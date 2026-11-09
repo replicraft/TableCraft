@@ -12,7 +12,7 @@ These results describe the committed `60b3315` continuation. The separate
 [selected forwarded-record continuation](ACE16_SELECTED_FORWARDED_UPDATES.md)
 has separately passed its ownership, preview and regression verification; the
 earlier counts do not qualify that additional storage path. The
-[original-file proof](ace16_fixed_ignore_null_updates/README.md), committed in
+[original-file proof](../../access/rows/ace16_fixed_ignore_null_updates/README.md), committed in
 `1196b4dc`, separately verifies the older `60b3315` producer.
 
 ## Entry points and scope
@@ -154,13 +154,13 @@ The unknown `0x90` constraint-coverage refusal remains unchanged. The first shar
 batch failure is retained; this correction did not relax production admission.
 
 On 29 October 2026, the separate
-[original-file proof](ace16_fixed_ignore_null_updates/README.md) qualified 12
+[original-file proof](../../access/rows/ace16_fixed_ignore_null_updates/README.md) qualified 12
 target tables and two Sentinels from its SOURCE5 capture, then derived all 16
 complete expected images from original sources and immutable requests before
 public reference actions or producer calls. The isolated `60b3315` producer
 matched all 16 images exactly, totaling 9,076,736 bytes, returned 18 precise
 refusals with no candidate output, and passed 16 fresh independent reader checks.
-The [saved result](results/ace16-fixed-ignore-null-update-originals-2026-10-29.json)
+The [saved result](../../results/rows/ace16-fixed-ignore-null-update-originals-2026-10-29.json)
 and verifier preserve the public reference's original two completed calls and
 66-call continuation, including the intervening proof correction.
 

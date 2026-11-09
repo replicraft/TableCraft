@@ -4,7 +4,7 @@ from pathlib import PurePosixPath
 import subprocess
 import tarfile
 
-RECEIPT = 'docs/testing/results/ace16-insert-extended-datetime-example-build-2026-10-28.json'
+RECEIPT = 'tests/results/rows/ace16-insert-extended-datetime-example-build-2026-10-28.json'
 REVISION = 'c3313b3e2d73f90956e6048792cfd7db66bc2742'
 
 

@@ -4,8 +4,8 @@ The separate `NativeImage::preview_ace16_insert_rows` service now inserts ordina
 Memo/OLE payloads using existing owned LVAL pages or represented EOF space. It
 constructs complete records and maintains qualified indexes through one append
 state. Normal saves, journalable ACE editing and native Access save/reopen
-qualification remain separate gates. The [ordinary record contract](ACE16_ORDINARY_INSERTS.md)
-and [preview safety boundary](ACE16_WRITE_PREVIEWS.md) still apply.
+qualification remain separate gates. The [ordinary record contract](../rows/ACE16_ORDINARY_INSERTS.md)
+and [preview safety boundary](../development/ACE16_WRITE_PREVIEWS.md) still apply.
 
 ## Complete requests before allocation
 
@@ -106,7 +106,7 @@ references. Public deletion of a seventh seed row leaves six live parents and
 one observed orphan chunk per column. These bodies stay protected; no source
 patch, selector retargeting or regeneration forces that observation.
 
-The [maintained proof](ace16_insert_external_long_values/README.md) reconstructs
+The [maintained proof](../../access/storage/ace16_insert_external_long_values/README.md) reconstructs
 sixteen complete images from only those originals and immutable full-row requests
 before producer execution. The cases cover OLE 65/4076/4077 bytes, Memo 66/4076/4078
 encoded bytes, mixed owners, NULL/empty/64-byte inline data and raw/compact `ABC`.
@@ -128,11 +128,11 @@ The first consumer build reused an older shared-target artifact and was declared
 unqualified before any native call. Its original report, artifact and relocated
 receipt remain preserved. A corrective build from the same committed `8374bad2`
 source used an initially absent isolated target and recorded actual engine
-compilation. The [compact build receipt](results/ace16-insert-external-long-value-isolated-example-build-2026-10-28.json)
+compilation. The [compact build receipt](../../results/rows/ace16-insert-external-long-value-isolated-example-build-2026-10-28.json)
 pins the full 4,526-file Git-bound archive/manifest and unchanged source inventory,
 with explicit failure/correction linkage. This is a build-freshness issue, not
 a native producer failure or a changed golden. The
-[result](results/ace16-insert-external-long-values-2026-10-28.json) retains all
+[result](../../results/rows/ace16-insert-external-long-values-2026-10-28.json) retains all
 phase records. Native Access/Windows save/reopen remains unrun.
 
 ## Original-file column-map growth
@@ -145,7 +145,7 @@ cohort rebases existing 69-byte owned rows to their observed aligned minima; the
 upper cohort promotes each owner to a new bitmap. Source files are never patched
 or regenerated to force a transition.
 
-The [maintained growth proof](ace16_insert_long_value_map_growth/README.md) derives
+The [maintained growth proof](../../access/storage/ace16_insert_long_value_map_growth/README.md) derives
 sixteen whole images independently before public references or a fresh-target
 committed `18bbfee7` consumer build. Single 65/66 and chained 8,145/8,146-byte requests
 exercise both column owners, owned bitmap allocation/reuse and candidate rebasing.
@@ -160,7 +160,7 @@ sixteen fresh combined typed-row/map calls pass after an all-image barrier. The
 corpus adds 64 LVAL body pages and 16 owned bitmap pages, with no new DATA/INDEX
 pages because both existing destinations fit. The public files also match the
 independently frozen images exactly; this is an observed result, not constructor
-authority. The [compact result](results/ace16-insert-long-value-map-growth-2026-10-28.json)
+authority. The [compact result](../../results/rows/ace16-insert-long-value-map-growth-2026-10-28.json)
 pins the distinct source/model/reference/build/native/reader phases. A tuple/list
 transport comparison in the first maintained replay was corrected without
 changing physical proofs, source bytes or runtime outcomes; its failure remains
@@ -215,7 +215,7 @@ The later [zero-pair initialization continuation](ACE16_LONG_VALUE_INITIALIZATIO
 can add fresh column maps after source emptiness qualification. Other external
 placement uses existing declared column-map pairs and represented global free
 cells, with the canonical first-crossing extension below. The [missing-declaration continuation](ACE16_MISSING_LONG_VALUE_DECLARATIONS.md)
-now qualifies bounded single-page tails. The [GLOBAL INSERT continuation](ACE16_GLOBAL_MAP_INSERT_GROWTH.md)
+now qualifies bounded single-page tails. The [GLOBAL INSERT continuation](../rows/ACE16_GLOBAL_MAP_INSERT_GROWTH.md)
 also qualifies canonical inline promotion at page 512. Wider declaration layouts,
 legacy external migration, wider global growth and map-record slot expansion
 remain unfinished. Other metadata, text-codec/BOM
@@ -226,7 +226,7 @@ comparisons remain separate evidence.
 
 ## Original-file GLOBAL first crossing
 
-The [GLOBAL original-file proof](ace16_insert_global_bootstrap/README.md) now
+The [GLOBAL original-file proof](../../access/rows/ace16_insert_global_bootstrap/README.md) now
 qualifies twelve engineering candidates on four immutable EOF 512 originals,
 followed by twelve fresh inert typed-row/map reads. Public Single 65/66 and chained
 8,145/8,146 requests place body 512 then GLOBAL 513; a separate 32-row inline 64+64

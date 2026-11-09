@@ -5,7 +5,7 @@ import json
 from collections import Counter
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[3]
+ROOT = Path(__file__).resolve().parents[4]
 PAGE_BYTES = 4096
 MEMBERSHIP_ROLES = ('TableOwned', 'CompactMemoOwned', 'RawMemoOwned', 'OLEOwned')
 

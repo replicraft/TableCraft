@@ -17,6 +17,6 @@ The source-only qualification function passes before helper execution. All five
 focused functions pass, covering exact NULL/empty/Binary records, source order,
 same-image deletion, stale expectations, duplicate/missing ordinals, empty
 admission, cumulative resource pools and cancellation at the final callback.
-The [verification record](results/ace16-ordinal-delete-selection-2026-10-29.json)
+The [verification record](../../results/rows/ace16-ordinal-delete-selection-2026-10-29.json)
 retains code/input pins and logs. These are local engineering checks, not native
 Access comparisons.

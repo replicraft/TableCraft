@@ -3,6 +3,7 @@
 Original engineering fixtures and the reviewed external JAR remain local. This
 checks stored rows, not native Access, SQL execution, snapshots or live-file safety.
 """
+from engineering_paths import reference_file
 import argparse
 import hashlib
 from pathlib import Path
@@ -25,12 +26,12 @@ def main():
     if args.generate:
         args.directory.mkdir(exist_ok=False)
         for profile,suffix in PROFILES:
-            run("java","-Dstdout.encoding=UTF-8","-cp",args.jar,RECIPES/"LargeTableFixture.java",args.directory/f"LargeRows-{profile}.{suffix}",profile)
+            run("java","-Dstdout.encoding=UTF-8","-cp",args.jar,reference_file('tests/access/reading/tables/LargeTableFixture.java'),args.directory/f"LargeRows-{profile}.{suffix}",profile)
     for profile,suffix in PROFILES:
         path=args.directory/f"LargeRows-{profile}.{suffix}"
         before=digest(path)
         for offset,limit in [(0,2),(1,2),(500,2),(1000,2)]:
-            oracle=run("java","-Dstdout.encoding=UTF-8","-cp",args.jar,RECIPES/"LargeTableOracle.java",path,offset,limit).splitlines()
+            oracle=run("java","-Dstdout.encoding=UTF-8","-cp",args.jar,reference_file('tests/access/reading/tables/LargeTableOracle.java'),path,offset,limit).splitlines()
             kind,rows,owned=oracle[0].split("\t")
             assert kind=="Meta" and int(rows)==6000 and int(owned)>4096,(profile,"fixture size")
             expected=oracle[1]+"\n"+"".join("\t".join(display(tag) for tag in row.split("\t"))+"\n" for row in oracle[2:])

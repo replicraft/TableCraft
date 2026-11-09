@@ -18,7 +18,7 @@ from compare_browsing import display
 from compare_strconv_kana import mapped as kana_mapped
 from compare_strconv_width import literal, mapped as width_mapped, pairs
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[4]
 MAX_COMMANDS = 300
 BATCH_COLUMNS = 3
 SOURCE_ROOTS = [
@@ -27,10 +27,10 @@ SOURCE_ROOTS = [
     "crates/query/tablecraft-expressions/src/evaluation/strconv",
 ]
 TOOL_PATHS = [
-    "docs/testing/compare_strconv_wide_hiragana.py",
-    "docs/testing/compare_strconv_width.py",
-    "docs/testing/compare_strconv_kana.py",
-    "docs/testing/compare_browsing.py",
+    "tests/access/queries/expressions/compare_strconv_wide_hiragana.py",
+    "tests/access/queries/expressions/compare_strconv_width.py",
+    "tests/access/queries/expressions/compare_strconv_kana.py",
+    "tests/access/reading/tables/compare_browsing.py",
 ]
 
 

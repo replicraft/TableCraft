@@ -28,7 +28,7 @@ positions and native field numbers remain distinct. Cancellation, retained
 release, unknown outcomes and failed AFTER reads preserve their actual ownership;
 no receipt or UI flag alone publishes a new schema.
 
-The [coordinated record](testing/results/saved-field-drop-gui-2026-11-09.json)
+The [coordinated record](../tests/results/schema/saved-field-drop-gui-2026-11-09.json)
 contains real Number/Text saves, independent complete AFTER comparisons, retained
 scratch/tab identity, fresh Design selection and actual omitted INSERT following
 a Number deletion gap. The first batch passed 681 UI and 201 desktop tests with
@@ -70,10 +70,10 @@ status-panel matrix rendered all 22 cases on macOS arm64; every frame is directl
 reviewed without clipping. These renders remain separate from the functional
 gate and establish neither general field CRUD nor native Access parity. See the [shared rename workflow](ui/FIELD_RENAME.md).
 
-The [current workbench record](testing/results/field-workbench-workflows-2026-11-09.json)
+The [current workbench record](../tests/results/schema/field-workbench-workflows-2026-11-09.json)
 reports 1,533 distinct accepted checks and three ignored cases, including the
 642-test UI and 188-test desktop suites. The earlier
-[service record](testing/results/field-schema-services-2026-11-09.json)
+[service record](../tests/results/schema/field-schema-services-2026-11-09.json)
 reports separate passing batches of 1,290 and 693 checks; repeated coverage is
 not summed. Strict affected-library, desktop and preview lint passes. These
 results remain headless implementation evidence, with no new native Access,
@@ -90,7 +90,7 @@ Read-only runtime inspection exposes exact target eligibility without save
 authority. A separate fitted ADD candidate preserves the database property row
 while appending the new user property body after it.
 
-The [frozen candidate batch](testing/results/saved-field-candidates-2026-11-09.json)
+The [frozen candidate batch](../tests/results/schema/saved-field-candidates-2026-11-09.json)
 passes 2,188 tests across five complete affected suites, with 265 existing
 ignored cases excluded. Later adapter and TCAC6 integration and small follow-up
 corrections remain outside that batch. That checkpoint did not activate GUI field
@@ -108,7 +108,7 @@ reconstructs the complete native result through the retained checked journal.
 The adapter, runtime and existing GUI command use the same selected plan and
 full-image reopen witness. TCDO0001 and TCAC1–5 retain their original languages.
 
-The [composition batch](testing/results/field-history-options-workflows-2026-11-09.json)
+The [composition batch](../tests/results/schema/field-history-options-workflows-2026-11-09.json)
 passes 991 unique selected tests with five existing ignored cases excluded.
 Runtime saves cover all five independent SDK/raw source classes; normal desktop
 widgets cover Number and Text → Number → Text, retaining field bytes and scratch
@@ -129,7 +129,7 @@ and identity survive. Failed or cancelled verification retains saved facts,
 Retry/Return and stale-source mutation guards. Hide details and Close have
 distinct effects. Dedicated Fluent catalogs cover all eight locales.
 
-The [coordinated record](testing/results/database-options-workflows-2026-11-08.json)
+The [coordinated record](../tests/results/general/database-options-workflows-2026-11-08.json)
 contains 2,787 unique successful tests across seven affected package suites plus
 focused corrections; 265 existing ignored cases remain excluded. Nineteen
 light/dark and translated offscreen frames pass layout checks and direct review.
@@ -153,7 +153,7 @@ close/deferred transitions and complete-image reopen. Short Text requests capaci
 default. Existing creator defaults and old Number source/request routes remain
 unchanged. Desktop services compose runtime authority rather than implement edits.
 
-The [coordinated batch](testing/results/field-addition-gui-workflows-2026-11-08.json)
+The [coordinated batch](../tests/results/schema/field-addition-gui-workflows-2026-11-08.json)
 passes 1,505 unique selected tests, including all shared UI and desktop cases;
 five existing ignored cases are excluded. Normal Text → Number → Text saves,
 subsequent omitted/NULL/empty/supplied row inputs, exact capability declaration
@@ -169,7 +169,7 @@ with database-option roles are still unfinished; this is not general ALTER.
 
 A separate native Number/Short Text candidate reconstructs exact empty ACE16
 source history and protects existing declarations, property storage and unrelated
-bytes. The [336-case batch](testing/results/typed-field-candidate-workflows-2026-11-08.json)
+bytes. The [336-case batch](../tests/results/schema/typed-field-candidate-workflows-2026-11-08.json)
 and strict feature-configuration lint pass. This checkpoint does not activate
 Short Text in the GUI or grant a typed-field normal save capability; recovery
 and shared application integration remain the next step. Native Access and
@@ -186,7 +186,7 @@ Other tabs, scratch SQL and valid filter/sort preferences survive publication.
 The composed GUI Number-save/New-row path verifies generated ID and an omitted
 field’s stored zero default after reopen.
 
-The [activation batch](testing/results/number-column-gui-workflows-2026-11-08.json)
+The [activation batch](../tests/results/schema/number-column-gui-workflows-2026-11-08.json)
 passes 785 checks: all 604 shared UI tests, 168 desktop tests and 13 selected
 runtime/naming checks, with one existing desktop test ignored. Strict affected
 library/desktop lint passes. Eleven light/dark offscreen frames were inspected;
@@ -200,12 +200,12 @@ external property rows and appending a new body on its owned LVAL ledger.
 The current bounded route allows one rollover to immediate EOF page 11, then
 fitted page-11 bodies; another allocation and sources at the sixteen-field
 ceiling refuse.
-Three independent [SDK observations](testing/number_column_repeat/README.md)
+Three independent [SDK observations](../tests/access/schema/number_column_repeat/README.md)
 match complete native second-ADD images; allocation/index pages remain unchanged.
 The same runtime/GUI service selects its exact source purpose, retains the sealed
 plan and requires complete-image checked reopen. Original TCAC1/2/3 stay frozen.
 
-The [repeated-add workflow record](testing/results/repeated-number-workflows-2026-11-08.json)
+The [repeated-add workflow record](../tests/results/rows/repeated-number-workflows-2026-11-08.json)
 retains 127 selected passing checks across native source/intent proof, adapter,
 runtime and desktop. They include three normal widget saves in one session,
 actual New-row insertion after three additions with all fields omitted, and a
@@ -214,7 +214,7 @@ lint passes both with all features and for normal creation+journal without
 preview. Earlier build and test-selection failures remain separate from passing
 gates. The third GUI image initially used a raw oracle; later independent SDK
 evidence is tracked separately rather than rewriting that execution record.
-A later [rollover workflow record](testing/results/number-column-rollover-workflows-2026-11-08.json)
+A later [rollover workflow record](../tests/results/schema/number-column-rollover-workflows-2026-11-08.json)
 retains 135 selected passing checks, including the complete SDK rollover image,
 partial-growth recovery/settled proof and ordinary runtime/GUI N13→N14 saves.
 Both composed consumers then save a row with generated ID1 and fourteen omitted
@@ -237,7 +237,7 @@ Unchanged native spellings and every non-expression model field remain protected
 full proposed-model equality and the same full-image witness precede atomic
 publication of the exact submitted text and retained other drafts.
 
-The [coordinated workflow record](testing/results/full-sql-expression-workflows-2026-11-08.json)
+The [coordinated workflow record](../tests/results/queries/full-sql-expression-workflows-2026-11-08.json)
 retains 94 passing selected checks across its recorded checkpoints and strict
 affected-library/desktop lint. Initial compile, fixture and assertion failures
 remain separate from corrected checks. Independent SDK byte observations remain
@@ -257,12 +257,12 @@ The initial native default-zero column candidate passes both independent full
 SDK AFTER pins. The subsequent exact Number declaration also qualifies explicit
 Required(false): three complete SDK images match independent native candidates.
 Its distinct TCAC0003 request, resizable V2 journal, offline recovery and consuming
-runtime review/save/reopen services pass the [65-case follow-up batch](testing/results/number-column-runtime-batch-2026-11-08.json).
+runtime review/save/reopen services pass the [65-case follow-up batch](../tests/results/schema/number-column-runtime-batch-2026-11-08.json).
 The actual GUI TableDraft producer matches both source classes. Saved-column
 At that earlier checkpoint, GUI naming/save controls remained disabled while
 their lifecycle was implemented.
 New source-availability and failure cases await the next coordinated batch.
-The [combined batch record](testing/results/gui-query-column-batch-2026-11-08.json)
+The [combined batch record](../tests/results/schema/gui-query-column-batch-2026-11-08.json)
 retains 60 passing focused checks, strict affected-package lint and two inspected
 light/dark offscreen frames. The earlier stale runtime assertion failure is
 retained separately from its passing corrected rerun. No native Access or Windows
@@ -287,7 +287,7 @@ full-image guarded reopen. Native metadata distinguishes an absent declaration,
 explicit OFF and other stored values without guessing an enabled default. The
 desktop has not enabled this option's UI.
 
-The earlier [focused workflow record](testing/results/saved-sql-options-workflows-2026-11-08.json)
+The earlier [focused workflow record](../tests/results/queries/saved-sql-options-workflows-2026-11-08.json)
 records 105 passing tests across native metadata, runtime options/reopen services,
 saved-query presentation, object sessions and headless desktop workflows. Strict
 affected-library/desktop lint passes after correcting session allocation and
@@ -296,7 +296,7 @@ separate from passing corrected gates. These are macOS/headless checks, not
 Microsoft Access or Windows execution, general QueryDef CRUD, or full native
 compatibility qualification.
 
-The subsequent [saved-query lifecycle record](testing/results/query-save-rebind-2026-11-08.json)
+The subsequent [saved-query lifecycle record](../tests/results/queries/query-save-rebind-2026-11-08.json)
 retains 113 current logical checks: 109 workflow cases plus four localization
 checks. Nine desktop cases include actual editor/Save/report/reopen/Run dispatch,
 formatting-only verification, stale source/close events and failed refreshes.
@@ -325,7 +325,7 @@ copy follow-up passes eight native parallel cases, eight CLI encryption cases an
 strict engine/CLI lint without repeating the unchanged application suites.
 Packaging checks pass 19 cases. Windows/Linux engine and exact host memory-module
 cross-checks pass on x64 and ARM64; full CLI cross-builds need missing SQLite C
-cross-compilers. Native Windows/Access execution remains unqualified. [End-to-end benchmark records](testing/ADAPTIVE_ENCRYPTION_BENCHMARKS.md) retain
+cross-compilers. Native Windows/Access execution remains unqualified. [End-to-end benchmark records](../tests/reports/encryption/ADAPTIVE_ENCRYPTION_BENCHMARKS.md) retain
 552 samples across 96 workloads and complete decoded-output comparisons. Wall
 time is noisy and overlapped packaging metadata work; the report makes no
 universal or isolated-crypto speedup claim.
@@ -352,7 +352,7 @@ application scenarios: consuming runtime save/reopen and headless desktop
 paste/review/save/acknowledge/refresh/reopen. Both compare the complete independent
 AFTER and retain the original source unchanged. These are macOS consumer checks,
 not broader Jet4 writes or native Access qualification. See the
-[workflow record](testing/results/jet4-genuine-application-workflows-2026-11-08.json).
+[workflow record](../tests/results/rows/jet4-genuine-application-workflows-2026-11-08.json).
 
 ## Saved-column and query persistence foundation — 8 November 2026
 
@@ -376,7 +376,7 @@ The runtime with explicit offline-edit/creation features compiles for Windows
 x64, Linux x64 and the FreeBSD unsupported-host contract. These are compilation
 checks, not native execution or Access comparison. The typed UTF-16 query-group
 follow-up passes all five candidates, seven intent cases and the explicit SDK
-whole-image case. The [batch record](testing/results/schema-save-workflows-2026-11-08.json) retains the
+whole-image case. The [batch record](../tests/results/schema/schema-save-workflows-2026-11-08.json) retains the
 failure and correction separately. Native Windows/Access qualification remains
 unrun.
 
@@ -410,7 +410,7 @@ The first retries caught a Bytes preview buffer type mismatch, private immutable
 proof-test mutations, an unreachable cancellation injection and benchmark chunk
 API lint/type errors. Corrected runs pass; initial and corrected logs remain in
 ignored `.cache/library-*` files. The retained
-[benchmark report](testing/NATIVE_LIBRARY_REFACTORS.md) includes all measured
+[benchmark report](../tests/reports/general/NATIVE_LIBRARY_REFACTORS.md) includes all measured
 samples, earlier noisy cohorts and the precise workload limitations.
 
 The accepted order remains library refactors, native read/write/query completion,
@@ -985,7 +985,7 @@ tests across the feature batches. The final full UI batch includes eight inline
 interaction tests, preserving dropdown ownership of Escape, Enter and Tab, and
 the foreground popup clipping case. Strict affected-package lint, five cross-target
 compilations, formatting, dependency and documentation checks pass; see the
-[platform audit](testing/CROSS_PLATFORM_AUDIT.md). Initial focus, popup-clipping
+[platform audit](../tests/reports/general/CROSS_PLATFORM_AUDIT.md). Initial focus, popup-clipping
 and fixture-selection failures remain distinct from accepted runs in ignored
 logs, including the reproduced popup Enter failure before its guard was fixed.
 Current final logs use `.cache/gui-inline-design-final-qualified-*20261107.log`.
@@ -1024,7 +1024,7 @@ selected zero tests because append is journal-gated; it is not counted as test
 coverage. Source and controller fixes were verified with independent byte
 fixtures, not wider test assertions or suppressed diagnostics.
 
-Seventeen [independent-reader observations](testing/results/ace16-mixed-design-independent-reader-2026-11-07.json)
+Seventeen [independent-reader observations](../tests/results/reading/ace16-mixed-design-independent-reader-2026-11-07.json)
 retain their original hashes. Four populated-table/capacity offscreen frames were
 inspected in both themes and translated compact layouts; see
 [the presentation record](ui/PRESENTATION_PREVIEW.md#populated-table-design-and-capacity--7-november-2026).
@@ -1074,7 +1074,7 @@ Design capture; the empty Design and primary-key prompt have no matching native
 capture and remain visual adaptations. See the
 [presentation record](ui/PRESENTATION_PREVIEW.md#manual-table-design--7-november-2026).
 Eight independently read candidates retain their original hashes; scope and
-producer pins are in the [result](testing/results/ace16-manual-design-independent-reader-2026-11-07.json).
+producer pins are in the [result](../tests/results/reading/ace16-manual-design-independent-reader-2026-11-07.json).
 Failed exploratory selectors, old generated-only continuation assumptions,
 accessibility assertions, prompt paint and lint runs remain separately retained
 in ignored logs; the accepted runs do not erase those failures.
@@ -1093,7 +1093,7 @@ limitations; this is not complete regional-settings parity.
 All 116 desktop tests and strict all-target/all-feature desktop lint pass.
 The preceding affected-package batch passes 139 I/O, 151 runtime and 454 shared-UI
 tests, with six-target compilation coverage recorded in the
-[renewed audit](testing/CROSS_PLATFORM_AUDIT.md#manual-design-working-tree-refresh).
+[renewed audit](../tests/reports/general/CROSS_PLATFORM_AUDIT.md#manual-design-working-tree-refresh).
 Native Windows/Linux execution, desktop installation and physical durability
 remain separate qualification work. No native application windows were opened.
 
@@ -1131,7 +1131,7 @@ Four light/dark and compact translated offscreen frames were inspected; see
 [the presentation record](ui/PRESENTATION_PREVIEW.md#description-authoring--7-november-2026).
 Read-only Jackcess observations of three generated schema candidates preserve
 all file hashes and exact descriptions, with their narrower scope recorded in
-[the result](testing/results/ace16-description-independent-reader-2026-11-07.json).
+[the result](../tests/results/reading/ace16-description-independent-reader-2026-11-07.json).
 Initial feature-gate, selector, stale-default-assertion, negative-fixture and lint
 failures remain separate from accepted runs under ignored
 `.cache/gui-description-*20261107.log` paths. The real first-row refusal and its
@@ -1247,7 +1247,7 @@ dependency boundaries and 7,923 documentation targets pass. A compact translated
 property-pane regression found during the audit was corrected and rechecked.
 These are local builds/tests, not native Windows/Linux, installed-app,
 power-loss or Access qualification. See the
-[current audit evidence](testing/CROSS_PLATFORM_AUDIT.md#current-tree-verification-follow-up).
+[current audit evidence](../tests/reports/general/CROSS_PLATFORM_AUDIT.md#current-tree-verification-follow-up).
 
 ## Omitted nullable first-record fields — 7 November 2026
 
@@ -1314,7 +1314,7 @@ audit also corrected accessibility deadlock/role issues in pending field-propert
 work without changing its assertions. Fresh native batches pass 1,004 focused
 tests, and complete workspace strict lint passes on macOS ARM64. Cross-target
 coverage and remaining Windows/Linux runtime qualification are recorded in the
-[renewed audit](testing/CROSS_PLATFORM_AUDIT.md#renewed-source-and-host-review).
+[renewed audit](../tests/reports/general/CROSS_PLATFORM_AUDIT.md#renewed-source-and-host-review).
 
 ## Editable initial-table Design view — 7 November 2026
 
@@ -1385,7 +1385,7 @@ use exclusive creation and protect competing or symlinked paths.
 All six supported OS/architecture targets pass affected-package all-target/
 all-feature cross-checks. The macOS ARM64 affected library/binary batch passes
 857 tests; no native Windows/Linux execution or full workspace integration pass
-is claimed. See [audit findings and exact evidence](testing/CROSS_PLATFORM_AUDIT.md#save-path-and-packaging-follow-up).
+is claimed. See [audit findings and exact evidence](../tests/reports/general/CROSS_PLATFORM_AUDIT.md#save-path-and-packaging-follow-up).
 
 ## Retained INSERT input and guarded retry — 7 November 2026
 
@@ -1493,7 +1493,7 @@ include all targets/features of runtime, UI and desktop. These are macOS test
 execution and Windows compilation evidence; native Windows/Linux execution and
 Access comparison remain unrun. No native app windows were opened.
 See [the creation workflow](ui/DATABASE_CREATION.md#creating-the-first-table-after-open)
-and [the platform audit](testing/CROSS_PLATFORM_AUDIT.md).
+and [the platform audit](../tests/reports/general/CROSS_PLATFORM_AUDIT.md).
 
 ## Explicit Open-time journal recovery — 7 November 2026
 
@@ -1554,7 +1554,7 @@ All 139 IO, 125 runtime, 342 UI, 82 desktop, 108 CLI unit and 10 builder unit te
 pass, as do 19 Rust doctests and 16 isolated feature combinations. Earlier broad
 runs include the corrected stale version assertion, the initial three desktop
 failures and explicitly interrupted targets; they are not a full-suite pass.
-See the [audit record](testing/CROSS_PLATFORM_AUDIT.md) for exact coverage and
+See the [audit record](../tests/reports/general/CROSS_PLATFORM_AUDIT.md) for exact coverage and
 remaining qualification. Actual Windows/Linux filesystem execution, native
 GUI/platform integration, power-loss behavior and
 Microsoft Access comparisons remain separate, unrun qualification work. No native
@@ -2497,7 +2497,7 @@ slots and the parent consumes the complete retained proof while preserving alias
 allocation, DATA separation and physical-role census checks. Thirty-one runtime
 functions, strict lint and reader/journal/preview builds pass. See the
 [bounded Source contract](access/writes/NORMAL_RETAINED_GUID_TUPLE_SOURCE.md) and
-[execution record](testing/results/ace16-retained-guid-tuple-source-2026-11-03.json).
+[execution record](../tests/results/indexes/ace16-retained-guid-tuple-source-2026-11-03.json).
 This qualifies no new indexed-target token or tuple save. Both prior complete
 admission failures are preserved; tuple UPDATE qualification remains work.
 
@@ -2511,7 +2511,7 @@ eight mixed GUID/Score cases additionally pass at each boundary. Eighteen resour
 contexts, 48 recovery states, 468 direct protected-byte forgeries and 25 retained
 functions pass, followed by strict checks. See the
 [current contract](access/writes/NORMAL_GUID_INDEX_UPDATE.md) and
-[execution record](testing/results/ace16-normal-indexed-guid-update-2026-11-03.json).
+[execution record](../tests/results/indexes/ace16-normal-indexed-guid-update-2026-11-03.json).
 Broader GUID constraints/tuples/omissions, NODEs, allocation and native Access
 save/reopen remain separate work. The twelve fitted GUID/Int32 tuple originals now pass Source admission in the
 separate continuation above.
@@ -2524,7 +2524,7 @@ NULL clear preserves inactive bytes; expected values remain exact. Six native,
 typed and CLI saves each match literal complete-image expectations. Named GUID
 targets select the wider original-request dialect even when empty; old dialects
 remain closed. See the [current scope](access/writes/NORMAL_GUID_FIXED_UPDATE.md)
-and [execution record](testing/results/ace16-normal-guid-fixed-update-2026-11-03.json).
+and [execution record](../tests/results/rows/ace16-normal-guid-fixed-update-2026-11-03.json).
 The single-GUID index continuation above now supplies fitting key maintenance.
 Generation, mixed variable records and native Access save/reopen remain work.
 
@@ -2547,7 +2547,7 @@ Six native, typed and CLI saves each match independent literal endpoint, NULL-cl
 and NULL-restore spans. Plain integer CLI assignments, inactive-byte preservation,
 stale witnesses, recovery, resource controls and mixed IEEE batches pass. See the
 [qualified scope](access/writes/NORMAL_BYTE_INT16_FIXED_UPDATE.md) and
-[execution record](testing/results/ace16-normal-byte-int16-update-2026-11-03.json).
+[execution record](../tests/results/rows/ace16-normal-byte-int16-update-2026-11-03.json).
 Indexed/mixed-variable composition and native Access save/reopen remain work.
 
 ## Exact ordinary Single/Double UPDATE
@@ -2585,7 +2585,7 @@ models and explicitly labelled full-reader parity preserve values, IDs, encoded
 bytes and DATE bits. Five engine and three browser functions pass, including
 complete caps, multivalue overflow and terminal cumulative Rows exhaustion, followed
 by scoped strict/minimal/boundary/format checks. The
-[acceptance record](testing/results/lazy-collection-scale-2026-11-02.json) preserves
+[acceptance record](../tests/results/reading/lazy-collection-scale-2026-11-02.json) preserves
 test-only compile/lint corrections. Each expansion still performs complete-key
 validation; this adds no default-limit, throughput, concurrent-read or native Access
 claim. See [larger native collections](access/collections/LARGER_NATIVE_COLLECTIONS.md#source-bound-selected-parent-scale-acceptance).
@@ -2600,7 +2600,7 @@ finishes before backend publication. Nullable NULL, existing Int32 and descripto
 rules remain. See the [assignment contract](query/QUERY_EXECUTION.md#sql-stored-assignment).
 Forty unique functions pass across conversion units, actual UPDATE/INSERT plans,
 retained editing/inserting and four real CLI save/readbacks, followed by strict,
-minimal and boundary checks. The [acceptance record](testing/results/sql-integral-assignment-2026-11-02.json)
+minimal and boundary checks. The [acceptance record](../tests/results/queries/sql-integral-assignment-2026-11-02.json)
 preserves the mock trait, syntax-profile and superseded Currency refusal corrections.
 Fractional/Text/Boolean/date conversions and native Access qualification remain
 separate work.
@@ -2609,7 +2609,7 @@ Byte and Int16 destinations now use the same checked integral assignment owner.
 Out-of-range values fail before backend finish; exact-carrier paths retain their
 previous work cost. Four unit, five actual-planner, fifteen inserting and seventeen
 retained editing functions pass, followed by strict/minimal/boundary/format checks.
-See the [narrow assignment record](testing/results/sql-integral-narrow-assignment-2026-11-03.json).
+See the [narrow assignment record](../tests/results/queries/sql-integral-narrow-assignment-2026-11-03.json).
 These SQL conversions grant no additional native field-mutation authority.
 
 ## Wider numeric key updates with ordinary fields
@@ -2626,7 +2626,7 @@ contexts, 296 completion confirmations and 24 public resource contexts pass.
 Ten new test functions and eighteen retained regressions pass, followed by strict,
 reader/journal/preview, dependency and formatting checks. The
 [contract](access/writes/NORMAL_WIDE_ORDINARY_SIBLING_UPDATE.md) and
-[acceptance record](testing/results/ace16-wide-sibling-writes-2026-11-02.json)
+[acceptance record](../tests/results/general/ace16-wide-sibling-writes-2026-11-02.json)
 keep the first fixture-comment compile failure and CLI Text-spelling correction.
 IgnoreNULL keys, mixed NODE schemas, general allocation and native Access
 save/reopen remain separate work.
@@ -2644,7 +2644,7 @@ See the [history contract](access/collections/LAZY_HISTORY.md).
 Twelve new functions and retained regressions pass: 83 engine, 63 adapter and
 48 CLI functions, followed by strict, minimal, warning-free Rust documentation,
 dependency and formatting checks. The
-[acceptance record](testing/results/lazy-history-reader-2026-11-02.json) preserves
+[acceptance record](../tests/results/reading/lazy-history-reader-2026-11-02.json) preserves
 the static association finding and first unused-import lint failure. Existing
 complete query/presence caches remain unchanged; larger-directory evidence and
 native Access comparisons remain work.
@@ -2662,7 +2662,7 @@ complete query/presence caches. See the
 [attachment contract](access/collections/LAZY_ATTACHMENTS.md). Eleven new functions
 and retained regressions pass (86 engine, 68 adapter, 35 CLI), followed by strict,
 minimal, Rust documentation and boundary checks. The
-[acceptance record](testing/results/lazy-attachment-reader-2026-11-02.json)
+[acceptance record](../tests/results/reading/lazy-attachment-reader-2026-11-02.json)
 retains the test-only lexical-scope correction. History now has the separate
 reader above; larger-directory evidence and native Access comparisons remain work.
 
@@ -2692,7 +2692,7 @@ full readers and complete query caches remain unchanged. Nine focused functions
 and retained regressions pass (99 engine, 61 adapter, 35 CLI), followed by strict,
 minimal-feature, Rust documentation and dependency checks. The
 [contract](access/collections/LAZY_MULTIVALUES.md) and
-[acceptance record](testing/results/lazy-multivalue-reader-2026-11-02.json)
+[acceptance record](../tests/results/reading/lazy-multivalue-reader-2026-11-02.json)
 retain the first unused-argument lint failure and correction. Attachments now
 have the separate reader above; history also has its own reader above. Larger
 directories and native Access qualification remain work.
@@ -2728,7 +2728,7 @@ Ten focused functions and existing regressions pass: 95 engine functions,
 19 adapter functions, all 35 CLI browsing functions across the preserved first
 run and one test-only correction, plus existing streaming unit checks. Strict
 checks, minimal-feature builds and dependency guards pass. The
-[acceptance record](testing/results/projected-scalar-pages-2026-11-02.json)
+[acceptance record](../tests/results/storage/projected-scalar-pages-2026-11-02.json)
 retains the first failure, narrow correction and a real example-database smoke
 run separately from native Access qualification.
 
@@ -2741,7 +2741,7 @@ all Binary index pages and aliases byte-for-byte. Ten native commits, independen
 proof and journal forgeries, recovery/resource controls, eighteen typed/SQL saves
 and eight CLI saves/readbacks pass. Indexed Id now has the separately qualified
 [mutation profile](access/writes/NORMAL_RETAINED_BINARY_ID_UPDATE.md). The [write contract](access/writes/NORMAL_RETAINED_BINARY_MARKER_UPDATE.md)
-and [acceptance record](testing/results/ace16-retained-binary-marker-writes-2026-11-02.json)
+and [acceptance record](../tests/results/storage/ace16-retained-binary-marker-writes-2026-11-02.json)
 separate earlier source-only qualification from matching saves. Native Access
 save/reopen remains unrun.
 
@@ -2755,7 +2755,7 @@ The existing exact DISTINCT profile composes with this operation. This is bounde
 terminal retention, with no constant-memory or early-publication guarantee.
 Eight focused functions, existing terminal regressions, the completed query test
 batch and strict checks pass; preserved first failures and narrow corrections are
-in the [acceptance record](testing/results/progressive-sorted-top-2026-11-02.json).
+in the [acceptance record](../tests/results/general/progressive-sorted-top-2026-11-02.json).
 Sorted aggregates/groups, stateful sorted inputs, TOP PERCENT and broader sort
 shapes remain outside the progressive profile. Native Access comparison remains
 unrun. See [progressive execution](query/PROGRESSIVE_QUERIES.md).
@@ -2885,7 +2885,7 @@ native Access save/reopen remain work.
 
 ## Next write sources qualified
 
-[Wider numeric, inline Memo/OLE and Date/Now sources](testing/ACE16_WIDE_INLINE_CLOCK_SOURCES.md)
+[Wider numeric, inline Memo/OLE and Date/Now sources](../tests/reports/general/ACE16_WIDE_INLINE_CLOCK_SOURCES.md)
 now pass native Source checks and independent inert readers before their matching
 writers. Wider UPDATE has 48 complete views and 408 reports; inline UPDATE has
 28 contexts/24 unique images and 28 reports; clock defaults have eighteen views
@@ -3012,7 +3012,7 @@ Strict all-feature/all-target, minimal, journal-only, preview-only and dependenc
 checks pass. The broad engine run passed 1,164 units and found one obsolete
 wide-primary error expectation; its corrected Carrier assertion passed without
 production changes. Adapter/CLI/recovery runs pass 79/104/90 functions. The
-[execution record](testing/results/ace16-constant-defaults-and-node-retirement-writes-2026-11-01.json)
+[execution record](../tests/results/schema/ace16-constant-defaults-and-node-retirement-writes-2026-11-01.json)
 keeps that failure and correction explicit. Native Access save/reopen remains
 unrun; deeper retirement and Text/Date follow-ons remain work.
 
@@ -3026,7 +3026,7 @@ Earlier fitting split native/session checks also pass. See the
 [compound contract](access/writes/NORMAL_COMPOUND_ROOT_SPLIT.md).
 
 Strict all-feature/all-target, minimal, journal-only and preview-only profiles
-pass. The [execution record](testing/results/ace16-normal-compound-root-split-writes-2026-11-01.json)
+pass. The [execution record](../tests/results/indexes/ace16-normal-compound-root-split-writes-2026-11-01.json)
 records this focused batch separately from the preceding full-suite run.
 Multiple-row/multiple-hint placement, recursive/wider splits, map expansion and
 native Access save/reopen remain work.
@@ -3050,7 +3050,7 @@ The combined batch passes 1,165 ACE units, 79 adapter units, 104 CLI units and
 90 default recovery functions. All focused creator, index-update, split, native
 recovery, host and CLI tranches pass. Strict all-feature/all-target, minimal,
 journal-only and preview-only checks pass. The
-[execution record](testing/results/ace16-index-updates-splits-and-primary-creation-2026-11-01.json)
+[execution record](../tests/results/creation/ace16-index-updates-splits-and-primary-creation-2026-11-01.json)
 retains first compile/registration failures, peer accounting review and corrections.
 Native Access save/reopen and Windows qualification remain unrun.
 
@@ -3074,7 +3074,7 @@ The combined batch passes 1,160 ACE units, 79 adapter units, 102 CLI units and
 90 default recovery functions, plus 84 query units, eight editing functions,
 actual DELETE CLI acceptance and the five-function prior Binary INSERT native
 regression. Strict all-feature/all-target, minimal, journal-only and preview-only
-checks pass. The [execution record](testing/results/ace16-primary-creation-and-binary-delete-writes-2026-11-01.json)
+checks pass. The [execution record](../tests/results/creation/ace16-primary-creation-and-binary-delete-writes-2026-11-01.json)
 retains the first IsNull admission failure, obsolete empty-source refusal,
 sequential-tail test assumption and lint failures with their corrections.
 Native Access save/reopen and Windows durability remain unrun. Compound
@@ -3092,7 +3092,7 @@ Binary DELETE is described above.
 Strict feature checks and all sixteen prior write-profile regression commands
 pass. The combined batch passes 1,153 ACE units, 79 adapter units, 102 CLI units
 and 90 default recovery functions. The
-[execution record](testing/results/ace16-binary-index-insert-writes-2026-11-01.json)
+[execution record](../tests/results/indexes/ace16-binary-index-insert-writes-2026-11-01.json)
 retains first failures and corrections without changed expected bytes. See the
 [owning contract](access/writes/NORMAL_BINARY_INDEX_INSERT.md). Native Access
 save/reopen and Windows qualification remain unrun.
@@ -3105,7 +3105,7 @@ typed/SQL sessions distinguish omitted fields from supplied NULL, preserving
 TCNA2/TCNA4 semantics and Required constraints. Four focused creator functions,
 five prior Boolean-policy functions and three host functions pass, including
 resource/cancellation and retained lease/receipt controls. See the
-[execution record](testing/results/ace16-creation-default-writes-2026-11-01.json).
+[execution record](../tests/results/creation/ace16-creation-default-writes-2026-11-01.json).
 Strict all-feature/all-target and minimal checks pass; the creation regression
 filter passes 35 functions with one ignored exporter. AutoNumber mode detection,
 broader default families and native Access qualification remain open.
@@ -3126,7 +3126,7 @@ and exact SDK comparisons before creator tests. Fourteen complete creator output
 match independent sources; initial-row violations refuse before image allocation.
 Five focused property functions and the 31-function creation regression filter
 pass. Broader results and preserved first failures are in the
-[batch record](testing/results/ace16-sparse-actions-and-creation-properties-2026-11-01.json).
+[batch record](../tests/results/creation/ace16-sparse-actions-and-creation-properties-2026-11-01.json).
 The combined batch passes 1,148 ACE units, 79 adapter units, 102 CLI units and
 90 default recovery functions, plus strict feature checks. These additions do not
 qualify native Access saves or Windows durability.
@@ -3145,7 +3145,7 @@ explicit native TCNA1/3 APIs and recovery retain their closed profiles.
 Focused whole-image, proof, interruption, refusal, budget, typed/SQL and CLI checks
 pass. The broad batch passes 1,142 ACE units, 104 I/O units, 79 adapter units,
 102 CLI units and 90 default recovery functions, plus strict feature builds.
-The [execution record](testing/results/ace16-complete-insert-writes-2026-11-01.json)
+The [execution record](../tests/results/rows/ace16-complete-insert-writes-2026-11-01.json)
 retains failed lint receipts and exact passing results. Wider-carrier witnesses
 cover existing capacity/one EOF page; multi-page witnesses use I32/NULL rows.
 Their Cartesian composition, index allocation/splits, broader column-identity profiles,
@@ -3159,7 +3159,7 @@ root leaves alongside Int32 indexes. Thirty-six literal native commits,
 independent raw proofs, typed/SQL saves and restarts, CLI saves/readbacks and
 resource/forgery controls pass. Indexed UPDATE keeps its prior Int32 target admission; unindexed fixed-scalar
 UPDATE retains its existing wider carriers. The
-[execution record](testing/results/ace16-normal-integral-indexed-writes-2026-11-01.json)
+[execution record](../tests/results/indexes/ace16-normal-integral-indexed-writes-2026-11-01.json)
 records the first missed capture guard, correction and passing strict/broad batch.
 Wide primary keys, additional ordinal/ID profiles and wider tree shapes remain
 work; native Access qualification remains unrun.
@@ -3172,7 +3172,7 @@ qualified represented EOF page through original TCNA0003 requests and checked
 V2 recovery. Four native complete-image commits, interrupted recovery and
 forgery checks, typed/SQL sessions, cold restarts and CLI saves/readbacks pass.
 Omitted/default requests stay fixed-length; indexed allocation and multiple EOF
-pages remain open. The [execution record](testing/results/ace16-normal-eof-insert-writes-2026-11-01.json)
+pages remain open. The [execution record](../tests/results/rows/ace16-normal-eof-insert-writes-2026-11-01.json)
 separates these results from native Access and Windows qualification, both unrun.
 
 ## Fresh creation and ordinary sessions
@@ -3185,7 +3185,7 @@ tests with 1 ignored exporter; one Access typed/SQL test and one CLI test publis
 fresh files then perform normal INSERT/DELETE with whole-image/readback checks.
 Strict all-feature, journal-only, preview-only and minimal builds pass. The
 current broad batch passes 1,134 ACE units, 79 adapter units, 102 CLI units and
-83 default recovery functions. The [creation execution record](testing/results/ace16-native17-creation-writes-2026-11-01.json)
+83 default recovery functions. The [creation execution record](../tests/results/creation/ace16-native17-creation-writes-2026-11-01.json)
 retains focused and broad receipts.
 
 Every session rederives content-based NoRequired and physical/constraint proof;
@@ -3205,7 +3205,7 @@ Native, typed/SQL session and CLI checks pass against frozen independent images.
 Strict all-feature, journal-only, preview-only and minimal builds pass. The broad
 batch passes 1,129 ACE units, 79 adapter units, 102 CLI units and 83 default
 recovery functions. Exact receipts and first failures remain in the
-[execution record](testing/results/ace16-normal-insert-expansion-2026-11-01.json).
+[execution record](../tests/results/rows/ace16-normal-insert-expansion-2026-11-01.json).
 Native Access save/reopen remains unrun; splits, allocation, broader keys and
 identity/clock defaults remain unfinished. See the
 [normal INSERT contract](access/writes/NORMAL_ACE_INSERT.md).
@@ -3224,8 +3224,8 @@ journal lifecycle.
 Broad checks pass 1,121 ACE units, 79 adapter units, 102 CLI units and 83 default
 recovery functions, alongside strict all/journal/preview and minimal builds.
 Targeted whole-image, recovery, forgery, resource and host checks are in the
-[NODE DELETE record](testing/results/ace16-normal-retained-node-delete-writes-2026-11-01.json)
-and [optional INSERT record](testing/results/ace16-normal-indexed-desc-null-insert-writes-2026-11-01.json).
+[NODE DELETE record](../tests/results/rows/ace16-normal-retained-node-delete-writes-2026-11-01.json)
+and [optional INSERT record](../tests/results/indexes/ace16-normal-indexed-desc-null-insert-writes-2026-11-01.json).
 NODE insertion, defaults/generation, broader keys, page retirement and native
 Access save/reopen remain open.
 
@@ -3242,10 +3242,10 @@ historical counters, protected tails and the existing V1 lifecycle remain intact
 Thirteen focused native functions pass, including pending/committed mixed-target
 recovery, protected-image refusals and resource/cancellation controls. Typed/SQL
 sessions and CLI saves match independently authored full images. See the
-[indexed write record](testing/results/ace16-normal-indexed-writes-2026-11-01.json)
+[indexed write record](../tests/results/indexes/ace16-normal-indexed-writes-2026-11-01.json)
 for exact scope, broader checks and retained first failures. Broader trees,
 generation/defaults, relationships and native Access save/reopen remain open.
-The [follow-on record](testing/results/ace16-indexed-write-followons-2026-11-01.json)
+The [follow-on record](../tests/results/indexes/ace16-indexed-write-followons-2026-11-01.json)
 also qualifies cross-page INSERT request association, descending/NULL deletion
 and healthy NODE source reads with precise current mutation refusals.
 
@@ -3257,7 +3257,7 @@ the requested character refuse recovery. Two native commits and two CLI
 saves/readbacks match independently authored full images. Ten normal controls,
 329 existing INSERT tests and strict all-feature/journal checks pass. Wide-mode
 zero-low-byte representations remain unsupported. See the
-[follow-on record](testing/results/ace16-normal-insert-feff-writes-2026-11-01.json).
+[follow-on record](../tests/results/rows/ace16-normal-insert-feff-writes-2026-11-01.json).
 
 ## Normal explicit-row INSERT
 
@@ -3274,7 +3274,7 @@ cancellation controls pass. Typed/SQL and CLI saves retain the original row/OLE,
 properties, maps and EOF. All 1,118 ACE units, 79 adapter units, 102 CLI units and
 83 recovery functions pass, with strict feature builds and prior DELETE/EOF host
 workflows intact. See the [INSERT contract](access/writes/NORMAL_ACE_INSERT.md)
-and [native record](testing/results/ace16-normal-insert-writes-2026-11-01.json).
+and [native record](../tests/results/rows/ace16-normal-insert-writes-2026-11-01.json).
 
 ## Normal ordinary-row deletion
 
@@ -3293,7 +3293,7 @@ readbacks. All complete images match frozen expectations. Broader key/tree profi
 conformance remain open. The batch passes 1,114 ACE units, 79 adapter units, 98 CLI units and
 83 recovery functions, with strict feature checks and prior EOF workflows intact.
 See the [normal deletion contract](access/writes/NORMAL_ACE_DELETE.md) and
-[native write record](testing/results/ace16-normal-delete-writes-2026-11-01.json).
+[native write record](../tests/results/rows/ace16-normal-delete-writes-2026-11-01.json).
 
 ## Active scope
 
@@ -3327,9 +3327,9 @@ The batch passes 1,108 ACE units, 83 recovery functions, 79 adapter units and
 94 CLI units. Prior owned/joint/multirow/alternate images and host saves remain
 qualified. Strict all-feature, journal-only, preview-only and minimal checks pass.
 Source goldens are unchanged; first compile/negative-fixture failures remain in
-the [native record](testing/results/ace16-normal-eof-allocation-writes-2026-11-01.json).
+the [native record](../tests/results/storage/ace16-normal-eof-allocation-writes-2026-11-01.json).
 See the [contract](access/writes/NORMAL_ACE_EOF_ALLOCATION.md) and
-[host record](testing/results/ace16-retained-eof-allocation-2026-11-01.json).
+[host record](../tests/results/storage/ace16-retained-eof-allocation-2026-11-01.json).
 Broader INSERT/DELETE, wider allocation/indexes and native Access
 qualification remain ongoing.
 
@@ -3352,7 +3352,7 @@ committed mixed-target refusals, protected-content forgeries, exact resource
 limits, cancellation, unavailable destinations and root-first preference pass.
 Broader allocation, general normal INSERT/DELETE and Microsoft Access save/reopen
 qualification remain open. See the [growth contract](access/writes/NORMAL_ACE_OWNED_GROWTH.md)
-and [write record](testing/results/ace16-normal-alternate-owned-writes-2026-11-01.json).
+and [write record](../tests/results/general/ace16-normal-alternate-owned-writes-2026-11-01.json).
 
 ## Normal same-page record growth
 
@@ -3373,7 +3373,7 @@ Twelve native commits, twenty-four typed/SQL session saves and twelve CLI
 saves/readbacks pass; all 1,105 ACE units, 83 recovery regressions, 79 adapter
 units and 94 CLI units pass, alongside strict feature builds. See the
 [contract](access/writes/NORMAL_ACE_OWNED_GROWTH.md) and
-[write record](testing/results/ace16-normal-owned-growth-writes-2026-11-01.json).
+[write record](../tests/results/rows/ace16-normal-owned-growth-writes-2026-11-01.json).
 
 ## Normal writes beside unchanged numeric indexes
 
@@ -3389,7 +3389,7 @@ saves/readbacks pass, along with repeated recovery, forgery, role-conflict and
 resource/cancellation controls. All 1,099 ACE units, 83 recovery regressions,
 79 adapter units and 94 CLI units pass; strict all-feature/journal-only/preview-only
 checks and minimal builds pass. See the [contract](access/writes/NORMAL_ACE_RETAINED_NUMERIC.md)
-and [write record](testing/results/ace16-retained-numeric-writes-2026-11-01.json).
+and [write record](../tests/results/indexes/ace16-retained-numeric-writes-2026-11-01.json).
 Native Access and broader mutation qualification remain separate.
 
 ## Genuine fitting writes with properties and readonly OLE
@@ -3408,7 +3408,7 @@ remain unchanged. General LVAL authoring and native Access save/reopen remain
 unqualified. All 1,093 ACE units, 83 recovery regressions, 79 adapter units and
 94 CLI units pass, alongside strict all-feature/journal-only/preview-only checks
 and minimal builds. See the [fitting contract](access/writes/NORMAL_ACE_FITTED.md)
-and [write record](testing/results/ace16-genuine-property-lval-writes-2026-11-01.json).
+and [write record](../tests/results/storage/ace16-genuine-property-lval-writes-2026-11-01.json).
 
 ## Normal ordinary fitting Text/Binary saves
 
@@ -3422,7 +3422,7 @@ Thirty literal native commits, thirty typed and eighteen SQL session saves,
 eighteen CLI saves/readbacks, causal forgery controls and exact resource tests
 pass. All 1,093 ACE unit tests (37 ignored), 83 recovery tests (five ignored),
 79 adapter units and 117 CLI regression tests pass. Strict all-feature,
-journal-only and preview-only checks pass. The [write record](testing/results/ace16-normal-ordinary-fitted-writes-2026-11-01.json)
+journal-only and preview-only checks pass. The [write record](../tests/results/rows/ace16-normal-ordinary-fitted-writes-2026-11-01.json)
 retains first failures and corrections. Evidence covers authored schemas;
 genuine fitted-schema and native Microsoft Access qualification remain unrun.
 Broader property profiles, richer retained indexes, record growth and general
@@ -3435,7 +3435,7 @@ use one internal record-serialization owner directly. Independent proof encoders
 remain separate, and old forwarding modules are removed. All 426 focused tests
 pass, alongside strict engine/adapter/CLI checks and the journal-only build.
 This prerequisite adds no normal Text/Binary save capability or new intent
-version; see the [extraction record](testing/results/ace16-record-serialization-extraction-2026-10-31.json).
+version; see the [extraction record](../tests/results/rows/ace16-record-serialization-extraction-2026-10-31.json).
 
 ## Genuine ordinary target writes
 
@@ -3454,7 +3454,7 @@ required-program absence inference is bounded by primary native locator evidence
 it is not a universal absence theorem or observed Microsoft Access save/reopen
 conformance. All 1,082 ACE unit tests pass (37 ignored), alongside strict
 all-feature, journal-only and preview-only checks. See the
-[write record](testing/results/ace16-genuine-ordinary-target-writes-2026-10-31.json).
+[write record](../tests/results/rows/ace16-genuine-ordinary-target-writes-2026-10-31.json).
 
 ## Ordinary fitting indexed updates
 
@@ -3467,7 +3467,7 @@ whole image. Twenty-four literal CLI saves/readbacks, 16 principal typed session
 saves and all 79 recovery tests pass. The full ACE batch passes 1,075 tests
 (32 ignored), including exact resource/cancellation controls. Strict all-feature,
 journal-only and preview-only checks pass. See the
-[write record](testing/results/ace16-ordinary-indexed-target-writes-2026-10-31.json).
+[write record](../tests/results/indexes/ace16-ordinary-indexed-target-writes-2026-10-31.json).
 
 ## Ordinary indexed-target source qualification
 
@@ -3476,7 +3476,7 @@ and constraint checks plus 56 exact independent SDK observations. Requests cover
 manual Int32 key changes, NULL transitions, atomic UNIQUE swaps, aliases, fitting
 trees and prefix loss. Four refusal contexts per header retain healthy originals
 without manufactured outcomes. This is source evidence before indexed mutation;
-see the [source contract](testing/ACE16_ORDINARY_INDEXED_TARGET_SOURCES.md).
+see the [source contract](../tests/reports/indexes/ACE16_ORDINARY_INDEXED_TARGET_SOURCES.md).
 
 ## Ordinary writes preserving counters and indexes
 
@@ -3489,7 +3489,7 @@ Eighteen literal native and public journal commits, 36 typed/SQL session saves,
 and 18 CLI saves with exact query readback pass. The complete ACE unit batch
 passes 1,067 tests (31 ignored), and all 75 recovery tests pass. Resource and
 cancellation controls also pass. See the
-[write record](testing/results/ace16-ordinary-counter-index-writes-2026-10-31.json).
+[write record](../tests/results/indexes/ace16-ordinary-counter-index-writes-2026-10-31.json).
 
 ## Ordinary counter and retained-index source qualification
 
@@ -3498,7 +3498,7 @@ historical counters and inactive INDEX capacity now pass native read/constraint
 checks and exact independent SDK observations. Thirty adversarial views retain
 separate content-validator expectations. This is source evidence; write admission
 and recovery require their own checks. See the
-[source contract](testing/ACE16_ORDINARY_INDEXED_SOURCES.md).
+[source contract](../tests/reports/indexes/ACE16_ORDINARY_INDEXED_SOURCES.md).
 
 ## Ordinary writes with dynamic inline windows
 
@@ -3509,7 +3509,7 @@ TCNI0004 or host lifecycle. Four bitmap tests, two dynamic content tests and fou
 public planning/recovery tests pass. The adapter passes four new tests with
 20 principal typed/SQL whole-image saves; the CLI passes ten whole-image writes
 and ten exact TSV readbacks. Existing ordinary source and consumer tests retain
-their behavior. See the [dynamic write record](testing/results/ace16-ordinary-inline-writes-2026-10-31.json).
+their behavior. See the [dynamic write record](../tests/results/general/ace16-ordinary-inline-writes-2026-10-31.json).
 
 ## Larger ordinary inline-map source qualification
 
@@ -3517,7 +3517,7 @@ Ten 96-page ordinary input views now pass native reads/constraints and exact
 independent SDK observations, before newly admitted producer calls. Fourteen
 adversarial views retain explicit allocation/ownership expectations. This is
 source evidence, separate from the dynamic content/write checks. See the
-[source contract](testing/ACE16_ORDINARY_INLINE_SOURCES.md).
+[source contract](../tests/reports/general/ACE16_ORDINARY_INLINE_SOURCES.md).
 
 ## Ordinary fixed writes through shared sessions and CLI
 
@@ -3529,7 +3529,7 @@ TCNI0004 while existing routes retain versions 1/2/3. The CLI passes 22 literal
 complete-image saves, equal/empty retirements and a real create/update/TSV workflow.
 An old indexed-unavailable control now asserts the earlier explicit capability
 refusal, retaining all byte/lease/receipt checks. See the
-[host record](testing/results/ace16-normal-ordinary-host-2026-10-31.json).
+[host record](../tests/results/general/ace16-normal-ordinary-host-2026-10-31.json).
 
 ## Normal ordinary-content fixed writes
 
@@ -3550,7 +3550,7 @@ pass, including all 56 expected user-table snapshots and constraint checks.
 Twenty-four exact independent SDK observations pass with unchanged inputs before
 new ordinary mutation calls. This qualifies source reads, not general native
 write admission or Microsoft Access saves. See the
-[source contract](testing/ACE16_ORDINARY_CONTENT_SOURCES.md).
+[source contract](../tests/reports/rows/ACE16_ORDINARY_CONTENT_SOURCES.md).
 
 ## Fixed-intent request identity validation
 
@@ -3560,7 +3560,7 @@ written order, spelling and request storage, retain native preflight error order
 and use cancellable metadata budgets without database row charges. Existing wire
 literals and native recovery controls remain unchanged. See the
 [fixed-scalar contract](access/writes/NORMAL_ACE_FIXED_SCALARS.md) and
-[verification record](testing/results/ace16-fixed-intent-identity-2026-10-31.json).
+[verification record](../tests/results/rows/ace16-fixed-intent-identity-2026-10-31.json).
 
 ## Journaled fixed-scalar SQL batches
 
@@ -3575,7 +3575,7 @@ twelve complete-image saves and twelve exact full TSV readbacks; its initial
 source-GUID expectation correction is retained separately. This extends the restricted
 positive BeforeChange profile, not general ACE save admission. See the
 [fixed-scalar contract](access/writes/NORMAL_ACE_FIXED_SCALARS.md) and
-[execution record](testing/results/ace16-normal-fixed-sql-cli-2026-10-31.json).
+[execution record](../tests/results/queries/ace16-normal-fixed-sql-cli-2026-10-31.json).
 
 ## SQL-addressable fixed-scalar source qualification
 
@@ -3583,8 +3583,8 @@ Ten discriminator originals and ten literal outcomes now qualify one-row wide
 SQL requests and both atomic SET orders. Two native source/anchor tests and
 20 exact independent SDK inventories pass before SQL execution. The joint case
 retains original false-Flag semantics, producing Int64 42. See the
-[source contract](testing/ACE16_FIXED_SQL_SOURCES.md) and
-[record](testing/results/ace16-fixed-sql-sources-2026-10-31.json).
+[source contract](../tests/reports/queries/ACE16_FIXED_SQL_SOURCES.md) and
+[record](../tests/results/queries/ace16-fixed-sql-sources-2026-10-31.json).
 
 ## Journaled typed fixed-scalar batches
 
@@ -3596,7 +3596,7 @@ them, while the old single-present-Int32 route retains `TCNI0002`. Thirty-two
 native complete-image commits, 61 recovery integration tests and 56 real typed
 session saves pass. Broader verification and SQL/CLI qualification remain
 explicit in the [contract](access/writes/NORMAL_ACE_FIXED_SCALARS.md) and
-[record](testing/results/ace16-normal-fixed-before-change-2026-10-31.json).
+[record](../tests/results/rows/ace16-normal-fixed-before-change-2026-10-31.json).
 
 ## Typed fixed-scalar BeforeChange source qualification
 
@@ -3609,8 +3609,8 @@ Signed-zero and alias DATE bits, scaled Currency, Boolean masks and inactive
 NULL payloads retain explicit raw coverage. The first exporter compile correction
 is preserved separately. This is source qualification before normal typed saves,
 not SQL ordinal selection, macro-absence permission or native Access save evidence.
-See the [source contract](testing/ACE16_FIXED_BEFORE_CHANGE_SOURCES.md) and
-[record](testing/results/ace16-fixed-before-change-sources-2026-10-31.json).
+See the [source contract](../tests/reports/rows/ACE16_FIXED_BEFORE_CHANGE_SOURCES.md) and
+[record](../tests/results/rows/ace16-fixed-before-change-sources-2026-10-31.json).
 
 ## Normal updates beside untouched NULL index keys
 
@@ -3629,7 +3629,7 @@ ignored), including 28 new complete-image saves. All 1,021 ACE unit tests pass
 the engine, adapter and CLI. Actual NULL transitions, ignore-NULL indexes,
 allocation, other key carriers and native Access qualification remain unfinished.
 Adapter and broader regression results are retained in the
-[write record](testing/results/ace16-normal-nullable-key-before-change-2026-10-31.json).
+[write record](../tests/results/indexes/ace16-normal-nullable-key-before-change-2026-10-31.json).
 
 ## Untouched NULL-key source qualification
 
@@ -3640,8 +3640,8 @@ presence/inactive bytes and original PrimaryId storage remain exact. The unique
 all-NULL pair remains an authored read hypothesis. All ninety-six exact
 independent SDK observations and the saved-only verifier pass. Separate producer
 checks now match all twelve literal outcomes, as recorded above. See the
-[source contract](testing/ACE16_NULLABLE_KEY_BEFORE_CHANGE_SOURCES.md) and
-[record](testing/results/ace16-nullable-key-before-change-sources-2026-10-31.json).
+[source contract](../tests/reports/indexes/ACE16_NULLABLE_KEY_BEFORE_CHANGE_SOURCES.md) and
+[record](../tests/results/indexes/ace16-nullable-key-before-change-sources-2026-10-31.json).
 
 ## Journaled indexed mixed-schema Int32 updates
 
@@ -3655,7 +3655,7 @@ preserves the previous unindexed path beside unchanged nullable indexes: a
 separate source/old-proof control reproduced the routing regression, then passed
 four real saves, indexed-target refusals and original-intent recovery after the
 fix. No failed planner is retried. The
-[result](testing/results/ace16-normal-indexed-mixed-before-change-2026-10-31.json)
+[result](../tests/results/indexes/ace16-normal-indexed-mixed-before-change-2026-10-31.json)
 retains that regression and the test/lint corrections. The full ACE unit batch
 passes 1,019 tests (25 ignored). Twelve complete CLI saves and twelve exact TSV
 readbacks also pass. The adapter batch passes 68 tests, two explicit rich plans
@@ -3672,8 +3672,8 @@ readonly AutoNumber/PrimaryId. Two native source/anchor tests and one hundred
 exact independent SDK observations pass, including unique swaps, descending
 composites, prefix loss and retained loose bounds. The saved verifier starts no
 children. Source qualification preceded the writer checks above; see the
-[source contract](testing/ACE16_INDEXED_MIXED_BEFORE_CHANGE_SOURCES.md) and
-[record](testing/results/ace16-indexed-mixed-before-change-sources-2026-10-31.json).
+[source contract](../tests/reports/indexes/ACE16_INDEXED_MIXED_BEFORE_CHANGE_SOURCES.md) and
+[record](../tests/results/indexes/ace16-indexed-mixed-before-change-sources-2026-10-31.json).
 
 ## Journaled ACE mixed-schema Int32 updates
 
@@ -3688,7 +3688,7 @@ projected plans pass. Mixed stale/foreign handles remain refused under the same
 lease. Twelve CLI commits and twelve exact TSV readbacks pass with all sources
 unchanged. The ACE unit batch passes 1,011 tests (25 ignored), the focused adapter
 batch passes 63, and CLI journal unit/integration checks pass twelve. See the
-[result](testing/results/ace16-normal-mixed-before-change-2026-10-31.json).
+[result](../tests/results/general/ace16-normal-mixed-before-change-2026-10-31.json).
 See the [normal write contract](access/writes/NORMAL_ACE_BEFORE_CHANGE.md).
 General carriers, indexed mixed targets, NULL target transitions, relationships,
 allocation and native Access save qualification remain unfinished.
@@ -3702,8 +3702,8 @@ rich profiles use actual projected source reads, keeping header-5 native-20
 refusals explicit. Four focused source/anchor tests and eighty exact independent SDK observations
 pass; the saved-only verifier starts no children. A separate rich SDK probe
 confirms the missing catalog-container refusal and supplies no rich readback
-qualification. Source qualification preceded the normal writer checks recorded above. See the [source contract](testing/ACE16_MIXED_BEFORE_CHANGE_SOURCES.md)
-and [record](testing/results/ace16-mixed-before-change-sources-2026-10-31.json).
+qualification. Source qualification preceded the normal writer checks recorded above. See the [source contract](../tests/reports/schema/ACE16_MIXED_BEFORE_CHANGE_SOURCES.md)
+and [record](../tests/results/general/ace16-mixed-before-change-sources-2026-10-31.json).
 
 ## Retained-tree journaled ACE updates
 
@@ -3718,7 +3718,7 @@ Six native integration and three proof/policy tests pass on eighteen frozen
 images. Typed/SQL sessions pass 36 whole-image saves and successive same-lease
 edits; eighteen CLI saves match the complete expected files. See the
 [contract](access/writes/NORMAL_ACE_BEFORE_CHANGE.md) and
-[result](testing/results/ace16-normal-tree-before-change-2026-10-31.json).
+[result](../tests/results/indexes/ace16-normal-tree-before-change-2026-10-31.json).
 Observed tree sources are height one. Mixed schemas, NULLs, relationships,
 allocation/splits, broader normal writes and native Access qualification remain.
 
@@ -3733,7 +3733,7 @@ direct proof/ownership tests pass. Typed and SQL offline sessions pass 32 comple
 image comparisons plus four conflict refusals. This first indexed profile requires
 all-row non-NULL Int32 fields and prefix-zero leaves; interior nodes, broader
 carriers and general saves remain unfinished. See the [contract](access/writes/NORMAL_ACE_BEFORE_CHANGE.md)
-and [result](testing/results/ace16-normal-indexed-before-change-2026-10-31.json).
+and [result](../tests/results/indexes/ace16-normal-indexed-before-change-2026-10-31.json).
 
 ## Initial journaled ACE BeforeChange updates
 
@@ -3746,7 +3746,7 @@ assignments refuse pending native event-timing qualification. Empty operations
 still preflight programs; programs that restore the original can report zero
 changed rows. Complete-image proof and recovery rebuild from BEFORE and original
 intent, without trusting staged final rows. See the [contract](access/writes/NORMAL_ACE_BEFORE_CHANGE.md)
-and [execution record](testing/results/ace16-normal-before-change-2026-10-31.json).
+and [execution record](../tests/results/general/ace16-normal-before-change-2026-10-31.json).
 General ACE saves and native Access execution/save/reopen remain unfinished.
 
 ## Multiple-table native creation
@@ -3757,7 +3757,7 @@ one image with shared system metadata and separate table owners/maps. The Access
 required publisher. Table counts and aggregate row/column totals are available
 before publication. Twenty-four engine tests and nine creation-service tests
 pass, including all four independently qualified multiple-table images and
-retained single-table regressions. The [creation contract](testing/ACE16_DATABASE_CREATION.md#multiple-user-tables)
+retained single-table regressions. The [creation contract](../tests/reports/creation/ACE16_DATABASE_CREATION.md#multiple-user-tables)
 retains per-table limits and separate native Access/save qualification. CLI
 creation remains single-table.
 
@@ -3769,7 +3769,7 @@ available for present Int32 cells. Both use the same required durable publisher.
 Seventy command tests pass, including fifteen complete typed source images and
 existing write-input regressions. A fresh normal executable also passes creation,
 row retrieval, table checks and help; the [CLI guide](cli/NATIVE_CREATION.md) and
-[result](testing/results/typed-cli-native-creation-2026-10-31.json) retain syntax,
+[result](../tests/results/creation/typed-cli-native-creation-2026-10-31.json) retain syntax,
 limits and the corrected production schema dependency.
 
 ## Fresh variable-field creation
@@ -3779,7 +3779,7 @@ Decimal declarations through the engine and existing typed Access publisher.
 The standalone creator passes nineteen tests, including complete-image matches
 for five variable sources and two page-capacity boundaries. NULL and present
 empty values remain distinct; Text bounds use UTF-16 units and Decimal values
-retain their exact declared scale. The [creation contract](testing/ACE16_DATABASE_CREATION.md)
+retain their exact declared scale. The [creation contract](../tests/reports/creation/ACE16_DATABASE_CREATION.md)
 retains the one-table/one-DATA-page limits and separate native Access/save gates.
 Earlier fixed-only acceptance below describes its original implementation phase.
 
@@ -3792,7 +3792,7 @@ is supported except for Boolean; no carrier conversion or Required declaration
 is inferred. The first eleven tests pass 28 independent complete-image
 comparisons, including raw IEEE payloads. Existing fixed/INSERT/preservation
 regressions pass 187 functions, alongside minimal/all-feature strict checks.
-The [creation contract](testing/ACE16_DATABASE_CREATION.md) separates source
+The [creation contract](../tests/reports/creation/ACE16_DATABASE_CREATION.md) separates source
 observations, construction and native Access qualification.
 
 The [Access creation service](access/writes/FRESH_DATABASE_CREATION.md) now
@@ -3820,15 +3820,15 @@ handles while preserving the previous receipt; normal ACE updates remain unavail
 
 The complete session target passes 15 functions, including four typed cases;
 the real-protocol confirmation-error regression also passes. The
-[typed result](testing/results/offline-typed-write-sessions-2026-10-31.json) extends
-the original session acceptance. The [focused record](testing/results/offline-write-sessions-2026-10-31.json)
+[typed result](../tests/results/general/offline-typed-write-sessions-2026-10-31.json) extends
+the original session acceptance. The [focused record](../tests/results/general/offline-write-sessions-2026-10-31.json)
 retains source-first complete images and validation boundaries. This does not
 enable normal ACE saves, resolve required data macros, implement native Access
 shared-file locking or complete the application cursor/session roadmap.
 
 ## Rich-schema BeforeChange batches
 
-The explicit native [BeforeChange batch service](testing/ACE16_BEFORE_CHANGE_FIELD_COPIES.md#rich-schema-original-fixed-batches)
+The explicit native [BeforeChange batch service](../tests/reports/schema/ACE16_BEFORE_CHANGE_FIELD_COPIES.md#rich-schema-original-fixed-batches)
 now composes original fixed user assignments with selected Int32 macro programs
 over preserved mixed-schema tables. Current starts with all proposed Int32 values;
 Old stays original. Ordinary indexed/counter operands remain read-only, dormant
@@ -3837,13 +3837,13 @@ A fresh original-intent replay independently proves the complete fitting image.
 
 Ten focused native functions pass, including 60 complete-image comparisons;
 the mutation regression passes 629 functions with 11 ignored helpers. The
-[focused record](testing/results/ace16-before-change-rich-batch-copies-2026-10-31.json)
+[focused record](../tests/results/general/ace16-before-change-rich-batch-copies-2026-10-31.json)
 retains source-first expectations, failures and qualification boundaries.
 The Access adapter now exposes this service through snapshot-bound typed batches
 and the shared SQL batch planner. All RHS expressions retain original-row
 semantics. The complete preserved-update adapter target passes 39 functions,
 including 44 new typed/SQL whole-image comparisons and resource/error controls.
-The [adapter record](testing/results/ace16-before-change-rich-batch-access-2026-10-31.json)
+The [adapter record](../tests/results/general/ace16-before-change-rich-batch-access-2026-10-31.json)
 retains the corrected AutoNumber blocker assertion separately from production.
 No CLI command or publication route was added.
 
@@ -3854,7 +3854,7 @@ normal saves, physical INSERT macro handling and Access qualification remain ope
 
 The existing fitted engineering API now composes one ordinary Short Text target
 with unindexed Boolean, Int32, Int64, Currency or legacy DateTime siblings over
-one preserved mixed-schema original. [Joint fitting](testing/ACE16_PRESERVED_JOINT_TEXT_FIXED.md)
+one preserved mixed-schema original. [Joint fitting](../tests/reports/rows/ACE16_PRESERVED_JOINT_TEXT_FIXED.md)
 rebuilds Text first and applies fixed payloads/mask bits afterward, preserving
 opaque siblings, inactive NULL payloads, raw no-ops and Int32 padding. Its
 independent proof rebinds original intent, validates final rules and compares
@@ -3877,7 +3877,7 @@ constructed complete images through a fresh committed CLI, followed by fourteen
 matching fresh SDK inventories. The existing originals/getter remain unchanged;
 source admission and committed expectations precede all producer calls. Ten
 files change and four are exact no-ops, including genuine empty SQL groups.
-The [genuine result](testing/results/ace16-preserved-joint-text-fixed-genuine-images-2026-10-31.json)
+The [genuine result](../tests/results/rows/ace16-preserved-joint-text-fixed-genuine-images-2026-10-31.json)
 separates the initial reader-wrapper preflight and artifact-retention disk
 diagnostics from passing actual calls and saved replay. It grants no normal-save
 or required-event authority.
@@ -3886,7 +3886,7 @@ or required-event authority.
 
 The existing native batch API now composes ordinary Boolean, Int32, Int64,
 Currency and legacy DateTime groups into one same-table engineering candidate.
-[Joint preservation](testing/ACE16_PRESERVED_JOINT_FIXED.md) merges shared mask bits,
+[Joint preservation](../tests/reports/rows/ACE16_PRESERVED_JOINT_FIXED.md) merges shared mask bits,
 retains inactive NULL bytes and Int32 padding, validates all targets including
 empty groups, and counts changed logical roots once. All expectations refer to
 the original image; a late failure returns no candidate.
@@ -3898,7 +3898,7 @@ pass. Existing unrelated refusals remain. This adds no normal save, journal or
 required-macro permission; native Access qualification remains separate.
 
 Existing Access and CLI consumers require no production routing changes. Their
-[joint acceptance](testing/results/ace16-preserved-joint-fixed-frontends-2026-10-31.json)
+[joint acceptance](../tests/results/rows/ace16-preserved-joint-fixed-frontends-2026-10-31.json)
 passes 100 principal adapter complete-image comparisons and 36 CLI comparisons;
 full preserved targets pass 30 and 27 tests. SQL SET operands retain original-row
 semantics, and false selection still qualifies every empty target group.
@@ -3909,7 +3909,7 @@ and two genuine empty-selection SQL calls cover shared masks, overlapping rows,
 NULL transitions and exact DATE bits. Eight images change and four are exact
 no-ops; changed roots count once per image. All twelve fresh read-only SDK
 inventories and the first saved-only replay pass. The
-[genuine-file record](testing/results/ace16-preserved-joint-fixed-genuine-images-2026-10-31.json)
+[genuine-file record](../tests/results/rows/ace16-preserved-joint-fixed-genuine-images-2026-10-31.json)
 retains source, expectation admission, committed producer and reader phases.
 These observations grant no normal-save, journal or required-macro authority.
 
@@ -3917,7 +3917,7 @@ These observations grant no normal-save, journal or required-macro authority.
 
 The existing native fixed and batch engineering services now admit one qualified
 unindexed Int64, Currency or legacy DateTime target in a preserved mixed schema.
-[Exact scalar preservation](testing/ACE16_PRESERVED_FIXED_SCALARS.md) includes
+[Exact scalar preservation](../tests/reports/rows/ACE16_PRESERVED_FIXED_SCALARS.md) includes
 bitwise DATE changes, NULL mask-only transitions and inactive payload retention.
 Seventy principal complete-image comparisons, reversed request orders and five
 independent proof tests pass. The full preserved contract passes 48 tests with
@@ -3934,14 +3934,14 @@ Two independently generated V2016/V2019 originals now also pass 24 complete-imag
 comparisons through a fresh committed CLI, followed by 24 fresh read-only SDK
 inventories. Signed integer/Currency boundaries, DATE negative zero and NULL
 transitions retain all rich companions. The
-[genuine-file record](testing/results/ace16-preserved-fixed-scalars-genuine-images-2026-10-31.json)
+[genuine-file record](../tests/results/rows/ace16-preserved-fixed-scalars-genuine-images-2026-10-31.json)
 separates source, independent expected, build, producer and reader evidence.
 These checks do not establish Microsoft Access qualification, required-macro
 absence, journal permission or normal ACE saves.
 
 ## Explicit BeforeChange field-update candidates
 
-The native [BeforeChange update service](testing/ACE16_BEFORE_CHANGE_FIELD_COPIES.md)
+The native [BeforeChange update service](../tests/reports/schema/ACE16_BEFORE_CHANGE_FIELD_COPIES.md)
 now prepares caller-selected field assignments and produces one jointly final
 fixed Int32/NULL engineering candidate. It reconstructs original programs and
 requests before physical admission, preserves the complete Extra payload and
@@ -3955,11 +3955,11 @@ The shared Access SQL service now selects one original UPDATE through the existi
 planner and finishes that same native BeforeChange candidate. Eight focused
 service functions, all 15 guard integration functions and 69 adapter unit functions
 pass, along with strict and minimal builds. Its
-[result record](testing/results/ace16-before-change-sql-service-2026-10-30.json)
+[result record](../tests/results/queries/ace16-before-change-sql-service-2026-10-30.json)
 retains the initial test-boundary and incomplete-fixture failures. The original
 inspection fixtures remain separate from the fully framed physical derivatives.
 
-Complete selected [before-event collections](testing/ACE16_BEFORE_EVENT_COLLECTIONS.md)
+Complete selected [before-event collections](../tests/reports/reading/ACE16_BEFORE_EVENT_COLLECTIONS.md)
 now preflight BeforeChange and BeforeDelete together, then execute only the
 operation-matching definitions. Twenty-four independent source pairs, five API
 functions, two authority controls and the 21-function guard regression pass.
@@ -3984,7 +3984,7 @@ failures retain their known state through diagnostic errors.
 
 The existing fixed engineering services now admit one ordinary, nonindexed Int32
 field outside calculation dependencies in qualified mixed schemas. The
-[native and frontend contract](testing/ACE16_PRESERVED_INT32_UPDATES.md) retains
+[native and frontend contract](../tests/reports/rows/ACE16_PRESERVED_INT32_UPDATES.md) retains
 attachments, stored caches, opaque values and every byte outside the exact
 four-byte field. Native, typed, SQL and CLI complete-image comparisons pass;
 unsupported profiles still refuse. Qualified mixed fixed targets now use the
@@ -3998,13 +3998,13 @@ The same path also passes ten complete-image comparisons on two independently
 generated V2016/V2019 originals, followed by ten fresh readonly Jackcess inventories.
 Positive, negative, signed-boundary and no-op requests retain all non-target
 bytes, including stored caches and attachments. Expected images preceded CLI
-production; the [genuine-file result](testing/results/ace16-preserved-int32-genuine-images-2026-10-30.json)
+production; the [genuine-file result](../tests/results/rows/ace16-preserved-int32-genuine-images-2026-10-30.json)
 retains the source-framing correction and separate execution phases. Native Access
 save qualification remains pending.
 
 ## Preserved fitting Short Text copies
 
-The separate [fitting Short Text service](testing/ACE16_PRESERVED_SHORT_TEXT_UPDATES.md)
+The separate [fitting Short Text service](../tests/reports/rows/ACE16_PRESERVED_SHORT_TEXT_UPDATES.md)
 now handles one qualified unindexed target in a preserved mixed schema without
 moving the record or allocating pages. It retains opaque rich payloads and raw
 Text/NULL no-ops, independently reconstructs the complete image and checks final
@@ -4013,13 +4013,13 @@ whole-image comparisons and four proof functions pass. On two independently
 generated V2016/V2019 originals, 18 original/request-only complete images now
 match a freshly built committed CLI, four capacity-overflow requests refuse,
 and 18 fresh readonly SDK inventories remain exact. Real zero-capacity NULL
-spans retain their fitting refusals. The [genuine-file record](testing/results/ace16-preserved-short-text-genuine-images-2026-10-30.json)
+spans retain their fitting refusals. The [genuine-file record](../tests/results/rows/ace16-preserved-short-text-genuine-images-2026-10-30.json)
 keeps source, expected, build, candidate and reader evidence separate. Native
 Access save/reopen, required-macro discovery and normal ACE saves remain open.
 
 ## Preserved Short Text DATA growth
 
-Explicit `--variable` now selects the [preserved Text growth service](testing/ACE16_PRESERVED_TEXT_GROWTH.md)
+Explicit `--variable` now selects the [preserved Text growth service](../tests/reports/rows/ACE16_PRESERVED_TEXT_GROWTH.md)
 through the shared Access editor and typed/SQL CLI workflows. One ordinary,
 unindexed Short Text target with no calculated dependency can use stable-root
 forwarding to an original or alternate owned DATA page, or represented EOF
@@ -4036,7 +4036,7 @@ typed batches retain logical roots, rich companions and unchanged maps/EOF;
 both typed batch orders produce the same image. Eight fresh unchanged SDK
 getters also match complete expected inventories. This qualifies same-page
 placement on these two profiles; genuine-file EOF allocation remains open.
-The [separate genuine-growth record](testing/results/ace16-preserved-text-growth-genuine-images-2026-10-30.json)
+The [separate genuine-growth record](../tests/results/rows/ace16-preserved-text-growth-genuine-images-2026-10-30.json)
 retains each phase independently.
 
 ## Offline journaled updates and recovery
@@ -4053,8 +4053,8 @@ Independent sources ran first. The journal CLI passes five black-box functions,
 65 CLI unit functions, six adapter integration checks and 22 existing copy/inspect/
 guard integration checks. Strict CLI checks pass. The full I/O run passes 81 unit,
 nine integration and two documentation tests, with strict/minimal checks passing.
-The [CLI result](testing/results/jet4-journal-cli-2026-10-30.json) and
-[filesystem result](testing/results/filesystem-journal-lifecycle-2026-10-30.json)
+The [CLI result](../tests/results/recovery/jet4-journal-cli-2026-10-30.json) and
+[filesystem result](../tests/results/recovery/filesystem-journal-lifecycle-2026-10-30.json)
 retain actual evidence and failures separately.
 
 `query finalize-update` now verifies an explicitly selected intact retired bundle
@@ -4064,7 +4064,7 @@ bytes for committed journals, retaining the same native replan and object bindin
 Reports describe the verified current image rather than claiming a historical
 commit or rollback. Eight journal CLI integration functions and 70 CLI unit
 functions pass, with strict all-target checks passing. The
-[finalization result](testing/results/jet4-retired-journal-finalization-cli-2026-10-30.json)
+[finalization result](../tests/results/recovery/jet4-retired-journal-finalization-cli-2026-10-30.json)
 records the retained-error sizing correction separately from the first checks.
 
 Automatic journal discovery, partially cleaned or incomplete bundle resolution,
@@ -4093,7 +4093,7 @@ The separate native engineering service now creates one ordinary nonunique Int32
 secondary index, including NULL keys, on a previously unindexed field. It retains
 existing rows, indexes and aliases, reserves distinct map/body pages, and proves
 the complete candidate against the original request. The
-[creation contract](testing/ACE16_SECONDARY_INDEX_CREATION.md) records sixteen
+[creation contract](../tests/reports/creation/ACE16_SECONDARY_INDEX_CREATION.md) records sixteen
 independent whole-image comparisons, correlated-forgery refusals, resource and
 cancellation checks. The native mutation regression passes 559 functions. The
 Access adapter and `query preview-create-index` now provide the explicit SQL
@@ -4104,7 +4104,7 @@ Broader key/layout profiles and normal saves remain unfinished.
 A fresh committed-source producer also matches sixteen complete independent
 images on eight Jackcess-generated originals. Sixteen fresh Jackcess readers
 then confirm the emitted indexes, row order and counters; originals and candidates
-remain unchanged. The [genuine-file record](testing/results/ace16-secondary-index-genuine-native-2026-10-30.json)
+remain unchanged. The [genuine-file record](../tests/results/indexes/ace16-secondary-index-genuine-native-2026-10-30.json)
 keeps source admission, independent construction, native production and external
 readback separate. These checks do not establish Microsoft Access qualification.
 
@@ -4151,7 +4151,7 @@ Typed INSERT TSV now distinguishes `omitted` with empty DATA from supplied NULL
 and supplied values. Qualified batches use the existing default/generation
 services once over the original image; fully supplied batches retain their old
 path. Explicit default clocks share the existing lazy provider, now owned by a
-shared CLI command module. The [batch contract](testing/ACE16_TYPED_BATCH_OMISSIONS.md)
+shared CLI command module. The [batch contract](../tests/reports/general/ACE16_TYPED_BATCH_OMISSIONS.md)
 records 24 exact CLI copies, 16 clock-service comparisons and four complete-input
 comparisons, plus atomic failure controls. Native save and macro gates remain.
 
@@ -4190,7 +4190,7 @@ unfinished; explicit selection does not establish them.
 The existing fitted, DATA-growth and joint DATA/INDEX services now compose
 multiple Short Text/Binary fields and optional fixed siblings from one original
 image. SQL and typed CLI routes use those services without chaining candidates.
-The [working contract](testing/ACE16_MULTIPLE_VARIABLE_UPDATES.md) records 176
+The [working contract](../tests/reports/rows/ACE16_MULTIPLE_VARIABLE_UPDATES.md) records 176
 native whole-image comparisons, 88 typed adapter and eight SQL comparisons, and
 20 actual CLI copies. Normal saves, mixed Memo/OLE edits and required data-macro
 qualification remain separate.
@@ -4201,14 +4201,14 @@ The existing engineering fixed service now supports qualified unindexed Boolean
 updates in rich tables while retaining actual attachment and stored calculated
 fields. Its adapter exposes ordinary values and keeps excluded declarations
 unavailable. Original-source ownership/property checks and a complete-image proof
-govern each candidate. The [preservation contract](testing/ACE16_PRESERVED_BOOLEAN_UPDATES.md)
+govern each candidate. The [preservation contract](../tests/reports/rows/ACE16_PRESERVED_BOOLEAN_UPDATES.md)
 records passing authored-source, adapter and CLI checks. The donated real database
 still refuses with `Unsupported(Properties)` on a disposable copy; no output was
 created and the original remains unchanged. Normal ACE saves remain unfinished.
 
 ## Fitting UPDATE ownership protection
 
-The [fitting body-role correction](testing/ACE16_FITTING_BODY_ROLES.md) closes a
+The [fitting body-role correction](../tests/reports/storage/ACE16_FITTING_BODY_ROLES.md) closes a
 reproduced engineering-preview defect: an INDEX-owned map could also claim the
 ordinary DATA page being edited. The healthy and aliased complete candidates
 matched independent expectations before the fix; the aliased source now refuses.
@@ -4282,7 +4282,7 @@ not a new complete-file engine profile or native Access outcome.
 
 ## Joint mixed DATA and INDEX growth
 
-The additive [joint-growth engine](testing/ACE16_MIXED_DATA_INDEX_GROWTH.md) now
+The additive [joint-growth engine](../tests/reports/indexes/ACE16_MIXED_DATA_INDEX_GROWTH.md) now
 updates fixed fields and one Short Text/Binary field while placing DATA records
 and splitting all affected physical indexes through the same append state. Fresh
 original-row, key, map and complete tree-ownership proofs govern one candidate.
@@ -4300,7 +4300,7 @@ orders, SQL publishes 16 exact Text copies, and typed write publishes 24 exact
 copies including eight Binary cases. Source/stale/no-clobber controls remain
 active. The frontend round passes 57 adapter functions, 37 CLI unit and 29 selected
 integration functions, strict ACE/Access/CLI checks and minimal Access. The
-[frontend record](testing/results/mixed-data-index-growth-copies-2026-10-30.json)
+[frontend record](../tests/results/indexes/mixed-data-index-growth-copies-2026-10-30.json)
 retains an initial zero-test Access invocation separately from the corrected
 all-features run. Broader map profiles, normal saves and native Access
 qualification remain unfinished.
@@ -4315,7 +4315,7 @@ host clock. Metadata binding stays inert. Source shape, target, counter and
 generated-range checks precede the callback; the independent audit uses the
 original immutable reading and never calls the host again.
 
-The [native contract](testing/ACE16_CLOCK_INSERT_DEFAULTS.md) passes 15 focused
+The [native contract](../tests/reports/rows/ACE16_CLOCK_INSERT_DEFAULTS.md) passes 15 focused
 functions and 36 complete-image expectations. Its
 [SQL/CLI consumer](access/writes/SQL_INSERT_COPIES.md) passes 12 direct adapter
 comparisons and 12 exact CLI copies. The shared round passes 331 INSERT,
@@ -4326,7 +4326,7 @@ expressions/coercions and normal save qualification remain open.
 
 ## Mixed UPDATE record growth
 
-The additive [mixed-update engine service](testing/ACE16_MIXED_GROWING_UPDATES.md)
+The additive [mixed-update engine service](../tests/reports/rows/ACE16_MIXED_GROWING_UPDATES.md)
 now places larger fixed/Short Text or Binary records on the original page,
 another owned page or a new DATA page. One original-request proof governs full
 records, placement, maps and joint index keys. INDEX replacements must fit their
@@ -4365,7 +4365,7 @@ explicit clock path above; broader runtime expressions and coercions remain open
 Positional VALUES and the original complete
 insertion service retain their full-width contracts.
 
-The [native resolver](testing/ACE16_OMITTED_INSERT_DEFAULTS.md) passes ten focused
+The [native resolver](../tests/reports/rows/ACE16_OMITTED_INSERT_DEFAULTS.md) passes ten focused
 functions and 30 complete-image expectations. The
 [SQL service and CLI](access/writes/SQL_INSERT_COPIES.md) pass eight complete
 adapter comparisons and eight exact copies, including generated companions.
@@ -4389,7 +4389,7 @@ pass eight, and eight actual CLI copies match their complete expected images.
 The [frontend contract](access/writes/SQL_ENGINEERING_COPIES.md) distinguishes
 single-variable DATA growth from mixed updates within existing record capacity.
 
-The [fitted mixed-update engine](testing/ACE16_FITTED_MIXED_UPDATES.md) now composes
+The [fitted mixed-update engine](../tests/reports/rows/ACE16_FITTED_MIXED_UPDATES.md) now composes
 fixed fields and one Short Text/Binary field from one original record. Complete
 record reconstruction and fresh joint key projections precede one final candidate.
 Shared composite indexes and aliases see all final values together. Existing
@@ -4399,7 +4399,7 @@ Eight focused functions pass 83 complete-image comparisons, including zero-slack
 raw UTF-16 records, correlated forgery refusals and resource/cancellation controls.
 The old independent record-proof slice passes three tests and five shared variable
 integration targets pass 36 tests. Joint key controls, strict ACE Clippy and minimal
-builds pass. The [record](testing/results/ace16-fitted-mixed-updates-2026-10-30.json)
+builds pass. The [record](../tests/results/rows/ace16-fitted-mixed-updates-2026-10-30.json)
 retains source corrections before producers and the initial encoding mismatch;
 no expected image changed after its producer ran. Metadata-directed adapter/CLI
 consumers now use this fitting service. Mixed DATA allocation uses the separate
@@ -4412,13 +4412,13 @@ Engineering writes now preserve qualified field Format and numeric DecimalPlaces
 declarations without rendering or rounding stored values. Exact property scope,
 carriers, flags and enum values are checked; Extended Date/Time precision metadata,
 unknown properties and normal Jet 4 admission remain separate. The
-[display-metadata contract](testing/ACE16_PASSIVE_DISPLAY_METADATA.md) includes
+[display-metadata contract](../tests/reports/reading/ACE16_PASSIVE_DISPLAY_METADATA.md) includes
 scale-28 Decimal, generated fields, text updates and deletion controls.
 
 All ten focused engine functions and three exact CLI copies pass. The round also
 passes 306 INSERT functions, 43 shared native tests, 31 CLI unit and 33 integration
 tests, strict ACE/CLI Clippy and minimal ACE/Access builds. The
-[record](testing/results/ace16-passive-display-metadata-2026-10-30.json) retains
+[record](../tests/results/reading/ace16-passive-display-metadata-2026-10-30.json) retains
 test-only compile/lint corrections. No stored value is formatted implicitly and
 normal ACE save/data-macro/native Access qualification remains open.
 
@@ -4433,7 +4433,7 @@ comparison policies and one backend finish remain intact.
 Seven neutral functions, all 42 adapter library functions, 122 query regression
 tests and 31 CLI unit plus 29 CLI integration tests pass. Strict five-package
 Clippy and four-library minimal checks pass. The
-[record](testing/results/mutation-scalar-functions-2026-10-29.json) preserves stale
+[record](../tests/results/queries/mutation-scalar-functions-2026-10-29.json) preserves stale
 blanket-call test migrations; production semantics and source goldens were not
 changed to accommodate those older expectations.
 
@@ -4442,13 +4442,13 @@ changed to accommodate those older expectations.
 Engineering fixed UPDATE now admits deleted-column native-number gaps when every
 original record proves full width and exclusive logical ownership. Removed bytes
 and NULL bits remain opaque and preserved. The
-[historical-layout contract](testing/ACE16_HISTORICAL_FIXED_UPDATES.md) keeps shorter
+[historical-layout contract](../tests/reports/rows/ACE16_HISTORICAL_FIXED_UPDATES.md) keeps shorter
 records and all other admission modes closed.
 
 Sixty-four prefrozen full-image API comparisons and eight actual CLI copies pass.
 The fixed library slice passes 54 tests and five existing shared integration
 targets pass 36 tests, with strict ACE Clippy and minimal builds. The
-[record](testing/results/ace16-historical-fixed-updates-2026-10-29.json) retains the
+[record](../tests/results/rows/ace16-historical-fixed-updates-2026-10-29.json) retains the
 source-authoring corrections made before any mutation API; no golden changed
 after a producer ran. Normal ACE saves and native Access qualification remain open.
 
@@ -4468,7 +4468,7 @@ functions pass on their first API runs. Four source-derived complete output imag
 match. The regression round passes 296 engine INSERT functions, 94 query tests,
 36 adapter tests, 31 CLI unit tests and 23 CLI integration tests, with strict
 five-package Clippy and four-library minimal builds. The
-[record](testing/results/ace16-sql-insert-copies-2026-10-29.json) retains the source
+[record](../tests/results/queries/ace16-sql-insert-copies-2026-10-29.json) retains the source
 freezes and checks; no normal ACE save or native Access qualification is claimed.
 
 ## SQL-selected DELETE copies
@@ -4485,7 +4485,7 @@ functions and four executable integration functions pass. The combined round
 passes 31 CLI unit tests, 20 integration tests and all 36 Access adapter tests.
 Strict Clippy for five packages, minimal builds for four libraries, formatting,
 documentation links and dependency boundaries pass. The
-[record](testing/results/ace16-sql-delete-copies-2026-10-29.json) retains source-first
+[record](../tests/results/queries/ace16-sql-delete-copies-2026-10-29.json) retains source-first
 proofs, diagnostic/test corrections and allocation-accounting review findings.
 
 ## User-facing engineering write copies
@@ -4505,13 +4505,13 @@ are charged exactly once before any owned temporary is created. The current
 round passes 28 CLI unit tests, 14 CLI integration tests, all 27 Access adapter
 library tests, nine query editing tests and 22 AutoNumber tests. Strict Clippy
 passes for all five affected packages and minimal builds pass for four libraries.
-The [publication record](testing/results/shared-write-copy-publication-2026-10-29.json),
-[SQL record](testing/results/ace16-sql-engineering-updates-2026-10-29.json) and
-[counter record](testing/results/ace16-captured-increment-policy-2026-10-29.json)
+The [publication record](../tests/results/general/shared-write-copy-publication-2026-10-29.json),
+[SQL record](../tests/results/queries/ace16-sql-engineering-updates-2026-10-29.json) and
+[counter record](../tests/results/creation/ace16-captured-increment-policy-2026-10-29.json)
 retain first attempts and test-only compile corrections. These are local checks;
 Microsoft Access save/reopen and required data-macro qualification remain open.
 
-The [multi-column continuation](testing/results/ace16-sql-multiassignment-updates-2026-10-29.json)
+The [multi-column continuation](../tests/results/queries/ace16-sql-multiassignment-updates-2026-10-29.json)
 binds duplicate targets before evaluation and computes every right-hand side
 against the original row. One engine batch merges shared NULL masks, tuple keys,
 aliases and membership histories. Seven neutral functions, four adapter functions
@@ -4526,7 +4526,7 @@ evaluating them. Explicit NULL/empty/value inputs remain supplied values; omitte
 fields, unqualified declarations and stored NewValues inference remain closed.
 Five new API functions and the entire 292-function INSERT library slice pass,
 alongside strict ACE all-target/all-feature Clippy. The
-[default-admission record](testing/results/ace16-explicit-insert-defaults-2026-10-29.json)
+[default-admission record](../tests/results/rows/ace16-explicit-insert-defaults-2026-10-29.json)
 retains the source-first gate and test-only compilation correction. Native Access
 comparison remains pending.
 
@@ -4549,7 +4549,7 @@ transactions. Normal ACE save and data-macro gates remain unchanged.
 
 ## Nullable batch UPDATE with shared index allocation
 
-The separate [allocating batch preview](testing/ACE16_NULLABLE_SPLIT_BATCH_UPDATES.md)
+The separate [allocating batch preview](../tests/reports/indexes/ACE16_NULLABLE_SPLIT_BATCH_UPDATES.md)
 now composes multiple tables' Int32 assignments and physical index owners
 under one append ledger. It retains logical forwarded ROWs, stages every tuple
 component against the original image, deduplicates aliases and schedules physical
@@ -4567,9 +4567,9 @@ integration targets pass 148 tests. Strict all-target/all-feature ACE/CLI and
 minimal ACE Clippy, formatting, links and dependency checks pass. Local engine
 tests retain the explicit test-debug-level-1 disk accommodation.
 
-The [record](testing/results/ace16-nullable-split-batch-updates-2026-10-29.json)
+The [record](../tests/results/indexes/ace16-nullable-split-batch-updates-2026-10-29.json)
 keeps source/model freezes, static audit corrections and compile/lint observations.
-The [original-file proof](testing/results/ace16-nullable-split-batch-originals-2026-10-29.json)
+The [original-file proof](../tests/results/indexes/ace16-nullable-split-batch-originals-2026-10-29.json)
 now passes all 20 first-attempt candidate comparisons, matching 9,928,704 complete
 source/request-derived bytes, followed by 20 fresh independent SDK reads. The
 separate public-reference phase passes 20 actions and 20 reads over 8,008 row
@@ -4582,7 +4582,7 @@ unfinished. Fitted, slot, cascade and normal save policies retain their separate
 admission; this is a non-journalable engineering candidate, not macro or native
 Access qualification.
 
-The [multiple-table continuation](testing/ACE16_NULLABLE_SPLIT_BATCH_UPDATES.md#multiple-table-continuation)
+The [multiple-table continuation](../tests/reports/indexes/ACE16_NULLABLE_SPLIT_BATCH_UPDATES.md#multiple-table-continuation)
 adds immutable definition-bound INDEX purposes and one EOF/GLOBAL map ledger.
 Forty-eight independent literal source/expected cases pass their source gates,
 then all 96 normal/reversed-request complete-image comparisons pass on the first
@@ -4615,7 +4615,7 @@ formatting, links and dependency checks. Seven first original-file calls match
 all 130 expected TSV records: nine documents/definitions and two names-only
 reports. All four originals retain their hashes and use ACE 2010 stored profiles;
 these results do not qualify ACE 16 macro semantics. The
-[record](testing/results/data-macro-xml-envelopes-2026-10-29.json) preserves captured
+[record](../tests/results/schema/data-macro-xml-envelopes-2026-10-29.json) preserves captured
 consumer/input pins and the original preparation observations.
 
 ## Inert table Extra storage inspection
@@ -4642,12 +4642,12 @@ property values and 54 complete output records against prior independent
 observations, with original hashes unchanged. These desktop-origin originals use
 the ACE 2010 stored profile. They support carrier discovery, not ACE 16 macro
 semantics, qualified absence or native Access save/reopen. The
-[verification record](testing/results/table-extra-inspection-2026-10-29.json)
+[verification record](../tests/results/general/table-extra-inspection-2026-10-29.json)
 retains failed build, fixture and lint observations separately.
 
 ## Selected forwarded-record fixed and batch UPDATE previews
 
-The [resolved-record continuation](testing/ACE16_SELECTED_FORWARDED_UPDATES.md)
+The [resolved-record continuation](../tests/reports/rows/ACE16_SELECTED_FORWARDED_UPDATES.md)
 now updates eligible fixed payloads in selected forwarded logical rows. Shared
 root capture proves allocation ownership and exclusive selected-target ownership
 before callbacks. Payload offsets refer to the final physical record; index ROWs
@@ -4663,14 +4663,14 @@ this correction separately from direct batch support.
 All 665 engine-library tests pass with two existing generators ignored. The focused
 forwarding/IgnoreNULL batch passes 24 functions, the cascade target passes nine,
 and 20 shared targets pass 140 regressions. Strict all-target/all-feature and
-minimal-library Clippy and formatting pass. The [result](testing/results/ace16-selected-forwarded-fixed-updates-2026-10-29.json)
+minimal-library Clippy and formatting pass. The [result](../tests/results/rows/ace16-selected-forwarded-fixed-updates-2026-10-29.json)
 keeps the initial generic-type compile and disk-space interruptions separate from
 passing runtime checks. Native Access and original-file forwarding qualification
 remain open.
 
 ## Ignored-NULL fixed and batch UPDATE previews
 
-The separate [ACE 16 fixed/batch continuation](testing/ACE16_IGNORED_NULL_UPDATES.md)
+The separate [ACE 16 fixed/batch continuation](../tests/reports/rows/ACE16_IGNORED_NULL_UPDATES.md)
 now maintains qualified secondary indexes that omit entirely NULL keys. It binds
 the complete original logical-row universe, checks the stored eligible stream,
 applies complete tuple assignments, and checks Required before omission and final
@@ -4683,16 +4683,16 @@ The final 16 focused checks cover 44 complete independent images; 108 shared
 regressions across 16 targets and strict all-target/all-feature and minimal-library
 Clippy pass. The full engine library passes 657 tests with two existing generators
 ignored before the final state refactor and primary-group admission tightening;
-the final focused batch covers both changes. The [verification record](testing/results/ace16-ignored-null-fixed-updates-2026-10-29.json)
+the final focused batch covers both changes. The [verification record](../tests/results/rows/ace16-ignored-null-fixed-updates-2026-10-29.json)
 retains oracle, compile and prior-integration failures separately. The
-[original-file proof](testing/ace16_fixed_ignore_null_updates/README.md) now passes
+[original-file proof](../tests/access/rows/ace16_fixed_ignore_null_updates/README.md) now passes
 16 complete candidate comparisons, 18 exact refusal controls and 16 fresh readers
 using the earlier `60b33158` producer. It does not qualify the later forwarding or
 cascade isolation changes; native Access qualification remains open.
 
 ## Explicit incrementing AutoNumber INSERT preview
 
-The separate [incrementing INSERT service](testing/ACE16_INCREMENTING_AUTONUMBER_INSERTS.md)
+The separate [incrementing INSERT service](../tests/reports/creation/ACE16_INCREMENTING_AUTONUMBER_INSERTS.md)
 accepts companion values and an explicit caller policy pinned to the original
 last-issued Int32 counter. It generates checked signed values in request order,
 retains deleted-ID history, and composes the counter with the existing DATA,
@@ -4707,8 +4707,8 @@ strict all-target/all-feature and minimal-library Clippy pass. The first combine
 INSERT batch exposed missing generated-column context during long-value
 preflight; construction and independent audit now retain their own qualified
 contexts. A direct fixed-42-byte timestamp regression also covers the corrected
-preflight buffer. The [verification record](testing/results/ace16-incrementing-autonumber-preview-2026-10-28.json)
-retains initial failures separately. Eight independent [original-file candidates](testing/ace16_incrementing_autonumber/README.md)
+preflight buffer. The [verification record](../tests/results/creation/ace16-incrementing-autonumber-preview-2026-10-28.json)
+retains initial failures separately. Eight independent [original-file candidates](../tests/access/creation/ace16_incrementing_autonumber/README.md)
 match all 3,571,712 source/request-derived bytes, and eight fresh independent reads
 verify all 20 generated IDs. The 16 public-reference calls pass separately. Native
 Access qualification remains unrun; stored generation-mode detection remains
@@ -4717,7 +4717,7 @@ unfinished.
 ## DELETE-generated NULLs through UPDATE cascades
 
 The separate ACE 16 preview now follows qualified
-[UPDATE CASCADE relationships](testing/ACE16_DELETE_NULL_UPDATE_CASCADES.md)
+[UPDATE CASCADE relationships](../tests/reports/rows/ACE16_DELETE_NULL_UPDATE_CASCADES.md)
 after DELETE-generated NULL assignments. Lazy immutable key projections retain
 original row identities; checked nullable UNIQUE parents allow exact partial-NULL
 matches. Only changed components propagate, unchanged tuple siblings remain exact,
@@ -4735,7 +4735,7 @@ qualifies the earlier scoped producer, not the new UPDATE continuation.
 
 ## Atomic DELETE and SET NULL preview
 
-The separate ACE 16 [action preview](testing/ACE16_SET_NULL_DELETES.md) now applies
+The separate ACE 16 [action preview](../tests/reports/rows/ACE16_SET_NULL_DELETES.md) now applies
 qualified DELETE SET NULL edges after original-association cascade closure.
 Surviving child cells retain opaque fixed payload and clear presence bits; deleted
 children receive no NULL edits. Shared record-mask composition preserves tombstone
@@ -4749,9 +4749,9 @@ Thirteen independent integration functions, seven direct planner controls and 76
 existing regression functions pass. The full engine library passes 617 functions
 before direct-control registration, with two existing generators ignored. Strict
 all-target/all-feature and minimal-library Clippy, formatting and documentation
-guards pass. The [result](testing/results/ace16-set-null-delete-preview-2026-10-28.json)
+guards pass. The [result](../tests/results/rows/ace16-set-null-delete-preview-2026-10-28.json)
 keeps initial compile, fixture coverage, lint and disk failures separate. The
-[original-file proof](testing/ace16_set_null_deletes/README.md) now passes two exact
+[original-file proof](../tests/access/rows/ace16_set_null_deletes/README.md) now passes two exact
 source/request candidate comparisons and two fresh independent reads. Four public
 reference calls pass separately; five inactive bytes differ per public image.
 Native Access save qualification remains open.
@@ -4770,7 +4770,7 @@ Forty source/request literal images pass complete read qualification and exact
 producer comparisons. The corrected 337-function mutation batch and full ACE
 library pass (580 functions, one existing ignored generator); seven shared targets
 pass 49 tests. Strict ACE Clippy across all targets/features, minimal compilation and
-formatting pass. The [original-file proof](testing/ace16_insert_global_bootstrap/README.md)
+formatting pass. The [original-file proof](../tests/access/rows/ace16_insert_global_bootstrap/README.md)
 now adds twelve exact source/request-derived candidates and twelve fresh combined
 row/map reads on four EOF 512 originals. SOURCE9, four saved gates, prebuild images,
 24 public-reference calls and the fresh isolated `7c282f43` build remain separate
@@ -4779,7 +4779,7 @@ inline-DATA crossings preserve hole bodies while retiring old FREE membership.
 The source-pinned exclusive fill endpoint and frontier policy are explicit
 engineering observations, not universal Microsoft format claims. Block-one growth,
 higher-block ownership initialization and normal saves remain separate work. The
-ordinary-owned promotion continuation is recorded below. See the [GLOBAL contract](testing/ACE16_GLOBAL_MAP_INSERT_GROWTH.md).
+ordinary-owned promotion continuation is recorded below. See the [GLOBAL contract](../tests/reports/rows/ACE16_GLOBAL_MAP_INSERT_GROWTH.md).
 
 ## Original-file Memo/OLE column-map growth
 
@@ -4795,7 +4795,7 @@ SOURCE17 capture, eight saved gates, sixteen prebuild images, 32 public-referenc
 calls, an isolated committed-source build, sixteen candidate comparisons and
 sixteen fresh reads retain separate evidence. Every runtime phase passes first
 attempt; the first maintained replay's tuple/list comparison error and its
-transport-only correction remain preserved. The [maintained growth proof](testing/ace16_insert_long_value_map_growth/README.md)
+transport-only correction remain preserved. The [maintained growth proof](../tests/access/storage/ace16_insert_long_value_map_growth/README.md)
 does not qualify genuine next-block missing pointers, declaration initialization
 or native Access saves.
 
@@ -4822,7 +4822,7 @@ checks, strict ACE Clippy across all targets/features, minimal compilation,
 formatting and documentation/dependency guards pass. Literal capacity fixtures
 cover 4,086→4,096-byte growth and 4,088→4,098-byte refusal within bounded index/name
 profiles. These engineering checks do not qualify original Access-file mutation
-or native saves. See the [missing-declaration contract](testing/ACE16_MISSING_LONG_VALUE_DECLARATIONS.md).
+or native saves. See the [missing-declaration contract](../tests/reports/storage/ACE16_MISSING_LONG_VALUE_DECLARATIONS.md).
 
 ## Empty Memo/OLE map initialization
 
@@ -4850,7 +4850,7 @@ metadata dispatch adjustment.
 The later missing-declaration continuation is recorded above. Half-zero pairs,
 legacy external storage under zero pairs, continued TD initialization and
 production saves remain separate work. Qualified GLOBAL growth is recorded above. These literal engineering checks are not original-file or native
-Access qualification. See the [initialization contract](testing/ACE16_LONG_VALUE_INITIALIZATION.md).
+Access qualification. See the [initialization contract](../tests/reports/storage/ACE16_LONG_VALUE_INITIALIZATION.md).
 
 ## Initialized Memo maps with INDEX growth
 
@@ -4866,7 +4866,7 @@ The first combined INSERT batch passes all 249 functions, including the six
 source-authority/zero-Memo functions. The full ACE library passes 590 functions
 with one existing ignored generator; 49 selected shared integration tests,
 strict ACE Clippy, minimal compilation, formatting and documentation/dependency
-guards pass. See the [initialization continuation](testing/ACE16_LONG_VALUE_INITIALIZATION.md#initialization-through-later-index-growth).
+guards pass. See the [initialization continuation](../tests/reports/storage/ACE16_LONG_VALUE_INITIALIZATION.md#initialization-through-later-index-growth).
 
 ## Ordinary DATA-owned map promotion
 
@@ -4880,7 +4880,7 @@ by owned bitmap 521 and later DATA 522 demonstrates bitmap reuse. All four
 ordinary-owned functions pass in the first combined 249-function INSERT batch
 and the wider checks recorded above. Original-file comparison and native Access
 qualification remain separate. See the
-[ordinary-owned contract](testing/ACE16_ORDINARY_OWNED_MAP_PROMOTION.md).
+[ordinary-owned contract](../tests/reports/storage/ACE16_ORDINARY_OWNED_MAP_PROMOTION.md).
 
 ## First INSERT into empty ordinary ownership
 
@@ -4895,18 +4895,18 @@ resource and actual final-callback controls. The combined INSERT batch passes
 263 functions, the full ACE library passes 613 with two ignored, and the Access
 adapter suite passes 506. Strict ACE/Access Clippy, minimal builds, formatting
 and documentation/dependency guards pass. The subsequent
-[original-file proof](testing/ace16_insert_empty_owned/README.md) passes SOURCE3,
+[original-file proof](../tests/access/rows/ace16_insert_empty_owned/README.md) passes SOURCE3,
 a separate saved raw gate, two SOURCE/request-derived complete images, public
 REF4, a fresh committed-producer build, two exact native candidates and two
 fresh independent reads. Both public files also match the earlier images byte
 for byte. The sixteen-row case reuses the owned bitmap across two DATA pages.
 Preparation stops remain recorded separately; this qualifies the V2016 indirect
 missing-pointer origin, with Windows Access save/reopen still unqualified.
-See the [empty-ownership contract](testing/ACE16_ORDINARY_OWNED_MAP_PROMOTION.md#first-insert-with-a-missing-indirect-block-zero-pointer).
+See the [empty-ownership contract](../tests/reports/storage/ACE16_ORDINARY_OWNED_MAP_PROMOTION.md#first-insert-with-a-missing-indirect-block-zero-pointer).
 
 ## Original-file Extended Date/Time INSERT
 
-The [timestamp comparison](testing/ace16_insert_extended_datetime/README.md)
+The [timestamp comparison](../tests/access/rows/ace16_insert_extended_datetime/README.md)
 qualifies one public-builder ACE2019 original, a complete source/request-derived
 image and a separately bound fresh typed-row/map read. All 479,232 candidate
 bytes match the image frozen before the public reference and isolated producer
@@ -4934,7 +4934,7 @@ The public-writer lineage preserves two failed helper compilations and a proof
 stop after 133 successful calls. A corrected saved replay plus only the remaining
 120 calls completes the 253 distinct planned calls. It does not invent a combined
 first-pass result. Native Access qualification remains separate. See the
-[maintained variable-key proof](testing/ace16_insert_variable_indexes/README.md).
+[maintained variable-key proof](../tests/access/indexes/ace16_insert_variable_indexes/README.md).
 
 ## External Memo/OLE INSERT allocation
 
@@ -4949,7 +4949,7 @@ An initial shared-target build reused an older executable because archived sourc
 timestamps preceded its Cargo fingerprint. It was rejected before any candidate
 call. A fresh, initially absent target compiled the committed source and supplied
 the distinct artifact used for all sixteen comparisons. The [corrected build
-receipt](testing/results/ace16-insert-external-long-value-isolated-example-build-2026-10-28.json)
+receipt](../tests/results/rows/ace16-insert-external-long-value-isolated-example-build-2026-10-28.json)
 retains this lineage. These comparisons qualify the stated engineering profile;
 they do not establish native Access save/reopen behavior or qualify the later
 column-map growth and initialization continuations.
@@ -4986,7 +4986,7 @@ documentation/dependency guards pass. The later qualified declaration insertion
 is recorded above; qualified GLOBAL growth is also recorded above, while
 pointer-record expansion remains unfinished.
 Authentic external-file comparisons, normal saves and native Access qualification
-remain separate. See the [external LVAL contract](testing/ACE16_LONG_VALUE_INSERTS.md).
+remain separate. See the [external LVAL contract](../tests/reports/storage/ACE16_LONG_VALUE_INSERTS.md).
 
 ## Variable key and ROW comparison
 
@@ -4996,7 +4996,7 @@ with `Preservation`. Explicit leaf/branch wire kinds keep child pointers outside
 both logical components. A causal two-layout complete-image regression and four
 wire controls pass; the original source and expected image bytes remain intact.
 Typed native codecs and the reviewed UPDATE/DELETE comparison services are
-unchanged. See the [ordering contract](testing/ACE16_VARIABLE_INDEX_INSERTS.md#key-comparison-precedes-the-row-suffix).
+unchanged. See the [ordering contract](../tests/reports/indexes/ACE16_VARIABLE_INDEX_INSERTS.md#key-comparison-precedes-the-row-suffix).
 
 ## Inline Memo/OLE INSERT records
 
@@ -5011,7 +5011,7 @@ raw/compact UTF-16, NUL/non-BMP values, opaque OLE, limits and exact descriptors
 All 160 table INSERT/audit functions, strict ACE all-target/all-feature Clippy,
 minimal compilation, formatting and documentation/dependency guards pass.
 The later external single/chained continuation is recorded above; normal saves
-and native Access qualification remain separate. See the [inline LVAL contract](testing/ACE16_ORDINARY_INSERTS.md#inline-memoole-continuation).
+and native Access qualification remain separate. See the [inline LVAL contract](../tests/reports/rows/ACE16_ORDINARY_INSERTS.md#inline-memoole-continuation).
 
 ## Short Text/Binary INSERT index keys
 
@@ -5030,7 +5030,7 @@ existing ignored fixture generator. The initial empty-Text fixture refusal was
 resolved with an explicit typed source policy; its absence remains a causal
 refusal control. Thirty-seven shared DELETE/UPDATE and eight French boundary
 checks, strict ACE all-target/all-feature Clippy, minimal compilation, formatting
-and documentation/dependency guards also pass. See the [variable-key contract](testing/ACE16_VARIABLE_INDEX_INSERTS.md).
+and documentation/dependency guards also pass. See the [variable-key contract](../tests/reports/indexes/ACE16_VARIABLE_INDEX_INSERTS.md).
 
 ## Exact Decimal INSERT index keys
 
@@ -5050,7 +5050,7 @@ source/request-only expected images now match first-attempt committed-producer
 outputs before 96 fresh independent getter/map calls pass. The 289-call
 source/reference phase separately succeeds, preserving all 2,252 old rows and
 adding 160 with 4,812 physical key/ROW pairs. Normal saves and native Access
-qualification are unchanged. See the [exact Decimal index contract](testing/ACE16_FIXED_TUPLE_INSERTS.md#exact-decimal-index-continuation).
+qualification are unchanged. See the [exact Decimal index contract](../tests/reports/rows/ACE16_FIXED_TUPLE_INSERTS.md#exact-decimal-index-continuation).
 
 ## Fixed GUID and tuple INSERT keys
 
@@ -5077,7 +5077,7 @@ independent getter/map calls pass. They preserve 2,768 old rows and add 80, with
 commands. This file corpus covers single GUID and two-component GUID/Int32;
 ten-component coverage remains literal engineering controls. No native Access
 qualification is claimed.
-See [the fixed-key contract](testing/ACE16_FIXED_TUPLE_INSERTS.md).
+See [the fixed-key contract](../tests/reports/rows/ACE16_FIXED_TUPLE_INSERTS.md).
 
 ## Additional scalar secondary INSERT keys
 
@@ -5098,7 +5098,7 @@ thirty-two fresh independent getter/map calls pass. All 3,840 old ROWs remain
 and 24 are added; the sixteen source/reference cases separately pass 97 calls.
 The initial pure-static encoder API correction is preserved, without changing
 source recipes or repeating actual calls. Native Access qualification remains
-separate. See [the scalar key scope](testing/ACE16_MULTIPLE_INDEX_INSERTS.md#boolean-ieee-and-legacy-date-secondary-keys).
+separate. See [the scalar key scope](../tests/reports/indexes/ACE16_MULTIPLE_INDEX_INSERTS.md#boolean-ieee-and-legacy-date-secondary-keys).
 
 ## Secondary Ignore-NULL INSERT indexes
 
@@ -5119,7 +5119,7 @@ from an isolated committed producer before twenty fresh independent getter/map
 calls pass. All 1,818 old ROWs remain and 132 rows are added. The reference phase
 separately passes its remaining 53 calls after a preserved warning-policy stop;
 no completed calls are repeated. Primary or Required Ignore-NULL combinations,
-unsupported key families, data macros and normal saves retain their gates. See [the profile](testing/ACE16_MULTIPLE_INDEX_INSERTS.md#secondary-indexes-omitting-null-keys).
+unsupported key families, data macros and normal saves retain their gates. See [the profile](../tests/reports/indexes/ACE16_MULTIPLE_INDEX_INSERTS.md#secondary-indexes-omitting-null-keys).
 
 ## Multiple physical indexes during INSERT
 
@@ -5140,7 +5140,7 @@ first-attempt candidates from an isolated committed producer; eight fresh
 Jackcess getter/map calls pass on the unchanged candidates. All 806 old ROWs are
 preserved, and both pressure cases grow DATA plus both physical indexes.
 
-The [current profile](testing/ACE16_MULTIPLE_INDEX_INSERTS.md) separates this
+The [current profile](../tests/reports/indexes/ACE16_MULTIPLE_INDEX_INSERTS.md) separates this
 candidate evidence from four independent public-writer references and native
 Access qualification. The original seven-call source-gate failure, eighteen-call
 continuation and two pre-execution model corrections remain explicit; source or
@@ -5190,7 +5190,7 @@ placement. All 84 INSERT functions and eight example-input/publication functions
 pass, including explicit Decimal quotas/cancellation and invalid declaration and
 carrier controls. The example accepts exact `coefficient:scale` input through the
 existing shared parser. This does not enable normal saves or establish native
-Access write qualification; see [ordinary INSERT scope](testing/ACE16_ORDINARY_INSERTS.md#exact-decimal-continuation).
+Access write qualification; see [ordinary INSERT scope](../tests/reports/rows/ACE16_ORDINARY_INSERTS.md#exact-decimal-continuation).
 
 The combined continuation passes strict Clippy across expressions, query, ACE,
 Access and CLI targets/features, standalone minimal expression compilation,
@@ -5254,7 +5254,7 @@ Access qualification.
 
 The workspace now has fifteen packages. Working [cryptographic primitives](platform/CRYPTO.md),
 [inert Access package codecs](formats/ACCESS_PACKAGES.md) and
-[independent development fixtures](testing/TESTKIT.md) live in dedicated crates.
+[independent development fixtures](../tests/reports/general/TESTKIT.md) live in dedicated crates.
 Consumers import their actual owners directly; no old-path compatibility exports
 were added. DB owns borrowed row/collection views, SQL supplies bounded owned
 syntax constructors, and Access shares mechanical forwarding while retaining
@@ -5274,7 +5274,7 @@ controls. Native Microsoft Access comparisons were not run for this refactor.
 
 ## Broader ordinary scalar-row INSERT
 
-The existing [ordinary INSERT preview](testing/ACE16_ORDINARY_INSERTS.md) now
+The existing [ordinary INSERT preview](../tests/reports/rows/ACE16_ORDINARY_INSERTS.md) now
 constructs explicit Byte/Int16/Int32/Int64/Currency/Single/Double/legacy Date/GUID,
 Boolean masks and multiple Short Text/Binary fields. It selects the Int32 primary
 from actual index metadata rather than the first Int32 companion. Current physical
@@ -5301,7 +5301,7 @@ is included. Strict all-target/all-feature Clippy, four public preview contracts
 three compile-fail doctests, minimal compilation, strict rustdoc and formatting
 pass. Nine actual source capture calls and four saved-only typed source gates
 now pass. Four independently frozen complete images then match four first-attempt
-[candidates](testing/results/ace16-insert-ordinary-native-2026-10-28.json), followed
+[candidates](../tests/results/rows/ace16-insert-ordinary-native-2026-10-28.json), followed
 by eight first-attempt fresh getter/map calls. All 1,804 old selected ROWs remain;
 the four final snapshots contain 3,616 typed rows and 1,808 primary key/ROW pairs.
 FixedRows fits its DATA page; MixedRows adds one DATA page before two INDEX leaves.
@@ -5310,7 +5310,7 @@ source-gate receipt metadata change is retained; the rebound 87-input bundle has
 identical source/request-derived images and details. Raw Boolean declaration
 length one already normalizes to zero payload bytes in the native reader; its
 Python oracle correction did not change Rust behavior. Four separate
-[public INSERT references](testing/results/ace16-insert-ordinary-public-reference-2026-10-28.json)
+[public INSERT references](../tests/results/rows/ace16-insert-ordinary-public-reference-2026-10-28.json)
 and eight inert getter/map calls also pass on their first attempts. Their new
 ROWs and allocation purposes agree. Complete public/engineering comparisons
 differ only in 783 unused bytes per fresh INDEX leaf, 1,566 bytes per case;
@@ -5320,7 +5320,7 @@ Access qualification remain separate.
 
 ## Recursive primary INSERT continuation
 
-The optional [recursive INSERT continuation](testing/ACE16_INSERT_RECURSIVE.md)
+The optional [recursive INSERT continuation](../tests/reports/rows/ACE16_INSERT_RECURSIVE.md)
 now routes immutable final pairs through qualified original NODE trees at heights
 below the unchanged depth ceiling of 16. Original bounds partition assigned
 subtree ranges, with final-child clamping. Leaf and internal overflows normalize
@@ -5349,7 +5349,7 @@ separate from these code checks and prior receipts; Windows/native Access
 comparisons remain deferred.
 
 Four fresh two-field Jackcess sources now pass separate
-[source qualification](testing/results/ace16-insert-recursive-sources-2026-10-28.json).
+[source qualification](../tests/results/rows/ace16-insert-recursive-sources-2026-10-28.json).
 Both profiles retain 782 live rows/99,424 historical entries for root pressure,
 or 963 live rows/149,184 historical entries for nonroot parent pressure. Every
 retained key/ROW and complete tree graph survives public pruning; calculated
@@ -5367,7 +5367,7 @@ confirming 3,494 final primary pairs. Each root case adds three INDEX pages and
 grows the retained root from height one to two; each internal case adds two INDEX
 pages and retains its height-two root. Every DATA record fits, with no DATA or
 bitmap allocation and 40,960 aggregate appended bytes. The
-[candidate record](testing/results/ace16-insert-recursive-native-2026-10-28.json)
+[candidate record](../tests/results/rows/ace16-insert-recursive-native-2026-10-28.json)
 retains model-first authority and compiled-source binding.
 
 The twelve public reference commands also succeed, separately from a stopped
@@ -5378,7 +5378,7 @@ original inactive suffix. No completed calls repeat. Public and engineering ROWs
 agree in these cases, but public ceiling-half leaf populations (228/227 or 236/235)
 differ from engineering floor-halves (227/228 or 235/236), as do INDEX framing and
 scratch. Differences are confined to INDEX pages; DATA, counts and maps agree.
-The [public-reference record](testing/results/ace16-insert-recursive-public-reference-2026-10-28.json)
+The [public-reference record](../tests/results/rows/ace16-insert-recursive-public-reference-2026-10-28.json)
 keeps the failed proof and continuation explicit; no public bytes supplied the
 engineering expected images.
 
@@ -5388,7 +5388,7 @@ unfinished.
 
 ## General height-one INSERT continuation
 
-The optional [general height-one continuation](testing/ACE16_INSERT_GENERAL_HEIGHT_ONE.md)
+The optional [general height-one continuation](../tests/reports/indexes/ACE16_INSERT_GENERAL_HEIGHT_ONE.md)
 now handles any qualified nonempty leaf-child count, tail-present or all-bounded
 root form, fitting ranges and multiple/repeated leaf overflows. Final key/ROW
 pairs route against the first original maxima and clamp to the last child;
@@ -5414,7 +5414,7 @@ producer build. All four candidates match those complete images, and all eight
 distinct fresh getter/map commands pass. The getter controller stopped after
 four successful calls because its process cap was four; a separately frozen
 continuation ran only the four unattempted calls. Both reports remain preserved.
-The [evidence record](testing/results/ace16-insert-general-height-one-native-2026-10-28.json)
+The [evidence record](../tests/results/indexes/ace16-insert-general-height-one-native-2026-10-28.json)
 keeps that tooling failure separate from database results. Public framing does
 not supply the engineering expected images.
 The recursive continuation above now extends deeper source and parent-growth
@@ -5424,7 +5424,7 @@ remain unfinished; native Access comparisons remain deferred.
 
 ## One-child split during INSERT
 
-The optional [child-split INSERT continuation](testing/ACE16_INSERT_CHILD_SPLITS.md)
+The optional [child-split INSERT continuation](../tests/reports/indexes/ACE16_INSERT_CHILD_SPLITS.md)
 now handles exactly one overflowing child of the existing one-bound, two-leaf
 Int32 primary. Original-bound routing retains every old key/ROW; the offender's
 lower count-half goes to a fresh LEFT leaf while its original page retains RIGHT.
@@ -5454,7 +5454,7 @@ unused-byte rewrites also differ from engineering retained residue/fresh zeros.
 Four independently frozen complete images match all four first-attempt committed
 producer candidates, followed by eight successful fresh independent getter/map
 calls. All 2,708 original ROWs survive and 2,712 final primary key/ROW pairs agree.
-The [evidence record](testing/results/ace16-insert-child-splits-native-2026-10-27.json)
+The [evidence record](../tests/results/indexes/ace16-insert-child-splits-native-2026-10-27.json)
 keeps those phases and the public framing differences separate; public bytes
 do not supply the engineering goldens. The later general height-one continuation
 above removes the original arity/offender/half-count restrictions when the final
@@ -5464,7 +5464,7 @@ profiles and normal native saves remain unfinished. Native Microsoft Access comp
 
 ## Fitted INSERT into an existing height-one primary
 
-The optional [retained-tree INSERT continuation](testing/ACE16_INSERT_HEIGHT_ONE.md)
+The optional [retained-tree INSERT continuation](../tests/reports/indexes/ACE16_INSERT_HEIGHT_ONE.md)
 now admits an existing height-one root with exactly one inclusive full key/ROW
 bound and two leaves for the same required ascending Int32 primary. Final pairs
 retain every old pair and route against the original bound. Both affected leaves
@@ -5483,7 +5483,7 @@ package boundaries pass. The 55-function INSERT subset includes nine new control
 
 Thirteen independent reference calls, four frozen complete-image candidate
 comparisons and eight fresh getter/map calls all passed on their first attempts.
-The [scoped record](testing/results/ace16-insert-height-one-native-2026-10-27.json)
+The [scoped record](../tests/results/indexes/ace16-insert-height-one-native-2026-10-27.json)
 keeps those phases distinct. Actual original-file requests extend the right tail
 from 226 to 227 entries, preserving all 1,808 old ROWs across four results, with
 no new pages or map edits. Literal controls separately cover left/bulk routing.
@@ -5497,7 +5497,7 @@ Access qualification.
 
 ## Primary-root growth during INSERT
 
-The optional [INSERT root-leaf continuation](testing/ACE16_INSERT_ROOT_SPLITS.md)
+The optional [INSERT root-leaf continuation](../tests/reports/indexes/ACE16_INSERT_ROOT_SPLITS.md)
 now retains the original root as a height-one node and allocates two leaves when
 its final key/ROW list no longer fits. DATA and index allocation share one cursor;
 independent replay covers early/late bitmap promotion, source-seeded framing,
@@ -5513,13 +5513,13 @@ existing public preview contracts, seven example functions and three compile-fai
 checks. Strict all-target/feature lint, minimal-feature compilation and rustdoc
 pass. All 25 independent source/reference calls, four complete-image candidate
 comparisons and eight fresh getter/map calls passed first attempt. The
-[evidence record](testing/results/ace16-insert-root-splits-native-2026-10-27.json)
+[evidence record](../tests/results/indexes/ace16-insert-root-splits-native-2026-10-27.json)
 keeps physical engine results separate from deferred Microsoft Access qualification.
 Normal native saves and required data-macro qualification remain unfinished.
 
 ## Request-bound ordinary-row INSERT preview
 
-The optional [INSERT engineering service](testing/ACE16_INSERT_PREVIEW.md) now
+The optional [INSERT engineering service](../tests/reports/rows/ACE16_INSERT_PREVIEW.md) now
 constructs complete Int32/Short Binary rows, places visible roots in qualified
 existing/EOF pages and maintains one required Int32 primary leaf, including
 logical aliases. Table and actual historical physical-index counters increase
@@ -5551,7 +5551,7 @@ or insertion admission.
 ## Combined allocation-map transitions
 
 The existing combined variable-record/index engineering service now supports
-qualified [inline hint/index window rebases and bitmap promotion](testing/ACE16_ALLOCATION_TRANSITIONS.md).
+qualified [inline hint/index window rebases and bitmap promotion](../tests/reports/storage/ACE16_ALLOCATION_TRANSITIONS.md).
 Ordinary hint bitmap metadata has its own append purpose; complete original
 record authority and independent final replay protect all rewritten map bytes.
 Lower untried hints remain intact after a highest-candidate miss. Existing write
@@ -5561,7 +5561,7 @@ The scoped checks pass 290 engine unit functions (one existing ignored test),
 42 selected public write-preview contracts, three compile-fail doctests and
 strict feature/default lint. Fifteen new runtime functions cover authority,
 complete images, bitmaps and strict window boundaries. The
-[twelve enlarged-source candidates](testing/ORDINARY_HINT_CANDIDATE_OBSERVATIONS.md)
+[twelve enlarged-source candidates](../tests/reports/indexes/ORDINARY_HINT_CANDIDATE_OBSERVATIONS.md)
 now match independently generated complete images before fresh getters, with
 all 24 first-attempt native/getter calls passing. The separate public-writer
 references pass 25 commands including compilation. This does not enable normal
@@ -5576,7 +5576,7 @@ and reports orphan storage and sharing without treating them as corruption or
 write authority. Unknown, historical, indirect-candidate and unsupported profiles
 remain explicit. Ordinary Memo/OLE reads keep their existing behavior.
 
-The [scoped record](testing/results/long-value-storage-native-2026-10-26.json)
+The [scoped record](../tests/results/storage/long-value-storage-native-2026-10-26.json)
 records 148 distinct passing runtime functions and three compile-fail checks.
 Two frozen read-only consumers each checked the same 60 saved independent-writer
 outputs, with all 120 column reports matching independently captured expectations.
@@ -5592,7 +5592,7 @@ owned/candidate membership and live descriptors. Replacement retains immutable
 request/map authority, existing represented EOF cells and independent final replay.
 No new map, bitmap pointer or candidate window is created.
 
-The [scoped record](testing/results/ace16-indirect-lval-native-2026-10-27.json)
+The [scoped record](../tests/results/storage/ace16-indirect-lval-native-2026-10-27.json)
 passes 112 distinct runtime functions, including twelve new functions, plus three
 compile-fail doc tests, strict/default lint, minimal compilation, rustdoc and
 formatting. A separate working default checker returns all four exact expected
@@ -5602,7 +5602,7 @@ not a candidate replay or a committed-consumer qualification.
 An initial independent fixture had an invalid bitmap signature and was corrected
 without relaxing the four-byte parser grammar. A previously unsupported-map test
 now correctly rejects its globally free bitmap. Initial failures remain recorded.
-The [first committed-consumer original-file replay](testing/MIXED_LONG_VALUE_UPDATE_OBSERVATIONS.md)
+The [first committed-consumer original-file replay](../tests/reports/storage/MIXED_LONG_VALUE_UPDATE_OBSERVATIONS.md)
 now passes twelve exact images and fresh getter/map inspections on unchanged
 sources. All twenty-five fixture commands succeed, including explicit NULL and
 forwarded-parent cases. Indirect candidate maps, map/pointer growth, arbitrary
@@ -5610,7 +5610,7 @@ free-page reuse, reclamation and normal saves remain open.
 
 ## Indirect long-value map source observations
 
-A separate [public-builder source phase](testing/INDIRECT_LONG_VALUE_MAP_OBSERVATIONS.md)
+A separate [public-builder source phase](../tests/reports/storage/INDIRECT_LONG_VALUE_MAP_OBSERVATIONS.md)
 now captures two unchanged ACE 16 originals with indirect Memo owned maps and
 inline candidate maps. All thirteen first-attempt construction/getter commands
 pass. Each original has 702 user rows; 700 padding pages separate the two Memo
@@ -5628,7 +5628,7 @@ storage checker and engineering preview retain their documented restrictions.
 The engineering preview now proves exclusive map identity and storage authority
 before changing membership, including empty maps. An adversarial literal fixture
 previously let one table acquire another table's new LVAL page through shared
-empty map rows. The [correction](testing/LONG_VALUE_MAP_AUTHORITY.md) rejects that
+empty map rows. The [correction](../tests/reports/storage/LONG_VALUE_MAP_AUTHORITY.md) rejects that
 case and independently repeats the census against the immutable original during
 final certification. Distinct map rows sharing a container remain supported.
 
@@ -5651,9 +5651,9 @@ map, page and payload audits protect the actual candidate. Cross-catalog ownersh
 must qualify, including historical declarations and live references without map
 pairs. Unknown ownership, sharing, unqualified extended fields, selected properties
 and indexes remain explicit blockers. See the
-[storage contract](testing/ACE16_LONG_VALUE_UPDATES.md).
+[storage contract](../tests/reports/storage/ACE16_LONG_VALUE_UPDATES.md).
 
-The [scoped record](testing/results/ace16-long-value-updates-native-2026-10-27.json)
+The [scoped record](../tests/results/rows/ace16-long-value-updates-native-2026-10-27.json)
 passes 99 distinct core runtime functions, three compile-fail checks, strict lint,
 minimal compilation and formatting. A separate engineering consumer supports
 quoted TSV requests with an explicit larger value profile, with fourteen distinct
@@ -5662,13 +5662,13 @@ consumer; the prior public transition corpus is not candidate evidence.
 The first frozen 60-case original-file attempt refused all cases atomically,
 without output: V2016 returned unsupported-column errors and V2019 returned
 malformed-structure errors. Selected field metadata matches the intended raw
-profile. The [preserved refusal record](testing/LONG_VALUE_UPDATE_REFUSALS.md)
+profile. The [preserved refusal record](../tests/reports/storage/LONG_VALUE_UPDATE_REFUSALS.md)
 separates that outcome from the subsequent diagnosis: the census rejected a
 known opaque system backing field and interpreted a valid empty deleted slot
-before checking its flags. The [correction](testing/results/ace16-long-value-census-correction-2026-10-27.json)
+before checking its flags. The [correction](../tests/results/general/ace16-long-value-census-correction-2026-10-27.json)
 passes 152 distinct runtime functions and three compile-fail checks; both complete
 original catalog censuses now pass read-only. The separate
-[revised-artifact acceptance](testing/LONG_VALUE_UPDATE_ACCEPTANCE_OBSERVATIONS.md)
+[revised-artifact acceptance](../tests/reports/storage/LONG_VALUE_UPDATE_ACCEPTANCE_OBSERVATIONS.md)
 now matches all 60 unchanged controls through the committed corrected consumer:
 60 complete expected images and 120 read-only getter/map captures pass. Eight
 NULL, 28 inline, twelve single and twelve chained values retain original chunks
@@ -5680,7 +5680,7 @@ Multiple represented candidate hints now use an explicit highest-first engineeri
 policy for LVAL chunks and ordinary parent forwarding. Each real failed fit clears
 only its hint, lower hints are tried before EOF allocation, and the independent
 map audit derives every attempt from original capacity. The
-[focused record](testing/results/ace16-long-value-multiple-candidates-2026-10-27.json)
+[focused record](../tests/results/general/ace16-long-value-multiple-candidates-2026-10-27.json)
 passes 34 distinct runtime functions, including six new controls for complete
 images, slot ceilings, no-ops, unowned hints and correlated attempt/map forgeries.
 Original-file multiple-hint behavior remains unqualified.
@@ -5692,10 +5692,10 @@ text stays raw. Exact decoder roundtrip rejects leading-FEFF ambiguity instead
 of silently changing requested text. A separate request-derived payload verifier
 checks mode and every byte without calling the encoder. OLE ext1 and unknown
 extended shapes remain refused. The
-[compressed implementation record](testing/results/ace16-compressed-memo-native-2026-10-27.json)
+[compressed implementation record](../tests/results/storage/ace16-compressed-memo-native-2026-10-27.json)
 passes 68 distinct runtime functions, including eight new functions, three
 compile-fail checks, scoped feature/default strict checks, minimal compilation
-and formatting. Its [first original-file candidate replay](testing/COMPRESSED_MEMO_ACCEPTANCE_OBSERVATIONS.md)
+and formatting. Its [first original-file candidate replay](../tests/reports/storage/COMPRESSED_MEMO_ACCEPTANCE_OBSERVATIONS.md)
 now matches all 148 frozen controls: 132 exact complete images/getter results and
 sixteen typed atomic refusals for lossy leading-FEFF requests. The source strings,
 metadata, selectors and budgets are unchanged; no public writer action is rerun.
@@ -5704,7 +5704,7 @@ No semantic no-op or multiple-hint selection is qualified by this corpus.
 
 ## Compressed Memo reference observations
 
-Two [finite public-writer experiments](testing/COMPRESSED_MEMO_UPDATE_OBSERVATIONS.md)
+Two [finite public-writer experiments](../tests/reports/storage/COMPRESSED_MEMO_UPDATE_OBSERVATIONS.md)
 complete 148 updates in 456 bounded processes. Of those, 132 requested values
 reopen exactly and sixteen leading-FEFF inputs normalize; those sixteen are
 explicit observations, not value-equality passes. Exact encoded streams establish
@@ -5727,11 +5727,11 @@ index bytes and counters, and updates only represented index-owned/global map
 cells. Other-codec overflows still refuse. Existing fixed, page and
 variable previews retain their previous admission and behavior.
 
-The [split contract](testing/ACE16_INDEX_SPLITS.md) describes request-derived row
+The [split contract](../tests/reports/indexes/ACE16_INDEX_SPLITS.md) describes request-derived row
 authority, independent page/map audits and non-journalable output. Scoped checks
 pass 173 distinct runtime functions, including 153 existing regressions, and three
 compile-fail checks. Strict lint, standalone minimal compilation and rustdoc pass.
-The subsequent [two original-file candidates](testing/ROOT_SPLIT_UPDATE_OBSERVATIONS.md)
+The subsequent [two original-file candidates](../tests/reports/indexes/ROOT_SPLIT_UPDATE_OBSERVATIONS.md)
 both pass on their first run through a frozen committed consumer. Each complete
 image matches the independently frozen model, including all 500 row references,
 250/250 leaf partitions, map changes and preserved unrelated index bytes.
@@ -5740,14 +5740,14 @@ Native Access, data-macro semantics and normal saves remain unqualified.
 The service now also splits existing non-root leaves when every resulting parent
 fits. A new left leaf precedes the retained right page; neighbor links and full
 key/row parent bounds are repaired without changing the root ID or height.
-The [non-root scoped record](testing/results/ace16-nonroot-index-splits-native-2026-10-27.json)
+The [non-root scoped record](../tests/results/indexes/ace16-nonroot-index-splits-native-2026-10-27.json)
 passes 100 distinct runtime functions, including retained root-leaf regressions,
 and three compile-fail checks. That stage refused internal-node overflow.
-The [two original-file candidates](testing/NONROOT_SPLIT_UPDATE_OBSERVATIONS.md)
+The [two original-file candidates](../tests/reports/indexes/NONROOT_SPLIT_UPDATE_OBSERVATIONS.md)
 now pass on their first run, with complete independent image proofs. Each adds
 one EOF leaf while preserving original Memo/OLE descriptors and chunk pages.
 
-The [non-root reference capture](testing/NONROOT_INDEX_SPLIT_OBSERVATIONS.md)
+The [non-root reference capture](../tests/reports/indexes/NONROOT_INDEX_SPLIT_OBSERVATIONS.md)
 records two current-service refusals and two successful public updates. Its first
 verifier's exit 1 is retained: the reference writer also reallocated unchanged
 Memo/OLE values. Read-only diagnosis verifies their equal payloads and the actual
@@ -5761,10 +5761,10 @@ pages beneath two bounded maxima. All sibling levels are rebuilt from final
 child order, original unused bytes remain intact and fresh unused bytes are zero.
 The independent auditor replays original counts, capacities, EOF allocation,
 framing and maps without trusting the builder's arena. The
-[new scoped record](testing/results/ace16-parent-index-splits-native-2026-10-27.json)
+[new scoped record](../tests/results/indexes/ace16-parent-index-splits-native-2026-10-27.json)
 passes 108 distinct runtime functions, including eight new controls, and three
 compile-fail checks, plus strict lint, minimal compilation, rustdoc and formatting.
-The [four original-file candidates](testing/RECURSIVE_INDEX_SPLIT_UPDATE_OBSERVATIONS.md)
+The [four original-file candidates](../tests/reports/indexes/RECURSIVE_INDEX_SPLIT_UPDATE_OBSERVATIONS.md)
 now pass on their first run through a frozen committed consumer: both retained-root
 growth images and both below-root internal splits match the independent complete
 images, fresh getters, row identities and maps. Their eight native/JVM fixture
@@ -5773,7 +5773,7 @@ other-codec splits and native Access qualification remain unfinished.
 
 ## Exact fixed-scalar index split previews
 
-The separate [typed split facade](testing/ACE16_FIXED_INDEX_SPLITS.md) now accepts
+The separate [typed split facade](../tests/reports/indexes/ACE16_FIXED_INDEX_SPLITS.md) now accepts
 non-NULL Byte, Int16, Int32, Int64 and Currency requests, binding actual metadata
 and exact carrier bytes through the shared recursive split planner and independent
 final audit. The original Int32 API retains borrowed requests and preflight order.
@@ -5787,12 +5787,12 @@ parent-only growth. An authored wide descending parent case exceeded balanced-ha
 capacity; that exact source/request remains an atomic refusal, with a separate
 same-source value-1 positive. No production change was needed for that diagnostic.
 That historical refusal is retained in the original record. The subsequent
-[repeated-overflow service](testing/ACE16_REPEATED_INDEX_SPLITS.md) now handles
+[repeated-overflow service](../tests/reports/indexes/ACE16_REPEATED_INDEX_SPLITS.md) now handles
 that exact source/request through independently checked repeated splits.
 
 A working clap-based engineering consumer uses exact integer/scaled Currency
 arguments, validates carriers before source I/O and publishes only fresh synced
-candidate files. The [first frozen-consumer original-file replay](testing/FIXED_INDEX_SPLIT_UPDATE_OBSERVATIONS.md)
+candidate files. The [first frozen-consumer original-file replay](../tests/reports/indexes/FIXED_INDEX_SPLIT_UPDATE_OBSERVATIONS.md)
 now passes all eight complete expected images and fresh getter/index/map checks
 on unchanged Byte/Int16/Int64/Currency originals. All sixteen fixture commands
 pass without retries or regeneration, separately from prior public writer actions.
@@ -5800,7 +5800,7 @@ Normal native saves and Microsoft Access qualification remain open.
 
 ## Retained-key physical split planning
 
-The [physical split planner](testing/ACE16_RETAINED_SPLIT_PLANNER.md) now borrows
+The [physical split planner](../tests/reports/indexes/ACE16_RETAINED_SPLIT_PLANNER.md) now borrows
 complete keys from a retained-profile arena and tracks internal maxima by checked
 key positions. Numeric public consumers and their exact images remain unchanged;
 real General/Binary profiles have separate internal transport controls. This
@@ -5817,7 +5817,7 @@ subsequent correction below records its own causal evidence and checks.
 
 ## Existing-fit composite framing correction
 
-The [composite audit](testing/ACE16_COMPOSITE_FITTING_AUDIT.md) now reconstructs
+The [composite audit](../tests/reports/general/ACE16_COMPOSITE_FITTING_AUDIT.md) now reconstructs
 admitted numeric, GUID and Decimal tuple keys from immutable original requests.
 It retains original topology and derives exact child maxima, prefix/bitmap/free
 framing and encoded key/ROW/child bytes independently of the builder. Original
@@ -5833,7 +5833,7 @@ remains pending.
 
 ## General Text/Binary split source observations
 
-Two independently constructed [ACE 16 sources](testing/ENCODED_INDEX_SPLIT_SOURCE_OBSERVATIONS.md)
+Two independently constructed [ACE 16 sources](../tests/reports/indexes/ENCODED_INDEX_SPLIT_SOURCE_OBSERVATIONS.md)
 now establish root-leaf overflow and repeated split demand for General legacy
 text, General modern text and Short Binary keys. Each unchanged source has 2,701
 rows, checked physical aliases, complete typed/key streams and protected Memo/OLE
@@ -5844,14 +5844,14 @@ source phase passes. No public UPDATE or native baseline call has run in this
 source phase. These observations do not add Text/Binary split admission or qualify
 candidate images, normal saves or native Access compatibility.
 
-The subsequent [frozen existing-slot baseline](testing/ENCODED_INDEX_SPLIT_BASELINES.md)
+The subsequent [frozen existing-slot baseline](../tests/reports/indexes/ENCODED_INDEX_SPLIT_BASELINES.md)
 now passes six byte-identical no-ops and six exact IndexedColumn refusals without
 output, covering all three key families in both source formats. Its twelve
 native calls are separate from source construction and public writer actions.
 All sources and frozen inputs remain unchanged. New split candidates and normal
 saves remain unfinished.
 
-The separate [public-writer reference phase](testing/ENCODED_INDEX_SPLIT_UPDATE_OBSERVATIONS.md)
+The separate [public-writer reference phase](../tests/reports/indexes/ENCODED_INDEX_SPLIT_UPDATE_OBSERVATIONS.md)
 now passes six same-width replacements and six fresh getters on the unchanged
 originals. Each output adds six index pages, retains both root IDs and all row
 references, and preserves other records, counters and Memo/OLE storage. Its
@@ -5860,7 +5860,7 @@ packing; these public outputs are not substituted for independent byte goldens.
 
 ## Exact-slot General Text/Binary index splits
 
-A separate [engineering split service](testing/ACE16_ENCODED_INDEX_SPLITS.md)
+A separate [engineering split service](../tests/reports/indexes/ACE16_ENCODED_INDEX_SPLITS.md)
 now stages Short Text/Binary changes within their exact existing slots while
 allowing qualified single-key General legacy/modern and Binary indexes to split.
 The retained planner handles root, non-root, internal and repeated growth; owned
@@ -5876,7 +5876,7 @@ each keeps its own typed authority and independent index audit.
 Independent complete-image tests cover both General families, Binary, NULL/empty
 values, ties, long unchanged digest wires, internal growth, multiple physical
 owners and map promotion. The separate
-[first original-file replay](testing/ENCODED_INDEX_SPLIT_CANDIDATE_OBSERVATIONS.md)
+[first original-file replay](../tests/reports/indexes/ENCODED_INDEX_SPLIT_CANDIDATE_OBSERVATIONS.md)
 now passes six exact candidate images and six fresh getter/map/tree checks on
 unchanged sources, through twelve successful first-attempt fixture commands.
 Every output adds six index pages; all original/input pins remain unchanged.
@@ -5893,7 +5893,7 @@ no failed attempt or expected-byte change is hidden.
 
 ## Combined record and index pressure sources
 
-Two new [maximum-width pressure sources](testing/VARIABLE_ENCODED_SPLIT_SOURCE_OBSERVATIONS.md)
+Two new [maximum-width pressure sources](../tests/reports/indexes/VARIABLE_ENCODED_SPLIT_SOURCE_OBSERVATIONS.md)
 now pass a first-attempt five-command construction/inspection phase. Each has
 2,701 rows with fixed GUID/BYTE companions. Every target occupies ten DATA pages
 with 90 ordinary records and 32 free bytes each. Each maximum-width replacement
@@ -5905,13 +5905,13 @@ digests against a separate model before any UPDATE. Saved verification checks
 keys, combined candidates and the complete native metadata-role census remain
 separate qualifications. These source observations add no normal save path.
 
-The [frozen old variable writer](testing/VARIABLE_ENCODED_SPLIT_BASELINES.md)
+The [frozen old variable writer](../tests/reports/indexes/VARIABLE_ENCODED_SPLIT_BASELINES.md)
 passes twelve first-attempt controls on these unchanged sources: six byte-identical
 no-ops and six maximum-width growth refusals with `IndexedColumn` and no output.
 Every call explicitly selects the variable-update service. This establishes its
 existing admission boundary, not a combined record/index writer.
 
-The separate [public-writer reference phase](testing/VARIABLE_ENCODED_SPLIT_UPDATE_OBSERVATIONS.md)
+The separate [public-writer reference phase](../tests/reports/indexes/VARIABLE_ENCODED_SPLIT_UPDATE_OBSERVATIONS.md)
 now passes six fresh-copy replacements and six inert inspections, all first
 attempt. Each output adds one DATA page and six index leaves. Complete proofs
 verify root forwarding, fixed companions, all typed rows, persisted maximum-width
@@ -5922,7 +5922,7 @@ remain separate from TableCraft's candidate proofs below and native Access saves
 ## Shared append state for engineering writers
 
 Existing variable-record and index-split previews now use the same
-[typed append cursor and map-byte ledger](testing/ACE16_SHARED_APPEND_STATE.md).
+[typed append cursor and map-byte ledger](../tests/reports/storage/ACE16_SHARED_APPEND_STATE.md).
 DATA, index and bitmap reservations retain distinct purposes. This removes
 duplicate allocation state. That extraction preceded the combined API below and
 did not add a normal save path.
@@ -5933,7 +5933,7 @@ the causal control and 17 focused append/DATA functions pass after that fix.
 
 The existing variable-update preview now independently reconstructs complete
 records from original metadata and requests before publishing a candidate.
-The [record and placement proof](testing/ACE16_VARIABLE_DATA_PROOF.md) checks exact
+The [record and placement proof](../tests/reports/rows/ACE16_VARIABLE_DATA_PROOF.md) checks exact
 preferred Text/Binary bytes, original capacity, stored historical offsets/masks,
 expected values and logical-root identity. Map replay derives record lengths from
 those certified bytes rather than staged target ranges. Semantic no-ops remain
@@ -5943,7 +5943,7 @@ record authority for the combined API below. Production saves remain unfinished.
 ## Combined variable DATA and encoded-index growth
 
 The separate
-[`preview_ace16_variable_split_updates` service](testing/ACE16_VARIABLE_INDEX_SPLITS.md)
+[`preview_ace16_variable_split_updates` service](../tests/reports/indexes/ACE16_VARIABLE_INDEX_SPLITS.md)
 now combines variable Text/Binary records and qualified encoded index splits.
 DATA placement and index/bitmap allocation consume one append state and one
 map-byte ledger. Final certification rebinds original requests, proves DATA
@@ -5954,7 +5954,7 @@ Complete metadata discovery protects all definition chains and map storage,
 including historical column roles. A protected highest candidate refuses before
 any failed-fit hint clear. Literal Binary-255 complete images cover shared global
 bytes, immediate and late index-map promotion and original logical ROW identity.
-Its [first six original-file candidates](testing/VARIABLE_INDEX_SPLIT_CANDIDATE_OBSERVATIONS.md)
+Its [first six original-file candidates](../tests/reports/indexes/VARIABLE_INDEX_SPLIT_CANDIDATE_OBSERVATIONS.md)
 now match every independently frozen image and pass six fresh getter/key/map
 proofs. All twelve first-attempt commands succeed without changing original
 inputs, maximum-width requests or budgets. Every candidate adds one DATA page
@@ -5965,7 +5965,7 @@ save, macro or native Access qualification claim.
 ## Index-owned map promotion
 
 The optional engineering split services now support
-[same-extent inline index-owned map promotion](testing/ACE16_INDEX_MAP_GROWTH.md).
+[same-extent inline index-owned map promotion](../tests/reports/indexes/ACE16_INDEX_MAP_GROWTH.md).
 The existing map record becomes indirect when the complete required member span
 cannot fit an inline window. A separate EOF usage bitmap stores original members
 and actual new index pages; the bitmap is globally allocated without becoming
@@ -5987,7 +5987,7 @@ rustdoc and formatting. One old unsupported-width regression exposed a changed
 handler error order; recognizing the supported shape before census restored the
 original refusal without changing its test or fixture.
 
-The [first committed-consumer replay](testing/INDEX_MAP_GROWTH_UPDATE_OBSERVATIONS.md)
+The [first committed-consumer replay](../tests/reports/indexes/INDEX_MAP_GROWTH_UPDATE_OBSERVATIONS.md)
 now passes both unchanged public originals. All four native/getter commands
 succeed, and each candidate matches its pre-execution whole-image expectation,
 including exact pointer/global bytes, protected source residue and fresh padding.
@@ -5997,7 +5997,7 @@ reuse, reclamation and native Access saves remain unfinished.
 
 ## Shared native map authority
 
-The engineering [map-authority service](testing/ACE16_MAP_AUTHORITY.md) now
+The engineering [map-authority service](../tests/reports/storage/ACE16_MAP_AUTHORITY.md) now
 captures canonical map owners across the complete local catalog, including
 ordinary, physical-index and current/historical long-value maps. Operations select
 explicit mutable owners; exact record ranges and bitmap/container footprints
@@ -6018,7 +6018,7 @@ match the previous implementation exactly.
 
 ## Usage-map growth reference evidence
 
-A [separate independent-writer experiment](testing/USAGE_MAP_GROWTH_OBSERVATIONS.md)
+A [separate independent-writer experiment](../tests/reports/storage/USAGE_MAP_GROWTH_OBSERVATIONS.md)
 now captures inline index-owned map promotion on both unchanged ACE 16-family
 originals. Each transition retains the map record's 69-byte extent and root ID,
 allocates right/bitmap/left pages, and adds only the two index children to index
@@ -6035,7 +6035,7 @@ they do not implement engine map growth or qualify native Access saves.
 
 ## Repeated-overflow numeric split previews
 
-The [existing engineering split services](testing/ACE16_REPEATED_INDEX_SPLITS.md)
+The [existing engineering split services](../tests/reports/indexes/ACE16_REPEATED_INDEX_SPLITS.md)
 now subdivide oversized halves until each page fits, retaining exact request
 identity, original/fresh page origins, complete key/ROW bounds and represented
 allocation-map authority. Paid stable allocation-order passes preserve the old
@@ -6052,7 +6052,7 @@ checks but fails operation certification. A temporary causal builder fault first
 exposed the shared-capacity audit gap; audit-owned measurement now rejects it.
 Exact initial failures and removed fault sources remain recorded separately.
 
-A [frozen committed consumer](testing/REPEATED_INDEX_SPLIT_UPDATE_OBSERVATIONS.md)
+A [frozen committed consumer](../tests/reports/indexes/REPEATED_INDEX_SPLIT_UPDATE_OBSERVATIONS.md)
 now passes all four unchanged 900-key original candidates on its first run. Every
 complete image matches its pre-execution model; all eight native/getter commands
 pass, with complete typed rows, index/ROW streams, maps and protected bytes checked.
@@ -6062,7 +6062,7 @@ growth, normal saves and native Access qualification remain unfinished.
 
 ## Repeated numeric split source and reference observations
 
-A [separate bounded witness](testing/REPEATED_INDEX_SPLIT_OBSERVATIONS.md) now
+A [separate bounded witness](../tests/reports/indexes/REPEATED_INDEX_SPLIT_OBSERVATIONS.md) now
 captures two new originals with 900 zero keys in each Int64/Currency target and
 one preservation row (1,801 user rows per file). All nine source commands pass,
 including four byte-identical typed-facade no-ops. The inherited raw source
@@ -6079,7 +6079,7 @@ repeated splitting or qualify new TableCraft candidates or native Access saves.
 
 ## Other fixed numeric split sources
 
-The [finite Byte/Int16/Int64/Currency source phase](testing/INTEGRAL_INDEX_SPLIT_SOURCE_OBSERVATIONS.md)
+The [finite Byte/Int16/Int64/Currency source phase](../tests/reports/indexes/INTEGRAL_INDEX_SPLIT_SOURCE_OBSERVATIONS.md)
 now passes all thirteen native/JVM fixture commands on new V2016/V2019 originals.
 Each file has 2,729 user rows under unchanged caps. Eight exact typed fixed-preview
 no-ops preserve complete images, qualifying the actual Required properties,
@@ -6090,7 +6090,7 @@ both generated formats.
 Independent complete key/ROW capacity checks prove that the fixed future MAX
 requests overflow each selected root leaf and that both halves fit. These are
 source/admission measurements, not new typed split support or update outcomes.
-The subsequent [MAX reference phase](testing/INTEGRAL_INDEX_SPLIT_OBSERVATIONS.md)
+The subsequent [MAX reference phase](../tests/reports/indexes/INTEGRAL_INDEX_SPLIT_OBSERVATIONS.md)
 now completes all 25 fixture commands: eight old-consumer atomic refusals, eight
 public updates and eight fresh read-only descriptions after one compile. All
 sixteen physical roots grow to height one with four EOF pages per edited copy;
@@ -6102,7 +6102,7 @@ native Access qualification.
 
 ## Measured Int32 parent overflow and root growth
 
-The [separate public-reference action phase](testing/PARENT_INDEX_SPLIT_OBSERVATIONS.md)
+The [separate public-reference action phase](../tests/reports/indexes/PARENT_INDEX_SPLIT_OBSERVATIONS.md)
 uses the unchanged 782-row sparse sources. All nine first-attempt fixture
 processes complete: the frozen prior consumer refuses both overflowing edits
 atomically, while both public Jackcess updates split the parent and grow the
@@ -6111,7 +6111,7 @@ maxima and no tail. Three EOF index pages are added: a new left leaf, then a new
 right internal node and a new left internal node. All row references, unrelated
 field bytes and historical counters remain unchanged.
 
-The [receipt](testing/results/ace16-parent-index-split-originals-2026-10-27.json)
+The [receipt](../tests/results/indexes/ace16-parent-index-split-originals-2026-10-27.json)
 pins the actual sources, immutable input histories, commands and saved framing
 proofs. Read-only verification recomputes both actual tree/map outcomes without
 rerunning database actions. Public unused-byte rewrites are retained as
@@ -6121,7 +6121,7 @@ uses its own committed artifact and complete-image models.
 
 ## Non-root internal-parent overflow sources
 
-A [separate bounded source experiment](testing/INTERNAL_PARENT_INDEX_SPLIT_SOURCE_OBSERVATIONS.md)
+A [separate bounded source experiment](../tests/reports/indexes/INTERNAL_PARENT_INDEX_SPLIT_SOURCE_OBSERVATIONS.md)
 now finds genuine below-root internal-parent overflow in both ACE 16 profiles.
 Its first nine source processes pass. Natural generation stops at 149,184 target
 rows under the unchanged 150,000 aggregate cap; fresh public pruning retains
@@ -6130,13 +6130,13 @@ parent are verified independently, together with all 497 index pages, internal
 full key/ROW bounds, child/tail structure, three sibling levels and kept physical
 row identities. The fixed MAX request exceeds both leaf and parent capacity.
 
-The [source receipt](testing/results/ace16-internal-parent-split-sources-2026-10-27.json)
+The [source receipt](../tests/results/indexes/ace16-internal-parent-split-sources-2026-10-27.json)
 records original hashes, exact first-run helpers and read-only sparse-history
 proofs. Larger intermediates are not mutation inputs. No native admission,
 MAX action, internal-page retention rule or native Access qualification follows
 from these source-generation results.
 
-The [subsequent first action phase](testing/INTERNAL_PARENT_INDEX_SPLIT_OBSERVATIONS.md)
+The [subsequent first action phase](../tests/reports/indexes/INTERNAL_PARENT_INDEX_SPLIT_OBSERVATIONS.md)
 now records two successful public updates and two atomic prior-consumer refusals
 in nine processes. Both roots retain height two and grow from two to three
 bounded children. Each operation adds a left leaf and left internal page while
@@ -6157,18 +6157,18 @@ references, unrelated records and counters stay intact.
 An independent event replay derives exact map-bit authority from original
 geometry and actual placement failures. A separate finalizer validates the grown
 header/catalog, complete constraints and protected bytes without creating a
-journalable edit plan. The [scoped record](testing/results/ace16-variable-updates-native-2026-10-26.json)
+journalable edit plan. The [scoped record](../tests/results/rows/ace16-variable-updates-native-2026-10-26.json)
 passes 233 runtime functions and three compile-fail checks, plus strict lint,
 minimal compilation and formatting. Its subsequent
-[eight original-file candidates](testing/VARIABLE_UPDATE_OBSERVATIONS.md) all
+[eight original-file candidates](../tests/reports/rows/VARIABLE_UPDATE_OBSERVATIONS.md) all
 pass on their first run, including candidate growth-to-shrink chains, exact EOF
 pages and represented map changes. The earlier PAGE comparison remains separate.
 The same frozen consumer also passes the
-[eight Short Binary allocation controls](testing/BINARY_VARIABLE_UPDATE_OBSERVATIONS.md)
+[eight Short Binary allocation controls](../tests/reports/storage/BINARY_VARIABLE_UPDATE_OBSERVATIONS.md)
 on actual space-exhaustion sources. Their complete image/value/index proofs
 retain 268-byte target capacity and distinguish preserved shrink padding from
 public-writer canonicalization.
-See the [allocation contract](testing/ACE16_VARIABLE_UPDATES.md).
+See the [allocation contract](../tests/reports/rows/ACE16_VARIABLE_UPDATES.md).
 
 ## Same-page Text and Binary UPDATE candidates
 
@@ -6181,12 +6181,12 @@ opaque bytes and allocation maps remain protected by independent audits.
 This extends the physical growth path without allocating pages or enabling
 normal saves. Missing candidate hints, exhausted slots or insufficient space
 refuse rather than choosing another page. Exact-span updates keep their existing
-API and contract. See the [page-update contract](testing/ACE16_PAGE_UPDATES.md)
+API and contract. See the [page-update contract](../tests/reports/storage/ACE16_PAGE_UPDATES.md)
 for admission, preservation and scoped verification; native Access and data-macro
 qualification remain pending.
 
 The frozen committed consumer now passes all
-[180 original-file controls](testing/PAGE_UPDATE_OBSERVATIONS.md) on its first
+[180 original-file controls](../tests/reports/storage/PAGE_UPDATE_OBSERVATIONS.md) on its first
 attempt: 156 candidates and 24 typed refusals. The independent model checks 122
 fitted records, sixteen appends and eighteen byte-identical no-ops, including
 repeated forwarding history. Complete values, index keys/bounds, record framing,
@@ -6202,13 +6202,13 @@ and mixed tuple indexes use real replacement encoders and complete ancestor
 maintenance; complete final constraints still validate logical values. No record
 growth, allocation, ordinary ACE saves or data-macro qualification is supplied.
 
-The [scoped record](testing/results/ace16-slot-updates-native-2026-10-26.json)
+The [scoped record](../tests/results/rows/ace16-slot-updates-native-2026-10-26.json)
 passes nine author functions, 150 existing writer/read/delete functions and three
 compile-fail checks, plus strict lint, minimal compilation and formatting.
 Independent original-file candidate replay remains separate from these tests.
-See the [exact storage and index contract](testing/ACE16_WRITE_PREVIEWS.md#existing-width-short-text-and-binary-slots).
+See the [exact storage and index contract](../tests/reports/development/ACE16_WRITE_PREVIEWS.md#existing-width-short-text-and-binary-slots).
 
-The subsequent [original-file replay](testing/SLOT_UPDATE_OBSERVATIONS.md) now
+The subsequent [original-file replay](../tests/reports/rows/SLOT_UPDATE_OBSERVATIONS.md) now
 passes its fixed 162 controls: 124 complete candidates and 38 typed refusals.
 It checks actual values, complete index orders and ancestor bounds, topology and
 every byte outside the permitted changes. Four no-ops preserve entire files.
@@ -6222,7 +6222,7 @@ multiple requests, retaining full physical traversal and exact callback order.
 Ordered captures skip sorting; empty/single requests avoid directory allocation.
 Six private controls and 150 existing update/delete functions pass, and both
 isolated builds reproduce sixteen accepted original-file candidate images.
-The [balanced Hyperfine record](testing/ROW_REQUEST_DIRECTORY_OBSERVATIONS.md)
+The [balanced Hyperfine record](../tests/reports/rows/ROW_REQUEST_DIRECTORY_OBSERVATIONS.md)
 retains every sample: 500-row end-to-end timings are mixed/tied, so no uniform
 speedup is claimed. Finite 16,384-request work bounds are established separately;
 upfront allocation can change insufficient-resource error precedence.
@@ -6244,14 +6244,14 @@ become post-delete ordinals. Self/cyclic cascades, SET NULL and unsupported acti
 remain refused; unrelated components stay inactive. Ordinary ACE saves and the
 existing RESTRICT-only APIs are unchanged.
 
-The [scoped record](testing/results/ace16-cascading-delete-native-2026-10-26.json)
+The [scoped record](../tests/results/rows/ace16-cascading-delete-native-2026-10-26.json)
 records 255 distinct passing engine functions, including sixteen new controls,
 and three compile-fail checks. Strict lint, minimal compilation and formatting
 pass. Independent two-owner contraction verifies exact shared free-bit unions,
 retained NULL children, raw payload preservation and original-seed validation.
 Initial test-only module/fixture assumptions and their corrections are preserved.
 
-Matching now retains [projected fixed-key facts](testing/CASCADE_KEY_FACTS.md),
+Matching now retains [projected fixed-key facts](../tests/reports/indexes/CASCADE_KEY_FACTS.md),
 with dense/native mapping and original row/root alignment. Six native candidates
 are byte-identical to the frozen preceding implementation, with lower cumulative
 byte/work charges. Full preflight and final payload validation remain mandatory;
@@ -6259,7 +6259,7 @@ malformed unselected LVALs still refuse.
 
 Independent public self-tree actions left dangling
 children and loop/cycle actions overflowed their stack; none qualifies those
-profiles. The subsequent [original-file replay](testing/CASCADE_DELETE_OBSERVATIONS.md)
+profiles. The subsequent [original-file replay](../tests/reports/rows/CASCADE_DELETE_OBSERVATIONS.md)
 passes 24 acyclic candidates and eight exact self/cycle refusals on a frozen
 committed tool. Independent association and byte models check original records,
 complete index entries, maps and protected bytes; the 24 supported candidates
@@ -6268,7 +6268,7 @@ macros and Access save/reopen remain separate acceptance work.
 
 ## Native French field query replay
 
-The [frozen comparison CLI replay](testing/results/french-comparison-fields-replay-2026-10-26.json)
+The [frozen comparison CLI replay](../tests/results/schema/french-comparison-fields-replay-2026-10-26.json)
 passes all 112 controls over unchanged ACE16 Short Text/Memo originals: 96
 successful queries and sixteen intended buffered refusals, comparing 1,204 rows
 and 1,548 cells. Ordinary/declared arithmetic modes, actual field-policy routing,
@@ -6286,9 +6286,9 @@ results. A same-query Len probe changing only the native-step allowance isolated
 that pool; the accepted retry keeps all sizes, selectors and expected values,
 with explicit separate native/comparison allowances and a comparison-byte negative.
 No production defaults or answers were changed. See
-[the field observations](testing/FRENCH_COMPARISON_FIELD_OBSERVATIONS.md).
+[the field observations](../tests/reports/schema/FRENCH_COMPARISON_FIELD_OBSERVATIONS.md).
 
-Two separate [saved-source companions](testing/FRENCH_SAVED_COMPANION_OBSERVATIONS.md)
+Two separate [saved-source companions](../tests/reports/queries/FRENCH_SAVED_COMPANION_OBSERVATIONS.md)
 now preserve all original field values and 285 protected pages while adding one
 inert SELECT each. Their frozen-CLI replay passes four syntax controls, 24
 saved/named/derived executions and four buffered LIKE refusals, comparing 568 rows
@@ -6369,7 +6369,7 @@ remains open.
 The resolver's default accessor now returns `&dyn Collation`, an intentional
 public source-compatibility change documented in the owning contract.
 
-The [scoped record](testing/results/french-full-comparison-2026-10-26.json) records
+The [scoped record](../tests/results/queries/french-full-comparison-2026-10-26.json) records
 119 distinct passing runtime functions, including eighteen new controls, plus
 three compile-fail checks. Strict checks cover the affected engine, expressions,
 Access and CLI scopes; standalone minimal builds and warnings-denied rustdoc pass.
@@ -6382,11 +6382,11 @@ The independent oracle establishes 158 short keys and twenty long-Latin pairs.
 It does not establish arbitrary long-Unicode positional or native Access/NLS
 semantics. The new native Short Text/Memo corpus is separately registered;
 original-field SQL replay remains a subsequent acceptance step. See
-[the comparison observations](testing/FRENCH_COMPARISON_OBSERVATIONS.md).
+[the comparison observations](../tests/reports/queries/FRENCH_COMPARISON_OBSERVATIONS.md).
 
 ## Original French physical index CLI replay
 
-The [frozen CLI comparison](testing/results/french-physical-originals-2026-10-26.json)
+The [frozen CLI comparison](../tests/results/queries/french-physical-originals-2026-10-26.json)
 passes 58 controls over the two unchanged French/General originals: 52 successful
 inspections/queries and six expected buffered refusals. Selected Asc/Twin/Desc
 reads preserve independent cursor encounter order and full stored values across
@@ -6399,11 +6399,11 @@ filters do not establish native NULL seeks, and the CLI does not expose explicit
 physical Text ranges. Initial error-classification disagreements are retained:
 corrupt copies already returned status 2 and empty stdout, while the adapter
 correctly exposed its established source-error class. No engine correction was
-needed. See [the observations](testing/FRENCH_LEGACY_INDEX_OBSERVATIONS.md).
+needed. See [the observations](../tests/reports/queries/FRENCH_LEGACY_INDEX_OBSERVATIONS.md).
 
 ## Original-file multi-table deletion qualification
 
-The [batch comparison](testing/BATCH_DELETE_OBSERVATIONS.md) passes all 28
+The [batch comparison](../tests/reports/rows/BATCH_DELETE_OBSERVATIONS.md) passes all 28
 controls on unchanged ACE16 V2016/V2019 originals: sixteen candidates and twelve
 typed refusals. Each original has 500 parents and 500 children with an enforced
 non-NULL Int32 RESTRICT relationship and height-two GUID tuple indexes on both
@@ -6417,7 +6417,7 @@ Memo/OLE sentinel and every byte outside exact slot/count/index/map spans remain
 unchanged. Eight public child-before-parent reference states reach the same final
 rows and keys without requiring identical physical layouts.
 
-The [compact receipt](testing/results/ace16-batch-delete-originals-2026-10-26.json)
+The [compact receipt](../tests/results/rows/ace16-batch-delete-originals-2026-10-26.json)
 retains 88 command associations and both hashes in every table-order pair. Raw
 arrays remain ignored and pinned. This is final-state engineering evidence;
 automatic cascades, SQL action timing, macros, ordinary ACE saves and native
@@ -6438,7 +6438,7 @@ preserves the previous UPDATE/DELETE refusal for French-indexed tables, includin
 no-op requests; newly Checked read status does not grant mutation authority.
 An unindexed French field does not acquire a new unrelated write prohibition.
 
-The [implementation record](testing/results/french-legacy-read-native-2026-10-26.json)
+The [implementation record](../tests/results/queries/french-legacy-read-native-2026-10-26.json)
 records 108 passing distinct runtime functions, including eleven new controls,
 and three compile-fail checks. Feature/default test repetition is counted
 separately. Strict lint, minimal compilation and formatting pass. Initial authored
@@ -6446,11 +6446,11 @@ fixture failures and the discovered read-to-write admission coupling remain
 recorded with their corrections; an ineffective corruption probe was replaced by
 an actual marker mutation. This is engineering evidence, not native Access SQL
 or NLS qualification. See [the physical-key contract](access/indexes/NATIVE_TEXT.md)
-and [independent French oracle](testing/FRENCH_LEGACY_INDEX_OBSERVATIONS.md).
+and [independent French oracle](../tests/reports/queries/FRENCH_LEGACY_INDEX_OBSERVATIONS.md).
 
 ## Independent RESTRICT deletion action comparisons
 
-The [committed-tool comparison](testing/RESTRICT_DELETE_OBSERVATIONS.md) now
+The [committed-tool comparison](../tests/reports/rows/RESTRICT_DELETE_OBSERVATIONS.md) now
 records 84 original-file controls across two new ACE16 inputs: 64 candidate
 images and twenty typed missing-parent refusals satisfy the explicit final-image
 model. The public per-row writer instead succeeds in 58 cases and refuses 26;
@@ -6484,7 +6484,7 @@ automatic cascade execution. Self relationships, other delete actions, unknown
 properties and active content retain their refusals. Allocation, general INSERT,
 record growth, macro eligibility and native Access save/reopen remain unfinished.
 
-The [verification record](testing/results/ace16-batch-delete-native-2026-10-26.json)
+The [verification record](../tests/results/rows/ace16-batch-delete-native-2026-10-26.json)
 records 239 passing engine functions, including nine new controls, and three
 compile-fail checks. Strict lint, minimal compilation and scoped formatting pass.
 Independent whole-image checks cover two table owners retiring pages in one
@@ -6502,7 +6502,7 @@ column flags/properties and unaffected bytes. Sixteen disposable candidate
 append descendants independently allocate 261, matching the public-writer
 references even when deletion leaves no live rows.
 
-The [comparison record](testing/results/ace16-delete-autonumber-originals-2026-10-26.json)
+The [comparison record](../tests/results/creation/ace16-delete-autonumber-originals-2026-10-26.json)
 retains 38 public reference observations, sixteen candidates, sixteen candidate
 append observations and zero disagreements. A runner's initial missing empty-index
 order lookup is preserved separately; definition inventory and raw empty-root
@@ -6512,7 +6512,7 @@ This qualifies existing engineering behavior without adding a production branch
 or enabling AutoNumber assignment, general INSERT, GUID/complex identity handling
 or normal ACE saves. Append operations run only through the independent public
 writer on disposable descendants. Original files remain unchanged; native Access
-save/reopen remains separate. See [the observations and reproduction commands](testing/AUTONUMBER_DELETE_OBSERVATIONS.md).
+save/reopen remains separate. See [the observations and reproduction commands](../tests/reports/creation/AUTONUMBER_DELETE_OBSERVATIONS.md).
 
 ## Cross-table RESTRICT deletion candidates
 
@@ -6531,13 +6531,13 @@ Related table bytes, relationship declarations, UPDATE restrictions, existing
 index/map audits and cumulative budgets remain protected. Normal ACE saves,
 backend SQL DELETE and native Access action timing remain unqualified.
 
-The [verification record](testing/results/ace16-delete-restrict-native-2026-10-26.json)
+The [verification record](../tests/results/rows/ace16-delete-restrict-native-2026-10-26.json)
 records 230 passing engine functions, including nine new controls, plus three
 compile-fail checks. Strict lint, minimal compilation and formatting pass.
 Independent authored controls include a healthy unenforced relationship whose
 ordinary indexes pass read checks but whose empty and nonempty deletion requests
 still refuse. Original-file comparisons remain a separate acceptance step; see
-the [relationship contract](testing/ACE16_DELETE_PREVIEWS.md#cross-table-enforced-restrict-relationships).
+the [relationship contract](../tests/reports/rows/ACE16_DELETE_PREVIEWS.md#cross-table-enforced-restrict-relationships).
 
 ## Deletion through qualified ignore-NULL indexes
 
@@ -6552,21 +6552,21 @@ row count, so an index can retire to its root while NULL table rows remain.
 Ordinary-index removal counts, complete before/after checks, unsupported codecs,
 UPDATE gates and normal ACE write restrictions remain intact.
 
-The [implementation record](testing/results/ace16-delete-ignored-native-2026-10-26.json)
+The [implementation record](../tests/results/rows/ace16-delete-ignored-native-2026-10-26.json)
 records 221 passing engine functions, including nine new controls and 25 existing
 ignored-index read guards, plus three compile-fail checks. Strict lint, minimal
 compilation and formatting pass. An inherited test property owner mismatch and
 the two deliberately superseded DELETE refusal assertions are preserved in the
 record. Original-file candidate replay remains a separate acceptance step.
 
-The [committed-tool original replay](testing/results/ace16-delete-ignored-original-replay-2026-10-26.json)
+The [committed-tool original replay](../tests/results/rows/ace16-delete-ignored-original-replay-2026-10-26.json)
 now passes all fifty positive selections on six unchanged registered originals.
 It checks 3,346 deleted roots, 8,584 surviving target rows, 136 retired pages,
 32 byte-identical zero-effective index cases and 24 empty indexes with live NULL
 table rows. Candidate files retain original lengths, nonempty heights, map
 representations and retired residual bytes. Two sequential reference cases grow
 six pages and restructure indexes; the candidates reach the same final values
-and keys within their original pages. See [the observations and reproduction tools](testing/IGNORED_DELETE_OBSERVATIONS.md).
+and keys within their original pages. See [the observations and reproduction tools](../tests/reports/rows/IGNORED_DELETE_OBSERVATIONS.md).
 This remains independent engineering evidence, not native Access save/reopen.
 
 ## Checked internal-node sibling repair during contraction
@@ -6582,11 +6582,11 @@ the proven empty-root conversion. Empty trees keep their original root as a
 height-zero leaf, retire every original nonroot and retain root-only ownership.
 No-op and non-retirement paths retain their existing requirements.
 
-The [implementation record](testing/results/ace16-delete-internal-chains-native-2026-10-26.json)
+The [implementation record](../tests/results/rows/ace16-delete-internal-chains-native-2026-10-26.json)
 records 187 passing engine functions, including nine new controls, and three
 compile-fail checks. Strict lint, minimal compilation and formatting pass.
 Private causal tests reject forged after-images independently of the repair path.
-The [fresh committed-tool replay](testing/results/ace16-delete-internal-chains-originals-2026-10-26.json)
+The [fresh committed-tool replay](../tests/results/rows/ace16-delete-internal-chains-originals-2026-10-26.json)
 passes all 32 original-file controls: twenty verified candidates and twelve typed
 refusals across 96 commands. All request bytes match the old baseline, and all
 inputs remain unchanged. The sixteen earlier refusals remain recorded separately.
@@ -6606,7 +6606,7 @@ internal nodes with
 `Unsupported(IndexedColumn)` before creating an output. This is partial evidence,
 not completion of contraction acceptance.
 
-The [baseline record](testing/results/ace16-delete-contraction-baseline-2026-10-26.json)
+The [baseline record](../tests/results/rows/ace16-delete-contraction-baseline-2026-10-26.json)
 retains both attempts, exact archived verifier sources and unchanged input/request
 hashes. The corrected verifier models actual tail/bounded node forms and reciprocal
 sibling chains per height; sixteen original/reference graph checks pass. No
@@ -6633,17 +6633,17 @@ limit. Neither feature enables normal ACE saves.
 The scoped batch passes 178 engine functions, including ten new controls, plus
 three compile-fail checks. Root-leaf positives cover both ACE16-family headers.
 Strict lint, minimal compilation and formatting pass. The
-[verification record](testing/results/ace16-delete-encoded-native-2026-10-26.json)
+[verification record](../tests/results/rows/ace16-delete-encoded-native-2026-10-26.json)
 preserves initial fixture-layout and expectation failures with their causal
 diagnostics; no production correction followed those failures. Original-file
 Text/Binary candidate replay remains separate and unrun in this record.
 
-The subsequent [original-file comparison](testing/results/ace16-delete-encoded-internal-chains-originals-2026-10-26.json)
+The subsequent [original-file comparison](../tests/results/rows/ace16-delete-encoded-internal-chains-originals-2026-10-26.json)
 passes all 48 controls on the repaired committed tool: 36 candidates and twelve
 unsupported-profile refusals. Independent getters and exact key/reference and
 preservation checks cover 4,374 deletions, 8,676 surviving target rows and 158
 retired pages. Both Modern Text height-two delete-all cases now pass. The
-[owning observations](testing/ENCODED_DELETE_OBSERVATIONS.md) retain the initial
+[owning observations](../tests/reports/rows/ENCODED_DELETE_OBSERVATIONS.md) retain the initial
 two refusals, provenance and public reproduction tools. These are repeated tests
 of the same selectors, not additional distinct controls or native Access evidence.
 
@@ -6664,10 +6664,10 @@ retired-page residual bytes. This is not a database-wide allocator audit.
 
 The scoped batch passes 138 engine tests and three compile-fail checks, plus four
 separate request-consumer tests. Strict lint, minimal compilation and formatting
-pass. [The verification record](testing/results/ace16-delete-contraction-native-2026-10-26.json)
+pass. [The verification record](../tests/results/rows/ace16-delete-contraction-native-2026-10-26.json)
 preserves failed probes and exact source/log hashes. Original-file contraction
 replay remains pending; native Access save/reopen and data-macro qualification
-remain separate. See [the contract](testing/ACE16_DELETE_PREVIEWS.md#existing-page-contraction).
+remain separate. See [the contract](../tests/reports/rows/ACE16_DELETE_PREVIEWS.md#existing-page-contraction).
 
 ## Deletion through existing multi-level index trees
 
@@ -6686,9 +6686,9 @@ original-file controls: fourteen reopened candidates and ten typed refusals over
 two 1,000-row ACE16-family originals and their safe public-writer histories.
 Original leaf partitions, full encoded keys/references, separator maxima and
 unrelated bytes agree; all registered inputs remain unchanged. See
-[the candidate contract](testing/ACE16_DELETE_PREVIEWS.md#nonempty-leaf-tree-extension),
-[reference topology](testing/DELETE_TREE_STORAGE_OBSERVATIONS.md) and
-[candidate replay](testing/results/ace16-delete-trees-originals-2026-10-26.json).
+[the candidate contract](../tests/reports/rows/ACE16_DELETE_PREVIEWS.md#nonempty-leaf-tree-extension),
+[reference topology](../tests/reports/rows/DELETE_TREE_STORAGE_OBSERVATIONS.md) and
+[candidate replay](../tests/results/rows/ace16-delete-trees-originals-2026-10-26.json).
 Normal ACE saves, data-macro qualification, true tree contraction and native
 Access save/reopen remain outside this engineering profile.
 
@@ -6711,8 +6711,8 @@ example passes all 70 independent original-file controls: 64 reopened candidates
 and six expected refusals. Sixteen candidates start from public-writer inputs
 already containing tombstones. Getter populations/order, exact surviving physical
 keys/references and narrow byte preservation agree; all registered inputs remain
-unchanged. See the [candidate contract](testing/ACE16_DELETE_PREVIEWS.md) and
-[original-file replay](testing/results/ace16-delete-originals-2026-10-26.json).
+unchanged. See the [candidate contract](../tests/reports/rows/ACE16_DELETE_PREVIEWS.md) and
+[original-file replay](../tests/results/rows/ace16-delete-originals-2026-10-26.json).
 This adds physical deletion machinery, not ordinary ACE saves, SQL DELETE,
 allocation, data-macro qualification or native Access save/reopen evidence.
 
@@ -6733,8 +6733,8 @@ query compilation and scoped formatting pass. A frozen committed CLI matches all
 150 original-getter controls across ACE 2007 and both ACE 16-family fixtures:
 1,158 rows and 3,486 cells, with unchanged inputs. See the
 [contract and query checks](query/collections/MULTIVALUE_QUERIES.md#retained-members-of-named-and-derived-lists),
-[host checks](testing/results/derived-multivalue-host-2026-10-26.json) and
-[original replay](testing/results/derived-multivalue-originals-2026-10-26.json).
+[host checks](../tests/results/general/derived-multivalue-host-2026-10-26.json) and
+[original replay](../tests/results/general/derived-multivalue-originals-2026-10-26.json).
 Ordinary scalar/progressive APIs retain their pre-scan refusal for retained-list
 plans. These engineering checks do not qualify native Access alias lineage or
 complete P0 value/text semantics.
@@ -6753,7 +6753,7 @@ lint, minimal compilation and formatting. The frozen committed CLI matches all
 18 original-file controls: 50,004 result rows and 130,000 Binary-field comparisons,
 including complete counts, ordering, hidden keys, all twelve Binary payloads,
 row-cap refusals and empty stdout on output failure. See
-[scope and evidence](testing/LARGE_INDEX_SELECTIONS.md). These independent
+[scope and evidence](../tests/reports/indexes/LARGE_INDEX_SELECTIONS.md). These independent
 getter/model checks do not establish native Access save or shared-file behavior.
 
 ## Selected index reads over large native allocation maps
@@ -6771,7 +6771,7 @@ scoped lint, minimal compilation and formatting. A frozen committed CLI matches
 required/automatic selections and Binary payload digests. Sequential controls
 still succeed; that earlier replay records the complete-read ceiling before
 the explicit-request extension. See the
-[scope and replay](testing/LARGE_INDEX_SELECTIONS.md). These independent checks
+[scope and replay](../tests/reports/indexes/LARGE_INDEX_SELECTIONS.md). These independent checks
 do not establish native Access or shared-file compatibility.
 
 ## Complete lists beside displayed children
@@ -6785,8 +6785,8 @@ Static named/derived layers, nested joins, outer absence, scalar ordering and TO
 use the same buffered query service. Ordinary scalar join execution is unchanged.
 
 See the [query contract](query/collections/MULTIVALUE_QUERIES.md),
-[query verification](testing/results/read-query-mixed-multivalue-results-2026-10-26.json)
-and [host verification](testing/results/mixed-multivalue-results-host-2026-10-26.json).
+[query verification](../tests/results/queries/read-query-mixed-multivalue-results-2026-10-26.json)
+and [host verification](../tests/results/general/mixed-multivalue-results-host-2026-10-26.json).
 Native Microsoft Access SQL equivalence remains unqualified. Whole-list UNION,
 DISTINCT, sorting/grouping and aggregate operands retain their explicit refusal.
 
@@ -6794,7 +6794,7 @@ The focused checks pass 248 query functions and 41 native/CLI functions, includi
 22 new functions in total. Strict scoped lint, the minimal query build and
 formatting pass. Separate tests retain exact IEEE bits through mixed results and
 propagate child/list outputs through fifty named definitions on a 1 MiB stack.
-The [original-file replay](testing/MIXED_MULTIVALUE_RESULTS.md) matches 108 controls,
+The [original-file replay](../tests/reports/general/MIXED_MULTIVALUE_RESULTS.md) matches 108 controls,
 including 1,008 successful rows, 3,204 cells and 30 errors/refusals. These are
 independent stored-data checks, not native Access SQL qualification.
 
@@ -6811,7 +6811,7 @@ The CLI displays absent parents as `NULL`, present empty lists as `[]` and prese
 one-NULL lists as `[NULL]`. These are explicit TableCraft result/display contracts;
 native Microsoft Access output equivalence remains unqualified. See the
 [query contract](query/collections/MULTIVALUE_QUERIES.md) and
-[query verification](testing/results/read-query-typed-multivalue-outer-joins-2026-10-26.json).
+[query verification](../tests/results/queries/read-query-typed-multivalue-outer-joins-2026-10-26.json).
 Whole-list UNION remains refused pending its separate admission qualification.
 Mixed whole-list/displayed-member results now use the service described above.
 Scalar `.Value` grouping, ordering and
@@ -6824,8 +6824,8 @@ The focused query checks pass 254 distinct tests, including twelve new tests;
 29 native/CLI tests pass, including ten new tests. Strict query/selected-host
 lint, the minimal query build and formatting pass. The final named-presence
 control checks LEFT/RIGHT absence, empty and nonempty containers while retaining
-complete projected lists. See [host verification](testing/results/typed-multivalue-outer-host-2026-10-26.json).
-The [original-file outer replay](testing/TYPED_MULTIVALUE_OUTER_JOINS.md) matches
+complete projected lists. See [host verification](../tests/results/general/typed-multivalue-outer-host-2026-10-26.json).
+The [original-file outer replay](../tests/reports/general/TYPED_MULTIVALUE_OUTER_JOINS.md) matches
 84 controls from the frozen committed CLI: 264 successful rows and 1,056 cells,
 plus 24 errors/refusals. This independent stored-value evidence does not qualify
 native Microsoft Access SQL behavior.
@@ -6847,15 +6847,15 @@ strict query lint and a standalone minimal build. Four isolated depth tests pass
 on a 1 MiB stack. A newly exposed preparation overflow was fixed by separating
 recursive join traversal from post-child construction; plain fifty-level named
 queries retain their existing support. See the [query contract](query/collections/MULTIVALUE_QUERIES.md)
-and [scoped verification](testing/results/read-query-typed-multivalue-joins-2026-10-26.json).
+and [scoped verification](../tests/results/queries/read-query-typed-multivalue-joins-2026-10-26.json).
 These checks do not establish native Microsoft Access query equivalence or finish
 the read/query roadmap.
 
 Eight native-adapter and three CLI integration tests pass, with selected strict
 lint. The frozen committed CLI also matches 72 controls over three unchanged
 native databases and their registered getter transcripts: 198 successful rows,
-780 cells and 24 expected errors/refusals. See [host verification](testing/results/typed-multivalue-join-host-2026-10-26.json)
-and the [independent parent-pair replay](testing/TYPED_MULTIVALUE_JOINS.md).
+780 cells and 24 expected errors/refusals. See [host verification](../tests/results/general/typed-multivalue-join-host-2026-10-26.json)
+and the [independent parent-pair replay](../tests/reports/general/TYPED_MULTIVALUE_JOINS.md).
 
 ## Typed multivalue query results
 
@@ -6875,9 +6875,9 @@ typed admission; collection scans require successful admission.
 
 See [the query contract](query/collections/MULTIVALUE_QUERIES.md),
 [CLI presentation](access/queries/NATIVE_QUERIES.md#explicit-multivalue-queries),
-[query verification](testing/results/read-query-multivalue-results-2026-10-25.json),
-[native adapter verification](testing/results/bare-multivalue-native-conformance-2026-10-25.json)
-and [CLI verification](testing/results/read-query-multivalue-cli-2026-10-25.json).
+[query verification](../tests/results/queries/read-query-multivalue-results-2026-10-25.json),
+[native adapter verification](../tests/results/general/bare-multivalue-native-conformance-2026-10-25.json)
+and [CLI verification](../tests/results/queries/read-query-multivalue-cli-2026-10-25.json).
 These bounded services do not complete the read/query roadmap or establish
 native Microsoft Access display, ordering or query equivalence.
 
@@ -6891,7 +6891,7 @@ interior and forward empty spans retain their explicit provider contract.
 Five new tests and 35 selected search regressions pass, with strict lint,
 formatting and a standalone minimal build. A before-fix probe records three real
 failures. See [the search contract](expressions/text/STRING_SEARCH.md) and
-[verification](testing/results/read-query-reverse-search-bounds-2026-10-25.json).
+[verification](../tests/results/queries/read-query-reverse-search-bounds-2026-10-25.json).
 This fixes callback validation without qualifying native locale behavior.
 
 ## LIKE pattern error timing
@@ -6906,7 +6906,7 @@ Ten new tests and 209 selected regressions pass across matcher, evaluator, query
 and CLI layers, with strict lint, formatting and standalone minimal checks. Eager
 operand errors, NULL handling and cumulative resource limits remain explicit. See
 [pattern error timing](expressions/text/PATTERN_MATCHING.md#pattern-error-timing) and
-[verification](testing/results/read-query-like-timing-2026-10-25.json).
+[verification](../tests/results/queries/read-query-like-timing-2026-10-25.json).
 
 ## Complete physical membership checks for ignore-NULL indexes
 
@@ -6920,7 +6920,7 @@ Fifteen new tests and 198 selected regressions pass, along with strict lint and
 minimal-feature checks. Complete-table constructors, public seek limits and
 mutation gates retain their existing boundaries. See
 [the check contract](access/NATIVE_CHECKS.md) and
-[verification](testing/results/read-query-ignored-index-coverage-2026-10-25.json).
+[verification](../tests/results/queries/read-query-ignored-index-coverage-2026-10-25.json).
 
 ## NULL literal Variant provenance
 
@@ -6935,7 +6935,7 @@ Eight new tests and 115 selected regressions pass, including empty metadata,
 named/crosstab/progressive execution, checked limits, cancellation and plan reuse.
 Strict query lint and standalone minimal checks pass. See
 [the category contract](expressions/numeric/DECLARED_ARITHMETIC.md#null-literal-provenance) and
-[verification](testing/results/read-query-null-literal-2026-10-25.json).
+[verification](../tests/results/queries/read-query-null-literal-2026-10-25.json).
 
 ## LIKE scalar operand coercion
 
@@ -6949,12 +6949,12 @@ comparison profiles govern the operation.
 Thirteen new tests and 196 selected regressions pass across expression, matcher,
 query and CLI layers, with strict lint and minimal feature checks. See
 [the operator contract](expressions/text/PATTERN_MATCHING.md) and
-[verification](testing/results/read-query-like-coercion-2026-10-25.json).
+[verification](../tests/results/queries/read-query-like-coercion-2026-10-25.json).
 Native locale/pattern qualification remains separate from this coercion branch.
 
 ## Independent original-file DISTINCT replay
 
-The [184-control replay](testing/PROGRESSIVE_DISTINCT.md) passes against four
+The [184-control replay](../tests/reports/general/PROGRESSIVE_DISTINCT.md) passes against four
 unchanged priority-family originals. Independent getter-derived models check
 10,432 rows and 18,208 cells across buffered/progressive execution, both arithmetic
 profiles and three stream batch sizes. Controls cover first-encounter tuples,
@@ -6977,7 +6977,7 @@ Twelve new query tests, three new CLI tests and 266 selected regressions pass
 across the complete progressive lifecycle batch and CLI streaming target.
 Focused strict lint and repository formatting pass; independent review found no
 blocker. See [the contract](cli/STREAMING_QUERIES.md) and
-[verification](testing/results/read-query-progressive-distinct-2026-10-25.json).
+[verification](../tests/results/queries/read-query-progressive-distinct-2026-10-25.json).
 Text/float/date/GUID/Binary/Dynamic output profiles, inner DISTINCT and DISTINCTROW
 remain outside this progressive profile. Buffered execution retains its own scope.
 
@@ -6994,8 +6994,8 @@ Nine new tests and fifty-eight selected regressions pass, including adjacent
 integers above 2^53, scaled Currency extrema, nodes, aliases, constraints,
 cancellation and unchanged mutation blockers. Strict engine/adapter lint and
 minimal adapter compilation also pass. See [the index profile](access/indexes/NATIVE_INDEXES.md#single-integer-and-currency-ignore-null-selections)
-and [verification](testing/results/read-query-ignored-null-wide-2026-10-25.json).
-An independent [96-control original-file replay](testing/IGNORED_NULL_WIDE_INDEXES.md)
+and [verification](../tests/results/queries/read-query-ignored-null-wide-2026-10-25.json).
+An independent [96-control original-file replay](../tests/reports/indexes/IGNORED_NULL_WIDE_INDEXES.md)
 also passes: 78 successes compare 3,924 returned IDs and eighteen expected
 refusals retain empty stdout. Six tables, twenty artifacts and six native source
 snapshots remain unchanged. Native Access qualification is not implied.
@@ -7014,13 +7014,13 @@ Nineteen new tests and 145 selected regressions pass, including depth-fifty
 execution, staged domain limits, metadata-only preparation and failure recovery.
 Strict lint, minimal query compilation and repository formatting pass. See
 [the contract](query/QUERY_BINDING_LIMITS.md#composed-interpreter-nesting) and
-[verification](testing/results/read-query-named-depth-2026-10-25.json).
+[verification](../tests/results/queries/read-query-named-depth-2026-10-25.json).
 These are recorded engineering limits and local stack probes, not complete
 native Access or cross-platform qualification.
 
 ## Independent ignore-NULL index replay
 
-The [original database replay](testing/IGNORED_NULL_INDEXES.md) passes 64 CLI
+The [original database replay](../tests/reports/indexes/IGNORED_NULL_INDEXES.md) passes 64 CLI
 controls over unchanged Jet 4/ACE 2007/ACE 2016/ACE 2019 inputs. Independent row
 and index-cursor getters check 3,468 returned IDs, including node trees, ascending
 and descending keys, shared aliases, unique indexes and automatic table order.
@@ -7039,7 +7039,7 @@ multisections retain explicit refusals. Eager controls, cancellation and cumulat
 work/output limits remain active. See [the bounded profile](expressions/formatting/DATE_FORMAT_MASKS.md#numeric-serial-sections-with-literal-alternatives).
 
 Six new tests and twenty-nine selected regressions pass, with strict lint and
-minimal expression checks. [Verification](testing/results/format-serial-sections-2026-10-25.json)
+minimal expression checks. [Verification](../tests/results/reading/format-serial-sections-2026-10-25.json)
 does not establish native Access multisection behavior.
 
 ## Ignore-NULL Int32 index reads and checks
@@ -7054,7 +7054,7 @@ gate explicitly preserves its earlier refusal, including no-op previews.
 Eleven new tests and fifty-four selected regressions pass across engine and
 adapter checks, with strict lint and minimal adapter verification. See
 [index scope](access/indexes/NATIVE_INDEXES.md#single-integer-and-currency-ignore-null-selections) and the
-[verification record](testing/results/read-query-ignored-null-int32-2026-10-25.json).
+[verification record](../tests/results/queries/read-query-ignored-null-int32-2026-10-25.json).
 That initial Int32 slice did not qualify other ignore-NULL carriers, native
 Access behavior or broader write support.
 
@@ -7068,7 +7068,7 @@ existing boundaries. See [the date contract](expressions/dates/DATE_INTERVALS.md
 
 Six new expression/query tests and fifteen selected regressions pass; focused
 lint and standalone minimal expression checks also pass. The
-[verification record](testing/results/date-add-lower-bound-2026-10-25.json)
+[verification record](../tests/results/general/date-add-lower-bound-2026-10-25.json)
 distinguishes these checks from native Access error-precedence qualification.
 
 ## Independent native GUID inspection replay
@@ -7094,7 +7094,7 @@ retain their existing explicit behavior.
 Two expression, four query and one CLI focused tests cover wrappers, typed
 parameters, domains/groups, streaming, retained carriers, eager errors and
 cancellation. See [the contract](expressions/VALUE_INSPECTION.md#stored-guid-inspection-and-fixed-bounds)
-and [verification](testing/results/guid-inspection-2026-10-25.json).
+and [verification](../tests/results/general/guid-inspection-2026-10-25.json).
 Microsoft's Byte-array contract grounds the engineering mapping; exact native
 subtypes/bounds/error behavior and full P0 remain unqualified.
 
@@ -7123,7 +7123,7 @@ widths, ordering and unrelated Binary comparisons retain explicit refusals.
 Four expression, five query and CLI controls cover independent byte goldens and
 generated reversal/bit-flips, NULL, budgets, eager failures, parameter reuse,
 strict keys, streaming and cancellation. See [the contract](expressions/GUID_CONVERSIONS.md#guid-structure-predicate-equality)
-and [verification](testing/results/guid-byte-predicates-2026-10-25.json).
+and [verification](../tests/results/general/guid-byte-predicates-2026-10-25.json).
 This is a bounded engineering coercion rule grounded in Microsoft's Byte-array
 contract, not native Access comparison evidence or full P0 completion.
 
@@ -7135,7 +7135,7 @@ Current and pre-fix executables run both arithmetic modes and both UNION arm ord
 Independent native getters plus Python integer/Fraction expectations check 576
 rows and 1,152 cells, including VarType. Twenty-four unknown-widening refusals
 retain empty stdout. Current declared conversions change as intended; materialized
-behavior remains unchanged. The [audited report](testing/results/agreement-native-replay-2026-10-25.json)
+behavior remains unchanged. The [audited report](../tests/results/general/agreement-native-replay-2026-10-25.json)
 rehashes twelve artifacts and five selected source snapshots; native Access SQL
 categories, conversion precedence and complete P0 remain unqualified.
 
@@ -7147,7 +7147,7 @@ already refuses widening; metadata now reflects that guarantee, allowing correct
 common-carrier UNION conversion through outer queries. Provenance remains unknown,
 known Variant widening remains Dynamic and ordinary materialized behavior is
 unchanged. See [the result contract](query/QUERY_RESULT_TYPES.md#successful-arithmetic-with-unknown-declaration-provenance)
-and [verification](testing/results/agreement-result-types-2026-10-25.json).
+and [verification](../tests/results/general/agreement-result-types-2026-10-25.json).
 
 Seven query and two CLI tests cover arithmetic/negation widths, NULL/empty outputs,
 UNION arm order, ambiguity, known Variant controls, progressive consumers and edge
@@ -7163,8 +7163,8 @@ All 141 identical-SQL default-depth controls refuse structurally with empty stdo
 Exact Fraction/IEEE models check 3,660 rows and 11,544 cells; four independent
 read-only getter transcripts supply native inputs. The audit verifies the unique
 command grid, paired SQL hashes, eleven immutable artifact pins and 66 selected
-committed/live source snapshots. See [reproduction and limits](testing/DEEPER_QUERIES.md)
-and the [report](testing/results/deeper-query-replay-2026-10-25.json).
+committed/live source snapshots. See [reproduction and limits](../tests/reports/queries/DEEPER_QUERIES.md)
+and the [report](../tests/results/queries/deeper-query-replay-2026-10-25.json).
 This qualifies bounded engineering composition, not native Access SQL semantics
 or the rest of read/query acceptance.
 
@@ -7182,7 +7182,7 @@ The focused query/CLI tests exercise compound grouping/UNION, named and derived
 sources, dynamic crosstabs, runtime domains, required text policies, progressive
 execution and refusals before scans. Selected existing regression suites pass.
 See [the binding contract](query/QUERY_BINDING_LIMITS.md) and
-[verification record](testing/results/query-binding-depth-2026-10-25.json).
+[verification record](../tests/results/queries/query-binding-depth-2026-10-25.json).
 This does not complete read/query acceptance or qualify native Access behavior.
 
 ## Exact fixed/binary relational keys
@@ -7203,9 +7203,9 @@ eager failures; strict scoped linting, minimal query, formatting and boundary
 checks pass. This is an engineering key profile; complete
 Variant/result promotion and native Access grouping remain unqualified. See the
 [contract](query/keys/NUMERIC_KEYS.md#exact-fixedbinary-numeric-cohorts) and
-[scoped verification](testing/results/fixed-binary-keys-2026-10-25.json).
+[scoped verification](../tests/results/indexes/fixed-binary-keys-2026-10-25.json).
 
-A separate [mixed-key replay](testing/FIXED_BINARY_KEYS.md) now passes 3,956
+A separate [mixed-key replay](../tests/reports/indexes/FIXED_BINARY_KEYS.md) now passes 3,956
 current queries over fifteen host VALUE cohorts and getter-derived fields from
 four unchanged Jet 4/ACE originals. The 333 baseline controls retain 275 former
 mixed-key refusals and 58 already-correct answers. Independent Fraction/IEEE
@@ -7232,9 +7232,9 @@ implemented ACE 2007 compatibility-header promotion; product behavior was retain
 Strict scoped Clippy, formatting and dependency-boundary checks pass. Native
 Access save/reopen remains unrun; this does not authorize normal encrypted edits
 or establish live-file coherence. See the [encryption contract](access/storage/NATIVE_ENCRYPTION.md)
-and [scoped verification](testing/results/encryption-page-copies-2026-10-25.json).
+and [scoped verification](../tests/results/encryption/encryption-page-copies-2026-10-25.json).
 
-A separate [92-command large-file replay](testing/LARGE_ENCRYPTION.md) now passes
+A separate [92-command large-file replay](../tests/reports/encryption/LARGE_ENCRYPTION.md) now passes
 on both original V2016/V2019 databases, each about 77 MiB. Independent getters,
 decoded SIDs, page digests and encryption-library removal agree; all eight
 recovered full images match their originals. CLI projections and getters each
@@ -7270,10 +7270,10 @@ marks, flag/locale errors, reuse, eager failures, quotas and cancellation. Stric
 linting, minimal features and formatting pass. Existing bounded mapping and native
 NLS/Access qualification gaps remain explicit. See the
 [working profile](expressions/text/STRCONV.md#combined-japanese-case-width-and-kana) and
-[verification](testing/results/strconv-japanese-combinations-2026-10-25.json).
+[verification](../tests/results/queries/strconv-japanese-combinations-2026-10-25.json).
 The initial independent replay passed 5,528 CLI commands with 16,436 compared
 cells and 176 expected buffered failures, retaining four originals and 28 source/
-tool/executable pins. The [expanded replay](testing/STRCONV_COMBINATIONS_REPLAY.md)
+tool/executable pins. The [expanded replay](../tests/reports/queries/STRCONV_COMBINATIONS_REPLAY.md)
 above includes the later Japanese word-boundary behavior.
 
 ## Declared numeric/String baseline coverage
@@ -7298,7 +7298,7 @@ opt-in automatic selection. Safe same-field bounds and NULL tests preserve the
 full original filter, raw bits, eager errors, source-order rules and cache/limit
 boundaries. Twelve new tests and 94 regressions pass across query, native adapter
 and CLI targets; strict linting, minimal-feature checks and formatting pass.
-The [original-file replay](testing/DATE_QUERY_CANDIDATE_REPLAY.md) now passes
+The [original-file replay](../tests/reports/queries/DATE_QUERY_CANDIDATE_REPLAY.md) now passes
 192 controls over four 20,000-row inputs, comparing 539,848 ID rows with exact
 rational date predicates and independent physical order. Default-limit selections,
 wide-candidate/cache refusals and buffered corrupt-root errors pass; all original
@@ -7326,7 +7326,7 @@ reference queries retain explicit execution errors. Originals, copies and ten
 immutable pins remain unchanged. The observations support retaining the current
 64-bit count/sum profile but expose independent average/metadata differences;
 no production numeric behavior or native qualification claim follows. See the
-[artifact review and observations](testing/JDBC_AGGREGATE_METADATA.md).
+[artifact review and observations](../tests/reports/queries/JDBC_AGGREGATE_METADATA.md).
 
 ## Stateful progressive query stages
 
@@ -7340,8 +7340,8 @@ Thirty new controls and 672 regressions pass across query, native and CLI layers
 including saved definitions and physical EOF failures. Strict query/host linting,
 minimal query features and formatting pass. See the
 [contract](query/PROGRESSIVE_QUERIES.md#stateful-retained-stages) and
-[scoped verification](testing/results/read-query-progressive-stateful-stages-2026-10-25.json).
-The [original-file replay](testing/PROGRESSIVE_STATEFUL_STAGES.md) now passes all
+[scoped verification](../tests/results/queries/read-query-progressive-stateful-stages-2026-10-25.json).
+The [original-file replay](../tests/reports/general/PROGRESSIVE_STATEFUL_STAGES.md) now passes all
 96 commands, comparing 96 successful rows/480 cells and six exact earlier
 error-prefix rows separately. Fifteen immutable and fifty committed-source hashes
 were independently rechecked. Native Access qualification remains separate.
@@ -7353,7 +7353,7 @@ full index traversals with every key field projected. This avoids repeated
 non-key Memo/OLE decoding while preserving root coverage, full schema identity
 and original-position constraint checks. Four new tests and 43 regressions pass;
 counted LVAL visits match the sequential pass, and corrupt non-key payloads still
-fail. Strict engine linting passes. The [64-command original replay](testing/NATIVE_CHECK_PROJECTION_REPLAY.md)
+fail. Strict engine linting passes. The [64-command original replay](../tests/reports/reading/NATIVE_CHECK_PROJECTION_REPLAY.md)
 now retains identical complete reports while all sixteen optimized checks fit the
 unchanged default work allowance; twelve old nonempty checks require explicitly
 increased work. Twenty immutable hashes were independently rechecked. See
@@ -7369,7 +7369,7 @@ including sixteen explicit unsupported ignore-NULL index selections. Full checks
 use an explicit work allowance; the initial default-work refusals remain recorded.
 Thirty-seven input/tool/capture hashes were independently rechecked. These are
 read and storage observations, without a new deletion API or native Access
-qualification. See [evidence](testing/DELETE_STORAGE_OBSERVATIONS.md).
+qualification. See [evidence](../tests/reports/rows/DELETE_STORAGE_OBSERVATIONS.md).
 
 ## Explicit inspection work allowance
 
@@ -7379,7 +7379,7 @@ unchanged. This lets callers budget full long-payload/index checks without chang
 which profiles qualify. Sixteen CLI checks pass, including one new control for
 work exhaustion, independent byte exhaustion, range rejection, unchanged complete
 output and original bytes. Strict CLI linting and formatting pass. See the
-[verification record](testing/results/inspect-native-work-2026-10-25.json).
+[verification record](../tests/results/general/inspect-native-work-2026-10-25.json).
 
 ## Progressive aggregate lifecycle extraction
 
@@ -7393,7 +7393,7 @@ Two new receiver controls and 632 existing query/native/CLI regressions pass,
 with strict query/host linting, minimal query features and formatting.
 An initial host build exhausted disk before tests; the identical command passed
 after removing old generated incremental caches. See the
-[scoped verification record](testing/results/read-query-progressive-lifecycle-2026-10-25.json).
+[scoped verification record](../tests/results/queries/read-query-progressive-lifecycle-2026-10-25.json).
 
 ## Progressive Text grouping
 
@@ -7406,8 +7406,8 @@ can require quadratic comparison work. Twenty-seven new controls and 605
 regressions pass, including the original example under stored database policies
 with snapshot ceiling one. Strict query/native/CLI linting, minimal query features
 and formatting pass. See [phases and limits](query/PROGRESSIVE_QUERIES.md) and
-[verification](testing/results/read-query-progressive-text-groups-2026-10-25.json).
-The [original native/CAB replay](testing/PROGRESSIVE_TEXT_GROUPS.md) passes all
+[verification](../tests/results/queries/read-query-progressive-text-groups-2026-10-25.json).
+The [original native/CAB replay](../tests/reports/general/PROGRESSIVE_TEXT_GROUPS.md) passes all
 96 commands, comparing 1,272 successful rows/4,296 cells plus six exact earlier
 error-prefix rows. Six rich Ordinal controls use an explicit work allowance after
 default-work refusals; SQL and expected results are unchanged. Fifteen immutable
@@ -7425,8 +7425,8 @@ Mixed carriers retain the original path. Twelve-thousand-row fixed-key controls
 fit finite work allowances. Twenty-four new controls and 427 regressions pass,
 with strict query/native/CLI linting, minimal query features and formatting.
 See [proof and fallback](query/keys/EXACT_QUERY_KEYS.md) and
-[verification](testing/results/read-query-exact-fixed-keys-2026-10-25.json).
-The [original native/CAB replay](testing/EXACT_FIXED_KEYS.md) passes 90 controls,
+[verification](../tests/results/queries/read-query-exact-fixed-keys-2026-10-25.json).
+The [original native/CAB replay](../tests/reports/indexes/EXACT_FIXED_KEYS.md) passes 90 controls,
 including 84 new-query successes comparing 14,088 rows and 41,802 cells. The old
 1,100-key Decimal grouping needs increased work; the new path fits default work.
 Sixteen immutable and seventy-one revision-source hashes were independently
@@ -7442,8 +7442,8 @@ avoid those rows, including the 100,001-input control under an 8 KiB query budge
 TOP counts accepted groups while preserving later accepted groups' eager work.
 Twenty-three new controls and 531 regressions pass with strict query/native/CLI
 linting, minimal query features and formatting. See [semantics and limits](query/PROGRESSIVE_QUERIES.md#terminal-having-and-deferred-selected-operands)
-and [verification](testing/results/read-query-progressive-having-2026-10-25.json).
-The [original native/CAB replay](testing/PROGRESSIVE_HAVING.md) passes all 96
+and [verification](../tests/results/queries/read-query-progressive-having-2026-10-25.json).
+The [original native/CAB replay](../tests/reports/queries/PROGRESSIVE_HAVING.md) passes all 96
 commands, comparing 336 successful rows and 696 cells plus six exact earlier
 error-prefix rows. Fifteen immutable and thirty-four revision-source hashes were
 independently checked. These engineering checks do not establish native Access
@@ -7471,8 +7471,8 @@ refuse before scans. The CLI supports eligible explicit saved queries, external
 targets and recomputed-column views with `--stream`; stored paths never open files.
 Forty new controls and 498 regressions pass, with strict query/native/CLI linting
 and the minimal query feature check. See [scope](query/PROGRESSIVE_QUERIES.md) and
-[verification](testing/results/read-query-progressive-derived-2026-10-25.json).
-The [original native/CAB replay](testing/PROGRESSIVE_DERIVED.md) also passes all
+[verification](../tests/results/queries/read-query-progressive-derived-2026-10-25.json).
+The [original native/CAB replay](../tests/reports/general/PROGRESSIVE_DERIVED.md) also passes all
 96 commands, comparing 420 rows and 1,410 cells. Fourteen immutable and thirty-one
 revision-source hashes were independently rechecked. These checks do not
 establish native Access execution compatibility.
@@ -7488,8 +7488,8 @@ case reduces to seventeen modeled groups; native controls exceed snapshot
 retention and retain EOF/error guarantees. Thirty new tests and 429 regressions
 pass with strict query/native/CLI linting, minimal query features and formatting.
 See [scope](query/PROGRESSIVE_QUERIES.md#progressive-grouped-aggregates) and
-[verification](testing/results/read-query-progressive-grouped-2026-10-25.json).
-The [original native/CAB replay](testing/PROGRESSIVE_GROUPED.md) also passes all
+[verification](../tests/results/queries/read-query-progressive-grouped-2026-10-25.json).
+The [original native/CAB replay](../tests/reports/general/PROGRESSIVE_GROUPED.md) also passes all
 96 commands, comparing 1,374 rows and 5,364 cells across six unchanged inputs.
 Thirteen immutable and twenty-five revision-source hashes were independently
 rechecked. Native Access grouping qualification remains separate.
@@ -7504,12 +7504,12 @@ The 1,100-row native/CLI controls fit default query work, while 12,000-key query
 controls retain explicit finite budgets. Nineteen new controls and 123 regressions
 pass with strict linting, minimal query features and formatting. See
 [scope](query/QUERY_EQUIJOINS.md) and
-[verification](testing/results/read-query-directory-joins-2026-10-25.json).
-An [original six-input replay](testing/DIRECTORY_JOINS.md) passes 76 commands,
+[verification](../tests/results/queries/read-query-directory-joins-2026-10-25.json).
+An [original six-input replay](../tests/reports/general/DIRECTORY_JOINS.md) passes 76 commands,
 comparing 51,848 rows and 105,896 cells. Old default-work refusals and new successes
 are pinned separately; sixteen immutable and 37 revision-source hashes were
 independently rechecked.
-A [local whole-CLI benchmark](testing/DIRECTORY_JOIN_BENCHMARK.md) retains all 28
+A [local whole-CLI benchmark](../tests/reports/general/DIRECTORY_JOIN_BENCHMARK.md) retains all 28
 samples: these 1,100-row joins improve from 0.87–1.01 seconds to about 15 milliseconds
 with equal explicit allowances and exact results. This does not qualify release
 or arbitrary-workload performance.
@@ -7524,8 +7524,8 @@ tables and ordinary rows now accept explicit native byte allowances. Fifteen
 new controls and 41 regressions pass with strict Access/CLI linting and formatting.
 Encryption rewrite limits and signature verification remain separate. See
 [scope](access/containers/ACCDC_SPOOLED_READS.md) and
-[verification](testing/results/read-query-accdc-spooled-2026-10-25.json).
-The [original large deployment replay](testing/LARGE_DEPLOYMENT.md) passes 58
+[verification](../tests/results/queries/read-query-accdc-spooled-2026-10-25.json).
+The [original large deployment replay](../tests/reports/reading/LARGE_DEPLOYMENT.md) passes 58
 controls on two 77 MiB ACE 16 databases and their stored/MSZIP packages, including
 exact selected Memo digests and complete 1,100-row streams. Twelve immutable and
 fourteen revision-source hashes were independently rechecked.
@@ -7538,8 +7538,8 @@ refused. This is a documented engineering composition; native Access ordering
 remains unqualified. Five new controls and 46 regressions pass across expressions,
 queries and CLI, with strict linting and minimal expression compilation. See
 [scope](expressions/text/STRCONV.md#explicit-wide-then-hiragana-composition) and
-[verification](testing/results/read-query-wide-hiragana-2026-10-25.json).
-A separate [composition replay](testing/WIDE_HIRAGANA_COMPOSITION.md) passes
+[verification](../tests/results/queries/read-query-wide-hiragana-2026-10-25.json).
+A separate [composition replay](../tests/reports/general/WIDE_HIRAGANA_COMPOSITION.md) passes
 230 commands, including 616 successful cells and 24 intended refusals. Five
 immutable and fourteen revision-source hashes were independently rechecked.
 
@@ -7552,8 +7552,8 @@ Error consumers retain their ordinary semantics. This avoids complete native
 snapshots, while retained candidates remain independently budgeted. Twenty-three
 new controls and 315 regressions pass across query, native and CLI targets with
 strict Clippy and minimal query features. See [scope](query/PROGRESSIVE_QUERIES.md) and
-[verification](testing/results/read-query-progressive-extrema-2026-10-25.json).
-An [original native replay](testing/PROGRESSIVE_EXTREMA.md) also passes 364
+[verification](../tests/results/queries/read-query-progressive-extrema-2026-10-25.json).
+An [original native replay](../tests/reports/general/PROGRESSIVE_EXTREMA.md) also passes 364
 controls across four profiles, comparing 396 rows and 1,584 cells. Eleven
 immutable inputs and sixteen revision-source pins were independently rehashed.
 Native Access comparison remains separate.
@@ -7566,7 +7566,7 @@ Valid middle-dot/combining continuations and supplementary starts work; invalid
 Unicode-category approximations and malformed qualified names refuse. SQL/native
 name rules remain separate. Seven new controls and 59 template regressions pass
 with strict Access Clippy and formatting. See [scope](access/containers/ACCESS_TEMPLATE_DATA.md)
-and [verification](testing/results/read-query-template-xml-names-2026-10-25.json).
+and [verification](../tests/results/queries/read-query-template-xml-names-2026-10-25.json).
 
 ## Explicit Japanese string encoding
 
@@ -7578,8 +7578,8 @@ rules; single-byte Chr/Asc policies remain separate. Twelve new controls and
 features and formatting. This is the explicit WHATWG-based engineering profile,
 with documented Windows/mapping differences. See
 [scope](expressions/text/JAPANESE_STRING_ENCODING.md) and
-[verification](testing/results/read-query-japanese-string-encoding-2026-10-25.json).
-The separate [primary mapping replay](testing/JAPANESE_STRING_MAPPING.md) passes
+[verification](../tests/results/queries/read-query-japanese-string-encoding-2026-10-25.json).
+The separate [primary mapping replay](../tests/reports/storage/JAPANESE_STRING_MAPPING.md) passes
 2,172 CLI commands covering 17,314 mapping cases and 32,158 exact numeric cells.
 All five immutable and thirteen revision-source pins were independently rehashed;
 the excluded oversized-batch attempt remains documented.
@@ -7592,8 +7592,8 @@ refused across partial updates; options, defaults, display and navigation metada
 stay inert. Stored values are not replaced or rejected by option membership.
 Seven new controls and 52 template regressions pass with strict Access Clippy
 and formatting. See [scope](access/containers/ACCESS_TEMPLATE_LISTS.md) and
-[verification](testing/results/read-query-template-choice-2026-10-25.json).
-A separate [seven-template replay](testing/TEMPLATE_SCALAR_PROFILES.md) also checks
+[verification](../tests/results/queries/read-query-template-choice-2026-10-25.json).
+A separate [seven-template replay](../tests/reports/rows/TEMPLATE_SCALAR_PROFILES.md) also checks
 UTF-16, local named types and actual stored Choice/Text values: 14 modeled rows
 and 44 cells agree. Twelve immutable pins and thirty scoped revision-source hashes
 were independently rechecked. Native Access qualification remains separate.
@@ -7608,8 +7608,8 @@ and stale caches retain their separate routes. CLI `--recomputed-column` selects
 ordered view fields; every selected expression remains eager before outer filters.
 Twenty-one new controls and 89 regressions pass with strict native/CLI Clippy,
 formatting and dependency checks. See [scope](access/calculations/RECOMPUTED_CALCULATION_VIEWS.md)
-and [verification](testing/results/read-query-recomputed-views-2026-10-25.json).
-An [original two-profile replay](testing/RECOMPUTED_VIEWS.md) passes 80 independent
+and [verification](../tests/results/queries/read-query-recomputed-views-2026-10-25.json).
+An [original two-profile replay](../tests/reports/general/RECOMPUTED_VIEWS.md) passes 80 independent
 getter/model controls, comparing 212 rows and 460 cells. Twelve immutable and
 thirteen scoped compiled-source hashes were independently rechecked. Native
 Access formula qualification remains separate.
@@ -7623,7 +7623,7 @@ XML names, cycle checks and independent type/depth limits remain explicit.
 Existing value codecs and List Definition agreement retain authority. Eight new
 controls and 44 template regressions pass with strict Access Clippy and formatting.
 See [schema scope](access/containers/ACCESS_TEMPLATE_DATA.md) and
-[verification](testing/results/read-query-template-named-types-2026-10-25.json).
+[verification](../tests/results/queries/read-query-template-named-types-2026-10-25.json).
 
 ## Explicit linked-table streaming
 
@@ -7634,7 +7634,7 @@ publishing complete snapshot caches. CLI controls also cover encrypted targets,
 cached results and differing target/root text policies. Twelve new controls and
 68 regressions pass with strict native/CLI Clippy. See
 [streaming scope](cli/STREAMING_QUERIES.md#explicit-linked-tables) and
-[verification](testing/results/read-query-linked-progressive-2026-10-25.json).
+[verification](../tests/results/queries/read-query-linked-progressive-2026-10-25.json).
 
 ## Strict UTF-16 template XML
 
@@ -7645,7 +7645,7 @@ stops before the data suffix, including an immediately malformed suffix; complet
 row reads still validate it. Ten new controls and 39 regressions pass with strict
 Access Clippy. Package names and original bytes remain unchanged. See
 [template scope](access/containers/ACCESS_TEMPLATES.md) and
-[verification](testing/results/read-query-template-utf16-2026-10-25.json).
+[verification](../tests/results/queries/read-query-template-utf16-2026-10-25.json).
 
 ## Bounded exact-key grouping and sets
 
@@ -7657,8 +7657,8 @@ an unexpected runtime carrier disables the directory and scans all retained
 representatives. Twelve-thousand-row GROUP/DISTINCT controls fit finite work
 allowances without raising defaults. Eighteen new controls and 205 regressions
 pass with strict query Clippy and formatting. See [scope](query/keys/EXACT_QUERY_KEYS.md)
-and [verification](testing/results/read-query-exact-keys-2026-10-25.json).
-An [original four-profile replay](testing/NATIVE_EXACT_KEYS.md) separately passes
+and [verification](../tests/results/queries/read-query-exact-keys-2026-10-25.json).
+An [original four-profile replay](../tests/reports/indexes/NATIVE_EXACT_KEYS.md) separately passes
 76 getter/integer-model controls: 64 successful queries and twelve intended
 refusals, comparing 48,304 rows and 72,584 cells. Ten immutable and fourteen
 scoped compiled-source hashes were independently rechecked. Native Access
@@ -7674,8 +7674,8 @@ query allowance, and four native profiles pass tight-budget controls. Thirteen
 new controls and 113 regressions pass with strict query/native/CLI Clippy and
 formatting. This remains metered nested-loop execution. See
 [scope](query/QUERY_EQUIJOINS.md) and
-[verification](testing/results/read-query-borrowed-equijoins-2026-10-25.json).
-An [original four-profile replay](testing/NATIVE_EQUIJOINS.md) separately passes
+[verification](../tests/results/queries/read-query-borrowed-equijoins-2026-10-25.json).
+An [original four-profile replay](../tests/reports/general/NATIVE_EQUIJOINS.md) separately passes
 20 getter/integer-model controls, comparing 16,012 rows and 32,024 cells. All
 nine immutable pins and twelve scoped compiled-source hashes were independently
 rechecked. This does not establish native Access SQL equivalence.
@@ -7688,7 +7688,7 @@ policy to the rendered number. Actual String and NULL policies, empty-arm fallba
 and written-prefix DISTINCT stages retain their existing authority. Eight new
 controls and 133 regressions pass with strict query/CLI Clippy and formatting.
 See [policy scope](query/RUNTIME_TEXT_POLICIES.md#numeric-union-rendering) and
-[verification](testing/results/read-query-union-numeric-policy-2026-10-25.json).
+[verification](../tests/results/queries/read-query-union-numeric-policy-2026-10-25.json).
 
 ## Progressive global Sum and Avg
 
@@ -7700,8 +7700,8 @@ Concurrent states have independent scratch charges, and operand/finalization
 error phases remain explicit. Twenty-four new controls and 213 regressions pass
 with strict query/native/CLI Clippy and formatting. See
 [scope](query/PROGRESSIVE_QUERIES.md#global-sum-and-avg) and
-[verification](testing/results/read-query-progressive-numeric-aggregates-2026-10-25.json).
-A separate [original four-profile replay](testing/PROGRESSIVE_NUMERIC_AGGREGATES.md)
+[verification](../tests/results/queries/read-query-progressive-numeric-aggregates-2026-10-25.json).
+A separate [original four-profile replay](../tests/reports/queries/PROGRESSIVE_NUMERIC_AGGREGATES.md)
 passes 244 getter/Fraction controls, comparing 228 rows and 996 cells. All ten
 immutable and twenty-six scoped compiled-source hashes were independently rechecked.
 Native Access qualification remains separate.
@@ -7715,7 +7715,7 @@ validation; ordinary-only and zero-column projections prune cached payloads.
 No scan fills a complete snapshot cache. Nine native and three CLI controls plus
 65 related regressions pass with strict Clippy and formatting. See
 [cached streams](cli/STREAMING_QUERIES.md#explicit-stored-calculations) and
-[verification](testing/results/read-query-progressive-stored-calculations-2026-10-25.json).
+[verification](../tests/results/queries/read-query-progressive-stored-calculations-2026-10-25.json).
 
 ## Declared mixed-plus result types
 
@@ -7726,7 +7726,7 @@ explicit String operation. Variant String/numeric uses existing numeric carrier
 guarantees; Date, unknown declarations and default mixed-plus metadata retain
 conservative behavior. Five new tests and 151 regressions pass with strict query
 Clippy. See [descriptor scope](expressions/numeric/DECLARED_ARITHMETIC.md#mixed-plus-result-descriptors)
-and [verification](testing/results/read-query-declared-addition-types-2026-10-25.json).
+and [verification](../tests/results/queries/read-query-declared-addition-types-2026-10-25.json).
 
 ## Progressive Count operands
 
@@ -7740,7 +7740,7 @@ buffered aggregate-major evaluation order; final scalar expressions still run
 after EOF. A scoped batch passes 169 query/native/CLI tests, including 23 new
 controls, with strict Clippy and formatting. See
 [progressive counts](query/PROGRESSIVE_QUERIES.md#global-count) and the
-[verification record](testing/results/read-query-progressive-count-operands-2026-10-25.json).
+[verification record](../tests/results/queries/read-query-progressive-count-operands-2026-10-25.json).
 
 ## Progressive exact global counts
 
@@ -7752,8 +7752,8 @@ The focused batch passes 138 query/native/CLI tests and strict Clippy. A generat
 100,001-row input completes within an 8 KiB query allocation allowance; native
 four-profile tests exceed snapshot retention caps without filling a complete cache.
 See [count scope](query/PROGRESSIVE_QUERIES.md#global-count) and
-[verification record](testing/results/read-query-progressive-count-2026-10-25.json).
-An [original four-profile CLI replay](testing/PROGRESSIVE_COUNTS.md) also passes
+[verification record](../tests/results/queries/read-query-progressive-count-2026-10-25.json).
+An [original four-profile CLI replay](../tests/reports/general/PROGRESSIVE_COUNTS.md) also passes
 132 getter-modeled controls, with ten unchanged immutable pins and eleven scoped
 compiled-archive hashes verified separately. That replay covers Count(*) only;
 Count(expr) has the separate focused verification above. Other aggregates and
@@ -7767,7 +7767,7 @@ ungrouped capture; streaming retains partial-row values, cumulative budgets and
 full EOF checks after TOP. Immutable supplied CurrentUser context is reusable
 without callbacks. Sixteen new tests and 164 related controls pass with strict
 query and CLI Clippy. See [alias execution](query/PROJECTION_ALIASES.md#grouped-and-progressive-execution)
-and [verification record](testing/results/read-query-projection-alias-execution-2026-10-25.json).
+and [verification record](../tests/results/queries/read-query-projection-alias-execution-2026-10-25.json).
 Crosstab dependencies and native alias qualification remain separate work.
 
 ## Exact Decimal index selections
@@ -7780,10 +7780,10 @@ selected-error propagation and incomplete-cache isolation remain active. Eleven
 new tests and 73 related regressions pass with strict engine/query/Access Clippy,
 including eight existing Decimal mutation-preview controls. See
 [selection scope](access/indexes/NATIVE_INDEXES.md#exact-decimal-equality-and-null-selections) and
-[verification record](testing/results/read-query-decimal-selections-2026-10-25.json).
+[verification record](../tests/results/queries/read-query-decimal-selections-2026-10-25.json).
 A fixed-CLI original four-profile replay also passes 788 controls and compares
 38,772 returned IDs against exact getter-derived Fractions; all nineteen pins
-remain unchanged. See [independent evidence](testing/DECIMAL_INDEX_SELECTIONS.md).
+remain unchanged. See [independent evidence](../tests/reports/indexes/DECIMAL_INDEX_SELECTIONS.md).
 Actual Access query/optimizer qualification remains unrun.
 
 ## Prior calculated projection aliases
@@ -7794,7 +7794,7 @@ with paired arithmetic metadata, raw Strings and runtime policies. Lexical read
 scopes prevent nested capture; eager failures and cumulative limits remain active.
 Nineteen new query/CLI tests and 241 related regressions pass with strict query
 and CLI Clippy. See [alias scope](query/PROJECTION_ALIASES.md) and
-[verification record](testing/results/read-query-projection-aliases-2026-10-25.json).
+[verification record](../tests/results/queries/read-query-projection-aliases-2026-10-25.json).
 Crosstab dependencies and wider native alias semantics remain unfinished.
 
 ## Boolean index equality selections
@@ -7805,12 +7805,12 @@ retain the original filter and return sequential table order. Unsafe conjunction
 coercions, ranges and NULL predicates receive no new hint; selected malformed
 indexes fail explicitly. Ten engine, fifty-six retrieval and three Access adapter
 tests pass with scoped strict Clippy. See [index scope](access/indexes/NATIVE_INDEXES.md) and
-[verification record](testing/results/read-query-boolean-selections-2026-10-25.json).
+[verification record](../tests/results/queries/read-query-boolean-selections-2026-10-25.json).
 An original ACE 2016/2019 fixture replay passes 22 CLI controls and compares
 8,000 IDs against raw independent getters, including selective native budgets
 and six buffered refusals. All fourteen scoped pins remain unchanged; the fixed
 CLI source inventory matches committed archive `67ef6925`. See
-[the replay](testing/BOOLEAN_INDEX_SELECTIONS.md). Native Access comparisons
+[the replay](../tests/reports/indexes/BOOLEAN_INDEX_SELECTIONS.md). Native Access comparisons
 remain unrun.
 
 ## Policy-free constant String pivot headings
@@ -7823,7 +7823,7 @@ locale, code-page and source-dependent expressions retain their execution bounda
 Fourteen unit and sixty-four related crosstab tests pass with strict query Clippy,
 including shared work debit on failure and cancellation checks. See
 [the heading contract](query/NAMED_CROSSTABS.md#policy-free-constant-string-headings) and
-[verification record](testing/results/read-query-constant-text-headings-2026-10-25.json).
+[verification record](../tests/results/queries/read-query-constant-text-headings-2026-10-25.json).
 Native Access heading spelling and broader composition remain unqualified.
 
 ## Additional explicit ICU host locales
@@ -7836,7 +7836,7 @@ inferred. Native General database comparison and SQL field-policy routing remain
 separate. Ten provider and eight CLI tests pass with scoped strict Clippy, covering
 locale tailoring, canonical UTF-16 offsets and exact per-run registration.
 See [the profile table](expressions/text/ICU_TEXT_PROFILE.md#explicit-host-locales) and
-[verification record](testing/results/read-query-icu-expanded-2026-10-25.json).
+[verification record](../tests/results/queries/read-query-icu-expanded-2026-10-25.json).
 A separate fixed-CLI replay passes 14,498 ICU4C controls across all nineteen
 profiles, including original UTF-16 spans and exact numeric host registrations.
 The executable's 1,914-file Rust source inventory matches committed archive
@@ -7851,7 +7851,7 @@ identity cast wraps such an expression. Default, Variant and unknown descriptors
 remain conservative; checked runtime overflow and coercion kernels are unchanged.
 Four new matrix tests and thirty-four related regressions pass with strict query
 Clippy. See [the result contract](query/QUERY_RESULT_TYPES.md) and
-[verification record](testing/results/read-query-declared-result-widths-2026-10-25.json).
+[verification record](../tests/results/queries/read-query-declared-result-widths-2026-10-25.json).
 Native Access subtype/overflow equivalence remains unqualified.
 
 ## Progressive UNION ALL
@@ -7867,13 +7867,13 @@ The composed slice passes 68 focused tests: 23 progressive query, nine independe
 type/schema controls, seventeen native-adapter and nineteen CLI tests. Query,
 Access and CLI scoped strict Clippy, formatting and the final CLI build pass.
 See [the execution contract](query/PROGRESSIVE_QUERIES.md#progressive-union-all) and
-[verification record](testing/results/read-query-progressive-union-2026-10-25.json).
+[verification record](../tests/results/queries/read-query-progressive-union-2026-10-25.json).
 This expands explicit streaming; distinct sets, sorts, groups, joins and named
 sources remain buffered. Native Access and shared-file qualification stay separate.
 
 ## Independent thirty-two-source replay
 
-The [four-profile original corpus](testing/SAVED_MANY_SOURCES.md) passes sixty CLI
+The [four-profile original corpus](../tests/reports/general/SAVED_MANY_SOURCES.md) passes sixty CLI
 commands and twenty getter-modeled cells: 48 successes and twelve intended boundary
 refusals. All seventeen scoped pins remain unchanged. The frozen executable's
 1,897-file Rust source inventory separately matches committed archive `4443cd37`.
@@ -7891,7 +7891,7 @@ Choice carriers and text-policy provenance remain unchanged. Fifty-three scoped
 tests, including eleven new controls, and strict expressions/query Clippy pass.
 The composed CLI batch also passes fourteen preview and thirty-six saved-definition
 tests. See [the control contract](expressions/CONDITIONAL_FUNCTIONS.md#retained-string-controls)
-and [verification record](testing/results/read-query-retained-selector-controls-2026-10-24.json).
+and [verification record](../tests/results/queries/read-query-retained-selector-controls-2026-10-24.json).
 Native Access error precedence and broader value semantics remain unqualified.
 
 ## Thirty-two saved source declarations
@@ -7902,7 +7902,7 @@ join-fragment ceiling. Four new adapter tests cover source bit 31, disconnected
 joins, 17/32-source execution, 33-source refusal and resource/cancellation limits.
 All 89 saved SELECT tests and strict scoped Clippy pass with the expanded query
 FROM allowance. See [the join contract](access/queries/NATIVE_SAVED_JOINS.md) and
-[verification record](testing/results/read-query-saved32-2026-10-24.json).
+[verification record](../tests/results/queries/read-query-saved32-2026-10-24.json).
 Native Access execution qualification remains separate.
 
 ## Thirty-two flat FROM items
@@ -7924,12 +7924,12 @@ returned NonScalarExpression for valid retained numeric inputs that materialized
 Text and SQL evaluation already accepted. Six new tests cover eight operators,
 operand order, active ranges, NULL/Empty/errors, exact numeric carriers, formatting,
 publication limits and cancellation. Thirty-seven existing arithmetic tests and
-strict scoped Clippy also pass; see [the verification record](testing/results/read-query-retained-operators-2026-10-24.json).
+strict scoped Clippy also pass; see [the verification record](../tests/results/queries/read-query-retained-operators-2026-10-24.json).
 This fixes API consistency without broadening native promotion or default SQL rules.
 
 ## Independent conditional calculation replay
 
-The [original replay](testing/CALCULATED_IIF.md) passes 86 controls and 160 modeled
+The [original replay](../tests/reports/general/CALCULATED_IIF.md) passes 86 controls and 160 modeled
 cells across V2016/V2019 inputs, with 66 recomputed values differing from raw caches
 and separate stored-cache preservation checks. All 1,906 pins remain unchanged;
 the 1,892-file Rust inventory exactly matches committed archive `11ccd44d`.
@@ -7950,7 +7950,7 @@ See [the preview contract](access/calculations/CALCULATION_PREVIEWS.md#determini
 
 ## Independent per-table external replay
 
-The [twelve-file replay](testing/PER_TABLE_EXTERNAL.md) passes 184 commands and
+The [twelve-file replay](../tests/reports/storage/PER_TABLE_EXTERNAL.md) passes 184 commands and
 260 getter-modeled cells across four priority profiles, including direct/saved/
 named references, local/remote joins, target ownership and exact opaque selectors.
 All 1,923 pins remain unchanged; the 1,890-file Rust inventory exactly matches
@@ -7958,7 +7958,7 @@ committed archive `cf7a501b`. The accepted run has 156 successes and 28 intended
 refusals, with zero disagreements. Original authoring and diagnostic-label
 corrections remain documented as separate excluded attempts.
 
-[The verification record](testing/results/read-query-per-table-external-2026-10-24.json)
+[The verification record](../tests/results/queries/read-query-per-table-external-2026-10-24.json)
 retains 270 unique Rust tests, scoped strict Clippy, minimal-feature checks and
 final CLI build evidence. Native Access precedence, broader provider/field
 qualification and complete read/query/backend acceptance remain unfinished.
@@ -7980,11 +7980,11 @@ Original twelve-file replay and native Access qualification remain separate.
 
 ## Independent calculated dependency replay
 
-The [original ACE 16-family replay](testing/CALCULATED_DEPENDENCIES.md) passes
+The [original ACE 16-family replay](../tests/reports/development/CALCULATED_DEPENDENCIES.md) passes
 50 commands and 170 modeled cells. All 80 recomputed values differ from deliberately
 stale raw caches, while separate cached queries preserve 90 cache/ID cells.
 All 1,899 pins remain unchanged; the 1,885-file source inventory exactly matches
-committed archive `39f35d04`. [The verification record](testing/results/read-query-calculated-dependencies-2026-10-24.json)
+committed archive `39f35d04`. [The verification record](../tests/results/queries/read-query-calculated-dependencies-2026-10-24.json)
 retains 57 focused Rust tests, strict Clippy, minimal-feature checks and final CLI
 build evidence. Native intermediate conversions, freshness and broader read/query
 acceptance remain unqualified.
@@ -8021,7 +8021,7 @@ the corrected result is `zFalse/aFalse`. One hundred collation tests and scoped
 strict Clippy pass, including encounter permutations, derived/named boundaries,
 once-only evaluation, NULL contributors, raw values, quotas and cancellation.
 Eleven related Error/Variant aggregate tests also pass.
-[The verification record](testing/results/read-query-extrema-complete-policy-2026-10-24.json)
+[The verification record](../tests/results/queries/read-query-extrema-complete-policy-2026-10-24.json)
 retains exact changed-file hashes and logs. See
 [the aggregate contract](query/aggregates/EXPRESSION_AGGREGATES.md#retained-string-extrema).
 This fixes the supplied-provider contract without choosing native Access
@@ -8029,11 +8029,11 @@ mixed-policy precedence or completing P0 semantics.
 
 ## Independent unordered TOP replay
 
-The [four-profile TOP replay](testing/PROGRESSIVE_TOP.md) passes 156 commands
+The [four-profile TOP replay](../tests/reports/general/PROGRESSIVE_TOP.md) passes 156 commands
 and 1,220,688 modeled cells, including previous buffered-binary parity, omitted
 raw-String publication and late errors/quotas after the output cap. All 1,900
 pins match accepted artifacts and committed source archive `88380c9b`.
-[The verification record](testing/results/read-query-progressive-top-2026-10-24.json)
+[The verification record](../tests/results/queries/read-query-progressive-top-2026-10-24.json)
 retains 88 unique Rust tests and scoped strict Clippy/build evidence. Wider
 streaming shapes, P0 semantics and native Access qualification remain unfinished.
 
@@ -8054,13 +8054,13 @@ large-input replay and native Access qualification remain separate.
 
 ## Independent native streaming replay
 
-The [original four-profile replay](testing/PROGRESSIVE_QUERIES.md) passes 88
+The [original four-profile replay](../tests/reports/queries/PROGRESSIVE_QUERIES.md) passes 88
 commands and 1,341,336 getter-modeled cells over 20,000 rows per database. Exact
 TSV cells, buffered parity, late-error prefixes and independent native/query/output
 quotas match. All 1,898 pinned hashes remain unchanged; the 1,879-file frozen
 Rust inventory exactly matches committed archive `3aadd736`.
 
-The [verification record](testing/results/read-query-progressive-2026-10-24.json)
+The [verification record](../tests/results/queries/read-query-progressive-2026-10-24.json)
 combines 172 unique passing Rust tests with scoped strict Clippy, minimal-feature
 checks and the final CLI build. This qualifies the documented engineering slice;
 wider streaming, native Access behavior and backend completion remain open.
@@ -8096,7 +8096,7 @@ qualification remains separate.
 
 ## Wide-variable Memo history replay
 
-The [original history replay](testing/VARIABLE_MEMO_HISTORIES.md) passes 16
+The [original history replay](../tests/reports/storage/VARIABLE_MEMO_HISTORIES.md) passes 16
 controls and 33,422 matched cells over two ACE 16-family originals with 255
 columns, nine interspersed Memo fields and retained older physical row shapes.
 Sequential and selected-index reads agree with read-only getters under explicit
@@ -8122,13 +8122,13 @@ and the wider backend roadmap remain unfinished.
 
 ## Independent array-bound declaration replay
 
-The [source-free replay](testing/ARRAY_BOUND_DECLARATIONS.md) passes 77 commands
+The [source-free replay](../tests/reports/general/ARRAY_BOUND_DECLARATIONS.md) passes 77 commands
 and all 1,867 unchanged hashes. It checks 123 modeled cells per binary, corrects
 six unknown-declaration diagnostics to Scalar Long overflow and retains 31 paired
 outcomes. Candidate controls include 17 successes and 23 classified refusals.
 No database or reference runtime is invoked.
 
-The [verification record](testing/results/read-query-array-bound-declarations-2026-10-24.json)
+The [verification record](../tests/results/queries/read-query-array-bound-declarations-2026-10-24.json)
 pins production base `3fbf14ea`, the complete 1,862-file Rust inventory and 19
 passing scoped Rust tests. Wider array behavior, native query typing and complete
 P0 semantics remain unfinished.
@@ -8151,14 +8151,14 @@ query subtype/overflow qualification and wider P0 semantics remain unfinished.
 
 ## Independent concatenation policy replay
 
-The [getter-backed replay](testing/CONCATENATION_POLICIES.md) passes 300 commands
+The [getter-backed replay](../tests/reports/general/CONCATENATION_POLICIES.md) passes 300 commands
 on four unchanged priority-format policy originals. It corrects 76 paired false
 collation-conflict refusals while retaining 60 other baseline outcomes. Candidate
 controls cover 112 successes and 52 classified refusals; all 1,882 pinned hashes
 remain unchanged. Expected ASCII identities come from ordinary getter values,
 not reference SQL or copied weight algorithms.
 
-The [verification record](testing/results/read-query-concatenation-policies-2026-10-24.json)
+The [verification record](../tests/results/queries/read-query-concatenation-policies-2026-10-24.json)
 pins production base `b6c6a9fc`, all 1,861 committed Rust files and 199 passing
 focused Rust tests. NULL-origin distinctions, native mixed-String precedence and
 full P0/read-query acceptance remain open.
@@ -8186,13 +8186,13 @@ or complete P0/read-query acceptance.
 
 ## Independent external named-source replay
 
-The [external named replay](testing/EXTERNAL_NAMED_QUERIES.md) passes 588 controls
+The [external named replay](../tests/reports/queries/EXTERNAL_NAMED_QUERIES.md) passes 588 controls
 and 1,368 getter-modeled cells across 12 original Jet 4/ACE 2007/ACE 16-family
 root/A/B files. All 1,902 hashes remain unchanged. Matching names/native IDs,
 parameters, UNION/crosstabs, lexical domains, closed Eval, explicit redirection
 and buffered refusals are covered. Original getters never execute SQL.
 
-The [verification record](testing/results/read-query-external-named-2026-10-24.json)
+The [verification record](../tests/results/queries/read-query-external-named-2026-10-24.json)
 pins production base `12b031c6`, all 1,857 committed Rust sources and 196 focused
 passing Rust tests. Native Access qualification, full P0 value/text behavior and
 read/query acceptance remain unfinished.
@@ -8216,14 +8216,14 @@ separately. Full P0 value/text semantics and read/query acceptance remain open.
 
 ## Independent Scalar String/Variant field replay
 
-The [Scalar String/Variant replay](testing/SCALAR_STRING_VARIANT_COMPARISONS.md)
+The [Scalar String/Variant replay](../tests/reports/rows/SCALAR_STRING_VARIANT_COMPARISONS.md)
 passes 224 CLI controls: 144 source-free and 80 native across original Jet 4,
 ACE 2007 and both ACE 16-family files. It checks 6,433 Boolean and 718 NULL values
 against explicit rendered goldens and complete ordinal Strings, including
 trailing spaces. All 1,869 pinned hashes remain unchanged, including every
 entry in the complete 1,849-file Rust inventory. Original getters never run SQL.
 
-The [verification record](testing/results/read-query-scalar-string-2026-10-24.json)
+The [verification record](../tests/results/queries/read-query-scalar-string-2026-10-24.json)
 pins production base `9d3e0b42`, 143 focused Rust tests and final logs. Four
 17-row originals exercise integer, Boolean, Currency and legacy Date peers,
 regional formatting, NULLs, six operators in both directions and native
@@ -8258,12 +8258,12 @@ inference, NLS or complete P0/read-query compatibility is established here.
 
 ## Independent Power operand/error replay
 
-The [Power replay](testing/POWER.md) passes 627 CLI commands, seven exact-model
+The [Power replay](../tests/reports/general/POWER.md) passes 627 CLI commands, seven exact-model
 goldens and all seven selected executable/source hashes unchanged. It covers
 390 zero-negative carrier combinations and 237 finite/error/NULL controls through
 both retrieval profiles and default scalar eval. Successful values retain Double
 carriers and modeled bits; refusals retain expected error classifications and
-empty stdout. The [verification record](testing/results/read-query-power-2026-10-24.json)
+empty stdout. The [verification record](../tests/results/queries/read-query-power-2026-10-24.json)
 pins production base `80750158`, the complete 1,843-file Rust inventory and
 22 focused tests. An initial runner probe used an unsupported scalar-eval option
 and mismatched diagnostic spelling; it remains excluded, with no production
@@ -8290,7 +8290,7 @@ broader value/text compatibility remain open.
 
 ## Independent native saved external-source replay
 
-The [saved external-source replay](testing/SAVED_EXTERNAL_QUERIES.md) passes
+The [saved external-source replay](../tests/reports/queries/SAVED_EXTERNAL_QUERIES.md) passes
 188 CLI controls over four original frontend/backend pairs: Jet 4, ACE 2007 and
 both ACE 16-family layouts. All 109 pinned hashes remain unchanged. Forty-eight
 raw inspections compare every stored fragment field; 48 reconstructions check
@@ -8301,7 +8301,7 @@ domain calls. Fifty-six classified refusals preserve buffered publication.
 Original getters independently retain absent/empty connections, empty/NULL paths
 and punctuation. The reference never executes SQL or resolves a target.
 
-The [verification record](testing/results/read-query-saved-external-2026-10-24.json)
+The [verification record](../tests/results/queries/read-query-saved-external-2026-10-24.json)
 pins production base `97a0ab35`, the complete 1,840-file Rust inventory and
 127 focused test results. It records scoped strict Clippy, minimal adapter
 checking, normal CLI building and format/dependency checks. Neither these tests
@@ -8334,7 +8334,7 @@ native Access saved-query execution or complete the read/query roadmap.
 
 ## Independent numeric key replay over stored floats
 
-The [exact numeric-key replay](testing/NUMERIC_KEYS.md) passes all 2,910 candidate
+The [exact numeric-key replay](../tests/reports/indexes/NUMERIC_KEYS.md) passes all 2,910 candidate
 controls, including 1,584 native CLI controls across four original Jet 4,
 ACE 2007 and ACE 16-family databases. Nine independent model goldens and all
 25 pinned hashes pass unchanged. Raw getter Float/Double bits feed exact Fraction
@@ -8346,7 +8346,7 @@ extrema and scalar/static-UNION controls also pass.
 The same current-model runner records 144 previous-CLI controls: 66 agree and
 78 differ. The older 720-command audit's 70 binary-family discrepancies remain
 separate from its diagnostic-wording and comparison-path classifications.
-[The verification record](testing/results/read-query-numeric-keys-2026-10-24.json)
+[The verification record](../tests/results/queries/read-query-numeric-keys-2026-10-24.json)
 pins production base `f9df858a`, the 1,837-file Rust source inventory and focused
 78-test logs. Depth/label-model probes remain excluded; no execution limit was
 raised. Original fixtures remain unchanged. This is engineering evidence, not
@@ -8377,7 +8377,7 @@ not qualification of native heterogeneous Variant grouping or completion of P0.
 
 ## Independent external IN read/query replay
 
-The [external-source getter replay](testing/EXTERNAL_NATIVE_QUERIES.md) passes
+The [external-source getter replay](../tests/reports/queries/EXTERNAL_NATIVE_QUERIES.md) passes
 350 engineering controls/2,154 modeled cells and 375 actual CLI controls/2,214
 modeled cells across Jet 4, ACE 2007, ACE 16-family and mixed-format pairs. All
 75 pinned source, executable, reference, getter and database hashes remain
@@ -8388,7 +8388,7 @@ late errors, positive quotas and target-specific indexes are exercised. Referenc
 getters never execute SQL or traverse links. Native Access qualification remains
 pending; nested namespace rules are an explicit engineering contract.
 
-The [scoped verification record](testing/results/read-query-external-sources-2026-10-24.json)
+The [scoped verification record](../tests/results/queries/read-query-external-sources-2026-10-24.json)
 pins production base `6204cae4`, the 1,831-file Rust source inventory, terminal
 logs and separate replay counts. Sixty-five parser, 110 query, 28 adapter and 17
 CLI tests pass; overlapping query reruns are not added. Scoped strict Clippy,
@@ -8472,7 +8472,7 @@ This is syntax evidence, not native Access execution qualification.
 
 ## Independent mixed Decimal division replay
 
-The [exact-ratio replay](testing/DECIMAL_DIVISION.md) passes 269 CLI controls and
+The [exact-ratio replay](../tests/reports/general/DECIMAL_DIVISION.md) passes 269 CLI controls and
 11 independent IEEE model checks against an immutable executable. It rounds
 operands and quotients separately using integer-ratio arithmetic, checking exact
 Double bits, retained Decimal types, raw/regional Strings, signed zero,
@@ -8481,7 +8481,7 @@ observational default-profile pairs match the previous frozen CLI exactly; these
 pairs are recorded separately from independent expectations. All 32 pinned hashes
 remain unchanged across 509 total invocations.
 
-The [scoped verification record](testing/results/read-query-decimal-division-2026-10-24.json)
+The [scoped verification record](../tests/results/queries/read-query-decimal-division-2026-10-24.json)
 pins the committed production base, complete audited Rust source digest and
 terminal 91-test query log. Fifty-seven expression, 91 query and 36 CLI tests
 pass, with overlapping minimal-feature controls recorded separately. Scoped
@@ -8534,20 +8534,20 @@ MS-VBAL, not a new native Access comparison or default-profile change.
 
 Original public-writer/getter pairs now exercise explicit linked queries across
 Jet 4, ACE 2007, ACE 2016, ACE 2019 and a mixed Jet 4/ACE 2016 pair. The
-[engineering replay](testing/results/linked-queries-final-2026-10-24.json) passes
-335 controls; the [actual CLI replay](testing/results/linked-cli-final-2026-10-24.json)
+[engineering replay](../tests/results/queries/linked-queries-final-2026-10-24.json) passes
+335 controls; the [actual CLI replay](../tests/results/general/linked-cli-final-2026-10-24.json)
 passes 330. Each checks 1,779 main result cells through a separate executable;
 the overlapping getter model is not counted as independent native SQL evidence.
 All pinned hashes remain unchanged, with reference link traversal disabled.
 
-The [feature evidence](testing/LINKED_NATIVE_QUERIES.md) distinguishes ordinary
+The [feature evidence](../tests/reports/queries/LINKED_NATIVE_QUERIES.md) distinguishes ordinary
 public table/link authoring, lower-level inert saved-query records, controlled
 catalog copies, argument refusals and positive runtime limits. It records joins,
 aggregates, correlated/root saved queries, repeated aliases, unmapped links,
 provider/identity/chain refusals, real stored policy differences and exact
 ForeignName case handling. No reference engine executes SQL or active content.
 
-The [scoped batch record](testing/results/read-query-linked-sources-2026-10-24.json)
+The [scoped batch record](../tests/results/queries/read-query-linked-sources-2026-10-24.json)
 pins final immutable binaries, source digest and lockfiles. Sixty-three focused
 adapter tests and sixteen CLI tests pass, plus scoped strict Clippy, standalone
 no-default Access checking, normal builds, formatting, dependency boundaries and
@@ -8598,7 +8598,7 @@ and independent public-writer/getter replay are separate acceptance steps.
 The engine unit batch passes 163 tests with one intentionally ignored derived-data
 generator. Feature-local runs additionally cover Japanese width conversion,
 compressed wide-unit grammar, inert linked definitions and shared native quotas;
-their counts overlap the unit batch and are recorded separately. The [batch record](testing/results/read-query-width-links-regression-2026-10-24.json)
+their counts overlap the unit batch and are recorded separately. The [batch record](../tests/results/queries/read-query-width-links-regression-2026-10-24.json)
 pins the committed checkout, source digest, independent replay records, terminal
 unit log and final immutable CLI. It claims no new full-workspace/query-suite run.
 
@@ -8649,7 +8649,7 @@ switches apply only at character boundaries; the previous guard imposed a
 canonical compression choice absent from both reviewed reference decoders.
 Pair completeness, strict Unicode, quotas and cancellation remain enforced.
 
-The [grammar replay](testing/COMPRESSED_TEXT_WIDE_SEGMENTS.md) passes 542 controls
+The [grammar replay](../tests/reports/storage/COMPRESSED_TEXT_WIDE_SEGMENTS.md) passes 542 controls
 and 4,662 displayed CLI cells with seventeen unchanged hashes. Original streams
 and explicitly derived same-width ShortText/Memo copies are distinguished from
 ordinary writer output. Six focused decoder/source tests and strict scoped
@@ -8679,7 +8679,7 @@ the remaining read/query/backend acceptance work stay open.
 ## Consolidated byte-result and kana query regression
 
 The combined all-feature query package passes 1,089 tests across 199 result
-targets, including doctests, with none ignored. The [batch record](testing/results/read-query-kana-byte-regression-2026-10-24.json)
+targets, including doctests, with none ignored. The [batch record](../tests/results/queries/read-query-kana-byte-regression-2026-10-24.json)
 pins the committed source revision, 865 Rust files, terminal log, lockfile and
 independent replay records. It distinguishes the frozen replay executable from
 the final normal CLI build after SQL-only feature gating. Direct CLI checks
@@ -8698,7 +8698,7 @@ foreign keys. The former shared positive-key guard rejected actual persisted
 values that independent reopened getters returned successfully. Identity
 uniqueness, NULL/orphan rejection, physical order and complete-cache checks remain.
 
-The [signed-ID replay](testing/SIGNED_COMPLEX_IDENTITIES.md) passes 88 controls
+The [signed-ID replay](../tests/reports/general/SIGNED_COMPLEX_IDENTITIES.md) passes 88 controls
 across two original ACE 16-family files, including encoded/decoded attachments,
 nullable members, discovered history names and resource refusals. Fourteen hashes
 remain unchanged. Focused engine/adapter targets pass 56 tests with strict scoped
@@ -8740,7 +8740,7 @@ carrier or native Access type qualification changes.
 The rebuilt CLI and native row example pass 45 mixed-scalar and 37 modern-scalar
 history controls over the five unchanged registered inputs. Each file retains
 19,902 independently checked rows, spanning Jet 4, ACE 2007 and the ACE 16-family
-layouts, including Large Number and Extended dates. The [replay record](testing/results/read-query-storage-replay-2026-10-24.json)
+layouts, including Large Number and Extended dates. The [replay record](../tests/results/queries/read-query-storage-replay-2026-10-24.json)
 pins both commands, terminal logs, executables and all five source hashes.
 Dependency boundaries and all 41 policy-script tests also pass. These are
 independent storage/query regressions; native Access execution and save/reopen
@@ -8749,7 +8749,7 @@ remain unrun.
 ## Consolidated query metadata and edit-ownership regression
 
 The all-feature query package passes 1,083 tests across 198 result targets,
-including doctests, with none ignored. The [batch record](testing/results/read-query-metadata-ownership-regression-2026-10-24.json)
+including doctests, with none ignored. The [batch record](../tests/results/queries/read-query-metadata-ownership-regression-2026-10-24.json)
 pins the committed source revision, 861 query/expression Rust files, lockfile,
 terminal log and rebuilt CLI. Direct CLI controls now complete common-Text
 UNION ALL conversion for numbered Error and array-bound results. The restricted
@@ -8800,7 +8800,7 @@ Clippy. This is a current evaluator guarantee, not native type qualification.
 
 The combined all-feature query package passes 1,075 tests across 198 result
 targets, including doctests, with none ignored. The
-[recorded batch](testing/results/read-query-declared-addition-regression-2026-10-24.json)
+[recorded batch](../tests/results/queries/read-query-declared-addition-regression-2026-10-24.json)
 pins the committed source revision/digest, lockfile, final terminal log and frozen
 CLI. Earlier failed runs exposed two previous-profile test expectations; those
 attempts are explicitly excluded from passing evidence. The corrected controls
@@ -8848,7 +8848,7 @@ ACE SQL category selection remains unqualified.
 The combined all-feature query package passes 1,069 tests across 197 result
 targets, including doctests, with none ignored. This covers the committed
 crosstab group-policy correction and retained math, financial and date-constructor
-API changes. The [recorded batch](testing/results/read-query-crosstab-carrier-regression-2026-10-24.json)
+API changes. The [recorded batch](../tests/results/queries/read-query-crosstab-carrier-regression-2026-10-24.json)
 pins the source revision, explicit source digest algorithm, lockfile, terminal log
 and immutable native-replay CLI. Native calculated-cache evidence remains in its
 separate feature record. This establishes regression coverage for the implemented
@@ -8875,7 +8875,7 @@ carriers. Inspection and browsing preserve non-finite Single values; query
 snapshots keep their existing finite-number requirement. Default query admission,
 formula execution and freshness rules are unchanged.
 
-The [original carrier-family replay](testing/CALCULATED_CARRIER_FAMILY.md)
+The [original carrier-family replay](../tests/reports/general/CALCULATED_CARRIER_FAMILY.md)
 passes 248 controls and 238 cell comparisons over fresh ACE 2016/2019 files;
 all 21 pinned hashes match. Fifteen engine/adapter tests and scoped strict Clippy
 pass. The initial corpus and six ambiguous quota attempts were excluded from
@@ -8916,7 +8916,7 @@ coercion and failure-precedence qualification remain separate.
 
 The all-feature query package passes 1,056 tests across 194 result targets,
 including doctests, after the shared key and date-input changes. The
-[recorded batch](testing/results/read-query-error-date-regression-2026-10-24.json)
+[recorded batch](../tests/results/queries/read-query-error-date-regression-2026-10-24.json)
 pins the source revision/digest, lockfile, terminal log and immutable CLI.
 Scoped strict Clippy, workspace formatting and the normal CLI build also pass.
 No native Access or full backend completion is inferred from this regression.
@@ -8931,7 +8931,7 @@ stay raw and possibly stale, with no hyperlink navigation, RichText conversion,
 formula execution or change to default query admission.
 
 The focused engine/adapter batch passes 15 tests with scoped strict Clippy.
-An [original calculated Text-family replay](testing/CALCULATED_TEXT_FLAG_FAMILY.md)
+An [original calculated Text-family replay](../tests/reports/general/CALCULATED_TEXT_FLAG_FAMILY.md)
 passes 384 operation controls and 384 cached-cell comparisons through inspection,
 rows and queries. All 24 pinned hashes match, including the immutable fresh CLI.
 Actual authored compression is false/C0 despite builder requests. Native
@@ -8981,7 +8981,7 @@ combinations, metadata-only binding and unqualified member/flag refusals. Scoped
 strict Clippy, workspace formatting and a fresh CLI build pass. See the
 [stored-history contract](access/collections/STORED_HISTORY_QUERIES.md#stored-record-contract).
 
-The [independent Memo family replay](testing/MEMO_HISTORY_FLAG_FAMILY.md) passes
+The [independent Memo family replay](../tests/reports/storage/MEMO_HISTORY_FLAG_FAMILY.md) passes
 594 controls over nine fresh ACE 2007/2016/2019 files, covering declarations,
 current/history values, raw markup/components and both ordinal/database queries.
 All 32 pinned hashes match. Native Access SQL, history mutation/freshness and
@@ -9017,7 +9017,7 @@ late orphan refusal, unsupported flags, budgets and cancellation. Strict scoped
 Clippy and workspace formatting pass. See
 [stored-history contracts](access/collections/STORED_HISTORY_QUERIES.md#stored-record-contract).
 
-The [independent compressed-Memo replay](testing/COMPRESSED_MEMO_HISTORIES.md)
+The [independent compressed-Memo replay](../tests/reports/storage/COMPRESSED_MEMO_HISTORIES.md)
 passes 198 controls across fresh ACE 2007/2016/2019 files, comparing declarations,
 current values and stored-history queries under ordinal and database policies.
 All 26 pinned hashes match. Native Access SQL, history freshness/mutation and
@@ -9050,7 +9050,7 @@ candidate checks, eager errors, empty-table preflight, UTF-16 lengths and binary
 ordering. Workspace formatting passes; scoped rule units and strict Clippy also
 pass. See [native validation rules](access/schema/NATIVE_CONSTRAINTS.md#bounded-validation-expressions).
 
-The [independent text-call replay](testing/VALIDATION_TEXT_CALLS.md) passes
+The [independent text-call replay](../tests/reports/schema/VALIDATION_TEXT_CALLS.md) passes
 204 controls and 618 stored getter cells across ACE 2016/2019; all 19 pinned
 hashes match. Fresh original ACE/Jet 4 validation inputs also pass the existing
 12-check coverage replay without modification. Native Access equivalence and
@@ -9071,7 +9071,7 @@ three focused key unit tests and strict scoped Clippy also passing. Workspace
 formatting passes. See [stored Boolean relationships](access/schema/NATIVE_CONSTRAINTS.md#stored-boolean-relationship-membership).
 This is the physical stored-key profile, not native Access insertion qualification.
 
-The original [Boolean relationship replay](testing/BOOLEAN_RELATIONSHIPS.md)
+The original [Boolean relationship replay](../tests/reports/general/BOOLEAN_RELATIONSHIPS.md)
 passes 78 controls and 67,340 getter/index cells. Each clean ACE 2016/2019 input
 has 10 tables, six enforced relationships and four confirmed node/leaf roots.
 Fourteen disposable corrupt copies and two original NULL-input orphan files
@@ -9091,7 +9091,7 @@ inputs, stale/corrupt caches, eager late failures and final transport limits.
 Strict scoped Clippy and the CLI build pass. See
 [calculation previews](access/calculations/CALCULATION_PREVIEWS.md).
 
-The independent [CLI preview replay](testing/CALCULATION_PREVIEW_REPLAY.md) passes
+The independent [CLI preview replay](../tests/reports/development/CALCULATION_PREVIEW_REPLAY.md) passes
 44 controls and 1,018 modeled cells. Of these cells, 1,010 differ from stored
 caches; ordinary NULL inputs, empty tables, unsupported declarations and corrupt
 unselected caches remain separate controls. All 26 pinned hashes match after replay.
@@ -9106,7 +9106,7 @@ conditions where they intend unknown branch selection; retained UTF-16 observati
 and strict final publication remain separately checked. Focused strict Clippy and
 workspace formatting checks pass. No Windows or live Access comparison is implied.
 
-A fresh [advanced-field evolution corpus](testing/ADVANCED_FIELD_EVOLUTION.md)
+A fresh [advanced-field evolution corpus](../tests/reports/schema/ADVANCED_FIELD_EVOLUTION.md)
 passes 60 independent getter/query controls and 18,584 returned-cell comparisons
 across ACE 2016/2019 inputs. It retains untouched historical rows, relocated records,
 deleted parents and changed collections alongside cached calculations. All 21
@@ -9119,7 +9119,7 @@ controls: 92 cached-value, 60 advanced-evolution and 45 mixed-scalar-history che
 The latter compare 19,902 retained rows per ACE 16, ACE 2007 and Jet 4 file against
 independent getters and the original value model. Original input hashes remain
 unchanged. The minimal query build passes; normal incremental builds remain enabled.
-The [closeout record](testing/results/read-query-closeout-2026-10-24.json) retains
+The [closeout record](../tests/results/queries/read-query-closeout-2026-10-24.json) retains
 the executable/source identity, exact scope and replay counts.
 
 These checks strengthen the published stable/offline profile. They do not complete
@@ -9367,7 +9367,7 @@ ceiling. Public slices, field ordering, raw flags and qualification remain intac
 The owning NativeIndex vector includes inline capacity in its allocation charge;
 no separate key buffer is allocated. On the measured Darwin arm64 target, retained
 storage falls from 248 to 232 bytes per index and one allocation is removed.
-See [the candidate comparison](testing/INDEX_COLUMN_COLLECTIONS.md).
+See [the candidate comparison](../tests/reports/schema/INDEX_COLUMN_COLLECTIONS.md).
 
 The production tree passes 49 index unit tests and 42 integration tests, plus
 scoped Clippy and the minimal-feature check. Isolated variants pass 96 integration
@@ -9482,7 +9482,7 @@ supported scale pair, signed 96-bit ceiling/midpoint neighbors, cancellation and
 seeded full-width inputs are included. Numeric results, Decimal subtypes,
 overflow/zero-divisor refusals, NULL propagation and eager failures agree with
 independent Fraction models. The CLI binary is unchanged before/after the run.
-See [scope and recorded report](testing/DECIMAL_ARITHMETIC.md#full-width-rational-boundary-checks).
+See [scope and recorded report](../tests/reports/general/DECIMAL_ARITHMETIC.md#full-width-rational-boundary-checks).
 
 No production arithmetic change was needed. Python compilation and focused oracle
 anchors pass; no Rust source changed, so Cargo checks were not repeated for this
@@ -10533,7 +10533,7 @@ VarType results and DAO field type/size remain separate observations. Request,
 collector and database hashes, build metadata, complete case coverage and unchanged
 originals are checked. Native errors, partial output, process failures and mismatches
 cannot become passing compatibility evidence. See
-[probe scope and commands](testing/NATIVE_AGGREGATE_ORACLE.md).
+[probe scope and commands](../tests/reports/queries/NATIVE_AGGREGATE_ORACLE.md).
 
 All 100 query shapes execute through the current CLI over equivalent inline inputs,
 with independently checked aggregate values. Nine new portable evidence tests and
@@ -10649,7 +10649,7 @@ and diff checks pass. No dependency or ordinary write scope changes.
 The independent scalar browsing runner passes 275 inventory/page/projection/query
 controls per profile on fresh Jet 4 and ACE 2007/2016/2019 originals: 1,100 total.
 All four input hashes remain unchanged; provenance is recorded in
-[FIXTURES.md](testing/FIXTURES.md#interrupted-seek-scalar-replay).
+[FIXTURES.md](../tests/reports/reading/FIXTURES.md#interrupted-seek-scalar-replay).
 Jackcess supplies independent stored values; TableCraft alone executes SQL.
 Windows Access, full engine/workspace suites and benchmarks were not run. Stable
 input remains required; this does not qualify coherent live reads or native saves.
@@ -10966,7 +10966,7 @@ multivalues and stored histories; eight adapter attachment/collation tests pass.
 New controls include a valid external payload with page access denied, malformed
 references, payload-limit refusal, exact nullable metadata/DATE bits, complete
 cache alignment and cancellation. Engine/adapter all-target/all-feature Clippy and
-minimal checks pass. The [registered independent corpus](testing/FIXTURES.md#attachment-metadata-without-payload-reads)
+minimal checks pass. The [registered independent corpus](../tests/reports/reading/FIXTURES.md#attachment-metadata-without-payload-reads)
 passes 21 CLI controls across ACE 2007/2016/2019 with valid 3 MiB files and unchanged
 input hashes. Formatting and diff checks pass; no dependency was added. Full
 workspace tests, benchmarks and native Access comparisons were not repeated.
@@ -11070,7 +11070,7 @@ PrecisionLoss. Integer-only prefixes retain checked overflow and can round
 differently from individually converted operands; no heterogeneous encounter-order
 independence is claimed. DATE/Text/Error refusal, Decimal precedence, strict
 arithmetic/key services and buffered failure publication remain separate. See
-[the aggregate contract](testing/FLOATING_SUMS.md#integralfloating-integration).
+[the aggregate contract](../tests/reports/general/FLOATING_SUMS.md#integralfloating-integration).
 
 Three new focused tests cover exact bit goldens, both encounter orders and IEEE
 families, NULL, Sum/DSum, checked prefix overflow, order-sensitive rounding and
@@ -11227,7 +11227,7 @@ ACE 2007 and both ACE 16 layouts. Nine schema-width generations retain old rows
 across null-mask/variable-offset boundaries, with a later grown update, deleted
 rows and appended rows. WideVariable has 254 Short Text fields; WideMixed combines
 Boolean, Byte, Int16, Int32 and Text. No production reader or limit change was
-needed. See [coverage and limits](testing/WIDE_TABLE_HISTORIES.md).
+needed. See [coverage and limits](../tests/reports/general/WIDE_TABLE_HISTORIES.md).
 
 The original generation and first reuse pass 104 independent controls. Direct
 Jackcess/native index-order checks bring the final registered reuse to 112,
@@ -11338,7 +11338,7 @@ history corpus's 19,902 exact rows, including Large Numbers and 2019 Extended
 dates. New original drivers create only fresh encryption outputs and independently
 read modern rows/indexes, reusing the existing tagged encoding through a package-
 visible helper. No engine, runtime dependency, format or table-write capability
-changes. See [scope and reproduction](testing/ENCRYPTED_MODERN_HISTORIES.md).
+changes. See [scope and reproduction](../tests/reports/encryption/ENCRYPTED_MODERN_HISTORIES.md).
 
 Generation passes 98 controls and registered reuse passes 82. Every row, complete
 CLI stream, indexed query, selected date order and count agrees with the model
@@ -11372,7 +11372,7 @@ Date/Time Extended alongside added fields, Boolean/null-mask growth, deleted
 roots, grown Memo/OLE and tick-exact date changes. Each retains 19,902 rows.
 Independent getters and a Python model agree on every value, including Int64
 endpoint/Double-boundary values, added/missing fields and seven-digit dates.
-See [history contract and observed issue](testing/MODERN_SCALAR_HISTORIES.md).
+See [history contract and observed issue](../tests/reports/rows/MODERN_SCALAR_HISTORIES.md).
 
 The corpus exposed a full Large Number index scan exhausting the operation-wide
 4,096-read quota while following scattered rows. Explicit IndexReadRequest calls
@@ -11657,7 +11657,7 @@ Forty-five independent controls pass, including grown-row SQL projections,
 Currency totals, year groups, deleted-row absence and buffered resource failures.
 Registered identities, a one-byte derivative refusal and a wrong-profile
 substitution refusal precede reader use; all
-three originals remain unchanged. See [evidence and limitations](testing/MIXED_SCALAR_HISTORIES.md).
+three originals remain unchanged. See [evidence and limitations](../tests/reports/rows/MIXED_SCALAR_HISTORIES.md).
 CLI/example builds, Python syntax and diff checks pass. No production Rust,
 dependency, default limit or write gate changes. Full Rust suites, benchmarks,
 Windows/native Access, arbitrary schema evolution, million-row and live-file
@@ -11728,7 +11728,7 @@ minimal ACE/Access checks, CLI/example/release-benchmark builds, formatting,
 Python syntax, dependency boundaries and diff checks pass. Full backend/workspace
 suites and Microsoft Access comparisons were not repeated.
 
-The [benchmark report](testing/ATTACHMENT_SESSIONS.md) retains complete raw results
+The [benchmark report](../tests/reports/reading/ATTACHMENT_SESSIONS.md) retains complete raw results
 and an excluded overlapping run. In the accepted release pass, three-byte zlib
 cases measure 2.5–2.6 µs/file with reuse versus 3.5–3.7 µs with fresh workspaces.
 The 60,000-byte zlib repeated case measures 22.5 versus 24.7 µs; noisy larger input
@@ -11790,7 +11790,7 @@ larger aggregates, Memo lengths, sorting, deleted-identity filtering, every
 streamed field and separate default native/query byte/row refusals. The first
 larger aggregate exposed the existing default query byte ceiling; explicit pools
 now admit it while retaining that refusal under defaults. Registered hashes and
-unchanged-source checks remain mandatory on reuse; [fixture evidence](testing/FIXTURES.md#larger-scalar-history-inputs)
+unchanged-source checks remain mandatory on reuse; [fixture evidence](../tests/reports/reading/FIXTURES.md#larger-scalar-history-inputs)
 keeps generated bytes separate from native Access qualification.
 
 Thirty-seven selected query tests (execution budgets, named crosstabs and
@@ -12737,7 +12737,7 @@ Sum/DSum now admit Currency mixed with Single/Double using the existing explicit
 Double converter for Currency operands and checked prefixes. Pure Currency folds,
 exact integral admission, Decimal precedence, eager failures and shared bounded
 scratch ownership retain their existing behavior. The
-[contract](testing/FLOATING_SUMS.md#currencyfloating-integration) records prefix
+[contract](../tests/reports/general/FLOATING_SUMS.md#currencyfloating-integration) records prefix
 overflow and mixed encounter-order limits; this is not complete native aggregate
 promotion qualification. No dependency, physical format or writer change.
 
@@ -12816,7 +12816,7 @@ Double overflow before one final rounding/range check. NULL/empty behavior,
 Double result metadata, checked fixed-point folds and explicit mixed-type
 refusals remain. A shared execution-local numeric scratch pool serves ordinary/
 domain sums and means without another row buffer or argument-evaluation pass.
-The [contract and benchmark record](testing/FLOATING_SUMS.md) distinguish this
+The [contract and benchmark record](../tests/reports/general/FLOATING_SUMS.md) distinguish this
 numerical profile from native Access precision/promotion qualification.
 
 All 669 query tests plus one doctest, 199 Access adapter tests and 35 SQLite tests
@@ -12937,8 +12937,8 @@ including for zero-width projections. This is metadata routing, not fallback
 following a failed tail parse. The separate complete-tail parser used by metadata
 patching still rejects the ambiguous case; all native edit gates remain unchanged.
 
-The [history contract](testing/COLUMN_HISTORIES.md#known-fixed-prefix-qualification)
-and [fixture provenance](testing/FIXTURES.md#known-fixed-prefix-history-inputs) record the
+The [history contract](../tests/reports/schema/COLUMN_HISTORIES.md#known-fixed-prefix-qualification)
+and [fixture provenance](../tests/reports/reading/FIXTURES.md#known-fixed-prefix-history-inputs) record the
 qualification. Original fixed-first and variable-first recipes use reviewed
 Jackcess only for inert creation/getters; removed declarations are separate
 engineering copies. The new runner passes 128 controls across Jet 4, ACE 2007,
@@ -13113,7 +13113,7 @@ prove requests restore defaults and remain reusable after refusals.
 All 650 query tests plus one doctest, 35 SQLite tests plus one doctest, and eighteen
 focused CLI regressions (including the two new tests) pass. The full query run exposed an older Asc scalar rejection
 expectation; it now asserts the already-supported explicit-format conversion.
-The original [SQL runner](testing/compare_query_declarations.py) passes 195
+The original [SQL runner](../tests/access/queries/execution/compare_query_declarations.py) passes 195
 independent integer-bound/category controls, including nested selectors, carrier
 results, eager errors and unchanged default behavior. All-target/all-feature
 query/CLI/SQLite Clippy and the minimal query check pass. No new dependency,
@@ -13143,7 +13143,7 @@ No new dependency, source mutation or write gate change is introduced.
 Five new tests cover declared/Variant overflow differences, all 65,536 Byte pairs
 for three operators against independent wide bounds, signed-width/LongLong and
 quotient limits, NULL/type/zero boundaries, generated Long arithmetic and evaluator
-work/cancellation/reuse. The original [runner](testing/compare_declared_integral.py)
+work/cancellation/reuse. The original [runner](../tests/access/reading/tables/compare_declared_integral.py)
 passes 7,728 independent API controls using unbounded integer arithmetic and exact
 Double bits. These are explicit declarations, not inferred Access SQL types.
 
@@ -13174,7 +13174,7 @@ and builtin tracker retain complete Variant/native subtype and locale/error gaps
 Two expression and two query tests cover decimal-comma separation, literal Text,
 Boolean/date inputs, nested/reused policies, NULL/eager failures, combined byte
 quotas and every observed conversion/prefix cancellation checkpoint. The original
-[scalar runner](testing/compare_val_scalars.py) passes 336 independent controls with
+[scalar runner](../tests/access/reading/tables/compare_val_scalars.py) passes 336 independent controls with
 authored spellings, prefix parsing and exact Double-bit comparisons including
 signed zero, plus sequential/both index orders over four unchanged 20,000-row
 native fixtures. Jackcess supplies raw IDs only. Another 3,096 existing prefix/
@@ -13211,7 +13211,7 @@ Variant, regional, DBCS/Unicode and native qualification gaps.
 Three expression and two query tests cover ordinary scalar kinds, format rebinding,
 nested calls, exact numeric result carriers, NULL/empty/provider failures,
 surrogates, combined quotas and every observed conversion/output checkpoint.
-The original [runner](testing/compare_character_reverse_scalars.py) passes 336
+The original [runner](../tests/access/reading/tables/compare_character_reverse_scalars.py) passes 336
 independent authored spelling/ASCII-code/type/reversal controls through scalar
 CLI paths and sequential/both index directions over the four unchanged 20,000-row
 native fixtures. Jackcess supplies raw IDs only; it does not evaluate SQL.
@@ -13241,7 +13241,7 @@ and builtin tracker retain complete Variant/native regional/error-precedence gap
 Three expression and two query tests cover ordinary scalar carriers, reused/nested
 format contexts, NULL/provider failures, preserved controls/nonbreaking spaces,
 combined quotas and every observed conversion/output cancellation checkpoint.
-The original [runner](testing/compare_trim_case_scalars.py) passes 336 independent
+The original [runner](../tests/access/reading/tables/compare_trim_case_scalars.py) passes 336 independent
 spelling/ASCII controls through scalar CLI modes and sequential/both index orders
 on the four unchanged 20,000-row native fixtures. Jackcess supplies raw IDs only.
 Another 562 existing stable-Unicode/language/refusal controls pass in scalar CLI
@@ -13274,7 +13274,7 @@ and builtin tracker retain broader Variant, native error/locale and Unicode gaps
 Three expression and two query tests cover scalar source kinds, format rebinding,
 nested positions, NULL/eager failures, combined byte quotas, surrogate boundaries
 and every observed conversion/scan/output cancellation checkpoint. The original
-[scalar runner](testing/compare_slice_scalars.py) passes 336 independent controls
+[scalar runner](../tests/access/reading/tables/compare_slice_scalars.py) passes 336 independent controls
 using authored spellings and UTF-16 slices, with independent raw IDs from four
 unchanged 20,000-row Jet 4/ACE fixtures through sequential and both index orders.
 Another 1,086 existing rounded-count/UTF-16 controls pass in scalar CLI mode; their
@@ -13307,7 +13307,7 @@ tracker retain native Variant, regional and error-precedence limitations.
 Three expression and three query tests cover scalar positions, policy rebinding,
 grouping/correlation, NULL/options/unused operands, eager failures, shared byte/Text
 limits and every observed cancellation checkpoint. The original
-[scalar runner](testing/compare_replacement_scalars.py) passes 336 independent
+[scalar runner](../tests/access/reading/tables/compare_replacement_scalars.py) passes 336 independent
 spelling/UTF-16 controls across scalar CLI paths and sequential/ascending/descending
 indexed reads of the same unchanged four-family 20,000-row inputs. Jackcess supplies
 raw IDs only; no native Access SQL is executed.
@@ -13339,7 +13339,7 @@ qualification; the builtin tracker retains Partial status.
 Three expression and three query tests cover Boolean/numeric/fixed/date operands,
 policy changes on reused plans, grouping/correlation, NULL/start/mode failures,
 eager errors, byte/Text limits and every observed cancellation checkpoint.
-The original [comparison runner](testing/compare_search_scalars.py) passes 336
+The original [comparison runner](../tests/access/reading/tables/compare_search_scalars.py) passes 336
 independent spelling/UTF-16/native-source controls. It checks both scalar CLI paths
 and sequential/ascending/descending index reads over the four unchanged 20,000-row
 fixtures; Jackcess supplies raw IDs only and does not evaluate SQL.
@@ -13368,7 +13368,7 @@ keeps its own bound and can require TSV. The flags do not apply to eval, parse,
 saved reconstruction or update. A boxed feature argument group keeps the command
 enum bounded. No new dependencies or unbuffered publication are introduced.
 
-The [larger payload runner](testing/compare_large_payloads.py) now passes 55 controls
+The [larger payload runner](../tests/access/reading/tables/compare_large_payloads.py) now passes 55 controls
 against the same unchanged Jet 4 and ACE 2007/2016/2019 inputs. Full CLI Memo/OLE
 and decoded attachment projections match independent getter/Python byte digests;
 UTF-16 Len, NULL/empty distinctions, default refusals and resource gates also pass.
@@ -13397,7 +13397,7 @@ Original independently generated Jet 4 and ACE 2007/2016/2019 files pass 36 cont
 against Jackcess read-only getters and authored Python bytes: exact large Memo/OLE,
 empty/NULL Binary, actual attachment codecs and decoded file bytes, CLI Binary
 counts, exhausted budgets, oversized query Text refusal and unchanged originals.
-The original fixture recipe, hashes and runner are recorded in [FIXTURES.md](testing/FIXTURES.md#original-larger-stored-payload-corpus).
+The original fixture recipe, hashes and runner are recorded in [FIXTURES.md](../tests/reports/reading/FIXTURES.md#original-larger-stored-payload-corpus).
 Engineering examples gain explicit byte/work allowances; no dependencies change.
 
 Twenty focused engine tests, seven adapter tests and fifteen CLI retrieval/native
@@ -13857,7 +13857,7 @@ Clippy and formatting pass. The independent read-only cursor/getter runner passe
 20 controls over four new original 20,000-row Jet 4/ACE 2007/ACE 16-family files,
 including outputs over 1 MiB, several batch sizes, projections and cumulative quota
 failure prefixes. All originals remain unchanged. [Progressive contract](cli/STREAMING_ROWS.md)
-and [provenance](testing/FIXTURES.md#original-progressive-row-inputs) retain native Access,
+and [provenance](../tests/reports/reading/FIXTURES.md#original-progressive-row-inputs) retain native Access,
 live-file, template/collection streaming and larger SQL execution gaps. Full
 workspace/engine suites and Windows native comparisons were not run for this batch.
 
@@ -13894,7 +13894,7 @@ direct/saved/named execution controls on fresh Jet 4/ACE 2007/ACE 16-family inpu
 all hashes remain unchanged. The CLI builds, all-target/all-feature adapter Clippy
 and the minimal adapter build pass. Full workspace/engine suites and native Access
 comparisons were not run. [Identity scope](access/queries/NATIVE_SAVED_JOINS.md#unicode-source-labels)
-and [provenance](testing/FIXTURES.md#unicode-saved-source-inputs) retain those limits.
+and [provenance](../tests/reports/reading/FIXTURES.md#unicode-saved-source-inputs) retain those limits.
 
 ## Unprojected collection HAVING and sort inputs
 
@@ -13914,7 +13914,7 @@ models. All-target/all-feature query Clippy and the minimal query build pass; th
 CLI builds. Independent stored-row runners pass 153 multivalue and 177 ordinal-policy
 attachment controls across ACE 2007 and ACE 16-family inputs, verifying unchanged
 hashes. [Semantics](query/collections/MULTIVALUE_QUERIES.md#unprojected-having-and-sort-inputs) and
-[fixture provenance](testing/FIXTURES.md#hidden-collection-having-and-sort-controls) distinguish
+[fixture provenance](../tests/reports/reading/FIXTURES.md#hidden-collection-having-and-sort-controls) distinguish
 this child-row profile from a new parent-membership fold and native Access SQL
 qualification. Full workspace/engine suites and native Windows comparisons were
 not run for this batch.
@@ -14038,11 +14038,11 @@ and native Access comparisons were not run for this batch.
 ## Stored grouped-subquery comparisons
 
 Four fresh original V2000/V2007/V2016/V2019 files now supply fourteen additional
-inert grouped definitions. The [comparison runner](testing/compare_saved_grouped.py)
+inert grouped definitions. The [comparison runner](../tests/access/queries/saved/compare_saved_grouped.py)
 passes 328 raw-getter/rendering/direct/saved/named and diagnostic-category/no-output
 refusal controls, including parameter scopes, named/derived reads and crosstab
 HAVING. Original file hashes remain unchanged. Reviewed Jackcess getters provide
-metadata/SQL evidence; a Python partition model supplies results. [Fixture records](testing/FIXTURES.md#grouped-saved-query-inputs)
+metadata/SQL evidence; a Python partition model supplies results. [Fixture records](../tests/reports/reading/FIXTURES.md#grouped-saved-query-inputs)
 retain provenance and precise limits. No Rust production code or dependency
 changed, so the full Rust suite was not rerun. Java compilation and the complete
 new comparison batch pass; native Access SQL/save-reopen remains unrun.
@@ -14142,12 +14142,12 @@ intermediate Double overflow and preserves tiny cancellation residuals, includin
 subnormals and ties. A query-scoped scratch pool reuses buffers between groups;
 argument expressions are evaluated once. Allocation/work/cancellation limits
 remain explicit. Existing Decimal/mixed-type and native-precision gaps remain
-separate in [the numerical contract](testing/FLOATING_MEANS.md).
+separate in [the numerical contract](../tests/reports/general/FLOATING_MEANS.md).
 
 Original exact Fraction/CLI checks pass 129 binary and 69 Currency cases; synthetic
 ACE 16-family native rows cover extreme means with metadata-only binding. The
 release query benchmark records both the one-group improvement and a roughly
-0.12 ms cost for 128 small groups. [Raw timings](testing/results/floating-means-2026-10-22.json)
+0.12 ms cost for 128 small groups. [Raw timings](../tests/results/general/floating-means-2026-10-22.json)
 retain exploratory samples and full Hyperfine measurements. These are independent
 checks and local timings, not native Access qualification.
 
@@ -15768,7 +15768,7 @@ separate direct/kernel timings. Even after trailing-space handling, 118 legacy
 and 106 modern comparisons differ. The upstream API lacks substring search and
 replaces unpaired UTF-16 surrogates. This does not supply an Access Text/LCID
 provider. The dependency remains unadopted; no workspace lockfile or runtime
-behavior changed. [Probe evidence](testing/ICU_COLLATION_PROBE.md) separates model
+behavior changed. [Probe evidence](../tests/reports/queries/ICU_COLLATION_PROBE.md) separates model
 disagreements, raw costs and pending native Windows qualification.
 
 Release execution, isolated warnings-denied Clippy, argument controls and source
@@ -16209,7 +16209,7 @@ is implemented, while native SQL qualification and query integration remain open
 
 ## Native text capture replay
 
-The [native text recipe](testing/NATIVE_TEXT_ORACLE.md#replay-against-tablecraft)
+The [native text recipe](../tests/reports/general/NATIVE_TEXT_ORACLE.md#replay-against-tablecraft)
 now has a portable CLI replay tool. It validates capture provenance/completeness
 before running all 76 plain/indexed query cases under explicit collation and LIKE
 policies. Exact displayed typed cells retain NULL/empty/text distinctions,
@@ -16531,7 +16531,7 @@ extends that boundary as described in MULTIVALUE_QUERIES.md.
 
 ## Native text comparison capture tooling
 
-The [Windows ACE capture recipe](testing/NATIVE_TEXT_ORACLE.md) now prepares
+The [Windows ACE capture recipe](../tests/reports/general/NATIVE_TEXT_ORACLE.md) now prepares
 original Short/Long Text inputs and 38 SQL probes over unindexed/indexed files.
 It captures lossless UTF-16, typed results/errors, actual DAO/DLL/Windows builds,
 collating orders and unchanged read hashes. The portable validator verifies
@@ -16574,7 +16574,7 @@ to the fourteen-query crosstab baseline. Independent getters/rendering and expli
 expected grids pass 380 direct/saved/named/getter/refusal controls for dependencies,
 punctuated headings, parameters, joins, correlation, nested reads/UNION/crosstabs,
 inner TOP/ties and cycle/later-cell failures. Existing baseline/TOP inputs retain
-320/440 controls. Sources remain unchanged; [fixture records](testing/FIXTURES.md#named-fixed-crosstab-inputs)
+320/440 controls. Sources remain unchanged; [fixture records](../tests/reports/reading/FIXTURES.md#named-fixed-crosstab-inputs)
 retain provenance/hashes. Native Windows Access execution, heading/type/collation/
 parameter rules, error order and save/reopen remain unrun. The backend roadmap
 remains incomplete.
@@ -16605,7 +16605,7 @@ our fourteen-query baseline. Independent raw getters/rendering and explicit rows
 pass 264 direct/saved/named/getter/refusal controls, including literal bang/dot/
 grave/equals prompts, code-looking literal names, nested reads, UNION/crosstabs
 and a deferred control reference. Source bytes stay unchanged;
-[fixture records](testing/FIXTURES.md#literal-parameter-prompt-inputs) retain provenance and
+[fixture records](../tests/reports/reading/FIXTURES.md#literal-parameter-prompt-inputs) retain provenance and
 hashes. Native Windows Access prompt/Unicode/regional/error-order and save/reopen
 qualification remain unrun. The broader backend roadmap is still incomplete.
 
@@ -16632,7 +16632,7 @@ to the fourteen-query forest baseline. Independent getters/rendering and explici
 row controls pass 252 direct/saved/named/getter/refusal comparisons. Fresh originals
 satisfy native system-index key constraints; copy-only duplicate/NULL key cases
 deliberately disagree with that index and establish reader behavior, not native
-admissibility. Original/copy bytes stay unchanged; [fixture records](testing/FIXTURES.md#native-fragment-ordering-inputs)
+admissibility. Original/copy bytes stay unchanged; [fixture records](../tests/reports/reading/FIXTURES.md#native-fragment-ordering-inputs)
 retain provenance and hashes. Earlier SELECT, parameter and compound-join recipes
 pass on their unchanged originals through both hosts, with ordering copies now
 compared positively and other refusals retained. Actual Windows Access execution,
@@ -16661,7 +16661,7 @@ to our fourteen-query forest baseline. Independent renderer and explicit row
 controls pass 160 reconstruction/direct/saved/named checks, including reserved/
 symbol names, raw quoted join labels and single Unicode/derived aliases. Earlier
 forest/derived originals retain their 240/176 controls: 576 combined. Sources stay
-unchanged; [fixture records](testing/FIXTURES.md#stored-identifier-inputs) retain provenance
+unchanged; [fixture records](../tests/reports/reading/FIXTURES.md#stored-identifier-inputs) retain provenance
 and hashes. Native Windows Access execution, naming/collation and save/reopen
 remain unrun. The broader backend roadmap remains incomplete.
 
@@ -16689,7 +16689,7 @@ fourteen-query forest baseline. Independent rendering and explicit expected rows
 pass 176 direct/saved/named reconstruction/execution/refusal controls for nested
 reads, UNION, aggregates, anonymous/aliased roots, parameters and named dependencies.
 Lateral/owner/UDF execution refuses without stdout. All source bytes remain
-unchanged; [fixture records](testing/FIXTURES.md#saved-derived-source-inputs) record provenance
+unchanged; [fixture records](../tests/reports/reading/FIXTURES.md#saved-derived-source-inputs) record provenance
 and hashes. The unchanged forest originals also retain their 240 controls. These
 are independent metadata/row checks; native Windows Access qualification remains
 unrun and the broader backend roadmap is incomplete.
@@ -16720,7 +16720,7 @@ assembly/execution/refusal controls through direct/saved/named CLI paths. Existi
 twenty-eight-definition compound-join originals also pass on Jet 4 and both ACE 16
 layouts, with seven refused mutations and one newly accepted reversed-endpoint
 copy per file through both hosts. Original/copy bytes remain unchanged;
-[FIXTURES.md](testing/FIXTURES.md#saved-join-forest-inputs) records provenance and hashes.
+[FIXTURES.md](../tests/reports/reading/FIXTURES.md#saved-join-forest-inputs) records provenance and hashes.
 Actual Windows Access join admissibility, rows, errors and save/reopen remain
 unrun. This completes the former two-source restriction, not the backend roadmap.
 
@@ -16757,7 +16757,7 @@ stored counts/PERCENT that Jackcess omits from its renderer. The extended recipe
 passes 440 assembly/execution/getter/refusal controls; original inputs still pass
 320. A separate Python nullable-rank recipe passes 782 controls for ASC/DESC,
 secondary keys, NULL ties, count/percentage ceilings and buffered refusals. All
-original/mutation-copy bytes remain unchanged; [FIXTURES.md](testing/FIXTURES.md#crosstab-top-inputs)
+original/mutation-copy bytes remain unchanged; [FIXTURES.md](../tests/reports/reading/FIXTURES.md#crosstab-top-inputs)
 records hashes and reproduction. These are independent metadata/model checks;
 native Windows Access crosstab TOP, percentage/tie and error-order evidence remains
 unrun. The broader backend roadmap remains incomplete.
@@ -16801,7 +16801,7 @@ SELECT/crosstab definitions each. The independent recipe passes 320 raw metadata
 assembly, getter/grid, saved/direct and refusal controls, including raw fixed-field
 mutations on copies. The existing saved UNION recipe additionally passes 268
 regression controls. Source and mutation-copy bytes remain unchanged; fixtures,
-original recipes and hashes are recorded in [FIXTURES.md](testing/FIXTURES.md#saved-crosstab-inputs).
+original recipes and hashes are recorded in [FIXTURES.md](../tests/reports/reading/FIXTURES.md#saved-crosstab-inputs).
 The external reference assembles syntax and reads scalars; it never executes SQL.
 Windows Access parsing/execution and wider native behavior remain unrun.
 
@@ -16841,7 +16841,7 @@ diff checks pass. The full workspace runtime suite was not repeated.
 The original SavedUnionFixture and read-only SavedReadOracle recipes supply
 fourteen definitions each on fresh Jet 4 / ACE 2007/2016/2019 files. The independent
 comparison passes 268 assembly/execution/getter/refusal controls, including copy-only
-raw metadata mutations, with original bytes unchanged. [FIXTURES.md](testing/FIXTURES.md#saved-union-inputs)
+raw metadata mutations, with original bytes unchanged. [FIXTURES.md](../tests/reports/reading/FIXTURES.md#saved-union-inputs)
 records sources/hashes. The oracle assembles SQL and reads scalar inputs; it does
 not execute SQL. Native Microsoft Access parsing/execution remains unrun, including
 wider metadata layouts, type promotion and native error order.
@@ -16884,7 +16884,7 @@ build, warnings-denied expression/query rustdoc, formatting/diff checks, the
 12-package boundary guard and ten guard tests pass. The full workspace runtime
 suite was not repeated.
 
-The [independent recipe](testing/compare_casing.py) passes 714 stable-Unicode,
+The [independent recipe](../tests/access/reading/tables/compare_casing.py) passes 714 stable-Unicode,
 language-golden, refusal and native-row controls against the current release.
 Sequential/indexed projections use unchanged Jackcess-decoded source inputs.
 Native Access locale/version mappings, coercion, aliases and error ordering still
@@ -16927,7 +16927,7 @@ check/Clippy, minimal release CLI build, warnings-denied expression/query rustdo
 formatting/diff checks, the 12-package boundary guard and ten guard tests pass.
 The full workspace runtime suite was not repeated.
 
-The [independent recipe](testing/compare_clock.py) passes 2,684 Gregorian/fixed-clock/
+The [independent recipe](../tests/access/reading/tables/compare_clock.py) passes 2,684 Gregorian/fixed-clock/
 refusal/native-row controls against the current release binary. Sequential/indexed
 projections use unchanged Jackcess-decoded inputs. Native Windows Access remains
 unrun, including native timezone rules, clock invocation timing, precision, calendars
@@ -16965,7 +16965,7 @@ focused latest formatting/evaluator batch six. Workspace all-target/all-feature
 Clippy, minimal release CLI build, warnings-denied expression/query rustdoc,
 formatting and diff checks pass. The full workspace runtime suite was not repeated.
 
-The [independent recipe](testing/compare_styled_number.py) passes 1,790 Decimal/
+The [independent recipe](../tests/access/reading/tables/compare_styled_number.py) passes 1,790 Decimal/
 normalized-float/refusal/native-row controls. Existing CStr and numeric-text recipes
 pass 3,908 and 3,936 controls after sharing the float helper. Sequential/indexed
 projections use unchanged Jackcess-decoded source inputs. Native Windows Access
@@ -17001,7 +17001,7 @@ Workspace all-target/all-feature check/Clippy, minimal release CLI build,
 warnings-denied expression/query rustdoc, formatting and diff checks pass. The full
 workspace runtime suite was not repeated.
 
-The [independent recipe](testing/compare_weekday.py) passes 2,666 Gregorian/serial/
+The [independent recipe](../tests/access/reading/tables/compare_weekday.py) passes 2,666 Gregorian/serial/
 refusal/native-row controls. The existing week-policy recipe passes 1,368. Native
 sequential/indexed projections use unchanged Jackcess-decoded source inputs.
 Native Windows Access remains unrun, including full NLS/calendar/Variant coercion,
@@ -17035,7 +17035,7 @@ batches nine each and the worker regression one. Workspace all-target/all-featur
 check/Clippy, minimal release CLI build, warnings-denied expression rustdoc,
 formatting and diff checks pass. The full workspace runtime suite was not repeated.
 
-The [independent week recipe](testing/compare_week_context.py) passes 1,368 Python
+The [independent week recipe](../tests/access/queries/expressions/compare_week_context.py) passes 1,368 Python
 calendar-membership, boundary, refusal and native-row controls. The existing
 calendar-name recipe passes 1,922 after the CLI control changes. Sequential/indexed
 projections use unchanged Jackcess-decoded row inputs. Native Windows Access remains
@@ -17069,7 +17069,7 @@ expressions pass 158, selected CLI regressions nine and the worker regression on
 Workspace all-target/all-feature check/Clippy, the minimal CLI release build,
 formatting and diff checks pass. The full workspace runtime suite was not repeated.
 
-The [independent recipe](testing/compare_calendar_names.py) passes 1,922 Gregorian/
+The [independent recipe](../tests/access/queries/expressions/compare_calendar_names.py) passes 1,922 Gregorian/
 refusal/native-row controls, and the existing date-format recipe passes 3,238 after
 shared-label extraction. Sequential/indexed native projections use Jackcess-decoded
 inputs and preserve source bytes. Native Windows Access remains unrun, including
@@ -17101,7 +17101,7 @@ formatting tests cover the latest additions. Workspace all-target/all-feature
 Clippy, the minimal release CLI build, expression rustdoc, formatting and diff
 checks pass. The full workspace runtime suite was not repeated.
 
-The new [independent recipe](testing/compare_date_format.py) passes 3,238 Gregorian/
+The new [independent recipe](../tests/access/queries/expressions/compare_date_format.py) passes 3,238 Gregorian/
 weekday/refusal/native-row controls against the release binary; the existing CStr
 recipe passes 3,908 controls after renderer sharing. Sequential/indexed projections
 use unchanged Jackcess-decoded source inputs. Native Windows Access remains unrun;
@@ -17178,7 +17178,7 @@ Expression/query suites pass 345 tests with all features; standalone parser-free
 expressions pass 143, selected CLI regressions 22 and the all-feature SQLite package
 25 including its rustdoc example.
 
-The [independent recipe](testing/compare_date_conversion.py) passes 2,698 Python
+The [independent recipe](../tests/access/queries/expressions/compare_date_conversion.py) passes 2,698 Python
 Gregorian/Automation-serial, refusal and native-row controls. Sequential/indexed
 projections agree over Jackcess-decoded source inputs, with the original source
 hash unchanged. Native Windows Access remains unrun, including full regional/year,
@@ -17215,7 +17215,7 @@ Expression/query suites pass 335 tests with all features; standalone parser-free
 expressions pass 137, selected CLI regressions 22 and the all-feature SQLite package
 24 including its rustdoc example.
 
-The [independent recipe](testing/compare_cstr.py) passes 3,908 Python integer,
+The [independent recipe](../tests/access/reading/tables/compare_cstr.py) passes 3,908 Python integer,
 exact Decimal, floating/calendar, refusal and native-row controls. It uses exact
 Currency inputs to isolate formatting from the separate IEEE import policy.
 Sequential/indexed projections agree over Jackcess-decoded rows and the original
@@ -17251,7 +17251,7 @@ failure reuse. Expression/query suites pass 328 tests with all features;
 standalone parser-free expressions pass 132, selected CLI regressions 20 and the
 all-feature SQLite package 23 including its rustdoc example.
 
-The [independent recipe](testing/compare_inspection.py) passes 3,638 generated
+The [independent recipe](../tests/access/reading/tables/compare_inspection.py) passes 3,638 generated
 numeric-text, typed/negative, refusal and native-row controls across three profiles
 and both CLI paths. Sequential/indexed native projections agree over independently
 decoded Jackcess rows and the original source hash remains unchanged. Native
@@ -17290,7 +17290,7 @@ unchanged SQLite file. Expression/query suites pass 320 tests with all features,
 standalone parser-free expressions 128, selected CLI regressions 21 and the
 all-feature SQLite package 22 including its rustdoc example.
 
-The [independent recipe](testing/compare_number_format.py) passes 6,462 integer,
+The [independent recipe](../tests/access/queries/expressions/compare_number_format.py) passes 6,462 integer,
 exact Python Decimal, refusal and native-row controls across all profiles and both
 CLI paths. Sequential/indexed native projections agree over Jackcess-decoded
 inputs; the original source hash remains unchanged. Native Windows Access remains
@@ -17321,7 +17321,7 @@ ceiling. Expression/query suites pass 311 tests with all features, followed by a
 three numeric-text query tests after adding the explicit work-limit check; standalone
 parser-free expressions pass 123. Selected CLI regressions pass 20 tests.
 
-The [independent recipe](testing/compare_numeric_text.py) passes 3,936 integer,
+The [independent recipe](../tests/access/queries/expressions/compare_numeric_text.py) passes 3,936 integer,
 exact-Decimal floating-rounding, refusal and native-row controls. Sequential/indexed
 projections agree over independently decoded Jackcess inputs and the original
 fixture hash stays unchanged. These do not establish native expression compatibility;
@@ -17346,7 +17346,7 @@ exercise grouping, aggregates, parameter reuse and eager refusal. One CLI regres
 checks both execution paths and empty stdout on failed conversions. Expression/query
 suites pass 302 tests with all features; standalone parser-free expressions pass
 117. Selected CLI regressions pass 19 tests. The
-[independent recipe](testing/compare_val.py) passes 3,172 integer/radix/Currency,
+[independent recipe](../tests/access/reading/tables/compare_val.py) passes 3,172 integer/radix/Currency,
 refusal and native-row controls, including sequential/indexed projections over
 Jackcess-decoded source rows. The original fixture hash remains unchanged. These
 are independent-model/reader checks; native Windows Access remains unrun.
@@ -17378,7 +17378,7 @@ existing Text display cells.
 
 Expression/query suites pass 295 tests with all features and 295 without defaults;
 standalone parser-free expressions pass 112. Selected CLI regressions pass 25 tests.
-The [independent recipe](testing/compare_character_functions.py) passes 11,304
+The [independent recipe](../tests/access/queries/expressions/compare_character_functions.py) passes 11,304
 byte-page/inverse/UTF-16/refusal/native-row controls against Python models, including
 sequential/indexed projections, with the original database hash unchanged.
 Workspace all-target/all-feature Clippy, minimal release builds, warnings-denied
@@ -17410,7 +17410,7 @@ worker test cover independent goldens, every supported ASCII byte, bad IDs/unmap
 bytes, modulo/Text separation, nested/grouped execution and plan/request reuse.
 Expression/query/SQLite all-feature suites pass 308 tests; minimal expression/query
 suites pass 287 and standalone parser-free expressions pass 107. Selected CLI
-regressions pass 24 tests. The [independent recipe](testing/compare_character_code_pages.py)
+regressions pass 24 tests. The [independent recipe](../tests/access/storage/native/compare_character_code_pages.py)
 passes 5,672 controls, including all bytes across eleven pages in both CLI query
 paths, 46 unmapped-byte refusals, and sequential/indexed native projections with
 unchanged original database hash.
@@ -17451,7 +17451,7 @@ characters, NULL and eager errors, invalid code pages/surrogates, resource limit
 grouping/correlation and parameter reuse. Expression/query suites pass 282 tests
 with all features and 282 without defaults; standalone parser-free expressions
 pass 105 tests. Selected CLI regressions pass 22 tests. The
-[independent recipe](testing/compare_text_construction.py) passes 154 repetition,
+[independent recipe](../tests/access/queries/expressions/compare_text_construction.py) passes 154 repetition,
 UTF-16 reversal, NULL/refusal and sequential/indexed native-row controls with the
 original registered database hash unchanged.
 
@@ -17485,7 +17485,7 @@ bounded construction. Expression/query suites pass 274 tests with all features
 and 274 without defaults; standalone parser-free expressions pass 100 tests.
 Selected CLI regressions pass 21 tests. CLI expectations decode CSV/TSV transport
 before checking the existing quoted Text display policy; production output is
-unchanged. The [independent UTF-16 recipe](testing/compare_replacement.py) passes
+unchanged. The [independent UTF-16 recipe](../tests/access/reading/tables/compare_replacement.py) passes
 416 controls, including sequential/indexed native rows and both CLI resource
 profiles, with the original example database hash unchanged.
 
@@ -17520,7 +17520,7 @@ Unicode, overlapping/reverse matches, provider bounds, eager errors, optional
 slots, grouped/correlated expressions, parameter reuse and cancelled scans.
 Expression/query suites pass 266 tests with all features and 266 without defaults;
 standalone parser-free expressions pass 95 tests. Selected CLI regressions pass
-19 tests. The [independent recipe](testing/compare_string_search.py) passes 284
+19 tests. The [independent recipe](../tests/access/queries/expressions/compare_string_search.py) passes 284
 UTF-16/ordinal/default/NULL/refusal/native-row controls with unchanged source hash.
 
 Workspace all-target/all-feature Clippy, minimal workspace release build,
@@ -17549,7 +17549,7 @@ providers, eager failures, grouping, correlations, parameter reuse and resource
 limits. Expression/query packages pass 259 tests with all features and 259 without
 default features. The standalone parser-free expression profile passes 90 tests.
 The selected CLI eval/retrieval/StrComp regressions pass 17 tests.
-The [original reference recipe](testing/compare_strcomp.py) passes 85 independent
+The [original reference recipe](../tests/access/reading/tables/compare_strcomp.py) passes 85 independent
 UTF-16/ordinal/NULL/refusal controls, including sequential/indexed native projections;
 the registered database hash remains unchanged.
 
@@ -17584,7 +17584,7 @@ explicit execution-options consumer found by workspace-wide linting. Its complet
 all-feature package suite passes 20 tests, including request-local policy reuse
 and unchanged source bytes. This maintains the existing worker boundary without
 adding SQLite functionality or a CLI runtime dependency.
-The [independent constructor recipe](testing/compare_date_constructors.py) now
+The [independent constructor recipe](../tests/access/queries/expressions/compare_date_constructors.py) now
 passes 126 controls on the optimized CLI, including four windows, boundary-year
 mapping, native projections and indexed filters whose result depends on the
 chosen window. The registered Access example's original hash remains unchanged.
@@ -17620,7 +17620,7 @@ parameter reuse and nested date functions. The expression/query packages pass
 all-feature Clippy, minimal workspace release builds, warnings-denied rustdoc and
 formatting/diff checks pass. The full workspace runtime suite was not repeated.
 
-The [independent CLI recipe](testing/compare_date_constructors.py) passes 74
+The [independent CLI recipe](../tests/access/queries/expressions/compare_date_constructors.py) passes 74
 Gregorian/rational constructor controls on the optimized CLI, including
 sequential/indexed reads of original Int32 rows from the registered Access
 example. Its original hash remains unchanged. No dependency or database fixture is
@@ -17652,7 +17652,7 @@ default features. Relevant all-target/all-feature Clippy, minimal workspace rele
 builds, warnings-denied rustdoc and formatting/diff checks pass. The full workspace
 runtime suite was not repeated for this parser/expression batch.
 
-The [DATE arithmetic recipe](testing/compare_date_arithmetic.py) passes 62 controls
+The [DATE arithmetic recipe](../tests/access/queries/expressions/compare_date_arithmetic.py) passes 62 controls
 on the optimized CLI, including inert raw-bit reads from existing original Jet 4,
 ACE 2007, ACE 2016 and ACE 2019 scalar fixtures. All input hashes remain unchanged.
 These compare an explicit serial/IEEE model, not native Access SQL. No database
@@ -17677,7 +17677,7 @@ features. Relevant all-target/all-feature Clippy, the minimal workspace release
 build, warnings-denied expression/query rustdoc and formatting/diff checks pass.
 The full workspace runtime suite was not repeated for this expression-only batch.
 
-The [high-precision comparison](testing/compare_transcendental_functions.py)
+The [high-precision comparison](../tests/access/queries/expressions/compare_transcendental_functions.py)
 passes 134 mathematical/NULL/refusal controls on both development and optimized
 CLIs. Decimal provides high-precision root/exponential/logarithm references;
 independent power series and Machin's identity provide trigonometric references
@@ -17957,8 +17957,8 @@ Four original Jet 4 / ACE 2007/2016/2019 inputs pass 176 independent controls wi
 unchanged sources, including mixed ten-column keys, node roots, full/projected
 reads and corruption refusals. The prior Binary corpus passes 84 controls, with
 its existing compound case now positive. Native Microsoft Access remains unrun.
-[Contracts](testing/BINARY_INDEX_TUPLES.md) and
-[fixture identities](testing/FIXTURES.md#compound-binary-index-inputs) record exact scope.
+[Contracts](../tests/reports/indexes/BINARY_INDEX_TUPLES.md) and
+[fixture identities](../tests/reports/reading/FIXTURES.md#compound-binary-index-inputs) record exact scope.
 Full-string SQL collation remains a separate native-observation requirement;
 physical index weights do not silently replace the explicit ordinal query policy.
 
@@ -17986,7 +17986,7 @@ All 408 independent tuple controls pass across eight Jet 4 / ACE 2007/2016/2019
 General combinations, with unchanged sources. Registered MSysObjects.ParentIdName
 now supports complete/projected reads; authored corruption checks retain mandatory
 key verification. [Contracts](access/indexes/NATIVE_TEXT.md#compound-text-index-reads) and
-[fixture identities](testing/FIXTURES.md#compound-general-text-index-inputs) distinguish
+[fixture identities](../tests/reports/reading/FIXTURES.md#compound-general-text-index-inputs) distinguish
 these observations from unrun native Microsoft Access qualification.
 
 All 1,034 workspace all-feature tests and workspace all-target/all-feature Clippy
@@ -18016,7 +18016,7 @@ retains its 1 MiB default buffered-output ceiling and accepts an explicit allowa
 through 16 MiB; failed default-output runs publish no partial stdout.
 [Memo scope](access/indexes/NATIVE_TEXT.md#memo-index-reads) records Microsoft's differing current
 and older indexing documentation separately from unrun native Access evidence;
-[fixture records](testing/FIXTURES.md#general-memo-index-reads) retain exact source hashes.
+[fixture records](../tests/reports/reading/FIXTURES.md#general-memo-index-reads) retain exact source hashes.
 
 All 1,029 workspace all-feature tests and workspace all-target/all-feature Clippy
 pass. Minimal release workspace builds, warnings-denied rustdoc, formatting/diff
@@ -18063,7 +18063,7 @@ queries. The expensive General 2010 cumulative check hits the fixed CLI work
 limit without partial output; smaller checks complete. Three fresh mixed-schema
 inputs pass 198 indexed projection/order/range/refusal controls. Source hashes
 remain unchanged. [Text contracts](access/indexes/NATIVE_TEXT.md#checked-short-text-index-reads)
-and [fixture records](testing/FIXTURES.md#general-short-text-indexed-reads) retain exact
+and [fixture records](../tests/reports/reading/FIXTURES.md#general-short-text-indexed-reads) retain exact
 scope and distinguish this evidence from unrun native Microsoft Access tests.
 
 All 1,022 workspace all-feature tests and workspace all-target/all-feature Clippy
@@ -18328,7 +18328,7 @@ the fourth has ACE 2007 code 2/subversion 0. All four match expected envelope
 metadata and retain their source hashes; ordinary catalog reads remain refused.
 This evidence does not establish an ACE 16 encrypted layout or native Access
 compatibility. See [scope and references](access/storage/NATIVE_ENCRYPTION.md) and
-[fixture provenance](testing/FIXTURES.md#encryption-envelope-reference-inputs).
+[fixture provenance](../tests/reports/reading/FIXTURES.md#encryption-envelope-reference-inputs).
 
 All 94 native engine library tests and ten CLI inspection tests passed, including
 seven new engine tests and three CLI tests for malformed/unknown envelopes,
@@ -18374,7 +18374,7 @@ boundaries and all ten policy tests passed; no dependency changed.
 The unchanged original Binary inputs pass 200 independent interval/projection/
 disjoint-subtree controls. A temporary damaged rightmost subtree remains unread
 for NULL selection but fails full traversal without partial output. Expected rows
-come from independent native cursors filtered by raw byte bounds. [Evidence](testing/BINARY_INDEX_RANGES.md)
+come from independent native cursors filtered by raw byte bounds. [Evidence](../tests/reports/indexes/BINARY_INDEX_RANGES.md)
 distinguishes partial traversal from native Access/Windows/write qualification,
 which remains unrun.
 The original 72 complete Binary controls and 1,100 scalar CLI controls also pass
@@ -18411,8 +18411,8 @@ Four new original inert Jackcess inputs pass 72 independent tagged/full/projecte
 check/refusal controls, including 1,000-row ascending/descending node-root trees,
 NULL/empty/duplicate values and lengths through 255 bytes. All hashes remain
 unchanged. Existing GUID comparisons retain 2,034 ordered rows per ACE profile,
-and original scalar CLI inputs retain 1,100 controls. [Evidence](testing/BINARY_INDEX_READS.md)
-and [fixture provenance](testing/FIXTURES.md#native-binary-index-inputs) distinguish this
+and original scalar CLI inputs retain 1,100 controls. [Evidence](../tests/reports/indexes/BINARY_INDEX_READS.md)
+and [fixture provenance](../tests/reports/reading/FIXTURES.md#native-binary-index-inputs) distinguish this
 read scope from pending native Access/Windows/save/primary/foreign qualification.
 
 Next: binary compound keys and typed binary range reads before locale-dependent
@@ -18444,8 +18444,8 @@ boundaries and all ten policy tests passed; no dependency changed.
 Four original append-only inputs and separate deleted-declaration derivatives pass
 60 full/cursor/CLI/query/refusal controls against independent getters, with all
 base/derivative hashes unchanged. Original scalar CLI checks retain 1,100 controls;
-modern ACE exact-carrier comparisons also pass unchanged. [Evidence](testing/COLUMN_HISTORIES.md)
-and [fixture provenance](testing/FIXTURES.md#deleted-column-history-derivatives) distinguish
+modern ACE exact-carrier comparisons also pass unchanged. [Evidence](../tests/reports/schema/COLUMN_HISTORIES.md)
+and [fixture provenance](../tests/reports/reading/FIXTURES.md#deleted-column-history-derivatives) distinguish
 engineering derivatives from unrun native Access deletion/save/Windows qualification.
 The private guides remain ignored.
 
@@ -18474,7 +18474,7 @@ checks passed. Dependency boundaries and all ten policy tests passed; no depende
 Independent large-map fixtures retain 24 engineering query controls and now pass
 32 CLI controls: five complete query results, default-budget refusal and separate
 execution/output-budget refusals per profile. Original scalar CLI inputs retain
-1,100 controls. All hashes are unchanged. [Reproduction](testing/BATCHED_QUERY_SNAPSHOTS.md)
+1,100 controls. All hashes are unchanged. [Reproduction](../tests/reports/queries/BATCHED_QUERY_SNAPSHOTS.md)
 distinguishes stored getter comparison from native Access qualification, which
 remains unrun. [Query documentation](access/queries/NATIVE_QUERIES.md) records option scope.
 
@@ -18505,7 +18505,7 @@ Existing independent 6,000-page fixtures pass six query controls each: full sort
 IDs, descending TOP, filtered tail, Count(*), a bounded correlated query and
 default-budget refusal. Successful engineering calls explicitly supply 64 MiB
 native bytes; the ordinary CLI budget remains 16 MiB. All fixture hashes remain
-unchanged. [Evidence and reproduction](testing/BATCHED_QUERY_SNAPSHOTS.md) distinguish
+unchanged. [Evidence and reproduction](../tests/reports/queries/BATCHED_QUERY_SNAPSHOTS.md) distinguish
 bounded complete snapshot loading from streaming queries and pending native
 Microsoft Access/Windows/live-file qualification.
 The original 1,100 scalar CLI controls and 28 large-table page/count/refusal
@@ -18542,7 +18542,7 @@ fixtures pass five controls each: ordinary Id results in three batch sizes and
 explicit full/calculated-selection refusals. All hashes remain unchanged. The
 original 1,100 inventory/page/projection/query controls and modern ACE exact-carrier
 comparisons also pass unchanged. The
-[cursor evidence](testing/RESUMABLE_TABLE_READS.md) distinguishes library APIs and
+[cursor evidence](../tests/reports/reading/RESUMABLE_TABLE_READS.md) distinguishes library APIs and
 engineering output from ordinary CLI behavior. Native Access and live-file
 qualification remain pending.
 
@@ -18573,7 +18573,7 @@ passed. Dependency boundaries and all ten policy tests passed; no dependency cha
 All 6,000 rows in each unchanged independent large-map fixture match Jackcess
 at batch sizes 1, 127 and 250. Original scalar fixtures retain 1,100 controls;
 the original page/count/refusal checks remain separate from complete cursor reads.
-[Reproduction and measurements](testing/RESUMABLE_TABLE_READS.md) record a 1,000-row
+[Reproduction and measurements](../tests/reports/reading/RESUMABLE_TABLE_READS.md) record a 1,000-row
 scan in 25-row batches: 10.627 ms using repeated offsets versus 3.563 ms through
 continuation, about 2.98 times faster in the memory-backed harness. These are
 milliseconds per scan, not single-value timings or disk performance measurements.
@@ -18603,7 +18603,7 @@ Dependency boundaries and all ten policy tests passed.
 New independent Jet 4/ACE 2007/2016/2019 fixtures each contain 6,000 rows on 6,000
 owned pages. All 28 selected-page/count/refusal controls passed with unchanged
 hashes. Existing scalar inputs retained 1,100 controls, and modern ACE checks
-passed unchanged. [Evidence](testing/ALLOCATION_MAP_PAGING.md) separates stored
+passed unchanged. [Evidence](../tests/reports/storage/ALLOCATION_MAP_PAGING.md) separates stored
 getter comparison from pending native Access/SQL/live-file qualification.
 
 Hyperfine measured the small example at 57.49 µs/page before and 57.51 µs/page
@@ -18620,7 +18620,7 @@ Complete NativeImage capture and OfflineReadTransaction retain an explicit 64 Mi
 image ceiling before allocation, including when a caller supplies a larger budget.
 Existing page/map/row/payload/work/output limits and offline-source requirements
 remain. No layout, encoding, query materialization or write qualification expanded.
-[Large-source evidence](testing/LARGE_FILE_READS.md) separates the larger envelope
+[Large-source evidence](../tests/reports/reading/LARGE_FILE_READS.md) separates the larger envelope
 from unrestricted large-table or native Access compatibility.
 
 All 914 workspace all-feature tests passed. Synthetic cases fetch a row from the
@@ -18634,7 +18634,7 @@ Dependency boundaries and all ten policy tests passed; no dependency changed.
 
 Independent checks passed 1,100 controls on original scalar inputs plus 1,100 on
 128 MiB padded derivatives, with all hashes unchanged. Modern ACE checks passed
-unchanged too. [Fixture records](testing/FIXTURES.md#larger-read-source-derivatives) retain
+unchanged too. [Fixture records](../tests/reports/reading/FIXTURES.md#larger-read-source-derivatives) retain
 provenance and explain that padding does not establish native global allocation
 validity. Native Access, live-file consistency and authentic large-database
 qualification remain pending. Next: lazy allocation-map traversal for large-table
@@ -18659,10 +18659,10 @@ all-target Clippy, parser-free expression tests, minimal release build, warnings
 denied rustdoc, formatting and diff checks passed. Dependency boundaries and ten
 policy tests passed. Existing scalar files passed 1,100 independent controls across
 Jet 4/ACE 2007/2016/2019; modern ACE checks passed too, with source hashes unchanged.
-[Fixture evidence](testing/FIXTURES.md#checked-decimal-arithmetic-read-regression) remains
+[Fixture evidence](../tests/reports/reading/FIXTURES.md#checked-decimal-arithmetic-read-regression) remains
 independent getter/rational evidence rather than native Access SQL conformance.
 
-[Hyperfine measurements](testing/DECIMAL_ARITHMETIC.md) over ten million operations
+[Hyperfine measurements](../tests/reports/general/DECIMAL_ARITHMETIC.md) over ten million operations
 per run measured about 12.6 ns per operation for the Decimal add/subtract/multiply
 mix and 38.9 ns per Decimal division, versus 5.1 ns for the same Int64 arithmetic
 mix. Whole-process amortized timings include overhead and do not establish engine
@@ -18692,7 +18692,7 @@ expression tests, minimal release build, warnings-denied rustdoc, formatting and
 diff checks passed. Dependency boundaries and ten policy tests passed; no package
 or feature was added. Original Jet 4/ACE 2007/2016/2019 scalar files passed 1,080
 controls with unchanged hashes. Modern ACE scalar controls also passed unchanged.
-[Fixture evidence](testing/FIXTURES.md#explicit-decimal-conversion-read-regression) uses
+[Fixture evidence](../tests/reports/reading/FIXTURES.md#explicit-decimal-conversion-read-regression) uses
 independent getter/exact-carrier models, not native Access SQL equivalence.
 
 ## Shared declared Decimal field constraints
@@ -18736,7 +18736,7 @@ getter/model checks do not establish native Access equivalence.
 Hyperfine measured approximately 53 ns per Decimal conversion and 511 ns per
 floating-input conversion, versus 14 ns for the existing integer-kernel Decimal
 reference. These whole-process amortized costs cover different fixed workloads;
-they do not establish query-engine speed. [Benchmark details](testing/CURRENCY_CONVERSIONS.md)
+they do not establish query-engine speed. [Benchmark details](../tests/reports/queries/CURRENCY_CONVERSIONS.md)
 and [dependency records](development/DEPENDENCIES.md#explicit-currency-conversion-dependency)
 record scope and enabled features.
 
@@ -18769,7 +18769,7 @@ Existing original Jet 4/ACE 2007/2016/2019 scalar inputs passed 980 controls wit
 unchanged hashes, including exact IEEE result comparisons and NULL refusals.
 Original modern ACE scalar inputs retained carrier/index/query checks and passed
 both explicit float conversions at Large Number extrema/beyond double precision,
-unchanged. [Fixture evidence](testing/FIXTURES.md#explicit-floating-conversion-read-regression)
+unchanged. [Fixture evidence](../tests/reports/reading/FIXTURES.md#explicit-floating-conversion-read-regression)
 records the independent rational/IEEE model; native Access SQL remains unrun.
 
 ## Shared checked integer and Boolean conversion functions
@@ -18796,7 +18796,7 @@ checks passed. No dependency is added.
 Existing original Jet 4/ACE 2007/2016/2019 files passed 868 controls with unchanged
 hashes. Original modern ACE scalar inputs additionally retained exact carrier/
 index/query checks and passed exact Large Number conversion, numeric truth and
-NULL-refusal controls, unchanged. [Fixture evidence](testing/FIXTURES.md#checked-numeric-conversion-read-regression)
+NULL-refusal controls, unchanged. [Fixture evidence](../tests/reports/reading/FIXTURES.md#checked-numeric-conversion-read-regression)
 uses independent exact rational/getter models, not native Access SQL. Windows
 NULL/Boolean/coercion/platform qualification remains pending.
 
@@ -18826,7 +18826,7 @@ December endpoints. Workspace Clippy, release build, rustdoc, formatting and dif
 checks passed. Existing original Jet 4/ACE 2007/2016/2019 scalar files passed 584
 controls with unchanged hashes; original modern ACE scalar inputs also retained
 exact carrier/index/query checks and passed nine Extended DatePart projections,
-unchanged. [Fixture evidence](testing/FIXTURES.md#gregorian-datepart-read-regression) separates
+unchanged. [Fixture evidence](../tests/reports/reading/FIXTURES.md#gregorian-datepart-read-regression) separates
 independent getter/model results and documentation goldens from native Access
 runs, which remain unperformed. No dependency, fixture or third-party code added.
 
@@ -18859,7 +18859,7 @@ tests, release build, formatting and diff checks passed. Existing original
 Jet 4/ACE 2007/2016/2019 scalar files passed 536 controls with unchanged hashes.
 Existing modern ACE inputs retained carrier/index/query checks and passed Extended
 zero/one-second and Long-overflow refusal controls, also unchanged.
-[Fixture evidence](testing/FIXTURES.md#gregorian-datediff-read-regression) remains independent
+[Fixture evidence](../tests/reports/reading/FIXTURES.md#gregorian-datediff-read-regression) remains independent
 getter/model comparison, not native Access SQL. No dependency or fixture added.
 
 ## Shared Gregorian DateAdd
@@ -18887,7 +18887,7 @@ Workspace Clippy, parser-free expression tests, release build, rustdoc, formatti
 and diff checks passed. Existing original Jet 4/ACE 2007/2016/2019 scalar files
 passed 488 controls with unchanged hashes. Existing modern ACE inputs retained
 exact tagged carriers/index/query checks and passed zero-count/fraction-preserving
-leap-day Extended DateAdd projections, also unchanged. [Fixture evidence](testing/FIXTURES.md#gregorian-dateadd-read-regression)
+leap-day Extended DateAdd projections, also unchanged. [Fixture evidence](../tests/reports/reading/FIXTURES.md#gregorian-dateadd-read-regression)
 is independent getter/model comparison; native Access SQL remains unrun. No new
 dependency, third-party code or fixture is added.
 
@@ -18916,7 +18916,7 @@ Existing original Jet 4/ACE 2007/2016/2019 scalar fixtures passed 448 controls w
 unchanged bytes. Original modern ACE scalar files additionally passed six
 Extended component projections, exact tagged carrier/index/query checks and
 unchanged-hash checks, including years 1/9999 and 100 ns fractions.
-[Fixture evidence](testing/FIXTURES.md#gregorian-date-component-read-regression) remains
+[Fixture evidence](../tests/reports/reading/FIXTURES.md#gregorian-date-component-read-regression) remains
 independent inert getter/model comparison, not native Access SQL evidence.
 No new third-party code, fixture or runtime is adopted.
 
@@ -18943,7 +18943,7 @@ cancellation, grouped/correlated retrieval and CLI buffered failures. Workspace
 Clippy, parser-free expression tests, default release build, rustdoc, formatting
 and diff checks passed. Existing original Jet 4/ACE 2007/2016/2019 scalar files
 passed 424 inventory/page/projection/query controls with unchanged bytes, including
-eight text operations over Text and Memo getters. [Fixture evidence](testing/FIXTURES.md#text-built-in-read-regression)
+eight text operations over Text and Memo getters. [Fixture evidence](../tests/reports/reading/FIXTURES.md#text-built-in-read-regression)
 remains independent storage/getter/model comparison, not native Access SQL.
 No dependency or fixture is added.
 
@@ -18965,7 +18965,7 @@ Workspace Clippy, default release build, rustdoc, parser-free expression tests,
 formatting and diff checks passed. Four existing original Jet 4/ACE 2007/2016/2019
 scalar files passed 360 inventory/page/projection/query controls, including both
 Nz forms around fourteen stored carriers, with unchanged source bytes.
-[Fixture evidence](testing/FIXTURES.md#query-context-nz-scalar-regression) remains independent
+[Fixture evidence](../tests/reports/reading/FIXTURES.md#query-context-nz-scalar-regression) remains independent
 getter/model comparison, not native Access SQL qualification. No dependency added.
 
 ## Shared IsNull and eager IIf built-ins
@@ -18991,7 +18991,7 @@ all fourteen stored carriers and exact numeric condition models. All 835 workspa
 all-feature tests passed; subsequent affected-package/focused checks, Clippy,
 release build, rustdoc, formatting and parser-free expression tests also passed.
 No new dependency
-or fixture is added. [Fixture evidence](testing/FIXTURES.md#built-in-scalar-read-regression)
+or fixture is added. [Fixture evidence](../tests/reports/reading/FIXTURES.md#built-in-scalar-read-regression)
 retains the oracle's inert getter/model scope.
 
 
@@ -19020,7 +19020,7 @@ All 825 workspace all-feature tests, Clippy, default release build, rustdoc,
 formatting and standalone no-default query/Access checks passed. Independent original Jet 4/ACE
 2007/2016/2019 dependency files and existing parameter inputs passed 362
 saved/direct execution/getter/refusal controls over 171 definitions with unchanged
-bytes. [Fixture records](testing/FIXTURES.md#saved-select-dependency-inputs) separate the
+bytes. [Fixture records](../tests/reports/reading/FIXTURES.md#saved-select-dependency-inputs) separate the
 corrected original recipe, synthetic checks and independent evidence from native
 Access parameter/scope qualification, which remains unrun. No dependency added.
 
@@ -19045,7 +19045,7 @@ same-source parameter/filter/order execution, preserved fragments, cancellation,
 cumulative budget exhaustion, CLI argument/presentation policy and payload-free
 diagnostics. Seven original Jet 4/ACE 2007/2016/2019 inputs passed 358 saved/direct
 execution/getter/refusal controls over 168 definitions with unchanged bytes.
-[Fixture records](testing/FIXTURES.md#explicit-saved-select-execution-inputs) retain the new
+[Fixture records](../tests/reports/reading/FIXTURES.md#explicit-saved-select-execution-inputs) retain the new
 original ACE 2007 hash and existing-input provenance. No dependency or write
 qualification changed; native Access SQL comparison remains unrun.
 
@@ -19076,7 +19076,7 @@ SELECTs; 124 inventory/page/projection/query controls cover long payloads, NULLs
 filter/sort inputs, outer joins, grouping, correlation, derived reads, UNION and
 TOP. Another 576 indexed/sequential predicate/projection controls retain narrow
 outputs, constants/counts, parameter hints and residual filters. Input bytes stayed
-unchanged. [Fixture provenance](testing/FIXTURES.md#cross-family-projected-query-regression)
+unchanged. [Fixture provenance](../tests/reports/reading/FIXTURES.md#cross-family-projected-query-regression)
 records fresh hashes and the existing original inputs. Python compilation passed;
 no production query code/dependency was changed. Native Access remains unrun.
 
@@ -19133,7 +19133,7 @@ Three fresh original 1,000-row ACE 2007/2016/2019 inputs passed 157 independent
 cursor/model controls: full ascending/descending/composite order, counts, NULLs,
 duplicate/endpoints, exact Int64 values beyond 2^53, range and non-key predicates,
 and buffered missing/ignore-NULL/text-index refusal. Inputs remain unchanged.
-[Fixture records](testing/FIXTURES.md#mixed-schema-index-projection-inputs) record hashes,
+[Fixture records](../tests/reports/reading/FIXTURES.md#mixed-schema-index-projection-inputs) record hashes,
 reference-builder warnings, original recipes and scope. Native Access remains
 unrun. Synthetic cases also verify key reconstruction across GUID/Decimal/tuple
 profiles, zero-width outputs, hidden-key corruption and actual node pruning with
@@ -19168,7 +19168,7 @@ See [contracts and limits](access/queries/NATIVE_QUERIES.md#scalar-views-of-mixe
 Original ACE 2007/2016/2019 mixed inputs pass 45 independent getter/model controls
 for scalar fields after native collection columns, filters/counts, outer joins,
 correlation, derived wildcards and buffered refusal. Input bytes remain unchanged.
-[Fixture records](testing/FIXTURES.md#scalar-queries-over-mixed-native-tables) distinguish
+[Fixture records](../tests/reports/reading/FIXTURES.md#scalar-queries-over-mixed-native-tables) distinguish
 these results from unrun native Microsoft Access SQL/locale qualification.
 Synthetic checks additionally cover unknown carriers, zero-width native rows,
 missing/duplicate selections, shared controls, schema changes, unavailable name
@@ -19202,7 +19202,7 @@ The original inert Java oracle and nine existing ACE 2007/2016/2019 inputs passe
 multivalue/cache matrix now passes 102 controls, retaining all 57 earlier cases;
 attachment/history corrupt-copy runners additionally check empty general-page
 refusal. Existing stored metadata/history canonical hashes remain unchanged.
-[Fixture records](testing/FIXTURES.md#mixed-stored-collection-page-verification) retain
+[Fixture records](../tests/reports/reading/FIXTURES.md#mixed-stored-collection-page-verification) retain
 independent evidence separately from unrun native Microsoft Access qualification.
 
 Local workspace all-feature tests (789), Clippy, rustdoc, default release build,
@@ -19232,7 +19232,7 @@ existing nullable/corrupt disposable copies passed, preserving original bytes
 and canonical hashes. Checks include metadata/encoded lengths, empty membership,
 NULLs, signed-zero/subnormal/alias/calendar-extreme DATE bits, stored ordering,
 and no-output rejection. Separate bordered attachment/history reports passed.
-[Fixture records](testing/FIXTURES.md#stored-collection-cli-verification-using-existing-inputs)
+[Fixture records](../tests/reports/reading/FIXTURES.md#stored-collection-cli-verification-using-existing-inputs)
 retain independent evidence separately from unrun native Access qualification.
 
 Local workspace all-feature tests (785), Clippy, rustdoc, default release build,
@@ -19293,7 +19293,7 @@ These APIs do not yet render attachment/history cells through CLI rows.
 Fresh original V2007 inputs passed independent Jackcess comparisons for six
 attachments (65,810 decoded bytes), exact stored metadata and eighteen history
 versions across six parent collections, retaining ACE 16 controls and corruption
-cases. [Fixture evidence](testing/FIXTURES.md#ace-2007-stored-attachment-and-history-inputs)
+cases. [Fixture evidence](../tests/reports/reading/FIXTURES.md#ace-2007-stored-attachment-and-history-inputs)
 records hashes and limitations. Local workspace tests, Clippy, rustdoc and release
 build passed; native Microsoft Access comparison remains unrun.
 
@@ -19323,7 +19323,7 @@ twelve corrupted orphan/template copies, plus nine raw parent/child memberships
 and twelve corrupted-reference copies. Optional ACE 2007 mixed-page controls add
 eleven cases, retaining the original 46 controls (57 total). Original ACE 16
 canonical collection/reference hashes and all input bytes remain unchanged.
-[Fixture records](testing/FIXTURES.md#ace-2007-complex-key-and-multivalue-inputs) identify the
+[Fixture records](../tests/reports/reading/FIXTURES.md#ace-2007-complex-key-and-multivalue-inputs) identify the
 final fresh inputs, reviewed artifact, original sources/oracles and exact scope.
 Evaluation is disabled; no native Access provider or active content runs.
 
@@ -19372,7 +19372,7 @@ A fixed-seed 128-case property and saved regression check collection membership
 across parent offsets. New original mixed fixtures keep deliberately stale caches,
 while independent readers cover eight collection carriers through existing inputs.
 All 46 independent mixed-page controls pass with unchanged originals;
-[provenance](testing/FIXTURES.md#mixed-multivalue-page-inputs) records hashes, original
+[provenance](../tests/reports/reading/FIXTURES.md#mixed-multivalue-page-inputs) records hashes, original
 recipes/oracles and the distinction from native Access qualification.
 
 All 777 all-feature workspace tests/doc tests and 349 standalone default ACE tests/
@@ -19448,7 +19448,7 @@ an independent ordinal model. Shared-library and CLI tests cover explicit opt-in
 headers in both formats and deliberately stale results that must not be recomputed.
 The independent runner matches 38 controls on four unchanged original fixtures;
 previous Int32/six-scalar inspection runners also remain green.
-[Provenance](testing/FIXTURES.md#cached-calculation-page-regression) distinguishes inert
+[Provenance](../tests/reports/reading/FIXTURES.md#cached-calculation-page-regression) distinguishes inert
 Jackcess evidence from native Microsoft Access/formula/locale qualification.
 
 All 767 all-feature workspace tests/doc tests and 344 standalone default ACE tests/
@@ -19483,7 +19483,7 @@ The registered example already reports Ace2007 and remains readable through its
 existing profile. Fresh V2007 independent inventory, five page cases and ordered
 SELECT agree on fourteen scalar carriers; original bytes remain unchanged.
 The Jet 4 and both ACE 16 scalar and metadata matrices also pass with Kind labels.
-[Fixture records](testing/FIXTURES.md#ace-2007-browsing-priority-regression) retain the new
+[Fixture records](../tests/reports/reading/FIXTURES.md#ace-2007-browsing-priority-regression) retain the new
 hash/reproduction; [profile explanation](access/NATIVE_READING.md#read-profile-selection)
 distinguishes shared decoding from header recognition and capability qualification.
 No native Microsoft Access comparison or broader compatibility claim is added.
@@ -19511,7 +19511,7 @@ existing-page writer and complete final constraints. Decimal tuples select a wid
 private atom; compact numeric/GUID tree entries retain their representations.
 Original-association update cascades now include same-precision/scale Decimal
 pairs. All changed masks/fields/indexes retain authorized-byte preservation proofs.
-[Contract](testing/ACE16_WRITE_PREVIEWS.md#decimal-slot-and-index-write-previews)
+[Contract](../tests/reports/development/ACE16_WRITE_PREVIEWS.md#decimal-slot-and-index-write-previews)
 keeps record resizing, other variable carriers, allocation/splits, production saves,
 journaling and native Access/data-macro qualification separate.
 
@@ -19524,7 +19524,7 @@ independent V2016/V2019 originals match 22 complete candidates (four no-ops), 22
 reverse-order controls and fourteen atomic rejections. Full rows/long values,
 independent cursors, topology/reference sets and authorized byte spans agree.
 The previous 21 numeric ACE/Jet 4, 24 GUID and 46 Boolean/IEEE/DATE candidate manifests
-remain frozen. [Fixture identities](testing/FIXTURES.md#decimal-slot-and-index-update-inputs)
+remain frozen. [Fixture identities](../tests/reports/reading/FIXTURES.md#decimal-slot-and-index-update-inputs)
 record the observed inputs/manifests without claiming native Access conformance.
 
 All 755 all-feature workspace tests/doc tests and 338 default ACE tests/doc tests
@@ -19557,7 +19557,7 @@ limits and final cancellation. A new CLI test covers details, summaries and
 unsupported-column preservation; the existing exact schema-output expectation is
 updated. Fresh original Jet 4 and both ACE 16-family databases match independently
 read inventories/column metadata and linked refusal behavior, with unchanged
-source bytes. [Fixture provenance](testing/FIXTURES.md#native-browsing-metadata-inputs)
+source bytes. [Fixture provenance](../tests/reports/reading/FIXTURES.md#native-browsing-metadata-inputs)
 retains native Access/provider/Windows qualification as unfinished.
 
 Workspace all-feature tests/doc tests, warnings-denied all-feature/default Clippy,
@@ -19585,7 +19585,7 @@ The fixed-seed property checks 256 short patterns against an independent exhaust
 model. Fresh original Jet 4 and both ACE 16-family inputs each contain 28 inert
 text/NULL records. Independent stored-row reads plus explicit ordinal regex models
 match 228 projection/filter/NULL/error controls overall, with unchanged input bytes.
-[Fixture provenance](testing/FIXTURES.md#native-like-query-inputs) distinguishes these from
+[Fixture provenance](../tests/reports/reading/FIXTURES.md#native-like-query-inputs) distinguishes these from
 native Access SQL/locale evidence. No native provider or active content executes.
 
 Workspace all-feature tests/doc tests, standalone default expression tests,
@@ -19622,7 +19622,7 @@ use, cumulative controls and cancellation without the CLI. Existing CLI tests
 remain passing. Fresh original Jet 4 and both ACE 16-family files each contain
 20,050 independently enumerated rows; thirty page controls compare 351 returned
 rows, including deep offsets and long text. All source bytes remain unchanged.
-[Provenance and observed hashes](testing/FIXTURES.md#larger-native-browsing-page-inputs)
+[Provenance and observed hashes](../tests/reports/reading/FIXTURES.md#larger-native-browsing-page-inputs)
 distinguish independent evidence from pending native Access/Windows qualification.
 
 Workspace all-feature tests/doc tests, warnings-denied all-feature/default Clippy,
@@ -19647,7 +19647,7 @@ Four new CLI tests cover Jet 4 discovery/pages, registered-sample output agreeme
 source preservation, unknown/unusual names, unsupported columns, truncation and
 invalid pagination. Fresh independent V2000/V2016/V2019 files each match complete
 catalog table inventories, five scalar page controls and an ordered SELECT. Their
-original bytes remain unchanged. [Fixture provenance](testing/FIXTURES.md#native-cli-browsing-inputs)
+original bytes remain unchanged. [Fixture provenance](../tests/reports/reading/FIXTURES.md#native-cli-browsing-inputs)
 records the original recipe, reviewed artifact and observed hashes; these are
 independent comparisons, with native Access/Windows qualification still pending.
 
@@ -19682,8 +19682,8 @@ successful updates/no-ops and complete values while preserving unknown flag gate
 Independent comparisons match forty-six complete candidates, forty-six reversed
 controls and eighteen rejections. All exact bits, complete tables, index cursors,
 topology/reference sets and authorized byte spans agree. The earlier 21 single-
-column ACE/Jet 4 and 24 GUID candidates retain frozen manifests. [Contract](testing/ACE16_WRITE_PREVIEWS.md#boolean-ieee-and-legacy-date-index-write-previews)
-and [fixture manifests](testing/FIXTURES.md#boolean-ieee-and-date-index-update-inputs)
+column ACE/Jet 4 and 24 GUID candidates retain frozen manifests. [Contract](../tests/reports/development/ACE16_WRITE_PREVIEWS.md#boolean-ieee-and-legacy-date-index-write-previews)
+and [fixture manifests](../tests/reports/reading/FIXTURES.md#boolean-ieee-and-date-index-update-inputs)
 retain native Access/data-macro/save qualification as unfinished.
 
 All 717 all-feature workspace tests/doc tests and 329 default ACE tests/doc tests
@@ -19715,8 +19715,8 @@ Independent fresh 2016/2019 files match twenty-four candidates, twenty-four
 reversed controls and ten atomic rejections, including a split-required change.
 Complete tables/long values, index cursors, topology/reference sets and authorized
 byte spans agree. The earlier 21 single-column ACE/Jet 4 candidates and 22 composite/mask
-batches retain frozen manifest hashes. [Contract](testing/ACE16_WRITE_PREVIEWS.md#guid-index-write-previews)
-and [immutable manifests](testing/FIXTURES.md#guid-index-update-inputs) distinguish this
+batches retain frozen manifest hashes. [Contract](../tests/reports/development/ACE16_WRITE_PREVIEWS.md#guid-index-write-previews)
+and [immutable manifests](../tests/reports/reading/FIXTURES.md#guid-index-update-inputs) distinguish this
 engineering evidence from native Access/data-macro qualification.
 
 All 710 all-feature workspace tests/doc tests and 328 default ACE tests/doc tests
@@ -19752,8 +19752,8 @@ separate enforcing unique index with different directions. Link checking now
 admits the matching unique column set; complete physical/relationship checks
 remain mandatory. A focused unit regression also covers different ordering,
 nonunique/wrong/unknown declarations and cancellation/resource failure.
-[Contract](testing/ACE16_WRITE_PREVIEWS.md#declared-update-cascade-batches) and
-[immutable manifests](testing/FIXTURES.md#declared-update-cascade-inputs) retain the
+[Contract](../tests/reports/development/ACE16_WRITE_PREVIEWS.md#declared-update-cascade-batches) and
+[immutable manifests](../tests/reports/reading/FIXTURES.md#declared-update-cascade-inputs) retain the
 independent/native qualification distinction. Native Access comparisons,
 non-integral indexed mutation, variable records, allocation/splits, INSERT/DELETE,
 production saves and the rest of backend milestones 1–9 remain unfinished.
@@ -19786,8 +19786,8 @@ only fresh outputs after preparation completes. Independent comparisons match
 typed rejections. Complete related/untouched tables, long values, exact carriers,
 index cursors, page/count/child/row-reference sets and authorized byte spans agree.
 The earlier 84 single-column mask candidates keep their original row hashes.
-[Contract](testing/ACE16_WRITE_PREVIEWS.md#explicit-fixed-field-batches) and
-[fixture manifests](testing/FIXTURES.md#explicit-fixed-field-batch-inputs) distinguish this
+[Contract](../tests/reports/development/ACE16_WRITE_PREVIEWS.md#explicit-fixed-field-batches) and
+[fixture manifests](../tests/reports/reading/FIXTURES.md#explicit-fixed-field-batch-inputs) distinguish this
 evidence from native Access/data-macro/transaction qualification.
 
 All 696 all-feature workspace tests/doc tests and 26 default mutation/composite
@@ -19819,8 +19819,8 @@ and atomic refusal of a required split. Independent V2016/V2019 comparisons matc
 including composite foreign keys and ten-column indexes. Related rows, complete
 Memo/OLE values, page/count/child/row-reference sets and permitted byte spans
 agree. All 21 earlier single-column candidates retain their original ACE/Jet 4
-manifest hashes. [Contract](testing/ACE16_WRITE_PREVIEWS.md#integral-composite-index-updates)
-and [fixture hashes](testing/FIXTURES.md#integral-composite-index-update-inputs) retain the
+manifest hashes. [Contract](../tests/reports/development/ACE16_WRITE_PREVIEWS.md#integral-composite-index-updates)
+and [fixture hashes](../tests/reports/reading/FIXTURES.md#integral-composite-index-update-inputs) retain the
 native Access/data-macro qualification gaps.
 
 The new read-only `check_table` engineering example provides explicit bounded
@@ -19854,8 +19854,8 @@ tables, complete Memo/OLE values, all selected index cursors, page/count/child/
 row-reference sets and unrelated bytes remain intact. The earlier 84 Boolean/
 mask candidates still match their original row hashes, with 22 current rejection
 cases; two final ordinary-Boolean span checks also pass with unrelated enforced
-relationships present. [The contract](testing/ACE16_WRITE_PREVIEWS.md#checked-foreign-index-updates)
-and [fixture record](testing/FIXTURES.md#checked-foreign-index-update-inputs) retain native
+relationships present. [The contract](../tests/reports/development/ACE16_WRITE_PREVIEWS.md#checked-foreign-index-updates)
+and [fixture record](../tests/reports/reading/FIXTURES.md#checked-foreign-index-update-inputs) retain native
 Access, data-macro, production-save and mixed-client qualification limits.
 
 All 680 all-feature workspace tests/doc tests, nineteen default mutation tests,
@@ -19879,8 +19879,8 @@ NULLs, compression, deep trees, both directions, uniqueness swaps, stale/wrong
 carriers, cancellation/resource failures and a deterministic 128-case exact model.
 Fresh independent V2016/V2019 comparisons match 56 full candidates (eight exact
 no-ops), reject 32 requests without output, and retain page topology, row
-references, all unrelated bytes and complete long values. [The contract](testing/ACE16_WRITE_PREVIEWS.md#integral-and-currency-index-updates)
-and [fixture hashes](testing/FIXTURES.md#integral-and-currency-index-update-inputs) separate
+references, all unrelated bytes and complete long values. [The contract](../tests/reports/development/ACE16_WRITE_PREVIEWS.md#integral-and-currency-index-updates)
+and [fixture hashes](../tests/reports/reading/FIXTURES.md#integral-and-currency-index-update-inputs) separate
 independent evidence from pending native Access/data-macro qualification.
 
 All 675 all-feature workspace tests/doc tests, nineteen default native mutation
@@ -19903,7 +19903,7 @@ the deterministic 128-case key model, late cancellation and resource failures
 pass. All 354 ACE all-feature tests/doc tests and all-target/all-feature
 warnings-denied ACE Clippy pass. Documentation checks validate 1,006 local
 links/anchors across seventy-two public Markdown documents. No dependency changed.
-[Evidence limits](testing/ACE16_WRITE_PREVIEWS.md#bounded-final-child-nodes) remain
+[Evidence limits](../tests/reports/development/ACE16_WRITE_PREVIEWS.md#bounded-final-child-nodes) remain
 explicit: no independent-reader or native Access qualification is claimed for
 this topology extension.
 
@@ -19923,8 +19923,8 @@ directions, leaf/node/deep trees, nullable batches, rules, resource limits and l
 cancellation. A 600-row source proves fitting growth and whole-batch split refusal.
 Fresh independent V2016/V2019 controls match thirty candidates (six exact no-ops),
 fourteen rejected requests, exact geometry/topology, full rows and long values.
-[Contract](testing/ACE16_WRITE_PREVIEWS.md#indexed-int32-null-transitions) and
-[hashes](testing/FIXTURES.md#indexed-int32-null-preview-inputs) retain native qualification gaps.
+[Contract](../tests/reports/development/ACE16_WRITE_PREVIEWS.md#indexed-int32-null-transitions) and
+[hashes](../tests/reports/reading/FIXTURES.md#indexed-int32-null-preview-inputs) retain native qualification gaps.
 
 Verification passed all 667 all-feature workspace tests/doc tests, the default
 eighteen-test mutation suite, warnings-denied workspace Clippy/rustdoc and the
@@ -19948,7 +19948,7 @@ three exact no-ops, complete rows/Memo/OLE values, duplicate index order and byt
 spans. Fifteen invalid requests publish no output; existing outputs and originals
 remain unchanged. All seven Jet 4 CLI copies match engine output, while normal
 ACE editing remains blocked. [Contract](access/writes/NATIVE_WRITES.md#non-unique-int32-replacements)
-and [hashes](testing/FIXTURES.md#non-unique-index-update-inputs) retain native qualification gaps.
+and [hashes](../tests/reports/reading/FIXTURES.md#non-unique-index-update-inputs) retain native qualification gaps.
 
 Verification passed all 657 all-feature workspace tests/doc tests, the final
 nineteen-test mutation suite and eighteen-test default mutation suite,
@@ -19975,7 +19975,7 @@ v3 ACE families, the registered sample and existing nullable Large Number fixtur
 Duplicate child keys, aliases, composite/self relationships and node roots are
 covered. Eight corrupted copies reject through both reads and complete checks;
 all original hashes remain unchanged. [Contract](access/indexes/NATIVE_INDEXES.md#foreign-physical-traversal-and-checks)
-and [fixture evidence](testing/FIXTURES.md#foreign-physical-read-inputs) record current limits.
+and [fixture evidence](../tests/reports/reading/FIXTURES.md#foreign-physical-read-inputs) record current limits.
 
 Verification passed all 653 all-feature workspace tests/doc tests, the final
 fourteen-test foreign-index suite and thirteen-test default-feature suite,
@@ -19999,7 +19999,7 @@ foreign-index constraints and all existing write gates remain unchanged.
 Independent v2 controls match 28 directed links across both ACE families and two
 registered-sample links. Sixty-two corrupt copies reject, and reordered composite
 declarations agree with both readers. [Contract](access/indexes/NATIVE_INDEXES.md#reciprocal-foreign-index-links)
-and [provenance](testing/FIXTURES.md#relationship-catalog-agreement-inputs) keep metadata
+and [provenance](../tests/reports/reading/FIXTURES.md#relationship-catalog-agreement-inputs) keep metadata
 evidence separate from row membership, physical reads/writes and native Access.
 
 Verification passed the 647-test/doc-test all-feature workspace suite, followed by
@@ -20025,7 +20025,7 @@ Fresh independent restrict, cascade, SET NULL, composite, self and alias inputs
 match 24 directed links across V2016/V2019. Two registered-sample links also match;
 32 malformed copies reject without output, and all originals remain unchanged.
 [Inspection contract](access/indexes/NATIVE_INDEXES.md#reciprocal-foreign-index-links) and
-[fixture evidence](testing/FIXTURES.md#reciprocal-foreign-index-inputs) distinguish this from
+[fixture evidence](../tests/reports/reading/FIXTURES.md#reciprocal-foreign-index-inputs) distinguish this from
 MSysRelationships agreement, physical-tree qualification and native Access work.
 
 Verification passes the 644-test/doc-test all-feature workspace suite, the final
@@ -20050,7 +20050,7 @@ remain in force. Mask changes recheck all supported indexes after construction.
 Required/rule failures and cancellation reject before publication. Fresh independent
 fixtures retain enforced relationships and their automatic type-2 foreign-key
 indexes; those unqualified index links still block child edits with ConstraintCoverage.
-They were not removed to make the test pass. [Mask contract](testing/ACE16_WRITE_PREVIEWS.md#boolean-and-null-mask-transitions)
+They were not removed to make the test pass. [Mask contract](../tests/reports/development/ACE16_WRITE_PREVIEWS.md#boolean-and-null-mask-transitions)
 records the current profile, independent comparisons and remaining native/index work.
 
 Verification passes all 639 all-feature workspace tests/doc tests, the final
@@ -20083,7 +20083,7 @@ carriers remain explicitly unsupported. The normal ACE save gate is unchanged.
 Fresh independent V2016/V2019 fixtures match eighteen scalar candidate files,
 including exact wide extrema, floating bits, native GUID order and complete
 unrelated Memo/OLE contents. Only the selected field span changes; originals and
-existing outputs remain intact. [Contract and evidence](testing/ACE16_WRITE_PREVIEWS.md#exact-fixed-scalar-candidates)
+existing outputs remain intact. [Contract and evidence](../tests/reports/development/ACE16_WRITE_PREVIEWS.md#exact-fixed-scalar-candidates)
 include six focused tests and a 128-case multirow Int64 model. No new dependency,
 SQL coercion or native Access/data-macro qualification is implied.
 
@@ -20111,7 +20111,7 @@ V2016/V2019 fixtures match reopened rows, Memo/OLE lengths and index references;
 every byte outside selected field/index-entry spans remains identical. Rules,
 stale values and duplicate keys reject without files, existing candidate paths
 are retained, and original images are unchanged. [Contract, reproduction and
-Windows checklist](testing/ACE16_WRITE_PREVIEWS.md) separate these byte-level
+Windows checklist](../tests/reports/development/ACE16_WRITE_PREVIEWS.md) separate these byte-level
 results from missing macro semantics, actual Access comparisons and production
 save/shared-file safety. No registry dependency or cross-crate boundary changed.
 
@@ -20178,7 +20178,7 @@ rows. This supplies no positive ACE 16 table-event fixture or proof of macro abs
 The reviewed independent artifact/fixture workflow has no qualified creation/
 detection path for that evidence. No macro, provider or application code was run.
 
-[The data-macro plan](testing/DATA_MACROS.md) now records primary desktop event
+[The data-macro plan](../tests/reports/schema/DATA_MACROS.md) now records primary desktop event
 references, XML/service versus native-storage boundaries, required original ACE 16
 fixture cases, exact build/provenance capture and acceptance before writes. Desktop
 example XML and published service schemas use different namespaces; neither is a
@@ -20525,7 +20525,7 @@ all-target Clippy profiles, release CLI/examples/benchmark builds, warnings-deni
 ACE docs and dependency/documentation checks. Independent numeric/GUID/Decimal
 tuple runners match 12,537 ordered rows per family on unchanged inputs. Local
 test debug symbols remain disabled; release defaults are unchanged.
-[The follow-up benchmark](testing/NATIVE_BENCHMARKS.md#separate-column-set-follow-up)
+[The follow-up benchmark](../tests/reports/general/NATIVE_BENCHMARKS.md#separate-column-set-follow-up)
 retains 520 samples: five/ten numeric tuples improve 0.559/0.514 and 0.369/0.330 ms
 before/after, with 2.8%/4.4% fewer instructions. Mixed GUID/Decimal wall results
 vary; no uniform improvement is claimed. Both reports retain the original
@@ -20559,7 +20559,7 @@ all-target Clippy profiles, release CLI/examples/benchmark builds, warnings-deni
 ACE docs and dependency/documentation checks. The 4,512-row GUID tuple and 6,116-row
 single-Decimal comparisons pass on both unchanged inputs. Local test debug
 symbols remain disabled; runtime assertions/release defaults are unchanged.
-[Initial benchmarks](testing/NATIVE_BENCHMARKS.md#decimal-tuple-measurements) retain
+[Initial benchmarks](../tests/reports/general/NATIVE_BENCHMARKS.md#decimal-tuple-measurements) retain
 520 samples: existing numeric tuples cost 3–5% more instructions and about 10%
 more user time/cycles, despite retaining their key models. Shared component
 metadata dispatch is the next optimization target. New complete mixed 1,000-row
@@ -20591,7 +20591,7 @@ all ACE writes stay blocked and milestones 1–9 continue.
 All 531 workspace tests/doc tests and 269 ACE all-feature tests pass, as do both
 all-target Clippy profiles, release CLI/examples/benchmark builds, warnings-denied
 ACE docs and dependency/documentation checks. Local test debug symbols remain
-disabled; release flags/default features match the frozen baseline. [Recorded benchmarks](testing/NATIVE_BENCHMARKS.md#indexed-root-page-reuse)
+disabled; release flags/default features match the frozen baseline. [Recorded benchmarks](../tests/reports/general/NATIVE_BENCHMARKS.md#indexed-root-page-reuse)
 retain all 800 samples: 1,000-row Int32 reads improve 0.538/0.361 ms before/current,
 GUID 0.413/0.222 ms, Single/Double about 0.41/0.21 ms, DateTime 0.406/0.203 ms and
 scale-four Decimal 0.476/0.284 ms. Scattered mixed GUID/DATE tuples gain little.
@@ -20622,7 +20622,7 @@ All 527 workspace tests/doc tests and 265 ACE all-feature tests pass, as do both
 all-target Clippy profiles, release CLI/examples/benchmark builds, warnings-denied
 ACE docs and dependency/documentation checks. Local test debug symbols remain
 disabled; runtime assertions/release defaults
-are unchanged. [Recorded benchmarks](testing/NATIVE_BENCHMARKS.md#single-decimal-index-measurements)
+are unchanged. [Recorded benchmarks](../tests/reports/general/NATIVE_BENCHMARKS.md#single-decimal-index-measurements)
 retain 360 samples: complete 1,000-row Decimal reads take about 0.483–0.487 ms
 indexed versus 0.229–0.233 ms sequential. Existing Int32 controls remain close in
 this run; no speed improvement is claimed.
@@ -20652,7 +20652,7 @@ all-target Clippy profiles, release CLI/examples/benchmark builds, warnings-deni
 ACE docs and dependency/documentation checks. The existing 10,540-row IEEE
 comparison passes on both unchanged inputs after disabling oracle expression
 evaluation explicitly. Local test debug symbols remain disabled; runtime
-assertions/release flags are unchanged. [Recorded benchmarks](testing/NATIVE_BENCHMARKS.md#legacy-datetime-index-measurements)
+assertions/release flags are unchanged. [Recorded benchmarks](../tests/reports/general/NATIVE_BENCHMARKS.md#legacy-datetime-index-measurements)
 retain 320 samples: 1,000-row DateTime reads take 0.412 ms indexed/0.157 ms
 sequential, mixed rows 0.627/0.212 ms. Int32 controls remain close in this run.
 
@@ -20661,7 +20661,7 @@ sequential, mixed rows 0.627/0.212 ms. Int32 controls remain close in this run.
 The independent date-bit helper now serializes the reviewed Jackcess DATE carrier
 to an in-memory buffer, validating ordinary widths or the known calculated
 prefix/length/trailer. Its former `toDateDouble` path can normalize aliases and
-round through milliseconds. Original [precision probes](testing/compare_date_bits.py)
+round through milliseconds. Original [precision probes](../tests/access/queries/expressions/compare_date_bits.py)
 now match 28 ordinary/cached cells per V2016/V2019 family against golden bits,
 including signed zero, subnormals, negative aliases and sub-millisecond values.
 Generation demonstrates the old conversion loses at least one probe's bits.
@@ -20693,7 +20693,7 @@ key mutation/seeks/foreign keys remain outside this slice; milestones 1–9 cont
 All 514 workspace tests/doc tests and 252 ACE all-feature tests pass, as do both
 all-target Clippy profiles, release CLI/examples/benchmark builds, warnings-denied
 ACE docs and dependency/documentation checks. Local test debug symbols remain
-disabled; runtime assertions/release flags are unchanged. [Recorded benchmarks](testing/NATIVE_BENCHMARKS.md#boolean-and-ieee-index-measurements)
+disabled; runtime assertions/release flags are unchanged. [Recorded benchmarks](../tests/reports/general/NATIVE_BENCHMARKS.md#boolean-and-ieee-index-measurements)
 retain 600 samples: complete 1,000-row IEEE reads take about 0.415–0.420 ms indexed
 versus 0.158–0.159 ms sequential; mixed rows 0.641/0.218 ms. Numeric tuple controls
 cost about 1.6–2.1% more instructions; wall medians vary. No speed gain is claimed.
@@ -20746,7 +20746,7 @@ remain blocked. The earlier empty GUID/Int32 corpus now qualifies too.
 All 502 workspace tests/doc tests and 240 ACE all-feature tests, both Clippy profiles,
 release CLI/examples/bench builds, warnings-denied ACE docs and dependency checks
 pass. Test debug symbols were disabled after local disk exhaustion; release flags
-are unchanged. [Two benchmark reports](testing/NATIVE_BENCHMARKS.md#guid-bearing-tuple-measurements)
+are unchanged. [Two benchmark reports](../tests/reports/general/NATIVE_BENCHMARKS.md#guid-bearing-tuple-measurements)
 retain all 1,040 samples: numeric tuple instructions cost about 1.7–2.1% more;
 wall medians are noisy. An inconclusive inlining contender was removed. Final
 source fingerprints match the original tested implementation. No dependency was
@@ -20816,7 +20816,7 @@ The CLI now labels index constraints exact unique/required across key types.
 All 488 workspace tests/doc tests and 226 ACE all-feature tests pass, along with
 both Clippy profiles, release CLI/examples/bench builds, warnings-denied ACE docs
 and dependency checks. Existing Int64 range/query and Currency comparisons pass.
-[Recorded benchmarks](testing/NATIVE_BENCHMARKS.md#composite-numeric-index-follow-up)
+[Recorded benchmarks](../tests/reports/general/NATIVE_BENCHMARKS.md#composite-numeric-index-follow-up)
 retain all samples: single-index controls stay within observed noise; current full
 compound reads are slower than sequential scans (1,000 mixed rows: 0.583/0.212 ms).
 No dependency was added. Composite seeks/mutation, other index carriers, native
@@ -20880,7 +20880,7 @@ Read-count regressions confirm one root-page fetch and separate relocation reads
 corrupt target owners/signatures/ranges/cycles fail without partial snapshots.
 All 470 workspace tests/doc tests, 208 ACE all-feature tests, both Clippy profiles
 and the independent 12-file ACE16 fixture comparisons pass. The
-[recorded release benchmark](testing/NATIVE_BENCHMARKS.md#reusing-the-current-scan-page)
+[recorded release benchmark](../tests/reports/general/NATIVE_BENCHMARKS.md#reusing-the-current-scan-page)
 measures 1,000-row sequential reads at 0.504 → 0.279 milliseconds over a
 memory-backed Cursor; the 1,000-row indexed control remains within noise.
 All timing samples are retained. No new dependency, write permission, native
@@ -21144,7 +21144,7 @@ publication or general streaming qualification follows; milestones 1–9 continu
 Twenty-run/three-warmup Hyperfine measurements over 20,000 synthetic 60,000-byte
 payloads/process report about 1 microsecond for direct wrappers, 22 microseconds
 for compressible zlib and 167 microseconds for noisy zlib. A large noisy-case
-outlier is retained. [Absolute benchmark evidence](testing/NATIVE_BENCHMARKS.md#bounded-attachment-decoding)
+outlier is retained. [Absolute benchmark evidence](../tests/reports/general/NATIVE_BENCHMARKS.md#bounded-attachment-decoding)
 includes raw samples and source/binary hashes; this is not a native Access or
 whole-query performance comparison.
 
@@ -21394,7 +21394,7 @@ revalidation and recovery. They explicitly preserve native write/format gates,
 backend-specific transaction scope and the no-locks-during-review rule.
 
 New [preview](features/HEADLESS_PREVIEWS.md),
-[application scenario](testing/APPLICATION_SCENARIOS.md) and
+[application scenario](../tests/reports/reading/APPLICATION_SCENARIOS.md) and
 [MCP adapter](interfaces/MCP.md) requirements cover semantic plus visual artifacts,
 reproducible workflows, capabilities, bounded/redacted data, untrusted project
 content, job ownership, executable trust and protocol negotiation. Verified the
@@ -21446,7 +21446,7 @@ External third-party transitive/feature closures remain a separate review concer
 Formatting, whitespace, public local links/anchors, target-map uniqueness and the
 original registered fixture hash pass checks. Rust production sources and Cargo
 manifests are unchanged, so the Rust runtime suite was not rerun for this slice;
-[project qualification](testing/PROJECT_COMPATIBILITY.md) is an acceptance plan,
+[project qualification](../tests/reports/reading/PROJECT_COMPATIBILITY.md) is an acceptance plan,
 not passing behavioral evidence. CI's Linux/Windows runs remain unrun locally.
 Next implementation remains ACE 16 advanced fields/write safety; the native
 project versioning/migration proof follows the current native priority.
@@ -21833,7 +21833,7 @@ carry is folded into one civil-day addition; exact stored/Serde bits, negative
 DATE rules, field bounds and checked errors are unchanged. No dependency or
 feature change was needed. Stored-date comparison does not construct calendars.
 
-The [20-run follow-up](testing/NATIVE_BENCHMARKS.md#jiff-conversion-follow-up)
+The [20-run follow-up](../tests/reports/general/NATIVE_BENCHMARKS.md#jiff-conversion-follow-up)
 records every sample, including scheduling outliers. Five-million round-trip
 medians improve from 39.50 to 27.15 ns per operation (about 31%); the time baseline
 is 23.20 ns, leaving a roughly 17% median gap on this macOS ARM host. Mean
@@ -21882,7 +21882,7 @@ index, skipped corrupt Text-index coverage, cumulative allowances/cancellation a
 every I/O callback failure. Generated Indexed tables report 1,000 rows with 2/3
 checked/unverified indexes; Wide/EmptyWide report 7/0 rows with both indexes checked
 in both Jet 4 and ACE. [Check scope](access/NATIVE_CHECKS.md) and
-[Hyperfine evidence](testing/NATIVE_BENCHMARKS.md#table-consistency-checks) record
+[Hyperfine evidence](../tests/reports/general/NATIVE_BENCHMARKS.md#table-consistency-checks) record
 the current limitations and all timing samples.
 
 Local Rust 1.99.0 checks passed 268 workspace tests/doc tests, all-target Clippy,
@@ -21903,8 +21903,8 @@ The original 2,000-page recipe and standalone clap-based table_data example matc
 all 4,000 tagged Jet 4/ACE rows, including every Binary byte, against Jackcess.
 The engineering consumer supplies 256 MiB explicitly; CLI defaults remain 16 MiB.
 [Usage-map limits](access/NATIVE_READING.md#usage-map-ordering-and-ownership-bounds),
-[fixture identities](testing/FIXTURES.md#original-generated-usage-map-inputs) and
-[Hyperfine samples](testing/NATIVE_BENCHMARKS.md#usage-map-traversal) record the
+[fixture identities](../tests/reports/reading/FIXTURES.md#original-generated-usage-map-inputs) and
+[Hyperfine samples](../tests/reports/general/NATIVE_BENCHMARKS.md#usage-map-traversal) record the
 evidence. Timings are noisy, including a worse ACE sequential mean; no broad
 whole-reader speedup is claimed for this complexity/invariant change.
 
@@ -21942,8 +21942,8 @@ Jackcess comparisons match 800 column descriptions, eight index definitions and
 12 sequential/bounded CLI outputs across Jet 4/ACE, including empty tables.
 Independent golden assembly, malformed chains, fixed-seed mutation, cancellation,
 budgets and every I/O callback failure are covered. [Definition limits](access/storage/NATIVE_TABLES.md#bounded-chained-table-definitions),
-[fixture provenance](testing/FIXTURES.md#original-generated-chained-definition-inputs)
-and [Hyperfine evidence](testing/NATIVE_BENCHMARKS.md#chained-table-definitions)
+[fixture provenance](../tests/reports/reading/FIXTURES.md#original-generated-chained-definition-inputs)
+and [Hyperfine evidence](../tests/reports/general/NATIVE_BENCHMARKS.md#chained-table-definitions)
 record the accepted profile. Ordinary-reader means changed about -0.1% to +3.3%;
 the new capability is not presented as a speedup.
 
@@ -21971,7 +21971,7 @@ NULL, eager errors, callback/late source failures and 256 fixed-seed intervals.
 The release CLI matched 32 independently filtered/sorted Jackcess outputs across
 generated Jet 4/ACE files. [Query contracts](query/QUERY_EXECUTION.md#safe-source-constraints),
 [native source limits](access/queries/NATIVE_QUERIES.md) and
-[Hyperfine evidence](testing/NATIVE_BENCHMARKS.md#query-filter-pushdown) record the scope.
+[Hyperfine evidence](../tests/reports/general/NATIVE_BENCHMARKS.md#query-filter-pushdown) record the scope.
 
 Local Rust 1.99.0 checks passed 249 workspace tests/doc tests, all-target Clippy,
 minimal package checks, release/benchmark builds and warning-denied API docs.
@@ -21996,7 +21996,7 @@ and every-callback read/seek failures cover the new API. Hyperfine's four
 500-read workloads measure roughly 6–13× faster selected reads than full snapshots
 plus filtering on this host, with all samples retained, including outliers.
 See [native index limits](access/indexes/NATIVE_INDEXES.md#native-int32-range-selections) and
-[benchmark evidence](testing/NATIVE_BENCHMARKS.md#native-index-seeks).
+[benchmark evidence](../tests/reports/general/NATIVE_BENCHMARKS.md#native-index-seeks).
 
 Local Rust 1.99.0 checks passed 239 workspace tests/doc tests, all-target Clippy,
 release/benchmark/example builds and warning-denied API docs. No dependency or
@@ -22018,10 +22018,10 @@ intermediate UTF-16 vector while preserving strict Unicode fallback. Bitmap work
 uses precharged eight-byte word blocks with bounded cancellation polling.
 No semantic Value/Decimal/date receives POD or unchecked construction.
 
-[Hyperfine samples and reproduction](testing/NATIVE_BENCHMARKS.md) record 20 runs
+[Hyperfine samples and reproduction](../tests/reports/general/NATIVE_BENCHMARKS.md) record 20 runs
 after three warmups per command. Catalog/table workloads improve about 13–22% on
 this macOS ARM host; the initial Jiff calendar round trip was about 65% slower.
-The [adapter follow-up](testing/NATIVE_BENCHMARKS.md#jiff-conversion-follow-up)
+The [adapter follow-up](../tests/reports/general/NATIVE_BENCHMARKS.md#jiff-conversion-follow-up)
 records the subsequent improvement and remaining conversion cost.
 Bitmap microbenchmarks vary by density, and a whole-catalog comparison established
 no reliable SIMD advantage over the simpler word iterator. These are measured
@@ -22794,7 +22794,7 @@ distribution/signatures, linked from [ARCHITECTURE.md](architecture/ARCHITECTURE
 primary references were reviewed on 18 October 2026, including build-qualified
 form/report limits and the distinction between code and package signatures.
 
-[ACCESS_APPLICATIONS.md](testing/ACCESS_APPLICATIONS.md) defines separate
+[ACCESS_APPLICATIONS.md](../tests/reports/reading/ACCESS_APPLICATIONS.md) defines separate
 open/preserve/execute/edit/save-and-reopen results, provenance/privacy handling,
 oracle profiles and representative application selection. The existing MIT
 example is its sole candidate, with every native operation unrun. No application
@@ -22831,7 +22831,7 @@ revision.
 ## Access example
 
 The supplied [Access example](examples/Access_Example_VBA.accdb) is registered in
-[FIXTURES.md](testing/FIXTURES.md) with its
+[FIXTURES.md](../tests/reports/reading/FIXTURES.md) with its
 size and SHA-256. It matches upstream Access-projects/Access-examples commit
 `d0ffd681d431f38d91c138559763c30df0699c55` byte for byte, and its original MIT
 notice is retained. It has not been parsed, executed or qualified against Access.
@@ -22848,11 +22848,11 @@ profile preserves surviving native/stored identities and history instead of
 compacting fields. Normal GUI DROP activation remains pending; shared model
 ownership checks do not constitute end-to-end GUI acceptance.
 
-The [service record](testing/results/saved-field-drop-services-2026-11-09.json)
+The [service record](../tests/results/schema/saved-field-drop-services-2026-11-09.json)
 keeps nine initial native guard failures and the corrected post-DROP INSERT
 refusal prediction. It lists passing selected 14 native, 208 Access, 12 DROP runtime,
 650 UI and 188 desktop checks separately without adding repeated scopes. The
-[single raw gapped-row reader observation](testing/gapped_number_insert/README.md)
+[single raw gapped-row reader observation](../tests/access/rows/gapped_number_insert/README.md)
 is not an SDK INSERT write. A separate sparse-generated writer change is applied
 but unrun. See the [bounded contract](access/writes/FIELD_DROP.md); populated-row,
 older-format and Microsoft Access save parity remain open.

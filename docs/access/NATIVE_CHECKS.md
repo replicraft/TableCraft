@@ -131,9 +131,9 @@ were researched in the pinned [Jackcess IndexData](https://github.com/jahlborn/j
 reference, not copied as implementation. The DAO Required documentation does not
 establish field-property decoding; no such support is inferred.
 
-The original [constraint recipe](../testing/ConstraintFixture.java) creates unique,
+The original [constraint recipe](../../tests/access/schema/fields/ConstraintFixture.java) creates unique,
 required and primary Int32 tables, verifies rejected inserts using Jackcess, then
-reopens read-only. [Independent comparison](../testing/compare_constraints.py) matches
+reopens read-only. [Independent comparison](../../tests/access/schema/fields/compare_constraints.py) matches
 all six index declarations, completed checks and all 18 tagged rows across Jet 4
 and ACE. Repeated NULLs in a unique index are included. Rust tests additionally
 cover changed unique/primary flags, shared backing, multiple-primary rejection and
@@ -143,7 +143,7 @@ a 256-case independent set model. This is not Microsoft Access qualification.
 java -cp path/to/jackcess-5.0.4.jar docs/testing/ConstraintFixture.java path/to/new.accdb V2007
 java -cp path/to/jackcess-5.0.4.jar docs/testing/ConstraintFixture.java path/to/new.mdb V2000
 cargo build --locked -p tablecraft-cli -p tablecraft-ace --examples
-python3 docs/testing/compare_constraints.py --cli path/to/tablecraft \
+python3 tests/run.py tests/access/schema/fields/compare_constraints.py --cli path/to/tablecraft \
   --example path/to/table_data --jar path/to/jackcess-5.0.4.jar \
   --ace path/to/new.accdb --jet path/to/new.mdb
 ```
@@ -189,7 +189,7 @@ partial output and trace redaction.
 Generated Jet 4/ACE Indexed fixtures report 1,000 rows, two checked indexes and
 three unqualified profiles. Seven-page Wide/EmptyWide fixtures report seven/zero
 rows and both indexes checked. These are independent-writer inputs and local Rust
-execution, not native Access integrity results. [Check benchmarks](../testing/NATIVE_BENCHMARKS.md#table-consistency-checks)
+execution, not native Access integrity results. [Check benchmarks](../../tests/reports/general/NATIVE_BENCHMARKS.md#table-consistency-checks)
 measure the additional complete traversal work without comparing it to a weaker
 validation operation as a claimed speedup.
 
@@ -203,7 +203,7 @@ explicit gaps. See
 [compound text contracts and evidence](indexes/NATIVE_TEXT.md#compound-text-index-reads).
 
 
-[Compound Short Binary indexes](../testing/BINARY_INDEX_TUPLES.md) now also participate
+[Compound Short Binary indexes](../../tests/reports/indexes/BINARY_INDEX_TUPLES.md) now also participate
 in complete traversal/row-key checks. Exact short-key unique checks and row-derived
 NULL facts retain the shared tuple policy; full-width/digested unique keys remain
 unqualified. Primary/foreign Binary fixture qualification and OLE keys stay pending.
@@ -225,7 +225,7 @@ source records exactly the same LVAL page-visit multiset as its standalone full
 sequential read, with fewer LVAL visits and total read bytes than full decoding
 through each index. Corrupting an observed non-key payload page still fails.
 Gapped, reversed composite keys retain duplicate-key and required-NULL failures.
-Strict engine linting passes; see the [verification record](../testing/results/native-check-projection-2026-10-25.json).
+Strict engine linting passes; see the [verification record](../../tests/results/reading/native-check-projection-2026-10-25.json).
 An initial new-test size assumption failed and was corrected separately from
 production behavior; its log remains excluded in that record.
 

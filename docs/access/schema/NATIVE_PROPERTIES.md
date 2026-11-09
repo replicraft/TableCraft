@@ -47,7 +47,7 @@ for MR2 block/name/value framing, scope tags and Boolean storage. These Apache-2
 sources are technical references; no implementation was copied. Microsoft field
 rule semantics require separate qualification before enforcement.
 
-[PropertyFixture.java](../../testing/PropertyFixture.java) is an original repository-
+[PropertyFixture.java](../../../tests/access/reading/tables/PropertyFixture.java) is an original repository-
 licensed inert recipe using the previously reviewed Jackcess 5.0.4 artifact. It
 refuses existing outputs and declares Required, AllowZeroLength, DefaultValue,
 ValidationRule/Text, Unicode Caption and an opaque binary FutureFlag.
@@ -55,7 +55,7 @@ ValidationRule/Text, Unicode Caption and an opaque binary FutureFlag.
 ```sh
 java -Dstdout.encoding=UTF-8 -cp path/to/jackcess-5.0.4.jar docs/testing/PropertyFixture.java new.accdb V2007
 java -Dstdout.encoding=UTF-8 -cp path/to/jackcess-5.0.4.jar docs/testing/PropertyFixture.java new.mdb V2000
-python3 docs/testing/compare_properties.py --cli target/debug/tablecraft --jar path/to/jackcess-5.0.4.jar --ace new.accdb --jet new.mdb
+python3 tests/run.py tests/access/reading/tables/compare_properties.py --cli target/debug/tablecraft --jar path/to/jackcess-5.0.4.jar --ace new.accdb --jet new.mdb
 ```
 
 All 11 declarations per format match the independent reader, including type/DDL
@@ -74,7 +74,7 @@ explicit stored-calculation projection without changing its original bytes.
 Its attachment-bearing full-row and complex-field paths still refuse; this
 metadata fix does not qualify those read profiles or native writes.
 
-Generated files/JARs are not tracked or CI inputs. [Fixtures](../../testing/FIXTURES.md) identifies
+Generated files/JARs are not tracked or CI inputs. [Fixtures](../../../tests/reports/reading/FIXTURES.md) identifies
 the observed inputs. [Bounded rule audits](NATIVE_CONSTRAINTS.md) are now implemented separately.
 Default evaluation, native mutation, application preservation and Microsoft
 Access comparison remain unfinished.

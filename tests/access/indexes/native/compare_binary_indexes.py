@@ -1,4 +1,5 @@
 """Compare bounded native Binary index cursors with independent read-only getters."""
+from engineering_paths import reference_file
 import argparse
 from pathlib import Path
 import subprocess
@@ -15,7 +16,7 @@ def main():
     if args.generate:
         args.directory.mkdir(exist_ok=False)
         for profile,suffix in PROFILES:
-            run("java","-Dstdout.encoding=UTF-8","-cp",args.jar,RECIPES/"BinaryIndexFixture.java",args.directory/f"BinaryIndexes-{profile}.{suffix}",profile)
+            run("java","-Dstdout.encoding=UTF-8","-cp",args.jar,reference_file('tests/access/indexes/native/BinaryIndexFixture.java'),args.directory/f"BinaryIndexes-{profile}.{suffix}",profile)
     for profile,suffix in PROFILES:
         path=args.directory/f"BinaryIndexes-{profile}.{suffix}"
         before=digest(path)
@@ -25,7 +26,7 @@ def main():
             root=next(int(line.split("\t")[3]) for line in metadata.splitlines() if line.startswith(name+"\t"))
             assert image[root*4096]==3,(profile,name,"multi-page node root")
         for table,index,count in [("BinaryIndexed","BinaryAsc",1000),("BinaryIndexed","BinaryDesc",1000),("BinaryUnique","UniqueBinary",32),("BinaryEmpty","EmptyBinary",0),("BinaryCompound","CompoundBinary",1)]:
-            expected=run("java","-Dstdout.encoding=UTF-8","-cp",args.jar,RECIPES/"IndexRowsOracle.java",path,table,index,"ID","Bytes")
+            expected=run("java","-Dstdout.encoding=UTF-8","-cp",args.jar,reference_file('tests/access/indexes/native/IndexRowsOracle.java'),path,table,index,"ID","Bytes")
             assert len(expected.splitlines())==count,(profile,table,"count")
             if table=="BinaryIndexed":
                 assert "\t0x\n" in expected and "\tNULL\n" in expected,(profile,"empty/NULL distinction")

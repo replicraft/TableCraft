@@ -15,13 +15,13 @@ import sys
 import xml.etree.ElementTree as ET
 
 sys.dont_write_bytecode = True
-sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+sys.path.insert(0, str(Path(__file__).resolve().parents[4]))
 from scripts.compat_artifacts import ArtifactStore
 
-ROOT = Path(__file__).resolve().parents[2]
-DEFAULT_RECORD = 'docs/testing/results/data-macro-xml-envelopes-2026-10-29.json'
-SOURCE_WITNESS_MANIFEST = 'docs/testing/ace16_data_macro_xml/source-witnesses.json'
-SOURCE_WITNESS_ROOT = 'docs/testing/ace16_data_macro_xml/witnesses'
+ROOT = Path(__file__).resolve().parents[4]
+DEFAULT_RECORD = 'tests/results/schema/data-macro-xml-envelopes-2026-10-29.json'
+SOURCE_WITNESS_MANIFEST = 'tests/access/schema/ace16_data_macro_xml/source-witnesses.json'
+SOURCE_WITNESS_ROOT = 'tests/access/schema/ace16_data_macro_xml/witnesses'
 SOURCE_RECORD_PIN = {
     'path': DEFAULT_RECORD,
     'bytes': 11028,

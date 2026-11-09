@@ -78,19 +78,19 @@ historical source evidence. The twelve old-slot controls remain a distinct
 native-engine baseline. This phase comprises exactly six public UPDATE calls
 and six read-only getters.
 
-The [action model](encoded_index_split_sources/action_model.py) derives from the
+The [action model](../../access/indexes/encoded_index_split_sources/action_model.py) derives from the
 exact hardened source parser by adding a closed changed-table selector. Strict
 boolean, duplicate/inventory, declared type/length, fixed/variable footer and raw
 graph checks are retained. The
-[separate byte proof](encoded_index_split_sources/reference_proof.py) does not
+[separate byte proof](../../access/indexes/encoded_index_split_sources/reference_proof.py) does not
 take planner-supplied patch authority. Public wrappers adjust root-path
 composition/terminal whitespace only; function ASTs match the executed files.
 
-The [later saved verifier](encoded_index_split_sources/verify_references.py)
+The [later saved verifier](../../access/indexes/encoded_index_split_sources/verify_references.py)
 rehashes 86 saved identities and recomputes all six proofs without starting any
 child process. It compares 16,206 after-getter rows and 64,806 logical index
 entries including aliases, and checks 3,563,520 original-prefix bytes across
-the six copies. The [compact receipt](results/encoded-index-split-update-observations-2026-10-27.json)
+the six copies. The [compact receipt](../../results/indexes/encoded-index-split-update-observations-2026-10-27.json)
 pins the authoritative raw report, immutable sources, exact executed inputs and
 these maintained tools.
 

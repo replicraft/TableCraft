@@ -62,9 +62,9 @@ write-free completion confirmation.
 
 ## Independent evidence
 
-The [first and forwarded-continuation sources](../../testing/ACE16_OWNED_GROWTH_SOURCES.md)
+The [first and forwarded-continuation sources](../../../tests/reports/rows/ACE16_OWNED_GROWTH_SOURCES.md)
 provide two original, two growth and two second-edit images. Four additional
-[joint sources](../../testing/results/ace16-joint-owned-growth-sources-2026-11-01.json)
+[joint sources](../../../tests/results/rows/ace16-joint-owned-growth-sources-2026-11-01.json)
 combine growth with ID NULL/present changes, preserving inactive bytes and using
 the new mask offset. Native source reads and eight independent SDK observations
 precede their respective producer calls; none of the expected images come from
@@ -77,13 +77,13 @@ cancellation and slot-boundary controls pass. Twelve native commits, twenty-four
 typed/SQL session saves and twelve CLI saves/readbacks pass, alongside 1,105 ACE
 units, 83 recovery regressions,
 79 adapter units, 94 CLI units and strict feature builds. See the
-[write record](../../testing/results/ace16-normal-owned-growth-writes-2026-11-01.json)
+[write record](../../../tests/results/rows/ace16-normal-owned-growth-writes-2026-11-01.json)
 for exact counts and retained first failures. Microsoft Access save/reopen,
 mixed-client and physical power-loss qualification remain unrun.
 
 ## Alternate-page continuation
 
-The [alternate-page source record](../../testing/results/ace16-alternate-owned-sources-2026-11-01.json)
+The [alternate-page source record](../../../tests/results/general/ace16-alternate-owned-sources-2026-11-01.json)
 adds independently authored BEFORE files whose original root directories are full
 and whose separate destination DATA pages are already owned. Native reads and
 six independent SDK observations qualify both first outcomes and separate
@@ -95,12 +95,12 @@ readbacks pass. Recovery exercises each page order of genuinely partial writes,
 settled states and write-free confirmation; committed mixed targets refuse.
 Protected-content forgeries, exact/one-less resource pools, cancellation,
 missing hints, full destinations, ownership conflicts and root-first preference
-have focused checks. The separately qualified [two-row sources](../../testing/ACE16_MULTIROW_OWNED_GROWTH_SOURCES.md)
+have focused checks. The separately qualified [two-row sources](../../../tests/reports/rows/ACE16_MULTIROW_OWNED_GROWTH_SOURCES.md)
 now match both request orders, three-page partial recovery and a destination
 combining same-page and cross-page events. Healthy second-reservation exhaustion
 refuses before publication. Ten native commits, eight typed/SQL saves and four
 CLI saves/readbacks pass against sixteen independently read images; the full
 regression batch and strict feature builds pass. See the
-[alternate-page write record](../../testing/results/ace16-normal-alternate-owned-writes-2026-11-01.json)
+[alternate-page write record](../../../tests/results/general/ace16-normal-alternate-owned-writes-2026-11-01.json)
 for exact coverage and retained first failures. These results do not establish
 native Access save/reopen or mixed-client safety.

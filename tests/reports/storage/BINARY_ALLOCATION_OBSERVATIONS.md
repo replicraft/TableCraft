@@ -4,11 +4,11 @@ A separate fresh-copy capture completed **34 public row actions** on both ACE 16
 profiles: 26 INSERT checkpoints and eight subsequent UPDATE observations. All
 107 bounded child commands passed on their first attempt, with original files,
 helpers, reviewed JAR and compiled classes unchanged. No engine candidate was
-called. The [compact receipt](results/ace16-binary-allocation-originals-2026-10-26.json)
+called. The [compact receipt](../../results/storage/ace16-binary-allocation-originals-2026-10-26.json)
 pins every source/output, frozen selector, command result and exact executed
 private source/archive. Full getters, maps and record bodies remain ignored.
 
-The original [Slot producer](SlotUpdateFixture.java) supplies
+The original [Slot producer](../../access/queries/expressions/SlotUpdateFixture.java) supplies
 `BinaryStorage(ID LONG primary, Bytes ShortBinary length 255)`. Bytes is variable,
 flag 2/ext 0 and unindexed; PrimaryID is genuine required/unique. Initially its
 one data page has ten rows and 3365 free bytes. Its NULL record is 13 bytes and
@@ -17,7 +17,7 @@ non-witness for allocation; these new descendants establish the boundary.
 
 ## INSERT checkpoint construction
 
-The new repository-owned [BinaryBoundaryAppend.java](BinaryBoundaryAppend.java)
+The new repository-owned [BinaryBoundaryAppend.java](../../access/storage/native/BinaryBoundaryAppend.java)
 uses only public builder/database row APIs on fresh copies, verifies the exact
 schema and PrimaryID, disables expressions, rejects links and appends IDs
 10001 through 10013. Each value is exactly 255 deterministic bytes. No original,
@@ -63,13 +63,13 @@ not inferred from these public writer results.
 ## Reproduction and scope
 
 The promoted Java helper is byte-identical to the private executed source. The
-parameterized [capture tool](capture_binary_allocation.py) is a new public wrapper,
+parameterized [capture tool](../../access/storage/native/capture_binary_allocation.py) is a new public wrapper,
 with syntax/help verification only; it was not used for the historical capture.
 Its fresh output directory and explicit inputs keep subsequent reproduction
 separate from the accepted raw evidence:
 
 ```sh
-python3 docs/testing/capture_binary_allocation.py \
+python3 tests/run.py tests/access/storage/native/capture_binary_allocation.py \
   --facts .cache/ace16-slot-originals-next-20261026/original-facts-initial.json \
   --inventory .cache/ace16-binary-allocation-next-20261026/inventory.json \
   --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar \
@@ -77,7 +77,7 @@ python3 docs/testing/capture_binary_allocation.py \
 ```
 
 The reviewed Jackcess 5.0.4 JAR and original producer provenance are retained in
-the [Slot reference receipt](results/ace16-slot-original-references-2026-10-26.json).
+the [Slot reference receipt](../../results/general/ace16-slot-original-references-2026-10-26.json).
 No upstream code or fixture bytes are copied. The [Text cross-page evidence](CROSS_PAGE_UPDATE_OBSERVATIONS.md)
 and [PAGE180 candidates](PAGE_UPDATE_OBSERVATIONS.md) keep their own immutable
 scopes. These observations do not qualify an engine Binary allocation candidate,

@@ -19,13 +19,13 @@ replay or native Access saves. Those services require separate implementation
 and matching acceptance.
 
 One ignored engine function and ACE all-target/all-feature strict checks pass. The
-[execution record](results/ace16-ieee-update-sources-2026-11-03.json) retains the
+[execution record](../../results/rows/ace16-ieee-update-sources-2026-11-03.json) retains the
 command, source hashes and separate admission observations. Before execution,
 review corrected a test-only digest formatting assumption to the existing
 byte-wise hexadecimal pattern. The source files and byte laws stayed unchanged.
 Native Access save/reopen and Windows mixed-client evidence remain unrun.
 
 
-The later [ordinary IEEE service](../access/writes/NORMAL_IEEE_FIXED_UPDATE.md) now
+The later [ordinary IEEE service](../../../docs/access/writes/NORMAL_IEEE_FIXED_UPDATE.md) now
 has separate matching write, proof, recovery and host acceptance. Those results
 follow this source prerequisite and do not change its original observations.

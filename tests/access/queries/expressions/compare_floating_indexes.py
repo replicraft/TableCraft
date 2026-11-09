@@ -36,7 +36,7 @@ def main():
                 raise RuntimeError("Missing floating native root metadata")
             # The existing sequential oracle path must retain every original bit too.
             sequential = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar,
-                "docs/testing/TableDataOracle.java", path, table)
+                "tests/access/reading/tables/TableDataOracle.java", path, table)
             if run(args.rows, path, table) != sequential:
                 raise RuntimeError("Exact sequential IEEE input differs")
             for index in indexes:
@@ -46,7 +46,7 @@ def main():
                 if table == "DoubleFinite" and index == "FloatAsc":
                     corrupt_root = root
                 expected = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar,
-                    "docs/testing/TableDataOracle.java", path, "--index", table, index)
+                    "tests/access/reading/tables/TableDataOracle.java", path, "--index", table, index)
                 if len(expected.splitlines()) != rows:
                     raise RuntimeError("Unexpected independent floating cursor count")
                 actual = run(args.rows, path, table, "--index", index)

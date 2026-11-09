@@ -3,8 +3,8 @@
 The two BEFORE images are unchanged, independently modeled first-EOF allocation
 AFTERs, qualified by native and independent-reader checks before their producer
 calls. No native writer output supplies these DELETE expectations. The
-[forwarded model](ordinary_delete_originals/forwarded_model.py) and
-[original requests](ordinary_delete_originals/forwarded_requests.json) were frozen
+[forwarded model](../../access/rows/ordinary_delete_originals/forwarded_model.py) and
+[original requests](../../access/rows/ordinary_delete_originals/forwarded_requests.json) were frozen
 before construction.
 
 For each ACE 16 header 5/6 input, the literal model decrements the selected table
@@ -19,7 +19,7 @@ complete expected image and raw proof facts. `reader(original_report, profile)`
 changes only the Sentinel table count from 1 to 0 and removes its one logical ROW; all
 other bounded-observer report lines remain exact. Generated images stay outside
 Git. Original provenance, full image hashes and observed source outcomes are in
-the [source record](results/ace16-forwarded-delete-sources-2026-11-01.json).
+the [source record](../../results/rows/ace16-forwarded-delete-sources-2026-11-01.json).
 
 The ignored native gate
 `normal_ordinary_sources::forwarded_delete::forwarded_delete_source_views_preserve_terminal_and_read_zero_live_rows`
@@ -40,4 +40,4 @@ no source/golden bytes.
 Source reads qualify the literal inputs/expectations, not normal DELETE behavior,
 Microsoft Access save/reopen conformance or every historical forwarding layout.
 Producer, recovery and retained host outcomes belong in the separate
-[normal DELETE contract](../access/writes/NORMAL_ACE_DELETE.md).
+[normal DELETE contract](../../../docs/access/writes/NORMAL_ACE_DELETE.md).

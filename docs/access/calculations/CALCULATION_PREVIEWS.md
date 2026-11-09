@@ -268,7 +268,7 @@ continues to own cached storage decoding and preservation.
 
 ## Independent CLI replay
 
-The earlier [ordinary-getter replay](../../testing/CALCULATION_PREVIEW_REPLAY.md) records 44
+The earlier [ordinary-getter replay](../../../tests/reports/development/CALCULATION_PREVIEW_REPLAY.md) records 44
 controls and 1,018 independently modeled result cells across 20 selected
 ACE 2016/2019 declarations. It compares recomputation separately from stale caches,
 including ordinary NULL propagation, empty inputs, refusal and corrupted-cache
@@ -299,7 +299,7 @@ native Access result equivalence.
 
 The focused predicate batch passes five syntax tests, ten adapter tests and eleven
 CLI tests with strict scoped adapter/CLI Clippy. The
-[independent predicate replay](../../testing/PREDICATE_PREVIEW_REPLAY.md) passes 248
+[independent predicate replay](../../../tests/reports/development/PREDICATE_PREVIEW_REPLAY.md) passes 248
 controls and 312 recomputed cells over fresh ACE 2016/2019 originals. Every
 recomputed cell differs from its stale cache, and all twelve pinned hashes match.
 These are engineering formula-model checks; native Access execution remains

@@ -90,7 +90,7 @@ arity and work refusal. Three bound controls cover plan/state reuse, nested call
 filters, aggregates, sort aliases and cancellation/work refusal. CLI controls
 exercise both commands, raw-seed validation, repeatability and buffered errors.
 
-The original [independent runner](../../testing/compare_random.py) passes 1680
+The original [independent runner](../../../tests/access/queries/expressions/compare_random.py) passes 1680
 state/seed/Single/refusal/native-field controls. Python uses unbounded integer
 modular arithmetic and explicit IEEE Single packing; output comparisons are exact
 at the Single-bit level. Native ID fields come from the four original

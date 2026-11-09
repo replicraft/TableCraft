@@ -15,7 +15,7 @@ import subprocess
 import xml.etree.ElementTree as ET
 import zipfile
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[4]
 COMPILED_REVISION = "1286af1ea0ea39c0d350c4d64bb235fb8132f196"
 CLI_SHA256 = "398b9c4f4b9e41521c2fd70750b5f946d5fcfa38133f3f66304f11c92ea91808"
 OBJECT = "http://schemas.microsoft.com/office/access/2005/04/template/object-metadata"
@@ -30,9 +30,9 @@ INPUTS = {
 }
 INTEGER_FIELDS = {"ID", "Tiny", "Large", "编号"}
 AUTHORING_BASES = [
-    "docs/testing/compare_template_packages.py",
-    "docs/testing/compare_template_tables.py",
-    "docs/testing/compare_template_lists.py",
+    "tests/access/reading/tables/compare_template_packages.py",
+    "tests/access/reading/tables/compare_template_tables.py",
+    "tests/access/reading/tables/compare_template_lists.py",
 ]
 CLI_PATHS = [
     "apps/tablecraft-cli/src/output.rs",

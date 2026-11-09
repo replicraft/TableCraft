@@ -72,7 +72,7 @@ late operational failures, quotas and all observed nested cancellation checkpoin
 CLI checks set USER/LOGNAME/USERNAME to a different account and still receive the
 explicit Admin session, with empty stdout on late failures.
 
-The original [session runner](../testing/compare_current_user.py) passes 58 controls for the declared
+The original [session runner](../../tests/access/reading/tables/compare_current_user.py) passes 58 controls for the declared
 unsecured profile, type/arity behavior and native-field/group/domain integration.
 Reviewed getters supply IDs from four unchanged ScalarFixture files with
 expression evaluation disabled. It does not run CurrentUser in Access or prove

@@ -9,9 +9,9 @@ import subprocess
 import sys
 import traceback
 
-ROOT = Path(__file__).resolve().parents[3]
+ROOT = Path(__file__).resolve().parents[4]
 DIRECTORY = Path(__file__).resolve().parent
-sys.path.insert(0, str(ROOT / 'docs/testing'))
+sys.path.insert(0, str(ROOT / 'tests/access'))
 from nonroot_split_preview_originals import proof, verify_existing
 from nonroot_index_split_originals import capture as evidence
 from slot_preview_originals import common
@@ -70,8 +70,8 @@ def execute(args, plan):
     source_report = json.loads(common.path(plan['source']['path']).read_text())
     dependencies = [Path(__file__), DIRECTORY / 'proof.py', args.plan,
                     Path(evidence.__file__).resolve(), evidence.GETTER, evidence.REFERENCE,
-                    Path('docs/testing/capture_delete_trees.py'), Path('docs/testing/delete_reference_maps.py'),
-                    Path('docs/testing/index_split_originals/capture.py'), Path('docs/testing/slot_preview_originals/common.py'), JAR]
+                    Path('tests/access/rows/delete/capture_delete_trees.py'), Path('tests/access/rows/delete/delete_reference_maps.py'),
+                    Path('tests/access/indexes/index_split_originals/capture.py'), Path('tests/access/rows/slot_preview_originals/common.py'), JAR]
     immutable = [common.pin(path) for path in dependencies]
     immutable.extend([plan['source'], plan['handoff'], build['receipt'], build['artifact']])
     for case, observed in zip(plan['cases'], source_report['cases'], strict=True):

@@ -4,7 +4,7 @@ Read-only `Avg` and `DAvg` now share a dedicated mean accumulator. Currency
 averaging no longer enters the unsupported legacy Currency division path, and a
 mean can succeed when its intermediate integral/Currency sum exceeds the source
 carrier. Source values and stored schemas are unchanged. Floating Sum/DSum now
-share the [bounded binary accumulator](../../testing/FLOATING_SUMS.md); [Decimal sums](DECIMAL_SUMS.md)
+share the [bounded binary accumulator](../../../tests/reports/general/FLOATING_SUMS.md); [Decimal sums](DECIMAL_SUMS.md)
 also share wider exact fixed totals, while other fixed-point sums
 retain their separate checked fold.
 
@@ -59,7 +59,7 @@ checked i64 count bound the fallback coefficient to at most 254 bits. BigInt
 scratch is charged before allocation; work and cancellation checks remain explicit.
 Results still use the validated 96-bit, scale 0–28 Decimal carrier. Ordinary
 rust_decimal quotient behavior, retained scales and conversions remain unchanged.
-[Exact binary floating means](../../testing/FLOATING_MEANS.md) avoid floating-total
+[Exact binary floating means](../../../tests/reports/general/FLOATING_MEANS.md) avoid floating-total
 overflow and preserve cancellation residuals. Mixed-type conversion order, full
 Variant/SQL result typing and native ACE/Jet rounding/precision qualification
 remain open. In particular, a floating prefix converted after Decimal appears
@@ -78,12 +78,12 @@ Currency overflow failures, then check ordinary/domain means, NULL/empty input,
 Currency extremes/cancellation, wider integral totals and mixed Decimal precedence.
 Synthetic ACE 16-family native fixtures check Currency data and ordinary/domain
 queries with metadata-only binding. The original
-[Fraction/CLI runner](../../testing/compare_currency_average.py) checks 69 exact rational
+[Fraction/CLI runner](../../../tests/access/queries/execution/compare_currency_average.py) checks 69 exact rational
 integer/quarter-unit cases, including values that overflow a Currency sum. It uses
 source-free UNION inputs and Python Fraction, not a native Access SQL engine.
 
 
-[Exact floating means and measured costs](../../testing/FLOATING_MEANS.md) extend this
+[Exact floating means and measured costs](../../../tests/reports/general/FLOATING_MEANS.md) extend this
 profile for pure floating inputs; bounded mixed-type/Decimal and native behavior
 remain distinct.
 
@@ -99,7 +99,7 @@ Six alternating release pairs on this local Darwin/arm64 host measured median
 execution of 4,096 rows/one group at 0.910 ms before and 0.939 ms after (about
 29 microseconds, 3.2% more). For 2,048 rows/128 groups, medians were 3.109 and
 3.097 ms, within the observed spread. No broad speed improvement is claimed.
-[Raw samples](../../testing/results/decimal-means-2026-10-22.json) retain the initial
+[Raw samples](../../../tests/results/general/decimal-means-2026-10-22.json) retain the initial
 single runs as well as every paired sample; baseline is `233cd29` with the identical
 benchmark harness. Run `cargo bench -p tablecraft-query --bench decimal_averages`.
 
@@ -113,7 +113,7 @@ exceed the core carrier. Avg and DAvg return the original coefficient/scale;
 preparation reads no user records and retains Decimal result metadata. This
 qualifies the tested engine-to-query path, not Microsoft Access SQL behavior.
 
-The original [Fraction/CLI Decimal runner](../../testing/compare_decimal_average.py)
+The original [Fraction/CLI Decimal runner](../../../tests/access/queries/execution/compare_decimal_average.py)
 passes 123 independent controls, including full core maxima, nonterminating
 quotients, positive/negative halfway cases, mixed scales, tiny cancellation and
 96 deterministic generated groups. Python Fraction computes exact means and
@@ -121,7 +121,7 @@ rounds each candidate scale independently with ties to even. It compares numeric
 values; retained-scale representation has separate Rust goldens. Run:
 
 ```sh
-python3 docs/testing/compare_decimal_average.py --cli target/debug/tablecraft
+python3 tests/run.py tests/access/queries/execution/compare_decimal_average.py --cli target/debug/tablecraft
 ```
 
 No third-party fixture/code or native Access result is introduced. These checks
@@ -156,7 +156,7 @@ ID-index orders, through Avg and DAvg. The runner checks JAR/input hashes and
 unchanged original bytes. Native Microsoft Access remains unrun.
 
 ```sh
-python3 docs/testing/compare_currency_average.py \
+python3 tests/run.py tests/access/queries/execution/compare_currency_average.py \
   --cli target/debug/tablecraft --jar path/to/reviewed/jackcess-5.0.4.jar \
   --native-directory path/to/registered-large-indexes
 ```
@@ -171,7 +171,7 @@ controls were 0.912 versus 0.911 ms and 3.287 versus 3.347 ms. There is no clear
 overall regression or speed improvement; the unrelated many-group floating
 control varied by about 60 microseconds. Hyperfine whole-process means were
 274.0 ± 3.3 versus 273.1 ± 2.9 ms over seven runs after two warm-ups.
-[Raw evidence](../../testing/results/fixed-mean-rounding-2026-10-23.json) retains every
+[Raw evidence](../../../tests/results/rows/fixed-mean-rounding-2026-10-23.json) retains every
 sample and harness/executable hashes, with no exclusions. Timings include result
 destruction, exclude setup/binding from per-query results and exclude native I/O.
 
@@ -215,7 +215,7 @@ Six focused date-mean Rust tests include 128 fixed-seed generated quarter-day
 sequences, no-scan metadata, named/derived/grouped/crosstab consumers, negative
 serial aliases, Decimal mixtures, one clock call per row and every observed
 cancellation checkpoint. CLI controls exercise projection and atomic late failures.
-The independent [DATE average runner](../../testing/compare_date_average.py) passes
+The independent [DATE average runner](../../../tests/access/queries/execution/compare_date_average.py) passes
 144 controls: 72 source-free exact-rational cases and 72 native query cases on
 unchanged registered four-family large-index inputs. Jackcess supplies inert
 raw DATE bits; Python Fraction supplies expected means. Sequential and both

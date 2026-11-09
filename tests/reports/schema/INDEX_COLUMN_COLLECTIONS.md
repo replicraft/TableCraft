@@ -44,15 +44,15 @@ capacity/spill bookkeeping; full native inspection timings do not.
 
 ## Independent correctness and refusal checks
 
-The original [fixture recipe](IndexColumnsFixture.java) creates fresh inert ACE
+The original [fixture recipe](../../access/schema/fields/IndexColumnsFixture.java) creates fresh inert ACE
 16 and Jet 4 databases. Each contains one-, two- and ten-column index tables with
 one or 24 logical indexes, rotated component order and alternating directions.
 The 24-index case deliberately stresses metadata allocation; it is not a survey
-of typical user databases. Existing [Jackcess getters](IndexOracle.java) supply
+of typical user databases. Existing [Jackcess getters](../../access/indexes/native/IndexOracle.java) supply
 independent logical/physical IDs, names, root pages, kinds, raw flags and key
 columns. No reference SQL or active database content executes.
 
-[Differential verification](verify_index_column_variants.py) passes 2,094
+[Differential verification](../../access/schema/fields/verify_index_column_variants.py) passes 2,094
 component/inspection/constructor controls over all three implementations and both
 formats. Complete returned descriptors, including usage-map references, agree
 between variants. Every input and executable hash is unchanged across replay and
@@ -63,13 +63,13 @@ Those 96 passes are separate from production-tree checks after adoption.
 
 ## Measurements and limits
 
-The [initial raw run](results/index-columns-2026-10-24.json) retains 405 samples
+The [initial raw run](../../results/schema/index-columns-2026-10-24.json) retains 405 samples
 (27 commands, 15 runs, three warmups). A parent `cargo fmt --all -- --check`
 finished around the start of that batch and may have affected initial samples;
-the [sidecar](results/index-columns-2026-10-24.metadata.json) records that event.
-The [reverse-order confirmation](results/index-columns-reverse-2026-10-24.json)
+the [sidecar](../../results/schema/index-columns-2026-10-24.metadata.json) records that event.
+The [reverse-order confirmation](../../results/schema/index-columns-reverse-2026-10-24.json)
 retains another 270 samples, with its own
-[sidecar](results/index-columns-reverse-2026-10-24.metadata.json). No samples were
+[sidecar](../../results/schema/index-columns-reverse-2026-10-24.metadata.json). No samples were
 discarded. All executables use ordinary release defaults and owned in-memory
 input bytes; each timed inspection repeats the public `inspect_table_indexes`
 operation 1,000 times, including normal budgets and result destruction.
@@ -114,7 +114,7 @@ Jackcess 5.0.4 JAR. Generate V2016 and V2000 sources and save read-only IndexOra
 observations as `V2016.full-oracle.tsv` and `V2000.full-oracle.tsv`. Hash and record
 new originals rather than assigning them the hashes from another generation.
 
-Run [the isolated-workspace recipe](prepare_index_column_variants.py) with a fresh
+Run [the isolated-workspace recipe](../../access/schema/fields/prepare_index_column_variants.py) with a fresh
 ignored directory. It recognizes the qualified Vec or current ArrayVec source,
 normalizes a Vec counterfactual only inside each copy, then derives the two inline
 contenders. It preserves current source files and references existing local
@@ -126,7 +126,7 @@ directory contains those executables and a `fixtures/` subdirectory with the two
 databases and getter observations. Description output deliberately requires
 simple ASCII fixture index names; it is not a generic metadata export protocol.
 
-The [timing runner](benchmark_index_columns.py) requires a fresh output path and
+The [timing runner](../../access/schema/fields/benchmark_index_columns.py) requires a fresh output path and
 never builds. Coordinate a quiet window first. `--inspection-only --reverse-order`
 repeats public inspections in the opposite contender order without constructor
 timings. Retain noisy, tied and contrary results alongside favorable ones.

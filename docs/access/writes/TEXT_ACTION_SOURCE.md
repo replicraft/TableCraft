@@ -17,7 +17,7 @@ LVAL inventory and raw record protection remain mandatory. Certificates stay
 bound to their issuing image. Source success cannot substitute for action facts,
 mutation ownership, target binding or an independent candidate proof.
 
-The [original source phase](../../testing/ACE16_TEXT_INDEX_UPDATE_SOURCES.md)
+The [original source phase](../../../tests/reports/indexes/ACE16_TEXT_INDEX_UPDATE_SOURCES.md)
 first recorded the old `Unsupported(ActiveContent)` profile refusal separately
 from body/module/Extra absence. Its code and first receipt remain unchanged in
 history. Current tests explicitly replace that historical boundary with actual
@@ -32,5 +32,5 @@ consumes it with its own ownership and whole-image proof.
 These are local source/preservation checks. Native Access save/reopen and Windows
 qualification remain unrun.
 
-The [execution record](../../testing/results/ace16-text-action-source-2026-11-01.json)
+The [execution record](../../../tests/results/general/ace16-text-action-source-2026-11-01.json)
 retains the original refusal and new positive admission as separate observations.

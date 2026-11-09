@@ -237,7 +237,7 @@ TCAC0005 captures the complete typed target and BEFORE binding; it uses the same
 checked resizable V2 journal owner. TCAC0001 through TCAC0004 languages remain distinct. Native,
 adapter, runtime and host evidence are separately accounted in the
 [ADD-column contract](../access/writes/ADD_COLUMN.md). The
-[coordinated workflow record](../testing/results/field-addition-gui-workflows-2026-11-08.json)
+[coordinated workflow record](../../tests/results/schema/field-addition-gui-workflows-2026-11-08.json)
 records 1,505 passing selected tests and retains the initial failures separately.
 Shared machinery and headless execution do not establish native Access parity.
 

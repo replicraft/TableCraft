@@ -125,7 +125,7 @@ transaction semantics.
 
 [Native index metadata](../../crates/engines/tablecraft-ace/src/table/indexes/metadata.rs)
 now uses ArrayVec under its existing ten-column ceiling. The completed
-[Vec/ArrayVec/SmallVec comparison](../testing/INDEX_COLUMN_COLLECTIONS.md) records
+[Vec/ArrayVec/SmallVec comparison](../../tests/reports/schema/INDEX_COLUMN_COLLECTIONS.md) records
 allocations, enclosing object sizes, retained storage and inspection timings.
 SmallVec was not selected for this storage; the retained benchmark is evidence,
 not a pending adoption task. Existing fixed arrays for encoded tuples and
@@ -146,7 +146,7 @@ candidate, not a claimed speed improvement.
 
 The [exact byte search](../../crates/query/tablecraft-expressions/src/functions/text/byte_string/search.rs)
 retains its current per-candidate work and cancellation contract. The completed
-[memmem comparison](../testing/BYTE_SEARCH_EXPERIMENT.md) found that precharging
+[memmem comparison](../../tests/reports/general/BYTE_SEARCH_EXPERIMENT.md) found that precharging
 bounded optimized spans changes early-match admission. That implementation is
 not selected for production; its benchmark and independent controls remain as
 historical evidence, not an active replacement task.
@@ -238,7 +238,7 @@ encoder equivalence does not establish native Access SQL or text-index traversal
 | [rust_decimal 1.43.0](https://docs.rs/crate/rust_decimal/1.43.0) | MIT | Adopted; expressions conversions/arithmetic | Checked numeric conversion/arithmetic and explicit bounded rounding behind domain carriers; std only, Serde disabled. Full promotion and native rounding qualification remain pending. Its 96-bit magnitude is not the field envelope; preserve scale, errors and explicit rounding. |
 | [bigdecimal 0.4.11](https://docs.rs/crate/bigdecimal/0.4.11) | MIT/Apache-2.0 | Alternative/oracle; Bounded intermediates or tests | Useful exact large coefficients; cap precision, scale, time and allocation. Nonterminating division is not exact and it is not a native storage codec. |
 | [decimal-rs 0.2.0](https://docs.rs/crate/decimal-rs/0.2.0) | Apache-2.0 | Alternative; Future broader SQL decimal | 38-digit model could serve broader DECIMAL needs; no current requirement supersedes the field carrier. Compare rounding, scale retention and overflow first. |
-| [icu_collator 2.3.1](https://docs.rs/crate/icu_collator/2.3.1) | Unicode-3.0 | Optional host text provider; expressions | The [ordering probe](../testing/ICU_COLLATION_PROBE.md) differs from General and still rules out native-key substitution. The [explicit ICU profile](../expressions/text/ICU_TEXT_PROFILE.md) compares decoded Unicode and owns bounded scalar-span search. Raw malformed Strings refuse before ICU; no native NLS/ACE equivalence is claimed. |
+| [icu_collator 2.3.1](https://docs.rs/crate/icu_collator/2.3.1) | Unicode-3.0 | Optional host text provider; expressions | The [ordering probe](../../tests/reports/queries/ICU_COLLATION_PROBE.md) differs from General and still rules out native-key substitution. The [explicit ICU profile](../expressions/text/ICU_TEXT_PROFILE.md) compares decoded Unicode and owns bounded scalar-span search. Raw malformed Strings refuse before ICU; no native NLS/ACE equivalence is claimed. |
 | [encoding_rs 0.8.42](https://docs.rs/crate/encoding_rs/0.8.42) | (Apache-2.0 OR MIT) AND BSD-3-Clause | Adopted; explicit scalar character-code pages and Japanese 932 string conversion. Native legacy text/import remain future consumers | [Character operations](../expressions/text/CHARACTER_CODE_PAGES.md) retain their single-byte contract; the separate [Japanese string codec](../expressions/text/JAPANESE_STRING_ENCODING.md) uses strict, metered whole-string conversion. Defaults remain disabled. WHATWG coverage is not every Windows/OEM code page or native Access equivalence. Preserve original bytes and reject unsupported/unmapped inputs. |
 | [jiff 0.2.38](https://docs.rs/crate/jiff/0.2.38) | Unlicense OR MIT | Keep; core and expressions | Replaces time for civil validation/conversion, strict date input and shared Gregorian date extraction. Keep exact Access carriers; std/perf-inline only, without automatic timezone discovery. Benchmarks include its conversion cost. |
 | [regex 1.13.1](https://docs.rs/crate/regex/1.13.1) | MIT OR Apache-2.0 | Use with a concrete application feature; Search/import tooling | Bound patterns, compiled size and input. Do not implement Access LIKE by assuming regex syntax/semantics match. |
@@ -585,7 +585,7 @@ bounded final mean conversion after fixed exponent-bin accumulation. The BigInt
 0.4 line matches num-rational's supported dependency, avoiding duplicate major
 versions. No arbitrary-precision storage format, random feature or serializer is
 adopted. See [exact adoption/notice scope](DEPENDENCIES.md#bounded-exact-floating-means-22-october-2026)
-and [independent controls plus timings](../testing/FLOATING_MEANS.md). The existing
+and [independent controls plus timings](../../tests/reports/general/FLOATING_MEANS.md). The existing
 bigdecimal/decimal-rs evaluations remain separate prospective Decimal choices.
 
 
@@ -604,7 +604,7 @@ and existing rewrite runner now share an exact artifact guard before compilation
 Actual 5.0.2 bytecode provides EncryptionUtil/SidRemasker, and all original drivers
 compile with reviewed Jackcess 5.0.4 and BC 1.86. The older reviewed JAR is refused
 for this consumer. No Rust/application dependency or copied reference source is
-introduced. [Observed comparisons](../testing/ENCRYPTED_MODERN_HISTORIES.md) establish
+introduced. [Observed comparisons](../../tests/reports/encryption/ENCRYPTED_MODERN_HISTORIES.md) establish
 engineering interoperability; native Access qualification and cryptographic audit
 remain distinct. The general dependency summary now reflects both reference
 versions rather than assigning the older baseline to every helper.
@@ -612,7 +612,7 @@ versions rather than assigning the older baseline to every helper.
 
 ## Working external JDBC aggregate reference
 
-The original [aggregate metadata probe](../testing/JDBC_AGGREGATE_METADATA.md) now
+The original [aggregate metadata probe](../../tests/reports/queries/JDBC_AGGREGATE_METADATA.md) now
 executes against reviewed UCanAccess 5.2.0, Jackcess 5.2.0 and HSQLDB 2.7.4 JARs.
 They remain ignored external engineering artifacts with recorded licenses/hashes;
 Cargo, production runtime and ordinary CI dependencies are unchanged. JDBC metadata,

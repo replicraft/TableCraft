@@ -5,7 +5,7 @@ import importlib.util
 import json
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[3]
+ROOT = Path(__file__).resolve().parents[4]
 REPORT = '.cache/ace16-parent-four-acceptance-first-20261027/report.json'
 REPORT_HASH = '332a3ee6d3e2f23d9225ba5c67e918c33a7bf66af9724f357364cc53522484eb'
 RUNNER = '.cache/ace16-parent-four-acceptance-next-20261027/replay.py'

@@ -183,7 +183,7 @@ before the separate positive-program route was added; its historical record is
 unchanged. At that phase, the complete session target passed 15 functions;
 all eight CLI journal regressions, strict checks, default-disabled compilation
 and formatting passed.
-See the [typed result](../../testing/results/offline-typed-write-sessions-2026-10-31.json).
+See the [typed result](../../../tests/results/general/offline-typed-write-sessions-2026-10-31.json).
 
 ## Evidence
 
@@ -196,7 +196,7 @@ without losing the previous receipt. A separate real-protocol regression verifie
 that confirmation cleanup failures retain Original/Replacement without claiming
 historical commit or rollback. The IO transfer has its own complete regression.
 
-The [focused record](../../testing/results/offline-write-sessions-2026-10-31.json)
+The [focused record](../../../tests/results/general/offline-write-sessions-2026-10-31.json)
 separates source admission, compiler/metadata diagnostics, direct tests and CLI
 validation. These are local engineering observations. Native Access save/reopen,
 power-loss/network filesystems, Windows and mixed-client behavior remain unqualified.

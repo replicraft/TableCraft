@@ -18,7 +18,7 @@ from compare_declared_numeric_text import INPUTS, JAR_SHA256
 from compare_fixed_binary_keys import digest
 from compare_large_indexes import INPUT_HASHES, registered_input_hash
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[4]
 CANDIDATE_SHA256 = "2be6ed81c1839ce7235bf29ce0b6d6e8f5d6aea70da5ac4e20109ff62bf5b9ed"
 BASELINE_SHA256 = "5a73870b888d58a22314096e761ec3ddec8cfc4ea6bbf7a7e5acda868b46d10c"
 MAX_COMMANDS = 400
@@ -32,7 +32,7 @@ SOURCE_FILES = [
 
 def getter(jar, script, database, *arguments):
     result = subprocess.run(
-        ["java", "-Xmx256m", "-cp", str(jar), str(ROOT / "docs/testing" / script),
+        ["java", "-Xmx256m", "-cp", str(jar), str(ROOT / "tests/access" / script),
          str(database), *arguments],
         capture_output=True, text=True, encoding="utf-8", timeout=120, check=True,
     )
@@ -89,11 +89,11 @@ def main():
         if digest(ROOT / name) != sources[name]:
             raise ValueError("Selected source differs from revision")
     tools = [args.cli, args.baseline, args.jar, Path(__file__),
-             ROOT / "docs/testing/TableDataOracle.java", ROOT / "docs/testing/IndexRowsOracle.java",
-             ROOT / "docs/testing/compare_declared_numeric_text.py",
-             ROOT / "docs/testing/compare_fixed_binary_keys.py",
-             ROOT / "docs/testing/compare_numeric_keys.py",
-             ROOT / "docs/testing/compare_large_indexes.py",
+             ROOT / "tests/access/reading/tables/TableDataOracle.java", ROOT / "tests/access/indexes/native/IndexRowsOracle.java",
+             ROOT / "tests/access/queries/expressions/compare_declared_numeric_text.py",
+             ROOT / "tests/access/indexes/native/compare_fixed_binary_keys.py",
+             ROOT / "tests/access/indexes/native/compare_numeric_keys.py",
+             ROOT / "tests/access/indexes/native/compare_large_indexes.py",
              *(args.directory / name for name in INPUTS), *large_inputs]
     pins = {str(path.resolve().relative_to(ROOT)): digest(path) for path in tools}
     report = {

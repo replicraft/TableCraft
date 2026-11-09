@@ -43,7 +43,7 @@ publication through the existing provider path; system Text/LCID support is not
 inferred from General database support. A raw provider range must be nonempty
 and within the remaining suffix; success checks cancellation before use.
 
-The [independent runner](../../testing/compare_raw_replacement.py) passes 9,068 controls:
+The [independent runner](../../../tests/access/reading/tables/compare_raw_replacement.py) passes 9,068 controls:
 Python nonoverlapping unit models, both CLI evaluators, independently keyed General
 spans, raw output observations and sequential/selected-index queries over four
 unchanged native inputs. The Java helper uses the reviewed external encoder and
@@ -133,7 +133,7 @@ provider ranges and bounded expansion/cancellation. An evaluator test checks wor
 per-value and cumulative byte failures during construction. Two query tests cover
 binding, grouping, correlations, parameter reuse, defaults and eager failures. Two
 CLI tests decode TSV with the csv crate and check both results and buffered errors.
-The [independent recipe](../../testing/compare_replacement.py) uses a UTF-16 list model,
+The [independent recipe](../../../tests/access/reading/tables/compare_replacement.py) uses a UTF-16 list model,
 explicit binary/ordinal modes, missing defaults, surrogate refusals, resource-limit
 refusals and independently decoded sequential/indexed native rows. Source bytes
 remain unchanged; see [implementation status](../../IMPLEMENTATION.md) for check totals.
@@ -183,7 +183,7 @@ match list, runtime or dependency is introduced.
 The batch passes 819 expression/query tests including doctests, 307 separately
 run parser-free expression tests and three selected CLI tests. All-feature/minimal
 Clippy, warnings-denied rustdoc and format/diff checks pass. The original
-[comparison recipe](../../testing/compare_replace_counts.py) passes 798 independent
+[comparison recipe](../../../tests/access/reading/tables/compare_replace_counts.py) passes 798 independent
 Decimal/strict UTF-16/Python replacement controls, including both CLI commands,
 en-us/de-de policies, rounded sentinels and unchanged Jet 4/ACE 2007/ACE 16-family
 ID getter integration. Only TableCraft executes SQL. Original/JAR hashes are
@@ -221,7 +221,7 @@ regional formatting and exact Access error precedence remain unqualified.
 Three expression and three query tests cover numeric/fixed/date/Boolean operands,
 policy rebinding, grouping/correlation, eager/NULL/option failures, Text/byte limits
 and every observed cancellation checkpoint. The original
-[scalar runner](../../testing/compare_replacement_scalars.py) passes 336 authored numeric
+[scalar runner](../../../tests/access/reading/tables/compare_replacement_scalars.py) passes 336 authored numeric
 spelling/UTF-16 controls against an independent replacement model and raw IDs read
 by Jackcess from the unchanged four-family 20,000-row inputs. Only TableCraft
 evaluates SQL.

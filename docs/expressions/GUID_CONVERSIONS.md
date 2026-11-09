@@ -94,7 +94,7 @@ Evaluator tests exercise fixed output charges, work limits, cancellation and NUL
 Query/CLI tests cover binary shape/subtype, parameters/correlations, aggregates,
 all observed cancellation checkpoints and buffered failures.
 
-The original [independent runner](../testing/compare_guid_conversion.py) compares
+The original [independent runner](../../tests/access/queries/expressions/compare_guid_conversion.py) compares
 bytes against Python UUID's independent implementation and checks unchanged
 original SavedForest-derived native files. It does not execute Microsoft Access
 or add saved GUID conversion fixtures. Native qualification remains pending.
@@ -106,7 +106,7 @@ Bound tests retain parameter/aggregate/group/correlated dependencies and every
 observed cancellation checkpoint. CLI controls exercise both commands and empty
 stdout on late failures.
 
-The original [inverse runner](../testing/compare_string_from_guid.py) passes 1594
+The original [inverse runner](../../tests/access/queries/expressions/compare_string_from_guid.py) passes 1594
 provisional Text/byte-order/type/refusal controls. Python UUID supplies an
 independent formatting and bytes_le model; reviewed getters supply GUID fields
 from four unchanged original ScalarFixture files with expression evaluation
@@ -154,13 +154,13 @@ model, cover bytes, widths, NULL, strict-key separation, work and cancellation.
 Five query tests cover composed consumers, parameter reuse, strict group refusal,
 eager errors, progressive parity and every observed filter cancellation point.
 CLI checks cover eval/run equality and buffered refusals. See the
-[verification record](../testing/results/guid-byte-predicates-2026-10-25.json).
+[verification record](../../tests/results/general/guid-byte-predicates-2026-10-25.json).
 This closes a concrete predicate-coercion gap; broader Byte-array semantics,
 native qualification and full P0 acceptance remain open.
 
 ## Native predicate replay — 25 October 2026
 
-The original [GUID predicate runner](../testing/compare_guid_predicates.py) passes
+The original [GUID predicate runner](../../tests/access/reading/tables/compare_guid_predicates.py) passes
 192 CLI controls: 156 successful queries and 36 buffered refusals. Eight
 independent read-only getter invocations supply the original stored GUIDs. Four
 small scalar originals cover Jet 4, ACE 2007, ACE 2016 and ACE 2019; four registered
@@ -177,7 +177,7 @@ mismatches across small and indexed queries. Large cases compare sequential,
 required ascending and required descending GUID-index reads under explicit
 native/query allowances; they retain the complete original predicate.
 
-The [audited report](../testing/results/guid-predicate-replay-2026-10-25.json) records
+The [audited report](../../tests/results/general/guid-predicate-replay-2026-10-25.json) records
 64,140 returned ID observations, a complete unique command grid, eighteen
 unchanged artifact pins and four selected committed/live source snapshots. The
 large getters read 80,000 original rows across four files; repeated returned rows

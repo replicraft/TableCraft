@@ -72,7 +72,7 @@ refusal, compound refusal, corrupt selected roots, hidden DATE-key payload
 validation, byte exhaustion and cancellation. Nine existing
 DATE/projection regressions pass. Strict engine linting with all features,
 minimal adapter compilation and formatting pass; see the
-[scoped verification record](../../testing/results/date-index-candidates-2026-10-25.json).
+[scoped verification record](../../../tests/results/indexes/date-index-candidates-2026-10-25.json).
 
 The first native-test compile used an incorrect error variant name; its excluded
 log remains recorded, and only that assertion was corrected to the actual typed
@@ -85,11 +85,11 @@ negative dates, signed zero/subnormal distinctions, typed parameter reuse,
 whole-predicate safety, source/index ordering, one-row ceilings, incomplete-cache
 refusals and buffered CLI errors across four authored header profiles. Strict
 query/host linting, minimal-feature compilation and formatting pass. See the
-[integration verification](../../testing/results/date-query-candidates-2026-10-25.json).
+[integration verification](../../../tests/results/queries/date-query-candidates-2026-10-25.json).
 
 This does not establish native Microsoft Access SQL predicate equivalence, new
 relationship/write eligibility or live-file coherence. The original
-[20,000-row replay](../../testing/DATE_QUERY_CANDIDATE_REPLAY.md) now passes 192 controls
+[20,000-row replay](../../../tests/reports/queries/DATE_QUERY_CANDIDATE_REPLAY.md) now passes 192 controls
 across four formats, including default-limit selections, complete-cache refusals
 and corrupt selected roots. It compares 539,848 ID rows with exact rational
 predicates and independent physical order while keeping all originals unchanged;

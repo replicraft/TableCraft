@@ -1,6 +1,6 @@
 # Original ignore-NULL DELETE observations
 
-The [candidate receipt](results/ace16-delete-ignored-original-replay-2026-10-26.json)
+The [candidate receipt](../../results/rows/ace16-delete-ignored-original-replay-2026-10-26.json)
 records **50 positive candidates, zero disagreements**, on frozen engineering
 example `b193984510d924a1688b8de2c5d073de90142af2`. Every selector succeeds without
 waivers or budget changes. The candidates remove 3,346 roots, check 8,584 surviving
@@ -12,19 +12,19 @@ Normal writes, UPDATE eligibility, data macros and journal/apply remain separate
 
 No database was regenerated and no index flags were edited. Six registered ACE16
 V2016/V2019 originals were reused, with their existing hashes checked against the
-[fixture ledger](FIXTURES.md) and owning observations:
+[fixture ledger](../reading/FIXTURES.md) and owning observations:
 
 - [DeleteStorage](DELETE_STORAGE_OBSERVATIONS.md): six Indexed rows, ordinary and
   ignored GroupKey indexes, physical aliases, descending/composite/unique indexes,
   Memo/OLE payloads, plus separate Unindexed and Sentinel tables.
-- [IgnoreNullIndex](IGNORED_NULL_INDEXES.md): 701 rows, 637 ordinary ignored-key
+- [IgnoreNullIndex](../indexes/IGNORED_NULL_INDEXES.md): 701 rows, 637 ordinary ignored-key
   entries and 647 unique ignored-key entries, with ascending/descending trees and
   a shared physical alias.
-- [IgnoredIndexCoverage](IGNORED_INDEX_COVERAGE.md): the existing UniquePartial,
+- [IgnoredIndexCoverage](../indexes/IGNORED_INDEX_COVERAGE.md): the existing UniquePartial,
   TupleGuid, TupleDecimal, ScalarTEXT0, ScalarTEXT1 and ScalarBINARY tables. No
   eligibility is inferred for the other tables in those files.
 
-[IgnoredDeleteReference.java](IgnoredDeleteReference.java) is original repository
+[IgnoredDeleteReference.java](../../access/rows/delete/IgnoredDeleteReference.java) is original repository
 code under the root license. It only copies/deletes or performs inert getters;
 it has no database-generation mode. Fresh reference copies use public
 `Table.deleteRow`. Expressions are disabled, time zone is UTC, linked opens throw,
@@ -69,7 +69,7 @@ this DELETE qualification; index checking alone does not grant write authority.
 
 ## Sequential references versus atomic candidates
 
-The [reference receipt](results/ace16-delete-ignored-original-reference-2026-10-26.json)
+The [reference receipt](../../results/rows/ace16-delete-ignored-original-reference-2026-10-26.json)
 preserves 50 fresh copy hashes, their getter/request receipts, 106 successful
 copy/getter commands and independently audited allocation transitions. All six
 originals and all 50 references remain unchanged during candidate replay.
@@ -98,27 +98,27 @@ candidate topology or file length to equal the sequential reference.
 ## Source versions and reproduction
 
 Historical preparation and audit used private sources preserved as inert text:
-[prepare](ignored_delete_originals/historical/prepare.py.txt),
-[audit](ignored_delete_originals/historical/audit.py.txt), and the excluded
-[JSON-ID](ignored_delete_originals/historical/audit-before-json-id-fix.py.txt),
-[residual](ignored_delete_originals/historical/audit-before-reference-residual-observation.py.txt)
-and [growth](ignored_delete_originals/historical/audit-before-reference-growth-observation.py.txt)
+[prepare](../../access/rows/ignored_delete_originals/historical/prepare.py.txt),
+[audit](../../access/rows/ignored_delete_originals/historical/audit.py.txt), and the excluded
+[JSON-ID](../../access/rows/ignored_delete_originals/historical/audit-before-json-id-fix.py.txt),
+[residual](../../access/rows/ignored_delete_originals/historical/audit-before-reference-residual-observation.py.txt)
+and [growth](../../access/rows/ignored_delete_originals/historical/audit-before-reference-growth-observation.py.txt)
 versions. The first failure was an authored string/integer ID mismatch. The other
 two failures exposed unjustified assumptions about sequential reference bodies
 and file length. Correcting the reference audit did not weaken candidate policy.
 Exact raw logs/source hashes remain in the receipts.
 
-The public [reference](ignored_delete_originals/reference.py) and
-[audit](ignored_delete_originals/audit.py) tools accept explicit paths, are import
+The public [reference](../../access/rows/ignored_delete_originals/reference.py) and
+[audit](../../access/rows/ignored_delete_originals/audit.py) tools accept explicit paths, are import
 safe and write fresh outputs only. The public
-[replay](ignored_delete_originals/replay.py),
-[atomic checker](ignored_delete_originals/atomic.py) and
-[support](ignored_delete_originals/support.py) are byte-identical promotions of
+[replay](../../access/rows/ignored_delete_originals/replay.py),
+[atomic checker](../../access/rows/ignored_delete_originals/atomic.py) and
+[support](../../access/rows/ignored_delete_originals/support.py) are byte-identical promotions of
 the actual candidate tools. The public
-[getter parser](ignored_delete_originals/getters.py) differs only by removal of
+[getter parser](../../access/rows/ignored_delete_originals/getters.py) differs only by removal of
 two trailing blank lines at EOF; its Python AST is unchanged. Receipts retain the
 immutable private execution hash separately from the current public source hash. Shared raw framing is reused
-[read-only](encoded_delete_originals/wire.py). Repository-relative artifact labels
+[read-only](../../access/rows/encoded_delete_originals/wire.py). Repository-relative artifact labels
 and outside-repository rejection prevent machine-specific public labels.
 
 Separate public verification re-read all retained references and recomputed their
@@ -134,16 +134,16 @@ repository-local class directory. Supply the six inputs explicitly, for example:
 
 ```sh
 javac -cp "$jar" -d "$classes" docs/testing/IgnoredDeleteReference.java
-python3 docs/testing/ignored_delete_originals/reference.py \
+python3 tests/run.py tests/access/rows/ignored_delete_originals/reference.py \
   --input DeleteStorage V2016 "$delete2016" \
   --input DeleteStorage V2019 "$delete2019" \
   --input Ignore701 V2016 "$ignore2016" --input Ignore701 V2019 "$ignore2019" \
   --input Coverage V2016 "$coverage2016" --input Coverage V2019 "$coverage2019" \
   --helper-source docs/testing/IgnoredDeleteReference.java --helper-dir "$classes" \
   --jar "$jar" --workdir "$fresh_references" --report "$reference_report"
-python3 docs/testing/ignored_delete_originals/audit.py \
+python3 tests/run.py tests/access/rows/ignored_delete_originals/audit.py \
   --references "$reference_report" --report "$transition_report"
-python3 docs/testing/ignored_delete_originals/replay.py \
+python3 tests/run.py tests/access/rows/ignored_delete_originals/replay.py \
   --reference-report "$reference_report" --transition-audit "$transition_report" \
   --helper-source docs/testing/IgnoredDeleteReference.java --helper-dir "$classes" \
   --jar "$jar" --example "$frozen_example" \

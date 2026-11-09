@@ -2,6 +2,7 @@
 
 This checks stored read/query composition, not recalculation or Access SQL.
 """
+from engineering_paths import reference_file
 import argparse
 import hashlib
 import json
@@ -12,8 +13,8 @@ import tempfile
 from compare_browsing import display
 from compare_calculated_decimals import decimal_text, digest, run, JACKCESS_SHA256
 
-ROOT = Path(__file__).resolve().parents[2]
-RECIPES = ROOT / "docs/testing"
+ROOT = Path(__file__).resolve().parents[4]
+RECIPES = ROOT / "tests/access"
 SOURCE_PATHS = [
     "crates/engines/tablecraft-ace/src/table/calculated/projection.rs",
     "crates/engines/tablecraft-ace/src/table/page/cursor.rs",
@@ -34,8 +35,8 @@ def main():
     args = parser.parse_args()
     assert not args.report.exists(), "Refuse to overwrite an evidence report"
     assert digest(args.jar) == JACKCESS_SHA256
-    inputs = [args.cli, args.jar, Path(__file__), RECIPES / "CalculatedDecimalFixture.java",
-              RECIPES / "CalculatedMemoFixture.java", *[ROOT / name for name in SOURCE_PATHS]]
+    inputs = [args.cli, args.jar, Path(__file__), reference_file('tests/access/queries/expressions/CalculatedDecimalFixture.java'),
+              reference_file('tests/access/storage/native/CalculatedMemoFixture.java'), *[ROOT / name for name in SOURCE_PATHS]]
     files = [(directory / (profile + ".accdb"), kind) for directory, kind in
              [(args.decimal_directory, "decimal"), (args.memo_directory, "memo")]
              for profile in ("V2016", "V2019")]
@@ -57,7 +58,7 @@ def main():
 
     for path, kind in files:
         original = path.read_bytes()
-        recipe = RECIPES / ("CalculatedDecimalFixture.java" if kind == "decimal"
+        recipe = reference_file("CalculatedDecimalFixture.java" if kind == "decimal"
                             else "CalculatedMemoFixture.java")
         oracle = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar, recipe, "--inspect", path)
         if kind == "decimal":

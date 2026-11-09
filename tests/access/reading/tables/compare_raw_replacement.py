@@ -3,6 +3,7 @@
 Python supplies nonoverlapping unit replacement; the reviewed external key encoder
 supplies independent General spans. Native getters provide data only, not SQL.
 """
+from engineering_paths import reference_file
 
 import argparse
 from itertools import product
@@ -81,7 +82,7 @@ def native_controls(args):
         path = args.directory / f"Policies-{profile}.{suffix}"
         before = digest(path)
         oracle = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar,
-                     RECIPES / "TableDataOracle.java", path, "PolicyProbe")
+                     reference_file('tests/access/reading/tables/TableDataOracle.java'), path, "PolicyProbe")
         expected = []
         for line in oracle.splitlines():
             fields = line.split("\t")
@@ -127,8 +128,8 @@ def main():
         ]:
             controls += query(args.cli, mode, sql, None)
     with tempfile.TemporaryDirectory(prefix="tablecraft-raw-replacement-") as classes:
-        run("javac", "-cp", args.jar, "-d", classes, RECIPES / "GeneralSearchOracle.java",
-            RECIPES / "RawGeneralSearchOracle.java", RECIPES / "RawGeneralReplacementOracle.java")
+        run("javac", "-cp", args.jar, "-d", classes, reference_file('tests/access/reading/tables/GeneralSearchOracle.java'),
+            reference_file('tests/access/reading/tables/RawGeneralSearchOracle.java'), reference_file('tests/access/reading/tables/RawGeneralReplacementOracle.java'))
         classpath = os.pathsep.join([classes, str(args.jar)])
         for version, policy in [(0, "general-legacy"), (1, "general-2010")]:
             oracle = run("java", "-Dstdout.encoding=UTF-8", "-cp", classpath,

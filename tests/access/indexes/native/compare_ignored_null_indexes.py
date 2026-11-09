@@ -7,7 +7,7 @@ import json
 from pathlib import Path
 import subprocess
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[4]
 PROFILES = ("V2000", "V2007", "V2016", "V2019")
 JAR_SHA256 = "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc"
 BASELINE_SHA256 = "1093091eb45bd7e78fe1f0536da4994439e7012682b1f19f358ca13330cb52a0"
@@ -186,7 +186,7 @@ def main():
 
     tools = [
         args.cli, args.baseline_cli, args.jar, Path(__file__),
-        ROOT / "docs/testing/IgnoreNullIndexFixture.java",
+        ROOT / "tests/access/indexes/native/IgnoreNullIndexFixture.java",
     ]
     for profile in PROFILES:
         tools.extend(args.originals / f"{profile}{suffix}" for suffix in ("-getter.tsv", "-baseline-indexes.tsv"))

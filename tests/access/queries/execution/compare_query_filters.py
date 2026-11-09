@@ -35,7 +35,7 @@ def main():
         before = path.read_bytes()
         for index, column, key in [("PrimaryKey", 0, "ID"), ("CategoryDesc", 1, "Category")]:
             reference = subprocess.check_output([
-                "java", "-cp", str(args.jar), "docs/testing/IndexRowsOracle.java", str(path),
+                "java", "-cp", str(args.jar), "tests/access/indexes/native/IndexRowsOracle.java", str(path),
                 "Indexed", index, "ID", "Category",
             ], text=True).splitlines()
             for name, predicate, include, parameters in cases:

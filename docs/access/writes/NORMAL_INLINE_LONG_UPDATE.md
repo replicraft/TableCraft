@@ -31,6 +31,6 @@ writes. Twenty-six literal native commits, independent proof/forgery,
 recovery/resource checks, 42 retained typed/SQL saves with empty follow-ons and
 sixteen CLI saves/readbacks pass. SQL coverage uses honestly expressible Memo
 and OLE-NULL cases; there is no invented Binary literal or implicit coercion.
-See the [execution record](../../testing/results/ace16-normal-inline-long-update-writes-2026-11-01.json)
-and [source qualification](../../testing/ACE16_WIDE_INLINE_CLOCK_SOURCES.md).
+See the [execution record](../../../tests/results/rows/ace16-normal-inline-long-update-writes-2026-11-01.json)
+and [source qualification](../../../tests/reports/general/ACE16_WIDE_INLINE_CLOCK_SOURCES.md).
 Native Microsoft Access save/reopen remains unrun.

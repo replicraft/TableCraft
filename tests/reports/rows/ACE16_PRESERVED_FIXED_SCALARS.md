@@ -82,7 +82,7 @@ families in every header 5 database.
 
 ## Observed authored evidence
 
-The [result record](results/ace16-preserved-fixed-scalars-2026-10-31.json)
+The [result record](../../results/rows/ace16-preserved-fixed-scalars-2026-10-31.json)
 separates source qualification, producer comparisons, causal proof and regressions.
 
 SOURCE qualification was committed separately as `70a1f0c4` before producer calls.
@@ -103,7 +103,7 @@ wrong carriers, foreign metadata and substituted requests. A forged observed
 Required-property disable still fails validation of the proof's independently
 reconstructed image against original properties.
 
-The [frontend result](results/ace16-preserved-fixed-scalar-frontends-2026-10-31.json)
+The [frontend result](../../results/rows/ace16-preserved-fixed-scalar-frontends-2026-10-31.json)
 records the separate consumer runs and retained first failure.
 The shared Access editor now admits the same target families in Default and
 Fixed(Fitted) modes. Variable remains Short Text-only for projected rich schemas.
@@ -118,7 +118,7 @@ frozen corpus without changing expected bytes or function admission.
 ## Independently generated file observations
 
 Two unchanged V2016/V2019 originals created with the
-[synthetic recipe and read-only getter](preserved_fixed_scalars_genuine/README.md)
+[synthetic recipe and read-only getter](../../access/rows/preserved_fixed_scalars_genuine/README.md)
 now pass 24 independent complete-image comparisons through a freshly compiled
 committed CLI. Three target families each cover present change, NULL-to-value,
 value-to-NULL and NULL no-op on both files. Int64 and Currency use signed endpoints;
@@ -131,7 +131,7 @@ inventories, including unchanged indexes, stored caches, rich payloads,
 attachments and Sentinel. Eighteen requests change bytes; six reproduce the
 entire source. SDK calendar observations do not distinguish DATE signed zero:
 the independent raw-image proof supplies that evidence. The
-[genuine-file record](results/ace16-preserved-fixed-scalars-genuine-images-2026-10-31.json)
+[genuine-file record](../../results/rows/ace16-preserved-fixed-scalars-genuine-images-2026-10-31.json)
 keeps source creation, expected construction, build, candidate and reader phases
 separate. No original or expected payload was adjusted from producer output.
 

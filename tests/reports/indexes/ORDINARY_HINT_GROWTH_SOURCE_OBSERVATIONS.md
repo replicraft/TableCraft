@@ -144,11 +144,11 @@ zero mismatches. The original 26 input paths and first report remain unchanged.
 
 ## Maintained saved verification
 
-The [helper](ordinary_hint_growth_sources/OrdinaryHintProbe.java) is byte-identical
-to compiled source. The [source model](ordinary_hint_growth_sources/model.py)
-and corrected [measurement](ordinary_hint_growth_sources/measure.py) change only
+The [helper](../../access/indexes/ordinary_hint_growth_sources/OrdinaryHintProbe.java) is byte-identical
+to compiled source. The [source model](../../access/indexes/ordinary_hint_growth_sources/model.py)
+and corrected [measurement](../../access/indexes/ordinary_hint_growth_sources/measure.py) change only
 repository-root composition from their frozen private counterparts. The
-[verifier](ordinary_hint_growth_sources/verify.py) preserves the exact one-line
+[verifier](../../access/indexes/ordinary_hint_growth_sources/verify.py) preserves the exact one-line
 transport correction, both phase histories and preparation archives, then
 rederives all four sources from saved database/getter bytes without a child
 process. Its first run passed 450 pin occurrences representing 182 unique saved
@@ -160,9 +160,9 @@ index entries including aliases and 144 complete original-page comparisons
 python3 -B docs/testing/ordinary_hint_growth_sources/verify.py
 ```
 
-The [compact receipt](results/ordinary-hint-growth-source-observations-2026-10-27.json)
+The [compact receipt](../../results/indexes/ordinary-hint-growth-source-observations-2026-10-27.json)
 pins raw reports, frozen sources, corrected proof and saved checks. Jackcess
-5.0.4 binary/source provenance follows the [fixture ledger](FIXTURES.md); the
+5.0.4 binary/source provenance follows the [fixture ledger](../reading/FIXTURES.md); the
 helper is repository-authored. Later public UPDATE references, native no-op/
 refusal controls and committed-consumer candidates belong to separate phases
 and records. This evidence does not qualify map growth, native saves, macros,

@@ -5,7 +5,7 @@ With `ace16-write-preview`,
 consumes existing `SlotScalarUpdate` requests and returns a non-journalable
 `Ace16WritePreview`. This separate engineering service adds alternate owned-page
 placement and bounded EOF allocation. The
-[root-page-only service](ACE16_PAGE_UPDATES.md) and exact-span slot service keep
+[root-page-only service](../storage/ACE16_PAGE_UPDATES.md) and exact-span slot service keep
 their existing contracts. Normal backend/CLI writes, journal admission and
 unqualified data macros remain blocked.
 
@@ -25,7 +25,7 @@ that single highest candidate does not fit, its hint is cleared and a new EOF
 page is allocated; lower candidates are not searched. With no hinted candidate,
 a new EOF page is allocated directly. This finite policy follows the reviewed
 independent writer's maintenance control flow and the
-[actual public UPDATE observations](CROSS_PAGE_UPDATE_OBSERVATIONS.md).
+[actual public UPDATE observations](../storage/CROSS_PAGE_UPDATE_OBSERVATIONS.md).
 
 EOF allocation requires existing represented owned, hint and global cells for
 the exact appended page: original owned/hint bits must be clear and the global
@@ -76,7 +76,7 @@ candidate; no source file is modified.
 
 ## Validation boundaries
 
-The [scoped implementation record](results/ace16-variable-updates-native-2026-10-26.json)
+The [scoped implementation record](../../results/rows/ace16-variable-updates-native-2026-10-26.json)
 records exact source/log hashes, failures and focused regression commands.
 Author tests reuse repository-owned encoded fixture mechanics and literal key
 expectations; the independent contract target authors its own storage/map model.
@@ -92,7 +92,7 @@ index orders and exact image/map/EOF/padding proofs agree. These later results
 remain separate from the original core test record and native Access qualification.
 
 The same committed consumer separately passes the
-[eight Binary allocation controls](BINARY_VARIABLE_UPDATE_OBSERVATIONS.md)
+[eight Binary allocation controls](../storage/BINARY_VARIABLE_UPDATE_OBSERVATIONS.md)
 against genuine space-exhaustion checkpoints. All eight preserve complete
 typed/index results and independently reconstructed image/map changes. Four
 shrinks consume their corresponding generated growth candidates and retain

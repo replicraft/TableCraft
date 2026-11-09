@@ -68,7 +68,7 @@ LIKE and search retain their General-only scope. The separate
 supplies SQL comparison without reusing truncated physical keys or claiming
 native NLS behavior.
 
-The [original oracle and engineering observations](../../testing/FRENCH_LEGACY_INDEX_OBSERVATIONS.md)
+The [original oracle and engineering observations](../../../tests/reports/queries/FRENCH_LEGACY_INDEX_OBSERVATIONS.md)
 keep stored descriptor/key evidence distinct from these local implementation
 checks and from native Access qualification.
 
@@ -306,7 +306,7 @@ intentional false positives, digested keys, Memo/unknown/limit refusals and samp
 cancellation. They include 253,952 scalar-BMP/family/direction cases with stored
 trailing spaces. Existing public-API tests additionally check early UTF-16 and
 cancellation refusal before I/O, wrong carriers and an actual nullable Memo index.
-The independent [runner](../../testing/compare_text_equality_candidates.py) passes 824
+The independent [runner](../../../tests/access/queries/expressions/compare_text_equality_candidates.py) passes 824
 controls over eight immutable original 1,000-row Text inputs. Independent Jackcess
 encoders/getters supply exact candidate sets, physical order and complete trimmed
 short-key equalities; no SQL or active content runs there. Controls cover both
@@ -314,7 +314,7 @@ General versions and directions, all four priority families, projected IDs,
 UTF-16 maxima, empty/ignored weights, accents, expansions and supplementary text.
 Corrupt-copy controls prove disjoint-child pruning, complete-read refusal and
 selected-root failure without stdout. Output-limit failures stay buffered.
-[Fixture records](../../testing/FIXTURES.md#short-text-equality-candidate-evidence) retain hashes.
+[Fixture records](../../../tests/reports/reading/FIXTURES.md#short-text-equality-candidate-evidence) retain hashes.
 
 `GeneralEqualityPrefix` now retains an owned, descriptor-qualified prefix for
 `TextIndexSelection::EqualityPrefix`. The Access resolver and source use it for
@@ -413,7 +413,7 @@ Short Binary fields. Each text column retains its own General legacy/General
 2010 descriptor; each component retains its own direction. Jet 4 Decimal
 reconstruction preserves its legacy sign-byte behavior without enabling writes.
 Fixed-only indexes retain their existing qualified profiles;
-[compound Binary indexes](../../testing/BINARY_INDEX_TUPLES.md) now use the same owned
+[compound Binary indexes](../../../tests/reports/indexes/BINARY_INDEX_TUPLES.md) now use the same owned
 variable-width tuple reader.
 
 Complete component encodings are concatenated before the whole entry is capped
@@ -448,14 +448,14 @@ mixed-direction keys, suffix-sensitive whole-entry digests, resource failures,
 row-only NULL metadata and key/row disagreement with both key fields unprojected.
 
 ```sh
-python3 docs/testing/compare_text_tuples.py \
+python3 tests/run.py tests/access/queries/expressions/compare_text_tuples.py \
   --jar path/to/jackcess-5.0.4.jar \
   --cli target/debug/tablecraft --rows target/debug/examples/table_data \
   --directory path/to/fresh-text-tuples --generate
 ```
 
 The generator refuses existing output files. The reviewed JAR and generated
-files remain engineering-only, local and untracked; [fixture records](../../testing/FIXTURES.md#compound-general-text-index-inputs)
+files remain engineering-only, local and untracked; [fixture records](../../../tests/reports/reading/FIXTURES.md#compound-general-text-index-inputs)
 retain provenance, exact hashes and regeneration limits.
 
 
@@ -479,7 +479,7 @@ The explicit CLI ordinal policy retains its meaning. The full-string model below
 is separately selected and does not silently replace it or introduce a case-folding
 fallback.
 
-The [native capture recipe](../../testing/NATIVE_TEXT_ORACLE.md) now prepares original
+The [native capture recipe](../../../tests/reports/general/NATIVE_TEXT_ORACLE.md) now prepares original
 Short/Long Text values and captures pair comparisons, sorting, grouping, DISTINCT,
 joins, LIKE and typed-parameter outcomes through Windows ACE DAO. Its portable
 checker verifies complete outcomes, lossless stored values, build metadata and
@@ -549,7 +549,7 @@ stored descriptor. Existing policy-independent NULL/empty/out-of-range controls
 and Binary search retain their evaluator behavior. No equality-prefix hint,
 automatic selection expansion or mutation authority is introduced.
 
-[Independent short French keys and the Latin oracle](../../testing/FRENCH_COMPARISON_OBSERVATIONS.md)
+[Independent short French keys and the Latin oracle](../../../tests/reports/queries/FRENCH_COMPARISON_OBSERVATIONS.md)
 test complete comparison signs. A separate bounded
 Latin model reads measured one-character weight metadata, cross-checks 158 short
 complete keys, and supplies long suffix/accent/padding controls at
@@ -714,14 +714,14 @@ for these finite cases. This proves the chosen model/integration, not native
 Access expression compatibility or long-string ordering.
 
 ```sh
-python3 docs/testing/compare_native_collations.py --jar /path/to/jackcess-5.0.4.jar \
+python3 tests/run.py tests/access/queries/expressions/compare_native_collations.py --jar /path/to/jackcess-5.0.4.jar \
   --cli target/release/tablecraft --directory /path/to/fresh-corpus --generate
 ```
 
 The runner validates the reviewed JAR hash, compiles the original oracle into a
 temporary directory, checks buffered failures and preserves every source hash.
 Generated databases/classes and reference binaries remain outside Git; fixture
-provenance is in [FIXTURES.md](../../testing/FIXTURES.md#native-per-field-general-policy-inputs).
+provenance is in [FIXTURES.md](../../../tests/reports/reading/FIXTURES.md#native-per-field-general-policy-inputs).
 
 A controlled release CLI comparison first verifies identical 55-row results over
 the unchanged V2016/General-2010 TextChecked input, then measures explicit
@@ -1013,7 +1013,7 @@ cargo bench -p tablecraft-access --bench general_like -- 1 class --iterations 10
 
 ## ICU locale-provider candidate evidence
 
-The [isolated ICU4X probe](../../testing/ICU_COLLATION_PROBE.md) compares explicit English
+The [isolated ICU4X probe](../../../tests/reports/queries/ICU_COLLATION_PROBE.md) compares explicit English
 secondary-strength ordering with both provisional General models. The results
 differ even after trailing-space handling. Upstream ordering APIs also do not
 supply consumed-span substring search or the existing raw-unit LIKE contract.
@@ -1089,7 +1089,7 @@ fresh Jet 4, ACE 2007 and ACE 16-family copies, including selected-index reads,
 both General versions and global overrides. Grouped domain-key expectations use
 the existing independent short-key encoders; only TableCraft executes SQL. Source
 hashes and generation provenance are recorded in
-[FIXTURES.md](../../testing/FIXTURES.md#grouped-string-policy-provenance-controls).
+[FIXTURES.md](../../../tests/reports/reading/FIXTURES.md#grouped-string-policy-provenance-controls).
 Unknown/conflicting required identities still fail, fresh text-function results
 retain their documented defaults, and concrete Text/LCID providers and native
 Access precedence remain open.

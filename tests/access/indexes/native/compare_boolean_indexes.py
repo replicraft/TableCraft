@@ -57,7 +57,7 @@ def main():
                 if table == "BooleanIndexed":
                     roots.append(root)
                 expected = canonical(run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar,
-                    "docs/testing/IndexRowsOracle.java", path, table, index, *columns), columns)
+                    "tests/access/indexes/native/IndexRowsOracle.java", path, table, index, *columns), columns)
                 if len(expected.splitlines()) != rows:
                     raise RuntimeError("Unexpected independent Boolean cursor count")
                 header = "\t".join(columns) + "\n"

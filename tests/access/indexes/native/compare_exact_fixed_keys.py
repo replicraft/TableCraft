@@ -19,17 +19,17 @@ from compare_large_deployment import JAR_SHA256, getter_model
 from compare_progressive_derived import compiled_sources
 from compare_progressive_grouped import PROVENANCE_HASH, invoke, relative
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[4]
 MAX_COMMANDS = 100
 BASELINE_SHA = "f6a86b005512d52520c9398853843be1d3e47d19b34f1758e09b0f6f40f1a89c"
 BASELINE_REVISION = "e28fd42cf33a64489106d9514fbc227b8ae1f9e4"
 TOOLS = [
-    "docs/testing/compare_exact_fixed_keys.py",
-    "docs/testing/compare_progressive_derived.py",
-    "docs/testing/compare_progressive_grouped.py",
-    "docs/testing/compare_large_deployment.py",
-    "docs/testing/build_large_deployment.py",
-    "docs/testing/LargeDeploymentFixture.java",
+    "tests/access/indexes/native/compare_exact_fixed_keys.py",
+    "tests/access/queries/execution/compare_progressive_derived.py",
+    "tests/access/queries/execution/compare_progressive_grouped.py",
+    "tests/access/reading/tables/compare_large_deployment.py",
+    "tests/access/reading/tables/build_large_deployment.py",
+    "tests/access/reading/tables/LargeDeploymentFixture.java",
 ]
 
 

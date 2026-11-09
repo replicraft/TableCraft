@@ -13,7 +13,7 @@ from pathlib import Path
 import subprocess
 
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[4]
 BASELINE_SHA256 = "747425183d2e0869646fa359f3f557a540bff6fb835116a8912e6346a38c4cf3"
 LONG_MAX = (1 << 31) - 1
 LONG_MIN = -(1 << 31)

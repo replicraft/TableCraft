@@ -94,8 +94,8 @@ executed helper and uses the existing
 executes no cached Python code or database content. Private originals, classes,
 archives and raw streams are deliberately not distributed in this directory.
 
-The [owning contract](../ACE16_LONG_VALUE_INSERTS.md) and
-[compact result](../results/ace16-insert-external-long-values-2026-10-28.json)
+The [owning contract](../../../reports/storage/ACE16_LONG_VALUE_INSERTS.md) and
+[compact result](../../../results/rows/ace16-insert-external-long-values-2026-10-28.json)
 retain the distinction between engineering evidence and compatibility. No native
 Microsoft Access/Windows save or reopen has run; validation/data macros and
 production save admission remain separate gates.

@@ -137,7 +137,7 @@ Five kernel tests cover exact values, profiles, dates, epoch/midnight carry, bou
 resources and generated Int64 models. An evaluator test checks emitted-byte charging
 and failures; query tests check grouped parameters, nested dates and policy reuse.
 CLI and worker regressions verify separate policies, buffering and failure reuse.
-The [independent recipe](../../testing/compare_cstr.py) uses Python integer/Decimal and
+The [independent recipe](../../../tests/access/reading/tables/compare_cstr.py) uses Python integer/Decimal and
 calendar models plus optional sequential/indexed native-row controls, checking
 source hashes. Explicit exact Currency inputs keep its separate IEEE import policy
 out of the numeric preservation comparison. Native Windows Access is unrun; CStr
@@ -209,7 +209,7 @@ selectors, constructor/evaluation errors, exact byte accounting, bounds, every
 observed conversion cancellation checkpoint and generated standard-code spellings.
 Four query tests cover composition, named metadata, raw Error preservation, domains,
 pivots, eager failures and cancellation. The independent
-[Error/Empty runner](../../testing/compare_cstr_errors.py) passes 1,211 controls using
+[Error/Empty runner](../../../tests/access/queries/expressions/compare_cstr_errors.py) passes 1,211 controls using
 original code/string models and unchanged native inputs; Windows Access remains unrun.
 
 ## Unary string expression states
@@ -251,7 +251,7 @@ Three expression tests cover all ten functions, source borrowing/cumulative
 bytes, input ceilings, required policies, every observed successful cancellation
 checkpoint and once-only Rnd evaluation. Query tests exercise derived/aggregate
 Error values and explicit CStr; CLI tests retain empty buffered stdout on errors.
-The [independent runner](../../testing/compare_unary_string_states.py) passes 600 checks
+The [independent runner](../../../tests/access/queries/expressions/compare_unary_string_states.py) passes 600 checks
 (360 scalar and 240 four-family sequential/indexed native cases). Original hashes
 remain unchanged. Only TableCraft executes SQL; native Microsoft Access, complete
 Variant conversion, raw byte states and broader string options remain open.

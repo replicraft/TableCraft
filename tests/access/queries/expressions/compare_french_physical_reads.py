@@ -12,7 +12,7 @@ import subprocess
 
 from encoded_delete_originals import wire
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[4]
 COMPILED_REVISION = '978435fa08c6d92577b031929d8abdeb3bd4b247'
 CLI_SHA256 = 'fc11c14e3bb34119888deaeef6ee5e4c6ee785679bba9ace84aaacde195c672b'
 INVALID_INPUT_STATUS = 2

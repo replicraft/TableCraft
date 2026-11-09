@@ -3,6 +3,7 @@
 Only a separate original reference-check mode evaluates supplied pure rules.
 The accepted main corpus and all getter/CLI inspection remain inert.
 """
+from engineering_paths import reference_file
 
 import argparse
 import hashlib
@@ -15,8 +16,8 @@ from cli_tsv import display_tsv
 from compare_browsing import display
 from compare_calculated_decimals import digest, JACKCESS_SHA256
 
-ROOT = Path(__file__).resolve().parents[2]
-RECIPES = ROOT / "docs/testing"
+ROOT = Path(__file__).resolve().parents[4]
+RECIPES = ROOT / "tests/access"
 PROFILES = ("V2016", "V2019")
 UNSUPPORTED = {
     "Locale": 'StrComp([Label],"ABC",1)=0',
@@ -115,11 +116,11 @@ def main():
     args = parser.parse_args()
     assert not args.report.exists(), "Refuse to overwrite accepted evidence"
     assert digest(args.jar) == JACKCESS_SHA256
-    oracle = RECIPES / "ValidationTextCallOracle.java"
+    oracle = reference_file('tests/access/queries/expressions/ValidationTextCallOracle.java')
     paths = {
         args.cli, args.jar, oracle, Path(__file__),
-        RECIPES / "ValidationTextCallFixture.java",
-        *[RECIPES / name for name in (
+        reference_file('tests/access/queries/expressions/ValidationTextCallFixture.java'),
+        *[reference_file(name) for name in (
             "cli_tsv.py", "compare_browsing.py", "compare_calculated_decimals.py", "float_model.py",
         )],
         *sorted((ROOT / "crates/engines/tablecraft-ace/src/constraints/rules").rglob("*.rs")),

@@ -168,7 +168,7 @@ validation programs, references and other defaults refuse rather than execute.
 Shared ownership proof covers all real DATA/INDEX/TDEF/map/LVAL roles; all
 unmodified index and external-property bytes remain protected.
 
-[Eight independent literal AFTER images reopen through the SDK reader](../../testing/ACE16_CREATOR_RENAME_SOURCES.md).
+[Eight independent literal AFTER images reopen through the SDK reader](../../../tests/reports/schema/ACE16_CREATOR_RENAME_SOURCES.md).
 All 35 focused engine rename tests pass, including 54 independently authored V3
 complete-image pairs, nine explicit-OFF compositions and 36 V3 recovery states.
 The source selector, V3 wire/recovery and frozen V1/V2 regressions pass in that
@@ -178,7 +178,7 @@ rename workflow consumes the result. The separate explicit option GUI command
 remains unavailable. Creator defaults stay unchanged and V1/V2 retain their
 original inline admission and exact reconstruction. Multiple tables, add-table
 composition and native Microsoft Access save/timestamp behavior remain
-unqualified. The [completed 72-test batch](../../testing/results/sql-creator-focused-2026-11-08.json)
+unqualified. The [completed 72-test batch](../../../tests/results/creation/sql-creator-focused-2026-11-08.json)
 also records six passing long-value regression tests. These results precede the
 new runtime option service and expected-image helper checkpoint; they do not
 qualify its unrun tests or newly extracted consumer rewires.
@@ -251,7 +251,7 @@ tests. The native unit batch passed 1,323 cases with one invalid Jet password
 fixture; correcting that fixture passes its targeted rerun (1,324 covered cases,
 260 existing ignored cases). No unchanged whole suite was repeated for that fix.
 
-[Independent reader observations](../../testing/results/ace16-table-rename-independent-reader-2026-11-08.json)
+[Independent reader observations](../../../tests/results/schema/ace16-table-rename-independent-reader-2026-11-08.json)
 cover 14 original BEFORE/AFTER pairs through 28 immutable Jackcess getter runs.
 The maintained `table_rename_fixtures` example reconstructs native plans and
 exports matching complete image hashes. This is read observation, not a Jackcess

@@ -67,7 +67,7 @@ derived/correlated/closed Eval calls, borrowed-source allocation accounting and
 Unicode boundaries. All-feature/minimal Clippy, warnings-denied rustdoc and
 format/diff checks pass.
 
-The original [comparison recipe](../../testing/compare_slice_counts.py) passes 1,122
+The original [comparison recipe](../../../tests/access/reading/tables/compare_slice_counts.py) passes 1,122
 independent controls using Decimal nearest-even rounding and strict Python
 UTF-16 slicing. Read-only Jackcess getters supply ID references for unchanged
 Jet 4/ACE 2007/ACE 16 2016/2019-family files; TableCraft executes the actual
@@ -105,7 +105,7 @@ surrogate results remain unqualified.
 Three expression and two query tests cover numeric/fixed/date/Boolean sources,
 format rebinding, nested positions, NULL/eager failures, surrogate boundaries,
 combined allocation budgets and every observed cancellation checkpoint. The
-original [scalar source runner](../../testing/compare_slice_scalars.py) passes 336
+original [scalar source runner](../../../tests/access/reading/tables/compare_slice_scalars.py) passes 336
 independent spelling/UTF-16 controls, including sequential and explicit ascending/
 descending index reads over the unchanged four-family 20,000-row inputs. Jackcess
 supplies raw IDs only; TableCraft alone executes SQL.

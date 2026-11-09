@@ -14,7 +14,7 @@ from compare_saved_queries import catalog_ids
 
 def oracle(args, path, name=None):
     command = ["java", "-Dstdout.encoding=UTF-8", "-cp", args.jar,
-        "docs/testing/SavedSelectOracle.java", path]
+        "tests/access/queries/saved/SavedSelectOracle.java", path]
     return run(*(command + ([] if name is None else [name])))
 
 

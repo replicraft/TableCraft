@@ -15,7 +15,7 @@ from pathlib import Path
 import subprocess
 
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[4]
 PROFILES = ("V2016", "V2019", "V2000", "V2007")
 JAR_SHA256 = "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc"
 BASELINE_SHA256 = "8b9c8e89f6804f57e45a6bba74cf7b6ebbdb8b7a20917cd8b1170c6e31710d23"
@@ -98,7 +98,7 @@ def main():
     paths = {args.cli, args.baseline, args.jar, args.source_manifest, Path(__file__), ROOT / "Cargo.lock"}
     paths.update(args.directory.iterdir())
     paths.update(args.getters.iterdir())
-    paths.update(ROOT / "docs/testing" / name for name in (
+    paths.update(ROOT / "tests/access" / name for name in (
         "NativePolicyFixture.java", "ConcatenationPolicyOracle.java",
     ))
     for line in args.source_manifest.read_text().splitlines():

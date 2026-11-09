@@ -2,6 +2,7 @@
 
 Only TableCraft executes SQL; native Access equivalence remains unqualified.
 """
+from engineering_paths import reference_file
 import argparse
 import csv
 import hashlib
@@ -74,7 +75,7 @@ def main():
         before = path.read_bytes()
         assert hashlib.sha256(before).hexdigest() == digest
         raw = subprocess.check_output(["java", "-Dstdout.encoding=UTF-8", "-cp", str(args.jar),
-            str(RECIPES / "TableDataOracle.java"), str(path), "IndexedRows"], text=True, encoding="utf-8")
+            str(reference_file('tests/access/reading/tables/TableDataOracle.java')), str(path), "IndexedRows"], text=True, encoding="utf-8")
         ids = [int(line.split("\t")[1][4:]) for line in raw.splitlines()]
         assert len(ids) == 20000
         options = ["--database", path, "--native-bytes", "67108864", "--native-rows", "100000",

@@ -1,4 +1,5 @@
 """Compare larger native OLE/FileData reads with inert getters and original bytes."""
+from engineering_paths import reference_file
 
 import argparse
 import csv
@@ -47,7 +48,7 @@ def query(cli, path, sql, options, accepted=True):
 
 def java(jar, name, *arguments):
     return subprocess.check_output(
-        ["java", "-Dstdout.encoding=UTF-8", "-cp", str(jar), str(RECIPES / name), *map(str, arguments)],
+        ["java", "-Dstdout.encoding=UTF-8", "-cp", str(jar), str(reference_file(name)), *map(str, arguments)],
         text=True, encoding="utf-8",
     )
 

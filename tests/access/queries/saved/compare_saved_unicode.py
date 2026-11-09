@@ -3,6 +3,7 @@
 No native Access SQL or application content executes. Labels use exact Unicode
 spelling with ASCII case equivalence; wider native NLS identity is unqualified.
 """
+from engineering_paths import reference_file
 import argparse
 import csv
 import hashlib
@@ -27,7 +28,7 @@ def main():
     assert hashlib.sha256(args.jar.read_bytes()).hexdigest() == JAR_SHA256
     controls = 0
     with tempfile.TemporaryDirectory(prefix="tablecraft-unicode-sources-") as classes:
-        sources = [RECIPES / (name + ".java") for name in
+        sources = [reference_file(name + ".java") for name in
                    ("SavedForestFixture", "SavedUnicodeFixture", "SavedReadOracle", "TableDataOracle")]
         subprocess.run(["javac", "-cp", str(args.jar), "-d", classes, *map(str, sources)], check=True)
 

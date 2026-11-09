@@ -23,7 +23,7 @@ thirty-three actual calls include one excluded historical failure. No SDK writer
 compiler, generator or stored expression runs. Saved verification starts no child
 and checks exactly 66 concrete regular files with pinned stream provenance.
 
-The [source record](results/ace16-retained-binary-id-update-sources-2026-11-02.json)
+The [source record](../../results/storage/ace16-retained-binary-id-update-sources-2026-11-02.json)
 preserves three distinct corrections. A raw bitmap-offset assumption was fixed
 before laws/models existed. Native test registration then changed one historical
 Rust reference; a narrow binding checks the old snapshot plus the exact added
@@ -33,9 +33,9 @@ argument changed in 24 cursor commands. Its failed output remains excluded, the
 two correct metadata reads are explicitly reused, and source images/models/report
 expectations remain unchanged.
 
-Subsequent [actual save qualification](../access/writes/NORMAL_RETAINED_BINARY_ID_UPDATE.md)
+Subsequent [actual save qualification](../../../docs/access/writes/NORMAL_RETAINED_BINARY_ID_UPDATE.md)
 uses these unchanged images for native commits, recovery and retained typed/SQL/CLI
-saves. The [write result](results/ace16-retained-binary-id-updates-2026-11-02.json)
+saves. The [write result](../../results/storage/ace16-retained-binary-id-updates-2026-11-02.json)
 is separate from this preserved source record. This source gate never asserts
 historical mutation refusal as a permanent format rule. Native Microsoft Access
 save/reopen and Windows mixed-client behavior remain unrun.

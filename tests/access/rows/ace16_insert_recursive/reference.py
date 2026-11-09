@@ -2,8 +2,8 @@
 from pathlib import Path
 import sys
 
-ROOT = Path(__file__).resolve().parents[3]
-sys.path.insert(0, str(ROOT / 'docs/testing'))
+ROOT = Path(__file__).resolve().parents[4]
+sys.path.insert(0, str(ROOT / 'tests/access'))
 from ace16_insert_root_split import reference as root_reference
 from ace16_insert_candidates import model as record_codec
 

@@ -11,11 +11,11 @@ The engine now admits exactly the ordinary Unicode-compression bit on the
 ordinary flags and scalar-codec checks. Calculated/unknown flags stay refused.
 History templates and flat stored members still require their prior zero extended
 flags. Their encodings, mapping checks and decoders do not change. See the
-[stored-history contract](../access/collections/STORED_HISTORY_QUERIES.md).
+[stored-history contract](../../../docs/access/collections/STORED_HISTORY_QUERIES.md).
 
 ## Original evidence
 
-The [producer](CompressedHistoryFixture.java) creates fresh ACE 2007, 2016 and
+The [producer](../../access/storage/native/CompressedHistoryFixture.java) creates fresh ACE 2007, 2016 and
 2019 files with two independently scoped append-only Memo tables. It disables
 expression evaluation throughout. Current values include ASCII, Unicode/NUL and
 line endings, empty/NULL values and larger Text. Stored versions separately
@@ -23,7 +23,7 @@ contain duplicate text/timestamps, older entries, empty/NULL cells and larger
 Unicode text; two parents per table have empty histories. Current values are not
 replaced by a latest historical entry.
 
-The [compression oracle](CompressedHistoryOracle.java) opens originals read-only,
+The [compression oracle](../../access/storage/native/CompressedHistoryOracle.java) opens originals read-only,
 disables evaluation and uses public Column compression/history association getters
 plus metadata getters on the pinned VersionHistoryColumnInfoImpl reference class.
 The existing original VersionHistoryQueryOracle and VersionHistoryOracle provide
@@ -40,14 +40,14 @@ compressed child/template support from visible current-Memo compression.
 
 ## Accepted replay
 
-The [runner](compare_compressed_histories.py) reuses the original stored-history
+The [runner](../../access/storage/native/compare_compressed_histories.py) reuses the original stored-history
 query model in both ordinal and stored-database comparison modes. It compares
 member projection/permutation, current/history separation, aligned text/time
 values, empty/all-NULL collection presence, grouping/counts and member criteria
 against independent getters. Unsupported bare members/modes and explicit
 native/query/output exhaustion remain buffered refusals.
 
-The [accepted report](results/compressed-history-2026-10-24.json) records 198
+The [accepted report](../../results/storage/compressed-history-2026-10-24.json) records 198
 passing controls: six original metadata comparisons and 96 query controls in
 each comparison mode. The three files retain 30 total parent records and 36 stored
 versions. All 26 pinned input, JAR, producer/oracle/helper, selected implementation
@@ -68,11 +68,11 @@ retain metadata-only binding, complete-cache reuse and late-orphan failure under
 TOP. The combined engine/adapter targets pass 19 tests with scoped strict Clippy.
 These results qualify the current offline engineering read path, not native
 Access SQL, compressed child variants, history writes, freshness or live-file
-coherence. [Fixture provenance](FIXTURES.md#original-compressed-memo-history-inputs)
+coherence. [Fixture provenance](../reading/FIXTURES.md#original-compressed-memo-history-inputs)
 records ownership and original hashes.
 
 ```sh
-python3 docs/testing/compare_compressed_histories.py \
+python3 tests/run.py tests/access/storage/native/compare_compressed_histories.py \
   --cli .cache/tablecraft-bin/compressed-history-20261024 \
   --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar \
   --directory .cache/tablecraft-fixtures/compressed-history-20261024 \

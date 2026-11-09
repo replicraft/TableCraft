@@ -28,7 +28,7 @@ Access behavior. Keep Selawik and shared assets under `assets/ui/`.
 | indexmap | Defer direct use to an ordered keyed property/registry consumer; currently transitive. Bounded vectors retain native order. Rust hashing/equality cannot replace SQL key semantics. |
 
 The [earlier targeted review](DEPENDENCY_REVIEW.md#targeted-backend-review-24-october-2026)
-and [collection measurements](../testing/INDEX_COLUMN_COLLECTIONS.md) retain
+and [collection measurements](../../tests/reports/schema/INDEX_COLUMN_COLLECTIONS.md) retain
 the original experiments and limits.
 
 ## Presentation, designers and reports

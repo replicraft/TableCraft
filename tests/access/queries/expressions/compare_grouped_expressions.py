@@ -3,6 +3,7 @@
 Python derives expected groups/endpoints from read-only Jackcess cursors. This is
 an independent row-based model, not an Access SQL engine or optimizer oracle.
 """
+from engineering_paths import reference_file
 import argparse
 from pathlib import Path
 
@@ -20,7 +21,7 @@ def main():
     for index in [None, "Number"]:
         cursor = ["--index", "ROULETTE_TB", index] if index else ["ROULETTE_TB"]
         expected = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar,
-                       RECIPES / "TableDataOracle.java", args.database, *cursor)
+                       reference_file('tests/access/reading/tables/TableDataOracle.java'), args.database, *cursor)
         rows = [line.split("\t") for line in expected.splitlines()]
         assert len(rows) == 38
         groups = {}

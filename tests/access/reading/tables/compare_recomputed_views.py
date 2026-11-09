@@ -15,7 +15,7 @@ import subprocess
 from compare_calculated_dependencies import getters, model
 from compare_progressive_queries import display
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[4]
 PROFILES = {
     "V2016": "87b70b3e8182981966a6a77a022c37d463d7ef049c6c99e2c0e04bcf1618e150",
     "V2019": "f3a8c0a7e3c842b6bfa9b492e5409935c337d6f24e2bbecd06f4fcb3395dce6d",
@@ -305,9 +305,9 @@ def main():
         raise RuntimeError("Registered getter class identity mismatch")
     paths = {
         args.cli, args.jar, generation_path, compiled, Path(__file__),
-        ROOT / "docs/testing/CalculatedDependencyFixture.java",
-        ROOT / "docs/testing/compare_calculated_dependencies.py",
-        ROOT / "docs/testing/compare_progressive_queries.py",
+        ROOT / "tests/access/reading/tables/CalculatedDependencyFixture.java",
+        ROOT / "tests/access/reading/tables/compare_calculated_dependencies.py",
+        ROOT / "tests/access/queries/execution/compare_progressive_queries.py",
     }
     for profile, expected in PROFILES.items():
         database = args.directory / (profile + ".accdb")

@@ -1,8 +1,8 @@
 # Original large Access deployment corpus
 
-The repository-authored [Java recipe](LargeDeploymentFixture.java) produces
+The repository-authored [Java recipe](../../access/reading/tables/LargeDeploymentFixture.java) produces
 original ACE 16-family V2016 and V2019 databases larger than 64 MiB. The original
-[streaming CAB writer](build_large_deployment.py) wraps each database in stored
+[streaming CAB writer](../../access/reading/tables/build_large_deployment.py) wraps each database in stored
 and MSZIP packages. No third-party database, CAB binary or writer implementation
 is copied. The reviewed Jackcess 5.0.4 artifact is used through public builders
 and read-only getters, with expression evaluation disabled.
@@ -106,9 +106,9 @@ not a product failure or change to expected query outcomes.
 
 ## Frozen CLI acceptance
 
-The [accepted report](results/large-deployment-2026-10-25.json) records 58 controls
+The [accepted report](../../results/reading/large-deployment-2026-10-25.json) records 58 controls
 across the two raw originals and four packages. The
-[runner](compare_large_deployment.py) checks header profiles, catalog row counts,
+[runner](../../access/reading/tables/compare_large_deployment.py) checks header profiles, catalog row counts,
 exact selected Memo payloads through bounded row pages, progressive aggregate
 counts and complete projected streams with batch sizes 1 and 128. All controls
 agree with the independent models. Six low-byte refusals and four unchanged

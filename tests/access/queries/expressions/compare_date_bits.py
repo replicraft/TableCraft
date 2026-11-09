@@ -22,7 +22,7 @@ def main():
         for table in ("ExactDates", "CalculatedExactDates"):
             expected = "".join(f"{table}\tY64:{value:016x}\n" for value in bits) + table + "\tN\n"
             oracle = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar,
-                "docs/testing/StoredDateBitsOracle.java", path, table, "Value")
+                "tests/access/queries/expressions/StoredDateBitsOracle.java", path, table, "Value")
             if oracle != expected:
                 raise RuntimeError("Independent DATE oracle rounded precision/alias probes: " + table)
             if table == "CalculatedExactDates":

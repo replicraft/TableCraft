@@ -4,7 +4,7 @@ import importlib.util
 from pathlib import Path
 import sys
 
-ROOT = Path(__file__).resolve().parents[3]
+ROOT = Path(__file__).resolve().parents[4]
 PAGE = 4096
 CAPACITY = 3616
 ROWS = 900
@@ -18,10 +18,10 @@ def load_module(name, relative):
     return module
 
 
-WIRE = load_module('combined_independent_index_wire', 'docs/testing/encoded_index_split_originals/candidate_model.py')
-RECORD = load_module('combined_independent_record_wire', 'docs/testing/variable_index_split_originals/record_model.py')
-ALLOCATION = load_module('hint_transition_allocation', 'docs/testing/ordinary_hint_growth_candidates/allocation_model.py')
-WEIGHTS = load_module('combined_independent_weights', 'docs/testing/variable_index_split_originals/source_weights.py')
+WIRE = load_module('combined_independent_index_wire', 'tests/access/indexes/encoded_index_split_originals/candidate_model.py')
+RECORD = load_module('combined_independent_record_wire', 'tests/access/indexes/variable_index_split_originals/record_model.py')
+ALLOCATION = load_module('hint_transition_allocation', 'tests/access/indexes/ordinary_hint_growth_candidates/allocation_model.py')
+WEIGHTS = load_module('combined_independent_weights', 'tests/access/indexes/variable_index_split_originals/source_weights.py')
 
 
 def cell(raw, metadata, number):

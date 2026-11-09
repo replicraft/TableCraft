@@ -1,6 +1,6 @@
 # Original native HAVING replay
 
-The original [runner](compare_progressive_having.py) compares native/CAB queries
+The original [runner](../../access/queries/execution/compare_progressive_having.py) compares native/CAB queries
 with independent linear grouping, integer and Fraction models. It reuses both
 registered LargeDeployment ACE 16 family files and four unchanged stored/MSZIP
 CAB packages. Existing inert public Jackcess getters validate every authored row;
@@ -8,7 +8,7 @@ the existing bounded CAB inspector verifies complete decoded image hashes. No
 fixture is generated or modified, and only TableCraft executes SQL. This is
 engineering evidence, not native Access SQL/error-order or timing qualification.
 
-The [accepted report](results/progressive-having-2026-10-25.json) contains
+The [accepted report](../../results/queries/progressive-having-2026-10-25.json) contains
 **96 matched commands**: 72 successes comparing 336 rows and 696 cells, plus
 24 intended failures. Six failures independently compare an earlier progressive
 prefix of one row/two cells each; those six rows/twelve cells are recorded
@@ -64,7 +64,7 @@ hash, enforces a 100-command ceiling and applies 120-second process timeouts.
 Run from the repository root using a fresh destination:
 
 ```sh
-python3 docs/testing/compare_progressive_having.py \
+python3 tests/run.py tests/access/queries/execution/compare_progressive_having.py \
   --cli .cache/tablecraft-bin/progressive-having-cli-20261025 \
   --cli-sha256 f6a86b005512d52520c9398853843be1d3e47d19b34f1758e09b0f6f40f1a89c \
   --revision e28fd42cf33a64489106d9514fbc227b8ae1f9e4 \

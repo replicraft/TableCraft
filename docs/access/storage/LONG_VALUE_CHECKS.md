@@ -13,9 +13,9 @@ The checked profile is ordinary unencoded ACE 16, subversion zero,
 variable Memo/OLE fields with native flag 2 and zero declared length. Memo accepts
 exact extended flags 0 or 1; OLE requires extended flags 0. These metadata facts
 identify the observed read-check profile, not write
-permission. The [60 public UPDATE observations](../../testing/LONG_VALUE_UPDATE_OBSERVATIONS.md)
+permission. The [60 public UPDATE observations](../../../tests/reports/storage/LONG_VALUE_UPDATE_OBSERVATIONS.md)
 provide original declaration, descriptor, allocation and orphan evidence.
-The separate [compressed Memo observations](../../testing/COMPRESSED_MEMO_UPDATE_OBSERVATIONS.md)
+The separate [compressed Memo observations](../../../tests/reports/storage/COMPRESSED_MEMO_UPDATE_OBSERVATIONS.md)
 establish actual flag1 field declarations, physical streams and the finite
 independent-writer compression profile. The existing decoder handles both raw
 and compressed streams; a compression flag does not require every stored stream
@@ -31,7 +31,7 @@ metadata cursor logic remain authoritative.
 
 Inline owned/candidate pairs and indirect-owned/inline-candidate pairs receive
 complete checks. The latter shape has separate
-[original-file storage observations](../../testing/INDIRECT_LONG_VALUE_MAP_OBSERVATIONS.md).
+[original-file storage observations](../../../tests/reports/storage/INDIRECT_LONG_VALUE_MAP_OBSERVATIONS.md).
 Its existing bitmap storage must pass the same allocation and complete member
 checks; the service does not create maps or shift windows. Indirect candidate
 maps remain `IndirectMaps`. Ordinary table-owned indirect coverage alone does
@@ -92,7 +92,7 @@ Its `key=value` diagnostic format is separate from CLI row/TSV rendering. It
 prints counts and native column numbers, not stored values. It accepts an
 explicit cumulative byte allowance without changing engine defaults.
 
-The [scoped verification record](../../testing/results/long-value-storage-native-2026-10-26.json)
+The [scoped verification record](../../../tests/results/storage/long-value-storage-native-2026-10-26.json)
 records final source/log identities and distinguishes repeated tests. An
 initially frozen default example checked all **60 saved public outputs** on its
 first attempt: all **120 column reports** match independently captured descriptor
@@ -102,7 +102,7 @@ reports; the record preserves both binary/source identities and counts these as
 repeated controls. Every input and original remains unchanged. This is engine storage-check evidence,
 not another writer run or Microsoft Access qualification.
 
-The separate [mixed-map implementation record](../../testing/results/ace16-indirect-lval-native-2026-10-27.json)
+The separate [mixed-map implementation record](../../../tests/results/storage/ace16-indirect-lval-native-2026-10-27.json)
 covers default and preview builds, independent literal map/descriptor cases and
 immutable finalizer forgeries. A working default example also checks both
 unchanged mixed-map originals: Memo reports ten owned/live chunks across two

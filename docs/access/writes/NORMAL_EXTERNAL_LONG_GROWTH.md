@@ -19,7 +19,7 @@ then checks complete final Source and the whole image. No staged chunk or patch
 is used as proof authority. Complete source/catalog/LVAL ownership and original
 expected-value checks still apply to empty and no-op requests.
 
-The [source family](../../testing/ACE16_EXTERNAL_CONTINUATION_WIDE_SPLIT_SOURCES.md)
+The [source family](../../../tests/reports/indexes/ACE16_EXTERNAL_CONTINUATION_WIDE_SPLIT_SOURCES.md)
 passed complete native reads and 36 inert independent-reader reports before
 matching writers. Its twelve growth outcomes cover single, chained and joint
 changes under both header variants and both Memo storage declarations.
@@ -35,4 +35,4 @@ four CLI saves/readbacks pass. Existing reuse commits and retained-session tests
 pass with active capacity refusals updated to actual nonfitting requests.
 Strict combined lint, journal-only and preview-only builds, formatting and the
 focused CLI help check pass. See the
-[execution record](../../testing/results/ace16-normal-external-long-growth-writes-2026-11-01.json).
+[execution record](../../../tests/results/rows/ace16-normal-external-long-growth-writes-2026-11-01.json).

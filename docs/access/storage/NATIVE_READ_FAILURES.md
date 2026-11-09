@@ -48,7 +48,7 @@ work and close continuation without automatic retry using a fresh budget.
 These are adversarial host-I/O and synthetic native-framing checks. They do not
 qualify a new encrypted codec, concurrent-file snapshot, allocation repair,
 native Access save/reopen or Windows behavior. Broader storage/scale acceptance
-remains in [the read/query checklist](../../testing/READ_QUERY_ACCEPTANCE.md).
+remains in [the read/query checklist](../../../tests/reports/queries/READ_QUERY_ACCEPTANCE.md).
 
 
 ## Maximum-width malformed suffixes
@@ -69,9 +69,9 @@ negative expectation used a shortened variable tail, which is not universally
 invalid framing for a projection; the test was corrected to exceed the schema's
 variable ceiling rather than broaden production admission.
 
-[Original independent location reporting](../../testing/WideRowLocationOracle.java)
+[Original independent location reporting](../../../tests/access/reading/tables/WideRowLocationOracle.java)
 identifies the last appended row in the registered maximum-width inputs. The
-[corrupted-copy runner](../../testing/compare_wide_row_failures.py) changes only fresh
+[corrupted-copy runner](../../../tests/access/reading/tables/compare_wide_row_failures.py) changes only fresh
 temporary copies. Across two tables/four profiles/five faults it passes 280 CLI
 controls: buffered rows, wildcard/ID/COUNT(*)/indexed queries fail with empty
 stdout; full and ID-only streaming retain exactly the preceding valid rows.

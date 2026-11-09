@@ -6,7 +6,7 @@ import os
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[4]
 WORK = Path('.cache/ace16-binary-allocation-next-20261026')
 ORIGINALS = Path('.cache/ace16-slot-originals-next-20261026')
 JAR = Path('.cache/tablecraft-fixtures/jackcess-5.0.4.jar')
@@ -20,7 +20,7 @@ PAYLOAD_BYTES = 255
 PATTERN_STEP = 31
 GROWTH = bytes((position * PATTERN_STEP + 17) & 255 for position in range(PAYLOAD_BYTES))
 SHRINK = bytes((position * PATTERN_STEP + 19) & 255 for position in range(7))
-sys.path.insert(0, str(ROOT / 'docs/testing'))
+sys.path.insert(0, str(ROOT / 'tests/access'))
 from slot_preview_originals import common
 import capture_cross_page_updates as OBS
 
@@ -132,9 +132,9 @@ def main():
     selectors = freeze_selectors(originals)
     immutable = [Path(original['input']['path']) for original in originals]
     immutable.extend([
-        facts_path, inventory_path, JAR, Path('docs/testing/BinaryBoundaryAppend.java'),
+        facts_path, inventory_path, JAR, Path('tests/access/storage/native/BinaryBoundaryAppend.java'),
         Path(__file__).resolve().relative_to(ROOT), WORK / 'selectors.json',
-        Path('docs/testing/SlotUpdateFixture.java'), Path('docs/testing/SlotMapProbe.java'),
+        Path('tests/access/queries/expressions/SlotUpdateFixture.java'), Path('tests/access/storage/native/SlotMapProbe.java'),
         Path(OBS.__file__).resolve().relative_to(ROOT),
         Path(common.__file__).resolve().relative_to(ROOT),
     ])
@@ -150,8 +150,8 @@ def main():
     CLASSES.mkdir()
     compilation = commands.run([
         'javac', '-cp', str(JAR), '-d', str(CLASSES),
-        'docs/testing/BinaryBoundaryAppend.java',
-        'docs/testing/SlotUpdateFixture.java', 'docs/testing/SlotMapProbe.java',
+        'tests/access/storage/native/BinaryBoundaryAppend.java',
+        'tests/access/queries/expressions/SlotUpdateFixture.java', 'tests/access/storage/native/SlotMapProbe.java',
     ], 'compile')
     report['compilation'] = compilation
     assert compilation['status'] == 0 and not compilation['timed_out']

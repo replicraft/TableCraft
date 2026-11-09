@@ -64,7 +64,7 @@ for original in sorted(source.glob("Scalar-*")):
 
 ```sh
 CARGO_INCREMENTAL=0 cargo build --workspace --release --no-default-features --locked --offline
-python3 docs/testing/compare_browsing.py --jar path/to/jackcess-5.0.4.jar --cli target/release/tablecraft --directory /tmp/tablecraft-large-scalar-copies
+python3 tests/run.py tests/access/reading/tables/compare_browsing.py --jar path/to/jackcess-5.0.4.jar --cli target/release/tablecraft --directory /tmp/tablecraft-large-scalar-copies
 ```
 
 Original recipes, reviewed artifact/license provenance, source and derivative
@@ -75,7 +75,7 @@ Microsoft Access, encrypted-file, shared-file or large-table conformance.
 ## Remaining scale work
 
 Bounded row paging now validates maps upfront and uses an incremental address
-cursor without the 4,096-address vector cap. [Large-table evidence](ALLOCATION_MAP_PAGING.md)
+cursor without the 4,096-address vector cap. [Large-table evidence](../storage/ALLOCATION_MAP_PAGING.md)
 covers 6,000-page tables. Catalog/full snapshot/index/write consumers retain their
 bounded materialized maps. The existing 4,096 physical-page-read ceiling and
 byte/work allowances still constrain requests. Resumable cursor continuation

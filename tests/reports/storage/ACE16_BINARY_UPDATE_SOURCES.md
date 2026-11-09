@@ -17,7 +17,7 @@ independently of historical counters. The native gate also reconstructs complete
 expected images, checks all six logical aliases and verifies constraints and
 retained-tree membership.
 
-The [source record](results/ace16-binary-update-sources-2026-11-01.json)
+The [source record](../../results/storage/ace16-binary-update-sources-2026-11-01.json)
 retains the frozen recipe/model closure, actual SDK reports, native gate and the
 root saved-result overwrite refusal. These are source/read observations, not
 passing UPDATE producer tests or native Access save/reopen qualification.

@@ -6,9 +6,9 @@ changing the requested rows, callback order or candidate bytes. It adds no write
 profile, field codec, normal save path or native compatibility qualification.
 
 The implementation is in
-[rows.rs](../../crates/engines/tablecraft-ace/src/table/mutation/rows.rs) and its
-[private directory](../../crates/engines/tablecraft-ace/src/table/mutation/rows/directory.rs).
-The [scoped record](results/ace16-row-request-directory-2026-10-26.json)
+[rows.rs](../../../crates/engines/tablecraft-ace/src/table/mutation/rows.rs) and its
+[private directory](../../../crates/engines/tablecraft-ace/src/table/mutation/rows/directory.rs).
+The [scoped record](../../results/rows/ace16-row-request-directory-2026-10-26.json)
 pins the source, builds, original inputs, comparisons and raw timings.
 
 ## Matching and resource contract

@@ -1,7 +1,7 @@
 # Project architecture qualification
 
 Acceptance plan, not passing evidence or installed runtime test gates. Current
-headless/native-reader results remain in [IMPLEMENTATION.md](../IMPLEMENTATION.md).
+headless/native-reader results remain in [IMPLEMENTATION.md](../../../docs/IMPLEMENTATION.md).
 Architectural completeness percentages/ratings from proposals are not release metrics.
 
 | Proof | Required evidence before claiming support |

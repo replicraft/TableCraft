@@ -5,8 +5,8 @@ map bytes, but fill the existing Sentinel root directory with inert deleted
 entries. The next page at the true original EOF is independently checked as
 represented GLOBAL-free, unowned and absent from the candidate map.
 
-The [literal model](owned_growth_originals/eof_model.py) and
-[original requests](owned_growth_originals/eof_requests.json) predict a single
+The [literal model](../../access/rows/owned_growth_originals/eof_model.py) and
+[original requests](../../access/rows/owned_growth_originals/eof_requests.json) predict a single
 4096-byte DATA append. The new hidden record and forwarding capsule retain the
 logical root. Exactly three original map bits change; the saturated root's
 candidate hint and every other original byte remain protected. No existing
@@ -16,7 +16,7 @@ To reconstruct a profile from its pinned original and original SDK report, call
 `source(original, profile)`, then
 `construct(original, before, original_report, profile)`. The latter returns the
 complete AFTER, raw proof and predicted reader report. Original provenance and
-all artifact hashes are in the [source record](results/ace16-eof-allocation-sources-2026-11-01.json).
+all artifact hashes are in the [source record](../../results/storage/ace16-eof-allocation-sources-2026-11-01.json).
 Retain generated files outside Git and use copies for later mutation experiments.
 
 The ignored native gate
@@ -33,9 +33,9 @@ Microsoft Access allocation choices or native save/reopen compatibility.
 
 ## Combined owned and new-page reservations
 
-The [compound model](owned_growth_originals/compound_eof_model.py) and its
-[requests](owned_growth_originals/compound_eof_requests.json) reuse the earlier
-healthy [two-row no-capacity sources](ACE16_MULTIROW_OWNED_GROWTH_SOURCES.md).
+The [compound model](../../access/rows/owned_growth_originals/compound_eof_model.py) and its
+[requests](../../access/rows/owned_growth_originals/compound_eof_requests.json) reuse the earlier
+healthy [two-row no-capacity sources](../rows/ACE16_MULTIROW_OWNED_GROWTH_SOURCES.md).
 The first owned destination has one slot available; the second is full. The
 literal AFTER puts one enlarged row in that last owned slot and the other in
 one newly claimed EOF page. It retains both logical roots, the full destination,
@@ -43,6 +43,6 @@ and all unrelated bytes. Exactly the three EOF map bits change.
 
 Four native read views and four unchanged-formatter two-row SDK reports pass
 before their corresponding producer calls. See the
-[compound source record](results/ace16-compound-eof-sources-2026-11-01.json).
+[compound source record](../../results/general/ace16-compound-eof-sources-2026-11-01.json).
 The original owned-only capacity refusal remains its explicit fixed-length
 contract; successful automatic allocation has separate write acceptance.

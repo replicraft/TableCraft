@@ -1,4 +1,5 @@
 """Compare progressive CLI TSV with independent stored rows beyond snapshot/output caps."""
+from engineering_paths import reference_file
 import argparse
 import csv
 import hashlib
@@ -24,7 +25,7 @@ def main():
     controls = 0
     with tempfile.TemporaryDirectory(prefix="tablecraft-stream-oracle-") as classes:
         subprocess.run(["javac", "-cp", str(args.jar), "-d", classes,
-            str(RECIPES / "StreamRowsFixture.java"), str(RECIPES / "TableDataOracle.java")], check=True)
+            str(reference_file('tests/access/reading/tables/StreamRowsFixture.java')), str(reference_file('tests/access/reading/tables/TableDataOracle.java'))], check=True)
 
         def java(name, *values):
             return subprocess.check_output(["java", "-Dstdout.encoding=UTF-8", "-cp",

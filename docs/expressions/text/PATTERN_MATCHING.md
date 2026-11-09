@@ -212,15 +212,15 @@ patterns against an independent exhaustive matcher. SQL evaluator, query, CLI an
 async worker tests cover eager behavior, parameter reuse, grouping/aggregate
 traversal, correlated subqueries, errors and atomic output.
 
-[Native-file comparisons](../../testing/compare_like.py) use independent inert Jackcess
+[Native-file comparisons](../../../tests/access/queries/expressions/compare_like.py) use independent inert Jackcess
 rows and explicit Python regular-expression expectations on fresh Jet 4 and both
 ACE 16-family files. These test TableCraft's ordinal pattern profile over native
 text; they are not native Microsoft Access SQL/locale comparisons.
-[Fixture provenance](../../testing/FIXTURES.md#native-like-query-inputs) records inputs and scope.
+[Fixture provenance](../../../tests/reports/reading/FIXTURES.md#native-like-query-inputs) records inputs and scope.
 
 ## Original native-source coercion replay
 
-The [136-control replay](../../testing/results/native-like-coercion-2026-10-25.json)
+The [136-control replay](../../../tests/results/queries/native-like-coercion-2026-10-25.json)
 checks the registered original Scalar V2000, V2007, V2016 and V2019 files in
 ordinary and declared arithmetic modes. All 944 modeled result cells agree.
 Nine native numeric/Boolean/date carriers appear in both LIKE operand positions;
@@ -230,7 +230,7 @@ policies, Error states, eager expression failures and invalid patterns are cover
 Expected spellings come from previously pinned inert ordinary getter transcripts,
 exact integers/fractions and Gregorian calendar facts under invariant numeric and
 ISO date policies. Neither CStr nor another SQL evaluator supplies the answers.
-The [runner](../../testing/compare_native_like_coercion.py) rechecks the getter hashes
+The [runner](../../../tests/access/queries/expressions/compare_native_like_coercion.py) rechecks the getter hashes
 and preserves all four original hashes before and after execution. The initial
 unbracketed Money field-name authoring failure is retained separately; its parser
 failure and repeated controls are excluded from the accepted count.
@@ -273,7 +273,7 @@ references guide the explicit profile above; they do not establish conformance.
 
 ## Pattern timing verification
 
-The [timing verification record](../../testing/results/read-query-like-timing-2026-10-25.json)
+The [timing verification record](../../../tests/results/queries/read-query-like-timing-2026-10-25.json)
 records 219 unique tests, including ten new focused tests. The scalar and
 weighted matchers share explicit element-frontier goldens; independent generated
 valid-pattern models remain passing. Query and CLI checks cover both ANSI modes,

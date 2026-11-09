@@ -69,5 +69,5 @@ Limits remain 8 MiB files, 16 MiB streams, 512 MiB heap and 30 seconds per runti
 call. Only the explicit example requests use `--value-bytes 16384`; its default
 stays 1024. This corpus does not qualify block-one global initialization, arbitrary
 free-page reuse, missing-pointer large-file behavior, normal editing or native
-Access save/reopen. See the [result](../results/ace16-insert-global-bootstrap-2026-10-28.json)
-and [owning contract](../ACE16_GLOBAL_MAP_INSERT_GROWTH.md).
+Access save/reopen. See the [result](../../../results/rows/ace16-insert-global-bootstrap-2026-10-28.json)
+and [owning contract](../../../reports/rows/ACE16_GLOBAL_MAP_INSERT_GROWTH.md).

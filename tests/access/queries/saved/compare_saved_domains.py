@@ -2,6 +2,7 @@
 
 Jackcess only writes/reads inert definitions and renders SQL; it never executes it.
 """
+from engineering_paths import reference_file
 import argparse
 import csv
 from fractions import Fraction
@@ -28,7 +29,7 @@ def main():
     with tempfile.TemporaryDirectory(prefix='tablecraft-saved-domain-oracle-') as classes:
         names = ['SavedForestFixture', 'SavedStatisticsFixture', 'SavedDomainFixture', 'SavedReadOracle', 'SavedQueryOracle', 'TableDataOracle']
         subprocess.run(['javac', '-encoding', 'UTF-8', '-cp', str(args.jar), '-d', classes,
-                        *[str(RECIPES / (name + '.java')) for name in names]], check=True)
+                        *[str(reference_file(name + '.java')) for name in names]], check=True)
 
         def java(name, *values):
             return subprocess.check_output(['java', '-Dstdout.encoding=UTF-8', '-cp', str(args.jar) + os.pathsep + classes,

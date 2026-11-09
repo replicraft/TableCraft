@@ -4,7 +4,7 @@ from pathlib import PurePosixPath
 import subprocess
 import tarfile
 
-RECEIPT = 'docs/testing/results/ace16-insert-long-value-map-growth-example-build-2026-10-28.json'
+RECEIPT = 'tests/results/rows/ace16-insert-long-value-map-growth-example-build-2026-10-28.json'
 REVISION = '18bbfee7cd6bb229c68a936f3c023d04b111bdd5'
 
 

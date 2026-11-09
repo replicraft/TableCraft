@@ -8,8 +8,8 @@ first attempt with unchanged inputs; root's native original and AFTER gates
 passed for all eight distinct views. Normal default planning, commit/recovery
 and typed/SQL host acceptance remain pending.
 
-The maintained [original builder](default_insert_originals/BuildDefaultOriginal.java)
-and [recipe](default_insert_originals/recipe.json) create Defaults, Numbered,
+The maintained [original builder](../../access/rows/default_insert_originals/BuildDefaultOriginal.java)
+and [recipe](../../access/rows/default_insert_originals/recipe.json) create Defaults, Numbered,
 NonPrimary and Sentinel for V2016/V2019 through bounded exclusive CREATE_NEW.
 Expression evaluation is disabled. Every original default-bearing field is
 explicitly supplied; the only Java NULL belongs to a field without a default.
@@ -21,8 +21,8 @@ Defaults has manual required primary Id plus a true ordinary alias, Score LONG,
 Caption uncompressed TEXT40, Flag BOOLEAN, Money CURRENCY and Optional LONG.
 Its actual DefaultValue declarations are MEMO/DDL=true text7, quoted"seed",
 True and-1.0001; Optional has no declaration. The original row is explicitly
-(1,-1,"original",false,2.5000,NULL). The [original presence requests](default_insert_originals/requests.json)
-and observed source/default/ROW law were frozen before the [pure byte model](default_insert_originals/model.py).
+(1,-1,"original",false,2.5000,NULL). The [original presence requests](../../access/rows/default_insert_originals/requests.json)
+and observed source/default/ROW law were frozen before the [pure byte model](../../access/rows/default_insert_originals/model.py).
 The model imports no TableCraft resolver/parser/serializer/planner or SDK writer.
 
 Each positive request starts from the same original rather than a producer
@@ -53,7 +53,7 @@ also distinguishes ordinary defaults from AutoNumber/Long Binary and describes
 a separate random LONG default. No clock, entropy, GenUniqueID or arbitrary
 expression behavior is qualified by these literal sources.
 
-The [result record](results/ace16-normal-default-insert-sources-2026-11-01.json)
+The [result record](../../results/rows/ace16-normal-default-insert-sources-2026-11-01.json)
 contains exact original/AFTER hashes, pre-model/pre-call closures and first
 source/native/read/saved-verifier receipt hashes. Compiled classes, jars and
 binary artifacts remain private evidence. This source tranche establishes

@@ -16,7 +16,7 @@ import subprocess
 from compare_progressive_queries import display as scalar_display
 
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[4]
 PROFILES = ("V2016", "V2019")
 JAR_HASH = "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc"
 PRIMARY = "https://support.microsoft.com/en-us/office/add-functions-to-access-expressions-72a471a0-4f0e-4d49-923b-be97b0fa4bb0"
@@ -150,7 +150,7 @@ def generate(args):
     classes.mkdir()
     runner = args.directory / "generation-runner.py"
     runner.write_bytes(Path(__file__).read_bytes())
-    recipe = ROOT / "docs/testing/CalculatedIIfFixture.java"
+    recipe = ROOT / "tests/access/reading/tables/CalculatedIIfFixture.java"
     observations = []
     result = invoke(["javac", "-cp", args.jar, "-d", classes, recipe], observations)
     assert result.returncode == 0, result.stderr
@@ -202,8 +202,8 @@ def replay(args):
     authored = json.loads(generation.read_text())
     paths = {args.cli, args.jar, args.source_manifest, generation, Path(__file__).resolve()}
     paths.update(path for path in args.directory.rglob("*") if path.is_file())
-    paths.add(ROOT / "docs/testing/CalculatedIIfFixture.java")
-    paths.add(ROOT / "docs/testing/compare_progressive_queries.py")
+    paths.add(ROOT / "tests/access/reading/tables/CalculatedIIfFixture.java")
+    paths.add(ROOT / "tests/access/queries/execution/compare_progressive_queries.py")
     paths.add(ROOT / "Cargo.lock")
     for key in ("recipe", "runner", "class"):
         assert digest(ROOT / authored[key]) == authored[key + "_sha256"]

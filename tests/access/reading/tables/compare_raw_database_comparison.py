@@ -3,6 +3,7 @@
 Reviewed short keys supply order, including isolated units. Optional independent
 native getters supply IDs only; no Microsoft Access SQL execution is claimed.
 """
+from engineering_paths import reference_file
 
 import argparse
 from pathlib import Path
@@ -22,7 +23,7 @@ def native_controls(args):
         path = args.directory / f"Policies-{profile}.{suffix}"
         before = digest(path)
         oracle = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar,
-                     RECIPES / "TableDataOracle.java", path, "PolicyProbe")
+                     reference_file('tests/access/reading/tables/TableDataOracle.java'), path, "PolicyProbe")
         ids = []
         for line in oracle.splitlines():
             fields = line.split("\t")

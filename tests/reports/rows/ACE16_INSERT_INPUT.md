@@ -16,7 +16,7 @@ and its current mutation profile.
 The first Extended Date/Time consumer batch passes all 16 example functions,
 including three strict civil-input and validation-before-database-open controls.
 This parser evidence does not qualify a new original file or native save.
-The later [original-file replay](ace16_insert_extended_datetime/README.md) uses
+The later [original-file replay](../../access/rows/ace16_insert_extended_datetime/README.md) uses
 the same strict token in a separately qualified V2019 source/request/native/read
 sequence; it retains distinct phase receipts and does not qualify normal saves.
 
@@ -73,7 +73,7 @@ native Access qualification pending. This example adds no normal CLI write path.
 ## Explicit incrementing AutoNumber requests
 
 `--incrementing-last LAST` selects the separate
-[incrementing engineering service](ACE16_INCREMENTING_AUTONUMBER_INSERTS.md).
+[incrementing engineering service](../creation/ACE16_INCREMENTING_AUTONUMBER_INSERTS.md).
 `LAST` must exactly match the original signed last-issued counter. It does not
 detect the stored Increment/Random mode. For example:
 

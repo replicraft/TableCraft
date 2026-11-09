@@ -3,6 +3,7 @@
 This is independent-reader evidence, not Microsoft Access qualification.
 Original databases remain unchanged; mutation checks operate on fresh copies.
 """
+from engineering_paths import reference_file
 import argparse
 from pathlib import Path
 import subprocess
@@ -30,7 +31,7 @@ def main():
         for profile, suffix in PROFILES:
             for version in [0, 1]:
                 run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar,
-                    RECIPES / "TextTupleFixture.java",
+                    reference_file('tests/access/queries/expressions/TextTupleFixture.java'),
                     args.directory / f"TextTuples-{profile}-{version}.{suffix}", profile, version)
     total = 0
     for profile, suffix in PROFILES:
@@ -39,7 +40,7 @@ def main():
             before = digest(path)
             for table, index, count in CASES:
                 expected = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar,
-                               RECIPES / "TableDataOracle.java", path, "--date-bits", "--index", table, index)
+                               reference_file('tests/access/reading/tables/TableDataOracle.java'), path, "--date-bits", "--index", table, index)
                 lines = [line.split("\t") for line in expected.splitlines()]
                 assert len(lines) == count, (profile, version, index, "count")
                 actual = run(args.rows, path, table, "--date-bits", "--index", index, "--bytes", 268435456)

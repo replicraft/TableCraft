@@ -8,7 +8,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from slot_preview_originals import common, facts, model, proof
 
 ROOT = common.ROOT
@@ -99,7 +99,7 @@ def main():
     immutable = [ROOT / item['path'] for item in preparation['inputs'] + preparation['tools']]
     immutable.extend([plan_path, Path(model.__file__), Path(proof.__file__), Path(__file__),
                       Path(common.__file__), Path(facts.__file__),
-                      ROOT / 'docs/testing/capture_delete_trees.py',
+                      ROOT / 'tests/access/rows/delete/capture_delete_trees.py',
                       args.example, args.build_receipt, args.facts, args.preparation])
     immutable.extend(path for _, path in report_paths)
     report = {'scope': ('Original-span engineering model; public canonicalization and '

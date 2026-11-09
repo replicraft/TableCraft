@@ -24,13 +24,13 @@ and a distinct `TCDO0002` original request. Native source purpose comes from act
 catalog-column map ownership before one complete source proof. The fitted
 11-page/page-10 profile preserves fields, property history and exact scratch SQL;
 N12's observed free space qualifies, N13 does not. The
-[8–9 November composition record](testing/results/field-history-options-workflows-2026-11-09.json)
+[8–9 November composition record](../tests/results/schema/field-history-options-workflows-2026-11-09.json)
 passes 991 unique selected checks plus strict all-feature and minimal ACE
 create+journal lint. Earlier UI/renders are excluded from that count. Old
 `TCDO0001` is unchanged. Separate TCAC6/7 services now support qualified fitted
 ADD and repeated ADD after this OFF history. The bounded same-width saved-field
 rename now passes normal Datasheet/Design save, close and fresh-schema selection
-checks. The [current workbench record](testing/results/field-workbench-workflows-2026-11-09.json)
+checks. The [current workbench record](../tests/results/schema/field-workbench-workflows-2026-11-09.json)
 retains failed batches and the accepted 1,533 distinct checks plus 22 reviewed
 offscreen frames. Saved-field alteration/deletion, populated/broader layouts
 and native Windows/Access save comparison remain open.
@@ -63,7 +63,7 @@ values, partial-page removal and new external allocation remain work.
 native/retained-session/CLI and cold replay checks under the initial two-field
 unindexed profile. Broader default/identity/index composition and native Access
 clock/save qualification remain work. All three writer source families were
-[independently qualified](testing/ACE16_WIDE_INLINE_CLOCK_SOURCES.md) first.
+[independently qualified](../tests/reports/general/ACE16_WIDE_INLINE_CLOCK_SOURCES.md) first.
 
 [Qualified Increment AutoNumber INSERT](access/writes/NORMAL_INCREMENTING_AUTONUMBER.md)
 now passes native, recovery, retained-session and CLI checks using original
@@ -135,7 +135,7 @@ source-bound target certificate and the full preservation census. This uses
 strict selected catalog/LVAL/declaration checks rather than broad bootstrap-byte
 acceptance. Wider catalog/property profiles, indirect-map ownership, other
 actions and native Access save/reopen qualification remain explicit work. See
-the [genuine write record](testing/results/ace16-genuine-ordinary-target-writes-2026-10-31.json).
+the [genuine write record](../tests/results/rows/ace16-genuine-ordinary-target-writes-2026-10-31.json).
 
 The normal [fitting Text/Binary route](access/writes/NORMAL_ACE_FITTED.md) now
 composes multiple unindexed variable fields and optional fixed siblings through
@@ -164,7 +164,7 @@ witnesses through retained sessions and the CLI. The [normal explicit-row INSERT
 now supplies typed, SQL and CLI saves using existing owned capacity. Both routes
 now maintain qualified nullable/directional single-Int32 root leaves. DELETE
 also supports retained NODE trees whose children remain nonempty. Whole-image source, recovery and host checks are in the
-[indexed write record](testing/results/ace16-normal-indexed-writes-2026-11-01.json).
+[indexed write record](../tests/results/indexes/ace16-normal-indexed-writes-2026-11-01.json).
 NODE insertion and qualified constant defaults now work, and complete supplied
 rows can add one represented EOF DATA page through TCNA3/V2. Fresh creation now
 emits catalogs admitted by normal content checks. Manual Int64/Currency secondary
@@ -222,11 +222,11 @@ Short Text, Short Binary and Decimal through the existing typed creation service
 The multiple-table API now accepts up to sixteen tables with separate DATA pages
 and one shared catalog/map envelope; indexes, relationships, wider per-table DATA
 allocation and schema changes remain creation work. This does not enable
-ordinary saves to imported ACE files. See the [creation contract](testing/ACE16_DATABASE_CREATION.md).
+ordinary saves to imported ACE files. See the [creation contract](../tests/reports/creation/ACE16_DATABASE_CREATION.md).
 
 
 
-[Joint preserved fixed updates](testing/ACE16_PRESERVED_JOINT_FIXED.md) now compose
+[Joint preserved fixed updates](../tests/reports/rows/ACE16_PRESERVED_JOINT_FIXED.md) now compose
 qualified Boolean, Int32, Int64, Currency and legacy DateTime groups over one
 original image. Shared mask bits merge, changed rows count once and final
 constraints validate the complete result. Native authored-image, causal proof
@@ -236,7 +236,7 @@ Twelve complete-image comparisons through a fresh committed CLI and twelve
 fresh read-only SDK inventories now also pass on the unchanged generated
 V2016/V2019 originals. The joint genuine corpus includes overlapping row groups,
 NULL/mask transitions and true empty SQL groups; its saved-only replay passes.
-Atomic [fitting Short Text plus fixed-field composition](testing/ACE16_PRESERVED_JOINT_TEXT_FIXED.md)
+Atomic [fitting Short Text plus fixed-field composition](../tests/reports/rows/ACE16_PRESERVED_JOINT_TEXT_FIXED.md)
 now also passes authored-source native, Access and CLI whole-image checks.
 Fourteen Text/Boolean copies now also match independently constructed complete
 images on unchanged generated originals, followed by fourteen matching fresh
@@ -244,7 +244,7 @@ SDK inventories and a passing saved-only replay. Broader required-event handling
 and safe-save integration remain next; other generated joint carrier profiles
 retain their separate qualification limits.
 
-Preserved mixed-schema [eight-byte scalar updates](testing/ACE16_PRESERVED_FIXED_SCALARS.md)
+Preserved mixed-schema [eight-byte scalar updates](../tests/reports/rows/ACE16_PRESERVED_FIXED_SCALARS.md)
 now cover one ordinary unindexed Int64, Currency or legacy DateTime target through
 the existing native fixed/batch engineering APIs. Exact payload/NULL preservation
 and independent whole-image proof pass authored-source checks. This broadens
@@ -255,7 +255,7 @@ V2016/V2019 originals, followed by 24 matching fresh read-only SDK inventories.
 Source and expected-image admission preceded every producer call; all non-target
 bytes remain unchanged.
 
-Explicit [physical secondary-index creation](testing/ACE16_SECONDARY_INDEX_CREATION.md)
+Explicit [physical secondary-index creation](../tests/reports/creation/ACE16_SECONDARY_INDEX_CREATION.md)
 now has native, Access adapter and SQL/CLI copy consumers. Sixteen complete
 images match through each consumer, including NULL/duplicate keys and root-leaf
 growth. A fresh committed-source producer also matches sixteen whole images on
@@ -293,7 +293,7 @@ Typed expected-value UPDATE now also accepts bounded
 need not be command arguments. It reuses the existing typed/native services and
 keeps their limits and save gates; focused source-first copy checks pass.
 
-The working copy workflows now also include [typed batch omissions/defaults](testing/ACE16_TYPED_BATCH_OMISSIONS.md)
+The working copy workflows now also include [typed batch omissions/defaults](../tests/reports/general/ACE16_TYPED_BATCH_OMISSIONS.md)
 and native-metadata-driven single Memo/OLE routing. Explicit
 [observed macro inventory](access/schema/NATIVE_TABLE_EXTRA.md) reports stored
 envelopes and unresolved content; it does not qualify required-event discovery
@@ -305,7 +305,7 @@ now has a native service and SQL/CLI consumer. It reports only caller-selected
 programs; discovering required native programs and qualifying absence still gate
 general saves. It never grants a write permit.
 
-Explicit [BeforeChange field-update candidates](testing/ACE16_BEFORE_CHANGE_FIELD_COPIES.md)
+Explicit [BeforeChange field-update candidates](../tests/reports/schema/ACE16_BEFORE_CHANGE_FIELD_COPIES.md)
 now compose selected SetField assignments into one fixed Int32/NULL update with
 original-request reconstruction, complete Extra preservation and existing index/
 constraint checks. Eight whole-image comparisons and the mutation regression pass.
@@ -320,7 +320,7 @@ The shared Access SQL planner now consumes that service for a bounded one-column
 UPDATE. The explicit [`query preview-before-change`](cli/BEFORE_CHANGE_COPY.md)
 copy consumer now supports default or required-durability publication, with typed
 state retained through publication/output failures.
-Complete selected [before-event collections](testing/ACE16_BEFORE_EVENT_COLLECTIONS.md)
+Complete selected [before-event collections](../tests/reports/reading/ACE16_BEFORE_EVENT_COLLECTIONS.md)
 now validate inactive BeforeDelete definitions as well as active BeforeChange
 definitions before rows execute. Inactive definitions do not run during a change;
 unsupported content still refuses empty operations. Native required-program
@@ -332,7 +332,7 @@ explicit logical event preparation. Missing and opaque carriers remain unresolve
 complete observed-property selection does not establish native required coverage.
 Native storage mapping, required-event discovery and normal saves remain open.
 
-Qualified [mixed-schema Int32 copies](testing/ACE16_PRESERVED_INT32_UPDATES.md)
+Qualified [mixed-schema Int32 copies](../tests/reports/rows/ACE16_PRESERVED_INT32_UPDATES.md)
 now extend the preserved fixed service beyond Boolean masks. One ordinary,
 nonindexed field outside calculation dependencies can change through existing
 typed/SQL/CLI consumers while attachments and stored caches remain byte-exact.
@@ -343,15 +343,15 @@ retaining inactive payloads and enforcing Required/validation on the final
 candidate. Authored-source native, shared-service and CLI comparisons pass;
 genuine nullable sources and native Access qualification remain separate.
 
-One qualified [Short Text target](testing/ACE16_PRESERVED_SHORT_TEXT_UPDATES.md)
+One qualified [Short Text target](../tests/reports/rows/ACE16_PRESERVED_SHORT_TEXT_UPDATES.md)
 now also fits its existing mixed-schema record through a separate preservation
 service, retaining rich siblings, raw no-ops and final field/table rules. Eight
 whole-image authored comparisons pass. Two independently generated V2016/V2019
 originals now also pass 18 complete-image committed-CLI comparisons, four honest
 capacity refusals and 18 fresh readonly SDK inventories, with original hashes
-unchanged. The [genuine-file result](testing/results/ace16-preserved-short-text-genuine-images-2026-10-30.json)
+unchanged. The [genuine-file result](../tests/results/rows/ace16-preserved-short-text-genuine-images-2026-10-30.json)
 retains independent expectations and separate execution phases. Explicit
-`--variable` now adds [preserved Short Text DATA growth](testing/ACE16_PRESERVED_TEXT_GROWTH.md)
+`--variable` now adds [preserved Short Text DATA growth](../tests/reports/rows/ACE16_PRESERVED_TEXT_GROWTH.md)
 for one ordinary, unindexed target independent of calculated fields, with stable
 logical references and represented owned/EOF placement. Default remains fitting.
 Its separate genuine-original corpus now matches eight complete images from
@@ -361,12 +361,12 @@ Broader mixed targets, INDEX/map-storage growth, unsupported properties, require
 macro discovery/semantics, normal ACE saves and native Microsoft Access
 qualification remain open.
 
-The existing copy workflows now support [multiple Short Text/Binary targets](testing/ACE16_MULTIPLE_VARIABLE_UPDATES.md)
+The existing copy workflows now support [multiple Short Text/Binary targets](../tests/reports/rows/ACE16_MULTIPLE_VARIABLE_UPDATES.md)
 in one UPDATE, including optional fixed siblings and explicit DATA/INDEX growth.
 Single-column Memo/OLE keeps its separate explicit mode; mixed LVAL operations
 and general native saves remain unfinished.
 
-The [advanced-field preservation slice](testing/ACE16_PRESERVED_BOOLEAN_UPDATES.md)
+The [advanced-field preservation slice](../tests/reports/rows/ACE16_PRESERVED_BOOLEAN_UPDATES.md)
 now passes authored-source Boolean copy edits through the engine, adapter and
 CLI. The donated real database still refuses its property profile; qualifying
 that actual representation is the next preservation task. This does not close
@@ -401,7 +401,7 @@ cumulative default-route budget/cancellation checks are retained as observed
 history; current single-column Memo/OLE routing is described above. Affected
 fixture consumers and final strict checks also pass, with test-only
 extraction/import corrections recorded. Multiple variable fields now use the
-[whole-row service](testing/ACE16_MULTIPLE_VARIABLE_UPDATES.md); mixed LVAL updates
+[whole-row service](../tests/reports/rows/ACE16_MULTIPLE_VARIABLE_UPDATES.md); mixed LVAL updates
 remain open. UPDATE routing does not evaluate omitted-field defaults or qualify
 normal ACE saves.
 SQL-selected [DELETE copies](access/writes/SQL_DELETE_COPIES.md) now use original
@@ -412,7 +412,7 @@ omissions with needed-only constant defaults or NULL, including explicitly
 selected incrementing companions. Supplied NULL stays distinct; positional
 VALUES and the complete-row API remain strict. Native and frontend whole-image
 checks pass, including exact Decimal assignment and generated companions.
-Explicit [Date()/Now() default clocks](testing/ACE16_CLOCK_INSERT_DEFAULTS.md)
+Explicit [Date()/Now() default clocks](../tests/reports/rows/ACE16_CLOCK_INSERT_DEFAULTS.md)
 now capture one reading only when needed, including source-bound generated
 companions; native and CLI complete-image checks pass. Broader runtime defaults,
 coercions and normal saves remain open. Next delivery
@@ -420,7 +420,7 @@ work is broader real-table schema admission, deterministic write expressions and
 durable save/recovery. These
 explicit engineering workflows retain their separate normal-save and macro gates.
 
-Qualified [historical full-width layouts](testing/ACE16_HISTORICAL_FIXED_UPDATES.md)
+Qualified [historical full-width layouts](../tests/reports/rows/ACE16_HISTORICAL_FIXED_UPDATES.md)
 now permit engineering fixed updates across deleted-column native-number gaps.
 Old shorter records and other mutation modes retain their existing refusals.
 
@@ -431,23 +431,23 @@ DateSerial/TimeSerial construction now use the existing date kernels, with no
 ambient clock or text-date parsing. Hidden retrieval/runtime calls
 and broader function semantics remain outside that capability.
 
-Qualified [passive display declarations](testing/ACE16_PASSIVE_DISPLAY_METADATA.md)
+Qualified [passive display declarations](../tests/reports/reading/ACE16_PASSIVE_DISPLAY_METADATA.md)
 now remain intact during ACE 16 engineering INSERT/UPDATE/DELETE. Formatting and
 numeric display places do not coerce stored values or replace physical Decimal
 precision/scale; broader metadata and normal save admission remain unfinished.
 
-The [joint fitted-record engine](testing/ACE16_FITTED_MIXED_UPDATES.md) now changes
+The [joint fitted-record engine](../tests/reports/rows/ACE16_FITTED_MIXED_UPDATES.md) now changes
 fixed fields plus one Short Text/Binary field with one original-record proof and
 one joint physical-index transform. Existing-capacity records and metadata-directed
 adapter routing are qualified. The separate
-[mixed DATA-growth service](testing/ACE16_MIXED_GROWING_UPDATES.md) now admits
+[mixed DATA-growth service](../tests/reports/rows/ACE16_MIXED_GROWING_UPDATES.md) now admits
 hidden-record placement and appended DATA pages under complete original-source
 role checks. Its 72 new complete-image comparisons and the 83 fitting comparisons
 pass. Explicit SQL `--variable` now exposes joint DATA growth, with 72 complete
 adapter comparisons and 24 actual CLI Text copies passing. The CLI default
 remains fitted. Typed `write preview-update --variable` now shares this service,
 with 36 exact copies, including Binary, preserving caller expectations and ordinals.
-The separate [joint DATA/INDEX engine](testing/ACE16_MIXED_DATA_INDEX_GROWTH.md)
+The separate [joint DATA/INDEX engine](../tests/reports/indexes/ACE16_MIXED_DATA_INDEX_GROWTH.md)
 now passes 24 source pairs and 48 complete API comparisons for root and nonroot
 splits, with one shared allocation overlay. Existing SQL and typed
 `--variable --index-growth` now select that joint service: frontend source gates
@@ -472,7 +472,7 @@ literal node ranges; the explicit CLI consumer covers 50 native carriers.
 This advances the required macro work without supplying execution, qualified
 absence or normal native-save permission.
 
-Fitting UPDATE now has [complete body-role protection](testing/ACE16_FITTING_BODY_ROLES.md),
+Fitting UPDATE now has [complete body-role protection](../tests/reports/storage/ACE16_FITTING_BODY_ROLES.md),
 closing a reproduced reader-valid DATA/INDEX ownership overlap. Both producer and
 fresh proof revalidate original roles and allocated membership without granting
 map rewrite authority. Historical source images remain intact; independently
@@ -505,215 +505,215 @@ Delivered read/query and engineering foundations:
   for qualified column maps, live descriptors, owned pages, orphan counts and
   sharing. Unknown profiles remain visible; this does not authorize writes.
 - [x] Offline Jet 4 fixed Int32 UPDATE copies and separate
-  [ACE 16 engineering write previews](testing/ACE16_WRITE_PREVIEWS.md).
-  [Deletion candidates](testing/ACE16_DELETE_PREVIEWS.md) retain original key/row
+  [ACE 16 engineering write previews](../tests/reports/development/ACE16_WRITE_PREVIEWS.md).
+  [Deletion candidates](../tests/reports/rows/ACE16_DELETE_PREVIEWS.md) retain original key/row
   boundaries, including qualified single Short Text/Binary keys. Existing-page
   contraction retires empty branches through checked owned/free maps and repairs
   complete internal chains by height. A frozen committed tool now passes all
-  [32 deep/indirect original-file controls](testing/results/ace16-delete-internal-chains-originals-2026-10-26.json)
+  [32 deep/indirect original-file controls](../tests/results/rows/ace16-delete-internal-chains-originals-2026-10-26.json)
   without changing the earlier selectors, requests or budgets. Required splits
-  still refuse. A separate [existing-width Text/Binary UPDATE preview](testing/ACE16_WRITE_PREVIEWS.md#existing-width-short-text-and-binary-slots)
+  still refuse. A separate [existing-width Text/Binary UPDATE preview](../tests/reports/development/ACE16_WRITE_PREVIEWS.md#existing-width-short-text-and-binary-slots)
   now performs actual slot and single/mixed tuple key replacements, with full
   constraints and no record growth or ordinary save capability.
-  A separate [same-page Text/Binary service](testing/ACE16_PAGE_UPDATES.md) now
+  A separate [same-page Text/Binary service](../tests/reports/storage/ACE16_PAGE_UPDATES.md) now
   fits records within retained capacity or appends hidden forwarding targets
   while preserving original logical roots. General allocation, index splitting and
   ordinary saves remain unfinished.
-  Its [separate original-file replay](testing/PAGE_UPDATE_OBSERVATIONS.md) now
+  Its [separate original-file replay](../tests/reports/storage/PAGE_UPDATE_OBSERVATIONS.md) now
   passes 180 controls: 156 candidates and 24 typed refusals, with complete
   record/index/map and protected-byte proofs.
-  A further [variable-update service](testing/ACE16_VARIABLE_UPDATES.md) now adds
+  A further [variable-update service](../tests/reports/rows/ACE16_VARIABLE_UPDATES.md) now adds
   alternate owned destinations and EOF data-page allocation through existing map
   representation, with independent placement/map replay. Map growth, arbitrary
   free-page reuse and production saves remain unfinished. Its
-  [eight original-file candidates](testing/VARIABLE_UPDATE_OBSERVATIONS.md) now
+  [eight original-file candidates](../tests/reports/rows/VARIABLE_UPDATE_OBSERVATIONS.md) now
   pass complete byte/value/index proofs, separately from the earlier PAGE results.
-  A further [eight Binary allocation candidates](testing/BINARY_VARIABLE_UPDATE_OBSERVATIONS.md)
+  A further [eight Binary allocation candidates](../tests/reports/storage/BINARY_VARIABLE_UPDATE_OBSERVATIONS.md)
   pass on independently constructed space-exhaustion sources with exact retained
   target padding, maps and original primary references.
-  A separate [Int32 root-leaf split service](testing/ACE16_INDEX_SPLITS.md) now
+  A separate [Int32 root-leaf split service](../tests/reports/indexes/ACE16_INDEX_SPLITS.md) now
   grows qualified overflowing single-field root leaves into a retained root and
   two represented EOF leaves, with request-derived row authority and independent
   map/framing audits. Non-root leaves now split with a new left page, a retained
   right page and repaired neighbors/ancestor bounds when every parent fits.
   Qualified internal-parent splitting and retained-root growth now propagate
   recursively under independent count/capacity/EOF/framing audits and 108 scoped
-  runtime checks. Its [four recursive original-file candidates](testing/RECURSIVE_INDEX_SPLIT_UPDATE_OBSERVATIONS.md)
+  runtime checks. Its [four recursive original-file candidates](../tests/reports/indexes/RECURSIVE_INDEX_SPLIT_UPDATE_OBSERVATIONS.md)
   now pass first-run complete-image/getter/map proofs across retained-root growth
   and below-root internal splits. Other-codec splits, normal saves and native
   Access qualification remain separate. Separate
-  [Byte/Int16/Int64/Currency sources](testing/INTEGRAL_INDEX_SPLIT_SOURCE_OBSERVATIONS.md)
+  [Byte/Int16/Int64/Currency sources](../tests/reports/indexes/INTEGRAL_INDEX_SPLIT_SOURCE_OBSERVATIONS.md)
   now pass measured root-leaf overflow gates and eight byte-identical typed no-ops
   in both ACE 16 formats; that source phase alone does not establish typed split admission.
-  Its [two unchanged-original candidates](testing/ROOT_SPLIT_UPDATE_OBSERVATIONS.md)
+  Its [two unchanged-original candidates](../tests/reports/indexes/ROOT_SPLIT_UPDATE_OBSERVATIONS.md)
   now pass their first complete-image, typed-value and index/reference proofs
   through a frozen committed consumer.
-  Its [two non-root original-file candidates](testing/NONROOT_SPLIT_UPDATE_OBSERVATIONS.md)
+  Its [two non-root original-file candidates](../tests/reports/indexes/NONROOT_SPLIT_UPDATE_OBSERVATIONS.md)
   also pass first-attempt complete-image proofs, allocating one index page and
   retaining the source's unchanged Memo/OLE storage.
-  Separate [sparse Int32 sources](testing/PARENT_INDEX_SPLIT_SOURCE_OBSERVATIONS.md)
+  Separate [sparse Int32 sources](../tests/reports/indexes/PARENT_INDEX_SPLIT_SOURCE_OBSERVATIONS.md)
   now establish measured leaf-and-parent overflow with only 782 live target rows,
   plus a sentinel, and pass byte-identical no-op admission. Their larger generation
   histories are not qualified mutation inputs. The subsequent
-  [nine-process public-reference phase](testing/PARENT_INDEX_SPLIT_OBSERVATIONS.md)
+  [nine-process public-reference phase](../tests/reports/indexes/PARENT_INDEX_SPLIT_OBSERVATIONS.md)
   now measures actual retained-root growth to height two and three EOF index
   pages on both sources; the prior frozen kernel refuses those two edits
   atomically. Recursive candidate acceptance now passes separately on the new committed consumer.
-  A distinct [below-root internal-parent source](testing/INTERNAL_PARENT_INDEX_SPLIT_SOURCE_OBSERVATIONS.md)
+  A distinct [below-root internal-parent source](../tests/reports/indexes/INTERNAL_PARENT_INDEX_SPLIT_SOURCE_OBSERVATIONS.md)
   now retains 963 live target rows under a height-two root after bounded public
   pruning, with all 497 index pages and three sibling levels preserved. Its
   source phase contains no MAX update or native candidate qualification.
-  Its [separate public MAX actions](testing/INTERNAL_PARENT_INDEX_SPLIT_OBSERVATIONS.md)
+  Its [separate public MAX actions](../tests/reports/indexes/INTERNAL_PARENT_INDEX_SPLIT_OBSERVATIONS.md)
   now establish new-left/retained-right internal splitting on both originals,
   with a retained height-two root and two EOF pages. The old consumer still
   refuses those edits; new-kernel candidate acceptance is recorded separately above.
-  The [exact typed facade](testing/ACE16_FIXED_INDEX_SPLITS.md) now implements
+  The [exact typed facade](../tests/reports/indexes/ACE16_FIXED_INDEX_SPLITS.md) now implements
   Byte/Int16/Int32/Int64/Currency recursive splits with request-derived final
   authority and a fresh-output engineering consumer; 124 distinct scoped runtime
   functions and strict/minimal/docs checks pass. The subsequent
-  [repeated-overflow extension](testing/ACE16_REPEATED_INDEX_SPLITS.md) now splits
+  [repeated-overflow extension](../tests/reports/indexes/ACE16_REPEATED_INDEX_SPLITS.md) now splits
   oversized halves with independent capacity/topology audits, passing 139 distinct
   scoped functions, including fifteen new controls. Other codecs, general
   allocation and normal saves remain unfinished.
-  Its [eight first original-file candidates](testing/FIXED_INDEX_SPLIT_UPDATE_OBSERVATIONS.md)
+  Its [eight first original-file candidates](../tests/reports/indexes/FIXED_INDEX_SPLIT_UPDATE_OBSERVATIONS.md)
   now match independent complete images and fresh getter/index/map checks on the
   unchanged sources, through a committed frozen consumer and sixteen successful
   fixture commands. Recursive typed originals and native Access remain separate.
-  A [repeated-overflow witness](testing/REPEATED_INDEX_SPLIT_OBSERVATIONS.md)
+  A [repeated-overflow witness](../tests/reports/indexes/REPEATED_INDEX_SPLIT_OBSERVATIONS.md)
   now passes nine source commands and thirteen separate reference commands:
   four facade no-ops preserve complete originals, four prior MAX attempts refuse
   atomically and four public updates split the remaining oversized halves. Their
   six-EOF-page topology is measured. The subsequent
-  [four first-run candidates](testing/REPEATED_INDEX_SPLIT_UPDATE_OBSERVATIONS.md)
+  [four first-run candidates](../tests/reports/indexes/REPEATED_INDEX_SPLIT_UPDATE_OBSERVATIONS.md)
   now match their frozen complete images and fresh typed/index/map inspections
   through a new committed consumer. All eight commands pass without changing the
   originals, selectors, expectations or budgets. Map growth and native saves
   remain separate work.
-  Their [separate MAX reference actions](testing/INTEGRAL_INDEX_SPLIT_OBSERVATIONS.md)
+  Their [separate MAX reference actions](../tests/reports/indexes/INTEGRAL_INDEX_SPLIT_OBSERVATIONS.md)
   now record eight successful public updates and eight old-consumer atomic
   refusals on unchanged originals. All sixteen physical roots split; new typed
   candidate acceptance and native Access qualification remain separate.
-  A separate [ordinary Memo/OLE replacement service](testing/ACE16_LONG_VALUE_UPDATES.md)
+  A separate [ordinary Memo/OLE replacement service](../tests/reports/storage/ACE16_LONG_VALUE_UPDATES.md)
   now composes qualified column-owned LVAL append/EOF allocation with parent
   descriptor forwarding and independently replays request/map/payload authority.
   Old chunks remain allocated. Broader field/map profiles, reclamation and
   production saves remain unfinished. Its
-  [revised committed-consumer replay](testing/LONG_VALUE_UPDATE_ACCEPTANCE_OBSERVATIONS.md)
+  [revised committed-consumer replay](../tests/reports/storage/LONG_VALUE_UPDATE_ACCEPTANCE_OBSERVATIONS.md)
   now passes all 60 unchanged raw Memo/OLE controls with complete image/getter/map
   proofs, following the preserved initial zero-of-60 census refusals and narrow
   ownership/deleted-slot correction. Exact ordinary compressed Memo now shares
   this preview under its measured narrow/raw encoding rule and independent byte
   audit, with 68 scoped runtime checks. Its
-  [first original-file replay](testing/COMPRESSED_MEMO_ACCEPTANCE_OBSERVATIONS.md)
+  [first original-file replay](../tests/reports/storage/COMPRESSED_MEMO_ACCEPTANCE_OBSERVATIONS.md)
   now passes 132 exact candidate images/getters and sixteen typed atomic refusals
   under unchanged inputs/budgets. Other extended/history/map profiles, broader
   encoding, reclamation and normal saves stay open.
-  A subsequent [map-authority correction](testing/LONG_VALUE_MAP_AUTHORITY.md)
+  A subsequent [map-authority correction](../tests/reports/storage/LONG_VALUE_MAP_AUTHORITY.md)
   now rejects empty cross-owner map aliases and overlapping metadata footprints
   before allocation, with immutable-original final recensus. Its 85 scoped runtime
   functions pass; 44 read-only source-admission probes are distinct from candidate
   replay. Indirect candidate maps and production saves remain open.
-  A [separate indirect-map source phase](testing/INDIRECT_LONG_VALUE_MAP_OBSERVATIONS.md)
+  A [separate indirect-map source phase](../tests/reports/storage/INDIRECT_LONG_VALUE_MAP_OBSERVATIONS.md)
   now records mixed indirect-owned/inline-candidate Memo maps on both originals,
   with thirteen successful fixture commands and complete saved storage proofs.
   No map admission, growth or replacement qualification follows from that phase.
-  The subsequent [mixed-map implementation](testing/results/ace16-indirect-lval-native-2026-10-27.json)
+  The subsequent [mixed-map implementation](../tests/results/storage/ace16-indirect-lval-native-2026-10-27.json)
   now admits qualified indirect-owned/inline-candidate pairs in the default
   storage checker and engineering replacement, with 112 distinct runtime checks.
   A working read-only checker matches all four reports on the unchanged originals.
-  Its [twelve committed-consumer candidates](testing/MIXED_LONG_VALUE_UPDATE_OBSERVATIONS.md)
+  Its [twelve committed-consumer candidates](../tests/reports/storage/MIXED_LONG_VALUE_UPDATE_OBSERVATIONS.md)
   now match complete independently frozen images and fresh getter/maps on both
   unchanged originals, through twenty-five successful first-attempt fixture commands.
   Candidate-indirect maps, metadata growth and production saves remain separate work.
-  A separate [48-control Text/Binary corpus](testing/ENCODED_DELETE_OBSERVATIONS.md)
+  A separate [48-control Text/Binary corpus](../tests/reports/rows/ENCODED_DELETE_OBSERVATIONS.md)
   checks 36 candidates and twelve unsupported-profile refusals on the same
   committed tool, including the previously refused height-two delete-all cases.
   Qualified ignore-NULL deletion now derives checked per-index request subsets
   and physical empty-root ownership under 224 scoped engine checks. Its
-  [fifty original-file candidates](testing/IGNORED_DELETE_OBSERVATIONS.md) all pass,
+  [fifty original-file candidates](../tests/reports/rows/IGNORED_DELETE_OBSERVATIONS.md) all pass,
   including physically empty indexes with live NULL table rows and unchanged
   index bytes for zero-effective requests.
   The separate acyclic Cascade service now passes
-  [24 original-file candidates and eight self/cycle refusals](testing/CASCADE_DELETE_OBSERVATIONS.md),
+  [24 original-file candidates and eight self/cycle refusals](../tests/reports/rows/CASCADE_DELETE_OBSERVATIONS.md),
   retaining independent association, index-entry and unchanged-byte checks.
   General ACE 16 saves are still unavailable.
 
-- [x] [Retained-key split transport](testing/ACE16_RETAINED_SPLIT_PLANNER.md)
+- [x] [Retained-key split transport](../tests/reports/indexes/ACE16_RETAINED_SPLIT_PLANNER.md)
   supports real profile-owned keys internally while preserving numeric public
   consumers. Independent fast-path framing now enforces fresh/original prefix
   policy. Its 115 runtime functions and scoped checks pass. The subsequent
-  [existing-fit composite audit](testing/ACE16_COMPOSITE_FITTING_AUDIT.md) separately
+  [existing-fit composite audit](../tests/reports/general/ACE16_COMPOSITE_FITTING_AUDIT.md) separately
   derives exact tuple wire bytes and original topology under 62 scoped runtime
   functions, including four new controls. Text/Binary split mutation, composite
   allocation and normal native saves remain separate work.
 
-Separate [Text/Binary source observations](testing/ENCODED_INDEX_SPLIT_SOURCE_OBSERVATIONS.md)
+Separate [Text/Binary source observations](../tests/reports/indexes/ENCODED_INDEX_SPLIT_SOURCE_OBSERVATIONS.md)
 now establish measured root overflow and repeated demand for both General text
 families and Short Binary on two unchanged 2,701-row sources. The corrected five
 source commands pass after an earlier compile failure. The subsequent
-[old-slot baseline](testing/ENCODED_INDEX_SPLIT_BASELINES.md) passes six
+[old-slot baseline](../tests/reports/indexes/ENCODED_INDEX_SPLIT_BASELINES.md) passes six
 byte-identical no-ops and six exact IndexedColumn refusals with no output. The
-subsequent [public references](testing/ENCODED_INDEX_SPLIT_UPDATE_OBSERVATIONS.md)
+subsequent [public references](../tests/reports/indexes/ENCODED_INDEX_SPLIT_UPDATE_OBSERVATIONS.md)
 pass six replacements and six getters, each retaining row identities while adding
 six index pages. Committed-consumer candidate comparisons remain separate.
 
-- [x] A separate [exact-slot Text/Binary split preview](testing/ACE16_ENCODED_INDEX_SPLITS.md)
+- [x] A separate [exact-slot Text/Binary split preview](../tests/reports/indexes/ACE16_ENCODED_INDEX_SPLITS.md)
   now supplies a working General legacy/modern and Binary consumer of retained
   keys, with independent complete-image, request-authority, alias and map checks.
   It preserves field widths and original row locations. The
-  [first six original-file candidates](testing/ENCODED_INDEX_SPLIT_CANDIDATE_OBSERVATIONS.md)
+  [first six original-file candidates](../tests/reports/indexes/ENCODED_INDEX_SPLIT_CANDIDATE_OBSERVATIONS.md)
   now match independently frozen complete images and pass six fresh getters,
   without changing sources, requests or budgets. Tuple allocation, broader
   profiles, combined record growth and normal saves remain unfinished.
 
-New [combined pressure sources](testing/VARIABLE_ENCODED_SPLIT_SOURCE_OBSERVATIONS.md)
+New [combined pressure sources](../tests/reports/indexes/VARIABLE_ENCODED_SPLIT_SOURCE_OBSERVATIONS.md)
 now establish maximum-width record and index growth inputs in both ACE 16 formats:
 43-byte records, 90 per DATA page, only 32 free bytes, and independently confirmed
 maximum-width encoded keys. All five construction/inspection commands pass first
 attempt. They do not establish a combined writer, persisted new-key behavior or
 complete native metadata authority.
 
-The [old variable-service baseline](testing/VARIABLE_ENCODED_SPLIT_BASELINES.md)
+The [old variable-service baseline](../tests/reports/indexes/VARIABLE_ENCODED_SPLIT_BASELINES.md)
 now passes six exact no-ops and six `IndexedColumn` growth refusals without output
 on these unchanged inputs. That baseline does not exercise combined allocation.
 
-Its [separate public-writer references](testing/VARIABLE_ENCODED_SPLIT_UPDATE_OBSERVATIONS.md)
+Its [separate public-writer references](../tests/reports/indexes/VARIABLE_ENCODED_SPLIT_UPDATE_OBSERVATIONS.md)
 now pass six fresh-copy growth operations and six inspections with complete
 record/key/map preservation proofs. Each adds one DATA page and six index leaves;
 the maximum Modern DESC key requires a two-byte mixed-leaf prefix. TableCraft's
 original-file combined candidate proofs remain separate below.
 
 The existing variable and index previews now share a
-[typed append state](testing/ACE16_SHARED_APPEND_STATE.md), including one EOF
+[typed append state](../tests/reports/storage/ACE16_SHARED_APPEND_STATE.md), including one EOF
 cursor and original-before/current-after map-byte ledger per operation.
 The standalone writer now has
-[request-derived record and placement replay](testing/ACE16_VARIABLE_DATA_PROOF.md),
+[request-derived record and placement replay](../tests/reports/rows/ACE16_VARIABLE_DATA_PROOF.md),
 including exact preferred wire bytes and original record capacity. A separate
-[combined engineering API](testing/ACE16_VARIABLE_INDEX_SPLITS.md) now uses that
+[combined engineering API](../tests/reports/indexes/ACE16_VARIABLE_INDEX_SPLITS.md) now uses that
 proof during index allocation. One append
 state and independently derived DATA/index/bitmap purposes cover record growth,
 index splitting and index-owned map promotion. Complete-image Binary-255 literal
-controls pass. The [first six original-file candidates](testing/VARIABLE_INDEX_SPLIT_CANDIDATE_OBSERVATIONS.md)
+controls pass. The [first six original-file candidates](../tests/reports/indexes/VARIABLE_INDEX_SPLIT_CANDIDATE_OBSERVATIONS.md)
 now match independently frozen complete images and pass six fresh getter/map/key
 proofs through twelve first-attempt commands. Normal ACE saves and native Access
 qualification remain unfinished.
 
-- [x] Qualified [index-owned map promotion](testing/ACE16_INDEX_MAP_GROWTH.md)
+- [x] Qualified [index-owned map promotion](../tests/reports/indexes/ACE16_INDEX_MAP_GROWTH.md)
   now composes same-extent pointer-row rewrites and distinct bitmap metadata with
   recursive/repeated splits. Independent images cover late promotion and mixed
   represented peers. Its 92 distinct runtime functions and scoped build/lint/doc
-  checks pass. Its [first two-original replay](testing/INDEX_MAP_GROWTH_UPDATE_OBSERVATIONS.md)
+  checks pass. Its [first two-original replay](../tests/reports/indexes/INDEX_MAP_GROWTH_UPDATE_OBSERVATIONS.md)
   now matches both independently frozen complete images and fresh row/index/map
   inspections through four successful commands. General allocation, other map
   roles/windows, normal saves and native Access qualification remain unfinished.
 
-- [x] Shared [native map authority](testing/ACE16_MAP_AUTHORITY.md) now serves the
+- [x] Shared [native map authority](../tests/reports/storage/ACE16_MAP_AUTHORITY.md) now serves the
   existing long-value engineering consumer, with explicit canonical mutable
   owners and complete catalog/current/historical footprint checks. Its 43 scoped
   runtime checks and 44 separate unchanged-original admissions pass. Missing
   physical index ownership coverage refuses; actual map growth remains open.
 
-- [x] Independent [usage-map growth observations](testing/USAGE_MAP_GROWTH_OBSERVATIONS.md)
+- [x] Independent [usage-map growth observations](../tests/reports/storage/USAGE_MAP_GROWTH_OBSERVATIONS.md)
   distinguish selected index children from newly allocated bitmap metadata and
   preserve the original map extent, root identity and unrelated bytes. The
   eighteen-command history explicitly retains one failed reference action with
@@ -729,14 +729,14 @@ qualification remain unfinished.
   sorting, sorted groups/aggregates, joins and runtime schema discovery remain
   outside streaming.
 
-- [x] A separate [ordinary-row INSERT engineering preview](testing/ACE16_INSERT_PREVIEW.md)
+- [x] A separate [ordinary-row INSERT engineering preview](../tests/reports/rows/ACE16_INSERT_PREVIEW.md)
   constructs explicit Int32/Short Binary records, visible fitted/EOF roots and
   required Int32 primary-leaf membership under independent complete-image proof.
   Its four original-file candidates and eight fresh independent getter/map calls
   pass on the first attempt. General INSERT, broader split shapes, defaults/generated fields,
   data macros and production saves remain unfinished.
 
-- [x] [INSERT root-leaf growth](testing/ACE16_INSERT_ROOT_SPLITS.md) now retains
+- [x] [INSERT root-leaf growth](../tests/reports/indexes/ACE16_INSERT_ROOT_SPLITS.md) now retains
   the root as a height-one node and appends two leaves under the DATA allocator's
   same cursor. Four frozen complete-image comparisons and eight fresh independent
   getter/map calls pass. General height-one admission now extends leaf-child
@@ -744,7 +744,7 @@ qualification remain unfinished.
   deeper sources and parent growth. Defaults and required data macros remain
   unfinished.
 
-- [x] [Fitted INSERT into an existing height-one primary](testing/ACE16_INSERT_HEIGHT_ONE.md)
+- [x] [Fitted INSERT into an existing height-one primary](../tests/reports/indexes/ACE16_INSERT_HEIGHT_ONE.md)
   routes final key/ROW pairs against the original inclusive bound of exactly two
   retained leaves. Both leaves must fit; the whole root, sibling links, untouched
   leaves and index maps stay unchanged, with no new index pages. Thirteen
@@ -757,7 +757,7 @@ qualification remain unfinished.
   trees. Normal native saves remain unfinished.
   Native Microsoft Access comparisons remain deferred.
 
-- [x] [One-child INSERT splitting](testing/ACE16_INSERT_CHILD_SPLITS.md) now
+- [x] [One-child INSERT splitting](../tests/reports/indexes/ACE16_INSERT_CHILD_SPLITS.md) now
   extends an original one-bound/two-leaf primary to three leaves with the same
   root, fresh LEFT and retained RIGHT offender. Fitting peer batches, exact links,
   original/fresh framing and DATA/index/map ownership have independent proof.
@@ -776,7 +776,7 @@ qualification remain unfinished.
   continuation below extends deeper trees and parent growth. Normal native saves
   remain unfinished.
 
-- [x] [General height-one INSERT](testing/ACE16_INSERT_GENERAL_HEIGHT_ONE.md)
+- [x] [General height-one INSERT](../tests/reports/indexes/ACE16_INSERT_GENERAL_HEIGHT_ONE.md)
   admits arbitrary nonempty leaf-child counts, tail-present/all-bounded roots,
   fitting ranges and multiple/repeated splits with original-bound routing and
   final-child clamping. Final parent capacity, one append state, immutable
@@ -792,7 +792,7 @@ qualification remain unfinished.
   The recursive continuation below extends parent growth and deeper trees;
   production saves remain unfinished.
 
-- [x] [Recursive primary INSERT](testing/ACE16_INSERT_RECURSIVE.md) now admits
+- [x] [Recursive primary INSERT](../tests/reports/rows/ACE16_INSERT_RECURSIVE.md) now admits
   qualified NODE trees below the unchanged depth ceiling of 16, with recursive
   original-bound routing, multiple/repeated leaf and internal splits, per-height
   sibling proof and one shared DATA/index append state. One grown root retains
@@ -815,12 +815,12 @@ qualification remain unfinished.
   reference calls also succeed; a first-three protected-peer-scratch proof failure,
   saved recertification and remaining-nine continuation stay explicit. Actual ROWs
   agree while leaf half-rounding and INDEX unused bytes differ. The
-  [candidate record](testing/results/ace16-insert-recursive-native-2026-10-28.json)
-  and [public references](testing/results/ace16-insert-recursive-public-reference-2026-10-28.json)
+  [candidate record](../tests/results/rows/ace16-insert-recursive-native-2026-10-28.json)
+  and [public references](../tests/results/rows/ace16-insert-recursive-public-reference-2026-10-28.json)
   retain these distinctions. Native Access, additional top nesting, wider profiles,
   required data macros and production saves remain unfinished.
 
-- [x] [Ordinary scalar-row INSERT](testing/ACE16_ORDINARY_INSERTS.md) now admits
+- [x] [Ordinary scalar-row INSERT](../tests/reports/rows/ACE16_ORDINARY_INSERTS.md) now admits
   explicit fixed scalars/Boolean masks and multiple Short Text/Binary fields under
   actual-primary metadata selection and independent exact record reconstruction.
   Empty Text requires an explicit AllowZeroLength declaration; absence is not a
@@ -831,17 +831,17 @@ qualification remain unfinished.
   four public preview contracts, three compile-fail doctests, minimal compilation,
   strict rustdoc and formatting pass. Nine actual source capture calls and four
   saved-only typed gates pass; four independent complete images match four
-  first-attempt [candidates](testing/results/ace16-insert-ordinary-native-2026-10-28.json)
+  first-attempt [candidates](../tests/results/rows/ace16-insert-ordinary-native-2026-10-28.json)
   before eight first-attempt fresh getter/map calls. All 1,804 old selected ROWs
   remain; the suffix contains eight INDEX and two DATA pages with no bitmap.
   The pre-build source-gate receipt metadata rebind preserves all four image and
-  detail files. Four separate [public INSERT references](testing/results/ace16-insert-ordinary-public-reference-2026-10-28.json)
+  detail files. Four separate [public INSERT references](../tests/results/rows/ace16-insert-ordinary-public-reference-2026-10-28.json)
   and eight inert getter/map calls pass on their first attempts, with matching new
   ROWs and allocation purposes. Complete images differ only in 1,566 unused
   fresh-INDEX bytes per case; engineering padding stays zero. Existing two-field
   receipts are not retargeted;
   later exact Decimal records and
-  [multiple physical index maintenance](testing/ACE16_MULTIPLE_INDEX_INSERTS.md)
+  [multiple physical index maintenance](../tests/reports/indexes/ACE16_MULTIPLE_INDEX_INSERTS.md)
   now extend that profile. Four source/request-derived multiple-index images
   match four first-attempt committed-producer candidates before eight fresh
   independent getter/map calls; 426 ACE unit functions pass with one existing
@@ -857,7 +857,7 @@ qualification remain unfinished.
   sixteen frozen source/request images now match sixteen first-attempt candidates
   before thirty-two fresh independent getter/map calls pass. The sixteen
   source/reference cases separately pass 97 calls; native Access qualification
-  remains unrun. The [fixed GUID/tuple continuation](testing/ACE16_FIXED_TUPLE_INSERTS.md)
+  remains unrun. The [fixed GUID/tuple continuation](../tests/reports/rows/ACE16_FIXED_TUPLE_INSERTS.md)
   now maintains single GUID and up-to-ten-component fixed keys, with complete
   tuple NULL/uniqueness rules and 198-byte bounds. All 171 INSERT functions and
   468 ACE unit functions pass (one generator ignored). Thirty-two original-file
@@ -866,7 +866,7 @@ qualification remain unfinished.
   commands. Ten-component native-file qualification and production saves remain
   unqualified.
 
-The [exact Decimal INSERT index continuation](testing/ACE16_FIXED_TUPLE_INSERTS.md#exact-decimal-index-continuation)
+The [exact Decimal INSERT index continuation](../tests/reports/rows/ACE16_FIXED_TUPLE_INSERTS.md#exact-decimal-index-continuation)
 now maintains single Decimal and Decimal-bearing fixed tuples, retaining each
 field's declared precision/scale. Eight complete-image functions and two separate
 audit controls bring that INSERT checkpoint to 183 passing functions. Forty-eight
@@ -874,7 +874,7 @@ source/request-only images now match first-attempt committed-producer outputs
 before 96 fresh independent getter/map calls pass. The source/reference phase
 passes 289 calls. Normal-save and native Access qualification remain open.
 
-The [Short Text/Binary INSERT continuation](testing/ACE16_VARIABLE_INDEX_INSERTS.md)
+The [Short Text/Binary INSERT continuation](../tests/reports/indexes/ACE16_VARIABLE_INDEX_INSERTS.md)
 now retains non-Copy keys and complete row NULL facts through fitted/root/recursive
 normalization. Five public complete-image functions cover General text, digests,
 reversed tuples and genuine 585-byte Binary bounds; the full ACE library batch
@@ -885,11 +885,11 @@ text/tuple scope and preserved failed/corrective phases are documented separatel
 Binary510/577-byte key file qualification and production write admission remain
 open.
 
-[Inline Memo/OLE INSERT records](testing/ACE16_ORDINARY_INSERTS.md#inline-memoole-continuation)
+[Inline Memo/OLE INSERT records](../tests/reports/rows/ACE16_ORDINARY_INSERTS.md#inline-memoole-continuation)
 now reuse the actual long-value codec through its 64-byte preferred-inline
 profile, with independent descriptor/record reconstruction and complete-image
 controls. That inline checkpoint passed 160 table INSERT/audit functions. External single/chained
-allocation now uses the [shared append state](testing/ACE16_LONG_VALUE_INSERTS.md),
+allocation now uses the [shared append state](../tests/reports/storage/ACE16_LONG_VALUE_INSERTS.md),
 with independently replayed descriptors, column maps and typed reservations.
 Twelve boundary and four composition cases pass, including a LVAL→DATA→INDEX
 suffix and row-width fallback. All 180 table INSERT/audit functions and the full
@@ -898,28 +898,28 @@ with one existing ignored generator). The following LVAL map-growth continuation
 rebases or promotes existing column maps and fills missing indirect pointers
 within their original record capacity, using separately typed bitmap pages and
 independent original-byte replay. Its combined INSERT batch passes 194 functions.
-Explicit zero/zero [column-map initialization](testing/ACE16_LONG_VALUE_INITIALIZATION.md)
+Explicit zero/zero [column-map initialization](../tests/reports/storage/ACE16_LONG_VALUE_INITIALIZATION.md)
 now proves source emptiness, adds typed containers before bodies and independently
 replays exact TD pointer patches. Inline-only requests keep zero pairs untouched.
 The combined INSERT batch passes 212 functions and the full ACE library passes
-548 with one existing ignored generator. The following [missing-declaration continuation](testing/ACE16_MISSING_LONG_VALUE_DECLARATIONS.md)
+548 with one existing ignored generator. The following [missing-declaration continuation](../tests/reports/storage/ACE16_MISSING_LONG_VALUE_DECLARATIONS.md)
 adds certified single-page TD tails and exact header changes, with mixed zero/missing
 bindings, nonzero consumed-spare before-images and an independent complete-image
 audit. Its combined INSERT batch passes 229 functions; the full ACE library passes
 565 with one existing ignored generator. The following
-[GLOBAL INSERT continuation](testing/ACE16_GLOBAL_MAP_INSERT_GROWTH.md) now
+[GLOBAL INSERT continuation](../tests/reports/rows/ACE16_GLOBAL_MAP_INSERT_GROWTH.md) now
 promotes canonical inline storage at the first page 512 allocation, interleaving
 GLOBAL 513 with actual DATA/INDEX/LVAL/container/owned-bitmap IDs and independently
 replaying source identity, frontier retirement and the pinned fill policy.
 Forty complete literal images, 337 mutation functions and the full 580-function
 ACE library pass (one existing ignored generator); seven shared targets pass 49
 tests. Strict ACE Clippy, minimal compilation and formatting pass. The
-[original-file GLOBAL proof](testing/ace16_insert_global_bootstrap/README.md) adds
+[original-file GLOBAL proof](../tests/access/rows/ace16_insert_global_bootstrap/README.md) adds
 four saved EOF 512 source gates, twelve prebuild whole images, 24 public-reference
 calls, twelve exact candidates and twelve fresh typed-row/map reads, all runtime
 phases first attempt. LVAL and inline-DATA crossings preserve original hole bodies
 under the declared frontier-retirement policy; no new INDEX is required here.
-The later [ordinary DATA-owned promotion](testing/ACE16_ORDINARY_OWNED_MAP_PROMOTION.md)
+The later [ordinary DATA-owned promotion](../tests/reports/storage/ACE16_ORDINARY_OWNED_MAP_PROMOTION.md)
 now allocates a distinct block-zero bitmap when an inline membership window no
 longer fits. Four independently constructed literal images, resource/cancellation
 controls and a correlated-purpose refusal pass in the combined 249-function INSERT
@@ -932,7 +932,7 @@ checkpoints do not qualify normal saves or native Access behavior.
 The external-payload profile additionally passes sixteen source/request-only
 complete-image comparisons and sixteen fresh independent typed-row/map reads.
 Its committed producer was rebuilt in a fresh target after a stale shared-cache
-artifact was rejected before execution. The later [original-file growth corpus](testing/ace16_insert_long_value_map_growth/README.md)
+artifact was rejected before execution. The later [original-file growth corpus](../tests/access/storage/ace16_insert_long_value_map_growth/README.md)
 also passes sixteen complete-image comparisons and sixteen fresh combined reads,
 covering rebase/promotion across eight fixed-padding originals. Its 64 LVAL bodies
 and 16 owned bitmap pages retain source references and all old/Padding bytes.
@@ -947,7 +947,7 @@ service with fresh handle identities; 15 session tests and the real confirmation
 regression pass. This closes a concrete host-composition gap without broadening
 normal ACE admission or claiming native shared-file coordination.
 
-The standalone [fresh database constructor](testing/ACE16_DATABASE_CREATION.md)
+The standalone [fresh database constructor](../tests/reports/creation/ACE16_DATABASE_CREATION.md)
 now serializes one ordinary table of ten fixed scalar families into a complete
 nine-page ACE 16 image. Eleven controls and 28 complete-image comparisons pass;
 the shared Access service now publishes typed fixed-scalar inputs through
@@ -956,7 +956,7 @@ unfinished. This does not admit normal saves of existing ACE files.
 
 Major gates still open before the full backend is complete:
 
-- [ ] Remaining [read/query acceptance](testing/READ_QUERY_ACCEPTANCE.md), including full
+- [ ] Remaining [read/query acceptance](../tests/reports/queries/READ_QUERY_ACCEPTANCE.md), including full
   Variant/result promotion, native text semantics and wider native definitions.
 - [ ] Broader ACE 16 validation/preservation and required data-macro safety.
 - [ ] General physical mutation: record growth/allocation, index splits/merges,
@@ -1097,7 +1097,7 @@ explicit resumption, prove a SQLite/form/Python/report workflow across qualified
 platforms,
 real native Access save/reopen plus separately mixed-client writes, and a full
 supported Access-to-native application conversion. Peer evolution follows its
-own convergence/upgrade proofs. [Qualification requirements](testing/PROJECT_COMPATIBILITY.md)
+own convergence/upgrade proofs. [Qualification requirements](../tests/reports/reading/PROJECT_COMPATIBILITY.md)
 replace subjective completeness ratings. Project health, deployment updates and
 actionable recovery precede optional AI or additional scripting languages.
 
@@ -1114,7 +1114,7 @@ MCP tool count. `tablecraft-edit` can begin as a module; no empty package is add
 owned job/changeset handles. Python generation/checking, conversion and Agent
 Activity follow working shared services; P2P agent coordination and built-in AI
 remain later work. Keep `tablecraft-builders`, not the proposal's old design name.
-[Agent acceptance](testing/APPLICATION_SCENARIOS.md) includes stale revisions,
+[Agent acceptance](../tests/reports/reading/APPLICATION_SCENARIOS.md) includes stale revisions,
 approval/content mismatch, permission/version bypass, duplicate calls, cancellation,
 uncertain outcomes, prompt injection and concurrent GUI edits. This remains a
 future application workstream; current implementation focuses on reliable ACE 16
@@ -1162,7 +1162,7 @@ do not label native Access conformance or mixed-client safety established withou
 actual evidence. Required write-safety and native qualification gates remain
 separate from independent read/query checks.
 
-The [ACE 16 engineering preview](testing/ACE16_WRITE_PREVIEWS.md) now supports
+The [ACE 16 engineering preview](../tests/reports/development/ACE16_WRITE_PREVIEWS.md) now supports
 Boolean masks, nine nullable fixed scalar carriers and qualified ordinary/unique non-NULL
 integral index reordering plus eligible indexed Byte, Int16/32/64 and Currency NULL transitions within
 existing pages, independently
@@ -1350,7 +1350,7 @@ Decimal records. See [current implementation](IMPLEMENTATION.md) for scope and
 verification, rather than treating older refusal records as the current API.
 
 
-The [current acceptance checklist](testing/READ_QUERY_ACCEPTANCE.md) separates the working
+The [current acceptance checklist](../tests/reports/queries/READ_QUERY_ACCEPTANCE.md) separates the working
 baseline, remaining priorities and prerequisites for broader writes.
 
 Encrypted local-file reads are implemented for the qualified schemes in
@@ -1460,7 +1460,7 @@ contract retains the primary references, algorithms, provenance and exact limits
    scans. Stable successful arithmetic carriers now flow through derived outputs,
    aggregates, crosstabs and UNION widening; value-dependent arithmetic and broader
    inference remain Dynamic.
-   [Exact floating means](testing/FLOATING_MEANS.md) now avoid intermediate
+   [Exact floating means](../tests/reports/general/FLOATING_MEANS.md) now avoid intermediate
    Double overflow and preserve cancellation residuals under bounded scratch;
    [wider exact Decimal totals](query/aggregates/AVERAGES.md) also retain mixed-scale residuals;
    mixed conversion order and native precision qualification remain.
@@ -1594,7 +1594,7 @@ contract retains the primary references, algorithms, provenance and exact limits
    native Variant/error-order qualification remain unfinished.
 2. Complete and qualify native text behavior. Ordinal and plain LIKE modes remain
    separate from the explicit provisional native General providers below; they
-   do not substitute for database locale/case/accent or character-unit semantics. The [Windows ACE capture recipe](testing/NATIVE_TEXT_ORACLE.md)
+   do not substitute for database locale/case/accent or character-unit semantics. The [Windows ACE capture recipe](../tests/reports/general/NATIVE_TEXT_ORACLE.md)
    now prepares original Short/Long Text comparison probes with a portable
    provenance/completeness checker and an explicit-policy CLI replay report;
    Windows execution/replay remains unrun and no native
@@ -1768,7 +1768,7 @@ contract retains the primary references, algorithms, provenance and exact limits
    indexed snapshots now use the same ownership service with mandatory complete
    counts and row/key validation. Legacy complete/full-check and index-owned/
    mutation map ceilings remain unfinished scale work. See
-   [large-map indexed reads](testing/LARGE_INDEX_SELECTIONS.md).
+   [large-map indexed reads](../tests/reports/indexes/LARGE_INDEX_SELECTIONS.md).
    A separate 100,000-insert history recipe now qualifies 99,110 retained
    sequential rows, added-column NULLs, Memo growth and deleted roots across
    ACE 16/ACE 2007/Jet 4. Explicit query byte/row allowances preserve defaults
@@ -1852,7 +1852,7 @@ Scoped complex child links/scalars, bounded original attachment payloads, stored
 scalar calculations and opaque catalog payload inspection now work. Continue
 complete advanced-field/collection semantics, exact physical index/constraint
 coverage and required data-macro handling before enabling ACE 16 writes. The
-[data-macro evidence dependency](testing/DATA_MACROS.md) now has bounded
+[data-macro evidence dependency](../tests/reports/schema/DATA_MACROS.md) now has bounded
 [table Extra framing inspection](access/schema/NATIVE_TABLE_EXTRA.md), motivated
 by positive desktop-origin ACE 2010 payloads. Positive ACE 16 fixtures, qualified
 absence, required event semantics and native comparisons remain unfinished;
@@ -1891,22 +1891,22 @@ future work.
 
 Continue original minimal fixture recipes and independent-reader comparisons;
 add real Microsoft Access comparisons as the oracle environment becomes available.
-The [application corpus](testing/ACCESS_APPLICATIONS.md) still has one candidate
+The [application corpus](../tests/reports/reading/ACCESS_APPLICATIONS.md) still has one candidate
 and no qualified application open/preserve/edit/save-and-reopen baseline. A Jackcess
 comparison is independent evidence, not Microsoft Access conformance.
 
 ## Nullable allocating batch UPDATE continuation
 
-The separate [one-table Int32 batch service](testing/ACE16_NULLABLE_SPLIT_BATCH_UPDATES.md)
+The separate [one-table Int32 batch service](../tests/reports/indexes/ACE16_NULLABLE_SPLIT_BATCH_UPDATES.md)
 now shares one INDEX append ledger across physical owners, retains qualified
 nullable/IgnoreNULL populations and independently audits original requests,
 history, allocation and byte preservation. Its first API run matches 80 complete
 prefrozen images; 16 fitting comparisons remain exact. Adversarial controls include
 repeated families, request ordering, source ownership and correlated forgeries.
 Four public-builder originals now pass
-[20 complete-image candidate comparisons and 20 fresh independent reads](testing/results/ace16-nullable-split-batch-originals-2026-10-29.json),
+[20 complete-image candidate comparisons and 20 fresh independent reads](../tests/results/indexes/ace16-nullable-split-batch-originals-2026-10-29.json),
 with a separate 40-call public-reference phase. A further
-[multiple-table continuation](testing/ACE16_NULLABLE_SPLIT_BATCH_UPDATES.md#multiple-table-continuation)
+[multiple-table continuation](../tests/reports/indexes/ACE16_NULLABLE_SPLIT_BATCH_UPDATES.md#multiple-table-continuation)
 now passes 96 complete-image comparisons over 48 independently qualified literal
 cases with one shared append ledger and final relationship checks. Wider carriers, contraction,
 broader map/height cases and normal ACE saves remain unfinished. This advances
@@ -1914,7 +1914,7 @@ milestone 4 without completing it or changing the required data-macro gate.
 
 ## Selected forwarded fixed UPDATE continuation
 
-The [explicit fixed/batch service](testing/ACE16_SELECTED_FORWARDED_UPDATES.md)
+The [explicit fixed/batch service](../tests/reports/rows/ACE16_SELECTED_FORWARDED_UPDATES.md)
 now patches qualified final records while retaining logical index ROWs, original
 pointers and physical layout. Shared capture verifies owned targets and exclusive
 logical ownership before callbacks. UPDATE cascades use a separate strict policy,
@@ -1925,7 +1925,7 @@ remain unfinished.
 
 ## Ignored-NULL fixed UPDATE continuation
 
-The [fixed/batch engineering service](testing/ACE16_IGNORED_NULL_UPDATES.md)
+The [fixed/batch engineering service](../tests/reports/rows/ACE16_IGNORED_NULL_UPDATES.md)
 now adds and removes qualified secondary index membership as complete keys become
 represented or entirely NULL. Original-row certification, final tuple constraints,
 physical-alias ownership and checked historical deltas remain mandatory.
@@ -1933,18 +1933,18 @@ Order-dependent history, capacity and empty-subtree transitions refuse; existing
 topology is retained. Forty-four complete literal images pass. Normal editing and
 ACE save gates remain unchanged. The later forwarding continuation corrects the
 transitive cascade-policy leak in the original checkpoint. Its
-[original-file proof](testing/ace16_fixed_ignore_null_updates/README.md) now passes
+[original-file proof](../tests/access/rows/ace16_fixed_ignore_null_updates/README.md) now passes
 16 complete images and 18 exact refusals followed by 16 fresh readers. Broader
 topology changes and native Access qualification remain unfinished.
 
 ## Explicit AutoNumber generation continuation
 
-The [incrementing INSERT engineering preview](testing/ACE16_INCREMENTING_AUTONUMBER_INSERTS.md)
+The [incrementing INSERT engineering preview](../tests/reports/creation/ACE16_INCREMENTING_AUTONUMBER_INSERTS.md)
 now composes caller-selected signed Int32 generation with the ordinary INSERT
 pipeline. The caller pins the original last-issued counter; live-row maxima do
 not replace stored history. Independent request replay checks the counter, keys
 and complete candidate before publication. Ordinary manual INSERT does not gain
-generated-field authority. Its [eight original-file candidates](testing/ace16_incrementing_autonumber/README.md)
+generated-field authority. Its [eight original-file candidates](../tests/access/creation/ace16_incrementing_autonumber/README.md)
 now pass complete source/request byte comparisons and eight fresh independent
 reads after separate public-reference checks. Stored Increment/Random mode detection, broader
 generated fields, normal saves and native Access qualification remain unfinished.
@@ -1964,7 +1964,7 @@ explicit user reprioritization and is excluded from the active sequence.
 | 1 | Native schema metadata | Bounded ACE 16-family metadata, inert saved-query fragments and owned local SELECT reconstruction, scoped complex links/child scalars, bounded typed multivalue/attachment/stored-history collections and mixed read-only browsing pages, explicit stored scalar calculations and original attachment decoding work; remaining collection/query semantics, advanced types and native Access evidence remain |
 | 2 | Constraint validation | Qualified complete native index checks (including ACE 16 Decimal tuples) and one-to-ten-column Boolean/integer/Currency/GUID plus same-precision/scale ACE 16 Decimal FK tuple audits implemented (Boolean membership remains read-only) alongside bounded field/pure-rule audits, including statically Text/NULL Len and explicit binary StrComp; broader FK/expression profiles, collations, other carriers and native Access evidence remain |
 | 3 | Preservation | Complete images, unchanged-byte patch proofs and bounded direct catalog-child inspection implemented; owned children block edits; actual ACE/VBA application save/reopen and full dependency discovery remain unqualified |
-| 4 | Native physical mutation | Qualified normal ACE 16 writes and replay now have the [current implemented profiles](IMPLEMENTATION.md); these do not promote the wider engineering previews below into general save permission. Fixed Int32 replacements and ordinary/unique existing-tree maintenance work on offline Jet 4 copies; ACE 16 previews extend this to integral tuples, NULL transitions, checked foreign indexes and explicit multi-column/table batches within existing pages. Bounded integral/Currency/GUID and same-precision/scale Decimal update cascades now expand original associations across chains/cycles. Existing-width Decimal slot/index previews and ordinary deletion candidates with qualified existing-page contraction and single Short Text/Binary preserved keys are implemented. Explicit multi-table RESTRICT-only deletion batches compose shared retirement bits and validate final membership. A separate engineering service now expands qualified acyclic cross-table Cascade associations over original rows; self/cyclic actions and native SQL timing remain unqualified. A separate existing-width Short Text/Binary UPDATE service now re-encodes single/mixed tuple keys with full final constraints. A separate variable-record service now supports fitted Short Text/Binary changes, hidden-target forwarding, alternate owned-page placement and represented EOF data-page allocation. Ordinary raw Memo/OLE replacement, integral/Currency splits and General Text/Binary splits have separate engineering services and original-file candidate proofs. A combined variable-record/index service now shares one append state and independently certifies DATA/index/bitmap effects; its first six original-file candidates pass complete-image and independent getter proofs. Qualified [ordinary hint/index window transitions](testing/ACE16_ALLOCATION_TRANSITIONS.md) now rebase inline maps or promote them with distinct metadata reservations and independent byte replay; all twelve enlarged-source candidates now pass complete-image and fresh independent getter proofs on the first attempt. A separate [ordinary-row INSERT preview](testing/ACE16_INSERT_PREVIEW.md) now constructs explicit Int32/Short Binary records and required primary-leaf entries with exact positive table/historical counters and independent fitted/EOF proof; four original-file candidates and eight fresh independent getter/map calls pass. A separate [root-leaf growth path](testing/ACE16_INSERT_ROOT_SPLITS.md) now retains a height-one root and adds two leaves under independent DATA/index/map proof; its four complete-image comparisons and eight fresh getter/map calls pass. [Fitted insertion into an existing two-leaf primary](testing/ACE16_INSERT_HEIGHT_ONE.md) now preserves the original inclusive bound and whole root, independently certifies fitting leaf changes, and allocates no index pages; four original-file complete-image comparisons and eight fresh getter/map calls pass, extending the right tail without new pages or map changes. The [one-child overflow checkpoint](testing/ACE16_INSERT_CHILD_SPLITS.md) independently certifies a retained-root two-to-three-leaf INSERT with fitting peer changes; 25 public source/reference calls, four complete-image candidate comparisons and eight fresh independent getter/map calls pass on four eligible right-child sources, with public framing differences recorded separately. [General height-one INSERT](testing/ACE16_INSERT_GENERAL_HEIGHT_ONE.md) now removes per-child-count restrictions and normalizes multiple/repeated leaf overflows when the parent fits; all 25 independent general-profile reference calls, four complete-image producer comparisons and eight distinct fresh getter/map commands pass, with the stopped getter controller and four-call continuation preserved separately. The [recursive INSERT continuation](testing/ACE16_INSERT_RECURSIVE.md) now extends qualified deeper sources, internal splitting and one root growth when the new top fits; 383 ACE unit functions pass (including the 88-function INSERT subset). Four source/request-only images match all four first-attempt committed-producer outputs, and eight fresh getter/map calls pass. Twelve public reference calls succeed separately from the preserved first-three scratch-proof failure and remaining-nine continuation; actual ROWs agree, while leaf rounding and INDEX framing/padding differ. The [ordinary scalar-row continuation](testing/ACE16_ORDINARY_INSERTS.md) now constructs supported fixed scalars and multiple Short Text/Binary fields with actual-primary selection and explicit empty-Text coverage; 108 focused functions and separately recorded wider-schema candidate/readback checks pass; native Access qualification remains unrun. [Multiple physical integral/Currency indexes](testing/ACE16_MULTIPLE_INDEX_INSERTS.md) now share DATA-first allocation, retain represented NULL/duplicate secondary keys or omit qualified secondary NULL keys, and independently certify per-owner trees and historical counters. Qualified fixed GUID/numeric INSERT tuples now have complete-image coverage through ten components; single-GUID/two-component original-file candidates now pass 32 complete-image comparisons and 64 fresh independent getter/map calls, while ten-component file qualification remains pending. General allocation/map growth, broader Memo/OLE profiles and reclamation, other index split profiles, composite deletion, broader relationship actions, self/cyclic DELETE cascades, ON UPDATE SET NULL, broader INSERT and production ACE saves remain unfinished. The separate [atomic DELETE SET NULL continuation](testing/ACE16_SET_NULL_DELETES.md) now composes surviving NULL fields and deleted roots in one original-image index plan; its literal checks do not qualify normal saves. Qualified [downstream UPDATE cascades](testing/ACE16_DELETE_NULL_UPDATE_CASCADES.md) now propagate effective NULL components through checked nullable UNIQUE parents and bounded UPDATE-only cycles; native SQL timing and original-file qualification for those additional paths remain open |
+| 4 | Native physical mutation | Qualified normal ACE 16 writes and replay now have the [current implemented profiles](IMPLEMENTATION.md); these do not promote the wider engineering previews below into general save permission. Fixed Int32 replacements and ordinary/unique existing-tree maintenance work on offline Jet 4 copies; ACE 16 previews extend this to integral tuples, NULL transitions, checked foreign indexes and explicit multi-column/table batches within existing pages. Bounded integral/Currency/GUID and same-precision/scale Decimal update cascades now expand original associations across chains/cycles. Existing-width Decimal slot/index previews and ordinary deletion candidates with qualified existing-page contraction and single Short Text/Binary preserved keys are implemented. Explicit multi-table RESTRICT-only deletion batches compose shared retirement bits and validate final membership. A separate engineering service now expands qualified acyclic cross-table Cascade associations over original rows; self/cyclic actions and native SQL timing remain unqualified. A separate existing-width Short Text/Binary UPDATE service now re-encodes single/mixed tuple keys with full final constraints. A separate variable-record service now supports fitted Short Text/Binary changes, hidden-target forwarding, alternate owned-page placement and represented EOF data-page allocation. Ordinary raw Memo/OLE replacement, integral/Currency splits and General Text/Binary splits have separate engineering services and original-file candidate proofs. A combined variable-record/index service now shares one append state and independently certifies DATA/index/bitmap effects; its first six original-file candidates pass complete-image and independent getter proofs. Qualified [ordinary hint/index window transitions](../tests/reports/storage/ACE16_ALLOCATION_TRANSITIONS.md) now rebase inline maps or promote them with distinct metadata reservations and independent byte replay; all twelve enlarged-source candidates now pass complete-image and fresh independent getter proofs on the first attempt. A separate [ordinary-row INSERT preview](../tests/reports/rows/ACE16_INSERT_PREVIEW.md) now constructs explicit Int32/Short Binary records and required primary-leaf entries with exact positive table/historical counters and independent fitted/EOF proof; four original-file candidates and eight fresh independent getter/map calls pass. A separate [root-leaf growth path](../tests/reports/indexes/ACE16_INSERT_ROOT_SPLITS.md) now retains a height-one root and adds two leaves under independent DATA/index/map proof; its four complete-image comparisons and eight fresh getter/map calls pass. [Fitted insertion into an existing two-leaf primary](../tests/reports/indexes/ACE16_INSERT_HEIGHT_ONE.md) now preserves the original inclusive bound and whole root, independently certifies fitting leaf changes, and allocates no index pages; four original-file complete-image comparisons and eight fresh getter/map calls pass, extending the right tail without new pages or map changes. The [one-child overflow checkpoint](../tests/reports/indexes/ACE16_INSERT_CHILD_SPLITS.md) independently certifies a retained-root two-to-three-leaf INSERT with fitting peer changes; 25 public source/reference calls, four complete-image candidate comparisons and eight fresh independent getter/map calls pass on four eligible right-child sources, with public framing differences recorded separately. [General height-one INSERT](../tests/reports/indexes/ACE16_INSERT_GENERAL_HEIGHT_ONE.md) now removes per-child-count restrictions and normalizes multiple/repeated leaf overflows when the parent fits; all 25 independent general-profile reference calls, four complete-image producer comparisons and eight distinct fresh getter/map commands pass, with the stopped getter controller and four-call continuation preserved separately. The [recursive INSERT continuation](../tests/reports/rows/ACE16_INSERT_RECURSIVE.md) now extends qualified deeper sources, internal splitting and one root growth when the new top fits; 383 ACE unit functions pass (including the 88-function INSERT subset). Four source/request-only images match all four first-attempt committed-producer outputs, and eight fresh getter/map calls pass. Twelve public reference calls succeed separately from the preserved first-three scratch-proof failure and remaining-nine continuation; actual ROWs agree, while leaf rounding and INDEX framing/padding differ. The [ordinary scalar-row continuation](../tests/reports/rows/ACE16_ORDINARY_INSERTS.md) now constructs supported fixed scalars and multiple Short Text/Binary fields with actual-primary selection and explicit empty-Text coverage; 108 focused functions and separately recorded wider-schema candidate/readback checks pass; native Access qualification remains unrun. [Multiple physical integral/Currency indexes](../tests/reports/indexes/ACE16_MULTIPLE_INDEX_INSERTS.md) now share DATA-first allocation, retain represented NULL/duplicate secondary keys or omit qualified secondary NULL keys, and independently certify per-owner trees and historical counters. Qualified fixed GUID/numeric INSERT tuples now have complete-image coverage through ten components; single-GUID/two-component original-file candidates now pass 32 complete-image comparisons and 64 fresh independent getter/map calls, while ten-component file qualification remains pending. General allocation/map growth, broader Memo/OLE profiles and reclamation, other index split profiles, composite deletion, broader relationship actions, self/cyclic DELETE cascades, ON UPDATE SET NULL, broader INSERT and production ACE saves remain unfinished. The separate [atomic DELETE SET NULL continuation](../tests/reports/rows/ACE16_SET_NULL_DELETES.md) now composes surviving NULL fields and deleted roots in one original-image index plan; its literal checks do not qualify normal saves. Qualified [downstream UPDATE cascades](../tests/reports/rows/ACE16_DELETE_NULL_UPDATE_CASCADES.md) now propagate effective NULL components through checked nullable UNIQUE parents and bounded UPDATE-only cycles; native SQL timing and original-file qualification for those additional paths remain open |
 | 5 | Native transactions and recovery | Optional validated image journal integration and local fault/reopen tests implemented; native Access/power-loss/network-filesystem qualification remains |
 | 6 | Backend-neutral database contracts | Shared snapshots and consuming edits implemented with an Access consumer; connection/cursor/runtime APIs remain separate |
 | 7 | Query completion for editing | Bounded single-table UPDATE copies and qualified normal INSERT/UPDATE/DELETE use shared retained sessions and journal services with original-row SET semantics. [Wider numeric index updates](access/writes/NORMAL_WIDE_INDEX_UPDATE.md), [inline Memo/OLE updates](access/writes/NORMAL_INLINE_LONG_UPDATE.md), [native Increment insertion](access/writes/NORMAL_INCREMENTING_AUTONUMBER.md) and [captured Date/Now defaults](access/writes/NORMAL_CLOCK_DEFAULTS.md) now have connected native/recovery/session/CLI acceptance. General target/index/relationship and expression coverage, collations, query result-set updateability and native SQL timing remain explicit gaps |

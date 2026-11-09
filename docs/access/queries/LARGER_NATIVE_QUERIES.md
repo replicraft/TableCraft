@@ -82,7 +82,7 @@ then fetch referenced rows in internal 256-row groups, each with the existing
 boundaries; failures are not retried and no result is published until completion.
 The single current-page buffer may survive a boundary; root/row/hidden-key checks
 still apply to every returned record. Legacy index APIs retain their original
-operation-wide read quota. [Scattered modern histories](../../testing/MODERN_SCALAR_HISTORIES.md)
+operation-wide read quota. [Scattered modern histories](../../../tests/reports/rows/MODERN_SCALAR_HISTORIES.md)
 exposed and now exercise this distinction. This is not streaming index execution.
 Independent 20,000-row indexed comparisons now cover the profiles below; the accepted ceiling is not
 evidence that all tables up to 1,000,000 rows can be read.
@@ -106,8 +106,8 @@ cover checked bounds, advanced/failed cursor refusal, scalar projections, count
 mismatches, every observed cancellation checkpoint, metadata-only binding,
 reentrant complete caches, repeated late failures and indexed retention caps.
 
-[compare_large_queries.py](../../testing/compare_large_queries.py) passes 44 controls on
-unchanged registered [20,000-row inputs](../../testing/FIXTURES.md#original-progressive-row-inputs).
+[compare_large_queries.py](../../../tests/access/reading/tables/compare_large_queries.py) passes 44 controls on
+unchanged registered [20,000-row inputs](../../../tests/reports/reading/FIXTURES.md#original-progressive-row-inputs).
 Read-only Jackcess getters supply ID rows; Python independently derives counts,
 min/max, descending TOP, filters, parity groups, nested counts and UNION results.
 Default snapshot/work refusals, non-refilling native row budgets, large output and
@@ -116,7 +116,7 @@ are independent stored-value/query-model controls, not native Access SQL, optimi
 locale, locking or save/reopen qualification. Windows comparisons remain unrun.
 
 ```sh
-python3 docs/testing/compare_large_queries.py \
+python3 tests/run.py tests/access/reading/tables/compare_large_queries.py \
   --jar path/to/reviewed/jackcess-5.0.4.jar --cli target/debug/tablecraft \
   --directory path/to/registered-stream-inputs
 ```
@@ -129,7 +129,7 @@ GUID and adapter Int64/retention tests cover unchanged key and cache boundaries.
 
 ## Larger indexed evidence
 
-[compare_large_indexes.py](../../testing/compare_large_indexes.py) passes 288 controls
+[compare_large_indexes.py](../../../tests/access/indexes/native/compare_large_indexes.py) passes 288 controls
 on four original 20,000-row files: Jet 4, ACE 2007, ACE 2016 and ACE 2019. Each
 file has seventeen indexes; the ACE 16-family files add a Large Number index.
 Read-only Jackcess cursor/getter order supplies expected IDs, while Python checks
@@ -148,7 +148,7 @@ indexes and eager expression failures retain empty stdout. Original hashes are
 verified before and after reads. Synthetic Rust 20,000-row trees additionally
 cover full/projected/zero-width values, both directions across four priority
 headers, exact ceilings, unchanged legacy API refusal and selected hidden-key
-corruption. [Provenance](../../testing/FIXTURES.md#original-large-index-inputs) records generation
+corruption. [Provenance](../../../tests/reports/reading/FIXTURES.md#original-large-index-inputs) records generation
 and hashes; no generated database is tracked.
 
 These inputs establish the measured 20,000-row profile, not arbitrary key
@@ -157,7 +157,7 @@ widely scattered keys can still exceed them. This is neither a performance claim
 nor native Access SQL, locale, concurrent-read or save/reopen qualification.
 
 ```sh
-python3 docs/testing/compare_large_indexes.py \
+python3 tests/run.py tests/access/indexes/native/compare_large_indexes.py \
   --jar path/to/reviewed/jackcess-5.0.4.jar --cli target/debug/tablecraft \
   --directory path/to/registered-large-index-inputs
 ```
@@ -176,11 +176,11 @@ shared query allocation pool. See [larger payloads](../storage/LARGE_PAYLOADS.md
 
 ## Larger scalar histories (23 October 2026)
 
-The original [scale/history recipe](../../testing/ScaleHistoryFixture.java) performs
+The original [scale/history recipe](../../../tests/access/reading/tables/ScaleHistoryFixture.java) performs
 100,000 inserts in scattered key order, adds a nullable Long column halfway
 through, grows selected Memo values, deletes every 101st original identity and
 appends 100 rows. Each ACE 16, ACE 2007 and Jet 4 input retains 99,110 rows.
-The [independent runner](../../testing/compare_scale_histories.py) checks every stored
+The [independent runner](../../../tests/access/reading/tables/compare_scale_histories.py) checks every stored
 field against a separate Python model and read-only Jackcess getters. Twenty-four
 CLI controls verify aggregates, Unicode Memo lengths, sorting, deleted identities,
 complete streamed values and distinct default native/query byte/row refusals.
@@ -194,13 +194,13 @@ tablecraft query run 'SELECT Count(*),Sum(ID),Count(Later) FROM ScaleRows' \
   --execution-rows 1000000 --execution-steps 100000000
 ```
 
-Registered sizes/hashes and reproduction are in [FIXTURES.md](../../testing/FIXTURES.md#larger-scalar-history-inputs).
+Registered sizes/hashes and reproduction are in [FIXTURES.md](../../../tests/reports/reading/FIXTURES.md#larger-scalar-history-inputs).
 Originals remain unchanged. This establishes those sequential histories, not
 arbitrary million-row, collection/index, native Access SQL or live-file coverage.
 
 ## Mixed scalar storage histories
 
-A separate [original corpus](../../testing/MIXED_SCALAR_HISTORIES.md) now checks 19,902
+A separate [original corpus](../../../tests/reports/rows/MIXED_SCALAR_HISTORIES.md) now checks 19,902
 retained rows per ACE 16, ACE 2007 and Jet 4 file across shared scalar types.
 Schema extension crosses the sixteen-field null-mask boundary; updates grow
 Memo/OLE values and populate previously absent late fields. Forty-five controls

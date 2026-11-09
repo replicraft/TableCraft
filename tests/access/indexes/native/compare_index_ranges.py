@@ -27,7 +27,7 @@ def main():
     for format, path in [(args.ace_label, args.ace), (args.jet_label, args.jet)]:
         for index, column in [("PrimaryKey", 0), ("CategoryDesc", 1)]:
             reference = subprocess.check_output([
-                "java", "-cp", str(args.jar), "docs/testing/IndexRowsOracle.java", str(path),
+                "java", "-cp", str(args.jar), "tests/access/indexes/native/IndexRowsOracle.java", str(path),
                 "Indexed", index, "ID", "Category",
             ], text=True).splitlines()
             for name, selection, predicate in cases:

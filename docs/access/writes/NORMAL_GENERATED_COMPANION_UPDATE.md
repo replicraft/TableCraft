@@ -54,7 +54,7 @@ rollback may rewrite an intact BEFORE image.
 
 ## Observed evidence
 
-The [source qualification](../../testing/ACE16_GENERATED_COMPANION_UPDATE_SOURCES.md)
+The [source qualification](../../../tests/reports/rows/ACE16_GENERATED_COMPANION_UPDATE_SOURCES.md)
 preceded matching writes: twelve views and thirty inert SDK reports passed with
 unchanged independent image expectations. Sixteen principal request cases have
 eighteen ordered batch contexts; reverse order is tested only for the two actual
@@ -73,7 +73,7 @@ formatting also pass on their first matching attempts.
 Shared testkit machinery owns image pins, literal requests and TCNI4 framing;
 independent literal image oracles remain separate from production encoding. The
 framing helper has both the earlier Marker fixture and this fixture as actual
-consumers. See the [write result](../../testing/results/ace16-generated-companion-updates-2026-11-02.json)
+consumers. See the [write result](../../../tests/results/rows/ace16-generated-companion-updates-2026-11-02.json)
 for receipt pins, verification scope and counts.
 
 These are TableCraft engine, adapter and CLI save observations with independent

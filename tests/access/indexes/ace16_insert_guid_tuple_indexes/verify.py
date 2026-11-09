@@ -6,10 +6,10 @@ from pathlib import Path
 import sys
 from uuid import UUID
 
-ROOT = Path(__file__).resolve().parents[3]
+ROOT = Path(__file__).resolve().parents[4]
 sys.dont_write_bytecode = True
 sys.path.insert(0, str(ROOT))
-sys.path.insert(0, str(ROOT / 'docs/testing'))
+sys.path.insert(0, str(ROOT / 'tests/access'))
 from scripts.compat_artifacts import ArtifactStore
 from ace16_insert_multiple_indexes.verify_candidates import Pins, command_report, git_archive
 from ace16_insert_guid_tuple_indexes import model, reference, recipes, stderr_policy
@@ -21,7 +21,7 @@ NATIVE = '.cache/ace16-guid-tuple-index-insert-candidates-next-20261028'
 NATIVE_WORK = '.cache/ace16-guid-tuple-index-insert-candidates-first-20261028'
 GETTERS = '.cache/ace16-guid-tuple-index-insert-getters-next-20261028'
 GETTER_WORK = '.cache/ace16-guid-tuple-index-insert-getters-first-20261028'
-PUBLIC = 'docs/testing/ace16_insert_guid_tuple_indexes'
+PUBLIC = 'tests/access/indexes/ace16_insert_guid_tuple_indexes'
 NOTICE = b'Engineering candidate: data-macro semantics and native Access qualification pending.\n'
 FIXED = {
     SOURCE + '/controller-freeze.json': '7be0b815e18d4d082d92b151cb99939dc151df9264cf575b50d9b9951f128b21',

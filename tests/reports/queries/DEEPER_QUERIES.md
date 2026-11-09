@@ -1,7 +1,7 @@
 # Deeper compound-query replay
 
-The [explicit binding-depth implementation](../query/QUERY_BINDING_LIMITS.md) is exercised
-by the original [replay runner](compare_deeper_queries.py) over literal constructors
+The [explicit binding-depth implementation](../../../docs/query/QUERY_BINDING_LIMITS.md) is exercised
+by the original [replay runner](../../access/reading/tables/compare_deeper_queries.py) over literal constructors
 and unchanged native stored fields. Only TableCraft executes SQL; exact Python
 Fraction/IEEE relations and independent Jackcess getters supply expected values.
 This is engineering composition evidence, not native Access semantics.
@@ -22,7 +22,7 @@ stored values come from the unchanged native fields. The model reconstructs
 Single transport at binary32 precision before comparison and never rounds fixed
 coefficients through Double. No source rows or database bytes are modified.
 
-The [machine-readable report](results/deeper-query-replay-2026-10-25.json) records
+The [machine-readable report](../../results/queries/deeper-query-replay-2026-10-25.json) records
 the observations, default refusals, getter transcript hashes, executable/tool/input
 pins and selected committed source hashes. Selected source snapshots are not an
 exhaustive compilation manifest. Private diagnostic attempts remain identified

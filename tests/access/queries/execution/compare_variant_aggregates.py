@@ -3,6 +3,7 @@
 List endpoints model selection; native getters provide source encounter IDs.
 No Microsoft Access aggregate/Variant evaluation is performed.
 """
+from engineering_paths import reference_file
 
 import argparse
 import hashlib
@@ -51,7 +52,7 @@ def main():
         assert hashlib.sha256(args.jar.read_bytes()).hexdigest() == JAR_SHA256
     for database in args.database:
         before = hashlib.sha256(database.read_bytes()).hexdigest()
-        tagged = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar, RECIPES / "TableDataOracle.java", database, "ScalarSamples")
+        tagged = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar, reference_file('tests/access/reading/tables/TableDataOracle.java'), database, "ScalarSamples")
         identities = [int(line.split("\t")[1].removeprefix("I32:")) for line in tagged.splitlines()]
         first, last = identities[0], identities[-1]
         sql = f"SELECT First(CVErr(ID)),Last(CVErr(ID)),DFirst('CVErr(ID)','ScalarSamples'),DLast('CVErr(ID)','ScalarSamples'),DLookup('CVErr(ID)','ScalarSamples','ID={first}'),IsError(First(CVErr(ID))) FROM ScalarSamples"

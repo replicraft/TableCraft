@@ -5,7 +5,7 @@ unchanged V2016/V2019 originals from the
 [eight-byte scalar corpus](../preserved_fixed_scalars_genuine/README.md).
 It reuses that creation recipe, pinned Jackcess 5.0.4 runtime, compiled classes
 and read-only getter. Generated databases, classes, JARs and raw execution logs
-remain private; the [result record](../results/ace16-preserved-joint-fixed-genuine-images-2026-10-31.json)
+remain private; the [result record](../../../results/rows/ace16-preserved-joint-fixed-genuine-images-2026-10-31.json)
 pins their identities. These are independent-reader observations, not Microsoft
 Access save/reopen qualification.
 
@@ -46,7 +46,7 @@ With the pinned private artifacts restored in their recorded repository-relative
 locations, run:
 
 ```sh
-python3 docs/testing/preserved_joint_fixed_genuine/verify.py --root .
+python3 tests/run.py tests/access/rows/preserved_joint_fixed_genuine/verify.py --root .
 ```
 
 The saved-only verifier launches no build, JVM, database writer or reader. It

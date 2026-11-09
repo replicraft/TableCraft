@@ -3,6 +3,7 @@
 Calendar day/fraction tuples and Decimal raw serials are distinct models.
 Only TableCraft executes SQL; native Access qualification remains pending.
 """
+from engineering_paths import reference_file
 import argparse
 import csv
 from decimal import Decimal
@@ -81,7 +82,7 @@ def main():
         assert hashlib.sha256(before).hexdigest() == digest
         output = subprocess.check_output([
             "java", "-Dstdout.encoding=UTF-8", "-cp", str(args.jar),
-            str(RECIPES / "TableDataOracle.java"), str(path), "--date-bits", "IndexedRows",
+            str(reference_file('tests/access/reading/tables/TableDataOracle.java')), str(path), "--date-bits", "IndexedRows",
         ], text=True, encoding="utf-8")
         records = [line.split("\t") for line in output.splitlines()]
         assert len(records) == 20000

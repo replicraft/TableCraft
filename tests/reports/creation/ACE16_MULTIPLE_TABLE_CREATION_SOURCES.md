@@ -30,7 +30,7 @@ complete files and matches the entire ordered inventories, exact values and raw
 record references. Source and reader templates remain distinct from producer
 outputs; earlier single-table evidence is unchanged.
 
-The [source record](results/ace16-multiple-table-creation-source-2026-10-31.json)
+The [source record](../../results/creation/ace16-multiple-table-creation-source-2026-10-31.json)
 pins complete hashes, source/observer inputs and separate validation phases.
 These are repository-authored fixtures under the repository license. This phase
 does not implement multiple-table creation, qualify native Access saves or grant

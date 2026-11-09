@@ -50,7 +50,7 @@ application copies. Compare Access query row expansion/criteria, DAO children,
 attachment hashes, history and metadata before/after supported edits and reopen.
 Test malformed children, size limits, failed updates and preservation during
 unrelated edits. No advanced-field compatibility is qualified today; record
-results in the [application corpus](../testing/ACCESS_APPLICATIONS.md).
+results in the [application corpus](../../tests/reports/reading/ACCESS_APPLICATIONS.md).
 
 ## References
 
@@ -78,10 +78,10 @@ CLI: `tablecraft inspect COPY.accdb --table NAME --features`. Results are buffer
 malformed typed declarations return no partial stdout. Ordinary scalar reads
 continue rejecting calculated/complex layouts, including empty tables.
 
-The original [advanced fixture](../testing/AdvancedFieldFixture.java) generates
+The original [advanced fixture](../../tests/access/schema/fields/AdvancedFieldFixture.java) generates
 V2016/V2019 calculated, multivalue, attachment, append-only/history, rich-text,
 hyperlink and input-mask declarations. Each has ten columns including the hidden
-history field. [Independent comparison](../testing/compare_advanced_fields.py)
+history field. [Independent comparison](../../tests/access/schema/fields/compare_advanced_fields.py)
 matches all exposed semantic declarations, compares complex presence and verifies
 three distinct raw type IDs. Exact numeric IDs have separate synthetic golden
 coverage; the independent public API does not expose their raw numbers. The
@@ -126,10 +126,10 @@ extra bits, different types/widths and older unqualified profiles remain rejecte
 Parent complex fields (0x12) remain outside scalar Value, preventing accidental
 flattening of whole collections into an integer or delimited string.
 
-[ComplexRowsFixture.java](../testing/ComplexRowsFixture.java) generates three
+[ComplexRowsFixture.java](../../tests/access/reading/tables/ComplexRowsFixture.java) generates three
 multivalue, three attachment-storage and three version-history rows per family,
 with Unicode, empty values, fixed timestamps and a parent with empty collections.
-[Exact raw comparison](../testing/compare_complex_rows.py) matches all eighteen
+[Exact raw comparison](../../tests/access/reading/tables/compare_complex_rows.py) matches all eighteen
 child rows across the two families through the native library and CLI query count.
 It preserves the encoded attachment FileData bytes as opaque Binary; this is not
 file extraction/decompression or proof of parent collection/query `.Value`
@@ -157,10 +157,10 @@ stored-scalar profile below extends explicit inspection; historical layouts
 remain unqualified. Shared record geometry, owned-page/count
 checks, fallible allocation, budgets and cancellation still apply.
 
-The original [stored-calculation recipe](../testing/CalculatedStorageFixture.java)
+The original [stored-calculation recipe](../../tests/access/reading/tables/CalculatedStorageFixture.java)
 explicitly disables expression evaluation and writes known caches, including a
 deliberately stale result, NULL and Int32 extremes. The
-[comparison runner](../testing/compare_calculated_storage.py) matches seven exact
+[comparison runner](../../tests/access/reading/tables/compare_calculated_storage.py) matches seven exact
 stored results and an empty table per family, rejects ordinary query reads and
 three unknown/malformed disposable copies/profile, and verifies unchanged original
 hashes. Synthetic CI tests also cover matching declarations, profile/width/flag
@@ -228,16 +228,16 @@ MEMO long-value storage before unwrapping and decoding the cached Text.
 observed Numeric wrapper separately, with self-described effective scale and
 strict geometry independent of ordinary Decimal declarations.
 
-The original [mixed scalar recipe](../testing/CalculatedScalarFixture.java)
+The original [mixed scalar recipe](../../tests/access/reading/tables/CalculatedScalarFixture.java)
 explicitly disables evaluation and creates six stored projections plus empty
-declarations in each family. [Independent comparisons](../testing/compare_calculated_scalars.py)
+declarations in each family. [Independent comparisons](../../tests/access/reading/tables/compare_calculated_scalars.py)
 match 30 cells/profile, compressed/uncompressed Unicode and empty Text, Boolean
 NULL/false, signed-zero/subnormal/maximum Double, full-range Currency and dates.
-The original [date-bit oracle](../testing/StoredDateBitsOracle.java) uses the
+The original [date-bit oracle](../../tests/access/queries/expressions/StoredDateBitsOracle.java) uses the
 reviewed artifact's Date carrier and in-memory `ColumnImpl.write` serialization
 to retain serial bits, with strict calculated-wrapper validation. `toDateDouble`
 can round through milliseconds and is no longer used as a bit oracle. Independent
-[ordinary/cached precision probes](../testing/compare_date_bits.py) now cover signed
+[ordinary/cached precision probes](../../tests/access/queries/expressions/compare_date_bits.py) now cover signed
 zero, negative aliases, subnormals and sub-millisecond dates. For example the cached serial
 renders 03:04:05.000000065 through TableCraft while Jackcess's calendar renderer
 reports milliseconds. This is an explicit precision-policy difference, not native
@@ -270,7 +270,7 @@ scopes; every child FK must bind a parent in the selected column. Typed
 duplicate child identities and NULL child references. Other layouts/values remain
 unsupported. No partial storage view is published on failure.
 
-The [signed-identity replay](../testing/SIGNED_COMPLEX_IDENTITIES.md) compares
+The [signed-identity replay](../../tests/reports/general/SIGNED_COMPLEX_IDENTITIES.md) compares
 reopened typed multivalue, attachment and history getters against complete native
 views. Stored -1/zero identities remain present data; reference insertion helper
 sentinels do not become NULL or missing children. Parent/reference positivity is
@@ -283,9 +283,9 @@ sorting/search work and cancellation. Flat index trees, `.Value` query expansion
 Access attachment/history semantics, child mutations and native saves remain
 separate work. This view is not a write authorization or database integrity claim.
 
-The existing [complex recipe](../testing/ComplexRowsFixture.java) now has a read-only
+The existing [complex recipe](../../tests/access/reading/tables/ComplexRowsFixture.java) now has a read-only
 `--links` oracle using its public key/count APIs. The
-[comparison runner](../testing/compare_complex_links.py) matches nine scoped parent
+[comparison runner](../../tests/access/reading/tables/compare_complex_links.py) matches nine scoped parent
 links per family across multivalue/attachment/history columns, including empty
 memberships. Twelve corrupted disposable copies/profile check missing/duplicate/
 NULL references with no partial stdout. Existing raw child-row comparisons remain
@@ -319,10 +319,10 @@ logical codec workspace is charged; upstream internal allocations are not
 intercepted. Other encodings, large streaming files and attachment mutation remain
 unimplemented. File extraction/publication policy belongs to a future host.
 
-The original [attachment recipe](../testing/AttachmentFixture.java) generates
+The original [attachment recipe](../../tests/access/reading/tables/AttachmentFixture.java) generates
 fresh V2016/V2019 files with both wrapper modes, an empty file, all byte values,
 Unicode bytes, inert PNG/ZIP signature bytes, a 64 KiB compressible file and an
-empty parent. [Independent comparison](../testing/compare_attachments.py) matches
+empty parent. [Independent comparison](../../tests/access/reading/tables/compare_attachments.py) matches
 six original files/type labels per family through Jackcess's public decoder and
 the `attachment_data` engineering example; original input hashes remain unchanged.
 CI tests add an independent Python-zlib golden, truncation/checksum/metadata/
@@ -333,7 +333,7 @@ References: the reviewed Jackcess 5.0.4 AttachmentColumnInfoImpl artifact,
 [its source reference](https://github.com/jahlborn/jackcess/blob/be0a2139b087a227d14cafd4ea231306a5a3a862/src/main/java/com/healthmarketscience/jackcess/impl/complex/AttachmentColumnInfoImpl.java),
 and the [flate2 streaming API](https://docs.rs/flate2/1.1.10/flate2/struct.Decompress.html).
 No upstream implementation was copied. [Dependency records](../development/DEPENDENCIES.md#native-attachment-compression)
-and [native benchmarks](../testing/NATIVE_BENCHMARKS.md) own adoption/measurement.
+and [native benchmarks](../../tests/reports/general/NATIVE_BENCHMARKS.md) own adoption/measurement.
 
 ## Bounded stored multivalue collections
 
@@ -364,25 +364,25 @@ hint with matching qualified child metadata. It does not introduce a nine-byte
 record decoder or relax the ordinary Decimal scalar profile. Unknown hints,
 nonempty conceptual templates and incompatible children fail explicitly.
 
-ACE 2007 now has independent [raw-link and exact-collection evidence](../testing/FIXTURES.md#ace-2007-complex-key-and-multivalue-inputs),
+ACE 2007 now has independent [raw-link and exact-collection evidence](../../tests/reports/reading/FIXTURES.md#ace-2007-complex-key-and-multivalue-inputs),
 including the same conceptual hint and fixed Int32 child foreign-key layout.
-Typed attachments/history now have separate [ACE 2007 qualification evidence](../testing/FIXTURES.md#ace-2007-stored-attachment-and-history-inputs); cached
+Typed attachments/history now have separate [ACE 2007 qualification evidence](../../tests/reports/reading/FIXTURES.md#ace-2007-stored-attachment-and-history-inputs); cached
 calculations retain their ACE 16 gates. The raw primitive by itself does not
 qualify additional semantics.
 Ordinary nine-byte Decimal storage, Large Number fields and `.Value` SQL semantics
 are not inferred from successful legacy collection reads.
 
-The original [recipe](../testing/MultivalueFixture.java) supplies eight native
+The original [recipe](../../tests/access/reading/tables/MultivalueFixture.java) supplies eight native
 scalar collection types, exact signed/subnormal/non-finite IEEE bits, GUIDs,
 Decimal neighbors beyond f64 precision, Unicode/control text, duplicates, stored
 NULLs, empty parents, 100-item and separate 101-item controls. Inert row-source
 properties meet the reference builder's requirements; no lookup is executed.
-[The read-only oracle](../testing/MultivalueOracle.java) uses public collection
+[The read-only oracle](../../tests/access/reading/tables/MultivalueOracle.java) uses public collection
 retrieval and exported implementation metadata with expression evaluation disabled.
-[Comparison](../testing/compare_multivalues.py) matches 32 parent collections and
+[Comparison](../../tests/access/reading/tables/compare_multivalues.py) matches 32 parent collections and
 137 stored values per V2016/V2019 family, rejects 12 corrupt disposable copies
 without output, and rechecks the earlier Text/attachment/history inputs. Original
-hashes remain unchanged and recorded in [provenance](../testing/FIXTURES.md#original-ace-16-multivalue-collection-inputs).
+hashes remain unchanged and recorded in [provenance](../../tests/reports/reading/FIXTURES.md#original-ace-16-multivalue-collection-inputs).
 
 Seven CI tests add exact Large Number collections, typed template/profile guards,
 strict Decimal hints, 100/101 boundaries, immutable source bytes, resource/
@@ -396,7 +396,7 @@ and application save/reopen remain unqualified. All ACE writes remain blocked.
 ```sh
 java -cp path/to/jackcess-5.0.4.jar docs/testing/MultivalueFixture.java new-2016.accdb V2016
 java -cp path/to/jackcess-5.0.4.jar docs/testing/MultivalueFixture.java new-2019.accdb V2019
-python3 docs/testing/compare_multivalues.py --jar path/to/jackcess-5.0.4.jar \
+python3 tests/run.py tests/access/reading/tables/compare_multivalues.py --jar path/to/jackcess-5.0.4.jar \
   --cli target/release/tablecraft --rows target/release/examples/table_data \
   --ace2016 new-2016.accdb --ace2019 new-2019.accdb \
   --complex2016 complex-2016.accdb --complex2019 complex-2019.accdb
@@ -428,17 +428,17 @@ remain distinct. Metadata inspection does not validate or inflate the wrapper.
 Stored FileType and the wrapper's decoded type label remain separate. No string
 becomes a filesystem destination or resolved URL, and no file content executes.
 
-The existing [attachment recipe](../testing/AttachmentFixture.java) now has a
+The existing [attachment recipe](../../tests/access/reading/tables/AttachmentFixture.java) now has a
 read-only `--metadata` oracle using exported native metadata/public attachment
 accessors. Its ordinary DATE writer retains exact timestamp serial bits with
 UTC/DateExt settings and expression evaluation disabled; it never writes the
-database. [The comparison](../testing/compare_attachment_columns.py) matches all
+database. [The comparison](../../tests/access/schema/fields/compare_attachment_columns.py) matches all
 six original metadata/payload records per V2016/V2019 family. Six disposable
 mutations cover all-NULL metadata, late missing payload/checksum failure, unknown
 template flags/names and orphan references. Valid NULL/corrupt-wrapper metadata
 still matches the independent getter; explicit decoding fails without stdout,
 including after earlier files were decoded. Other collection types are rejected.
-Original hashes remain unchanged in [provenance](../testing/FIXTURES.md#original-ace-16-attachment-payload-fixtures).
+Original hashes remain unchanged in [provenance](../../tests/reports/reading/FIXTURES.md#original-ace-16-attachment-payload-fixtures).
 Both typed collection comparisons discover the generated hidden version-history
 column through resolved declarations and reject that actual collection as well
 as the visible ordinary Notes Memo field; the two are not interchangeable.
@@ -456,7 +456,7 @@ they do not qualify native SQL FileData representation.
 All ACE writes stay blocked.
 
 ```sh
-python3 docs/testing/compare_attachment_columns.py --jar path/to/jackcess-5.0.4.jar \
+python3 tests/run.py tests/access/schema/fields/compare_attachment_columns.py --jar path/to/jackcess-5.0.4.jar \
   --cli target/release/tablecraft --example target/release/examples/attachment_data \
   --ace2016 attachments-2016.accdb --ace2019 attachments-2019.accdb \
   --complex2016 complex-2016.accdb --complex2019 complex-2019.accdb
@@ -489,23 +489,23 @@ publication. Earlier multivalue/attachment/link readers use the same checked pat
 The reviewed Jackcess 5.0.4 [history implementation](https://github.com/jahlborn/jackcess/blob/be0a2139b087a227d14cafd4ea231306a5a3a862/src/main/java/com/healthmarketscience/jackcess/impl/complex/VersionHistoryColumnInfoImpl.java) binds its value-field
 name to the visible Memo. Its public history API sorts by modified time and then
 descending child identity for ties; that reference observation is separate from
-this deliberately stored-order view. [The original recipe](../testing/VersionHistoryFixture.java)
+this deliberately stored-order view. [The original recipe](../../tests/access/reading/tables/VersionHistoryFixture.java)
 uses two tables to exercise Notes/Details bindings and independently scoped keys.
 The reviewed builder permits only one append-only Memo per table; that generator
 restriction is not a Microsoft Access compatibility claim. Explicit DateExt/Date
 overloads preserve signed zero, subnormal, negative-alias, sub-millisecond and
 calendar-endpoint DATE bits. No lookup, formula or application content executes.
 
-[The read-only oracle](../testing/VersionHistoryOracle.java) iterates flat storage
+[The read-only oracle](../../tests/access/reading/tables/VersionHistoryOracle.java) iterates flat storage
 and separately exposes public API order, with expression evaluation disabled.
-[Comparison](../testing/compare_version_history.py) matches six parent collections/
+[Comparison](../../tests/access/reading/tables/compare_version_history.py) matches six parent collections/
 18 versions per V2016/V2019 family, all 13 literal DATE bit probes, empty/Unicode/
 NUL text and nullable values/times. Public API membership matches; a separate
 equal-time control observes its reversed identity order without assigning that
 policy to TableCraft. Six corrupt disposable copies fail without stdout for
 reference, template, hidden-marker and Memo-name binding violations. An additional
 NULL timestamp mutation still matches raw reference storage. Original populated
-history controls and hashes remain unchanged in [provenance](../testing/FIXTURES.md#original-ace-16-stored-version-history-inputs).
+history controls and hashes remain unchanged in [provenance](../../tests/reports/reading/FIXTURES.md#original-ace-16-stored-version-history-inputs).
 
 Five CI tests add strict source/profile/template guards, template reordering,
 NULL parent references, orphan rejection, exact representation/storage order,
@@ -523,7 +523,7 @@ remain unqualified. All ACE writes stay blocked.
 ```sh
 java -Dfile.encoding=UTF-8 -cp path/to/jackcess-5.0.4.jar docs/testing/VersionHistoryFixture.java new-2016.accdb V2016
 java -Dfile.encoding=UTF-8 -cp path/to/jackcess-5.0.4.jar docs/testing/VersionHistoryFixture.java new-2019.accdb V2019
-python3 docs/testing/compare_version_history.py --jar path/to/jackcess-5.0.4.jar \
+python3 tests/run.py tests/access/reading/tables/compare_version_history.py --jar path/to/jackcess-5.0.4.jar \
   --cli target/release/tablecraft --rows target/release/examples/table_data \
   --ace2016 new-2016.accdb --ace2019 new-2019.accdb \
   --complex2016 complex-2016.accdb --complex2019 complex-2019.accdb

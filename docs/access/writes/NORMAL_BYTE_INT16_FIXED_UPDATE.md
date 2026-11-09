@@ -63,6 +63,6 @@ The endpoint CLI uses plain integer literals through the shared checked assignme
 service; restores retain explicit CByte/CInt constructors. Seventeen codec and
 three literal-wire functions pass, along with 109 unique retained runtime
 functions and strict/minimal/dependency/format checks. See the
-[execution record](../../testing/results/ace16-normal-byte-int16-update-2026-11-03.json). The new variants have no independent SDK or native Microsoft
+[execution record](../../../tests/results/rows/ace16-normal-byte-int16-update-2026-11-03.json). The new variants have no independent SDK or native Microsoft
 Access interpretation claim. Windows save/reopen, mixed-client and power-loss
 qualification remain separate and unrun.

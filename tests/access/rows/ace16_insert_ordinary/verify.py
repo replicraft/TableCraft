@@ -8,10 +8,10 @@ import subprocess
 import sys
 
 
-ROOT = Path(__file__).resolve().parents[3]
+ROOT = Path(__file__).resolve().parents[4]
 sys.dont_write_bytecode = True
 sys.path.insert(0, str(ROOT))
-sys.path.insert(0, str(ROOT / 'docs/testing'))
+sys.path.insert(0, str(ROOT / 'tests/access'))
 from scripts.compat_artifacts import ArtifactStore
 from ace16_insert_ordinary import acceptance, reference_verify
 
@@ -90,12 +90,12 @@ def maintained(pins):
             expected = expected.replace(
                 "QUALIFICATION = ROOT / '.cache/ace16-insert-ordinary-qualification-next-20261028'\n", '')
             expected = expected.replace('sys.path.insert(0, str(QUALIFICATION))',
-                                        "sys.path.insert(0, str(ROOT / 'docs/testing'))")
+                                        "sys.path.insert(0, str(ROOT / 'tests/access'))")
             expected = expected.replace('import image_model\nimport record_decode\nimport requests\n'
                                         'import row_codec\nimport source',
                                         'from ace16_insert_ordinary import image_model, record_decode, '
                                         'requests, row_codec, source')
-        public = pins.check(STORE.pin('docs/testing/ace16_insert_ordinary/' + name)).read_text()
+        public = pins.check(STORE.pin('tests/access/rows/ace16_insert_ordinary/' + name)).read_text()
         assert public == expected, ('Maintained direct-owner transformation', name)
         old = [ast.dump(node, include_attributes=False) for node in ast.parse(original).body
                if isinstance(node, (ast.FunctionDef, ast.ClassDef))]

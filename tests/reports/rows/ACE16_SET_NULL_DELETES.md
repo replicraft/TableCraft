@@ -91,7 +91,7 @@ corrections changed no constructed database or expected image bytes.
 
 Strict Clippy across all engine targets/features, strict minimal-library Clippy,
 workspace formatting and documentation/dependency guards pass. The
-[verification record](results/ace16-set-null-delete-preview-2026-10-28.json)
+[verification record](../../results/rows/ace16-set-null-delete-preview-2026-10-28.json)
 retains scoped source hashes, passing groups and earlier failed attempts. This
 keeps the separate original-file study below distinct from Windows Access execution
 and normal saves.
@@ -99,7 +99,7 @@ and normal saves.
 
 ## Original-file DELETE and SET NULL comparison
 
-The [maintained original-file proof](ace16_set_null_deletes/README.md) now passes
+The [maintained original-file proof](../../access/rows/ace16_set_null_deletes/README.md) now passes
 on two immutable public-created V2016 originals. SOURCE5 capture is followed by
 two saved raw gates that bind genuine required parent primaries, reciprocal
 foreign indexes and raw SET NULL/CASCADE relationship actions. Two complete
@@ -121,8 +121,8 @@ and image publication respectively; their programs/freezes and correction notes
 remain retained. Root tool output recorded the exceptions, with no standalone
 traceback file retained. Saved default replay passes with subprocess creation
 blocked; optional Git metadata mode passes, and missing evidence returns status
-2. The [result](results/ace16-set-null-delete-originals-2026-10-28.json) and
-[build receipt](results/ace16-set-null-delete-example-build-2026-10-28.json) keep
+2. The [result](../../results/rows/ace16-set-null-delete-originals-2026-10-28.json) and
+[build receipt](../../results/rows/ace16-set-null-delete-example-build-2026-10-28.json) keep
 those histories separate from the first passing runtime phases. The public
 reference uses one parent-delete call per original and does not qualify a
 multi-call transaction, crash recovery, data macros or native Access save/reopen.

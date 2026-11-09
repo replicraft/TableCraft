@@ -6,7 +6,7 @@ reader, comparer, writer or native Access behavior.
 
 ## Unique keys and foreign-key matching differ in the reference
 
-The original [fresh-file probe](TextRelationshipProbe.java) creates separate
+The original [fresh-file probe](../../access/schema/fields/TextRelationshipProbe.java) creates separate
 parent/child and unique-probe tables using the reviewed Jackcess 5.0.4 artifact.
 It disables expression evaluation. Parent values include Alpha, accented é,
 Straße and empty Text. Each file contains both explicit General legacy and
@@ -46,7 +46,7 @@ inferred.
 
 ## Recorded scope
 
-The [research report](results/text-relationship-research-2026-10-24.json) records
+The [research report](../../results/general/text-relationship-research-2026-10-24.json) records
 176 reference insert attempts across four formats and eight TableCraft audits.
 The audits retain Unsupported for both Text relationships per file and report
 five retained child rows per relationship. Original database hashes remain
@@ -57,7 +57,7 @@ The report pins the original producer, reference JAR, immutable existing CLI,
 four databases and four complete tagged TSV logs. Text values in logs use UTF-8
 hex with a distinct NULL tag, retaining the empty/NUL distinction. No library
 implementation or external fixture is copied. The
-[fixture ledger](FIXTURES.md#original-text-relationship-research-inputs)
+[fixture ledger](../reading/FIXTURES.md#original-text-relationship-research-inputs)
 records hashes and excluded capability probes. Native Access comparisons remain
 unrun; required write validation is not relaxed.
 

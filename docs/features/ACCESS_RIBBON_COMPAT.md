@@ -40,7 +40,7 @@ and original-binding preservation instead.
 Include unknown elements, malformed/oversized XML, denied callbacks and an
 inspection test proving zero execution/network activity. Reopen saved copies in
 Access and verify definitions and associations. No such comparison has run yet;
-use the [application corpus](../testing/ACCESS_APPLICATIONS.md).
+use the [application corpus](../../tests/reports/reading/ACCESS_APPLICATIONS.md).
 
 ## References
 

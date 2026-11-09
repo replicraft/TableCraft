@@ -140,7 +140,7 @@ correlated rows, joins, named queries, crosstabs, eager failures, shared quotas
 and every observed cancellation checkpoint. Editing cancellation tests now cover
 every observed checkpoint and verify that no backend candidate is requested.
 
-The original [independent runner](../testing/compare_cverr.py) passes 4522 controls,
+The original [independent runner](../../tests/access/reading/tables/compare_cverr.py) passes 4522 controls,
 including raw Error cells alongside standard-code
 ranges, Decimal half-even input rounding, selection/inspection and refusal cases.
 Reviewed getters supply native ID fields from four original ScalarFixture files
@@ -175,7 +175,7 @@ empty/scalar/NULL/Error sequences. They cover grouped/derived/crosstab/domain
 results, explicit consumers, late operational failures, scalar publication refusal,
 shared quotas and every observed query/domain cancellation checkpoint. CLI checks
 verify Error display, late-failure buffering and source-free eval refusal. The
-[original runner](../testing/compare_variant_aggregates.py) passes 1058 controls
+[original runner](../../tests/access/queries/execution/compare_variant_aggregates.py) passes 1058 controls
 using independent list endpoints and native getter IDs from four unchanged ScalarFixture files. It does
 not execute First/Last or CVErr in Microsoft Access.
 
@@ -221,7 +221,7 @@ Microsoft's [Count reference](https://learn.microsoft.com/en-us/office/vba/acces
 defines counting non-NULL expressions without depending on their stored values.
 That motivates this explicit profile; Error-valued native query cells and actual
 Access aggregate error ordering remain unqualified. The original
-[comparison runner](../testing/compare_error_counts.py) passes 98 independent controls:
+[comparison runner](../../tests/access/queries/expressions/compare_error_counts.py) passes 98 independent controls:
 seeded Python nullness models and read-only stored ID getters across four unchanged
 20,000-row native inputs, sequential and indexed reads, small selected ranges,
 DCount and late-error publication refusals. No Access SQL is executed by the oracle.
@@ -249,7 +249,7 @@ applied rather than inventing an arithmetic operation on two error codes. Logica
 comparison, concatenation, Empty/Missing and numeric-aggregate behavior are separate
 acceptance work, not silently generalized from this arithmetic rule.
 
-The original [arithmetic Error runner](../testing/compare_error_arithmetic.py) passes
+The original [arithmetic Error runner](../../tests/access/queries/expressions/compare_error_arithmetic.py) passes
 1,190 CLI controls across both eval/run, seeded standard codes, unary/binary forms,
 NULL/Error pairs and eager failures. Native checks reuse read-only ID getters from
 four unchanged 20,000-row inputs through sequential and both indexed directions;
@@ -289,7 +289,7 @@ profile below. Concatenation, Missing and numeric aggregates retain their separa
 contracts and acceptance work. Predicate support
 does not silently widen those consumers or stored sources.
 
-The original [predicate runner](../testing/compare_error_predicates.py) passes 838
+The original [predicate runner](../../tests/access/queries/expressions/compare_error_predicates.py) passes 838
 independent CLI/model/native-source controls. Seeded Python unsigned-code relations,
 lists and ranges check both eval/run. Read-only getters from four unchanged
 20,000-row inputs support native sequential/indexed filters, derived rows, DCount,

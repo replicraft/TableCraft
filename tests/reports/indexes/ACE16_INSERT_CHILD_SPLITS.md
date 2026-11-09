@@ -1,6 +1,6 @@
 # INSERT split of one existing primary child
 
-The optional [ordinary-row INSERT preview](ACE16_INSERT_PREVIEW.md) can split
+The optional [ordinary-row INSERT preview](../rows/ACE16_INSERT_PREVIEW.md) can split
 one overflowing child of its admitted height-one primary. The original one-child checkpoint below uses one inclusive Int32 key/ROW bound,
 two nonempty leaves and a right tail. The later
 [general height-one continuation](ACE16_INSERT_GENERAL_HEIGHT_ONE.md) removes
@@ -115,8 +115,8 @@ calls. Across the four candidates, all 2,708 original ROWs remain intact and
 the aggregate growth is 16,384 bytes, with no DATA or bitmap allocation. Exact
 counter deltas and the engineering prefix/residue policy remain independently
 checked, rather than borrowed from public output. The
-[evidence record](results/ace16-insert-child-splits-native-2026-10-27.json) and
-[saved-only verifier](ace16_insert_child_split/verify.py) retain the source,
+[evidence record](../../results/indexes/ace16-insert-child-splits-native-2026-10-27.json) and
+[saved-only verifier](../../access/indexes/ace16_insert_child_split/verify.py) retain the source,
 reference, complete-image and getter phases separately. The earlier
 [fitting height-one qualification](ACE16_INSERT_HEIGHT_ONE.md) and
 [root-leaf growth qualification](ACE16_INSERT_ROOT_SPLITS.md) remain separate.
@@ -126,7 +126,7 @@ Windows/native Microsoft Access comparisons remain deferred by the user.
 
 The [general height-one continuation](ACE16_INSERT_GENERAL_HEIGHT_ONE.md) extends
 original child counts and multiple/repeated leaf normalization. The later
-[recursive continuation](ACE16_INSERT_RECURSIVE.md) also admits deeper qualified
+[recursive continuation](../rows/ACE16_INSERT_RECURSIVE.md) also admits deeper qualified
 sources, internal splitting and one retained-root growth event when the new top
 fits. Existing source heights and the grown height remain below the unchanged
 depth ceiling of 16. The earlier original-file results and frozen images above

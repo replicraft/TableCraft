@@ -5,7 +5,7 @@ import hashlib
 import json
 import subprocess
 
-HELPER = Path('docs/testing/CreatedNumberColumnOracle.java')
+HELPER = Path('tests/access/schema/fields/CreatedNumberColumnOracle.java')
 JAR_HASH = '19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc'
 HELPER_HASH = 'c805c038da5f0853c50a3b76753dab0577aa66322fe873c9e642e52a943d1886'
 CASES = [

@@ -42,7 +42,7 @@ Focused tests cover qualified fields, computed/NULL outputs, aggregates and
 aggregate subexpressions, DISTINCTROW/TOP, metadata-only refusal and retained late
 errors. Per-field collation controls verify inherited policy routing; an explicit
 Rnd alias proves one draw per input rather than a second draw for sorting. The
-original [set/order CLI runner](../testing/compare_projected_sort.py) independently
+original [set/order CLI runner](../../tests/access/reading/tables/compare_projected_sort.py) independently
 models 144 deterministic arithmetic/NULL and grouped-count cases with Python sets
 and counters. The existing original native grouped-query fixture also checks
 computed and aggregate DISTINCT ordering across Jet 4/ACE 2007/ACE 16-family
@@ -50,7 +50,7 @@ read paths. None of these execute SQL through Microsoft Access.
 
 
 ```sh
-python3 docs/testing/compare_projected_sort.py --cli target/debug/tablecraft
+python3 tests/run.py tests/access/reading/tables/compare_projected_sort.py --cli target/debug/tablecraft
 ```
 
 Microsoft documents [ORDER BY](https://support.microsoft.com/en-us/access/order-by-clause)

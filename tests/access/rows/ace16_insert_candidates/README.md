@@ -7,12 +7,12 @@ DATA page; two append one visible DATA page. This is saved-evidence verification
 not a fixture generator or database writer.
 
 ```sh
-python3 docs/testing/ace16_insert_candidates/verify.py
-python3 docs/testing/ace16_insert_candidates/verify.py --verify-git
+python3 tests/run.py tests/access/rows/ace16_insert_candidates/verify.py
+python3 tests/run.py tests/access/rows/ace16_insert_candidates/verify.py --verify-git
 ```
 
 The verifier uses Python 3.11+ and the existing shared
-[`ArtifactStore`](../../../scripts/compat_artifacts.py). Required databases,
+[`ArtifactStore`](../../../../scripts/compat_artifacts.py). Required databases,
 expected images, getter streams, classes, tools and raw reports remain private
 under `.cache/`; they are not included in this folder. Missing evidence reports
 `available: false` and exits 2. A contradiction exits 1; a complete verification
@@ -39,7 +39,7 @@ All saved getter and map streams must match the independently selected public
 reference observations. The parser is the existing maintained
 [`slot_preview_originals.facts`](../slot_preview_originals/facts.py).
 
-The [consumer build receipt](../results/ace16-insert-example-build-2026-10-27.json)
+The [consumer build receipt](../../../results/rows/ace16-insert-example-build-2026-10-27.json)
 binds compiled revision `4f9ee2da2f38651ea145209e8d568f26bc15a58d` and its frozen
 artifact. Receipt revision is `c399fce61fce657a33f8cb86acc6f6a962a9f54c`.
 `--verify-git` additionally checks the receipt and all 745 compiled source blobs

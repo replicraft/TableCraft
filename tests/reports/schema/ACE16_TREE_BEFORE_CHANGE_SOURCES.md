@@ -48,7 +48,7 @@ owned reachability and sibling order; expected stdout was frozen before calls.
 The saved-only verifier passes with all source, input and class hashes unchanged.
 These observers neither execute event rows nor obtain a normal write plan.
 
-The [source execution record](results/ace16-tree-before-change-sources-2026-10-31.json)
+The [source execution record](../../results/indexes/ace16-tree-before-change-sources-2026-10-31.json)
 separates native validation, hash anchors and independent reader observations.
 Generated databases, observer classes and raw observations remain ignored local
 evidence. These are source hypotheses and read evidence, not native Access

@@ -3,6 +3,7 @@
 Only TableCraft executes SQL. The original scalar inputs remain byte-for-byte
 unchanged; Jackcess supplies field values, never expression evaluation.
 """
+from engineering_paths import reference_file
 
 import argparse
 from decimal import Decimal, ROUND_HALF_EVEN
@@ -121,7 +122,7 @@ def main():
     for database in args.database:
         original = database.read_bytes()
         tagged = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar,
-                     RECIPES / "TableDataOracle.java", database, "ScalarSamples")
+                     reference_file('tests/access/reading/tables/TableDataOracle.java'), database, "ScalarSamples")
         expected = []
         for line in tagged.splitlines():
             identity = int(line.split("\t")[1].removeprefix("I32:"))

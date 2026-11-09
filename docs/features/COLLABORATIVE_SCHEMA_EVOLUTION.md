@@ -33,7 +33,7 @@ explicitly through the project health/recovery services.
 Acceptance includes reordered/duplicate operations, offline old-epoch edits,
 crashes between projection/history writes, malicious/untrusted script updates,
 unsupported peers and deterministic post-migration convergence. See
-[compatibility evidence](../testing/PROJECT_COMPATIBILITY.md).
+[compatibility evidence](../../tests/reports/reading/PROJECT_COMPATIBILITY.md).
 
 Agent participants require explicit attribution/authorization and the same
 revision/conflict checks as human editors. They cannot automatically resolve peers'

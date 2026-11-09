@@ -39,7 +39,7 @@ unchanged. The existing index observers and independent raw-tree decoder are
 reused. The saved-only verifier starts no children and rechecks all source,
 class, request, raw-structure and observation hashes.
 
-The [execution record](results/ace16-indexed-mixed-before-change-sources-2026-10-31.json)
+The [execution record](../../results/indexes/ace16-indexed-mixed-before-change-sources-2026-10-31.json)
 retains the first disk-cache lint failure and successful identical retry.
 Only disposable incremental cache was removed after compiler termination;
 incremental compilation stays enabled. Generated images, classes and raw reports

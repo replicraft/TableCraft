@@ -4,7 +4,7 @@ Eighteen independently constructed views now pass native row/schema/constraint
 reads, complete-owned index checks and all six alias/counter reads. Separate
 read-only SDK observations pass eighteen full inventories, eighteen metadata
 reports and 108 exact cursors before any matching native INSERT producer.
-The [execution record](results/ace16-binary-index-sources-2026-11-01.json)
+The [execution record](../../results/indexes/ace16-binary-index-sources-2026-11-01.json)
 retains the input/model freezes, complete-image manifest and actual receipts.
 
 The two private originals contain a manual Int32 primary key and ascending and

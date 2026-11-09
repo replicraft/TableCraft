@@ -1,6 +1,6 @@
 # Fitted INSERT into an existing two-leaf primary
 
-The optional [ordinary-row INSERT preview](ACE16_INSERT_PREVIEW.md) also admits
+The optional [ordinary-row INSERT preview](../rows/ACE16_INSERT_PREVIEW.md) also admits
 an original height-one Int32 primary with exactly one bounded left leaf and one
 right tail leaf. This records the original fitted two-leaf checkpoint. The later
 [general height-one continuation](ACE16_INSERT_GENERAL_HEIGHT_ONE.md) admits any
@@ -72,8 +72,8 @@ INSERT subset includes nine new builder, public-preview and audit controls.
 Thirteen bounded Jackcess reference calls passed on their first attempts.
 Independently frozen source/request-only engineering images then matched all
 four first-attempt candidates, before eight separate fresh read-only getter/map
-calls also passed. The [scoped evidence record](results/ace16-insert-height-one-native-2026-10-27.json)
-and [saved-only verifier](ace16_insert_height_one/verify.py) keep reference,
+calls also passed. The [scoped evidence record](../../results/indexes/ace16-insert-height-one-native-2026-10-27.json)
+and [saved-only verifier](../../access/indexes/ace16_insert_height_one/verify.py) keep reference,
 engineering candidate and getter phases distinct. Saved verification starts no
 fixture, database or JVM and reports missing private evidence as unavailable.
 
@@ -95,7 +95,7 @@ remains deferred by the user.
 
 The [general height-one continuation](ACE16_INSERT_GENERAL_HEIGHT_ONE.md) extends
 original child counts and multiple/repeated leaf normalization. The later
-[recursive continuation](ACE16_INSERT_RECURSIVE.md) also admits deeper qualified
+[recursive continuation](../rows/ACE16_INSERT_RECURSIVE.md) also admits deeper qualified
 sources, internal splitting and one retained-root growth event when the new top
 fits. Existing source heights and the grown height remain below the unchanged
 depth ceiling of 16. The earlier original-file results and frozen images above

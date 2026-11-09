@@ -81,7 +81,7 @@ and retirement7 functions passed, followed by the full IO81 unit, nine integrati
 and two documentation tests. Strict initially rejected large inline retained error
 owners; the paid one-slot correction then passed strict all-target/all-feature,
 full IO81+9+2 and minimal builds. Wire/source literals were unchanged. See the
-[observed result](../testing/results/filesystem-journal-lifecycle-2026-10-30.json).
+[observed result](../../tests/results/recovery/filesystem-journal-lifecycle-2026-10-30.json).
 These are injected/local filesystem checks, not hardware power-loss or native
 Access qualification. CLI validation is recorded separately by its actual host.
 
@@ -109,7 +109,7 @@ Both SOURCE functions passed before implementation. The IO target passes seven
 functions (SOURCE plus six API controls), and the native target passes four
 (SOURCE plus three API controls). Strict IO/ACE lib/tests with all features, full
 IO81 unit +16 integration +two documentation tests, and minimal build pass. See
-[the restart confirmation result](../testing/results/intact-retired-confirmation-2026-10-30.json).
+[the restart confirmation result](../../tests/results/general/intact-retired-confirmation-2026-10-30.json).
 CLI adoption is recorded separately after its own checks.
 
 Partial garbage or missing-child resolution, automatic discovery, Windows support,
@@ -140,7 +140,7 @@ all-feature strict checks pass, along with the complete IO regression: 85 unit
 functions, 16 integration functions and two doctests (103 total). This transfer adds no native write eligibility,
 Access locking, journal discovery or normal ACE save permission.
 
-See the [target-transfer record](../testing/results/offline-journal-target-transfer-2026-10-31.json).
+See the [target-transfer record](../../tests/results/recovery/offline-journal-target-transfer-2026-10-31.json).
 
 ## Explicit retained-target resize capability
 
@@ -162,7 +162,7 @@ retired write-free confirmation, resize failures before/partway/after their real
 effect, target/journal sync failures and retired garbage cleanup failure. They
 retain the same lease throughout. Local runtime evidence is macOS; generic
 protocol checks do not establish native Access or other-platform qualification.
-See the [V2 verification record](../testing/results/checked-v2-retained-targets-2026-11-01.json).
+See the [V2 verification record](../../tests/results/reading/checked-v2-retained-targets-2026-11-01.json).
 
 ## Explicit incomplete-setup unlock
 

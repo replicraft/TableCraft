@@ -1,4 +1,5 @@
 """Original larger Memo/getter controls; only TableCraft executes SQL."""
+from engineering_paths import reference_file
 
 import argparse
 import csv
@@ -36,7 +37,7 @@ def changed(options, flag, value):
 def java(jar, *arguments):
     return subprocess.check_output(
         ["java", "-Dstdout.encoding=UTF-8", "-cp", str(jar),
-         str(RECIPES / "LargerMemoFixture.java"), *map(str, arguments)],
+         str(reference_file('tests/access/storage/native/LargerMemoFixture.java')), *map(str, arguments)],
         text=True, encoding="utf-8",
     )
 
@@ -135,7 +136,7 @@ def main():
         "scope": "larger decoded Memo query values, exact getter/bytes/UTF16-unit answers and bounded failures",
         "binary_sha256": binary_hash,
         "runner_sha256": digest(Path(__file__)),
-        "recipe_sha256": digest(RECIPES / "LargerMemoFixture.java"),
+        "recipe_sha256": digest(reference_file('tests/access/storage/native/LargerMemoFixture.java')),
         "jar_sha256": JAR_SHA256,
     }
     if args.report is not None:

@@ -58,19 +58,19 @@ respects the authored fixture's four-byte binary column capacity. Existing SELEC
 UNION, crosstab, name, join and parameter checks continue to pass. One CLI test
 compares physical inspection with saved/named output header and row ordering.
 
-The original [SavedOrderingFixture.java](../../testing/SavedOrderingFixture.java) adds
+The original [SavedOrderingFixture.java](../../../tests/access/queries/saved/SavedOrderingFixture.java) adds
 eleven inert definitions to our fourteen-query forest baseline on fresh local
 Jet 4 / ACE 2007/2016/2019 files. All inserted ordering keys satisfy the system
-primary index. [compare_saved_ordering.py](../../testing/compare_saved_ordering.py)
+primary index. [compare_saved_ordering.py](../../../tests/access/queries/saved/compare_saved_ordering.py)
 passes 252 getter/rendering/direct/saved/named/refusal controls, including explicit
 row/header expectations and separate copy-only tie/NULL cases. TSV raw inspection
 is compared after CSV decoding; getters inspect physical system rows while the
 reference SQL renderer orders them independently. Originals and mutation-copy
-bytes remain unchanged. [Fixture records](../../testing/FIXTURES.md#native-fragment-ordering-inputs)
+bytes remain unchanged. [Fixture records](../../../tests/reports/reading/FIXTURES.md#native-fragment-ordering-inputs)
 retain provenance and observed hashes.
 
 ```sh
-python3 docs/testing/compare_saved_ordering.py \
+python3 tests/run.py tests/access/queries/saved/compare_saved_ordering.py \
   --jar path/to/jackcess-5.0.4.jar --cli target/release/tablecraft \
   --directory path/to/fresh-native-ordering --generate
 ```

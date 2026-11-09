@@ -173,14 +173,14 @@ unknown/conflicting identities, inert projection and named-crosstab materializat
 Metadata preparation performs no scans. Byte limits and cancellation at every
 observed domain/publication checkpoint remain enforced.
 
-The original [native policy runner](../testing/compare_native_collations.py) now passes
+The original [native policy runner](../../tests/access/queries/expressions/compare_native_collations.py) now passes
 1,844 model/source controls over four freshly regenerated Jet 4, ACE 2007
 and ACE 16-family inputs, each unchanged by the run. DLookup/DFirst/DLast/DMin/DMax with unique row criteria
 reuse independently encoded short-key expectations, both sequentially and through
 an explicitly selected index. Added controls reuse grouped composed domain keys
 inside nested string operators/CVar, with General Legacy/2010 fields, database
 policy and global overrides. Source hashes are recorded in
-[fixture provenance](../testing/FIXTURES.md#grouped-string-policy-provenance-controls).
+[fixture provenance](../../tests/reports/reading/FIXTURES.md#grouped-string-policy-provenance-controls).
 Only TableCraft evaluates SQL.
 
 Microsoft documents [DLookup field/expression results and query usage](https://learn.microsoft.com/en-us/office/vba/api/access.application.dlookup)

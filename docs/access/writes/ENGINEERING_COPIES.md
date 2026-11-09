@@ -64,7 +64,7 @@ original live-row ordinal, not a key value. All assignments refer to one immutab
 captured source. Groups are combined before one engine call; a stale expected
 value or any later failure returns no copy. Multiple fixed-field assignments can
 span qualified tables. `--variable` combines Short Text/Binary columns and
-optional fixed siblings in one table through the [whole-row service](../../testing/ACE16_MULTIPLE_VARIABLE_UPDATES.md). Expected carriers and ordinals come
+optional fixed siblings in one table through the [whole-row service](../../../tests/reports/rows/ACE16_MULTIPLE_VARIABLE_UPDATES.md). Expected carriers and ordinals come
 unchanged from the caller, not from a replacement snapshot expectation.
 `--long-value` remains single-table/single-column; mixed LVAL requests refuse
 rather than being applied sequentially.
@@ -72,28 +72,28 @@ rather than being applied sequentially.
 Default mode uses fitting fixed/batch maintenance for fixed kinds. Text-kind
 requests use shared fitted-record planning with the caller's original expected
 values and ordinals. A qualified mixed-schema source with one ordinary Short
-Text target selects the [preserved fitting service](../../testing/ACE16_PRESERVED_SHORT_TEXT_UPDATES.md),
+Text target selects the [preserved fitting service](../../../tests/reports/rows/ACE16_PRESERVED_SHORT_TEXT_UPDATES.md),
 retaining the original physical record position and length. Sibling variable
 spans may move inside that record while their bytes remain exact. Default
 mode also combines that one Text target with qualified unindexed Boolean,
 Int32, Int64, Currency and legacy DateTime siblings through the
-[joint fitting service](../../testing/ACE16_PRESERVED_JOINT_TEXT_FIXED.md).
+[joint fitting service](../../../tests/reports/rows/ACE16_PRESERVED_JOINT_TEXT_FIXED.md).
 Typed Text/fixed groups use the existing fitted request transport in either
 caller order. Multiple preserved Text targets remain refused; explicit
 variable/growth modes do not admit these joint preserved requests.
 
 One qualified preserved Int64, Currency or legacy DateTime target also uses the
-[fixed scalar service](../../testing/ACE16_PRESERVED_FIXED_SCALARS.md) in default
+[fixed scalar service](../../../tests/reports/rows/ACE16_PRESERVED_FIXED_SCALARS.md) in default
 mode. Existing `int64`, `currency-scaled` and hexadecimal `date-bits` request kinds
 retain exact expected/replacement carriers, NULL payloads and every unrelated
 byte. Qualified Boolean, Int32, Int64, Currency and legacy DateTime groups can
-also combine through the [joint fixed service](../../testing/ACE16_PRESERVED_JOINT_FIXED.md)
+also combine through the [joint fixed service](../../../tests/reports/rows/ACE16_PRESERVED_JOINT_FIXED.md)
 in one original-image batch. Shared mask bits merge and several changed fields
 on one row count once. Indexed/dependent targets remain refused; `--variable`
 does not admit these preserved scalar groups.
 
 For that qualified mixed schema, explicit `--variable` selects the
-[preserved Short Text growth service](../../testing/ACE16_PRESERVED_TEXT_GROWTH.md)
+[preserved Short Text growth service](../../../tests/reports/rows/ACE16_PRESERVED_TEXT_GROWTH.md)
 for one ordinary, unindexed field with no calculated dependency. It can retain
 the original logical row reference while placing a hidden record on the original
 or another owned DATA page, or allocating a represented EOF DATA page. Default
@@ -107,7 +107,7 @@ including qualified DATA forwarding. Multiple variable targets or fixed siblings
 use one joint DATA-placement preview: the original page, another owned DATA page,
 or qualified represented EOF allocation. INDEX owners must fit unless
 `--index-growth` is also selected. Together, `--variable --index-growth` selects
-one [joint DATA/INDEX continuation](../../testing/ACE16_MIXED_DATA_INDEX_GROWTH.md)
+one [joint DATA/INDEX continuation](../../../tests/reports/indexes/ACE16_MIXED_DATA_INDEX_GROWTH.md)
 for multiple Short Text/Binary targets and optional fixed siblings. One captured
 original image supplies the DATA placement and INDEX allocation ledger; there
 is no intermediate candidate or fallback. The one-variable combination retains
@@ -174,7 +174,7 @@ TSV rows still finish through one original-image INSERT, with no per-row
 candidate chaining. Optional `--default-clock[=LOCAL-DATETIME]` authorizes only
 needed stored Date()/Now() defaults; complete/supplied fields never read it.
 The existing incrementing flags also support omitted companions while excluding
-only the actual generated primary. See [typed batch omissions](../../testing/ACE16_TYPED_BATCH_OMISSIONS.md)
+only the actual generated primary. See [typed batch omissions](../../../tests/reports/general/ACE16_TYPED_BATCH_OMISSIONS.md)
 for the protocol and focused evidence.
 
 For example, a table with Int32 ID, Short Text Name and nullable Int32 Score could
@@ -296,7 +296,7 @@ Ten focused CLI unit functions and five integration functions pass. They cover
 actual UPDATE/INSERT/DELETE commands, quoted and typed inputs, source preservation,
 no-clobber publication, output-byte accounting and failure cleanup. Initial
 fixture/setup failures are retained in the
-[verification record](../../testing/results/ace16-engineering-write-workflow-2026-10-29.json).
+[verification record](../../../tests/results/general/ace16-engineering-write-workflow-2026-10-29.json).
 No Microsoft Access execution or native save comparison is claimed by these commands.
 
 ## Typed mixed DATA-placement validation

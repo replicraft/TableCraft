@@ -1,13 +1,13 @@
 # Variable-record allocation preview: eight original controls
 
 All eight engineering candidates completed on their first run, with zero
-model disagreements. The [compact receipt](results/ace16-variable-originals-2026-10-26.json)
+model disagreements. The [compact receipt](../../results/rows/ace16-variable-originals-2026-10-26.json)
 records eight native candidate calls, twelve read-only getters and twelve read-only
 map probes: 32 commands. This is a separate eight-case supplement, not another
 execution of Slot162, its batch supplement, or PAGE180.
 
 The candidates use the four unchanged sources and eight public UPDATE references
-from [cross-page observations](CROSS_PAGE_UPDATE_OBSERVATIONS.md). They compare
+from [cross-page observations](../storage/CROSS_PAGE_UPDATE_OBSERVATIONS.md). They compare
 actual typed rows and complete logical index orders against those references,
 while independently certifying engineering byte preservation. The reference
 writer is Jackcess 5.0.4; Microsoft Access execution and native saves remain
@@ -40,7 +40,7 @@ arbitrary globally free in-file page is reused.
 
 ## Independent byte and semantic checks
 
-The [proof](variable_preview_originals/proof.py) constructs an entire expected
+The [proof](../../access/rows/variable_preview_originals/proof.py) constructs an entire expected
 candidate from its actual source, with these narrowly derived changes:
 
 * The original root slot receives its forwarding flag and exact destination
@@ -67,18 +67,18 @@ No selected Text key is re-encoded because Label is unindexed.
 ## Frozen provenance and reproduction
 
 The executed artifact was compiled from committed revision
-`87c35d435450251d69f305cb247741ccbf7be7e2`; its [build receipt](results/ace16-variable-example-build-2026-10-26.json)
+`87c35d435450251d69f305cb247741ccbf7be7e2`; its [build receipt](../../results/rows/ace16-variable-example-build-2026-10-26.json)
 pins the 17,512,496-byte binary and 107 selected historical Git source objects.
 Its SHA256 is `2d2b173617e115a3bca3b10018086dab1c5d8f3d72b536fe3825d21e19cb4a5f`.
 The source inventory is selected, not an exhaustive compiler-input declaration.
 
-The [plan](variable_preview_originals/plan.json) is byte-identical to the frozen
+The [plan](../../access/rows/variable_preview_originals/plan.json) is byte-identical to the frozen
 pre-call plan (SHA256 `24e0bc6eb9af67b39976a4a8eb731402e6291216c0015c50687ffb578cc9a022`).
 Exact executed private runner/proof and imported helper bytes were archived
 before the first candidate call. All requests were written and pinned at that
 same boundary. Original images, references, requests and tools remain unchanged.
 
-The current public [runner](variable_preview_originals/replay.py) corrects package
+The current public [runner](../../access/rows/variable_preview_originals/replay.py) corrects package
 paths and adds read-only verification; it was not the historically executed
 runner. The public proof has readability changes. The receipt keeps both source
 versions distinct. Current public verification redecoded all preserved getters,
@@ -86,7 +86,7 @@ maps and images and repeated all eight proofs without another native/getter/map
 process:
 
 ```sh
-python3 docs/testing/variable_preview_originals/replay.py --verify-existing \
+python3 tests/run.py tests/access/rows/variable_preview_originals/replay.py --verify-existing \
   .cache/ace16-variable-original-candidates-initial-20261026/report.json
 ```
 

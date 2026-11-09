@@ -3,6 +3,7 @@
 Native caches remain stale data. No Microsoft Access formula execution,
 freshness, cache replacement, write or broader formula profile is qualified.
 """
+from engineering_paths import reference_file
 
 import argparse
 import hashlib
@@ -14,8 +15,8 @@ import subprocess
 from cli_tsv import display_tsv
 from compare_calculated_decimals import digest, JACKCESS_SHA256
 
-ROOT = Path(__file__).resolve().parents[2]
-RECIPES = ROOT / "docs/testing"
+ROOT = Path(__file__).resolve().parents[4]
+RECIPES = ROOT / "tests/access"
 FORMULAS = {
     "Equal": "[Input]=0",
     "NotEqual": "[Input]<>0",
@@ -153,9 +154,9 @@ def main():
     assert not arguments.report.exists(), "Refuse to overwrite accepted evidence"
     assert digest(arguments.jar) == JACKCESS_SHA256
     paths = {
-        arguments.cli, arguments.jar, Path(__file__), RECIPES / "PredicatePreviewFixture.java",
-        RECIPES / "PredicatePreviewOracle.java", RECIPES / "cli_tsv.py",
-        RECIPES / "compare_calculated_decimals.py",
+        arguments.cli, arguments.jar, Path(__file__), reference_file('tests/access/reading/tables/PredicatePreviewFixture.java'),
+        reference_file('tests/access/reading/tables/PredicatePreviewOracle.java'), reference_file('tests/access/shared/primitives/cli_tsv.py'),
+        reference_file('tests/access/queries/expressions/compare_calculated_decimals.py'),
         ROOT / "crates/backends/tablecraft-access/src/source/calculation.rs",
         ROOT / "crates/backends/tablecraft-access/src/source/calculation/syntax.rs",
         ROOT / "apps/tablecraft-cli/src/commands/query/preview_calculation.rs",
@@ -185,7 +186,7 @@ def main():
 
     for profile in ("V2016", "V2019"):
         path = arguments.directory / f"{profile}.accdb"
-        oracle = execute("java", "-cp", arguments.jar, RECIPES / "PredicatePreviewOracle.java", path)
+        oracle = execute("java", "-cp", arguments.jar, reference_file('tests/access/reading/tables/PredicatePreviewOracle.java'), path)
         for table, entry in records(oracle).items():
             controls += len(FORMULAS)
             expected = [model(value) for value, _ in entry["rows"]]

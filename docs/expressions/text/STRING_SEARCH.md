@@ -33,7 +33,7 @@ Microsoft's specific [InStr query examples](https://support.microsoft.com/en-gb/
 and [InStrRev query examples](https://support.microsoft.com/en-gb/access/functions/instrrev-function)
 establish direct query availability. The unit model and current edge/error rules
 remain independent engineering behavior pending native Access qualification.
-The [independent runner](../../testing/compare_raw_string_search.py) passes 3,634
+The [independent runner](../../../tests/access/queries/expressions/compare_raw_string_search.py) passes 3,634
 controls using Python integer-list windows, both CLI evaluators, forward/reverse
 bounds, failures and four unchanged native inputs through sequential and selected
 primary-index reads. Inert native getters supply rows only; TableCraft evaluates
@@ -73,7 +73,7 @@ explicit LCID raw search remain separate; the General provider does not supply
 a system-locale implementation. Built-in calls use the supplied default provider,
 while SQL predicates continue to route stored field policies separately.
 
-The original [raw General runner](../../testing/compare_raw_general_search.py) passes
+The original [raw General runner](../../../tests/access/reading/tables/compare_raw_general_search.py) passes
 4,544 controls. Its Java helper uses the reviewed independent encoder with the
 existing exhaustive short-span model, including unpaired units, valid pairs,
 ignored keys, accents, expansions, spaces and both bound directions. Native-source
@@ -224,7 +224,7 @@ Unicode positions, overlap, bounds, NULL/error behavior, separate locale search,
 invalid provider ranges and cancelled scans. Two query tests cover grouping,
 correlation, reusable parameters, optional slots and eager failures. Two CLI tests
 cover output carriers, ordinal policy, explicit defaults and buffered refusals.
-The [original reference recipe](../../testing/compare_string_search.py) passes 284 controls
+The [original reference recipe](../../../tests/access/queries/expressions/compare_string_search.py) passes 284 controls
 against Python UTF-16 window models and independently decoded native table rows,
 including sequential/indexed queries. Original database bytes remain unchanged.
 
@@ -301,7 +301,7 @@ remain open; it does not add a VBA execution host.
 Focused expression/query tests cover numeric/fixed/date/Boolean strings, formatting
 policy rebinding, grouping and correlation, NULL/mode/start boundaries, eager
 failures, allocation/text limits and every observed conversion/search cancellation
-checkpoint. The original [scalar search runner](../../testing/compare_search_scalars.py)
+checkpoint. The original [scalar search runner](../../../tests/access/reading/tables/compare_search_scalars.py)
 passes 336 authored Decimal-spelling and UTF-16 byte-matching controls, with independent raw IDs
 from the unchanged four-family 20,000-row corpus. Only TableCraft executes SQL;
 Jackcess supplies inert scalar getters. Existing General, LCID dispatch and strict
@@ -359,7 +359,7 @@ LCID/Access compatibility profile.
 
 ## Reverse callback-bound verification
 
-The [scoped verification record](../../testing/results/read-query-reverse-search-bounds-2026-10-25.json)
+The [scoped verification record](../../../tests/results/queries/read-query-reverse-search-bounds-2026-10-25.json)
 records 40 expression tests, including five new Unicode/raw callback and finite
 range-model controls. The before-fix probe retained three failures: decoded and
 raw reverse searches published a position beyond their requested start, and the

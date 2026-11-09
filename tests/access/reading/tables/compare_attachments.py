@@ -15,13 +15,13 @@ def main():
     args=parser.parse_args()
     for path in [args.ace2016,args.ace2019]+([args.ace2007] if args.ace2007 else []):
         original=path.read_bytes()
-        expected=run("java","-Dstdout.encoding=UTF-8","-cp",args.jar,"docs/testing/AttachmentFixture.java","--inspect",path)
+        expected=run("java","-Dstdout.encoding=UTF-8","-cp",args.jar,"tests/access/reading/tables/AttachmentFixture.java","--inspect",path)
         actual=run(args.example,path)
         assert actual==expected,"decoded attachment bytes disagree"
         rows=[row.split("\t") for row in actual.splitlines()]
         assert len(rows)==6 and [len(bytes.fromhex(row[3])) for row in rows]==[0,256,6,8,4,65536]
         assert [row[0] for row in rows]==["0"]*6
-        modes=run("java","-cp",args.jar,"docs/testing/AttachmentFixture.java","--encodings",path)
+        modes=run("java","-cp",args.jar,"tests/access/reading/tables/AttachmentFixture.java","--encodings",path)
         assert [int(row.split("\t")[2]) for row in modes.splitlines()]==[1,1,1,0,0,1]
         assert path.read_bytes()==original
         print(path.name,"files",6,"original bytes",sum(len(bytes.fromhex(row[3])) for row in rows),

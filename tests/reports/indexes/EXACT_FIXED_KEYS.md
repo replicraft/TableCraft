@@ -1,6 +1,6 @@
 # Original exact fixed-key replay
 
-The original [runner](compare_exact_fixed_keys.py) checks Currency/Decimal
+The original [runner](../../access/indexes/native/compare_exact_fixed_keys.py) checks Currency/Decimal
 relational key behavior against independent scaled-integer and Fraction models.
 It reuses the two registered LargeDeployment ACE 16 family files and four
 unchanged stored/MSZIP CAB packages. Existing read-only public Jackcess getters
@@ -10,7 +10,7 @@ This is engineering correctness/resource evidence, not a timing claim.
 
 ## Accepted results
 
-The [accepted report](results/exact-fixed-keys-2026-10-25.json) records 90 matched
+The [accepted report](../../results/indexes/exact-fixed-keys-2026-10-25.json) records 90 matched
 commands, separated into:
 
 - 84 new-executable successes: 14,088 rows and 41,802 cells.
@@ -90,7 +90,7 @@ uses 120-second child-process timeouts. Commands retain expected rows, compariso
 policy, return status, stdout and stderr.
 
 ```sh
-python3 docs/testing/compare_exact_fixed_keys.py \
+python3 tests/run.py tests/access/indexes/native/compare_exact_fixed_keys.py \
   --cli .cache/tablecraft-bin/exact-fixed-keys-cli-20261025 \
   --cli-sha256 89f66dcbc51349598137ed40356d711f2a7798828aaad69b8be43df3cd58687d \
   --revision 9b8d5280ce5ab4d15225d630d8a1d2135835644a \

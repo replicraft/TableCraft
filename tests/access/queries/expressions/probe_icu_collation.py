@@ -14,7 +14,7 @@ from pathlib import Path
 import subprocess
 import tomllib
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[4]
 SOURCE = Path(__file__).with_suffix('.rs')
 CANDIDATE = '2.3.1'
 

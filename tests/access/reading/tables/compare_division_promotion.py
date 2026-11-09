@@ -3,6 +3,7 @@
 The reference supplies inert raw values only. TableCraft alone executes SQL;
 materialized result models do not establish Windows Access compatibility.
 """
+from engineering_paths import reference_file
 
 import argparse
 from fractions import Fraction
@@ -67,7 +68,7 @@ def main():
     for database in args.database:
         original = database.read_bytes()
         tagged = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar,
-                     RECIPES / "TableDataOracle.java", database, "--date-bits", "ScalarSamples")
+                     reference_file('tests/access/reading/tables/TableDataOracle.java'), database, "--date-bits", "ScalarSamples")
         expected = []
         for line in tagged.splitlines():
             fields = line.split("\t")

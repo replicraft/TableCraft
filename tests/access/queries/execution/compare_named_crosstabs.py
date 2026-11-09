@@ -1,4 +1,5 @@
 """Independent fixed-crosstab dependencies, row grids and buffered refusal checks."""
+from engineering_paths import reference_file
 import argparse
 import csv
 import hashlib
@@ -39,7 +40,7 @@ def main():
     refused = {"CrossFixedError", "CrossFixedCycle", "NamedError", "NamedCycle"}
     controls = 0
     with tempfile.TemporaryDirectory(prefix="tablecraft-named-cross-oracle-") as classes:
-        sources = [RECIPES / (name + ".java") for name in
+        sources = [reference_file(name + ".java") for name in
                    ("SavedCrosstabFixture", "SavedNamedCrosstabFixture", "SavedReadOracle", "SavedQueryOracle")]
         subprocess.run(["javac", "-cp", str(args.jar), "-d", classes, *map(str, sources)], check=True)
 

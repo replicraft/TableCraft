@@ -32,4 +32,4 @@ These are independent read observations, not native Microsoft Access save/reopen
 or event evidence, and not permission inferred from creator provenance, a matching
 file digest or an empty macro inventory. Normal source validation, mutation proof
 and journal/recovery integration remain separate acceptance work. See the
-[execution record](results/ace16-ordinary-content-sources-2026-10-31.json).
+[execution record](../../results/rows/ace16-ordinary-content-sources-2026-10-31.json).

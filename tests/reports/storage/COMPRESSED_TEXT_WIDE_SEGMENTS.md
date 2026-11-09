@@ -24,9 +24,9 @@ streams in this corpus. The review uses those algorithms as grammar evidence,
 without copying third-party source or treating permissive replacement of invalid
 UTF-16 by another implementation as a valid stored Unicode contract.
 
-The original [recipe/oracle](CompressedWideFixture.java) creates ordinary seed
+The original [recipe/oracle](../../access/storage/native/CompressedWideFixture.java) creates ordinary seed
 ShortText/Memo tables with public builders and ASCII values. The
-[runner](compare_compressed_wide.py) authors 259 original encoded streams:
+[runner](../../access/storage/native/compare_compressed_wide.py) authors 259 original encoded streams:
 every nonzero low byte 1–255 paired with high zero, repeated mode transitions,
 zero boundary switches, supplementary Unicode followed by wide ASCII, and a
 127-unit wide segment. Independent expected Unicode strings are compared with
@@ -62,7 +62,7 @@ cover ordinary ShortText and inline Memo under the existing ACE 2007/2016/2019
 read profiles, including late malformed tails that return no snapshot.
 Scoped engine strict Clippy, formatting and Python compilation pass.
 
-The [accepted report](results/compressed-wide-2026-10-24.json) records 542 passing
+The [accepted report](../../results/storage/compressed-wide-2026-10-24.json) records 542 passing
 controls on 24 October 2026: 518 independent ShortText/inline-Memo stream pairs,
 two complete stored getter comparisons, six ordinary row/query comparisons,
 four resource refusals and twelve late-tail/pruned-column controls. The main
@@ -77,12 +77,12 @@ A separate supplementary reproduction with the previous immutable CLI
 refuses both unchanged grammar copies as malformed, without stdout. Those two
 before-fix failures are not included in the accepted control count.
 
-[Fixture provenance](FIXTURES.md#original-compressed-text-wide-segment-controls)
+[Fixture provenance](../reading/FIXTURES.md#original-compressed-text-wide-segment-controls)
 records original seeds and explicitly derived copies. No native Access SQL,
 native writer validity, application execution, freshness or save is qualified.
 
 ```sh
-python3 docs/testing/compare_compressed_wide.py \
+python3 tests/run.py tests/access/storage/native/compare_compressed_wide.py \
   --cli .cache/tablecraft-bin/width-wide-grammar-20261024 \
   --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar \
   --directory .cache/tablecraft-fixtures/compressed-wide-final-20261024 \

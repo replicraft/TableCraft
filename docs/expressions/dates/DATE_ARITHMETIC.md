@@ -65,7 +65,7 @@ result classes, pre-epoch representations, NULL, non-finite inputs, boundaries
 and an independent integer quarter-day model. A scalar dispatch test, two query
 tests and a parser regression cover nested expressions, eager errors, pruning,
 correlations, grouping, parameters, promotion and rejected aggregate/operator
-expansion. The [CLI reference recipe](../../testing/compare_date_arithmetic.py) compares
+expansion. The [CLI reference recipe](../../../tests/access/queries/expressions/compare_date_arithmetic.py) compares
 explicit float/DATE presentation models and inert Jackcess raw date bits from
 existing original Jet 4, ACE 2007, ACE 2016 and ACE 2019 scalar fixtures. It verifies
 unchanged hashes. No new databases, dependencies or native Access oracle are added.

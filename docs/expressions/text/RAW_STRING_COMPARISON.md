@@ -63,7 +63,7 @@ Verification includes generated unsigned-unit comparison against an independent
 model, every observed pure/query cancellation checkpoint, zero byte/work budgets,
 odd/unaligned input, provider refusal without retry, field policy routing,
 General SQL/LIKE space differences and relational consumers. The original
-[runner](../../testing/compare_raw_string_order.py) passes 17,345 controls against the
+[runner](../../../tests/access/queries/expressions/compare_raw_string_order.py) passes 17,345 controls against the
 registered independent short key vectors, including isolated units. Existing raw
 LIKE/predicate, retained-cell and native-policy runners also pass. Full workspace
 tests, benchmarks and Windows Access qualification were not run for this batch.

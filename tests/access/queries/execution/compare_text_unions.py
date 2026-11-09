@@ -1,4 +1,5 @@
 """Check provisional text/numeric UNION conversion with original Python models."""
+from engineering_paths import reference_file
 import argparse
 import csv
 import hashlib
@@ -90,7 +91,7 @@ def main():
             original = path.read_bytes()
             assert hashlib.sha256(original).hexdigest() == digest
             output = subprocess.check_output(["java", "-Dstdout.encoding=UTF-8", "-cp", str(args.jar),
-                str(RECIPES / "TableDataOracle.java"), str(path), "AData"], text=True, encoding="utf-8")
+                str(reference_file('tests/access/reading/tables/TableDataOracle.java')), str(path), "AData"], text=True, encoding="utf-8")
             identifiers = [line.split("\t")[1].removeprefix("I32:") for line in output.splitlines()]
             for reverse in [False, True]:
                 body = "SELECT ID AS N FROM AData UNION ALL SELECT 'tail'"
@@ -108,7 +109,7 @@ def main():
             assert hashlib.sha256(original).hexdigest() == digest
             for index in ["IdAsc", "IdDesc"]:
                 output = subprocess.check_output(["java", "-Dstdout.encoding=UTF-8", "-cp", str(args.jar),
-                    str(RECIPES / "IndexRowsOracle.java"), str(path), "IndexedRows", index, "ID"], text=True, encoding="utf-8")
+                    str(reference_file('tests/access/indexes/native/IndexRowsOracle.java')), str(path), "IndexedRows", index, "ID"], text=True, encoding="utf-8")
                 identifiers = [line for line in output.splitlines() if int(line) >= 19998]
                 check("SELECT ID AS N FROM IndexedRows WHERE ID>=19998 UNION ALL SELECT 'tail'",
                       [*identifiers, "tail"], ["--database", path, "--index", "IndexedRows", index, "--number-format", "invariant"])

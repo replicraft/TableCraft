@@ -21,7 +21,7 @@ from strconv_japanese_model import (
     read_microsoft,
 )
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[4]
 INDEX_HASH = "341dcde7e8b984e9c7bbf5ed75c8da7c6087d47083a1a2b3ed558bfd5bef9468"
 MICROSOFT_HASH = "c9bc0b0cd42e0fbcb82a09635bb5abed86afbdd4abc9e76fa5716638217cb59f"
 MAX_COLUMNS = 16
@@ -142,7 +142,7 @@ def main():
         args.index,
         args.microsoft,
         Path(__file__),
-        ROOT / "docs/testing/strconv_japanese_model.py",
+        ROOT / "tests/access/queries/expressions/strconv_japanese_model.py",
     ]
     before = {relative(path): digest(path) for path in inputs}
     sources = source_pins(args.revision)

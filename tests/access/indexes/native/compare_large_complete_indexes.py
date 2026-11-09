@@ -78,8 +78,8 @@ def main():
         data = subprocess.check_output(["git", "show", f"{revision}:{path}"], cwd=ROOT, timeout=30)
         sources[path] = {"bytes": len(data), "sha256": digest(data)}
     artifacts = [
-        args.cli, Path(__file__), ROOT / "docs/testing/compare_large_index_selections.py",
-        ROOT / "docs/testing/compare_ignored_null_indexes.py", ROOT / "docs/testing/LargeUsageMapProbe.java",
+        args.cli, Path(__file__), ROOT / "tests/access/indexes/native/compare_large_index_selections.py",
+        ROOT / "tests/access/indexes/native/compare_ignored_null_indexes.py", ROOT / "tests/access/storage/native/LargeUsageMapProbe.java",
     ]
     for profile in ORIGINAL_SHA256:
         database = args.inputs / f"{profile}.accdb"

@@ -3,8 +3,8 @@ from pathlib import Path
 import hashlib
 import sys
 
-ROOT = Path(__file__).resolve().parents[3]
-sys.path.insert(0, str(ROOT / 'docs/testing'))
+ROOT = Path(__file__).resolve().parents[4]
+sys.path.insert(0, str(ROOT / 'tests/access'))
 from ace16_insert_external_long_values import model as ordinary
 from ace16_insert_long_value_map_growth import source, requests
 

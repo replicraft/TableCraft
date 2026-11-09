@@ -88,13 +88,13 @@ option retention, metadata conflicts/injection, budgets and early/late cancellat
 Two CLI tests cover inert output, explicit execution, named-source refusal and
 payload-free buffered diagnostics. SELECT/UNION regression tests remain in the batch.
 
-[SavedCrosstabFixture.java](../../testing/SavedCrosstabFixture.java) creates fourteen
+[SavedCrosstabFixture.java](../../../tests/access/queries/saved/SavedCrosstabFixture.java) creates fourteen
 original inert definitions on fresh Jet 4 / ACE 2007/2016/2019 files with expression
 evaluation disabled. The read-only getter/renderer and
-[comparison recipe](../../testing/compare_saved_crosstabs.py) pass 320 controls for SQL
+[comparison recipe](../../../tests/access/queries/saved/compare_saved_crosstabs.py) pass 320 controls for SQL
 assembly, raw metadata, getter-derived grids, parameters, HAVING, joins, dependencies,
 counts, text/fixed headings, stored options and copy-only malformed metadata.
-Original bytes remain unchanged; [FIXTURES.md](../../testing/FIXTURES.md#saved-crosstab-inputs)
+Original bytes remain unchanged; [FIXTURES.md](../../../tests/reports/reading/FIXTURES.md#saved-crosstab-inputs)
 records hashes and provenance. The reference never executes SQL. Windows Access
 qualification remains unrun; no third-party fixture or upstream code/data was adopted.
 
@@ -111,4 +111,4 @@ regression checks saved TOP and omitted-cell errors. The extended original
 SavedCrosstabFixture --top profile has twenty definitions, including percentage,
 full-key tie, HAVING, TOP 0 and excluded-cell-error cases. Its independent comparison
 passes 440 controls; the unchanged fourteen-definition inputs still pass 320.
-No native Access execution is implied. See the [fixture record](../../testing/FIXTURES.md#crosstab-top-inputs).
+No native Access execution is implied. See the [fixture record](../../../tests/reports/reading/FIXTURES.md#crosstab-top-inputs).

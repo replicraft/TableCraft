@@ -50,7 +50,7 @@ consumers as working slices emerge. Oracle tools stay in engineering. Bound and
 authorize debug probes; inspecting action plans/effectful UDFs cannot execute them
 accidentally. Acceptance needs real before/after copies, opaque/dynamic-reference
 negative cases, failure/recovery evidence and native reopen in the
-[corpus](../testing/ACCESS_APPLICATIONS.md). No such application baselines exist.
+[corpus](../../tests/reports/reading/ACCESS_APPLICATIONS.md). No such application baselines exist.
 
 ## References
 

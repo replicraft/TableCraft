@@ -26,7 +26,7 @@ root bytes. They are BEFORE-only evidence; generated outcomes require a separate
 original-intent model and write proof. No source flag grants mutation permission.
 
 All source constructions used fresh outputs and all saved receipt verifiers
-launched zero children. See the [execution record](results/ace16-retained-reuse-companion-source-gates-2026-11-01.json)
+launched zero children. See the [execution record](../../results/rows/ace16-retained-reuse-companion-source-gates-2026-11-01.json)
 for commands, pins and the retained lint correction. Native Microsoft Access
 save/reopen remains unrun. General allocations, macro semantics and broader
 schemas remain separate acceptance work.

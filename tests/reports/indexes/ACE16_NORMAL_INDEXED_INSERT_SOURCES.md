@@ -1,9 +1,9 @@
 # Manual indexed INSERT sources
 
-The [model](indexed_insert_originals/model.py) and
-[requests](indexed_insert_originals/requests.json) use unchanged genuine Items
+The [model](../../access/indexes/indexed_insert_originals/model.py) and
+[requests](../../access/indexes/indexed_insert_originals/requests.json) use unchanged genuine Items
 originals. Only original qualification and entry helpers from the maintained
-[genuine fact owner](../../scripts/compatibility/genuine_ordinary_targets/model.py)
+[genuine fact owner](../../../scripts/compatibility/genuine_ordinary_targets/model.py)
 participate; earlier UPDATE constructors and AFTERs are not inputs.
 
 One explicit row `[4,17,3]` and an ordered batch adding `[5,18,3]` append visible
@@ -20,7 +20,7 @@ verification passes. Use ignored
 `normal_ordinary_sources::indexed_insert::` with absolute
 `TABLECRAFT_INDEXED_INSERT_SOURCE_DIR` selecting the constructed images.
 
-See the [source record](results/ace16-normal-indexed-insert-sources-2026-11-01.json)
+See the [source record](../../results/indexes/ace16-normal-indexed-insert-sources-2026-11-01.json)
 for exact scope, pins and the initial broad-selector setup failure. No new Java
 compiler or native writer participates. These are source/read outcomes, separate
 from normal insertion, AutoNumber/defaults, tree splits and native Access saves.

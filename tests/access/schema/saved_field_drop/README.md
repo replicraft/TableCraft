@@ -2,7 +2,7 @@
 
 Four frozen raw hypotheses reopen through the reviewed Jackcess 5.0.4 reader,
 with all originals and observed files unchanged. The
-[9 November observation record](../results/saved-field-drop-raw-sdk-read-2026-11-09.json)
+[9 November observation record](../../../results/schema/saved-field-drop-raw-sdk-read-2026-11-09.json)
 retains complete BEFORE/AFTER hashes, pre-observation helper hashes, native column
 metadata, all SDK property groups, index/settings observations and independent
 raw reinspection. No SDK DROP writer or Microsoft Access Save was executed.
@@ -45,7 +45,7 @@ file write. Keep that in-memory map separate from stored groups.
 [model.py](model.py) independently removes active descriptor/name records while
 preserving high-water counts, native IDs/ordinals/offsets and the indexed TDEF
 prefix/suffix. It reuses the unchanged first-party raw
-[Short Text placement owner](../short_text_add/model.py) and
+[Short Text placement owner](../../rows/short_text_add/model.py) and
 [actual live descriptor reader](../saved_field_rename/model.py), without importing
 production codecs. The original indexed suffix is moved intact; successful SDK
 index enumeration is separate evidence of the retained ID index.
@@ -68,16 +68,16 @@ private source paths and SDK binaries remain local.
 
 From the repository root, with the pinned `number-second.accdb` and
 `text-number-text.accdb` outputs described in the
-[source record](../results/nac-after-field-add-sdk-2026-11-08.json):
+[source record](../../../results/schema/nac-after-field-add-sdk-2026-11-08.json):
 
 ```sh
-python3 docs/testing/saved_field_drop/prepare.py --repo . --sources-dir SOURCES --output-dir FRESH_OUTPUT
-python3 docs/testing/saved_field_drop/observe.py --repo . --sources-dir SOURCES --output-dir FRESH_OUTPUT --jar REVIEWED_JAR --java-bin REVIEWED_JDK_BIN
+python3 tests/run.py tests/access/schema/saved_field_drop/prepare.py --repo . --sources-dir SOURCES --output-dir FRESH_OUTPUT
+python3 tests/run.py tests/access/schema/saved_field_drop/observe.py --repo . --sources-dir SOURCES --output-dir FRESH_OUTPUT --jar REVIEWED_JAR --java-bin REVIEWED_JDK_BIN
 ```
 
 No native DROP candidate, original intent, recovery, normal runtime or GUI editing
 is supplied by this evidence. Native Access Save/layout/confirmation behavior,
 dependent objects, populated rows, selected indexed fields, long-value retirement,
 later edits on deleted layouts and older-format writing remain separate work.
-The earlier [deleted-column histories](../COLUMN_HISTORIES.md) retain independent
+The earlier [deleted-column histories](../../../reports/schema/COLUMN_HISTORIES.md) retain independent
 populated-row read coverage; that reader coverage does not grant schema writes.

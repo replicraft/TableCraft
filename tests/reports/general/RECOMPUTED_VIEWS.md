@@ -1,12 +1,12 @@
 # Original native recomputed-view replay
 
-The [accepted report](results/recomputed-views-2026-10-25.json) passes 80 controls
+The [accepted report](../../results/general/recomputed-views-2026-10-25.json) passes 80 controls
 on the registered ACE 2016/2019 calculated-dependency originals: 48 successful
 queries and 32 intended buffered refusals. It compares 212 rows and 460 cells
 with no disagreements. This is independent engineering evidence, not native
 Access formula execution, freshness or save/reopen qualification.
 
-[The runner](compare_recomputed_views.py) reopens both originals using the existing
+[The runner](../../access/reading/tables/compare_recomputed_views.py) reopens both originals using the existing
 inert Java getter with expression evaluation disabled and a throwing link
 resolver. Fresh getter output must match the registered observations exactly.
 Independent integer/NULL/String models use ordinary ID, Input and Label values;
@@ -36,9 +36,9 @@ or frozen executable changed. The accepted fresh replay uses the same originals.
 Commands, outputs, expected rows and hashes remain in the report. Its runner pins
 existing getter/model/display helpers separately and refuses to overwrite an
 existing report. No new fixture binaries or dependencies were adopted; original
-recipe and getter provenance remain in [FIXTURES.md](FIXTURES.md).
+recipe and getter provenance remain in [FIXTURES.md](../reading/FIXTURES.md).
 
-[Focused tests](../access/calculations/RECOMPUTED_CALCULATION_VIEWS.md) separately cover invalid
+[Focused tests](../../../docs/access/calculations/RECOMPUTED_CALCULATION_VIEWS.md) separately cover invalid
 caches, paired result types, retained Strings, provider reuse, metadata-only
 preparation, exact cumulative limits and cancellation. These views remain explicit
 buffered computations over selected formulas; they do not replace native table

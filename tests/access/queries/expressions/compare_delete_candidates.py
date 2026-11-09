@@ -6,14 +6,14 @@ import json
 from pathlib import Path
 import subprocess
 
-ROOT = Path(__file__).resolve().parents[2]
-OBSERVATIONS = ROOT / 'docs/testing/compare_delete_storage.py'
+ROOT = Path(__file__).resolve().parents[4]
+OBSERVATIONS = ROOT / 'tests/access/rows/delete/compare_delete_storage.py'
 SPEC = importlib.util.spec_from_file_location('storage_observations', OBSERVATIONS)
 STORAGE = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(STORAGE)
 TABLES = ('Indexed', 'CodecKeys', 'FloatingKeys', 'Unindexed', 'Sentinel')
 NOTICE = 'Engineering candidate: data-macro semantics and native Access qualification pending.\n'
-REFERENCE = ROOT / 'docs/testing/results/delete-candidate-reference-2026-10-26.json'
+REFERENCE = ROOT / 'tests/results/rows/delete-candidate-reference-2026-10-26.json'
 SOURCE_PATHS = (
     'crates/engines/tablecraft-ace/examples/preview_ace16_delete.rs',
     'crates/engines/tablecraft-ace/src/table/mutation/delete.rs',
@@ -407,7 +407,7 @@ def main():
     reference = json.loads(REFERENCE.read_text())
     if reference['hashes_before'] != reference['hashes_after']:
         parser.error('Committed reference has inconsistent pins')
-    helper = ROOT / 'docs/testing/DeleteCandidateFixture.java'
+    helper = ROOT / 'tests/access/queries/expressions/DeleteCandidateFixture.java'
     originals = []
     inputs = []
     for profile in ('V2016', 'V2019'):

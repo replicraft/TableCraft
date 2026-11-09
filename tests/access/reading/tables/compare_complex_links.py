@@ -34,7 +34,7 @@ def main():
     for path in [args.ace2016, args.ace2019] + ([args.ace2007] if args.ace2007 else []):
         original = path.read_bytes()
         oracle = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar,
-            "docs/testing/ComplexRowsFixture.java", "--links", path).splitlines()
+            "tests/access/reading/tables/ComplexRowsFixture.java", "--links", path).splitlines()
         assert len(oracle) == 9
         catalog = run(args.cli, "inspect", path, "--catalog", "--show-system").splitlines()
         start = next(i for i, line in enumerate(catalog) if line.startswith("Object ID\t"))

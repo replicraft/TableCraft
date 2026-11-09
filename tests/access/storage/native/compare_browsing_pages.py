@@ -3,6 +3,7 @@
 Requires the reviewed Jackcess artifact. Generated database bytes stay local;
 only the original MIT recipe is tracked. No native Access qualification implied.
 """
+from engineering_paths import reference_file
 import argparse
 import hashlib
 from pathlib import Path
@@ -19,14 +20,14 @@ def main():
     if args.generate:
         args.directory.mkdir(exist_ok=False)
         for profile, suffix in PROFILES:
-            run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar, RECIPES / "BrowsingFixture.java", args.directory / f"Browsing-{profile}.{suffix}", profile)
+            run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar, reference_file('tests/access/reading/tables/BrowsingFixture.java'), args.directory / f"Browsing-{profile}.{suffix}", profile)
     for profile, suffix in PROFILES:
         path = args.directory / f"Browsing-{profile}.{suffix}"
         before = path.read_bytes()
         family = {"V2000": 1, "V2016": 5, "V2019": 6}[profile]
         assert before[20:24] == bytes([family, 0, 0, 0])
         def oracle(recipe, *extra):
-            return run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar, RECIPES / f"{recipe}.java", path, *extra)
+            return run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar, reference_file(f"{recipe}.java"), path, *extra)
         header = "\t".join(escaped(line.split("\t")[1]) for line in oracle("TableSchemaOracle", "Browse rows").splitlines()) + "\n"
         rows = ["\t".join(display(tag) for tag in line.split("\t")[1:]) + "\n" for line in oracle("TableDataOracle", "Browse rows").splitlines()]
         assert len(rows) == 20_050

@@ -35,12 +35,12 @@ split regressions pass. Sixteen typed/SQL host saves, 48 cold restarts and the
 existing four CLI saves/readbacks pass. `CompleteInsertableBatch` performs the
 two-row typed saves atomically; SQL/CLI multi-row append shapes still refuse.
 The
-[source qualification](../../testing/ACE16_WIDE_ROOT_PROMOTION_SOURCES.md)
+[source qualification](../../../tests/reports/indexes/ACE16_WIDE_ROOT_PROMOTION_SOURCES.md)
 preceded matching writes.
 
 The paired source uses MAX/MAX-1 and requires a three-byte primary prefix. It
 does not replace the different historical MAX/MAX request with another golden.
-See the [prefix execution record](../../testing/results/ace16-wide-primary-prefix-writes-2026-11-02.json).
+See the [prefix execution record](../../../tests/results/general/ace16-wide-primary-prefix-writes-2026-11-02.json).
 
 The larger independently qualified batch requires fresh ascending leaf prefixes
 0/1 and descending prefixes 0/9. Coordinated fresh leaves explicitly bound shared
@@ -49,7 +49,7 @@ entry points retain their full sort-key and unused single-entry child-prefix
 behavior. The first larger matching run failed preservation because that legacy
 policy selected prefix 11. A three-owner policy correction matches all frozen
 images without changing source bytes, requests or independent proof. See the
-[larger batch record](../../testing/results/ace16-fresh-wide-leaf-compression-writes-2026-11-02.json).
+[larger batch record](../../../tests/results/indexes/ace16-fresh-wide-leaf-compression-writes-2026-11-02.json).
 
 DATA plus wider-index allocation, nullable/compound keys,
 retained wider NODE insertion, recursive splits and map expansion remain separate

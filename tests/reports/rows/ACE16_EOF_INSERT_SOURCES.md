@@ -6,7 +6,7 @@ are independent expected-byte and reader qualifications. They do not establish
 native Access save conformance or enable a normal growing INSERT consumer.
 At this source stage, implementation, native recovery and host acceptance were
 pending. Subsequent producer results belong to the
-[normal INSERT contract](../access/writes/NORMAL_ACE_INSERT.md#represented-eof-allocation).
+[normal INSERT contract](../../../docs/access/writes/NORMAL_ACE_INSERT.md#represented-eof-allocation).
 
 Both ACE 16 header families start from the immutable
 [preserved fixed-scalar originals](ACE16_PRESERVED_FIXED_SCALARS.md). The selected
@@ -49,7 +49,7 @@ The native source gates each passed one function over four views: batch 0.18s,
 single 0.17s. They validate complete selected rows, fresh Source/fitted admission,
 NULL counts, readonly OLE, properties, exact map polarity and byte complement.
 The maintained gates are
-[batch sources](../../crates/engines/tablecraft-ace/src/table/mutation/normal_insert/eof_sources.rs)
-and [single-row sources](../../crates/engines/tablecraft-ace/src/table/mutation/normal_insert/single_eof_sources.rs).
-Their literal pins and the [result record](results/ace16-eof-insert-sources-2026-11-01.json)
+[batch sources](../../../crates/engines/tablecraft-ace/src/table/mutation/normal_insert/eof_sources.rs)
+and [single-row sources](../../../crates/engines/tablecraft-ace/src/table/mutation/normal_insert/single_eof_sources.rs).
+Their literal pins and the [result record](../../results/rows/ace16-eof-insert-sources-2026-11-01.json)
 keep source evidence separate from future producer and recovery results.

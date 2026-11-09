@@ -17,7 +17,7 @@ import subprocess
 from compare_saved_external import decode, display
 
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[4]
 PROFILES = ("V2016", "V2019", "V2000", "V2007")
 NODES = ("root", "one", "two")
 JAR_SHA256 = "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc"
@@ -53,7 +53,7 @@ def main():
     assert digest(args.jar) == JAR_SHA256
     assert digest(args.source_manifest) == args.manifest_sha256
     paths = {args.cli, args.jar, args.source_manifest, Path(__file__), ROOT / "Cargo.lock"}
-    paths.update(ROOT / "docs/testing" / name for name in (
+    paths.update(ROOT / "tests/access" / name for name in (
         "ExternalNamedFixture.java", "ExternalNamedOracle.java", "compare_saved_external.py",
     ))
     paths.update(args.directory.rglob("*"))

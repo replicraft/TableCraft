@@ -1,7 +1,7 @@
 # Increment companions: independently qualified AFTER images
 
 Twenty literal AFTER images now extend the
-[qualified companion originals](ACE16_RETAINED_REUSE_COMPANION_SOURCES.md).
+[qualified companion originals](../rows/ACE16_RETAINED_REUSE_COMPANION_SOURCES.md).
 The original/request laws and complete observer/report closure were frozen
 before construction. All original bytes and earlier evidence remain unchanged.
 No matching generalized generator ran during this source phase.
@@ -26,7 +26,7 @@ strict receipt/summary/plan controls and zero-child saved verification. The
 observers open existing files read-only, disable expressions and never request
 next-value generation.
 
-See the [source execution record](results/ace16-increment-companion-after-source-gates-2026-11-01.json).
+See the [source execution record](../../results/creation/ace16-increment-companion-after-source-gates-2026-11-01.json).
 Generalized normal INSERT production and host acceptance remain a separate next
 step. These reads do not establish native Microsoft Access generation/save timing
 or application save/reopen compatibility.

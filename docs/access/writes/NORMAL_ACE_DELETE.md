@@ -102,8 +102,8 @@ recognize the separate TCND action without SQL replay or fallback. See
 ## Evidence and remaining limits
 
 Earlier unindexed direct/one-hop forwarded source and write results remain
-recorded in the [native DELETE record](../../testing/results/ace16-normal-delete-writes-2026-11-01.json)
-and [retained host record](../../testing/results/ace16-retained-normal-delete-2026-11-01.json).
+recorded in the [native DELETE record](../../../tests/results/rows/ace16-normal-delete-writes-2026-11-01.json)
+and [retained host record](../../../tests/results/rows/ace16-retained-normal-delete-2026-11-01.json).
 Their property/OLE/forwarding preservation and first failures remain unchanged.
 
 The indexed source tranche is committed as `7fe205f6`: sixteen native read views
@@ -111,7 +111,7 @@ and eighty exact independent SDK reports pass for two unchanged genuine original
 and eight literal AFTERs. It covers first/middle/exterior/all-row removal from
 both physical indexes and four logical aliases, preserving histories, tails,
 maps and EOF. Both exterior request orders share one independently specified
-image. See the [indexed source record](../../testing/results/ace16-normal-indexed-delete-sources-2026-11-01.json).
+image. See the [indexed source record](../../../tests/results/indexes/ace16-normal-indexed-delete-sources-2026-11-01.json).
 The initial broad-selector setup failure is retained: unrelated legacy exporters
 were selected without their fresh-output setup; exact source selectors passed
 without source/admission changes.
@@ -136,7 +136,7 @@ shared leaf cancellation tests. DELETE-specific checks cover:
 Complete images retain both physical trees, four aliases, historical counters,
 inactive tails, maps and EOF exactly as the independently authored outcomes.
 Broader regression and feature checks are recorded separately in the
-[indexed write record](../../testing/results/ace16-normal-indexed-writes-2026-11-01.json). The initial
+[indexed write record](../../../tests/results/indexes/ace16-normal-indexed-writes-2026-11-01.json). The initial
 static extraction review corrected the old preview's two-poll cancellation
 cadence before producer execution; earlier private checkpoints remain intact.
 
@@ -154,7 +154,7 @@ exterior request orders and empty resulting roots. Forty recovery contexts,
 eight committed mixed-target refusals, 44 protected-AFTER forgeries and two
 original inactive-NULL witness recovery refusals pass. Logical NULL does not
 authorize changes to inactive payloads, original masks or vacated entry bytes.
-See the [follow-on record](../../testing/results/ace16-indexed-write-followons-2026-11-01.json).
+See the [follow-on record](../../../tests/results/indexes/ace16-indexed-write-followons-2026-11-01.json).
 No interior-tree or wider-key mutation is established by these results.
 
 ## Retained NODE trees
@@ -173,8 +173,8 @@ in both request orders. Twelve recovery contexts, 42 protected-image refusals,
 full resource/cancellation checks, six retained typed/SQL saves plus six empty
 follow-ons, and four CLI saves/readbacks pass. The observed sources have
 height-one trees; broader heights and native Access qualification remain
-separate evidence. See the [source contract](../../testing/GENUINE_RETAINED_NODE_DELETE_SOURCE.md)
-and [write record](../../testing/results/ace16-normal-retained-node-delete-writes-2026-11-01.json).
+separate evidence. See the [source contract](../../../tests/reports/rows/GENUINE_RETAINED_NODE_DELETE_SOURCE.md)
+and [write record](../../../tests/results/rows/ace16-normal-retained-node-delete-writes-2026-11-01.json).
 
 
 ## Int64 and Currency secondary root leaves
@@ -200,7 +200,7 @@ and eight refusals. SQL positives use source-qualified NULL keys; non-NULL wide
 values are covered through exact typed/native carriers. These results do not
 establish implicit SQL numeric coercions or native Access save conformance.
 
-The [execution record](../../testing/results/ace16-normal-integral-indexed-writes-2026-11-01.json)
+The [execution record](../../../tests/results/indexes/ace16-normal-integral-indexed-writes-2026-11-01.json)
 retains the initial missed action-admission guard and its narrow correction,
 complete receipts and strict/broad regression results. Empty/all-NULL, stable-ID
 gaps and sparse native ordinals are separate follow-on source work.

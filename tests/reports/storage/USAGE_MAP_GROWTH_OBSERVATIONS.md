@@ -3,7 +3,7 @@
 Fresh public-builder ACE 16 sources demonstrate two storage transitions: a
 previously empty indirect ordinary-owned map gains its first bitmap, and an
 inline index-owned map promotes to indirect during a root-leaf split. The
-[receipt](results/usage-map-growth-observations-2026-10-27.json) preserves the
+[receipt](../../results/storage/usage-map-growth-observations-2026-10-27.json) preserves the
 sources, exact executed helpers, failure and successful read-only classifications.
 These are independent-writer observations, not native Access qualification or
 authority for normal saves.
@@ -31,7 +31,7 @@ Int32 MAX would require 7,201 bytes, while the two 450-entry halves require
 There was no population or shape adjustment after observation.
 
 All JVM/compiler processes have 512 MiB heaps and 30-second timeouts. The existing
-repository-owned [file bound](parent_index_split_originals/BoundedFileChannel.java)
+repository-owned [file bound](../../access/indexes/parent_index_split_originals/BoundedFileChannel.java)
 prevents writes beyond 8 MiB. Engine scalar, row and image ceilings are unchanged.
 
 ## The failed action remains a failure
@@ -57,7 +57,7 @@ to inspect that copy. Complete getters, map/index decoding and the frozen
 protected-byte proof pass; the result is **validated partial mutation evidence**
 with its original failed exit status. V2016 was never rerun.
 
-The separate [ProbeV2 helper](usage_map_growth/UsageMapGrowthProbeV2.java) changes
+The separate [ProbeV2 helper](../../access/storage/usage_map_growth/UsageMapGrowthProbeV2.java) changes
 only the class name and the update argument to a mutable `HashMap`. Its first
 V2019 action uses the unchanged original source and a fresh output. The exact
 original compiled helper performs the subsequent read-only inspection. Sources
@@ -94,8 +94,8 @@ bits, accounting for both children and their separate metadata page.
 
 ## Independent saved-byte proof
 
-The [model](usage_map_growth/model.py) preserves the executed raw proof functions
-without their process runner. The [verifier](usage_map_growth/verify.py) performs
+The [model](../../access/storage/usage_map_growth/model.py) preserves the executed raw proof functions
+without their process runner. The [verifier](../../access/storage/usage_map_growth/verify.py) performs
 no Java, native candidate or database write calls. Its first run verifies 88
 unique live pins, six source snapshots, 5,000 source-row comparisons and 3,200
 post-update row comparisons. These are repeated checkpoint comparisons, not
@@ -118,7 +118,7 @@ is imported by the public verifier.
 To verify the retained artifacts without repeating fixture commands:
 
 ```sh
-python3 docs/testing/usage_map_growth/verify.py \
+python3 tests/run.py tests/access/storage/usage_map_growth/verify.py \
   --first-report .cache/ace16-usage-map-growth-first-20261027/report.json \
   --partial-classification .cache/ace16-usage-map-growth-partial-classification-20261027/report.json \
   --v2019-report .cache/ace16-usage-map-growth-v2019-first-20261027/report.json

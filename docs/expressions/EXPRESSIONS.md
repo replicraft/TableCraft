@@ -233,7 +233,7 @@ rules and unresolved NULL validation results stay unqualified.
 
 Fixed-seed interval checks cover full i64 values without float conversion, along
 with reversed bounds, unknown truth, eager errors, cancellation and budget limits.
-Original [native rule fixtures](../testing/PredicateRuleFixture.java) separately check
+Original [native rule fixtures](../../tests/access/reading/tables/PredicateRuleFixture.java) separately check
 independent writer acceptance/rejection on both qualified newer families. This
 is not Microsoft Access conformance or a new writable ACE profile.
 
@@ -645,7 +645,7 @@ range-check ordering still require Windows comparison.
 The dependency stays behind TableCraft values; core representation, precision,
 scale, equality, Serde, field/index codecs and implicit promotion are unchanged.
 Remaining Currency operations and broader promotion rules are separate work. Calls retain existing arity/eager-error/budget and UPDATE restrictions.
-[Benchmarks](../testing/CURRENCY_CONVERSIONS.md) record absolute conversion costs.
+[Benchmarks](../../tests/reports/queries/CURRENCY_CONVERSIONS.md) record absolute conversion costs.
 
 Primary references: [Microsoft conversion functions](https://learn.microsoft.com/en-us/office/vba/language/concepts/getting-started/type-conversion-functions),
 [rust_decimal retained conversion](https://docs.rs/rust_decimal/1.43.0/rust_decimal/struct.Decimal.html#method.from_f64_retain)
@@ -706,7 +706,7 @@ with Overflow; converted zero divisors fail with DivisionByZero, and non-finite
 floating inputs fail with NonFinite. In particular, float-to-Decimal underflow
 can turn a nonzero float divisor into zero before division.
 
-The [full-width rational runner](../testing/DECIMAL_ARITHMETIC.md#full-width-rational-boundary-checks)
+The [full-width rational runner](../../tests/reports/general/DECIMAL_ARITHMETIC.md#full-width-rational-boundary-checks)
 now passes 23,460 CLI controls across every supported scale pair and signed
 96-bit boundary inputs, using exact Fraction arithmetic and direct half-even
 quantization. This independently checks numeric results and refusal behavior;
@@ -726,7 +726,7 @@ zero base with a zero exponent returns Double 1. This follows the explicit
 [MS-VBAL power error contract](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/c3f526af-9d58-47f9-a6be-22ab81e8747a).
 Operand admission, conversion and eager failures still precede the power kernel;
 an actual division-by-zero expression used as an operand keeps its own error.
-The [Power replay](../testing/POWER.md) checks 627 CLI commands against exact
+The [Power replay](../../tests/reports/general/POWER.md) checks 627 CLI commands against exact
 bounded-power and explicit error models; broader real-power/native qualification
 remains separate. Integer division and Mod
 retain the existing half-even-to-Int64 coercion and checked range contracts.
@@ -737,7 +737,7 @@ These are a bounded library-backed implementation and independent rational/golde
 checks, not native Access/OleAut rounding or SQL aggregate qualification. General
 Variant/declared-type promotion, locale coercion and native comparison remain
 required. Library versions/features and core/native storage representations are
-unchanged. [Arithmetic benchmarks](../testing/DECIMAL_ARITHMETIC.md) measure the kernel.
+unchanged. [Arithmetic benchmarks](../../tests/reports/general/DECIMAL_ARITHMETIC.md) measure the kernel.
 
 Primary references: [Microsoft addition](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/plus-operator),
 [subtraction](https://learn.microsoft.com/en-us/office/vba/language/reference/user-interface-help/minus-operator),
@@ -1026,7 +1026,7 @@ Original evaluator/query/CLI controls cover number/date-policy separation,
 regional and numeric spellings, NULLs, raw negative serials, exact Extended bypass,
 prepared rebinding, filters/grouping/correlations and closed Eval. Exact normalization
 ceilings and every observed transient cancellation checkpoint are exercised.
-The [independent runner](../testing/compare_date_component_sources.py) passes 1,406
+The [independent runner](../../tests/access/queries/expressions/compare_date_component_sources.py) passes 1,406
 Python Gregorian/native-field controls over unchanged priority-family inputs.
 Native getters supply raw fields, not Access SQL results; native Access qualification
 remains pending.

@@ -70,7 +70,7 @@ plan or ordinary save path is introduced.
 
 ## Engineering consumer
 
-The [working example](../../crates/engines/tablecraft-ace/examples/preview_ace16_split_fixed.rs)
+The [working example](../../../crates/engines/tablecraft-ace/examples/preview_ace16_split_fixed.rs)
 uses eight positional arguments:
 
 ```sh
@@ -89,7 +89,7 @@ replaced. Success reports `candidate_changed_rows=N` and the engineering notice.
 
 ## Verification and evidence boundaries
 
-The [scoped implementation record](results/ace16-fixed-index-splits-native-2026-10-27.json)
+The [scoped implementation record](../../results/indexes/ace16-fixed-index-splits-native-2026-10-27.json)
 records exact source/log pins and accepted check counts. Independent whole-image
 literals cover both ACE codes and directions, each width and declared kind,
 physical aliases, full row ties, root/non-root/recursive growth, stored NULL peers,

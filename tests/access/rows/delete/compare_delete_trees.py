@@ -6,8 +6,8 @@ import json
 from pathlib import Path
 import subprocess
 
-ROOT = Path(__file__).resolve().parents[2]
-REFERENCE = ROOT / 'docs/testing/results/delete-tree-reference-2026-10-26.json'
+ROOT = Path(__file__).resolve().parents[4]
+REFERENCE = ROOT / 'tests/results/rows/delete-tree-reference-2026-10-26.json'
 SOURCE_PATHS = (
     'crates/engines/tablecraft-ace/examples/preview_ace16_delete.rs',
     'crates/engines/tablecraft-ace/src/table/mutation/delete.rs',
@@ -26,8 +26,8 @@ def load_module(name, relative):
     return module
 
 
-BASE = load_module('flat_candidate_checks', 'docs/testing/compare_delete_candidates.py')
-TREE = load_module('original_tree_checks', 'docs/testing/capture_delete_trees.py')
+BASE = load_module('flat_candidate_checks', 'tests/access/queries/expressions/compare_delete_candidates.py')
+TREE = load_module('original_tree_checks', 'tests/access/rows/delete/capture_delete_trees.py')
 
 
 class TreeReplay(BASE.Replay):
@@ -241,7 +241,7 @@ def main():
     for relative, expected in reference['hashes_before'].items():
         if BASE.digest((ROOT / relative).read_bytes()) != expected:
             parser.error(f'Registered original/helper/JAR differs: {relative}')
-    helper = ROOT / 'docs/testing/DeleteTreeFixture.java'
+    helper = ROOT / 'tests/access/rows/delete/DeleteTreeFixture.java'
     if BASE.label(args.jar) not in reference['hashes_before']:
         parser.error('JAR path is not the registered reviewed artifact')
     pins = [Path(__file__), Path(BASE.__file__), Path(TREE.__file__),

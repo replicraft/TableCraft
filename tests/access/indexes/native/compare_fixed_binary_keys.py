@@ -20,7 +20,7 @@ import subprocess
 import compare_numeric_keys as model
 from compare_declared_numeric_text import INPUTS, JAR_SHA256
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[4]
 MAX_COMMANDS = 5000
 SOURCE_ROOTS = [
     "crates/query/tablecraft-expressions/src/comparison.rs",
@@ -331,8 +331,8 @@ def main():
         if digest(args.directory / name) != expected:
             raise ValueError("Original native fingerprint differs")
     tools = [args.cli, args.baseline, args.jar, Path(__file__),
-             ROOT / "docs/testing/compare_numeric_keys.py", ROOT / "docs/testing/compare_declared_numeric_text.py",
-             ROOT / "docs/testing/TableDataOracle.java", ROOT / "docs/testing/ScalarFixture.java",
+             ROOT / "tests/access/indexes/native/compare_numeric_keys.py", ROOT / "tests/access/queries/expressions/compare_declared_numeric_text.py",
+             ROOT / "tests/access/reading/tables/TableDataOracle.java", ROOT / "tests/access/reading/tables/ScalarFixture.java",
              *(args.directory / name for name in INPUTS)]
     pins = {str(path.resolve().relative_to(ROOT)): digest(path) for path in tools}
     revision = subprocess.run(["git", "rev-parse", "--verify", f"{args.revision}^{{commit}}"],
@@ -353,7 +353,7 @@ def main():
         for name in INPUTS:
             database = args.directory / name
             getter = subprocess.run(["java", "-Xmx256m", "-cp", args.jar,
-                                     ROOT / "docs/testing/TableDataOracle.java", database, "ScalarSamples"],
+                                     ROOT / "tests/access/reading/tables/TableDataOracle.java", database, "ScalarSamples"],
                                     capture_output=True, text=True, encoding="utf-8", check=True, timeout=120)
             if getter.stderr:
                 raise ValueError("Unexpected getter diagnostics")

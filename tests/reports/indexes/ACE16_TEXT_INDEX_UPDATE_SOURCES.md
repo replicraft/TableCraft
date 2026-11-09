@@ -15,11 +15,11 @@ The first full action Source gate refused selected Text declarations with coarse
 `Unsupported(ActiveContent)`. The first native gate tested that exact boundary
 separately from public body/module/Extra absence. This is a profile gap, not a
 malicious-content diagnosis. Generic readability grants no write permission.
-The later [read-only Source qualification](../access/writes/TEXT_ACTION_SOURCE.md)
+The later [read-only Source qualification](../../../docs/access/writes/TEXT_ACTION_SOURCE.md)
 now passes actual Source capture and negative/refusal controls. Actual
 UPDATE/proof remains a separate step.
 
-The [source record](results/ace16-text-index-update-sources-2026-11-01.json)
+The [source record](../../results/indexes/ace16-text-index-update-sources-2026-11-01.json)
 retains these first observations. Native Access save/reopen and Windows
 qualification remain unrun; other locales, Text NODEs/splits and novel key
 families are not qualified by these finite source cases.

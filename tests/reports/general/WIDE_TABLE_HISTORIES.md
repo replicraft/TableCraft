@@ -2,7 +2,7 @@
 
 Microsoft's [Access specifications](https://support.microsoft.com/en-us/access/access-specifications)
 list 255 fields per table. The original
-[WideTableHistoryFixture.java](WideTableHistoryFixture.java) recipe reaches that
+[WideTableHistoryFixture.java](../../access/reading/tables/WideTableHistoryFixture.java) recipe reaches that
 width in Jet 4, ACE 2007 and both ACE 16 layout families using the reviewed
 Jackcess 5.0.4 artifact. This is independent engineering evidence; it does not
 qualify native Access DDL, compaction, save/reopen or broader historical layouts.
@@ -20,7 +20,7 @@ Text, ASCII, accented/BMP Unicode and supplementary characters. Missing newer
 Boolean fields read FALSE; other missing fields read NULL, without defaults or
 active expressions. All mutations occur only while creating fresh originals.
 
-The [runner](compare_wide_table_histories.py) separately models values and row
+The [runner](../../access/reading/tables/compare_wide_table_histories.py) separately models values and row
 history in Python, then checks read-only Jackcess getters. It compares complete
 native reads, one/seven-row cursors, reversed requested projections at logical
 boundaries, direct independent/native index order, buffered/progressive CLI
@@ -29,7 +29,7 @@ and an atomic tiny-budget refusal. TableCraft alone executes SQL.
 
 The generation and original 104-control reuse run pass. Adding direct index
 order checks yields 112 controls in the final registered reuse run. Original
-file hashes remain unchanged. [Fixture records](FIXTURES.md#maximum-width-table-history-inputs)
+file hashes remain unchanged. [Fixture records](../reading/FIXTURES.md#maximum-width-table-history-inputs)
 retain the generation identity; downloaded JARs, generated databases, manifests
 and logs remain in ignored .cache/tablecraft-fixtures/ and are not CI inputs.
 
@@ -42,7 +42,7 @@ are unchanged; successful wide reads do not qualify historical writes.
 ```sh
 CARGO_INCREMENTAL=0 cargo build --locked --offline -p tablecraft-ace --example table_data
 CARGO_INCREMENTAL=0 cargo build --locked --offline -p tablecraft-cli
-python3 docs/testing/compare_wide_table_histories.py \
+python3 tests/run.py tests/access/reading/tables/compare_wide_table_histories.py \
   --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar \
   --cli target/debug/tablecraft --rows target/debug/examples/table_data \
   --directory .cache/tablecraft-fixtures/wide-table-histories
@@ -56,16 +56,16 @@ not evaluate expressions, load VBA or alter their bytes.
 
 ## Malformed-row continuation
 
-The separate [failure runner](compare_wide_row_failures.py) uses read-only
-[location metadata](WideRowLocationOracle.java) to damage fresh copies of row 20.
+The separate [failure runner](../../access/reading/tables/compare_wide_row_failures.py) uses read-only
+[location metadata](../../access/reading/tables/WideRowLocationOracle.java) to damage fresh copies of row 20.
 It retains original database identities and does not change the generation
 recipe. Five framing faults per table/profile yield 280 buffered/query/streaming
 CLI controls. Normal buffered commands publish nothing; explicit streaming
 preserves exactly the valid prefix. The portable wide_rows integration tests
 also verify poisoned continuation, unchanged delivered position and no later I/O
 or budget changes, including empty projections. See
-[cursor failure boundaries](../access/storage/NATIVE_READ_FAILURES.md#maximum-width-malformed-suffixes).
+[cursor failure boundaries](../../../docs/access/storage/NATIVE_READ_FAILURES.md#maximum-width-malformed-suffixes).
 
 ```sh
-python3 docs/testing/compare_wide_row_failures.py   --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar   --cli target/debug/tablecraft   --directory .cache/tablecraft-fixtures/wide-table-histories
+python3 tests/run.py tests/access/reading/tables/compare_wide_row_failures.py   --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar   --cli target/debug/tablecraft   --directory .cache/tablecraft-fixtures/wide-table-histories
 ```

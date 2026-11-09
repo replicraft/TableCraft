@@ -98,9 +98,9 @@ quotas. Publisher tests cover byte ceilings, write/flush errors, stopping at the
 current cursor position and cancellation between batches. The existing browsing,
 help, query retrieval and native-byte controls also remain regression-tested.
 
-The independent [20,000-row recipe](../testing/StreamRowsFixture.java) creates inert
+The independent [20,000-row recipe](../../tests/access/reading/tables/StreamRowsFixture.java) creates inert
 dense original tables with NULLs, Unicode/supplementary characters, tabs, quotes
-and newlines. [Comparison](../testing/compare_stream_rows.py) uses reviewed read-only
+and newlines. [Comparison](../../tests/access/reading/tables/compare_stream_rows.py) uses reviewed read-only
 Jackcess getters and Python's CSV reader, rather than a second TableCraft scan.
 It passes 20 full-stream/projection/quota controls across four generated files,
 including batch sizes 1/127/1,000, 20,000 exact rows and outputs exceeding 1 MiB.
@@ -109,12 +109,12 @@ transport checks, not native Access SQL, shared-file or save/reopen qualificatio
 
 
 ```sh
-python3 docs/testing/compare_stream_rows.py \
+python3 tests/run.py tests/access/reading/tables/compare_stream_rows.py \
   --jar path/to/reviewed/jackcess-5.0.4.jar --cli target/debug/tablecraft \
   --directory path/to/fresh-stream-inputs --generate
 ```
 
-[Fixture provenance and hashes](../testing/FIXTURES.md#original-progressive-row-inputs) record
+[Fixture provenance and hashes](../../tests/reports/reading/FIXTURES.md#original-progressive-row-inputs) record
 the observed files. Native Access, live coordination and larger SQL execution
 remain separate qualification/implementation work.
 

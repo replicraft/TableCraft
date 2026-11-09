@@ -40,7 +40,7 @@ a bitmap byte. Represented-only cases retain their existing placement and bytes.
 ## Authority and independent certification
 
 When any map promotes, the shared
-[map authority service](ACE16_MAP_AUTHORITY.md) proves exclusivity for global free
+[map authority service](../storage/ACE16_MAP_AUTHORITY.md) proves exclusivity for global free
 storage and every index-owned map mutated by the operation, including
 represented-only peers. It captures current and historical declarations,
 canonical physical-index aliases, exact map-record ranges and bitmap storage.
@@ -70,13 +70,13 @@ resource failures remain visible and publish no candidate.
 
 ## Evidence and remaining qualification
 
-[Public source/reference observations](USAGE_MAP_GROWTH_OBSERVATIONS.md) establish
+[Public source/reference observations](../storage/USAGE_MAP_GROWTH_OBSERVATIONS.md) establish
 two independent-writer inline-to-indirect transitions. Their 18-command history
 includes the failed mutating V2016 helper and its separate read-only partial
 classification; it is not an all-success reference run. The two old frozen
 consumer MAX refusals are separate baseline evidence.
 
-The scoped [implementation record](results/ace16-index-map-growth-native-2026-10-27.json)
+The scoped [implementation record](../../results/indexes/ace16-index-map-growth-native-2026-10-27.json)
 records literal whole-image, late-promotion, mixed-owner, role-alias, resource,
 reader-purpose and private finalizer checks, with first failures retained.
 These checks do not establish Microsoft Access native save behavior. The separate

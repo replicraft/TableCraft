@@ -36,7 +36,7 @@ required-event absence for arbitrary imported files. The committed canonical
 source qualification record owns that envelope's provenance and earlier SDK
 observations; the new scalar payloads now have their own separate observations.
 
-The [source result](results/ace16-fixed-creation-source-2026-10-31.json) records
+The [source result](../../results/creation/ace16-fixed-creation-source-2026-10-31.json) records
 the exact original hashes, read observations, CI anchors and qualification limits.
 
 ## IEEE payload continuation
@@ -66,5 +66,5 @@ These are source/read observations, not native Access creation/save, normal ACE
 editing or required-event absence permission. The
 prior fixed-source record continues to own the unchanged envelope's provenance.
 
-The [IEEE result](results/ace16-fixed-ieee-creation-source-2026-10-31.json)
+The [IEEE result](../../results/creation/ace16-fixed-ieee-creation-source-2026-10-31.json)
 pins exact originals and observations, including the unchanged complement.

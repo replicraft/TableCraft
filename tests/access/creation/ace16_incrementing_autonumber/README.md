@@ -98,9 +98,9 @@ The retained producer was compiled from committed
 `9e77ffcf5612734ec89e342aa304e17cb60be8fd` in an initially absent isolated target.
 The archive's 4,702 file contents match its source manifest and Git blob IDs;
 actual engine compilation and the copied executable are pinned by the
-[build receipt](../results/ace16-incrementing-autonumber-example-build-2026-10-28.json).
+[build receipt](../../../results/creation/ace16-incrementing-autonumber-example-build-2026-10-28.json).
 Disposable target contents are not evidence dependencies. The
-[result](../results/ace16-incrementing-autonumber-originals-2026-10-28.json)
+[result](../../../results/creation/ace16-incrementing-autonumber-originals-2026-10-28.json)
 keeps each phase, preparation correction and public byte difference separate.
 
 ## Saved verification

@@ -2,9 +2,9 @@
 
 Complete supplied-row INSERT now uses TCNA4 through the native planner, shared
 offline sessions and CLI. Focused and broad local checks pass; the
-[execution record](../../testing/results/ace16-complete-insert-writes-2026-11-01.json)
+[execution record](../../../tests/results/rows/ace16-complete-insert-writes-2026-11-01.json)
 retains exact commands, counts, hashes and the first failed lint receipts.
-The independent [wider scalar source qualification](../../testing/ACE16_WIDE_SCALAR_INSERT_SOURCES.md)
+The independent [wider scalar source qualification](../../../tests/reports/rows/ACE16_WIDE_SCALAR_INSERT_SOURCES.md)
 has passed 32 native source views and 32 exact SDK reports before these producers.
 That read evidence does not establish native Access or Windows save/reopen.
 

@@ -5,14 +5,14 @@ Jackcess 5.0.4 read-only observation run. One compile and two reads succeeded: t
 empty post-DROP baseline and the predicted row. Source and observed copies retain
 their hashes. This is **zero SDK INSERT writes and no Microsoft Access Save**;
 it is not a positive TableCraft writer or GUI insertion claim. The
-[record](../results/gapped-number-insert-raw-sdk-read-2026-11-09.json) preserves
+[record](../../../results/rows/gapped-number-insert-raw-sdk-read-2026-11-09.json) preserves
 frozen helper/prediction/observation hashes and actual observations separately
 from the later sparse writer work, which is applied but unrun at this checkpoint.
 
 ## Literal prediction
 
 The Number source is the appended-property-cleanup DROP image in the
-[existing raw deletion record](../results/saved-field-drop-raw-sdk-read-2026-11-09.json),
+[existing raw deletion record](../../../results/schema/saved-field-drop-raw-sdk-read-2026-11-09.json),
 SHA256 `6c08831dfe4d305064837d93a8d1942a1a87b691ca80e4834a130c202c72923b`.
 Its live fields are ID/Score2 at native numbers and stored IDs 0/2, with maximum
 column count 3 and retained fixed offsets 0/8. A live vector position is not a
@@ -47,12 +47,12 @@ execution status without rewriting those historical hashes. No successful
 observation was rerun during promotion and no failed attempt occurred.
 
 Use the pinned `number-history-append-live-group-removed.accdb` from the
-[raw DROP preparation](../saved_field_drop/README.md), with a fresh output for
+[raw DROP preparation](../../schema/saved_field_drop/README.md), with a fresh output for
 each command, from the repository root:
 
 ```sh
-python3 docs/testing/gapped_number_insert/model.py --repo . --source PINNED_DROP_SOURCE --output FRESH_PREDICTION
-python3 docs/testing/gapped_number_insert/observe.py --source PINNED_DROP_SOURCE --prediction FRESH_PREDICTION/number-gapped-first-row.accdb --jar REVIEWED_JAR --java-bin REVIEWED_JDK_BIN --output FRESH_OBSERVATION
+python3 tests/run.py tests/access/rows/gapped_number_insert/model.py --repo . --source PINNED_DROP_SOURCE --output FRESH_PREDICTION
+python3 tests/run.py tests/access/rows/gapped_number_insert/observe.py --source PINNED_DROP_SOURCE --prediction FRESH_PREDICTION/number-gapped-first-row.accdb --jar REVIEWED_JAR --java-bin REVIEWED_JDK_BIN --output FRESH_OBSERVATION
 ```
 
 The current service checkpoint retains the original dense-source INSERT refusal

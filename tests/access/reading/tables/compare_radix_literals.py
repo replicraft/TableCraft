@@ -3,6 +3,7 @@
 The reference reads stored fields only. Only TableCraft executes SQL; models do
 not qualify Access literal typing, optimizer choices or native error precedence.
 """
+from engineering_paths import reference_file
 
 import argparse
 import hashlib
@@ -49,7 +50,7 @@ def main():
     for database in args.database:
         original = database.read_bytes()
         tagged = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar,
-                     RECIPES / "TableDataOracle.java", database, "ScalarSamples")
+                     reference_file('tests/access/reading/tables/TableDataOracle.java'), database, "ScalarSamples")
         identities = [int(line.split("\t")[1].removeprefix("I32:")) for line in tagged.splitlines()]
         expected_rows = [[value, value + 1, 3, value % 2] for value in identities]
         check(execute(args.cli, "run", "SELECT ID,ID+&H1,VarType(ID+&H1),ID Mod &O2 FROM ScalarSamples ORDER BY ID", database), expected_rows)

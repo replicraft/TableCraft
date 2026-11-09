@@ -24,7 +24,7 @@ candidate-derived replacement input. All 76 before/after input pins matched;
 unmet cases, input errors or artifact inventory errors.
 
 The frozen executable was compiled from `abc9fd370f71a692a2b17774c7cba04df54e5c5d`.
-Its [committed build receipt](results/ace16-variable-split-example-build-2026-10-27.json)
+Its [committed build receipt](../../results/indexes/ace16-variable-split-example-build-2026-10-27.json)
 binds the exact executable, 285 selected compiled Git objects and a separate
 4,194-file committed export manifest. Selected source pins are not an exhaustive
 compiler/toolchain/dependency closure. The acceptance gate checked the committed
@@ -53,12 +53,12 @@ promotion evidence.
 ## Independent image and storage proof
 
 The six image hashes were frozen before the combined consumer existed. The
-[source-to-image model](variable_index_split_originals/candidate_model.py) uses
+[source-to-image model](../../access/indexes/variable_index_split_originals/candidate_model.py) uses
 original raw records, metadata/getter facts, independent finite key weights and
 native logical ROW references. It reads neither candidate output nor public
 writer scratch to construct expected bytes.
 
-The [record model](variable_index_split_originals/record_model.py) derives the
+The [record model](../../access/indexes/variable_index_split_originals/record_model.py) derives the
 replacement from the original physical variable offsets, footer and presence
 mask. Its capacity formula retains old padding/capacity before deciding growth.
 The actual source records have 43 bytes, one variable slot and masks of one or
@@ -85,7 +85,7 @@ encoded entries; original index-root suffix residue remains exact. All other
 original bytes are preserved outside the bounded root/map changes.
 
 Both directions are checked for General Legacy, General Modern and Binary. The
-[finite key oracle](variable_index_split_originals/source_weights.py) matches the
+[finite key oracle](../../access/indexes/variable_index_split_originals/source_weights.py) matches the
 original getter's whole-entry encoder, including Modern255 digest tails `c1ae`
 and `ce3d`, separately corroborated by persisted public references. Engineering
 compression uses complete key/ROW prefixes. For example, old-only 450-entry
@@ -105,7 +105,7 @@ images, 60 physical trees and 16,206 original-record instances were checked.
 
 ## Reproducibility and limits
 
-The [compact receipt](results/ace16-variable-index-split-originals-2026-10-27.json)
+The [compact receipt](../../results/indexes/ace16-variable-index-split-originals-2026-10-27.json)
 pins the authoritative raw report, first terminal/log, executed private model,
 plan, controller, binding, source/getter/helper inputs, output hashes and public
 tools. Public model/record/key functions have the same ASTs as their executed
@@ -113,7 +113,7 @@ private versions; only repository-root/import composition changes. The existing
 source parser and protection functions likewise match their executed versions.
 The historical implementation receipt remains its original snapshot.
 
-The maintained [saved verifier](variable_index_split_originals/verify_candidates.py)
+The maintained [saved verifier](../../access/indexes/variable_index_split_originals/verify_candidates.py)
 recomputes complete expected images before parsing cached getters. Its first
 saved-only run passed: 348 live pin occurrences, all 285 compiled Git objects,
 one receipt Git object and all six saved image/getter proofs. Git checks use

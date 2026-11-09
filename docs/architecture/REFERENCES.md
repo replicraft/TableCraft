@@ -10,7 +10,7 @@ The 18 October 2026 application review has feature-local Microsoft source mappin
 [startup](../features/ACCESS_APP_STARTUP.md), [custom ribbons](../features/ACCESS_RIBBON_COMPAT.md),
 [DAO/ADO](../features/DAO_ADO.md), [advanced fields](../features/ACCESS_ADVANCED_FIELDS.md)
 and [distribution/signatures/version limits](../features/ACCESS_DISTRIBUTION.md).
-These inform future contracts; the [corpus policy](../testing/ACCESS_APPLICATIONS.md)
+These inform future contracts; the [corpus policy](../../tests/reports/reading/ACCESS_APPLICATIONS.md)
 separates those requirements from observed compatibility evidence.
 The [expanded distribution read scope](../features/ACCESS_DISTRIBUTION.md#required-read-scope)
 distinguishes header-based `.accdr`/`.accde`/`.mde` reads from pending `.accdt`
@@ -282,6 +282,6 @@ connects these references to current requirements without claiming implementatio
 
 [Shared editing decision](../decisions/0002_SHARED_APPLICATION_EDITING.md),
 [MCP requirements](../interfaces/MCP.md) and
-[scenario qualification](../testing/APPLICATION_SCENARIOS.md) connect these references
+[scenario qualification](../../tests/reports/reading/APPLICATION_SCENARIOS.md) connect these references
 to the proposed application services. Architectural ratings in the supplied
 proposal are not implementation evidence.

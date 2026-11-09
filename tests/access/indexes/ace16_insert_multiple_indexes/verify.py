@@ -5,10 +5,10 @@ import json
 from pathlib import Path
 import sys
 
-ROOT = Path(__file__).resolve().parents[3]
+ROOT = Path(__file__).resolve().parents[4]
 sys.dont_write_bytecode = True
 sys.path.insert(0, str(ROOT))
-sys.path.insert(0, str(ROOT / 'docs/testing'))
+sys.path.insert(0, str(ROOT / 'tests/access'))
 from scripts.compat_artifacts import ArtifactStore
 from ace16_insert_multiple_indexes import reference
 
@@ -85,12 +85,12 @@ def verify(root):
         assert 'TIMEOUT_SECONDS = 30\n' in code
         assert 'MAX_STREAM_BYTES = 16 * 1024 * 1024\n' in code
     private = check(store.pin(CONTINUATION + '/proof.py')).read_text()
-    public = check(store.pin('docs/testing/ace16_insert_multiple_indexes/reference.py')).read_text()
+    public = check(store.pin('tests/access/indexes/ace16_insert_multiple_indexes/reference.py')).read_text()
     original_root = 'ROOT = Path(__file__).resolve().parents[2]'
     assert private.count(original_root) == 1
     assert public == private.replace(original_root, 'ROOT = Path(__file__).resolve().parents[3]')
     java = check(store.pin(ORIGINAL + '/MultiIndexInsertReference.java')).read_bytes()
-    assert check(store.pin('docs/testing/ace16_insert_multiple_indexes/MultiIndexInsertReference.java')).read_bytes() == java
+    assert check(store.pin('tests/access/indexes/ace16_insert_multiple_indexes/MultiIndexInsertReference.java')).read_bytes() == java
     # Source qualification is completed for all four cases before any AFTER
     # replay. These are reference proofs, not candidate image construction.
     sources = {}

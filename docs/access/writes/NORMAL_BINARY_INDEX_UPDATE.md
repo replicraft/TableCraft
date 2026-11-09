@@ -45,7 +45,7 @@ assignments; no Binary literal syntax or text/hex coercion is invented.
 
 ## Observed acceptance
 
-The [source phase](../../testing/ACE16_BINARY_UPDATE_SOURCES.md) passed sixteen
+The [source phase](../../../tests/reports/storage/ACE16_BINARY_UPDATE_SOURCES.md) passed sixteen
 native views and 128 exact independent SDK observations before these producers.
 Six focused unit functions pass literal plans, independent proofs, protected-byte
 forgeries, resource/cancellation controls, noops and stale-key checks. Two native
@@ -53,7 +53,7 @@ functions pass actual commits and interrupted/forged recovery. Actual retained
 sessions and CLI saves/readbacks match complete independent images. Prior Binary
 INSERT host tests pass with the newly qualified update capability.
 
-The [combined execution record](../../testing/results/ace16-index-updates-splits-and-primary-creation-2026-11-01.json)
+The [combined execution record](../../../tests/results/creation/ace16-index-updates-splits-and-primary-creation-2026-11-01.json)
 records 1,165 ACE units, 79 adapter units, 104 CLI units and 90 default recovery
 functions, plus strict feature checks and the focused tranches. These checks do
 not qualify native Access saves.

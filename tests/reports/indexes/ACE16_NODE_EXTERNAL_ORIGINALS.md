@@ -18,7 +18,7 @@ planner, serializer, preview or AFTER constructor. Their tests are ignored by
 default and require explicitly selected source directories. No private planning
 folder or machine path is required by ordinary builds or CI.
 
-[The execution record](results/ace16-node-external-original-source-gates-2026-11-01.json)
+[The execution record](../../results/indexes/ace16-node-external-original-source-gates-2026-11-01.json)
 contains exact commands, source checkpoint hashes and log hashes. Strict engine
 lint passed. These checks do not establish native Access save/reopen, a future
 writer's acceptance or byte identity with another engine's UPDATE algorithm.

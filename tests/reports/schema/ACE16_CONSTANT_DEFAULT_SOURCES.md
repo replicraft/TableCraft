@@ -16,6 +16,6 @@ TD/MR2/record overlays. It calls no creator, default resolver or mutation planne
 The native gate independently checks whole-file complements, raw records,
 properties/carriers and current source admission.
 
-The [source record](results/ace16-constant-default-sources-2026-11-01.json)
+The [source record](../../results/schema/ace16-constant-default-sources-2026-11-01.json)
 retains frozen closures, SDK execution and the first native receipt. This does not
 qualify a matching creator, native save or Microsoft Access behavior.

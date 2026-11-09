@@ -3,6 +3,7 @@
 No linked provider is opened by the comparison or CLI. Uses the reviewed Jackcess
 artifact and original MIT recipes; no native Microsoft Access qualification.
 """
+from engineering_paths import reference_file
 import argparse
 import hashlib
 from pathlib import Path
@@ -20,13 +21,13 @@ def main():
     if args.generate:
         args.directory.mkdir(exist_ok=False)
         for profile, suffix in PROFILES:
-            run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar, RECIPES / "BrowsingMetadataFixture.java", args.directory / f"Metadata-{profile}.{suffix}", profile)
+            run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar, reference_file('tests/access/reading/tables/BrowsingMetadataFixture.java'), args.directory / f"Metadata-{profile}.{suffix}", profile)
     for profile, suffix in PROFILES:
         path = args.directory / f"Metadata-{profile}.{suffix}"
         before = path.read_bytes()
         assert before[20:24] == bytes([{"V2000": 1, "V2016": 5, "V2019": 6}[profile], 0, 0, 0])
         def oracle(recipe, *extra):
-            return run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar, RECIPES / f"{recipe}.java", path, *extra)
+            return run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar, reference_file(f"{recipe}.java"), path, *extra)
         records = [line.split("\t") for line in oracle("CatalogOracle").splitlines()]
         table_records = [record for record in records if int(record[2]) in (1, 4, 6)]
         details = run(args.cli, "tables", path, "--details").splitlines()

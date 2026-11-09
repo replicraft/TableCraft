@@ -3,8 +3,8 @@ import hashlib
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[3]
-sys.path.insert(0, str(ROOT / 'docs/testing'))
+ROOT = Path(__file__).resolve().parents[4]
+sys.path.insert(0, str(ROOT / 'tests/access'))
 from parent_index_split_originals import wire
 
 PAGE_BYTES = 4096

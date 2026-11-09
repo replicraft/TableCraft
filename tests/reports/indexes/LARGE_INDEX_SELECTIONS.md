@@ -9,7 +9,7 @@ entry points, full checks, mutation consumers and index-owned maps keep their ol
 4,096-address ceiling. There is no new index codec,
 coercion, implicit fallback or shared-file coherence claim.
 
-The initial partial-read [native verification record](results/large-index-selections-native-2026-10-26.json)
+The initial partial-read [native verification record](../../results/indexes/large-index-selections-native-2026-10-26.json)
 records 170 unique passing engine tests, ten new: six public API tests and four
 private membership checks. Ten existing allocation tests and 150 existing
 index/constraint/write-preview/page regressions also pass. Selected strict Clippy,
@@ -36,7 +36,7 @@ against the caller's cap, validate all index entries and fetch/check all returne
 roots before exposing a snapshot. The whole index reference list and completed
 result remain retained under cumulative budgets.
 
-The [complete-request record](results/large-complete-index-native-2026-10-26.json)
+The [complete-request record](../../results/indexes/large-complete-index-native-2026-10-26.json)
 records 165 unique passing tests, nine new: two implementation controls and seven
 independent public-API contract tests. Six existing selection tests and 150
 index, constraint, preview and page regressions pass. These checks cover explicit
@@ -56,8 +56,8 @@ pass. No runtime code or expected result changed in response to a failing test.
 
 ## Complete original-file replay
 
-The [complete-snapshot runner](compare_large_complete_indexes.py) and
-[record](results/large-complete-index-originals-2026-10-26.json) use a frozen debug
+The [complete-snapshot runner](../../access/indexes/native/compare_large_complete_indexes.py) and
+[record](../../results/indexes/large-complete-index-originals-2026-10-26.json) use a frozen debug
 CLI built at `5b0ca3eb`. All eighteen controls match, with zero disagreements:
 50,004 result rows and 130,000 Binary-field comparisons across both unchanged
 originals. These counts include repeated operations and the extra hidden-key
@@ -81,7 +81,7 @@ Original/getter, executable and reference hashes stay unchanged. No native
 Microsoft Access execution, save/reopen or shared-file evidence is claimed.
 
 ```sh
-python3 docs/testing/compare_large_complete_indexes.py \
+python3 tests/run.py tests/access/indexes/native/compare_large_complete_indexes.py \
   --cli FROZEN_EXECUTABLE --cli-sha256 SHA256 \
   --compiled-revision REVISION --inputs ORIGINAL_DIRECTORY \
   --report FRESH_REPORT.json --log FRESH_LOG.jsonl
@@ -89,7 +89,7 @@ python3 docs/testing/compare_large_complete_indexes.py \
 
 ## Original public-writer baseline
 
-[LargeUsageMapProbe.java](LargeUsageMapProbe.java) is repository-owned code under
+[LargeUsageMapProbe.java](../../access/storage/native/LargeUsageMapProbe.java) is repository-owned code under
 the root license. It retains the existing `UsageMapFixture.java` geometry: ID,
 twelve Short Binary fields of 240 bytes, an ordinary primary Int32 index, and one
 row per owned data page. It selects ACE16 V2016/V2019 and 5,000 rows. Public builders
@@ -145,8 +145,8 @@ fresh generation is not promised byte-identical.
 
 ## Committed-build original replay
 
-The [read-only runner](compare_large_index_selections.py) and
-[record](results/large-index-selections-originals-2026-10-26.json) compare 22 CLI
+The [read-only runner](../../access/indexes/native/compare_large_index_selections.py) and
+[record](../../results/indexes/large-index-selections-originals-2026-10-26.json) compare 22 CLI
 controls from the frozen debug executable built at `66041fd7`. All match, with
 zero disagreements and 10,028 result rows compared. Required point/range and
 automatic selections now succeed over both 5,000-owned-page tables, including
@@ -159,7 +159,7 @@ This is independent public-writer/getter conformance, not native Microsoft
 Access execution, save/reopen or shared-file qualification.
 
 ```sh
-python3 docs/testing/compare_large_index_selections.py \
+python3 tests/run.py tests/access/indexes/native/compare_large_index_selections.py \
   --cli FROZEN_EXECUTABLE --cli-sha256 SHA256 \
   --compiled-revision REVISION --inputs ORIGINAL_DIRECTORY \
   --report FRESH_REPORT.json --log FRESH_LOG.jsonl

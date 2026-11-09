@@ -1,12 +1,12 @@
 # Original calculated dependency preview replay
 
-The [accepted replay](results/calculated-dependencies-2026-10-24.json) passes 50
+The [accepted replay](../../results/development/calculated-dependencies-2026-10-24.json) passes 50
 commands and compares 170 exact modeled result cells across two original
 ACE16-family V2016/V2019 files. All 1,899 pinned hashes remain unchanged before
 and after execution, including the complete 1,885-file frozen Rust inventory.
 There are 34 successful commands and 16 classified refusals.
 
-This verifies the explicit [same-table dependency preview](../access/calculations/CALCULATION_PREVIEWS.md#same-table-calculated-dependencies)
+This verifies the explicit [same-table dependency preview](../../../docs/access/calculations/CALCULATION_PREVIEWS.md#same-table-calculated-dependencies)
 against ordinary stored getters and an independent model. It does not qualify
 Microsoft Access intermediate conversion rules, certify freshness, replace caches
 or make calculated columns ordinary query inputs.
@@ -20,7 +20,7 @@ That supports a same-table dependency boundary. It does not establish a table
 function whitelist or require this preview's natural expression carriers to match
 Access's declared intermediate storage conversions. No function call is added.
 
-[CalculatedDependencyFixture.java](CalculatedDependencyFixture.java) creates fresh
+[CalculatedDependencyFixture.java](../../access/reading/tables/CalculatedDependencyFixture.java) creates fresh
 files through public Jackcess database/table/column builders. Both `Chains` and
 `EmptyChains` have ID, nullable Int32 Input, nullable Short Text Label and ten
 calculated declarations. `Chains` has five rows; the other table is empty.
@@ -55,7 +55,7 @@ compiled-class hash and unchanged original file hashes.
 
 ## Independent result model
 
-[compare_calculated_dependencies.py](compare_calculated_dependencies.py) models
+[compare_calculated_dependencies.py](../../access/reading/tables/compare_calculated_dependencies.py) models
 expected results directly from ordinary Input/Label getters. It does not parse
 stored expressions using TableCraft, execute reference SQL or use cached outputs
 as the expected calculation. Numeric expectations are exact Python integer
@@ -130,7 +130,7 @@ The accepted report SHA-256 is
 `4a2d8588df9aebbe09cbb9d45265778853bc01a0a0ffde3b177a8e9ade84667d`.
 
 ```sh
-python3 docs/testing/compare_calculated_dependencies.py \
+python3 tests/run.py tests/access/reading/tables/compare_calculated_dependencies.py \
   --cli .cache/tablecraft-bin/calculation-dependencies-cli-20261024 \
   --cli-sha256 8800b326d94cff1de051bc54edc56cd5b4b8b0ad2fc5d6eaf6c10f501f52d201 \
   --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar \

@@ -90,7 +90,7 @@ continue to apply.
 
 ## Verification
 
-The [compressed current-Memo replay](../../testing/COMPRESSED_MEMO_HISTORIES.md)
+The [compressed current-Memo replay](../../../tests/reports/storage/COMPRESSED_MEMO_HISTORIES.md)
 adds 198 independent controls across original ACE 2007/2016/2019 files: six
 metadata comparisons and 96 stored-query controls under each of ordinal and
 database policies. All 26 pinned hashes remain unchanged. Current/child values,
@@ -98,7 +98,7 @@ association names, NULL/empty histories, grouping, member criteria and refusals
 are compared without native Access execution. The expanded engine/adapter
 batch passes 19 tests, including calculated/unknown flag and late-orphan controls.
 
-The [ordinary visible-Memo family replay](../../testing/MEMO_HISTORY_FLAG_FAMILY.md)
+The [ordinary visible-Memo family replay](../../../tests/reports/storage/MEMO_HISTORY_FLAG_FAMILY.md)
 further checks all four ordinary/Hyperlink and uncompressed/compressed combinations,
 plus original RichText metadata and raw markup. It passes 594 controls over nine
 fresh ACE 2007/2016/2019 files, with all 32 pinned hashes unchanged. The current
@@ -116,21 +116,21 @@ and its existing typed-reader tests. A mixed two-history control separately
 checks unsupported visible-Memo and flat-member candidates without losing the
 supported history or fabricating unavailable members.
 
-[The independent runner](../../testing/compare_version_history_queries.py) uses the
-original [history recipe](../../testing/VersionHistoryFixture.java), its unchanged
-[stored-record oracle](../../testing/VersionHistoryOracle.java) and a new read-only
-[declaration/current-value oracle](../../testing/VersionHistoryQueryOracle.java).
+[The independent runner](../../../tests/access/reading/tables/compare_version_history_queries.py) uses the
+original [history recipe](../../../tests/access/reading/tables/VersionHistoryFixture.java), its unchanged
+[stored-record oracle](../../../tests/access/reading/tables/VersionHistoryOracle.java) and a new read-only
+[declaration/current-value oracle](../../../tests/access/queries/execution/VersionHistoryQueryOracle.java).
 It compares stored order, alignment, NULL-extension, current values, aggregates,
 presence, member filtering, mode/member refusals and resource failures, checking
 the CLI binary and original input hashes after replay. These are independent
 stored-record/model comparisons; Microsoft Access SQL, newest-first semantics,
 mutation and application save/reopen are unqualified.
 
-The 2026-10-24 [recorded replay](../../testing/results/stored-history-queries-2026-10-24.json)
+The 2026-10-24 [recorded replay](../../../tests/results/queries/stored-history-queries-2026-10-24.json)
 passes 96 controls with explicit Ordinal comparison and another 96 with database
 policies across three fresh original ACE 2007/2016/2019 inputs. The CLI binary
 and all original input hashes remain unchanged.
 
 ```sh
-python3 docs/testing/compare_version_history_queries.py --jar path/to/jackcess-5.0.4.jar --cli target/debug/tablecraft --ace2007 history-2007.accdb --ace2016 history-2016.accdb --ace2019 history-2019.accdb
+python3 tests/run.py tests/access/reading/tables/compare_version_history_queries.py --jar path/to/jackcess-5.0.4.jar --cli target/debug/tablecraft --ace2007 history-2007.accdb --ace2016 history-2016.accdb --ace2019 history-2019.accdb
 ```

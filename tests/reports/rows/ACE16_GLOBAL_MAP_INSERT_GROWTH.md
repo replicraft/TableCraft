@@ -5,8 +5,8 @@ GLOBAL free map when allocation first reaches page 512. Ordinary DATA, INDEX,
 external LVAL bodies, column-map containers and column-owned bitmaps use one
 shared allocator and independently replayed page purposes. Normal backend writes,
 journalable ACE saves and native Access qualification remain separate gates.
-The [preview boundary](ACE16_WRITE_PREVIEWS.md) and
-[long-value INSERT contract](ACE16_LONG_VALUE_INSERTS.md) continue to apply.
+The [preview boundary](../development/ACE16_WRITE_PREVIEWS.md) and
+[long-value INSERT contract](../storage/ACE16_LONG_VALUE_INSERTS.md) continue to apply.
 
 ## Qualified source and first crossing
 
@@ -70,7 +70,7 @@ cell path. After a rebase, complete row rewrites retain the original before-imag
 and absorb prior owned-cell edits. They never invent cells from a staged base.
 Fresh Metadata authority binds the original OrdinaryOwned role and record range.
 Wider, indirect and UPDATE paths retain their existing behavior. The subsequent
-[ordinary-owned promotion continuation](ACE16_ORDINARY_OWNED_MAP_PROMOTION.md)
+[ordinary-owned promotion continuation](../storage/ACE16_ORDINARY_OWNED_MAP_PROMOTION.md)
 adds a separately typed bitmap when the complete inline member window no longer
 fits; its original-file acceptance remains separate.
 
@@ -116,7 +116,7 @@ runtime semantics. Formatting also passes.
 
 ## Original-file comparison
 
-The [maintained original-file proof](ace16_insert_global_bootstrap/README.md) now
+The [maintained original-file proof](../../access/rows/ace16_insert_global_bootstrap/README.md) now
 records twelve exact engineering candidates on four unchanged originals, followed
 by twelve fresh combined typed-row/map inspections. V2016/V2019 and raw/compressed
 Memo use fixed public Padding counts 400/382, yielding original EOF 512 without

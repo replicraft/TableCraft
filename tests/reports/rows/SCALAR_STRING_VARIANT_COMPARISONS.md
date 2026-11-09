@@ -1,6 +1,6 @@
 # Scalar String and Variant comparison replay
 
-The [accepted independent replay](results/scalar-string-2026-10-24.json) passes
+The [accepted independent replay](../../results/rows/scalar-string-2026-10-24.json) passes
 224 CLI controls: 144 source-free and 80 native integrations across original
 Jet 4 (`V2000`), ACE 2007 (`V2007`) and ACE16-family (`V2016`, `V2019`) files.
 There are 196 successful commands and 28 expected buffered refusals. Successful
@@ -24,7 +24,7 @@ before any String regardless of spelling; Boolean and Date have separate
 contracts. Those clauses are a language-semantic reference, not proof of a
 particular native Access query result.
 
-[compare_scalar_string.py](compare_scalar_string.py) independently compares
+[compare_scalar_string.py](../../access/queries/expressions/compare_scalar_string.py) independently compares
 Python strings with six operators, in both operand directions. The corpus uses
 BMP/ASCII characters for which Python code-point order and the selected ordinal
 engineering model agree. Complete strings are compared: trailing spaces are
@@ -67,7 +67,7 @@ resource or cancellation path.
 
 ## Original ordinary-table corpus
 
-[ScalarStringFixture.java](ScalarStringFixture.java) uses public Jackcess table
+[ScalarStringFixture.java](../../access/queries/expressions/ScalarStringFixture.java) uses public Jackcess table
 and column builders, expression evaluation disabled, and fresh output paths.
 Each profile contains one TextOperands table with Int32 ID/Number, Short Text
 Spelling, Boolean Flag, Currency Money and legacy Date D. Values include `02`,
@@ -75,7 +75,7 @@ Spelling, Boolean Flag, Currency Money and legacy Date D. Values include `02`,
 spellings and NULL; a final row adds nullable numeric/Currency/Date peers and
 Boolean False. There are 17 rows per original, 68 overall.
 
-[ScalarStringOracle.java](ScalarStringOracle.java) reopens read-only, disables
+[ScalarStringOracle.java](../../access/queries/expressions/ScalarStringOracle.java) reopens read-only, disables
 expression evaluation and installs a throwing link resolver. It records public
 column types and exact ordinary cell getters; text is UTF8/base64 so empty and
 NULL remain distinct. Currency is recorded as exact BigDecimal, and Date uses
@@ -119,7 +119,7 @@ profile. Fresh file timestamps may change binary hashes; the report pins the
 actual preserved originals.
 
 ```sh
-python3 docs/testing/compare_scalar_string.py \
+python3 tests/run.py tests/access/queries/expressions/compare_scalar_string.py \
   --cli .cache/tablecraft-bin/declared-string-cli-20261024 \
   --cli-sha256 8aa578c621fe989b5034853e946a942f3700cb90aee8be12ee3d4970866cc5ce \
   --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar \

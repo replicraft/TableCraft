@@ -26,21 +26,21 @@ allocated page sets and file length do not change. Eligible mask changes are exp
 limited to the selected bit. Eligible indexed Byte, Int16/32/64 and Currency NULL
 transitions use the page repacking profiles below. Qualified GUID, Boolean/IEEE/DATE
 indexes, existing-width Decimal slots and same-width Short Text/Binary slots have
-their own profiles below. A separate [same-page update API](ACE16_PAGE_UPDATES.md)
+their own profiles below. A separate [same-page update API](../storage/ACE16_PAGE_UPDATES.md)
 admits fitted Text/Binary records and hidden-target forwarding on the original
-root page. A further [variable-update service](ACE16_VARIABLE_UPDATES.md)
+root page. A further [variable-update service](../rows/ACE16_VARIABLE_UPDATES.md)
 admits alternate owned-page placement and EOF allocation using existing map
 representation. These fixed-field APIs do not resize records. Memo/OLE changes,
 general allocation/map growth, INSERT, schema changes,
 AutoNumber assignment and broader UPDATE index topology changes remain unsupported
 through these fixed-field APIs. A separate
-[caller-selected incrementing INSERT preview](ACE16_INCREMENTING_AUTONUMBER_INSERTS.md)
+[caller-selected incrementing INSERT preview](../creation/ACE16_INCREMENTING_AUTONUMBER_INSERTS.md)
 now owns its generated request and return contract. The
-[ignored-NULL secondary-index UPDATE continuation](ACE16_IGNORED_NULL_UPDATES.md)
+[ignored-NULL secondary-index UPDATE continuation](../rows/ACE16_IGNORED_NULL_UPDATES.md)
 owns the current fixed/batch omission and historical-counter rules; older
 blanket ignore-NULL refusals below describe the earlier comparison slices.
 Ordinary-root deletion has a separate
-[existing-page candidate API](ACE16_DELETE_PREVIEWS.md), with its own request and return
+[existing-page candidate API](../rows/ACE16_DELETE_PREVIEWS.md), with its own request and return
 types; it does not turn these fixed-field APIs into a general writer.
 
 The physical patch machinery is private and shared. Format admission now resides
@@ -53,7 +53,7 @@ Required data macros are not detected or executed by this API. Existing blockers
 can reject known opaque behavior, but passing them does not establish absence of
 indirect or uninspected behavior. Candidate generation is an engineering experiment
 on disposable copies, not SQL execution, a safe production save or a relaxation
-of the [data-macro qualification requirements](DATA_MACROS.md).
+of the [data-macro qualification requirements](../schema/DATA_MACROS.md).
 
 ## Runnable harness
 
@@ -62,7 +62,7 @@ cargo build --locked -p tablecraft-ace --features ace16-write-preview --example 
 target/debug/examples/preview_ace16_update original.accdb candidate.accdb Items Score 1 20 27
 ```
 
-The separate [fixed-Int32 comparison build](results/ace16-index-split-example-build-2026-10-26.json)
+The separate [fixed-Int32 comparison build](../../results/indexes/ace16-index-split-example-build-2026-10-26.json)
 freezes this existing consumer at revision `2fc75f6f` with 108 selected committed
 source pins and a strict example-lint check. It provides a reproducible tool for
 measuring current index-capacity refusals; building it does not add index splits.
@@ -81,11 +81,11 @@ ceilings and no runtime/network dependencies.
 UpdateFixture now generates original V2016/V2019 files, with expression evaluation
 disabled, three LONG Id/Score rows, Required/range declarations, an Id primary
 index, Unicode Memo and 12,288-byte OLE values. No native Access provenance is
-claimed. [Original and candidate hashes](FIXTURES.md#ace-16-write-preview-inputs)
+claimed. [Original and candidate hashes](../reading/FIXTURES.md#ace-16-write-preview-inputs)
 record the reviewed Jackcess artifact and observed results.
 
 ```sh
-python3 docs/testing/compare_ace16_write_previews.py --jar path/to/jackcess-5.0.4.jar --cli target/debug/tablecraft --example target/debug/examples/preview_ace16_update --ace2016 original-2016.accdb --ace2019 original-2019.accdb
+python3 tests/run.py tests/access/reading/tables/compare_ace16_write_previews.py --jar path/to/jackcess-5.0.4.jar --cli target/debug/tablecraft --example target/debug/examples/preview_ace16_update --ace2016 original-2016.accdb --ace2019 original-2019.accdb
 ```
 
 Per family, the runner checks non-indexed Score 20→27 and indexed Id 2→27:
@@ -109,7 +109,7 @@ recovery qualification from an offline open.
 
 Positive table-event fixtures, required validation/error/rollback semantics and
 qualified absence detection remain the separate next write-safety milestone.
-The [data-macro plan](DATA_MACROS.md) defines those cases. A candidate opening in
+The [data-macro plan](../schema/DATA_MACROS.md) defines those cases. A candidate opening in
 Access is useful evidence, not proof that arbitrary application databases can be
 written or that macros can be omitted.
 
@@ -143,12 +143,12 @@ The explicit kind is `byte`, `int16`, `int32`, `int64`, `currency-scaled`,
 before output creation. Production CLI, Access backend and ordinary ACE commit
 capabilities are unchanged; this is the same non-journalable preview type.
 
-[FixedUpdateFixture](FixedUpdateFixture.java) generates fresh V2016/V2019 tables
+[FixedUpdateFixture](../../access/queries/expressions/FixedUpdateFixture.java) generates fresh V2016/V2019 tables
 with nine scalar fields, an unrelated Id primary key and long Memo/OLE values.
-[The runner](compare_fixed_updates.py) takes `--jar`, `--cli`, `--rows`, `--example`,
+[The runner](../../access/queries/expressions/compare_fixed_updates.py) takes `--jar`, `--cli`, `--rows`, `--example`,
 `--ace2016` and `--ace2019`. It compares all eighteen independent candidates, complete
 rows and long payloads, exact field spans, post-checks, wrong-carrier failure and
-existing-output retention. Originals remain unchanged. [Provenance and hashes](FIXTURES.md#ace-16-exact-fixed-scalar-preview-inputs)
+existing-output retention. Originals remain unchanged. [Provenance and hashes](../reading/FIXTURES.md#ace-16-exact-fixed-scalar-preview-inputs)
 keep this separate from native Access qualification.
 
 Six CI tests cover nine literal byte/carrier goldens on both families, exact no-ops,
@@ -160,7 +160,7 @@ coercion, NaN semantics or actual Access behavior claims.
 ## Boolean and NULL-mask transitions
 
 Ordinary non-unique Int32 key replacements now share the existing-tree pipeline;
-[their contract](../access/writes/NATIVE_WRITES.md#non-unique-int32-replacements) covers exact
+[their contract](../../../docs/access/writes/NATIVE_WRITES.md#non-unique-int32-replacements) covers exact
 duplicate row ties, aliases and retained unique/rule guards. Indexed Int32 NULL
 transitions have the separate profile below; checked foreign keys now have their own profile below.
 
@@ -194,10 +194,10 @@ target/debug/examples/preview_ace16_fixed original.accdb candidate.accdb Items L
 target/debug/examples/preview_ace16_fixed original.accdb candidate.accdb Items B7 0 boolean true false
 ```
 
-Use distinct fresh outputs for those examples. [MaskUpdateFixture](MaskUpdateFixture.java)
+Use distinct fresh outputs for those examples. [MaskUpdateFixture](../../access/queries/expressions/MaskUpdateFixture.java)
 generates fresh V2016/V2019 files with Boolean slots across mask-byte boundaries,
 nine nullable fields, required/range rules, long values, an enforced relationship
-and a Boolean index. [The mask runner](compare_mask_updates.py) uses the same
+and a Boolean index. [The mask runner](../../access/queries/expressions/compare_mask_updates.py) uses the same
 arguments as the fixed runner. Per family it compares 42 candidate copies,
 including fourteen exact no-ops, whole reopened rows/Memo/OLE data, exact payload/
 mask spans and neighbor bits, structural/constraint checks and retained outputs.
@@ -209,7 +209,7 @@ remain intact, and required cascades and normal ACE saves remain unsupported.
 
 Five CI tests cover literal bit/byte goldens, stale NULL payloads, exact no-ops,
 shared-byte neighbors, field-rule rejection, late cancellation and a
-128-case nullable multirow Int64 model. [Fixture hashes](FIXTURES.md#ace-16-boolean-and-null-mask-preview-inputs)
+128-case nullable multirow Int64 model. [Fixture hashes](../reading/FIXTURES.md#ace-16-boolean-and-null-mask-preview-inputs)
 record independent evidence separately from actual Access qualification.
 
 [Microsoft's desktop type overview](https://support.microsoft.com/en-us/access/data-types-for-access-desktop-databases)
@@ -251,13 +251,13 @@ tests cover both ACE families, leaf/node/deep trees, aliases, both directions,
 unique/required/rule rejection, stale NULL payloads, exact no-ops, late cancellation,
 a 128-case nullable key/row model and a 600-row fitting-versus-split batch.
 
-The original inert [recipe](IndexedNullFixture.java) creates fresh V2016/V2019
+The original inert [recipe](../../access/indexes/native/IndexedNullFixture.java) creates fresh V2016/V2019
 nullable/duplicate/unique/required/rule controls and 1,000-row trees with long values.
-[The runner](compare_indexed_nulls.py) accepts `--jar`, `--cli`, `--rows`, `--preview`,
+[The runner](../../access/indexes/native/compare_indexed_nulls.py) accepts `--jar`, `--cli`, `--rows`, `--preview`,
 `--ace2016` and `--ace2019`. Per family it matches fifteen complete candidates
 (three exact no-ops), preserves original row-reference/page sets and child links,
 checks native geometry and complete rows/long values, retains existing outputs
-and rejects seven invalid requests without files. [Hashes](FIXTURES.md#indexed-int32-null-preview-inputs)
+and rejects seven invalid requests without files. [Hashes](../reading/FIXTURES.md#indexed-int32-null-preview-inputs)
 record independent evidence separately from actual Access/data-macro qualification.
 
 ## Bounded final-child nodes
@@ -287,7 +287,7 @@ native type selects its payload/key width. Byte is unsigned; signed keys retain
 their full native domain, and Currency uses scaled i64 units without conversion
 through floating point. NULL keys keep their explicit presence marker. Other
 numeric carriers are not interchangeable, including Int64 and Currency despite
-their equal widths. [Existing index references](../access/indexes/NATIVE_INDEXES.md) still own
+their equal widths. [Existing index references](../../../docs/access/indexes/NATIVE_INDEXES.md) still own
 the read/constraint profiles.
 
 Non-NULL replacements retain the original prefix, per-entry lengths, bitmap and
@@ -310,14 +310,14 @@ Authored deep trees cover every added carrier and both bounded-final-child and
 unbounded-tail nodes. A deterministic 128-case model checks nullable Int64 and
 Currency keys. These authored tests are distinct from the independent fixtures.
 
-The original inert [recipe](IntegralUpdateFixture.java) generates fresh V2016/V2019
+The original inert [recipe](../../access/queries/expressions/IntegralUpdateFixture.java) generates fresh V2016/V2019
 Byte/Int16/Int64/Currency tables, ordinary/unique/required controls, ascending and
 descending indexes with aliases, 1,000-row trees and long Unicode Memo/OLE values.
-The [comparison runner](compare_integral_updates.py) accepts `--jar`, `--cli`,
+The [comparison runner](../../access/queries/expressions/compare_integral_updates.py) accepts `--jar`, `--cli`,
 `--rows`, `--preview`, `--ace2016` and `--ace2019`:
 
 ```sh
-python3 docs/testing/compare_integral_updates.py --jar path/to/jackcess-5.0.4.jar --cli target/debug/tablecraft --rows target/debug/examples/table_data --preview target/debug/examples/preview_ace16_fixed --ace2016 original-2016.accdb --ace2019 original-2019.accdb
+python3 tests/run.py tests/access/queries/expressions/compare_integral_updates.py --jar path/to/jackcess-5.0.4.jar --cli target/debug/tablecraft --rows target/debug/examples/table_data --preview target/debug/examples/preview_ace16_fixed --ace2016 original-2016.accdb --ace2019 original-2019.accdb
 ```
 
 Generation and comparisons require the reviewed Jackcess artifact; no external
@@ -328,7 +328,7 @@ Observed comparisons match 56 complete candidates (eight exact no-ops) and rejec
 32 invalid requests without output. Both sources remain unchanged. Exact values,
 all three selected index cursors, unchanged tree pages/counts/children/row-reference
 sets, admitted field/mask/page spans and complete Memo/OLE values agree. The
-[fixture record](FIXTURES.md#integral-and-currency-index-update-inputs) retains
+[fixture record](../reading/FIXTURES.md#integral-and-currency-index-update-inputs) retains
 source and ordered candidate-manifest hashes. These generated trees supply
 independent evidence for their observed topologies; bounded-final-child mutation
 still has the authored evidence described above.
@@ -371,11 +371,11 @@ typed orphan/unique/required/conflict rejection, malformed and disguised links,
 Jet 4 isolation, cancellation/budgets and a deterministic 128-case parent-membership
 model. They assert exact resulting values as well as completed relationship checks.
 
-The original inert [recipe](ForeignUpdateFixture.java) creates V2016/V2019
+The original inert [recipe](../../access/queries/expressions/ForeignUpdateFixture.java) creates V2016/V2019
 Byte/Int16/Int32/Int64/Currency parents, 1,000-row dependent tables, ordinary
 ascending/descending aliases, one-to-one and required controls, multiple child
 relationships, declared Currency cascades, self-references and Unicode Memo/OLE
-values. The [runner](compare_foreign_updates.py) compiles the repository's read-only
+values. The [runner](../../access/queries/expressions/compare_foreign_updates.py) compiles the repository's read-only
 Java row oracle once in a temporary directory and reopens every candidate through
 independent cursors. It uses the same arguments as the integral runner above,
 requires a JDK with `javac`, and compares related tables, every target index,
@@ -415,17 +415,17 @@ cancellation/budgets and a deterministic 128-case tuple model. A 600-row compres
 fixture grows to eight free bytes successfully, while a wider batch rejects the
 complete candidate rather than attempting an unimplemented split.
 
-The original inert [recipe](CompositeUpdateFixture.java) creates fresh V2016/V2019
+The original inert [recipe](../../access/queries/expressions/CompositeUpdateFixture.java) creates fresh V2016/V2019
 five-column mixed/alias indexes, a 1,000-row tree, ten-column indexes, unique/
 required controls, composite parents/children and Unicode Memo/OLE payloads.
-The [runner](compare_composite_updates.py) takes `--jar`, `--cli`, `--rows`,
+The [runner](../../access/queries/expressions/compare_composite_updates.py) takes `--jar`, `--cli`, `--rows`,
 `--preview`, `--checker`, `--ace2016` and `--ace2019`. It compiles the repository's
 read-only Java row oracle once, independently compares rows/cursors, and proves
 unchanged page/count/child/row-reference sets and bytes outside admitted spans.
 
 ```sh
 cargo build --locked -p tablecraft-ace --features ace16-write-preview --examples
-python3 docs/testing/compare_composite_updates.py --jar path/to/jackcess-5.0.4.jar --cli target/debug/tablecraft --rows target/debug/examples/table_data --preview target/debug/examples/preview_ace16_fixed --checker target/debug/examples/check_table --ace2016 original-2016.accdb --ace2019 original-2019.accdb
+python3 tests/run.py tests/access/queries/expressions/compare_composite_updates.py --jar path/to/jackcess-5.0.4.jar --cli target/debug/tablecraft --rows target/debug/examples/table_data --preview target/debug/examples/preview_ace16_fixed --checker target/debug/examples/check_table --ace2016 original-2016.accdb --ace2019 original-2019.accdb
 ```
 
 The read-only `check_table` engineering example uses an explicit cumulative byte
@@ -440,7 +440,7 @@ the fixture or hiding a failed check.
 Observed independent comparisons match 36 complete candidates (four exact
 no-ops), reject fourteen requests with their expected constraint/conflict errors,
 and preserve originals and existing output paths. Related parent/child tables,
-complete long values and permitted byte spans agree. [Recorded hashes](FIXTURES.md#integral-composite-index-update-inputs)
+complete long values and permitted byte spans agree. [Recorded hashes](../reading/FIXTURES.md#integral-composite-index-update-inputs)
 retain source/candidate manifests. All 21 previous non-unique single-column
 candidate hashes remain unchanged across both ACE families and Jet 4 after this
 generic writer refactor. These observations do not establish native Access,
@@ -500,14 +500,14 @@ This example requires an eligible stable/offline source with those exact origina
 values. It executes no SQL, providers, VBA, callbacks or implicit actions. A copy
 I/O failure can leave an incomplete new file; the input is never overwritten.
 
-The [batch comparison runner](compare_batch_updates.py) takes `--jar`, `--cli`,
+The [batch comparison runner](../../access/queries/expressions/compare_batch_updates.py) takes `--jar`, `--cli`,
 `--rows`, `--preview`, `--checker`, `--ace2016`, `--ace2019`, `--mask2016` and
 `--mask2019`. It reuses the recorded composite/mask recipes and independently
 matches 22 complete batches (two exact no-ops), their 22 reverse-order controls,
 and fourteen rejected requests without output. Complete related/untouched tables,
 long values, exact DATE/IEEE/GUID/Currency carriers, index key/row order, page/
 count/child/row-reference sets and admitted field/mask/index spans agree. Existing
-outputs and original bytes are retained. [Batch hashes](FIXTURES.md#explicit-fixed-field-batch-inputs)
+outputs and original bytes are retained. [Batch hashes](../reading/FIXTURES.md#explicit-fixed-field-batch-inputs)
 retain source/candidate manifests; native Access/data-macro, automatic-action and
 production-save qualification remains separate.
 
@@ -562,17 +562,17 @@ Without that flag, its explicit-only behavior is unchanged. Inputs must be
 eligible offline copies with the stated original values. Preparation completes
 before creating a fresh output; existing outputs and inputs are never overwritten.
 
-The original [cascade recipe](CascadeUpdateFixture.java) covers a three-level
+The original [cascade recipe](../../access/queries/expressions/CascadeUpdateFixture.java) covers a three-level
 chain, overlapping paths, mutual cycles, composite paths, RESTRICT, and separate
 unique indexes with different physical sort directions. The one-to-one link
 checker now admits a separately declared matching unique column set: uniqueness
 does not require the foreign index to share its sort directions or physical
 storage. Complete index and relationship checks still run independently.
-The [comparison runner](compare_cascade_updates.py) specifies literal full
+The [comparison runner](../../access/queries/expressions/compare_cascade_updates.py) specifies literal full
 closures and compares every table, long value and index cursor with independent
 readers, plus candidate equality with explicit complete batches and reversed
 request order. Observed counts and immutable manifests are recorded in
-[FIXTURES.md](FIXTURES.md#declared-update-cascade-inputs).
+[FIXTURES.md](../reading/FIXTURES.md#declared-update-cascade-inputs).
 
 
 ## GUID index write previews
@@ -591,7 +591,7 @@ canonical bytes in two eight-byte segments: the continuation tag stays unchanged
 in descending order, while data and the final length tag are complemented. The
 reviewed independent sources are Jackcess
 [IndexData GUID/general-binary encoding](https://github.com/jahlborn/jackcess/blob/be0a2139b087a227d14cafd4ea231306a5a3a862/src/main/java/com/healthmarketscience/jackcess/impl/IndexData.java)
-and the existing stored-GUID codec references in [NATIVE_INDEXES.md](../access/indexes/NATIVE_INDEXES.md).
+and the existing stored-GUID codec references in [NATIVE_INDEXES.md](../../../docs/access/indexes/NATIVE_INDEXES.md).
 Private physical ordering is not SQL GUID ordering or coercion.
 
 The shared tree writer keeps compact numeric-only profiles; mixed GUID tuples
@@ -608,13 +608,13 @@ uniqueness and swaps, GUIDs in every two-to-ten-component tuple position with
 numeric sibling changes, full ten-GUID keys, stale/duplicate/no-op requests, budgets/cancellation and
 a fixed-seed 128-case arbitrary canonical-byte model. Literal unit goldens verify
 stored endian order, both segment encodings, truncation and type-domain rejection.
-The [original fixture recipe](GuidUpdateFixture.java) and
-[comparison runner](compare_guid_updates.py) cover a 1,000-row tree, unique keys,
+The [original fixture recipe](../../access/queries/expressions/GuidUpdateFixture.java) and
+[comparison runner](../../access/queries/expressions/compare_guid_updates.py) cover a 1,000-row tree, unique keys,
 GUID/composite foreign keys, declared cascades, complete key clearing and parent
 permutations. Full rows, long values, independent index cursors, retained topology
 and exact field/mask/index byte-span proofs are checked. A deliberately divergent
 tree key requires a split and is retained as an atomic-rejection case. Observed
-counts and hashes are recorded in [FIXTURES.md](FIXTURES.md#guid-index-update-inputs).
+counts and hashes are recorded in [FIXTURES.md](../reading/FIXTURES.md#guid-index-update-inputs).
 Native Access/data-macro/save qualification remains pending.
 
 
@@ -649,7 +649,7 @@ unsupported relationship semantics still fails its ordinary coverage gates.
 The reviewed source is the pinned Jackcess
 [IndexData Boolean and floating-point descriptors](https://github.com/jahlborn/jackcess/blob/be0a2139b087a227d14cafd4ea231306a5a3a862/src/main/java/com/healthmarketscience/jackcess/impl/IndexData.java),
 alongside the existing Boolean/IEEE/DATE read/field references in
-[NATIVE_INDEXES.md](../access/indexes/NATIVE_INDEXES.md). No reference source is copied.
+[NATIVE_INDEXES.md](../../../docs/access/indexes/NATIVE_INDEXES.md). No reference source is copied.
 Six authored integration tests cover both families/directions, mask false/true,
 unique Boolean swaps, all IEEE bit classes, DATE aliases/precision, NULL changes,
 a full mixed ten-component key, shared masks, stale/duplicate inputs, cancellation
@@ -658,13 +658,13 @@ unit goldens cover Boolean keys, IEEE signs/payloads, DATE serial encoding, inva
 DATEs, widths and forbidden Boolean NULL. The prior Single-target rejection test
 now checks successful updates/no-ops and retains unsupported-index-flag rejection.
 
-The [comparison runner](compare_scalar_index_updates.py) reuses the original
+The [comparison runner](../../access/queries/expressions/compare_scalar_index_updates.py) reuses the original
 Boolean, floating v2 and DATE recipes. Forty-six complete candidates (six exact
 no-ops), forty-six reverse-order controls and eighteen typed rejections match on
 both ACE 16 families. Complete related/untouched tables, exact DATE/IEEE bits,
 independent index cursors, topology/reference sets and authorized field/mask/index
 spans agree. Existing outputs and immutable originals remain unchanged. Recorded
-[source/candidate manifests](FIXTURES.md#boolean-ieee-and-date-index-update-inputs)
+[source/candidate manifests](../reading/FIXTURES.md#boolean-ieee-and-date-index-update-inputs)
 retain the independent/native distinction: these observations do not qualify
 Access execution, data macros, shared-file behavior or production saves.
 
@@ -718,14 +718,14 @@ mixed keys, budgets/cancellation and noncanonical negative zero. A fixed-seed
 128-case property covers full-width coefficients. Two literal unit goldens cover
 native field/index words, signs, bounds, NULL directions and legacy encode refusal.
 
-The [original recipe](DecimalUpdateFixture.java) creates interspersed Memo/OLE and
+The [original recipe](../../access/queries/expressions/DecimalUpdateFixture.java) creates interspersed Memo/OLE and
 Decimal fields, single/mixed indexes, a 1,000-row node tree and single/composite
-update cascades. [Independent comparisons](compare_decimal_updates.py) match 22
+update cascades. [Independent comparisons](../../access/queries/expressions/compare_decimal_updates.py) match 22
 complete candidates (four exact no-ops), 22 reverse-order controls and fourteen
 atomic rejections across original V2016/V2019 inputs. Full table/long values,
 independent index cursors, topology/reference sets and authorized field/mask/index
 spans agree. Earlier 21 numeric ACE/Jet 4, 24 GUID and 46 Boolean/IEEE/DATE candidates
-retain their frozen manifests. [Observed fixture hashes](FIXTURES.md#decimal-slot-and-index-update-inputs)
+retain their frozen manifests. [Observed fixture hashes](../reading/FIXTURES.md#decimal-slot-and-index-update-inputs)
 record original/candidate identities. Native Access comparisons, data-macro gates
 and production-save qualification remain unfinished.
 
@@ -783,7 +783,7 @@ It reuses existing literal fixture mechanics with a separate writable-metadata
 wrapper. Fresh public-builder originals/reference updates are separate evidence;
 their candidate replay is not established by these synthetic tests.
 
-[Scoped slot-update verification](results/ace16-slot-updates-native-2026-10-26.json)
+[Scoped slot-update verification](../../results/rows/ace16-slot-updates-native-2026-10-26.json)
 records the author cases, unchanged writer/read regressions and preserved failed
 attempts separately from original-file candidate comparisons.
 
@@ -791,7 +791,7 @@ The [bounded slot-preview consumer](SLOT_PREVIEW_CONSUMER.md) accepts a headerle
 five-field quoted TSV, captures every request before opening the database, and
 publishes only a complete candidate to a fresh output path.
 
-A subsequent [original-file comparison](SLOT_UPDATE_OBSERVATIONS.md) passes its
+A subsequent [original-file comparison](../rows/SLOT_UPDATE_OBSERVATIONS.md) passes its
 unchanged 162-control plan: 124 full candidates and 38 typed atomic refusals.
 Actual stored fields, logical index orders, complete ancestor keys and permitted
 byte changes are checked independently. Public canonicalization, FEFF value
@@ -799,21 +799,21 @@ discrepancies and expressions-disabled reference writes remain separate evidence
 
 ## Ordinary-row INSERT
 
-The separate [request-bound INSERT preview](ACE16_INSERT_PREVIEW.md) constructs
+The separate [request-bound INSERT preview](../rows/ACE16_INSERT_PREVIEW.md) constructs
 qualified ordinary scalar/Short Text/Binary/Decimal rows and maintains every
 admitted physical owner, including logical aliases. A required Int32 primary
-remains mandatory. [Additional single-key scalar indexes](ACE16_MULTIPLE_INDEX_INSERTS.md)
+remains mandatory. [Additional single-key scalar indexes](../indexes/ACE16_MULTIPLE_INDEX_INSERTS.md)
 now retain qualified Boolean/IEEE/legacy DATE, GUID and integral/Currency keys,
 direction, constraints and distinct-key counter deltas. Qualified
-[fixed GUID/numeric tuples](ACE16_FIXED_TUPLE_INSERTS.md) now extend this to ten
+[fixed GUID/numeric tuples](../rows/ACE16_FIXED_TUPLE_INSERTS.md) now extend this to ten
 components with full NULL and uniqueness rules.
 DATA-first allocation and recursive index splits use one cursor and independent
-complete-image proof. The [quoted TSV example input](ACE16_INSERT_INPUT.md)
+complete-image proof. The [quoted TSV example input](../rows/ACE16_INSERT_INPUT.md)
 supplies all values explicitly. Qualified non-Required secondary Ignore-NULL
 indexes omit NULL keys while preserving complete DATA/primary membership.
 Defaults, generated fields, primary/Required Ignore-NULL indexes and other
 unqualified key families remain refused by the ordinary explicit-row API. The
-separate [incrementing AutoNumber preview](ACE16_INCREMENTING_AUTONUMBER_INSERTS.md)
+separate [incrementing AutoNumber preview](../creation/ACE16_INCREMENTING_AUTONUMBER_INSERTS.md)
 requires an explicit caller policy and expected source counter, without claiming
 stored mode detection. Required data-macro semantics
 remain unqualified. This adds no normal CLI write path or native Access qualification.

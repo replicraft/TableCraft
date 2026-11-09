@@ -3,6 +3,7 @@
 Uses the prior Python-codec/WHATWG model, not TableCraft output, to construct
 inverse byte mappings. Native database rows supply input only; Access is unrun.
 """
+from engineering_paths import reference_file
 import argparse
 from pathlib import Path
 import struct
@@ -75,7 +76,7 @@ def main():
             controls += 1
         refused(args.cli,mode,"Asc('中')",['--character-code-page','1252'])
         controls += 1
-    tagged = run('java','-Dstdout.encoding=UTF-8','-cp',args.jar,RECIPES/'TableDataOracle.java',args.database,'ROULETTE_TB')
+    tagged = run('java','-Dstdout.encoding=UTF-8','-cp',args.jar,reference_file('tests/access/reading/tables/TableDataOracle.java'),args.database,'ROULETTE_TB')
     rows = []
     for line in tagged.splitlines():
         row = line.split('\t')[1:]

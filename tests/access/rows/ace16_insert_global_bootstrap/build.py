@@ -4,7 +4,7 @@ from pathlib import PurePosixPath
 import subprocess
 import tarfile
 
-RECEIPT = 'docs/testing/results/ace16-insert-global-bootstrap-example-build-2026-10-28.json'
+RECEIPT = 'tests/results/rows/ace16-insert-global-bootstrap-example-build-2026-10-28.json'
 REVISION = '7c282f43de9cbaad218f9b1f01b6189364d0d4a0'
 
 

@@ -61,7 +61,7 @@ def main():
     if args.generate:
         assert all(not path.exists() for path in files.values()), "Never overwrite original inputs"
 
-    sources = (RECIPE, Path(__file__), Path("docs/testing/StoredDateBitsOracle.java"))
+    sources = (RECIPE, Path(__file__), Path("tests/access/queries/expressions/StoredDateBitsOracle.java"))
     report = {
         "scope": "Original 20,000-row DATE candidate replay; independent rational predicates, not native SQL qualification",
         "pins": [{"path": str(path), "sha256": digest(path)} for path in (args.jar, args.cli, *sources)],

@@ -1,4 +1,5 @@
 """Independent scalar spellings and ASCII casing controls; no Access SQL oracle."""
+from engineering_paths import reference_file
 import argparse
 import csv
 from decimal import Decimal
@@ -66,7 +67,7 @@ def main():
         before = path.read_bytes()
         assert hashlib.sha256(before).hexdigest() == digest
         output = subprocess.check_output(["java", "-Dstdout.encoding=UTF-8", "-cp", str(args.jar),
-            str(RECIPES / "TableDataOracle.java"), str(path), "IndexedRows"], text=True, encoding="utf-8")
+            str(reference_file('tests/access/reading/tables/TableDataOracle.java')), str(path), "IndexedRows"], text=True, encoding="utf-8")
         tags = [line.split("\t")[1] for line in output.splitlines()]
         assert len(tags) == 20000 and all(tag.startswith("I32:") for tag in tags)
         chosen = sorted(int(tag[4:]) for tag in tags if 12340 <= int(tag[4:]) <= 12344)

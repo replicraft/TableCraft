@@ -3,6 +3,7 @@
 The catalog comes from documented titles, not native Access execution. Jackcess
 getters independently supply row IDs; no reference SQL/VBA is executed.
 """
+from engineering_paths import reference_file
 
 import argparse
 import csv
@@ -109,7 +110,7 @@ def main():
     for database in args.database:
         before = hashlib.sha256(database.read_bytes()).hexdigest()
         tagged = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar,
-                     RECIPES / "TableDataOracle.java", database, "ScalarSamples")
+                     reference_file('tests/access/reading/tables/TableDataOracle.java'), database, "ScalarSamples")
         identities = [line.split("\t")[1].removeprefix("I32:") for line in tagged.splitlines()]
         expected = [[identity, quoted(messages.get(str(int(identity) + 10), messages["unknown"]))]
                     for identity in identities]

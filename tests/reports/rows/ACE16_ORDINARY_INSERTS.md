@@ -4,7 +4,7 @@ The existing `NativeImage::preview_ace16_insert_rows` engineering API now builds
 complete explicit ordinary rows containing supported fixed scalars and multiple
 Short Text/Binary fields. A required, unique, ascending Int32 primary selects
 its actual key column; an earlier Int32 companion or a field's
-name does not select it. [Additional physical indexes](ACE16_MULTIPLE_INDEX_INSERTS.md)
+name does not select it. [Additional physical indexes](../indexes/ACE16_MULTIPLE_INDEX_INSERTS.md)
 now retain their own checked trees and distinct-key counter deltas, with logical
 aliases sharing one physical owner. Qualified non-Required secondary
 Ignore-NULL indexes omit NULL keys; their complete original eligible membership
@@ -57,8 +57,8 @@ was detected before the producer build. The initial bundle is retained; the
 87-input rebound bundle reproduces all four complete images and detail files
 byte-for-byte, with source, request and model bytes unchanged.
 
-The [committed producer build](results/ace16-insert-ordinary-example-build-2026-10-28.json)
-then produces all four [matching candidates](results/ace16-insert-ordinary-native-2026-10-28.json)
+The [committed producer build](../../results/rows/ace16-insert-ordinary-example-build-2026-10-28.json)
+then produces all four [matching candidates](../../results/rows/ace16-insert-ordinary-native-2026-10-28.json)
 on their first attempts. All four complete-image comparisons precede eight
 first-attempt fresh read-only getter/map calls. Each final snapshot has 904 typed
 rows across the three tables. The four cases retain all 1,804 old selected ROWs
@@ -68,12 +68,12 @@ two INDEX leaves. Together the candidates add eight INDEX pages and two DATA
 pages, 40,960 bytes, with no bitmap page. Each table and physical historical
 counter increments once despite the logical alias.
 
-The [maintained saved verifier](ace16_insert_ordinary/README.md) rederives all four
+The [maintained saved verifier](../../access/rows/ace16_insert_ordinary/README.md) rederives all four
 images before interpreting cached fresh streams. Its default mode starts no
 child process; optional Git verification checks the compiled source closure.
 Missing private evidence is reported explicitly rather than treated as success.
 
-Four separate [public INSERT references](results/ace16-insert-ordinary-public-reference-2026-10-28.json)
+Four separate [public INSERT references](../../results/rows/ace16-insert-ordinary-public-reference-2026-10-28.json)
 and eight fresh inert getter/map calls also pass on their first attempts. Their
 new ROWs and allocation purposes agree with the engineering cases, and the
 transition proofs preserve old records and the other tables. The public proof
@@ -225,7 +225,7 @@ The first focused 15-function batch, combined 258-function INSERT batch and
 ignored generator; full Access passes 500 after its separate required-index
 read-order fix. Strict all-target/all-feature ACE Clippy, minimal ACE/Access
 compilation, formatting and documentation/dependency guards pass. These counts
-overlap. The later [original-file proof](ace16_insert_extended_datetime/README.md)
+overlap. The later [original-file proof](../../access/rows/ace16_insert_extended_datetime/README.md)
 now separately adds one exact SOURCE/request image comparison and one fresh
 typed-row/map read on a V2019 original, after SOURCE3 and a saved raw gate. Its
 public REF2 agrees except for 42 inactive NULL-cell bytes; expected-image
@@ -282,7 +282,7 @@ and logical aliases. Both independently constructed images are read and checked
 before the producer runs. Two separate audit functions check literal records,
 raw encoding ties, carrier errors and non-round-tripping BOM refusal.
 
-The later [external LVAL continuation](ACE16_LONG_VALUE_INSERTS.md) now supplies
+The later [external LVAL continuation](../storage/ACE16_LONG_VALUE_INSERTS.md) now supplies
 single/chained allocation using the same append state before DATA and INDEX
 placement. That functionality is separate from this initial inline checkpoint. Memo/OLE indexes, required macro/constraint execution,
 normal saves and native Access save/reopen qualification remain separate gates.

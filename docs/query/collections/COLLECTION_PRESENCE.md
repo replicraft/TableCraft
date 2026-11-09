@@ -64,7 +64,7 @@ observed cancellation checkpoint. Adapter tests prohibit external FileData page
 reads and verify cache reuse. CLI tests reuse original synthetic attachment
 fixtures across ACE 2007/2016/2019-family headers and verify unchanged bytes.
 
-The original [independent runner](../../testing/compare_attachment_presence.py) checks
+The original [independent runner](../../../tests/access/reading/tables/compare_attachment_presence.py) checks
 criteria against Jackcess-decoded parent membership counts on the registered
 [3 MiB attachment corpus](../../access/storage/NATIVE_TABLES.md#attachment-metadata-projection-snapshots).
 It verifies original hashes before and after each run. Only TableCraft executes

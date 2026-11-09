@@ -6,10 +6,10 @@ from pathlib import Path
 import subprocess
 import sys
 
-ROOT = Path(__file__).resolve().parents[3]
+ROOT = Path(__file__).resolve().parents[4]
 sys.dont_write_bytecode = True
 sys.path.insert(0, str(ROOT))
-sys.path.insert(0, str(ROOT / 'docs/testing'))
+sys.path.insert(0, str(ROOT / 'tests/access'))
 from scripts.compat_artifacts import ArtifactStore
 from ace16_insert_external_long_values.evidence import Pins, report
 from ace16_insert_long_value_map_growth import build, model, reference, requests, source
@@ -23,7 +23,7 @@ BUILD = '.cache/ace16-insert-long-value-map-growth-build-20261028'
 NATIVE = '.cache/ace16-insert-long-value-map-growth-acceptance-next-20261028'
 NATIVE_WORK = '.cache/ace16-insert-long-value-map-growth-candidate-first-20261028'
 GETTERS = '.cache/ace16-insert-long-value-map-growth-getters-first-20261028'
-PUBLIC = 'docs/testing/ace16_insert_long_value_map_growth'
+PUBLIC = 'tests/access/storage/ace16_insert_long_value_map_growth'
 NOTICE = b'Engineering candidate: data-macro semantics and native Access qualification pending.\n'
 FIXED = {
     SOURCE + '/freeze.json': 'b32ca7ab1e7d6356bd957340f4f7628c90bb085db05b5ed34e0aee6152e33de1',
@@ -62,7 +62,7 @@ def maintained(store, pins):
             definitions = lambda text: [ast.dump(node, include_attributes=False)
                 for node in ast.parse(text).body if isinstance(node, (ast.FunctionDef, ast.ClassDef))]
             assert definitions(actual) == definitions(original)
-    helper = pins.check(store.pin('docs/testing/parent_index_split_originals/BoundedFileChannel.java'))
+    helper = pins.check(store.pin('tests/access/indexes/parent_index_split_originals/BoundedFileChannel.java'))
     assert helper.read_bytes() == pins.check(store.pin(SOURCE + '/BoundedFileChannel.java')).read_bytes()
 
 

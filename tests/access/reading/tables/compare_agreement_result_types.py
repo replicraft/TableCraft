@@ -17,7 +17,7 @@ import subprocess
 import compare_fixed_binary_keys as mixed
 from compare_declared_numeric_text import INPUTS, JAR_SHA256
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[4]
 MAX_COMMANDS = 400
 CANDIDATE_SHA256 = "5a73870b888d58a22314096e761ec3ddec8cfc4ea6bbf7a7e5acda868b46d10c"
 BASELINE_SHA256 = "f9e51ed3b8bfd0500ed8f650cec6e2bdbf27ee4d93fccfab2e176454f6277433"
@@ -124,10 +124,10 @@ def main():
         if mixed.digest(ROOT / name) != sources[name]:
             raise ValueError("Selected source differs from revision")
     artifacts = [args.cli, args.baseline, args.jar, Path(__file__),
-                 ROOT / "docs/testing/compare_fixed_binary_keys.py",
-                 ROOT / "docs/testing/compare_declared_numeric_text.py",
-                 ROOT / "docs/testing/compare_numeric_keys.py",
-                 ROOT / "docs/testing/TableDataOracle.java",
+                 ROOT / "tests/access/indexes/native/compare_fixed_binary_keys.py",
+                 ROOT / "tests/access/queries/expressions/compare_declared_numeric_text.py",
+                 ROOT / "tests/access/indexes/native/compare_numeric_keys.py",
+                 ROOT / "tests/access/reading/tables/TableDataOracle.java",
                  *(args.directory / name for name in INPUTS)]
     pins = {str(path.resolve().relative_to(ROOT)): mixed.digest(path) for path in artifacts}
     report = {
@@ -169,7 +169,7 @@ def main():
             database = args.directory / name
             getter = subprocess.run(
                 ["java", "-Xmx256m", "-cp", str(args.jar),
-                 str(ROOT / "docs/testing/TableDataOracle.java"), str(database), "ScalarSamples"],
+                 str(ROOT / "tests/access/reading/tables/TableDataOracle.java"), str(database), "ScalarSamples"],
                 capture_output=True, text=True, timeout=120, check=True,
             )
             if getter.stderr:

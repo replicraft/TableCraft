@@ -3,6 +3,7 @@
 Only TableCraft executes SQL. Decimal and Python calendar values supply separate
 expectations, with unchanged native source hashes and read-only Jackcess getters.
 """
+from engineering_paths import reference_file
 
 import argparse
 import datetime as dt
@@ -56,7 +57,7 @@ def main():
     for database in args.database:
         before = hashlib.sha256(database.read_bytes()).hexdigest()
         tagged = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar,
-                     RECIPES / "TableDataOracle.java", database, "ScalarSamples")
+                     reference_file('tests/access/reading/tables/TableDataOracle.java'), database, "ScalarSamples")
         expected = []
         for line in tagged.splitlines():
             fields = line.split("\t")

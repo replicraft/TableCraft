@@ -61,16 +61,16 @@ query/streaming profile. Native Access qualification remains separate.
 
 ## Independent evidence
 
-The original [generator/getter](../../testing/LargerMemoFixture.java) supplies fresh
+The original [generator/getter](../../../tests/access/storage/native/LargerMemoFixture.java) supplies fresh
 inert Jet 4, ACE 2007, ACE 2016 and ACE 2019 inputs. Each stores 3 MiB ASCII,
 600,000 Chinese characters, 300,000 `é🦀` pairs, empty Memo
 and NULL. Read-only getters independently confirm UTF-8 lengths/SHA-256 and
 UTF-16 unit counts; no reference SQL or application content executes.
 
-The [runner](../../testing/compare_larger_memos.py) passes 76 controls, comparing
+The [runner](../../../tests/access/storage/native/compare_larger_memos.py) passes 76 controls, comparing
 complete query payloads, Len, count-only pruning, selected-index reads, exact
 UTF-8 boundaries and separate encoded/native/query/output refusals. Both original
-inputs and fixed CLI hashes remain unchanged. [Recorded results](../../testing/results/larger-memos-2026-10-24.json)
+inputs and fixed CLI hashes remain unchanged. [Recorded results](../../../tests/results/storage/larger-memos-2026-10-24.json)
 retain the inventory, JAR/source/binary hashes and count. Engine controls additionally
 reach exactly 16 MiB and reject the next byte, cover all five decode routes and
 cancel every observed checkpoint after successful prefixes. Five query large-Text

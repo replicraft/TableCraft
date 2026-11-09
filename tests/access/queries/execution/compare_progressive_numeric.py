@@ -10,7 +10,7 @@ from pathlib import Path
 
 from compare_decimal_seeks import JAR_SHA256, digest, getters, invoke, relative
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[4]
 CLI_SHA256 = "c1e7c12722c31c31fbcdf47283b2ef0c92089d698b51f09cc200efda1cbc90c5"
 REVISION = "e837d675137c8df82f296cfe9aab9f7b43ea6bb6"
 MAX_COEFFICIENT = (1 << 96) - 1
@@ -153,9 +153,9 @@ def main():
 
     pinned = [
         args.cli, args.jar, Path(__file__), *args.inputs,
-        ROOT / "docs/testing/compare_decimal_seeks.py",
-        ROOT / "docs/testing/DecimalIndexFixture.java",
-        ROOT / "docs/testing/IndexRowsOracle.java",
+        ROOT / "tests/access/queries/expressions/compare_decimal_seeks.py",
+        ROOT / "tests/access/queries/expressions/DecimalIndexFixture.java",
+        ROOT / "tests/access/indexes/native/IndexRowsOracle.java",
     ]
     before = {relative(path): digest(path) for path in pinned}
     compiled = compiled_sources()
@@ -219,7 +219,7 @@ def main():
 
             empty = invoke([
                 "java", "-Dstdout.encoding=UTF-8", "-cp", args.jar,
-                "docs/testing/IndexRowsOracle.java", database, "DecimalEmpty4", "EmptyKey", "Value",
+                "tests/access/indexes/native/IndexRowsOracle.java", database, "DecimalEmpty4", "EmptyKey", "Value",
             ])
             if empty.returncode or empty.stdout:
                 raise RuntimeError("Original public getter did not confirm empty table")

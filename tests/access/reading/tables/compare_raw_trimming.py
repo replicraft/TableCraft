@@ -3,6 +3,7 @@
 Python list prefix/suffix removal supplies expected bytes. Native getters supply
 rows only; TableCraft evaluates SQL and native Access qualification is unrun.
 """
+from engineering_paths import reference_file
 
 import argparse
 from itertools import product
@@ -88,7 +89,7 @@ def native_controls(args):
         path = args.directory / f"Policies-{profile}.{suffix}"
         before = digest(path)
         oracle = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar,
-                     RECIPES / "TableDataOracle.java", path, "PolicyProbe")
+                     reference_file('tests/access/reading/tables/TableDataOracle.java'), path, "PolicyProbe")
         expected = []
         for line in oracle.splitlines():
             fields = line.split("\t")

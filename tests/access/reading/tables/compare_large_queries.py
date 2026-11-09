@@ -1,4 +1,5 @@
 """Compare opt-in larger scalar snapshots/query work with independent stored ID models."""
+from engineering_paths import reference_file
 import argparse
 import csv
 import hashlib
@@ -29,7 +30,7 @@ def main():
         original = path.read_bytes()
         assert hashlib.sha256(original).hexdigest() == digest
         rows = subprocess.check_output(["java", "-Dstdout.encoding=UTF-8", "-cp", str(args.jar),
-            str(RECIPES / "TableDataOracle.java"), str(path), "StreamRows"], text=True, encoding="utf-8")
+            str(reference_file('tests/access/reading/tables/TableDataOracle.java')), str(path), "StreamRows"], text=True, encoding="utf-8")
         identifiers = [int(line.split("\t")[1].removeprefix("I32:")) for line in rows.splitlines()]
         assert identifiers == list(range(1, 20001))
         native = ["--native-bytes", "67108864", "--native-rows", "100000", "--native-steps", "10000000"]

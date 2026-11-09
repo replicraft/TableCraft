@@ -70,7 +70,7 @@ test checks byte charging and cancellation; two query tests cover grouping, nest
 parameter/page reuse and eager failures. A CLI test decodes CSV/TSV cells and checks
 both query paths, page selection and buffered refusals.
 
-The [independent recipe](../../testing/compare_character_functions.py) builds inverse
+The [independent recipe](../../../tests/access/queries/expressions/compare_character_functions.py) builds inverse
 mappings from Python codecs and documented WHATWG extensions, then compares Chr
 and Asc results across all eleven pages through both CLI query paths. It separately
 checks Unicode units, refused boundaries, supplementary input and independently
@@ -146,7 +146,7 @@ provide the string-argument and conversion basis. This is TableCraft's bounded
 materialized scalar profile; full Variant/native regional/error behavior, DBCS
 and native Access code-page/Unicode qualification remain open.
 
-The original [scalar runner](../../testing/compare_character_reverse_scalars.py) passes
+The original [scalar runner](../../../tests/access/reading/tables/compare_character_reverse_scalars.py) passes
 336 controls over authored numeric/date/Boolean spellings, first ASCII codes, typed results and BMP
 reversal. Independent raw IDs supply native-source controls through sequential
 and both index orders over the unchanged four-family 20,000-row inputs. Only
@@ -172,7 +172,7 @@ guide this existing query-function profile. Native Access coercion remains unrun
 Two expression tests exercise host states, exact conversion/output accounting and
 every observed successful cancellation checkpoint. Query/CLI tests cover derived
 Error values, explicit Long conversion and buffered failures. The shared
-[independent character/format runner](../../testing/compare_character_format_states.py)
+[independent character/format runner](../../../tests/access/queries/expressions/compare_character_format_states.py)
 checks raw Error refusal, independent Windows-1252/UTF-16 code models and selected
 native identities without reference SQL. See [numeric formatting states](../formatting/STYLED_NUMBER_FORMATTING.md#ordered-numeric-formatting-states)
 for the combined evidence.

@@ -6,7 +6,7 @@ import json
 from pathlib import Path
 import subprocess
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[4]
 JAR_SHA256 = '19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc'
 TABLES = ('Tree', 'Unindexed', 'Sentinel')
 INDEXES = {'PrimaryKey', 'GroupAsc', 'GroupTwin', 'GroupDesc', 'Compound', 'UniqueScore'}
@@ -308,7 +308,7 @@ def main():
         parser.error('Report must be fresh')
     if digest(args.jar.read_bytes()) != JAR_SHA256:
         parser.error('Reviewed JAR differs')
-    helper = ROOT / 'docs/testing/DeleteTreeFixture.java'
+    helper = ROOT / 'tests/access/rows/delete/DeleteTreeFixture.java'
     pins = [helper, Path(__file__), args.jar]
     originals = []
     for profile in ('V2016', 'V2019'):

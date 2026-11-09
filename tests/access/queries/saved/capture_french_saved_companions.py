@@ -11,7 +11,7 @@ import subprocess
 
 from capture_french_comparison import parse as field_model
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[4]
 JAR_SHA256 = '19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc'
 HELPER = 'com.healthmarketscience.jackcess.impl.FrenchSavedCompanion'
 FIELD_HELPER = 'com.healthmarketscience.jackcess.impl.FrenchComparisonFixture'
@@ -76,7 +76,7 @@ def main():
     command = ['java', '-cp', os.pathsep.join(map(str, (args.jar, args.classes))), HELPER]
     field_command = ['java', '-cp', os.pathsep.join(map(str, (args.jar, args.field_classes))), FIELD_HELPER]
     report = {'scope': 'Saved SELECT metadata construction/getter and exact protected field/page preservation only; no SQL execution',
-              'artifacts': [pin(Path(__file__)), pin(Path('docs/testing/FrenchSavedCompanion.java')),
+              'artifacts': [pin(Path(__file__)), pin(Path('tests/access/queries/saved/FrenchSavedCompanion.java')),
                             pin(args.fields), pin(args.jar),
                             pin(args.classes / Path(*HELPER.split('.')).with_suffix('.class'))],
               'profiles': []}

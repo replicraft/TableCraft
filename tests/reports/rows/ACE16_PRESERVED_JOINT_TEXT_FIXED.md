@@ -18,7 +18,7 @@ scalar families are outside this profile, including empty target groups.
 
 See [preserved Short Text](ACE16_PRESERVED_SHORT_TEXT_UPDATES.md),
 [joint fixed updates](ACE16_PRESERVED_JOINT_FIXED.md) and
-[engineering previews](ACE16_WRITE_PREVIEWS.md) for the adjoining contracts.
+[engineering previews](../development/ACE16_WRITE_PREVIEWS.md) for the adjoining contracts.
 
 ## One original record and one final image
 
@@ -108,9 +108,9 @@ closed mutation function set; changing that test expression to admitted Len
 retained every expected image. The initial typed CLI run exposed missing mixed
 transport routing; its correction reuses existing mixed grouping and the fitted
 engine service without adding storage rules to the host. Both initial failures
-remain in the [frontend result](results/ace16-preserved-joint-text-fixed-frontends-2026-10-31.json)
+remain in the [frontend result](../../results/rows/ace16-preserved-joint-text-fixed-frontends-2026-10-31.json)
 alongside corrected passing runs. The
-[native result](results/ace16-preserved-joint-text-fixed-2026-10-31.json)
+[native result](../../results/rows/ace16-preserved-joint-text-fixed-2026-10-31.json)
 separately records engine and proof checks.
 
 These engineering candidates grant no normal ACE save or journal permission,
@@ -120,7 +120,7 @@ separate from this authored corpus.
 
 ## Generated-file qualification
 
-The [generated Text/Boolean corpus](preserved_joint_text_fixed_genuine/README.md)
+The [generated Text/Boolean corpus](../../access/rows/preserved_joint_text_fixed_genuine/README.md)
 reuses two unchanged Short Text originals and their unchanged read-only getter.
 All fourteen original/request-only expectations pass complete native Source
 admission before producer calls; their source tranche was committed as
@@ -131,7 +131,7 @@ exact no-ops. Shared mask bits, a zero-capacity present-empty Text transition,
 disjoint original rows, caches and attachment companions remain qualified within
 this profile. The first saved-only replay passes without child processes.
 
-The [result](results/ace16-preserved-joint-text-fixed-genuine-images-2026-10-31.json)
+The [result](../../results/rows/ace16-preserved-joint-text-fixed-genuine-images-2026-10-31.json)
 retains the initial reader-wrapper arity preflight failure and executable-retention
 disk failure separately from the passing actual calls. No SDK process started
 before the preflight correction. These generated files qualify Text plus Boolean;

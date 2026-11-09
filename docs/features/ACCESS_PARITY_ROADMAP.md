@@ -87,7 +87,7 @@ now connects File Options with accepted scoped offscreen review and supports
 fitted OFF after qualified empty Number/Short Text histories through a distinct
 `TCDO0002` request. Actual catalog-column map ownership selects one source proof;
 no old decoder/source failure is retried. The
-[composition record](../testing/results/field-history-options-workflows-2026-11-09.json)
+[composition record](../../tests/results/schema/field-history-options-workflows-2026-11-09.json)
 passes 991 unique selected checks. This remains an 11-page, existing-page-10 fitted
 profile: the observed N12 free space qualifies and N13 does not. Subsequent
 ADD on that field-history OFF source now has a separate fitted TCAC6 service and
@@ -95,7 +95,7 @@ normal headless GUI save/reopen checks. Same-width field rename has a distinct
 native/adapter/runtime service and connected Datasheet/Design proposal, close
 and full-witness publication flow. Normal-host headless acceptance now passes;
 22 source-free panel renders are separate evidence with all images directly reviewed. See the
-[service record](../testing/results/field-schema-services-2026-11-09.json).
+[service record](../../tests/results/schema/field-schema-services-2026-11-09.json).
 The original creator-OFF→table-rename route retains its separate boundary. Ordinary populated or
 broader table/column rename and other lifecycle operations remain work. Neither
 parser nodes nor a “created by TableCraft” flag confer mutation authority.
@@ -136,7 +136,7 @@ neutral mutation planners and qualified native/CLI actions exist, but their
 closed expression/target profiles do not establish general action SQL.
 See [parser scope](../query/SQL_PARSER.md),
 [retrieval execution](../query/QUERY_EXECUTION.md) and
-[remaining read/query gaps](../testing/READ_QUERY_P0_GAPS.md).
+[remaining read/query gaps](../../tests/reports/queries/READ_QUERY_P0_GAPS.md).
 
 | Query workstream | Required completion |
 | --- | --- |
@@ -282,7 +282,7 @@ parallel streaming across the implemented native encryption codecs. The initial
 page measurements and later end-to-end measurements remain separate evidence. Wrapper candidates that do not replace current
 security/durability contracts were not added. See the
 [implementation record](../IMPLEMENTATION.md#native-library-refactors--8-november-2026)
-and [measurements](../testing/NATIVE_LIBRARY_REFACTORS.md). This is not an exhaustive
+and [measurements](../../tests/reports/general/NATIVE_LIBRARY_REFACTORS.md). This is not an exhaustive
 claim that no further library refactor is possible; phase 3 deliberately repeats
 the review against completed native workloads.
 

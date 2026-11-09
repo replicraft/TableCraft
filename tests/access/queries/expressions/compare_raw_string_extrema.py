@@ -3,6 +3,7 @@
 Python selects first equal representatives from reviewed short keys. Optional
 Jackcess getters provide stored IDs only; TableCraft alone evaluates SQL.
 """
+from engineering_paths import reference_file
 
 import argparse
 from pathlib import Path
@@ -23,7 +24,7 @@ def native_controls(args):
         path = args.directory / f"Policies-{profile}.{suffix}"
         before = digest(path)
         oracle = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar,
-                     RECIPES / "TableDataOracle.java", path, "PolicyProbe")
+                     reference_file('tests/access/reading/tables/TableDataOracle.java'), path, "PolicyProbe")
         ids = []
         for line in oracle.splitlines():
             fields = line.split("\t")

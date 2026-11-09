@@ -3,6 +3,7 @@
 Calendar intervals are deliberately outside this recipe. Jackcess supplies only
 inert stored DATE bits; this is not native Access SQL arithmetic qualification.
 """
+from engineering_paths import reference_file
 import argparse
 import datetime
 import struct
@@ -77,7 +78,7 @@ def main():
         controls += 1
     for path in args.database:
         before = digest(path)
-        tagged = run('java', '-Dstdout.encoding=UTF-8', '-cp', args.jar, RECIPES / 'TableDataOracle.java', path, '--date-bits', 'ScalarSamples')
+        tagged = run('java', '-Dstdout.encoding=UTF-8', '-cp', args.jar, reference_file('tests/access/reading/tables/TableDataOracle.java'), path, '--date-bits', 'ScalarSamples')
         records = [line.split('\t')[1:] for line in tagged.splitlines()]
         assert len(records) == 3 and all(len(row) == 14 for row in records)
         output = run(args.cli, 'query', 'run', 'SELECT ID,Stamp+0.5 AS Shifted,Stamp-#1899-12-30# AS Serial,0.5-Stamp AS Reverse,Stamp-Stamp AS Difference FROM ScalarSamples ORDER BY ID', '--database', path).splitlines()

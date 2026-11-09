@@ -55,7 +55,7 @@ and retire the journal namespace through the existing lifecycle.
 
 ## Observed evidence
 
-The [six source images](../../testing/ACE16_RETAINED_BINARY_MARKER_SOURCES.md) and
+The [six source images](../../../tests/reports/storage/ACE16_RETAINED_BINARY_MARKER_SOURCES.md) and
 48 inert SDK reports were qualified before matching writes. The initial canonical
 observer refused both originals; after the implementation, the same observer
 reports `ADMITTED` for both headers. Both observations remain preserved.
@@ -70,7 +70,7 @@ same frozen files. Exact-carrier, stale-handle and overflow controls pass. Histo
 refusals were superseded by the independently qualified Id update profile. Fixed UPDATE regressions, minimal/journal/preview builds, scoped
 strict checks, formatting and dependency boundaries also pass.
 
-See the [write result](../../testing/results/ace16-retained-binary-marker-writes-2026-11-02.json).
+See the [write result](../../../tests/results/storage/ace16-retained-binary-marker-writes-2026-11-02.json).
 These are TableCraft engine/adapter/CLI and independent-reader observations.
 Microsoft Access save/reopen, Windows mixed-client locking and general native
 save compatibility remain unqualified. The source record remains an earlier

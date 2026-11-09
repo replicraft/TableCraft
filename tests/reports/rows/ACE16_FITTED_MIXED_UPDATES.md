@@ -11,7 +11,7 @@ joint-key regression functions pass. Strict ACE all-target/all-feature Clippy an
 minimal ACE checks pass. This is engineering preview evidence; native Access
 save and original-file mixed-update qualification are not claimed.
 
-The subsequent [body-ownership correction](ACE16_FITTING_BODY_ROLES.md)
+The subsequent [body-ownership correction](../storage/ACE16_FITTING_BODY_ROLES.md)
 adds complete source-role protection to this nonallocating route. Historical
 fixture constructors remain unchanged; positive regression controls now use
 explicitly framed ownership-list derivatives qualified before their mutation
@@ -37,15 +37,15 @@ route. Independent fixed-update capabilities do not implicitly widen it.
 The result is the separate non-journalable `Ace16WritePreview`. Normal ACE
 writes, required data macros, journal activation and native save permission stay
 behind their existing gates. This API does not convert a preview into a normal
-write plan for callers. See [engineering preview boundaries](ACE16_WRITE_PREVIEWS.md)
+write plan for callers. See [engineering preview boundaries](../development/ACE16_WRITE_PREVIEWS.md)
 and the separate [variable-record allocation service](ACE16_VARIABLE_UPDATES.md).
 
 ## One original row and one joint key transform
 
-The [mixed stage](../../crates/engines/tablecraft-ace/src/table/mutation/fitted/stage.rs)
+The [mixed stage](../../../crates/engines/tablecraft-ace/src/table/mutation/fitted/stage.rs)
 resolves selected columns and affected key siblings from the original schema.
 It captures original logical roots through the existing owned/exclusive
-[record resolver](../../crates/engines/tablecraft-ace/src/table/mutation/record_roots.rs).
+[record resolver](../../../crates/engines/tablecraft-ace/src/table/mutation/record_roots.rs).
 Row identity remains the logical root even when the final payload resides in an
 existing hidden forwarded record. Wrong ownership, shared final targets and
 invalid forwarding retain their checks.
@@ -56,7 +56,7 @@ Fixed NULL assignments retain their original opaque payload bytes. Unselected
 variable payloads, unrelated mask bits and unconsumed padding remain exact.
 There is no intermediate candidate or modified-source value override.
 
-The [joint replacement owner](../../crates/engines/tablecraft-ace/src/table/indexes/mutation/replacement/mixed.rs)
+The [joint replacement owner](../../../crates/engines/tablecraft-ace/src/table/indexes/mutation/replacement/mixed.rs)
 qualifies every affected alias before deduplicating physical owners. It checks
 the original encoded key and derives the complete final key, applying all
 selected components together. Each physical owner is transformed once. This
@@ -95,7 +95,7 @@ serializer, including the observed raw UTF16 tie policy.
 
 ## Independent authority before broad record patches
 
-The [record proof](../../crates/engines/tablecraft-ace/src/table/mutation/fitted/record_proof.rs)
+The [record proof](../../../crates/engines/tablecraft-ace/src/table/mutation/fitted/record_proof.rs)
 starts again from the immutable image and original request groups. It rechecks
 source admission, resolves columns and roots, verifies original expected values,
 and independently reconstructs the complete final record. Its variable framing
@@ -116,7 +116,7 @@ actual index-column counts. Errors return no partial candidate.
 
 ## Independent fixtures and retained failures
 
-The [original literal model](../../crates/engines/tablecraft-ace/src/table/mutation/mixed_fitted_tests/model.rs)
+The [original literal model](../../../crates/engines/tablecraft-ace/src/table/mutation/mixed_fitted_tests/model.rs)
 defines 39 source/expected pairs: both headers, Legacy/Modern text and Binary,
 ASC/DESC keys, joint UNIQUE permutations, shrinking payloads, shared NULL masks
 and existing forwarded targets. Sources include nonzero NULL payloads and eight
@@ -139,15 +139,15 @@ the qualified expected images were not changed.
 
 A capacity review then identified a real fitting case: a one-character raw field
 with compression declared and no spare byte. The separate
-[zero-slack literal owner](../../crates/engines/tablecraft-ace/src/table/mutation/mixed_fitted_tests/capacity.rs)
+[zero-slack literal owner](../../../crates/engines/tablecraft-ace/src/table/mutation/mixed_fitted_tests/capacity.rs)
 defines four additional source/expected pairs. Its first source-only run caught
 an authored descriptor offset that omitted three physical counter records.
 Correcting that metadata offset preceded every new-case mutation. The corrected
 eight complete images passed source checks, and the original 39-pair constructor
 remained unchanged.
 
-The [focused mutation controls](../../crates/engines/tablecraft-ace/src/table/mutation/fitted/tests.rs)
-and [capacity controls](../../crates/engines/tablecraft-ace/src/table/mutation/fitted/tests/capacity.rs)
+The [focused mutation controls](../../../crates/engines/tablecraft-ace/src/table/mutation/fitted/tests.rs)
+and [capacity controls](../../../crates/engines/tablecraft-ace/src/table/mutation/fitted/tests/capacity.rs)
 then passed all eight functions, including the original 75 images and eight
 zero-slack comparisons in both group orders. They also cover stale original
 expectations, neither-form-fits refusal, exact/one-below Bytes/Rows/Steps limits,
@@ -169,7 +169,7 @@ do not establish growing-record support for the mixed route.
 
 ## Record-growth source qualification
 
-A separate [literal growth corpus](../../crates/engines/tablecraft-ace/src/table/mutation/mixed_fitted_tests/growing.rs)
+A separate [literal growth corpus](../../../crates/engines/tablecraft-ace/src/table/mutation/mixed_fitted_tests/growing.rs)
 now qualifies 36 source/expected pairs before any growing mixed-update producer
 runs. Both header codes, three key families, both index directions and three
 placement destinations are represented: a hidden slot on the original page, an
@@ -182,6 +182,6 @@ The first source gate stopped at source-role admission because three independent
 authored table definitions lacked their empty declaration terminators. The new
 corpus alone acquired explicit terminators at its known definition ends before
 the successful rerun. Existing fitted fixtures, engine guards and expected values
-were unchanged. The [source record](results/ace16-mixed-growth-sources-2026-10-30.json)
+were unchanged. The [source record](../../results/rows/ace16-mixed-growth-sources-2026-10-30.json)
 preserves both attempts. This is source qualification, not a passing growth
 producer, CLI capability, native Access comparison or save qualification.

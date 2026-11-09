@@ -157,7 +157,7 @@ without exposing or cloning its locked handle. Fixed-capacity implementations do
 not implicitly acquire the new capability. The complete I/O round passes 36 unit,
 three journal-file, four lock, two seek and one compile-fail documentation test;
 strict all-target/all-feature and minimal checks also pass. The
-[result record](../testing/results/variable-length-image-journal-2026-10-30.json)
+[result record](../../tests/results/recovery/variable-length-image-journal-2026-10-30.json)
 pins current source, independent records and the actual logs.
 
 The new capability requires honest contiguous writes that can extend EOF. Resize
@@ -288,7 +288,7 @@ writes. Mixed/opposite images refuse. Its outcome describes current complete byt
 and barriers, not historical events. The native consumer retains original-intent
 qualification before this operation. Parent acknowledgement never renames.
 
-[Focused source/API and broader checks pass](../testing/results/intact-retired-confirmation-2026-10-30.json).
+[Focused source/API and broader checks pass](../../tests/results/general/intact-retired-confirmation-2026-10-30.json).
 Partial garbage, missing children, automatic discovery, unsupported platforms and
 hardware power-loss qualification remain outside this intact-bundle path.
 
@@ -313,5 +313,5 @@ Six focused tests cover the independent V2 golden records, retained journal
 borrow without reload, intermediate lengths, corruption, resource limits,
 cancellation, barrier failures and write-free confirmation. Filesystem capability
 and failure checks are in the [retained-pair contract](FILESYSTEM_JOURNALS.md).
-See the [verification record](../testing/results/checked-v2-retained-targets-2026-11-01.json).
+See the [verification record](../../tests/results/reading/checked-v2-retained-targets-2026-11-01.json).
 These generic operations establish no native write permission.

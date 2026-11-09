@@ -7,10 +7,10 @@ from pathlib import Path
 import subprocess
 import sys
 
-ROOT = Path(__file__).resolve().parents[3]
+ROOT = Path(__file__).resolve().parents[4]
 sys.dont_write_bytecode = True
 sys.path.insert(0, str(ROOT))
-sys.path.insert(0, str(ROOT / 'docs/testing'))
+sys.path.insert(0, str(ROOT / 'tests/access'))
 from scripts.compat_artifacts import ArtifactStore
 from ace16_insert_general_height_one import model as independent_model, reference as source_reference
 
@@ -63,11 +63,11 @@ def portable_missing(filename):
 def maintained_sources(pins):
     private = pins.check(STORE.pin(MODEL + '/prospective_model.py')).read_text()
     assert hashlib.sha256(private.encode()).hexdigest() == 'aa17311422ec385becf4a4e7104b27f3ee5ac8f7e01b69922798f4af43e169bf'
-    public = pins.check(STORE.pin('docs/testing/ace16_insert_general_height_one/model.py')).read_text()
+    public = pins.check(STORE.pin('tests/access/indexes/ace16_insert_general_height_one/model.py')).read_text()
     assert public == private.replace('Path(__file__).resolve().parents[2]',
                                       'Path(__file__).resolve().parents[3]')
     original = pins.check(STORE.pin(REFERENCE + '/proof.py')).read_text()
-    public = pins.check(STORE.pin('docs/testing/ace16_insert_general_height_one/reference.py')).read_text()
+    public = pins.check(STORE.pin('tests/access/indexes/ace16_insert_general_height_one/reference.py')).read_text()
     assert public == original.replace('Path(__file__).resolve().parents[2]',
                                        'Path(__file__).resolve().parents[3]')
     original_functions = [ast.dump(node, include_attributes=False) for node in ast.parse(original).body

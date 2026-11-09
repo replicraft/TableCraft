@@ -30,7 +30,7 @@ publication and its separate provider; this adds no locale fallback or native
 Windows qualification. Ordinary predicates, keys and raw
 relational storage remain separate.
 
-The original [raw comparison runner](../../testing/compare_raw_string_comparison.py)
+The original [raw comparison runner](../../../tests/access/queries/expressions/compare_raw_string_comparison.py)
 passes 1,102 source-free controls against independent unsigned-unit sequence
 ordering, including mixed ordinary Text, NULs, prefixes, trailing spaces, NULL and
 refusals. Native Access comparisons and benchmarks were not run.
@@ -55,7 +55,7 @@ native qualification of function-specific padding, locale or code-page behavior.
 Explicit StrComp uses the supplied default database comparer; ordinary SQL
 predicates continue to route field policies separately.
 
-The [database comparison runner](../../testing/compare_raw_database_comparison.py)
+The [database comparison runner](../../../tests/access/reading/tables/compare_raw_database_comparison.py)
 passes 9,255 controls: all pairs of registered short unit vectors under both
 General models, omitted/-1/2 modes, refusals and queries over four unchanged
 native inputs through sequential and selected primary-index reads. Independent
@@ -130,7 +130,7 @@ Focused value/evaluator/query/CLI tests cover separate provider callbacks, omitt
 slots versus NULL, exact result carriers, UTF-16 ordering, grouping, correlations,
 parameter reuse, eager errors, budgets and cancellation. A generated property
 compares the binary kernel to independently constructed big-endian UTF-16 buffers.
-The original [reference recipe](../../testing/compare_strcomp.py) passes 85 controls
+The original [reference recipe](../../../tests/access/reading/tables/compare_strcomp.py) passes 85 controls
 against Python UTF-16/ordinal models and read-only independently decoded native
 rows, including sequential/indexed reads. The registered Access example's source
 hash remains unchanged. These are independent model/read checks; Microsoft Access
@@ -180,7 +180,7 @@ inputs, and cancels every observed conversion/comparison checkpoint.
 share the same selected conversion policy while retaining different domains.
 The combined batch passes 828 expression/query tests, 309 separately run minimal
 expression tests and three selected CLI tests. The original
-[comparison recipe](../../testing/compare_mode_character.py) passes 840 independent
+[comparison recipe](../../../tests/access/reading/tables/compare_mode_character.py) passes 840 independent
 Decimal/character-code/codec/mode/native-field controls. Native Access comparison
 is unrun; full Variant/source coercion and NLS/LCID provider qualification remain
 open. No dependency or runtime is added.
@@ -220,7 +220,7 @@ and exact error precedence still require Access comparisons.
 Two expression and two query tests cover exact large integers, Boolean, fixed-point
 and date spellings, policy changes between executions, numeric-versus-string
 ordering, NULL/mode/eager boundaries, byte quotas and every observed cancellation
-checkpoint. The original [scalar runner](../../testing/compare_strcomp_scalars.py) passes
+checkpoint. The original [scalar runner](../../../tests/access/reading/tables/compare_strcomp_scalars.py) passes
 620 independent spelling/UTF-16/native-source controls. It reads raw IDs from the
 four unchanged registered 20,000-row inputs and compares sequential and both
 explicit ID-index directions. The existing StrComp runner still passes its 85

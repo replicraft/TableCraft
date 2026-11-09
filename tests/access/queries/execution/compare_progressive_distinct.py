@@ -16,9 +16,9 @@ import subprocess
 from compare_ignored_null_indexes import JAR_SHA256, ORIGINAL_SHA256, PROFILES, parse_getter
 from compare_progressive_derived import compiled_sources
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[4]
 MAX_COMMANDS = 200
-PROVENANCE = "docs/testing/results/ignored-null-index-replay-2026-10-25.json"
+PROVENANCE = "tests/results/indexes/ignored-null-index-replay-2026-10-25.json"
 PROVENANCE_SHA256 = "18d024ef1ee766dfb7f8410e4a99cb454a5a521bcdb64de2626aca32b37c35b0"
 EXTRA_SOURCE_PATHS = (
     "crates/query/tablecraft-query/src/execution/retrieval/finish.rs",
@@ -28,13 +28,13 @@ EXTRA_SOURCE_PATHS = (
     "crates/query/tablecraft-query/src/output_types.rs",
 )
 TOOL_PATHS = (
-    "docs/testing/compare_progressive_distinct.py",
-    "docs/testing/compare_ignored_null_indexes.py",
-    "docs/testing/compare_progressive_derived.py",
-    "docs/testing/compare_progressive_grouped.py",
-    "docs/testing/compare_large_deployment.py",
-    "docs/testing/build_large_deployment.py",
-    "docs/testing/IgnoreNullIndexFixture.java",
+    "tests/access/queries/execution/compare_progressive_distinct.py",
+    "tests/access/indexes/native/compare_ignored_null_indexes.py",
+    "tests/access/queries/execution/compare_progressive_derived.py",
+    "tests/access/queries/execution/compare_progressive_grouped.py",
+    "tests/access/reading/tables/compare_large_deployment.py",
+    "tests/access/reading/tables/build_large_deployment.py",
+    "tests/access/indexes/native/IgnoreNullIndexFixture.java",
 )
 
 

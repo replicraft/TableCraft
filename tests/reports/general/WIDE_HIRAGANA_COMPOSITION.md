@@ -1,10 +1,10 @@
 # Explicit width-then-Hiragana composition evidence
 
-The original [replay runner](compare_strconv_wide_hiragana.py) checks the explicit
+The original [replay runner](../../access/queries/expressions/compare_strconv_wide_hiragana.py) checks the explicit
 Japanese `StrConv(text,36,1041)` engineering profile. It reuses the independent
 Unicode width-property and Unicode-name models in
-[the width runner](compare_strconv_width.py) and
-[the kana runner](compare_strconv_kana.py), in that order. It imports no production
+[the width runner](../../access/queries/expressions/compare_strconv_width.py) and
+[the kana runner](../../access/queries/expressions/compare_strconv_kana.py), in that order. It imports no production
 mapping code and introduces no third-party mapping files. Python's Unicode
 16.0.0 database supplies the same reviewed property/name data used by those
 standalone models; ten literal goldens independently check their composition.
@@ -12,11 +12,11 @@ standalone models; ten literal goldens independently check their composition.
 This establishes agreement with TableCraft's documented composition. It does not
 establish native Access StrConv evaluation order, Windows NLS equivalence, or
 support for other combined flags. The primary Microsoft references and the
-explicit engineering boundary remain in [STRCONV.md](../expressions/text/STRCONV.md#explicit-wide-then-hiragana-composition).
+explicit engineering boundary remain in [STRCONV.md](../../../docs/expressions/text/STRCONV.md#explicit-wide-then-hiragana-composition).
 
 ## Accepted replay
 
-The [accepted report](results/strconv-wide-hiragana-2026-10-25.json) records
+The [accepted report](../../results/queries/strconv-wide-hiragana-2026-10-25.json) records
 230 commands: 206 successful batches containing 616 expected cells and
 24 intended refusals. All matched, with no excluded attempts. Both `query eval`
 and `query run` execute the same controls, with three projections per successful
@@ -60,7 +60,7 @@ Run from the repository root with a fresh report path; the runner refuses
 an existing destination and checks the supplied executable hash before running:
 
 ```sh
-python3 docs/testing/compare_strconv_wide_hiragana.py \
+python3 tests/run.py tests/access/queries/expressions/compare_strconv_wide_hiragana.py \
   --cli .cache/tablecraft-bin/spooled-hiragana-cli-20261025 \
   --cli-sha256 fbf269865c214d09ce3d6cb07dd02eb558860eef142bd72bd008118db57d026b \
   --revision bfb5af50a8778185ba24ea99fffa85607e475b3f \

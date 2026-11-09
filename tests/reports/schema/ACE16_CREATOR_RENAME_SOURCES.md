@@ -1,13 +1,13 @@
 # Creator external-OFF rename source evidence
 
-The [read-only SDK observations](results/ace16-creator-rename-sdk-read-2026-11-08.json)
+The [read-only SDK observations](../../results/schema/ace16-creator-rename-sdk-read-2026-11-08.json)
 cover eight independently authored Name-only AFTER files over the previously
 [SDK-written explicit-OFF sources](ACE16_DATABASE_OPTIONS_SOURCES.md). The two
 sources began as current empty keyless and generated-primary creator outputs;
 explicit OFF added one ordinary MSysDb row and its single external property body.
 Missing creator defaults remain distinct from that explicit operation.
 
-The [literal model](ace16_creator_rename/model.py) authors growth, shrinkage,
+The [literal model](../../access/schema/ace16_creator_rename/model.py) authors growth, shrinkage,
 non-BMP Unicode and leading-BOM spellings on both sources. It changes the user
 Name and its footer, repacks the appended MSysDb record without changing its
 bytes, and adjusts the two catalog directory entries and free-space count.
@@ -26,7 +26,7 @@ This is independent read compatibility for literal images. It is not an SDK
 rename/save observation or Microsoft Access interaction, save/reopen, dependency
 repair, NameMap behavior or DateUpdate timing evidence. The separate native V3
 planner and original-intent comparisons now pass in the
-[completed focused batch](results/sql-creator-focused-2026-11-08.json): 35 engine
+[completed focused batch](../../results/creation/sql-creator-focused-2026-11-08.json): 35 engine
 rename tests, including 54 complete-image pairs, nine explicit-OFF compositions
 and 36 V3 recovery states. Four runtime rename tests pass, with creator sources included in positive
 save/reopen coverage; six long-value regression cases pass too. This is local headless evidence.

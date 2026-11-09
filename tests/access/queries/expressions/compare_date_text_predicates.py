@@ -3,6 +3,7 @@
 Only TableCraft executes SQL. Explicit date policy models do not qualify native
 Access declared/Variant typing, NLS or optimizer/error-order behavior.
 """
+from engineering_paths import reference_file
 
 import argparse
 import datetime as dt
@@ -99,7 +100,7 @@ def main():
         original = database.read_bytes()
         tagged = run(
             "java", "-Dstdout.encoding=UTF-8", "-cp", args.jar,
-            RECIPES / "TableDataOracle.java", database, "ScalarSamples",
+            reference_file('tests/access/reading/tables/TableDataOracle.java'), database, "ScalarSamples",
         )
         moments = []
         for line in tagged.splitlines():

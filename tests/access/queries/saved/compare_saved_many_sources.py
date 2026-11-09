@@ -45,7 +45,7 @@ def main():
         classes.mkdir()
         compilation = [
             "javac", "-cp", str(args.jar), "-d", str(classes),
-            "docs/testing/SavedManySourcesFixture.java",
+            "tests/access/queries/saved/SavedManySourcesFixture.java",
         ]
         subprocess.run(compilation, check=True)
         generated = []
@@ -79,7 +79,7 @@ def main():
         args.jar,
         args.cli,
         Path(__file__).resolve().relative_to(Path.cwd().resolve()),
-        Path("docs/testing/SavedManySourcesFixture.java"),
+        Path("tests/access/queries/saved/SavedManySourcesFixture.java"),
         Path("crates/backends/tablecraft-access/src/saved/fragments.rs"),
         Path("crates/backends/tablecraft-access/src/saved/relations/forest.rs"),
         Path("crates/query/tablecraft-query/src/profile.rs"),

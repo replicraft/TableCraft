@@ -1,6 +1,6 @@
 # Saved external-source reconstruction evidence
 
-The [accepted replay](results/saved-external-2026-10-24.json) passes 188 CLI
+The [accepted replay](../../results/storage/saved-external-2026-10-24.json) passes 188 CLI
 controls across fresh Jet 4 (`V2000`), ACE 2007 (`V2007`) and ACE 16-family
 (`V2016`, `V2019`) frontend/backend pairs. All 109 pinned file hashes remain
 unchanged before and after replay. The frozen executable is
@@ -15,7 +15,7 @@ that Access would author every tested representation.
 
 ## Producer and independent getter boundary
 
-[SavedExternalFixture.java](SavedExternalFixture.java) uses Jackcess public
+[SavedExternalFixture.java](../../access/queries/saved/SavedExternalFixture.java) uses Jackcess public
 ordinary table builders for two root People rows and three distinct backend
 People rows, plus four backend Orders rows. It writes original catalog and
 MSysQueries rows through table APIs for 12 definitions per frontend. The
@@ -24,7 +24,7 @@ rows; it has no synthetic START/END fragments. Query IDs, family flags,
 parameter declarations and labelled UNION arms are explicit original inputs.
 No reference query is executed.
 
-[SavedExternalOracle.java](SavedExternalOracle.java) reopens each file read-only
+[SavedExternalOracle.java](../../access/queries/saved/SavedExternalOracle.java) reopens each file read-only
 with expression evaluation disabled and a throwing link resolver. It records
 public query ID/family/type/SQL getters, SELECT/crosstab remote path/type getters,
 exact raw catalog/query fields (including NULL, empty strings and Order bytes),
@@ -59,7 +59,7 @@ The original binary fixtures and getter captures remain ignored under
 
 ## Independent model and accepted controls
 
-[compare_saved_external.py](compare_saved_external.py) models values directly
+[compare_saved_external.py](../../access/queries/saved/compare_saved_external.py) models values directly
 from reopened ordinary getters. It does not run reference SQL. Each profile has:
 
 - 12 inert inspect controls comparing every fragment field and duplicate count
@@ -112,7 +112,7 @@ stderr as the corresponding `.getters.stderr`. Fresh timestamps may change
 binary hashes; the accepted report pins the actual preserved originals.
 
 ```sh
-python3 docs/testing/compare_saved_external.py \
+python3 tests/run.py tests/access/queries/saved/compare_saved_external.py \
   --cli .cache/tablecraft-bin/saved-external-cli-20261024 \
   --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar \
   --directory .cache/tablecraft-fixtures/saved-external-20261024 \
@@ -144,4 +144,4 @@ establish the representations above, independently of upstream master changes.
 This corpus does not qualify imported provider activation, target named-query
 expansion, link chains, Access security/locking, native Windows execution or
 broader saved-query metadata. It preserves the limits in the
-[saved external-source contract](../access/queries/NATIVE_SAVED_EXTERNAL_QUERIES.md).
+[saved external-source contract](../../../docs/access/queries/NATIVE_SAVED_EXTERNAL_QUERIES.md).

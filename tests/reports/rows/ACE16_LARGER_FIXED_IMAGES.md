@@ -38,7 +38,7 @@ DATA. A separate named expected derivative restores abandoned DATA and INDEX
 bodies from the immutable original source. The original constructor and original
 source bytes remain unchanged and callable; the derivative qualified before any
 new capture policy or writer existed. These failures and the passing rerun are
-preserved in the [execution record](results/ace16-larger-fixed-image-sources-2026-10-30.json).
+preserved in the [execution record](../../results/rows/ace16-larger-fixed-image-sources-2026-10-30.json).
 
 At the capture-only phase-2 checkpoint, extended capture retained all 24 images
 byte-exactly. Existing source
@@ -56,7 +56,7 @@ poll. Normal and standalone minimal checks pass. The capture-only regression
 round passes 541 native mutation, 47 preservation and 37 fixture-consumer
 functions, with two export helpers ignored. All-target/all-feature native strict
 checks, native formatting, documentation links and dependency boundaries pass. See its
-[capture execution record](results/ace16-larger-fixed-image-capture-2026-10-30.json).
+[capture execution record](../../results/rows/ace16-larger-fixed-image-capture-2026-10-30.json).
 The earlier SOURCE strict/format/link/boundary results remain recorded separately.
 
 ## Phase 3: fixed single and nonallocating batch updates
@@ -78,7 +78,7 @@ GLOBAL must represent the header, map storage, selected definition, all owned
 DATA and physical INDEX map/body pages as allocated. Physical aliases are
 certified once. Read protection grants no map-record rewrite authority. Rich
 Boolean updates retain their existing stronger reconstruction/preservation proof.
-The shared [fixed DATA/INDEX ownership guard](ACE16_FIXED_INDEX_BODY_OWNERSHIP.md)
+The shared [fixed DATA/INDEX ownership guard](../indexes/ACE16_FIXED_INDEX_BODY_OWNERSHIP.md)
 also protects Standard fixed routes; this separate P0 correction was required
 before accepting the combined feature.
 
@@ -107,10 +107,10 @@ shared P0 guard. A separate Standard diagnostic then exposed reader-valid body
 overlap acceptance; its failed result is retained in the P0 history. After that
 shared correction, the seven-function larger native suite passed again, including
 the diagnostic and all twenty candidates/twenty no-ops. See the separate
-[phase-3 execution record](results/ace16-larger-fixed-updates-2026-10-30.json).
+[phase-3 execution record](../../results/rows/ace16-larger-fixed-updates-2026-10-30.json).
 The earlier SOURCE and capture-only JSON records remain historical evidence.
 
-The explicit [SQL host](../access/writes/SQL_ENGINEERING_COPIES.md) selects only
+The explicit [SQL host](../../../docs/access/writes/SQL_ENGINEERING_COPIES.md) selects only
 `Fixed(Fitted)` with `--image-bytes`; it does not widen default routing. All these
 outputs remain nonjournalable engineering candidates. Allocation growth, native
 Access save/reopen comparison, required-macro qualification and normal-save

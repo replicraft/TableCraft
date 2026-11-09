@@ -83,11 +83,11 @@ recalculation, application outcomes or freshness. Windows qualification remains
 separate from independent storage/getter evidence.
 
 
-The original [cached-query replay](../../testing/compare_cached_queries.py) passes 92
+The original [cached-query replay](../../../tests/access/reading/tables/compare_cached_queries.py) passes 92
 getter/query controls against unchanged Decimal and Memo inputs in both ACE
 2016/2019 profiles. Exact coefficients/scales, Unicode/NULL/empty values, length,
 count, filtering, empty tables, ordinary refusal and corrupted-copy pruning are
-checked through a fixed CLI. The [report](../../testing/results/cached-calculation-queries-2026-10-24.json)
+checked through a fixed CLI. The [report](../../../tests/results/queries/cached-calculation-queries-2026-10-24.json)
 retains input, source, oracle and binary hashes. These are independent stored-value
 checks; only TableCraft executes SQL. No native Access query qualification is
 implied, and original fixture bytes are unchanged.

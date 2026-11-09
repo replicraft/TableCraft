@@ -3,7 +3,7 @@
 Both fixed V2016/V2019 candidates passed on their **first attempt**: two native
 calls and four read-only getter/map calls, six commands total, terminal status 0.
 There were no retries, disagreements or source changes. The
-[compact receipt](results/ace16-nonroot-split-originals-2026-10-27.json) pins the
+[compact receipt](../../results/indexes/ace16-nonroot-split-originals-2026-10-27.json) pins the
 exact executed private programs, frozen requests, artifact, raw report and log.
 This is separate engineering-preview evidence, not a normal save or Microsoft
 Access/data-macro qualification.
@@ -31,7 +31,7 @@ the original leaf as RIGHT; every resulting leaf and parent must fit.
 The artifact was compiled from committed revision
 `d8bdf6c3ec015afdb70ffa4668ac10974cf7dbb6`, SHA-256
 `d9facf656f8cb51e5e235223b5532ee64624695e0f1a165fee3b8c6a4ec614c3`.
-Its [build receipt](results/ace16-nonroot-split-example-build-2026-10-27.json)
+Its [build receipt](../../results/indexes/ace16-nonroot-split-example-build-2026-10-27.json)
 pins 153 selected Git objects and the isolated exported source snapshot.
 Later working-tree Memo/OLE code is not the tested binary.
 
@@ -67,8 +67,8 @@ remain separate, immutable evidence; no action was rerun to obtain this result.
 
 ## Maintenance and read-only verification
 
-[compare_nonroot_split_updates.py](compare_nonroot_split_updates.py) and
-[nonroot_split_preview_originals](nonroot_split_preview_originals/replay.py)
+[compare_nonroot_split_updates.py](../../access/queries/expressions/compare_nonroot_split_updates.py) and
+[nonroot_split_preview_originals](../../access/indexes/nonroot_split_preview_originals/replay.py)
 are maintained public helpers. They are distinct from the exact private runner
 executed for this result; the public proof is byte-identical to its executed
 private source. The recipe requires the exact frozen plan and explicit committed
@@ -79,7 +79,7 @@ The saved images and cached getters/maps can be rechecked without native or JVM
 calls:
 
 ```sh
-python3 docs/testing/compare_nonroot_split_updates.py \
+python3 tests/run.py tests/access/queries/expressions/compare_nonroot_split_updates.py \
   --verify-existing .cache/ace16-nonroot-split-acceptance-first-20261027/report.json \
   --output .cache/nonroot-split-new-verification.json
 ```

@@ -7,7 +7,7 @@ certificate repeats that proof against the immutable original catalog. This
 correction does not admit indirect selected-column LVAL maps or enable normal
 backend writes.
 
-The [scoped record](results/ace16-lval-map-authority-native-2026-10-27.json)
+The [scoped record](../../results/storage/ace16-lval-map-authority-native-2026-10-27.json)
 retains the actual unsafe before candidate, source/log identities, focused tests
 and read-only original-admission diagnostics.
 

@@ -5,7 +5,7 @@ expected images and fresh read-only getters. Session 27053 terminated with statu
 0 after exactly eight native/JVM fixture commands: four candidate calls and four read-only
 JVM descriptions. No input, request, expected image or budget changed, and no
 public UPDATE or generation was repeated. The
-[compact acceptance receipt](results/ace16-recursive-index-split-originals-2026-10-27.json)
+[compact acceptance receipt](../../results/indexes/ace16-recursive-index-split-originals-2026-10-27.json)
 retains the exact first terminal/report/source archives and every output hash.
 
 ## Two separate measured families
@@ -47,19 +47,19 @@ rewrites are not these engineering candidates' byte goldens.
 The committed artifact has SHA256
 `4576adabdfa9dd074c1338de69c414aeee54a14f904f7f4ac77ed85f321cd01a`,
 compiled from `452f2bde94a2580bd0a64e166cc11384f1ff8a4a`.
-Its [build receipt](results/ace16-parent-split-example-build-2026-10-27.json)
+Its [build receipt](../../results/indexes/ace16-parent-split-example-build-2026-10-27.json)
 pins 197 historical Git objects. The executed private runner `838275e3`, static
 freeze `43325bdd` and selectors `174a5596` remain untouched. Separate root and
 internal whole-image models were independently reviewed before execution.
 
-The [new read-only verifier](parent_index_split_originals/verify_candidates.py)
+The [new read-only verifier](../../access/indexes/parent_index_split_originals/verify_candidates.py)
 requires the pinned ignored report, sources, cached/fresh getter outputs and
 exact executed runner/proofs. It reconstructs all four expected images, checks
 complete typed rows/index/maps and rehashes 74 artifact identities plus 197
 compiled Git objects without native or JVM calls:
 
 ```sh
-python3 docs/testing/parent_index_split_originals/verify_candidates.py \
+python3 tests/run.py tests/access/indexes/parent_index_split_originals/verify_candidates.py \
   --output FRESH_OUTPUT.json
 ```
 

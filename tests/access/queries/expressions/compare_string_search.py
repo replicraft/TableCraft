@@ -3,6 +3,7 @@
 This verifies TableCraft's explicit binary/ordinal profiles, not native Access
 locale search. The independently decoded source database remains read-only.
 """
+from engineering_paths import reference_file
 import argparse
 from pathlib import Path
 import subprocess
@@ -89,7 +90,7 @@ def main():
                            '--collation', 'ordinal') == f'P\n{expected}\n'
                 controls += 1
     tagged = run('java', '-Dstdout.encoding=UTF-8', '-cp', args.jar,
-                 RECIPES/'TableDataOracle.java', args.database, 'ROULETTE_TB')
+                 reference_file('tests/access/reading/tables/TableDataOracle.java'), args.database, 'ROULETTE_TB')
     rows = []
     for line in tagged.splitlines():
         row = line.split('\t')[1:]

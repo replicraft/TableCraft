@@ -4,7 +4,7 @@ from pathlib import PurePosixPath
 import subprocess
 import tarfile
 
-RECEIPT = 'docs/testing/results/ace16-incrementing-autonumber-example-build-2026-10-28.json'
+RECEIPT = 'tests/results/creation/ace16-incrementing-autonumber-example-build-2026-10-28.json'
 REVISION = '9e77ffcf5612734ec89e342aa304e17cb60be8fd'
 
 

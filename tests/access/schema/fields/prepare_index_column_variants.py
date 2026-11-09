@@ -60,7 +60,7 @@ def main():
     parser.add_argument("--directory", type=Path, required=True)
     args = parser.parse_args()
     assert not args.directory.exists(), "Fresh experiment directory required"
-    repository = Path(__file__).resolve().parents[2]
+    repository = Path(__file__).resolve().parents[4]
     workspace = (repository / "Cargo.toml").read_text()
     workspace = re.sub(
         r"members = \[.*?\]", f'members = ["{CRATE.as_posix()}"]',

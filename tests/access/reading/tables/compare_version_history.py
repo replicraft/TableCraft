@@ -13,7 +13,7 @@ from compare_attachment_columns import fields
 
 def stored(args, path, table, memo):
     expected = run("java", "-Dfile.encoding=UTF-8", "-Dstdout.encoding=UTF-8", "-cp", args.jar,
-        "docs/testing/VersionHistoryOracle.java", path, table, memo)
+        "tests/access/reading/tables/VersionHistoryOracle.java", path, table, memo)
     history_report(args, path, table, memo, expected)
     actual = run(args.rows, path, table, "--version-history", memo)
     if actual != expected:
@@ -59,7 +59,7 @@ def main():
             if len(lines) != parents or sum(len(records(line)) for line in lines) != versions:
                 raise RuntimeError("History parent/version count differs")
             api = run("java", "-Dfile.encoding=UTF-8", "-Dstdout.encoding=UTF-8", "-cp", args.jar,
-                "docs/testing/VersionHistoryOracle.java", path, table, memo, "--api-order").splitlines()
+                "tests/access/reading/tables/VersionHistoryOracle.java", path, table, memo, "--api-order").splitlines()
             if len(api) != len(lines):
                 raise RuntimeError("Reference API parent count differs")
             for raw_line, api_line in zip(lines, api):

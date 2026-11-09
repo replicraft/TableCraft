@@ -3,6 +3,7 @@
 This is independent-reader evidence, not Microsoft Access qualification.
 Original databases remain unchanged; mutation checks operate on fresh copies.
 """
+from engineering_paths import reference_file
 import argparse
 from pathlib import Path
 import subprocess
@@ -28,7 +29,7 @@ def main():
         args.directory.mkdir(exist_ok=False)
         for profile, suffix in PROFILES:
             run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar,
-                RECIPES / "BinaryTupleFixture.java",
+                reference_file('tests/access/storage/native/BinaryTupleFixture.java'),
                 args.directory / f"BinaryTuples-{profile}.{suffix}", profile)
     total = 0
     for profile, suffix in PROFILES:
@@ -36,7 +37,7 @@ def main():
         before = digest(path)
         for table, index, count in CASES:
             expected = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar,
-                           RECIPES / "TableDataOracle.java", path, "--date-bits", "--index", table, index)
+                           reference_file('tests/access/reading/tables/TableDataOracle.java'), path, "--date-bits", "--index", table, index)
             lines = [line.split("\t") for line in expected.splitlines()]
             assert len(lines) == count, (profile, index, "count")
             actual = run(args.rows, path, table, "--date-bits", "--index", index, "--bytes", 268435456)

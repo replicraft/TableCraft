@@ -33,19 +33,19 @@ def main():
     for path in (args.ace2016, args.ace2019):
         original = path.read_bytes()
         independent = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar,
-            "docs/testing/TableDataOracle.java", path, "CalculatedScalars")
+            "tests/access/reading/tables/TableDataOracle.java", path, "CalculatedScalars")
         rows = [line.split("\t") for line in independent.splitlines()]
         if len(rows) != 5 or any(len(row) != 8 for row in rows):
             raise RuntimeError("Unexpected original recipe rows")
         for encoded,expected_text in (("fffe00fffe","efbbbf\n"),("fffe","\n")):
-            decoded=run("java","-Dstdout.encoding=UTF-8","-cp",args.jar,"docs/testing/CalculatedScalarFixture.java","--decode-text",path,encoded)
+            decoded=run("java","-Dstdout.encoding=UTF-8","-cp",args.jar,"tests/access/reading/tables/CalculatedScalarFixture.java","--decode-text",path,encoded)
             if decoded!=expected_text:raise RuntimeError("Independent leading compression-marker rule differs")
         for position, (field, kind) in enumerate(zip(fields, types)):
             actual = run(args.rows, path, "CalculatedScalars", "--stored-calculation", field)
             expected = "".join("CalculatedScalars\t" + row[position + 2] + "\n" for row in rows)
             if kind == "DateTime":
                 actual=run(args.rows,path,"CalculatedScalars","--stored-calculation",field,"--date-bits")
-                expected=run("java","-Dstdout.encoding=UTF-8","-cp",args.jar,"docs/testing/StoredDateBitsOracle.java",path,"CalculatedScalars",field)
+                expected=run("java","-Dstdout.encoding=UTF-8","-cp",args.jar,"tests/access/queries/expressions/StoredDateBitsOracle.java",path,"CalculatedScalars",field)
             if actual != expected:
                 raise RuntimeError("Independent exact carrier mismatch: " + field)
             header = f"Table\tCalculatedScalars\nColumn\t{field}\nValues\tStored; not recalculated\nRow ordinal\tStored {kind} value\n"

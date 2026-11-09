@@ -6,7 +6,7 @@ independent expected-byte and reader results. They do not enable a normal save,
 qualify recovery or establish native Access save conformance.
 
 Both ACE 16 header families use the unchanged genuine Sentinel originals from
-the [one-page sources](ACE16_EOF_INSERT_SOURCES.md). Each contains manual ID 23,
+the [one-page sources](../rows/ACE16_EOF_INSERT_SOURCES.md). Each contains manual ID 23,
 a Text marker and readonly inline OLE. The request supplies 600 complete rows,
 ID 24..623, with Marker and Bytes explicitly NULL. Original pins, ordered values,
 placement and map laws were frozen before model code. No writer, engineering
@@ -36,7 +36,7 @@ zero children and confirms exact input/tool/class pins.
 
 The native source gate passed one function over four views in 0.19 seconds. It
 checks full rows, Source/fitted admission, NULL counts, readonly OLE, placement,
-map polarity and complete byte complement. The [result record](results/ace16-multipage-insert-sources-2026-11-01.json)
+map polarity and complete byte complement. The [result record](../../results/storage/ace16-multipage-insert-sources-2026-11-01.json)
 keeps these source results separate from pending multi-page producer, transaction,
 recovery and host qualification. The existing one-page TCNA3 evidence is unchanged.
 A source batch does not imply a new typed or SQL batch service.

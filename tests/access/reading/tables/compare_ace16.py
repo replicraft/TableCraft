@@ -29,7 +29,7 @@ def main():
         for profile, _ in PROFILES:
             for recipe in RECIPES:
                 path = args.directory / f"{recipe}-{profile}.accdb"
-                run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar, f"docs/testing/{recipe}Fixture.java", path, profile)
+                run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar, f"tests/access/{recipe}Fixture.java", path, profile)
     paths = {(recipe, profile): args.directory / f"{recipe}-{profile}.accdb" for recipe in RECIPES for profile, _ in PROFILES}
     originals = {}
     for (recipe, profile), path in paths.items():
@@ -39,7 +39,7 @@ def main():
             raise RuntimeError("Fixture does not have its expected original ACE family header")
         originals[path] = hashlib.sha256(data).hexdigest()
         # Compare all five native catalog fields independently, not just counts.
-        oracle = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar, "docs/testing/CatalogOracle.java", path)
+        oracle = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar, "tests/access/reading/tables/CatalogOracle.java", path)
         actual = run(args.cli, "inspect", path, "--catalog", "--show-system").splitlines()
         # CLI rows contain common category plus the raw native fields. Locate
         # by the printed header rather than assuming descriptor column positions.
@@ -57,7 +57,7 @@ def main():
         print(profile, recipe, "catalog", len(records), originals[path], flush=True)
         if recipe == "Scalar":
             actual = run(args.rows, path, "ScalarSamples")
-            expected = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar, "docs/testing/TableDataOracle.java", path, "ScalarSamples")
+            expected = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar, "tests/access/reading/tables/TableDataOracle.java", path, "ScalarSamples")
             if actual != expected:
                 raise RuntimeError(f"{profile}: scalar carrier disagreement")
             print(profile, "scalar rows", len(actual.splitlines()), hashlib.sha256(actual.encode()).hexdigest(), flush=True)
@@ -69,13 +69,13 @@ def main():
         executable = args.ranges if recipe == "Index" else args.cli
         flag = "--example" if recipe == "Index" else "--cli"
         jar = [] if script == "record_constraints" else ["--jar", args.jar]
-        print(run("python3", f"docs/testing/compare_{script}.py", flag, executable, *jar,
+        print(run("python3", f"tests/access/compare_{script}.py", flag, executable, *jar,
             "--ace", paths[recipe, "V2016"], "--jet", paths[recipe, "V2019"],
             "--ace-label", "ACE16-2016", "--jet-label", "ACE16-2019"), end="", flush=True)
     for profile, _ in PROFILES:
         path = paths["Index", profile]
         expected = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar,
-            "docs/testing/IndexRowsOracle.java", path, "Indexed", "Composite", "Category", "ID")
+            "tests/access/indexes/native/IndexRowsOracle.java", path, "Indexed", "Composite", "Category", "ID")
         actual = run(args.cli, "query", "run", "SELECT Category, ID FROM Indexed",
             "--database", path, "--index", "Indexed", "Composite")
         if len(expected.splitlines()) != 1000 or actual != "Category\tID\n" + expected:

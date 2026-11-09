@@ -34,7 +34,7 @@ def main():
         for table in tables:
             actual = run(args.rows, path, table)
             expected = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar,
-                "docs/testing/TableDataOracle.java", path, table)
+                "tests/access/reading/tables/TableDataOracle.java", path, table)
             assert actual == expected, (code, table, "carrier mismatch")
             tagged += actual
             if table == "LargeNumbers":

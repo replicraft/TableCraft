@@ -1,4 +1,5 @@
 """Independent literal-prompt rendering, raw getters and explicit row/refusal controls."""
+from engineering_paths import reference_file
 import argparse
 import csv
 import hashlib
@@ -33,7 +34,7 @@ def main():
     }
     controls = 0
     with tempfile.TemporaryDirectory(prefix="tablecraft-prompts-oracle-") as classes:
-        sources = [RECIPES / (name + ".java") for name in
+        sources = [reference_file(name + ".java") for name in
                    ("SavedForestFixture", "SavedPromptFixture", "SavedReadOracle", "SavedQueryOracle")]
         subprocess.run(["javac", "-cp", str(args.jar), "-d", classes, *map(str, sources)], check=True)
 

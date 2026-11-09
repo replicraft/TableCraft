@@ -1,6 +1,6 @@
 # Original multi-table DELETE batch observations
 
-The [28-control receipt](results/ace16-batch-delete-originals-2026-10-26.json)
+The [28-control receipt](../../results/rows/ace16-batch-delete-originals-2026-10-26.json)
 records 16 successful explicit candidates and 12 typed refusals over two fresh
 repository-owned ACE16 originals. Both group orders produce identical candidate
 bytes for every positive selection. This qualifies an engineering final-image
@@ -10,7 +10,7 @@ save/reopen compatibility.
 
 ## Originals and actual geometry
 
-[BatchDeleteFixture.java](BatchDeleteFixture.java) uses the reviewed Jackcess
+[BatchDeleteFixture.java](../../access/rows/delete/BatchDeleteFixture.java) uses the reviewed Jackcess
 5.0.4 JAR and fresh-output-only public builders. Each original has 500 `Parents`
 rows and 500 matching `Children` rows, non-NULL Int32 ID/ParentID relationship
 keys, and a known enforced RESTRICT declaration. Each owner also has ten
@@ -22,7 +22,7 @@ Expressions are disabled, links throw, and original column/table properties are
 absent. No AutoNumber, calculated field, imported binary fixture or stored active
 application code was introduced. The original files remain immutable. Exact
 original/reference hashes and generation commands are registered in
-[the fixture ledger](FIXTURES.md#original-multi-table-deletion-batch-inputs).
+[the fixture ledger](../reading/FIXTURES.md#original-multi-table-deletion-batch-inputs).
 
 | Profile | Owner definition | Wide root | Height | Owned pages | Leaves |
 | --- | ---: | ---: | ---: | ---: | ---: |
@@ -50,7 +50,7 @@ All eight reference copies reopen successfully.
 The frozen `preview_ace16_batch_delete` tool uses committed revision
 `eae88945eb59b3cb84e1fc2d6c1b3327e356c839`, SHA-256
 `e451a6ca7a41df6e226831f41f1111f42741dd2f0803749427860cca653692d9`.
-Its [build receipt](results/ace16-batch-delete-example-build-2026-10-26.json)
+Its [build receipt](../../results/rows/ace16-batch-delete-example-build-2026-10-26.json)
 pins 42 compiled Git objects. The replay rehashes those historical objects rather
 than the concurrently changing engine checkout.
 
@@ -84,15 +84,15 @@ not resolve the separate public-reader NULL-parent action discrepancy.
 
 ## Reproduction and retained evidence
 
-[The runner](compare_batch_deletes.py) requires explicit frozen executable/hash/
+[The runner](../../access/rows/delete/compare_batch_deletes.py) requires explicit frozen executable/hash/
 revision, the reviewed JAR, unchanged registered originals, and fresh work/report
 paths. Request files contain actual snapshot-local ordinals and independently
-extracted original raw record bytes. [The model](batch_delete_model.py) validates
+extracted original raw record bytes. [The model](../../access/rows/delete/batch_delete_model.py) validates
 authored GUIDs, complete values/index orders and raw topology without executing
 SQL or using candidate results to choose expectations.
 
 ```sh
-python3 docs/testing/compare_batch_deletes.py \
+python3 tests/run.py tests/access/rows/delete/compare_batch_deletes.py \
   --example .cache/tablecraft-bin/ace16-batch-delete-20261026 \
   --example-sha256 e451a6ca7a41df6e226831f41f1111f42741dd2f0803749427860cca653692d9 \
   --compiled-revision eae88945eb59b3cb84e1fc2d6c1b3327e356c839 \

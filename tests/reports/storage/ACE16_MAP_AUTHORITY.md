@@ -57,7 +57,7 @@ so identical budget or cancellation boundaries are not claimed.
 
 ## Scoped verification
 
-The [implementation record](results/ace16-map-authority-native-2026-10-27.json)
+The [implementation record](../../results/storage/ace16-map-authority-native-2026-10-27.json)
 records 43 distinct runtime functions: 36 existing integration functions and seven
 private functions, including five new controls. They cover required and duplicate
 owner selection, record and bitmap collisions, shared containers, bounded work,

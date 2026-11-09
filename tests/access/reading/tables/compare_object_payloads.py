@@ -22,9 +22,9 @@ def main():
     args = parser.parse_args()
     for path in (args.ace2016, args.ace2019, *([args.original] if args.original else [])):
         original = path.read_bytes()
-        listing = run("java", "-cp", args.jar, "docs/testing/ObjectPayloadOracle.java", path, "--list")
+        listing = run("java", "-cp", args.jar, "tests/access/reading/tables/ObjectPayloadOracle.java", path, "--list")
         records = {int(row[0]): row for row in (line.split("\t") for line in listing.splitlines())}
-        expected = run("java", "-cp", args.jar, "docs/testing/ObjectPayloadOracle.java", path, "--all")
+        expected = run("java", "-cp", args.jar, "tests/access/reading/tables/ObjectPayloadOracle.java", path, "--all")
         by_id = {}
         for line in expected.splitlines():
             native_id, field, value = line.split("\t")

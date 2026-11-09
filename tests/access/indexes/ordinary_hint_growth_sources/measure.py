@@ -214,7 +214,7 @@ def selfcheck():
 
 def saved_original_selfcheck():
     """Use pinned before bytes only; no database writer or fixture child runs."""
-    root = Path(__file__).resolve().parents[3]
+    root = Path(__file__).resolve().parents[4]
     directory = root / '.cache/ace16-variable-encoded-source-first-20261027'
     expected_pages = {
         'V2016': {

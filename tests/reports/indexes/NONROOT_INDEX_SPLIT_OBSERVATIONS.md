@@ -13,9 +13,9 @@ complete values. The first source, report, command outputs and precall archives
 remain unchanged. Separate read-only analyses verified the captured results;
 no action was repeated or relabeled as an initial verifier pass.
 
-The [compact receipt](results/ace16-nonroot-index-split-originals-2026-10-27.json)
+The [compact receipt](../../results/indexes/ace16-nonroot-index-split-originals-2026-10-27.json)
 pins the originals, executed sources, frozen consumer, commands, raw reports and
-subsequent analyses. The [frozen action plan](nonroot_index_split_originals/plan.json)
+subsequent analyses. The [frozen action plan](../../access/indexes/nonroot_index_split_originals/plan.json)
 selects `Tree.ID=1000` at live ordinal 27 and replaces it with `Int32MAX`, without
 changing the 16,384-row ceiling or any admission rule. Each source has 1,000 rows.
 The public helper uses fresh copies, foreign-key enforcement, disabled expression
@@ -77,11 +77,11 @@ These commands recheck existing artifacts only; they do not launch a native
 consumer or JVM and require the ignored raw reports:
 
 ```sh
-python3 docs/testing/nonroot_index_split_originals/capture.py
-python3 docs/testing/nonroot_index_split_originals/analyze.py \
+python3 tests/run.py tests/access/indexes/nonroot_index_split_originals/capture.py
+python3 tests/run.py tests/access/indexes/nonroot_index_split_originals/analyze.py \
   --verify-existing \
   --output .cache/ace16-nonroot-split-next-20261027/diagnosis.json
-python3 docs/testing/nonroot_index_split_originals/lval.py \
+python3 tests/run.py tests/access/indexes/nonroot_index_split_originals/lval.py \
   --verify-existing \
   --output .cache/ace16-nonroot-split-next-20261027/lval-chains.json
 ```

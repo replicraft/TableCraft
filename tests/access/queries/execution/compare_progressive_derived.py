@@ -24,14 +24,14 @@ from compare_progressive_grouped import (
     source_pins,
 )
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[4]
 MAX_COMMANDS = 100
 TOOLS = [
-    "docs/testing/compare_progressive_derived.py",
-    "docs/testing/compare_progressive_grouped.py",
-    "docs/testing/compare_large_deployment.py",
-    "docs/testing/build_large_deployment.py",
-    "docs/testing/LargeDeploymentFixture.java",
+    "tests/access/queries/execution/compare_progressive_derived.py",
+    "tests/access/queries/execution/compare_progressive_grouped.py",
+    "tests/access/reading/tables/compare_large_deployment.py",
+    "tests/access/reading/tables/build_large_deployment.py",
+    "tests/access/reading/tables/LargeDeploymentFixture.java",
 ]
 EXTRA_SOURCES = [
     "crates/backends/tablecraft-access/src/source/recomputed/forwarding.rs",

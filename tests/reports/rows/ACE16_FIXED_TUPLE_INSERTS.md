@@ -11,7 +11,7 @@ edits, schema changes or required data-macro execution.
 The [ordinary record contract](ACE16_ORDINARY_INSERTS.md) still governs all
 supplied fields, including fields outside an index. Its contiguous-column,
 explicit-value, default/generated-field and payload restrictions remain intact.
-Qualified [Short Text/Binary indexes](ACE16_VARIABLE_INDEX_INSERTS.md) now have
+Qualified [Short Text/Binary indexes](../indexes/ACE16_VARIABLE_INDEX_INSERTS.md) now have
 a separate retained-key continuation; other unqualified index profiles remain refused;
 being able to store a value does not qualify an index on it. Foreign indexes and
 unsupported relationship or validation semantics retain their existing gates.
@@ -88,15 +88,15 @@ attempt stopped on exhausted Cargo-cache disk space before tests ran; only
 rebuildable incremental cache was cleared. These failures remain separate from
 the subsequent passing batch.
 
-The [GUID/tuple file corpus](ace16_insert_guid_tuple_indexes/README.md) now
+The [GUID/tuple file corpus](../../access/indexes/ace16_insert_guid_tuple_indexes/README.md) now
 compares 32 source/request-only expected images with the first 32 committed-source
 producer outputs, followed by 64 fresh independent getter/map calls. All 2,768
 old rows remain and 80 rows are added, with 5,684 physical key/ROW pairs. The
 separate public-writer source/reference protocol passes all 193 commands.
 Independent file coverage is single GUID and two-component GUID/Int32; the
 ten-component cases above remain literal engineering controls. The
-[recorded producer build](results/ace16-insert-guid-tuple-index-example-build-2026-10-28.json)
-and [result receipt](results/ace16-insert-guid-tuple-index-native-2026-10-28.json)
+[recorded producer build](../../results/indexes/ace16-insert-guid-tuple-index-example-build-2026-10-28.json)
+and [result receipt](../../results/indexes/ace16-insert-guid-tuple-index-native-2026-10-28.json)
 retain the exact source and evidence pins.
 Native Microsoft Access save/reopen, data macros, shared-file behavior and
 production write admission remain unqualified.
@@ -147,13 +147,13 @@ audit functions check literal wire bytes and reject invalid signs, negative zero
 and out-of-precision values. All 183 INSERT regression functions pass, together
 with strict all-target/all-feature ACE Clippy, minimal ACE compilation, formatting
 and documentation/dependency guards. These are a later batch than the full
-468-function checkpoint above. The [Decimal file corpus](ace16_insert_decimal_indexes/README.md)
+468-function checkpoint above. The [Decimal file corpus](../../access/indexes/ace16_insert_decimal_indexes/README.md)
 now matches all 48 source/request-only expected images against first-attempt
 committed-producer outputs before 96 fresh independent getter/map calls pass.
 It retains 2,252 old rows, adds 160 rows and contains 4,812 physical key/ROW pairs,
 with 40 new INDEX pages and no new DATA pages. The separate source/reference
-protocol passes all 289 calls. The [build receipt](results/ace16-insert-decimal-index-example-build-2026-10-28.json)
-and [result receipt](results/ace16-insert-decimal-index-native-2026-10-28.json)
+protocol passes all 289 calls. The [build receipt](../../results/indexes/ace16-insert-decimal-index-example-build-2026-10-28.json)
+and [result receipt](../../results/indexes/ace16-insert-decimal-index-native-2026-10-28.json)
 preserve the exact phases and pins. This qualifies the stated single, GUID-mixed
 and two-declaration Decimal cases; native Access save/reopen and production write
 admission remain unqualified.

@@ -1,0 +1,572 @@
+{
+  "scope": "Fresh current engineering organization and helper checks; no native comparisons",
+  "python": "3.14.0",
+  "python_files_parsed": 762,
+  "local_documentation_targets": 9088,
+  "missing_documentation_targets": 0,
+  "duplicate_criterion": "Exact entire top-level function AST, at least 19 source lines; not proof of duplicated behavioral coverage",
+  "exact_function_groups": [
+    [
+      {
+        "path": "tests/access/indexes/ace16_insert_variable_indexes/model.py",
+        "function": "derive",
+        "line_start": 273,
+        "line_end": 404,
+        "retained_witness": false
+      },
+      {
+        "path": "tests/access/indexes/ace16_insert_guid_tuple_indexes/model.py",
+        "function": "derive",
+        "line_start": 204,
+        "line_end": 335,
+        "retained_witness": false
+      },
+      {
+        "path": "tests/access/indexes/ace16_insert_decimal_indexes/model.py",
+        "function": "derive",
+        "line_start": 273,
+        "line_end": 404,
+        "retained_witness": false
+      }
+    ],
+    [
+      {
+        "path": "tests/access/indexes/variable_index_split_originals/source_weights.py",
+        "function": "expected_encodings",
+        "line_start": 2,
+        "line_end": 26,
+        "retained_witness": false
+      },
+      {
+        "path": "tests/access/indexes/variable_encoded_split_sources/model.py",
+        "function": "expected_encodings",
+        "line_start": 434,
+        "line_end": 458,
+        "retained_witness": false
+      },
+      {
+        "path": "tests/access/indexes/variable_encoded_split_sources/action_model.py",
+        "function": "expected_encodings",
+        "line_start": 473,
+        "line_end": 497,
+        "retained_witness": false
+      },
+      {
+        "path": "tests/access/indexes/ordinary_hint_growth_sources/model.py",
+        "function": "expected_encodings",
+        "line_start": 464,
+        "line_end": 488,
+        "retained_witness": false
+      },
+      {
+        "path": "tests/access/indexes/ordinary_hint_growth_references/action_model.py",
+        "function": "expected_encodings",
+        "line_start": 504,
+        "line_end": 528,
+        "retained_witness": false
+      }
+    ],
+    [
+      {
+        "path": "tests/access/indexes/variable_index_split_originals/candidate_model.py",
+        "function": "cell",
+        "line_start": 26,
+        "line_end": 44,
+        "retained_witness": false
+      },
+      {
+        "path": "tests/access/indexes/ordinary_hint_growth_candidates/candidate_model.py",
+        "function": "cell",
+        "line_start": 27,
+        "line_end": 45,
+        "retained_witness": false
+      }
+    ],
+    [
+      {
+        "path": "tests/access/indexes/variable_index_split_originals/candidate_model.py",
+        "function": "allocation",
+        "line_start": 47,
+        "line_end": 70,
+        "retained_witness": false
+      },
+      {
+        "path": "tests/access/indexes/ordinary_hint_growth_candidates/candidate_model.py",
+        "function": "allocation",
+        "line_start": 48,
+        "line_end": 71,
+        "retained_witness": false
+      }
+    ],
+    [
+      {
+        "path": "tests/access/indexes/variable_encoded_split_sources/model.py",
+        "function": "tree",
+        "line_start": 400,
+        "line_end": 431,
+        "retained_witness": false
+      },
+      {
+        "path": "tests/access/indexes/variable_encoded_split_sources/action_model.py",
+        "function": "tree",
+        "line_start": 439,
+        "line_end": 470,
+        "retained_witness": false
+      },
+      {
+        "path": "tests/access/indexes/encoded_index_split_sources/model.py",
+        "function": "tree",
+        "line_start": 346,
+        "line_end": 377,
+        "retained_witness": false
+      },
+      {
+        "path": "tests/access/indexes/encoded_index_split_sources/action_model.py",
+        "function": "tree",
+        "line_start": 346,
+        "line_end": 377,
+        "retained_witness": false
+      },
+      {
+        "path": "tests/access/indexes/ordinary_hint_growth_sources/model.py",
+        "function": "tree",
+        "line_start": 430,
+        "line_end": 461,
+        "retained_witness": false
+      },
+      {
+        "path": "tests/access/indexes/ordinary_hint_growth_references/action_model.py",
+        "function": "tree",
+        "line_start": 470,
+        "line_end": 501,
+        "retained_witness": false
+      }
+    ],
+    [
+      {
+        "path": "tests/access/indexes/ace16_insert_guid_tuple_indexes/model.py",
+        "function": "tree",
+        "line_start": 136,
+        "line_end": 193,
+        "retained_witness": false
+      },
+      {
+        "path": "tests/access/indexes/ace16_insert_scalar_indexes/model.py",
+        "function": "tree",
+        "line_start": 112,
+        "line_end": 169,
+        "retained_witness": false
+      },
+      {
+        "path": "tests/access/indexes/ace16_insert_decimal_indexes/model.py",
+        "function": "tree",
+        "line_start": 205,
+        "line_end": 262,
+        "retained_witness": false
+      }
+    ],
+    [
+      {
+        "path": "tests/access/indexes/ace16_insert_guid_tuple_indexes/reference.py",
+        "function": "tree",
+        "line_start": 63,
+        "line_end": 129,
+        "retained_witness": false
+      },
+      {
+        "path": "tests/access/indexes/ace16_insert_decimal_indexes/reference.py",
+        "function": "tree",
+        "line_start": 77,
+        "line_end": 143,
+        "retained_witness": false
+      }
+    ],
+    [
+      {
+        "path": "tests/access/indexes/repeated_split_originals/model.py",
+        "function": "tree",
+        "line_start": 71,
+        "line_end": 122,
+        "retained_witness": false
+      },
+      {
+        "path": "tests/access/indexes/integral_split_originals/model.py",
+        "function": "tree",
+        "line_start": 73,
+        "line_end": 124,
+        "retained_witness": false
+      }
+    ],
+    [
+      {
+        "path": "tests/access/indexes/repeated_split_originals/action_model.py",
+        "function": "inspect_indexes",
+        "line_start": 71,
+        "line_end": 108,
+        "retained_witness": false
+      },
+      {
+        "path": "tests/access/indexes/integral_split_originals/action_model.py",
+        "function": "inspect_indexes",
+        "line_start": 71,
+        "line_end": 108,
+        "retained_witness": false
+      }
+    ],
+    [
+      {
+        "path": "tests/access/indexes/repeated_split_originals/action_model.py",
+        "function": "complete_members",
+        "line_start": 118,
+        "line_end": 143,
+        "retained_witness": false
+      },
+      {
+        "path": "tests/access/indexes/integral_split_originals/action_model.py",
+        "function": "complete_members",
+        "line_start": 118,
+        "line_end": 143,
+        "retained_witness": false
+      }
+    ],
+    [
+      {
+        "path": "tests/access/indexes/repeated_split_originals/action_model.py",
+        "function": "analyze",
+        "line_start": 145,
+        "line_end": 272,
+        "retained_witness": false
+      },
+      {
+        "path": "tests/access/indexes/integral_split_originals/action_model.py",
+        "function": "analyze",
+        "line_start": 145,
+        "line_end": 272,
+        "retained_witness": false
+      }
+    ],
+    [
+      {
+        "path": "tests/access/indexes/repeated_split_originals/candidate_model.py",
+        "function": "decode_tree",
+        "line_start": 145,
+        "line_end": 198,
+        "retained_witness": false
+      },
+      {
+        "path": "tests/access/indexes/integral_split_originals/candidate_model.py",
+        "function": "decode_tree",
+        "line_start": 83,
+        "line_end": 136,
+        "retained_witness": false
+      }
+    ],
+    [
+      {
+        "path": "tests/access/indexes/ace16_insert_child_split/model.py",
+        "function": "render",
+        "line_start": 43,
+        "line_end": 79,
+        "retained_witness": false
+      },
+      {
+        "path": "tests/access/indexes/ace16_insert_general_height_one/model.py",
+        "function": "render",
+        "line_start": 44,
+        "line_end": 80,
+        "retained_witness": false
+      }
+    ],
+    [
+      {
+        "path": "tests/access/indexes/ace16_insert_child_split/verify.py",
+        "function": "git_objects",
+        "line_start": 125,
+        "line_end": 147,
+        "retained_witness": false
+      },
+      {
+        "path": "tests/access/indexes/ace16_insert_height_one/verify.py",
+        "function": "git_objects",
+        "line_start": 116,
+        "line_end": 138,
+        "retained_witness": false
+      },
+      {
+        "path": "tests/access/indexes/ace16_insert_general_height_one/verify.py",
+        "function": "git_objects",
+        "line_start": 103,
+        "line_end": 125,
+        "retained_witness": false
+      }
+    ],
+    [
+      {
+        "path": "tests/access/indexes/ace16_nullable_split_batch_updates/executed/native/proof.py",
+        "function": "tree",
+        "line_start": 30,
+        "line_end": 98,
+        "retained_witness": true
+      },
+      {
+        "path": "tests/access/indexes/ace16_nullable_split_batch_updates/executed/reference/reference.py",
+        "function": "tree",
+        "line_start": 30,
+        "line_end": 98,
+        "retained_witness": true
+      }
+    ],
+    [
+      {
+        "path": "tests/access/schema/ace16_data_macro_xml/witnesses/docs/testing/verify_data_macro_xml.py",
+        "function": "wide_properties",
+        "line_start": 69,
+        "line_end": 114,
+        "retained_witness": true
+      },
+      {
+        "path": "tests/access/reading/tables/verify_data_macro_xml.py",
+        "function": "wide_properties",
+        "line_start": 157,
+        "line_end": 202,
+        "retained_witness": false
+      }
+    ],
+    [
+      {
+        "path": "tests/access/schema/ace16_data_macro_xml/witnesses/docs/testing/verify_data_macro_xml.py",
+        "function": "envelope",
+        "line_start": 117,
+        "line_end": 153,
+        "retained_witness": true
+      },
+      {
+        "path": "tests/access/reading/tables/verify_data_macro_xml.py",
+        "function": "envelope",
+        "line_start": 205,
+        "line_end": 241,
+        "retained_witness": false
+      }
+    ],
+    [
+      {
+        "path": "tests/access/schema/ace16_data_macro_xml/witnesses/docs/testing/verify_data_macro_xml.py",
+        "function": "source_expected",
+        "line_start": 156,
+        "line_end": 207,
+        "retained_witness": true
+      },
+      {
+        "path": "tests/access/reading/tables/verify_data_macro_xml.py",
+        "function": "source_expected",
+        "line_start": 244,
+        "line_end": 295,
+        "retained_witness": false
+      }
+    ],
+    [
+      {
+        "path": "tests/access/rows/ace16_insert_global_bootstrap/verify.py",
+        "function": "main",
+        "line_start": 177,
+        "line_end": 195,
+        "retained_witness": false
+      },
+      {
+        "path": "tests/access/storage/ace16_insert_long_value_map_growth/verify.py",
+        "function": "main",
+        "line_start": 170,
+        "line_end": 188,
+        "retained_witness": false
+      },
+      {
+        "path": "tests/access/storage/ace16_insert_external_long_values/verify.py",
+        "function": "main",
+        "line_start": 223,
+        "line_end": 241,
+        "retained_witness": false
+      }
+    ],
+    [
+      {
+        "path": "tests/access/rows/ace16_insert_global_bootstrap/source.py",
+        "function": "parse",
+        "line_start": 25,
+        "line_end": 109,
+        "retained_witness": false
+      },
+      {
+        "path": "tests/access/storage/ace16_insert_long_value_map_growth/source.py",
+        "function": "parse",
+        "line_start": 25,
+        "line_end": 109,
+        "retained_witness": false
+      },
+      {
+        "path": "tests/access/storage/ace16_insert_external_long_values/source.py",
+        "function": "parse",
+        "line_start": 24,
+        "line_end": 108,
+        "retained_witness": false
+      }
+    ],
+    [
+      {
+        "path": "tests/access/rows/ace16_insert_global_bootstrap/source.py",
+        "function": "inventory",
+        "line_start": 122,
+        "line_end": 151,
+        "retained_witness": false
+      },
+      {
+        "path": "tests/access/storage/ace16_insert_long_value_map_growth/source.py",
+        "function": "inventory",
+        "line_start": 122,
+        "line_end": 151,
+        "retained_witness": false
+      },
+      {
+        "path": "tests/access/storage/ace16_insert_external_long_values/source.py",
+        "function": "inventory",
+        "line_start": 121,
+        "line_end": 150,
+        "retained_witness": false
+      }
+    ],
+    [
+      {
+        "path": "tests/access/rows/ace16_fixed_ignore_null_updates/reference.py",
+        "function": "ordered_intent",
+        "line_start": 22,
+        "line_end": 60,
+        "retained_witness": false
+      },
+      {
+        "path": "tests/access/rows/ace16_fixed_ignore_null_updates/native_reference.py",
+        "function": "ordered_intent",
+        "line_start": 22,
+        "line_end": 60,
+        "retained_witness": false
+      }
+    ]
+  ],
+  "tests_removed": 0,
+  "history_path_registry": false,
+  "cargo_tests_relocated": false,
+  "current_checks": {
+    "artifact_store_unit_tests": 4,
+    "text_replay_unit_tests": 7,
+    "aggregate_oracle_unit_tests": 9,
+    "tsv_unit_tests": 3,
+    "text_oracle_unit_tests": 12,
+    "current_path_unit_tests": 3,
+    "float_model_unit_tests": 2,
+    "primitive_tsv_unit_tests": 2
+  },
+  "entry_point_help": [
+    {
+      "tool": "tests/access/queries/expressions/compare_general_like.py",
+      "arguments": [
+        "--help"
+      ],
+      "returncode": 0
+    },
+    {
+      "tool": "tests/access/queries/saved/compare_saved_ordering.py",
+      "arguments": [
+        "--help"
+      ],
+      "returncode": 0
+    },
+    {
+      "tool": "tests/access/queries/execution/compare_linked_queries.py",
+      "arguments": [
+        "--help"
+      ],
+      "returncode": 0
+    },
+    {
+      "tool": "tests/access/rows/ace16_insert_ordinary/verify.py",
+      "arguments": [
+        "--help"
+      ],
+      "returncode": 0
+    },
+    {
+      "tool": "tests/access/schema/fields/compare_boolean_relationships.py",
+      "arguments": [
+        "--help"
+      ],
+      "returncode": 0
+    },
+    {
+      "tool": "tests/access/indexes/native/compare_null_indexes.py",
+      "arguments": [
+        "--help"
+      ],
+      "returncode": 0
+    },
+    {
+      "tool": "tests/access/encryption/database/compare_encrypted_modern_histories.py",
+      "arguments": [
+        "--help"
+      ],
+      "returncode": 0
+    },
+    {
+      "tool": "tests/access/recovery/native/compare_jet4_journal_updates.py",
+      "arguments": [
+        "--help"
+      ],
+      "returncode": 0
+    },
+    {
+      "tool": "tests/access/creation/databases/compare_autonumber_deletes.py",
+      "arguments": [
+        "--help"
+      ],
+      "returncode": 0
+    },
+    {
+      "tool": "tests/access/reading/tables/compare_browsing.py",
+      "arguments": [
+        "--help"
+      ],
+      "returncode": 0
+    },
+    {
+      "tool": "tests/access/storage/native/compare_memo_history_family.py",
+      "arguments": [
+        "--help"
+      ],
+      "returncode": 0
+    }
+  ],
+  "maintained_tool_pins": [
+    {
+      "path": "scripts/engineering_paths.py",
+      "bytes": 2141,
+      "sha256": "609e5ff874d03b935d3894089971659d8828381b67356164f59ecf933a4287be"
+    },
+    {
+      "path": "tests/run.py",
+      "bytes": 962,
+      "sha256": "eac09a6744746877064a63edbaa8db600dab17f54f2e5aee800e8b0db2ed4f0b"
+    },
+    {
+      "path": "scripts/test_engineering_paths.py",
+      "bytes": 2440,
+      "sha256": "e3d47229dd115c7d087bc93e8153891527462a67b935dc634d0a0e4989a6ea91"
+    }
+  ],
+  "native_access_execution": false,
+  "windows_execution": false,
+  "historical_result_replay": "Not claimed: retained records still bind original execution paths and hashes.",
+  "missing_full_current_path_literals": 0,
+  "fresh_python_test_batch": {
+    "tests_run": 42,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  }
+}

@@ -10,8 +10,8 @@ import sys
 import traceback
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[3]
-sys.path.insert(0, str(ROOT / 'docs/testing'))
+ROOT = Path(__file__).resolve().parents[4]
+sys.path.insert(0, str(ROOT / 'tests/access'))
 from slot_preview_originals import common, facts
 import capture_cross_page_updates as capture
 from variable_preview_originals import proof
@@ -189,14 +189,14 @@ def verify_existing(path, plan):
 def run(args, plan):
     build = verify_build(args)
     assert common.pin(args.jar)['sha256'] == common.JAR_SHA256
-    assert common.pin('docs/testing/SlotUpdateFixture.java')['sha256'] == common.PRODUCER_SHA256
+    assert common.pin('tests/access/queries/expressions/SlotUpdateFixture.java')['sha256'] == common.PRODUCER_SHA256
     capture.JAR = common.path(args.jar).relative_to(ROOT)
     capture.CLASSES = common.path(args.classes).relative_to(ROOT)
     assert (common.path(args.classes) / 'SlotUpdateFixture.class').is_file()
     assert (common.path(args.classes) / 'SlotMapProbe.class').is_file()
     immutable = frozen_inputs(plan)
     tools = [Path(__file__), Path(proof.__file__), Path(capture.__file__), Path(common.__file__), Path(facts.__file__),
-             ROOT / 'docs/testing/delete_reference_maps.py', common.path(args.jar),
+             ROOT / 'tests/access/rows/delete/delete_reference_maps.py', common.path(args.jar),
              common.path(args.classes) / 'SlotUpdateFixture.class', common.path(args.classes) / 'SlotMapProbe.class']
     tool_pins = [common.pin(path) for path in tools]
     work = common.fresh_work(args.workdir)
@@ -289,7 +289,7 @@ def run(args, plan):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--plan', type=Path, default=Path('docs/testing/variable_preview_originals/plan.json'))
+    parser.add_argument('--plan', type=Path, default=Path('tests/access/rows/variable_preview_originals/plan.json'))
     parser.add_argument(
         '--verify-existing', type=Path,
         help='Recheck a preserved report without invoking native or Java tools',

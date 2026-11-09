@@ -42,11 +42,11 @@ def selected_body(before, row, begin, finish):
 
 
 def maintained(repo):
-    source = repo / 'docs/testing/short_text_add/model.py'
+    source = repo / 'tests/access/rows/short_text_add/model.py'
     spec = importlib.util.spec_from_file_location('owned_after_off_add_reference', source)
     owner = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(owner)
-    owner.RAW_SOURCE = repo / 'docs/testing/number_column_repeat/raw.py'
+    owner.RAW_SOURCE = repo / 'tests/access/schema/number_column_repeat/raw.py'
     # Specialize this isolated module instance's read-only selector. No maintained
     # file, encoding function, original fixture or SDK output is rewritten.
     owner.body_before = selected_body

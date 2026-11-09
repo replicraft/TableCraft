@@ -1,4 +1,5 @@
 """Compare explicit Agile password verification and data-page digests with Jackcess Encrypt."""
+from engineering_paths import reference_file
 import argparse
 import hashlib
 import os
@@ -27,7 +28,7 @@ def main():
         path = args.directory / name
         before = hashlib.sha256(path.read_bytes()).hexdigest()
         assert before == CASES[name][0], (name, "original source")
-        reference = run(["java", "-cp", classpath, RECIPES / "EncryptedPagesOracle.java", path], password)
+        reference = run(["java", "-cp", classpath, reference_file('tests/access/encryption/database/EncryptedPagesOracle.java'), path], password)
         assert reference.returncode == 0 and not reference.stderr, (name, reference.stderr)
         result = run([args.reader, path], password)
         assert result.returncode == 0 and not result.stderr, (name, result.stderr)

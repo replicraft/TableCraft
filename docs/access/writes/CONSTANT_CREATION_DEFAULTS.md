@@ -19,7 +19,7 @@ false and Text remain supplied. Actual Required/AllowZeroLength constraints appl
 to the resulting row. A stored default that violates those constraints does not
 authorize an otherwise invalid INSERT.
 
-The [source phase](../../testing/ACE16_CONSTANT_DEFAULT_SOURCES.md) qualified
+The [source phase](../../../tests/reports/schema/ACE16_CONSTANT_DEFAULT_SOURCES.md) qualified
 28 complete images before creator calls. Eight single/one-table-multiple creator
 contexts match complete sources; measured resource/cancellation and carrier/bound
 refusals pass. Real retained typed/SQL sessions pass twenty complete saves and
@@ -32,7 +32,7 @@ Broader constant families, Date representations outside the separately qualified
 literal profile, generated expressions and native application comparison remain
 explicit work.
 
-The [combined execution record](../../testing/results/ace16-constant-defaults-and-node-retirement-writes-2026-11-01.json)
+The [combined execution record](../../../tests/results/schema/ace16-constant-defaults-and-node-retirement-writes-2026-11-01.json)
 retains focused/strict checks and the first broad regression. One stale unit-test
 error expectation was corrected and replayed; the 1,164 other engine units passed
 the first run. Adapter/CLI/recovery checks passed separately.

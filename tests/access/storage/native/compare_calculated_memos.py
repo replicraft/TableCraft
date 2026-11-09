@@ -14,8 +14,8 @@ import tempfile
 from compare_browsing import display
 from compare_calculated_decimals import digest, run
 
-ROOT = Path(__file__).resolve().parents[2]
-RECIPE = ROOT / "docs/testing/CalculatedMemoFixture.java"
+ROOT = Path(__file__).resolve().parents[4]
+RECIPE = ROOT / "tests/access/storage/native/CalculatedMemoFixture.java"
 JACKCESS_SHA256 = "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc"
 SOURCE_FILES = [
     ROOT / "crates/engines/tablecraft-ace/src/table" / name

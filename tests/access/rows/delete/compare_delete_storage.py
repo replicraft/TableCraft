@@ -8,7 +8,7 @@ from pathlib import Path
 import subprocess
 import sys
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[4]
 JAR_SHA256 = "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc"
 CLI_SHA256 = "d19b3d30ac01c34aafe765cb0f8c0a2cd54c8ba234c6021f8c15065715caf041"
 PROFILES = ("V2000", "V2007", "V2016", "V2019")
@@ -264,11 +264,11 @@ def main():
         raise AssertionError("Work directory and report must be fresh")
     work.mkdir(parents=True)
     commands = Commands(work / "commands.jsonl")
-    tools = [jar, cli, Path(__file__).resolve(), ROOT / "docs/testing/DeleteStorageFixture.java"]
+    tools = [jar, cli, Path(__file__).resolve(), ROOT / "tests/access/rows/delete/DeleteStorageFixture.java"]
     tool_before = [pin(path) for path in tools]
     captures = []
     observations = []
-    java = ["java", "-Dstdout.encoding=UTF-8", "-cp", label(jar), "docs/testing/DeleteStorageFixture.java"]
+    java = ["java", "-Dstdout.encoding=UTF-8", "-cp", label(jar), "tests/access/rows/delete/DeleteStorageFixture.java"]
 
     for profile in PROFILES:
         inputs = args.inputs.resolve() if args.inputs else work

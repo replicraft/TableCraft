@@ -24,7 +24,7 @@ recaptures final Source. It consumes no staged descriptor, retirement patch or
 producer trace. The shared original-cell mask helper has actual INDEX and LVAL
 consumers; each supplies its own checked ownership and role authority.
 
-The [source family](../../testing/ACE16_EXTERNAL_CONTINUATION_WIDE_SPLIT_SOURCES.md)
+The [source family](../../../tests/reports/indexes/ACE16_EXTERNAL_CONTINUATION_WIDE_SPLIT_SOURCES.md)
 passed 36 native views and 36 inert independent-reader reports before matching
 writers. Twenty changed commits and eight no-op/empty commits, independent proof,
 forged-image and journal controls, 120 recovery contexts and measured public
@@ -36,7 +36,7 @@ Twenty typed and sixteen SQL saves, retained-lease/receipt and stale-predecessor
 checks, and sixteen CLI saves/readbacks pass. Empty Binary is typed coverage;
 SQL and CLI use supported NULL assignments rather than invented Binary literals.
 Default, journal-only and preview-only compilation, strict lint and formatting
-pass. See the [execution record](../../testing/results/ace16-external-long-retirement-writes-2026-11-02.json).
+pass. See the [execution record](../../../tests/results/storage/ace16-external-long-retirement-writes-2026-11-02.json).
 
 Mixed retirement with changed retained descriptors now has its separate
 [composed route](NORMAL_EXTERNAL_LONG_MIXED.md). Shared-page partial removal,

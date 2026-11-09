@@ -5,7 +5,7 @@ that avoid an intermediate UTF-16 vector. Raw byte arrays are cast by value;
 stored semantic types are not POD. Successful fast paths charge/reserve the retained
 UTF-8 bytes; other Unicode and compressed mode switches keep strict validation.
 Native long-value descriptors use borrowed little-endian zerocopy fields without
-changing payload/length/chain validation. See [benchmarks](../../testing/NATIVE_BENCHMARKS.md).
+changing payload/length/chain validation. See [benchmarks](../../../tests/reports/general/NATIVE_BENCHMARKS.md).
 
 Native index metadata is available separately; see [NATIVE_INDEXES.md](../indexes/NATIVE_INDEXES.md).
 
@@ -78,10 +78,10 @@ caller budget; cancellation is checked between pages and during I/O. Unknown
 properties/trailers, page free-space accounting and schema write semantics remain
 unqualified; this reader does not interpret an entire definition as writable data.
 
-The original [DefinitionFixture](../../testing/DefinitionFixture.java) recipe creates
+The original [DefinitionFixture](../../../tests/access/reading/tables/DefinitionFixture.java) recipe creates
 Wide and EmptyWide tables with 200 Int32 columns, long non-ASCII names and
 ascending/nullable-descending indexes. Each definition occupies seven pages and
-28,079 logical bytes. The original [comparison runner](../../testing/compare_definitions.py)
+28,079 logical bytes. The original [comparison runner](../../../tests/access/reading/tables/compare_definitions.py)
 matched all 800 column descriptions across the two tables/formats, eight index
 definitions, and 12 complete/bounded CLI outputs against Jackcess 5.0.4. Java
 stdout is explicitly UTF-8, preserving non-BMP field names. No active content runs.
@@ -90,14 +90,14 @@ stdout is explicitly UTF-8, preserving non-BMP field names. No active content ru
 java -cp path/to/jackcess-5.0.4.jar docs/testing/DefinitionFixture.java path/to/new-wide.accdb V2007
 java -cp path/to/jackcess-5.0.4.jar docs/testing/DefinitionFixture.java path/to/new-wide.mdb V2000
 cargo build --release --locked -p tablecraft-cli
-python3 docs/testing/compare_definitions.py \
+python3 tests/run.py tests/access/reading/tables/compare_definitions.py \
   --cli target/release/tablecraft --jar path/to/jackcess-5.0.4.jar \
   --ace path/to/new-wide.accdb --jet path/to/new-wide.mdb
 ```
 
 Independent layout goldens exercise column/name/index boundaries, empty/exact/max
 lengths, corruption, limits, cancellation, every I/O failure callback and 256
-fixed-seed byte mutations. [Measurements](../../testing/NATIVE_BENCHMARKS.md#chained-table-definitions)
+fixed-seed byte mutations. [Measurements](../../../tests/reports/general/NATIVE_BENCHMARKS.md#chained-table-definitions)
 check ordinary-reader regressions and new wide-schema/indexed workloads.
 
 Primary format research: [Jackcess TableImpl](https://github.com/jahlborn/jackcess/blob/be0a2139b087a227d14cafd4ea231306a5a3a862/src/main/java/com/healthmarketscience/jackcess/impl/TableImpl.java),
@@ -125,7 +125,7 @@ each live root, retaining owner/signature/slot validation and checking cancellat
 and work between rows. Relocation targets still incur physical reads and their
 normal owner/range/cycle checks. Only avoided I/O charges disappear; row copying
 and allocation still consume the shared budget. Nothing is cached across scan
-pages or separate operations. [The scan benchmark](../../testing/NATIVE_BENCHMARKS.md)
+pages or separate operations. [The scan benchmark](../../../tests/reports/general/NATIVE_BENCHMARKS.md)
 compares memory-backed public APIs, rather than disk or native shared-file behavior.
 Older rows support the qualified dense
 append-only and qualified deleted-column histories below. Certain ambiguous
@@ -159,8 +159,8 @@ java -cp path/to/jackcess-5.0.4.jar docs/testing/TableSchemaOracle.java path/to/
 java -cp path/to/jackcess-5.0.4.jar docs/testing/TableDataOracle.java path/to/copy.accdb ROULETTE_TB
 ```
 
-[Schema helper](../../testing/TableSchemaOracle.java) reports names/type/length/order;
-[data helper](../../testing/TableDataOracle.java) reports tagged data only for explicitly
+[Schema helper](../../../tests/access/reading/tables/TableSchemaOracle.java) reports names/type/length/order;
+[data helper](../../../tests/access/reading/tables/TableDataOracle.java) reports tagged data only for explicitly
 named supported tables. These engineering helpers never execute database content
 and are outside the product/CI dependency closure.
 
@@ -206,12 +206,12 @@ and the pinned ColumnImpl source above; calendar APIs use
 [Jiff civil dates](https://docs.rs/jiff/0.2.38/jiff/civil/index.html). These are distinct from native
 Access comparison evidence.
 
-The [exact date-bit probes](../../testing/compare_date_bits.py) independently match 28
+The [exact date-bit probes](../../../tests/access/queries/expressions/compare_date_bits.py) independently match 28
 ordinary/cached cells per V2016/V2019 family, including signed zero, subnormal
 serials, negative aliases and dates below millisecond precision. The read-only
 oracle serializes the reviewed artifact's retained DATE carrier to an in-memory
 buffer; it does not call `toDateDouble`, whose calendar conversion can change
-valid bits. No database write or expression evaluation occurs. [Fixture records](../../testing/FIXTURES.md#original-exact-date-precision-inputs)
+valid bits. No database write or expression evaluation occurs. [Fixture records](../../../tests/reports/reading/FIXTURES.md#original-exact-date-precision-inputs)
 retain original hashes and separate native Access qualification.
 Complete [legacy DateTime indexes](../indexes/NATIVE_INDEXES.md#complete-legacy-datetime-indexes)
 retain those serial bits separately from SQL civil-time comparison/sorting.
@@ -266,7 +266,7 @@ hyphenated values and Binary as unquoted `0x` hexadecimal (empty Binary is `0x`)
 Text remains quoted and NULL stays NULL. This is human-readable output rather
 than a production lossless exchange protocol.
 
-The original [GUID fixture recipe](../../testing/GuidFixture.java) creates only a new
+The original [GUID fixture recipe](../../../tests/access/reading/tables/GuidFixture.java) creates only a new
 explicitly named temporary database and refuses an existing output path. Its JAR
 setup is the same optional engineering setup as the other helpers. No generated
 database bytes were added to the repository.
@@ -293,7 +293,7 @@ Native row tests verify metadata, NULL, invalid layouts and excessive coefficien
 No dependency was added: this slice decodes a fixed integer representation into an
 existing validated carrier; it introduces no decimal arithmetic implementation.
 
-The original [Decimal fixture recipe](../../testing/DecimalFixture.java) creates only a
+The original [Decimal fixture recipe](../../../tests/access/queries/expressions/DecimalFixture.java) creates only a
 fresh disposable ACCDB through the independently reviewed Jackcess 5.0.4 JAR.
 Run it like GuidFixture, with a new output path. Four rows/two Decimal columns cover
 28-digit extremes, values beyond double precision, scales 4/28, trailing zeros,
@@ -315,7 +315,7 @@ access, not OLE activation or embedded-object authoring. Empty definitions map t
 NULL; zero-length inline definitions map to empty Binary.
 
 The pinned LongValueColumnImpl reference above uses the same storage for MEMO/OLE.
-The original [Binary fixture recipe](../../testing/BinaryFixture.java) creates a fresh
+The original [Binary fixture recipe](../../../tests/access/storage/native/BinaryFixture.java) creates a fresh
 Jackcess 5.0.4 database with four rows: invalid-Unicode raw bytes, a 12,000-byte
 chained payload, empty bytes and NULL. Independent Rust/Java tagged output matched
 exactly (SHA-256 `8b0795a3895a8dd998a17121cbf6c173f864ff78c0df3b9baacc64d18f60a57a`).
@@ -331,7 +331,7 @@ The registered fixture remains unchanged; generated files stay disposable.
 
 ## Mixed-scalar Jet 4 and ACE comparison
 
-The original [Scalar fixture recipe](../../testing/ScalarFixture.java) creates a new
+The original [Scalar fixture recipe](../../../tests/access/reading/tables/ScalarFixture.java) creates a new
 V2000 (Jet 4 MDB) or V2007 (ACE-code-2 ACCDB) file using the reviewed Jackcess
 5.0.4 JAR. It refuses existing output paths and accepts only these two formats.
 Each has three rows / fourteen columns spanning every currently qualified carrier:
@@ -384,7 +384,7 @@ ambiguous histories now use the separate read-only qualification below. Type cha
 virtual property evaluation and schema mutation are not implemented. This is
 read-only handling of an existing file, not ALTER TABLE support.
 
-The original [evolution recipe](../../testing/EvolutionFixture.java) creates a fresh
+The original [evolution recipe](../../../tests/access/reading/tables/EvolutionFixture.java) creates a fresh
 ACE file, writes an ID-only row, appends Text/writes a second row, then appends
 Int32, Boolean and MEMO/writes a third row. Int32/Boolean have defaults 999/True,
 but older rows still expose NULL/FALSE. Independent tagged Rust/Java output matched
@@ -419,7 +419,7 @@ retains a separate complete-tail parser and rejects this ambiguous-prefix case.
 This is read-only interpretation, not DROP/ALTER TABLE or type-change support.
 Native edit gates explicitly reject deleted/gapped declarations even for current rows.
 
-[History evidence](../../testing/COLUMN_HISTORIES.md) compares original engineering
+[History evidence](../../../tests/reports/schema/COLUMN_HISTORIES.md) compares original engineering
 derivatives against independent read-only getters in all four priority profiles,
 including full reads, batches, ordinary CLI rows and projected queries. These are
 not native Access-generated deletion/save fixtures; unobserved deleted tails,
@@ -452,7 +452,7 @@ silently presented as an extracted original file.
 ## Bounded physical row pages
 
 Source-bound `TableCursor` and `NativeBrowser::cursor` now retain traversal state
-across scalar batches. Their [controls and evidence](../../testing/RESUMABLE_TABLE_READS.md)
+across scalar batches. Their [controls and evidence](../../../tests/reports/reading/RESUMABLE_TABLE_READS.md)
 describe source ownership, EOF, cumulative budgets and terminal fetch failures.
 `open_projection` / `projected_cursor` explicitly select ordinary scalar columns
 from mixed schemas, preserving native logical order and retaining every schema
@@ -472,7 +472,7 @@ trigger the complete-snapshot row ceiling. Validated usage metadata now supplies
 an incremental address cursor, without the complete list's 4,096-address cap.
 File size, physical reads, steps and caller budgets remain bounded. All map
 metadata is still checked before data reads; unvisited record payloads remain
-outside this selected-read guarantee. See [allocation-map paging evidence](../../testing/ALLOCATION_MAP_PAGING.md).
+outside this selected-read guarantee. See [allocation-map paging evidence](../../../tests/reports/storage/ALLOCATION_MAP_PAGING.md).
 
 Skipped roots consume traversal work without allocating their values or spending
 the selected-row allowance. Their slot geometry is checked, but their payloads,
@@ -528,7 +528,7 @@ stored multivalue collections through the same raw-link/value/page readers.
 Its independently observed Decimal conceptual hint remains distinct from actual
 17-byte child storage. Other sizes/types/flags/hints remain unsupported; no
 nine-byte Decimal record decoder or newer Large Number carrier is enabled.
-[Evidence and limits](../../testing/FIXTURES.md#ace-2007-complex-key-and-multivalue-inputs)
+[Evidence and limits](../../../tests/reports/reading/FIXTURES.md#ace-2007-complex-key-and-multivalue-inputs)
 include complete reference/capacity checks and immutable original fixtures.
 Cached calculations, query expansion and writes retain their previous generation/
 semantic gates. Typed attachment/history reads are independently qualified for
@@ -542,7 +542,7 @@ scalar flags/widths, identities/references, NULL states, stored order and exact
 legacy DATE bits retain the existing validation. Attachment metadata keeps encoded
 FileData; original bytes are decoded only through the explicit bounded decoder.
 No URL, destination file, lookup expression or active content executes.
-[Independent legacy evidence](../../testing/FIXTURES.md#ace-2007-stored-attachment-and-history-inputs)
+[Independent legacy evidence](../../../tests/reports/reading/FIXTURES.md#ace-2007-stored-attachment-and-history-inputs)
 covers exact metadata/content, six files, eighteen stored versions, alias/precision
 probes and atomic corrupt-copy rejection. This does not enable mixed attachment/
 history browsing, query expansion, modification or native Access conformance.
@@ -569,7 +569,7 @@ Metadata and full readers share the same complete membership validation. Tests
 deny access to a valid external payload page: metadata succeeds without visiting
 it, while a full read attempts the page and fails. Corrupt child references still
 reject metadata, and cancellation or exhausted budgets publish no snapshot.
-Independent [large-file metadata controls](../../testing/FIXTURES.md#attachment-metadata-without-payload-reads)
+Independent [large-file metadata controls](../../../tests/reports/reading/FIXTURES.md#attachment-metadata-without-payload-reads)
 exercise real original attachment wrappers beyond the payload envelope. These are
 offline read contracts, not payload integrity, native SQL representation or save
 qualification.
@@ -606,7 +606,7 @@ page decoding before interpreting the local buffer. No new format, live-file
 coherence or write qualification follows from these synthetic checks.
 
 
-[Maximum-width table histories](../../testing/WIDE_TABLE_HISTORIES.md) independently
+[Maximum-width table histories](../../../tests/reports/general/WIDE_TABLE_HISTORIES.md) independently
 exercise 255 visible fields, wide variable tails and high logical mask bits in
 Jet 4, ACE 2007 and both ACE 16 layouts. Current readers handle original
 append-column generations without changing default limits. This evidence does

@@ -121,7 +121,7 @@ controls cover prepared policies, derived/grouped/pivot/domain/Eval consumers an
 eager errors; a named-heading test preserves metadata-only preparation. Both CLI
 query commands retain buffered failures and existing CSV/TSV quoting.
 
-The original [independent runner](../../testing/compare_arithmetic_text.py) compares
+The original [independent runner](../../../tests/access/queries/expressions/compare_arithmetic_text.py) compares
 Decimal arithmetic/half-even expectations and raw getters from unchanged original
 ScalarFixture files. Only TableCraft executes SQL; native Access optimizer,
 coercion, promotion and error-order qualification remain pending. No dependency,

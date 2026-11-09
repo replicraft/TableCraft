@@ -1,4 +1,5 @@
 """Independent large parent/child models; no native Access SQL qualification."""
+from engineering_paths import reference_file
 
 import argparse
 import csv
@@ -29,7 +30,7 @@ def main():
     parser.add_argument("--generate", action="store_true")
     args = parser.parse_args()
     assert digest(args.jar) == JAR_SHA256
-    recipe = RECIPES / "LargeCollectionFixture.java"
+    recipe = reference_file('tests/access/reading/tables/LargeCollectionFixture.java')
     profiles = ["V2016", "V2007"]
     if args.generate:
         args.directory.mkdir(exist_ok=False)

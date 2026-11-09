@@ -1,21 +1,21 @@
 # Repeated Number-field addition: independent SDK evidence
 
 Three explicit second additions to the hash-pinned AFTER images from the
-[Number declaration reference](../results/add-column-number-sdk-source-2026-11-08.json)
+[Number declaration reference](../../../results/schema/add-column-number-sdk-source-2026-11-08.json)
 match three independently authored complete AFTER images. Both SDK and raw model
 preserve every original. The unchanged first-party
-[Java helper](../CreatedNumberColumnOracle.java) runs against the same reviewed
+[Java helper](../fields/CreatedNumberColumnOracle.java) runs against the same reviewed
 Apache-2.0 Jackcess 5.0.4 JAR; evaluation is disabled and it reopens read-only.
 No database, class, JAR or third-party source is published.
 
-The [observation record](../results/repeated-number-add-sdk-2026-11-08.json)
+The [observation record](../../../results/rows/repeated-number-add-sdk-2026-11-08.json)
 pins the complete images, helper and models. These are inert SDK observations,
 not passing native candidate/recovery/GUI tests or Microsoft Access save evidence.
-The separately versioned [native repeated-ADD contract](../../access/writes/ADD_COLUMN.md#repeated-number-addition-with-existing-external-properties)
+The separately versioned [native repeated-ADD contract](../../../../docs/access/writes/ADD_COLUMN.md#repeated-number-addition-with-existing-external-properties)
 now connects this bounded source through candidate, TCAC4 original intent, offline
 staging/recovery and the same runtime/GUI Number service. These subsequent Rust
 and host gates remain distinct from the original three SDK observations. The
-[workflow record](../results/repeated-number-workflows-2026-11-08.json) retains
+[workflow record](../../../results/rows/repeated-number-workflows-2026-11-08.json) retains
 127 selected passing checks and their exact current limits.
 
 | Prior Number source | New name | Preserved existing policy |
@@ -47,9 +47,9 @@ AFTER files named `id-only-number-sdk-after.accdb`,
 `existing-default-only-number-sdk-after.accdb` under `SOURCES_DIR`:
 
 ```sh
-python3 docs/testing/number_column_repeat/probe.py \
+python3 tests/run.py tests/access/schema/number_column_repeat/probe.py \
   --jar "$JACKCESS_JAR" --sources-dir "$SOURCES_DIR" --output-dir "$SDK_OUTPUT"
-python3 docs/testing/number_column_repeat/model.py \
+python3 tests/run.py tests/access/schema/number_column_repeat/model.py \
   --sources-dir "$SOURCES_DIR" --sdk-dir "$SDK_OUTPUT" --output-dir "$RAW_OUTPUT"
 ```
 

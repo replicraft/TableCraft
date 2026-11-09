@@ -204,11 +204,11 @@ the correct ACCDB page mapping.
 
 Four original upstream encrypted inputs exercise two Agile envelopes and two
 version-4.2 envelopes, including a nonstandard provider. Their source/hashes are
-in [FIXTURES.md](../../testing/FIXTURES.md#encryption-envelope-reference-inputs). Run the local
+in [FIXTURES.md](../../../tests/reports/reading/FIXTURES.md#encryption-envelope-reference-inputs). Run the local
 comparison with an explicitly supplied upstream `src/test/data` directory:
 
 ```sh
-python3 docs/testing/compare_encryption_envelopes.py \
+python3 tests/run.py tests/access/encryption/database/compare_encryption_envelopes.py \
   --cli target/debug/tablecraft --directory /path/to/jackcessencrypt/src/test/data
 ```
 
@@ -343,7 +343,7 @@ success reaches the unchanged synchronization/no-clobber publication. This
 large verification batch passes, including the eight native parallel cases,
 eight CLI encryption cases, failure/cancellation checks and large-file round
 trips. The envelope-copy follow-up also passes those focused cases and strict
-engine/CLI lint. [End-to-end measurements](../../testing/ADAPTIVE_ENCRYPTION_BENCHMARKS.md) retain
+engine/CLI lint. [End-to-end measurements](../../../tests/reports/encryption/ADAPTIVE_ENCRYPTION_BENCHMARKS.md) retain
 all samples and decoded-output checks. Severe wall-time variance and concurrent
 packaging metadata work limit causal speedup claims; native Access compatibility
 is not established by these measurements. Existing Agile integrity
@@ -542,7 +542,7 @@ and native Access comparisons remain unavailable, not claimed.
 
 ## Encrypted modern history interoperability
 
-The [modern encrypted corpus](../../testing/ENCRYPTED_MODERN_HISTORIES.md) now covers
+The [modern encrypted corpus](../../../tests/reports/encryption/ENCRYPTED_MODERN_HISTORIES.md) now covers
 real 2016/2019 layout histories encrypted independently by Jackcess Encrypt and
 TableCraft, with 19,902 rows per file. Generation passes 98 controls, including
 6,010 decoded-page comparisons, exact modern-field rows/indexes/queries, SID
@@ -576,7 +576,7 @@ discard it. The CLI discards failed temporary files, synchronizes successful one
 and publishes with no-clobber persistence. It does not replace existing files or
 supply a transaction journal. Native Access save/reopen remains unqualified.
 
-The [large-file replay](../../testing/LARGE_ENCRYPTION.md) passes 92 commands over
+The [large-file replay](../../../tests/reports/encryption/LARGE_ENCRYPTION.md) passes 92 commands over
 unchanged 77 MiB V2016/V2019 originals. Independent getters/SID/page readers and
 independent encryption removal verify added/changed/removed candidates. Every
 recovered full image matches its original digest, and all data ciphertext stays

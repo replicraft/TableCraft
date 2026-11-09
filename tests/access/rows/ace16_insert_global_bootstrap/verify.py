@@ -6,10 +6,10 @@ from pathlib import Path
 import subprocess
 import sys
 
-ROOT = Path(__file__).resolve().parents[3]
+ROOT = Path(__file__).resolve().parents[4]
 sys.dont_write_bytecode = True
 sys.path.insert(0, str(ROOT))
-sys.path.insert(0, str(ROOT / 'docs/testing'))
+sys.path.insert(0, str(ROOT / 'tests/access'))
 from scripts.compat_artifacts import ArtifactStore
 from ace16_insert_external_long_values.evidence import Pins, report
 from ace16_insert_global_bootstrap import build, model, reference, requests, source
@@ -23,7 +23,7 @@ BUILD = '.cache/ace16-insert-global-bootstrap-build-20261028'
 NATIVE = '.cache/ace16-insert-global-bootstrap-acceptance-next-20261028'
 NATIVE_WORK = '.cache/ace16-insert-global-bootstrap-candidate-first-20261028'
 GETTERS = '.cache/ace16-insert-global-bootstrap-getters-first-20261028'
-PUBLIC = 'docs/testing/ace16_insert_global_bootstrap'
+PUBLIC = 'tests/access/rows/ace16_insert_global_bootstrap'
 NOTICE = b'Engineering candidate: data-macro semantics and native Access qualification pending.\n'
 FIXED = {'.cache/ace16-insert-global-bootstrap-source-next-20261028/freeze.json': '3b7c602c5a8eeb1d3537b8ab898be11e8322c97e1bf2efa8211d9c858432389c',
  '.cache/ace16-insert-global-bootstrap-source-next-20261028/source-gates-first.json': 'f8d6a9ff0db462147eb57f4945d90c1125cf7e183ff4e035306f47ed9a5d31a6',
@@ -33,7 +33,7 @@ FIXED = {'.cache/ace16-insert-global-bootstrap-source-next-20261028/freeze.json'
  '.cache/ace16-insert-global-bootstrap-reference-next-20261028/freeze.json': '0cfe3ac6e586aae8da8d7d52409b2b0c668ea9c69dda6fd63f814d7ef3e0bbc6',
  '.cache/ace16-insert-global-bootstrap-reference-first-20261028/report.json': '209e82800823800eb42758db07a95c01ee2e92ec91d738e44be59bc72375db4b',
  '.cache/ace16-insert-global-bootstrap-build-20261028/freeze.json': '1763536bb45a7998af3646cfb8a5ab5af5c18c20ada7730339c40ab4d5d3b1be',
- 'docs/testing/results/ace16-insert-global-bootstrap-example-build-2026-10-28.json': '79fda89c9fa6d3134a8a46bd3a8f4f6ff4bc7fe7b5585ee7289c0993317ea6b5',
+ 'tests/results/rows/ace16-insert-global-bootstrap-example-build-2026-10-28.json': '79fda89c9fa6d3134a8a46bd3a8f4f6ff4bc7fe7b5585ee7289c0993317ea6b5',
  '.cache/ace16-insert-global-bootstrap-acceptance-next-20261028/freeze.json': 'b1649465e3222f47ef7acf523d7e6d59c4a947ad164cde7c588ae9c5b2cadb45',
  '.cache/ace16-insert-global-bootstrap-acceptance-next-20261028/getter-binding.json': 'f8b53f70f65bc12cb3770b463d2e0dec3182d956a81e5432c1b1896bf6bc40b3',
  '.cache/ace16-insert-global-bootstrap-candidate-first-20261028/report.json': '4ab5340716270c87f3bac576aa566b29d5d756555942745716f9375e8b8cb34b',
@@ -63,7 +63,7 @@ def maintained(store, pins):
                 for node in ast.parse(text).body if isinstance(node, (ast.FunctionDef, ast.ClassDef))]
             assert definitions(actual) == definitions(original)
     assert pins.check(store.pin(PUBLIC + '/MODEL_POLICY.md')).read_bytes() == pins.check(store.pin(SOURCE + '/MODEL_POLICY.md')).read_bytes()
-    helper = pins.check(store.pin('docs/testing/parent_index_split_originals/BoundedFileChannel.java'))
+    helper = pins.check(store.pin('tests/access/indexes/parent_index_split_originals/BoundedFileChannel.java'))
     assert helper.read_bytes() == pins.check(store.pin(SOURCE + '/BoundedFileChannel.java')).read_bytes()
 
 

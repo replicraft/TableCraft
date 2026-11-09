@@ -1,6 +1,6 @@
 # Independent JDBC aggregate metadata observations
 
-The [four-profile report](results/jdbc-aggregate-metadata-final-2026-10-25.json)
+The [four-profile report](../../results/queries/jdbc-aggregate-metadata-final-2026-10-25.json)
 records 58 queries over each original Jet 4, ACE 2007, ACE 2016 and ACE 2019 scalar
 fixture: 232 UCanAccess queries and 232 TableCraft queries. It keeps JDBC declared
 metadata, actual Java object classes/values and TableCraft VarType/TypeName/display
@@ -71,7 +71,7 @@ query definitions before JDBC initialization. UCanAccess replaces an opener's li
 resolver, so the guard does not rely on that replaceable callback. A separate
 original application-copy control with stored queries refuses before any QUERY
 output, with original/copy bytes unchanged; the
-[probe review](results/jdbc-aggregate-probe-review-2026-10-25.json) records it.
+[probe review](../../results/queries/jdbc-aggregate-probe-review-2026-10-25.json) records it.
 JDBC operates with an in-memory mirror, read-only connection and a
 hardcoded SELECT list; no document scripts, writes, providers or new databases
 are requested. SQL timeouts, result-row limits and a 256 MiB JVM heap bound the
@@ -88,7 +88,7 @@ TableCraft tests.
 Reproduce with reviewed JARs and a fresh work directory/report:
 
 ```sh
-python3 docs/testing/compare_jdbc_aggregate_metadata.py \
+python3 tests/run.py tests/access/queries/execution/compare_jdbc_aggregate_metadata.py \
   --artifacts .cache/ucanaccess-reference-20261025 \
   --inputs .cache/tablecraft-fixtures/scalar-seek-20261023 \
   --cli .cache/tablecraft-bin/progressive-stateful-cli-20261025 \

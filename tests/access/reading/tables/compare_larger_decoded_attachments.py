@@ -1,4 +1,5 @@
 """Check explicit native attachment file allowances against original inert data."""
+from engineering_paths import reference_file
 
 import argparse
 import csv
@@ -72,7 +73,7 @@ def main():
 
     with tempfile.TemporaryDirectory(prefix="tablecraft-larger-file-getters-") as temporary:
         subprocess.run(
-            ["javac", "-cp", str(args.jar), "-d", temporary, str(RECIPES / "LargeDecodedAttachmentFixture.java")],
+            ["javac", "-cp", str(args.jar), "-d", temporary, str(reference_file('tests/access/reading/tables/LargeDecodedAttachmentFixture.java'))],
             check=True,
         )
         java = [

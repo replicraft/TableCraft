@@ -1,4 +1,5 @@
 """Check explicit CStr Error/Empty conversion with original standard-code models."""
+from engineering_paths import reference_file
 import argparse
 import csv
 import hashlib
@@ -73,7 +74,7 @@ def main():
             original = path.read_bytes()
             assert hashlib.sha256(original).hexdigest() == digest
             rows = subprocess.check_output(["java", "-Dstdout.encoding=UTF-8", "-cp", str(args.jar),
-                str(RECIPES / "TableDataOracle.java"), str(path), "AData"], text=True, encoding="utf-8")
+                str(reference_file('tests/access/reading/tables/TableDataOracle.java')), str(path), "AData"], text=True, encoding="utf-8")
             codes = [int(line.split("\t")[1].removeprefix("I32:")) for line in rows.splitlines()]
             query("run", "SELECT CStr(CVErr(ID)) FROM AData", [[f"Error {code}"] for code in codes], ["--database", path])
             assert path.read_bytes() == original
@@ -85,7 +86,7 @@ def main():
             assert hashlib.sha256(original).hexdigest() == digest
             for index in ("IdAsc", "IdDesc"):
                 rows = subprocess.check_output(["java", "-Dstdout.encoding=UTF-8", "-cp", str(args.jar),
-                    str(RECIPES / "IndexRowsOracle.java"), str(path), "IndexedRows", index, "ID"], text=True, encoding="utf-8")
+                    str(reference_file('tests/access/indexes/native/IndexRowsOracle.java')), str(path), "IndexedRows", index, "ID"], text=True, encoding="utf-8")
                 codes = [int(line) for line in rows.splitlines() if int(line) >= 19998]
                 options = ["--database", path, "--index", "IndexedRows", index]
                 query("run", "SELECT CStr(CVErr(ID)) FROM IndexedRows WHERE ID>=19998", [[f"Error {code}"] for code in codes], options)

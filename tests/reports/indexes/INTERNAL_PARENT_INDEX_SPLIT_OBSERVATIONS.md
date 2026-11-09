@@ -10,7 +10,7 @@ observations, not passing new-kernel candidates or Microsoft Access execution.
 Session 74237 completed with status 0 and exactly nine processes: one Java
 compilation, two prior-service attempts, two public UPDATEs and four read-only
 descriptions. No input was regenerated or retried. The
-[compact receipt](results/ace16-internal-parent-split-actions-2026-10-27.json)
+[compact receipt](../../results/indexes/ace16-internal-parent-split-actions-2026-10-27.json)
 pins the original sources, copied public results, executed sources/classes,
 getter outputs, raw report and command statuses. Requests retain ordinal 962,
 `Key=149184 → Int32MAX`, and original references 1180:8 / 1197:8.
@@ -51,14 +51,14 @@ from these public `updateRow` actions.
 
 ## Read-only verification and source identity
 
-The Java helper and [action model](internal_parent_split_originals/action_model.py)
+The Java helper and [action model](../../access/indexes/internal_parent_split_originals/action_model.py)
 are byte-identical promotions of the executed private sources. The
-[new verifier](internal_parent_split_originals/verify_actions.py) redecodes both
+[new verifier](../../access/indexes/internal_parent_split_originals/verify_actions.py) redecodes both
 cached before/after getters, maps and complete trees and repeats the row/record
 comparison without calling JVM/native tools:
 
 ```sh
-python3 docs/testing/internal_parent_split_originals/verify_actions.py \
+python3 tests/run.py tests/access/indexes/internal_parent_split_originals/verify_actions.py \
   --output FRESH_OUTPUT.json
 ```
 

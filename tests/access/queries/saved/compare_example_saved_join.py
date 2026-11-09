@@ -2,6 +2,7 @@
 
 Only TableCraft executes SQL. This is not native Access query qualification.
 """
+from engineering_paths import reference_file
 import argparse
 import hashlib
 from pathlib import Path
@@ -28,7 +29,7 @@ def main():
 
     def oracle(recipe):
         return subprocess.check_output(
-            ["java", "-Dstdout.encoding=UTF-8", "-cp", str(args.jar), str(RECIPES / (recipe + ".java")), str(args.database), *TABLES],
+            ["java", "-Dstdout.encoding=UTF-8", "-cp", str(args.jar), str(reference_file(recipe + ".java")), str(args.database), *TABLES],
             text=True, encoding="utf-8",
         ).splitlines()
 

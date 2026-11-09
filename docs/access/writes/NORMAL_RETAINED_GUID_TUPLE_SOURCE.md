@@ -57,7 +57,7 @@ All 17 focused retained functions, reader/journal/preview builds and ACE strict
 all-target checks pass. The initial strict run found one collapsible conditional;
 its equivalent let-chain cleanup passed without repeating unchanged functional
 tests. Formatting and documentation links pass. The
-[execution record](../../testing/results/ace16-retained-guid-tuple-source-2026-11-03.json)
+[execution record](../../../tests/results/indexes/ace16-retained-guid-tuple-source-2026-11-03.json)
 retains commands, logs, corrections and separate evidence boundaries.
 
 The readonly metadata validator is bounded to the native maximum; actual source

@@ -3,6 +3,7 @@
 Uses original scalar inputs plus registered native rows from read-only Jackcess.
 This is arithmetic/reference-row evidence, not native Access SQL qualification.
 """
+from engineering_paths import reference_file
 import argparse
 import subprocess
 from decimal import Decimal, ROUND_HALF_EVEN, ROUND_FLOOR, ROUND_DOWN
@@ -31,7 +32,7 @@ def main():
     for index in [None, "Number"]:
         cursor = ["--index", "ROULETTE_TB", index] if index else ["ROULETTE_TB"]
         text = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar,
-                   RECIPES / "TableDataOracle.java", args.database, *cursor)
+                   reference_file('tests/access/reading/tables/TableDataOracle.java'), args.database, *cursor)
         rows = [line.split("\t") for line in text.splitlines()]
         numbers = [int(row[1].removeprefix("I32:")) for row in rows]
         options = ["--database", args.database]

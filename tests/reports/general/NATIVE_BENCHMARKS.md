@@ -18,7 +18,7 @@ Measured 19 October 2026 on the same host/release settings above. Baseline
 tuples and the independently committed explicit-final-child traversal fix.
 Both executables were frozen before timing. Each run has 20 samples/three warmups
 per command, with compilation/validation completed before timing. All thirteen
-workloads passed preflight counts. [The initial report](results/guid-tuples-2026-10-19.json)
+workloads passed preflight counts. [The initial report](../../results/indexes/guid-tuples-2026-10-19.json)
 retains all 520 samples, source/input/binary hashes, memory and instruction data.
 
 **A complete 1,000-row GUID/numeric index read measured a 0.723 ms median**,
@@ -31,7 +31,7 @@ The first five-numeric-key control's wall median increased about 57 microseconds
 1,000-row operation. Instruction medians increased only about 1.7%, while several
 current wall measurements had large scheduling outliers. This prompted a second
 experiment adding `#[inline]` to Component max_bytes/decode/value and CompositeKey
-empty/set/get. That [contender report](results/guid-tuples-inlined-2026-10-19.json)
+empty/set/get. That [contender report](../../results/indexes/guid-tuples-inlined-2026-10-19.json)
 retains another 520 samples and both executables' fingerprints. It did not establish
 an inlining benefit, so those hints were removed. Final source fingerprints exactly
 match the original tested/measured implementation. No samples were removed.
@@ -62,11 +62,11 @@ Exact content/order comes from independent cursor comparisons, not timing checks
 Test debug symbols were disabled to fit local disk; release flags were unchanged.
 
 To reproduce, build/freeze `bc2f844` and current with the existing procedure, then
-generate original numeric, [single-GUID](GuidIndexFixture.java) and
-[GUID-tuple](GuidCompositeIndexFixture.java) inputs using the reviewed artifact:
+generate original numeric, [single-GUID](../../access/indexes/native/GuidIndexFixture.java) and
+[GUID-tuple](../../access/indexes/native/GuidCompositeIndexFixture.java) inputs using the reviewed artifact:
 
 ```sh
-python3 docs/testing/benchmark_scans.py \
+python3 tests/run.py tests/access/reading/tables/benchmark_scans.py \
   --baseline path/to/frozen-before --baseline-metadata path/to/before.json \
   --current path/to/frozen-current --database docs/examples/Access_Example_VBA.accdb \
   --generated-ace path/to/Index-V2016.accdb --composite-ace path/to/compound-2016.accdb \
@@ -80,7 +80,7 @@ Measured 19 October 2026 with the same release flags/host above, 20 runs and thr
 warmups. Baseline `4b0fad1` already includes current-page scan reuse and exact
 Currency index/FK support. Its executable was copied before changing source;
 both builds used the same lockfile/toolchain. No compilation or independent
-comparisons ran during timing. [The complete report](results/composite-indexes-2026-10-19.json)
+comparisons ran during timing. [The complete report](../../results/indexes/composite-indexes-2026-10-19.json)
 retains source/input/binary hashes, checksums, every sample and memory statistics.
 The runner now fingerprints all native index modules and itself as well.
 
@@ -120,11 +120,11 @@ Checksums/counts agree before timing, while separate independent cursors establi
 exact row order/carriers. No sample removal, thermal control or CI threshold applies.
 
 To reproduce, build/freeze `4b0fad1` and current using the build/metadata procedure
-below. Generate fresh [compound fixtures](CompositeIndexFixture.java) using the
+below. Generate fresh [compound fixtures](../../access/indexes/native/CompositeIndexFixture.java) using the
 reviewed Jackcess artifact, finish validation/builds, then run:
 
 ```sh
-python3 docs/testing/benchmark_scans.py \
+python3 tests/run.py tests/access/reading/tables/benchmark_scans.py \
   --baseline path/to/frozen-before --baseline-metadata path/to/before.json \
   --current path/to/frozen-current --database docs/examples/Access_Example_VBA.accdb \
   --generated-ace path/to/Index-V2016.accdb --composite-ace path/to/compound-2016.accdb \
@@ -146,7 +146,7 @@ These are memory-backed public API measurements: the executable loads input once
 then repeatedly uses a Cursor, including catalog/schema discovery, decoding and
 output destruction. They do not measure disk syscalls, cold reads or shared-file
 coordination. The fixture/input/binary/source hashes, every raw sample, memory
-statistics and checksums are in [the report](results/scans-2026-10-19.json).
+statistics and checksums are in [the report](../../results/general/scans-2026-10-19.json).
 
 | Operation | Iterations/process | Before, microseconds/operation ± SD | Reused page, microseconds/operation ± SD |
 | --- | --- | --- | --- |
@@ -171,12 +171,12 @@ To reproduce, build `e1a9cf3` in a separate checkout using
 Copy its compiler-reported `native` executable before rebuilding current with
 the same flags, lockfile and toolchain. Record the baseline JSON keys
 `source_commit`, `binary_sha256`, `cargo_lock_sha256`, `rustc` and `build`.
-Generate `Index-V2016.accdb` with [the original recipe](IndexFixture.java) and the
-reviewed Jackcess artifact in [FIXTURES.md](FIXTURES.md). Finish all compilation
-and independent checks before invoking [the runner](benchmark_scans.py):
+Generate `Index-V2016.accdb` with [the original recipe](../../access/indexes/native/IndexFixture.java) and the
+reviewed Jackcess artifact in [FIXTURES.md](../reading/FIXTURES.md). Finish all compilation
+and independent checks before invoking [the runner](../../access/reading/tables/benchmark_scans.py):
 
 ```sh
-python3 docs/testing/benchmark_scans.py \
+python3 tests/run.py tests/access/reading/tables/benchmark_scans.py \
   --baseline path/to/frozen-before --baseline-metadata path/to/before.json \
   --current path/to/frozen-current --database docs/examples/Access_Example_VBA.accdb \
   --generated-ace path/to/Index-V2016.accdb \
@@ -199,7 +199,7 @@ inlining. No calendar algorithms, timezone conversion, caches or unchecked
 constructors were introduced; exact stored/Serde bits and negative DATE rules
 remain unchanged.
 
-The [calendar runner](benchmark_calendar.py) compares the historical time adapter,
+The [calendar runner](../../access/queries/expressions/benchmark_calendar.py) compares the historical time adapter,
 08b603b's Jiff adapter and the optimized adapter. All builds precede timing. The
 original one-million round trips are retained; five million additionally amortize
 process overhead. Separate decode/encode workloads identify both conversion
@@ -213,7 +213,7 @@ directions. Twenty runs/three warmups and the host/profile above apply.
 | encode, 5,000,000 | — | 71.20 ± 17.26 ms | 42.66 ± 0.80 ms |
 
 Several cases contain large scheduling outliers. All samples, memory summaries,
-checksums and binary hashes remain in the [recorded report](results/calendar-2026-10-18.json).
+checksums and binary hashes remain in the [recorded report](../../results/queries/calendar-2026-10-18.json).
 The five-million round-trip **medians** are 115.98 / 197.52 / 135.73 ms for
 time / original Jiff / optimized Jiff: approximately 23.20 / 39.50 / 27.15 ns per
 round trip. Optimized Jiff improves about 31% by median and 28% by mean over the
@@ -242,7 +242,7 @@ invoke the three already-built executables:
 
 ```sh
 cargo bench --no-run --locked -p tablecraft-ace --bench native
-python3 docs/testing/benchmark_calendar.py \
+python3 tests/run.py tests/access/queries/expressions/benchmark_calendar.py \
   --baseline path/to/time-native-benchmark \
   --before path/to/original-jiff-native-benchmark \
   --current path/to/optimized-native-benchmark
@@ -263,13 +263,13 @@ to a weaker read as a speedup claim.
 | generated Jet 4 Indexed | 167.07 ± 19.97 ms | 1,000 rows; 2 checked / 3 unverified indexes |
 
 The generated ACE case has large scheduling outliers; all samples, memory
-summaries and input/binary hashes remain in the [report](results/checks-2026-10-18.json).
-These are bounded structural/row checks with [explicit gaps](../access/NATIVE_CHECKS.md),
+summaries and input/binary hashes remain in the [report](../../results/reading/checks-2026-10-18.json).
+These are bounded structural/row checks with [explicit gaps](../../../docs/access/NATIVE_CHECKS.md),
 not whole-database integrity or Microsoft Access qualification.
 
 ```sh
 cargo bench --no-run --locked -p tablecraft-ace --bench native
-python3 docs/testing/benchmark_checks.py \
+python3 tests/run.py tests/access/reading/tables/benchmark_checks.py \
   --binary path/to/current-native-benchmark \
   --database docs/examples/Access_Example_VBA.accdb \
   --ace path/to/fresh-indexes.accdb --jet path/to/fresh-indexes.mdb
@@ -277,7 +277,7 @@ python3 docs/testing/benchmark_checks.py \
 
 ## Workloads and evidence
 
-[Native API harness](../../crates/engines/tablecraft-ace/benches/native.rs) repeats
+[Native API harness](../../../crates/engines/tablecraft-ace/benches/native.rs) repeats
 header parsing, catalog inspection, complete sequential/indexed snapshots and
 Automation calendar conversion through the public API. Each native operation gets
 a fresh bounded budget/cursor; the explicitly selected stable input is loaded once
@@ -285,7 +285,7 @@ per process, outside the repeated operations. Every result is consumed with
 black_box. Workload checksums compare row/object counts or calendar bits, not every
 cell; correctness suites and independent tagged-row comparisons remain separate.
 
-[Bitmap harness](../../crates/engines/tablecraft-ace/benches/bitmaps.rs) compares the
+[Bitmap harness](../../../crates/engines/tablecraft-ace/benches/bitmaps.rs) compares the
 original bit-loop reduction, the actual production word iterator and the retained
 SIMD candidate on 4,096-byte zero/sparse/mixed/dense inputs. Checksums include every
 selected bit position, and all densities must agree before any measurements run.
@@ -293,11 +293,11 @@ The compiler may auto-vectorize the bit-loop reduction; "scalar" names source
 structure, not a guaranteed instruction set. These kernels omit parser callbacks,
 budget/cancellation and page I/O, so their ratios cannot be applied to queries.
 
-[Recorded samples/statistics](results/native-libraries-2026-10-18.json) retain wall
+[Recorded samples/statistics](../../results/general/native-libraries-2026-10-18.json) retain wall
 samples, mean/SD/range, resident-memory summaries, binary/input SHA-256 and tool
 versions without local paths. Raw Hyperfine JSON remains under ignored
 target/benchmarks. The registered fixture is unchanged. Generated Jet 4/ACE inputs
-come from the original [index recipe](IndexFixture.java), not vendored databases.
+come from the original [index recipe](../../access/indexes/native/IndexFixture.java), not vendored databases.
 
 ## Results
 
@@ -356,11 +356,11 @@ not the new native/date implementations. Keep its executable separate from the
 current build. Resolve the local development edge once, then retain its lockfile.
 
 Run the original Java index recipe for optional fresh V2000/V2007 inputs as
-documented in [NATIVE_INDEXES.md](../access/indexes/NATIVE_INDEXES.md). Never overwrite a registered
+documented in [NATIVE_INDEXES.md](../../../docs/access/indexes/NATIVE_INDEXES.md). Never overwrite a registered
 fixture or run application content. Then invoke the comparison runner:
 
 ```sh
-python3 docs/testing/benchmark_native.py \
+python3 tests/run.py tests/access/reading/tables/benchmark_native.py \
   --baseline path/to/baseline-native-executable \
   --current path/to/current-native-executable \
   --bitmaps path/to/current-bitmaps-executable \
@@ -378,11 +378,11 @@ accepting a dependency because its benchmark completed.
 
 ## Usage-map traversal
 
-The [usage-map recipe](UsageMapFixture.java) creates 2,000 owned data pages, each
+The [usage-map recipe](../../access/storage/native/UsageMapFixture.java) creates 2,000 owned data pages, each
 with one 13-column row (ID and 12 Binary fields). The public native harness repeats
 ten full reads with a fresh 256 MiB budget, comparing e083f6e's search through prior
 pages with the current monotonicity check. Baseline and current row-count checksums
-agree; [full tagged-row comparison](compare_usage_maps.py) is separate.
+agree; [full tagged-row comparison](../../access/storage/native/compare_usage_maps.py) is separate.
 
 | Workload | Baseline mean ± SD | Current mean ± SD |
 | --- | --- | --- |
@@ -393,7 +393,7 @@ agree; [full tagged-row comparison](compare_usage_maps.py) is separate.
 
 Same host/profile, 20 runs and three warmups apply. The ACE sequential current
 case has large scheduling outliers and a worse mean; every sample remains in the
-[recorded report](results/usage-maps-2026-10-18.json). These measurements establish
+[recorded report](../../results/storage/usage-maps-2026-10-18.json). These measurements establish
 no reliable broad whole-reader improvement. The change is retained for linear
 bookkeeping and explicit sorted ownership invariants, not a general speed claim.
 Normal CLI input/work limits are unchanged.
@@ -402,11 +402,11 @@ Normal CLI input/work limits are unchanged.
 java -cp path/to/jackcess-5.0.4.jar docs/testing/UsageMapFixture.java path/to/new-pages.accdb V2007
 java -cp path/to/jackcess-5.0.4.jar docs/testing/UsageMapFixture.java path/to/new-pages.mdb V2000
 cargo bench --no-run --locked -p tablecraft-ace --bench native
-python3 docs/testing/benchmark_usage_maps.py \
+python3 tests/run.py tests/access/storage/native/benchmark_usage_maps.py \
   --baseline path/to/e083f6e-native-benchmark --current path/to/current-native-benchmark \
   --ace path/to/new-pages.accdb --jet path/to/new-pages.mdb
 cargo build --release --locked -p tablecraft-ace --example table_data
-python3 docs/testing/compare_usage_maps.py \
+python3 tests/run.py tests/access/storage/native/compare_usage_maps.py \
   --example target/release/examples/table_data --jar path/to/jackcess-5.0.4.jar \
   --ace path/to/new-pages.accdb --jet path/to/new-pages.mdb
 ```
@@ -419,7 +419,7 @@ selected-row counts before timing. Inputs are the original generated 1,000-row
 Jet 4/ACE index fixtures. PrimaryKey selects ID 0 through 9 (ten rows); CategoryDesc
 selects Category = 0 (101 rows). This measures the native reader, not query planning
 or CLI startup. It omits validation of skipped pages on the seek path, as described
-in [native index limits](../access/indexes/NATIVE_INDEXES.md#native-int32-range-selections).
+in [native index limits](../../../docs/access/indexes/NATIVE_INDEXES.md#native-int32-range-selections).
 
 | Input / index | Full snapshot + filter | Seek | Ratio of means |
 | --- | --- | --- | --- |
@@ -430,12 +430,12 @@ in [native index limits](../access/indexes/NATIVE_INDEXES.md#native-int32-range-
 
 These are 20-run means ± SD after three warmups on the same host/toolchain above.
 The Jet descending case includes a large scheduling outlier, retained in the
-[complete samples and memory summaries](results/index-seeks-2026-10-18.json).
+[complete samples and memory summaries](../../results/indexes/index-seeks-2026-10-18.json).
 These numbers do not predict other selectivities or cold-disk performance.
 
 ```sh
 cargo build --release --locked -p tablecraft-ace --benches
-python3 docs/testing/benchmark_index_seeks.py \
+python3 tests/run.py tests/access/indexes/native/benchmark_index_seeks.py \
   --binary path/to/native-benchmark-executable \
   --ace path/to/fresh-indexes.accdb --jet path/to/fresh-indexes.mdb
 ```
@@ -460,13 +460,13 @@ cases detect regressions; the new wide-schema cases have no supported baseline.
 Ordinary-reader means change approximately +3.3% / -0.1% / +2.1%; no speedup is
 claimed. Wide inputs have 200 columns and seven-page definitions, with seven rows
 per nonempty table. Same host/profile, 20 runs and three warmups apply.
-[Recorded samples](results/definitions-2026-10-18.json) include memory summaries,
+[Recorded samples](../../results/general/definitions-2026-10-18.json) include memory summaries,
 binary/input hashes and explicit harness options. Exact metadata/rows are checked
-separately in [definition comparisons](compare_definitions.py).
+separately in [definition comparisons](../../access/reading/tables/compare_definitions.py).
 
 ```sh
 cargo bench --no-run --locked -p tablecraft-ace --bench native
-python3 docs/testing/benchmark_definitions.py \
+python3 tests/run.py tests/access/reading/tables/benchmark_definitions.py \
   --baseline path/to/f761d69-native-benchmark \
   --current path/to/current-native-benchmark \
   --database docs/examples/Access_Example_VBA.accdb \
@@ -478,14 +478,14 @@ correctness is covered separately by the independent range comparison and tests.
 
 ## Query filter pushdown
 
-The [Access adapter harness](../../crates/backends/tablecraft-access/benches/query.rs)
+The [Access adapter harness](../../../crates/backends/tablecraft-access/benches/query.rs)
 compares the same current source, preparation, execution and sorting path, with
 optional source constraints accepted versus declined by a thin Source wrapper.
 SQL parses once per process; each of 500 iterations constructs a fresh source,
 inventories its catalog, binds schema, executes and sorts ID/Category output.
 Stable fixture bytes are loaded once per process. Preflight checks compare row
 counts, ID sums and NULL counts before timing; exact rows have separate tests and
-[independent CLI comparisons](compare_query_filters.py).
+[independent CLI comparisons](../../access/queries/execution/compare_query_filters.py).
 
 | Input / predicate | Constraint declined | Constraint accepted | Ratio of means |
 | --- | --- | --- | --- |
@@ -499,21 +499,21 @@ counts, ID sums and NULL counts before timing; exact rows have separate tests an
 Twenty-run means ± SD follow three warmups, using the same host/toolchain/profile
 above. Range/equality/NULL select 10/101/91 rows respectively. Both formats' range
 full reads include substantial scheduling outliers; all samples and
-memory summaries remain in the [report](results/query-pushdown-2026-10-18.json).
+memory summaries remain in the [report](../../results/queries/query-pushdown-2026-10-18.json).
 This includes metadata discovery and query work, so native API-only seek ratios
 do not apply. It measures fresh sources, not repeated cached complete tables or
 CLI process startup; no improvement is promised for broad filters or other hosts.
 
 ```sh
 cargo bench --no-run --locked -p tablecraft-access --bench query
-python3 docs/testing/benchmark_query.py \
+python3 tests/run.py tests/access/queries/execution/benchmark_query.py \
   --binary path/to/query-benchmark-executable \
   --ace path/to/fresh-indexes.accdb --jet path/to/fresh-indexes.mdb
 ```
 
 ## Boolean and IEEE index measurements
 
-The [complete report](results/boolean-floating-indexes-2026-10-19.json) retains all
+The [complete report](../../results/indexes/boolean-floating-indexes-2026-10-19.json) retains all
 600 samples from 15 cases, 20 runs and three warmups. The frozen baseline is
 `9bfe9fb` before Boolean/IEEE qualification; its binary identity and every original
 source fingerprint were verified against that commit. Current source/binary,
@@ -549,14 +549,14 @@ outliers and inconsistent wall deltas preclude a general speed/parity claim.
 All samples, memory and instruction/cycle counters remain in the report.
 
 The existing runner accepts `--boolean-ace` and `--floating-ace` for the original
-inert recipes in [FIXTURES.md](FIXTURES.md). New full-read cases compare the
+inert recipes in [FIXTURES.md](../reading/FIXTURES.md). New full-read cases compare the
 same current executable's sequential/indexed APIs; existing controls compare
 before/current executables. Source test debug-symbol reductions do not change
 this release benchmark profile.
 
 ## Legacy DateTime index measurements
 
-The [complete report](results/date-indexes-2026-10-19.json) retains all 320 samples
+The [complete report](../../results/indexes/date-indexes-2026-10-19.json) retains all 320 samples
 from eight cases, 20 runs and three warmups. Frozen baseline `c87fa7a` predates the
 DATE index policy; binary identity and every recorded source fingerprint were
 checked against that commit. Current source/binary, toolchain, lockfile and input
@@ -582,11 +582,11 @@ current, and 1,000-row Int32 indexed reads 0.534/0.537 ms. These medians are
 observations, not a speed/parity guarantee. All instruction/cycle and memory
 counters remain in the report. The runner's `--date-ace` option uses the original
 DATE recipe; exact serial ordering and residual civil semantics have separate
-correctness comparisons in [FIXTURES.md](FIXTURES.md).
+correctness comparisons in [FIXTURES.md](../reading/FIXTURES.md).
 
 ## Single-Decimal index measurements
 
-The [complete report](results/decimal-indexes-2026-10-19.json) retains all 360 samples
+The [complete report](../../results/indexes/decimal-indexes-2026-10-19.json) retains all 360 samples
 from nine cases, 20 runs and three warmups. Frozen baseline `46cc9ab` predates the
 single-Decimal policy; binary identity and every recorded source fingerprint were
 verified against that commit. Current source/binary, toolchain, lockfile and input
@@ -610,12 +610,12 @@ they validate the entire tree and fetch referenced rows. Existing Int32 controls
 are 0.0833/0.0841 ms before/current for 38 rows and 0.542/0.539 ms for 1,000 rows.
 These close observations do not establish a speed/parity guarantee. Samples,
 memory and instruction/cycle counters stay in the report. The runner accepts
-`--decimal-ace` for the original recipe in [FIXTURES.md](FIXTURES.md); precision,
+`--decimal-ace` for the original recipe in [FIXTURES.md](../reading/FIXTURES.md); precision,
 scale and exact native key/reference correctness have separate comparisons.
 
 ## Indexed root-page reuse
 
-The [complete report](results/indexed-page-reuse-2026-10-19.json) retains all 800
+The [complete report](../../results/indexes/indexed-page-reuse-2026-10-19.json) retains all 800
 samples from 20 cases, 20 runs and three warmups. Frozen baseline `f17d914` already
 supports every measured carrier. Its executable identity and recorded source
 fingerprints were checked against that commit. Current source/binary, toolchain,
@@ -666,7 +666,7 @@ Native shared-file isolation and actual Access qualification remain separate.
 
 ## Decimal tuple measurements
 
-The [initial report](results/decimal-tuples-2026-10-19.json) retains all 520 samples
+The [initial report](../../results/indexes/decimal-tuples-2026-10-19.json) retains all 520 samples
 from 13 cases, 20 runs and three warmups. Frozen baseline `be53c86` includes indexed
 root-page reuse and predates Decimal tuples; binary identity and every recorded
 source fingerprint were checked against that commit. Source/binary, toolchain,
@@ -695,11 +695,11 @@ instruction counters remain in the report; no general speed/parity claim follows
 
 The runner accepts `--decimal-composite-ace` for the original recipe. Exact scales,
 typed ordering, complete constraints and immutable inputs have separate
-[fixture comparisons](FIXTURES.md#original-ace-16-decimal-tuple-index-inputs).
+[fixture comparisons](../reading/FIXTURES.md#original-ace-16-decimal-tuple-index-inputs).
 
 ### Separate column-set follow-up
 
-The [follow-up report](results/composite-column-sets-2026-10-19.json) retains another
+The [follow-up report](../../results/schema/composite-column-sets-2026-10-19.json) retains another
 520 samples across 13 cases, comparing initial tuple commit `218596c` with separate
 compact and Decimal column metadata. The initial source/binary fingerprints are
 verified against that commit. The same host/toolchain/default release profile,
@@ -738,7 +738,7 @@ requires exact decoded bytes. These are **microseconds per 60,000-byte payload**
 not nanoseconds and not whole-database/query timings. There is no prior decoder
 or Microsoft Access performance baseline.
 
-After compilation/tests, the [runner](benchmark_attachments.py) measures four
+After compilation/tests, the [runner](../../access/reading/tables/benchmark_attachments.py) measures four
 commands serially with 20 runs, three warmups and 20,000 payloads/process on the
 macOS ARM/Rust 1.99 host. Process durations include startup and fixture setup;
 inner-loop samples are also retained. Background/thermal state is uncontrolled.
@@ -751,7 +751,7 @@ Absolute means and standard deviations derived from process times:
 | stored-noise | 1.016 | 0.022 |
 | zlib-noise | 166.955 | 63.702 |
 
-The [complete report](results/attachments-2026-10-18.json) retains all measurements,
+The [complete report](../../results/reading/attachments-2026-10-18.json) retains all measurements,
 inner samples, dependency versions, source/binary hashes and host/profile metadata.
 The noisy zlib case reflects a different encoded workload from a direct memory
 copy; no relative-speed or cross-platform compatibility claim follows. Limits,
@@ -761,7 +761,7 @@ remain separate correctness evidence.
 ```sh
 CARGO_INCREMENTAL=0 cargo bench -p tablecraft-ace --bench attachments --no-run --locked
 # Use the executable path printed by Cargo for this target/build.
-python3 docs/testing/benchmark_attachments.py --binary target/release/deps/attachments-HASH \
+python3 tests/run.py tests/access/reading/tables/benchmark_attachments.py --binary target/release/deps/attachments-HASH \
   --iterations 20000 --runs 20 --warmup 3 --output new-attachment-report.json
 ```
 

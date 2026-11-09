@@ -3,6 +3,7 @@
 The database-ordinal controls use the CLI's selected ordinal policy; they are not
 native Access locale/case/code-page comparisons. No host text locale is inferred.
 """
+from engineering_paths import reference_file
 import argparse
 from pathlib import Path
 import subprocess
@@ -56,7 +57,7 @@ def main():
             controls += 1
     refused(args.cli,'run',"SELECT 1,StrComp('A','a',1)",['--collation','ordinal'])
     controls += 1
-    tagged = run('java','-Dstdout.encoding=UTF-8','-cp',args.jar,RECIPES/'TableDataOracle.java',args.database,'ROULETTE_TB')
+    tagged = run('java','-Dstdout.encoding=UTF-8','-cp',args.jar,reference_file('tests/access/reading/tables/TableDataOracle.java'),args.database,'ROULETTE_TB')
     records = [line.split('\t')[1:] for line in tagged.splitlines()]
     rows=[]
     for row in records:

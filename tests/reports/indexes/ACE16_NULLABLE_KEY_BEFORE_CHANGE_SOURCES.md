@@ -46,7 +46,7 @@ trailers, NULL ordering, ownership and retained bounds. Complete class/source/
 request/image hashes remain unchanged. The saved-only verifier starts no child
 processes. These observations do not execute macros or establish native Access
 UNIQUE-NULL save behavior.
-The [execution record](results/ace16-nullable-key-before-change-sources-2026-10-31.json)
+The [execution record](../../results/indexes/ace16-nullable-key-before-change-sources-2026-10-31.json)
 retains actual pins and phase outcomes. Generated images, Java classes and raw
 reports remain ignored. No NULL transition, ignore-NULL flag, allocation, new
 intent version, normal write authority or macro-absence certificate is supplied.
@@ -70,5 +70,5 @@ saved-only verifier passes without launching children. This is index readback,
 not a full SDK inventory. Separate normal journal tests now match both complete
 companion images and requalify original Id requests through recovery. Read
 success itself supplies no write permit or native Access save qualification.
-The [companion record](results/ace16-nullable-id-companion-sources-2026-10-31.json)
+The [companion record](../../results/rows/ace16-nullable-id-companion-sources-2026-10-31.json)
 retains first source/export pins and checks.

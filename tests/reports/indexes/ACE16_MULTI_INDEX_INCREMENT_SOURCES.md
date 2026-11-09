@@ -29,7 +29,7 @@ TABLECRAFT_INCREMENT_MULTI_SOURCE_DIR=/absolute/path/to/expected-first \
   -- --ignored
 ```
 
-The [execution record](results/ace16-multi-index-increment-sources-2026-11-02.json)
-records source qualification only. The [matching normal writer](../access/writes/NORMAL_INCREMENTING_AUTONUMBER.md)
+The [execution record](../../results/indexes/ace16-multi-index-increment-sources-2026-11-02.json)
+records source qualification only. The [matching normal writer](../../../docs/access/writes/NORMAL_INCREMENTING_AUTONUMBER.md)
 now has separate batch acceptance. Native Microsoft Access save/reopen remains
 unrun.

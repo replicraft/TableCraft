@@ -7,15 +7,15 @@ thirteen-process capture: four current typed-service attempts refused atomically
 and four fresh public updates succeeded by splitting again. No repeated-split
 implementation or candidate replay is established by these observations.
 
-The [source receipt](results/ace16-repeated-index-split-sources-2026-10-27.json)
-and [reference receipt](results/ace16-repeated-index-split-reference-2026-10-27.json)
+The [source receipt](../../results/indexes/ace16-repeated-index-split-sources-2026-10-27.json)
+and [reference receipt](../../results/indexes/ace16-repeated-index-split-reference-2026-10-27.json)
 retain distinct phases, exact commands, original/copy/tool hashes and raw reports.
 Jackcess 5.0.4 is the reviewed independent public writer, not Microsoft Access.
 No original database was patched, regenerated or replaced after its first run.
 
 ## Source phase: nine processes
 
-The repository-owned [producer](repeated_split_originals/RepeatedSplitFixture.java)
+The repository-owned [producer](../../access/indexes/repeated_split_originals/RepeatedSplitFixture.java)
 uses public builders with UTC, expression evaluation disabled, foreign-key
 enforcement enabled and a throwing link resolver. Each V2016/V2019 database has
 900 nonunique zero keys in each of `Int64Keys` and `CurrencyKeys`, plus one separate
@@ -54,7 +54,7 @@ uses an actual `native_noop_attempts` counter instead of that inherited label.
 The separate frozen phase used the same unchanged originals and measured ID1
 ordinals, with exact zero-to-MAX requests. It ran one javac, four prior-service
 attempts, four fresh public UPDATE copies and four complete descriptions. The
-prior artifact was the [committed typed consumer](results/ace16-fixed-split-example-build-2026-10-27.json),
+prior artifact was the [committed typed consumer](../../results/indexes/ace16-fixed-split-example-build-2026-10-27.json),
 compiled from `809c5e8d72ed1afe698f565f8447005292739b05`, SHA-256
 `ff4adf2f0a3699bdeefdc64cd95daed54dda183f0f871861a14fce6f9a324418`.
 All four attempts returned `Unsupported(IndexedColumn)`, with empty stdout,
@@ -112,14 +112,14 @@ recovery and normal saves remain unqualified.
 
 ## Saved verification and fresh reproduction
 
-The [read-only verifier](repeated_split_originals/verify.py) recomputes complete
+The [read-only verifier](../../access/indexes/repeated_split_originals/verify.py) recomputes complete
 source facts, typed/reference streams, maps and framing from saved descriptions
 and database bytes. Its accepted run checked 269 recursive pin occurrences with
 zero fixture processes. The multi-megabyte reports, getter stdout, class files,
 originals and reference copies remain ignored and hash-pinned.
 
 ```sh
-python3 docs/testing/repeated_split_originals/verify.py \
+python3 tests/run.py tests/access/indexes/repeated_split_originals/verify.py \
   --source-report .cache/ace16-repeated-split-sources-first-20261027/report.json \
   --action-report .cache/ace16-repeated-split-actions-first-20261027/report.json \
   --framing .cache/ace16-repeated-split-actions-first-20261027/framing.json \
@@ -138,19 +138,19 @@ accepted corpus. The explicit source plan contains JAR, artifact/revision, helpe
 pins, limits and a fresh output directory. Review its inventory before execution:
 
 ```sh
-python3 docs/testing/repeated_split_originals/capture_sources.py \
+python3 tests/run.py tests/access/indexes/repeated_split_originals/capture_sources.py \
   --freeze docs/testing/repeated_split_originals/source-plan.json
-python3 docs/testing/repeated_split_originals/capture_sources.py \
+python3 tests/run.py tests/access/indexes/repeated_split_originals/capture_sources.py \
   --freeze docs/testing/repeated_split_originals/source-plan.json --execute
-python3 docs/testing/repeated_split_originals/postcheck.py \
+python3 tests/run.py tests/access/indexes/repeated_split_originals/postcheck.py \
   --freeze docs/testing/repeated_split_originals/source-plan.json
-python3 docs/testing/repeated_split_originals/bind_actions.py \
+python3 tests/run.py tests/access/indexes/repeated_split_originals/bind_actions.py \
   --source-plan docs/testing/repeated_split_originals/source-plan.json \
   --source-report .cache/ace16-repeated-split-sources-reproduction-20261027/report.json \
   --source-postcheck .cache/ace16-repeated-split-sources-reproduction-20261027/post-execution-pins.json \
   --work .cache/ace16-repeated-split-actions-reproduction-20261027 \
   --output .cache/ace16-repeated-split-actions-reproduction-plan-20261027.json
-python3 docs/testing/repeated_split_originals/capture_actions.py \
+python3 tests/run.py tests/access/indexes/repeated_split_originals/capture_actions.py \
   --freeze .cache/ace16-repeated-split-actions-reproduction-plan-20261027.json
 ```
 

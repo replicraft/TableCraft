@@ -6,7 +6,7 @@ import subprocess
 import time
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[3]
+ROOT = Path(__file__).resolve().parents[4]
 JAR_SHA256 = '19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc'
 PRODUCER_SHA256 = '2d92ce90bd970c0d613ddc8a6bca3146a551c48f5aef3026c728dd69822493a6'
 TIMEOUT_SECONDS = 30

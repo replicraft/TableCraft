@@ -32,7 +32,7 @@ def main():
             ("MoneyEmpty", "EmptyMoneyKey", ("ID", "Amount"), 0),
         ):
             expected = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar,
-                "docs/testing/IndexRowsOracle.java", path, table, index, *columns)
+                "tests/access/indexes/native/IndexRowsOracle.java", path, table, index, *columns)
             if len(expected.splitlines()) != rows:
                 raise RuntimeError("Unexpected independent Currency cursor count")
             header = "\t".join(columns) + "\n"

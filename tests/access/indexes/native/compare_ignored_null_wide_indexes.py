@@ -135,8 +135,8 @@ def main():
     assert digest(args.jar.read_bytes()) == JAR_SHA256
     tools = [
         args.cli, args.baseline_cli, args.jar, Path(__file__),
-        ROOT / "docs/testing/compare_ignored_null_indexes.py",
-        ROOT / "docs/testing/IgnoreNullWideIndexFixture.java",
+        ROOT / "tests/access/indexes/native/compare_ignored_null_indexes.py",
+        ROOT / "tests/access/indexes/native/IgnoreNullWideIndexFixture.java",
     ]
     for profile in PROFILES:
         original = args.originals / f"IgnoreWide-{profile}.accdb"

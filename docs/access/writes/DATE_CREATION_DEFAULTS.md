@@ -27,5 +27,5 @@ These checks qualify local engine and retained-session behavior. Microsoft
 Access save/reopen remains unrun; generated and clock defaults keep their
 separate contracts.
 
-The [execution record](../../testing/results/ace16-date-default-writes-2026-11-01.json)
+The [execution record](../../../tests/results/schema/ace16-date-default-writes-2026-11-01.json)
 separates creator, native proof/recovery and retained-session checks.

@@ -118,15 +118,15 @@ The full preserved targets pass all six adapter and seven CLI functions, retaini
 existing Boolean coverage. Combined native/Access/CLI strict checks and dependency
 boundaries (15 packages and 12 checker tests) pass. Format checks for ACE/Access/CLI, no-default-feature checks for ACE/Access, and
 6,718 documentation link targets with no missing links also pass. Exact logs and
-retained first failures are in the [frontend record](results/ace16-preserved-int32-frontends-2026-10-30.json).
+retained first failures are in the [frontend record](../../results/rows/ace16-preserved-int32-frontends-2026-10-30.json).
 
 
 ## Independently generated source admission
 
 Two fresh Jackcess 5.0.4 public-builder originals, V2016 and V2019, now pass
 source-only admission through the existing preserved `source::capture`. The
-[repository-authored recipe](preserved_int32_originals/PreservedInt32Originals.java)
-reuses the maintained [bounded channel](parent_index_split_originals/BoundedFileChannel.java).
+[repository-authored recipe](../../access/rows/preserved_int32_originals/PreservedInt32Originals.java)
+reuses the maintained [bounded channel](../../access/indexes/parent_index_split_originals/BoundedFileChannel.java).
 It creates manual ID and ordinary nonindexed Required Int32 Score fields alongside
 indexed Base, stored calculated Cached (`[Base]*2`), Boolean, Memo, OLE and
 attachment fields, plus a separate Sentinel table. Stored caches remain
@@ -151,7 +151,7 @@ files. The row recipe is repeatable; system timestamps, generated GUIDs and
 physical allocation are measured source facts. Candidate writers and native
 Access save/reopen checks remain unrun for this corpus. Exact source pins,
 provenance and observed outcomes are in the
-[source record](results/ace16-preserved-int32-genuine-sources-2026-10-30.json).
+[source record](../../results/rows/ace16-preserved-int32-genuine-sources-2026-10-30.json).
 
 The source helper formatting and ACE library/test all-feature strict checks pass.
 Documentation validation passes 6,723 link targets with no missing links. These
@@ -179,10 +179,10 @@ positional physical owner, retaining all identity and ownership checks. Original
 files, requests and four-byte preservation rules did not change. The failed
 programs and log remain separate from the successful construction.
 
-The [image and readback record](results/ace16-preserved-int32-genuine-images-2026-10-30.json)
+The [image and readback record](../../results/rows/ace16-preserved-int32-genuine-images-2026-10-30.json)
 keeps source admission, committed build, independent construction, native copies
 and external observations distinct. The maintained
-[saved-evidence verifier](preserved_int32_genuine/README.md) reconstructs expected
+[saved-evidence verifier](../../access/rows/preserved_int32_genuine/README.md) reconstructs expected
 images without running a database process. These results qualify the stated
 engineering-copy profile, not Microsoft Access save/reopen, normal ACE saves,
 required macro handling or general mixed-schema editing.
@@ -222,7 +222,7 @@ The preserved unit regression also passes 15 functions, with one explicit
 genuine-source helper ignored, including the existing larger-image cases.
 
 All-target/all-feature ACE, Access and CLI Clippy, scoped formatting and minimal
-ACE/Access builds pass. The [nullable result](results/ace16-preserved-int32-nullable-2026-10-30.json)
+ACE/Access builds pass. The [nullable result](../../results/rows/ace16-preserved-int32-nullable-2026-10-30.json)
 retains the initial fixture typing failure separately; its correction changed no
 literal source or expected bytes. This is authored-source evidence. The genuine
 SDK Score field above is Required, so its positive non-NULL results do not qualify

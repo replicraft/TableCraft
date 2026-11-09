@@ -1,10 +1,10 @@
 # Mixed fixed/binary key replay
 
-The [exact numeric key implementation](../query/keys/NUMERIC_KEYS.md#exact-fixedbinary-numeric-cohorts)
+The [exact numeric key implementation](../../../docs/query/keys/NUMERIC_KEYS.md#exact-fixedbinary-numeric-cohorts)
 passes 3,956 current CLI queries against independent Fraction/IEEE models and
 unchanged native scalar getters. A further 333 earlier-executable controls retain
 275 former mixed-key refusals and 58 already-correct results. The
-[report](results/fixed-binary-key-replay-2026-10-25.json) contains all 4,289 CLI
+[report](../../results/indexes/fixed-binary-key-replay-2026-10-25.json) contains all 4,289 CLI
 observations, 8,648 returned query rows and 25,112 cells compared by the candidate
 model. Four separate Java getter invocations supply native values.
 
@@ -15,8 +15,8 @@ not qualify dynamic column heading names.
 
 ## Data, model and observations
 
-The [original runner](compare_fixed_binary_keys.py) reuses the historical
-[numeric-key Fraction/IEEE model](compare_numeric_keys.py), preserving that
+The [original runner](../../access/indexes/native/compare_fixed_binary_keys.py) reuses the historical
+[numeric-key Fraction/IEEE model](../../access/indexes/native/compare_numeric_keys.py), preserving that
 runner and its recorded results. Nine literal model goldens pin IEEE values,
 subnormals, signed zero and existing decimal rounding helpers. Expected key
 partitions and ordering use exact fractions, independently of production's
@@ -47,7 +47,7 @@ ordering and TOP also check identities to preserve row/value association.
 
 The native phase reuses the four registered `Scalar-V2000.mdb`,
 `Scalar-V2007.accdb`, `Scalar-V2016.accdb` and `Scalar-V2019.accdb` originals.
-The reviewed Jackcess 5.0.4 [getter](TableDataOracle.java) opens them read-only
+The reviewed Jackcess 5.0.4 [getter](../../access/reading/tables/TableDataOracle.java) opens them read-only
 with expression evaluation disabled. It supplies signed/scaled Money and Numeric
 coefficients, exact Single/Double IEEE bits and stored Boolean/integer values.
 No new database or third-party implementation is copied.

@@ -29,7 +29,7 @@ match complete independent files. The direct proof rejects 720 protected-byte
 forgeries; checked original-intent journal recovery rejects another 720.
 There are 408 recovery contexts, 112 committed mismatches refused without effects,
 296 completion confirmations and 24 measured full public resource operations.
-These observations follow [independent source qualification](../../testing/ACE16_WIDE_SIBLING_AFTER_SOURCES.md).
+These observations follow [independent source qualification](../../../tests/reports/general/ACE16_WIDE_SIBLING_AFTER_SOURCES.md).
 
 Typed edits preserve exact Int64 and Currency carriers. SQL and CLI retain their
 current checked assignment rules. The sixteen qualified SQL/CLI cases use
@@ -48,7 +48,7 @@ tablecraft query journal-update \
 ```
 
 The shared original TCNI4 intent, checked V1 replay and retained typed/SQL/CLI
-services are unchanged. See the [acceptance record](../../testing/results/ace16-wide-sibling-writes-2026-11-02.json)
+services are unchanged. See the [acceptance record](../../../tests/results/general/ace16-wide-sibling-writes-2026-11-02.json)
 for first failures, corrections and exact verification scope. Independent
 readers and portable tests do not establish native Access save/reopen. General
 allocation, ignored-NULL keys, broader index families, shared-file writes and

@@ -8,15 +8,15 @@ import sys
 import traceback
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[3]
-sys.path.insert(0, str(ROOT / 'docs/testing'))
+ROOT = Path(__file__).resolve().parents[4]
+sys.path.insert(0, str(ROOT / 'tests/access'))
 from slot_preview_originals import common
 import capture_delete_trees as trees
 import delete_reference_maps as maps
 
 PLAN_SHA256 = 'bffbf7831ae1911fdfb3b3b5b583f27c59bd08757e8b48bce0c6b99585a25006'
 JAR = Path('.cache/tablecraft-fixtures/jackcess-5.0.4.jar')
-PUBLIC_GETTER = Path('docs/testing/BatchDeleteFixture.java')
+PUBLIC_GETTER = Path('tests/access/rows/delete/BatchDeleteFixture.java')
 PAGE_BYTES = 4096
 SLOT_START = 14
 SLOT_BYTES = 2
@@ -281,8 +281,8 @@ def execute(args, plan):
     directory = common.fresh_work(args.workdir)
     commands = common.Capture(directory)
     immutable = [pin(__file__), pin(args.plan), pin(args.jar), pin(args.reference_helper),
-                 pin(PUBLIC_GETTER), pin('docs/testing/capture_delete_trees.py'),
-                 pin('docs/testing/delete_reference_maps.py'), pin('docs/testing/slot_preview_originals/common.py')]
+                 pin(PUBLIC_GETTER), pin('tests/access/rows/delete/capture_delete_trees.py'),
+                 pin('tests/access/rows/delete/delete_reference_maps.py'), pin('tests/access/rows/slot_preview_originals/common.py')]
     immutable.extend(case['original'] for case in plan['cases'])
     before_path = directory / 'before-first-call.json'
     before_path.write_text(json.dumps({'build': build, 'plan': pin(args.plan), 'immutable': immutable}, indent=2) + '\n')
@@ -348,7 +348,7 @@ def main():
     parser.add_argument('--build-receipt', type=Path)
     parser.add_argument('--jar', type=Path, default=JAR)
     parser.add_argument('--reference-helper', type=Path,
-                        default=Path('docs/testing/index_split_originals/IndexSplitReference.java'))
+                        default=Path('tests/access/indexes/index_split_originals/IndexSplitReference.java'))
     parser.add_argument('--workdir', type=Path)
     args = parser.parse_args()
     assert pin(args.plan)['sha256'] == PLAN_SHA256

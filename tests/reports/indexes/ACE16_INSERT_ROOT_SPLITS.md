@@ -1,6 +1,6 @@
 # Request-bound INSERT root-leaf growth
 
-The optional [ordinary-row INSERT preview](ACE16_INSERT_PREVIEW.md) can now grow
+The optional [ordinary-row INSERT preview](../rows/ACE16_INSERT_PREVIEW.md) can now grow
 its sole required ascending Int32 primary from an original leaf into a retained
 height-one root and two fresh leaves. The table still has one Int32 and one Short
 Binary field, with complete explicit values. This is an engineering candidate,
@@ -54,14 +54,14 @@ bytes and requests before the new producer was built. Public-reference differenc
 are confined to unused fresh-index padding, which the engineering policy zeros.
 All four engineering candidates subsequently matched those complete images on
 their first attempts. Eight fresh read-only getter/map calls also passed, after
-the whole-image checks. The [scoped record](results/ace16-insert-root-splits-native-2026-10-27.json)
-pins the [committed producer](results/ace16-insert-root-split-example-build-2026-10-27.json),
+the whole-image checks. The [scoped record](../../results/indexes/ace16-insert-root-splits-native-2026-10-27.json)
+pins the [committed producer](../../results/indexes/ace16-insert-root-split-example-build-2026-10-27.json),
 raw reports and checks. Across the four results, 1,808 primary entries and 1,804
 old ROWs agree, eight new index leaves and two new DATA pages are correctly owned,
 and all 15 map-byte changes match. The 12,656 unused fresh-index bytes are zero;
 14,412 bytes of retained-root residue remain unchanged.
 
-The [saved verifier](ace16_insert_root_split/README.md) rederives all four images
+The [saved verifier](../../access/indexes/ace16_insert_root_split/README.md) rederives all four images
 and checks archived reference, candidate and getter evidence. Optional Git checks
 read the producer source closure in one batch. Private artifacts are required;
 their absence reports unavailable and is not a passing result or CI prerequisite.
@@ -76,7 +76,7 @@ pages. [One overflowing child](ACE16_INSERT_CHILD_SPLITS.md) now has a separate
 continuation that adds one left leaf and preserves the original right page and
 root identities. The later [general height-one continuation](ACE16_INSERT_GENERAL_HEIGHT_ONE.md)
 also admits multiple offenders, repeated leaf splits and arbitrary leaf-child
-counts when the final root fits. The later [recursive continuation](ACE16_INSERT_RECURSIVE.md)
+counts when the final root fits. The later [recursive continuation](../rows/ACE16_INSERT_RECURSIVE.md)
 removes the two-fitting-halves limit for larger/repeated LEAF overflow and admits
 deeper NODE sources with internal splits and one root growth whose new top fits.
 This checkpoint's original-file evidence remains separately scoped. Further

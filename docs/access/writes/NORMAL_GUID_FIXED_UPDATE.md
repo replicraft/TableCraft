@@ -65,7 +65,7 @@ zero-test filtered runs are excluded. Correct installation preceded all matching
 results. All 120 retained runtime functions passed, followed by strict all-target
 checks for ACE, Access, CLI and testkit, reader/journal/preview builds, dependency
 boundaries with 17 guard tests, and formatting. The
-[execution record](../../testing/results/ace16-normal-guid-fixed-update-2026-11-03.json)
+[execution record](../../../tests/results/rows/ace16-normal-guid-fixed-update-2026-11-03.json)
 retains commands, log hashes and excluded preliminary runs.
 The new in-memory states have no independent SDK or Microsoft Access
 interpretation claim. Windows save/reopen, mixed-client, power-loss and universal

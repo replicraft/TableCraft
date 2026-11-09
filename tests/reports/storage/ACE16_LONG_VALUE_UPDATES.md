@@ -29,7 +29,7 @@ coverage cannot be skipped. Unchanged numeric relationship keys do not supply a
 new Memo/OLE relationship encoder. Defaults remain stored and are not evaluated
 for an existing-row UPDATE.
 
-The [read-only storage checker](../access/storage/LONG_VALUE_CHECKS.md) is a
+The [read-only storage checker](../../../docs/access/storage/LONG_VALUE_CHECKS.md) is a
 prerequisite, not write permission. A separate paid catalog census inventories
 complete current/historical column declarations, ordinary/index ownership and
 live external descriptors, including fields without map pairs. A known empty
@@ -101,13 +101,13 @@ missing pointers or candidate-window cells refuse without allocating metadata.
 Indirect candidate maps remain outside this profile. All old chunks, pointer
 rows, bitmap prefixes and unrelated bits retain their independent preservation
 checks. The source experiment itself contains no native candidate calls.
-The [scoped implementation checks](results/ace16-indirect-lval-native-2026-10-27.json)
+The [scoped implementation checks](../../results/storage/ace16-indirect-lval-native-2026-10-27.json)
 cover fitted reuse, exact represented bitmap edits through multiple EOF chunks,
 missing-pointer refusal and reader-valid finalizer forgeries. Original mixed-map
 replacement qualification still requires a separately frozen consumer and
 independent whole-image expectations.
 
-The [multiple-candidate checks](results/ace16-long-value-multiple-candidates-2026-10-27.json)
+The [multiple-candidate checks](../../results/general/ace16-long-value-multiple-candidates-2026-10-27.json)
 include independent complete expected images for two fitting hints, a failed high
 hint followed by lower-page reuse, complete exhaustion, the native slot ceiling
 and ordinary parent forwarding. Empty/no-op requests preserve both hints, while
@@ -153,7 +153,7 @@ distinct from that candidate evidence.
 
 ## Explicit engineering consumer
 
-The feature-gated [example](../../crates/engines/tablecraft-ace/examples/preview_ace16_long_value.rs)
+The feature-gated [example](../../../crates/engines/tablecraft-ace/examples/preview_ace16_long_value.rs)
 buffers a complete candidate before creating a fresh output. It shares the
 existing quoted TSV reader and synchronized fresh-file publisher. Its separate
 input profile allows 64 KiB per encoded value; the Short Text/Binary example
@@ -178,7 +178,7 @@ consumer total. Checks include a real chained Memo candidate, exact source/old
 chunk preservation, fresh output, explicit width profiles and late malformed
 input without publication. These checks do not replace original-file replay.
 
-The [scoped implementation record](results/ace16-long-value-updates-native-2026-10-27.json)
+The [scoped implementation record](../../results/rows/ace16-long-value-updates-native-2026-10-27.json)
 pins the actual source, preserved attempts and selected final checks. Shared
 consumer functions and repeated default/preview executions are counted explicitly.
 
@@ -189,7 +189,7 @@ V2016 refused an unrelated opaque backing field, while V2019 encountered an empt
 deleted catalog slot. The [first-refusal evidence](LONG_VALUE_UPDATE_REFUSALS.md)
 preserves every request, source, error and no-output result.
 
-The [census correction record](results/ace16-long-value-census-correction-2026-10-27.json)
+The [census correction record](../../results/general/ace16-long-value-census-correction-2026-10-27.json)
 separates physical reference inspection from scalar projection. Existing scalar
 long-value profiles, supported calculated Memo outer storage and the observed
 variable OLE/flag2/ext0x10 backing profile can be traced without decoding their
@@ -209,7 +209,7 @@ proofs. The initial 0/60 outcome remains preserved separately.
 
 ## Compressed Memo implementation checks
 
-The [scoped implementation record](results/ace16-compressed-memo-native-2026-10-27.json)
+The [scoped implementation record](../../results/storage/ace16-compressed-memo-native-2026-10-27.json)
 separates the engineering code checks from the public-reference observations.
 Default-build tests read and storage-check a physically compressed source while
 retaining explicit unsupported flags/OLE statuses. Preview tests compare literal

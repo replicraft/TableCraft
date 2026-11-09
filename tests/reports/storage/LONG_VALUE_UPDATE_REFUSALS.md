@@ -2,7 +2,7 @@
 
 The first original-file candidate replay attempted all 60 frozen Memo/OLE
 transitions and produced **zero candidates: all 60 controls remain unmet**.
-The [compact receipt](results/ace16-long-value-first-refusals-2026-10-27.json)
+The [compact receipt](../../results/general/ace16-long-value-first-refusals-2026-10-27.json)
 pins the exact first report, terminal log, frozen requests/model and later
 read-only diagnostic evidence. This records a discovered admission gap, not
 replacement acceptance or native Access qualification.
@@ -18,7 +18,7 @@ expected value, budget or metadata was changed afterward.
 The artifact was compiled from `d1e6d4c77523c80594584e8b9143d564cd41a56b`
 and has SHA256
 `3c829ba49adb25146e000ce1d1ce431919b91ac8d5b81c261950d7ec0d92e808`.
-Its [build receipt](results/ace16-long-value-example-build-2026-10-27.json)
+Its [build receipt](../../results/general/ace16-long-value-example-build-2026-10-27.json)
 retains the compiled source identities. The exact private plan `bbcd7ad0`, model
 `b35b1aa9` and runner `e938b2f2` remain unchanged. Each case used its own original
 or public-history input, never a preceding kernel candidate.
@@ -53,7 +53,7 @@ published replacement images nor qualified the original 60 requested updates.
 A revised artifact must receive its own fresh acceptance run; that result cannot
 be described as first-attempt acceptance.
 
-The separate [census correction record](results/ace16-long-value-census-correction-2026-10-27.json)
+The separate [census correction record](../../results/general/ace16-long-value-census-correction-2026-10-27.json)
 owns the implementation checks and subsequent regression totals. The counts
 above describe the actual causal before/after runs, rather than replacing them
 with later combined totals.
@@ -63,7 +63,7 @@ with later combined totals.
 With the pinned ignored local evidence available, run:
 
 ```sh
-python3 docs/testing/long_value_preview_originals/verify_first_refusals.py \
+python3 tests/run.py tests/access/storage/long_value_preview_originals/verify_first_refusals.py \
   --output FRESH_OUTPUT.json
 ```
 

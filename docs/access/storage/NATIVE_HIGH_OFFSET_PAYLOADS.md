@@ -43,7 +43,7 @@ EOF in that full batch. The corrected test performs an explicit empty final
 fetch, preserving checked EOF rather than changing the cursor.
 
 Exact commands, logs, source hashes and the excluded first run are recorded in
-[the scoped verification](../../testing/results/read-query-high-offset-payloads-2026-10-25.json).
+[the scoped verification](../../../tests/results/queries/read-query-high-offset-payloads-2026-10-25.json).
 Existing seek/short-read, shared-lock and ordinary high-offset page evidence is
 separate in [read failure reliability](NATIVE_READ_FAILURES.md). These controls do
 not qualify live-file coherence, native Access save/reopen, million-row throughput,

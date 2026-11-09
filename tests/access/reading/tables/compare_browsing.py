@@ -5,6 +5,7 @@ files remain local. This establishes independent reading, not native Access SQL
 or shared-file qualification. Scalar float formatting covers this recipe's exact
 binary fractions only; it is not a general cross-language float formatter.
 """
+from engineering_paths import reference_file
 
 from cli_tsv import command_output
 from float_model import expected_bits, display_bits
@@ -79,14 +80,14 @@ def main():
     if args.generate:
         args.directory.mkdir(exist_ok=False)
         for profile, suffix in profiles:
-            run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar, RECIPES / "ScalarFixture.java", args.directory / f"Scalar-{profile}.{suffix}", profile)
+            run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar, reference_file('tests/access/reading/tables/ScalarFixture.java'), args.directory / f"Scalar-{profile}.{suffix}", profile)
     for profile, suffix in profiles:
         path = args.directory / f"Scalar-{profile}.{suffix}"
         before = path.read_bytes()
         family = {"V2000": 1, "V2007": 2, "V2016": 5, "V2019": 6}[profile]
         assert before[20:24] == bytes([family, 0, 0, 0]), "Wrong original family"
         def oracle(recipe, *extra):
-            return run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar, RECIPES / f"{recipe}.java", path, *extra)
+            return run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar, reference_file(f"{recipe}.java"), path, *extra)
         catalog = [line.split("\t") for line in oracle("CatalogOracle").splitlines()]
         names = sorted(escaped(row[4]) + "\t" + ("System" if int(row[3]) & 0x80000002 else "User") for row in catalog if int(row[2]) in (1, 4, 6))
         actual = run(args.cli, "tables", path, "--show-system").splitlines()

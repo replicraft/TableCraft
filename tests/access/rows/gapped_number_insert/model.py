@@ -20,7 +20,7 @@ def digest(data):
 
 def predict(before, repo):
     assert digest(before) == SOURCE_SHA256
-    spec = importlib.util.spec_from_file_location('drop_raw', repo / 'docs/testing/saved_field_drop/model.py')
+    spec = importlib.util.spec_from_file_location('drop_raw', repo / 'tests/access/schema/saved_field_drop/model.py')
     raw = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(raw)
     definition = before[7 * PAGE:8 * PAGE]

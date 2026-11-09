@@ -2,6 +2,7 @@
 
 Only TableCraft executes SQL. Existing registered inputs remain unchanged.
 """
+from engineering_paths import reference_file
 
 import argparse
 import csv
@@ -49,7 +50,7 @@ def main():
         subprocess.run(
             [
                 "javac", "-cp", str(args.jar), "-d", temporary,
-                str(RECIPES / "IndexRowsOracle.java"), str(RECIPES / "TableDataOracle.java"),
+                str(reference_file('tests/access/indexes/native/IndexRowsOracle.java')), str(reference_file('tests/access/reading/tables/TableDataOracle.java')),
             ],
             check=True,
         )

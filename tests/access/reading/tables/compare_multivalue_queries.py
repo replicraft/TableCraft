@@ -3,6 +3,7 @@
 Python expands original parent/member values read through reviewed Jackcess APIs.
 This is not Microsoft Access SQL, optimizer, locale or return-promotion evidence.
 """
+from engineering_paths import reference_file
 import argparse
 import subprocess
 from pathlib import Path
@@ -29,7 +30,7 @@ def main():
         options = ["--database", path, "--multivalues", "--native-bytes", "67108864"]
         collections = {}
         for column in ["Bytes", "Shorts", "Ints", "Guids", "Decimals", "Texts"]:
-            text = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar, RECIPES / "MultivalueOracle.java", path, "Multivalues", column, "ID")
+            text = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar, reference_file('tests/access/reading/tables/MultivalueOracle.java'), path, "Multivalues", column, "ID")
             records = [line.split("\t") for line in text.splitlines()]
             collections[column] = records
             flat = [(display(row[3]), display(value)) for row in records for value in (row[4:] or ["N"])]

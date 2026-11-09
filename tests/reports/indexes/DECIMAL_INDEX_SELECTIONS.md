@@ -1,6 +1,6 @@
 # Exact Decimal index selection evidence
 
-The 2026-10-25 [accepted replay](results/decimal-index-selections-2026-10-25.json)
+The 2026-10-25 [accepted replay](../../results/indexes/decimal-index-selections-2026-10-25.json)
 passes 788 controls across fresh Jet 4, ACE 2007 and ACE 16-family originals.
 Its 696 successful queries compare 38,772 returned IDs with independent exact
 Fraction expectations. The 92 buffered refusals preserve empty stdout: 72
@@ -8,7 +8,7 @@ structural-limit controls, 12 eager division errors, four native resource failur
 and four output failures. These are engineering comparisons; Microsoft Access
 execution, optimizer behavior and native saves remain unqualified.
 
-The implemented [Decimal selections](../access/indexes/NATIVE_INDEXES.md#exact-decimal-equality-and-null-selections)
+The implemented [Decimal selections](../../../docs/access/indexes/NATIVE_INDEXES.md#exact-decimal-equality-and-null-selections)
 retain the existing physical codec and qualify exact single-key equality/NULL
 reads. Typed Decimal parameters can use automatic or required indexes after
 lossless checked field-scale normalization. The original filter remains active.
@@ -20,7 +20,7 @@ introduced for this optimization.
 
 ## Original inputs and independent model
 
-The unchanged original MIT [DecimalIndexFixture.java](DecimalIndexFixture.java)
+The unchanged original MIT [DecimalIndexFixture.java](../../access/queries/expressions/DecimalIndexFixture.java)
 recipe uses reviewed Jackcess 5.0.4 public builders to author fresh files, with
 expression evaluation disabled. Its existing reference-format check distinguishes
 Jet 4 legacy numeric indexes. The complete recipe also retains its unique/primary,
@@ -29,7 +29,7 @@ precision-four and empty/composite controls. The new replay selects its three
 non-NULL numeric boundary values and 91 NULL records. Boundary coefficients include
 both signed 28-digit extrema and neighbors beyond i64 and floating exactness.
 
-The read-only [IndexRowsOracle.java](IndexRowsOracle.java) returns stored cells
+The read-only [IndexRowsOracle.java](../../access/indexes/native/IndexRowsOracle.java) returns stored cells
 through public index cursors; no reference SQL or active database content runs.
 The Python model constructs exact `Fraction` values from getter Decimal strings,
 checks their retained scale, and derives matching IDs without floating conversion.
@@ -78,7 +78,7 @@ its division failure. Complete reused-source cache behavior is covered separatel
 by the focused Rust tests, since CLI controls start independent operations.
 
 ```sh
-python3 docs/testing/compare_decimal_seeks.py \
+python3 tests/run.py tests/access/queries/expressions/compare_decimal_seeks.py \
   --cli .cache/tablecraft-bin/read-query-decimal-alias-cli-20261025 \
   --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar \
   --inputs .cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb \

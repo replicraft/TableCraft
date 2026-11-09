@@ -2,8 +2,8 @@
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[3]
-sys.path.insert(0, str(ROOT / 'docs/testing'))
+ROOT = Path(__file__).resolve().parents[4]
+sys.path.insert(0, str(ROOT / 'tests/access'))
 from ace16_insert_ordinary import row_codec, record_decode
 from slot_preview_originals import facts
 from parent_index_split_originals import wire

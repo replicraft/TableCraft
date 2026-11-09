@@ -68,7 +68,7 @@ Text variable-slot gaps remain outside ordinary INSERT support.
 
 ## Verification boundary
 
-The [coordinated headless macOS record](../testing/results/saved-field-drop-gui-2026-11-09.json)
+The [coordinated headless macOS record](../../tests/results/schema/saved-field-drop-gui-2026-11-09.json)
 reports 681 shared UI tests passed and 201 desktop tests passed with one existing
 ignored desktop test, including all seven focused DROP test functions. They
 exercise actual Datasheet and Design entry points, No/Yes/pending Save, complete independent raw AFTER

@@ -22,16 +22,16 @@ rebased image, dummy numeric keys or synthetic widths are used. Owned key facts
 outlive the DATA plan move while the builder prepares real replacement keys.
 The independent final audit derives its keys again from original requests.
 
-DATA placement retains the [ordinary-variable policy](ACE16_VARIABLE_UPDATES.md):
+DATA placement retains the [ordinary-variable policy](../rows/ACE16_VARIABLE_UPDATES.md):
 fit the original physical record when possible; otherwise examine the highest
 hinted owned candidate once, then allocate represented EOF DATA when necessary.
 Original logical ROW references stay stable. First forwarding clears the ordinary
 root body and writes its pointer without reclaiming its allocated range.
 Already-forwarded stub remainders and retired hidden records remain preserved.
 Preferred record serialization, historical offsets, masks and stationary padding
-follow the [request-derived DATA proof](ACE16_VARIABLE_DATA_PROOF.md).
+follow the [request-derived DATA proof](../rows/ACE16_VARIABLE_DATA_PROOF.md).
 The combined service additionally supports qualified
-[inline hint/index window transitions](ACE16_ALLOCATION_TRANSITIONS.md), including
+[inline hint/index window transitions](../storage/ACE16_ALLOCATION_TRANSITIONS.md), including
 new ordinary candidate-map bitmaps. Ordinary owned/global allocation must still
 be represented; older variable wrappers keep their original limits.
 
@@ -69,7 +69,7 @@ and final union. DATA reservations cannot become index membership during late
 promotion. Source/candidate identity controls reject reuse of the certificate
 against byte-identical but separately captured objects.
 
-The [scoped implementation result](results/ace16-variable-index-splits-native-2026-10-27.json)
+The [scoped implementation result](../../results/indexes/ace16-variable-index-splits-native-2026-10-27.json)
 records 168 distinct runtime functions, three compile-fail doctests and scoped
 strict/minimal/rustdoc/format checks. Twelve functions are added by the combined
 feature; two checked-page visitor functions belong to the separately committed

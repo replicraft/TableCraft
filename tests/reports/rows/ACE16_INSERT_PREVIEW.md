@@ -4,7 +4,7 @@
 a separate `Ace16WritePreview` from complete explicit `RowInsert` values. This
 is an engineering candidate for disposable offline copies. It is not a normal
 save, SQL INSERT executor, journalable edit plan or Microsoft Access qualification.
-The existing [preview safety boundary](ACE16_WRITE_PREVIEWS.md) still applies:
+The existing [preview safety boundary](../development/ACE16_WRITE_PREVIEWS.md) still applies:
 required data-macro semantics remain unqualified.
 
 ## Admitted physical profile
@@ -25,7 +25,7 @@ values. Defaults are never evaluated or substituted for an explicit NULL;
 missing fields still refuse. Empty batches preserve the original declaration.
 Default declarations on generated or OLE fields, nonfield scopes, opaque/wrong
 property carriers or unqualified flags refuse. AutoNumber, calculated and
-complex fields otherwise refuse through this manual API. A separate [explicit incrementing AutoNumber preview](ACE16_INCREMENTING_AUTONUMBER_INSERTS.md)
+complex fields otherwise refuse through this manual API. A separate [explicit incrementing AutoNumber preview](../creation/ACE16_INCREMENTING_AUTONUMBER_INSERTS.md)
 accepts companion values and a caller-selected counter policy; it does not detect
 stored Increment mode or change manual INSERT admission. Existing active
 payload, catalog-child, unsupported-property and constraint blockers remain.
@@ -63,10 +63,10 @@ source or expected bytes. The complete INSERT library slice also passes all
 292 functions; remaining broader checks are tracked separately.
 
 A unique, required, ascending Int32 primary remains mandatory. Qualified
-[additional scalar physical indexes](ACE16_MULTIPLE_INDEX_INSERTS.md)
+[additional scalar physical indexes](../indexes/ACE16_MULTIPLE_INDEX_INSERTS.md)
 now compose through the same INSERT service; logical aliases share their actual
 physical owner. An original root leaf
-uses the established [two-fitting-halves path](ACE16_INSERT_ROOT_SPLITS.md)
+uses the established [two-fitting-halves path](../indexes/ACE16_INSERT_ROOT_SPLITS.md)
 first. Larger/repeated leaf overflow and arbitrary qualified NODE sources use the
 [recursive continuation](ACE16_INSERT_RECURSIVE.md), retaining the existing depth
 ceiling of 16 and requiring source/new heights below 16. Original tail-present
@@ -89,15 +89,15 @@ existing rows are not compacted or rewritten to make room.
 The allocator tries the highest qualified free-space hint. A failed fit clears
 that hint, preserves lower untried hints and proceeds to represented EOF space.
 New DATA pages and any required hint bitmap metadata have distinct reservations.
-The shared [allocation rules](ACE16_ALLOCATION_TRANSITIONS.md) remain bounded by
+The shared [allocation rules](../storage/ACE16_ALLOCATION_TRANSITIONS.md) remain bounded by
 the original map authority and represented global free-page coverage.
 
 A first INSERT into an empty table can initialize a qualified existing indirect
 ordinary-owned block-zero pointer. DATA and its separately typed owned bitmap
 share the cursor; higher pointers and unclaimed old pages stay unchanged. The
-[ordinary-owned continuation](ACE16_ORDINARY_OWNED_MAP_PROMOTION.md#first-insert-with-a-missing-indirect-block-zero-pointer)
+[ordinary-owned continuation](../storage/ACE16_ORDINARY_OWNED_MAP_PROMOTION.md#first-insert-with-a-missing-indirect-block-zero-pointer)
 records source authority and literal checks. Its
-[original-file proof](ace16_insert_empty_owned/README.md) now passes two complete
+[original-file proof](../../access/rows/ace16_insert_empty_owned/README.md) now passes two complete
 candidate comparisons and two fresh reads after a separate public REF4 phase;
 both public files also match the earlier SOURCE/request-derived images.
 
@@ -114,7 +114,7 @@ form. Fresh pages use zero seeds/padding, while the grown root keeps its origina
 residue under a zero seed.
 
 The declared table count increases by the number of inserted rows. The actual
-[historical physical index counter](../access/indexes/NATIVE_INDEXES.md#explicit-historical-counter-inspection)
+[historical physical index counter](../../../docs/access/indexes/NATIVE_INDEXES.md#explicit-historical-counter-inspection)
 increases by the same delta once, including when logical aliases exist. The
 historical counter is not reconstructed from the current live row count.
 
@@ -139,13 +139,13 @@ publisher. Ordinary CLI writes remain unchanged.
 
 ## Verification and independent evidence
 
-[Scoped verification](results/ace16-insert-native-2026-10-27.json) covers 339
+[Scoped verification](../../results/rows/ace16-insert-native-2026-10-27.json) covers 339
 distinct passing runtime functions, three compile-fail checks, strict lint,
 minimal-feature compilation and rustdoc. The end-to-end hint-promotion control
 constructs DATA page 600 and separate bitmap page 601, retains the lower untried
 hint and checks the complete expected image before invoking the API.
 
-The [committed producer](results/ace16-insert-example-build-2026-10-27.json)
+The [committed producer](../../results/rows/ace16-insert-example-build-2026-10-27.json)
 passed four first-attempt original-file comparisons. Each complete image matched
 its independently frozen source/request-derived expectation before fresh getters
 ran. Eight read-only Jackcess getter/map calls then agreed, covering 4,528 typed
@@ -159,7 +159,7 @@ requests and expected images remained unchanged.
 | V2019 fitted | Page 217, slot 10 | 10 to 11 | None |
 | V2019 EOF | Page 272, slot 0 | 22 to 23 | 4,096 bytes |
 
-The [saved-evidence verifier](ace16_insert_candidates/README.md) rederives the
+The [saved-evidence verifier](../../access/rows/ace16_insert_candidates/README.md) rederives the
 expectations and checks archived reports without executing a database or JVM.
 Its optional Git mode checks the producer's committed source closure. It requires
 the retained private engineering artifacts; absence is reported as unavailable

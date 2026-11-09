@@ -29,13 +29,13 @@ membership, counter and retained-topology rules.
 
 ## Capture before callbacks
 
-The actual shared [root capture](../../crates/engines/tablecraft-ace/src/table/mutation/record_roots.rs)
+The actual shared [root capture](../../../crates/engines/tablecraft-ace/src/table/mutation/record_roots.rs)
 now accepts the existing row-assignment contract. Its earlier variable-record
 consumers retain their concrete `SlotScalarUpdate` binding; it is not a copied
 forwarding implementation or a new interpretation of pointer bytes.
 
 Capture enumerates the original ordinary owned pages and every live logical
-root. The existing bounded [reader](../../crates/engines/tablecraft-ace/src/format/reader.rs)
+root. The existing bounded [reader](../../../crates/engines/tablecraft-ace/src/format/reader.rs)
 resolves pointers, validates page owners and slots, and enforces cycle and hop
 limits. Capture requires each resolved final page to belong to the source table's
 ordinary owned map. It records final physical offsets for the full logical-row
@@ -51,14 +51,14 @@ retain their reader errors rather than being normalized into writable rows.
 
 ## Logical identity and physical payload
 
-The [resolved visitor](../../crates/engines/tablecraft-ace/src/table/mutation/rows/final_record.rs)
+The [resolved visitor](../../../crates/engines/tablecraft-ace/src/table/mutation/rows/final_record.rs)
 keeps the two locations explicit. `Row.reference` is the original logical ROW used
 by indexes and changed-row accounting. `Row.data` and `Row.offset` describe the
 resolved physical payload and its absolute file location. The slot offset and
 word still describe the logical root's original directory entry, never the
 hidden target's slot.
 
-The [fixed callback](../../crates/engines/tablecraft-ace/src/table/mutation/fixed/masked.rs)
+The [fixed callback](../../../crates/engines/tablecraft-ace/src/table/mutation/fixed/masked.rs)
 patches only qualified payload and presence spans. A non-NULL value uses its exact
 fixed encoding; clearing presence retains ignored payload bytes, and NULL-to-NULL
 preserves them. Decimal updates retain their existing 17-byte slot and footer.
@@ -86,7 +86,7 @@ the new resolved-record branch would also have leaked through that call. The
 current policy split corrects both paths. Earlier statements that cascade
 admission was unchanged did not identify this bug, and the earlier passing
 verification counts do not establish isolation. The
-[causal controls](../../crates/engines/tablecraft-ace/tests/cascade_updates/policy.rs)
+[causal controls](../../../crates/engines/tablecraft-ace/tests/cascade_updates/policy.rs)
 qualify a real enforced relationship and independent complete explicit-batch
 image before comparing direct batch support with strict automatic-cascade
 refusal. They also distinguish an empty table-scoped request from an operation
@@ -101,14 +101,14 @@ written by these previews.
 
 ## Independent controls and verification
 
-The [core literal controls](../../crates/engines/tablecraft-ace/src/table/mutation/fixed/ignored_updates/selected_forwarded.rs)
+The [core literal controls](../../../crates/engines/tablecraft-ace/src/table/mutation/fixed/ignored_updates/selected_forwarded.rs)
 construct complete expected images before invoking previews. They cover both
 header profiles and key directions, single-hop and chained forwarding, NULL
 transitions and no-ops, and multiple physical keys changed on one logical row.
 They protect pointer records, hidden slot metadata, map pages and file length.
 Wrong-owner, cyclic-target, stale-value and late-cancellation controls are separate.
 
-The [authority controls](../../crates/engines/tablecraft-ace/src/table/mutation/fixed/ignored_updates/selected_forwarded/authority.rs)
+The [authority controls](../../../crates/engines/tablecraft-ace/src/table/mutation/fixed/ignored_updates/selected_forwarded/authority.rs)
 first establish that two problematic sources are readable and their indexes are
 checked. One has two logical roots sharing a final target, with genuine ordinary
 nonunique index declarations so primary uniqueness does not reject it first. The
@@ -135,7 +135,7 @@ tests, 140 shared regressions across 20 targets, strict all-target/all-feature
 Clippy, minimal-feature Clippy and formatting checks. These forwarding and
 cascade-policy controls are repository-authored literal models, not original-file
 or Microsoft Access save/reopen comparisons. The separate
-[original-file ignored-NULL proof](ace16_fixed_ignore_null_updates/README.md)
+[original-file ignored-NULL proof](../../access/rows/ace16_fixed_ignore_null_updates/README.md)
 uses the older `60b3315` producer and does not qualify forwarding or cascade
 isolation. Normal write, data-macro and native qualification boundaries remain
 unchanged.

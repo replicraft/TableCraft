@@ -20,12 +20,12 @@ qualify native Byte/Int16 mutation, intent decoding, recovery or saves.
 
 One ignored engine function and scoped ACE/testkit all-target/all-feature strict
 checks pass. The
-[execution record](results/ace16-byte-int16-update-sources-2026-11-03.json) retains
+[execution record](../../results/rows/ace16-byte-int16-update-sources-2026-11-03.json) retains
 source pins, the command and separate admission observations. Native Access
 save/reopen and Windows mixed-client comparisons remain unrun.
 
 
-The later [normal Byte/Int16 continuation](../access/writes/NORMAL_BYTE_INT16_FIXED_UPDATE.md)
+The later [normal Byte/Int16 continuation](../../../docs/access/writes/NORMAL_BYTE_INT16_FIXED_UPDATE.md)
 has separate matching write, independent reconstruction, recovery and host
 acceptance. Those results do not turn the in-memory variants into SDK/native
 Access qualification.

@@ -114,9 +114,9 @@ refusals. The corrected full contract passes 53 functions with the same two
 ignored helpers. The mutation-library batch passes 609 functions with nine
 existing ignored helpers. Strict checks across ACE, Access and CLI targets and
 features, minimal ACE/Access builds and formatting pass. The
-[native result](results/ace16-preserved-joint-fixed-2026-10-31.json) retains the
+[native result](../../results/rows/ace16-preserved-joint-fixed-2026-10-31.json) retains the
 initial compilation and obsolete-refusal failures separately from passing runs.
-The [frontend record](results/ace16-preserved-joint-fixed-frontends-2026-10-31.json)
+The [frontend record](../../results/rows/ace16-preserved-joint-fixed-frontends-2026-10-31.json)
 separates 76 typed and 24 SQL complete-image adapter comparisons from 32 typed
 and four SQL CLI comparisons. Full preserved frontend targets pass 30 adapter
 and 27 CLI functions. SQL controls prove original-row RHS evaluation and genuine
@@ -131,7 +131,7 @@ groups through the existing SQL host.
 
 ## Generated-file joint qualification
 
-The [genuine corpus](preserved_joint_fixed_genuine/README.md) reuses the exact
+The [genuine corpus](../../access/rows/preserved_joint_fixed_genuine/README.md) reuses the exact
 unchanged repository-authored V2016/V2019 originals and read-only getter from
 the eight-byte scalar qualification. Original-only requests and expectations
 were frozen separately; all twelve expected images passed complete native
@@ -148,7 +148,7 @@ three roots rather than the number of changed cells.
 All twelve fresh unchanged read-only SDK getter processes match the complete
 expected inventories, including calculated caches, Memo/OLE, attachments and
 Sentinel. The first saved-only verifier replay passes without child processes.
-The [genuine result](results/ace16-preserved-joint-fixed-genuine-images-2026-10-31.json)
+The [genuine result](../../results/rows/ace16-preserved-joint-fixed-genuine-images-2026-10-31.json)
 retains the actual compilation, source, independent expectation, producer,
 reader and replay evidence separately. These are generated-file engineering
 observations; Microsoft Access save/reopen, required-macro coverage and normal

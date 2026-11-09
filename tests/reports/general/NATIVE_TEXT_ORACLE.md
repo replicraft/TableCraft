@@ -16,9 +16,9 @@ the `DAO.DBEngine.120` ProgID identifies a particular release.
 From the repository root, choose a fresh directory outside tracked files:
 
 ```powershell
-python docs/testing/native_text_oracle.py prepare C:\temp\tablecraft-native-text
+python tests/access/native_text_oracle.py prepare C:\temp\tablecraft-native-text
 powershell -NoProfile -File docs/testing/Capture-NativeText.ps1 -Directory C:\temp\tablecraft-native-text
-python docs/testing/native_text_oracle.py check C:\temp\tablecraft-native-text
+python tests/access/native_text_oracle.py check C:\temp\tablecraft-native-text
 ```
 
 The request's exact SHA-256 is checked before executing its SQL. Both preparation
@@ -74,7 +74,7 @@ files before it becomes native evidence. Then implement/compare the appropriate
 TableCraft full-string policy across each operation. DISTINCT representative
 values and grouping equivalence need semantic comparison rather than assuming
 one arbitrarily chosen case spelling. No native query collation is enabled by
-this recipe. See [the full-string boundary](../access/indexes/NATIVE_TEXT.md#full-string-sql-qualification-boundary).
+this recipe. See [the full-string boundary](../../../docs/access/indexes/NATIVE_TEXT.md#full-string-sql-qualification-boundary).
 
 ## Replay against TableCraft
 
@@ -82,7 +82,7 @@ After a complete capture, use the portable replay tool with an explicit current
 CLI policy. For example, from the repository root:
 
 ```sh
-python3 docs/testing/replay_native_text.py /path/to/tablecraft-native-text \
+python3 tests/run.py tests/access/queries/expressions/replay_native_text.py /path/to/tablecraft-native-text \
   --cli target/release/tablecraft --collation ordinal --like-mode ansi89 \
   > /path/to/native-text-replay.json
 ```
@@ -93,7 +93,7 @@ from the database or reinterpret the captured literal SQL. No new runtime policy
 is introduced. Native capture/replay remains unrun locally.
 The CLI now also accepts explicit `general-legacy`/`general-2010` provisional
 policies; replay can select those without altering native evidence. See the
-[General policy boundary](../access/indexes/NATIVE_TEXT.md#general-query-policy).
+[General policy boundary](../../../docs/access/indexes/NATIVE_TEXT.md#general-query-policy).
 
 Replay first validates the complete capture, then executes all 38 original SQL
 cases against both database phases, including the typed Text parameter. It

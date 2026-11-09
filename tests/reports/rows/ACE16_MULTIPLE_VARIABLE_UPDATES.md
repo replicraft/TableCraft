@@ -49,8 +49,8 @@ for ACE, Access and CLI pass.
 
 SOURCE framing corrections preceded writers. Test-only type/import/borrow
 corrections and bracket quoting of reserved SQL names are retained in the
-[execution record](results/ace16-multiple-variable-updates-2026-10-30.json). Obsolete one-variable
+[execution record](../../results/rows/ace16-multiple-variable-updates-2026-10-30.json). Obsolete one-variable
 refusal assertions were migrated explicitly; fixed-only, capacity, cross-table,
 unknown-kind and mixed-LVAL refusals remain. No expected bytes changed after
 writers ran. The existing [fitted contract](ACE16_FITTED_MIXED_UPDATES.md)
-and [body-ownership guard](ACE16_FITTING_BODY_ROLES.md) remain active.
+and [body-ownership guard](../storage/ACE16_FITTING_BODY_ROLES.md) remain active.

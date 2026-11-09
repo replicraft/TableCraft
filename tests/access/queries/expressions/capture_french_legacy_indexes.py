@@ -11,7 +11,7 @@ import subprocess
 
 from encoded_delete_originals import wire
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[4]
 HELPER = 'com.healthmarketscience.jackcess.impl.FrenchLegacyIndexFixture'
 JAR_SHA256 = '19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc'
 PROFILES = ('V2016', 'V2019')
@@ -125,7 +125,7 @@ def main():
     args.directory.mkdir(parents=True, exist_ok=True)
     command = ['java', '-cp', os.pathsep.join(map(str, (args.jar, args.classes))), HELPER]
     report = {'schema_version': 1, 'scope': 'Pinned Jackcess stored-index oracle; no TableCraft, SQL comparison, ICU or native NLS qualification',
-              'artifacts': [pin(Path(__file__)), pin(Path('docs/testing/FrenchLegacyIndexFixture.java')),
+              'artifacts': [pin(Path(__file__)), pin(Path('tests/access/queries/expressions/FrenchLegacyIndexFixture.java')),
                             pin(args.jar), pin(args.classes / Path(*HELPER.split('.')).with_suffix('.class')),
                             pin(Path(wire.__file__))], 'profiles': []}
     for profile in PROFILES:

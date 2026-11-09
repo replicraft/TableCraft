@@ -1,14 +1,14 @@
 # Unchanged numeric-index source qualification
 
 The unchanged V2016/V2019
-[integral split originals](results/ace16-integral-index-split-sources-2026-10-27.json)
+[integral split originals](../../results/indexes/ace16-integral-index-split-sources-2026-10-27.json)
 contain `ByteKeys`, `Int16Keys`, `Int64Keys` and `CurrencyKeys`. Each table has
 an Int32 primary ID, the named numeric key and an unindexed Int32 `Marker`.
 Ascending and descending numeric indexes plus a logical alias remain unchanged.
 These are existing source files, not regenerated or previously mutated outputs.
 
-The independent [original facts](retained_numeric_originals/original-observations.json)
-and [model](retained_numeric_originals/model.py) qualify exact native descriptors,
+The independent [original facts](../../access/indexes/retained_numeric_originals/original-observations.json)
+and [model](../../access/indexes/retained_numeric_originals/model.py) qualify exact native descriptors,
 the first DATA record and saved SDK observations. Each literal request changes
 `Marker` from 17 to 42 on ID 1 in one table. Eight complete expected images alter
 only that four-byte field; all INDEX pages, maps, counters, properties, unrelated
@@ -33,4 +33,4 @@ cargo test --locked -p tablecraft-ace --all-features --lib \
 The shared testkit loader verifies both original hashes and all eight expected
 hashes before returning any case to write tests. No database, class or JAR binary
 is committed by this tranche. See the
-[source record](results/ace16-retained-numeric-sources-2026-11-01.json).
+[source record](../../results/indexes/ace16-retained-numeric-sources-2026-11-01.json).

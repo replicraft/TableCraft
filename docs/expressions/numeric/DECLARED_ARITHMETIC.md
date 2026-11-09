@@ -84,7 +84,7 @@ native ACE SQL category qualification remains separate.
 Eight new tests and 115 selected regressions cover the classifier, downstream
 overflow, mixed addition, empty metadata, named/crosstab/progressive execution,
 explicit casts, unknown categories, cancellation and reuse. See
-[verification](../../testing/results/read-query-null-literal-2026-10-25.json).
+[verification](../../../tests/results/queries/read-query-null-literal-2026-10-25.json).
 
 ## Captured decimal integer literals
 
@@ -141,7 +141,7 @@ and both signs of input zero. The current Date policy is stored-serial `0 - DATE
 both input zero signs yield positive zero, checked by raw serial bits. This does
 not make Date-to-heading spelling policy-independent or qualify native behavior.
 The independent
-[`compare_numeric_literals.py`](../../testing/compare_numeric_literals.py) runner uses
+[`compare_numeric_literals.py`](../../../tests/access/reading/tables/compare_numeric_literals.py) runner uses
 Python integers and binary64 conversions, rather than production imports.
 Its 2026-10-24 run passed 191 value/subtype controls and 6 refusals against a
 fixed CLI with SHA-256
@@ -152,7 +152,7 @@ that binary. Its existing exact LongLong operator controls now supply numeric
 Text with an explicit `en-us` format, preserving exact operands independently of
 the new literal policy; the dedicated literal runner separately checks rounding
 and cast overflow of bare large integers. No controls were removed.
-The [tracked replay report](../../testing/results/numeric-literals-2026-10-24.json)
+The [tracked replay report](../../../tests/results/indexes/numeric-literals-2026-10-24.json)
 retains the actual terminal summaries, runner/binary hashes and explicitly
 post-run source observations; per-case stdout was not retained.
 
@@ -241,7 +241,7 @@ Tests cover all 65,536 Byte pairs for addition/subtraction/multiplication agains
 independent wide integer arithmetic and literal width bounds, plus signed limits,
 Variant positions, LongLong overflow, quotient overflow, zero divisors, NULL/type
 admission, generated Long bounds and evaluator work/cancellation behavior.
-The original [Python runner](../../testing/compare_declared_integral.py) passes 7,728
+The original [Python runner](../../../tests/access/reading/tables/compare_declared_integral.py) passes 7,728
 independent controls using unbounded integer quotient/remainder/bounds and exact
 Double bits. Its declaration cases are supplied explicitly, not inferred by SQL.
 
@@ -291,7 +291,7 @@ per request, with defaults restored for each subsequent request.
 
 The query suite checks direct/derived/named/correlated values, typed parameter
 reuse, unknown UNION/aggregate outputs, eager failures and cancellation. The
-original [SQL comparison runner](../../testing/compare_query_declarations.py) passes
+original [SQL comparison runner](../../../tests/access/queries/execution/compare_query_declarations.py) passes
 4,954 independent source-free SQL controls with result carrier checks, including
 185 fixed-width/range controls. Its optional `--native-directory` mode checks the
 registered 20,000-row Jet 4, ACE 2007, ACE 2016 and ACE 2019 fixture images; that
@@ -457,7 +457,7 @@ remain acceptance work.
 Microsoft's [arithmetic overflow rules](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/e070115f-8d40-40cf-ac6d-ab18b9c6c906)
 and [division effective types](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/8628f21c-3f02-42b1-908c-201bd7ffe1b5)
 motivate the selected-width distinction. The original
-[floating runner](../../testing/compare_declared_floating.py) passes 1,300 controls:
+[floating runner](../../../tests/access/queries/expressions/compare_declared_floating.py) passes 1,300 controls:
 1,280 exact IEEE carrier/bit checks across signed zeros, subnormal/normal values,
 overflow rounding boundaries, four operators and all declaration combinations,
 plus 20 controls over raw Jackcess Single getters in unchanged registered native
@@ -1235,11 +1235,11 @@ These establish the language-level distinction; actual ACE SQL declaration
 inference, regional rendering and collation still require native qualification.
 
 
-The [independent Scalar String/Variant replay](../../testing/SCALAR_STRING_VARIANT_COMPARISONS.md)
+The [independent Scalar String/Variant replay](../../../tests/reports/rows/SCALAR_STRING_VARIANT_COMPARISONS.md)
 passes 224 CLI controls and 1,869 unchanged hashes, including native fields in
 four priority layouts. Explicit short rendering goldens and ordinal String
 ordering supply expected results; the reference never executes SQL. The
-[verification record](../../testing/results/read-query-scalar-string-2026-10-24.json)
+[verification record](../../../tests/results/queries/read-query-scalar-string-2026-10-24.json)
 records 143 focused Rust tests, strict scoped Clippy and the frozen source/executable
 inventory. These are engineering checks, not native ACE declaration qualification.
 
@@ -1289,4 +1289,4 @@ results can compose with outer UNION conversions. This changes metadata and
 result conversion, without changing operator evaluation, ambiguity checks or
 native declaration claims. Materialized execution and known Variant widening
 retain their existing behavior. Verification is recorded in
-[the focused result](../../testing/results/agreement-result-types-2026-10-25.json).
+[the focused result](../../../tests/results/general/agreement-result-types-2026-10-25.json).

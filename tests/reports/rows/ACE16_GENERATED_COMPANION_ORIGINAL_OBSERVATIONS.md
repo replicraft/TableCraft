@@ -12,7 +12,7 @@ unchanged or empty target, and reject its ordinary-field guard. The probe checks
 original rows, index aliases, physical declarations, counters and stored defaults.
 It invokes no mutation planner, stages no bytes and generates no values.
 
-The [observation record](results/ace16-generated-companion-original-observations-2026-11-02.json)
+The [observation record](../../results/rows/ace16-generated-companion-original-observations-2026-11-02.json)
 preserves the actual outcomes and first log pin. These are observations rather
 than permanent admission assertions: future valid Source admission changes must
 not be mistaken for a format regression. Execution used the pending reviewed

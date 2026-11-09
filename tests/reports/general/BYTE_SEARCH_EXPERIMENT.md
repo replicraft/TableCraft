@@ -77,8 +77,8 @@ Python's raw-byte `find`, records exact source/input/binary hashes and probe wor
 counts, then captures the seven-case matrix with all hyperfine samples:
 
 ```sh
-python3 docs/testing/benchmark_byte_search.py --check-only
-python3 docs/testing/benchmark_byte_search.py \
+python3 tests/run.py tests/access/reading/tables/benchmark_byte_search.py --check-only
+python3 tests/run.py tests/access/reading/tables/benchmark_byte_search.py \
   --output docs/testing/results/byte-search-EXPERIMENT-DATE.json
 ```
 
@@ -98,8 +98,8 @@ speedup is claimed because no production integration was made.
 
 Six Rust tests and scoped Clippy pass. The capture runner passes 21 independent
 Python byte-position probes. The fixed release binary, input bytes and source
-hashes are recorded in the [metadata](results/byte-search-experiment-2026-10-24.metadata.json);
-[all 315 timed samples](results/byte-search-experiment-2026-10-24.json) are retained.
+hashes are recorded in the [metadata](../../results/general/byte-search-experiment-2026-10-24.metadata.json);
+[all 315 timed samples](../../results/general/byte-search-experiment-2026-10-24.json) are retained.
 The host was Darwin arm64 with rustc 1.99.0 and hyperfine 2.0.0. Each contender had
 three warmups and fifteen measured runs. Cargo and the other coordinated timing
 workloads were stopped during this capture. Binary/source hashes were unchanged

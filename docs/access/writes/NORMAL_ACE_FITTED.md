@@ -59,14 +59,14 @@ coverage; no unsupported SQL literal or coercion is invented.
 
 ## Evidence and limits
 
-[Authored sources](../../testing/ACE16_ORDINARY_FITTED_SOURCES.md) supply 30 literal
+[Authored sources](../../../tests/reports/rows/ACE16_ORDINARY_FITTED_SOURCES.md) supply 30 literal
 outcomes. Thirty native commits, fresh independent proof, malformed-image checks,
 exact resource/cancellation checks and repeated recovery pass. Twelve recovery
 contexts start from genuinely mixed BEFORE/AFTER record bytes. Thirty typed and
 eighteen SQL session saves pass; the CLI passes eighteen saves and exact TSV
 readbacks. All 1,093 ACE unit tests and 83 recovery tests pass, alongside strict
-feature-profile checks. See the [write result](../../testing/results/ace16-normal-ordinary-fitted-writes-2026-11-01.json).
-The [genuine property/OLE sources](../../testing/ACE16_GENUINE_PROPERTY_LVAL_SOURCES.md)
+feature-profile checks. See the [write result](../../../tests/results/rows/ace16-normal-ordinary-fitted-writes-2026-11-01.json).
+The [genuine property/OLE sources](../../../tests/reports/storage/ACE16_GENUINE_PROPERTY_LVAL_SOURCES.md)
 add two unchanged SDK-created originals and twelve independently modeled fitting
 outcomes. Twelve native commits, twelve typed and twelve SQL session saves, and
 twelve CLI saves/readbacks match the complete expected images. Two additional
@@ -74,7 +74,7 @@ stale-handle predecessor saves retain completed receipts. Recovery rejects alter
 protected content and handles repeated and mixed partial states. The independent
 SDK getter matches all twelve modeled outcomes. All 1,093 ACE units, 83 recovery
 regressions, 79 adapter units and 94 CLI units pass, with strict feature-profile
-checks. See the [genuine write record](../../testing/results/ace16-genuine-property-lval-writes-2026-11-01.json).
+checks. See the [genuine write record](../../../tests/results/storage/ace16-genuine-property-lval-writes-2026-11-01.json).
 Microsoft Access save/reopen remains unqualified.
 
 ## Missing property declarations

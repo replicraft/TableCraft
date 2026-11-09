@@ -1,4 +1,5 @@
 """Compare indexed General equality queries with independent inert key/getter answers."""
+from engineering_paths import reference_file
 
 import argparse
 import csv
@@ -59,7 +60,7 @@ def main():
     with tempfile.TemporaryDirectory(prefix="tablecraft-equality-query-oracle-") as temporary:
         subprocess.run([
             "javac", "-cp", str(args.jar), "-d", temporary,
-            str(RECIPES / "TextEqualityCandidateOracle.java"), str(RECIPES / "IndexOracle.java"),
+            str(reference_file('tests/access/queries/expressions/TextEqualityCandidateOracle.java')), str(reference_file('tests/access/indexes/native/IndexOracle.java')),
         ], check=True)
         java = ["java", "-Dstdout.encoding=UTF-8", "-cp", os.pathsep.join((str(args.jar), temporary))]
         for profile in ["V2000", "V2007", "V2016", "V2019"]:

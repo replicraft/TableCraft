@@ -213,7 +213,7 @@ execution and formatting.
 
 ## Independent getter replay
 
-The [linked-query evidence](../../testing/LINKED_NATIVE_QUERIES.md) exercises original
+The [linked-query evidence](../../../tests/reports/queries/LINKED_NATIVE_QUERIES.md) exercises original
 public-writer/getter frontend/backend pairs across Jet 4, ACE 2007 and ACE 16
 families, including mixed stored General orders. Separate already-open example
 and actual CLI replays pass 335 and 330 controls, respectively, with all pinned
@@ -241,4 +241,4 @@ parity, repeated aggregate/row UNION ALL arms, completed-batch failure prefixes,
 unmapped/chained refusals, encrypted targets, stored-calculation opt-in, and
 independent target-field/root-literal text policy selection. Stored paths never
 open automatically. See [streaming behavior](../../cli/STREAMING_QUERIES.md#explicit-linked-tables)
-and the [combined 80-test record](../../testing/results/read-query-linked-progressive-2026-10-25.json).
+and the [combined 80-test record](../../../tests/results/queries/read-query-linked-progressive-2026-10-25.json).

@@ -2,6 +2,7 @@
 
 Optional native rows supply input through Jackcess; native Access is unrun.
 """
+from engineering_paths import reference_file
 import argparse
 import csv
 import datetime as dt
@@ -103,7 +104,7 @@ def main():
     if args.jar:
         assert digest(args.jar)=='19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc'
         before=digest(args.database)
-        tagged=run('java','-Dstdout.encoding=UTF-8','-cp',args.jar,RECIPES/'TableDataOracle.java',args.database,'ROULETTE_TB')
+        tagged=run('java','-Dstdout.encoding=UTF-8','-cp',args.jar,reference_file('tests/access/reading/tables/TableDataOracle.java'),args.database,'ROULETTE_TB')
         rows=[]
         for line in tagged.splitlines():
             cells=line.split('\t')[1:]

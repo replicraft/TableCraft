@@ -1,6 +1,6 @@
 # Original DATE query candidate replay
 
-The [192-command report](results/date-query-candidate-replay-2026-10-25.json)
+The [192-command report](../../results/queries/date-query-candidate-replay-2026-10-25.json)
 passes over four original 20,000-row databases: Jet 4, ACE 2007 and ACE 2016/2019.
 There are 172 successful queries with 539,848 compared ID rows and twenty expected
 buffered failures. Every original and five artifact/source pins remain unchanged.
@@ -8,7 +8,7 @@ This is independent engineering evidence, not Microsoft Access SQL qualification
 
 ## Inputs and independent model
 
-The original [Java recipe](DateCandidateFixture.java) uses the reviewed Jackcess
+The original [Java recipe](../../access/queries/expressions/DateCandidateFixture.java) uses the reviewed Jackcess
 5.0.4 JAR to create fresh scalar tables with ascending and descending DATE indexes.
 Each table has an ID permutation, NULLs, both signed zeros, positive/negative epoch
 aliases, positive/negative minimum subnormals, negative-date fractions, later dates
@@ -53,7 +53,7 @@ preserved. An earlier 184-control pass is retained separately from the final
 192-control superset. Counts do not add repeated runs together.
 
 ```sh
-python3 docs/testing/compare_date_candidates.py \
+python3 tests/run.py tests/access/queries/expressions/compare_date_candidates.py \
   --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar \
   --cli .cache/tablecraft-bin/date-query-cli-20261025 \
   --directory .cache/tablecraft-fixtures/date-candidates-20261025 \
@@ -62,7 +62,7 @@ python3 docs/testing/compare_date_candidates.py \
 
 `--generate` requires all four destinations to be fresh and never overwrites
 existing originals. Reports must also be fresh. The JAR and generated databases
-stay ignored; public recipes and [fixture provenance](FIXTURES.md#original-date-candidate-inputs)
+stay ignored; public recipes and [fixture provenance](../reading/FIXTURES.md#original-date-candidate-inputs)
 are sufficient to recreate independent inputs. Runtime/compiler resources are
 temporary and are not product dependencies. This replay does not establish native
 Access optimizer behavior, complete collation/Variant semantics, writes or live

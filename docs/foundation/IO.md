@@ -15,7 +15,7 @@ Default features are empty; optional journal enables the working
   or stable-snapshot guarantee; other platforms retain standard open behavior.
   CLI write-file inputs consume it. Three focused tests and the existing TSV
   write-file regression pass; see the
-  [input-opening record](../testing/results/regular-input-opening-2026-10-31.json).
+  [input-opening record](../../tests/results/general/regular-input-opening-2026-10-31.json).
 - `seek_absolute` / `seek_to_end`: bounded absolute and End(0) targets, including
   Interrupted retries, position checks where known and completion cancellation.
   Relative seeks are deliberately absent from this retry API.
@@ -273,7 +273,7 @@ payload pools. These are injected and local filesystem observations, not a
 power-loss qualification of the filesystem/device or another operating system.
 The first strict check found only a test-only function-pointer type-complexity
 lint, corrected by a named alias without behavior or trace changes.
-See the [observed IO result](../testing/results/io-required-fresh-publication-2026-10-30.json).
+See the [observed IO result](../../tests/results/general/io-required-fresh-publication-2026-10-30.json).
 
 
 ## Windows same-file journal integration

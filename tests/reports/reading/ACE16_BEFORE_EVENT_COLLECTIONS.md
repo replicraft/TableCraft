@@ -1,7 +1,7 @@
 # Complete explicitly selected before-event collections
 
-The existing explicit [BeforeChange field preparation](../access/schema/NATIVE_BEFORE_CHANGE_FIELDS.md)
-and [fixed UPDATE candidate](ACE16_BEFORE_CHANGE_FIELD_COPIES.md) now accept a
+The existing explicit [BeforeChange field preparation](../../../docs/access/schema/NATIVE_BEFORE_CHANGE_FIELDS.md)
+and [fixed UPDATE candidate](../schema/ACE16_BEFORE_CHANGE_FIELD_COPIES.md) now accept a
 complete selected Extra collection containing both BeforeChange and BeforeDelete
 programs. This introduces no automatic event discovery, normal ACE save permission
 or physical INSERT/DELETE consumer.
@@ -64,4 +64,4 @@ or constraint permission. Existing logical cases retain active INSERT Old refusa
 The public Extra regression passes all 46 functions, including the original
 logical 18-case corpus. Native strict checks pass for all targets/features; the
 no-default-feature check and formatter also pass. Exact logs and retained phase
-failures are in the [focused record](results/ace16-before-event-collections-2026-10-30.json).
+failures are in the [focused record](../../results/reading/ace16-before-event-collections-2026-10-30.json).

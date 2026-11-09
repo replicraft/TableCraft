@@ -4,6 +4,7 @@ Uses the existing original TextIndexFixture corpus and reviewed Jackcess reader.
 This is a bounded weight-model comparison, not native Access SQL qualification.
 Long/digested physical keys deliberately do not supply expected SQL ordering.
 """
+from engineering_paths import reference_file
 import argparse
 import subprocess
 from pathlib import Path
@@ -28,7 +29,7 @@ def main():
             path = args.directory / f"TextIndexes-{profile}-{version}.{suffix}"
             before = digest(path)
             independent = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar,
-                              RECIPES / "TableDataOracle.java", path, "--index", "TextChecked", "CheckedText")
+                              reference_file('tests/access/reading/tables/TableDataOracle.java'), path, "--index", "TextChecked", "CheckedText")
             selected = []
             for line in independent.splitlines():
                 table, ident, value = line.split("\t")
@@ -53,7 +54,7 @@ def main():
             # default differs; it must never override a column's policy.
             database_order, column_order = run(
                 "java", "-Dstdout.encoding=UTF-8", "-cp", args.jar,
-                RECIPES / "TextSortOrderOracle.java", path, "TextChecked", "Label"
+                reference_file('tests/access/queries/expressions/TextSortOrderOracle.java'), path, "TextChecked", "Label"
             ).strip().split("\t")
             if column_order != f"1033:0:{version}":
                 raise ValueError("unexpected independently read column descriptor")

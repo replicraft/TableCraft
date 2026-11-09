@@ -34,7 +34,7 @@ Original Rust tests cover finite means of `f64::MAX`, cancellation residuals dow
 to subnormal units, ties-to-even, all finite exponent bins, order permutations,
 argument volatility, scratch reuse under a 1 MiB budget, quotas and cancellation.
 Synthetic ACE 16-family native rows exercise the same extreme cases with
-metadata-only preparation. [Python Fraction controls](compare_floating_average.py)
+metadata-only preparation. [Python Fraction controls](../../access/queries/execution/compare_floating_average.py)
 check 129 source-free CLI cases using exact input binary fractions and one final
 conversion, including deterministic full-width random inputs. The existing 69
 Currency rational controls also pass. No third-party fixture or Access result
@@ -42,7 +42,7 @@ is copied or inferred from these checks.
 
 ## Query-level benchmark
 
-The [harness](../../crates/query/tablecraft-query/benches/averages.rs) uses immutable
+The [harness](../../../crates/query/tablecraft-query/benches/averages.rs) uses immutable
 MemorySource data and reusable plans. It verifies warm-up results, excludes source
 construction/parsing/binding from per-query timings, and includes result drop.
 Both revisions use exactly the same harness. The baseline engine is `8ae34fc`;
@@ -62,7 +62,7 @@ hidden behind the one-group improvement. File I/O and native Access are outside
 this benchmark. Initial exploratory samples, superseded before the single-term
 fast path, are retained separately and excluded from the final comparison.
 
-[Raw paired samples and complete Hyperfine measurements](results/floating-means-2026-10-22.json)
+[Raw paired samples and complete Hyperfine measurements](../../results/general/floating-means-2026-10-22.json)
 retain timing/memory fields; only executable labels replace temporary absolute
 paths. Reproduce with `CARGO_INCREMENTAL=0 cargo bench -p tablecraft-query --bench averages --locked`.
 

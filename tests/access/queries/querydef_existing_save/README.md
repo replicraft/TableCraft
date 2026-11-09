@@ -6,10 +6,10 @@ reference evidence for a future versioned expansion of existing saved-query
 Save. The production writer and frozen `TCQE0001` admission remain unchanged.
 Microsoft Access application save/reopen was not run.
 
-The [observation record](../results/querydef-existing-fragment-save-2026-11-08.json)
+The [observation record](../../../results/queries/querydef-existing-fragment-save-2026-11-08.json)
 pins source, AFTER, independent-model, recipe, SDK and observation hashes. The
 [Java recipe](ExistingQuerySaveFixture.java) is original repository-authored
-engineering code extending the earlier [constant-query recipe](../ConstantQuerySaveFixture.java)
+engineering code extending the earlier [constant-query recipe](../execution/ConstantQuerySaveFixture.java)
 in a new file. The earlier recipe and its outputs remain unchanged. The
 [raw model](model.py) calls no TableCraft codec/planner/constructor or SDK encoder.
 No third-party database bytes or source code are copied into this fixture.
@@ -87,7 +87,7 @@ java -cp .cache/querydef-existing-save-sdk-20261108/classes:.cache/tablecraft-fi
 java -cp .cache/querydef-existing-save-sdk-20261108/classes:.cache/tablecraft-fixtures/jackcess-5.0.4.jar \
   ExistingQuerySaveFixture --extend-where .cache/querydef-existing-save-sdk-20261108/files \
   > .cache/querydef-existing-save-sdk-20261108/sdk-where-observations.tsv
-python3 docs/testing/querydef_existing_save/model.py
+python3 tests/run.py tests/access/queries/querydef_existing_save/model.py
 ```
 
 The actual first run used the four-edit recipe archived under `first-run/`; the

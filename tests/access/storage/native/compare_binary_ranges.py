@@ -1,4 +1,5 @@
 """Compare typed Binary intervals with independent raw-byte filtering of native cursors."""
+from engineering_paths import reference_file
 import argparse
 from pathlib import Path
 import struct
@@ -24,7 +25,7 @@ def main():
         before=digest(path)
         null_expected=None
         for index in ["BinaryAsc","BinaryDesc"]:
-            original=run("java","-Dstdout.encoding=UTF-8","-cp",args.jar,RECIPES/"IndexRowsOracle.java",path,"BinaryIndexed",index,"ID","Bytes").splitlines()
+            original=run("java","-Dstdout.encoding=UTF-8","-cp",args.jar,reference_file('tests/access/indexes/native/IndexRowsOracle.java'),path,"BinaryIndexed",index,"ID","Bytes").splitlines()
             rows=[(line.split("\t")[0],None if line.split("\t")[1]=="NULL" else bytes.fromhex(line.split("\t")[1][2:])) for line in original]
             for mode,lower,upper,exclude_lower,exclude_upper in cases:
                 low=None if lower is None else bytes.fromhex(lower)

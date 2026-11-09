@@ -18,8 +18,8 @@ independent modeling, inert SDK reads and full native Source checks before
 matching writes. Native literal commits, independent proof/forgery checks,
 recovery/resource controls and retained typed/SQL sessions pass. CLI acceptance
 checks exact saves, NULL versus empty readback and no-effect policy refusals.
-See the [source record](../../testing/ACE16_AZL_AUTONUMBER_SOURCES.md) and
-[execution record](../../testing/results/ace16-explicit-text-azl-writes-2026-11-01.json).
+See the [source record](../../../tests/reports/creation/ACE16_AZL_AUTONUMBER_SOURCES.md) and
+[execution record](../../../tests/results/general/ace16-explicit-text-azl-writes-2026-11-01.json).
 
 This evidence does not grant empty-string permission when the property is absent.
 The earlier four absent-property refusals remain intact. Arbitrary field-policy

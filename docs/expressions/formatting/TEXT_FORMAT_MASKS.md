@@ -63,7 +63,7 @@ and byte/work/output ceilings. Query tests cover grouping, aggregates,
 correlation and plan reuse with changed language/masks. CLI tests exercise both
 commands and empty stdout on errors.
 
-The original [independent runner](../../testing/compare_format_text.py) passes 1326
+The original [independent runner](../../../tests/access/queries/expressions/compare_format_text.py) passes 1326
 layout/casing/refusal/native-field controls. Reviewed Jackcess getters supply
 ordinary Short Text and NULL/empty values from the four existing original
 ScalarFixture databases; all source hashes remain unchanged. Python models assign

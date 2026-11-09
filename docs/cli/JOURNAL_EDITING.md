@@ -131,7 +131,7 @@ backed by native locator evidence, not general macro-absence certification or
 Microsoft Access save/reopen conformance. Ten genuine CLI saves and exact TSV
 readbacks match frozen whole images; the CLI duplicate refusal asserts exit code
 2 and the exact constraint diagnostic. Native recovery and retained-session
-checks also pass; see the [write record](../testing/results/ace16-genuine-ordinary-target-writes-2026-10-31.json).
+checks also pass; see the [write record](../../tests/results/rows/ace16-genuine-ordinary-target-writes-2026-10-31.json).
 
 Qualified ordinary ACE 16 tables also support [fitting Text/Binary batches](../access/writes/NORMAL_ACE_FITTED.md),
 with optional unindexed fixed siblings and shared original-record capacity.
@@ -156,7 +156,7 @@ SQL literal assignment; the CLI does not invent a Binary literal dialect.
 The indexed-target CLI checks pass 24 literal saves and exact row readbacks,
 including NULL transitions, swaps, tree fitting and noops, with eight refusal
 controls. See the
-[indexed-target write record](../testing/results/ace16-ordinary-indexed-target-writes-2026-10-31.json).
+[indexed-target write record](../../tests/results/indexes/ace16-ordinary-indexed-target-writes-2026-10-31.json).
 
 Jet4 retains its existing fixed Int32 admission. The separate
 [normal ACE BeforeChange route](../access/writes/NORMAL_ACE_BEFORE_CHANGE.md)
@@ -349,6 +349,6 @@ retained-error/lock ownership. Corrected all-target/all-feature CLI Clippy, all
 overlap those complete target runs. Final CLI/Access formatting, documentation
 links and dependency-boundary checks/tests also pass.
 
-See the [local result](../testing/results/jet4-journal-cli-2026-10-30.json).
-The [finalization result](../testing/results/jet4-retired-journal-finalization-cli-2026-10-30.json)
+See the [local result](../../tests/results/recovery/jet4-journal-cli-2026-10-30.json).
+The [finalization result](../../tests/results/recovery/jet4-retired-journal-finalization-cli-2026-10-30.json)
 records the separate restart-confirmation consumer.

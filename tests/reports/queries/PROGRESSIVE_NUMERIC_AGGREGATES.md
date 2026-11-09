@@ -1,6 +1,6 @@
 # Original native progressive Sum/Avg evidence
 
-The 2026-10-25 [accepted replay](results/progressive-numeric-2026-10-25.json)
+The 2026-10-25 [accepted replay](../../results/indexes/progressive-numeric-2026-10-25.json)
 passes 244 controls across original Jet 4, ACE 2007 and ACE 16-family files.
 Its 204 successful controls compare 228 output rows and 996 cells with independent
 getter/Fraction expectations. Forty failures retain empty stdout: 24 Decimal
@@ -12,10 +12,10 @@ execution or subtype qualification, and makes no performance claim.
 ## Independent data and numeric model
 
 The replay reuses the four unchanged originals registered in
-[Decimal selection evidence](DECIMAL_INDEX_SELECTIONS.md#original-inputs-and-independent-model).
-The original MIT [DecimalIndexFixture.java](DecimalIndexFixture.java) public-builder
+[Decimal selection evidence](../indexes/DECIMAL_INDEX_SELECTIONS.md#original-inputs-and-independent-model).
+The original MIT [DecimalIndexFixture.java](../../access/queries/expressions/DecimalIndexFixture.java) public-builder
 recipe and reviewed Jackcess 5.0.4 artifact are unchanged. The read-only
-[IndexRowsOracle.java](IndexRowsOracle.java) returns actual stored cells with
+[IndexRowsOracle.java](../../access/indexes/native/IndexRowsOracle.java) returns actual stored cells with
 expression evaluation disabled; no reference SQL or active content executes.
 All three 1,000-row tables have 909 non-NULL values and 91 NULLs. The runner also
 reopens each actual `DecimalEmpty4` table through the getter and confirms zero
@@ -23,7 +23,7 @@ records, rather than inferring emptiness from native declared counts. Its raw
 empty stdout has SHA-256
 `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`.
 
-The [new runner](compare_progressive_numeric.py) uses exact Python `Fraction`
+The [new runner](../../access/queries/execution/compare_progressive_numeric.py) uses exact Python `Fraction`
 values parsed from getter Decimal strings. It computes population sizes, totals
 and means independently of TableCraft results. Every candidate Decimal scale from
 28 through zero represents a grid of rational points with a 96-bit coefficient
@@ -33,7 +33,7 @@ expected numeric result; if no candidate fits, the expected result is Overflow.
 Mean candidates use the exact total divided by non-NULL count, never the already
 rounded Sum result. Empty and all-NULL populations instead produce NULL totals
 and means. This models the documented current
-[Decimal sum](../query/aggregates/DECIMAL_SUMS.md) and [mean](../query/aggregates/AVERAGES.md) result envelope,
+[Decimal sum](../../../docs/query/aggregates/DECIMAL_SUMS.md) and [mean](../../../docs/query/aggregates/AVERAGES.md) result envelope,
 without using its Rust implementation or CLI output as the oracle.
 
 Numeric cells are compared as exact Fractions after TSV decoding. `VarType`
@@ -64,7 +64,7 @@ row may escape; completed streaming-prefix behavior has separate Rust coverage.
 ## Reproduction and immutable evidence
 
 ```sh
-python3 docs/testing/compare_progressive_numeric.py \
+python3 tests/run.py tests/access/queries/execution/compare_progressive_numeric.py \
   --cli .cache/tablecraft-bin/progressive-numeric-cli-20261025 \
   --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar \
   --inputs .cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb \
@@ -77,7 +77,7 @@ python3 docs/testing/compare_progressive_numeric.py \
 The runner refuses an existing report, requires the reviewed reader and frozen
 CLI hashes, uses repository-relative labels and bounds each subprocess to 60
 seconds. It reuses the reviewed getter invocation from
-[compare_decimal_seeks.py](compare_decimal_seeks.py), which is pinned separately.
+[compare_decimal_seeks.py](../../access/queries/expressions/compare_decimal_seeks.py), which is pinned separately.
 Successful stdout hashes follow full modeled-cell comparisons.
 
 | Artifact | SHA-256 |

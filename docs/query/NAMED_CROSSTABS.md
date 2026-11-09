@@ -84,18 +84,18 @@ qualified fields while preserving object/function/bang guards. Native authored
 layouts exercise fixed named reads across Jet 4 / ACE 2007/2016/2019. CLI tests
 cover fixed projections, repeated aliases/joins, inner TOP and buffered cell errors.
 
-The original [SavedNamedCrosstabFixture.java](../testing/SavedNamedCrosstabFixture.java)
+The original [SavedNamedCrosstabFixture.java](../../tests/access/queries/saved/SavedNamedCrosstabFixture.java)
 adds nineteen inert definitions to our fourteen-query crosstab baseline. Four
 fresh local files pass 380 independent getter/rendering/direct/saved/named/refusal
-controls through [compare_named_crosstabs.py](../testing/compare_named_crosstabs.py).
+controls through [compare_named_crosstabs.py](../../tests/access/queries/execution/compare_named_crosstabs.py).
 Explicit expected grids control parameterized dependencies, punctuated headings,
 correlation, joins, UNION, nested reads, another crosstab, inner TOP/ties and
 cycle/later-cell refusals. Raw flags supply stored TOP omitted by the reference
-renderer. [Fixture records](../testing/FIXTURES.md#named-fixed-crosstab-inputs) retain provenance
+renderer. [Fixture records](../../tests/reports/reading/FIXTURES.md#named-fixed-crosstab-inputs) retain provenance
 and hashes. All source bytes stay unchanged; the reference never executes SQL.
 
 ```sh
-python3 docs/testing/compare_named_crosstabs.py \
+python3 tests/run.py tests/access/queries/execution/compare_named_crosstabs.py \
   --jar path/to/jackcess-5.0.4.jar --cli target/release/tablecraft \
   --directory path/to/fresh-named-crosstabs --generate
 ```
@@ -159,9 +159,9 @@ preparation, missing/empty results, repeated execution policies, punctuation,
 collisions and contextual/volatile refusals. Three kernel-boundary tests exercise
 no-source guards, parent byte/work budgets, structural ceilings/depth and every
 observed transient cancellation checkpoint. The original
-[ComputedCrosstabFixture.java](../testing/ComputedCrosstabFixture.java) adds nine inert
+[ComputedCrosstabFixture.java](../../tests/access/queries/execution/ComputedCrosstabFixture.java) adds nine inert
 definitions to the existing original thirty-three-query Sales fixture. The
-[independent runner](../testing/compare_computed_headings.py) passes 204 getter/grid/
+[independent runner](../../tests/access/reading/tables/compare_computed_headings.py) passes 204 getter/grid/
 reconstruction/inspection/direct/saved/named/refusal controls over four unchanged
 priority-family files. Explicit expected grids, not the reference renderer, supply
 query result expectations. Jackcess never executes stored SQL. These controls do

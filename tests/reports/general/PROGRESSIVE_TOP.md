@@ -1,6 +1,6 @@
 # Original unordered TOP streaming replay
 
-The [accepted replay](results/progressive-top-2026-10-24.json) passes 156 commands
+The [accepted replay](../../results/general/progressive-top-2026-10-24.json) passes 156 commands
 and 1,220,688 independently modeled cells: 128 candidate and 28 frozen buffered
 baseline controls. All 1,900 pins match the accepted artifacts and committed
 source revision `88380c9b`. This covers TableCraft's explicit engineering contract,
@@ -8,14 +8,14 @@ not native Access execution order/error precedence or a performance benchmark.
 
 ## Original inputs and independent model
 
-[compare_progressive_top.py](compare_progressive_top.py) reuses the four original
+[compare_progressive_top.py](../../access/queries/execution/compare_progressive_top.py) reuses the four original
 20,000-row databases and inert public getter captures registered in
-[the original corpus](PROGRESSIVE_QUERIES.md). It imports only the original Python
+[the original corpus](../queries/PROGRESSIVE_QUERIES.md). It imports only the original Python
 recipe's getter/TSV display helpers, not TableCraft execution code. No reference
 SQL runs, no database is mutated and no additional upstream material is copied.
 The Java producer, getters, generation metadata, baseline/candidate executables,
 runner sources and frozen Rust inventory are pinned. Existing MIT recipe and
-reviewed Jackcess provenance remain in [FIXTURES.md](FIXTURES.md).
+reviewed Jackcess provenance remain in [FIXTURES.md](../reading/FIXTURES.md).
 
 Expected TOP output is computed by filtering getter records and taking their
 first n qualifying rows. Counts 1, 129 and 20,001 cover a singleton, a batch
@@ -57,7 +57,7 @@ The accepted report has SHA-256
 `fe7053913ed99b8ac6e031eed636b729c60db60c5fa8fffe28062ffd011ceaa0`.
 
 ```sh
-python3 docs/testing/compare_progressive_top.py \
+python3 tests/run.py tests/access/queries/execution/compare_progressive_top.py \
   --cli .cache/tablecraft-bin/progressive-top-cli-20261024 \
   --cli-sha256 ee7a40c313daf7f5e874235857e103bd937df5ef240dcf2b0883f9d062d077d4 \
   --baseline .cache/tablecraft-bin/progressive-query-cli-20261024 \
@@ -73,7 +73,7 @@ Restore the accepted production revision for reproduction; later source changes
 are not silently accepted. Parent verification separately checked all source
 pins against the immutable committed archive after later work resumed.
 
-[The verification record](results/read-query-progressive-top-2026-10-24.json)
+[The verification record](../../results/queries/read-query-progressive-top-2026-10-24.json)
 retains 88 unique passing Rust tests, strict Clippy and final CLI build logs.
-The [TOP contract](../query/PROGRESSIVE_QUERIES.md#unordered-top-counts) cites the primary
+The [TOP contract](../../../docs/query/PROGRESSIVE_QUERIES.md#unordered-top-counts) cites the primary
 Microsoft syntax reference and distinguishes the native qualification boundary.

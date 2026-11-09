@@ -28,11 +28,11 @@ expressions rather than inventing Binary literals.
 
 Source qualification precedes matching writers. The four original databases and
 32 complete contexts passed current native reads, and 32 inert independent reader
-reports passed. See the [source record](../../testing/ACE16_RETAINED_REUSE_COMPANION_SOURCES.md).
+reports passed. See the [source record](../../../tests/reports/rows/ACE16_RETAINED_REUSE_COMPANION_SOURCES.md).
 Native Microsoft Access save/reopen remains unrun.
 
 Twenty-eight literal native commits, 120 recovery contexts, forged/stale and
 resource controls, 40 typed/SQL saves with 40 same-lease empty follow-ons and
 twelve CLI saves/readbacks pass. The first host test used an unbracketed reserved
 field name; corrected `[Memo]` SQL passes with unchanged source and expected
-images. See the [execution record](../../testing/results/ace16-normal-external-long-update-writes-2026-11-01.json).
+images. See the [execution record](../../../tests/results/rows/ace16-normal-external-long-update-writes-2026-11-01.json).

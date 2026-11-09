@@ -4,6 +4,7 @@ The reviewed reference source is compiled only in a temporary directory with
 index-only string trimming/prefix preparation disabled. This models literal
 weights and finite recursive pattern paths, not native Access SQL execution.
 """
+from engineering_paths import reference_file
 import argparse
 import hashlib
 import os
@@ -40,7 +41,7 @@ def main():
         path=classes/SOURCE_PATH
         path.parent.mkdir(parents=True)
         path.write_bytes(modified.encode("utf-8"))
-        run("javac","-encoding","UTF-8","-cp",args.jar,"-d",classes,path,RECIPES/"GeneralLikeOracle.java")
+        run("javac","-encoding","UTF-8","-cp",args.jar,"-d",classes,path,reference_file('tests/access/queries/expressions/GeneralLikeOracle.java'))
         classpath=os.pathsep.join([str(classes),str(args.jar)])
         for version,policy in [(0,"general-legacy"),(1,"general-2010")]:
             expected=run("java","-Dstdout.encoding=UTF-8","-cp",classpath,"com.healthmarketscience.jackcess.impl.GeneralLikeOracle",version)

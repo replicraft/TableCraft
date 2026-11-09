@@ -71,7 +71,7 @@ read starts, so callers can assert that unselected pages were never read. The
 helper moved byte-for-byte from engine test support; six existing targets now
 import this owner directly. Access tests enable the existing `ace-support` dev
 feature for these consumers. The default testkit and production dependencies
-remain unchanged. Its [acceptance record](results/shared-page-read-support-2026-11-02.json)
+remain unchanged. Its [acceptance record](../../results/storage/shared-page-read-support-2026-11-02.json)
 covers all six consumers, strict checks, minimal features and dependency guards.
 
 `fixtures::access::original_fixed_wire` owns literal TCNI4/8 group framing.
@@ -86,14 +86,14 @@ Two full literal goldens, six actual IEEE native/legacy-boundary functions and
 five retained numeric commit functions pass. The latter cover Marker, generated
 Score, Binary Id, wider numeric siblings and ignored-NULL originals. Scoped
 strict and minimal testkit checks also pass; see the
-[extraction record](results/shared-fixed-wire-fixtures-2026-11-03.json).
-The [earlier TCNI4 record](results/shared-tcni4-literal-framing-2026-11-02.json)
+[extraction record](../../results/rows/shared-fixed-wire-fixtures-2026-11-03.json).
+The [earlier TCNI4 record](../../results/general/shared-tcni4-literal-framing-2026-11-02.json)
 remains historical evidence.
 
-The later [Byte/Int16 continuation](../access/writes/NORMAL_BYTE_INT16_FIXED_UPDATE.md)
+The later [Byte/Int16 continuation](../../../docs/access/writes/NORMAL_BYTE_INT16_FIXED_UPDATE.md)
 adds the cumulative TCNI9 dialect and a third complete literal golden to this
 same owner. Existing TCNI4/8 bytes and consumers retain their closed vocabulary.
-The [GUID continuation](../access/writes/NORMAL_GUID_FIXED_UPDATE.md) adds TCNI10
+The [GUID continuation](../../../docs/access/writes/NORMAL_GUID_FIXED_UPDATE.md) adds TCNI10
 with canonical 17-byte cells and a fourth whole literal golden. Native DATA
 permutation is independent of these original-request bytes.
 
@@ -104,21 +104,21 @@ Source and API observations stay in ACE. Three existing consumers import the
 actual owner directly. Twelve moved helpers retain their bodies and 24 literal
 AFTER specifications; the eager loader performs complete expected replay once.
 All three source/read/Score functions and strict testkit checks pass. See the
-[extraction record](results/shared-indexed-guid-fixtures-2026-11-03.json).
+[extraction record](../../results/indexes/shared-indexed-guid-fixtures-2026-11-03.json).
 
 The independent `fixtures::access::{complex_schema, attachments,
 attachment_modern}` modules own the existing raw collection builders. Engine,
 adapter and CLI tests import those owners directly. Their move preserves builder
 bodies and literal bytes; no production codec or dependency is introduced. Public
 and restricted test-module consumers retain their actual child dependencies.
-The [extraction record](results/shared-complex-attachment-fixtures-2026-11-02.json)
+The [extraction record](../../results/reading/shared-complex-attachment-fixtures-2026-11-02.json)
 retains the complete-consumer correction, lint cleanup and 435 passing runtime
 functions across engine, adapter, CLI and private preservation checks.
 
 `fixtures::access::version_history` owns the shared independent stored-history
 builder. Six existing engine/adapter/CLI consumers import it directly; Text and
 DATE-bit inputs remain exact. The
-[extraction record](results/shared-history-fixture-2026-11-02.json) preserves the
+[extraction record](../../results/reading/shared-history-fixture-2026-11-02.json) preserves the
 lint cleanup and 69 passing runtime functions, with strict and minimal checks.
 
 ## Optional subsystem support
@@ -177,7 +177,7 @@ explicit when consolidating metadata. Never generate the expected side of a test
 with the producer it checks.
 
 See the [duplication audit](TEST_DUPLICATION_AUDIT.md) for the consolidation scope
-and the [fixture policy](FIXTURES.md) for provenance and qualification requirements.
+and the [fixture policy](../reading/FIXTURES.md) for provenance and qualification requirements.
 
 ## Historical extraction evidence
 
@@ -187,7 +187,7 @@ rewritten by this organization change.
 
 ### Extraction check
 
-The [27 October receipt](results/testkit-builder-equivalence-2026-10-27.json)
+The [27 October receipt](../../results/general/testkit-builder-equivalence-2026-10-27.json)
 records a standalone comparison against the committed former ACE helper. After
 removing line comments and whitespace, the old and moved sources have identical
 token sequences. A separate standard-library-only Rust witness compiled and ran
@@ -246,7 +246,7 @@ The selected CLI regression targets pass 46 integration functions. Native and
 host all-target/all-feature strict checks, minimal testkit/ACE/Access builds,
 dependency boundaries (15 packages), all 12 boundary tests, formatter and
 documentation links pass. Strict inventories exposed further private or unused
-imports, corrected without algorithm or fixture changes. The [extraction result](results/testkit-secondary-index-builder-extraction-2026-10-30.json)
+imports, corrected without algorithm or fixture changes. The [extraction result](../../results/indexes/testkit-secondary-index-builder-extraction-2026-10-30.json)
 retains every failed import-diagnostic phase separately from the final passes.
 
 Historical model paths and qualification records keep their original hashes;
@@ -258,17 +258,17 @@ The same stored-history fixture owner now includes `version_history::mixed`,
 the existing independent two-history builder moved from its Access test owner.
 Engine freshness controls and the original query-source tests import it directly;
 current-Memo descriptor overlays also serve engine and browser observations.
-See the [reader acceptance record](results/lazy-history-reader-2026-11-02.json).
+See the [reader acceptance record](../../results/reading/lazy-history-reader-2026-11-02.json).
 
 `fixtures::access::genuine_wide_ordinary_siblings` owns the eighteen independently
 qualified source pins and original requests used by native proof/recovery, adapter
 and CLI tests. It shares the existing literal TCNI4 grammar without importing an
-engine encoder. See the [write acceptance record](results/ace16-wide-sibling-writes-2026-11-02.json).
+engine encoder. See the [write acceptance record](../../results/general/ace16-wide-sibling-writes-2026-11-02.json).
 
 `fixtures::access::collection_scale` owns retained corpus pins and independent
 recipe expectations; `support::ace::collection_scale` owns shared real-reader
 limits/observations. Engine and browser scale targets import these owners directly.
-The [scale acceptance record](results/lazy-collection-scale-2026-11-02.json) separates
+The [scale acceptance record](../../results/reading/lazy-collection-scale-2026-11-02.json) separates
 recipe checks, full-reader parity and cumulative resource controls.
 
 ## Explicit fixture artifact exports

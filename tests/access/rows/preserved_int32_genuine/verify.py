@@ -4,13 +4,13 @@ import json
 from pathlib import Path
 import sys
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[3] / 'scripts'))
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+sys.path.insert(0, str(Path(__file__).resolve().parents[4] / 'scripts'))
+sys.path.insert(0, str(ROOT / 'tests/access'))
 from compat_artifacts import ArtifactStore
 from preserved_int32_genuine import framing, model
 
-ROOT = Path(__file__).resolve().parents[3]
-DEFAULT_RECORD = 'docs/testing/results/ace16-preserved-int32-genuine-images-2026-10-30.json'
+ROOT = Path(__file__).resolve().parents[4]
+DEFAULT_RECORD = 'tests/results/rows/ace16-preserved-int32-genuine-images-2026-10-30.json'
 
 
 def verify(root, record_path):

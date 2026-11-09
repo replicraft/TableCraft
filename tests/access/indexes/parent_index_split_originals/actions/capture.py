@@ -11,9 +11,9 @@ import sys
 import traceback
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[4]
+ROOT = Path(__file__).resolve().parents[5]
 HERE = Path(__file__).resolve().parent
-sys.path.insert(0, str(ROOT / 'docs/testing'))
+sys.path.insert(0, str(ROOT / 'tests/access'))
 sys.path.insert(0, str(HERE))
 from parent_index_split_originals import wire
 from parent_index_split_originals.capture import Commands
@@ -24,7 +24,7 @@ import model
 PLAN = HERE / 'plan.json'
 FREEZE = HERE / 'freeze.json'
 REFERENCE = HERE / 'ParentSplitUpdateReference.java'
-BOUNDED_CHANNEL = ROOT / 'docs/testing/parent_index_split_originals/BoundedFileChannel.java'
+BOUNDED_CHANNEL = ROOT / 'tests/access/indexes/parent_index_split_originals/BoundedFileChannel.java'
 ORIGINAL_CLASSES = ROOT / '.cache/ace16-parent-split-reference-initial-20261027/classes'
 JAR = ROOT / '.cache/tablecraft-fixtures/jackcess-5.0.4.jar'
 COMPILED_REVISION = 'd8bdf6c3ec015afdb70ffa4668ac10974cf7dbb6'
@@ -202,7 +202,7 @@ def main():
     parser.add_argument('--artifact', type=Path,
                         default=Path('.cache/tablecraft-bin/ace16-nonroot-split-20261027'))
     parser.add_argument('--build-receipt', type=Path,
-                        default=Path('docs/testing/results/ace16-nonroot-split-example-build-2026-10-27.json'))
+                        default=Path('tests/results/indexes/ace16-nonroot-split-example-build-2026-10-27.json'))
     parser.add_argument('--workdir', type=Path)
     parser.add_argument('--execute', action='store_true')
     args = parser.parse_args()
@@ -212,7 +212,7 @@ def main():
         target = common.path(args.freeze_current)
         target.relative_to(ROOT / '.cache')
         sources = [HERE / name for name in ('capture.py', 'model.py', 'ParentSplitUpdateReference.java', 'plan.json', 'framing.py', 'fresh_framing.py', 'verify_existing.py')]
-        sources.extend([BOUNDED_CHANNEL, ROOT / 'docs/testing/parent_index_split_originals/capture.py', ROOT / 'docs/testing/parent_index_split_originals/wire.py', ROOT / 'docs/testing/slot_preview_originals/common.py', ROOT / 'docs/testing/delete_reference_maps.py'])
+        sources.extend([BOUNDED_CHANNEL, ROOT / 'tests/access/indexes/parent_index_split_originals/capture.py', ROOT / 'tests/access/indexes/parent_index_split_originals/wire.py', ROOT / 'tests/access/rows/slot_preview_originals/common.py', ROOT / 'tests/access/rows/delete/delete_reference_maps.py'])
         target.parent.mkdir(parents=True, exist_ok=True)
         with target.open('x') as output:
             json.dump({'sources': [pin(path) for path in sources],

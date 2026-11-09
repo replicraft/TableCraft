@@ -1,6 +1,6 @@
 # Ordinary LONG AutoNumber DELETE observations
 
-The [compact receipt](results/ace16-delete-autonumber-originals-2026-10-26.json)
+The [compact receipt](../../results/creation/ace16-delete-autonumber-originals-2026-10-26.json)
 records 16 successful engineering DELETE candidates and 16 successful disposable
 append descendants across ACE16 V2016/V2019. No engine change was needed. These
 are public Jackcess comparisons, not native Access save/reopen or data-macro
@@ -8,10 +8,10 @@ qualification; ordinary backend and CLI write eligibility remains unchanged.
 
 ## Original construction and inspection
 
-[AutoNumberDeleteFixture.java](AutoNumberDeleteFixture.java) is original
+[AutoNumberDeleteFixture.java](../../access/creation/databases/AutoNumberDeleteFixture.java) is original
 repository-owned code. It uses the reviewed Jackcess 5.0.4 JAR, SHA-256
 `19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`.
-Its existing dependency provenance is in [the fixture ledger](FIXTURES.md).
+Its existing dependency provenance is in [the fixture ledger](../reading/FIXTURES.md).
 Expressions are disabled, the time zone is UTC and linked opens throw.
 
 Each fresh original contains Numbered and Loose tables, each with ordinary LONG
@@ -41,7 +41,7 @@ actually allocate 261; this is observed rather than inferred from surviving IDs.
 Frozen engineering example `ace16-delete-restrict-20261026`, SHA-256
 `aeb9a06d16d7d6356fe7ab0f2c53afd9f96f851da587ec0b407b5aff3c088f08`, was
 compiled from `1e776246313e114c7ea0d8f4b18fe3fc4162ef7f`. Its
-[build receipt](results/ace16-delete-restrict-example-build-2026-10-26.json)
+[build receipt](../../results/rows/ace16-delete-restrict-example-build-2026-10-26.json)
 source objects were verified against that immutable revision, independently of
 later working-tree edits. Each request uses the original live ordinal and exact
 raw record bytes, including framing and null mask. All 16 candidates match the
@@ -68,8 +68,8 @@ engine behavior changed. The fresh accepted replay passed all 16 cases.
 
 Use fresh output directories and the exact reviewed JAR. Database binaries,
 classes, complete getter transcripts and failed captures stay ignored. The
-[reference capture](capture_autonumber_deletes.py) and
-[candidate comparison](compare_autonumber_deletes.py) are import-safe, bounded
+[reference capture](../../access/creation/databases/capture_autonumber_deletes.py) and
+[candidate comparison](../../access/creation/databases/compare_autonumber_deletes.py) are import-safe, bounded
 runners; no Cargo build, imported SQL or active database content is invoked.
 The commands below describe a fresh reproduction, not byte-reproducible database
 generation. The actual original hashes remain in the ledger and receipt.
@@ -78,12 +78,12 @@ generation. The actual original hashes remain in the ledger and receipt.
 mkdir -p .cache/autonumber-reproduction/classes
 javac -cp .cache/tablecraft-fixtures/jackcess-5.0.4.jar \
   -d .cache/autonumber-reproduction/classes docs/testing/AutoNumberDeleteFixture.java
-python3 docs/testing/capture_autonumber_deletes.py \
+python3 tests/run.py tests/access/creation/databases/capture_autonumber_deletes.py \
   --directory .cache/autonumber-reproduction/fixtures \
   --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar \
   --classes .cache/autonumber-reproduction/classes \
   --report .cache/autonumber-reproduction/reference.json
-python3 docs/testing/compare_autonumber_deletes.py \
+python3 tests/run.py tests/access/creation/databases/compare_autonumber_deletes.py \
   --binary .cache/tablecraft-bin/ace16-delete-restrict-20261026 \
   --binary-sha256 aeb9a06d16d7d6356fe7ab0f2c53afd9f96f851da587ec0b407b5aff3c088f08 \
   --build-receipt docs/testing/results/ace16-delete-restrict-example-build-2026-10-26.json \

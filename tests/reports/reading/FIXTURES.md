@@ -6,7 +6,7 @@ The first-party `canonical_table_drop` builder composes only the independent raw
 rename-source families, then authors a literal catalog slot tombstone and live
 count decrement. Expected bytes never come from a native deletion planner. All
 historical user pages, usage maps and EOF remain unchanged. The
-[observation record](results/table-drop-catalog-observations-2026-11-09.json)
+[observation record](../../results/reading/table-drop-catalog-observations-2026-11-09.json)
 pins the raw builder/test sources and 35 complete BEFORE/expected/SDK-written
 images, with failed BOM name-getter qualification preserved separately.
 
@@ -24,10 +24,10 @@ independent explicit-OFF image builder with a literal catalog Name/footer and
 physical two-record repack. Nine creator originals cover keyless/manual/generated
 empty/populated tables and safe field metadata. It calls no native encoder or
 planner. Its source SHA-256 is `7c746dad3919a0252587d6c94accc52cd94c6c591a8f46aaf2c19f06af421e2c`.
-The separate [Python literal model and SDK observations](ACE16_CREATOR_RENAME_SOURCES.md)
+The separate [Python literal model and SDK observations](../schema/ACE16_CREATOR_RENAME_SOURCES.md)
 pin eight complete images over two SDK-written sources; all eight read-only SDK
 opens pass with exact names, OFF metadata and original table/index counts.
-The [completed 72-test focused batch](results/sql-creator-focused-2026-11-08.json)
+The [completed 72-test focused batch](../../results/creation/sql-creator-focused-2026-11-08.json)
 passes all 35 engine rename tests, including 54 V3 complete images, nine option
 compositions and 36 V3 recovery states; four runtime rename cases pass too.
 Microsoft Access rename/save behavior remains unqualified. No third-party fixture
@@ -63,15 +63,15 @@ pinned by the same repository revision.
 
 | Recipe | SHA-256 |
 | --- | --- |
-| [canonical_catalog_names.rs](../../crates/engineering/tablecraft-testkit/src/fixtures/access/canonical_catalog_names.rs) | `55874e3506c8998244dc21c4ec0a29d6173a51a7dd5f247d834962280b3bf94f` |
-| [database_properties.rs](../../crates/engineering/tablecraft-testkit/src/fixtures/access/database_properties.rs) | `6c6bb0486b42bf0f56bd2bb446978287bf5f516b68c05a9745aa27848e47acbc` |
+| [canonical_catalog_names.rs](../../../crates/engineering/tablecraft-testkit/src/fixtures/access/canonical_catalog_names.rs) | `55874e3506c8998244dc21c4ec0a29d6173a51a7dd5f247d834962280b3bf94f` |
+| [database_properties.rs](../../../crates/engineering/tablecraft-testkit/src/fixtures/access/database_properties.rs) | `6c6bb0486b42bf0f56bd2bb446978287bf5f516b68c05a9745aa27848e47acbc` |
 
-Native Microsoft Access comparison remains unrun; see the [rename contract](../access/writes/TABLE_RENAME.md).
+Native Microsoft Access comparison remains unrun; see the [rename contract](../../../docs/access/writes/TABLE_RENAME.md).
 
 
 ## Description creation: independent-reader observations
 
-The [Description checker](ace16_table_addition/ReadDescriptions.java) reads three
+The [Description checker](../../access/schema/ace16_table_addition/ReadDescriptions.java) reads three
 TableCraft-produced ACE 16 candidate images containing one, two and three tables.
 It observes exact Unicode/whitespace descriptions, a 255-UTF-16-unit boundary
 including a supplementary character, present-empty versus absent descriptions,
@@ -79,7 +79,7 @@ native types, generated-ID/primary metadata, empty row counts and complete table
 inventories. Reviewed Jackcess 5.0.4 opens each file read-only; hashes are unchanged
 after reading. No third-party database fixture or implementation is copied.
 
-The [result](results/ace16-description-independent-reader-2026-11-07.json) pins
+The [result](../../results/reading/ace16-description-independent-reader-2026-11-07.json) pins
 the JAR, maintained checker, producer sources, ignored exporter and all three
 images. Exported bytes and logs remain in ignored
 `.cache/description-independent-20261107/`. These are independent observations of
@@ -103,26 +103,26 @@ provides later BEFORE/AFTER pairs. `capacity_source()` is a valid nineteen-table
 64-page database whose bitmap cannot represent another table. It does not invent
 an invalid 67-page AFTER. Generated database images remain ignored.
 
-The [read-only checker](ace16_table_addition/ReadRepeatedAddition.java) observes
+The [read-only checker](../../access/schema/ace16_table_addition/ReadRepeatedAddition.java) observes
 five distinct images across the 2→3, 3→4 and 18→19 boundaries with reviewed
 Jackcess 5.0.4. It verifies both original rows and physical row identities,
 complete table inventories, and the empty added tables' LONG AutoNumber,
 TEXT(20) and primary-index metadata. The six exported files include the identical
 third-table AFTER and next BEFORE; that duplicate is explicitly recorded and
 does not count as additional distinct evidence. All file hashes remain unchanged
-after reading. The [result](results/ace16-repeated-table-independent-reader-2026-11-07.json)
+after reading. The [result](../../results/reading/ace16-repeated-table-independent-reader-2026-11-07.json)
 pins every image, source, checker and JAR. No third-party database fixture or
 implementation is copied. These are independent read observations, not native
 Access mutation, indexed lookup, first-insertion, recovery or platform evidence.
 
 ## Repository-authored database-option insertion reference
 
-The [explicit OFF reference](ACE16_DATABASE_OPTIONS_SOURCES.md) uses two fresh
+The [explicit OFF reference](../schema/ACE16_DATABASE_OPTIONS_SOURCES.md) uses two fresh
 TableCraft-created originals and original repository-authored Java/Python recipes.
 The reviewed Jackcess artifact retains its existing Apache-2.0 provenance; no
 third-party database or implementation source is copied. SDK role/property writes,
 their earlier missing-role failure and an independently authored complete-image
-model are pinned in the [result record](results/ace16-database-options-sdk-reference-2026-11-08.json).
+model are pinned in the [result record](../../results/general/ace16-database-options-sdk-reference-2026-11-08.json).
 Generated input/output databases and compiled helper artifacts remain ignored.
 The evidence does not qualify a native writer, NameMap behavior, enabled settings,
 Windows Access, recovery, frontend saves or composition with add-table/rename.
@@ -141,20 +141,20 @@ The BEFORE is 40,960 bytes with SHA-256
 `fc1ff4a87243a4302978702b4c1e048a4b1de4a7076ede29b0dfb67d488c178b`.
 The AFTER is 53,248 bytes with SHA-256
 `92a8885c1e00057fa532ba4330169f69496538403c6725ec1855abec887a4bd0`.
-The [read-only checker](ace16_table_addition/ReadAddition.java) uses the retained
+The [read-only checker](../../access/schema/ace16_table_addition/ReadAddition.java) uses the retained
 reviewed Jackcess 5.0.4 JAR, SHA-256
 `19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`.
 It observes V2016 format, the unchanged `Id=1, Score=17` row at `8:0`, both user
 tables after addition, and the empty new table's declared columns and primary
 index metadata. It does not perform indexed lookups, writes or recovery.
-The [result](results/ace16-add-table-independent-reader-2026-11-07.json) pins the
+The [result](../../results/reading/ace16-add-table-independent-reader-2026-11-07.json) pins the
 fixture/checker/JAR hashes and records exact scope. These observations remain
 separate from native Access or Windows/Linux execution and journal qualification.
 
 ## Original DELETE and SET NULL inputs
 
 The repository-authored
-[SetNullDeleteFixture.java](ace16_set_null_deletes/SetNullDeleteFixture.java)
+[SetNullDeleteFixture.java](../../access/rows/ace16_set_null_deletes/SetNullDeleteFixture.java)
 creates two V2016 originals through the reviewed Jackcess 5.0.4 public APIs.
 The existing JAR SHA-256 is
 `19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`.
@@ -164,22 +164,22 @@ The second original adds a separate CASCADE child; Sentinel is independent.
 No third-party fixture or implementation is copied. Generated databases and
 compiled tools remain private.
 
-The [maintained proof](ace16_set_null_deletes/README.md) separates SOURCE5,
+The [maintained proof](../../access/rows/ace16_set_null_deletes/README.md) separates SOURCE5,
 two saved raw gates, two SOURCE/request-only images, expected-read2, public REF4,
 a fresh committed-producer build, native2 complete-image comparisons and fresh2
 inert reader proofs. All runtime phases pass first attempt. Two earlier pure
 failures remain recorded separately, with retained programs/freezes and no
 invented raw traceback logs. Public files each have five representation-byte
 differences; the earlier model is unchanged. The
-[result](results/ace16-set-null-delete-originals-2026-10-28.json) and
-[build receipt](results/ace16-set-null-delete-example-build-2026-10-28.json)
+[result](../../results/rows/ace16-set-null-delete-originals-2026-10-28.json) and
+[build receipt](../../results/rows/ace16-set-null-delete-example-build-2026-10-28.json)
 pin the originals and phase histories. This is independent engineering evidence,
 not Windows Access mutation, native save or transaction/recovery qualification.
 
 ## Original empty ordinary-owned INSERT input
 
 The repository-authored
-[EmptyOwnedInsertFixture.java](ace16_insert_empty_owned/EmptyOwnedInsertFixture.java)
+[EmptyOwnedInsertFixture.java](../../access/rows/ace16_insert_empty_owned/EmptyOwnedInsertFixture.java)
 uses the existing reviewed Jackcess 5.0.4 JAR to create one V2016 empty Items table
 and a separate Sentinel through public builders. No source patch, deletion,
 orphan construction or adaptive generation is used. The JAR SHA-256 is
@@ -187,20 +187,20 @@ orphan construction or adaptive generation is used. The JAR SHA-256 is
 No third-party fixture or implementation is copied; generated database bytes
 remain private.
 
-The [maintained proof](ace16_insert_empty_owned/README.md) separates SOURCE3
+The [maintained proof](../../access/rows/ace16_insert_empty_owned/README.md) separates SOURCE3
 capture, a saved raw gate, two SOURCE/request-only complete images, public REF4,
 an isolated committed-producer build, two native candidates and two fresh inert
 reads. All executed runtime phases pass first attempt. Earlier preparation stops
 remain retained, and both public files have zero differing bytes from the
-pre-build images. The [result](results/ace16-insert-empty-owned-2026-10-28.json)
-and [build receipt](results/ace16-insert-empty-owned-example-build-2026-10-28.json)
+pre-build images. The [result](../../results/rows/ace16-insert-empty-owned-2026-10-28.json)
+and [build receipt](../../results/rows/ace16-insert-empty-owned-example-build-2026-10-28.json)
 pin the source and all phases. This qualifies the existing indirect missing
 block-zero origin, not inline-origin promotion or Windows Access save/reopen.
 
 ## Original column-LVAL map growth INSERT inputs
 
 Original project helper
-[LongValueMapGrowthFixture.java](ace16_insert_long_value_map_growth/LongValueMapGrowthFixture.java)
+[LongValueMapGrowthFixture.java](../../access/storage/ace16_insert_long_value_map_growth/LongValueMapGrowthFixture.java)
 uses the same reviewed Jackcess 5.0.4 JAR and bounded channel as the external
 Memo/OLE corpus below. It establishes real early selected ownership, then writes
 an independent 430/700-row Padding table through public builders/DML. All payloads
@@ -210,13 +210,13 @@ remain disabled and linked opens refuse. Originals stay private under
 `.cache/ace16-insert-long-value-map-growth-source-first-20261028/`.
 
 SOURCE17 capture and eight separate raw/catalog gates pass before construction.
-The [maintained proof](ace16_insert_long_value_map_growth/README.md) derives sixteen
+The [maintained proof](../../access/storage/ace16_insert_long_value_map_growth/README.md) derives sixteen
 whole images before a fresh-target committed producer build, then verifies
 sixteen native candidates and sixteen fresh combined reader/map calls. A separate
 public32 phase also passes sixteen transitions without supplying golden bytes.
 Both layouts/Memo modes qualify actual owned-row rebase and promotion with chain
 links around new owned bitmap metadata. The
-[compact result](results/ace16-insert-long-value-map-growth-2026-10-28.json)
+[compact result](../../results/rows/ace16-insert-long-value-map-growth-2026-10-28.json)
 pins all eight original identities and phase receipts. Old orphan chunks and
 all Padding/Sentinel rows remain preserved. Authentic next-block missing-pointer,
 missing-map initialization and native Access/Windows saves remain separate gaps;
@@ -225,7 +225,7 @@ no such result is inferred from these small originals.
 ## Original external Memo/OLE INSERT inputs
 
 Original project helper
-[LongValueInsertFixture.java](ace16_insert_external_long_values/LongValueInsertFixture.java)
+[LongValueInsertFixture.java](../../access/storage/ace16_insert_external_long_values/LongValueInsertFixture.java)
 creates four inert originals with the reviewed Jackcess 5.0.4 JAR
 (SHA-256 `19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`).
 It reuses the existing bounded file-channel helper. No upstream code or database
@@ -245,7 +245,7 @@ I32 indexes with true aliases, and an untouched Sentinel. The saved catalog-wide
 gate observes one preserved orphan chunk per long column after public deletion;
 no source patch or orphan predicate forces that result. SOURCE9 capture passed
 separately from saved-only qualification. The
-[maintained proof](ace16_insert_external_long_values/README.md) derives sixteen
+[maintained proof](../../access/storage/ace16_insert_external_long_values/README.md) derives sixteen
 complete request images before producer execution, then verifies sixteen native
 candidates and sixteen fresh combined getter/map calls. The independent public
 phase retains its initial two successful children, footer-proof correction and
@@ -255,7 +255,7 @@ remain unrun; this corpus does not qualify map-growth or initialization cases.
 
 ## Original DATE candidate inputs
 
-Original Apache-2.0 [DateCandidateFixture.java](DateCandidateFixture.java),
+Original Apache-2.0 [DateCandidateFixture.java](../../access/queries/expressions/DateCandidateFixture.java),
 SHA-256 `11e87b781c5f276cf2f8d167a07bbfbc024c0d6310a63920af3358156240d0eb`,
 creates fresh inert 20,000-row scalar inputs through the reviewed Jackcess 5.0.4
 JAR (SHA-256 `19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`).
@@ -271,14 +271,14 @@ remain ignored under `.cache/tablecraft-fixtures/date-candidates-20261025/`.
 | V2016.accdb | 1,564,672 | `9882672e878b2114c28fbd581d431b0edb4ccb8f539124de0fee7fb5deae7a61` |
 | V2019.accdb | 1,634,304 | `27d3e8c62337e037c2906f7b6f6dbd58309b468f8d520dc201a764fc3efa315f` |
 
-The [192-command replay](DATE_QUERY_CANDIDATE_REPLAY.md) compares 539,848
+The [192-command replay](../queries/DATE_QUERY_CANDIDATE_REPLAY.md) compares 539,848
 successful ID rows and twenty buffered failure controls. Four original hashes
 and five artifact/source pins remain unchanged. Native Access execution remains
 unrun; independent fixture agreement does not qualify native SQL conformance.
 
 ## Conditional calculation preview inputs
 
-Original MIT [CalculatedIIfFixture.java](CalculatedIIfFixture.java),
+Original MIT [CalculatedIIfFixture.java](../../access/reading/tables/CalculatedIIfFixture.java),
 SHA-256 `24367523568a67cf314ba78bdac118ab273102fbddb7fca9b2d94fb4e4d31257`,
 creates fresh inert V2016/V2019 inputs through the reviewed Jackcess 5.0.4 public
 builders. No upstream fixture/code is copied. Formula evaluation stays disabled;
@@ -290,13 +290,13 @@ Originals remain ignored under calculated-iif-20261024.
 | V2016.accdb | 393,216 | `0918d2bcf67eb8ab12a9f1439149262ba6bb8ab165f0d303b16f28950ea9be3d` |
 | V2019.accdb | 466,944 | `ffd7835b2498bfe670b8c87c4eeee2823c3f80ca622a8d6228599c6ad91e0a9f` |
 
-The [86-control replay](CALCULATED_IIF.md) retains unchanged original and
+The [86-control replay](../general/CALCULATED_IIF.md) retains unchanged original and
 producer/getter/source/executable hashes. Negative persisted declarations do not
 establish native formula availability; no cache freshness is inferred.
 
 ## Cached calculated Memo inputs
 
-Original MIT [CalculatedMemoFixture.java](CalculatedMemoFixture.java),
+Original MIT [CalculatedMemoFixture.java](../../access/storage/native/CalculatedMemoFixture.java),
 SHA-256 `62ee9b69c72941aff5606a7c993f0cf51a635747c2e5a9a9cff759fd931ca933`,
 creates fresh ACE 2016/2019 Memo caches with expression evaluation disabled. The
 reviewed Jackcess 5.0.4 getters and public in-memory Column.read probes supply
@@ -311,15 +311,15 @@ copied. Accepted originals stay ignored under
 | V2016.accdb | 454,656 | `d6c65a4f59909fa550e9fc98cc196997a3326bca92e882348c6e99596b98ac7c` |
 | V2019.accdb | 528,384 | `230b92a3a12c327a2cf27d9d31c58d8acf6e3f07340e383d9ff7a162eec7a5cd` |
 
-The [86-control report](results/calculated-memos-2026-10-24.json) retains
+The [86-control report](../../results/storage/calculated-memos-2026-10-24.json) retains
 unchanged original/oracle/implementation/CLI hashes. Mutation checks use disposable
 copies only. Earlier probe directories are investigation inputs, not accepted
-fixtures. The [cached Memo contract](../access/calculations/CACHED_MEMO_CALCULATIONS.md) retains explicit
+fixtures. The [cached Memo contract](../../../docs/access/calculations/CACHED_MEMO_CALCULATIONS.md) retains explicit
 freshness and native Access qualification gaps.
 
 ## Cached calculated Decimal inputs
 
-Original MIT [CalculatedDecimalFixture.java](CalculatedDecimalFixture.java),
+Original MIT [CalculatedDecimalFixture.java](../../access/queries/expressions/CalculatedDecimalFixture.java),
 SHA-256 `aa35e0e600b8b86874449d7a3455d13eec1c7fb4e84195bf098aa6a25057746b`,
 creates fresh inert calculated Numeric inputs with expression evaluation disabled.
 The existing reviewed Jackcess 5.0.4 JAR supplies independent BigDecimal getters
@@ -332,10 +332,10 @@ or active content is copied. Original files stay ignored under
 | V2016.accdb | 389,120 | `9c6669076c8cba89ac36e26bfffc1f3f59a3f6df9ed5544f2663764d84041c8f` |
 | V2019.accdb | 462,848 | `4da0bffb0c76c690d350b3bb4685377fa55f9434312eaa1a1d259a8f1799f9f1` |
 
-The [comparison report](results/calculated-decimals-2026-10-24.json)
+The [comparison report](../../results/general/calculated-decimals-2026-10-24.json)
 records 82 controls, exact source/oracle/JAR/input/implementation hashes and an
 unchanged immutable CLI. Only disposable copies receive late-payload mutations.
-The [profile contract](../access/calculations/CACHED_DECIMAL_CALCULATIONS.md) separates cached values,
+The [profile contract](../../../docs/access/calculations/CACHED_DECIMAL_CALCULATIONS.md) separates cached values,
 raw declaration metadata and recomputed previews. Independent reader agreement
 does not qualify native Access recalculation, freshness or result admissibility.
 
@@ -344,7 +344,7 @@ does not qualify native Access recalculation, freshness or result admissibility.
 Fresh original AttachmentFixture.java inputs use the existing reviewed Jackcess
 5.0.4 JAR. The unchanged original generator has SHA-256
 `97d8012bef975401e153cc214cd2d05edcd5c1f34db5425c45c5abfe76a59201`.
-The new original MIT [physical oracle](AttachmentStoredDataOracle.java),
+The new original MIT [physical oracle](../../access/reading/tables/AttachmentStoredDataOracle.java),
 SHA-256 `26bb1bf45b6eea445bc1c90faf3149b85e38bbfcab7be39d800bdeec70242d2e`,
 checks the actual OLE declaration and raw flat byte arrays independently against
 the encoded getter. No third-party implementation, database or active content
@@ -356,7 +356,7 @@ is copied. Original databases remain ignored under stored-file-data-20261024.
 | V2016.accdb | 409,600 | `d8a365d911e8f707f41f31b90fa7830b9e442e70c71c43289f13f455e16ff292` |
 | V2019.accdb | 483,328 | `b2c14c78cbe8d79f545214ddb1f038bfa28ad4952d00372ba092bcb9af5f6505` |
 
-The [query replay report](results/stored-attachment-queries-2026-10-24.json)
+The [query replay report](../../results/queries/stored-attachment-queries-2026-10-24.json)
 retains source/oracle/JAR/input hashes and the immutable CLI SHA-256. It passes
 198 controls under each comparison policy, 396 total, including exact stored
 bytes, decoded bytes, member alignment, counts and opaque checksum mutations.
@@ -365,7 +365,7 @@ physical-reader/query controls do not establish Windows SQL/DAO byte equivalence
 
 ## Native index collection experiment recipes
 
-Original MIT [IndexColumnsFixture.java](IndexColumnsFixture.java), SHA-256
+Original MIT [IndexColumnsFixture.java](../../access/schema/fields/IndexColumnsFixture.java), SHA-256
 `2a4c96894698e1cec1acb3dfed21e650b95e1502b52745800952a84d36f45947`,
 creates fresh inert ACE 16 and Jet 4 inputs, each with six tables covering
 one/two/ten-column indexes and one/twenty-four logical indexes. It uses the
@@ -375,10 +375,10 @@ ignored; the recipe refuses existing fixture paths.
 
 The existing IndexOracle getter supplies independent names, flags, native/physical
 identifiers, roots and key ordering. The new
-[verifier](verify_index_column_variants.py) compares these against all
+[verifier](../../access/schema/fields/verify_index_column_variants.py) compares these against all
 three isolated container variants and checks unchanged inputs/binaries. Its
 capacity/spill-derived allocation counts concern collection constructors only.
-See the [experiment procedure](INDEX_COLUMN_COLLECTIONS.md); neither the
+See the [experiment procedure](../schema/INDEX_COLUMN_COLLECTIONS.md); neither the
 recipe nor independent getter agreement establishes native Access compatibility.
 
 | Original input | Bytes | SHA-256 |
@@ -395,7 +395,7 @@ reproducible after adoption. Original inputs stay ignored and unchanged.
 
 ## Larger decoded Memo inputs
 
-Original MIT [LargerMemoFixture.java](LargerMemoFixture.java), SHA-256
+Original MIT [LargerMemoFixture.java](../../access/storage/native/LargerMemoFixture.java), SHA-256
 `6f8749c2cf3f53830372522ae8de24495a51625cf8b3fc2466ad83cd3f8116a2`,
 creates fresh inert native tables with 3 MiB ASCII, 600,000 Chinese characters,
 300,000 é/supplementary pairs, empty Memo and NULL. Its read-only inspection uses
@@ -411,25 +411,25 @@ content. The reviewed Jackcess 5.0.4 JAR remains SHA-256
 | memos-2016.accdb | 9,748,480 | `90cfc95517dab8bf5da482b59dcc1443ab8a323d5bf70d532b1c6fecb2aa74d4` |
 | memos-2019.accdb | 9,818,112 | `c0ddab22165559475d04d2298ad768d4a001edb0959aa0c93a9f5b5fcbfaa9b9` |
 
-The [runner](compare_larger_memos.py), SHA-256
+The [runner](../../access/storage/native/compare_larger_memos.py), SHA-256
 `7babba2bd4db496ee61beec728970c6e165bc7e9c2f844565487455f08e0f1ec`,
 passes 76 independent getter/byte/query controls, verifies immutable input and
-fixed binary hashes, and refuses to overwrite reports. [Recorded evidence](results/larger-memos-2026-10-24.json)
+fixed binary hashes, and refuses to overwrite reports. [Recorded evidence](../../results/storage/larger-memos-2026-10-24.json)
 retains exact source/JAR/input/binary hashes. Defaults and independent per-value,
 cumulative native/query/output refusals remain tested. The inputs stay ignored
 under larger-memos-20261024; no new database binary is tracked. Windows Access
-is unrun. See [larger Memo scope](../access/storage/LARGER_MEMOS.md).
+is unrun. See [larger Memo scope](../../../docs/access/storage/LARGER_MEMOS.md).
 
 ## Stored-history query inputs
 
 Fresh original VersionHistoryFixture.java inputs are retained unchanged under the
 ignored history-query-20261024 inventory. The existing original generator/getter
 sources retain SHA-256 values recorded in the
-[query report](results/stored-history-queries-2026-10-24.json).
-The new [metadata oracle](VersionHistoryQueryOracle.java), SHA-256
+[query report](../../results/queries/stored-history-queries-2026-10-24.json).
+The new [metadata oracle](../../access/queries/execution/VersionHistoryQueryOracle.java), SHA-256
 `abef84e2aeb4c1f7da3c8aa7abdd802a0a51f41aa99da0666edac5cc64851cb6`,
 uses inert read-only Jackcess declarations/current-value getters, not reference
-SQL or VBA. The [runner](compare_version_history_queries.py), SHA-256
+SQL or VBA. The [runner](../../access/reading/tables/compare_version_history_queries.py), SHA-256
 `aa3476693f035e26c91afce252aed4dfa7377908c76ea62e3901e7cbd385580f`,
 compares 192 independent stored-record/query controls under Ordinal/database
 policies, verifies unchanged original inputs and the fixed CLI hash, and records
@@ -444,24 +444,24 @@ source hashes. It adds no copied third-party database or implementation.
 The reviewed Jackcess 5.0.4 JAR remains SHA-256
 `19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`.
 Native Access SQL, conceptual latest-history behavior and general compatibility
-are unrun/unqualified; see the [explicit history contract](../access/collections/STORED_HISTORY_QUERIES.md).
+are unrun/unqualified; see the [explicit history contract](../../../docs/access/collections/STORED_HISTORY_QUERIES.md).
 
 ## Full-width Decimal arithmetic controls
 
-The original [Python runner](compare_decimal_boundaries.py), SHA-256
+The original [Python runner](../../access/queries/expressions/compare_decimal_boundaries.py), SHA-256
 `77d6f5473024914c99cff35c3f1ca8a7e41bcfab84fe445e3b07d9281e284ad6`,
 uses only exact Fraction arithmetic and independently stated 96-bit/scale bounds.
 It copies no third-party code or fixture, opens no database and executes only
-explicit source-free TableCraft queries. The [recorded report](results/decimal-boundaries-2026-10-24.json)
+explicit source-free TableCraft queries. The [recorded report](../../results/general/decimal-boundaries-2026-10-24.json)
 retains the deterministic seed, binary/source hashes and all 23,460 passing control
 counts. The binary hash is checked before and after execution. Numeric equality,
 subtypes and empty-stdout failures are checked separately; representational scale,
 full Variant promotion and native Access execution are not claimed. See
-[boundary evidence](DECIMAL_ARITHMETIC.md#full-width-rational-boundary-checks).
+[boundary evidence](../general/DECIMAL_ARITHMETIC.md#full-width-rational-boundary-checks).
 
 ## Short Text equality query evidence
 
-The [query runner](compare_text_equality_queries.py), SHA-256
+The [query runner](../../access/queries/expressions/compare_text_equality_queries.py), SHA-256
 `0f296bda3a6dfc95c09d69bee7fd54c8f4a8483e3a2576daef6a847adc3c349b`,
 reuses the eight immutable Text inputs registered under NULL-only index evidence.
 No new third-party database or implementation is copied. The unchanged original
@@ -471,17 +471,17 @@ its SHA-256 remains
 The runner verifies registered input/JAR hashes, passes 792 query controls over
 128 oracle cases and mutates only disposable copies. Native Access is unrun.
 
-The [benchmark recipe](benchmark_text_equality.py), SHA-256
+The [benchmark recipe](../../access/queries/expressions/benchmark_text_equality.py), SHA-256
 `ee6dabc528250d4f06efc8f305ff19c716b2439a3d1b1eebb062b536746738bd`,
 checks equal complete answers and unchanged binary/input hashes around timing.
-[Raw measurements](results/text-equality-queries-2026-10-24.json) preserve
+[Raw measurements](../../results/queries/text-equality-queries-2026-10-24.json) preserve
 all 15 samples per command; the adjacent metadata records relative input paths,
 hashes, build/tool details and answer digests. No private paths were present in
-the raw artifact. Scope and results are in [Text equality seeks](../access/indexes/TEXT_EQUALITY_SEEKS.md).
+the raw artifact. Scope and results are in [Text equality seeks](../../../docs/access/indexes/TEXT_EQUALITY_SEEKS.md).
 
 ## Larger decoded attachment inputs
 
-Original MIT [LargeDecodedAttachmentFixture.java](LargeDecodedAttachmentFixture.java)
+Original MIT [LargeDecodedAttachmentFixture.java](../../access/reading/tables/LargeDecodedAttachmentFixture.java)
 creates inert native data using the reviewed Jackcess 5.0.4 JAR, SHA-256
 `19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`.
 Each file has a three-parent table: one 3 MiB repeated-byte compressed file,
@@ -498,18 +498,18 @@ database or implementation is copied.
 | `files-2016.accdb` | 1,933,312 | `7fbe870ba2eb4216beb63b3a0aff99fd1efe20598a63bf5a4b7a738bdbd77e9c` |
 | `files-2019.accdb` | 2,007,040 | `e2ef569a4088c656567d68b67a634bded5cef6e7b57790cb7a5c7f8015486302` |
 
-The [independent runner](compare_larger_decoded_attachments.py) passes
+The [independent runner](../../access/reading/tables/compare_larger_decoded_attachments.py) passes
 33 controls against separate Python bytes and those inert getters. Complete CLI
 decoded bytes, metadata/scalar pruning, counts, default/lower file caps and
 native/query/output budget refusals agree. Immutable reuse checks the JAR/input
 identities and confirms unchanged originals after all reads. Data/JARs remain
 under ignored persistent storage; fresh generation timestamps can change hashes.
 Only TableCraft executes SQL. Native Access, larger encoded values and native
-FileData SQL representation remain unqualified. See [current limits and reproduction](../access/collections/LARGER_DECODED_ATTACHMENTS.md).
+FileData SQL representation remain unqualified. See [current limits and reproduction](../../../docs/access/collections/LARGER_DECODED_ATTACHMENTS.md).
 
 ## Retained String repetition controls
 
-The original [runner](compare_raw_repetition.py) passes 2,432 controls.
+The original [runner](../../access/reading/tables/compare_raw_repetition.py) passes 2,432 controls.
 Python integer-list repetition supplies exact unit expectations for authored
 boundaries, seeded units, complete source tails and zero/positive counts across
 both CLI evaluators. Binary observations, rounded regional counts, NULL gates,
@@ -528,7 +528,7 @@ not observed Microsoft Access unit/coercion behavior.
 
 ## Retained String trimming controls
 
-The original [runner](compare_raw_trimming.py) passes 3,786 controls.
+The original [runner](../../access/reading/tables/compare_raw_trimming.py) passes 3,786 controls.
 Independent Python integer-list prefix/suffix removal checks exact unit results
 and lengths across both CLI evaluators, including isolated units, surrogate
 pairs, NUL, tabs, nonbreaking spaces, empty/all-space and unaligned ranges.
@@ -546,8 +546,8 @@ native Access edge/coercion qualification remains pending.
 
 ## Retained String replacement controls
 
-The original [runner](compare_raw_replacement.py) and
-[General helper](RawGeneralReplacementOracle.java) pass 9,068 controls.
+The original [runner](../../access/reading/tables/compare_raw_replacement.py) and
+[General helper](../../access/reading/tables/RawGeneralReplacementOracle.java) pass 9,068 controls.
 Python supplies independent nonoverlapping binary unit replacement; General
 cases use the reviewed Jackcess encoder through the existing original short-span
 model. UTF-16 hex preserves isolated units. Length and binary StrComp observations
@@ -567,8 +567,8 @@ retain existing default step limits.
 
 ## Raw General substring-search controls
 
-The original [runner](compare_raw_general_search.py) and
-[raw oracle helper](RawGeneralSearchOracle.java) pass 4,544 controls.
+The original [runner](../../access/reading/tables/compare_raw_general_search.py) and
+[raw oracle helper](../../access/reading/tables/RawGeneralSearchOracle.java) pass 4,544 controls.
 The helper reuses the existing original GeneralSearchOracle span model and
 reviewed Jackcess key encoder; all synthetic inputs fit the complete short-key
 profile. UTF-16 hex output retains isolated units without replacement encoding.
@@ -586,7 +586,7 @@ the provisional span model; native Access search/locale qualification is pending
 
 ## Retained binary String search controls
 
-The original [runner](compare_raw_string_search.py) passes 3,634 controls
+The original [runner](../../access/queries/expressions/compare_raw_string_search.py) passes 3,634 controls
 against independent Python integer-list window positions, including isolated
 UTF-16 units, overlapping patterns, default reverse starts, empty/NULL inputs,
 unaligned ranges and refusals. Both CLI evaluators run the source-free controls.
@@ -601,7 +601,7 @@ engineering checks, not observed Windows Access search behavior.
 
 ## Raw database-mode StrComp controls
 
-The original [runner](compare_raw_database_comparison.py) passes 9,255
+The original [runner](../../access/reading/tables/compare_raw_database_comparison.py) passes 9,255
 controls against the registered short General key vectors and existing four
 native-policy inputs. It covers both model families, modes 2/omitted/-1, raw and
 decoded inputs, NULL/refusal controls and sequential/selected primary-index reads.
@@ -615,7 +615,7 @@ Access function-specific padding/locale compatibility.
 
 ## Retained String extrema controls
 
-The original [extrema runner](compare_raw_string_extrema.py) passes 791
+The original [extrema runner](../../access/queries/expressions/compare_raw_string_extrema.py) passes 791
 controls. Python selects first equal representatives from all reviewed short
 General vectors in original, reversed and seeded orders, with NULL and grouped
 inputs. Lengths and binary StrComp observations verify selected byte contents.
@@ -631,7 +631,7 @@ was added. Native Access qualification and benchmarks were not run.
 
 ## Retained String key controls
 
-The original [key runner](compare_raw_string_keys.py) passes 406 controls
+The original [key runner](../../access/queries/expressions/compare_raw_string_keys.py) passes 406 controls
 using all reviewed short General vectors from the order runner and one NULL row
 per family. Python groups/sorts the recorded keys and supplies stable ties,
 representative lengths, distinct counts and selected-record expectations. Cases
@@ -647,7 +647,7 @@ Windows Access qualification and benchmarks were not run.
 
 ## Raw String order controls
 
-The original [raw String order runner](compare_raw_string_order.py) passes
+The original [raw String order runner](../../access/queries/expressions/compare_raw_string_order.py) passes
 17,345 controls against the existing reviewed short General key vectors in
 `crates/engines/tablecraft-ace/src/collation/key/tests/vectors.tsv`. It pairs both
 families' vectors of at most four units through all six SQL operators, including
@@ -660,7 +660,7 @@ Native Access qualification and benchmarks remain unrun.
 
 ## Raw UTF-16 LIKE controls
 
-The original [raw LIKE runner](compare_raw_like.py) passes 2,745 controls
+The original [raw LIKE runner](../../access/queries/expressions/compare_raw_like.py) passes 2,745 controls
 under both General families and ANSI modes. Python supplies exact byte slicing,
 unit wildcard counts, NULL truth and explicit refusal expectations over fixed
 and seeded units, including isolated surrogates. Additional cases preserve the
@@ -672,7 +672,7 @@ passes 7,113 controls.
 
 ## Raw String predicate controls
 
-The original [predicate runner](compare_raw_string_predicates.py) passes
+The original [predicate runner](../../access/queries/expressions/compare_raw_string_predicates.py) passes
 7,113 source-free controls. Python supplies Unknown truth for String/NULL pairs,
 empty quantifier outcomes and the issued-Variant type-category rule over fixed
 and seeded raw producers. Both CLI modes cover scalar comparisons/lists/ranges;
@@ -686,7 +686,7 @@ Access and benchmarks were not run.
 
 ## Retained query String cells
 
-The original [retained-cell runner](compare_retained_string_cells.py)
+The original [retained-cell runner](../../access/queries/expressions/compare_retained_string_cells.py)
 passes 1,053 source-free controls. Python supplies byte/unit count, signed unit,
 String type, NULL, correlation, encounter and comparison expectations through
 intermediate rows. Direct unrepresentable output and invalid constructors remain
@@ -707,7 +707,7 @@ not run; this validates the shared representation and existing consumers only.
 
 ## Independent raw UTF-16 comparison controls
 
-The original [binary StrComp runner](compare_raw_string_comparison.py)
+The original [binary StrComp runner](../../access/queries/expressions/compare_raw_string_comparison.py)
 passes 1,102 source-free controls. Python compares unsigned unit sequences over
 fixed and seeded ranges, modeling both orders, identity and mixed ordinary Text.
 Inputs include unpaired surrogates, NULs, prefixes and trailing spaces. Both CLI
@@ -717,7 +717,7 @@ Windows Access and benchmarks were not run.
 
 ## Independent lossless Nz/Switch/Choose controls
 
-The original [selection runner](compare_raw_string_selection.py) passes
+The original [selection runner](../../access/queries/expressions/compare_raw_string_selection.py) passes
 1,806 source-free controls. Python models byte-choice length, String identity,
 NULL/no-match outcomes and valid selected Text over fixed and seeded unit/byte
 pairs. Both CLI modes also verify eager, control-conversion and strict-publication
@@ -727,7 +727,7 @@ were not run.
 
 ## Independent lossless IIf controls
 
-The original [IIf branch runner](compare_raw_string_iif.py) passes 1,392
+The original [IIf branch runner](../../access/queries/expressions/compare_raw_string_iif.py) passes 1,392
 source-free controls. Python selects independent UTF-16-unit or single-byte
 payloads and models length, first byte, String identity and NULL status. Both CLI
 modes cover chosen raw branches, unchosen raw branches beside valid Text, NULL
@@ -737,7 +737,7 @@ or dependency was added; native Access and benchmarks were not run.
 
 ## Independent raw String NULL tests
 
-The original [NULL-identity runner](compare_raw_string_nullness.py) passes
+The original [NULL-identity runner](../../access/queries/expressions/compare_raw_string_nullness.py) passes
 2,246 source-free controls. Python supplies String-versus-NULL identity for fixed
 and seeded units, ChrW/ChrB, odd slices, explicit CStr and NULL addition results.
 Both CLI modes test IsNull and SQL IS NULL/IS NOT NULL plus buffered constructor
@@ -747,7 +747,7 @@ benchmarks were not run.
 
 ## Independent raw String counting controls
 
-The original [Count cardinality runner](compare_raw_string_count.py)
+The original [Count cardinality runner](../../access/queries/expressions/compare_raw_string_count.py)
 passes 774 source-free controls. Python models selected row membership over fixed
 and seeded unit sequences; TableCraft alone executes SQL. Cases include unpaired
 UTF-16, odd byte ranges, CVar/CStr identity, NULL expression results, filtering,
@@ -757,7 +757,7 @@ third-party fixtures. Native Access execution and benchmarks were not run.
 
 ## Independent raw numeric String controls
 
-The original [numeric Text runner](compare_arithmetic_text.py) passes
+The original [numeric Text runner](../../access/queries/expressions/compare_arithmetic_text.py) passes
 1,350 source-free controls. Python Decimal supplies arithmetic and half-even
 expectations for ordinary and raw UTF-16 numeric spellings under explicit regional
 policies. Additional cases cover all six non-addition operators with raw Strings
@@ -772,7 +772,7 @@ or fixture generator was introduced. Windows Access and benchmarks were not run.
 
 ## Grouped string policy provenance controls
 
-The expanded original [native policy runner](compare_native_collations.py)
+The expanded original [native policy runner](../../access/queries/expressions/compare_native_collations.py)
 passes 1,844 model/source controls. New grouped-key cases start with a neutral
 constant domain result and later contribute a General Legacy/2010 field policy,
 then reuse the key inside ampersand/plus and CVar. Expected comparisons come from
@@ -799,18 +799,18 @@ added to Git. Native Windows Access and benchmarks were not run.
 
 ## Independent host Empty arithmetic controls
 
-The original [Empty-integral model](compare_empty_arithmetic.py) passes
+The original [Empty-integral model](../../access/reading/tables/compare_empty_arithmetic.py) passes
 3,230 value/carrier/refusal controls against the SQL-feature-gated
 `tablecraft-expressions` example probe `empty_arithmetic`. Python supplies integer
 arithmetic, issued declaration categories and the independent Byte/Empty rounded
 target exception. Both operand orders, boundaries, seeded values, NULL and zero
 divisors are included. This calls the shared expression/numeric APIs; it does not
 construct SQL Empty values or execute Access/VBA. No third-party fixture is used.
-See [scope, commands and source distinctions](../expressions/numeric/EMPTY_ARITHMETIC.md).
+See [scope, commands and source distinctions](../../../docs/expressions/numeric/EMPTY_ARITHMETIC.md).
 
 ## Independent lossless concatenation controls
 
-The expanded original [concatenation recipe](compare_concatenation.py)
+The expanded original [concatenation recipe](../../access/reading/tables/compare_concatenation.py)
 passes 2,918 source-free controls through eval and run. Python constructs complete
 UTF-16LE units, concatenates bytes, checks unit/byte observations and strictly
 decodes only final valid Text. Seeded pairs cover paired/unpaired surrogates,
@@ -823,7 +823,7 @@ Access and benchmarks were not run; no third-party artifact or dependency was ad
 
 ## Independent raw UTF-16 observations
 
-The expanded original [byte recipe](compare_byte_strings.py) checks 35,336
+The expanded original [byte recipe](../../access/queries/expressions/compare_byte_strings.py) checks 35,336
 source-free values/refusals against Python UTF-16LE byte models in both query
 commands. Added cases cover Len/AscW over complete raw units and ChrW inputs for
 every code unit D800–DFFF, plus signed spellings, byte lengths and String subtype
@@ -841,7 +841,7 @@ source-free controls respectively; their optional native inputs were not supplie
 
 ## Independent Round precision controls
 
-The original [precision recipe](compare_round_precision.py) uses Python's
+The original [precision recipe](../../access/reading/tables/compare_round_precision.py) uses Python's
 exact `Decimal.from_float` input and half-even quantization to check 960 CLI
 Double results and subtype codes. Cases include signed zero, subnormals, seeded
 finite bit patterns and digit counts 29 through maximum Long. No database or
@@ -852,9 +852,9 @@ Microsoft Access and native fixture replays were not run for this batch.
 
 ## Registered VALUE parameter inventory
 
-The original [parameter getter](SavedParameterOracle.java) disables
+The original [parameter getter](../../access/queries/saved/SavedParameterOracle.java) disables
 expression evaluation and reads only query-family/parameter metadata with reviewed
-Jackcess 5.0.4. The [comparison](compare_example_saved_definitions.py)
+Jackcess 5.0.4. The [comparison](../../access/queries/saved/compare_example_saved_definitions.py)
 checks all 59 registered definitions: 51 saved reads reconstruct and round-trip,
 their declarations agree with independent getters (including twelve VALUE
 parameters), and eight DDL/pass-through definitions remain refused by read
@@ -898,7 +898,7 @@ No new binary or third-party source was added. Original database SHA-256 remains
 `3cd1fc88d70bc93909ae6d190fa9692e709d5641b205fd2f66185c905e42cfbf`;
 reviewed Jackcess 5.0.4 JAR SHA-256 remains
 `19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`.
-The original [saved-join comparison](compare_example_saved_join.py) derives
+The original [saved-join comparison](../../access/queries/saved/compare_example_saved_join.py) derives
 all 933 complete rows/headers from inert schema/value getters, then compares the
 explicit TableCraft saved-query result and verifies unchanged originals. Only
 TableCraft executes SQL; this adds read/query evidence, not VBA execution or
@@ -906,19 +906,19 @@ native Access SQL/save qualification.
 
 ## Native aggregate probe recipe
 
-The original MIT [aggregate recipe](native_aggregate_oracle.py) and
-[DAO collector](Capture-NativeAggregates.ps1) use authored values 1, 2, 3
+The original MIT [aggregate recipe](../../access/queries/execution/native_aggregate_oracle.py) and
+[DAO collector](../../access/queries/execution/Capture-NativeAggregates.ps1) use authored values 1, 2, 3
 and NULL with 100 fixed queries. Request SHA-256:
 `2744eab6f5d791fbf59ccaee52b64a00d35e39e88c3f34e97044f77c9fbbe15e`.
 Prepared requests and future native captures stay ignored. No third-party binary,
 code or dataset was added. No native database has been generated or qualified by
 this recipe yet; synthetic portable-test envelopes are not ACCDB fixtures or
 native observations. The working CLI passes its 100 inline exercise controls.
-[Capture/comparison limits](NATIVE_AGGREGATE_ORACLE.md) remain explicit.
+[Capture/comparison limits](../queries/NATIVE_AGGREGATE_ORACLE.md) remain explicit.
 
 ## Declared numeric/String field replay
 
-The [independent 128-control replay](DECLARED_NUMERIC_TEXT_REPLAY.md)
+The [independent 128-control replay](../indexes/DECLARED_NUMERIC_TEXT_REPLAY.md)
 reuses the four unchanged registered Scalar inputs below. No new database or
 third-party fixture is copied. Existing read-only getter values feed an original
 Decimal half-even/range model under explicit en-us/de-de profiles; only TableCraft
@@ -934,9 +934,9 @@ The expanded Japanese word-boundary run now passes 5,680 CLI commands, comparing
 registered files it checks both stored Label and an explicit composed expression
 adding an ideographic-space word, without creating or modifying fixtures. All
 four input and 30 source/tool/executable hashes remain unchanged. See the
-[current record](results/japanese-proper-space-replay-2026-10-25.json).
+[current record](../../results/general/japanese-proper-space-replay-2026-10-25.json).
 
-The [combined-operation replay](STRCONV_COMBINATIONS_REPLAY.md) reuses the
+The [combined-operation replay](../queries/STRCONV_COMBINATIONS_REPLAY.md) reuses the
 four registered Scalar inputs below without mutation or new fixture generation.
 Read-only Jackcess getters supply Label values; independent Unicode-property,
 Unicode-name and selected casing models supply expected transformations. The
@@ -947,7 +947,7 @@ new mapping table is copied; native Access/NLS qualification remains unrun.
 
 ## Interrupted-seek scalar replay
 
-On 23 October 2026 the original MIT [ScalarFixture.java](ScalarFixture.java)
+On 23 October 2026 the original MIT [ScalarFixture.java](../../access/reading/tables/ScalarFixture.java)
 recipe generated a fresh ignored corpus for the interrupted-seek I/O checks.
 The reviewed Jackcess 5.0.4 artifact and earlier provenance/license records remain
 applicable; no third-party fixture or source was copied. Generated databases and
@@ -964,7 +964,7 @@ JAR SHA-256:
 | Scalar-V2019.accdb | 471,040 | `eef6a7d1f23c482333ad5b70b312125bd89799ea168b10a522491eb4b7625190` |
 
 ```sh
-python3 docs/testing/compare_browsing.py \
+python3 tests/run.py tests/access/reading/tables/compare_browsing.py \
   --cli target/debug/tablecraft \
   --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar \
   --directory .cache/tablecraft-fixtures/scalar-seek-20261023
@@ -978,7 +978,7 @@ hashes remain separate; generation metadata can differ between fresh inputs.
 
 ## Attachment metadata without payload reads
 
-The original MIT [AttachmentMetadataFixture.java](AttachmentMetadataFixture.java)
+The original MIT [AttachmentMetadataFixture.java](../../access/reading/tables/AttachmentMetadataFixture.java)
 uses the reviewed Jackcess 5.0.4 JAR to create fresh ACE 2016/2019/2007 databases.
 Each has two parents: one holds a deterministic incompressible 3 MiB file and a
 three-byte file, and the other has no attachments. Public attachment APIs produce
@@ -1002,7 +1002,7 @@ Fresh generations may have different database identities; the default runner
 admits only these recorded original bytes, independently of mutable inventories.
 
 ```sh
-python3 docs/testing/compare_attachment_metadata.py \
+python3 tests/run.py tests/access/reading/tables/compare_attachment_metadata.py \
   --cli target/debug/tablecraft \
   --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar \
   --directory .cache/tablecraft-fixtures/attachment-metadata
@@ -1020,7 +1020,7 @@ does not qualify native FileData representation, coherent live reads or saves.
 
 ## Larger scalar snapshot query controls
 
-The original MIT [compare_large_queries.py](compare_large_queries.py) reuses
+The original MIT [compare_large_queries.py](../../access/reading/tables/compare_large_queries.py) reuses
 the four immutable [progressive row inputs](#original-progressive-row-inputs), with
 recorded JAR/input hash checks and read-only TableDataOracle getters. Python derives
 aggregate/order/filter/group/nested-count/UNION expectations independently. The runner
@@ -1031,11 +1031,11 @@ is added. Authored compact native layouts separately exercise 20,000 exact rows,
 all priority headers, several batch sizes, one data-page read, partial-cursor
 refusal, corruption, cache publication and cancellation/limit checks. These are
 independent stored-value/profile checks, not native Access SQL or concurrency
-qualification. [The current profile](../access/queries/LARGER_NATIVE_QUERIES.md) retains those gaps.
+qualification. [The current profile](../../../docs/access/queries/LARGER_NATIVE_QUERIES.md) retains those gaps.
 
 ## Original progressive row inputs
 
-[StreamRowsFixture.java](StreamRowsFixture.java) is original repository MIT
+[StreamRowsFixture.java](../../access/reading/tables/StreamRowsFixture.java) is original repository MIT
 material using reviewed Jackcess 5.0.4. Four fresh, local/untracked databases contain
 one inert 20,000-row table with Int32 IDs, nullable Text, Unicode/supplementary
 characters, quotes, tabs and line breaks. No expression/SQL/application code executes.
@@ -1048,7 +1048,7 @@ The generator refuses existing paths; original files remain unchanged.
 | ACE 16 / V2016 | 4,919,296 | `21fe4c647c0768492efb6be460a52e0b3fb90e62ae46c05a0bbd4b90d4a426db` |
 | ACE 16 / V2019 | 4,988,928 | `894e84373184d7b9740cd093b0df743f4526ba03709c46c2ac6ff687b092b975` |
 
-[compare_stream_rows.py](compare_stream_rows.py) verifies the reviewed JAR
+[compare_stream_rows.py](../../access/reading/tables/compare_stream_rows.py) verifies the reviewed JAR
 hash and uses the existing read-only TableDataOracle getters for every stored value.
 Python's CSV reader checks 20 full/projection/quota controls across batch sizes
 1/127/1,000, 20,000 rows and encoded outputs larger than 1 MiB. A separate ID-only
@@ -1060,7 +1060,7 @@ shared-file coordination, application or save/reopen evidence.
 
 ## UNION exact-widening controls
 
-The original MIT [compare_union_types.py](compare_union_types.py) uses Python
+The original MIT [compare_union_types.py](../../access/queries/execution/compare_union_types.py) uses Python
 integer/set and IEEE models for the explicit TableCraft result profile. It passes
 85 controls including all integer-width pairs, endpoints, equality/ALL multiplicity,
 Single/Double values and outer runtime-carrier inspection. Sixteen controls also
@@ -1072,7 +1072,7 @@ profile checks, not evidence of native Access UNION type precedence or coercion.
 
 ## Unicode saved source inputs
 
-[SavedUnicodeFixture.java](SavedUnicodeFixture.java) is original repository
+[SavedUnicodeFixture.java](../../access/queries/saved/SavedUnicodeFixture.java) is original repository
 MIT material extending the existing original SavedForestFixture recipe. Reviewed
 Jackcess 5.0.4 builds four fresh, untracked files with expression evaluation disabled.
 Two Unicode tables and seven additional inert SELECT definitions exercise exact
@@ -1087,7 +1087,7 @@ baseline forest definitions remain; no SQL, VBA or active application content ru
 | ACE 16 / V2016 | 491,520 | `c131ed71b372ebb028d6816381c3984a68c89394eeb7df55baecb9dc1465858c` |
 | ACE 16 / V2019 | 561,152 | `b5509cfd4d9e7bd286531756db148eafdf29d51e79f606902b05288fc4049e8e` |
 
-[compare_saved_unicode.py](compare_saved_unicode.py) checks the reviewed JAR
+[compare_saved_unicode.py](../../access/queries/saved/compare_saved_unicode.py) checks the reviewed JAR
 hash, exact table-getter inputs and query inventory, then passes 112 independent
 SQL-rendering/direct/saved/named controls. Python computes nullable join/product
 rows independently. Every source remains byte-identical. No third-party code/data
@@ -1119,7 +1119,7 @@ qualification remain separate and unrun.
 ## GUID point-seek controls
 
 Original synthetic node/leaf fixtures reuse the authored GUID codec goldens and
-add independent page/split/membership models. [compare_guid_seeks.py](compare_guid_seeks.py)
+add independent page/split/membership models. [compare_guid_seeks.py](../../access/reading/tables/compare_guid_seeks.py)
 passes 76 point/all/NULL/miss controls against the unchanged registered V2016/V2019
 [GUID index inputs](#original-ace-16-guid-index-inputs). The reviewed Jackcess JAR
 and both input hashes are checked before reads. Full independent cursors supply
@@ -1128,7 +1128,7 @@ The working engineering example emits buffered Int32 ID lines from the native AP
 The optional `--cli` control additionally passes 212 full/NULL/literal/reversed/typed-parameter
 query comparisons using the same independent cursor expectations and unchanged hashes.
 All new code is original repository MIT test/host material; no third-party source
-or database binary is added. [Selection scope](../access/indexes/NATIVE_INDEXES.md#exact-guid-point-selections)
+or database binary is added. [Selection scope](../../../docs/access/indexes/NATIVE_INDEXES.md#exact-guid-point-selections)
 keeps partial audits, SQL ordering, writes and native Access qualification separate.
 
 ## Projected DISTINCT order controls
@@ -1137,16 +1137,16 @@ Original `testing/compare_projected_sort.py` checks 144 deterministic source-fre
 SELECT/UNION inputs using independent Python sets, counters and NULL ordering.
 It adds no third-party code/data or database binary. Rust controls retain opaque
 provider refusal, one-draw explicit random aliases and per-field text policies.
-See [ordering scope](../query/QUERY_ORDERING.md); these are independent current-profile
+See [ordering scope](../../../docs/query/QUERY_ORDERING.md); these are independent current-profile
 controls, not native Access execution or optimizer evidence.
 
 ## Grouped saved-query inputs
 
-Original MIT [SavedGroupedFixture.java](SavedGroupedFixture.java) adds
+Original MIT [SavedGroupedFixture.java](../../access/queries/saved/SavedGroupedFixture.java) adds
 fourteen inert definitions to the existing fourteen-query forest/data recipe.
 It creates fresh engineering files with expression evaluation disabled and never
 executes SQL, VBA or application content. The new
-[comparison runner](compare_saved_grouped.py) passes 328 raw-getter,
+[comparison runner](../../access/queries/saved/compare_saved_grouped.py) passes 328 raw-getter,
 SQL-rendering, direct/saved/named execution and diagnostic-category/no-output
 refusal controls. Reviewed Jackcess 5.0.4 supplies read-only getters/rendering;
 a Python partition model supplies expected rows. The existing reviewed JAR hash
@@ -1166,7 +1166,7 @@ Cases cover grouped key correlations, scalar/HAVING/predicate subqueries, nested
 frames, joins, UNION, typed parameters, named/derived sources and crosstabs.
 Invalid grouping/cardinality and missing/wrong-type/zero parameters fail without
 partial results. No new database binary or third-party implementation/source is
-copied into Git. [The contract](../query/GROUPED_SUBQUERIES.md#stored-and-named-definition-comparisons)
+copied into Git. [The contract](../../../docs/query/GROUPED_SUBQUERIES.md#stored-and-named-definition-comparisons)
 keeps independent evidence separate from native Access static/ownership/error-order
 and application save/reopen qualification; Windows comparisons remain unrun.
 
@@ -1177,7 +1177,7 @@ Original query/collection tests and `testing/compare_grouped_subqueries.py` supp
 SELECT/UNION rows rather than downloaded data. Adapter controls reuse the authored
 mutation fixture with an inert Caption property and profile bytes 1/2/5/6. They
 add no binary, modify no original and execute no active database content. All new
-material uses the repository MIT license. [The grouped-query contract](../query/GROUPED_SUBQUERIES.md)
+material uses the repository MIT license. [The grouped-query contract](../../../docs/query/GROUPED_SUBQUERIES.md)
 keeps independent results separate from native Access evidence.
 
 ## Decimal mean read/query controls
@@ -1188,7 +1188,7 @@ Original adapter controls reuse the authored NUMERIC fixture recipes at
 added or original modified. The independent Python Fraction/CLI runner checks
 123 exact mean cases using source-free SELECT/UNION inputs. Both are repository
 MIT test material, not downloaded data or Microsoft Access output. See
-[mean evidence and limits](../query/aggregates/AVERAGES.md#native-adapter-and-independent-rational-controls).
+[mean evidence and limits](../../../docs/query/aggregates/AVERAGES.md#native-adapter-and-independent-rational-controls).
 
 ## Conditional Date/Text coercion controls
 
@@ -1198,7 +1198,7 @@ inert Jackcess getters supply original ScalarSamples IDs/timestamps on
 V2000/V2007/V2016/V2019 files; all original hashes remain unchanged. The script
 copies no third-party data/code, introduces no new binaries and executes no
 native Access SQL. Typed Empty/Missing controls are library-state tests, not
-native fields or SQL constructors. See [selector scope](../expressions/CONDITIONAL_FUNCTIONS.md).
+native fields or SQL constructors. See [selector scope](../../../docs/expressions/CONDITIONAL_FUNCTIONS.md).
 
 ## Legacy DATE numeric conversion controls
 
@@ -1208,7 +1208,7 @@ claiming exact Decimal normalization for nonexact binary fractions; a one-second
 probe checks floating narrowing. The existing ScalarSamples
 V2000/V2007/V2016/V2019 inputs use inert reviewed Jackcess getters and retain
 unchanged source hashes. No third-party code/data or native Access SQL result is
-introduced. See [the conversion contract](../expressions/dates/DATE_NUMERIC.md).
+introduced. See [the conversion contract](../../../docs/expressions/dates/DATE_NUMERIC.md).
 
 ## Numeric Format literal layouts
 
@@ -1221,7 +1221,7 @@ Jackcess getters supply original values without executing Format; source hashes
 remain unchanged. The new runner passes 816 controls. This adds no third-party binary/data or
 native Access evidence.
 The fixed numeric comparison recipe now treats the newly supported `0-0` mask as
-a positive control. See [scope](../expressions/formatting/FORMAT.md#interleaved-numeric-literals).
+a positive control. See [scope](../../../docs/expressions/formatting/FORMAT.md#interleaved-numeric-literals).
 
 ## Numeric DATE-format controls
 
@@ -1231,7 +1231,7 @@ Format output. It also reads the existing original ScalarSamples
 V2000/V2007/V2016/V2019 timestamps through reviewed Jackcess getters; all source
 hashes stay unchanged. The 252 controls add no downloaded database, binary or
 third-party code/data and do not qualify native Access SQL. See
-[format scope](../expressions/formatting/FORMAT.md#numeric-display-of-legacy-datetime-serials).
+[format scope](../../../docs/expressions/formatting/FORMAT.md#numeric-display-of-legacy-datetime-serials).
 
 ## Reference error-message data
 
@@ -1250,7 +1250,7 @@ native Access fixture or passing native Error() oracle.
 
 Original `testing/native_text_oracle.py` inputs and `testing/Capture-NativeText.ps1`
 prepare two disposable native-authored files and 76 query outcomes on Windows;
-[the procedure](NATIVE_TEXT_ORACLE.md) records exact values, environment,
+[the procedure](../general/NATIVE_TEXT_ORACLE.md) records exact values, environment,
 format/header evidence and unchanged read hashes. The Windows run is unrun: no
 generated native files, hashes or passing comparisons are registered yet. Portable
 checker tests use explicitly synthetic report envelopes, not native fixtures.
@@ -1338,14 +1338,14 @@ Apache-2.0 source header in a temporary directory and replaces only the index
 string-preparation adapter to retain pattern spaces and avoid index truncation.
 The unchanged independent encoder supplies keys and all raw single-unit forms;
 an original recursive matcher and explicit finite pattern models supply truth.
-The patched source SHA-256 is recorded in [NATIVE_TEXT.md](../access/indexes/NATIVE_TEXT.md#general-utf-16-like-matching).
+The patched source SHA-256 is recorded in [NATIVE_TEXT.md](../../../docs/access/indexes/NATIVE_TEXT.md#general-utf-16-like-matching).
 No external source/class/database is tracked and original hashes remain unchanged.
 This qualifies the explicit UTF-16/weighted model, including excluded-prefix
 negation, not native Access LIKE syntax/semantics or error ordering.
 
 ## Derived General LIKE unit dictionaries
 
-The [derived LIKE unit sets](../../crates/engines/tablecraft-ace/data/general/README.md)
+The [derived LIKE unit sets](../../../crates/engines/tablecraft-ace/data/general/README.md)
 add no database fixture. They are generated by the existing General weight model
 for every raw UTF-16 unit, preserving pattern-literal spaces and widened positions.
 Original regeneration tooling reproduces both serialized sets byte-for-byte.
@@ -1363,7 +1363,7 @@ spaces and reversed secondary weights. Its first retained generation produced
 The original `scripts/regenerate_french_like.py` verifies or explicitly replaces
 only this artifact; it can consume saved stdout without starting Cargo.
 Existing reviewed weight-data attribution and Apache-2.0 notices apply. The
-[French LIKE contract](../access/indexes/FRENCH_LIKE.md) separates the engineering
+[French LIKE contract](../../../docs/access/indexes/FRENCH_LIKE.md) separates the engineering
 matcher and independent pattern checks from native Access qualification.
 
 ## General substring search inputs
@@ -1476,7 +1476,7 @@ they are represented as hex UTF-16 units, not repaired UTF-8 strings. These are
 deterministic generated vectors, not third-party database bytes.
 
 The separate bundled weight data and Rust adaptation retain Apache-2.0 license
-and copyright notices; [provenance and hashes](../../crates/engines/tablecraft-ace/data/general/README.md)
+and copyright notices; [provenance and hashes](../../../crates/engines/tablecraft-ace/data/general/README.md)
 record the reviewed source/binary artifacts and normalization recipe. Exact
 reference encoding agrees with the Rust implementation; the weight source is
 shared, so this does not independently prove native Access weight behavior.
@@ -1488,7 +1488,7 @@ reviewed binary JAR; ordinary tests/builds use only tracked artifacts.
 The original `SortOrderOracle.java` driver and `compare_sort_orders.py` use the
 existing read-only Java comparison closure to check root and text-column
 LCID/variant/version. Ten already registered or original generated inputs agree;
-the exact selection and limits are in [NATIVE_TEXT.md](../access/indexes/NATIVE_TEXT.md). Source
+the exact selection and limits are in [NATIVE_TEXT.md](../../../docs/access/indexes/NATIVE_TEXT.md). Source
 hashes stay unchanged. Original Rust header goldens also cover zero/unknown
 descriptors without adopting the reference reader's fallback. No new third-party
 database or weight-table bytes are introduced; native comparison/LIKE/index
@@ -1564,7 +1564,7 @@ This experiment never rewrites a corpus original. Fixed CLI test derivatives
 cover codes 1/2/3/5/6 with fresh-key checks and exact byte recovery except the
 documented ACE 2007 Agile header upgrade. No extra fixture bytes are tracked.
 
-The [envelope comparison](../access/storage/NATIVE_ENCRYPTION.md#references-and-evidence) checks
+The [envelope comparison](../../../docs/access/storage/NATIVE_ENCRYPTION.md#references-and-evidence) checks
 version/family/length/flags, continued encoded-read refusal and unchanged input
 hashes. These are reference-inspection controls, not decrypted-row comparisons.
 The additional legacy comparison now checks all 28 Jet 4 encoded pages, all
@@ -1577,7 +1577,7 @@ Their creation recipes, Access build, Windows observations and ACE 16 layout
 qualification are not established by the file names. Mutation tests use separate
 synthetic memory images; the upstream inputs remain untouched.
 
-The separate [Agile page comparison](../access/storage/NATIVE_ENCRYPTION.md#working-agile-codec)
+The separate [Agile page comparison](../../../docs/access/storage/NATIVE_ENCRYPTION.md#working-agile-codec)
 now checks all 104 data pages in `db2007-enc.accdb` and 94 in `db2013-enc.accdb`
 against read-only Jackcess Encrypt output, using their public upstream test
 passwords through stdin. Original hashes remain unchanged. These raw-page checks
@@ -1599,7 +1599,7 @@ Raw Read/Seek, cursor batches and encoded-image refusal retain original cipherte
 the tracked original and all upstream fixtures remain unchanged.
 
 The original, synthetic SQL syntax corpus is recorded separately in
-[SQL_PARSER.md](../query/SQL_PARSER.md), including its Microsoft grammar references.
+[SQL_PARSER.md](../../../docs/query/SQL_PARSER.md), including its Microsoft grammar references.
 It contains no copied third-party fixture bytes or extracted Access SQL and is
 not native Access comparison evidence.
 
@@ -1614,7 +1614,7 @@ not native Access comparison evidence.
 - Verified upstream commit: `d0ffd681d431f38d91c138559763c30df0699c55`.
 - Pinned file: [Access_Example_VBA.accdb](https://github.com/Access-projects/Access-examples/blob/d0ffd681d431f38d91c138559763c30df0699c55/Access_Example_VBA.accdb).
 - Upstream license: MIT, copyright 2019 Anthony Duguid. The original notice is
-  retained verbatim in [Access-examples-MIT.txt](../licenses/Access-examples-MIT.txt).
+  retained verbatim in [Access-examples-MIT.txt](../../../docs/licenses/Access-examples-MIT.txt).
 - Verification date: 17 October 2026. The pinned upstream binary was downloaded
   for a read-only comparison and matches the local file byte for byte, including
   the recorded size and SHA-256.
@@ -1640,31 +1640,31 @@ this candidate with application-level operation outcomes unrun. Its corpus polic
 additional application selection, sanitization, per-profile evidence and native
 save/reopen qualification. Header inspection of a disposable copy now reports format code 2/subversion 0,
 4,096-byte pages, 827 pages and a zero page-encoding key. See
-[NATIVE_READING.md](../access/NATIVE_READING.md). The catalog reader inventories 146 metadata records; the five selected native
+[NATIVE_READING.md](../../../docs/access/NATIVE_READING.md). The catalog reader inventories 146 metadata records; the five selected native
 metadata fields match an independent Jackcess 5.0.4 read-only comparison exactly.
 This does not qualify application behavior, encryption support or native editing.
 
-[Native table evidence](../access/storage/NATIVE_TABLES.md) records schema comparison for 36 tables /
+[Native table evidence](../../../docs/access/storage/NATIVE_TABLES.md) records schema comparison for 36 tables /
 187 columns and 1,488 scalar rows across seven tables against Jackcess.
-[Native query tests](../access/queries/NATIVE_QUERIES.md) exercise supported CLI retrieval on copies.
+[Native query tests](../../../docs/access/queries/NATIVE_QUERIES.md) exercise supported CLI retrieval on copies.
 Object/application behavior and Microsoft Access comparisons remain unqualified.
 
 ## Original generated relationship inputs
 
-[RelationshipFixture.java](RelationshipFixture.java) is an original
+[RelationshipFixture.java](../../access/schema/fields/RelationshipFixture.java) is an original
 repository-licensed inert recipe using the reviewed Jackcess 5.0.4 artifact.
 Compared V2007 output SHA-256:
 `5e09e133be78fcb0c39986ba760cb6d97443c0f4cc465e988b3b76cad4d544d5`;
 V2000 SHA-256:
 `f29a2cc0d211f63aff3b9a5030397dc98960f9a456cc9a5ef2ab2a128e428d1a`.
-Fresh metadata can differ. [Relationship evidence](../access/schema/NATIVE_RELATIONSHIPS.md#references-and-evidence)
+Fresh metadata can differ. [Relationship evidence](../../../docs/access/schema/NATIVE_RELATIONSHIPS.md#references-and-evidence)
 records five relationships/six pairs per format and the observed composite-NULL
 comparison limitation. Generated files/JARs are not tracked or CI dependencies.
 Original candidate bytes remain unchanged; no Access execution evidence is claimed.
 
 ## Original generated property inputs
 
-[PropertyFixture.java](PropertyFixture.java) is an original repository-
+[PropertyFixture.java](../../access/reading/tables/PropertyFixture.java) is an original repository-
 licensed inert recipe using the previously reviewed Jackcess 5.0.4 JAR. It refuses
 existing output paths; generated files/JARs are not tracked or CI dependencies.
 Observed ACE V2007 output SHA-256:
@@ -1672,13 +1672,13 @@ Observed ACE V2007 output SHA-256:
 Observed Jet 4 V2000 output SHA-256:
 `393ee170a8cd51275ca3e133bb5327228654b1fb534edb632aea42c7efdad6b3`.
 Fresh generated metadata may differ. All 22 declarations match Jackcess;
-[scope and canonical comparison hash](../access/schema/NATIVE_PROPERTIES.md#references-and-independent-comparison)
+[scope and canonical comparison hash](../../../docs/access/schema/NATIVE_PROPERTIES.md#references-and-independent-comparison)
 record coverage. Original registered bytes remain unchanged. No Microsoft Access
 runtime comparison or native save is implied.
 
 ## Original generated index-constraint inputs
 
-[ConstraintFixture.java](ConstraintFixture.java) is an original repository-
+[ConstraintFixture.java](../../access/schema/fields/ConstraintFixture.java) is an original repository-
 licensed inert recipe using the separately reviewed Jackcess 5.0.4 artifact. It
 refuses existing output paths, verifies expected constraint rejections, and offers
 a read-only --inspect mode. Generated databases/JARs are not tracked or CI inputs.
@@ -1692,12 +1692,12 @@ Both formats match all nine tagged rows: UniqueValues hash
 `4345e67c72047e4af1365126453f1c17d609adbb86dcac7ab04b3ead4cb460fc`,
 RequiredValues `81c043e10988f8af45c74c2e5cba757ed275b7adbb7d7e9dbcbaae46e48c97fa`,
 PrimaryValues `5528b4670cae4fb431c27c63319e8b9d816910f892818fa641e0ed3a5581d5f9`.
-[Constraint evidence](../access/NATIVE_CHECKS.md#qualified-index-constraints) records scope;
+[Constraint evidence](../../../docs/access/NATIVE_CHECKS.md#qualified-index-constraints) records scope;
 native Access remains unrun and the registered original remains unchanged.
 
 ## Original generated chained-definition inputs
 
-[DefinitionFixture.java](DefinitionFixture.java) is an original TableCraft
+[DefinitionFixture.java](../../access/reading/tables/DefinitionFixture.java) is an original TableCraft
 engineering recipe under the repository license, using the separately reviewed
 Jackcess 5.0.4 artifact (Apache-2.0; identity in NATIVE_READING.md). It refuses to
 overwrite an existing path and creates only inert Wide/EmptyWide tables. No third-
@@ -1708,13 +1708,13 @@ The observed disposable V2007 output is 421,888 bytes, SHA-256
 V2000 is 192,512 bytes, SHA-256
 `f0d4529ab0fcb45eb3598656ae3f82dfa202d1ff155fac1c106c75b03bdc012d`.
 Fresh files can differ in generated metadata; these hashes identify the measured
-inputs, not a deterministic-output promise. [Definition evidence](../access/storage/NATIVE_TABLES.md#bounded-chained-table-definitions)
+inputs, not a deterministic-output promise. [Definition evidence](../../../docs/access/storage/NATIVE_TABLES.md#bounded-chained-table-definitions)
 records the schema/index/row comparisons. Original registered fixture bytes remain
 unchanged; no native Access qualification is implied.
 
 ## Original generated usage-map inputs
 
-[UsageMapFixture.java](UsageMapFixture.java) is an original repository-
+[UsageMapFixture.java](../../access/storage/native/UsageMapFixture.java) is an original repository-
 licensed inert recipe using the same external Jackcess 5.0.4 artifact. It refuses
 existing output paths. Each generated table contains 2,000 rows with 12 short
 Binary fields of 240 bytes, forcing 2,000 owned data pages and indirect usage maps.
@@ -1724,19 +1724,19 @@ Observed V2007 input: 8,568,832 bytes, SHA-256
 Observed V2000 input: 8,339,456 bytes, SHA-256
 `0dbeac6855be9a718308879eabfba577242424ee49794dee48266cda1e64c77e`.
 Hashes identify measured disposable files; fresh metadata may differ. No generated
-binary/JAR is tracked. [Usage-map evidence](../access/NATIVE_READING.md#usage-map-ordering-and-ownership-bounds)
+binary/JAR is tracked. [Usage-map evidence](../../../docs/access/NATIVE_READING.md#usage-map-ordering-and-ownership-bounds)
 records the full tagged-row comparison and larger engineering budget. The normal
 CLI limits, original fixture and lack of native Access qualification are unchanged.
 
 ## Original validation-rule fixtures
 
-[ValidationFixture.java](ValidationFixture.java) is an original MIT recipe
+[ValidationFixture.java](../../access/reading/tables/ValidationFixture.java) is an original MIT recipe
 using the reviewed Jackcess 5.0.4 artifact; generated outputs remain untracked.
 The successful V2007 input has SHA-256
 `8498dbaf475ded63675e781175f227d3783b8d098da127d19c17664bb3a8915f`;
 the V2000 input has SHA-256
 `0f61ccd6401c04bb480674574ce1669a490ee19d7e48fecc855bd2dfadc41699`.
-[Comparison](compare_validation.py) verifies all six table row counts
+[Comparison](../../access/reading/tables/compare_validation.py) verifies all six table row counts
 and rule-coverage states per format, retaining unchanged bytes. Ranges and Bounds
 assert rejection of invalid writes by Jackcess. Nullable explicitly allows NULL.
 Calls/EmptyCalls demonstrate unsupported function rules independently of row count.
@@ -1746,10 +1746,10 @@ Native Microsoft Access execution and save/reopen remain unrun.
 
 ## Original fixed Int32 update fixture
 
-[UpdateFixture.java](UpdateFixture.java) is an original MIT recipe using
+[UpdateFixture.java](../../access/queries/expressions/UpdateFixture.java) is an original MIT recipe using
 the already reviewed Jackcess 5.0.4 artifact. The untracked V2000 input SHA-256 is
 `591b31b94a442d03b57c208f632a1b1a07ebd19fe2bad077db809c0746325332`.
-[Comparison](compare_updates.py) changes Score 20 to 27 on a fresh copy,
+[Comparison](../../access/queries/expressions/compare_updates.py) changes Score 20 to 27 on a fresh copy,
 whose SHA-256 is
 `15f3b4da6b39d35d2c578a211b562802fe81f42f0dc313f9455e757dafd38740`.
 Exactly one byte changes. Three rows retain Unicode memo and 12 KiB binary
@@ -1779,7 +1779,7 @@ Public schema/index inspection first confirms fourteen readable columns, an
 ordinary non-NULL Int32 `ID` and no selected-table indexes. Original and independent
 expected images both pass the three-row public-reader check before mutation.
 
-[The focused comparison](compare_jet4_journal_updates.py) changes `ID=1` to `41`.
+[The focused comparison](../../access/recovery/native/compare_jet4_journal_updates.py) changes `ID=1` to `41`.
 Its independently specified page 31/slot 0 field at absolute offset 130954 yields
 complete expected SHA-256
 `abf76b9a2eec8ffd8074a2eb131cebe48d17b75691217b6e475292074108e54f`;
@@ -1787,11 +1787,11 @@ only byte 130954 differs. The normal `query journal-update` reports one matched
 and changed row, commits exactly that full image, retires/removes the journal
 under the local captured-parent barrier and reopens with all fourteen-column
 rows equal to the independent expectation. The registered original remains
-unchanged. The [result record](results/jet4-genuine-journal-update-2026-11-08.json)
+unchanged. The [result record](../../results/recovery/jet4-genuine-journal-update-2026-11-08.json)
 pins the existing compiled CLI; this gate performs no new Cargo build.
 
 ```sh
-python3 docs/testing/compare_jet4_journal_updates.py \
+python3 tests/run.py tests/access/recovery/native/compare_jet4_journal_updates.py \
   --cli path/to/tablecraft \
   --database .cache/tablecraft-fixtures/scalar-seek-20261023/Scalar-V2000.mdb
 ```
@@ -1807,19 +1807,19 @@ independent AFTER comparison; the desktop additionally checks acknowledgment,
 automatic refresh and a new host reopening the file. The shared testkit loader
 requires an explicit `TABLECRAFT_JET4_SCALAR_SOURCE` and both pinned image hashes.
 Ordinary CI leaves these two tests explicitly ignored. See the
-[application workflow result](results/jet4-genuine-application-workflows-2026-11-08.json).
+[application workflow result](../../results/rows/jet4-genuine-application-workflows-2026-11-08.json).
 These checks do not expand the existing Jet4 write profile or qualify Windows,
 native Access or interrupted recovery on this genuine source.
 
 ## Original existing-tree index update fixture
 
-[IndexUpdateFixture.java](IndexUpdateFixture.java) is an original MIT
+[IndexUpdateFixture.java](../../access/queries/expressions/IndexUpdateFixture.java) is an original MIT
 recipe using the same reviewed Jackcess 5.0.4 artifact. Its untracked V2000 input
 SHA-256 is `4c2db844ba947bd386e760ed2d8c631727b78211a9df4c0bfe1d0df508a3c2e8`.
 There are 1,000 manual Int32 keys, ascending primary and descending unique node
 trees, and Unicode memo/binary records including long external payloads.
 
-[The comparison](compare_index_updates.py) independently checks row/index
+[The comparison](../../access/queries/expressions/compare_index_updates.py) independently checks row/index
 order, memo/binary digests, native/CLI equality, exact byte footprints and duplicate
 rejection. Disposable output SHA-256 values, against that exact original:
 
@@ -1837,7 +1837,7 @@ are implied; ACE writes remain blocked.
 
 ## Original ACE 16-family read fixtures
 
-[ACE 16 comparison](../access/profiles/NATIVE_ACE16.md) reuses the original MIT Scalar/Index/Property/
+[ACE 16 comparison](../../../docs/access/profiles/NATIVE_ACE16.md) reuses the original MIT Scalar/Index/Property/
 Relationship/Validation/Definition recipes with reviewed Jackcess 5.0.4 V2016 and
 V2019 templates. Generated files remain untracked; they are independent engineering
 fixtures, not Microsoft Access-authored files. Observed input SHA-256 values:
@@ -1857,7 +1857,7 @@ relationships retained by both the engine and the complete independent inventory
 
 ## Original ACE 16 modern scalar fixtures
 
-[ModernScalarFixture.java](ModernScalarFixture.java) is original MIT
+[ModernScalarFixture.java](../../access/reading/tables/ModernScalarFixture.java) is original MIT
 repository test code, generated with the reviewed Jackcess 5.0.4 artifact above.
 Fresh V2016/V2019 files contain Large Number extremes and values beyond double
 precision, NULLs, a physical BigInt index and an empty calculated-column table.
@@ -1869,7 +1869,7 @@ No Access application code is executed. Generated files remain untracked.
 | V2016 (7 rows) | `41ca0f872f07ded32da69f8f7da9fcd978c8c9558c6596be9389c95917ae24f8` | `501a0e419d8cddd5d2f9349d095f2154e51602ad893991f1b65bc0377ac3446a` |
 | V2019 (13 rows) | `e829d4875d8a2d25df43eba2f94200c492f396a83f26ac17b921b30f6f47b45e` | `c1f1d1f9c7916f057abdd9b9e0fe0d55e86d01018c953d97f02fd1c67dd7ef81` |
 
-[The comparison runner](compare_ace16_scalars.py) verifies original family
+[The comparison runner](../../access/reading/tables/compare_ace16_scalars.py) verifies original family
 headers, exact independent tagged carriers, CLI query behavior, complete BigInt
 index checks, explicit calculated-column errors and unchanged input hashes. Synthetic Rust
 fixtures separately test profile/width gates, malformed timestamps and CLI output
@@ -1878,7 +1878,7 @@ conformance; a Microsoft Access oracle remains unrun.
 
 ## Original ACE 16 advanced field metadata
 
-[AdvancedFieldFixture.java](AdvancedFieldFixture.java) is original MIT
+[AdvancedFieldFixture.java](../../access/schema/fields/AdvancedFieldFixture.java) is original MIT
 repository test code generated with the reviewed Jackcess 5.0.4 JAR. Fresh
 V2016/V2019 files include calculation metadata, multivalue/attachment child schemas,
 append-only version-history fields, rich-text/Hyperlink/input-mask properties and
@@ -1889,7 +1889,7 @@ AutoNumber markers. They have no active application code and remain untracked.
 | V2016 | `84b35fd0d7c4c22a83d0a5b507f71ed6c782df7edbb9fc0f75d17da2864cadbc` |
 | V2019 | `03dacb57f6613a0139ce9811de25aae29dc9e3b289677396f5815d76cf49db15` |
 
-[The comparison](compare_advanced_fields.py) matches ten columns/profile
+[The comparison](../../access/schema/fields/compare_advanced_fields.py) matches ten columns/profile
 and rejects scalar queries on empty calculated/complex tables with no partial
 stdout. Normalized declaration digest for each profile is
 `86a60b47dbf0879e948a1c64ea3931611c32ff4e7af155ef1438644cb0460316`.
@@ -1911,7 +1911,7 @@ from the earlier presence-only field comparison and from child-value decoding.
 
 ## Original populated complex-child storage fixtures
 
-[ComplexRowsFixture.java](ComplexRowsFixture.java) is original MIT test
+[ComplexRowsFixture.java](../../access/reading/tables/ComplexRowsFixture.java) is original MIT test
 code using the reviewed Jackcess JAR, creating fresh V2016/V2019 files with three
 parents and three rows each for multivalues, encoded attachment storage and
 version history. Histories use explicit fixed timestamps; parent Notes start NULL.
@@ -1925,7 +1925,7 @@ or application content is executed; generated files remain untracked.
 
 Both nine-row normalized tagged outputs have SHA-256
 `385407dfff6c995502203cb34e465b712f9dbaedffccc2f34d5548973bd10fdf`.
-[The runner](compare_complex_rows.py) checks exact independent raw rows,
+[The runner](../../access/reading/tables/compare_complex_rows.py) checks exact independent raw rows,
 CLI counts, unchanged inputs and continued rejection of parent collections as
 scalar snapshots. Raw attachment bytes are encoded storage, not extracted file
 content. These are independent-reader comparisons, not Microsoft Access evidence.
@@ -1933,7 +1933,7 @@ An earlier failed history-deletion experiment was abandoned; it is not a fixture
 or a supported TableCraft/native history-deletion claim.
 
 The recipe's read-only `--links` mode independently reports scoped parent keys
-and child counts. [Link comparison](compare_complex_links.py) matches nine
+and child counts. [Link comparison](../../access/reading/tables/compare_complex_links.py) matches nine
 parent links per family across all three complex columns and rejects twelve
 corrupt disposable copies/profile without partial CLI output. Sorted normalized
 link output SHA-256 is
@@ -1943,7 +1943,7 @@ third-party input or extraction/conformance claim is introduced.
 
 ## Original ACE 16 composite constraint fixtures
 
-[CompositeConstraintFixture.java](CompositeConstraintFixture.java) is
+[CompositeConstraintFixture.java](../../access/schema/fields/CompositeConstraintFixture.java) is
 original MIT fixture code using reviewed Jackcess 5.0.4. Fresh files contain six
 parents, six many-to-one children and three one-to-one children, with exact partial
 and all-NULL cases. Generation asserts native-independent acceptance/rejection
@@ -1956,7 +1956,7 @@ behavior without executing VBA/application content. Files remain untracked.
 
 Both fifteen-row tagged outputs have digest
 `edeeaec8929864afe12f16d3ba2b687a35eca0f1949839167b9cc26d885a77a7`.
-[The runner](compare_composite_constraints.py) checks exact independent
+[The runner](../../access/schema/fields/compare_composite_constraints.py) checks exact independent
 records and audit coverage, then verifies four corrupt disposable copies/profile:
 missing parent, unmatched partial-NULL child, duplicate parent and duplicate
 one-to-one child. Original hashes remain unchanged. Physical composite indexes,
@@ -1964,7 +1964,7 @@ cascade writes and actual Microsoft Access behavior remain separate qualificatio
 
 ## Original ACE 16 predicate validation rules
 
-[PredicateRuleFixture.java](PredicateRuleFixture.java) is original MIT
+[PredicateRuleFixture.java](../../access/reading/tables/PredicateRuleFixture.java) is original MIT
 fixture code generated with the reviewed Jackcess JAR. Fresh V2016/V2019 files
 contain six tables for forward/reversed BETWEEN, IN/NOT IN, empty text rules and
 an existing unresolved NULL membership result. Generation asserts independent
@@ -1978,14 +1978,14 @@ the probe record rather than asserted as accepted. No active project code is run
 
 Both thirteen-row tagged outputs have digest
 `f6a86d4274618970448f991677df8d0cf6954b173ee0132559e4c8bfdec0c34e`.
-[Comparison](compare_predicate_rules.py) checks exact independent rows,
+[Comparison](../../access/reading/tables/compare_predicate_rules.py) checks exact independent rows,
 all six coverage reports and unchanged originals. Text/unknown NULL remain
 unsupported, not silently accepted. These are independent-reader fixtures;
 native Microsoft Access remains unrun. Generated files remain untracked.
 
 ## Original ACE 16 Int64 index fixtures
 
-[Int64IndexFixture.java](Int64IndexFixture.java) is original MIT repository
+[Int64IndexFixture.java](../../access/indexes/native/Int64IndexFixture.java) is original MIT repository
 test code generated with the reviewed Jackcess 5.0.4 artifact. Fresh V2016/V2019
 files contain 600 records, real node/leaf Int64 trees in both directions, duplicate
 and NULL keys, exact integer extremes/adjacent values beyond double precision,
@@ -1997,7 +1997,7 @@ No active Access content executes; generated files remain untracked.
 | V2016 | `408aa138ace738662bec60bf56894a22b963211a0e81eb99140993185d85a25a` |
 | V2019 | `f1d9ff999901e626c40eb2adafaf1e3ffdef172bc2b9a979c72c7a1831fe0bd7` |
 
-[The runner](compare_int64_indexes.py) verifies 1,212 ordered cursor rows
+[The runner](../../access/indexes/native/compare_int64_indexes.py) verifies 1,212 ordered cursor rows
 per file, 24 direct exact Int64/NULL/range selections, 20 additional matching query
 intervals, full native check coverage,
 NULL/precision-sensitive CLI filtering and
@@ -2009,7 +2009,7 @@ traversal. No native Access qualification is inferred.
 
 ## Original ACE 16 Byte and Int16 index fixtures
 
-[NarrowIndexFixture.java](NarrowIndexFixture.java) is original MIT test
+[NarrowIndexFixture.java](../../access/indexes/native/NarrowIndexFixture.java) is original MIT test
 code using the reviewed Jackcess 5.0.4 artifact. It generates 700-row Byte/Int16
 tables with real ascending/descending node trees, separate unique tables including
 unsigned/signed boundaries and repeated NULLs, and empty tables. Duplicate inserts
@@ -2020,7 +2020,7 @@ are independently rejected during generation. Files remain untracked and inert.
 | V2016 | `2ef10c1fc28362b6c57fe085b7178674a9e33be4ad779bcada65435566c7f4d5` |
 | V2019 | `7c56a90e64b55e271f35836d3aad9b9250ed1d70c9acd98bb9cc721d7219cb97` |
 
-[The runner](compare_narrow_indexes.py) matches 3,067 ordered rows/profile
+[The runner](../../access/indexes/native/compare_narrow_indexes.py) matches 3,067 ordered rows/profile
 and SQL filters against public independent cursors; native complete checks cover
 all supported indexes. Java Byte values are rendered unsigned. Tagged ordered-row
 SHA-256 is `94c719e52cd6ba4d77b7bd7f350b25b6474727f5c2ddeac9c1d1a0c29596be34`
@@ -2029,7 +2029,7 @@ Microsoft Access conformance remain unqualified.
 
 ## Original ACE 16 GUID relationship fixtures
 
-[GuidRelationshipFixture.java](GuidRelationshipFixture.java) is original
+[GuidRelationshipFixture.java](../../access/schema/fields/GuidRelationshipFixture.java) is original
 MIT test code using the reviewed Jackcess 5.0.4 artifact. Fresh inert V2016/V2019
 files contain six tables/32 rows with GUID/Int64 tuples, exact boundaries, NULLs,
 all-zero GUIDs and one-to-one declarations. Generation asserts duplicate/orphan
@@ -2040,7 +2040,7 @@ rejection, including alternate GUID input case for duplicates. Files stay untrac
 | V2016 | `760ead3e7b7ca568343092fc54edc9d25775d801caf65165f6154699be5f3dbb` |
 | V2019 | `c3b9571cf1640608cac3717b2ea7d44b4176b8623f2260d2ab077f6b977ada8c` |
 
-[The runner](compare_guid_relationships.py) matches 32 exact tagged rows
+[The runner](../../access/schema/fields/compare_guid_relationships.py) matches 32 exact tagged rows
 and six audits/profile, six corrupted-copy failures and all-NULL exemption.
 Tagged-row SHA-256 is `f9990ac3c56a760c6b6a4057b2399b10de556789f974475974ab463ac26b3196`
 for both families. It verifies immutable source hashes and retains a read-only
@@ -2051,7 +2051,7 @@ GUID physical-index ordering, native Access, cascades or write compatibility.
 
 ## Original ACE 16 Byte and Int16 relationship fixtures
 
-[NarrowRelationshipFixture.java](NarrowRelationshipFixture.java) is original
+[NarrowRelationshipFixture.java](../../access/schema/fields/NarrowRelationshipFixture.java) is original
 MIT code using reviewed Jackcess 5.0.4. Inert fresh V2016/V2019 databases each
 contain nine tables/59 records, separate Byte/Int16 keys, mixed tuples, one-to-one
 declarations, partial/all NULLs and signed/unsigned boundaries. Generation verifies
@@ -2062,7 +2062,7 @@ invalid insert rejection; databases stay untracked.
 | V2016 | `d73beac6fcadd1e475a6f37f2d49ca4087137167acfb6767e3d387dfc50bdfe5` |
 | V2019 | `cbbe94586c1a28812d7c76f8cff4f84ae5a5d9256fdf860ca93c95380233396e` |
 
-[The runner](compare_narrow_relationships.py) matches all 59 typed rows
+[The runner](../../access/schema/fields/compare_narrow_relationships.py) matches all 59 typed rows
 and nine audits, with six corrupted copies/profile and a separate all-NULL
 exemption check. Tagged-row SHA-256 is
 `e0e11f4821a700153e4e341ec8676185d6a33e2a503932e075e18de840517bcc`
@@ -2071,7 +2071,7 @@ qualification is implied.
 
 ## Original ACE 16 Int64 relationship fixtures
 
-[Int64RelationshipFixture.java](Int64RelationshipFixture.java) is original
+[Int64RelationshipFixture.java](../../access/schema/fields/Int64RelationshipFixture.java) is original
 MIT repository test code, generated with the reviewed Jackcess 5.0.4 artifact.
 Fresh V2016/V2019 files contain six tables and 35 records: exact full-range and
 adjacent Int64 values, mixed Int32/Int64 tuples, partial/all-NULL keys and enforced
@@ -2083,7 +2083,7 @@ Access code executes; generated databases remain untracked.
 | V2016 | `571ce07d06dd2951432a9d76535a0bf07185d4b3f98798c0984ab8fad8b34a87` |
 | V2019 | `97f58d77ce9fa2853b3a6299fd24bf430d54c607e2542930770a83607b00f4af` |
 
-[The runner](compare_int64_relationships.py) verifies all 35 exact rows,
+[The runner](../../access/schema/fields/compare_int64_relationships.py) verifies all 35 exact rows,
 six audit reports and four corrupt-copy rejection cases per family. Tagged rows
 SHA-256 is `43820899492e9744c2113ae4b33b6aa04247aa51920df24c719c25f9a075e29a`
 for each family. Originals remain unchanged. This is independent-reader evidence,
@@ -2091,7 +2091,7 @@ without native Access, cascade or composite physical-index qualification.
 
 ## Original ACE 16 stored-calculation fixtures
 
-[CalculatedStorageFixture.java](CalculatedStorageFixture.java) is original
+[CalculatedStorageFixture.java](../../access/reading/tables/CalculatedStorageFixture.java) is original
 MIT repository test code generated with the reviewed Jackcess 5.0.4 artifact.
 It explicitly disables expression evaluation and writes seven known Int32 caches,
 including a deliberately stale result, NULL and exact extremes, plus an empty
@@ -2102,7 +2102,7 @@ table. Fresh V2016/V2019 files remain untracked; no active Access code executes.
 | V2016 | `7b98d314b4d0ce5d22dee5847751aa0198c3d3e2aca05773a47459ecc9304263` |
 | V2019 | `d16d63cc07cb7a356a0fa21c415af668ffc0a95b9e50bd1ad75ef15cb6d99bc9` |
 
-[The runner](compare_calculated_storage.py) verifies all stored results,
+[The runner](../../access/reading/tables/compare_calculated_storage.py) verifies all stored results,
 empty output, rejection of ordinary query reads and three corrupt disposable
 copies per family. Tagged rows SHA-256 is
 `b2fd6c79beb488efac9f4f82b8225127fe3eac666857cb87d3ca52c1fd584fb7`
@@ -2111,11 +2111,11 @@ stored-value inspection only; native Access and recalculation remain unrun.
 
 ## Original ACE 16 opaque catalog payload fixtures
 
-[ObjectPayloadFixture.java](ObjectPayloadFixture.java) is original MIT
+[ObjectPayloadFixture.java](../../access/reading/tables/ObjectPayloadFixture.java) is original MIT
 code using reviewed Jackcess 5.0.4. It creates fresh inert table objects with
 known opaque catalog byte patterns, NULLs, empty data and a 65,537-byte limit case.
 The arbitrary bodies are not valid VBA/application content; generated files stay
-untracked. The [read-only oracle](ObjectPayloadOracle.java) accesses only
+untracked. The [read-only oracle](../../access/reading/tables/ObjectPayloadOracle.java) accesses only
 raw native binary fields without enabling expression evaluation.
 
 | Profile | Input SHA-256 | Matched bounded objects | Payload bytes | Normalized payload SHA-256 |
@@ -2123,7 +2123,7 @@ raw native binary fields without enabling expression evaluation.
 | V2016 | `e5493b66f3746e8436397341670a4dc8f2245c0280df86ea9fe15a79b86bdd32` | 37 | 16,582 | `73fe33efb50b3f110195310268ec4bed132e394a1805988253fc5ece62843cf6` |
 | V2019 | `5ceeecde670461c6a5f5a3f7999cb7f79358a8162a6034dcba73c0302e243c50` | 41 | 14,596 | `e4d5cb12960c5ef9ffc02a5b024e66b5953b8770fe26a9361cba5fb4eee35bbd` |
 
-[The comparison](compare_object_payloads.py) verifies exact tagged bytes,
+[The comparison](../../access/reading/tables/compare_object_payloads.py) verifies exact tagged bytes,
 empty/NULL distinctions, immutable sources and one oversized-object rejection
 without partial stdout/profile. The registered original Access example also
 matches all 146 catalog records/24,693 bytes; normalized payload SHA-256 is
@@ -2134,7 +2134,7 @@ No active content executes, and no VBA extraction or Access save/reopen is quali
 
 ## Original ACE 16 stored scalar calculation fixtures
 
-[CalculatedScalarFixture.java](CalculatedScalarFixture.java) is original
+[CalculatedScalarFixture.java](../../access/reading/tables/CalculatedScalarFixture.java) is original
 MIT repository code using the reviewed Jackcess 5.0.4 artifact. It disables
 evaluation and writes six cached projections (Boolean, Double, Currency, legacy
 DateTime, uncompressed/Unicode-compressed Text), five rows and empty declarations.
@@ -2145,15 +2145,15 @@ No Access-generated or active application content is used; outputs remain untrac
 | V2016 | `494160be568484db2ecb9fc08d14bbf2dd8446b8bc9d16e893743128dd01c757` |
 | V2019 | `b59973b300ad3cff2e73506dc3a7b7ee121dc4611180533274b7359d05772c41` |
 
-[The comparison](compare_calculated_scalars.py) matches 30 cached cells
+[The comparison](../../access/reading/tables/compare_calculated_scalars.py) matches 30 cached cells
 per family, empty declarations, exact CLI formatting and buffered rejection of
 an unknown Boolean cache on a disposable copy. Tagged independent calendar rows
 SHA-256 is `622a2f5aadbb9664ca734a4389d0fdd33402f403887df0751ca900f51c5bc155`
 for each family. Legacy date values additionally match exact serial bits through
-the original [date-bit oracle](StoredDateBitsOracle.java), avoiding a
+the original [date-bit oracle](../../access/queries/expressions/StoredDateBitsOracle.java), avoiding a
 Jackcess calendar conversion that rounds away sub-millisecond precision.
 TableCraft's nanosecond rendering retains an observed 65 ns fraction; this is
-documented in the [stored-scalar scope](../features/ACCESS_ADVANCED_FIELDS.md#explicit-stored-scalar-calculations).
+documented in the [stored-scalar scope](../../../docs/features/ACCESS_ADVANCED_FIELDS.md#explicit-stored-scalar-calculations).
 Original hashes remain unchanged. Native Access, formula execution, ordinary
 query eligibility and writes remain unqualified.
 
@@ -2217,7 +2217,7 @@ a bounded scalar ON domain separately qualifies the same captured scopes.
 Budgets stay unchanged. These remain independent models, not native Access SQL,
 NULL/negative/absent, binary or optimizer/error-order qualification.
 
-[AttachmentFixture.java](AttachmentFixture.java) is original MIT repository
+[AttachmentFixture.java](../../access/reading/tables/AttachmentFixture.java) is original MIT repository
 code generated with the reviewed Jackcess 5.0.4 artifact. Fresh V2016/V2019 files
 contain six attachment files on one parent plus an empty parent: empty bytes,
 all 256 byte values, Unicode UTF-8, inert PNG/ZIP signatures and a 65,536-byte
@@ -2230,7 +2230,7 @@ Generated databases remain untracked.
 | V2016 | `36fdc9136cb13464a279b43f53b1dd3e8485c7f42dc8498d74c839b28e9bfd30` |
 | V2019 | `c38881cdd305656af2ee8101e5491fd048437ab4a611dfeeb648cf9199a54960` |
 
-[The runner](compare_attachments.py) matches six original files and type
+[The runner](../../access/reading/tables/compare_attachments.py) matches six original files and type
 labels per family, totaling 65,810 bytes each, and verifies unchanged inputs.
 Normalized decoded-row SHA-256 is
 `4c038c940feaaa94445e667830b6b53007814d42345a594b2ca49f5b897c0995`
@@ -2238,7 +2238,7 @@ for each family. This is independent-reader evidence without native Access,
 attachment write/reopen or large streaming qualification. The separate
 `attachments.rs` CI golden uses Python zlib over original literal wrapper bytes.
 
-The recipe's read-only `--metadata` mode and [typed collection comparison](compare_attachment_columns.py)
+The recipe's read-only `--metadata` mode and [typed collection comparison](../../access/schema/fields/compare_attachment_columns.py)
 now match all six stored metadata/encoded-payload records per family, with canonical
 SHA-256 `ab8850199b35f9146a6442e92dea93c9ec6111ad25126eb9daac2126dccfa5f2`.
 Exact DATE bits use the exported ordinary column writer in memory, preserving
@@ -2251,7 +2251,7 @@ Native Access, collection mutation and application save/reopen remain unqualifie
 
 The recipe's additional read-only `--query-metadata` mode reports actual Int32
 parent IDs beside the unchanged stored attachment records. The
-[attachment query comparison](compare_attachment_queries.py) uses those
+[attachment query comparison](../../access/reading/tables/compare_attachment_queries.py) uses those
 IDs, exact metadata and existing empty memberships for explicit alignment and
 membership models. It verifies the reviewed JAR hash and all original database
 hashes. No database bytes, source dataset or third-party fixture are added; the
@@ -2261,7 +2261,7 @@ SQL qualification remains pending.
 
 ## Original ACE 16 Currency index inputs
 
-[CurrencyIndexFixture.java](CurrencyIndexFixture.java) is original MIT
+[CurrencyIndexFixture.java](../../access/indexes/native/CurrencyIndexFixture.java) is original MIT
 repository code using the reviewed Jackcess 5.0.4 artifact. It refuses existing
 output paths and generates inert V2016/V2019 tables with ascending/descending
 Currency node trees, unique/primary declarations, signed extrema, adjacent scaled
@@ -2274,7 +2274,7 @@ Generated databases remain untracked; nothing executes application content.
 | V2016 | `2581de772a345fa3185bf546ae53e0607fd42abf6595b87725cd3d61299da414` |
 | V2019 | `444ce6b3223943b7d1729b22de4278f7bb5b0f6e0468366e8ffc706754113cba` |
 
-[The runner](compare_currency_indexes.py) matches 1,426 ordered rows per
+[The runner](../../access/indexes/native/compare_currency_indexes.py) matches 1,426 ordered rows per
 family, SQL filters and complete table/index check coverage. Normalized output
 SHA-256 is `9ad67935b4dad7454b4d920e497c856c477d705f560d371c988b5431455a9487`
 on both families. All original hashes remain unchanged. This is independent
@@ -2283,7 +2283,7 @@ save/reopen remain unqualified.
 
 ## Original ACE 16 Currency relationship inputs
 
-[CurrencyRelationshipFixture.java](CurrencyRelationshipFixture.java) is
+[CurrencyRelationshipFixture.java](../../access/schema/fields/CurrencyRelationshipFixture.java) is
 original MIT repository code using the reviewed Jackcess 5.0.4 artifact. It refuses
 existing paths and generates six inert tables/profile with exact Currency and
 mixed Currency/Int32 keys, extrema, adjacent scaled units, partial/all-NULL tuples
@@ -2296,7 +2296,7 @@ Generated files are untracked; no application content executes.
 | V2016 | `17c939417295c0045954f8272a8123454aa704d5f1a88d78cbf95a28eb35d57b` |
 | V2019 | `0c41c93c534d3789b0dbc59cc1a1f7536c3ae991bd7916a5c41a337941a8ae3e` |
 
-[The runner](compare_currency_relationships.py) matches 48 exact rows,
+[The runner](../../access/schema/fields/compare_currency_relationships.py) matches 48 exact rows,
 six table audits and eight corrupt disposable-copy failures per family. Normalized
 tagged rows SHA-256 is
 `7eb875f3a826c4e7c45d3ae301ee65a3def8e224f5dd62cb8568bb9732f7414d`
@@ -2305,7 +2305,7 @@ physical composite indexes and Currency write qualification remain separate.
 
 ## Original ACE 16 compound numeric index inputs
 
-[CompositeIndexFixture.java](CompositeIndexFixture.java) is original MIT
+[CompositeIndexFixture.java](../../access/indexes/native/CompositeIndexFixture.java) is original MIT
 repository code using the reviewed Jackcess 5.0.4 artifact. Fresh V2016/V2019
 outputs contain five-/ten-component numeric node trees, all supported integer
 widths, exact scaled Currency, mixed directions and reordered keys, partial/all
@@ -2318,21 +2318,21 @@ databases remain untracked.
 | V2016 | `7f5c569ad9989dbc69ed6595fdf3e9e35118df4091d7a0e294bb242b1a0bc098` |
 | V2019 | `498de3bd2b3381d395931d18189e32f7a599f47e1e28daed55e6e3768000e41a` |
 
-[The runner](compare_composite_indexes.py) matches 4,513 exact ordered
+[The runner](../../access/indexes/native/compare_composite_indexes.py) matches 4,513 exact ordered
 rows/profile and required-index residual queries, complete check coverage,
 maximum-width 98-/94-byte node/leaf entries, and explicit failure without fallback
 for corrupt roots, Text and ignore-NULL profiles. Normalized rows SHA-256 is
 `2706f9166905577243c6c2874b1dc560c4b9fb1577302d0ca5966a8765b3907f`
 on both families. The ten-column trees have three node/45 leaf pages and maximum
 prefix two; the separate 93-byte compressed prefix golden is synthetic CI evidence.
-The existing [ACE16 corpus runner](compare_ace16.py) also matches 1,000
+The existing [ACE16 corpus runner](../../access/reading/tables/compare_ace16.py) also matches 1,000
 original two-Int32 composite rows/profile without regenerating any input.
 All original hashes remain unchanged. Native Access, composite mutation/seeks,
 macros, concurrency and application save/reopen remain unqualified.
 
 ## Original ACE 16 GUID index inputs
 
-[GuidIndexFixture.java](GuidIndexFixture.java) is original MIT repository
+[GuidIndexFixture.java](../../access/indexes/native/GuidIndexFixture.java) is original MIT repository
 code using the reviewed Jackcess 5.0.4 artifact. Fresh V2016/V2019 files contain
 1,000-row ascending/descending GUID node trees, unique/primary tables, all-zero/
 high/group-boundary GUIDs, repeated NULLs and empty/unqualified composite indexes.
@@ -2345,7 +2345,7 @@ Nothing executes application content; generated databases remain untracked.
 | V2016 | `6805dbcf59eaa8d1ac88c7d5fd710eb131f0382a0d4ce712d7d1c80e1267b079` |
 | V2019 | `4300ae1cec647871237c33f454ec7a5ce06f764dc4a874a6251e878bd1f2b900` |
 
-[The runner](compare_guid_indexes.py) matches 2,034 ordered rows/profile,
+[The runner](../../access/indexes/native/compare_guid_indexes.py) matches 2,034 ordered rows/profile,
 complete check coverage, required-index NULL filters and buffered rejection of a
 corrupt selected root or unqualified GUID composite. Oracle text is formatted in
 the CLI's lowercase canonical spelling; this does not define SQL collation.
@@ -2357,7 +2357,7 @@ composites now have the separate tuple evidence below.
 
 ## Original ACE 16 GUID tuple index inputs
 
-[GuidCompositeIndexFixture.java](GuidCompositeIndexFixture.java) is original
+[GuidCompositeIndexFixture.java](../../access/indexes/native/GuidCompositeIndexFixture.java) is original
 MIT repository code using the reviewed Jackcess 5.0.4 artifact. Fresh V2016/V2019
 outputs contain reordered mixed GUID/Currency/Int64/Int16 and ten-GUID node trees,
 direction combinations, exact scaled extrema, partial/all NULLs, unique/primary
@@ -2370,7 +2370,7 @@ untracked. Canonical uppercase GUID input retains the earlier cursor-case bounda
 | V2016 | `58426808a5a292be96a455f27ee8dcde967f1a18453a04f5d6fcfb6f52c4539b` |
 | V2019 | `3bfdf15fe9b113f8365d3f344129cf90b8bf549d2c8c3861bf7d8fa58afa8e5c` |
 
-[The runner](compare_guid_composite_indexes.py) matches 4,512 ordered rows/
+[The runner](../../access/indexes/native/compare_guid_composite_indexes.py) matches 4,512 ordered rows/
 profile, complete checks, required-index NULL filters and buffered failure for a
 corrupt selected root or unqualified GUID/Text tuple. Ten-GUID trees contain nine
 nodes/96 leaves across three indexes, maximum expanded entries 198/194 bytes,
@@ -2380,13 +2380,13 @@ prefix is a separate synthetic golden. Normalized row SHA-256 is
 on both families. Original bytes remain unchanged. Native Access, composite seeks/
 mutation, application save/reopen and broader index encodings remain unqualified.
 
-The earlier [single-GUID runner](compare_guid_indexes.py) now additionally
+The earlier [single-GUID runner](../../access/indexes/native/compare_guid_indexes.py) now additionally
 checks its empty GUID/Int32 composite without changing any original input or its
 2,034-row canonical comparison hash.
 
 ## Original ACE 16 Boolean index inputs
 
-[BooleanIndexFixture.java](BooleanIndexFixture.java) is original MIT
+[BooleanIndexFixture.java](../../access/indexes/native/BooleanIndexFixture.java) is original MIT
 repository code using the reviewed Jackcess 5.0.4 artifact. Fresh inert V2016/V2019
 outputs contain 1,000-row single and Boolean/Currency/GUID/Int16 mixed node trees,
 500 ten-Boolean rows, both directions, unique/primary/empty indexes and partially
@@ -2399,7 +2399,7 @@ generated databases remain untracked.
 | V2016 | `ae9ef759d914e58bd54dcd6e0126f15f7624d6db7336497363199097404cb714` |
 | V2019 | `27489674902f14335482eedad35ebcd3729d11c1927c393a88d63c3bb0eb9b32` |
 
-[The comparison runner](compare_boolean_indexes.py) matches 4,509 ordered
+[The comparison runner](../../access/indexes/native/compare_boolean_indexes.py) matches 4,509 ordered
 rows/profile, actual node roots, Boolean equality/IS NULL residual queries and
 complete checks. Corrupt selected roots fail without output or fallback. Canonical
 row SHA-256 is `949b831bc890d38f47fba4a5c196384c74277471ba415b9ccef9c1d8ce62aa9b`
@@ -2410,7 +2410,7 @@ save/reopen remain unqualified.
 
 ## Original ACE 16 floating index inputs
 
-[FloatingIndexFixture.java](FloatingIndexFixture.java) is original MIT
+[FloatingIndexFixture.java](../../access/queries/expressions/FloatingIndexFixture.java) is original MIT
 repository code using the reviewed Jackcess 5.0.4 artifact. Fresh inert V2016/V2019
 version-two outputs contain Single/Double node trees, separate finite-only controls,
 mixed floating/Boolean/Currency/GUID tuples, ten-Double keys, unique and empty
@@ -2426,9 +2426,9 @@ version-one experiments remain outside the qualified corpus.
 | V2016 | `f52b791d2c1e5a151cfb6e7d629bdf4e9cf2ca379436b8b12c90b4a8400ea6eb` |
 | V2019 | `8f51e5d6c1ed947db798e78f25a879d11149f5d2fb7affad673ee1aa7be1af3a` |
 
-[The runner](compare_floating_indexes.py) independently matches 10,540
+[The runner](../../access/queries/expressions/compare_floating_indexes.py) independently matches 10,540
 ordered rows/profile with exact tagged IEEE bytes and sequential controls. It uses
-the original [TableDataOracle.java](TableDataOracle.java)'s new explicit
+the original [TableDataOracle.java](../../access/reading/tables/TableDataOracle.java)'s new explicit
 index mode; existing sequential behavior is retained. Finite-only controls pass
 required-index CLI queries and residual filters; non-finite tables retain query's
 explicit buffered rejection. Complete checks pass and corrupt finite roots fail
@@ -2441,7 +2441,7 @@ save/reopen remain unqualified.
 
 ## Original exact DATE precision inputs
 
-[DateBitsFixture.java](DateBitsFixture.java) is original MIT repository
+[DateBitsFixture.java](../../access/queries/expressions/DateBitsFixture.java) is original MIT repository
 code using the reviewed Jackcess 5.0.4 artifact. Fresh inert version-two outputs
 contain 14 ordinary and 14 explicitly cached DATE values per family: NULL, signed
 zeros, subnormal serials, positive/negative day-zero aliases, negative dates,
@@ -2455,8 +2455,8 @@ remain untracked; earlier private version-one experiments are unqualified.
 | V2016 | `f5b94dae401bc8bd74429f94fd5960839308ec488b61f3ae59c7632553bcaa4c` |
 | V2019 | `a64dba44e398ff35bb8574941c3d6ce6063a9049b44cf68543edac7d5f52da5d` |
 
-[The runner](compare_date_bits.py) compares both native reads and the
-corrected [bit oracle](StoredDateBitsOracle.java) against independent
+[The runner](../../access/queries/expressions/compare_date_bits.py) compares both native reads and the
+corrected [bit oracle](../../access/queries/expressions/StoredDateBitsOracle.java) against independent
 golden serial bits. It matches 28 cells/profile with normalized SHA-256
 `bf551831ff280021cce1a92527e12e7f566eaf6c6237e2032de7dc03948e9320`.
 Generation proves that `toDateDouble` changes at least one precision probe.
@@ -2468,7 +2468,7 @@ Production Rust behavior is unchanged; native Access conformance remains unrun.
 
 ## Original ACE 16 DATE index inputs
 
-[DateIndexFixture.java](DateIndexFixture.java) is original MIT repository
+[DateIndexFixture.java](../../access/queries/expressions/DateIndexFixture.java) is original MIT repository
 code using the reviewed Jackcess 5.0.4 artifact. Fresh inert V2016/V2019 outputs
 contain 1,000-row single and mixed DateTime/GUID/Currency/Boolean node trees, 500
 ten-DateTime rows, unique/primary/empty indexes, exact negative serials, signed
@@ -2482,7 +2482,7 @@ disabled; generated databases remain untracked.
 | V2016 | `bc7b2887bfc775042a12bc77febae61ca6fc4b4da158fc03a541799f6d46d78a` |
 | V2019 | `814ecb93c44ef2c26b716eaa5ddfc81d42a8491663581f007b922d1e20fbb49a` |
 
-[The runner](compare_date_indexes.py) independently matches 4,528 ordered
+[The runner](../../access/queries/expressions/compare_date_indexes.py) independently matches 4,528 ordered
 rows/profile, exact tagged serial bits, sequential controls, complete checks and
 actual node roots. Required-index CLI comparisons retain alias equality and
 civil-time ORDER BY separately from physical serial order. Corrupt roots fail
@@ -2495,7 +2495,7 @@ and application save/reopen remain unqualified.
 
 ## Original ACE 16 Decimal index inputs
 
-[DecimalIndexFixture.java](DecimalIndexFixture.java) is original MIT
+[DecimalIndexFixture.java](../../access/queries/expressions/DecimalIndexFixture.java) is original MIT
 repository code using the reviewed Jackcess 5.0.4 artifact. Fresh inert V2016/V2019
 outputs assert corrected numeric index encoding, then construct coefficients
 through BigInteger/BigDecimal without floating conversion. Three 1,000-row tables
@@ -2510,7 +2510,7 @@ ordinary unique NULL acceptance. No expressions execute; databases stay untracke
 | V2016 | `ee6bf835f79670ef70adaf7128fe7609ae3ddd2be0ba6ed3d590304ed1a5b11e` |
 | V2019 | `174a36153e459f69418bf40f80acb628ff190ef37720af57fba9752ee6d34fae` |
 
-[The runner](compare_decimal_indexes.py) independently matches 6,116 ordered
+[The runner](../../access/queries/expressions/compare_decimal_indexes.py) independently matches 6,116 ordered
 rows/profile, exact tagged coefficients/scales, sequential controls, complete
 checks and actual node roots. Required-index CLI queries/NULL residuals pass;
 corrupt roots fail without output/fallback. Normalized
@@ -2522,7 +2522,7 @@ Access and application save/reopen remain unqualified.
 
 ## Original ACE 16 Decimal tuple index inputs
 
-[DecimalCompositeIndexFixture.java](DecimalCompositeIndexFixture.java) is
+[DecimalCompositeIndexFixture.java](../../access/queries/expressions/DecimalCompositeIndexFixture.java) is
 original MIT repository code using the reviewed Jackcess 5.0.4 artifact. Fresh
 inert V2016/V2019 outputs assert corrected numeric encoding and disable expression
 evaluation. They contain mixed ten-component Decimal/GUID/Currency/Int64/Byte/
@@ -2538,7 +2538,7 @@ untracked and no active content executes.
 | V2016 | `b988d40df160c21701a4d9289db80f6dccb55792aa3254f79760f38813d6a100` |
 | V2019 | `ce9a997f1623c7ce151727949d40646cf394d9a1b552e4415b2bb065909d8269` |
 
-[The runner](compare_decimal_composite_indexes.py) independently matches
+[The runner](../../access/queries/expressions/compare_decimal_composite_indexes.py) independently matches
 3,512 ordered rows/profile, exact tagged coefficients/scales and GUID/IEEE/DATE
 bits, sequential controls, actual node roots and complete checks. Required-index
 residual queries pass; corrupt roots and unqualified Text tuples fail without
@@ -2552,7 +2552,7 @@ remain unqualified.
 
 ## Original ACE 16 Decimal relationship inputs
 
-[DecimalRelationshipFixture.java](DecimalRelationshipFixture.java) is
+[DecimalRelationshipFixture.java](../../access/schema/fields/DecimalRelationshipFixture.java) is
 original MIT repository code using the reviewed Jackcess 5.0.4 artifact. Fresh
 V2016/V2019 outputs contain 12 inert tables/profile with precision-28 Decimal
 single keys at scales 0/4/28 and mixed Decimal/Int32/Decimal tuples. BigInteger/
@@ -2566,7 +2566,7 @@ paths, remain untracked and contain no active content.
 | V2016 | `cd1be7df981b25e22dae73e6cf929bddc13d3c5fa950a2a74e11ae10e162ee09` |
 | V2019 | `420e976683f1df527e1a9cb65c7e693367abb06d422ec600ff98657d04bec2f1` |
 
-[The runner](compare_decimal_relationships.py) matches 116 exact rows,
+[The runner](../../access/schema/fields/compare_decimal_relationships.py) matches 116 exact rows,
 12 table audits, 17 corrupt-copy failures, two all-NULL precision/scale mismatch
 rejections and a separate all-NULL exemption per family. Normalized tagged row
 SHA-256 is `bd60cfb4d961affa706c549808b51c301e6a695c1cd1fc37b69d5c74b3c828f4`
@@ -2575,7 +2575,7 @@ membership, Decimal mutation and application save/reopen remain unqualified.
 
 ## Original ACE 16 multivalue collection inputs
 
-[MultivalueFixture.java](MultivalueFixture.java) is original MIT repository
+[MultivalueFixture.java](../../access/reading/tables/MultivalueFixture.java) is original MIT repository
 code using the reviewed Jackcess 5.0.4 artifact. Fresh V2016/V2019 outputs contain
 eight scalar collection types, four parents each, exact IEEE/GUID/Decimal carriers,
 Unicode/control text, stored duplicates/NULLs, empty parents, a 100-value boundary
@@ -2589,8 +2589,8 @@ remain untracked. Decimal's built-in conceptual template has width 9, precision
 | V2016 | `9417112bf18ef96824bc2653bc36aef361164daa6a04e4164a7f9baea1f2dc9d` |
 | V2019 | `0c4eb87f037daa84d062af850b77cdb33d777831081b1271a231f73e255125aa` |
 
-[The read-only oracle](MultivalueOracle.java) uses native collection APIs
-with expression evaluation disabled. [The runner](compare_multivalues.py)
+[The read-only oracle](../../access/reading/tables/MultivalueOracle.java) uses native collection APIs
+with expression evaluation disabled. [The runner](../../access/reading/tables/compare_multivalues.py)
 matches 32 parent collections/137 stored values per family, rejects 12 disposable
 orphan/template-hint copies without output, distinguishes typed overflow rejection
 from raw 101-item membership, and rechecks earlier populated complex inputs above.
@@ -2603,7 +2603,7 @@ independently generated BigInt multivalue fixture.
 
 ## Original ACE 16 stored version-history inputs
 
-[VersionHistoryFixture.java](VersionHistoryFixture.java) is original MIT
+[VersionHistoryFixture.java](../../access/reading/tables/VersionHistoryFixture.java) is original MIT
 repository code using the reviewed Jackcess 5.0.4 artifact. Fresh V2016/V2019
 outputs contain Notes/Details histories in two tables, with six parents/18 versions,
 an ordinary Memo without history, empty membership, duplicate text, Unicode/NUL,
@@ -2619,9 +2619,9 @@ and execute no application content.
 | V2016 | `0fabc26956897e117dffb19ca1e575713172988452a01e8ff6a81ba79db3a8d0` |
 | V2019 | `5f92a714c9e920459c313e70965b537b509e2d87da32499fcc43e640fb921b92` |
 
-[The read-only oracle](VersionHistoryOracle.java) compares flat storage
+[The read-only oracle](../../access/reading/tables/VersionHistoryOracle.java) compares flat storage
 order and separately observes public history API order with expression evaluation
-disabled. [The runner](compare_version_history.py) matches six collections/
+disabled. [The runner](../../access/reading/tables/compare_version_history.py) matches six collections/
 18 versions per family, exact text/DATE carriers, nullable metadata and visible-
 Memo bindings; public API membership agrees while its tie-ID order differs.
 Six corrupt-copy failures, one preserved NULL timestamp mutation and the earlier
@@ -2633,7 +2633,7 @@ history mutation and application save/reopen remain unqualified.
 
 ## Original ACE 16 saved-query fragment inputs
 
-[SavedQueryFixture.java](SavedQueryFixture.java) is original MIT repository
+[SavedQueryFixture.java](../../access/queries/saved/SavedQueryFixture.java) is original MIT repository
 code using the reviewed Jackcess 5.0.4 artifact. It refuses existing paths and
 writes explicit inert MSysObjects/MSysQueries rows into fresh V2016/V2019 files.
 Eleven definitions/75 fragments cover all nine query-object flag families, signed
@@ -2648,8 +2648,8 @@ provider or application content executes; generated files remain untracked.
 | V2016 | `297e7d3aa5c27dd6ba77c1d93466723785fc09e32b9f1c89e54cc96a89a1b2b4` |
 | V2019 | `f1fc4ad48d91f05bf60c5f88f092aaa0b09be2cf66080c74058d3af8fb6cf19d` |
 
-[The read-only oracle](SavedQueryOracle.java) never invokes toSQLString or
-execution. [The runner](compare_saved_queries.py) matches all 75 fragments/
+[The read-only oracle](../../access/queries/saved/SavedQueryOracle.java) never invokes toSQLString or
+execution. [The runner](../../access/queries/saved/compare_saved_queries.py) matches all 75 fragments/
 family and six disposable-copy outcomes: four retained inspection variants
 (unknown tag, NULL attribute/order, unbound row) and two buffered carrier/geometry
 failures. NULL key fields violate native index constraints; successful inspection
@@ -2666,7 +2666,7 @@ application save/reopen.
 
 ## Original ACE 16 saved SELECT inputs
 
-[SavedSelectFixture.java](SavedSelectFixture.java) is original MIT repository
+[SavedSelectFixture.java](../../access/queries/saved/SavedSelectFixture.java) is original MIT repository
 code using the same reviewed Jackcess 5.0.4 artifact. It refuses existing paths and
 creates thirteen local SELECT definitions through explicit fresh system-row writes
 per V2016/V2019 family. Constants, source/column aliases, multiple projections,
@@ -2680,8 +2680,8 @@ Generated files remain untracked and mutations use disposable copies.
 | V2016 | `c3835339c5b54b164ddc8e041cd18d38e15ae5dc358b5380aa885d52ef86d294` |
 | V2019 | `db05f622b34776278943b5fb862130c20a85ba6ed496851bc7e481ebaabeea66` |
 
-[SavedSelectOracle.java](SavedSelectOracle.java) opens read-only and invokes
-toSQLString without execution. [Comparison](compare_saved_selects.py) feeds
+[SavedSelectOracle.java](../../access/queries/saved/SavedSelectOracle.java) opens read-only and invokes
+toSQLString without execution. [Comparison](../../access/queries/saved/compare_saved_selects.py) feeds
 those independently assembled spellings through the bounded SQL parser, matching
 all thirteen adapter models per family through both the engineering host and
 `query saved` CLI. Query-name-prefixed canonical SQL SHA-256:
@@ -2694,13 +2694,13 @@ The registered example separately asserts an observed bare leading-digit name in
 the reference rendering and compares the adapter with an explicitly quoted expected
 source identity. That spelling is outside the SQL parser's current profile; this
 regression is not counted among whole-renderer comparisons. Original sample bytes
-and hash remain unchanged. [The contract](../access/queries/NATIVE_SAVED_QUERIES.md#owned-select-reconstruction)
+and hash remain unchanged. [The contract](../../../docs/access/queries/NATIVE_SAVED_QUERIES.md#owned-select-reconstruction)
 records the narrow metadata/order/identifier profile. Saved-query execution,
 native Access conformance and application save/reopen remain unqualified.
 
 ## Original ACE 16 saved join inputs
 
-[SavedSelectFixture.java](SavedSelectFixture.java) `--joins` is original MIT
+[SavedSelectFixture.java](../../access/queries/saved/SavedSelectFixture.java) `--joins` is original MIT
 repository code using the same reviewed artifact, fresh-path and disabled-expression
 policies. Nine additional definitions cover INNER/LEFT/RIGHT, reversed table
 storage, ASCII endpoint case variants, explicit aliases, self-joins, Unicode table
@@ -2713,20 +2713,20 @@ tables/fields exist in these original fixtures, but no query execution occurs.
 | V2016 | `3c1bd36f7a0597fdc5cf37191125c32203ebbd2f910369e2f39fc05aa43bd0f2` |
 | V2019 | `92e2221be9bab8c6cbfd27e05eec9c50709c9c6103e264603c621d665e564a94` |
 
-[The runner](compare_saved_joins.py) matches the independent renderer's
+[The runner](../../access/queries/saved/compare_saved_joins.py) matches the independent renderer's
 twenty-two normalized models through both the engineering host and public CLI.
 Query-name-prefixed canonical SQL SHA-256 is
 `25fdf506c0243a5d3960caecf7e301da3dc315ed16a81927e48fb23bab9caa68`
 on both families. Eight mutations per family retain inspectable raw field carriers
 but fail reconstruction without stdout: unknown/NULL kind, NULL left/right/condition,
 undeclared endpoint, ambiguous aliases and non-ASCII comparison labels. Originals
-remain unchanged; generated files stay untracked. [The join contract](../access/queries/NATIVE_SAVED_QUERIES.md#two-source-native-joins)
+remain unchanged; generated files stay untracked. [The join contract](../../../docs/access/queries/NATIVE_SAVED_QUERIES.md#two-source-native-joins)
 keeps compound/larger graphs, Cartesian sources, non-ASCII label matching, actual
 Access and query execution unqualified. No production ACE write support is enabled.
 
 ## Original ACE 16 saved parameter inputs
 
-[SavedSelectFixture.java](SavedSelectFixture.java) `--parameters` is original
+[SavedSelectFixture.java](../../access/queries/saved/SavedSelectFixture.java) `--parameters` is original
 MIT repository code using the same reviewed artifact, fresh-path and disabled-
 expression policies. Eight parameterized definitions add twelve scalar type tags,
 literal prompts/punctuation, NULL/zero/positive/max-i32 Text syntax arguments,
@@ -2739,7 +2739,7 @@ untracked; all mutation experiments use disposable copies.
 | V2016 | `72d4ed8567e85437a91a086bfd3b1d33858b3e1687cb00cbc526f66d3cd2e6fa` |
 | V2019 | `8b1d1e3d2a0a81a2ce364f4e51bf3a0d6896e24e4a5f3fe32fc0851b67f9426d` |
 
-[The runner](compare_saved_parameters.py) matches all twenty-one independent
+[The runner](../../access/queries/saved/compare_saved_parameters.py) matches all twenty-one independent
 normalized models per family through the engineering host and public CLI.
 Query-name-prefixed canonical SQL SHA-256:
 `ea448de23733f8f2dccb47770a1044e1aeeca7e13838b24148bd9db2d7d18801`.
@@ -2749,7 +2749,7 @@ non-Text extra, duplicate name/order and unused non-NULL empty Name2. Name mutat
 checks exact original encodings and replaces equal-width bytes. Duplicate ordering
 keys do not qualify native index integrity merely because inspection succeeds.
 
-The [parameter contract](../access/queries/NATIVE_SAVED_QUERIES.md#native-parameter-declarations)
+The [parameter contract](../../../docs/access/queries/NATIVE_SAVED_QUERIES.md#native-parameter-declarations)
 keeps type/name gaps, runtime Text-value limits, native Access and query execution
 qualification explicit. Text arguments are syntax, not stored-field width evidence.
 Current Rust tests separately pack synthetic system rows across bounded data pages
@@ -2758,7 +2758,7 @@ Existing registered example bytes/hash remain unchanged; no ACE write support is
 
 ## Original ACE 16 compound join inputs
 
-[SavedSelectFixture.java](SavedSelectFixture.java) `--compound-joins` is
+[SavedSelectFixture.java](../../access/queries/saved/SavedSelectFixture.java) `--compound-joins` is
 original MIT repository code using the same reviewed artifact/fresh-path policy.
 Six definitions cover two/three distinguishable same-pair conditions for each
 INNER/LEFT/RIGHT kind, alongside the twenty-two earlier SELECT/simple-join controls.
@@ -2769,7 +2769,7 @@ Expression evaluation remains disabled and no native query or application code r
 | V2016 | `02c5d9c4fe4c44100ec1ebea8d06de4c58159337bd9286c9b3c559cfcba69f27` |
 | V2019 | `2409d297ef87533229aa4f18ddcbf9b968ce6ecf208863f94c866682cf704e2a` |
 
-[Comparison](compare_compound_joins.py) matches all twenty-eight normalized
+[Comparison](../../access/queries/execution/compare_compound_joins.py) matches all twenty-eight normalized
 independent models/family through both hosts, including reversed condition order
 and owned conjunction association. Query-name-prefixed canonical SQL SHA-256:
 `df42f32423054ac50ac9252de8e29157d5bff6a18385cabdb86d38627aaa2374`.
@@ -2777,7 +2777,7 @@ Eight copies/family keep raw carriers inspectable but reject reconstruction with
 stdout: mixed/NULL kinds, NULL endpoints, reversed/other condition endpoints and
 duplicate/reversed ordering keys. The runner verifies original endpoint/order
 encodings before mutation. Originals remain unchanged and generated files stay
-untracked. [The condition contract](../access/queries/NATIVE_SAVED_QUERIES.md#multiple-conditions-on-the-same-pair)
+untracked. [The condition contract](../../../docs/access/queries/NATIVE_SAVED_QUERIES.md#multiple-conditions-on-the-same-pair)
 keeps the sixteen-part consumer ceiling, metadata/name/graph gaps, actual Access
 and native execution/error-order qualification explicit. No ACE write support is enabled.
 
@@ -2825,7 +2825,7 @@ The Jet 4 offline Decimal4/ID edit produces a disposable image SHA-256
 `fb4cf72c5e62537c6d8cbd1fb1c077c60e86f177ba7fbd69c7c1e90ab1dae501`,
 with sequential/two-index row SHA-256
 `d1bc3a77aa2fca4327c3382045c95f4a67eab869b087042518a07f13eee5e086`.
-The [profile record](../access/profiles/NATIVE_JET4.md) separates native/remaining scope.
+The [profile record](../../../docs/access/profiles/NATIVE_JET4.md) separates native/remaining scope.
 
 ## ACE 16 write-preview inputs
 
@@ -2842,11 +2842,11 @@ creation/qualification is claimed. The normal ACE write API remains blocked.
 | `tablecraft-ace16-preview-v1-2016.accdb` | `45928dd403fd97f2acb2dead3da7fb9a412e9738a229b71453dc17b93d5476cf` | `979d2d3f7033fd61b3b6a1cc3772c527c0e08f4275b5c6499e133e56e4f2233e` | `a5ad00046a6cfb4d518734bcf934b6c7ae0e0a1b0e7d96179d80998962080383` |
 | `tablecraft-ace16-preview-v1-2019.accdb` | `2b4fbc738907ec8e29caa1d3b9f4bf67e8dcb77ef812e11f0e14b8fc41a7524b` | `31b94bda901868e26005dfca7a7e9b93eb9912a1fe8538ac257ef48a1b097daa` | `8de5d804e76120e8d7a5d6bd99292979af6cbca5974c031f2eeb3e55e8f0c145` |
 
-The [comparison runner](compare_ace16_write_previews.py) verifies exact
+The [comparison runner](../../access/reading/tables/compare_ace16_write_previews.py) verifies exact
 field/index-entry spans and independently reopened rows, long-value lengths and
 index references; candidates retain every unrelated byte. It rejects rule/stale/
 duplicate requests without files, refuses existing outputs and checks the normal
-CLI ACE gate. Original hashes remain unchanged. [Preview scope](ACE16_WRITE_PREVIEWS.md)
+CLI ACE gate. Original hashes remain unchanged. [Preview scope](../development/ACE16_WRITE_PREVIEWS.md)
 records separate native/macro/production qualification requirements.
 
 ## ACE 16 exact fixed scalar preview inputs
@@ -2889,12 +2889,12 @@ All eighteen candidates match exact independent carriers and complete Memo/OLE
 contents. Every byte outside the selected fixed field remains unchanged; the
 unrelated primary index is checked and retained. Wrong carrier input creates no
 output, existing output paths are never overwritten and original input hashes
-remain identical. [Contract and reproduction](ACE16_WRITE_PREVIEWS.md#exact-fixed-scalar-candidates)
+remain identical. [Contract and reproduction](../development/ACE16_WRITE_PREVIEWS.md#exact-fixed-scalar-candidates)
 retain the optional/non-journalable boundary and Windows/macro qualification gaps.
 
 ## ACE 16 Boolean and NULL-mask preview inputs
 
-The original inert [MaskUpdateFixture recipe](MaskUpdateFixture.java)
+The original inert [MaskUpdateFixture recipe](../../access/queries/expressions/MaskUpdateFixture.java)
 generates V2016/V2019 inputs with Boolean columns across mask-byte boundaries,
 nine nullable fixed carriers, required/range rules, Memo/OLE payloads, an enforced
 relationship and an indexed Boolean control. Expression evaluation is disabled.
@@ -2909,7 +2909,7 @@ creation, not native Access provenance.
 | `tablecraft-mask-updates-v1-2016.accdb` | `62dbe695e55420e525c7fef58ae2cde2a05ed3e5b8200df9897fbe87fb67553f` | `ca5146cfe4a068496b1dfcb86b409687164d29631b4ab945ceb0b6d6d04dae40` |
 | `tablecraft-mask-updates-v1-2019.accdb` | `d67d2e8e873c58cebce49c1531c7f4d7429f5a12459242df68767d7c176a5e6d` | `ca5146cfe4a068496b1dfcb86b409687164d29631b4ab945ceb0b6d6d04dae40` |
 
-[The comparison runner](compare_mask_updates.py) passes 42 candidates per
+[The comparison runner](../../access/queries/expressions/compare_mask_updates.py) passes 42 candidates per
 family, including fourteen exact no-ops, with complete independently reopened
 rows, long values, selected payload/mask spans and unchanged neighboring bits.
 Eleven rejected requests per family now cover required/rule failures, wrong/stale
@@ -2919,14 +2919,14 @@ unchanged. The automatic type-2 index is retained. The previously rejected
 valid-parent child edit now belongs to the checked foreign preview profile; its
 broader independent evidence is recorded below. Native Access, data macros and
 normal ACE saves remain unqualified; see the
-[mask contract](ACE16_WRITE_PREVIEWS.md#boolean-and-null-mask-transitions).
+[mask contract](../development/ACE16_WRITE_PREVIEWS.md#boolean-and-null-mask-transitions).
 
 ## Reciprocal foreign-index inputs
 
-The original inert [ForeignIndexFixture recipe](ForeignIndexFixture.java)
+The original inert [ForeignIndexFixture recipe](../../access/indexes/native/ForeignIndexFixture.java)
 at commit `d28143d` created V2016/V2019 restrict, cascade-update/delete, SET NULL, composite,
 self-reference and shared-primary-alias cases. Expressions are not evaluated.
-Generation and the original [read-only oracle](ForeignIndexOracle.java)
+Generation and the original [read-only oracle](../../access/indexes/native/ForeignIndexOracle.java)
 use the reviewed Apache-2.0 Jackcess 5.0.4 JAR SHA-256
 `19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`, source
 pin `be0a2139b087a227d14cafd4ea231306a5a3a862`. No third-party source is copied.
@@ -2945,11 +2945,11 @@ output. Two registered-sample links match canonical SHA-256
 All originals remain unchanged. This first evidence qualified reciprocal metadata;
 the current runner requires the expanded v2 inputs below. Physical foreign-index
 reads/writes and native Access behavior remain separate work. See the
-[inspection contract](../access/indexes/NATIVE_INDEXES.md#reciprocal-foreign-index-links).
+[inspection contract](../../../docs/access/indexes/NATIVE_INDEXES.md#reciprocal-foreign-index-links).
 
 ## Relationship-catalog agreement inputs
 
-The [ForeignIndexFixture recipe](ForeignIndexFixture.java) at commit `a8dfeaa` added
+The [ForeignIndexFixture recipe](../../access/indexes/native/ForeignIndexFixture.java) at commit `a8dfeaa` added
 one-to-one and non-enforced controls to the v1 cases. Fresh v2 originals use the
 same reviewed artifact, source pin and disabled-expression policy above. They do
 not replace or modify v1 originals. No third-party source or generated database
@@ -2960,9 +2960,9 @@ is tracked.
 | `tablecraft-foreign-index-links-v2-2016.accdb` | `c222583ba5cf319c0d6ca59a055c8767da0e95a9881c3955a7f81f14b777474b` | `1b88ee390d33f44ed8d8f16446205d19c7b1232bdecd3075f7f39b720f564457` |
 | `tablecraft-foreign-index-links-v2-2019.accdb` | `60e289c46ca3c86c52ffd9a1b121bcdebbe18ab787101d727b9038a36f156e4f` | `616ca8a81bf7496cc0d7df7b080dc7f84fc94bd23b907e413f1b20116e3ed7f1` |
 
-The current [oracle](ForeignIndexOracle.java) checks catalog endpoints,
+The current [oracle](../../access/indexes/native/ForeignIndexOracle.java) checks catalog endpoints,
 column-pair mappings, actions, uniqueness and complete enforced coverage before
-publishing tags. [The runner](compare_foreign_indexes.py) matches fourteen
+publishing tags. [The runner](../../access/indexes/native/compare_foreign_indexes.py) matches fourteen
 directed links per family, two unchanged registered-sample links, and positive
 composite declaration-ordinal permutations. Thirty-one malformed copies per family
 reject with empty output, including mutually consistent pointers/actions that
@@ -2974,7 +2974,7 @@ or native Access behavior.
 
 ## Foreign physical read inputs
 
-The current [ForeignIndexFixture recipe](ForeignIndexFixture.java) adds
+The current [ForeignIndexFixture recipe](../../access/indexes/native/ForeignIndexFixture.java) adds
 duplicate dependent keys and 1,000-parent/1,200-child multi-page trees to the v2
 metadata controls. Generation uses the same reviewed Apache-2.0 Jackcess 5.0.4
 artifact/source pin above and disables expression evaluation. Fresh v3 inputs do
@@ -2986,9 +2986,9 @@ is tracked; independent creation is not native Access provenance.
 | `tablecraft-foreign-index-links-v3-2016.accdb` | `ae4f6924be2de8871beb6e2ce631aa9a5e7e4dad1c73afb75476e06ae9c3a224` | `80e2c86485692915a8f1ad58f09d36b4048823699e553b2c71e82f54a0e7c734` |
 | `tablecraft-foreign-index-links-v3-2019.accdb` | `518a1d7df248e54ef2a707f2ab0bdd42acd0a6253328c91333ad400e8b5e78e8` | `80e2c86485692915a8f1ad58f09d36b4048823699e553b2c71e82f54a0e7c734` |
 
-The [read runner](compare_foreign_index_reads.py) matches exact index order,
+The [read runner](../../access/indexes/native/compare_foreign_index_reads.py) matches exact index order,
 all rows and complete index-check coverage against the existing read-only
-[TableDataOracle](TableDataOracle.java). Each v3 family matches sixteen
+[TableDataOracle](../../access/reading/tables/TableDataOracle.java). Each v3 family matches sixteen
 foreign indexes/2,225 returned rows, including two node roots; four malformed
 copies per family reject through both read and check without output. The registered
 sample matches two indexes/952 rows (one node root), canonical row SHA-256
@@ -2998,11 +2998,11 @@ nullable Large Number foreign indexes/three rows, canonical SHA-256
 `bfbebddefd774a90df5a0b2813647fe4e24f44f00e02733f980f8355463870f5`.
 All originals remain unchanged. This qualifies physical read/declared-index checks,
 not foreign row membership, cascade execution, mutation or actual Access behavior;
-see the [read contract](../access/indexes/NATIVE_INDEXES.md#foreign-physical-traversal-and-checks).
+see the [read contract](../../../docs/access/indexes/NATIVE_INDEXES.md#foreign-physical-traversal-and-checks).
 
 ## Non-unique index update inputs
 
-The original inert [NonUniqueUpdateFixture recipe](NonUniqueUpdateFixture.java)
+The original inert [NonUniqueUpdateFixture recipe](../../access/queries/expressions/NonUniqueUpdateFixture.java)
 creates fresh V2016/V2019 and V2000 controls with duplicate/NULL keys, two physical
 ascending/descending Score indexes and a shared logical alias, 1,000-row trees,
 non-monotonic identities, long Memo/OLE values and separate unique/rule guards.
@@ -3017,7 +3017,7 @@ generated database is tracked; independent creation is not Access provenance.
 | `tablecraft-nonunique-update-v1-2019.accdb` | `cd30574d29172a6fcbc5c13978491139e627e180b0c12ae0f30f81bc5d09ca21` | `e22e31736601fd52de540a886ed832599a5b142372614161891a0853ee431905` |
 | `tablecraft-nonunique-update-v1-2000.mdb` | `542050cb3e8525b7d34ce6766687609030d0112cb5ff2ac1ae838b13f3475b91` | `e6b019cf9430286b21d34d58d4e0affb49b4997ead4142aee8666ad4b005f927` |
 
-[The comparison runner](compare_nonunique_updates.py) independently expands
+[The comparison runner](../../access/queries/expressions/compare_nonunique_updates.py) independently expands
 original native prefixes and binds row references/entry spans. Twenty-one complete
 candidates match independent rows, duplicate tie order, long values and unchanged
 bytes outside selected spans. Each family includes one exact no-op, five rejected
@@ -3027,11 +3027,11 @@ three logical node roots, with Asc/Alias sharing physical data. Manifest hashes
 cover ordered candidate SHA-256 strings joined with newlines and no trailing
 newline, in runner case order. All originals remain unchanged. Native Access,
 foreign/indexed-NULL mutation and resizing remain unqualified; see the
-[write contract](../access/writes/NATIVE_WRITES.md#non-unique-int32-replacements).
+[write contract](../../../docs/access/writes/NATIVE_WRITES.md#non-unique-int32-replacements).
 
 ## Indexed Int32 NULL preview inputs
 
-The original inert [IndexedNullFixture recipe](IndexedNullFixture.java)
+The original inert [IndexedNullFixture recipe](../../access/indexes/native/IndexedNullFixture.java)
 creates fresh V2016/V2019 ordinary/unique/required/rule controls, ascending/
 descending indexes with shared aliases, NULL and duplicate keys, 1,000-row trees
 and Unicode Memo/OLE values. Expressions are disabled. Generation uses the reviewed
@@ -3045,7 +3045,7 @@ database is tracked; independent creation is not native Access provenance.
 | `tablecraft-indexed-null-v1-2016.accdb` | `eb520858bfd08bfd3101e4b6d3aa96963c2e63365dd88cc28e1e19b3459c1f9d` | `8439e7213067bf508734046c5b51c1fd52180efa12fb3a40cdeea93dd7cb4aac` |
 | `tablecraft-indexed-null-v1-2019.accdb` | `8c091357504232679402a36a0081e83ec1e912c74db4abe9e27a19cc32bd6821` | `f2f6aed471751857ff25b846b7009b553a9d3f4190f6c5bbb7bb3ae6ee8c37e0` |
 
-The [runner](compare_indexed_nulls.py) matches thirty complete candidates,
+The [runner](../../access/indexes/native/compare_indexed_nulls.py) matches thirty complete candidates,
 including six exact no-ops, against independent row/index cursors. It checks exact
 row-mask bits, retained ignored payloads, native prefixes/bitmaps/free bytes,
 unchanged per-page entry counts, child links, page sets and row-reference sets;
@@ -3055,11 +3055,11 @@ Existing output paths and all originals remain unchanged. Manifest hashes cover
 ordered candidate SHA-256 strings joined with newlines and no trailing newline,
 in runner case order. This does not qualify actual Access, data macros, production
 saves, foreign/wider indexed mutations or allocation/splits; see the
-[preview contract](ACE16_WRITE_PREVIEWS.md#indexed-int32-null-transitions).
+[preview contract](../development/ACE16_WRITE_PREVIEWS.md#indexed-int32-null-transitions).
 
 ## Integral and Currency index update inputs
 
-The original inert [IntegralUpdateFixture recipe](IntegralUpdateFixture.java)
+The original inert [IntegralUpdateFixture recipe](../../access/queries/expressions/IntegralUpdateFixture.java)
 creates fresh V2016/V2019 Byte, Int16, Int64 and Currency ordinary/unique/required
 controls, ascending/descending indexes with shared aliases, exact extrema and
 adjacent large integers, NULLs/duplicates, 1,000-row trees and long Unicode Memo/OLE
@@ -3075,7 +3075,7 @@ does not establish Microsoft Access provenance.
 | `tablecraft-integral-updates-v1-2016.accdb` | `10a2a5b78a17ed616f92bd1a17d95993c33edf17330223c7db58593634822c06` | `d3e5e99df89f15b3009e20fa05e56b7d3350ca7ff313b009993a3982de19ed82` |
 | `tablecraft-integral-updates-v1-2019.accdb` | `d60e38adeebeac82f32d340ff8ebeecf580398cb8503320881bd8d3ad6e1dd27` | `5e98e7745903d6811f2fc76d0a6c263feaf8a911f08b92bfcf555ba4d32cf321` |
 
-The [runner](compare_integral_updates.py) matches 56 complete candidates,
+The [runner](../../access/queries/expressions/compare_integral_updates.py) matches 56 complete candidates,
 including eight exact no-ops, with independent exact row/index cursors. It proves
 unchanged per-page entry counts, child links, page and row-reference sets; only
 admitted field/mask/index regions change. Complete Memo/OLE values survive.
@@ -3084,11 +3084,11 @@ Existing output paths and original input bytes remain unchanged. Manifest hashes
 cover ordered candidate SHA-256 strings joined by newlines without a trailing
 newline, in runner case order. This does not qualify native Access/data macros,
 production saves, composite/foreign/non-integral mutation or allocation/splits;
-see the [integral preview contract](ACE16_WRITE_PREVIEWS.md#integral-and-currency-index-updates).
+see the [integral preview contract](../development/ACE16_WRITE_PREVIEWS.md#integral-and-currency-index-updates).
 
 ## Checked foreign-index update inputs
 
-The original inert [ForeignUpdateFixture recipe](ForeignUpdateFixture.java)
+The original inert [ForeignUpdateFixture recipe](../../access/queries/expressions/ForeignUpdateFixture.java)
 creates fresh V2016/V2019 Byte/Int16/Int32/Int64/Currency parents and 1,000-row
 dependent tables, ascending/descending ordinary aliases, automatic reciprocal
 foreign indexes, one-to-one/required controls, multiple child relationships,
@@ -3103,7 +3103,7 @@ generated database is tracked; independent creation is not native Access provena
 | `tablecraft-foreign-updates-v2-2016.accdb` | `22dbff4badb1f6b2f9aef539b172b220274c558da98e0be7e05354e1f7e4e2b7` | `9be8448ac91f4976437bf7943a2f57d8bd120773292181c6cd4a6d9aa3398a8f` |
 | `tablecraft-foreign-updates-v2-2019.accdb` | `30c66e413e88750950552ad3232fd88df2d76028cfb9924d9b302231874da5c9` | `5a1a508c5b080272af88cec43e863968f1d690976b36fc70bab758059aa4b158` |
 
-The [runner](compare_foreign_updates.py) compares 78 complete candidates
+The [runner](../../access/queries/expressions/compare_foreign_updates.py) compares 78 complete candidates
 (twelve exact no-ops), preserving related tables, exact key/row cursor order,
 page/count/child/row-reference sets and all bytes outside admitted field/mask/index
 spans. Complete Memo/OLE values remain intact. Fifty-four requests reject without
@@ -3113,11 +3113,11 @@ outputs and originals remain unchanged. Manifest hashes cover ordered candidate
 SHA-256 strings joined by newlines without a trailing newline, in runner order.
 This proves neither required cascade execution nor Microsoft Access/data-macro,
 production-save or mixed-client qualification; see the
-[foreign preview contract](ACE16_WRITE_PREVIEWS.md#checked-foreign-index-updates).
+[foreign preview contract](../development/ACE16_WRITE_PREVIEWS.md#checked-foreign-index-updates).
 
 ## Integral composite index update inputs
 
-The original inert [CompositeUpdateFixture recipe](CompositeUpdateFixture.java)
+The original inert [CompositeUpdateFixture recipe](../../access/queries/expressions/CompositeUpdateFixture.java)
 creates fresh V2016/V2019 mixed Byte/Int16/Int32/Int64/Currency indexes with per-key
 directions and shared aliases, a 1,000-row tree, ten-column indexes, unique/
 required controls, composite parents/children and Unicode Memo/OLE values.
@@ -3131,7 +3131,7 @@ generated databases are tracked; this is independent creation, not Access proven
 | `tablecraft-composite-updates-v1-2016.accdb` | `16ae05023855c47bce9dc319e9e6cec9322b415062dd6d064594f5ef1a8d8f62` | `e3043696ad580c84bd20bea975107ba54ffb45a854848fa64ab22832d49ee7ef` |
 | `tablecraft-composite-updates-v1-2019.accdb` | `0e2d4ea61bcc47be08ccb6c79e3a905f2d39c0a9027bcb7aa44594f0f2dd5767` | `0e54966e8014c1115bd73407ca2975469520744dce5227bb8329bbc2956f03b2` |
 
-The [runner](compare_composite_updates.py) matches 36 complete candidates
+The [runner](../../access/queries/expressions/compare_composite_updates.py) matches 36 complete candidates
 (four exact no-ops), including composite foreign updates and all/partial NULL
 tuples. Fourteen requests reject with expected duplicate/required/orphan/stale
 errors and no output. Independent exact rows/index cursors, related tables and
@@ -3147,13 +3147,13 @@ treated as passing. The original 21 single-column non-unique candidates also
 retain all three previously recorded family manifest hashes after the writer
 refactor. Native Access, data macros, required cascades, multi-column assignments,
 allocation/splits and production saves remain unqualified; see the
-[composite contract](ACE16_WRITE_PREVIEWS.md#integral-composite-index-updates).
+[composite contract](../development/ACE16_WRITE_PREVIEWS.md#integral-composite-index-updates).
 
 ## Explicit fixed-field batch inputs
 
-The [batch runner](compare_batch_updates.py) reuses the original
-[composite](CompositeUpdateFixture.java) and
-[Boolean/NULL-mask](MaskUpdateFixture.java) recipes and their recorded
+The [batch runner](../../access/queries/expressions/compare_batch_updates.py) reuses the original
+[composite](../../access/queries/expressions/CompositeUpdateFixture.java) and
+[Boolean/NULL-mask](../../access/queries/expressions/MaskUpdateFixture.java) recipes and their recorded
 sources. Both disable expression evaluation during generation. The reviewed
 Apache-2.0 Jackcess 5.0.4 JAR SHA-256 is
 `19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`, with source
@@ -3185,12 +3185,12 @@ candidates retain both original canonical row hashes after staging refactoring.
 These results qualify explicit in-memory candidate construction, not native
 transactions, implicit cascade execution, data macros, production saves or
 Microsoft Access interoperability. See the
-[batch contract](ACE16_WRITE_PREVIEWS.md#explicit-fixed-field-batches).
+[batch contract](../development/ACE16_WRITE_PREVIEWS.md#explicit-fixed-field-batches).
 
 
 ## Declared update-cascade inputs
 
-[CascadeUpdateFixture.java](CascadeUpdateFixture.java) is an original,
+[CascadeUpdateFixture.java](../../access/queries/expressions/CascadeUpdateFixture.java) is an original,
 inert TableCraft recipe generated with the already reviewed Jackcess 5.0.4
 artifact (Apache-2.0, SHA-256
 `19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`).
@@ -3205,7 +3205,7 @@ Notes/OLE include Unicode and long-value storage. No VBA or active content runs.
 | `tablecraft-cascade-update-v1-2016.accdb` | 634,880 | `049c7644091391ace4112d8893cb5a902e1c8f8287ef7a1e6c9b3ba0a7437e74` | `6066675c6d592aa4bdfb029eb24ee82ebe5db1a6ebcd5d0d8367b3a6f5077059` |
 | `tablecraft-cascade-update-v1-2019.accdb` | 700,416 | `17dfb758b50b18cc8aea8ad570a26ee294e9e0d9aa5adcd4d291b817cbe8346a` | `496dcd0762f0189c972c01c677c8e40cff2bf1c2d1b373d7dc8db46debb3da89` |
 
-The [runner](compare_cascade_updates.py) independently specifies complete
+The [runner](../../access/queries/expressions/compare_cascade_updates.py) independently specifies complete
 literal cell closures. Fourteen candidates (two exact no-ops), fourteen
 reverse-order controls, and sixteen invalid requests were observed. Every table,
 including untouched components, agrees with the independent complete-row reader;
@@ -3222,7 +3222,7 @@ Run with the reviewed artifact, built CLI and engineering examples:
 javac -cp "$JACKCESS_JAR" -d "$CLASSES" docs/testing/CascadeUpdateFixture.java
 java -cp "$JACKCESS_JAR:$CLASSES" CascadeUpdateFixture /tmp/tablecraft-cascade-update-v1-2016.accdb V2016
 java -cp "$JACKCESS_JAR:$CLASSES" CascadeUpdateFixture /tmp/tablecraft-cascade-update-v1-2019.accdb V2019
-python3 docs/testing/compare_cascade_updates.py --jar "$JACKCESS_JAR" --cli target/debug/tablecraft --rows target/debug/examples/table_data --preview target/debug/examples/preview_ace16_batch --checker target/debug/examples/check_table --ace2016 /tmp/tablecraft-cascade-update-v1-2016.accdb --ace2019 /tmp/tablecraft-cascade-update-v1-2019.accdb
+python3 tests/run.py tests/access/queries/expressions/compare_cascade_updates.py --jar "$JACKCESS_JAR" --cli target/debug/tablecraft --rows target/debug/examples/table_data --preview target/debug/examples/preview_ace16_batch --checker target/debug/examples/check_table --ace2016 /tmp/tablecraft-cascade-update-v1-2016.accdb --ace2019 /tmp/tablecraft-cascade-update-v1-2019.accdb
 ```
 
 Use fresh absent output paths and an existing classes directory; use the platform's
@@ -3233,7 +3233,7 @@ production-save qualification.
 
 ## GUID index update inputs
 
-[GuidUpdateFixture.java](GuidUpdateFixture.java) is an original inert
+[GuidUpdateFixture.java](../../access/queries/expressions/GuidUpdateFixture.java) is an original inert
 recipe generated with the reviewed Apache-2.0 Jackcess 5.0.4 artifact (SHA-256
 `19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`).
 No third-party source/fixture bytes are copied. The fixture combines a 1,000-row
@@ -3246,7 +3246,7 @@ Use fresh absent paths and keep originals immutable; candidates remain disposabl
 | `tablecraft-guid-update-v1-2016.accdb` | 909,312 | `eb0093b9a6c52bfa91460d048d17861528a96cf12b3261c2271f15930842a85d` | `1a24866594a28e52c23d3cde34eebcbb73991ccc160e3a26439757e9d9d691cb` |
 | `tablecraft-guid-update-v1-2019.accdb` | 974,848 | `d380dfbbea6d81abd482ab8c3ad99babb460265ec1f98fa1fe961f5b9fe9d543` | `48d0943d955b69a0063af70e2a2623f5b15fe84662d74334c68f9cc12e43010d` |
 
-The [runner](compare_guid_updates.py) uses literal full closures and
+The [runner](../../access/queries/expressions/compare_guid_updates.py) uses literal full closures and
 requests the parent changes through the update-cascade API. Twenty-four candidates
 (two exact no-ops), twenty-four reversed-order controls and ten typed rejections
 were observed. Every related/untouched table, exact carrier, long value and native
@@ -3263,7 +3263,7 @@ without a trailing newline; reversed controls are not counted twice.
 javac -cp "$JACKCESS_JAR" -d "$CLASSES" docs/testing/GuidUpdateFixture.java
 java -cp "$JACKCESS_JAR:$CLASSES" GuidUpdateFixture /tmp/tablecraft-guid-update-v1-2016.accdb V2016
 java -cp "$JACKCESS_JAR:$CLASSES" GuidUpdateFixture /tmp/tablecraft-guid-update-v1-2019.accdb V2019
-python3 docs/testing/compare_guid_updates.py --jar "$JACKCESS_JAR" --cli target/debug/tablecraft --rows target/debug/examples/table_data --preview target/debug/examples/preview_ace16_batch --checker target/debug/examples/check_table --ace2016 /tmp/tablecraft-guid-update-v1-2016.accdb --ace2019 /tmp/tablecraft-guid-update-v1-2019.accdb
+python3 tests/run.py tests/access/queries/expressions/compare_guid_updates.py --jar "$JACKCESS_JAR" --cli target/debug/tablecraft --rows target/debug/examples/table_data --preview target/debug/examples/preview_ace16_batch --checker target/debug/examples/check_table --ace2016 /tmp/tablecraft-guid-update-v1-2016.accdb --ace2019 /tmp/tablecraft-guid-update-v1-2019.accdb
 ```
 
 Use the platform's classpath separator and an existing classes directory. The
@@ -3276,10 +3276,10 @@ allocation/splits, delete actions, shared-file safety or production saves.
 
 ## Boolean IEEE and DATE index update inputs
 
-[compare_scalar_index_updates.py](compare_scalar_index_updates.py) reuses
-the original [Boolean](BooleanIndexFixture.java),
-[floating v2](FloatingIndexFixture.java) and
-[DATE](DateIndexFixture.java) recipes already reviewed above. They were
+[compare_scalar_index_updates.py](../../access/queries/expressions/compare_scalar_index_updates.py) reuses
+the original [Boolean](../../access/indexes/native/BooleanIndexFixture.java),
+[floating v2](../../access/queries/expressions/FloatingIndexFixture.java) and
+[DATE](../../access/queries/expressions/DateIndexFixture.java) recipes already reviewed above. They were
 generated with the same reviewed Apache-2.0 Jackcess 5.0.4 artifact (SHA-256
 `19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`).
 No source fixture bytes are changed or redistributed. Candidates are fresh copies;
@@ -3312,7 +3312,7 @@ outputs and immutable inputs are retained. Reproduce against existing reviewed
 originals and built examples:
 
 ```sh
-python3 docs/testing/compare_scalar_index_updates.py --jar "$JACKCESS_JAR" --cli target/debug/tablecraft --rows target/debug/examples/table_data --preview target/debug/examples/preview_ace16_batch --checker target/debug/examples/check_table --boolean2016 /tmp/tablecraft-boolean-indexes-v1-2016.accdb --boolean2019 /tmp/tablecraft-boolean-indexes-v1-2019.accdb --floating2016 /tmp/tablecraft-floating-indexes-v2-2016.accdb --floating2019 /tmp/tablecraft-floating-indexes-v2-2019.accdb --date2016 /tmp/tablecraft-date-indexes-v1-2016.accdb --date2019 /tmp/tablecraft-date-indexes-v1-2019.accdb
+python3 tests/run.py tests/access/queries/expressions/compare_scalar_index_updates.py --jar "$JACKCESS_JAR" --cli target/debug/tablecraft --rows target/debug/examples/table_data --preview target/debug/examples/preview_ace16_batch --checker target/debug/examples/check_table --boolean2016 /tmp/tablecraft-boolean-indexes-v1-2016.accdb --boolean2019 /tmp/tablecraft-boolean-indexes-v1-2019.accdb --floating2016 /tmp/tablecraft-floating-indexes-v2-2016.accdb --floating2019 /tmp/tablecraft-floating-indexes-v2-2019.accdb --date2016 /tmp/tablecraft-date-indexes-v1-2016.accdb --date2019 /tmp/tablecraft-date-indexes-v1-2019.accdb
 ```
 
 This is independent physical mutation evidence, not Access statement execution,
@@ -3321,8 +3321,8 @@ coordination or production-save qualification.
 
 ## Native CLI browsing inputs
 
-[compare_browsing.py](compare_browsing.py) reuses the original MIT
-[ScalarFixture.java](ScalarFixture.java), CatalogOracle.java,
+[compare_browsing.py](../../access/reading/tables/compare_browsing.py) reuses the original MIT
+[ScalarFixture.java](../../access/reading/tables/ScalarFixture.java), CatalogOracle.java,
 TableSchemaOracle.java and TableDataOracle.java with the previously reviewed
 Jackcess 5.0.4 artifact (SHA-256
 `19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`).
@@ -3349,7 +3349,7 @@ Build `tablecraft-cli` first, then supply reviewed local inputs and a fresh outp
 directory:
 
 ```sh
-python3 docs/testing/compare_browsing.py --jar "$JACKCESS_JAR" --cli target/debug/tablecraft --directory /tmp/tablecraft-browsing-inputs --generate
+python3 tests/run.py tests/access/reading/tables/compare_browsing.py --jar "$JACKCESS_JAR" --cli target/debug/tablecraft --directory /tmp/tablecraft-browsing-inputs --generate
 ```
 
 Input hashes identify the observed originals, not a guarantee of byte-identical
@@ -3358,7 +3358,7 @@ and unchanged original bytes on each run.
 
 ## Larger native browsing-page inputs
 
-[BrowsingFixture.java](BrowsingFixture.java) is an original MIT recipe
+[BrowsingFixture.java](../../access/reading/tables/BrowsingFixture.java) is an original MIT recipe
 using the already reviewed Jackcess 5.0.4 artifact (same SHA-256 as the preceding
 browsing section). It creates 20,050 records with a spaced table/column name,
 Unicode/escaped text, nullable 28-digit Decimal extrema and long Memo values.
@@ -3372,7 +3372,7 @@ Fresh originals observed on 19 October 2026:
 | V2016 ACE ACCDB | `b7c898ef4a15deae28fc9c169e0081966f704e39ab17dbdb82dde7708c8f006e` |
 | V2019 ACE ACCDB | `a5b5b724cef64b1a9e0299493e2021f9da096e1377ece00ea3001d9d86b129c6` |
 
-[compare_browsing_pages.py](compare_browsing_pages.py) enumerates all
+[compare_browsing_pages.py](../../access/storage/native/compare_browsing_pages.py) enumerates all
 20,050 records per family through the independent Java oracle, then checks ten
 CLI page controls per family: first/default-sized pages, page-boundary ranges,
 long Memo records, offsets beyond 16,384 and end/out-of-range requests. These
@@ -3384,7 +3384,7 @@ Windows and concurrent-file behavior remain unqualified.
 Build the CLI first and use a fresh generation directory:
 
 ```sh
-python3 docs/testing/compare_browsing_pages.py --jar "$JACKCESS_JAR" --cli target/debug/tablecraft --directory /tmp/tablecraft-browsing-pages --generate
+python3 tests/run.py tests/access/storage/native/compare_browsing_pages.py --jar "$JACKCESS_JAR" --cli target/debug/tablecraft --directory /tmp/tablecraft-browsing-pages --generate
 ```
 
 The hashes identify observed originals; generation is not claimed byte-identical.
@@ -3394,7 +3394,7 @@ complete query snapshots are outside this page-reader evidence.
 
 ## Native LIKE query inputs
 
-[LikeFixture.java](LikeFixture.java) is an original MIT recipe using the
+[LikeFixture.java](../../access/queries/expressions/LikeFixture.java) is an original MIT recipe using the
 previously reviewed Jackcess 5.0.4 artifact. Its table contains 28 Text/NULL rows:
 empty strings, ASCII case/range examples, digit strings, bracket/wildcard literals,
 Unicode/astral characters, newline and trailing space. Generated MDB/ACCDB files
@@ -3408,7 +3408,7 @@ Fresh originals observed on 19 October 2026:
 | V2016 ACE ACCDB | `92605c9d82df8e63c3aeec662e80abe79ffaa204b7e845b9dbafa3b16aed10fd` |
 | V2019 ACE ACCDB | `0e276feec1c0e1dce389ceabea50024481091ccb85c0302a6eae2f2141e43b0a` |
 
-[compare_like.py](compare_like.py) reads stored labels independently with
+[compare_like.py](../../access/queries/expressions/compare_like.py) reads stored labels independently with
 TableDataOracle.java, then derives ordinal matches through explicit Python
 regular expressions. Per family it checks 68 projection/filter controls over
 seventeen pattern pairs and both modes, two NULL-pattern controls and six atomic
@@ -3421,17 +3421,17 @@ Python regex models establish native Microsoft Access SQL/locale conformance.
 Build the CLI first and use a fresh directory:
 
 ```sh
-python3 docs/testing/compare_like.py --jar "$JACKCESS_JAR" --cli target/debug/tablecraft --directory /tmp/tablecraft-like-inputs --generate
+python3 tests/run.py tests/access/queries/expressions/compare_like.py --jar "$JACKCESS_JAR" --cli target/debug/tablecraft --directory /tmp/tablecraft-like-inputs --generate
 ```
 
 Hashes identify observed originals, not guaranteed byte-identical regeneration.
 The runner verifies original family headers, independent expected results and
-unchanged source bytes each time. [Pattern contracts](../expressions/text/PATTERN_MATCHING.md) retain
+unchanged source bytes each time. [Pattern contracts](../../../docs/expressions/text/PATTERN_MATCHING.md) retain
 explicit limits for Unicode units, locale expansions and numeric/date coercion.
 
 ## Native browsing metadata inputs
 
-[BrowsingMetadataFixture.java](BrowsingMetadataFixture.java) is an original
+[BrowsingMetadataFixture.java](../../access/reading/tables/BrowsingMetadataFixture.java) is an original
 MIT recipe using the previously reviewed Jackcess 5.0.4 artifact. Each family
 contains one ordinary local scalar table and an unresolved non-ODBC linked-table
 declaration pointing to a generic unavailable filename. The comparison never
@@ -3446,7 +3446,7 @@ Fresh originals observed on 19 October 2026:
 | V2016 ACE ACCDB | `350f3085b97696d0e08975ab97a6d0319dfcf926d892f3d20d25149ecd2a18a7` |
 | V2019 ACE ACCDB | `f60ab46f10eabdb8ef8ac99d305a7a0a8c20e6cc9d2ef05598814568d970a461` |
 
-[compare_browsing_metadata.py](compare_browsing_metadata.py) independently
+[compare_browsing_metadata.py](../../access/reading/tables/compare_browsing_metadata.py) independently
 reads all native table declarations with CatalogOracle.java and local column
 metadata with TableSchemaOracle.java. Detailed CLI inventories and column reports
 agree; both linked schema inspection and linked row retrieval fail without stdout.
@@ -3458,16 +3458,16 @@ checks, not native Microsoft Access, provider or Windows qualification.
 Build the CLI first and use a fresh generation directory:
 
 ```sh
-python3 docs/testing/compare_browsing_metadata.py --jar "$JACKCESS_JAR" --cli target/debug/tablecraft --directory /tmp/tablecraft-browsing-metadata --generate
+python3 tests/run.py tests/access/reading/tables/compare_browsing_metadata.py --jar "$JACKCESS_JAR" --cli target/debug/tablecraft --directory /tmp/tablecraft-browsing-metadata --generate
 ```
 
 Observed hashes do not promise deterministic byte regeneration. The runner checks
 original family headers, independent metadata and unchanged bytes on each run.
-Metadata support does not prove readable stored records; see [browsing scope](../cli/CLI_BROWSING.md).
+Metadata support does not prove readable stored records; see [browsing scope](../../../docs/cli/CLI_BROWSING.md).
 
 ## Decimal slot and index update inputs
 
-[DecimalUpdateFixture.java](DecimalUpdateFixture.java) is an original MIT
+[DecimalUpdateFixture.java](../../access/queries/expressions/DecimalUpdateFixture.java) is an original MIT
 recipe using the previously reviewed Jackcess 5.0.4 artifact. It creates six tables
 and 1,020 rows per ACE 16 family: Decimal fields interspersed with long Memo/OLE
 values, precisions/scales 4/2, 28/4 and 28/28, ascending/descending and mixed
@@ -3482,7 +3482,7 @@ Observed immutable originals and ordered candidate-manifest SHA-256 values:
 | V2016 ACE ACCDB | `4312b2ab8c699dd93214b464a4fdbfe4f229aa3c8f2569e67911cd7b59362475` | `1ed780cc56bcedddaf547f24250babf369c3c96d708f7471cb891ecd84f8274b` |
 | V2019 ACE ACCDB | `a0a9e221243c29bd9e57666f03bfc9ff02ed3299a9cdb03ef03b8d8688cadb75` | `6ea0fc87b6f18eaad05acd81ded9eaaeb4a8a59302552f0f25f84db341c4dc2b` |
 
-[compare_decimal_updates.py](compare_decimal_updates.py) uses the shared
+[compare_decimal_updates.py](../../access/queries/expressions/compare_decimal_updates.py) uses the shared
 batch runner and independent Java complete-row/index oracles. Twenty-two complete
 candidates include four exact no-ops; 22 reverse-order controls produce identical
 bytes/counts. Fourteen invalid precision/scale/resize/duplicate/FK/stale requests
@@ -3505,26 +3505,26 @@ recipe and immutable originals for comparison:
 ```sh
 java -cp "$JACKCESS_JAR" docs/testing/DecimalUpdateFixture.java new-2016.accdb V2016
 java -cp "$JACKCESS_JAR" docs/testing/DecimalUpdateFixture.java new-2019.accdb V2019
-python3 docs/testing/compare_decimal_updates.py --jar "$JACKCESS_JAR" --cli target/debug/tablecraft --rows target/debug/examples/table_data --preview target/debug/examples/preview_ace16_batch --checker target/debug/examples/check_table --ace2016 new-2016.accdb --ace2019 new-2019.accdb
+python3 tests/run.py tests/access/queries/expressions/compare_decimal_updates.py --jar "$JACKCESS_JAR" --cli target/debug/tablecraft --rows target/debug/examples/table_data --preview target/debug/examples/preview_ace16_batch --checker target/debug/examples/check_table --ace2016 new-2016.accdb --ace2019 new-2019.accdb
 ```
 
 Hashes identify observed originals/candidates, not deterministic fixture generation.
 These are engineering byte-operation comparisons, not native Microsoft Access SQL,
 save/reopen, data-macro, journal or mixed-client qualification. Ordinary ACE saves
-remain blocked; the [preview contract](ACE16_WRITE_PREVIEWS.md#decimal-slot-and-index-write-previews)
+remain blocked; the [preview contract](../development/ACE16_WRITE_PREVIEWS.md#decimal-slot-and-index-write-previews)
 retains all limits and the immediate read/query priority is unchanged.
 
 ## ACE 2007 browsing priority regression
 
 A fresh local `Scalar-V2007.accdb` was generated on 19 October 2026 with our MIT
-[ScalarFixture.java](ScalarFixture.java), reviewed Jackcess 5.0.4 and its
+[ScalarFixture.java](../../access/reading/tables/ScalarFixture.java), reviewed Jackcess 5.0.4 and its
 previously recorded artifact/license. No third-party fixture bytes were copied.
 Header code is 2, subversion zero, unencoded; size is 364,544 bytes and SHA-256 is
 `67680aa053fea89b1dd31df465367fe27a962596007902663b74b13cd7bb2d87`.
 The binary remains untracked. The recipe contains three rows and fourteen scalar
 columns, including exact Decimal/Currency, dates, Unicode and long text/binary.
 
-[compare_browsing.py](compare_browsing.py) now accepts `--profile V2007`;
+[compare_browsing.py](../../access/reading/tables/compare_browsing.py) now accepts `--profile V2007`;
 its default three-family matrix is unchanged. Independent catalog flags/names,
 five bounded page cases and an ordered SELECT match the Java metadata/row oracles.
 Inputs retain identical bytes after comparison. The registered example continues
@@ -3535,7 +3535,7 @@ were also rerun with the new `Kind` column, comparing both native system bits.
 Reproduce using the reviewed jar and a fresh local output directory:
 
 ```sh
-python3 docs/testing/compare_browsing.py --jar "$JACKCESS_JAR" \
+python3 tests/run.py tests/access/reading/tables/compare_browsing.py --jar "$JACKCESS_JAR" \
   --cli target/debug/tablecraft --directory "$FRESH_FIXTURE_DIR" \
   --profile V2007 --generate
 ```
@@ -3546,7 +3546,7 @@ or shared-file behavior is established.
 
 ## Cached calculation page regression
 
-[compare_cached_pages.py](compare_cached_pages.py) reuses the original
+[compare_cached_pages.py](../../access/storage/native/compare_cached_pages.py) reuses the original
 [stored Int32](#original-ace-16-stored-calculation-fixtures) and
 [stored scalar](#original-ace-16-stored-scalar-calculation-fixtures) recipes and
 reviewed Jackcess 5.0.4 artifact. No new binary/source dependency or copied fixture
@@ -3571,7 +3571,7 @@ This is independent reader/presentation evidence, not native Access qualificatio
 
 ## Mixed multivalue page inputs
 
-[MultivaluePageFixture.java](MultivaluePageFixture.java) is original MIT
+[MultivaluePageFixture.java](../../access/storage/native/MultivaluePageFixture.java) is original MIT
 repository code generated with the previously reviewed Jackcess 5.0.4 artifact.
 Both fresh, untracked inputs have three mixed parent rows and an empty matching
 table: ordinary ID/Text, Int32/Text collections and inert cached Int32 results.
@@ -3584,9 +3584,9 @@ exercise separate stored states. No third-party fixture bytes are copied.
 | V2016 | 475,136 | `52d4199f99383cc1bac13020922a9a11addb1881009abdeb8beb4c100e50580b` |
 | V2019 | 544,768 | `b1c637eaba2f6a5d432bba9eceac0f887a8a8da9f76d0260b087ecd1ac650105` |
 
-[compare_multivalue_pages.py](compare_multivalue_pages.py) compiles our
-[page oracle](MultivaluePageOracle.java) with the existing
-[exact collection encoder](MultivalueOracle.java) in a temporary directory.
+[compare_multivalue_pages.py](../../access/storage/native/compare_multivalue_pages.py) compiles our
+[page oracle](../../access/storage/native/MultivaluePageOracle.java) with the existing
+[exact collection encoder](../../access/reading/tables/MultivalueOracle.java) in a temporary directory.
 It also reuses the [eight-carrier originals](#original-ace-16-multivalue-collection-inputs)
 without changing their hashes. Independent public scalar/collection reads agree
 on 46 page/empty/default-refusal/stale/pretty/overflow/corruption controls across
@@ -3610,8 +3610,8 @@ outputs and `--mixed2016`/`--mixed2019` to these new inputs; it also requires
 
 ## ACE 2007 complex key and multivalue inputs
 
-The existing original MIT [MultivalueFixture.java](MultivalueFixture.java)
-and [ComplexRowsFixture.java](ComplexRowsFixture.java) recipes now accept
+The existing original MIT [MultivalueFixture.java](../../access/reading/tables/MultivalueFixture.java)
+and [ComplexRowsFixture.java](../../access/reading/tables/ComplexRowsFixture.java) recipes now accept
 V2007, with expression evaluation explicitly disabled. Fresh files were generated
 using the reviewed Jackcess 5.0.4 artifact; no binary fixture/source is copied.
 Files remain local/untracked and originals are immutable. Both headers are code 2,
@@ -3657,8 +3657,8 @@ java -cp "$JACKCESS_JAR" docs/testing/ComplexRowsFixture.java "$FRESH_COMPLEX_PA
 
 ## ACE 2007 stored attachment and history inputs
 
-The original MIT [AttachmentFixture.java](AttachmentFixture.java) and
-[VersionHistoryFixture.java](VersionHistoryFixture.java) now accept V2007
+The original MIT [AttachmentFixture.java](../../access/reading/tables/AttachmentFixture.java) and
+[VersionHistoryFixture.java](../../access/reading/tables/VersionHistoryFixture.java) now accept V2007
 and disable expression evaluation explicitly. Fresh files were generated with the
 previously reviewed Jackcess 5.0.4 artifact; no fixture bytes or third-party source
 are copied. Both headers are ACE 2007 code 2, subversion zero, unencoded. Binaries
@@ -3711,7 +3711,7 @@ content is executed, and no existing database is modified.
 
 The attachment/history comparison runners above additionally check the explicit
 CLI `inspect --table ... --attachments ...` and `--version-history ...` views via
-[collection_cli.py](collection_cli.py). No new fixture bytes or reference
+[collection_cli.py](../../access/reading/tables/collection_cli.py). No new fixture bytes or reference
 artifacts are adopted. Comparisons decode actual CLI TSV with Python csv and use
 the existing independent Java stored metadata/history results as expectations.
 They compare parent membership (including assigned empty keys), identities,
@@ -3725,8 +3725,8 @@ qualification, attachment extraction or history mutation evidence.
 
 ## Mixed stored-collection page verification
 
-[CollectionPageOracle.java](CollectionPageOracle.java) and
-[compare_collection_pages.py](compare_collection_pages.py) are original
+[CollectionPageOracle.java](../../access/storage/native/CollectionPageOracle.java) and
+[compare_collection_pages.py](../../access/storage/native/compare_collection_pages.py) are original
 repository engineering sources. They reuse the reviewed Jackcess 5.0.4 artifact,
 original complex-row/attachment/history inputs and existing exact scalar encoder.
 No third-party source or new database bytes are adopted. Expression evaluation
@@ -3747,8 +3747,8 @@ collection query/write semantics are qualified by this evidence.
 
 ## Scalar queries over mixed native tables
 
-[ScalarProjectionOracle.java](ScalarProjectionOracle.java) and
-[compare_scalar_projection.py](compare_scalar_projection.py) are original
+[ScalarProjectionOracle.java](../../access/reading/tables/ScalarProjectionOracle.java) and
+[compare_scalar_projection.py](../../access/reading/tables/compare_scalar_projection.py) are original
 repository engineering sources. They reuse the reviewed Jackcess 5.0.4 artifact,
 existing exact scalar encoder and previously recorded complex-row inputs:
 `tablecraft-complex-rows-v1-2007.accdb` and `tablecraft-complex-rows-v2-{2016,2019}.accdb`.
@@ -3769,7 +3769,7 @@ collation, omitted-payload integrity or write qualification.
 
 ## Mixed-schema index projection inputs
 
-[MixedIndexFixture.java](MixedIndexFixture.java) is original repository
+[MixedIndexFixture.java](../../access/indexes/native/MixedIndexFixture.java) is original repository
 source using the reviewed Jackcess 5.0.4 artifact already recorded above (SHA-256
 `19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`).
 No new third-party code/artifact is adopted. The builder disables expression
@@ -3793,9 +3793,9 @@ warns about duplicate NULL entries in the ignore-NULL refusal index; no successf
 read, constraint or correctness claim is made for that index. Earlier partial
 local generation attempts are not adopted or used as comparison inputs.
 
-The original [ScalarProjectionOracle](ScalarProjectionOracle.java) now
+The original [ScalarProjectionOracle](../../access/reading/tables/ScalarProjectionOracle.java) now
 optionally traverses a named native reference cursor while preserving exact scalar
-tags and disabling expression evaluation. [Comparison](compare_index_projection.py)
+tags and disabling expression evaluation. [Comparison](../../access/indexes/native/compare_index_projection.py)
 checks 157 full-order, count, range/filter and buffered-refusal controls against
 inert getters/cursors and independent integer models. Original input bytes stay
 unchanged. Repository synthetic fixtures additionally check native/dense position
@@ -3854,7 +3854,7 @@ metadata without running saved SQL, providers, macros or VBA. The new local
 | --- | --- | --- | --- |
 | tablecraft-saved-execution-v1-2007.accdb | 2 | 409600 | `15afc38d1c9742b4f86955b1cde134721051f6a9c99eb35688f3f94060a9f9ca` |
 
-The original [comparison runner](compare_saved_execution.py) uses this
+The original [comparison runner](../../access/queries/saved/compare_saved_execution.py) uses this
 input plus previously recorded `tablecraft-jet4-saved-parameters-v1.mdb`,
 `tablecraft-saved-parameters-v2-{2016,2019}.accdb`,
 `tablecraft-jet4-saved-compound-v1.mdb` and
@@ -3876,7 +3876,7 @@ assembly and independent model checks, not Microsoft Access SQL qualification.
 Example reproduction, after generating fresh recipe inputs:
 
 ```sh
-python3 docs/testing/compare_saved_execution.py \
+python3 tests/run.py tests/access/queries/saved/compare_saved_execution.py \
   --jar path/to/jackcess-5.0.4.jar --cli target/release/tablecraft \
   --input path/to/original-saved-parameters.mdb \
   --input path/to/original-saved-parameters-2007.accdb \
@@ -3903,7 +3903,7 @@ V1 local files used a reserved alias that the independent reference SQL renderer
 emitted without delimiters. Those files remain unchanged and are not adopted as
 passing comparison inputs. V2 uses the original unreserved alias ChosenKey.
 
-The [existing saved execution runner](compare_saved_execution.py) now
+The [existing saved execution runner](../../access/queries/saved/compare_saved_execution.py) now
 accepts the 27-definition dependency profile and expects the previous SourceIsQuery
 control to execute successfully. Four new files and the previously recorded
 Jet 4/ACE 2016/2019 parameter inputs passed 362 saved/direct execution/getter/refusal
@@ -4065,11 +4065,11 @@ Existing original V2000/V2007/V2016/V2019 scalar files now pass 245 controls per
 family (980 total). Twenty-eight new controls per family compare CSng/CDbl over
 eight numeric/Boolean getter columns, including negative zero and exact fixed
 values, plus concrete NULL refusal. Expected Single bits use the new original
-[exact-rational IEEE model](float_model.py): bounded binary32 encoding
+[exact-rational IEEE model](../../access/shared/primitives/float_model.py): bounded binary32 encoding
 search and exact neighbor-distance/ties-even selection, without a Double
 intermediate. Double expectations use Python Fraction-to-float conversion.
 Shortest CLI displays round-trip to bits for comparison; formatting differences
-are not treated as value differences. The oracle's two [independent golden tests](test_float_model.py)
+are not treated as value differences. The oracle's two [independent golden tests](../../access/shared/primitives/test_float_model.py)
 passed, including midpoint neighbors, subnormals, negative zero and a Currency
 conversion that differs from coefficient-as-float division.
 
@@ -4189,18 +4189,18 @@ compare_large_tables.py passed seven controls per family (28 total): bounded
 windows at offsets 0/1/500/1,000, declared counts, and explicit query/deep-offset
 limit refusals with empty stdout. All original input hashes remained unchanged.
 Existing original scalar inputs retained 1,100 controls and unchanged hashes;
-modern ACE scalar checks also passed unchanged. [Reproduction and measurements](ALLOCATION_MAP_PAGING.md)
+modern ACE scalar checks also passed unchanged. [Reproduction and measurements](../storage/ALLOCATION_MAP_PAGING.md)
 distinguish these independent storage/getter cases from actual Access, full-table,
 SQL-type/locale or concurrent-file qualification. Native Access remains unrun.
 
 
 ## Deleted-column history derivatives
 
-[ColumnHistoryFixture.java](ColumnHistoryFixture.java) is original MIT
+[ColumnHistoryFixture.java](../../access/schema/fields/ColumnHistoryFixture.java) is original MIT
 engineering source using the previously reviewed Apache-2.0 Jackcess 5.0.4 JAR
 (SHA-256 `19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`).
 It creates inert append-only histories with original integer, Unicode, empty and
-NULL values in four formats. [The derivative recipe](compare_column_histories.py)
+NULL values in four formats. [The derivative recipe](../../access/schema/fields/compare_column_histories.py)
 removes fixed/variable declaration blocks and names only on separate fresh copies,
 updating active counts/lengths while preserving maximum counts, native identities,
 record bytes and every other page. No third-party fixture/source was copied.
@@ -4217,7 +4217,7 @@ These are engineering derivatives, not native Access DROP COLUMN/save fixtures.
 Names are `HistoryBase-<profile>.<mdb|accdb>` and
 `HistoryGaps-<profile>.<mdb|accdb>`. There are now sixteen full/cursor/CLI/query
 controls per profile, including known fixed prefixes in AmbiguousGap, with
-unchanged base/derivative hashes. Deleted tail geometry remains unqualified. [Evidence and reproduction](COLUMN_HISTORIES.md) describe exact
+unchanged base/derivative hashes. Deleted tail geometry remains unqualified. [Evidence and reproduction](../schema/COLUMN_HISTORIES.md) describe exact
 scope, source pins and the deliberate read/write boundary. Native Access and
 Windows qualification remain unrun. Regeneration can change native file metadata;
 record new identities rather than treating a different hash as equivalent evidence.
@@ -4225,7 +4225,7 @@ record new identities rather than treating a different hash as equivalent eviden
 
 ## Native binary index inputs
 
-[BinaryIndexFixture.java](BinaryIndexFixture.java) is original MIT
+[BinaryIndexFixture.java](../../access/indexes/native/BinaryIndexFixture.java) is original MIT
 engineering source using the previously reviewed Apache-2.0 Jackcess 5.0.4 JAR
 (SHA-256 `19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`).
 It refuses existing outputs and creates inert original 1,000-row binary indexes,
@@ -4234,7 +4234,7 @@ empty, duplicates, zero/high bytes and segment-boundary lengths through 255 byte
 No external fixture/source was copied, and no active database content is executed.
 Files remain local/untracked; no private data is included.
 
-Typed [Binary range comparisons](BINARY_INDEX_RANGES.md) reuse these same
+Typed [Binary range comparisons](../indexes/BINARY_INDEX_RANGES.md) reuse these same
 immutable files for 200 interval/projection/pruning controls. Disjoint-subtree
 damage is confined to separate temporary copies; originals are hashed before
 and after. No fixture is regenerated for these checks.
@@ -4246,7 +4246,7 @@ and after. No fixture is regenerated for these checks.
 | BinaryIndexes-V2016.accdb | 745472 | `199d0bc074acde3d178e42c22b77f17bbfe4c97851939408a8f187af468339d6` |
 | BinaryIndexes-V2019.accdb | 819200 | `86813fc06e924227bee5f070454b36841f0e76bb07ff8cc249430bb3bc2fd80a` |
 
-[Reproduction and limits](BINARY_INDEX_READS.md) record eighteen independent
+[Reproduction and limits](../indexes/BINARY_INDEX_READS.md) record eighteen independent
 read/check/refusal controls per profile, node-root assertions, exact empty/NULL
 semantics and immutable input hashes. This does not qualify native Access SQL,
 primary/foreign binary fixtures, writes, Windows or shared-file behavior. Later
@@ -4255,14 +4255,14 @@ regeneration may change native file metadata; record new hashes explicitly.
 
 ## Compound General text index inputs
 
-[TextTupleFixture.java](TextTupleFixture.java) is original MIT engineering
+[TextTupleFixture.java](../../access/queries/expressions/TextTupleFixture.java) is original MIT engineering
 source using the reviewed Apache-2.0 Jackcess 5.0.4 JAR (SHA-256
 `19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`).
 No third-party fixture or source is copied. Generated files contain only original
 inert values, remain local/untracked and are never executed as application content.
 They are independent-reader inputs, not Access-authored or native save evidence.
 
-[The comparison recipe](compare_text_tuples.py) checks 408 controls across
+[The comparison recipe](../../access/queries/expressions/compare_text_tuples.py) checks 408 controls across
 these eight files: exact complete tagged rows, two query projection shapes,
 unique/Memo/empty coverage reports, multi-page roots, corrupt-root refusals and
 source preservation. Mixed ten-column keys include two General families,
@@ -4289,14 +4289,14 @@ indexes remain explicit refusals. No existing fixture bytes are replaced.
 
 ## Compound Binary index inputs
 
-[BinaryTupleFixture.java](BinaryTupleFixture.java) is original MIT
+[BinaryTupleFixture.java](../../access/storage/native/BinaryTupleFixture.java) is original MIT
 engineering source using the reviewed Apache-2.0 Jackcess 5.0.4 JAR (SHA-256
 `19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`).
 No external fixtures/source are copied. Generated inputs contain original inert
 values and remain local/untracked; no application content is executed. Native
 Access creation/save and Binary primary/foreign fixtures remain unqualified.
 
-[The recipe](compare_binary_tuples.py) passes 176 independent controls:
+[The recipe](../../access/storage/native/compare_binary_tuples.py) passes 176 independent controls:
 complete tagged rows, two query projections, multi-page roots, mixed ten-column
 carriers, NULL/empty/unique/digested coverage, mandatory corruption/ignore-NULL
 refusals and unchanged original/damaged hashes. Mutations use temporary copies.
@@ -4317,7 +4317,7 @@ new identities rather than assuming hashes will repeat.
 
 ## Computed grouping reference-row checks
 
-[compare_grouped_expressions.py](compare_grouped_expressions.py) is original
+[compare_grouped_expressions.py](../../access/queries/expressions/compare_grouped_expressions.py) is original
 MIT engineering source. It reuses the registered unchanged MIT ACE 2007 sample
 `Access_Example_VBA.accdb` (SHA-256
 `3cd1fc88d70bc93909ae6d190fa9692e709d5641b205fd2f66185c905e42cfbf`)
@@ -4331,7 +4331,7 @@ No new database fixture, dependency or third-party notice is introduced.
 
 ## Crosstab reference-row checks
 
-[compare_crosstabs.py](compare_crosstabs.py) is original MIT engineering
+[compare_crosstabs.py](../../access/queries/execution/compare_crosstabs.py) is original MIT engineering
 source. It reuses the registered unchanged MIT ACE 2007 sample
 `Access_Example_VBA.accdb` (SHA-256
 `3cd1fc88d70bc93909ae6d190fa9692e709d5641b205fd2f66185c905e42cfbf`)
@@ -4424,11 +4424,11 @@ refusal case; simple scalar-parent criteria have become supported.
 
 ## Saved UNION inputs
 
-[SavedUnionFixture.java](SavedUnionFixture.java) is original MIT repository
+[SavedUnionFixture.java](../../access/queries/saved/SavedUnionFixture.java) is original MIT repository
 source. It creates fourteen inert SELECT/UNION definitions on fresh files through
 the previously reviewed Jackcess 5.0.4 artifact. Expressions are disabled; creation
 and inspection never execute SQL, providers, macros or VBA. The recipe and original
-[SavedReadOracle.java](SavedReadOracle.java) link the external reference API;
+[SavedReadOracle.java](../../access/queries/saved/SavedReadOracle.java) link the external reference API;
 no third-party source or database fixture is copied into the repository. Generated
 files remain local/untracked and originals are never mutation targets.
 
@@ -4443,7 +4443,7 @@ incorrect recipe count assertion; the final recipe checks fourteen definitions.
 | union-2016.accdb | 5 | 409600 | `dbc0427bd21c59f9164d52658875c1530517005d88f5aed30d8018ee370d84aa` |
 | union-2019.accdb | 6 | 479232 | `0ae182514ddd9e5a9a4bd156ed44a9908ba8445bc1132d9382a4de5c400e98f7` |
 
-[compare_saved_unions.py](compare_saved_unions.py) compiles the original
+[compare_saved_unions.py](../../access/queries/saved/compare_saved_unions.py) compiles the original
 fixture/oracle and existing TableDataOracle into a temporary directory. It checks
 Jackcess-rendered SQL normalized through the already qualified syntax parser,
 explicit saved/direct/named retrieval against getter-derived row expectations,
@@ -4455,14 +4455,14 @@ by reading. Jackcess supplies metadata/data getters and SQL assembly, not SQL
 execution; this is independent storage/model evidence, not native Access qualification.
 
 ```sh
-python3 docs/testing/compare_saved_unions.py \
+python3 tests/run.py tests/access/queries/saved/compare_saved_unions.py \
   --jar path/to/jackcess-5.0.4.jar --cli target/release/tablecraft \
   --directory path/to/fresh-saved-unions --generate
 ```
 
 ## Saved crosstab inputs
 
-[SavedCrosstabFixture.java](SavedCrosstabFixture.java) is original MIT
+[SavedCrosstabFixture.java](../../access/queries/saved/SavedCrosstabFixture.java) is original MIT
 repository source creating fourteen inert definitions on fresh files with the
 previously reviewed Jackcess 5.0.4 artifact. Expression evaluation is disabled;
 creation never executes SQL, providers, macros or VBA. No third-party fixture/code
@@ -4477,7 +4477,7 @@ rendering alongside SELECT/UNION; SavedQueryOracle/TableDataOracle remain inert.
 | cross-2016.accdb | 5 | 413696 | `50be6da2f5e76c79ea5ba703ed7c1a5af9018b13157b696ef4056ee5066dc201` |
 | cross-2019.accdb | 6 | 483328 | `090949240c69fb955f1dcf702820289321ad4da7f5ce77a4f1f8d7aa529ec5b3` |
 
-[compare_saved_crosstabs.py](compare_saved_crosstabs.py) compiles original
+[compare_saved_crosstabs.py](../../access/queries/saved/compare_saved_crosstabs.py) compiles original
 fixture/oracle sources into a temporary directory and passes 320 SQL-assembly,
 raw-fragment, getter/grid and refusal controls. Cases cover fixed/dynamic/text
 headings, sums/counts, NULL/missing intersections, row totals, WHERE/HAVING,
@@ -4496,7 +4496,7 @@ The oracle never executes SQL; Windows/Access versions, filtering/heading rules,
 option execution and wider type/alias semantics remain unqualified.
 
 ```sh
-python3 docs/testing/compare_saved_crosstabs.py \
+python3 tests/run.py tests/access/queries/saved/compare_saved_crosstabs.py \
   --jar path/to/jackcess-5.0.4.jar --cli target/release/tablecraft \
   --directory path/to/fresh-saved-crosstabs --generate
 ```
@@ -4526,22 +4526,22 @@ with its former hidden-TOP case now returning the correctly limited row set.
 All original/mutation-copy bytes remain unchanged. These are independent metadata/
 model checks; the reference never executes SQL and native Access remains unrun.
 
-The original [compare_crosstab_top.py](compare_crosstab_top.py) additionally
+The original [compare_crosstab_top.py](../../access/queries/execution/compare_crosstab_top.py) additionally
 passes 782 inline nullable-rank, percentage/tie and buffered-refusal controls against
 an independent Python threshold model. It covers ASC/DESC, complete secondary keys,
 all-NULL ties, ceilings and excluded-cell errors without another fixture dependency.
 Those models describe the current explicit profile, not native qualification.
 
 ```sh
-python3 docs/testing/compare_saved_crosstabs.py \
+python3 tests/run.py tests/access/queries/saved/compare_saved_crosstabs.py \
   --jar path/to/jackcess-5.0.4.jar --cli target/release/tablecraft \
   --directory path/to/fresh-crosstab-top --generate --top
-python3 docs/testing/compare_crosstab_top.py --cli target/release/tablecraft
+python3 tests/run.py tests/access/queries/execution/compare_crosstab_top.py --cli target/release/tablecraft
 ```
 
 ## Saved join forest inputs
 
-[SavedForestFixture.java](SavedForestFixture.java) is original repository
+[SavedForestFixture.java](../../access/queries/saved/SavedForestFixture.java) is original repository
 MIT source using the already reviewed Jackcess 5.0.4 artifact (SHA-256
 `19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`).
 It authors four tiny integer tables and fourteen inert local saved definitions
@@ -4556,7 +4556,7 @@ hashes are evidence for these runs, not deterministic regeneration promises.
 | forest-2016.accdb | 5 | 446464 | `a360ec6407deb0dcc8a168c2b7d2f8484e3a780e634201a86e4e23673cb551bd` |
 | forest-2019.accdb | 6 | 516096 | `511d68ed0e66d44e5cba21ac8270c412c45b920db4eb68d5837846223b9aec51` |
 
-[compare_saved_forests.py](compare_saved_forests.py) compiles original
+[compare_saved_forests.py](../../access/queries/saved/compare_saved_forests.py) compiles original
 getter/recipe sources in a temporary directory, checks the reviewed JAR hash and
 passes 240 assembly/execution/refusal controls. Jackcess independently renders
 stored SQL and supplies table getters; explicit Python relational models control
@@ -4574,14 +4574,14 @@ The unchanged twenty-eight-definition originals pass through both hosts on Jet 4
 and ACE 2016/2019. Their earlier hashes remain valid.
 
 ```sh
-python3 docs/testing/compare_saved_forests.py \
+python3 tests/run.py tests/access/queries/saved/compare_saved_forests.py \
   --jar path/to/jackcess-5.0.4.jar --cli target/release/tablecraft \
   --directory path/to/fresh-join-forests --generate
 ```
 
 ## Saved derived source inputs
 
-[SavedDerivedFixture.java](SavedDerivedFixture.java) extends only our
+[SavedDerivedFixture.java](../../access/queries/saved/SavedDerivedFixture.java) extends only our
 original MIT forest recipe, using the reviewed Jackcess 5.0.4 artifact recorded
 above. Each fresh local/untracked file has four tiny integer tables, the fourteen
 forest definitions and eleven additional derived-source definitions. Expression
@@ -4596,7 +4596,7 @@ are added to the repository. Observed file hashes can change on regeneration:
 | derived-2016.accdb | 5 | 462848 | `c66fa480d4af73d622cd5110e5da1faa2d14b816a5315f3af2cd52b94e9f6003` |
 | derived-2019.accdb | 6 | 532480 | `d73e154763e931c8998d996020ec57204c67739599c29ca93846e5c2d8829656` |
 
-[compare_saved_derived.py](compare_saved_derived.py) compiles our original
+[compare_saved_derived.py](../../access/queries/saved/compare_saved_derived.py) compiles our original
 recipes/getter in a temporary directory and verifies the JAR hash. It passes 176
 rendering/direct/saved/named execution/refusal controls. Explicit expected rows
 cover local filtering, nested reads, UNION, anonymous/aliased sources, nullable
@@ -4607,14 +4607,14 @@ execution and save/reopen remain unrun. The earlier forest originals retain 240
 controls with the new adapter.
 
 ```sh
-python3 docs/testing/compare_saved_derived.py \
+python3 tests/run.py tests/access/queries/saved/compare_saved_derived.py \
   --jar path/to/jackcess-5.0.4.jar --cli target/release/tablecraft \
   --directory path/to/fresh-derived-sources --generate
 ```
 
 ## Stored identifier inputs
 
-[SavedIdentifiersFixture.java](SavedIdentifiersFixture.java) extends only
+[SavedIdentifiersFixture.java](../../access/queries/saved/SavedIdentifiersFixture.java) extends only
 our original MIT forest recipe using the reviewed Jackcess 5.0.4 artifact above.
 Each fresh local/untracked file contains the original tiny integer tables and
 fourteen forest queries, one symbol-named table/column, and ten additional inert
@@ -4630,7 +4630,7 @@ regeneration promises:
 | names-2016.accdb | 5 | 475136 | `0f6c26ac53585dd03cd87216b8e50ac904f45e7f548db98f7d597832b1f6ffc3` |
 | names-2019.accdb | 6 | 544768 | `226ca0b9df593a120a055c0ef711a3c640053df45041fc559631a05bdcab93b5` |
 
-[compare_saved_identifiers.py](compare_saved_identifiers.py) compiles our
+[compare_saved_identifiers.py](../../access/queries/saved/compare_saved_identifiers.py) compiles our
 recipes/getter in a temporary directory and verifies the reviewed JAR hash. Its
 160 renderer/direct/saved/named controls check prequoted tables/aliases/columns,
 parameters/prompts, native join endpoints, reserved/symbol names, a single Unicode
@@ -4639,14 +4639,14 @@ remain unchanged. Windows Microsoft Access execution and save/reopen remain
 unrun, and this does not qualify full native naming or collation.
 
 ```sh
-python3 docs/testing/compare_saved_identifiers.py \
+python3 tests/run.py tests/access/queries/saved/compare_saved_identifiers.py \
   --jar path/to/jackcess-5.0.4.jar --cli target/release/tablecraft \
   --directory path/to/fresh-stored-names --generate
 ```
 
 ## Native fragment ordering inputs
 
-[SavedOrderingFixture.java](SavedOrderingFixture.java) is original MIT
+[SavedOrderingFixture.java](../../access/queries/saved/SavedOrderingFixture.java) is original MIT
 repository source extending only our original forest recipe. The reviewed
 Jackcess 5.0.4 artifact above creates fresh local/untracked files with the fourteen
 baseline definitions plus eleven inert SELECT/UNION/crosstab ordering definitions.
@@ -4661,7 +4661,7 @@ the repository. Observed hashes can differ on regeneration:
 | order-2016.accdb | 5 | 462848 | `2e27d7f42209fcc62c6d2d7fd1baa45e2088b22947185576ecc72b81865a03df` |
 | order-2019.accdb | 6 | 532480 | `fda72ffd642906ce4228cc15fbd0a7f80b4d05dd46929912b847017c20119d7a` |
 
-[compare_saved_ordering.py](compare_saved_ordering.py) compiles our original
+[compare_saved_ordering.py](../../access/queries/saved/compare_saved_ordering.py) compiles our original
 recipes/oracles in a temporary directory, verifies the reviewed JAR hash and passes
 252 getter/rendering/direct/saved/named/refusal controls. Independent raw getters
 retain physical system rows; SQL rendering uses the reference's separate ordered
@@ -4683,14 +4683,14 @@ copies with the independent renderer instead of treating key order as corruption
 Their other payload/type/identity refusals remain. Original files are preserved.
 
 ```sh
-python3 docs/testing/compare_saved_ordering.py \
+python3 tests/run.py tests/access/queries/saved/compare_saved_ordering.py \
   --jar path/to/jackcess-5.0.4.jar --cli target/release/tablecraft \
   --directory path/to/fresh-native-ordering --generate
 ```
 
 ## Literal parameter prompt inputs
 
-[SavedPromptFixture.java](SavedPromptFixture.java) is original MIT repository
+[SavedPromptFixture.java](../../access/queries/saved/SavedPromptFixture.java) is original MIT repository
 source extending only our original forest recipe. The reviewed Jackcess 5.0.4
 artifact above creates fresh local/untracked files containing the fourteen-query
 baseline and thirteen additional inert prompt definitions. Expression evaluation
@@ -4705,7 +4705,7 @@ Observed file hashes can differ when regenerating incidental metadata:
 | prompt-2016.accdb | 5 | 462848 | `013836c6051bc475e12bb55fec22a7031e8209ad6bca029eae51daa5a255a0e9` |
 | prompt-2019.accdb | 6 | 532480 | `c346944bc27c8672dddbe11b1769a0fb29da3ae0751723dfafc26408f323c737` |
 
-[compare_saved_prompts.py](compare_saved_prompts.py) compiles our original
+[compare_saved_prompts.py](../../access/queries/saved/compare_saved_prompts.py) compiles our original
 recipe/getters in a temporary directory and checks the reviewed JAR hash. Its 264
 getter/rendering/direct/saved/named/refusal controls compare raw rows after CSV
 decoding and normalized syntax against the independent renderer. Explicit expected
@@ -4718,14 +4718,14 @@ stay unchanged. The reference never evaluates queries; native Windows Access
 parameter, collation/error-order and save/reopen qualification remain unrun.
 
 ```sh
-python3 docs/testing/compare_saved_prompts.py \
+python3 tests/run.py tests/access/queries/saved/compare_saved_prompts.py \
   --jar path/to/jackcess-5.0.4.jar --cli target/release/tablecraft \
   --directory path/to/fresh-literal-prompts --generate
 ```
 
 ## Named fixed crosstab inputs
 
-[SavedNamedCrosstabFixture.java](SavedNamedCrosstabFixture.java) is original
+[SavedNamedCrosstabFixture.java](../../access/queries/saved/SavedNamedCrosstabFixture.java) is original
 MIT source extending only our original crosstab recipe. Using the reviewed
 Jackcess 5.0.4 artifact above, it creates four fresh local/untracked files with
 the fourteen-query baseline and nineteen additional inert definitions. Expression
@@ -4740,7 +4740,7 @@ repository. Observed hashes can vary with regenerated incidental metadata:
 | named-cross-2016.accdb | 5 | 430080 | `12f734e5a70f96ca3e4c80cb8f13d770dea4813887747e3369177bdfec9fb135` |
 | named-cross-2019.accdb | 6 | 499712 | `506ef741204a51c3bf5a15f14ae84f43ea94519f82c5e986bc32b13c5bcccffa` |
 
-[compare_named_crosstabs.py](compare_named_crosstabs.py) compiles our original
+[compare_named_crosstabs.py](../../access/queries/execution/compare_named_crosstabs.py) compiles our original
 recipes/getters in a temporary directory and checks the reviewed JAR hash. Its
 380 getter/rendering/direct/saved/named/refusal controls use explicit expected
 grids for fixed-schema projections, joins, UNION, derived/correlated reads,
@@ -4757,7 +4757,7 @@ discovery remains unsupported. Ordering and prompt recipes likewise now expect
 their fixed named crosstab cases to succeed with their original names and rows.
 
 ```sh
-python3 docs/testing/compare_named_crosstabs.py \
+python3 tests/run.py tests/access/queries/execution/compare_named_crosstabs.py \
   --jar path/to/jackcess-5.0.4.jar --cli target/release/tablecraft \
   --directory path/to/fresh-named-crosstabs --generate
 ```
@@ -4766,7 +4766,7 @@ python3 docs/testing/compare_named_crosstabs.py \
 ## Stored collection text-policy integration
 
 The original attachment corpus was re-read using
-[compare_attachment_queries.py](compare_attachment_queries.py) with
+[compare_attachment_queries.py](../../access/reading/tables/compare_attachment_queries.py) with
 `--collation database`. All 162 existing stored-record/explicit-model controls
 passed across ACE 2007 and ACE 16-family files. The script now accepts that mode
 alongside its default ordinal override. Jackcess remains the reviewed 5.0.4
@@ -4789,12 +4789,12 @@ qualification remains deferred at the user's direction.
 
 ## Unicode literal parameter-prompt inputs
 
-The original MIT [SavedPromptFixture.java](SavedPromptFixture.java) now
+The original MIT [SavedPromptFixture.java](../../access/queries/saved/SavedPromptFixture.java) now
 adds 23 inert definitions to the 14-query forest baseline (37 queries total).
 Ten added definitions exercise raw/quoted accented, Cyrillic, CJK and supplementary
 prompt names, composed/decomposed spellings, derived reads, UNION and crosstabs.
 Existing qualified-control refusal remains in the corpus. The revised
-[comparison script](compare_saved_prompts.py) passes 464 raw-getter,
+[comparison script](../../access/queries/saved/compare_saved_prompts.py) passes 464 raw-getter,
 independent-rendering, explicit direct/saved/named execution and refusal controls.
 Jackcess 5.0.4 renders metadata but does not evaluate these queries; expected rows
 come from the original data recipe and explicit comparison model.
@@ -4817,10 +4817,10 @@ save/reopen behavior. Windows qualification remains deferred.
 
 ## Statistical saved-query inputs
 
-The original MIT [SavedStatisticsFixture.java](SavedStatisticsFixture.java)
+The original MIT [SavedStatisticsFixture.java](../../access/queries/saved/SavedStatisticsFixture.java)
 adds nine inert definitions to the existing fourteen-query forest/data recipe.
 It writes fresh engineering files, disables expression evaluation and executes no
-SQL or application content. [compare_saved_statistics.py](compare_saved_statistics.py)
+SQL or application content. [compare_saved_statistics.py](../../access/queries/saved/compare_saved_statistics.py)
 passes 180 getter/rendering/direct/saved/named/refusal controls across four formats.
 Jackcess 5.0.4 only decodes rows/definitions and renders SQL; expected numeric
 results come from explicit exact-rational models and documented count rules.
@@ -4842,7 +4842,7 @@ save/reopen. Windows comparisons remain deferred.
 
 ## Domain-function read controls
 
-[compare_domain_functions.py](compare_domain_functions.py) reuses the
+[compare_domain_functions.py](../../access/queries/expressions/compare_domain_functions.py) reuses the
 original `SavedStatisticsFixture` inputs above, without changing their bytes or
 adding third-party database binaries. The reviewed Jackcess JAR is used only to
 read AData records; Fraction-based expectations and the existing statistical
@@ -4859,14 +4859,14 @@ that source bytes remain unchanged. No VBA/application content executes.
 
 ## Stored domain-query inputs
 
-The original MIT [SavedDomainFixture.java](SavedDomainFixture.java) extends
+The original MIT [SavedDomainFixture.java](../../access/queries/saved/SavedDomainFixture.java) extends
 SavedStatisticsFixture with fifteen inert query definitions (38 total) and a
 `Commandes été` table containing two original numeric rows. It writes fresh files
 with expression evaluation disabled and executes no SQL, VBA or application
 content. The reviewed Jackcess dependency and existing recipe provenance above
 apply; no external binaries or source are added to Git.
 
-[compare_saved_domains.py](compare_saved_domains.py) passes 300 raw-getter,
+[compare_saved_domains.py](../../access/queries/saved/compare_saved_domains.py) passes 300 raw-getter,
 SQL-rendering, direct/saved/named and refusal controls. Jackcess reads metadata and
 rows and renders SQL only; Fraction/statistical models supply expected results.
 The controls cover all twelve functions, omitted final criteria, Unicode domain
@@ -4890,14 +4890,14 @@ qualification remains deferred.
 
 ## Financial annuity query inputs
 
-The original MIT [SavedFinancialFixture.java](SavedFinancialFixture.java)
+The original MIT [SavedFinancialFixture.java](../../access/queries/saved/SavedFinancialFixture.java)
 adds nine inert query definitions to SavedStatisticsFixture (32 total), using
 only the existing original numeric table rows. Expression evaluation is disabled;
 no SQL, VBA, UDF or financial function executes during generation. The reviewed
 Jackcess dependency/provenance above applies. No external binary/source is added
 to Git.
 
-[compare_financial_functions.py](compare_financial_functions.py) passes
+[compare_financial_functions.py](../../access/queries/expressions/compare_financial_functions.py) passes
 246 ledger/scalar/getter/rendering/direct/saved/named/refusal controls. A 400-digit
 Decimal model builds period-by-period growth and payment accumulation independently
 of the Rust logarithmic formula. Jackcess reads rows/metadata and renders SQL only.
@@ -4921,14 +4921,14 @@ remain unqualified; Windows comparisons remain deferred.
 
 ## Period and payment-component query inputs
 
-The original MIT [SavedPaymentFixture.java](SavedPaymentFixture.java)
+The original MIT [SavedPaymentFixture.java](../../access/queries/saved/SavedPaymentFixture.java)
 extends SavedFinancialFixture with ten inert definitions (42 total). The
 registered original AData rows supply selected periods 1, 2 and 4 of four-period
 loans. Generation disables expression evaluation and runs no SQL, VBA or payment
 formula. Existing reviewed Jackcess dependency/provenance applies; no external
 binary/source is added to Git.
 
-[compare_payment_functions.py](compare_payment_functions.py) passes 306
+[compare_payment_functions.py](../../access/queries/expressions/compare_payment_functions.py) passes 306
 ledger/scalar/getter/rendering/direct/saved/named/refusal controls. Independent
 400-digit Decimal period-by-period ledgers cover NPer/IPmt/PPmt, end/beginning
 payments, zero/near-zero/negative rates and first/last periods. Stored controls
@@ -4953,7 +4953,7 @@ observed files, not deterministic generation promises.
 
 ## Depreciation query inputs
 
-The original MIT [SavedDepreciationFixture.java](SavedDepreciationFixture.java)
+The original MIT [SavedDepreciationFixture.java](../../access/queries/saved/SavedDepreciationFixture.java)
 adds ten inert definitions to the original fourteen-query forest/data recipe (24
 total). It reuses only original numeric table rows and the statistical recipe's
 metadata helpers, without adding its statistical queries. Expression evaluation
@@ -4961,7 +4961,7 @@ is disabled; no SQL, VBA, UDF or depreciation formula runs during generation.
 Reviewed Jackcess dependency/provenance above applies; no external binary or
 source is added to Git.
 
-[compare_depreciation_functions.py](compare_depreciation_functions.py)
+[compare_depreciation_functions.py](../../access/queries/expressions/compare_depreciation_functions.py)
 passes 278 rational-ledger/scalar/getter/rendering/direct/saved/named/refusal
 controls. Fraction-based book-value and digit-weight schedules supply expected
 results independently of the Rust algebraic kernels. Controls cover SLN/SYD/DDB,
@@ -4986,14 +4986,14 @@ not deterministic generation promises.
 
 ## Iterative annuity-rate inputs
 
-The original MIT [SavedRateFixture.java](SavedRateFixture.java) adds eleven
+The original MIT [SavedRateFixture.java](../../access/queries/saved/SavedRateFixture.java) adds eleven
 inert definitions to the original fourteen-query forest/data recipe (25 total).
 It reuses original AData numeric rows and existing metadata helpers. Expression
 evaluation is disabled; no SQL, VBA or rate calculation executes during generation.
 Reviewed Jackcess dependency/provenance above applies; no external binary/source
 is added to Git.
 
-[compare_rate_function.py](compare_rate_function.py) passes 294 rate/
+[compare_rate_function.py](../../access/queries/expressions/compare_rate_function.py) passes 294 rate/
 certificate/scalar/getter/rendering/direct/saved/named/refusal controls. Independent
 120-digit Decimal period ledgers and bisection supply roots; coupled scalar-loan
 cases additionally validate cashflow residuals from returned rates/payments.
@@ -5018,13 +5018,13 @@ not deterministic generation promises.
 
 ## Cashflow query inputs
 
-The original MIT [SavedCashFlowFixture.java](SavedCashFlowFixture.java)
+The original MIT [SavedCashFlowFixture.java](../../access/queries/saved/SavedCashFlowFixture.java)
 adds twelve inert definitions to the forest's fourteen (26 total), using the
 already reviewed Jackcess 5.0.4 artifact and original helper recipes. No external
 source or database bytes are committed. The recipe disables expression evaluation;
 Jackcess constructs and reads metadata without executing formulas or SQL.
 
-[compare_cashflow_functions.py](compare_cashflow_functions.py) compares
+[compare_cashflow_functions.py](../../access/queries/expressions/compare_cashflow_functions.py) compares
 raw getters and SQL rendering separately from TableCraft execution, with independent
 120-digit Decimal discount/reinvestment ledgers and bisection certificates.
 Scalar eval/run, direct/saved/named retrieval, parameters, grouped/fixed-crosstab/
@@ -5044,7 +5044,7 @@ all reads (fresh generation may produce different volatile bytes):
 | ACE 2019 `cashflows-2019.accdb` | 528384 | `43b8c224116d3bc4d84081747ff54b3fa95961d05aa1729ca197b9e05e9e9bb0` |
 
 ```sh
-python3 docs/testing/compare_cashflow_functions.py \
+python3 tests/run.py tests/access/queries/expressions/compare_cashflow_functions.py \
   --jar /path/to/reviewed/jackcess-5.0.4.jar \
   --cli target/debug/tablecraft --directory /tmp/fresh-cashflow-queries --generate
 ```
@@ -5053,11 +5053,11 @@ Omit `--generate` to reuse the files and recheck their unchanged bytes.
 
 ## Value inspection query inputs
 
-The original MIT [SavedInspectionFixture.java](SavedInspectionFixture.java)
+The original MIT [SavedInspectionFixture.java](../../access/queries/saved/SavedInspectionFixture.java)
 adds twelve inert definitions to the forest's fourteen (26 total), with the
 already reviewed Jackcess 5.0.4 artifact and original helpers. It disables expression
 evaluation; no formula, SQL or VBA executes. No external source/JAR/database bytes
-are committed. [compare_value_inspection.py](compare_value_inspection.py)
+are committed. [compare_value_inspection.py](../../access/reading/tables/compare_value_inspection.py)
 uses independent public subtype/bound goldens and raw I32 getters, separating
 metadata/rendering from formula evaluation. All 284 scalar/bounds/getter/rendering/
 direct/saved/named/refusal controls pass with unchanged file bytes. This does not
@@ -5074,7 +5074,7 @@ bytes):
 | ACE 2019 `inspection-2019.accdb` | 528384 | `35ca4d51ac4816a9e4b3d05a5a4c58cbc7a4ac9a5c9f2dbfd9067605d22a68a3` |
 
 ```sh
-python3 docs/testing/compare_value_inspection.py \
+python3 tests/run.py tests/access/reading/tables/compare_value_inspection.py \
   --jar /path/to/reviewed/jackcess-5.0.4.jar \
   --cli target/debug/tablecraft --directory /tmp/fresh-inspection-queries --generate
 ```
@@ -5083,7 +5083,7 @@ Omit `--generate` to reuse the files and recheck their unchanged bytes.
 
 ## Original Hyperlink field values
 
-[HyperlinkFixture.java](HyperlinkFixture.java) is original repository MIT
+[HyperlinkFixture.java](../../access/reading/tables/HyperlinkFixture.java) is original repository MIT
 fixture code using the reviewed Jackcess 5.0.4 JAR. Each fresh file has a local
 Hyperlinks table with an Int32 ID and a Hyperlink-marked Memo field. Eight rows
 include display/address/subaddress/tip values, internal-only addresses, Unicode,
@@ -5097,7 +5097,7 @@ Generated database files and the third-party JAR remain untracked.
 | V2016 | `04bf3ebddb3ab2dfe268514f0b6401b8d54382dd118e2d33addb60169af49f66` |
 | V2019 | `65c7a8984406e18ef6f62de376832f0a38ea74395ffa6d387ef1287cfe7bc449` |
 
-[The comparison runner](compare_hyperlink.py) passes 1090 independent
+[The comparison runner](../../access/reading/tables/compare_hyperlink.py) passes 1090 independent
 component/refusal/native-field controls, including typed raw getters and all six
 component projections with unchanged source hashes. Recorded hashes identify
 this original generation; repeat generation can contain different metadata bytes.
@@ -5107,7 +5107,7 @@ The corrected run uses four fresh files. Jackcess constructs/decodes data withou
 executing HyperlinkPart; actual Microsoft Access evaluation/save remains unrun.
 
 The same original Hyperlink files also pass 628 independent UTF-16-byte/refusal/
-native-field controls through [the byte observation runner](compare_byte_strings.py).
+native-field controls through [the byte observation runner](../../access/queries/expressions/compare_byte_strings.py).
 LenB covers every row, including empty/NULL Text; AscB runs only on nonempty Text.
 Expected lengths/first bytes come from Python UTF-16LE encoding of independent
 Jackcess-decoded fields. All four original file hashes remain unchanged; native
@@ -5127,7 +5127,7 @@ including NULL/empty rows, against the independent getter-derived UTF-16LE
 model. File hashes remain unchanged. This is independent reader/model evidence,
 not Microsoft Access function execution or linguistic byte-search qualification.
 
-[The StrConv runner](compare_strconv.py) passes 12178 independent controls.
+[The StrConv runner](../../access/queries/expressions/compare_strconv.py) passes 12178 independent controls.
 It exhausts byte decoding and exact encode-back behavior for the eleven existing
 single-byte pages using Python codecs plus the reviewed WHATWG exceptions, and
 checks selected casing models and refusal cases in both query modes. Native
@@ -5137,7 +5137,7 @@ unmappable row. Every original file hash remains unchanged. This establishes
 independent model/reader evidence, not native Windows StrConv execution or NLS
 mapping, best-fit, word-start or error-order equivalence.
 
-[The numeric Format runner](compare_format.py) passes 2570 independent
+[The numeric Format runner](../../access/queries/expressions/compare_format.py) passes 2570 independent
 Decimal/model, section/literal/refusal and native-field controls. Original native
 Int32 IDs exercise zero-padding, negative sections and exact eighth fractions in
 percent output; decoded NULL rows exercise explicit fourth-section literals.
@@ -5147,8 +5147,8 @@ Format/NLS/error semantics or the unfinished date/text mask families.
 
 ## Original Format date-mask inputs
 
-The original MIT [ScalarFixture.java](ScalarFixture.java) recipe generated
-four fresh files for [the date-mask runner](compare_format_dates.py), using
+The original MIT [ScalarFixture.java](../../access/reading/tables/ScalarFixture.java) recipe generated
+four fresh files for [the date-mask runner](../../access/queries/expressions/compare_format_dates.py), using
 the reviewed Jackcess 5.0.4 JAR (SHA-256
 `19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`).
 The ordinary stored Stamp values cover a recent date/time, a negative DATE serial
@@ -5170,7 +5170,7 @@ An initial harness run exceeded the existing work quota at 22 formatted columns;
 the final runner retains every probe in batches of six without changing limits.
 
 ```sh
-python3 docs/testing/compare_format_dates.py --cli target/debug/tablecraft \
+python3 tests/run.py tests/access/queries/expressions/compare_format_dates.py --cli target/debug/tablecraft \
   --jar /path/to/reviewed/jackcess-5.0.4.jar \
   --directory /tmp/fresh-format-date-inputs --generate
 ```
@@ -5180,7 +5180,7 @@ files and unchanged bytes. Regeneration can produce different metadata hashes.
 
 ## Original Format text-layout inputs
 
-[compare_format_text.py](compare_format_text.py) reuses the four original
+[compare_format_text.py](../../access/queries/expressions/compare_format_text.py) reuses the four original
 ScalarFixture files and reviewed Jackcess 5.0.4 getter from the Format date-mask
 controls above. It does not add or mutate binary fixtures. Getters disable
 expression evaluation; ordinary Label Text/NULL/empty values feed UTF-16 layout
@@ -5192,7 +5192,7 @@ execution and compiled/application preservation qualification remain separate.
 
 ## Original scientific Format and scaling controls
 
-[compare_format_scientific.py](compare_format_scientific.py) reuses the
+[compare_format_scientific.py](../../access/queries/expressions/compare_format_scientific.py) reuses the
 four original ScalarFixture databases and reviewed Jackcess 5.0.4 getter above.
 ID/Currency/NULL input fields supply 24 native-field observations within 1456
 independent model/refusal controls. Original hashes remain unchanged. The initial
@@ -5203,7 +5203,7 @@ No new binary fixture, third-party source or dependency was added.
 
 ## Original EuroConvert controls
 
-[compare_euro.py](compare_euro.py) reuses the four original ScalarFixture
+[compare_euro.py](../../access/reading/tables/compare_euro.py) reuses the four original ScalarFixture
 files and reviewed Jackcess 5.0.4 getter described above. It reads Currency/NULL
 fields without evaluating expressions and preserves all original hashes. The
 runner passes 4646 Decimal/model/rate/triangulation/refusal/native-field controls;
@@ -5214,7 +5214,7 @@ Access EuroConvert, later currency codes or rounding/precision/error behavior.
 
 ## Original Rnd controls
 
-[compare_random.py](compare_random.py) reuses original ScalarFixture
+[compare_random.py](../../access/queries/expressions/compare_random.py) reuses original ScalarFixture
 MDB/ACCDB files and reviewed Jackcess 5.0.4 getters from the date-mask controls.
 It passes 1680 state/seed/Single/refusal/native-field checks using independent
 wide integer modular arithmetic and explicit IEEE Single packing. Native getters
@@ -5224,7 +5224,7 @@ Access generator/default/optimizer semantics or native application execution.
 
 ## Original CVErr controls
 
-[compare_cverr.py](compare_cverr.py) reuses the four original ScalarFixture
+[compare_cverr.py](../../access/reading/tables/compare_cverr.py) reuses the four original ScalarFixture
 files and reviewed Jackcess 5.0.4 getter described above. It passes 3120 independent
 standard-code/half-even/inspection/selection/refusal/native-field controls.
 Expression evaluation is disabled in getters; original hashes remain unchanged.
@@ -5238,28 +5238,28 @@ ID-field construction. Its extended 4522 controls retain the same four original
 ScalarFixture inputs and unchanged hashes; getters still disable expression
 evaluation. No new binary fixture or third-party implementation was copied.
 These are independent data/Decimal/display controls, not native Access Error-cell
-qualification. See [expression result boundaries](../expressions/VARIANT_ERRORS.md).
+qualification. See [expression result boundaries](../../../docs/expressions/VARIANT_ERRORS.md).
 
 `compare_string_from_guid.py` adds 1594 original provisional GUID-Text/byte-order/
 type/refusal/native-field controls. Python UUID is the independent model; the
 reviewed TableDataOracle getter supplies G values from the same four original
 ScalarFixture files, with expressions disabled and hashes unchanged. It does not
 execute StringFromGUID in Access or qualify its native output/query admission.
-No new binary or third-party source was added. See [the inverse profile](../expressions/GUID_CONVERSIONS.md).
+No new binary or third-party source was added. See [the inverse profile](../../../docs/expressions/GUID_CONVERSIONS.md).
 
 `compare_variant_aggregates.py` adds 1058 original independent list-endpoint/NULL/
 Error/refusal/native-field controls. It uses 256 fixed-seed inline sequences and
 reviewed getter IDs from the same four original ScalarFixture files. Hashes remain
 unchanged, getter expressions are disabled and no additional binary is copied.
 This does not execute Access First/Last, domain functions or CVErr; native order/
-Error semantics remain unqualified. See [the encounter profile](../expressions/VARIANT_ERRORS.md#encounter-order-aggregates-and-domains).
+Error semantics remain unqualified. See [the encounter profile](../../../docs/expressions/VARIANT_ERRORS.md#encounter-order-aggregates-and-domains).
 
 `compare_dynamic_eval.py` adds 1084 original integer/Boolean/civil/context/
 refusal/native-field controls. Python models supply expected values; reviewed
 TableDataOracle getters provide IDs from four unchanged original ScalarFixture
 files with expression evaluation disabled. It does not execute Microsoft Access
 Eval or qualify saved/application formulas. No binary or third-party source was
-added. See [closed Eval](../expressions/DYNAMIC_EVALUATION.md).
+added. See [closed Eval](../../../docs/expressions/DYNAMIC_EVALUATION.md).
 
 `compare_current_user.py` adds 58 explicit unsecured-session/type/arity/native-
 field/group/domain controls. It deliberately changes USER/LOGNAME/USERNAME while
@@ -5267,11 +5267,11 @@ checking the declared CLI Admin profile. Reviewed getters supply IDs from the
 same four unchanged original ScalarFixture files, with expression evaluation
 disabled. This is profile/integration evidence, not an Access session, MDW login
 or authorization oracle. No new binary or third-party source was added.
-See [CurrentUser boundaries](../expressions/SESSION_FUNCTIONS.md).
+See [CurrentUser boundaries](../../../docs/expressions/SESSION_FUNCTIONS.md).
 
 ## Integer logical integration controls
 
-The original MIT [integer comparison recipe](compare_integer_logic.py)
+The original MIT [integer comparison recipe](../../access/reading/tables/compare_integer_logic.py)
 uses independent per-bit truth tables at 8/16/32/64-bit widths and read-only
 Jackcess ID getters from the existing scalar Date fixtures. It passes 1,394
 controls through CLI eval/run and unchanged Jet 4/ACE 2007/ACE 16-family inputs.
@@ -5280,7 +5280,7 @@ Access SQL, subtype and NULL qualification remain pending.
 
 ## Rounded logical integration controls
 
-The original MIT [logical coercion recipe](compare_logical_coercion.py)
+The original MIT [logical coercion recipe](../../access/reading/tables/compare_logical_coercion.py)
 passes 2,658 independent Decimal/per-bit/quarter-value controls, including both
 CLI modes and en-us/de-de Text policies. Existing read-only Jackcess getters supply
 ID/DATE references for the four unchanged priority native scalar fixture families;
@@ -5289,7 +5289,7 @@ code is added. Native Access coercion, regional and subtype behavior is unrun.
 
 ## Rounded slicing integration controls
 
-The original MIT [slicing count recipe](compare_slice_counts.py) passes
+The original MIT [slicing count recipe](../../access/reading/tables/compare_slice_counts.py) passes
 1,122 independent Decimal/strict UTF-16 controls, including eager/buffered refusals
 and unchanged Jet 4/ACE 2007/ACE 16-family ID getter integration. Only TableCraft
 executes SQL. Original/JAR hashes are checked; no third-party code/fixtures are
@@ -5297,7 +5297,7 @@ added and no native Access SQL compatibility is claimed.
 
 ## Repetition and search-start integration controls
 
-The original MIT [repetition/search recipe](compare_repeat_search.py)
+The original MIT [repetition/search recipe](../../access/reading/tables/compare_repeat_search.py)
 passes 1,200 independent Decimal/repetition/UTF-16 controls with both CLI modes,
 en-us/de-de Text starts/counts and inert native ID getter integration. Existing
 Jet 4/ACE 2007/ACE 16-family sources retain their hashes. Only TableCraft executes
@@ -5305,7 +5305,7 @@ SQL; no third-party fixtures/code are added or native Access behavior qualified.
 
 ## Replacement start/count integration controls
 
-The original MIT [replacement-count recipe](compare_replace_counts.py)
+The original MIT [replacement-count recipe](../../access/reading/tables/compare_replace_counts.py)
 passes 798 independent Decimal/strict UTF-16/Python replacement controls and inert
 native ID getter comparisons. It covers both CLI modes, two explicit number
 profiles, rounded sentinel/domain cases and unchanged Jet 4/ACE 2007/ACE 16-family
@@ -5314,7 +5314,7 @@ Only TableCraft executes SQL, so native Access qualification remains pending.
 
 ## Comparison-mode and character-code integration controls
 
-The original MIT [mode/code recipe](compare_mode_character.py) passes 840
+The original MIT [mode/code recipe](../../access/reading/tables/compare_mode_character.py) passes 840
 independent Decimal/character/single-byte codec/mode/native-field controls across
 both CLI modes and en-us/de-de policies. Windows-1252 controls compare actual
 Unicode units rather than only encoding round trips. Existing read-only ID getters
@@ -5324,7 +5324,7 @@ and native Access/NLS qualification remains pending.
 
 ## StrConv option integration controls
 
-The original MIT [StrConv option recipe](compare_strconv_options.py)
+The original MIT [StrConv option recipe](../../access/queries/expressions/compare_strconv_options.py)
 passes 938 independent Decimal/ASCII representation/locale controls and inert
 native ID getter comparisons across the four unchanged priority scalar families.
 It checks both CLI modes, two explicit numeric profiles, option rounding, flag/
@@ -5334,35 +5334,35 @@ native Access/NLS qualification remains pending.
 
 ## Formatting-option integration controls
 
-The original MIT [format-option recipe](compare_format_options.py) passes
+The original MIT [format-option recipe](../../access/queries/expressions/compare_format_options.py) passes
 420 controls using the existing independent Python Decimal and Gregorian models.
 It checks both CLI modes, numeric Text rounding/sentinels and inert ID/DATE getter
 queries over the four unchanged priority native fixture families. Source/JAR
 hashes are checked; no third-party data/code is added and only TableCraft runs
 SQL. Native Access/NLS qualification remains pending.
 
-The original MIT [week option recipe](compare_week_options.py) reuses the
+The original MIT [week option recipe](../../access/reading/tables/compare_week_options.py) reuses the
 independent Python enumerated-week model and Decimal half-even conversion. Its
 928 controls cover Text/raw DATE options, both query CLI modes, host sentinels,
 range failures and unchanged priority-family date/ID projections. It checks the
 reference JAR and native input hashes; no binary or third-party implementation is
 copied. These independent getter/model results are not native Access SQL evidence.
 
-The original MIT [named numeric DATE recipe](compare_styled_date_sources.py)
+The original MIT [named numeric DATE recipe](../../access/queries/expressions/compare_styled_date_sources.py)
 passes 1,636 Decimal/calendar/native-field controls. Exactly representable quarter
 fractions separate numeric display from calendar rounding. Raw signed aliases
 are covered directly in Rust and SQL controls. Original priority-family sources
 and the reference JAR are hash checked; read-only native getters supply fields,
 not Access SQL execution. No third-party implementation or binary is copied.
 
-The original MIT [date component source recipe](compare_date_component_sources.py)
+The original MIT [date component source recipe](../../access/queries/expressions/compare_date_component_sources.py)
 passes 1,406 Python Gregorian/native-field controls across the six components.
 Regional date Text, numeric/raw alias inputs, NULLs and explicit policy refusals
 are checked in both CLI query modes. Native numeric/Text projections use read-only
 getter values and unchanged priority-family inputs; JAR/input hashes are checked.
 No binary or third-party implementation is copied. Native Access SQL remains unrun.
 
-The original MIT [date interval source recipe](compare_date_interval_sources.py)
+The original MIT [date interval source recipe](../../access/queries/expressions/compare_date_interval_sources.py)
 passes 13,662 Python Gregorian/Decimal/native-field controls for all ten intervals.
 Calendar additions, components, enumerated week boundaries, reverse differences,
 NULL/refusal controls and numeric/Text source projections use independent models.
@@ -5370,7 +5370,7 @@ The priority-family native inputs remain unchanged and hash checked; the referen
 JAR supplies read-only getters, not SQL execution. No binary or third-party code is
 copied. Native Access SQL qualification remains pending.
 
-The original MIT [constructor coercion recipe](compare_constructor_coercion.py)
+The original MIT [constructor coercion recipe](../../access/reading/tables/compare_constructor_coercion.py)
 passes 388 Decimal/Gregorian/Fraction/native-field controls. Raw DATE/numeric Text
 components, half-even ranges, explicit year windows and fractional Text projections
 over unchanged priority-family IDs use independent Python models. Native getters
@@ -5379,7 +5379,7 @@ copied, and native Access SQL qualification remains pending.
 
 ## Computed fixed named crosstab inputs
 
-Original MIT [ComputedCrosstabFixture.java](ComputedCrosstabFixture.java)
+Original MIT [ComputedCrosstabFixture.java](../../access/queries/execution/ComputedCrosstabFixture.java)
 extends the original SavedCrosstabFixture/SavedNamedCrosstabFixture generators.
 It adds nine inert definitions, retaining their original Sales/Regions rows and
 producing forty-two stored query records per fresh file. It never executes SQL,
@@ -5394,7 +5394,7 @@ SHA-256 `19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`.
 | computed-2016.accdb | 442368 | 7a0d8b3356c9c05df78bd9a0f7e52f211cdb92fe75a63bc6b0da0f6f82b77c96 |
 | computed-2019.accdb | 512000 | bb637619584378d403090a92a375eb87814e63bc9920a16862642ac6549ae00d |
 
-The original [independent runner](compare_computed_headings.py) passes
+The original [independent runner](../../access/reading/tables/compare_computed_headings.py) passes
 204 read-only getter/grid/reconstruction/inspection/direct/saved/named/refusal
 controls. Explicit grids cover arithmetic/casts/numeric math, concatenated punctuated
 names, empty intersections, wrapper projections, collisions and later cell errors.
@@ -5405,7 +5405,7 @@ metadata and reads rows. Native Access computed-IN admissibility, expression/opt
 semantics, error precedence and save/reopen remain unqualified.
 
 ```sh
-python3 docs/testing/compare_computed_headings.py \
+python3 tests/run.py tests/access/reading/tables/compare_computed_headings.py \
   --jar path/to/jackcess-5.0.4.jar --cli target/debug/tablecraft \
   --directory path/to/fresh-computed-crosstabs --generate
 ```
@@ -5413,7 +5413,7 @@ python3 docs/testing/compare_computed_headings.py \
 
 ## Execution-stage crosstab discovery inputs
 
-Original MIT [DiscoveryCrosstabFixture.java](DiscoveryCrosstabFixture.java)
+Original MIT [DiscoveryCrosstabFixture.java](../../access/queries/execution/DiscoveryCrosstabFixture.java)
 extends the computed-heading recipe with five inert definitions, producing
 forty-seven stored query records per file. Definitions cover contextual parameters,
 nested dynamic dependencies, random and Error cells, and a dependency cycle.
@@ -5428,7 +5428,7 @@ binary is copied. The external reviewed Jackcess 5.0.4 JAR has SHA-256
 | discovery-2016.accdb | 442368 | c2fda51a8181966520a2eb8f40882dcc63ccab91fec30bc4fedab6985435865a |
 | discovery-2019.accdb | 516096 | 34b550664d0d6c3921f408b948aa17940a2cab286f9a17e03b2755da71345f15 |
 
-The original [independent runner](compare_schema_discovery.py) passes
+The original [independent runner](../../access/reading/tables/compare_schema_discovery.py) passes
 148 getter/explicit-grid/direct/saved/named/domain/inert/refusal controls, including
 first-use runtime domain discovery and reuse of completed volatile and Error cells
 in domain lookups. Only TableCraft
@@ -5436,7 +5436,7 @@ executes SQL. Original bytes and reference JAR hashes are checked; native Access
 schema, volatile evaluation, error ordering and optimizer equivalence remain unqualified.
 
 ```sh
-python3 docs/testing/compare_schema_discovery.py \
+python3 tests/run.py tests/access/reading/tables/compare_schema_discovery.py \
   --jar path/to/jackcess-5.0.4.jar --cli target/debug/tablecraft \
   --directory path/to/fresh-discovery-crosstabs --generate
 ```
@@ -5444,7 +5444,7 @@ python3 docs/testing/compare_schema_discovery.py \
 
 ## Numeric Text arithmetic integration controls
 
-The original MIT [arithmetic Text runner](compare_arithmetic_text.py) passes
+The original MIT [arithmetic Text runner](../../access/queries/expressions/compare_arithmetic_text.py) passes
 672 independent Decimal/half-even/native-field controls. It checks both query CLI
 modes, en-us/de-de policies, numeric/operator targets, lexical values just beyond
 a midpoint, eager/refusal cases and native ID projections. The four existing
@@ -5457,7 +5457,7 @@ Access promotion, rounding, optimizer and error-order qualification remain open.
 
 ## Materialized arithmetic promotion controls
 
-The original MIT [promotion runner](compare_arithmetic_promotion.py) passes
+The original MIT [promotion runner](../../access/reading/tables/compare_arithmetic_promotion.py) passes
 818 independent integer range/subtype, Fraction Currency-rounding and native-field
 controls. It covers both query modes, widening and LongLong overflow, plus stored
 Byte/Integer/Single projections over the four existing original ScalarFixture
@@ -5471,7 +5471,7 @@ optimizer, error-order or save/reopen qualification.
 
 ## Unary and division-family integration controls
 
-The original MIT [division promotion runner](compare_division_promotion.py)
+The original MIT [division promotion runner](../../access/reading/tables/compare_division_promotion.py)
 passes 1,040 independent Fraction/half-even/subtype/raw native-field controls. It
 covers both query modes, typed negation/minimum boundaries, quotient widths, signed
 remainders, direct lexical midpoint conversion, refusal/publication boundaries
@@ -5486,7 +5486,7 @@ Access typing, rounding, optimizer and error-order qualification remain open.
 
 ## Radix literal integration controls
 
-The original MIT [radix literal runner](compare_radix_literals.py) passes
+The original MIT [radix literal runner](../../access/reading/tables/compare_radix_literals.py) passes
 742 independent signed-width/type/native-field controls, including both query
 commands, unary signs, overflow/syntax refusals, native arithmetic/filter projection
 and a fixed-heading pivot. The four existing original ScalarFixture inputs from
@@ -5500,7 +5500,7 @@ unqualified.
 
 ## Numeric predicate integration controls
 
-The original MIT [numeric predicate runner](compare_numeric_text_predicates.py)
+The original MIT [numeric predicate runner](../../access/queries/expressions/compare_numeric_text_predicates.py)
 passes 1,060 independent Decimal/rounding/predicate/native-field controls. It
 checks six relational comparisons, operand reversal, explicit en-us/de-de Text,
 Currency binary/lexical midpoint differences, refusals and native filters/BETWEEN/
@@ -5514,7 +5514,7 @@ coercion, optimizer and error order remain unqualified.
 
 ## Date predicate integration controls
 
-The original MIT [date predicate runner](compare_date_text_predicates.py)
+The original MIT [date predicate runner](../../access/queries/expressions/compare_date_text_predicates.py)
 passes 310 independent Gregorian/Automation-serial/native-field controls. Regional
 syntax, year controls, numeric fallback, operand reversal, eager failures and
 native date-field filters/domain criteria use the four existing original
@@ -5526,7 +5526,7 @@ copied. Only TableCraft executes SQL; native Access comparison remains unrun.
 
 ## Original ACCDT package controls
 
-The original MIT [template package runner](compare_template_packages.py)
+The original MIT [template package runner](../../access/reading/tables/compare_template_packages.py)
 generates inert OPC parts with Python zipfile, for stored and deflated containers.
 Its 30 CLI controls cover content-based routing, internal relationships, failure
 buffering, unknown/missing roots, unsafe/external targets, XML refusals, CRC
@@ -5538,7 +5538,7 @@ Access-created template schemas/data or native application behavior.
 
 ## Original typed template table controls
 
-The original MIT [typed-template runner](compare_template_tables.py)
+The original MIT [typed-template runner](../../access/reading/tables/compare_template_tables.py)
 builds its own OPC graph, object metadata, inline XSD and two stored rows using
 Python XML/ZIP libraries. It passes 48 CLI/query controls across stored/deflated
 packages and 15 scalar domains: metadata, counts, paging, all-table display,
@@ -5553,7 +5553,7 @@ qualify Access-created templates or native application schema/type behavior.
 
 ## Original List Definition agreement controls
 
-The original MIT [stored SOAP/XSD runner](compare_template_lists.py)
+The original MIT [stored SOAP/XSD runner](../../access/reading/tables/compare_template_lists.py)
 passes 36 CLI/query controls over original stored/deflated OPC packages. It builds
 its own list requests, metadata, property part and inline XSD, checking all eight
 qualified declared field types, UUID spelling, property updates, deletion, counts,
@@ -5596,7 +5596,7 @@ Original Rust controls cover Currency Avg/DAvg, NULL and empty selections,
 intermediate Currency/Int64 overflow and mixed numeric result precedence.
 Existing synthetic ACE 16-family scalar generators provide original Currency
 row bytes for ordinary/domain queries with metadata-only preparation. Original
-[Python Fraction controls](compare_currency_average.py) generate 69
+[Python Fraction controls](../../access/queries/execution/compare_currency_average.py) generate 69
 integer/quarter-unit means through source-free CLI UNIONs, including wide totals.
 Expected values come from exact rational arithmetic with power-of-two counts;
 no third-party data/code, binary fixture or native Access result is introduced.
@@ -5604,19 +5604,19 @@ no third-party data/code, binary fixture or native Access result is introduced.
 
 ## Original exact floating mean controls
 
-The original [Fraction/CLI runner](compare_floating_average.py) supplies
+The original [Fraction/CLI runner](../../access/queries/execution/compare_floating_average.py) supplies
 129 full-width binary64, cancellation, subnormal, tie and order-permutation cases.
 Expected means use exact Python Fraction input values before a single float
 conversion. Original Rust/native ACE 16-family controls cover all finite exponent
 bins, synthetic raw Double fields, volatile arguments, scratch reuse under a
 1 MiB allowance and cancellation/work/allocation failures. No third-party fixture,
 implementation or native Access result is introduced. Performance samples are
-recorded separately in [the benchmark ledger](FLOATING_MEANS.md).
+recorded separately in [the benchmark ledger](../general/FLOATING_MEANS.md).
 
 
 ## Original large-index inputs
 
-The original MIT [LargeIndexFixture.java](LargeIndexFixture.java) creates
+The original MIT [LargeIndexFixture.java](../../access/indexes/native/LargeIndexFixture.java) creates
 inert 20,000-row tables with seventeen indexes, plus a Large Number index for the
 ACE 16-family formats. It uses the reviewed Jackcess 5.0.4 JAR (SHA-256
 `19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`)
@@ -5633,7 +5633,7 @@ is disabled during construction; explicit flush/close is not durability evidence
 | `index-2016.accdb` | 9,003,008 | `cf842bae9c927e0515f5fb15e8b0318e4e5fccf3609396f28f557a6ba8170345` |
 | `index-2019.accdb` | 9,072,640 | `58c1bba47f65bea61c2a2c6a06f0022eb05667d40ef22580dee0ecb6768a654a` |
 
-[compare_large_indexes.py](compare_large_indexes.py) compiles the original
+[compare_large_indexes.py](../../access/indexes/native/compare_large_indexes.py) compiles the original
 recipe and existing read-only IndexRowsOracle in temporary classes, checks the
 reviewed JAR and registered input hashes, then compares ID projections, zero-width
 counts, additional output fields and small typed selections with independent
@@ -5644,7 +5644,7 @@ checks the same outcomes; metadata timestamps need not reproduce registered
 hashes. No generated database is committed. Independent index evidence does not
 establish native Access SQL, text, platform, locking or save/reopen conformance.
 
-The original [automatic-index runner](compare_automatic_indexes.py) reuses
+The original [automatic-index runner](../../access/indexes/native/compare_automatic_indexes.py) reuses
 these registered inputs and reviewed JAR without generating or modifying files.
 Existing IndexRowsOracle and TableDataOracle supply inert field values and
 sequential row order. Its 86 controls cover all six supported key carriers,
@@ -5656,7 +5656,7 @@ code, native Access execution or additional format qualification is supplied.
 
 ## Original arithmetic result-type controls
 
-The existing MIT [UNION runner](compare_union_types.py) now passes 109
+The existing MIT [UNION runner](../../access/queries/execution/compare_union_types.py) now passes 109
 controls. Additional original arithmetic arms cover exact LongLong values above
 binary64 precision, Double quotients/powers/DATE differences, converted-width Mod
 and Byte integer quotients in both arm orders. Existing read-only getters supply
@@ -5669,7 +5669,7 @@ native Access declared types, promotion, overflow or rounding qualification.
 
 ## Original contextual concatenation controls
 
-The original MIT [concatenation runner](compare_concatenation.py) passes
+The original MIT [concatenation runner](../../access/reading/tables/compare_concatenation.py) passes
 190 eval/run controls using Python integer/Decimal/calendar/string expectations.
 It covers exact full-width signed integers, lexical fixed-point conversion under
 explicit numeric formats, Gregorian date output, Boolean/NULL behavior and buffered
@@ -5688,7 +5688,7 @@ profile, not native Access SQL coercion, locale, Variant or save/reopen behavior
 
 ## Original mixed numeric UNION controls
 
-The original MIT [numeric UNION runner](compare_numeric_unions.py) passes
+The original MIT [numeric UNION runner](../../access/queries/execution/compare_numeric_unions.py) passes
 180 controls using an explicit nine-family expected matrix and independent Python
 integer/Decimal/IEEE value conversion models. It covers UNION/ALL, both arm orders,
 exact fixed-point endpoints, Single transport, Double rounding above 2^53,
@@ -5706,7 +5706,7 @@ rounding qualification; Windows comparisons remain a separate gate.
 
 ## Original Text/numeric UNION controls
 
-The original MIT [Text UNION runner](compare_text_unions.py) passes 216
+The original MIT [Text UNION runner](../../access/queries/execution/compare_text_unions.py) passes 216
 controls. Python integer and exact Decimal/IEEE-based rendering models supply
 expected strings for both arm orders, nine numeric families, two number formats,
 post-conversion duplicates, flat wide-integer preservation and NULL/empty/refusal
@@ -5726,7 +5726,7 @@ first-arm precedence or locale qualification; Windows comparisons remain unrun.
 
 ## Original CStr expression Error/Empty controls
 
-The original MIT [CStr Error runner](compare_cstr_errors.py) passes 1,211
+The original MIT [CStr Error runner](../../access/queries/expressions/compare_cstr_errors.py) passes 1,211
 controls. Original Python standard-code/string expectations cover generated codes,
 explicit conversion/selection/inspection, empty Text, raw Error alongside converted
 Text, both CLI query modes and buffered failure cases. No native application code,
@@ -5743,7 +5743,7 @@ localization or host-HRESULT mapping qualification. Windows comparisons are unru
 
 ## Original typed scalar pivot controls
 
-The original repository MIT [compare_scalar_pivots.py](compare_scalar_pivots.py)
+The original repository MIT [compare_scalar_pivots.py](../../access/reading/tables/compare_scalar_pivots.py)
 passes 68 independent scalar-heading/crosstab controls. It reuses the registered
 20,000-row large-index inputs and reviewed Jackcess JAR, checking hashes before
 and unchanged input bytes after reading. Read-only TableDataOracle getters supply
@@ -5755,7 +5755,7 @@ added. This verifies TableCraft's explicit profile, not native Access SQL naming
 
 ## Original expression Error counting controls
 
-The original MIT [compare_error_counts.py](compare_error_counts.py) passes
+The original MIT [compare_error_counts.py](../../access/queries/expressions/compare_error_counts.py) passes
 98 independent controls using seeded Python NULL/Error count models and read-only
 TableDataOracle ID getters. It reuses the registered four 20,000-row large-index
 inputs and reviewed Jackcess JAR, verifying their hashes before reads and all
@@ -5766,7 +5766,7 @@ Error-valued query cells and aggregate error ordering remain unqualified.
 
 ## Original arithmetic Error admission controls
 
-The original MIT [compare_error_arithmetic.py](compare_error_arithmetic.py)
+The original MIT [compare_error_arithmetic.py](../../access/queries/expressions/compare_error_arithmetic.py)
 passes 1,190 CLI refusal controls. Seeded standard codes, Error/NULL pairs, unary
 signs and seven binary operators check TypeMismatch and eager operational errors
 through both eval/run, with empty stdout. Four registered large-index inputs reuse
@@ -5777,7 +5777,7 @@ explicit runtime profile; native Access SQL and error ordering remain unqualifie
 
 ## Original Error predicate and logical controls
 
-The original MIT [compare_error_predicates.py](compare_error_predicates.py)
+The original MIT [compare_error_predicates.py](../../access/queries/expressions/compare_error_predicates.py)
 passes 838 independent CLI controls. Seeded Python code-pair, IN-list and reversed
 range models check both eval/run. Four registered 20,000-row large-index inputs
 reuse reviewed read-only TableDataOracle ID getters for sequential/indexed filters,
@@ -5789,7 +5789,7 @@ and complete declared/Variant coercion remain unqualified.
 
 ## Original Error aggregate and concatenation controls
 
-The original MIT [compare_error_consumers.py](compare_error_consumers.py)
+The original MIT [compare_error_consumers.py](../../access/queries/expressions/compare_error_consumers.py)
 passes 410 independent controls. Python models seeded code/NULL extrema and uses
 read-only TableDataOracle ID getters from the four registered 20,000-row large-index
 inputs. Sequential and both ID-index directions cover raw/converted/nullable
@@ -5801,7 +5801,7 @@ explicit provisional profile; the oracle does not execute Access SQL.
 
 ## Original Currency range and parameter controls
 
-The original MIT [compare_currency_ranges.py](compare_currency_ranges.py)
+The original MIT [compare_currency_ranges.py](../../access/reading/tables/compare_currency_ranges.py)
 passes 136 independent controls, reusing the four registered 20,000-row large-index
 inputs and two registered ACE 16 Currency index inputs. Reviewed read-only getters
 supply scaled keys/IDs, while Python models exact point/range/NULL counts and sums.
@@ -5809,13 +5809,13 @@ Controls include full signed endpoints, adjacent scaled units above 2^53, both
 directions, explicit retention ceilings, unsafe eager predicates and no partial
 cache publication. JAR/input hashes and unchanged originals are checked. No new
 binary fixture, third-party code/data or dependency is added. The separate
-[release benchmark](../access/indexes/CURRENCY_RANGES.md#release-measurements) retains raw samples,
+[release benchmark](../../../docs/access/indexes/CURRENCY_RANGES.md#release-measurements) retains raw samples,
 including noisy/slower cases and the excluded overlapping run. Neither reader
 comparisons nor timings qualify native Access SQL, writes or shared-file safety.
 
 ## Original Byte and Int16 range controls
 
-The original MIT [compare_narrow_ranges.py](compare_narrow_ranges.py)
+The original MIT [compare_narrow_ranges.py](../../access/reading/tables/compare_narrow_ranges.py)
 passes 128 independent controls on the four registered 20,000-row large-index
 inputs. Reviewed read-only getters supply unsigned Byte and signed Int16 tags;
 Python models exact points/ranges, NULL counts and ID sums. Typed parameters,
@@ -5826,7 +5826,7 @@ These comparisons do not execute Access SQL or qualify writes/shared-file safety
 
 ## Original rounded Double arithmetic controls
 
-The original MIT [compare_rounded_double.py](compare_rounded_double.py)
+The original MIT [compare_rounded_double.py](../../access/reading/tables/compare_rounded_double.py)
 passes 176 controls. Python independently quantizes signed integers to 53-bit
 nearest-even significands before modeling IEEE arithmetic. Raw ID getters from
 the four registered 20,000-row inputs drive sequential and both explicit ID-index
@@ -5837,7 +5837,7 @@ code/data or dependency is added. This oracle does not execute Access SQL.
 
 ## Original rounded LongLong predicate controls
 
-The original MIT [compare_rounded_predicates.py](compare_rounded_predicates.py)
+The original MIT [compare_rounded_predicates.py](../../access/reading/tables/compare_rounded_predicates.py)
 passes 284 controls using an independent integer-significand rounding model, seeded signed Int64 inputs
 and all six comparisons in both written orders against Double, Single and numeric
 Text. Exact integral inequality, NULL and eager/malformed failures remain separate
@@ -5848,7 +5848,7 @@ third-party code/data or dependency is added. Only TableCraft executes SQL.
 
 ## Conditional native text-policy controls
 
-The original [compare_native_collations.py](compare_native_collations.py)
+The original [compare_native_collations.py](../../access/queries/expressions/compare_native_collations.py)
 now passes 660 model/source controls on the four registered mixed-policy inputs.
 Additional Switch/Choose/nested wrappers reuse independent short-key comparison,
 filter, sort, group and one-unit LIKE expectations, with sequential and selected
@@ -5859,7 +5859,7 @@ No native Access SQL runs in this oracle.
 
 ## Original StrComp scalar operand controls
 
-The original MIT [compare_strcomp_scalars.py](compare_strcomp_scalars.py)
+The original MIT [compare_strcomp_scalars.py](../../access/reading/tables/compare_strcomp_scalars.py)
 passes 620 independent controls. Decimal quarter-value models, exact integer
 spellings, Boolean/date goldens and Python UTF-16 comparison cover two explicit
 number profiles, both query modes and typed results. Raw ID getters from the
@@ -5871,7 +5871,7 @@ is added. Only TableCraft evaluates SQL; native Access coercion remains unqualif
 
 ## Runtime domain text-policy controls
 
-The original [compare_native_collations.py](compare_native_collations.py)
+The original [compare_native_collations.py](../../access/queries/expressions/compare_native_collations.py)
 passes 1,460 model/source controls. DLookup, DFirst, DLast, DMin and DMax with
 unique row criteria now reuse independent short-key expectations for all four
 registered mixed-policy inputs, with explicit default/global policies and both
@@ -5883,12 +5883,12 @@ code/data or dependency is added. Native Access expression precedence stays pend
 ## Original larger stored payload corpus
 
 Generated 22 October 2026 with the original MIT-licensed
-[LargePayloadFixture.java](LargePayloadFixture.java) recipe and the reviewed
+[LargePayloadFixture.java](../../access/reading/tables/LargePayloadFixture.java) recipe and the reviewed
 Jackcess 5.0.4 JAR (SHA-256
 `19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`).
 No third-party database bytes or source were copied. Generated binaries remain
 untracked. These hashes identify this local run; regenerations can differ in
-creation metadata. The [comparison runner](compare_large_payloads.py)
+creation metadata. The [comparison runner](../../access/reading/tables/compare_large_payloads.py)
 verifies stored bytes against read-only independent getters and authored Python
 values, including compressed/stored attachment codec tags, and rechecks originals.
 
@@ -5899,7 +5899,7 @@ values, including compressed/stored attachment codec tags, and rechecks original
 | ace2019.accdb | 6107136 | `1b95f62f64481e3c8919f95009dd2b5026329155ec6fbeeb2e7a7f58c3602cc8` |
 | jet4.mdb | 4657152 | `2a4b2833e0aef46eff2bd3cc5c33f3c20cf42d4866ef56c6f0daf56b831e745e` |
 
-All 36 independent controls passed. [Larger payload limits](../access/storage/LARGE_PAYLOADS.md)
+All 36 independent controls passed. [Larger payload limits](../../../docs/access/storage/LARGE_PAYLOADS.md)
 retain separate query/output ceilings and unqualified native Access behavior.
 Existing smaller registered fixture recipes and bytes were not modified.
 
@@ -5913,12 +5913,12 @@ needed; native Access qualification remains pending.
 
 ## Known fixed-prefix history inputs
 
-[FixedPrefixHistoryFixture.java](FixedPrefixHistoryFixture.java) is original
+[FixedPrefixHistoryFixture.java](../../access/reading/tables/FixedPrefixHistoryFixture.java) is original
 MIT engineering source using reviewed Apache-2.0 Jackcess 5.0.4, JAR SHA-256
 `19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`, source commit
 `be0a2139b087a227d14cafd4ea231306a5a3a862`. It disables expression evaluation and
 creates inert FixedFirst/VariableFirst append histories. The original
-[runner](compare_fixed_prefix_histories.py) removes DropFixed/DropText
+[runner](../../access/reading/tables/compare_fixed_prefix_histories.py) removes DropFixed/DropText
 metadata only on separate copies via the existing reviewed engineering recipe.
 No row bytes or original files are modified, no third-party code/data is copied
 into the repository, and generated databases remain local/untracked.
@@ -5934,14 +5934,14 @@ Names are `PrefixBase-<profile>.<mdb|accdb>` and
 `PrefixGaps-<profile>.<mdb|accdb>`; `Definitions-<profile>.tsv` retains their authored
 native definition pages for controlled corruption experiments. Each family passes
 14 positive read/query controls and 18 corrupted-copy atomic refusals. Original
-and derivative bytes remain unchanged. The [contract and reproduction](COLUMN_HISTORIES.md#known-fixed-prefix-qualification)
+and derivative bytes remain unchanged. The [contract and reproduction](../schema/COLUMN_HISTORIES.md#known-fixed-prefix-qualification)
 separate known fixed-prefix values from unqualified deleted tails, native DDL,
 metadata patching, Microsoft Access comparisons and save/reopen.
 
 
 ## Original zero-divisor error controls
 
-The original MIT [compare_zero_divisors.py](compare_zero_divisors.py)
+The original MIT [compare_zero_divisors.py](../../access/reading/tables/compare_zero_divisors.py)
 passes 609 operator/type/error-class controls using language-reference expectations
 and raw TableDataOracle Long getters from the four registered
 [20,000-row inputs](#original-large-index-inputs). It checks the reviewed Jackcess
@@ -5949,28 +5949,28 @@ JAR hash, every input hash before queries and unchanged bytes afterward.
 Only TableCraft executes SQL; Jackcess supplies inert stored values. Sequential
 and both explicit ID-index directions preserve error class and empty stdout.
 No binary fixture, third-party source/data, new dependency or native Access
-qualification is introduced. The [arithmetic contract](../expressions/numeric/ARITHMETIC_PROMOTION.md#zero-divisor-error-selection)
+qualification is introduced. The [arithmetic contract](../../../docs/expressions/numeric/ARITHMETIC_PROMOTION.md#zero-divisor-error-selection)
 retains Decimal/integer distinctions and unimplemented Empty/native behavior.
 
 
 ## CDate/CVDate declaration controls
 
-The original MIT [declaration runner](compare_query_declarations.py) now
+The original MIT [declaration runner](../../access/queries/execution/compare_query_declarations.py) now
 passes 930 independent controls: 886 scalar and 44 integrations with the same
 registered 20,000-row priority-family inputs, whose hashes are checked before and
 after execution. The expanded Decimal half-even/integer model distinguishes
 Scalar CDate from Variant CVDate, including explicit narrow overflow error class,
 four operand Variant combinations and derived results. The existing
-[date-conversion runner](compare_date_conversion.py) with `--conversion CVDate`
+[date-conversion runner](../../access/queries/expressions/compare_date_conversion.py) with `--conversion CVDate`
 adds 2,470 Gregorian/Automation conversion/refusal controls without native files.
 These scripts execute SQL only in TableCraft. No binary, copied third-party
 source/data or new dependency is added; native Access classification remains
-unqualified under the [owning contract](../expressions/numeric/DECLARED_ARITHMETIC.md#date-conversion-return-declarations).
+unqualified under the [owning contract](../../../docs/expressions/numeric/DECLARED_ARITHMETIC.md#date-conversion-return-declarations).
 
 
 ## Original exact floating-sum controls
 
-The original MIT [compare_floating_sum.py](compare_floating_sum.py) passes
+The original MIT [compare_floating_sum.py](../../access/queries/expressions/compare_floating_sum.py) passes
 155 independent controls: 131 authored/permuted/random Fraction cases and 24
 native query comparisons over the registered four 20,000-row inputs. Read-only
 TableDataOracle Single/Double raw bits supply the numerical inputs; the reviewed
@@ -5978,13 +5978,13 @@ Jackcess JAR hash and every original input hash/unchanged buffer are checked.
 Sequential and ascending/descending ID-index sums and domain sums match one final
 Python Fraction-to-Double rounding. Only TableCraft executes SQL; no reference
 engine executes database content. No binary or third-party source/data is added.
-[Qualification and measured costs](FLOATING_SUMS.md) remain separate from
+[Qualification and measured costs](../general/FLOATING_SUMS.md) remain separate from
 native Access behavior, complete aggregate promotion and write evidence.
 
 
 ## Domain return-declaration controls
 
-The original MIT [declaration runner](compare_query_declarations.py) now
+The original MIT [declaration runner](../../access/queries/execution/compare_query_declarations.py) now
 passes 1,042 controls: 886 scalar and 156 native integrations using the registered
 four 20,000-row input hashes. Its optional `--jar` checks the reviewed Jackcess
 artifact and independently reads stored Byte 255, Integer 32767 and Single 30.5
@@ -5992,14 +5992,14 @@ from ID 2. Domain selectors request that row while the outer read selects ID 1;
 other controls exercise all twelve domain functions, explicit cast overflow and
 NULL. Every source hash remains unchanged. No new binary or copied third-party
 source/data is added; only TableCraft executes SQL.
-[The return-declaration contract](../expressions/numeric/DECLARED_ARITHMETIC.md#domain-function-return-declarations)
+[The return-declaration contract](../../../docs/expressions/numeric/DECLARED_ARITHMETIC.md#domain-function-return-declarations)
 separates Microsoft signatures/independent evidence from native Access SQL
 classification, aggregate precision and complete compatibility.
 
 
 ## Math return-declaration controls
 
-The original MIT [declaration runner](compare_query_declarations.py) now
+The original MIT [declaration runner](../../access/queries/execution/compare_query_declarations.py) now
 passes 1,136 controls: 948 scalar and 188 native integrations over the registered
 four 20,000-row input hashes. It checks Variant same-carrier math returns versus
 Scalar transcendental/Rnd results, explicit cast overflow, Len/LenB's corrected
@@ -6008,7 +6008,7 @@ Floating outputs compare exact binary64 bits rather than a decimal formatting
 spelling. Every original database hash remains unchanged. Optional reviewed
 Jackcess raw getters still supply inert field evidence; only TableCraft runs SQL.
 No binary or third-party code/data is added. The dated Microsoft specification is
-consulted outside the repository and recorded as a [signature reference](../expressions/numeric/DECLARED_ARITHMETIC.md#math-signatures-and-lenlenb-correction),
+consulted outside the repository and recorded as a [signature reference](../../../docs/expressions/numeric/DECLARED_ARITHMETIC.md#math-signatures-and-lenlenb-correction),
 not a fixture or native Access oracle.
 
 ## Mixed Currency/floating sum controls
@@ -6032,7 +6032,7 @@ using existing registered four-family 20,000-row inputs and the reviewed
 Jackcess 5.0.4 JAR hash. Inert raw getters supply Money inputs for positive/negative
 16,913-row means, checked through Avg/DAvg in sequential and both ID-index orders.
 Original bytes remain unchanged; only TableCraft executes SQL. The independently
-modeled one-bit rounding fix is documented in [AVERAGES.md](../query/aggregates/AVERAGES.md#single-rounding-for-fixed-point-double-means-23-october-2026).
+modeled one-bit rounding fix is documented in [AVERAGES.md](../../../docs/query/aggregates/AVERAGES.md#single-rounding-for-fixed-point-double-means-23-october-2026).
 This is not native Microsoft Access aggregation or save evidence.
 
 ## Financial/date/inspection declaration controls
@@ -6045,7 +6045,7 @@ DATE serial boundaries, Boolean truth and explicit Scalar/Variant overflow rules
 Native checks reuse the four registered 20,000-row inputs and reviewed Jackcess
 raw getters, verifying JAR/input hashes and unchanged originals. No Access SQL
 engine, VBA or application content executes; the
-[signature review](../expressions/numeric/DECLARED_ARITHMETIC.md#financial-date-and-inspection-signatures-23-october-2026)
+[signature review](../../../docs/expressions/numeric/DECLARED_ARITHMETIC.md#financial-date-and-inspection-signatures-23-october-2026)
 keeps native qualification separate.
 
 ## Logical declaration propagation controls
@@ -6058,7 +6058,7 @@ overflow categories. Native queries reuse the registered four-family 20,000-row
 inputs and reviewed raw Jackcess getters; JAR/input hashes and original bytes
 remain checked. Tests include unknown aggregate categories, checked LongLong
 limits, NULL/eager failures, once-only random operands and cancellation.
-The [operator contract](../expressions/numeric/DECLARED_ARITHMETIC.md#logical-operator-declaration-propagation-23-october-2026)
+The [operator contract](../../../docs/expressions/numeric/DECLARED_ARITHMETIC.md#logical-operator-declaration-propagation-23-october-2026)
 retains runtime Variant/native qualification gaps; no Microsoft Access SQL or
 stored application code executes in these controls.
 
@@ -6073,7 +6073,7 @@ registered four-family 20,000-row inputs and reviewed inert Jackcess getters.
 JAR/input hashes and unchanged original bytes remain checked. Tests also cover
 grouped/derived/correlated outputs, unknown aggregate declarations, one comparer
 call, once-only random operands, NULL and eager failures. The
-[relational contract](../expressions/numeric/DECLARED_ARITHMETIC.md#relational-result-categories-23-october-2026)
+[relational contract](../../../docs/expressions/numeric/DECLARED_ARITHMETIC.md#relational-result-categories-23-october-2026)
 keeps mixed-type/native qualification gaps explicit; no Access SQL, writes or
 stored application code executes in these checks.
 
@@ -6089,7 +6089,7 @@ cases cover seven numeric carriers. Domain criteria check full counts and zero
 numeric/String equalities after the outer query selects one ID, without caching
 that selection as a complete table. JAR/input hashes and unchanged originals
 remain checked. The
-[contract](../expressions/numeric/DECLARED_ARITHMETIC.md#both-variant-stringnumeric-comparison-exception-23-october-2026)
+[contract](../../../docs/expressions/numeric/DECLARED_ARITHMETIC.md#both-variant-stringnumeric-comparison-exception-23-october-2026)
 keeps qualification separate from Microsoft Access SQL and app execution.
 
 ## LIKE and NULL-check declaration controls
@@ -6103,7 +6103,7 @@ the registered four-family 20,000-row inputs and reviewed Jackcess getters, with
 original JAR/input hashes and bytes checked. Tests cover negation, composed
 scopes, unknown aggregate declarations, NULL/Error distinctions, eager failures,
 missing modes, invalid patterns, one literal-comparer call and cancellation.
-The [declaration contract](../expressions/numeric/DECLARED_ARITHMETIC.md#like-and-null-check-declarations-23-october-2026)
+The [declaration contract](../../../docs/expressions/numeric/DECLARED_ARITHMETIC.md#like-and-null-check-declarations-23-october-2026)
 keeps native pattern/locale and SQL overflow qualification separate. No Access
 SQL or stored application code executes in these checks.
 
@@ -6119,7 +6119,7 @@ comparisons, ANY/SOME/ALL and empty results. Native queries reuse the registered
 four-family 20,000-row files and reviewed getters, verifying original JAR/input
 hashes and bytes. Focused tests preserve late failures, Error data, unknown
 categories, query scopes, once-only random operands and cancellation. The
-[policy contract](../expressions/numeric/DECLARED_ARITHMETIC.md#list-range-and-subquery-result-policies-23-october-2026)
+[policy contract](../../../docs/expressions/numeric/DECLARED_ARITHMETIC.md#list-range-and-subquery-result-policies-23-october-2026)
 distinguishes composition-derived categories from native Access evidence; no
 Access SQL, application code or writes execute in these checks.
 
@@ -6137,7 +6137,7 @@ It adds no fixture binaries or copied third-party code.
 Focused Rust tests add empty named sources and fixed-heading crosstab group
 metadata with preparation scan counters, joined/correlated outputs and unknown
 UNION/aggregate categories. CLI checks retain both flag names and buffered
-failures. See [static declaration scope](../expressions/numeric/DECLARED_ARITHMETIC.md#static-query-output-categories-23-october-2026).
+failures. See [static declaration scope](../../../docs/expressions/numeric/DECLARED_ARITHMETIC.md#static-query-output-categories-23-october-2026).
 These controls do not establish native Access declaration equivalence.
 
 
@@ -6149,7 +6149,7 @@ results use integer serial arithmetic, explicit declarations and carrier tags;
 Date-minus-Date and default behavior remain controls. No generated database or
 third-party bytes are added. Kernel/query/CLI tests cover both operand positions,
 range ends, NULL, scalar subqueries and buffered errors. These independently
-check the [engineering profile](../expressions/numeric/DECLARED_ARITHMETIC.md#declared-legacy-date-overflow-23-october-2026),
+check the [engineering profile](../../../docs/expressions/numeric/DECLARED_ARITHMETIC.md#declared-legacy-date-overflow-23-october-2026),
 not native Access conformance.
 
 
@@ -6161,7 +6161,7 @@ plus missing-policy errors and unchanged defaults. Expected Double serials use
 integer arithmetic and explicit carrier tags. Focused evaluator, query and CLI
 tests retain cancellation, NULL, conversion errors and buffered failures.
 No fixture bytes or third-party code are added. See the
-[contextual declaration contract](../expressions/numeric/DECLARED_ARITHMETIC.md#contextual-numeric-text-and-date-declarations-23-october-2026).
+[contextual declaration contract](../../../docs/expressions/numeric/DECLARED_ARITHMETIC.md#contextual-numeric-text-and-date-declarations-23-october-2026).
 
 
 ## Effective numeric comparison controls
@@ -6178,7 +6178,7 @@ explicit IEEE pack/unpack, rather than TableCraft-generated output.
 Focused evaluator/query/CLI tests additionally retain fixed-point conversions,
 shared predicate consumers, missing policies, NULL/cancellation, eager errors
 and buffered failures. Original native hashes/bytes remain checked; no generated
-binary fixture is added. See [effective numeric comparison scope](../expressions/numeric/DECLARED_ARITHMETIC.md#effective-numeric-predicate-types-23-october-2026).
+binary fixture is added. See [effective numeric comparison scope](../../../docs/expressions/numeric/DECLARED_ARITHMETIC.md#effective-numeric-predicate-types-23-october-2026).
 These controls do not establish native Access equivalence.
 
 
@@ -6196,7 +6196,7 @@ Decimal and out-of-envelope Long values. The recipe defines ID 1 as 2 January
 Focused evaluator/query/CLI tests additionally retain explicit date policies,
 NULL/non-finite/Extended Date refusals, cancellation, shared relational consumers
 and buffered failures. No fixture binaries or third-party code are added. See the
-[effective Date comparison contract](../expressions/numeric/DECLARED_ARITHMETIC.md#effective-legacy-date-comparison-types-23-october-2026).
+[effective Date comparison contract](../../../docs/expressions/numeric/DECLARED_ARITHMETIC.md#effective-legacy-date-comparison-types-23-october-2026).
 Native Access temporal/coercion qualification remains pending.
 
 
@@ -6214,7 +6214,7 @@ Focused query tests retain actual direct/derived/scalar-subquery categories and
 inert provider-requiring metadata. Character kernel and CLI tests retain distinct
 Chr$ resolution, shared construction/range/NULL handling and buffered failures.
 No copied code or fixture binaries are added. See the
-[text declaration contract](../expressions/numeric/DECLARED_ARITHMETIC.md#text-built-in-return-categories-23-october-2026).
+[text declaration contract](../../../docs/expressions/numeric/DECLARED_ARITHMETIC.md#text-built-in-return-categories-23-october-2026).
 These controls do not establish native Access declarations or full coercion.
 
 
@@ -6229,7 +6229,7 @@ fixture binary or provider implementation.
 Two query tests use explicit session metadata and an original counting catalog
 to verify declaration-sensitive overflow/widening, once-only lookups, missing
 contexts, empty-result metadata and late failures. CLI controls retain both flag
-names and buffered failures. See [scope and primary references](../expressions/numeric/DECLARED_ARITHMETIC.md#session-numbered-error-and-guid-return-categories-23-october-2026).
+names and buffered failures. See [scope and primary references](../../../docs/expressions/numeric/DECLARED_ARITHMETIC.md#session-numbered-error-and-guid-return-categories-23-october-2026).
 These do not qualify Access host or authentication behavior.
 
 
@@ -6249,7 +6249,7 @@ Long MIN, fallback and malformed/out-of-range spellings. Evaluator/query/CLI tes
 cover exact provider numbers, CVErr separation, aliases, contexts, output limits,
 lookup counts, eager failures and buffering. The focused async SQLite test retains
 request-local providers with signed/typed/closed-Eval calls. See
-[Error message scope](../expressions/ERROR_MESSAGES.md#signed-numbers-and-typed-error-identity-23-october-2026).
+[Error message scope](../../../docs/expressions/ERROR_MESSAGES.md#signed-numbers-and-typed-error-identity-23-october-2026).
 Native Access message/HRESULT/sandbox qualification remains pending.
 
 
@@ -6266,7 +6266,7 @@ and unchanged bytes. No third-party code or fixture binary is added.
 Focused evaluator/query/CLI tests additionally retain all scalar financial call
 identities, typed Euro options, plan/policy reuse, derived/correlated input,
 conversion order and direct-call cancellation. Existing independent financial
-kernel controls remain separate. See [financial Text scope](../expressions/financial/FINANCIAL_FUNCTIONS.md#contextual-numeric-text-inputs-23-october-2026).
+kernel controls remain separate. See [financial Text scope](../../../docs/expressions/financial/FINANCIAL_FUNCTIONS.md#contextual-numeric-text-inputs-23-october-2026).
 These controls do not qualify native Access coercion or precision.
 
 
@@ -6283,13 +6283,13 @@ and bytes remain checked. No new binary or copied code is added.
 Focused evaluator/query/CLI controls retain reusable plans/policies, derived
 outputs, strict numeric array elements, shared normalization limits and every
 observed cancellation checkpoint for Text-based calls. See the
-[cashflow Text contract](../expressions/financial/CASHFLOW_FUNCTIONS.md#explicit-numeric-text-rates-and-guesses-23-october-2026).
+[cashflow Text contract](../../../docs/expressions/financial/CASHFLOW_FUNCTIONS.md#explicit-numeric-text-rates-and-guesses-23-october-2026).
 Native Access query/array and numerical qualification remains unrun.
 
 
 ## Numeric Text math integration controls (23 October 2026)
 
-The original [compare_math_text.py](compare_math_text.py) passes 164
+The original [compare_math_text.py](../../access/queries/expressions/compare_math_text.py) passes 164
 controls (132 source-free and 32 native integrations). It covers all fifteen
 math identities under en-US/de-DE policies, required-format refusals, ordered
 errors, output carriers and buffered failures. Independent elementary values,
@@ -6299,14 +6299,14 @@ SHA-256 identities before/after and never mutate fixtures. No third-party code,
 fixture, license or dependency is added. No Microsoft Access SQL runs.
 
 ```sh
-python3 docs/testing/compare_math_text.py --cli target/debug/tablecraft \
+python3 tests/run.py tests/access/queries/expressions/compare_math_text.py --cli target/debug/tablecraft \
   --native-directory /tmp/fresh-large-indexes
 ```
 
 
 ## Numeric Text input spelling controls (23 October 2026)
 
-The original [compare_numeric_text_inputs.py](compare_numeric_text_inputs.py)
+The original [compare_numeric_text_inputs.py](../../access/queries/expressions/compare_numeric_text_inputs.py)
 passes 308 controls: 284 source-free and 24 native integrations. Python Decimal
 half-even rounding, explicit integer bit patterns and the existing independent
 binary64 spelling model supply expected Hex/Oct/Str Text and VarType values.
@@ -6319,14 +6319,14 @@ controls without Java/native inputs in this run. Neither runner executes SQL in
 Microsoft Access.
 
 ```sh
-python3 docs/testing/compare_numeric_text_inputs.py --cli target/debug/tablecraft \
+python3 tests/run.py tests/access/queries/expressions/compare_numeric_text_inputs.py --cli target/debug/tablecraft \
   --native-directory /tmp/fresh-large-indexes
 ```
 
 
 ## Partition numeric Text controls (23 October 2026)
 
-The original [compare_partition.py](compare_partition.py) now passes 838
+The original [compare_partition.py](../../access/reading/tables/compare_partition.py) now passes 838
 controls: 830 source-free numeric/Text/rounding/refusal controls and eight native
 integrations. An independently enumerated bucket model and Python Decimal
 half-even conversion check unchanged label spaces under en-US/de-DE in both CLI
@@ -6337,14 +6337,14 @@ index/source budgets. No database application content or Microsoft Access SQL
 executes, and no fixture bytes or third-party source are added.
 
 ```sh
-python3 docs/testing/compare_partition.py --cli target/debug/tablecraft \
+python3 tests/run.py tests/access/reading/tables/compare_partition.py --cli target/debug/tablecraft \
   --native-directory /tmp/fresh-large-indexes
 ```
 
 
 ## Str expression-state and date controls (23 October 2026)
 
-The original [numeric input runner](compare_numeric_text_inputs.py) now
+The original [numeric input runner](../../access/queries/expressions/compare_numeric_text_inputs.py) now
 passes 338 controls (306 source-free and 32 native integrations). Added authored
 expectations check invariant standard Error spelling, nested Error selection,
 explicit numeric Nz replacement, legacy ISO dates, missing date policy and eager
@@ -6358,7 +6358,7 @@ execution evidence.
 
 ## Legacy DATE unary math controls (23 October 2026)
 
-The original [compare_date_numeric.py](compare_date_numeric.py) now passes
+The original [compare_date_numeric.py](../../access/queries/expressions/compare_date_numeric.py) now passes
 1,384 controls (1,368 source-free and sixteen native field controls) without Java
 inputs in this run. Added raw CDate serial inputs, independent Python integer/
 math floor and truncation, magnitudes/signs and VarType checks cover unary math.
@@ -6370,14 +6370,14 @@ are verified before/after. No fixture bytes change and no Microsoft Access SQL
 executes. Separate Rust tests qualify exact raw signed-zero bits.
 
 ```sh
-python3 docs/testing/compare_date_numeric.py --cli target/debug/tablecraft \
+python3 tests/run.py tests/access/queries/expressions/compare_date_numeric.py --cli target/debug/tablecraft \
   --native-directory /tmp/fresh-large-indexes
 ```
 
 
 ## Hex/Oct legacy DATE and expression-state controls (23 October 2026)
 
-The original [numeric input runner](compare_numeric_text_inputs.py) now
+The original [numeric input runner](../../access/queries/expressions/compare_numeric_text_inputs.py) now
 passes 378 controls (338 source-free and forty native integrations). New controls
 use Python Decimal half-even rounding and integer bit patterns for raw Date
 inputs, require explicit numeric Error-code conversion and retain eager failures.
@@ -6391,7 +6391,7 @@ No fixture bytes change and no native Microsoft Access SQL executes.
 
 ## Math expression Error/Empty admission controls (23 October 2026)
 
-The original [compare_math_text.py](compare_math_text.py) now passes 222
+The original [compare_math_text.py](../../access/queries/expressions/compare_math_text.py) now passes 222
 controls (178 source-free and forty-four native integrations). Added controls
 check TypeMismatch for Error arguments across math identities, eager operational
 failures, Round count-first and RGB channel domain precedence, plus explicitly
@@ -6406,7 +6406,7 @@ fixture bytes change and no Microsoft Access SQL runs.
 
 ## Scalar financial expression-state controls (23 October 2026)
 
-The original [compare_financial_text.py](compare_financial_text.py) now
+The original [compare_financial_text.py](../../access/queries/expressions/compare_financial_text.py) now
 passes 242 controls (182 source-free and sixty native integrations). Added
 controls cover Error data and later eager failures across all eleven scalar
 financial identities, NULL/conversion order, Euro currency precedence and explicit
@@ -6420,7 +6420,7 @@ constructors. No fixture bytes change and no native Microsoft Access SQL runs.
 
 ## Cashflow expression-state controls (23 October 2026)
 
-The original [compare_financial_text.py](compare_financial_text.py) now
+The original [compare_financial_text.py](../../access/queries/expressions/compare_financial_text.py) now
 passes 274 controls (202 source-free and seventy-two native integrations). Added
 controls cover rate-versus-array Error/NULL precedence, later eager failures in
 array elements and scalar controls, Error-zero refusal and explicit numeric-code
@@ -6434,7 +6434,7 @@ no native Microsoft Access SQL executes.
 
 ## Constructor expression-state controls (23 October 2026)
 
-The original [compare_date_constructors.py](compare_date_constructors.py)
+The original [compare_date_constructors.py](../../access/queries/expressions/compare_date_constructors.py)
 now accepts source-free runs and optional registered native inputs alongside its
 existing paired Java getter mode. This run passes 162 controls (134 source-free
 and twenty-eight native integrations), without Java inputs. Independent Python
@@ -6448,14 +6448,14 @@ checks without invented SQL constructors. No fixture bytes change and no native
 Microsoft Access SQL runs.
 
 ```sh
-python3 docs/testing/compare_date_constructors.py --cli target/debug/tablecraft \
+python3 tests/run.py tests/access/queries/expressions/compare_date_constructors.py --cli target/debug/tablecraft \
   --native-directory /tmp/fresh-large-indexes
 ```
 
 
 ## Date interval expression-state controls (23 October 2026)
 
-The original [compare_date_interval_sources.py](compare_date_interval_sources.py)
+The original [compare_date_interval_sources.py](../../access/queries/expressions/compare_date_interval_sources.py)
 now passes 13,614 controls (13,586 source-free and twenty-eight registered native
 integrations) without Java inputs in this run. Independent Python calendar/
 Decimal models retain additions, parts and signed boundaries across existing
@@ -6468,7 +6468,7 @@ checkpoint and once-only Rnd effects use focused Rust tests. No fixture bytes
 change and no Microsoft Access SQL executes.
 
 ```sh
-python3 docs/testing/compare_date_interval_sources.py --cli target/debug/tablecraft \
+python3 tests/run.py tests/access/queries/expressions/compare_date_interval_sources.py --cli target/debug/tablecraft \
   --native-directory /tmp/fresh-large-indexes
 ```
 
@@ -6512,7 +6512,7 @@ hashes remained unchanged. No native Access comparison or save/reopen was run.
 
 ## Search/replacement expression-state controls
 
-[compare_search_replacement_states.py](compare_search_replacement_states.py)
+[compare_search_replacement_states.py](../../access/reading/tables/compare_search_replacement_states.py)
 adds independent binary UTF-16 search/replacement expectations, Error-data versus
 explicit CStr conversion, option/NULL/source admission and eager failure controls.
 It creates no database. Optional `--native-directory` uses ID=1 from the separately
@@ -6532,7 +6532,7 @@ unqualified.
 
 ### StrComp ordered state controls (23 October 2026)
 
-The existing [scalar comparison runner](compare_strcomp_scalars.py) now
+The existing [scalar comparison runner](../../access/reading/tables/compare_strcomp_scalars.py) now
 adds sixty-four source-free Error-state/control/eager-failure checks and eight
 native integrations to its original 620 controls. The full run passes 692
 controls, including twenty native checks. Native inputs use the four separately
@@ -6544,7 +6544,7 @@ integration checks, not Microsoft Access SQL comparison evidence.
 
 ## Larger scalar history inputs
 
-Original MIT [ScaleHistoryFixture.java](ScaleHistoryFixture.java) uses the
+Original MIT [ScaleHistoryFixture.java](../../access/reading/tables/ScaleHistoryFixture.java) uses the
 previously reviewed Jackcess 5.0.4 JAR, with expression evaluation disabled and
 per-row syncing disabled during generation. It creates tables and explicit rows
 only; no copied Access objects, external fixture or active content is included.
@@ -6561,14 +6561,14 @@ comparison do not establish native Access write/save compatibility.
 
 Inputs persist under `.cache/tablecraft-fixtures/scale-histories/`, with a local
 inventory of recipe/JAR/input hashes. No JAR or database binary is tracked. The
-[comparison runner](compare_scale_histories.py) verifies registered hashes
+[comparison runner](../../access/reading/tables/compare_scale_histories.py) verifies registered hashes
 on reuse and unchanged bytes after each run. Explicit `--generate` requires a
 fresh directory; newly generated catalog timestamps can produce different hashes,
 which are printed separately. The full stored-row model/getter comparison still
 applies to fresh generations; it does not silently rewrite the registered list.
 
 ```sh
-python3 docs/testing/compare_scale_histories.py \
+python3 tests/run.py tests/access/reading/tables/compare_scale_histories.py \
   --cli "$PWD/target/debug/tablecraft" \
   --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar \
   --directory .cache/tablecraft-fixtures/scale-histories
@@ -6583,7 +6583,7 @@ qualification is claimed.
 
 ## Larger multivalue collection inputs
 
-Original MIT [LargeCollectionFixture.java](LargeCollectionFixture.java)
+Original MIT [LargeCollectionFixture.java](../../access/reading/tables/LargeCollectionFixture.java)
 uses the previously reviewed Jackcess 5.0.4 JAR. Generation disables expression
 evaluation and per-row syncing; read-only inspection disables expressions too.
 No copied third-party fixture or active object is included. Each input contains
@@ -6603,7 +6603,7 @@ collection and unchanged bytes after the run. `--generate` requires a fresh
 directory and reports new hashes separately; timestamps can change the bytes.
 
 ```sh
-python3 docs/testing/compare_large_collections.py \
+python3 tests/run.py tests/access/reading/tables/compare_large_collections.py \
   --cli "$PWD/target/debug/tablecraft" \
   --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar \
   --directory .cache/tablecraft-fixtures/large-collections
@@ -6618,7 +6618,7 @@ history scale, million-row or shared-file conformance evidence.
 
 ## Larger attachment and stored-history inputs
 
-Original MIT [LargeStoredObjectsFixture.java](LargeStoredObjectsFixture.java)
+Original MIT [LargeStoredObjectsFixture.java](../../access/reading/tables/LargeStoredObjectsFixture.java)
 uses the previously reviewed Jackcess 5.0.4 JAR with expressions disabled, UTC
 DATE input and per-row syncing disabled during generation. It creates two owning
 tables, each with 201 parents: 200 have 100 children and the final parent is empty.
@@ -6637,7 +6637,7 @@ recipe/input inventory. No JAR or database binary is tracked. Reuse requires the
 registered hashes and family headers; explicit fresh `--generate` runs report
 new identities separately. Original bytes are checked unchanged after reading.
 
-[LargeAttachmentOracle.java](LargeAttachmentOracle.java) supplies read-only
+[LargeAttachmentOracle.java](../../access/reading/tables/LargeAttachmentOracle.java) supplies read-only
 encoded metadata and decoded bytes. The existing stored-order history oracle
 supplies exact identities/text/DATE bits. Python independently checks every value
 against the recipe model. The full runner passes 33 controls across ACE 16 and
@@ -6650,7 +6650,7 @@ file mutation or shared-file conformance results.
 ```sh
 cargo build -p tablecraft-cli --locked --offline
 cargo build -p tablecraft-ace --example table_data --example attachment_data --locked --offline
-python3 docs/testing/compare_large_stored_objects.py \
+python3 tests/run.py tests/access/reading/tables/compare_large_stored_objects.py \
   --cli "$PWD/target/debug/tablecraft" \
   --rows "$PWD/target/debug/examples/table_data" \
   --attachments "$PWD/target/debug/examples/attachment_data" \
@@ -6666,7 +6666,7 @@ retains matched and excluded runs; correctness relies on the exact controls abov
 
 ## Larger buffered collection-page controls
 
-Original [compare_large_collection_pages.py](compare_large_collection_pages.py)
+Original [compare_large_collection_pages.py](../../access/storage/native/compare_large_collection_pages.py)
 reuses the four registered larger multivalue/stored-object inputs above. It checks
 the reviewed JAR hash and each input identity, compiles the existing original
 read-only collection oracle into a disposable directory, and compares every
@@ -6683,7 +6683,7 @@ reports output-limit exhaustion with empty stdout; larger native allowances do
 not widen that output cap.
 
 ```sh
-python3 docs/testing/compare_large_collection_pages.py \
+python3 tests/run.py tests/access/storage/native/compare_large_collection_pages.py \
   --cli "$PWD/target/debug/tablecraft" \
   --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar \
   --collections-directory .cache/tablecraft-fixtures/large-collections \
@@ -6699,7 +6699,7 @@ collection pages, million-row and live-file qualification were not added here.
 
 ## Mixed scalar storage history inputs
 
-Original MIT [MixedScalarHistoryFixture.java](MixedScalarHistoryFixture.java)
+Original MIT [MixedScalarHistoryFixture.java](../../access/reading/tables/MixedScalarHistoryFixture.java)
 uses the reviewed Jackcess 5.0.4 JAR (SHA-256
 `19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`)
 for fresh inert generation and read-only getter comparisons.
@@ -6718,11 +6718,11 @@ coefficients, GUIDs, Unicode and exactly representable legacy dates.
 
 Inputs persist locally under ignored `.cache/tablecraft-fixtures/mixed-scalar-histories/`,
 with recipe/JAR/input identities in its inventory. No binary or JAR is tracked.
-The [runner](compare_mixed_scalar_histories.py) verifies registered hashes
+The [runner](../../access/reading/tables/compare_mixed_scalar_histories.py) verifies registered hashes
 on reuse, independently models every cell, compares exact full/projected cursors
 and progressive CLI rows with read-only getters, and checks buffered queries,
 aggregates, deleted roots and limit refusals. Forty-five controls pass across the
-three profiles; original hashes remain unchanged. See [scope and reproduction](MIXED_SCALAR_HISTORIES.md).
+three profiles; original hashes remain unchanged. See [scope and reproduction](../rows/MIXED_SCALAR_HISTORIES.md).
 One-byte derivatives and a different-profile substitution are refused before
 invoking a database reader. Fresh generation
 requires a new directory and reports its own identities. Native Access, DDL/save,
@@ -6731,7 +6731,7 @@ unqualified; the reference writer is not a native Access comparison.
 
 ## Repetition expression-state controls
 
-Original MIT [compare_repetition_states.py](compare_repetition_states.py)
+Original MIT [compare_repetition_states.py](../../access/reading/tables/compare_repetition_states.py)
 uses explicit NULL/state/construction models and read-only identity
 getters from the registered original/restored large-index corpus. The reviewed
 Jackcess 5.0.4 artifact identity is checked before reference use; no new fixture,
@@ -6747,7 +6747,7 @@ are independent stored-field/query integration checks, not native Access SQL,
 error/NULL precedence, code-page or full Variant qualification.
 
 ```sh
-python3 docs/testing/compare_repetition_states.py \
+python3 tests/run.py tests/access/reading/tables/compare_repetition_states.py \
   --cli target/debug/tablecraft \
   --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar \
   --directory .cache/tablecraft-fixtures/large-indexes
@@ -6755,7 +6755,7 @@ python3 docs/testing/compare_repetition_states.py \
 
 ## Unary string expression-state controls
 
-Original MIT [compare_unary_string_states.py](compare_unary_string_states.py)
+Original MIT [compare_unary_string_states.py](../../access/queries/expressions/compare_unary_string_states.py)
 uses independent ASCII/UTF-16 string/count/code/prefix models, explicit state
 refusals and read-only identity getters from the registered large-index corpus.
 The reviewed JAR and original/restored input hashes are checked before reference
@@ -6770,7 +6770,7 @@ separate Rust tests; SQL Nz(NULL) still supplies empty Text. These are engineeri
 models and getter integration, not native Access query/error/locale evidence.
 
 ```sh
-python3 docs/testing/compare_unary_string_states.py \
+python3 tests/run.py tests/access/queries/expressions/compare_unary_string_states.py \
   --cli target/debug/tablecraft \
   --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar \
   --directory .cache/tablecraft-fixtures/large-indexes
@@ -6778,7 +6778,7 @@ python3 docs/testing/compare_unary_string_states.py \
 
 ## Character construction and numeric formatting state controls
 
-Original MIT [compare_character_format_states.py](compare_character_format_states.py)
+Original MIT [compare_character_format_states.py](../../access/queries/expressions/compare_character_format_states.py)
 uses Python Windows-1252/UTF-16 character and exact integer/Decimal display
 models, explicit state/domain controls and read-only identity getters from the
 registered large-index originals/restored inputs. JAR/input identities are
@@ -6796,7 +6796,7 @@ separate Rust controls; no new SQL Empty constructor is inferred. These results
 do not qualify native Access error/locale/subtype/rounding behavior.
 
 ```sh
-python3 docs/testing/compare_character_format_states.py \
+python3 tests/run.py tests/access/queries/expressions/compare_character_format_states.py \
   --cli target/debug/tablecraft \
   --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar \
   --directory .cache/tablecraft-fixtures/large-indexes
@@ -6804,7 +6804,7 @@ python3 docs/testing/compare_character_format_states.py \
 
 ## Calendar name and named date-format state controls
 
-Original MIT [compare_calendar_format_states.py](compare_calendar_format_states.py)
+Original MIT [compare_calendar_format_states.py](../../access/queries/expressions/compare_calendar_format_states.py)
 uses independent English/German full/short name labels, Python epoch-date
 arithmetic, state/error controls and read-only native identity getters. The
 reviewed JAR and registered original/restored large-index hashes are verified
@@ -6820,7 +6820,7 @@ Nz(NULL). Only TableCraft executes SQL; native Access, NLS, complete Variant and
 error-order qualification remain open.
 
 ```sh
-python3 docs/testing/compare_calendar_format_states.py \
+python3 tests/run.py tests/access/queries/expressions/compare_calendar_format_states.py \
   --cli target/debug/tablecraft \
   --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar \
   --directory .cache/tablecraft-fixtures/large-indexes
@@ -6828,7 +6828,7 @@ python3 docs/testing/compare_calendar_format_states.py \
 
 ## StrConv expression-state and raw-input controls
 
-Original MIT [compare_strconv_states.py](compare_strconv_states.py) uses
+Original MIT [compare_strconv_states.py](../../access/queries/expressions/compare_strconv_states.py) uses
 independent ASCII casing, Windows-1252 byte counts/round trips and explicit
 state/domain/error models. Read-only Jackcess getters supply native identities
 from registered original/restored large-index inputs. JAR/input hashes are
@@ -6846,16 +6846,16 @@ Only TableCraft executes SQL; native Access, NLS and full Variant/error-order
 qualification remain open.
 
 ```sh
-python3 docs/testing/compare_strconv_states.py \
+python3 tests/run.py tests/access/queries/expressions/compare_strconv_states.py \
   --cli target/debug/tablecraft \
   --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar \
   --directory .cache/tablecraft-fixtures/large-indexes
-python3 docs/testing/compare_strconv.py --cli target/debug/tablecraft
+python3 tests/run.py tests/access/queries/expressions/compare_strconv.py --cli target/debug/tablecraft
 ```
 
 ## Byte-function expression-state controls
 
-Original MIT [compare_byte_states.py](compare_byte_states.py) uses Python
+Original MIT [compare_byte_states.py](../../access/reading/tables/compare_byte_states.py) uses Python
 UTF-16LE byte lengths, slices, first bytes and binary search, explicit state/error
 models and read-only native identity getters. The reviewed Jackcess artifact and
 registered original/restored large-index input identities are checked before
@@ -6874,16 +6874,16 @@ controls; its optional native branch was not rerun. These are independent models
 and getter integration, not native Access query/error/Variant/provider evidence.
 
 ```sh
-python3 docs/testing/compare_byte_states.py \
+python3 tests/run.py tests/access/reading/tables/compare_byte_states.py \
   --cli target/debug/tablecraft \
   --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar \
   --directory .cache/tablecraft-fixtures/large-indexes
-python3 docs/testing/compare_byte_strings.py --cli target/debug/tablecraft
+python3 tests/run.py tests/access/queries/expressions/compare_byte_strings.py --cli target/debug/tablecraft
 ```
 
 ## General Format expression-state controls
 
-Original MIT [compare_format_states.py](compare_format_states.py) uses
+Original MIT [compare_format_states.py](../../access/queries/expressions/compare_format_states.py) uses
 independent fixed-integer display, ASCII text/casing and explicit state/error
 models. Read-only Jackcess getters supply native identities from registered
 original/restored large-index inputs. JAR/input identities are checked before
@@ -6903,17 +6903,17 @@ controls; its optional native branch was not rerun. These are engineering models
 and getter integration, not native Access query/NLS/Variant/error-order evidence.
 
 ```sh
-python3 docs/testing/compare_format_states.py \
+python3 tests/run.py tests/access/queries/expressions/compare_format_states.py \
   --cli target/debug/tablecraft \
   --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar \
   --directory .cache/tablecraft-fixtures/large-indexes
-python3 docs/testing/compare_format.py --cli target/debug/tablecraft
+python3 tests/run.py tests/access/queries/expressions/compare_format.py --cli target/debug/tablecraft
 ```
 
 
 ## Partition and hyperlink state controls (23 October 2026)
 
-The original [state runner](compare_partition_hyperlink_states.py) passes
+The original [state runner](../../access/reading/tables/compare_partition_hyperlink_states.py) passes
 282 controls: 218 scalar and 64 native sequential/indexed cases. Partition labels
 use the independent enumerated-bucket/Decimal model; hyperlink selectors use
 Python Decimal half-even conversion and independently split stored-text parts.
@@ -6932,7 +6932,7 @@ were not rerun. Native Access expression/coercion/error qualification is unrun.
 ## Native continuation fault inputs (23 October 2026)
 
 The original table-pages fixture builder supplies in-memory 403-row inputs for
-[continuation fault checks](../access/storage/NATIVE_READ_FAILURES.md) under read profiles 1/2/5/6.
+[continuation fault checks](../../../docs/access/storage/NATIVE_READ_FAILURES.md) under read profiles 1/2/5/6.
 No new third-party bytes or generated database artifact is added. Source bytes
 remain unchanged through callback failures and successful interrupted short
 reads. These synthetic layouts verify failure/publication invariants, not new
@@ -6941,7 +6941,7 @@ native-format or encrypted-provider qualification.
 
 ## Modern ACE 16 scalar history inputs
 
-The repository-original [recipe](ModernScalarHistoryFixture.java) was run
+The repository-original [recipe](../../access/reading/tables/ModernScalarHistoryFixture.java) was run
 with the reviewed Jackcess 5.0.4 JAR, SHA-256
 `19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`
 and Temurin 21.0.8+9-LTS on 23 October 2026. No third-party
@@ -6954,9 +6954,9 @@ inventory containing recipe/JAR hashes, sizes and file identities.
 | modern-V2016.accdb | 5,451,776 | d17fa71f3283bb50b6f3571926c18c842024aa8a37c1d28640f980dd23ded1e2 |
 | modern-V2019.accdb | 6,864,896 | 03bc1d98ac89b903dc3d40caa7c65edd6b31f29d93f386a40a26719f36e98acb |
 
-The [history contract](MODERN_SCALAR_HISTORIES.md) records exact Large
+The [history contract](../rows/MODERN_SCALAR_HISTORIES.md) records exact Large
 Number/Extended-date values, added fields, deleted/updated roots and scattered
-index references. The original [runner](compare_modern_scalar_histories.py)
+index references. The original [runner](../../access/reading/tables/compare_modern_scalar_histories.py)
 checks all 19,902 retained rows per file and passes 37 independent controls, with
 unchanged original hashes. It verifies the reviewed JAR and registered inputs
 before getters run. Jackcess reads values/order without expression execution;
@@ -6966,7 +6966,7 @@ and general write qualification remain unrun.
 
 ## Encrypted modern history inputs
 
-The original [runner](compare_encrypted_modern_histories.py) created four
+The original [runner](../../access/encryption/database/compare_encrypted_modern_histories.py) created four
 fresh Agile files from the registered modern-history originals on 23 October
 2026, using both the independent reference and TableCraft encryption writers.
 Passwords are public Unicode test inputs. No third-party fixture/code is copied;
@@ -6990,7 +6990,7 @@ The 5.0.0 raw-decoder baseline remains separate from the newer rewrite APIs.
 Generation passes 98 controls over all 19,902 rows per file, 6,010 independently
 decrypted page hashes, SID digests, native queries, credential/limit failures,
 password changes and exact plaintext recovery through both implementations.
-[The contract](ENCRYPTED_MODERN_HISTORIES.md) distinguishes independent
+[The contract](../encryption/ENCRYPTED_MODERN_HISTORIES.md) distinguishes independent
 engineering evidence from pending native Access, cryptographic audit and general
 write qualification. An initial duplicate-flag runner failure and its partial
 local generation remain excluded; only the registered successful generation is
@@ -6999,20 +6999,20 @@ used for reuse checks.
 
 ## SQL date-literal controls (23 October 2026)
 
-The repository-original [runner](compare_sql_date_literals.py) passes
+The repository-original [runner](../../access/queries/expressions/compare_sql_date_literals.py) passes
 230 controls: 206 scalar calendar/spelling/refusal cases and 24 native sequential/
 indexed cases over the four registered persistent large-index originals. Python's
 Gregorian calendar computes component expectations. Reviewed Jackcess 5.0.4
 read-only getters establish native stored dates without executing expressions;
 TableCraft alone applies the date-literal SQL predicates. JAR/input hashes remain
 checked and originals unchanged. No new database, third-party source or library
-is added. [The profile](../query/SQL_DATE_LITERALS.md) retains wider spelling, regional,
+is added. [The profile](../../../docs/query/SQL_DATE_LITERALS.md) retains wider spelling, regional,
 precision/error and native Access qualification gaps.
 
 
 ## SQL date-token year and order controls (23 October 2026)
 
-The expanded original [date runner](compare_sql_date_literals.py) passes
+The expanded original [date runner](../../access/queries/expressions/compare_sql_date_literals.py) passes
 442 controls: 418 scalar and 24 native cases over the same unchanged registered
 four-family inputs. Python checks all 100 short token years, representative
 component priorities/month-year forms and native date predicates. The fixed
@@ -7036,8 +7036,8 @@ execution remains unrun; local logs stay in the ignored persistent fixture cache
 
 ## Maximum-width table history inputs
 
-Original MIT [recipe](WideTableHistoryFixture.java) and
-[comparison runner](compare_wide_table_histories.py), generated locally
+Original MIT [recipe](../../access/reading/tables/WideTableHistoryFixture.java) and
+[comparison runner](../../access/reading/tables/compare_wide_table_histories.py), generated locally
 23 October 2026 using the reviewed Apache-2.0 Jackcess 5.0.4 JAR. No external
 fixture bytes or third-party implementation code are copied. The artifact SHA-256
 is 19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc;
@@ -7053,7 +7053,7 @@ adbdf7e3184747164ece88657eb3ff6110fc1bce25b3fc528fc8faabbd189e84.
 
 Two 255-column/18-row tables per profile retain nine schema-width generations,
 updated/deleted/added rows, wide variable tails and mixed fixed/Boolean/Text
-storage. The [contract](WIDE_TABLE_HISTORIES.md) records 112 independent
+storage. The [contract](../general/WIDE_TABLE_HISTORIES.md) records 112 independent
 model/getter/native/CLI/query controls, unchanged originals and two portable
 Rust framing tests. Databases, reviewed JAR, inventory and logs remain ignored
 under .cache/tablecraft-fixtures/. Native Access execution and save/reopen are
@@ -7070,7 +7070,7 @@ appended row of each table. It checks 280 buffered/query/streaming outcomes and
 both original/derivative immutability during reads. No derivative is retained as
 a binary fixture or added to CI. The original generation hashes, reviewed JAR
 and license boundary above remain unchanged; native Access is unrun. See
-[the failure contract](../access/storage/NATIVE_READ_FAILURES.md#maximum-width-malformed-suffixes).
+[the failure contract](../../../docs/access/storage/NATIVE_READ_FAILURES.md#maximum-width-malformed-suffixes).
 
 
 ### QBColor Integer boundary controls
@@ -7130,12 +7130,12 @@ twelve native controls use inert BigValue and Single/Double getters on the two
 modern ACE inputs. Sum/DSum execute in TableCraft through sequential and both
 ID-index orders. The existing four-profile original hashes and bytes remain
 unchanged. No binary fixture, third-party source or native Access evidence is
-added. See [numerical scope](FLOATING_SUMS.md#integralfloating-integration).
+added. See [numerical scope](../general/FLOATING_SUMS.md#integralfloating-integration).
 
 
 ## Statistical numeric admission and explicit DATE serials
 
-The original MIT [compare_statistical_admission.py](compare_statistical_admission.py)
+The original MIT [compare_statistical_admission.py](../../access/reading/tables/compare_statistical_admission.py)
 adds no binary input or third-party source. It checks the existing reviewed
 Jackcess JAR and four registered large-index corpus identities, reads inert raw
 DATE bits, and compares 208 CLI controls. Python Fraction derives sample/population
@@ -7148,7 +7148,7 @@ and result typing remain unqualified.
 
 ## Legacy DATE average controls
 
-The original MIT [compare_date_average.py](compare_date_average.py) adds
+The original MIT [compare_date_average.py](../../access/queries/execution/compare_date_average.py) adds
 no binary fixture or third-party source. It verifies the reviewed Jackcess JAR
 and existing registered large-index inputs before inert raw DATE-bit getters.
 Its 144 controls combine 72 source-free Fraction models and 72 native query
@@ -7156,12 +7156,12 @@ cases over Jet 4, ACE 2007 and both modern ACE layouts. Sequential and both
 ID-index directions exercise Avg/DAvg, derived/grouped/crosstab means, empty
 inputs and mixed serial/numeric expressions. Source hashes and bytes remain
 unchanged. Only TableCraft executes SQL; no native Access result-carrier,
-rounding, shared-file or save qualification is implied. See [mean scope](../query/aggregates/AVERAGES.md#legacy-datetime-means).
+rounding, shared-file or save qualification is implied. See [mean scope](../../../docs/query/aggregates/AVERAGES.md#legacy-datetime-means).
 
 
 ## Ordinary Date/numeric comparison controls
 
-The original MIT [compare_date_numeric_predicates.py](compare_date_numeric_predicates.py)
+The original MIT [compare_date_numeric_predicates.py](../../access/queries/expressions/compare_date_numeric_predicates.py)
 adds no binary fixture or third-party source. It checks the reviewed Jackcess JAR
 and existing registered four-family large-index inputs, derives calendar order
 from independent Decimal day/fraction tuples, and obtains native DATE bits through
@@ -7185,12 +7185,12 @@ before and after execution. These are independent source/model controls, not
 native Access SQL qualification.
 
 ```sh
-python3 docs/testing/compare_attachment_presence.py --cli target/debug/tablecraft --jar path/to/jackcess-5.0.4.jar --directory path/to/attachment-metadata
+python3 tests/run.py tests/access/reading/tables/compare_attachment_presence.py --cli target/debug/tablecraft --jar path/to/jackcess-5.0.4.jar --directory path/to/attachment-metadata
 ```
 
 ## Larger encoded native values
 
-Original MIT [LargerEncodedValueFixture.java](LargerEncodedValueFixture.java)
+Original MIT [LargerEncodedValueFixture.java](../../access/reading/tables/LargerEncodedValueFixture.java)
 creates fresh Jet 4 / ACE 2007/2016/2019 tables containing deterministic 4 MiB and
 20 MiB opaque OLE bytes, empty bytes and NULL. No OLE object, script or expression
 is executed. Read-only Jackcess getters supply lengths and SHA-256 independently
@@ -7214,7 +7214,7 @@ Their 3,146,722-byte incompressible encoded values now fit an explicit 4 MiB
 storage allowance and 3 MiB decoded-file policy; existing default failures remain.
 
 ```sh
-python3 docs/testing/compare_larger_encoded_values.py \
+python3 tests/run.py tests/access/reading/tables/compare_larger_encoded_values.py \
   --cli target/debug/tablecraft \
   --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar \
   --directory .cache/tablecraft-fixtures/larger-encoded-values-20261024 \
@@ -7226,7 +7226,7 @@ checks exact original hashes before and after reads. The 55 controls cover
 independent getter identities, complete large reads, exact smaller CLI payloads,
 empty/NULL counts, default/lower/storage/work/output refusals and scalar pruning.
 These are independent-reader controls, not Windows Access SQL or native saves.
-See [read policy and remaining limits](../access/storage/LARGER_ENCODED_VALUES.md).
+See [read policy and remaining limits](../../../docs/access/storage/LARGER_ENCODED_VALUES.md).
 
 ## NULL-only index predicate inputs
 
@@ -7244,7 +7244,7 @@ existing provenance apply; its SHA-256 remains
 `19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`.
 Text recipe SHA-256: `6397d199928bf8a6d6e7d1ac2c53f160498167886773cf22f96df9988e76bf1e`.
 Binary recipe SHA-256: `d57754f255d164b39dcd24384a10256a355beee222f319407d7912448b7fc392`.
-[Runner](compare_null_indexes.py) SHA-256:
+[Runner](../../access/indexes/native/compare_null_indexes.py) SHA-256:
 `b205a2dbfbb39128c8dc5d653fe4740027ad1b82c535843fcb430aaf672797a2`.
 
 | Input stem | Bytes | SHA-256 |
@@ -7269,7 +7269,7 @@ Corruption controls alter disposable copies of the independently located chosen
 root. The originals stay unchanged; generated binaries remain ignored.
 
 ```sh
-python3 docs/testing/compare_null_indexes.py \
+python3 tests/run.py tests/access/indexes/native/compare_null_indexes.py \
   --cli target/debug/tablecraft \
   --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar \
   --directory .cache/tablecraft-fixtures/null-indexes-20261024
@@ -7281,7 +7281,7 @@ SQL string/binary bounds and native optimizer qualification remain unrun.
 
 ## Short Text equality candidate evidence
 
-The original MIT [TextEqualityCandidateOracle.java](TextEqualityCandidateOracle.java)
+The original MIT [TextEqualityCandidateOracle.java](../../access/queries/expressions/TextEqualityCandidateOracle.java)
 uses the reviewed Jackcess 5.0.4 encoder/getter implementation independently of
 TableCraft. It opens inputs read-only, disables expression evaluation, retains
 index-cursor order and emits candidate identities plus complete trimmed Short
@@ -7298,12 +7298,12 @@ JAR remains unchanged, SHA-256
 `19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`.
 
 Oracle SHA-256: `006bf10ff2c3ebd599624da972da59749228e9e4f335200383d0fbcc064f2693`.
-[Runner](compare_text_equality_candidates.py) SHA-256:
+[Runner](../../access/queries/expressions/compare_text_equality_candidates.py) SHA-256:
 `88dc515a4c5155d87ea5b9e3a51434c547a9619003ab26d2a5c7372a49a12003`.
 
 ```sh
 cargo build -p tablecraft-ace --example text_range --locked --offline
-python3 docs/testing/compare_text_equality_candidates.py \
+python3 tests/run.py tests/access/queries/expressions/compare_text_equality_candidates.py \
   --ranges target/debug/examples/text_range \
   --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar \
   --directory .cache/tablecraft-fixtures/null-indexes-20261024
@@ -7316,14 +7316,14 @@ oversized bounds and conflicting mode arguments refuse. Corrupt disjoint childre
 are skipped, full traversal rejects them, corrupt chosen roots fail and small
 output caps publish nothing. Native Access SQL, performance and automatic non-NULL
 query selection remain unqualified/unimplemented as described in
-[the owning contract](../access/indexes/NATIVE_TEXT.md#conservative-short-text-equality-candidates).
+[the owning contract](../../../docs/access/indexes/NATIVE_TEXT.md#conservative-short-text-equality-candidates).
 
 ## Advanced-field storage evolution inputs
 
-The original MIT [producer](AdvancedEvolutionFixture.java) creates fresh
+The original MIT [producer](../../access/reading/tables/AdvancedEvolutionFixture.java) creates fresh
 ACE 2016/2019 files through the reviewed Jackcess 5.0.4 public builder/update APIs.
 Expression evaluation is disabled. The original MIT
-[getter oracle](AdvancedEvolutionOracle.java) opens accepted files read-only,
+[getter oracle](../../access/reading/tables/AdvancedEvolutionOracle.java) opens accepted files read-only,
 checks raw/public attachment identities and encoded bytes, and records stored
 history DATE bits without executing expressions or SQL. Its separate `--orphan`
 mode only edits an explicitly named disposable `orphan.accdb` copy for refusal
@@ -7339,14 +7339,14 @@ Accepted originals are under ignored
 
 Producer SHA-256: `c79544e3b0afe5a4ee228c7e71bb34cef074fcb5e3a02149fbadffce4e414a0e`.
 Oracle SHA-256: `f04ed21232606413fa5a036b60e6838cc0a4afbb3324c060389687ec54d6cc26`.
-[Runner](compare_advanced_evolution.py) SHA-256:
+[Runner](../../access/reading/tables/compare_advanced_evolution.py) SHA-256:
 `f900b2f3b1a3b8c16c2b4e2bd6757e8264b425c9f96b13092342b58cafbf7fa8`.
 The reviewed JAR remains SHA-256
 `19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`;
 its existing Apache-2.0 provenance/notice review is unchanged.
 
-The [feature report](ADVANCED_FIELD_EVOLUTION.md) and
-[raw results](results/advanced-evolution-2026-10-24.json) record 60 passing
+The [feature report](../schema/ADVANCED_FIELD_EVOLUTION.md) and
+[raw results](../../results/general/advanced-evolution-2026-10-24.json) record 60 passing
 controls and 18,584 compared query cells against one unchanged immutable CLI.
 Each file retains seven untouched 8-field historical roots, 147 current 18-field
 roots, 120 relocation links, 303 multivalue children, 130 attachments and 30 stored
@@ -7365,8 +7365,8 @@ concurrent edits and save/reopen behavior remain unqualified.
 
 ## Independent calculation preview inputs
 
-The original [CalculationPreviewOracle.java](CalculationPreviewOracle.java)
-and [preview runner](compare_calculation_previews.py) reuse the accepted
+The original [CalculationPreviewOracle.java](../../access/reading/tables/CalculationPreviewOracle.java)
+and [preview runner](../../access/reading/tables/compare_calculation_previews.py) reuse the accepted
 original Decimal, Memo and advanced-evolution inputs above. The oracle is original
 repository code under MIT: it opens files read-only, disables expression evaluation
 and emits stored declarations, ordinary dependency getters and caches separately.
@@ -7374,8 +7374,8 @@ No third-party fixture or code was copied. The reviewed external Jackcess 5.0.4 
 and its existing Apache-2.0 notice/provenance remain unchanged.
 
 Fresh copies of the existing original
-[CalculatedStorageFixture.java](CalculatedStorageFixture.java) and
-[CalculatedScalarFixture.java](CalculatedScalarFixture.java) recipes were
+[CalculatedStorageFixture.java](../../access/reading/tables/CalculatedStorageFixture.java) and
+[CalculatedScalarFixture.java](../../access/reading/tables/CalculatedScalarFixture.java) recipes were
 generated on 24 October 2026, with expression evaluation disabled. These additional
 ignored inputs supply ordinary NULL propagation, empty tables and stored
 comparison/DateSerial declaration refusals; no formula is executed by the producer
@@ -7389,8 +7389,8 @@ or reference oracle. Their local inventory is
 | Scalar-V2016.accdb | 389,120 | `4f9f0c3c9209f9d4997020c3f1e8ef9425babce77ad662ec4a168c083a020f00` |
 | Scalar-V2019.accdb | 462,848 | `92d6c2e279d94cd4c646607d7656075b4c159f9d6078b11b4ab47d80da320729` |
 
-The [feature replay](CALCULATION_PREVIEW_REPLAY.md) and
-[accepted report](results/calculation-preview-2026-10-24.json) retain 44
+The [feature replay](../development/CALCULATION_PREVIEW_REPLAY.md) and
+[accepted report](../../results/development/calculation-preview-2026-10-24.json) retain 44
 passing controls, 1,018 modeled result cells and all 26 before/after hashes.
 The executable, oracle, runner, helpers and selected implementation sources remain
 unchanged across replay. A malformed cached Decimal experiment uses a disposable
@@ -7401,8 +7401,8 @@ execution, cached freshness or native compatibility qualification.
 
 ## Original Boolean relationship inputs
 
-The [BooleanRelationshipFixture.java](BooleanRelationshipFixture.java)
-producer and [BooleanRelationshipOracle.java](BooleanRelationshipOracle.java)
+The [BooleanRelationshipFixture.java](../../access/schema/fields/BooleanRelationshipFixture.java)
+producer and [BooleanRelationshipOracle.java](../../access/schema/fields/BooleanRelationshipOracle.java)
 are original repository code under MIT. They call the reviewed external Jackcess
 5.0.4 public builder/getter APIs; no third-party source or fixture is copied.
 Expression evaluation stays disabled, the producer requires fresh files, and the
@@ -7433,8 +7433,8 @@ audit inputs, not accepted relationship-consistent databases. Normal stored
 reading returns false; explicit membership audit must reject it. No native NULL
 Boolean exemption or Access write behavior is inferred.
 
-The [feature record](BOOLEAN_RELATIONSHIPS.md) and
-[accepted report](results/boolean-relationships-2026-10-24.json) retain
+The [feature record](../general/BOOLEAN_RELATIONSHIPS.md) and
+[accepted report](../../results/general/boolean-relationships-2026-10-24.json) retain
 78 passing controls, 67,340 compared result cells, fourteen disposable corruption
 refusals and all 27 unchanged hashes. Producer SHA-256 is
 `33adf0dc28f622a3c616d6bb89c4e00629eac39cd30222d32923ccd69086b946`;
@@ -7454,8 +7454,8 @@ Boolean-key mutation qualification remain unrun.
 
 ## Original text-call validation inputs
 
-The [ValidationTextCallFixture.java](ValidationTextCallFixture.java)
-producer and [ValidationTextCallOracle.java](ValidationTextCallOracle.java)
+The [ValidationTextCallFixture.java](../../access/queries/expressions/ValidationTextCallFixture.java)
+producer and [ValidationTextCallOracle.java](../../access/queries/expressions/ValidationTextCallOracle.java)
 are original MIT repository code. They use the reviewed external Jackcess 5.0.4
 public property/getter APIs; no third-party code or fixture is copied. Default
 corpus generation and read-only oracle access disable expression evaluation.
@@ -7482,15 +7482,15 @@ Fresh files generated on 24 October 2026 remain ignored under
 | reference-V2019.accdb | 589,824 | `7eccbfe6428c36ebfaf53e43099a7338b5d288e9975d5dd2af89a163aa6e08b3` |
 
 Each main input has 51 tables and 103 stored rows. The
-[independent model](compare_validation_text_calls.py) counts unsigned
+[independent model](../../access/queries/expressions/compare_validation_text_calls.py) counts unsigned
 UTF-16 units and compares unit vectors, with independent U+00FF/U+0100,
 BMP/astral, NUL, combining and boundary controls. Read-only inspection preserves
 Unsupported NULL/call cases, explicit NULL guards and field-scope restrictions;
 late FALSE states fail without partial stdout. Ordinary queries still return
 stored rows without activating validation properties.
 
-The [feature record](VALIDATION_TEXT_CALLS.md) and
-[accepted report](results/validation-text-calls-2026-10-24.json) retain
+The [feature record](../schema/VALIDATION_TEXT_CALLS.md) and
+[accepted report](../../results/schema/validation-text-calls-2026-10-24.json) retain
 204 passing controls, 618 compared getter cells and all 19 unchanged hashes.
 Producer SHA-256 is
 `5588aaa3c388d486c9077ed22d4d2a0acb3ea99893e6370e7f5064e2907fe1bd`;
@@ -7529,8 +7529,8 @@ They provide independent engineering evidence, not native Access qualification.
 
 ## Original compressed Memo history inputs
 
-The [CompressedHistoryFixture.java](CompressedHistoryFixture.java) producer
-and [CompressedHistoryOracle.java](CompressedHistoryOracle.java) are original
+The [CompressedHistoryFixture.java](../../access/storage/native/CompressedHistoryFixture.java) producer
+and [CompressedHistoryOracle.java](../../access/storage/native/CompressedHistoryOracle.java) are original
 MIT repository code. The producer creates fresh files through the reviewed
 Jackcess 5.0.4 public builder/history APIs, with expression evaluation disabled.
 The read-only oracle combines public Column getters with pinned reference
@@ -7565,8 +7565,8 @@ The reviewed JAR remains
 `19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`,
 with its existing Apache-2.0 provenance/notice review.
 
-The [feature record](COMPRESSED_MEMO_HISTORIES.md) and
-[accepted report](results/compressed-history-2026-10-24.json) retain 198
+The [feature record](../storage/COMPRESSED_MEMO_HISTORIES.md) and
+[accepted report](../../results/storage/compressed-history-2026-10-24.json) retain 198
 passing controls across metadata, ordinal queries and stored-database comparison
 queries. All 26 hashes remain unchanged after replay. The reused query runner
 uses an explicit larger cumulative native byte allowance; defaults do not change.
@@ -7583,8 +7583,8 @@ remain unqualified.
 
 ## Original ordinary Memo history family inputs
 
-The [MemoHistoryFamilyFixture.java](MemoHistoryFamilyFixture.java) producer
-and [MemoHistoryFamilyOracle.java](MemoHistoryFamilyOracle.java) are original
+The [MemoHistoryFamilyFixture.java](../../access/storage/native/MemoHistoryFamilyFixture.java) producer
+and [MemoHistoryFamilyOracle.java](../../access/storage/native/MemoHistoryFamilyOracle.java) are original
 MIT repository code. They use the reviewed external Jackcess 5.0.4 public builder,
 column/property and history APIs; the read-only association oracle additionally
 uses metadata getters on pinned VersionHistoryColumnInfoImpl. Existing original
@@ -7627,8 +7627,8 @@ The existing external JAR retains SHA-256
 `19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`
 and its previous Apache-2.0 provenance/notice review.
 
-The [feature record](MEMO_HISTORY_FLAG_FAMILY.md) and
-[accepted report](results/memo-history-family-2026-10-24.json) retain 594
+The [feature record](../storage/MEMO_HISTORY_FLAG_FAMILY.md) and
+[accepted report](../../results/storage/memo-history-family-2026-10-24.json) retain 594
 passing metadata/query controls across both ordinal and stored-database policies,
 with all 32 hashes unchanged. The reused query replay supplies an explicit larger
 cumulative native byte allowance; defaults stay unchanged. Earlier
@@ -7641,7 +7641,7 @@ remain unqualified.
 
 ## Original text-relationship research inputs
 
-[TextRelationshipProbe.java](TextRelationshipProbe.java) is original MIT
+[TextRelationshipProbe.java](../../access/schema/fields/TextRelationshipProbe.java) is original MIT
 repository code. It creates fresh inert tables through the reviewed Jackcess
 5.0.4 builder/relationship APIs and pinned General descriptor constants. Expression
 evaluation is disabled. Unique-probe tables are separate from relationship parents.
@@ -7659,8 +7659,8 @@ Fresh originals remain ignored under
 | V2016.accdb | 495,616 | `9a8c52fb09ee6cada9d71646192d6095867edc65c30d3fd44a2162b3b9bdbe14` |
 | V2019.accdb | 561,152 | `55b04ca1f64c5829e50a17e8bcb0a3e5d3f2dda44797343ca2f0cb373087d6ac` |
 
-The [research record](TEXT_RELATIONSHIP_RESEARCH.md) and
-[report](results/text-relationship-research-2026-10-24.json) distinguish
+The [research record](../general/TEXT_RELATIONSHIP_RESEARCH.md) and
+[report](../../results/general/text-relationship-research-2026-10-24.json) distinguish
 176 independent reference attempts from eight unchanged conservative reader
 audits. Text FK coverage remains Unsupported; no native Access semantics or write
 permit is inferred. Tagged TSV logs retain exact reference outcomes and are
@@ -7675,8 +7675,8 @@ original producer with separate unique-probe tables and complete tagged logs.
 
 ## Original calculated Text flag family inputs
 
-[CalculatedTextFamilyFixture.java](CalculatedTextFamilyFixture.java) and
-[CalculatedTextFamilyOracle.java](CalculatedTextFamilyOracle.java) are
+[CalculatedTextFamilyFixture.java](../../access/queries/expressions/CalculatedTextFamilyFixture.java) and
+[CalculatedTextFamilyOracle.java](../../access/queries/expressions/CalculatedTextFamilyOracle.java) are
 original repository code under MIT. The producer uses the reviewed external
 Jackcess 5.0.4 public builder/property APIs with expression evaluation disabled.
 The oracle opens originals read-only, disables evaluation and emits public
@@ -7713,8 +7713,8 @@ The external JAR retains SHA-256
 `19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`
 and its existing Apache-2.0 provenance/notice review.
 
-The [feature record](CALCULATED_TEXT_FLAG_FAMILY.md) and
-[accepted report](results/calculated-text-family-2026-10-24.json) retain
+The [feature record](../general/CALCULATED_TEXT_FLAG_FAMILY.md) and
+[accepted report](../../results/general/calculated-text-family-2026-10-24.json) retain
 384 passing operation controls and 384 cached-cell comparisons through three
 explicit consumers, with all 24 hashes unchanged. Sixteen disposable copies test
 late malformed wrappers, atomic inspection/rows/query refusal and unrelated
@@ -7731,9 +7731,9 @@ shared-file behavior and writes remain unqualified.
 
 ## Original additional cached calculated carrier inputs
 
-[CalculatedCarrierFixture.java](CalculatedCarrierFixture.java),
-[CalculatedCarrierOracle.java](CalculatedCarrierOracle.java) and the
-[comparison runner](compare_calculated_carriers.py) are original repository
+[CalculatedCarrierFixture.java](../../access/reading/tables/CalculatedCarrierFixture.java),
+[CalculatedCarrierOracle.java](../../access/reading/tables/CalculatedCarrierOracle.java) and the
+[comparison runner](../../access/reading/tables/compare_calculated_carriers.py) are original repository
 code under MIT. They use reviewed external Jackcess 5.0.4 public builder and
 read-only getter APIs with expression evaluation disabled. No third-party code
 or fixture is copied; no formula or imported active content executes.
@@ -7766,8 +7766,8 @@ The external JAR retains SHA-256
 `19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`
 and its existing Apache-2.0 provenance/notice review.
 
-The [feature record](CALCULATED_CARRIER_FAMILY.md) and
-[accepted report](results/calculated-carriers-2026-10-24.json) retain
+The [feature record](../general/CALCULATED_CARRIER_FAMILY.md) and
+[accepted report](../../results/general/calculated-carriers-2026-10-24.json) retain
 248 passing operation controls, 238 cached-cell comparisons and all 21 pinned
 hashes unchanged. Twelve disposable copies test late-wrapper refusal without
 changing any original. Native Access admissibility, formula behavior, freshness,
@@ -7788,9 +7788,9 @@ instead verifies actual quota error categories on admitted finite sources.
 
 ## Original predicate-preview inputs
 
-The original [producer](PredicatePreviewFixture.java),
-[read-only getter oracle](PredicatePreviewOracle.java) and
-[independent Python runner](compare_predicate_previews.py) are repository
+The original [producer](../../access/reading/tables/PredicatePreviewFixture.java),
+[read-only getter oracle](../../access/reading/tables/PredicatePreviewOracle.java) and
+[independent Python runner](../../access/reading/tables/compare_predicate_previews.py) are repository
 MIT code. No third-party source or fixture bytes were copied. The external
 Jackcess 5.0.4 JAR retains its existing reviewed Apache-2.0 provenance and SHA-256
 `19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`.
@@ -7811,8 +7811,8 @@ formulas and one late eager-error formula remain distinct controls. The producer
 supplies deliberately stale cache values as data. The Python model independently
 uses persisted ordinary getters, not those caches, to compute expected results.
 
-The [feature record](PREDICATE_PREVIEW_REPLAY.md) and
-[accepted report](results/predicate-previews-2026-10-24.json) retain
+The [feature record](../development/PREDICATE_PREVIEW_REPLAY.md) and
+[accepted report](../../results/development/predicate-previews-2026-10-24.json) retain
 248 controls, 312 recomputed cells all different from stored caches and twelve
 unchanged input/source/helper/reference/executable hashes. No original is modified;
 generated databases, compiled classes, reference JAR and frozen CLI remain ignored.
@@ -7822,9 +7822,9 @@ unqualified.
 
 ## Original signed complex child identity inputs
 
-The original [producer](SignedComplexIdentityFixture.java),
-[read-only oracle](SignedComplexIdentityOracle.java) and
-[independent replay](compare_signed_complex_identities.py) are repository
+The original [producer](../../access/reading/tables/SignedComplexIdentityFixture.java),
+[read-only oracle](../../access/reading/tables/SignedComplexIdentityOracle.java) and
+[independent replay](../../access/reading/tables/compare_signed_complex_identities.py) are repository
 MIT code. No third-party source or fixture bytes were copied. The reviewed
 Jackcess 5.0.4 artifact retains its existing Apache-2.0 provenance and SHA-256
 `19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`.
@@ -7846,8 +7846,8 @@ The author uses public flat-table AutoNumber insertion controls and pinned
 implementation metadata getters, without declaration/byte patches; this is
 independent stored-read evidence, not proof of native Access write acceptance.
 
-The [feature record](SIGNED_COMPLEX_IDENTITIES.md) and
-[accepted report](results/signed-complex-identities-2026-10-24.json) retain
+The [feature record](../general/SIGNED_COMPLEX_IDENTITIES.md) and
+[accepted report](../../results/general/signed-complex-identities-2026-10-24.json) retain
 88 passing controls and fourteen unchanged hashes. Inputs, preliminary probes,
 compiled classes, the reference JAR and frozen CLI remain ignored. Preliminary
 probes and failed harness iterations are excluded from accepted counts. No active
@@ -7857,8 +7857,8 @@ unqualified.
 
 ## Original compressed-text wide-segment controls
 
-The original [seed producer/getter oracle](CompressedWideFixture.java),
-[stream/copy replay](compare_compressed_wide.py) and authored stream
+The original [seed producer/getter oracle](../../access/storage/native/CompressedWideFixture.java),
+[stream/copy replay](../../access/storage/native/compare_compressed_wide.py) and authored stream
 vectors are repository MIT code. No third-party source or fixture bytes are
 copied into tracked files. Jackcess 5.0.4 retains its reviewed Apache-2.0 artifact
 provenance and SHA-256
@@ -7889,8 +7889,8 @@ copies contain late unpaired-surrogate payloads and are explicitly invalid;
 the accepted report pins all eight databases plus stream/source/helper references.
 Original seeds remain unchanged. No formula, imported action or application runs.
 
-The [feature record](COMPRESSED_TEXT_WIDE_SEGMENTS.md) and
-[accepted report](results/compressed-wide-2026-10-24.json) retain
+The [feature record](../storage/COMPRESSED_TEXT_WIDE_SEGMENTS.md) and
+[accepted report](../../results/storage/compressed-wide-2026-10-24.json) retain
 542 controls, 4,662 main CLI projection cells and seventeen unchanged hashes.
 Exploratory literal-leading-U+FEFF writer collisions, rejected multivalue carrier
 probes and two supplementary before-fix CLI failures are excluded from accepted
@@ -7901,9 +7901,9 @@ executables remain ignored local artifacts.
 
 ## Original inert linked-table metadata
 
-The original [public-writer recipe](LinkedTableFixture.java),
-[reopened getter oracle](LinkedTableOracle.java),
-[engine replay](compare_linked_tables.py) and Rust engineering example
+The original [public-writer recipe](../../access/queries/execution/LinkedTableFixture.java),
+[reopened getter oracle](../../access/queries/execution/LinkedTableOracle.java),
+[engine replay](../../access/queries/execution/compare_linked_tables.py) and Rust engineering example
 are repository MIT code. No third-party source or fixture bytes are copied into
 tracked files. The local Jackcess 5.0.4 artifact retains its reviewed Apache-2.0
 provenance and SHA-256
@@ -7931,8 +7931,8 @@ with expression evaluation disabled and a throwing LinkResolver. Sixteen engine
 comparisons pass across all four profiles with zero target-resolution calls and
 all eight original hashes unchanged.
 
-The [feature contract](../access/schema/NATIVE_LINKED_TABLES.md) and
-[accepted report](results/linked-metadata-2026-10-24.json) distinguish inert
+The [feature contract](../../../docs/access/schema/NATIVE_LINKED_TABLES.md) and
+[accepted report](../../results/general/linked-metadata-2026-10-24.json) distinguish inert
 catalog metadata from target activation. No credentials, active content or saved
 queries execute. Native Access execution, automatic provider/path resolution,
 linked query semantics and writes remain unqualified. Fixture databases, decoded
@@ -7941,11 +7941,11 @@ oracle output, reference JAR and frozen executable remain ignored local artifact
 
 ## Original explicit linked-query inputs
 
-The original [producer](LinkedQueryFixture.java),
-[read-only getter oracle](LinkedQueryOracle.java),
-[public case-addition recipe](LinkedQueryCaseFixture.java),
-[engineering replay](compare_linked_queries.py) and
-[actual CLI replay](compare_linked_cli.py) are repository MIT code. No
+The original [producer](../../access/queries/execution/LinkedQueryFixture.java),
+[read-only getter oracle](../../access/queries/execution/LinkedQueryOracle.java),
+[public case-addition recipe](../../access/queries/execution/LinkedQueryCaseFixture.java),
+[engineering replay](../../access/queries/execution/compare_linked_queries.py) and
+[actual CLI replay](../../access/queries/execution/compare_linked_cli.py) are repository MIT code. No
 third-party source or fixture bytes were copied. The reviewed Jackcess 5.0.4 JAR
 retains its Apache-2.0 provenance and SHA-256
 `19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`.
@@ -7983,9 +7983,9 @@ receive a public createLinkedTable addition whose stored ForeignName is lowercas
 All original pairs stay unchanged. The final reports pin every selected controlled
 copy and lowercase addition; database bytes are not tracked.
 
-The [feature record](LINKED_NATIVE_QUERIES.md) links separate accepted
-[engineering](results/linked-queries-final-2026-10-24.json) and
-[CLI](results/linked-cli-final-2026-10-24.json) reports: 335 controls and
+The [feature record](../queries/LINKED_NATIVE_QUERIES.md) links separate accepted
+[engineering](../../results/queries/linked-queries-final-2026-10-24.json) and
+[CLI](../../results/general/linked-cli-final-2026-10-24.json) reports: 335 controls and
 1,779 main cells with 49 unchanged hashes for the already-open example, and
 330 controls and the same 1,779 modeled main cells with 48 unchanged hashes for
 the actual CLI. These consumer counts remain separate. CLI zero-limit arguments
@@ -8003,17 +8003,17 @@ save/reopen remain unqualified.
 
 ## Original mixed Decimal division expression corpus
 
-The [source-free SQL replay](compare_decimal_division.py) is original
+The [source-free SQL replay](../../access/queries/expressions/compare_decimal_division.py) is original
 repository MIT code. It imports no database fixtures or third-party implementation.
 An integer-ratio IEEE model supplies expected binary64 results; Microsoft language
 contracts guide the explicit declared-profile cases without claiming native Access
 query qualification. Existing rust_decimal and conversion services remain the
 production implementation.
 
-The [accepted record](results/decimal-division-2026-10-24.json) pins 269
+The [accepted record](../../results/general/decimal-division-2026-10-24.json) pins 269
 CLI controls, 11 model checks and 120 separate observational default baseline pairs
 (509 total executable invocations), with all 32 source/artifact hashes unchanged.
-The [evidence document](DECIMAL_DIVISION.md) records exact commands,
+The [evidence document](../general/DECIMAL_DIVISION.md) records exact commands,
 immutable executable hashes, baseline scope and excluded exploratory reports.
 Executables, raw local logs and preliminary reports remain ignored local artifacts.
 There are no newly tracked binary fixture bytes or additional license notices.
@@ -8021,10 +8021,10 @@ There are no newly tracked binary fixture bytes or additional license notices.
 
 ## Original explicit external IN namespace corpus
 
-The original [writer additions](ExternalQueryFixture.java),
-[getter oracle](ExternalQueryOracle.java),
-[independent model](compare_external_queries.py) and
-[engineering consumer](../../crates/backends/tablecraft-access/examples/external_query.rs)
+The original [writer additions](../../access/queries/execution/ExternalQueryFixture.java),
+[getter oracle](../../access/queries/execution/ExternalQueryOracle.java),
+[independent model](../../access/queries/execution/compare_external_queries.py) and
+[engineering consumer](../../../crates/backends/tablecraft-access/examples/external_query.rs)
 are repository MIT code. They reuse the original LinkedQueryFixture recipe to
 create fresh pairs, then public table/index builders add deliberately different
 same-name root/target tables and RootOnlyIndex/ExternalId indexes. Earlier
@@ -8057,8 +8057,8 @@ The existing root saved SELECT uses inert lower-level QueryImpl.Row/MSysQueries
 syntax fragments, not ordinary query authoring or reference SQL execution.
 Neither imported SQL nor active database content executes.
 
-The [feature record](EXTERNAL_NATIVE_QUERIES.md) and
-[accepted report](results/external-native-2026-10-24.json) retain 350
+The [feature record](../queries/EXTERNAL_NATIVE_QUERIES.md) and
+[accepted report](../../results/storage/external-native-2026-10-24.json) retain 350
 engineering controls/2,154 modeled cells and 375 actual CLI controls/2,214 cells,
 with all 75 selected source/artifact/input/getter hashes unchanged. These consumer
 counts remain separate. Explicit host paths/borrowed handles authorize target
@@ -8075,9 +8075,9 @@ qualified by this read-only corpus.
 
 ## Original finite mixed numeric-key fields
 
-[NumericKeyFixture.java](NumericKeyFixture.java),
-[NumericKeyOracle.java](NumericKeyOracle.java) and
-[compare_numeric_keys.py](compare_numeric_keys.py) are original repository
+[NumericKeyFixture.java](../../access/indexes/native/NumericKeyFixture.java),
+[NumericKeyOracle.java](../../access/indexes/native/NumericKeyOracle.java) and
+[compare_numeric_keys.py](../../access/indexes/native/compare_numeric_keys.py) are original repository
 MIT code. Public table/column builders author twelve inert rows per file with
 Int32 Family/Ordinal fields, Boolean Kind and nullable SingleValue/DoubleValue
 columns. Four families exercise normal, subnormal, large finite and signed-zero
@@ -8104,8 +8104,8 @@ those bits, all six encounter permutations and both arithmetic profiles; native
 SELECT observers retain original carriers and signed-zero bits. Default scalar
 predicates and static UNION promotion are separately checked.
 
-The [feature record](NUMERIC_KEYS.md) and
-[accepted report](results/numeric-keys-2026-10-24.json) retain 2,910
+The [feature record](../indexes/NUMERIC_KEYS.md) and
+[accepted report](../../results/indexes/numeric-keys-2026-10-24.json) retain 2,910
 candidate controls (1,326 source-free and 1,584 native), 144 baseline observations,
 nine model goldens and all 25 unchanged source/artifact/input/getter hashes.
 All candidate outcomes agree, including explicit comparison and pivot-name
@@ -8125,9 +8125,9 @@ save/reopen are not established by this finite read-only corpus.
 
 ## Original saved external-source metadata and target pairs
 
-[SavedExternalFixture.java](SavedExternalFixture.java),
-[SavedExternalOracle.java](SavedExternalOracle.java) and
-[compare_saved_external.py](compare_saved_external.py) are original
+[SavedExternalFixture.java](../../access/queries/saved/SavedExternalFixture.java),
+[SavedExternalOracle.java](../../access/queries/saved/SavedExternalOracle.java) and
+[compare_saved_external.py](../../access/queries/saved/compare_saved_external.py) are original
 repository MIT recipes. Public table builders create distinct root/target data;
 original system-table rows author twelve inert saved definitions per frontend.
 Read-only reopened getters retain exact raw fields, path/connection options and
@@ -8151,7 +8151,7 @@ retains actual authoring/getter commands. Originals are never modified in replay
 | V2019/backend.accdb | 466,944 | `76320956c37381e0095c740c11659101c09eb3411026d7e61141b0f131e602e4` |
 | V2019/frontend.accdb | 462,848 | `81d0746adbb4f8c92cc53454dbf3e25f68fa94ad18077b85359d68dc816774a4` |
 
-The [accepted report](results/saved-external-2026-10-24.json) passes
+The [accepted report](../../results/storage/saved-external-2026-10-24.json) passes
 188 CLI controls and all 109 unchanged source/artifact/input/getter hashes:
 48 exact raw inspections, 48 qualifier reconstructions, 36 successful mapped/local
 execution controls and 56 classified buffered refusals. Reconstruction checks
@@ -8160,7 +8160,7 @@ owned-model equality. Root and target same-name rows distinguish source routing.
 Present-empty versus absent connections and NULL-to-empty owned path behavior
 have separate reopened getter controls. Reference SQL never executes.
 
-The [feature evidence](SAVED_EXTERNAL_QUERIES.md) records exact scope,
+The [feature evidence](../queries/SAVED_EXTERNAL_QUERIES.md) records exact scope,
 reproduction and excluded argument-spelling probes. Frozen CLI, original binary
 files, getters, tools and local logs stay ignored. Native Access creation of these
 saved definitions, execution, provider behavior, coherent cross-file snapshots,
@@ -8169,9 +8169,9 @@ writes and application save/reopen remain unqualified.
 
 ## Original Scalar String/Variant comparison fields
 
-[ScalarStringFixture.java](ScalarStringFixture.java),
-[ScalarStringOracle.java](ScalarStringOracle.java) and
-[compare_scalar_string.py](compare_scalar_string.py) are original
+[ScalarStringFixture.java](../../access/queries/expressions/ScalarStringFixture.java),
+[ScalarStringOracle.java](../../access/queries/expressions/ScalarStringOracle.java) and
+[compare_scalar_string.py](../../access/queries/expressions/compare_scalar_string.py) are original
 repository MIT recipes. Public builders author 17 ordinary TextOperands rows per
 profile, with Short Text, Int32, Boolean, Currency and legacy Date fields.
 Spellings include numeric-looking and nonnumeric Strings, empty, Unicode,
@@ -8192,7 +8192,7 @@ actual generation commands and source hashes remain ignored under
 | V2016.accdb | 380,928 | `b4a64a473006b77c8e362cb75e0facfd64fdf7bb6f31b04c47943a897f654c34` |
 | V2019.accdb | 450,560 | `a9aa6dccc9bc5c242893aad5e42cd6559f3c61f91cac4518998d38e797da98d1` |
 
-The [accepted replay](results/scalar-string-2026-10-24.json) passes
+The [accepted replay](../../results/rows/scalar-string-2026-10-24.json) passes
 224 CLI controls: 144 source-free and 80 native, including 196 successes and
 28 classified buffered refusals. It checks 6,433 Boolean and 718 NULL values;
 6,804 direct comparison values are a subset. All 1,869 hashes remain unchanged,
@@ -8200,7 +8200,7 @@ including every entry in the frozen 1,849-file Rust source inventory. Ordinal
 expectations derive from explicit short rendered goldens and original native
 getters rather than numeric parsing or reference SQL execution.
 
-The [feature evidence](SCALAR_STRING_VARIANT_COMPARISONS.md) records
+The [feature evidence](../rows/SCALAR_STRING_VARIANT_COMPARISONS.md) records
 reproduction, NULL-Date conversion probe exclusion and exact modeling limits.
 Original files remain unchanged; there are no save/edit experiments here.
 Native Access declaration inference, regional/NLS equivalence, full Variant
@@ -8209,9 +8209,9 @@ behavior and application compatibility remain unqualified.
 
 ## Original external named-query trios
 
-[ExternalNamedFixture.java](ExternalNamedFixture.java),
-[ExternalNamedOracle.java](ExternalNamedOracle.java) and
-[compare_external_named.py](compare_external_named.py) are original MIT
+[ExternalNamedFixture.java](../../access/queries/execution/ExternalNamedFixture.java),
+[ExternalNamedOracle.java](../../access/queries/execution/ExternalNamedOracle.java) and
+[compare_external_named.py](../../access/queries/execution/compare_external_named.py) are original MIT
 repository tools. Public builders create ordinary Items data; public system-table
 row APIs author inert saved-query fragments. Query IDs and names intentionally
 collide across root/A/B files. Read-only getters record raw fragments, public
@@ -8239,11 +8239,11 @@ and generation commands remain ignored under
 | V2019/root.accdb | `849b806bc789b9b46e100c6b57370061110c46ac6e9c54f7c0c72b7b58872c5a` |
 | V2019/two.accdb | `958b90d3f69672614d89f3108617a9e08457c106b534119509d9ef304184ad8e` |
 
-The [accepted replay](results/external-named-2026-10-24.json) passes
+The [accepted replay](../../results/storage/external-named-2026-10-24.json) passes
 588 controls and 1,368 getter-modeled cells with all 1,902 pinned hashes unchanged.
-The [evidence contract](EXTERNAL_NAMED_QUERIES.md) records exact modeling,
+The [evidence contract](../queries/EXTERNAL_NAMED_QUERIES.md) records exact modeling,
 original authoring limits and reproduction. The
-[verification record](results/read-query-external-named-2026-10-24.json)
+[verification record](../../results/queries/read-query-external-named-2026-10-24.json)
 pins the committed 1,857-file Rust inventory and 196 focused passing Rust tests.
 No source file is edited, no provider is activated and native Access execution,
 namespace equivalence, shared-file coherence and save/reopen remain unqualified.
@@ -8251,8 +8251,8 @@ namespace equivalence, shared-file coherence and save/reopen remain unqualified.
 
 ## Getter-backed concatenation policy replay
 
-[ConcatenationPolicyOracle.java](ConcatenationPolicyOracle.java) and
-[compare_concatenation_policies.py](compare_concatenation_policies.py)
+[ConcatenationPolicyOracle.java](../../access/reading/tables/ConcatenationPolicyOracle.java) and
+[compare_concatenation_policies.py](../../access/reading/tables/compare_concatenation_policies.py)
 are original repository MIT tools. They reuse the four registered unchanged
 [native per-field policy originals](#native-per-field-general-policy-inputs)
 in `.cache/tablecraft-fixtures/native-policy-20261024-provenance/`; no new
@@ -8263,7 +8263,7 @@ throwing link resolver. It executes no SQL or reference weight algorithms.
 The existing reviewed Apache-2.0 Jackcess 5.0.4 JAR retains SHA-256
 `19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`.
 No upstream source or fixture bytes are copied. Captures remain local and their
-hashes are pinned in the [accepted report](results/concatenation-policies-2026-10-24.json).
+hashes are pinned in the [accepted report](../../results/general/concatenation-policies-2026-10-24.json).
 
 The replay passes 300 commands: 164 candidate and 136 frozen-baseline controls.
 It models 116 candidate and 28 baseline cells, corrects 76 paired false policy
@@ -8271,14 +8271,14 @@ conflicts and retains 60 paired outcomes. All 1,882 pinned hashes remain
 unchanged, including every file in the 1,861-entry frozen Rust inventory.
 Conservative conditional NULL, actual String and empty UNION-arm policies remain
 explicit refusals; ASCII result identities do not qualify native comparison
-weights or Windows behavior. See [the evidence contract](CONCATENATION_POLICIES.md)
-and [verification record](results/read-query-concatenation-policies-2026-10-24.json).
+weights or Windows behavior. See [the evidence contract](../general/CONCATENATION_POLICIES.md)
+and [verification record](../../results/queries/read-query-concatenation-policies-2026-10-24.json).
 
 
 ## Original wide-variable Memo history corpus
 
-[VariableMemoHistoryFixture.java](VariableMemoHistoryFixture.java) and
-[compare_variable_memo_histories.py](compare_variable_memo_histories.py)
+[VariableMemoHistoryFixture.java](../../access/storage/native/VariableMemoHistoryFixture.java) and
+[compare_variable_memo_histories.py](../../access/storage/native/compare_variable_memo_histories.py)
 are original repository MIT recipes. They create fresh V2016/V2019 ordinary
 tables with ID plus 254 variable fields, including nine interspersed Memo fields,
 untouched older roots and multi-page Unicode Memo growth. Read-only getters
@@ -8296,7 +8296,7 @@ actual generation commands remain ignored under
 | V2016.accdb | `ff533b105a2cccb8e3b5d6e2433a7d5ebb4cd2269a296b0edb61c2c8707a82fa` |
 | V2019.accdb | `014b4fc3850019fbf1f9bc4ab4ad0e34481a5c6d59fcc13fb4ac242907a0b224` |
 
-The [accepted replay](results/variable-memo-histories-2026-10-24.json)
+The [accepted replay](../../results/storage/variable-memo-histories-2026-10-24.json)
 passes 16 controls and 33,422 getter-modeled cells, including full/projected
 sequential/indexed reads. All 13 selected hashes remain unchanged. Every file
 in the frozen 1,862-entry source manifest matches committed archive `3fbf14ea`;
@@ -8304,13 +8304,13 @@ this is not a claim about the later live worktree. Initial default-step refusals
 remain excluded exploratory limits, with final reads using explicit ceilings.
 No decoder change was needed. This adds Memo locality/history coverage beside
 existing wide-variable fixtures, not first-time 255-column or native Access
-qualification. See [the evidence contract](VARIABLE_MEMO_HISTORIES.md).
+qualification. See [the evidence contract](../storage/VARIABLE_MEMO_HISTORIES.md).
 
 
 ## Original native streaming query corpus
 
-[ProgressiveQueryFixture.java](ProgressiveQueryFixture.java) and
-[compare_progressive_queries.py](compare_progressive_queries.py) are
+[ProgressiveQueryFixture.java](../../access/queries/execution/ProgressiveQueryFixture.java) and
+[compare_progressive_queries.py](../../access/queries/execution/compare_progressive_queries.py) are
 original repository MIT recipes. Public Jackcess builders create four fresh
 20,000-row ordinary tables with nullable integers and escaped Unicode Text.
 Read-only getters capture exact values/types with expression evaluation disabled
@@ -8329,20 +8329,20 @@ getter captures, compiled class and generation commands remain ignored under
 | V2016.accdb | `eef29d5909afa8a88dc4a90f75a092d0255d1b2f1ce97895a90407cd9384cb87` |
 | V2019.accdb | `b8b97165fee79f6d2288aa55573e1d19d5a37c9d60a7cb41bf7a04d11ff1735d` |
 
-The [accepted replay](results/progressive-queries-2026-10-24.json)
+The [accepted replay](../../results/queries/progressive-queries-2026-10-24.json)
 passes 88 commands and 1,341,336 modeled cells. Complete stdout is compared before
 retaining byte counts/hashes; late-error prefixes and cumulative quota failures
 are checked separately from successful EOF. All 1,898 hashes remain unchanged,
 including 1,879 Rust sources independently matched to committed archive
 `3aadd736`. These originals and independent models establish the documented
 engineering slice, not native Microsoft Access or arbitrary-scale qualification.
-See [the evidence contract](PROGRESSIVE_QUERIES.md).
+See [the evidence contract](../queries/PROGRESSIVE_QUERIES.md).
 
 
 ## Original calculated dependency corpus
 
-[CalculatedDependencyFixture.java](CalculatedDependencyFixture.java) and
-[compare_calculated_dependencies.py](compare_calculated_dependencies.py)
+[CalculatedDependencyFixture.java](../../access/reading/tables/CalculatedDependencyFixture.java) and
+[compare_calculated_dependencies.py](../../access/reading/tables/compare_calculated_dependencies.py)
 are original MIT recipes. Public Jackcess builders create fresh V2016/V2019
 ordinary tables with chains, a shared diamond, aliases, constants and Text
 calculation declarations. Expression evaluation is disabled. Stored calculated
@@ -8361,19 +8361,19 @@ actual generation commands remain ignored under
 | V2016.accdb | `87b70b3e8182981966a6a77a022c37d463d7ef049c6c99e2c0e04bcf1618e150` |
 | V2019.accdb | `f3a8c0a7e3c842b6bfa9b492e5409935c337d6f24e2bbecd06f4fcb3395dce6d` |
 
-The [accepted replay](results/calculated-dependencies-2026-10-24.json)
+The [accepted replay](../../results/development/calculated-dependencies-2026-10-24.json)
 passes 50 commands and 170 exact modeled cells. All 80 recomputed values differ
 from raw cached getters; separate cached queries preserve 90 original cache/ID
 cells. All 1,899 hashes remain unchanged, including every file in the 1,885-entry
 Rust inventory independently matched to committed archive `39f35d04`.
 Natural intermediate carriers, stored ResultType conversion and native freshness
-remain distinct. See [the evidence contract](CALCULATED_DEPENDENCIES.md).
+remain distinct. See [the evidence contract](../development/CALCULATED_DEPENDENCIES.md).
 
 
 ## Original per-table external query corpus
 
-[PerTableExternalFixture.java](PerTableExternalFixture.java) and
-[compare_per_table_external.py](compare_per_table_external.py) are original
+[PerTableExternalFixture.java](../../access/queries/execution/PerTableExternalFixture.java) and
+[compare_per_table_external.py](../../access/queries/execution/compare_per_table_external.py) are original
 MIT recipes. Public Jackcess builders and inert system-query rows author root
 and two target files per V2016/V2019/V2000/V2007 profile. Reopened read-only getters
 record raw fragments, query/from-table metadata and ordinary values. Expression
@@ -8401,7 +8401,7 @@ exact generation commands/class/tool identities remain ignored under
 | V2019/root.accdb | `1b941c5bd99a2ffc70f57ac71206b48a7446290d587c7acc012e25e4d62afb97` |
 | V2019/target.accdb | `324951f69e657bf645b33c170eb6d689abed7289b2147a2c7153c00b2bc04838` |
 
-The [accepted replay](results/per-table-external-2026-10-24.json) passes
+The [accepted replay](../../results/storage/per-table-external-2026-10-24.json) passes
 184 commands and 260 getter-modeled cells, with 156 successes, 28 intended refusals
 and zero disagreements. All 1,923 pins remain unchanged, including the 1,890-file
 Rust inventory independently matched to committed archive `cf7a501b`.
@@ -8411,15 +8411,15 @@ Its twelve originals and exact failed-report/Java/runner/class snapshots remain
 untouched in ignored exploration storage. Corrected originals were generated in
 a fresh directory. A passed intermediate report with host-specific diagnostic
 labels is also retained privately; labels alone changed for the accepted rerun.
-See [the evidence contract](PER_TABLE_EXTERNAL.md) and
-[verification record](results/read-query-per-table-external-2026-10-24.json).
+See [the evidence contract](../storage/PER_TABLE_EXTERNAL.md) and
+[verification record](../../results/queries/read-query-per-table-external-2026-10-24.json).
 Owned SQL escaping, engineering global/per-leaf precedence and native Access
 qualification remain separate from public getter metadata rendering.
 
 
 ## Original saved queries with thirty-two declared sources
 
-[SavedManySourcesFixture.java](SavedManySourcesFixture.java) is original
+[SavedManySourcesFixture.java](../../access/queries/saved/SavedManySourcesFixture.java) is original
 repository-licensed code. It uses the reviewed Apache-2.0 Jackcess 5.0.4 artifact
 (SHA-256 `19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`)
 to create four fresh files with one ordinary Int32 row and seven inert saved
@@ -8441,10 +8441,10 @@ exact generation commands remain ignored under
 | V2016.accdb | `2c3ad5e886e7c0f8013d0cfa0c65d5650b80517a75739913956b52cfef831f28` |
 | V2019.accdb | `a4daea07a15993fdc0ccbbe12b50e411409bc43a7e0dc15a740ebf310a3cc598` |
 
-The [accepted replay](results/saved-many-sources-2026-10-24.json) passes
+The [accepted replay](../../results/general/saved-many-sources-2026-10-24.json) passes
 60 CLI commands, including 16 renderer comparisons, 16 actual getter-modeled
 executions and 12 boundary refusals, with 20 modeled result cells. All 17 scoped
-hashes remain unchanged. The [evidence contract](SAVED_MANY_SOURCES.md)
+hashes remain unchanged. The [evidence contract](../general/SAVED_MANY_SOURCES.md)
 separates the initial reserved-alias normalization failure and successful
 pre-relative-label report from accepted evidence. Their original inputs and tool
 snapshots remain preserved privately. Windows Access execution, native save and
@@ -8453,8 +8453,8 @@ unchanged.
 
 ## Original ACE 16 Boolean equality selection replay inputs
 
-The 2026-10-25 [selection evidence](BOOLEAN_INDEX_SELECTIONS.md) reuses the
-original MIT [BooleanIndexFixture.java](BooleanIndexFixture.java) recipe
+The 2026-10-25 [selection evidence](../indexes/BOOLEAN_INDEX_SELECTIONS.md) reuses the
+original MIT [BooleanIndexFixture.java](../../access/indexes/native/BooleanIndexFixture.java) recipe
 with the reviewed Jackcess 5.0.4 artifact to generate two fresh inert files. It
 retains the earlier registered originals separately. No third-party fixture or
 source was copied, and no reference SQL or active database content was executed.
@@ -8467,14 +8467,14 @@ Generated binaries remain ignored under `.cache/tablecraft-fixtures/`.
 
 The unchanged producer SHA-256 is
 `81d341059c537c0d71dbf8975e0d7264e23572922e1f0385515046090de6b2e0`;
-the read-only [IndexRowsOracle.java](IndexRowsOracle.java) SHA-256 is
+the read-only [IndexRowsOracle.java](../../access/indexes/native/IndexRowsOracle.java) SHA-256 is
 `06cf3882a64d5509b2cf93bd3d30ad30bcb70f685afe546c5d200fe2dce315f4`.
 Both complete raw BooleanIndexed getter captures have SHA-256
 `62a1142bd031613c2ee65889dc68b80b0af0a3983168dcd450e457395f6bd5ef`,
 with 286 true and 714 false rows/profile. Exact fresh producer/replay commands
 and reviewed artifact hash are in the owning evidence document.
 
-The [accepted report](results/boolean-index-selections-2026-10-25.json)
+The [accepted report](../../results/indexes/boolean-index-selections-2026-10-25.json)
 records 22 controls: 16 successful queries comparing 8,000 returned ID rows and
 six buffered structural/resource/output refusals. All 14 scoped pins and original
 bytes remain unchanged. These getter/model comparisons qualify the bounded
@@ -8483,11 +8483,11 @@ and Boolean writes remain unqualified.
 
 ## Original exact Decimal equality selection replay inputs
 
-The 2026-10-25 [Decimal selection evidence](DECIMAL_INDEX_SELECTIONS.md)
+The 2026-10-25 [Decimal selection evidence](../indexes/DECIMAL_INDEX_SELECTIONS.md)
 uses fresh outputs from the original MIT
-[DecimalIndexFixture.java](DecimalIndexFixture.java), source SHA-256
+[DecimalIndexFixture.java](../../access/queries/expressions/DecimalIndexFixture.java), source SHA-256
 `dfbb9d98ab48c68f35ece47225e314373dcf66efd6beb515b5a432b68e2663fa`.
-The unchanged read-only [IndexRowsOracle.java](IndexRowsOracle.java) hash is
+The unchanged read-only [IndexRowsOracle.java](../../access/indexes/native/IndexRowsOracle.java) hash is
 `06cf3882a64d5509b2cf93bd3d30ad30bcb70f685afe546c5d200fe2dce315f4`.
 The reviewed Jackcess 5.0.4 artifact remains
 `19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`.
@@ -8506,7 +8506,7 @@ and replay commands and all three raw getter hashes, shared across the profiles.
 Each selected table has 1,000 rows, 16 exact boundary points and 91 NULLs, at scale
 0, 4 or 28. The independent model uses exact Fractions of getter values.
 
-The [accepted report](results/decimal-index-selections-2026-10-25.json)
+The [accepted report](../../results/indexes/decimal-index-selections-2026-10-25.json)
 passes 788 controls: 696 successful queries comparing 38,772 returned IDs and
 92 buffered structural/resource/output/eager-error refusals. All 19 scoped pins
 and four original byte hashes remain unchanged. This qualifies bounded engineering
@@ -8516,7 +8516,7 @@ unqualified. Existing write permits and preview boundaries are unchanged.
 
 ## Original native progressive Count replay reuse
 
-The 2026-10-25 [progressive Count evidence](PROGRESSIVE_COUNTS.md) reuses
+The 2026-10-25 [progressive Count evidence](../general/PROGRESSIVE_COUNTS.md) reuses
 the four unchanged originals, original producer and read-only getter registered
 under [exact Decimal equality selection inputs](#original-exact-decimal-equality-selection-replay-inputs).
 No database or third-party fixture was added. Getter records provide independent
@@ -8525,7 +8525,7 @@ content executes. Decimal4 getter stdout retains SHA-256
 `ede9a228e39462288251fa9205415eae6b3a301221fcbc69712e5a5bc903f1f9`
 across all four profiles.
 
-The [accepted report](results/progressive-counts-2026-10-25.json) records
+The [accepted report](../../results/general/progressive-counts-2026-10-25.json) records
 132 controls: 108 successful buffered/streamed queries comparing 132 output rows
 and 24 runtime resource/output/division refusals with empty stdout. Ten immutable
 pins agree before/after; eleven compiled production paths are hashed separately
@@ -8536,9 +8536,9 @@ commands, hashes, model counts and excluded oracle-setup probes.
 
 ## Native progressive Sum/Avg replay (25 October 2026)
 
-The [independent numeric replay](PROGRESSIVE_NUMERIC_AGGREGATES.md) reuses
+The [independent numeric replay](../queries/PROGRESSIVE_NUMERIC_AGGREGATES.md) reuses
 the four unchanged originals and getter artifacts registered by the
-[Decimal selection corpus](DECIMAL_INDEX_SELECTIONS.md#original-inputs-and-independent-model).
+[Decimal selection corpus](../indexes/DECIMAL_INDEX_SELECTIONS.md#original-inputs-and-independent-model).
 No additional database binaries or third-party code are distributed. The original
 MIT generator, reviewed reader, hashes and notices retain their existing records.
 
@@ -8551,11 +8551,11 @@ This is independent engineering evidence, without native Access qualification.
 
 ## Original native integral join replay reuse
 
-The 2026-10-25 [integral join replay](NATIVE_EQUIJOINS.md) reuses the four
+The 2026-10-25 [integral join replay](../general/NATIVE_EQUIJOINS.md) reuses the four
 registered Decimal corpus originals, existing inert `TableDataOracle.java`, and
 reviewed Jackcess 5.0.4 reader. It generates no additional binary fixture and
 adopts no new dependency or third-party code. The
-[accepted report](results/native-equijoins-2026-10-25.json) retains the
+[accepted report](../../results/general/native-equijoins-2026-10-25.json) retains the
 original hashes, frozen CLI hash, runner/getter/recipe hashes, scoped compiled
 source hashes, getter encounter order and 20 modeled observations. Original
 bytes and all nine immutable pins were rechecked unchanged; twelve scoped
@@ -8564,11 +8564,11 @@ is separate from native Access SQL qualification.
 
 ## Original native exact-key replay reuse
 
-The 2026-10-25 [exact-key replay](NATIVE_EXACT_KEYS.md) reuses the same
+The 2026-10-25 [exact-key replay](../indexes/NATIVE_EXACT_KEYS.md) reuses the same
 four registered Decimal corpus originals, reviewed Jackcess reader and inert
 getter as the native integral join replay above. Its runner pins that helper
 separately and uses independent integer/NULL ordered-count models. The
-[accepted report](results/native-exact-keys-2026-10-25.json) records
+[accepted report](../../results/indexes/native-exact-keys-2026-10-25.json) records
 76 controls, unchanged original/tool hashes and scoped compiled-source hashes.
 All ten immutable pins and fourteen compiled source hashes were independently
 rechecked. No new binary fixture, dependency or third-party code is adopted;
@@ -8577,12 +8577,12 @@ qualification and throughput claims are separate.
 
 ## Original composable recomputed-view replay reuse
 
-The 2026-10-25 [recomputed-view replay](RECOMPUTED_VIEWS.md) reuses the
+The 2026-10-25 [recomputed-view replay](../general/RECOMPUTED_VIEWS.md) reuses the
 registered original calculated-dependency V2016/V2019 files, reviewed reader,
 existing inert Java getter and independent ordinary-value formula models. Fresh
 getter output matches the original observations. No new binary fixture,
 dependency or copied third-party code is adopted. The
-[accepted report](results/recomputed-views-2026-10-25.json) passes
+[accepted report](../../results/general/recomputed-views-2026-10-25.json) passes
 80 controls; all twelve immutable pins and thirteen scoped compiled-source hashes
 were independently rechecked. A reserved-identifier runner correction preserves
 the failed report/log/source privately; original database bytes never changed.
@@ -8590,13 +8590,13 @@ Native Access calculation/freshness qualification remains separate.
 
 ## Original synthetic template profile replay
 
-The seven inputs in the [template scalar replay](TEMPLATE_SCALAR_PROFILES.md)
+The seven inputs in the [template scalar replay](../rows/TEMPLATE_SCALAR_PROFILES.md)
 are original repository-owned synthetic XML/ZIP audit packages, based on the
 existing original package/table/List Definition helpers under this repository's
 MIT license. No third-party fixture bytes, extra binaries or new dependency are
 adopted. Their authoring history is not asserted byte-reproducible; exact original
 hashes and source/projection details are recorded in the owning document and
-[accepted report](results/template-scalar-profiles-2026-10-25.json).
+[accepted report](../../results/rows/template-scalar-profiles-2026-10-25.json).
 The unchanged originals remain ignored under `.cache/storage-read-audit-20261025/`.
 Seven CLI queries compare 14 independently modeled rows and 44 actual stored
 cells, including Notes rather than IDs alone. Twelve immutable pins and thirty
@@ -8605,7 +8605,7 @@ engineering inputs, not Access-created template or native runtime qualification.
 
 ## Independent Japanese string mapping references
 
-The [Japanese StrConv mapping replay](JAPANESE_STRING_MAPPING.md) uses
+The [Japanese StrConv mapping replay](../storage/JAPANESE_STRING_MAPPING.md) uses
 original MIT Python tools with two separately fetched primary data files. The
 Microsoft-authored CP932 table 2.01 (1998-04-15) has SHA-256
 `c9bc0b0cd42e0fbcb82a09635bb5abed86afbdd4abc9e76fa5716638217cb59f`;
@@ -8616,7 +8616,7 @@ in the owning evidence document. The tables remain ignored/private under
 `.cache/cp932-strconv-next-20261025/`; no mapping data, upstream implementation,
 third-party fixture or new dependency is redistributed or adopted.
 
-The [accepted report](results/strconv-japanese-primary-2026-10-25.json)
+The [accepted report](../../results/queries/strconv-japanese-primary-2026-10-25.json)
 passes 2,172 CLI commands, 17,314 defined mapping cases and 32,158 numeric cells
 with zero disagreements. Five immutable input/tool pins and thirteen scoped
 compiled-revision source pins were independently rehashed. Microsoft historical
@@ -8628,7 +8628,7 @@ Access execution or Windows NLS qualification.
 
 ## Original native progressive extrema replay (25 October 2026)
 
-The [progressive extrema replay](PROGRESSIVE_EXTREMA.md) reuses the
+The [progressive extrema replay](../general/PROGRESSIVE_EXTREMA.md) reuses the
 unchanged original four-profile DecimalIndexFixture databases and reviewed public
 Jackcess getter. New repository-owned Python checks use exact Fraction/integer
 and ordinal models; only TableCraft executes SQL. The 364-control report passes
@@ -8639,7 +8639,7 @@ This is engineering read/query evidence, not Microsoft Access qualification.
 
 ## Original wide/Hiragana composition model (25 October 2026)
 
-The [mode-36 replay](WIDE_HIRAGANA_COMPOSITION.md) composes existing
+The [mode-36 replay](../general/WIDE_HIRAGANA_COMPOSITION.md) composes existing
 original Unicode width-property and kana-name models. Python's reviewed Unicode
 16.0.0 data and ten literal goldens supply independent expectations; no production
 lookup, new mapping file or third-party fixture is copied. The 230 commands
@@ -8649,14 +8649,14 @@ qualifies the explicit engineering composition, not native Access/NLS ordering.
 
 ## Original larger deployment corpus (25 October 2026)
 
-[LargeDeploymentFixture.java](LargeDeploymentFixture.java) is an original
+[LargeDeploymentFixture.java](../../access/reading/tables/LargeDeploymentFixture.java) is an original
 repository MIT recipe using the already reviewed Jackcess public builder/getter.
-[The original streaming wrapper](build_large_deployment.py) creates stored
+[The original streaming wrapper](../../access/reading/tables/build_large_deployment.py) creates stored
 and MSZIP CAB copies. No third-party fixture or CAB implementation is copied.
 Two ACE 16-family originals contain deterministic public synthetic Id/Score/Label
 and Memo values, with active expression evaluation disabled. All files remain
 ignored; source originals are preserved. See [evidence](LARGE_DEPLOYMENT.md)
-and the [58-control report](results/large-deployment-2026-10-25.json).
+and the [58-control report](../../results/reading/large-deployment-2026-10-25.json).
 
 Files below reside under `.cache/tablecraft-fixtures/large-deployment-20261025/`.
 
@@ -8679,28 +8679,28 @@ installation or package trust qualification. The six files total 313,943,080 byt
 
 ## Original directory-join replay (25 October 2026)
 
-[The independent runner](compare_directory_joins.py) reuses the unchanged
+[The independent runner](../../access/queries/execution/compare_directory_joins.py) reuses the unchanged
 four-profile Decimal corpus and both original large ACE 16 databases above.
 Public inert getters and original integer encounter-order models supply expected
 results; only TableCraft executes Access SQL. No new fixture or third-party code
-is copied. The [76-command report](results/directory-joins-2026-10-25.json)
+is copied. The [76-command report](../../results/general/directory-joins-2026-10-25.json)
 compares 51,848 rows and 105,896 cells, including 62 successes and fourteen intended
 refusals. Sixteen immutable inputs and 21 new/16 baseline committed source hashes
-were independently rechecked. See [scope](DIRECTORY_JOINS.md); native
+were independently rechecked. See [scope](../general/DIRECTORY_JOINS.md); native
 Access optimizer/ordering and performance qualification are separate.
 
 ## Original progressive grouped replay (25 October 2026)
 
-[The original runner](compare_progressive_grouped.py) reuses both large
+[The original runner](../../access/queries/execution/compare_progressive_grouped.py) reuses both large
 ACE 16 databases and their four stored/MSZIP copies. Existing public getters and
 bounded CAB inspectors validate unchanged data; independent linear grouping,
 integer/Fraction and Python lexical models supply expected answers. No fixture
-or third-party implementation is added. The [96-command report](results/progressive-grouped-2026-10-25.json)
+or third-party implementation is added. The [96-command report](../../results/general/progressive-grouped-2026-10-25.json)
 compares 1,374 rows and 5,364 cells, including 72 successful queries and 24 intended
 refusals. Thirteen immutable pins and twenty-five committed source hashes were
 independently rechecked. The first diagnostic-label attempt remains preserved;
 SQL, expected rows, runtime and input bytes were unchanged. See
-[evidence](PROGRESSIVE_GROUPED.md); native Access SQL and timing
+[evidence](../general/PROGRESSIVE_GROUPED.md); native Access SQL and timing
 qualification remain separate.
 
 ## Original public-writer delete storage corpus
@@ -8725,8 +8725,8 @@ full-check resource refusals and sixteen corrected refusal-wording expectations.
 The final explicit-work replay passes 192 controls, including sixteen expected
 unsupported selected ignore-NULL index refusals; no TableCraft deletion API or
 native write/save qualification is established. See the
-[observations and commands](DELETE_STORAGE_OBSERVATIONS.md) and
-[hash-pinned accepted report](results/delete-storage-final-2026-10-25.json).
+[observations and commands](../rows/DELETE_STORAGE_OBSERVATIONS.md) and
+[hash-pinned accepted report](../../results/rows/delete-storage-final-2026-10-25.json).
 
 | Actual input | SHA256 |
 | --- | --- |
@@ -8755,10 +8755,10 @@ native write/save qualification is established. See the
 reuse the four registered `scalar-seek-20261023` original Scalar fixtures listed
 above, copy them into fresh ignored work directories and verify unchanged original
 and copy hashes. No new third-party fixture or implementation bytes are tracked.
-The [observations](JDBC_AGGREGATE_METADATA.md) record exact external
+The [observations](../queries/JDBC_AGGREGATE_METADATA.md) record exact external
 UCanAccess 5.2.0/Jackcess 5.2.0/HSQLDB 2.7.4 artifact hashes, POM/license sources
 and checksum review; their JARs/notices remain in the ignored artifact cache.
-The [report](results/jdbc-aggregate-metadata-final-2026-10-25.json) retains
+The [report](../../results/queries/jdbc-aggregate-metadata-final-2026-10-25.json) retains
 232 independent reference queries (including eight reference errors) and 232
 successful TableCraft queries. This is JDBC metadata/value evidence, without
 native Access qualification or a changed TableCraft numeric profile.
@@ -8778,17 +8778,17 @@ change, and queries the existing 38-row table. The derived files are removed wit
 the test's temporary directory. No additional database bytes or external fixture
 license are introduced. This proves the larger page-copy path, not a 65 MiB native
 application or the complete 2 GiB envelope. See the
-[verification record](results/encryption-page-copies-2026-10-25.json).
+[verification record](../../results/encryption/encryption-page-copies-2026-10-25.json).
 
 ## Large encryption page-copy replay (25 October 2026)
 
-The [original replay and getter driver](LARGE_ENCRYPTION.md) reuse both
+The [original replay and getter driver](../encryption/LARGE_ENCRYPTION.md) reuse both
 unchanged V2016/V2019 originals from the large deployment corpus. No new database
 fixture, third-party code or reference dependency is introduced. Existing reviewed
 Jackcess 5.0.4, Jackcess Encrypt 5.0.2 and Bouncy Castle 1.86 artifacts supply inert
 getters, SID/page reads and independent removal of newly generated candidates.
 
-The [92-command report](results/large-encryption-2026-10-25.json) retains
+The [92-command report](../../results/encryption/large-encryption-2026-10-25.json) retains
 all seventeen immutable fingerprints, fourteen versioned source snapshots and
 eight expected refusals, including the two former-size-limit controls. Four
 plaintext recoveries per profile match the original full-image digests. Actual
@@ -8799,14 +8799,14 @@ selected source/tool/executable hashes are independently rechecked.
 
 ## Mixed fixed/binary key replay (25 October 2026)
 
-The [original replay](FIXED_BINARY_KEYS.md) reuses the four registered
+The [original replay](../indexes/FIXED_BINARY_KEYS.md) reuses the four registered
 `scalar-seek-20261023` originals and their reviewed Jackcess getter. No fixture,
 third-party code or dependency is added. The new parameter cohorts use public
 synthetic exact values and the existing VALUE binding contract; native cohorts
 consume original Money/Numeric coefficients and actual IEEE/Boolean/integer
 getters. Historical numeric-key evidence remains unchanged.
 
-The [4,289-observation report](results/fixed-binary-key-replay-2026-10-25.json)
+The [4,289-observation report](../../results/indexes/fixed-binary-key-replay-2026-10-25.json)
 records 3,956 passing current queries and 333 baseline controls, including 275
 former mixed-key refusals. Four separate getter calls reopen all originals
 read-only with expression evaluation disabled. All twelve immutable fingerprints
@@ -8817,39 +8817,39 @@ this evidence.
 
 ## Deeper compound-query replay — 25 October 2026
 
-The [deeper query runner](compare_deeper_queries.py) reuses the four
+The [deeper query runner](../../access/reading/tables/compare_deeper_queries.py) reuses the four
 registered immutable Scalar-V2000/V2007/V2016/V2019 originals and reviewed
-Jackcess 5.0.4 getter tooling from the [mixed-key replay](FIXED_BINARY_KEYS.md).
+Jackcess 5.0.4 getter tooling from the [mixed-key replay](../indexes/FIXED_BINARY_KEYS.md).
 No new third-party fixture, code or binary is committed. Fifteen literal and
 eight stored-field cohorts per original exercise explicit structural depth 32;
 independent Fraction/IEEE models supply expected groups, order and extrema.
-The [report](results/deeper-query-replay-2026-10-25.json) records 1,692
+The [report](../../results/queries/deeper-query-replay-2026-10-25.json) records 1,692
 successful queries, 141 default-depth refusals, four getter transcript hashes,
 eleven immutable artifacts and 66 selected committed/live source snapshots.
 Original bytes are unchanged; this is not native Access execution evidence.
 
 ## Stored arithmetic/UNION replay — 25 October 2026
 
-The original [agreement-result runner](compare_agreement_result_types.py)
+The original [agreement-result runner](../../access/reading/tables/compare_agreement_result_types.py)
 reuses the registered immutable Scalar-V2000/V2007/V2016/V2019 originals and
 reviewed Jackcess 5.0.4 getter tooling. No new third-party fixture or binary is
 committed. Four read-only getter transcripts supply stored Byte/Integer/Single
 values for independent Python integer/Fraction expectations. The
-[report](results/agreement-native-replay-2026-10-25.json) records 312 CLI
+[report](../../results/general/agreement-native-replay-2026-10-25.json) records 312 CLI
 observations, 576 compared rows, 1,152 cells and 24 declaration refusals in
 current/pre-fix executables. Twelve immutable artifacts and five selected sources
 are rehashed; all originals remain unchanged. Getter hashes agree with the earlier
-[mixed-key replay](FIXED_BINARY_KEYS.md). This is not native Access SQL
+[mixed-key replay](../indexes/FIXED_BINARY_KEYS.md). This is not native Access SQL
 execution or subtype qualification.
 
 ## Native GUID predicate replay — 25 October 2026
 
-The [original GUID predicate runner](compare_guid_predicates.py) reuses
+The [original GUID predicate runner](../../access/reading/tables/compare_guid_predicates.py) reuses
 four immutable ScalarFixture originals and four registered 20,000-row indexed
 originals with the existing reviewed Jackcess 5.0.4 read-only getters. No new
 third-party fixture or binary is committed. Python UUID supplies identity
 expectations; only TableCraft executes SQL. The
-[report](results/guid-predicate-replay-2026-10-25.json) records 192 CLI
+[report](../../results/general/guid-predicate-replay-2026-10-25.json) records 192 CLI
 observations, 64,140 compared IDs, eighteen unchanged artifacts and four selected
 source snapshots. Eight getters supply stored rows, including 80,000 larger
 indexed rows; scalar transcripts match the earlier mixed-key replay. Native
@@ -8857,10 +8857,10 @@ Access execution and Byte-array subtype/ordering qualification remain pending.
 
 ## Native GUID inspection replay — 25 October 2026
 
-The [original inspection runner](compare_guid_inspection.py) reuses the
+The [original inspection runner](../../access/reading/tables/compare_guid_inspection.py) reuses the
 four registered immutable ScalarFixture originals and reviewed Jackcess 5.0.4
 read-only getter tooling. No new third-party fixture or binary is committed.
-The [report](results/guid-inspection-replay-2026-10-25.json) records 84 CLI
+The [report](../../results/general/guid-inspection-replay-2026-10-25.json) records 84 CLI
 controls, 96 compared rows, 432 cells, fourteen immutable artifacts and five
 selected source snapshots. Four getter hashes match the preceding GUID predicate
 replay. Observer expectations follow the explicit fixed Byte-array profile;
@@ -8869,7 +8869,7 @@ qualify native Access subtype names, bounds or errors.
 
 ## Original single Int32 ignore-NULL index inputs
 
-Original Apache-2.0 [IgnoreNullIndexFixture.java](IgnoreNullIndexFixture.java)
+Original Apache-2.0 [IgnoreNullIndexFixture.java](../../access/indexes/native/IgnoreNullIndexFixture.java)
 uses the reviewed Jackcess 5.0.4 JAR, SHA-256
 `19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`,
 to author fresh inert V2000/V2007/V2016/V2019 inputs. No upstream source or fixture
@@ -8881,9 +8881,9 @@ Originals remain ignored under
 `.cache/tablecraft-fixtures/ignore-null-indexes-20261025/`. Each has 701 rows,
 637 ordinary ignored-key entries, 647 unique ignored-key entries, ascending and
 descending node trees, and a logical alias sharing physical data. The
-[evidence record](IGNORED_NULL_INDEXES.md) lists all four exact input hashes,
+[evidence record](../indexes/IGNORED_NULL_INDEXES.md) lists all four exact input hashes,
 raw root/owner observations, producer commands and provenance boundaries. The
-[64-command comparison](results/ignored-null-index-replay-2026-10-25.json)
+[64-command comparison](../../results/indexes/ignored-null-index-replay-2026-10-25.json)
 compares 3,468 returned IDs, seventeen unchanged artifacts and six selected native
 source objects. Original bytes remain unchanged. Native Access qualification and
 other ignore-NULL carrier profiles are not inferred.
@@ -8891,7 +8891,7 @@ other ignore-NULL carrier profiles are not inferred.
 ## Original Int64/Currency ignore-NULL index inputs
 
 Original Apache-2.0
-[IgnoreNullWideIndexFixture.java](IgnoreNullWideIndexFixture.java) uses the
+[IgnoreNullWideIndexFixture.java](../../access/indexes/native/IgnoreNullWideIndexFixture.java) uses the
 reviewed Jackcess 5.0.4 JAR, SHA-256
 `19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`,
 to author fresh inert Currency tables in V2000/V2007/V2016/V2019 and additional
@@ -8905,9 +8905,9 @@ Originals remain ignored under
 `.cache/tablecraft-fixtures/ignore-null-wide-indexes-20261025/`. Six actual tables
 each have 701 rows, 637 ordinary ignored-key entries, 647 unique ignored-key
 entries, ascending/descending node trees and a shared logical alias. Each physical
-index owns five pages. The [evidence record](IGNORED_NULL_WIDE_INDEXES.md)
+index owns five pages. The [evidence record](../indexes/IGNORED_NULL_WIDE_INDEXES.md)
 lists all four exact original hashes, producer commands and raw owner/root facts.
-The [96-command comparison](results/ignored-null-wide-index-replay-2026-10-25.json)
+The [96-command comparison](../../results/indexes/ignored-null-wide-index-replay-2026-10-25.json)
 compares 3,924 returned IDs, twenty unchanged artifacts and six selected native
 source objects. Original bytes remain unchanged. Other ignored-key families,
 Int64 outside ACE16, native Access qualification and write eligibility are not
@@ -8915,10 +8915,10 @@ inferred.
 
 ## Original-file progressive DISTINCT replay
 
-The [184-control comparison](PROGRESSIVE_DISTINCT.md) reuses the four
+The [184-control comparison](../general/PROGRESSIVE_DISTINCT.md) reuses the four
 registered 701-row Int32 ignore-NULL originals and ordinary getter transcripts.
 It creates no new database or derivative. Their original
-[producer and getter recipe](IgnoreNullIndexFixture.java), reviewed
+[producer and getter recipe](../../access/indexes/native/IgnoreNullIndexFixture.java), reviewed
 Jackcess JAR, earlier provenance report and tools remain pinned; no Java or
 reference SQL is executed during this replay.
 
@@ -8927,13 +8927,13 @@ order for distinct tuples, grouping, exact Currency/Decimal and TOP. Buffered an
 progressive commands compare directly with those models. The accepted first run
 has 160 successes (10,432 rows / 18,208 cells) and 24 expected empty-stdout refusals.
 All eighteen artifacts and 47 selected query-source objects remain unchanged.
-The [report](results/progressive-distinct-2026-10-25.json) preserves exact
+The [report](../../results/general/progressive-distinct-2026-10-25.json) preserves exact
 commands and results. This does not establish native Access SQL compatibility or
 expand the progressive output-type profile.
 
 ## Original complete ignore-NULL index coverage
 
-Original Apache-2.0 [IgnoredIndexCoverageFixture.java](IgnoredIndexCoverageFixture.java)
+Original Apache-2.0 [IgnoredIndexCoverageFixture.java](../../access/indexes/native/IgnoredIndexCoverageFixture.java)
 uses the reviewed Jackcess 5.0.4 JAR, SHA-256
 `19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`,
 to create fresh inert V2016/V2019 tables. Public builders and row/index-cursor
@@ -8950,7 +8950,7 @@ model validates every actual physical population from key-column NULL facts.
 Historical one-column roots remain unchanged after adding fields. Exact commands,
 source-at-generation snapshot, getter transcripts and writer warnings are retained.
 
-The [172-command evidence](IGNORED_INDEX_COVERAGE.md) compares complete
+The [172-command evidence](../indexes/IGNORED_INDEX_COVERAGE.md) compares complete
 physical-check reports against the previous frozen CLI, with 318 versus 116 checked
 logical profiles and 24 retained unique Memo/digest refusals. Seventeen artifacts
 and eight compiled native source snapshots remain unchanged. No fixture binaries
@@ -8959,8 +8959,8 @@ integrity qualification.
 
 ## Fresh original bare-multivalue query results
 
-The unchanged repository-owned [MultivalueFixture.java](MultivalueFixture.java)
-and [MultivalueOracle.java](MultivalueOracle.java) were reused with the
+The unchanged repository-owned [MultivalueFixture.java](../../access/reading/tables/MultivalueFixture.java)
+and [MultivalueOracle.java](../../access/reading/tables/MultivalueOracle.java) were reused with the
 reviewed Jackcess 5.0.4 JAR, SHA-256
 `19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`.
 Fresh V2007/V2016/V2019 inputs remain ignored under
@@ -8981,7 +8981,7 @@ members, including duplicates, NULL members, empty lists and exact carrier
 boundaries. Producer commands, all 24 read-only getter commands and their raw
 stdout/stderr remain beside the originals. Original bytes stay unchanged.
 
-The [48-control comparison](BARE_MULTIVALUE_RESULTS.md) compares 87 rows
+The [48-control comparison](../general/BARE_MULTIVALUE_RESULTS.md) compares 87 rows
 and 258 cells across 27 successes, with 21 classified empty-stdout refusals. It
 pins 36 artifacts and forty selected compiled source objects. Bracketed-list TSV
 is an explicit TableCraft presentation; NaN display does not identify payload or
@@ -8990,7 +8990,7 @@ SQL/lookup or collection result-representation qualification is inferred.
 
 ## Original ACE16 large indexed-table selection inputs
 
-[LargeUsageMapProbe.java](LargeUsageMapProbe.java) is repository-owned
+[LargeUsageMapProbe.java](../../access/storage/native/LargeUsageMapProbe.java) is repository-owned
 code under the root license, promoted byte-identically from the actual generator
 and read-only getter source (SHA-256
 `bb207c72e9324f166a160929e9596da09d4b15b45de7d2414d44ec20eed88b13`).
@@ -9011,7 +9011,7 @@ establish all 5,000 IDs and Binary payload hashes; explicitly identified pinned
 implementation getters establish 5,000 owned data pages and seventeen index
 pages per profile. The independent model reproduces the Binary bytes. Exact
 commands and excluded initial probe details are retained, with relative fresh
-reproduction commands in [the owning evidence document](LARGE_INDEX_SELECTIONS.md).
+reproduction commands in [the owning evidence document](../indexes/LARGE_INDEX_SELECTIONS.md).
 Fresh generation is not promised byte-identical. Originals remain unchanged.
 
 The twelve baseline controls establish sequential success and the previous
@@ -9022,8 +9022,8 @@ Access compatibility or enable writes.
 
 ## Fresh ACE16 physical DELETE reference inputs
 
-[DeleteCandidateFixture.java](DeleteCandidateFixture.java) and
-[capture_delete_candidates.py](capture_delete_candidates.py) are original
+[DeleteCandidateFixture.java](../../access/queries/expressions/DeleteCandidateFixture.java) and
+[capture_delete_candidates.py](../../access/queries/expressions/capture_delete_candidates.py) are original
 repository-owned recipes under the root license. They use reviewed Jackcess
 5.0.4, JAR SHA-256
 `19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`.
@@ -9056,7 +9056,7 @@ index owns one page in the getter observations. Reference operations delete ID2,
 nullable-key ID3, or all rows from the four nonsentinel tables; Sentinel remains
 untouched.
 
-The [reference capture](results/delete-candidate-reference-2026-10-26.json)
+The [reference capture](../../results/rows/delete-candidate-reference-2026-10-26.json)
 contains eight read-only getter commands and raw output. Eleven file pins
 (producer, capture script, JAR and eight databases) stay unchanged across capture.
 Exact table/logical-index inventories remain present after delete-all; complete
@@ -9081,7 +9081,7 @@ for profile in V2016 V2019; do
   java -Dstdout.encoding=UTF-8 -cp .cache/tablecraft-fixtures/jackcess-5.0.4.jar \
     docs/testing/DeleteCandidateFixture.java generate FRESH_DIRECTORY "$profile"
 done
-python3 docs/testing/capture_delete_candidates.py \
+python3 tests/run.py tests/access/queries/expressions/capture_delete_candidates.py \
   --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar \
   --inputs FRESH_DIRECTORY --report FRESH_REPORT.json
 ```
@@ -9091,8 +9091,8 @@ uses a 120-second timeout per Java getter command.
 
 ## Original ACE16 multi-level DELETE reference inputs
 
-[DeleteTreeFixture.java](DeleteTreeFixture.java) and
-[capture_delete_trees.py](capture_delete_trees.py) are original repository-owned
+[DeleteTreeFixture.java](../../access/rows/delete/DeleteTreeFixture.java) and
+[capture_delete_trees.py](../../access/rows/delete/capture_delete_trees.py) are original repository-owned
 code under the root license. Reviewed Jackcess 5.0.4, JAR SHA-256
 `19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`,
 created fresh V2016/V2019 originals with 1,000 indexed rows, permuted physical
@@ -9120,7 +9120,7 @@ Originals and public `Table.deleteRow` reference copies remain ignored under
 | V2019 | leaf-exhaustion-observation | 753,664 | `094df570911e6254588c411bd6f722de9a3cb09ef8559237f85880f9dd23e011` |
 | V2019 | delete-all-observation | 753,664 | `a5d3a4bff7532ad3c33ccbc2bde874f310ddf120292b96aac3a32ce5070001a5` |
 
-The [compact reference summary](results/delete-tree-reference-2026-10-26.json) records
+The [compact reference summary](../../results/rows/delete-tree-reference-2026-10-26.json) records
 ten read-only getter receipts and thirteen unchanged file pins: two recipes, the
 JAR and ten databases. Public rows/index cursors establish complete populations,
 order and payload hashes; identified pinned implementation getters establish
@@ -9139,14 +9139,14 @@ observations. They do not establish candidate admission, retirement/allocation
 correctness or native Access save/reopen. Delete-all leaves every index empty, so
 root identity cannot be uniquely inferred from equal empty cursor orders; that
 ambiguity remains explicit in the report. See
-[the owning observations](DELETE_TREE_STORAGE_OBSERVATIONS.md) for boundaries,
+[the owning observations](../rows/DELETE_TREE_STORAGE_OBSERVATIONS.md) for boundaries,
 actual reproduction commands and preserved initial captures. Fresh file hashes
 are recorded, not claimed reproducible.
 
 ## Fresh deep and indirect DELETE contraction references
 
-The original repository recipes [DeepDeleteFixture.java](DeepDeleteFixture.java)
-and [IndirectDeleteFixture.java](IndirectDeleteFixture.java) create separate
+The original repository recipes [DeepDeleteFixture.java](../../access/rows/delete/DeepDeleteFixture.java)
+and [IndirectDeleteFixture.java](../../access/rows/delete/IndirectDeleteFixture.java) create separate
 500-row V2016/V2019 originals with ten deterministic GUID key components, an ID
 primary key, a true composite index alias and a preserved Memo/OLE table. The
 Indirect variant adds ten nonindexed 240-byte Binary fields per row. Public
@@ -9155,8 +9155,8 @@ delete-all references. No prior original/reference is changed.
 
 The reviewed Jackcess 5.0.4 JAR remains
 `19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`.
-All four Java sources, including [DeepUsageMapProbe.java](DeepUsageMapProbe.java)
-and [IndirectUsageMapProbe.java](IndirectUsageMapProbe.java), are promoted
+All four Java sources, including [DeepUsageMapProbe.java](../../access/storage/native/DeepUsageMapProbe.java)
+and [IndirectUsageMapProbe.java](../../access/storage/native/IndirectUsageMapProbe.java), are promoted
 byte-identically from the actual original producers/read-only probes. Their
 code is repository-owned under the root license; no third-party source or
 fixture bytes are copied. Expression evaluation is disabled and linked targets
@@ -9186,7 +9186,7 @@ All sixteen files remain ignored under
 | Indirect | V2019 | retain-one-leaf | 2,744,320 | `fbcc39aa8521e99aad50fae039118a70b1e46d0c5ed1ebcc49c38701cdfe9a27` |
 | Indirect | V2019 | delete-all | 2,744,320 | `76faee8357cd14a0677207825f2beb714786566cf72c197e85ad155de4cceeb2` |
 
-The [compact reference summary](results/delete-contraction-reference-2026-10-26.json)
+The [compact reference summary](../../results/rows/delete-contraction-reference-2026-10-26.json)
 pins 24 input/tool files before and after 32 final read-only Java commands.
 Historical private generation/reference captures remain separately hash-pinned,
 including their original private helper paths; publication recaptures use only
@@ -9203,14 +9203,14 @@ map-payload/bitmap-page checks show only the exact retirement bits changing;
 representations/pointers remain unchanged. Original record bodies, Binary
 padding, Memo/OLE and historical counters remain preserved.
 
-The [owning observations](DELETE_CONTRACTION_STORAGE_OBSERVATIONS.md) distinguish
+The [owning observations](../rows/DELETE_CONTRACTION_STORAGE_OBSERVATIONS.md) distinguish
 these reviewed-Jackcess facts from native Access/allocation qualification, give
 public-source reproduction commands, and record the real host E2BIG/request-file
 discriminator. No candidate execution is part of this reference registration.
 
 ## Original encoded Text/Binary DELETE inputs
 
-Original Apache-2.0 [EncodedDeleteFixture.java](EncodedDeleteFixture.java),
+Original Apache-2.0 [EncodedDeleteFixture.java](../../access/rows/delete/EncodedDeleteFixture.java),
 SHA-256 `1bf7fced97992d29fdc90b38fdb3315901f37f199359f4895da0ef3bd966a725`,
 uses the reviewed Jackcess 5.0.4 public builders and public `Table.deleteRow` on
 fresh copies. No upstream code or fixtures are copied. Expressions remain
@@ -9233,9 +9233,9 @@ for publication.
 | Encoded-V2019-delete-null.accdb | 1,236,992 | `a8feef2d9b9cac28605be952da0214b94116a1061142764c8abfda1e1bcd2dea` |
 | Encoded-V2019-delete-tie.accdb | 1,236,992 | `4adabfd289b3404123d5578a4fb54e12736f169aadb2a5b5a218837338718aad` |
 
-The [owning observations](ENCODED_DELETE_OBSERVATIONS.md) and compact
-[reference](results/ace16-delete-encoded-original-reference-2026-10-26.json) /
-[candidate](results/ace16-delete-encoded-original-replay-2026-10-26.json) receipts
+The [owning observations](../rows/ENCODED_DELETE_OBSERVATIONS.md) and compact
+[reference](../../results/rows/ace16-delete-encoded-original-reference-2026-10-26.json) /
+[candidate](../../results/rows/ace16-delete-encoded-original-replay-2026-10-26.json) receipts
 record actual General legacy/2010 descriptors, Binary framing, NULL/empty/ties,
 nonunique Text overflow, physical aliases and preserved Memo/OLE. The 48 controls
 have 34 successful candidates, twelve unsupported-profile refusals and two
@@ -9246,7 +9246,7 @@ ordinary writes. Exact private helper sources, public-tool verification and
 historical command associations are distinguished in the receipts.
 
 The same originals/selectors subsequently passed the
-[internal-chain follow-up](results/ace16-delete-encoded-internal-chains-originals-2026-10-26.json)
+[internal-chain follow-up](../../results/rows/ace16-delete-encoded-internal-chains-originals-2026-10-26.json)
 on frozen `cd52af09c3f9253ed9aa7e3195a2210bf316efdc`: 36 candidates and twelve
 profile refusals, zero disagreements, including both Modern Text height-2
 delete-all cases. This supersedes that specific historical capability refusal;
@@ -9255,7 +9255,7 @@ native Access saves. Originals and selector counts are unchanged.
 
 ## Reused originals for ignore-NULL DELETE
 
-Original Apache-2.0 [IgnoredDeleteReference.java](IgnoredDeleteReference.java)
+Original Apache-2.0 [IgnoredDeleteReference.java](../../access/rows/delete/IgnoredDeleteReference.java)
 adds only explicit fresh-copy/public-delete and inert read-only getters. It has
 no generation mode and copies no upstream implementation or fixture. It uses the
 reviewed Jackcess 5.0.4 JAR, SHA-256
@@ -9272,9 +9272,9 @@ sources and original bytes were reused without regeneration or flag edits:
 | IgnoredProfiles-V2016.accdb | 4,157,440 | `90c5fc95e47be4996924ac6b0fe232a5209a12689527c5c05be593ec0b7f08df` |
 | IgnoredProfiles-V2019.accdb | 4,227,072 | `2db1bd079e3f9df28dc82c2d3eb9dc82753a8a75273b67213eefa5e2ce872b05` |
 
-The [owning observations](IGNORED_DELETE_OBSERVATIONS.md), compact
-[reference receipt](results/ace16-delete-ignored-original-reference-2026-10-26.json)
-and [candidate receipt](results/ace16-delete-ignored-original-replay-2026-10-26.json)
+The [owning observations](../rows/IGNORED_DELETE_OBSERVATIONS.md), compact
+[reference receipt](../../results/rows/ace16-delete-ignored-original-reference-2026-10-26.json)
+and [candidate receipt](../../results/rows/ace16-delete-ignored-original-replay-2026-10-26.json)
 retain 50 fresh reference-copy hashes and 50 positive candidate outcomes, with
 zero disagreements. Six originals and 50 references remain unchanged. Exact
 membership is derived from actual key-column NULL facts; partial NULLs remain
@@ -9293,7 +9293,7 @@ public wrapper verification is distinguished from historical execution.
 
 ## Ordinary LONG AutoNumber DELETE originals
 
-Repository-owned [AutoNumberDeleteFixture.java](AutoNumberDeleteFixture.java)
+Repository-owned [AutoNumberDeleteFixture.java](../../access/creation/databases/AutoNumberDeleteFixture.java)
 uses the already reviewed Jackcess 5.0.4 JAR, SHA-256
 `19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`.
 It generates two ACE16 tables with 260 ordinary LONG AutoNumber inserts each;
@@ -9308,8 +9308,8 @@ not post-freeze edits or seed resets.
 | AutoNumber-V2016-before.accdb | 409,600 | `68002961ab71eff6938ccf91726ca50ec6b70094cfca2313921a2e6fa56a1895` |
 | AutoNumber-V2019-before.accdb | 479,232 | `49bc0f0a097424be5e345081d154de49c4700b5fc9563d796d22a20997a39d96` |
 
-[Owning observations](AUTONUMBER_DELETE_OBSERVATIONS.md) and the compact
-[receipt](results/ace16-delete-autonumber-originals-2026-10-26.json) pin the
+[Owning observations](../creation/AUTONUMBER_DELETE_OBSERVATIONS.md) and the compact
+[receipt](../../results/creation/ace16-delete-autonumber-originals-2026-10-26.json) pin the
 producer/getter, compiled helper, original/reference/candidate hashes and raw
 captures. Sixteen public delete references and sixteen frozen engineering
 candidates preserve LONG counter260, including highest/all deletions. Twenty
@@ -9323,7 +9323,7 @@ write enablement is claimed.
 
 ## Exact French Legacy stored-index originals
 
-Repository-owned [FrenchLegacyIndexFixture.java](FrenchLegacyIndexFixture.java)
+Repository-owned [FrenchLegacyIndexFixture.java](../../access/queries/expressions/FrenchLegacyIndexFixture.java)
 uses the reviewed Jackcess 5.0.4 JAR, SHA-256
 `19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`.
 Public builders create exact French `1036/0/0` and matched General Legacy
@@ -9336,8 +9336,8 @@ third-party database bytes were copied.
 | French-V2016.accdb | 413,696 | `8dd327f872cb50e20c3bfee09731300cdb22bc392f25ad5217b372cad3a6b6d2` |
 | French-V2019.accdb | 483,328 | `62dc9a90aa3d5aa11bc962c07ba2ab4cc9f996f8c26ad9f71eeb38652c897bba` |
 
-The [owning observations](FRENCH_LEGACY_INDEX_OBSERVATIONS.md) and compact
-[oracle receipt](results/french-legacy-index-oracle-2026-10-26.json) retain actual
+The [owning observations](../queries/FRENCH_LEGACY_INDEX_OBSERVATIONS.md) and compact
+[oracle receipt](../../results/queries/french-legacy-index-oracle-2026-10-26.json) retain actual
 descriptors, distinct backwards-accent orders, exact full key/reference framing,
 source/JAR/class hashes and the first authored compile correction. Both originals
 remain unchanged. Two tables per profile each contain 38 rows, three logical
@@ -9349,14 +9349,14 @@ observations separately record subsequent physical engine implementation checks.
 Native Access/NLS/SQL comparison, LIKE/search and write qualification remain
 separate.
 
-Repository-owned [FrenchKeysOracle.java](FrenchKeysOracle.java) adds 349 complete
+Repository-owned [FrenchKeysOracle.java](../../access/queries/expressions/FrenchKeysOracle.java) adds 349 complete
 UTF-16 sequence vectors and per-block digests for all 65,536 BMP units in both
 index directions, using only the pinned reference encoder API. The implementation
 receipt pins the exact producer/class/output hashes. No new upstream weights or
 code were copied; generated keys are test observations, not a full-string SQL or
 native NLS oracle.
 
-The separate [frozen physical CLI replay](results/french-physical-originals-2026-10-26.json)
+The separate [frozen physical CLI replay](../../results/queries/french-physical-originals-2026-10-26.json)
 reuses these unchanged originals: 58 controls agree, comprising 52 successful
 inspections/queries and six buffered refusals, with 1,076 query rows and 1,684
 cells checked. Explicit Asc/Twin/Desc snapshots retain getter encounter order and
@@ -9368,12 +9368,12 @@ status 2 and empty stdout already held. See the owning observations for scope.
 
 ## New cross-table RESTRICT DELETE comparison originals
 
-Original Apache-2.0 [RestrictDeleteFixture.java](RestrictDeleteFixture.java),
+Original Apache-2.0 [RestrictDeleteFixture.java](../../access/rows/delete/RestrictDeleteFixture.java),
 SHA-256 `c26f63b4db4c62f22895b2b90e4e45e49eb8646f936de3cf5bb5b73bc5f03d79`,
 uses the reviewed Jackcess 5.0.4 public builders and per-row delete API. Explicit
 foreign-key enforcement is enabled, expressions are disabled, time zone is UTC
 and linked opens throw. The separate original
-[RestrictNullJoinProbe.java](RestrictNullJoinProbe.java) is read-only. No upstream
+[RestrictNullJoinProbe.java](../../access/queries/execution/RestrictNullJoinProbe.java) is read-only. No upstream
 implementation or fixture is copied; the reviewed JAR SHA-256 remains
 `19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`.
 
@@ -9394,9 +9394,9 @@ nullable parent keys separately from non-NULL ID primaries. Actual BigInt/Decima
 metadata, physical roots, all-NULL/partial-NULL shapes, bounds and exact adjacency
 are captured before actions; no header or index flags were patched.
 
-The [owning observations](RESTRICT_DELETE_OBSERVATIONS.md) and compact
-[reference](results/ace16-delete-restrict-original-reference-2026-10-26.json) /
-[candidate](results/ace16-delete-restrict-original-replay-2026-10-26.json) receipts
+The [owning observations](../rows/RESTRICT_DELETE_OBSERVATIONS.md) and compact
+[reference](../../results/rows/ace16-delete-restrict-original-reference-2026-10-26.json) /
+[candidate](../../results/rows/ace16-delete-restrict-original-replay-2026-10-26.json) receipts
 report 84 controls with zero final-image-model discrepancies **and six public-action
 disagreements**. Candidates have 64 successes/twenty typed no-output refusals;
 public actions have 58 successes/26 byte-identical refusals. NULL-parent Joiner
@@ -9407,9 +9407,9 @@ write qualification is claimed.
 
 ## Original multi-table deletion batch inputs
 
-[BatchDeleteFixture.java](BatchDeleteFixture.java),
-[the independent model](batch_delete_model.py) and
-[the comparison runner](compare_batch_deletes.py) are original repository-owned
+[BatchDeleteFixture.java](../../access/rows/delete/BatchDeleteFixture.java),
+[the independent model](../../access/rows/delete/batch_delete_model.py) and
+[the comparison runner](../../access/rows/delete/compare_batch_deletes.py) are original repository-owned
 test code. The reviewed Jackcess 5.0.4 JAR is unchanged (SHA-256
 `19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`).
 No JAR or database binary is tracked. Fresh public builders create two plain
@@ -9423,7 +9423,7 @@ The originals below reside under
 `.cache/batch-delete-originals-next-20261026/`. These are newly generated
 identities, not restored historical files. Exact generation/getter command
 receipts and tool hashes are retained in the
-[compact evidence record](results/ace16-batch-delete-originals-2026-10-26.json).
+[compact evidence record](../../results/rows/ace16-batch-delete-originals-2026-10-26.json).
 Generation uses the following public recipe, with V2019 as the other profile:
 
 ```sh
@@ -9456,7 +9456,7 @@ admission. Both original and reference byte hashes remain immutable.
 | V2019 | retain-one | `0cec5fcaf31af3184d8aed0de49aaffed1b3bb4518afa72a0045e7725e525c8d` |
 | V2019 | delete-all | `aff8c941e2c66f60b9687d303d63632d3fd083bfe7f496220bc7fa798beaec28` |
 
-[The observations](BATCH_DELETE_OBSERVATIONS.md) record 28/28 controls against
+[The observations](../rows/BATCH_DELETE_OBSERVATIONS.md) record 28/28 controls against
 one frozen engineering candidate tool: 16 successful explicit batch outputs in
 both group orders and 12 typed refusals. Every original record body, sentinel,
 long-value payload and byte outside exact slot/count/index/map spans is protected.
@@ -9475,7 +9475,7 @@ is preserved separately; there was no candidate or expected-data correction.
 
 ## French Short Text and Memo comparison field inputs
 
-Repository-owned [FrenchComparisonFixture.java](FrenchComparisonFixture.java)
+Repository-owned [FrenchComparisonFixture.java](../../access/queries/expressions/FrenchComparisonFixture.java)
 uses the reviewed Jackcess 5.0.4 JAR, SHA-256
 `19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`.
 Public builders create new plain ACE16 identities with one 38-row Comparisons
@@ -9490,8 +9490,8 @@ no header/descriptor/flag was patched.
 | Comparison-V2016.accdb | 937,984 | `ca64a8f518214f5ea889f1bc56922e2269cc120929e4c42b9f60a11d37b54b61` |
 | Comparison-V2019.accdb | 1,007,616 | `abc1aa1977057c4d55bc69b86be70972d6759859e1e6611a81ae276805bb5443` |
 
-[The field-data observations](FRENCH_COMPARISON_FIELD_OBSERVATIONS.md) and
-[compact receipt](results/french-comparison-fields-2026-10-26.json) retain exact
+[The field-data observations](../schema/FRENCH_COMPARISON_FIELD_OBSERVATIONS.md) and
+[compact receipt](../../results/schema/french-comparison-fields-2026-10-26.json) retain exact
 raw/getter descriptors and full value/hash captures: 76 rows and 304 Text/Memo
 cells, zero input/storage differences. French Short/Memo store exact 1036/0/0,
 General Short/Memo exact 1033/0/0. Eighteen Memo controls per profile retain
@@ -9500,7 +9500,7 @@ Read-only inspection leaves originals unchanged; raw values remain ignored.
 This field-data receipt invokes no query/comparator and establishes no native
 Access SQL/NLS order, Memo index support or ordinary write qualification.
 
-The later [native-field comparison replay](results/french-comparison-fields-replay-2026-10-26.json)
+The later [native-field comparison replay](../../results/schema/french-comparison-fields-replay-2026-10-26.json)
 uses the same immutable originals: 112 controls across ordinary/declared profiles
 agree, with 96 successes and 16 buffered refusals, 1,204 rows and 1,548 cells.
 Short expectations use independent exact keys; clean-Latin long Memo expectations
@@ -9513,7 +9513,7 @@ source snapshots remain preserved. See the owning field observations for limits.
 
 ## Separate French saved-source companions
 
-Repository-owned [FrenchSavedCompanion.java](FrenchSavedCompanion.java) follows
+Repository-owned [FrenchSavedCompanion.java](../../access/queries/saved/FrenchSavedCompanion.java) follows
 the existing SavedSelectFixture public system-table/QueryImpl.Row metadata recipe
 against the reviewed Jackcess 5.0.4 artifact (SHA-256
 `19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`).
@@ -9529,8 +9529,8 @@ original/receipt mutation is involved.
 | Named-V2016.accdb | 942,080 | `6058f8a3db444a37f3994c606954070216152243285fde9d4d47b50370d054c1` |
 | Named-V2019.accdb | 1,011,712 | `f0f3823633d9c999ed88b5147c01a07e746bb4e775011f26d6568a9346991d82` |
 
-[Owning observations](FRENCH_SAVED_COMPANION_OBSERVATIONS.md) and the compact
-[metadata/replay receipt](results/french-saved-companions-2026-10-26.json) separate
+[Owning observations](../queries/FRENCH_SAVED_COMPANION_OBSERVATIONS.md) and the compact
+[metadata/replay receipt](../../results/queries/french-saved-companions-2026-10-26.json) separate
 inert creation/getter reconstruction from explicit execution. All 76 original
 rows, 304 Text/Memo values, field descriptors/properties/locations/index facts
 and 285 original user definition/data/index/LVAL-signature pages remain unchanged.
@@ -9545,8 +9545,8 @@ qualification and does not rewrite the older 112 corpus's named-source boundary.
 
 ## Original acyclic cascade DELETE inputs
 
-Repository-owned [CascadeDeleteFixture.java](CascadeDeleteFixture.java) and its
-[read-only index helper](CascadeDeleteIndexInspection.java) use the existing
+Repository-owned [CascadeDeleteFixture.java](../../access/rows/delete/CascadeDeleteFixture.java) and its
+[read-only index helper](../../access/indexes/native/CascadeDeleteIndexInspection.java) use the existing
 reviewed public Jackcess 5.0.4 JAR, SHA-256
 `19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`.
 No upstream code or fixture bytes are copied. Fresh ignored originals under
@@ -9563,8 +9563,8 @@ parent primaries cover Byte/Int16/Int32/Int64/Currency/GUID/Decimal; nullable ch
 sentinels and Unicode Memo/OLE payloads are retained. Expressions are disabled,
 links throw, no properties/AutoNumber are added and metadata flags are not patched.
 
-[Owning observations](CASCADE_DELETE_OBSERVATIONS.md) and the compact
-[reference/candidate receipt](results/ace16-cascading-delete-originals-2026-10-26.json)
+[Owning observations](../rows/CASCADE_DELETE_OBSERVATIONS.md) and the compact
+[reference/candidate receipt](../../results/rows/ace16-cascading-delete-originals-2026-10-26.json)
 pin generation, helpers, JAR, originals, reference copies and created candidates.
 Public actions are 24 acyclic agreements, two successful self-tree calls leaving a
 dangling child, and six isolated stack overflows. The distinct engineering replay
@@ -9576,7 +9576,7 @@ SQL/save, mixed per-row timing, data-macro or self/cycle qualification is claime
 
 ## Cascade association facts with same-table Memo/OLE
 
-Repository-owned [CascadeKeyFactsFixture.java](CascadeKeyFactsFixture.java) uses
+Repository-owned [CascadeKeyFactsFixture.java](../../access/indexes/native/CascadeKeyFactsFixture.java) uses
 the reviewed Jackcess 5.0.4 public builders, with expressions disabled, UTC
 explicit and linked opens refused. Fresh originals contain nine rows each,
 interleaved composite keys and unindexed Memo/OLE payloads in both affected
@@ -9587,8 +9587,8 @@ tables. No accepted earlier corpus, descriptor or header is patched.
 | KeyFacts-V2016-before.accdb | 2,039,808 | `c718b3c4a65817a9bdca5c18cb680eef211af6ee690456cae41e6bceaadef08b` |
 | KeyFacts-V2019-before.accdb | 2,113,536 | `44b950b5948aa82fcfe04ced869e8f7c0ba6321106b539211d744dda2adb33ae` |
 
-[Measured observations](CASCADE_KEY_FACTS.md) and the
-[scoped receipt](results/ace16-cascade-key-facts-2026-10-26.json) retain actual
+[Measured observations](../indexes/CASCADE_KEY_FACTS.md) and the
+[scoped receipt](../../results/indexes/ace16-cascade-key-facts-2026-10-26.json) retain actual
 getter values/locations, raw geometry, six frozen-before candidates and equal
 new candidate bytes. The facts pass avoids 132 parent and 264 child LVAL page
 reads; full validation still decodes these values. Cumulative resource charges
@@ -9600,7 +9600,7 @@ SQL/action/save or broader write profile is qualified.
 
 ## Public-writer data-page row-slot boundary
 
-Repository-owned [RowSlotBoundaryFixture.java](RowSlotBoundaryFixture.java) uses
+Repository-owned [RowSlotBoundaryFixture.java](../../access/reading/tables/RowSlotBoundaryFixture.java) uses
 the reviewed Jackcess 5.0.4 JAR, SHA-256
 `19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`.
 Fresh ignored originals under `.cache/row-slot-boundary-20261026/` each contain
@@ -9615,8 +9615,8 @@ read-only. No upstream code or fixture bytes are copied.
 | Rows-V2000.mdb | 122,880 | `e7953d7b84f12819cab1cffbe765c77b38d47ed56716c18f6d547afc870010b2` |
 | Rows-V2007.accdb | 352,256 | `22fef07786dfe3b8d6445d9d3ff9a22f7a3d906aac761664e21117fdbaa2e48f` |
 
-[Observations](ROW_SLOT_BOUNDARY_OBSERVATIONS.md) and the compact
-[receipt](results/row-slot-boundary-2026-10-26.json) pin all tools, original hashes
+[Observations](../rows/ROW_SLOT_BOUNDARY_OBSERVATIONS.md) and the compact
+[receipt](../../results/rows/row-slot-boundary-2026-10-26.json) pin all tools, original hashes
 and command transcripts. Nine commands pass. Each profile has actual raw page
 counts 255, 255, 90, maximum public getter slot 254 and a JAR format limit of 255.
 Every original remains unchanged. The proposed 256-row hypothesis was rejected;
@@ -9627,7 +9627,7 @@ links the frozen artifact/build source pins and ignored raw capture.
 
 ## Existing-slot Text and Binary preview originals
 
-Repository-owned [SlotUpdateFixture.java](SlotUpdateFixture.java) uses reviewed
+Repository-owned [SlotUpdateFixture.java](../../access/queries/expressions/SlotUpdateFixture.java) uses reviewed
 Jackcess 5.0.4 public builders/getters (JAR SHA-256
 `19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`).
 It creates fresh inert V2016/V2019 originals with expressions disabled, UTC,
@@ -9645,9 +9645,9 @@ both directions, supported mixed keys, NULL/empty/noncanonical values, field
 properties and protected Memo/OLE. Physical heights are zero/one. Indexed French
 and ignore-NULL fields remain explicit preview refusals.
 
-[Owning observations](SLOT_UPDATE_OBSERVATIONS.md), the
-[reference receipt](results/ace16-slot-original-references-2026-10-26.json) and
-[candidate receipt](results/ace16-slot-original-candidates-2026-10-26.json)
+[Owning observations](../rows/SLOT_UPDATE_OBSERVATIONS.md), the
+[reference receipt](../../results/general/ace16-slot-original-references-2026-10-26.json) and
+[candidate receipt](../../results/general/ace16-slot-original-candidates-2026-10-26.json)
 preserve the immutable 152 initial plus ten NULL controls. Public calls produce
 150 successes/12 unchanged-copy refusals; two successful FEFF writes reopen the
 wrong requested value. The separate frozen engineering model agrees on all 162:
@@ -9660,20 +9660,20 @@ experiments are not included in these 162 controls.
 
 ### Separate cross-page UPDATE descendants
 
-The [cross-page observations](CROSS_PAGE_UPDATE_OBSERVATIONS.md) use four
+The [cross-page observations](../storage/CROSS_PAGE_UPDATE_OBSERVATIONS.md) use four
 preserved allocation-boundary descendants of these same originals. Eight public
 UPDATE calls run only on fresh copies: four large replacements followed by four
 shrinks. Two growths append an EOF page with exact represented map-bit changes;
 two reuse an owned alternate page without changing maps or file length. All
 logical roots, table/index counters and unrelated row/index bytes remain intact.
-The [separate receipt](results/ace16-cross-page-update-originals-2026-10-26.json)
+The [separate receipt](../../results/storage/ace16-cross-page-update-originals-2026-10-26.json)
 pins source/output hashes, tools, actual executed sources and all 32 command
 records. These are public-writer observations, with no engineering candidate or
 native Access qualification implied.
 
 ### Separate same-page UPDATE candidate replay
 
-The [page-update comparison](PAGE_UPDATE_OBSERVATIONS.md) retains the original
+The [page-update comparison](../storage/PAGE_UPDATE_OBSERVATIONS.md) retains the original
 162 assignments and adds fourteen no-ops on actual public growth outputs plus
 four shrink/regrowth actions on observed forwarding descendants. Its frozen
 consumer passes all 180 controls on the first attempt: 156 complete candidates
@@ -9684,7 +9684,7 @@ Access saves or required data macros.
 
 ### Alternate-page and EOF UPDATE candidates
 
-The [separate variable-update comparison](VARIABLE_UPDATE_OBSERVATIONS.md)
+The [separate variable-update comparison](../rows/VARIABLE_UPDATE_OBSERVATIONS.md)
 uses the four preserved Text allocation-boundary sources and eight public
 reference outcomes. A separately frozen committed consumer produces eight
 passing candidates with 32 commands, including four growth-to-shrink chains
@@ -9696,33 +9696,33 @@ separate.
 
 ### Short Binary allocation descendants
 
-The [Binary allocation observations](BINARY_ALLOCATION_OBSERVATIONS.md) extend
+The [Binary allocation observations](../storage/BINARY_ALLOCATION_OBSERVATIONS.md) extend
 these same originals through a repository-owned public-API append helper.
 Twenty-six INSERT checkpoints establish four actual space-exhaustion sources;
 eight separate public UPDATEs then exercise EOF growth, alternate-owned reuse
 and shrink at retained 268-byte capacity. All 34 actions and 107 bounded
 processes succeed with original sources unchanged. The
-[receipt](results/ace16-binary-allocation-originals-2026-10-26.json) pins every
+[receipt](../../results/storage/ace16-binary-allocation-originals-2026-10-26.json) pins every
 checkpoint, tool, selector and output. These public-writer facts remain separate
 from engineering candidate acceptance and native Access qualification.
 
 ### Memo/OLE storage-transition references
 
-The [long-value observations](LONG_VALUE_UPDATE_OBSERVATIONS.md) use the original
+The [long-value observations](../storage/LONG_VALUE_UPDATE_OBSERVATIONS.md) use the original
 Sentinel row through 60 fixed fresh-copy public updates and 183 bounded processes.
 Both actual metadata gates match the frozen descriptors and column maps before
 mutation. NULL, empty, inline, single and chained values retain exact getters;
 32 EOF column-owned additions and eight existing-page reuse cases are observed.
 Saved-byte checks preserve 592 cumulative old chunks, including unreachable
 ancestors, with no observed ownership removals. The
-[receipt](results/long-value-update-observations-2026-10-26.json) retains the
+[receipt](../../results/rows/long-value-update-observations-2026-10-26.json) retains the
 initial static-audit map assumption failure and its read-only correction; no
 actions were rerun. These facts support a working ownership checker and future
 writer, without qualifying current Memo/OLE editing or native Access saves.
 
 ### Short Binary allocation candidates
 
-The [separate Binary candidate replay](BINARY_VARIABLE_UPDATE_OBSERVATIONS.md)
+The [separate Binary candidate replay](../storage/BINARY_VARIABLE_UPDATE_OBSERVATIONS.md)
 passes eight controls on the four space-exhaustion sources above, using the
 unchanged committed variable consumer. Its 32 commands include four shrinks
 whose sources are generated growth candidates. Complete expected-image, map,
@@ -9732,52 +9732,52 @@ qualification retain their separate scopes.
 
 ### Int32 root-leaf split references
 
-The [split observations](INDEX_SPLIT_OBSERVATIONS.md) use the unchanged registered
+The [split observations](../indexes/INDEX_SPLIT_OBSERVATIONS.md) use the unchanged registered
 BatchDelete originals. Two frozen fixed-Int32 requests refuse atomically with
 `Unsupported(IndexedColumn)`; two matching public UPDATEs succeed and create two
 EOF leaves while retaining the primary root and all original row references.
-The [receipt](results/ace16-index-split-originals-2026-10-26.json) preserves all
+The [receipt](../../results/indexes/ace16-index-split-originals-2026-10-26.json) preserves all
 12 commands and the initial verifier's exit 1: its unaffected-index byte-identity
 hypothesis failed when the public writer redistributed unchanged Wide keys.
 Separate read-only diagnosis verifies the complete final streams, bounds, maps
 and counters. That public redistribution is not a required engineering byte
 golden; this reference capture does not implement a split API or qualify Access.
 
-The subsequent [two-candidate acceptance](ROOT_SPLIT_UPDATE_OBSERVATIONS.md)
+The subsequent [two-candidate acceptance](../indexes/ROOT_SPLIT_UPDATE_OBSERVATIONS.md)
 uses those exact originals and requests through a separately frozen committed
 split consumer. Both first-attempt outputs match complete independent expected
 images, preserve original Wide bytes and agree with the existing public typed
 values and full key/row streams. The
-[candidate receipt](results/ace16-root-split-originals-2026-10-27.json) pins all six
+[candidate receipt](../../results/indexes/ace16-root-split-originals-2026-10-27.json) pins all six
 commands, outputs and immutable sources; no new public UPDATE was performed.
 Native Access/data-macro qualification remains separate.
 
 ### Non-root Int32 split reference copies
 
-The [non-root observations](NONROOT_INDEX_SPLIT_OBSERVATIONS.md) reuse the exact
+The [non-root observations](../indexes/NONROOT_INDEX_SPLIT_OBSERVATIONS.md) reuse the exact
 registered 1,000-row DeleteTree originals and select live ordinal 27, ID 1000.
 The frozen root-leaf consumer refuses both attempts atomically; both fresh public
 copies update successfully. All twelve original commands and first verifier exit
-1 remain pinned in the [receipt](results/ace16-nonroot-index-split-originals-2026-10-27.json).
+1 remain pinned in the [receipt](../../results/indexes/ace16-nonroot-index-split-originals-2026-10-27.json).
 Separate saved-byte analyses verify the actual leaf/parent/map changes and equal
 Memo/OLE payloads despite nine new public LVAL pages. No original database was
 modified, no action was repeated, and no non-root kernel success is claimed.
 
-The subsequent [non-root candidate acceptance](NONROOT_SPLIT_UPDATE_OBSERVATIONS.md)
+The subsequent [non-root candidate acceptance](../indexes/NONROOT_SPLIT_UPDATE_OBSERVATIONS.md)
 uses those same originals and ID requests through a frozen committed consumer.
 Both first-attempt images match the independently frozen complete-byte models;
 all original long-value descriptors/pages remain unchanged and each image grows
-by one index page. The [candidate receipt](results/ace16-nonroot-split-originals-2026-10-27.json)
+by one index page. The [candidate receipt](../../results/indexes/ace16-nonroot-split-originals-2026-10-27.json)
 pins six commands, outputs and exact executed sources. The preceding public
 reference capture and its verifier failure remain separate evidence.
 
 ### Sparse Int32 parent-overflow sources
 
-The [bounded source history](PARENT_INDEX_SPLIT_SOURCE_OBSERVATIONS.md) creates
+The [bounded source history](../indexes/PARENT_INDEX_SPLIT_SOURCE_OBSERVATIONS.md) creates
 fresh V2016/V2019 larger intermediates, then prunes copies to 782 target rows
 and one sentinel while retaining every index leaf and maximum. The first eleven
 processes all succeed, including byte-identical frozen-consumer no-op copies.
-The [receipt](results/ace16-parent-index-split-sources-2026-10-27.json) pins source,
+The [receipt](../../results/indexes/ace16-parent-index-split-sources-2026-10-27.json) pins source,
 intermediate, selection, class, map/getter and complete tree identities. Measured
 leaf and parent capacity both overflow for the separately planned MAX update.
 The larger 99,424-row targets are generation artifacts, not qualified mutation
@@ -9785,33 +9785,33 @@ inputs, and no overflowing UPDATE is part of this source-phase qualification.
 
 ### Sparse Int32 parent-overflow actions
 
-The [separate first action phase](PARENT_INDEX_SPLIT_OBSERVATIONS.md) completes
+The [separate first action phase](../indexes/PARENT_INDEX_SPLIT_OBSERVATIONS.md) completes
 nine processes on those same sparse inputs: two atomic frozen-kernel refusals,
 two successful public Jackcess updates and their read-only descriptions. Both
 roots grow from height one to two while retaining their IDs. Each image adds
 three index pages, preserves every live row reference and changes only the
 requested four bytes on the selected data page. Complete active key/ROW/child,
 sibling and map geometry is verified independently of public scratch rewrites.
-The [action receipt](results/ace16-parent-index-split-originals-2026-10-27.json)
+The [action receipt](../../results/indexes/ace16-parent-index-split-originals-2026-10-27.json)
 pins exact first-run sources, inputs, outputs and later saved-byte analyses.
 No recursive kernel success or native Microsoft Access qualification is claimed.
 
 ### Revised raw Memo/OLE replacement acceptance
 
-The [revised frozen-consumer replay](LONG_VALUE_UPDATE_ACCEPTANCE_OBSERVATIONS.md)
+The [revised frozen-consumer replay](../storage/LONG_VALUE_UPDATE_ACCEPTANCE_OBSERVATIONS.md)
 uses every unchanged input, request, expected image and budget from the initial
 zero-of-60 attempt. The corrected committed consumer matches all 60 complete
 independent images and 120 read-only getter/metadata captures. Results comprise
 eight NULL, 28 inline, twelve single and twelve chained replacements, including
 twelve forwarded parent records. Old chunks, sibling values, logical/index row
 identities and historical counters remain unchanged. The
-[receipt](results/ace16-long-value-originals-2026-10-27.json) pins exact first/revised
+[receipt](../../results/general/ace16-long-value-originals-2026-10-27.json) pins exact first/revised
 lineage, historical compiled Git objects, outputs and saved read-only proofs.
 No public UPDATE was repeated and no native Access qualification is claimed.
 
 ### Compressed Memo replacement references
 
-The [two finite public-writer experiments](COMPRESSED_MEMO_UPDATE_OBSERVATIONS.md)
+The [two finite public-writer experiments](../storage/COMPRESSED_MEMO_UPDATE_OBSERVATIONS.md)
 use new inert V2016/V2019 originals with separate compressed/raw Memo fields,
 untouched OLE/second-row values and aliased ID indexes. Both original metadata
 prerequisites pass before updates. The first 92 actions and separate 56-action
@@ -9819,14 +9819,14 @@ prerequisites pass before updates. The first 92 actions and separate 56-action
 values, 132 reopen exactly and sixteen leading-FEFF inputs normalize; those
 sixteen are preserved as mismatches. All old chunks remain unchanged, including
 1,302 cumulative ancestor comparisons. No native candidate calls are part of
-these experiments. The [receipt](results/compressed-memo-update-observations-2026-10-27.json)
+these experiments. The [receipt](../../results/storage/compressed-memo-update-observations-2026-10-27.json)
 pins exact first-run helpers, plans, originals, outputs, decoder and source-review
 artifacts, and separate later public verification wrappers. Native Access
 qualification, broader map transitions and mode-switch authoring remain open.
 
 ### Non-root internal-parent overflow sources
 
-The [distinct bounded source experiment](INTERNAL_PARENT_INDEX_SPLIT_SOURCE_OBSERVATIONS.md)
+The [distinct bounded source experiment](../indexes/INTERNAL_PARENT_INDEX_SPLIT_SOURCE_OBSERVATIONS.md)
 finds its first natural gate at 149,184 target rows in each profile, below the
 unchanged 150,000 aggregate cap. Fresh pruning preserves all 497 index pages,
 complete internal bounds/children/tails, all three sibling chains and kept row
@@ -9834,7 +9834,7 @@ references while reducing each target to 963 rows plus a separate sentinel.
 A height-one parent distinct from the height-two root and its rightmost leaf
 both overflow for the fixed future MAX replacement. All nine first source
 processes pass; there is no native admission or MAX action in this phase.
-The [receipt](results/ace16-internal-parent-split-sources-2026-10-27.json) pins
+The [receipt](../../results/indexes/ace16-internal-parent-split-sources-2026-10-27.json) pins
 originals, intermediate/pruned hashes, selections, raw captures, exact executed
 helpers and later public read-only tools. Existing root-growth sources remain
 unchanged. Internal retention/allocation behavior is measured in the separate
@@ -9842,7 +9842,7 @@ action phase below.
 
 ### Non-root internal-parent split actions
 
-The [separate MAX action phase](INTERNAL_PARENT_INDEX_SPLIT_OBSERVATIONS.md)
+The [separate MAX action phase](../indexes/INTERNAL_PARENT_INDEX_SPLIT_OBSERVATIONS.md)
 uses the unchanged 963-row sources and original selected references. Its first
 nine processes complete with two atomic prior-consumer refusals and two
 successful public updates. Both roots retain height two, increasing from two to
@@ -9850,21 +9850,21 @@ three bounded children. Allocation adds a new left leaf and a new left internal
 page, preserving the original right leaf/parent and repairing sibling links.
 All 1,926 original record bodies match the selected four-byte patch or unchanged
 body, with complete key/ROW/map proofs and historical counters retained. The
-[receipt](results/ace16-internal-parent-split-actions-2026-10-27.json) pins actual
+[receipt](../../results/indexes/ace16-internal-parent-split-actions-2026-10-27.json) pins actual
 first-run sources, commands, outputs and separate read-only verification. Public
 scratch rewrites are observations, not engineering byte goldens. No new-kernel
 candidate or native Microsoft Access qualification is claimed.
 
 ### Recursive Int32 split original-file acceptance
 
-The [separate committed-consumer replay](RECURSIVE_INDEX_SPLIT_UPDATE_OBSERVATIONS.md)
+The [separate committed-consumer replay](../indexes/RECURSIVE_INDEX_SPLIT_UPDATE_OBSERVATIONS.md)
 passes all four unchanged originals on its first execution: two 782-row root-parent
 overflows and two 963-row below-root internal-parent overflows. Eight native/JVM
 fixture commands produce four complete expected-image matches and four fresh
 read-only getter/map proofs. Every original row reference, marker, counter,
 protected byte and map bit agrees with the frozen independent models; retained
 page residue stays unchanged and fresh unused bytes are zero. The
-[receipt](results/ace16-recursive-index-split-originals-2026-10-27.json) pins exact
+[receipt](../../results/indexes/ace16-recursive-index-split-originals-2026-10-27.json) pins exact
 first-run sources, plans, compiled Git objects, outputs and read-only replay.
 Earlier public reference actions and prior-consumer refusals remain distinct;
 no fixture was regenerated and no actual candidate was retried. This remains an
@@ -9872,13 +9872,13 @@ engineering Int32 preview, not native Access or normal-save qualification.
 
 ### Compressed Memo original-file candidate acceptance
 
-The [first committed-consumer replay](COMPRESSED_MEMO_ACCEPTANCE_OBSERVATIONS.md)
+The [first committed-consumer replay](../storage/COMPRESSED_MEMO_ACCEPTANCE_OBSERVATIONS.md)
 uses all 148 unchanged controls from the two public observation series: 132
 complete expected-image/getter matches and sixteen typed atomic refusals for
 lossy leading-FEFF requests. It executes 280 native/JVM fixture commands with
 no public UPDATE, generation, retry, selector change or budget change. All
 source/request/artifact manifests remain unchanged. The
-[receipt](results/ace16-compressed-memo-originals-2026-10-27.json) pins the exact
+[receipt](../../results/storage/ace16-compressed-memo-originals-2026-10-27.json) pins the exact
 executed driver, frozen independent model, input histories, compiled Git objects,
 outputs and separate saved-proof verifier. Its 884 before-live-chunk comparisons,
 1,188 map-wire proofs and sixty global free-bit clears match expectations.
@@ -9888,7 +9888,7 @@ saves and native Access qualification are not established by this corpus.
 
 ### Other fixed numeric split sources
 
-The [finite source phase](INTEGRAL_INDEX_SPLIT_SOURCE_OBSERVATIONS.md) creates
+The [finite source phase](../indexes/INTEGRAL_INDEX_SPLIT_SOURCE_OBSERVATIONS.md) creates
 new V2016/V2019 originals with Byte, Int16, Int64 and Currency target tables,
 small unique controls and a separate Memo/OLE preservation table. All thirteen
 native/JVM fixture commands succeed on their first execution; eight existing
@@ -9896,7 +9896,7 @@ typed fixed-preview no-ops preserve complete original images. Actual Required
 properties, both index directions, physical alias sharing, exact unsigned/scaled
 carriers and complete ROW/map/capacity facts are captured. Each file contains
 2,729 rows under the unchanged 4,096-row/64 MiB limits. The
-[receipt](results/ace16-integral-index-split-sources-2026-10-27.json) pins exact
+[receipt](../../results/indexes/ace16-integral-index-split-sources-2026-10-27.json) pins exact
 executed helpers, source hashes, old baseline artifact/Git objects, no-op copies
 and separate unchanged-input postcheck. Pre-execution header-XOR/heap/carrier
 proof corrections remain preserved. This phase includes no non-noop UPDATE,
@@ -9904,11 +9904,11 @@ split candidate, native Access comparison or new typed split API.
 
 ### Empty long-value map authority regression
 
-The [map-authority correction](LONG_VALUE_MAP_AUTHORITY.md) uses independent
+The [map-authority correction](../storage/LONG_VALUE_MAP_AUTHORITY.md) uses independent
 literal ACE 16 fixtures with initially empty column maps. Exact shared references
 previously admitted an EOF candidate that changed both selected and unrelated
 table ownership; the initial failing probe and unsafe image are preserved in the
-[scoped receipt](results/ace16-lval-map-authority-native-2026-10-27.json).
+[scoped receipt](../../results/storage/ace16-lval-map-authority-native-2026-10-27.json).
 Six new integration functions and two private functions cover map roles, exact
 row ranges, bitmap/container storage, legitimate physical aliases and immutable
 finalizer authority. Fixtures do not normalize owner bytes or reuse unreadable
@@ -9922,14 +9922,14 @@ replace frozen original-file candidate evidence or qualify native Access saves.
 
 ### Fixed numeric MAX split references
 
-The [MAX reference phase](INTEGRAL_INDEX_SPLIT_OBSERVATIONS.md) uses the same
+The [MAX reference phase](../indexes/INTEGRAL_INDEX_SPLIT_OBSERVATIONS.md) uses the same
 unchanged V2016/V2019 originals and ID 1/ordinal zero for all four typed targets.
 The first 25 fixture commands produce eight exact typed public updates and eight
 old-consumer atomic IndexedColumn refusals, followed by fresh complete getters.
 All sixteen physical roots retain their page IDs and grow from leaf to height
 one; every copy adds four index pages in physical order, right before left.
 No ROW references, historical/getter counters or unrelated index pages change.
-The [receipt](results/ace16-integral-index-split-actions-2026-10-27.json) retains
+The [receipt](../../results/indexes/ace16-integral-index-split-actions-2026-10-27.json) retains
 the original raw report, reviewed freeze, immutable tools, postcheck and later
 saved-proof verifier. Exact Java/Python observation sources are published beside
 that verifier. All 32 public fresh leaves have nonzero unused scratch; those
@@ -9938,7 +9938,7 @@ facade, regenerate sources, rerun earlier actions or establish native Access sav
 
 ### Indirect-owned long-value map sources
 
-The [mixed-map source phase](INDIRECT_LONG_VALUE_MAP_OBSERVATIONS.md) creates
+The [mixed-map source phase](../storage/INDIRECT_LONG_VALUE_MAP_OBSERVATIONS.md) creates
 fresh V2016/V2019 originals through one fixed thirteen-command recipe, without
 native candidates, retries or metadata patching. Each file retains two selected
 rows and 700 separate padding rows. Actual Memo owned maps become indirect with
@@ -9946,7 +9946,7 @@ one bitmap and a 716-page span; candidate maps shift and remain inline. Their
 ordinary table-owned maps are also indirect despite one ordinary data member.
 All six immutable checkpoints retain complete getter/raw row, descriptor, chunk,
 map and catalog-role evidence. The
-[receipt](results/indirect-long-value-map-observations-2026-10-27.json) pins exact
+[receipt](../../results/storage/indirect-long-value-map-observations-2026-10-27.json) pins exact
 executed Java/Python sources and the separately identified public wrapper.
 The saved verifier rebuilds six snapshots with 2,808 repeated record-body and 48
 live-chunk comparisons; these are comparison counts, not distinct stored objects.
@@ -9955,7 +9955,7 @@ native Access save qualification is established.
 
 ### Exact fixed-scalar split literals and consumer
 
-The [typed split contract](ACE16_FIXED_INDEX_SPLITS.md) adds independent literal
+The [typed split contract](../indexes/ACE16_FIXED_INDEX_SPLITS.md) adds independent literal
 Byte/Int16/Int64/Currency fixtures for both format codes, physical directions,
 row ties, aliases, NULL peers and root/non-root/parent-only growth. All eight
 independent functions pass. The initial positive parent loop incorrectly assumed
@@ -9964,7 +9964,7 @@ that wide descending balanced halves fit: the exact 600-child/MAX case needs
 source with exact value 1 supplies the successful wide parent-growth control.
 No production correction or smaller source was used to satisfy that failure.
 
-The [scoped record](results/ace16-fixed-index-splits-native-2026-10-27.json) retains
+The [scoped record](../../results/indexes/ace16-fixed-index-splits-native-2026-10-27.json) retains
 initial source/log identities, exact-width request authority/preflight controls,
 working clap consumer tests and the final 124 distinct runtime checks. The
 original eight-case expected-image model remains separate and unchanged;
@@ -9973,14 +9973,14 @@ candidate replay, Microsoft Access compatibility or normal save qualification.
 
 ### Exact fixed numeric original-file split acceptance
 
-The [first committed-consumer replay](FIXED_INDEX_SPLIT_UPDATE_OBSERVATIONS.md)
+The [first committed-consumer replay](../indexes/FIXED_INDEX_SPLIT_UPDATE_OBSERVATIONS.md)
 passes all eight unchanged Byte/Int16/Int64/Currency MAX cases on V2016/V2019.
 All sixteen native/getter commands succeed without regeneration, public UPDATE,
 retry or selector/budget change. The independently frozen plan matches every
 candidate byte, including original residuals, zero fresh padding and composed
 map cells. All 5,200 selected-table rows and sixteen affected physical trees are
 checked independently; fresh getters also check other tables and typed values.
-The [receipt](results/ace16-fixed-index-split-originals-2026-10-27.json) retains
+The [receipt](../../results/indexes/ace16-fixed-index-split-originals-2026-10-27.json) retains
 compiled Git/source/artifact identities, raw first output, separate unchanged-input
 postcheck and the later saved-proof verifier. Compiler pins bind Git revision
 809c5e8d rather than concurrent working-tree bytes. Earlier public reference
@@ -9989,7 +9989,7 @@ remain separate evidence and scope.
 
 ### Mixed indirect-map default checks and engineering literals
 
-The [mixed-map implementation record](results/ace16-indirect-lval-native-2026-10-27.json)
+The [mixed-map implementation record](../../results/storage/ace16-indirect-lval-native-2026-10-27.json)
 adds default storage and engineering whole-image fixtures for an indirect owned
 map with an inline candidate map. All 112 distinct runtime functions pass; three
 default independent functions also run under the feature and count once. The
@@ -10009,7 +10009,7 @@ diagnostic; new frozen original-file candidate acceptance remains separate.
 
 ### Repeated numeric split originals and public comparisons
 
-The [two-phase repeated-overflow corpus](REPEATED_INDEX_SPLIT_OBSERVATIONS.md)
+The [two-phase repeated-overflow corpus](../indexes/REPEATED_INDEX_SPLIT_OBSERVATIONS.md)
 uses new V2016/V2019 originals with two 900-row zero-key targets and one separate
 Memo/OLE preservation row. All nine source processes succeed, including four
 byte-identical typed-facade no-ops. The immutable source report's inherited
@@ -10024,7 +10024,7 @@ sharing, maps and counters are checked; unused public scratch is measured rather
 than used as a candidate golden. The two compact receipts retain exact executed
 private helpers and separately identified maintained public wrappers. A saved
 verifier repeats no fixture calls. The subsequent
-[engineering implementation](ACE16_REPEATED_INDEX_SPLITS.md) has independent
+[engineering implementation](../indexes/ACE16_REPEATED_INDEX_SPLITS.md) has independent
 full-image literal controls for repeated leaf/parent splits, NULL peers, aliases,
 protected padding, map effects and a multi-offender schedule discriminator. Its
 139 distinct runtime functions include fifteen new controls. These synthetic
@@ -10034,7 +10034,7 @@ experiments remain preserved separately in the scoped result.
 
 ### Mixed indirect-map original-file replacement acceptance
 
-The [first twelve-case replay](MIXED_LONG_VALUE_UPDATE_OBSERVATIONS.md) uses both
+The [first twelve-case replay](../storage/MIXED_LONG_VALUE_UPDATE_OBSERVATIONS.md) uses both
 unchanged mixed-map originals and a committed frozen Memo consumer. All twenty-five
 fixture commands pass: one read-only probe compilation, twelve native attempts and
 twelve fresh combined getter/map inspections. Exact complete-image predictions
@@ -10042,7 +10042,7 @@ cover no-op, NULL, forwarded inline, fitted single, EOF single and EOF chain cas
 No source regeneration, public UPDATE, retry or selector/budget change occurs.
 Across repeated cases, 8,412 protected original body/slot, 144 old LVAL body/slot
 and 312 original index-page comparisons match; total growth is 32,768 bytes.
-The [receipt](results/ace16-mixed-long-value-originals-2026-10-27.json) separates
+The [receipt](../../results/general/ace16-mixed-long-value-originals-2026-10-27.json) separates
 immutable plan/model/source/Git/artifact identity, actual first replay and later
 saved verification. Draft parser assumptions were corrected before any fixture
 call, with all twelve expected images checked purely. A later verifier import
@@ -10051,7 +10051,7 @@ expected images. Normal saves and Microsoft Access qualification remain open.
 
 ### Repeated numeric original-file candidate acceptance
 
-The [four-candidate replay](REPEATED_INDEX_SPLIT_UPDATE_OBSERVATIONS.md) uses the
+The [four-candidate replay](../indexes/REPEATED_INDEX_SPLIT_UPDATE_OBSERVATIONS.md) uses the
 same two unchanged 900-key Int64/Currency originals. Before any candidate call,
 a separate literal model froze exact complete images, source row references,
 selected field spans, root bounds, allocation IDs, links and map cells. Its pure
@@ -10066,7 +10066,7 @@ Access behavior or ordinary saves.
 
 ### Usage-map growth source and reference evidence
 
-The [usage-map experiment](USAGE_MAP_GROWTH_OBSERVATIONS.md) constructs two
+The [usage-map experiment](../storage/USAGE_MAP_GROWTH_OBSERVATIONS.md) constructs two
 independent ACE 16-family originals with 900 indexed Int32 rows and 700 padding
 rows. Empty/filled/padded checkpoints separate ordinary first-bitmap creation
 from selected inline index-owned map promotion. The latter retains its 69-byte
@@ -10084,7 +10084,7 @@ Access qualification.
 
 ### Shared map-authority controls
 
-The [shared authority batch](ACE16_MAP_AUTHORITY.md) retains literal footprint
+The [shared authority batch](../storage/ACE16_MAP_AUTHORITY.md) retains literal footprint
 controls for record overlap and bitmap/container sharing, adds explicit selected
 owner presence/uniqueness checks, and preserves real logical aliases and shared
 containers. A readable unreferenced physical descriptor with a real map identity
@@ -10100,7 +10100,7 @@ these admissions perform no candidate stage, finish, publication or JVM calls.
 
 ### Index-owned map promotion literals
 
-The [engineering promotion controls](ACE16_INDEX_MAP_GROWTH.md) use independent
+The [engineering promotion controls](../indexes/ACE16_INDEX_MAP_GROWTH.md) use independent
 literal source and complete-image models. Both ACE 16 codes preserve 900 exact
 Int32 rows, logical aliases and shared global-bit composition while distinguishing
 index pages from newly allocated usage bitmaps. Late promotion proves that a
@@ -10117,7 +10117,7 @@ fixtures. Whole-original candidate acceptance remains separate.
 
 ### Index-map promotion original-file acceptance
 
-The [first two-candidate replay](INDEX_MAP_GROWTH_UPDATE_OBSERVATIONS.md) uses both
+The [first two-candidate replay](../indexes/INDEX_MAP_GROWTH_UPDATE_OBSERVATIONS.md) uses both
 unchanged 900-target/700-padding-row originals. Before candidate execution, a
 separate source-only model freezes exact selected field bytes, root bounds,
 right/bitmap/left EOF identities, map-pointer rows, complete bitmap membership and
@@ -10133,7 +10133,7 @@ other map transitions, arbitrary databases, native Access saves or normal editin
 
 ### Retained-key physical transport and prefix authority
 
-The [retained planner batch](ACE16_RETAINED_SPLIT_PLANNER.md) uses actual preserved
+The [retained planner batch](../indexes/ACE16_RETAINED_SPLIT_PLANNER.md) uses actual preserved
 General legacy/modern and Binary profiles with independently checked literal
 sources. Borrowed keys retain complete wire/ROW maxima through leaf, tail and
 bounded-node forms without granting new public codec mutation eligibility.
@@ -10150,7 +10150,7 @@ or qualified by this record.
 
 ### Existing-fit composite framing authority
 
-The [composite framing batch](ACE16_COMPOSITE_FITTING_AUDIT.md) executes the
+The [composite framing batch](../general/ACE16_COMPOSITE_FITTING_AUDIT.md) executes the
 previously separate discriminator using unchanged repository-owned tuple
 fixtures. On 200 equal Int32/Int32 tuples, the original prefix is 13 and the
 changed request requires 9. A reader/index/constraint-valid alternative prefix
@@ -10166,7 +10166,7 @@ engineering certification, not composite allocation or native Access evidence.
 
 ### General Text/Binary split source observations
 
-The [source-only record](ENCODED_INDEX_SPLIT_SOURCE_OBSERVATIONS.md) describes two
+The [source-only record](../indexes/ENCODED_INDEX_SPLIT_SOURCE_OBSERVATIONS.md) describes two
 new unchanged Jackcess ACE 16 originals with 900 rows each in General legacy text,
 General modern text and Short Binary targets, plus one Memo/OLE sentinel. Actual
 source fields, raw variable slots, full ROW/key streams, physical aliases, maps
@@ -10182,7 +10182,7 @@ native baseline call or split candidate acceptance belongs to this source phase.
 
 ### Encoded split sources through the frozen old-slot consumer
 
-The [separate native baseline](ENCODED_INDEX_SPLIT_BASELINES.md) now passes twelve
+The [separate native baseline](../indexes/ENCODED_INDEX_SPLIT_BASELINES.md) now passes twelve
 first-attempt controls through the committed existing-slot example: six complete
 byte-identical no-ops, then six exact IndexedColumn refusals with no output.
 The quoted TSV parser receives genuine Text or Binary carriers; a numeric-parser
@@ -10193,7 +10193,7 @@ public writer actions and successful new split candidates remain distinct.
 
 ### Independent exact-slot encoded split images
 
-The [encoded split contract](ACE16_ENCODED_INDEX_SPLITS.md) adds independently
+The [encoded split contract](../indexes/ACE16_ENCODED_INDEX_SPLITS.md) adds independently
 modeled complete images for real General legacy/modern and Binary key profiles.
 Source reads, complete index/constraint checks and expected images are checked
 before invoking the new service. Six original literal root cases retain their
@@ -10213,7 +10213,7 @@ and native Access qualification remain separate from these literal images.
 
 ### Public encoded split update observations
 
-The [separate public-writer phase](ENCODED_INDEX_SPLIT_UPDATE_OBSERVATIONS.md)
+The [separate public-writer phase](../indexes/ENCODED_INDEX_SPLIT_UPDATE_OBSERVATIONS.md)
 passes six fresh-copy replacements and six read-only getters on the unchanged
 General/Binary originals, without generation or retries. Each output appends six
 index pages and retains both roots, full row references, aliases, unaffected
@@ -10226,7 +10226,7 @@ or native Access save compatibility.
 
 ### Committed encoded split candidates on original files
 
-The [first six-image replay](ENCODED_INDEX_SPLIT_CANDIDATE_OBSERVATIONS.md)
+The [first six-image replay](../indexes/ENCODED_INDEX_SPLIT_CANDIDATE_OBSERVATIONS.md)
 uses the committed isolated consumer and unchanged V2016/V2019 originals.
 Every complete image equals the source-derived frozen golden before its fresh
 getter; all twelve native/getter commands pass first attempt. Six index pages
@@ -10241,7 +10241,7 @@ unfinished.
 
 ### Maximum-width combined DATA/index pressure sources
 
-The [separate source phase](VARIABLE_ENCODED_SPLIT_SOURCE_OBSERVATIONS.md) creates
+The [separate source phase](../indexes/VARIABLE_ENCODED_SPLIT_SOURCE_OBSERVATIONS.md) creates
 two new unchanged ACE 16 originals with 900 rows in each General legacy/modern
 and Binary target, plus one Memo/OLE sentinel. Fixed GUID/BYTE companions yield
 43-byte records, ten 90-row DATA pages per target and only 32 free bytes/page.
@@ -10258,14 +10258,14 @@ layout or oracle was adjusted after execution. The 26 observed user/global map
 roles do not establish the complete catalog/historical census or native write
 admission of the future combined service.
 
-The [old variable-service baseline](VARIABLE_ENCODED_SPLIT_BASELINES.md) uses the
+The [old variable-service baseline](../indexes/VARIABLE_ENCODED_SPLIT_BASELINES.md) uses the
 unchanged originals and an existing frozen committed consumer. All twelve actual
 calls pass first attempt: six exact no-op copies and six maximum-width
 `IndexedColumn` refusals without output. The historical binary, selected source
 objects, requests, ordinal bindings and captured streams are pinned separately.
 No new source generation or public-writer action occurs in that baseline.
 
-The [separate public-writer reference phase](VARIABLE_ENCODED_SPLIT_UPDATE_OBSERVATIONS.md)
+The [separate public-writer reference phase](../indexes/VARIABLE_ENCODED_SPLIT_UPDATE_OBSERVATIONS.md)
 reuses those original bytes and accepted helper/classes for six fresh-copy
 maximum-width replacements and six inert inspections. All twelve first-attempt
 commands pass, with one DATA page and six index leaves per output. Its saved
@@ -10273,7 +10273,7 @@ proof checks 84 identities, complete original-prefix preservation and all
 record/key/map effects. Original inputs, selected values and oracle expectations
 remain unchanged; no TableCraft combined candidate runs in this phase.
 
-The [first combined candidate replay](VARIABLE_INDEX_SPLIT_CANDIDATE_OBSERVATIONS.md)
+The [first combined candidate replay](../indexes/VARIABLE_INDEX_SPLIT_CANDIDATE_OBSERVATIONS.md)
 now uses a separately built committed consumer on those unchanged originals.
 All six complete images match expectations frozen before the consumer existed,
 then pass six fresh read-only row/key/tree/map proofs. The twelve first-attempt
@@ -10285,7 +10285,7 @@ models and saved verification tools are tracked without adding database binaries
 
 ### Enlarged ordinary hint-map sources
 
-The [ordinary-hint source phase](ORDINARY_HINT_GROWTH_SOURCE_OBSERVATIONS.md)
+The [ordinary-hint source phase](../indexes/ORDINARY_HINT_GROWTH_SOURCE_OBSERVATIONS.md)
 retains four enlarged copies of the two originals above, with exactly 384 or
 700 passive padding rows. Original target records, keys, definitions and complete
 original DATA/LVAL/bitmap pages remain checked. Two targets per copy receive an
@@ -10300,7 +10300,7 @@ The saved verifier checks all four copies, 12,972 user rows and 144 complete
 original pages. Predicted inline rebases and bitmap promotions are source geometry
 only; no target UPDATE or native candidate is qualified by this phase.
 
-The [separate public UPDATE references](ORDINARY_HINT_UPDATE_OBSERVATIONS.md)
+The [separate public UPDATE references](../indexes/ORDINARY_HINT_UPDATE_OBSERVATIONS.md)
 now pass twelve fresh maximum-width updates and twelve complete getter proofs,
 plus one separately counted helper compilation. All 25 first-attempt commands
 succeed. Their 100 new pages have exact distinct purposes: twelve DATA, 72 INDEX
@@ -10309,7 +10309,7 @@ physical counter blocks and protected original bytes pass. These observations
 are independent-writer evidence; native candidates and Microsoft Access
 qualification remain separate.
 
-The [separate native candidate replay](ORDINARY_HINT_CANDIDATE_OBSERVATIONS.md)
+The [separate native candidate replay](../indexes/ORDINARY_HINT_CANDIDATE_OBSERVATIONS.md)
 now passes all twelve complete images generated independently before execution,
 then twelve fresh read-only getter proofs. The committed `69443c6a` consumer
 retains all original source/request/model bytes and its frozen budgets. All 24
@@ -10336,25 +10336,25 @@ fixture retargeting is used. Expressions and link resolution stay disabled.
 | V2019 root | 3,424,256 | `830aa0fc3b600b1655b9a5582e6b9c1113a2a46128897efa42ace259d50efe01` |
 | V2019 internal | 4,911,104 | `c3fc4d82f997163d764e5d8cd13f4362b6169167094b4c791d32d817e83065b7` |
 
-The [source record](results/ace16-insert-recursive-sources-2026-10-28.json)
+The [source record](../../results/rows/ace16-insert-recursive-sources-2026-10-28.json)
 retains five successful initial calls, the tombstone-checker failure, saved-only
 recertification and twelve unattempted source commands. Actual historical counts
 remain 99,424/149,184 while live counts are 782/963. The four sources, larger
 originals, exact selectors and read-only captures remain ignored private evidence.
 No database/getter binary is bundled in the repository.
 
-Four separate [public INSERT copies](results/ace16-insert-recursive-public-reference-2026-10-28.json)
+Four separate [public INSERT copies](../../results/rows/ace16-insert-recursive-public-reference-2026-10-28.json)
 retain their own first-three scratch-proof failure, saved proof and remaining-nine
 continuation; no completed command repeats. Four source/request-only engineering
 images were independently frozen before the
-[committed producer build](results/ace16-insert-recursive-example-build-2026-10-28.json).
-All four [engineering candidates](results/ace16-insert-recursive-native-2026-10-28.json)
+[committed producer build](../../results/rows/ace16-insert-recursive-example-build-2026-10-28.json).
+All four [engineering candidates](../../results/rows/ace16-insert-recursive-native-2026-10-28.json)
 match those images on their first attempts, followed by eight first-attempt
 fresh read-only getter/map calls. Public half rounding and INDEX scratch differ
 from the engineering policy, despite equal new ROWs in these cases. Exact source,
 reference, candidate, tool and compiled-source identities are in those linked
 records. These observations qualify the
-[stated engineering profile](ACE16_INSERT_RECURSIVE.md), not normal native saves
+[stated engineering profile](../rows/ACE16_INSERT_RECURSIVE.md), not normal native saves
 or Windows/Microsoft Access interoperability, which remains deferred.
 
 ## Ordinary scalar-row INSERT originals and candidates
@@ -10374,7 +10374,7 @@ evaluation and target-link resolution and fixes UTC/LOCAL_DATE_TIME.
 | V2016 | 495,616 | `bbfd0711082b6870200e44e7147dd101a521236868aaba135edddf6e29a7e6b8` |
 | V2019 | 569,344 | `6c3f299d71e397588d562d2ab161def669e3c12cf289c499e4ace51cb079e832` |
 
-The [candidate record](results/ace16-insert-ordinary-native-2026-10-28.json)
+The [candidate record](../../results/rows/ace16-insert-ordinary-native-2026-10-28.json)
 retains nine first-attempt source capture calls and separate saved-only typed
 gates. Existing NULL payloads and Text representations are decoded without
 canonicalizing the old records. The raw Boolean length-one declaration is already
@@ -10384,11 +10384,11 @@ its 87-input rebound bundle remain recorded, with all four original expected
 images and details unchanged.
 
 Four complete source/request-only expected images precede the
-[committed producer build](results/ace16-insert-ordinary-example-build-2026-10-28.json).
+[committed producer build](../../results/rows/ace16-insert-ordinary-example-build-2026-10-28.json).
 All four engineering candidates match on their first attempts, then eight fresh
 read-only getter/map calls pass. FixedRows appends two INDEX pages; MixedRows adds
 one DATA page and two INDEX pages. The total is eight INDEX and two DATA pages,
-with no bitmap. Four separate [public INSERT copies](results/ace16-insert-ordinary-public-reference-2026-10-28.json)
+with no bitmap. Four separate [public INSERT copies](../../results/rows/ace16-insert-ordinary-public-reference-2026-10-28.json)
 and eight inert getter/map calls also pass on their first attempts. Their new
 ROWs and suffix purposes agree with the engineering cases, while public framing
 is observed independently of engineering byte expectations. Complete comparisons
@@ -10396,13 +10396,13 @@ differ only in 783 unused bytes per fresh INDEX leaf, with engineering padding
 zero; all other bytes agree in these cases. Original databases,
 reference/candidate copies and getter streams stay ignored private evidence; no database
 binary is bundled. These results cover the
-[ordinary engineering profile](ACE16_ORDINARY_INSERTS.md), with Windows/native
+[ordinary engineering profile](../rows/ACE16_ORDINARY_INSERTS.md), with Windows/native
 Microsoft Access qualification and production saves still deferred.
 
 ## Ignored-NULL secondary INSERT originals
 
 The repository-owned
-[IgnoredIndexInsertReference.java](ace16_insert_ignored_indexes/IgnoredIndexInsertReference.java)
+[IgnoredIndexInsertReference.java](../../access/indexes/ace16_insert_ignored_indexes/IgnoredIndexInsertReference.java)
 creates eight fresh V2016/V2019 originals using the reviewed, pinned Jackcess
 5.0.4 JAR. No third-party fixture or upstream implementation code is copied.
 Each source has manual required Int32 ID, nullable Int32 Group, Short Binary
@@ -10411,7 +10411,7 @@ secondary index is nonunique ASC, IgnoreNULL and not Required; column Required
 and index Required are qualified separately. Generation disables expression
 execution and linked-target resolution and uses bounded file channels.
 
-The [saved evidence record](results/ace16-insert-ignored-index-native-2026-10-28.json)
+The [saved evidence record](../../results/indexes/ace16-insert-ignored-index-native-2026-10-28.json)
 pins all original bytes and tools. Mixed, empty-secondary, existing secondary
 NODE and two-root pressure sources produce ten copy cases, because each empty
 original supplies separate all-NULL and first-non-NULL references. Originals,
@@ -10423,7 +10423,7 @@ omitted-NULL pending-change warning; no source or reference was repaired.
 
 Ten complete SOURCE+REQUEST images were frozen before the committed producer
 build, then ten native engineering candidates and twenty fresh read-only calls
-passed. The [maintained proof](ace16_insert_ignored_indexes/README.md) preserves
+passed. The [maintained proof](../../access/indexes/ace16_insert_ignored_indexes/README.md) preserves
 this ordering and source/proof identities, with no default child process. These
 are independent-reader/engineering observations, not native Microsoft Access
 save/reopen or production-write qualification.
@@ -10431,7 +10431,7 @@ save/reopen or production-write qualification.
 ## Scalar secondary INSERT originals
 
 The repository-owned
-[ScalarIndexInsertReference.java](ace16_insert_scalar_indexes/ScalarIndexInsertReference.java)
+[ScalarIndexInsertReference.java](../../access/indexes/ace16_insert_scalar_indexes/ScalarIndexInsertReference.java)
 creates sixteen fresh originals with the reviewed Jackcess 5.0.4 JAR: V2016/V2019,
 ASC/DESC and Boolean/Single/Double/legacy DateTime. Each source has manual required
 Int32 ID, Group and Short Binary Bytes, with four logical names sharing exactly
@@ -10439,7 +10439,7 @@ two physical indexes. The secondary is ordinary and nonunique. No third-party
 fixture or upstream implementation code is copied; original databases, JARs,
 classes and captures remain ignored private evidence.
 
-The [evidence record](results/ace16-insert-scalar-index-native-2026-10-28.json)
+The [evidence record](../../results/indexes/ace16-insert-scalar-index-native-2026-10-28.json)
 pins raw sources, requests, independent expected images, tools and outcomes.
 All sixteen raw gates precede public appends in the first successful 97-command
 experiment. Actual createEntryBytes output is captured for old and requested
@@ -10451,14 +10451,14 @@ Actual fields and getters preserve finite IEEE bits, Boolean false as mask data,
 and explicit UTC/LOCAL_DATE_TIME DATE projections. NaN/infinity and arbitrary DATE
 conversion are not inferred. Sixteen SOURCE+REQUEST images were frozen before
 the isolated committed build; sixteen candidate comparisons and thirty-two fresh
-read-only calls passed. The [maintained saved proof](ace16_insert_scalar_indexes/README.md)
+read-only calls passed. The [maintained saved proof](../../access/indexes/ace16_insert_scalar_indexes/README.md)
 has no default child process. These observations do not qualify native Microsoft
 Access saves, Windows integration or production write paths.
 
 ## GUID and GUID/Int32 secondary INSERT originals
 
 The repository-authored
-[GuidTupleIndexInsertReference.java](ace16_insert_guid_tuple_indexes/GuidTupleIndexInsertReference.java)
+[GuidTupleIndexInsertReference.java](../../access/indexes/ace16_insert_guid_tuple_indexes/GuidTupleIndexInsertReference.java)
 creates 32 V2016/V2019 originals using the reviewed Jackcess 5.0.4 JAR. Each has
 manual required Int32 ID, nullable GUID Group and nullable Int32 Score, with four
 logical names sharing two physical owners. The finite corpus covers ordinary
@@ -10467,7 +10467,7 @@ fitted mixed-direction ordinary/unique/unique-ignored tuples. No third-party
 fixture or implementation source is copied; databases, JARs, classes and raw
 captures remain ignored private evidence.
 
-The [compact result](results/ace16-insert-guid-tuple-index-native-2026-10-28.json)
+The [compact result](../../results/indexes/ace16-insert-guid-tuple-index-native-2026-10-28.json)
 pins the source protocol, raw reports, requests, independent images and build.
 The first 193 public-writer calls completed with every source gate before any
 append. Exact known omitted-NULL warnings use the previously reviewed Jackcess
@@ -10478,7 +10478,7 @@ not establish a UUID runtime class claim.
 
 Thirty-two SOURCE+REQUEST images were frozen before the isolated producer build;
 32 complete candidate comparisons and 64 fresh read-only calls passed on their
-first attempts. The [maintained replay](ace16_insert_guid_tuple_indexes/README.md)
+first attempts. The [maintained replay](../../access/indexes/ace16_insert_guid_tuple_indexes/README.md)
 starts no child process by default. Authentic evidence here covers single GUID
 and two-component GUID/Int32 profiles, not ten-component native compatibility or
 Microsoft Access save/reopen qualification.
@@ -10486,7 +10486,7 @@ Microsoft Access save/reopen qualification.
 ## Decimal secondary INSERT originals
 
 The repository-authored
-[DecimalIndexInsertReference.java](ace16_insert_decimal_indexes/DecimalIndexInsertReference.java)
+[DecimalIndexInsertReference.java](../../access/indexes/ace16_insert_decimal_indexes/DecimalIndexInsertReference.java)
 creates 48 V2016/V2019 originals with the reviewed Jackcess 5.0.4 JAR. Tables
 have manual required Int32 ID, Decimal Amount and GUID or independently declared
 Decimal Peer. Four logical index names share two physical owners. Cases cover
@@ -10495,7 +10495,7 @@ both orders/directions, and fitted two-domain ordinary/unique/unique-ignored
 keys. No third-party fixture or implementation code is copied; original databases,
 JARs, compiled classes and raw captures remain ignored private evidence.
 
-The [compact result](results/ace16-insert-decimal-index-native-2026-10-28.json)
+The [compact result](../../results/indexes/ace16-insert-decimal-index-native-2026-10-28.json)
 pins the exact protocol, source/reference reports, requests, independent expected
 images, isolated build and candidate/readback reports. All 48 source gates passed
 before any public append in the first successful 289-call experiment. Raw
@@ -10508,14 +10508,14 @@ Forty-eight SOURCE+REQUEST images froze before the committed producer build;
 48 full candidate comparisons and 96 fresh read-only calls passed first attempt.
 The initial pure getter static display-count correction is preserved separately,
 with actual 96-call inventory/caps unchanged. The
-[maintained saved proof](ace16_insert_decimal_indexes/README.md) starts no child
+[maintained saved proof](../../access/indexes/ace16_insert_decimal_indexes/README.md) starts no child
 process by default. These finite independent-reader observations do not qualify
 arbitrary native tuples, Microsoft Access saves or production write paths.
 
 ## Variable-key secondary INSERT originals
 
 The repository-authored
-[VariableKeyIndexInsertReference.java](ace16_insert_variable_indexes/VariableKeyIndexInsertReference.java)
+[VariableKeyIndexInsertReference.java](../../access/indexes/ace16_insert_variable_indexes/VariableKeyIndexInsertReference.java)
 creates 42 V2016/V2019 originals using reviewed Jackcess 5.0.4. Tables have
 manual required Int32 ID, nullable Int32 Group and Binary or Text Payload; four
 logical names share two physical owners. The finite corpus covers both General
@@ -10531,7 +10531,7 @@ outcomes remain ignored private evidence. The linked public experiment completes
 253 distinct planned calls plus two failed compilation calls; it is not an
 overall first-pass result. Known omitted-NULL warnings are retained and checked.
 
-The [compact result](results/ace16-insert-variable-index-native-2026-10-28.json)
+The [compact result](../../results/indexes/ace16-insert-variable-index-native-2026-10-28.json)
 pins the source/reference lineage, immutable requests, independent full images,
 committed producer and actual 38-positive/4-guard/76-reader phases. All positive
 images froze before the producer build. The four guards return exact native
@@ -10539,7 +10539,7 @@ ConstraintCoverage errors and publish no candidate. Text255units/raw510bytes
 and Modern key digests do not qualify Binary510/577-byte keys: the public builder
 accepts Binary255 only, and no bypass/source patch is used.
 
-The [maintained replay](ace16_insert_variable_indexes/README.md) starts no child
+The [maintained replay](../../access/indexes/ace16_insert_variable_indexes/README.md) starts no child
 process by default. Java fixtures and finite key oracles are repository-authored;
 no third-party fixture or implementation source is copied. JARs, classes,
 databases and raw streams stay private/ignored. Native Microsoft Access saves
@@ -10547,16 +10547,16 @@ and normal production writes remain unqualified by these observations.
 
 ## Original-file GLOBAL INSERT bootstrap corpus
 
-The repository-authored [GlobalBootstrapFixture.java](ace16_insert_global_bootstrap/GlobalBootstrapFixture.java)
+The repository-authored [GlobalBootstrapFixture.java](../../access/rows/ace16_insert_global_bootstrap/GlobalBootstrapFixture.java)
 uses the previously reviewed pinned Jackcess 5.0.4 fixture dependency and existing
-[bounded channel owner](parent_index_split_originals/BoundedFileChannel.java).
+[bounded channel owner](../../access/indexes/parent_index_split_originals/BoundedFileChannel.java).
 Four original V2016/V2019 raw/compressed Memo files use fixed 400/382 Padding rows
 and all end at 512 pages. No source byte is patched or count tuned. Complete saved
 raw metadata, native records/chains, properties, aliases/counters, canonical
 GlobalFree and catalog-role gates qualify them separately from SOURCE9 capture.
 
-The [saved proof](ace16_insert_global_bootstrap/README.md) and
-[result](results/ace16-insert-global-bootstrap-2026-10-28.json) pin all four originals,
+The [saved proof](../../access/rows/ace16_insert_global_bootstrap/README.md) and
+[result](../../results/rows/ace16-insert-global-bootstrap-2026-10-28.json) pin all four originals,
 twelve SOURCE/request-only prebuild images, 24 public-reference calls, the isolated
 committed `7c282f43` build, twelve complete candidate comparisons and twelve fresh
 inert typed-row/map inspections. All actual runtime phases pass first attempt;
@@ -10568,7 +10568,7 @@ Native Access save/reopen, block-one growth and arbitrary page reuse remain unqu
 
 ## Original-file Extended Date/Time INSERT corpus
 
-The repository-authored [helper](ace16_insert_extended_datetime/ExtendedDateTimeInsertFixture.java)
+The repository-authored [helper](../../access/rows/ace16_insert_extended_datetime/ExtendedDateTimeInsertFixture.java)
 creates one V2019 Items/Sentinel original through the reviewed Jackcess 5.0.4 JAR.
 Items has required manual Int32 ID, nullable Int32 Group and native fixed 42-byte
 Extended Date/Time Stamp, with two physical Int32 indexes and four logical names.
@@ -10576,8 +10576,8 @@ Four original records and six explicit requests cover epoch, maximum, leap day,
 the non-leap century 1900, exact 100 ns fractions and NULL. No fixture binary or
 third-party implementation is added; the existing bounded channel owner is reused.
 
-The [maintained proof](ace16_insert_extended_datetime/README.md) and
-[result](results/ace16-insert-extended-datetime-2026-10-28.json) retain SOURCE3,
+The [maintained proof](../../access/rows/ace16_insert_extended_datetime/README.md) and
+[result](../../results/rows/ace16-insert-extended-datetime-2026-10-28.json) retain SOURCE3,
 the separate saved gate, a SOURCE/request-only expected image before any AFTER,
 REF2, an isolated committed `c3313b3e` build, one exact native comparison and one fresh
 inert typed-row/map read. Actual DATA 111 slots 4..9 fit in the original file and
@@ -10595,7 +10595,7 @@ history rather than relabeled runtime/native failures.
 
 ## Private desktop data-macro carrier investigation
 
-The [table Extra inspection](../access/schema/NATIVE_TABLE_EXTRA.md) comparison
+The [table Extra inspection](../../../docs/access/schema/NATIVE_TABLE_EXTRA.md) comparison
 uses four original databases retained privately, with no database, extracted XML
 or third-party macro body committed or redistributed. CI uses original synthetic
 framing and tiny inert text instead. All originals have stored ACE 2010 selectors;
@@ -10627,14 +10627,14 @@ extraction. Original bytes were preserved; inert reads used hash-checked copies.
 Seven extracted table-owned Extra values and nine UTF-16 property values were
 frozen before the new consumer ran. All seven first comparisons pass complete
 raw payload/group/property/text and native Id/ParentId/logical-root checks. The
-[verification record](results/table-extra-inspection-2026-10-29.json) pins the
+[verification record](../../results/general/table-extra-inspection-2026-10-29.json) pins the
 private original-file observations and consumer lineage through its manifest. No stored content,
 VBA, macro, startup action or external connection was executed. Native macro
 absence and native Access save/reopen remain unqualified.
 
 ## Original nullable batch index-growth corpus
 
-The [allocating batch proof](results/ace16-nullable-split-batch-originals-2026-10-29.json)
+The [allocating batch proof](../../results/indexes/ace16-nullable-split-batch-originals-2026-10-29.json)
 uses four fresh public-builder originals, created with the pinned Jackcess 5.0.4
 workflow. Each has Items and UniqueItems (500 original manual Int32 rows each),
 four logical declarations over two physical indexes per target, and one Sentinel
@@ -10664,7 +10664,7 @@ semantics and normal ACE saves remain unqualified.
 
 ## Preserved Int32 genuine SDK originals (2026-10-30)
 
-The [repository-authored recipe](preserved_int32_originals/PreservedInt32Originals.java)
+The [repository-authored recipe](../../access/rows/preserved_int32_originals/PreservedInt32Originals.java)
 creates two fresh V2016/V2019 originals through pinned Jackcess 5.0.4 public
 builders. It reuses `parent_index_split_originals/BoundedFileChannel.java` directly.
 All row values, stale calculated caches, attachment contents and requests are
@@ -10681,17 +10681,17 @@ pass. This establishes source admission before expected/candidate construction;
 no writer or native Microsoft Access save/reopen has been run for these files.
 System-generated timestamps/GUIDs prevent a byte-identical regeneration claim.
 The initial Java compile failure and the separate zero-child controller preflight
-failure are preserved in the [source record](results/ace16-preserved-int32-genuine-sources-2026-10-30.json).
+failure are preserved in the [source record](../../results/rows/ace16-preserved-int32-genuine-sources-2026-10-30.json).
 
 
 ## Preserved Short Text SDK originals (2026-10-30)
 
-The [creation-only recipe](preserved_short_text_originals/PreservedShortTextOriginals.java)
+The [creation-only recipe](../../access/rows/preserved_short_text_originals/PreservedShortTextOriginals.java)
 is repository-authored synthetic input using pinned Jackcess 5.0.4 public
 builders. It creates nullable ordinary Short_Text beside stored calculations,
 Memo/OLE and attachments, with a separate Sentinel table. It reuses the unchanged
 bounded-channel class and the prior generic readonly
-[getter](preserved_int32_originals/PreservedInt32Originals.java). No third-party
+[getter](../../access/rows/preserved_int32_originals/PreservedInt32Originals.java). No third-party
 fixture or implementation is copied. Runtime JARs, classes and generated database
 binaries remain private.
 
@@ -10710,13 +10710,13 @@ frozen before candidates. The fresh committed CLI matches all 18 images
 18 fresh unchanged readonly SDK getter calls match the complete expected
 inventories. Original hashes remain stable. The actual source capacities are
 seven bytes for present Text and zero for NULL; no original was retuned to
-manufacture a positive fit. The [source record](results/ace16-preserved-short-text-genuine-sources-2026-10-30.json)
-and [genuine-image record](results/ace16-preserved-short-text-genuine-images-2026-10-30.json)
+manufacture a positive fit. The [source record](../../results/rows/ace16-preserved-short-text-genuine-sources-2026-10-30.json)
+and [genuine-image record](../../results/rows/ace16-preserved-short-text-genuine-images-2026-10-30.json)
 keep generation, independent expectations, committed build, candidate and reader
 phases separate. SDK-created sources are not native Access save evidence;
 required macros, native Access comparisons and normal ACE saves remain open.
 
-The separate [genuine growth corpus](results/ace16-preserved-text-growth-genuine-images-2026-10-30.json)
+The separate [genuine growth corpus](../../results/rows/ace16-preserved-text-growth-genuine-images-2026-10-30.json)
 reuses these exact originals, creation recipe, classes and readonly getter.
 Original-only raw measurements establish their actual parent DATA candidate
 hints, allocated GLOBAL membership and 3,816 free bytes before construction.
@@ -10733,7 +10733,7 @@ grant no normal ACE save or native Microsoft Access qualification.
 
 ## Preserved eight-byte scalar SDK originals (2026-10-31)
 
-The [creation recipe and read-only getter](preserved_fixed_scalars_genuine/README.md)
+The [creation recipe and read-only getter](../../access/rows/preserved_fixed_scalars_genuine/README.md)
 are repository-authored synthetic tooling using pinned Jackcess 5.0.4 public
 builders and the unchanged bounded channel. Eleven-field tables contain nullable
 Int64, Currency and legacy Date/Time targets beside indexed ID/Base fields, stale
@@ -10753,14 +10753,14 @@ Source admission before the fresh committed CLI matches all 24. Twenty-four
 fresh SDK getters then match the complete expected inventories. These cover
 signed integer/Currency endpoints, exact DATE negative zero and NULL transitions;
 Time_Field remains a preserved sibling. The
-[source](results/ace16-preserved-fixed-scalar-genuine-sources-2026-10-31.json) and
-[genuine-image](results/ace16-preserved-fixed-scalars-genuine-images-2026-10-31.json)
+[source](../../results/rows/ace16-preserved-fixed-scalar-genuine-sources-2026-10-31.json) and
+[genuine-image](../../results/rows/ace16-preserved-fixed-scalars-genuine-images-2026-10-31.json)
 records keep the phases distinct. Native Access save/reopen, required macros and
 normal ACE saves remain unqualified.
 
 ## Joint preserved fixed SDK qualification (2026-10-31)
 
-The [joint fixed corpus](preserved_joint_fixed_genuine/README.md) reuses the exact
+The [joint fixed corpus](../../access/rows/preserved_joint_fixed_genuine/README.md) reuses the exact
 two originals, repository-authored Java creation/getter tools, pinned SDK and
 compiled classes documented immediately above. No new database generation or
 third-party fixture copying occurs. Twelve original/request-only expectations
@@ -10769,17 +10769,17 @@ twelve images. Twelve fresh unchanged read-only SDK getter calls then match
 whole logical inventories; the saved-only replay passes. Ten typed batches and
 two genuine empty-selection SQL calls yield eight changed images and four exact
 no-ops. Original hashes remain unchanged. The
-[joint result](results/ace16-preserved-joint-fixed-genuine-images-2026-10-31.json)
+[joint result](../../results/rows/ace16-preserved-joint-fixed-genuine-images-2026-10-31.json)
 keeps these observations separate from Microsoft Access save/reopen,
 required-macro coverage and normal-save qualification.
 
 ## Joint preserved fitting Text/fixed authored corpus (2026-10-31)
 
-The [joint fitting corpus](ACE16_PRESERVED_JOINT_TEXT_FIXED.md) reuses the actual
+The [joint fitting corpus](../rows/ACE16_PRESERVED_JOINT_TEXT_FIXED.md) reuses the actual
 rich, Short Text, Int32 and fixed-scalar source owners. Its new independent
 raw-record serializer applies literal Text payloads/footer changes before fixed
 payload and selected-mask overlays; it consumes no producer output. The
-[source-first record](results/ace16-preserved-joint-text-fixed-sources-2026-10-31.json)
+[source-first record](../../results/rows/ace16-preserved-joint-text-fixed-sources-2026-10-31.json)
 qualifies 27 originals and 18 complete expectations per header before candidate
 execution: 90 public read views, 45 complete header-6 Source admissions and
 45 expected header-5 Column refusals from retained Extended Date siblings.
@@ -10789,7 +10789,7 @@ generated-file, Microsoft Access and normal-save qualification.
 
 ## Joint fitting Text/Boolean SDK qualification (2026-10-31)
 
-The [generated joint Text corpus](preserved_joint_text_fixed_genuine/README.md)
+The [generated joint Text corpus](../../access/rows/preserved_joint_text_fixed_genuine/README.md)
 reuses the exact two Short Text SDK originals, original creation recipe, runtime
 JAR and compiled getter classes already recorded above. No third-party fixture
 is copied and no original is recreated or patched. Fourteen original/request-only
@@ -10799,7 +10799,7 @@ complete expected inventories. Twelve typed batches and two SQL calls include
 shared Text/Boolean masks, zero-capacity present-empty Text, disjoint rows and
 four exact no-ops. This corpus qualifies the actual unindexed Boolean sibling;
 indexed/calculated Int32 siblings remain ineligible. The
-[result record](results/ace16-preserved-joint-text-fixed-genuine-images-2026-10-31.json)
+[result record](../../results/rows/ace16-preserved-joint-text-fixed-genuine-images-2026-10-31.json)
 retains separate source, expected, build, producer, reader, replay and initial
 preflight/disk diagnostics. Native Microsoft Access and normal-save qualification
 remain separate.
@@ -10810,7 +10810,7 @@ Three original nine-page header-5 files now have frozen whole-file and role
 ledgers for empty, one-row and signed-endpoint Int32 tables. No SDK template or
 third-party database bytes were copied. Outputs remain private; no database binary
 is added to the repository. The existing reviewed Jackcess artifact is used only
-as a read-only reference tool. The [creation-source qualification](ACE16_DATABASE_CREATION.md)
+as a read-only reference tool. The [creation-source qualification](../creation/ACE16_DATABASE_CREATION.md)
 records exact SDK and native read observations, known constructive omissions and
 unqualified native Access/save behavior. These sources are not a normal-write permit.
 
@@ -10823,8 +10823,8 @@ recipes in `tablecraft-testkit::access::canonical_creation` match every byte and
 frozen hash before production constructor execution. Both recipes are repository
 authored; no bundled SDK database or third-party implementation is copied.
 The reviewed Jackcess runtime is a read-only reference. Private generated files
-remain ignored. The [source qualification](ACE16_DATABASE_CREATION.md) and
-[version-two record](results/ace16-canonical-creation-source-v2-2026-10-31.json)
+remain ignored. The [source qualification](../creation/ACE16_DATABASE_CREATION.md) and
+[version-two record](../../results/creation/ace16-canonical-creation-source-v2-2026-10-31.json)
 keep read observations separate from creation, native Access and normal saves.
 
 ### Fixed-scalar fresh-creation sources (2026-10-31)
@@ -10834,10 +10834,10 @@ and independently encode ten fixed field kinds and 70 user rows. No production
 creator, native codec, SDK template or third-party fixture is copied. The SDK
 remains a read-only reference. Generated originals, classes and observations stay
 private; a pure Rust fixture and five complete hashes run in ordinary CI.
-[Source qualification](ACE16_FIXED_CREATION_SOURCES.md) separates exact native/SDK
+[Source qualification](../creation/ACE16_FIXED_CREATION_SOURCES.md) separates exact native/SDK
 read observations from generic construction and Microsoft Access qualification.
 
-The [IEEE continuation](ACE16_FIXED_CREATION_SOURCES.md#ieee-payload-continuation)
+The [IEEE continuation](../creation/ACE16_FIXED_CREATION_SOURCES.md#ieee-payload-continuation)
 adds five two-row originals derived only by four literal Float/Double payload
 spans. Independent SDK reads retain subnormals, infinities and asymmetric quiet
 and signalling NaNs exactly on the recorded JVM. All other bytes remain equal
@@ -10845,7 +10845,7 @@ to the qualified signed-zero source; the earlier five originals remain unchanged
 
 ### Variable fields and catalog names (2026-10-31)
 
-The [variable sources](ACE16_VARIABLE_CREATION_SOURCES.md) add five independently
+The [variable sources](../creation/ACE16_VARIABLE_CREATION_SOURCES.md) add five independently
 authored Text/Binary/Decimal cases and a separate raw-BOM reader control. The
 [catalog-name sources](ACE16_CATALOG_NAME_SOURCES.md) independently rebuild
 stored names and protect raw column-definition names. They reuse only the owned
@@ -10856,7 +10856,7 @@ source/read results, not producer or Microsoft Access save qualification.
 
 ## Authored variable creation capacity boundaries
 
-The [two capacity originals](ACE16_VARIABLE_CAPACITY_SOURCES.md) are authored by
+The [two capacity originals](../rows/ACE16_VARIABLE_CAPACITY_SOURCES.md) are authored by
 TableCraft under the repository license, with no copied third-party database
 bytes. Their exact hashes, native reads and independent SDK observations are
 recorded in the linked result. They retain the prior variable-source envelope
@@ -10865,7 +10865,7 @@ in ignored local evidence; ordinary CI reconstructs them and checks both hashes.
 
 ## Authored multiple-table creation originals
 
-The [four multiple-table sources](ACE16_MULTIPLE_TABLE_CREATION_SOURCES.md) use
+The [four multiple-table sources](../creation/ACE16_MULTIPLE_TABLE_CREATION_SOURCES.md) use
 repository-authored complete images, with no copied third-party database bytes.
 The linked result records hashes, native source admission and independent SDK
 read inventories. Ordinary CI reconstructs and anchors each complete image;
@@ -10873,7 +10873,7 @@ local source files and compiled reader tooling remain ignored.
 
 ## Authored BeforeChange original and modeled views
 
-The [BeforeChange source corpus](ACE16_NORMAL_BEFORE_CHANGE_SOURCES.md) contains
+The [BeforeChange source corpus](../schema/ACE16_NORMAL_BEFORE_CHANGE_SOURCES.md) contains
 32 original views and 14 literal modeled after-images, authored under the
 repository license. Their complete hashes and original request metadata are
 frozen before normal-writer execution. Native structural reads and all 46
@@ -10883,7 +10883,7 @@ admission. The linked result retains exact provenance and phase outcomes.
 
 ## Authored indexed BeforeChange originals
 
-The [indexed source corpus](ACE16_INDEXED_BEFORE_CHANGE_SOURCES.md) contains
+The [indexed source corpus](../indexes/ACE16_INDEXED_BEFORE_CHANGE_SOURCES.md) contains
 eighteen originals and sixteen complete modeled outcomes under the repository
 license. One owned leaf adds ascending, descending, composite, alias and unique
 key profiles to the existing original-only event envelope. No third-party
@@ -10893,7 +10893,7 @@ from future indexed normal-write and native Access qualification.
 
 ## Authored retained-tree BeforeChange sources
 
-The [tree source corpus](ACE16_TREE_BEFORE_CHANGE_SOURCES.md) adds eighteen
+The [tree source corpus](../schema/ACE16_TREE_BEFORE_CHANGE_SOURCES.md) adds eighteen
 originals and eighteen complete fitting expectations under the repository
 license. It retains original-only event/index envelopes and independently
 encodes compressed leaves, retained nodes, cross-leaf swaps and prefix loss.
@@ -10903,7 +10903,7 @@ qualification from normal writer and native Access outcomes.
 
 ## Authored mixed-schema BeforeChange sources
 
-The [mixed source corpus](ACE16_MIXED_BEFORE_CHANGE_SOURCES.md) contains twenty-eight
+The [mixed source corpus](../schema/ACE16_MIXED_BEFORE_CHANGE_SOURCES.md) contains twenty-eight
 originals and eighteen literal expected images, authored under the repository
 license. It reuses owned fixed/variable and rich envelopes; no third-party database
 bytes or production writer outputs are copied. Actual source read checks retain
@@ -10913,7 +10913,7 @@ qualification. Generated databases and observer tooling remain ignored.
 
 ## Authored indexed mixed-schema BeforeChange sources
 
-The [indexed mixed corpus](ACE16_INDEXED_MIXED_BEFORE_CHANGE_SOURCES.md) contains
+The [indexed mixed corpus](../indexes/ACE16_INDEXED_MIXED_BEFORE_CHANGE_SOURCES.md) contains
 fourteen originals and twelve literal expected images under the repository
 license. It reuses only owned mixed BEFORE envelopes, independently adding Score
 indexes while preserving original counter and PrimaryId bytes. Native/hash checks
@@ -10929,13 +10929,13 @@ unindexed proof pass before the new routing regression is reproduced. Only a
 present Score payload changes in the literal expectation; the NULL Id, inactive
 stored value and complete old index remain exact. This is a native regression
 control, separate from the twenty-six independently read indexed mixed views.
-The [writer record](results/ace16-normal-indexed-mixed-before-change-2026-10-31.json)
+The [writer record](../../results/indexes/ace16-normal-indexed-mixed-before-change-2026-10-31.json)
 retains its failure/correction and actual session/recovery checks. No third-party
 fixture bytes are copied or native Access compatibility inferred.
 
 ## Authored untouched NULL-key sources
 
-The [NULL-key corpus](ACE16_NULLABLE_KEY_BEFORE_CHANGE_SOURCES.md) adds twelve
+The [NULL-key corpus](../indexes/ACE16_NULLABLE_KEY_BEFORE_CHANGE_SOURCES.md) adds twelve
 originals and twelve literal expected images under the repository license.
 Only present Score payloads change; NULL masks, inactive bytes and original
 PrimaryId storage remain exact. Native/hash checks precede producer execution;
@@ -10948,13 +10948,13 @@ the original nullable-Id control and original row facts. Its four complete views
 freeze a present Id 1 to 7 request and macro-only Score 2007. Native read/hash
 checks pass before nullable-index producer execution; the retained NULL row and
 old leaf tail remain exact. Its
-[source record](results/ace16-nullable-id-companion-sources-2026-10-31.json) keeps
+[source record](../../results/rows/ace16-nullable-id-companion-sources-2026-10-31.json) keeps
 independent observation and native Access qualification separate. These are
 repository-authored fixtures under the repository license.
 
 ## Authored typed fixed-scalar BeforeChange sources
 
-The [fixed-scalar corpus](ACE16_FIXED_BEFORE_CHANGE_SOURCES.md) consumes only the
+The [fixed-scalar corpus](../rows/ACE16_FIXED_BEFORE_CHANGE_SOURCES.md) consumes only the
 earlier mixed-schema originals, original rows and native program. Thirty-eight
 originals and 28 literal expected images freeze typed Boolean/Int64/Currency/DATE
 requests and macro-only Int32 outcomes. Raw overlays preserve inactive payloads
@@ -10973,7 +10973,7 @@ reader; the predecessor and all first 66 views remain unchanged.
 
 ## Authored SQL discriminator sources
 
-The [SQL-addressable corpus](ACE16_FIXED_SQL_SOURCES.md) consumes original fixed
+The [SQL-addressable corpus](../queries/ACE16_FIXED_SQL_SOURCES.md) consumes original fixed
 rows and native programs only. Ten original contexts and ten literal expected
 images establish a row-one discriminator, four single-target recipes and a joint
 original-RHS recipe. Native/hash checks and 20 independent SDK inventories pass
@@ -10983,7 +10983,7 @@ license and do not copy third-party database bytes.
 
 ## Authored ordinary-content source corpus
 
-The [ordinary-content corpus](ACE16_ORDINARY_CONTENT_SOURCES.md) derives inputs
+The [ordinary-content corpus](../rows/ACE16_ORDINARY_CONTENT_SOURCES.md) derives inputs
 only from earlier qualified repository encoders. Twelve ordinary recipes and
 seventeen adversaries retain explicit source values and raw role mutations.
 Native read checks pass for 24 header-selected ordinary views and all 56 expected
@@ -10994,7 +10994,7 @@ database bytes, JARs or class files are tracked.
 
 ## Authored larger ordinary inline-map sources
 
-The [96-page corpus](ACE16_ORDINARY_INLINE_SOURCES.md) extends only independent
+The [96-page corpus](../general/ACE16_ORDINARY_INLINE_SOURCES.md) extends only independent
 original Int32 input envelopes. Twelve recipes declare relocated DATA95, complete
 zero/free holes and variable inline windows; they do not reuse producer results.
 Ten header-selected ordinary views pass native reads/constraints and exact SDK
@@ -11005,14 +11005,14 @@ remain frozen; no third-party database bytes are copied.
 
 ## Authored manual/keyless first-table candidates — 7 November 2026
 
-The [manual Design result](results/ace16-manual-design-independent-reader-2026-11-07.json)
+The [manual Design result](../../results/reading/ace16-manual-design-independent-reader-2026-11-07.json)
 records eight TableCraft-produced candidates: keyless and manual Int32, Int64 and
 Currency primaries, each before and after supplied ordinary row insertion. Every
 schema has two fields, with the optional primary on the actual second field and
 no generated AutoNumber. The original repository-owned exporter calls public
 candidate APIs, writes fresh exclusive outputs and does not execute a journal.
 
-The original [read-only observer](ace16_table_addition/ReadManualTables.java)
+The original [read-only observer](../../access/schema/ace16_table_addition/ReadManualTables.java)
 uses the previously reviewed Jackcess 5.0.4 JAR in ignored local cache. It checks
 the complete user-table/column/index inventory, exact native scalar types,
 primary absence or actual field identity, complete row enumeration and supplied
@@ -11031,7 +11031,7 @@ original observer/export recipe uses the repository license.
 ## Authored mixed append ledgers — 7 November 2026
 
 The testkit's independent
-[raw mixed-ledger builder](../../crates/engineering/tablecraft-testkit/src/fixtures/access/canonical_mixed_add_table.rs)
+[raw mixed-ledger builder](../../../crates/engineering/tablecraft-testkit/src/fixtures/access/canonical_mixed_add_table.rs)
 composes the existing authored generated, keyless, Int32, Int64 and Currency
 sources without calling production creators, planners, schema decoders or intent
 encoders. The first table retains its declared rows; later tables start empty.
@@ -11041,17 +11041,17 @@ under the bounded bitmap. Opaque TD/DATA/root sentinels remain protected. The
 between a two-page keyless append and a three-page keyed append. Engine and
 runtime/desktop tests import this owner directly.
 
-The [mixed Design result](results/ace16-mixed-design-independent-reader-2026-11-07.json)
+The [mixed Design result](../../results/reading/ace16-mixed-design-independent-reader-2026-11-07.json)
 records a read-only Jackcess observation of one independent five-table source
 and ten native append/first-insertion candidates. Its original
-[observer](ace16_table_addition/ReadMixedTables.java) checks complete table,
+[observer](../../access/schema/ace16_table_addition/ReadMixedTables.java) checks complete table,
 column and index inventories, generation flags, actual primary field/name,
 scalar types, exact original/new row values and EOF. The five-table source has
 only its generated first table populated. Each added family is observed empty
 and then with one inserted row; manual keys occupy the actual second field.
 All eleven hashes stay unchanged after reading. The same result separately
 records six empty Long Text/OLE legacy sources and manual append candidates,
-observed by [the retained-source checker](ace16_table_addition/ObserveLegacySources.java).
+observed by [the retained-source checker](../../access/schema/ace16_table_addition/ObserveLegacySources.java).
 Those six checks cover schema metadata and empty EOF, not live LVAL payloads.
 Their hashes also stay unchanged; the total is seventeen distinct images.
 
@@ -11064,7 +11064,7 @@ database bytes, JARs or class files are committed.
 
 ## Existing QueryDef fitting-expression reference
 
-[ConstantQuerySaveFixture.java](ConstantQuerySaveFixture.java) is original
+[ConstantQuerySaveFixture.java](../../access/queries/execution/ConstantQuerySaveFixture.java) is original
 Apache-2.0 repository code using the previously reviewed Jackcess 5.0.4
 system-table/QueryImpl.Row metadata recipe. Its artifact SHA-256 is
 `19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`.
@@ -11074,7 +11074,7 @@ Expression evaluation stays disabled; original source SHA-256 is checked before
 and after the copied-file update. Queries are rendered through read-only SDK
 opens. No native Access or active database content is run.
 
-The [observation record](results/querydef-fitting-expression-2026-11-08.json)
+The [observation record](../../results/queries/querydef-fitting-expression-2026-11-08.json)
 pins both complete files, spans, SDK/recipe hashes and separate explicit CLI
 saved-query execution. BEFORE SHA-256 is
 `83f9d69408948d64eab4dbeafcca468116b5624bdf6b9510569640497b487779`;
@@ -11086,12 +11086,12 @@ Generated databases remain private/untracked. The testkit's original
 `saved_queries::fitting_select` raw pair retains independent synthetic identity
 and observed record framing without production codecs or copied SDK database
 bytes. It does not include the SDK source's system indexes. The
-[reference contract](NATIVE_QUERYDEF_FITTING_SAVE.md) separates this byte oracle
+[reference contract](../queries/NATIVE_QUERYDEF_FITTING_SAVE.md) separates this byte oracle
 from native producer, source ownership, recovery and Access qualification.
 
 ## Empty generated-primary saved-column ADD reference — 8 November 2026
 
-The [generated-primary SDK record](results/add-column-created-sdk-source-2026-11-08.json)
+The [generated-primary SDK record](../../results/schema/add-column-created-sdk-source-2026-11-08.json)
 pins two independent complete source/AFTER pairs using the previously reviewed
 Jackcess 5.0.4 JAR (Apache-2.0, SHA-256
 `19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`).
@@ -11109,7 +11109,7 @@ Both retain 40,960 bytes and change only definition page 7. Independent raw whol
 AFTER images and seven source-qualified candidate tests pass. Existing keys,
 field types, inline default zero and zero catalog dates remain intact.
 
-The original [reproduction harness](CreatedTableColumnOracle.java) performs explicit
+The original [reproduction harness](../../access/schema/fields/CreatedTableColumnOracle.java) performs explicit
 ADD on a fresh copy with expression evaluation disabled, reopens the copy read-only
 and checks that original bytes remain unchanged. The record distinguishes the
 original executed private probes from this subsequently authored public harness.
@@ -11124,7 +11124,7 @@ broader file profiles and GUI column-save behavior remain unqualified by this re
 
 ## Existing multi-query expression growth/shrink reference — 8 November 2026
 
-The original [Java recipe](querydef_existing_save/ExistingQuerySaveFixture.java)
+The original [Java recipe](../../access/queries/querydef_existing_save/ExistingQuerySaveFixture.java)
 extends the existing repository-authored constant-query recipe in a new file;
 the original remains untouched. Two fresh V2016 sources contain indexed local
 data and two or three saved SELECTs, with 10 or 112 MSysQueries fragments over
@@ -11138,32 +11138,32 @@ No new dependency, third-party source or database fixture is imported.
 Expression evaluation is disabled; only explicit metadata mutation and inert
 read-only SDK observations run. Generated bytes/classes remain ignored/private.
 
-The [six-image observation record](results/querydef-existing-fragment-save-2026-11-08.json)
+The [six-image observation record](../../results/queries/querydef-existing-fragment-save-2026-11-08.json)
 pins both unchanged source hashes, six complete SDK AFTERs, independent complete
 AFTER matches, field/ROW/page observations and recipe/model/observation hashes.
-The original [raw model](querydef_existing_save/model.py) uses no production
+The original [raw model](../../access/queries/querydef_existing_save/model.py) uses no production
 codec or SDK encoder. Original logical ROWs and ordered index memberships remain
 unchanged; growth appends a physical target and retains a relocated indexed root,
 while shrink zero-pads the original span. All six entire-file comparisons pass.
 
-The [reference and implementation proposal](querydef_existing_save/README.md)
+The [reference and implementation proposal](../../access/queries/querydef_existing_save/README.md)
 keeps this evidence distinct from engine admission, frozen TCQE0001, compiled
 cache/property qualification, external-LVAL allocation, older profiles and native
 Microsoft Access saves. No Cargo gate ran for this evidence-only checkpoint.
 
 ## Explicit-default-zero saved-column ADD reference — 8 November 2026
 
-[CreatedFirstDefaultColumnOracle.java](CreatedFirstDefaultColumnOracle.java) is
+[CreatedFirstDefaultColumnOracle.java](../../access/schema/fields/CreatedFirstDefaultColumnOracle.java) is
 original Apache-2.0 repository code promoted unchanged from the executed first
 LONG DefaultValue0 probe. Its SHA-256 is
 `621f8394fd0c81d8337a8914fc677b59ea2a9b2a522b1af9597caa0abdbf57a4`.
-The existing [CreatedTableColumnOracle.java](CreatedTableColumnOracle.java)
+The existing [CreatedTableColumnOracle.java](../../access/schema/fields/CreatedTableColumnOracle.java)
 recipe is unchanged. Both use the previously reviewed Jackcess 5.0.4 artifact,
 Apache-2.0, SHA-256
 `19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`,
 source pin `be0a2139b087a227d14cafd4ea231306a5a3a862`.
 
-The [new observation record](results/add-column-default-zero-sdk-source-2026-11-08.json)
+The [new observation record](../../results/schema/add-column-default-zero-sdk-source-2026-11-08.json)
 pins both source classes and complete AFTER images. `Table1(ID)` BEFORE is
 `b52d124892cdaab8fbe9c5028c876f57f1f82ee280cea7984aad68f1ead5eb13`;
 ADD `Score` with explicit default zero gives
@@ -11183,7 +11183,7 @@ production codecs. Separate literal Python reconstruction equals both full SDK
 AFTER images. The new native candidate slice is connected; its six Rust cases pass, including
 both complete SDK AFTER pins. The coordinated batch also passes twelve earlier
 candidate cases and nine frozen-intent cases. The
-[candidate contract and reproduction commands](../access/writes/ADD_COLUMN.md#separate-explicit-default-zero-candidate-checkpoint)
+[candidate contract and reproduction commands](../../../docs/access/writes/ADD_COLUMN.md#separate-explicit-default-zero-candidate-checkpoint)
 keep observed SDK behavior separate from native admission, journal/recovery,
 GUI availability and native Microsoft Access save/timestamp comparison. Database
 bytes, JARs and generated classes remain local and untracked.
@@ -11191,13 +11191,13 @@ bytes, JARs and generated classes remain local and untracked.
 
 ## Exact Number declaration reference — 8 November 2026
 
-[CreatedNumberColumnOracle.java](CreatedNumberColumnOracle.java), original
+[CreatedNumberColumnOracle.java](../../access/schema/fields/CreatedNumberColumnOracle.java), original
 repository code, has SHA-256
 `c805c038da5f0853c50a3b76753dab0577aa66322fe873c9e642e52a943d1886`.
 It uses the previously reviewed Jackcess 5.0.4 artifact and Apache-2.0 provenance
 recorded above. No third-party fixture or new dependency is imported.
 
-The [three-case record](results/add-column-number-sdk-source-2026-11-08.json)
+The [three-case record](../../results/schema/add-column-number-sdk-source-2026-11-08.json)
 contains complete source/AFTER hashes, property bodies, ordering observations,
 fresh read-only SDK reopen and original preservation checks. The original raw
 `canonical_created_number` testkit fixture uses no production codecs. All three
@@ -11205,17 +11205,17 @@ complete native candidates equal the independent SDK AFTERs. A separate runtime
 test compares actual TableDraft creation/save/reopen with both original source
 classes. The first Required-first raw composition mismatch is retained in the
 record before its independently corrected SDK ordering model. The
-[65-case batch](results/number-column-runtime-batch-2026-11-08.json) separates
+[65-case batch](../../results/schema/number-column-runtime-batch-2026-11-08.json) separates
 passing native/runtime checks from pending GUI and native Access qualification.
 Generated databases, classes and SDK binaries remain local and untracked.
 
 
 ## Repeated and multi-fragment SELECT edits — 8 November 2026
 
-The original [repeat recipe](querydef_existing_save/ExistingQueryRepeatFixture.java)
-and [independent raw model](querydef_existing_save/repeat_model.py) extend the
+The original [repeat recipe](../../access/queries/querydef_existing_save/ExistingQueryRepeatFixture.java)
+and [independent raw model](../../access/queries/querydef_existing_save/repeat_model.py) extend the
 previous six-case reference without changing its files or original sources.
-The [six new observations](results/querydef-repeat-fragment-save-2026-11-08.json)
+The [six new observations](../../results/queries/querydef-repeat-fragment-save-2026-11-08.json)
 pin every complete image and helper/model/SDK hash. These use the same reviewed
 Apache-2.0 Jackcess 5.0.4 artifact; no third-party source or database is imported.
 The initial model/report hashes remain recorded after making its model path
@@ -11224,7 +11224,7 @@ repository-relative; only the raw model reran, with unchanged full image results
 The native testkit `query_expression_edits` owner independently authors normal
 CI inputs and complete expected bytes, including repeated forwarded roots and
 two edits on one page in reverse native order. A high-byte catalog-ID alias case
-checks actual normalized schema resolution. The [follow-up batch](results/query-fragments-number-batch-2026-11-08.json)
+checks actual normalized schema resolution. The [follow-up batch](../../results/queries/query-fragments-number-batch-2026-11-08.json)
 retains nine normal candidate/binding cases and two separately executed ignored
 SDK cases within its broader gates. Native Access execution, broader SQL Save,
 compiled caches, external edited bodies and older formats remain unqualified.
@@ -11233,11 +11233,11 @@ Generated SDK database/class/JAR bytes remain local and untracked.
 
 ## Repeated Number addition with external properties — 8 November 2026
 
-The [first-party recipe and raw model](number_column_repeat/README.md) use the
+The [first-party recipe and raw model](../../access/schema/number_column_repeat/README.md) use the
 unchanged maintained CreatedNumberColumnOracle Java helper and reviewed Apache-2.0
 Jackcess 5.0.4 JAR. The three original sources are the exact pinned prior Number
 AFTERs; each SDK mutation operates on a fresh copy with evaluation disabled.
-All originals remain unchanged. The [evidence record](results/repeated-number-add-sdk-2026-11-08.json)
+All originals remain unchanged. The [evidence record](../../results/rows/repeated-number-add-sdk-2026-11-08.json)
 pins each complete BEFORE/AFTER, the exact helper, original execution scripts and
 portable independent raw-model rerun. Three full expected images match SDK bytes.
 The literal raw framing is original first-party work extracted unchanged from the
@@ -11248,13 +11248,13 @@ not native writer/recovery admission, page exhaustion or Microsoft Access behavi
 
 ## Number property-page rollover — 8 November 2026
 
-The [portable first-party recipe/model](number_column_rollover/README.md) reuses
+The [portable first-party recipe/model](../../access/schema/number_column_rollover/README.md) reuses
 the unchanged maintained Number Java helper and reviewed Apache-2.0 Jackcess 5.0.4
 JAR. It starts from the exact pinned ID-only first Number AFTER, adds N2 through
 N13 on fresh copies, and independently matches every complete SDK image. N14
 allocates immediate EOF LVAL page 11 while preserving all of page 10 and its 13
 historical bodies. Its complete independent AFTER also matches SDK bytes.
-The [record](results/number-column-rollover-sdk-2026-11-08.json) pins all steps,
+The [record](../../results/schema/number-column-rollover-sdk-2026-11-08.json) pins all steps,
 original/portable helper hashes, map/descriptor binding and preserved dates.
 
 An initial independent model asserted catalog-owned map 3:0 was the global-free
@@ -11268,7 +11268,7 @@ allocation shape or older-profile qualification.
 
 ## Explicit Short Text and mixed-column reference — 8 November 2026
 
-The [first-party Short Text helper, metadata observer and independent model](short_text_add/README.md)
+The [first-party Short Text helper, metadata observer and independent model](../../access/rows/short_text_add/README.md)
 produce eighteen complete SDK/raw matches: compression-off/on twins on four
 source classes, another compressed Short Text field on those outputs, and the
 unchanged Number helper's explicit-zero declaration after compressed Short Text.
@@ -11277,7 +11277,7 @@ Every SDK operation copies its input, disables expression evaluation, reopens
 read-only and preserves its original. The SDK is the same reviewed Apache-2.0
 Jackcess 5.0.4 JAR; no third-party source/database, generated class or JAR is tracked.
 
-The [report](results/add-short-text-sdk-source-2026-11-08.json) pins every image,
+The [report](../../results/general/add-short-text-sdk-source-2026-11-08.json) pins every image,
 executed helper/model/report history and portable raw-model rerun. The raw model
 imports only the maintained first-party Number framing owner, never production
 or SDK encoders. It records exact property absence, typed Boolean/Memo carriers,
@@ -11285,7 +11285,7 @@ field metadata and all untouched index/property-row bytes. The initial observati
 report helper-name collision is preserved separately from corrected full matches;
 expected byte algorithms and SDK outputs were unchanged.
 
-The [primary-reference/producer audit](short_text_add/DEFAULTS.json) distinguishes
+The [primary-reference/producer audit](../../access/rows/short_text_add/DEFAULTS.json) distinguishes
 Required false, Access UI AllowZeroLength true versus programmatic false, explicit
 255-unit target, and the current creator's compression-off gap versus documented
 UI compression-on. These sources do not authorize a native writer, change a
@@ -11293,13 +11293,13 @@ frozen constructor/default/wire language, or establish Microsoft Access behavior
 
 ## Field ADD after explicit OFF: 9 November 2026
 
-The original MIT [role-bound raw model](field_add_after_off/model.py),
-[portable prepare/run recipes](field_add_after_off/README.md) and
-[read-only observer](field_add_after_off/AfterOffProperties.java) compare four
+The original MIT [role-bound raw model](../../access/schema/field_add_after_off/model.py),
+[portable prepare/run recipes](../../access/schema/field_add_after_off/README.md) and
+[read-only observer](../../access/schema/field_add_after_off/AfterOffProperties.java) compare four
 complete predictions frozen before four fresh-copy SDK saves. They reuse the
 unchanged first-party Number/Short Text helpers and the previously reviewed
 Apache-2.0 Jackcess 5.0.4 artifact. The
-[observation record](results/field-add-after-off-sdk-2026-11-09.json) retains all
+[observation record](../../results/schema/field-add-after-off-sdk-2026-11-09.json) retains all
 source/prediction/helper hashes and the prior OFF source pins. Original files
 remain exact; no binaries or private paths are tracked. Every SDK open disables
 expression evaluation. The database ROW stays fixed while the next user body
@@ -11309,7 +11309,7 @@ native ADD-after-OFF admission, Access save behavior and older profiles unqualif
 
 ## Saved-field same-width raw rename: 9 November 2026
 
-The original MIT [literal model and portable recipe](saved_field_rename/README.md)
+The original MIT [literal model and portable recipe](../../access/schema/saved_field_rename/README.md)
 and byte-identical `FieldRenameObserver.java` compare four coordinated raw
 mutations with four TDEF-only controls on pinned generated nine-role OFF sources.
 The same reviewed Apache-2.0 Jackcess 5.0.4 JAR only opens files read-only, with
@@ -11318,7 +11318,7 @@ preserve their inputs. Coordinated TDEF/live-user-MR2 name edits retain observed
 metadata except the selected name; TDEF-only edits stop exposing that field's
 original policies under the new name, while their raw property bytes remain.
 
-The [record](results/saved-field-rename-raw-sdk-read-2026-11-09.json) preserves
+The [record](../../results/schema/saved-field-rename-raw-sdk-read-2026-11-09.json) preserves
 source/model/helper pins, all baselines and eight observations, frozen prediction
 and original wrapper/result hashes. Portable wrappers are unrun; successful
 observations were not repeated during promotion. No third-party source or binary,
@@ -11328,8 +11328,8 @@ Access behavior, dependency/NameMap updates or normal writer/recovery admission.
 
 ## Repeated ADD after explicit OFF — 9 November 2026
 
-The first-party [repeated field ADD recipe](field_add_repeat_after_off/README.md)
-and [four-case observation record](results/field-add-repeat-after-off-sdk-2026-11-09.json)
+The first-party [repeated field ADD recipe](../../access/schema/field_add_repeat_after_off/README.md)
+and [four-case observation record](../../results/schema/field-add-repeat-after-off-sdk-2026-11-09.json)
 retain full frozen source/AFTER hashes, actual DB/user ROW chronology, preservation
 facts and the pre-SDK metadata correction. The reviewed local Jackcess 5.0.4
 Apache-2.0 artifact is unchanged; only generated copies were mutated, with
@@ -11339,11 +11339,11 @@ No third-party database/source/binary or private machine path is included.
 
 ## Raw nonprimary field deletion: 9 November 2026
 
-The original MIT [raw model, prepare/observation recipes and inert Java getter](saved_field_drop/README.md)
+The original MIT [raw model, prepare/observation recipes and inert Java getter](../../access/schema/saved_field_drop/README.md)
 use two independently pinned generated OFF-history sources from the
-[existing source record](results/nac-after-field-add-sdk-2026-11-08.json).
+[existing source record](../../results/schema/nac-after-field-add-sdk-2026-11-08.json).
 Four complete raw hypotheses were frozen before one read-only SDK observation run.
-The [observation record](results/saved-field-drop-raw-sdk-read-2026-11-09.json)
+The [observation record](../../results/schema/saved-field-drop-raw-sdk-read-2026-11-09.json)
 retains exact source/AFTER/helper hashes and native properties/index/settings facts.
 TDEF-only deletion leaves the selected live MR2 group orphaned; appending a new
 snapshot without it removes that orphan. Both remain readable with all surviving
@@ -11358,17 +11358,17 @@ One compile, two baseline reads and four hypothesis reads succeeded; no command
 was retried. Local database/class/log artifacts remain private. This is empty
 ACE16 raw/read evidence, not an SDK DROP, native Access Save, populated-row write,
 UI confirmation or normal schema-editing admission. Earlier
-[deleted-column history derivatives](COLUMN_HISTORIES.md) retain their separate
+[deleted-column history derivatives](../schema/COLUMN_HISTORIES.md) retain their separate
 populated-row read evidence and unchanged provenance.
 
 ## Gapped Number first-row raw prediction: 9 November 2026
 
-The original first-party [model, inert observer and portable wrapper](gapped_number_insert/README.md)
+The original first-party [model, inert observer and portable wrapper](../../access/rows/gapped_number_insert/README.md)
 retain their executed hashes. They use the independently authored appended-cleanup
-DROP image from the [existing deletion record](results/saved-field-drop-raw-sdk-read-2026-11-09.json).
+DROP image from the [existing deletion record](../../results/schema/saved-field-drop-raw-sdk-read-2026-11-09.json).
 One compile and two read-only Jackcess 5.0.4 opens succeeded, with expression
 evaluation disabled and originals/observed copies unchanged. The
-[separate observation record](results/gapped-number-insert-raw-sdk-read-2026-11-09.json)
+[separate observation record](../../results/rows/gapped-number-insert-raw-sdk-read-2026-11-09.json)
 records actual native 0/2, high-water 3, fixed offsets 0/8, ID 1/Score2 zero through
 sequential and primary-index cursors, and stored explicit OFF. The reviewed
 Apache-2.0 JAR/source pins are unchanged; no SDK code, binaries or database bytes

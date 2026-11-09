@@ -2,8 +2,8 @@
 from pathlib import Path
 import sys
 
-ROOT = Path(__file__).resolve().parents[3]
-sys.path.insert(0, str(ROOT / 'docs/testing'))
+ROOT = Path(__file__).resolve().parents[4]
+sys.path.insert(0, str(ROOT / 'tests/access'))
 from compressed_memo_observations import capture as long_wire
 from indirect_lval_observations import capture as declarations
 from ace16_insert_ignored_indexes import reference as index_wire

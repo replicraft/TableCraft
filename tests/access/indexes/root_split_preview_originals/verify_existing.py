@@ -7,7 +7,7 @@ import subprocess
 from index_split_originals import capture
 from root_split_preview_originals import proof
 
-HISTORICAL_RECEIPT_PATH = 'docs/testing/results/ace16-root-split-example-build-2026-10-27.json'
+HISTORICAL_RECEIPT_PATH = 'tests/results/indexes/ace16-root-split-example-build-2026-10-27.json'
 HISTORICAL_RECEIPT_BYTES = 30596
 HISTORICAL_RECEIPT_SHA256 = 'a9d4fb2ae812b7351e88381ed35f28e216beafb5f4fc3c00330891f37b339b3d'
 HISTORICAL_RECEIPT_ARCHIVE = '.cache/root-split-receipt-provenance-20261027/ace16-root-split-example-build-2026-10-27.json'

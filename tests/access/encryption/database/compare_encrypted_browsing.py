@@ -1,4 +1,5 @@
 """Compare password-enabled CLI table/row/query reads with independent encrypted cursors."""
+from engineering_paths import reference_file
 import argparse
 import csv
 import hashlib
@@ -21,7 +22,7 @@ def main():
         path=args.directory/name
         before=hashlib.sha256(path.read_bytes()).hexdigest();assert before==CASES[name][0]
         table="Table1" if name.startswith("db2007") else "Customers"
-        oracle=run(["java","-cp",classpath,RECIPES/"EncryptedPagesOracle.java",path,"--rows",table],password)
+        oracle=run(["java","-cp",classpath,reference_file('tests/access/encryption/database/EncryptedPagesOracle.java'),path,"--rows",table],password)
         assert oracle.returncode==0 and not oracle.stderr,oracle.stderr
         records=[line.split("\t") for line in oracle.stdout.decode().splitlines()]
         headings=records[0][1:];expected=[[display(v) for v in row[1:]] for row in records[1:]]

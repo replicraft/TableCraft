@@ -22,7 +22,7 @@ concurrent-client or arbitrary-size performance.
 Both commands select `L.Id,R.Score` from the same raw native table self-joined
 on `L.Id=R.Id`. Each expected row is `(id, id * 17 - 9)` for IDs 1 through
 1,100, in original encounter order. The repository-owned producer and reopened
-getter/model evidence are in [the original corpus](LARGE_DEPLOYMENT.md).
+getter/model evidence are in [the original corpus](../reading/LARGE_DEPLOYMENT.md).
 
 Timing uses identical explicit query allowances: 256 MiB of query bytes,
 10,000 query rows and 100,000,000 query steps. The higher work allowance lets
@@ -33,7 +33,7 @@ new default-step success; that distinction is not hidden in the timing flags.
 The before executable is frozen from `ef6d7f50acf9d6068c7ea14bc26f8270a2d8c446`;
 the after executable is frozen from `35b6ce8dca59590d316e62bf59ec9511a16d14ca`.
 Both were built with the ordinary development Cargo profile. The source inputs
-and binaries have exact hashes in the [qualified summary](results/directory-joins-benchmark-2026-10-25.json).
+and binaries have exact hashes in the [qualified summary](../../results/general/directory-joins-benchmark-2026-10-25.json).
 The environment is Darwin arm64 with Hyperfine 2.0.0. All native images and
 binaries retained their hashes after measurement.
 
@@ -44,7 +44,7 @@ Id/Score TSV model before timing. Candidate commands matched before timing;
 all four commands matched after timing. The expected output hash is recorded
 in the summary. Hashes and complete commands identify exactly what was measured.
 
-[Raw Hyperfine schema-2 data](results/directory-joins-hyperfine-2026-10-25.json)
+[Raw Hyperfine schema-2 data](../../results/general/directory-joins-hyperfine-2026-10-25.json)
 retains every observation, exit code, command, summary and additional measured
 metric. Its SHA-256 is `d2b5686a5589db811453a77255e501f8a1265072928d88f667b3e649de27e7d9`.
 No memory improvement claim is derived from the incidental RSS observations.

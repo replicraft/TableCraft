@@ -79,7 +79,7 @@ context, NULL option/date behavior, signed boundaries and all first-day/first-we
 combinations around year boundaries. Query and CLI tests cover pruning, grouping,
 correlations, execution-local settings, optional slots, flag validation and eager
 failures. A worker regression checks request isolation and recovery after failure.
-The [independent recipe](../../testing/compare_week_context.py) enumerates qualifying
+The [independent recipe](../../../tests/access/queries/expressions/compare_week_context.py) enumerates qualifying
 Gregorian weeks/boundaries in Python and compares optional sequential/indexed
 projections over Jackcess-decoded row inputs with unchanged source hashes.
 Native Windows Access remains unrun; independent model/reader evidence is separate.
@@ -123,7 +123,7 @@ existing [explicit conversion service](DATE_NUMERIC.md), including ties-to-even.
 Full Variant/enum subtype rules, native locale behavior and native Access error
 precedence remain open acceptance work.
 
-The original [independent runner](../../testing/compare_week_options.py) uses Python
+The original [independent runner](../../../tests/access/reading/tables/compare_week_options.py) uses Python
 Decimal rounding and enumerated Gregorian weeks/boundaries. It checks Text and
 DATE options, half-even ties, system sentinels, invalid rounded ranges, both CLI
 query modes and native date/ID projections over unchanged Jet 4, ACE 2007 and

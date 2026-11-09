@@ -101,19 +101,19 @@ contracts, independently checked rather than native Access edge qualification.
 `Count(*)` without a member dependency retains parent cardinality. Existing
 query controls in `tests/multivalue.rs`, CLI controls in
 `apps/tablecraft-cli/tests/multivalue_queries.rs`, and the
-[original-child getter model](../../testing/compare_multivalue_queries.py) exercise this
+[original-child getter model](../../../tests/access/reading/tables/compare_multivalue_queries.py) exercise this
 capability. Mixed complete-list/member output now has the separate typed
 admission described below. Bare-list UNION remains refused; unsupported bare
 operations must not be presented as automatically required native features.
 
-The [counting evidence gate](../../testing/results/multivalue-count-evidence-gate-2026-10-26.json)
+The [counting evidence gate](../../../tests/results/general/multivalue-count-evidence-gate-2026-10-26.json)
 rechecks nine existing-capability controls using the frozen committed CLI and
 unchanged originals/getters. Parent Count remains four; member counts for the
 four original Int32 lists are 3, 0, 0 and 100. All three profiles retain the
 bare-list Count refusal. No new Count implementation or native SQL equivalence
 is claimed.
 
-The [scoped query verification record](../../testing/results/read-query-multivalue-results-2026-10-25.json)
+The [scoped query verification record](../../../tests/results/queries/read-query-multivalue-results-2026-10-25.json)
 records 388 distinct passing query tests, including twelve new structured-result
 and isolated depth controls, strict query lint and the minimal feature build.
 Adapter and CLI evidence is counted separately; these checks do not establish
@@ -164,7 +164,7 @@ and cancellation controls. No Core Value variant, Source capability or lookup
 execution is added. These are explicit TableCraft composition contracts; native
 Access alias-lineage and edge-result qualification remains unrun.
 
-The [retained-member query record](../../testing/results/read-query-derived-multivalue-members-2026-10-26.json)
+The [retained-member query record](../../../tests/results/queries/read-query-derived-multivalue-members-2026-10-26.json)
 records 429 distinct passing query tests, including seventeen new implementation,
 independent policy/origin/width and isolated depth controls. Query strict lint,
 minimal-feature compilation and scoped formatting pass. Host and original-reader
@@ -225,7 +225,7 @@ TableCraft absence model.
 Microsoft Access qualification of native bare-list outer-join results remains
 open; the model does not claim native display or empty/absence equivalence.
 
-The [typed-join query verification record](../../testing/results/read-query-typed-multivalue-joins-2026-10-26.json)
+The [typed-join query verification record](../../../tests/results/queries/read-query-typed-multivalue-joins-2026-10-26.json)
 records 242 distinct passing query tests, including sixteen new join, scalar
 crosstab-composition and isolated depth controls, strict lint and the minimal
 feature build. The first mixed-depth probe exposed a preparation stack overflow;
@@ -233,7 +233,7 @@ lean join traversal/finishing separation fixed it without reducing the fifty-nam
 limit or changing matching semantics. Native adapter/CLI checks and original
 fixture getter models are recorded separately.
 
-The [outer-join query verification record](../../testing/results/read-query-typed-multivalue-outer-joins-2026-10-26.json)
+The [outer-join query verification record](../../../tests/results/queries/read-query-typed-multivalue-outer-joins-2026-10-26.json)
 records 254 distinct passing query tests, including twelve new absent-parent,
 metadata, eager-error and cancellation controls, plus strict query lint and the
 minimal build. Existing isolated stack checks now include a LEFT-joined scalar
@@ -351,7 +351,7 @@ cardinality, empty-parent, duplicate-order or optimizer behavior. The contracts
 above preserve TableCraft's existing expansion model; Microsoft Access SQL
 comparison remains separate.
 
-The [mixed-result query verification record](../../testing/results/read-query-mixed-multivalue-results-2026-10-26.json)
+The [mixed-result query verification record](../../../tests/results/queries/read-query-mixed-multivalue-results-2026-10-26.json)
 records 248 distinct passing query functions, including fourteen new composition,
 alignment, eager-failure and resource controls, strict query lint and the minimal
 build. Its first combined Cargo process exited 101 after six completed target
@@ -366,7 +366,7 @@ also checks explicit stored Single bit patterns, including signed zero,
 subnormal, infinity and distinct NaN payloads, while an independent finite member
 is displayed and through a derived layer; displaying the nonfinite member still
 returns the existing NonFinite error.
-The [host verification record](../../testing/results/mixed-multivalue-results-host-2026-10-26.json)
+The [host verification record](../../../tests/results/general/mixed-multivalue-results-host-2026-10-26.json)
 records 41 native-adapter/CLI functions, eight new; original-fixture evidence
 remains separate.
 
@@ -518,7 +518,7 @@ Six additional authored/generated tests cover parent cardinality, independent
 atoms, NULL/empty folds, logical negation, parameters, correlated scalar slots,
 derived composition, eager failures and unsupported shapes. A CLI test and native
 cache assertions cover the adapter path. The
-[225-control recipe](../../testing/compare_multivalue_parent_criteria.py) compares original
+[225-control recipe](../../../tests/access/indexes/native/compare_multivalue_parent_criteria.py) compares original
 parent/member rows with an independent nullable membership model across the three
 qualified ACE families. These models support the documented execution policy;
 Microsoft Access SQL, NULL/error ordering and return-type qualification remain open.
@@ -893,11 +893,11 @@ Focused controls cover joins, correlated/derived sorts, crosstabs, sibling align
 TOP ties, eager/late failures, malformed providers, metadata-only binding, parameter
 rebinding, quotas and every observed cancellation checkpoint. Generated controls
 compare hidden aggregate inputs with an independent nullable product/count model.
-The [stored multivalue runner](../../testing/compare_multivalue_queries.py) passes 153
+The [stored multivalue runner](../../../tests/access/reading/tables/compare_multivalue_queries.py) passes 153
 controls across unchanged registered V2007/V2016/V2019 files. The
-[attachment runner](../../testing/compare_attachment_queries.py) passes 177 ordinal-policy
+[attachment runner](../../../tests/access/reading/tables/compare_attachment_queries.py) passes 177 ordinal-policy
 controls using independent stored child records. These are independent model checks,
-not native Access SQL results; [fixture evidence](../../testing/FIXTURES.md#hidden-collection-having-and-sort-controls)
+not native Access SQL results; [fixture evidence](../../../tests/reports/reading/FIXTURES.md#hidden-collection-having-and-sort-controls)
 records the fresh ACE 2007 attachment input separately.
 
 ## Larger native collection tables

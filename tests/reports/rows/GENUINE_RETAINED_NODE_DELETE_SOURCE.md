@@ -6,10 +6,10 @@ originals and both independently modeled AFTERs passed complete native reads,
 ordinary Source qualification, retained owned-tree membership, all four aliases,
 historical counters and full key+ROW fence checks before matching producers.
 Producer acceptance was pending at source freeze; matching saves now pass in
-the separate [write record](results/ace16-normal-retained-node-delete-writes-2026-11-01.json).
+the separate [write record](../../results/rows/ace16-normal-retained-node-delete-writes-2026-11-01.json).
 
-The maintained [model](../../scripts/compatibility/genuine_node_delete/model.py)
-and [requests](../../scripts/compatibility/genuine_node_delete/requests.json)
+The maintained [model](../../../scripts/compatibility/genuine_node_delete/model.py)
+and [requests](../../../scripts/compatibility/genuine_node_delete/requests.json)
 derive expectations exclusively from the pinned original bytes. They consume no
 prior writer output or preview candidate. Input/request laws were frozen before
 the model. Delete original IDs 302 and 354 (ordinals 301 and 353), in either written
@@ -30,7 +30,7 @@ selected logical directory words, the TD live count800→798 and fitting INDEX
 framing/payload change. Historical counters800/7, raw records, inactive/vacated
 tail, children, links, tail pointers, height, maps and EOF remain byte-exact.
 
-The independent [report predictions](../../scripts/compatibility/genuine_node_delete/reports.py)
+The independent [report predictions](../../../scripts/compatibility/genuine_node_delete/reports.py)
 retain the original complete inventory and derive changed PAGE/TD/DATA/physical
 slot frames plus target row/cell ordinals from frozen bytes and literal requests.
 Cursor predictions use original native ROW identities for ties. Twelve original
@@ -40,7 +40,7 @@ complete observer, metadata oracle and four alias cursors use read-only opens;
 no new compiler or Java tool change was needed. Closure pins remained unchanged.
 
 The native source test checked all four views in one passing function (0.24s),
-without invoking a planner. The [result](results/ace16-genuine-retained-node-delete-source-2026-11-01.json)
+without invoking a planner. The [result](../../results/rows/ace16-genuine-retained-node-delete-source-2026-11-01.json)
 pins complete images, preconstruction laws/code, twelve new child receipts and
 the native log. It distributes no class/JAR binaries or machine paths. The
 original-builder record is preserved separately at commit c60cdc4d.

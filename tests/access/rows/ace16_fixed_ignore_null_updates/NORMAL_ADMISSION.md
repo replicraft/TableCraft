@@ -27,7 +27,7 @@ qualification. A declaration continuation and matching normal saves remain held
 until actual full program-absence and Source admission succeed.
 
 Two diagnostic functions and scoped ACE all-feature/all-target strict checks pass.
-The [audit record](../results/ace16-ignore-null-admission-audit-2026-11-02.json)
+The [audit record](../../../results/general/ace16-ignore-null-admission-audit-2026-11-02.json)
 retains actual stage observations and first failures. Later implementations must
 establish full admission before matching writes; the test does not encode a
 permanent refusal invariant.
@@ -41,5 +41,5 @@ contexts. The earlier refusal observations above remain the baseline audit;
 no source image was regenerated or retuned. The unchanged original requests and
 independent outcomes now pass separate normal proof, native recovery, retained
 session and CLI matching checks. See the
-[current fitting scope](../../access/writes/NORMAL_IGNORE_NULL_INDEX_UPDATE.md).
+[current fitting scope](../../../../docs/access/writes/NORMAL_IGNORE_NULL_INDEX_UPDATE.md).
 Native Access save/reopen remains unrun.

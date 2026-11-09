@@ -1,6 +1,6 @@
 # French Legacy stored-index oracle
 
-The [compact oracle receipt](results/french-legacy-index-oracle-2026-10-26.json)
+The [compact oracle receipt](../../results/queries/french-legacy-index-oracle-2026-10-26.json)
 records actual ACE16 V2016/V2019 originals with French descriptor `1036/0/0`
 and matched General Legacy `1033/0/0`. Both profiles passed descriptor, complete
 key/reference and cursor-order checks: 456 logical memberships, or 304 physical
@@ -9,10 +9,10 @@ native Access comparison is established by this oracle preparation.
 
 ## Exact evidence
 
-[FrenchLegacyIndexFixture.java](FrenchLegacyIndexFixture.java) is original
+[FrenchLegacyIndexFixture.java](../../access/queries/expressions/FrenchLegacyIndexFixture.java) is original
 repository-owned code using the reviewed Jackcess 5.0.4 JAR, SHA-256
 `19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`.
-Its existing dependency/license provenance is in [the fixture ledger](FIXTURES.md).
+Its existing dependency/license provenance is in [the fixture ledger](../reading/FIXTURES.md).
 Public `ColumnBuilder.setTextSortOrder` receives an explicit
 `ColumnImpl.SortOrder(lcid, variant, version)`. Neither headers nor descriptors
 are patched. Expressions are disabled, UTC is explicit and linked opens throw.
@@ -67,7 +67,7 @@ a contemporaneous diagnostic summary are retained and hash-pinned; the summary
 is not represented as a raw compiler log. Generation had not run at that failure,
 and no accepted original was regenerated or patched afterward.
 
-Fresh reproduction uses [capture_french_legacy_indexes.py](capture_french_legacy_indexes.py),
+Fresh reproduction uses [capture_french_legacy_indexes.py](../../access/queries/expressions/capture_french_legacy_indexes.py),
 which is import-safe and retains bounded command/stdout/stderr captures. It
 checks the exact reviewed JAR and getter/raw identity. Database generation is
 not claimed byte-reproducible. Use new directories; accepted originals remain
@@ -77,7 +77,7 @@ ignored and immutable.
 mkdir -p .cache/french-legacy-reproduction/classes
 javac -cp .cache/tablecraft-fixtures/jackcess-5.0.4.jar \
   -d .cache/french-legacy-reproduction/classes docs/testing/FrenchLegacyIndexFixture.java
-python3 docs/testing/capture_french_legacy_indexes.py \
+python3 tests/run.py tests/access/queries/expressions/capture_french_legacy_indexes.py \
   --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar \
   --classes .cache/french-legacy-reproduction/classes \
   --directory .cache/french-legacy-reproduction/originals \
@@ -99,7 +99,7 @@ span and reverses that paid stream before existing neutral trimming. Other strea
 and General recognition remain unchanged. No upstream implementation or new weight
 table was copied for this transformation.
 
-[FrenchKeysOracle.java](FrenchKeysOracle.java) independently resolves the exact
+[FrenchKeysOracle.java](../../access/queries/expressions/FrenchKeysOracle.java) independently resolves the exact
 descriptor against the pinned JAR. Its 349 vectors cover neutral spans, combining
 marks, expansions, kana, unprintable positions, arbitrary raw surrogates,
 truncation and overrun inputs, including 128 deterministic random sequences.
@@ -131,7 +131,7 @@ separately. No complete initial untracked Rust-file snapshot is claimed.
 No query comparison policy, LIKE/search capability, ordinary write API or native
 Access compatibility is established by these local physical-read checks.
 
-The scoped [implementation receipt](results/french-legacy-read-native-2026-10-26.json)
+The scoped [implementation receipt](../../results/queries/french-legacy-read-native-2026-10-26.json)
 records 108 distinct runtime test functions (11 new), three passing compile-fail
 doc checks, strict lint, standalone minimal compilation and formatting. Repeated
 default/feature executions are counted once; the existing ignored exhaustive
@@ -140,13 +140,13 @@ these literal-fixture and encoder checks.
 
 ## Original-file frozen CLI physical replay
 
-The [original-file receipt](results/french-physical-originals-2026-10-26.json)
+The [original-file receipt](../../results/queries/french-physical-originals-2026-10-26.json)
 records 58 matching controls: 52 successful inspector/query results and six
 buffered refusals, with 1,076 query rows and 1,684 cells compared. It uses the
 unchanged originals above and the frozen CLI from
 `978435fa08c6d92577b031929d8abdeb3bd4b247`, SHA-256
 `fc11c14e3bb34119888deaeef6ee5e4c6ee785679bba9ace84aaacde195c672b`.
-The [build receipt](results/french-physical-cli-build-2026-10-26.json) and additional
+The [build receipt](../../results/queries/french-physical-cli-build-2026-10-26.json) and additional
 error/output source objects are verified against that immutable Git revision,
 independently of later comparison-provider edits.
 
@@ -177,7 +177,7 @@ already correct. That first complete report and executed source snapshot remain
 pinned. Only the expected host classification and immutable error-source pins
 changed; no values, damaged bytes or selectors were changed.
 
-[compare_french_physical_reads.py](compare_french_physical_reads.py) is import-safe,
+[compare_french_physical_reads.py](../../access/queries/expressions/compare_french_physical_reads.py) is import-safe,
 uses bounded subprocesses and requires explicit frozen binary/hash, build receipt,
 original oracle and fresh output/report paths. Raw commands/stdout/stderr and
 mutated copies remain ignored and hash-pinned. Both originals, oracle and tool
@@ -185,7 +185,7 @@ hashes are checked before and after. No native Access execution/save/reopen,
 French SQL comparison, LIKE/search, native NLS or write qualification is claimed.
 
 ```sh
-python3 docs/testing/compare_french_physical_reads.py \
+python3 tests/run.py tests/access/queries/expressions/compare_french_physical_reads.py \
   --cli .cache/tablecraft-bin/tablecraft-french-physical-20261026 \
   --cli-sha256 fc11c14e3bb34119888deaeef6ee5e4c6ee785679bba9ace84aaacde195c672b \
   --build-receipt docs/testing/results/french-physical-cli-build-2026-10-26.json \

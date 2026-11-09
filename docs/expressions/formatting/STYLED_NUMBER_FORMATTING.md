@@ -106,7 +106,7 @@ refusals and host failures, with generated Currency cases checked against an
 independent integer rounding model. Evaluator tests check input/scratch/output/work
 limits and cancellation. Query, CLI and worker tests cover dynamic options,
 fields, grouping, aggregates, correlations, optional slots, profile isolation and
-buffered failures. The [independent recipe](../../testing/compare_styled_number.py) uses
+buffered failures. The [independent recipe](../../../tests/access/reading/tables/compare_styled_number.py) uses
 Python Decimal half-up models plus explicit float normalization and optional
 sequential/indexed projections over Jackcess-decoded row inputs, checking unchanged
 source bytes. Existing CStr and numeric-text recipes check the shared float helper.
@@ -131,7 +131,7 @@ output share cumulative limits and every observed contextual formatting checkpoi
 can cancel. Regional defaults, source carriers and unsupported profile choices
 are unchanged; these named profiles do not discover machine preferences.
 
-The combined [numeric/date option recipe](../../testing/compare_format_options.py)
+The combined [numeric/date option recipe](../../../tests/access/queries/expressions/compare_format_options.py)
 passes 420 independent Decimal/Gregorian controls, including en-us/de-de Text
 options, default/sentinel/error cases and unchanged priority native ID/DATE getter
 integration. The expression/query batch passes 840 tests including doctests, with
@@ -171,7 +171,7 @@ DATE range ends, plus explicit Extended refusal. Evaluator controls cover exact
 output-byte ceilings and every observed cancellation checkpoint without a date
 policy. Prepared query and CLI controls cover execution-local number policies,
 raw DATE rebinding, nested calls, closed Eval, NULLs and buffered eager failures.
-The original [independent runner](../../testing/compare_styled_date_sources.py) passes
+The original [independent runner](../../../tests/access/queries/expressions/compare_styled_date_sources.py) passes
 1,636 Decimal/calendar/native-field controls over unchanged priority-family inputs.
 The calendar cases deliberately use exactly representable quarter-day fractions;
 direct raw-alias goldens cover representations that calendar getters normalize.
@@ -212,7 +212,7 @@ Three expression tests cover source/option Empty targets, NULL/policy/domain/typ
 order, borrowed Text normalization under exact byte controls, every observed
 successful cancellation checkpoint and once-only Rnd consumption after Error
 data. Query/CLI tests add derived states and explicit conversions. The original
-[independent runner](../../testing/compare_character_format_states.py) compares character
+[independent runner](../../../tests/access/queries/expressions/compare_character_format_states.py) compares character
 construction plus all three formatters with Python code-page/integer/Decimal
 models and read-only native identity getters; only TableCraft executes SQL.
 Its 528 controls pass (360 scalar and 168 four-family sequential/indexed cases)

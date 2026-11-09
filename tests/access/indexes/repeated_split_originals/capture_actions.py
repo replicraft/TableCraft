@@ -7,9 +7,9 @@ from pathlib import Path
 import subprocess
 import sys
 
-ROOT = Path(__file__).resolve().parents[3]
+ROOT = Path(__file__).resolve().parents[4]
 BASE = Path(__file__).resolve().parent
-sys.path.insert(0, str(ROOT / 'docs/testing'))
+sys.path.insert(0, str(ROOT / 'tests/access'))
 from integral_split_originals.capture_sources import Capture, pin, require_pin
 
 JAVA_HEAP = '512m'

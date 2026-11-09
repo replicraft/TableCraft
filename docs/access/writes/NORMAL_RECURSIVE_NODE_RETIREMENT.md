@@ -30,7 +30,7 @@ The large fixture retains 149,184 historical slots despite having 963 live rows.
 Its CLI writes use explicit `--work-bytes 1000000000 --work-steps 1000000000`:
 cumulative source/proof/recovery work exceeds the default byte allowance. The
 initial budget refusal is retained in the
-[execution record](../../testing/results/ace16-normal-recursive-retirement-writes-2026-11-01.json).
+[execution record](../../../tests/results/general/ace16-normal-recursive-retirement-writes-2026-11-01.json).
 Defaults and expected images were unchanged.
 
 ## Repeated retirement and an empty root
@@ -52,7 +52,7 @@ is still valid.
 Sixteen literal native commits, 72 recovery contexts, 456 forged journal-image
 refusals, six older-history recovery refusals, direct proof/resource controls,
 24 retained typed/SQL saves plus empty follow-ons and sixteen CLI saves/readbacks
-pass. See the [repeated-retirement record](../../testing/results/ace16-repeated-recursive-retirement-writes-2026-11-01.json)
+pass. See the [repeated-retirement record](../../../tests/results/general/ace16-repeated-recursive-retirement-writes-2026-11-01.json)
 for original failures, corrected source qualification and replay evidence.
 
 Nullable/DESC trees, arbitrary heights, nonempty root promotion and DATA-page

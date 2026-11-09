@@ -1,7 +1,7 @@
 # Leading U+FEFF INSERT sources
 
-The [independent literal model](ordinary_insert_originals/feff_model.py) and
-[requests](ordinary_insert_originals/feff_requests.json) preserve the unchanged
+The [independent literal model](../../access/rows/ordinary_insert_originals/feff_model.py) and
+[requests](../../access/rows/ordinary_insert_originals/feff_requests.json) preserve the unchanged
 genuine originals. A requested leading U+FEFF in Marker needs a marked-wide
 payload: `FF FE 00 FF FE 6E 00 65 00 77 00` preserves U+FEFF followed by `new`.
 Separate unescaped UTF16 controls decode to `new`, losing the requested leading
@@ -15,7 +15,7 @@ admission. Run ignored `normal_ordinary_sources::insert_feff::` with absolute
 The SDK observations reuse unchanged bounded original/two-row getter classes;
 no new Java observer or compiler invocation participates.
 
-The [source record](results/ace16-normal-insert-feff-sources-2026-11-01.json)
+The [source record](../../results/rows/ace16-normal-insert-feff-sources-2026-11-01.json)
 retains pins, alias classifications and actual outcomes. All original properties,
 maps, unrelated bytes and EOF stay exact. This finite witness does not qualify
 all leading-U+FEFF combinations, zero low bytes at marked-wide boundaries or

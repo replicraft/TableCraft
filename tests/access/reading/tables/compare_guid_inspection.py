@@ -15,7 +15,7 @@ import subprocess
 
 import compare_guid_predicates as native
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[4]
 CANDIDATE_SHA256 = "eb8ea6717440d41b9e4a4e159425c71d2d15b5cd2e48ad5c417d5d85654049f4"
 BASELINE_SHA256 = "2be6ed81c1839ce7235bf29ce0b6d6e8f5d6aea70da5ac4e20109ff62bf5b9ed"
 MAX_COMMANDS = 128
@@ -55,12 +55,12 @@ def main():
         if native.digest(ROOT / name) != sources[name]:
             raise ValueError("Selected source differs from revision")
     artifacts = [args.cli, args.baseline, args.jar, Path(__file__),
-                 ROOT / "docs/testing/compare_guid_predicates.py",
-                 ROOT / "docs/testing/compare_declared_numeric_text.py",
-                 ROOT / "docs/testing/compare_fixed_binary_keys.py",
-                 ROOT / "docs/testing/compare_numeric_keys.py",
-                 ROOT / "docs/testing/compare_large_indexes.py",
-                 ROOT / "docs/testing/TableDataOracle.java",
+                 ROOT / "tests/access/reading/tables/compare_guid_predicates.py",
+                 ROOT / "tests/access/queries/expressions/compare_declared_numeric_text.py",
+                 ROOT / "tests/access/indexes/native/compare_fixed_binary_keys.py",
+                 ROOT / "tests/access/indexes/native/compare_numeric_keys.py",
+                 ROOT / "tests/access/indexes/native/compare_large_indexes.py",
+                 ROOT / "tests/access/reading/tables/TableDataOracle.java",
                  *(args.directory / name for name in native.INPUTS)]
     pins = {str(path.resolve().relative_to(ROOT)): native.digest(path) for path in artifacts}
     report = {

@@ -17,7 +17,7 @@ publish one complete cached snapshot. This removes the materialized 4,096-addres
 list from those loads; a host with an explicitly sufficient native byte budget
 can query tables spanning more pages. The default 16,384-row snapshot ceiling remains,
 and budgets never refill between batches. Explicit indexed reads retain their
-existing ownership/range checks. See [batched-query evidence](../../testing/BATCHED_QUERY_SNAPSHOTS.md).
+existing ownership/range checks. See [batched-query evidence](../../../tests/reports/queries/BATCHED_QUERY_SNAPSHOTS.md).
 No application host, native provider, GUI, network runtime or new registry dependency
 is required. ACE and query do not depend on the adapter; query still performs no
 native I/O. Backend-neutral connection/cursor/runtime services remain unimplemented.
@@ -131,7 +131,7 @@ ineligible index keys, following [Microsoft's Access restriction](https://suppor
 Explicit Binary index ranges are available to library hosts through
 `read_table_binary_index_range` and projected Binary selections. The query adapter
 still applies Binary predicates after complete snapshots; it does not automatically
-push them into the new reader. [Range evidence](../../testing/BINARY_INDEX_RANGES.md)
+push them into the new reader. [Range evidence](../../../tests/reports/indexes/BINARY_INDEX_RANGES.md)
 records borrowed bounds, pruning and partial-validation limits.
 Single Short/Long Text indexes now supply complete checked snapshots and projections
 for General legacy/General 2010, including entry-level overflow digests. Library hosts can explicitly select physical Text start/end intervals; the query
@@ -260,7 +260,7 @@ snapshot into the adapter's complete-table cache. Required-index traversal,
 residual filtering, fresh full loads and row budgeting retain separate checks.
 Seeks validate only visited pages and selected rows, not skipped tree integrity.
 
-The original [CLI comparison runner](../../testing/compare_query_filters.py) matched
+The original [CLI comparison runner](../../../tests/access/queries/execution/compare_query_filters.py) matched
 32 exact outputs against independently filtered/sorted Jackcess cursor rows:
 ascending and nullable descending indexes in generated Jet 4 and ACE files,
 including open/closed/empty intervals, NULL/non-NULL and rebound parameters.
@@ -269,7 +269,7 @@ fresh inputs using the existing index recipe:
 
 ```sh
 cargo build --release --locked -p tablecraft-cli
-python3 docs/testing/compare_query_filters.py \
+python3 tests/run.py tests/access/queries/execution/compare_query_filters.py \
   --cli target/release/tablecraft --jar path/to/jackcess-5.0.4.jar \
   --ace path/to/fresh-indexes.accdb --jet path/to/fresh-indexes.mdb
 ```
@@ -341,7 +341,7 @@ fields and include ascending/descending/composite scans, NULLs, duplicate keys,
 Int32 endpoints and exact Int64 values beyond 2^53. General Short Text indexes also participate in the projected read path;
 missing and ignore-NULL indexes publish no success output. Synthetic checks additionally verify omitted
 key reconstruction across existing GUID/Decimal/tuple profiles and disjoint
-corrupt-leaf pruning. [Fixture records](../../testing/FIXTURES.md#mixed-schema-index-projection-inputs)
+corrupt-leaf pruning. [Fixture records](../../../tests/reports/reading/FIXTURES.md#mixed-schema-index-projection-inputs)
 retain independent evidence separately from native Microsoft Access qualification.
 
 
@@ -400,7 +400,7 @@ implicit complete-image capture. The source still materializes bounded requested
 snapshots and caches; table map/page/row and cumulative source/execution limits
 remain unchanged. This does not add streaming or TOP pushdown. Complete-image
 preservation/edit APIs retain a separate 64 MiB cap. See
-[large-file evidence](../../testing/LARGE_FILE_READS.md) for high-offset page checks,
+[large-file evidence](../../../tests/reports/reading/LARGE_FILE_READS.md) for high-offset page checks,
 independent padded-input comparisons and limits on the qualification claim.
 
 
@@ -416,7 +416,7 @@ filters, sorts and explicit ordinal policy remain unchanged. See
 The same explicit index path now accepts text-free mixed tuples containing Short
 Binary fields. Complete/projection reads verify all key fields and whole-entry
 overflow digests. Typed Binary ranges remain single-column; no compound seek or
-Binary predicate pushdown is inferred. [Scope and evidence](../../testing/BINARY_INDEX_TUPLES.md)
+Binary predicate pushdown is inferred. [Scope and evidence](../../../tests/reports/indexes/BINARY_INDEX_TUPLES.md)
 retain SQL, mutation and native Access qualification gaps.
 
 ## Explicit multivalue queries
@@ -448,9 +448,9 @@ now repeats the complete list on each expanded row. Same-member predicates filte
 that child; independent hidden membership criteria retain their parent semantics.
 Present empty lists, stored NULL children and absent outer parents remain distinct
 in the list sidecar. See the [typed result contract](../../query/collections/MULTIVALUE_QUERIES.md).
-The [mixed-output replay](../../testing/MIXED_MULTIVALUE_RESULTS.md) checks complete
+The [mixed-output replay](../../../tests/reports/general/MIXED_MULTIVALUE_RESULTS.md) checks complete
 lists beside displayed members against registered original getter values;
-separate [native/CLI controls](../../testing/results/mixed-multivalue-results-host-2026-10-26.json)
+separate [native/CLI controls](../../../tests/results/general/mixed-multivalue-results-host-2026-10-26.json)
 cover repeated payloads, child filtering, outer absence and buffered failures.
 
 INNER joins and comma-separated CROSS sources can project complete lists from
@@ -468,13 +468,13 @@ tablecraft query run --database example.accdb --multivalues \
   'SELECT A.ID,A.AssignedTo,B.AssignedTo FROM Tasks A INNER JOIN Tasks B ON A.ID=B.ID'
 ```
 
-The [typed-join replay](../../testing/TYPED_MULTIVALUE_JOINS.md) compares parent pairs
+The [typed-join replay](../../../tests/reports/general/TYPED_MULTIVALUE_JOINS.md) compares parent pairs
 and whole lists with registered original stored values. Separate
-[native/CLI integration checks](../../testing/results/typed-multivalue-join-host-2026-10-26.json)
+[native/CLI integration checks](../../../tests/results/general/typed-multivalue-join-host-2026-10-26.json)
 cover authorized routing, corrupt unselected children, NULL versus empty lists,
 quotas and buffered errors. Native Access query equivalence remains unqualified.
-The separate [outer-join replay](../../testing/TYPED_MULTIVALUE_OUTER_JOINS.md) and
-[outer host checks](../../testing/results/typed-multivalue-outer-host-2026-10-26.json)
+The separate [outer-join replay](../../../tests/reports/general/TYPED_MULTIVALUE_OUTER_JOINS.md) and
+[outer host checks](../../../tests/results/general/typed-multivalue-outer-host-2026-10-26.json)
 now cover missing parents, nested absence and independent nullability.
 
 List cells use the same buffered CLI spellings as stored collection browsing:
@@ -508,7 +508,7 @@ original index-refusal boundary. Current indexed coverage is recorded separately
 in the reference contract above. Two CLI tests cover opt-in, actual buffered results, invalid scope,
 criteria-only rejection and unchanged input bytes. A native test separately
 qualifies metadata inspection and direct value lookup. The
-[reference recipe](../../testing/compare_multivalue_queries.py) passes 75 controls over
+[reference recipe](../../../tests/access/reading/tables/compare_multivalue_queries.py) passes 75 controls over
 three original typed multivalue inputs using actual parent IDs and stored values
 from read-only Jackcess APIs. It checks six finite scalar families, exact Decimal,
 GUID/Text, duplicates/empty/NULL cases, grouping/counts, products, untouched scalar
@@ -561,7 +561,7 @@ counts do not load attachment records. Explicit required parent indexes now use
 alignment without sequential fallback. All native/query/output budgets
 and unchanged/offline-source requirements continue to apply.
 
-The [independent comparison](../../testing/compare_attachment_queries.py) uses the
+The [independent comparison](../../../tests/access/reading/tables/compare_attachment_queries.py) uses the
 existing original `AttachmentFixture` corpus and read-only Jackcess 5.0.4 metadata.
 It checks all five individual members, paired/full/reordered projection alignment,
 empty parents, aggregates, displayed-child filtering, scalar-parent membership,
@@ -569,7 +569,7 @@ stored payload bytes and wildcard refusal and unchanged hashes across all three
 qualified families. These are stored-record/explicit-model comparisons, not native
 Access SQL, empty-set/negative-criteria semantics or Windows qualification.
 The script also accepts `--collation database` to compose stored child policies
-with the shared native resolver. The [24 October replay](../../testing/results/stored-attachment-queries-2026-10-24.json)
+with the shared native resolver. The [24 October replay](../../../tests/results/queries/stored-attachment-queries-2026-10-24.json)
 passes 198 model controls per policy (396 total) against fresh original
 V2007/V2016/V2019 files, including aligned/mixed/joined membership,
 correlated reads, crosstabs, decoded payloads and rejection checks. Synthetic
@@ -578,7 +578,7 @@ using one database-wide policy.
 
 Microsoft's [attachment overview](https://support.microsoft.com/en-us/access/attach-files-and-graphics-to-the-records-in-your-database)
 guides the multi-file/inert-content boundary; exact observed storage comes from
-[the existing fixture evidence](../../testing/FIXTURES.md). This feature adds no dependencies,
+[the existing fixture evidence](../../../tests/reports/reading/FIXTURES.md). This feature adds no dependencies,
 lookup/VBA execution, new file writes or extraction destination policy.
 
 ### Explicit decoded attachment values

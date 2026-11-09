@@ -31,8 +31,8 @@ pass. Twenty-four retained typed/SQL saves, sixteen cold host recovery contexts
 and twelve CLI saves/readbacks also pass. A copied codec test had paired an old
 frozen digest with the wrong BEFORE input; the input was corrected while all
 expected wire bytes were preserved. See the
-[execution record](../../testing/results/ace16-normal-clock-default-writes-2026-11-01.json)
-and [source qualification](../../testing/ACE16_WIDE_INLINE_CLOCK_SOURCES.md).
+[execution record](../../../tests/results/schema/ace16-normal-clock-default-writes-2026-11-01.json)
+and [source qualification](../../../tests/reports/general/ACE16_WIDE_INLINE_CLOCK_SOURCES.md).
 
 This does not establish native Access statement-versus-row clock timing,
 Windows timezone behavior or native save/reopen compatibility. Those comparisons

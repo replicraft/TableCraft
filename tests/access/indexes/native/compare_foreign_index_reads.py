@@ -23,7 +23,7 @@ def foreign_indexes(args, path, table):
 
 def compare(args, path, table, index):
     expected = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar,
-        "docs/testing/TableDataOracle.java", path, "--index", table, index)
+        "tests/access/reading/tables/TableDataOracle.java", path, "--index", table, index)
     actual = run(args.rows, path, table, "--index", index)
     if actual != expected:
         raise RuntimeError("Foreign index order/rows differ: " + table + "." + index)

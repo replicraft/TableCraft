@@ -36,5 +36,5 @@ source export. These sources and tests confer no
 imported-file write or native Access save permission.
 
 Minimal creation compilation, workspace formatting and all 6,885 local
-documentation targets also pass. The [acceptance record](results/ace16-catalog-name-encoding-2026-10-31.json)
+documentation targets also pass. The [acceptance record](../../results/reading/ace16-catalog-name-encoding-2026-10-31.json)
 retains the failed reproduction and separate validation phases.

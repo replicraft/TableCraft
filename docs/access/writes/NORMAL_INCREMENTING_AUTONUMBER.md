@@ -141,8 +141,8 @@ committed/interrupted recovery. These are headless qualification cases; their
 execution results and native Windows/Access comparisons are separate evidence.
 
 The initial two-Int32 route retains its
-[execution record](../../testing/results/ace16-normal-increment-autonumber-writes-2026-11-01.json).
-The [companion AFTER sources](../../testing/ACE16_INCREMENT_COMPANION_AFTER_SOURCES.md)
+[execution record](../../../tests/results/creation/ace16-normal-increment-autonumber-writes-2026-11-01.json).
+The [companion AFTER sources](../../../tests/reports/creation/ACE16_INCREMENT_COMPANION_AFTER_SOURCES.md)
 were qualified before matching generation. New acceptance covers twenty exact
 commits and twenty empty plans, forty direct proofs with 208 refusals, 120
 recovery contexts, 168 journal forgeries and forty measured resource contexts.
@@ -152,11 +152,11 @@ aliases and a deleted high physical slot. All earlier Increment regressions pass
 Twenty typed and twelve SQL saves, stale-handle/prior-receipt controls and twelve
 CLI saves/readbacks pass. Non-NULL Binary and Int64 assignment remains typed
 coverage; these tests invent no SQL literal or coercion. See the
-[companion execution record](../../testing/results/ace16-increment-companion-writes-2026-11-02.json).
+[companion execution record](../../../tests/results/creation/ace16-increment-companion-writes-2026-11-02.json).
 
 [Empty Increment creation](INCREMENTING_CREATION.md) remains its separately
 qualified creator profile. The
-[multiple-index source family](../../testing/ACE16_MULTI_INDEX_INCREMENT_SOURCES.md)
+[multiple-index source family](../../../tests/reports/indexes/ACE16_MULTI_INDEX_INCREMENT_SOURCES.md)
 now has two exact ordered batch commits, independent proof, original TCNA2/V1
 recovery, public resource controls and actual retained batch saves. `LAST = 137`
 generates 138 then 139; a long first row can occupy a later DATA page while the
@@ -165,7 +165,7 @@ complete distinct population, regardless of alias count. The generated primary
 history becomes 11 and duplicate `Guard = 7` contributes one new secondary value.
 The shared `OmittingInsertableBatch` host retains one lease, journal and receipt;
 eight filesystem cold restart contexts pass. See the
-[batch execution record](../../testing/results/ace16-multi-index-increment-writes-2026-11-02.json).
+[batch execution record](../../../tests/results/indexes/ace16-multi-index-increment-writes-2026-11-02.json).
 
 Nullable/descending secondary keys, retained NODEs, allocation/splits,
 default/validation composition beyond these checked constants and Boolean

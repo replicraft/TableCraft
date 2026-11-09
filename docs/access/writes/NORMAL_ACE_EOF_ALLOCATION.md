@@ -37,7 +37,7 @@ profiles 1–6.
 
 ## Independent evidence
 
-The [first EOF sources](../../testing/ACE16_EOF_ALLOCATION_SOURCES.md) qualify
+The [first EOF sources](../../../tests/reports/storage/ACE16_EOF_ALLOCATION_SOURCES.md) qualify
 four original-derived BEFORE/AFTER views through native and independent SDK reads
 before the corresponding producers. A separate compound corpus reuses two
 already qualified two-row originals and adds two literal AFTERs: one row uses the
@@ -60,7 +60,7 @@ The regression batch passes 1,108 ACE units and 83 recovery functions; the joint
 host worktree passes 79 adapter and 94 CLI units. Strict combined, journal-only,
 preview-only and minimal builds pass. Twelve focused existing owned-page
 regressions preserve prior images and recovery. See the
-[write record](../../testing/results/ace16-normal-eof-allocation-writes-2026-11-01.json)
+[write record](../../../tests/results/storage/ace16-normal-eof-allocation-writes-2026-11-01.json)
 for exact scope, counts and retained first failures. Retained Access/CLI adoption
 has a separate acceptance record.
 
@@ -85,4 +85,4 @@ Two typed and four SQL saves, four CLI saves/readbacks, eight real restarted
 active/retired contexts, two interrupted-extension same-session rollbacks and
 two intent6/V2 mismatch refusals pass. Counts, current-image versus historical
 receipt facts, namespace retirement, exact restored length and continuous lease
-are checked. See the [host record](../../testing/results/ace16-retained-eof-allocation-2026-11-01.json).
+are checked. See the [host record](../../../tests/results/storage/ace16-retained-eof-allocation-2026-11-01.json).

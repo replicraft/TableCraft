@@ -15,7 +15,7 @@ remains mandatory; it is not concurrent-file consistency.
 
 Catalogs, the original complete table read APIs, index ownership and write consumers
 retain their existing materialized lists and 4,096-address ceiling. Sequential
-NativeSource query loads now use [batched snapshot materialization](BATCHED_QUERY_SNAPSHOTS.md)
+NativeSource query loads now use [batched snapshot materialization](../queries/BATCHED_QUERY_SNAPSHOTS.md)
 under cumulative caller controls. Row paging
 retains its 4,096 physical-read ceiling, page-size and caller byte/row/work limits.
 Each visited root still consumes traversal work; repeated offset requests rescan
@@ -25,24 +25,24 @@ streaming query execution remains separate work.
 
 ## Independent original large-table inputs
 
-[LargeTableFixture.java](LargeTableFixture.java) creates six uncompressed Short
+[LargeTableFixture.java](../../access/reading/tables/LargeTableFixture.java) creates six uncompressed Short
 Text fields of 255 UTF-16 units plus a Long ID, and inserts 6,000 original rows.
 Each fixture has 6,000 owned pages, confirmed through Jackcess's usage-map getter.
 The original recipe uses the existing reviewed Jackcess 5.0.4 artifact; no upstream
 implementation or fixture was copied. Binary files remain local/untracked.
 
-[LargeTableOracle.java](LargeTableOracle.java) opens read-only, disables expression
-evaluation and returns bounded stored getters. [The comparator](compare_large_tables.py)
+[LargeTableOracle.java](../../access/reading/tables/LargeTableOracle.java) opens read-only, disables expression
+evaluation and returns bounded stored getters. [The comparator](../../access/reading/tables/compare_large_tables.py)
 checks windows at offsets 0, 1, 500 and 1,000; declared row counts; and explicit
 large-query/deep-offset limit refusals. Seven controls per Jet 4/ACE 2007/2016/2019
 input passed, with unchanged hashes. These are independent storage comparisons,
 not observed Microsoft Access SQL, live-file or complete large-table qualification.
 
 ```sh
-python3 docs/testing/compare_large_tables.py --jar path/to/jackcess-5.0.4.jar --cli target/release/tablecraft --directory /tmp/new-large-table-inputs --generate
+python3 tests/run.py tests/access/reading/tables/compare_large_tables.py --jar path/to/jackcess-5.0.4.jar --cli target/release/tablecraft --directory /tmp/new-large-table-inputs --generate
 ```
 
-[Fixture records](FIXTURES.md#large-owned-map-paging-inputs) retain recipe/license
+[Fixture records](../reading/FIXTURES.md#large-owned-map-paging-inputs) retain recipe/license
 provenance, sizes and hashes. Synthetic tests additionally exercise dense maps,
 all four profiles, corruption in later bitmap metadata before first data reads,
 revalidated rereads, empty/extreme bases, malformed map roots, bit-model properties,

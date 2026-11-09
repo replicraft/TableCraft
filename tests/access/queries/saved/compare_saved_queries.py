@@ -12,7 +12,7 @@ from compare_attachment_columns import fields
 
 def oracle(args, path, name=None):
     command = ["java", "-Dfile.encoding=UTF-8", "-Dstdout.encoding=UTF-8", "-cp", args.jar,
-        "docs/testing/SavedQueryOracle.java", path]
+        "tests/access/queries/saved/SavedQueryOracle.java", path]
     return run(*(command + ([] if name is None else [name])))
 
 

@@ -6,7 +6,7 @@ import json
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[4]
 WORK = Path('.cache/ace16-cross-page-update-next-20261026')
 BOUNDARY = Path('.cache/ace16-slot-boundary-next-20261026/report.json')
 ORIGINALS = Path('.cache/ace16-slot-originals-next-20261026')
@@ -26,7 +26,7 @@ FORWARDED = 0x4000
 TABLE_ROWS_OFFSET = 16
 INDEX_HISTORY_OFFSET = 67
 GROWN_VALUE = 'Ā' * 255
-sys.path.insert(0, str(ROOT / 'docs/testing'))
+sys.path.insert(0, str(ROOT / 'tests/access'))
 from slot_preview_originals import common, facts
 import delete_reference_maps as MAP
 
@@ -193,8 +193,8 @@ def main():
     assert len(selectors) == 8
     selectors_path.write_text(json.dumps(selectors, indent=2) + '\n')
     immutable = [Path(item['path']) for item in inputs]
-    immutable.extend([BOUNDARY, JAR, Path('docs/testing/SlotUpdateFixture.java'),
-                      CLASSES / 'SlotUpdateFixture.class', Path('docs/testing/SlotMapProbe.java'),
+    immutable.extend([BOUNDARY, JAR, Path('tests/access/queries/expressions/SlotUpdateFixture.java'),
+                      CLASSES / 'SlotUpdateFixture.class', Path('tests/access/storage/native/SlotMapProbe.java'),
                       CLASSES / 'SlotMapProbe.class', Path(__file__).resolve().relative_to(ROOT),
                       Path(common.__file__).resolve().relative_to(ROOT),
                       Path(MAP.__file__).resolve().relative_to(ROOT),

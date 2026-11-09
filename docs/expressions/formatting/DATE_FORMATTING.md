@@ -77,7 +77,7 @@ Kernel tests cover all modes/profiles, epoch rules, scratch isolation, numeric/T
 conversion, rounding carry, selectors, fixed-buffer long-date bounds and host errors.
 Evaluator tests check byte/work/input-size and cancellation limits. Query, CLI and
 worker regressions cover fields, groups, correlated calls, optional slots, execution
-settings and recovery after missing context. The [independent recipe](../../testing/compare_date_format.py)
+settings and recovery after missing context. The [independent recipe](../../../tests/access/queries/expressions/compare_date_format.py)
 uses Python Gregorian/weekday models and optional sequential/indexed projections
 over Jackcess-decoded input rows, checking that the source hash is unchanged.
 Independent model/reader checks do not qualify native Access; Windows comparisons
@@ -130,7 +130,7 @@ every observed successful cancellation checkpoint. A shared calendar test checks
 once-only Rnd controls after Error data; query/CLI cases cover derived states,
 explicit conversion and atomic failure.
 
-The original [calendar/date-format runner](../../testing/compare_calendar_format_states.py)
+The original [calendar/date-format runner](../../../tests/access/queries/expressions/compare_calendar_format_states.py)
 passes 302 checks with [calendar names](../dates/CALENDAR_NAMES.md#ordered-expression-state-admission),
 independent English/German labels, date models and read-only native identities.
 All source hashes remain unchanged; only TableCraft executes SQL. Microsoft's

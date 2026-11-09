@@ -14,7 +14,7 @@ import subprocess
 
 from build_large_deployment import digest, inspect
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[4]
 JAR_SHA256 = "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc"
 ROWS = 1100
 MEMO_UNITS = 32768
@@ -64,7 +64,7 @@ def source_snapshots(revision):
 def getter_model(jar, path):
     result = invoke([
         "java", "-Xmx256m", "-Dstdout.encoding=UTF-8", "-cp", jar,
-        "docs/testing/LargeDeploymentFixture.java", "--inspect", path,
+        "tests/access/reading/tables/LargeDeploymentFixture.java", "--inspect", path,
     ])
     if result.returncode:
         raise RuntimeError(result.stderr)
@@ -185,8 +185,8 @@ def main():
             raise RuntimeError(resolved.stderr)
         revision = resolved.stdout.strip()
         snapshots = source_snapshots(revision)
-    pinned = [args.jar, Path(__file__), ROOT / "docs/testing/LargeDeploymentFixture.java",
-              ROOT / "docs/testing/build_large_deployment.py"]
+    pinned = [args.jar, Path(__file__), ROOT / "tests/access/reading/tables/LargeDeploymentFixture.java",
+              ROOT / "tests/access/reading/tables/build_large_deployment.py"]
     if args.cli:
         pinned.append(args.cli)
     if args.provenance:

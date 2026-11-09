@@ -3,6 +3,7 @@
 This compares original independent-writer files and getter observations, not
 native Access SQL, write permission or helper-sentinel insertion semantics.
 """
+from engineering_paths import reference_file
 
 import argparse
 import csv
@@ -12,8 +13,8 @@ import json
 from pathlib import Path
 import subprocess
 
-ROOT = Path(__file__).resolve().parents[2]
-RECIPES = ROOT / "docs/testing"
+ROOT = Path(__file__).resolve().parents[4]
+RECIPES = ROOT / "tests/access"
 PROFILES = ("V2016", "V2019")
 IDENTITIES = (1, -2147483648, -7, -2, -1, 0, 7, 2147483647)
 JACKCESS_SHA256 = "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc"
@@ -48,8 +49,8 @@ def main():
     assert digest(args.jar) == JACKCESS_SHA256
     paths = {
         args.cli, args.jar, Path(__file__),
-        RECIPES / "SignedComplexIdentityFixture.java",
-        RECIPES / "SignedComplexIdentityOracle.java",
+        reference_file('tests/access/reading/tables/SignedComplexIdentityFixture.java'),
+        reference_file('tests/access/reading/tables/SignedComplexIdentityOracle.java'),
         *[args.directory / f"{profile}.accdb" for profile in PROFILES],
         *[ROOT / "crates/engines/tablecraft-ace/src/table/complex" / name for name in (
             "links/membership.rs", "attachments/record.rs", "history/record.rs",
@@ -66,7 +67,7 @@ def main():
         path = args.directory / f"{profile}.accdb"
         records = [line.split("\t") for line in execute(
             "java", "-Dstdout.encoding=UTF-8", "-cp", args.jar,
-            RECIPES / "SignedComplexIdentityOracle.java", path,
+            reference_file('tests/access/reading/tables/SignedComplexIdentityOracle.java'), path,
         ).splitlines()]
         assert records[0] == ["S", "-1", "null-row-location"]
         hidden, history_text, history_time = next(row[1:] for row in records if row[0] == "D")

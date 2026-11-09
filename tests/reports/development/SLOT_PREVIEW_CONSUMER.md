@@ -36,7 +36,7 @@ candidate page or append data pages at EOF when the existing maps already
 represent the required addresses. It preserves original logical roots and
 refuses unsupported map growth or index splits. This flag and `--page-updates`
 are mutually exclusive; the default remains the exact-span slot API. See the
-[allocation contract](ACE16_VARIABLE_UPDATES.md) for placement and byte audits.
+[allocation contract](../rows/ACE16_VARIABLE_UPDATES.md) for placement and byte audits.
 
 ```sh
 target/debug/examples/preview_ace16_slot --variable-updates original.accdb candidate.accdb Items Score requests.tsv
@@ -121,18 +121,18 @@ the source. Argument tests reject selecting both modes.
 On 26 October 2026, all eleven example tests pass with `ace16-write-preview`;
 strict Clippy for this example and scoped formatting also pass. These checks
 cover the consumer boundary. The engine's independent preservation controls are
-recorded in the [page-update contract](ACE16_PAGE_UPDATES.md).
+recorded in the [page-update contract](../storage/ACE16_PAGE_UPDATES.md).
 
 These authored tests do not establish native Access behavior. Fresh original
 fixture comparisons and any frozen consumer receipts remain separate evidence.
 
-The [page-mode build receipt](results/ace16-page-example-build-2026-10-26.json)
+The [page-mode build receipt](../../results/storage/ace16-page-example-build-2026-10-26.json)
 records the executable built from committed revision `fd2a23cd`, its SHA-256,
 94 selected committed source pins and the consumer test/lint logs. The original
 exact-slot comparison executable remains separate and unchanged. Building this
 tool does not establish original-file or native Access outcomes.
 
-The separate [variable-mode build receipt](results/ace16-variable-example-build-2026-10-26.json)
+The separate [variable-mode build receipt](../../results/rows/ace16-variable-example-build-2026-10-26.json)
 records the executable built from committed revision `87c35d43`, 107 selected
 committed source pins and its eleven passing consumer tests. Its allocation
 results require their own original-file comparison; neither older executable

@@ -2,6 +2,7 @@
 
 Native stored-value getters are optional; no Access SQL is executed here.
 """
+from engineering_paths import reference_file
 import argparse
 import csv
 from decimal import Decimal
@@ -87,7 +88,7 @@ def main():
             original = path.read_bytes()
             assert hashlib.sha256(original).hexdigest() == digest
             output = subprocess.check_output(["java", "-Dstdout.encoding=UTF-8", "-cp", str(args.jar),
-                str(RECIPES / "TableDataOracle.java"), str(path), "AData"], text=True, encoding="utf-8")
+                str(reference_file('tests/access/reading/tables/TableDataOracle.java')), str(path), "AData"], text=True, encoding="utf-8")
             values = [int(line.split("\t")[1].removeprefix("I32:")) for line in output.splitlines()]
             for expression, expected, carrier in [
                 ("CDbl(0.5)", [*map(float, values), 0.5], "Double"),

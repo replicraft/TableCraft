@@ -4,18 +4,18 @@ import json
 from pathlib import Path
 import sys
 
-ROOT = Path(__file__).resolve().parents[3]
+ROOT = Path(__file__).resolve().parents[4]
 sys.path.insert(0, str(ROOT / 'scripts'))
 from compat_artifacts import ArtifactStore
 
-sys.path.insert(0, str(ROOT / 'docs/testing'))
+sys.path.insert(0, str(ROOT / 'tests/access'))
 from ordinary_hint_growth_references import action_model, reference_proof
 
 STORE = ArtifactStore(ROOT)
 
 PRIVATE = '.cache/ace16-ordinary-hint-reference-next-20261027'
 WORK = '.cache/ace16-ordinary-hint-reference-first-20261027'
-PUBLIC = 'docs/testing/ordinary_hint_growth_references'
+PUBLIC = 'tests/access/indexes/ordinary_hint_growth_references'
 FREEZE_SHA = 'be7063ee7d2ea0a2aaa1448a77f6aa0a483d8c5feb8d716b0843fe5c63a67c94'
 UPDATES_SHA = '9feb967e798c7595e00846e9fee691ffdd2abf0da8f7853ee25b93cd5bc1b4ab'
 GETTERS_SHA = 'b1a5a1e021d0677bfdaa7b7f6b1a44217fda0f4064c1dec90587b253fd7234e9'

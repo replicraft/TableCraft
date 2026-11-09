@@ -8,7 +8,7 @@ import os
 import model
 import probe
 
-RECORD = Path('docs/testing/results/add-short-text-sdk-source-2026-11-08.json')
+RECORD = Path('tests/results/general/add-short-text-sdk-source-2026-11-08.json')
 COLUMN = 'OtherLabel'
 UNITS = 255
 

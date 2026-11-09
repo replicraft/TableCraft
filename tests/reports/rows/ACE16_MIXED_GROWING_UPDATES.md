@@ -10,7 +10,7 @@ non-journalable engineering candidate.
 The final focused run passes eight growth functions and eight existing fitting
 functions, including 72 growth matrix comparisons and 83 fitting comparisons.
 Final strict ACE all-target/all-feature and minimal ACE checks pass. The
-[result record](results/ace16-mixed-growing-updates-2026-10-30.json) distinguishes
+[result record](../../results/rows/ace16-mixed-growing-updates-2026-10-30.json) distinguishes
 earlier broad regressions from verification after the represented-map policy
 was tightened. Native Access save and original-file mixed-growth qualification
 are not claimed.
@@ -31,7 +31,7 @@ including raw UTF16 for the two-unit compression tie. The
 preference and equal-capacity contract. The operation chooses its serialization
 policy explicitly; producer caches and failed candidates never select a policy.
 
-The actual [placement owner](../../crates/engines/tablecraft-ace/src/table/mutation/variable_update/placement.rs)
+The actual [placement owner](../../../crates/engines/tablecraft-ace/src/table/mutation/variable_update/placement.rs)
 handles the finished record. Its existing highest-candidate and failed-fit rules
 remain authoritative. A larger record appends a hidden last slot and redirects
 the original logical root. A record that fits remains at its existing physical
@@ -41,7 +41,7 @@ this does not authorize adopting an unrelated hidden record.
 The DATA phase owns one append cursor and map-byte overlay. It does not reuse
 arbitrary in-file free pages. GLOBAL, owned and candidate allocation cells must
 already be represented. The current composer does not grant map-record rebasing,
-bitmap promotion or INDEX allocation. The separate [joint DATA/INDEX continuation](ACE16_MIXED_DATA_INDEX_GROWTH.md)
+bitmap promotion or INDEX allocation. The separate [joint DATA/INDEX continuation](../indexes/ACE16_MIXED_DATA_INDEX_GROWTH.md)
 now consumes the same original-source operation and append ledger through
 qualified INDEX splitting. This DATA-only method keeps its represented-map and
 fitting-INDEX policy.
@@ -49,14 +49,14 @@ fitting-INDEX policy.
 The CLI's current default mixed SQL route still uses the fitting service. This
 engine continuation does not implicitly change default routing, normal ACE
 saves, required data macros, journaling or publication permissions.
-Explicit [SQL `--variable` routing](../access/writes/SQL_ENGINEERING_COPIES.md)
+Explicit [SQL `--variable` routing](../../../docs/access/writes/SQL_ENGINEERING_COPIES.md)
 now invokes the growing service for fixed fields plus one Short Text/Binary
 field. Mixed INDEX allocation still refuses; single-variable services retain
 their existing profiles.
 
 ## Complete source authority before placement
 
-The [growing stage](../../crates/engines/tablecraft-ace/src/table/mutation/fitted/growing/stage.rs)
+The [growing stage](../../../crates/engines/tablecraft-ace/src/table/mutation/fitted/growing/stage.rs)
 first obtains fresh authority from the immutable image and original request
 groups. The independent proof captures the original table, affected fields,
 key siblings, logical root words/ranges, original physical bytes, complete final
@@ -78,7 +78,7 @@ ownership claim. Selected no-op roots undergo the same source protection.
 
 ## Independent final record, map and key proof
 
-The [finalizer](../../crates/engines/tablecraft-ace/src/table/mutation/fitted/growing/finish.rs)
+The [finalizer](../../../crates/engines/tablecraft-ace/src/table/mutation/fitted/growing/finish.rs)
 reacquires original requests and complete source-role authority. The shared
 placement replay compares actual target bytes with independent final records,
 replays candidate selection and genuine failed fits, and verifies slot/header
@@ -100,7 +100,7 @@ operation; no resource checks were skipped to preserve an older quota.
 
 ## Independent evidence and chronology
 
-The [literal growth corpus](../../crates/engines/tablecraft-ace/src/table/mutation/mixed_fitted_tests/growing/model.rs)
+The [literal growth corpus](../../../crates/engines/tablecraft-ace/src/table/mutation/mixed_fitted_tests/growing/model.rs)
 contains 36 pairs: both headers, Legacy/Modern text or Binary, ASC/DESC keys and
 three placement destinations. The original selected record is 23 bytes with a
 zero-byte NULL variable span and no internal padding. Jointly setting its fixed
@@ -115,7 +115,7 @@ explicit `FFFF` at independently calculated empty declaration tails for TD 2,
 7 and 10. The donor and earlier fitting constructors were not changed. The
 corrected gate passed all 72 source/expected images before mutation.
 
-The [reader-valid alias source](../../crates/engines/tablecraft-ace/src/table/mutation/mixed_fitted_tests/growing_roles.rs)
+The [reader-valid alias source](../../../crates/engines/tablecraft-ace/src/table/mutation/mixed_fitted_tests/growing_roles.rs)
 adds one INDEX-owned map bit claiming DATA page 12 as an unreachable INDEX body.
 Reading and index checks pass; complete source-role protection refuses DATA
 mutation. That source gate passed before its actual API refusal control.
@@ -133,7 +133,7 @@ uses represented-map capture and attaches the same complete source metadata to
 its actual placement space. This changes admission, not failed-candidate retry
 or postfailure error classification. The 36 expected constructors stayed exact.
 
-The [new boundary source](../../crates/engines/tablecraft-ace/src/table/mutation/mixed_fitted_tests/growing_boundary.rs)
+The [new boundary source](../../../crates/engines/tablecraft-ace/src/table/mutation/mixed_fitted_tests/growing_boundary.rs)
 has EOF 512, existing wide GLOBAL/owned maps and an inline candidate map.
 Native source checks prove GLOBAL 512 is free and owned 512 is represented and
 unset, while candidate 512 is unrepresented. Its source gate passed first.
@@ -142,7 +142,7 @@ allocation with `Inspect(Unsupported)` before publishing a candidate.
 
 After this correction, all 16 growth/fitting functions and strict/minimal ACE
 checks passed. The
-[growth controls](../../crates/engines/tablecraft-ace/src/table/mutation/fitted/growing/tests.rs)
+[growth controls](../../../crates/engines/tablecraft-ace/src/table/mutation/fitted/growing/tests.rs)
 also cover late stale values, exact budgets and final cancellation, correlated
 record/key changes, unselected-byte tampering, an extra GLOBAL claim without an
 event, and collation-equivalent producer projections that fail exact record

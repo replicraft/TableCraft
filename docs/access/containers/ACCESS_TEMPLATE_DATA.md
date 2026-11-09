@@ -186,7 +186,7 @@ policy. Stored template locale properties do not activate an unqualified compare
 Nine feature tests cover exact values/types/names, schema-only binding despite
 bad records, reusable joins/filters/aggregates, nullable/order/facet failures,
 linked/missing/List Definition refusals, reentrancy, quotas and every observed
-cancellation checkpoint. The original [Python XML/ZIP runner](../../testing/compare_template_tables.py)
+cancellation checkpoint. The original [Python XML/ZIP runner](../../../tests/access/reading/tables/compare_template_tables.py)
 passes 48 typed-template CLI/query controls, including 15 scalar domains. Existing
 package controls are updated for catalog inspection. All fixtures are original
 inert data generated in memory/temporary directories; bytes remain unchanged.
@@ -219,13 +219,13 @@ independent List Definition agreement.
 The coordinated Access batch passes 92 tests in total, including unrelated
 calculation-view companion checks; these are not additional template tests.
 Strict Access library/test Clippy and the initial library check pass. The
-[scoped verification record](../../testing/results/read-query-template-named-types-2026-10-25.json)
+[scoped verification record](../../../tests/results/queries/read-query-template-named-types-2026-10-25.json)
 contains exact commands, source/log hashes, count attribution and excluded
 companion failures. No native Access execution or template instantiation was run.
 
 ### XML name verification
 
-The [scoped verification record](../../testing/results/read-query-template-xml-names-2026-10-25.json)
+The [scoped verification record](../../../tests/results/queries/read-query-template-xml-names-2026-10-25.json)
 records 66 passing template tests, including seven new exact-name tests, and
 strict Access library/test linting. Independent literal boundary cases cover the
 XML character ranges, continuation-only characters and invalid Unicode category

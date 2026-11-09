@@ -7,10 +7,10 @@ from pathlib import Path
 import subprocess
 import sys
 
-ROOT = Path(__file__).resolve().parents[3]
+ROOT = Path(__file__).resolve().parents[4]
 sys.dont_write_bytecode = True
 sys.path.insert(0, str(ROOT))
-sys.path.insert(0, str(ROOT / 'docs/testing'))
+sys.path.insert(0, str(ROOT / 'tests/access'))
 from scripts.compat_artifacts import ArtifactStore
 from ace16_insert_child_split import model as independent_model, reference as source_reference
 
@@ -69,11 +69,11 @@ def maintained_sources(pins):
     private = pins.check(STORE.pin(MODEL + '/prospective_model.py')).read_text()
     assert hashlib.sha256(private.encode()).hexdigest() == (
         'd23acef9b51867f727fa296fabc8e64440d46d5226cfbb62f9f3695d5803a058')
-    public = pins.check(STORE.pin('docs/testing/ace16_insert_child_split/model.py')).read_text()
+    public = pins.check(STORE.pin('tests/access/indexes/ace16_insert_child_split/model.py')).read_text()
     assert public == private.replace('Path(__file__).resolve().parents[2]',
                                       'Path(__file__).resolve().parents[3]')
     old = pins.check(STORE.pin(REFERENCE + '/proof.py')).read_text()
-    public = pins.check(STORE.pin('docs/testing/ace16_insert_child_split/reference.py')).read_text()
+    public = pins.check(STORE.pin('tests/access/indexes/ace16_insert_child_split/reference.py')).read_text()
 
     class OwnerNames(ast.NodeTransformer):
         def visit_Name(self, node):
@@ -95,7 +95,7 @@ def maintained_sources(pins):
                         isinstance(target, ast.Name) and target.id == name for target in node.targets)]
         assert assignment(private_ast) == assignment(public_ast)
     old_owner = STORE.path('.cache/ace16-insert-root-split-reference-next-20261027/proof.py').read_text()
-    owner = pins.check(STORE.pin('docs/testing/ace16_insert_root_split/reference.py')).read_text()
+    owner = pins.check(STORE.pin('tests/access/indexes/ace16_insert_root_split/reference.py')).read_text()
     assert owner == old_owner.replace('Path(__file__).resolve().parents[2]',
                                        'Path(__file__).resolve().parents[3]')
 

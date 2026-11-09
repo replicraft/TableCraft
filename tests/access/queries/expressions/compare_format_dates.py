@@ -3,6 +3,7 @@
 Optional original ScalarFixture files supply stored timestamps through reviewed
 Jackcess getters. This does not execute Microsoft Access or qualify Windows NLS.
 """
+from engineering_paths import reference_file
 
 import argparse
 import csv
@@ -98,7 +99,7 @@ def main():
     if args.generate:
         args.directory.mkdir(exist_ok=False)
         for family, suffix in PROFILES:
-            run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar, RECIPES / "ScalarFixture.java", args.directory / f"Scalar-{family}.{suffix}", family)
+            run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar, reference_file('tests/access/reading/tables/ScalarFixture.java'), args.directory / f"Scalar-{family}.{suffix}", family)
 
     rng = random.Random(20261021)
     values = [dt.datetime(1899, 12, 30), dt.datetime(1899, 12, 30, 6), dt.datetime(1993, 1, 27, 17, 4, 23), dt.datetime(2024, 2, 29, 23, 59, 59, 750000), dt.datetime(100, 1, 1), dt.datetime(9999, 12, 31, 23, 59, 59)]
@@ -136,7 +137,7 @@ def main():
         for family, suffix in PROFILES:
             database = args.directory / f"Scalar-{family}.{suffix}"
             before = hashlib.sha256(database.read_bytes()).hexdigest()
-            tagged = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar, RECIPES / "TableDataOracle.java", database, "ScalarSamples")
+            tagged = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar, reference_file('tests/access/reading/tables/TableDataOracle.java'), database, "ScalarSamples")
             decoded = []
             for line in tagged.splitlines():
                 fields = line.split("\t")

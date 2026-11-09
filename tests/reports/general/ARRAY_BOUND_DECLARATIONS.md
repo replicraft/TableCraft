@@ -1,6 +1,6 @@
 # Array-bound Long declaration replay
 
-The [accepted source-free replay](results/array-bound-declarations-2026-10-24.json)
+The [accepted source-free replay](../../results/general/array-bound-declarations-2026-10-24.json)
 passes 77 controls and all 1,867 unchanged hashes, including every entry in the
 frozen 1,862-file Rust inventory. The candidate has 40 commands (17 successes,
 23 classified refusals); the fixed older CLI has 37 (17 successes, 20 refusals).
@@ -20,9 +20,9 @@ as returning Long. The existing TableCraft runtime already returns Int32, whose
 VarType is 3; the query declaration classifier now records that known Scalar
 category instead of leaving it unknown. These signature references do not by
 themselves prove direct query availability or native Access behavior. The
-[existing inspection profile](../expressions/VALUE_INSPECTION.md) retains those scope limits.
+[existing inspection profile](../../../docs/expressions/VALUE_INSPECTION.md) retains those scope limits.
 
-[compare_array_bound_declarations.py](compare_array_bound_declarations.py) uses
+[compare_array_bound_declarations.py](../../access/reading/tables/compare_array_bound_declarations.py) uses
 Python integer arithmetic with signed 32-bit limits. It independently models the
 existing zero-based explicit Array profile: lower bound 0 and upper bound
 `length - 1`, including -1 for an empty extent. The vectorized signature matrix
@@ -76,7 +76,7 @@ The original runner uses Python's standard library. Its report pins:
   `8f377ddf7734b22c74ba71f79defbd12ddd116d93c5bbeacb86ddda084e50541`.
 
 ```sh
-python3 docs/testing/compare_array_bound_declarations.py \
+python3 tests/run.py tests/access/reading/tables/compare_array_bound_declarations.py \
   --cli .cache/tablecraft-bin/array-bound-declaration-cli-20261024 \
   --cli-sha256 40fc7f58e5bfa48458762bfcc97b1b1ea3232ac6c7b10d4a16a15f83cbfb292e \
   --baseline .cache/tablecraft-bin/concat-policy-cli-20261024 \

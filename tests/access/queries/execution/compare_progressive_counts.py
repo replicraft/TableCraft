@@ -8,7 +8,7 @@ from pathlib import Path
 
 from compare_decimal_seeks import JAR_SHA256, digest, getters, invoke, relative
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[4]
 COMPILED_REVISION = "905b885a"
 CLI_SHA256 = "b51b570ab768359f734a6a3f37e88deb8d1b8f693d99e5bd83fa209a3402d0d4"
 COMPILED_PATHS = [
@@ -90,9 +90,9 @@ def main():
 
     paths = [
         args.cli, args.jar, Path(__file__), *args.inputs,
-        ROOT / "docs/testing/compare_decimal_seeks.py",
-        ROOT / "docs/testing/DecimalIndexFixture.java",
-        ROOT / "docs/testing/IndexRowsOracle.java",
+        ROOT / "tests/access/queries/expressions/compare_decimal_seeks.py",
+        ROOT / "tests/access/queries/expressions/DecimalIndexFixture.java",
+        ROOT / "tests/access/indexes/native/IndexRowsOracle.java",
     ]
     before = {relative(path): digest(path) for path in paths}
     revision, compiled = snapshot()

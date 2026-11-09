@@ -59,7 +59,7 @@ serialization, key replacement and audits.
 
 ## Verification scope
 
-The [scoped implementation record](results/ace16-page-updates-native-2026-10-26.json)
+The [scoped implementation record](../../results/storage/ace16-page-updates-native-2026-10-26.json)
 contains exact source/log hashes, commands and preserved failures. Author tests
 reuse existing repository-authored encoded fixture mechanics; the separate
 contract target independently authors its unindexed physical model. Four causal

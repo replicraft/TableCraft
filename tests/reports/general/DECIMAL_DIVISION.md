@@ -16,7 +16,7 @@ establish native Access query equivalence or change function availability.
 
 ## Independent model
 
-[The original Python runner](compare_decimal_division.py) models exact Decimal,
+[The original Python runner](../../access/queries/expressions/compare_decimal_division.py) models exact Decimal,
 Currency and numeric Text inputs with `Fraction`. It rounds each operand to
 binary64 with integer quotient/remainder arithmetic, recovers the exact rational
 represented by those bits, divides those rational operands, then independently
@@ -51,7 +51,7 @@ they do not replace the independent expected-bit model or provide Access results
 
 ## Accepted replay
 
-The [2026-10-24 report](results/decimal-division-2026-10-24.json) records 269
+The [2026-10-24 report](../../results/general/decimal-division-2026-10-24.json) records 269
 independent CLI controls, 120 observational default baseline pairs and eleven
 IEEE model controls. The two executable runs for each baseline pair account for
 509 total CLI invocations; pairs are not counted as independent model controls.

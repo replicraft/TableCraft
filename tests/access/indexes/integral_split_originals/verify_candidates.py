@@ -6,8 +6,8 @@ from pathlib import Path
 import subprocess
 import sys
 
-ROOT = Path(__file__).resolve().parents[3]
-sys.path.insert(0, str(ROOT / 'docs/testing'))
+ROOT = Path(__file__).resolve().parents[4]
+sys.path.insert(0, str(ROOT / 'tests/access'))
 from integral_split_originals import action_model, candidate_model
 from integral_split_originals.verify_sources import all_pins, check_pin, normalized
 

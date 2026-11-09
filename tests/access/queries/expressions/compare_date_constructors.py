@@ -3,6 +3,7 @@
 No Microsoft Access execution is claimed. Optional reviewed getter inputs and
 registered authored fixtures supply inert Int32 fields; source hashes stay unchanged.
 """
+from engineering_paths import reference_file
 import argparse
 import calendar
 import datetime
@@ -115,7 +116,7 @@ def main():
             assert digest(database) == expected_digest
     if args.database:
         before = digest(args.database)
-        tagged = run('java','-Dstdout.encoding=UTF-8','-cp',args.jar,RECIPES/'TableDataOracle.java',args.database,'ROULETTE_TB')
+        tagged = run('java','-Dstdout.encoding=UTF-8','-cp',args.jar,reference_file('tests/access/reading/tables/TableDataOracle.java'),args.database,'ROULETTE_TB')
         ids = sorted(int(line.split('\t')[1].removeprefix('I32:')) for line in tagged.splitlines())
         sql = 'SELECT ORDR_NBR AS N,DateSerial(2000+ORDR_NBR,2,29) AS D FROM ROULETTE_TB ORDER BY N'
         expected = 'N\tD\n'+''.join(str(n)+'\t'+date_serial(2000+n,2,29)+'\n' for n in ids)

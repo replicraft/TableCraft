@@ -6,7 +6,7 @@ platform/feature modules, examples and benchmarks. It follows actual test module
 boundaries rather than excluding files merely by name. Testkit fixtures/support
 and actual test bodies are test code and are outside this request.
 
-The [per-call record](../testing/results/clone-ownership-audit-2026-11-09.json)
+The [per-call record](../../tests/results/general/clone-ownership-audit-2026-11-09.json)
 contains **707 production/example/benchmark calls**, one rustdoc example and
 16 additional associated/iterator clone forms in the hosts. All baseline calls
 reconcile with the parser/module inventory and macro-body cross-check. Every

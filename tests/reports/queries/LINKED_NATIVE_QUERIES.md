@@ -4,12 +4,12 @@ Reviewed 24 October 2026. Independent original getter records now exercise the
 Access adapter's explicit already-open source facade and the actual CLI
 `query run --link ALIAS PATH` consumer. This is bounded engineering read/query
 evidence, not native Access linked SQL, live cross-file snapshot or save evidence.
-The [inert metadata contract](../access/schema/NATIVE_LINKED_TABLES.md) remains separate from
+The [inert metadata contract](../../../docs/access/schema/NATIVE_LINKED_TABLES.md) remains separate from
 authorization to open targets.
 
 ## Original corpus and oracle
 
-The original [producer](LinkedQueryFixture.java) creates separate frontend/backend
+The original [producer](../../access/queries/execution/LinkedQueryFixture.java) creates separate frontend/backend
 pairs for Jet 4, ACE 2007, ACE 2016 and ACE 2019, plus a mixed Jet 4 frontend/ACE
 2016 backend pair. Public table builders create nullable ordinary data: six people,
 six orders, an empty remote table and three frontend rates. Public
@@ -23,7 +23,7 @@ TABLE, COLUMN, WHERE, ORDER and END records are authored through lower-level
 profile. This is not an ordinary saved-query writer API, reference SQL execution
 or new native availability evidence. Expression evaluation is disabled throughout.
 
-The [oracle](LinkedQueryOracle.java) reopens both explicitly named originals
+The [oracle](../../access/queries/execution/LinkedQueryOracle.java) reopens both explicitly named originals
 read-only, installs throwing link resolvers and reads local tables separately.
 It records raw scalar values, frontend link metadata, signed catalog IDs, inert
 saved SQL reconstruction and exact column text-order identities. Ordinary values
@@ -55,7 +55,7 @@ not select or erase a field's stored policy.
 
 ## Explicit authority and refusal controls
 
-The [engineering example](../../crates/backends/tablecraft-access/examples/linked_query.rs)
+The [engineering example](../../../crates/backends/tablecraft-access/examples/linked_query.rs)
 opens only its two host path arguments. It supplies exact root alias/native ID,
 expected Database string, an already-open target handle, target table and target
 native ID. All routes share one cumulative native pool; the same target handle
@@ -83,7 +83,7 @@ backend handle successfully. The actual CLI likewise reads the host-selected
 backend despite that stored string naming a nonexistent file. This proves the
 tested authority separation, not a native filesystem/path identity relationship.
 
-A separate [public-link recipe](LinkedQueryCaseFixture.java) adds `Lowercase link`
+A separate [public-link recipe](../../access/queries/execution/LinkedQueryCaseFixture.java) adds `Lowercase link`
 with stored ForeignName `remote people` to fresh copies. Reopened getters verify
 the exact stored spelling. CLI queries resolve it to the supplied backend's
 canonical `Remote People` table, including case-varied host aliases. Provider,
@@ -104,8 +104,8 @@ many of the same cells through different executables.
 
 | Consumer | Passing controls | Main result cells | Unchanged pinned hashes |
 | --- | ---: | ---: | ---: |
-| [Already-open example](results/linked-queries-final-2026-10-24.json) | 335 | 1,779 | 49 |
-| [Actual CLI](results/linked-cli-final-2026-10-24.json) | 330 | 1,779 | 48 |
+| [Already-open example](../../results/queries/linked-queries-final-2026-10-24.json) | 335 | 1,779 | 49 |
+| [Actual CLI](../../results/general/linked-cli-final-2026-10-24.json) | 330 | 1,779 | 48 |
 
 The final immutable example SHA-256 is
 `b8903dd27c229da51687b6607164e053f619b6d09335f8d6d5ad68a980dd3607`.
@@ -125,13 +125,13 @@ producer probes are also excluded. No accepted source or input changed between
 the final replay and hash review.
 
 ```sh
-python3 docs/testing/compare_linked_queries.py \
+python3 tests/run.py tests/access/queries/execution/compare_linked_queries.py \
   --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar \
   --reader .cache/tablecraft-bin/linked-native-example-final-20261024 \
   --directory .cache/tablecraft-fixtures/linked-query-final-20261024 \
   --report /tmp/linked-query-replay.json
 
-python3 docs/testing/compare_linked_cli.py \
+python3 tests/run.py tests/access/queries/execution/compare_linked_cli.py \
   --cli .cache/tablecraft-bin/linked-native-cli-final-20261024 \
   --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar \
   --directory .cache/tablecraft-fixtures/linked-query-final-20261024 \
@@ -141,7 +141,7 @@ python3 docs/testing/compare_linked_cli.py \
 
 Fresh engineering generation uses `--generate` with new per-profile directories.
 Fresh CLI case additions use `--generate-case-copies`; ordinary replay writes no
-database. [Fixture provenance](FIXTURES.md#original-explicit-linked-query-inputs)
+database. [Fixture provenance](../reading/FIXTURES.md#original-explicit-linked-query-inputs)
 records original pairs and controlled-copy boundaries. Native Access query
 comparisons, live cross-file coherence, authentication qualification, linked
 writes, automatic provider traversal and application save/reopen remain separate.

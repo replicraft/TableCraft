@@ -3,6 +3,7 @@
 Optional Jackcess rows provide native input, not native expression semantics.
 Nothing executes database application content; native Access remains unrun.
 """
+from engineering_paths import reference_file
 import argparse
 import csv
 from decimal import Decimal, ROUND_HALF_EVEN, localcontext
@@ -85,7 +86,7 @@ def main():
         assert digest(args.jar) == '19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc'
         before = digest(args.database)
         tagged = run('java', '-Dstdout.encoding=UTF-8', '-cp', args.jar,
-                     RECIPES/'TableDataOracle.java', args.database, 'ROULETTE_TB')
+                     reference_file('tests/access/reading/tables/TableDataOracle.java'), args.database, 'ROULETTE_TB')
         expected = []
         for line in tagged.splitlines():
             value = int(line.split('\t')[1].removeprefix('I32:'))

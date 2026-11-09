@@ -33,7 +33,7 @@ The ordinary native gate passes all forty views through complete scalar reads,
 index/constraint checks and public single BeforeChange inspection. The rich gate
 passes four admitted views and two expected source refusals. Separate exclusive
 exports retain all forty-six complete images before normal writer execution.
-The [execution record](results/ace16-mixed-before-change-sources-2026-10-31.json)
+The [execution record](../../results/general/ace16-mixed-before-change-sources-2026-10-31.json)
 records complete image hashes, original request binding and the first compile-only
 integration-test correction without replacing its frozen source draft.
 
@@ -55,7 +55,7 @@ qualifies no complete rich SDK inventory. The actual rich native/raw checks rema
 separate. The record preserves this first failure, a compile-controller inventory
 error and an artifact-binder predecessor rather than rewriting their history.
 
-The separate [normal mixed writer record](results/ace16-normal-mixed-before-change-2026-10-31.json)
+The separate [normal mixed writer record](../../results/general/ace16-normal-mixed-before-change-2026-10-31.json)
 reports subsequent planning/save checks. These sources and
 independent reads do not establish Microsoft Access program execution, native
 save/reopen, generated writes or general mixed-schema compatibility.

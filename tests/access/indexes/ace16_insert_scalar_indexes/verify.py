@@ -5,10 +5,10 @@ import json
 from pathlib import Path
 import sys
 
-ROOT = Path(__file__).resolve().parents[3]
+ROOT = Path(__file__).resolve().parents[4]
 sys.dont_write_bytecode = True
 sys.path.insert(0, str(ROOT))
-sys.path.insert(0, str(ROOT / 'docs/testing'))
+sys.path.insert(0, str(ROOT / 'tests/access'))
 from scripts.compat_artifacts import ArtifactStore
 from ace16_insert_multiple_indexes.verify_candidates import Pins, command_report, git_archive
 from ace16_insert_scalar_indexes import model, reference
@@ -20,7 +20,7 @@ NATIVE = '.cache/ace16-scalar-index-insert-candidates-next-20261028'
 NATIVE_WORK = '.cache/ace16-scalar-index-insert-candidates-first-20261028'
 GETTERS = '.cache/ace16-scalar-index-insert-getters-next-20261028'
 GETTER_WORK = '.cache/ace16-scalar-index-insert-getters-first-20261028'
-PUBLIC = 'docs/testing/ace16_insert_scalar_indexes'
+PUBLIC = 'tests/access/indexes/ace16_insert_scalar_indexes'
 NOTICE = b'Engineering candidate: data-macro semantics and native Access qualification pending.\n'
 FIXED = {
     SOURCE + '/controller-freeze.json': 'e86f3ef304807feb605379cb58feb3aaad58f478e50670b9b35d35618d0ffe4b',

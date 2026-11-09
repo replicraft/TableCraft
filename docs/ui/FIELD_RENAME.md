@@ -9,7 +9,7 @@ An unsupported source inspection keeps the proposal read-only and cannot Save.
 
 The normal desktop workflow passes headless native save/reopen, unchanged review,
 Design selection, duplicate refusal, exact dirty-close and retained sort retry
-checks. The [coordinated record](../testing/results/field-workbench-workflows-2026-11-09.json)
+checks. The [coordinated record](../../tests/results/schema/field-workbench-workflows-2026-11-09.json)
 retains earlier failures and corrections without adding repeated coverage.
 Source-free rendering has separate evidence below.
 
@@ -86,7 +86,7 @@ Japanese layouts retain the complete Ribbon through its existing horizontal
 overflow behavior. These renders establish neither native writes nor Windows/Access
 interaction, dependency repair or pixel parity. Final functional/visual acceptance
 must be reported separately rather than inferred from these source-free scenes.
-The [independent raw/reader record](../testing/results/saved-field-rename-raw-sdk-read-2026-11-09.json)
+The [independent raw/reader record](../../tests/results/schema/saved-field-rename-raw-sdk-read-2026-11-09.json)
 contains four coordinated raw positives and four TDEF-only controls observed
 through inert SDK reads, not SDK-authored rename writes.
 

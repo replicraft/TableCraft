@@ -51,7 +51,7 @@ def main():
                 table = prefix + suffix
                 actual = run(args.rows, path, table)
                 expected = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar,
-                    "docs/testing/TableDataOracle.java", path, table)
+                    "tests/access/reading/tables/TableDataOracle.java", path, table)
                 if actual != expected or len(actual.splitlines()) != rows:
                     raise RuntimeError("Exact Decimal/integer carriers differ: " + table)
                 output = run(args.cli, "inspect", path, "--table", table, "--constraints")

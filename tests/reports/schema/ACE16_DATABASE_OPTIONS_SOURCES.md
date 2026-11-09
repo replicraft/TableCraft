@@ -1,6 +1,6 @@
 # Explicit database-option insertion reference
 
-The [saved reference](results/ace16-database-options-sdk-reference-2026-11-08.json)
+The [saved reference](../../results/general/ace16-database-options-sdk-reference-2026-11-08.json)
 records explicit Name AutoCorrect OFF authoring through reviewed Jackcess 5.0.4
 on fresh copies of two current TableCraft creator outputs: an empty keyless
 `Items(Id, Score)` table and an empty Increment primary-key variant. Original
@@ -38,7 +38,7 @@ the single-external-row carrier, not the larger inline representation used by
 some independently read-qualified engineering fixtures. Reader acceptance does
 not authorize introducing a new native write-size rule.
 
-The independent [literal model](ace16_database_options/model.py) calls no
+The independent [literal model](../../access/schema/ace16_database_options/model.py) calls no
 TableCraft or SDK codec. Its complete expected files match both one-call SDK
 outputs exactly: 40,960 bytes for keyless and 45,056 bytes for generated-primary,
 with zero differing bytes. The model retains all original bytes except the exact
@@ -46,7 +46,7 @@ catalog count/directory/free-space/append scope and two existing allocation bits
 and authors the new LVAL page separately. The saved record pins source, output,
 helper, model and SDK hashes, including the earlier failures.
 
-The maintained [engineering helper](ace16_database_options/InsertOptions.java)
+The maintained [engineering helper](../../access/schema/ace16_database_options/InsertOptions.java)
 accepts a mode and a caller-created fresh copy. Modes are `read`,
 `missing-role-save`, `insert-off` and `insert-complete-off`. The last mode captures
 the complete role and properties in one insertion. Run it only on fresh copies;

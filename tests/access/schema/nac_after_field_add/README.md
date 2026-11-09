@@ -56,7 +56,7 @@ The old TCDO0001 9/10-page contract is unchanged. Its decoder does not admit the
 
 ## Recorded execution and wrapper portability
 
-The [five-case evidence record](../results/nac-after-field-add-sdk-2026-11-08.json)
+The [five-case evidence record](../../../results/schema/nac-after-field-add-sdk-2026-11-08.json)
 pins the actual helper/model and complete source/AFTER images. All five expected
 images were frozen before SDK mutation. The initial compile failure occurred
 before any database mutation and remains identified in that record. The executed
@@ -69,5 +69,5 @@ it has been syntax-reviewed but has not been executed or verified on Windows.
 The executed helper and independent model hashes remain unchanged. Original
 private logs, failed compile attempt and frozen predictions remain retained.
 
-See the [native options contract](../../access/writes/DATABASE_OPTIONS.md) for
+See the [native options contract](../../../../docs/access/writes/DATABASE_OPTIONS.md) for
 current source admission, which this SDK evidence does not broaden.

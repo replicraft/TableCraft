@@ -9,8 +9,8 @@ Access application compatibility.
 VBA-heavy cases remain useful for preservation and dependency-detection tests.
 VBA execution/authoring and COM/Wine comparisons are deferred; record those outcomes
 as unsupported or unrun, never as passing because code was preserved. Required
-table data-macro validation remains in scope. See [VBA decision](../architecture/VBA_COMPATIBILITY.md).
-The [ACE 16 macro fixture requirements](DATA_MACROS.md) separate ordinary macro
+table data-macro validation remains in scope. See [VBA decision](../../../docs/architecture/VBA_COMPATIBILITY.md).
+The [ACE 16 macro fixture requirements](../schema/DATA_MACROS.md) separate ordinary macro
 inventory, positive table-event evidence, preservation and native write/reopen tests.
 
 ## Initial inventory
@@ -20,7 +20,7 @@ inventory, positive table-event evidence, preservation and native write/reopen t
 | `docs/examples/Access_Example_VBA.accdb` | Reviewed MIT example; source, notice, size and SHA-256 in [FIXTURES.md](FIXTURES.md) | Unrun | Unrun | Unrun | Unrun | Unrun |
 
 Read-only header/catalog inspection on a disposable copy is recorded in
-[NATIVE_READING.md](../access/NATIVE_READING.md); the application-level outcomes above
+[NATIVE_READING.md](../../../docs/access/NATIVE_READING.md); the application-level outcomes above
 remain unrun.
 
 This inventory records one candidate, not a representative qualified corpus. Its
@@ -33,7 +33,7 @@ bytes have been acquired as part of this policy.
 ## Corpus selection and handling
 
 ACE 16 is the primary oracle and fixture target under the
-[100% compatibility goal](../ROADMAP.md#primary-target-100-ace-16-compatibility).
+[100% compatibility goal](../../../docs/ROADMAP.md#primary-target-100-ace-16-compatibility).
 Prioritize original minimal fixtures with reproducible ACE 16 creation recipes,
 then licensed representative applications: simple CRUD; VBA-heavy business logic;
 linked-table frontends; complex reports/labels; custom ribbons/startup; advanced
@@ -90,7 +90,7 @@ reconnect behavior. A local single-client success does not qualify shared use.
 Forms need control/property/event matrices with cancellation and binding traces.
 Reports need fonts/fallback, printer metrics, page/section limits, pagination,
 grouping, labels and PDF/print comparisons. Qualify design limits by build; see
-[distribution profiles](../features/ACCESS_DISTRIBUTION.md). Linked-source cases
+[distribution profiles](../../../docs/features/ACCESS_DISTRIBUTION.md). Linked-source cases
 need actual driver/server/authentication profiles, never production credentials.
 P2P tests are separate from native shared-file tests and must not replay external
 effects or bypass required validation.
@@ -106,6 +106,6 @@ harness with the first operations it can actually compare, followed by small
 open/preserve/edit/reopen scenarios. No placeholder crate or always-skipped test
 suite is needed to make this policy appear implemented.
 
-Use [NATIVE_ENGINE.md](../architecture/NATIVE_ENGINE.md), [VBA_COMPATIBILITY.md](../architecture/VBA_COMPATIBILITY.md)
-and [WINDOWS_COMPATIBILITY.md](../architecture/WINDOWS_COMPATIBILITY.md) for the owning contracts.
+Use [NATIVE_ENGINE.md](../../../docs/architecture/NATIVE_ENGINE.md), [VBA_COMPATIBILITY.md](../../../docs/architecture/VBA_COMPATIBILITY.md)
+and [WINDOWS_COMPATIBILITY.md](../../../docs/architecture/WINDOWS_COMPATIBILITY.md) for the owning contracts.
 Corpus failures should determine subsequent implementation priorities.

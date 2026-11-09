@@ -33,7 +33,7 @@ narrow-index tests remain unchanged. The focused batch passes 12 engine, 13 Acce
 and 40 retrieval tests. All-target/all-feature Clippy for those three packages,
 standalone minimal engine/query checks and a debug CLI build pass.
 
-The original [comparison runner](../../testing/compare_narrow_ranges.py) reuses four
+The original [comparison runner](../../../tests/access/reading/tables/compare_narrow_ranges.py) reuses four
 registered 20,000-row inputs and reviewed read-only Jackcess getters. Its 128
 controls compare exact counts/ID sums against independent integer models, including
 typed parameters, out-of-width endpoints, eager failures and a 6,000-row retention
@@ -41,7 +41,7 @@ cap that permits a point selection but refuses a subsequent complete read.
 JAR/input hashes and unchanged originals are checked.
 
 ```sh
-python3 docs/testing/compare_narrow_ranges.py --cli target/debug/tablecraft --jar path/to/jackcess-5.0.4.jar --directory path/to/large-index-inputs
+python3 tests/run.py tests/access/reading/tables/compare_narrow_ranges.py --cli target/debug/tablecraft --jar path/to/jackcess-5.0.4.jar --directory path/to/large-index-inputs
 ```
 
 This extends selection coverage, not the index encoding algorithm. No speedup is

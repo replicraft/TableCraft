@@ -1,4 +1,5 @@
 """Independent Decimal amortization ledgers and original inert native query metadata."""
+from engineering_paths import reference_file
 import argparse
 import csv
 from decimal import Decimal, localcontext
@@ -78,7 +79,7 @@ def main():
     with tempfile.TemporaryDirectory(prefix='tablecraft-payment-oracle-') as classes:
         names = ['SavedForestFixture', 'SavedStatisticsFixture', 'SavedFinancialFixture', 'SavedPaymentFixture', 'SavedReadOracle', 'SavedQueryOracle', 'TableDataOracle']
         subprocess.run(['javac', '-encoding', 'UTF-8', '-cp', str(args.jar), '-d', classes,
-                        *[str(RECIPES / (name + '.java')) for name in names]], check=True)
+                        *[str(reference_file(name + '.java')) for name in names]], check=True)
 
         def java(name, *values):
             return subprocess.check_output(['java', '-Dstdout.encoding=UTF-8', '-cp', str(args.jar) + os.pathsep + classes,

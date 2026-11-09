@@ -144,7 +144,7 @@ profile. Decimal precision is 1 through 28 and scale is zero through precision.
 There is no inferred capacity, numeric coercion, truncation or Decimal rescaling,
 even for empty or all-NULL input. UTF-16 code units differ from Unicode scalar
 characters and encoded payload bytes. See the [native declaration and encoding
-rules](../testing/ACE16_DATABASE_CREATION.md#explicit-variable-declarations).
+rules](../../tests/reports/creation/ACE16_DATABASE_CREATION.md#explicit-variable-declarations).
 
 In typed mode, exactly lowercase `null` means stored NULL. Prefix a literal with
 `value:` to bypass that keyword; `value:null` is literal Text `null`, and

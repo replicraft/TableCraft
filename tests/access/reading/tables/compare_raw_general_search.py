@@ -3,6 +3,7 @@
 The reviewed external encoder supplies keys to the existing original Java model.
 No native Microsoft Access query execution or broader locale support is claimed.
 """
+from engineering_paths import reference_file
 
 import argparse
 import os
@@ -64,7 +65,7 @@ def native_controls(args):
         path = args.directory / f"Policies-{profile}.{suffix}"
         before = digest(path)
         oracle = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar,
-                     RECIPES / "TableDataOracle.java", path, "PolicyProbe")
+                     reference_file('tests/access/reading/tables/TableDataOracle.java'), path, "PolicyProbe")
         expected = []
         for line in oracle.splitlines():
             fields = line.split("\t")
@@ -97,7 +98,7 @@ def main():
         raise ValueError("unexpected independent artifact")
     with tempfile.TemporaryDirectory(prefix="tablecraft-raw-general-search-") as classes:
         run("javac", "-cp", args.jar, "-d", classes,
-            RECIPES / "GeneralSearchOracle.java", RECIPES / "RawGeneralSearchOracle.java")
+            reference_file('tests/access/reading/tables/GeneralSearchOracle.java'), reference_file('tests/access/reading/tables/RawGeneralSearchOracle.java'))
         controls = source_free(args, os.pathsep.join([classes, str(args.jar)]))
     if args.directory is not None:
         controls += native_controls(args)

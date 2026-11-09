@@ -19,7 +19,7 @@ def main():
             raise RuntimeError("Expected original ACE 16 read family")
         def inspect(source):
             return run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar,
-                "docs/testing/UpdateFixture.java", "--inspect", source)
+                "tests/access/queries/expressions/UpdateFixture.java", "--inspect", source)
         expected = "1\t10\t8400\t12288\n2\t20\t8400\t12288\n3\t30\t8400\t12288\n"
         if inspect(path) != expected:
             raise RuntimeError("Unexpected original inert fixture")
@@ -56,7 +56,7 @@ def main():
                 changed = expected.replace("2\t20\t", "2\t27\t" if column == "Score" else "27\t20\t")
                 if inspect(output) != changed:
                     raise RuntimeError("Independent candidate rows/long-value lengths differ")
-                ordered = run("java", "-cp", args.jar, "docs/testing/IndexRowsOracle.java",
+                ordered = run("java", "-cp", args.jar, "tests/access/indexes/native/IndexRowsOracle.java",
                     output, "Items", "PK_Items", "Id")
                 if ordered != ("1\n2\n3\n" if column == "Score" else "1\n3\n27\n"):
                     raise RuntimeError("Independent candidate index references differ")

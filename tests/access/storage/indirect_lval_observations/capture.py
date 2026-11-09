@@ -8,8 +8,8 @@ import shutil
 import sys
 import traceback
 
-ROOT = Path(__file__).resolve().parents[3]
-sys.path.insert(0, str(ROOT / 'docs/testing'))
+ROOT = Path(__file__).resolve().parents[4]
+sys.path.insert(0, str(ROOT / 'tests/access'))
 from slot_preview_originals import common
 from compressed_memo_observations import capture as LONG
 import delete_reference_maps as MAP

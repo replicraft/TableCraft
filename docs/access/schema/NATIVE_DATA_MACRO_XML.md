@@ -77,7 +77,7 @@ separate existing limits.
 
 [Microsoft's desktop Before Change example](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/before-change-macro-event)
 uses the wrapper and April namespace. The privately retained desktop-origin
-payloads described in [fixture provenance](../../testing/FIXTURES.md#private-desktop-data-macro-carrier-investigation)
+payloads described in [fixture provenance](../../../tests/reports/reading/FIXTURES.md#private-desktop-data-macro-carrier-investigation)
 use single roots and the November namespace. They use ACE 2010 stored selectors,
 not ACE 16 native qualification. The
 [Access Services data-macro specification](https://learn.microsoft.com/en-us/openspecs/sharepoint_protocols/ms-axl2/bfdd300c-7b9c-4a9a-8669-c3cad1f3a8ce)
@@ -90,14 +90,14 @@ Eight focused engine tests cover supported metadata, independent property/event
 names, both wrappers/namespaces, inert body content, malformed/unknown input,
 resource ceilings and final cancellation. Native event semantics, qualified
 absence and native Access save/reopen remain unqualified; follow
-[data-macro acceptance](../../testing/DATA_MACROS.md). Eight CLI tests additionally
+[data-macro acceptance](../../../tests/reports/schema/DATA_MACROS.md). Eight CLI tests additionally
 cover explicit selection, zero-document reporting, refusal and late-error atomic
 output. Seven first original-file calls match all 130 source-derived TSV records,
 including nine envelopes and two names-only results with unchanged original hashes.
-The [record](../../testing/results/data-macro-xml-envelopes-2026-10-29.json) pins
+The [record](../../../tests/results/schema/data-macro-xml-envelopes-2026-10-29.json) pins
 the captured inputs, consumer and outputs.
 
-The maintained [saved-evidence verifier](../../testing/verify_data_macro_xml.py)
+The maintained [saved-evidence verifier](../../../tests/access/reading/tables/verify_data_macro_xml.py)
 reconstructs all expected records from pinned original observations before
 reading captured stdout. It launches no process and uses a retained copy of the
 exact consumer; normal rebuilds need not preserve `target/debug/tablecraft`.

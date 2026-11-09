@@ -10,7 +10,7 @@ Each logical index's at-most-ten key columns now use private inline ArrayVec
 storage. The public column slice, native key order, raw flags and qualification
 rules are unchanged. The complete metadata allocation is budgeted before
 construction, including inline capacity; no separate column heap allocation is
-needed. See the [collection comparison and retained measurements](../../testing/INDEX_COLUMN_COLLECTIONS.md)
+needed. See the [collection comparison and retained measurements](../../../tests/reports/schema/INDEX_COLUMN_COLLECTIONS.md)
 for target-specific memory savings, timing ties and noisy samples. This change
 does not establish a general query speedup or additional format compatibility.
 
@@ -18,9 +18,9 @@ Single-column native Short Binary indexes now support complete ascending/descend
 reads, scalar projections and read-only index checks. Empty Binary, NULL, padding,
 continuation tags and key/root agreement have explicit contracts. This does not
 enable OLE keys or writes of tables with binary indexes.
-[Compound Short Binary reads](../../testing/BINARY_INDEX_TUPLES.md) now use the bounded
-owned tuple reader, including mixed fields and whole-entry overflow digests. See [binary evidence and limits](../../testing/BINARY_INDEX_READS.md).
-Library hosts can now use exact borrowed [Binary range selections](../../testing/BINARY_INDEX_RANGES.md)
+[Compound Short Binary reads](../../../tests/reports/indexes/BINARY_INDEX_TUPLES.md) now use the bounded
+owned tuple reader, including mixed fields and whole-entry overflow digests. See [binary evidence and limits](../../../tests/reports/indexes/BINARY_INDEX_READS.md).
+Library hosts can now use exact borrowed [Binary range selections](../../../tests/reports/indexes/BINARY_INDEX_RANGES.md)
 with conservative branch pruning; automatic binary predicate pushdown remains separate.
 
 Single Short Text indexes now support checked ascending/descending reads and
@@ -39,7 +39,7 @@ Index-page prefixes now use borrowed zerocopy layouts with explicit little-endia
 unaligned fields. Signature/owner/free-space/order/reference validation remains in
 the decoder. Bitmap traversal uses bounded word blocks; byte work is precharged
 and cancellation checked at each block (at most eight bytes), with existing
-per-entry checks retained. [Benchmarks](../../testing/NATIVE_BENCHMARKS.md) compare the
+per-entry checks retained. [Benchmarks](../../../tests/reports/general/NATIVE_BENCHMARKS.md) compare the
 original bit loop, word iteration and a SIMD candidate without changing the file
 format or claiming native compatibility.
 
@@ -79,7 +79,7 @@ physical counts, truncated records and malformed chains remain errors. Byte/work
 budgets and immediate or later cancellation propagate before a result is returned.
 
 The format reference is the reviewed Jackcess 5.0.4 source archived and pinned in
-[the map-growth candidate receipt](../../testing/results/ace16-index-map-growth-originals-2026-10-27.json):
+[the map-growth candidate receipt](../../../tests/results/indexes/ace16-index-map-growth-originals-2026-10-27.json):
 `IndexData.create` reads the field four bytes into each physical count descriptor,
 `IndexData.commitAddRow` increments it only for a new distinct key, and
 `TableImpl.updateTableDefinition` writes each physical counter separately from
@@ -153,7 +153,7 @@ materialized table-map ceiling. Index-owned page maps independently retain their
 codec is introduced. Existing snapshot, source, per-operation physical-read and
 output limits still apply.
 
-The [focused implementation evidence](../../testing/LARGE_INDEX_SELECTIONS.md) records
+The [focused implementation evidence](../../../tests/reports/indexes/LARGE_INDEX_SELECTIONS.md) records
 170 passing engine tests, including ten new checks. Fresh public-writer ACE16
 inputs independently establish 5,000-row/5,000-page tables whose tiny indexed reads
 previously refused despite successful sequential reads. This is a bounded
@@ -165,7 +165,7 @@ from that evidence document.
 
 ## Independent metadata evidence
 
-The original [IndexOracle](../../testing/IndexOracle.java) uses the already reviewed
+The original [IndexOracle](../../../tests/access/indexes/native/IndexOracle.java) uses the already reviewed
 external Jackcess 5.0.4 JAR read-only. Its protected root-page accessor is invoked
 reflectively only in this engineering helper; this does not add Java to production.
 The registered candidate matched all 60 key components across its 22 indexed tables
@@ -173,7 +173,7 @@ for names, logical/physical identities, root, type, flags, column order and dire
 After grouping by table/logical number while preserving key order, tagged output
 SHA-256 is `e02d4a62e8f42d172982c33887ff2d62abc6e9bd341534f1f911d710a1a153b4`.
 
-The original [IndexFixture recipe](../../testing/IndexFixture.java) creates only a new
+The original [IndexFixture recipe](../../../tests/access/indexes/native/IndexFixture.java) creates only a new
 V2000 or V2007 file with 1,000 permuted rows, a primary Int32 index, nullable descending
 Int32, composite, Text and ignore-NULL indexes, plus an empty indexed table. Generated
 ACE metadata matched 30 components/11 tables including system tables (hash
@@ -222,17 +222,17 @@ Malformed and unknown rule/physical-flag semantics are Unsupported. No user rows
 or key pages are traversed, key membership/actions are not executed, and ordinary
 index constraints and write gates remain unchanged.
 
-The [original read-only oracle](../../testing/ForeignIndexOracle.java) resolves both
+The [original read-only oracle](../../../tests/access/indexes/native/ForeignIndexOracle.java) resolves both
 ends through Jackcess's public implementation accessors. The inert
-[fixture recipe](../../testing/ForeignIndexFixture.java) creates fresh V2016/V2019
+[fixture recipe](../../../tests/access/indexes/native/ForeignIndexFixture.java) creates fresh V2016/V2019
 restrict, cascade-update/delete, SET NULL, composite, self-reference and shared
 primary-alias cases, plus one-to-one and non-enforced controls in v2.
-[The comparison runner](../../testing/compare_foreign_indexes.py)
+[The comparison runner](../../../tests/access/indexes/native/compare_foreign_indexes.py)
 accepts `--jar`, `--cli`, `--example`, `--ace2016`, `--ace2019` and `--sample`.
 It matches fourteen directed links per generated v2 file and two in the registered
 sample, rejecting thirty-one corrupted copies per generated family with empty
 output. Reordered composite declaration ordinals also match both readers.
-[Hashes and provenance](../../testing/FIXTURES.md#relationship-catalog-agreement-inputs)
+[Hashes and provenance](../../../tests/reports/reading/FIXTURES.md#relationship-catalog-agreement-inputs)
 remain separate from native Access qualification.
 
 Eight CI tests cover literal self/alias metadata and actions on both ACE families,
@@ -285,7 +285,7 @@ separator/sibling/root/key/row checks as an ordinary index. Physical child-key
 duplicates and NULLs remain allowed when its declaration permits them; parent
 aliases retain primary-backed uniqueness and requiredness. This does not establish
 referential row membership or execute cascade actions. Ordinary Jet 4 plans still
-block foreign-index tables. ACE 16 [engineering previews](../../testing/ACE16_WRITE_PREVIEWS.md#checked-foreign-index-updates)
+block foreign-index tables. ACE 16 [engineering previews](../../../tests/reports/development/ACE16_WRITE_PREVIEWS.md#checked-foreign-index-updates)
 can now maintain eligible single-column integral keys after these physical and
 metadata checks plus complete before/after relationship audits. A successful read
 alone remains insufficient for mutation.
@@ -294,13 +294,13 @@ Six additional CI tests cover leaf/node/descending/nullable alias reads, exact
 Int32 ranges, malformed versus unsupported coverage, physical corruption and
 duplicate-key constraints, shared budgets/cancellation and the separate preview/
 journalable write guard. Eight metadata tests remain separate. The independent
-[read runner](../../testing/compare_foreign_index_reads.py) takes `--jar`, `--cli`, `--rows`,
+[read runner](../../../tests/access/indexes/native/compare_foreign_index_reads.py) takes `--jar`, `--cli`, `--rows`,
 `--ace2016`, `--ace2019`, `--sample`, `--mask2016` and `--mask2019`. The current v3
 recipe includes duplicate child keys plus 1,000-parent/1,200-child node trees.
 Comparisons match 38 foreign-index reads/5,408 returned rows across both ACE
 families, the registered sample and existing nullable Large Number fixtures;
 eight corrupted copies reject through both read and check paths. No Java input
-or generated database is required in CI. [Hashes and limits](../../testing/FIXTURES.md#foreign-physical-read-inputs)
+or generated database is required in CI. [Hashes and limits](../../../tests/reports/reading/FIXTURES.md#foreign-physical-read-inputs)
 remain independent evidence, not native Access or write qualification.
 
 The decoder traverses root/node/leaf pages, reconstructs shared entry prefixes from
@@ -403,7 +403,7 @@ actual i128 entry allocation sizes and bounded work remain charged.
 
 The reviewed Jackcess 5.0.4 `FixedPointColumnDescriptor` and big-endian
 `ColumnImpl.writeNumericValue` establish the reference transform. The original
-[recipe](../../testing/DecimalIndexFixture.java) asserts its V2016/V2019 formats use the
+[recipe](../../../tests/access/queries/expressions/DecimalIndexFixture.java) asserts its V2016/V2019 formats use the
 corrected encoding, then writes coefficients directly through BigInteger/BigDecimal
 with no floating conversion. Jet 4 additionally retains the sign byte for descending keys while
 complementing only the magnitude. Its descending negative group precedes the
@@ -413,10 +413,10 @@ are unchanged. The band is derived from the core Decimal bound and fits i128.
 ACE 12 uses corrected encoding, established by fresh V2007 fixtures rather than
 header retagging. See [Jet 4 qualification](../profiles/NATIVE_JET4.md).
 
-[Independent comparisons](../../testing/compare_decimal_indexes.py) match 6,116 ordered
+[Independent comparisons](../../../tests/access/queries/expressions/compare_decimal_indexes.py) match 6,116 ordered
 rows/profile, actual ascending/descending node trees, precisions 4/28, scales
 0/2/4/28, beyond-i64/2^53 neighbors, signed extrema, unique/primary/NULL checks,
-required-index residual queries and corrupt-root buffering. [Input/canonical hashes](../../testing/FIXTURES.md#original-ace-16-decimal-index-inputs)
+required-index residual queries and corrupt-root buffering. [Input/canonical hashes](../../../tests/reports/reading/FIXTURES.md#original-ace-16-decimal-index-inputs)
 remain recorded and originals unchanged. The earlier empty Decimal composite
 now qualifies through the separate complete tuple profile below.
 
@@ -498,19 +498,19 @@ chooses the column set before profile construction; the chosen builder still
 validates format, declared precision/scale, flags and column mapping. This changes
 neither the public read/check API nor native eligibility or constraint semantics.
 
-The original [recipe](../../testing/DecimalCompositeIndexFixture.java) writes fresh
+The original [recipe](../../../tests/access/queries/expressions/DecimalCompositeIndexFixture.java) writes fresh
 V2016/V2019 inputs through reviewed Jackcess 5.0.4, with corrected numeric encoding
 asserted and expression evaluation disabled. It combines exact Decimal scales
 4/28, GUID, Currency, Int64, Byte, Int16, Single, Boolean and legacy DateTime in
 reordered ten-component keys, plus ten Decimal fields at ten scales. Unique,
 primary, all/partial NULL and empty/unqualified controls remain explicit.
 
-[Independent comparisons](../../testing/compare_decimal_composite_indexes.py) match
+[Independent comparisons](../../../tests/access/queries/expressions/compare_decimal_composite_indexes.py) match
 3,512 ordered rows/profile with exact coefficients/scales, GUID/IEEE/date bits,
 required-index residual filters and complete checks. Ten-Decimal trees contain
 nine nodes/92 leaves across three indexes, maximum expanded entries 188/184 bytes
 and maximum observed prefix 162. The 183-byte prefix is a separate synthetic
-golden. [Fixture records](../../testing/FIXTURES.md#original-ace-16-decimal-tuple-index-inputs)
+golden. [Fixture records](../../../tests/reports/reading/FIXTURES.md#original-ace-16-decimal-tuple-index-inputs)
 retain immutable original/canonical hashes. Corrupt selected roots and unqualified
 Decimal/Text tuples fail without output or sequential fallback. The earlier
 6,116-row single-Decimal runner additionally checks its empty Decimal/Int32 tuple
@@ -548,19 +548,19 @@ seeks still reject this distinct carrier even for All/Null.
 
 The reviewed Jackcess 5.0.4 `FloatingPointColumnDescriptor`, big-endian DATE writer
 and bit-preserving Date carrier establish the independent transform. The original
-[recipe](../../testing/DateIndexFixture.java) writes fresh inert V2016/V2019 trees through
+[recipe](../../../tests/access/queries/expressions/DateIndexFixture.java) writes fresh inert V2016/V2019 trees through
 that artifact, without evaluating expressions. It asserts physical uniqueness
 distinguishes both signed zeros and calendar aliases, exact duplicates fail,
 ordinary unique NULLs repeat and primary NULLs fail. This is artifact evidence,
 not Microsoft Access qualification of aliased date writes or constraints.
 
-[Independent comparisons](../../testing/compare_date_indexes.py) match 4,528 ordered
+[Independent comparisons](../../../tests/access/queries/expressions/compare_date_indexes.py) match 4,528 ordered
 rows/profile with exact tagged serial bits, sequential controls, complete checks,
 single/mixed/ten-DateTime node trees and corrupt-root buffering. Required-index
 CLI tests check residual NULL/ID filters, quarter-day alias equality and civil
 sorting independently of native key order. The corrected read-only oracle
 serializes retained DATE carriers into memory, avoiding the lossy `toDateDouble`
-calendar path. [Input/canonical hashes](../../testing/FIXTURES.md#original-ace-16-date-index-inputs)
+calendar path. [Input/canonical hashes](../../../tests/reports/reading/FIXTURES.md#original-ace-16-date-index-inputs)
 remain recorded and originals unchanged.
 
 Six CI tests include a 256-case valid arbitrary-bit model, independent negative
@@ -592,21 +592,21 @@ API, foreign-key qualification, general coercion or new dependency is introduced
 
 The reviewed Jackcess 5.0.4 JAR and pinned
 [FloatingPointColumnDescriptor/ColumnImpl reference](https://github.com/jahlborn/jackcess/blob/be0a2139b087a227d14cafd4ea231306a5a3a862/src/main/java/com/healthmarketscience/jackcess/impl/IndexData.java)
-establish the physical transform. The original [recipe](../../testing/FloatingIndexFixture.java)
+establish the physical transform. The original [recipe](../../../tests/access/queries/expressions/FloatingIndexFixture.java)
 includes both signed zeros, finite endpoints, subnormals, infinities, positive/
 negative quiet NaNs and distinct payloads. It asserts exact duplicate rejection,
 distinct zero/NaN-key acceptance and repeated unique NULLs through that artifact.
 This is independent-reader engineering evidence, not native Access qualification
 of non-finite writes or SQL constraints.
 
-[The runner](../../testing/compare_floating_indexes.py) compares tagged hexadecimal
+[The runner](../../../tests/access/queries/expressions/compare_floating_indexes.py) compares tagged hexadecimal
 IEEE bytes in complete native index order, with sequential controls. Engineering
 `table_data --index INDEX` and `TableDataOracle PATH --index TABLE INDEX` select
 the required index without fallback; the normal CLI protocol is unchanged.
 Finite-only tables also exercise required-index CLI queries and residual NULL/ID
 filters. Tables containing non-finite values retain query's explicit rejection,
 even when only an ID is projected. Corrupt finite roots must fail with no output.
-[Fixture hashes](../../testing/FIXTURES.md#original-ace-16-floating-index-inputs) record immutable
+[Fixture hashes](../../../tests/reports/reading/FIXTURES.md#original-ace-16-floating-index-inputs) record immutable
 inputs and canonical comparisons.
 
 Six CI tests cover an independent 256-case all-bit-pattern total-order model,
@@ -638,15 +638,15 @@ The reviewed Jackcess 5.0.4 JAR's `IndexCodes`, `BooleanColumnDescriptor` and
 `ColumnDescriptor.writeValue` establish the reference encoding. Source reference:
 [IndexData.java](https://github.com/jahlborn/jackcess/blob/be0a2139b087a227d14cafd4ea231306a5a3a862/src/main/java/com/healthmarketscience/jackcess/impl/IndexData.java)
 and [IndexCodes.java](https://github.com/jahlborn/jackcess/blob/be0a2139b087a227d14cafd4ea231306a5a3a862/src/main/java/com/healthmarketscience/jackcess/impl/IndexCodes.java).
-The original [fixture recipe](../../testing/BooleanIndexFixture.java) separately asserts
+The original [fixture recipe](../../../tests/access/indexes/native/BooleanIndexFixture.java) separately asserts
 that supplied NULL becomes stored false and that unique/primary Boolean indexes
 reject a subsequent NULL input as a duplicate false value. This observation is
 specific to native stored Yes/No fields, not linked backends or expression NULLs.
 
-[Independent comparisons](../../testing/compare_boolean_indexes.py) match 4,509 ordered
+[Independent comparisons](../../../tests/access/indexes/native/compare_boolean_indexes.py) match 4,509 ordered
 rows/profile, actual single/mixed/ten-Boolean node trees, Boolean equality and
 IS NULL residual filters, unique/primary/partial-NULL checks and corrupt-root
-buffering. [Input and canonical hashes](../../testing/FIXTURES.md#original-ace-16-boolean-index-inputs)
+buffering. [Input and canonical hashes](../../../tests/reports/reading/FIXTURES.md#original-ace-16-boolean-index-inputs)
 remain recorded and original bytes unchanged. Six CI tests include a 256-case
 two-value model, compressed row-reference prefixes, every possible value byte,
 NULL/key mismatches, typed seeks, mixed carriers, constraints, budgets and
@@ -707,31 +707,31 @@ are research references; no upstream implementation was copied. The actual revie
 artifact and original fixtures provide comparison evidence, not Microsoft Access
 qualification.
 
-The original [GUID index recipe](../../testing/GuidIndexFixture.java) creates fresh inert
+The original [GUID index recipe](../../../tests/access/indexes/native/GuidIndexFixture.java) creates fresh inert
 V2016/V2019 files with 1,000-row ascending/descending trees, unique/primary keys,
 group/endian boundary patterns, repeated NULLs, zero/high GUIDs and empty indexes.
 Generation asserts duplicate and primary-NULL rejection.
-[Independent comparisons](../../testing/compare_guid_indexes.py) match 2,034 ordered rows
+[Independent comparisons](../../../tests/access/indexes/native/compare_guid_indexes.py) match 2,034 ordered rows
 per family, complete checks, required-index NULL filters and buffered rejection of
 corrupt selected roots. The original empty GUID composite now also qualifies.
 Oracle text is rendered in
 the CLI's canonical lowercase spelling; this does not add a SQL case policy or
 change the earlier default-cursor case observation. Original hashes remain
-unchanged and are recorded in [provenance](../../testing/FIXTURES.md#original-ace-16-guid-index-inputs).
+unchanged and are recorded in [provenance](../../../tests/reports/reading/FIXTURES.md#original-ace-16-guid-index-inputs).
 
 Five CI tests include a fixed-seed 256-case arbitrary-byte ordering model, both
 directions, prefixes crossing both segments/row references, NULL/zero distinctions,
 exact uniqueness/required rules, malformed tag/key/width/profile rejection and
 shared budgets/cancellation. The Int32 editor still rejects GUID targets and all
 ACE writes; a synthetic unrelated Jet 4 Int32 edit preserves the entire GUID
-index and every byte outside its exact field. Optional [GUID engineering write previews](../../testing/ACE16_WRITE_PREVIEWS.md#guid-index-write-previews) now exist separately. GUID seeks/production mutation,
+index and every byte outside its exact field. Optional [GUID engineering write previews](../../../tests/reports/development/ACE16_WRITE_PREVIEWS.md#guid-index-write-previews) now exist separately. GUID seeks/production mutation,
 general binary/text/float/date/Decimal indexes and native Access remain
 unqualified.
 
 ```sh
 java -cp path/to/jackcess-5.0.4.jar docs/testing/GuidIndexFixture.java new-2016.accdb V2016
 java -cp path/to/jackcess-5.0.4.jar docs/testing/GuidIndexFixture.java new-2019.accdb V2019
-python3 docs/testing/compare_guid_indexes.py --jar path/to/jackcess-5.0.4.jar \
+python3 tests/run.py tests/access/indexes/native/compare_guid_indexes.py --jar path/to/jackcess-5.0.4.jar \
   --cli target/release/tablecraft --ace2016 new-2016.accdb --ace2019 new-2019.accdb
 ```
 
@@ -753,12 +753,12 @@ component work and existing read/row/depth/cancellation ceilings remain charged.
 Unique tuples exempt only entirely NULL keys; primary/required indexes reject a
 NULL in any component. Numeric and GUID zero values remain real keys.
 
-The original [GUID tuple recipe](../../testing/GuidCompositeIndexFixture.java) generates
+The original [GUID tuple recipe](../../../tests/access/indexes/native/GuidCompositeIndexFixture.java) generates
 fresh inert V2016/V2019 inputs with reordered mixed GUID/Currency/Int64/Int16 keys,
 ten-GUID keys, both directions, duplicates, NULL shapes, unique/primary tuples and
 empty/explicitly unqualified profiles. Generation asserts exact and partial-NULL
 duplicate rejection and primary rejection for NULL in every key position.
-[Independent comparison](../../testing/compare_guid_composite_indexes.py) matches 4,512
+[Independent comparison](../../../tests/access/indexes/native/compare_guid_composite_indexes.py) matches 4,512
 ordered rows/profile, required-index NULL filters and complete checks. The ten-GUID
 trees have nine nodes and 96 leaves across three indexes, maximum expanded node/
 leaf entries of 198/194 bytes and observed prefix 19. Depth-two roots list their
@@ -773,18 +773,18 @@ keys, integer-seek/resource rejection and edit boundaries remain explicit.
 An unrelated qualified Jet 4 Int32 edit preserves every byte outside its exact
 field and the entire GUID composite index. Any affected composite key and all ACE
 writes remain blocked. Input hashes stay unchanged; provenance and canonical row
-hashes are in [FIXTURES.md](../../testing/FIXTURES.md#original-ace-16-guid-tuple-index-inputs).
+hashes are in [FIXTURES.md](../../../tests/reports/reading/FIXTURES.md#original-ace-16-guid-tuple-index-inputs).
 
-The [benchmark runner](../../testing/benchmark_scans.py) compares frozen prior/current
+The [benchmark runner](../../../tests/access/reading/tables/benchmark_scans.py) compares frozen prior/current
 numeric and single-GUID workloads plus complete sequential/compound operations.
-Raw samples are recorded under [native benchmarks](../../testing/NATIVE_BENCHMARKS.md).
-Optional [GUID tuple write previews](../../testing/ACE16_WRITE_PREVIEWS.md#guid-index-write-previews) now exist separately. General binary/Text/float/date/Decimal key encodings, GUID composite seeks/production mutation,
+Raw samples are recorded under [native benchmarks](../../../tests/reports/general/NATIVE_BENCHMARKS.md).
+Optional [GUID tuple write previews](../../../tests/reports/development/ACE16_WRITE_PREVIEWS.md#guid-index-write-previews) now exist separately. General binary/Text/float/date/Decimal key encodings, GUID composite seeks/production mutation,
 native Access comparisons and application save/reopen remain unqualified.
 
 ```sh
 java -cp path/to/jackcess-5.0.4.jar docs/testing/GuidCompositeIndexFixture.java new-2016.accdb V2016
 java -cp path/to/jackcess-5.0.4.jar docs/testing/GuidCompositeIndexFixture.java new-2019.accdb V2019
-python3 docs/testing/compare_guid_composite_indexes.py --jar path/to/jackcess-5.0.4.jar \
+python3 tests/run.py tests/access/indexes/native/compare_guid_composite_indexes.py --jar path/to/jackcess-5.0.4.jar \
   --cli target/release/tablecraft --ace2016 new-2016.accdb --ace2019 new-2019.accdb
 ```
 
@@ -813,21 +813,21 @@ primary backing semantics remain. The reviewed Jackcess 5.0.4 IndexData descript
 and insertion checks confirm per-component encoding and these independent tuple
 rules; no upstream implementation was copied. Native Access remains unrun.
 
-The original [composite recipe](../../testing/CompositeIndexFixture.java) creates fresh
+The original [composite recipe](../../../tests/access/indexes/native/CompositeIndexFixture.java) creates fresh
 inert V2016/V2019 inputs with five mixed-width and ten full-width components,
 ascending/descending/mixed directions, reordered key columns, partial/all NULLs,
 duplicates, unique/primary pairs and empty/explicitly unqualified profiles.
 Generation asserts duplicate/partial-NULL unique and any-NULL primary rejection.
-[Independent comparison](../../testing/compare_composite_indexes.py) matches 4,513
+[Independent comparison](../../../tests/access/indexes/native/compare_composite_indexes.py) matches 4,513
 ordered rows/profile and required-index residual queries, with actual node trees
 and complete checks. Ten-column trees have three node/45 leaf pages across their
 three indexes, observed maximum expanded node/leaf entries of 98/94 bytes, and
-maximum prefix two. The [fixture record](../../testing/FIXTURES.md#original-ace-16-compound-numeric-index-inputs)
+maximum prefix two. The [fixture record](../../../tests/reports/reading/FIXTURES.md#original-ace-16-compound-numeric-index-inputs)
 retains file and canonical row hashes. Corrupt selected roots and Text/ignore-NULL
 profiles fail without partial stdout or sequential fallback; original files remain
 unchanged.
 
-The [12-file ACE16 comparison](../../testing/compare_ace16.py) additionally compares all
+The [12-file ACE16 comparison](../../../tests/access/reading/tables/compare_ace16.py) additionally compares all
 1,000 original two-Int32 Composite rows/profile, with row hash
 `9e0cba9b3eb34112b294d09a525ea4df89ec431d7cf8d34ff08c9bad13c10f93`.
 Seven synthetic tests include a fixed-seed 256-case nullable tuple model,
@@ -836,11 +836,11 @@ unique/required rules, type/profile/corruption/resource rejection and every I/O/
 cancellation failure. The 93-byte prefix is a synthetic golden; it was not observed
 in the independent files. Jet 4 composite key mutation stays blocked; otherwise qualified
 non-key Jet 4 Int32 edits have an exact unchanged-index/byte proof. All ACE writes
-remain blocked. ACE 16 [integral tuple previews](../../testing/ACE16_WRITE_PREVIEWS.md#integral-composite-index-updates)
+remain blocked. ACE 16 [integral tuple previews](../../../tests/reports/development/ACE16_WRITE_PREVIEWS.md#integral-composite-index-updates)
 now supply separate existing-page mutation evidence. The CLI labels constraints
 `Checked: exact unique/required`.
 
-The [performance record](../../testing/NATIVE_BENCHMARKS.md) compares the frozen prior
+The [performance record](../../../tests/reports/general/NATIVE_BENCHMARKS.md) compares the frozen prior
 build and current single-key controls, plus current sequential/compound workloads.
 Text/float/date/Decimal index encodings, composite seek bounds, automatic
 index selection, key mutation and native Access qualification remain separate.
@@ -848,7 +848,7 @@ index selection, key mutation and native Access qualification remain separate.
 ```sh
 java -cp path/to/jackcess-5.0.4.jar docs/testing/CompositeIndexFixture.java new-2016.accdb V2016
 java -cp path/to/jackcess-5.0.4.jar docs/testing/CompositeIndexFixture.java new-2019.accdb V2019
-python3 docs/testing/compare_composite_indexes.py --jar path/to/jackcess-5.0.4.jar \
+python3 tests/run.py tests/access/indexes/native/compare_composite_indexes.py --jar path/to/jackcess-5.0.4.jar \
   --cli target/release/tablecraft --ace2016 new-2016.accdb --ace2019 new-2019.accdb
 ```
 
@@ -878,27 +878,27 @@ fixed-seed generated intervals and every read/seek failure callback. A six-row
 selection skips the disjoint leaf and fetches exactly six live root records.
 
 The original [range example](../../../crates/engines/tablecraft-ace/examples/index_range.rs)
-and [comparison runner](../../testing/compare_index_ranges.py) reproduce 28 selections
+and [comparison runner](../../../tests/access/indexes/native/compare_index_ranges.py) reproduce 28 selections
 across both generated file formats and both tested indexes. Exact rows/order
 match independently filtered Jackcess cursor output, including NULL and empty
 results. This is independent-reader evidence, not Microsoft Access qualification:
 
 ```sh
 cargo build --release --locked -p tablecraft-ace --example index_range
-python3 docs/testing/compare_index_ranges.py \
+python3 tests/run.py tests/access/indexes/native/compare_index_ranges.py \
   --example target/release/examples/index_range \
   --jar path/to/jackcess-5.0.4.jar \
   --ace path/to/fresh-indexes.accdb --jet path/to/fresh-indexes.mdb
 ```
 
-[Measurements](../../testing/NATIVE_BENCHMARKS.md#native-index-seeks) compare seeks with
+[Measurements](../../../tests/reports/general/NATIVE_BENCHMARKS.md#native-index-seeks) compare seeks with
 complete indexed snapshots followed by equivalent filtering. The adapter connects
 these selections to safe query filters after schema-only discovery; no complete
 snapshot is cached from a selected read.
 
 ## Indexed-row evidence
 
-The original [IndexRowsOracle](../../testing/IndexRowsOracle.java) iterates a named Jackcess
+The original [IndexRowsOracle](../../../tests/access/indexes/native/IndexRowsOracle.java) iterates a named Jackcess
 index cursor read-only and compares selected integer/NULL output. Both generated
 Jet 4 and ACE files matched all 1,000 rows in each tested index, including order:
 
@@ -937,18 +937,18 @@ Native scalar eligibility gates Int64 to code-5/code-6 fixed eight-byte fields.
 Unique/required checks retain exact full-range keys, including adjacent values
 beyond double precision and repeated NULLs in ordinary unique indexes.
 
-The original [Int64 fixture recipe](../../testing/Int64IndexFixture.java) creates fresh
+The original [Int64 fixture recipe](../../../tests/access/indexes/native/Int64IndexFixture.java) creates fresh
 V2016/V2019 files with 600 mixed nullable/duplicate/extreme values, ascending and
 descending indexes, a unique table and an empty table. The
-[comparison runner](../../testing/compare_int64_indexes.py) matches 1,212 ordered rows
+[comparison runner](../../../tests/access/indexes/native/compare_int64_indexes.py) matches 1,212 ordered rows
 per file to independent cursors, verifies both Int64 roots are real node pages,
 checks every supported index and tests exact large-value/NULL CLI filters.
-Input hashes are in [fixture provenance](../../testing/FIXTURES.md#original-ace-16-int64-index-fixtures).
+Input hashes are in [fixture provenance](../../../tests/reports/reading/FIXTURES.md#original-ace-16-int64-index-fixtures).
 
 ```sh
 java -cp path/to/jackcess-5.0.4.jar docs/testing/Int64IndexFixture.java new-2016.accdb V2016
 java -cp path/to/jackcess-5.0.4.jar docs/testing/Int64IndexFixture.java new-2019.accdb V2019
-python3 docs/testing/compare_int64_indexes.py --jar path/to/jackcess-5.0.4.jar \
+python3 tests/run.py tests/access/indexes/native/compare_int64_indexes.py --jar path/to/jackcess-5.0.4.jar \
   --cli target/release/tablecraft --ranges target/release/examples/index_range \
   --ace2016 new-2016.accdb --ace2019 new-2019.accdb
 ```
@@ -981,7 +981,7 @@ independent ordered cursor output in addition to the existing 1,212-row checks:
 
 ```sh
 cargo build -p tablecraft-ace --example index_range --release --locked
-python3 docs/testing/compare_int64_indexes.py --jar path/to/jackcess-5.0.4.jar \
+python3 tests/run.py tests/access/indexes/native/compare_int64_indexes.py --jar path/to/jackcess-5.0.4.jar \
   --cli target/release/tablecraft --ranges target/release/examples/index_range \
   --ace2016 new-2016.accdb --ace2019 new-2019.accdb
 ```
@@ -1008,16 +1008,16 @@ confirm the independent key encoding and exact scale-four carrier. Its source
 reference above remains format research, without copied implementation or native
 Microsoft Access qualification.
 
-The original [Currency recipe](../../testing/CurrencyIndexFixture.java) generates fresh
+The original [Currency recipe](../../../tests/access/indexes/native/CurrencyIndexFixture.java) generates fresh
 inert V2016/V2019 files: 700-row ascending/descending node trees, unique/primary
 tables and empty indexes. BigDecimal inputs retain signed extrema, adjacent
 ten-thousandths, values beyond floating-point integer precision and NULL. Generation
 asserts unique/primary duplicate and primary-NULL rejection.
-[Independent comparisons](../../testing/compare_currency_indexes.py) match 1,426 ordered
+[Independent comparisons](../../../tests/access/indexes/native/compare_currency_indexes.py) match 1,426 ordered
 rows/profile, complete native checks and NULL/negative/nonnegative SQL filters.
 The normalized row SHA-256 is
 `9ad67935b4dad7454b4d920e497c856c477d705f560d371c988b5431455a9487`
-on each family; [fixture records](../../testing/FIXTURES.md#original-ace-16-currency-index-inputs)
+on each family; [fixture records](../../../tests/reports/reading/FIXTURES.md#original-ace-16-currency-index-inputs)
 retain observed file hashes. No original input changes.
 
 Synthetic goldens and a fixed-seed 256-case exact ordering model cover all i64
@@ -1036,7 +1036,7 @@ remain separate.
 ```sh
 java -cp path/to/jackcess-5.0.4.jar docs/testing/CurrencyIndexFixture.java new-2016.accdb V2016
 java -cp path/to/jackcess-5.0.4.jar docs/testing/CurrencyIndexFixture.java new-2019.accdb V2019
-python3 docs/testing/compare_currency_indexes.py --jar path/to/jackcess-5.0.4.jar \
+python3 tests/run.py tests/access/indexes/native/compare_currency_indexes.py --jar path/to/jackcess-5.0.4.jar \
   --cli target/release/tablecraft --ace2016 new-2016.accdb --ace2019 new-2019.accdb
 ```
 
@@ -1050,10 +1050,10 @@ checks and all existing structural/resource gates remain shared. The reviewed
 Jackcess 5.0.4 Byte/Integer column descriptors and the IndexData source reference
 above provide independent format evidence; no implementation was copied.
 
-The original [narrow integer recipe](../../testing/NarrowIndexFixture.java) creates
+The original [narrow integer recipe](../../../tests/access/indexes/native/NarrowIndexFixture.java) creates
 separate 700-row Byte/Int16 tables with ascending/descending node trees, unique
 tables with boundaries/repeated NULLs and empty indexes. Generation asserts
-duplicate rejection. [Independent comparisons](../../testing/compare_narrow_indexes.py)
+duplicate rejection. [Independent comparisons](../../../tests/access/indexes/native/compare_narrow_indexes.py)
 match 3,067 ordered rows/profile, unsigned 0–255 and signed extrema, SQL filters
 and complete native check coverage on V2016/V2019. The original cursor oracle
 now normalizes Java's signed Byte carrier to Access's unsigned value. Original
@@ -1070,14 +1070,14 @@ conformance remain separate work.
 ```sh
 java -cp path/to/jackcess-5.0.4.jar docs/testing/NarrowIndexFixture.java new-2016.accdb V2016
 java -cp path/to/jackcess-5.0.4.jar docs/testing/NarrowIndexFixture.java new-2019.accdb V2019
-python3 docs/testing/compare_narrow_indexes.py --jar path/to/jackcess-5.0.4.jar \
+python3 tests/run.py tests/access/indexes/native/compare_narrow_indexes.py --jar path/to/jackcess-5.0.4.jar \
   --cli target/release/tablecraft --ace2016 new-2016.accdb --ace2019 new-2019.accdb
 ```
 
 
 ## Additional fixed-key engineering writes
 
-Opt-in [Boolean, IEEE and legacy DATE previews](../../testing/ACE16_WRITE_PREVIEWS.md#boolean-ieee-and-legacy-date-index-write-previews)
+Opt-in [Boolean, IEEE and legacy DATE previews](../../../tests/reports/development/ACE16_WRITE_PREVIEWS.md#boolean-ieee-and-legacy-date-index-write-previews)
 now maintain eligible existing indexes through the shared batch writer. This
 supersedes earlier blanket target-mutation limitations for those engineering
 entry points; ordinary ACE saves and SQL editing remain unchanged. Exact stored
@@ -1092,8 +1092,8 @@ The opt-in ACE 16 preview now reuses the checked tree writer for qualified singl
 and mixed Decimal indexes, with exact field precision/scale and existing pages.
 Stored-field word order remains separate from sorted key encoding. This does not
 change Jet 4's legacy Decimal reads or enable its Decimal writes. The
-[write contract](../../testing/ACE16_WRITE_PREVIEWS.md#decimal-slot-and-index-write-previews)
-and [fixture evidence](../../testing/FIXTURES.md#decimal-slot-and-index-update-inputs) distinguish
+[write contract](../../../tests/reports/development/ACE16_WRITE_PREVIEWS.md#decimal-slot-and-index-write-previews)
+and [fixture evidence](../../../tests/reports/reading/FIXTURES.md#decimal-slot-and-index-update-inputs) distinguish
 these engineering candidates from ordinary ACE saves/native Access qualification.
 
 
@@ -1120,12 +1120,12 @@ The query adapter uses this for mixed-table scalar views, retaining explicit
 index choice and correct mapping from dense query columns to native key fields.
 No new carrier, index collation or write profile is enabled.
 
-[Independent comparisons](../../testing/compare_index_projection.py) use original
+[Independent comparisons](../../../tests/access/indexes/native/compare_index_projection.py) use original
 1,000-row mixed schemas with native keys after unavailable collection fields,
 including NULL/duplicate/endpoints, ascending/descending/composite reads and exact
 64-bit ranges. Synthetic tests cover hidden key corruption, node pruning,
 zero-width outputs and projected GUID/Decimal/tuple reconstruction. See the
-[fixture record](../../testing/FIXTURES.md#mixed-schema-index-projection-inputs) for hashes,
+[fixture record](../../../tests/reports/reading/FIXTURES.md#mixed-schema-index-projection-inputs) for hashes,
 reference-builder warnings and native Access qualification limits.
 
 ## Exact GUID point selections
@@ -1155,7 +1155,7 @@ composites, every observed I/O/cancellation checkpoint and allocation/row/work
 exhaustion refuse a snapshot. Existing GUID tuple and write-preview regressions
 also pass; no new write path is enabled.
 
-The original [comparison runner](../../testing/compare_guid_seeks.py) passes 76 controls
+The original [comparison runner](../../../tests/access/reading/tables/compare_guid_seeks.py) passes 76 controls
 against the registered 1,000-row V2016/V2019 ascending/descending index fixtures.
 Read-only Jackcess cursors supply full independent ID/GUID rows; Python filters
 canonical GUID equality/NULL/misses and compares ordered IDs emitted by the new
@@ -1164,7 +1164,7 @@ independent physical-reader results, not native Access SQL or save/reopen eviden
 
 ```sh
 cargo build -p tablecraft-ace --example read_guid_index --locked
-python3 docs/testing/compare_guid_seeks.py \
+python3 tests/run.py tests/access/reading/tables/compare_guid_seeks.py \
   --jar path/to/reviewed/jackcess-5.0.4.jar \
   --reader target/debug/examples/read_guid_index \
   --ace2016 path/to/original-guid-2016.accdb \
@@ -1206,7 +1206,7 @@ Explicit IndexReadRequest reads now fetch referenced roots in predetermined
 index/map preparation. Every group shares the caller's original cumulative byte,
 row and work budget; no failed read is retried or refunded. All root membership,
 row framing, relocation and hidden-key checks remain. Legacy APIs retain their
-operation-wide quota. [Modern scalar histories](../../testing/MODERN_SCALAR_HISTORIES.md)
+operation-wide quota. [Modern scalar histories](../../../tests/reports/rows/MODERN_SCALAR_HISTORIES.md)
 record the independent input that exhausted the former single quota and the
 successful exact indexed/query comparisons. This adds no cache, streaming index,
 fallback, live-file or write qualification.
@@ -1241,8 +1241,8 @@ eligibility. Ignore-NULL declarations retain their existing mutation blocker,
 including no-op plans and updates to unrelated columns. It does not establish
 Microsoft Access qualification.
 
-Independent original-file comparisons cover [Int32 membership and ordering](../../testing/IGNORED_NULL_INDEXES.md)
-and [exact Currency/Int64 node trees](../../testing/IGNORED_NULL_WIDE_INDEXES.md).
+Independent original-file comparisons cover [Int32 membership and ordering](../../../tests/reports/indexes/IGNORED_NULL_INDEXES.md)
+and [exact Currency/Int64 node trees](../../../tests/reports/indexes/IGNORED_NULL_WIDE_INDEXES.md).
 The latter passes 96 CLI controls over six actual tables, including signed
 extrema, adjacent values above 2^53, shared aliases and automatic table order.
 

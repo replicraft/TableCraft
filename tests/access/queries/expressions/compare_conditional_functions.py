@@ -3,6 +3,7 @@
 Original scalar controls and read-only Jackcess rows provide independent evidence;
 this recipe does not execute Microsoft Access SQL or qualify Variant coercion.
 """
+from engineering_paths import reference_file
 import argparse
 import subprocess
 import struct
@@ -64,7 +65,7 @@ def main():
     for index in [None, "Number"]:
         cursor = ["--index", "ROULETTE_TB", index] if index else ["ROULETTE_TB"]
         text = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar,
-                   RECIPES / "TableDataOracle.java", args.database, *cursor)
+                   reference_file('tests/access/reading/tables/TableDataOracle.java'), args.database, *cursor)
         numbers = sorted(int(line.split("\t")[1].removeprefix("I32:")) for line in text.splitlines())
         options = ["--database", args.database]
         if index:

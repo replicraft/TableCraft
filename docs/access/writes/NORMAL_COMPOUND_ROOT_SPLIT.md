@@ -46,7 +46,7 @@ Binary literal.
 
 ## Observed checks and limits
 
-The [four-view source gate](../../testing/ACE16_COMPOUND_ROOT_SPLIT_SOURCES.md)
+The [four-view source gate](../../../tests/reports/indexes/ACE16_COMPOUND_ROOT_SPLIT_SOURCES.md)
 passed before producers. Direct literal proofs/forgeries, two native V2 commits,
 twenty pending recovery contexts, exact public resource pools/cancellation and
 four retained-session commits pass. Earlier fitting root-split native/session
@@ -58,6 +58,6 @@ Multiple-row compound placement, multiple exhausted hints, recursive/multiple
 splits, wider index codecs and map expansion remain work. These checks do not
 qualify native Access saves or Windows durability.
 
-The [execution record](../../testing/results/ace16-normal-compound-root-split-writes-2026-11-01.json)
+The [execution record](../../../tests/results/indexes/ace16-normal-compound-root-split-writes-2026-11-01.json)
 retains successful checks, the first source-audit lint failure and corrections.
 The preceding full-suite batch is linked separately; it was not rerun per edit.

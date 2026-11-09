@@ -73,7 +73,7 @@ CLI tests cover both query commands, source policies, invalid literals and stric
 ISO typed parameters. An older refusal golden now uses an invalid month because
 its previous U.S. date is supported.
 
-The original [independent runner](../testing/compare_sql_date_literals.py) passes
+The original [independent runner](../../tests/access/queries/expressions/compare_sql_date_literals.py) passes
 534 controls: 502 scalar and 32 native sequential/indexed cases. Python calendars
 supply expected components; reviewed read-only Jackcess getters supply 20,000
 native DATE rows per registered Jet 4/ACE 2007/2016/2019 input. Existing original

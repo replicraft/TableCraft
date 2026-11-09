@@ -3,6 +3,7 @@
 These are original engineering derivatives, not Access-generated DROP COLUMN saves.
 Generation preserves each original base and modifies only fresh, separate copies.
 """
+from engineering_paths import reference_file
 import argparse
 import hashlib
 from pathlib import Path
@@ -54,7 +55,7 @@ def main():
         args.directory.mkdir(exist_ok=False)
         for profile, suffix in PROFILES:
             base = args.directory / f"HistoryBase-{profile}.{suffix}"
-            definitions = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar, RECIPES / "ColumnHistoryFixture.java", base, profile)
+            definitions = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar, reference_file('tests/access/schema/fields/ColumnHistoryFixture.java'), base, profile)
             data = bytearray(base.read_bytes())
             for line in definitions.splitlines():
                 name, page = line.split("\t")
@@ -67,7 +68,7 @@ def main():
         before = sha(path)
         base_before = sha(base)
         for table in ["FixedGap", "VariableGap", "MixedGap", "AmbiguousGap"]:
-            expected = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar, RECIPES / "TableDataOracle.java", path, table)
+            expected = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar, reference_file('tests/access/reading/tables/TableDataOracle.java'), path, table)
             actual = run(args.rows, path, table)
             assert actual == expected, (profile, table, "complete tagged rows", actual, expected)
             assert run(args.rows, path, table, "--batch-size", 2) == expected, (profile, table, "cursor")

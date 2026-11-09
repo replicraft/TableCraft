@@ -197,7 +197,7 @@ to their totals, and this is not a full-workspace regression or native Access
 save/reopen qualification. Filesystem receipts retain the actual platform
 mechanism; local macOS execution does not establish Windows or Linux behavior.
 
-[Jackcess 5.0.4 independently read the retained BEFORE/AFTER fixture images](../../testing/results/ace16-add-table-independent-reader-2026-11-07.json).
+[Jackcess 5.0.4 independently read the retained BEFORE/AFTER fixture images](../../../tests/results/reading/ace16-add-table-independent-reader-2026-11-07.json).
 It reported V2016, retained `Items` row `(Id=1, Score=17)` at physical row `8:0`,
 and enumerated the added empty `More` table with LONG AutoNumber `Id`, TEXT(20)
 `Name` and primary-index metadata. This check did not perform an indexed lookup,
@@ -222,7 +222,7 @@ Windows x64 and ARM64 runtime/desktop all-target/all-feature compilation checks
 pass with their dependencies. These checks are not native Windows filesystem or
 GUI execution, nor a complete twenty-package Windows/CLI/SQLite build.
 
-[Jackcess independently read the repeated-addition fixture images](../../testing/results/ace16-repeated-table-independent-reader-2026-11-07.json).
+[Jackcess independently read the repeated-addition fixture images](../../../tests/results/reading/ace16-repeated-table-independent-reader-2026-11-07.json).
 The result covers transitions two→three, three→four and eighteen→nineteen tables,
 with both original rows retained at physical positions `8:0` and `11:0`:
 `Items(Id=1, Score=17)` and `More(Id=1, Name=Ada)`. New tables were empty, with

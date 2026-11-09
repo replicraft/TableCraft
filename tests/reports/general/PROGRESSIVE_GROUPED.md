@@ -1,6 +1,6 @@
 # Original native grouped streaming replay
 
-The original [runner](compare_progressive_grouped.py) checks buffered and explicit
+The original [runner](../../access/queries/execution/compare_progressive_grouped.py) checks buffered and explicit
 progressive grouped queries against independent Python models over the registered
 LargeDeployment originals. It reuses two immutable ACE 16 family native files
 and their four original stored/MSZIP CAB packages. No fixture is generated or
@@ -12,7 +12,7 @@ Access SQL compatibility or timing qualification.
 
 ## Accepted results and models
 
-The [accepted report](results/progressive-grouped-2026-10-25.json) contains
+The [accepted report](../../results/general/progressive-grouped-2026-10-25.json) contains
 96 matched commands: 72 successful queries comparing 1,374 rows and 5,364 cells,
 and 24 intended refusals. Thirteen immutable pins and twenty-five scoped compiled
 revision source blobs were independently rehashed after completion.
@@ -96,7 +96,7 @@ timeouts. Each command retains expected rows or an error fragment, exit status,
 stdout and stderr, including matched refusals and disagreements.
 
 ```sh
-python3 docs/testing/compare_progressive_grouped.py \
+python3 tests/run.py tests/access/queries/execution/compare_progressive_grouped.py \
   --cli .cache/tablecraft-bin/progressive-grouped-cli-20261025 \
   --cli-sha256 623e28dedb96b35c78a074e766271ae0938819902df49c169f36af5de6433144 \
   --revision 6a0e5f209953bded9ecc5bbda8ee8497e68a2ea2 \

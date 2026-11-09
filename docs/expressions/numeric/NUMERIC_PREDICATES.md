@@ -130,7 +130,7 @@ prepared policy changes, strict group/set equality and a source spy proving that
 partial hints cannot hide a late bad value. Both CLI query commands retain buffered
 failures; existing collation/cancellation tests remain passing.
 
-The original [independent runner](../../testing/compare_numeric_text_predicates.py) passes
+The original [independent runner](../../../tests/access/queries/expressions/compare_numeric_text_predicates.py) passes
 1,060 Decimal/rounding/predicate/native-field controls over four unchanged original
 ScalarFixture inputs. Raw getters supply field values only. Only TableCraft
 executes SQL; native Access typing, coercion, optimizer and error order remain
@@ -140,7 +140,7 @@ Three additional expression tests cover DATE/Text syntax, optional serial fallba
 year controls, NULL, strict/extended boundaries and every observed cancellation
 checkpoint. Three query tests cover bound filters, joins, membership/subqueries,
 domain criteria, closed Eval, per-execution settings and eager failures. Both CLI
-query modes check buffered failures. The original [date predicate runner](../../testing/compare_date_text_predicates.py)
+query modes check buffered failures. The original [date predicate runner](../../../tests/access/queries/expressions/compare_date_text_predicates.py)
 passes 310 Gregorian/serial/native-field controls over four unchanged priority-family
 files; only TableCraft executes SQL. Native Access remains unrun.
 
@@ -178,7 +178,7 @@ Two expression tests cover endpoints, ties, Single widening, strict/integral
 separation, required policies, nonfinite refusal and every observed cancellation
 checkpoint. Two query tests cover bound parameter reuse, metadata without scans,
 join/membership/quantified predicates, exact group keys and no coercive source hint.
-The original [runner](../../testing/compare_rounded_predicates.py) passes 284 controls and
+The original [runner](../../../tests/access/reading/tables/compare_rounded_predicates.py) passes 284 controls and
 independently models
 rounded significands and all six comparisons in both orders, including seeded
 Int64 inputs. Native-source controls use raw ID getters from four unchanged
@@ -199,7 +199,7 @@ Two new evaluator tests cover exhaustive quarter-day calendar/raw-serial
 comparison models and checked Date envelopes. Two query tests cover ordinary
 filters, reversed operands, membership/ranges, subqueries, joins, grouping/HAVING,
 domain criteria and eager failures. A CLI test covers both eval/run and buffered
-refusals. The original [comparison runner](../../testing/compare_date_numeric_predicates.py)
+refusals. The original [comparison runner](../../../tests/access/queries/expressions/compare_date_numeric_predicates.py)
 passes 236 query controls with independent Decimal day/fraction tuples and raw
 native DATE getters on unchanged registered four-family inputs. It checks both
 operand directions, nine numeric families, range errors, NULLs, and sequential/

@@ -13,8 +13,8 @@ import json
 from pathlib import Path
 import subprocess
 
-ROOT = Path(__file__).resolve().parents[2]
-RECIPE = ROOT / "docs/testing/CompressedWideFixture.java"
+ROOT = Path(__file__).resolve().parents[4]
+RECIPE = ROOT / "tests/access/storage/native/CompressedWideFixture.java"
 JACKCESS_SHA256 = "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc"
 PROFILES = ("V2016", "V2019")
 MDBTOOLS_SOURCE = ROOT / ".cache/tablecraft-fixtures/mdbtools-iconv-6a8a4b0.c"

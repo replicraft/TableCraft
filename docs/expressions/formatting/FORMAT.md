@@ -108,7 +108,7 @@ truncation/refusals and a fixed-seed 256-case integer-padding model. Three scala
 and three query controls cover optional slots, error order, parameters/policies,
 group/aggregate/correlated dependencies, output limits and every observed
 cancellation checkpoint. CLI controls exercise both commands and buffered errors.
-The [independent runner](../../testing/compare_format.py) passes 2570 Decimal/model,
+The [independent runner](../../../tests/access/queries/expressions/compare_format.py) passes 2570 Decimal/model,
 section/refusal and native Int32/NULL-field controls across the four original
 Hyperlink fixtures, with unchanged hashes. Jackcess supplies values without
 executing Format; actual Microsoft Access evaluation remains unrun.
@@ -227,7 +227,7 @@ Four expression tests cover NULL/week/mask/source order, supported versus
 unqualified Empty targets, exact six-byte Text normalization/output, every
 observed successful cancellation checkpoint and once-only Rnd controls. New
 query/CLI tests add derived states, explicit conversion and atomic failures.
-The original [state runner](../../testing/compare_format_states.py) passes 186 checks
+The original [state runner](../../../tests/access/queries/expressions/compare_format_states.py) passes 186 checks
 (130 scalar and 56 four-family sequential/indexed native cases), retaining all
 source hashes. The existing numeric Format runner also passes 2,470 scalar
 checks; its optional native branch was not rerun. Only TableCraft executes SQL.

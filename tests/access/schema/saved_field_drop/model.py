@@ -116,8 +116,8 @@ def remove_group(body, selected):
 
 def prediction(before, selected, variant, repo):
     assert len(before) == 11 * PAGE and selected.isascii()
-    rename = load(repo / 'docs/testing/saved_field_rename/model.py', 'drop_role_observer')
-    add = load(repo / 'docs/testing/short_text_add/model.py', 'drop_raw_placement')
+    rename = load(repo / 'tests/access/schema/saved_field_rename/model.py', 'drop_role_observer')
+    add = load(repo / 'tests/access/rows/short_text_add/model.py', 'drop_raw_placement')
     body_start, body_end, _, old_reference = rename.live_user_body(before)
     definition, facts = remove_definition(before, selected)
     after = bytearray(before)

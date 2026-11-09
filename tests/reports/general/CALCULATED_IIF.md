@@ -1,6 +1,6 @@
 # Original conditional calculation preview replay
 
-The [accepted report](results/calculated-iif-2026-10-24.json) passes 86 controls
+The [accepted report](../../results/general/calculated-iif-2026-10-24.json) passes 86 controls
 and 160 independently modeled cells across fresh V2016/V2019 originals, with
 34 successful commands and 52 intended buffered refusals. All 1,906 pins
 remain unchanged. The 1,892-file Rust inventory exactly matches commit `11ccd44d`.
@@ -9,10 +9,10 @@ remain unchanged. The 1,892-file Rust inventory exactly matches commit `11ccd44d
 
 Microsoft's [table-calculation example](https://support.microsoft.com/en-us/office/add-functions-to-access-expressions-72a471a0-4f0e-4d49-923b-be97b0fa4bb0)
 supports narrow `IIf` admission. This verifies the explicit
-[preview profile](../access/calculations/CALCULATION_PREVIEWS.md#deterministic-iif-calls), not native
+[preview profile](../../../docs/access/calculations/CALCULATION_PREVIEWS.md#deterministic-iif-calls), not native
 ACE conversion, freshness or a general calculated-function whitelist.
 
-Original MIT [CalculatedIIfFixture.java](CalculatedIIfFixture.java) authors two
+Original MIT [CalculatedIIfFixture.java](../../access/reading/tables/CalculatedIIfFixture.java) authors two
 fresh databases through the reviewed Jackcess 5.0.4 public builders. Expression
 evaluation stays disabled; read-only ordinary getters and a throwing link resolver
 capture declarations and stale caches without running formulas or linked content.
@@ -24,7 +24,7 @@ No upstream fixture or implementation is copied. Originals stay ignored under
 | V2016.accdb | 393,216 | `0918d2bcf67eb8ab12a9f1439149262ba6bb8ab165f0d303b16f28950ea9be3d` |
 | V2019.accdb | 466,944 | `ffd7835b2498bfe670b8c87c4eeee2823c3f80ca622a8d6228599c6ad91e0a9f` |
 
-[compare_calculated_iif.py](compare_calculated_iif.py) independently models branches,
+[compare_calculated_iif.py](../../access/reading/tables/compare_calculated_iif.py) independently models branches,
 NULL conditions, numeric/Text/Boolean outputs and transitive dependencies from
 ordinary Input/Label getters. Seven successful formulas run on populated and empty
 tables. Sixty-six recomputed values differ from raw caches; separate cached queries
@@ -43,7 +43,7 @@ verifies original/generator/class/JAR/getter/source/executable hashes before and
 after execution. The report retains exact commands and observations; generation
 commands and hashes remain in the pinned ignored `generation.json`.
 
-[The scoped verification record](results/read-query-calculated-iif-2026-10-24.json)
+[The scoped verification record](../../results/queries/read-query-calculated-iif-2026-10-24.json)
 records 76 unique Rust tests, strict Clippy, formatting, minimal Access features,
 CLI build and archive verification. No Windows comparison, complete workspace
 suite or performance claim is supplied.

@@ -42,4 +42,4 @@ Source qualification remains
 separate from content admission, indexed mutation, journal/recovery and shared
 session acceptance. No allocation, generated-field update permission, native
 Microsoft Access or Windows qualification is established here. See the
-[source result](results/ace16-ordinary-indexed-target-sources-2026-10-31.json).
+[source result](../../results/indexes/ace16-ordinary-indexed-target-sources-2026-10-31.json).

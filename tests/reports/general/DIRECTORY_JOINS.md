@@ -1,6 +1,6 @@
 # Native exact-key directory join replay
 
-The original [runner](compare_directory_joins.py) compares TableCraft joins with
+The original [runner](../../access/queries/execution/compare_directory_joins.py) compares TableCraft joins with
 an independent integer-equality model over six immutable, publicly authored
 native databases. Only TableCraft executes SQL. Jackcess ordinary getters verify
 the original input rows; this is engineering correctness and resource-admission
@@ -8,7 +8,7 @@ evidence, not native Microsoft Access SQL qualification or a timing result.
 
 ## Accepted results
 
-The [accepted report](results/directory-joins-2026-10-25.json) contains 76 matched
+The [accepted report](../../results/general/directory-joins-2026-10-25.json) contains 76 matched
 commands: 62 successful queries, 12 intended refusals on the new executable and
 two intended refusals on the old executable. Successes compare all 51,848 result
 rows and 105,896 cells exactly. There were no disagreements or excluded attempts.
@@ -76,7 +76,7 @@ Choose a fresh report path: the runner refuses to overwrite an accepted report.
 No build or fixture-generation command is invoked.
 
 ```sh
-python3 docs/testing/compare_directory_joins.py \
+python3 tests/run.py tests/access/queries/execution/compare_directory_joins.py \
   --cli .cache/tablecraft-bin/directory-join-cli-20261025 \
   --cli-sha256 9b5b64282049461ca5590f16d9746ff8fdfcb465801b6ef69f56928e0ed4350f \
   --revision 35b6ce8dca59590d316e62bf59ec9511a16d14ca \

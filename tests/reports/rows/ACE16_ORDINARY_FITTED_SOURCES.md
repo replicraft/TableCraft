@@ -34,7 +34,7 @@ ordinary fixed-table admission check. Its first compile failed on a duplicate
 import. The next read failed because existing content admission required active
 EOD to equal the footer; the corrected guard permits protected inactive slack
 when EOD is bounded by the actual footer. Literal source/AFTER bytes did not change.
-The third gate passes. See the [source result](results/ace16-ordinary-fitted-sources-2026-10-31.json).
+The third gate passes. See the [source result](../../results/rows/ace16-ordinary-fitted-sources-2026-10-31.json).
 
 No SDK or native Microsoft Access comparison has run for this source set. These
 are authored-schema source results. Normal write acceptance is recorded separately.

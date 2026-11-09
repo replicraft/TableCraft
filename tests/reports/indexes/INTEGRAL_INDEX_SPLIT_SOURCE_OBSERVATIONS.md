@@ -5,13 +5,13 @@ one Java compilation, two fresh public-builder generations, two read-only
 metadata/getter captures and eight existing typed fixed-preview no-ops. Both
 originals contain 2,729 user rows. Every no-op returned a byte-identical whole
 image. No non-noop update, public UPDATE or split candidate ran in this phase.
-The [compact receipt](results/ace16-integral-index-split-sources-2026-10-27.json)
+The [compact receipt](../../results/indexes/ace16-integral-index-split-sources-2026-10-27.json)
 pins the exact first report, commands, sources, outputs and separate postcheck.
 
 These are new repository-owned Jackcess 5.0.4 comparison inputs, not restored
 historical files or Microsoft Access qualification. Original files and accepted
 helpers remain unchanged. The optional engine preview remains separate from
-normal saves and journalable edits; see the [fixed-preview contract](ACE16_WRITE_PREVIEWS.md).
+normal saves and journalable edits; see the [fixed-preview contract](../development/ACE16_WRITE_PREVIEWS.md).
 
 ## Actual source profile
 
@@ -57,7 +57,7 @@ original through a bounded channel. Actual files are 757,760 bytes for V2016 and
 827,392 bytes for V2019. Java and javac use 512 MiB heaps. Native no-ops use the
 existing frozen non-splitting `preview_ace16_fixed` artifact, compiled from
 `452f2bde94a2580bd0a64e166cc11384f1ff8a4a`; its
-[build receipt](results/ace16-integral-split-baseline-build-2026-10-27.json)
+[build receipt](../../results/indexes/ace16-integral-split-baseline-build-2026-10-27.json)
 records the artifact and historical source binding. No source or allocation cap
 was increased, and there were no retries, selector changes or fallback generation.
 
@@ -83,10 +83,10 @@ They are not claimed as the historical command paths. JSON dictionary-key
 normalization in the verifier only compares saved facts and does not alter them.
 
 ```sh
-python3 docs/testing/integral_split_originals/verify_sources.py \
+python3 tests/run.py tests/access/indexes/integral_split_originals/verify_sources.py \
   --report .cache/ace16-integral-split-sources-first-20261027/report.json
-python3 docs/testing/integral_split_originals/selfcheck.py
-python3 docs/testing/integral_split_originals/capture_sources.py
+python3 tests/run.py tests/access/indexes/integral_split_originals/selfcheck.py
+python3 tests/run.py tests/access/indexes/integral_split_originals/capture_sources.py
 ```
 
 The first command replays saved source facts, hashes, command associations and

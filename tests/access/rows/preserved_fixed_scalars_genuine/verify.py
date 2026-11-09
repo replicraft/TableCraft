@@ -6,13 +6,13 @@ from pathlib import Path
 import sys
 import tarfile
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[3] / 'scripts'))
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+sys.path.insert(0, str(Path(__file__).resolve().parents[4] / 'scripts'))
+sys.path.insert(0, str(ROOT / 'tests/access'))
 from compat_artifacts import ArtifactStore
 from preserved_fixed_scalars_genuine import model
 
-ROOT = Path(__file__).resolve().parents[3]
-DEFAULT_RECORD = 'docs/testing/results/ace16-preserved-fixed-scalars-genuine-images-2026-10-31.json'
+ROOT = Path(__file__).resolve().parents[4]
+DEFAULT_RECORD = 'tests/results/rows/ace16-preserved-fixed-scalars-genuine-images-2026-10-31.json'
 REPORT_HEADER = b'Engineering copy\tExperimental; data macros and native Access saves unqualified\n'
 WORK_LIMITS = {'bytes': 268435456, 'rows': 100000, 'steps': 100000000}
 require = model.require
@@ -82,12 +82,12 @@ def verify(root, record_path):
     maintained = record['maintained_files']
     required_paths = {
         'scripts/compat_artifacts.py',
-        'docs/testing/preserved_fixed_scalars_genuine/__init__.py',
-        'docs/testing/preserved_fixed_scalars_genuine/model.py',
-        'docs/testing/preserved_fixed_scalars_genuine/verify.py',
-        'docs/testing/preserved_int32_genuine/__init__.py',
-        'docs/testing/preserved_int32_genuine/framing.py',
-        'docs/testing/ace16_insert_candidates/model.py',
+        'tests/access/rows/preserved_fixed_scalars_genuine/__init__.py',
+        'tests/access/rows/preserved_fixed_scalars_genuine/model.py',
+        'tests/access/rows/preserved_fixed_scalars_genuine/verify.py',
+        'tests/access/rows/preserved_int32_genuine/__init__.py',
+        'tests/access/rows/preserved_int32_genuine/framing.py',
+        'tests/access/rows/ace16_insert_candidates/model.py',
     }
     require(required_paths <= {pin['path'] for pin in maintained}, 'Pinned maintained import closure')
     for pin in maintained:

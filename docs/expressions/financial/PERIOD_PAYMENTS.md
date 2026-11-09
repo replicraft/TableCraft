@@ -63,9 +63,9 @@ non-finite/NULL/type errors, required/optional slots and eager failures. A new b
 query control covers six-argument retention, aggregate/domain/correlated composition
 and late errors. The prior annuity property now also uses 256 fixed-seed cases.
 
-[SavedPaymentFixture](../../testing/SavedPaymentFixture.java) adds ten original inert
+[SavedPaymentFixture](../../../tests/access/queries/saved/SavedPaymentFixture.java) adds ten original inert
 queries over the existing financial recipe. Its
-[comparison runner](../../testing/compare_payment_functions.py) passes 306 controls
+[comparison runner](../../../tests/access/queries/expressions/compare_payment_functions.py) passes 306 controls
 using 400-digit Decimal period-by-period ledgers, scalar and bound evaluation,
 raw native metadata/row getters, rendered SQL and direct/saved/named execution.
 Four fresh Jet 4/ACE 2007/V2016/V2019 files retain their hashes. Cases include end/

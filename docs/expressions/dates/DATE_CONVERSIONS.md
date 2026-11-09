@@ -117,7 +117,7 @@ Eight kernel tests cover raw bits/aliases, numeric bounds, region/month/time gra
 reference/window controls, dotted-time boundaries, extended projection and resource/error provenance,
 including generated whole-day models. Evaluator, query, multivalue, CLI and worker
 regressions cover dependencies, settings, buffering and failure reuse. The
-[independent recipe](../../testing/compare_date_conversion.py) uses Python Gregorian and
+[independent recipe](../../../tests/access/queries/expressions/compare_date_conversion.py) uses Python Gregorian and
 Automation-serial models plus optional sequential/indexed native-row controls,
 checking the source hash. Independent models/readers do not establish native Access
 compatibility; Windows comparisons remain unrun.

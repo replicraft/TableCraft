@@ -39,7 +39,7 @@ omissions. SOURCE passed before consumers. Three parser controls and the prior
 quoted-TSV test pass. Four API controls pass: 24 complete CLI copies, 16 exact
 clock-service images and four fully supplied old-path copies, plus late
 conflict/invalid-presence/missing-clock refusals. The first SOURCE compile's
-module-path correction changed no fixture bytes. See the [execution record](results/ace16-typed-batch-omissions-2026-10-30.json).
+module-path correction changed no fixture bytes. See the [execution record](../../results/general/ace16-typed-batch-omissions-2026-10-30.json).
 The broader run passes: native LVAL15 and Extra41; Access63 library functions
 plus six integration functions; CLI43 unit functions plus 107 integration
 functions across 12 targets, including INSERT, clock and eval. Minimal ACE/Access,

@@ -4,9 +4,9 @@ import json
 from pathlib import Path
 import sys
 
-ROOT = Path(__file__).resolve().parents[3]
+ROOT = Path(__file__).resolve().parents[4]
 BASE = Path(__file__).resolve().parent
-sys.path.insert(0, str(ROOT / 'docs/testing'))
+sys.path.insert(0, str(ROOT / 'tests/access'))
 from integral_split_originals.capture_sources import pin, require_pin
 from repeated_split_originals import capture_actions, capture_sources
 

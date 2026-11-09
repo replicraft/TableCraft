@@ -57,7 +57,7 @@ a complete read to fail rather than reuse a subset. Corrupt required roots fail.
 Planner controls compare honoring/ignoring sources, parameter reuse, binary-literal
 rounding, empty inputs, unsafe predicates and every observed cancellation checkpoint.
 
-The original MIT [comparison runner](../../testing/compare_currency_ranges.py) passes
+The original MIT [comparison runner](../../../tests/access/reading/tables/compare_currency_ranges.py) passes
 136 independent controls on four unchanged 20,000-row inputs plus the two registered
 700-row ACE 16 Currency fixtures. Read-only Jackcess getters supply exact scaled
 keys; Python models counts/sums and bounds. Both physical directions, NULL tests,
@@ -66,7 +66,7 @@ No Access SQL or application content executes in the oracle.
 
 ## Release measurements
 
-[The runner](../../testing/benchmark_currency_ranges.py) times identical release SQL with
+[The runner](../../../tests/access/reading/tables/benchmark_currency_ranges.py) times identical release SQL with
 sequential or explicitly indexed access. Hyperfine 2.0.0 ran 15 process samples per
 command with three warmups on macOS 14.7.2 arm64. Input hashes and counts agree.
 Process wall time includes startup, metadata, reads, materialization and evaluation;
@@ -83,7 +83,7 @@ The broad small-table indexed read is slower. Some runs have substantial varianc
 no statistical significance, universal speedup or cold-storage result is claimed.
 An initial large-point run overlapped compilation/validation and is excluded from
 conclusions. Hyperfine warned about the first 6.2 ms sequential small-point sample;
-all its samples remain included. [Raw samples](../../testing/results/currency-ranges-2026-10-22.json)
+all its samples remain included. [Raw samples](../../../tests/results/general/currency-ranges-2026-10-22.json)
 retain both observed runs and the excluded run, with local paths/host metadata
 removed. Bounded index reads and sequential reads have different integrity-audit
 scope even when their outputs agree on these valid fixtures. Native Access and

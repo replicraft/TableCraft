@@ -15,7 +15,7 @@ from encoded_delete_originals import wire
 from french_comparison_latin_model import load
 from french_field_comparison.model import FieldModel, cases, short_hex
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[4]
 REVISION = '596d40ea41a4bafefbd5b34af4ef35a8a4e2cde4'
 CLI_SHA256 = 'bcff00ad245c7a70582db222fa48e5eb2f796bd944d5ccbeefe759fbd010a576'
 INVALID_INPUT_STATUS = 2
@@ -89,10 +89,10 @@ def main():
     keys = short_keys(args.short_keys)
     weights, _ = load(args.latin_oracle)
     artifacts = [args.cli, args.build_receipt, args.fields, args.short_keys, args.latin_oracle,
-                 args.defaults, Path(__file__), ROOT / 'docs/testing/capture_french_comparison.py',
-                 ROOT / 'docs/testing/compare_french_physical_reads.py',
-                 ROOT / 'docs/testing/french_field_comparison/model.py',
-                 ROOT / 'docs/testing/french_comparison_latin_model.py', Path(wire.__file__)]
+                 args.defaults, Path(__file__), ROOT / 'tests/access/queries/expressions/capture_french_comparison.py',
+                 ROOT / 'tests/access/queries/expressions/compare_french_physical_reads.py',
+                 ROOT / 'tests/access/schema/french_field_comparison/model.py',
+                 ROOT / 'tests/access/queries/expressions/french_comparison_latin_model.py', Path(wire.__file__)]
     for entry in fields['profiles']:
         for item in (entry['original'], entry['getter']):
             path = ROOT / item['path']

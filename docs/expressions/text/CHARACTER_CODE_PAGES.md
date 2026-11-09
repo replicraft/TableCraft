@@ -90,7 +90,7 @@ Two decoder tests cover independent mapping goldens, invalid IDs/unmapped bytes,
 and every ASCII byte across all supported pages. An evaluator test, two query
 tests, two CLI tests and a worker test cover context/plan/request isolation,
 modulo behavior, unchanged Text, nested/grouped calls, inert commands and buffered
-errors. The [independent recipe](../../testing/compare_character_code_pages.py) exhausts
+errors. The [independent recipe](../../../tests/access/storage/native/compare_character_code_pages.py) exhausts
 all 256 bytes in all eleven pages through both CLI query paths. It uses Python
 codecs with documented WHATWG C1/Hebrew extensions, checks unmapped-byte refusals,
 and compares sequential/indexed native projections while preserving source bytes.

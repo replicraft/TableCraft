@@ -24,4 +24,4 @@ input/expected byte.
 These results qualify input reads. Complete content validation, ordinary mutation
 proof, normal journal/recovery and retained session/CLI saves have their own
 acceptance checks. Native Microsoft Access and Windows qualification remain
-unrun. See the [source record](results/ace16-ordinary-inline-sources-2026-10-31.json).
+unrun. See the [source record](../../results/general/ace16-ordinary-inline-sources-2026-10-31.json).

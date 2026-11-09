@@ -10,7 +10,7 @@ from pathlib import Path
 import shutil
 import subprocess
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[4]
 MAX_RESULT_ROWS = 16
 EXPECTED_QUERY_COUNT = 58
 PROCESS_TIMEOUT_SECONDS = 60
@@ -109,7 +109,7 @@ def main():
         raise FileExistsError("Work directory and report must be fresh")
     artifacts = [args.artifacts / name for name in ARTIFACTS]
     inputs = [args.inputs / name for name in INPUTS]
-    source = ROOT / "docs/testing/JdbcAggregateMetadataProbe.java"
+    source = ROOT / "tests/access/queries/execution/JdbcAggregateMetadataProbe.java"
     pinned = [*artifacts, *inputs, args.cli, source, Path(__file__)]
     for directory, expected in [(args.artifacts, ARTIFACTS), (args.inputs, INPUTS)]:
         for name, value in expected.items():

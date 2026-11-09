@@ -196,9 +196,9 @@ def main():
     jar = ROOT / ".cache/tablecraft-fixtures/jackcess-5.0.4.jar"
     assert digest(jar.read_bytes()) == JAR_SHA256
     artifacts = [
-        args.cli, jar, Path(__file__), ROOT / "docs/testing/compare_browsing.py",
-        ROOT / "docs/testing/compare_ignored_null_indexes.py",
-        ROOT / "docs/testing/MultivalueFixture.java", ROOT / "docs/testing/MultivalueOracle.java",
+        args.cli, jar, Path(__file__), ROOT / "tests/access/reading/tables/compare_browsing.py",
+        ROOT / "tests/access/indexes/native/compare_ignored_null_indexes.py",
+        ROOT / "tests/access/reading/tables/MultivalueFixture.java", ROOT / "tests/access/reading/tables/MultivalueOracle.java",
         args.originals / "producer-commands.json", args.originals / "getter-commands.json",
     ]
     for profile in PROFILES:

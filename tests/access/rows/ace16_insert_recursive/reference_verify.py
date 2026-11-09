@@ -19,9 +19,9 @@ FIXED = {
 
 def maintained(store, check):
     executed = check(store.pin(CONTINUED + '/proof_peer.py')).read_text()
-    public = check(store.pin('docs/testing/ace16_insert_recursive/reference.py')).read_text()
+    public = check(store.pin('tests/access/rows/ace16_insert_recursive/reference.py')).read_text()
     old = "ROOT = Path(__file__).resolve().parents[2]\nSNAPSHOT = ROOT / '.cache/ace16-insert-parent-growth-continuation-next-20261028'\nsys.path.insert(0, str(SNAPSHOT))\nimport snapshot_deleted as snapshot"
-    new = "ROOT = Path(__file__).resolve().parents[3]\nsys.path.insert(0, str(ROOT / 'docs/testing'))\nfrom ace16_insert_root_split import reference as root_reference\nfrom ace16_insert_candidates import model as record_codec"
+    new = "ROOT = Path(__file__).resolve().parents[3]\nsys.path.insert(0, str(ROOT / 'tests/access'))\nfrom ace16_insert_root_split import reference as root_reference\nfrom ace16_insert_candidates import model as record_codec"
     assert executed.count(old) == 1
     expected = executed.replace(old, new)
     forwarding = '\ndef inspect(case, path, getter, maps):\n    return snapshot.inspect(case, path, getter, maps)\n\n'

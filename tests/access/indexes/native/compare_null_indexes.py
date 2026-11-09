@@ -1,4 +1,5 @@
 """Compare Text/Binary NULL index selections with inert sequential getters."""
+from engineering_paths import reference_file
 
 import argparse
 import csv
@@ -32,7 +33,7 @@ POOLS = ["--native-bytes", "268435456", "--native-steps", "100000000", "--format
 
 def java(jar, name, *arguments):
     return subprocess.check_output(
-        ["java", "-Dstdout.encoding=UTF-8", "-cp", str(jar), str(RECIPES / name), *map(str, arguments)],
+        ["java", "-Dstdout.encoding=UTF-8", "-cp", str(jar), str(reference_file(name)), *map(str, arguments)],
         text=True, encoding="utf-8",
     )
 

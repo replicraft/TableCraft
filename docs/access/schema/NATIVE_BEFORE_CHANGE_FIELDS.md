@@ -66,7 +66,7 @@ not an observed native timing result. The documented
 is not executed. Other native events, named calls, handlers and transaction
 side effects remain outside this profile. The existing
 [guard-only service](NATIVE_BEFORE_EVENT_GUARDS.md) and its structural profile keep
-their previous behavior. All [normal ACE write gates](../../testing/DATA_MACROS.md)
+their previous behavior. All [normal ACE write gates](../../../tests/reports/schema/DATA_MACROS.md)
 remain unchanged.
 
 ## Observed checks
@@ -84,13 +84,13 @@ with ACE library strict/all-feature and formatter checks. The minimal build
 passed; the subsequent target-binding correction is preview-feature-only.
 Existing CLI compilation/strict checks, 65 unit functions and 22 copy/inspection
 integration functions also pass with the additive structural enum. No new CLI
-SetField command is introduced. The [focused result](../../testing/results/ace16-before-change-fields-logical-2026-10-30.json)
+SetField command is introduced. The [focused result](../../../tests/results/schema/ace16-before-change-fields-logical-2026-10-30.json)
 retains those exact logical phases. The separate
-[physical field-update consumer](../../testing/ACE16_BEFORE_CHANGE_FIELD_COPIES.md)
+[physical field-update consumer](../../../tests/reports/schema/ACE16_BEFORE_CHANGE_FIELD_COPIES.md)
 now applies prepared fixed UPDATE rows once through the engineering batch;
 logical preparation itself remains read-only.
 
-The [complete selected before-event collection](../../testing/ACE16_BEFORE_EVENT_COLLECTIONS.md)
+The [complete selected before-event collection](../../../tests/reports/reading/ACE16_BEFORE_EVENT_COLLECTIONS.md)
 profile also preflights explicitly selected BeforeDelete programs under their own
 bindings while executing only the operation-matching BeforeChange definitions.
 Existing public guard-only preparation retains its selected-event contract.

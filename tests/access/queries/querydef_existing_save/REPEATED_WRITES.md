@@ -5,10 +5,10 @@ independently authored AFTER images. These extend the [first six observations](R
 without changing that recipe, model, report or original files. The
 [new first-party recipe](ExistingQueryRepeatFixture.java),
 [new raw model](repeat_model.py) and
-[observation record](../results/querydef-repeat-fragment-save-2026-11-08.json)
+[observation record](../../../results/queries/querydef-repeat-fragment-save-2026-11-08.json)
 retain their own provenance. Native Microsoft Access was not run. The new engine
 candidate is connected. Nine normal native cases and two explicit SDK cases
-pass in the [native follow-up batch](../results/query-fragments-number-batch-2026-11-08.json);
+pass in the [native follow-up batch](../../../results/queries/query-fragments-number-batch-2026-11-08.json);
 TCQE0002 intent, adapter and runtime Save admission remain pending.
 
 The unchanged three-query, two-DATA-page source has SHA-256
@@ -56,7 +56,7 @@ java -cp .cache/querydef-repeat-save-sdk-20261108/classes:.cache/tablecraft-fixt
   .cache/querydef-repeat-save-sdk-20261108/files \
   > .cache/querydef-repeat-save-sdk-20261108/sdk-observations.tsv \
   2> .cache/querydef-repeat-save-sdk-20261108/sdk-stderr.log
-python3 docs/testing/querydef_existing_save/repeat_model.py
+python3 tests/run.py tests/access/queries/querydef_existing_save/repeat_model.py
 ```
 
 The helper refuses existing AFTER paths. Preserve the retained evidence rather

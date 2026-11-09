@@ -3,24 +3,24 @@
 These fresh originals and public Jackcess delete references establish observed
 page-retirement behavior for the reviewed dependency. They do not execute a
 TableCraft candidate, qualify native Access save/reopen, or enable ordinary writes.
-The [compact reference summary](results/delete-contraction-reference-2026-10-26.json)
+The [compact reference summary](../../results/rows/delete-contraction-reference-2026-10-26.json)
 keeps hashes, receipts, boundaries and checks; full getter stdout and raw key/map
 arrays remain in its hash-pinned ignored captures.
 
 ## Original recipes and provenance
 
-[DeepDeleteFixture.java](DeepDeleteFixture.java) creates 500 rows with ten
+[DeepDeleteFixture.java](../../access/rows/delete/DeepDeleteFixture.java) creates 500 rows with ten
 SHA-256-derived GUID components, an Int32 primary key, a unique composite Wide
 index and a real WideAlias sharing the physical index. Physical insertion order
 is permuted. A separate Preserved table contains Unicode Memo and 12 KiB OLE.
-[IndirectDeleteFixture.java](IndirectDeleteFixture.java) adds ten nonindexed
+[IndirectDeleteFixture.java](../../access/rows/delete/IndirectDeleteFixture.java) adds ten nonindexed
 240-byte Binary values to each row to force a larger actual page population.
 Both are original repository code under the root license; no upstream source or
 third-party fixture was copied.
 
 The reviewed Jackcess 5.0.4 JAR has SHA-256
 `19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`.
-Its provenance is already in [the fixture ledger](FIXTURES.md). The new ledger
+Its provenance is already in [the fixture ledger](../reading/FIXTURES.md). The new ledger
 entry lists all sixteen original/reference hashes. Originals and references remain
 ignored under `.cache/delete-deep-contraction-next-20261026/`. They were never
 regenerated for publication. Promoted Java recipes are byte-identical to the
@@ -31,8 +31,8 @@ Expressions are disabled and linked targets throw. Public `Table.deleteRow` runs
 only on new copies. All getter reopens are read-only. No stored/reference SQL,
 lookup expression or active imported content runs. Public rows/index cursors
 establish populations, order and payloads. The separate
-[DeepUsageMapProbe.java](DeepUsageMapProbe.java) and
-[IndirectUsageMapProbe.java](IndirectUsageMapProbe.java) read protected root/map
+[DeepUsageMapProbe.java](../../access/storage/native/DeepUsageMapProbe.java) and
+[IndirectUsageMapProbe.java](../../access/storage/native/IndirectUsageMapProbe.java) read protected root/map
 metadata reflectively against this exact JAR; that introspection is not a stable
 native format API. The public global membership method is intentionally unsupported
 by the reviewed handler, so its protected BitSet is checked independently against
@@ -118,10 +118,10 @@ for profile in V2016 V2019; do
   java -Dstdout.encoding=UTF-8 -cp .cache/tablecraft-fixtures/jackcess-5.0.4.jar \
     docs/testing/IndirectDeleteFixture.java generate "FRESH_DIRECTORY/Indirect-$profile-before.accdb" "$profile"
 done
-python3 docs/testing/capture_delete_contraction.py \
+python3 tests/run.py tests/access/rows/delete/capture_delete_contraction.py \
   --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar --family Deep \
   --inputs FRESH_DIRECTORY --report .cache/FRESH_DEEP_CAPTURE.json
-python3 docs/testing/capture_delete_contraction.py \
+python3 tests/run.py tests/access/rows/delete/capture_delete_contraction.py \
   --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar --family Indirect \
   --inputs FRESH_DIRECTORY --report .cache/FRESH_INDIRECT_CAPTURE.json
 ```
@@ -141,7 +141,7 @@ reference chunk.
 
 ## Initial candidate baseline: sixteen positive controls remained unmet
 
-The separate [candidate baseline](results/ace16-delete-contraction-baseline-2026-10-26.json)
+The separate [candidate baseline](../../results/rows/ace16-delete-contraction-baseline-2026-10-26.json)
 runs the committed frozen engineering example from revision
 `a19cda688f6ea7660bfc8ca53852f5846fa3fd24`, SHA-256
 `c807a655bce1ea49a6b4c5308bc287293e01d6039279589110f7cf8db85deda4`.
@@ -196,11 +196,11 @@ This baseline will not be rewritten into a passing result.
 
 ## Accepted original replay with internal sibling chains
 
-The new [acceptance record](results/ace16-delete-internal-chains-originals-2026-10-26.json)
+The new [acceptance record](../../results/rows/ace16-delete-internal-chains-originals-2026-10-26.json)
 keeps the preceding baseline unchanged. Its separate frozen engineering example
 was compiled from `cd52af09c3f9253ed9aa7e3195a2210bf316efdc`, SHA-256
 `27edd9e81947a201725f006ada35bb76cadae3f05e8493ec2898a9be799082de`.
-The [build receipt](results/ace16-delete-internal-chains-example-build-2026-10-26.json)
+The [build receipt](../../results/rows/ace16-delete-internal-chains-example-build-2026-10-26.json)
 and 22 listed Git source objects were independently rehashed, including the new
 sibling qualification/repair and final-audit modules. Those selected source pins
 are not represented as a complete dependency closure or a live source inventory.
@@ -244,7 +244,7 @@ failed reports and their exact source archives remain intact. For the retained
 frozen artifact and registered local originals, use fresh replay paths:
 
 ```sh
-python3 docs/testing/compare_delete_contraction.py \
+python3 tests/run.py tests/access/rows/delete/compare_delete_contraction.py \
   --example .cache/tablecraft-bin/ace16-delete-internal-chains-20261026 \
   --example-sha256 27edd9e81947a201725f006ada35bb76cadae3f05e8493ec2898a9be799082de \
   --compiled-revision cd52af09c3f9253ed9aa7e3195a2210bf316efdc \

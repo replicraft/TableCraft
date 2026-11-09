@@ -4,7 +4,7 @@ import hashlib
 import json
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[3]
+ROOT = Path(__file__).resolve().parents[4]
 REPORT = Path('.cache/ace16-nonroot-split-original-actions-initial-20261027/report.json')
 OUTPUT = Path('.cache/ace16-nonroot-split-next-20261027/lval-chains.json')
 PAGE_BYTES = 4096

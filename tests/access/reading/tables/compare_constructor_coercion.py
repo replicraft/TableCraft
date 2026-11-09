@@ -3,6 +3,7 @@
 The existing original Python calendar and Fraction models provide expected DATE
 results. Native getters only supply IDs; no native Access SQL is executed.
 """
+from engineering_paths import reference_file
 
 import argparse
 from decimal import Decimal, ROUND_HALF_EVEN
@@ -77,7 +78,7 @@ def main():
     for database in args.database:
         before = hashlib.sha256(database.read_bytes()).hexdigest()
         tagged = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar,
-                     RECIPES / "TableDataOracle.java", database, "ScalarSamples")
+                     reference_file('tests/access/reading/tables/TableDataOracle.java'), database, "ScalarSamples")
         identities = [int(line.split("\t")[1].removeprefix("I32:")) for line in tagged.splitlines()]
         for profile in ["en-us", "de-de"]:
             month, day, minute, second = [component(value, profile, "text")

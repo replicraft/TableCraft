@@ -12,19 +12,19 @@ import sys
 import traceback
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[3]
-sys.path.insert(0, str(ROOT / 'docs/testing'))
+ROOT = Path(__file__).resolve().parents[4]
+sys.path.insert(0, str(ROOT / 'tests/access'))
 from slot_preview_originals import common
 from index_split_originals.capture import body, geometry
 import capture_delete_trees as trees
 import delete_reference_maps as maps
 
-PLAN = Path('docs/testing/nonroot_index_split_originals/plan.json')
+PLAN = Path('tests/access/indexes/nonroot_index_split_originals/plan.json')
 PLAN_SHA256 = '44f35ae7dbd339d0a1f3d4f9bc8c2b9bc6e7eaf1a1e3fbc8216a8d92e3716f20'
 REVISION = '0c0dc6d904bd112236a383c74b04192ee6c5f90f'
 ARTIFACT_SHA256 = '8245c35b6b533dbdc8f6dec5fed74aab0c0fdaf0da73e5df529dd3053eae4709'
-GETTER = Path('docs/testing/DeleteTreeFixture.java')
-REFERENCE = Path('docs/testing/nonroot_index_split_originals/NonrootSplitReference.java')
+GETTER = Path('tests/access/rows/delete/DeleteTreeFixture.java')
+REFERENCE = Path('tests/access/indexes/nonroot_index_split_originals/NonrootSplitReference.java')
 PAGE_BYTES = 4096
 COLUMN_COUNT_BYTES = 2
 FIELD_BYTES = 4
@@ -36,10 +36,10 @@ TABLES = ('Tree', 'Unindexed', 'Sentinel')
 SOURCE_INPUTS = (
     GETTER,
     REFERENCE,
-    Path('docs/testing/capture_delete_trees.py'),
-    Path('docs/testing/delete_reference_maps.py'),
-    Path('docs/testing/index_split_originals/capture.py'),
-    Path('docs/testing/slot_preview_originals/common.py'),
+    Path('tests/access/rows/delete/capture_delete_trees.py'),
+    Path('tests/access/rows/delete/delete_reference_maps.py'),
+    Path('tests/access/indexes/index_split_originals/capture.py'),
+    Path('tests/access/rows/slot_preview_originals/common.py'),
 )
 
 
@@ -291,7 +291,7 @@ def main():
     parser.add_argument('--jar', type=Path, default=Path('.cache/tablecraft-fixtures/jackcess-5.0.4.jar'))
     parser.add_argument('--artifact', type=Path, default=Path('.cache/tablecraft-bin/ace16-root-split-20261027'))
     parser.add_argument('--build-receipt', type=Path,
-                        default=Path('docs/testing/results/ace16-root-split-example-build-2026-10-27.json'))
+                        default=Path('tests/results/indexes/ace16-root-split-example-build-2026-10-27.json'))
     parser.add_argument('--freeze', type=Path, help='Caller-prepared current source manifest for execution')
     parser.add_argument('--revision', default=REVISION)
     parser.add_argument('--artifact-sha256', default=ARTIFACT_SHA256)

@@ -45,7 +45,7 @@ uses the same service.
 
 ## Evidence
 
-The [independent source qualification](../../testing/ACE16_BINARY_DELETE_SOURCES.md)
+The [independent source qualification](../../../tests/reports/storage/ACE16_BINARY_DELETE_SOURCES.md)
 passed fourteen native views and 112 exact SDK observations before matching
 DELETE producers ran. Focused native tests cover complete literal commits,
 independent proof, forged candidates, resource/cancellation controls and checked
@@ -56,5 +56,5 @@ frozen intermediate source; it does not equate sequential and atomic images.
 These are local engineering checks, separate from native Microsoft Access
 qualification. The combined batch passes 1,160 ACE units, 79 adapter units, 102 CLI units
 and 90 default recovery functions, plus query, CLI and prior Binary INSERT
-regressions. Strict feature checks pass. The [execution record](../../testing/results/ace16-primary-creation-and-binary-delete-writes-2026-11-01.json)
+regressions. Strict feature checks pass. The [execution record](../../../tests/results/creation/ace16-primary-creation-and-binary-delete-writes-2026-11-01.json)
 retains failed checks and corrections alongside successful observations.

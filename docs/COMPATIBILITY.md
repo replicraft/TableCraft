@@ -91,7 +91,7 @@ compatibility gaps rather than completed features. Current CLI commands do not
 implement Access forms/reports, a VBA runtime or a GUI.
 
 Reads and queries remain the immediate native backend priority before wider
-writes. The [read/query acceptance gates](testing/READ_QUERY_ACCEPTANCE.md),
-[native checks](access/NATIVE_CHECKS.md), [fixture provenance](testing/FIXTURES.md) and
+writes. The [read/query acceptance gates](../tests/reports/queries/READ_QUERY_ACCEPTANCE.md),
+[native checks](access/NATIVE_CHECKS.md), [fixture provenance](../tests/reports/reading/FIXTURES.md) and
 [roadmap](ROADMAP.md) distinguish working services from remaining implementation
 and qualification. Use the [CLI guide](cli/CLI.md) for current command examples.

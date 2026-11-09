@@ -76,7 +76,7 @@ def archive(store, pins, receipt, verify_git):
     if not verify_git:
         return result
     receipt_revision = 'b51c5eae8a298d36ed4ba9f5c11cd3ebdef788cc'
-    receipt_pin = store.pin('docs/testing/results/ace16-insert-external-long-value-isolated-example-build-2026-10-28.json')
+    receipt_pin = store.pin('tests/results/rows/ace16-insert-external-long-value-isolated-example-build-2026-10-28.json')
     pins.check(receipt_pin)
     queries = [revision + ':' + name for name in files]
     queries.append(receipt_revision + ':' + receipt_pin['path'])

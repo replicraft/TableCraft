@@ -7,9 +7,9 @@ from pathlib import Path
 import subprocess
 import sys
 
-ROOT = Path(__file__).resolve().parents[3]
+ROOT = Path(__file__).resolve().parents[4]
 HERE = Path(__file__).resolve().parent
-sys.path.insert(0, str(ROOT / 'docs/testing'))
+sys.path.insert(0, str(ROOT / 'tests/access'))
 from repeated_split_originals import action_model
 
 REPORT_SHA256 = 'f20b275538a9f78c4c2408e7ede8edf13605da964410f99833b20ea9b6d40ecd'

@@ -35,7 +35,7 @@ def main():
             raise RuntimeError("Expected original ACE 16 family")
         def oracle(source):
             return run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar,
-                "docs/testing/TableDataOracle.java", source, "--date-bits", "Items")
+                "tests/access/reading/tables/TableDataOracle.java", source, "--date-bits", "Items")
         before = oracle(path)
         if run(args.rows, path, "Items", "--date-bits") != before:
             raise RuntimeError("Original exact values differ")

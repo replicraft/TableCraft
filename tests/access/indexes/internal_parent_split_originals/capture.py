@@ -8,9 +8,9 @@ import subprocess
 import sys
 import traceback
 
-ROOT = Path(__file__).resolve().parents[3]
+ROOT = Path(__file__).resolve().parents[4]
 HERE = Path(__file__).resolve().parent
-sys.path.insert(0, str(ROOT / 'docs/testing'))
+sys.path.insert(0, str(ROOT / 'tests/access'))
 sys.path.insert(0, str(HERE))
 import certificate
 import delete_reference_maps as maps
@@ -120,7 +120,7 @@ def execute(args, freeze):
     try:
         command = commands.run([
             'javac', '-cp', str(JAR), '-d', str(classes),
-            str(ROOT / 'docs/testing/parent_index_split_originals/BoundedFileChannel.java'),
+            str(ROOT / 'tests/access/indexes/parent_index_split_originals/BoundedFileChannel.java'),
             str(HERE / 'InternalParentSplitFixture.java'),
         ], 'compile')
         report['compile'] = command
@@ -197,9 +197,9 @@ def main():
         if output.exists():
             raise FileExistsError(output)
         sources = [Path(__file__), HERE / 'certificate.py', HERE / 'InternalParentSplitFixture.java',
-                   ROOT / 'docs/testing/parent_index_split_originals/BoundedFileChannel.java',
-                   ROOT / 'docs/testing/parent_index_split_originals/wire.py',
-                   ROOT / 'docs/testing/delete_reference_maps.py']
+                   ROOT / 'tests/access/indexes/parent_index_split_originals/BoundedFileChannel.java',
+                   ROOT / 'tests/access/indexes/parent_index_split_originals/wire.py',
+                   ROOT / 'tests/access/rows/delete/delete_reference_maps.py']
         output.write_text(json.dumps({'status': 'Fresh public-source reproduction manifest',
                                      'sources': [pin(path) for path in sources],
                                      'jar': pin(JAR)}, indent=2) + '\n')

@@ -16,7 +16,7 @@ def main():
     args = parser.parse_args()
     for format, path in [("ace", args.ace), ("jet4", args.jet)]:
         declarations = subprocess.check_output([
-            "java", "-cp", str(args.jar), "docs/testing/ConstraintFixture.java", "--inspect", str(path),
+            "java", "-cp", str(args.jar), "tests/access/schema/fields/ConstraintFixture.java", "--inspect", str(path),
         ], text=True)
         for line in declarations.splitlines():
             table, *expected, rows = line.split("\t")
@@ -29,7 +29,7 @@ def main():
             if f"Rows checked\t{rows}\n" not in checked or "Key\tChecked\tChecked: exact unique/required\n" not in checked:
                 raise RuntimeError(f"{format}: incomplete constraint check")
             expected_rows = subprocess.check_output([
-                "java", "-Dstdout.encoding=UTF-8", "-cp", str(args.jar), "docs/testing/TableDataOracle.java", str(path), table,
+                "java", "-Dstdout.encoding=UTF-8", "-cp", str(args.jar), "tests/access/reading/tables/TableDataOracle.java", str(path), table,
             ])
             actual_rows = subprocess.check_output([str(args.example), str(path), table])
             if actual_rows != expected_rows or len(actual_rows.splitlines()) != int(rows):

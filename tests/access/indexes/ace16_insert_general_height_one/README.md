@@ -4,7 +4,7 @@ Four ACE 16 cases on four prepared source copies passed complete source/request-
 
 The 25-command public reference phase and four native producer calls passed on their first executions. Fresh inspection required two controllers: the original controller completed four V2016 calls, then its copied four-process ceiling stopped it before the first V2019 call. Its raw report remains unsuccessful. A separately frozen continuation ran only the four unattempted V2019 calls. All eight distinct read-only JVM calls succeeded once; no completed call was rerun. The original getter protocol declared a 16 MiB stream limit, while its implementation used a stricter 8 MiB limit. No stream hit that limit; the continuation explicitly retained 8 MiB, four processes and 30 seconds per child.
 
-These are separate, non-journalable engineering candidates. They do not qualify normal native writes, data macros, Microsoft Access save/reopen, every field/index profile, or root growth beyond height one. See the [implemented contract](../ACE16_INSERT_GENERAL_HEIGHT_ONE.md) and [compact result](../results/ace16-insert-general-height-one-native-2026-10-28.json).
+These are separate, non-journalable engineering candidates. They do not qualify normal native writes, data macros, Microsoft Access save/reopen, every field/index profile, or root growth beyond height one. See the [implemented contract](../../../reports/indexes/ACE16_INSERT_GENERAL_HEIGHT_ONE.md) and [compact result](../../../results/indexes/ace16-insert-general-height-one-native-2026-10-28.json).
 
 ## Independent construction and saved checks
 

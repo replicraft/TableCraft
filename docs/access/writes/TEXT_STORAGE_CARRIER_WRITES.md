@@ -25,6 +25,6 @@ residue. The proof preserves exact original histories, aliases, allocation,
 unrelated objects and EOF. This does not qualify arbitrary locales, unsupported
 metadata, new tree shapes or Microsoft Access save/reopen.
 
-The [execution record](../../testing/results/ace16-text-storage-carrier-writes-2026-11-01.json)
+The [execution record](../../../tests/results/storage/ace16-text-storage-carrier-writes-2026-11-01.json)
 separates native engine, direct proof, resource, retained-session and CLI checks
 from native Access qualification.

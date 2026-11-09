@@ -138,7 +138,7 @@ using a separate committed frozen consumer and fresh read-only getters.
 
 ## Engineering consumer
 
-The feature-gated [example](../../crates/engines/tablecraft-ace/examples/preview_ace16_split.rs)
+The feature-gated [example](../../../crates/engines/tablecraft-ace/examples/preview_ace16_split.rs)
 accepts seven positional arguments. It buffers the complete candidate before
 creating a fresh output, synchronizes publication and cleans up only its own
 failed partial file. It never writes the source or replaces an existing output.
@@ -158,7 +158,7 @@ is not a qualified native save, locking/recovery guarantee or data-macro result.
 The original root-leaf slice passed 173 distinct runtime functions (153 existing,
 15 primary and five private), three compile-fail docs, scoped strict lint,
 standalone minimal compilation, warnings-denied all-feature rustdoc and formatting.
-The [scoped result record](results/ace16-index-splits-native-2026-10-27.json)
+The [scoped result record](../../results/indexes/ace16-index-splits-native-2026-10-27.json)
 separates final focused checks from earlier diagnostics and mechanical cleanup.
 It includes independent literal source/key goldens, both admitted ACE codes and
 index directions, real aliases, row-tie boundaries, two physical owners sharing
@@ -174,7 +174,7 @@ failures and the mode-specific malformed-versus-unsupported map expectation are
 retained and excluded from final passing counts. No model bytes were changed to
 match a candidate.
 
-The [non-root implementation record](results/ace16-nonroot-index-splits-native-2026-10-27.json)
+The [non-root implementation record](../../results/indexes/ace16-nonroot-index-splits-native-2026-10-27.json)
 reports 100 distinct runtime functions: 70 existing regressions, 23 primary
 functions and seven private controls. Ten functions are new in this slice.
 Three compile-fail docs, scoped strict lint, standalone minimal compilation,
@@ -194,7 +194,7 @@ production draft; source/log evidence is retained. This was not an oracle
 correction or a published corrupt candidate.
 
 
-The [recursive implementation record](results/ace16-parent-index-splits-native-2026-10-27.json)
+The [recursive implementation record](../../results/indexes/ace16-parent-index-splits-native-2026-10-27.json)
 reports 108 distinct runtime functions: 70 existing regressions, 29 primary
 functions and nine private controls. Eight functions are newly added. Three
 compile-fail docs, scoped strict lint, standalone minimal compilation,

@@ -11,7 +11,7 @@ import json
 from pathlib import Path
 import subprocess
 
-ROOT = Path(__file__).resolve().parents[3]
+ROOT = Path(__file__).resolve().parents[4]
 HERE = Path(__file__).resolve().parent
 DEFAULT_REPORT = '.cache/ace16-encoded-split-acceptance-first-20261027/report.json'
 DEFAULT_PLAN = '.cache/ace16-encoded-originals-next-20261027/plan.json'
@@ -101,7 +101,7 @@ def verify(report_path, plan_path):
         assert all(size <= 16 * 1024 * 1024 for size in command['observed_stream_bytes'])
 
     private = '.cache/ace16-encoded-index-reference-next-20261027/'
-    public = 'docs/testing/encoded_index_split_sources/'
+    public = 'tests/access/indexes/encoded_index_split_sources/'
     assert functions(private + 'action_model.py') == functions(public + 'action_model.py')
     assert functions(private + 'proof.py') == functions(public + 'reference_proof.py')
     model = load_module('encoded_split_candidate_model', HERE / 'candidate_model.py')

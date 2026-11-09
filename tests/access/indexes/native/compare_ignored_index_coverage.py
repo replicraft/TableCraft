@@ -7,7 +7,7 @@ import json
 from pathlib import Path
 import subprocess
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[4]
 PROFILES = ("V2016", "V2019")
 CURRENT_SHA256 = "9ef8530041ddefff1b888b6b58757a35221297044497fa9a32360570c1ed259f"
 BASELINE_SHA256 = "121d76588ed4e6c9497e23b9f42c6f9ca5e729aceb0a0e9491f153865fac3e4c"
@@ -159,7 +159,7 @@ def main():
         assert pin(ROOT / path)["sha256"] == expected["sha256"]
     artifacts = [
         args.cli, args.baseline_cli, jar, Path(__file__), args.build_record,
-        ROOT / "docs/testing/IgnoredIndexCoverageFixture.java",
+        ROOT / "tests/access/indexes/native/IgnoredIndexCoverageFixture.java",
         args.originals / "source-at-generation.java",
         args.originals / "producer-getter-commands.json",
         args.originals / "location-getter-commands.json",

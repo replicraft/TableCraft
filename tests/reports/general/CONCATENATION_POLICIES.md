@@ -1,6 +1,6 @@
 # Known non-Text concatenation policy replay
 
-The [accepted replay](results/concatenation-policies-2026-10-24.json) passes
+The [accepted replay](../../results/general/concatenation-policies-2026-10-24.json) passes
 300 commands and all 1,882 unchanged hashes, including every entry in the frozen
 1,861-file Rust inventory. It reuses the four registered original native-policy
 fixtures for Jet 4, ACE 2007 and ACE16-family V2016/V2019.
@@ -18,14 +18,14 @@ model. Existing NULL and actual String provenance rules remain conservative.
 
 ## Getter and model boundary
 
-[ConcatenationPolicyOracle.java](ConcatenationPolicyOracle.java) reopens the
+[ConcatenationPolicyOracle.java](../../access/reading/tables/ConcatenationPolicyOracle.java) reopens the
 registered original files read-only, disables expressions and installs a throwing
 link resolver. Public row getters capture exact stored text; pinned Jackcess
 ColumnImpl/DatabaseImpl metadata getters capture field/default sort identities.
 No reference SQL, expression, sort-weight encoder or imported content executes.
 The getter verifies that no linked handle was opened.
 
-The registered [NativePolicyFixture.java](NativePolicyFixture.java) originally
+The registered [NativePolicyFixture.java](../../access/reading/tables/NativePolicyFixture.java) originally
 created LegacyText with LCID1033/version0 and ModernText with LCID1033/version1.
 Both have variant0. Row3 contains exact `a` / `A`; the remaining ordinary rows
 include Unicode, NULL and trailing-space inputs. Original file hashes remain:
@@ -37,7 +37,7 @@ include Unicode, NULL and trailing-space inputs. Original file hashes remain:
 | V2016 | `86076051e896e0e79c5e2e649f4dfd5e0386e6a87ef145314730901f8454ee6e` |
 | V2019 | `3ae803876edee6a5510169ebbaa380a8a1dbe1a522edf4b080d7047ea5ce3347` |
 
-[compare_concatenation_policies.py](compare_concatenation_policies.py) asserts
+[compare_concatenation_policies.py](../../access/reading/tables/compare_concatenation_policies.py) asserts
 those exact registered hashes and getter identities before replay. It independently
 constructs short ASCII outputs from the raw `a` value and explicit rendering
 goldens: `2`, `1.25`, `True`, `2000-01-02` and `12`. Equality compares each
@@ -86,7 +86,7 @@ The existing binary fixtures remain under ignored
 patched or regenerated for this slice. The new getter captures and actual getter
 commands are under `.cache/concat-policy-getters-20261024/`, with generation.json
 recording each unchanged original hash. Existing fixture provenance remains in
-[the ledger](FIXTURES.md).
+[the ledger](../reading/FIXTURES.md).
 
 The reviewed Jackcess 5.0.4 JAR is Apache-2.0, SHA-256
 `19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`.
@@ -114,7 +114,7 @@ The frozen artifacts are:
   `cf5c9a255d44634b31a91fb74192590b56053749b504914d992e047e07f72ba2`.
 
 ```sh
-python3 docs/testing/compare_concatenation_policies.py \
+python3 tests/run.py tests/access/reading/tables/compare_concatenation_policies.py \
   --cli .cache/tablecraft-bin/concat-policy-cli-20261024 \
   --cli-sha256 747425183d2e0869646fa359f3f557a540bff6fb835116a8912e6346a38c4cf3 \
   --baseline .cache/tablecraft-bin/external-named-cli-20261024 \
@@ -140,4 +140,4 @@ provenance was also confirmed rather than changed. The exclusion record is
 `.cache/concat-policy-exclusions-20261024.md`; no original inputs were modified.
 
 Native Access collation/precedence evidence and broader field-origin semantics
-remain separate; see [native Text policies](../access/indexes/NATIVE_TEXT.md).
+remain separate; see [native Text policies](../../../docs/access/indexes/NATIVE_TEXT.md).

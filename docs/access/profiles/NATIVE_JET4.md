@@ -36,7 +36,7 @@ check means only its reported coverage, not full database integrity.
 
 Fresh original V2000 and V2007 files were generated with the previously reviewed
 Jackcess 5.0.4 artifact, with expression evaluation disabled. No third-party source
-or database bytes were copied into production. [Fixture hashes](../../testing/FIXTURES.md#jet-4-and-ace-12-current-profile-inputs)
+or database bytes were copied into production. [Fixture hashes](../../../tests/reports/reading/FIXTURES.md#jet-4-and-ace-12-current-profile-inputs)
 record each original; generated databases remain untracked.
 
 - Single Decimal trees: 6,116 ordered row visits per family; precisions 4/28,
@@ -68,12 +68,12 @@ DecimalCompositeIndexFixture and DecimalRelationshipFixture with `V2000`/`V2007`
 Their comparison runners retain required `--ace2016`/`--ace2019` regression inputs
 and accept optional `--jet4`/`--ace2007` inputs. Build the CLI and ACE `table_data`
 example first. See [index contracts](../indexes/NATIVE_INDEXES.md), [relationship contracts](../schema/NATIVE_CONSTRAINTS.md)
-and [fixture provenance](../../testing/FIXTURES.md).
+and [fixture provenance](../../../tests/reports/reading/FIXTURES.md).
 
 SavedSelectFixture accepts `V2000` with `--compound-joins` or `--parameters`;
 compare_compound_joins.py and compare_saved_parameters.py accept `--jet4` alongside
 their existing modern controls. Build the Access `saved_select` example as well.
-The dedicated [edit comparison](../../testing/compare_jet4_decimal_edits.py) takes
+The dedicated [edit comparison](../../../tests/access/queries/expressions/compare_jet4_decimal_edits.py) takes
 `--jar`, `--cli`, `--rows` and `--database` pointing to the original Decimal index
 fixture, creates only a temporary new copy and independently verifies its results.
 

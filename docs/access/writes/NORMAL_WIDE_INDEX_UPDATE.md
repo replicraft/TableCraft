@@ -26,8 +26,8 @@ Forty-eight complete source views and 408 independent inert reader observations
 preceded matching writes. Ninety-six native commits, original-wire comparisons,
 independent proof/forgery, recovery/resource controls, 56 retained typed/SQL saves
 and eight CLI saves/readbacks pass. See the
-[execution record](../../testing/results/ace16-normal-wide-index-update-writes-2026-11-01.json)
-and [source qualification](../../testing/ACE16_WIDE_INLINE_CLOCK_SOURCES.md).
+[execution record](../../../tests/results/indexes/ace16-normal-wide-index-update-writes-2026-11-01.json)
+and [source qualification](../../../tests/reports/general/ACE16_WIDE_INLINE_CLOCK_SOURCES.md).
 
 These are portable checks. Native Microsoft Access save/reopen, wider retained
 NODE saves beyond the qualified retained partitions, splits and broader

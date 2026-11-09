@@ -4,7 +4,7 @@ Two fresh public-builder ACE 16 originals now demonstrate an indirect Memo owned
 map with an inline candidate map. The fixed construction and read-only capture
 completed all thirteen fixture commands on their first attempt. No native
 candidate or normal save was attempted. The
-[compact receipt](results/indirect-long-value-map-observations-2026-10-27.json)
+[compact receipt](../../results/storage/indirect-long-value-map-observations-2026-10-27.json)
 pins the actual sources, snapshots, raw report and saved-proof verification.
 
 These are independent-writer storage observations. They do not qualify Microsoft
@@ -14,7 +14,7 @@ Existing raw60 and compressed148 candidate acceptance remain separate evidence.
 ## Fixed public construction
 
 The repository-authored
-[producer and getter](indirect_lval_observations/IndirectLongValueProbe.java)
+[producer and getter](../../access/storage/indirect_lval_observations/IndirectLongValueProbe.java)
 uses the previously reviewed Jackcess 5.0.4 binary. Both V2016 and V2019 have
 `IndirectLongValues` with ID LONG, uncompressed Memo and opaque OLE. The primary
 ID index and two ordinary ascending declarations yield two physical roots;
@@ -70,14 +70,14 @@ that prefix are bitmap data, not an ordinary owner integer.
 
 ## Saved preservation checks
 
-The import-safe [capture wrapper](indirect_lval_observations/capture.py) combines
+The import-safe [capture wrapper](../../access/storage/indirect_lval_observations/capture.py) combines
 public getters with independently decoded raw map rows, bitmap bits, descriptors
 and chunks. It captures native column blocks, current and historical map pairs,
 ordinary/index/column/global roles, exact map-row ranges, bitmap storage, complete
 bit counts and future bits. All captured catalog declaration tails are complete.
 Logical index aliases canonicalize to their actual physical identities.
 
-The separate [read-only verifier](indirect_lval_observations/verify.py) repeats no
+The separate [read-only verifier](../../access/storage/indirect_lval_observations/verify.py) repeats no
 fixture commands. Its first run verifies 48 unique live artifact pins and rebuilds
 all six saved snapshots. It checks 2,808 raw row bodies, 48 live chunk observations,
 672 map-role observations and 3,240 mutable-role storage comparisons. Repeated
@@ -100,7 +100,7 @@ compiled class, outputs and original six snapshots remain preserved unchanged.
 To verify retained private artifacts without starting Java or the engine:
 
 ```sh
-python3 docs/testing/indirect_lval_observations/verify.py \
+python3 tests/run.py tests/access/storage/indirect_lval_observations/verify.py \
   --report .cache/ace16-indirect-lval-observations-first-20261027/report.json
 ```
 

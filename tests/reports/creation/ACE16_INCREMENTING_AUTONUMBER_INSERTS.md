@@ -3,7 +3,7 @@
 With `ace16-write-preview`,
 `NativeImage::preview_ace16_incrementing_insert_rows` constructs a separate
 `Ace16AutoNumberInsertPreview` under a caller-selected incrementing policy.
-The ordinary [explicit-row INSERT API](ACE16_INSERT_PREVIEW.md) remains unchanged
+The ordinary [explicit-row INSERT API](../rows/ACE16_INSERT_PREVIEW.md) remains unchanged
 and continues to refuse generated fields, including empty manual batches.
 Normal ACE saves, journalable edits, required data macros and SQL INSERT execution
 are not enabled.
@@ -142,20 +142,20 @@ with that original intent before publication.
 
 ## Independent literal coverage and verification state
 
-The [source/request model](../../crates/engines/tablecraft-ace/src/table/mutation/insert/tests/incrementing_autonumber/model.rs)
-and [public API tests](../../crates/engines/tablecraft-ace/src/table/mutation/insert/tests/incrementing_autonumber.rs)
+The [source/request model](../../../crates/engines/tablecraft-ace/src/table/mutation/insert/tests/incrementing_autonumber/model.rs)
+and [public API tests](../../../crates/engines/tablecraft-ace/src/table/mutation/insert/tests/incrementing_autonumber.rs)
 construct complete expected images before preview calls. They cover both ACE 16
 headers, a generated column after another Int32, deleted highest/all-deleted
 populations, a higher historical counter, signed counters, upper exhaustion,
 collisions, empty requests, aliases and shared DATA/index growth.
 
-[Private audit controls](../../crates/engines/tablecraft-ace/src/table/mutation/insert/autonumber/tests.rs)
+[Private audit controls](../../../crates/engines/tablecraft-ace/src/table/mutation/insert/autonumber/tests.rs)
 first match a complete independent healthy image, then test correlated wrong IDs,
 DATA/index ledgers and counter values that remain reader-valid. Original request
 arithmetic still rejects them. Missing counter updates and incorrect returned key
 order, length or values are checked separately.
 
-[Companion integration tests](../../crates/engines/tablecraft-ace/src/table/mutation/insert/autonumber/companions.rs)
+[Companion integration tests](../../../crates/engines/tablecraft-ace/src/table/mutation/insert/autonumber/companions.rs)
 reuse actual independent ordinary-row and missing-long-value-declaration models.
 Their 14 source/expected cases cover large, empty and NULL Text/Binary companions,
 a non-first generated primary, and external Memo/OLE values with single/chained
@@ -178,7 +178,7 @@ Final library verification passes 641 tests with two existing ignored tests,
 including 280 INSERT functions. All 16 AutoNumber functions pass, covering signed
 counters, companions and private correlated audits; the fixed-42 regression also
 passes. The separate example batch passes all 22 tests again after the context
-correction; its [input contract](ACE16_INSERT_INPUT.md#explicit-incrementing-autonumber-requests)
+correction; its [input contract](../rows/ACE16_INSERT_INPUT.md#explicit-incrementing-autonumber-requests)
 describes the explicit flag and companion ordering. Strict all-target/all-feature and
 minimal-library Clippy pass. The 76 shared write regression tests also pass.
 
@@ -190,7 +190,7 @@ with expected-freeze SHA-256
 All 16 public-reference calls pass. The committed producer's eight candidates
 match all 3,571,712 expected bytes; eight separate fresh independent reads verify
 the resulting rows, counters, aliases, maps and 20 generated IDs. The
-[original-file proof](ace16_incrementing_autonumber/README.md) supplies maintained
+[original-file proof](../../access/creation/ace16_incrementing_autonumber/README.md) supplies maintained
 saved-evidence verification. Public-reference
 images remain observations, not expected-image authority. Stored mode qualification
 and Microsoft Access save/reopen remain separate from this independent evidence.
@@ -201,7 +201,7 @@ instead of the CLI's actual generated-key report. A separately frozen derivative
 checks the genuine CLI stream; the original protocol and successful eight native
 outputs remain unchanged. No native call was repeated for this correction.
 
-The [committed-producer build receipt](results/ace16-incrementing-autonumber-example-build-2026-10-28.json)
+The [committed-producer build receipt](../../results/creation/ace16-incrementing-autonumber-example-build-2026-10-28.json)
 binds the copied engineering example to commit `9e77ffcf`. Its initially absent
 isolated release target compiled the owning engine; all 4,702 exported files match
 the committed Git blobs. This establishes producer provenance separately from

@@ -10,7 +10,7 @@ import subprocess
 import capture_autonumber_deletes as reference
 from encoded_delete_originals import wire
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[4]
 NOTICE = 'Engineering candidate: data-macro semantics and native Access qualification pending.\n'
 TABLE_COUNT_OFFSET = 16
 SLOT_START = 14

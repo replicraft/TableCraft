@@ -40,16 +40,16 @@ describes the general binary segment encoding used by its BinaryColumnDescriptor
 GUID uses the same encoding with a fixed payload. Production Rust and fixture
 recipes are original; no upstream implementation or binary fixture was copied.
 
-[BinaryIndexFixture.java](BinaryIndexFixture.java) creates 1,000-row ordinary
+[BinaryIndexFixture.java](../../access/indexes/native/BinaryIndexFixture.java) creates 1,000-row ordinary
 ascending/descending indexes, a unique index, an empty table and explicit ignored/
 compound refusals. Values cover NULL, empty, duplicates, zero/high bytes, partial
 and full segment boundaries and 254/255-byte fields. Both ordinary roots are
-verified as node pages rather than single leaves. [IndexRowsOracle](IndexRowsOracle.java)
+verified as node pages rather than single leaves. [IndexRowsOracle](../../access/indexes/native/IndexRowsOracle.java)
 opens read-only with expression evaluation disabled and now formats byte arrays
-as exact hexadecimal values. [The runner](compare_binary_indexes.py) checks tagged
+as exact hexadecimal values. [The runner](../../access/indexes/native/compare_binary_indexes.py) checks tagged
 indexed rows, complete/projected CLI queries and table-check coverage, plus explicit
 refusals: eighteen controls per profile, seventy-two total. Hashes remain unchanged;
-[fixture records](FIXTURES.md#native-binary-index-inputs) retain their identities.
+[fixture records](../reading/FIXTURES.md#native-binary-index-inputs) retain their identities.
 
 Synthetic tests cover all four profiles, typed seek refusal, padding damage,
 key/row disagreement and the write gate. Codec goldens and fixed-seed generated
@@ -60,7 +60,7 @@ fixtures, Windows, shared-file operation and native saves remain unqualified.
 ```sh
 CARGO_INCREMENTAL=0 cargo build -p tablecraft-cli --release --locked --offline
 CARGO_INCREMENTAL=0 cargo build -p tablecraft-ace --example table_data --release --locked --offline
-python3 docs/testing/compare_binary_indexes.py \
+python3 tests/run.py tests/access/indexes/native/compare_binary_indexes.py \
   --jar /tmp/reviewed/jackcess-5.0.4.jar --cli target/release/tablecraft \
   --rows target/release/examples/table_data --directory /tmp/new-binary-index-inputs --generate
 ```

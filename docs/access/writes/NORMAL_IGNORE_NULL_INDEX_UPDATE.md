@@ -66,7 +66,7 @@ refresh, stale-handle refusal and durable namespace lifecycle.
 
 ## Focused observations
 
-The [acceptance record](../../testing/results/ace16-normal-ignore-null-update-2026-11-03.json)
+The [acceptance record](../../../tests/results/rows/ace16-normal-ignore-null-update-2026-11-03.json)
 retains commands, log hashes, source pins and first failures.
 
 Eight unchanged source images supplied 12 native read/admission contexts. Actual
@@ -100,7 +100,7 @@ native functions pass six outcomes: counter-MAX zero delta versus overflow, and
 unindexed Marker edits preserving every ignored-owner byte. These explicit
 adversarial counter variants are not new source qualification.
 
-The [independent source and admission record](../../testing/ace16_fixed_ignore_null_updates/NORMAL_ADMISSION.md)
+The [independent source and admission record](../../../tests/access/rows/ace16_fixed_ignore_null_updates/NORMAL_ADMISSION.md)
 keeps those observations separate from earlier engineering comparisons and
 preserved admission failures. No native Microsoft Access save/reopen, Windows
 mixed-client or full ACE 16 compatibility claim follows from these portable

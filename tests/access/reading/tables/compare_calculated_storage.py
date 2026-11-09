@@ -16,7 +16,7 @@ def main():
     for path in [args.ace2016, args.ace2019]:
         original = path.read_bytes()
         expected = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar,
-            "docs/testing/TableDataOracle.java", path, "Calculations")
+            "tests/access/reading/tables/TableDataOracle.java", path, "Calculations")
         values = [line.split("\t")[2] for line in expected.splitlines()]
         assert values == ["I32:20", "I32:-40", "I32:0", "N", "I32:41", "I32:-2147483648", "I32:2147483647"]
         header = "Table\tCalculations\nColumn\tTwice\nValues\tStored; not recalculated\nRow ordinal\tStored Int32 value\n"

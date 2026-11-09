@@ -2,7 +2,7 @@
 
 This source evidence preceded matching normal index mutations. Subsequent
 producer results are recorded separately in the
-[execution record](results/ace16-normal-integral-indexed-writes-2026-11-01.json).
+[execution record](../../results/indexes/ace16-normal-integral-indexed-writes-2026-11-01.json).
 
 Two unchanged SDK-created originals contain Int64 and Currency tables with
 manual Int32 identities and fixed siblings. Literal requests cover MIN, NULL,
@@ -24,8 +24,8 @@ The first native command selected an ignored test without enabling it and ran
 zero tests; the second explicit invocation passed the actual gate.
 
 Exact manifest, source gate and reader receipt pins are in the
-[source record](results/ace16-integral-indexed-mutation-sources-2026-11-01.json).
+[source record](../../results/indexes/ace16-integral-indexed-mutation-sources-2026-11-01.json).
 The gate lives beside the other native source tests in
-[integral_indexed.rs](../../crates/engines/tablecraft-ace/src/table/mutation/normal_ordinary_sources/integral_indexed.rs).
+[integral_indexed.rs](../../../crates/engines/tablecraft-ace/src/table/mutation/normal_ordinary_sources/integral_indexed.rs).
 Native Access save/reopen remains unrun; source qualification alone establishes
 no mutation permission.

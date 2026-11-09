@@ -66,18 +66,18 @@ and byte/work/syntax limits. One crosstab test checks the shared source path.
 One CLI test covers saved/named retrieval, inert unknown calls and a later arithmetic
 error without partial stdout. Source bytes remain unchanged.
 
-The original [SavedDerivedFixture.java](../../testing/SavedDerivedFixture.java) recipe
+The original [SavedDerivedFixture.java](../../../tests/access/queries/saved/SavedDerivedFixture.java) recipe
 extends only our original forest recipe. Four fresh local files contain its
 fourteen baseline queries and eleven additional inert derived definitions.
-[compare_saved_derived.py](../../testing/compare_saved_derived.py) passes 176 independent
+[compare_saved_derived.py](../../../tests/access/queries/saved/compare_saved_derived.py) passes 176 independent
 SQL-rendering/direct/saved/named execution/refusal controls using explicit expected
-rows. The reference renders metadata but never executes SQL. [Fixture records](../../testing/FIXTURES.md#saved-derived-source-inputs)
+rows. The reference renders metadata but never executes SQL. [Fixture records](../../../tests/reports/reading/FIXTURES.md#saved-derived-source-inputs)
 give provenance and observed hashes. Windows Microsoft Access execution and
 save/reopen remain unrun; these controls are independent evidence, not native
 compatibility qualification.
 
 ```sh
-python3 docs/testing/compare_saved_derived.py \
+python3 tests/run.py tests/access/queries/saved/compare_saved_derived.py \
   --jar path/to/jackcess-5.0.4.jar --cli target/release/tablecraft \
   --directory path/to/fresh-derived-sources --generate
 ```

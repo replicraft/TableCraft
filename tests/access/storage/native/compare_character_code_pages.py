@@ -5,6 +5,7 @@ controls, and Windows-1255 byte CA maps to U+05BA (WHATWG index position 74),
 which differ from older strict Python/Windows mapping tables. These extensions
 are checked explicitly, not inferred from TableCraft output. No tables are copied.
 """
+from engineering_paths import reference_file
 import argparse
 from pathlib import Path
 import subprocess
@@ -76,7 +77,7 @@ def main():
             refused(args.cli, mode, 'String(1,128)', ['--character-code-page',page], b'supported single-byte code page')
             controls += 1
     tagged = run('java', '-Dstdout.encoding=UTF-8', '-cp', args.jar,
-                 RECIPES/'TableDataOracle.java', args.database, 'ROULETTE_TB')
+                 reference_file('tests/access/reading/tables/TableDataOracle.java'), args.database, 'ROULETTE_TB')
     identities = sorted(int(line.split('\t')[1].removeprefix('I32:')) for line in tagged.splitlines())
     for page in [1251,1252]:
         expected = 'N\tC\n'+''.join(f'{identity}\t{spelling(decode(page,(128+identity)%256)*2)}\n' for identity in identities)

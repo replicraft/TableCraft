@@ -8,14 +8,14 @@ import subprocess
 import sys
 import time
 
-REPO = Path(__file__).resolve().parents[3]
+REPO = Path(__file__).resolve().parents[4]
 BASE = Path(__file__).resolve().parent
 TIMEOUT_SECONDS = 120
 POLL_SECONDS = 0.05
 MAX_STREAM_BYTES = 16 * 1024 * 1024
 JAVA_HEAP = "512m"
 REVIEWED_JAR_SHA256 = '19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc'
-RECEIPT = 'docs/testing/results/ace16-integral-split-baseline-build-2026-10-27.json'
+RECEIPT = 'tests/results/indexes/ace16-integral-split-baseline-build-2026-10-27.json'
 
 
 def repository_path(value):
@@ -111,7 +111,7 @@ def validate(freeze):
 
 
 def execute(freeze):
-    sys.path.insert(0, str(REPO / 'docs/testing'))
+    sys.path.insert(0, str(REPO / 'tests/access'))
     import model
 
     work = repository_path(freeze['work'])

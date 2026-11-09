@@ -3,6 +3,7 @@
 Original authored definitions use the existing original Sales rows. Jackcess renders
 metadata and reads fields; it never evaluates SQL. Expected grids are explicit.
 """
+from engineering_paths import reference_file
 
 import argparse
 import csv
@@ -43,7 +44,7 @@ def main():
         names = ["SavedCrosstabFixture", "SavedNamedCrosstabFixture", "ComputedCrosstabFixture",
                  "SavedReadOracle", "SavedQueryOracle", "TableDataOracle"]
         subprocess.run(["javac", "-cp", str(args.jar), "-d", classes,
-                        *[str(RECIPES / (name + ".java")) for name in names]], check=True)
+                        *[str(reference_file(name + ".java")) for name in names]], check=True)
 
         def java(name, *values):
             return subprocess.check_output(["java", "-Dstdout.encoding=UTF-8", "-cp",

@@ -1,8 +1,8 @@
 # Original native/CAB stateful streaming replay
 
-The [96-control report](results/progressive-stateful-stages-2026-10-25.json)
+The [96-control report](../../results/general/progressive-stateful-stages-2026-10-25.json)
 checks static nested aggregate stages against independent Python integer/Fraction
-models over the six unchanged [large deployment inputs](LARGE_DEPLOYMENT.md).
+models over the six unchanged [large deployment inputs](../reading/LARGE_DEPLOYMENT.md).
 Only TableCraft executes SQL. Inert getters establish source rows and separate
 CAB checks establish packaged bytes; neither is a native Access SQL oracle.
 
@@ -31,7 +31,7 @@ All six original database/package hashes remain unchanged.
 Reproduce using the registered original inputs and fresh report path:
 
 ```sh
-python3 docs/testing/compare_progressive_stateful_stages.py \
+python3 tests/run.py tests/access/queries/execution/compare_progressive_stateful_stages.py \
   --cli .cache/tablecraft-bin/progressive-stateful-cli-20261025 \
   --cli-sha256 93ee5e5e27b9b6eea392c5c50566c53b8e0f9de28fef9d7c5c2943b7ff22d4e9 \
   --revision 57140e145eaef59b3de6f8b84eca6852a8526ea8 \

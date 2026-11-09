@@ -31,7 +31,7 @@ No new dependency or failed source/golden retry was involved.
 
 These source-phase runs called no native producer. Corresponding normal INSERT
 implementation/proof/host results pass in the separate
-[write record](results/ace16-normal-indexed-desc-null-insert-writes-2026-11-01.json). SDK read success and primary-source history interpretation
+[write record](../../results/indexes/ace16-normal-indexed-desc-null-insert-writes-2026-11-01.json). SDK read success and primary-source history interpretation
 are not Microsoft Access save/reopen conformance. Allocation, interior-tree
 mutation, AutoNumber/default generation and larger/external LVAL remain separate.
 

@@ -90,8 +90,8 @@ Thirty-two native complete-image commits and the original-request recovery
 controls pass. Fifty-six real typed session saves cover the first 28 literal
 outcomes in both group orders. Separate controls verify the old Int32 record
 dispatch. Wider feature checks remain separate in the
-[execution record](../../testing/results/ace16-normal-fixed-before-change-2026-10-31.json).
-The [source contract](../../testing/ACE16_FIXED_BEFORE_CHANGE_SOURCES.md) records
+[execution record](../../../tests/results/rows/ace16-normal-fixed-before-change-2026-10-31.json).
+The [source contract](../../../tests/reports/rows/ACE16_FIXED_BEFORE_CHANGE_SOURCES.md) records
 independent source/read evidence. Native Access event/save/reopen and
 mixed-client qualification remain unrun.
 
@@ -112,5 +112,5 @@ literal expected outcomes. A separate immutable CLI artifact passes twelve fresh
 complete-image saves and twelve exact full TSV readbacks. Its first run stopped
 on an incorrect expected GUID; the successor uses the original fixture's literal
 GUID and independent BEFORE inventory. Both attempts remain in the
-[execution record](../../testing/results/ace16-normal-fixed-sql-cli-2026-10-31.json).
+[execution record](../../../tests/results/queries/ace16-normal-fixed-sql-cli-2026-10-31.json).
 See the [CLI guide](../../cli/JOURNAL_EDITING.md).

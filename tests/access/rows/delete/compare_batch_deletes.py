@@ -11,9 +11,9 @@ import compare_delete_contraction as CONTRACT
 import delete_reference_maps as MAP
 
 BASE = CONTRACT.BASE
-ROOT = Path(__file__).resolve().parents[2]
-HELPER = ROOT / 'docs/testing/BatchDeleteFixture.java'
-BUILD = ROOT / 'docs/testing/results/ace16-batch-delete-example-build-2026-10-26.json'
+ROOT = Path(__file__).resolve().parents[4]
+HELPER = ROOT / 'tests/access/rows/delete/BatchDeleteFixture.java'
+BUILD = ROOT / 'tests/results/rows/ace16-batch-delete-example-build-2026-10-26.json'
 ORIGINALS = {
     'V2016': ('.cache/batch-delete-originals-next-20261026/Batch-V2016-before.accdb',
               'ebb1f05f264dddf5e8195633a0bd5077f5ea6bb1211da0943086a1dbf713ff80'),
@@ -329,12 +329,12 @@ def main():
         args.jar,
         HELPER,
         Path(__file__),
-        ROOT / 'docs/testing/batch_delete_model.py',
-        ROOT / 'docs/testing/compare_delete_contraction.py',
-        ROOT / 'docs/testing/compare_delete_candidates.py',
-        ROOT / 'docs/testing/capture_delete_trees.py',
-        ROOT / 'docs/testing/capture_delete_contraction.py',
-        ROOT / 'docs/testing/delete_reference_maps.py',
+        ROOT / 'tests/access/rows/delete/batch_delete_model.py',
+        ROOT / 'tests/access/rows/delete/compare_delete_contraction.py',
+        ROOT / 'tests/access/queries/expressions/compare_delete_candidates.py',
+        ROOT / 'tests/access/rows/delete/capture_delete_trees.py',
+        ROOT / 'tests/access/rows/delete/capture_delete_contraction.py',
+        ROOT / 'tests/access/rows/delete/delete_reference_maps.py',
         BUILD,
         ROOT / '.cache/batch-delete-originals-next-20261026/initial-commands.json',
         ROOT / '.cache/batch-delete-originals-next-20261026/original-geometry.json',

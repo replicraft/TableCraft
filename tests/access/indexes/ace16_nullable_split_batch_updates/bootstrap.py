@@ -11,8 +11,8 @@ from pathlib import Path
 import sys
 import types
 
-ROOT = Path(__file__).resolve().parents[3]
-PUBLIC = ROOT / 'docs/testing/ace16_nullable_split_batch_updates'
+ROOT = Path(__file__).resolve().parents[4]
+PUBLIC = ROOT / 'tests/access/indexes/ace16_nullable_split_batch_updates'
 
 
 def identity(store, pins, anchors):
@@ -55,12 +55,12 @@ def load(store, pins, anchors, frozen_inputs, native=False):
         # Validate shared owner bytes before their top-level imports execute.
         frozen = {item['path']: item for item in frozen_inputs}
         for name, item in frozen.items():
-            if name.startswith('docs/testing/') and name.endswith('.py'):
+            if name.startswith('tests/access/') and name.endswith('.py'):
                 pins.check(item)
                 raw = (ROOT / name).read_bytes()
                 assert len(raw) == item['bytes']
                 assert hashlib.sha256(raw).hexdigest() == item['sha256'], name
-        sys.path.insert(0, str(ROOT / 'docs/testing'))
+        sys.path.insert(0, str(ROOT / 'tests/access'))
         old_modules = set(sys.modules)
         importlib.import_module('ace16_fixed_ignore_null_updates.source')
         importlib.import_module('ace16_insert_multiple_indexes.model')
@@ -73,7 +73,7 @@ def load(store, pins, anchors, frozen_inputs, native=False):
                 relative = path.relative_to(ROOT).as_posix()
             except ValueError:
                 continue
-            if relative.startswith('docs/testing/') and path.suffix == '.py':
+            if relative.startswith('tests/access/') and path.suffix == '.py':
                 assert relative in frozen, ('Unbound shared owner', relative)
 
         selection = [('source', 'source.py', 'source'),

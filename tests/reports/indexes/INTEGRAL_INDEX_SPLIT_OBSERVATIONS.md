@@ -7,7 +7,7 @@ Jackcess updates and eight atomic refusals from the frozen, non-splitting
 TableCraft fixed-scalar consumer. It does not qualify the new typed split API,
 normal native saves or Microsoft Access behavior.
 
-The [receipt](results/ace16-integral-index-split-actions-2026-10-27.json) pins the
+The [receipt](../../results/indexes/ace16-integral-index-split-actions-2026-10-27.json) pins the
 actual first execution, reviewed private freeze, original files, compiled old
 consumer and independent analysis. No source was regenerated, no action retried
 and no budget, selector or field flag changed. The Java and Python observation
@@ -68,7 +68,7 @@ contracts.
 From the repository root, with the recorded ignored artifacts still available:
 
 ```sh
-python3 docs/testing/integral_split_originals/verify_actions.py \
+python3 tests/run.py tests/access/indexes/integral_split_originals/verify_actions.py \
   --report .cache/ace16-integral-split-actions-first-20261027/report.json
 ```
 

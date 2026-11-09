@@ -17,10 +17,10 @@ from pathlib import Path
 import struct
 import subprocess
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[4]
 JAR_SHA256 = "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc"
 GETTER_SHA256 = "588a43a018a37316bfb2df9c8dff1feaa6b53f0c18d55543125f526a9d439d0a"
-PROVENANCE = "docs/testing/results/declared-numeric-text-replay-2026-10-25.json"
+PROVENANCE = "tests/results/indexes/declared-numeric-text-replay-2026-10-25.json"
 PROVENANCE_SHA256 = "109d367935afbe8684819b3ea8c81e776d928864b5c6b94fe46ad0379adef327"
 INPUT_SHA256 = {
     "Scalar-V2000.mdb": "de2e67a9f0194988d031cc9c981176ae9a76d3bf80599040729b408fc2b7be82",
@@ -214,7 +214,7 @@ def main():
     artifacts = args.report.with_suffix("")
     artifacts.mkdir(parents=True)
     pins = [args.cli, args.jar, args.build_manifest, Path(__file__), ROOT / PROVENANCE,
-            ROOT / "docs/testing/TableDataOracle.java", ROOT / "docs/testing/ScalarFixture.java"]
+            ROOT / "tests/access/reading/tables/TableDataOracle.java", ROOT / "tests/access/reading/tables/ScalarFixture.java"]
     record = {
         "scope": __doc__,
         "compiled_revision": args.revision,
@@ -242,7 +242,7 @@ def main():
             raise RuntimeError("Unregistered or changed original scalar input")
         getter = invoke([
             "java", "-Dstdout.encoding=UTF-8", "-cp", args.jar,
-            ROOT / "docs/testing/TableDataOracle.java", database, "ScalarSamples",
+            ROOT / "tests/access/reading/tables/TableDataOracle.java", database, "ScalarSamples",
         ])
         prefix = name.split(".")[0]
         raw_path = artifacts / (prefix + "-getter.tsv")

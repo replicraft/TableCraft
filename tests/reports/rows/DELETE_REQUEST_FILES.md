@@ -81,13 +81,13 @@ rather than hiding the remaining file. The source is always opened read-only.
 
 The single-table example's positional arguments and mutually exclusive
 `--delete`/`--delete-file` switches are unchanged; they are not batch switches.
-The [consumer verification record](results/ace16-batch-delete-example-2026-10-26.json)
+The [consumer verification record](../../results/rows/ace16-batch-delete-example-2026-10-26.json)
 separates six new tests from four shared request-parser tests that execute in both
 example targets. These checks are example/input evidence, not additional engine
 compatibility tests or native Access action/save qualification.
 
 The explicit cascade extension has a separate
-[consumer verification record](results/ace16-cascading-delete-example-2026-10-26.json):
+[consumer verification record](../../results/rows/ace16-cascading-delete-example-2026-10-26.json):
 17 executions cover 13 distinct test definitions, including three new example
 functions. The four shared request-parser definitions execute once in each example
 target and are counted once as definitions. Tests pin default RESTRICT refusal,

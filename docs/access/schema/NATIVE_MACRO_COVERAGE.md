@@ -70,7 +70,7 @@ focused tests pass, including four new logical API tests and existing coverage/
 guard regressions. A separate inert read of four retained ACE 2010 files also
 binds nine declarations across seven tables, preserving aliases, named definitions
 and unresolved names. This is observed native-reference evidence, not ACE 16
-native dispatch/save qualification. The [binding result](../../testing/results/native-event-binding-2026-10-31.json)
+native dispatch/save qualification. The [binding result](../../../tests/results/schema/native-event-binding-2026-10-31.json)
 retains the separate phases and earlier compiler/preflight diagnostics.
 
 Physical mutation, normal-save admission and journal recovery do not yet consume
@@ -109,7 +109,7 @@ actual SetField results, legacy event behavior, resource pools and cancellation.
 Existing Extra, native guard and guard CLI regressions pass 55, 22 and 20
 functions respectively. All-target/all-feature ACE, Access and CLI Clippy,
 formatting, and minimal ACE/Access builds also pass locally.
-The [result record](../../testing/results/ace16-source-bound-macro-coverage-2026-10-30.json)
+The [result record](../../../tests/results/schema/ace16-source-bound-macro-coverage-2026-10-30.json)
 keeps compilation failures, corrected source classification and subsequent
 verification separate. These authored sources do not qualify native Microsoft
 Access execution or save/reopen behavior.

@@ -3,6 +3,7 @@
 Python character/codec and Decimal models supply expectations; only TableCraft
 executes SQL. Native controls use read-only getters and unchanged source hashes.
 """
+from engineering_paths import reference_file
 
 import argparse
 from decimal import Decimal, ROUND_HALF_EVEN
@@ -68,7 +69,7 @@ def main():
     for database in args.database:
         before = hashlib.sha256(database.read_bytes()).hexdigest()
         tagged = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar,
-                     RECIPES / "TableDataOracle.java", database, "ScalarSamples")
+                     reference_file('tests/access/reading/tables/TableDataOracle.java'), database, "ScalarSamples")
         identities = sorted(int(line.split("\t")[1].removeprefix("I32:")) for line in tagged.splitlines())
         expected = [[str(n), str(int((Decimal(n + 64) + Decimal("0.5")).to_integral_value(rounding=ROUND_HALF_EVEN))), str(int((Decimal(n + 64) + Decimal("0.5")).to_integral_value(rounding=ROUND_HALF_EVEN))), str(n + 64), "-1", "2", '"bXana"'] for n in identities]
         sql = "SELECT ID,Asc(Chr(CStr(ID+64)&'.5')),AscW(ChrW(CDate(ID+64.5))),AscB(ChrB(CStr(ID+64))),StrComp('10','2',CStr(0)),InStr(1,'abc','b',CDate(0)),Replace('banana','an','X',1,1,CStr(0)) FROM ScalarSamples ORDER BY ID"

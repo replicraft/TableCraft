@@ -7,7 +7,7 @@ both **K→K no-op** requests and returned byte-identical fresh outputs. No
 K→MAX request, public UPDATE, parent split or root-growth action is part of this
 source phase. These observations do not qualify Microsoft Access behavior.
 
-The [compact receipt](results/ace16-parent-index-split-sources-2026-10-27.json)
+The [compact receipt](../../results/indexes/ace16-parent-index-split-sources-2026-10-27.json)
 records the exact first 11 fixture-phase processes: one Java compilation and,
 for each profile, generation, larger-source description, fresh-copy pruning,
 sparse-source description and native no-op admission. All succeeded on the
@@ -90,25 +90,25 @@ checks accept the final sparse sources under unchanged allowances. Each fresh
 output equals its source byte for byte. No tombstone flag was changed to force
 admission; historical counters remain distinct from live populations.
 
-The [public verifier](parent_index_split_originals/verify_existing.py) recomputes
+The [public verifier](../../access/indexes/parent_index_split_originals/verify_existing.py) recomputes
 the saved complete source/tree/map/selection proofs and checks both byte-identical
 no-op outputs without a native or JVM call:
 
 ```sh
-python3 docs/testing/parent_index_split_originals/verify_existing.py
-python3 docs/testing/parent_index_split_originals/selfcheck.py
+python3 tests/run.py tests/access/indexes/parent_index_split_originals/verify_existing.py
+python3 tests/run.py tests/access/indexes/parent_index_split_originals/selfcheck.py
 ```
 
 The two Java sources, wire model and arithmetic selfcheck are byte-identical
-promotions. The [capture wrapper](parent_index_split_originals/capture.py) adjusts
+promotions. The [capture wrapper](../../access/indexes/parent_index_split_originals/capture.py) adjusts
 repository paths and can create a current-source manifest. It is distinct from
 the archived wrapper actually executed in the initial history. A current public
 reproduction requires fresh outputs and explicit execution:
 
 ```sh
-python3 docs/testing/parent_index_split_originals/capture.py \
+python3 tests/run.py tests/access/indexes/parent_index_split_originals/capture.py \
   --freeze-current .cache/fresh-parent-tools.json
-python3 docs/testing/parent_index_split_originals/capture.py \
+python3 tests/run.py tests/access/indexes/parent_index_split_originals/capture.py \
   --execute --freeze .cache/fresh-parent-tools.json \
   --workdir .cache/fresh-parent-sources
 ```

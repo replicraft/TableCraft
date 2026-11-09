@@ -6,7 +6,7 @@ import json
 from pathlib import Path
 import subprocess
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[4]
 JAR_SHA256 = "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc"
 COMMAND_TIMEOUT_SECONDS = 60
 
@@ -45,8 +45,8 @@ def main():
 
     pinned = [args.cli, args.jar, Path(__file__), *args.inputs]
     pinned.extend(Path(path) for path in [
-        "docs/testing/BooleanIndexFixture.java",
-        "docs/testing/IndexRowsOracle.java",
+        "tests/access/indexes/native/BooleanIndexFixture.java",
+        "tests/access/indexes/native/IndexRowsOracle.java",
         "crates/engines/tablecraft-ace/src/table/indexes/selection.rs",
         "crates/engines/tablecraft-ace/src/table/indexes/boolean.rs",
         "crates/engines/tablecraft-ace/src/table/indexes/read.rs",
@@ -62,7 +62,7 @@ def main():
     for database in args.inputs:
         getter = command([
             "java", "-Dstdout.encoding=UTF-8", "-cp", args.jar,
-            "docs/testing/IndexRowsOracle.java", database,
+            "tests/access/indexes/native/IndexRowsOracle.java", database,
             "BooleanIndexed", "BoolAsc", "ID", "Flag",
         ])
         if getter.returncode:

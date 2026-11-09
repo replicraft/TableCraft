@@ -15,9 +15,9 @@ publishes two fresh files and performs four normal transactions under retained
 leases, matching independently authored complete images. The separate CLI
 workflow adds one publication, two normal transactions and two exact row
 readbacks. Focused tests and the strict/broad regression batch pass; exact receipts are
-in the [execution record](../../testing/results/ace16-native17-creation-writes-2026-11-01.json).
+in the [execution record](../../../tests/results/creation/ace16-native17-creation-writes-2026-11-01.json).
 
-The [source qualification](../../testing/ACE16_NATIVE17_CREATION_SOURCES.md)
+The [source qualification](../../../tests/reports/creation/ACE16_NATIVE17_CREATION_SOURCES.md)
 precedes these producers. Complete-row INSERT now has its separate
 [wider scalar and represented EOF profile](NORMAL_COMPLETE_INSERT.md). Explicit
 Required/AllowZeroLength creation is described below; generated/default policies
@@ -25,7 +25,7 @@ and represented future FREE requirements remain explicit normal gates. No future
 this upgrade, and native Access/Windows conformance is not inferred.
 
 The optional `tablecraft-access/ace16-create` feature composes the
-[native creator](../../testing/ACE16_DATABASE_CREATION.md) with required
+[native creator](../../../tests/reports/creation/ACE16_DATABASE_CREATION.md) with required
 fresh-file publication. The Int32 convenience and typed scalar path accept
 explicit user schemas and borrowed rows. Neither accepts a database template,
 imported image or engineering candidate.
@@ -78,7 +78,7 @@ Boolean requires a Boolean value. Numerically equal values with another carrier
 are refused. There is no type inference, coercion, native flag input or copied
 Access declaration DTO. Explicit Short Text, Short Binary and Decimal declarations now use the same
 preparation and required publication path. Their capacities, exact retained scale
-and NULL/empty rules follow the [engine contract](../../testing/ACE16_DATABASE_CREATION.md#explicit-variable-declarations).
+and NULL/empty rules follow the [engine contract](../../../tests/reports/creation/ACE16_DATABASE_CREATION.md#explicit-variable-declarations).
 Extended and long-value families remain unsupported.
 
 Both preparation methods retain one user table, 1–16 columns, at most 64 rows and
@@ -94,21 +94,21 @@ publication and receipt handling. See the [CLI syntax and NULL/empty rules](../.
 Two typed service tests publish all ten independent fixed/IEEE images exactly
 and reject invalid declarations/carriers before staging. The complete six-test
 creation suite also retains Int32, directory-retargeting and publication-failure
-coverage. See the [typed acceptance record](../../testing/results/typed-native-creation-host-2026-10-31.json).
+coverage. See the [typed acceptance record](../../../tests/results/creation/typed-native-creation-host-2026-10-31.json).
 
 This service creates an unencrypted fresh file. It grants no normal update,
 macro-absence or recovery permission for arbitrary existing ACE files. Native
 Access creation/save compatibility and broader schemas remain unqualified.
 Existing [normal-write gates](NATIVE_WRITES.md) are unchanged.
 
-The [local acceptance record](../../testing/results/fresh-native-creation-host-2026-10-31.json)
+The [local acceptance record](../../../tests/results/creation/fresh-native-creation-host-2026-10-31.json)
 keeps complete-file checks, publication controls, process observations and
 unqualified native Access behavior separate.
 
 The variable creation acceptance adds five exact publications through the same
 service. All seven creation-service tests pass, retaining the ten fixed/IEEE
 and six Int32 images, cancellation, namespace retargeting and refusal controls.
-See the [variable result](../../testing/results/ace16-native-variable-creation-2026-10-31.json).
+See the [variable result](../../../tests/results/creation/ace16-native-variable-creation-2026-10-31.json).
 
 ## Multiple-table preparation
 
@@ -139,7 +139,7 @@ Eighteen independent native17 source views now qualify explicit Required and
 AllowZeroLength Boolean properties: fourteen healthy sources and four readable
 constraint violations. Native declaration/constraint reads, an explicit export,
 eighteen exact read-only SDK reports and saved verification pass before any
-matching creator is run. The [source record](../../testing/results/ace16-creation-property-sources-2026-11-01.json)
+matching creator is run. The [source record](../../../tests/results/creation/ace16-creation-property-sources-2026-11-01.json)
 retains receipts. These are authored metadata sources, not native Access creation
 or save/reopen qualification. Creator support is tested separately.
 
@@ -163,10 +163,10 @@ TableDraft creation's existing producer remains separate from the explicit new
 saved-column target; this option does not itself change that producer's default.
 
 Independent SDK compression twins and the separate native candidate gate are
-recorded in the [Short Text evidence](../../testing/short_text_add/README.md).
+recorded in the [Short Text evidence](../../../tests/access/rows/short_text_add/README.md).
 They do not establish native Access creation/save behavior, broader Unicode
 storage or new creation-intent admission. The separate
-[field workflow batch](../../testing/results/field-addition-gui-workflows-2026-11-08.json)
+[field workflow batch](../../../tests/results/schema/field-addition-gui-workflows-2026-11-08.json)
 now records corrected TCAC0005, shared source proof and application checks;
 its evidence does not widen these frozen creation requests.
 
@@ -184,7 +184,7 @@ Five focused functions pass, including fourteen full-image creator/source
 comparisons, four initial-row refusals, three two-table component comparisons
 and invalid-policy/early-allocation controls. The existing creation regression
 filter passes 31 functions with one ignored exporter. The
-[batch record](../../testing/results/ace16-sparse-actions-and-creation-properties-2026-11-01.json)
+[batch record](../../../tests/results/creation/ace16-sparse-actions-and-creation-properties-2026-11-01.json)
 separates these from source qualification and broader regression. The two-table
 checks qualify independent catalog and user-page components, not whole-image
 source equality. The CLI currently has no field-policy flags. Broader defaults and
@@ -206,7 +206,7 @@ from explicitly supplied NULL. Native read/export gates, 32 exact SDK reads and
 saved verification pass before matching creator/resolver/planner calls.
 The Required-plus-NULL-default source has valid initial rows; unsupported future
 NULL requests have no invented successful AFTER. The
-[source record](../../testing/results/ace16-creation-default-sources-2026-11-01.json)
+[source record](../../../tests/results/creation/ace16-creation-default-sources-2026-11-01.json)
 retains receipts. This source phase supplies no native Access save/reopen claim.
 
 
@@ -229,7 +229,7 @@ Four focused creator functions pass, including twelve complete independent image
 comparisons and full public-call resource/cancellation controls. Five existing
 Boolean-property functions also pass. Three host functions pass twenty literal
 typed/SQL saves, four Required refusals and two committed-then-failed lease/receipt
-controls. The [execution record](../../testing/results/ace16-creation-default-writes-2026-11-01.json)
+controls. The [execution record](../../../tests/results/creation/ace16-creation-default-writes-2026-11-01.json)
 separates focused results, source qualification and final feature checks. Strict
 all-feature/all-target checks, minimal ACE/adapter builds and the 35-function
 creation regression filter (one ignored exporter) pass. Broader
@@ -243,7 +243,7 @@ Twenty independent views now qualify ordinary Int32 primary metadata, valid
 initial rows, explicit duplicate/NULL constraint controls and eight literal normal
 INSERT AFTERs. Native read/export checks and sixteen healthy SDK observations
 pass before matching creators; four native constraint negatives remain explicit
-SDK exclusions. The [source record](../../testing/results/ace16-manual-primary-creation-sources-2026-11-01.json)
+SDK exclusions. The [source record](../../../tests/results/creation/ace16-manual-primary-creation-sources-2026-11-01.json)
 separates real observations from copied-receipt tamper controls. Constructive
 primary-key acceptance is described below; native Access saves remain unrun.
 
@@ -260,7 +260,7 @@ request. Existing no-primary outputs remain byte exact. Existing table, column,
 row, catalog, definition and map-window limits remain mandatory; aggregate
 multiple-table capacity is checked before image construction.
 
-The [independent primary source phase](../../testing/results/ace16-manual-primary-creation-sources-2026-11-01.json)
+The [independent primary source phase](../../../tests/results/creation/ace16-manual-primary-creation-sources-2026-11-01.json)
 preceded creator calls. Focused creator tests cover complete single-table and
 one-table-multiple outputs, duplicate/NULL failures, exact resource limits,
 cancellation and multiple-table component checks. Actual published files then
@@ -269,7 +269,7 @@ refusals retaining the same lease and completed receipt. Component checks do not
 claim independent whole-image qualification of every multiple-table combination.
 Native Access save/reopen remains unrun.
 
-The [combined execution record](../../testing/results/ace16-primary-creation-and-binary-delete-writes-2026-11-01.json)
+The [combined execution record](../../../tests/results/creation/ace16-primary-creation-and-binary-delete-writes-2026-11-01.json)
 retains focused creator/host acceptance and the strict and broader regression
 results, including first failures and corrections.
 
@@ -281,7 +281,7 @@ exact read-only SDK comparisons; eight duplicate/NULL constraint negatives remai
 explicit exclusions. Literal subsequent INSERT/DELETE views retain signed key
 units, exact Currency carriers, tombstoned physical records and inactive tails.
 
-The [source record](../../testing/results/ace16-integral-primary-creation-sources-2026-11-01.json)
+The [source record](../../../tests/results/creation/ace16-integral-primary-creation-sources-2026-11-01.json)
 retains receipt tamper controls separately from the actual observations. This is
 read/source qualification only; the wider creator and actual write lifecycle
 require their own acceptance. No AutoNumber behavior is inferred.
@@ -302,7 +302,7 @@ reflect the wider private key representation. Native Access qualification remain
 unrun. The CLI's explicit [primary flag](../../cli/NATIVE_CREATION.md) forwards
 these declarations through the same shared creation service.
 
-The [wider-key and CLI execution record](../../testing/results/ace16-index-updates-splits-and-primary-creation-2026-11-01.json)
+The [wider-key and CLI execution record](../../../tests/results/creation/ace16-index-updates-splits-and-primary-creation-2026-11-01.json)
 records the complete focused and broader verification batch separately from
 native Access qualification.
 

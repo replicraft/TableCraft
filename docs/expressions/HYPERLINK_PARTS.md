@@ -61,13 +61,13 @@ observed scan-cancellation checkpoint. A fixed-seed 256-case property checks
 generated components. Query/CLI tests cover grouping, correlations, filtering,
 aggregates, plan reuse, query-specific arity, eager failures and buffered stdout.
 
-The original [fixture recipe](../testing/HyperlinkFixture.java) writes actual
-Hyperlink-marked Memo fields. Its [independent runner](../testing/compare_hyperlink.py)
+The original [fixture recipe](../../tests/access/reading/tables/HyperlinkFixture.java) writes actual
+Hyperlink-marked Memo fields. Its [independent runner](../../tests/access/reading/tables/compare_hyperlink.py)
 compares Jackcess-decoded fields with TableCraft's six component projections for
 Jet 4/ACE 2007/2016/2019 files, including NULL/empty/Unicode values and unchanged
 source hashes. Jackcess does not execute the function. Native Access evaluation,
 field creation/save interoperability and broader malformed-field behavior remain
-unqualified. [Fixture provenance](../testing/FIXTURES.md#original-hyperlink-field-values)
+unqualified. [Fixture provenance](../../tests/reports/reading/FIXTURES.md#original-hyperlink-field-values)
 records original hashes; generated databases stay untracked.
 
 
@@ -90,7 +90,7 @@ cancellation. Addresses remain inert. No dependency or return category changes.
 Tests cover ordered admission, exact four-byte selector-normalization/output
 allowance, every observed successful cancellation checkpoint, prepared policy
 rebinding and once-only volatile operands. The
-[independent state runner](../testing/compare_partition_hyperlink_states.py) models
+[independent state runner](../../tests/access/reading/tables/compare_partition_hyperlink_states.py) models
 component splitting and half-even selectors, with unchanged registered native
 inputs in sequential/indexed modes. It does not execute Access expressions;
 native coercion and Error/Empty precedence remain unqualified.

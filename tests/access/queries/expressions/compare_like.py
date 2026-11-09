@@ -3,6 +3,7 @@
 Jackcess supplies inert stored rows only. Python supplies the explicitly ordinal
 expected matches; neither is a native Microsoft Access SQL execution oracle.
 """
+from engineering_paths import reference_file
 import argparse
 import hashlib
 from pathlib import Path
@@ -35,12 +36,12 @@ def main():
     if args.generate:
         args.directory.mkdir(exist_ok=False)
         for profile, suffix in PROFILES:
-            run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar, RECIPES / "LikeFixture.java", args.directory / f"Like-{profile}.{suffix}", profile)
+            run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar, reference_file('tests/access/queries/expressions/LikeFixture.java'), args.directory / f"Like-{profile}.{suffix}", profile)
     for profile, suffix in PROFILES:
         path = args.directory / f"Like-{profile}.{suffix}"
         before = path.read_bytes()
         assert before[20:24] == bytes([{"V2000": 1, "V2016": 5, "V2019": 6}[profile], 0, 0, 0])
-        raw = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar, RECIPES / "TableDataOracle.java", path, "Text samples")
+        raw = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar, reference_file('tests/access/reading/tables/TableDataOracle.java'), path, "Text samples")
         values = []
         for line in raw.splitlines():
             _, ident, label = line.split("\t")

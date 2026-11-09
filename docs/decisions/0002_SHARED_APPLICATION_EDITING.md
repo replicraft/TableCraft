@@ -29,4 +29,4 @@ version/permission gates, native preservation and VBA/Windows deferrals intact.
 Contracts: [agent services](../features/AGENT_NATIVE.md),
 [changesets](../architecture/APPLICATION_CHANGESETS.md),
 [previews](../features/HEADLESS_PREVIEWS.md),
-[scenarios](../testing/APPLICATION_SCENARIOS.md) and [MCP](../interfaces/MCP.md).
+[scenarios](../../tests/reports/reading/APPLICATION_SCENARIOS.md) and [MCP](../interfaces/MCP.md).

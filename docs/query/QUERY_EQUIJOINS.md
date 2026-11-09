@@ -98,7 +98,7 @@ Three native controls pass across the four working layout profiles, including a
 order and selected-corrupt/pruned payloads. Two new CLI controls and three SQLite
 regressions also pass; the 1,100-row CLI join matches independent read-only SQLite
 results under a 10,000-row query allowance. Scoped query/native/CLI Clippy and
-formatting pass. See the [verification record](../testing/results/read-query-borrowed-equijoins-2026-10-25.json).
+formatting pass. See the [verification record](../../tests/results/queries/read-query-borrowed-equijoins-2026-10-25.json).
 
 ## Directory implementation checks
 
@@ -114,7 +114,7 @@ unchanged and pass. Ten independent conformance tests and 110 related
 retrieval/named/external/alias regressions also pass: 135 distinct query tests,
 including 17 new tests. Strict query library/tests Clippy and the standalone
 minimal-feature check pass. The
-[query verification record](../testing/results/read-query-directory-joins-2026-10-25.json)
+[query verification record](../../tests/results/queries/read-query-directory-joins-2026-10-25.json)
 retains exact commands, raw log hashes and excluded test-authoring/lint attempts.
 Native/CLI integration and replay evidence are recorded separately.
 
@@ -125,7 +125,7 @@ priority layouts and both arithmetic profiles; CLI SQLite controls keep exact
 read-only reference results with the previous large work override removed.
 Native Access and timing qualification remain separate.
 
-A separate [whole-CLI benchmark](../testing/DIRECTORY_JOIN_BENCHMARK.md) on the two
+A separate [whole-CLI benchmark](../../tests/reports/general/DIRECTORY_JOIN_BENCHMARK.md) on the two
 original 1,100-row ACE 16 inputs measures 0.87–1.01 seconds before and about
 15 milliseconds after, with identical exact results and explicit equal allowances.
 All 28 measured samples are retained. This is local development-build evidence,

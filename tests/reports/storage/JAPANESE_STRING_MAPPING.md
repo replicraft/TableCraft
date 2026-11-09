@@ -5,20 +5,20 @@ with an independently authored integer/index model of the published
 [WHATWG Shift_JIS algorithms](https://encoding.spec.whatwg.org/#shift_jis-decoder).
 It passes **2,172 CLI commands**, checking **17,314 mapping cases** and
 **32,158 numeric cells**, with zero disagreements. The
-[accepted report](results/strconv-japanese-primary-2026-10-25.json) retains every
+[accepted report](../../results/queries/strconv-japanese-primary-2026-10-25.json) retains every
 command, expected cell, stdout/stderr, immutable input hash and scoped compiled
-source hash. [The feature check record](results/read-query-japanese-string-encoding-2026-10-25.json)
+source hash. [The feature check record](../../results/queries/read-query-japanese-string-encoding-2026-10-25.json)
 keeps this replay separate from its 47 scoped Rust tests.
 
 This is codec and strict round-trip engineering evidence. It does not establish
 Microsoft Access execution, Windows NLS behavior, native default code pages,
 best-fit conversion or performance. The implementation contract remains in
-[JAPANESE_STRING_ENCODING.md](../expressions/text/JAPANESE_STRING_ENCODING.md).
+[JAPANESE_STRING_ENCODING.md](../../../docs/expressions/text/JAPANESE_STRING_ENCODING.md).
 
 ## Original tools and private reference data
 
-[compare_strconv_japanese.py](compare_strconv_japanese.py) and
-[strconv_japanese_model.py](strconv_japanese_model.py) are original repository
+[compare_strconv_japanese.py](../../access/queries/expressions/compare_strconv_japanese.py) and
+[strconv_japanese_model.py](../../access/queries/expressions/strconv_japanese_model.py) are original repository
 MIT tools. The model reads primary reference files as data and applies their
 published pointer arithmetic. It imports neither the production codec nor a
 Python encoding implementation as its oracle. No reference mapping table,
@@ -101,7 +101,7 @@ controls and resource/cancellation boundaries.
 The accepted command was:
 
 ```sh
-python3 docs/testing/compare_strconv_japanese.py \
+python3 tests/run.py tests/access/queries/expressions/compare_strconv_japanese.py \
   --cli .cache/tablecraft-bin/japanese-string-cli-20261025 \
   --cli-sha256 398b9c4f4b9e41521c2fd70750b5f946d5fcfa38133f3f66304f11c92ea91808 \
   --index .cache/cp932-strconv-next-20261025/index-jis0208.txt \

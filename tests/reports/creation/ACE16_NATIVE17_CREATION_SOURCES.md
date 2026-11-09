@@ -6,7 +6,7 @@ canonical originals: six Int32, five fixed, five IEEE, five variable, two capaci
 four catalog-name and four multiple-table cases. Original source owners and
 previous fifteen-field goldens remain unchanged.
 
-The [new source owner](../../crates/engineering/tablecraft-testkit/src/fixtures/access/canonical_native17_creation.rs)
+The [new source owner](../../../crates/engineering/tablecraft-testkit/src/fixtures/access/canonical_native17_creation.rs)
 reconstructs the catalog declaration, catalog DATA and map container from literal
 seventeen-field laws. It retains native fixed prefix 32, eleven variable slots,
 bf0000 presence, seven distinct Memo/OLE declaration pairs and 22 initial map cells.
@@ -16,7 +16,7 @@ nonfinite IEEE payloads, Decimal scale, NULL/empty values and multiple-table rol
 placement stay source facts rather than inferred writer output.
 
 Both header codes 5 and 6 produce 62 complete source images. The
-[read-only native gate](../../crates/engines/tablecraft-ace/src/table/mutation/normal_ordinary_sources/native17_creation.rs)
+[read-only native gate](../../../crates/engines/tablecraft-ace/src/table/mutation/normal_ordinary_sources/native17_creation.rs)
 checks 98 complete user reads, native table checks and Source snapshots. Its six malformed
 controls cover shortened catalog footer, missing Memo pair, duplicated physical
 pair, present-empty Extra, wrong descriptor flags and a distinct live object
@@ -42,7 +42,7 @@ with 0 compiler calls, 0 writer calls and 0 retries. Saved-report verification a
 passed with 0 child calls. Every source, expected report and closed reader input
 remained unchanged.
 
-The [result record](results/ace16-native17-creation-sources-2026-11-01.json)
+The [result record](../../results/creation/ace16-native17-creation-sources-2026-11-01.json)
 pins all 62 images and terminal receipts. These are source/read qualifications.
 Subsequent creator and normal-session acceptance is separate from these source
 results; see the [creation contract](ACE16_DATABASE_CREATION.md). No creator
@@ -59,7 +59,7 @@ new user scalar write carrier is introduced by this source qualification.
 ## Literal normal-session companion
 
 A separate source owner,
-[canonical_native17_sessions](../../crates/engineering/tablecraft-testkit/src/fixtures/access/canonical_native17_sessions.rs),
+[canonical_native17_sessions](../../../crates/engineering/tablecraft-testkit/src/fixtures/access/canonical_native17_sessions.rs),
 authors the explicit `(1,10)`→INSERT `(2,20)`→DELETE row1 sequence before any
 creator or session producer runs. Its six header 5/6 views reuse the two exact
 original core source images and add four unique complete AFTER images.

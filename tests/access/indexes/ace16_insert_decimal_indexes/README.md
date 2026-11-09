@@ -73,8 +73,8 @@ pure authoring history is separate from the successful first actual phases.
 
 Original databases, JARs, classes, raw streams and expected images remain ignored
 private evidence. No third-party fixture or implementation source is copied.
-See the [compact result](../results/ace16-insert-decimal-index-native-2026-10-28.json)
-and [fixture provenance](../FIXTURES.md).
+See the [compact result](../../../results/indexes/ace16-insert-decimal-index-native-2026-10-28.json)
+and [fixture provenance](../../../reports/reading/FIXTURES.md).
 
 These observations qualify the finite engineering and independent-reader cases
 above. They do not establish arbitrary Decimal tuples, native Microsoft Access

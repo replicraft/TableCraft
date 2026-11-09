@@ -18,9 +18,9 @@ def fixed(store, check, filename, digest):
 
 def maintained(store, check):
     private = check(store.pin(DIRECTORY + '/proof.py')).read_text()
-    public = check(store.pin('docs/testing/ace16_insert_ordinary/reference.py')).read_text()
+    public = check(store.pin('tests/access/rows/ace16_insert_ordinary/reference.py')).read_text()
     old = "ROOT = Path(__file__).resolve().parents[2]\nSOURCE = ROOT / '.cache/ace16-insert-ordinary-qualification-next-20261028'\nMODEL = ROOT / '.cache/ace16-insert-ordinary-actual-model-next-20261028'\nsys.path.insert(0, str(SOURCE))\nsys.path.insert(0, str(MODEL))\nimport source\nimport requests as operands\nimport row_codec\nimport record_decode"
-    new = "ROOT = Path(__file__).resolve().parents[3]\nsys.path.insert(0, str(ROOT / 'docs/testing'))\nfrom ace16_insert_ordinary import source, requests as operands, row_codec, record_decode\nfrom ace16_insert_candidates import model as storage_wire\nfrom parent_index_split_originals import wire"
+    new = "ROOT = Path(__file__).resolve().parents[3]\nsys.path.insert(0, str(ROOT / 'tests/access'))\nfrom ace16_insert_ordinary import source, requests as operands, row_codec, record_decode\nfrom ace16_insert_candidates import model as storage_wire\nfrom parent_index_split_originals import wire"
     assert private.count(old) == 1
     expected = private.replace(old, new)
     expected = expected.replace('source.storage_wire.', 'storage_wire.')

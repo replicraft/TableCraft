@@ -117,7 +117,7 @@ cancellation and resource failures remain visible. Grouped/HAVING, aggregate,
 correlated and rebound parameter consumers use the same path. Other relational
 operators and stored/derived cells retain their existing strict boundaries.
 
-The original [NULL-identity runner](../../testing/compare_raw_string_nullness.py) passes
+The original [NULL-identity runner](../../../tests/access/queries/expressions/compare_raw_string_nullness.py) passes
 2,246 independent source-free value/refusal controls over fixed and seeded unit
 values in both CLI query modes. This implements the explicit NULL identity
 contract; native Access raw-string comparisons/execution remain unqualified.
@@ -157,7 +157,7 @@ surrogate/odd-byte query behavior remains unqualified. Both query hosts reuse th
 same evaluator; raw storage is charged before allocation, observations require
 no new payload allocation and cancellation remains active.
 
-The expanded [independent byte recipe](../../testing/compare_byte_strings.py) compares
+The expanded [independent byte recipe](../../../tests/access/queries/expressions/compare_byte_strings.py) compares
 35,336 source-free values/refusals against Python UTF-16LE bytes. It includes
 every surrogate unit, signed code spellings, partial-byte slices, inspection and
 both CLI query paths. It executes no native Access SQL or application code.
@@ -303,9 +303,9 @@ code-page independence, NULL/carrier rules, scan cancellation and a fixed-seed
 filters/groups/correlations, aggregates, parameter reuse, invalid calls and eager
 failure with empty stdout.
 
-The original [independent runner](../../testing/compare_byte_strings.py) models results
+The original [independent runner](../../../tests/access/queries/expressions/compare_byte_strings.py) models results
 with Python UTF-16LE encoding. It also uses reviewed Jackcess getters on the
-[original Hyperlink field fixtures](../../testing/FIXTURES.md#original-hyperlink-field-values)
+[original Hyperlink field fixtures](../../../tests/reports/reading/FIXTURES.md#original-hyperlink-field-values)
 before TableCraft queries the decoded values, with unchanged hashes. This does
 not establish native Access evaluation or compressed/native storage sizes.
 
@@ -351,7 +351,7 @@ consumers remain unfinished. Borrowed policy-free text APIs are unchanged.
 
 Tests cover format rebinding, nested calls, strict publication, retained Binary
 identity, NULL/eager errors and every observed conversion/encoding cancellation
-checkpoint. The original [runner](../../testing/compare_byte_scalar_sources.py) passes
+checkpoint. The original [runner](../../../tests/access/reading/tables/compare_byte_scalar_sources.py) passes
 356 independent spelling/UTF-16 controls using both CLI query modes and raw
 Jackcess getters from the unchanged registered priority-family native fixtures.
 These checks establish the explicit conversion profile, not native Access SQL,
@@ -454,7 +454,7 @@ control order, NULL masking, progressive source policy failures, raw view buffer
 identity under zero additional byte allowance, every observed successful slice/
 search cancellation checkpoint and once-only Rnd controls. Query/CLI tests add
 derived states, explicit conversion and atomic failures. The new
-[runner](../../testing/compare_byte_states.py) passes 364 controls (300 scalar and 64
+[runner](../../../tests/access/reading/tables/compare_byte_states.py) passes 364 controls (300 scalar and 64
 four-family sequential/indexed cases) over unchanged registered inputs. The
 existing byte runner additionally passes 3,792 scalar controls; its optional
 native branch was not rerun. Only TableCraft executes SQL. Full Variant, broader

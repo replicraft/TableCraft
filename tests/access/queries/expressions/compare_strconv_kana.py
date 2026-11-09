@@ -71,7 +71,7 @@ def main():
         Path("crates/query/tablecraft-expressions/src/evaluation/strconv.rs"),
         Path("crates/query/tablecraft-expressions/src/functions/text/strconv/flags.rs"),
         Path("crates/query/tablecraft-expressions/src/functions/text/strconv/kana.rs"),
-        Path("docs/testing/compare_browsing.py"),
+        Path("tests/access/reading/tables/compare_browsing.py"),
     ]
     source_before = {
         str(path): hashlib.sha256(path.read_bytes()).hexdigest()

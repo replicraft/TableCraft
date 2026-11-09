@@ -82,7 +82,7 @@ repository work.
 Within this future application workstream, first establish typed introspection,
 version/capability gates, bounded access and semantic operations. Then qualify
 changesets, [headless previews](HEADLESS_PREVIEWS.md),
-[application scenarios](../testing/APPLICATION_SCENARIOS.md) and a thin
+[application scenarios](../../tests/reports/reading/APPLICATION_SCENARIOS.md) and a thin
 [MCP adapter](../interfaces/MCP.md). Python generation/test tooling, conversion
 and activity UI follow working services; peer-agent coordination and built-in AI
 are later conveniences. This ordering does not displace ACE 16's immediate

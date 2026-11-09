@@ -54,12 +54,12 @@ uniqueness limits. These observations establish independent-reader evidence,
 not native Access behavior, SQL binary comparison or concurrent-file safety.
 
 ```sh
-python3 docs/testing/compare_binary_tuples.py \
+python3 tests/run.py tests/access/storage/native/compare_binary_tuples.py \
   --jar path/to/jackcess-5.0.4.jar \
   --cli target/debug/tablecraft --rows target/debug/examples/table_data \
   --directory path/to/fresh-binary-tuples --generate
 ```
 
 The recipe refuses an existing output directory. The reviewed JAR and generated
-databases remain local/untracked; [fixture records](FIXTURES.md#compound-binary-index-inputs)
+databases remain local/untracked; [fixture records](../reading/FIXTURES.md#compound-binary-index-inputs)
 retain artifact provenance, identities and regeneration limits.

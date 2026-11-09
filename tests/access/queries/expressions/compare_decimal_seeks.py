@@ -9,7 +9,7 @@ import json
 from pathlib import Path
 import subprocess
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[4]
 JAR_SHA256 = "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc"
 TIMEOUT_SECONDS = 60
 TABLE_SCALES = [0, 4, 28]
@@ -99,7 +99,7 @@ class Replay:
 def getters(jar, database, table, scale):
     result = invoke([
         "java", "-Dstdout.encoding=UTF-8", "-cp", jar,
-        "docs/testing/IndexRowsOracle.java", database, table, "DecimalAsc", "ID", "Value",
+        "tests/access/indexes/native/IndexRowsOracle.java", database, table, "DecimalAsc", "ID", "Value",
     ])
     if result.returncode:
         raise RuntimeError(result.stderr)
@@ -136,8 +136,8 @@ def main():
 
     pinned = [args.cli, args.jar, Path(__file__), *args.inputs]
     pinned.extend(Path(path) for path in [
-        "docs/testing/DecimalIndexFixture.java",
-        "docs/testing/IndexRowsOracle.java",
+        "tests/access/queries/expressions/DecimalIndexFixture.java",
+        "tests/access/indexes/native/IndexRowsOracle.java",
         "crates/engines/tablecraft-ace/src/table/indexes/decimal.rs",
         "crates/engines/tablecraft-ace/src/table/indexes/decimal/selection.rs",
         "crates/engines/tablecraft-ace/src/table/indexes/profile.rs",

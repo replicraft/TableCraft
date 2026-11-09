@@ -18,7 +18,7 @@ def main():
     args = parser.parse_args()
 
     def oracle(helper, path, table):
-        return subprocess.check_output(["java", "-Dstdout.encoding=UTF-8", "-cp", str(args.jar), f"docs/testing/{helper}.java",
+        return subprocess.check_output(["java", "-Dstdout.encoding=UTF-8", "-cp", str(args.jar), f"tests/access/{helper}.java",
                                         str(path), table], text=True).splitlines()
 
     def cli(*command):

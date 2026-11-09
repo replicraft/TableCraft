@@ -1,15 +1,15 @@
 # Original-file progressive DISTINCT replay
 
-The [original Python runner](compare_progressive_distinct.py) passes all 184
+The [original Python runner](../../access/queries/execution/compare_progressive_distinct.py) passes all 184
 controls on four unchanged, 701-row `Ignore-V2000/V2007/V2016/V2019` inputs:
 160 successful queries produce 10,432 rows / 18,208 cells, and 24 intended
 refusals produce no stdout. The first complete run passed without SQL, model,
-golden or allowance changes. [The accepted report](results/progressive-distinct-2026-10-25.json)
+golden or allowance changes. [The accepted report](../../results/general/progressive-distinct-2026-10-25.json)
 retains every command, expected result, actual stdout/stderr and exit code.
 
 The files and ordinary-getter transcripts come from the existing
-[ignore-NULL index corpus](results/ignored-null-index-replay-2026-10-25.json),
-authored by the repository's original [public Jackcess recipe](IgnoreNullIndexFixture.java).
+[ignore-NULL index corpus](../../results/indexes/ignored-null-index-replay-2026-10-25.json),
+authored by the repository's original [public Jackcess recipe](../../access/indexes/native/IgnoreNullIndexFixture.java).
 The getter opens read-only, disables expression evaluation and rejects linked
 opens. This replay reuses those reviewed transcripts; it does not generate files
 or run Java again. Only TableCraft executes SQL. Neither Jackcess metadata nor
@@ -61,7 +61,7 @@ Use fresh output paths; the runner refuses overwrites and checks the original,
 getter, JAR, tool and selected query-source hashes before and after replay:
 
 ```sh
-python3 docs/testing/compare_progressive_distinct.py \
+python3 tests/run.py tests/access/queries/execution/compare_progressive_distinct.py \
   --cli .cache/tablecraft-bin/read-query-distinct-wide-cli-20261025 \
   --cli-sha256 121d76588ed4e6c9497e23b9f42c6f9ca5e729aceb0a0e9491f153865fac3e4c \
   --revision b44494d4cd5a9350cfef1f1484148f16d5362bb7 \
@@ -71,7 +71,7 @@ python3 docs/testing/compare_progressive_distinct.py \
   --log .cache/progressive-distinct-reproduction.log
 ```
 
-The [implementation checks](results/read-query-progressive-distinct-2026-10-25.json)
+The [implementation checks](../../results/queries/read-query-progressive-distinct-2026-10-25.json)
 separately cover exact representatives, logical EOF, source/sink failures,
 cancellation and quotas. This replay adds original-file CLI composition evidence;
 it does not expand the admitted key families, native comparison claims or writes.

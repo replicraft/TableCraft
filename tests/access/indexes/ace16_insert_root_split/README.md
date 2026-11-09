@@ -3,7 +3,7 @@
 Run the saved-only source/reference proof from the repository root:
 
 ```sh
-python3 docs/testing/ace16_insert_root_split/verify.py --verify-git
+python3 tests/run.py tests/access/indexes/ace16_insert_root_split/verify.py --verify-git
 ```
 
 The verifier reads the private artifacts named by the frozen protocol. It uses
@@ -73,7 +73,7 @@ match the frozen engineering image exactly.
 The actual artifact is bound to compiled revision
 `0739bc27f6eae90b15942e6171bd61aa1ba171e1` and receipt revision
 `10262cc2732008fceaff37c3c2789ea4cdf1d4a0`, using the committed
-[build receipt](../results/ace16-insert-root-split-example-build-2026-10-27.json).
+[build receipt](../../../results/indexes/ace16-insert-root-split-example-build-2026-10-27.json).
 The artifact SHA-256 is
 `3f98b59dd5b8b602d0b79f8bb618fb60b8646874b1dcb577c5d658fa57fbccdb`.
 The archived dependency-info bytes identify 737 dependency paths plus 12

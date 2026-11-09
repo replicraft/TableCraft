@@ -9,9 +9,9 @@ import subprocess
 import sys
 import traceback
 
-ROOT = Path(__file__).resolve().parents[3]
+ROOT = Path(__file__).resolve().parents[4]
 DIRECTORY = Path(__file__).resolve().parent
-sys.path.insert(0, str(ROOT / 'docs/testing'))
+sys.path.insert(0, str(ROOT / 'tests/access'))
 from root_split_preview_originals import proof, verify_existing
 from index_split_originals import capture
 
@@ -105,11 +105,11 @@ def execute(args, plan):
     directory = capture.common.fresh_work(args.workdir)
     commands = capture.common.Capture(directory)
     dependencies = [
-        'docs/testing/index_split_originals/capture.py',
-        'docs/testing/capture_delete_trees.py',
-        'docs/testing/delete_reference_maps.py',
-        'docs/testing/slot_preview_originals/common.py',
-        'docs/testing/BatchDeleteFixture.java',
+        'tests/access/indexes/index_split_originals/capture.py',
+        'tests/access/rows/delete/capture_delete_trees.py',
+        'tests/access/rows/delete/delete_reference_maps.py',
+        'tests/access/rows/slot_preview_originals/common.py',
+        'tests/access/rows/delete/BatchDeleteFixture.java',
         JAR,
     ]
     immutable = list(plan['immutable'])

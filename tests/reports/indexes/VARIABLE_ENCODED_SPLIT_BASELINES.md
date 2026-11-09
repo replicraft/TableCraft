@@ -9,7 +9,7 @@ or a new combined DATA/index candidate.
 
 ## Actual consumer and inputs
 
-The [historical build receipt](results/ace16-variable-example-build-2026-10-26.json)
+The [historical build receipt](../../results/rows/ace16-variable-example-build-2026-10-26.json)
 identifies committed revision `87c35d435450251d69f305cb247741ccbf7be7e2` and the
 17,512,496-byte frozen artifact, SHA-256
 `2d2b173617e115a3bca3b10018086dab1c5d8f3d72b536fe3825d21e19cb4a5f`.
@@ -48,9 +48,9 @@ and live 16 MiB capture limit per stream. Every output name was fresh; capture,
 partial-file inventories and per-input hash checks were retained in the report.
 No JVM, new build, source generation, public UPDATE or new combined API ran.
 
-The [compact receipt](results/variable-encoded-split-old-variable-native-2026-10-27.json)
+The [compact receipt](../../results/indexes/variable-encoded-split-old-variable-native-2026-10-27.json)
 pins actual arguments, streams, source identities and the historical artifact.
-The [later saved verifier](variable_encoded_split_sources/verify_baseline.py)
+The [later saved verifier](../../access/indexes/variable_encoded_split_sources/verify_baseline.py)
 checks 61 identities, exact TSV carriers and flag, physical ordinal bindings,
 no-op bytes and refusal publication without starting a child process:
 

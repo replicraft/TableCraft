@@ -39,5 +39,5 @@ These are source-read results. They grant no ordinary-content certificate, norma
 write permission, index mutation or counter-generation authority. Validator,
 journal/recovery and Access session outcomes require separate acceptance.
 Native Microsoft Access and Windows comparisons remain unrun. See the
-[source result](results/ace16-ordinary-indexed-sources-2026-10-31.json) and the
-[larger inline-map sources](ACE16_ORDINARY_INLINE_SOURCES.md).
+[source result](../../results/indexes/ace16-ordinary-indexed-sources-2026-10-31.json) and the
+[larger inline-map sources](../general/ACE16_ORDINARY_INLINE_SOURCES.md).

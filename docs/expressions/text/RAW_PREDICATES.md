@@ -52,12 +52,12 @@ unfinished.
 Focused tests cover all six comparisons, state/eager failures, lists/ranges,
 group/filter/subquery consumers, empty sets, issued declarations, zero decoded
 payload budget and cancellation at every observed query checkpoint. The original
-[independent runner](../../testing/compare_raw_string_predicates.py) passes 7,113
+[independent runner](../../../tests/access/queries/expressions/compare_raw_string_predicates.py) passes 7,113
 source-free NULL/category/refusal controls. Retained-cell and native-policy recipes
 also pass; only TableCraft evaluates SQL. Native Windows Access qualification and
 benchmarks were not run.
 
-The independent [raw LIKE runner](../../testing/compare_raw_like.py) additionally passes
+The independent [raw LIKE runner](../../../tests/access/queries/expressions/compare_raw_like.py) additionally passes
 2,745 unit-count, exact byte-slice, NULL/refusal and existing General expansion
 controls under both explicit General families and ANSI modes. A generated
 exhaustive unit-glob model checks the pure service independently of its state

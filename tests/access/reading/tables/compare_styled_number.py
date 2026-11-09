@@ -2,6 +2,7 @@
 
 Optional Jackcess row inputs do not qualify native Access formatting semantics.
 """
+from engineering_paths import reference_file
 import argparse
 import csv
 from decimal import Decimal, localcontext, ROUND_HALF_UP
@@ -101,7 +102,7 @@ def main():
     if args.jar:
         assert digest(args.jar) == '19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc'
         before = digest(args.database)
-        tagged = run('java', '-Dstdout.encoding=UTF-8', '-cp', args.jar, RECIPES/'TableDataOracle.java', args.database, 'ROULETTE_TB')
+        tagged = run('java', '-Dstdout.encoding=UTF-8', '-cp', args.jar, reference_file('tests/access/reading/tables/TableDataOracle.java'), args.database, 'ROULETTE_TB')
         identities = sorted(int(line.split('\t')[1].removeprefix('I32:')) for line in tagged.splitlines())
         sql = "SELECT ORDR_NBR AS N,FormatNumber(ORDR_NBR) AS V,FormatPercent(ORDR_NBR/100) AS P,FormatCurrency(ORDR_NBR) AS C FROM ROULETTE_TB ORDER BY N"
         for profile in ['en-us', 'de-de']:

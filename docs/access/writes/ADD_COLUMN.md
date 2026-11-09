@@ -23,7 +23,7 @@ available. The candidate alone supplies no persistence authority or GUI Text
 activation; the separate original request below owns native persistence. Legacy Number
 purposes remain distinct.
 
-The [candidate workflow batch](../../testing/results/typed-field-candidate-workflows-2026-11-08.json)
+The [candidate workflow batch](../../../tests/results/schema/typed-field-candidate-workflows-2026-11-08.json)
 passes 336 unique selected tests, including ten new candidate cases covering
 18 independent SDK AFTER images. Three existing ignored cases are excluded.
 Strict engine/testkit all-feature lint, creation+journal lint and creation-only
@@ -105,7 +105,7 @@ version5 is independent of journal format2. Settled confirmation cannot repair.
 TCAC0001 through TCAC0004 retain their own target/source constructors and wire
 languages. Shared storage/proof helpers do not widen those languages.
 
-The [coordinated workflow batch](../../testing/results/field-addition-gui-workflows-2026-11-08.json)
+The [coordinated workflow batch](../../../tests/results/schema/field-addition-gui-workflows-2026-11-08.json)
 passes 1,505 unique selected checks, including native intent/source/recovery,
 adapter, runtime and the complete shared UI/desktop suites. Five existing ignored
 cases are excluded. It covers ordinary Text → Number → Text saves, independent
@@ -157,9 +157,9 @@ its exact complete proposal; no guessed default field name or AFTER is built by
 inspection. The generic runtime/adapter/GUI field workflow retains its existing
 consuming review, schema-only receipt and full-image witness publication.
 
-The [four SDK observations](../../testing/field_add_after_off/README.md) and
+The [four SDK observations](../../../tests/access/schema/field_add_after_off/README.md) and
 independent raw fixtures anchor complete bytes. The
-[service record](../../testing/results/field-schema-services-2026-11-09.json)
+[service record](../../../tests/results/schema/field-schema-services-2026-11-09.json)
 reports two separate passing batches: 1,290 recovery/adapter/presentation checks
 and 693 source/runtime/host checks. Their repeated coverage is not summed.
 Four actual headless widget cases save Number/Text after the two OFF histories,
@@ -184,10 +184,10 @@ Readonly inspection measures the actual qualified encoder capacity; one normal
 runtime review, save worker and complete-image witness serve the GUI. There is
 no post-failure retry into another source language or unchecked AFTER payload.
 
-The [independent second-event SDK record](../../testing/field_add_repeat_after_off/README.md)
+The [independent second-event SDK record](../../../tests/access/schema/field_add_repeat_after_off/README.md)
 anchors four complete second additions. Headless runtime and actual GUI cases
 match those bytes; a further raw-only history case is explicitly separate from
-SDK save evidence. The [coordinated workbench record](../../testing/results/field-workbench-workflows-2026-11-09.json)
+SDK save evidence. The [coordinated workbench record](../../../tests/results/schema/field-workbench-workflows-2026-11-09.json)
 contains passing creation, original-intent recovery, adapter, runtime and GUI
 checks. Empty canonical ACE16, ASCII identifiers, existing-page capacity and
 sixteen-field source limits remain. This adds no rollover, populated-table or
@@ -247,7 +247,7 @@ The adapter stages a reviewed plan against fresh retained-target bytes and
 dispatches only the closed TCAC family during cold and settled recovery. A
 committed `SchemaChange::ColumnAdded` has no matched/changed row counts.
 
-See the [focused batch record](../../testing/results/schema-save-workflows-2026-11-08.json).
+See the [focused batch record](../../../tests/results/schema/schema-save-workflows-2026-11-08.json).
 Native Windows and Microsoft Access save/reopen behavior, timestamp parity and
 GUI column editing are not qualified by this checkpoint. Five additional runtime
 checks now pass: consuming review/save, full-schema reopen, stale revisions and
@@ -284,7 +284,7 @@ default authoring.
 
 ## Independent generated-primary SDK observations
 
-The [source/provenance record](../../testing/results/add-column-created-sdk-source-2026-11-08.json)
+The [source/provenance record](../../../tests/results/schema/add-column-created-sdk-source-2026-11-08.json)
 separates whole-image SDK observations from native candidate and normal-save
 qualification. The existing inline-default-zero source and the fourteen-field
 Mixed source both yield the complete independently authored AFTER when a nullable
@@ -323,7 +323,7 @@ dates refuse. The complete
 target MR2 body must prefer one external LVAL row (65 through 4,076 bytes);
 shorter inline and chained targets remain outside this checkpoint.
 
-The [new SDK record](../../testing/results/add-column-default-zero-sdk-source-2026-11-08.json)
+The [new SDK record](../../../tests/results/schema/add-column-default-zero-sdk-source-2026-11-08.json)
 qualifies two distinct independent observations. Adding `Score` with explicit
 DefaultValue `0` to `Table1(ID)` grows its 73-byte catalog root into an 85-byte
 hidden target, retaining logical root slot 7 through a forwarding pointer to
@@ -346,12 +346,12 @@ comparison or timestamp/event parity is inferred from the SDK observations.
 
 ### Reproduce the independent SDK operations
 
-The maintained [first-column helper](../../testing/CreatedFirstDefaultColumnOracle.java)
+The maintained [first-column helper](../../../tests/access/schema/fields/CreatedFirstDefaultColumnOracle.java)
 is the executed original first-party probe source, promoted unchanged; the
-[existing-inline helper](../../testing/CreatedTableColumnOracle.java) keeps its
+[existing-inline helper](../../../tests/access/schema/fields/CreatedTableColumnOracle.java) keeps its
 frozen recipe. Both use the reviewed Jackcess 5.0.4 JAR, Apache-2.0, SHA-256
 `19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`.
-See [fixture provenance](../../testing/FIXTURES.md#explicit-default-zero-saved-column-add-reference--8-november-2026).
+See [fixture provenance](../../../tests/reports/reading/FIXTURES.md#explicit-default-zero-saved-column-add-reference--8-november-2026).
 
 Set `JACKCESS_JAR` to that reviewed artifact, `ORACLE_CLASSES` to a local generated
 class directory, and `ID_BEFORE`/`INLINE_BEFORE` to the hash-pinned original inputs
@@ -401,7 +401,7 @@ save timing or timestamp parity.
 The typed `CreatedDefaultZeroColumnRequired` declaration keeps absent Required
 metadata distinct from stored Boolean false. The Number service explicitly
 requests `StoredFalse` together with an Int32 zero default. Three independent
-[SDK observations](../../testing/results/add-column-number-sdk-source-2026-11-08.json)
+[SDK observations](../../../tests/results/schema/add-column-number-sdk-source-2026-11-08.json)
 cover an ID-only source, an existing default-only source and a source with
 Required false plus default zero. Complete candidate images match all three.
 The property writer retains dictionary order: newly introduced Required follows
@@ -420,7 +420,7 @@ Runtime exposes `ReviewAddNumberColumn`, a consuming `ReviewedNumberColumn`,
 `SaveWorker::start_number_column` and the existing complete-image guarded
 `OpenColumnAdded` read. Review holds no write lease. Actual native review/save
 rechecks the source and requested declaration; a terminal receipt alone cannot
-publish a refreshed document. The [batch record](../../testing/results/number-column-runtime-batch-2026-11-08.json)
+publish a refreshed document. The [batch record](../../../tests/results/schema/number-column-runtime-batch-2026-11-08.json)
 retains 65 passing checks and strict affected-package lint. The actual GUI draft
 producer, not only hand-authored declarations, matches both source classes.
 
@@ -441,7 +441,7 @@ qualify Microsoft Access or Windows execution.
 The distinct `RepeatedDefaultZeroAddColumnCandidate` and `TCAC0004`/profile 4
 original intent admit the same explicit nullable LONG, stored Required(false)
 and typed zero declaration on the output of the first Number save. The
-[three independent SDK observations](../../testing/number_column_repeat/README.md)
+[three independent SDK observations](../../../tests/access/schema/number_column_repeat/README.md)
 match complete native candidates: the file stays 45,056 bytes, only catalog page 4,
 table-definition page 7 and existing property LVAL page 10 change, and allocation
 maps and the primary INDEX page remain exact. The new complete MR2 body appends
@@ -505,7 +505,7 @@ unavailable, while malformed/cancel/resource errors propagate. The worker retain
 the actual sealed purpose, same exclusive offline lifecycle, schema-only
 ColumnAdded receipt and full-image witness before publishing the fresh document.
 
-The [coordinated repeated-add record](../../testing/results/repeated-number-workflows-2026-11-08.json)
+The [coordinated repeated-add record](../../../tests/results/rows/repeated-number-workflows-2026-11-08.json)
 retains 127 selected passing checks across engine, adapter, runtime and desktop.
 It includes three ordinary Click-to-Add/name/Save operations in one session,
 followed by actual GUI insertion of a row with generated ID and three omitted
@@ -520,12 +520,12 @@ attempt and corrected test-helper build failure remain separately recorded.
 ### One-rollover recovery and consumer evidence
 
 The earlier three second-ADD SDK observations above remain same-page evidence.
-The later [rollover SDK record](../../testing/results/number-column-rollover-sdk-2026-11-08.json)
+The later [rollover SDK record](../../../tests/results/schema/number-column-rollover-sdk-2026-11-08.json)
 separately pins the complete N13→N14 image, which grows from 45,056 to 49,152
 bytes. N15's fitted page-11 construction has independent raw-model/native proof;
 it is not an additional SDK execution observation.
 
-The [rollover workflow record](../../testing/results/number-column-rollover-workflows-2026-11-08.json)
+The [rollover workflow record](../../../tests/results/schema/number-column-rollover-workflows-2026-11-08.json)
 retains 135 selected passing checks: 83 engine, 16 adapter, 18 runtime and 18
 desktop checks. Strict normal creation+journal lint without preview passes.
 Native checks cover the complete SDK image, positive reconstructed page-11
@@ -546,7 +546,7 @@ Windows execution, other fields or older-format writes.
 
 ## Short Text and mixed-source evidence checkpoint
 
-The [new independent reference](../../testing/short_text_add/README.md) records
+The [new independent reference](../../../tests/access/rows/short_text_add/README.md) records
 eighteen complete SDK/raw AFTER matches for explicit TEXT255 with Required(false),
 AllowZeroLength(true), no DefaultValue property and separate compression-off/on
 twins; repeated Text and Number-after-Text compositions retain all original

@@ -85,9 +85,9 @@ DDB; an integer digit-weight model checks SYD and straight-line conservation.
 A bound query control checks projection dependencies, factor defaults, aggregate/
 domain/correlated composition and late failures under TOP.
 
-The original [SavedDepreciationFixture](../../testing/SavedDepreciationFixture.java)
+The original [SavedDepreciationFixture](../../../tests/access/queries/saved/SavedDepreciationFixture.java)
 adds ten inert definitions to the existing fourteen-query forest/data recipe.
-The [comparison runner](../../testing/compare_depreciation_functions.py) passes 278
+The [comparison runner](../../../tests/access/queries/expressions/compare_depreciation_functions.py) passes 278
 controls using exact
 Fraction schedules, raw native row/metadata getters and independently rendered
 SQL, then compares TableCraft scalar, direct, saved and named execution. Stored

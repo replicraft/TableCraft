@@ -2,6 +2,7 @@
 
 Uses inert Jackcess cursors, not its expression evaluator or an Access SQL oracle.
 """
+from engineering_paths import reference_file
 import argparse
 from pathlib import Path
 
@@ -19,7 +20,7 @@ def main():
     for index in [None, "Number"]:
         cursor = ["--index", "ROULETTE_TB", index] if index else ["ROULETTE_TB"]
         tagged = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar,
-                     RECIPES / "TableDataOracle.java", args.database, *cursor)
+                     reference_file('tests/access/reading/tables/TableDataOracle.java'), args.database, *cursor)
         rows = [line.split("\t") for line in tagged.splitlines()]
         assert len(rows) == 38
         def width(row):

@@ -41,13 +41,13 @@ hyperfine --warmup 2 --runs 7 --export-json /tmp/tablecraft-decimal-arithmetic-h
 The example adds no dependency: it reuses existing development-only clap and
 normal expression/core APIs. Independent i128/rational properties, midpoint/range
 and error goldens, query/CLI integration and original native-file regressions
-provide separate correctness evidence. See [contracts](../expressions/EXPRESSIONS.md#checked-decimal-arithmetic)
-and [fixture evidence](FIXTURES.md#checked-decimal-arithmetic-read-regression).
+provide separate correctness evidence. See [contracts](../../../docs/expressions/EXPRESSIONS.md#checked-decimal-arithmetic)
+and [fixture evidence](../reading/FIXTURES.md#checked-decimal-arithmetic-read-regression).
 
 
 ## Full-width rational boundary checks
 
-The original [boundary runner](compare_decimal_boundaries.py) checks the existing
+The original [boundary runner](../../access/queries/expressions/compare_decimal_boundaries.py) checks the existing
 fixed Decimal +, -, * and / profile independently of rust_decimal. Python Fraction
 computes the exact rational result, then selects the highest scale from 28 down
 to zero whose directly rounded ties-to-even coefficient fits the independently
@@ -71,7 +71,7 @@ binary operations. Both `query eval` and `query run` pass, with:
 | Total | 23,460 |
 
 ```sh
-python3 docs/testing/compare_decimal_boundaries.py \
+python3 tests/run.py tests/access/queries/expressions/compare_decimal_boundaries.py \
   --cli target/debug/tablecraft \
   --report /tmp/tablecraft-decimal-boundaries.json
 ```
@@ -81,7 +81,7 @@ remains unchanged and records its own source hash. Four results per successful
 SELECT keep the existing scalar evaluator work ceiling intact; overflow and
 zero-divisor controls additionally check buffered publication after an earlier
 successful column. No database, third-party fixture or active content is used.
-The [recorded report](results/decimal-boundaries-2026-10-24.json) retains exact
+The [recorded report](../../results/general/decimal-boundaries-2026-10-24.json) retains exact
 counts, seed and hashes. This strengthens independent boundary evidence for the
 current arithmetic contract; it neither changes that contract nor qualifies
 native Access rounding, declared/Variant promotion, floating import or aggregate

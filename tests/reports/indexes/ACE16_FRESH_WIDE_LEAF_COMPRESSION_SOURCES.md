@@ -3,7 +3,7 @@
 Six independent files now pass eight native read contexts and six exact inert
 Jackcess reports. Four changed images each insert 157 complete rows into a
 400-row source, under two header variants and Int64/Currency carriers. This
-qualifies prospective sources. The [normal writer](../access/writes/NORMAL_WIDE_ROOT_PROMOTION.md)
+qualifies prospective sources. The [normal writer](../../../docs/access/writes/NORMAL_WIDE_ROOT_PROMOTION.md)
 now has separate 157-row mutation acceptance; the source receipt retains its
 historical phase status.
 
@@ -36,6 +36,6 @@ TABLECRAFT_WIDE_LEAF_COMPRESSION_SOURCE_DIR=/absolute/path/to/expected-first \
   -- --ignored
 ```
 
-See the [execution record](results/ace16-fresh-wide-leaf-compression-sources-2026-11-02.json).
+See the [execution record](../../results/indexes/ace16-fresh-wide-leaf-compression-sources-2026-11-02.json).
 These portable checks do not establish native Microsoft Access save/reopen or
 grant mutation permission.

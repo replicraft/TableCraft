@@ -94,7 +94,7 @@ checks pass: native Extra 41, LVAL contracts 15, Access 69, and CLI 43 unit plus
 features, minimal ACE/Access builds, final formatter, documentation links and
 dependency boundaries pass. The unrelated reused Memo fixture qualification and
 unused-import strict failures are retained in the
-[focused result](../../testing/results/ace16-observed-macro-inventory-2026-10-30.json).
+[focused result](../../../tests/results/schema/ace16-observed-macro-inventory-2026-10-30.json).
 
 ## Bounds and preservation
 
@@ -121,7 +121,7 @@ establish qualified macro absence.
 
 Required event semantics, absence qualification, native Access save/reopen and
 normal ACE writes remain unfinished. Follow the
-[data-macro qualification contract](../../testing/DATA_MACROS.md) before changing
+[data-macro qualification contract](../../../tests/reports/schema/DATA_MACROS.md) before changing
 write eligibility. [Opaque payload preservation](../writes/NATIVE_PRESERVATION.md)
 continues to apply to every unimplemented object body.
 
@@ -148,7 +148,7 @@ Seven original-file calls match 14,266 complete payload bytes, nine values and
 54 output records against independent source-derived expectations. The four
 original databases retain their hashes. These originals use ACE 2010 storage;
 they do not qualify ACE 16 macro behavior. The generic
-[comparison runner](../../testing/compare_table_extra.py) consumes an explicitly
+[comparison runner](../../../tests/access/reading/tables/compare_table_extra.py) consumes an explicitly
 supplied private manifest; no third-party database or macro body is tracked.
-See the [record](../../testing/results/table-extra-inspection-2026-10-29.json)
+See the [record](../../../tests/results/general/table-extra-inspection-2026-10-29.json)
 for the captured evidence and earlier failures.

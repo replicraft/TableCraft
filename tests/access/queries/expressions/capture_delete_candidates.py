@@ -107,7 +107,7 @@ def main():
     if digest(args.jar) != JAR_SHA256:
         parser.error('Unexpected reviewed Jackcess JAR')
 
-    helper = Path('docs/testing/DeleteCandidateFixture.java')
+    helper = Path('tests/access/queries/expressions/DeleteCandidateFixture.java')
     files = []
     for profile in PROFILES:
         for state in STATES:

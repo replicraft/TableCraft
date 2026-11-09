@@ -1,6 +1,6 @@
 # Combined StrConv Unicode and native-field replay
 
-The [5,680-command record](results/japanese-proper-space-replay-2026-10-25.json)
+The [5,680-command record](../../results/general/japanese-proper-space-replay-2026-10-25.json)
 passes both CLI query modes and four registered native inputs. It compares
 17,280 successful result cells and retains 176 expected buffered failures.
 Thirty source/tool/executable pins and four original database hashes remain
@@ -9,7 +9,7 @@ models; Microsoft Access and Windows NLS execution remain unrun.
 
 ## Independent expectations
 
-The original [runner](compare_strconv_combinations.py) imports existing original
+The original [runner](../../access/queries/expressions/compare_strconv_combinations.py) imports existing original
 reference models, never production Rust mappings. Python Unicode 16.0.0 supplies
 width decomposition properties and kana names/canonical decomposition. Selected
 Python casing and separator models supply the explicit upper/lower/proper-case
@@ -51,7 +51,7 @@ The complete production tree matches that revision. No product code, constructor
 default allowance, expected model result or original input changed during replay.
 
 ```sh
-python3 docs/testing/compare_strconv_combinations.py \
+python3 tests/run.py tests/access/queries/expressions/compare_strconv_combinations.py \
   --cli .cache/tablecraft-bin/japanese-proper-space-cli-20261025 \
   --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar \
   --directory .cache/tablecraft-fixtures/scalar-seek-20261023 \
@@ -64,7 +64,7 @@ the existing eval work allowance. Its 6,000-command tool ceiling admits all
 5,680 commands without raising product limits. This expanded run passes without
 changing expected answers or production code during execution.
 
-The earlier [5,528-command record](results/strconv-combinations-replay-2026-10-25.json)
+The earlier [5,528-command record](../../results/queries/strconv-combinations-replay-2026-10-25.json)
 remains evidence for the prior `8389ed63` profile: 16,436 cells, 176 expected
 failures and 32 unchanged original/source/tool pins. Its initial batch-size/tool
 ceiling failures remain preserved there. The expanded current run includes all
@@ -76,6 +76,6 @@ digests, compared-cell count and exit status. Every expected failure has no stdo
 The pinned runner and Unicode version reconstruct the exact queries. Native
 getter and input identities are included. No reference JAR, generated database,
 new product dependency or machine-specific path is committed. The
-[fixture registration](FIXTURES.md#interrupted-seek-scalar-replay) retains the
+[fixture registration](../reading/FIXTURES.md#interrupted-seek-scalar-replay) retains the
 existing provenance. Broader mappings, locale providers and native qualification
 remain on the read/query roadmap.

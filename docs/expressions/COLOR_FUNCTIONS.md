@@ -59,7 +59,7 @@ cancellation checkpoints, projections, filtering, correlations, grouping,
 aggregates/domains, parameter-plan reuse and eager/late errors. CLI tests cover
 both execution paths and empty output on failures.
 
-The original [independent runner](../testing/compare_colors.py) uses decimal rounding
+The original [independent runner](../../tests/access/reading/tables/compare_colors.py) uses decimal rounding
 and byte construction for RGB, and palette bit/intensity arithmetic for QBColor.
 Optional original SavedForest-derived AData fixtures exercise local native-file
 projections with hashes checked before/after. It does not execute formulas in

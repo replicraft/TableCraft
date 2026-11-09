@@ -1,4 +1,5 @@
 """Check typed scalar pivot keys and explicit heading names against Python models."""
+from engineering_paths import reference_file
 import argparse
 from collections import Counter
 import csv
@@ -82,7 +83,7 @@ def main():
             original = path.read_bytes()
             assert hashlib.sha256(original).hexdigest() == digest
             output = subprocess.check_output(["java", "-Dstdout.encoding=UTF-8", "-cp", str(args.jar),
-                str(RECIPES / "TableDataOracle.java"), str(path), "IndexedRows"], text=True, encoding="utf-8")
+                str(reference_file('tests/access/reading/tables/TableDataOracle.java')), str(path), "IndexedRows"], text=True, encoding="utf-8")
             stored = [line.split("\t")[1:] for line in output.splitlines()]
             assert len(stored) == 20000
             budgets = [

@@ -3,6 +3,7 @@
 The reviewed reference reads stored fields only. Only TableCraft executes SQL;
 these controls are not Windows Access result-type or optimizer qualification.
 """
+from engineering_paths import reference_file
 
 import argparse
 from decimal import Decimal
@@ -75,7 +76,7 @@ def main():
     for database in args.database:
         original = database.read_bytes()
         tagged = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar,
-                     RECIPES / "TableDataOracle.java", database, "ScalarSamples")
+                     reference_file('tests/access/reading/tables/TableDataOracle.java'), database, "ScalarSamples")
         expected = []
         for line in tagged.splitlines():
             fields = line.split("\t")

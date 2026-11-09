@@ -3,7 +3,7 @@
 Six independently constructed files now pass eight native table contexts and six
 complete Jackcess reader reports. They cover Int64 and Currency tables under both
 frozen modern header variants. The source phase preceded matching writes; the
-[normal writer](../access/writes/NORMAL_WIDE_ROOT_PROMOTION.md) now passes its
+[normal writer](../../../docs/access/writes/NORMAL_WIDE_ROOT_PROMOTION.md) now passes its
 separate mutation acceptance. The source receipt retains its historical phase
 status.
 
@@ -42,7 +42,7 @@ TABLECRAFT_WIDE_ROOT_PROMOTION_SOURCE_DIR=/absolute/path/to/expected-first \
   -- --ignored
 ```
 
-See the [execution record](results/ace16-wide-root-promotion-sources-2026-11-02.json)
+See the [execution record](../../results/indexes/ace16-wide-root-promotion-sources-2026-11-02.json)
 and [original source observations](INTEGRAL_INDEX_SPLIT_SOURCE_OBSERVATIONS.md).
 Independent reader agreement does not establish native Microsoft Access save or
 reopen compatibility, or grant mutation permission.

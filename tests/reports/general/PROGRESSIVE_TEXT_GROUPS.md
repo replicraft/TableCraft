@@ -1,6 +1,6 @@
 # Original native Text grouping replay
 
-The original [runner](compare_progressive_text_groups.py) checks buffered and
+The original [runner](../../access/queries/execution/compare_progressive_text_groups.py) checks buffered and
 progressive Text grouping against independent ASCII, integer and Fraction models.
 It reuses the two registered LargeDeployment ACE 16 family native files and their
 four unchanged stored/MSZIP CAB packages. Existing read-only Jackcess getters
@@ -11,7 +11,7 @@ or timing qualification.
 
 ## Accepted results and comparison scope
 
-The [accepted report](results/progressive-text-groups-2026-10-25.json) contains
+The [accepted report](../../results/general/progressive-text-groups-2026-10-25.json) contains
 **96 matched controls**: 78 successful queries comparing 1,272 rows and 4,296
 cells, plus 18 intended failures. Six failures also compare an exact earlier
 progressive prefix of one row/two cells each; these six rows/twelve cells are
@@ -86,7 +86,7 @@ timeouts. Every control retains full arguments, expected rows/prefix/error
 fragment, return status, stdout and stderr. Use a fresh report destination:
 
 ```sh
-python3 docs/testing/compare_progressive_text_groups.py \
+python3 tests/run.py tests/access/queries/execution/compare_progressive_text_groups.py \
   --cli .cache/tablecraft-bin/progressive-text-groups-cli-20261025 \
   --cli-sha256 d19b3d30ac01c34aafe765cb0f8c0a2cd54c8ba234c6021f8c15065715caf041 \
   --revision 05637859e69e9495b9d96e048dab06a89df9d140 \

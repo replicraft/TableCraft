@@ -40,13 +40,13 @@ byte complement, unchanged identities, new native containment role and exact
 database-property decoding. All original user TDEF/DATA/INDEX bytes, physical
 row slots, counters, properties and opaque tails remain unchanged.
 
-The [SDK reference and independent full-image model](../../testing/ACE16_DATABASE_OPTIONS_SOURCES.md)
+The [SDK reference and independent full-image model](../../../tests/reports/schema/ACE16_DATABASE_OPTIONS_SOURCES.md)
 establish the external representation on two current creator originals. Separate
 raw fixtures author six empty/populated keyless/manual/generated-primary pairs
 with retained sentinels for the native candidate tests. Authored tests and SDK
 write observations remain distinct from executed native planner checks.
 
-A separate [OFF-after-ADD SDK experiment](../../testing/nac_after_field_add/README.md)
+A separate [OFF-after-ADD SDK experiment](../../../tests/access/schema/nac_after_field_add/README.md)
 now compares five first-party Number/ShortText ADD sources with complete raw
 images frozen before SDK mutation. All five match exactly. The explicit new
 MSysDb role appends its 152-byte body to the existing catalog-column LvProp page;
@@ -141,7 +141,7 @@ constructing an AFTER image or acquiring an exclusive target lease. It is positi
 eligibility only: actual review and staging repeat native source qualification.
 Unknown is the UI's unobserved state, not a fifth runtime value or an inferred OFF.
 
-The [earlier completed SQL/creator batch](../../testing/results/sql-creator-focused-2026-11-08.json)
+The [earlier completed SQL/creator batch](../../../tests/results/creation/sql-creator-focused-2026-11-08.json)
 passes 72 tests, including 35 engine rename, four runtime rename and six long-value
 cases. Its V3 positives establish bounded native option-then-rename composition.
 It predates the runtime options service, metadata observer and expected-image
@@ -213,7 +213,7 @@ Options, Current Database or close-objects capture exists; these dialogs are
 uncaptured adaptations. Source-free offscreen scenes illustrate state and layout,
 not real saves or Windows/Access behavior.
 
-The [coordinated Options record](../../testing/results/database-options-workflows-2026-11-08.json)
+The [coordinated Options record](../../../tests/results/general/database-options-workflows-2026-11-08.json)
 reports 2,787 unique successful cases across seven selected package suites and
 265 existing ignored cases. This combines the broad seven-package run with its
 focused corrections, not a full-workspace run. The sixteen repeated Options and
@@ -254,7 +254,7 @@ The MSysDb body is not another user ADD event.
 
 All three focused candidate cases pass in the root-coordinated native batch.
 Their five complete raw AFTER images match the separately retained
-[SDK hashes](../../testing/results/nac-after-field-add-sdk-2026-11-08.json), covering
+[SDK hashes](../../../tests/results/schema/nac-after-field-add-sdk-2026-11-08.json), covering
 first/repeated Number, compressed Text, ordinary versus forwarded user roots and
 Text→Number→Text history. Complement/body tampering, absent history, foreign source
 bytes, cancellation and exhausted budgets refuse. This is engine construction
@@ -315,7 +315,7 @@ and retains exact scratch SQL. Stored field definitions, properties, historical
 rows and all other protected bytes remain unchanged. There is no new UI surface
 or new screenshot qualification in this composition batch.
 
-The [composition workflow record](../../testing/results/field-history-options-workflows-2026-11-09.json)
+The [composition workflow record](../../../tests/results/schema/field-history-options-workflows-2026-11-09.json)
 records 991 unique selected passing checks with five existing ignored cases:
 169 creation, 187 original-intent, 11 catalog-property, 188 Access-adapter, 257
 runtime and 179 desktop cases. Strict all-feature lint and the minimal ACE
@@ -342,7 +342,7 @@ constructor must then qualify its complete Source5 history and reproduce every
 current byte, including both live objects, retired rows and protected tails.
 Removing a role from a view or observing two zero settings is not source proof.
 
-The [source-proof record](../../testing/results/settled-field-history-source-proof-2026-11-09.json)
+The [source-proof record](../../../tests/results/schema/settled-field-history-source-proof-2026-11-09.json)
 passes five focused cases within 174 selected native checks; one existing ignored
 case is excluded. It covers all five independent SDK sources and the highest
 fitting N12 history under the unchanged 512 MiB/5M pool. Erased date-carrier and
@@ -351,7 +351,7 @@ settings remain ExplicitOff. Strict full/minimal native lint and formatting pass
 This checker issues no mutation capability and does not enable rename or further
 ADD. Later field events require a distinct chronological source language.
 
-Four independent [ADD-after-OFF SDK observations](../../testing/field_add_after_off/README.md)
+Four independent [ADD-after-OFF SDK observations](../../../tests/access/schema/field_add_after_off/README.md)
 now establish the next event order: the database body stays at its original ROW,
 and the next user body appends after it. All old rows and directory entries stay
 exact. These SDK observations alone do not qualify a native writer. The separate

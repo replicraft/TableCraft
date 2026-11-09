@@ -17,7 +17,7 @@ def main():
 
     def inspect(path):
         return subprocess.check_output(["java", "-Dstdout.encoding=UTF-8", "-cp", str(args.jar),
-            "docs/testing/UpdateFixture.java", "--inspect", str(path)], text=True)
+            "tests/access/queries/expressions/UpdateFixture.java", "--inspect", str(path)], text=True)
 
     original = "1\t10\t8400\t12288\n2\t20\t8400\t12288\n3\t30\t8400\t12288\n"
     if inspect(args.jet) != original:
@@ -39,7 +39,7 @@ def main():
         subprocess.run([str(args.example),str(args.jet),str(indexed),"Items","Id","1","2","27"],check=True)
         if inspect(indexed)!=original.replace("2\t20\t","27\t20\t"):
             raise RuntimeError("Indexed update changed independent record values")
-        ordered=subprocess.check_output(["java","-cp",str(args.jar),"docs/testing/IndexRowsOracle.java",str(indexed),"Items","PK_Items","Id"],text=True)
+        ordered=subprocess.check_output(["java","-cp",str(args.jar),"tests/access/indexes/native/IndexRowsOracle.java",str(indexed),"Items","PK_Items","Id"],text=True)
         if ordered!="1\n3\n27\n":raise RuntimeError("Independent index references disagree after key reordering")
         metadata=display_tsv(subprocess.check_output([str(args.cli),"inspect",str(args.jet),"--table","Items","--indexes"],text=True)).splitlines()
         root=int(next(line.split("\t")[3] for line in metadata if line.startswith("PK_Items\t")))

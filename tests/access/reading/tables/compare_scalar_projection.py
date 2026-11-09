@@ -18,7 +18,7 @@ def main():
     args = parser.parse_args()
     controls = 0
     with tempfile.TemporaryDirectory(prefix='tablecraft-scalar-projection-') as directory:
-        subprocess.run(['javac', '-cp', str(args.jar), '-d', directory, 'docs/testing/MultivalueOracle.java', 'docs/testing/ScalarProjectionOracle.java'], check=True)
+        subprocess.run(['javac', '-cp', str(args.jar), '-d', directory, 'tests/access/reading/tables/MultivalueOracle.java', 'tests/access/reading/tables/ScalarProjectionOracle.java'], check=True)
         classpath = str(args.jar) + os.pathsep + directory
         for family in ('2007', '2016', '2019'):
             path = getattr(args, 'ace' + family)

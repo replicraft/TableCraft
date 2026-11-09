@@ -57,16 +57,16 @@ writer and reopened [TableMetaData getters](https://jackcess.sourceforge.io/apid
 The getter oracle also compares the physical catalog fields and installs a
 throwing target resolver: no target-resolution calls are permitted.
 
-The [original recipe](../../testing/LinkedTableFixture.java),
-[getter oracle](../../testing/LinkedTableOracle.java),
-[replay runner](../../testing/compare_linked_tables.py) and
-[accepted report](../../testing/results/linked-metadata-2026-10-24.json) retain sixteen
+The [original recipe](../../../tests/access/queries/execution/LinkedTableFixture.java),
+[getter oracle](../../../tests/access/queries/execution/LinkedTableOracle.java),
+[replay runner](../../../tests/access/queries/execution/compare_linked_tables.py) and
+[accepted report](../../../tests/results/general/linked-metadata-2026-10-24.json) retain sixteen
 passing comparisons across Jet 4, ACE 2007, ACE 2016 and ACE 2019 files. Each
 frontend has four links, covering a real local backend basename, exact Unicode,
 opaque SQL-looking/whitespace identifiers and an external Memo-sized target
 string. Both frontend and backend originals remain unchanged. The report pins
 inputs, recipe/reader sources, lockfile, reference artifact and frozen executable.
-Fixture provenance is in [FIXTURES.md](../../testing/FIXTURES.md#original-inert-linked-table-metadata).
+Fixture provenance is in [FIXTURES.md](../../../tests/reports/reading/FIXTURES.md#original-inert-linked-table-metadata).
 
 Eight focused engine tests additionally cover missing/unsupported declarations,
 ODBC and unknown connection text, malformed selected payloads, identity drift,

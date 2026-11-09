@@ -1,6 +1,6 @@
 # Original template scalar profile replay
 
-The [accepted report](results/template-scalar-profiles-2026-10-25.json) records
+The [accepted report](../../results/rows/template-scalar-profiles-2026-10-25.json) records
 seven successful CLI queries, 14 independently modeled rows and 44 compared stored
 cells. Python's standard-library ZIP and XML readers derive expected cells from
 unchanged `data.xml` parts; only TableCraft executes SQL. This qualifies the
@@ -17,9 +17,9 @@ already succeeded in the initial audit and remains a regression control.
 
 These seven original, repository-owned synthetic ZIP/XML packages were authored
 in the storage-read audit using the package/table/List Definition structures in
-[compare_template_packages.py](compare_template_packages.py),
-[compare_template_tables.py](compare_template_tables.py) and
-[compare_template_lists.py](compare_template_lists.py). The historical per-variant
+[compare_template_packages.py](../../access/reading/tables/compare_template_packages.py),
+[compare_template_tables.py](../../access/reading/tables/compare_template_tables.py) and
+[compare_template_lists.py](../../access/reading/tables/compare_template_lists.py). The historical per-variant
 construction steps were not retained as a byte-reproducible generator. The
 hash-locked original files are the replay inputs; this runner never regenerates
 or changes them. No third-party fixture bytes or additional binaries are added.
@@ -70,7 +70,7 @@ counted as a passing check here; the fresh report contains seven actual successe
 ## Reproduction
 
 ```sh
-python3 docs/testing/compare_template_scalar_profiles.py \
+python3 tests/run.py tests/access/reading/tables/compare_template_scalar_profiles.py \
   --cli .cache/tablecraft-bin/japanese-string-cli-20261025 \
   --directory .cache/storage-read-audit-20261025 \
   --report docs/testing/results/template-scalar-profiles-2026-10-25.json

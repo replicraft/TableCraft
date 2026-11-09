@@ -16,7 +16,7 @@ TABLES = ('Numbered', 'Loose')
 KEPT = (1, 3, 7, 64, 128, 259, 260)
 SELECTIONS = {'first': {1}, 'highest': {260}, 'subset': {3, 128, 260}, 'all': set(KEPT)}
 APPEND_SCORE = -1234567
-REPOSITORY = Path(__file__).resolve().parents[2]
+REPOSITORY = Path(__file__).resolve().parents[4]
 
 
 def pin(path):
@@ -112,7 +112,7 @@ def main():
               'scope': 'Repository-owned ordinary LONG AutoNumber public-writer facts, not native Access qualification',
               'construction': {'generated_rows_per_table': 260, 'kept_ids': list(KEPT),
                                'deletes_are_part_of_original_construction': True},
-              'artifacts': [pin(Path(__file__)), pin(Path('docs/testing/AutoNumberDeleteFixture.java')),
+              'artifacts': [pin(Path(__file__)), pin(Path('tests/access/creation/databases/AutoNumberDeleteFixture.java')),
                             pin(args.jar), pin(args.classes / CLASS_FILE)],
               'observations': []}
     originals = []

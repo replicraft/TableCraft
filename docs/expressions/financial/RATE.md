@@ -78,9 +78,9 @@ cashflow polynomial checks the analytic slope on both sides of zero. A new bound
 query control checks metadata defaults, reusable parameters, all observed query
 cancellation points, cumulative work and no returned iterate on exhaustion.
 
-The original [SavedRateFixture](../../testing/SavedRateFixture.java) adds eleven inert
+The original [SavedRateFixture](../../../tests/access/queries/saved/SavedRateFixture.java) adds eleven inert
 queries to the existing fourteen-query forest/data recipe. The
-[comparison runner](../../testing/compare_rate_function.py) passes 294 controls across
+[comparison runner](../../../tests/access/queries/expressions/compare_rate_function.py) passes 294 controls across
 scalar/run and raw-getter/rendered/direct/saved/named paths. Independent 120-digit
 Decimal ledgers and bisection provide expected roots; scalar coupled-loan cases
 also check residuals using the returned rate and payment. Rate comparisons use

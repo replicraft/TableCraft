@@ -13,7 +13,7 @@ by the same operation allowance.
 
 ## Measured native workload
 
-[CascadeKeyFactsFixture.java](CascadeKeyFactsFixture.java) creates two fresh
+[CascadeKeyFactsFixture.java](../../access/indexes/native/CascadeKeyFactsFixture.java) creates two fresh
 ACE16-family originals through the reviewed Jackcess 5.0.4 public builders, with
 expressions disabled, UTC explicit and linked opens refused. Each file contains
 three parent rows and six child rows. Composite relationship order differs from
@@ -25,7 +25,7 @@ The frozen preceding tool and the new implementation produce byte-identical
 candidates for parent, all-parent and child-only requests in both profiles.
 Independent public getters verify survivor identities, relationship components,
 payload lengths/hashes and original physical row locations. The
-[scoped receipt](results/ace16-cascade-key-facts-2026-10-26.json) pins the inputs,
+[scoped receipt](../../results/indexes/ace16-cascade-key-facts-2026-10-26.json) pins the inputs,
 source, raw measurements, initial diagnostics and completed checks.
 
 For V2016, whole-operation cumulative charges change as follows:
@@ -50,7 +50,7 @@ regression batch passes 208 engine tests with one existing ignored test; strict
 lint, minimal compilation and formatting pass. An additional explicit corpus
 probe passes two tests, separately from those engine counts.
 
-[probe_cascade_key_facts.rs](probe_cascade_key_facts.rs) is the exact executed
+[probe_cascade_key_facts.rs](../../access/indexes/native/probe_cascade_key_facts.rs) is the exact executed
 measurement/corruption probe, kept outside normal Cargo test discovery. It needs
 an explicitly prepared corpus selected with `TABLECRAFT_FACTS_CORPUS`, including
 raw LVAL-page inventories, original requests and frozen-before candidates. It is

@@ -4,7 +4,7 @@ The optional engineering [Int32 and exact fixed-scalar split services](ACE16_FIX
 now split a still-oversized half again. Their APIs, original-row request authority,
 closed scalar carriers and complete before/final gates are unchanged. This is a
 working allocation extension, not a normal save path or native Access/data-macro
-qualification. The [implementation result](results/ace16-repeated-index-splits-native-2026-10-27.json)
+qualification. The [implementation result](../../results/indexes/ace16-repeated-index-splits-native-2026-10-27.json)
 retains exact scoped source/log pins and initial diagnostics.
 
 ## Declared deterministic policy

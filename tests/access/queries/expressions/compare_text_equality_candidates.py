@@ -1,4 +1,5 @@
 """Compare conservative Short Text equality candidates with independent encoders."""
+from engineering_paths import reference_file
 
 import argparse
 import json
@@ -37,8 +38,8 @@ def main():
     with tempfile.TemporaryDirectory(prefix="tablecraft-equality-oracle-") as temporary:
         subprocess.run([
             "javac", "-cp", str(args.jar), "-d", temporary,
-            str(RECIPES / "TextEqualityCandidateOracle.java"),
-            str(RECIPES / "IndexOracle.java"),
+            str(reference_file('tests/access/queries/expressions/TextEqualityCandidateOracle.java')),
+            str(reference_file('tests/access/indexes/native/IndexOracle.java')),
         ], check=True)
         java = [
             "java", "-Dstdout.encoding=UTF-8", "-cp", os.pathsep.join((str(args.jar), temporary)),

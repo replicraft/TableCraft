@@ -8,7 +8,7 @@ passing read checks do not qualify a mutation producer.
 ## Initial admission audit
 
 The initial audit reuses two unindexed wide-scalar originals and four single-GUID
-ASC/DESC originals from the [earlier GUID tuple evidence](results/ace16-insert-guid-tuple-index-native-2026-10-28.json).
+ASC/DESC originals from the [earlier GUID tuple evidence](../../results/indexes/ace16-insert-guid-tuple-index-native-2026-10-28.json).
 It runs no reference reader, database application constructor or write producer.
 
 All six originals pass complete scalar/raw-record checks. The indexed sources
@@ -35,7 +35,7 @@ qualify the source, not evidence that active code exists. Later stages and full
 program absence remain unestablished for these indexed originals.
 
 Three ignored functions and ACE all-target/all-feature strict checks pass. The
-[execution record](results/ace16-guid-update-admission-2026-11-03.json) preserves the
+[execution record](../../results/rows/ace16-guid-update-admission-2026-11-03.json) preserves the
 first test-only compile failure: an extra selection argument to the complete-read
 API. Correcting that call changed no production code, source or byte law.
 No GUID UPDATE save, intent profile, journal recovery or native Access save/reopen
@@ -45,7 +45,7 @@ before any matching indexed write claims.
 
 ## Later selected GUID Source continuation
 
-The [retained GUID Source service](../access/writes/NORMAL_RETAINED_GUID_SOURCE.md)
+The [retained GUID Source service](../../../docs/access/writes/NORMAL_RETAINED_GUID_SOURCE.md)
 now passes complete admission for all six originals and four exact unrelated
 Score plans. The baseline refusal/stage observations above remain historical;
 the old integral declaration family still stays closed to GUID keys.
@@ -68,7 +68,7 @@ A separate native gate passed all four original and 24 AFTER views, with complet
 raw/row checks, all four aliases, GUID All/NULL/equality and primary reads, unchanged
 historical counters, full program-absence proof and canonical ordinary Source.
 One focused ignored function, ACE all-target/all-feature strict lint and formatting
-passed. See the [execution record](results/ace16-indexed-guid-update-sources-2026-11-03.json).
+passed. See the [execution record](../../results/indexes/ace16-indexed-guid-update-sources-2026-11-03.json).
 These are source/read premises for later mutation qualification. This gate invokes
 no writer, save or journal; Microsoft Access save/reopen remains unrun.
 
@@ -108,13 +108,13 @@ The first run failed before native capture because its test EOF assertion used
 the pressure corpus's page count. Only that assertion changed to the pinned fitted
 sizes of 95/113 pages; original files, raw records and prior expected laws stayed
 unchanged. The corrected focused function passed. The
-[baseline record](results/ace16-guid-tuple-update-baseline-2026-11-03.json)
+[baseline record](../../results/rows/ace16-guid-tuple-update-baseline-2026-11-03.json)
 retains both attempts. No new SDK, model construction or writer ran in this gate.
 
 
 ## Qualified single-GUID write continuation
 
-The [normal indexed GUID service](../access/writes/NORMAL_GUID_INDEX_UPDATE.md)
+The [normal indexed GUID service](../../../docs/access/writes/NORMAL_GUID_INDEX_UPDATE.md)
 now produces the 28 ordered request outcomes through checked commits and
 independent full-image proof. Typed/CLI saves, resource and recovery controls pass
 in the separate write record. That extends the single-GUID root-leaf family. The later tuple Source
@@ -125,7 +125,7 @@ qualifying tuple mutations.
 ## Complete retained tuple Source continuation
 
 All twelve fitted originals now pass complete NoRequired and canonical Source
-admission through the [retained tuple Source service](../access/writes/NORMAL_RETAINED_GUID_TUPLE_SOURCE.md).
+admission through the [retained tuple Source service](../../../docs/access/writes/NORMAL_RETAINED_GUID_TUPLE_SOURCE.md).
 The raw declaration checks every key slot and the parent consumes the complete
 retained proof while preserving aliases, allocation, DATA separation and the
 physical census. The historical failures above remain evidence of earlier states.

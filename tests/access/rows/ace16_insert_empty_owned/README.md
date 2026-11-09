@@ -83,8 +83,8 @@ The optional mode was executed separately by the root reviewer.
 Runtime limits stay 8MiB files, 16MiB streams, 512MiB Java heap and 30 seconds per child.
 Native requests use the unchanged 1024-byte value default. The public creator's
 normal indirect origin qualifies missing block-zero initialization, not the
-[separate inline-origin promotion corpus](../ACE16_ORDINARY_OWNED_MAP_PROMOTION.md).
+[separate inline-origin promotion corpus](../../../reports/storage/ACE16_ORDINARY_OWNED_MAP_PROMOTION.md).
 Block-one growth, arbitrary map widths, normal editing, data-macro semantics and
-Windows Access save/reopen remain separate. See the [result](../results/ace16-insert-empty-owned-2026-10-28.json),
-[committed build receipt](../results/ace16-insert-empty-owned-example-build-2026-10-28.json)
-and [owning contract](../ACE16_ORDINARY_OWNED_MAP_PROMOTION.md#first-insert-with-a-missing-indirect-block-zero-pointer).
+Windows Access save/reopen remain separate. See the [result](../../../results/rows/ace16-insert-empty-owned-2026-10-28.json),
+[committed build receipt](../../../results/rows/ace16-insert-empty-owned-example-build-2026-10-28.json)
+and [owning contract](../../../reports/storage/ACE16_ORDINARY_OWNED_MAP_PROMOTION.md#first-insert-with-a-missing-indirect-block-zero-pointer).

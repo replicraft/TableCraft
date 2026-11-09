@@ -79,7 +79,7 @@ are not summed.
 
 ## Original-file comparison
 
-The [maintained original-file proof](ace16_insert_extended_datetime/README.md)
+The [maintained original-file proof](../../access/rows/ace16_insert_extended_datetime/README.md)
 now qualifies one unchanged public-builder V2019 source, one complete
 SOURCE/request-derived candidate and one separately bound fresh typed-row/map
 read. SOURCE3 capture and the later saved source gate are distinct; expected1

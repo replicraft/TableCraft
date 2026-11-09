@@ -44,7 +44,7 @@ Committed mismatches and forged intents/AFTERs refuse without effects.
 
 ## Observed checks and remaining work
 
-The [source gate](../../testing/ACE16_NORMAL_ROOT_SPLIT_SOURCES.md) passed four
+The [source gate](../../../tests/reports/indexes/ACE16_NORMAL_ROOT_SPLIT_SOURCES.md) passed four
 original/independent AFTER views before producer calls. Two unit functions pass
 literal plans, direct proof and forgery controls. Actual V2 commits, mixed-target
 recovery, exact public resource limits and measured cancellation checks pass.
@@ -54,6 +54,6 @@ snapshots, stale-handle refusal, primary cursor checks and namespace cleanup.
 The supplied row includes present-empty Binary. No SQL/CLI split save is claimed
 from a substituted NULL or an invented Binary literal. Broader compound DATA+INDEX
 allocation, multiple physical splits, recursive growth, Binary splits and map
-expansion remain work. The [combined execution record](../../testing/results/ace16-index-updates-splits-and-primary-creation-2026-11-01.json)
+expansion remain work. The [combined execution record](../../../tests/results/creation/ace16-index-updates-splits-and-primary-creation-2026-11-01.json)
 retains focused and broader validation alongside failed first checks and their
 corrections; native Access qualification remains unrun.

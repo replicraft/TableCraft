@@ -96,7 +96,7 @@ and after each reader. Source images remain unchanged throughout.
 During maintained-package authoring, an initial copy looked for a local
 BoundedFileChannel.java and raised FileNotFoundError before verifier execution.
 The actual source compile uses the existing shared
-[parent-index fixture helper](../parent_index_split_originals/BoundedFileChannel.java).
+[parent-index fixture helper](../../indexes/parent_index_split_originals/BoundedFileChannel.java).
 No standalone exception log is claimed and no evidence bytes changed. The first
 maintained replay and its code freeze remain retained separately from the later
 observational NULL-payload comparison check.
@@ -122,7 +122,7 @@ one metadata-only batch for all 4,727 source blobs and the receipt at commit
 Private retained evidence is required. Missing evidence returns status 2;
 contradictory evidence returns 1. The default does not create fixtures, build a
 producer, invoke Java/native code, install dependencies or write databases.
-The [result](../results/ace16-fixed-ignore-null-update-originals-2026-10-29.json)
+The [result](../../../results/rows/ace16-fixed-ignore-null-update-originals-2026-10-29.json)
 records the phase pins and saved replay checks. The locally retained Jackcess
-5.0.4 artifact follows existing [fixture provenance](../FIXTURES.md); no JAR or
+5.0.4 artifact follows existing [fixture provenance](../../../reports/reading/FIXTURES.md); no JAR or
 original database is bundled here.

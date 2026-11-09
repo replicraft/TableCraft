@@ -1,6 +1,6 @@
 # Original static pipeline replay
 
-The original [runner](compare_progressive_derived.py) checks native static
+The original [runner](../../access/queries/execution/compare_progressive_derived.py) checks native static
 SELECT/WHERE/TOP pipelines against independent integer and Fraction models.
 It reuses the two registered LargeDeployment ACE 16 family files and their four
 unchanged stored/MSZIP CAB packages. Existing read-only public Jackcess getters
@@ -9,7 +9,7 @@ verifies complete decoded image hashes. No fixture is generated or modified.
 Only TableCraft executes SQL: this is engineering correctness/resource evidence,
 not native Access SQL or timing qualification.
 
-The [accepted report](results/progressive-derived-2026-10-25.json) records
+The [accepted report](../../results/general/progressive-derived-2026-10-25.json) records
 **96 matched commands**: 72 successful queries comparing 420 rows and 1,410 cells,
 and 24 intended refusals. There were no disagreements or excluded attempts.
 
@@ -64,7 +64,7 @@ Run from the repository root with a fresh report path; the runner refuses to
 overwrite an existing report and checks the explicit frozen executable hash.
 
 ```sh
-python3 docs/testing/compare_progressive_derived.py \
+python3 tests/run.py tests/access/queries/execution/compare_progressive_derived.py \
   --cli .cache/tablecraft-bin/progressive-derived-cli-20261025 \
   --cli-sha256 601802625ebf1448150856a7e2f724c0ae58f8118860f466b9c4034a0c3bf300 \
   --revision 9882b9071d5dda849e575d0326c1eea9b62f967a \

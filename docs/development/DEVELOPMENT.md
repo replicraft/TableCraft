@@ -57,7 +57,7 @@ extraction, all three source gates, 36 public Extra tests and the three CLI
 fixture targets (20, 6 and 13 tests) passed, together with strict checks for the
 four affected packages and formatting. These fixture moves grant no additional
 write or event-coverage permission.
-See the [extraction record](../testing/results/ace16-before-change-shared-fixtures-2026-10-31.json).
+See the [extraction record](../../tests/results/reading/ace16-before-change-shared-fixtures-2026-10-31.json).
 
 The saved-query raw fragment builder now belongs to
 `tablecraft-testkit::fixtures::access::saved_queries`. Engine, Access, CLI and
@@ -260,7 +260,7 @@ aggregate required an explicit testkit-root workaround because production
 feature forwarding activated support without its complete development dependency
 closure. Commit `c9735d11` corrected that manifest boundary; the historical
 failure remains evidence, not a current required command. See
-[testkit feature ownership](../testing/TESTKIT.md).
+[testkit feature ownership](../../tests/reports/general/TESTKIT.md).
 
 ## Committed producer builds
 
@@ -330,7 +330,7 @@ scaffolding packages. [Windows research](../architecture/WINDOWS_COMPATIBILITY.m
 ordinary OS I/O and engineering oracle work are independent of that decision.
 
 Use [ROADMAP.md](../ROADMAP.md) for application priorities and feature-local contracts.
-Follow [application corpus policy](../testing/ACCESS_APPLICATIONS.md) for provenance,
+Follow [application corpus policy](../../tests/reports/reading/ACCESS_APPLICATIONS.md) for provenance,
 disposable copies, exact oracle profiles and independent operation outcomes.
 Introduce runnable comparisons with working slices rather than empty harnesses;
 inspection must not execute startup, ribbon callbacks or saved data tasks.
@@ -373,22 +373,22 @@ Do not imply native or browser qualification from a successful headless build.
 
 ## Native benchmarks
 
-[Allocation-map paging measurements](../testing/ALLOCATION_MAP_PAGING.md) extend the
+[Allocation-map paging measurements](../../tests/reports/storage/ALLOCATION_MAP_PAGING.md) extend the
 native harness with page/offset/limit controls and separate small-table baseline
 comparison from newly readable large-map tables.
 
-[Larger-source checks](../testing/LARGE_FILE_READS.md) separately exercise high-offset
+[Larger-source checks](../../tests/reports/reading/LARGE_FILE_READS.md) separately exercise high-offset
 pages and padded independent inputs. They are correctness/resource evidence, not
 large-table throughput benchmarks.
 
-[Decimal arithmetic measurements](../testing/DECIMAL_ARITHMETIC.md) use a separate
+[Decimal arithmetic measurements](../../tests/reports/general/DECIMAL_ARITHMETIC.md) use a separate
 clap-based release example and Hyperfine; no database I/O or query planning is timed.
 
-[Currency conversion measurements](../testing/CURRENCY_CONVERSIONS.md) separately
+[Currency conversion measurements](../../tests/reports/queries/CURRENCY_CONVERSIONS.md) separately
 compare the expression library with the existing integer-kernel reference using
 the release example and Hyperfine. They are not native I/O benchmarks.
 
-[Native benchmark instructions/results](../testing/NATIVE_BENCHMARKS.md) use release
+[Native benchmark instructions/results](../../tests/reports/general/NATIVE_BENCHMARKS.md) use release
 public-API workloads and bitmap contenders with Hyperfine. Build before timing,
 compare deterministic checksums, retain samples and report regressions as well as
 improvements. Benchmark tools stay outside production dependency closures.
@@ -732,13 +732,13 @@ Keep downloaded engineering tools and generated native corpora under ignored
 `.cache/tablecraft-fixtures/`, rather than the system temporary directory. The
 current local cache contains reviewed `jackcess-5.0.4.jar`, `large-indexes/`,
 `inventory.json` and `logs/`. No binary cache is committed or required by CI.
-[Fixture provenance and registered generations](../testing/FIXTURES.md#persistent-large-index-corpus-restoration-23-october-2026)
+[Fixture provenance and registered generations](../../tests/reports/reading/FIXTURES.md#persistent-large-index-corpus-restoration-23-october-2026)
 remain separate from native Access qualification.
 
 Use an existing registered corpus without overwriting it:
 
 ```sh
-python3 docs/testing/compare_large_indexes.py \
+python3 tests/run.py tests/access/indexes/native/compare_large_indexes.py \
   --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar \
   --cli target/debug/tablecraft \
   --directory .cache/tablecraft-fixtures/large-indexes

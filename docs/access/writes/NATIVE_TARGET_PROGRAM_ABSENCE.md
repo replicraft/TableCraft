@@ -88,7 +88,7 @@ identity aliases, declaration closure and eighteen NULL cells with nonempty raw
 spans. Five genuine planning/recovery tests pass, including mixed DATA/INDEX
 rollback and write-free confirmation. All 1,082 ACE unit tests and 79 existing
 recovery tests pass; the typed/SQL session and CLI checks retain whole-image
-expectations. See the [write record](../../testing/results/ace16-genuine-ordinary-target-writes-2026-10-31.json). Native Microsoft Access write/reopen,
+expectations. See the [write record](../../../tests/results/rows/ace16-genuine-ordinary-target-writes-2026-10-31.json). Native Microsoft Access write/reopen,
 Windows, mixed-client and physical power-loss conformance remain unrun. Existing
 positive-program and initial data-only evidence keeps its separate scope.
 
@@ -104,7 +104,7 @@ Selected ordinary Memo/OLE declarations now retain exact widths, flags, variable
 ordering, one owned/candidate pair per LVAL field and an exact final terminator.
 These are readonly siblings; even empty fixed/fitted target groups refuse them.
 The original property/OLE corpus and normal fitting saves have separate
-[source evidence](../../testing/ACE16_GENUINE_PROPERTY_LVAL_SOURCES.md).
+[source evidence](../../../tests/reports/storage/ACE16_GENUINE_PROPERTY_LVAL_SOURCES.md).
 
 Selected single-column Byte/Int16/Int64/Currency indexes can now remain unchanged
 beside unindexed fixed targets, under the

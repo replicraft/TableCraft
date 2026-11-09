@@ -106,6 +106,6 @@ and dependency guards are run by the commit owner after this documentation
 freeze.
 
 These are local filesystem/API observations, not Windows, native Access or
-hardware power-loss qualification. See the [host result](../testing/results/durable-output-cli-copies-2026-10-30.json)
-and [IO result](../testing/results/io-required-fresh-publication-2026-10-30.json)
+hardware power-loss qualification. See the [host result](../../tests/results/recovery/durable-output-cli-copies-2026-10-30.json)
+and [IO result](../../tests/results/general/io-required-fresh-publication-2026-10-30.json)
 for scope, chronology and pinned logs.

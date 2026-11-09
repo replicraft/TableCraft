@@ -106,7 +106,7 @@ BETWEEN/IN/NULL behavior, explicit collation, late/eager errors and limits/cance
 with a backend-call spy. Adapter integration drives SQL into a native plan. Three
 CLI tests cover exact byte changes, read-only source preservation, rejected
 statements/profiles, existing paths and reopening through query run. The independent
-[update comparison](../../testing/compare_updates.py) confirms CLI and engine outputs
+[update comparison](../../../tests/access/queries/expressions/compare_updates.py) confirms CLI and engine outputs
 match byte for byte, reopen with Jackcess and retain native primary-index checks.
 Microsoft Access comparison, general result-set updateability and broader write
 profiles remain unqualified.

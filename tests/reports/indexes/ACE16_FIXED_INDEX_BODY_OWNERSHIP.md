@@ -36,7 +36,7 @@ guessed `ConstraintCoverage`. Only that diagnostic expectation was corrected;
 there was no second maintenance acceptance defect and no new orphan rule.
 After the fix, all 42 body calls refuse with `RowLayout`; the 42 healthy images
 and 14 established orphan refusals pass. The original acceptance diagnostic also
-passes. The [execution record](results/ace16-fixed-index-body-ownership-2026-10-30.json)
+passes. The [execution record](../../results/indexes/ace16-fixed-index-body-ownership-2026-10-30.json)
 retains the source gates, first acceptance failures and corrected results.
 
 Regression checks pass: 541 native mutation functions (one existing ignored

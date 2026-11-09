@@ -102,7 +102,7 @@ limits and every observed cancellation checkpoint. Two bound controls cover
 field/group/aggregate/correlated dependencies and currency/precision plan reuse.
 CLI controls exercise both query commands and empty stdout on failure.
 
-The original [independent runner](../../testing/compare_euro.py) passes 4646 controls:
+The original [independent runner](../../../tests/access/reading/tables/compare_euro.py) passes 4646 controls:
 all 144 currency pairs with four input amounts and four precision policies in
 both commands, optional/refusal probes, and Currency/NULL-field retrieval over
 four original ScalarFixture MDB/ACCDB files. Getter expression evaluation is

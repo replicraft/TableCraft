@@ -1,6 +1,6 @@
 # Complete ignore-NULL physical checks
 
-The [original comparison](results/ignored-index-coverage-replay-2026-10-25.json)
+The [original comparison](../../results/indexes/ignored-index-coverage-replay-2026-10-25.json)
 passes 172 commands: 86 current complete checks and 86 baseline checks over the
 same original ACE16 V2016/V2019 files. Every command succeeds with its independently
 modeled coverage. Current checks qualify 318 of 342 logical index profiles;
@@ -21,7 +21,7 @@ executable, SHA-256
 
 ## Originals and independent model
 
-[IgnoredIndexCoverageFixture.java](IgnoredIndexCoverageFixture.java) is original
+[IgnoredIndexCoverageFixture.java](../../access/indexes/native/IgnoredIndexCoverageFixture.java) is original
 repository-owned Apache-2.0 code. It uses the reviewed Jackcess 5.0.4 JAR,
 SHA-256 `19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`.
 Public builders author fresh inert tables; public row/index-cursor getters read
@@ -80,7 +80,7 @@ inputs; a new generation is not promised byte-identical.
 ## Accepted replay and limits
 
 ```sh
-python3 docs/testing/compare_ignored_index_coverage.py \
+python3 tests/run.py tests/access/indexes/native/compare_ignored_index_coverage.py \
   --cli .cache/tablecraft-bin/read-query-p0-cli-20261025 \
   --baseline-cli .cache/tablecraft-bin/read-query-distinct-wide-cli-20261025 \
   --originals .cache/tablecraft-fixtures/ignored-index-coverage-20261025 \
@@ -98,7 +98,7 @@ not added to the accepted command count. Writer duplicate-null-entry warnings ar
 preserved verbatim; actual cursor memberships agree with all independently computed
 populations. They are not silently discarded or treated as corruption.
 
-The [implementation record](results/read-query-ignored-index-coverage-2026-10-25.json)
+The [implementation record](../../results/queries/read-query-ignored-index-coverage-2026-10-25.json)
 records 213 unique passing checks, including 15 new tests, strict linting and minimal
 build. Synthetic corruption tests cover missing roots, injected all-NULL entries,
 wrong keys, required/unique violations, cancellation and budgets. Public full/NULL

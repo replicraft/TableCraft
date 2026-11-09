@@ -1,7 +1,7 @@
 # Original encoded Text/Binary DELETE observations
 
-The [reference receipt](results/ace16-delete-encoded-original-reference-2026-10-26.json)
-and [current candidate receipt](results/ace16-delete-encoded-internal-chains-originals-2026-10-26.json)
+The [reference receipt](../../results/rows/ace16-delete-encoded-original-reference-2026-10-26.json)
+and [current candidate receipt](../../results/rows/ace16-delete-encoded-internal-chains-originals-2026-10-26.json)
 record **48 controls with zero disagreements: 36 candidates and twelve profile
 refusals** against frozen revision `cd52af09c3f9253ed9aa7e3195a2210bf316efdc`.
 Both Modern Text height-2 delete-all cases succeed. The run checks 4,374 removed
@@ -11,7 +11,7 @@ Jackcess evidence, not native Access execution or save/reopen qualification.
 Normal writes, UPDATE codecs, journal/apply and data macros remain outside this
 experiment.
 
-The [earlier candidate receipt](results/ace16-delete-encoded-original-replay-2026-10-26.json)
+The [earlier candidate receipt](../../results/rows/ace16-delete-encoded-original-replay-2026-10-26.json)
 records the same 48 selectors at `d5690381ef6eb394a998b43255f025b163329466`:
 34 candidates, twelve unsupported-profile refusals and two linked-internal
 contraction refusals. Those two capability limits are resolved in the current
@@ -20,12 +20,12 @@ repeated selectors are not counted as new distinct controls.
 
 ## Original inputs and independent reference
 
-[EncodedDeleteFixture.java](EncodedDeleteFixture.java) is original repository
+[EncodedDeleteFixture.java](../../access/rows/delete/EncodedDeleteFixture.java) is original repository
 code under the root license. It creates fresh V2016/V2019 files with public
 Jackcess builders and deletes from fresh copies through public `Table.deleteRow`.
 No upstream implementation or fixture was copied. The reviewed 5.0.4 JAR has
 SHA-256 `19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`;
-its provenance and all eight file hashes are in [the fixture ledger](FIXTURES.md).
+its provenance and all eight file hashes are in [the fixture ledger](../reading/FIXTURES.md).
 Expressions are disabled, time zone is UTC, and linked database access throws.
 Getter reopens are read-only. No stored query or active content executes.
 
@@ -95,19 +95,19 @@ The receipts pin each of the 34 candidate files, getter stdout/stderr and all
 
 Accepted generation and the first corrected replay used private sources under
 `.cache/encoded-delete-originals-next-20261026/`. The Java promotion is byte-identical.
-The exact private [capture](encoded_delete_originals/historical/capture.py.txt),
-[qualification](encoded_delete_originals/historical/qualify.py.txt),
-[replay](encoded_delete_originals/historical/replay.py.txt) and
-[wire](encoded_delete_originals/historical/wire.py.txt) sources are archived as
+The exact private [capture](../../access/rows/encoded_delete_originals/historical/capture.py.txt),
+[qualification](../../access/rows/encoded_delete_originals/historical/qualify.py.txt),
+[replay](../../access/rows/encoded_delete_originals/historical/replay.py.txt) and
+[wire](../../access/rows/encoded_delete_originals/historical/wire.py.txt) sources are archived as
 inert text; the receipts preserve their actual paths and hashes. An initial 48/0 run had incorrect command-list pointers
 in its report. It remains excluded; a fresh 48/0 run fixed only those pointers
 and added source pins. These are repeated observations of the same 48 controls,
 not additional controls.
 
-The maintained [capture](encoded_delete_originals/capture.py),
-[qualification](encoded_delete_originals/qualify.py),
-[replay](encoded_delete_originals/replay.py) and
-[raw framing](encoded_delete_originals/wire.py) helpers use explicit paths,
+The maintained [capture](../../access/rows/encoded_delete_originals/capture.py),
+[qualification](../../access/rows/encoded_delete_originals/qualify.py),
+[replay](../../access/rows/encoded_delete_originals/replay.py) and
+[raw framing](../../access/rows/encoded_delete_originals/wire.py) helpers use explicit paths,
 import-safe entry points and independent named layout constants. Their separate
 read-only verification uses the same unchanged originals and frozen executable;
 the receipt distinguishes it from the historical private-source run. A later
@@ -127,13 +127,13 @@ All input, helper, example and output artifacts must be inside this checkout;
 repository root, choosing fresh repository-local `.cache` capture/report paths:
 
 ```sh
-python3 docs/testing/encoded_delete_originals/capture.py \
+python3 tests/run.py tests/access/rows/encoded_delete_originals/capture.py \
   --corpus "$corpus" --helper-dir "$getter" \
   --helper-source docs/testing/EncodedDeleteFixture.java --jar "$jar" \
   --output-dir "$fresh_capture" --report "$fresh_observations"
-python3 docs/testing/encoded_delete_originals/qualify.py \
+python3 tests/run.py tests/access/rows/encoded_delete_originals/qualify.py \
   --capture "$fresh_observations" --report "$fresh_qualification"
-python3 docs/testing/encoded_delete_originals/replay.py \
+python3 tests/run.py tests/access/rows/encoded_delete_originals/replay.py \
   --corpus "$corpus" --capture-dir "$fresh_capture" \
   --observations "$fresh_observations" --qualification "$fresh_qualification" \
   --helper-dir "$getter" --helper-source docs/testing/EncodedDeleteFixture.java \

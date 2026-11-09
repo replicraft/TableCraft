@@ -3,6 +3,7 @@
 Generate inputs with compare_saved_statistics.py --generate first. This script
 uses Jackcess only for inert row getters, never for SQL execution.
 """
+from engineering_paths import reference_file
 import argparse
 from fractions import Fraction
 import hashlib
@@ -25,7 +26,7 @@ def main():
     controls = 0
     with tempfile.TemporaryDirectory(prefix='tablecraft-domain-oracle-') as classes:
         subprocess.run(['javac', '-encoding', 'UTF-8', '-cp', str(args.jar), '-d', classes,
-                        str(RECIPES / 'TableDataOracle.java')], check=True)
+                        str(reference_file('tests/access/reading/tables/TableDataOracle.java'))], check=True)
         for _, suffix in PROFILES:
             path = args.directory / ('statistics-' + suffix)
             original = path.read_bytes()

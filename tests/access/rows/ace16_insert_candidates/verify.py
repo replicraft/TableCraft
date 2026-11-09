@@ -6,10 +6,10 @@ from pathlib import Path
 import subprocess
 import sys
 
-ROOT = Path(__file__).resolve().parents[3]
+ROOT = Path(__file__).resolve().parents[4]
 sys.dont_write_bytecode = True
 sys.path.insert(0, str(ROOT))
-sys.path.insert(0, str(ROOT / 'docs/testing'))
+sys.path.insert(0, str(ROOT / 'tests/access'))
 from scripts.compat_artifacts import ArtifactStore
 from ace16_insert_candidates import model
 from slot_preview_originals import facts
@@ -174,8 +174,8 @@ def verify(verify_git=False):
     pins = Pins()
     for path, sha256 in FIXED.items():
         pins.fixed(path, sha256)
-    pins.fixed('docs/testing/ace16_insert_candidates/model.py', MODEL_SHA)
-    assert STORE.path('docs/testing/ace16_insert_candidates/model.py').read_bytes() == (
+    pins.fixed('tests/access/rows/ace16_insert_candidates/model.py', MODEL_SHA)
+    assert STORE.path('tests/access/rows/ace16_insert_candidates/model.py').read_bytes() == (
         STORE.path(ORACLE + '/model.py').read_bytes()
     )
 

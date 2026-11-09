@@ -27,7 +27,7 @@ REFERENCE_SLOT_MASK = 255
 
 
 def owner(repository):
-    path = repository / 'docs/testing/field_add_after_off/model.py'
+    path = repository / 'tests/access/schema/field_add_after_off/model.py'
     specification = importlib.util.spec_from_file_location('repeat_off_owned_model', path)
     module = importlib.util.module_from_spec(specification)
     specification.loader.exec_module(module)

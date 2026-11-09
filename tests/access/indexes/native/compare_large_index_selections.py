@@ -108,8 +108,8 @@ def main():
         data = subprocess.check_output(["git", "show", f"{revision}:{path}"], cwd=ROOT, timeout=30)
         sources[path] = {"bytes": len(data), "sha256": digest(data)}
     artifacts = [
-        args.cli, Path(__file__), ROOT / "docs/testing/compare_ignored_null_indexes.py",
-        ROOT / "docs/testing/LargeUsageMapProbe.java",
+        args.cli, Path(__file__), ROOT / "tests/access/indexes/native/compare_ignored_null_indexes.py",
+        ROOT / "tests/access/storage/native/LargeUsageMapProbe.java",
     ]
     if digest(artifacts[-1].read_bytes()) != "bb207c72e9324f166a160929e9596da09d4b15b45de7d2414d44ec20eed88b13":
         raise ValueError("Public writer/getter recipe differs from the reviewed original")

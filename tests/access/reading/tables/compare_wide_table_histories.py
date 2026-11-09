@@ -3,6 +3,7 @@
 Only TableCraft executes SQL. This is independent read evidence, not native
 Access DDL/save/reopen qualification. All database inputs stay unchanged.
 """
+from engineering_paths import reference_file
 
 import argparse
 import csv
@@ -73,11 +74,11 @@ def main():
             path = args.directory / f"wide-{profile}.{suffix}"
             subprocess.run([
                 "java", "-Dstdout.encoding=UTF-8", "-cp", str(args.jar),
-                str(RECIPES / "WideTableHistoryFixture.java"), str(path), profile,
+                str(reference_file('tests/access/reading/tables/WideTableHistoryFixture.java')), str(path), profile,
             ], check=True)
             generated[profile] = digest(path)
         inventory = {
-            "recipe_sha256": digest(RECIPES / "WideTableHistoryFixture.java"),
+            "recipe_sha256": digest(reference_file('tests/access/reading/tables/WideTableHistoryFixture.java')),
             "jar_sha256": JAR_SHA256,
             "inputs": generated,
         }
@@ -92,7 +93,7 @@ def main():
             expected = model(table == "WideMixed")
             reference = subprocess.check_output([
                 "java", "-Dstdout.encoding=UTF-8", "-cp", str(args.jar),
-                str(RECIPES / "TableDataOracle.java"), str(path), table,
+                str(reference_file('tests/access/reading/tables/TableDataOracle.java')), str(path), table,
             ], text=True, encoding="utf-8")
             records = [line.split("\t")[1:] for line in reference.splitlines()]
             identities = [int(row[0][4:]) for row in records]
@@ -124,7 +125,7 @@ def main():
             )
             indexed_reference = subprocess.check_output([
                 "java", "-Dstdout.encoding=UTF-8", "-cp", str(args.jar),
-                str(RECIPES / "TableDataOracle.java"), str(path), "--index", table, "IdAsc",
+                str(reference_file('tests/access/reading/tables/TableDataOracle.java')), str(path), "--index", table, "IdAsc",
             ], text=True, encoding="utf-8")
             indexed_actual = subprocess.check_output([
                 str(args.rows), str(path), table, "--index", "IdAsc", "--bytes", "67108864",

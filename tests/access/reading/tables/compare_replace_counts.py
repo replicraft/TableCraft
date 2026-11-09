@@ -3,6 +3,7 @@
 Decimal and Python replacement provide separate expectations. Only TableCraft
 executes SQL, with read-only native ID getters and unchanged source hashes.
 """
+from engineering_paths import reference_file
 
 import argparse
 from decimal import Decimal, ROUND_HALF_EVEN
@@ -68,7 +69,7 @@ def main():
     for database in args.database:
         before = hashlib.sha256(database.read_bytes()).hexdigest()
         tagged = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar,
-                     RECIPES / "TableDataOracle.java", database, "ScalarSamples")
+                     reference_file('tests/access/reading/tables/TableDataOracle.java'), database, "ScalarSamples")
         identities = sorted(int(line.split("\t")[1].removeprefix("I32:")) for line in tagged.splitlines())
         expected = [[str(n), quoted(model("banana", "an", "X", Decimal(n), Decimal(n) + Decimal("0.5"))), quoted(model("aaaa", "a", "aa", Decimal(n), Decimal("-1.25")))] for n in identities]
         sql = "SELECT ID,Replace('banana','an','X',CDate(ID),CStr(ID)&'.5'),Replace('aaaa','a','aa',CStr(ID),CDate(-1.25)) FROM ScalarSamples ORDER BY ID"

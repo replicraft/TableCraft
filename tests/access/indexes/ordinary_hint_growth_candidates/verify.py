@@ -6,11 +6,11 @@ from pathlib import Path
 import subprocess
 import sys
 
-ROOT = Path(__file__).resolve().parents[3]
+ROOT = Path(__file__).resolve().parents[4]
 sys.path.insert(0, str(ROOT / 'scripts'))
 from compat_artifacts import ArtifactStore
 
-sys.path.insert(0, str(ROOT / 'docs/testing'))
+sys.path.insert(0, str(ROOT / 'tests/access'))
 from ordinary_hint_growth_candidates import candidate_model
 from ordinary_hint_growth_references import action_model, reference_proof
 
@@ -108,11 +108,11 @@ def verify(verify_git):
         assert item['matches'] and item['actual'] == item['expected']
         check(item['expected'])
 
-    public = 'docs/testing/ordinary_hint_growth_candidates/'
+    public = 'tests/access/indexes/ordinary_hint_growth_candidates/'
     source = STORE.path(MODELS + '/candidate_model.py').read_text()
     assert source.count('parents[2]') == 1
     old_import = "'.cache/ace16-hint-transition-model-next-20261027/allocation_model.py'"
-    new_import = "'docs/testing/ordinary_hint_growth_candidates/allocation_model.py'"
+    new_import = "'tests/access/indexes/ordinary_hint_growth_candidates/allocation_model.py'"
     assert source.count(old_import) == 1
     assert STORE.path(public + 'candidate_model.py').read_text() == source.replace('parents[2]', 'parents[3]').replace(old_import, new_import)
     assert STORE.path(public + 'allocation_model.py').read_bytes() == STORE.path(MODELS + '/allocation_model.py').read_bytes()
@@ -122,7 +122,7 @@ def verify(verify_git):
         maintained = raw.replace('parents[2]', 'parents[3]')
         if filename == 'reference_proof.py':
             maintained = maintained.replace('import map_proof', 'from ordinary_hint_growth_references import map_proof')
-        assert STORE.path('docs/testing/ordinary_hint_growth_references/' + filename).read_text() == maintained
+        assert STORE.path('tests/access/indexes/ordinary_hint_growth_references/' + filename).read_text() == maintained
 
     receipt = STORE.load(protocol['build_receipt']['path'])
     assert receipt['compiled_revision'] == COMPILED and receipt['exit_code'] == 0

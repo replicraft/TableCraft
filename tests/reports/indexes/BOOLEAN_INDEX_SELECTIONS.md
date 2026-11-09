@@ -1,14 +1,14 @@
 # Boolean equality index selection evidence
 
-The 2026-10-25 [accepted replay](results/boolean-index-selections-2026-10-25.json)
+The 2026-10-25 [accepted replay](../../results/indexes/boolean-index-selections-2026-10-25.json)
 passes 22 CLI controls against two fresh, inert ACE 16-family databases. Sixteen
 successful queries compare 8,000 returned ID rows with independent getter-based
 expectations; six buffered refusals retain empty stdout. There are 2,000 original
 input rows, exercised through several access paths. This is engineering evidence;
 Microsoft Access execution and optimizer equivalence remain unqualified.
 
-The implementation is documented in [native indexes](../access/indexes/NATIVE_INDEXES.md#boolean-indexes)
-and [automatic selection](../access/indexes/AUTOMATIC_INDEXES.md). Exact Boolean field/literal
+The implementation is documented in [native indexes](../../../docs/access/indexes/NATIVE_INDEXES.md#boolean-indexes)
+and [automatic selection](../../../docs/access/indexes/AUTOMATIC_INDEXES.md). Exact Boolean field/literal
 equality can use automatic or explicitly required single-key indexes. The original
 predicate remains mandatory. Numeric/Text coercions, Boolean ranges, NULL tests,
 parameter hints and partial conjunction extraction remain outside this addition.
@@ -19,7 +19,7 @@ reviewed Boolean codec; no SQL integer reinterpretation was introduced.
 ## Independent inputs and model
 
 The existing original MIT repository recipe
-[BooleanIndexFixture.java](BooleanIndexFixture.java) produced fresh V2016/V2019
+[BooleanIndexFixture.java](../../access/indexes/native/BooleanIndexFixture.java) produced fresh V2016/V2019
 files using the reviewed Jackcess 5.0.4 JAR. These files preserve the complete
 recipe, including its original unique/primary and stored NULL-to-false assertions.
 The new comparison uses `BooleanIndexed`: 1,000 ordinary rows, an ascending index
@@ -27,7 +27,7 @@ and a descending index. The earlier complete-index evidence separately covers
 actual native node trees; the new engine tests cover bounded branch pruning.
 No reference SQL, macros, VBA or imported code runs.
 
-The original read-only [IndexRowsOracle.java](IndexRowsOracle.java) returns actual
+The original read-only [IndexRowsOracle.java](../../access/indexes/native/IndexRowsOracle.java) returns actual
 ID and Boolean cells through a public index cursor. The model admits only literal
 `true`/`false` getter spellings and compares the complete selected ID sequences.
 Each profile has 286 true and 714 false rows. Its complete raw getter stdout SHA-256
@@ -73,7 +73,7 @@ produce runtime resource/output errors with empty stdout. These are bounded
 correctness checks, without performance claims.
 
 ```sh
-python3 docs/testing/compare_boolean_seeks.py \
+python3 tests/run.py tests/access/reading/tables/compare_boolean_seeks.py \
   --cli .cache/tablecraft-bin/read-query-text-boolean-cli-20261025 \
   --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar \
   --inputs .cache/tablecraft-fixtures/boolean-seeks-V2016-20261025.accdb \

@@ -155,8 +155,8 @@ original profiles/counts, protected/unselected BEFORE changes on no-ops, a priva
 same-BEFORE/same-count mismatched AFTER, cancellation and resource limits.
 
 Two of these tests are opt-in and were executed with the existing hash-pinned
-[owned-growth](../../testing/ACE16_OWNED_GROWTH_SOURCES.md) and
-[EOF-allocation](../../testing/ACE16_EOF_ALLOCATION_SOURCES.md) images. They remain
+[owned-growth](../../../tests/reports/rows/ACE16_OWNED_GROWTH_SOURCES.md) and
+[EOF-allocation](../../../tests/reports/storage/ACE16_EOF_ALLOCATION_SOURCES.md) images. They remain
 ignored by default so ordinary builds need no private cache. Those input bytes
 were only read and remain unchanged. No producer or native Access process ran.
 

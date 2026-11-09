@@ -31,6 +31,6 @@ their separately checked semantics.
 Native engine and host checks do not establish Microsoft Access save/reopen
 qualification, which remains unrun.
 
-The [execution record](../../testing/results/ace16-normal-text-cardinality-writes-2026-11-01.json)
+The [execution record](../../../tests/results/general/ace16-normal-text-cardinality-writes-2026-11-01.json)
 records source pins, native commits/recovery, direct proofs, retained saves and
 CLI readbacks, including the initial acceptance failures and corrections.

@@ -2,14 +2,14 @@
 
 The first frozen PAGE replay passes all **180 controls**: 156 candidates and 24
 atomic typed refusals, with zero disagreements across 336 commands. All 382
-immutable inputs/tool pins remain unchanged. The [compact receipt](results/ace16-page-originals-2026-10-26.json)
+immutable inputs/tool pins remain unchanged. The [compact receipt](../../results/storage/ace16-page-originals-2026-10-26.json)
 links the raw report, command log, 180 requests, actual candidate hashes and
 executed-source archives. No failed candidate attempt or corrected golden is
 hidden: the single original-file run exited zero on its first attempt.
 
 The executable was compiled at `fd2a23cd` and frozen with SHA-256
 `32c2ca3d9b4fbcfad5909a8fbe0d9fadcca5047b68709c9708e9075bce346d82`.
-Its [build receipt](results/ace16-page-example-build-2026-10-26.json) records the
+Its [build receipt](../../results/storage/ace16-page-example-build-2026-10-26.json) records the
 94 historical Git source pins. Later working allocator code is not the code
 qualified by these candidates. Every candidate command explicitly includes
 `--page-updates`; the existing Slot default and its earlier 162 outcomes remain
@@ -66,20 +66,20 @@ writer byte identity is not claimed.
 
 ## Public reproduction and read-only verification
 
-The [parameterized model](page_preview_originals/model.py),
-[proof](page_preview_originals/proof.py) and
-[runner](page_preview_originals/replay.py) are new public wrappers. They are
+The [parameterized model](../../access/storage/page_preview_originals/model.py),
+[proof](../../access/storage/page_preview_originals/proof.py) and
+[runner](../../access/storage/page_preview_originals/replay.py) are new public wrappers. They are
 separate from the exact private files executed historically. Source/archive
 mappings in the receipt preserve both identities. The public model rebuilds the
 same 180 selectors, and `--verify-existing` revalidates the accepted 156 candidate
 images and 24 refusals without launching the native consumer or Java getters.
 These verification passes do not add candidate executions to the 180 count.
 
-Run the [entry point](compare_page_updates.py) from the repository root, supplying
+Run the [entry point](../../access/queries/expressions/compare_page_updates.py) from the repository root, supplying
 preserved ignored inputs explicitly. For read-only verification:
 
 ```sh
-python3 docs/testing/compare_page_updates.py \
+python3 tests/run.py tests/access/queries/expressions/compare_page_updates.py \
   --example .cache/tablecraft-bin/ace16-page-20261026 \
   --sha256 32c2ca3d9b4fbcfad5909a8fbe0d9fadcca5047b68709c9708e9075bce346d82 \
   --compiled-revision fd2a23cd1f4b50157531c28ab50a77b3e45eb405 \
@@ -101,7 +101,7 @@ python3 docs/testing/compare_page_updates.py \
 Omitting only `--verify-existing` explicitly runs the separate PAGE consumer on
 fresh outputs; both work directory and report must be fresh. It never rebuilds
 or chooses a mutable binary. Full stdout/getters and raw proof arrays remain
-ignored and hash-pinned. [Original Slot provenance](results/ace16-slot-original-references-2026-10-26.json)
+ignored and hash-pinned. [Original Slot provenance](../../results/general/ace16-slot-original-references-2026-10-26.json)
 and [separate cross-page public observations](CROSS_PAGE_UPDATE_OBSERVATIONS.md)
 retain their own scopes. No Microsoft Access/native save, data-macro, allocation,
 arbitrary free-page reuse or broader write compatibility is qualified here.

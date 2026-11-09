@@ -3,6 +3,7 @@
 Only TableCraft executes SQL; existing read-only Jackcess ID getters supply native
 field references. Source/JAR hashes are checked and no fixtures are changed.
 """
+from engineering_paths import reference_file
 
 import argparse
 from decimal import Decimal, ROUND_HALF_EVEN
@@ -73,7 +74,7 @@ def main():
     for database in args.database:
         before = hashlib.sha256(database.read_bytes()).hexdigest()
         tagged = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar,
-                     RECIPES / "TableDataOracle.java", database, "ScalarSamples")
+                     reference_file('tests/access/reading/tables/TableDataOracle.java'), database, "ScalarSamples")
         identities = sorted(int(line.split("\t")[1].removeprefix("I32:")) for line in tagged.splitlines())
         expected = [[str(n), str(n), quoted("6" * n), str(find_model("ababab", "ab", n, False)), str(find_model("ababab", "ab", n, True))] for n in identities]
         sql = "SELECT ID,Len(Space(CDate(ID))),String(CStr(ID),'65'),InStr(CStr(ID),'ababab','ab',0),InStrRev('ababab','ab',CDate(ID),0) FROM ScalarSamples ORDER BY ID"

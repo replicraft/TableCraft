@@ -49,7 +49,7 @@ evaluated, and no UI formatting behavior is implemented by this admission.
 
 ## Independent controls and verification
 
-The [rich scalar source owner](../../crates/engines/tablecraft-ace/src/table/mutation/insert/tests/display_metadata.rs)
+The [rich scalar source owner](../../../crates/engines/tablecraft-ace/src/table/mutation/insert/tests/display_metadata.rs)
 reuses the actual independent MR2 and ordinary-row fixture builders. It constructs
 complete expected INSERT, fixed UPDATE, text-slot UPDATE and DELETE images before
 any new API call. Cases include both layouts, property flags zero/one, all four
@@ -59,7 +59,7 @@ expectations preserve raw record bodies, physical slot identities, inactive key
 tails, historical counters and property bytes.
 
 The generated-column controls use the actual non-first primary field and LAST
-260. The [Decimal controls](../../crates/engines/tablecraft-ace/src/table/mutation/insert/tests/decimal_index_inserts/display_metadata.rs)
+260. The [Decimal controls](../../../crates/engines/tablecraft-ace/src/table/mutation/insert/tests/decimal_index_inserts/display_metadata.rs)
 retain precision 28 and scale 28 under display places 0/15/Auto, including exact
 coefficient/NULL records and wrong-scale refusal. Separate API controls cover
 negative scopes/carriers/flags/values, unrelated properties, exhausted budgets

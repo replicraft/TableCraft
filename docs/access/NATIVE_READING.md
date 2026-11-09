@@ -103,7 +103,7 @@ and OfflineReadTransaction. Per-operation page/map/row/payload/output budgets
 still apply. Header acceptance is not whole-file, format-maximum or live-file
 consistency qualification. Microsoft's [Access specifications](https://support.microsoft.com/en-us/access/access-specifications)
 list a 2 GB database limit; TableCraft's explicit envelope does not establish
-support for every valid database within it. [Large-source evidence](../testing/LARGE_FILE_READS.md)
+support for every valid database within it. [Large-source evidence](../../tests/reports/reading/LARGE_FILE_READS.md)
 records high-offset synthetic reads and the remaining map/snapshot constraints.
 
 Read size is 66 bytes, charged before reading; source length is bounded to 2 GiB,
@@ -164,7 +164,7 @@ catalog, fields, indexes, encryption or application objects.
 | Target | Current evidence and intended scope |
 | --- | --- |
 | Jet 4 | Bounded unencoded reads, including exact Decimal indexes/relationships; [current-profile qualification](profiles/NATIVE_JET4.md) uses independent comparisons, not native Access conformance |
-| ACE 12 (Access 2007) | Bounded unencoded scalar/index reads plus qualified raw complex links, multivalues and stored attachment/history reads; [legacy complex evidence](../testing/FIXTURES.md#ace-2007-complex-key-and-multivalue-inputs) is independent, not native Access conformance |
+| ACE 12 (Access 2007) | Bounded unencoded scalar/index reads plus qualified raw complex links, multivalues and stored attachment/history reads; [legacy complex evidence](../../tests/reports/reading/FIXTURES.md#ace-2007-complex-key-and-multivalue-inputs) is independent, not native Access conformance |
 | ACE 14 (Access 2010) | Bounded ordinary table reads; qualified Agile fixture inventory/rows/query checks are independent evidence; advanced field/index variants need separate qualification |
 | ACE 15 (Access 2013) | Explicit compatibility target; test its actual stored layout and features rather than inventing a separate header family |
 | ACE 16 (Access 2016 and later releases) | Bounded 2016/2019-family reads and separately qualified restricted journaled writes/creation work; general CRUD and native Access qualification remain incomplete |
@@ -232,7 +232,7 @@ malformed/unsupported layouts fail without a partial inventory.
 Compressed Unicode mode switches apply at character boundaries. A zero high byte
 inside a wide UTF-16 unit is retained as data, including wide ASCII. Odd wide
 tails and unpaired surrogates still fail. The
-[wide-segment grammar controls](../testing/COMPRESSED_TEXT_WIDE_SEGMENTS.md) compare
+[wide-segment grammar controls](../../tests/reports/storage/COMPRESSED_TEXT_WIDE_SEGMENTS.md) compare
 original streams with pinned independent decoders and explicitly distinguish
 derived payload controls from native-writer or Access qualification.
 
@@ -276,25 +276,25 @@ Overflow/out-of-file pages, malformed pointer widths, signatures, unknown map
 types and caller byte/work limits remain checked. Materialized consumers retain
 the 4,096-address ceiling and charge emitted references to allocation allowance.
 Bounded row paging now validates the whole usage metadata first, then enumerates
-addresses through a [bounded cursor](../testing/ALLOCATION_MAP_PAGING.md), retaining
+addresses through a [bounded cursor](../../tests/reports/storage/ALLOCATION_MAP_PAGING.md), retaining
 only its usage row and one bitmap page. It does not build the address list.
 Physical reads remain capped separately; bitmap work/cancellation is precharged
 at most eight bytes at a time. Tests cover inline/indirect agreement, byte/word/tail
 boundaries, empty maps, limits, overflow, cancellation and a 256-case independent
 bit model with strict order assertions.
 
-The original [UsageMapFixture recipe](../testing/UsageMapFixture.java) creates 2,000
+The original [UsageMapFixture recipe](../../tests/access/storage/native/UsageMapFixture.java) creates 2,000
 rows with 12 Binary fields of 240 bytes each, one row per owned data page. Its
 indirect maps emit 2,000 pages in each generated Jet 4/ACE file. The standalone
 [table_data example](../../crates/engines/tablecraft-ace/examples/table_data.rs) and
-[comparison runner](../testing/compare_usage_maps.py) match all 4,000 tagged rows,
+[comparison runner](../../tests/access/storage/native/compare_usage_maps.py) match all 4,000 tagged rows,
 including every Binary byte, against Jackcess. Per-format output SHA-256 is
 `c4572f8f86f2a600f4fc0b6ef5c55dc63e370552374ac567427c06785db6cb1e`.
 
 These engineering runs explicitly use a 256 MiB native work/allocation budget;
 the CLI's default 16 MiB allowance and all structural ceilings are unchanged.
 The example uses clap Parser and emits engineering tags, not the CLI protocol.
-The [benchmark report](../testing/NATIVE_BENCHMARKS.md#usage-map-traversal) retains
+The [benchmark report](../../tests/reports/general/NATIVE_BENCHMARKS.md#usage-map-traversal) retains
 timing variance and does not establish a general whole-reader speedup.
 
 Local table-definition inspection now uses the same bounded metadata reader; see
@@ -319,7 +319,7 @@ Microsoft Access comparison evidence or a complete published file specification.
 
 ## Observed candidate and independent comparison
 
-A disposable byte-identical copy of the [registered MIT example](../testing/FIXTURES.md)
+A disposable byte-identical copy of the [registered MIT example](../../tests/reports/reading/FIXTURES.md)
 reports Ace2007, subversion 0, 4,096-byte pages, 827 pages and a zero encoding key.
 It yields 146 live metadata records: 36 tables, 59 queries, 13 forms, 8 reports,
 3 macros, 12 modules, 9 containers, 1 relationship and 5 unknown categories.
@@ -329,7 +329,7 @@ Unknown native codes 2, -32757 and -32758 remain visible.
 On 18 October 2026, a read-only Jackcess 5.0.4 scan of MSysObjects selecting only
 Id, ParentId, Type, Flags and Name matched all 146 tuples exactly after sorting
 and normalizing Flags to unsigned 32-bit. Temurin OpenJDK 21.0.8 ran the original
-[comparison helper](../testing/CatalogOracle.java) on a disposable copy. The reviewed
+[comparison helper](../../tests/access/reading/tables/CatalogOracle.java) on a disposable copy. The reviewed
 Apache-2.0 [Maven artifact](https://repo.maven.apache.org/maven2/com/healthmarketscience/jackcess/jackcess/5.0.4/)
 was 1,407,244 bytes with SHA-256
 `19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`;
@@ -407,7 +407,7 @@ returned on failure. This extends an existing projection service to bounded
 pages; native Access compatibility and whole-file integrity remain separate
 qualification work.
 
-The [projected-page acceptance record](../testing/results/projected-scalar-pages-2026-11-02.json)
+The [projected-page acceptance record](../../tests/results/storage/projected-scalar-pages-2026-11-02.json)
 covers engine, browser and CLI controls, retained regressions and the preserved
 first test diagnostic correction. Native Access comparisons remain unrun.
 

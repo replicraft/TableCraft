@@ -68,8 +68,8 @@ loader, using the maintained frame owner directly. The Java helper is the exact
 repository-owned source compiled in the successful experiment. No third-party
 implementation or database binary is copied into this package.
 
-See the [compact evidence record](../results/ace16-insert-scalar-index-native-2026-10-28.json)
-and [committed producer build](../results/ace16-insert-scalar-index-example-build-2026-10-28.json).
+See the [compact evidence record](../../../results/indexes/ace16-insert-scalar-index-native-2026-10-28.json)
+and [committed producer build](../../../results/indexes/ace16-insert-scalar-index-example-build-2026-10-28.json).
 These are engineering-candidate and independent-reader observations. They do not
 qualify production saves, Microsoft Access save/reopen, data macros or Windows
 integration, nor do index bytes establish SQL predicate coercion semantics.

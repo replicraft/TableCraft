@@ -3,6 +3,7 @@
 Uses the existing immutable large-map corpus; never regenerates input fixtures.
 The tagged example is engineering output, without the CLI's atomic output bound.
 """
+from engineering_paths import reference_file
 import argparse
 from pathlib import Path
 import subprocess
@@ -22,7 +23,7 @@ def main():
         path = args.directory / f"LargeRows-{profile}.{suffix}"
         before = digest(path)
         oracle = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar,
-                     RECIPES / "LargeTableOracle.java", path, 0, 6000).splitlines()
+                     reference_file('tests/access/reading/tables/LargeTableOracle.java'), path, 0, 6000).splitlines()
         assert len(oracle) == 6002, (profile, "oracle row count")
         expected = "".join("LargeRows\t" + row + "\n" for row in oracle[2:])
         for batch in [1, 127, 250]:
@@ -38,7 +39,7 @@ def main():
     for path in args.mixed:
         before = digest(path)
         oracle = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar,
-                     RECIPES / "TableDataOracle.java", path, "CalculatedScalars").splitlines()
+                     reference_file('tests/access/reading/tables/TableDataOracle.java'), path, "CalculatedScalars").splitlines()
         assert len(oracle) == 5, "mixed oracle row count"
         expected = "".join("\t".join(row.split("\t")[:2]) + "\n" for row in oracle)
         for batch in [1, 2, 3]:

@@ -2,6 +2,7 @@
 
 Read-only native getters are optional; this does not execute SQL in Access.
 """
+from engineering_paths import reference_file
 import argparse
 import csv
 import datetime as dt
@@ -136,7 +137,7 @@ def main():
             original = path.read_bytes()
             assert hashlib.sha256(original).hexdigest() == digest
             stored = subprocess.check_output(["java", "-Dstdout.encoding=UTF-8", "-cp", str(args.jar),
-                str(RECIPES / "TableDataOracle.java"), str(path), "AData"], text=True, encoding="utf-8")
+                str(reference_file('tests/access/reading/tables/TableDataOracle.java')), str(path), "AData"], text=True, encoding="utf-8")
             identifiers = [int(line.split("\t")[1].removeprefix("I32:")) for line in stored.splitlines()]
             expected = ["id=" + str(identifier) for identifier in identifiers]
             for sql in ("SELECT 'id=' & ID AS Result FROM AData",
@@ -154,7 +155,7 @@ def main():
             assert hashlib.sha256(original).hexdigest() == digest
             for index in ("IdAsc", "IdDesc"):
                 stored = subprocess.check_output(["java", "-Dstdout.encoding=UTF-8", "-cp", str(args.jar),
-                    str(RECIPES / "IndexRowsOracle.java"), str(path), "IndexedRows", index, "ID"], text=True, encoding="utf-8")
+                    str(reference_file('tests/access/indexes/native/IndexRowsOracle.java')), str(path), "IndexedRows", index, "ID"], text=True, encoding="utf-8")
                 expected = [line + "!" for line in stored.splitlines() if int(line) >= 19998]
                 check("SELECT ID & '!' AS Result FROM IndexedRows WHERE ID>=19998", expected,
                       ["--database", path, "--index", "IndexedRows", index, "--number-format", "invariant"], commands=("run",))

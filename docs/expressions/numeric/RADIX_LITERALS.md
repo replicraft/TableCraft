@@ -65,7 +65,7 @@ Query tests cover carriers, aggregates, Eval, subqueries, fixed named crosstabs,
 no-scan preparation and colliding headings. Parser controls verify adjacency and
 unquoted tokens; both CLI query commands verify buffered overflow failures.
 
-The original [independent runner](../../testing/compare_radix_literals.py) passes 742
+The original [independent runner](../../../tests/access/reading/tables/compare_radix_literals.py) passes 742
 signed-width/type/native-field controls across the four unchanged original
 ScalarFixture priority-family inputs. Raw getters independently supply field values;
 only TableCraft executes SQL. Source bytes and the reviewed reference JAR are hash

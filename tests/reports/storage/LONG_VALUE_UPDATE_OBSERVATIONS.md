@@ -8,12 +8,12 @@ unchanged other fields, rows, index orders and counters. The bounded run used
 These are independent Jackcess 5.0.4 storage observations. They do not implement
 TableCraft Memo/OLE editing, establish Microsoft Access native save/reopen
 compatibility or qualify data macros. The
-[compact receipt](results/long-value-update-observations-2026-10-26.json)
+[compact receipt](../../results/rows/long-value-update-observations-2026-10-26.json)
 retains exact sources, original/getter identities, commands and saved-byte proofs.
 
 ## Original inputs and actual metadata
 
-The unchanged [registered Slot originals](SLOT_UPDATE_OBSERVATIONS.md#fresh-independent-originals)
+The unchanged [registered Slot originals](../rows/SLOT_UPDATE_OBSERVATIONS.md#fresh-independent-originals)
 contain the selected `Sentinel` table, ID 91. Both fields have native flag 2,
 extended flags 0 and zero declared length: Memo type 12, variable slot 0; OLE type
 11, variable slot 1. Memo is uncompressed. Only the ordinary ID primary is
@@ -92,24 +92,24 @@ change. The original 60 successful action records remain untouched.
 
 ## Tools and replay boundary
 
-[LongValueUpdateProbe.java](LongValueUpdateProbe.java) is byte-identical to the
+[LongValueUpdateProbe.java](../../access/queries/expressions/LongValueUpdateProbe.java) is byte-identical to the
 repository-owned source actually compiled. It has explicit passive metadata and
 single-field update operations, bounded literal payloads and inert settings.
 No upstream implementation or binary fixture was copied.
 
-[capture_long_value_updates.py](capture_long_value_updates.py) is a parameterized
+[capture_long_value_updates.py](../../access/queries/expressions/capture_long_value_updates.py) is a parameterized
 action-phase derivative. It requires a frozen 60-case plan, completed metadata
 gate, compiled getter/probe classes and a fresh work directory; it does not
 silently prepare or qualify a source. Its action phase was not rerun during
 promotion. The exact executed private runner remains separately pinned.
 
-[verify_long_value_update_bytes.py](verify_long_value_update_bytes.py) rechecks
+[verify_long_value_update_bytes.py](../../access/queries/expressions/verify_long_value_update_bytes.py) rechecks
 saved outputs without database calls. The public parameterized proof was run
 against all 60 saved outputs and matches the accepted private proof byte for
 byte. For the retained local evidence:
 
 ```sh
-python3 docs/testing/verify_long_value_update_bytes.py \
+python3 tests/run.py tests/access/queries/expressions/verify_long_value_update_bytes.py \
   --report .cache/ace16-long-update-observations-initial-20261026/actions-report.json \
   --original-facts .cache/ace16-slot-originals-next-20261026/original-facts-initial.json \
   --output .cache/long-value-update-proof-new.json

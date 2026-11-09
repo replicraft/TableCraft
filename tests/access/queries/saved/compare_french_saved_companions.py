@@ -15,7 +15,7 @@ from compare_french_comparison_fields import COMPARISON_BYTES, COMPARISON_STEPS,
 from french_comparison_latin_model import load
 from french_field_comparison.model import FieldModel
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[4]
 SAVED = 'FrenchFields'
 INVALID_INPUT_STATUS = 2
 ADDITIONAL_SOURCES = ('apps/tablecraft-cli/src/commands/query/saved.rs',)
@@ -72,11 +72,11 @@ def main():
     weights, _ = load(args.latin_oracle)
     artifacts = [args.cli, args.build_receipt, args.metadata, args.fields, args.short_keys,
                  args.latin_oracle, Path(__file__),
-                 ROOT / 'docs/testing/capture_french_comparison.py',
-                 ROOT / 'docs/testing/capture_french_saved_companions.py',
-                 ROOT / 'docs/testing/compare_french_comparison_fields.py',
-                 ROOT / 'docs/testing/french_field_comparison/model.py',
-                 ROOT / 'docs/testing/french_comparison_latin_model.py']
+                 ROOT / 'tests/access/queries/expressions/capture_french_comparison.py',
+                 ROOT / 'tests/access/queries/saved/capture_french_saved_companions.py',
+                 ROOT / 'tests/access/schema/fields/compare_french_comparison_fields.py',
+                 ROOT / 'tests/access/schema/french_field_comparison/model.py',
+                 ROOT / 'tests/access/queries/expressions/french_comparison_latin_model.py']
     for entry in metadata['profiles']:
         for item in (entry['source'], entry['companion']):
             path = ROOT / item['path']

@@ -88,8 +88,8 @@ pre-bundle refusals also pass. Two CLI INSERTs plus two follow-on saves and four
 exact row readbacks pass. The initial regression batch passes 1,118 ACE units, 79 adapter units, 102 CLI units and
 83 recovery functions. Strict all-feature, journal-only, preview-only and minimal
 builds pass. Existing DELETE and EOF-update host workflows remain intact. See the
-[native record](../../testing/results/ace16-normal-insert-writes-2026-11-01.json)
-and [retained host record](../../testing/results/ace16-retained-normal-insert-2026-11-01.json)
+[native record](../../../tests/results/rows/ace16-normal-insert-writes-2026-11-01.json)
+and [retained host record](../../../tests/results/rows/ace16-retained-normal-insert-2026-11-01.json)
 for exact scope and preserved first failures.
 
 Next compatibility work includes broader index trees/keys, AutoNumber/default behavior,
@@ -115,7 +115,7 @@ commits and two CLI saves/readbacks match the literal whole images; all six
 pending/partial/committed alias journals refuse before effects. Ten normal INSERT
 controls, 329 existing INSERT tests and strict all-feature/journal checks pass.
 The CLI readback verifies four UTF16 units and signed first-character code -257.
-See the [separate execution record](../../testing/results/ace16-normal-insert-feff-writes-2026-11-01.json)
+See the [separate execution record](../../../tests/results/rows/ace16-normal-insert-feff-writes-2026-11-01.json)
 for focused scope and preserved first preview assertion failures.
 
 ## Indexed existing-page insertion
@@ -149,8 +149,8 @@ typed/SQL same-session saves and CLI saves match those complete images. Recovery
 checks include authored mixed DATA/INDEX/definition targets, pending rollback,
 committed mixed-target refusal and protected-byte forgeries. Duplicate-key
 refusals retain exact typed errors and CLI exit status. See the
-[source contract](../../testing/ACE16_NORMAL_INDEXED_INSERT_SOURCES.md) and
-[indexed write record](../../testing/results/ace16-normal-indexed-writes-2026-11-01.json).
+[source contract](../../../tests/reports/indexes/ACE16_NORMAL_INDEXED_INSERT_SOURCES.md) and
+[indexed write record](../../../tests/results/indexes/ace16-normal-indexed-writes-2026-11-01.json).
 These checks do not establish native Microsoft Access save/reopen compatibility.
 
 ## Cross-page request association
@@ -163,8 +163,8 @@ self-consistent journals with swapped new primary ROW suffixes refuse before
 effects. Four authored pending/partial mixed targets roll back; two committed
 mixed targets refuse without writes. Eight successive typed/SQL single-row
 saves reach the same independently authored joint images under retained leases.
-See the [source contract](../../testing/ACE16_INDEXED_INSERT_ASSOCIATION_SOURCES.md)
-and [follow-on record](../../testing/results/ace16-indexed-write-followons-2026-11-01.json).
+See the [source contract](../../../tests/reports/indexes/ACE16_INDEXED_INSERT_ASSOCIATION_SOURCES.md)
+and [follow-on record](../../../tests/results/indexes/ace16-indexed-write-followons-2026-11-01.json).
 
 ## Nullable and descending keys
 
@@ -179,8 +179,8 @@ Six native source views and 36 SDK observations precede eight complete commits.
 Four directly constructed literal plans also prove without planner authority;
 36 changed images/requests refuse. Recovery, source/protected-byte forgeries,
 full budget/cancellation controls and typed/SQL/CLI NULL readbacks pass. See the
-[source contract](../../testing/ACE16_NORMAL_INDEXED_DESC_NULL_INSERT_SOURCES.md)
-and [write record](../../testing/results/ace16-normal-indexed-desc-null-insert-writes-2026-11-01.json).
+[source contract](../../../tests/reports/indexes/ACE16_NORMAL_INDEXED_DESC_NULL_INSERT_SOURCES.md)
+and [write record](../../../tests/results/indexes/ace16-normal-indexed-desc-null-insert-writes-2026-11-01.json).
 
 
 ## Retained interior trees
@@ -242,7 +242,7 @@ binary and Unicode values; SQL covers representable Memo/NULL cases. The CLI doe
 not invent binary literal syntax. Native Access save/reopen remains unrun.
 
 
-The [combined execution record](../../testing/results/ace16-normal-insert-expansion-2026-11-01.json)
+The [combined execution record](../../../tests/results/rows/ace16-normal-insert-expansion-2026-11-01.json)
 retains focused receipts, strict feature builds, the broad regression batch and
 first failures for these three additions.
 
@@ -285,10 +285,10 @@ Four typed/SQL saves, eight cold restart contexts and two CLI saves with complet
 238-row TSV readbacks also pass. Omitted growing requests refuse before journal
 setup. These portable results do not establish native Access save/reopen or
 Windows durability qualification. Source pins are in the
-[EOF source contract](../../testing/ACE16_EOF_INSERT_SOURCES.md).
+[EOF source contract](../../../tests/reports/rows/ACE16_EOF_INSERT_SOURCES.md).
 
 
-The [EOF execution record](../../testing/results/ace16-normal-eof-insert-writes-2026-11-01.json)
+The [EOF execution record](../../../tests/results/rows/ace16-normal-eof-insert-writes-2026-11-01.json)
 retains native, host, CLI and broad regression receipts, including the shared
 recovery-fixture move and corrected help/source-directory test invocations.
 
@@ -316,7 +316,7 @@ and eight refusals. SQL positives use source-qualified NULL keys; non-NULL wide
 values are covered through exact typed/native carriers. These results do not
 establish implicit SQL numeric coercions or native Access save conformance.
 
-The [execution record](../../testing/results/ace16-normal-integral-indexed-writes-2026-11-01.json)
+The [execution record](../../../tests/results/indexes/ace16-normal-integral-indexed-writes-2026-11-01.json)
 retains the initial missed action-admission guard and its narrow correction,
 complete receipts and strict/broad regression results. Empty/all-NULL, stable-ID
 gaps and sparse native ordinals are separate follow-on source work.

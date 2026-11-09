@@ -3,7 +3,7 @@
 Fourteen independent views pass native row/schema/constraint reads and complete
 six-alias index membership checks. Separate SDK observations pass fourteen full
 inventories, fourteen metadata reports and 84 exact cursors before matching native
-DELETE producers. The [execution record](results/ace16-binary-delete-sources-2026-11-01.json)
+DELETE producers. The [execution record](../../results/storage/ace16-binary-delete-sources-2026-11-01.json)
 retains the frozen laws, first preparation failure, reviewed tooling successor
 and actual native/SDK receipts.
 

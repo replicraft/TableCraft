@@ -48,6 +48,6 @@ costs must be measured under those actual passes; unchanged old total costs are 
 claimed. This API adds no CLI/query grammar or native Access compatibility claim.
 Twelve new functions and retained regressions pass: 83 engine, 63 adapter and
 48 CLI functions, followed by strict/minimal/Rust documentation and boundary checks.
-The [acceptance record](../../testing/results/lazy-history-reader-2026-11-02.json)
+The [acceptance record](../../../tests/results/reading/lazy-history-reader-2026-11-02.json)
 keeps the static fresh-association finding and first unused-import lint correction.
 These results do not qualify larger directories or native Access behavior.

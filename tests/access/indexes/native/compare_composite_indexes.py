@@ -71,7 +71,7 @@ def main():
                     "largest entries", largest[3], largest[4], "largest prefix", prefix_max)
             for index in indexes:
                 expected = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar,
-                    "docs/testing/IndexRowsOracle.java", path, table, index, *columns)
+                    "tests/access/indexes/native/IndexRowsOracle.java", path, table, index, *columns)
                 if len(expected.splitlines()) != rows:
                     raise RuntimeError("Unexpected independent compound cursor count")
                 sql = "SELECT " + ",".join("[" + column + "]" for column in columns) + " FROM " + table

@@ -1,8 +1,8 @@
 # ICU4X ordering candidate probe
 
 ICU4X 2.3.1 remains a candidate, **not a runtime dependency or Access comparison
-provider**. The original [Rust probe](probe_icu_collation.rs) and
-[isolated runner](probe_icu_collation.py) make that decision reviewable without
+provider**. The original [Rust probe](../../access/queries/expressions/probe_icu_collation.rs) and
+[isolated runner](../../access/queries/expressions/probe_icu_collation.py) make that decision reviewable without
 changing the workspace manifest or lockfile. They do not qualify Windows/NLS,
 Access SQL, native index keys or a new locale provider.
 
@@ -78,7 +78,7 @@ candidate packages are cached. Optional `--target-dir` shares an external Cargo
 cache while retaining an immutable executable in each result directory.
 
 ```sh
-python3 docs/testing/probe_icu_collation.py --output-dir "$FRESH_PROBE_DIR"
+python3 tests/run.py tests/access/queries/expressions/probe_icu_collation.py --output-dir "$FRESH_PROBE_DIR"
 "$FRESH_PROBE_DIR/tablecraft-icu-probe" --help
 hyperfine --runs 5 --warmup 2 --shell=none --export-json "$FRESH_PROBE_DIR/hyperfine.json" \
   "$FRESH_PROBE_DIR/tablecraft-icu-probe --provider icu --rounds 100000" \

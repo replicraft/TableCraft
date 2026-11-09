@@ -33,5 +33,5 @@ Set work/memory/page/image/output ceilings and cancellation checks. Visual tests
 must control fonts/platform or document approved tolerances; no headless image
 alone qualifies a native Access form writer or cross-platform UI behavior.
 
-Qualify these services with [application scenarios](../testing/APPLICATION_SCENARIOS.md)
+Qualify these services with [application scenarios](../../tests/reports/reading/APPLICATION_SCENARIOS.md)
 before exposing equivalent CLI/MCP/GUI adapters.

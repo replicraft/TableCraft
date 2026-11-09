@@ -1,6 +1,6 @@
 # Original native progressive extrema evidence
 
-The 2026-10-25 [accepted replay](results/native-extrema-2026-10-25.json)
+The 2026-10-25 [accepted replay](../../results/general/native-extrema-2026-10-25.json)
 passes 364 controls across original Jet 4, ACE 2007 and ACE 16-family files.
 Its 348 successful controls compare 396 output rows and 1,584 cells against
 independent getter and exact-model expectations. Sixteen expected refusals retain
@@ -9,22 +9,22 @@ resource limits and output limits. Buffered execution and explicit streaming
 batches of 1 and 128 agree with those expectations.
 
 This is engineering evidence for the current
-[progressive Min/Max contract](../query/PROGRESSIVE_QUERIES.md#global-min-and-max).
+[progressive Min/Max contract](../../../docs/query/PROGRESSIVE_QUERIES.md#global-min-and-max).
 It does not establish Microsoft Access evaluation equivalence, complete native
 result typing, large-file performance or Windows collation qualification.
 
 ## Original inputs and independent model
 
 The replay reuses the four unchanged originals registered in
-[Decimal selection evidence](DECIMAL_INDEX_SELECTIONS.md#original-inputs-and-independent-model).
-The original public-builder [DecimalIndexFixture.java](DecimalIndexFixture.java)
+[Decimal selection evidence](../indexes/DECIMAL_INDEX_SELECTIONS.md#original-inputs-and-independent-model).
+The original public-builder [DecimalIndexFixture.java](../../access/queries/expressions/DecimalIndexFixture.java)
 recipe produces 1,000-row tables at Decimal scales 0, 4 and 28. The reviewed
 Jackcess 5.0.4 reader reopens each file. Its inert
-[IndexRowsOracle.java](IndexRowsOracle.java) getter observes actual stored values
+[IndexRowsOracle.java](../../access/indexes/native/IndexRowsOracle.java) getter observes actual stored values
 with expression evaluation disabled. No reference SQL, linked-source resolution
 or active content executes.
 
-The [runner](compare_native_extrema.py) parses getter Decimal strings into exact
+The [runner](../../access/reading/tables/compare_native_extrema.py) parses getter Decimal strings into exact
 Python `Fraction` values. It independently computes minimum, maximum, total row
 count and non-NULL count, excluding only actual NULLs from the extrema population.
 There is no Decimal result rounding model here: successful Min/Max selects an
@@ -92,7 +92,7 @@ Python syntax, exact population goldens and dry command enumeration ran without
 opening databases or producing reports. No accepted historical report or original
 fixture was overwritten.
 
-The separate [query verification record](results/read-query-progressive-extrema-2026-10-25.json)
+The separate [query verification record](../../results/queries/read-query-progressive-extrema-2026-10-25.json)
 records 269 focused query tests, including 16 new tests, strict query library/test
 Clippy and the standalone minimal-feature check. This native replay supplements
 those checks; its controls are not additional Rust tests. The reused 1,000-row

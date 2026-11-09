@@ -15,20 +15,20 @@ import subprocess
 import compare_native_equijoins as borrowed
 from compare_large_deployment import getter_model
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[4]
 MAX_COMMANDS = 100
 LARGE_HASHES = {
     "V2016.accdb": "51b4a6bf4477b2c1dca061e95179b5ccd70de158623edeafc96c5e38186bf630",
     "V2019.accdb": "cbb12a433c622b6d2a91e72d627b1cfab0eb6192953eaca7510c8d97668cc4f7",
 }
 TOOLS = [
-    "docs/testing/compare_directory_joins.py",
-    "docs/testing/compare_native_equijoins.py",
-    "docs/testing/compare_large_deployment.py",
-    "docs/testing/build_large_deployment.py",
-    "docs/testing/TableDataOracle.java",
-    "docs/testing/DecimalIndexFixture.java",
-    "docs/testing/LargeDeploymentFixture.java",
+    "tests/access/queries/execution/compare_directory_joins.py",
+    "tests/access/queries/execution/compare_native_equijoins.py",
+    "tests/access/reading/tables/compare_large_deployment.py",
+    "tests/access/reading/tables/build_large_deployment.py",
+    "tests/access/reading/tables/TableDataOracle.java",
+    "tests/access/queries/expressions/DecimalIndexFixture.java",
+    "tests/access/reading/tables/LargeDeploymentFixture.java",
 ]
 
 

@@ -15,7 +15,7 @@ SOURCES = [
     "crates/query/tablecraft-expressions/examples/byte_search.rs",
     "crates/query/tablecraft-expressions/examples/byte_search/algorithm.rs",
     "crates/query/tablecraft-expressions/examples/byte_search/tests.rs",
-    "docs/testing/benchmark_byte_search.py",
+    "tests/access/reading/tables/benchmark_byte_search.py",
 ]
 CASES = [
     ("front", 32, 1_000_000),

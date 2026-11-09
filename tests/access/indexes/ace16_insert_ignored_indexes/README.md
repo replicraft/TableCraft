@@ -69,8 +69,8 @@ fixed that packaging error without changing executed tools, models, originals,
 expected images or actual outcomes. The corrected default replay and explicit
 Git/missing-evidence contracts pass separately.
 
-See the [candidate record](../results/ace16-insert-ignored-index-native-2026-10-28.json)
-and [committed build](../results/ace16-insert-ignored-index-example-build-2026-10-28.json).
+See the [candidate record](../../../results/indexes/ace16-insert-ignored-index-native-2026-10-28.json)
+and [committed build](../../../results/indexes/ace16-insert-ignored-index-example-build-2026-10-28.json).
 These are engineering candidate and independent-reader observations. They do not
 qualify normal native saves, Microsoft Access save/reopen, data macros or Windows
 integration. Public-writer framing and scratch remain separate from the complete

@@ -52,7 +52,7 @@ clones, bookmark reuse, edit buffers, cancel/update, query parameters and worksp
 rollback across databases. Add linked-provider and ADO cursor/location/lock-mode
 matrices, including disconnected updates and concurrent conflicts. Record exact
 Access/ACE/provider versions and error numbers. All are unrun requirements; track
-application use in the [corpus](../testing/ACCESS_APPLICATIONS.md).
+application use in the [corpus](../../tests/reports/reading/ACCESS_APPLICATIONS.md).
 
 ## References
 

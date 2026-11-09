@@ -13,9 +13,9 @@ import time
 import traceback
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[3]
+ROOT = Path(__file__).resolve().parents[4]
 HERE = Path(__file__).resolve().parent
-sys.path.insert(0, str(ROOT / 'docs/testing'))
+sys.path.insert(0, str(ROOT / 'tests/access'))
 sys.path.insert(0, str(HERE))
 from slot_preview_originals import common
 import delete_reference_maps as maps
@@ -277,7 +277,7 @@ def main():
     parser.add_argument('--admission-example', type=Path,
                         default=Path('.cache/tablecraft-bin/ace16-root-split-20261027'))
     parser.add_argument('--build-receipt', type=Path,
-                        default=Path('docs/testing/results/ace16-root-split-example-build-2026-10-27.json'))
+                        default=Path('tests/results/indexes/ace16-root-split-example-build-2026-10-27.json'))
     parser.add_argument('--freeze', type=Path)
     parser.add_argument('--freeze-current', type=Path,
                         help='Write a fresh current-tool source manifest; no JVM/native calls')
@@ -291,8 +291,8 @@ def main():
         destination.relative_to(ROOT / '.cache')
         sources = [*JAVA_SOURCES, HERE / 'wire.py', HERE / 'capture.py',
                    HERE / 'selfcheck.py', HERE / 'verify_existing.py',
-                   ROOT / 'docs/testing/slot_preview_originals/common.py',
-                   ROOT / 'docs/testing/delete_reference_maps.py']
+                   ROOT / 'tests/access/rows/slot_preview_originals/common.py',
+                   ROOT / 'tests/access/rows/delete/delete_reference_maps.py']
         destination.parent.mkdir(parents=True, exist_ok=True)
         with destination.open('x') as output:
             json.dump({'sources': [pin(path) for path in sources],

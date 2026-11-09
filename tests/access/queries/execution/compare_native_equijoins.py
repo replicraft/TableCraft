@@ -12,7 +12,7 @@ import json
 from pathlib import Path
 import subprocess
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[4]
 JAR_SHA256 = "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc"
 INPUT_SHA256 = {
     "decimal-seeks-V2000-20261025.mdb": "0ec45083fd4aea8cde561ecac5a6bec472a019d9a62249914120c9ad6fc1782a",
@@ -78,7 +78,7 @@ def compiled_sources(revision):
 def getter_ids(jar, database):
     command = [
         "java", "-Dstdout.encoding=UTF-8", "-cp", jar,
-        ROOT / "docs/testing/TableDataOracle.java", database, *TABLES,
+        ROOT / "tests/access/reading/tables/TableDataOracle.java", database, *TABLES,
     ]
     result = invoke(command)
     if result.returncode or result.stderr:
@@ -178,8 +178,8 @@ def main():
 
     pinned = [
         args.cli, args.jar, Path(__file__),
-        ROOT / "docs/testing/TableDataOracle.java",
-        ROOT / "docs/testing/DecimalIndexFixture.java",
+        ROOT / "tests/access/reading/tables/TableDataOracle.java",
+        ROOT / "tests/access/queries/expressions/DecimalIndexFixture.java",
         *args.inputs,
     ]
     before = {relative(path): digest(path) for path in pinned}

@@ -68,14 +68,14 @@ derived/domain/crosstab consumers, unchanged integral/Currency prefix failures,
 late selected Error/division failures, once-only volatile operands and every
 observed precision/final-rounding cancellation checkpoint.
 
-The original [Fraction runner](../../testing/compare_decimal_sum.py) constructs typed
+The original [Fraction runner](../../../tests/access/queries/expressions/compare_decimal_sum.py) constructs typed
 source-free SQL values and compares results with exact rational totals and
 independent half-even rounding at each candidate scale. It also checks final
 range refusals and actual row-three argument failures after an overflowing
 Decimal prefix. No native database fixture or Access instance is used.
 
 
-The recorded [24 October replay](../../testing/results/decimal-sums-2026-10-24.json)
+The recorded [24 October replay](../../../tests/results/general/decimal-sums-2026-10-24.json)
 passes 125 Fraction/half-even result controls and five refusals against one
 unchanged executable. Source-free inputs are original authored/generated SQL;
 no native fixture or Access SQL comparison is claimed. The current focused

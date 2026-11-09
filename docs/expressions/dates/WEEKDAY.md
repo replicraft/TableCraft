@@ -69,7 +69,7 @@ An evaluator test checks input/work/cancellation limits. Query tests cover dynam
 first-day dependencies, groups, aggregate arguments, correlations and policy reuse;
 a multivalue regression covers hidden member dependencies. CLI and worker tests
 cover optional slots, failure buffering, request isolation and recovery after
-missing context. The [independent recipe](../../testing/compare_weekday.py) uses Python
+missing context. The [independent recipe](../../../tests/access/reading/tables/compare_weekday.py) uses Python
 Gregorian/Automation-day models and optional sequential/indexed projections over
 Jackcess-decoded row inputs, checking unchanged source bytes. Native Windows Access
 remains unrun; these model/reader checks do not establish native compatibility.

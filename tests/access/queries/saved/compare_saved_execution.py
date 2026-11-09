@@ -3,6 +3,7 @@
 Inputs must use the original SavedSelectFixture recipe. Jackcess supplies stored
 metadata SQL and inert table getters, never query execution or Access SQL evidence.
 """
+from engineering_paths import reference_file
 import argparse
 import csv
 import hashlib
@@ -26,7 +27,7 @@ def main():
     controls = 0
     with tempfile.TemporaryDirectory(prefix='tablecraft-saved-execution-') as directory:
         subprocess.run(['javac', '-cp', str(args.jar), '-d', directory,
-                        str(RECIPES / 'SavedSelectOracle.java'), str(RECIPES / 'TableDataOracle.java')], check=True)
+                        str(reference_file('tests/access/queries/saved/SavedSelectOracle.java')), str(reference_file('tests/access/reading/tables/TableDataOracle.java'))], check=True)
         classpath = str(args.jar) + os.pathsep + directory
         def java(recipe, *options):
             return subprocess.check_output(['java', '-Dstdout.encoding=UTF-8', '-cp', classpath,

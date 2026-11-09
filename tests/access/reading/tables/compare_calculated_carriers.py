@@ -3,6 +3,7 @@
 Original files remain unchanged. No formulas execute, and no native Access SQL,
 cached freshness, mutation or calculated-result coercion is qualified.
 """
+from engineering_paths import reference_file
 
 import argparse
 import hashlib
@@ -18,7 +19,7 @@ from cli_tsv import display_tsv
 from compare_browsing import display
 from compare_calculated_decimals import digest, JACKCESS_SHA256
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[4]
 RECIPES = Path(__file__).resolve().parent
 PROFILES = ("V2016", "V2019")
 KINDS = {
@@ -90,9 +91,9 @@ def main():
     assert digest(arguments.jar) == JACKCESS_SHA256
     paths = {
         arguments.cli, arguments.jar, Path(__file__),
-        RECIPES / "CalculatedCarrierFixture.java", RECIPES / "CalculatedCarrierOracle.java",
-        RECIPES / "cli_tsv.py", RECIPES / "compare_browsing.py",
-        RECIPES / "compare_calculated_decimals.py", RECIPES / "float_model.py",
+        reference_file('tests/access/reading/tables/CalculatedCarrierFixture.java'), reference_file('tests/access/reading/tables/CalculatedCarrierOracle.java'),
+        reference_file('tests/access/shared/primitives/cli_tsv.py'), reference_file('tests/access/reading/tables/compare_browsing.py'),
+        reference_file('tests/access/queries/expressions/compare_calculated_decimals.py'), reference_file('tests/access/shared/primitives/float_model.py'),
         *sorted((ROOT / "crates/engines/tablecraft-ace/src/table/calculated").glob("*.rs")),
         *[arguments.directory / f"{profile}.accdb" for profile in PROFILES],
     }
@@ -118,7 +119,7 @@ def main():
     for profile in PROFILES:
         path = arguments.directory / f"{profile}.accdb"
         original = path.read_bytes()
-        oracle = execute("java", "-cp", arguments.jar, RECIPES / "CalculatedCarrierOracle.java", path)
+        oracle = execute("java", "-cp", arguments.jar, reference_file('tests/access/reading/tables/CalculatedCarrierOracle.java'), path)
         for name, table in records(oracle).items():
             kind, scalar = KINDS[table["kind"]]
             rows = table["rows"]

@@ -37,7 +37,7 @@ Observed results:
   request law, expected bytes or source image changed.
 - Matching native producer/recovery/forgery acceptance then passed all three
   functions without a production mutation change. The separately maintained
-  [indexed write follow-on record](results/ace16-indexed-write-followons-2026-11-01.json)
+  [indexed write follow-on record](../../results/indexes/ace16-indexed-write-followons-2026-11-01.json)
   owns its exact commit/recovery/forgery and strict-check outcomes.
 
 The source-phase zero-producer counts are historical. Later native write checks

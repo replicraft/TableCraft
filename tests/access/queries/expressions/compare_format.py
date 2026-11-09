@@ -3,6 +3,7 @@
 Original HyperlinkFixture files supply native Int32/NULL fields through Jackcess
 getters. These controls do not execute Microsoft Access or qualify its NLS rules.
 """
+from engineering_paths import reference_file
 
 import argparse
 import csv
@@ -100,7 +101,7 @@ def main():
         assert hashlib.sha256(args.jar.read_bytes()).hexdigest() == JAR_SHA256
     for database in args.database:
         before = hashlib.sha256(database.read_bytes()).hexdigest()
-        tagged = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar, RECIPES / "TableDataOracle.java", database, "Hyperlinks")
+        tagged = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar, reference_file('tests/access/reading/tables/TableDataOracle.java'), database, "Hyperlinks")
         identities = [int(line.split("\t")[1].removeprefix("I32:")) for line in tagged.splitlines()]
         expected = [[str(identity), spelling(str(identity).zfill(3)), spelling(f"({identity})"), spelling(fixed(Decimal(identity) / 8, 1, percent=True))] for identity in identities]
         sql = "SELECT ID,Format(ID,'000'),Format(-ID,'0;(0)'),Format(ID/8.0,'0.0%') FROM Hyperlinks ORDER BY ID"

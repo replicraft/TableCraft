@@ -3,6 +3,7 @@
 Python UUID formats the independent expected value/byte order. Native getters
 supply stored GUIDs without evaluating expressions. This is not an Access oracle.
 """
+from engineering_paths import reference_file
 
 import argparse
 import csv
@@ -74,7 +75,7 @@ def main():
         assert hashlib.sha256(args.jar.read_bytes()).hexdigest() == JAR_SHA256
     for database in args.database:
         before = hashlib.sha256(database.read_bytes()).hexdigest()
-        tagged = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar, RECIPES / "TableDataOracle.java", database, "ScalarSamples")
+        tagged = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar, reference_file('tests/access/reading/tables/TableDataOracle.java'), database, "ScalarSamples")
         expected = []
         for line in tagged.splitlines():
             fields = line.split("\t")

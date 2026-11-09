@@ -1,6 +1,6 @@
 # Wider scalar INSERT source qualification
 
-The [independent source owner](../../crates/engineering/tablecraft-testkit/src/fixtures/access/canonical_ordinary_wide_insert.rs)
+The [independent source owner](../../../crates/engineering/tablecraft-testkit/src/fixtures/access/canonical_ordinary_wide_insert.rs)
 defines eight complete-row INSERT recipes from immutable canonical originals and
 the independently qualified seventeen-field catalog projection. Both header codes
 5 and 6 have BEFORE and literal AFTER views: 32 views in total. Repeated BEFORE
@@ -24,7 +24,7 @@ the three original allocation claims and TD row count outside that new page.
 Other original maps, schema, catalog and system bytes stay exact.
 This is a source witness, not stored allocation permission or creator authority.
 
-The [read-only native gate](../../crates/engines/tablecraft-ace/src/table/mutation/normal_ordinary_sources/wide_scalar.rs)
+The [read-only native gate](../../../crates/engines/tablecraft-ace/src/table/mutation/normal_ordinary_sources/wide_scalar.rs)
 passed its one exact test on the first run, checking all 32 complete reads,
 constraints and fresh normal Source captures. The separate create-new export
 passed its one exact test and pinned all 32 files. Neither operation invoked an
@@ -45,7 +45,7 @@ companion class. The first class-count preflight stopped before reads, and its
 successor pins exactly that companion and the main class. No source, requested
 value or predicted report was retuned after an observation.
 
-The [result record](results/ace16-wide-scalar-insert-sources-2026-11-01.json) pins the
+The [result record](../../results/rows/ace16-wide-scalar-insert-sources-2026-11-01.json) pins the
 32 views and saved receipts. These results qualify sources and independent reads;
 matching TCNA4 insertion, publication and recovery acceptance is a separate phase.
 Wider indexed-key writes, multi-page plus wider-carrier composition, SQL nonfinite

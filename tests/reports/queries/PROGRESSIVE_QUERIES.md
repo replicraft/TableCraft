@@ -1,6 +1,6 @@
 # Original large native query streaming replay
 
-The [accepted replay](results/progressive-queries-2026-10-24.json) passes 88
+The [accepted replay](../../results/queries/progressive-queries-2026-10-24.json) passes 88
 commands and compares 1,341,336 modeled result cells over four original native
 files containing 20,000 ordinary rows each. All 1,898 pinned artifact, input,
 getter, tool and source hashes remain unchanged before and after execution,
@@ -8,13 +8,13 @@ including every entry in the 1,879-file frozen Rust inventory.
 
 There are 52 successful commands and 36 classified failures: 16 division errors,
 16 resource refusals and four output-limit refusals. This verifies the explicit
-[streaming query host](../cli/STREAMING_QUERIES.md) against original getter records.
+[streaming query host](../../../docs/cli/STREAMING_QUERIES.md) against original getter records.
 It is engineering correctness evidence, not Microsoft Access qualification,
 a benchmark, arbitrary-scale support or shared-file consistency qualification.
 
 ## Original producer and read-only oracle
 
-[ProgressiveQueryFixture.java](ProgressiveQueryFixture.java) creates fresh Jet 4
+[ProgressiveQueryFixture.java](../../access/queries/execution/ProgressiveQueryFixture.java) creates fresh Jet 4
 V2000, ACE2007 V2007 and ACE16-family V2016/V2019 databases through public
 Jackcess database/table/column builders. The single ordinary `StreamingRows`
 table has these declarations:
@@ -44,7 +44,7 @@ that natural cursor order sorts arbitrary databases.
 
 ## Independent model and parity
 
-[compare_progressive_queries.py](compare_progressive_queries.py) decodes the
+[compare_progressive_queries.py](../../access/queries/execution/compare_progressive_queries.py) decodes the
 getter records and builds expected values independently in Python. The three
 successful query shapes are:
 
@@ -133,7 +133,7 @@ The accepted report has SHA-256
 `60c04f1939fb0c084707b92fd11229fb237ffcfb9d5ae7477b19b7c7d7053171`.
 
 ```sh
-python3 docs/testing/compare_progressive_queries.py \
+python3 tests/run.py tests/access/queries/execution/compare_progressive_queries.py \
   --cli .cache/tablecraft-bin/progressive-query-cli-20261024 \
   --cli-sha256 771116caa0b27854de4d2737ef9962e7c3d696020a98b309cd2277cab58fe3b0 \
   --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar \

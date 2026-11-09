@@ -17,11 +17,11 @@ NULL. Ordinary query sources still exclude calculated fields.
 
 ## Original corpus and consumers
 
-[CalculatedCarrierFixture.java](CalculatedCarrierFixture.java) creates fresh ACE
+[CalculatedCarrierFixture.java](../../access/reading/tables/CalculatedCarrierFixture.java) creates fresh ACE
 2016/2019 files using reviewed Jackcess 5.0.4 public builder APIs. Each file has
 six populated declarations and six matching empty tables, with seven stored
 rows per populated table. Expression evaluation is disabled throughout creation
-and [read-only getter inspection](CalculatedCarrierOracle.java). Original caches
+and [read-only getter inspection](../../access/reading/tables/CalculatedCarrierOracle.java). Original caches
 are supplied as data; the expression `[ID]*2` never executes or coerces them.
 
 Values cover unsigned Byte boundaries, Int16/Int64 extrema, an Int64 beyond the
@@ -30,7 +30,7 @@ maximum finite Single, both infinities, a NaN payload and asymmetric Guid fields
 The independent oracle records Single raw bits and canonical Guid strings rather
 than using a TableCraft decoder.
 
-The [runner](compare_calculated_carriers.py) compares native declarations and
+The [runner](../../access/reading/tables/compare_calculated_carriers.py) compares native declarations and
 explicit cached inspection, row pages and finite-carrier queries. Separate
 exceptional-Single tables retain infinities/NaNs for inspection and row pages;
 queries explicitly retain their existing non-finite-source refusal, including
@@ -58,7 +58,7 @@ equivalence, formula behavior, freshness, shared-file coherence or writes.
 
 ## Accepted results
 
-On 24 October 2026, the [accepted report](results/calculated-carriers-2026-10-24.json)
+On 24 October 2026, the [accepted report](../../results/general/calculated-carriers-2026-10-24.json)
 records 248 passing operation controls and 238 cached-cell comparisons. Across
 ACE 2016/2019 there are 24 declarations, including twelve empty counterparts,
 and 84 stored rows. Both inspection and row pages compare every stored cell;
@@ -71,7 +71,7 @@ The immutable CLI SHA-256 is
 `021a072d23e21e8d65fcf7e7331cc3100db24d4fda15337e31ded8cc01e34e11`.
 The engine calculated-scalar target passes seven tests, the adapter cached-query
 target passes eight, and scoped strict Clippy passes for both. The
-[fixture ledger](FIXTURES.md#original-additional-cached-calculated-carrier-inputs)
+[fixture ledger](../reading/FIXTURES.md#original-additional-cached-calculated-carrier-inputs)
 retains original hashes and provenance; generated databases and binaries remain
 ignored.
 
@@ -83,7 +83,7 @@ excluded. Accepted evidence uses the final split corpus and verifies resource
 error categories only on admitted finite query sources.
 
 ```sh
-python3 docs/testing/compare_calculated_carriers.py \
+python3 tests/run.py tests/access/reading/tables/compare_calculated_carriers.py \
   --cli .cache/tablecraft-bin/calculated-carriers-20261024 \
   --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar \
   --directory .cache/tablecraft-fixtures/calculated-carriers-final-20261024 \

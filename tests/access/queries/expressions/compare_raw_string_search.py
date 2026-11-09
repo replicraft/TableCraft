@@ -3,6 +3,7 @@
 Python integer-list windows supply positions, including isolated UTF-16 units.
 Optional inert native getters supply rows only; Microsoft Access SQL is unrun.
 """
+from engineering_paths import reference_file
 
 import argparse
 from pathlib import Path
@@ -35,7 +36,7 @@ def native_controls(args):
         path = args.directory / f"Policies-{profile}.{suffix}"
         before = digest(path)
         oracle = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar,
-                     RECIPES / "TableDataOracle.java", path, "PolicyProbe")
+                     reference_file('tests/access/reading/tables/TableDataOracle.java'), path, "PolicyProbe")
         expected = []
         for line in oracle.splitlines():
             fields = line.split("\t")

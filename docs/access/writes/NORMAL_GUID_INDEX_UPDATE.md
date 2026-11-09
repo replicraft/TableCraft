@@ -58,7 +58,7 @@ target bytes; independent frozen AFTER files remain the exact image oracle.
 
 All 25 retained runtime functions passed, followed by strict all-target checks
 for ACE, Access, CLI and testkit, formatting and dependency guards with 17 tests.
-See the [execution record](../../testing/results/ace16-normal-indexed-guid-update-2026-11-03.json).
+See the [execution record](../../../tests/results/indexes/ace16-normal-indexed-guid-update-2026-11-03.json).
 
 Known Required/UNIQUE/primary GUID declarations are checked structurally, but
 positive mutation corpus qualification for those variants remains work. Tuples,

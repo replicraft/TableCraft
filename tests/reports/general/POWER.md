@@ -1,6 +1,6 @@
 # Power operand and error boundaries
 
-The [accepted replay](results/power-2026-10-24.json) passes 627 CLI commands
+The [accepted replay](../../results/general/power-2026-10-24.json) passes 627 CLI commands
 with seven independent model goldens and seven unchanged executable/source
 hashes. Production base `80750158` changes one runtime branch: a converted zero
 base with a negative exponent now reports Domain. It previously reported
@@ -10,7 +10,7 @@ it does not add VBA execution or a new built-in function.
 
 ## Independent model
 
-[compare_power.py](compare_power.py) uses exact `Fraction` exponentiation after
+[compare_power.py](../../access/reading/tables/compare_power.py) uses exact `Fraction` exponentiation after
 binary64 operand conversion for bounded integral exponents. The accepted finite
 examples use exactly representable dyadic values and powers; seven goldens check
 zero-negative refusal, zero-to-zero, negative integral powers, signed underflow,
@@ -43,7 +43,7 @@ result. This source-free replay does not read or mutate native databases.
 
 ## Rust verification and reproduction
 
-[The verification record](results/read-query-power-2026-10-24.json) pins the
+[The verification record](../../results/queries/read-query-power-2026-10-24.json) pins the
 complete 1,843-file Rust inventory, source commit and terminal logs. Twenty-two
 unique focused Rust tests pass, including thirteen new tests; overlapping reruns
 are not added. Strict Clippy covers expression unit-test code and the Power query
@@ -56,8 +56,8 @@ before any source scan. Kernel/evaluator tests retain separate division errors,
 finite limits, conversion failures, shared allowances and cancellation checkpoints.
 
 ```sh
-python3 docs/testing/compare_power.py --self-test
-python3 docs/testing/compare_power.py \
+python3 tests/run.py tests/access/reading/tables/compare_power.py --self-test
+python3 tests/run.py tests/access/reading/tables/compare_power.py \
   --cli .cache/tablecraft-bin/power-cli-20261024 \
   --expect-sha256 bde91ce6702cf0b7e6b931024a27c6760e2f6f70aef5699c02e78e83172c9430 \
   --source crates/query/tablecraft-expressions/src/numeric/arithmetic.rs \

@@ -85,7 +85,7 @@ The implemented shared state separates Yes/No confirmation, local pending
 deletion, explicit Save, reviewed request, retained save/recovery and checked
 publication. Dirty owners must be resolved, never silently discarded. The normal
 desktop composes these services through the [shared deletion workflow](../../ui/FIELD_DROP.md);
-the [coordinated headless macOS record](../../testing/results/saved-field-drop-gui-2026-11-09.json)
+the [coordinated headless macOS record](../../../tests/results/schema/saved-field-drop-gui-2026-11-09.json)
 reports 681 shared UI tests passed and 201 desktop tests passed with one existing
 ignored desktop test. All seven focused DROP test functions are included in those
 totals. They use independently generated first-party byte fixtures, not original
@@ -96,16 +96,16 @@ comparison exists.
 
 ## Evidence and current limits
 
-The [native/adapter/runtime checkpoint record](../../testing/results/saved-field-drop-services-2026-11-09.json)
+The [native/adapter/runtime checkpoint record](../../../tests/results/schema/saved-field-drop-services-2026-11-09.json)
 keeps the initial nine native failures, isolated diagnostic and incorrect INSERT
 baseline prediction alongside corrected runs. Passing selected scopes are not
-summed with repeated full-suite runs. The [raw deletion record](../../testing/results/saved-field-drop-raw-sdk-read-2026-11-09.json)
+summed with repeated full-suite runs. The [raw deletion record](../../../tests/results/schema/saved-field-drop-raw-sdk-read-2026-11-09.json)
 is separate: four frozen raw hypotheses plus inert reader observations, zero SDK
 DROP writes and no Microsoft Access saves.
 
 Deletion can leave native-number and variable-ordinal holes. The observed Number
 layout has live native numbers 0/2, stored IDs 0/2 and high-water 3; these identities
-are not vector positions. The [single raw first-row reader observation](../../testing/gapped_number_insert/README.md)
+are not vector positions. The [single raw first-row reader observation](../../../tests/access/rows/gapped_number_insert/README.md)
 confirms one independent authored record, not a working INSERT writer. At the
 recorded service checkpoint, ordinary omitted INSERT refuses this source with
 Unsupported(ActiveContent) from the old dense declaration grammar; this does not

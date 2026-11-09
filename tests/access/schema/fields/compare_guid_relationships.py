@@ -29,7 +29,7 @@ def main():
             ("GuidMixedUniqueChildren", 3, "UniqueGuidMixedKeys"),
         ):
             expected = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar,
-                "docs/testing/TableDataOracle.java", path, table)
+                "tests/access/reading/tables/TableDataOracle.java", path, table)
             actual = run(args.rows, path, table)
             if actual != expected or len(actual.splitlines()) != rows:
                 raise RuntimeError("Canonical GUID/exact integer row mismatch")
@@ -38,7 +38,7 @@ def main():
                 raise RuntimeError("GUID key membership coverage incomplete")
             tagged += actual
             count += rows
-        case_probe = run("java", "-cp", args.jar, "docs/testing/GuidRelationshipFixture.java", "--probe-case", path)
+        case_probe = run("java", "-cp", args.jar, "tests/access/schema/fields/GuidRelationshipFixture.java", "--probe-case", path)
         if case_probe != "lower\tfalse\nupper\ttrue\n":
             raise RuntimeError("Reviewed Jackcess default GUID cursor case observation changed")
         cases = []

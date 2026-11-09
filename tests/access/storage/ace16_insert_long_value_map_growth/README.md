@@ -84,8 +84,8 @@ JSON list representation. Its code/output remain retained; the correction only
 normalizes that comparison boundary. The corrected default and first Git replay
 pass. No original, model, expected image, runtime call or physical proof changed.
 
-The [result](../results/ace16-insert-long-value-map-growth-2026-10-28.json) and
-[owning contract](../ACE16_LONG_VALUE_INSERTS.md) retain current limits. This
+The [result](../../../results/rows/ace16-insert-long-value-map-growth-2026-10-28.json) and
+[owning contract](../../../reports/storage/ACE16_LONG_VALUE_INSERTS.md) retain current limits. This
 small-file corpus does not reach a new 32,736-page indirect bitmap block near
 128 MiB. Authentic missing-pointer growth needs a separate file/native-budget
 profile; literal empty-slot coverage is not promoted from these files. Missing

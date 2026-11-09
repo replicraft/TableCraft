@@ -6,10 +6,10 @@ from pathlib import Path
 import subprocess
 import sys
 
-ROOT = Path(__file__).resolve().parents[3]
+ROOT = Path(__file__).resolve().parents[4]
 sys.dont_write_bytecode = True
 sys.path.insert(0, str(ROOT))
-sys.path.insert(0, str(ROOT / 'docs/testing'))
+sys.path.insert(0, str(ROOT / 'tests/access'))
 from scripts.compat_artifacts import ArtifactStore
 from ace16_insert_height_one import model as independent_model, reference
 
@@ -68,7 +68,7 @@ def maintained_sources(pins):
     original_model = STORE.path(MODEL + '/model.py').read_text()
     assert hashlib.sha256(original_model.encode()).hexdigest() == (
         '8c3179ca33d1f45daa11ca071572cd2babf8c166929dcd05821ac751567787a2')
-    public_model = pins.check(STORE.pin('docs/testing/ace16_insert_height_one/model.py')).read_text()
+    public_model = pins.check(STORE.pin('tests/access/indexes/ace16_insert_height_one/model.py')).read_text()
     assert public_model == original_model.replace(
         'Path(__file__).resolve().parents[2]', 'Path(__file__).resolve().parents[3]')
     original = STORE.path(REFERENCE + '/proof.py').read_text()
@@ -82,11 +82,11 @@ def maintained_sources(pins):
     expected = expected.replace('parser = previous_proof()', 'parser = source_reference')
     expected = expected.replace('Path(__file__).resolve().parents[2]',
                                 'Path(__file__).resolve().parents[3]')
-    public = pins.check(STORE.pin('docs/testing/ace16_insert_height_one/reference.py')).read_text()
+    public = pins.check(STORE.pin('tests/access/indexes/ace16_insert_height_one/reference.py')).read_text()
     assert public == expected
     # The imported owner is itself the maintained exact prior independent proof.
     old_private = STORE.path('.cache/ace16-insert-root-split-reference-next-20261027/proof.py').read_text()
-    owner = pins.check(STORE.pin('docs/testing/ace16_insert_root_split/reference.py')).read_text()
+    owner = pins.check(STORE.pin('tests/access/indexes/ace16_insert_root_split/reference.py')).read_text()
     assert owner == old_private.replace('Path(__file__).resolve().parents[2]',
                                          'Path(__file__).resolve().parents[3]')
 

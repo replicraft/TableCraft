@@ -62,10 +62,10 @@ def main():
         assert digest(ROOT / name) == expected, name
     paths = {
         args.cli, args.jar, Path(__file__), args.engineering_report,
-        ROOT / "docs/testing/compare_linked_queries.py",
-        ROOT / "docs/testing/LinkedQueryFixture.java",
-        ROOT / "docs/testing/LinkedQueryOracle.java",
-        ROOT / "docs/testing/LinkedQueryCaseFixture.java",
+        ROOT / "tests/access/queries/execution/compare_linked_queries.py",
+        ROOT / "tests/access/queries/execution/LinkedQueryFixture.java",
+        ROOT / "tests/access/queries/execution/LinkedQueryOracle.java",
+        ROOT / "tests/access/queries/execution/LinkedQueryCaseFixture.java",
         *[ROOT / "apps/tablecraft-cli/src" / name for name in (
             "commands/query/links.rs", "commands/query/native_options.rs",
             "commands/query/retrieval.rs", "commands/query/run_args.rs", "native.rs",

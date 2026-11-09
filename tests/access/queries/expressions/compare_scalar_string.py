@@ -15,7 +15,7 @@ from pathlib import Path
 import subprocess
 
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[4]
 PROFILES = ("V2016", "V2019", "V2000", "V2007")
 JAR_SHA256 = "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc"
 OPERATORS = ("=", "<>", "<", ">", "<=", ">=")
@@ -106,7 +106,7 @@ def main():
         ROOT / ".cache/declared-string-rust-source-20261024.manifest",
     }
     paths.update(args.directory.iterdir())
-    paths.update(ROOT / "docs/testing" / name for name in ("ScalarStringFixture.java", "ScalarStringOracle.java"))
+    paths.update(ROOT / "tests/access" / name for name in ("ScalarStringFixture.java", "ScalarStringOracle.java"))
     for directory in ("crates/query/tablecraft-expressions/src", "crates/query/tablecraft-query/src"):
         paths.update((ROOT / directory).rglob("*.rs"))
     manifest = ROOT / ".cache/declared-string-rust-source-20261024.manifest"

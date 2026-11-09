@@ -7,10 +7,10 @@ from pathlib import Path
 import subprocess
 import sys
 
-ROOT = Path(__file__).resolve().parents[3]
+ROOT = Path(__file__).resolve().parents[4]
 sys.dont_write_bytecode = True
 sys.path.insert(0, str(ROOT))
-sys.path.insert(0, str(ROOT / 'docs/testing'))
+sys.path.insert(0, str(ROOT / 'tests/access'))
 from scripts.compat_artifacts import ArtifactStore
 from ace16_insert_recursive import model, source, source_geometry, reference_verify
 
@@ -74,7 +74,7 @@ def maintained(pins):
         private = pins.check(STORE.pin(original)).read_text()
         if digest is not None:
             assert hashlib.sha256(private.encode()).hexdigest() == digest
-        public = pins.check(STORE.pin('docs/testing/ace16_insert_recursive/' + name)).read_text()
+        public = pins.check(STORE.pin('tests/access/rows/ace16_insert_recursive/' + name)).read_text()
         assert public == private.replace('Path(__file__).resolve().parents[2]',
                                           'Path(__file__).resolve().parents[3]')
         old_functions = [ast.dump(node, include_attributes=False) for node in ast.parse(private).body

@@ -3,6 +3,7 @@
 Uses an original recipe and reviewed read-only Jackcess getters, not native
 Access SQL or live-file coordination. All generated binaries remain local.
 """
+from engineering_paths import reference_file
 
 import argparse
 import csv
@@ -56,7 +57,7 @@ def main():
         for profile, extension in profiles:
             subprocess.run([
                 "java", "-Dstdout.encoding=UTF-8", "-cp", str(args.jar),
-                str(RECIPES / "ScaleHistoryFixture.java"),
+                str(reference_file('tests/access/reading/tables/ScaleHistoryFixture.java')),
                 str(args.directory / f"scale-{profile}.{extension}"), profile,
             ], check=True)
 
@@ -76,7 +77,7 @@ def main():
         assert prefix[20:24] == bytes([{"V2000": 1, "V2007": 2, "V2016": 5}[profile], 0, 0, 0])
         reference = subprocess.check_output([
             "java", "-Dstdout.encoding=UTF-8", "-cp", str(args.jar),
-            str(RECIPES / "TableDataOracle.java"), str(path), "ScaleRows",
+            str(reference_file('tests/access/reading/tables/TableDataOracle.java')), str(path), "ScaleRows",
         ], text=True, encoding="utf-8")
         stored = [line.split("\t")[1:] for line in reference.splitlines()]
         identifiers = [int(row[0].removeprefix("I32:")) for row in stored]

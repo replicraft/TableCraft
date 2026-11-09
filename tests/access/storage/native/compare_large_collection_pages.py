@@ -1,4 +1,5 @@
 """Independent larger multivalue/attachment/history pages with buffered refusals."""
+from engineering_paths import reference_file
 
 import argparse
 import csv
@@ -47,7 +48,7 @@ def main():
 
     with tempfile.TemporaryDirectory(prefix="tablecraft-large-pages-reference-") as directory:
         subprocess.run(["javac", "-cp", str(args.jar), "-d", directory,
-                        str(RECIPES / "MultivalueOracle.java"), str(RECIPES / "CollectionPageOracle.java")], check=True)
+                        str(reference_file('tests/access/reading/tables/MultivalueOracle.java')), str(reference_file('tests/access/storage/native/CollectionPageOracle.java'))], check=True)
         classpath = str(args.jar) + os.pathsep + directory
         for profile in ["V2016", "V2007"]:
             cases = [

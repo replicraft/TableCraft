@@ -17,9 +17,9 @@ from compare_browsing import display
 from compare_cached_pages import date_display
 from compare_calculated_decimals import digest, run
 
-ROOT = Path(__file__).resolve().parents[2]
-ORACLE = ROOT / "docs/testing/AdvancedEvolutionOracle.java"
-FIXTURE = ROOT / "docs/testing/AdvancedEvolutionFixture.java"
+ROOT = Path(__file__).resolve().parents[4]
+ORACLE = ROOT / "tests/access/reading/tables/AdvancedEvolutionOracle.java"
+FIXTURE = ROOT / "tests/access/reading/tables/AdvancedEvolutionFixture.java"
 JACKCESS_SHA256 = "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc"
 FIELDS = [
     "ID", "Label", "Ordinary", "Cached", "Notes", "LaterMemo", "Amount",
@@ -115,7 +115,7 @@ def main():
         "compare_browsing.py", "compare_cached_pages.py",
         "compare_calculated_decimals.py", "cli_tsv.py",
     )
-    paths.extend(ROOT / "docs/testing" / name for name in helper_names)
+    paths.extend(ROOT / "tests/access" / name for name in helper_names)
     hashes = {str(path): digest(path) for path in paths}
     controls = 0
     compared_cells = 0

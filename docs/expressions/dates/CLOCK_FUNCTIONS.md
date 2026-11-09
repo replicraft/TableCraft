@@ -121,12 +121,12 @@ callbacks. Query tests cover inert preparation, repeated/correlated reads, missi
 context, eager/unused failures, group keys/equivalence and field-name preservation.
 CLI tests cover fixed readings, invalid inputs/calls, lazy discovery, UTC system-day
 checks and invalid-timezone refusal. A worker test covers request isolation and
-recovery after missing context. The [independent recipe](../../testing/compare_clock.py)
+recovery after missing context. The [independent recipe](../../../tests/access/reading/tables/compare_clock.py)
 uses Python Gregorian models and optional sequential/indexed projections over
 Jackcess-decoded row inputs, checking unchanged source bytes. Native Windows Access
 remains unrun; model/reader checks do not establish native compatibility.
 
-The original [Timer runner](../../testing/compare_timer.py) independently binary-searches
+The original [Timer runner](../../../tests/access/queries/expressions/compare_timer.py) independently binary-searches
 adjacent binary32 values using exact integer/rational distances and even-parity
 tie handling. It checks deterministic scalar/query readings, sub-tick truncation,
 rounding boundaries, midnight, unchanged DATE seconds and optional original

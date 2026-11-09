@@ -119,7 +119,7 @@ retirements emit no allocation edits and retain the existing nonretirement gates
 this does not qualify unrelated allocator metadata. Budgets and cancellation cover
 the whole operation, and no candidate is published after any failed proof.
 
-The [verification record](results/ace16-batch-delete-native-2026-10-26.json)
+The [verification record](../../results/rows/ace16-batch-delete-native-2026-10-26.json)
 records 239 passing engine functions, including nine new controls, and three
 compile-fail documentation checks. Focused tests cover complete final-image
 child/parent removal, partial-NULL composites, multiple incoming edges, exact
@@ -173,7 +173,7 @@ requests still fail before this deduplication. Generated requests copy checked
 original raw records through the existing row walker. All captured rows must have
 qualified ordinary framing. No pointer into a temporary page or reconstructed
 scalar record becomes an expected payload. The association service now retains
-[projected fixed-key facts](CASCADE_KEY_FACTS.md), with explicit dense-to-native
+[projected fixed-key facts](../indexes/CASCADE_KEY_FACTS.md), with explicit dense-to-native
 column mapping and complete original row/root alignment. It avoids retaining
 unrelated Memo/OLE in this redundant pass. Full before/final validation still
 decodes those payloads and keeps the same limits; projection supplies no new
@@ -204,7 +204,7 @@ partial copies were preserved and reopened; the cyclic failures left the origina
 bytes unchanged. These cases remain refused rather than being qualified merely
 because the engineering work queue could terminate.
 
-The [implementation verification record](results/ace16-cascading-delete-native-2026-10-26.json)
+The [implementation verification record](../../results/rows/ace16-cascading-delete-native-2026-10-26.json)
 records 255 distinct passing unit/integration functions, including 16 new controls,
 and three compile-fail documentation checks. Independent tests cover frozen
 association expansion, NULL exemption, explicit/generated overlap, valid stored
@@ -237,7 +237,7 @@ native Microsoft Access save/reopen or permit normal ACE writes.
 
 ## Focused implementation verification
 
-The initial root-leaf [implementation record](results/ace16-delete-preview-native-2026-10-26.json)
+The initial root-leaf [implementation record](../../results/rows/ace16-delete-preview-native-2026-10-26.json)
 records 117 passing unit/integration tests: thirteen new and 104 existing writer
 and page-encoding regressions. Three compile-fail documentation tests also pass,
 including the new candidate/qualified-plan separation. Strict library, author and
@@ -265,7 +265,7 @@ counted as passing by this implementation record.
 
 ## Nonempty-leaf tree extension
 
-The [tree-extension record](results/ace16-delete-trees-native-2026-10-26.json)
+The [tree-extension record](../../results/rows/ace16-delete-trees-native-2026-10-26.json)
 records 126 passing unit/integration tests, including nine new tree controls,
 and three retained compile-fail documentation tests. Strict selected library,
 test and example lint, minimal library compilation and twelve-file formatting
@@ -333,7 +333,7 @@ unsafe synthetic source/candidate and failed probe are retained separately from
 accepted results. Ordinary table checks are not presented as global allocation
 qualification.
 
-The [contraction implementation record](results/ace16-delete-contraction-native-2026-10-26.json)
+The [contraction implementation record](../../results/rows/ace16-delete-contraction-native-2026-10-26.json)
 records 138 passing engine unit/integration functions: twelve new contraction
 controls, twenty-two earlier DELETE controls, ninety-eight writer regressions and
 six private encoding controls. Three compile-fail documentation tests also pass.
@@ -381,7 +381,7 @@ constraint, preservation and macro qualification boundaries remain unchanged.
 Existing topology and mutation safeguards remain in force; internal sibling
 chains must qualify as described below.
 
-The [encoded-key implementation record](results/ace16-delete-encoded-native-2026-10-26.json)
+The [encoded-key implementation record](../../results/rows/ace16-delete-encoded-native-2026-10-26.json)
 records 178 passing engine functions, including ten new controls: two private
 preserved-wire/resource controls and eight independent public-contract tests.
 Root-leaf Short Text General families and Binary cases run in both ACE16 headers;
@@ -432,7 +432,7 @@ ACE write capability. The preserved public-writer baseline describes an older
 frozen binary's internal-chain refusals; a repaired original-file candidate replay
 requires a new frozen artifact and separate acceptance record.
 
-The [internal-chain implementation record](results/ace16-delete-internal-chains-native-2026-10-26.json)
+The [internal-chain implementation record](../../results/rows/ace16-delete-internal-chains-native-2026-10-26.json)
 records 187 passing engine functions, including nine new controls: two author
 integration tests, six independent integration tests and one direct after-audit
 causal test. The remaining 178 functions retain prior DELETE, encoded-key,
@@ -452,7 +452,7 @@ expected values required no correction.
 
 ## Original-file internal-chain acceptance
 
-The [repaired frozen-tool replay](results/ace16-delete-internal-chains-originals-2026-10-26.json)
+The [repaired frozen-tool replay](../../results/rows/ace16-delete-internal-chains-originals-2026-10-26.json)
 passes all 32 controls: twenty candidates and twelve typed refusals over 96
 commands. All source/request pins remain unchanged, and request bytes match the
 initial refusal baseline. The sixteen previously unmet positives now pass with
@@ -468,7 +468,7 @@ than identical reference bytes or native Access save/reopen qualification.
 
 ## Original-file Short Text and Short Binary acceptance
 
-The separate [encoded-key original replay](results/ace16-delete-encoded-internal-chains-originals-2026-10-26.json)
+The separate [encoded-key original replay](../../results/rows/ace16-delete-encoded-internal-chains-originals-2026-10-26.json)
 passes 48 controls on the same committed tool: 36 candidates and twelve
 unsupported-profile refusals. Both previously refused Modern Text height-two
 delete-all selections now succeed. The original files and selectors are unchanged.
@@ -525,7 +525,7 @@ scans use fallible allocation, cancellation and cumulative budgets. This remains
 a separate non-journalable engineering candidate, not ordinary ACE DELETE or
 native Access save qualification.
 
-The [ignored-index DELETE implementation record](results/ace16-delete-ignored-native-2026-10-26.json)
+The [ignored-index DELETE implementation record](../../results/rows/ace16-delete-ignored-native-2026-10-26.json)
 records 221 passing engine functions, including nine new integration controls:
 two author profile matrices and seven independent multi-index/constraint controls.
 The remaining functions include prior writer/DELETE coverage and twenty-five
@@ -545,7 +545,7 @@ to address these fixture or test-authoring failures.
 
 ## Original-file ignore-NULL acceptance
 
-The [frozen-tool replay](results/ace16-delete-ignored-original-replay-2026-10-26.json)
+The [frozen-tool replay](../../results/rows/ace16-delete-ignored-original-replay-2026-10-26.json)
 passes all fifty positive selections on six unchanged registered originals.
 Independent checks cover per-index eligible subsets, exact retained encoded
 keys/references, original leaf partitions and separator maxima, maps, roots and
@@ -593,7 +593,7 @@ and ignored-index contracts, cumulative budgets/cancellation and non-journalable
 candidate isolation remain. Normal ACE/backend SQL DELETE, macro eligibility and
 native Access save/reopen are not enabled by this extension.
 
-The [RESTRICT implementation record](results/ace16-delete-restrict-native-2026-10-26.json)
+The [RESTRICT implementation record](../../results/rows/ace16-delete-restrict-native-2026-10-26.json)
 records 230 passing engine functions: nine new assertion functions and 221
 existing DELETE/read/writer/private regressions. Two author tests reuse the
 peer-authored synthetic cross-table fixture with their own expected rows and

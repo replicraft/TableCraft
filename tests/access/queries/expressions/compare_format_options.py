@@ -3,6 +3,7 @@
 Reuse original Python Decimal/Gregorian reference models, never TableCraft's typed
 formatter as the oracle. Native getters remain read-only and source hashes checked.
 """
+from engineering_paths import reference_file
 
 import argparse
 import datetime as dt
@@ -70,7 +71,7 @@ def main():
     for database in args.database:
         before = hashlib.sha256(database.read_bytes()).hexdigest()
         tagged = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar,
-                     RECIPES / "TableDataOracle.java", database, "ScalarSamples")
+                     reference_file('tests/access/reading/tables/TableDataOracle.java'), database, "ScalarSamples")
         references = []
         for line in tagged.splitlines():
             fields = line.split("\t")

@@ -39,8 +39,8 @@ def verify(report_path, freeze_path):
 
     model_source = next(item for item in freeze['inputs'] if item['path'].endswith('variable-encoded-reference-next-20261027/action_model.py'))
     proof_source = next(item for item in freeze['inputs'] if item['path'].endswith('variable-encoded-reference-next-20261027/proof.py'))
-    assert function_bodies(model_source['path']) == function_bodies('docs/testing/variable_encoded_split_sources/action_model.py')
-    assert function_bodies(proof_source['path']) == function_bodies('docs/testing/variable_encoded_split_sources/reference_proof.py')
+    assert function_bodies(model_source['path']) == function_bodies('tests/access/indexes/variable_encoded_split_sources/action_model.py')
+    assert function_bodies(proof_source['path']) == function_bodies('tests/access/indexes/variable_encoded_split_sources/reference_proof.py')
 
     total_rows = 0
     total_entries = 0

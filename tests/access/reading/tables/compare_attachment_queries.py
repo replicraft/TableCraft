@@ -3,6 +3,7 @@
 Uses the original AttachmentFixture recipe and Jackcess reader; this is an
 explicit flattening/membership model, not a Microsoft Access SQL oracle.
 """
+from engineering_paths import reference_file
 import argparse
 from pathlib import Path
 import tempfile
@@ -27,7 +28,7 @@ def main():
     controls = 0
     for path in [args.ace2007, args.ace2016, args.ace2019]:
         before = digest(path)
-        tagged = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar, RECIPES / "AttachmentFixture.java", "--query-metadata", path)
+        tagged = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar, reference_file('tests/access/reading/tables/AttachmentFixture.java'), "--query-metadata", path)
         parents, children, child_ids, encoded_payloads = {}, {}, {}, {}
         for line in tagged.splitlines():
             cells = line.split("\t")
@@ -82,7 +83,7 @@ def main():
                 controls += 1
         # Explicit logical decoder view. Public getFileData() supplies original
         # bytes; this deliberately does not claim native SQL representation.
-        decoded = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar, RECIPES / "AttachmentFixture.java", "--inspect", path)
+        decoded = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar, reference_file('tests/access/reading/tables/AttachmentFixture.java'), "--inspect", path)
         payloads = {parent: [] for parent in parents}
         decoded_ids = {parent: [] for parent in parents}
         for line in decoded.splitlines():
@@ -93,7 +94,7 @@ def main():
         assert all(len(payloads[p]) == len(children[p]) for p in parents)
         # Check the physical OLE declaration and raw flat carrier independently
         # of the public encoded getter used by the original metadata recipe.
-        physical = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar, RECIPES / "AttachmentStoredDataOracle.java", path)
+        physical = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar, reference_file('tests/access/reading/tables/AttachmentStoredDataOracle.java'), path)
         declaration, *physical_rows = physical.splitlines()
         assert declaration == "D\tFileData\tOLE\tBinary"
         expected_physical = ["\t".join(["C", parent, identity, value]) for parent in parents for identity, value in zip(child_ids[parent], encoded_payloads[parent], strict=True)]
@@ -250,7 +251,7 @@ def main():
         # Corrupt the final original wrapper/checksum without changing storage
         # framing. Metadata remains readable; completed decoding must fail even
         # if TOP/filter would omit that child. Mutate only a disposable copy.
-        metadata = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar, RECIPES / "AttachmentFixture.java", "--metadata", path)
+        metadata = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar, reference_file('tests/access/reading/tables/AttachmentFixture.java'), "--metadata", path)
         encoded = bytes.fromhex(metadata.splitlines()[-1].split("\t")[5][1:])
         original = path.read_bytes()
         assert original.count(encoded) == 1

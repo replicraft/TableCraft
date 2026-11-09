@@ -79,14 +79,14 @@ arithmetic, resource exhaustion and every observed cancellation checkpoint.
 These are specification-derived engineering controls; Windows Access execution
 remains unrun.
 
-The original [retained String replay](../../testing/compare_retained_logical.py) passes
+The original [retained String replay](../../../tests/access/reading/tables/compare_retained_logical.py) passes
 2,056 CLI invocations: 3,448 successful value/subtype controls and 320 buffered
 refusals. Decimal nearest-even rounding and independent per-bit signed 32/64-bit
 truth tables supply the expected answers for both CLI evaluators. Coverage includes
 LeftB/RightB/MidB, repaired nested slices with an odd intermediate, all six
 logical operators, en-US/de-DE Text, exact signed LongLong boundaries, typed NULL
 tables, eager query scopes, conversion-order diagnostics and declaration-sensitive
-widening. The [recorded report](../../testing/results/retained-logical-2026-10-24.json)
+widening. The [recorded report](../../../tests/results/general/retained-logical-2026-10-24.json)
 retains the counts and CLI SHA-256, unchanged before/after the run:
 `5d2c57f043b15264c0d59395e6f0940d6b73b344cbff4884df90e08c2650f9b6`.
 No database fixtures, third-party resources or native Access execution are used.
@@ -185,7 +185,7 @@ correlations, eager errors and per-item versus parent membership. Proptest
 compares all five Int64 binary operators against independent per-bit truth tables;
 generated collection controls use parity and independent membership models.
 
-The original [independent runner](../../testing/compare_integer_logic.py) passes 1,394
+The original [independent runner](../../../tests/access/reading/tables/compare_integer_logic.py) passes 1,394
 integer/predicate/eager/native-field controls. Its per-bit model covers all four
 integer widths through both CLI commands. Read-only Jackcess getters supply ID
 references for unchanged Jet 4, ACE 2007 and ACE 16 2016/2019-family fixtures;
@@ -193,7 +193,7 @@ TableCraft applies the actual query operators. Source hashes are checked before
 and after. These are independent storage/integration controls, not native Access
 SQL execution. No third-party fixture or code is added by this change.
 
-The original [rounding comparison runner](../../testing/compare_logical_coercion.py)
+The original [rounding comparison runner](../../../tests/access/reading/tables/compare_logical_coercion.py)
 passes 2,658 independent controls using Decimal nearest-even expectations,
 per-bit tables and exact binary quarter values. It checks both CLI commands,
 explicit en-us/de-de policies, exact large-Text promotion, eager failures and

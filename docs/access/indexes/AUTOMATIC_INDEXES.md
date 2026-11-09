@@ -98,9 +98,9 @@ relocated-root reads with sequential order and reject invalid row ceilings befor
 Existing typed/projection/GUID adapter controls and CLI argument/order checks
 retain their separate coverage.
 
-The original [independent runner](../../testing/compare_automatic_indexes.py) passes 86
+The original [independent runner](../../../tests/access/indexes/native/compare_automatic_indexes.py) passes 86
 controls against inert Jackcess getters over four unchanged registered
-[20,000-row inputs](../../testing/FIXTURES.md#original-large-index-inputs). It checks all six key
+[20,000-row inputs](../../../tests/reports/reading/FIXTURES.md#original-large-index-inputs). It checks all six key
 carriers, NULL/equality/ranges, exact LongLong boundaries, prepared parameters,
 nested full counts, sequential encounter order, TOP/First/Last and buffered refusals. Successful default-limit selections
 also demonstrate that the oversized complete table was not materialized. Only
@@ -109,7 +109,7 @@ Access execution or native optimizer equivalence.
 
 ```sh
 cargo build -p tablecraft-cli --locked --offline
-python3 docs/testing/compare_automatic_indexes.py \
+python3 tests/run.py tests/access/indexes/native/compare_automatic_indexes.py \
   --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar \
   --cli target/debug/tablecraft --directory .cache/tablecraft-fixtures/large-indexes
 ```
@@ -130,10 +130,10 @@ during these measurements. Times include process startup and output formatting.
 | ACE 2016 | 99.157 ± 9.231 | 4.967 ± 0.365 | 4.918 ± 0.165 | 20.16× |
 | ACE 2019 | 90.227 ± 1.090 | 4.812 ± 0.678 | 5.375 ± 0.451 | 16.79× |
 
-Raw [three-path measurements](../../testing/results/automatic-index-2026-10-24.json)
+Raw [three-path measurements](../../../tests/results/indexes/automatic-index-2026-10-24.json)
 retain every sample and exact command. Earlier
-[two-path](../../testing/results/automatic-index-initial-2026-10-24.json) and
-[three-path](../../testing/results/automatic-index-pre-order-2026-10-24.json) runs are
+[two-path](../../../tests/results/indexes/automatic-index-initial-2026-10-24.json) and
+[three-path](../../../tests/results/indexes/automatic-index-pre-order-2026-10-24.json) runs are
 retained as preliminary measurements before the source-order correction; they
 are excluded from the table above. No outliers were removed, including the noisy
 Jet 4 and ACE 2016 samples. Automatic and explicit index times overlap here and
@@ -162,7 +162,7 @@ predicates do not acquire this NULL selection. Short Text equality has its
 separate comparer-qualified contract above. An unsafe AND does not contribute a
 partial NULL hint, preserving eager errors.
 
-The original [NULL selection runner](../../testing/compare_null_indexes.py) passes
+The original [NULL selection runner](../../../tests/access/indexes/native/compare_null_indexes.py) passes
 216 controls over four-family Binary indexes and both General versions of Text indexes against
 inert sequential Jackcess getters. It compares automatic and explicit ascending/
 descending selections, complete reads versus a smaller row ceiling, TOP/First/

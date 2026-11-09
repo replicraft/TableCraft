@@ -3,6 +3,7 @@
 Jackcess supplies inert metadata and verifies its own original file encoding.
 Only TableCraft executes SQL. No native Access behavior or save is qualified.
 """
+from engineering_paths import reference_file
 import argparse
 import csv
 import datetime
@@ -44,7 +45,7 @@ def main():
     def java(*arguments):
         return subprocess.check_output([
             "java", "-Dstdout.encoding=UTF-8", "-cp", str(args.jar),
-            str(RECIPES / "AttachmentMetadataFixture.java"), *map(str, arguments),
+            str(reference_file('tests/access/reading/tables/AttachmentMetadataFixture.java')), *map(str, arguments),
         ], text=True, encoding="utf-8")
 
     def query(path, sql, options=(), accepted=True, diagnostic=None):

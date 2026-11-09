@@ -1,7 +1,7 @@
 # Boolean relationship read audits
 
-The original [producer](BooleanRelationshipFixture.java) and
-[read-only oracle](BooleanRelationshipOracle.java) exercise stored Boolean
+The original [producer](../../access/schema/fields/BooleanRelationshipFixture.java) and
+[read-only oracle](../../access/schema/fields/BooleanRelationshipOracle.java) exercise stored Boolean
 foreign-key memberships in ACE 2016/2019 files. This is independent offline
 engineering evidence, not native Access write, cascade or SQL qualification.
 
@@ -47,7 +47,7 @@ row locations without executing expressions or application content.
 
 ## Independent replay
 
-The [runner](compare_boolean_relationships.py) independently checks exact stored
+The [runner](../../access/schema/fields/compare_boolean_relationships.py) independently checks exact stored
 tuple memberships, parent uniqueness and one-to-one child uniqueness. It compares
 ordinary CLI query results with tagged getters, index-ordered query results with
 independent index cursors, and complete read-audit coverage for both endpoints.
@@ -64,7 +64,7 @@ and after replay. Generated databases and compiled classes stay ignored.
 
 ## Accepted results
 
-On 24 October 2026, the [accepted report](results/boolean-relationships-2026-10-24.json)
+On 24 October 2026, the [accepted report](../../results/general/boolean-relationships-2026-10-24.json)
 records 78 passing controls and 67,340 getter/index result cells across both
 profiles. Each clean input retains 5,714 rows and four confirmed node/leaf roots.
 Fourteen disposable corrupt copies are refused without stdout, and both original
@@ -76,11 +76,11 @@ The immutable CLI SHA-256 is
 `945882fb9dfc1c67b953458923e4a9a39c09f9bd21cbec954f342b9f051ad245`.
 These checks broaden read-audit coverage only. They do not authorize native
 Boolean-key edits or qualify cascades, shared-file behavior or Access execution.
-[Fixture provenance](FIXTURES.md#original-boolean-relationship-inputs) records
+[Fixture provenance](../reading/FIXTURES.md#original-boolean-relationship-inputs) records
 all original file hashes, ownership and excluded capability probes.
 
 ```sh
-python3 docs/testing/compare_boolean_relationships.py \
+python3 tests/run.py tests/access/schema/fields/compare_boolean_relationships.py \
   --cli .cache/tablecraft-bin/boolean-fk-audits-20261024 \
   --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar \
   --directory .cache/tablecraft-fixtures/boolean-relationships-20261024 \

@@ -57,14 +57,14 @@ def main():
         for table, memo in (("Histories", "Notes"), ("OtherHistories", "Details")):
             java = ["java", "-Dfile.encoding=UTF-8", "-Dstdout.encoding=UTF-8", "-cp", args.jar]
             metadata = run(
-                *java, "docs/testing/VersionHistoryQueryOracle.java", path, table, memo
+                *java, "tests/access/queries/execution/VersionHistoryQueryOracle.java", path, table, memo
             ).splitlines()
             declaration = metadata[0].split("\t")
             assert declaration[0] == "D" and len(declaration) == 4
             hidden, value, modified = map(decoded, declaration[1:])
             parents = [line.split("\t") for line in metadata[1:]]
             tagged = run(
-                *java, "docs/testing/VersionHistoryOracle.java", path, table, memo
+                *java, "tests/access/reading/tables/VersionHistoryOracle.java", path, table, memo
             ).splitlines()
             assert len(parents) == len(tagged)
             children = [records(line) for line in tagged]

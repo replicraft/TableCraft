@@ -14,10 +14,10 @@ while distinguishing this from a stored table-field type. The
 requires named declarations and explicitly supplied values.
 Jackcess's [parameter map](https://github.com/jahlborn/jackcess/blob/master/src/main/java/com/healthmarketscience/jackcess/impl/query/QueryFormat.java)
 maps code zero to Value. The reviewed local 5.0.4 JAR's bytecode confirms the same
-mapping; its existing provenance/hash remains in [FIXTURES.md](../testing/FIXTURES.md).
+mapping; its existing provenance/hash remains in [FIXTURES.md](../../tests/reports/reading/FIXTURES.md).
 No upstream implementation or fixture bytes were copied.
 
-The original [registered-definition comparison](../testing/compare_example_saved_definitions.py)
+The original [registered-definition comparison](../../tests/access/queries/saved/compare_example_saved_definitions.py)
 uses read-only Jackcess query/parameter getters with expression evaluation
 disabled. All 51 read definitions in the registered ACE 2007 application's
 59-query inventory reconstruct and round-trip through TableCraft. Their parameter
@@ -28,7 +28,7 @@ all execute: missing application sources, VBA UDFs and execution policies retain
 their own failures. Neither getter nor comparison executes SQL or application code.
 
 ```sh
-python3 docs/testing/compare_example_saved_definitions.py \
+python3 tests/run.py tests/access/queries/saved/compare_example_saved_definitions.py \
   --cli target/debug/tablecraft \
   --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar
 ```

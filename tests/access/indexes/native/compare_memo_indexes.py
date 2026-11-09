@@ -3,6 +3,7 @@
 The original generator uses the reviewed Jackcess artifact. This is independent
 reader/writer evidence, not native Access creation/save or SQL locale evidence.
 """
+from engineering_paths import reference_file
 import argparse
 from collections import defaultdict
 from pathlib import Path
@@ -22,7 +23,7 @@ def main():
         args.directory.mkdir(exist_ok=False)
         for profile, suffix in PROFILES:
             for version in [0, 1]:
-                run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar, RECIPES / "MemoIndexFixture.java", args.directory / f"MemoIndexes-{profile}-{version}.{suffix}", profile, version)
+                run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar, reference_file('tests/access/indexes/native/MemoIndexFixture.java'), args.directory / f"MemoIndexes-{profile}-{version}.{suffix}", profile, version)
     controls = 0
     for profile, suffix in PROFILES:
         for version in [0, 1]:
@@ -34,7 +35,7 @@ def main():
                 root = next(int(line.split("\t")[3]) for line in metadata.splitlines() if line.startswith(index + "\t"))
                 assert image[root * 4096] == 3, (profile, version, index, "multi-page root")
             for table, index, count in [("MemoIndexed", "MemoAsc", 128), ("MemoIndexed", "MemoDesc", 128), ("MemoChecked", "CheckedMemo", 12), ("MemoEmpty", "EmptyMemo", 0), ("MemoUnique", "UniqueMemo", 1)]:
-                expected = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar, RECIPES / "TableDataOracle.java", path, "--index", table, index)
+                expected = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar, reference_file('tests/access/reading/tables/TableDataOracle.java'), path, "--index", table, index)
                 lines = [line.split("\t") for line in expected.splitlines()]
                 assert len(lines) == count
                 assert run(args.rows, path, table, "--index", index, "--bytes", 268435456) == expected, (profile, version, index, "full Memo values")
@@ -49,14 +50,14 @@ def main():
                     assert "unsupported" not in report.lower() and "checked" in report.lower()
                 controls += 4
             for index in ["MemoAsc", "MemoDesc"]:
-                raw = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar, RECIPES / "TableDataOracle.java", path, "--index", "MemoIndexed", index)
+                raw = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar, reference_file('tests/access/reading/tables/TableDataOracle.java'), path, "--index", "MemoIndexed", index)
                 values = [(int(row[1][4:]), None if row[2] == "N" else bytes.fromhex(row[2][1:]).decode("utf-8")) for row in (line.split("\t") for line in raw.splitlines())]
                 lengths = "ID\tUnits\n" + "".join(f"{key}\t" + ("NULL" if value is None else str(len(value.encode("utf-16-le")) // 2)) + "\n" for key, value in sorted(values))
                 assert run(args.cli, "query", "run", "SELECT ID, Len(Label) AS Units FROM MemoIndexed ORDER BY ID", "--database", path, "--index", "MemoIndexed", index) == lengths
                 filtered = "ID\n" + "".join(str(key) + "\n" for key, value in sorted(values) if value is not None and value.endswith("left"))
                 assert run(args.cli, "query", "run", "SELECT ID FROM MemoIndexed WHERE Right(Label,4)='left' ORDER BY ID", "--database", path, "--index", "MemoIndexed", index, "--collation", "ordinal") == filtered
                 controls += 2
-                oracle = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar, RECIPES / "TextRangeOracle.java", path, index, "MemoIndexed")
+                oracle = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar, reference_file('tests/access/queries/expressions/TextRangeOracle.java'), path, index, "MemoIndexed")
                 expected = defaultdict(list)
                 for line in oracle.splitlines():
                     name, row = line.split("\t", 1)

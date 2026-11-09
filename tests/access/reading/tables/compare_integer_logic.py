@@ -3,6 +3,7 @@
 No Access SQL engine is invoked. Original native sources are hash checked before
 and after queries; Jackcess supplies only read-only typed integer reference data.
 """
+from engineering_paths import reference_file
 
 import argparse
 import hashlib
@@ -71,7 +72,7 @@ def main():
     for database in args.database:
         before = hashlib.sha256(database.read_bytes()).hexdigest()
         tagged = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar,
-                     RECIPES / "TableDataOracle.java", database, "ScalarSamples")
+                     reference_file('tests/access/reading/tables/TableDataOracle.java'), database, "ScalarSamples")
         identities = sorted(int(line.split("\t")[1].removeprefix("I32:")) for line in tagged.splitlines())
         sql = "SELECT ID,ID And 2,Not ID FROM ScalarSamples ORDER BY ID"
         expected = [[str(n), str(bits(n, 2, 32, operators[0][1])), str(-n - 1)] for n in identities]

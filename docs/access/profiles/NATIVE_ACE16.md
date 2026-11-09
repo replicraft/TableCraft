@@ -57,15 +57,15 @@ Six original fixture recipes now accept V2016/V2019: Scalar, Index, Property,
 Relationship, Validation and Definition. The reviewed Jackcess 5.0.4 artifact
 generates fresh files; they are not retagged older files. Generation refuses
 existing output directories/files. Inputs/JAR remain untracked and are not CI
-requirements. [Fixture provenance and hashes](../../testing/FIXTURES.md) identify observed inputs.
+requirements. [Fixture provenance and hashes](../../../tests/reports/reading/FIXTURES.md) identify observed inputs.
 
 ```sh
 cargo build -p tablecraft-cli --locked
 cargo build -p tablecraft-ace --examples --locked
-python3 docs/testing/compare_ace16.py --jar path/to/jackcess-5.0.4.jar --cli target/debug/tablecraft --rows target/debug/examples/table_data --ranges target/debug/examples/index_range --directory new-fixture-directory --generate
+python3 tests/run.py tests/access/reading/tables/compare_ace16.py --jar path/to/jackcess-5.0.4.jar --cli target/debug/tablecraft --rows target/debug/examples/table_data --ranges target/debug/examples/index_range --directory new-fixture-directory --generate
 ```
 
-[The runner](../../testing/compare_ace16.py) verifies original headers and unchanged
+[The runner](../../../tests/access/reading/tables/compare_ace16.py) verifies original headers and unchanged
 hashes, all five catalog fields (480 records across 12 files), exact mixed scalar
 rows, 22 properties, complete relationship inventories, ten child-table integrity
 reports, twelve validation-table coverage reports, 28 Int32 range cases, and
@@ -100,7 +100,7 @@ currently return a type error. The CLI renders extended dates as
 `#YYYY-MM-DD HH:MM:SS.fffffff#`; it does not implicitly convert literals or legacy
 `date` parameters into the extended carrier.
 
-The original [modern fixture recipe](../../testing/ModernScalarFixture.java) generates
+The original [modern fixture recipe](../../../tests/access/reading/tables/ModernScalarFixture.java) generates
 V2016/V2019 inputs with signed extremes, integers beyond double precision,
 NULLs, years 1–9999, leap dates and single-tick fractions. Independent exact row
 comparisons cover seven and thirteen rows respectively. The runner also checks
@@ -112,7 +112,7 @@ not Microsoft Access qualification.
 ```sh
 java -cp path/to/jackcess-5.0.4.jar docs/testing/ModernScalarFixture.java new-2016.accdb V2016
 java -cp path/to/jackcess-5.0.4.jar docs/testing/ModernScalarFixture.java new-2019.accdb V2019
-python3 docs/testing/compare_ace16_scalars.py --jar path/to/jackcess-5.0.4.jar --cli target/debug/tablecraft --rows target/debug/examples/table_data --ace2016 new-2016.accdb --ace2019 new-2019.accdb
+python3 tests/run.py tests/access/reading/tables/compare_ace16_scalars.py --jar path/to/jackcess-5.0.4.jar --cli target/debug/tablecraft --rows target/debug/examples/table_data --ace2016 new-2016.accdb --ace2019 new-2019.accdb
 ```
 
 References: [Microsoft Large Number](https://support.microsoft.com/en-us/access/using-the-large-number-data-type),
@@ -153,7 +153,7 @@ remaining index encodings, composite seeks/mutation and all ACE writes remain
 unqualified.
 
 
-[Modern storage histories](../../testing/MODERN_SCALAR_HISTORIES.md) now independently
+[Modern storage histories](../../../tests/reports/rows/MODERN_SCALAR_HISTORIES.md) now independently
 exercise 19,902 retained rows per 2016/2019-family input with Large Number fields,
 2019 Date/Time Extended, added columns, null-mask growth, updates/deletes and
 scattered Large Number index references. These extend observed read/query

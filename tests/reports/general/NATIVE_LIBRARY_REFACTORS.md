@@ -6,7 +6,7 @@ flags. Each command has three warmups and nine measured runs. No Cargo builds or
 other agent work ran during the final cohort; background OS work and thermals
 were not controlled. No native app windows were opened.
 
-[The complete report](results/native-library-refactors-2026-11-08.json) retains
+[The complete report](../../results/general/native-library-refactors-2026-11-08.json) retains
 input/source/binary hashes, every final sample, observed peak RSS and earlier
 exploratory samples. The earlier cohort whose ignored filename said `quiet`
 actually overlapped compilation; it is retained as noisy evidence. Do not use
@@ -39,7 +39,7 @@ The runtime now consumes a whole-owned `NativeImageSource` for immutable reviews
 Every review admits complete retained capacity and control storage under its own
 budget. Arbitrary sliced `Bytes` cannot establish that witness. Native save and
 recovery still re-read/requalify the real source; cached bytes grant no authority.
-[The ownership contract](../access/NATIVE_READING.md#shared-immutable-native-image-ownership)
+[The ownership contract](../../../docs/access/NATIVE_READING.md#shared-immutable-native-image-ownership)
 retains these distinctions.
 
 ## Optional parallel page decoding
@@ -71,7 +71,7 @@ retains serial streaming. Parallel removal captures at most 64 MiB and refuses
 other operations/ciphers without fallback. Native validation/publication remain
 serial. The default desktop dependency tree contains no Rayon; browser targets
 do not inherit this feature's native dependency. See the
-[parallel removal contract](../access/storage/NATIVE_ENCRYPTION.md#explicit-parallel-agile-removal).
+[parallel removal contract](../../../docs/access/storage/NATIVE_ENCRYPTION.md#explicit-parallel-agile-removal).
 
 ## Reproduction
 

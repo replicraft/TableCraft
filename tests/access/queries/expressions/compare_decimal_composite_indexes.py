@@ -36,7 +36,7 @@ def main():
             if set(roots) != set(indexes):
                 raise RuntimeError("Missing native Decimal tuple roots")
             sequential = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar,
-                "docs/testing/TableDataOracle.java", path, "--date-bits", table)
+                "tests/access/reading/tables/TableDataOracle.java", path, "--date-bits", table)
             if run(args.rows, path, table, "--date-bits") != sequential:
                 raise RuntimeError("Exact mixed Decimal sequential carriers differ")
             for index in indexes:
@@ -46,7 +46,7 @@ def main():
                 if table == "DecimalMixed" and index == "MixedAsc":
                     corrupt_root = root
                 expected = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar,
-                    "docs/testing/TableDataOracle.java", path, "--date-bits", "--index", table, index)
+                    "tests/access/reading/tables/TableDataOracle.java", path, "--date-bits", "--index", table, index)
                 if len(expected.splitlines()) != rows:
                     raise RuntimeError("Unexpected independent Decimal tuple row count")
                 actual = run(args.rows, path, table, "--date-bits", "--index", index)

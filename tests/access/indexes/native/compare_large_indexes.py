@@ -1,4 +1,5 @@
 """Compare larger native indexed queries with independent read-only stored cursors."""
+from engineering_paths import reference_file
 import argparse
 import csv
 import hashlib
@@ -57,7 +58,7 @@ def main():
     execution = ["--execution-steps", "10000000"]
     with tempfile.TemporaryDirectory(prefix="tablecraft-large-index-oracle-") as temporary:
         subprocess.run(["javac", "-cp", str(args.jar), "-d", temporary,
-                        str(RECIPES / "LargeIndexFixture.java"), str(RECIPES / "IndexRowsOracle.java")], check=True)
+                        str(reference_file('tests/access/indexes/native/LargeIndexFixture.java')), str(reference_file('tests/access/indexes/native/IndexRowsOracle.java'))], check=True)
         java = ["java", "-Dstdout.encoding=UTF-8", "-cp", os.pathsep.join((str(args.jar), temporary))]
         if args.generate:
             args.directory.mkdir(parents=True, exist_ok=True)

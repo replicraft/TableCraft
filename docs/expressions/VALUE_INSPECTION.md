@@ -135,12 +135,12 @@ Independent named subtype goldens, state/array/Byte controls, a fixed-seed
 256-case wide-bound property and scalar/bound tests cover carrier widths, limits,
 evaluation order, metadata-only binding, grouping, parameter reuse, name allocation,
 every observed cancellation checkpoint and late failures. The original
-[fixture recipe](../testing/SavedInspectionFixture.java) creates twelve inert
+[fixture recipe](../../tests/access/queries/saved/SavedInspectionFixture.java) creates twelve inert
 inspection definitions alongside the original forest's fourteen, without executing
-SQL, formulas or VBA. Its [runner](../testing/compare_value_inspection.py) passes
+SQL, formulas or VBA. Its [runner](../../tests/access/reading/tables/compare_value_inspection.py) passes
 284 scalar/bounds/getter/rendering/direct/saved/named/refusal controls across four
 original Jet 4/ACE 2007/2016/2019 files with unchanged bytes. Type-name display
-quoting is decoded separately from TSV transport. See [provenance](../testing/FIXTURES.md#value-inspection-query-inputs).
+quoting is decoded separately from TSV transport. See [provenance](../../tests/reports/reading/FIXTURES.md#value-inspection-query-inputs).
 
 These controls establish TableCraft behavior and independent metadata/row agreement;
 Jackcess is not a query/VBA oracle. Native SQL admissibility of Array/inspection
@@ -207,12 +207,12 @@ Two focused expression tests, four query tests and a CLI test cover fixed extent
 wrapper normalization, source carrier preservation, parameter reuse, compound
 consumers, streaming parity, eager failures and every observed query cancellation
 point. Existing Binary/Variant array tests remain passing. See the
-[verification record](../testing/results/guid-inspection-2026-10-25.json).
+[verification record](../../tests/results/general/guid-inspection-2026-10-25.json).
 This closes an implementation gap without completing native qualification or P0.
 
 ## Native GUID inspection replay — 25 October 2026
 
-The original [inspection runner](../testing/compare_guid_inspection.py) passes 84 CLI
+The original [inspection runner](../../tests/access/reading/tables/compare_guid_inspection.py) passes 84 CLI
 controls over four unchanged Jet 4/ACE 2007/ACE 2016/ACE 2019 scalar originals.
 Four independent read-only getters supply GUID presence and identities. Only
 TableCraft executes SQL; expected observer values follow the explicit fixed
@@ -225,7 +225,7 @@ the earlier executable's four type-name refusals and twelve current NULL-bound,
 dimension and eager-division failures. Four earlier IsArray controls retain their
 previous False results, documenting the changed observer behavior separately.
 
-The [audited report](../testing/results/guid-inspection-replay-2026-10-25.json) verifies
+The [audited report](../../tests/results/general/guid-inspection-replay-2026-10-25.json) verifies
 the complete unique command grid, fourteen immutable artifacts, five selected
 committed/live source snapshots, matching getter transcripts and identical primary
 observer output hashes across buffered/streaming and arithmetic profiles. Row/cell

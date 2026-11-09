@@ -56,7 +56,7 @@ preserves duplicate rows, as in buffered execution. Metadata-only `output_names(
 supplies ordinary read-plan names; top-level crosstabs return None. Output type/policy metadata
 retains its existing conservative contracts.
 
-Sorted TOP's [acceptance record](../testing/results/progressive-sorted-top-2026-11-02.json)
+Sorted TOP's [acceptance record](../../tests/results/general/progressive-sorted-top-2026-11-02.json)
 records eight focused tests, retained terminal regressions and broad query checks.
 It preserves the first test failures and their narrow corrections separately from
 native Access qualification.
@@ -634,7 +634,7 @@ The stateful named/derived extension passes 550 distinct query tests, including
 23 new controls: 220 progressive/value/policy tests, 38 runtime units and 292
 related buffered metadata, policy, named, crosstab and key regressions. Strict
 query library/tests Clippy and standalone minimal-feature checking pass. The
-[scoped query record](../testing/results/read-query-progressive-stateful-stages-2026-10-25.json)
+[scoped query record](../../tests/results/queries/read-query-progressive-stateful-stages-2026-10-25.json)
 retains exact commands, log hashes and excluded compile/Decimal representation
 probes. Logical-EOF tests cover late TOP-omitted inner errors, retained unknown
 extrema declarations and downstream provider suppression. Existing direct Count
@@ -646,7 +646,7 @@ new tests. The Text-group total is 632 unique tests with 27 new controls. Stored
 comparison policies on the original Access example, four priority synthetic
 profiles, exact late-error prefixes and raw observers pass, alongside strict
 query/native/CLI linting, minimal query features and repository formatting. The
-[original native/CAB replay](../testing/PROGRESSIVE_TEXT_GROUPS.md) also passes
+[original native/CAB replay](../../tests/reports/general/PROGRESSIVE_TEXT_GROUPS.md) also passes
 96 commands, comparing 1,272 successful rows/4,296 cells and six exact earlier
 error-prefix rows. Six rich Ordinal controls use explicit 10M query work; other
 limits and all SQL/independent numerical goldens remain unchanged.
@@ -655,7 +655,7 @@ The Text grouping extension passes 525 distinct query tests, including 22 new
 controls: 198 progressive/exact/value/policy tests, 35 runtime units and 292
 related buffered key/raw/policy, named, crosstab, UNION and metadata regressions.
 Strict query library/tests Clippy and the standalone minimal-feature check pass.
-The [scoped record](../testing/results/read-query-progressive-text-groups-2026-10-25.json)
+The [scoped record](../../tests/results/queries/read-query-progressive-text-groups-2026-10-25.json)
 retains exact commands, log hashes, the separately committed ampersand metadata
 prerequisite and the new-test raw-construction correction established first by
 buffered execution. Private probes establish zero Count/key-only retained source
@@ -667,14 +667,14 @@ Parent integration adds 153 distinct controls, including four new CLI tests and
 one independent actual-policy conflict test. The total is 554 unique tests with
 23 new controls; the repeated 51-test query target is counted once. Strict
 native/CLI/policy-target linting and repository formatting also pass. A separate
-[original native/CAB replay](../testing/PROGRESSIVE_HAVING.md) passes 96 commands,
+[original native/CAB replay](../../tests/reports/queries/PROGRESSIVE_HAVING.md) passes 96 commands,
 comparing 336 successful rows/696 cells and six exact earlier error-prefix rows.
 
 The terminal HAVING extension passes 401 distinct query tests, including eighteen
 new controls: 148 progressive/value/policy tests, 28 runtime units and 225 related
 buffered grouping/HAVING, text, crosstab, named and alias regressions. Strict query
 library/tests Clippy and standalone minimal-feature checking pass. The
-[scoped record](../testing/results/read-query-progressive-having-2026-10-25.json)
+[scoped record](../../tests/results/queries/read-query-progressive-having-2026-10-25.json)
 records exact commands and log hashes, the initial compile integration correction,
 and obsolete negative-control updates. All executed tests passed on their first
 run. Native/CLI integration and original replay remain separate checkpoints.
@@ -683,12 +683,12 @@ The static named/derived pipeline extension passes 404 distinct query tests,
 including 28 new controls: 130 progressive/value/policy tests, 28 runtime units
 and 246 related metadata/named/alias/UNION/text regressions. Strict query
 library/tests Clippy and standalone minimal-feature checking pass. The
-[scoped record](../testing/results/read-query-progressive-derived-2026-10-25.json)
+[scoped record](../../tests/results/queries/read-query-progressive-derived-2026-10-25.json)
 retains exact commands, log hashes, excluded setup probes and the prepare-only
 depth diagnostic. Existing generated Count under 8 KiB passes unchanged. Native
 and CLI integration adds 134 passing controls, including twelve new facade/host
 checks. The complete scoped total is 538 distinct tests with forty new controls;
-strict native/CLI linting also passes. The [original native/CAB replay](../testing/PROGRESSIVE_DERIVED.md)
+strict native/CLI linting also passes. The [original native/CAB replay](../../tests/reports/general/PROGRESSIVE_DERIVED.md)
 passes all 96 controls, comparing 420 rows and 1,410 cells against independent
 formulas. Actual Access qualification remains separate.
 
@@ -696,7 +696,7 @@ The grouped extension passes 385 distinct query tests, including 25 new tests:
 104 progressive/value/policy controls, 26 runtime units and 255 related buffered
 metadata/grouping/crosstab/named/alias/key regressions. Strict query library/tests
 Clippy and standalone minimal-feature checking pass. The
-[scoped record](../testing/results/read-query-progressive-grouped-2026-10-25.json)
+[scoped record](../../tests/results/queries/read-query-progressive-grouped-2026-10-25.json)
 retains exact commands, log hashes and excluded new-test authoring/diagnostic
 attempts. No production answer correction was required. Native/CLI integration
 and original getter replay evidence are recorded separately.
@@ -711,7 +711,7 @@ carriers, ExtendedDate, GUID/Binary admission parity, mixed binary precision,
 sticky failures and every observed cancellation checkpoint. Existing Count/Sum/Avg
 limits pass unchanged, including the 8 KiB generated Count(*) control. Strict
 query library/tests Clippy and the standalone minimal-feature library check pass.
-The [scoped record](../testing/results/read-query-progressive-extrema-2026-10-25.json)
+The [scoped record](../../tests/results/queries/read-query-progressive-extrema-2026-10-25.json)
 separates these checks from native/CLI integration and native Access qualification.
 
 The Sum/Avg extension passes 153 focused query tests: 66 progressive/count/numeric

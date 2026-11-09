@@ -6,8 +6,8 @@ import json
 import os
 import subprocess
 
-AREA = Path('docs/testing/short_text_add')
-NUMBER_HELPER = Path('docs/testing/CreatedNumberColumnOracle.java')
+AREA = Path('tests/access/rows/short_text_add')
+NUMBER_HELPER = Path('tests/access/schema/fields/CreatedNumberColumnOracle.java')
 TEXT_HELPER = AREA / 'CreatedShortTextColumnOracle.java'
 PROPERTY_HELPER = AREA / 'ShortTextProperties.java'
 JAR_HASH = '19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc'

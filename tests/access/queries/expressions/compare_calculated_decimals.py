@@ -15,7 +15,7 @@ from cli_tsv import command_output
 
 JACKCESS_SHA256 = "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc"
 RECIPE = Path(__file__).with_name("CalculatedDecimalFixture.java")
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[4]
 SOURCE_FILES = [
     ROOT / "crates/engines/tablecraft-ace/src/table/calculated" / name
     for name in ("decimal.rs", "encoding.rs", "mod.rs", "page.rs", "read.rs")

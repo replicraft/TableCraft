@@ -1,6 +1,6 @@
 # Historical data-macro XML evidence
 
-The [saved verifier](../verify_data_macro_xml.py) replays the original seven
+The [saved verifier](../../reading/tables/verify_data_macro_xml.py) replays the original seven
 inert inspection calls and their 130 exact records, including nine XML envelopes
 and two names-only results. It reads retained originals and captured streams; it
 launches no process, imports no witness code and rebuilds no consumer.
@@ -47,5 +47,5 @@ raise immediately if incorrectly imported.
 This is maintenance of historical envelope-inspection evidence. It does not
 qualify current engine behavior, macro program execution, macro absence, native
 ACE16 saves or Microsoft Access timing. New program-validation work has its own
-source/API acceptance. The [original result](../results/data-macro-xml-envelopes-2026-10-29.json)
-and [data-macro requirements](../DATA_MACROS.md) retain their existing scope.
+source/API acceptance. The [original result](../../../results/schema/data-macro-xml-envelopes-2026-10-29.json)
+and [data-macro requirements](../../../reports/schema/DATA_MACROS.md) retain their existing scope.

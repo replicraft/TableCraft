@@ -19,11 +19,11 @@ SOURCES = [
     ('text-number-text-text', 'd5940a703ae582f27958b4369c8cdca97d9f566dd7cb79c63c4a39e72edf4002'),
 ]
 OWNERS = [
-    'docs/testing/field_add_after_off/model.py',
-    'docs/testing/short_text_add/model.py',
-    'docs/testing/number_column_repeat/raw.py',
-    'docs/testing/CreatedNumberColumnOracle.java',
-    'docs/testing/short_text_add/CreatedShortTextColumnOracle.java',
+    'tests/access/schema/field_add_after_off/model.py',
+    'tests/access/rows/short_text_add/model.py',
+    'tests/access/schema/number_column_repeat/raw.py',
+    'tests/access/schema/fields/CreatedNumberColumnOracle.java',
+    'tests/access/rows/short_text_add/CreatedShortTextColumnOracle.java',
 ]
 
 

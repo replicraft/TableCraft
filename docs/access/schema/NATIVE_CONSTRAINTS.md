@@ -61,9 +61,9 @@ Microsoft documents [Required](https://learn.microsoft.com/en-us/office/client-d
 and [referential integrity](https://support.microsoft.com/en-us/access/guide-to-table-relationships).
 Independent comparisons are not Microsoft Access runtime conformance.
 
-The original [relationship recipe](../../testing/RelationshipFixture.java) supplies valid
+The original [relationship recipe](../../../tests/access/schema/fields/RelationshipFixture.java) supplies valid
 duplicate/NULL children, one-to-one/set-null declarations, a checked composite
-and a NotEnforced orphan. [Comparison runner](../../testing/compare_record_constraints.py)
+and a NotEnforced orphan. [Comparison runner](../../../tests/access/schema/fields/compare_record_constraints.py)
 verifies all five child-table row counts and coverage in Jet 4/ACE without changing
 files. Candidate tests mutate only in-memory copies to create Required, empty Text,
 orphan-child and duplicate-parent violations. A 256-case fixed-seed BTreeSet model
@@ -73,7 +73,7 @@ Defaults, broader expression/collation and other key profiles, native writes
 and Microsoft Access comparison remain separate work. Unsupported coverage blocks
 write qualification; this is a bounded step-2 profile, not universal validation.
 
-Text FK expansion has a concrete [reference comparison prerequisite](../../testing/TEXT_RELATIONSHIP_RESEARCH.md):
+Text FK expansion has a concrete [reference comparison prerequisite](../../../tests/reports/general/TEXT_RELATIONSHIP_RESEARCH.md):
 observed reference foreign-key matching differs from its physical unique-index
 key equivalence for trailing/ignored units, combining text and expansions.
 Existing text-index support therefore does not establish Text FK membership.
@@ -116,8 +116,8 @@ buffers have separate structural ceilings rather than a strict allocator quota.
 
 Microsoft describes [field rules](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/field-validationrule-property-dao)
 and [table rules](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/tabledef-validationrule-property-dao).
-The original [validation recipe](../../testing/ValidationFixture.java) and
-[comparison runner](../../testing/compare_validation.py) verify six tables per format:
+The original [validation recipe](../../../tests/access/reading/tables/ValidationFixture.java) and
+[comparison runner](../../../tests/access/reading/tables/compare_validation.py) verify six tables per format:
 field ranges, cross-field bounds, explicit NULL handling, admitted Len calls on
 populated/empty tables and an intentionally unresolved NULL result. Jackcess
 rejects the generated out-of-range/cross-field invalid writes. These comparisons
@@ -130,18 +130,18 @@ UTF-16 characters, embedded NUL, binary case/trailing spaces, NULL outcomes and
 explicit guards, pure text addition/concatenation, eager division failures,
 rejected signatures/scopes even when empty, limits and prefix cancellation. This
 expansion does not qualify all validation functions or native Access saves.
-The [independent text-call replay](../../testing/VALIDATION_TEXT_CALLS.md) records
+The [independent text-call replay](../../../tests/reports/schema/VALIDATION_TEXT_CALLS.md) records
 204 controls and 618 getter cells across original ACE 2016/2019 inputs, with
 all 19 pinned hashes unchanged. The existing ACE/Jet 4 recipe also passes its
 12 coverage checks on fresh originals.
 
 ## Composite independent evidence
 
-[CompositeConstraintFixture.java](../../testing/CompositeConstraintFixture.java) creates
+[CompositeConstraintFixture.java](../../../tests/access/schema/fields/CompositeConstraintFixture.java) creates
 fresh V2016/V2019 inputs with matching partial/all-NULL tuples, duplicate all-NULL
 parents/children and an enforced one-to-one relationship. Generation asserts
 rejection of unmatched partial tuples, componentwise-only matches and duplicate
-partial unique keys. [The runner](../../testing/compare_composite_constraints.py)
+partial unique keys. [The runner](../../../tests/access/schema/fields/compare_composite_constraints.py)
 compares fifteen exact rows/profile, checks coverage and mutates only disposable
 copies to verify missing-parent, duplicate-parent and duplicate-child errors.
 
@@ -154,10 +154,10 @@ this membership audit does not perform it or authorize writes/cascades.
 
 ## Numeric range and membership rule evidence
 
-Original [predicate-rule fixtures](../../testing/PredicateRuleFixture.java) contain
+Original [predicate-rule fixtures](../../../tests/access/reading/tables/PredicateRuleFixture.java) contain
 forward/reversed ranges, allowed/excluded integer sets and explicit unsupported
 text/unknown-NULL cases. Generation checks rejected out-of-range/nonmember rows
-with the independent reader. [Comparison](../../testing/compare_predicate_rules.py)
+with the independent reader. [Comparison](../../../tests/access/reading/tables/compare_predicate_rules.py)
 matches six coverage reports and thirteen exact records per V2016/V2019 family,
 without changing originals. Range endpoints may appear in either written order;
 NULL membership results still report Unsupported in the native audit.
@@ -169,16 +169,16 @@ ACE writes, native callbacks, physical index changes or implicit collation.
 
 ## Int64 and mixed tuple evidence
 
-[Int64RelationshipFixture.java](../../testing/Int64RelationshipFixture.java) generates
+[Int64RelationshipFixture.java](../../../tests/access/schema/fields/Int64RelationshipFixture.java) generates
 fresh V2016/V2019 inputs with full-range Int64 keys, adjacent values beyond double
 precision, mixed Int32/Int64 composite keys, matching partial-NULL keys and
 one-to-one declarations. Generation asserts rejection of missing parents,
 precision-sensitive mismatches and duplicate dependent unique keys.
-[The comparison runner](../../testing/compare_int64_relationships.py) compares 35 exact
+[The comparison runner](../../../tests/access/schema/fields/compare_int64_relationships.py) compares 35 exact
 rows/profile, audits all six tables and corrupts only disposable copies to verify
 missing-parent, duplicate-parent and duplicate-child errors with no partial CLI
 output. Original input hashes are recorded in
-[fixture provenance](../../testing/FIXTURES.md#original-ace-16-int64-relationship-fixtures).
+[fixture provenance](../../../tests/reports/reading/FIXTURES.md#original-ace-16-int64-relationship-fixtures).
 
 Synthetic CI tests cover mixed self relations, mismatched paired types, exact
 parent uniqueness and adjacent large values; full-range tuple-set property checks
@@ -194,10 +194,10 @@ must still match, so Byte/Int16 pairs are not coerced. Width/profile/type gates,
 parent unique declarations, all-NULL exemption and exact partial-NULL membership
 remain unchanged.
 
-The original [narrow relationship recipe](../../testing/NarrowRelationshipFixture.java)
+The original [narrow relationship recipe](../../../tests/access/schema/fields/NarrowRelationshipFixture.java)
 generates separate Byte/Int16 single-key and mixed-tuple relationships, including
 one-to-one declarations and unsigned/signed boundaries. Jackcess independently
-rejects orphan and duplicate inserts. [The runner](../../testing/compare_narrow_relationships.py)
+rejects orphan and duplicate inserts. [The runner](../../../tests/access/schema/fields/compare_narrow_relationships.py)
 matches all 59 exact rows and nine table audits per family. Six corrupted disposable
 copies/profile fail for missing/duplicate parents, componentwise/partial-NULL
 mismatches and duplicate one-to-one children; a complete NULL tuple remains exempt.
@@ -216,10 +216,10 @@ order; it does not define SQL GUID ordering or physical index encoding. Text GUI
 spellings are not coerced into stored keys. Key allocation charges use the actual
 private tuple size and retain existing limits/cancellation.
 
-The original [GUID recipe](../../testing/GuidRelationshipFixture.java) generates 32 rows
+The original [GUID recipe](../../../tests/access/schema/fields/GuidRelationshipFixture.java) generates 32 rows
 in six tables/profile, including nearby GUIDs, zero/high patterns, exact Int64
 extremes and partial/all-NULL tuples. It independently rejects duplicate/orphan
-inserts. [The comparison](../../testing/compare_guid_relationships.py) matches all rows
+inserts. [The comparison](../../../tests/access/schema/fields/compare_guid_relationships.py) matches all rows
 and audits, rejects six corrupt disposable copies/profile without partial stdout,
 and verifies all-NULL exemption and immutable inputs. Synthetic exact-byte/tuple
 models cover arbitrary GUID bits, mixed pair-type rejection and exact orphans.
@@ -230,7 +230,7 @@ rejected that existing lowercase key. The recipe uses canonical spelling and
 retains a read-only `--probe-case` observation. This independent-engine limitation
 does not become a TableCraft key rule: native bytes alone determine membership.
 An initial partial generation attempt remains unqualified; the final fresh
-fixtures are registered in [provenance](../../testing/FIXTURES.md#original-ace-16-guid-relationship-fixtures).
+fixtures are registered in [provenance](../../../tests/reports/reading/FIXTURES.md#original-ace-16-guid-relationship-fixtures).
 GUID and GUID-bearing composite physical indexes now have separate
 [complete checks](../indexes/NATIVE_INDEXES.md#complete-guid-bearing-composite-indexes).
 SQL GUID ordering, cascades, native Access comparison
@@ -247,17 +247,17 @@ child membership, one-to-one uniqueness, exact partial NULLs and all-NULL exempt
 There is no floating conversion or general SQL/Value equality. Private tuple
 allocation/work charging and cancellation remain shared.
 
-The original [Currency relationship recipe](../../testing/CurrencyRelationshipFixture.java)
+The original [Currency relationship recipe](../../../tests/access/schema/fields/CurrencyRelationshipFixture.java)
 generates six inert tables/profile, with scalar and mixed Currency/Int32 keys,
 signed extrema, adjacent ten-thousandths beyond floating-point integer precision,
 NULL shapes and one-to-one declarations. Generation independently rejects orphans,
 componentwise-only matches, unmatched partial NULLs and duplicate children.
-[The runner](../../testing/compare_currency_relationships.py) matches all 48 exact rows
+[The runner](../../../tests/access/schema/fields/compare_currency_relationships.py) matches all 48 exact rows
 and six table audits per V2016/V2019 family. Eight corrupt disposable copies/profile
 fail atomically for exact orphans, one-unit mismatches, duplicate parents (including
 partial NULLs) and duplicate one-to-one children. An all-NULL tuple remains exempt;
 original file hashes are unchanged and recorded in
-[provenance](../../testing/FIXTURES.md#original-ace-16-currency-relationship-inputs).
+[provenance](../../../tests/reports/reading/FIXTURES.md#original-ace-16-currency-relationship-inputs).
 
 Synthetic tests add exact Money/Money self relations, mixed Money/Int64/GUID
 carriers, equal-width type rejection, NULL/zero distinctions and a fixed-seed
@@ -268,7 +268,7 @@ native Microsoft Access conformance.
 ```sh
 java -cp path/to/jackcess-5.0.4.jar docs/testing/CurrencyRelationshipFixture.java new-2016.accdb V2016
 java -cp path/to/jackcess-5.0.4.jar docs/testing/CurrencyRelationshipFixture.java new-2019.accdb V2019
-python3 docs/testing/compare_currency_relationships.py --jar path/to/jackcess-5.0.4.jar \
+python3 tests/run.py tests/access/schema/fields/compare_currency_relationships.py --jar path/to/jackcess-5.0.4.jar \
   --cli target/release/tablecraft --rows target/release/examples/table_data \
   --ace2016 new-2016.accdb --ace2019 new-2019.accdb
 ```
@@ -287,7 +287,7 @@ Unsupported; no rescaling or rounding supplies an implicit match. The existing
 one-to-ten-column audit checks parent uniqueness, exact membership and one-to-one
 child uniqueness. All-NULL tuples remain exempt; partial NULLs stay exact.
 
-The original [recipe](../../testing/DecimalRelationshipFixture.java) generates 12 inert
+The original [recipe](../../../tests/access/schema/fields/DecimalRelationshipFixture.java) generates 12 inert
 tables/profile: scales 0/4/28, mixed Decimal/Int32/Decimal tuples with different
 per-field scales, adjacent coefficients beyond f64/i64, extrema, NULLs and
 one-to-one declarations. Generation independently rejects orphans, componentwise
@@ -295,12 +295,12 @@ matches, unmatched partial NULLs and duplicate children using reviewed Jackcess
 5.0.4. Its relationship creator checks matching native types; TableCraft's exact
 precision/scale gate deliberately qualifies a narrower profile.
 
-[The comparison](../../testing/compare_decimal_relationships.py) matches 116 exact rows
+[The comparison](../../../tests/access/schema/fields/compare_decimal_relationships.py) matches 116 exact rows
 and 12 table audits per V2016/V2019 family. Seventeen corrupt disposable copies
 fail without stdout for exact orphans and duplicate complete/partial parent and
 one-to-one child tuples. Two precision/scale mutations with all-NULL children
 report Unsupported; another all-NULL child remains exempt. Original hashes remain
-unchanged and recorded in [provenance](../../testing/FIXTURES.md#original-ace-16-decimal-relationship-inputs).
+unchanged and recorded in [provenance](../../../tests/reports/reading/FIXTURES.md#original-ace-16-decimal-relationship-inputs).
 
 Six integration tests include every scale, extreme/adjacent coefficients, mixed
 integer/Currency/GUID carriers, metadata/profile rejection, cancellation/budgets,
@@ -308,14 +308,14 @@ unchanged source bytes and a 256-case independent nullable tuple-set model. A
 focused unit test retains scale/domain distinctions even for zero. Physical
 index integrity remains a separate check. Native Access, cascades, general
 cross-scale semantics and production ACE writes remain unqualified. Separate
-[ACE 16 Decimal key previews](../../testing/ACE16_WRITE_PREVIEWS.md#decimal-slot-and-index-write-previews)
+[ACE 16 Decimal key previews](../../../tests/reports/development/ACE16_WRITE_PREVIEWS.md#decimal-slot-and-index-write-previews)
 now cover existing-width slots, index maintenance and declared same-precision/scale
 update cascades; they do not establish native Access write conformance.
 
 ```sh
 java -cp path/to/jackcess-5.0.4.jar docs/testing/DecimalRelationshipFixture.java new-2016.accdb V2016
 java -cp path/to/jackcess-5.0.4.jar docs/testing/DecimalRelationshipFixture.java new-2019.accdb V2019
-python3 docs/testing/compare_decimal_relationships.py --jar path/to/jackcess-5.0.4.jar \
+python3 tests/run.py tests/access/schema/fields/compare_decimal_relationships.py --jar path/to/jackcess-5.0.4.jar \
   --cli target/release/tablecraft --rows target/release/examples/table_data \
   --ace2016 new-2016.accdb --ace2019 new-2019.accdb
 ```
@@ -348,8 +348,8 @@ allocation/row/work limits and cancellation after successful read prefixes. Head
 variants preserve the existing Jet 4/ACE 12/16-family read gates. These controls do
 not establish physical tree validity or Microsoft Access qualification.
 
-The original [Boolean fixture recipe](../../testing/BooleanRelationshipFixture.java)
-and [read-only getter oracle](../../testing/BooleanRelationshipOracle.java) exercise
+The original [Boolean fixture recipe](../../../tests/access/schema/fields/BooleanRelationshipFixture.java)
+and [read-only getter oracle](../../../tests/access/schema/fields/BooleanRelationshipOracle.java) exercise
 Jackcess Boolean and composite relationships. A capability probe found that
 Jackcess 5.0.4 rejects an explicit false child without a parent, but accepts NULL
 input that subsequently reads back as stored false, even with an empty parent.
@@ -365,7 +365,7 @@ and Jackcess's [relationship builder contract](https://jackcess.sourceforge.io/a
 support matching paired types and unique parent keys. They do not establish the
 NULL-input anomaly as native Access semantics or qualify Boolean SQL coercion.
 
-The [independent Boolean relationship replay](../../testing/BOOLEAN_RELATIONSHIPS.md)
+The [independent Boolean relationship replay](../../../tests/reports/general/BOOLEAN_RELATIONSHIPS.md)
 passes 78 controls and 67,340 getter/index cells across ACE 2016/2019 inputs,
 including real node trees, partial NULL tuples and refused orphan/uniqueness
 copies. All 27 pinned hashes remain unchanged. Native Access comparison and

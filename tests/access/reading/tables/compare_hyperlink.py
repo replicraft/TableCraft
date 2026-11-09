@@ -3,6 +3,7 @@
 Jackcess constructs and independently decodes stored fields without executing
 the function. Native Microsoft Access comparison remains unrun.
 """
+from engineering_paths import reference_file
 
 import argparse
 import csv
@@ -91,9 +92,9 @@ def main():
             ("V2016", "hyperlink-2016.accdb"), ("V2019", "hyperlink-2019.accdb"),
         ]:
             database = args.work_dir / filename
-            run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar, RECIPES / "HyperlinkFixture.java", database, profile)
+            run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar, reference_file('tests/access/reading/tables/HyperlinkFixture.java'), database, profile)
             before = hashlib.sha256(database.read_bytes()).hexdigest()
-            decoded = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar, RECIPES / "TableDataOracle.java", database, "Hyperlinks")
+            decoded = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar, reference_file('tests/access/reading/tables/TableDataOracle.java'), database, "Hyperlinks")
             stored = []
             for line in decoded.splitlines():
                 cells = line.split("\t")

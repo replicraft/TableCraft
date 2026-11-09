@@ -12,7 +12,7 @@ from pathlib import Path
 import subprocess
 import sys
 
-ROOT = Path(__file__).resolve().parents[3]
+ROOT = Path(__file__).resolve().parents[4]
 HERE = Path(__file__).resolve().parent
 DEFAULT_REPORT = '.cache/ace16-variable-encoded-acceptance-first-20261027/report.json'
 DEFAULT_PLAN = '.cache/ace16-variable-encoded-independent-next-20261027/combined-plan.json'
@@ -22,7 +22,7 @@ COMPILED_REVISION = 'abc9fd370f71a692a2b17774c7cba04df54e5c5d'
 RECEIPT_REVISION = '704137ca7f93c9e381041da1bfe2d1de23d0c091'
 PRIVATE_MODEL = '.cache/ace16-variable-encoded-independent-next-20261027/'
 PRIVATE_REFERENCE = '.cache/ace16-variable-encoded-reference-next-20261027/'
-PUBLIC_REFERENCE = 'docs/testing/variable_encoded_split_sources/'
+PUBLIC_REFERENCE = 'tests/access/indexes/variable_encoded_split_sources/'
 
 
 def path(value):

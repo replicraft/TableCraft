@@ -1,4 +1,5 @@
 """Independently reopen native encryption/password copies and verify rows and decoded SIDs."""
+from engineering_paths import reference_file
 import argparse
 import csv
 import hashlib
@@ -39,7 +40,7 @@ def main():
     with tempfile.TemporaryDirectory(prefix="tablecraft-rewrite-comparison-") as temporary:
         temporary = Path(temporary)
         classpath = os.pathsep.join([reviewed_classpath, str(temporary)])
-        subprocess.run(["javac", "-cp", classpath, "-d", str(temporary), str(RECIPES / "NativeSecurityOracle.java"), str(RECIPES / "EncryptedPagesOracle.java"), str(RECIPES / "RemoveAddedEncryptionOracle.java")], check=True, capture_output=True)
+        subprocess.run(["javac", "-cp", classpath, "-d", str(temporary), str(reference_file('tests/access/reading/tables/NativeSecurityOracle.java')), str(reference_file('tests/access/encryption/database/EncryptedPagesOracle.java')), str(reference_file('tests/access/encryption/database/RemoveAddedEncryptionOracle.java'))], check=True, capture_output=True)
 
         def oracle(driver, path, password, *extra):
             result = subprocess.run(["java", "-cp", classpath, driver, str(path), *extra], input=b"" if password is None else password.encode() + b"\n", capture_output=True)

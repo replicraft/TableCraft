@@ -73,16 +73,16 @@ parameters/NULL/empty arms, outer TypeName/VarType consumers, named descriptors,
 exact Decimal constraints, signed zero/subnormal widening, late failures, resource
 caps, every observed cancellation checkpoint and generated exact integer sets.
 
-[compare_union_types.py](../testing/compare_union_types.py) passes 85 CLI controls with
+[compare_union_types.py](../../tests/access/queries/execution/compare_union_types.py) passes 85 CLI controls with
 independent Python integer/set and IEEE models. Four registered immutable
-[Unicode saved-source inputs](../testing/FIXTURES.md#unicode-saved-source-inputs) additionally
+[Unicode saved-source inputs](../../tests/reports/reading/FIXTURES.md#unicode-saved-source-inputs) additionally
 supply native Int32 table rows through read-only Jackcess getters for inline UNION
 and outer carrier checks across Jet 4, ACE 2007 and ACE 16-family files. The runner
 checks reviewed JAR/input hashes and unchanged originals. These checks validate
 TableCraft's explicit profile, not native Access result-type inference.
 
 ```sh
-python3 docs/testing/compare_union_types.py --cli target/debug/tablecraft \
+python3 tests/run.py tests/access/queries/execution/compare_union_types.py --cli target/debug/tablecraft \
   --jar path/to/reviewed/jackcess-5.0.4.jar \
   --native-directory path/to/registered-unicode-sources
 ```
@@ -129,12 +129,12 @@ all 81 pairs, three-arm combinations, metadata-only binding, exact endpoints,
 post-conversion duplicates, empty/NULL arms, downstream aggregates, cancellation
 and generated independent Decimal/IEEE expectations. Query Clippy and the minimal
 query build pass; the CLI builds. The original
-[compare_numeric_unions.py](../testing/compare_numeric_unions.py) passes 180 controls
+[compare_numeric_unions.py](../../tests/access/queries/execution/compare_numeric_unions.py) passes 180 controls
 using Python Decimal/IEEE models and read-only native IDs across four unchanged
 priority-family inputs. The prior 109 UNION controls also pass.
 
 ```sh
-python3 docs/testing/compare_numeric_unions.py --cli target/debug/tablecraft \
+python3 tests/run.py tests/access/queries/execution/compare_numeric_unions.py --cli target/debug/tablecraft \
   --jar path/to/reviewed/jackcess-5.0.4.jar \
   --native-directory path/to/registered-unicode-sources
 ```
@@ -198,7 +198,7 @@ in both arm orders, explicit formats, exact full-width integer property tests,
 empty/NULL/parameter/named/derived/group/crosstab consumers, exact allocation-byte
 accounting, every observed cancellation checkpoint and refusal boundaries.
 All-target/all-feature query Clippy, the minimal query build and CLI build pass.
-The original [compare_text_unions.py](../testing/compare_text_unions.py) passes 216
+The original [compare_text_unions.py](../../tests/access/queries/execution/compare_text_unions.py) passes 216
 controls against Python exact/IEEE/rendering models and read-only native getters.
 Four priority header families have unchanged sequential/derived/indexed inputs;
 qualified stored General field routing is included. Existing 180 numeric and 109
@@ -206,7 +206,7 @@ prior UNION controls also pass. These are independent implementation checks,
 not native Access SQL, regional or save/reopen qualification.
 
 ```sh
-python3 docs/testing/compare_text_unions.py --cli target/debug/tablecraft \
+python3 tests/run.py tests/access/queries/execution/compare_text_unions.py --cli target/debug/tablecraft \
   --jar path/to/reviewed/jackcess-5.0.4.jar \
   --native-directory path/to/registered-unicode-sources \
   --indexed-directory path/to/registered-large-index-inputs

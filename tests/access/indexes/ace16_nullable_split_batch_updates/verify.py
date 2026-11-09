@@ -5,14 +5,14 @@ from pathlib import Path
 import sys
 
 sys.dont_write_bytecode = True
-ROOT = Path(__file__).resolve().parents[3]
+ROOT = Path(__file__).resolve().parents[4]
 sys.path.insert(0, str(ROOT))
-sys.path.insert(0, str(ROOT / 'docs/testing'))
+sys.path.insert(0, str(ROOT / 'tests/access'))
 from scripts.compat_artifacts import ArtifactStore
 from ace16_insert_external_long_values.evidence import Pins, report
 from ace16_nullable_split_batch_updates import bootstrap, build, observations
 
-PUBLIC = ROOT / 'docs/testing/ace16_nullable_split_batch_updates'
+PUBLIC = ROOT / 'tests/access/indexes/ace16_nullable_split_batch_updates'
 SOURCE = '.cache/ace16-nullable-split-batch-source-next-20261029'
 SOURCE_WORK = '.cache/ace16-nullable-split-batch-source-first-20261029'
 EXPECTED = '.cache/ace16-nullable-split-batch-expected-next-20261029'

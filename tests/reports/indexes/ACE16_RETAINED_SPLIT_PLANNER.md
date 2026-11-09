@@ -45,7 +45,7 @@ outside this correction and still warrants a separate prefix-authority probe.
 Its private proposed discriminator has not been compiled or executed here. This
 record does not claim that all opaque composite framing is independently fixed.
 
-The [scoped result](results/ace16-retained-split-planner-native-2026-10-27.json)
+The [scoped result](../../results/indexes/ace16-retained-split-planner-native-2026-10-27.json)
 records 115 distinct runtime functions, including five new functions, plus three
 compile-fail doctests. Feature/default strict checks, minimal build and scoped
 formatting pass. Initial lifetime and test-visibility compilation failures, the

@@ -64,7 +64,7 @@ operation spans contain no expression, domain, criteria, parameter or row data.
 
 The implementation reuses ordinary aggregate kernels, including the
 [wider mean accumulator](aggregates/AVERAGES.md) for DAvg and
-[exact binary totals](../testing/FLOATING_SUMS.md) for floating DSum. DCount('*',...) counts
+[exact binary totals](../../tests/reports/general/FLOATING_SUMS.md) for floating DSum. DCount('*',...) counts
 rows; other DCount expressions omit NULL and currently return Int64. Empty counts
 return zero. DCount also counts expression Error cells as non-NULL without code
 conversion; invalid constructors and operational failures remain failed calls.
@@ -116,9 +116,9 @@ profile; they do not establish native Access execution equivalence.
 
 ## Stored-query evidence
 
-The original [SavedDomainFixture](../testing/SavedDomainFixture.java) builds fifteen
+The original [SavedDomainFixture](../../tests/access/queries/saved/SavedDomainFixture.java) builds fifteen
 inert definitions over the existing statistical recipe and one Unicode-named
-local table. [compare_saved_domains.py](../testing/compare_saved_domains.py) verifies
+local table. [compare_saved_domains.py](../../tests/access/queries/saved/compare_saved_domains.py) verifies
 raw native metadata and independently rendered SQL, then executes direct, saved
 and named forms through TableCraft against rational/getter expectations. All
 300 controls pass across original Jet 4, ACE 2007, V2016 and V2019 files, with

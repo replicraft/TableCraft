@@ -1,4 +1,5 @@
 """Independent rounded-Double predicate models; no Access SQL oracle executes."""
+from engineering_paths import reference_file
 import argparse
 import csv
 import hashlib
@@ -71,7 +72,7 @@ def main():
         before = path.read_bytes()
         assert hashlib.sha256(before).hexdigest() == digest
         output = subprocess.check_output(["java", "-Dstdout.encoding=UTF-8", "-cp", str(args.jar),
-            str(RECIPES / "TableDataOracle.java"), str(path), "IndexedRows"], text=True, encoding="utf-8")
+            str(reference_file('tests/access/reading/tables/TableDataOracle.java')), str(path), "IndexedRows"], text=True, encoding="utf-8")
         tags = [line.split("\t")[1] for line in output.splitlines()]
         assert len(tags) == 20000 and all(tag.startswith("I32:") for tag in tags)
         ids = [int(tag[4:]) for tag in tags]

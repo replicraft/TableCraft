@@ -24,7 +24,7 @@ groups return NULL. Successful Single/Double sums retain Double result metadata.
 Preparation reads no rows to choose a result or accumulator.
 
 Integral, Boolean and Currency sums retain their checked scalar fold.
-[Decimal sums](../query/aggregates/DECIMAL_SUMS.md) now retain wider exact totals when needed and
+[Decimal sums](../../../docs/query/aggregates/DECIMAL_SUMS.md) now retain wider exact totals when needed and
 round/check their final result once.
 An integral prefix is checked as Int64, then converts to Double with the existing
 nearest-even converter when floating mode begins. Later integral values use the
@@ -69,7 +69,7 @@ bridging and late operand failures retain explicit tests.
 
 Synthetic native rows cover Jet 4, ACE 2007 and both ACE 16-family layouts, with
 ordinary and domain sums and metadata-only binding. The original
-[Fraction runner](compare_floating_sum.py) passes 155 independent controls:
+[Fraction runner](../../access/queries/expressions/compare_floating_sum.py) passes 155 independent controls:
 131 explicit/random/permuted CLI cases and 24 native query controls over
 registered 20,000-row files. Raw Jackcess Single/Double getters supply input bits;
 Python Fraction sums them exactly and rounds once. Sequential and ascending/
@@ -80,19 +80,19 @@ Only TableCraft executes SQL. These are independent numerical/native-reader
 observations, not Microsoft Access execution, error-order or application evidence.
 
 ```sh
-python3 docs/testing/compare_floating_sum.py \
+python3 tests/run.py tests/access/queries/expressions/compare_floating_sum.py \
   --cli target/debug/tablecraft --jar path/to/reviewed/jackcess-5.0.4.jar \
   --directory path/to/registered-large-indexes
 ```
 
 ## Benchmark
 
-The [release harness](../../crates/query/tablecraft-query/benches/floating_sums.rs)
+The [release harness](../../../crates/query/tablecraft-query/benches/floating_sums.rs)
 checks warm results, reuses metadata/immutable source rows, excludes setup/binding
 from per-query timings and includes result destruction. It measures floating
 one-group and many-group cases plus an integral control. Both revisions use the
 identical harness; the baseline is `26c1983`. Native I/O is outside this benchmark.
-The [raw record](results/floating-sums-2026-10-22.json) retains all samples and
+The [raw record](../../results/general/floating-sums-2026-10-22.json) retains all samples and
 separates exploratory measurements from the final comparison.
 
 
@@ -140,7 +140,7 @@ The independent Fraction runner now passes 331 controls (the prior 155 plus
 scaled decimal strings and dynamically selected native Money/Single/Double fields
 in sequential and both ID-index orders. Only TableCraft executes these queries.
 
-A separate [regression measurement](results/currency-sums-2026-10-22.json) against
+A separate [regression measurement](../../results/general/currency-sums-2026-10-22.json) against
 `4429d23` uses the identical existing harness: six alternating release pairs and
 seven Hyperfine runs after two warm-ups. Median one-group floating queries were
 0.917 versus 0.914 ms; 128-group floating queries were 3.250 versus 3.280 ms

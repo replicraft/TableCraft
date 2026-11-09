@@ -149,10 +149,10 @@ def main():
     assert not args.report.exists(), "Refuse to overwrite accepted evidence"
     assert digest(args.jar) == JACKCESS_SHA256
     paths = {
-        args.jar, Path(__file__), ROOT / "docs/testing/compare_linked_queries.py",
-        ROOT / "docs/testing/compare_linked_cli.py", ROOT / "docs/testing/LinkedQueryFixture.java",
-        ROOT / "docs/testing/LinkedQueryOracle.java", ROOT / "docs/testing/ExternalQueryFixture.java",
-        ROOT / "docs/testing/ExternalQueryOracle.java", *args.source,
+        args.jar, Path(__file__), ROOT / "tests/access/queries/execution/compare_linked_queries.py",
+        ROOT / "tests/access/queries/execution/compare_linked_cli.py", ROOT / "tests/access/queries/execution/LinkedQueryFixture.java",
+        ROOT / "tests/access/queries/execution/LinkedQueryOracle.java", ROOT / "tests/access/queries/execution/ExternalQueryFixture.java",
+        ROOT / "tests/access/queries/execution/ExternalQueryOracle.java", *args.source,
     }
     paths.update(path for path in (args.reader, args.cli) if path is not None)
     initial_hashes = {path: digest(path) for path in paths}

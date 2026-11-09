@@ -7,8 +7,8 @@ from pathlib import Path
 import subprocess
 import sys
 
-ROOT = Path(__file__).resolve().parents[3]
-sys.path.insert(0, str(ROOT / 'docs/testing'))
+ROOT = Path(__file__).resolve().parents[4]
+sys.path.insert(0, str(ROOT / 'tests/access'))
 from usage_map_growth import model
 
 PLAN_SHA256 = '48b32bb601b1b5333e6014fc2285905e110a581c3927a4b197e61452c921699f'

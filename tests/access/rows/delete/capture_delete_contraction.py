@@ -9,7 +9,7 @@ import subprocess
 import capture_delete_trees as TREE
 import delete_reference_maps as MAP
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[4]
 JAR_SHA256 = '19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc'
 STATES = ('whole-child-subtree', 'retain-one-leaf', 'delete-all')
 ROW_REFERENCE_BYTES = 4
@@ -204,8 +204,8 @@ def main():
         parser.error('Report must be fresh')
     if digest(args.jar.read_bytes()) != JAR_SHA256:
         parser.error('Reviewed JAR differs')
-    helper = ROOT / f'docs/testing/{args.family}DeleteFixture.java'
-    map_helper = ROOT / f'docs/testing/{args.family}UsageMapProbe.java'
+    helper = ROOT / f'tests/access/{args.family}DeleteFixture.java'
+    map_helper = ROOT / f'tests/access/{args.family}UsageMapProbe.java'
     originals = []
     pins = [helper, map_helper, Path(__file__), args.jar, Path(TREE.__file__), Path(MAP.__file__)]
     for profile in ('V2016', 'V2019'):

@@ -6,8 +6,8 @@ import json
 from pathlib import Path
 import sys
 
-ROOT = Path(__file__).resolve().parents[3]
-sys.path.insert(0, str(ROOT / 'docs/testing'))
+ROOT = Path(__file__).resolve().parents[4]
+sys.path.insert(0, str(ROOT / 'tests/access'))
 from encoded_index_split_sources import model
 
 DEFAULT_FAILED = '.cache/ace16-encoded-index-source-first-20261027/report.json'
@@ -69,9 +69,9 @@ def verify(failed_path, report_path, freeze_path):
         assert previous == item
         assert pin(item['path']) == item
     executed_helper = next(item for item in freeze['inputs'] if item['path'].endswith('source-corrected-next-20261027/EncodedSplitProbe.java'))
-    assert path(executed_helper['path']).read_bytes() == path('docs/testing/encoded_index_split_sources/EncodedSplitProbe.java').read_bytes()
+    assert path(executed_helper['path']).read_bytes() == path('tests/access/indexes/encoded_index_split_sources/EncodedSplitProbe.java').read_bytes()
     original_model = next(item for item in freeze['inputs'] if item['path'].endswith('encoded-index-split-next-20261027/model.py'))
-    assert function_bodies(original_model['path']) == function_bodies('docs/testing/encoded_index_split_sources/model.py')
+    assert function_bodies(original_model['path']) == function_bodies('tests/access/indexes/encoded_index_split_sources/model.py')
 
     source_command = {item['label']: item for item in report['commands']}
     qualified = []

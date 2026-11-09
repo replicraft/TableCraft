@@ -2,6 +2,7 @@
 
 The Java recipe is original. No Microsoft Access SQL equivalence is implied.
 """
+from engineering_paths import reference_file
 import argparse
 import csv
 import io
@@ -55,7 +56,7 @@ def main():
     for path in [args.jet4, args.ace2007, args.ace2016, args.ace2019]:
         original = digest(path.read_bytes())
         oracle = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar,
-                     RECIPES / "LargePayloadFixture.java", "--inspect", path)
+                     reference_file('tests/access/reading/tables/LargePayloadFixture.java'), "--inspect", path)
         values, files = [], []
         for line in oracle.splitlines():
             cells = line.split("\t")

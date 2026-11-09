@@ -4,12 +4,15 @@ import hashlib
 import importlib.util
 import json
 from pathlib import Path
+from engineering_paths import configure_imports
+
+configure_imports(__file__)
 from types import SimpleNamespace
 import tempfile
 import unittest
 from unittest.mock import patch
 
-SOURCE = Path(__file__).resolve().parents[1] / "docs/testing/native_aggregate_oracle.py"
+SOURCE = Path(__file__).resolve().parents[1] / "tests/access/queries/execution/native_aggregate_oracle.py"
 SPEC = importlib.util.spec_from_file_location("native_aggregate_oracle", SOURCE)
 oracle = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(oracle)

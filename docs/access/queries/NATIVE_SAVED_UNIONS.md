@@ -80,12 +80,12 @@ metadata/statement refusals, budgets/parser ceilings and early/late cancellation
 Two CLI tests cover inert printing, explicit/named execution and buffered owner,
 UDF, cycle and action refusals. Existing SELECT behavior remains regression-tested.
 
-The original [fixture recipe](../../testing/SavedUnionFixture.java) creates fourteen
+The original [fixture recipe](../../../tests/access/queries/saved/SavedUnionFixture.java) creates fourteen
 inert definitions on fresh Jet 4 and ACE 2007/2016/2019 files with expressions
-disabled. The [read-only oracle](../../testing/SavedReadOracle.java) uses Jackcess's own
-SQL renderer; [the comparison](../../testing/compare_saved_unions.py) checks normalized
+disabled. The [read-only oracle](../../../tests/access/queries/saved/SavedReadOracle.java) uses Jackcess's own
+SQL renderer; [the comparison](../../../tests/access/queries/saved/compare_saved_unions.py) checks normalized
 assembly, saved/direct/named execution, getter-derived expectations and malformed
-metadata on copies. [FIXTURES.md](../../testing/FIXTURES.md#saved-union-inputs) records hashes.
+metadata on copies. [FIXTURES.md](../../../tests/reports/reading/FIXTURES.md#saved-union-inputs) records hashes.
 The comparison passed 268 controls with original sources unchanged. Jackcess never
 executes SQL here; these are independent storage/assembly/model results. Native
 Microsoft Access parsing/execution, versions and source files still need Windows

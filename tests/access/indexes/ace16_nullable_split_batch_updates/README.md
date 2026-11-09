@@ -8,7 +8,7 @@ passes on its first execution. This is independent-reader engineering evidence;
 native Access save/reopen, data macros and normal ACE writes remain unqualified.
 
 The working API and unfinished scope are described in
-[the owning contract](../ACE16_NULLABLE_SPLIT_BATCH_UPDATES.md). These originals
+[the owning contract](../../../reports/indexes/ACE16_NULLABLE_SPLIT_BATCH_UPDATES.md). These originals
 exercise one table per operation, two physical owners, nullable Int32 single and
 reversed two-component keys, UNIQUE/nonunique declarations and genuine aliases.
 They do not qualify cross-table allocation, wider carriers, contraction,
@@ -110,8 +110,8 @@ and fresh20. The action helper uses a fresh class directory and never replaces
 SOURCE9 classes. The producer was built from committed
 `50d028cc19452c54046b1e1d23baa77ac80f491b` in an initially absent isolated target;
 its archive contains 4791 source files. The
-[build receipt](../results/ace16-nullable-split-batch-example-build-2026-10-29.json)
-and [original-file result](../results/ace16-nullable-split-batch-originals-2026-10-29.json)
+[build receipt](../../../results/indexes/ace16-nullable-split-batch-example-build-2026-10-29.json)
+and [original-file result](../../../results/indexes/ace16-nullable-split-batch-originals-2026-10-29.json)
 retain those authorities.
 
 The first maintained-verifier authoring run refused its own argv reconstruction:

@@ -3,8 +3,8 @@
 This continuation extends the separate ACE 16 INSERT engineering preview.
 It does not enable ordinary saves or qualify native Access transactions, data
 macros or concurrent writing. The
-[ordinary-row contract](ACE16_ORDINARY_INSERTS.md) still owns record construction,
-and the [recursive INSERT contract](ACE16_INSERT_RECURSIVE.md) owns the established
+[ordinary-row contract](../rows/ACE16_ORDINARY_INSERTS.md) still owns record construction,
+and the [recursive INSERT contract](../rows/ACE16_INSERT_RECURSIVE.md) owns the established
 tree-normalization policy.
 
 ## Physical ownership
@@ -26,10 +26,10 @@ required-key and nullable-unique behavior.
 Secondary Ignore-NULL indexes admit the qualified fixed-key profiles when the
 index is not Required. Primary Ignore-NULL and Required+Ignore-NULL combinations
 remain refused, as do foreign indexes and other unqualified key families.
-Qualified [fixed GUID/numeric tuples](ACE16_FIXED_TUPLE_INSERTS.md) now extend
+Qualified [fixed GUID/numeric tuples](../rows/ACE16_FIXED_TUPLE_INSERTS.md) now extend
 this service to two-to-ten components with independent directions. Storing a
 value does not by itself authorize an index on that field. Qualified
-[Decimal indexes](ACE16_FIXED_TUPLE_INSERTS.md#exact-decimal-index-continuation)
+[Decimal indexes](../rows/ACE16_FIXED_TUPLE_INSERTS.md#exact-decimal-index-continuation)
 and [Short Text/Binary indexes](ACE16_VARIABLE_INDEX_INSERTS.md) now have their
 own typed preparation and independent final audit. The ordinary record and physical key profiles remain
 separate requirements.
@@ -70,7 +70,7 @@ value of 29 becomes 30; it is never reset to the current live distinct count.
 Primary uniqueness makes its delta equal the inserted-row count. Zero deltas
 emit no counter patch, and overflow refuses the complete operation.
 
-The [historical-counter reference](../access/indexes/NATIVE_INDEXES.md#explicit-historical-counter-inspection)
+The [historical-counter reference](../../../docs/access/indexes/NATIVE_INDEXES.md#explicit-historical-counter-inspection)
 records the pinned Jackcess source for this distinction. Native Access mutation
 timing and save/reopen equivalence remain separate qualification work.
 
@@ -94,7 +94,7 @@ gate before the physical planner; the test now records that exact earlier gate.
 Old private single-owner refusal tests were updated for the new per-owner
 constructor, retaining missing-owner and public complete-maintenance controls.
 
-The separate [independent-writer reference](ace16_insert_multiple_indexes/README.md)
+The separate [independent-writer reference](../../access/indexes/ace16_insert_multiple_indexes/README.md)
 admits four Jackcess-generated originals and verifies four reference transitions.
 An initial authored source gate required a native leaf to use its best possible
 prefix even though its uncompressed entries fit. The failed seven-call phase is
@@ -103,14 +103,14 @@ the eighteen remaining calls. No original bytes were repaired or calls repeated.
 These references do not substitute for TableCraft candidate checks or native
 Microsoft Access qualification.
 
-The [isolated producer build](results/ace16-insert-multiple-index-example-build-2026-10-28.json)
+The [isolated producer build](../../results/indexes/ace16-insert-multiple-index-example-build-2026-10-28.json)
 uses committed source after all four independent source/request expected images
 were frozen. All four first-attempt candidates match those complete images before
 any independent reader is launched. Eight subsequent fresh, read-only Jackcess
 calls pass all four typed/raw ROW, index, counter, map and protected-byte proofs;
 all 806 old ROWs remain, and 112 explicit new rows are added across the cases.
 Original and reference files remain unchanged. The
-[candidate receipt](results/ace16-insert-multiple-index-native-2026-10-28.json)
+[candidate receipt](../../results/indexes/ace16-insert-multiple-index-native-2026-10-28.json)
 and maintained saved replay retain exact inputs, outputs and execution phases.
 
 Both pressure cases grow one ordinary DATA page followed by four INDEX pages:
@@ -177,11 +177,11 @@ candidate was repaired, and no completed call was repeated. These checks do
 not establish native Access writes.
 
 
-The [maintained saved proof](ace16_insert_ignored_indexes/README.md) and
-[candidate receipt](results/ace16-insert-ignored-index-native-2026-10-28.json)
+The [maintained saved proof](../../access/indexes/ace16_insert_ignored_indexes/README.md) and
+[candidate receipt](../../results/indexes/ace16-insert-ignored-index-native-2026-10-28.json)
 retain those phases separately. Default replay starts no child process and
 reports missing private evidence explicitly. The
-[isolated build receipt](results/ace16-insert-ignored-index-example-build-2026-10-28.json)
+[isolated build receipt](../../results/indexes/ace16-insert-ignored-index-example-build-2026-10-28.json)
 binds the committed producer to the previously frozen expected images.
 
 
@@ -212,7 +212,7 @@ functions additionally reject corrupt Boolean payloads, invalid DATE wires and
 impossible narrow atoms. All 158 INSERT regressions, including these twelve
 functions, pass; strict all-target/all-feature ACE Clippy also passes.
 
-The separate [scalar reference/candidate corpus](ace16_insert_scalar_indexes/README.md)
+The separate [scalar reference/candidate corpus](../../access/indexes/ace16_insert_scalar_indexes/README.md)
 now qualifies sixteen originals: both ACE 16 layouts and both directions for
 Boolean, Single, Double and legacy DATE. All 97 source/reference calls pass,
 with every original qualified before any public-writer append. Actual stored
@@ -232,8 +232,8 @@ The initial pure static API check exposed the independent encoder's package-priv
 Java visibility before any fixture call. The corrected helper uses the existing
 narrow reflection probe pattern; failed static inputs remain preserved. No
 source recipe or expected image was repaired, and actual calls were not repeated.
-The [candidate receipt](results/ace16-insert-scalar-index-native-2026-10-28.json)
-and [producer receipt](results/ace16-insert-scalar-index-example-build-2026-10-28.json)
+The [candidate receipt](../../results/indexes/ace16-insert-scalar-index-native-2026-10-28.json)
+and [producer receipt](../../results/indexes/ace16-insert-scalar-index-example-build-2026-10-28.json)
 keep build provenance and separate execution phases. Native Access save/reopen
 and deeper scalar-specific reference observations remain unqualified.
 
@@ -243,7 +243,7 @@ and deeper scalar-specific reference observations remain unqualified.
 The recursive tree kernel now uses generic retained keys and borrowed encoding.
 Its current numeric caller and exact allocation/image policy are unchanged.
 A non-Copy retained-key test brought that checkpoint to 159 passing INSERT
-functions. The later [fixed GUID/tuple continuation](ACE16_FIXED_TUPLE_INSERTS.md)
+functions. The later [fixed GUID/tuple continuation](../rows/ACE16_FIXED_TUPLE_INSERTS.md)
 now implements complete-row NULL rules, original membership and independent
 wire proof, with 171 passing INSERT functions. The later exact Decimal and variable-key continuations are documented above;
 normal save qualification remains separate work.

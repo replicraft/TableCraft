@@ -3,6 +3,7 @@
 Source-free UNION inputs exercise the actual CLI query evaluator. Fraction supplies
 independent exact means; optional inert native getters add a double-rounding regression.
 """
+from engineering_paths import reference_file
 import argparse
 import csv
 from fractions import Fraction
@@ -74,7 +75,7 @@ def main():
             assert hashlib.sha256(before).hexdigest() == digest
             output = subprocess.check_output([
                 "java", "-Dstdout.encoding=UTF-8", "-cp", str(args.jar),
-                str(RECIPES / "TableDataOracle.java"), str(path), "IndexedRows",
+                str(reference_file('tests/access/reading/tables/TableDataOracle.java')), str(path), "IndexedRows",
             ], text=True, encoding="utf-8")
             records = [line.split("\t") for line in output.splitlines()]
             assert len(records) == 20000

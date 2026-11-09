@@ -60,7 +60,7 @@ and must expose exactly the appended contents. No dependency or fixture is added
 
 Focused tests cover documented examples, exact suffix boundaries, generated Int32
 and radix models, rounding, budget exhaustion, cancellation, grouping, parameter
-rebinding, aggregates and CLI failure buffering. The [independent recipe](../../testing/compare_val.py) adds Python integer/Decimal
+rebinding, aggregates and CLI failure buffering. The [independent recipe](../../../tests/access/reading/tables/compare_val.py) adds Python integer/Decimal
 models and sequential/indexed projections over Jackcess-decoded native rows;
 the source database hash is checked after reads. Native Access execution remains
 unrun. Broader Variant coercion, exact native result subtypes and native error
@@ -98,7 +98,7 @@ regional spelling, result subtypes and error precedence remain unqualified.
 Two expression and two query tests cover scalar inputs, decimal-comma versus
 period parsing, nested/reused formatting settings, Boolean zero, NULL/eager errors,
 combined byte quotas and every observed conversion/prefix cancellation checkpoint.
-The original [scalar runner](../../testing/compare_val_scalars.py) passes 336 controls over
+The original [scalar runner](../../../tests/access/reading/tables/compare_val_scalars.py) passes 336 controls over
 authored spellings with independent decimal-prefix parsing and exact Double bits,
 including signed zero. Raw IDs come from read-only Jackcess getters over four
 unchanged 20,000-row files, through sequential and both index directions. Only

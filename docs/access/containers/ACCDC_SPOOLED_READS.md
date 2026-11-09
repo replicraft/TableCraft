@@ -90,7 +90,7 @@ Host error messages, paths and package names are not included in diagnostics.
 
 ## Scoped verification
 
-The [scoped record](../../testing/results/read-query-accdc-spooled-2026-10-25.json)
+The [scoped record](../../../tests/results/queries/read-query-accdc-spooled-2026-10-25.json)
 records 56 passing checks: nineteen Access integration/layout controls and
 thirty-seven CLI browsing/deployment/budget/password controls, with strict Access
 and CLI linting and formatting. Fifteen controls are new.

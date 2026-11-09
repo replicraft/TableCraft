@@ -164,8 +164,8 @@ def main():
         classes.mkdir()
         compiled = replay.command([
             'javac', '-cp', label(args.jar), '-d', label(classes),
-            'docs/testing/CascadeDeleteFixture.java',
-            'docs/testing/CascadeDeleteIndexInspection.java',
+            'tests/access/rows/delete/CascadeDeleteFixture.java',
+            'tests/access/indexes/native/CascadeDeleteIndexInspection.java',
         ])
         assert compiled['status'] == 0 and not compiled['timed_out']
         classpath = label(args.jar) + ':' + label(classes)

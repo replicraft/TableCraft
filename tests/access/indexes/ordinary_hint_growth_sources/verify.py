@@ -5,8 +5,8 @@ import json
 from pathlib import Path
 import sys
 
-ROOT = Path(__file__).resolve().parents[3]
-sys.path.insert(0, str(ROOT / 'docs/testing'))
+ROOT = Path(__file__).resolve().parents[4]
+sys.path.insert(0, str(ROOT / 'tests/access'))
 from ordinary_hint_growth_sources import measure, model
 
 SOURCE = '.cache/ace16-ordinary-hint-growth-next-20261027'
@@ -132,7 +132,7 @@ def verify():
     needle = "assert actual['tables'][name] == table, name"
     replacement = "assert json.loads(json.dumps(actual['tables'][name])) == table, name"
     assert old.count(needle) == 1 and corrected == old.replace(needle, replacement)
-    public = 'docs/testing/ordinary_hint_growth_sources/'
+    public = 'tests/access/indexes/ordinary_hint_growth_sources/'
     assert path(public + 'OrdinaryHintProbe.java').read_bytes() == path(SOURCE + '/OrdinaryHintProbe.java').read_bytes()
     for maintained, executed in [('model.py', 'model.py'), ('measure.py', 'measure_json.py')]:
         before = path(SOURCE + '/' + executed).read_text()

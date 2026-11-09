@@ -128,12 +128,12 @@ six-command continuation remain [source history](ORDINARY_HINT_GROWTH_SOURCE_OBS
 not failed or repeated UPDATE calls. Separate terminal postchecks verified 131
 Phase A identities and 168 Phase B identities without rewriting either raw report.
 
-The maintained [helper](ordinary_hint_growth_references/OrdinaryHintReferenceProbe.java)
-and [map proof](ordinary_hint_growth_references/map_proof.py) are byte-identical
-to their executed private sources. The [action model](ordinary_hint_growth_references/action_model.py)
-and [reference proof](ordinary_hint_growth_references/reference_proof.py) change
+The maintained [helper](../../access/indexes/ordinary_hint_growth_references/OrdinaryHintReferenceProbe.java)
+and [map proof](../../access/indexes/ordinary_hint_growth_references/map_proof.py) are byte-identical
+to their executed private sources. The [action model](../../access/indexes/ordinary_hint_growth_references/action_model.py)
+and [reference proof](../../access/indexes/ordinary_hint_growth_references/reference_proof.py) change
 only repository-root/import composition. The new
-[saved verifier](ordinary_hint_growth_references/verify.py) is a maintained replay,
+[saved verifier](../../access/indexes/ordinary_hint_growth_references/verify.py) is a maintained replay,
 not the historical execution. Its first saved-only run passed: 1,418 pin
 occurrences/449 identities, 38,916 after rows including 6,504 unchanged padding
 rows, 336 map-role instances, 129,612 logical index entries including aliases and
@@ -143,6 +143,6 @@ rows, 336 map-role instances, 129,612 logical index entries including aliases an
 python3 -B docs/testing/ordinary_hint_growth_references/verify.py
 ```
 
-The [compact receipt](results/ordinary-hint-update-observations-2026-10-27.json)
+The [compact receipt](../../results/indexes/ordinary-hint-update-observations-2026-10-27.json)
 pins the executed freeze, both raw reports, postchecks, source/output identities
 and maintained tools. No database, getter dump or compiled binary is committed.

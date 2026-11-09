@@ -181,10 +181,10 @@ Its normalized output buffers under 1 MiB before stdout. A saved source name is
 still unresolved during reconstruction; explicit retrieval uses the named-source
 contract below.
 
-The original [SELECT recipe](../../testing/SavedSelectFixture.java) creates thirteen
-inert definitions per V2016/V2019 family. The [read-only rendering oracle](../../testing/SavedSelectOracle.java)
+The original [SELECT recipe](../../../tests/access/queries/saved/SavedSelectFixture.java) creates thirteen
+inert definitions per V2016/V2019 family. The [read-only rendering oracle](../../../tests/access/queries/saved/SavedSelectOracle.java)
 uses Jackcess toSQLString with expression evaluation disabled, without executing
-queries. [Comparison](../../testing/compare_saved_selects.py) normalizes those independent
+queries. [Comparison](../../../tests/access/queries/saved/compare_saved_selects.py) normalizes those independent
 renderings through the existing SQL parser and compares the adapter's complete
 formatted models through both the engineering host and public CLI. Five disposable
 corruption variants per family fail without stdout through both hosts; three
@@ -198,7 +198,7 @@ an omitted-type query. The reference renderer emits `101f_cbo_Crew_Id_qry` bare;
 that spelling is outside TableCraft's current bounded SQL grammar. Its exact
 rendering is asserted separately, and the adapter is compared with an explicitly
 quoted expected source name. This is not another whole-renderer normalization
-result or native Access syntax qualification. [Provenance](../../testing/FIXTURES.md#original-ace-16-saved-select-inputs)
+result or native Access syntax qualification. [Provenance](../../../tests/reports/reading/FIXTURES.md#original-ace-16-saved-select-inputs)
 records the original hashes. Actual Access and application save/reopen remain unrun.
 
 ### Native joins
@@ -226,11 +226,11 @@ retain the documented allowances/ceilings; cancellation precedes publication.
 Three additional focused tests cover all kinds, both endpoint/storage orientations,
 self-joins, Unicode table names, missing/ambiguous/unsupported metadata, expression
 boundaries, budgets and late cancellation. The original recipe's `--joins` mode
-adds nine joins to the thirteen baseline SELECTs. [Independent comparison](../../testing/compare_saved_joins.py)
+adds nine joins to the thirteen baseline SELECTs. [Independent comparison](../../../tests/access/queries/saved/compare_saved_joins.py)
 matches all twenty-two models per V2016/V2019 family through both hosts. Eight
 join mutations per family retain inert inspectability but reject reconstruction
 without stdout: unknown/NULL kind, NULL endpoints/condition, undeclared endpoint,
-ambiguous aliases and unqualified label comparison. [Provenance](../../testing/FIXTURES.md#original-ace-16-saved-join-inputs)
+ambiguous aliases and unqualified label comparison. [Provenance](../../../tests/reports/reading/FIXTURES.md#original-ace-16-saved-join-inputs)
 records file/model hashes; no query execution or actual Access comparison has run.
 
 #### Multiple conditions on the same pair
@@ -255,20 +255,20 @@ is checked during construction and before publication. No condition executes.
 Two focused tests cover all kinds with two/three distinguishable conditions,
 invalid metadata/expression boundaries, the 16/17 ceiling, budgets and late
 cancellation. The original `--compound-joins` mode adds six definitions to the
-twenty-two baseline/simple-join controls. [Comparison](../../testing/compare_compound_joins.py)
+twenty-two baseline/simple-join controls. [Comparison](../../../tests/access/queries/execution/compare_compound_joins.py)
 matches twenty-eight independent models/family through both hosts. Five mutations
 retain inert inspectability but reject reconstruction without stdout: mixed/NULL
 kinds, NULL endpoints and undeclared condition endpoints. Three positive copies
 check reversed same-pair endpoints and tied/reversed ordering keys against the
 independent renderer through both hosts. Tied keys deliberately disagree with
-the system primary index and are reader controls, not native-save qualification. [Provenance](../../testing/FIXTURES.md#original-ace-16-compound-join-inputs)
+the system primary index and are reader controls, not native-save qualification. [Provenance](../../../tests/reports/reading/FIXTURES.md#original-ace-16-compound-join-inputs)
 records hashes. These are syntax/order results, not native execution/error-order
 or actual Access qualification.
 
 ```sh
 java -Dfile.encoding=UTF-8 -cp path/to/jackcess-5.0.4.jar docs/testing/SavedSelectFixture.java compound-2016.accdb V2016 --compound-joins
 java -Dfile.encoding=UTF-8 -cp path/to/jackcess-5.0.4.jar docs/testing/SavedSelectFixture.java compound-2019.accdb V2019 --compound-joins
-python3 docs/testing/compare_compound_joins.py --jar path/to/jackcess-5.0.4.jar \
+python3 tests/run.py tests/access/queries/execution/compare_compound_joins.py --jar path/to/jackcess-5.0.4.jar \
   --cli target/release/tablecraft --example target/release/examples/saved_select \
   --ace2016 compound-2016.accdb --ace2019 compound-2019.accdb
 ```
@@ -311,18 +311,18 @@ that ceiling test. A CLI test prints declarations without supplied values/prompt
 rejects unknown types and verifies payload-free diagnostics and unchanged input.
 
 The original recipe's `--parameters` mode adds eight parameterized definitions to
-thirteen baselines. [Comparison](../../testing/compare_saved_parameters.py) matches all
+thirteen baselines. [Comparison](../../../tests/access/queries/saved/compare_saved_parameters.py) matches all
 twenty-one models per V2016/V2019 family through both hosts, including prompts,
 twelve type tags, NULL/zero/positive/max-i32 Text syntax, owner-access/sorting and
 a parameterized join. Seven inspectable mutations/family reject reconstruction
-without stdout; a tied-order copy compares positively through both hosts. [Provenance](../../testing/FIXTURES.md#original-ace-16-saved-parameter-inputs)
+without stdout; a tied-order copy compares positively through both hosts. [Provenance](../../../tests/reports/reading/FIXTURES.md#original-ace-16-saved-parameter-inputs)
 records hashes. Actual Access, native query execution and runtime Text-value limits
 remain unqualified; explicit saved/named retrieval is described below.
 
 ```sh
 java -Dfile.encoding=UTF-8 -cp path/to/jackcess-5.0.4.jar docs/testing/SavedSelectFixture.java params-2016.accdb V2016 --parameters
 java -Dfile.encoding=UTF-8 -cp path/to/jackcess-5.0.4.jar docs/testing/SavedSelectFixture.java params-2019.accdb V2019 --parameters
-python3 docs/testing/compare_saved_parameters.py --jar path/to/jackcess-5.0.4.jar \
+python3 tests/run.py tests/access/queries/saved/compare_saved_parameters.py --jar path/to/jackcess-5.0.4.jar \
   --cli target/release/tablecraft --example target/release/examples/saved_select \
   --ace2016 params-2016.accdb --ace2019 params-2019.accdb
 ```
@@ -330,7 +330,7 @@ python3 docs/testing/compare_saved_parameters.py --jar path/to/jackcess-5.0.4.ja
 ```sh
 java -Dfile.encoding=UTF-8 -cp path/to/jackcess-5.0.4.jar docs/testing/SavedSelectFixture.java joins-2016.accdb V2016 --joins
 java -Dfile.encoding=UTF-8 -cp path/to/jackcess-5.0.4.jar docs/testing/SavedSelectFixture.java joins-2019.accdb V2019 --joins
-python3 docs/testing/compare_saved_joins.py --jar path/to/jackcess-5.0.4.jar \
+python3 tests/run.py tests/access/queries/saved/compare_saved_joins.py --jar path/to/jackcess-5.0.4.jar \
   --cli target/release/tablecraft --example target/release/examples/saved_select \
   --ace2016 joins-2016.accdb --ace2019 joins-2019.accdb
 ```
@@ -339,7 +339,7 @@ python3 docs/testing/compare_saved_joins.py --jar path/to/jackcess-5.0.4.jar \
 java -Dfile.encoding=UTF-8 -cp path/to/jackcess-5.0.4.jar docs/testing/SavedSelectFixture.java select-2016.accdb V2016
 java -Dfile.encoding=UTF-8 -cp path/to/jackcess-5.0.4.jar docs/testing/SavedSelectFixture.java select-2019.accdb V2019
 cargo build --locked --release -p tablecraft-access --example saved_select
-python3 docs/testing/compare_saved_selects.py --jar path/to/jackcess-5.0.4.jar \
+python3 tests/run.py tests/access/queries/saved/compare_saved_selects.py --jar path/to/jackcess-5.0.4.jar \
   --cli target/release/tablecraft --example target/release/examples/saved_select \
   --ace2016 select-2016.accdb --ace2019 select-2019.accdb \
   --sample docs/examples/Access_Example_VBA.accdb
@@ -362,20 +362,20 @@ defines declaration/name/prompt syntax; its runtime prompting behavior is not
 implemented by inert reconstruction. The [type comparison](https://learn.microsoft.com/en-us/office/vba/access/concepts/error-codes/comparison-of-data-types)
 distinguishes query parameters and SQL spellings from table field types.
 
-[The original fixture recipe](../../testing/SavedQueryFixture.java) writes inert system
+[The original fixture recipe](../../../tests/access/queries/saved/SavedQueryFixture.java) writes inert system
 rows into fresh V2016/V2019 databases through the reviewed artifact. Eleven
 definitions/75 fragments per family cover all nine query-object flag families,
 unknown attributes, signed flags/extra fields, Unicode/NUL/control text, NULL/
 empty distinctions, nonmonotonic order bytes and an empty definition. These are
 stored fragment fixtures, not a claim that the illustrative SQL is executable.
 
-[The read-only oracle](../../testing/SavedQueryOracle.java) uses query identity metadata
+[The read-only oracle](../../../tests/access/queries/saved/SavedQueryOracle.java) uses query identity metadata
 and raw stored rows with expression evaluation disabled; it never invokes
-toSQLString or query execution. [Comparison](../../testing/compare_saved_queries.py)
+toSQLString or query execution. [Comparison](../../../tests/access/queries/saved/compare_saved_queries.py)
 matches all 75 fragments per family and all 59 queries/332 fragments in the
 unchanged registered example. Unknown-tag, NULL-attribute, NULL-order and unbound
 row copies still match inert inspection. Incompatible carrier/late-count copies
-fail without stdout. [Provenance](../../testing/FIXTURES.md#original-ace-16-saved-query-fragment-inputs)
+fail without stdout. [Provenance](../../../tests/reports/reading/FIXTURES.md#original-ace-16-saved-query-fragment-inputs)
 records original file/report hashes and current limits; no native Access oracle
 or application save/reopen has run.
 
@@ -389,7 +389,7 @@ failures. The shared output refactor retains existing value formatting tests.
 ```sh
 java -Dfile.encoding=UTF-8 -cp path/to/jackcess-5.0.4.jar docs/testing/SavedQueryFixture.java new-2016.accdb V2016
 java -Dfile.encoding=UTF-8 -cp path/to/jackcess-5.0.4.jar docs/testing/SavedQueryFixture.java new-2019.accdb V2019
-python3 docs/testing/compare_saved_queries.py --jar path/to/jackcess-5.0.4.jar \
+python3 tests/run.py tests/access/queries/saved/compare_saved_queries.py --jar path/to/jackcess-5.0.4.jar \
   --cli target/release/tablecraft --ace2016 new-2016.accdb --ace2019 new-2019.accdb \
   --sample docs/examples/Access_Example_VBA.accdb
 ```
@@ -437,7 +437,7 @@ Focused synthetic tests cover same-source parameter/filter/order execution,
 all four qualified layout families, original fragment retention, cumulative
 budget exhaustion, cancellation, buffered refusal, diagnostic payload omission
 and both CLI presentation modes. Independent fixture/model comparisons are
-recorded in [fixture evidence](../../testing/FIXTURES.md#explicit-saved-select-execution-inputs);
+recorded in [fixture evidence](../../../tests/reports/reading/FIXTURES.md#explicit-saved-select-execution-inputs);
 they remain separate from actual Microsoft Access SQL qualification.
 
 
@@ -473,7 +473,7 @@ Stable/offline source ownership remains mandatory. No update-through-query suppo
 or write qualification is introduced.
 
 Original fixtures and independent getter/SQL-assembly comparisons are recorded in
-[dependency evidence](../../testing/FIXTURES.md#saved-select-dependency-inputs). Microsoft references
+[dependency evidence](../../../tests/reports/reading/FIXTURES.md#saved-select-dependency-inputs). Microsoft references
 for the underlying stored-query and typed parameter concepts are
 [QueryDef](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/querydef-object-dao)
 and [PARAMETERS](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/parameters-declaration-microsoft-access-sql).
@@ -517,7 +517,7 @@ CLI regression checks compare its buffered output with the explicit owned SQL,
 refuse partial output under a small output limit and retain original database
 bytes. Authored fixtures exercise execution across Jet 4 and ACE codes 2/5/6.
 
-The original [independent comparison](../../testing/compare_example_saved_join.py) derives
+The original [independent comparison](../../../tests/access/queries/saved/compare_example_saved_join.py) derives
 all 933 joined rows and their headers from reviewed Jackcess schema/value getters.
 Only TableCraft executes SQL; no VBA/application code runs in the reference reader.
 The immutable example and JAR hashes are checked, and original bytes remain

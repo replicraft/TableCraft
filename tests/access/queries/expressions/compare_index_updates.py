@@ -65,7 +65,7 @@ def main():
 
     def java(source, *arguments):
         return subprocess.check_output(["java", "-Dstdout.encoding=UTF-8", "-cp", str(args.jar),
-            "docs/testing/" + source + ".java", *map(str, arguments)], text=True)
+            "tests/access/" + source + ".java", *map(str, arguments)], text=True)
 
     physical = [line.split("\t") for line in java("IndexUpdateFixture", "--inspect", args.jet).splitlines()]
     if len(physical) != 1000 or any((int(row[0]), int(row[1])) != (2 * (i + 1), i) for i, row in enumerate(physical)):

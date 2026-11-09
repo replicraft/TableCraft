@@ -18,7 +18,7 @@ import tarfile
 from compare_saved_external import display
 
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[4]
 PROFILES = ("V2016", "V2019")
 CLI_SHA256 = "40fc7f58e5bfa48458762bfcc97b1b1ea3232ac6c7b10d4a16a15f83cbfb292e"
 JAR_SHA256 = "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc"
@@ -90,7 +90,7 @@ def main():
     archived = archive_sources(args.source_revision, args.source_manifest)
     paths = {args.cli, args.jar, args.source_manifest, Path(__file__)}
     paths.update(args.directory.iterdir())
-    paths.update(ROOT / "docs/testing" / name for name in (
+    paths.update(ROOT / "tests/access" / name for name in (
         "VariableMemoHistoryFixture.java", "compare_saved_external.py",
     ))
     hashes = {str(path.relative_to(ROOT) if path.is_absolute() else path): digest(path)

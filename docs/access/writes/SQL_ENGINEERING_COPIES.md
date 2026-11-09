@@ -83,12 +83,12 @@ assignment coercions or the ordinary `ExistingInt32` carrier law.
 
 Default and explicit fitted services admit one qualified preserved Int64,
 Currency or legacy DateTime target through the existing
-[fixed scalar service](../../testing/ACE16_PRESERVED_FIXED_SCALARS.md). The planner
+[fixed scalar service](../../../tests/reports/rows/ACE16_PRESERVED_FIXED_SCALARS.md). The planner
 keeps its closed mutation expression set: admitted explicit numeric conversions,
 date literals and NULL assignments do not enable `CDate` or general retrieval
 functions. Exact native carriers and original row expectations remain mandatory.
 Qualified preserved Boolean, Int32, Int64, Currency and legacy DateTime targets
-can combine through the [joint fixed service](../../testing/ACE16_PRESERVED_JOINT_FIXED.md).
+can combine through the [joint fixed service](../../../tests/reports/rows/ACE16_PRESERVED_JOINT_FIXED.md).
 Every SET expression reads the original snapshot and one finish validates the
 complete result. Variable/growth modes and unsupported selected targets retain
 their refusals.
@@ -96,15 +96,15 @@ their refusals.
 The default resolves the complete target set from the original snapshot and
 selects one service before native planning. A qualified mixed-schema projection
 with one ordinary, unindexed Short Text target uses the
-[preserved fitting service](../../testing/ACE16_PRESERVED_SHORT_TEXT_UPDATES.md)
+[preserved fitting service](../../../tests/reports/rows/ACE16_PRESERVED_SHORT_TEXT_UPDATES.md)
 under Default mode, retaining opaque companions and original record capacity.
 One such Text target can also combine with qualified ordinary unindexed
 Boolean, Int32, Int64, Currency and legacy DateTime targets through the
-[joint fitting service](../../testing/ACE16_PRESERVED_JOINT_TEXT_FIXED.md).
+[joint fitting service](../../../tests/reports/rows/ACE16_PRESERVED_JOINT_TEXT_FIXED.md).
 All SET expressions read the original row; multiple changed fields count one
 changed logical root. True empty groups still qualify every selected target.
 Explicit `--variable` selects the separate
-[preserved Short Text growth service](../../testing/ACE16_PRESERVED_TEXT_GROWTH.md)
+[preserved Short Text growth service](../../../tests/reports/rows/ACE16_PRESERVED_TEXT_GROWTH.md)
 for one ordinary, unindexed target with no calculated dependency. It preserves
 the original logical row reference while placing the replacement on the original
 or another owned DATA page, or allocating a represented EOF DATA page. Default
@@ -117,7 +117,7 @@ fixed/batch maintenance and retain its history policy. For one Text/Binary targe
 the retained native declaration selects the existing ordinary Memo/OLE service
 when it matches that engine storage shape. Otherwise it uses the existing variable
 service without INDEX growth. Their qualified DATA placement may allocate pages. Multiple variable targets, or variable targets
-with fixed siblings, use [joint fitted-record maintenance](../../testing/ACE16_MULTIPLE_VARIABLE_UPDATES.md):
+with fixed siblings, use [joint fitted-record maintenance](../../../tests/reports/rows/ACE16_MULTIPLE_VARIABLE_UPDATES.md):
 one original/final row projection, existing record capacity and retained INDEX
 topology. There is no failed-preview retry or intermediate candidate.
 
@@ -132,7 +132,7 @@ omitted INSERT fields or native `DefaultValue` evaluation.
 
 `--index-growth` explicitly selects existing Int32 fixed INDEX allocation.
 `--variable` retains its existing service for one Short Text/Binary target.
-With multiple variable targets or fixed siblings it selects [joint DATA placement](../../testing/ACE16_MIXED_GROWING_UPDATES.md)
+With multiple variable targets or fixed siblings it selects [joint DATA placement](../../../tests/reports/rows/ACE16_MIXED_GROWING_UPDATES.md)
 once, allowing a hidden target on the original or another owned DATA page, or
 qualified represented EOF allocation. INDEX owners must still fit. For example:
 
@@ -142,7 +142,7 @@ tablecraft query preview-update "UPDATE Contacts SET Age=40, Name='Alice' WHERE 
 ```
 
 With multiple variable targets or fixed siblings, `--variable --index-growth`
-instead selects one [joint DATA/INDEX continuation](../../testing/ACE16_MIXED_DATA_INDEX_GROWTH.md).
+instead selects one [joint DATA/INDEX continuation](../../../tests/reports/indexes/ACE16_MIXED_DATA_INDEX_GROWTH.md).
 The engine uses one original source and one allocation ledger for DATA placement
 and every affected physical INDEX owner. It derives each final tuple jointly;
 logical aliases do not allocate independent trees. A single-variable statement
@@ -187,7 +187,7 @@ tablecraft query preview-update 'UPDATE Items SET [Score]=11 WHERE [Id]=1' \
 The host captures the original once through `capture_for_fixed_updates`, passes
 it to the existing SQL batch editor in `Fixed(Fitted)` mode, and uses the common
 fresh-copy publisher. Actual native field, index, ownership and preservation
-checks remain mandatory. See the [native image contract](../../testing/ACE16_LARGER_FIXED_IMAGES.md)
+checks remain mandatory. See the [native image contract](../../../tests/reports/rows/ACE16_LARGER_FIXED_IMAGES.md)
 for its separately recorded limits and native qualification.
 
 The inert CLI source gate qualified twelve source/expected pairs, including ten
@@ -315,7 +315,7 @@ preservation, fitted-default refusal and mixed INDEX-growth/multiple-variable
 no-output refusals. At that checkpoint, the zero-match mixed INDEX-growth adapter control used a
 zero-Bytes planning budget and received the then-current mode refusal. The joint
 INDEX continuation below replaces that obsolete blanket refusal with a paid
-request-allocation control. The later [multiple-variable extension](../../testing/ACE16_MULTIPLE_VARIABLE_UPDATES.md)
+request-allocation control. The later [multiple-variable extension](../../../tests/reports/rows/ACE16_MULTIPLE_VARIABLE_UPDATES.md)
 also replaces the historical multiple-variable refusal. The targeted old/new native fixture regression passed all
 16 functions, the Access library passed 55, and CLI regressions passed 31 unit
 plus 36 integration functions (six DELETE, two historical, nine INSERT, fifteen
@@ -350,7 +350,7 @@ destinations and source aliases leave all original files unchanged. The full
 adapter library passes 57 functions; the selected CLI round passes 37 unit and
 29 integration functions (23 UPDATE and six typed CRUD). Strict ACE/Access/CLI
 all-target/all-feature checks and minimal Access checks pass. See the
-[frontend record](../../testing/results/mixed-data-index-growth-copies-2026-10-30.json).
+[frontend record](../../../tests/results/indexes/mixed-data-index-growth-copies-2026-10-30.json).
 These are experimental engineering copies, not native Access save qualification.
 
 ## Default ordinary Memo/OLE routing evidence
@@ -442,8 +442,8 @@ retain the final copy and never trigger fallback, retry or final-file deletion.
 This option changes filesystem publication only, not index admission or normal
 native-save/macro authority.
 
-The [native creation contract](../../testing/ACE16_SECONDARY_INDEX_CREATION.md)
-and [host result](../../testing/results/secondary-index-sql-copies-2026-10-30.json)
+The [native creation contract](../../../tests/reports/creation/ACE16_SECONDARY_INDEX_CREATION.md)
+and [host result](../../../tests/results/queries/secondary-index-sql-copies-2026-10-30.json)
 separate literal engineering checks from native Access conformance. The shared
 pure source owner preserves eight original images and sixteen complete expected
 images across both qualified headers, both directions and four populations.

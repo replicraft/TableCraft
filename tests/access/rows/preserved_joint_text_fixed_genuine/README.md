@@ -5,7 +5,7 @@ originals, creation recipe and read-only getter from the
 [Short Text corpus](../preserved_short_text_genuine/README.md). No database,
 getter or compiled class was recreated or changed for this tranche. Generated
 files, runtime JARs, classes and raw logs remain private; the
-[result record](../results/ace16-preserved-joint-text-fixed-genuine-images-2026-10-31.json)
+[result record](../../../results/rows/ace16-preserved-joint-text-fixed-genuine-images-2026-10-31.json)
 pins the actual observations.
 
 ## Scope and cases
@@ -13,7 +13,7 @@ pins the actual observations.
 Each original has an ordinary, unindexed `Short_Text` target and Boolean `Flag`.
 The other Int32 fields are indexed, calculated or calculation inputs; this
 corpus does not qualify joint Text/Int32 or eight-byte targets. Their authored
-coverage remains in the [joint fitting contract](../ACE16_PRESERVED_JOINT_TEXT_FIXED.md).
+coverage remains in the [joint fitting contract](../../../reports/rows/ACE16_PRESERVED_JOINT_TEXT_FIXED.md).
 
 | Request per original | Transport | Changed logical roots |
 | --- | --- | ---: |
@@ -57,7 +57,7 @@ the result record. No candidate or SDK outcome was retuned.
 To replay retained evidence with the pinned private artifacts restored:
 
 ```sh
-python3 docs/testing/preserved_joint_text_fixed_genuine/verify.py --root .
+python3 tests/run.py tests/access/rows/preserved_joint_text_fixed_genuine/verify.py --root .
 ```
 
 The verifier checks source/tool provenance, the complete committed source archive,

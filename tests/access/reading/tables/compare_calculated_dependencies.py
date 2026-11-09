@@ -12,7 +12,7 @@ import subprocess
 from compare_progressive_queries import display
 
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[4]
 PROFILES = ("V2016", "V2019")
 JAR_SHA256 = "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc"
 FORMULAS = {
@@ -96,7 +96,7 @@ def main():
     compiled = ROOT / generation["compiled_class"]
     assert digest(compiled) == generation["compiled_class_sha256"]
     paths.add(compiled)
-    paths.update(ROOT / "docs/testing" / name for name in (
+    paths.update(ROOT / "tests/access" / name for name in (
         "CalculatedDependencyFixture.java", "compare_progressive_queries.py",
     ))
     hashes = {str(path.relative_to(ROOT) if path.is_absolute() else path): digest(path)

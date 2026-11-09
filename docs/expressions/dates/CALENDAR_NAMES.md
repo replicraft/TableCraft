@@ -118,7 +118,7 @@ combinations, overrides, missing policy, coercion, domain/NULL errors and host
 failures. Separate tests cover first-day validation and evaluator resource limits.
 Query, CLI and worker regressions cover fields, grouping identity, correlations,
 optional slots, flag validation, settings isolation and recovery after missing
-context. The [independent recipe](../../testing/compare_calendar_names.py) uses Python
+context. The [independent recipe](../../../tests/access/queries/expressions/compare_calendar_names.py) uses Python
 Gregorian weekday mapping and optional sequential/indexed projections over
 Jackcess-decoded row inputs, verifying unchanged source bytes. Native Windows
 Access remains unrun; these checks do not establish native compatibility.
@@ -155,7 +155,7 @@ contracts guide the existing argument roles; the [shared conversion basis](../fo
 separates Empty targets and explicit Error conversion. Broader Variant/Text
 coercion, NLS/calendar names and native Access precedence remain unqualified.
 
-The original [runner](../../testing/compare_calendar_format_states.py) passes 302
+The original [runner](../../../tests/access/queries/expressions/compare_calendar_format_states.py) passes 302
 combined controls: 238 scalar eval/run and 64 native sequential/indexed cases over
 four unchanged registered large-index inputs. Explicit English/German full/short
 labels and epoch-date arithmetic supply independent models. Read-only getters

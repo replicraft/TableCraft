@@ -365,7 +365,7 @@ transition. A failed AFTER refresh can retry or explicitly Return to draft while
 retaining saved facts; stale-source mutation stays blocked until a fresh open.
 Closing that draft does not undo a completed native save.
 
-The [field workflow record](../testing/results/field-addition-gui-workflows-2026-11-08.json)
+The [field workflow record](../../tests/results/schema/field-addition-gui-workflows-2026-11-08.json)
 passes 1,505 unique selected checks, including all shared UI and desktop cases.
 Five existing ignored cases are excluded. The ordinary host saves Text → Number
 → Text against complete independent images and then preserves omitted, NULL,
@@ -394,7 +394,7 @@ interaction or save-timestamp evidence.
 Repeated addition preserves every earlier property body. It now permits exactly
 one rollover from property page 10 to immediate EOF page 11, then fitted appends
 on page 11 within the sixteen-field bound. A full second page refuses. The
-[rollover workflow record](../testing/results/number-column-rollover-workflows-2026-11-08.json)
+[rollover workflow record](../../tests/results/schema/number-column-rollover-workflows-2026-11-08.json)
 includes ordinary headless N13→N14 header/name/Save and checked reopen, followed
 by actual New row with all fourteen Number fields omitted: native reopen shows
 generated ID1 and fourteen non-NULL zeros. The normal viewport, host flags and
@@ -402,11 +402,11 @@ budgets remain unchanged. Unknown/additional property storage,
 options/additional-table composition, populated tables, choices beyond the two
 closed declarations above and other Jet/ACE write profiles remain separate targets. See the
 [native repeated-ADD limits](../access/writes/ADD_COLUMN.md#repeated-number-addition-with-existing-external-properties)
-and [independent SDK observations](../testing/number_column_repeat/README.md).
+and [independent SDK observations](../../tests/access/schema/number_column_repeat/README.md).
 
 The retained images show the trailing header. Expanded-menu, naming and save
 status surfaces lack corresponding Access captures and remain adaptations;
-[offscreen frames](../testing/results/number-column-presentation-2026-11-08.json)
+[offscreen frames](../../tests/results/schema/number-column-presentation-2026-11-08.json)
 are separate from native save and Windows qualification.
 
 ## Click to Add reference boundaries

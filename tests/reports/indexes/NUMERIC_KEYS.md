@@ -26,7 +26,7 @@ is an explicit coherent engineering key profile pending Access comparison.
 
 ## Independent model and retained boundaries
 
-[The original Python runner](compare_numeric_keys.py) decomposes finite IEEE
+[The original Python runner](../../access/indexes/native/compare_numeric_keys.py) decomposes finite IEEE
 bit patterns into exact `Fraction` values. Fixed-point inputs use exact signed
 coefficients/scales. It compares complete partitions, exact key values, ordering,
 maximum tie membership and extrema across all six encounter permutations and
@@ -58,14 +58,14 @@ narrowing with Overflow.
 
 ## Original native fields
 
-[NumericKeyFixture.java](NumericKeyFixture.java) authors twelve inert rows per
+[NumericKeyFixture.java](../../access/indexes/native/NumericKeyFixture.java) authors twelve inert rows per
 Jet 4/V2000, ACE 2007/V2007 and ACE 16-family V2016/V2019 file through public
 table/column builders. Int32 Family/Ordinal fields and Boolean Kind select
 nullable SingleValue/DoubleValue columns. The unused floating column is NULL.
 The four families are normal aliases, subnormal aliases, large finite distinct
 values and signed zeros.
 
-[NumericKeyOracle.java](NumericKeyOracle.java) opens each original read-only,
+[NumericKeyOracle.java](../../access/indexes/native/NumericKeyOracle.java) opens each original read-only,
 disables expression evaluation and refuses link resolution. It records public
 schema getters and raw IEEE cell bits, with zero resolver calls. The native model
 uses those actual getter bits, not cast-expression guesses. Single 3e38 differs
@@ -91,7 +91,7 @@ or removes a case from the report.
 
 ## Accepted replay and earlier audit
 
-The [2026-10-24 final report](results/numeric-keys-2026-10-24.json) retains
+The [2026-10-24 final report](../../results/indexes/numeric-keys-2026-10-24.json) retains
 2,910 candidate controls: 1,326 source-free and 1,584 native controls, plus
 144 baseline observations and nine model goldens. The native controls are 396
 per original file. Candidate outcomes comprise 2,524 ordinary exact-model

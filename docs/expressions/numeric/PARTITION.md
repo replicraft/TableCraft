@@ -56,7 +56,7 @@ dependencies, aggregates, plan reuse, eager errors, syntax refusal and every
 observed cancellation checkpoint. CLI tests check TSV-decoded spaces, NULL and
 buffered failures in both execution paths.
 
-The original [independent runner](../../testing/compare_partition.py) enumerates small
+The original [independent runner](../../../tests/access/reading/tables/compare_partition.py) enumerates small
 buckets, rounds with Python Decimal and checks unchanged original
 SavedForest-derived native files. It adds no saved Partition query fixtures and
 does not execute Microsoft Access expressions. Complete Variant conversion,
@@ -82,7 +82,7 @@ return category remain unchanged. The existing primary references establish
 nearest-even rounding and NULL behavior; native Text coercion, padding and error
 precedence still require Access comparisons.
 
-The original [range runner](../../testing/compare_partition.py) now also checks all-Text
+The original [range runner](../../../tests/access/reading/tables/compare_partition.py) now also checks all-Text
 controls under en-US/de-DE, malformed/overflowing controls, NULL/eager failures and
 four registered large-index fixture families. It independently enumerates buckets
 and rounds with Python Decimal; unchanged source hashes remain checked.
@@ -100,7 +100,7 @@ padding, while normalization and output use the same cumulative byte budget.
 
 Focused tests cover exact output/normalization allowances, every observed
 successful cancellation checkpoint, derived Error values and once-only volatile
-operands. The [independent state runner](../../testing/compare_partition_hyperlink_states.py)
+operands. The [independent state runner](../../../tests/access/reading/tables/compare_partition_hyperlink_states.py)
 checks NULL/error ordering and labels against a separately enumerated model over
 scalar calls and unchanged registered native inputs. Only TableCraft executes
 expressions; native Error/Empty precedence remains unqualified.

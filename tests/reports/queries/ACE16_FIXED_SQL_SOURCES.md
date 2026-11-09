@@ -31,7 +31,7 @@ catalog/system metadata, user cells and complete raw records. Separate literal
 overlays check the full image complement and the original-row discriminator.
 The saved-only verifier passes without children. Source models, exported bytes,
 classes and the older 66/8-view corpora remain unchanged. The
-[execution record](results/ace16-fixed-sql-sources-2026-10-31.json) retains pins
+[execution record](../../results/queries/ace16-fixed-sql-sources-2026-10-31.json) retains pins
 and first outcomes.
 
 This establishes source readability and intended literal results. Actual normal

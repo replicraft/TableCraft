@@ -6,7 +6,7 @@ import json
 from pathlib import Path
 import subprocess
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[4]
 BASELINE_SHA256 = "1093091eb45bd7e78fe1f0536da4994439e7012682b1f19f358ca13330cb52a0"
 CURRENT_SHA256 = "93ee5e5e27b9b6eea392c5c50566c53b8e0f9de28fef9d7c5c2943b7ff22d4e9"
 BASELINE_REVISION = "32b5d157fea3512cd9f624bdff5a3f3a4b3d2e2b"

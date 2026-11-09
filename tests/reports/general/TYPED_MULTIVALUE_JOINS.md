@@ -17,7 +17,7 @@ Each profile runs twelve cases under both ordinary and declared arithmetic:
 The eight successful cases per profile/mode contain 33 rows and 130 cells.
 Across all profiles and modes, the expected comparison is 72 controls, including
 48 successful results containing 198 rows and 780 cells, and 24 errors/refusals.
-The [committed-build replay](results/typed-multivalue-joins-originals-2026-10-26.json)
+The [committed-build replay](../../results/general/typed-multivalue-joins-originals-2026-10-26.json)
 matches all 72 controls with zero disagreements: 198 successful result rows and
 780 cells, plus 24 actual errors/refusals. The frozen debug executable was built
 at `0f0fe5ac`; all registered database/getter and executable hashes stayed
@@ -29,7 +29,7 @@ Run the replay with a frozen executable, its SHA-256 and the committed source
 revision used to build it:
 
 ```sh
-python3 docs/testing/compare_typed_multivalue_joins.py \
+python3 tests/run.py tests/access/queries/execution/compare_typed_multivalue_joins.py \
   --cli FROZEN_EXECUTABLE --cli-sha256 SHA256 \
   --compiled-revision REVISION --originals ORIGINAL_FIXTURE_DIRECTORY \
   --report FRESH_REPORT.json --log FRESH_LOG.jsonl

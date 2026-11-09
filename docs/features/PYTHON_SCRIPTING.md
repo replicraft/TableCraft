@@ -64,5 +64,5 @@ workflows. Source checking and code execution have separate permissions; pytest
 collection/plugins/imports can execute code. Source edits in packed projects use
 shared editing services and validated repacking; `.tcraftproj/` source edits retain
 base-revision conflict checks. Nothing auto-installs/runs because an agent requests
-inspection. See [application scenarios](../testing/APPLICATION_SCENARIOS.md) and
+inspection. See [application scenarios](../../tests/reports/reading/APPLICATION_SCENARIOS.md) and
 [changeset source edits](../architecture/APPLICATION_CHANGESETS.md).

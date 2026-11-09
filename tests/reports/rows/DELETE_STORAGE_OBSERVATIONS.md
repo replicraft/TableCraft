@@ -42,7 +42,7 @@ The reviewed Jackcess 5.0.4 JAR hash is
 `19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`.
 The producer/helper and Python runner are original repository code under the
 repository license; no third-party source or fixture bytes were copied. The JAR's
-existing provenance/notices remain in [the fixture ledger](FIXTURES.md).
+existing provenance/notices remain in [the fixture ledger](../reading/FIXTURES.md).
 Generated databases and raw captures stay under ignored `.cache`; the report
 records their hashes and exact commands, without machine-specific paths.
 
@@ -73,7 +73,7 @@ reference cursors, including nonunique ties, compound keys, aliases and empty
 roots. Scalar queries/counts match independently observed live rows. Inputs,
 helper, runner, JAR and frozen CLI hashes remain unchanged during reads.
 
-The [accepted report](results/delete-storage-final-2026-10-25.json) records 16
+The [accepted report](../../results/rows/delete-storage-final-2026-10-25.json) records 16
 profile/states, 37 immutable pins, raw slot/index observations and every control.
 The frozen CLI hash is
 `1093091eb45bd7e78fe1f0536da4994439e7012682b1f19f358ca13330cb52a0`,
@@ -95,7 +95,7 @@ files are not claimed byte-reproducible: record the actual generated hashes.
 Run the independent getter/byte/native comparison with fresh work/report paths:
 
 ```sh
-python3 docs/testing/compare_delete_storage.py \
+python3 tests/run.py tests/access/rows/delete/compare_delete_storage.py \
   --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar \
   --cli .cache/tablecraft-bin/inspect-native-work-cli-20261025 \
   --cli-sha256 1093091eb45bd7e78fe1f0536da4994439e7012682b1f19f358ca13330cb52a0 \
@@ -110,36 +110,36 @@ initial producer/diagnostic captures rather than generating replacement data.
 
 ## Fresh reference inputs for physical DELETE candidates
 
-The separate [ACE16 candidate reference registration](FIXTURES.md#fresh-ace16-physical-delete-reference-inputs)
+The separate [ACE16 candidate reference registration](../reading/FIXTURES.md#fresh-ace16-physical-delete-reference-inputs)
 adds newly generated V2016/V2019 originals without ignored-NULL indexes and their
 public Jackcess delete-ID2/delete-ID3/delete-all copies. The
-[final eight-file reference capture](results/delete-candidate-reference-2026-10-26.json)
+[final eight-file reference capture](../../results/rows/delete-candidate-reference-2026-10-26.json)
 checks complete logical index inventories, surviving populations/order and
 payload preservation, with eleven unchanged pins. It includes numeric, Boolean,
 GUID and Decimal index families, finite floating/DATE controls, a real physical
 alias, Memo/OLE and an untouched sentinel.
 
-The producer is [DeleteCandidateFixture.java](DeleteCandidateFixture.java); the
-read-only capture is [capture_delete_candidates.py](capture_delete_candidates.py).
+The producer is [DeleteCandidateFixture.java](../../access/queries/expressions/DeleteCandidateFixture.java); the
+read-only capture is [capture_delete_candidates.py](../../access/queries/expressions/capture_delete_candidates.py).
 This reference chunk does not execute a TableCraft candidate or establish native
 Access DELETE compatibility. Historical observations and reports above remain
 unchanged.
 
 ## TableCraft candidate replay
 
-The [comparison example](../../crates/engines/tablecraft-ace/examples/preview_ace16_delete.rs)
+The [comparison example](../../../crates/engines/tablecraft-ace/examples/preview_ace16_delete.rs)
 built from committed revision `df6e235d0fcca26854c65be584eb331e333abcc7`
-passes all 70 [original-file replay controls](results/ace16-delete-originals-2026-10-26.json):
+passes all 70 [original-file replay controls](../../results/rows/ace16-delete-originals-2026-10-26.json):
 64 candidates reopen with matching getters and six stale/duplicate/output-path
 controls refuse. Sixteen successful candidates start from the registered
 delete-one/delete-null inputs, checking live ordinals after prior tombstones.
 
-The [runner](compare_delete_candidates.py) checks the committed reference hashes,
+The [runner](../../access/queries/expressions/compare_delete_candidates.py) checks the committed reference hashes,
 complete table/column/index inventories, row/index encounter order, full surviving
 physical key/reference bytes and exact slot/count/entry patch locality. It also
 checks all original record bodies, including preexisting tombstones, long-value
 digests, historical counters, alias identities and protected header/map bytes.
-The [frozen build receipt](results/ace16-delete-example-build-2026-10-26.json)
+The [frozen build receipt](../../results/rows/ace16-delete-example-build-2026-10-26.json)
 pins the executable and supplemental committed sources. Its selected source pins
 are not a complete compiler-input manifest. Generated candidates remain ignored;
 the report retains their hashes and every invocation, including expected failures.

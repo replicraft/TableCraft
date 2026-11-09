@@ -9,10 +9,10 @@ import json
 from pathlib import Path
 import sys
 
-ROOT = Path(__file__).resolve().parents[3]
+ROOT = Path(__file__).resolve().parents[4]
 sys.dont_write_bytecode = True
 sys.path.insert(0, str(ROOT))
-sys.path.insert(0, str(ROOT / 'docs/testing'))
+sys.path.insert(0, str(ROOT / 'tests/access'))
 from scripts.compat_artifacts import ArtifactStore
 from ace16_insert_root_split import acceptance, model, reference
 
@@ -73,7 +73,7 @@ def maintained_sources(pins):
         frozen = pins.check(private).read_text()
         if maintained == 'model.py':
             assert hashlib.sha256(frozen.encode()).hexdigest() == MODEL_SHA
-        public_path = 'docs/testing/ace16_insert_root_split/' + maintained
+        public_path = 'tests/access/indexes/ace16_insert_root_split/' + maintained
         public = pins.check(STORE.pin(public_path)).read_text()
         assert frozen.count('Path(__file__).resolve().parents[2]') == 1
         assert public == frozen.replace(

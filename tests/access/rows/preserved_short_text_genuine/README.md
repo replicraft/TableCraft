@@ -36,7 +36,7 @@ the maintained saved-verifier outcome.
 Run the saved verifier with the local recorded artifact tree:
 
 ```sh
-python3 docs/testing/preserved_short_text_genuine/verify.py --root /path/to/TableCraft
+python3 tests/run.py tests/access/rows/preserved_short_text_genuine/verify.py --root /path/to/TableCraft
 ```
 
 These results concern explicit non-journalable engineering copies. They do not

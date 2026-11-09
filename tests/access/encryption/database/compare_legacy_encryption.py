@@ -1,4 +1,5 @@
 """Compare qualified legacy native codecs with pinned independent encrypted files."""
+from engineering_paths import reference_file
 import argparse
 import csv
 import hashlib
@@ -28,11 +29,11 @@ def main():
         path = args.directory / name
         before = path.read_bytes()
         assert hashlib.sha256(before).hexdigest() == digest
-        reference = run(["java", "-cp", classpath, RECIPES / "EncryptedPagesOracle.java", path], password)
+        reference = run(["java", "-cp", classpath, reference_file('tests/access/encryption/database/EncryptedPagesOracle.java'), path], password)
         actual = run([args.reader, path], password)
         assert reference.returncode == actual.returncode == 0, (name, reference.stderr, actual.stderr)
         assert reference.stdout == actual.stdout, (name, "all decoded pages")
-        records = run(["java", "-cp", classpath, RECIPES / "EncryptedPagesOracle.java", path, "--rows", table], password)
+        records = run(["java", "-cp", classpath, reference_file('tests/access/encryption/database/EncryptedPagesOracle.java'), path, "--rows", table], password)
         assert records.returncode == 0, (name, records.stderr)
         records = [line.split("\t") for line in records.stdout.decode().splitlines()]
         expected = [records[0][1:], *[[display(v) for v in row[1:]] for row in records[1:]]]

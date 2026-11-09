@@ -8,13 +8,13 @@ import subprocess
 import sys
 
 sys.dont_write_bytecode = True
-sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+sys.path.insert(0, str(Path(__file__).resolve().parents[4]))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from scripts.compat_artifacts import ArtifactStore
 from ace16_insert_external_long_values.evidence import Pins, report
 from ace16_insert_extended_datetime import build, model, reference, source
 
-ROOT = Path(__file__).resolve().parents[3]
+ROOT = Path(__file__).resolve().parents[4]
 SOURCE = '.cache/ace16-extended-datetime-insert-source-next-20261028'
 SOURCE_WORK = '.cache/ace16-extended-datetime-insert-reference-first-20261028'
 EXPECTED = '.cache/ace16-extended-datetime-insert-expected-first-20261028'
@@ -25,7 +25,7 @@ PREPARE_FAILURE = '.cache/ace16-insert-extended-datetime-build-20261028/prepare-
 NATIVE = '.cache/ace16-extended-datetime-insert-acceptance-next-20261028'
 NATIVE_WORK = '.cache/ace16-extended-datetime-insert-candidate-first-20261028'
 GETTERS = '.cache/ace16-extended-datetime-insert-getters-first-20261028'
-PUBLIC = 'docs/testing/ace16_insert_extended_datetime'
+PUBLIC = 'tests/access/rows/ace16_insert_extended_datetime'
 NOTICE = b'Engineering candidate: data-macro semantics and native Access qualification pending.\n'
 FIXED = {
     '.cache/ace16-extended-datetime-insert-source-next-20261028/plan-helper-freeze.json':
@@ -46,7 +46,7 @@ FIXED = {
         'd769726b798c05048fd0c36dee5afe53009a71ebf76d9d55a015a38fffc69432',
     '.cache/ace16-insert-extended-datetime-isolated-build-20261028/freeze.json':
         'ad7d0e56363cf633d20b405a516b6e2e308075b05c56d7d616f262c811f959ba',
-    'docs/testing/results/ace16-insert-extended-datetime-example-build-2026-10-28.json':
+    'tests/results/rows/ace16-insert-extended-datetime-example-build-2026-10-28.json':
         '7e9fb86575da3b07fc6c3718af088e22832510601b59d2d7ad3a3ecaf70affe4',
     '.cache/ace16-insert-extended-datetime-build-20261028/prepare-failure.json':
         '85d3c75c3959cd04d5fe1ba215a3bc13cdcadbee7c9654e6ddd367547e756a3d',
@@ -80,7 +80,7 @@ def maintained(store, pins):
                 return [ast.dump(node, include_attributes=False) for node in ast.parse(text).body
                         if isinstance(node, (ast.FunctionDef, ast.ClassDef))]
             assert definitions(actual) == definitions(original)
-    bounded = pins.check(store.pin('docs/testing/parent_index_split_originals/BoundedFileChannel.java'))
+    bounded = pins.check(store.pin('tests/access/indexes/parent_index_split_originals/BoundedFileChannel.java'))
     assert bounded.read_bytes() == pins.check(store.pin(SOURCE + '/BoundedFileChannel.java')).read_bytes()
 
 

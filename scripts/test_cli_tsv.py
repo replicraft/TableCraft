@@ -2,9 +2,12 @@
 import csv
 import importlib.util
 from pathlib import Path
+from engineering_paths import configure_imports
+
+configure_imports(__file__)
 import unittest
 
-SOURCE = Path(__file__).resolve().parents[1] / "docs/testing/cli_tsv.py"
+SOURCE = Path(__file__).resolve().parents[1] / "tests/access/shared/primitives/cli_tsv.py"
 SPEC = importlib.util.spec_from_file_location("cli_tsv", SOURCE)
 transport = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(transport)

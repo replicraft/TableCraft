@@ -47,7 +47,7 @@ def main():
                     "largest entries", largest[3], largest[4], "largest prefix", prefix_max)
             for index in indexes:
                 cursor = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar,
-                    "docs/testing/IndexRowsOracle.java", path, table, index, *columns)
+                    "tests/access/indexes/native/IndexRowsOracle.java", path, table, index, *columns)
                 lines = []
                 for row in cursor.splitlines():
                     cells = row.split("\t")

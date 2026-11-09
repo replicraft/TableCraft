@@ -3,6 +3,7 @@
 Reference getters only read native fields. Python computes calendar additions,
 parts and boundaries; no native Access SQL or copied implementation is executed.
 """
+from engineering_paths import reference_file
 
 import argparse
 import calendar
@@ -181,7 +182,7 @@ def main():
     for database in args.database:
         before = hashlib.sha256(database.read_bytes()).hexdigest()
         tagged = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar,
-                     RECIPES / "TableDataOracle.java", database, "ScalarSamples")
+                     reference_file('tests/access/reading/tables/TableDataOracle.java'), database, "ScalarSamples")
         references = []
         for line in tagged.splitlines():
             fields = line.split("\t")

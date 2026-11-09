@@ -1,9 +1,9 @@
 # Mixed scalar storage histories
 
-The original [recipe](MixedScalarHistoryFixture.java) creates offline ACE 16,
+The original [recipe](../../access/reading/tables/MixedScalarHistoryFixture.java) creates offline ACE 16,
 ACE 2007 and Jet 4 databases using the reviewed Jackcess 5.0.4 artifact. It does
 not execute Access SQL, formulas, macros or VBA. This extends the larger
-[scalar query evidence](../access/queries/LARGER_NATIVE_QUERIES.md); it does not change supported
+[scalar query evidence](../../../docs/access/queries/LARGER_NATIVE_QUERIES.md); it does not change supported
 types, limits, concurrency guarantees or write permissions.
 
 Each table starts with fourteen fields: Int32 identity, Boolean, Byte, Int16,
@@ -22,7 +22,7 @@ coefficients, negative legacy dates and Unicode surrogate pairs are intentional.
 Historical bytes and native allocation are produced by the reference writer;
 this is not an Access-generated schema/save fixture.
 
-The [runner](compare_mixed_scalar_histories.py) checks every stored value against
+The [runner](../../access/reading/tables/compare_mixed_scalar_histories.py) checks every stored value against
 an independent Python construction, then compares full engine cursors at two
 batch sizes, reversed-name projections and complete CLI progressive rows against
 read-only Jackcess getters. Expected identity sets are independent of physical
@@ -44,13 +44,13 @@ index maintenance or save/reopen evidence. Those acceptance gaps remain open.
 ```sh
 CARGO_INCREMENTAL=0 cargo build -p tablecraft-ace --example table_data \
   -p tablecraft-cli --locked --offline
-python3 docs/testing/compare_mixed_scalar_histories.py \
+python3 tests/run.py tests/access/reading/tables/compare_mixed_scalar_histories.py \
   --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar \
   --cli target/debug/tablecraft --rows target/debug/examples/table_data \
   --directory .cache/tablecraft-fixtures/mixed-scalar-histories
 ```
 
-Reuse verifies the [registered identities](FIXTURES.md#mixed-scalar-storage-history-inputs)
+Reuse verifies the [registered identities](../reading/FIXTURES.md#mixed-scalar-storage-history-inputs)
 before reference/database reads. For fresh engineering generation, supply a new
 directory and `--generate`; that directory must not exist. Metadata timestamps
 can change generated hashes, so fresh generation reports new identities rather

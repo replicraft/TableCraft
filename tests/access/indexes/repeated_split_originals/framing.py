@@ -4,7 +4,7 @@ import hashlib
 import json
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[3]
+ROOT = Path(__file__).resolve().parents[4]
 PAGE = 4096
 ENTRY_START = 480
 KIND = 0

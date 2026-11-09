@@ -3,6 +3,7 @@
 Hyperlink and RichText remain raw data; no parsing, provider activation, native
 Access SQL, freshness, mutation or compressed-child qualification is implied.
 """
+from engineering_paths import reference_file
 
 import argparse
 import hashlib
@@ -13,8 +14,8 @@ import subprocess
 from cli_tsv import display_tsv
 from compare_calculated_decimals import digest, JACKCESS_SHA256
 
-ROOT = Path(__file__).resolve().parents[2]
-RECIPES = ROOT / "docs/testing"
+ROOT = Path(__file__).resolve().parents[4]
+RECIPES = ROOT / "tests/access"
 PROFILES = ("V2007", "V2016", "V2019")
 FAMILIES = ("plain", "hyperlink", "richtext")
 
@@ -36,7 +37,7 @@ def main():
     assert digest(args.jar) == JACKCESS_SHA256
     paths = {
         args.cli, args.jar, Path(__file__),
-        *[RECIPES / name for name in (
+        *[reference_file(name) for name in (
             "MemoHistoryFamilyFixture.java", "MemoHistoryFamilyOracle.java",
             "VersionHistoryQueryOracle.java", "VersionHistoryOracle.java",
             "compare_version_history_queries.py", "compare_version_history.py",
@@ -61,7 +62,7 @@ def main():
             path = directory / f"{profile}.accdb"
             oracle = execute(
                 "java", "-Dstdout.encoding=UTF-8", "-cp", args.jar,
-                RECIPES / "MemoHistoryFamilyOracle.java", path,
+                reference_file('tests/access/storage/native/MemoHistoryFamilyOracle.java'), path,
             )
             for line in oracle.splitlines():
                 (
@@ -109,7 +110,7 @@ def main():
 
         for collation in ("ordinal", "database"):
             output = execute(
-                "python3", RECIPES / "compare_version_history_queries.py",
+                "python3", reference_file('tests/access/reading/tables/compare_version_history_queries.py'),
                 "--cli", args.cli, "--jar", args.jar,
                 "--ace2007", directory / "V2007.accdb",
                 "--ace2016", directory / "V2016.accdb",

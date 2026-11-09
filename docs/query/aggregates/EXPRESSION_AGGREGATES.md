@@ -36,7 +36,7 @@ contracts. Empty/Missing query cells remain unsupported.
 
 Raw Strings remain expression data with [retained cells](../../expressions/text/RETAINED_STRINGS.md)
 and [explicit comparison keys](../keys/RAW_STRING_KEYS.md). Stored values retain their
-own admission rules. The original [cardinality runner](../../testing/compare_raw_string_count.py)
+own admission rules. The original [cardinality runner](../../../tests/access/queries/expressions/compare_raw_string_count.py)
 passes 774 independent source-free controls, including seeded unit sequences,
 odd bytes, explicit CStr/CVar identity, filtering, NULL results and failures.
 
@@ -97,7 +97,7 @@ explicitly permits query expressions, describes numeric/String results and
 excludes NULL values. Applying those selection rules to lossless String cells
 is TableCraft's implemented profile; raw native Access execution remains unqualified.
 
-The original [extrema runner](../../testing/compare_raw_string_extrema.py) passes 791
+The original [extrema runner](../../../tests/access/queries/expressions/compare_raw_string_extrema.py) passes 791
 controls: 215 source-free controls over reordered independent General key vectors
 and 576 native-source aggregate/domain controls. Jackcess getters supply the six
 stored IDs in each of four unchanged inputs; Python supplies selection/length/
@@ -160,7 +160,7 @@ subtypes and failure precedence still need Windows comparisons.
 Focused Rust tests cover explicit/scalar publication, code zero and endpoints,
 NULL/all-empty inputs, domain/group/pivot consumers, mixed-type and late failures,
 256 generated NULL/Error sequences, shared quotas and every observed cancellation
-checkpoint. The original MIT [comparison runner](../../testing/compare_error_consumers.py)
+checkpoint. The original MIT [comparison runner](../../../tests/access/queries/expressions/compare_error_consumers.py)
 passes 410 independent controls. Python derives extrema from seeded code sequences
 and read-only ID getters on four unchanged 20,000-row native inputs. Sequential and
 both ID-index directions cover raw/converted/nullable extrema, domain functions,

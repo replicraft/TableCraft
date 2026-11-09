@@ -45,7 +45,7 @@ No formula, provider, VBA, extraction or active content executes.
 
 ## Evidence and limits
 
-The original [fixture and public getter oracle](../../testing/CalculatedMemoFixture.java)
+The original [fixture and public getter oracle](../../../tests/access/storage/native/CalculatedMemoFixture.java)
 creates fresh ACE 2016/2019 files with expression evaluation disabled. Read-only
 getters supply exact Unicode/empty/NULL values, including multi-page caches. An
 independent in-memory public `Column.read` probe checks compressed ASCII, empty
@@ -54,15 +54,15 @@ wrappers. No file is altered by these probes.
 
 The reviewed Jackcess 5.0.4 artifact's `CalcMemoColImpl` resolves a long value before
 unwrapping calculated storage; it is a physical reference, not an adopted codec.
-The [comparison runner](../../testing/compare_calculated_memos.py) checks stored column
+The [comparison runner](../../../tests/access/storage/native/compare_calculated_memos.py) checks stored column
 inspection, cached row output, empty declarations, ordinary-query refusal and late
 wrapper corruption on disposable copies. The
-[24 October 2026 report](../../testing/results/calculated-memos-2026-10-24.json) records
+[24 October 2026 report](../../../tests/results/storage/calculated-memos-2026-10-24.json) records
 86 passing controls across both files, with unchanged fixed executable, oracle,
 implementation and original input hashes. Microsoft Access calculated-Memo admissibility,
 recalculation, freshness and native error-cache representations remain unqualified.
 
-The [cached Text flag-family replay](../../testing/CALCULATED_TEXT_FLAG_FAMILY.md)
+The [cached Text flag-family replay](../../../tests/reports/general/CALCULATED_TEXT_FLAG_FAMILY.md)
 additionally checks public-builder calculated Memo Hyperlink flags `0x82` under
 C0 alongside plain/RichText Memo and existing Short Text declarations. It records
 384 passing controls and 384 cached-cell comparisons through inspect, rows and

@@ -3,6 +3,7 @@
 Admin is the declared CLI expression-session profile, not a native authentication
 oracle. Getter IDs establish unchanged file/row integration without running SQL.
 """
+from engineering_paths import reference_file
 
 import argparse
 import csv
@@ -50,7 +51,7 @@ def main():
         assert hashlib.sha256(args.jar.read_bytes()).hexdigest() == JAR_SHA256
     for database in args.database:
         before = hashlib.sha256(database.read_bytes()).hexdigest()
-        tagged = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar, RECIPES / "TableDataOracle.java", database, "ScalarSamples")
+        tagged = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar, reference_file('tests/access/reading/tables/TableDataOracle.java'), database, "ScalarSamples")
         identities = [line.split("\t")[1].removeprefix("I32:") for line in tagged.splitlines()]
         sql = "SELECT ID,CurrentUser(),Eval('CurrentUser()') FROM ScalarSamples ORDER BY ID"
         assert execute(args.cli, "run", sql, database) == [[identity, '"Admin"', '"Admin"'] for identity in identities]

@@ -49,7 +49,7 @@ makes no selectivity promise.
 
 ## Independent evidence
 
-The [query runner](../../testing/compare_text_equality_queries.py) passes 792 controls
+The [query runner](../../../tests/access/queries/expressions/compare_text_equality_queries.py) passes 792 controls
 against 128 independent encoder/getter oracle cases across eight unchanged
 Jet 4, ACE 2007, ACE 2016 and ACE 2019 Text files, covering both supported General
 versions. It compares sequential, automatic, explicit ascending/descending and
@@ -67,7 +67,7 @@ compound/collection seeks and full read/query acceptance remain unfinished.
 
 ## Measured CLI cost
 
-The [benchmark recipe](../../testing/benchmark_text_equality.py) verifies identical
+The [benchmark recipe](../../../tests/access/queries/expressions/benchmark_text_equality.py) verifies identical
 answers before timing. Hyperfine 2.0.0 measured 15 runs after three warmups for
 each path over 1,000-row tables, returning 94 rows for `Label='Straße'`.
 The build was debug with default features and normal incremental compilation,
@@ -86,7 +86,7 @@ on Darwin arm64 with Rust 1.99.0. Explicit comparison allowances were 128 MiB an
 | ACE 2019 / 1 | 49.4 ± 1.1 | 8.8 ± 0.6 |
 
 All samples, including the noisier ACE 2019 / 0 run, remain in the
-[raw measurements](../../testing/results/text-equality-queries-2026-10-24.json).
-[Metadata](../../testing/results/text-equality-queries-2026-10-24.metadata.json) records
+[raw measurements](../../../tests/results/queries/text-equality-queries-2026-10-24.json).
+[Metadata](../../../tests/results/queries/text-equality-queries-2026-10-24.metadata.json) records
 binary/input hashes and answer digests. This is one warm-cache CLI workload,
 not release-build throughput, a kernel benchmark or native Access performance.

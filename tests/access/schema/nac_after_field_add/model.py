@@ -31,7 +31,7 @@ def put32(data, at, value):
 
 
 def properties(repository):
-    path = repository / "docs/testing/ace16_database_options/model.py"
+    path = repository / "tests/access/schema/ace16_database_options/model.py"
     spec = importlib.util.spec_from_file_location("original_off_oracle", path)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)

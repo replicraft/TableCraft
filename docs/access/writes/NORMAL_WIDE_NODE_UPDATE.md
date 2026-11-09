@@ -23,7 +23,7 @@ maps, inactive tails, unrelated bytes and EOF remain protected.
 Four original databases passed current native Source checks before constructing
 twenty independently modeled complete views. All twenty passed full native replay
 and inert independent reader reports before matching writers. See the
-[source record](../../testing/ACE16_RETAINED_REUSE_COMPANION_SOURCES.md).
+[source record](../../../tests/reports/rows/ACE16_RETAINED_REUSE_COMPANION_SOURCES.md).
 Native Microsoft Access save/reopen and deeper-tree save qualification remain
 unrun.
 
@@ -32,4 +32,4 @@ forged-image/mixed recovery and exact-resource controls, twenty typed saves,
 four SQL no-op saves and four CLI no-op saves/readbacks pass. Typed saves exercise
 changed partitions and fences; SQL/CLI preserve the original wide carrier without
 claiming new literal coercion. See the
-[execution record](../../testing/results/ace16-normal-wide-node-update-writes-2026-11-01.json).
+[execution record](../../../tests/results/rows/ace16-normal-wide-node-update-writes-2026-11-01.json).

@@ -154,7 +154,7 @@ review of its 38 explicit calls: eight comparison-only copies were replaced by
 borrowed comparisons, and one last-use target now moves. The remaining 29 are
 26 owned command inputs retained for later commands or independent expectations,
 two owned returns and one shared egui Context. The
-[per-site ledger](../testing/results/objects-test-clones-2026-11-09.json)
+[per-site ledger](../../tests/results/general/objects-test-clones-2026-11-09.json)
 records every decision and the exact before/after source hashes.
 
 Five shared UI implementation files now borrow readonly descriptions, types and
@@ -178,7 +178,7 @@ and 65 parameter/progressive integration cases. Its UI batch passed 681 cases
 and exposed one newly added retry test observing before the next-frame action
 collector. A test-only timing correction then passed all 32 DROP UI cases;
 repeated cases are not added to the totals. Strict workspace/all-target/all-feature
-Clippy passed. The [GUI record](../testing/results/saved-field-drop-gui-2026-11-09.json)
+Clippy passed. The [GUI record](../../tests/results/schema/saved-field-drop-gui-2026-11-09.json)
 retains the failed attempt and subsequent focused result separately. Native
 startup/File/Open review resumed with permission; native database save interaction
 was not established by that graphical attempt.

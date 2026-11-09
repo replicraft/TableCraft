@@ -119,10 +119,10 @@ Twelve focused DISTINCT tests pass within a 223-test progressive lifecycle batch
 They include generated 100,003-row input, exact fixed-point representatives,
 post-deduplication TOP, active-profile admission, all-arm preflight, logical EOF
 failures and sink/cancellation/quota controls. Scoped strict query linting passes. Three new native CLI controls pass within
-its 58-test progressive target; see the [implementation verification record](../testing/results/read-query-progressive-distinct-2026-10-25.json).
+its 58-test progressive target; see the [implementation verification record](../../tests/results/queries/read-query-progressive-distinct-2026-10-25.json).
 One obsolete grouped-query refusal was updated to an unsupported Double result;
 its failed batch is retained separately and not counted twice. The independent
-[184-control original-file replay](../testing/PROGRESSIVE_DISTINCT.md) further checks
+[184-control original-file replay](../../tests/reports/general/PROGRESSIVE_DISTINCT.md) further checks
 10,432 rows and 18,208 cells against getter-derived models. Native Access SQL
 qualification remains separate.
 
@@ -487,10 +487,10 @@ new CLI tests and eight new native tests cover routing, repeated aggregate/row
 UNION arms, late prefixes, pruning, EOF, shared limits and refusal boundaries.
 Existing option controls also exercise password authentication, cached-value
 opt-in and target field/root literal comparison policies in streaming mode.
-See the [scoped verification](../testing/results/read-query-linked-progressive-2026-10-25.json).
+See the [scoped verification](../../tests/results/queries/read-query-linked-progressive-2026-10-25.json).
 
 Global Min/Max adds four CLI and three native cursor controls, including retained
 raw/Error consumers, explicit Text comparison, EOF-only publication and failure
 prefixes. The complete scoped checkpoint passes 338 distinct query/native/CLI
 tests with strict Clippy and minimal query features; see
-[verification](../testing/results/read-query-progressive-extrema-2026-10-25.json).
+[verification](../../tests/results/queries/read-query-progressive-extrema-2026-10-25.json).

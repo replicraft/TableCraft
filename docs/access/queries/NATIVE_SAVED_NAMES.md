@@ -56,19 +56,19 @@ crosstab test checks source/row/TRANSFORM aliases. One CLI test checks saved/nam
 retrieval, literal headers, prompt binding and missing-value buffering. Existing
 resource/cancellation tests continue to pass.
 
-The original [SavedIdentifiersFixture.java](../../testing/SavedIdentifiersFixture.java)
+The original [SavedIdentifiersFixture.java](../../../tests/access/queries/saved/SavedIdentifiersFixture.java)
 adds ten inert definitions to our fourteen-query forest recipe. Four fresh local
 Jet 4 / ACE 2007/2016/2019 files compare through independent SQL rendering and
-explicit expected rows using [compare_saved_identifiers.py](../../testing/compare_saved_identifiers.py).
+explicit expected rows using [compare_saved_identifiers.py](../../../tests/access/queries/saved/compare_saved_identifiers.py).
 All 160 direct/saved/named reconstruction/execution controls pass with source bytes
 unchanged. Symbols, reserved names, prequoted tables/aliases/columns/prompts,
 quoted join endpoints, a derived alias and a single Unicode alias are covered.
-[Fixture records](../../testing/FIXTURES.md#stored-identifier-inputs) retain provenance and hashes.
+[Fixture records](../../../tests/reports/reading/FIXTURES.md#stored-identifier-inputs) retain provenance and hashes.
 The oracle renders metadata but never evaluates SQL. Native Microsoft Access
 execution and application save/reopen remain unrun.
 
 ```sh
-python3 docs/testing/compare_saved_identifiers.py \
+python3 tests/run.py tests/access/queries/saved/compare_saved_identifiers.py \
   --jar path/to/jackcess-5.0.4.jar --cli target/release/tablecraft \
   --directory path/to/fresh-stored-names --generate
 ```

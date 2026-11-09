@@ -3,6 +3,7 @@
 Reuses the original TextIndexFixture corpus. Range semantics are native encoded
 start/end order, not SQL text comparison. All mutations affect fresh copies only.
 """
+from engineering_paths import reference_file
 import argparse
 from collections import defaultdict
 from pathlib import Path
@@ -25,7 +26,7 @@ def main():
             before = digest(path)
             null_rows = None
             for index in ["TextAsc", "TextDesc"]:
-                oracle = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar, RECIPES / "TextRangeOracle.java", path, index)
+                oracle = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar, reference_file('tests/access/queries/expressions/TextRangeOracle.java'), path, index)
                 expected = defaultdict(list)
                 for line in oracle.splitlines():
                     name, row = line.split("\t", 1)

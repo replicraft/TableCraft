@@ -2,10 +2,10 @@
 
 Status: native engineering creation API, exact quota/purpose controls, mutation
 regressions and strict/minimal builds pass. The Access adapter and explicit
-[SQL/CLI copy command](../access/writes/SQL_ENGINEERING_COPIES.md#explicit-secondary-index-creation)
+[SQL/CLI copy command](../../../docs/access/writes/SQL_ENGINEERING_COPIES.md#explicit-secondary-index-creation)
 now consume this service. Native Access creation/save qualification remains open.
 
-The [source gate](../../crates/engines/tablecraft-ace/src/table/mutation/create_index_tests.rs)
+The [source gate](../../../crates/engines/tablecraft-ace/src/table/mutation/create_index_tests.rs)
 constructs eight authored BEFORE images and sixteen complete ASC/DESC expected
 images across headers 5 and 6. Its first execution passes one function covering
 16 pairs and 32 complete reader/ownership views, before any new writer/API.
@@ -47,7 +47,7 @@ cargo test -p tablecraft-ace --all-features --lib --locked \
   qualify_real_secondary_index_source_and_complete_expected_before_writer
 ```
 
-The [source result](results/ace16-secondary-index-creation-sources-2026-10-30.json)
+The [source result](../../results/creation/ace16-secondary-index-creation-sources-2026-10-30.json)
 retains the original model, source gate, helpers, review and first log. Its
 SOURCE-only state is historical; it is not retargeted to the later producer.
 
@@ -101,7 +101,7 @@ inclusive-range correction preserves both endpoints. After that correction, all
 five public API functions, all three audit controls and native strict
 all-target/all-feature checks pass. Final formatter, documentation links and
 dependency boundaries pass. Source/expected images remain unchanged.
-The [native result](results/ace16-secondary-index-creation-native-2026-10-30.json)
+The [native result](../../results/creation/ace16-secondary-index-creation-native-2026-10-30.json)
 pins the initial and final logs separately, including the first strict refusal.
 
 Blank-database creation, general CREATE/ALTER TABLE, required macro coverage,
@@ -130,7 +130,7 @@ authored byte models. These are semantic reference results, not whole-image
 equivalence or direct qualification of those authored files. All generated
 sources and the original authored images remain unchanged. Reference databases
 use the pinned library's embedded templates privately; no third-party fixture
-bytes are added to the repository. The [reference record](results/ace16-secondary-index-public-reference-2026-10-30.json)
+bytes are added to the repository. The [reference record](../../results/indexes/ace16-secondary-index-public-reference-2026-10-30.json)
 retains the initial refusal, unrun calls, frozen programs and separate passing
 series. No Microsoft Access, native-save or transaction qualification is implied.
 
@@ -147,7 +147,7 @@ The exact file hashes and requests were frozen before the first call. Static
 review corrected two budget-error conversions before compilation; the original
 private draft and freeze remain retained. The diagnostic and native strict
 all-target/all-feature check pass on their first executions. The
-[SOURCE-admission record](results/ace16-secondary-index-genuine-source-admission-2026-10-30.json)
+[SOURCE-admission record](../../results/indexes/ace16-secondary-index-genuine-source-admission-2026-10-30.json)
 pins the inputs, installed diagnostic, relevant owners and actual logs separately
 from the historical authored-corpus/native-writer records.
 
@@ -186,7 +186,7 @@ This expected-model checkpoint preceded native writer comparison and fresh
 independent-reader candidate opens. The later phases below record those outcomes;
 no normal-save or transaction permission follows from this model.
 
-The [expected-model record](results/ace16-secondary-index-genuine-expected-2026-10-30.json)
+The [expected-model record](../../results/indexes/ace16-secondary-index-genuine-expected-2026-10-30.json)
 pins the source-only derivations, retained failures and sixteen complete hashes:
 7,208,960 bytes and 2,436 indexed ROW observations across the sixteen cases.
 At that expected-model checkpoint, the separately registered ignored native
@@ -222,7 +222,7 @@ These matches qualify canonical engineering output on these originals. They do
 not claim Jackcess packing parity, Microsoft Access native saves, macro permission
 or a journalable normal plan.
 
-The [genuine-original native record](results/ace16-secondary-index-genuine-native-2026-10-30.json)
+The [genuine-original native record](../../results/indexes/ace16-secondary-index-genuine-native-2026-10-30.json)
 pins the actual producer archive, source inventory, executable, build receipts,
 native log, sixteen actual candidates and the independent expected-output freeze.
 The earlier SOURCE and pure-model records remain historical and unchanged.
@@ -248,7 +248,7 @@ producer was not rerun. The executed SDK plan directly pins its reader inputs
 and producer manifest. Separate post-native producer-asset rehashes are recorded
 as documentation checks, not retroactively claimed as SDK pre-run checks.
 
-The same [genuine-original record](results/ace16-secondary-index-genuine-native-2026-10-30.json)
+The same [genuine-original record](../../results/indexes/ace16-secondary-index-genuine-native-2026-10-30.json)
 pins the actual bound plan, execution freeze, reader/comparator, report, command
 receipts and all sixteen stdout/stderr pairs. This is Jackcess fresh-reader
 evidence, not Microsoft Access native-save or transaction qualification.

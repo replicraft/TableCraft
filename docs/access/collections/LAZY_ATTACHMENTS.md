@@ -48,6 +48,6 @@ Access compatibility claim.
 Eight new engine and three browser functions pass within 86 engine, 68 adapter
 and 35 CLI browsing functions. Strict all-target checks, minimal builds,
 warning-free Rust documentation and dependency guards pass. The
-[acceptance record](../../testing/results/lazy-attachment-reader-2026-11-02.json)
+[acceptance record](../../../tests/results/reading/lazy-attachment-reader-2026-11-02.json)
 retains the first test-only lint failure and lexical-scope correction separately
 from native Access qualification.

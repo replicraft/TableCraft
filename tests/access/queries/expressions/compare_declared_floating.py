@@ -2,6 +2,7 @@
 
 Only TableCraft executes SQL; raw native getters do not qualify Access evaluation.
 """
+from engineering_paths import reference_file
 import argparse
 import csv
 import hashlib
@@ -91,7 +92,7 @@ def main():
         original = source.read_bytes()
         assert hashlib.sha256(original).hexdigest() == digest
         output = subprocess.check_output(["java", "-Dstdout.encoding=UTF-8", "-cp", str(args.jar),
-            str(RECIPES / "TableDataOracle.java"), str(source), "IndexedRows"], text=True, encoding="utf-8")
+            str(reference_file('tests/access/reading/tables/TableDataOracle.java')), str(source), "IndexedRows"], text=True, encoding="utf-8")
         selected = [line.split("\t")[7] for line in output.splitlines()
                     if line.split("\t")[1] == "I32:2"]
         assert len(selected) == 1 and selected[0].startswith("F")

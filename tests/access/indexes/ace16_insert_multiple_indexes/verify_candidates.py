@@ -8,10 +8,10 @@ import subprocess
 import sys
 import tarfile
 
-ROOT = Path(__file__).resolve().parents[3]
+ROOT = Path(__file__).resolve().parents[4]
 sys.dont_write_bytecode = True
 sys.path.insert(0, str(ROOT))
-sys.path.insert(0, str(ROOT / 'docs/testing'))
+sys.path.insert(0, str(ROOT / 'tests/access'))
 from scripts.compat_artifacts import ArtifactStore
 from ace16_insert_multiple_indexes import model, reference, verify
 
@@ -131,7 +131,7 @@ def replay(root, verify_git=False):
     pins.closure(NATIVE + '/protocol-freeze.json')
     pins.closure(GETTERS + '/controller-freeze.json')
     private = pins.check(store.pin(NATIVE + '/model.py')).read_text()
-    public = pins.check(store.pin('docs/testing/ace16_insert_multiple_indexes/model.py')).read_text()
+    public = pins.check(store.pin('tests/access/indexes/ace16_insert_multiple_indexes/model.py')).read_text()
     old = 'ROOT = Path(__file__).resolve().parents[2]'
     assert private.count(old) == 1
     assert public == private.replace(old, 'ROOT = Path(__file__).resolve().parents[3]')

@@ -43,7 +43,7 @@ Set `TABLECRAFT_EXTERNAL_LVAL_MIXED_SOURCE_DIR` or
 directory and run the selector with `cargo test -p tablecraft-ace --all-features
 --lib SELECTOR -- --ignored`.
 
-See the [execution record](results/ace16-mixed-external-prefix-sources-2026-11-02.json).
+See the [execution record](../../results/storage/ace16-mixed-external-prefix-sources-2026-11-02.json).
 The larger 157-row fresh-leaf compression family now has its own
-[source qualification](ACE16_FRESH_WIDE_LEAF_COMPRESSION_SOURCES.md); it is not
+[source qualification](../indexes/ACE16_FRESH_WIDE_LEAF_COMPRESSION_SOURCES.md); it is not
 qualified by the two-row checks above.

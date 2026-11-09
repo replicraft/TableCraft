@@ -14,7 +14,7 @@ The exact compiled revision is
 `69443c6accdd5b6c3118a5a9a31ba30c0fc4d03b`. The frozen dedicated
 `preview_ace16_variable_split` consumer is 16,203,984 bytes with SHA-256
 `dab3bc46a6ee39cb5f6622215a11dd3c7e8906ed1bf46ba137fba2944fe533bb`.
-Its [build receipt](results/ace16-hint-transition-example-build-2026-10-27.json),
+Its [build receipt](../../results/indexes/ace16-hint-transition-example-build-2026-10-27.json),
 committed at `fe67cc3a`, records the full 4,217-file committed export and 295
 selected source pins. The dev build used debug=0 without a release or optimization
 override; source/target isolation excluded uncommitted worktree changes.
@@ -136,11 +136,11 @@ expected-image computation passed, and its six older-cohort hashes remained exac
 
 ## Saved verification and limits
 
-The maintained [candidate model](ordinary_hint_growth_candidates/candidate_model.py)
+The maintained [candidate model](../../access/indexes/ordinary_hint_growth_candidates/candidate_model.py)
 changes only repository-root/import composition from its frozen private source;
-the [allocator model](ordinary_hint_growth_candidates/allocation_model.py) is
+the [allocator model](../../access/indexes/ordinary_hint_growth_candidates/allocation_model.py) is
 byte-identical. They reuse the already published independent wire/record/weight
-helpers. The [saved verifier](ordinary_hint_growth_candidates/verify.py) reuses the
+helpers. The [saved verifier](../../access/indexes/ordinary_hint_growth_candidates/verify.py) reuses the
 published reference parser/proof rather than duplicating a Java helper.
 
 Its first saved-only run reconstructed all twelve complete images, replayed all
@@ -153,9 +153,9 @@ JVM process:
 python3 -B docs/testing/ordinary_hint_growth_candidates/verify.py --verify-git
 ```
 
-The [compact receipt](results/ace16-ordinary-hint-candidates-2026-10-27.json)
+The [compact receipt](../../results/indexes/ace16-ordinary-hint-candidates-2026-10-27.json)
 pins the exact reports, artifacts, inputs and maintained sources. The working
-service contract remains [ACE16_ALLOCATION_TRANSITIONS.md](ACE16_ALLOCATION_TRANSITIONS.md).
+service contract remains [ACE16_ALLOCATION_TRANSITIONS.md](../storage/ACE16_ALLOCATION_TRANSITIONS.md).
 This finite cohort has one changed row and one new DATA page per operation, no
 semantic no-ops and no observed index rebase. It does not qualify normal saves,
 Microsoft Access execution, data macros, arbitrary page reuse/reclamation, general

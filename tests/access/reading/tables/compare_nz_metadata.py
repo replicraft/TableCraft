@@ -3,6 +3,7 @@
 Only TableCraft executes SQL. Inert getters and independent recipe models retain
 original bytes; no Microsoft Access query qualification is claimed.
 """
+from engineering_paths import reference_file
 
 import argparse
 import csv
@@ -31,7 +32,7 @@ def main():
             expected = model(table == "WideMixed")
             reference = subprocess.check_output([
                 "java", "-Dstdout.encoding=UTF-8", "-cp", str(args.jar),
-                str(RECIPES / "TableDataOracle.java"), str(path), table,
+                str(reference_file('tests/access/reading/tables/TableDataOracle.java')), str(path), table,
             ], text=True, encoding="utf-8")
             records = [line.split("\t")[1:] for line in reference.splitlines()]
             assert {int(row[0][4:]): row for row in records} == expected

@@ -6,21 +6,21 @@ comparison/logical support and its separate evidence are described in
 [predicate previews](PREDICATE_PREVIEW_REPLAY.md). The pinned original report is
 unchanged.
 
-This replay checks the explicit [calculation preview](../access/calculations/CALCULATION_PREVIEWS.md)
+This replay checks the explicit [calculation preview](../../../docs/access/calculations/CALCULATION_PREVIEWS.md)
 against independent models over ordinary stored getters. It does not ask Jackcess
 to evaluate formulas, qualify native Access arithmetic or certify cached freshness.
 
 ## Original inputs and model
 
-The [read-only oracle](CalculationPreviewOracle.java) opens each original database
+The [read-only oracle](../../access/reading/tables/CalculationPreviewOracle.java) opens each original database
 read-only, disables expression evaluation and emits the actual stored Expression
 property, selected ordinary dependency and cached result separately. No imported
 code, macro, UDF or formula executes. The new oracle is original repository code
 under its MIT license; the reviewed Jackcess 5.0.4 artifact remains an external
 Apache-2.0 reference dependency, identified by SHA-256 in the report.
 
-The [runner](compare_calculation_previews.py) uses existing original Decimal,
-Memo and [schema evolution](ADVANCED_FIELD_EVOLUTION.md) files. It also regenerates
+The [runner](../../access/reading/tables/compare_calculation_previews.py) uses existing original Decimal,
+Memo and [schema evolution](../schema/ADVANCED_FIELD_EVOLUTION.md) files. It also regenerates
 the existing inert CalculatedStorageFixture and CalculatedScalarFixture recipes
 into fresh ignored files to cover ordinary NULL dependencies and unsupported
 stored expressions. No new native declaration variant is admitted.
@@ -62,7 +62,7 @@ reference JAR and executable remain ignored artifacts.
 
 ## Accepted replay
 
-On 24 October 2026, the [accepted report](results/calculation-preview-2026-10-24.json)
+On 24 October 2026, the [accepted report](../../results/development/calculation-preview-2026-10-24.json)
 records 44 passing controls and 1,018 independently modeled result cells across
 20 selected declarations in ACE 2016/2019 files. Of those result cells, 1,010
 numerically or textually differ from the independent cached getter; the other
@@ -78,7 +78,7 @@ These are offline engineering results; native Access execution and broader
 calculated-field semantics remain unqualified.
 
 ```sh
-python3 docs/testing/compare_calculation_previews.py \
+python3 tests/run.py tests/access/reading/tables/compare_calculation_previews.py \
   --cli .cache/tablecraft-bin/calculation-preview-20261024 \
   --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar \
   --decimal-directory .cache/tablecraft-fixtures/calculated-decimals-20261024 \
@@ -88,5 +88,5 @@ python3 docs/testing/compare_calculation_previews.py \
   --report /tmp/calculation-preview.json
 ```
 
-[Fixture provenance](FIXTURES.md#independent-calculation-preview-inputs) records
+[Fixture provenance](../reading/FIXTURES.md#independent-calculation-preview-inputs) records
 the newly regenerated simple input hashes. The runner refuses report overwrites.

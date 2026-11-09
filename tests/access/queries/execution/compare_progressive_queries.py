@@ -10,7 +10,7 @@ from pathlib import Path
 import subprocess
 
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[4]
 PROFILES = ("V2000", "V2007", "V2016", "V2019")
 BATCHES = (1, 128, 1000)
 JAR_SHA256 = "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc"
@@ -84,7 +84,7 @@ def main():
     compiled = ROOT / generation["compiled_class"]
     assert digest(compiled) == generation["compiled_class_sha256"]
     paths.add(compiled)
-    paths.update(ROOT / "docs/testing" / name for name in (
+    paths.update(ROOT / "tests/access" / name for name in (
         "ProgressiveQueryFixture.java",
     ))
     hashes = {str(path.relative_to(ROOT) if path.is_absolute() else path): digest(path)

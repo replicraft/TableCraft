@@ -103,7 +103,7 @@ def main():
         Path("crates/query/tablecraft-expressions/src/evaluation/strconv.rs"),
         Path("crates/query/tablecraft-expressions/src/functions/text/strconv/flags.rs"),
         Path("crates/query/tablecraft-expressions/src/functions/text/strconv/width.rs"),
-        Path("docs/testing/compare_browsing.py"),
+        Path("tests/access/reading/tables/compare_browsing.py"),
     ]
     source_before = {str(path): digest(path) for path in source_paths}
     wide, narrow = pairs()

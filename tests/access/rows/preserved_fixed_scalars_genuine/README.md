@@ -1,9 +1,9 @@
 # Fixed-scalar rich source recipe and read-only getter
 
 These repository-authored Java tools prepare and inspect synthetic fixtures for
-the [preserved fixed-scalar profile](../ACE16_PRESERVED_FIXED_SCALARS.md). They
+the [preserved fixed-scalar profile](../../../reports/rows/ACE16_PRESERVED_FIXED_SCALARS.md). They
 use the pinned Jackcess 5.0.4 API and the existing
-[BoundedFileChannel](../parent_index_split_originals/BoundedFileChannel.java).
+[BoundedFileChannel](../../indexes/parent_index_split_originals/BoundedFileChannel.java).
 They have not yet been compiled, executed or qualified. No generated database,
 JAR or class file belongs in this directory.
 
@@ -110,11 +110,11 @@ Generation, original SDK inventories and direct complete native source admission
 must pass before independent expectations or candidates are produced. The first
 two creation and two read-only inventory calls now pass, followed by direct
 complete native source admission of both originals. The
-[source result](../results/ace16-preserved-fixed-scalar-genuine-sources-2026-10-31.json)
+[source result](../../../results/rows/ace16-preserved-fixed-scalar-genuine-sources-2026-10-31.json)
 pins the unchanged originals, classes and logs. No update candidate was involved
 in those checks.
 
-The subsequent [genuine-file qualification](../results/ace16-preserved-fixed-scalars-genuine-images-2026-10-31.json)
+The subsequent [genuine-file qualification](../../../results/rows/ace16-preserved-fixed-scalars-genuine-images-2026-10-31.json)
 freezes 24 original/request-only complete images before a fresh committed CLI
 produces any candidate. Every expected image passes complete native Source
 admission; all 24 actual copies match exactly and 24 fresh getter processes match
@@ -126,7 +126,7 @@ the executed private constructor inputs. `verify.py` replays saved evidence and
 starts no Java, Cargo or CLI process:
 
 ```sh
-python3 docs/testing/preserved_fixed_scalars_genuine/verify.py --root "$PWD"
+python3 tests/run.py tests/access/rows/preserved_fixed_scalars_genuine/verify.py --root "$PWD"
 ```
 
 Native Microsoft Access save/reopen, required-macro

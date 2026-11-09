@@ -52,7 +52,7 @@ Acceptance compares preserved specifications and authorized reruns with native
 Access: filtered exports, changed paths, repeated append, conversion errors,
 cancellation and partial writes. Linked tests need disposable server/driver
 profiles. No production connections or task runs have been made. Record evidence
-in the [corpus](../testing/ACCESS_APPLICATIONS.md).
+in the [corpus](../../tests/reports/reading/ACCESS_APPLICATIONS.md).
 
 ## References
 

@@ -1,16 +1,16 @@
 # Original multi-level DELETE storage observations
 
-[DeleteTreeFixture.java](DeleteTreeFixture.java) creates fresh inert V2016/V2019
+[DeleteTreeFixture.java](../../access/rows/delete/DeleteTreeFixture.java) creates fresh inert V2016/V2019
 originals with public Jackcess builders and deletes selected IDs only on separate
 copies using `Table.deleteRow`. The
-[read-only capture](capture_delete_trees.py) reopens all ten files without write
+[read-only capture](../../access/rows/delete/capture_delete_trees.py) reopens all ten files without write
 access. Expression evaluation is off, linked targets throw, and UTC is explicit.
 No stored/reference SQL, imported active content or Microsoft Access execution is
 used. These original repository recipes use the reviewed Jackcess 5.0.4 JAR; its
 provenance and all ten exact database hashes are in
-[the fixture ledger](FIXTURES.md#original-ace16-multi-level-delete-reference-inputs).
+[the fixture ledger](../reading/FIXTURES.md#original-ace16-multi-level-delete-reference-inputs).
 
-The [compact reference summary](results/delete-tree-reference-2026-10-26.json)
+The [compact reference summary](../../results/rows/delete-tree-reference-2026-10-26.json)
 records ten getter receipts, no failures and thirteen unchanged pins: producer,
 capture, JAR, two originals and eight reference copies. Its SHA-256 is
 `81c1f64f10014ea938fcc0badbe375dc8d8273917a62e70cb3902c24eb9999ef`.
@@ -94,7 +94,7 @@ for profile in V2016 V2019; do
   java -Dstdout.encoding=UTF-8 -cp .cache/tablecraft-fixtures/jackcess-5.0.4.jar \
     docs/testing/DeleteTreeFixture.java generate "FRESH_DIRECTORY/Tree-$profile-before.accdb" "$profile"
 done
-python3 docs/testing/capture_delete_trees.py \
+python3 tests/run.py tests/access/rows/delete/capture_delete_trees.py \
   --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar \
   --inputs FRESH_DIRECTORY --report FRESH_GENERATION_REPORT.json
 ```
@@ -105,7 +105,7 @@ per profile, then reopens them. No output name may already exist. The report
 records actual commands and hashes. A later read-only recapture uses:
 
 ```sh
-python3 docs/testing/capture_delete_trees.py \
+python3 tests/run.py tests/access/rows/delete/capture_delete_trees.py \
   --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar \
   --inputs ORIGINAL_DIRECTORY --report FRESH_READ_ONLY_REPORT.json \
   --existing-references
@@ -116,15 +116,15 @@ ignored; no third-party fixture or binary is bundled in this reference chunk.
 
 ## TableCraft candidate comparison
 
-The [frozen comparison example](results/ace16-delete-trees-example-build-2026-10-26.json)
+The [frozen comparison example](../../results/rows/ace16-delete-trees-example-build-2026-10-26.json)
 from committed revision `3b1cb8c7696312fccd95e635c5b21ed6993abf49` passes all
-24 [candidate replay controls](results/ace16-delete-trees-originals-2026-10-26.json):
+24 [candidate replay controls](../../results/rows/ace16-delete-trees-originals-2026-10-26.json):
 fourteen successful independent reopens and ten typed refusals with empty stdout.
 The positives include both safe batches, individual non-tail/tail and equal-key
 boundaries, and new boundary deletions from each existing safe reference history.
 Leaf-exhaustion, delete-all, stale/duplicate and existing-output requests refuse.
 
-The [runner](compare_delete_trees.py) verifies exact original leaf partitions,
+The [runner](../../access/rows/delete/compare_delete_trees.py) verifies exact original leaf partitions,
 surviving physical keys/references and every node's full separator maximum. All
 root/child/tail/sibling pointers, heights, maps, historical counters, record bodies
 and Memo/OLE data remain preserved under narrow patch spans. All registered input,

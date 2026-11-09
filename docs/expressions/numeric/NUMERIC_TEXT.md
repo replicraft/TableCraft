@@ -73,7 +73,7 @@ Focused kernel tests cover examples, ranges, exact fixed values, IEEE extremes,
 generated integer/Decimal models and resource failures. Query tests cover fields,
 NULLs, grouped calls, aggregates, nested queries, parameters and eager refusals.
 CLI tests use csv to decode TSV cells and check failure buffering. The
-[independent recipe](../../testing/compare_numeric_text.py) uses Python integers and
+[independent recipe](../../../tests/access/queries/expressions/compare_numeric_text.py) uses Python integers and
 exact Decimal rounding of binary floating values. Optional Jackcess-decoded rows
 supply independent inputs for sequential/indexed projections and a source hash
 check; they do not validate native expression semantics. Native Windows Access
@@ -112,7 +112,7 @@ specifications select Long for non-LongLong values. The
 selects Double for the remaining nonnumeric input branch. These guide the current
 Text paths without supplying native Access execution evidence.
 
-The original [input runner](../../testing/compare_numeric_text_inputs.py) uses Python
+The original [input runner](../../../tests/access/queries/expressions/compare_numeric_text_inputs.py) uses Python
 integer/Decimal half-even models, explicit binary64 spelling and original
 registered native inputs. It checks output type, missing-policy refusals, invalid
 and overflowing Text, negative-width boundaries and unchanged hashes. It does not

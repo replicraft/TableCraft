@@ -8,7 +8,7 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
-VERIFIER = Path(__file__).resolve().parents[1] / 'verify_data_macro_xml.py'
+VERIFIER = Path(__file__).resolve().parents[2] / 'verify_data_macro_xml.py'
 SPEC = importlib.util.spec_from_file_location('data_macro_xml_current_verifier', VERIFIER)
 verifier = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(verifier)

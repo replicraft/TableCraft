@@ -29,7 +29,7 @@ Neither a temporary refusal nor read admission is a permanent format invariant o
 permission to write. Boolean's raw declared length one is distinct from its
 zero-payload native storage and is checked accordingly.
 
-See the [original qualification record](results/ace16-wide-sibling-originals-2026-11-02.json).
+See the [original qualification record](../../results/general/ace16-wide-sibling-originals-2026-11-02.json).
 Independent AFTER construction, further reader observations, actual mutations,
 recovery and typed/SQL/CLI save qualification remain separate work. Microsoft
 Access save/reopen and native compatibility remain unqualified.

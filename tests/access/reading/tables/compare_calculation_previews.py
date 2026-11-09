@@ -3,6 +3,7 @@
 This qualifies the engineering preview and its separation from stored caches,
 not native Access formula evaluation, freshness or result-type conversion.
 """
+from engineering_paths import reference_file
 
 import argparse
 from fractions import Fraction
@@ -17,9 +18,9 @@ from cli_tsv import display_tsv
 from compare_browsing import display, escaped
 from compare_calculated_decimals import digest, JACKCESS_SHA256
 
-ROOT = Path(__file__).resolve().parents[2]
-RECIPES = ROOT / "docs/testing"
-ORACLE = RECIPES / "CalculationPreviewOracle.java"
+ROOT = Path(__file__).resolve().parents[4]
+RECIPES = ROOT / "tests/access"
+ORACLE = reference_file('tests/access/reading/tables/CalculationPreviewOracle.java')
 PROFILES = ("V2016", "V2019")
 
 
@@ -92,10 +93,10 @@ def main():
         *sorted((ROOT / "crates/backends/tablecraft-access/src/source/calculation").glob("*.rs")),
         ROOT / "crates/backends/tablecraft-access/src/source/calculation.rs",
         ROOT / "apps/tablecraft-cli/src/commands/query/preview_calculation.rs",
-        ORACLE, Path(__file__), RECIPES / "cli_tsv.py",
-        RECIPES / "compare_browsing.py", RECIPES / "compare_calculated_decimals.py",
-        RECIPES / "float_model.py",
-        *[RECIPES / name for name in (
+        ORACLE, Path(__file__), reference_file('tests/access/shared/primitives/cli_tsv.py'),
+        reference_file('tests/access/reading/tables/compare_browsing.py'), reference_file('tests/access/queries/expressions/compare_calculated_decimals.py'),
+        reference_file('tests/access/shared/primitives/float_model.py'),
+        *[reference_file(name) for name in (
             "CalculatedDecimalFixture.java", "CalculatedMemoFixture.java",
             "AdvancedEvolutionFixture.java", "CalculatedStorageFixture.java",
             "CalculatedScalarFixture.java",
@@ -216,7 +217,7 @@ def main():
         original = args.decimal_directory / f"{profile}.accdb"
         stored = execute(
             "java", "-Dstdout.encoding=UTF-8", "-cp", args.jar,
-            RECIPES / "CalculatedDecimalFixture.java", "--inspect", original,
+            reference_file('tests/access/queries/expressions/CalculatedDecimalFixture.java'), "--inspect", original,
         )
         wrapper = bytes.fromhex(stored.splitlines()[-2].split("\t")[-1])
         changed = bytearray(original.read_bytes())

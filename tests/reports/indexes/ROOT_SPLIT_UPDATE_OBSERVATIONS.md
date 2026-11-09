@@ -3,7 +3,7 @@
 Both fixed V2016/V2019 candidates passed on the **first attempt**: two native
 calls and four read-only getter/map calls, six commands total, terminal status 0.
 There were no candidate retries or disagreements. The
-[compact receipt](results/ace16-root-split-originals-2026-10-27.json) pins the raw
+[compact receipt](../../results/indexes/ace16-root-split-originals-2026-10-27.json) pins the raw
 report, log, exact executed private sources, requests, outputs and frozen build.
 
 This qualifies the separate engineering preview on these original files.
@@ -22,7 +22,7 @@ getter, helper and JAR retains its recorded identity.
 The consumer was compiled from committed revision
 `0c0dc6d904bd112236a383c74b04192ee6c5f90f`, artifact SHA-256
 `8245c35b6b533dbdc8f6dec5fed74aab0c0fdaf0da73e5df529dd3053eae4709`.
-The [build receipt](results/ace16-root-split-example-build-2026-10-27.json)
+The [build receipt](../../results/indexes/ace16-root-split-example-build-2026-10-27.json)
 records 143 selected immutable Git objects and the exported compiler-source
 snapshot. Subsequent working-tree writer code is not the tested binary.
 
@@ -65,8 +65,8 @@ attempt and its complete evidence remain intact.
 
 ## Replay and read-only verification
 
-[compare_root_split_updates.py](compare_root_split_updates.py) and
-[root_split_preview_originals](root_split_preview_originals/replay.py) are public
+[compare_root_split_updates.py](../../access/queries/expressions/compare_root_split_updates.py) and
+[root_split_preview_originals](../../access/indexes/root_split_preview_originals/replay.py) are public
 maintenance helpers. They are distinct from the pinned private runner actually
 executed. The public proof is byte-identical to the executed proof. Replay is
 inert without `--execute`, requires the exact frozen plan and explicit artifact,
@@ -77,7 +77,7 @@ The saved images, cached getters/maps and immutable Git objects can be rechecked
 without native or JVM calls:
 
 ```sh
-python3 docs/testing/compare_root_split_updates.py \
+python3 tests/run.py tests/access/queries/expressions/compare_root_split_updates.py \
   --verify-existing .cache/ace16-index-split-acceptance-first-20261027/run/report.json \
   --output .cache/root-split-new-verification.json
 ```

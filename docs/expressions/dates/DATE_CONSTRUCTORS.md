@@ -86,7 +86,7 @@ Five value tests cover rollover, leap years, year-window boundaries, half-even
 conversion, errors, signed times and generated independent date/second models.
 A scalar dispatch test and two retrieval tests exercise grouping, pruning,
 correlations, constructor identity, reusable parameters, nesting and eager errors.
-The [CLI comparison](../../testing/compare_date_constructors.py) uses Python calendar
+The [CLI comparison](../../../tests/access/queries/expressions/compare_date_constructors.py) uses Python calendar
 models and exact rational seconds, plus inert native Int32 input in sequential
 and indexed reads. It verifies original source hashes and adds no database
 fixtures, dependencies or runtime host. Native Access comparison remains pending.
@@ -123,7 +123,7 @@ Kernel/evaluator/query/CLI controls cover raw DATE components, numeric Text,
 Int16 ties/ranges, progressive error order, exact cumulative allocation ceilings,
 input limits, every observed cancellation checkpoint, groups/filters/correlations,
 closed Eval, prepared rebinding and execution-local year windows. The original
-[independent coercion recipe](../../testing/compare_constructor_coercion.py) passes 388
+[independent coercion recipe](../../../tests/access/reading/tables/compare_constructor_coercion.py) passes 388
 Decimal/Gregorian/Fraction/native-field controls. It includes fractional Text
 components projected over unchanged priority-family native IDs under selected
 number profiles and distinct year windows. Hash-checked Jackcess getters supply

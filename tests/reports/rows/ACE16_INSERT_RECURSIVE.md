@@ -177,7 +177,7 @@ No helper, population, scalar, selector, cap or original source byte was changed
 Across all four sources, ordinary DATA pages remain byte-exact to their larger
 originals except for the public deleted-slot tombstone words.
 
-The [source record](results/ace16-insert-recursive-sources-2026-10-28.json) keeps
+The [source record](../../results/rows/ace16-insert-recursive-sources-2026-10-28.json) keeps
 those first-five/checker-failure/saved-proof/remaining-twelve phases distinct.
 Total fixture work is one compile and sixteen generation/prune/read-only probe
 commands, with zero INSERT reference or native candidate calls. The later
@@ -208,10 +208,10 @@ internal cases split a leaf and its nonroot parent while retaining the height-tw
 root. Across the four candidates, all 3,490 old ROWs survive and 3,494 final
 primary pairs agree. Ten INDEX pages add 40,960 bytes; no DATA or bitmap page is
 allocated. Table and actual historical physical counts each increase once.
-The [candidate record](results/ace16-insert-recursive-native-2026-10-28.json)
+The [candidate record](../../results/rows/ace16-insert-recursive-native-2026-10-28.json)
 keeps original sources, pre-build goldens, producer provenance and fresh getters
 separate from the source and public-reference phases. The
-[saved-only verifier](ace16_insert_recursive/README.md) requires the retained
+[saved-only verifier](../../access/rows/ace16_insert_recursive/README.md) requires the retained
 private artifacts, starts no fixture/JVM and reports missing evidence as
 unavailable rather than a pass.
 
@@ -237,7 +237,7 @@ comparison finds differences only on INDEX pages: 12,328/12,329 bytes in the two
 root files and 15,674/15,673 in the internal files. DATA, counters, map effects and
 all other bytes agree in these actual outputs.
 
-The [public-reference record](results/ace16-insert-recursive-public-reference-2026-10-28.json)
+The [public-reference record](../../results/rows/ace16-insert-recursive-public-reference-2026-10-28.json)
 preserves the stopped first-three proof, separate saved recertification and
 remaining-nine continuation. These Jackcess observations and ACE engineering
 images do not establish Microsoft Access save/reopen compatibility. Required data

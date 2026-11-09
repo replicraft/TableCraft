@@ -17,7 +17,7 @@ import subprocess
 from build_large_deployment import digest, inspect
 from compare_large_deployment import JAR_SHA256, getter_model
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[4]
 PROVENANCE_HASH = "e5c4e1f575d96bd8552ce05f610505b6987ee0e1946ac740886468cec094d56b"
 MAX_COMMANDS = 100
 SOURCE_ROOTS = [
@@ -34,10 +34,10 @@ SOURCE_ROOTS = [
     "apps/tablecraft-cli/src/commands/query/retrieval.rs",
 ]
 TOOLS = [
-    "docs/testing/compare_progressive_grouped.py",
-    "docs/testing/compare_large_deployment.py",
-    "docs/testing/build_large_deployment.py",
-    "docs/testing/LargeDeploymentFixture.java",
+    "tests/access/queries/execution/compare_progressive_grouped.py",
+    "tests/access/reading/tables/compare_large_deployment.py",
+    "tests/access/reading/tables/build_large_deployment.py",
+    "tests/access/reading/tables/LargeDeploymentFixture.java",
 ]
 
 

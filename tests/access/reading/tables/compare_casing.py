@@ -1,4 +1,5 @@
 """Independent stable-Unicode/ASCII casing controls; native Access remains unrun."""
+from engineering_paths import reference_file
 import argparse
 import csv
 from io import StringIO
@@ -47,7 +48,7 @@ def main():
     if args.jar:
         assert digest(args.jar) == '19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc'
         before = digest(args.database)
-        tagged = run('java', '-Dstdout.encoding=UTF-8', '-cp', args.jar, RECIPES / 'TableDataOracle.java', args.database, 'ROULETTE_TB')
+        tagged = run('java', '-Dstdout.encoding=UTF-8', '-cp', args.jar, reference_file('tests/access/reading/tables/TableDataOracle.java'), args.database, 'ROULETTE_TB')
         source_rows = sorted((int(parts[1].removeprefix('I32:')), bytes.fromhex(parts[2].removeprefix('T')).decode('utf-8')) for parts in (line.split('\t') for line in tagged.splitlines()))
         expected = [[str(identity), spelling('abc '+text), spelling('STRASSE '+text)] for identity, text in source_rows]
         sql = "SELECT ORDR_NBR AS N,LCase('AbC ' & NBR_VALUE),UCase('straße ' & NBR_VALUE) FROM ROULETTE_TB ORDER BY N"

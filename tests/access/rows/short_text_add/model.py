@@ -6,7 +6,7 @@ import importlib.util
 import json
 import struct
 
-RAW_SOURCE = Path('docs/testing/number_column_repeat/raw.py')
+RAW_SOURCE = Path('tests/access/schema/number_column_repeat/raw.py')
 PAGE = 4096
 CATALOG_PAGE = 4
 DEFINITION_PAGE = 7
@@ -299,7 +299,7 @@ def main():
         (root / (case['case'] + '-independent-after.accdb')).write_bytes(expected)
         print(case['case'], expected == actual, digest(expected), differences[:8])
         records.append(case)
-    report.update(model='docs/testing/short_text_add/model.py', model_sha256=digest(Path(__file__).read_bytes()),
+    report.update(model='tests/access/rows/short_text_add/model.py', model_sha256=digest(Path(__file__).read_bytes()),
                   raw_helper=str(RAW_SOURCE), raw_helper_sha256=digest(RAW_SOURCE.read_bytes()),
                   third_independent_complete_match=third_match,
                   third_independent_sha256=digest(expected_third), observations=records)

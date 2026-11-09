@@ -2,6 +2,7 @@
 
 Original engineering derivatives only; no Access DDL/save qualification is implied.
 """
+from engineering_paths import reference_file
 import argparse
 import hashlib
 from pathlib import Path
@@ -53,7 +54,7 @@ def main():
         for profile, suffix in PROFILES:
             base = args.directory / f"PrefixBase-{profile}.{suffix}"
             output = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar,
-                         RECIPES / "FixedPrefixHistoryFixture.java", base, profile)
+                         reference_file('tests/access/reading/tables/FixedPrefixHistoryFixture.java'), base, profile)
             definitions = [(name, int(page)) for name, page in
                            (line.split("\t") for line in output.splitlines())]
             assert {name for name, _ in definitions} == {"FixedFirst", "VariableFirst"}
@@ -75,7 +76,7 @@ def main():
                        (args.directory / f"Definitions-{profile}.tsv").read_text().splitlines())]
         for table, definition in definitions:
             expected = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar,
-                           RECIPES / "TableDataOracle.java", path, table)
+                           reference_file('tests/access/reading/tables/TableDataOracle.java'), path, table)
             assert run(args.rows, path, table) == expected
             assert run(args.rows, path, table, "--batch-size", 1) == expected
             rows = [line.split("\t")[1:] for line in expected.splitlines()]

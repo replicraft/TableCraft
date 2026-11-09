@@ -121,7 +121,7 @@ original database paths for native-field integration:
 
 ```sh
 CARGO_INCREMENTAL=0 cargo build -p tablecraft-cli --locked
-python3 docs/testing/compare_error_messages.py --cli target/debug/tablecraft \
+python3 tests/run.py tests/access/queries/expressions/compare_error_messages.py --cli target/debug/tablecraft \
   --jar /path/to/jackcess-5.0.4.jar --database /path/to/Scalar-V2016.accdb
 ```
 

@@ -81,7 +81,7 @@ only its repository root. Frozen executed scripts, models, reports, source
 images and expected images remain untouched in ignored evidence.
 
 No third-party fixture or implementation source is copied into this package.
-See the [compact result](../results/ace16-insert-variable-index-native-2026-10-28.json)
-and [fixture provenance](../FIXTURES.md). These finite engineering and independent
+See the [compact result](../../../results/indexes/ace16-insert-variable-index-native-2026-10-28.json)
+and [fixture provenance](../../../reports/reading/FIXTURES.md). These finite engineering and independent
 reader observations do not qualify native Microsoft Access saves/reopens, data
 macros, Windows integration or normal production write paths.

@@ -78,8 +78,8 @@ the executed original helper; it calls the pinned Jackcess API and contains no
 copied third-party implementation. Its bounded-channel dependency is the already
 maintained [BoundedFileChannel](../parent_index_split_originals/BoundedFileChannel.java),
 whose bytes equal the executed helper dependency. Existing
-[SlotUpdateFixture](../SlotUpdateFixture.java) and
-[SlotMapProbe](../SlotMapProbe.java) supplied read-only observations from pinned
+[SlotUpdateFixture](../../queries/expressions/SlotUpdateFixture.java) and
+[SlotMapProbe](../../storage/native/SlotMapProbe.java) supplied read-only observations from pinned
 compiled classes. The verifier does not invoke these Java tools.
 
 Recorded child bounds were 25 then 18 maximum processes, 30 seconds per child,
@@ -87,7 +87,7 @@ Recorded child bounds were 25 then 18 maximum processes, 30 seconds per child,
 A later proof replay starts zero Java/native processes and does not grant
 permission to rerun the historical protocol.
 
-See the [compact reference receipt](../results/ace16-insert-multiple-index-references-2026-10-28.json)
+See the [compact reference receipt](../../../results/indexes/ace16-insert-multiple-index-references-2026-10-28.json)
 for source/reference hashes, exact lineage and maintained-tool pins. Private
 source files and captured streams remain ignored artifacts; absence does not
 become passing evidence. Rust candidate acceptance and native Access save/reopen
@@ -151,5 +151,5 @@ The first four producer calls and first eight fresh read-only calls all succeede
 there were no native/getter retries. Their input closure and first reports are
 immutable. The older reference receipt's tool hashes describe its initial
 promotion; its prior README is archived before this candidate section was added.
-The [candidate receipt](../results/ace16-insert-multiple-index-native-2026-10-28.json)
+The [candidate receipt](../../../results/indexes/ace16-insert-multiple-index-native-2026-10-28.json)
 records this later scope without rewriting the original reference history.

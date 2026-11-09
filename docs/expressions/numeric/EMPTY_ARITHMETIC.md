@@ -74,10 +74,10 @@ caller-issued declarations, without constructing SQL or opening files:
 
 ```sh
 CARGO_INCREMENTAL=0 cargo build -p tablecraft-expressions --example empty_arithmetic --features sql --locked --offline
-python3 docs/testing/compare_empty_arithmetic.py --probe target/debug/examples/empty_arithmetic
+python3 tests/run.py tests/access/reading/tables/compare_empty_arithmetic.py --probe target/debug/examples/empty_arithmetic
 ```
 
-The [independent Python model](../../testing/compare_empty_arithmetic.py) checks 3,230
+The [independent Python model](../../../tests/access/reading/tables/compare_empty_arithmetic.py) checks 3,230
 integral value/carrier/refusal outcomes, including both operand orders, boundaries,
 seeded values, rounded Byte exceptions, NULL and all four issued declaration
 combinations. Its Python integer model is independent of production zero selection.

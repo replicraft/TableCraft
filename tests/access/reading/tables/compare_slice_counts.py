@@ -1,4 +1,5 @@
 """Independent nearest-even/UTF-16 slicing controls and inert native ID queries."""
+from engineering_paths import reference_file
 
 import argparse
 from decimal import Decimal, ROUND_HALF_EVEN
@@ -100,7 +101,7 @@ def main():
     for database in args.database:
         before = hashlib.sha256(database.read_bytes()).hexdigest()
         tagged = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar,
-                     RECIPES / "TableDataOracle.java", database, "ScalarSamples")
+                     reference_file('tests/access/reading/tables/TableDataOracle.java'), database, "ScalarSamples")
         identities = sorted(int(line.split("\t")[1].removeprefix("I32:")) for line in tagged.splitlines())
         expected = [[str(n), quoted(slice_model("Left", "abcdef", Decimal(n) / 2)), quoted(slice_model("Right", "abcdef", Decimal(n) / 2)), quoted(slice_model("Mid", "abcdef", Decimal(n) + Decimal("0.5")))] for n in identities]
         sql = "SELECT ID,Left('abcdef',CDbl(ID)/2),Right('abcdef',CDec(ID)/2),Mid('abcdef',CStr(ID)&'.5','2.5') FROM ScalarSamples ORDER BY ID"

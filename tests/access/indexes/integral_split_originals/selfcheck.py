@@ -6,7 +6,7 @@ import sys
 
 BASE = Path(__file__).resolve().parent
 REPO = BASE.parents[2]
-sys.path.insert(0, str(REPO / 'docs/testing'))
+sys.path.insert(0, str(REPO / 'tests/access'))
 import model
 
 for path in BASE.glob('*.py'):

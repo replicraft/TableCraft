@@ -4,8 +4,8 @@
 one ordinary Short Text/Binary field jointly, allowing DATA placement and
 qualified INDEX splitting in one original-source operation. It returns the
 separate non-journalable engineering candidate. The existing
-[fitting](ACE16_FITTED_MIXED_UPDATES.md) and
-[DATA-only growing](ACE16_MIXED_GROWING_UPDATES.md) methods retain their profiles.
+[fitting](../rows/ACE16_FITTED_MIXED_UPDATES.md) and
+[DATA-only growing](../rows/ACE16_MIXED_GROWING_UPDATES.md) methods retain their profiles.
 
 The independent source gate passed all 24 source/expected pairs before the
 producer was installed. The first native API run passed six functions, including
@@ -13,7 +13,7 @@ producer was installed. The first native API run passed six functions, including
 images. Shared checks also pass: 522 mutation functions, 72 native regressions across
 10 targets, 55 Access tests, and 37 CLI unit plus 51 integration tests. Strict
 ACE/Access/CLI all-target/all-feature Clippy and minimal ACE/Access checks pass.
-The [result record](results/ace16-mixed-data-index-growth-2026-10-30.json) pins the
+The [result record](../../results/indexes/ace16-mixed-data-index-growth-2026-10-30.json) pins the
 current source and actual logs. These are independent literal engineering checks;
 native Access saves and original-file joint mixed-growth qualification remain
 separate work.
@@ -34,7 +34,7 @@ method's separate declared-if-fits encoding preference. Native field numbers,
 NULL presence, unselected fields, opaque payload and forwarding ownership retain
 their qualified preservation rules.
 
-The [record stage](../../crates/engines/tablecraft-ace/src/table/mutation/fitted/growing/stage.rs)
+The [record stage](../../../crates/engines/tablecraft-ace/src/table/mutation/fitted/growing/stage.rs)
 compares the producer's records and value caches against fresh reconstruction
 from original groups before placement. The shared DATA placement owner chooses
 actual existing-page or EOF hidden targets, retaining logical root identities.
@@ -45,7 +45,7 @@ The explicit `JointIndexes` continuation moves the same source Metadata from
 DATA space qualification into the same append State. The separate `DataOnly`
 wrapper retains its existing policy. Every affected alias qualifies before
 physical owners are ordered by data number. The
-[INDEX continuation](../../crates/engines/tablecraft-ace/src/table/indexes/mutation/split/rows.rs)
+[INDEX continuation](../../../crates/engines/tablecraft-ace/src/table/indexes/mutation/split/rows.rs)
 prepares typed complete key populations and complete original tree inventories
 before its first INDEX reservation, then consumes the DATA phase's EOF cursor
 and shared map-byte overlay.
@@ -60,7 +60,7 @@ not establish new bitmap-promotion or map-rebasing coverage.
 
 ## Independent authority for both phases
 
-The [finalizer](../../crates/engines/tablecraft-ace/src/table/mutation/fitted/growing/joint/finish.rs)
+The [finalizer](../../../crates/engines/tablecraft-ace/src/table/mutation/fitted/growing/joint/finish.rs)
 composes one candidate and then reacquires original groups, the original table,
 full record framing, source root identities and source role protection.
 `CertifiedRows` contains independently reconstructed complete records and exact
@@ -68,7 +68,7 @@ original/final projections. Producer `RowKeyUpdate` vectors, staged fields and
 matching encoded keys are not certificates.
 
 The shared
-[DATA certificate](../../crates/engines/tablecraft-ace/src/table/mutation/variable_update/map_audit/placement_certificate.rs)
+[DATA certificate](../../../crates/engines/tablecraft-ace/src/table/mutation/variable_update/map_audit/placement_certificate.rs)
 checks actual DATA bytes, events, original before-pages, forwarding/slot/header
 geometry, candidate selection, genuine failed fits, initialized suffix pages
 and exact map transitions. It independently derives the DATA frontier before
@@ -114,7 +114,7 @@ overflowing left leaf and retain the original right leaf. An unrelated allocated
 opaque page remains unchanged.
 
 The qualified
-[source model](../../crates/engines/tablecraft-ace/src/table/mutation/fitted/growing/joint_split_tests/model.rs)
+[source model](../../../crates/engines/tablecraft-ace/src/table/mutation/fitted/growing/joint_split_tests/model.rs)
 and all complete expected images were authored before producer execution and
 remain unchanged. Source qualification checks original and expected rows,
 indexes, counters, constraints, maps, body roles and exclusive roots. The first

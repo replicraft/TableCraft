@@ -3,6 +3,7 @@
 Only TableCraft executes SQL. Expected ASCII results come from Python models;
 the reviewed read-only reference reader supplies original native identities.
 """
+from engineering_paths import reference_file
 
 import argparse
 import csv
@@ -93,7 +94,7 @@ def main():
         assert digest(path) == before
         reference = subprocess.check_output([
             "java", "-Dstdout.encoding=UTF-8", "-cp", str(args.jar),
-            str(RECIPES / "TableDataOracle.java"), str(path), "IndexedRows",
+            str(reference_file('tests/access/reading/tables/TableDataOracle.java')), str(path), "IndexedRows",
         ], text=True, encoding="utf-8")
         identities = [int(line.split("\t")[1].removeprefix("I32:")) for line in reference.splitlines()]
         assert len(identities) == len(set(identities)) == 20_000 and 1 in identities

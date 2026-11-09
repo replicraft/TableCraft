@@ -70,7 +70,7 @@ no source/target directory. It remains distinct from the qualified isolated buil
 The successful build uses committed `c3313b3e2d73f90956e6048792cfd7db66bc2742`,
 an initially absent dedicated target and all 4,610 Git-bound source files. Actual
 engine compilation and the unchanged source inventory are recorded in the
-[compact receipt](../results/ace16-insert-extended-datetime-example-build-2026-10-28.json).
+[compact receipt](../../../results/rows/ace16-insert-extended-datetime-example-build-2026-10-28.json).
 The separately retained executable, archives, logs and source artifacts remain
 pinned even when disposable completed Cargo targets are reclaimed.
 
@@ -95,5 +95,5 @@ The example's unchanged 1,024-byte default admits the explicit 27-byte
 `extended-date` cells. No resource limit was raised. This fitted, one-profile
 comparison does not qualify allocation, splits, timestamp keys, data-macro
 semantics, normal backend editing or native Access save/reopen. See the
-[result](../results/ace16-insert-extended-datetime-2026-10-28.json) and
-[owning contract](../ACE16_EXTENDED_DATETIME_INSERTS.md).
+[result](../../../results/rows/ace16-insert-extended-datetime-2026-10-28.json) and
+[owning contract](../../../reports/rows/ACE16_EXTENDED_DATETIME_INSERTS.md).

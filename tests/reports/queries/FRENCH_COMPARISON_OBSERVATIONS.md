@@ -5,14 +5,14 @@ establish native Access SQL, Windows NLS, substring matching or LIKE behavior.
 The [stored-index observations](FRENCH_LEGACY_INDEX_OBSERVATIONS.md) remain a
 separate physical-key oracle with a 255-unit input prefix and native entry limits.
 
-[FrenchComparisonOracle.java](FrenchComparisonOracle.java) is an original caller
+[FrenchComparisonOracle.java](../../access/queries/expressions/FrenchComparisonOracle.java) is an original caller
 of the reviewed Jackcess 5.0.4 JAR. It selects the exact French encoder, exports
 82 measured Latin character handlers, and obtains 158 complete short keys from
 that independent implementation. The alphabet contains only measured SIMPLE or
 INTERNATIONAL one-character/one-primary-unit handlers, with no modifiers, kana,
 unprintable or tertiary bytes. No upstream implementation is copied or modified.
 
-The independent [Latin stream model](french_comparison_latin_model.py) checks
+The independent [Latin stream model](../../access/queries/expressions/french_comparison_latin_model.py) checks
 those handler restrictions, constructs complete primary and per-character
 secondary streams, reverses the entire secondary stream, removes neutral trailing
 secondary weights and compares complete keys. All 158 short outputs agree exactly
@@ -44,22 +44,22 @@ javac -encoding UTF-8 -cp .cache/tablecraft-fixtures/jackcess-5.0.4.jar \
 java -cp .cache/french-comparison-reproduction/classes:.cache/tablecraft-fixtures/jackcess-5.0.4.jar \
   com.healthmarketscience.jackcess.impl.FrenchComparisonOracle \
   > .cache/french-comparison-reproduction/oracle.tsv
-python3 docs/testing/french_comparison_latin_model.py \
+python3 tests/run.py tests/access/queries/expressions/french_comparison_latin_model.py \
   --oracle .cache/french-comparison-reproduction/oracle.tsv \
   --vectors .cache/french-comparison-reproduction/long-pairs.tsv \
   --report .cache/french-comparison-reproduction/report.json
 ```
 
 Use the platform Java classpath separator (`;` on Windows). Verify the reviewed
-JAR hash from the [fixture ledger](FIXTURES.md) before invoking the commands.
+JAR hash from the [fixture ledger](../reading/FIXTURES.md) before invoking the commands.
 Neither helper opens or modifies a database or executes stored content.
 
 The working consumer contract and intentional resolver accessor source change
-are described in [native text comparison](../access/indexes/NATIVE_TEXT.md#provisional-complete-french-legacy-comparison).
+are described in [native text comparison](../../../docs/access/indexes/NATIVE_TEXT.md#provisional-complete-french-legacy-comparison).
 
 ## Local implementation verification
 
-The [scoped verification record](results/french-full-comparison-2026-10-26.json)
+The [scoped verification record](../../results/queries/french-full-comparison-2026-10-26.json)
 records 119 distinct selected runtime functions, including eighteen new controls,
 and three separate compile-fail isolation checks. Default/preview strict checks,
 standalone minimal checks, warnings-denied public rustdoc and formatting pass.

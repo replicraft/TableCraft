@@ -46,7 +46,7 @@ def main():
         cases = []
         for column in columns:
             expected = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar,
-                "docs/testing/MultivalueOracle.java", path, "Multivalues", column)
+                "tests/access/reading/tables/MultivalueOracle.java", path, "Multivalues", column)
             actual = run(args.rows, path, "Multivalues", "--multivalues", column)
             lines = [line.split("\t") for line in actual.splitlines()]
             if actual != expected or len(lines) != 4:
@@ -85,12 +85,12 @@ def main():
                 rejected(args.rows, copy, "Multivalues", column)
         rejected(args.rows, path, "Overflow", "Items")
         if len(run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar,
-                "docs/testing/MultivalueOracle.java", path, "Overflow", "Items").strip().split("\t")) != 104:
+                "tests/access/reading/tables/MultivalueOracle.java", path, "Overflow", "Items").strip().split("\t")) != 104:
             raise RuntimeError("Independent 101-item overflow control missing")
         if "\t101\n" not in run(args.cli, "inspect", path, "--table", "Overflow", "--complex-links", "Items"):
             raise RuntimeError("Raw links unexpectedly inherited the typed collection cap")
         expected = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar,
-            "docs/testing/MultivalueOracle.java", complex_path, "Collections", "Choices")
+            "tests/access/reading/tables/MultivalueOracle.java", complex_path, "Collections", "Choices")
         if run(args.rows, complex_path, "Collections", "--multivalues", "Choices") != expected:
             raise RuntimeError("Existing original Text choices changed")
         declarations = run(args.cli, "inspect", complex_path, "--table", "Collections", "--complex").splitlines()[2:]

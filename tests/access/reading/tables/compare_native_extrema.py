@@ -14,7 +14,7 @@ from pathlib import Path
 from compare_decimal_seeks import JAR_SHA256, digest, getters, invoke, relative
 from compare_progressive_numeric import MODES, Replay
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[4]
 SOURCE_ROOTS = [
     "crates/query/tablecraft-query/src/execution/aggregate.rs",
     "crates/query/tablecraft-query/src/execution/aggregate/extrema.rs",
@@ -176,10 +176,10 @@ def main():
     revision = revision.stdout.strip()
     pinned = [args.cli, args.jar, Path(__file__), *args.inputs]
     pinned.extend(ROOT / name for name in [
-        "docs/testing/compare_progressive_numeric.py",
-        "docs/testing/compare_decimal_seeks.py",
-        "docs/testing/DecimalIndexFixture.java",
-        "docs/testing/IndexRowsOracle.java",
+        "tests/access/queries/execution/compare_progressive_numeric.py",
+        "tests/access/queries/expressions/compare_decimal_seeks.py",
+        "tests/access/queries/expressions/DecimalIndexFixture.java",
+        "tests/access/indexes/native/IndexRowsOracle.java",
     ])
     before = {relative(path): digest(path) for path in pinned}
     compiled = compiled_sources(revision)
@@ -211,7 +211,7 @@ def main():
                 )
                 empty = invoke([
                     "java", "-Dstdout.encoding=UTF-8", "-cp", args.jar,
-                    "docs/testing/IndexRowsOracle.java", database,
+                    "tests/access/indexes/native/IndexRowsOracle.java", database,
                     "DecimalEmpty4", "EmptyKey", "Value",
                 ])
                 if empty.returncode or empty.stdout:

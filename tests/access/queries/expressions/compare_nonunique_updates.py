@@ -87,7 +87,7 @@ def tree_spans(data, root, pages=None, key_width=4):
 
 def oracle(args, path, table, index=None):
     command = (path, table) if index is None else (path, "--index", table, index)
-    return run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar, "docs/testing/TableDataOracle.java", *command)
+    return run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar, "tests/access/reading/tables/TableDataOracle.java", *command)
 
 
 def main():

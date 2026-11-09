@@ -72,7 +72,7 @@ Two query tests cover selective fields, grouping, aggregates, correlated argumen
 parameter/policy reuse, invalid grouping and eager errors. A multivalue test checks
 hidden member dependencies and parent-row behavior. CLI transport/failure buffering
 and optional worker request isolation have focused regressions.
-The [independent recipe](../../testing/compare_inspection.py) uses generated Python
+The [independent recipe](../../../tests/access/reading/tables/compare_inspection.py) uses generated Python
 Decimal spellings, explicit type/negative controls and optional sequential/indexed
 native-row projections with an unchanged source hash. These are independent-model/
 reader checks; native Windows Access execution remains unrun. No dependency or

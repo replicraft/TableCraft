@@ -51,7 +51,7 @@ AutoKeys overrides, disabled bypass, denied actions and deliberate failures.
 Record event traces, session isolation, cancellation/cleanup and reopen behavior.
 Test two independent sessions and verify that local state never leaks through P2P.
 These are future tests; no startup application is qualified yet. Track results in
-the [application corpus](../testing/ACCESS_APPLICATIONS.md).
+the [application corpus](../../tests/reports/reading/ACCESS_APPLICATIONS.md).
 
 ## References
 

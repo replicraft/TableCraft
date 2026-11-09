@@ -74,7 +74,7 @@ decoding. Other scalar APIs retain explicit refusal of unpublished carriers.
 Focused controls cover retained odd/surrogate cells, UNION ALL, correlations,
 First/Last, valid scalar/set boundaries, strict final output, parameter rebinding,
 byte quotas and every observed cancellation checkpoint. The original independent
-[cell runner](../../testing/compare_retained_string_cells.py) passes 1,053 source-free
+[cell runner](../../../tests/access/queries/expressions/compare_retained_string_cells.py) passes 1,053 source-free
 controls. Existing byte/selection/comparison/concatenation and native-policy
 recipes also pass. These are implementation/model comparisons; native Windows
 Access execution remains unrun.

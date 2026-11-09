@@ -7,7 +7,7 @@ refusal. There were no retries, selector changes, budget changes or unmet
 controls. These are engineering candidate checks, not Microsoft Access
 save/reopen or normal backend write qualification.
 
-The [acceptance receipt](results/ace16-compressed-memo-originals-2026-10-27.json)
+The [acceptance receipt](../../results/storage/ace16-compressed-memo-originals-2026-10-27.json)
 pins the unchanged sources, requests, model, compiled artifact, execution and
 saved-output verification. The preceding [raw 60-case acceptance](LONG_VALUE_UPDATE_ACCEPTANCE_OBSERVATIONS.md)
 and its preserved initial census refusals remain separate.
@@ -53,7 +53,7 @@ separate retained identities. Expected images never come from kernel output.
 ## Frozen consumer and actual outcomes
 
 The artifact is compiled from Git `452f2bde94a2580bd0a64e166cc11384f1ff8a4a`;
-its [build receipt](results/ace16-compressed-memo-example-build-2026-10-27.json)
+its [build receipt](../../results/storage/ace16-compressed-memo-example-build-2026-10-27.json)
 records the isolated committed export. The replay verifies all 197 historical
 Git source objects against that revision, rather than current working files.
 The consumer retains its 256 MiB/100,000-row/100-million-step budget and the
@@ -104,7 +104,7 @@ checks. Broader map growth, in-file free reuse, old-chain retirement,
 mode-switch authoring, indexed/history Memo, active-content eligibility and
 native Access qualification remain explicit gaps toward full ACE 16 support.
 
-The [saved-proof verifier](compressed_memo_observations/verify_acceptance.py)
+The [saved-proof verifier](../../access/storage/compressed_memo_observations/verify_acceptance.py)
 reconstructs every expected image from the frozen before sources and requests,
 rehashes actual output and all recursive live artifacts, reparses cached
 getters/maps, and re-derives each atomic refusal. Its accepted run verified
@@ -112,7 +112,7 @@ getters/maps, and re-derives each atomic refusal. Its accepted run verified
 objects**. It performs no native/JVM or database-write calls:
 
 ```sh
-python3 docs/testing/compressed_memo_observations/verify_acceptance.py \
+python3 tests/run.py tests/access/storage/compressed_memo_observations/verify_acceptance.py \
   --report .cache/ace16-compressed-memo-acceptance-first-20261027/report.json \
   --output .cache/compressed-memo-acceptance-verify-fresh.json \
   --verify-git

@@ -131,7 +131,7 @@ The broader native Extra target passes 29 functions, and the existing CLI Extra
 target passes 13, including all 50 structure carriers. Strict ACE/CLI
 all-target/all-feature Clippy and the minimal ACE build pass on their first
 invocations. Checks for this additive extraction slice are recorded in its
-[focused result](../../testing/results/data-macro-program-text-2026-10-30.json).
+[focused result](../../../tests/results/schema/data-macro-program-text-2026-10-30.json).
 
 ## Observed verification
 
@@ -156,7 +156,7 @@ program/trace bodies are preserved; no decoder was weakened.
 These witnesses do not qualify runtime ambiguity selection, native macro storage
 discovery, required-macro coverage or native dispatch order. The guard evaluator
 and host consumer remain uninstalled and unexecuted at this source prerequisite.
-See the [source-only result](../../testing/results/ace16-guard-sources-2026-10-30.json).
+See the [source-only result](../../../tests/results/general/ace16-guard-sources-2026-10-30.json).
 
 ### Structural inspection
 
@@ -186,7 +186,7 @@ strict CLI all-target/all-feature Clippy passes on its first invocation.
 Current tests do not qualify macro execution, old/new/IsInsert/Updated binding,
 transaction effects/rollback, complete native storage detection, native ACE16
 absence, or Microsoft Access save/reopen. These remain required work under
-[data-macro acceptance](../../testing/DATA_MACROS.md). The separate
-[historical envelope proof](../../testing/ace16_data_macro_xml/README.md) retains
+[data-macro acceptance](../../../tests/reports/schema/DATA_MACROS.md). The separate
+[historical envelope proof](../../../tests/access/schema/ace16_data_macro_xml/README.md) retains
 its original consumer/source witnesses; it is not current program qualification.
-See the [focused result](../../testing/results/data-macro-program-inspection-2026-10-30.json).
+See the [focused result](../../../tests/results/schema/data-macro-program-inspection-2026-10-30.json).

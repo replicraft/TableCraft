@@ -39,10 +39,10 @@ reinforces the separation between read and write qualification. The reviewed
 5.0.4 JAR only creates append-only originals before deletion; getters open derived
 files read-only, without appending columns, updating rows or evaluating expressions.
 
-[ColumnHistoryFixture.java](ColumnHistoryFixture.java) creates original histories
+[ColumnHistoryFixture.java](../../access/schema/fields/ColumnHistoryFixture.java) creates original histories
 in V2000, V2007, V2016 and V2019: ID, removed Int32, removed Text, retained Unicode
 Text, Boolean and Int32, with rows inserted between schema additions. A separate
-[original Python recipe](compare_column_histories.py) removes selected declaration
+[original Python recipe](../../access/schema/fields/compare_column_histories.py) removes selected declaration
 blocks/names on fresh copies, updating the active count and definition length.
 It keeps maximum logical/variable counts, native identities, all row bytes and
 all other pages intact. Indexed/chained table definitions are refused by this
@@ -51,7 +51,7 @@ deletion/save fixture. Existing opaque property declarations are not rewritten.
 
 FixedGap and VariableGap remove one field each. MixedGap removes both without a
 row at the ambiguous intermediate count. AmbiguousGap includes that row and now also exposes its known fixed-prefix values,
-without interpreting the deleted tail. [Fixture records](FIXTURES.md#deleted-column-history-derivatives) retain all
+without interpreting the deleted tail. [Fixture records](../reading/FIXTURES.md#deleted-column-history-derivatives) retain all
 base/derivative identities. Neither original files nor derived inputs are tracked.
 
 Each profile now passes sixteen positive controls (four tables through full
@@ -64,7 +64,7 @@ qualification remain unrun; passing independent getters does not establish them.
 ```sh
 CARGO_INCREMENTAL=0 cargo build -p tablecraft-ace --example table_data --release --locked --offline
 CARGO_INCREMENTAL=0 cargo build -p tablecraft-cli --release --locked --offline
-python3 docs/testing/compare_column_histories.py \
+python3 tests/run.py tests/access/schema/fields/compare_column_histories.py \
   --jar /tmp/reviewed/jackcess-5.0.4.jar \
   --cli target/release/tablecraft --rows target/release/examples/table_data \
   --directory /tmp/new-column-history-inputs --generate
@@ -76,7 +76,7 @@ existing directory; original bases are retained separately from derivatives.
 
 ## Known fixed-prefix qualification
 
-[FixedPrefixHistoryFixture.java](FixedPrefixHistoryFixture.java) separately creates
+[FixedPrefixHistoryFixture.java](../../access/reading/tables/FixedPrefixHistoryFixture.java) separately creates
 fixed-first and variable-first histories in V2000/V2007/V2016/V2019. Rows are
 inserted before each schema extension; subsequent declaration removal on fresh
 copies retains every original row byte and native column identity. Both deleted
@@ -84,14 +84,14 @@ storage orders produce independently readable visible fixed values. This is an
 original MIT recipe using the reviewed Jackcess 5.0.4 JAR, not an Access-generated
 DROP COLUMN/save fixture or a copied external database.
 
-The [runner](compare_fixed_prefix_histories.py) compares raw Jackcess getters with
+The [runner](../../access/reading/tables/compare_fixed_prefix_histories.py) compares raw Jackcess getters with
 full tagged reads, one-row cursor batches, CLI pages, progressive rows, wildcard
 and projected queries, and COUNT(*). Separate temporary corruptions test zero
 counts, insufficient fixed-prefix/mask space and damaged required variable tails.
 Buffered rows, projected queries and COUNT(*) all fail atomically on those damaged copies.
 Across four families, 56 positive and 72 negative controls pass (128 total).
 The unchanged earlier corpus adds 64 controls. All original/derivative hashes
-remain unchanged; [fixture identities](FIXTURES.md#known-fixed-prefix-history-inputs)
+remain unchanged; [fixture identities](../reading/FIXTURES.md#known-fixed-prefix-history-inputs)
 record the newly generated files.
 
 CI tests cover both deleted layouts, all four read profiles, absent fields/high
@@ -102,7 +102,7 @@ reject historical/gapped layouts. These controls qualify visible-value reading,
 not the ignored deleted tail, DDL, repair, native Access or save/reopen behavior.
 
 ```sh
-python3 docs/testing/compare_fixed_prefix_histories.py \
+python3 tests/run.py tests/access/reading/tables/compare_fixed_prefix_histories.py \
   --jar path/to/reviewed-jackcess-5.0.4.jar \
   --cli target/debug/tablecraft --rows target/debug/examples/table_data \
   --directory path/to/fresh-prefix-inputs --generate

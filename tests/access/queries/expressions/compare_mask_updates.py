@@ -24,7 +24,7 @@ def main():
         cache = {}
         for table, count in (("Items", 4), ("Children", 2)):
             before = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar,
-                "docs/testing/TableDataOracle.java", path, "--date-bits", table)
+                "tests/access/reading/tables/TableDataOracle.java", path, "--date-bits", table)
             if run(args.rows, path, table, "--date-bits") != before:
                 raise RuntimeError("Original exact carriers differ")
             definition = ids[table]
@@ -82,7 +82,7 @@ def main():
                 if not changed and after != original:
                     raise RuntimeError("No-op changed physical bytes")
                 oracle = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar,
-                    "docs/testing/TableDataOracle.java", output, "--date-bits", table)
+                    "tests/access/reading/tables/TableDataOracle.java", output, "--date-bits", table)
                 if oracle != expected or run(args.rows, output, table, "--date-bits") != expected:
                     raise RuntimeError("Reopened values/long payloads differ")
                 for mode in ("--check", "--constraints"):

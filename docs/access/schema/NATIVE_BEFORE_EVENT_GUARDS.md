@@ -92,7 +92,7 @@ logging-table write or external effect.
 
 ## Observed checks and remaining qualification
 
-The [source prerequisite](../../testing/results/ace16-guard-sources-2026-10-30.json)
+The [source prerequisite](../../../tests/results/general/ace16-guard-sources-2026-10-30.json)
 qualified 40 original source/intent carriers plus six admitted selector carriers
 and two native-Malformed controls before guard execution. Its first selector
 source expectation was corrected to respect the existing duplicate-kind MR2
@@ -118,12 +118,12 @@ all-target/all-feature checks, minimal ACE/Access builds, formatter, documentati
 links and dependency boundaries pass. The strict history retains three native
 typed-array style findings and one later CLI loop finding; equivalent corrections
 change no behavior or golden. Post-style authority four and example parser one
-pass. See the [focused result](../../testing/results/ace16-before-event-guards-2026-10-30.json).
+pass. See the [focused result](../../../tests/results/schema/ace16-before-event-guards-2026-10-30.json).
 
 This is the first working execution consumer, not complete desktop macro
 semantics. Native dispatch/Updated timing for equal assignments, defaults,
 generated fields and cascades remains unqualified. Complete storage detection,
 after-events, named calls, further actions/contexts, error handlers/logging,
 transaction effects and Microsoft Access save/reopen comparisons remain required
-under [data-macro acceptance](../../testing/DATA_MACROS.md). Existing normal ACE
+under [data-macro acceptance](../../../tests/reports/schema/DATA_MACROS.md). Existing normal ACE
 write/save gates remain unchanged.

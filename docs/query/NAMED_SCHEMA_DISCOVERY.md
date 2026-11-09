@@ -104,9 +104,9 @@ source failures. A separate routing test proves that discovered Text cells retai
 an explicit field policy through outer comparison. Existing metadata-only no-scan
 and constant-schema controls remain passing.
 
-The original [DiscoveryCrosstabFixture.java](../testing/DiscoveryCrosstabFixture.java)
+The original [DiscoveryCrosstabFixture.java](../../tests/access/queries/execution/DiscoveryCrosstabFixture.java)
 adds five inert definitions to the original forty-two-query computed fixture.
-The [independent runner](../testing/compare_schema_discovery.py) passes 100 getter/
+The [independent runner](../../tests/access/reading/tables/compare_schema_discovery.py) passes 100 getter/
 explicit-grid/direct/saved/named/inert/refusal controls over unchanged Jet 4,
 ACE 2007 and ACE 16-family files. The existing computed-heading recipe also passes
 204 controls with its contextual CLI case updated to this execution path. Reference

@@ -112,7 +112,7 @@ and designer behavior. Its examples do not qualify every edge case above.
 Eleven authored/generated tests cover dynamic/fixed headings, row totals, filtering,
 NULL/missing cells, grouping expressions, parameter reuse, metadata-only binding,
 name collisions, cancellation/limits and independently computed integer grids.
-[compare_crosstabs.py](../testing/compare_crosstabs.py) passes ten CLI controls over
+[compare_crosstabs.py](../../tests/access/queries/execution/compare_crosstabs.py) passes ten CLI controls over
 the unchanged registered ACE 2007 sample using independently read Jackcess rows
 and a Python grid model, through sequential and explicit Number-index sources.
 This is independent row-based evidence, not native Access SQL execution.
@@ -182,9 +182,9 @@ or its WHERE/HAVING interactions.
 
 Four focused/generated TOP tests cover counts, percentages, complete-key/NULL ties,
 heading retention, omitted-cell errors and provider failure/final cancellation.
-[compare_crosstab_top.py](../testing/compare_crosstab_top.py) passes 782 independent
+[compare_crosstab_top.py](../../tests/access/queries/execution/compare_crosstab_top.py) passes 782 independent
 Python nullable-rank/refusal controls. Stored flags/percentages have additional
-[original native inputs](../testing/FIXTURES.md#crosstab-top-inputs) and independent comparisons;
+[original native inputs](../../tests/reports/reading/FIXTURES.md#crosstab-top-inputs) and independent comparisons;
 these remain model/reader evidence, not Microsoft Access SQL execution.
 
 ## Scalar heading verification
@@ -192,7 +192,7 @@ these remain model/reader evidence, not Microsoft Access SQL execution.
 Eight focused tests cover all newly admitted carriers, per-execution formats,
 metadata-only Boolean binding, contextual named discovery, collisions, eager
 validation and every observed cancellation checkpoint. The original MIT
-[scalar pivot runner](../testing/compare_scalar_pivots.py) passes 68 independent
+[scalar pivot runner](../../tests/access/reading/tables/compare_scalar_pivots.py) passes 68 independent
 controls. It derives names/counts using Python and read-only Jackcess stored-value
 getters across four unchanged 20,000-row inputs: Jet 4, ACE 2007 and ACE 16
 V2016/V2019. It also checks fixed missing columns, missing policies, overlong

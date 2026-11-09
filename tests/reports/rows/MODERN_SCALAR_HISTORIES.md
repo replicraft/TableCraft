@@ -1,6 +1,6 @@
 # Modern ACE 16 scalar histories and scattered indexed reads
 
-The original [recipe](ModernScalarHistoryFixture.java) creates fresh inert
+The original [recipe](../../access/reading/tables/ModernScalarHistoryFixture.java) creates fresh inert
 ACE 2016 and ACE 2019 layout-family files with the reviewed Jackcess 5.0.4 writer.
 Both contain Large Number fields; the 2019 layout additionally contains
 Date/Time Extended. The generator explicitly disables expression evaluation and
@@ -46,7 +46,7 @@ these requests. No new library, data carrier, write permission or format is adde
 
 ## Verification
 
-The [runner](compare_modern_scalar_histories.py) passes 37 controls. Python derives
+The [runner](../../access/reading/tables/compare_modern_scalar_histories.py) passes 37 controls. Python derives
 every expected value and identity independently; read-only Jackcess getters
 establish stored values, sequential order and index order. Engine cursors at
 127/257 rows and reversed-name projected cursors at 131 rows match those getters.
@@ -70,7 +70,7 @@ and save/reopen remain unqualified. These files do not establish all databases
 up to the one-million-row consumer ceiling or arbitrary modern-field evolution.
 
 ```sh
-python3 docs/testing/compare_modern_scalar_histories.py \
+python3 tests/run.py tests/access/reading/tables/compare_modern_scalar_histories.py \
   --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar \
   --cli target/debug/tablecraft --rows target/debug/examples/table_data \
   --directory .cache/tablecraft-fixtures/modern-scalar-histories
@@ -79,4 +79,4 @@ python3 docs/testing/compare_modern_scalar_histories.py \
 Fresh generation uses the Java recipe with a new output path and V2016/V2019.
 Existing paths are refused. Generation timestamps can change hashes; review and
 register new identities before comparison reuse rather than weakening hash checks.
-[Provenance](FIXTURES.md#modern-ace-16-scalar-history-inputs) records this generation.
+[Provenance](../reading/FIXTURES.md#modern-ace-16-scalar-history-inputs) records this generation.

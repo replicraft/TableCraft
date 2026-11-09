@@ -12,7 +12,7 @@ share bounded local editing, explicit Save, exact dirty-close decisions and an
 operation-specific full-witness publication. Unchanged spelling performs review
 and a readonly check without a native save actor. Normal-host save/reopen,
 Design selection, close, duplicate and failed-sort retry journeys pass headlessly.
-See the [coordinated record](../testing/results/field-workbench-workflows-2026-11-09.json).
+See the [coordinated record](../../tests/results/schema/field-workbench-workflows-2026-11-09.json).
 The separate source-free status-panel matrix has 22 successful renders and direct review of every image without clipping. Compact
 German/Japanese layouts retain the complete Ribbon through horizontal overflow. Retained
 captures supply no rename popup/status reference, and no Windows/Access rename
@@ -58,7 +58,7 @@ the OFF body, while N13's 71 bytes refuse before review. Other allocation layout
 repeated settings changes and subsequent ADD/rename on that new OFF source remain
 unqualified. The existing creator-OFF→rename route remains separate.
 
-The [field-history composition record](../testing/results/field-history-options-workflows-2026-11-09.json)
+The [field-history composition record](../../tests/results/schema/field-history-options-workflows-2026-11-09.json)
 passes 991 unique selected checks, including all 179 desktop cases. Its new actual
 widget case covers Number and Text→Number→Text sources through real review/save,
 full witness, persisted-tab closure and exact scratch SQL retention, comparing
@@ -66,7 +66,7 @@ complete independent AFTER images. It changes no visible controls and adds no
 new captures. Prior UI checks and offscreen frames are not counted again.
 
 The
-[coordinated Options record](../testing/results/database-options-workflows-2026-11-08.json)
+[coordinated Options record](../../tests/results/general/database-options-workflows-2026-11-08.json)
 includes all 178 passing desktop cases (one existing ignored) and 618 passing
 shared UI cases. The broad selected-package run plus focused corrections verifies
 actual native ACK, Escape/Retry, witness mismatch, Return, Hide details and the
@@ -101,7 +101,7 @@ all query drafts across the new document revision.
 
 The saved SQL editor and its close prompt are visual adaptations: no retained
 Access capture exists for those surfaces. The
-[focused workflow checks](../testing/results/saved-sql-options-workflows-2026-11-08.json)
+[focused workflow checks](../../tests/results/queries/saved-sql-options-workflows-2026-11-08.json)
 pass, including stale replies, exact close decisions, frame-ordered Save and
 deferred Open/Cancel. Earlier saved-query read/execution checks remain separate.
 
@@ -1063,7 +1063,7 @@ query shapes do not gain write support from read or parser support. Leading-zero
 parenthesized, signed, decimal, exponent and radix spellings cannot be silently
 normalized into this writer. This is not general QueryDef creation, deletion,
 renaming or SQL-definition editing; see the
-[native fitting-expression boundary](../testing/NATIVE_QUERYDEF_FITTING_SAVE.md).
+[native fitting-expression boundary](../../tests/reports/queries/NATIVE_QUERYDEF_FITTING_SAVE.md).
 
 A complete original/proposed SQL review precedes the consuming save worker.
 Status remains query-owned through cancellation, retained recovery and tab/view

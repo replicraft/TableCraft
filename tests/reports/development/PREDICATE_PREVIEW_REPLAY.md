@@ -8,7 +8,7 @@ broader formula admission.
 
 ## Original inert corpus
 
-[PredicatePreviewFixture.java](PredicatePreviewFixture.java) uses reviewed
+[PredicatePreviewFixture.java](../../access/reading/tables/PredicatePreviewFixture.java) uses reviewed
 external Jackcess 5.0.4 public builders with expression evaluation disabled. Fresh
 ACE 2016/2019 files contain `Predicates` and its empty counterpart. The populated
 table has ordinary nullable Int32 inputs `-2, -1, 0, 1, 2, NULL`, ordinary row IDs
@@ -32,17 +32,17 @@ preview must fail without publishing earlier results; the empty counterpart
 publishes only its `Recomputed` heading. No formula executes inside the producer
 or oracle.
 
-[PredicatePreviewOracle.java](PredicatePreviewOracle.java) reopens originals
+[PredicatePreviewOracle.java](../../access/reading/tables/PredicatePreviewOracle.java) reopens originals
 read-only with expression evaluation disabled. It emits exact typed declaration
 properties, ordinary Int32/NULL getters and stored Boolean cache getters.
-[The runner](compare_predicate_previews.py) verifies exact formula identity before
+[The runner](../../access/reading/tables/compare_predicate_previews.py) verifies exact formula identity before
 using original Python three-valued truth functions and integer comparisons.
 Stored formula text is never evaluated by Python. Only the CLI's explicit
 restricted preview evaluates a selected admitted expression.
 
 ## Results and boundaries
 
-On 24 October 2026, the [accepted report](results/predicate-previews-2026-10-24.json)
+On 24 October 2026, the [accepted report](../../results/development/predicate-previews-2026-10-24.json)
 records **248 passing operation controls** and **312 independently modeled
 recomputed cells**, all 312 distinct from their stored caches. The files contain
 116 calculated declarations including 58 empty-table declarations and 348 stored
@@ -91,7 +91,7 @@ results use only the final originals above. No original is mutated and no active
 database content is executed implicitly.
 
 ```sh
-python3 docs/testing/compare_predicate_previews.py \
+python3 tests/run.py tests/access/reading/tables/compare_predicate_previews.py \
   --cli .cache/tablecraft-bin/predicate-preview-20261024 \
   --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar \
   --directory .cache/tablecraft-fixtures/predicate-previews-final-20261024 \

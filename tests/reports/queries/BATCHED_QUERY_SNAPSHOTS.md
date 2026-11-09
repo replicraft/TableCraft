@@ -31,7 +31,7 @@ limit. No TOP pushdown, streaming execution, native transaction snapshot or
 concurrent/shared-file guarantee is implied. All reads require stable/offline input.
 Native `query run --database` now accepts an explicit `--native-bytes BYTES`
 override within 1..=268435456. Only cumulative native bytes change; all other
-ceilings above remain. [The CLI contract](../access/queries/NATIVE_QUERIES.md) covers scope.
+ceilings above remain. [The CLI contract](../../../docs/access/queries/NATIVE_QUERIES.md) covers scope.
 
 ## Evidence
 
@@ -44,7 +44,7 @@ budgets fail without partial rows. Engine tests compare independent sequences
 at empty, 255/256/257-row and 16,384-row boundaries, enforce the 16,385-row refusal
 before user records, check zero-width records and reject final cancellation.
 
-The unchanged [original large-map corpus](ALLOCATION_MAP_PAGING.md) adds six
+The unchanged [original large-map corpus](../storage/ALLOCATION_MAP_PAGING.md) adds six
 controls per profile: complete sorted ID results, descending TOP, filtered tail,
 Count(*), a bounded correlated query and refusal under the default native budget.
 Expected integer rows come from independent read-only Jackcess getters, with
@@ -58,7 +58,7 @@ controls across the four profiles, with unchanged hashes. Native Access remains 
 
 ```sh
 CARGO_INCREMENTAL=0 cargo build -p tablecraft-access --example query_integers --release --locked --offline
-python3 docs/testing/compare_batched_queries.py \
+python3 tests/run.py tests/access/rows/update/compare_batched_queries.py \
   --jar /tmp/reviewed/jackcess-5.0.4.jar \
   --query target/release/examples/query_integers \
   --cli target/release/tablecraft \
@@ -76,7 +76,7 @@ Windows/live-file behavior and broader backend acceptance remain unqualified.
 ## Explicit larger consumer limits
 
 Default batched APIs retain the limits above. A new checked
-[scalar materialization profile](../access/queries/LARGER_NATIVE_QUERIES.md) lets a fresh cursor
+[scalar materialization profile](../../../docs/access/queries/LARGER_NATIVE_QUERIES.md) lets a fresh cursor
 produce a larger complete snapshot under caller controls. The Access adapter uses
 it only with explicit configuration; it never caches a returned suffix from an
 advanced cursor or a failed load as a complete table. Native index/collection

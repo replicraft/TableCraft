@@ -5,8 +5,8 @@ healthy non-leaf Int32 indexes for native read qualification and current normal
 INSERT/DELETE refusal controls. This is source evidence, not an admitted NODE
 mutation or a native Access save/reopen comparison.
 
-The maintained [builder](../../scripts/compatibility/genuine_node_originals/BuildNodeIndexOriginal.java)
-and [literal recipe](../../scripts/compatibility/genuine_node_originals/recipe.json)
+The maintained [builder](../../../scripts/compatibility/genuine_node_originals/BuildNodeIndexOriginal.java)
+and [literal recipe](../../../scripts/compatibility/genuine_node_originals/recipe.json)
 create Items with three manual LONG fields, two physical indexes and four
 logical aliases. Positions 0..799 supply `(position+1, position-400, position%7)`.
 Sentinel has one manual Marker value 999. Public builders use an exclusive
@@ -37,14 +37,14 @@ The initial source build was blocked by an unrelated DESC-NULL gate's undeclared
 serde_json use; root corrected it to literal pins before the successful runs.
 That first failure remains recorded, with no NODE source change.
 
-The [result record](results/ace16-genuine-node-originals-2026-11-01.json) pins both
+The [result record](../../results/rows/ace16-genuine-node-originals-2026-11-01.json) pins both
 complete originals, recipe/builder/tool identity, all fifteen SDK child receipts
 and native logs. It contains no class/JAR binaries or machine paths. Whole-file
 hashes belong to this frozen creation, including SDK system metadata; a fresh
 creation needs a new freeze and read qualification rather than substituted hashes.
 
 Reproduction uses the maintained
-[bounded channel](parent_index_split_originals/BoundedFileChannel.java) and a
+[bounded channel](../../access/indexes/parent_index_split_originals/BoundedFileChannel.java) and a
 separately supplied pinned SDK JAR. Compile into a fresh directory, then invoke
 `BuildNodeIndexOriginal fresh.accdb V2016` or `V2019`. Creation must fail when
 the target already exists. Freeze the generator/tool closure before creation,

@@ -1,4 +1,5 @@
 """Original stored metadata plus exact-rational statistical models; not Access execution."""
+from engineering_paths import reference_file
 import argparse
 import csv
 from fractions import Fraction
@@ -51,7 +52,7 @@ def main():
     controls = 0
     with tempfile.TemporaryDirectory(prefix='tablecraft-statistics-oracle-') as classes:
         sources = ['SavedForestFixture', 'SavedStatisticsFixture', 'SavedReadOracle', 'SavedQueryOracle', 'TableDataOracle']
-        subprocess.run(['javac', '-encoding', 'UTF-8', '-cp', str(args.jar), '-d', classes, *[str(RECIPES / (name + '.java')) for name in sources]], check=True)
+        subprocess.run(['javac', '-encoding', 'UTF-8', '-cp', str(args.jar), '-d', classes, *[str(reference_file(name + '.java')) for name in sources]], check=True)
 
         def java(name, *values):
             return subprocess.check_output(['java', '-Dstdout.encoding=UTF-8', '-cp', str(args.jar) + os.pathsep + classes, name, *map(str, values)], text=True, encoding='utf-8')

@@ -495,8 +495,8 @@ uses horizontal scrolling in the compact localized scene.
 Expanded-menu, naming, close-confirmation and dark Access captures are missing;
 those controls remain adaptations. These scenes contain no database or save actor
 and establish presentation only. The initial desktop workflow gate contained cancellation and save-completion
-failures; the later [normal-host acceptance](../testing/results/number-column-gui-workflows-2026-11-08.json)
-records their corrected workflows and activation. See the [frame record](../testing/results/number-column-presentation-2026-11-08.json).
+failures; the later [normal-host acceptance](../../tests/results/schema/number-column-gui-workflows-2026-11-08.json)
+records their corrected workflows and activation. See the [frame record](../../tests/results/schema/number-column-presentation-2026-11-08.json).
 
 The failed-refresh follow-up adds three inspected source-free scenes: English
 light at 1280×820, scale 1; German dark at 900×580, scale 1.25; and English dark
@@ -510,7 +510,7 @@ Access screenshot or native save parity. Frame hashes are in the same record.
 The retained Home/datasheet reference was reopened at 1920×1141 pixels (Windows
 Access inside VirtualBox; display scale unknown). It informs the trailing field
 header and surrounding chrome. Eight new English/light and German/dark
-[offscreen observations](../testing/results/field-addition-presentation-2026-11-08.json)
+[offscreen observations](../../tests/results/schema/field-addition-presentation-2026-11-08.json)
 cover the shared Text gallery, naming, close and review states under normal
 presentation gates. There are no matching native Access captures for those open
 surfaces, so the observations establish TableCraft layout/readability only.
@@ -524,7 +524,7 @@ unknown. Neither captures an expanded deletion command, confirmation, pending
 status or failure dialog; these are adaptations of the documented workflow,
 not visually verified Access parity.
 
-All sixteen [deletion preview frames](../testing/results/saved-field-drop-gui-2026-11-09.json)
+All sixteen [deletion preview frames](../../tests/results/schema/saved-field-drop-gui-2026-11-09.json)
 were directly inspected. The record pins locales, themes, pixel dimensions and
 scales. Offscreen rendering used macOS 14.7.2 ARM64 with Windows input emulation;
 GPU adapter identity was not captured. Native macOS startup and File/Open were

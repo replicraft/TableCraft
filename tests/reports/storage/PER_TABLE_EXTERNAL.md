@@ -3,7 +3,7 @@
 The accepted 2026-10-24 replay passed **184 commands: 156 successful commands and
 28 intended refusals**, with **260 modeled result cells**, zero disagreements and
 **1,923 unchanged file pins**. The report is
-[per-table-external-2026-10-24.json](results/per-table-external-2026-10-24.json).
+[per-table-external-2026-10-24.json](../../results/storage/per-table-external-2026-10-24.json).
 The production source is commit `cf7a501b7c008f5971c53df968be21ee54b61836`,
 verified against the frozen 1,890-file Rust manifest.
 
@@ -17,7 +17,7 @@ native precedence between a global `IN` and a per-table selector.
 
 ## Original corpus and reference model
 
-[PerTableExternalFixture.java](PerTableExternalFixture.java) is original repository
+[PerTableExternalFixture.java](../../access/queries/execution/PerTableExternalFixture.java) is original repository
 MIT authoring code using the reviewed Jackcess 5.0.4 public builders and inert
 system-query fragment insertion. It creates fresh files for V2016, V2019, V2000
 and V2007. Each profile has a root and two explicitly supplied targets: twelve
@@ -94,7 +94,7 @@ ignored directory; newly authored database bytes receive their own provenance
 hashes rather than replacing the accepted originals:
 
 ```sh
-python3 docs/testing/compare_per_table_external.py --generate \
+python3 tests/run.py tests/access/queries/execution/compare_per_table_external.py --generate \
   --directory .cache/tablecraft-fixtures/per-table-external-reproduced \
   --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar
 ```
@@ -105,7 +105,7 @@ outside the checkout are refused. The runner checks all pins before and after
 execution and retains stdout, stderr and modeled/refusal expectations:
 
 ```sh
-python3 docs/testing/compare_per_table_external.py \
+python3 tests/run.py tests/access/queries/execution/compare_per_table_external.py \
   --directory .cache/tablecraft-fixtures/per-table-external-20261024-qualified \
   --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar \
   --cli .cache/tablecraft-bin/per-table-remote-cli-20261024 \

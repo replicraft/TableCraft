@@ -1,6 +1,6 @@
 # Cross-table RESTRICT DELETE observations
 
-The [candidate receipt](results/ace16-delete-restrict-original-replay-2026-10-26.json)
+The [candidate receipt](../../results/rows/ace16-delete-restrict-original-replay-2026-10-26.json)
 records **84 controls, zero final-image-model discrepancies and six public-action
 disagreements**. The frozen candidate produces 64 successful images and twenty
 typed `MissingParent` refusals without output. Public Jackcess per-row actions
@@ -17,9 +17,9 @@ filenames were absent. That lookup was recorded as tool output, not a retained
 raw scan log. No historical bytes were regenerated or described as restored.
 
 The approved replacement comparison uses two **new** V2016/V2019 files, with fresh
-hashes in [the fixture ledger](FIXTURES.md) and
-[reference receipt](results/ace16-delete-restrict-original-reference-2026-10-26.json).
-[RestrictDeleteFixture.java](RestrictDeleteFixture.java) is original repository
+hashes in [the fixture ledger](../reading/FIXTURES.md) and
+[reference receipt](../../results/rows/ace16-delete-restrict-original-reference-2026-10-26.json).
+[RestrictDeleteFixture.java](../../access/rows/delete/RestrictDeleteFixture.java) is original repository
 code under the root license. It uses reviewed Jackcess 5.0.4, SHA-256
 `19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`.
 No upstream implementation or fixture is copied. New paths are required;
@@ -41,7 +41,7 @@ RESTRICT and five update CASCADE. There are no self links, delete cascades or SE
 NULL actions. Measured selected-table properties, catalog-owned child objects and active
 payloads remain empty/NULL. No flags or headers were patched to force eligibility.
 
-The separate peer [metadata audit](results/ace16-delete-restrict-original-reference-2026-10-26.json)
+The separate peer [metadata audit](../../results/rows/ace16-delete-restrict-original-reference-2026-10-26.json)
 pins its ignored artifact and scope. It checks nineteen normal catalog entries,
 48 root leaves/profile and twenty reciprocal endpoints. It is read-only metadata
 evidence, not another engine, reference-action or candidate execution. Its nine
@@ -80,7 +80,7 @@ The candidates are not compared to the unchanged rejected-reference images for
 these six cases. Expected survivors, full retained encoded keys and final membership
 are modeled independently. All other 78 public action outcomes agree.
 
-[RestrictNullJoinProbe.java](RestrictNullJoinProbe.java) separately uses read-only
+[RestrictNullJoinProbe.java](../../access/queries/execution/RestrictNullJoinProbe.java) separately uses read-only
 public `Joiner` lookups. The NULL scalar parent matches NULL child IDs 4 and 2;
 each all-NULL composite parent matches child ID 3. Both original hashes remain
 unchanged. This records action-time NULL-key lookup behavior; it does not turn
@@ -97,7 +97,7 @@ removed or relabeled as model agreement.
 The tested example is `.cache/tablecraft-bin/ace16-delete-restrict-20261026`,
 SHA-256 `aeb9a06d16d7d6356fe7ab0f2c53afd9f96f851da587ec0b407b5aff3c088f08`,
 compiled at `1e776246313e114c7ea0d8f4b18fe3fc4162ef7f`. Its
-[build receipt](results/ace16-delete-restrict-example-build-2026-10-26.json)
+[build receipt](../../results/rows/ace16-delete-restrict-example-build-2026-10-26.json)
 records clean compiler inputs. All 23 compiler object hashes were independently
 checked with `git show` at that revision. Later working-tree changes are not
 claimed to match the frozen artifact.
@@ -117,16 +117,16 @@ writes and unqualified active-content/data-macro behavior are not enabled.
 
 ## Reproduction and version provenance
 
-[Public reference tooling](restrict_delete_originals/reference.py) has explicit
+[Public reference tooling](../../access/rows/restrict_delete_originals/reference.py) has explicit
 path/header guards. Its exported model and plan functions retain the accepted
 Python AST and regenerate all 168 actual reference/getter argv unchanged. New
 main-entry guards were checked read-only; they were not present in the historical
-capture. Exact [complete](restrict_delete_originals/historical/reference-complete.py.txt)
-and [initial-stop](restrict_delete_originals/historical/reference-initial-stop.py.txt)
+capture. Exact [complete](../../access/rows/restrict_delete_originals/historical/reference-complete.py.txt)
+and [initial-stop](../../access/rows/restrict_delete_originals/historical/reference-initial-stop.py.txt)
 sources remain archived. The public
-[candidate](restrict_delete_originals/candidates.py),
-[getter](restrict_delete_originals/getters.py) and
-[support](restrict_delete_originals/support.py) modules and both Java helpers are
+[candidate](../../access/rows/restrict_delete_originals/candidates.py),
+[getter](../../access/rows/restrict_delete_originals/getters.py) and
+[support](../../access/rows/restrict_delete_originals/support.py) modules and both Java helpers are
 byte-identical promotions of their executed private sources. Shared atomic and
 raw framing helpers are reused read-only. Expanded outputs and databases remain
 ignored under `.cache/restrict-delete-originals-next-20261026/` and hash-pinned;
@@ -151,12 +151,12 @@ Set `classpath` to the reviewed JAR plus that class directory. Capture a read-on
 `V2019-before-getters.tsv` in a fresh baseline directory. Then run:
 
 ```sh
-python3 docs/testing/restrict_delete_originals/reference.py \
+python3 tests/run.py tests/access/rows/restrict_delete_originals/reference.py \
   --input V2016 "$fresh2016" --input V2019 "$fresh2019" \
   --baseline-dir "$baseline" --helper-dir "$classes" \
   --helper-source docs/testing/RestrictDeleteFixture.java --jar "$jar" \
   --workdir "$fresh_references" --report "$reference_report"
-python3 docs/testing/restrict_delete_originals/candidates.py \
+python3 tests/run.py tests/access/rows/restrict_delete_originals/candidates.py \
   --references "$reference_report" --baseline-dir "$baseline" \
   --helper-dir "$classes" --helper-source docs/testing/RestrictDeleteFixture.java \
   --jar "$jar" --example "$frozen_example" \

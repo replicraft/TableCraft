@@ -1,6 +1,6 @@
 # Single Int32 ignore-NULL index evidence
 
-The [64-command comparison](results/ignored-null-index-replay-2026-10-25.json)
+The [64-command comparison](../../results/indexes/ignored-null-index-replay-2026-10-25.json)
 passes against four original public-writer inputs. It compares 3,468 returned IDs
 with read-only getter values and index-cursor membership. There are 56 current
 executable controls and eight baseline controls: 52 successful commands and twelve
@@ -9,7 +9,7 @@ not native Microsoft Access execution or compatibility qualification.
 
 ## Original inputs and oracle
 
-Original Apache-2.0 [IgnoreNullIndexFixture.java](IgnoreNullIndexFixture.java)
+Original Apache-2.0 [IgnoreNullIndexFixture.java](../../access/indexes/native/IgnoreNullIndexFixture.java)
 uses the reviewed Jackcess 5.0.4 public builders to create 701 ordinary rows per
 V2000/V2007/V2016/V2019 input. Explicit expression evaluation is disabled and linked
 resolvers refuse every open. No third-party source, fixture or active content is
@@ -28,7 +28,7 @@ index inspection locates the roots; independent byte checks confirm sixteen
 logical root references identify node pages of kind/version 3/1 with the expected
 table owner. The ascending alias shares physical index zero.
 
-The [runner](compare_ignored_null_indexes.py) independently filters the actual
+The [runner](../../access/indexes/native/compare_ignored_null_indexes.py) independently filters the actual
 getter rows. Required-index expectations use captured cursor order; automatic
 expectations use captured sequential encounter order. It also verifies that cursor
 membership is exactly the non-NULL getter population and follows integer key order.
@@ -51,7 +51,7 @@ Automatic equality/ranges preserve sequential order; automatic NULL tests declin
 the omitting index and return the actual NULL roots. Required All/NULL reads still
 refuse, and the baseline also refuses the newly admitted non-NULL equality read.
 
-The [implementation verification](results/read-query-ignored-null-int32-2026-10-25.json)
+The [implementation verification](../../results/queries/read-query-ignored-null-int32-2026-10-25.json)
 records 65 unique focused Rust tests, eleven new, plus strict engine/adapter lint
 and the adapter minimal-feature check. These include corruption, missing/extra/
 NULL entries, unique/required violations, empty populations, cancellation and
@@ -93,7 +93,7 @@ java -Dstdout.encoding=UTF-8 -cp .cache/tablecraft-fixtures/jackcess-5.0.4.jar \
 java -Dstdout.encoding=UTF-8 -cp .cache/tablecraft-fixtures/jackcess-5.0.4.jar \
   docs/testing/IgnoreNullIndexFixture.java oracle FRESH_PATH
 
-python3 docs/testing/compare_ignored_null_indexes.py \
+python3 tests/run.py tests/access/indexes/native/compare_ignored_null_indexes.py \
   --cli .cache/tablecraft-bin/ignored-null-int32-cli-20261025 \
   --cli-sha256 1128c3a6e9b8a29bf667fea81d1c94809b6d7abe9566c9826e0ebd7f7bb24db7 \
   --revision 9cb3e387 \

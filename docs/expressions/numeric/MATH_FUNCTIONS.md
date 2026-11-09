@@ -73,7 +73,7 @@ Seven authored/generated value tests cover types, exact large values, minimum
 boundaries, NULL/error behavior, midpoint goldens and independent integer models.
 A scalar dispatch test and three retrieval tests cover both entry paths, grouping,
 aggregates, pruning, correlations, parameter rebinding, crosstab cells, cancellation
-and eager errors. The [CLI reference recipe](../../testing/compare_math_functions.py)
+and eager errors. The [CLI reference recipe](../../../tests/access/queries/expressions/compare_math_functions.py)
 adds independent Python Decimal/integer models and registered sequential/indexed
 native rows with unchanged hashes. Broader implicit locale/date/Variant coercion and native Access qualification
 remain open; random and financial calls have separate owning contracts.
@@ -118,7 +118,7 @@ Three value tests include generated trigonometric identities and explicit carrie
 domain, finite/subnormal, NULL, signed-zero, overflow and arity controls. Scalar
 dispatch and two retrieval tests cover composition, grouping/pruning, correlations,
 parameter rebinding and eager failures. The
-[high-precision recipe](../../testing/compare_transcendental_functions.py) compares
+[high-precision recipe](../../../tests/access/queries/expressions/compare_transcendental_functions.py) compares
 both CLI paths with Python Decimal square root/exponential/logarithm and
 independent convergent trig series, using Machin's identity for pi. Its stated
 four-ULP bound is a mathematical regression tolerance, not an Access error bound
@@ -148,7 +148,7 @@ provider. This metadata also supplies downstream UNION carrier selection.
 Full Variant/Date coercion, native color argument widths, native precision and
 error precedence remain unqualified; every function remains Partial.
 
-The original [Text conversion runner](../../testing/compare_math_text.py) passes 164
+The original [Text conversion runner](../../../tests/access/queries/expressions/compare_math_text.py) passes 164
 controls: 132 source-free eval/run controls and 32 native integrations over the
 four registered large-index fixture families. Elementary results, half-even ties
 and an independent integer Rnd recurrence supply expected values. Original hashes
@@ -184,7 +184,7 @@ Three kernel tests include independent integer-quarter models, exact signed-zero
 and negative-fraction goldens, envelope checks and distinct Extended/unsupported
 refusals. Query controls cover derived results, static metadata, empty subqueries,
 UNION carrier selection and eager errors; CLI failures remain buffered. The
-[DATE runner](../../testing/compare_date_numeric.py) adds independent raw-serial math and
+[DATE runner](../../../tests/access/queries/expressions/compare_date_numeric.py) adds independent raw-serial math and
 VarType controls and four registered native fixture families with unchanged hashes.
 
 
@@ -275,7 +275,7 @@ IEEE carrier is unchanged. Signed zero and Single reconstruction retain their bi
 [Access's query examples](https://support.microsoft.com/en-us/access/functions/round-function)
 and the reviewed MS-VBAL Round declaration motivate this extension; they do not
 establish native results at extreme precision. The original
-[independent precision runner](../../testing/compare_round_precision.py) compares 960
+[independent precision runner](../../../tests/access/reading/tables/compare_round_precision.py) compares 960
 results and Double carriers against exact binary input converted to Python Decimal
 with half-even quantization. Subnormals, both signs, signed zero, random finite
 bits and maximum Long counts are covered. Native Access precision, admissible

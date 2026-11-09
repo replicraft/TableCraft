@@ -81,16 +81,16 @@ describes selecting an attachment's `.FileData` attribute and expanding one reco
 per attachment. These support query accessibility and the child-row boundary;
 they do not establish exact native SQL or DAO Value bytes.
 
-The original [physical oracle](../../testing/AttachmentStoredDataOracle.java) separately
+The original [physical oracle](../../../tests/access/reading/tables/AttachmentStoredDataOracle.java) separately
 checks the actual hidden FileData declaration is OLE, its flat stored carrier is
 `byte[]`, and each raw child value matches Jackcess 5.0.4's public
 `getEncodedFileData()` by child identity. The
-[query replay](../../testing/compare_attachment_queries.py) compares these exact bytes,
+[query replay](../../../tests/access/reading/tables/compare_attachment_queries.py) compares these exact bytes,
 alignment, counts, empty-parent extension and reordered projections. It also
 compares explicit decoded bytes with the separate public `getFileData()` getter.
 A disposable copy with a changed checksum remains readable as stored Binary while
 explicit decoding refuses it. Original fixture and fixed CLI hashes are checked. The
-[24 October 2026 report](../../testing/results/stored-attachment-queries-2026-10-24.json)
+[24 October 2026 report](../../../tests/results/queries/stored-attachment-queries-2026-10-24.json)
 records 198 passing controls under each of ordinal and stored database comparison
 policies (396 total), with unchanged input, oracle, source and immutable CLI hashes.
 Fresh original fixtures cover ACE 2007, ACE 2016 and ACE 2019 file families.

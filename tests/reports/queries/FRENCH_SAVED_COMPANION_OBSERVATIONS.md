@@ -1,6 +1,6 @@
 # French saved-source companion observations
 
-The [compact receipt](results/french-saved-companions-2026-10-26.json) records two
+The [compact receipt](../../results/queries/french-saved-companions-2026-10-26.json) records two
 new companion files with one inert FrenchFields SELECT each. All 32 controls
 agree: four syntax-only reconstruction controls, 24 successful query executions
 and four intentional buffered LIKE refusals. Executions compare 568 rows and 936
@@ -9,10 +9,10 @@ not native Access SQL/NLS, save/reopen or ordinary writer qualification.
 
 ## Separate identities and inert metadata creation
 
-[FrenchSavedCompanion.java](FrenchSavedCompanion.java) follows the existing
-repository-owned [SavedSelectFixture.java](SavedSelectFixture.java) recipe and
-[SavedSelectOracle.java](SavedSelectOracle.java) getter. It copies an unchanged
-[field original](FRENCH_COMPARISON_FIELD_OBSERVATIONS.md) to a fresh path, then
+[FrenchSavedCompanion.java](../../access/queries/saved/FrenchSavedCompanion.java) follows the existing
+repository-owned [SavedSelectFixture.java](../../access/queries/saved/SavedSelectFixture.java) recipe and
+[SavedSelectOracle.java](../../access/queries/saved/SavedSelectOracle.java) getter. It copies an unchanged
+[field original](../schema/FRENCH_COMPARISON_FIELD_OBSERVATIONS.md) to a fresh path, then
 uses public MSysObjects/MSysQueries table maps and the pinned QueryImpl.Row /
 QueryFormat metadata helper API. These are version-specific reviewed JAR APIs,
 not a general query DDL contract. No upstream implementation was copied.
@@ -37,7 +37,7 @@ FROM Comparisons AS src;
 
 There is no action, UDF, remote source or stored executable content. The Java
 producer/getter reconstructs metadata but does not execute SQL. The separate
-[capture wrapper](capture_french_saved_companions.py) checks this definition
+[capture wrapper](../../access/queries/saved/capture_french_saved_companions.py) checks this definition
 before any CLI reconstruction/execution.
 
 ## Original table and payload preservation
@@ -59,7 +59,7 @@ field getters remain in ignored hash-pinned captures.
 
 Frozen CLI `596d40ea41a4bafefbd5b34af4ef35a8a4e2cde4`, SHA-256
 `bcff00ad245c7a70582db222fa48e5eb2f796bd944d5ccbeefe759fbd010a576`,
-is identified by its [build receipt](results/french-comparison-cli-build-2026-10-26.json).
+is identified by its [build receipt](../../results/queries/french-comparison-cli-build-2026-10-26.json).
 All 53 selected compiled objects are checked against that immutable Git revision,
 independently of later engine changes.
 
@@ -75,14 +75,14 @@ and declared arithmetic modes on both companions:
 - Named Short GROUP/Count retains the expected classes/first payloads.
 - French field LIKE refuses with status 2 and empty stdout.
 
-Expected values reuse the [accepted independent Short/Latin models](results/french-comparison-fields-replay-2026-10-26.json),
+Expected values reuse the [accepted independent Short/Latin models](../../results/schema/french-comparison-fields-replay-2026-10-26.json),
 not CLI-derived answers or truncated long keys. The 20k accent order distinguishes
 French field policy from the actual General operation defaults. Separate native
 and comparison allowances are explicit: 64 MiB and 10 million steps for each pool.
 No defaults are changed. All original and companion hashes match before/after.
 There were no failures, selector changes, dropped columns or retries.
 
-[compare_french_saved_companions.py](compare_french_saved_companions.py) is an
+[compare_french_saved_companions.py](../../access/queries/saved/compare_french_saved_companions.py) is an
 import-safe bounded runner. The repository ledger records these new identities;
 the original 112 corpus and its absence of saved definitions remain historical
 facts, not a claim that named queries are unimplemented. The new proof qualifies

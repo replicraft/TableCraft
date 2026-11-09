@@ -4,6 +4,7 @@ Expected values come from whole-number padding/slicing and Decimal rounding,
 not a second parser for TableCraft masks. Optional native inputs use inert
 Jackcess getters; no Access SQL or VBA is executed.
 """
+from engineering_paths import reference_file
 
 import argparse
 from decimal import Decimal, localcontext
@@ -86,7 +87,7 @@ def main():
     for database in args.database:
         before = hashlib.sha256(database.read_bytes()).hexdigest()
         tagged = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar,
-                     RECIPES / "TableDataOracle.java", database, "ScalarSamples")
+                     reference_file('tests/access/reading/tables/TableDataOracle.java'), database, "ScalarSamples")
         for profile in ["en-US", "de-DE"]:
             expected = []
             for line in tagged.splitlines():

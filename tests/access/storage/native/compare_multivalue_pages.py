@@ -4,6 +4,7 @@ Compile original local oracle sources against the reviewed Jackcess artifact.
 Only stored data is read; lookup/formula evaluation stays disabled. CLI NaN
 presentation intentionally omits payload bits; native APIs retain those bits.
 """
+from engineering_paths import reference_file
 import argparse
 import hashlib
 import math
@@ -61,7 +62,7 @@ def main():
     args = parser.parse_args()
     controls = 0
     with tempfile.TemporaryDirectory(prefix="tablecraft-multivalue-oracle-") as directory:
-        run("javac", "-cp", args.jar, "-d", directory, RECIPES / "MultivalueOracle.java", RECIPES / "MultivaluePageOracle.java")
+        run("javac", "-cp", args.jar, "-d", directory, reference_file('tests/access/reading/tables/MultivalueOracle.java'), reference_file('tests/access/storage/native/MultivaluePageOracle.java'))
         classpath = str(args.jar) + os.pathsep + directory
         cases = [(args.matrix2016, "Multivalues", False, 5), (args.matrix2019, "Multivalues", False, 6),
                  (args.mixed2016, "MixedValues", True, 5), (args.mixed2019, "MixedValues", True, 6)]

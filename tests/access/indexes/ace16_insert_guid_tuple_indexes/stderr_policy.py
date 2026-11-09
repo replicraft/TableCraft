@@ -2,8 +2,8 @@
 from pathlib import Path
 import sys
 
-ROOT = Path(__file__).resolve().parents[3]
-sys.path.insert(0, str(ROOT / 'docs/testing'))
+ROOT = Path(__file__).resolve().parents[4]
+sys.path.insert(0, str(ROOT / 'tests/access'))
 from ace16_insert_ignored_indexes import omission_warnings
 from ace16_insert_guid_tuple_indexes import recipes
 

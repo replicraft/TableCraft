@@ -19,7 +19,7 @@ and original retirement-map effects without producer patches or traced payloads.
 It compares the complete candidate and captures fresh final Source. Mixed plans
 do not retry the old reuse/growth or retirement-only planners after failure.
 
-The [independent sources](../../testing/ACE16_MIXED_EXTERNAL_PREFIX_SOURCES.md)
+The [independent sources](../../../tests/reports/storage/ACE16_MIXED_EXTERNAL_PREFIX_SOURCES.md)
 preceded matching writes. All 32 request-order contexts pass exact commits and
 ordered result-relative no-ops. Eight named-column empty plans pass; four distinct
 targetless requests correctly refuse the existing intent contract before native
@@ -31,7 +31,7 @@ and stale-handle checks; sixteen CLI saves/readbacks pass.
 SQL/CLI cover NULL and Text recipes, including eager-safe `IIf` expressions for
 different original parents. Binary replacement remains typed coverage. These
 checks invent no Binary SQL literal or implicit carrier conversion. See the
-[execution record](../../testing/results/ace16-mixed-external-writes-2026-11-02.json).
+[execution record](../../../tests/results/storage/ace16-mixed-external-writes-2026-11-02.json).
 
 Partial-page retirement, relocation, new external allocation and native Microsoft
 Access save/reopen remain separate work. The portable and independent-reader

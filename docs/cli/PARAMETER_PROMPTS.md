@@ -92,13 +92,13 @@ malformed/control refusals, duplicates, generated names and all measured
 cancellation checkpoints. Four CLI tests cover inline/native saved/named paths,
 assignment delimiters, text preservation, missing values and buffered failures.
 
-The original [SavedPromptFixture.java](../testing/SavedPromptFixture.java) now adds
+The original [SavedPromptFixture.java](../../tests/access/queries/saved/SavedPromptFixture.java) now adds
 twenty-three inert prompt definitions to our fourteen-query baseline. Four fresh Jet 4 / ACE
 2007/2016/2019 files pass 464 independent getter/rendering/direct/saved/named/refusal
-controls through [compare_saved_prompts.py](../testing/compare_saved_prompts.py).
+controls through [compare_saved_prompts.py](../../tests/access/queries/saved/compare_saved_prompts.py).
 They include raw/quoted Unicode prompts, composed/decomposed spellings,
 derived reads, UNION, crosstabs and a deferred control reference.
 The reference renders metadata, not results; explicit expected rows control
-execution. [Fixture records](../testing/FIXTURES.md#literal-parameter-prompt-inputs) retain
+execution. [Fixture records](../../tests/reports/reading/FIXTURES.md#literal-parameter-prompt-inputs) retain
 provenance/hashes; source bytes remain unchanged. Windows Microsoft Access prompt,
 collation, execution/error-order and save/reopen qualification remain unrun.

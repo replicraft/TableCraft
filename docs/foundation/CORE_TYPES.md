@@ -11,7 +11,7 @@ owns exact Automation DATE bits, field year bounds and extended 100 ns precision
 optional Serde retains those representations. The unpublished from_calendar and
 calendar_rounded_to_nanos APIs accept/return jiff::civil::DateTime. No timezone is
 attached implicitly. [Dependency records](../development/DEPENDENCIES.md) and
-[native benchmarks](../testing/NATIVE_BENCHMARKS.md) document the migration and costs.
+[native benchmarks](../../tests/reports/general/NATIVE_BENCHMARKS.md) document the migration and costs.
 
 Legacy calendar projection rounds to nanoseconds with ties to even. It folds a
 possible midnight carry into one checked civil-day addition, then combines the

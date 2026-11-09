@@ -1,8 +1,8 @@
 # Original full-check projection replay
 
-The [64-command report](results/native-check-projection-replay-2026-10-25.json)
+The [64-command report](../../results/reading/native-check-projection-replay-2026-10-25.json)
 compares frozen full-table consistency checks over the same sixteen original
-[deletion-history inputs](DELETE_STORAGE_OBSERVATIONS.md). It generates no
+[deletion-history inputs](../rows/DELETE_STORAGE_OBSERVATIONS.md). It generates no
 replacement files and performs no writes. The registered independent getter/byte
 report remains the source population and provenance reference.
 
@@ -19,7 +19,7 @@ This proves a concrete default-budget improvement on these long-payload/index
 histories while retaining every reported checked/unsupported status and row count.
 The known ignore-NULL profile stays explicitly unchecked. It does not qualify
 native Access integrity results, arbitrary table sizes or elapsed-time performance.
-The [focused engine tests](results/native-check-projection-2026-10-25.json) separately
+The [focused engine tests](../../results/reading/native-check-projection-2026-10-25.json) separately
 prove payload-page visit reduction and corrupt unselected payload rejection.
 
 The old CLI is SHA256
@@ -34,7 +34,7 @@ and after execution and independently rehashed afterward. Every original is unch
 Reproduce with the frozen executables and a fresh report path:
 
 ```sh
-python3 docs/testing/compare_native_check_projection.py \
+python3 tests/run.py tests/access/reading/tables/compare_native_check_projection.py \
   --baseline .cache/tablecraft-bin/inspect-native-work-cli-20261025 \
   --current .cache/tablecraft-bin/progressive-stateful-cli-20261025 \
   --corpus-report docs/testing/results/delete-storage-final-2026-10-25.json \

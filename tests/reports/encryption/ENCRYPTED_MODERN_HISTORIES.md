@@ -1,15 +1,15 @@
 # Encrypted ACE 16 modern histories
 
-The original [comparison runner](compare_encrypted_modern_histories.py) reuses the
-registered [modern scalar histories](MODERN_SCALAR_HISTORIES.md): 19,902 exact rows
+The original [comparison runner](../../access/encryption/database/compare_encrypted_modern_histories.py) reuses the
+registered [modern scalar histories](../rows/MODERN_SCALAR_HISTORIES.md): 19,902 exact rows
 per ACE 2016/2019 layout, Large Number values, 2019 Extended dates, later-added
 fields, Boolean/null-mask growth, deleted roots and grown Memo/OLE payloads.
 It creates fresh Agile copies with both Jackcess Encrypt and TableCraft, then
 compares both producers against the independent Python model and getters.
 No database original changes or active database content executes.
 
-The original [reference creation driver](AddEncryptionOracle.java) invokes the
-fresh-output EncryptionUtil overload. [Encrypted getters](ModernEncryptedOracle.java)
+The original [reference creation driver](../../access/encryption/database/AddEncryptionOracle.java) invokes the
+fresh-output EncryptionUtil overload. [Encrypted getters](../../access/encryption/database/ModernEncryptedOracle.java)
 open read-only, disable expression evaluation, use civil dates and reuse the
 existing tagged row encoding. TableDataOracle's row helper is now package-visible;
 its standalone main, encoding and plaintext JAR requirements remain unchanged.
@@ -44,7 +44,7 @@ writes and encryption-management limits remain unchanged.
 
 ## Reviewed engineering tools
 
-The shared [artifact guard](encryption_references.py) checks exact SHA-256 values
+The shared [artifact guard](../../access/encryption/database/encryption_references.py) checks exact SHA-256 values
 for Jackcess 5.0.4, Jackcess Encrypt 5.0.2 and Bouncy Castle 1.86 before invoking
 reference code. The existing rewrite comparison now uses that guard as well.
 The detailed encryption contract already recorded 5.0.2 for SID/removal helpers;
@@ -61,7 +61,7 @@ ACE 16 layouts without retagging old encrypted headers.
 ## Reproduction and scope
 
 ```sh
-python3 docs/testing/compare_encrypted_modern_histories.py \
+python3 tests/run.py tests/access/encryption/database/compare_encrypted_modern_histories.py \
   --cli target/debug/tablecraft --pages target/debug/examples/agile_pages \
   --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar \
   --crypt-jar .cache/tablecraft-fixtures/jackcess-encrypt-5.0.2.jar \
@@ -74,7 +74,7 @@ Generate into a new output directory with --generate. Existing directories and
 output files are refused. Random encryption material changes fresh hashes;
 review/register the resulting identities before reuse. Files and compiled
 engineering helpers remain under ignored persistent repository storage.
-[Provenance](FIXTURES.md#encrypted-modern-history-inputs) records the observed
+[Provenance](../reading/FIXTURES.md#encrypted-modern-history-inputs) records the observed
 files. An initial runner failure used a duplicate byte-limit flag; its partial
 local generation/log remains excluded from this registered corpus.
 

@@ -7,7 +7,7 @@ getters, key/ROW streams, physical indexes and allocation maps agree. This is
 bounded engineering candidate evidence, not normal-save or Microsoft Access
 qualification.
 
-The [receipt](results/ace16-fixed-index-split-originals-2026-10-27.json) separates
+The [receipt](../../results/indexes/ace16-fixed-index-split-originals-2026-10-27.json) separates
 the actual first replay from the earlier
 [source/no-op phase](INTEGRAL_INDEX_SPLIT_SOURCE_OBSERVATIONS.md) and
 [public-writer MAX observations](INTEGRAL_INDEX_SPLIT_OBSERVATIONS.md).
@@ -16,7 +16,7 @@ the actual first replay from the earlier
 
 The consumer was built from committed revision
 `809c5e8d72ed1afe698f565f8447005292739b05` in an isolated Git export. Its
-[build receipt](results/ace16-fixed-split-example-build-2026-10-27.json) pins the
+[build receipt](../../results/indexes/ace16-fixed-split-example-build-2026-10-27.json) pins the
 executable, build driver/log, 215 selected Git objects and the complete 2,556-file
 export inventory. All exported sources remained unchanged through the build.
 Debug symbols were disabled explicitly; this was an unoptimized development
@@ -27,7 +27,7 @@ It derives field offsets, exact unsigned/signed/scaled widths, original ROW
 references, physical alias deduplication, root/leaf framing, EOF ownership and
 global free-map edits from the original files. It does not use production
 serializers, candidate outputs or public unused-page scratch as goldens.
-The published [candidate model](integral_split_originals/candidate_model.py) is
+The published [candidate model](../../access/indexes/integral_split_originals/candidate_model.py) is
 byte-identical to that executed proof source.
 
 The actual first replay executes sixteen fixture commands: eight native candidate
@@ -74,7 +74,7 @@ fresh getters and raw decoders also check the other tables.
 From the repository root, while the recorded ignored artifacts are available:
 
 ```sh
-python3 docs/testing/integral_split_originals/verify_candidates.py \
+python3 tests/run.py tests/access/indexes/integral_split_originals/verify_candidates.py \
   --report .cache/ace16-integral-split-acceptance-first-20261027/report.json
 ```
 

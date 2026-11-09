@@ -1,8 +1,8 @@
 # Indexed DELETE sources
 
-The [literal model](indexed_delete_originals/model.py),
-[requests](indexed_delete_originals/requests.json) and
-[observer predictions](indexed_delete_originals/reports.py) use unchanged genuine
+The [literal model](../../access/indexes/indexed_delete_originals/model.py),
+[requests](../../access/indexes/indexed_delete_originals/requests.json) and
+[observer predictions](../../access/indexes/indexed_delete_originals/reports.py) use unchanged genuine
 Items originals. First, middle, exterior and all-row deletions remove original
 ROW identities from both physical Int32 root leaves. Four logical aliases and
 historical counters remain unchanged. DATA payloads/free counts, vacated leaf
@@ -20,6 +20,6 @@ existing Source admission and the full literal byte complement. Use ignored
 The unchanged complete inventory observer supplies 16 reports; four unchanged
 alias cursor observers supply 64. Frozen source/class/tool pins stay unchanged,
 and saved verification passes. No new Java compilation participates. See the
-[source record](results/ace16-normal-indexed-delete-sources-2026-11-01.json) for
+[source record](../../results/indexes/ace16-normal-indexed-delete-sources-2026-11-01.json) for
 pins, outcomes and the initial broad-selector setup failure. This evidence does
 not qualify a normal DELETE producer or native Access save/reopen.

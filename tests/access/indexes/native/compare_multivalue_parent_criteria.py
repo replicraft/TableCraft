@@ -3,6 +3,7 @@
 Jackcess supplies original stored parent IDs and values. These explicit three-
 valued models are not a Microsoft Access SQL or NULL/error-order oracle.
 """
+from engineering_paths import reference_file
 import argparse
 from pathlib import Path
 
@@ -52,7 +53,7 @@ def main():
     for path in [args.ace2007, args.ace2016, args.ace2019]:
         before = digest(path)
         options = ["--database", path, "--multivalues", "--native-bytes", "67108864"]
-        text = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar, RECIPES / "MultivalueOracle.java", path, "Multivalues", "Ints", "ID")
+        text = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar, reference_file('tests/access/reading/tables/MultivalueOracle.java'), path, "Multivalues", "Ints", "ID")
         rows = [line.split("\t") for line in text.splitlines()]
         cases = [
             ("Ints.Value=0", lambda values: membership(values, "I32:0")),
@@ -107,7 +108,7 @@ def main():
             sql = "PARAMETERS Delta LONG; " + cross.replace("A.Ints.Value=B.ID", "A.Ints.Value=B.ID+Delta")
             assert run(args.cli, "query", "run", sql, *options, "--param", f"Delta=long:{delta}") == expected
             controls += 1
-        text = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar, RECIPES / "MultivalueOracle.java", path, "Multivalues", "Texts", "ID")
+        text = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar, reference_file('tests/access/reading/tables/MultivalueOracle.java'), path, "Multivalues", "Texts", "ID")
         records = [line.split("\t") for line in text.splitlines()]
         options += ["--collation", "ordinal"]
         red = "T" + "Red".encode().hex()

@@ -113,21 +113,21 @@ refused. All 28 input/freeze checks and 17 created artifact pins stayed unchange
 A separate saved postcheck rederived both complete source snapshots without a
 compiler, JVM or native call.
 
-The [repository-authored helper](variable_encoded_split_sources/VariableEncodedProbe.java)
+The [repository-authored helper](../../access/indexes/variable_encoded_split_sources/VariableEncodedProbe.java)
 is byte-identical to executed source. The maintained
-[model](variable_encoded_split_sources/model.py) changes only repository-root
+[model](../../access/indexes/variable_encoded_split_sources/model.py) changes only repository-root
 composition; all eight function ASTs match. The
-[saved verifier](variable_encoded_split_sources/verify.py) checks source and archived
+[saved verifier](../../access/indexes/variable_encoded_split_sources/verify.py) checks source and archived
 preparation identities, 5,402 typed rows, 5,400 target slots, 60 target DATA pages
 and 21,602 logical index entries including aliases, with zero fixture processes.
 The reviewed Jackcess 5.0.4 JAR/source provenance follows the
-[fixture ledger](FIXTURES.md); no upstream fixture database is copied.
+[fixture ledger](../reading/FIXTURES.md); no upstream fixture database is copied.
 
 ```sh
 python3 -B docs/testing/variable_encoded_split_sources/verify.py
 ```
 
-The [compact receipt](results/variable-encoded-split-source-observations-2026-10-27.json)
+The [compact receipt](../../results/indexes/variable-encoded-split-source-observations-2026-10-27.json)
 pins the executed sources, actual report, original bytes, archived prose correction
 and saved checks. Later public references, old-variable baselines and combined
 engineering candidates require separate records and authorization. This source

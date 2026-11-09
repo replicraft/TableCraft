@@ -61,14 +61,14 @@ Original synthetic native rows exercise these queries through profile bytes
 fixture recipe and qualify only those tested read/query paths. No original binary
 is changed, active content executed or native Access result recorded.
 
-The original [partition-model CLI runner](../testing/compare_grouped_subqueries.py)
+The original [partition-model CLI runner](../../tests/access/reading/tables/compare_grouped_subqueries.py)
 checks 96 deterministic cases with duplicate rows, NULL amounts, positive/negative
 values, correlated sums/counts and grouped EXISTS filtering. Python independently
 partitions the inputs and derives expected outputs. It also checks that an invalid
 capture returns a failure with no partial stdout. Run after building the CLI:
 
 ```sh
-python3 docs/testing/compare_grouped_subqueries.py --cli target/debug/tablecraft
+python3 tests/run.py tests/access/reading/tables/compare_grouped_subqueries.py --cli target/debug/tablecraft
 ```
 
 Microsoft's [Access SQL subquery reference](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/sql-subqueries-microsoft-access-sql)
@@ -80,9 +80,9 @@ Native Windows comparisons and broader application-query qualification remain op
 
 ## Stored and named definition comparisons
 
-The original [SavedGroupedFixture.java](../testing/SavedGroupedFixture.java) adds
+The original [SavedGroupedFixture.java](../../tests/access/queries/saved/SavedGroupedFixture.java) adds
 fourteen inert definitions to the existing join-forest fixture recipe. The
-[comparison runner](../testing/compare_saved_grouped.py) checks 328 controls across
+[comparison runner](../../tests/access/queries/saved/compare_saved_grouped.py) checks 328 controls across
 fresh V2000/V2007/V2016/V2019 files. Reviewed Jackcess getters independently read
 raw MSysQueries fragments and render SQL without executing it; a Python model
 partitions independently read table rows and supplies expected results.
@@ -99,11 +99,11 @@ expressions; neither activates them.
 
 All four original hashes remain unchanged. These results establish the tested
 storage/reconstruction/host path, not native Access SQL execution, aggregate
-ownership, optimizer behavior or application save/reopen. [Fixture records](../testing/FIXTURES.md#grouped-saved-query-inputs)
+ownership, optimizer behavior or application save/reopen. [Fixture records](../../tests/reports/reading/FIXTURES.md#grouped-saved-query-inputs)
 retain sizes, hashes and provenance. Regenerate into a fresh directory:
 
 ```sh
-python3 docs/testing/compare_saved_grouped.py \
+python3 tests/run.py tests/access/queries/saved/compare_saved_grouped.py \
   --jar path/to/reviewed/jackcess-5.0.4.jar --cli target/debug/tablecraft \
   --directory path/to/fresh-grouped-inputs --generate
 ```

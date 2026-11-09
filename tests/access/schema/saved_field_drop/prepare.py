@@ -7,8 +7,8 @@ from pathlib import Path
 import model
 
 HERE = Path(__file__).resolve().parent
-SHARED = ['docs/testing/saved_field_rename/model.py',
-          'docs/testing/short_text_add/model.py']
+SHARED = ['tests/access/schema/saved_field_rename/model.py',
+          'tests/access/rows/short_text_add/model.py']
 
 
 def digest(data):

@@ -3,7 +3,7 @@
 Two genuine fitted originals and two existing independent model images now pass
 current native metadata, Required=true, constraint, complete index and full
 Source/NoRequired checks. The gate reconstructs complete raw effects without
-calling mutation or preview code. The [execution record](results/ace16-normal-root-split-sources-2026-11-01.json)
+calling mutation or preview code. The [execution record](../../results/indexes/ace16-normal-root-split-sources-2026-11-01.json)
 binds the unchanged original/model files, historical reference evidence and the
 additive provenance closure. Historical SDK calls were not rerun for this gate.
 

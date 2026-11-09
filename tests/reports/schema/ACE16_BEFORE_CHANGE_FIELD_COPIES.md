@@ -6,12 +6,12 @@ ACE16 engineering candidate. `Ace16BeforeChangePreview` exposes complete origina
 candidate bytes, distinct changed-row count and program/trace metadata. It has no
 normal-plan conversion or journal/commit operation. This native API introduces no
 CLI command and does not enable normal ACE saves. A [complete explicitly selected
-before-event collection](ACE16_BEFORE_EVENT_COLLECTIONS.md) may also contain
+before-event collection](../reading/ACE16_BEFORE_EVENT_COLLECTIONS.md) may also contain
 dormant BeforeDelete definitions; all are preflighted before the UPDATE runs.
 
 ## One original source, one jointly final update
 
-The method performs [logical field preparation](../access/schema/NATIVE_BEFORE_CHANGE_FIELDS.md)
+The method performs [logical field preparation](../../../docs/access/schema/NATIVE_BEFORE_CHANGE_FIELDS.md)
 itself. It accepts original selectors, column and exact `FixedScalarUpdate`
 requests; a public logical report cannot grant physical permission. Current
 changes sequentially, Old remains frozen and RaiseError returns a typed rejection
@@ -81,7 +81,7 @@ substituted images or altered program bytes. The full mutation regression passes
 formats and Access. The combined host strict attempt retained a separate CLI
 journal-error size diagnostic; the corrective CLI strict round passes after its
 separate retained-error-owner correction. Exact logs and phase
-boundaries are in the [focused record](results/ace16-before-change-field-copies-2026-10-30.json).
+boundaries are in the [focused record](../../results/schema/ace16-before-change-field-copies-2026-10-30.json).
 
 
 ## Shared SQL-selected preparation
@@ -120,7 +120,7 @@ No production gate or literal value outcome changed for these corrections.
 Strict Access/CLI all-target/all-feature checks, the full 15-function guard target,
 69 Access unit functions, minimal Access, scoped formatting and documentation
 links (6,697 targets, no broken links) pass. CLI adoption is a separate consumer.
-The [shared-service record](results/ace16-before-change-sql-service-2026-10-30.json)
+The [shared-service record](../../results/queries/ace16-before-change-sql-service-2026-10-30.json)
 keeps original read pairs, physically qualified derivatives and failed attempts
 separate. Required discovery, native timing and normal ACE saves remain open.
 
@@ -200,7 +200,7 @@ qualification remains separately tracked; it is not implied by native results.
 These authored engineering observations do not establish genuine-file or
 Microsoft Access save/reopen compatibility, required-event discovery, native
 ordering/timing, normal ACE saves, journal permission or macro absence. See
-[the complete collection contract](ACE16_BEFORE_EVENT_COLLECTIONS.md) and
+[the complete collection contract](../reading/ACE16_BEFORE_EVENT_COLLECTIONS.md) and
 [data-macro acceptance](DATA_MACROS.md).
 
 ## Preserved rich fixed batches through Access
@@ -257,4 +257,4 @@ its separate index restriction. Only the test expectation/comment changed;
 production code and source/expected images remained unchanged. Both failed logs
 are retained separately from the passing corrected full target.
 
-See the [adapter record](results/ace16-before-change-rich-batch-access-2026-10-31.json).
+See the [adapter record](../../results/general/ace16-before-change-rich-batch-access-2026-10-31.json).

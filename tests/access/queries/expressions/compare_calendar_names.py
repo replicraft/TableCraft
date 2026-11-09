@@ -2,6 +2,7 @@
 
 Jackcess supplies optional native row inputs, not native Access SQL evaluation.
 """
+from engineering_paths import reference_file
 import argparse
 import csv
 import datetime as dt
@@ -99,7 +100,7 @@ def main():
     if args.jar:
         assert digest(args.jar) == '19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc'
         before = digest(args.database)
-        tagged = run('java', '-Dstdout.encoding=UTF-8', '-cp', args.jar, RECIPES/'TableDataOracle.java', args.database, 'ROULETTE_TB')
+        tagged = run('java', '-Dstdout.encoding=UTF-8', '-cp', args.jar, reference_file('tests/access/reading/tables/TableDataOracle.java'), args.database, 'ROULETTE_TB')
         identities = sorted(int(line.split('\t')[1].removeprefix('I32:')) for line in tagged.splitlines())
         sql = 'SELECT ORDR_NBR AS N,MonthName((ORDR_NBR MOD 12)+1,True) AS M,WeekdayName((ORDR_NBR MOD 7)+1,False,2) AS D FROM ROULETTE_TB ORDER BY N'
         for profile in ['iso', 'en-us', 'de-de']:

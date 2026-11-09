@@ -13,7 +13,7 @@ def main():
     for format, path in [("ace", args.ace), ("jet4", args.jet)]:
         expected = subprocess.check_output([
             "java", "-Dstdout.encoding=UTF-8", "-cp", str(args.jar),
-            "docs/testing/TableDataOracle.java", str(path), "Pages",
+            "tests/access/reading/tables/TableDataOracle.java", str(path), "Pages",
         ])
         actual = subprocess.check_output([
             str(args.example), str(path), "Pages", "--bytes", str(256 * 1024 * 1024),

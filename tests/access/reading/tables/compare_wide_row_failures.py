@@ -3,6 +3,7 @@
 Original inputs and their hashes stay unchanged. Independent row locations only
 identify the mutation targets; TableCraft alone executes SQL and streaming reads.
 """
+from engineering_paths import reference_file
 
 import argparse
 import csv
@@ -35,7 +36,7 @@ def main():
         for table in ["WideVariable", "WideMixed"]:
             locations = subprocess.check_output([
                 "java", "-Dstdout.encoding=UTF-8", "-cp", str(args.jar),
-                str(RECIPES / "WideRowLocationOracle.java"), str(path), table,
+                str(reference_file('tests/access/reading/tables/WideRowLocationOracle.java')), str(path), table,
             ], text=True, encoding="utf-8")
             locations = [tuple(map(int, line.split("\t"))) for line in locations.splitlines()]
             expected = model(table == "WideMixed")

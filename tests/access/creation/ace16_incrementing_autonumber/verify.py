@@ -8,14 +8,14 @@ import subprocess
 import sys
 
 sys.dont_write_bytecode = True
-sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+sys.path.insert(0, str(Path(__file__).resolve().parents[4]))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from scripts.compat_artifacts import ArtifactStore
 from ace16_insert_external_long_values.evidence import Pins, report
 from ace16_incrementing_autonumber import build, model, reference, source
 
-ROOT = Path(__file__).resolve().parents[3]
-PUBLIC = 'docs/testing/ace16_incrementing_autonumber'
+ROOT = Path(__file__).resolve().parents[4]
+PUBLIC = 'tests/access/creation/ace16_incrementing_autonumber'
 SOURCE = '.cache/ace16-incrementing-autonumber-insert-next-20261028'
 SOURCE_WORK = '.cache/ace16-incrementing-autonumber-insert-source-first-20261028'
 FIRST_EXPECTED = '.cache/ace16-incrementing-autonumber-insert-expected-first-20261028'

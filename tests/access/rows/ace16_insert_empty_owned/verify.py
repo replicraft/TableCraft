@@ -8,9 +8,9 @@ import subprocess
 import sys
 
 sys.dont_write_bytecode = True
-ROOT = Path(__file__).resolve().parents[3]
+ROOT = Path(__file__).resolve().parents[4]
 sys.path.insert(0, str(ROOT))
-sys.path.insert(0, str(ROOT / 'docs/testing'))
+sys.path.insert(0, str(ROOT / 'tests/access'))
 from scripts.compat_artifacts import ArtifactStore
 from ace16_insert_external_long_values.evidence import Pins, report
 from ace16_insert_empty_owned import build, model, reference, source
@@ -25,7 +25,7 @@ BUILD = '.cache/ace16-insert-empty-owned-isolated-build-20261028'
 NATIVE = '.cache/ace16-empty-owned-insert-acceptance-next-20261028'
 NATIVE_WORK = '.cache/ace16-empty-owned-insert-candidate-first-20261028'
 GETTERS = '.cache/ace16-empty-owned-insert-getters-first-20261028'
-PUBLIC = 'docs/testing/ace16_insert_empty_owned'
+PUBLIC = 'tests/access/rows/ace16_insert_empty_owned'
 NOTICE = b'Engineering candidate: data-macro semantics and native Access qualification pending.\n'
 
 FIXED = {
@@ -62,7 +62,7 @@ FIXED = {
     '.cache/ace16-insert-empty-owned-isolated-build-20261028/freeze.json': (
         'eb67a5c8b73ba499ece0295bf5a5a29badfc7bf6dc3d46754db819f00960a2e7'
     ),
-    'docs/testing/results/ace16-insert-empty-owned-example-build-2026-10-28.json': (
+    'tests/results/rows/ace16-insert-empty-owned-example-build-2026-10-28.json': (
         'aed2dea58e362658b49c817b3b89acd174102a777ac09c10f8fda142f34a8515'
     ),
     '.cache/ace16-empty-owned-insert-acceptance-next-20261028/freeze.json': (
@@ -107,7 +107,7 @@ def maintained(store, pins):
         name = '/requests/' + selected + '.tsv'
         assert pins.check(store.pin(PUBLIC + name)).read_bytes() == pins.check(store.pin(SOURCE + name)).read_bytes()
     assert pins.check(store.pin(SOURCE + '/BoundedFileChannel.java')).read_bytes() == pins.check(
-        store.pin('docs/testing/parent_index_split_originals/BoundedFileChannel.java')).read_bytes()
+        store.pin('tests/access/indexes/parent_index_split_originals/BoundedFileChannel.java')).read_bytes()
 
 
 def preparation_history(store, pins):

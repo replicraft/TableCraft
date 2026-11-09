@@ -1,9 +1,9 @@
 # Composite existing-fit framing certification
 
-The [fixed numeric split preview](ACE16_FIXED_INDEX_SPLITS.md) now independently
+The [fixed numeric split preview](../indexes/ACE16_FIXED_INDEX_SPLITS.md) now independently
 certifies framing for affected, already-admitted composite indexes that retain
 their original topology. This closes the composite fallback gap explicitly left
-outside the [retained-planner correction](ACE16_RETAINED_SPLIT_PLANNER.md).
+outside the [retained-planner correction](../indexes/ACE16_RETAINED_SPLIT_PLANNER.md).
 It adds no composite allocation, codec admission, public API or normal write path.
 
 The audit resolves the actual numeric, mixed GUID or Decimal tuple profile from
@@ -38,7 +38,7 @@ resource limits, immediate/measured late cancellation and exact retry. Fixture
 bytes and existing numeric/composite goldens are unchanged. Shared tuple fixtures
 are registered once for private read and mutation tests.
 
-The [scoped result](results/ace16-composite-fitting-audit-native-2026-10-27.json)
+The [scoped result](../../results/general/ace16-composite-fitting-audit-native-2026-10-27.json)
 records 62 distinct runtime functions, four new, and three compile-fail doctests.
 Feature/default strict checks, minimal build and scoped formatting pass. It retains
 the causal before result, test-only compilation errors and duplicate fixture lint

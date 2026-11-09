@@ -15,7 +15,7 @@ signed identity contract. No value becomes absent because its ID is negative.
 
 ## Independent stored-read evidence
 
-The original [producer](SignedComplexIdentityFixture.java) creates fresh V2016 and
+The original [producer](../../access/reading/tables/SignedComplexIdentityFixture.java) creates fresh V2016 and
 V2019 databases with two ordinary parent rows. One parent has eight members of
 each of three independent collections; the other has none. The identities, in
 physical stored order, are `1, -2147483648, -7, -2, -1, 0, 7, 2147483647`.
@@ -32,7 +32,7 @@ This authoring route establishes a useful independent stored-read corpus. It doe
 **not** establish that Access itself generates or accepts every such child ID,
 or authorize TableCraft to create or mutate those records.
 
-The [oracle](SignedComplexIdentityOracle.java) reopens originals read-only and
+The [oracle](../../access/reading/tables/SignedComplexIdentityOracle.java) reopens originals read-only and
 compares physical flat-row IDs, actual positive references and public typed
 multivalue, attachment and version getters. Every persisted typed identity has a
 non-NULL physical RowId, including -1 and zero. The pinned reference helper
@@ -49,7 +49,7 @@ a latest version or freshness claim.
 
 ## Accepted replay and focused checks
 
-The [runner](compare_signed_complex_identities.py) passed 88 controls on 24 October
+The [runner](../../access/reading/tables/compare_signed_complex_identities.py) passed 88 controls on 24 October
 2026 against the immutable CLI SHA-256
 `4f3049ae09612ea9c54ecbf7a6bffff62b1fd2d7e22026619e821609674903eb`:
 
@@ -60,7 +60,7 @@ The [runner](compare_signed_complex_identities.py) passed 88 controls on 24 Octo
   decoded FileData, and actual discovered history member names.
 - Twelve cumulative native/query/output resource refusals with no stdout.
 
-The [accepted report](results/signed-complex-identities-2026-10-24.json) pins fourteen
+The [accepted report](../../results/general/signed-complex-identities-2026-10-24.json) pins fourteen
 unchanged original input, recipe, oracle, runner, implementation, JAR and executable
 hashes. Early harness attempts used an assumed history timestamp name and incorrect
 multivalue predicate-count expectations. Those failed runs produced no accepted
@@ -76,6 +76,6 @@ retain NULL, orphan, quota, cancellation and payload-pruning checks. Scoped stri
 Clippy passes for all five targets; scoped rustfmt, Python compilation and
 whitespace checks pass.
 
-See [fixture provenance](FIXTURES.md#original-signed-complex-child-identity-inputs).
+See [fixture provenance](../reading/FIXTURES.md#original-signed-complex-child-identity-inputs).
 These are bounded independent-reader results, not native Access SQL, native
 application qualification, concurrency, mutation or save/reopen evidence.

@@ -48,7 +48,7 @@ refusal, and reject correlated destination lengths and root/branch forgeries.
 Literal record tests cover padding absorption, actual growth, shrink, NULL/empty,
 historical offsets and a selected bit in the second mask byte.
 
-The [scoped result](results/ace16-variable-data-proof-native-2026-10-27.json)
+The [scoped result](../../results/rows/ace16-variable-data-proof-native-2026-10-27.json)
 records 33 distinct runtime functions, including eight added private functions,
 and three compile-fail doctests. The runtime set comprises eleven private DATA
 functions, eleven existing variable integration functions and eleven existing

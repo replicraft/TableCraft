@@ -19,7 +19,7 @@ from compare_strconv import proper
 from compare_strconv_kana import mapped as kana_mapped
 from compare_strconv_width import literal, mapped as width_mapped, pairs
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[4]
 BATCH_COLUMNS = 3
 MAX_COMMANDS = 6000
 CHECKPOINT_COMMANDS = 128
@@ -32,13 +32,13 @@ CODES = tuple(
 )
 WIDE, NARROW = pairs()
 TOOLS = (
-    "docs/testing/compare_strconv_combinations.py",
-    "docs/testing/compare_strconv_width.py",
-    "docs/testing/compare_strconv_kana.py",
-    "docs/testing/compare_strconv.py",
-    "docs/testing/compare_browsing.py",
-    "docs/testing/compare_declared_numeric_text.py",
-    "docs/testing/TableDataOracle.java",
+    "tests/access/queries/expressions/compare_strconv_combinations.py",
+    "tests/access/queries/expressions/compare_strconv_width.py",
+    "tests/access/queries/expressions/compare_strconv_kana.py",
+    "tests/access/queries/expressions/compare_strconv.py",
+    "tests/access/reading/tables/compare_browsing.py",
+    "tests/access/queries/expressions/compare_declared_numeric_text.py",
+    "tests/access/reading/tables/TableDataOracle.java",
 )
 RUST_ROOTS = (
     "crates/query/tablecraft-expressions/src/functions/text/strconv",
@@ -196,7 +196,7 @@ def main():
             execute(mode, "SELECT 1," + expression, None, [label])
         print(mode, "scalar controls passed", flush=True)
 
-    oracle = Path("docs/testing/TableDataOracle.java")
+    oracle = Path("tests/access/reading/tables/TableDataOracle.java")
     for filename, registered in INPUTS.items():
         database = args.directory / filename
         assert digest(database) == registered, "Unregistered native input"

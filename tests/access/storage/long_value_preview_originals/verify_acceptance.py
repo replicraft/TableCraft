@@ -7,8 +7,8 @@ from pathlib import Path
 import subprocess
 import sys
 
-ROOT = Path(__file__).resolve().parents[3]
-sys.path.insert(0, str(ROOT / 'docs/testing'))
+ROOT = Path(__file__).resolve().parents[4]
+sys.path.insert(0, str(ROOT / 'tests/access'))
 import capture_long_value_updates as evidence
 
 REPORT = '.cache/ace16-long-value-acceptance-revised-first-20261027/report.json'

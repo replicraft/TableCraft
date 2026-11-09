@@ -5,14 +5,14 @@ import json
 from pathlib import Path
 import sys
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[3] / 'scripts'))
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+sys.path.insert(0, str(Path(__file__).resolve().parents[4] / 'scripts'))
+sys.path.insert(0, str(ROOT / 'tests/access'))
 from compat_artifacts import ArtifactStore
 from preserved_short_text_genuine import prepare
 from preserved_short_text_genuine.framing import require
 
-ROOT = Path(__file__).resolve().parents[3]
-DEFAULT_RECORD = 'docs/testing/results/ace16-preserved-short-text-genuine-images-2026-10-30.json'
+ROOT = Path(__file__).resolve().parents[4]
+DEFAULT_RECORD = 'tests/results/rows/ace16-preserved-short-text-genuine-images-2026-10-30.json'
 REPORT_HEADER = b'Engineering copy\tExperimental; data macros and native Access saves unqualified\n'
 
 

@@ -14,7 +14,7 @@ from slot_preview_originals import common, facts, model as SLOT
 from . import model as PAGE, proof as PROOF
 
 ROOT = common.ROOT
-SLOT_RECEIPT = Path('docs/testing/results/ace16-slot-original-candidates-2026-10-26.json')
+SLOT_RECEIPT = Path('tests/results/general/ace16-slot-original-candidates-2026-10-26.json')
 WARNING = b'Engineering candidate: data-macro semantics and native Access qualification pending.\n'
 
 

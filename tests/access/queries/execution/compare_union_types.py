@@ -2,6 +2,7 @@
 
 This is a TableCraft profile/value model, not native Access result-type evidence.
 """
+from engineering_paths import reference_file
 import argparse
 import csv
 import hashlib
@@ -93,7 +94,7 @@ def main():
             original = path.read_bytes()
             assert hashlib.sha256(original).hexdigest() == digest
             stored = subprocess.check_output(["java", "-Dstdout.encoding=UTF-8", "-cp", str(args.jar),
-                str(RECIPES / "TableDataOracle.java"), str(path), "AData", "BData"], text=True, encoding="utf-8")
+                str(reference_file('tests/access/reading/tables/TableDataOracle.java')), str(path), "AData", "BData"], text=True, encoding="utf-8")
             inputs = {name: [] for name in ("AData", "BData")}
             for line in stored.splitlines():
                 name, value = line.split("\t")

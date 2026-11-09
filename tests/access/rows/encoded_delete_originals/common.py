@@ -5,7 +5,7 @@ import os
 from pathlib import Path
 import json
 
-REPOSITORY_ROOT = Path(__file__).resolve().parents[3]
+REPOSITORY_ROOT = Path(__file__).resolve().parents[4]
 JAR_SHA256 = '19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc'
 GETTER_CLASS = 'com.healthmarketscience.jackcess.impl.EncodedDeleteFixture'
 GETTER_CLASS_FILE = Path('com/healthmarketscience/jackcess/impl/EncodedDeleteFixture.class')

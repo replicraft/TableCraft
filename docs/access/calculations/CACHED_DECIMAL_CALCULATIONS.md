@@ -49,7 +49,7 @@ retain their documented partial-read validation range.
 
 ## Evidence and limits
 
-The original [fixture and getter oracle](../../testing/CalculatedDecimalFixture.java)
+The original [fixture and getter oracle](../../../tests/access/queries/expressions/CalculatedDecimalFixture.java)
 creates fresh ACE 2016/2019 files with expression evaluation disabled, then opens
 them read-only. Independent `BigDecimal` getters provide exact coefficients and
 scales; public in-memory column serialization provides wrapper observations.
@@ -57,11 +57,11 @@ The reviewed Jackcess 5.0.4 artifact's `CalcNumericColImpl` is a physical refere
 not an adopted implementation. Microsoft's [calculated-field properties](https://support.microsoft.com/en-us/access/introduction-to-data-types-and-field-properties)
 document stored calculation results and Result Type, not these physical bytes.
 
-The [comparison runner](../../testing/compare_calculated_decimals.py) checks 22 cached
+The [comparison runner](../../../tests/access/queries/expressions/compare_calculated_decimals.py) checks 22 cached
 cells across both files, retained zeros, signs, 28-digit extremes, scales through
 28, empty declarations, cached row browsing, ordinary-query refusal and late
 corruptions on disposable copies. The
-[24 October 2026 report](../../testing/results/calculated-decimals-2026-10-24.json)
+[24 October 2026 report](../../../tests/results/general/calculated-decimals-2026-10-24.json)
 records 82 passing controls and unchanged fixture, oracle, implementation and
 immutable executable hashes. This is independent cached-storage evidence;
 Microsoft Access result admissibility, native recalculation and freshness remain

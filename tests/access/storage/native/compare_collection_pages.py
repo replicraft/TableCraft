@@ -46,7 +46,7 @@ def main():
     args = parser.parse_args()
     controls = 0
     with tempfile.TemporaryDirectory(prefix='tablecraft-collection-pages-') as directory:
-        subprocess.run(['javac', '-cp', str(args.jar), '-d', directory, 'docs/testing/MultivalueOracle.java', 'docs/testing/CollectionPageOracle.java'], check=True)
+        subprocess.run(['javac', '-cp', str(args.jar), '-d', directory, 'tests/access/reading/tables/MultivalueOracle.java', 'tests/access/storage/native/CollectionPageOracle.java'], check=True)
         classpath = str(args.jar) + os.pathsep + directory
         for family in ('2007', '2016', '2019'):
             for recipe, tables in [('complex', ['Collections']), ('attachment', ['Collections']), ('history', ['Histories', 'OtherHistories'])]:

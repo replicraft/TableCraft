@@ -81,7 +81,7 @@ These broader totals include the focused functions and are not additional
 independent test populations.
 
 These tests establish an engineering span contract, not native Access SQL/NLS
-matching. The [French comparison observations](../../testing/FRENCH_COMPARISON_OBSERVATIONS.md)
+matching. The [French comparison observations](../../../tests/reports/queries/FRENCH_COMPARISON_OBSERVATIONS.md)
 remain comparison evidence, not a native substring oracle. The subsequent
 [French LIKE policy](FRENCH_LIKE.md) has its own untrimmed pattern keys and
 character-class dictionary; search does not supply its grammar or padding rule.

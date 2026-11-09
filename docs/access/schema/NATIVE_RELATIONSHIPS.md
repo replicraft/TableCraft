@@ -36,7 +36,7 @@ previously reviewed Jackcess 5.0.4 JAR exposes cascade-null bit 8192; that actio
 has independent declaration evidence, not native Microsoft Access execution proof.
 No third-party implementation or generated binary was copied into the repository.
 
-[RelationshipFixture.java](../../testing/RelationshipFixture.java) is an original inert
+[RelationshipFixture.java](../../../tests/access/schema/fields/RelationshipFixture.java) is an original inert
 recipe, refusing existing outputs, with enforced, unenforced/left-join, one-to-one,
 cascade-update/delete, set-null and two-column declarations. Both V2000 and V2007
 match the independent oracle across five relationships/six ordered field pairs.
@@ -46,7 +46,7 @@ The canonical sorted declarations have SHA-256
 ```sh
 java -Dstdout.encoding=UTF-8 -cp path/to/jackcess-5.0.4.jar docs/testing/RelationshipFixture.java new.accdb V2007
 java -Dstdout.encoding=UTF-8 -cp path/to/jackcess-5.0.4.jar docs/testing/RelationshipFixture.java new.mdb V2000
-python3 docs/testing/compare_relationships.py --cli target/debug/tablecraft --jar path/to/jackcess-5.0.4.jar --ace new.accdb --jet new.mdb
+python3 tests/run.py tests/access/schema/fields/compare_relationships.py --cli target/debug/tablecraft --jar path/to/jackcess-5.0.4.jar --ace new.accdb --jet new.mdb
 ```
 
 Jackcess rejects the recipe's unmatched partially NULL composite child keys while
@@ -56,7 +56,7 @@ parents are accepted and duplicate partial unique keys are rejected. The bounded
 that exact integer tuple profile, including qualified Int64 and mixed tuples
 with matching paired types; native Access comparison remains unrun. Metadata
 inspection alone does not enforce it. Generated files/JARs stay local;
-[fixture records](../../testing/FIXTURES.md) identify inputs. Original bytes remain unchanged.
+[fixture records](../../../tests/reports/reading/FIXTURES.md) identify inputs. Original bytes remain unchanged.
 
 Tests include real candidate declarations, malformed/missing/repeated ordinals,
 conflicting metadata, unknown flags, shared budgets/cancellation, constructor

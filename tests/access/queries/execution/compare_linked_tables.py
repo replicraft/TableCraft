@@ -7,7 +7,7 @@ import json
 from pathlib import Path
 import subprocess
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[4]
 PROFILES = ("V2000", "V2007", "V2016", "V2019")
 JAR_SHA256 = "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc"
 
@@ -23,7 +23,7 @@ def relative(path):
 def java(jar, source, *arguments):
     return subprocess.run(
         ["java", "-Dfile.encoding=UTF-8", "-Dstdout.encoding=UTF-8", "-cp", str(jar),
-         str(ROOT / "docs/testing" / source), *map(str, arguments)],
+         str(ROOT / "tests/access" / source), *map(str, arguments)],
         check=True, capture_output=True, text=True, encoding="utf-8",
     ).stdout
 
@@ -72,8 +72,8 @@ def main():
         })
     assert digest(args.reader) == reader_digest
     sources = [
-        ROOT / "docs/testing/LinkedTableFixture.java",
-        ROOT / "docs/testing/LinkedTableOracle.java",
+        ROOT / "tests/access/queries/execution/LinkedTableFixture.java",
+        ROOT / "tests/access/queries/execution/LinkedTableOracle.java",
         Path(__file__).resolve(),
         ROOT / "crates/engines/tablecraft-ace/examples/linked_table_data.rs",
         ROOT / "crates/engines/tablecraft-ace/src/catalog/linked/fields.rs",

@@ -46,14 +46,14 @@ the initial review and its evidence classifications remain unchanged.
 | V3 | A UNION result used in a later widening operation, including an empty arm | UNION conversion and paired result descriptors work; they do not establish the resulting Scalar/Variant declaration. **Conservative refusal** where branches differ; **native qualification pending** for category assignment. | Capture each written arm order and prefix stage, including an empty leading/trailing arm, then observe downstream overflow and String comparison. Never choose a category from the first row. |
 | V4 | `SELECT 32767+1`, `CVar(32767)+1`, and `(NULL Or CInt(32767))+CInt(1)` under declared arithmetic | Literal widths, known Variant widening and literal-NULL Variant provenance are implemented. These are regression controls, **not residual implementation gaps**. Native ACE declaration equivalence remains separate. | Preserve the existing implementation records; add native observations only when available. An operational error common to both declaration branches must not become category ambiguity. |
 
-The [declared arithmetic contract](../expressions/numeric/DECLARED_ARITHMETIC.md#binary-arithmetic-with-unknown-provenance)
-and [successful-result metadata](../query/QUERY_RESULT_TYPES.md#successful-arithmetic-with-unknown-declaration-provenance)
+The [declared arithmetic contract](../../../docs/expressions/numeric/DECLARED_ARITHMETIC.md#binary-arithmetic-with-unknown-provenance)
+and [successful-result metadata](../../../docs/query/QUERY_RESULT_TYPES.md#successful-arithmetic-with-unknown-declaration-provenance)
 define V1–V4. The implementation is in `tablecraft-expressions/src/numeric` and
 `tablecraft-query/src/{binding/result_types,plan/declarations,execution/declarations}`.
 Existing `declared_integral`, `declared_result_widths`, `relational_declarations`,
 `declared_string_comparisons` and `null_literal_declarations` targets cover these
-boundaries. The [agreement result record](results/agreement-result-types-2026-10-25.json)
-and [Scalar String/Variant evidence](SCALAR_STRING_VARIANT_COMPARISONS.md) are
+boundaries. The [agreement result record](../../results/general/agreement-result-types-2026-10-25.json)
+and [Scalar String/Variant evidence](../rows/SCALAR_STRING_VARIANT_COMPARISONS.md) are
 engineering evidence, not ACE result-category observations.
 
 Microsoft's [relational effective-type table](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/f8acd631-55c1-4199-bc1e-022aaab6d9c8)
@@ -72,9 +72,9 @@ by themselves establish ACE's category assignment to a SQL aggregate or UNION.
 | E3 | `SELECT Sum(CVErr(1))` and the explicit-code control `SELECT Sum(CLng(CVErr(1)))` | Implicit Error admission refuses TypeMismatch; explicit supported code conversion permits numeric aggregation. **Conservative refusal/native qualification pending** for broader Error aggregate semantics. | Compare Sum/Avg and statistical/domain consumers separately. Do not silently unwrap Error codes or generalize Min/Max's provisional rule. |
 | E4 | Error group/set/sort keys versus an opaque implementation-defined Error code | Standard-code relational keys retain Error identity; opaque codes lack a supplied ordering. **Working standard-code profile/conservative opaque-code refusal.** | Native group/set/order captures must establish whether the same profile applies; numeric equality or the stored core Value representation cannot serve as the oracle. |
 
-See [expression aggregates](../query/aggregates/EXPRESSION_AGGREGATES.md),
-[Variant Error data](../expressions/VARIANT_ERRORS.md#standard-error-relational-keys)
-and [strict keys](../query/keys/NUMERIC_KEYS.md). Owning code includes
+See [expression aggregates](../../../docs/query/aggregates/EXPRESSION_AGGREGATES.md),
+[Variant Error data](../../../docs/expressions/VARIANT_ERRORS.md#standard-error-relational-keys)
+and [strict keys](../../../docs/query/keys/NUMERIC_KEYS.md). Owning code includes
 `execution/aggregate`, `execution/keys.rs` and the expression comparison/conversion
 services. Existing `error_predicates`, aggregate/domain and key tests are the
 regression surface. Native Access Error-cell aggregate ordering is explicitly
@@ -90,12 +90,12 @@ unqualified; the finite audit did not establish a new Error aggregate bug.
 | T4 | `StrComp('A','a',1)` or `InStr(1,'xI','ı',1055)` with explicit ICU locale/LCID registration | Nineteen explicit ICU host profiles and one exactly registered LCID per execution already work. **Working host implementation; NLS/ACE equivalence pending.** | Capture function-specific ACE16/NLS results with build, locale, flags, Option Compare and full LCID identity. Do not turn an LCID's structural validity into automatic provider support. |
 | T5 | Binary StrComp, General database comparison, LIKE and substring matching on trailing spaces/raw UTF-16 | Distinct current contracts already exist: binary units, General SQL padding, pattern spans and bounded search callbacks. **Working engineering profiles; native function-specific padding/matching pending.** | Compare each consumer independently using empty/NUL/trailing-space inputs, expansions, surrogate boundaries and consumed spans. Equality agreement alone does not qualify LIKE or search. |
 
-The [runtime policy contract](../query/RUNTIME_TEXT_POLICIES.md) specifies T1/T2;
+The [runtime policy contract](../../../docs/query/RUNTIME_TEXT_POLICIES.md) specifies T1/T2;
 `execution/collation{.rs,/provenance.rs,/declared_strings.rs}` and
 `execution/declarations/predicates/{like,range,membership,subquery}.rs` route these
 consumers. Existing `collation_routing` and retained-list policy tests cover
 construction, dynamic cohorts, callbacks and named/derived propagation. The
-[original per-field fixture ledger](FIXTURES.md#native-per-field-general-policy-inputs)
+[original per-field fixture ledger](../reading/FIXTURES.md#native-per-field-general-policy-inputs)
 records 172 independent model/source controls, not native mixed-order SQL results.
 
 For T3, inspect `tablecraft-ace/src/collation/sort_order.rs`,
@@ -105,15 +105,15 @@ explicit refusals already have tests. No new native-sort implementation was
 approved by this inventory. In particular, read support or ICU language names
 cannot establish a compatible persisted key representation.
 
-The [ICU profile](../expressions/text/ICU_TEXT_PROFILE.md) records 14,498 controls
+The [ICU profile](../../../docs/expressions/text/ICU_TEXT_PROFILE.md) records 14,498 controls
 across nineteen profiles against its stated independent ICU4C model. It explicitly
 separates stored database/LIKE routing and NLS equivalence. Microsoft's
 [sorting guidance](https://learn.microsoft.com/en-us/windows/win32/intl/handling-sorting-in-your-applications)
 also distinguishes linguistic/ordinal sorting, locale selection and sort options;
 it does not establish interchangeability with ACE's persisted key tables.
-[StrComp](../expressions/text/STRING_COMPARISON.md),
-[search](../expressions/text/STRING_SEARCH.md) and
-[LIKE](../expressions/text/PATTERN_MATCHING.md) retain their owning boundaries.
+[StrComp](../../../docs/expressions/text/STRING_COMPARISON.md),
+[search](../../../docs/expressions/text/STRING_SEARCH.md) and
+[LIKE](../../../docs/expressions/text/PATTERN_MATCHING.md) retain their owning boundaries.
 
 ## What can advance next
 
@@ -123,14 +123,14 @@ now establishes exact descriptor `1036/0/0`, independent stored keys and distinc
 accent ordering on unchanged ACE16 V2016/V2019 originals. Both profiles pass
 456 logical index memberships, or 304 physical entries after alias deduplication.
 This satisfies the descriptor/oracle entry gate for that closed family; physical
-encoder/read support is now implemented under its [closed contract](../access/indexes/NATIVE_TEXT.md). A [separate provisional full-string query provider](FRENCH_COMPARISON_OBSERVATIONS.md)
+encoder/read support is now implemented under its [closed contract](../../../docs/access/indexes/NATIVE_TEXT.md). A [separate provisional full-string query provider](FRENCH_COMPARISON_OBSERVATIONS.md)
 now supplies SQL/default/Database ordering, including ordinary Memo values. This
 does not qualify native Access comparisons, equality-prefix hints,
 Memo physical indexes or mutations. The subsequent
-[French Database substring service](../access/indexes/FRENCH_SEARCH.md) implements
+[French Database substring service](../../../docs/access/indexes/FRENCH_SEARCH.md) implements
 complete-weight consumed spans with primary-only pruning. Its first seven
 kernel, one invariant and thirteen Access functions pass, along with thirty
-General regressions. The later [French LIKE service](../access/indexes/FRENCH_LIKE.md)
+General regressions. The later [French LIKE service](../../../docs/access/indexes/FRENCH_LIKE.md)
 uses untrimmed pattern keys and a separately derived complete single-unit
 dictionary with the existing full ANSI grammar. Its first seven engine and
 nineteen Access functions pass, including the independent recursive pattern
@@ -142,7 +142,7 @@ from an arbitrary locale library or relabel a host profile as native compatibili
 V1–V3 and E1–E4 have finite capture gates. Until category or aggregate evidence
 resolves them, conservative refusals remain necessary. The
 reviewed Val Single-rounding observation likewise does not establish a defect:
-the current [Val contract](../expressions/numeric/VAL.md) specifies its narrowing
+the current [Val contract](../../../docs/expressions/numeric/VAL.md) specifies its narrowing
 path, and a different direct lexical rounding route needs additional evidence.
 
 No independently proven wrong-answer patch emerged from the finite scalar/text

@@ -75,18 +75,18 @@ Expression evaluation was disabled, foreign-key checks enabled, free-page reuse
 disabled, time zone UTC, and linked opens refused. No SQL or active database
 content was executed.
 
-The [exact corrected helper](encoded_index_split_sources/EncodedSplitProbe.java)
+The [exact corrected helper](../../access/indexes/encoded_index_split_sources/EncodedSplitProbe.java)
 matches the executed source byte for byte. The maintained
-[pure model](encoded_index_split_sources/model.py) adjusts its repository-root
+[pure model](../../access/indexes/encoded_index_split_sources/model.py) adjusts its repository-root
 composition and terminal whitespace; all six function ASTs match the executed model. The
-[saved verifier](encoded_index_split_sources/verify.py) rechecks 48 unique saved
+[saved verifier](../../access/indexes/encoded_index_split_sources/verify.py) rechecks 48 unique saved
 pins, 5,402 typed rows, 5,400 variable slots and 21,602 logical index entries
 including aliases, without starting a compiler, JVM or native process. Its first
 read-only attempt exposed JSON integer-key normalization in the verifier;
 normalizing the recomputed JSON shape corrected only that comparison. The
 original source facts and fixture runs were not repeated or changed.
 
-The [compact receipt](results/encoded-index-split-source-observations-2026-10-27.json)
+The [compact receipt](../../results/indexes/encoded-index-split-source-observations-2026-10-27.json)
 pins the first failure, corrected phase, postcheck, exact sources and saved
 verification. Root independently repeated the zero-process saved verification.
 The Jar/source provenance follows the already reviewed Apache-2.0 Jackcess 5.0.4

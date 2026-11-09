@@ -4,12 +4,12 @@ The revised frozen consumer matched **all 60 unchanged raw Memo/OLE controls**,
 including complete independent expected images and read-only getter/map proofs.
 Session 64220 terminated with status 0 after 180 commands: 60 candidate operations
 and 120 read-only JVM getter/metadata captures. No public UPDATE was rerun.
-The [compact acceptance receipt](results/ace16-long-value-originals-2026-10-27.json)
+The [compact acceptance receipt](../../results/general/ace16-long-value-originals-2026-10-27.json)
 pins every candidate and exact source/request identity.
 
 This is revised-artifact acceptance. The [first consumer accepted zero of 60](LONG_VALUE_UPDATE_REFUSALS.md).
 Its atomic refusals, unchanged inputs and precise diagnostic phases remain
-immutable. The [census correction](results/ace16-long-value-census-correction-2026-10-27.json)
+immutable. The [census correction](../../results/general/ace16-long-value-census-correction-2026-10-27.json)
 resolved unrelated physical backing-field and deleted-slot census errors without
 widening selected-field write admission. Neither the diagnostic passes nor the
 public-writer observations alone were candidate replacement acceptance.
@@ -19,7 +19,7 @@ public-writer observations alone were candidate replacement acceptance.
 The accepted artifact has SHA256
 `89b041fae4d83e362d07005aaf2ffaa27e4eece9eab69c71c90f1c388753f7d8`,
 compiled from `b3b7d907ac65632941000ae2cb3f3a6b675e0714`.
-Its [build receipt](results/ace16-long-value-census-example-build-2026-10-27.json)
+Its [build receipt](../../results/general/ace16-long-value-census-example-build-2026-10-27.json)
 pins 180 historical Git objects. The unchanged plan `bbcd7ad0`, model `b35b1aa9`
 and runner `e938b2f2` retain every original/public-history before input, selector,
 expected value and budget. No case was replaced by a preceding kernel candidate.
@@ -45,14 +45,14 @@ profile is qualified by these results.
 
 ## Read-only verification
 
-The [new verifier](long_value_preview_originals/verify_acceptance.py) requires the
+The [new verifier](../../access/storage/long_value_preview_originals/verify_acceptance.py) requires the
 pinned ignored raw evidence and exact frozen private model. It is distinct from
 the historical runner. It rehashes 763 unique artifact identities and 180 compiled
 Git objects, reconstructs all 60 complete expected images, and redecodes cached
 getters and metadata without invoking native or JVM tools:
 
 ```sh
-python3 docs/testing/long_value_preview_originals/verify_acceptance.py \
+python3 tests/run.py tests/access/storage/long_value_preview_originals/verify_acceptance.py \
   --output FRESH_OUTPUT.json
 ```
 

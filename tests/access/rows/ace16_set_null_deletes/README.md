@@ -89,6 +89,6 @@ child. Native example allowances remain unchanged. The creator and readers disab
 expressions, reject linked opens and select UTC/LOCAL_DATE_TIME explicitly.
 V2019, tuples, wider/internal trees, mixed explicit seeds, UPDATE propagation and
 failure/recovery require their separate evidence; they are not inferred here.
-See the [result](../results/ace16-set-null-delete-originals-2026-10-28.json),
-[committed build receipt](../results/ace16-set-null-delete-example-build-2026-10-28.json)
-and [engineering contract](../ACE16_SET_NULL_DELETES.md).
+See the [result](../../../results/rows/ace16-set-null-delete-originals-2026-10-28.json),
+[committed build receipt](../../../results/rows/ace16-set-null-delete-example-build-2026-10-28.json)
+and [engineering contract](../../../reports/rows/ACE16_SET_NULL_DELETES.md).

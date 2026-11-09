@@ -3,8 +3,8 @@ from pathlib import Path
 import hashlib
 import sys
 
-ROOT = Path(__file__).resolve().parents[3]
-sys.path.insert(0, str(ROOT / 'docs/testing'))
+ROOT = Path(__file__).resolve().parents[4]
+sys.path.insert(0, str(ROOT / 'tests/access'))
 from ace16_insert_candidates import model as CODEC
 from parent_index_split_originals import wire as INDEX
 from slot_preview_originals import facts

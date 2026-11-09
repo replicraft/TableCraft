@@ -4,6 +4,7 @@ Only fresh temporary copies are rewritten. Independent public getters, decoded
 SID hashes, page digests and independent removal supply engineering evidence;
 no Microsoft Access execution or application save qualification is inferred.
 """
+from engineering_paths import reference_file
 
 import argparse
 import csv
@@ -19,7 +20,7 @@ from build_large_deployment import digest
 from compare_large_deployment import MEMO_UNITS, ROWS, memo
 from encryption_references import rewrite_classpath
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[4]
 RECIPES = Path(__file__).resolve().parent
 INPUTS = {
     "V2016.accdb": "51b4a6bf4477b2c1dca061e95179b5ccd70de158623edeafc96c5e38186bf630",
@@ -188,10 +189,10 @@ def main():
     source_pins = snapshots(revision)
     immutable = [
         args.cli, args.baseline, args.jar, args.crypt_jar, args.bc_jar,
-        Path(__file__), RECIPES / "encryption_references.py",
-        RECIPES / "compare_large_deployment.py", RECIPES / "build_large_deployment.py",
-        RECIPES / "compare_union_types.py", RECIPES / "compare_browsing.py",
-        *(RECIPES / driver for driver in DRIVERS),
+        Path(__file__), reference_file('tests/access/encryption/database/encryption_references.py'),
+        reference_file('tests/access/reading/tables/compare_large_deployment.py'), reference_file('tests/access/reading/tables/build_large_deployment.py'),
+        reference_file('tests/access/queries/execution/compare_union_types.py'), reference_file('tests/access/reading/tables/compare_browsing.py'),
+        *(reference_file(driver) for driver in DRIVERS),
         *(args.directory / name for name in INPUTS),
     ]
     pins = {str(path.resolve().relative_to(ROOT)): digest(path) for path in immutable}
@@ -209,7 +210,7 @@ def main():
         work = Path(work)
         compilation = subprocess.run([
             "javac", "-cp", classpath, "-d", work,
-            *(RECIPES / driver for driver in DRIVERS),
+            *(reference_file(driver) for driver in DRIVERS),
         ], check=True, capture_output=True, timeout=120)
         if compilation.stdout or compilation.stderr:
             raise RuntimeError("Unexpected compiler diagnostics")

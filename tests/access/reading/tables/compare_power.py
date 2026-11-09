@@ -15,7 +15,7 @@ import struct
 import subprocess
 
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[4]
 REFERENCE = (
     "https://learn.microsoft.com/en-us/openspecs/"
     "microsoft_general_purpose_programming_languages/ms-vbal/"

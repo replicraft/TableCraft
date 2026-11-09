@@ -70,19 +70,19 @@ decoding, lower/re-raised policy changes, stored-cache reuse without I/O, no
 budget refund and first enabling FileData after metadata inventory. CLI controls
 cover option requirements and ranges.
 
-The original [Java recipe](../../testing/LargeDecodedAttachmentFixture.java) creates
+The original [Java recipe](../../../tests/access/reading/tables/LargeDecodedAttachmentFixture.java) creates
 inert ACE 2007/2016/2019 files with a 3 MiB compressed attachment, a 1,500,000-byte
-stored attachment and an empty parent. The [runner](../../testing/compare_larger_decoded_attachments.py)
+stored attachment and an empty parent. The [runner](../../../tests/access/reading/tables/compare_larger_decoded_attachments.py)
 passes 33 controls against independent Python bytes and read-only Jackcess
 lengths/digests/codec tags. Complete CLI bytes, metadata/scalar pruning, counts,
 default/lower caps and independent native/query/output refusals agree. Original
-hashes remain unchanged; [fixture records](../../testing/FIXTURES.md#larger-decoded-attachment-inputs)
+hashes remain unchanged; [fixture records](../../../tests/reports/reading/FIXTURES.md#larger-decoded-attachment-inputs)
 retain the identities. Native Access, large encoded wrappers, release performance
 and broader attachment SQL semantics remain unqualified.
 
 ```sh
 cargo build -p tablecraft-cli --locked --offline
-python3 docs/testing/compare_larger_decoded_attachments.py \
+python3 tests/run.py tests/access/reading/tables/compare_larger_decoded_attachments.py \
   --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar --cli target/debug/tablecraft \
   --directory .cache/tablecraft-fixtures/larger-decoded-attachments-20261024
 ```

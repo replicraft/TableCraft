@@ -3,8 +3,8 @@ import hashlib
 from pathlib import Path
 import sys
 
-ROOT = Path(__file__).resolve().parents[3]
-sys.path.insert(0, str(ROOT / 'docs/testing'))
+ROOT = Path(__file__).resolve().parents[4]
+sys.path.insert(0, str(ROOT / 'tests/access'))
 import capture_delete_trees as TREE
 import delete_reference_maps as MAP
 from integral_split_originals.model import qualify_header

@@ -4,7 +4,7 @@ from pathlib import PurePosixPath
 import subprocess
 import tarfile
 
-RECEIPT = 'docs/testing/results/ace16-insert-empty-owned-example-build-2026-10-28.json'
+RECEIPT = 'tests/results/rows/ace16-insert-empty-owned-example-build-2026-10-28.json'
 REVISION = '463853e1e2a7dae00bb549538b7a049e21d376cc'
 
 

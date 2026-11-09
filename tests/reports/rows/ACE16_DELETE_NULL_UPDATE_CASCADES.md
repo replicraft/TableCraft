@@ -99,16 +99,16 @@ Failures publish no candidate.
 ## Independent validation
 
 The repository-authored
-[update-closure tests](../../crates/engines/tablecraft-ace/tests/ace16_set_null_delete_contract/update_closure.rs)
-and their [literal model](../../crates/engines/tablecraft-ace/tests/ace16_set_null_delete_contract/update_closure/model.rs)
+[update-closure tests](../../../crates/engines/tablecraft-ace/tests/ace16_set_null_delete_contract/update_closure.rs)
+and their [literal model](../../../crates/engines/tablecraft-ace/tests/ace16_set_null_delete_contract/update_closure/model.rs)
 construct complete source and expected images before invoking the preview. Cases
 cover both ACE 16 headers, chains, diamonds, convergent UPDATE-only cycles,
 deleted endpoints, no matching descendant, downstream Restrict and required keys,
 stale requests, budgets and measured terminal cancellation.
 
 The separate
-[partial-tuple tests](../../crates/engines/tablecraft-ace/tests/ace16_set_null_delete_contract/partial_tuple.rs)
-and [model](../../crates/engines/tablecraft-ace/tests/ace16_set_null_delete_contract/partial_tuple/model.rs)
+[partial-tuple tests](../../../crates/engines/tablecraft-ace/tests/ace16_set_null_delete_contract/partial_tuple.rs)
+and [model](../../../crates/engines/tablecraft-ace/tests/ace16_set_null_delete_contract/partial_tuple/model.rs)
 use two genuine physical indexes on the intermediate table. A single-field DELETE
 relationship feeds a distinct reversed two-component UNIQUE UPDATE parent key.
 Four complete source/expected images cover a retained non-NULL component and an
@@ -130,7 +130,7 @@ generators ignored, and 76 existing integration regression functions pass across
 ten targets. Those broader runs preceded the two additional Restrict-diamond tests;
 production behavior did not change between runs. Strict all-target/all-feature
 Clippy, strict minimal-library Clippy and workspace formatting pass. The
-[verification record](results/ace16-delete-null-update-cascades-2026-10-28.json)
+[verification record](../../results/rows/ace16-delete-null-update-cascades-2026-10-28.json)
 retains source hashes, actual test groups and the failed initial source gate.
 
 This continuation has independent literal validation. The original-file comparison

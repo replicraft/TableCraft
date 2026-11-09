@@ -70,7 +70,7 @@ for the unqualified French mutation family. Strict ACE Clippy across all targets
 and features, minimal compilation, formatting and documentation/dependency guards
 pass. The first Clippy attempt found a redundant test-only String conversion;
 removing it did not change image construction or runtime behavior.
-The [independent original-file corpus](ace16_insert_variable_indexes/README.md)
+The [independent original-file corpus](../../access/indexes/ace16_insert_variable_indexes/README.md)
 now qualifies 38 positive engineering images and four exact conservative refusals.
 All 38 source/request-only images match first-attempt committed-producer outputs
 before 76 fresh independent getter/map calls pass. They preserve 206 old rows,
@@ -84,8 +84,8 @@ Two failed helper compilations and a stopped proof after 133 successful calls
 remain preserved. Corrected saved replay checks all 42 source gates and both
 completed references, and an exact continuation performs only the remaining
 120 calls. No completed source/append/read call is repeated or synthesized.
-The [result receipt](results/ace16-insert-variable-index-native-2026-10-28.json)
-and [committed build](results/ace16-insert-variable-index-example-build-2026-10-28.json)
+The [result receipt](../../results/indexes/ace16-insert-variable-index-native-2026-10-28.json)
+and [committed build](../../results/indexes/ace16-insert-variable-index-example-build-2026-10-28.json)
 retain the distinct phases. Native Microsoft Access save/reopen qualification
 remains separate work.
 

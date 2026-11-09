@@ -3,6 +3,7 @@
 Decimal and fixed ASCII/locale models supply expectations. Only TableCraft runs
 SQL; native references use inert typed ID getters and unchanged source hashes.
 """
+from engineering_paths import reference_file
 
 import argparse
 from decimal import Decimal, ROUND_HALF_EVEN
@@ -59,7 +60,7 @@ def main():
     for database in args.database:
         before = hashlib.sha256(database.read_bytes()).hexdigest()
         tagged = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar,
-                     RECIPES / "TableDataOracle.java", database, "ScalarSamples")
+                     reference_file('tests/access/reading/tables/TableDataOracle.java'), database, "ScalarSamples")
         identities = sorted(int(line.split("\t")[1].removeprefix("I32:")) for line in tagged.splitlines())
         expected = [[str(n), "8", str(97 if n == 2 else 65), quoted("ı" if n == 2 else "i")] for n in identities]
         sql = "SELECT ID,LenB(StrConv('Ab C',CStr(ID),'1033')),AscB(StrConv('Ab C',CDate(ID),CDate(1033))),StrConv('I','1.5',CStr(IIf(ID=2,1055,1033))) FROM ScalarSamples ORDER BY ID"

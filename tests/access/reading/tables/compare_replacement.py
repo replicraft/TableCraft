@@ -3,6 +3,7 @@
 Independent native getters supply input rows only. No Access SQL or stored active
 content is executed, and the original source bytes must remain unchanged.
 """
+from engineering_paths import reference_file
 import argparse
 from pathlib import Path
 import subprocess
@@ -90,7 +91,7 @@ def main():
         assert expected_error in refused(args.cli, mode, expression)
         controls += 1
     tagged = run('java', '-Dstdout.encoding=UTF-8', '-cp', args.jar,
-                 RECIPES/'TableDataOracle.java', args.database, 'ROULETTE_TB')
+                 reference_file('tests/access/reading/tables/TableDataOracle.java'), args.database, 'ROULETTE_TB')
     rows = []
     for line in tagged.splitlines():
         row = line.split('\t')[1:]

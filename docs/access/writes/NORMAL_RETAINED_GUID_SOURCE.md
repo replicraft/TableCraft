@@ -30,7 +30,7 @@ and GUID mutation are not established by this study.
 
 Two new metadata tests and retained source/ownership/ordinary checks pass, followed
 by strict and reader/journal/preview builds. See the
-[execution record](../../testing/results/ace16-retained-guid-source-2026-11-03.json).
-The [baseline audit](../../testing/ACE16_GUID_UPDATE_ADMISSION.md) retains earlier
+[execution record](../../../tests/results/general/ace16-retained-guid-source-2026-11-03.json).
+The [baseline audit](../../../tests/reports/rows/ACE16_GUID_UPDATE_ADMISSION.md) retains earlier
 refusals. Its explicitly labelled dense-integral helper probe is historical and
 does not trace the new dispatcher. Native Access save/reopen remains unrun.

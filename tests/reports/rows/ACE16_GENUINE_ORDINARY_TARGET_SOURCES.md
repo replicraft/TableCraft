@@ -5,7 +5,7 @@ genuine ordinary target expectations. Their complete hashes are
 `72e7ba5480d95d0be0d4ea6f2c75b015062970599da3fde620cc9f13c60b028d` and
 `5cfbf6d4b6224b989f00f0abd63ec362846ff60240a91b058e1442c3010305c5`.
 They were already admitted for independent
-[secondary-index source reads](results/ace16-secondary-index-genuine-source-admission-2026-10-30.json).
+[secondary-index source reads](../../results/indexes/ace16-secondary-index-genuine-source-admission-2026-10-30.json).
 No system table, property, VBA content or bootstrap byte is removed to create a
 simpler input. The observed complex foreign-key carrier belongs to system
 inventory; Items itself has three plain manual Int32 fields.
@@ -41,7 +41,7 @@ observations, recomputing page/record hashes from literal image bytes. They neve
 consume new reader output or a native producer image as an oracle.
 
 The maintained pure tools are under
-[`scripts/compatibility/genuine_ordinary_targets`](../../scripts/compatibility/genuine_ordinary_targets/create_expected.py).
+[`scripts/compatibility/genuine_ordinary_targets`](../../../scripts/compatibility/genuine_ordinary_targets/create_expected.py).
 The model and report helper retain the executed private helpers' ASTs, with
 readable formatting; the request inventory remains byte-exact. The command below
 requires the two pinned originals and their two pinned carrier-third reports:
@@ -70,4 +70,4 @@ Genuine native writer calls were zero throughout this source-qualification and
 pure-tool replay phase. Later write integration has separate acceptance evidence
 and does not change those historical counts. Microsoft Access save/reopen and
 Windows qualification remain unrun. See the
-[source result](results/ace16-genuine-ordinary-target-sources-2026-10-31.json).
+[source result](../../results/rows/ace16-genuine-ordinary-target-sources-2026-10-31.json).

@@ -2,7 +2,7 @@
 
 Two frozen old-service requests refused with `Unsupported(IndexedColumn)` and
 created no candidate. Two matching public Jackcess UPDATE calls succeeded.
-The [receipt](results/ace16-index-split-originals-2026-10-26.json) records all
+The [receipt](../../results/indexes/ace16-index-split-originals-2026-10-26.json) records all
 12 commands and preserves the initial verifier's exit 1. Its failed hypothesis
 was byte identity of unaffected indexes, not failure of either public UPDATE.
 A separate read-only diagnosis completed successfully without repeating actions.
@@ -19,7 +19,7 @@ GUID fields remain unchanged. The sole enforced relationship is
 `Parents.ID -> Children.ParentID`, with RESTRICT updates/deletes. This request
 therefore changes neither endpoint's relationship key value or association.
 
-The [frozen plan](index_split_originals/plan.json) requests exactly one fixed
+The [frozen plan](../../access/indexes/index_split_originals/plan.json) requests exactly one fixed
 Int32 replacement per profile: original ordinal 0, expected 1, new 2147483647.
 It is byte-identical to the pre-action plan, SHA256
 `bffbf7831ae1911fdfb3b3b5b583f27c59bd08757e8b48bce0c6b99585a25006`.
@@ -28,9 +28,9 @@ enforces foreign keys, selects UTC and rejects linked opens. It checks actual
 empty table/column property maps and the required unique primary metadata before
 the update. Read-only full getters independently check all rows and index orders.
 
-The existing [fixed Int32 consumer](../../crates/engines/tablecraft-ace/examples/preview_ace16_update.rs)
+The existing [fixed Int32 consumer](../../../crates/engines/tablecraft-ace/examples/preview_ace16_update.rs)
 was frozen from revision `2fc75f6f147df1ae7e715a79ef400968185ab304`.
-Its [build receipt](results/ace16-index-split-example-build-2026-10-26.json)
+Its [build receipt](../../results/indexes/ace16-index-split-example-build-2026-10-26.json)
 pins the 18,074,152-byte artifact, SHA256
 `28bfe8b1db749eebf1da2ed2ca266aed1bc0d317393d567504478006fc8bd7b5`,
 and 108 selected historical Git source objects. Both actual old-service failures
@@ -100,15 +100,15 @@ the public writer's redistribution is not its raw-byte golden.
 ## Tools and provenance
 
 Exact executed private sources are archived and pinned separately from the
-current public [capture](index_split_originals/capture.py),
-[action helper](index_split_originals/IndexSplitReference.java) and
-[analysis](index_split_originals/analyze.py). The public capture records physical
+current public [capture](../../access/indexes/index_split_originals/capture.py),
+[action helper](../../access/indexes/index_split_originals/IndexSplitReference.java) and
+[analysis](../../access/indexes/index_split_originals/analyze.py). The public capture records physical
 rewrites rather than repeating the false byte-identity expectation. That refactor
 was not the historically executed program. The public analysis was exercised
 read-only on the preserved initial artifacts, with no new native or Java calls:
 
 ```sh
-python3 docs/testing/index_split_originals/analyze.py \
+python3 tests/run.py tests/access/indexes/index_split_originals/analyze.py \
   --report .cache/ace16-index-split-original-actions-initial-20261026/report.json \
   --output .cache/index-split-fresh-read-only-diagnosis.json
 ```

@@ -6,10 +6,10 @@ from pathlib import Path
 import subprocess
 import sys
 
-ROOT = Path(__file__).resolve().parents[3]
+ROOT = Path(__file__).resolve().parents[4]
 sys.dont_write_bytecode = True
 sys.path.insert(0, str(ROOT))
-sys.path.insert(0, str(ROOT / 'docs/testing'))
+sys.path.insert(0, str(ROOT / 'tests/access'))
 from scripts.compat_artifacts import ArtifactStore
 from ace16_insert_external_long_values import evidence, model, reference, requests, source
 
@@ -25,8 +25,8 @@ REJECTED = '.cache/ace16-insert-external-long-value-build-20261028'
 NATIVE = '.cache/ace16-insert-external-long-value-acceptance-next-20261028'
 NATIVE_WORK = '.cache/ace16-insert-external-long-value-candidate-first-20261028'
 GETTERS = '.cache/ace16-insert-external-long-value-getters-first-20261028'
-PUBLIC = 'docs/testing/ace16_insert_external_long_values'
-BUILD_RECEIPT = 'docs/testing/results/ace16-insert-external-long-value-isolated-example-build-2026-10-28.json'
+PUBLIC = 'tests/access/storage/ace16_insert_external_long_values'
+BUILD_RECEIPT = 'tests/results/rows/ace16-insert-external-long-value-isolated-example-build-2026-10-28.json'
 NOTICE = b'Engineering candidate: data-macro semantics and native Access qualification pending.\n'
 FIXED = {
     SOURCE + '/freeze.json': '9bc9bccf92a3a0872fba94aa30306e558677f288cc95401bb393b908e4e70ce7',
@@ -73,7 +73,7 @@ def maintained(store, pins):
             definitions = lambda text: [ast.dump(node, include_attributes=False)
                 for node in ast.parse(text).body if isinstance(node, (ast.FunctionDef, ast.ClassDef))]
             assert definitions(actual) == definitions(original)
-    helper = pins.check(store.pin('docs/testing/parent_index_split_originals/BoundedFileChannel.java'))
+    helper = pins.check(store.pin('tests/access/indexes/parent_index_split_originals/BoundedFileChannel.java'))
     assert helper.read_bytes() == pins.check(store.pin(SOURCE + '/BoundedFileChannel.java')).read_bytes()
 
 

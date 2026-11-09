@@ -3,6 +3,7 @@
 Optional native controls read immutable registered large-index inputs through
 Jackcess getters. No Access SQL or active database content is executed.
 """
+from engineering_paths import reference_file
 
 import argparse
 import csv
@@ -77,7 +78,7 @@ def main():
             assert hashlib.sha256(before).hexdigest() == digest
             output = subprocess.check_output(
                 ["java", "-Dstdout.encoding=UTF-8", "-cp", str(args.jar),
-                 str(RECIPES / "TableDataOracle.java"), str(path), "IndexedRows"],
+                 str(reference_file('tests/access/reading/tables/TableDataOracle.java')), str(path), "IndexedRows"],
                 text=True, encoding="utf-8",
             )
             tags = [line.split("\t")[1] for line in output.splitlines()]

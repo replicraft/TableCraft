@@ -115,7 +115,7 @@ Kernel/evaluator/query/CLI tests cover raw DATE counts, count rounding, month en
 Extended preservation, progressive controls, source validation before NULL,
 prepared rebinding, filters/grouping/correlations and eager errors. Exact cumulative
 normalization ceilings and transient cancellation at every observed checkpoint
-are exercised. The original [independent recipe](../../testing/compare_date_interval_sources.py)
+are exercised. The original [independent recipe](../../../tests/access/queries/expressions/compare_date_interval_sources.py)
 checks all ten intervals against Python Gregorian additions/components/enumerated
 week boundaries and Decimal count rounding. Its 13,662 controls include both CLI
 query modes and numeric/Text projections over unchanged Jet 4, ACE 2007 and

@@ -13,7 +13,7 @@ from pathlib import Path
 
 from compare_native_equijoins import INPUT_SHA256, JAR_SHA256, digest, getter_ids, invoke, relative
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[4]
 MODES = {
     "materialized": [],
     "declared": ["--declared-arithmetic"],
@@ -194,9 +194,9 @@ def main():
 
     pinned = [
         args.cli, args.jar, Path(__file__),
-        ROOT / "docs/testing/compare_native_equijoins.py",
-        ROOT / "docs/testing/TableDataOracle.java",
-        ROOT / "docs/testing/DecimalIndexFixture.java",
+        ROOT / "tests/access/queries/execution/compare_native_equijoins.py",
+        ROOT / "tests/access/reading/tables/TableDataOracle.java",
+        ROOT / "tests/access/queries/expressions/DecimalIndexFixture.java",
         *args.inputs,
     ]
     before = {relative(path): digest(path) for path in pinned}

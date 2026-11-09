@@ -255,7 +255,7 @@ promotion is not complete.
 | Built-in | Status | Notes |
 | --- | --- | --- |
 | Count | Partial | Count(*) and Count(expr), grouping and empty/all-NULL behavior. Explicit Error-valued expressions count as non-NULL without code conversion; [lossless String inputs](../query/aggregates/EXPRESSION_AGGREGATES.md#counting-lossless-string-expressions) count without Unicode publication. Native cell/error qualification and resource/result limits remain. |
-| Sum | Partial | [Exact floating totals](../testing/FLOATING_SUMS.md), [wider exact Decimal totals](../query/aggregates/DECIMAL_SUMS.md) and checked integral/Currency folds; Currency/integer inputs in floating-selected sums reuse CDbl conversion. Full mixed date/Variant and encounter-order promotion and native accumulation/rounding qualification remain open. |
+| Sum | Partial | [Exact floating totals](../../tests/reports/general/FLOATING_SUMS.md), [wider exact Decimal totals](../query/aggregates/DECIMAL_SUMS.md) and checked integral/Currency folds; Currency/integer inputs in floating-selected sums reuse CDbl conversion. Full mixed date/Variant and encounter-order promotion and native accumulation/rounding qualification remain open. |
 | Avg | Partial | [Wider numeric means](../query/aggregates/AVERAGES.md), including Currency, legacy DATE serials, exact binary floating totals and NULL elimination; fixed-point Double means round once from exact rational totals; wider exact Decimal totals; mixed conversion and native accumulation/promotion gaps remain. |
 | Min | Partial | Comparable scalar and [retained String extrema](../query/aggregates/EXPRESSION_AGGREGATES.md#retained-string-extrema), plus provisional standard Error-only extrema. Mixed Error/scalar/String kinds fail. Actual String ordering requires an explicit provider; native aggregate/locale qualification remains. |
 | Max | Partial | Same comparison/collation limits as Min. |
@@ -290,7 +290,7 @@ remain separate; this does not complete any Partial entry.
 | DMax | Partial | Domain maximum retaining lossless Strings and provisional standard Error-only extrema. See [domain profile](../query/DOMAIN_FUNCTIONS.md); broader host/criteria/coercion and native qualification remain. |
 | DStDev | Partial | Domain sample standard deviation. See [domain profile](../query/DOMAIN_FUNCTIONS.md); broader host/criteria/coercion and native qualification remain. |
 | DStDevP | Partial | Domain population standard deviation. See [domain profile](../query/DOMAIN_FUNCTIONS.md); broader host/criteria/coercion and native qualification remain. |
-| DSum | Partial | Shares [exact floating Sum](../testing/FLOATING_SUMS.md), [wider Decimal totals](../query/aggregates/DECIMAL_SUMS.md) and checked integral/Currency folds. See [domain profile](../query/DOMAIN_FUNCTIONS.md); broader host/criteria/coercion and native qualification remain. |
+| DSum | Partial | Shares [exact floating Sum](../../tests/reports/general/FLOATING_SUMS.md), [wider Decimal totals](../query/aggregates/DECIMAL_SUMS.md) and checked integral/Currency folds. See [domain profile](../query/DOMAIN_FUNCTIONS.md); broader host/criteria/coercion and native qualification remain. |
 | DVar | Partial | Domain sample variance. See [domain profile](../query/DOMAIN_FUNCTIONS.md); broader host/criteria/coercion and native qualification remain. |
 | DVarP | Partial | Domain population variance. See [domain profile](../query/DOMAIN_FUNCTIONS.md); broader host/criteria/coercion and native qualification remain. |
 

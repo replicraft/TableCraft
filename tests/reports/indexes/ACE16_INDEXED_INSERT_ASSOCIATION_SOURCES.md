@@ -6,12 +6,12 @@ construction and all 24 exact independent SDK observations passed on the first
 attempt; saved verification passed without launching children. All four native
 source views also pass the independent complete-image and reader gate. Matching
 producer and retained-host checks now pass separately; see the
-[write record](results/ace16-indexed-write-followons-2026-11-01.json).
+[write record](../../results/indexes/ace16-indexed-write-followons-2026-11-01.json).
 
 The [original qualification](ACE16_INDEXED_INSERT_ASSOCIATION_ORIGINALS.md) records
 source creation, the explicit SDK candidate-hint restoration and native original
-admission. This tranche preserves those originals. The [literal requests](indexed_insert_association/requests.json)
-and observed input closure were frozen before the [pure byte model](indexed_insert_association/model.py).
+admission. This tranche preserves those originals. The [literal requests](../../access/indexes/indexed_insert_association/requests.json)
+and observed input closure were frozen before the [pure byte model](../../access/indexes/indexed_insert_association/model.py).
 The model imports no native mutation code, serializer, decoder, reservation,
 staged key array, earlier expected output or SDK writer.
 
@@ -46,7 +46,7 @@ TD byte and selected row changes in the prediction; every unrelated observation
 remains exact. All source, request, reader-class, jar and code pins are checked
 before and after calls. No new compiler or native producer was invoked.
 
-The [source result](results/ace16-indexed-insert-association-sources-2026-11-01.json)
+The [source result](../../results/indexes/ace16-indexed-insert-association-sources-2026-11-01.json)
 records exact original/AFTER hashes, pre-model and pre-call closures, first
 construction/read receipts and saved-verifier hashes. Binary artifacts, compiled
 classes and jars remain private evidence rather than maintained source files.

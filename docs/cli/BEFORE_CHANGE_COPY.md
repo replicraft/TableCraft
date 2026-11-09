@@ -74,4 +74,4 @@ strict checks pass. Final ACE/Access/CLI formatting and ACE/Access no-default
 builds pass, along with 6718 local documentation targets (none missing), 15
 package-boundary checks and 12 policy tests. No product test failed in this host
 round; import-only review and additive envelope registration changed no source
-constructors or expected bytes. See the [pinned result](../testing/results/ace16-before-change-cli-copy-2026-10-30.json).
+constructors or expected bytes. See the [pinned result](../../tests/results/general/ace16-before-change-cli-copy-2026-10-30.json).

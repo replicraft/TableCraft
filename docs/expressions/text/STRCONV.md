@@ -151,7 +151,7 @@ visitors, Binary inputs, parameter/host-policy reuse, call-local overrides and
 every observed query cancellation checkpoint. Two CLI controls exercise both
 query modes, explicit policy overrides and empty stdout on errors.
 
-The original [comparison runner](../../testing/compare_strconv.py) passes 12178 controls:
+The original [comparison runner](../../../tests/access/queries/expressions/compare_strconv.py) passes 12178 controls:
 Python codec mappings plus reviewed WHATWG exceptions exhaust all bytes of the
 eleven existing pages; selected Python casing models and explicit language goldens
 cover casing; original native Hyperlink fixtures supply independent decoded fields
@@ -188,7 +188,7 @@ The batch passes 833 expression/query tests including doctests, 309 separately
 run minimal-profile expression tests, three selected CLI tests and the tightened
 resource boundary control. All-feature/minimal Clippy, warnings-denied rustdoc
 and formatting/diff checks pass. The original
-[comparison recipe](../../testing/compare_strconv_options.py) passes 938 independent
+[comparison recipe](../../../tests/access/queries/expressions/compare_strconv_options.py) passes 938 independent
 Decimal/ASCII-representation/locale/native-field controls, including both CLI
 commands and en-us/de-de options. Existing read-only ID getters supply unchanged
 Jet 4/ACE 2007/ACE 16-family references; only TableCraft executes SQL. Source/JAR
@@ -257,7 +257,7 @@ Three expression tests cover state/control order, host Empty, zero-byte-budget
 raw buffer identity, output refusal, every observed successful cancellation
 checkpoint, CVar and once-only Rnd controls. Query/CLI tests add derived Error
 values, explicit conversion, unpaired raw intermediates and buffered failures.
-The original [state runner](../../testing/compare_strconv_states.py) passes 154 controls
+The original [state runner](../../../tests/access/queries/expressions/compare_strconv_states.py) passes 154 controls
 (114 scalar and 40 native sequential/indexed) across four unchanged registered
 inputs. The existing mapping/casing runner also passes 12,046 scalar controls;
 its optional native branch was not rerun. Only TableCraft executes SQL. Native
@@ -315,14 +315,14 @@ existing StrConv controls, explicit public-parser refusals, natural Text/NULL
 results, aggregate/correlated visitors, raw intermediates, plan reuse, exact locale
 selection, eager failures, cancellation and expansion limits.
 
-The original [kana comparison runner](../../testing/compare_strconv_kana.py) passes
+The original [kana comparison runner](../../../tests/access/queries/expressions/compare_strconv_kana.py) passes
 3,024 success controls and 32 refusals through both CLI modes (1,040 commands).
 Python Unicode 16.0 character-name counterpart lookup supplies the independent
 answers; canonical decomposition is used only when a voiced source lacks a
 precomposed counterpart. It does not import production mappings or normalize
 whole strings. Single letters, iteration marks, deterministic mixed strings,
 voiced expansions, halfwidth/combining preservation, NUL and retained byte slices
-are covered. The [retained report](../../testing/results/strconv-kana-2026-10-24.json)
+are covered. The [retained report](../../../tests/results/queries/strconv-kana-2026-10-24.json)
 records runner, source and unchanged executable hashes. Native Access/NLS execution
 remains deferred; StrConv remains **Partial**.
 
@@ -395,14 +395,14 @@ expression and selected query Clippy checks pass. Native Access/NLS width result
 remain unqualified; StrConv remains **Partial**.
 
 
-The original [width comparison runner](../../testing/compare_strconv_width.py) passes
+The original [width comparison runner](../../../tests/access/queries/expressions/compare_strconv_width.py) passes
 5,544 success controls plus 30 refusals across 1,878 CLI commands in eval/run.
 Its independent Python Unicode 16.0 model derives 160 width pairs from character
 properties and uses local kana composition/decomposition only. Single mappings,
 voiced sequences, spacing-mark asymmetry, deterministic mixed strings, unrelated
 compatibility characters, raw slices, NUL and control/error refusals are covered.
-The [retained report](../../testing/results/strconv-width-2026-10-24.json) records unchanged
-binary, source and manifest hashes. An [excluded initial attempt](../../testing/results/strconv-width-precorrection-2026-10-24.txt)
+The [retained report](../../../tests/results/queries/strconv-width-2026-10-24.json) records unchanged
+binary, source and manifest hashes. An [excluded initial attempt](../../../tests/results/queries/strconv-width-precorrection-2026-10-24.txt)
 found missing white-parenthesis counterparts; those two pairs were implemented and
 pinned before the final replay. The failed attempts are not passing evidence or
 included in completed control totals. The earlier kana runner now uses combined
@@ -454,13 +454,13 @@ refuse. Native NLS/Access equivalence remains separate compatibility work.
 Three focused scalar evaluator tests and one bound-query test cover the new
 composition. The accepted scoped checks pass 28 expression tests and 19 query
 tests, with strict Clippy, minimal-feature compilation and scoped formatting.
-The [verification record](../../testing/results/read-query-wide-hiragana-2026-10-25.json)
+The [verification record](../../../tests/results/queries/read-query-wide-hiragana-2026-10-25.json)
 retains exact commands/log hashes, the four new controls and 43 existing
 regressions. CLI and native execution evidence are separate.
 
 The scoped wide/Hiragana checkpoint passes 51 distinct expression/query/CLI tests,
 including five new controls, strict linting, minimal expression features and
-formatting. See [verification](../../testing/results/read-query-wide-hiragana-2026-10-25.json).
+formatting. See [verification](../../../tests/results/queries/read-query-wide-hiragana-2026-10-25.json).
 
 ## Combined Japanese case, width and kana
 
@@ -510,10 +510,10 @@ values against independent accepted-code goldens. Reused controls, grouped and
 correlated queries, raw slices, representation failures, every observed combined
 conversion cancellation checkpoint and buffered CLI errors pass. Separate
 parser-free component checks preserve the legacy public recipes. Strict scoped
-linting and formatting pass; the [verification record](../../testing/results/strconv-japanese-combinations-2026-10-25.json)
+linting and formatting pass; the [verification record](../../../tests/results/queries/strconv-japanese-combinations-2026-10-25.json)
 retains initial authoring errors and the pre-qualification implicit-widening
 correction rather than counting earlier passes as final evidence. The independent
-[combined-mode replay](../../testing/STRCONV_COMBINATIONS_REPLAY.md) now passes 5,680 CLI
+[combined-mode replay](../../../tests/reports/queries/STRCONV_COMBINATIONS_REPLAY.md) now passes 5,680 CLI
 commands, comparing 17,280 result cells and 176 buffered failures across both query
 modes and four unchanged native inputs. All 34 original/source/tool hashes remain
 unchanged. Native Windows qualification remains separate; component and composition
@@ -555,9 +555,9 @@ checkpoint preserves cancellation and sink errors. A seven-byte input can expand
 to eight bytes before narrowing to six; its seven-byte intermediate allowance
 still refuses. No default limit, normalization, dependency, stored type or native
 write eligibility changes. See the
-[scoped verification](../../testing/results/japanese-proper-space-2026-10-25.json).
+[scoped verification](../../../tests/results/general/japanese-proper-space-2026-10-25.json).
 
-The expanded [independent replay](../../testing/STRCONV_COMBINATIONS_REPLAY.md) now
+The expanded [independent replay](../../../tests/reports/queries/STRCONV_COMBINATIONS_REPLAY.md) now
 passes 5,680 CLI commands with 17,280 compared cells and 176 expected buffered
 failures. It retains all original composition cases, adds explicit Japanese word
 boundaries for every mode, and checks stored/composed field expressions in four

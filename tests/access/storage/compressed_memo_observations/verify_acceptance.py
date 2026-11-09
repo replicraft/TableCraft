@@ -9,8 +9,8 @@ from pathlib import Path
 import subprocess
 import sys
 
-ROOT = Path(__file__).resolve().parents[3]
-sys.path.insert(0, str(ROOT / 'docs/testing'))
+ROOT = Path(__file__).resolve().parents[4]
+sys.path.insert(0, str(ROOT / 'tests/access'))
 from compressed_memo_observations import capture
 
 MODEL_SHA256 = '499025d5304606b6c3177ba40865b64863dd5aa74bb65c4e62423f97a8960aeb'

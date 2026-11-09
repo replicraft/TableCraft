@@ -6,7 +6,7 @@ Short Text additions, four Number-after-Short-Text additions, and explicit
 compressed width1/80 probes. All original
 files remain unchanged. A nineteenth comparison pins the third Number addition
 against a genuine SDK AFTER. The
-[observation record](../results/add-short-text-sdk-source-2026-11-08.json) retains
+[observation record](../../../results/general/add-short-text-sdk-source-2026-11-08.json) retains
 complete hashes, raw fields/MR2 bodies, changed pages and read-only property facts.
 No native Short Text ADD candidate, original-intent language, runtime/GUI command,
 Microsoft Access execution or older-format admission is supplied by this record.
@@ -90,7 +90,7 @@ query, macro, VBA, provider or native application executes. Generated databases,
 classes and the SDK binary remain local and untracked.
 
 The [independent model](model.py) reuses only the earlier first-party literal
-[raw Number framing](../number_column_repeat/raw.py), never production or SDK
+[raw Number framing](../../schema/number_column_repeat/raw.py), never production or SDK
 encoders. BEFORE and the explicit declaration construct the expected complete
 image before comparison. A portable model rerun also matches all eighteen images
 and the third Number; historical execution helper/model/report hashes remain
@@ -103,9 +103,9 @@ From the repository root, place the three exact input files named
 are checked. Use fresh SDK/raw output directories:
 
 ```sh
-python3 docs/testing/short_text_add/probe.py \
+python3 tests/run.py tests/access/rows/short_text_add/probe.py \
   --jar "$JACKCESS_JAR" --sources-dir "$SOURCES_DIR" --output-dir "$SDK_OUTPUT"
-python3 docs/testing/short_text_add/model.py \
+python3 tests/run.py tests/access/rows/short_text_add/model.py \
   --sources-dir "$SOURCES_DIR" --sdk-dir "$SDK_OUTPUT" --output-dir "$RAW_OUTPUT"
 ```
 
@@ -124,14 +124,14 @@ those four retained Number-after-Label outputs. Every complete AFTER matches the
 independent model constructed before invoking the SDK. The originals remain
 unchanged, and the read-only typed observer confirms Required(false),
 AllowZeroLength(true), and absent DefaultValue. The
-[third-step record](../results/short-text-mixed-sequence-sdk-2026-11-08.json)
+[third-step record](../../../results/general/short-text-mixed-sequence-sdk-2026-11-08.json)
 keeps these observations separate from the original eighteen cases.
 
 Reproduce from the repository root with the retained SDK files and a fresh output
 directory:
 
 ```sh
-python3 docs/testing/short_text_add/mixed_sequence.py \
+python3 tests/run.py tests/access/rows/short_text_add/mixed_sequence.py \
   --jar "$JACKCESS_JAR" --sources-dir "$SDK_OUTPUT/files" \
   --output-dir "$THIRD_STEP_OUTPUT"
 ```
@@ -145,10 +145,10 @@ editing or qualify populated-table schema changes.
 
 This retained SDK/model record remains an independent observation, with its
 original execution hashes and source classes unchanged. The separate native
-[typed-field contract](../../access/writes/ADD_COLUMN.md#typed-original-request-and-constructive-prefix)
+[typed-field contract](../../../../docs/access/writes/ADD_COLUMN.md#typed-original-request-and-constructive-prefix)
 now describes the connected candidate, explicit compression opt-in, constructive
 prefix proof and TCAC0005 original request. Native intent, adapter/runtime and GUI
 workflow qualification are separate from these SDK comparisons. The
-[coordinated workflow record](../results/field-addition-gui-workflows-2026-11-08.json)
+[coordinated workflow record](../../../results/schema/field-addition-gui-workflows-2026-11-08.json)
 now records the corrected native/application checks without changing these
 historical SDK results or inferring Microsoft Access/Windows execution.

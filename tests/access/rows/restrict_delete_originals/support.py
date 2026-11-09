@@ -7,8 +7,8 @@ from pathlib import Path
 import sys
 
 REPOSITORY_ROOT = next(parent for parent in Path(__file__).resolve().parents
-                       if (parent / 'docs/testing/encoded_delete_originals/wire.py').is_file())
-sys.path.insert(0, str(REPOSITORY_ROOT / 'docs/testing/encoded_delete_originals'))
+                       if (parent / 'tests/access/rows/encoded_delete_originals/wire.py').is_file())
+sys.path.insert(0, str(REPOSITORY_ROOT / 'tests/access/rows/encoded_delete_originals'))
 import wire
 
 GETTER_CLASS = 'com.healthmarketscience.jackcess.impl.RestrictDeleteFixture'

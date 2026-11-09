@@ -52,7 +52,7 @@ attempt on a disposable copy produced no candidate and left both source copy and
 original unchanged. These authored-source results do not establish edit support
 for that donated file. Native Access save/reopen qualification remains unrun.
 
-The [result record](results/ace16-preserved-boolean-updates-2026-10-30.json)
+The [result record](../../results/rows/ace16-preserved-boolean-updates-2026-10-30.json)
 pins the executed checks and retained donor outcome. The earlier source-only
 qualification failures remain distinct from producer results; original fixture
 constructors and expected images were not repaired after producer execution.
@@ -87,7 +87,7 @@ bytes or complete-image expectations; all five source/API tests pass afterward.
 upstream property declarations do not establish native desktop semantics for
 that value. No donated-file retry was performed for this increment, and the
 previous real-file refusal still applies. The
-[UI-carrier result](results/ace16-preserved-ui-carriers-2026-10-30.json) records
+[UI-carrier result](../../results/general/ace16-preserved-ui-carriers-2026-10-30.json) records
 this narrower evidence.
 
 

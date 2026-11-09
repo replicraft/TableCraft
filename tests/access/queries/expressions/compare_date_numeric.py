@@ -4,6 +4,7 @@ Calendar/Decimal/IEEE models provide expected results independently of the Rust
 conversion kernels. Quarter-day inputs avoid unspecified Decimal normalization
 of nonexact binary fractions. This does not execute native Access SQL.
 """
+from engineering_paths import reference_file
 
 import argparse
 import datetime as dt
@@ -158,7 +159,7 @@ def main():
     for database in args.database:
         before = hashlib.sha256(database.read_bytes()).hexdigest()
         tagged = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar,
-                     RECIPES / "TableDataOracle.java", database, "ScalarSamples")
+                     reference_file('tests/access/reading/tables/TableDataOracle.java'), database, "ScalarSamples")
         reference = []
         for line in tagged.splitlines():
             fields = line.split("\t")

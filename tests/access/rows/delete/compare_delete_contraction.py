@@ -10,8 +10,8 @@ import subprocess
 import capture_delete_contraction as CAP
 import delete_reference_maps as MAP
 
-ROOT = Path(__file__).resolve().parents[2]
-REFERENCE = ROOT / 'docs/testing/results/delete-contraction-reference-2026-10-26.json'
+ROOT = Path(__file__).resolve().parents[4]
+REFERENCE = ROOT / 'tests/results/rows/delete-contraction-reference-2026-10-26.json'
 NODE = CAP.INDEX_NODE_KIND
 LEAF = CAP.INDEX_LEAF_KIND
 REFERENCE_BYTES = CAP.ROW_REFERENCE_BYTES
@@ -38,15 +38,15 @@ SOURCE_PATHS = (
     'crates/engines/tablecraft-ace/src/table/indexes/mutation/retirement/audit.rs',
     'crates/engines/tablecraft-ace/src/format/allocation/edit.rs',
 )
-SPEC = importlib.util.spec_from_file_location('original_flat_checks', ROOT / 'docs/testing/compare_delete_candidates.py')
+SPEC = importlib.util.spec_from_file_location('original_flat_checks', ROOT / 'tests/access/queries/expressions/compare_delete_candidates.py')
 BASE = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(BASE)
 
 
 class Replay(BASE.Replay):
     def capture(self, path, family, jar):
-        helper = ROOT / f'docs/testing/{family}DeleteFixture.java'
-        map_helper = ROOT / f'docs/testing/{family}UsageMapProbe.java'
+        helper = ROOT / f'tests/access/{family}DeleteFixture.java'
+        map_helper = ROOT / f'tests/access/{family}UsageMapProbe.java'
         getter = self.run(['java', '-Dstdout.encoding=UTF-8', '-cp', jar, helper, 'oracle', path])
         probe = self.run(['java', '-Dstdout.encoding=UTF-8', '-cp', jar, map_helper, path])
         for receipt in (getter, probe):

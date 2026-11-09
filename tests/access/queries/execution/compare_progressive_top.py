@@ -25,8 +25,8 @@ def main():
     assert digest(args.source_manifest) == args.manifest_sha256
     sources = dict(line.split("\0") for line in args.source_manifest.read_text().splitlines())
     paths = {args.cli, args.baseline, args.source_manifest, Path(__file__),
-             ROOT / "docs/testing/compare_progressive_queries.py",
-             ROOT / "docs/testing/ProgressiveQueryFixture.java"}
+             ROOT / "tests/access/queries/execution/compare_progressive_queries.py",
+             ROOT / "tests/access/queries/execution/ProgressiveQueryFixture.java"}
     paths.update(path for path in args.directory.iterdir() if path.is_file())
     hashes = {str(path.relative_to(ROOT) if path.is_absolute() else path): digest(path)
               for path in sorted(paths)}

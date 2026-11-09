@@ -24,5 +24,5 @@ was changed. The ordinary hash anchor, strict and format checks passed.
 No repair producer was invoked during this source phase. These observations do not establish native Access/Windows,
 ordinary imported-file save or macro eligibility.
 
-The [source result](results/ace16-catalog-name-source-2026-10-31.json) records exact inputs, observations and retained
+The [source result](../../results/reading/ace16-catalog-name-source-2026-10-31.json) records exact inputs, observations and retained
 failed attempts separately from production creation and native Access qualification.

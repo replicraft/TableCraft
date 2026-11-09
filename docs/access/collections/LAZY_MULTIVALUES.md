@@ -44,6 +44,6 @@ Nine focused functions and retained regressions pass: 99 engine functions,
 61 adapter functions and 35 CLI browsing functions. Strict all-target checks,
 minimal builds, warning-free Rust documentation and dependency guards pass after
 removing one unused private argument. The
-[acceptance record](../../testing/results/lazy-multivalue-reader-2026-11-02.json)
+[acceptance record](../../../tests/results/reading/lazy-multivalue-reader-2026-11-02.json)
 preserves the first lint failure and narrow correction; it supplies no native
 Access qualification.

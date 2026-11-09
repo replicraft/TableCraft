@@ -4,6 +4,7 @@ The recurrence is checked with unbounded Python integer arithmetic, including
 Single seed bits. Getters provide native Int32 fields without evaluating Rnd.
 This does not establish Windows Access generator or query invocation behavior.
 """
+from engineering_paths import reference_file
 
 import argparse
 import csv
@@ -83,7 +84,7 @@ def main():
         assert hashlib.sha256(args.jar.read_bytes()).hexdigest() == JAR_SHA256
     for database in args.database:
         before = hashlib.sha256(database.read_bytes()).hexdigest()
-        tagged = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar, RECIPES / "TableDataOracle.java", database, "ScalarSamples")
+        tagged = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar, reference_file('tests/access/reading/tables/TableDataOracle.java'), database, "ScalarSamples")
         identities = [int(line.split("\t")[1].removeprefix("I32:")) for line in tagged.splitlines()]
         expected = []
         for identity in identities:

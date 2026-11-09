@@ -23,7 +23,7 @@ creation/publication followed by typed and SQL normal INSERT/DELETE passes one
 session test; the CLI create→journal-insert→journal-delete test also passes with
 exact whole images and row readbacks. Strict all-feature, journal-only, preview-only and minimal builds pass, with
 1,134 ACE units, 79 adapter units, 102 CLI units and 83 default recovery functions.
-The [execution record](results/ace16-native17-creation-writes-2026-11-01.json)
+The [execution record](../../results/creation/ace16-native17-creation-writes-2026-11-01.json)
 retains these portable results separately from native Access qualification.
 
 No creator provenance, serialized permission or special write bypass is issued.
@@ -61,7 +61,7 @@ Extended DateTime and long-value declarations remain unsupported.
 Catalog table names use a prevalidated stored-text encoding plan. Leading U+FEFF
 is escaped where the qualified representation is reversible; unsupported
 representations return `TextEncoding` before image allocation. Column-definition
-names retain raw UTF-16. The [catalog-name repair](ACE16_CATALOG_NAME_ENCODING.md)
+names retain raw UTF-16. The [catalog-name repair](../reading/ACE16_CATALOG_NAME_ENCODING.md)
 records the independent whole-image checks and actual CLI reproduction.
 
 Single and Double preserve their raw representations, including signed zero,
@@ -92,9 +92,9 @@ record composition passed seventeen, and the preserved scalar contract passed
 54 (two ignored). Strict checks passed for minimal and all-feature targets;
 the dependency guard also passed.
 
-The [generic constructor result](results/ace16-native-fixed-creation-2026-10-31.json)
+The [generic constructor result](../../results/creation/ace16-native-fixed-creation-2026-10-31.json)
 records the first execution and encoder regressions. The
-[Int32 constructor result](results/ace16-native-int32-creation-2026-10-31.json)
+[Int32 constructor result](../../results/creation/ace16-native-int32-creation-2026-10-31.json)
 retains the earlier implementation phase.
 
 ## Multiple user tables
@@ -176,7 +176,7 @@ that zero native declarations are impossible.
 Each actual record supplies its own offsets and length. Candidate-map membership
 uses space for a minimum legal row plus its directory slot, rather than promising
 that every requested record fits. The two independently read-qualified
-[capacity sources](ACE16_VARIABLE_CAPACITY_SOURCES.md) exercise this boundary.
+[capacity sources](../rows/ACE16_VARIABLE_CAPACITY_SOURCES.md) exercise this boundary.
 The one-table, sixteen-column, sixty-four-row and single-DATA-page limits remain.
 No indexes, relationships, AutoNumbers or Required properties are inferred.
 
@@ -185,7 +185,7 @@ previous tests and adding five variable/capacity checks. Seven new complete
 images match the independent source owners committed before producer execution
 (`dd000ad6` and `e5f6dd9c`). This extends fresh construction only; imported-file
 normal save, required-macro safety and native Access qualification remain separate.
-The [variable creation result](results/ace16-native-variable-creation-2026-10-31.json)
+The [variable creation result](../../results/creation/ace16-native-variable-creation-2026-10-31.json)
 records these phases and host verification.
 
 ### Authored header-5 source qualification, version 1
@@ -217,7 +217,7 @@ files and observations immutable. Native Access creation/open/save/reopen,
 Windows behavior, native required-event absence, normal ACE editing/recovery and
 broader schemas remain unqualified. No production creator was invoked.
 
-The [version-one record](results/ace16-canonical-creation-source-v1-2026-10-31.json)
+The [version-one record](../../results/creation/ace16-canonical-creation-source-v1-2026-10-31.json)
 pins original images, models, readers, exact saved comparisons and remaining gaps.
 
 ### Corrective generic source qualification, version 2
@@ -252,7 +252,7 @@ native system/ACL sufficiency, and native required-event absence remains
 unqualified. Version 1 sources and their accepted omissions remain immutable
 historical evidence.
 
-The [version-two record](results/ace16-canonical-creation-source-v2-2026-10-31.json)
+The [version-two record](../../results/creation/ace16-canonical-creation-source-v2-2026-10-31.json)
 pins the six sources, independent Rust fixtures and observed read checks.
 
 ### Fixed-scalar source continuation
@@ -266,10 +266,10 @@ the CLI remains restricted to Int32.
 
 ## Shared publication boundary
 
-The [Access creation service](../access/writes/FRESH_DATABASE_CREATION.md)
+The [Access creation service](../../../docs/access/writes/FRESH_DATABASE_CREATION.md)
 forwards typed declarations and exact Value rows through `prepare_typed`, then
 uses the existing required fresh publisher and receipt. Its ten fixed/IEEE
-whole-file publications pass. The [CLI](../cli/NATIVE_CREATION.md) retains its
+whole-file publications pass. The [CLI](../../../docs/cli/NATIVE_CREATION.md) retains its
 Int32 input syntax; this library method adds no imported-file write permission.
 
 ### Stored-text and variable-field source qualification
@@ -277,5 +277,5 @@ Int32 input syntax; this library method adds no imported-file write permission.
 [Variable-field sources](ACE16_VARIABLE_CREATION_SOURCES.md) now qualify exact
 Text/Binary/Decimal declarations, NULL/empty masks, UTF-16 and retained Decimal
 scale before adding those families to the creator. Separately,
-[catalog-name sources](ACE16_CATALOG_NAME_SOURCES.md) qualify escaped stored
+[catalog-name sources](../reading/ACE16_CATALOG_NAME_SOURCES.md) qualify escaped stored
 names and raw definition names before repairing the leading-BOM name bug.

@@ -1,12 +1,12 @@
 # Native aggregate value and carrier observations
 
-The original MIT [portable recipe](native_aggregate_oracle.py) prepares 100 fixed
+The original MIT [portable recipe](../../access/queries/execution/native_aggregate_oracle.py) prepares 100 fixed
 SQL probes for Count, Sum, Avg, Min, Max, First and Last. Seven explicit numeric
 casts cover Byte, Integer, Long, Single, Double, Currency and Decimal, each over
 populated and empty inputs. Separate Count(*) and Count(V) probes include a NULL
 row. These are executable probes, not recorded native results.
 
-The [Windows collector](Capture-NativeAggregates.ps1) requires a matching-bitness
+The [Windows collector](../../access/queries/execution/Capture-NativeAggregates.ps1) requires a matching-bitness
 native ACE DAO installation. It creates one fresh database containing the four
 original values 1, 2, 3 and NULL. It never opens an existing application database.
 A fixed request digest rejects edited SQL, and existing preparation/capture
@@ -24,9 +24,9 @@ request, runner and database hashes and the original header prefix.
 ## Portable preparation and exercise
 
 ```sh
-python3 docs/testing/native_aggregate_oracle.py prepare \
+python3 tests/run.py tests/access/queries/execution/native_aggregate_oracle.py prepare \
   .cache/tablecraft-fixtures/native-aggregate-probes
-python3 docs/testing/native_aggregate_oracle.py exercise \
+python3 tests/run.py tests/access/queries/execution/native_aggregate_oracle.py exercise \
   .cache/tablecraft-fixtures/native-aggregate-probes --cli target/debug/tablecraft
 ```
 
@@ -47,8 +47,8 @@ Copy the prepared request directory to Windows, using the reviewed collector:
 Retain the complete directory, then validate and compare it with a TableCraft CLI:
 
 ```sh
-python3 docs/testing/native_aggregate_oracle.py validate ./native-aggregate-probes
-python3 docs/testing/native_aggregate_oracle.py compare ./native-aggregate-probes \
+python3 tests/run.py tests/access/queries/execution/native_aggregate_oracle.py validate ./native-aggregate-probes
+python3 tests/run.py tests/access/queries/execution/native_aggregate_oracle.py compare ./native-aggregate-probes \
   --cli target/debug/tablecraft
 ```
 

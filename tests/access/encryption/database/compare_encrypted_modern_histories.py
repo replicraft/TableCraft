@@ -3,6 +3,7 @@
 Public fixture passwords are test inputs, never user credentials. No Access
 expressions execute in the reference reader. Native Windows qualification is unrun.
 """
+from engineering_paths import reference_file
 
 import argparse
 import csv
@@ -42,7 +43,7 @@ def main():
     classes.mkdir(exist_ok=True)
     subprocess.run([
         "javac", "-cp", classpath, "-d", str(classes),
-        *[str(RECIPES / (name + ".java")) for name in [
+        *[str(reference_file(name + ".java")) for name in [
             "TableDataOracle", "ModernEncryptedOracle", "AddEncryptionOracle",
             "NativeSecurityOracle", "RemoveAddedEncryptionOracle", "EncryptedPagesOracle",
         ]],

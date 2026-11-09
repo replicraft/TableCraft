@@ -1,6 +1,6 @@
 # Native progressive Count(*) evidence
 
-The 2026-10-25 [accepted replay](results/progressive-counts-2026-10-25.json)
+The 2026-10-25 [accepted replay](../../results/general/progressive-counts-2026-10-25.json)
 passes 132 CLI controls across original Jet 4, ACE 2007 and ACE 16-family files.
 Its 108 successful controls compare 132 output rows against independent getter
 models. Twenty-four runtime failures preserve empty stdout: eight native/query
@@ -11,16 +11,16 @@ No benchmark or full-backend compatibility claim follows from these results.
 ## Original inputs and model
 
 This replay reuses the four unchanged originals registered in
-[Decimal index evidence](DECIMAL_INDEX_SELECTIONS.md#original-inputs-and-independent-model)
-and [fixture provenance](FIXTURES.md#original-exact-decimal-equality-selection-replay-inputs).
+[Decimal index evidence](../indexes/DECIMAL_INDEX_SELECTIONS.md#original-inputs-and-independent-model)
+and [fixture provenance](../reading/FIXTURES.md#original-exact-decimal-equality-selection-replay-inputs).
 No new database files or third-party fixtures were introduced. The original MIT
-[DecimalIndexFixture.java](DecimalIndexFixture.java) uses public Jackcess builders;
-[IndexRowsOracle.java](IndexRowsOracle.java) reopens files read-only and returns
+[DecimalIndexFixture.java](../../access/queries/expressions/DecimalIndexFixture.java) uses public Jackcess builders;
+[IndexRowsOracle.java](../../access/indexes/native/IndexRowsOracle.java) reopens files read-only and returns
 stored cells through public index cursors with expression evaluation disabled.
 Neither tool executes reference SQL or active content.
 
-The [runner](compare_progressive_counts.py) reuses the reviewed getter invocation
-from [compare_decimal_seeks.py](compare_decimal_seeks.py). It counts actual getter
+The [runner](../../access/queries/execution/compare_progressive_counts.py) reuses the reviewed getter invocation
+from [compare_decimal_seeks.py](../../access/queries/expressions/compare_decimal_seeks.py). It counts actual getter
 records and NULLs, and uses exact Python `Fraction` values for sign and typed-point
 predicates. Native declared row counts and TableCraft query results are not used
 as its expected-value oracle. All four Decimal4 getter outputs have SHA-256
@@ -55,7 +55,7 @@ native limits. No new large corpus or timings were needed.
 ## Reproduction and immutable records
 
 ```sh
-python3 docs/testing/compare_progressive_counts.py \
+python3 tests/run.py tests/access/queries/execution/compare_progressive_counts.py \
   --cli .cache/tablecraft-bin/progressive-count-cli-20261025 \
   --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar \
   --inputs .cache/tablecraft-fixtures/decimal-seeks-V2000-20261025.mdb \

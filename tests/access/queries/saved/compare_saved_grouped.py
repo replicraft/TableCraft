@@ -1,4 +1,5 @@
 """Original saved-query metadata and partition models; no native Access SQL execution."""
+from engineering_paths import reference_file
 import argparse
 import csv
 import hashlib
@@ -30,7 +31,7 @@ def main():
     with tempfile.TemporaryDirectory(prefix="tablecraft-grouped-oracle-") as classes:
         sources = ["SavedForestFixture", "SavedGroupedFixture", "SavedReadOracle", "SavedQueryOracle", "TableDataOracle"]
         subprocess.run(["javac", "-encoding", "UTF-8", "-cp", str(args.jar), "-d", classes,
-                        *[str(RECIPES / (name + ".java")) for name in sources]], check=True)
+                        *[str(reference_file(name + ".java")) for name in sources]], check=True)
 
         def java(name, *values):
             return subprocess.check_output(["java", "-Dstdout.encoding=UTF-8", "-cp",

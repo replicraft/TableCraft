@@ -80,7 +80,7 @@ MASK = (
 
 def compare(args, profiles, request=lambda cells: cells, cascade=False):
     with tempfile.TemporaryDirectory(prefix="tablecraft-batch-oracle-") as classes:
-        run("javac", "-cp", args.jar, "-d", classes, "docs/testing/TableDataOracle.java")
+        run("javac", "-cp", args.jar, "-d", classes, "tests/access/reading/tables/TableDataOracle.java")
         def oracle(path, *arguments):
             return run("java", "-Dstdout.encoding=UTF-8", "-cp", str(args.jar) + os.pathsep + classes,
                        "TableDataOracle", path, "--date-bits", *arguments)

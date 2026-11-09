@@ -3,6 +3,7 @@
 No native Access SQL executes. The model deliberately records shortest nonempty
 matching spans; all inputs fit complete raw keys, not physical digested prefixes.
 """
+from engineering_paths import reference_file
 import argparse
 import os
 from pathlib import Path
@@ -29,7 +30,7 @@ def main():
     if before != JACKCESS_SHA256:
         raise ValueError("unexpected independent reader artifact")
     with tempfile.TemporaryDirectory(prefix="tablecraft-general-search-oracle-") as classes:
-        run("javac", "-cp", args.jar, "-d", classes, RECIPES / "GeneralSearchOracle.java")
+        run("javac", "-cp", args.jar, "-d", classes, reference_file('tests/access/reading/tables/GeneralSearchOracle.java'))
         controls = compare(args, os.pathsep.join([classes, str(args.jar)]))
     if digest(args.jar) != before:
         raise ValueError("independent artifact changed")

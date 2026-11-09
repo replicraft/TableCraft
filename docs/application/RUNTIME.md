@@ -332,7 +332,7 @@ native execution. Native Access comparison, Windows same-file filesystem-journal
 behavior and power-loss qualification remain unrun. See the separate
 [first-table](../access/writes/FIRST_TABLE_PERSISTENCE.md) and
 [append-table](../access/writes/ADD_TABLE_PERSISTENCE.md) adapter contracts. The
-[repeated-fixture independent-reader receipt](../testing/results/ace16-repeated-table-independent-reader-2026-11-07.json)
+[repeated-fixture independent-reader receipt](../../tests/results/reading/ace16-repeated-table-independent-reader-2026-11-07.json)
 records five distinct images across six exported files, retaining both original
 rows and empty added-table metadata; it is not insertion, recovery or native
 Access save qualification.
@@ -1661,13 +1661,13 @@ matches. An unchanged request still performs native review, then consumes to a
 read-only witness through `into_unchanged_reopen`; it receives no save ID or
 journal and must not be reported as a changed save.
 
-The [coordinated service record](../testing/results/field-schema-services-2026-11-09.json)
+The [coordinated service record](../../tests/results/schema/field-schema-services-2026-11-09.json)
 includes actual runtime save/witness, unchanged, stale and retained-failure cases.
 The [shared field-name UI](../ui/FIELD_RENAME.md) now connects Datasheet/Design
 proposals, exact close decisions and distinct checked replacement publication.
 Normal-host interaction checks now pass, including real Design save/reopen,
 unchanged review, close, duplicate rejection and retained sort retry. The
-[coordinated record](../testing/results/field-workbench-workflows-2026-11-09.json)
+[coordinated record](../../tests/results/schema/field-workbench-workflows-2026-11-09.json)
 retains failures and final evidence separately. The separate
 source-free status-panel matrix has 22 successful renders and direct review of every image without clipping; compact
 German/Japanese layouts retain the complete Ribbon through horizontal overflow. No-op review consumes
@@ -1731,7 +1731,7 @@ allocator capacity: the booleans mean some valid name can fit, while exact named
 review remains authoritative. Low-level old Number services and TCAC1–5 requests
 retain their original source languages. The same generic service consumes the
 sealed TCAC6 plan, so there is no extra host-specific save endpoint or automatic
-settings change. The [separate service record](../testing/results/field-schema-services-2026-11-09.json)
+settings change. The [separate service record](../../tests/results/schema/field-schema-services-2026-11-09.json)
 covers actual runtime and headless GUI saves, complete reopened images and the
 historical later-event refusal; it does not inherit the historical passing count below.
 The separate metadata-selected `AfterExplicitOffHistory` route now consumes a
@@ -1739,7 +1739,7 @@ sealed chronological replay plan and TCAC7 staged owner through these same
 services. Runtime and actual GUI saves match four independently observed second
 additions; a further raw-only case stays separate. Complete-image reconstruction,
 per-kind measured capacity, one actor and the checked reopen witness remain
-mandatory. See the [current coordinated record](../testing/results/field-workbench-workflows-2026-11-09.json).
+mandatory. See the [current coordinated record](../../tests/results/schema/field-workbench-workflows-2026-11-09.json).
 
 One private plan composition and renamed `StagedFieldAddition` owner reuse fresh
 original-image requalification, the exclusive offline session and checked V2
@@ -1759,7 +1759,7 @@ block the schema write. The bounded empty canonical ACE16 source, sixteen-field
 ceiling, actual property-page ledger and single-rollover limits remain explicit
 in the [native contract](../access/writes/ADD_COLUMN.md).
 
-The [field workflow record](../testing/results/field-addition-gui-workflows-2026-11-08.json)
+The [field workflow record](../../tests/results/schema/field-addition-gui-workflows-2026-11-08.json)
 passes 1,505 unique selected checks, including all 248 runtime, 606 shared UI and
 173 desktop cases. Five existing ignored cases are excluded. Actual mixed-field
 saves and row inputs, declaration substitution refusal and N13/N14 budget/rollover
@@ -1793,7 +1793,7 @@ original declaration/framing and checked V2 lifecycle. A full page 11 still
 refuses. Native proof, comparison and persistence use their existing independent
 allowances, including during whole-history reconstruction.
 
-The [rollover workflow record](../testing/results/number-column-rollover-workflows-2026-11-08.json)
+The [rollover workflow record](../../tests/results/schema/number-column-rollover-workflows-2026-11-08.json)
 includes a normal N13→N14 save, actual actor acknowledgement and full-image
 reopen, followed by ordinary insertion with every Number field omitted. Fresh
 reads verify generated ID1 and fourteen non-NULL zeros. The desktop exercises
@@ -1874,7 +1874,7 @@ No allowance was raised or reset. Equal-length V2 recovery accepts qualified
 pending original/replacement mixtures; a foreign shortened or grown target refuses
 without writes rather than inventing a tail.
 
-The [field-history composition record](../testing/results/field-history-options-workflows-2026-11-09.json)
+The [field-history composition record](../../tests/results/schema/field-history-options-workflows-2026-11-09.json)
 passes 991 unique selected checks with five existing ignored cases, including all
 257 runtime and 179 desktop cases. It also retains the strict all-feature and
 minimal ACE create+journal lint results. These checks exercise five independent
@@ -1886,7 +1886,7 @@ has its own source and verification record. Repeated settings changes and broade
 storage/older native profiles remain work; the existing creator-OFF→table-rename
 source stays separate.
 
-The [coordinated Options record](../testing/results/database-options-workflows-2026-11-08.json)
+The [coordinated Options record](../../tests/results/general/database-options-workflows-2026-11-08.json)
 includes all 253 passing runtime cases and one existing ignored case. The broader
 selected-package run and focused corrections also cover actual host cancellation
 of acknowledged replacement reads, exact-witness Retry and failed-read Return.
@@ -1904,7 +1904,7 @@ explicitly unchanged review followed by the same successful full-image witness
 can resolve exact visible text. Failed/original outcomes preserve dirty drafts;
 Open/Create/close and unrelated writes cannot bypass them. The distinct `ReviewedQuerySql`/`start_query_sql` route now targets qualified
 existing SELECT projection/WHERE fragments through TCQE0002; the low-level
-literal TCQE0001 service remains unchanged. The [coordinated record](../testing/results/full-sql-expression-workflows-2026-11-08.json)
+literal TCQE0001 service remains unchanged. The [coordinated record](../../tests/results/queries/full-sql-expression-workflows-2026-11-08.json)
 retains its selected passing checks and corrected failures. This route does not establish general
 QueryDef creation/Save As,
 Access 97–2019 write parity or native Microsoft Access save behavior.
@@ -1933,14 +1933,14 @@ A terminal save and its ACK leave the original read session/revision/schema
 intact; publication is allowed only after this full-image read succeeds.
 Cancellation, changed source and failed reopen do not become deletion success.
 
-The [checkpoint record](../testing/results/saved-field-drop-services-2026-11-09.json)
+The [checkpoint record](../../tests/results/schema/saved-field-drop-services-2026-11-09.json)
 retains corrected native/recovery, actual adapter-file and runtime service cases,
 plus source-free shared model/regression suites. The subsequent
 [normal GUI workflow](../ui/FIELD_DROP.md) connects Datasheet Delete Field and
 saved Design Delete Rows/Delete to these exact services. Metadata inspection
 precedes local Yes confirmation; explicit Save repeats target admission through
 the consuming review. Only full-witness publication changes the visible stored
-schema. The [GUI record](../testing/results/saved-field-drop-gui-2026-11-09.json)
+schema. The [GUI record](../../tests/results/schema/saved-field-drop-gui-2026-11-09.json)
 separates real headless saves from source-free renders and incomplete native
 interaction. Sparse-generated INSERT was outside the earlier service checkpoint;
 the later GUI record separately checks omitted INSERT after witnessed Number DROP.

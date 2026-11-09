@@ -61,7 +61,7 @@ def payload_end(data, definition, encoded):
 
 def compare(args, path):
     expected = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar,
-        "docs/testing/AttachmentFixture.java", "--metadata", path)
+        "tests/access/reading/tables/AttachmentFixture.java", "--metadata", path)
     attachment_report(args, path, expected)
     actual = run(args.example, path, "--metadata")
     if actual != expected or len(actual.splitlines()) != 6:

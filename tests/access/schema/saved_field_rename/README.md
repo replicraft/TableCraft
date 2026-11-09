@@ -35,9 +35,9 @@ compiled class accompanies this recipe. Use a fresh output directory; existing
 results are refused and must be retained rather than overwritten.
 
 ```sh
-python3 docs/testing/saved_field_rename/prepare.py \
+python3 tests/run.py tests/access/schema/saved_field_rename/prepare.py \
   --sources-dir "$RENAME_SOURCES" --output-dir "$RENAME_OUTPUT"
-python3 docs/testing/saved_field_rename/run.py \
+python3 tests/run.py tests/access/schema/saved_field_rename/run.py \
   --sources-dir "$RENAME_SOURCES" --output-dir "$RENAME_OUTPUT" \
   --jar "$JACKCESS_JAR" --java-bin "$JAVA_HOME/bin"
 ```
@@ -54,7 +54,7 @@ execution is involved.
 The maintained model and Java helper are byte-identical to the executed originals.
 Portable prepare/run wrappers replace the original local path configuration;
 they have not been executed as part of promotion. Successful SDK observations
-were not repeated. The [9 November record](../results/saved-field-rename-raw-sdk-read-2026-11-09.json)
+were not repeated. The [9 November record](../../../results/schema/saved-field-rename-raw-sdk-read-2026-11-09.json)
 retains original/portable hashes, frozen prediction identity, all baselines, eight
 positive/control results and stdout/stderr hashes. Original local results remain
 preserved separately.
@@ -66,7 +66,7 @@ pinned generated inputs. It is an experiment oracle, not a general parser or
 production rename algorithm. It imports no SDK/native encoding implementation.
 The original Java observer uses only the reviewed SDK's public read APIs. This
 first-party source follows the repository MIT license; Jackcess retains its
-Apache-2.0 provenance in [FIXTURES](../FIXTURES.md).
+Apache-2.0 provenance in [FIXTURES](../../../reports/reading/FIXTURES.md).
 
 Readable raw mutations establish a bounded storage/lookup relationship, not what
 Access or the SDK would write when asked to rename. There is no qualification of

@@ -17,7 +17,7 @@ four fresh-copy public appends and eight read-only getter/map calls. It generate
 no source database. The subsequent first producer phase matched all four full
 engineering images; its separate first fresh inspection phase completed eight
 calls. No command is rerun by this verifier. The
-[result receipt](../results/ace16-insert-height-one-native-2026-10-27.json) retains
+[result receipt](../../../results/indexes/ace16-insert-height-one-native-2026-10-27.json) retains
 these phases, their hashes and qualification limits separately.
 
 `model.py` preserves the independent source/request-only model frozen before the

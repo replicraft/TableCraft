@@ -8,14 +8,14 @@ runtime and qualified desktop Save route below build on that closed profile.
 There is no CLI QueryDef save command.
 Native Microsoft Access save/reopen remains unrun.
 
-The later [multi-query growth/shrink reference](querydef_existing_save/README.md)
+The later [multi-query growth/shrink reference](../../access/queries/querydef_existing_save/README.md)
 adds six independent SDK byte oracles for a proposed versioned expansion. It
 does not widen the current planner or TCQE0001 replay language.
 
-[The observation record](results/querydef-fitting-expression-2026-11-08.json)
+[The observation record](../../results/queries/querydef-fitting-expression-2026-11-08.json)
 retains hashes, raw field/record spans, exact native fragments, independent
 rendering and explicit TableCraft execution. The original
-[fixture recipe](ConstantQuerySaveFixture.java) creates fresh V2016 outputs
+[fixture recipe](../../access/queries/execution/ConstantQuerySaveFixture.java) creates fresh V2016 outputs
 using the existing reviewed system-table/`QueryImpl.Row` recipe. Expression
 evaluation stays disabled. Saving stored metadata executes no query, macro, VBA,
 UDF or external provider. Explicit read-only TableCraft retrieval subsequently
@@ -29,14 +29,14 @@ text. Multiple definitions/pages and qualified inline Memo growth/shrink use the
 shared native record-placement/forwarding owner. Unedited external bodies remain
 protected; this is not general external-Memo editing. Complete candidate images,
 logical roots, indexes, roles and untouched bytes are independently checked.
-The [repeated-root reference](querydef_existing_save/REPEATED_WRITES.md) retains
+The [repeated-root reference](../../access/queries/querydef_existing_save/REPEATED_WRITES.md) retains
 SDK evidence separately from Rust construction and consumer outcomes.
 
 TCQE0001 below retains its exact original admission and wire language. TCQE0002
 uses the same fixed-image checked V1 journal because this operation preserves
 file length; semantic request version does not select a resizable journal.
 Closed action/version dispatch has no decoder fallback. The full-SQL runtime
-transition passes its selected [coordinated checks](results/full-sql-expression-workflows-2026-11-08.json),
+transition passes its selected [coordinated checks](../../results/queries/full-sql-expression-workflows-2026-11-08.json),
 including separate unchanged literal-service regressions. Native Access saves remain unrun.
 
 ## Observed physical change
@@ -76,7 +76,7 @@ query creation or index rewriting.
 ## Independent raw fixture
 
 The testkit's
-[`saved_queries::fitting_select`](../../crates/engineering/tablecraft-testkit/src/fixtures/access/saved_queries/fitting_select.rs)
+[`saved_queries::fitting_select`](../../../crates/engineering/tablecraft-testkit/src/fixtures/access/saved_queries/fitting_select.rs)
 constructs a complete synthetic BEFORE/AFTER pair through the existing raw
 saved-query builder. Its query retains that builder's independent native ID and
 name. A literal 58-byte golden matches the SDK-observed projection record after
@@ -88,7 +88,7 @@ These synthetic images intentionally lack the SDK source's native system
 indexes. They are byte oracles for the fitting expression, not imported-source
 eligibility witnesses. The private SDK pair retains the real system indexes;
 no complete database bytes are tracked. Fixture provenance is recorded in
-[FIXTURES.md](FIXTURES.md#existing-querydef-fitting-expression-reference).
+[FIXTURES.md](../reading/FIXTURES.md#existing-querydef-fitting-expression-reference).
 
 ## Unpublished native candidate checkpoint
 
@@ -185,14 +185,14 @@ and return unconsumed starts with `UnsupportedPlatform`.
 The five runtime cases pass in the completed SQL/creator batch: complete
 changed/no-op images, unlocked review, busy retention, source drift,
 document/target invalidation, guarded reopen and unsupported-expression refusal.
-The subsequent [initial connected save/rebind batch](results/query-save-rebind-2026-11-08.json)
-passes seven real desktop controller cases. The [application contract](../application/SAVED_QUERY_EDITING.md)
+The subsequent [initial connected save/rebind batch](../../results/queries/query-save-rebind-2026-11-08.json)
+passes seven real desktop controller cases. The [application contract](../../../docs/application/SAVED_QUERY_EDITING.md)
 keeps the exact SQL/witness lifecycle, parked-draft transfer, presentation limits
 and subsequent focused corrections distinct from this SDK reference.
 
 ## Runtime outcome-facts checkpoint
 
-The subsequent [completed SQL/creator batch](results/sql-creator-focused-2026-11-08.json)
+The subsequent [completed SQL/creator batch](../../results/creation/sql-creator-focused-2026-11-08.json)
 passes the five existing query-expression runtime cases and six SQL bridge cases.
 Those checks are separate from the newly authored receipt-facts tests below.
 
@@ -212,10 +212,10 @@ before resolving visible SQL or publishing a new document revision. An explicitl
 unchanged semantic review can separately use its full BEFORE-equal-AFTER witness;
 it must not invent a journal commit or treat a failed original outcome as that
 review. Three focused outcome-facts tests now pass in the
-[saved-query lifecycle gate](results/query-save-lifecycle-2026-11-08.json), alongside
+[saved-query lifecycle gate](../../results/queries/query-save-lifecycle-2026-11-08.json), alongside
 nine shared status cases and two bounded review-report cases. This library
 extraction alone did not enable GUI editing. The subsequent qualified desktop
-integration is covered by the [current application contract](../application/SAVED_QUERY_EDITING.md).
+integration is covered by the [current application contract](../../../docs/application/SAVED_QUERY_EDITING.md).
 
 ## Required proof before a normal native save
 

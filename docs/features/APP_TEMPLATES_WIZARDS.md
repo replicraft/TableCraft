@@ -29,4 +29,4 @@ Microsoft documents [Form Wizard](https://support.microsoft.com/en-us/access/cre
 [main forms/subforms](https://support.microsoft.com/en-us/access/create-a-form-that-contains-a-subform-a-one-to-many-form)
 and [reusable design elements](https://support.microsoft.com/en-us/access/save-and-reuse-database-design-elements).
 See [distribution profiles](ACCESS_DISTRIBUTION.md) and
-[application evidence](../testing/ACCESS_APPLICATIONS.md).
+[application evidence](../../tests/reports/reading/ACCESS_APPLICATIONS.md).

@@ -1,14 +1,14 @@
 # Public cross-page UPDATE observations
 
 Eight bounded public Jackcess 5.0.4 `updateRow` calls completed on fresh copies of
-four existing allocation-boundary descendants. The [compact receipt](results/ace16-cross-page-update-originals-2026-10-26.json)
+four existing allocation-boundary descendants. The [compact receipt](../../results/storage/ace16-cross-page-update-originals-2026-10-26.json)
 records all eight outcomes and 32 commands: eight updates, twelve read-only full
 getters and twelve read-only map probes. No INSERT, DELETE or engineering candidate
 was called in this capture. The actual executed private source/selectors and full
 raw report are archived and hash-pinned; the new public wrapper was not the
 historically executed program.
 
-The unchanged [original producer](SlotUpdateFixture.java) supplies ordinary
+The unchanged [original producer](../../access/queries/expressions/SlotUpdateFixture.java) supplies ordinary
 `RawLegacy(ID LONG primary, Label ShortText255)` rows. `Label` is uncompressed and
 unindexed; the table still has its ID primary index. Expressions are disabled,
 linked opens throw and each output must be fresh. The selected ID is always 1.
@@ -60,10 +60,10 @@ reuse arbitrary residual pages or a universal allocation-order contract.
 
 ## Reproduction and limits
 
-The parameterized [capture tool](capture_cross_page_updates.py) performs only this
+The parameterized [capture tool](../../access/queries/expressions/capture_cross_page_updates.py) performs only this
 eight-action matrix in a fresh ignored directory. Its current source has syntax
 and help checks; it has not been rerun to replace the historical execution. The
-promoted [read-only map probe](SlotMapProbe.java) is byte-identical to the executed
+promoted [read-only map probe](../../access/storage/native/SlotMapProbe.java) is byte-identical to the executed
 repository-owned helper. It inspects reviewed Jackcess metadata by reflection;
 those internal names are scoped to the pinned 5.0.4 JAR.
 
@@ -74,7 +74,7 @@ then provide the preserved boundary capture, reviewed JAR and classes explicitly
 javac -cp .cache/tablecraft-fixtures/jackcess-5.0.4.jar \
   -d .cache/cross-page-fresh-classes \
   docs/testing/SlotUpdateFixture.java docs/testing/SlotMapProbe.java
-python3 docs/testing/capture_cross_page_updates.py \
+python3 tests/run.py tests/access/queries/expressions/capture_cross_page_updates.py \
   --boundary-report .cache/ace16-slot-boundary-next-20261026/report.json \
   --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar \
   --classes .cache/cross-page-fresh-classes \
@@ -82,7 +82,7 @@ python3 docs/testing/capture_cross_page_updates.py \
 ```
 
 The boundary sources and original producer provenance are already recorded in the
-[Slot reference receipt](results/ace16-slot-original-references-2026-10-26.json).
+[Slot reference receipt](../../results/general/ace16-slot-original-references-2026-10-26.json).
 The new evidence establishes actual public UPDATE behavior, separately from the
 earlier INSERT allocation observations. It does not qualify Microsoft Access
 execution/native saves, data macros, arbitrary free-page reuse, map growth,

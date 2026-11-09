@@ -11,7 +11,7 @@ from getters import parse_getters
 from reference import tables_list, violations
 from support import (JAR_SHA256, REPOSITORY_ROOT, canonical, fresh_report, oracle_command, pin, verify, wire)
 
-sys.path.insert(0, str(REPOSITORY_ROOT / 'docs/testing/ignored_delete_originals'))
+sys.path.insert(0, str(REPOSITORY_ROOT / 'tests/access/rows/ignored_delete_originals'))
 from atomic import check as atomic_check
 
 EXPECTED_CONTROLS = 84

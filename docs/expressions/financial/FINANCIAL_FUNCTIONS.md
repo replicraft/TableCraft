@@ -85,9 +85,9 @@ and source-free evaluation. Three query controls cover pruning, filters, group
 identity, correlations, aggregate/domain composition, reusable parameters, eager
 errors, cumulative work and every observed cancellation checkpoint.
 
-The original [SavedFinancialFixture](../../testing/SavedFinancialFixture.java) recipe
+The original [SavedFinancialFixture](../../../tests/access/queries/saved/SavedFinancialFixture.java) recipe
 adds nine inert queries to the existing statistical inputs. The
-[comparison runner](../../testing/compare_financial_functions.py) passes 246 independent
+[comparison runner](../../../tests/access/queries/expressions/compare_financial_functions.py) passes 246 independent
 controls: 400-digit Decimal cashflow ledgers across rate/period/timing cases,
 scalar/run paths, native raw getters and rendered SQL, direct/saved/named execution,
 explicit parameters, grouping, derived inputs, UNION, crosstabs and buffered

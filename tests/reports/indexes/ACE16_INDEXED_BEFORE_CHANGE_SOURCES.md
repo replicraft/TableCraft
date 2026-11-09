@@ -52,7 +52,7 @@ before compilation. Complete ordered output, empty diagnostics, all source/tool
 hashes and the complete class inventories pass the separate saved-only verifier.
 Neither the observers nor that verifier execute event rows or obtain a write plan.
 
-The [source execution record](results/ace16-indexed-before-change-sources-2026-10-31.json)
+The [source execution record](../../results/indexes/ace16-indexed-before-change-sources-2026-10-31.json)
 records native checks and the separate independent reader phase. Generated files,
 compiled SDK tooling and raw observations remain ignored local evidence. These
 sources cover one-leaf Int32 trees; native Access behavior, deeper topology,

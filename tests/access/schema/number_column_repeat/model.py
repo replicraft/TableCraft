@@ -161,9 +161,9 @@ def main():
     result = {
         'schema': 1,
         'scope': 'Independent repeated Number ADD full-image model vs unchanged first-party SDK helper; no engine/native Access execution',
-        'model': 'docs/testing/number_column_repeat/model.py',
+        'model': 'tests/access/schema/number_column_repeat/model.py',
         'model_sha256': digest(Path(__file__).read_bytes()),
-        'raw_helper': {'path': 'docs/testing/number_column_repeat/raw.py', 'sha256': digest(Path(raw.__file__).read_bytes()), 'production_codecs': False},
+        'raw_helper': {'path': 'tests/access/schema/number_column_repeat/raw.py', 'sha256': digest(Path(raw.__file__).read_bytes()), 'production_codecs': False},
         'observations': records,
     }
     (root / 'independent-comparison.json').write_text(json.dumps(result, indent=2) + '\n')

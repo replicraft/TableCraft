@@ -31,7 +31,7 @@ def main():
             ("LargeEmpty", "BigEmpty", ["Value"], 0),
         ]:
             expected = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar,
-                "docs/testing/IndexRowsOracle.java", path, table, index, *columns)
+                "tests/access/indexes/native/IndexRowsOracle.java", path, table, index, *columns)
             assert len(expected.splitlines()) == count
             def query(where=""):
                 sql = f"SELECT {', '.join('[' + col + ']' for col in columns)} FROM {table} {where}"

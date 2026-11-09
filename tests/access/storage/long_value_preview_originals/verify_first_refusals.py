@@ -6,7 +6,7 @@ import json
 from pathlib import Path
 import subprocess
 
-ROOT = Path(__file__).resolve().parents[3]
+ROOT = Path(__file__).resolve().parents[4]
 REPORT = '.cache/ace16-long-value-acceptance-first-20261027/report.json'
 PLAN = '.cache/ace16-long-value-acceptance-next-20261027/plan.json'
 

@@ -2,6 +2,7 @@
 
 This is an offline read-audit model, not native Access write/SQL qualification.
 """
+from engineering_paths import reference_file
 
 import argparse
 import hashlib
@@ -15,8 +16,8 @@ from compare_boolean_indexes import canonical
 from compare_browsing import display
 from compare_calculated_decimals import digest, JACKCESS_SHA256
 
-ROOT = Path(__file__).resolve().parents[2]
-RECIPES = ROOT / "docs/testing"
+ROOT = Path(__file__).resolve().parents[4]
+RECIPES = ROOT / "tests/access"
 PAGE_BYTES = 4096
 PROFILES = ("V2016", "V2019")
 
@@ -83,11 +84,11 @@ def main():
     args = parser.parse_args()
     assert not args.report.exists(), "Refuse to overwrite accepted evidence"
     assert digest(args.jar) == JACKCESS_SHA256
-    oracle = RECIPES / "BooleanRelationshipOracle.java"
+    oracle = reference_file('tests/access/schema/fields/BooleanRelationshipOracle.java')
     paths = {
         args.cli, args.jar, oracle, Path(__file__),
-        RECIPES / "BooleanRelationshipFixture.java", RECIPES / "IndexRowsOracle.java",
-        *[RECIPES / name for name in (
+        reference_file('tests/access/schema/fields/BooleanRelationshipFixture.java'), reference_file('tests/access/indexes/native/IndexRowsOracle.java'),
+        *[reference_file(name) for name in (
             "cli_tsv.py", "compare_boolean_indexes.py", "compare_browsing.py",
             "compare_calculated_decimals.py", "compare_composite_constraints.py", "float_model.py",
         )],
@@ -177,7 +178,7 @@ def main():
             assert original[root * PAGE_BYTES] == 3, "Expected original node/leaf tree"
             node_roots.append({"table": name, "index": index, "root": root})
             index_rows = execute(
-                "java", "-cp", args.jar, RECIPES / "IndexRowsOracle.java",
+                "java", "-cp", args.jar, reference_file('tests/access/indexes/native/IndexRowsOracle.java'),
                 path, name, index, *table["columns"],
             )
             expected = "\t".join(table["columns"]) + "\n" + canonical(index_rows, table["columns"])

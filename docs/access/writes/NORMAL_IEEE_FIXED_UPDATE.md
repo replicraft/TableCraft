@@ -73,7 +73,7 @@ owned-growth TCNI6 and EOF TCNI7 carrier policies remain unchanged.
 
 ## Evidence and current verification state
 
-The [execution record](../../testing/results/ace16-normal-ieee-update-2026-11-03.json)
+The [execution record](../../../tests/results/rows/ace16-normal-ieee-update-2026-11-03.json)
 separates source admission, matching writes and retained regressions.
 
 Six unchanged independently authored native17 images from the prior wide-scalar
@@ -82,7 +82,7 @@ native derivatives, not SDK-created originals or writer-produced expected
 UPDATE images. The complete read-only gate passed six exact reads, six
 NoRequired admissions, six canonical Source admissions and four protected-byte
 pair reconstructions before matching UPDATE execution. The original
-[wide-scalar source record](../../testing/results/ace16-wide-scalar-insert-sources-2026-11-01.json)
+[wide-scalar source record](../../../tests/results/rows/ace16-wide-scalar-insert-sources-2026-11-01.json)
 remains historical source evidence.
 
 The new three primitive tests and eleven existing fixed-intent tests passed,

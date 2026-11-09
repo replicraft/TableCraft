@@ -7,14 +7,14 @@ changed text**. These are independent-writer observations, not TableCraft candid
 acceptance or Microsoft Access save/reopen qualification. They do not expand the
 current [raw Memo/OLE engineering preview](ACE16_LONG_VALUE_UPDATES.md).
 
-The [compact receipt](results/compressed-memo-update-observations-2026-10-27.json)
+The [compact receipt](../../results/storage/compressed-memo-update-observations-2026-10-27.json)
 pins executed sources, frozen selectors, originals, raw captures, later public
 helpers and read-only verification results. No accepted raw 60-case input,
 selector, model or result was changed or replaced by this series.
 
 ## Inputs and prerequisites
 
-The original [producer/getter](CompressedMemoUpdateProbe.java) creates an inert
+The original [producer/getter](../../access/queries/expressions/CompressedMemoUpdateProbe.java) creates an inert
 `CompressedMemos` table: ID LONG, CompactMemo MEMO with Unicode compression
 requested, RawMemo MEMO without it, and an untouched OLE field. Actual persisted
 Memo metadata is native type 12, flag 2, zero declared length, with extended flag
@@ -116,7 +116,7 @@ logical index order and historical counters remain unchanged. Old-chain
 retirement, indirect LVAL map transitions and mode-switch authoring are not
 established by this series.
 
-The read-only [saved-result verifier](compressed_memo_observations/verify.py)
+The read-only [saved-result verifier](../../access/storage/compressed_memo_observations/verify.py)
 rehashes all recursive artifact pins, checks the saved assertions and derives
 counts without opening a database or invoking Java/native tools. Its first two
 runs verified 694 and 435 live pins respectively; those counts overlap and are
@@ -128,7 +128,7 @@ not claim its inline wrapper was the persisted storage form.
 
 The tracked Java helper is byte-identical to the compiled executed helper.
 The two exact executed Python drivers and all frozen plans remain separately
-pinned. The later [parameterized capture helper](compressed_memo_observations/capture.py)
+pinned. The later [parameterized capture helper](../../access/storage/compressed_memo_observations/capture.py)
 combines original creation/reuse and count handling and adjusts the repository
 root for its public location. It has passed both frozen plans in verify-only
 mode; it has not rerun either public update experiment. The saved-result verifier
@@ -137,7 +137,7 @@ has executed against both unchanged reports.
 For example, verify a retained report into a fresh output:
 
 ```sh
-python3 docs/testing/compressed_memo_observations/verify.py \
+python3 tests/run.py tests/access/storage/compressed_memo_observations/verify.py \
   --report .cache/ace16-compressed-memo-observations-first-20261027/report.json \
   --output .cache/compressed-memo-verify-fresh.json
 ```

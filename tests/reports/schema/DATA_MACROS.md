@@ -1,13 +1,13 @@
 # ACE 16 data-macro qualification
 
 Status: evidence requirements and current observations, 29 October 2026.
-[Inert table Extra framing](../access/schema/NATIVE_TABLE_EXTRA.md) and explicit
-[XML envelope metadata](../access/schema/NATIVE_DATA_MACRO_XML.md) now have bounded
+[Inert table Extra framing](../../../docs/access/schema/NATIVE_TABLE_EXTRA.md) and explicit
+[XML envelope metadata](../../../docs/access/schema/NATIVE_DATA_MACRO_XML.md) now have bounded
 readers. Complete semantic detection, qualified absence and execution remain
 unfinished. All production ACE writes remain blocked. This document does
 not establish native Access qualification.
 
-Explicit [selected-source before-event guard preparation](../access/schema/NATIVE_BEFORE_EVENT_GUARDS.md)
+Explicit [selected-source before-event guard preparation](../../../docs/access/schema/NATIVE_BEFORE_EVENT_GUARDS.md)
 now provides a separate read-only execution consumer for the documented bounded
 If/RaiseError profile. It does not discover native macro storage, certify required
 coverage/absence or authorize normal saves; the complete acceptance below remains.
@@ -19,7 +19,7 @@ AutoKeys, Ribbon and zzzAutoExec. Its MSysAccessXML schema has six scalar fields
 and zero declared rows; MSysAccessStorage has seven scalar fields and 328 declared
 rows. These are inert metadata observations, not proof that any table lacks event
 data macros. No application content or macro was executed. Original provenance,
-license and SHA-256 remain in [FIXTURES.md](FIXTURES.md).
+license and SHA-256 remain in [FIXTURES.md](../reading/FIXTURES.md).
 Its creating Access build is unassessed; these observations do not turn it into
 an ACE 16 data-macro fixture.
 
@@ -38,7 +38,7 @@ reads must not become an ACE write permit.
 [Microsoft's desktop documentation](https://support.microsoft.com/en-us/access/add-data-macros-in-a-desktop-database)
 distinguishes table-triggered macros from explicitly invoked named macros.
 Table event behavior is not established by enumerating ordinary catalog macros.
-The existing [write gate](../access/writes/NATIVE_WRITES.md) and [preservation limits](../access/writes/NATIVE_PRESERVATION.md)
+The existing [write gate](../../../docs/access/writes/NATIVE_WRITES.md) and [preservation limits](../../../docs/access/writes/NATIVE_PRESERVATION.md)
 therefore remain unchanged while positive native evidence is missing.
 
 ## Reference boundaries
@@ -72,7 +72,7 @@ names-only carriers explicitly reporting zero inspected documents. Neither empty
 coverage nor a recognized envelope establishes absence, supported actions,
 required event behavior or normal save eligibility.
 
-A subsequent explicit [program-structure reader](../access/schema/NATIVE_DATA_MACRO_PROGRAM.md)
+A subsequent explicit [program-structure reader](../../../docs/access/schema/NATIVE_DATA_MACRO_PROGRAM.md)
 recognizes a documented desktop structural subset and retains unfamiliar
 subtrees and argument-presence/span facts. It does not evaluate expressions,
 execute events or establish complete detection/absence. Native-original and
@@ -102,7 +102,7 @@ Access/ACE 16. Record exact product/engine builds, bitness, locale/collation and
 the observed file selector independently; engine version is not a header family.
 Use original simple tables and original macro definitions, without VBA, linked
 sources, AutoExec, startup forms, credentials or external effects. Preserve each
-original and run scenarios on disposable copies under the [corpus policy](ACCESS_APPLICATIONS.md).
+original and run scenarios on disposable copies under the [corpus policy](../reading/ACCESS_APPLICATIONS.md).
 
 | Case | Evidence to capture |
 | --- | --- |
@@ -146,7 +146,7 @@ roadmap steps 1–9.
 ## Engineering progress before Windows qualification
 
 The user will test on Windows later and authorized continued independent write
-work. The [ACE 16 preview](ACE16_WRITE_PREVIEWS.md) now produces explicit disposable
+work. The [ACE 16 preview](../development/ACE16_WRITE_PREVIEWS.md) now produces explicit disposable
 physical candidates with structural/constraint/byte-preservation checks. This is
 not positive macro evidence or an absence detector. Its separate return type and
 opt-in feature retain the ordinary ACE write blocker; required macro semantics

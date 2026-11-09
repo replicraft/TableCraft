@@ -55,7 +55,7 @@ clock context, cancellation and eager errors. Existing field-policy tests now
 also wrap operands with CVar, including conflict rejection. CLI controls cover
 subtype codes, NULL/Text, invalid calls and empty output on failures.
 
-The original [independent runner](../testing/compare_cvar.py) uses explicit subtype
+The original [independent runner](../../tests/access/reading/tables/compare_cvar.py) uses explicit subtype
 goldens and integer models, including values beyond binary64 exact precision.
 Optional original SavedForest-derived AData files provide native Int32 inputs;
 their hashes must remain unchanged. This is TableCraft execution over original

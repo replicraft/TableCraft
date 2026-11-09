@@ -11,17 +11,17 @@ flags 0 or 1 (optional Unicode compression). It still requires a variable Memo
 and its existing ordinary scalar codec. Unknown, calculated and fixed variants
 remain refused. History templates and flat child fields retain their original
 ordinary/extended flag gates; their codecs and association checks do not change.
-See the [stored-history contract](../access/collections/STORED_HISTORY_QUERIES.md).
+See the [stored-history contract](../../../docs/access/collections/STORED_HISTORY_QUERIES.md).
 
 ## Independent original corpus
 
-The [producer](MemoHistoryFamilyFixture.java) creates separate plain, Hyperlink and
+The [producer](../../access/storage/native/MemoHistoryFamilyFixture.java) creates separate plain, Hyperlink and
 RichText families in fresh ACE 2007/2016/2019 files, with uncompressed Notes and
 compressed Details in separate tables. All four ordinary flag combinations occur;
 RichText properties exercise the same physical Memo family without inferring a
 new carrier. Expression evaluation remains disabled throughout.
 
-The [metadata oracle](MemoHistoryFamilyOracle.java) opens originals read-only,
+The [metadata oracle](../../access/storage/native/MemoHistoryFamilyOracle.java) opens originals read-only,
 disables evaluation and combines public Column flags/association/property getters
 with pinned VersionHistoryColumnInfoImpl metadata getters. It records actual
 hidden/member/flat names, compression booleans, Hyperlink booleans and original
@@ -37,7 +37,7 @@ preserved under ignored local fixture directories.
 
 ## Query and refusal scope
 
-The [runner](compare_memo_history_family.py) checks actual native current/hidden/
+The [runner](../../access/storage/native/compare_memo_history_family.py) checks actual native current/hidden/
 child column flags against reference declarations and typed feature properties.
 It reuses the original stored-history query model in ordinal and stored-database
 comparison modes for every family. That model compares projection order,
@@ -54,7 +54,7 @@ compression refusal. No mutation or native application behavior is qualified.
 
 ## Accepted results
 
-On 24 October 2026, the [accepted report](results/memo-history-family-2026-10-24.json)
+On 24 October 2026, the [accepted report](../../results/storage/memo-history-family-2026-10-24.json)
 records 594 passing controls: eighteen original metadata/property comparisons
 plus 96 query controls per family in each of ordinal and stored-database modes.
 The nine original files retain 90 total parent records and 108 stored versions.
@@ -67,11 +67,11 @@ The complete engine/adapter history targets pass 22 tests, and scoped strict Cli
 passes for both integration targets. The reused query replay explicitly permits
 a 64 MiB cumulative native byte pool; other controls and defaults do not change.
 These are bounded offline engineering results, not native Access qualification.
-[Fixture provenance](FIXTURES.md#original-ordinary-memo-history-family-inputs)
+[Fixture provenance](../reading/FIXTURES.md#original-ordinary-memo-history-family-inputs)
 records all original hashes and excluded capability probes.
 
 ```sh
-python3 docs/testing/compare_memo_history_family.py \
+python3 tests/run.py tests/access/storage/native/compare_memo_history_family.py \
   --cli .cache/tablecraft-bin/memo-history-family-20261024 \
   --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar \
   --directory .cache/tablecraft-fixtures/memo-history-family-20261024 \

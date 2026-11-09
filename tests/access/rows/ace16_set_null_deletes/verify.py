@@ -8,9 +8,9 @@ import subprocess
 import sys
 
 sys.dont_write_bytecode = True
-ROOT = Path(__file__).resolve().parents[3]
+ROOT = Path(__file__).resolve().parents[4]
 sys.path.insert(0, str(ROOT))
-sys.path.insert(0, str(ROOT / 'docs/testing'))
+sys.path.insert(0, str(ROOT / 'tests/access'))
 from scripts.compat_artifacts import ArtifactStore
 from ace16_insert_external_long_values.evidence import Pins, report
 from ace16_set_null_deletes import build, model, reference, source
@@ -30,7 +30,7 @@ BUILD = '.cache/ace16-set-null-delete-isolated-build-20261028'
 NATIVE = '.cache/ace16-set-null-delete-acceptance-next-20261028'
 NATIVE_WORK = '.cache/ace16-set-null-delete-candidate-first-20261028'
 GETTERS = '.cache/ace16-set-null-delete-getters-first-20261028'
-PUBLIC = 'docs/testing/ace16_set_null_deletes'
+PUBLIC = 'tests/access/rows/ace16_set_null_deletes'
 NOTICE = b'Engineering candidate: data-macro semantics and native Access qualification pending.\n'
 FIXED = {
     '.cache/ace16-set-null-delete-source-next-20261028/plan-helper-freeze.json': (
@@ -81,7 +81,7 @@ FIXED = {
     '.cache/ace16-set-null-delete-isolated-build-20261028/freeze.json': (
         '0b60f9badb95e56ffe7b63eda52e2aadf12a941f197303f6f666e94b0554291f'
     ),
-    'docs/testing/results/ace16-set-null-delete-example-build-2026-10-28.json': (
+    'tests/results/rows/ace16-set-null-delete-example-build-2026-10-28.json': (
         '89f0bdc24961a0d49c95862b1e2ad10625cc180fa2b1d164a61fe56b3b8db4c4'
     ),
     '.cache/ace16-set-null-delete-acceptance-next-20261028/seed-freeze.json': (
@@ -143,7 +143,7 @@ def maintained(store, pins):
         if name.endswith('.py'):
             assert functions(current) == functions(original), name
     assert pins.check(store.pin(SOURCE + '/BoundedFileChannel.java')).read_bytes() == pins.check(
-        store.pin('docs/testing/parent_index_split_originals/BoundedFileChannel.java')).read_bytes()
+        store.pin('tests/access/indexes/parent_index_split_originals/BoundedFileChannel.java')).read_bytes()
 
 
 def preparation_history(store, pins):

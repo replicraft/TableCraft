@@ -75,9 +75,9 @@ No OLE/application container, VBA source/p-code, macro or dependency semantics a
 interpreted. No module or application content executes. These objects supply no
 mutation handle or permission to save. All ACE writes remain blocked.
 
-The original [payload recipe](../../testing/ObjectPayloadFixture.java) places inert
+The original [payload recipe](../../../tests/access/reading/tables/ObjectPayloadFixture.java) places inert
 binary patterns in catalog fields of fresh V2016/V2019 table objects; these are
-not valid VBA or native application bodies. [Independent comparison](../../testing/compare_object_payloads.py)
+not valid VBA or native application bodies. [Independent comparison](../../../tests/access/reading/tables/compare_object_payloads.py)
 matches all bounded catalog records (37 and 41), including 2,304/12,288-byte
 payloads, all byte values, NULL and empty data. A separate 65,537-byte payload per
 profile fails without stdout. The registered Access example additionally matches
@@ -99,7 +99,7 @@ after its complete object read succeeds:
 cargo build -p tablecraft-ace --example object_payloads --locked
 java -cp path/to/jackcess-5.0.4.jar docs/testing/ObjectPayloadFixture.java new-2016.accdb V2016
 java -cp path/to/jackcess-5.0.4.jar docs/testing/ObjectPayloadFixture.java new-2019.accdb V2019
-python3 docs/testing/compare_object_payloads.py --jar path/to/jackcess-5.0.4.jar \
+python3 tests/run.py tests/access/reading/tables/compare_object_payloads.py --jar path/to/jackcess-5.0.4.jar \
   --example target/debug/examples/object_payloads --ace2016 new-2016.accdb \
   --ace2019 new-2019.accdb --original docs/examples/Access_Example_VBA.accdb
 ```

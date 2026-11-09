@@ -3,14 +3,14 @@
 The first frozen Binary8 replay passes **eight candidates with zero
 disagreements**, using 32 commands: eight native calls, twelve read-only getters
 and twelve read-only map probes. Each shrink consumes its paired native growth
-candidate, never a public-writer substitute. The [compact receipt](results/ace16-binary-variable-originals-2026-10-26.json)
+candidate, never a public-writer substitute. The [compact receipt](../../results/storage/ace16-binary-variable-originals-2026-10-26.json)
 pins the immutable plan, private executed sources, requests, images, raw logs and
 current public verification. There was no native retry or changed expectation.
 
 The separate `--variable-updates` consumer was compiled at `87c35d43`, frozen at
 17,512,496 bytes with SHA-256
 `2d2b173617e115a3bca3b10018086dab1c5d8f3d72b536fe3825d21e19cb4a5f`.
-Its [build receipt](results/ace16-variable-example-build-2026-10-26.json) identifies
+Its [build receipt](../../results/rows/ace16-variable-example-build-2026-10-26.json) identifies
 the historical source objects. Later working code is not qualified by this run.
 Existing Slot and PAGE consumers/evidence remain unchanged.
 
@@ -53,22 +53,22 @@ byte-exactly before native calls.
 
 The raw report retains all command receipts, cached complete getters/maps and
 all eight outputs. Private plan `95ce3a6b`, proof and runner remain archived
-unchanged. The [public plan](binary_preview_originals/plan.py) reproduces that
-same plan byte for byte. The [public proof](binary_preview_originals/proof.py) is
-byte-identical to the executed private proof. The [public runner](binary_preview_originals/replay.py)
+unchanged. The [public plan](../../access/storage/binary_preview_originals/plan.py) reproduces that
+same plan byte for byte. The [public proof](../../access/storage/binary_preview_originals/proof.py) is
+byte-identical to the executed private proof. The [public runner](../../access/storage/binary_preview_originals/replay.py)
 is a new wrapper with a separate read-only mode, not the historical executable
 script. Its initial import-spelling and JSON page-key adapter errors are preserved;
 correcting those wrapper errors changed no native image, selector or golden.
 
 ## Read-only verification
 
-The [entry point](compare_binary_variable_updates.py) verifies all eight accepted
+The [entry point](../../access/queries/expressions/compare_binary_variable_updates.py) verifies all eight accepted
 images, actual candidate-source dependencies, cached getter/map receipts, decoded
 map cells, header counters, historical source objects and whole-image proofs
 without launching a native process or JVM:
 
 ```sh
-python3 docs/testing/compare_binary_variable_updates.py \
+python3 tests/run.py tests/access/queries/expressions/compare_binary_variable_updates.py \
   --plan .cache/ace16-binary-variable-originals-next-20261026/plan.json \
   --plan-sha256 95ce3a6b064be0cc815fba5d59e8ef2cb6e36ef902dc62e82faab1596f602fb2 \
   --verify-existing .cache/ace16-binary-variable-candidates-initial-20261026/report.json \

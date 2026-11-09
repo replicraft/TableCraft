@@ -1,8 +1,8 @@
 # Stored text-call validation audits
 
-Reviewed 24 October 2026. The [original producer](ValidationTextCallFixture.java),
-[read-only oracle](ValidationTextCallOracle.java) and
-[independent runner](compare_validation_text_calls.py) exercise bounded stored
+Reviewed 24 October 2026. The [original producer](../../access/queries/expressions/ValidationTextCallFixture.java),
+[read-only oracle](../../access/queries/expressions/ValidationTextCallOracle.java) and
+[independent runner](../../access/queries/expressions/compare_validation_text_calls.py) exercise bounded stored
 field/table validation rules containing Len and explicit binary StrComp. This is
 read-audit evidence under the current engineering expression profile, not Access
 execution or native save qualification.
@@ -64,17 +64,17 @@ case failures remain separate from binary order controls. Ordinary queries still
 read every table, including invalid/unsupported rule states, without executing
 those stored properties or silently asserting their consistency.
 
-The [accepted report](results/validation-text-calls-2026-10-24.json) records 204
+The [accepted report](../../results/schema/validation-text-calls-2026-10-24.json) records 204
 passing controls and 618 compared getter cells across ACE 2016/2019. All 19 pinned
 implementation, producer/oracle/runner, helper, original input, reference JAR and
 immutable executable hashes remain unchanged. The CLI SHA-256 is
 `36613d7cac56199e04337385e0fbdcebdfe425dc6fed592e463363f2710d3eca`.
 No native Access execution, Windows comparison or broader function admission is
-inferred. [Fixture provenance](FIXTURES.md#original-text-call-validation-inputs)
+inferred. [Fixture provenance](../reading/FIXTURES.md#original-text-call-validation-inputs)
 records original hashes and excluded probes.
 
 ```sh
-python3 docs/testing/compare_validation_text_calls.py \
+python3 tests/run.py tests/access/queries/expressions/compare_validation_text_calls.py \
   --cli .cache/tablecraft-bin/validation-functions-20261024 \
   --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar \
   --directory .cache/tablecraft-fixtures/validation-text-calls-qualified-20261024 \

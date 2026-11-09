@@ -8,7 +8,7 @@ typed values, full key/ROW streams, index graphs and maps. This is separate
 engineering candidate qualification, not normal saves or Microsoft Access
 save/reopen evidence.
 
-The [receipt](results/ace16-encoded-index-split-originals-2026-10-27.json) preserves
+The [receipt](../../results/indexes/ace16-encoded-index-split-originals-2026-10-27.json) preserves
 the actual first run and its source identities. Earlier
 [source observations](ENCODED_INDEX_SPLIT_SOURCE_OBSERVATIONS.md),
 [old-service admissions/refusals](ENCODED_INDEX_SPLIT_BASELINES.md)
@@ -19,7 +19,7 @@ remain distinct phases.
 
 The executable was built from committed revision
 `85576d139a3c02a89d2ef5eeef2720e7d6aaa8fb` in an isolated export. Its
-[build receipt](results/ace16-encoded-split-example-build-2026-10-27.json) pins
+[build receipt](../../results/indexes/ace16-encoded-split-example-build-2026-10-27.json) pins
 263 selected Git source objects, all 2,602 exported files and the frozen
 executable. The source-object checks use that revision rather than a concurrent
 working tree. This unoptimized build retains debug assertions; it is not a
@@ -46,7 +46,7 @@ uses the previously frozen class/JAR, a 512 MiB heap, a 30-second deadline and
 
 ## Complete expected images
 
-The published [candidate model](encoded_index_split_originals/candidate_model.py)
+The published [candidate model](../../access/indexes/encoded_index_split_originals/candidate_model.py)
 is byte-identical to the executed private proof. It derives slot spans, original
 physical ROW references, complete keys, canonical physical aliases, map cells and
 EOF allocation from the unchanged saved sources and independent getter facts.
@@ -85,7 +85,7 @@ independently aggregated owned/global map cells.
 With the recorded ignored artifacts retained, run from the repository root:
 
 ```sh
-python3 docs/testing/encoded_index_split_originals/verify_candidates.py \
+python3 tests/run.py tests/access/indexes/encoded_index_split_originals/verify_candidates.py \
   --report .cache/ace16-encoded-split-acceptance-first-20261027/report.json \
   --plan .cache/ace16-encoded-originals-next-20261027/plan.json
 ```

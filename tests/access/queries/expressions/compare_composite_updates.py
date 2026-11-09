@@ -62,7 +62,7 @@ def main():
         parser.add_argument("--" + name, required=True, type=Path)
     args = parser.parse_args()
     with tempfile.TemporaryDirectory(prefix="tablecraft-tuple-oracle-") as classes:
-        run("javac", "-cp", args.jar, "-d", classes, "docs/testing/TableDataOracle.java")
+        run("javac", "-cp", args.jar, "-d", classes, "tests/access/reading/tables/TableDataOracle.java")
         def oracle(path, *arguments):
             return run("java", "-Dstdout.encoding=UTF-8", "-cp", str(args.jar) + os.pathsep + classes,
                        "TableDataOracle", path, *arguments)

@@ -1,4 +1,5 @@
 """Independent larger attachment/history models and exact bounded reader checks."""
+from engineering_paths import reference_file
 
 import argparse
 import csv
@@ -39,7 +40,7 @@ def main():
         for profile in profiles:
             subprocess.run([
                 "java", "-Dstdout.encoding=UTF-8", "-cp", str(args.jar),
-                str(RECIPES / "LargeStoredObjectsFixture.java"),
+                str(reference_file('tests/access/reading/tables/LargeStoredObjectsFixture.java')),
                 str(args.directory / f"stored-{profile}.accdb"), profile,
             ], check=True)
 
@@ -70,7 +71,7 @@ def main():
         def java(recipe, *arguments):
             return subprocess.check_output([
                 "java", "-Dstdout.encoding=UTF-8", "-cp", str(args.jar),
-                str(RECIPES / recipe), *map(str, arguments),
+                str(reference_file(recipe)), *map(str, arguments),
             ], text=True, encoding="utf-8")
 
         metadata = java("LargeAttachmentOracle.java", "--metadata", path)

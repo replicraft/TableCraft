@@ -1,4 +1,5 @@
 """Independent subtype/bounds goldens and inert native type-inspection metadata."""
+from engineering_paths import reference_file
 import argparse
 import csv
 import hashlib
@@ -72,7 +73,7 @@ def main():
         names = ['SavedForestFixture', 'SavedStatisticsFixture', 'SavedInspectionFixture',
                  'SavedReadOracle', 'SavedQueryOracle', 'TableDataOracle']
         subprocess.run(['javac', '-encoding', 'UTF-8', '-cp', str(args.jar), '-d', classes,
-                        *[str(RECIPES / (name + '.java')) for name in names]], check=True)
+                        *[str(reference_file(name + '.java')) for name in names]], check=True)
 
         def java(name, *values):
             return subprocess.check_output([

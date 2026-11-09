@@ -31,7 +31,7 @@ and topology replay, and the same map-allocation authority. Full key plus ROW
 maxima, per-height links, root allocation order, original residue and zeroed fresh
 padding remain certified. New fitting-root checks compare complete decoded keys
 and ROWs against request-derived expectations; matching lengths/prefixes alone
-cannot authorize different bytes. The existing [composite fitting audit](ACE16_COMPOSITE_FITTING_AUDIT.md)
+cannot authorize different bytes. The existing [composite fitting audit](../general/ACE16_COMPOSITE_FITTING_AUDIT.md)
 remains separate and unchanged in scope.
 
 The slot finalizer rebinds immutable original table/column metadata, reruns original
@@ -60,7 +60,7 @@ output, synchronizes the completed candidate and removes only its own failed
 partial file. It never overwrites the source or an existing output. Success prints
 `candidate_changed_rows=N` and an engineering qualification notice.
 
-The [implementation result](results/ace16-encoded-index-splits-native-2026-10-27.json)
+The [implementation result](../../results/indexes/ace16-encoded-index-splits-native-2026-10-27.json)
 records 142 distinct runtime functions, 15 new, plus three compile-fail doctests.
 Nine independent functions cover six complete root images for both General
 families/Binary and directions, NULL/empty and weight ties, Binary segment widths,

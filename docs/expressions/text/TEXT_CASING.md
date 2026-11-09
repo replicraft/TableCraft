@@ -84,7 +84,7 @@ Generated ASCII tests compare integer-offset mappings. Evaluator tests exercise
 expansion, cumulative bytes, work and cancellation; query/CLI/worker tests exercise
 request isolation, grouping, correlation and buffered errors.
 
-The [independent recipe](../../testing/compare_casing.py) compares established Unicode
+The [independent recipe](../../../tests/access/reading/tables/compare_casing.py) compares established Unicode
 characters against Python casing plus explicit language goldens. Its optional
 native-row controls compare read order/row membership with unchanged Jackcess
 inputs while executing casing in TableCraft. These are independent model/reader
@@ -133,7 +133,7 @@ establish complete Variant coercion, native regional spelling or error precedenc
 Three expression and two query tests cover scalar source kinds, nested/reused
 execution settings, NULL/provider failures, preserved whitespace, byte quotas and
 every observed conversion/output cancellation checkpoint. The original
-[scalar runner](../../testing/compare_trim_case_scalars.py) passes 336 authored spelling
+[scalar runner](../../../tests/access/reading/tables/compare_trim_case_scalars.py) passes 336 authored spelling
 and ASCII-only casing controls, with raw IDs read independently from four unchanged 20,000-row
 Jet 4/ACE inputs through sequential and both index directions. Its ASCII oracle
 is separate from broader ICU/Windows mapping qualification.
@@ -171,7 +171,7 @@ establish direct query availability. The complete-unit/range rules here are the
 explicit engineering profile; native Access edge/error and coercion qualification
 remain separate.
 
-The original [runner](../../testing/compare_raw_trimming.py) passes 3,786 independent
+The original [runner](../../../tests/access/reading/tables/compare_raw_trimming.py) passes 3,786 independent
 controls. Python list prefix/suffix removal checks lengths and exact binary
 result units across both CLI evaluators. Native getters supply four unchanged
 inputs for sequential/selected-index length controls under stored and explicit

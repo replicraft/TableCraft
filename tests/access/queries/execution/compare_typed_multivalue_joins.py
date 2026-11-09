@@ -90,9 +90,9 @@ def main():
     if not joined_sources.issubset(snapshots):
         parser.error("Compiled revision does not include the typed join implementation")
     artifacts = [
-        args.cli, Path(__file__), ROOT / "docs/testing/compare_bare_multivalue_results.py",
-        ROOT / "docs/testing/compare_browsing.py", ROOT / "docs/testing/compare_ignored_null_indexes.py",
-        ROOT / "docs/testing/results/bare-multivalue-results-2026-10-25.json",
+        args.cli, Path(__file__), ROOT / "tests/access/reading/tables/compare_bare_multivalue_results.py",
+        ROOT / "tests/access/reading/tables/compare_browsing.py", ROOT / "tests/access/indexes/native/compare_ignored_null_indexes.py",
+        ROOT / "tests/results/general/bare-multivalue-results-2026-10-25.json",
     ]
     provenance = json.loads(artifacts[-1].read_text())
     registered = {item["path"]: item["sha256"] for item in provenance["immutable_artifacts_before_after"]}

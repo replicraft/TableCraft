@@ -150,11 +150,11 @@ Focused tests cover exact LongLong/fixed-point digits, date and numeric profiles
 Boolean/NULL behavior, policy reuse, metadata-only sources, derived/grouped/nested
 queries, named crosstab discovery, all observed conversion cancellation checkpoints,
 intermediate/final allocation caps and unchanged input values. The original
-[Python runner](../../testing/compare_concatenation.py) passes 190 controls through eval
+[Python runner](../../../tests/access/reading/tables/compare_concatenation.py) passes 190 controls through eval
 and run, including unchanged native inputs and both directions of indexed seeks.
 Python integer/Decimal/calendar models and read-only Jackcess getters provide
 expectations. Exact Decimal tests use lexical CDec input to isolate them from the
-separate floating SQL literal policy. [Provenance](../../testing/FIXTURES.md#original-contextual-concatenation-controls)
+separate floating SQL literal policy. [Provenance](../../../tests/reports/reading/FIXTURES.md#original-contextual-concatenation-controls)
 records the existing input sets. No benchmark or speed claim is introduced.
 Native Windows Access SQL, formatting, coercion and error-order comparisons remain
 unrun; these controls establish the explicit implementation profile.

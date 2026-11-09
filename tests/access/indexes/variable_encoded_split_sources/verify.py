@@ -6,8 +6,8 @@ import json
 from pathlib import Path
 import sys
 
-ROOT = Path(__file__).resolve().parents[3]
-sys.path.insert(0, str(ROOT / 'docs/testing'))
+ROOT = Path(__file__).resolve().parents[4]
+sys.path.insert(0, str(ROOT / 'tests/access'))
 from variable_encoded_split_sources import model
 
 DEFAULT_REPORT = '.cache/ace16-variable-encoded-source-first-20261027/report.json'
@@ -86,8 +86,8 @@ def verify(report_path, freeze_path):
             changes.append(before['path'])
     assert changes == [str(directory / 'DESIGN.md')]
     helper = directory / 'VariableEncodedProbe.java'
-    assert path(helper).read_bytes() == path('docs/testing/variable_encoded_split_sources/VariableEncodedProbe.java').read_bytes()
-    assert functions(directory / 'model.py') == functions('docs/testing/variable_encoded_split_sources/model.py')
+    assert path(helper).read_bytes() == path('tests/access/indexes/variable_encoded_split_sources/VariableEncodedProbe.java').read_bytes()
+    assert functions(directory / 'model.py') == functions('tests/access/indexes/variable_encoded_split_sources/model.py')
     commands = {item['label']: item for item in report['commands']}
     profiles = []
     rows = slots = entries = data_pages = 0

@@ -88,7 +88,7 @@ from those other limits.
 
 The named-depth scope passes 164 distinct tests: 102 named/domain/binding/source
 controls, 47 execution units and 15 binding units, including fifteen new depth/probe tests and four
-new scope-restoration units. The [scoped record](../testing/results/read-query-named-depth-2026-10-25.json)
+new scope-restoration units. The [scoped record](../../tests/results/queries/read-query-named-depth-2026-10-25.json)
 separates successful fifty-definition shapes from checked compound refusals,
 retains final command/log hashes, and records excluded initial stack aborts,
 timeouts and test-construction/lint diagnostics. Native Access comparison remains
@@ -106,7 +106,7 @@ Selected collation, domain, named-crosstab, editing and progressive regression
 suites also pass. These are engineering checks, not Microsoft Access comparisons
 or completion of the broader read/query roadmap.
 
-The independent [compound replay](../testing/DEEPER_QUERIES.md) adds 1,692 successful
+The independent [compound replay](../../tests/reports/queries/DEEPER_QUERIES.md) adds 1,692 successful
 explicit-depth queries and 141 identical-SQL default-depth refusals over literal
 constructors and four unchanged native scalar originals. It checks exact retained
 values, group memberships, ordering and extrema in both arithmetic profiles.

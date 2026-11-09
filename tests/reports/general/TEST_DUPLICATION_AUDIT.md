@@ -77,7 +77,7 @@ The broader CLI run exposed three stale expectations. Help now checks the
 implemented journal update/recovery capability and the retained GUI limitation.
 The UTF-16 addition and concatenation tests now require two paired byte fragments
 to produce a two-byte result, matching the existing
-[String join contract](../expressions/text/CONCATENATION.md#odd-byte-join-verification),
+[String join contract](../../../docs/expressions/text/CONCATENATION.md#odd-byte-join-verification),
 while retaining invalid-Unicode publication and eager-error refusals. These are
 test corrections; production behavior is unchanged.
 CAB construction also moved to `fixtures::formats::deployment`. These ownership
@@ -128,7 +128,7 @@ plumbing worth removing; it did not establish that whole feature suites can be
 deleted as equivalent coverage.
 
 Verification and recorded cleanup measurements are in the
-[audit record](results/test-duplication-audit-2026-11-01.json).
+[audit record](../../results/general/test-duplication-audit-2026-11-01.json).
 
 ## Verification status
 

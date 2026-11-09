@@ -7,10 +7,10 @@ read-only getters/maps. All twenty-five fixture commands succeed without retries
 regeneration or public UPDATE calls. This remains engineering preview evidence,
 not native Access save/reopen or normal-save qualification.
 
-The [acceptance receipt](results/ace16-mixed-long-value-originals-2026-10-27.json)
+The [acceptance receipt](../../results/general/ace16-mixed-long-value-originals-2026-10-27.json)
 separates the source observations, implementation checks, immutable build and
 actual first candidate replay. The
-[build receipt](results/ace16-mixed-long-value-example-build-2026-10-27.json)
+[build receipt](../../results/general/ace16-mixed-long-value-example-build-2026-10-27.json)
 binds revision `c609d94e1f1384e2d8a431922f7bba5d34ebc35b`, 219 selected Git objects,
 the complete 2,561-file export inventory, driver/log and frozen executable.
 Concurrent working-tree changes are not compiled-source authority.
@@ -51,13 +51,13 @@ across the eight no-growth and four growing cases is 32,768 bytes.
 
 The twelve-case plan, quoted TSV requests and whole-image proof were frozen
 before the new consumer build. The original raw placement model is published
-[byte-identically](mixed_lval_originals/raw_placement.py); the
-[mixed adapter](mixed_lval_originals/proof.py) is a separately identified path
+[byte-identically](../../access/storage/mixed_lval_originals/raw_placement.py); the
+[mixed adapter](../../access/storage/mixed_lval_originals/proof.py) is a separately identified path
 derivative of the executed adapter. Neither derives expected bytes from production
 serializers or successful candidates.
 
 The actual first replay compiles one new
-[read-only probe](mixed_lval_originals/MixedLongValueCandidateProbe.java), then
+[read-only probe](../../access/storage/mixed_lval_originals/MixedLongValueCandidateProbe.java), then
 executes twelve native attempts and twelve fresh combined inspections. The probe
 has no mutation entrypoint, opens read-only, disables expression evaluation and
 refuses linked opens. It reports NULL explicitly, independently of empty bytes.
@@ -77,7 +77,7 @@ were not modified to satisfy the new checks.
 With the recorded ignored artifacts retained, run from the repository root:
 
 ```sh
-python3 docs/testing/mixed_lval_originals/verify.py \
+python3 tests/run.py tests/access/storage/mixed_lval_originals/verify.py \
   --report .cache/ace16-mixed-lval-acceptance-first-20261027/report.json
 ```
 

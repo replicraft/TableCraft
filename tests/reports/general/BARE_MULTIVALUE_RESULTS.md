@@ -15,8 +15,8 @@ API tests retain exact Single bits, including two signed NaN payloads.
 
 ## Original inputs
 
-The unchanged repository-owned [MultivalueFixture.java](MultivalueFixture.java) recipe
-and read-only [MultivalueOracle.java](MultivalueOracle.java) were run with reviewed Jackcess 5.0.4, JAR SHA-256
+The unchanged repository-owned [MultivalueFixture.java](../../access/reading/tables/MultivalueFixture.java) recipe
+and read-only [MultivalueOracle.java](../../access/reading/tables/MultivalueOracle.java) were run with reviewed Jackcess 5.0.4, JAR SHA-256
 `19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`.
 Fresh outputs were created under
 `.cache/tablecraft-fixtures/bare-multivalue-results-20261025/` after the historical
@@ -47,7 +47,7 @@ All 50 focused checks pass, including eight new native tests plus 35 existing
 multivalue/collection/linked/external regressions and seven recomputed-view
 consumer checks. Strict scoped Clippy and formatting also pass. The existing
 scalar-only recomputed metadata helper explicitly rejects unexpected collection
-metadata after the OutputType extension. The [native conformance record](results/bare-multivalue-native-conformance-2026-10-25.json)
+metadata after the OutputType extension. The [native conformance record](../../results/general/bare-multivalue-native-conformance-2026-10-25.json)
 preserves the first authored failures: an execution quota test initially exhausted
 catalog inventory, and a scalar-multivalue `IS NULL` assumption confused it with
 the existing named attachment/history presence contract. Neither required a
@@ -55,7 +55,7 @@ production change; bare scalar-list operations remain refused.
 
 ## Accepted original-data replay
 
-The [first accepted report](results/bare-multivalue-results-2026-10-25.json) has
+The [first accepted report](../../results/general/bare-multivalue-results-2026-10-25.json) has
 48 controls and zero disagreements: 27 successful commands compare 87 rows and
 258 output cells; 21 expected refusals require empty stdout and a matching error
 class. Three profiles each exercise the complete eight-carrier matrix, aliases,
@@ -84,7 +84,7 @@ is retained in `.cache/bare-multivalue-replay-20261025.jsonl`. No failed origina
 CLI replay was discarded or replaced.
 
 ```sh
-python3 docs/testing/compare_bare_multivalue_results.py \
+python3 tests/run.py tests/access/reading/tables/compare_bare_multivalue_results.py \
   --cli .cache/tablecraft-bin/bare-multivalue-cli-20261025 \
   --cli-sha256 07224f3fc964afd9c500c3141d592625205504ff664e9b6716bbec522d9b90fe \
   --compiled-revision ff7d63c12184957e0e22ab711cf7b8eb7a051190 \

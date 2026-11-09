@@ -1,13 +1,13 @@
 # General height-one primary INSERT
 
-The optional [ordinary-row INSERT preview](ACE16_INSERT_PREVIEW.md) admits a
+The optional [ordinary-row INSERT preview](../rows/ACE16_INSERT_PREVIEW.md) admits a
 qualified height-one primary with any nonempty number of leaf children, including
 one child. The table still has the same explicit Int32/Short Binary row profile
 and sole required, unique, ascending Int32 physical primary with genuine logical
 aliases. No scalar, metadata, constraint, map grammar or resource ceiling is
 widened. This is the existing non-journalable engineering API and example, with
 no new normal host write path or public preview method. Its later
-[recursive continuation](ACE16_INSERT_RECURSIVE.md) extends internal splitting and
+[recursive continuation](../rows/ACE16_INSERT_RECURSIVE.md) extends internal splitting and
 root growth; the evidence below remains this height-one checkpoint's record.
 
 ## Source forms and INSERT routing
@@ -144,15 +144,15 @@ verified the stopped prefix, every complete image and all original pins, then ra
 only the four unattempted commands. No completed inspection was repeated. The
 original run also used a stricter 8 MiB stream cap than its declared 16 MiB;
 neither cap was hit. The stopped report and continuation remain separate in the
-[evidence record](results/ace16-insert-general-height-one-native-2026-10-28.json)
-and [saved-only verifier](ace16_insert_general_height_one/verify.py).
+[evidence record](../../results/indexes/ace16-insert-general-height-one-native-2026-10-28.json)
+and [saved-only verifier](../../access/indexes/ace16_insert_general_height_one/verify.py).
 Earlier [fitting](ACE16_INSERT_HEIGHT_ONE.md) and
 [one-child split](ACE16_INSERT_CHILD_SPLITS.md) original-file evidence stays
 separate. Windows/native Microsoft Access comparisons remain deferred by the user.
 
 ## Remaining work
 
-The later [recursive continuation](ACE16_INSERT_RECURSIVE.md) admits qualified
+The later [recursive continuation](../rows/ACE16_INSERT_RECURSIVE.md) admits qualified
 deeper sources and parent/root growth, including larger root-leaf overflow beyond
 two fitting halves. It preserves the unchanged depth ceiling and permits one root
 growth per operation only when the new top fits. The original-file evidence here

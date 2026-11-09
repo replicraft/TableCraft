@@ -49,7 +49,7 @@ all experiments. No fixture was regenerated or new dependency adopted.
 
 ```sh
 CARGO_INCREMENTAL=0 cargo build -p tablecraft-ace --example binary_range --release --locked --offline
-python3 docs/testing/compare_binary_ranges.py \
+python3 tests/run.py tests/access/storage/native/compare_binary_ranges.py \
   --jar /tmp/reviewed/jackcess-5.0.4.jar --cli target/release/tablecraft \
   --reader target/release/examples/binary_range --directory /tmp/existing-binary-index-inputs
 ```

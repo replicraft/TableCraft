@@ -85,18 +85,18 @@ are checked. CLI tests execute saved and named sources and refuse inert unknown
 calls without partial stdout. Existing same-pair condition and malformed metadata
 tests remain in the saved-query suite.
 
-The original [SavedForestFixture.java](../../testing/SavedForestFixture.java) recipe
+The original [SavedForestFixture.java](../../../tests/access/queries/saved/SavedForestFixture.java) recipe
 creates fourteen inert definitions in each of four fresh files. The independent
-[comparison](../../testing/compare_saved_forests.py) passes 240 SQL-assembly, table-getter,
+[comparison](../../../tests/access/queries/saved/compare_saved_forests.py) passes 240 SQL-assembly, table-getter,
 direct/saved/named execution and mutation-refusal controls. Jackcess renders SQL
 but never executes it. Separate Python relational models control exact nullable
 rows for three/four-table joins and comma products. Copies with conflicting or
 unknown kinds refuse reconstruction/execution. Original and mutation-copy bytes
-remain unchanged. [Fixture provenance and hashes](../../testing/FIXTURES.md#saved-join-forest-inputs)
+remain unchanged. [Fixture provenance and hashes](../../../tests/reports/reading/FIXTURES.md#saved-join-forest-inputs)
 record the observed files; regenerated files can differ in incidental metadata.
 
 ```sh
-python3 docs/testing/compare_saved_forests.py \
+python3 tests/run.py tests/access/queries/saved/compare_saved_forests.py \
   --jar path/to/jackcess-5.0.4.jar --cli target/release/tablecraft \
   --directory path/to/fresh-join-forests --generate
 ```
@@ -114,17 +114,17 @@ and decomposed spellings remain distinct. A differently cased non-ASCII endpoint
 is not silently rebound to another source. Native Unicode/NLS identifier matching
 still needs its own provider/evidence; this change does not qualify that behavior.
 
-The original [Unicode fixture recipe](../../testing/SavedUnicodeFixture.java) extends our
+The original [Unicode fixture recipe](../../../tests/access/queries/saved/SavedUnicodeFixture.java) extends our
 existing inert forest recipe, adding seven named/derived/comma/inner/outer/nested
-source definitions. [Independent comparison](../../testing/compare_saved_unicode.py)
+source definitions. [Independent comparison](../../../tests/access/queries/saved/compare_saved_unicode.py)
 passes 112 normalized rendering and direct/saved/named execution controls across
 Jet 4, ACE 2007 and both ACE 16-family layouts. Table getters and explicit nullable
 row models supply expected data; Jackcess renders but never executes SQL.
-Original hashes remain unchanged. [Fixture records](../../testing/FIXTURES.md#unicode-saved-source-inputs)
+Original hashes remain unchanged. [Fixture records](../../../tests/reports/reading/FIXTURES.md#unicode-saved-source-inputs)
 retain the generated inputs and provenance separately from native Access qualification.
 
 ```sh
-python3 docs/testing/compare_saved_unicode.py \
+python3 tests/run.py tests/access/queries/saved/compare_saved_unicode.py \
   --jar path/to/reviewed/jackcess-5.0.4.jar --cli target/debug/tablecraft \
   --directory path/to/fresh-unicode-sources --generate
 ```

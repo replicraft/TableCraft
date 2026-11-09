@@ -8,7 +8,7 @@ recalculation, concurrent files or native application saves.
 
 ## Original workload
 
-The [inert producer](AdvancedEvolutionFixture.java) starts with 48 rows containing
+The [inert producer](../../access/reading/tables/AdvancedEvolutionFixture.java) starts with 48 rows containing
 ordinary scalar fields. It then adds multivalues, attachments, a cached Int32
 calculation and an append-only Memo/history field, followed by 48 more rows.
 A later stage adds cached Memo/Decimal columns and eight Boolean fields before
@@ -21,7 +21,7 @@ empty files and explicit stored history. Selected child lists are deleted and
 repopulated. Six parents with empty collections are deleted through a fresh cursor.
 No formula, macro, provider or application code runs.
 
-The [read-only oracle](AdvancedEvolutionOracle.java) emits exact stored scalar
+The [read-only oracle](../../access/reading/tables/AdvancedEvolutionOracle.java) emits exact stored scalar
 getters and flat child rows in their physical table order. It checks attachment
 identity and encoded-byte agreement against the separate public attachment API,
 and retains original decoded bytes. History values keep their actual hidden field
@@ -47,7 +47,7 @@ reader rather than inferred from the current schema alone.
 
 ## Read/query checks
 
-The [runner](compare_advanced_evolution.py) compares ordinary and cached scalar
+The [runner](../../access/reading/tables/compare_advanced_evolution.py) compares ordinary and cached scalar
 projections, cached predicates with/without automatic hints, multivalue expansion
 and counts, mixed cache/collection criteria, exact encoded and explicitly decoded
 FileData, and stored history members/dates alongside the current Memo. Required
@@ -61,7 +61,7 @@ are never changed. The original getter oracle's `--orphan` operation is restrict
 to an explicitly named disposable `orphan.accdb` copy and is not an application
 write capability.
 
-The [accepted report](results/advanced-evolution-2026-10-24.json) records 60 passing
+The [accepted report](../../results/general/advanced-evolution-2026-10-24.json) records 60 passing
 controls and 18,584 compared query cells across the two files, with unchanged
 producer, oracle, implementation, helper, JAR, input and immutable CLI hashes.
 The executable is the previously fixed cached-query binary, SHA-256
@@ -75,7 +75,7 @@ was needed for these cases. Full native collection/history semantics, calculated
 freshness, other historical variants and Windows comparisons remain separate.
 
 ```sh
-python3 docs/testing/compare_advanced_evolution.py \
+python3 tests/run.py tests/access/reading/tables/compare_advanced_evolution.py \
   --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar \
   --cli .cache/tablecraft-bin/cached-query-20261024 \
   --ace2016 .cache/tablecraft-fixtures/advanced-evolution-deleted-20261024/V2016.accdb \
@@ -83,6 +83,6 @@ python3 docs/testing/compare_advanced_evolution.py \
   --report /tmp/advanced-evolution.json
 ```
 
-[Fixture provenance](FIXTURES.md#advanced-field-storage-evolution-inputs) records
+[Fixture provenance](../reading/FIXTURES.md#advanced-field-storage-evolution-inputs) records
 accepted original hashes and excluded investigation inputs. Generated databases,
 compiled fixture classes and the executable remain ignored local artifacts.

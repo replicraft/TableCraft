@@ -8,7 +8,7 @@ It does not change normal ACE save permission or required data-macro handling.
 
 ## Nonallocating protection
 
-The [metadata owner](../../crates/engines/tablecraft-ace/src/table/mutation/variable_split/metadata.rs)
+The [metadata owner](../../../crates/engines/tablecraft-ace/src/table/mutation/variable_split/metadata.rs)
 provides a distinct fitting capture. It requires complete catalog ownership
 framing, original ordinary-owned map exclusivity and every affected physical
 INDEX owner's exact identity. An affected tree's reachable pages must equal its
@@ -29,8 +29,8 @@ checked, the fitting capture clears its rewrite-role list, so even an exact
 original owned-map record cannot be rewritten through that capability. The
 existing allocating capture retains its actual map-rewrite behavior.
 
-Both the [producer stage](../../crates/engines/tablecraft-ace/src/table/mutation/fitted/stage.rs)
-and the [independent record proof](../../crates/engines/tablecraft-ace/src/table/mutation/fitted/record_proof.rs)
+Both the [producer stage](../../../crates/engines/tablecraft-ace/src/table/mutation/fitted/stage.rs)
+and the [independent record proof](../../../crates/engines/tablecraft-ace/src/table/mutation/fitted/record_proof.rs)
 reacquire protection from the immutable original. Producer caches do not supply
 proof authority. Existing complete-record, exact original-value, joint-key,
 constraint, budget and cancellation checks remain in place. Additional catalog
@@ -56,7 +56,7 @@ missing ownership declarations, rather than a candidate-hint requirement or
 GLOBAL free-bit contradiction.
 
 Those original constructors and expected-image bodies remain unchanged. The
-new [pure fixture derivative](../../crates/engines/tablecraft-ace/src/table/mutation/mixed_fitted_tests/framed.rs)
+new [pure fixture derivative](../../../crates/engines/tablecraft-ace/src/table/mutation/mixed_fitted_tests/framed.rs)
 clones each original and expected image and changes exactly six bytes: an
 explicit `FF FF` empty-list terminator at each of the three known tails. It
 asserts the original zero suffixes and complete changed-offset list. All 43
@@ -78,8 +78,8 @@ forgeries. Access passes 58 library tests. CLI passes 37 unit tests, 25 query
 UPDATE integration tests and six typed-write tests. Strict all-target/all-feature
 ACE/Access/CLI checks and minimal ACE/Access checks pass.
 
-The broader native mutation regression passes all 529 tests. See the [structured result](results/ace16-fitting-body-roles-2026-10-30.json)
+The broader native mutation regression passes all 529 tests. See the [structured result](../../results/general/ace16-fitting-body-roles-2026-10-30.json)
 for chronology and exact source pins. This is engineering-preview preservation
 evidence; native Access comparison, journalability and normal ACE saves are not
-qualified by these tests. The [fitting service contract](ACE16_FITTED_MIXED_UPDATES.md)
+qualified by these tests. The [fitting service contract](../rows/ACE16_FITTED_MIXED_UPDATES.md)
 and existing growth services retain their distinct allocation scopes.

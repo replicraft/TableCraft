@@ -17,7 +17,7 @@ def owner_model():
 
 
 model = owner_model()
-HELPER = model.ROOT / 'docs/testing/CreatedNumberColumnOracle.java'
+HELPER = model.ROOT / 'tests/access/schema/fields/CreatedNumberColumnOracle.java'
 JAR_HASH = '19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc'
 HELPER_HASH = 'c805c038da5f0853c50a3b76753dab0577aa66322fe873c9e642e52a943d1886'
 
@@ -78,7 +78,7 @@ def main():
         (root / 'sdk-observations.json').write_text(json.dumps({
             'scope': 'Unchanged first-party SDK helper; explicit Required false/default0; no native Access execution',
             'sdk': {'artifact': 'Jackcess 5.0.4', 'sha256': JAR_HASH, 'license': 'Apache-2.0'},
-            'helper': {'source': 'docs/testing/CreatedNumberColumnOracle.java', 'sha256': HELPER_HASH},
+            'helper': {'source': 'tests/access/schema/fields/CreatedNumberColumnOracle.java', 'sha256': HELPER_HASH},
             'driver_sha256': digest(Path(__file__).read_bytes()),
             'observations': observations,
         }, indent=2) + '\n')

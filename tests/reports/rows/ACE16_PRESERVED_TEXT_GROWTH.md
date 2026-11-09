@@ -8,8 +8,8 @@ engineering candidate; it grants no normal ACE save or macro permission.
 
 The [fitting service](ACE16_PRESERVED_SHORT_TEXT_UPDATES.md) and Default workflow
 retain their existing physical-capacity boundary. This growth service is an
-explicit choice. The existing [SQL](../access/writes/SQL_ENGINEERING_COPIES.md)
-and [typed engineering-copy](../access/writes/ENGINEERING_COPIES.md) workflows
+explicit choice. The existing [SQL](../../../docs/access/writes/SQL_ENGINEERING_COPIES.md)
+and [typed engineering-copy](../../../docs/access/writes/ENGINEERING_COPIES.md) workflows
 select it with `--variable` for one admitted projected Short Text target. Default
 remains fitting; combined INDEX growth, LVAL and larger-image modes retain their
 separate restrictions. A failed mode is not retried through another writer.
@@ -90,7 +90,7 @@ variable-update and seven placement-contract functions also pass. Strict checks
 for ACE, Access and CLI across all targets/features, ACE/Access minimal builds,
 workspace formatting and the diff check pass. Documentation validation reports
 6,760 targets with no missing links. The
-[result record](results/ace16-preserved-text-growth-2026-10-30.json) retains the
+[result record](../../results/rows/ace16-preserved-text-growth-2026-10-30.json) retains the
 logs and failure chronology. The genuine fitting corpus does not automatically
 qualify these growth paths.
 These authored-source checks do not establish native Access save/reopen or
@@ -124,7 +124,7 @@ independent SDK getter calls pass on the first attempt, matching every expected
 tagged inventory with only the selected cells changed. Original hashes remain
 unchanged. This qualifies same-page placement on these two original profiles;
 genuine-file EOF allocation is not established by this corpus.
-The [genuine-image result](results/ace16-preserved-text-growth-genuine-images-2026-10-30.json)
+The [genuine-image result](../../results/rows/ace16-preserved-text-growth-genuine-images-2026-10-30.json)
 keeps source, expected, build, producer and reader phases distinct. These
 engineering copies do not qualify native Microsoft Access saves, required-macro
 discovery or normal ACE writes.

@@ -38,7 +38,7 @@ is set, otherwise `User`. Hidden status alone (`0x01`) is not a system marker;
 names are not used for classification. `User` does not prove who created a table.
 The engine interprets these flags and the shared inventory exposes `is_system()`.
 The flag interpretation follows the reviewed Jackcess `DatabaseImpl`
-`SYSTEM_OBJECT_FLAGS`/`isSystemObject` reference recorded in [fixtures](../testing/FIXTURES.md).
+`SYSTEM_OBJECT_FLAGS`/`isSystemObject` reference recorded in [fixtures](../../tests/reports/reading/FIXTURES.md).
 
 The table argument to `rows` is optional when exactly one user table exists.
 System tables do not count; hidden user tables and linked user declarations do.
@@ -214,14 +214,14 @@ Unknown/complex/unsupported wrappers fail; they never become NULL or hidden fiel
 The physical page walker, limits and cancellation checks are shared with scalar
 pages. Selected values are checked; skipped/later payloads remain unchecked.
 
-[Cached-page comparison](../testing/compare_cached_pages.py) reuses four original
+[Cached-page comparison](../../tests/access/storage/native/compare_cached_pages.py) reuses four original
 inert V2016/V2019 fixtures with seven result encodings (including both Text
 encodings). Thirty-eight independent controls cover pages, EOF/empty results,
 ordinary query/read refusals, pretty output and corrupt-copy atomic failures.
 DATE display is checked from independently retained serial bits using an explicit
 nanosecond calendar model, avoiding the Java calendar carrier's millisecond
 rounding. Fixtures include deliberately stale results; formulas stay disabled.
-See [provenance](../testing/FIXTURES.md#cached-calculation-page-regression).
+See [provenance](../../tests/reports/reading/FIXTURES.md#cached-calculation-page-regression).
 Those results and the linked recipe describe the historical explicit-opt-in CLI;
 its default-row refusal controls require that recorded CLI. Current buffered
 defaults are tested separately by the automatic-browsing and CLI regressions.
@@ -245,7 +245,7 @@ profile. They retain separate stored-content APIs and explicit inspection views.
 key/collection qualification includes ACE 2007 and both ACE 16 families.
 Large Number collection carriers remain ACE 16-only. Typed attachment/history
 read APIs separately qualify ACE 2007/ACE 16, but they are not rendered by this
-multivalue page profile. See [legacy stored-content evidence](../testing/FIXTURES.md#ace-2007-stored-attachment-and-history-inputs).
+multivalue page profile. See [legacy stored-content evidence](../../tests/reports/reading/FIXTURES.md#ace-2007-stored-attachment-and-history-inputs).
 
 The reusable `NativeBrowser::multivalue_page` returns `MultivalueTablePage` from
 `read_multivalue_table_page`. `schema()` retains native types; `cell(row, column)`
@@ -269,18 +269,18 @@ Ordinary scalar and cached payloads outside the selected page remain unchecked.
 Repeated pages currently repeat complete collection validation; this is not lazy
 child fetching or a whole-table scalar integrity proof.
 
-The [independent runner](../testing/compare_multivalue_pages.py) checks 46 controls
+The [independent runner](../../tests/access/storage/native/compare_multivalue_pages.py) checks 46 controls
 across existing eight-carrier originals and fresh mixed scalar/collection/cache
 fixtures for both ACE 16 families. It covers pages, NULL/empty/duplicate values,
 stale results, complete-snapshot refusals and atomic corrupt-copy rejection.
 NaN display is `NaN` and does not encode payload bits; borrowed core values retain
-those original bits. [Fixture provenance](../testing/FIXTURES.md#mixed-multivalue-page-inputs)
+those original bits. [Fixture provenance](../../tests/reports/reading/FIXTURES.md#mixed-multivalue-page-inputs)
 records immutable sources and qualification scope. The optional `--matrix2007`
 adds eleven ACE 2007 controls while retaining the original 46-control matrix;
 these historical comparisons likewise use their recorded explicit-opt-in CLI,
 including its default-row refusal controls. Current default browsing has separate
 automatic-browsing and CLI regression coverage.
-[ACE 2007 evidence](../testing/FIXTURES.md#ace-2007-complex-key-and-multivalue-inputs) also
+[ACE 2007 evidence](../../tests/reports/reading/FIXTURES.md#ace-2007-complex-key-and-multivalue-inputs) also
 checks raw links and exact collection APIs.
 
 ## Current limits
@@ -326,13 +326,13 @@ behavior, case-insensitive names, maximum offsets, unusual table names, unknown
 and unsupported columns, malformed files, invalid arguments, registered-sample
 output agreement and unchanged source bytes.
 
-[The independent comparison](../testing/compare_browsing.py) reuses the original
-[ScalarFixture recipe](../testing/ScalarFixture.java) and reviewed Jackcess artifact.
+[The independent comparison](../../tests/access/reading/tables/compare_browsing.py) reuses the original
+[ScalarFixture recipe](../../tests/access/reading/tables/ScalarFixture.java) and reviewed Jackcess artifact.
 Fresh original V2000, V2016 and V2019 files each verify complete table inventory,
 five page controls and a sorted SELECT against independent catalog/schema/row
 oracles. Scalars include Unicode text, long values, binary/GUID data, NULLs,
 Boolean, signed numeric extrema, Currency, 28-digit Decimal and legacy dates.
-[Fixture provenance](../testing/FIXTURES.md#native-cli-browsing-inputs) records hashes and
+[Fixture provenance](../../tests/reports/reading/FIXTURES.md#native-cli-browsing-inputs) records hashes and
 reproduction. This is independent reader evidence; native Microsoft Access,
 Windows and concurrent-file behavior remain unqualified.
 
@@ -345,8 +345,8 @@ and resource exhaustion. A fixed-seed 128-case property compares pages with an
 independent sequence model. Two backend tests exercise inventory filtering and
 paging without the CLI, cumulative budgets and cancellation.
 
-[The larger-table comparison](../testing/compare_browsing_pages.py) uses the original
-[BrowsingFixture recipe](../testing/BrowsingFixture.java): each of three original
+[The larger-table comparison](../../tests/access/storage/native/compare_browsing_pages.py) uses the original
+[BrowsingFixture recipe](../../tests/access/reading/tables/BrowsingFixture.java): each of three original
 families has 20,050 rows and ten page controls, including offsets beyond 16,384,
 Unicode/escaped text, 28-digit Decimal extrema, NULLs and long text. Original bytes
 must remain unchanged. This comparison does not expand complete query snapshots,
@@ -357,7 +357,7 @@ Three additional backend tests cover local/non-ODBC/ODBC storage declarations,
 linked-definition refusal, metadata-only I/O despite corrupt data pages,
 unsupported column reporting, typed failures and final cancellation. A CLI test
 covers detail/summary output and unsupported-column preservation. Independent
-[metadata comparisons](../testing/compare_browsing_metadata.py) use fresh original
+[metadata comparisons](../../tests/access/reading/tables/compare_browsing_metadata.py) use fresh original
 Jet 4 and both ACE 16-family databases with local rows and an unresolved link.
 Inventories, column metadata and explicit link refusals agree with independently
 read native declarations; originals remain unchanged.
@@ -451,9 +451,9 @@ remain unchecked. Repeated requests repeat complete collection validation; this
 is not lazy collection loading or concurrent-file coherence. Final output retains
 the 1 MiB cap and complete buffering.
 
-The original [mixed-page oracle](../testing/CollectionPageOracle.java) uses inert
+The original [mixed-page oracle](../../tests/access/storage/native/CollectionPageOracle.java) uses inert
 Jackcess getters and raw stored history order on nine existing ACE 2007/16-family
-inputs. [Comparison](../testing/compare_collection_pages.py) checks 72 page, offset,
+inputs. [Comparison](../../tests/access/storage/native/compare_collection_pages.py) checks 72 page, offset,
 empty and bordered cases with standard CSV parsing and unchanged input bytes.
 The existing multivalue/cache matrix additionally checks the general mode,
 retaining all old controls; attachment/history corrupt-copy runners verify that
@@ -520,7 +520,7 @@ through bounded cursor batches while retaining complete materialization and row
 limits; indexed reads retain materialized maps. Cumulative budgets can reject larger tables inside an
 accepted file. A larger file-size envelope is not unrestricted large-table,
 streaming, native Access or live-file compatibility. See
-[large-source evidence and reproduction](../testing/LARGE_FILE_READS.md).
+[large-source evidence and reproduction](../../tests/reports/reading/LARGE_FILE_READS.md).
 
 `inspect`, `tables`, `rows` and native `query run --database` accept the explicit
 `--native-bytes BYTES` override within 1..=268435456. The 16 MiB default remains;
@@ -548,8 +548,8 @@ No complete address vector is retained for this paging path. Repeated offsets
 still rescan earlier roots. Sequential queries now build bounded complete snapshots
 through cursor batches; indexed reads and writes retain materialized ownership
 checks. Library hosts can use [source-bound scalar
-cursors](../testing/RESUMABLE_TABLE_READS.md); CLI offset requests and streaming queries
-remain separate. [Evidence and benchmarks](../testing/ALLOCATION_MAP_PAGING.md) describe
+cursors](../../tests/reports/reading/RESUMABLE_TABLE_READS.md); CLI offset requests and streaming queries
+remain separate. [Evidence and benchmarks](../../tests/reports/storage/ALLOCATION_MAP_PAGING.md) describe
 resource ceilings, original fixtures and qualification limits.
 
 Explicit `rows --stream` now uses this cursor path; [progressive row output](STREAMING_ROWS.md)

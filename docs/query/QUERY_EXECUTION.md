@@ -635,7 +635,7 @@ Tests compare sources that honor versus ignore constraints, independent numeric
 filtering over 256 fixed-seed ranges, parameter reuse/NULLs, eager overflow/division
 errors, rejected callbacks and late source failures. Adapter tests count exact
 selected root reads and verify subsequent full scans/caches. The
-[query benchmark](../testing/NATIVE_BENCHMARKS.md#query-filter-pushdown) measures
+[query benchmark](../../tests/reports/general/NATIVE_BENCHMARKS.md#query-filter-pushdown) measures
 source construction, preparation, execution and sorting with constraints accepted
 versus declined in the same build.
 
@@ -942,7 +942,7 @@ execution policy, not native Access compatibility evidence.
 Twenty-three authored/generated tests cover hidden fields, duplicate entire records,
 NULL/text comparison, outer/nested joins, ignored cases, errors and TOP/UNION. A
 projection-provider test ensures hidden selected fields cannot be silently pruned.
-The [reference-row recipe](../testing/compare_distinctrow.py) independently computes
+The [reference-row recipe](../../tests/access/reading/tables/compare_distinctrow.py) independently computes
 semijoin record sets and visible multiplicities from registered native rows.
 It now passes 46 sequential/indexed controls including complete/partial/computed,
 UNION and grouped derived records, correlated/nested/shadowed subquery projections,
@@ -1564,7 +1564,7 @@ returns Text 7. Missing policy fails without partial output. Ordinary Nz values
 are unchanged. All fallback expressions still bind and evaluate under the
 existing eager contract, including a failing fallback beside a non-null input.
 
-The [independent runner](../testing/compare_nz_metadata.py) uses registered wide-table
+The [independent runner](../../tests/access/reading/tables/compare_nz_metadata.py) uses registered wide-table
 inputs, inert getters and original Python value models. Only TableCraft evaluates
 SQL; native query wrappers, return promotion and error equivalence remain open.
 

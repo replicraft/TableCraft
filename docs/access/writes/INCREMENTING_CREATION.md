@@ -29,7 +29,7 @@ cancellation controls, typed/SQL create-then-insert saves and both CLI schema
 modes pass. The two-table test checks independently authored page components;
 it is not a separately SDK-qualified complete multi-table image. Forty-five
 existing native creation tests and sixteen CLI creation tests pass. See the
-[execution record](../../testing/results/ace16-increment-creation-2026-11-01.json).
+[execution record](../../../tests/results/creation/ace16-increment-creation-2026-11-01.json).
 
 ## Initial table schemas
 

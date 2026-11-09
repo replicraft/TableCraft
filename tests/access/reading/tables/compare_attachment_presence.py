@@ -3,6 +3,7 @@
 Uses registered originals with valid 3 MiB attachments. Only TableCraft evaluates
 SQL; this does not qualify native Access SQL or coherent shared-file reads.
 """
+from engineering_paths import reference_file
 import argparse
 import csv
 from decimal import Decimal
@@ -28,7 +29,7 @@ def main():
         assert digest(path) == expected_hash
         report = subprocess.check_output([
             "java", "-Dstdout.encoding=UTF-8", "-cp", str(args.jar),
-            str(RECIPES / "AttachmentMetadataFixture.java"), "--inspect", str(path),
+            str(reference_file('tests/access/reading/tables/AttachmentMetadataFixture.java')), "--inspect", str(path),
         ], text=True, encoding="utf-8")
         parents = [line.split("\t") for line in report.splitlines() if line.startswith("P\t")]
         empty = [[identity] for _, identity, count in parents if int(count) == 0]

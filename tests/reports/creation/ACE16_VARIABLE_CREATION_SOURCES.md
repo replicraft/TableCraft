@@ -39,5 +39,5 @@ matched every complete image and observation. These attempts are retained
 separately; no original or positive expectation was retuned. The ordinary CI
 hash anchor passed for all six originals. Final strict and format checks passed.
 
-The [source result](results/ace16-variable-creation-source-2026-10-31.json) records exact inputs, observations and retained
+The [source result](../../results/creation/ace16-variable-creation-source-2026-10-31.json) records exact inputs, observations and retained
 failed attempts separately from production creation and native Access qualification.

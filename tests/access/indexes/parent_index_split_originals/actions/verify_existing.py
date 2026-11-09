@@ -4,8 +4,8 @@ import json
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[4]
-sys.path.insert(0, str(ROOT / 'docs/testing'))
+ROOT = Path(__file__).resolve().parents[5]
+sys.path.insert(0, str(ROOT / 'tests/access'))
 from parent_index_split_originals import wire
 from parent_index_split_originals.actions import model
 from slot_preview_originals import common

@@ -107,20 +107,20 @@ corrected before authorization. The actual reference helper, model, proof,
 selectors, values and argv did not change in response to an executed action.
 There was no fixture retry or repaired database output.
 
-The maintained [action model](variable_encoded_split_sources/action_model.py)
-and [separate proof](variable_encoded_split_sources/reference_proof.py) match all
+The maintained [action model](../../access/indexes/variable_encoded_split_sources/action_model.py)
+and [separate proof](../../access/indexes/variable_encoded_split_sources/reference_proof.py) match all
 executed function ASTs; only repository-root composition changes for publication.
 The model retains strict duplicate, boolean, inventory, field/footer, LOCATION,
 raw tree and map checks. It does not grant full-catalog mutation authority from
 the source's 26 user/global map roles.
 
-The [saved verifier](variable_encoded_split_sources/verify_references.py)
+The [saved verifier](../../access/indexes/variable_encoded_split_sources/verify_references.py)
 rehashes 84 saved identities and repeats all six proofs, comparing 16,206 after
 rows, 64,806 logical index entries including aliases, and 3,883,008 original-prefix
 bytes across the copies. Its first saved-only run had a copied source-path suffix
 and failed before model/proof replay; the exact source and diagnostic were
 archived. Correcting only that suffix did not rerun any fixture command.
-The [compact receipt](results/variable-encoded-split-update-observations-2026-10-27.json)
+The [compact receipt](../../results/indexes/variable-encoded-split-update-observations-2026-10-27.json)
 pins the authoritative raw report, before/after identities and maintained tools.
 
 ```sh

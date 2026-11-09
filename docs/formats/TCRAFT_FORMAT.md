@@ -59,7 +59,7 @@ Do not default to a ZIP containing a live SQLite database.
 
 Acceptance requires [version gates](SCHEMA_VERSIONING.md),
 [lifecycle checks](../architecture/PROJECT_LIFECYCLE.md), bounded/lazy loading and
-[cross-version proofs](../testing/PROJECT_COMPATIBILITY.md). File-open must not
+[cross-version proofs](../../tests/reports/reading/PROJECT_COMPATIBILITY.md). File-open must not
 read every table, parse every Python module or render all forms eagerly.
 
 Primary references: [SQLite application files](https://www.sqlite.org/appfileformat.html),

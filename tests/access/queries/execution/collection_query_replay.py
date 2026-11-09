@@ -27,10 +27,10 @@ def replay(case_factory, scope, case_file, required_sources, extra_options):
         parser.error("Compiled revision lacks a required collection source module")
     artifacts = [
         args.cli, Path(case_file), Path(__file__),
-        ROOT / "docs/testing/compare_bare_multivalue_results.py",
-        ROOT / "docs/testing/compare_browsing.py",
-        ROOT / "docs/testing/compare_ignored_null_indexes.py",
-        ROOT / "docs/testing/results/bare-multivalue-results-2026-10-25.json",
+        ROOT / "tests/access/reading/tables/compare_bare_multivalue_results.py",
+        ROOT / "tests/access/reading/tables/compare_browsing.py",
+        ROOT / "tests/access/indexes/native/compare_ignored_null_indexes.py",
+        ROOT / "tests/results/general/bare-multivalue-results-2026-10-25.json",
     ]
     registered = {
         item["path"]: item["sha256"]

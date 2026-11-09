@@ -56,8 +56,8 @@ expand declared actions. `--cascade-deletes` explicitly selects the existing
 qualified CASCADE DELETE and SET NULL closure, including its supported downstream
 update cascades. Unsupported actions, source profiles and cycles retain their
 existing refusals. There is no retry under another mode and no per-row candidate
-chain. See the [DELETE SET NULL contract](../../testing/ACE16_SET_NULL_DELETES.md)
-and [NULL-generated update cascades](../../testing/ACE16_DELETE_NULL_UPDATE_CASCADES.md)
+chain. See the [DELETE SET NULL contract](../../../tests/reports/rows/ACE16_SET_NULL_DELETES.md)
+and [NULL-generated update cascades](../../../tests/reports/rows/ACE16_DELETE_NULL_UPDATE_CASCADES.md)
 for the underlying engine boundaries.
 
 Even zero matches invoke native source qualification. The report distinguishes

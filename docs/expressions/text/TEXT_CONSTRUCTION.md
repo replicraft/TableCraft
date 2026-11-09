@@ -43,7 +43,7 @@ establishes direct query availability and its first-character/modulo/NULL contra
 The unit, coercion and error-edge profile above remains independent engineering
 behavior pending native Access qualification.
 
-The [original runner](../../testing/compare_raw_repetition.py) passes 2,432 independent
+The [original runner](../../../tests/access/reading/tables/compare_raw_repetition.py) passes 2,432 independent
 controls using Python unit-list repetition, exact binary observations, seeded
 units, complete tails, rounded counts, zero/NULL outcomes and refusals. Four
 unchanged native inputs supply counts and character fields through inert getters;
@@ -129,7 +129,7 @@ surrogate refusals and bounded/cancelled output. An evaluator test checks per-va
 cumulative-byte and step limits. Two query tests cover binding, grouping,
 correlation, parameter reuse, eager failures and wrong arities. A CLI test decodes
 CSV/TSV transport to check results and buffered errors.
-The [independent recipe](../../testing/compare_text_construction.py) uses Python repetition
+The [independent recipe](../../../tests/access/queries/expressions/compare_text_construction.py) uses Python repetition
 and reversed UTF-16 buffers, explicit refusal controls and independently decoded
 sequential/indexed native rows. Source database bytes remain unchanged; check totals
 are recorded in [implementation status](../../IMPLEMENTATION.md).
@@ -158,7 +158,7 @@ apply for zero counts; StrReverse behavior is unchanged.
 The corresponding [search-start extension](STRING_SEARCH.md#contextual-search-starts)
 retains its different defaults and NULL precedence. The combined batch passes
 812 expression/query tests, 306 separately run minimal-profile tests and four
-selected CLI tests. The original [comparison recipe](../../testing/compare_repeat_search.py)
+selected CLI tests. The original [comparison recipe](../../../tests/access/reading/tables/compare_repeat_search.py)
 passes 1,200 independent repetition/UTF-16/rounding controls, including read-only
 ID getter integration over unchanged Jet 4/ACE 2007/ACE 16-family sources. Only
 TableCraft executes SQL. Native Access coercion, subtype, NULL and code-page
@@ -186,7 +186,7 @@ supplementary reversal qualification remain compatibility gaps.
 Three expression and two query tests cover scalar character-code/reversal inputs,
 format rebinding, nested calls and exact Int16 results, NULL/empty/provider errors,
 surrogate behavior, shared byte quotas and every observed cancellation checkpoint.
-The original [runner](../../testing/compare_character_reverse_scalars.py) compares
+The original [runner](../../../tests/access/reading/tables/compare_character_reverse_scalars.py) compares
 independent scalar spellings, ASCII codes, type tags and reversal results through
 both scalar CLI modes and four-family sequential/indexed native reads. Originals
 remain unchanged; native Access SQL qualification remains pending.
@@ -226,7 +226,7 @@ shared byte limits, every observed successful cancellation checkpoint and
 once-only Rnd consumption after earlier Error data. A query test adds source
 NULLs, derived Error values, aggregate consumption and eager failures.
 A CLI test verifies both scalar commands and empty stdout on failure. The
-[independent runner](../../testing/compare_repetition_states.py) passes 220 controls
+[independent runner](../../../tests/access/reading/tables/compare_repetition_states.py) passes 220 controls
 across scalar modes and registered four-family sequential/indexed native reads;
 all source hashes remain unchanged. Only TableCraft executes SQL. Native Access
 qualification, full Variant promotion and broader query semantics remain open.

@@ -60,7 +60,7 @@ def main():
     args = parser.parse_args()
     assert not args.report.exists(), "Report must be fresh"
     assert digest(args.jar) == JAR_SHA256
-    oracle = Path("docs/testing/TableDataOracle.java")
+    oracle = Path("tests/access/reading/tables/TableDataOracle.java")
     pins = (args.cli, args.jar, Path(__file__).resolve(), oracle)
     record = {
         "scope": __doc__,

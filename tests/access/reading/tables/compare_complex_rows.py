@@ -19,12 +19,12 @@ def main():
     for path,code in [(args.ace2016,5),(args.ace2019,6)]:
         original=path.read_bytes()
         assert original[20:24]==bytes([code,0,0,0])
-        declarations=run("java","-Dstdout.encoding=UTF-8","-cp",args.jar,"docs/testing/ComplexRowsFixture.java","--tables",path)
+        declarations=run("java","-Dstdout.encoding=UTF-8","-cp",args.jar,"tests/access/reading/tables/ComplexRowsFixture.java","--tables",path)
         combined=""
         for line in declarations.splitlines():
             column,table,count=line.split("\t")
             assert count=="3"
-            expected=run("java","-Dstdout.encoding=UTF-8","-cp",args.jar,"docs/testing/TableDataOracle.java",path,table)
+            expected=run("java","-Dstdout.encoding=UTF-8","-cp",args.jar,"tests/access/reading/tables/TableDataOracle.java",path,table)
             actual=run(args.rows,path,table)
             assert actual==expected,(code,column,"raw child mismatch")
             # Count and scalar records are available through the normal read-only

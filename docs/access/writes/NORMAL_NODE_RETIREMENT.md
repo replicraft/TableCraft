@@ -32,7 +32,7 @@ refresh after saves; old handles refuse while retaining the completed receipt
 and held lease. Empty follow-ons preserve exact images and retire their journal
 namespace. Current actual Source is still required for every operation.
 
-The [source phase](../../testing/ACE16_NODE_RETIREMENT_SOURCES.md) passed eight
+The [source phase](../../../tests/reports/indexes/ACE16_NODE_RETIREMENT_SOURCES.md) passed eight
 native views and 48 SDK observations before matching producers. Direct literal
 proofs/forgeries, twelve native commits, mixed/pending/committed recovery,
 twelve full-public resource/cancellation contexts, eighteen typed/SQL saves and
@@ -46,12 +46,12 @@ promotion and a second nonempty retirement from an already single-child source
 remain work. The sole-child AFTER is readable and accepts empty plans. Native
 Access save/reopen and Windows qualification remain unrun.
 
-The [combined execution record](../../testing/results/ace16-constant-defaults-and-node-retirement-writes-2026-11-01.json)
+The [combined execution record](../../../tests/results/schema/ace16-constant-defaults-and-node-retirement-writes-2026-11-01.json)
 retains focused/strict checks and the first broad regression. One stale unit-test
 error expectation was corrected and replayed; the 1,164 other engine units passed
 the first run. Adapter/CLI/recovery checks passed separately.
 
-The later [recursive source gate](../../testing/results/ace16-recursive-retirement-sources-2026-11-01.json)
+The later [recursive source gate](../../../tests/results/general/ace16-recursive-retirement-sources-2026-11-01.json)
 passes six independently modeled height-two views and twelve read-only SDK
 observations before matching recursive producers. It checks original partitions,
 fences, sibling chains, exact retirement cells and current complete native Source

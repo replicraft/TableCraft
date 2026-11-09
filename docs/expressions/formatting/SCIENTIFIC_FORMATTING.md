@@ -75,7 +75,7 @@ work/byte/output refusal and eager errors. Query controls cover grouping,
 aggregates, correlation and plan reuse with changed masks/profiles. CLI tests run
 both commands and verify buffered errors.
 
-The original [independent runner](../../testing/compare_format_scientific.py) passes
+The original [independent runner](../../../tests/access/queries/expressions/compare_format_scientific.py) passes
 1456 Decimal/model/refusal/native-field controls. Reviewed getter values from the
 four original ScalarFixture files supply ID, Currency and NULL inputs; all source
 hashes remain unchanged. Its initial native query omitted brackets around the

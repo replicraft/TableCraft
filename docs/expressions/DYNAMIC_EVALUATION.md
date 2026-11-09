@@ -134,7 +134,7 @@ cover fields/parameters, grouping/aggregates/correlation, crosstab pivot refusal
 source-predicate safety and shared quotas/cancellation. A CLI control exercises
 both commands, fixed clock/random state and empty stdout on late failures.
 
-The original [independent runner](../testing/compare_dynamic_eval.py) passes 1084
+The original [independent runner](../../tests/access/reading/tables/compare_dynamic_eval.py) passes 1084
 integer/Boolean/civil/context/refusal/native-field controls. Reviewed getters
 supply IDs from four unchanged original ScalarFixture files with expression
 evaluation disabled. The runner does not execute Eval in Microsoft Access or

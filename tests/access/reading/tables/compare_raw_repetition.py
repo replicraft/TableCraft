@@ -3,6 +3,7 @@
 Python integer-list repetition supplies exact expected UTF-16 bytes. Independent
 native getters supply rows only; TableCraft alone evaluates SQL.
 """
+from engineering_paths import reference_file
 
 import argparse
 from decimal import Decimal, ROUND_HALF_EVEN
@@ -79,7 +80,7 @@ def native_controls(args):
         path = args.directory / f"Policies-{profile}.{suffix}"
         before = digest(path)
         oracle = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar,
-                     RECIPES / "TableDataOracle.java", path, "PolicyProbe")
+                     reference_file('tests/access/reading/tables/TableDataOracle.java'), path, "PolicyProbe")
         rows = []
         for line in oracle.splitlines():
             fields = line.split("\t")

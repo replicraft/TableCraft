@@ -1,8 +1,8 @@
 # Number property-page rollover: independent SDK evidence
 
-The unchanged first-party [Number helper](../CreatedNumberColumnOracle.java)
+The unchanged first-party [Number helper](../fields/CreatedNumberColumnOracle.java)
 added `N2` through `N14` to fresh copies of the pinned `Table1(ID, Score)` AFTER
-from the [Number declaration record](../results/add-column-number-sdk-source-2026-11-08.json).
+from the [Number declaration record](../../../results/schema/add-column-number-sdk-source-2026-11-08.json).
 The reviewed Apache-2.0 Jackcess 5.0.4 JAR remains unchanged. Expression evaluation
 was disabled; every result was reopened read-only. Every original stayed exact.
 
@@ -19,7 +19,7 @@ change. The catalog forwarding root, physical slot 8 and its 3,359–3,444 span
 stay exact; its descriptor changes from 523 bytes at page 10/row 12 to 560 bytes
 at page 11/row 0. The selected owned map retains page 10 and adds page 11; its
 candidate map drops page 10 and includes page 11. The global-free map stays exact.
-The [record](../results/number-column-rollover-sdk-2026-11-08.json) pins the complete
+The [record](../../../results/schema/number-column-rollover-sdk-2026-11-08.json) pins the complete
 images, actual map bytes, helpers and all intermediate comparisons.
 
 The [independent model](model.py) constructs the entire expected image from
@@ -44,11 +44,11 @@ pinned `Score` source with SHA-256
 `a6a9e18cd35dc2bf018e5cd554a68b5b60d56023fd78a4a0ecba627ab9041d72`:
 
 ```sh
-python3 docs/testing/number_column_rollover/probe.py \
+python3 tests/run.py tests/access/schema/number_column_rollover/probe.py \
   --jar /path/to/reviewed-jackcess-5.0.4.jar \
   --source /path/to/id-only-number-sdk-after.accdb \
   --output-dir /path/to/fresh-sdk-output
-python3 docs/testing/number_column_rollover/model.py \
+python3 tests/run.py tests/access/schema/number_column_rollover/model.py \
   --sdk-dir /path/to/fresh-sdk-output \
   --output-dir /path/to/fresh-model-output
 ```

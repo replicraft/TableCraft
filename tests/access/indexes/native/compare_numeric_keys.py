@@ -19,7 +19,7 @@ import subprocess
 import sys
 
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[4]
 JAR_SHA256 = "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc"
 BASELINE_SHA256 = "2fea30893b358d283b895049abc47d484d946e8232e8359dc6eed175fdcf1a83"
 PROFILES = ("V2000", "V2007", "V2016", "V2019")
@@ -334,7 +334,7 @@ def main():
     assert digest(args.jar) == JAR_SHA256
     assert digest(args.baseline_cli) == BASELINE_SHA256
     paths = {args.cli, args.baseline_cli, args.jar, args.audit, Path(__file__), *args.source,
-             ROOT / "docs/testing/NumericKeyFixture.java", ROOT / "docs/testing/NumericKeyOracle.java"}
+             ROOT / "tests/access/indexes/native/NumericKeyFixture.java", ROOT / "tests/access/indexes/native/NumericKeyOracle.java"}
     hashes = {path: digest(path) for path in paths}
     prior = json.loads(args.audit.read_text())
     prior_binary = ROOT / prior["binary"]
@@ -429,7 +429,7 @@ def main():
         getter = database.with_suffix(".tsv")
         for path in (database, getter):
             hashes[path] = digest(path)
-        command = ["java", "-cp", str(args.jar), str(ROOT / "docs/testing/NumericKeyOracle.java"), str(database)]
+        command = ["java", "-cp", str(args.jar), str(ROOT / "tests/access/indexes/native/NumericKeyOracle.java"), str(database)]
         result = subprocess.run(command, capture_output=True, text=True, encoding="utf-8", check=True)
         assert result.stdout == getter.read_text(), "Original getter records changed"
         native_getters[profile] = result.stdout

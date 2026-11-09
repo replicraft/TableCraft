@@ -319,7 +319,7 @@ Four independent tests cross preparation/execution profiles and compare actual
 String carriers, nullable/NULL-only metadata, named/derived UNION conversions,
 metadata-only preparation and unchanged format/error/unsupported boundaries.
 The focused 56-test batch and strict library/new-target Clippy pass. The
-[scoped record](../testing/results/read-query-concatenation-dynamic-types-2026-10-25.json)
+[scoped record](../../tests/results/queries/read-query-concatenation-dynamic-types-2026-10-25.json)
 separates before-fix metadata evidence and authoring probes from accepted checks.
 These are successful-return engineering guarantees, not native DAO typing.
 
@@ -510,7 +510,7 @@ conversion before downstream consumers observe the values. See
 
 ## Stored-field agreement replay — 25 October 2026
 
-The original [native replay](../testing/compare_agreement_result_types.py) passes
+The original [native replay](../../tests/access/reading/tables/compare_agreement_result_types.py) passes
 312 CLI observations over four unchanged ScalarFixture originals (Jet 4,
 ACE 2007, ACE 2016 and ACE 2019). Public Jackcess getters supply exact Byte,
 Integer and Single inputs; Python integer/Fraction calculations supply expected
@@ -528,7 +528,7 @@ ordinary materialized outputs retain their earlier mixed carriers. Independent
 expected values do not establish native Access result categories or conversion
 precedence.
 
-The [report](../testing/results/agreement-native-replay-2026-10-25.json) records a
+The [report](../../tests/results/general/agreement-native-replay-2026-10-25.json) records a
 complete unique command-grid audit, twelve rehashed immutable artifacts, five
 selected committed/live source snapshots and four getter transcript hashes.
 Getter transcripts match the preceding independent numeric replay. Original

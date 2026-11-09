@@ -16,6 +16,6 @@ reference, logical index alias, root form, map complement, constraint and full
 Source/NoRequired admission. Saved verification checks the SDK reports and frozen
 pins without starting a reader or writer.
 
-The [source record](results/ace16-node-retirement-sources-2026-11-01.json)
+The [source record](../../results/indexes/ace16-node-retirement-sources-2026-11-01.json)
 separates these observations from future mutation acceptance. Native Access
 save/reopen and Windows qualification remain unrun.

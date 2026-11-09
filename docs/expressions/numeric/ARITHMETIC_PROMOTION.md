@@ -5,7 +5,7 @@ materialized-value profile for the seven binary arithmetic operators. SQL scalar
 evaluation and bound read queries use it after any contextual Text conversion.
 `numeric::arithmetic` remains the existing checked Int64/Double kernel for consumers
 that need that contract, including fixed-point Sum accumulation. Floating
-Sum/DSum use a separate [exact binary total](../../testing/FLOATING_SUMS.md). Stored schemas,
+Sum/DSum use a separate [exact binary total](../../../tests/reports/general/FLOATING_SUMS.md). Stored schemas,
 values, parameters and core representational equality are unchanged.
 
 Arithmetic now admits both operand families before returning a NULL result.
@@ -105,10 +105,10 @@ and CLI tests verify carriers through derived/grouped/correlated/pivot reads,
 inspection and buffered late overflow. A DATE regression now checks serial
 multiplication instead of refusing it.
 
-The original [range/type/Fraction runner](../../testing/compare_arithmetic_promotion.py)
+The original [range/type/Fraction runner](../../../tests/access/reading/tables/compare_arithmetic_promotion.py)
 passes 818 controls, including native Byte/Integer/Single field projections over
 four unchanged original ScalarFixture files. The existing
-[DATE runner](../../testing/compare_date_arithmetic.py) passes 62 model controls after
+[DATE runner](../../../tests/access/queries/expressions/compare_date_arithmetic.py) passes 62 model controls after
 updating multiplication to its working profile. Getters only supply raw fields;
 only TableCraft executes SQL. Native Access typing, rounding, optimizer and
 error-order qualification remain pending.
@@ -162,7 +162,7 @@ runtime semantics are not claimed as fully implemented.
 Two additional kernel tests cover width/minimum boundaries, Single division,
 fixed-point/DATE ratios and converted operand range failures. Query and CLI tests
 cover resulting carriers, aggregates/subqueries and eager/buffered refusals.
-The original [division runner](../../testing/compare_division_promotion.py) passes 1,040
+The original [division runner](../../../tests/access/reading/tables/compare_division_promotion.py) passes 1,040
 Fraction/half-even/type/native-field controls over the unchanged priority-family
 inputs. Only TableCraft executes SQL; native Access qualification remains unrun.
 
@@ -196,7 +196,7 @@ Focused goldens include halfway ties in both directions, signed Int64 endpoints,
 all Double-selected operator families, parameter rebinding, derived aggregates,
 strict-kernel separation and eager failures. A fixed-seed generated significand
 model independently checks integer rounding. The original
-[runner](../../testing/compare_rounded_double.py) passes 176 controls using an independent
+[runner](../../../tests/access/reading/tables/compare_rounded_double.py) passes 176 controls using an independent
 integer quantization/IEEE model and raw ID getters from the four unchanged registered
 20,000-row inputs. Sequential and both ID-index directions are compared. Only
 TableCraft executes SQL. No dependency or native write behavior changes.
@@ -267,7 +267,7 @@ Kernel tests cover carrier pairs, Scalar/Variant combinations, signed zeros,
 Decimal scales, subnormals, NULL and nonfinite inputs. Prepared-query tests cover
 parameter reuse after each failure class and every ordinary/domain numeric fold
 and encounter/extrema/count consumer. The original
-[comparison runner](../../testing/compare_zero_divisors.py) passes 609 explicit operator/type
+[comparison runner](../../../tests/access/reading/tables/compare_zero_divisors.py) passes 609 explicit operator/type
 error expectations in both CLI modes and the declared profile, plus raw Long
 getters from unchanged registered 20,000-row priority-family inputs through
 sequential and both index directions. The date matrix uses explicit CVar;
@@ -278,7 +278,7 @@ equivalence. Windows qualification and remaining P0 value semantics stay open.
 
 
 ```sh
-python3 docs/testing/compare_zero_divisors.py \
+python3 tests/run.py tests/access/reading/tables/compare_zero_divisors.py \
   --cli target/debug/tablecraft --jar path/to/reviewed/jackcess-5.0.4.jar \
   --directory path/to/registered-large-indexes
 ```

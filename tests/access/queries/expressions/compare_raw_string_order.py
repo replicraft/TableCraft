@@ -22,7 +22,7 @@ def expression(units):
 
 
 def read_vectors():
-    vectors = Path(__file__).resolve().parents[2] / "crates/engines/tablecraft-ace/src/collation/key/tests/vectors.tsv"
+    vectors = Path(__file__).resolve().parents[4] / "crates/engines/tablecraft-ace/src/collation/key/tests/vectors.tsv"
     for line in vectors.read_text(encoding="ascii").splitlines():
         family, raw, key, _ = line.split("\t")
         if raw != "-" and len(raw) > 16:

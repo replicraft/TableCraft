@@ -31,7 +31,7 @@ existing fixed-image checked V1 journal. Request version and journal version are
 separate. The low-level literal review/`ReviewedQueryExpression`/TCQE0001 route
 keeps its original same-length, one-query, five-fragment language exactly; neither
 decoder retries a failed request as the other version. The
-[native QueryDef reference](../testing/NATIVE_QUERYDEF_FITTING_SAVE.md) preserves
+[native QueryDef reference](../../tests/reports/queries/NATIVE_QUERYDEF_FITTING_SAVE.md) preserves
 that earlier profile and the independent SDK observations.
 
 Canonical SQL visibility remains independent of writer eligibility. A readable
@@ -121,7 +121,7 @@ the query-only save uses the explicit full-witness owned-transfer route.
 
 ## Connected expression expansion evidence
 
-The [coordinated workflow record](../testing/results/full-sql-expression-workflows-2026-11-08.json)
+The [coordinated workflow record](../../tests/results/queries/full-sql-expression-workflows-2026-11-08.json)
 retains 94 selected passing checks across the Access bridge/staging, runtime,
 shared UI and headless desktop checkpoints. Eleven full-SQL runtime cases cover
 multi-projection save/reopen/explicit Run, projection+WHERE review, inert syntax,
@@ -133,7 +133,7 @@ execution is claimed. General QueryDef CRUD remains unfinished.
 
 ## Earlier bounded-route evidence
 
-The [initial connected headless batch](../testing/results/query-save-rebind-2026-11-08.json)
+The [initial connected headless batch](../../tests/results/queries/query-save-rebind-2026-11-08.json)
 passes 93 tests, including seven real desktop query-save cases and nine owned
 transfer cases within the broader object filter. The UI interaction case drives
 the editor, Command-S, the actual query-owned report modal, acknowledgement,

@@ -3,6 +3,7 @@
 Dynamic heading discovery follows TableCraft's current explicit profile, including
 its unfiltered discovery domain. Windows Access qualification remains pending.
 """
+from engineering_paths import reference_file
 import argparse
 import csv
 import hashlib
@@ -32,7 +33,7 @@ def main():
     assert hashlib.sha256(args.jar.read_bytes()).hexdigest() == '19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc'
     controls = 0
     with tempfile.TemporaryDirectory(prefix='tablecraft-cross-oracle-') as classes:
-        subprocess.run(['javac','-cp',str(args.jar),'-d',classes,*[str(RECIPES/(name+'.java')) for name in ['SavedCrosstabFixture','SavedReadOracle','SavedQueryOracle','TableDataOracle']]],check=True)
+        subprocess.run(['javac','-cp',str(args.jar),'-d',classes,*[str(reference_file(name+'.java')) for name in ['SavedCrosstabFixture','SavedReadOracle','SavedQueryOracle','TableDataOracle']]],check=True)
         classpath = str(args.jar)+os.pathsep+classes
         def java(name,*values):
             return subprocess.check_output(['java','-Dstdout.encoding=UTF-8','-cp',classpath,name,*map(str,values)],text=True,encoding='utf-8')

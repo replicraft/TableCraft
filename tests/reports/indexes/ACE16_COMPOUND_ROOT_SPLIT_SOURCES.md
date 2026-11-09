@@ -16,6 +16,6 @@ ROWs, key partitions, root residue, history and map complements. It checks actua
 native17 catalog admission, the nonempty Required property, constraints and full
 current Source/NoRequired qualification on each original and AFTER.
 
-The [source record](results/ace16-compound-root-split-sources-2026-11-01.json)
+The [source record](../../results/indexes/ace16-compound-root-split-sources-2026-11-01.json)
 retains pins and the first successful native receipt. This is source/read evidence;
 it does not establish a working compound normal save or native Access save/reopen.

@@ -1,10 +1,10 @@
 # Repeated field ADD after explicit OFF
 
 Four second-ADD SDK saves match complete independent raw predictions frozen before
-all writes. The [Nov 9 record](../results/field-add-repeat-after-off-sdk-2026-11-09.json)
+all writes. The [Nov 9 record](../../../results/schema/field-add-repeat-after-off-sdk-2026-11-09.json)
 retains original/prediction/helper hashes, observations and the initial pre-SDK
 metadata correction. The sources are preserved first-ADD-after-OFF outputs from
-the [preceding record](../results/field-add-after-off-sdk-2026-11-09.json).
+the [preceding record](../../../results/schema/field-add-after-off-sdk-2026-11-09.json).
 
 This is representation evidence. It adds no TableCraft repeated-source proof,
 candidate, original intent, normal Save admission or GUI completion. Native
@@ -61,6 +61,6 @@ From the repository root, with the two pinned source files
 `number-first-long.accdb` and `text-number-text-text.accdb`:
 
 ```sh
-python3 docs/testing/field_add_repeat_after_off/prepare.py --sources-dir SOURCES --output-dir FRESH_OUTPUT
-python3 docs/testing/field_add_repeat_after_off/run.py --sources-dir SOURCES --output-dir FRESH_OUTPUT --jar JACKCESS_JAR --java-bin JDK_BIN
+python3 tests/run.py tests/access/schema/field_add_repeat_after_off/prepare.py --sources-dir SOURCES --output-dir FRESH_OUTPUT
+python3 tests/run.py tests/access/schema/field_add_repeat_after_off/run.py --sources-dir SOURCES --output-dir FRESH_OUTPUT --jar JACKCESS_JAR --java-bin JDK_BIN
 ```

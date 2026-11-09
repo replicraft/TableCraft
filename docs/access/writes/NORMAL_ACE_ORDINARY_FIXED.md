@@ -94,7 +94,7 @@ This family is selected structurally before planning; a failed check never falls
 back to the initial global grammar. It retains the fixed-target, constraint,
 index fitting and no-growth limits below. The native VCS locator evidence supports
 an explicitly inferred profile, not universal macro absence or native Access
-save/reopen conformance. The [write record](../../testing/results/ace16-genuine-ordinary-target-writes-2026-10-31.json)
+save/reopen conformance. The [write record](../../../tests/results/rows/ace16-genuine-ordinary-target-writes-2026-10-31.json)
 records genuine native recovery, twenty principal typed/SQL session saves, ten CLI
 saves/readbacks and full ACE unit/recovery regressions. Mixed DATA/INDEX rollback
 and exact refusal diagnostics are tested separately from source admission.
@@ -169,13 +169,13 @@ Requests naming a Single/Double target use the separate `TCNI0008`/profile 8
 carrier-only requests and their TCNI0004 bytes remain unchanged; old record
 validators do not acquire IEEE tags.
 
-The [independent sources](../../testing/ACE16_ORDINARY_CONTENT_SOURCES.md) passed
+The [independent sources](../../../tests/reports/rows/ACE16_ORDINARY_CONTENT_SOURCES.md) passed
 native reads and 24 exact SDK observations before mutation calls. Three content
 tests cover 24 accepted and 34 refused views, image/table binding and resource
 controls. Four planner/proof tests and five public planning/recovery tests pass,
 including 22 literal whole-image commits. The initial ordinary fixed-field unit
 and recovery batches passed. First compile/test/lint diagnostics remain in the
-[execution record](../../testing/results/ace16-normal-ordinary-fixed-2026-10-31.json).
+[execution record](../../../tests/results/rows/ace16-normal-ordinary-fixed-2026-10-31.json).
 Native Microsoft Access save/reopen, Windows, power-loss and mixed-client
 qualification remain separate and unrun.
 
@@ -196,16 +196,16 @@ before mutation. Dynamic content controls include a file whose high pages all
 have valid DATA roles but lack GLOBAL cells: ordinary reading succeeds, while
 certification refuses. Native, retained-session and CLI consumers compare whole
 images including all maps and free holes, with unchanged TCNI0004 framing and
-recovery. See the [dynamic execution record](../../testing/results/ace16-ordinary-inline-writes-2026-10-31.json).
+recovery. See the [dynamic execution record](../../../tests/results/general/ace16-ordinary-inline-writes-2026-10-31.json).
 
 ## Shared sessions and CLI
 
 The earlier counter/index preservation acceptance, including unchanged physical
 indexes, historical counters, recovery and retained-session saves, is recorded
 in the
-[counter/index write record](../../testing/results/ace16-ordinary-counter-index-writes-2026-10-31.json).
+[counter/index write record](../../../tests/results/indexes/ace16-ordinary-counter-index-writes-2026-10-31.json).
 
-The [indexed-target sources](../../testing/ACE16_ORDINARY_INDEXED_TARGET_SOURCES.md)
+The [indexed-target sources](../../../tests/reports/indexes/ACE16_ORDINARY_INDEXED_TARGET_SOURCES.md)
 qualify 32 original and 24 literal AFTER views through native checks and 56 exact
 independent SDK observations before indexed producer calls. Native indexed-target
 tests pass all 24 literal outcomes, eight refusal contexts and causal proof
@@ -221,7 +221,7 @@ manual empty-group saves. Four CLI tests pass, including 24 new literal saves,
 saves/readbacks and manual Id migration. Explicit stale expected-value forgeries
 remain native API tests; SQL uses actual snapshot expectations. Generated-field
 refusals remain separate from newly admitted manual indexed fields. See the
-[indexed-target write record](../../testing/results/ace16-ordinary-indexed-target-writes-2026-10-31.json).
+[indexed-target write record](../../../tests/results/indexes/ace16-ordinary-indexed-target-writes-2026-10-31.json).
 The full ACE batch passes 1,075 tests (32 ignored), including exact indexed
 planning/recovery pools and entry/middle/terminal cancellation. Strict checks
 pass for all-feature consumers and journal-only/preview-only engine libraries.
@@ -240,4 +240,4 @@ requests, empty tables, stale handles, unknown-content refusals and the older
 record routes. The CLI passes 22 literal complete-image saves, four equal/empty
 retirements and a real create/update/TSV-readback workflow. It adds no absence
 override or alternate publication lifecycle. See the
-[host execution record](../../testing/results/ace16-normal-ordinary-host-2026-10-31.json).
+[host execution record](../../../tests/results/general/ace16-normal-ordinary-host-2026-10-31.json).

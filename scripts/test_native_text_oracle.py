@@ -3,10 +3,13 @@ import hashlib
 import importlib.util
 import json
 from pathlib import Path
+from engineering_paths import configure_imports
+
+configure_imports(__file__)
 import tempfile
 import unittest
 
-SOURCE = Path(__file__).resolve().parents[1] / "docs/testing/native_text_oracle.py"
+SOURCE = Path(__file__).resolve().parents[1] / "tests/access/queries/expressions/native_text_oracle.py"
 SPEC = importlib.util.spec_from_file_location("native_text_oracle", SOURCE)
 oracle = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(oracle)

@@ -7,14 +7,14 @@ import subprocess
 import sys
 
 sys.dont_write_bytecode = True
-sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+sys.path.insert(0, str(Path(__file__).resolve().parents[4]))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from scripts.compat_artifacts import ArtifactStore
 from ace16_insert_external_long_values.evidence import Pins, report
 from ace16_fixed_ignore_null_updates import build, model, native_reference, reference, source, source_warnings
 
-ROOT = Path(__file__).resolve().parents[3]
-PUBLIC = 'docs/testing/ace16_fixed_ignore_null_updates'
+ROOT = Path(__file__).resolve().parents[4]
+PUBLIC = 'tests/access/rows/ace16_fixed_ignore_null_updates'
 SOURCE = '.cache/ace16-fixed-ignore-null-update-source-next-20261029'
 SOURCE_WORK = '.cache/ace16-fixed-ignore-null-update-source-first-20261029'
 CONSTRUCTOR = '.cache/ace16-fixed-ignore-null-update-expected-next-20261029'

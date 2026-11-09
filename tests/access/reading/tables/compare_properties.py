@@ -20,7 +20,7 @@ def main():
         before = hashlib.sha256(path.read_bytes()).hexdigest()
         expected = subprocess.check_output([
             "java", "-Dstdout.encoding=UTF-8", "-cp", str(args.jar),
-            "docs/testing/PropertyFixture.java", "--inspect", str(path),
+            "tests/access/reading/tables/PropertyFixture.java", "--inspect", str(path),
         ], text=True, encoding="utf-8")
         actual = display_tsv(subprocess.check_output([
             str(args.cli), "inspect", str(path), "--table", "Rules", "--properties",

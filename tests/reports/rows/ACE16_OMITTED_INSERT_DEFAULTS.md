@@ -76,8 +76,8 @@ returned keys must agree before a candidate is returned. No source is changed.
 
 ## Literal coverage and current verification
 
-The [ordinary source owner](../../crates/engines/tablecraft-ace/src/table/mutation/insert/tests/omitted_defaults.rs)
-and [Decimal source owner](../../crates/engines/tablecraft-ace/src/table/mutation/insert/tests/decimal_index_inserts/omitted_defaults.rs)
+The [ordinary source owner](../../../crates/engines/tablecraft-ace/src/table/mutation/insert/tests/omitted_defaults.rs)
+and [Decimal source owner](../../../crates/engines/tablecraft-ace/src/table/mutation/insert/tests/decimal_index_inserts/omitted_defaults.rs)
 reuse existing independent MR2/record/index/image builders. They construct 30
 complete expected images before new APIs: 24 ordinary, two incrementing and four
 Decimal cases across both ACE 16 layouts. They cover omitted constants, nullable

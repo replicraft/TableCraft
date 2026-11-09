@@ -113,15 +113,15 @@ result. Two CLI controls cover actual numeric output and buffered late failures.
 A native collection test covers stored `.Value` groups and empty parents over the
 three priority ACE header families.
 
-The original [SavedStatisticsFixture.java](../../testing/SavedStatisticsFixture.java)
+The original [SavedStatisticsFixture.java](../../../tests/access/queries/saved/SavedStatisticsFixture.java)
 adds nine inert statistical definitions to the fourteen-query forest recipe.
 Four fresh Jet 4 / ACE 2007/2016/2019 files pass 180 controls through
-[compare_saved_statistics.py](../../testing/compare_saved_statistics.py). Read-only
+[compare_saved_statistics.py](../../../tests/access/queries/saved/compare_saved_statistics.py). Read-only
 Jackcess getters/rendering supply storage/SQL evidence; explicit rational models
 supply expected results. They cover raw inspection, direct/saved/named execution,
 grouping, parameters, derived reads, UNION, crosstabs, singleton/empty groups and
 wrong-type refusal. All four hashes remain unchanged.
-[Fixture records](../../testing/FIXTURES.md#statistical-saved-query-inputs) retain provenance.
+[Fixture records](../../../tests/reports/reading/FIXTURES.md#statistical-saved-query-inputs) retain provenance.
 These are independent stored-data/model checks, not Access SQL execution evidence.
 
 ```sh
@@ -142,7 +142,7 @@ Existing NULL/insufficient populations, nonnumeric/raw/Error admission, eager
 failures, volatile once-only evaluation and statistical cancellation controls
 remain active.
 
-The original [Fraction runner](../../testing/compare_fixed_statistics.py) constructs
+The original [Fraction runner](../../../tests/access/reading/tables/compare_fixed_statistics.py) constructs
 source-free typed SQL values and checks all permutations against exact Python
 centered moments, with binary64 conversion/sqrt only for expected outputs. It
 also retains explicit CDbl and mixed-floating reference controls. These are
@@ -153,7 +153,7 @@ or new dependency is introduced.
 The 2026-10-24 replay passed 404 Fraction-model result controls across 101 SQL
 queries against immutable CLI SHA-256
 `f2ed2b85aa1b665043df3eaaedcac7f1753be01b6cb3d2c2f05c424726c49e99`.
-The [tracked report](../../testing/results/fixed-statistics-2026-10-24.json) records
+The [tracked report](../../../tests/results/rows/fixed-statistics-2026-10-24.json) records
 actual terminal output, matching binary hashes before/after, runner hash and
 generated SQL digest. The focused 16-test statistics, 9-test domain and 6-test
 Variant aggregate targets pass, together with 9 library tests and scoped Clippy.

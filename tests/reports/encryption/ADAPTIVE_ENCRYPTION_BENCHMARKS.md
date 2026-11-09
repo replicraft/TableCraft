@@ -6,7 +6,7 @@ native preflight and SID handling, page transformation or envelope-only copying,
 output synchronization and fresh no-clobber publication. They are not isolated
 cipher throughput, native Microsoft Access timings or native Access qualification.
 
-[The complete sanitized report](results/adaptive-encryption-2026-11-08.json)
+[The complete sanitized report](../../results/encryption/adaptive-encryption-2026-11-08.json)
 retains all measured samples, wall/user/system/total CPU time, peak resident
 memory, input and executable hashes, and full decoded-output verification.
 Repository-relative paths identify local evidence without distributing inputs.
@@ -127,7 +127,7 @@ The initial exploratory samples are retained in full, including high-variance
 and slower observations. They measure the earlier envelope-copy implementation
 and must not be pooled with the final source state. No sample or operation was
 excluded because its timing was unfavorable. The earlier captured-image
-[page-decoding experiment](NATIVE_LIBRARY_REFACTORS.md#optional-parallel-page-decoding)
+[page-decoding experiment](../general/NATIVE_LIBRARY_REFACTORS.md#optional-parallel-page-decoding)
 is a different workload and remains separate evidence.
 
 ## Reproduction and limits
@@ -154,5 +154,5 @@ Only Agile and the retained Jet 4 route are timed here. Other implemented
 ciphers, constrained machines, Windows/Linux execution, cold-cache behavior,
 concurrent access and native Access saves need their own evidence. No native
 app window was launched. See the
-[encryption contract](../access/storage/NATIVE_ENCRYPTION.md#adaptive-parallel-streaming)
+[encryption contract](../../../docs/access/storage/NATIVE_ENCRYPTION.md#adaptive-parallel-streaming)
 for current eligibility, failure/publication behavior and integrity limitations.

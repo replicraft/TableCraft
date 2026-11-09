@@ -105,7 +105,7 @@ Eight complete native images match. The native contract passes 33 functions,
 with two existing helpers ignored. Four independent proof functions reject
 unrelated page/cache/mask changes, changed inactive NULL bytes, wrong counts,
 alternative requests and independently reconstructed constraint violations.
-The [result record](results/ace16-preserved-short-text-2026-10-30.json) retains
+The [result record](../../results/general/ace16-preserved-short-text-2026-10-30.json) retains
 the static physical-count framing correction and first fixed-span transport
 failure, first fixture lint and additional typed CLI invocation failure separately
 from subsequent passing checks. The fixture lint correction replaces a constant
@@ -122,7 +122,7 @@ required-macro discovery and ordinary ACE saves remain open.
 
 Two fresh Jackcess 5.0.4 public-builder originals, V2016 and V2019, pass the
 strongest preserved-source capture before expected-image or candidate
-construction. The [repository-authored creation recipe](preserved_short_text_originals/PreservedShortTextOriginals.java)
+construction. The [repository-authored creation recipe](../../access/rows/preserved_short_text_originals/PreservedShortTextOriginals.java)
 creates nullable ordinary `Short_Text` with 40 UTF16 units, declared compression,
 Required false and AllowZeroLength true. Original values are `alpha`, NULL and
 `omega`. Manual ID/Base indexes, deliberately stale Cached values 999 / -333 / 0,
@@ -146,7 +146,7 @@ not byte-identical regeneration promises. Independent raw framing measures seven
 bytes of fitting capacity for each present Text row and zero for the NULL row;
 the authored corpus's 10-byte and two-byte capacities are not assumed. Exact
 source provenance and the retained path-setup failure are in the
-[source record](results/ace16-preserved-short-text-genuine-sources-2026-10-30.json).
+[source record](../../results/rows/ace16-preserved-short-text-genuine-sources-2026-10-30.json).
 
 ## Genuine complete-image comparisons
 
@@ -173,9 +173,9 @@ inside a selected record, but complete-image proof fixes their contents and all
 bytes outside the selected record; physical record position and length stay
 unchanged. Original hashes remain stable through every phase.
 
-The [genuine image record](results/ace16-preserved-short-text-genuine-images-2026-10-30.json)
+The [genuine image record](../../results/rows/ace16-preserved-short-text-genuine-images-2026-10-30.json)
 pins separate source, expected, build, candidate and SDK receipts. Its
-[maintained saved-only verifier](preserved_short_text_genuine/README.md) rederives
+[maintained saved-only verifier](../../access/rows/preserved_short_text_genuine/README.md) rederives
 expectations from original inputs and reads saved evidence without launching
 fixture processes. Its first saved replay passes 257 pinned artifacts, both
 originals, all 22 native outcomes and all 18 SDK inventories with zero child

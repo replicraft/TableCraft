@@ -43,7 +43,7 @@ The ordinary buffered CLI `rows` command retains independent offset requests and
 bounded snapshots through the batched loading below. Output remains buffered and
 the ordinary CLI budget does not refill between internal batches.
 
-An explicit [CLI streaming mode](../cli/STREAMING_ROWS.md) now uses the same browser
+An explicit [CLI streaming mode](../../../docs/cli/STREAMING_ROWS.md) now uses the same browser
 cursor with cumulative controls and progressive TSV publication. It can return
 more than a complete-snapshot cap without changing ordinary query materialization.
 
@@ -53,7 +53,7 @@ budget spans opening, every fetch and aggregate storage; the physical-read quota
 applies per batch. The 16,384-row snapshot cap remains. Complete row/count/schema
 checks finish before a snapshot reaches a query visitor or cache. The original
 `read_table` and `read_table_projection` functions retain their previous materialized
-map behavior for existing consumers. This is [bounded snapshot loading](BATCHED_QUERY_SNAPSHOTS.md),
+map behavior for existing consumers. This is [bounded snapshot loading](../queries/BATCHED_QUERY_SNAPSHOTS.md),
 not streaming query execution or permission to skip unselected row framing.
 
 ## Evidence and reproduction
@@ -65,7 +65,7 @@ independent generated row sequences. All four read profiles traverse 6,000-page
 inline and indirect maps with explicitly fresh per-fetch budgets; corrupt later
 map metadata prevents opening before user data reads.
 
-The unchanged original [large-map fixtures](ALLOCATION_MAP_PAGING.md) independently
+The unchanged original [large-map fixtures](../storage/ALLOCATION_MAP_PAGING.md) independently
 match all 6,000 getter rows for V2000, V2007, V2016 and V2019 at batch sizes 1, 127
 and 250, for full rows and the explicit ID/P2/P5 subset requested in reversed order.
 Existing calculated-scalar V2016/V2019 fixtures add five controls each: ordinary Id
@@ -79,7 +79,7 @@ bytes, library dependency or native Access qualification is implied.
 
 ```sh
 CARGO_INCREMENTAL=0 cargo build -p tablecraft-ace --example table_data --release --locked --offline
-python3 docs/testing/compare_table_cursors.py \
+python3 tests/run.py tests/access/reading/tables/compare_table_cursors.py \
   --jar /tmp/reviewed/jackcess-5.0.4.jar \
   --rows target/release/examples/table_data \
   --directory /tmp/existing-large-table-inputs \
@@ -123,6 +123,6 @@ hyperfine --warmup 2 --runs 7 \
 
 
 A fresh cursor can now be consumed into a complete scalar snapshot through checked
-`TableSnapshotLimits`; [larger query materialization](../access/queries/LARGER_NATIVE_QUERIES.md)
+`TableSnapshotLimits`; [larger query materialization](../../../docs/access/queries/LARGER_NATIVE_QUERIES.md)
 retains cumulative controls and refuses advanced/failed cursors. The default
 materialization helpers still use 16,384 rows and 256-row batches.

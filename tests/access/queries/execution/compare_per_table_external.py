@@ -14,7 +14,7 @@ from pathlib import Path
 import subprocess
 
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[4]
 PROFILES = ("V2016", "V2019", "V2000", "V2007")
 NODES = ("root", "target", "other")
 JAR_HASH = "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc"
@@ -68,7 +68,7 @@ def invoke(command, observations):
 def generate(args):
     assert not args.directory.exists(), "Refuse to overwrite an original corpus"
     assert digest(args.jar) == JAR_HASH
-    recipe = ROOT / "docs/testing/PerTableExternalFixture.java"
+    recipe = ROOT / "tests/access/queries/execution/PerTableExternalFixture.java"
     args.directory.mkdir(parents=True)
     classes = args.directory / "classes"
     classes.mkdir()
@@ -141,7 +141,7 @@ def replay(args):
         assert digest(ROOT / original["path"]) == original["sha256"]
         assert digest(ROOT / original["getter"]) == original["getter_sha256"]
     pins = {args.cli, args.jar, generation, args.source_manifest, Path(__file__).resolve()}
-    pins.add(ROOT / "docs/testing/PerTableExternalFixture.java")
+    pins.add(ROOT / "tests/access/queries/execution/PerTableExternalFixture.java")
     pins.add(ROOT / "Cargo.lock")
     pins.update(path for path in args.directory.rglob("*") if path.is_file())
     for line in args.source_manifest.read_text().splitlines():

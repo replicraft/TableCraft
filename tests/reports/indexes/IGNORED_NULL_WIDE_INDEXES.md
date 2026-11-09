@@ -1,13 +1,13 @@
 # Exact Int64/Currency ignore-NULL index evidence
 
-The [96-command original-data replay](results/ignored-null-wide-index-replay-2026-10-25.json)
+The [96-command original-data replay](../../results/indexes/ignored-null-wide-index-replay-2026-10-25.json)
 passes with 3,924 modeled IDs, 78 successful commands and eighteen expected
 refusals. There are 84 current-executable and twelve baseline controls across six
 actual tables. Twenty immutable artifacts and six selected native source objects
 are unchanged. This is independent engineering evidence, not native Microsoft
 Access execution or compatibility qualification.
 
-The [focused implementation checks](results/read-query-ignored-null-wide-2026-10-25.json)
+The [focused implementation checks](../../results/queries/read-query-ignored-null-wide-2026-10-25.json)
 separately pass 67 unique Rust tests, nine new, plus strict engine/adapter lint,
 minimal adapter compilation and owned-file formatting checks. The admitted
 extension reuses exact single-key codecs for Currency and ACE2016/ACE2019 Int64.
@@ -17,7 +17,7 @@ mutation eligibility.
 ## Original producer/getter observations
 
 Original Apache-2.0
-[IgnoreNullWideIndexFixture.java](IgnoreNullWideIndexFixture.java), SHA-256
+[IgnoreNullWideIndexFixture.java](../../access/indexes/native/IgnoreNullWideIndexFixture.java), SHA-256
 `077cec0801fdc52a59028c999f3e8b9a31216e5a621774bd885b0c03ec2ec15a`,
 uses the reviewed Jackcess 5.0.4 JAR, SHA-256
 `19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`.
@@ -65,7 +65,7 @@ not promise byte-identical files across creation times/reference versions.
 
 ## Original CLI comparison
 
-The original [runner](compare_ignored_null_wide_indexes.py) filters captured
+The original [runner](../../access/indexes/native/compare_ignored_null_wide_indexes.py) filters captured
 getter integers and exact scaled Currency units. Required reads follow the
 public index-cursor order; automatic reads follow public table encounter order.
 Typed endpoints cover signed extrema and 2^53 versus 2^53+1, including one-unit
@@ -98,7 +98,7 @@ unchanged. The raw log is
 the replay command completed with exit zero during its initial tool call.
 
 ```sh
-python3 docs/testing/compare_ignored_null_wide_indexes.py \
+python3 tests/run.py tests/access/indexes/native/compare_ignored_null_wide_indexes.py \
   --cli .cache/tablecraft-bin/read-query-distinct-wide-cli-20261025 \
   --cli-sha256 121d76588ed4e6c9497e23b9f42c6f9ca5e729aceb0a0e9491f153865fac3e4c \
   --revision b44494d4cd5a9350cfef1f1484148f16d5362bb7 \

@@ -62,9 +62,9 @@ remains unqualified.
 
 ## Evidence and limits
 
-The original [large collection recipe](../../testing/LargeCollectionFixture.java) creates
+The original [large collection recipe](../../../tests/access/reading/tables/LargeCollectionFixture.java) creates
 20,000 parents with 48,000 children, another 400 parents with 40,000 children,
-and a separate 101-value refusal control. The [independent runner](../../testing/compare_large_collections.py)
+and a separate 101-value refusal control. The [independent runner](../../../tests/access/reading/tables/compare_large_collections.py)
 checks every stored collection with Python models and read-only Jackcess getters.
 Twenty-two CLI controls pass across ACE 16 and ACE 2007, covering aggregates,
 empty-parent placeholders, NULLs, duplicates, explicit collection opt-ins and
@@ -75,7 +75,7 @@ Five new native tests cover both table caps, batch boundaries, EOF counts,
 100/101 values, typed attachment/history limits and every observed successful
 link-path cancellation checkpoint. An adapter fault test confirms that failed
 child reads publish no cache, explicit retry completes and later scans avoid I/O.
-See [registered inputs](../../testing/FIXTURES.md#larger-multivalue-collection-inputs).
+See [registered inputs](../../../tests/reports/reading/FIXTURES.md#larger-multivalue-collection-inputs).
 
 These checks establish the stated multivalue scale and bounded typed APIs.
 The additional attachment/history corpus below qualifies its explicit larger
@@ -123,13 +123,13 @@ limits are not raised or refunded to admit the batch.
 
 ## Larger attachments and stored histories
 
-Original [LargeStoredObjectsFixture.java](../../testing/LargeStoredObjectsFixture.java)
+Original [LargeStoredObjectsFixture.java](../../../tests/access/reading/tables/LargeStoredObjectsFixture.java)
 creates 20,000 attachments and 20,000 versions, with 201 parents per owning table
 including an empty parent. Version values include NULLs, duplicate Unicode text,
 tied/nonmonotonic timestamps and NULL dates. Attachments have varied flags and
 three exact data bytes. ACE 16 and ACE 2007 inputs persist under ignored `.cache/`.
 
-The [runner](../../testing/compare_large_stored_objects.py) passes 33 controls against
+The [runner](../../../tests/access/reading/tables/compare_large_stored_objects.py) passes 33 controls against
 independent Python models, read-only Jackcess getters and exact tagged readers.
 Every encoded metadata field, decoded byte and stored history identity/text/DATE
 bit agrees. CLI controls cover larger metadata/decoded queries, default refusals,
@@ -142,7 +142,7 @@ options select explicit cumulative native row and parent/child retention limits.
 The latter requires a history/multivalue mode before opening a file. Defaults
 remain 16,384; the explicit maximum is 1,000,000. These tagged tools are separate
 from the public CLI output protocol and do not widen ordinary `rows` inspection.
-[Hashes and reproduction](../../testing/FIXTURES.md#larger-attachment-and-stored-history-inputs)
+[Hashes and reproduction](../../../tests/reports/reading/FIXTURES.md#larger-attachment-and-stored-history-inputs)
 record unchanged originals and the reviewed external artifact.
 
 ## Buffered larger CLI pages
@@ -182,7 +182,7 @@ uses one cumulative budget; a later invalid collection or formatting/output-cap
 failure publishes no earlier section. This adds no collection stream or automatic
 retry. Shared OS locks retain their separate offline-source guarantee.
 
-The original [large-page runner](../../testing/compare_large_collection_pages.py) passes
+The original [large-page runner](../../../tests/access/storage/native/compare_large_collection_pages.py) passes
 88 controls over the four unchanged registered multivalue/stored-object inputs.
 Read-only Java getters supply every heading/cell, including generated history
 headings. Controls cover both multivalue modes, offsets, final/empty pages,
@@ -206,7 +206,7 @@ Five engine and three browser functions pass, including explicit directory caps,
 the 101-value refusal, exact selected payloads and terminal cumulative Rows
 exhaustion. Native work uses 256 MiB/1,000,000 Rows/100,000,000 Steps; explicit
 attachment decoding has a separate named allowance. Defaults are unchanged.
-The [acceptance record](../../testing/results/lazy-collection-scale-2026-11-02.json)
+The [acceptance record](../../../tests/results/reading/lazy-collection-scale-2026-11-02.json)
 retains first compile/lint failures and syntax-only corrections.
 
 Each expansion still repeats the complete key census. These samples do not prove

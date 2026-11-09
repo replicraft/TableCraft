@@ -3,6 +3,7 @@
 Uses the reviewed artifact and original fixture recipe, never native Access.
 Generated database files stay local; original source hashes must remain unchanged.
 """
+from engineering_paths import reference_file
 import argparse
 from pathlib import Path
 import subprocess
@@ -22,7 +23,7 @@ def main():
         for profile, suffix in PROFILES:
             for version in [0, 1]:
                 run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar,
-                    RECIPES / "TextIndexFixture.java",
+                    reference_file('tests/access/queries/expressions/TextIndexFixture.java'),
                     args.directory / f"TextIndexes-{profile}-{version}.{suffix}", profile, version)
     for profile, suffix in PROFILES:
         for version in [0, 1]:
@@ -35,7 +36,7 @@ def main():
                 assert image[root * 4096] == 3, (profile, version, name, "multi-page node root")
             for table, index, count in [("TextIndexed", "TextAsc", 1000), ("TextIndexed", "TextDesc", 1000), ("TextUnique", "UniqueText", 33), ("TextEmpty", "EmptyText", 0), ("TextChecked", "CheckedText", 64), ("TextDigestUnique", "DigestUnique", 1), ("TextCompound", "CompoundText", 1)]:
                 expected = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar,
-                    RECIPES / "TableDataOracle.java", path, "--index", table, index)
+                    reference_file('tests/access/reading/tables/TableDataOracle.java'), path, "--index", table, index)
                 lines = [line.split("\t") for line in expected.splitlines()]
                 assert len(lines) == count, (profile, version, table, "count")
                 if table == "TextIndexed":

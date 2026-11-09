@@ -33,10 +33,10 @@ TABLECRAFT_RETAINED_BINARY_MARKER_SOURCE_DIR=/absolute/path/to/expected-first \
   -- --ignored
 ```
 
-See the [source record](results/ace16-retained-binary-marker-sources-2026-11-02.json).
-Subsequent [normal fixed UPDATE acceptance](../access/writes/NORMAL_RETAINED_BINARY_MARKER_UPDATE.md)
+See the [source record](../../results/storage/ace16-retained-binary-marker-sources-2026-11-02.json).
+Subsequent [normal fixed UPDATE acceptance](../../../docs/access/writes/NORMAL_RETAINED_BINARY_MARKER_UPDATE.md)
 now passes against these same frozen files; its separate
-[write result](results/ace16-retained-binary-marker-writes-2026-11-02.json) records
+[write result](../../results/storage/ace16-retained-binary-marker-writes-2026-11-02.json) records
 the matching runs. The linked source record is intentionally unchanged and
 describes the earlier source-only phase. Native Microsoft Access save/reopen
 and Windows mixed-client qualification remain unrun.

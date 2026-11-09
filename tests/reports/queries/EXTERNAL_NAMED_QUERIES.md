@@ -1,6 +1,6 @@
 # External named-source replay
 
-The [accepted replay](results/external-named-2026-10-24.json) passes 588 controls
+The [accepted replay](../../results/storage/external-named-2026-10-24.json) passes 588 controls
 and 1,368 getter-modeled result cells over original root/A/B trios in Jet 4
 (`V2000`), ACE 2007 (`V2007`) and ACE16-family (`V2016`, `V2019`) formats.
 All 1,902 pinned file hashes remain unchanged, including every file in the
@@ -21,7 +21,7 @@ host mappings, cache isolation and closed Eval rules tested here remain
 TableCraft engineering contracts; that page does not independently establish
 all of those namespace details.
 
-[ExternalNamedFixture.java](ExternalNamedFixture.java) uses public Jackcess
+[ExternalNamedFixture.java](../../access/queries/execution/ExternalNamedFixture.java) uses public Jackcess
 ordinary table builders to create Items, and public system-table row APIs to
 author original inert catalog/MSysQueries fragments. It disables expression
 evaluation, rejects existing outputs and installs a throwing link resolver.
@@ -50,7 +50,7 @@ Owned contains a nested local Count, base/named DCount and Eval(Formula). Saved
 crosstabs compute Sum(Score) under a constant row key and fixed or discovered
 Quarter headings. No reference SQL or saved definition is executed.
 
-[ExternalNamedOracle.java](ExternalNamedOracle.java) reopens each file read-only,
+[ExternalNamedOracle.java](../../access/queries/execution/ExternalNamedOracle.java) reopens each file read-only,
 disables expressions and installs a throwing resolver. It records public query
 ID/family/type/SQL and remote path/type getters, raw catalog/query fields
 including Order bytes, and ordinary Items column types and raw cells. UTF8/base64
@@ -68,7 +68,7 @@ once per profile and creates all three fresh files.
 
 ## Independent execution model
 
-[compare_external_named.py](compare_external_named.py) derives expected scans,
+[compare_external_named.py](../../access/queries/execution/compare_external_named.py) derives expected scans,
 counts, integer sums, pivot headings and row products directly from ordinary
 getter records. Formula expectations split the original two literal integers
 and add them; Python eval and reference SQL are never used. Raw inspect compares
@@ -130,7 +130,7 @@ Fresh timestamps may change file hashes; the accepted report pins the preserved
 originals rather than requiring reproducible creation timestamps.
 
 ```sh
-python3 docs/testing/compare_external_named.py \
+python3 tests/run.py tests/access/queries/execution/compare_external_named.py \
   --cli .cache/tablecraft-bin/external-named-cli-20261024 \
   --cli-sha256 8b9c8e89f6804f57e45a6bba74cf7b6ebbdb8b7a20917cd8b1170c6e31710d23 \
   --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar \
@@ -148,4 +148,4 @@ accepted counts. No failed model cases or patched original inputs were hidden.
 
 Provider activation, implicit filesystem traversal, live Access coordination,
 target linked chains and native Windows saved-query qualification remain outside
-this evidence. See the [working feature contract](../query/EXTERNAL_NAMED_QUERIES.md).
+this evidence. See the [working feature contract](../../../docs/query/EXTERNAL_NAMED_QUERIES.md).

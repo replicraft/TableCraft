@@ -3,6 +3,7 @@
 The reference never evaluates SQL. These compare the explicit materialized numeric
 profile, not complete Access declared/Variant type inference or native execution.
 """
+from engineering_paths import reference_file
 
 import argparse
 from decimal import Decimal, ROUND_HALF_EVEN
@@ -50,7 +51,7 @@ def main():
         assert hashlib.sha256(args.jar.read_bytes()).hexdigest() == JAR_SHA256
     for database in args.database:
         original = database.read_bytes()
-        tagged = run("java", "-Dstdout.encoding=UTF-8", "-cp",args.jar, RECIPES / "TableDataOracle.java",database,"ScalarSamples")
+        tagged = run("java", "-Dstdout.encoding=UTF-8", "-cp",args.jar, reference_file('tests/access/reading/tables/TableDataOracle.java'),database,"ScalarSamples")
         identities = [int(line.split("\t")[1].removeprefix("I32:")) for line in tagged.splitlines()]
         for profile, threshold in [("en-us","1.5"),("de-de","1,5")]:
             controls=("--number-format",profile)

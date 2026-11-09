@@ -47,7 +47,7 @@ No new intent version or command is introduced.
 
 ## Evidence
 
-The [genuine sources](../../testing/ACE16_RETAINED_NUMERIC_SOURCES.md) independently
+The [genuine sources](../../../tests/reports/indexes/ACE16_RETAINED_NUMERIC_SOURCES.md) independently
 qualify eight original/request-only `Marker` updates on two unchanged originals.
 Source reads and independent SDK checks precede save acceptance. Eight native commits, eight typed and eight SQL retained-session saves, and
 eight CLI saves/readbacks match the complete expected files. Twenty-four repeated
@@ -56,5 +56,5 @@ differs in one byte; partial journal states are checked without claiming a third
 mixed target image. Source admission has exact/one-less resource and cancellation
 controls. All 1,099 ACE unit tests, 83 recovery regressions, 79 adapter units and
 94 CLI units pass, alongside strict feature builds. See the
-[write record](../../testing/results/ace16-retained-numeric-writes-2026-11-01.json). Microsoft Access save/reopen and mixed-client qualification remain
+[write record](../../../tests/results/indexes/ace16-retained-numeric-writes-2026-11-01.json). Microsoft Access save/reopen and mixed-client qualification remain
 unrun; this is not general native save compatibility.

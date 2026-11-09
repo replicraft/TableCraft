@@ -1,4 +1,5 @@
 """Independent native derived-source rendering and explicit expected row checks."""
+from engineering_paths import reference_file
 import argparse
 import csv
 import hashlib
@@ -32,7 +33,7 @@ def main():
     refused = {"DerivedUdf", "DerivedLateral", "DerivedOwner"}
     controls = 0
     with tempfile.TemporaryDirectory(prefix="tablecraft-derived-oracle-") as classes:
-        sources = [RECIPES / (name + ".java") for name in
+        sources = [reference_file(name + ".java") for name in
                    ("SavedForestFixture", "SavedDerivedFixture", "SavedReadOracle")]
         subprocess.run(["javac", "-cp", str(args.jar), "-d", classes, *map(str, sources)], check=True)
 

@@ -8,8 +8,8 @@ that same bounded cursor. There is no second mutable length or global-byte vecto
 in either owning plan. Original map references and page-membership inventories
 remain role-specific facts.
 
-This is a working extraction for the existing [variable](ACE16_VARIABLE_UPDATES.md)
-and [encoded/numeric split](ACE16_ENCODED_INDEX_SPLITS.md) consumers. It adds no
+This is a working extraction for the existing [variable](../rows/ACE16_VARIABLE_UPDATES.md)
+and [encoded/numeric split](../indexes/ACE16_ENCODED_INDEX_SPLITS.md) consumers. It adds no
 combined DATA-plus-index update API or normal write path. A private mixed-purpose
 cursor test checks the mechanical sequence; it is not a qualified combined image.
 
@@ -44,7 +44,7 @@ index or variable operations. Stronger combined-operation census/purpose gates
 remain future work. Unknown metadata and missing/contradictory representations
 keep their existing domain refusals; no new grammar or in-file reuse is added.
 
-The [scoped result](results/ace16-shared-append-state-native-2026-10-27.json)
+The [scoped result](../../results/general/ace16-shared-append-state-native-2026-10-27.json)
 records a pre-correction batch of 123 distinct runtime functions, including three
 new private functions, and three compile-fail doctests. The selected logs contain 130 executions, with
 seven repeated shared parser/publication executions excluded. That batch passed existing complete numeric, encoded and variable images, actual

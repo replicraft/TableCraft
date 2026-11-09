@@ -33,7 +33,7 @@ owners.
 
 The existing fitted fixed/batch API keeps its output policy. Normal Jet 4 edits,
 exact-slot updates, UPDATE cascades and DELETE/SET NULL consumers retain their
-separate admission. The [strict cascade consumer](ACE16_SELECTED_FORWARDED_UPDATES.md)
+separate admission. The [strict cascade consumer](../rows/ACE16_SELECTED_FORWARDED_UPDATES.md)
 does not inherit this allocation path. No formula, default, provider, macro or
 application callback executes. Ordinary ACE saves remain blocked.
 
@@ -77,7 +77,7 @@ entirely NULL secondary key is omitted. Partial-NULL UNIQUE keys remain
 represented. An IgnoreNULL owner cannot become admissible through a nonprimary
 alias when another alias makes that owner primary.
 
-The [original-association history law](ACE16_IGNORED_NULL_UPDATES.md#historical-counters-and-batch-order)
+The [original-association history law](../rows/ACE16_IGNORED_NULL_UPDATES.md#historical-counters-and-batch-order)
 is unchanged. Represented replacements/removals do not increment or decrement
 history. An originally omitted row can introduce a new family, deduplicated across
 incoming rows and physical aliases. Ordering-sensitive removed/reintroduced or
@@ -118,7 +118,7 @@ and final checks share the caller's resource budget and cancellation callback.
 
 ## Evidence and remaining qualification
 
-The [verification record](results/ace16-nullable-split-batch-updates-2026-10-29.json)
+The [verification record](../../results/indexes/ace16-nullable-split-batch-updates-2026-10-29.json)
 pins source/model checkpoints, actual commands and predecessor observations.
 
 The [source checkpoint](ACE16_NULLABLE_SPLIT_BATCH_SOURCES.md) was committed before
@@ -144,7 +144,7 @@ prepared-profile enum's size difference. Its local justification retains the
 fallibly reserved, budget-metered vector instead of adding unmetered per-owner
 boxing. These preparation/lint results are separate from candidate behavior.
 
-The [source-only original-file checkpoint](results/ace16-nullable-split-batch-sources-2026-10-29.json)
+The [source-only original-file checkpoint](../../results/indexes/ace16-nullable-split-batch-sources-2026-10-29.json)
 now passes its first nine public-builder/inspection commands and eight raw target
 gates plus four Sentinel gates. Four unchanged V2016/V2019 ASC/DESC originals
 contain 4,004 user records. Each target has the predicted four logical declarations
@@ -153,7 +153,7 @@ creation warning records are preserved and classified exactly; no stderr is
 silently suppressed. No expected image, public UPDATE, native candidate or native
 Access comparison ran in that source phase.
 
-The [complete original-file proof](results/ace16-nullable-split-batch-originals-2026-10-29.json)
+The [complete original-file proof](../../results/indexes/ace16-nullable-split-batch-originals-2026-10-29.json)
 now derives and independently reconstructs 20 whole expected images from those
 sources and immutable requests before either writer runs. All 20 first native
 candidate calls match all 9,928,704 expected bytes. Only after all full-image
@@ -161,7 +161,7 @@ comparisons pass do 20 separately bound fresh SDK readers verify actual values,
 complete index/ROW streams, histories, maps and protected bytes. Every candidate
 is rehashed before and after every reader. No candidate or model adjustment was
 needed. The producer is an isolated fresh release build of commit `50d028cc`,
-bound by the [committed receipt](results/ace16-nullable-split-batch-example-build-2026-10-29.json).
+bound by the [committed receipt](../../results/indexes/ace16-nullable-split-batch-example-build-2026-10-29.json).
 
 The separate public reference passes 20 ordered actions and 20 fresh reads over
 8,008 row updates, preserving all 1,600 exact Clear warnings. Four fitted
@@ -176,10 +176,10 @@ typed-value, mask, counter, map or protected-prefix differences.
 
 Further root-height growth, map-boundary variants, wider tuples/carriers,
 broader cross-table combinations and contraction need their own acceptance. Required
-[data-macro semantics](DATA_MACROS.md), native Access save/reopen and recovery
+[data-macro semantics](../schema/DATA_MACROS.md), native Access save/reopen and recovery
 qualification remain open; this candidate has no journal or save operation.
 
-The [maintained saved replay](ace16_nullable_split_batch_updates/README.md) now
+The [maintained saved replay](../../access/indexes/ace16_nullable_split_batch_updates/README.md) now
 reconstructs the complete expectations and rechecks all saved phases without
 starting children or rebuilding the producer. Its default root replay verifies
 9,766 pin occurrences, 1,001 distinct paths and all 4,791 archived source files.
@@ -214,6 +214,6 @@ failures and diagnostic probe are retained separately.
 
 The combined engine library passes 713 functions with two existing ignored tests;
 this includes the separate ordinal-deletion helper. The
-[continuation record](results/ace16-multitable-index-growth-2026-10-29.json) keeps
+[continuation record](../../results/indexes/ace16-multitable-index-growth-2026-10-29.json) keeps
 the literal freezes, checks and failed preparation observations. These are local
 engineering checks, not native Access comparisons or production save permission.

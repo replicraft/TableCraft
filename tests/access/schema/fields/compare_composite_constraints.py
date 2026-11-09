@@ -38,7 +38,7 @@ def main():
         ids={cells[fields.index("Name")]:int(cells[fields.index("Native ID")]) for cells in (r.split("\t") for r in catalog[header+1:])}
         tagged=""
         for table,count,relationship in [("Parents",6,"Pairs"),("Children",6,"Pairs"),("UniqueChildren",3,"UniquePairs")]:
-            expected=run("java","-Dstdout.encoding=UTF-8","-cp",args.jar,"docs/testing/TableDataOracle.java",path,table)
+            expected=run("java","-Dstdout.encoding=UTF-8","-cp",args.jar,"tests/access/reading/tables/TableDataOracle.java",path,table)
             actual=run(args.rows,path,table);assert actual==expected;tagged+=actual
             output=run(args.cli,"inspect",path,"--table",table,"--constraints")
             assert f"Rows checked\t{count}\n" in output

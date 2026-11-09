@@ -1,17 +1,17 @@
 # French comparison field-data preparation
 
-The [compact field receipt](results/french-comparison-fields-2026-10-26.json)
+The [compact field receipt](../../results/schema/french-comparison-fields-2026-10-26.json)
 records two fresh ACE16 V2016/V2019 originals, 76 rows and 304 complete Text/Memo
 values. This receipt captures actual stored data and descriptors before any query
 or string comparison runs. It is not a native Access SQL or NLS ordering oracle.
 
-[FrenchComparisonFixture.java](FrenchComparisonFixture.java) is original
+[FrenchComparisonFixture.java](../../access/queries/expressions/FrenchComparisonFixture.java) is original
 repository-owned code. Public Jackcess builders create one Comparisons table
 with ID Int32, FrenchShort TEXT255, FrenchMemo MEMO and matched GeneralShort/Memo
 fields. French fields receive exact `1036/0/0`; General fields receive `1033/0/0`.
 The reviewed JAR is Jackcess 5.0.4, SHA-256
 `19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`;
-its existing provenance is in [the fixture ledger](FIXTURES.md). No upstream
+its existing provenance is in [the fixture ledger](../reading/FIXTURES.md). No upstream
 code or database bytes were copied. Expressions are disabled, UTC is explicit
 and linked opens throw. No header, descriptor or flag is patched.
 
@@ -41,7 +41,7 @@ inputs. Complete actual UTF-16LE values are retained as Base64 with lengths and
 SHA-256 in the ignored getter captures. NULL and empty remain distinct even
 though their empty byte sequence has the same digest.
 
-[capture_french_comparison.py](capture_french_comparison.py) is import-safe and
+[capture_french_comparison.py](../../access/queries/expressions/capture_french_comparison.py) is import-safe and
 uses bounded subprocesses. It compares an independent construction model with
 actual values, recording any public-writer storage differences without silently
 substituting input text. It verifies field/index inventories, raw descriptor
@@ -57,7 +57,7 @@ paths and does not promise byte-reproducible database generation:
 mkdir -p .cache/french-comparison-reproduction/classes
 javac -encoding UTF-8 -cp .cache/tablecraft-fixtures/jackcess-5.0.4.jar \
   -d .cache/french-comparison-reproduction/classes docs/testing/FrenchComparisonFixture.java
-python3 docs/testing/capture_french_comparison.py \
+python3 tests/run.py tests/access/queries/expressions/capture_french_comparison.py \
   --directory .cache/french-comparison-reproduction/originals \
   --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar \
   --classes .cache/french-comparison-reproduction/classes \
@@ -66,22 +66,22 @@ python3 docs/testing/capture_french_comparison.py \
 
 ## Frozen native-field comparison replay
 
-The subsequent [112-control receipt](results/french-comparison-fields-replay-2026-10-26.json)
+The subsequent [112-control receipt](../../results/schema/french-comparison-fields-replay-2026-10-26.json)
 uses frozen CLI `596d40ea41a4bafefbd5b34af4ef35a8a4e2cde4`, SHA-256
 `bcff00ad245c7a70582db222fa48e5eb2f796bd944d5ccbeefe759fbd010a576`.
 All 52 compiled source objects were verified against immutable Git objects,
-independently of later source work. The [build receipt](results/french-comparison-cli-build-2026-10-26.json)
+independently of later source work. The [build receipt](../../results/queries/french-comparison-cli-build-2026-10-26.json)
 and raw commands/results are hash-pinned. Ordinary and declared arithmetic modes
 run separately on both unchanged originals: 96 successes and 16 intended refusals,
 zero disagreements, 1,204 rows and 1,548 cells compared.
 
 Expected Short results use 42 independent complete keys for 21 distinct actual
 non-NULL values under exact French and General Legacy reference encoders.
-[ShortKeysOracle.java](ShortKeysOracle.java) is an original bounded caller of the
+[ShortKeysOracle.java](../../access/indexes/native/ShortKeysOracle.java) is an original bounded caller of the
 reviewed JAR, not copied encoding logic. Every French physical key/reference in
 the originals is additionally checked by independent raw framing. No Short value
 here needs prefix truncation or overflow digestion. Long Memo expectations use
-the pinned [Latin model](french_comparison_latin_model.py), restricted to measured
+the pinned [Latin model](../../access/queries/expressions/french_comparison_latin_model.py), restricted to measured
 e/a/b/é/è primitive streams. Matched General Legacy Memo siblings use the forward
 secondary stream separately. These model results do not qualify arbitrary long
 Unicode or native Access SQL/NLS comparison; serialized unprintable positions
@@ -115,8 +115,8 @@ bytes to 1 MiB and reports the intended Bytes refusal after native materializati
 No defaults were changed. The complete initial report, executed source snapshots
 and causal probe remain pinned.
 
-[compare_french_comparison_fields.py](compare_french_comparison_fields.py) and its
-[expected model](french_field_comparison/model.py) are import-safe. They use fresh
+[compare_french_comparison_fields.py](../../access/schema/fields/compare_french_comparison_fields.py) and its
+[expected model](../../access/schema/french_field_comparison/model.py) are import-safe. They use fresh
 output/report paths and preserve every command/stdout/stderr and initial failure.
 These are headless engineering model comparisons over actual native field data,
 not Windows/native Access execution or save qualification.
@@ -124,7 +124,7 @@ not Windows/native Access execution or save qualification.
 ## Separate saved-source follow-up
 
 The original 112-control corpus remains unchanged and contains no saved query
-definitions. Two separate [saved-source companions](FRENCH_SAVED_COMPANION_OBSERVATIONS.md)
+definitions. Two separate [saved-source companions](../queries/FRENCH_SAVED_COMPANION_OBSERVATIONS.md)
 add one inert passthrough SELECT each through the reviewed public metadata recipe.
 Their metadata/preservation proof and 32-control reconstruction/execution receipt
 are separate evidence: four syntax controls, 24 successful saved/named/derived

@@ -164,7 +164,7 @@ pre-I/O option validation. Existing General/database and comparison-limit tests
 remain applicable. Native Access comparison remains unrun; wider LCID providers,
 NLS error/ordering equivalence and mixed database-policy precedence remain P0.
 
-The original four-profile [ICU4C comparison runner](../../testing/compare_icu_text.py) passes **3,032
+The original four-profile [ICU4C comparison runner](../../../tests/access/queries/expressions/compare_icu_text.py) passes **3,032
 controls** against a fixed CLI copy. It calls the separately installed ICU4C 74.1
 ucol_strcoll implementation, with explicit matching secondary/case/normalization/
 punctuation/numeric settings. Pairwise anchors, seeded mixed text, canonical and
@@ -173,7 +173,7 @@ and explicit per-locale LCID registrations cover all four profiles. Expected sea
 positions come from independent Python scalar-boundary enumeration with ICU4C
 comparison; this is not an ICU4C StringSearch or Windows NLS search equivalence test.
 
-The [recorded report](../../testing/results/icu-text-profile-2026-10-24.json) retains the
+The [recorded report](../../../tests/results/reading/icu-text-profile-2026-10-24.json) retains the
 runner/input/CLI hashes and ICU4C library/collation versions. The CLI hash is
 unchanged before/after. All inputs are original authored/generated text; no native
 database or third-party fixture is created or copied. Library version differences
@@ -181,18 +181,18 @@ are allowed to surface as failures, not silently accepted as matching data. Actu
 Access and Windows NLS remain unrun.
 
 ```sh
-python3 docs/testing/compare_icu_text.py \
+python3 tests/run.py tests/access/queries/expressions/compare_icu_text.py \
   --cli path/to/fixed/tablecraft \
   --report path/to/fresh-icu-report.json
 ```
 
 The expanded recipe passes **14,498 controls across all nineteen host profiles**
 against ICU4C 74.1, adding script-specific tailoring and original-span search inputs.
-The [expanded report](../../testing/results/icu-text-expanded-2026-10-25.json) records
+The [expanded report](../../../tests/results/general/icu-text-expanded-2026-10-25.json) records
 per-locale counts, exact host registrations, input/runner/CLI hashes and reference
 versions separately from the original four-profile result. No profile or mismatch
 was dropped. Its fixed CLI's 1,914-file Rust source inventory matches committed
-archive `67ef6925`; the [verification record](../../testing/results/read-query-icu-expanded-2026-10-25.json)
+archive `67ef6925`; the [verification record](../../../tests/results/queries/read-query-icu-expanded-2026-10-25.json)
 retains the private manifest hash. Ten current provider tests and eight CLI tests
 pass with scoped strict Clippy. This is independent engineering evidence, with
 Windows NLS and actual Access comparisons still unrun.

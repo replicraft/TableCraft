@@ -23,7 +23,7 @@ the selected raw String through their existing services.
 This closes the IIf branch-publication gap, not raw relational storage, arbitrary
 conditional functions, result promotion or native Access qualification. Nz,
 Switch and Choose now also retain lossless choices as described below. The original
-[IIf runner](../testing/compare_raw_string_iif.py) passes 1,392 independent source-free
+[IIf runner](../../tests/access/queries/expressions/compare_raw_string_iif.py) passes 1,392 independent source-free
 selection/refusal controls in both CLI modes, using Python byte selection rather
 than TableCraft's own evaluator as the oracle.
 
@@ -52,7 +52,7 @@ enrich grouped runtime provenance. Direct final publication remains strict; raw
 control expressions now share the retained-control admission below; relational
 cells retain their separate storage limits.
 
-The original [selection runner](../testing/compare_raw_string_selection.py) passes
+The original [selection runner](../../tests/access/queries/expressions/compare_raw_string_selection.py) passes
 1,806 independent source-free controls in both CLI modes. Existing IIf, raw NULL
 and Count recipes also pass. Native Access execution/result promotion remains
 unqualified; this supplies no VBA runtime or stored raw-string carrier.
@@ -145,7 +145,7 @@ carriers, exact/half-even/out-of-range indices, invalid state transitions and an
 independent vector-selection model. Scalar dispatch/order and unselected-text
 budget tests cover eager host calls and late failures. Five retrieval tests cover
 binding, pruning, mixed carriers, grouping, aggregates, parameters, correlations,
-crosstabs, errors and cancellation. The [CLI recipe](../testing/compare_conditional_functions.py)
+crosstabs, errors and cancellation. The [CLI recipe](../../tests/access/queries/expressions/compare_conditional_functions.py)
 compares independent selection models and registered sequential/indexed native
 rows while checking unchanged source hashes. It handles existing quoted Text
 presentation through the TSV display adapter; it does not change CLI formatting.

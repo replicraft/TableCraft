@@ -87,14 +87,14 @@ committed, torn-marker and settled states retain their existing V1 semantics.
 Other action families/versions are never tried after a refusal. The retained
 Access adapter has a separate staging and recovery route, with schema-only
 receipts. Its file-based checks and consuming runtime save/witness cases pass in
-the [service record](../../testing/results/field-schema-services-2026-11-09.json).
+the [service record](../../../tests/results/schema/field-schema-services-2026-11-09.json).
 Normal GUI interaction and publication remain the next integration boundary.
 
 ## Evidence and verification status
 
 <!-- FIELD_RENAME_GATE_STATUS: native/adapter/runtime and bounded GUI headless gate verified; native Access comparison open -->
 
-The [coordinated candidate batch](../../testing/results/saved-field-candidates-2026-11-09.json)
+The [coordinated candidate batch](../../../tests/results/schema/saved-field-candidates-2026-11-09.json)
 passes 2,188 tests across the complete engine, Access adapter, runtime, desktop
 and testkit suites, with 265 existing ignored cases excluded. It includes the
 new native rename candidates, both parser visitors, ASCII sibling refusal,
@@ -104,13 +104,13 @@ not repeated. Later adapter/TCAC6 integration, scan-bound and iterator changes
 are explicitly outside that frozen batch; the separate service record above
 reports their later checks without summing repeated coverage.
 
-The [independent raw and reader record](../../testing/results/saved-field-rename-raw-sdk-read-2026-11-09.json)
+The [independent raw and reader record](../../../tests/results/schema/saved-field-rename-raw-sdk-read-2026-11-09.json)
 contains four coordinated TDEF-plus-live-group hypotheses and four TDEF-only
 controls, frozen before metadata reads. All 12 read-only opens succeed and all
 files retain their hashes. The coordinated images preserve observed native IDs,
 field policies and explicit OFF settings except for the requested name; the
 TDEF-only controls lose field property lookup. The maintained first-party
-[recipe](../../testing/saved_field_rename/README.md) retains original model/helper
+[recipe](../../../tests/access/schema/saved_field_rename/README.md) retains original model/helper
 hashes, controls and portable-wrapper execution limits.
 
 These are raw-authored renames plus inert Jackcess metadata observations: **zero

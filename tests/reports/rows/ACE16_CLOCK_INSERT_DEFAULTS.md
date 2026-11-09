@@ -94,9 +94,9 @@ Clippy run stops on one collapsible-if style finding in the shared CLI parser;
 that parser-only correction is followed by a passing strict run. Minimal ACE and
 Access builds pass. No clock engine or expected-image correction was needed.
 
-The [Access/CLI consumer](../access/writes/SQL_INSERT_COPIES.md) has a separate source/API record.
+The [Access/CLI consumer](../../../docs/access/writes/SQL_INSERT_COPIES.md) has a separate source/API record.
 No original-file public-writer comparison, native Access open/save, macro
 execution or Windows timing claim is established by these literal images.
 
 See the [literal omission contract](ACE16_OMITTED_INSERT_DEFAULTS.md) and
-[focused result](results/ace16-clock-insert-defaults-2026-10-30.json).
+[focused result](../../results/rows/ace16-clock-insert-defaults-2026-10-30.json).

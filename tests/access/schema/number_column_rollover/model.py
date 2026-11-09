@@ -13,13 +13,13 @@ SOURCE_HASH = 'a6a9e18cd35dc2bf018e5cd554a68b5b60d56023fd78a4a0ecba627ab9041d72'
 
 def repository_root():
     for parent in Path(__file__).resolve().parents:
-        if (parent / 'docs/testing/number_column_repeat/raw.py').is_file():
+        if (parent / 'tests/access/schema/number_column_repeat/raw.py').is_file():
             return parent
     raise RuntimeError('Run this maintained helper inside the TableCraft source tree')
 
 
 ROOT = repository_root()
-OWNER = ROOT / 'docs/testing/number_column_repeat'
+OWNER = ROOT / 'tests/access/schema/number_column_repeat'
 sys.path.insert(0, str(OWNER))
 spec = importlib.util.spec_from_file_location('number_repeat_model', OWNER / 'model.py')
 prior_model = importlib.util.module_from_spec(spec)
@@ -198,7 +198,7 @@ def main():
     result = {
         'scope': 'Portable independent model replay; SDK not re-executed',
         'model_sha256': digest(Path(__file__).read_bytes()),
-        'raw_owner': 'docs/testing/number_column_repeat/raw.py',
+        'raw_owner': 'tests/access/schema/number_column_repeat/raw.py',
         'raw_owner_sha256': digest(Path(raw.__file__).read_bytes()),
         'observations': observations,
     }

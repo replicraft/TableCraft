@@ -3,6 +3,7 @@
 Jackcess supplies inert metadata rendering and raw row values, never SQL execution.
 Expected grids are authored independently; all database bytes must stay unchanged.
 """
+from engineering_paths import reference_file
 
 import argparse
 import csv
@@ -33,7 +34,7 @@ def main():
         names = ["SavedCrosstabFixture", "SavedNamedCrosstabFixture", "ComputedCrosstabFixture",
                  "DiscoveryCrosstabFixture", "SavedReadOracle", "SavedQueryOracle", "TableDataOracle"]
         subprocess.run(["javac", "-cp", str(args.jar), "-d", classes,
-                        *[str(RECIPES / (name + ".java")) for name in names]], check=True)
+                        *[str(reference_file(name + ".java")) for name in names]], check=True)
 
         def java(name, *values):
             return subprocess.check_output(["java", "-Dstdout.encoding=UTF-8", "-cp",

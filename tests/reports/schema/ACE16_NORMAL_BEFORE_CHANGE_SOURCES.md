@@ -49,6 +49,6 @@ checks passed; final documentation/format checks are recorded separately.
 
 There were no macro program, normal planner, native mutation writer or journal
 calls. SDK row reads are independent-reader evidence, not native Access runtime
-or Windows creation/save comparisons. The [source result](results/ace16-normal-before-change-sources-2026-10-31.json)
+or Windows creation/save comparisons. The [source result](../../results/general/ace16-normal-before-change-sources-2026-10-31.json)
 keeps these facts and the no-op admission boundary separate from future durable
 normal-write acceptance.

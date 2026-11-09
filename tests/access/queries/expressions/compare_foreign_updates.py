@@ -38,7 +38,7 @@ def main():
     # Compile only our inert oracle once; repeated comparisons still reopen every
     # candidate independently without source-launch compilation overhead.
     with tempfile.TemporaryDirectory(prefix="tablecraft-foreign-oracle-") as classes:
-        run("javac", "-cp", args.jar, "-d", classes, "docs/testing/TableDataOracle.java")
+        run("javac", "-cp", args.jar, "-d", classes, "tests/access/reading/tables/TableDataOracle.java")
         def oracle(path, *arguments):
             return run("java", "-Dstdout.encoding=UTF-8", "-cp", str(args.jar) + os.pathsep + classes,
                        "TableDataOracle", path, *arguments)

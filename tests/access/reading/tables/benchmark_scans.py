@@ -35,7 +35,7 @@ def main():
     args = parser.parse_args()
     if args.runs < 2 or args.warmup < 0:
         parser.error("use at least two runs and nonnegative warmup")
-    root = Path(__file__).resolve().parents[2]
+    root = Path(__file__).resolve().parents[4]
     sources = [
         "crates/engines/tablecraft-ace/benches/native.rs",
         "crates/engines/tablecraft-ace/src/format/reader.rs",
@@ -44,7 +44,7 @@ def main():
     ]
     sources += sorted(path.relative_to(root).as_posix()
         for path in (root / "crates/engines/tablecraft-ace/src/table/indexes").rglob("*.rs"))
-    sources.append("docs/testing/benchmark_scans.py")
+    sources.append("tests/access/reading/tables/benchmark_scans.py")
     baseline_metadata = json.loads(args.baseline_metadata.read_text())
     lock_hash = digest(root / "Cargo.lock")
     rustc = subprocess.check_output(["rustc", "-V"], text=True).strip()

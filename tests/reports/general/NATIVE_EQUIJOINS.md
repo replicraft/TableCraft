@@ -1,12 +1,12 @@
 # Original native integral join replay
 
-The [accepted report](results/native-equijoins-2026-10-25.json) records 20 passing
+The [accepted report](../../results/general/native-equijoins-2026-10-25.json) records 20 passing
 controls over the four immutable Decimal corpus databases: Jet 4, ACE 2007,
 ACE 2016 and ACE 2019. It compares 16,012 rows and 32,024 cells with no
 disagreements. These are independent getter/model checks, not native Access SQL
 qualification or a timing benchmark.
 
-[The runner](compare_native_equijoins.py) obtains actual ID values and their
+[The runner](../../access/queries/execution/compare_native_equijoins.py) obtains actual ID values and their
 encounter order through the existing inert sequential Jackcess getter. Python
 integer equality models self joins, reversed ON operands, post-join filtering,
 and left/right unmatched rows. Outer-row encounter order checks TableCraft's
@@ -29,12 +29,12 @@ revision, not from concurrently changing live files.
 The report and runner retain commands, hashes, cardinalities and refusal details.
 The runner requires a fresh report path and the four registered original hashes;
 replay it using the recorded CLI, reviewed reader and input arguments. Original
-bytes and provenance remain in [FIXTURES.md](FIXTURES.md). No new binary
+bytes and provenance remain in [FIXTURES.md](../reading/FIXTURES.md). No new binary
 fixtures or dependencies were adopted.
 
 This corpus covers ordinary non-null Int32 IDs. NULLs, duplicate IDs, other
 admitted integral carriers, paired descriptors, eager source failures,
 cancellation and resource failures have separate focused
-[implementation checks](../query/QUERY_EQUIJOINS.md). Text joins, compound predicates,
+[implementation checks](../../../docs/query/QUERY_EQUIJOINS.md). Text joins, compound predicates,
 other carriers, general hash joins and native Access comparison remain outside
 this evidence.

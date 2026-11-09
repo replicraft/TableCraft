@@ -3,6 +3,7 @@
 Uses existing immutable large-map inputs. Native Access SQL semantics, streaming
 execution and shared-file consistency are separate qualification targets.
 """
+from engineering_paths import reference_file
 import argparse
 from pathlib import Path
 import subprocess
@@ -21,7 +22,7 @@ def main():
         path = args.directory / f"LargeRows-{profile}.{suffix}"
         before = digest(path)
         oracle = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar,
-                     RECIPES / "LargeTableOracle.java", path, 0, 6000).splitlines()
+                     reference_file('tests/access/reading/tables/LargeTableOracle.java'), path, 0, 6000).splitlines()
         ids = [row.split("\t")[0] for row in oracle[2:]]
         assert len(ids) == 6000, "oracle row count"
         cases = [

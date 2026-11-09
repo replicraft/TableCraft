@@ -50,7 +50,7 @@ LenB/AscW observer or numeric projection can consume raw intermediate keys witho
 publishing their contents. Stored/native Text, source/parameter admission, write
 gates and index pushdown are unchanged.
 
-The original [key runner](../../testing/compare_raw_string_keys.py) passes 406 independent
+The original [key runner](../../../tests/access/queries/expressions/compare_raw_string_keys.py) passes 406 independent
 controls over all registered short General vectors in each family, plus NULLs.
 Python supplies grouping, sorting, stable ties and first representative lengths
 from the reviewed key bytes. It also checks duplicate removal, active DISTINCTROW,

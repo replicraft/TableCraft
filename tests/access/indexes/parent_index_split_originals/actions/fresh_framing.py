@@ -4,7 +4,7 @@ import hashlib
 import json
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[4]
+ROOT = Path(__file__).resolve().parents[5]
 REPORT = Path('.cache/ace16-parent-split-actions-initial-20261027/report.json')
 OUTPUT = Path('.cache/ace16-parent-split-actions-next-20261027/fresh-framing.json')
 EXPECTED_SHA256 = 'fb970dbb6263bc3146d2852549dfdbc8b6119d456fe8c42cd9f2fca72e54566c'

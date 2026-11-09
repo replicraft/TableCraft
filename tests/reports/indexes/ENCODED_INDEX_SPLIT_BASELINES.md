@@ -9,7 +9,7 @@ writer actions. They do not establish a working split candidate or normal save.
 
 ## Consumer and requests
 
-The consumer is the [committed existing-slot example](results/ace16-slot-example-build-2026-10-26.json)
+The consumer is the [committed existing-slot example](../../results/general/ace16-slot-example-build-2026-10-26.json)
 compiled from `59c87310ad4d25fa182336640a85477f5075455c`. Its frozen artifact is
 17,017,616 bytes, SHA-256
 `ba3b1f5f80c0274d0145006e22ae60a1fc8b7b051576ae651e7a853da36e285b`.
@@ -46,9 +46,9 @@ consumer retained its compiled 256 MiB allocation, 100,000-row and 100,000,000-s
 allowances. All output names were fresh. No JVM, new compilation, source
 regeneration or public UPDATE ran in this phase.
 
-The [compact receipt](results/encoded-index-split-old-slot-native-2026-10-27.json)
+The [compact receipt](../../results/indexes/encoded-index-split-old-slot-native-2026-10-27.json)
 pins the plan, controller, raw report and saved proof. The
-[later verifier](encoded_index_split_sources/verify_baseline.py) rechecks command
+[later verifier](../../access/indexes/encoded_index_split_sources/verify_baseline.py) rechecks command
 arguments, exact TSV carriers, exit status, captured streams, no-op bytes,
 refusal publication and immutable identities without starting a child process:
 

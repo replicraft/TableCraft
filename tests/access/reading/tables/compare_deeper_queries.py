@@ -18,7 +18,7 @@ import compare_fixed_binary_keys as mixed
 import compare_numeric_keys as model
 from compare_declared_numeric_text import INPUTS, JAR_SHA256
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[4]
 MAX_COMMANDS = 2000
 RETAINED_WRAPPERS = 6
 SOURCE_ROOTS = [
@@ -159,10 +159,10 @@ def main():
         check=True, capture_output=True, text=True,
     ).stdout.strip()
     tools = [args.cli, args.jar, Path(__file__),
-             ROOT / "docs/testing/compare_fixed_binary_keys.py",
-             ROOT / "docs/testing/compare_numeric_keys.py",
-             ROOT / "docs/testing/compare_declared_numeric_text.py",
-             ROOT / "docs/testing/TableDataOracle.java",
+             ROOT / "tests/access/indexes/native/compare_fixed_binary_keys.py",
+             ROOT / "tests/access/indexes/native/compare_numeric_keys.py",
+             ROOT / "tests/access/queries/expressions/compare_declared_numeric_text.py",
+             ROOT / "tests/access/reading/tables/TableDataOracle.java",
              *(args.directory / name for name in INPUTS)]
     pins = {str(path.resolve().relative_to(ROOT)): mixed.digest(path) for path in tools}
     sources = source_pins(revision)
@@ -180,7 +180,7 @@ def main():
             database = args.directory / name
             getter = subprocess.run(
                 ["java", "-Xmx256m", "-cp", str(args.jar),
-                 str(ROOT / "docs/testing/TableDataOracle.java"), str(database), "ScalarSamples"],
+                 str(ROOT / "tests/access/reading/tables/TableDataOracle.java"), str(database), "ScalarSamples"],
                 capture_output=True, text=True, encoding="utf-8", timeout=120, check=True,
             )
             if getter.stderr:

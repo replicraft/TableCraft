@@ -40,7 +40,7 @@ def logical_offsets(data, definition):
 
 def compare(args, path, table):
     expected = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar,
-        "docs/testing/ForeignIndexOracle.java", path, table)
+        "tests/access/indexes/native/ForeignIndexOracle.java", path, table)
     actual = run(args.example, path, table)
     if sorted(actual.splitlines()) != sorted(expected.splitlines()):
         raise RuntimeError("Exact reciprocal-index metadata differs: " + table)

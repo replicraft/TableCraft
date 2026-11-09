@@ -7,7 +7,7 @@ two successful public Jackcess UPDATEs with actual root growth from height 1 to
 observations, not Microsoft Access qualification or a successful parent-splitting
 kernel implementation.
 
-The [compact receipt](results/ace16-parent-index-split-originals-2026-10-27.json)
+The [compact receipt](../../results/indexes/ace16-parent-index-split-originals-2026-10-27.json)
 pins the exact first execution, sources, commands, complete raw reports and
 subsequent read-only framing checks. The fixed inputs are the two unchanged
 782-row [sparse sources](PARENT_INDEX_SPLIT_SOURCE_OBSERVATIONS.md), not their
@@ -90,15 +90,15 @@ parity with public canonicalization or normal native save behavior.
 
 ## Source identity and reproduction
 
-The [public verifier](parent_index_split_originals/actions/verify_existing.py)
+The [public verifier](../../access/indexes/parent_index_split_originals/actions/verify_existing.py)
 and framing tools recheck saved artifacts without launching a JVM or consumer:
 
 ```sh
-python3 docs/testing/parent_index_split_originals/actions/verify_existing.py
-python3 docs/testing/parent_index_split_originals/actions/framing.py \
+python3 tests/run.py tests/access/indexes/parent_index_split_originals/actions/verify_existing.py
+python3 tests/run.py tests/access/indexes/parent_index_split_originals/actions/framing.py \
   --verify-existing \
   --output .cache/ace16-parent-split-actions-next-20261027/framing.json
-python3 docs/testing/parent_index_split_originals/actions/fresh_framing.py \
+python3 tests/run.py tests/access/indexes/parent_index_split_originals/actions/fresh_framing.py \
   --verify-existing \
   --output .cache/ace16-parent-split-actions-next-20261027/fresh-framing.json
 ```
@@ -114,9 +114,9 @@ Explicit fresh reproduction uses the fixed accepted inputs and a current manifes
 it does not regenerate sources or authorize normal database saves:
 
 ```sh
-python3 docs/testing/parent_index_split_originals/actions/capture.py \
+python3 tests/run.py tests/access/indexes/parent_index_split_originals/actions/capture.py \
   --freeze-current .cache/fresh-parent-action-tools.json
-python3 docs/testing/parent_index_split_originals/actions/capture.py \
+python3 tests/run.py tests/access/indexes/parent_index_split_originals/actions/capture.py \
   --execute --freeze .cache/fresh-parent-action-tools.json \
   --workdir .cache/fresh-parent-actions
 ```

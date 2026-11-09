@@ -60,8 +60,8 @@ record placement. It also rechecks every observed pin before returning success.
 Original databases, JARs, compiled classes, raw streams and expected images stay
 in ignored private evidence. The Java fixture is repository-authored; no
 third-party source or fixture is copied into this package. See the
-[compact result](../results/ace16-insert-guid-tuple-index-native-2026-10-28.json)
-and [fixture provenance](../FIXTURES.md).
+[compact result](../../../results/indexes/ace16-insert-guid-tuple-index-native-2026-10-28.json)
+and [fixture provenance](../../../reports/reading/FIXTURES.md).
 
 These are engineering candidate and independent-reader observations. They do not
 qualify native Microsoft Access saves/reopens, data macros, Windows integration

@@ -32,8 +32,8 @@ imported active database content.
 
 The ignored corpus has five freshly authored pairs: Jet 4/V2000, ACE 2007/V2007,
 ACE 16-family V2016/V2019 and a mixed Jet 4 root/V2016 target. It reuses the original
-[linked-query producer](LinkedQueryFixture.java), then applies public writer
-additions through [ExternalQueryFixture.java](ExternalQueryFixture.java). Earlier
+[linked-query producer](../../access/queries/execution/LinkedQueryFixture.java), then applies public writer
+additions through [ExternalQueryFixture.java](../../access/queries/execution/ExternalQueryFixture.java). Earlier
 accepted linked inputs are unchanged.
 
 Root and target have deliberately conflicting `Remote People`, `Remote Orders`
@@ -42,7 +42,7 @@ from target rates by both values and membership. A root-only table catches any
 silent fallback from target lookup. Root `RootOnlyIndex` and target `ExternalId`
 are independently authored indexes on their corresponding ID columns.
 
-[ExternalQueryOracle.java](ExternalQueryOracle.java) reads only explicitly opened
+[ExternalQueryOracle.java](../../access/queries/execution/ExternalQueryOracle.java) reads only explicitly opened
 local tables, index declarations and ordinary cell getters. The reference
 expression evaluator is disabled, and a throwing link resolver records zero
 target traversals. The pinned reference implementation's `ColumnImpl` metadata
@@ -51,7 +51,7 @@ The existing linked getter supplies inert mapping IDs and root saved-query text.
 Its lower-level `QueryImpl.Row`/MSysQueries fragments are syntax fixtures, not
 evidence of public query saves or reference/Access SQL execution.
 
-[The independent runner](compare_external_queries.py) builds joins, grouping,
+[The independent runner](../../access/queries/execution/compare_external_queries.py) builds joins, grouping,
 filters, correlations and expected namespace differences from these ordinary
 getter records. Numeric keys and simple ASCII comparison controls avoid inventing
 native linguistic rules. The example's ordinal provider uses explicit Unicode
@@ -102,7 +102,7 @@ query behavior or expected result weakened.
 
 ## Accepted replay
 
-The [2026-10-24 final report](results/external-native-2026-10-24.json) records
+The [2026-10-24 final report](../../results/storage/external-native-2026-10-24.json) records
 350 engineering controls with 2,154 modeled cells and 375 actual CLI controls
 with 2,214 modeled cells. The two consumer counts remain separate; they reuse
 the same original getter records and include equivalent grouped/ungrouped SQL.

@@ -1,4 +1,5 @@
 """Independent stored-key ordering, raw physical getters and explicit row controls."""
+from engineering_paths import reference_file
 import argparse
 import csv
 import hashlib
@@ -39,7 +40,7 @@ def main():
     }
     controls = 0
     with tempfile.TemporaryDirectory(prefix="tablecraft-ordering-oracle-") as classes:
-        sources = [RECIPES / (name + ".java") for name in
+        sources = [reference_file(name + ".java") for name in
                    ("SavedForestFixture", "SavedOrderingFixture", "SavedReadOracle", "SavedQueryOracle")]
         subprocess.run(["javac", "-cp", str(args.jar), "-d", classes, *map(str, sources)], check=True)
 

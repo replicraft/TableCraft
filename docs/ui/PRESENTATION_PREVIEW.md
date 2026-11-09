@@ -3,7 +3,7 @@
 ## Ownership regression — 9 November 2026
 
 Headless-only verification was reinstated after the brief native review. The
-[clone ownership record](../testing/results/clone-ownership-audit-2026-11-09.json)
+[clone ownership record](../../tests/results/general/clone-ownership-audit-2026-11-09.json)
 includes directly inspected light/dark initial Table Design description frames
 at 1280 × 820 logical points/1×. The actual widgets preserve authored Unicode
 descriptions across Design/Datasheet transitions after locale and edit-buffer
@@ -19,7 +19,7 @@ presentation. Use the datasheet scene and no other workflow preview setting.
 These source-free shared-widget scenarios contain no native capability, file
 open, save worker or completed deletion.
 
-The [evidence record](../testing/results/saved-field-drop-gui-2026-11-09.json)
+The [evidence record](../../tests/results/schema/saved-field-drop-gui-2026-11-09.json)
 pins sixteen directly inspected frames: all six modes in English light/dark at
 1280 × 800 logical points/1×; Russian dark close at 640 × 480/2×; Japanese light
 confirmation, Chinese dark pending and German light refusal at 860 × 640/1×.
@@ -46,7 +46,7 @@ workflow setting. `none` retains ordinary presentation. These are source-free
 illustrations through actual shared state/widgets: they create no database,
 native capability, SaveWorker, journal or full-image witness.
 
-The [Options evidence record](../testing/results/database-options-workflows-2026-11-08.json)
+The [Options evidence record](../../tests/results/general/database-options-workflows-2026-11-08.json)
 pins nineteen directly reviewed frames: every mode in English light/dark at
 1280 × 820 logical points/1×; German dark General/refused/close/returned at
 1000 × 720/1.25×; and Japanese light unknown/review/returned at 1100 × 760/1×.
@@ -110,7 +110,7 @@ identity was not captured. Dimensions below are logical points:
 The renderer checks exact SQL, edit eligibility, dirty state, modal button
 availability and complete painting of its labels inside the modal/viewport.
 Final captures include the corrected common left inset for the editor and empty
-results notice. The [combined evidence record](../testing/results/saved-sql-options-workflows-2026-11-08.json)
+results notice. The [combined evidence record](../../tests/results/queries/saved-sql-options-workflows-2026-11-08.json)
 separates these offscreen observations from the headless service/workflow gates;
 private PNGs remain in ignored local cache.
 
@@ -131,7 +131,7 @@ status modal, with illustrative identities and localized mock reports. No native
 review, SaveWorker, database, journal or real read witness exists in this renderer.
 The eight status cases below were rendered and visually inspected on macOS
 14.7.2 ARM64, using the existing WGPU offscreen renderer and Windows input
-emulation. The [save lifecycle record](../testing/results/query-save-rebind-2026-11-08.json)
+emulation. The [save lifecycle record](../../tests/results/queries/query-save-rebind-2026-11-08.json)
 pins actual images, sizes and scales. GPU adapter identity was not captured.
 The earlier seven editor/close captures remain separate evidence.
 
@@ -1254,7 +1254,7 @@ if the extra row fails. Scalar Jet 4 and stored-calculation ACE 16 cases cover
 and existing stored/contents checks passed 13 tests. Cancellation guards remain;
 cancellation specifically during the extra row was not independently exercised.
 Strict all-target/all-feature runtime Clippy and focused formatting also passed.
-See the [fixture provenance](../testing/FIXTURES.md#null-only-index-predicate-inputs).
+See the [fixture provenance](../../tests/reports/reading/FIXTURES.md#null-only-index-predicate-inputs).
 
 One headless desktop journey now composes the existing independent 205-row Jet 4
 fixture with actual widgets: Selection filter, descending sort, the later
@@ -2639,7 +2639,7 @@ capability, database, journal or SaveWorker. Existing
 `TABLECRAFT_PREVIEW_NUMBER_COLUMN` modes and output names remain supported;
 selecting both settings at once refuses.
 
-Eight [offscreen frames](../testing/results/field-addition-presentation-2026-11-08.json)
+Eight [offscreen frames](../../tests/results/schema/field-addition-presentation-2026-11-08.json)
 were rendered and visually inspected: English/light at 1280×820 logical points,
 1×, and German/dark at 960×640, 1.25× (1200×800 pixels). Each configuration covers
 the complete gallery, header naming, close confirmation and pending review.

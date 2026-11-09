@@ -5,7 +5,7 @@ parent overflow witness** within the unchanged generation cap. Session 90573
 completed on its first execution with status 0 and exactly nine source processes:
 one Java compilation, two generations, two public sparse-copy prune histories
 and four read-only descriptions. No MAX replacement, native admission or internal
-split action was executed. The [compact receipt](results/ace16-internal-parent-split-sources-2026-10-27.json)
+split action was executed. The [compact receipt](../../results/indexes/ace16-internal-parent-split-sources-2026-10-27.json)
 pins sources, classes, commands, selections, raw proofs and immutable database
 histories. These observations do not qualify Microsoft Access behavior.
 
@@ -60,12 +60,12 @@ actual nine-process execution.
 
 ## Read-only checks and fresh reproduction
 
-The [verifier](internal_parent_split_originals/verify_existing.py) recomputes both
+The [verifier](../../access/indexes/internal_parent_split_originals/verify_existing.py) recomputes both
 larger/sparse certificates and complete map/child/sibling/retained-row facts from
 cached descriptions, without JVM or native calls:
 
 ```sh
-python3 docs/testing/internal_parent_split_originals/verify_existing.py \
+python3 tests/run.py tests/access/indexes/internal_parent_split_originals/verify_existing.py \
   --output FRESH_OUTPUT.json
 ```
 
@@ -75,9 +75,9 @@ verifier are explicitly distinct from historical execution. Fresh reproduction
 requires a current-source manifest and fresh outputs:
 
 ```sh
-python3 docs/testing/internal_parent_split_originals/capture.py \
+python3 tests/run.py tests/access/indexes/internal_parent_split_originals/capture.py \
   --freeze-current .cache/fresh-internal-parent-tools.json
-python3 docs/testing/internal_parent_split_originals/capture.py \
+python3 tests/run.py tests/access/indexes/internal_parent_split_originals/capture.py \
   --freeze .cache/fresh-internal-parent-tools.json --execute \
   --workdir .cache/fresh-internal-parent-sources
 ```

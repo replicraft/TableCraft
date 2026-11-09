@@ -51,7 +51,7 @@ Binary DELETE; indexed Binary UPDATE retains its existing limits.
 
 ## Evidence
 
-The [independent source phase](../../testing/ACE16_BINARY_INDEX_SOURCES.md) passed
+The [independent source phase](../../../tests/reports/indexes/ACE16_BINARY_INDEX_SOURCES.md) passed
 18 native views and 144 exact SDK observations before matching producers.
 Sixteen native literal commits, independent direct proofs, recovery/forgery and
 full public budget/cancellation controls pass. Typed/SQL sessions and CLI saves
@@ -60,6 +60,6 @@ match complete images and retain leases, receipts and namespace cleanup.
 All sixteen prior profile regression commands pass. Strict all-feature,
 journal-only, preview-only and minimal checks pass; the combined batch passes
 1,153 ACE units, 79 adapter units, 102 CLI units and 90 default recovery functions.
-The [execution record](../../testing/results/ace16-binary-index-insert-writes-2026-11-01.json)
+The [execution record](../../../tests/results/indexes/ace16-binary-index-insert-writes-2026-11-01.json)
 retains exact receipts and the first negative-fixture, trait-method and lint
 failures. No expectation was retuned to producer output.

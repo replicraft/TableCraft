@@ -2,7 +2,7 @@
 from pathlib import Path
 from ace16_insert_root_split import reference as source_reference
 
-ROOT = Path(__file__).resolve().parents[3]
+ROOT = Path(__file__).resolve().parents[4]
 
 
 def before(case):

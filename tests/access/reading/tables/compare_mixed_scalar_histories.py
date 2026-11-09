@@ -3,6 +3,7 @@
 Original recipes and reviewed Jackcess getters establish independent reading,
 not Microsoft Access SQL, native save/reopen or coherent live-file behavior.
 """
+from engineering_paths import reference_file
 
 import argparse
 import csv
@@ -100,7 +101,7 @@ def main():
         for profile, extension, _ in PROFILES:
             subprocess.run([
                 "java", "-Dstdout.encoding=UTF-8", "-cp", str(args.jar),
-                str(RECIPES / "MixedScalarHistoryFixture.java"),
+                str(reference_file('tests/access/reading/tables/MixedScalarHistoryFixture.java')),
                 str(args.directory / f"mixed-{profile}.{extension}"), profile,
             ], check=True)
 
@@ -115,7 +116,7 @@ def main():
             assert source.read(24)[20:24] == bytes([family, 0, 0, 0]), "Wrong header family"
         reference = subprocess.check_output([
             "java", "-Dstdout.encoding=UTF-8", "-cp", str(args.jar),
-            str(RECIPES / "TableDataOracle.java"), str(path), "--date-bits", "MixedHistory",
+            str(reference_file('tests/access/reading/tables/TableDataOracle.java')), str(path), "--date-bits", "MixedHistory",
         ], text=True, encoding="utf-8")
         records = [line.split("\t")[1:] for line in reference.splitlines()]
         identifiers = [int(row[0][4:]) for row in records]

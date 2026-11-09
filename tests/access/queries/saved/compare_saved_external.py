@@ -15,7 +15,7 @@ from pathlib import Path
 import subprocess
 
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[4]
 PROFILES = ("V2016", "V2019", "V2000", "V2007")
 JAR_SHA256 = "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc"
 CLI_SHA256 = "dc67d1ae174734112b412892c5bc8054d4408abffc1cc5f79ac6769bdbd09007"
@@ -58,7 +58,7 @@ def main():
     assert digest(args.cli) == CLI_SHA256
     assert digest(args.jar) == JAR_SHA256
     paths = {args.cli, args.jar, Path(__file__)}
-    paths.update(ROOT / "docs/testing" / name for name in (
+    paths.update(ROOT / "tests/access" / name for name in (
         "SavedExternalFixture.java", "SavedExternalOracle.java",
     ))
     paths.update(args.directory.glob("*/*"))

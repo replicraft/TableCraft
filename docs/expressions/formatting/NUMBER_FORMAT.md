@@ -106,7 +106,7 @@ dependency, fixture or GUI/network runtime requirement.
 Focused tests cover all profiles, grouping/currency/exponents, exact range and
 midpoint cases, direct Single parsing, Decimal precision, cancellation/allocation
 limits, parameter reuse, grouping, separate nested-query cases, CLI transport and
-worker isolation. The [independent recipe](../../testing/compare_number_format.py) uses
+worker isolation. The [independent recipe](../../../tests/access/queries/expressions/compare_number_format.py) uses
 Python Decimal/integer models and optional sequential/indexed projections over
 Jackcess-decoded inputs, checking the source hash after reads. These are independent
 models/readers; native Windows Access comparisons remain unrun. All nine functions

@@ -2,7 +2,7 @@
 
 These gates qualify inputs before matching write implementations. They add no
 write permission and do not establish native Microsoft Access save behavior.
-The preceding [reuse and retained-tree sources](ACE16_RETAINED_REUSE_COMPANION_SOURCES.md)
+The preceding [reuse and retained-tree sources](../rows/ACE16_RETAINED_REUSE_COMPANION_SOURCES.md)
 remain unchanged.
 
 ## External growth and whole-page retirement
@@ -43,5 +43,5 @@ or native Access save-byte oracle. Only the original gate has run for this
 family; AFTER construction, independent-reader checks and matching splits
 remain work.
 
-See the [execution record](results/ace16-external-continuation-wide-split-source-gates-2026-11-01.json).
+See the [execution record](../../results/indexes/ace16-external-continuation-wide-split-source-gates-2026-11-01.json).
 Native Access execution/save/reopen remains unrun.

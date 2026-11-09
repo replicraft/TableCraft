@@ -3,7 +3,7 @@
 The separate ACE 16 INSERT engineering preview can promote a canonical ordinary
 DATA-owned inline map to bitmap-backed storage when its complete member set no
 longer fits an aligned 512-page window. This continues the INSERT-only rebasing
-in the [GLOBAL allocation contract](ACE16_GLOBAL_MAP_INSERT_GROWTH.md). Normal
+in the [GLOBAL allocation contract](../rows/ACE16_GLOBAL_MAP_INSERT_GROWTH.md). Normal
 backend writes, journalable ACE saves and native Access mutation remain separate
 gates.
 
@@ -115,7 +115,7 @@ and dictionary generators; they are not skipped acceptance checks.
 Existing represented cells, other record widths, table-definition growth,
 block-one initialization and general in-file reuse retain their earlier limits.
 These four cases are repository-authored native-format literals. A subsequent
-[original-file proof](ace16_insert_empty_owned/README.md) qualifies this
+[original-file proof](../../access/rows/ace16_insert_empty_owned/README.md) qualifies this
 missing-pointer continuation on one immutable public-created V2016 empty table.
 SOURCE3 capture and a separate raw gate precede two complete SOURCE/request-only
 expected images. Four public reference calls pass two transition proofs; a fresh
@@ -123,8 +123,8 @@ isolated build of committed `463853e1` then produces two byte-exact candidates,
 followed by two separately bound fresh reader checks. Both public files also
 match the earlier complete images with zero differing bytes. The batch reuses
 its owned bitmap across two DATA pages without adopting unrelated storage.
-The [result](results/ace16-insert-empty-owned-2026-10-28.json) and
-[build receipt](results/ace16-insert-empty-owned-example-build-2026-10-28.json)
+The [result](../../results/rows/ace16-insert-empty-owned-2026-10-28.json) and
+[build receipt](../../results/rows/ace16-insert-empty-owned-example-build-2026-10-28.json)
 retain phase identities and preparation stops. Saved-only replay passes with
 subprocess creation blocked; missing evidence returns status 2.
 
@@ -141,4 +141,4 @@ The original-file missing-pointer proof does not qualify the separate
 inline-origin promotion profile. Both forms of independent-reader evidence
 remain separate from actual Windows Access mutation and native save/reopen
 qualification.
-The [engineering preview boundary](ACE16_WRITE_PREVIEWS.md) remains unchanged.
+The [engineering preview boundary](../development/ACE16_WRITE_PREVIEWS.md) remains unchanged.

@@ -3,6 +3,7 @@
 Original mixed-policy files are generated only on request into a fresh local
 corpus. Jackcess supplies exact metadata and raw weights, not native Access SQL.
 """
+from engineering_paths import reference_file
 import argparse
 import base64
 import csv
@@ -56,11 +57,11 @@ def main():
         args.directory.mkdir(exist_ok=False)
         for profile, suffix in PROFILES:
             run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar,
-                RECIPES / "NativePolicyFixture.java", args.directory / f"Policies-{profile}.{suffix}", profile)
+                reference_file('tests/access/reading/tables/NativePolicyFixture.java'), args.directory / f"Policies-{profile}.{suffix}", profile)
     controls = 0
     with tempfile.TemporaryDirectory(prefix="tablecraft-native-policy-oracle-") as directory:
         run("javac", "-encoding", "UTF-8", "-cp", args.jar, "-d", directory,
-            RECIPES / "NativePolicyOracle.java")
+            reference_file('tests/access/reading/tables/NativePolicyOracle.java'))
         classpath = os.pathsep.join([directory, str(args.jar)])
         for profile, suffix in PROFILES:
             path = args.directory / f"Policies-{profile}.{suffix}"

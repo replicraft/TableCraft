@@ -9,7 +9,7 @@ import os
 from pathlib import Path
 import subprocess
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[4]
 JAR_SHA256 = '19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc'
 HELPER = 'com.healthmarketscience.jackcess.impl.FrenchComparisonFixture'
 PROFILES = ('V2016', 'V2019')
@@ -161,7 +161,7 @@ def main():
     args.directory.mkdir(parents=True, exist_ok=True)
     command = ['java', '-cp', os.pathsep.join(map(str, (args.jar, args.classes))), HELPER]
     report = {'scope': 'Actual native field-data observations only; no SQL/comparator/native semantics qualification',
-              'artifacts': [pin(Path(__file__)), pin(Path('docs/testing/FrenchComparisonFixture.java')),
+              'artifacts': [pin(Path(__file__)), pin(Path('tests/access/queries/expressions/FrenchComparisonFixture.java')),
                             pin(args.jar), pin(args.classes / Path(*HELPER.split('.')).with_suffix('.class'))],
               'profiles': []}
     for profile in PROFILES:

@@ -1,12 +1,12 @@
 # Public-writer data-page row limit
 
-Fresh repository-owned [producer](RowSlotBoundaryFixture.java) originals use the
+Fresh repository-owned [producer](../../access/reading/tables/RowSlotBoundaryFixture.java) originals use the
 reviewed public Jackcess 5.0.4 builder. Each has one ordinary `LONG` column,
 `Slots.N`, containing exactly the integers 0 through 599, with no indexes or
 AutoNumber. Generation requires a fresh path; expressions are disabled, linked
 opens throw, and getters open read-only.
 
-The [compact receipt](results/row-slot-boundary-2026-10-26.json) pins the producer,
+The [compact receipt](../../results/rows/row-slot-boundary-2026-10-26.json) pins the producer,
 compiled class, reviewed JAR, four originals and all command transcripts. Nine
 commands passed: one compilation and four generation/getter pairs. Each command
 had a 30-second timeout; no retries or original mutations occurred.

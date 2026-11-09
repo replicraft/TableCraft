@@ -134,12 +134,12 @@ using production normalization. Representation, late policy cohorts, nullable
 keys, full-node aggregate consumers, collision/fallback, quotas and cancellation
 are checked alongside 12,000-row fixed-key populations in both profiles. Strict
 query library/tests Clippy and the standalone minimal-feature check pass. The
-[fixed-key record](../../testing/results/read-query-exact-fixed-keys-2026-10-25.json)
+[fixed-key record](../../../tests/results/queries/read-query-exact-fixed-keys-2026-10-25.json)
 retains exact commands and hashes; its excluded initial regression used an obsolete
 Decimal-refusal control, corrected to the still-unsupported Single profile.
 Parent native/CLI integration adds 57 passing controls, including three new tests.
 The scoped total is 451 distinct tests with 24 new controls; strict native/CLI
-linting and repository formatting also pass. The [original native/CAB replay](../../testing/EXACT_FIXED_KEYS.md)
+linting and repository formatting also pass. The [original native/CAB replay](../../../tests/reports/indexes/EXACT_FIXED_KEYS.md)
 adds 84 new-query successes comparing 14,088 rows and 41,802 cells, four old-work
 baselines and two representation probes. Actual Access qualification remains separate.
 
@@ -158,12 +158,12 @@ runtime carriers. The SQL comparer remains authoritative and a disabled director
 does not lose any retained representative or refund charges. Existing policy,
 group, key, alias and set targets pass beside these controls. Strict Clippy covers
 the library and all query test modules. Exact commands, observed counts and log
-hashes are retained in the [verification record](../../testing/results/read-query-exact-keys-2026-10-25.json).
+hashes are retained in the [verification record](../../../tests/results/queries/read-query-exact-keys-2026-10-25.json).
 The initial lint attempt is excluded: it flagged a complex tuple type in the new
 test helper, corrected with readable aliases. No test-answer or runtime correction
 was required.
 
-The [native exact-key replay](../../testing/NATIVE_EXACT_KEYS.md)
+The [native exact-key replay](../../../tests/reports/indexes/NATIVE_EXACT_KEYS.md)
 passes 76 controls: 64 successes and 12 intended buffered refusals, comparing
 48,304 rows and 72,584 cells. Ordinary read-only Jackcess getters supply the IDs
 and encounter order from four immutable registered originals. Independent integer

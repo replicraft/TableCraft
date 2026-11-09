@@ -7,7 +7,7 @@ list 32 tables and 16 joins per query, with lower maxima possible for multivalue
 lookup fields. This slice does not establish every query shape at those product
 limits or native Access compatibility.
 
-[SavedManySourcesFixture.java](SavedManySourcesFixture.java) creates four fresh
+[SavedManySourcesFixture.java](../../access/queries/saved/SavedManySourcesFixture.java) creates four fresh
 Jet 4/ACE 2007/ACE 16-family files through the reviewed Jackcess 5.0.4 artifact.
 Its public table builder writes one ordinary Int32 table containing ID 7. Original
 inert MSysObjects/MSysQueries rows declare repeated references to that table under
@@ -24,7 +24,7 @@ fixture bytes or implementation source are copied.
 The read-only getter mode disables expression evaluation and rejects linked
 opens. It records the ordinary Int32 getter, query family, exact stored table/join
 fragment counts and the reference renderer's SQL. Reference SQL never executes.
-The [runner](compare_saved_many_sources.py) compares TableCraft reconstruction
+The [runner](../../access/queries/saved/compare_saved_many_sources.py) compares TableCraft reconstruction
 with that independently assembled SQL normalized by TableCraft's existing parser.
 It separately models execution from the single ordinary getter: each self-source
 has one row, the joins match ID 7, and the crosstab counts one combination. This
@@ -57,7 +57,7 @@ original/source/executable hashes before and after every replay. No database byt
 are modified by reading, rendering or TableCraft query execution.
 
 ```sh
-python3 docs/testing/compare_saved_many_sources.py \
+python3 tests/run.py tests/access/queries/saved/compare_saved_many_sources.py \
   --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar \
   --cli path/to/frozen/tablecraft \
   --directory .cache/tablecraft-fixtures/saved-many-sources-20261024-qualified \
@@ -70,7 +70,7 @@ that flag, existing original bytes and getter captures are reused unchanged.
 
 ## Accepted engineering results
 
-The [final replay](results/saved-many-sources-2026-10-24.json) passes 60 CLI
+The [final replay](../../results/general/saved-many-sources-2026-10-24.json) passes 60 CLI
 commands: 16 independent-rendering comparisons, 16 getter-modeled executions and
 12 boundary refusals, plus the 16 parser normalization calls used by the rendering
 comparisons. These are 48 successful commands and 12 intended refusals, with 20

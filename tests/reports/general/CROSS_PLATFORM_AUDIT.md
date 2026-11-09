@@ -244,7 +244,7 @@ runs headless checks. Isolated runtime checks cover no optional capabilities,
 creation only, editing only and both together. Minimal workspace tests/lint
 remain separate from optional IO, ACE, Access, runtime, expression, core and
 SQLite coverage. Archive and association tests run on the native hosts.
-The [workflow](../../.github/workflows/ci.yml) is configured coverage, not a record
+The [workflow](../../../.github/workflows/ci.yml) is configured coverage, not a record
 that those six jobs passed. No push, workflow dispatch or release was performed
 for this audit. The existing release workflow still publishes only CLI archives;
 desktop archive tooling does not establish a published desktop release.
@@ -326,9 +326,9 @@ the corrected passes.
 - 32-bit, big-endian, other Unix and a web host are not covered by this six-target
   qualification. Existing explicit unsupported-platform refusals remain intact.
 
-See [development commands](../development/DEVELOPMENT.md),
-[IO guarantees](../foundation/IO.md), [compatibility](../COMPATIBILITY.md) and
-[desktop scope](../ui/DESKTOP.md).
+See [development commands](../../../docs/development/DEVELOPMENT.md),
+[IO guarantees](../../../docs/foundation/IO.md), [compatibility](../../../docs/COMPATIBILITY.md) and
+[desktop scope](../../../docs/ui/DESKTOP.md).
 
 ## Explicit oracle exporter portability follow-up
 

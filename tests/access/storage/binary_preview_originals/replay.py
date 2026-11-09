@@ -72,7 +72,7 @@ def write_report(path, report):
 def run(args, plan):
     build = verify_build(args)
     assert common.pin(args.jar)['sha256'] == common.JAR_SHA256
-    assert common.pin('docs/testing/SlotUpdateFixture.java')['sha256'] == common.PRODUCER_SHA256
+    assert common.pin('tests/access/queries/expressions/SlotUpdateFixture.java')['sha256'] == common.PRODUCER_SHA256
     assert build['artifact'] == plan['artifact']
     assert args.revision == plan['compiled_revision']
     capture.TABLE = 'BinaryStorage'
@@ -83,7 +83,7 @@ def run(args, plan):
     assert (common.path(args.classes) / 'SlotMapProbe.class').is_file()
     immutable = frozen_inputs(plan)
     tools = [Path(__file__), Path(proof.__file__), Path(capture.__file__), Path(common.__file__), Path(facts.__file__),
-             ROOT / 'docs/testing/delete_reference_maps.py', common.path(args.jar),
+             ROOT / 'tests/access/rows/delete/delete_reference_maps.py', common.path(args.jar),
              common.path(args.classes) / 'SlotUpdateFixture.class', common.path(args.classes) / 'SlotMapProbe.class']
     tool_pins = [common.pin(path) for path in tools]
     work = common.fresh_work(args.workdir)

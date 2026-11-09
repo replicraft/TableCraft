@@ -1,6 +1,6 @@
 # Original acyclic cascade deletion observations
 
-The [compact receipt](results/ace16-cascading-delete-originals-2026-10-26.json)
+The [compact receipt](../../results/rows/ace16-cascading-delete-originals-2026-10-26.json)
 separates two experiments over fresh repository-authored V2016/V2019 originals.
 Public Jackcess actions produced **24 acyclic closure agreements, two successful
 self-tree calls with dangling children, and six stack overflows**. The separate
@@ -10,7 +10,7 @@ Microsoft Access SQL/save qualification.
 
 ## Originals and reference actions
 
-[CascadeDeleteFixture.java](CascadeDeleteFixture.java) uses the reviewed public
+[CascadeDeleteFixture.java](../../access/rows/delete/CascadeDeleteFixture.java) uses the reviewed public
 Jackcess 5.0.4 builders; it copies no upstream implementation. Each original has
 27 tables, 121 rows, 44 root-leaf physical indexes and 18 enforced Cascade
 relationships with 36 reciprocal foreign endpoints. The corpus includes a chain,
@@ -21,7 +21,7 @@ Unicode Memo/OLE sentinel remain. No properties, expressions, AutoNumber, stored
 link activation or header/relationship flag patches are used.
 
 The generator refuses existing outputs. Its `oracle` mode and the separate
-[CascadeDeleteIndexInspection.java](CascadeDeleteIndexInspection.java) open
+[CascadeDeleteIndexInspection.java](../../access/indexes/native/CascadeDeleteIndexInspection.java) open
 read-only, disable expressions and reject linked opens. Index inspection includes
 all logical aliases and empty declarations. The compact receipt records actual
 generation commands and hashes; originals and expanded getter transcripts stay
@@ -49,15 +49,15 @@ reclassified as successful closure. Self and cyclic engine profiles remain refus
 
 ## Frozen candidate comparison
 
-[compare_cascading_deletes.py](compare_cascading_deletes.py) and its independent
-[cascade_delete_model.py](cascade_delete_model.py) are byte-identical promotions
+[compare_cascading_deletes.py](../../access/rows/delete/compare_cascading_deletes.py) and its independent
+[cascade_delete_model.py](../../access/rows/delete/cascade_delete_model.py) are byte-identical promotions
 of the executed private sources. Run from the repository root; the receipt retains
 the historical executed paths and hashes. Original associations were frozen before
 public actions, without using production coercion, index encoding or action output
 as an expected-answer oracle.
 
 Frozen example `074b97e2…`, compiled at `b16c4ece…`, completed 32 controls and 85
-commands with no disagreement or retry. Its [build receipt](results/ace16-cascading-delete-example-build-2026-10-26.json)
+commands with no disagreement or retry. Its [build receipt](../../results/rows/ace16-cascading-delete-example-build-2026-10-26.json)
 pins 55 Git source objects, rechecked at that revision before/after. A later live
 checkout is not used as a compiler-input inventory. Each run requires explicit
 binary hash/revision/build receipt and fresh work/report paths.

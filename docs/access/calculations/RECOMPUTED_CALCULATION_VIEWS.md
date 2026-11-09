@@ -148,14 +148,14 @@ Five implementation tests, seven independent conformance tests and twenty-one
 existing native preview regressions pass. Nine new CLI tests and sixty-eight
 CLI regressions also pass, for 110 unique scoped tests. Access and CLI test-aware
 strict Clippy, workspace formatting and dependency boundaries pass. See the
-[verification record](../../testing/results/read-query-recomputed-views-2026-10-25.json)
+[verification record](../../../tests/results/queries/read-query-recomputed-views-2026-10-25.json)
 for exact commands, counts and retained failed attempts. An initial constructor
 Field/Expression projection mismatch was fixed without weakening tests; an
 independent overflow golden was separately corrected to the established Long
 to Double rule after a pre-feature baseline check. Native Access formula
 execution/save/reopen and original-file replay remain separate qualification.
 
-An [original native replay](../../testing/RECOMPUTED_VIEWS.md) additionally passes
+An [original native replay](../../../tests/reports/general/RECOMPUTED_VIEWS.md) additionally passes
 80 getter/model controls over immutable ACE 2016/2019 files, comparing 212 rows
 and 460 cells. Twelve immutable pins and thirteen scoped compiled-source hashes
 were independently rechecked. Native Access qualification remains separate.

@@ -49,10 +49,10 @@ def main():
             suffix = [] if index is None else ["--index", index]
             oracle_suffix = ["Decimal4"] if index is None else ["--index", "Decimal4", index]
             before = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar,
-                "docs/testing/TableDataOracle.java", args.database, *oracle_suffix)
+                "tests/access/reading/tables/TableDataOracle.java", args.database, *oracle_suffix)
             expected = changed_rows(before)
             oracle = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar,
-                "docs/testing/TableDataOracle.java", copy, *oracle_suffix)
+                "tests/access/reading/tables/TableDataOracle.java", copy, *oracle_suffix)
             actual = run(args.rows, copy, "Decimal4", *suffix)
             if actual != expected or oracle != expected:
                 raise RuntimeError("Edited exact carriers/index order differ")

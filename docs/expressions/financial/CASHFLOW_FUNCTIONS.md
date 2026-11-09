@@ -97,13 +97,13 @@ sides of zero. Scalar/bound tests cover evaluation order, shape/depth/allocation
 limits, metadata-only binding, grouping identity, correlations, reusable
 parameters, domain/aggregate composition and late failures.
 
-The original [fixture recipe](../../testing/SavedCashFlowFixture.java) stores twelve
+The original [fixture recipe](../../../tests/access/queries/saved/SavedCashFlowFixture.java) stores twelve
 inert definitions alongside the original forest's fourteen, using reviewed
-Jackcess only to construct metadata. The [comparison runner](../../testing/compare_cashflow_functions.py)
+Jackcess only to construct metadata. The [comparison runner](../../../tests/access/queries/expressions/compare_cashflow_functions.py)
 uses independent 120-digit Decimal discounting, reinvestment and bisection
 certificates; raw getters and rendered SQL remain separate from formula evaluation.
 It passes 280 controls across four original Jet 4/ACE 2007/2016/2019 files with
-unchanged bytes. See [fixture provenance](../../testing/FIXTURES.md#cashflow-query-inputs).
+unchanged bytes. See [fixture provenance](../../../tests/reports/reading/FIXTURES.md#cashflow-query-inputs).
 No SQL or formula runs in Jackcess. Microsoft Access was not run; these fixtures
 do not prove Access itself accepts Array calls in saved SQL.
 
@@ -149,7 +149,7 @@ Two evaluator tests and two query tests cover all three functions, both query
 scopes, reusable parameters/formats, validation order, strict array admission,
 shared Text limits and every observed Text-path cancellation checkpoint. CLI
 controls retain both query commands and buffered failure. The expanded original
-[financial Text runner](../../testing/compare_financial_text.py) passes 174 controls
+[financial Text runner](../../../tests/access/queries/expressions/compare_financial_text.py) passes 174 controls
 (126 source-free and 48 native integrations), including independent NPV discount,
 IRR root and MIRR endpoint examples plus the existing scalar-financial controls.
 Original four-family file hashes and bytes remain unchanged. These engineering

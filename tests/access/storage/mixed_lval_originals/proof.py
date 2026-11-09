@@ -4,8 +4,8 @@ import importlib.util
 from pathlib import Path
 import sys
 
-ROOT = Path(__file__).resolve().parents[3]
-sys.path.insert(0, str(ROOT / 'docs/testing'))
+ROOT = Path(__file__).resolve().parents[4]
+sys.path.insert(0, str(ROOT / 'tests/access'))
 from compressed_memo_observations import capture as decode
 
 RAW_MODEL = Path(__file__).with_name('raw_placement.py')

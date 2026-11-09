@@ -31,7 +31,7 @@ The execution record distinguishes source/SDK evidence, native engine tests and
 actual host saves from Microsoft Access qualification. Native Access save/reopen
 remains unrun.
 
-The [execution record](../../testing/results/ace16-normal-text-index-update-writes-2026-11-01.json)
+The [execution record](../../../tests/results/indexes/ace16-normal-text-index-update-writes-2026-11-01.json)
 records 44 native commits, recovery/forgery/resource controls, eight retained
 typed/SQL saves and four CLI saves/readbacks, including first failures and fixes.
 
@@ -44,4 +44,4 @@ DESC aliases. A new key family does not change this existing-member replacement
 into an INSERT history event. Six complete source views preceded matching
 mutation; four literal native commits and write-free committed confirmations
 pass without production changes. See the
-[execution record](../../testing/results/ace16-new-text-key-update-writes-2026-11-01.json).
+[execution record](../../../tests/results/indexes/ace16-new-text-key-update-writes-2026-11-01.json).

@@ -3,6 +3,7 @@
 Optional inputs are original HyperlinkFixture databases; Jackcess independently
 decodes their Text fields before TableCraft evaluates byte observations.
 """
+from engineering_paths import reference_file
 
 import argparse
 import csv
@@ -172,7 +173,7 @@ def main():
         assert hashlib.sha256(args.jar.read_bytes()).hexdigest() == JAR_SHA256
     for database in args.database:
         before = hashlib.sha256(database.read_bytes()).hexdigest()
-        decoded = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar, RECIPES / "TableDataOracle.java", database, "Hyperlinks")
+        decoded = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar, reference_file('tests/access/reading/tables/TableDataOracle.java'), database, "Hyperlinks")
         expected = []
         lengths = []
         slices = []

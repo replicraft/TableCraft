@@ -24,7 +24,7 @@ uses one session per complete decoded-column cache, never publishing partial dat
 
 ## Timings
 
-The [raw report](results/attachment-sessions-2026-10-23.json) records ten process
+The [raw report](../../results/reading/attachment-sessions-2026-10-23.json) records ten process
 runs and two warmups per contender, full samples, source/binary hashes and locked
 dependency versions. Both modes use matched cumulative pools. Each iteration
 validates a complete wrapper and destroys its decoded output; reused mode also
@@ -41,7 +41,7 @@ use 1,000. All payloads are authored repeated or deterministic-noise bytes.
 | 60,000 bytes / zlib repeated | 24.668 ± 0.429 | 22.538 ± 0.369 | 1.09× in this case |
 | 60,000 bytes / zlib noise | 154.970 ± 6.864 | 151.268 ± 0.567 | Unresolved within variation |
 
-The original [overlapping run](results/attachment-sessions-excluded-2026-10-23.json)
+The original [overlapping run](../../results/reading/attachment-sessions-excluded-2026-10-23.json)
 ran alongside Cargo/Clippy and reference/native comparisons. Its complete raw
 results are preserved and explicitly excluded. The accepted pass ran after those
 agent jobs completed. Stored/noise controls and variation remain visible; no
@@ -49,7 +49,7 @@ universal speedup or allocator/RSS conclusion follows from these measurements.
 
 ```sh
 cargo bench -p tablecraft-ace --bench attachments --no-run --locked --offline
-python3 docs/testing/benchmark_attachment_sessions.py \
+python3 tests/run.py tests/access/reading/tables/benchmark_attachment_sessions.py \
   --binary target/release/deps/attachments-BUILD_HASH \
   --output /tmp/attachment-sessions.json
 ```

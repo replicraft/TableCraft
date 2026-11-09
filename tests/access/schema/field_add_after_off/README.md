@@ -1,7 +1,7 @@
 # Field ADD after explicit Name AutoCorrect OFF
 
 Four fresh-copy SDK saves match four complete raw predictions frozen before any
-SDK mutation. The [Nov 9 observation record](../results/field-add-after-off-sdk-2026-11-09.json)
+SDK mutation. The [Nov 9 observation record](../../../results/schema/field-add-after-off-sdk-2026-11-09.json)
 retains source/prediction/helper hashes, raw field and ROW observations, unchanged
 regions and read-only property results. Both Number and compressed Short Text ADD
 work on the two independently pinned OFF-after-ADD sources.
@@ -45,12 +45,12 @@ not edit the maintained files or use the SDK/production engine as an encoder.
 [prepare.py](prepare.py) freezes complete predictions and source/helper hashes.
 [run.py](run.py) verifies those hashes before each explicit SDK mutation and uses
 only the unchanged first-party
-[Number](../CreatedNumberColumnOracle.java) and
-[Short Text](../short_text_add/CreatedShortTextColumnOracle.java) Java writers.
+[Number](../fields/CreatedNumberColumnOracle.java) and
+[Short Text](../../rows/short_text_add/CreatedShortTextColumnOracle.java) Java writers.
 [AfterOffProperties.java](AfterOffProperties.java) adds a read-only declaration/OFF
 check. Every SDK open immediately disables expression evaluation. Sources are
 copies of the retained, independently pinned
-[OFF-after-ADD outputs](../results/nac-after-field-add-sdk-2026-11-08.json).
+[OFF-after-ADD outputs](../../../results/schema/nac-after-field-add-sdk-2026-11-08.json).
 
 The previously reviewed Apache-2.0 Jackcess 5.0.4 JAR keeps SHA-256
 `19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`.
@@ -67,8 +67,8 @@ From the repository root, with a directory containing the pinned source files
 `number-first.accdb` and `text-number-text.accdb`:
 
 ```sh
-python3 docs/testing/field_add_after_off/prepare.py --sources-dir SOURCES --output-dir FRESH_OUTPUT
-python3 docs/testing/field_add_after_off/run.py --sources-dir SOURCES --output-dir FRESH_OUTPUT --jar JACKCESS_JAR --java-bin JDK_BIN
+python3 tests/run.py tests/access/schema/field_add_after_off/prepare.py --sources-dir SOURCES --output-dir FRESH_OUTPUT
+python3 tests/run.py tests/access/schema/field_add_after_off/run.py --sources-dir SOURCES --output-dir FRESH_OUTPUT --jar JACKCESS_JAR --java-bin JDK_BIN
 ```
 
 A reproduction must use fresh output paths; it does not overwrite prior evidence.

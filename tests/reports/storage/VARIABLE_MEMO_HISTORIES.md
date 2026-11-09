@@ -1,6 +1,6 @@
 # Wide-variable and Memo history replay
 
-The [accepted replay](results/variable-memo-histories-2026-10-24.json) passes
+The [accepted replay](../../results/storage/variable-memo-histories-2026-10-24.json) passes
 16 controls and 33,422 exact getter-modeled result cells over two original
 ACE16-family V2016/V2019 files. All 13 pinned executable, JAR, recipe, getter,
 input and manifest hashes remain unchanged. Every entry in the 1,862-file Rust
@@ -14,7 +14,7 @@ compatibility claim.
 
 ## Original history and independent getter
 
-[VariableMemoHistoryFixture.java](VariableMemoHistoryFixture.java) creates fresh
+[VariableMemoHistoryFixture.java](../../access/storage/native/VariableMemoHistoryFixture.java) creates fresh
 files through public Jackcess ordinary table/column builders, with expression
 evaluation disabled. It starts with ID plus 16 variable fields, grows to 127,
 128 and 254 variable fields, and adds eight rows at every stage. Nine variable
@@ -52,7 +52,7 @@ patched binary, authors every qualifying layout.
 
 ## Comparison and resource boundaries
 
-[compare_variable_memo_histories.py](compare_variable_memo_histories.py) compares
+[compare_variable_memo_histories.py](../../access/storage/native/compare_variable_memo_histories.py) compares
 all 255 columns and a six-column early/boundary/tail projection through both
 sequential and explicit PrimaryKey reads. Aggregates check count, historical
 late-field presence, UTF16 Len and middle-field NULLs. A late-field NULL filter
@@ -100,7 +100,7 @@ Repeat for V2019, capture each getter as `.accdb.getters.tsv` /
 binary hashes; the accepted report pins actual produced files.
 
 ```sh
-python3 docs/testing/compare_variable_memo_histories.py \
+python3 tests/run.py tests/access/storage/native/compare_variable_memo_histories.py \
   --cli .cache/tablecraft-bin/array-bound-declaration-cli-20261024 \
   --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar \
   --directory .cache/tablecraft-fixtures/variable-memo-histories-20261024 \

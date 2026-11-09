@@ -56,7 +56,7 @@ completion confirmation is write-free. Pending rollback may rewrite BEFORE.
 
 ## Observed evidence
 
-The [four source views](../../testing/ACE16_RETAINED_BINARY_ID_UPDATE_SOURCES.md)
+The [four source views](../../../tests/reports/storage/ACE16_RETAINED_BINARY_ID_UPDATE_SOURCES.md)
 and 32 qualified inert reader observations preceded matching writes. Six distinct
 contexts cover changed, equal and named-empty requests for two headers; no extra
 reverse single-row case or duplicate image is added.
@@ -78,7 +78,7 @@ guard and old host/CLI suites pass. The independently qualified Id positives
 replace that former boundary. No producer correction or expected-image retuning
 was needed; historical source and result records remain unchanged.
 
-See the [write result](../../testing/results/ace16-retained-binary-id-updates-2026-11-02.json)
+See the [write result](../../../tests/results/storage/ace16-retained-binary-id-updates-2026-11-02.json)
 for pinned receipts. These are portable TableCraft save and independent-reader
 observations. Microsoft Access save/reopen and Windows mixed-client behavior
 remain unrun; full ACE 16 compatibility is not established by this slice.

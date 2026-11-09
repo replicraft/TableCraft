@@ -32,7 +32,7 @@ and checks both tables, all six aliases, counters, constraints and fresh Source.
 The first strict check found a range-loop lint in the test replay. Enumerating
 the same roots in the same order resolved it without changing expected bytes;
 the affected native gate and strict checks then passed. See the
-[acceptance record](results/ace16-wide-sibling-after-sources-2026-11-02.json).
+[acceptance record](../../results/general/ace16-wide-sibling-after-sources-2026-11-02.json).
 
 Actual mutation admission, commits, recovery, resource limits and typed/SQL/CLI
 saves remain separate work. Independent readers do not establish native Microsoft

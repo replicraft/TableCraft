@@ -370,7 +370,7 @@ case. This engineering command adds no fallback, in-place editing, normal-save
 or required-macro authority.
 
 See [the exact SQL engineering contract](../access/writes/SQL_ENGINEERING_COPIES.md#explicit-secondary-index-creation)
-and [native index creation](../testing/ACE16_SECONDARY_INDEX_CREATION.md).
+and [native index creation](../../tests/reports/creation/ACE16_SECONDARY_INDEX_CREATION.md).
 
 ## Required durable output
 

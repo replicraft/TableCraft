@@ -26,7 +26,7 @@ def main():
             ("GuidEmpty", "EmptyGuid", ("Value",), 0),
         ):
             cursor = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar,
-                "docs/testing/IndexRowsOracle.java", path, table, index, *columns)
+                "tests/access/indexes/native/IndexRowsOracle.java", path, table, index, *columns)
             lines = []
             for line in cursor.splitlines():
                 cells = line.split("\t")

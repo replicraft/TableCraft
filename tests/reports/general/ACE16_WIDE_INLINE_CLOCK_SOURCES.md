@@ -24,7 +24,7 @@ their original live pins. It does not regenerate expectations or relax an input
 hash. Date/Now declarations were inspected as inert metadata, not evaluated by
 Access.
 
-See the [execution record](results/ace16-wide-inline-clock-source-gates-2026-11-01.json)
+See the [execution record](../../results/general/ace16-wide-inline-clock-source-gates-2026-11-01.json)
 for hashes and exact native commands. These checks establish readable sources
 and current Source admission, not completed mutation support, arbitrary schema
 compatibility or native Microsoft Access save/reopen qualification.

@@ -1,6 +1,6 @@
 # Saved-table catalog tombstone observations
 
-The [35-image record](results/table-drop-catalog-observations-2026-11-09.json)
+The [35-image record](../../results/reading/table-drop-catalog-observations-2026-11-09.json)
 compares independently authored first-party raw AFTER images with public Jackcess
 5.2.0 system-catalog row deletion. Separate experiments execute full UCanAccess
 5.2.0 SQL `DROP TABLE` under two native cursor preconditions. No Microsoft Access
@@ -59,7 +59,7 @@ the raw catalog model. No Access comparison, required-program execution, general
 allocation reclamation or multi-table behavior follows from these experiments.
 
 First-party raw builders live in
-[`canonical_table_drop.rs`](../../crates/engineering/tablecraft-testkit/src/fixtures/access/canonical_table_drop.rs).
+[`canonical_table_drop.rs`](../../../crates/engineering/tablecraft-testkit/src/fixtures/access/canonical_table_drop.rs).
 Expected bytes never come from the production mutation engine. SDK jars and source
 archives remain ignored reference artifacts with retained hashes/license review;
 no third-party code or database fixture was copied into the repository. The record

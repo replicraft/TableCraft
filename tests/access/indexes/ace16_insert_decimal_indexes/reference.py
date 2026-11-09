@@ -4,8 +4,8 @@ import sys
 from uuid import UUID
 from decimal import Decimal
 
-ROOT = Path(__file__).resolve().parents[3]
-sys.path.insert(0, str(ROOT / 'docs/testing'))
+ROOT = Path(__file__).resolve().parents[4]
+sys.path.insert(0, str(ROOT / 'tests/access'))
 from slot_preview_originals import facts
 from ace16_insert_candidates import model as wire
 import delete_reference_maps as maps_probe

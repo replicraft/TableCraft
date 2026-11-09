@@ -108,4 +108,4 @@ production. The independently authored model reads those supplied files; the
 runtime uses the existing licensed `encoding_rs` dependency.
 
 The scoped library/query check record is
-[recorded separately](../../testing/results/read-query-japanese-string-encoding-2026-10-25.json).
+[recorded separately](../../../tests/results/queries/read-query-japanese-string-encoding-2026-10-25.json).

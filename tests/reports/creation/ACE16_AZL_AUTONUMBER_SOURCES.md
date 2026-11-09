@@ -1,7 +1,7 @@
 # Explicit field-policy sources
 
 Two source-only families now pass native read checks before matching write work.
-The [execution record](results/ace16-azl-autonumber-sources-2026-11-01.json) keeps
+The [execution record](../../results/creation/ace16-azl-autonumber-sources-2026-11-01.json) keeps
 the initial failures, immutable successors and independent reader evidence.
 
 The AllowZeroLength family crosses both General index versions with explicitly

@@ -3,11 +3,14 @@ import csv
 import importlib.util
 import io
 from pathlib import Path
+from engineering_paths import configure_imports
+
+configure_imports(__file__)
 import subprocess
 import sys
 import unittest
 
-RECIPES = Path(__file__).resolve().parents[1] / "docs/testing"
+RECIPES = Path(__file__).resolve().parents[1] / "tests/access/queries/expressions"
 sys.path.insert(0, str(RECIPES))
 import replay_native_text as replay
 

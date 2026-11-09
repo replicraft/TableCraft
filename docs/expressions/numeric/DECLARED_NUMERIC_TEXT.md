@@ -62,14 +62,14 @@ relational operators, composed predicates, reusable parameters, eager failures,
 every observed conversion cancellation checkpoint and zero-byte allocation
 refusal. Strict expression/host linting, independent minimal-feature expression
 and query checks, and formatting pass. See the
-[baseline audit and current verification](../../testing/results/declared-numeric-text-baseline-audit-2026-10-25.json).
+[baseline audit and current verification](../../../tests/results/indexes/declared-numeric-text-baseline-audit-2026-10-25.json).
 
 The initial minimal-feature test filter selected zero tests because evaluation
 requires the SQL feature; it is not counted as test coverage. The initial CLI
 precision control used an untyped large literal that had already rounded under
 literal preparation; the final control uses exact Text-to-LongLong conversion.
 No product result was adjusted to make that assertion pass. The independent
-[source-free/native replay](../../testing/DECLARED_NUMERIC_TEXT_REPLAY.md) now passes
+[source-free/native replay](../../../tests/reports/indexes/DECLARED_NUMERIC_TEXT_REPLAY.md) now passes
 128 controls comparing 2,592 Boolean/NULL cells and 32 buffered overflow failures
 with all originals and artifact/source pins unchanged. Native Access execution
 remains separate evidence work.

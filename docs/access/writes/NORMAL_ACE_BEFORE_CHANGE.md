@@ -58,7 +58,7 @@ before checking exact ROW/child trailers, retained node bounds and final keys.
 All-NULL keys retain their physical ROW suffixes; partial-NULL tuples retain
 their non-NULL identity. The authored all-NULL unique pair is a read hypothesis,
 not native Access uniqueness or save qualification. See the
-[frozen source contract](../../testing/ACE16_NULLABLE_KEY_BEFORE_CHANGE_SOURCES.md).
+[frozen source contract](../../../tests/reports/indexes/ACE16_NULLABLE_KEY_BEFORE_CHANGE_SOURCES.md).
 
 Non-Int32 field operands refuse. Changed fields must remain outside calculation/
 collection dependencies and have present original/final Int32 values. Native
@@ -142,12 +142,12 @@ it obtains no caller-selected programs or final-row authority.
 
 ## Evidence and limits
 
-[Original sources and independently read modeled outcomes](../../testing/ACE16_NORMAL_BEFORE_CHANGE_SOURCES.md)
+[Original sources and independently read modeled outcomes](../../../tests/reports/schema/ACE16_NORMAL_BEFORE_CHANGE_SOURCES.md)
 were frozen before normal writer calls. Ten admitted complete images pass both
 native planning and real offline SQL session commits. Native tests additionally
 exercise framing states, restart, intent/image tampering, resource exhaustion
 and cancellation. Separate direct-proof tests reject mutations outside permitted
-payloads. The [execution record](../../testing/results/ace16-normal-before-change-2026-10-31.json)
+payloads. The [execution record](../../../tests/results/general/ace16-normal-before-change-2026-10-31.json)
 separates those checks from retained legacy regressions.
 
 These are bounded engineering results. Read-only independent SDK inventories do
@@ -155,7 +155,7 @@ not execute the programs or establish Access event timing. Native Access
 execution/save/reopen, power-loss behavior, encrypted editing and broader normal
 ACE UPDATE/INSERT/DELETE remain unqualified or unfinished.
 
-The [indexed execution record](../../testing/results/ace16-normal-indexed-before-change-2026-10-31.json)
+The [indexed execution record](../../../tests/results/indexes/ace16-normal-indexed-before-change-2026-10-31.json)
 adds eighteen in-memory journal commits, four independently qualified tie images,
 32 typed/SQL offline saves and sixteen complete CLI saves. Direct proof checks
 cover index-only forgery, original ownership contradictions and final alias
@@ -163,7 +163,7 @@ constraints. A generated signed-tuple ordering law independently checks the key
 wire across numeric directions. Existing unindexed and Jet 4 regressions pass;
 the retained final lint failure was disk exhaustion, followed by a passing retry.
 
-The [retained-tree execution record](../../testing/results/ace16-normal-tree-before-change-2026-10-31.json)
+The [retained-tree execution record](../../../tests/results/indexes/ace16-normal-tree-before-change-2026-10-31.json)
 adds eighteen complete tree/prefix images through native commits and recovery,
 36 typed/SQL full-image saves and eighteen matching CLI files. Same-lease
 continuation tests rebind Old and row handles across successive saves. Separate
@@ -182,7 +182,7 @@ layout. Read-only source comparisons do not establish Access event timing.
 
 ### Mixed-schema continuation
 
-The [frozen mixed sources](../../testing/ACE16_MIXED_BEFORE_CHANGE_SOURCES.md)
+The [frozen mixed sources](../../../tests/reports/schema/ACE16_MIXED_BEFORE_CHANGE_SOURCES.md)
 provide sixteen complete ordinary outcomes and two separately observed rich
 projection outcomes. Seven native/journal tests and four direct independent-proof
 tests pass. Offline sessions pass sixteen typed and twelve SQL complete-image
@@ -194,13 +194,13 @@ observations. Twelve CLI commits and twelve complete TSV readbacks also pass on 
 ordinary variable/counter sources. General mixed writes and native Access
 qualification remain open.
 
-The [mixed execution record](../../testing/results/ace16-normal-mixed-before-change-2026-10-31.json)
+The [mixed execution record](../../../tests/results/general/ace16-normal-mixed-before-change-2026-10-31.json)
 retains feature-boundary compilation corrections separately from first passing
 native/session outcomes and exact CLI/save/readback qualification.
 
 ### Indexed mixed-schema continuation
 
-The [indexed mixed sources](../../testing/ACE16_INDEXED_MIXED_BEFORE_CHANGE_SOURCES.md)
+The [indexed mixed sources](../../../tests/reports/indexes/ACE16_INDEXED_MIXED_BEFORE_CHANGE_SOURCES.md)
 freeze twelve complete outcomes before producer execution. Six native/journal
 and four independent proof tests pass; real typed/SQL sessions match all twenty-
 four saves. Twelve complete CLI saves and twelve exact TSV readbacks also pass.
@@ -211,7 +211,7 @@ NULL row, inactive payload and complete old index; indexed Id updates refuse.
 The existing TCNI0002 recovery route rederives the same selection from BEFORE.
 Native Access comparisons remain unrun.
 
-The [indexed mixed execution record](../../testing/results/ace16-normal-indexed-mixed-before-change-2026-10-31.json)
+The [indexed mixed execution record](../../../tests/results/indexes/ace16-normal-indexed-mixed-before-change-2026-10-31.json)
 separates source qualification, initial positive saves, the reproduced nullable
 routing regression and its retained compatibility controls from native Access
 qualification.

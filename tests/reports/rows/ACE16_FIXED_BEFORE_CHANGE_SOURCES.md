@@ -40,7 +40,7 @@ retain inactive NULL payloads and distinguish DATE signed zero and fractional
 aliases from their calendar rendering. No Java compilation was needed. The
 saved-only verifier passes without launching children. Source, image, class and
 request pins remain exact; see the
-[execution record](results/ace16-fixed-before-change-sources-2026-10-31.json).
+[execution record](../../results/rows/ace16-fixed-before-change-sources-2026-10-31.json).
 
 These are typed ordinal witnesses. The two original SignedZero rows cannot be
 uniquely selected by the supported SQL equality profile. SQL saves need separate
@@ -66,5 +66,5 @@ predecessor requires Score present. That predecessor boundary is a static
 contract, not a reported execution failure. The successor validates actual SDK
 NULL presence and prints complete raw rows so inactive payloads stay observable.
 The saved-only verifier passes without launching children. See the
-[companion record](results/ace16-nullable-fixed-int32-sources-2026-10-31.json).
+[companion record](../../results/rows/ace16-nullable-fixed-int32-sources-2026-10-31.json).
 These observations still supply no normal save authority or native event evidence.

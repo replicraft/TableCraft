@@ -4,6 +4,7 @@ Every backend path is a host argument. Stored Database strings only pin metadata
 the oracle refuses link traversal and never executes SQL or imported content.
 Controlled catalog copies are refusal/authority checks, not native writer evidence.
 """
+from engineering_paths import reference_file
 
 import argparse
 import base64
@@ -15,8 +16,8 @@ from pathlib import Path
 import struct
 import subprocess
 
-ROOT = Path(__file__).resolve().parents[2]
-RECIPES = ROOT / "docs/testing"
+ROOT = Path(__file__).resolve().parents[4]
+RECIPES = ROOT / "tests/access"
 PROFILES = ("V2000", "V2007", "V2016", "V2019", "Mixed")
 JACKCESS_SHA256 = "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc"
 
@@ -34,7 +35,7 @@ def execute(*arguments):
 
 def java(jar, source, *arguments):
     return execute("java", "-Dstdout.encoding=UTF-8", "-cp", jar,
-                   RECIPES / source, *arguments)
+                   reference_file(source), *arguments)
 
 
 def value(tag):
@@ -191,7 +192,7 @@ def main():
     assert digest(args.jar) == JACKCESS_SHA256
     paths = {
         args.jar, args.reader, Path(__file__),
-        RECIPES / "LinkedQueryFixture.java", RECIPES / "LinkedQueryOracle.java",
+        reference_file('tests/access/queries/execution/LinkedQueryFixture.java'), reference_file('tests/access/queries/execution/LinkedQueryOracle.java'),
         ROOT / "crates/backends/tablecraft-access/examples/linked_query.rs",
         *[ROOT / "crates/backends/tablecraft-access/src/source" / path for path in (
             "handle.rs", "links/mod.rs", "links/mapping.rs", "links/forwarding.rs",

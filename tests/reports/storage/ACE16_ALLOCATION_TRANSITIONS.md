@@ -4,7 +4,7 @@ The existing feature-gated
 `NativeImage::preview_ace16_variable_split_updates` now supports qualified
 ordinary candidate-map and index-owned-map inline window changes. It still
 returns a separate non-journalable engineering candidate. No normal CLI/backend
-save path is enabled. The [combined service contract](ACE16_VARIABLE_INDEX_SPLITS.md)
+save path is enabled. The [combined service contract](../indexes/ACE16_VARIABLE_INDEX_SPLITS.md)
 and its existing field, index, constraint and active-content restrictions apply.
 
 ## Allocation policy
@@ -54,7 +54,7 @@ The composer requires exactly one typed object for each appended page.
 
 ## Verification
 
-The [scoped result](results/ace16-allocation-transitions-native-2026-10-27.json)
+The [scoped result](../../results/storage/ace16-allocation-transitions-native-2026-10-27.json)
 records checks and retained initial compiler/lint diagnostics. Fifteen new test
 functions cover framing, canonical authority, complete-record composition,
 reservation identity, bitmap bounds, strict boundaries and complete candidate
@@ -74,15 +74,15 @@ reservations. Whole-record controls retain shared global bytes and reject stale
 before bytes, invalid ranges, exhausted resources and cancellation without a
 partially rewritten ledger.
 
-The [four enlarged source copies](ORDINARY_HINT_GROWTH_SOURCE_OBSERVATIONS.md)
-are separate preparation evidence. The [twelve public-writer cases](ORDINARY_HINT_UPDATE_OBSERVATIONS.md)
-and [twelve committed-consumer candidates](ORDINARY_HINT_CANDIDATE_OBSERVATIONS.md)
+The [four enlarged source copies](../indexes/ORDINARY_HINT_GROWTH_SOURCE_OBSERVATIONS.md)
+are separate preparation evidence. The [twelve public-writer cases](../indexes/ORDINARY_HINT_UPDATE_OBSERVATIONS.md)
+and [twelve committed-consumer candidates](../indexes/ORDINARY_HINT_CANDIDATE_OBSERVATIONS.md)
 now pass in separate phases. Every native image matches its independent byte
 model before a fresh getter; all 24 native/getter commands pass first attempt.
 Native Microsoft Access comparison, required data-macro qualification and
 production saves remain unfinished.
 
-The [isolated consumer build](results/ace16-hint-transition-example-build-2026-10-27.json)
+The [isolated consumer build](../../results/indexes/ace16-hint-transition-example-build-2026-10-27.json)
 compiles committed `69443c6a` into a separate frozen example. Its complete export
 contains 4,217 Git-verified files; all remain unchanged after compilation, with
 295 selected source pins recorded separately. The first offline dev build passes

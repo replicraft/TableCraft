@@ -2,6 +2,7 @@
 
 Only TableCraft parses SQL. Neither reader executes saved queries or VBA.
 """
+from engineering_paths import reference_file
 import argparse
 import hashlib
 from pathlib import Path
@@ -34,7 +35,7 @@ def main():
 
     report = run(
         "java", "-Dstdout.encoding=UTF-8", "-cp", args.jar,
-        RECIPES / "SavedParameterOracle.java", args.database,
+        reference_file('tests/access/queries/saved/SavedParameterOracle.java'), args.database,
     )
     if report.returncode:
         raise RuntimeError("Independent parameter getter failed: " + report.stderr)

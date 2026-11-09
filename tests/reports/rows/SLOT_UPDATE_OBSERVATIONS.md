@@ -6,17 +6,17 @@ observations are **150 successful calls and 12 refusals**; two successful FEFF
 writes reopen to a different value than requested. This is not full public-action
 parity or native Access qualification.
 
-The [reference receipt](results/ace16-slot-original-references-2026-10-26.json)
-and [candidate receipt](results/ace16-slot-original-candidates-2026-10-26.json)
+The [reference receipt](../../results/general/ace16-slot-original-references-2026-10-26.json)
+and [candidate receipt](../../results/general/ace16-slot-original-candidates-2026-10-26.json)
 pin the actual originals, fixed selectors, sources, commands, getters, reference
 copies and 124 candidate images. The
-[core profile](ACE16_WRITE_PREVIEWS.md#existing-width-short-text-and-binary-slots)
-and [consumer](SLOT_PREVIEW_CONSUMER.md) remain engineering-only and do not enable
+[core profile](../development/ACE16_WRITE_PREVIEWS.md#existing-width-short-text-and-binary-slots)
+and [consumer](../development/SLOT_PREVIEW_CONSUMER.md) remain engineering-only and do not enable
 normal saves, record resizing, data macros or journals.
 
 ## Fresh independent originals
 
-Repository-owned [SlotUpdateFixture.java](SlotUpdateFixture.java) uses the reviewed
+Repository-owned [SlotUpdateFixture.java](../../access/queries/expressions/SlotUpdateFixture.java) uses the reviewed
 Jackcess 5.0.4 JAR and its public builders. Expressions are disabled, foreign-key
 enforcement is enabled, UTC is explicit and linked opens throw. The Java producer
 is byte-identical to the source used for the actual captures; no third-party code
@@ -83,7 +83,7 @@ No case, budget, selector or expected outcome changes after execution.
 
 The frozen consumer is built from committed
 `59c87310ad4d25fa182336640a85477f5075455c`:
-[build receipt](results/ace16-slot-example-build-2026-10-26.json).
+[build receipt](../../results/general/ace16-slot-example-build-2026-10-26.json).
 Its SHA-256 is `ba3b1f5f80c0274d0145006e22ae60a1fc8b7b051576ae651e7a853da36e285b`.
 The 75 selected build-source pins are Git-verified; they are not an exhaustive
 compiler-input inventory. Candidate execution is first-attempt, 162/162 model
@@ -132,7 +132,7 @@ reuse existing bytes and do not run these generation commands.
 For read-only capture using existing registered originals:
 
 ```sh
-python3 docs/testing/slot_preview_originals/capture.py \
+python3 tests/run.py tests/access/shared/slot_preview_originals/capture.py \
   --original V2016 .cache/ace16-slot-originals-next-20261026/Slot-V2016-before.accdb \
   --original V2019 .cache/ace16-slot-originals-next-20261026/Slot-V2019-before.accdb \
   --jar .cache/tablecraft-fixtures/jackcess-5.0.4.jar \
@@ -146,7 +146,7 @@ accepted inputs and captures are never regenerated or overwritten. Adding explic
 a model plan for that new run. That reproduction branch is distinct from the
 historical private capture and the executed read-only wrapper check.
 
-Use `python3 docs/testing/slot_preview_originals/replay.py --help` for required
+Use `python3 tests/run.py tests/access/shared/slot_preview_originals/replay.py --help` for required
 artifact hash/revision/build receipt, original preparation/facts, both reference
 reports, fixed plan/hash, helper classpath, JAR and fresh work/report arguments.
 `--verify-existing REPORT` performs read-only proof verification; omitting it
@@ -195,12 +195,12 @@ same preservation checks. The supplement records 66 commands: 26 public actions,
 eight final reference getters, 16 native calls and 16 candidate getters. Inputs,
 tools and the original 162 plan/reports remain unchanged.
 
-The [separate receipt](results/ace16-slot-batch-originals-2026-10-26.json) pins the
+The [separate receipt](../../results/general/ace16-slot-batch-originals-2026-10-26.json) pins the
 pre-call plan (`99ceb013e5c3de1ea87d5bd349b1d02e0679869cffc4fb237bfffe0e2c34021d`),
 actual private execution sources, requests, stages, getters and outputs.
-The parameterized [recipe/proof](slot_preview_originals/batch.py) reproduces the
+The parameterized [recipe/proof](../../access/rows/slot_preview_originals/batch.py) reproduces the
 same eight scenario definitions. The
-[batch runner](slot_preview_originals/batch_replay.py) accepts explicit plan/hash,
+[batch runner](../../access/rows/slot_preview_originals/batch_replay.py) accepts explicit plan/hash,
 preparation, frozen artifact/build receipt, JAR/classes and fresh work/report
 paths. Its `--verify-existing` mode is checked against these existing images;
 no historical native or public action is reissued by that check. As with the

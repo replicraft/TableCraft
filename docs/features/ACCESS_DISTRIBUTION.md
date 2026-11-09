@@ -163,7 +163,7 @@ This is documented upstream behavior, not observed TableCraft compatibility.
 Compare signed/unsigned originals and edited copies in native Access, including
 signature invalidation, compiled-project preservation and package extraction.
 Use explicit skips for absent signer/oracle environments; no re-signing or native
-distribution tests have run. See the [application corpus](../testing/ACCESS_APPLICATIONS.md).
+distribution tests have run. See the [application corpus](../../tests/reports/reading/ACCESS_APPLICATIONS.md).
 
 ## References
 

@@ -5,7 +5,7 @@ python3 -B docs/testing/ace16_insert_child_split/verify.py
 python3 -B docs/testing/ace16_insert_child_split/verify.py --verify-git
 ```
 
-The [result receipt](../results/ace16-insert-child-splits-native-2026-10-27.json)
+The [result receipt](../../../results/indexes/ace16-insert-child-splits-native-2026-10-27.json)
 records the actual reference25, first producer4 and separate first fresh getter8
 phases. All four native candidates matched their pre-frozen complete images;
 all eight fresh read-only calls matched the saved semantic getter/map streams.

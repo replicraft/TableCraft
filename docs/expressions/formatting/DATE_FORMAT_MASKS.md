@@ -98,7 +98,7 @@ cover conversion, aggregate/correlated/grouping dependencies, reusable parameter
 and week/year policies, eager errors and every observed cancellation checkpoint. Two
 CLI controls exercise both commands and empty stdout on refusal.
 
-The original [independent runner](../../testing/compare_format_dates.py) passes 13020
+The original [independent runner](../../../tests/access/queries/expressions/compare_format_dates.py) passes 13020
 calendar/week/refusal/native-field controls. Python calendar/components and the
 existing enumerated-week model supply expectations. Four original ScalarFixture
 files supply ordinary stored DATE and NULL values through reviewed Jackcess
@@ -146,4 +146,4 @@ calendar or display provider.
 
 Six new expression/query tests and twenty-nine selected regressions pass, along
 with focused strict lint and standalone minimal expression checks. See the
-[verification record](../../testing/results/format-serial-sections-2026-10-25.json).
+[verification record](../../../tests/results/reading/format-serial-sections-2026-10-25.json).

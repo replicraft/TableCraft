@@ -113,7 +113,7 @@ skip data macros, constraints, preservation or native save qualification.
 Six feature tests, including generated final-update models, cover successful
 renames/base declarations/UUIDs/deletions, mismatched and ambiguous schemas,
 unknown calls/default-dependent fields, metadata-only binding, shared limits and
-every observed cancellation checkpoint. The original [Python SOAP/XSD runner](../../testing/compare_template_lists.py)
+every observed cancellation checkpoint. The original [Python SOAP/XSD runner](../../../tests/access/reading/tables/compare_template_lists.py)
 passes 36 CLI/query controls over stored/deflated original packages and all eight
 previously supported declared field types. Existing typed-template and package runners retain
 their 48 and 30 controls. Only TableCraft executes SQL; no SOAP server or application
@@ -142,7 +142,7 @@ navigation strings, retained storage overrides, metadata-only refusals, named
 String/nullable/length agreement, cumulative work and every observed option
 cancellation checkpoint. The first focused test and lint runs passed without
 corrections. Commands and source/log hashes are in the
-[scoped verification record](../../testing/results/read-query-template-choice-2026-10-25.json).
+[scoped verification record](../../../tests/results/queries/read-query-template-choice-2026-10-25.json).
 These checks do not establish native Access or SharePoint runtime behavior.
 
 Choice storage and field properties follow the [Microsoft Field reference](https://learn.microsoft.com/en-us/sharepoint/dev/schema/field-element-list)

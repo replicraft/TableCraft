@@ -28,7 +28,7 @@ def main():
             ("MixedUniqueChildren", 3, "UniqueMixedKeys"),
         ]:
             expected = run("java", "-Dstdout.encoding=UTF-8", "-cp", args.jar,
-                "docs/testing/TableDataOracle.java", path, table)
+                "tests/access/reading/tables/TableDataOracle.java", path, table)
             actual = run(args.rows, path, table)
             assert actual == expected, table
             tagged += actual
