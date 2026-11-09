@@ -1,4 +1,5 @@
 //! The same public Number service consumes selected TCAC4 and existing witnesses.
+mod capacity;
 use super::{
     Command, Response, SaveOutcome, SaveSchemaChange, SaveWorker, opened, raw, request, review,
     terminal,
