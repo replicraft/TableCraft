@@ -214,9 +214,7 @@ impl State {
         );
         egui::CollapsingHeader::new(tr(ui, "backstage-font-license")).show(ui, |ui| {
             ScrollArea::vertical().max_height(260.0).show(ui, |ui| {
-                ui.label(include_str!(
-                    "../../../../../assets/fonts/OFL-Selawik.txt"
-                ));
+                ui.label(include_str!("../../../../../assets/fonts/OFL-Selawik.txt"));
             });
         });
         ui.add_space(12.0);

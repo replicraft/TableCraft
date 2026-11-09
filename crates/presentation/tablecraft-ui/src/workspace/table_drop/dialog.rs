@@ -295,10 +295,8 @@ impl State {
             ui.label(tr(ui, "table-drop-refresh-required"));
             details = ui.button(tr(ui, "table-drop-details")).clicked();
         });
-        if details {
-            if let Some(session) = self.table_drop.session.as_mut() {
-                session.visible = true;
-            }
+        if details && let Some(session) = self.table_drop.session.as_mut() {
+            session.visible = true;
         }
     }
 }

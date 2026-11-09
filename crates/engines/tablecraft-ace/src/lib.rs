@@ -302,11 +302,11 @@ pub use transaction::{
 };
 
 #[cfg(feature = "journal")]
-pub use table::{NativeTableRenameIdentity, NativeTableRenamePlan, TableRenameError};
-#[cfg(feature = "journal")]
 pub use table::{
     NativeTableDropIdentity, NativeTableDropInspection, NativeTableDropPlan, TableDropError,
 };
+#[cfg(feature = "journal")]
+pub use table::{NativeTableRenameIdentity, NativeTableRenamePlan, TableRenameError};
 
 #[cfg(all(feature = "journal", feature = "ace16-create"))]
 pub use transaction::{

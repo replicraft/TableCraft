@@ -1,6 +1,7 @@
 //! Hosts without native filesystem editing cannot issue a table DROP capability.
 use crate::{
-    Error, Response, document::Document,
+    Error, Response,
+    document::Document,
     editing::{EditError, TableDroppedReopen},
 };
 use std::sync::Arc;
