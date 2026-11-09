@@ -5,7 +5,7 @@ use super::{
     properties,
 };
 use crate::{
-    InspectError, NativeImage, PropertyGroupKind,
+    EditError, InspectError, NativeImage, PropertyGroupKind,
     creation::{catalog_page::Page, record::DATABASE_SYSTEM_FLAGS},
     format::{
         bytes::u16_at,
@@ -180,7 +180,11 @@ pub(super) fn candidate(
     }
     // The database role and its observed body are distinct from the catalog
     // column's ownership. Bind its actual descriptor to the produced row too.
-    let ledger = ledger::capture(after, &native, budget, cancelled)?;
+    let ledger =
+        ledger::capture(after, &native, budget, cancelled).map_err(|error| match error {
+            EditError::Inspect(error) => DatabaseOptionsError::Inspect(error),
+            _ => DatabaseOptionsError::Preservation,
+        })?;
     if !ledger.sole_single(
         db.object_id(),
         reference(new_page, 0),

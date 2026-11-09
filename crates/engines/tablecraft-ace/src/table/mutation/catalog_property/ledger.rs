@@ -16,8 +16,7 @@ use crate::{
     },
 };
 use std::io::Cursor;
-use tablecraft_core::limits::ResourceBudget;
-use tablecraft_model::ObjectId;
+use tablecraft_core::{ids::ObjectId, limits::ResourceBudget};
 
 struct Live<'a> {
     origin: &'a NativeObjectOrigin,
