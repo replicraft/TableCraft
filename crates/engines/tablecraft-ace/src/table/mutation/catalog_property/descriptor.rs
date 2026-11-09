@@ -70,6 +70,8 @@ impl Descriptor {
     fn bytes(&self) -> &[u8] {
         match &self.range {
             None => &[],
+            // Return a borrowed descriptor slice without moving its range out of the descriptor
+            // owner. Only range bounds are copied, not the payload.
             Some(range) => &self.record.data[range.clone()],
         }
     }

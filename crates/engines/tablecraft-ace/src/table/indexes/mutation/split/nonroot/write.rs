@@ -147,6 +147,8 @@ fn serialize<P: RetainedProfile, const N: usize>(
     let (entries, tail) = match &node.contents {
         Contents::Leaf(range) => (
             leaf_entries(
+                // Read leaf entries from a borrowed normalized node without changing its
+                // retained membership. Only range bounds are copied, not the payload.
                 &operation.keys[range.clone()],
                 reader.budget,
                 reader.cancelled,

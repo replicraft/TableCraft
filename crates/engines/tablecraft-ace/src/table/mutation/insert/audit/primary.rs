@@ -214,6 +214,8 @@ fn prove_index(
     let root = page_range(index.root_page())?;
     let original = image
         .as_bytes()
+        // Retain page/patch bounds across original/candidate comparisons and physical patch
+        // validation. Only range bounds are copied, not the payload.
         .get(root.clone())
         .ok_or(EditError::Preservation)?;
     let header = IndexHeader::read(original)?;
@@ -493,11 +495,15 @@ fn patches(
         ] {
             reader.tick()?;
             reader.work(range.len())?;
+            // Retain page/patch bounds across original/candidate comparisons and physical patch
+            // validation. Only range bounds are copied, not the payload.
             if original[range.clone()] == after[range.clone()] {
                 continue;
             }
             let patch = actual.patches.get(count).ok_or(EditError::Preservation)?;
             if patch.offset != root + range.start
+                // Retain page/patch bounds across original/candidate comparisons and physical
+                // patch validation. Only range bounds are copied, not the payload.
                 || patch.before != original[range.clone()]
                 || patch.after != after[range]
             {

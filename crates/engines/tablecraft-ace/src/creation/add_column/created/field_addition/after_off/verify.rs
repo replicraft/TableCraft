@@ -31,6 +31,8 @@ pub(super) fn candidate<P: super::source::ProvedImage>(
     }
     let map = MAP_PAGE * PAGE_BYTES..(MAP_PAGE + 1) * PAGE_BYTES;
     budget.charge(Resource::Steps, (2 * PAGE_BYTES) as u64)?;
+    // Compare exactly the same map bounds in original and candidate; one range must feed both
+    // slice operations. Only range bounds are copied, not the payload.
     if before.as_bytes()[map.clone()] != after[map] {
         return Err(Error::Preservation);
     }

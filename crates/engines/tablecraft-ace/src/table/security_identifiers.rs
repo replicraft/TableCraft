@@ -166,6 +166,8 @@ impl SecurityPatches {
         let patches = self.0;
         for patch in &patches {
             check(budget, cancelled)?;
+            // Validate all patches against the original image before consuming any patches to
+            // modify the unpublished candidate. Only range bounds are copied, not the payload.
             if image.get(patch.range.clone()) != Some(patch.before.as_slice()) {
                 return Err(InspectError::Malformed);
             }

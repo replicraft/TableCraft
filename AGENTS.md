@@ -250,6 +250,20 @@ hide failures through silent defaults or unconditional retries.
 When extracting code, update consumers to import its owning crate directly.
 Avoid compatibility re-exports or wrappers whose only purpose is to retain an
 old import path. Keep re-exports that define a genuine public API boundary.
+
+Treat cloning in non-test code as an ownership-design smell. First consider
+borrowing or moving, shared immutable ownership with `Arc`/`Rc`, and conditional
+ownership with `Cow`. Choose according to actual lifetimes, mutation and thread
+boundaries; do not add reference-counted allocations around cheap scalar copies.
+Every remaining non-test `.clone()` must have an adjacent comment explaining
+the concrete independent owner, mutation, snapshot or iterator requirement and
+why a useful borrowed/shared alternative does not fit. Distinguish deep payload
+copies from shared handles and allocation-free bounds/carriers. A consuming API
+alone does not justify copying: change unnecessarily owning APIs to borrow.
+Do not hide an equivalent copy behind `.cloned()`, `to_owned()` or a helper to
+make the clone count smaller. Revisit the representation when repeated large
+immutable snapshots can share storage; preserve admission budgets and exact
+snapshot/revision checks when doing so.
 Review cloning and collection materialization by ownership, lifetime and resource
 cost; prefer borrowing or moving existing storage when equivalent, and preserve
 paid snapshots, immutable sharing and independent test oracles. Use typed failures

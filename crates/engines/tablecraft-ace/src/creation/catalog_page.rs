@@ -96,6 +96,8 @@ impl Page {
             return Err(PageError::Capacity);
         }
         let range = start..self.start;
+        // Zero the newly allocated record span and return those same bounds as the placement
+        // result. Only range bounds are copied, not the payload.
         raw[range.clone()].fill(0);
         let slot = HEADER_BYTES + self.count * SLOT_BYTES;
         raw[slot..slot + SLOT_BYTES].copy_from_slice(&(start as u16).to_le_bytes());

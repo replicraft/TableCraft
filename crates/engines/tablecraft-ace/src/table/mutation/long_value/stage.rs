@@ -207,6 +207,8 @@ pub(super) fn build<'u>(
             .budget
             .charge(Resource::Steps, record.len() as u64)
             .map_err(InspectError::from)?;
+        // Check selected target bytes and retain target length and range in the staged Change.
+        // Only range bounds are copied, not the payload.
         if plan.bytes_mut(target.clone(), reader.budget, reader.cancelled)? != record {
             return Err(EditError::Preservation);
         }

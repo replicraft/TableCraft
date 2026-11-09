@@ -92,6 +92,8 @@ impl FreshIndexOwner {
             RepresentedMap::read_storage(&mut reader, GLOBAL_FREE_REFERENCE, MapRole::GlobalFree)?;
         let raw = image
             .as_bytes()
+            // Check or return exact global-map bounds while retaining them in the storage/owner
+            // proof. Only range bounds are copied, not the payload.
             .get(storage.record.clone())
             .ok_or(InspectError::Truncated)?;
         if global.kind() != INLINE_MAP
@@ -106,6 +108,8 @@ impl FreshIndexOwner {
             RecordIdentity {
                 owner: Owner::GlobalFree,
                 reference: GLOBAL_FREE_REFERENCE,
+                // Check or return exact global-map bounds while retaining them in the
+                // storage/owner proof. Only range bounds are copied, not the payload.
                 range: storage.record.clone(),
             },
             reader.budget,
@@ -159,6 +163,8 @@ impl FreshIndexOwner {
     }
 
     pub(in crate::table) fn global_record(&self) -> Range<usize> {
+        // Check or return exact global-map bounds while retaining them in the storage/owner
+        // proof. Only range bounds are copied, not the payload.
         self.global.clone()
     }
 

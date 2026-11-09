@@ -52,6 +52,8 @@ impl NativeImageSource {
     /// Share bytes with a read cursor. Derived/sliced `Bytes` cannot be admitted
     /// back as a whole native owner; only this original witness can be captured.
     pub fn shared_bytes(&self) -> Bytes {
+        // Return an independently owned cursor handle while retaining the complete original
+        // allocation witness.
         self.bytes.clone()
     }
 

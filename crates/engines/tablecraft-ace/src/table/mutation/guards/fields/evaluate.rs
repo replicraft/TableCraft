@@ -109,6 +109,8 @@ fn run_rows<Row>(
             if !matches!(value, Value::Int32(_) | Value::Null) {
                 return Err(InspectError::Malformed.into());
             }
+            // Create mutable current Int32/NULL evaluation cells while original/proposed
+            // borrowed frames stay unchanged. This admitted carrier allocates no payload.
             current.push(value.clone());
         }
         scalar::trace(

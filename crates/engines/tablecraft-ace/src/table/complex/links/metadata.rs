@@ -67,6 +67,8 @@ impl ComplexColumnLinks {
     /// Checked children in their flat snapshot order, or None for an absent row
     /// ordinal. An existing parent with no children returns an empty iterator.
     pub fn child_rows(&self, parent: usize) -> Option<impl ExactSizeIterator<Item = &[Value]>> {
+        // Index child membership by a parent range borrowed from the reusable metadata
+        // snapshot. Only range bounds are copied, not the payload.
         let range = self.parents.get(parent)?.range.clone();
         Some(
             self.order[range]

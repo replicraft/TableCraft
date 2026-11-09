@@ -325,6 +325,9 @@ impl Metadata {
                 reader.tick()?;
                 reader.work(indexes.len() + native.columns().len())?;
                 let checked = indexes
+                    // Restart borrowed index search for each freshly inspected native index
+                    // while preserving the original selection. Only borrowed iterator state is
+                    // copied.
                     .clone()
                     .find(|checked| checked.number() == native.number())
                     .ok_or(EditError::Preservation)?;

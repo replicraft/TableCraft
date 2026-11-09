@@ -119,6 +119,8 @@ pub(in crate::table::mutation::normal_insert) fn plan(
         budget
             .charge(Resource::Steps, (2 * size_of::<u32>()) as u64)
             .map_err(InspectError::from)?;
+        // Check old counter bytes before consuming the same bounds to write the new counter.
+        // Only range bounds are copied, not the payload.
         if after.get(range.clone()) != Some(old.to_le_bytes().as_slice()) {
             return Err(EditError::Preservation);
         }

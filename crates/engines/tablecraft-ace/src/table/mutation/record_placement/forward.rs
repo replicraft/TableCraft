@@ -222,6 +222,9 @@ impl Plan {
                     .ok_or(EditError::Preservation)?
                     != image
                         .bytes
+                        // Preserve root bounds and duplicate only target bounds needed both by
+                        // stored placement events and the returned destination. Only range
+                        // bounds are copied, not the payload.
                         .get(root.range.clone())
                         .ok_or(EditError::Preservation)?
             {
@@ -260,7 +263,13 @@ impl Plan {
             kind: EventKind::SamePage,
             root: root.reference,
             root_word: root.word,
+            // Preserve root bounds and duplicate only target bounds needed both by stored
+            // placement events and the returned destination. Only range bounds are copied, not
+            // the payload.
             root_range: root.range.clone(),
+            // Preserve root bounds and duplicate only target bounds needed both by stored
+            // placement events and the returned destination. Only range bounds are copied, not
+            // the payload.
             target: target.clone(),
             appended,
         });
@@ -370,7 +379,13 @@ impl Plan {
                 kind: EventKind::AppendTarget,
                 root: root.reference,
                 root_word: root.word,
+                // Preserve root bounds and duplicate only target bounds needed both by stored
+                // placement events and the returned destination. Only range bounds are copied,
+                // not the payload.
                 root_range: root.range.clone(),
+                // Preserve root bounds and duplicate only target bounds needed both by stored
+                // placement events and the returned destination. Only range bounds are copied,
+                // not the payload.
                 target: destination.range.clone(),
                 appended: Some(destination.slot),
             });
@@ -393,6 +408,9 @@ impl Plan {
                 .charge(Resource::Steps, root.range.len() as u64)
                 .map_err(InspectError::from)?;
             if u16_at(&page.after, word_at)? != root.word
+                // Preserve root bounds and duplicate only target bounds needed both by stored
+                // placement events and the returned destination. Only range bounds are copied,
+                // not the payload.
                 || page.after.get(start..end) != image.as_bytes().get(root.range.clone())
             {
                 return Err(EditError::Preservation);
@@ -414,7 +432,13 @@ impl Plan {
                 kind: EventKind::ForwardRoot,
                 root: root.reference,
                 root_word: root.word,
+                // Preserve root bounds and duplicate only target bounds needed both by stored
+                // placement events and the returned destination. Only range bounds are copied,
+                // not the payload.
                 root_range: root.range.clone(),
+                // Preserve root bounds and duplicate only target bounds needed both by stored
+                // placement events and the returned destination. Only range bounds are copied,
+                // not the payload.
                 target: destination.range.clone(),
                 appended: Some(destination.slot),
             });

@@ -359,6 +359,8 @@ impl Plan {
 
         let appended = self.append(image, Family::Ordinary, record, budget, cancelled)?;
         let destination = self.appended[appended].reference;
+        // Retain source/target bounds across root verification, relocation and the appended
+        // event/result. Only range bounds are copied, not the payload.
         let target = self.appended[appended].range.clone();
         let position = self.page(image, Family::Ordinary, root_page, budget, cancelled)?;
         let page = &mut self.pages[position];
@@ -366,6 +368,8 @@ impl Plan {
         let range = root.range.start - base..root.range.end - base;
         let word = slot_offset(usize::from(reference_slot(root.reference)));
         if u16_at(&page.after, word)? != root.word
+            // Retain source/target bounds across root verification, relocation and the appended
+            // event/result. Only range bounds are copied, not the payload.
             || page.after.get(range.clone()) != image.as_bytes().get(root.range.clone())
         {
             return Err(EditError::Preservation);
@@ -374,6 +378,8 @@ impl Plan {
             .charge(Resource::Steps, range.len() as u64)
             .map_err(InspectError::from)?;
         if root.word & RELOCATED_MASK == 0 {
+            // Retain source/target bounds across root verification, relocation and the appended
+            // event/result. Only range bounds are copied, not the payload.
             page.after[range.clone()].fill(0);
         }
         page.after[range.start..range.start + POINTER_BYTES]

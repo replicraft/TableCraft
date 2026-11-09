@@ -73,6 +73,8 @@ pub(super) fn verify(
     for (range, member) in maps.records[source.maps.count..].iter().zip(role.members()) {
         let mut expected = [0; 13];
         expected[5 + member / 8] = 1 << (member % 8);
+        // Index a borrowed catalog/map record range without removing it from the captured page
+        // inventory used by preservation audit. Only range bounds are copied, not the payload.
         if source::page(after, source::MAP_PAGE)[range.clone()] != expected {
             return Err(AddTableError::Preservation);
         }
@@ -179,6 +181,8 @@ pub(super) fn verify(
     }
     let properties = properties::verify(&image, schema, &columns, budget, cancelled)?;
     catalog::verify(
+        // Index a borrowed catalog/map record range without removing it from the captured page
+        // inventory used by preservation audit. Only range bounds are copied, not the payload.
         &source::page(after, source::CATALOG_PAGE)[catalog.records[source.catalog.count].clone()],
         definition.table(),
         role.definition as u32,

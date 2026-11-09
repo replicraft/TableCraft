@@ -118,6 +118,9 @@ fn render<P: RetainedProfile, const N: usize>(
     let (entries, tail) = match &node.contents {
         Contents::Leaf(range) => (
             leaf_entries(
+                // Read leaf entries using bounds borrowed from the operation layout, which
+                // remains required for the write proof. Only range bounds are copied, not the
+                // payload.
                 &operation.keys[range.clone()],
                 reader.budget,
                 reader.cancelled,

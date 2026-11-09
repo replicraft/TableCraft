@@ -191,6 +191,8 @@ impl Verified {
                 return Err(EditError::Preservation);
             }
 
+            // Read candidate bytes by an event range retained for complete placement/authority
+            // checks. Only range bounds are copied, not the payload.
             let actual = plan.target(event.target.clone(), budget, cancelled)?;
             record_proof::equal(&expected.bytes, actual, budget, cancelled)?;
         }

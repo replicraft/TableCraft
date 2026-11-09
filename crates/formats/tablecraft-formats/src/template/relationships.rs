@@ -116,6 +116,10 @@ pub(super) fn assemble(
             {
                 return Err(TemplateError::Unsupported);
             }
+            // Retain duplicate-ID membership while also returning ordered relationships with
+            // their owned IDs; moving either owner would lose retained state. Bounded parsing
+            // already charges conservative attribute storage. Cow cannot borrow the moved ID;
+            // shared control would add storage for each short ID.
             if !record.attributes.is_empty() || !ids.insert(id.clone()) {
                 return Err(TemplateError::Malformed);
             }
@@ -124,6 +128,10 @@ pub(super) fn assemble(
                 .get(&target.to_ascii_lowercase())
                 .ok_or(TemplateError::Malformed)?
                 .name
+                // Return owned canonical target spelling detached from parts-map borrowing
+                // while retaining the part inventory and allowing relationship attachment
+                // mutation. Cow would tie the relationship to the mutable parts map; shared
+                // names require a different package representation.
                 .clone();
             relationships.push(TemplateRelationship { id, kind, target });
         }

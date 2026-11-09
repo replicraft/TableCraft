@@ -69,6 +69,8 @@ pub(super) fn fits<P: RetainedProfile, const N: usize>(
         Contents::Leaf(range) => leaf_entries(
             operation
                 .keys
+                // Measure leaf entries without moving bounds out of the borrowed arena node.
+                // Only range bounds are copied, not the payload.
                 .get(range.clone())
                 .ok_or(EditError::Preservation)?,
             reader.budget,

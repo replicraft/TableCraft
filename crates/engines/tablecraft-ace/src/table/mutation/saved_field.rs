@@ -223,12 +223,16 @@ impl Observed {
         let property_name = chunk.offset + name.start..chunk.offset + name.end;
         exact_name(
             image.as_bytes(),
+            // Verify encoded stored name bytes and retain both definition/property spans in the
+            // resulting SavedField observation. Only range bounds are copied, not the payload.
             definition_name.clone(),
             target.name(),
             reader.budget,
         )?;
         exact_name(
             image.as_bytes(),
+            // Verify encoded stored name bytes and retain both definition/property spans in the
+            // resulting SavedField observation. Only range bounds are copied, not the payload.
             property_name.clone(),
             target.name(),
             reader.budget,

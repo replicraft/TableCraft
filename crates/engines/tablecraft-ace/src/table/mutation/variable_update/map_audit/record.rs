@@ -43,6 +43,8 @@ pub(in crate::table::mutation) fn compare<R: RecordImage>(
         {
             return Err(EditError::Preservation);
         }
+        // Read candidate record using exact bounds borrowed from the event under audit. Only
+        // range bounds are copied, not the payload.
         let actual = data.target(event.target.clone(), budget, cancelled)?;
         crate::table::mutation::record_serialization::proof::equal(
             record.bytes(),

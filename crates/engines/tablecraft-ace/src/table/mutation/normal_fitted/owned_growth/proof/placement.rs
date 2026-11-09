@@ -303,6 +303,8 @@ fn apply_with(
             return Err(EditError::Preservation);
         }
         let target = expected
+            // Read/write the selected placement or original root without moving ranges out of
+            // retained ownership proof. Only range bounds are copied, not the payload.
             .get_mut(choice.target.clone())
             .ok_or(EditError::Preservation)?;
         budget
@@ -395,6 +397,8 @@ fn apply_with(
             .charge(Resource::Steps, root.range.len() as u64)
             .map_err(InspectError::from)?;
         if u16_at(page, word_at)? != root.word
+            // Read/write the selected placement or original root without moving ranges out of
+            // retained ownership proof. Only range bounds are copied, not the payload.
             || page.get(start..end) != image.as_bytes().get(root.range.clone())
         {
             return Err(EditError::Preservation);

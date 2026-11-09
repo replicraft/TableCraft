@@ -124,6 +124,8 @@ fn fits<P: RetainedProfile, const N: usize>(
             replay
                 .operation
                 .keys
+                // Use leaf bounds borrowed from the reusable candidate for fit measurement or
+                // leaf certification. Only range bounds are copied, not the payload.
                 .get(range.clone())
                 .ok_or(EditError::Preservation)?,
             actual.budget,
@@ -212,6 +214,8 @@ fn certify<P: RetainedProfile, const N: usize>(
 ) -> Result<Child, EditError> {
     match &candidate.contents {
         Payload::Leaf(range) => {
+            // Use leaf bounds borrowed from the reusable candidate for fit measurement or leaf
+            // certification. Only range bounds are copied, not the payload.
             replay.leaf_page(candidate.number, range.clone(), candidate.source, actual)
         }
         Payload::Branch { children, tail } => replay.branch(

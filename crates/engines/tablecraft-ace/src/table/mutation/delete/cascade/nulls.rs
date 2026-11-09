@@ -48,6 +48,9 @@ pub(super) fn stage(
                 | Value::Int64(_)
                 | Value::Currency(_)
                 | Value::Guid(_)
+                // Own the original surviving fixed scalar in a nulling update; the source table
+                // remains needed for cascade staging. This admitted carrier allocates no
+                // payload.
                 | Value::Decimal(_) => value.clone(),
                 _ => return Err(EditError::Unsupported(WriteBlocker::Column)),
             };

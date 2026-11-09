@@ -124,6 +124,11 @@ impl TemplatePackage {
                 if linked {
                     "Table".to_owned()
                 } else {
+                    // Retain independent duplicate-name/type key in the ordered set and
+                    // original spelling in returned TemplateObject; moving would invalidate one
+                    // live owner. Replacing this needs a representation change, not a last-use
+                    // move. Cow cannot outlive parsed metadata; sharing a tiny duplicate key
+                    // adds a control allocation.
                     type_name.clone()
                 },
                 name.as_str().to_ascii_lowercase(),

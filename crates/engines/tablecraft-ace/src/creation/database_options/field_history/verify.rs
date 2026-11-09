@@ -54,11 +54,15 @@ pub(super) fn candidate(
         catalog_base + FREE_OFFSET..catalog_base + FREE_OFFSET + SLOT_BYTES,
         catalog_base + ROW_COUNT_OFFSET..catalog_base + ROW_COUNT_OFFSET + SLOT_BYTES,
         catalog_base + slot_offset(catalog_count)..catalog_base + slot_offset(catalog_count + 1),
+        // Retain placed catalog/property ranges for both allowed-scope byte checks and fresh
+        // native-property verification. Only range bounds are copied, not the payload.
         placed.catalog_range.clone(),
         property_base + FREE_OFFSET..property_base + FREE_OFFSET + SLOT_BYTES,
         property_base + ROW_COUNT_OFFSET..property_base + ROW_COUNT_OFFSET + SLOT_BYTES,
         property_base + slot_offset(property_count)
             ..property_base + slot_offset(property_count + 1),
+        // Retain placed catalog/property ranges for both allowed-scope byte checks and fresh
+        // native-property verification. Only range bounds are copied, not the payload.
         placed.property_range.clone(),
     ];
     budget
@@ -122,6 +126,8 @@ pub(super) fn candidate(
         || database_properties.name_auto_correct(budget, cancelled)?
             != DatabaseNameAutoCorrect::ExplicitOff
         || database_properties.raw_bytes().len() != properties::ENCODED_BYTES
+        // Retain placed catalog/property ranges for both allowed-scope byte checks and fresh
+        // native-property verification. Only range bounds are copied, not the payload.
         || database_properties.raw_bytes() != &after[placed.property_range.clone()]
     {
         return Err(Error::Preservation);

@@ -111,6 +111,8 @@ fn copy(
         if !matches!(value, Value::Null | Value::Int32(_)) {
             return Err(EditError::Unsupported(WriteBlocker::Column));
         }
+        // Materialize independent original/proposed Int32/NULL frame cells under charged vector
+        // allocation. This admitted carrier allocates no payload.
         output.push(value.clone());
     }
     Ok(output)
@@ -179,6 +181,8 @@ pub(super) fn frames(
                 }
                 let old = copy(original, width, budget, cancelled)?;
                 let mut proposed = copy(original, width, budget, cancelled)?;
+                // Set the mutable proposed cell from borrowed intent while retaining original
+                // cells and intent. This admitted carrier allocates no payload.
                 proposed[selected] = update.value().clone();
                 output.push(Frame {
                     ordinal: update.row(),

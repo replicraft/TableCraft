@@ -209,7 +209,11 @@ fn derive_columns(
             }
             changes.push(FixedScalarUpdate::new(
                 final_row.ordinal(),
+                // Own original Int32/NULL in a physical update while source table and prepared
+                // rows remain needed. This admitted carrier allocates no payload.
                 before.clone(),
+                // Own final Int32/NULL in a physical update while source table and prepared
+                // rows remain needed. This admitted carrier allocates no payload.
                 after.clone(),
             ));
         }

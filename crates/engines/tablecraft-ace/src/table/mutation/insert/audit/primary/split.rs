@@ -63,6 +63,8 @@ pub(super) fn derive(
     let range = super::page_range(index.root_page())?;
     let original = image
         .as_bytes()
+        // Retain root bounds for native header admission and independent original/candidate
+        // patch checks. Only range bounds are copied, not the payload.
         .get(range.clone())
         .ok_or(EditError::Preservation)?;
     let header = IndexHeader::read(original)?;
@@ -153,6 +155,8 @@ impl Growth {
         let patch = &actual.patches[0];
         reader.work(PAGE_BYTES)?;
         if patch.offset != root.start
+            // Retain root bounds for native header admission and independent original/candidate
+            // patch checks. Only range bounds are copied, not the payload.
             || patch.before != proof.original[root.clone()]
             || patch.after != proof.bytes[root]
         {

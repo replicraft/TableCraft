@@ -152,7 +152,13 @@ pub(in crate::creation) fn qualify_geometry(
     }
     for (actual, expected) in catalog.records.iter().zip(&canonical_catalog.records) {
         equal(
+            // Read independently captured source/canonical catalog or map record using borrowed
+            // inventory bounds; inventories remain reusable. Only range bounds are copied, not
+            // the payload.
             &page(bytes, CATALOG_PAGE)[actual.clone()],
+            // Read independently captured source/canonical catalog or map record using borrowed
+            // inventory bounds; inventories remain reusable. Only range bounds are copied, not
+            // the payload.
             &page(canonical.as_bytes(), CATALOG_PAGE)[expected.clone()],
             budget,
             cancelled,
@@ -177,6 +183,9 @@ pub(in crate::creation) fn qualify_geometry(
     }
     for (slot, range) in maps.records.iter().enumerate() {
         check(budget, cancelled)?;
+        // Read independently captured source/canonical catalog or map record using borrowed
+        // inventory bounds; inventories remain reusable. Only range bounds are copied, not the
+        // payload.
         let raw = &page(bytes, MAP_PAGE)[range.clone()];
         let mut expected = [0; MAP_RECORD_BYTES];
         let mut member = if matches!(slot, 0 | 4) {

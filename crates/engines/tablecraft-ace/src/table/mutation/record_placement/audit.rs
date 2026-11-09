@@ -70,6 +70,8 @@ pub(in crate::table::mutation) fn pages(
                     .end
                     .checked_sub(base)
                     .ok_or(EditError::Preservation)?;
+            // Pass bounds to scope admission, then reuse them to check exact existing-record
+            // membership. Only range bounds are copied, not the payload.
             allow(target.clone())?;
             if event.appended.is_none() {
                 let mut existing = false;

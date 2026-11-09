@@ -35,6 +35,8 @@ pub(super) fn prove(
         check(budget, cancelled)?;
         let record = image
             .as_bytes()
+            // Read the target/chunk span without consuming its retained change or append event.
+            // Only range bounds are copied, not the payload.
             .get(change.target.clone())
             .ok_or(EditError::Preservation)?;
         page_update::audit::record(
@@ -131,6 +133,8 @@ pub(super) fn prove(
                 .ok_or(EditError::Preservation)?;
             let body = image
                 .as_bytes()
+                // Read the target/chunk span without consuming its retained change or append
+                // event. Only range bounds are copied, not the payload.
                 .get(event.range.clone())
                 .ok_or(EditError::Preservation)?;
             let length = (encoded.len() - consumed).min(capacity);

@@ -191,7 +191,11 @@ pub(super) fn definition(
     let mut counts = [0; COUNT_BLOCK_BYTES];
     integer(&mut counts, COUNTER_OFFSET, counter);
     active.extend(counts);
+    // Read original column/physical/logical/name spans from a borrowed layout during
+    // independent index frame reconstruction. Only range bounds are copied, not the payload.
     active.extend_from_slice(&raw[layout.columns.clone()]);
+    // Read original column/physical/logical/name spans from a borrowed layout during
+    // independent index frame reconstruction. Only range bounds are copied, not the payload.
     active.extend_from_slice(&raw[layout.physical.clone()]);
     let mut physical = [0; PHYSICAL_BYTES];
     integer(&mut physical, 0, INDEX_MAGIC);
@@ -208,6 +212,8 @@ pub(super) fn definition(
     integer(&mut physical, ROOT_OFFSET, root);
     physical[FLAGS_OFFSET] = ORDINARY_FLAGS;
     active.extend(physical);
+    // Read original column/physical/logical/name spans from a borrowed layout during
+    // independent index frame reconstruction. Only range bounds are copied, not the payload.
     active.extend_from_slice(&raw[layout.logical.clone()]);
     let mut logical = [0; LOGICAL_BYTES];
     integer(&mut logical, 0, LOGICAL_MAGIC);
@@ -215,6 +221,8 @@ pub(super) fn definition(
     integer(&mut logical, PHYSICAL_NUMBER_OFFSET, layout.physical_count);
     integer(&mut logical, RELATED_INDEX_OFFSET, u32::MAX);
     active.extend(logical);
+    // Read original column/physical/logical/name spans from a borrowed layout during
+    // independent index frame reconstruction. Only range bounds are copied, not the payload.
     active.extend_from_slice(&raw[layout.names.clone()]);
     active.extend(
         u16::try_from(bytes)

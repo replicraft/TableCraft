@@ -285,6 +285,8 @@ pub(super) fn prove(
         RepresentedMap::read_storage(&mut reader, GLOBAL_FREE_REFERENCE, MapRole::GlobalFree)?;
     let raw_global = image
         .as_bytes()
+        // Read the global-map record and retain storage bounds for the subsequent exact owner
+        // comparison. Only range bounds are copied, not the payload.
         .get(storage.record.clone())
         .ok_or(InspectError::Truncated)?;
     let map_bytes = INLINE_BITMAP_OFFSET + QualifiedInlineRecord::PAGE_CAPACITY / u8::BITS as usize;
