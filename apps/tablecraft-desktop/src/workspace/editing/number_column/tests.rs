@@ -2,20 +2,37 @@
 use super::*;
 use crate::workspace::test_support::{self, finish_reads};
 use egui::{Key, accesskit::Role};
-use egui_kittest::kittest::Queryable;
+use egui_kittest::kittest::{NodeT, Queryable};
 use std::time::{Duration, Instant};
-use tablecraft_testkit::fixtures::access::canonical_created_number as raw;
-use tablecraft_ui::ObjectTarget;
+use tablecraft_runtime::SaveWorker;
+use tablecraft_testkit::fixtures::access::{canonical_created_number as raw, canonical_creation};
+use tablecraft_ui::{
+    ObjectTarget,
+    preview::{Preview, Scene},
+};
 
 #[test]
 fn number_header_save_checks_after_and_preserves_tab_ids_order_and_scratch_sql() {
     let before = raw::source(raw::Source::IdOnly);
     let after = raw::append(&before, raw::Source::IdOnly, "Score");
     let (_directory, path, _, mut harness) = test_support::opened(before);
-    harness.state_mut().state.number_column_available = true;
-    harness.state_mut().inspect_number_column_availability();
-    finish_reads(&mut harness);
+    // This is the ordinary Desktop::new path, not a test capability override.
+    // Initial page publication must perform the native source inspection itself.
+    assert_eq!(
+        harness.state().state.number_column_available,
+        SaveWorker::supports_number_column()
+    );
+    assert!(harness.state().state.number_column_available);
     let table = harness.state().state.active_object().unwrap();
+    assert_eq!(
+        harness
+            .state()
+            .state
+            .number_column_inspection(&table)
+            .unwrap()
+            .1,
+        Some(true)
+    );
     let revision = table.target.document_revision;
     assert!(harness.state().state.can_name_number_column(&table));
     harness
@@ -151,3 +168,42 @@ fn review_cancellation_latch_never_starts_actor_even_if_capability_finishes_firs
 }
 
 mod preflight;
+
+#[test]
+fn normal_native_host_still_requires_positive_source_while_mock_has_no_write_support() {
+    let before = canonical_creation::source(canonical_creation::Case::Empty).bytes;
+    let (_directory, path, _, harness) = test_support::opened(before.clone());
+    assert!(harness.state().state.number_column_available);
+    assert_eq!(
+        harness.state().state.number_column_available,
+        SaveWorker::supports_number_column()
+    );
+    let table = harness.state().state.active_object().unwrap();
+    assert!(harness.state().state.data.as_ref().unwrap().rows.is_empty());
+    assert_eq!(
+        harness
+            .state()
+            .state
+            .number_column_inspection(&table)
+            .unwrap()
+            .1,
+        Some(false)
+    );
+    assert!(!harness.state().state.can_name_number_column(&table));
+    assert!(
+        harness
+            .get_by_role_and_label(Role::Button, "Click to Add")
+            .accesskit_node()
+            .is_disabled()
+    );
+    assert!(!journal_path(&path).exists());
+    assert_eq!(std::fs::read(path).unwrap(), before);
+    let mock = Preview::new(Scene::Datasheet);
+    assert!(!mock.state().number_column_available);
+    assert!(mock.state().active_object().is_some());
+    assert!(
+        !mock
+            .state()
+            .can_name_number_column(&mock.state().active_object().unwrap())
+    );
+}

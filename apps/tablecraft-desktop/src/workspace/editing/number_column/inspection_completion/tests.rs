@@ -1,22 +1,50 @@
 //! Actual readonly results resolve recorded parked owners after generation replacement.
 use crate::workspace::{
-    PendingOperation,
+    Desktop, PendingOperation,
     test_support::{self, finish_reads},
 };
 use egui::accesskit::Role;
-use egui_kittest::kittest::{NodeT, Queryable};
+use egui_kittest::{
+    Harness,
+    kittest::{NodeT, Queryable},
+};
 use std::time::{Duration, Instant};
 use tablecraft_runtime::{Command, Response};
 use tablecraft_testkit::fixtures::access::canonical_created_number as raw;
-use tablecraft_ui::{ObjectKind, ObjectTarget};
+use tablecraft_ui::{ObjectKind, ObjectTab, ObjectTarget};
+
+// Normal startup now completes the first source inspection. Ask the actual
+// typed retry controller for a fresh publication to exercise cancellation;
+// never clear cache state or manufacture a pending/busy owner in the test.
+fn request_fresh_inspection(harness: &mut Harness<'_, Desktop>) -> ObjectTab {
+    assert!(harness.state().state.number_column_available);
+    let owner = harness.state().state.active_object().unwrap();
+    assert!(
+        !harness
+            .state()
+            .state
+            .number_column_inspection(&owner)
+            .unwrap()
+            .0
+    );
+    harness
+        .state_mut()
+        .retry_number_column_availability(owner.clone());
+    assert!(harness.state().state.busy);
+    assert!(
+        harness
+            .state()
+            .state
+            .has_pending_number_column_inspection(harness.state().generation)
+    );
+    owner
+}
 
 #[test]
 fn completed_native_inspection_is_interrupted_for_parked_owner_when_publication_is_replaced() {
     let before = raw::source(raw::Source::IdOnly);
     let (_directory, path, _, mut harness) = test_support::opened(before.clone());
-    harness.state_mut().state.number_column_available = true;
-    let owner = harness.state().state.active_object().unwrap();
-    harness.state_mut().inspect_number_column_availability();
+    let owner = request_fresh_inspection(&mut harness);
     let deadline = Instant::now() + Duration::from_secs(10);
     let (old_generation, result) = loop {
         if let Some(result) = harness.state_mut().worker.poll() {
@@ -83,9 +111,7 @@ fn completed_native_inspection_is_interrupted_for_parked_owner_when_publication_
 fn normally_superseded_native_inspection_is_terminal_without_restarting_proof() {
     let before = raw::source(raw::Source::IdOnly);
     let (_directory, path, _, mut harness) = test_support::opened(before.clone());
-    harness.state_mut().state.number_column_available = true;
-    let owner = harness.state().state.active_object().unwrap();
-    harness.state_mut().inspect_number_column_availability();
+    let owner = request_fresh_inspection(&mut harness);
     let old_generation = harness.state().generation;
     harness.state_mut().submit(Command::Page {
         table: "Table1".into(),
@@ -122,9 +148,7 @@ fn normally_superseded_native_inspection_is_terminal_without_restarting_proof() 
 fn escape_cancel_retires_the_readonly_publication_and_retry_uses_the_actual_button() {
     let before = raw::source(raw::Source::IdOnly);
     let (_directory, path, _, mut harness) = test_support::opened(before.clone());
-    harness.state_mut().state.number_column_available = true;
-    let owner = harness.state().state.active_object().unwrap();
-    harness.state_mut().inspect_number_column_availability();
+    let owner = request_fresh_inspection(&mut harness);
     let old = harness.state().generation;
     let deadline = Instant::now() + Duration::from_secs(10);
     let (finished_id, completed_reply) = loop {

@@ -192,27 +192,21 @@ new native candidate or establish normal save/recovery qualification.
 
 ## Existing-table UI boundary
 
-Saved native datasheets keep Click to Add disabled. The runtime review, consuming
-save worker and whole-content reopen are implemented, but the desktop has no
-existing-column naming/save controller. The current primitive's absent default
-must remain distinct from the [Number gallery's typed-zero declaration](../../ui/DATABASE_CREATION.md#adding-a-column-to-an-existing-saved-table).
-It cannot enable ordinary Number creation by displaying a provisional zero or
-borrowing the unsaved-table gallery's enabled choices.
+Saved native datasheets connect the exact Number declaration through shared UI
+naming, runtime review and the dedicated desktop save owner. Host support and a
+positive name-independent native source inspection are both required. The older
+absent-default primitive remains distinct from the [Number gallery's typed-zero
+declaration](../../ui/DATABASE_CREATION.md#adding-a-column-to-an-existing-saved-table).
+Painting a provisional zero cannot substitute for persisted default metadata.
 
-The retained explicit-zero SDK target grows from 40,960 to 45,056 bytes, changes
-existing pages 3, 4 and 7, and adds property LVAL page 10. Besides a new complete
-property/allocation-preserving target proof, this requires resizable journal
-preparation and matching original-request recovery: the current fixed V1
-`prepare_expected` rejects unequal image lengths. Generic checked resizable V2
-support already exists, but is not an add-column qualification. Frozen
-`TCAC0001`/`TCAC0002` requests continue to mean their original no-default operations.
-
-A complete user-facing slice still needs qualified source eligibility, exact
-new-field declaration/name review, a dedicated schema-save owner, acknowledged
-`ColumnAdded` receipt and guarded reopen. A separate insert must establish omitted
-zero-default behavior while preserving explicit NULL and supplied values. Current
-empty-source, field-count and file-profile limits remain; SDK byte comparisons
-and zero dates do not establish native Access save timing or timestamp parity.
+The explicit-zero target grows from 40,960 to 45,056 bytes, changes pages 3, 4
+and 7, and adds property LVAL page 10. TCAC0003's complete property/allocation
+proof uses checked resizable V2 journal recovery. Frozen TCAC0001/TCAC0002 retain
+their original no-default meanings. An acknowledged ColumnAdded receipt alone
+does not publish a refreshed document: the complete expected image must reopen.
+A separate insert checks omitted zero-default behavior while retaining NULL and
+supplied values. SDK comparisons and zero dates do not establish native Access
+save timing or timestamp parity.
 
 ## Exact Number declaration and persistence
 
@@ -242,10 +236,15 @@ publish a refreshed document. The [batch record](../../testing/results/number-co
 retains 65 passing checks and strict affected-package lint. The actual GUI draft
 producer, not only hand-authored declarations, matches both source classes.
 
-Saved-datasheet naming and save controls remain disabled pending their dedicated
-host/shared-UI lifecycle. The later name-independent native source check grants
-no write capability; its availability consumers and additional failure tests
-are pending a subsequent batch. Required true, broader properties, populated
-sources, external source properties and native Access timestamps remain outside
-this profile. SDK comparisons and macOS checks do not qualify Microsoft Access
-or Windows execution.
+Saved-datasheet naming/save, multi-tab checked publication, close confirmation,
+readonly inspection cancellation and explicit failed-refresh Return are connected.
+Return preserves the field name, save outcome and cleanup notice without rollback
+or replay, and blocks mutation against the stale document until a fresh open.
+The actual GUI Number-save/New-row case verifies generated ID and an omitted
+Score stored as zero after native reopen; separate runtime cases retain explicit
+NULL and supplied-value observations. Required true, broader properties,
+populated sources, external source properties and native Access timestamps remain
+outside this profile. The [repeated-addition SDK reference](../../testing/number_column_repeat/README.md)
+records expected same-page property history, but does not yet qualify its source.
+SDK comparisons and macOS checks do not qualify Microsoft Access or Windows
+execution.

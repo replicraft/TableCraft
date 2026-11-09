@@ -319,27 +319,36 @@ historical test counts below; native Access comparison remains pending.
 
 ## Adding a column to an existing saved table
 
-The native saved-table datasheet still ends with a disabled Click to Add header.
-It is outside the stored fields and cannot select, sort, copy or create a cell.
-The editable gallery described above belongs to unsaved table drafts; it does
-not enable schema changes on an existing table.
+Saved native datasheets use a name-independent native source inspection before
+Click to Add offers Number. The header remains outside stored fields: it cannot
+select, sort, copy or create a cell. Other gallery choices remain disabled with
+unavailable tooltips. Number starts a bounded field-name editor in that header;
+QAT Save or the Save shortcut captures its final text and reviews the exact name.
+It adds a Long Integer with stored Required false and typed default zero, without
+inserting a record. The separate older no-default primitive remains distinct.
 
-The shared runtime has a source-qualified operation for adding a nullable Long
-Integer field with **no default** to a qualified empty ACE 16 table. It is not
-connected to an existing-table naming or save controller. This differs from the
-Number gallery's initial Long Integer declaration with typed default zero.
-A default is persisted field metadata used for new records; painting zero in a
-blank cell cannot substitute for it, and adding a field must not insert a row.
+A consuming runtime review and dedicated save worker retain ownership through
+native persistence, acknowledgement and a fresh complete-image checked reopen.
+Only that successful reopen publishes the new schema and resolves the name.
+Other tabs, scratch SQL, view preferences and valid filters/sorts survive; native
+row handles and results are rebuilt. Closing the name or opening another file
+requires Save/Don't Save/Cancel. A failed refresh can retry or explicitly Return
+to draft while retaining saved facts; stale-source mutation stays blocked until
+a fresh open. Closing that draft does not undo the completed native save.
 
-The retained [independent SDK observations](../testing/results/add-column-created-sdk-source-2026-11-08.json)
-show that adding the new zero default also changes catalog/allocation storage
-and adds a property LVAL page. The current definition-only operation cannot make
-that change. Ordinary Number creation therefore remains disabled until its
-property/allocation proof, resizable journal recovery and complete host workflow
-are qualified; see [saved-column limits](../access/writes/ADD_COLUMN.md#existing-table-ui-boundary).
-Populated tables and other Jet/ACE profiles remain separate targets. The retained
-images show the Click to Add header, without establishing this saved-column
-menu, naming, default-property or Save interaction.
+The current source is an empty, unencoded ACE 16 canonical generated-primary
+layout, with one to fifteen original scalar fields and qualified absent/default
+zero/Required false properties. Populated tables, external source properties,
+other field types/properties and other Jet/ACE profiles remain separate targets.
+Consequently the first Number addition's external-property output is not yet
+qualified for another Number addition. The [repeated-addition SDK record](../testing/number_column_repeat/README.md)
+establishes independent expected bytes for the next source expansion, not current
+write authority. See [native limits](../access/writes/ADD_COLUMN.md).
+
+The retained images show the trailing header. Expanded-menu, naming and save
+status surfaces lack corresponding Access captures and remain adaptations;
+[offscreen frames](../testing/results/number-column-presentation-2026-11-08.json)
+are separate from native save and Windows qualification.
 
 ## Click to Add reference boundaries
 
