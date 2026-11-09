@@ -47,7 +47,7 @@ impl State {
     /// Can prompt without activating a parked owner. Only an exact unstarted
     /// naming draft can be discarded; a running review/save must settle first.
     pub(in crate::workspace) fn can_request_field_addition_close(&self, tab: &ObjectTab) -> bool {
-        self.object_switch_ready_without_field_addition()
+        self.object_switch_ready_without_saved_field_name()
             && self.field_addition_status.is_none()
             && self.field_addition_close_owner_bound(tab)
             && self
@@ -125,7 +125,7 @@ impl State {
         self.field_addition_close_current()
             && !self.native_mutation_blocked()
             && self.field_addition_available
-            && self.object_switch_ready_without_field_addition()
+            && self.object_switch_ready_without_saved_field_name()
             && self.field_addition_status.is_none()
             && !self.has_unsaved_table_drafts()
             && !self.has_modified_saved_query_sql()

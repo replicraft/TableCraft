@@ -1,5 +1,6 @@
 //! Exclusive presentation admission before a native actor can be accepted.
-use super::{FieldAdditionSaveIdentity, Status, StatusPhase};
+use super::FieldAdditionSaveIdentity;
+use crate::workspace::schema_save::{Status, StatusPhase};
 use crate::workspace::{
     State,
     field_addition::{Draft, FieldAdditionRequest, Phase},
@@ -11,7 +12,7 @@ use crate::workspace::{
 /// This token is presentation ownership, never a native write capability.
 pub struct PreparedFieldAdditionSave<'a> {
     draft: &'a mut Draft,
-    status: &'a mut Option<Status>,
+    status: &'a mut Option<Status<FieldAdditionSaveIdentity>>,
     request_id: u64,
     review_id: u64,
     bound: bool,

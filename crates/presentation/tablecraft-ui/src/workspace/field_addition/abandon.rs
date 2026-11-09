@@ -1,9 +1,7 @@
 //! Release failed-reopen presentation without erasing historical saved facts.
-use super::{
-    FieldAdditionRequest, FieldAdditionSaveIdentity, Phase,
-    status::{Status, StatusPhase},
-};
+use super::{FieldAdditionRequest, FieldAdditionSaveIdentity, Phase};
 use crate::localization::tr;
+use crate::workspace::schema_save::{Status, StatusPhase};
 use crate::workspace::{EditSaveOutcome, SaveCleanupNotice, State, diagnostics, save_display};
 
 /// Historical shared presentation facts. They grant no native retry or rollback.
@@ -17,7 +15,7 @@ pub struct FieldAdditionSavedWarning<'a> {
 
 pub(super) struct SavedWarning {
     document_revision: u64,
-    status: Status,
+    status: Status<FieldAdditionSaveIdentity>,
     cleanup: Option<SaveCleanupNotice>,
     owner: super::Draft,
     open: bool,

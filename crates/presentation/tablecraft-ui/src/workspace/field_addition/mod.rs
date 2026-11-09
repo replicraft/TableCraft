@@ -14,13 +14,11 @@ mod status;
 pub use abandon::FieldAdditionSavedWarning;
 pub use close::{FieldAdditionCloseDecision, FieldAdditionCloseResult};
 
-pub(super) use status::Status;
 pub use status::{FieldAdditionSaveCommand, FieldAdditionSaveIdentity, PreparedFieldAdditionSave};
 
 use super::{ObjectKind, ObjectTab};
-use tablecraft_builders::table::{
-    FieldAdditionDeclaration, FieldAdditionKind, MAX_DRAFT_NAME_BYTES, MAX_DRAFT_NAME_UNITS,
-};
+use crate::workspace::field_name::bounded_name;
+use tablecraft_builders::table::{FieldAdditionDeclaration, FieldAdditionKind};
 
 /// Exact naming snapshot submitted after the current frame's header widgets.
 #[derive(Debug, PartialEq, Eq)]
@@ -458,11 +456,6 @@ impl FieldAdditionRequest {
             .checked_add(table_name(&self.tab)?.capacity())?
             .checked_add(self.column.capacity())
     }
-}
-
-fn bounded_name(name: &str) -> bool {
-    name.len() <= MAX_DRAFT_NAME_BYTES
-        && name.encode_utf16().take(MAX_DRAFT_NAME_UNITS + 1).count() <= MAX_DRAFT_NAME_UNITS
 }
 
 fn table_name(tab: &ObjectTab) -> Option<&String> {

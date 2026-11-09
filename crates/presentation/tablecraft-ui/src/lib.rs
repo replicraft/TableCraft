@@ -44,6 +44,11 @@ pub use workspace::{
     NameAutoCorrectState, PreparedDatabaseOptionsSave,
 };
 pub use workspace::{FieldAdditionCloseDecision, FieldAdditionCloseResult};
+pub use workspace::{
+    FieldRenameRequest, FieldRenameSaveCommand, FieldRenameSaveIdentity, FieldRenameTarget,
+    FieldRenameWarning, PreparedFieldRenameInspection, PreparedFieldRenameResolution,
+    PreparedFieldRenameSave, PreparedUnchangedFieldRename,
+};
 
 #[cfg(test)]
 mod tests {

@@ -3,11 +3,8 @@
 //! The retained datasheet capture supplies the trailing-header placement. There
 //! is no retained expanded-menu or saved-field naming capture; those controls
 //! adapt the existing initial-table editor rather than establish visual parity.
-mod buffer;
-
-use super::bounded_name;
 use crate::localization::tr;
-use buffer::NameBuffer;
+use crate::workspace::field_name::{NameBuffer, bounded_name};
 use egui::TextBuffer;
 use egui::{Button, RichText, TextEdit, Ui};
 use tablecraft_builders::table::FieldAdditionKind;

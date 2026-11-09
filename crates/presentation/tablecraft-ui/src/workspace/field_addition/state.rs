@@ -413,7 +413,7 @@ impl State {
         self.field_addition_available
             && !self.native_mutation_blocked()
             && !self.field_addition_close_open()
-            && self.object_switch_ready_without_field_addition()
+            && self.object_switch_ready_without_saved_field_name()
             && self.view == DocumentView::Table
             && self.field_addition_binding(tab)
             && !self.has_unsaved_table_drafts()

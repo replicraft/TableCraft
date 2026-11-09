@@ -1,17 +1,16 @@
 //! TextEdit cannot insert an invalid UTF-8/UTF-16 name, including undo or IME.
-use super::super::bounded_name;
 use egui::{TextBuffer, text::CharIndex};
 use std::{any::TypeId, ops::Range};
-use tablecraft_builders::table::MAX_DRAFT_NAME_BYTES;
+use tablecraft_builders::table::{MAX_DRAFT_NAME_BYTES, MAX_DRAFT_NAME_UNITS};
 
-pub(super) struct NameBuffer {
+pub(in crate::workspace) struct NameBuffer {
     text: String,
     before_delete: String,
     deletion_pending: bool,
 }
 
 impl NameBuffer {
-    pub(super) fn new(original: &str) -> Option<Self> {
+    pub(in crate::workspace) fn new(original: &str) -> Option<Self> {
         if !bounded_name(original) {
             return None;
         }
@@ -27,7 +26,7 @@ impl NameBuffer {
         })
     }
 
-    pub(super) fn into_string(self) -> String {
+    pub(in crate::workspace) fn into_string(self) -> String {
         self.text
     }
 
@@ -118,4 +117,9 @@ mod tests {
         buffer.replace_with("Score");
         assert_eq!(buffer.as_str(), "Score");
     }
+}
+
+pub(in crate::workspace) fn bounded_name(name: &str) -> bool {
+    name.len() <= MAX_DRAFT_NAME_BYTES
+        && name.encode_utf16().take(MAX_DRAFT_NAME_UNITS + 1).count() <= MAX_DRAFT_NAME_UNITS
 }

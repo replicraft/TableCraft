@@ -1,5 +1,6 @@
 //! Field-addition owner status; it never routes through a cell-edit dialog.
-use super::{FieldAdditionSaveCommand as Command, status::StatusPhase};
+use super::FieldAdditionSaveCommand as Command;
+use crate::workspace::schema_save::StatusPhase;
 use crate::workspace::{diagnostics, save_display};
 use crate::{Action, State, localization::tr};
 use egui::{Context, Id, Modal};

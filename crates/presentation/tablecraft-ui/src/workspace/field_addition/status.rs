@@ -1,7 +1,10 @@
 //! Resource-free status facts keyed to the actual field-addition save actor.
 mod preparation;
 use super::{FieldAdditionRequest, Phase};
-use crate::workspace::{EditSaveOutcome, State};
+use crate::workspace::{
+    EditSaveOutcome, State,
+    schema_save::{Status, StatusPhase, outcome_bytes},
+};
 pub use preparation::PreparedFieldAdditionSave;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -19,31 +22,6 @@ pub enum FieldAdditionSaveCommand {
     Acknowledge,
     RetryReopen,
     ReturnToDraft,
-}
-
-#[derive(Clone, Copy, PartialEq, Eq)]
-pub(super) enum StatusPhase {
-    Saving { cancelled: bool, resolving: bool },
-    Finished,
-    Reopening { cancelled: bool },
-    ReopenFailed,
-}
-
-pub(in crate::workspace) struct Status {
-    pub(super) identity: FieldAdditionSaveIdentity,
-    pub(super) phase: StatusPhase,
-    pub(super) outcome: Option<EditSaveOutcome>,
-    pub(super) error: Option<String>,
-    pub(super) omitted: bool,
-}
-
-impl Status {
-    pub(in crate::workspace) fn heap_bytes(&self) -> Option<usize> {
-        self.outcome
-            .as_ref()
-            .map_or(0, outcome_bytes)
-            .checked_add(self.error.as_ref().map_or(0, String::capacity))
-    }
 }
 
 impl State {
@@ -106,26 +84,22 @@ impl State {
     pub fn set_field_addition_save_outcome(
         &mut self,
         identity: FieldAdditionSaveIdentity,
-        mut outcome: EditSaveOutcome,
+        outcome: EditSaveOutcome,
     ) -> bool {
-        if !self.field_addition_status.as_ref().is_some_and(|status| {
-            status.identity == identity && matches!(status.phase, StatusPhase::Saving { .. })
-        }) {
+        if !self
+            .field_addition_status
+            .as_ref()
+            .is_some_and(|status| status.accepts_outcome(identity))
+        {
             return false;
         }
+
         let admitted = self.admit_object_bytes(Some(outcome_bytes(&outcome)));
-        if !admitted {
-            match &mut outcome {
-                EditSaveOutcome::Saved(message)
-                | EditSaveOutcome::Failed(message)
-                | EditSaveOutcome::Cancelled(message)
-                | EditSaveOutcome::Retained { message, .. } => *message = String::new(),
-            }
-        }
-        let status = self.field_addition_status.as_mut().unwrap();
-        status.omitted = !admitted;
-        status.outcome = Some(outcome);
-        status.phase = StatusPhase::Finished;
+        self.field_addition_status
+            .as_mut()
+            .unwrap()
+            .record_outcome(outcome, admitted);
+
         true
     }
 
@@ -134,11 +108,9 @@ impl State {
         identity: FieldAdditionSaveIdentity,
         recover: bool,
     ) -> bool {
-        self.field_addition_status.as_ref().is_some_and(|status| {
-            status.identity == identity && status.phase == StatusPhase::Finished
-                && matches!(&status.outcome, Some(EditSaveOutcome::Retained { can_recover, can_release, .. })
-                    if if recover { *can_recover } else { *can_release })
-        })
+        self.field_addition_status
+            .as_ref()
+            .is_some_and(|status| status.can_resolve(identity, recover))
     }
 
     pub fn begin_field_addition_resolution(
@@ -173,32 +145,17 @@ impl State {
     }
 
     pub fn can_acknowledge_field_addition_save(&self, identity: FieldAdditionSaveIdentity) -> bool {
-        self.field_addition_status.as_ref().is_some_and(|status| {
-            status.identity == identity
-                && status.phase == StatusPhase::Finished
-                && status
-                    .outcome
-                    .as_ref()
-                    .is_some_and(|outcome| !matches!(outcome, EditSaveOutcome::Retained { .. }))
-        })
+        self.field_addition_status
+            .as_ref()
+            .is_some_and(|status| status.can_acknowledge(identity))
     }
 
     /// A native ACK must precede this transition; it alone does not resolve the
     /// field draft. Keep the known terminal outcome while the witness is read.
     pub fn begin_field_addition_reopen(&mut self, identity: FieldAdditionSaveIdentity) -> bool {
-        let Some(status) = self
-            .field_addition_status
+        self.field_addition_status
             .as_mut()
-            .filter(|status| status.identity == identity)
-        else {
-            return false;
-        };
-        if status.phase != StatusPhase::Finished && status.phase != StatusPhase::ReopenFailed {
-            return false;
-        }
-        status.phase = StatusPhase::Reopening { cancelled: false };
-        status.error = None;
-        true
+            .is_some_and(|status| status.begin_reopen(identity))
     }
 
     pub fn fail_field_addition_reopen(
@@ -206,42 +163,33 @@ impl State {
         identity: FieldAdditionSaveIdentity,
         message: String,
     ) -> bool {
-        if !self.field_addition_status.as_ref().is_some_and(|status| {
-            status.identity == identity && matches!(status.phase, StatusPhase::Reopening { .. })
-        }) {
+        if !self
+            .field_addition_status
+            .as_ref()
+            .is_some_and(|status| status.reopening(identity))
+        {
             return false;
         }
+
         let admitted = self.admit_object_bytes(Some(message.capacity()));
-        let status = self.field_addition_status.as_mut().unwrap();
-        status.phase = StatusPhase::ReopenFailed;
-        status.error = Some(if admitted { message } else { String::new() });
-        status.omitted |= !admitted;
+        self.field_addition_status
+            .as_mut()
+            .unwrap()
+            .record_reopen_failure(message, admitted);
+
         true
     }
 
     pub fn can_retry_field_addition_reopen(&self, identity: FieldAdditionSaveIdentity) -> bool {
-        self.field_addition_status.as_ref().is_some_and(|status| {
-            status.identity == identity && status.phase == StatusPhase::ReopenFailed
-        })
+        self.field_addition_status
+            .as_ref()
+            .is_some_and(|status| status.can_retry_reopen(identity))
     }
 
     pub fn cancel_field_addition_operation(&mut self, identity: FieldAdditionSaveIdentity) -> bool {
-        let Some(status) = self
-            .field_addition_status
+        self.field_addition_status
             .as_mut()
-            .filter(|status| status.identity == identity)
-        else {
-            return false;
-        };
-        match &mut status.phase {
-            StatusPhase::Saving { cancelled, .. } | StatusPhase::Reopening { cancelled }
-                if !*cancelled =>
-            {
-                *cancelled = true;
-                true
-            }
-            _ => false,
-        }
+            .is_some_and(|status| status.cancel(identity))
     }
 
     /// Original/no-write ACK releases only the actor. Keep the unsaved name;
@@ -274,14 +222,5 @@ impl State {
         self.field_addition = super::Model::default();
         self.field_addition_status = None;
         true
-    }
-}
-
-fn outcome_bytes(outcome: &EditSaveOutcome) -> usize {
-    match outcome {
-        EditSaveOutcome::Saved(message)
-        | EditSaveOutcome::Failed(message)
-        | EditSaveOutcome::Cancelled(message)
-        | EditSaveOutcome::Retained { message, .. } => message.capacity(),
     }
 }

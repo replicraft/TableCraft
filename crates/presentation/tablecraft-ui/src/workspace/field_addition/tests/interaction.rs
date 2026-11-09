@@ -1,5 +1,5 @@
 //! Real header widgets emit only an exact naming review, never a native write.
-use crate::{Action, Data, Database, ObjectKind, ObjectTarget, State, Table};
+use crate::{Action, State};
 use egui::{Key, accesskit::Role};
 use egui_kittest::{
     Harness,
@@ -8,41 +8,8 @@ use egui_kittest::{
 use tablecraft_builders::table::{FieldAdditionDeclaration, FieldAdditionKind};
 
 pub(in crate::workspace::field_addition) fn state(available: bool) -> State {
-    let mut state = State {
-        field_addition_available: available,
-        database: Some(Database {
-            document_revision: 7,
-            title_path: None,
-            title: "Field naming".into(),
-            format: "ACE 16".into(),
-            queries: Vec::new(),
-            tables: vec![Table {
-                name: "Table1".into(),
-                local: true,
-                system: false,
-                storage: "Local".into(),
-            }],
-        }),
-        ..State::default()
-    };
-    state.dismiss_backstage();
-    state
-        .prepare_object_open(ObjectTarget {
-            document_revision: 7,
-            kind: ObjectKind::Table {
-                name: "Table1".into(),
-            },
-        })
-        .unwrap();
-    assert!(state.set_table_data(Data {
-        source_revision: Some(7),
-        row_ordinals: None,
-        table: "Table1".into(),
-        offset: 0,
-        columns: vec!["ID".into()],
-        rows: Vec::new(),
-        has_more: false,
-    }));
+    let mut state = crate::workspace::test_support::saved_table("Field naming", vec!["ID".into()]);
+    state.field_addition_available = available;
     state
 }
 

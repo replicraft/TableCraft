@@ -3,10 +3,16 @@ use super::State;
 
 impl State {
     pub fn native_source_stale(&self) -> bool {
-        self.field_addition_source_stale() || self.database_options_source_stale()
+        self.field_addition_source_stale()
+            || self.database_options_source_stale()
+            || self.field_rename_source_stale()
     }
 
     pub fn native_mutation_blocked(&self) -> bool {
+        self.native_mutation_blocked_without_field_rename() || self.field_rename_open()
+    }
+
+    pub(in crate::workspace) fn native_mutation_blocked_without_field_rename(&self) -> bool {
         self.native_source_stale() || self.options_dialog_open() || self.database_options_pending()
     }
 }

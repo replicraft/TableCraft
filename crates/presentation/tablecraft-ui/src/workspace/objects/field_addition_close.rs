@@ -72,7 +72,7 @@ impl State {
     ) -> bool {
         if !self.field_addition_unstarted_matches(tab, revision)
             || !self.field_addition_close_owner_can_review(tab)
-            || !self.object_switch_ready_without_field_addition()
+            || !self.object_switch_ready_without_saved_field_name()
             || self.field_addition_status.is_some()
             || self.has_unsaved_table_drafts()
             || self.has_modified_saved_query_sql()

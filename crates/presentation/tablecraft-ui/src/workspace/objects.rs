@@ -413,10 +413,11 @@ impl State {
     pub(super) fn object_switch_ready(&self) -> bool {
         !self.field_addition_open()
             && !self.field_addition_close_open()
-            && self.object_switch_ready_without_field_addition()
+            && !self.field_rename_open()
+            && self.object_switch_ready_without_saved_field_name()
     }
 
-    pub(super) fn object_switch_ready_without_field_addition(&self) -> bool {
+    pub(super) fn object_switch_ready_without_saved_field_name(&self) -> bool {
         !self.busy
             && !self.options_dialog_open()
             && !self.database_options_modal_open()
@@ -465,7 +466,11 @@ impl State {
         if self.objects.revision != revision {
             self.retire_unowned_field_addition_warning(revision);
             self.retire_database_options_warning(revision);
-            if self.has_modified_saved_query_sql() {
+            self.retire_field_rename_warning(revision);
+            if self.has_modified_saved_query_sql()
+                || self.field_rename_open()
+                || self.field_rename_status_open()
+            {
                 return;
             }
             self.objects = Objects {

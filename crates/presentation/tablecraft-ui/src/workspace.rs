@@ -10,6 +10,8 @@ mod deletion;
 mod diagnostics;
 mod editing;
 pub(crate) mod field_addition;
+mod field_name;
+mod field_rename;
 mod filtering;
 mod find;
 pub(crate) mod focus;
@@ -29,7 +31,10 @@ mod save_display;
 mod saved_query;
 mod saved_query_save;
 mod schema;
+mod schema_save;
 mod table_draft;
+#[cfg(test)]
+mod test_support;
 pub(crate) mod totals;
 pub(crate) mod zoom;
 
@@ -47,6 +52,11 @@ pub use field_addition::{
     PreparedFieldAdditionSave,
 };
 pub use field_addition::{FieldAdditionCloseDecision, FieldAdditionCloseResult};
+pub use field_rename::{
+    FieldRenameRequest, FieldRenameSaveCommand, FieldRenameSaveIdentity, FieldRenameTarget,
+    FieldRenameWarning, PreparedFieldRenameInspection, PreparedFieldRenameResolution,
+    PreparedFieldRenameSave, PreparedUnchangedFieldRename,
+};
 pub use filtering::{
     FieldFilterDescription, FieldFilterOperator, FieldFilterPatternMode, FieldFilterTarget,
     FilterComparison, FilterPublication, FilterRestore, FilterSelectionTarget, FilterTarget,
@@ -423,12 +433,15 @@ pub struct State {
     /// Host opt-in remains false until the checked schema-reopen controller is connected.
     pub field_addition_available: bool,
     field_addition: field_addition::Model,
+    /// Host opt-in stays false until the guarded rename controller is connected.
+    pub field_rename_available: bool,
+    field_rename: field_rename::model::Model,
     database_options: database_options::Model,
     pub database_options_available: bool,
     database_options_confirmation_sequence: u64,
     options_open: bool,
     options_current_database: bool,
-    field_addition_status: Option<field_addition::Status>,
+    field_addition_status: Option<schema_save::Status<FieldAdditionSaveIdentity>>,
     /// Host can review and persist native table renames; false for synthetic hosts.
     pub table_rename_available: bool,
     table_selection: Selection,
