@@ -159,6 +159,25 @@ impl CollationResolver for NativeCollationResolver<'_> {
         policy: TextCollationId,
         text: &str,
     ) -> Result<Option<TextEqualityKey>, QueryError> {
+        let selected = if policy == identity(self.legacy.order) {
+            &self.legacy
+        } else if policy == identity(self.modern.order) {
+            &self.modern
+        } else {
+            return Ok(None);
+        };
+
+        if (selected.cancelled)() {
+            return Err(EvalError::Cancelled.into());
+        }
+
+        // Singleton groups require no comparison. An occupied host allowance
+        // makes this optional acceleration unavailable, not a semantic failure.
+        // Actual comparisons and source-filter keys retain their checked borrow.
+        if selected.budget.try_borrow_mut().is_err() {
+            return Ok(None);
+        }
+
         // Full General equality implies identical primary streams, including
         // trailing-space handling. Their fixed prefix is therefore symmetric;
         // different secondary weights and prefix collisions still compare fully.
