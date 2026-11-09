@@ -48,6 +48,10 @@ impl Preview {
             return;
         }
         match action {
+            Action::ConfigureQueryRunLimits { limits } => {
+                // Presentation preferences alone; no runtime or query is invoked.
+                self.state.set_query_run_limits(limits);
+            }
             Action::InspectDatabaseOptions { document_revision } => {
                 // Source-free previews cannot claim any stored settings state.
                 // Record an explicit inspection refusal so Unknown stays visible

@@ -28,6 +28,7 @@ macro_rules! sections {
             section!($locale, "datasheet"),
             section!($locale, "diagnostics"),
             section!($locale, "query"),
+            section!($locale, "query-limits"),
             section!($locale, "query-actions"),
             section!($locale, "query-design"),
             section!($locale, "saved-query"),

@@ -396,6 +396,10 @@ impl State {
             )
     }
     pub fn edit_dialog_open(&self) -> bool {
+        self.query_run_limits_open() || self.database_edit_dialog_open()
+    }
+
+    pub(in crate::workspace) fn database_edit_dialog_open(&self) -> bool {
         self.recovery_prompt_open()
             || self.edit.is_some()
             || self.query_design_dialog_open()

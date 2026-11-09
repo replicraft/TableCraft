@@ -1,0 +1,15 @@
+query-limits-title = 读取查询限制…
+query-limits-help = 仅适用于今后的读取查询。限制按累计工作量计算。更改限制不会运行查询，也不会更改编辑限制。
+query-limits-snapshot = 每个源快照的行数
+query-limits-batch = 每次原生读取的行数
+query-limits-pool = 资源池
+query-limits-bytes = 字节
+query-limits-rows = 行数
+query-limits-steps = 步骤
+query-limits-native = 原生读取
+query-limits-execution = 查询执行
+query-limits-comparison = 文本比较
+query-limits-presentation = 结果显示
+query-limits-input = { $pool }: { $dimension }
+query-limits-apply = 用于后续运行
+query-limits-cancel = 取消

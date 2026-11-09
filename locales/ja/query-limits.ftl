@@ -1,0 +1,15 @@
+query-limits-title = 読み取りクエリの上限…
+query-limits-help = 今後の読み取りクエリにのみ適用されます。上限は累積の処理量に対するものです。変更してもクエリは実行されず、編集の上限も変わりません。
+query-limits-snapshot = ソースのスナップショット行数
+query-limits-batch = 1 回の読み取り行数
+query-limits-pool = リソース枠
+query-limits-bytes = バイト
+query-limits-rows = 行数
+query-limits-steps = ステップ
+query-limits-native = データベース読み取り
+query-limits-execution = クエリ実行
+query-limits-comparison = テキスト比較
+query-limits-presentation = 結果表示
+query-limits-input = { $pool }: { $dimension }
+query-limits-apply = 次回以降の実行に使用
+query-limits-cancel = キャンセル

@@ -1,0 +1,15 @@
+query-limits-title = Grenzen für Leseabfragen…
+query-limits-help = Gilt nur für künftige Leseabfragen. Die Grenzen zählen den gesamten Aufwand. Änderungen führen keine Abfrage aus und ändern keine Bearbeitungsgrenzen.
+query-limits-snapshot = Zeilen pro Quelldatenbestand
+query-limits-batch = Zeilen pro nativem Lesevorgang
+query-limits-pool = Ressourcenbereich
+query-limits-bytes = Bytes
+query-limits-rows = Zeilen
+query-limits-steps = Schritte
+query-limits-native = Natives Lesen
+query-limits-execution = Abfrageausführung
+query-limits-comparison = Textvergleich
+query-limits-presentation = Ergebnisanzeige
+query-limits-input = { $pool }: { $dimension }
+query-limits-apply = Für nächste Ausführungen verwenden
+query-limits-cancel = Abbrechen

@@ -1,0 +1,15 @@
+query-limits-title = Limites de consultas de leitura…
+query-limits-help = Aplica-se apenas a futuras consultas de leitura. Os limites contabilizam o trabalho acumulado. Alterá-los não executa consultas nem muda os limites de edição.
+query-limits-snapshot = Linhas por instantâneo da origem
+query-limits-batch = Linhas por leitura nativa
+query-limits-pool = Conjunto de recursos
+query-limits-bytes = Bytes
+query-limits-rows = Linhas
+query-limits-steps = Etapas
+query-limits-native = Leituras nativas
+query-limits-execution = Execução da consulta
+query-limits-comparison = Comparação de texto
+query-limits-presentation = Exibição de resultados
+query-limits-input = { $pool }: { $dimension }
+query-limits-apply = Usar nas próximas execuções
+query-limits-cancel = Cancelar

@@ -59,6 +59,7 @@ pub use workspace::{
     FieldRenameWarning, PreparedFieldRenameInspection, PreparedFieldRenameResolution,
     PreparedFieldRenameSave, PreparedUnchangedFieldRename,
 };
+pub use workspace::{QueryPoolLimits, QueryRunLimits};
 
 #[cfg(test)]
 mod tests;

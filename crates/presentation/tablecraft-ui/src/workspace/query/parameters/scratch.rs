@@ -56,7 +56,8 @@ impl State {
             .is_some_and(|session| matches!(session.phase, Phase::Prompt(_) | Phase::Ready(_)))
     }
 
-    pub(in crate::workspace) fn parameter_prompt_open(&self) -> bool {
+    /// Whether scratch or saved-query parameter acquisition owns a prompt.
+    pub fn parameter_prompt_open(&self) -> bool {
         self.saved_query_prompt_open() || self.scratch_parameter_prompt_open()
     }
 

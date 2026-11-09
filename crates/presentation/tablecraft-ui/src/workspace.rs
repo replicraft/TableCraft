@@ -84,6 +84,7 @@ pub use insertion::{
 pub use navigation::rename::TableRenameRequest;
 pub use objects::{ObjectKind, ObjectOpen, ObjectTab, ObjectTarget, WorkspaceLayout};
 pub use query::actions::review::{QueryActionEffect, QueryActionKind, QueryActionReview};
+pub use query::options::{QueryPoolLimits, QueryRunLimits};
 pub use query::parameters::{ParameterInput, ParameterSpec};
 pub use query_design::{QueryDesignCompletion, QueryDesignRequest, QueryDesignTarget};
 pub use records::RecordTarget;
@@ -145,6 +146,9 @@ pub struct Data {
 
 /// User intents dispatched to the host's shared backend services.
 pub enum Action {
+    ConfigureQueryRunLimits {
+        limits: QueryRunLimits,
+    },
     InspectFieldDrop {
         target: FieldDropTarget,
     },
@@ -499,6 +503,7 @@ pub struct State {
     query_pending: Option<PendingSql>,
     query_sql_revision: u64,
     query_parameters: Option<query::parameters::scratch::Session>,
+    query_limits: query::options::Model,
     query_action: Option<query::actions::review::Session>,
     table_rename: Option<navigation::rename::Rename>,
     /// Host opt-in remains false until the checked schema-reopen controller is connected.
@@ -1017,6 +1022,7 @@ impl State {
         self.deletion_dialog(ui.ctx(), &mut actions);
         self.saved_query_prompt_dialog(ui.ctx(), &mut actions);
         self.scratch_parameter_dialog(ui.ctx(), &mut actions);
+        self.query_run_limits_dialog(ui.ctx(), &mut actions);
         self.query_action_dialog(ui.ctx(), &mut actions);
         self.table_rename_dialog(ui.ctx(), &mut actions);
         self.table_drop_dialog(ui.ctx(), &mut actions);

@@ -1,0 +1,15 @@
+query-limits-title = 읽기 쿼리 제한…
+query-limits-help = 이후의 읽기 쿼리에만 적용됩니다. 제한은 누적 작업량을 기준으로 합니다. 변경해도 쿼리가 실행되거나 편집 제한이 바뀌지 않습니다.
+query-limits-snapshot = 원본 스냅샷당 행 수
+query-limits-batch = 한 번에 읽을 행 수
+query-limits-pool = 리소스 풀
+query-limits-bytes = 바이트
+query-limits-rows = 행
+query-limits-steps = 단계
+query-limits-native = 기본 읽기
+query-limits-execution = 쿼리 실행
+query-limits-comparison = 텍스트 비교
+query-limits-presentation = 결과 표시
+query-limits-input = { $pool }: { $dimension }
+query-limits-apply = 다음 실행부터 사용
+query-limits-cancel = 취소

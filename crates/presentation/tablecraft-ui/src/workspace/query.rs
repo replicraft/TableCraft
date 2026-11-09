@@ -1,5 +1,6 @@
 //! Query editor admission is shared with keyboard command handling.
 pub(super) mod actions;
+pub(super) mod options;
 pub(super) mod parameters;
 pub(super) mod provenance;
 
@@ -37,6 +38,7 @@ impl State {
 
     fn query_editor_contents(&mut self, ui: &mut Ui, actions: &mut Vec<Action>) {
         if self.view == DocumentView::Query {
+            self.query_run_limits_button(ui);
             if self.saved_query.active {
                 self.saved_query_editor(ui, actions);
                 return;

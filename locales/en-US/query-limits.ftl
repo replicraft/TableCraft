@@ -1,0 +1,15 @@
+query-limits-title = Read query limits…
+query-limits-help = Applies to future read queries only. Limits count cumulative work. Changing them does not run a query or change editing limits.
+query-limits-snapshot = Rows per source snapshot
+query-limits-batch = Rows per native fetch
+query-limits-pool = Resource pool
+query-limits-bytes = Bytes
+query-limits-rows = Rows
+query-limits-steps = Steps
+query-limits-native = Native reads
+query-limits-execution = Query execution
+query-limits-comparison = Text comparison
+query-limits-presentation = Result display
+query-limits-input = { $pool }: { $dimension }
+query-limits-apply = Use for next runs
+query-limits-cancel = Cancel

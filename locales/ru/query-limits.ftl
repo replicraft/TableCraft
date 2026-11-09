@@ -1,0 +1,15 @@
+query-limits-title = Лимиты запросов на чтение…
+query-limits-help = Применяется только к будущим запросам на чтение. Лимиты учитывают суммарную работу. Их изменение не запускает запрос и не меняет ограничения редактирования.
+query-limits-snapshot = Строк в снимке источника
+query-limits-batch = Строк за одно чтение
+query-limits-pool = Пул ресурсов
+query-limits-bytes = Байты
+query-limits-rows = Строки
+query-limits-steps = Шаги
+query-limits-native = Чтение базы
+query-limits-execution = Выполнение запроса
+query-limits-comparison = Сравнение текста
+query-limits-presentation = Вывод результатов
+query-limits-input = { $pool }: { $dimension }
+query-limits-apply = Для следующих запусков
+query-limits-cancel = Отмена
