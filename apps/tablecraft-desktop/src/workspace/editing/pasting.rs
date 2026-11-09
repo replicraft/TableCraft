@@ -48,6 +48,7 @@ fn pasted_text_requires_review_and_explicit_apply_before_native_save() {
     finish_reads(&mut harness);
     let data = harness.state().state.data.as_ref().unwrap();
     assert_eq!(data.rows[1][1].text, "25");
+    assert_eq!(harness.state().state.selected_cell_text(), Some("25"));
     assert_ne!(std::fs::read(path).unwrap(), original);
 }
 
