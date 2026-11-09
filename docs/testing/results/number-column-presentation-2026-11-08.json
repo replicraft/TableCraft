@@ -131,5 +131,48 @@
     "Synthetic presentation only; no database writes or runtime actor in these scenes.",
     "No retained native captures for expanded menu, field naming, confirmation or dark theme; these remain adaptations.",
     "Windows/Linux execution and native Access interaction parity unverified."
-  ]
+  ],
+  "return_follow_up": {
+    "implementation_commit": "58af112d",
+    "platform": "macOS 14.7.2 ARM64, offscreen GPU; Windows input emulation; no native windows",
+    "scenes": [
+      {
+        "mode": "refresh-failed",
+        "locale": "en-US",
+        "theme": "light",
+        "width": 1280,
+        "height": 820,
+        "scale": 1,
+        "artifact": ".cache/ui-previews/number-return-20261108/en-US-light-datasheet-number-refresh-failed.png",
+        "sha256": "c6b0cec56ab5a01401ddddbcccad90e1e19b527d71852dd565d0e45737007519",
+        "exit_code": 0,
+        "visual_review": "Actual PNG inspected: status, retained warning and close choices readable within viewport; compact Ribbon retains horizontal scrolling."
+      },
+      {
+        "mode": "returned-warning",
+        "locale": "de",
+        "theme": "dark",
+        "width": 900,
+        "height": 580,
+        "scale": 1.25,
+        "artifact": ".cache/ui-previews/number-return-20261108/de-dark-datasheet-number-returned-warning@1.25x.png",
+        "sha256": "909f38629e824cfa8b2008f445b0af63d2907f4087ddff59a69c8623a62c6914",
+        "exit_code": 0,
+        "visual_review": "Actual PNG inspected: status, retained warning and close choices readable within viewport; compact Ribbon retains horizontal scrolling."
+      },
+      {
+        "mode": "returned-close",
+        "locale": "en-US",
+        "theme": "dark",
+        "width": 1100,
+        "height": 720,
+        "scale": 1,
+        "artifact": ".cache/ui-previews/number-return-20261108/en-US-dark-datasheet-number-returned-close.png",
+        "sha256": "9929dfb7beac7bc6485b19cb69962bf302d17ec0dc93d61b8e7c2e01c6852a79",
+        "exit_code": 0,
+        "visual_review": "Actual PNG inspected: status, retained warning and close choices readable within viewport; compact Ribbon retains horizontal scrolling."
+      }
+    ],
+    "qualification": "Source-free illustrative state only, no actor/database/journal; no retained Access capture for these surfaces."
+  }
 }
