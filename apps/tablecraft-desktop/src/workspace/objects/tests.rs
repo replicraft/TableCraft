@@ -86,8 +86,8 @@ fn table_tabs_keep_independent_pages_selections_and_native_view_definitions() {
         .click();
     harness.run_steps(2);
     assert_eq!(
-        harness.state().state.active_object(),
-        Some(numbers_tab.clone()),
+        harness.state().state.active_object().as_ref(),
+        Some(&numbers_tab),
         "one Navigation Pane click selects without opening"
     );
     harness.key_press(egui::Key::Enter);
@@ -116,8 +116,8 @@ fn table_tabs_keep_independent_pages_selections_and_native_view_definitions() {
     harness.state_mut().activate_object(numbers_tab.clone());
     finish_reads(&mut harness);
     assert_eq!(
-        harness.state().state.active_object(),
-        Some(numbers_tab.clone())
+        harness.state().state.active_object().as_ref(),
+        Some(&numbers_tab)
     );
     assert_eq!(
         harness.state().state.active_filter_target(),
@@ -140,8 +140,8 @@ fn table_tabs_keep_independent_pages_selections_and_native_view_definitions() {
     harness.state_mut().view_object_schema("Numbers".into());
     finish_reads(&mut harness);
     assert_eq!(
-        harness.state().state.active_object(),
-        Some(numbers_tab.clone())
+        harness.state().state.active_object().as_ref(),
+        Some(&numbers_tab)
     );
     assert_eq!(harness.state().state.object_tabs().len(), count);
     assert_eq!(
@@ -157,8 +157,8 @@ fn table_tabs_keep_independent_pages_selections_and_native_view_definitions() {
         .click_accesskit();
     harness.run_steps(2);
     assert_eq!(
-        harness.state().state.active_object(),
-        Some(numbers_tab.clone())
+        harness.state().state.active_object().as_ref(),
+        Some(&numbers_tab)
     );
     assert_eq!(
         harness.state().state.selected_cell_text(),
@@ -169,8 +169,8 @@ fn table_tabs_keep_independent_pages_selections_and_native_view_definitions() {
     finish_reads(&mut harness);
     assert_eq!(harness.state().state.data.as_ref().unwrap().offset, 1);
     assert_eq!(
-        harness.state().state.active_filter_target(),
-        Some(mixed_filter.clone())
+        harness.state().state.active_filter_target().as_ref(),
+        Some(&mixed_filter)
     );
     assert_eq!(harness.state().state.selected_cell_text(), Some("2"));
     harness.state_mut().close_object(numbers_tab);
@@ -432,8 +432,8 @@ fn save_owner_vetoes_other_tabs_and_reopen_revokes_old_object_and_row_rights() {
     harness.state_mut().close_object(mixed_tab.clone());
     assert_eq!(harness.state().generation, generation);
     assert_eq!(
-        harness.state().state.active_object(),
-        Some(numbers_tab.clone())
+        harness.state().state.active_object().as_ref(),
+        Some(&numbers_tab)
     );
     assert!(harness.state().state.object_tabs().contains(&mixed_tab));
     let report = finish_save(&mut harness);
@@ -467,7 +467,7 @@ fn save_owner_vetoes_other_tabs_and_reopen_revokes_old_object_and_row_rights() {
     assert!(!harness.state().state.can_edit_cell(&old_row));
     let active = harness.state().state.active_object();
     let generation = harness.state().generation;
-    harness.state_mut().activate_object(mixed_tab.clone());
+    harness.state_mut().activate_object(mixed_tab);
     harness.state_mut().close_object(numbers_tab);
     harness.state_mut().open_object(mixed);
     assert_eq!(harness.state().generation, generation);
@@ -710,8 +710,8 @@ fn failed_object_retry_never_falls_back_and_stale_or_loaded_empty_tabs_do_not_re
     harness.state_mut().retry_object(broken_tab.clone());
     assert_eq!(finish_failed_read(&mut harness), error);
     assert_eq!(
-        harness.state().state.active_object(),
-        Some(broken_tab.clone())
+        harness.state().state.active_object().as_ref(),
+        Some(&broken_tab)
     );
     assert!(harness.state().state.data.is_none());
     assert_eq!(std::fs::read(&path).unwrap(), original);
@@ -780,8 +780,8 @@ fn failed_lazy_filter_restore_retries_the_definition_instead_of_plain_page() {
         assert!(harness.state().state.data.is_none());
         assert!(harness.state().filter.is_none());
         assert_eq!(
-            harness.state().state.active_object(),
-            Some(items_tab.clone())
+            harness.state().state.active_object().as_ref(),
+            Some(&items_tab)
         );
     }
     assert_eq!(std::fs::read(path).unwrap(), changed);
