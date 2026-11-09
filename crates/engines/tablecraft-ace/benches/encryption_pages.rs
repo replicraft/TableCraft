@@ -77,7 +77,11 @@ impl fmt::Display for Failure {
     }
 }
 
-impl Error for Failure {}
+impl Error for Failure {
+    fn source(&self) -> Option<&(dyn Error + 'static)> {
+        Some(&self.cause)
+    }
+}
 
 #[derive(Clone, Copy)]
 struct PagePolicy {
