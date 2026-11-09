@@ -45,10 +45,11 @@ fn original_ace2007_table_and_sql_reads_keep_unsupported_schema_authoring_inert(
         .iter()
         .position(|column| column.name == "ORDR_NBR")
         .unwrap();
-    // Literal original rows agree with the registered independent table-reading
-    // observations and existing CLI native_queries regression; no writer builds them.
-    assert_eq!(page.rows[0][order].text, "1");
-    assert_eq!(page.rows[1][order].text, "2");
+    // The browser preserves physical source order. These literal memberships
+    // agree with the existing original-sample native_queries observations;
+    // only the explicit SQL ORDER BY below imposes their sorted order.
+    assert!(page.rows.iter().any(|row| row[order].text == "1"));
+    assert!(page.rows.iter().any(|row| row[order].text == "2"));
 
     harness
         .get_by_role_and_label(Role::Button, "New SQL query")
