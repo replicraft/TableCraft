@@ -1,7 +1,7 @@
 //! Deferred close composes actual local choices, native ACK and full witness read.
-use super::{finish_schema, inspected};
+use super::inspected;
 use crate::workspace::Desktop;
-use crate::workspace::test_support::{self, finish_reads};
+use crate::workspace::test_support::{self, finish_reads, finish_schema_save};
 use egui::{Id, accesskit::Role};
 use egui_kittest::Harness;
 use egui_kittest::kittest::{NodeT, Queryable};
@@ -78,7 +78,7 @@ fn dirty_close_cancel_retains_name_then_save_closes_only_after_checked_publicati
         "readonly review cannot close or write the table"
     );
 
-    finish_schema(&mut harness);
+    finish_schema_save(&mut harness);
     assert_eq!(std::fs::read(&path).unwrap(), after);
     assert!(!journal_path(&path).exists());
     assert!(harness.state().deferred_draft_action.is_none());

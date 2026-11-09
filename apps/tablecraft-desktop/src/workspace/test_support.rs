@@ -63,6 +63,21 @@ pub(super) fn finish_reads(harness: &mut Harness<'_, Desktop>) {
 }
 
 #[cfg(any(target_os = "macos", target_os = "linux", windows))]
+pub(super) fn finish_schema_save(harness: &mut Harness<'_, Desktop>) {
+    let deadline = Instant::now() + Duration::from_secs(10);
+    while harness.state().state.busy || harness.state().editing.has_save() {
+        assert!(
+            Instant::now() < deadline,
+            "schema save stalled: {:?}",
+            harness.state().state.error
+        );
+        harness.run_steps(1);
+        std::thread::yield_now();
+    }
+    finish_reads(harness);
+}
+
+#[cfg(any(target_os = "macos", target_os = "linux", windows))]
 pub(super) fn finish_save(harness: &mut Harness<'_, Desktop>) -> tablecraft_runtime::SaveReport {
     let deadline = Instant::now() + Duration::from_secs(10);
     while harness.state().editing.save_report().is_none() {

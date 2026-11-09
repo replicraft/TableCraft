@@ -1,7 +1,8 @@
 //! Header/Save widgets compose checked replacement with existing record editing.
-use super::tests::finish_schema;
 use crate::workspace::Desktop;
-use crate::workspace::test_support::{self, finish_reads, inserting::insert_omitted_fields};
+use crate::workspace::test_support::{
+    self, finish_reads, finish_schema_save, inserting::insert_omitted_fields,
+};
 use egui::{Key, Modifiers, accesskit::Role};
 use egui_kittest::{
     Harness,
@@ -58,7 +59,7 @@ fn actual_header_rename_and_save_preserve_tabs_and_scratch_then_omitted_default_
         );
         harness.key_press_modifiers(Modifiers::COMMAND, Key::S);
         harness.run_steps(1);
-        finish_schema(&mut harness);
+        finish_schema_save(&mut harness);
         assert_eq!(std::fs::read(&path).unwrap(), after);
         assert!(!journal_path(&path).exists());
         assert!(!harness.state().state.field_rename_open());

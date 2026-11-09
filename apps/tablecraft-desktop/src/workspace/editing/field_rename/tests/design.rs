@@ -1,8 +1,7 @@
 //! Actual saved Design field names compose native proof and read-only properties.
-use super::finish_schema;
 use crate::workspace::{
     editing::field_rename::widgets::propose_name,
-    test_support::{self, finish_reads},
+    test_support::{self, finish_reads, finish_schema_save},
 };
 use egui::accesskit::{Action, Role};
 use egui_kittest::kittest::{NodeT, Queryable};
@@ -56,7 +55,7 @@ fn saved_design_rename_reopens_design_with_same_native_field_selected_and_other_
     assert_eq!(target.column, "Score");
     harness.key_press_modifiers(egui::Modifiers::COMMAND, egui::Key::S);
     harness.run_steps(1);
-    finish_schema(&mut harness);
+    finish_schema_save(&mut harness);
 
     assert_eq!(std::fs::read(&path).unwrap(), after);
     assert!(!journal_path(&path).exists());

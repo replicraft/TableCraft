@@ -3,7 +3,7 @@ mod close;
 mod design;
 mod preferences;
 use super::*;
-use crate::workspace::test_support::{self, finish_reads};
+use crate::workspace::test_support::{self, finish_reads, finish_schema_save};
 use egui_kittest::Harness;
 use std::time::{Duration, Instant};
 use tablecraft_runtime::{Response, SaveOutcome, SaveWorker};
@@ -85,20 +85,6 @@ fn accept_review(harness: &mut Harness<'_, Desktop>, new_name: &str) {
         .start_reviewed_field_rename(generation, review, capability);
 }
 
-pub(super) fn finish_schema(harness: &mut Harness<'_, Desktop>) {
-    let deadline = Instant::now() + Duration::from_secs(10);
-    while harness.state().state.busy || harness.state().editing.has_save() {
-        assert!(
-            Instant::now() < deadline,
-            "rename stalled: {:?}",
-            harness.state().state.error
-        );
-        harness.run_steps(1);
-        std::thread::yield_now();
-    }
-    finish_reads(harness);
-}
-
 #[test]
 fn unchanged_review_owns_only_a_real_read_witness_and_never_a_native_actor() {
     let [before, _] = saved_field_rename::pair(SourceCase::Number);
@@ -115,7 +101,7 @@ fn unchanged_review_owns_only_a_real_read_witness_and_never_a_native_actor() {
     assert!(!harness.state().editing.worker.is_busy());
     assert!(!journal_path(&path).exists());
     assert_eq!(std::fs::read(&path).unwrap(), before);
-    finish_schema(&mut harness);
+    finish_schema_save(&mut harness);
     assert!(!harness.state().state.field_rename_open());
     assert_eq!(std::fs::read(&path).unwrap(), before);
 }
