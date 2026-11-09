@@ -1,5 +1,30 @@
 # Implementation status
 
+## Classified query-source failures — 9 November 2026
+
+The backend-neutral `SourceFailure` contract preserves payload-free source
+causes through binding, buffered execution, dynamic discovery and progressive
+execution. Access maps known native I/O, invalid/truncated data, busy-resource,
+request/cursor, constraint, allocation and structural/resource failures; unknown
+provider failures retain the legacy opaque category. Linked, external and
+recomputed paths preserve those diagnostics. No source failure triggers fallback,
+implicit retry or publication of a complete cache from a failed prefix.
+
+Runtime identifies actual native-source resource exhaustion without relabelling
+comparison/evaluator errors. Desktop regressions retain SQL and previous results
+until explicit rerun; CLI/MCP corrupt-record cases retain a useful diagnosis
+without paths/SQL or partial buffered output. Four query-source propagation cases,
+833 distinct Access cases across the full batch and corrected target reruns
+(105 existing ignores), 212 desktop cases (one ignored), 62 MCP plus two stdio
+cases, 332 runtime cases (one ignored) and its diagnostic integration test pass.
+The two new CLI process cases pass. These are local checks, not native Access
+qualification. Read admission and native writes are unchanged.
+
+The [sample report](../tests/reports/reading/UNLOCODE_ACE2007_SAMPLE_QUALIFICATION.md)
+now records complete decoding of all five tables and an optimized-build
+Hyperfine comparison. The original 2.05-second figure was an unoptimized debug
+observation; the repeated release mean is about 245 ms on the recorded machine.
+
 ## Explicit read-query limits — 9 November 2026
 
 Desktop and MCP now consume the same checked per-run snapshot/native/execution/

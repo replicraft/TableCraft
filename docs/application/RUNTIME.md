@@ -37,12 +37,16 @@ another, refill between scans, relax format/index/payload restrictions, authoriz
 external sources or change cancellation and preservation behavior. There is no
 automatic unlimited retry.
 
-Unambiguous native initialization and presentation failures expose
-`Error::ReadQueryLimit` with its pool and original `LimitError`. Failures already
-crossing the shared source/expression error contracts retain their native/query
-error types: those contracts do not always preserve pool identity, so runtime
-does not guess whether an execution failure originated in native decoding,
-comparison or evaluation. Rejected configurations perform no I/O.
+Native initialization, classified native-source limits during execution and
+presentation failures expose `Error::ReadQueryLimit` with their actual pool and
+original `LimitError`. Backend-neutral `QueryError::SourceFailure` also preserves
+payload-free I/O kinds, invalid/truncated data, busy resources, invalid requests/
+cursor state, constraints, source structural ceilings and allocation failures.
+Runtime retains those non-limit categories through `Error::Query`; it does not
+retry or replace a source. Unclassified providers can still return the legacy
+opaque source failure. Comparison/evaluator limits without pool provenance keep
+their original diagnosis rather than a guessed pool. Rejected configurations
+perform no I/O.
 
 ## Fresh blank database creation
 

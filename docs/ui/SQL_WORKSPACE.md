@@ -278,10 +278,12 @@ reused, and the original database SHA-256 is unchanged. This observes the shared
 runtime, separately from desktop headless SQL/Design/saved-query cases over
 independent synthetic files; it is not a native Access comparison.
 
-Native-boundary and presentation limit errors identify their known resource
-pool. Source/expression errors whose shared contracts erase pool provenance keep
-their original typed diagnosis; they are not relabelled as a guessed execution
-or comparison failure. Full pool-specific provenance remains a follow-up. A
+Native-source and presentation limit errors identify their known resource
+pool, including native exhaustion during scans. Classified source failures now
+retain their payload-free cause (such as invalid data, truncated input, I/O kind,
+busy resources or a source structural ceiling) through desktop and MCP. Opaque
+legacy providers and comparison/evaluator limits without pool provenance keep
+their original diagnosis rather than a guessed execution/comparison label. A
 failed run preserves prior complete results and requires explicit Run again;
 there is no automatic larger retry or partial result publication.
 
