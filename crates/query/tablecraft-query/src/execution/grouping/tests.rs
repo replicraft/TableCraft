@@ -9,6 +9,7 @@ use tablecraft_schema::{Column, ScalarType};
 use tablecraft_sql::{ParseLimits, parse_query};
 
 const POLICY: TextCollationId = TextCollationId::from_host(7);
+const OTHER_POLICY: TextCollationId = TextCollationId::from_host(8);
 
 struct Rows(MemorySource);
 
@@ -19,7 +20,7 @@ impl Source for Rows {
 
     fn text_collations(&self, table: &str) -> Result<&[Option<TextCollationId>], QueryError> {
         if table == "U" {
-            Ok(&[Some(TextCollationId::from_host(8))])
+            Ok(&[Some(OTHER_POLICY)])
         } else {
             Ok(&[Some(POLICY)])
         }

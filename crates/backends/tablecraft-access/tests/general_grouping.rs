@@ -11,6 +11,8 @@ use tablecraft_query::{
 use tablecraft_schema::{Column, ScalarType};
 use tablecraft_sql::{ParseLimits, parse_query};
 
+const GENERAL_POLICY: TextCollationId = TextCollationId::from_host(1033);
+
 struct Rows(MemorySource);
 
 impl Source for Rows {
@@ -19,7 +21,7 @@ impl Source for Rows {
     }
 
     fn text_collations(&self, _: &str) -> Result<&[Option<TextCollationId>], QueryError> {
-        Ok(&[Some(TextCollationId::from_host(1033))])
+        Ok(&[Some(GENERAL_POLICY)])
     }
 
     fn scan(
