@@ -25,7 +25,7 @@ impl Editing {
 }
 
 impl Desktop {
-    pub(super) fn restore_saved_cell_selection(&mut self, generation: u64) {
+    pub(in crate::workspace) fn restore_saved_cell_selection(&mut self, generation: u64) {
         let Some(Restore::Page { request_id, target }) = self.editing.cell_selection.take() else {
             return;
         };
