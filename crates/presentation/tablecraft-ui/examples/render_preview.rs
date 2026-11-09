@@ -15,6 +15,8 @@ mod initial_numbers;
 mod initial_properties;
 #[path = "render_preview/navigation.rs"]
 mod navigation;
+#[path = "render_preview/query_limits.rs"]
+mod query_limits;
 #[path = "render_preview/saved_sql.rs"]
 mod saved_sql;
 #[path = "render_preview/table_creation.rs"]
@@ -66,6 +68,15 @@ fn main() -> Result<(), Box<dyn Error>> {
         Err(env::VarError::NotPresent) => None,
         Err(error) => return Err(error.into()),
     };
+    let query_limits = match setting("TABLECRAFT_PREVIEW_QUERY_LIMITS", "false")?.as_str() {
+        "false" => false,
+        "true" => true,
+        _ => return Err(io::Error::other("query-limits setting must be true or false").into()),
+    };
+    if query_limits && scenes != [Scene::Query] {
+        return Err(io::Error::other("query-limits rendering requires the query scene").into());
+    }
+    let query_limits_suffix = if query_limits { "-limits" } else { "" };
     if font_search.is_some() && scenes != [Scene::Datasheet] {
         return Err(io::Error::other("font-search rendering requires the datasheet scene").into());
     }
@@ -289,7 +300,8 @@ fn main() -> Result<(), Box<dyn Error>> {
         + usize::from(field_addition != "none")
         + usize::from(field_drop != "none")
         + usize::from(field_rename != "none")
-        + usize::from(database_options != "none");
+        + usize::from(database_options != "none")
+        + usize::from(query_limits);
     if interaction_count > 1 {
         return Err(io::Error::other("choose one preview interaction workflow").into());
     }
@@ -439,9 +451,12 @@ fn main() -> Result<(), Box<dyn Error>> {
         if database_options != "none" {
             database_options::prepare(&mut harness, &database_options);
         }
+        if query_limits {
+            query_limits::prepare(&mut harness);
+        }
         let image = harness.render().map_err(io::Error::other)?;
         let path = directory.join(format!(
-            "{}-{}-{}{}{}{ribbon_suffix}{gallery_suffix}{initial_suffix}{table_suffix}{navigation_suffix}{date_suffix}{rename_suffix}{saved_sql_suffix}{field_addition_suffix}{field_drop_suffix}{field_rename_suffix}{database_options_suffix}{}.png",
+            "{}-{}-{}{}{}{ribbon_suffix}{gallery_suffix}{initial_suffix}{table_suffix}{navigation_suffix}{date_suffix}{rename_suffix}{saved_sql_suffix}{field_addition_suffix}{field_drop_suffix}{field_rename_suffix}{database_options_suffix}{query_limits_suffix}{}.png",
             locale.as_str(),
             theme_name,
             scene.as_str(),
