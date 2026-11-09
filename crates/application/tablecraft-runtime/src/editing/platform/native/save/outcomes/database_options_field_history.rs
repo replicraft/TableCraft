@@ -100,6 +100,14 @@ mod tests {
                 )),
                 expected
             );
+            assert_eq!(
+                resource_failure(&DatabaseOptionsSourceError::FieldHistory(
+                    FieldHistoryDatabaseOptionsError::Field(FieldAdditionError::Placement(
+                        EditError::Inspect(inspect()),
+                    )),
+                )),
+                expected
+            );
         }
         assert_eq!(
             resource_failure(&Cause::FieldHistoryDatabaseOptionsIntent(
