@@ -1,5 +1,7 @@
 # Testing and evidence
 
+- [Explicit Short Text and mixed-column SDK source evidence](short_text_add/README.md)
+
 - [Repeated Number source, recovery and GUI workflow checks](results/repeated-number-workflows-2026-11-08.json)
 
 - [Normal desktop Number-column workflow acceptance](results/number-column-gui-workflows-2026-11-08.json)

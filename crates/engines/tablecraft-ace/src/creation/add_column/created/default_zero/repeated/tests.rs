@@ -99,11 +99,15 @@ fn absent_old_required_second_number_matches_complete_independent_sdk_after() {
 fn next_history_stage_is_reconstructed_with_all_old_property_rows_preserved() {
     let first = raw::source(Source::IdOnly);
     let before = raw::append(&first, "Score2");
-    let expected = raw::append(&before, "Third Number");
+    let expected = raw::append(&before, "Third");
+    assert_eq!(
+        hash(&expected),
+        "337e03454d5aa233f66087301d5e8fe50092c4e90dfa4a65888430cdb9f61dd6"
+    );
     let actual = image(&before)
         .prepare_repeated_default_zero_int32_column_candidate(
             "Table1",
-            "Third Number",
+            "Third",
             &mut budget(),
             &|| false,
         )

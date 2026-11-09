@@ -1,0 +1,2023 @@
+{
+  "scope": "Independent inert SDK TEXT255 twins, repeated TEXT, Number-after-TEXT, explicit compressed TEXT widths1/80, and third Number full-image oracle; no new native Short Text admission or Access execution",
+  "sdk": {
+    "artifact": "Jackcess5.0.4",
+    "sha256": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc",
+    "license": "Apache-2.0",
+    "source_pin": "be0a2139b087a227d14cafd4ea231306a5a3a862"
+  },
+  "helper_sha256": "74b09b0ae88486dcf395d85c8fd4b4e454900c80e256c3a888e3894a3ac7f19e",
+  "frozen_number_helper_sha256": "c805c038da5f0853c50a3b76753dab0577aa66322fe873c9e642e52a943d1886",
+  "third_number": {
+    "source_sha256": "8ca406b45272b6225d8f44b37ba74336250257cb5b37f0d074200d1837ef9ff9",
+    "after_sha256": "337e03454d5aa233f66087301d5e8fe50092c4e90dfa4a65888430cdb9f61dd6",
+    "stdout": [
+      "ID\tLONG\ttrue\tnull\tRequired=null",
+      "Score\tLONG\tfalse\t0\tRequired=false",
+      "Score2\tLONG\tfalse\t0\tRequired=false",
+      "Third\tLONG\tfalse\t0\tRequired=false",
+      "Rows\t0",
+      "Indexes\t1",
+      "Created\t1899-12-30T00:00",
+      "Updated\t1899-12-30T00:00",
+      "BeforeSHA256\t8ca406b45272b6225d8f44b37ba74336250257cb5b37f0d074200d1837ef9ff9",
+      "AfterSHA256\t337e03454d5aa233f66087301d5e8fe50092c4e90dfa4a65888430cdb9f61dd6"
+    ]
+  },
+  "observations": [
+    {
+      "case": "id-only-uncompressed",
+      "source": "generated-primary-before.accdb",
+      "output": "id-only-uncompressed-after.accdb",
+      "source_sha256": "b52d124892cdaab8fbe9c5028c876f57f1f82ee280cea7984aad68f1ead5eb13",
+      "after_sha256": "8ab534635f537de37676868858c276dafa465e78558a443c11a4e5b494a75b31",
+      "source_bytes": 40960,
+      "after_bytes": 45056,
+      "declaration": {
+        "type": "TEXT",
+        "units": 255,
+        "required": false,
+        "allow_zero_length": true,
+        "default": "absent",
+        "unicode_compression": false
+      },
+      "original_unchanged": true,
+      "stdout": [
+        "Column\tID\tLONG\tunits=4\tnumber=0\tvariable=0\tfixedOffset=0\tcompressed=false\trequired=null\tallowZeroLength=null\tdefault=null\tsort=null",
+        "Column\tLabel\tTEXT\tunits=255\tnumber=1\tvariable=0\tfixedOffset=0\tcompressed=false\trequired=false\tallowZeroLength=true\tdefault=null\tsort=SortOrder[0x01000409, General]",
+        "Rows\t0",
+        "Indexes\t1",
+        "Created\t1899-12-30T00:00",
+        "Updated\t1899-12-30T00:00",
+        "BeforeSHA256\tb52d124892cdaab8fbe9c5028c876f57f1f82ee280cea7984aad68f1ead5eb13",
+        "AfterSHA256\t8ab534635f537de37676868858c276dafa465e78558a443c11a4e5b494a75b31"
+      ],
+      "before_definition": {
+        "current_fields": 1,
+        "maximum_fields": 1,
+        "variable_fields": 0,
+        "definition_bytes": 210,
+        "index_tail_sha256": "b0ab7ea67e49161c2dc505360365ce445c2350c6f596fc2be178db3960d23dbd"
+      },
+      "after_definition": {
+        "current_fields": 2,
+        "maximum_fields": 2,
+        "variable_fields": 1,
+        "definition_bytes": 247,
+        "index_tail_sha256": "b0ab7ea67e49161c2dc505360365ce445c2350c6f596fc2be178db3960d23dbd"
+      },
+      "index_definition_tail_unchanged": true,
+      "before_catalog": {
+        "logical_root_word": "0xd74",
+        "physical_slot": 7,
+        "physical_span": [
+          3444,
+          3517
+        ],
+        "slots": 8,
+        "free_bytes": 3414,
+        "property_descriptor_hex": ""
+      },
+      "after_catalog": {
+        "logical_root_word": "0x4d74",
+        "physical_slot": 8,
+        "physical_span": [
+          3359,
+          3444
+        ],
+        "slots": 9,
+        "free_bytes": 3327,
+        "property_descriptor_hex": "64000040000a000000000000"
+      },
+      "changed_pages": [
+        3,
+        4,
+        7,
+        10
+      ],
+      "field_hex": "0a59060000010000000100090400010200000000000000fe01",
+      "body_hex": "4d5232003800000080001000520065007100750069007200650064001e0041006c006c006f0077005a00650072006f004c0065006e00670074006800280000000100100000000a004c006100620065006c000900010100000100000900010101000100ff",
+      "dictionary": [
+        "Required",
+        "AllowZeroLength"
+      ],
+      "old_property_rows": [],
+      "independent_sha256": "8ab534635f537de37676868858c276dafa465e78558a443c11a4e5b494a75b31",
+      "complete_match": true,
+      "first_differences": [],
+      "typed_read_only_properties": {
+        "case": "id-only-uncompressed",
+        "after_sha256": "8ab534635f537de37676868858c276dafa465e78558a443c11a4e5b494a75b31",
+        "metadata_read_only": true,
+        "default_present": false,
+        "lines": [
+          "Required\tBOOLEAN\tfalse",
+          "AllowZeroLength\tBOOLEAN\ttrue",
+          "DefaultValuePresent\tfalse"
+        ]
+      },
+      "compression_twin_differences": [
+        28788
+      ],
+      "source_page_9_index_unchanged": true,
+      "source_map_page_3_unchanged": false
+    },
+    {
+      "case": "id-only-compressed",
+      "source": "generated-primary-before.accdb",
+      "output": "id-only-compressed-after.accdb",
+      "source_sha256": "b52d124892cdaab8fbe9c5028c876f57f1f82ee280cea7984aad68f1ead5eb13",
+      "after_sha256": "5a47a64973b8847ff174cd6f94da6fc7b6fc7eb159b74e8e044a647bc02ac6fb",
+      "source_bytes": 40960,
+      "after_bytes": 45056,
+      "declaration": {
+        "type": "TEXT",
+        "units": 255,
+        "required": false,
+        "allow_zero_length": true,
+        "default": "absent",
+        "unicode_compression": true
+      },
+      "original_unchanged": true,
+      "stdout": [
+        "Column\tID\tLONG\tunits=4\tnumber=0\tvariable=0\tfixedOffset=0\tcompressed=false\trequired=null\tallowZeroLength=null\tdefault=null\tsort=null",
+        "Column\tLabel\tTEXT\tunits=255\tnumber=1\tvariable=0\tfixedOffset=0\tcompressed=true\trequired=false\tallowZeroLength=true\tdefault=null\tsort=SortOrder[0x01000409, General]",
+        "Rows\t0",
+        "Indexes\t1",
+        "Created\t1899-12-30T00:00",
+        "Updated\t1899-12-30T00:00",
+        "BeforeSHA256\tb52d124892cdaab8fbe9c5028c876f57f1f82ee280cea7984aad68f1ead5eb13",
+        "AfterSHA256\t5a47a64973b8847ff174cd6f94da6fc7b6fc7eb159b74e8e044a647bc02ac6fb"
+      ],
+      "before_definition": {
+        "current_fields": 1,
+        "maximum_fields": 1,
+        "variable_fields": 0,
+        "definition_bytes": 210,
+        "index_tail_sha256": "b0ab7ea67e49161c2dc505360365ce445c2350c6f596fc2be178db3960d23dbd"
+      },
+      "after_definition": {
+        "current_fields": 2,
+        "maximum_fields": 2,
+        "variable_fields": 1,
+        "definition_bytes": 247,
+        "index_tail_sha256": "b0ab7ea67e49161c2dc505360365ce445c2350c6f596fc2be178db3960d23dbd"
+      },
+      "index_definition_tail_unchanged": true,
+      "before_catalog": {
+        "logical_root_word": "0xd74",
+        "physical_slot": 7,
+        "physical_span": [
+          3444,
+          3517
+        ],
+        "slots": 8,
+        "free_bytes": 3414,
+        "property_descriptor_hex": ""
+      },
+      "after_catalog": {
+        "logical_root_word": "0x4d74",
+        "physical_slot": 8,
+        "physical_span": [
+          3359,
+          3444
+        ],
+        "slots": 9,
+        "free_bytes": 3327,
+        "property_descriptor_hex": "64000040000a000000000000"
+      },
+      "changed_pages": [
+        3,
+        4,
+        7,
+        10
+      ],
+      "field_hex": "0a59060000010000000100090400010201000000000000fe01",
+      "body_hex": "4d5232003800000080001000520065007100750069007200650064001e0041006c006c006f0077005a00650072006f004c0065006e00670074006800280000000100100000000a004c006100620065006c000900010100000100000900010101000100ff",
+      "dictionary": [
+        "Required",
+        "AllowZeroLength"
+      ],
+      "old_property_rows": [],
+      "independent_sha256": "5a47a64973b8847ff174cd6f94da6fc7b6fc7eb159b74e8e044a647bc02ac6fb",
+      "complete_match": true,
+      "first_differences": [],
+      "typed_read_only_properties": {
+        "case": "id-only-compressed",
+        "after_sha256": "5a47a64973b8847ff174cd6f94da6fc7b6fc7eb159b74e8e044a647bc02ac6fb",
+        "metadata_read_only": true,
+        "default_present": false,
+        "lines": [
+          "Required\tBOOLEAN\tfalse",
+          "AllowZeroLength\tBOOLEAN\ttrue",
+          "DefaultValuePresent\tfalse"
+        ]
+      },
+      "compression_twin_differences": [
+        28788
+      ],
+      "source_page_9_index_unchanged": true,
+      "source_map_page_3_unchanged": false
+    },
+    {
+      "case": "inline-number-uncompressed",
+      "source": "gui-number-inline-before.accdb",
+      "output": "inline-number-uncompressed-after.accdb",
+      "source_sha256": "9bb835b86e8e0789728834ae8871ab9b51d647c69bea89a091d15fd14cd8a90e",
+      "after_sha256": "e7783095ca422c8023060eea985405efc0397f0dd1af50d23c680baa8b8df07b",
+      "source_bytes": 40960,
+      "after_bytes": 45056,
+      "declaration": {
+        "type": "TEXT",
+        "units": 255,
+        "required": false,
+        "allow_zero_length": true,
+        "default": "absent",
+        "unicode_compression": false
+      },
+      "original_unchanged": true,
+      "stdout": [
+        "Column\tID\tLONG\tunits=4\tnumber=0\tvariable=0\tfixedOffset=0\tcompressed=false\trequired=null\tallowZeroLength=null\tdefault=null\tsort=null",
+        "Column\tScore\tLONG\tunits=4\tnumber=1\tvariable=0\tfixedOffset=4\tcompressed=false\trequired=false\tallowZeroLength=null\tdefault=0\tsort=null",
+        "Column\tLabel\tTEXT\tunits=255\tnumber=2\tvariable=0\tfixedOffset=0\tcompressed=false\trequired=false\tallowZeroLength=true\tdefault=null\tsort=SortOrder[0x01000409, General]",
+        "Rows\t0",
+        "Indexes\t1",
+        "Created\t1899-12-30T00:00",
+        "Updated\t1899-12-30T00:00",
+        "BeforeSHA256\t9bb835b86e8e0789728834ae8871ab9b51d647c69bea89a091d15fd14cd8a90e",
+        "AfterSHA256\te7783095ca422c8023060eea985405efc0397f0dd1af50d23c680baa8b8df07b"
+      ],
+      "before_definition": {
+        "current_fields": 2,
+        "maximum_fields": 2,
+        "variable_fields": 0,
+        "definition_bytes": 247,
+        "index_tail_sha256": "b0ab7ea67e49161c2dc505360365ce445c2350c6f596fc2be178db3960d23dbd"
+      },
+      "after_definition": {
+        "current_fields": 3,
+        "maximum_fields": 3,
+        "variable_fields": 1,
+        "definition_bytes": 284,
+        "index_tail_sha256": "b0ab7ea67e49161c2dc505360365ce445c2350c6f596fc2be178db3960d23dbd"
+      },
+      "index_definition_tail_unchanged": true,
+      "before_catalog": {
+        "logical_root_word": "0xd09",
+        "physical_slot": 7,
+        "physical_span": [
+          3337,
+          3517
+        ],
+        "slots": 8,
+        "free_bytes": 3307,
+        "property_descriptor_hex": "5f00008000000000000000004d5232003200000080001000520065007100750069007200650064001800440065006600610075006c007400560061006c0075006500290000000100100000000a00530063006f00720065000900010100000100000a00010c010002003000"
+      },
+      "after_catalog": {
+        "logical_root_word": "0xd09",
+        "physical_slot": 7,
+        "physical_span": [
+          3337,
+          3517
+        ],
+        "slots": 8,
+        "free_bytes": 3307,
+        "property_descriptor_hex": "a7000040000a000000000000"
+      },
+      "changed_pages": [
+        3,
+        4,
+        7,
+        10
+      ],
+      "field_hex": "0a59060000020000000200090400010200000000000000fe01",
+      "body_hex": "4d5232005200000080001000520065007100750069007200650064001800440065006600610075006c007400560061006c00750065001e0041006c006c006f0077005a00650072006f004c0065006e00670074006800290000000100100000000a00530063006f00720065000900010100000100000a00010c010002003000280000000100100000000a004c006100620065006c000900010100000100000900010102000100ff",
+      "dictionary": [
+        "Required",
+        "DefaultValue",
+        "AllowZeroLength"
+      ],
+      "old_property_rows": [],
+      "independent_sha256": "e7783095ca422c8023060eea985405efc0397f0dd1af50d23c680baa8b8df07b",
+      "complete_match": true,
+      "first_differences": [],
+      "typed_read_only_properties": {
+        "case": "inline-number-uncompressed",
+        "after_sha256": "e7783095ca422c8023060eea985405efc0397f0dd1af50d23c680baa8b8df07b",
+        "metadata_read_only": true,
+        "default_present": false,
+        "lines": [
+          "Required\tBOOLEAN\tfalse",
+          "AllowZeroLength\tBOOLEAN\ttrue",
+          "DefaultValuePresent\tfalse"
+        ]
+      },
+      "compression_twin_differences": [
+        28813
+      ],
+      "source_page_9_index_unchanged": true,
+      "source_map_page_3_unchanged": false
+    },
+    {
+      "case": "inline-number-compressed",
+      "source": "gui-number-inline-before.accdb",
+      "output": "inline-number-compressed-after.accdb",
+      "source_sha256": "9bb835b86e8e0789728834ae8871ab9b51d647c69bea89a091d15fd14cd8a90e",
+      "after_sha256": "08b43874ba150d4d7db4cbf5af409f4ded5fde69577fa43e62d520886ca3be10",
+      "source_bytes": 40960,
+      "after_bytes": 45056,
+      "declaration": {
+        "type": "TEXT",
+        "units": 255,
+        "required": false,
+        "allow_zero_length": true,
+        "default": "absent",
+        "unicode_compression": true
+      },
+      "original_unchanged": true,
+      "stdout": [
+        "Column\tID\tLONG\tunits=4\tnumber=0\tvariable=0\tfixedOffset=0\tcompressed=false\trequired=null\tallowZeroLength=null\tdefault=null\tsort=null",
+        "Column\tScore\tLONG\tunits=4\tnumber=1\tvariable=0\tfixedOffset=4\tcompressed=false\trequired=false\tallowZeroLength=null\tdefault=0\tsort=null",
+        "Column\tLabel\tTEXT\tunits=255\tnumber=2\tvariable=0\tfixedOffset=0\tcompressed=true\trequired=false\tallowZeroLength=true\tdefault=null\tsort=SortOrder[0x01000409, General]",
+        "Rows\t0",
+        "Indexes\t1",
+        "Created\t1899-12-30T00:00",
+        "Updated\t1899-12-30T00:00",
+        "BeforeSHA256\t9bb835b86e8e0789728834ae8871ab9b51d647c69bea89a091d15fd14cd8a90e",
+        "AfterSHA256\t08b43874ba150d4d7db4cbf5af409f4ded5fde69577fa43e62d520886ca3be10"
+      ],
+      "before_definition": {
+        "current_fields": 2,
+        "maximum_fields": 2,
+        "variable_fields": 0,
+        "definition_bytes": 247,
+        "index_tail_sha256": "b0ab7ea67e49161c2dc505360365ce445c2350c6f596fc2be178db3960d23dbd"
+      },
+      "after_definition": {
+        "current_fields": 3,
+        "maximum_fields": 3,
+        "variable_fields": 1,
+        "definition_bytes": 284,
+        "index_tail_sha256": "b0ab7ea67e49161c2dc505360365ce445c2350c6f596fc2be178db3960d23dbd"
+      },
+      "index_definition_tail_unchanged": true,
+      "before_catalog": {
+        "logical_root_word": "0xd09",
+        "physical_slot": 7,
+        "physical_span": [
+          3337,
+          3517
+        ],
+        "slots": 8,
+        "free_bytes": 3307,
+        "property_descriptor_hex": "5f00008000000000000000004d5232003200000080001000520065007100750069007200650064001800440065006600610075006c007400560061006c0075006500290000000100100000000a00530063006f00720065000900010100000100000a00010c010002003000"
+      },
+      "after_catalog": {
+        "logical_root_word": "0xd09",
+        "physical_slot": 7,
+        "physical_span": [
+          3337,
+          3517
+        ],
+        "slots": 8,
+        "free_bytes": 3307,
+        "property_descriptor_hex": "a7000040000a000000000000"
+      },
+      "changed_pages": [
+        3,
+        4,
+        7,
+        10
+      ],
+      "field_hex": "0a59060000020000000200090400010201000000000000fe01",
+      "body_hex": "4d5232005200000080001000520065007100750069007200650064001800440065006600610075006c007400560061006c00750065001e0041006c006c006f0077005a00650072006f004c0065006e00670074006800290000000100100000000a00530063006f00720065000900010100000100000a00010c010002003000280000000100100000000a004c006100620065006c000900010100000100000900010102000100ff",
+      "dictionary": [
+        "Required",
+        "DefaultValue",
+        "AllowZeroLength"
+      ],
+      "old_property_rows": [],
+      "independent_sha256": "08b43874ba150d4d7db4cbf5af409f4ded5fde69577fa43e62d520886ca3be10",
+      "complete_match": true,
+      "first_differences": [],
+      "typed_read_only_properties": {
+        "case": "inline-number-compressed",
+        "after_sha256": "08b43874ba150d4d7db4cbf5af409f4ded5fde69577fa43e62d520886ca3be10",
+        "metadata_read_only": true,
+        "default_present": false,
+        "lines": [
+          "Required\tBOOLEAN\tfalse",
+          "AllowZeroLength\tBOOLEAN\ttrue",
+          "DefaultValuePresent\tfalse"
+        ]
+      },
+      "compression_twin_differences": [
+        28813
+      ],
+      "source_page_9_index_unchanged": true,
+      "source_map_page_3_unchanged": false
+    },
+    {
+      "case": "two-number-uncompressed",
+      "source": "id-only-second-number-sdk-after.accdb",
+      "output": "two-number-uncompressed-after.accdb",
+      "source_sha256": "8ca406b45272b6225d8f44b37ba74336250257cb5b37f0d074200d1837ef9ff9",
+      "after_sha256": "df22e93cb73d8e5a89428dfd28f65e3370d974f1b418e22deb6a553a8566a96f",
+      "source_bytes": 45056,
+      "after_bytes": 45056,
+      "declaration": {
+        "type": "TEXT",
+        "units": 255,
+        "required": false,
+        "allow_zero_length": true,
+        "default": "absent",
+        "unicode_compression": false
+      },
+      "original_unchanged": true,
+      "stdout": [
+        "Column\tID\tLONG\tunits=4\tnumber=0\tvariable=0\tfixedOffset=0\tcompressed=false\trequired=null\tallowZeroLength=null\tdefault=null\tsort=null",
+        "Column\tScore\tLONG\tunits=4\tnumber=1\tvariable=0\tfixedOffset=4\tcompressed=false\trequired=false\tallowZeroLength=null\tdefault=0\tsort=null",
+        "Column\tScore2\tLONG\tunits=4\tnumber=2\tvariable=0\tfixedOffset=8\tcompressed=false\trequired=false\tallowZeroLength=null\tdefault=0\tsort=null",
+        "Column\tLabel\tTEXT\tunits=255\tnumber=3\tvariable=0\tfixedOffset=0\tcompressed=false\trequired=false\tallowZeroLength=true\tdefault=null\tsort=SortOrder[0x01000409, General]",
+        "Rows\t0",
+        "Indexes\t1",
+        "Created\t1899-12-30T00:00",
+        "Updated\t1899-12-30T00:00",
+        "BeforeSHA256\t8ca406b45272b6225d8f44b37ba74336250257cb5b37f0d074200d1837ef9ff9",
+        "AfterSHA256\tdf22e93cb73d8e5a89428dfd28f65e3370d974f1b418e22deb6a553a8566a96f"
+      ],
+      "before_definition": {
+        "current_fields": 3,
+        "maximum_fields": 3,
+        "variable_fields": 0,
+        "definition_bytes": 286,
+        "index_tail_sha256": "b0ab7ea67e49161c2dc505360365ce445c2350c6f596fc2be178db3960d23dbd"
+      },
+      "after_definition": {
+        "current_fields": 4,
+        "maximum_fields": 4,
+        "variable_fields": 1,
+        "definition_bytes": 323,
+        "index_tail_sha256": "b0ab7ea67e49161c2dc505360365ce445c2350c6f596fc2be178db3960d23dbd"
+      },
+      "index_definition_tail_unchanged": true,
+      "before_catalog": {
+        "logical_root_word": "0x4d74",
+        "physical_slot": 8,
+        "physical_span": [
+          3359,
+          3444
+        ],
+        "slots": 9,
+        "free_bytes": 3327,
+        "property_descriptor_hex": "8a000040010a000000000000"
+      },
+      "after_catalog": {
+        "logical_root_word": "0x4d74",
+        "physical_slot": 8,
+        "physical_span": [
+          3359,
+          3444
+        ],
+        "slots": 9,
+        "free_bytes": 3327,
+        "property_descriptor_hex": "d2000040020a000000000000"
+      },
+      "changed_pages": [
+        4,
+        7,
+        10
+      ],
+      "field_hex": "0a59060000030000000300090400010200000000000000fe01",
+      "body_hex": "4d5232005200000080001800440065006600610075006c007400560061006c00750065001000520065007100750069007200650064001e0041006c006c006f0077005a00650072006f004c0065006e00670074006800290000000100100000000a00530063006f00720065000a00010c0000020030000900010101000100002b0000000100120000000c00530063006f007200650032000a00010c000002003000090001010100010000280000000100100000000a004c006100620065006c000900010101000100000900010102000100ff",
+      "dictionary": [
+        "DefaultValue",
+        "Required",
+        "AllowZeroLength"
+      ],
+      "old_property_rows": [
+        {
+          "slot": 0,
+          "span": [
+            4001,
+            4096
+          ],
+          "sha256": "eb32aba93278fe696ff06e0aa1d947a08c828f0bc5e335780fb70f9ef767451f",
+          "unchanged": true
+        },
+        {
+          "slot": 1,
+          "span": [
+            3863,
+            4001
+          ],
+          "sha256": "f718ca6fddd16d6ebe0384ebc52d06a15cf404d1dff60b5db8c29c7b76ac6644",
+          "unchanged": true
+        }
+      ],
+      "independent_sha256": "df22e93cb73d8e5a89428dfd28f65e3370d974f1b418e22deb6a553a8566a96f",
+      "complete_match": true,
+      "first_differences": [],
+      "typed_read_only_properties": {
+        "case": "two-number-uncompressed",
+        "after_sha256": "df22e93cb73d8e5a89428dfd28f65e3370d974f1b418e22deb6a553a8566a96f",
+        "metadata_read_only": true,
+        "default_present": false,
+        "lines": [
+          "Required\tBOOLEAN\tfalse",
+          "AllowZeroLength\tBOOLEAN\ttrue",
+          "DefaultValuePresent\tfalse"
+        ]
+      },
+      "compression_twin_differences": [
+        28838
+      ],
+      "source_page_9_index_unchanged": true,
+      "source_map_page_3_unchanged": true
+    },
+    {
+      "case": "two-number-compressed",
+      "source": "id-only-second-number-sdk-after.accdb",
+      "output": "two-number-compressed-after.accdb",
+      "source_sha256": "8ca406b45272b6225d8f44b37ba74336250257cb5b37f0d074200d1837ef9ff9",
+      "after_sha256": "21299f7253f2dbc22aab30e0b7989daf36b94645f5bee7cb2f9d7f5587a98fdd",
+      "source_bytes": 45056,
+      "after_bytes": 45056,
+      "declaration": {
+        "type": "TEXT",
+        "units": 255,
+        "required": false,
+        "allow_zero_length": true,
+        "default": "absent",
+        "unicode_compression": true
+      },
+      "original_unchanged": true,
+      "stdout": [
+        "Column\tID\tLONG\tunits=4\tnumber=0\tvariable=0\tfixedOffset=0\tcompressed=false\trequired=null\tallowZeroLength=null\tdefault=null\tsort=null",
+        "Column\tScore\tLONG\tunits=4\tnumber=1\tvariable=0\tfixedOffset=4\tcompressed=false\trequired=false\tallowZeroLength=null\tdefault=0\tsort=null",
+        "Column\tScore2\tLONG\tunits=4\tnumber=2\tvariable=0\tfixedOffset=8\tcompressed=false\trequired=false\tallowZeroLength=null\tdefault=0\tsort=null",
+        "Column\tLabel\tTEXT\tunits=255\tnumber=3\tvariable=0\tfixedOffset=0\tcompressed=true\trequired=false\tallowZeroLength=true\tdefault=null\tsort=SortOrder[0x01000409, General]",
+        "Rows\t0",
+        "Indexes\t1",
+        "Created\t1899-12-30T00:00",
+        "Updated\t1899-12-30T00:00",
+        "BeforeSHA256\t8ca406b45272b6225d8f44b37ba74336250257cb5b37f0d074200d1837ef9ff9",
+        "AfterSHA256\t21299f7253f2dbc22aab30e0b7989daf36b94645f5bee7cb2f9d7f5587a98fdd"
+      ],
+      "before_definition": {
+        "current_fields": 3,
+        "maximum_fields": 3,
+        "variable_fields": 0,
+        "definition_bytes": 286,
+        "index_tail_sha256": "b0ab7ea67e49161c2dc505360365ce445c2350c6f596fc2be178db3960d23dbd"
+      },
+      "after_definition": {
+        "current_fields": 4,
+        "maximum_fields": 4,
+        "variable_fields": 1,
+        "definition_bytes": 323,
+        "index_tail_sha256": "b0ab7ea67e49161c2dc505360365ce445c2350c6f596fc2be178db3960d23dbd"
+      },
+      "index_definition_tail_unchanged": true,
+      "before_catalog": {
+        "logical_root_word": "0x4d74",
+        "physical_slot": 8,
+        "physical_span": [
+          3359,
+          3444
+        ],
+        "slots": 9,
+        "free_bytes": 3327,
+        "property_descriptor_hex": "8a000040010a000000000000"
+      },
+      "after_catalog": {
+        "logical_root_word": "0x4d74",
+        "physical_slot": 8,
+        "physical_span": [
+          3359,
+          3444
+        ],
+        "slots": 9,
+        "free_bytes": 3327,
+        "property_descriptor_hex": "d2000040020a000000000000"
+      },
+      "changed_pages": [
+        4,
+        7,
+        10
+      ],
+      "field_hex": "0a59060000030000000300090400010201000000000000fe01",
+      "body_hex": "4d5232005200000080001800440065006600610075006c007400560061006c00750065001000520065007100750069007200650064001e0041006c006c006f0077005a00650072006f004c0065006e00670074006800290000000100100000000a00530063006f00720065000a00010c0000020030000900010101000100002b0000000100120000000c00530063006f007200650032000a00010c000002003000090001010100010000280000000100100000000a004c006100620065006c000900010101000100000900010102000100ff",
+      "dictionary": [
+        "DefaultValue",
+        "Required",
+        "AllowZeroLength"
+      ],
+      "old_property_rows": [
+        {
+          "slot": 0,
+          "span": [
+            4001,
+            4096
+          ],
+          "sha256": "eb32aba93278fe696ff06e0aa1d947a08c828f0bc5e335780fb70f9ef767451f",
+          "unchanged": true
+        },
+        {
+          "slot": 1,
+          "span": [
+            3863,
+            4001
+          ],
+          "sha256": "f718ca6fddd16d6ebe0384ebc52d06a15cf404d1dff60b5db8c29c7b76ac6644",
+          "unchanged": true
+        }
+      ],
+      "independent_sha256": "21299f7253f2dbc22aab30e0b7989daf36b94645f5bee7cb2f9d7f5587a98fdd",
+      "complete_match": true,
+      "first_differences": [],
+      "typed_read_only_properties": {
+        "case": "two-number-compressed",
+        "after_sha256": "21299f7253f2dbc22aab30e0b7989daf36b94645f5bee7cb2f9d7f5587a98fdd",
+        "metadata_read_only": true,
+        "default_present": false,
+        "lines": [
+          "Required\tBOOLEAN\tfalse",
+          "AllowZeroLength\tBOOLEAN\ttrue",
+          "DefaultValuePresent\tfalse"
+        ]
+      },
+      "compression_twin_differences": [
+        28838
+      ],
+      "source_page_9_index_unchanged": true,
+      "source_map_page_3_unchanged": true
+    },
+    {
+      "case": "three-number-uncompressed",
+      "source": "third-number-sdk-after.accdb",
+      "output": "three-number-uncompressed-after.accdb",
+      "source_sha256": "337e03454d5aa233f66087301d5e8fe50092c4e90dfa4a65888430cdb9f61dd6",
+      "after_sha256": "17da7eb8c5e3513cb0f95a7f7b5d4b36e136297d375b3d44fcfb0511f75bae7f",
+      "source_bytes": 45056,
+      "after_bytes": 45056,
+      "declaration": {
+        "type": "TEXT",
+        "units": 255,
+        "required": false,
+        "allow_zero_length": true,
+        "default": "absent",
+        "unicode_compression": false
+      },
+      "original_unchanged": true,
+      "stdout": [
+        "Column\tID\tLONG\tunits=4\tnumber=0\tvariable=0\tfixedOffset=0\tcompressed=false\trequired=null\tallowZeroLength=null\tdefault=null\tsort=null",
+        "Column\tScore\tLONG\tunits=4\tnumber=1\tvariable=0\tfixedOffset=4\tcompressed=false\trequired=false\tallowZeroLength=null\tdefault=0\tsort=null",
+        "Column\tScore2\tLONG\tunits=4\tnumber=2\tvariable=0\tfixedOffset=8\tcompressed=false\trequired=false\tallowZeroLength=null\tdefault=0\tsort=null",
+        "Column\tThird\tLONG\tunits=4\tnumber=3\tvariable=0\tfixedOffset=12\tcompressed=false\trequired=false\tallowZeroLength=null\tdefault=0\tsort=null",
+        "Column\tLabel\tTEXT\tunits=255\tnumber=4\tvariable=0\tfixedOffset=0\tcompressed=false\trequired=false\tallowZeroLength=true\tdefault=null\tsort=SortOrder[0x01000409, General]",
+        "Rows\t0",
+        "Indexes\t1",
+        "Created\t1899-12-30T00:00",
+        "Updated\t1899-12-30T00:00",
+        "BeforeSHA256\t337e03454d5aa233f66087301d5e8fe50092c4e90dfa4a65888430cdb9f61dd6",
+        "AfterSHA256\t17da7eb8c5e3513cb0f95a7f7b5d4b36e136297d375b3d44fcfb0511f75bae7f"
+      ],
+      "before_definition": {
+        "current_fields": 4,
+        "maximum_fields": 4,
+        "variable_fields": 0,
+        "definition_bytes": 323,
+        "index_tail_sha256": "b0ab7ea67e49161c2dc505360365ce445c2350c6f596fc2be178db3960d23dbd"
+      },
+      "after_definition": {
+        "current_fields": 5,
+        "maximum_fields": 5,
+        "variable_fields": 1,
+        "definition_bytes": 360,
+        "index_tail_sha256": "b0ab7ea67e49161c2dc505360365ce445c2350c6f596fc2be178db3960d23dbd"
+      },
+      "index_definition_tail_unchanged": true,
+      "before_catalog": {
+        "logical_root_word": "0x4d74",
+        "physical_slot": 8,
+        "physical_span": [
+          3359,
+          3444
+        ],
+        "slots": 9,
+        "free_bytes": 3327,
+        "property_descriptor_hex": "b3000040020a000000000000"
+      },
+      "after_catalog": {
+        "logical_root_word": "0x4d74",
+        "physical_slot": 8,
+        "physical_span": [
+          3359,
+          3444
+        ],
+        "slots": 9,
+        "free_bytes": 3327,
+        "property_descriptor_hex": "fb000040030a000000000000"
+      },
+      "changed_pages": [
+        4,
+        7,
+        10
+      ],
+      "field_hex": "0a59060000040000000400090400010200000000000000fe01",
+      "body_hex": "4d5232005200000080001800440065006600610075006c007400560061006c00750065001000520065007100750069007200650064001e0041006c006c006f0077005a00650072006f004c0065006e00670074006800290000000100100000000a00530063006f00720065000a00010c0000020030000900010101000100002b0000000100120000000c00530063006f007200650032000a00010c000002003000090001010100010000290000000100100000000a00540068006900720064000a00010c000002003000090001010100010000280000000100100000000a004c006100620065006c000900010101000100000900010102000100ff",
+      "dictionary": [
+        "DefaultValue",
+        "Required",
+        "AllowZeroLength"
+      ],
+      "old_property_rows": [
+        {
+          "slot": 0,
+          "span": [
+            4001,
+            4096
+          ],
+          "sha256": "eb32aba93278fe696ff06e0aa1d947a08c828f0bc5e335780fb70f9ef767451f",
+          "unchanged": true
+        },
+        {
+          "slot": 1,
+          "span": [
+            3863,
+            4001
+          ],
+          "sha256": "f718ca6fddd16d6ebe0384ebc52d06a15cf404d1dff60b5db8c29c7b76ac6644",
+          "unchanged": true
+        },
+        {
+          "slot": 2,
+          "span": [
+            3684,
+            3863
+          ],
+          "sha256": "3f94dfae682ac99e823f01896da60a95c0d7bb7070aba7f01d50abf4b218db49",
+          "unchanged": true
+        }
+      ],
+      "independent_sha256": "17da7eb8c5e3513cb0f95a7f7b5d4b36e136297d375b3d44fcfb0511f75bae7f",
+      "complete_match": true,
+      "first_differences": [],
+      "typed_read_only_properties": {
+        "case": "three-number-uncompressed",
+        "after_sha256": "17da7eb8c5e3513cb0f95a7f7b5d4b36e136297d375b3d44fcfb0511f75bae7f",
+        "metadata_read_only": true,
+        "default_present": false,
+        "lines": [
+          "Required\tBOOLEAN\tfalse",
+          "AllowZeroLength\tBOOLEAN\ttrue",
+          "DefaultValuePresent\tfalse"
+        ]
+      },
+      "compression_twin_differences": [
+        28863
+      ],
+      "source_page_9_index_unchanged": true,
+      "source_map_page_3_unchanged": true
+    },
+    {
+      "case": "three-number-compressed",
+      "source": "third-number-sdk-after.accdb",
+      "output": "three-number-compressed-after.accdb",
+      "source_sha256": "337e03454d5aa233f66087301d5e8fe50092c4e90dfa4a65888430cdb9f61dd6",
+      "after_sha256": "628a1a8462a8ee971ffe3a72fffe94e72457ca39a760a0cd52cbb949272d18a6",
+      "source_bytes": 45056,
+      "after_bytes": 45056,
+      "declaration": {
+        "type": "TEXT",
+        "units": 255,
+        "required": false,
+        "allow_zero_length": true,
+        "default": "absent",
+        "unicode_compression": true
+      },
+      "original_unchanged": true,
+      "stdout": [
+        "Column\tID\tLONG\tunits=4\tnumber=0\tvariable=0\tfixedOffset=0\tcompressed=false\trequired=null\tallowZeroLength=null\tdefault=null\tsort=null",
+        "Column\tScore\tLONG\tunits=4\tnumber=1\tvariable=0\tfixedOffset=4\tcompressed=false\trequired=false\tallowZeroLength=null\tdefault=0\tsort=null",
+        "Column\tScore2\tLONG\tunits=4\tnumber=2\tvariable=0\tfixedOffset=8\tcompressed=false\trequired=false\tallowZeroLength=null\tdefault=0\tsort=null",
+        "Column\tThird\tLONG\tunits=4\tnumber=3\tvariable=0\tfixedOffset=12\tcompressed=false\trequired=false\tallowZeroLength=null\tdefault=0\tsort=null",
+        "Column\tLabel\tTEXT\tunits=255\tnumber=4\tvariable=0\tfixedOffset=0\tcompressed=true\trequired=false\tallowZeroLength=true\tdefault=null\tsort=SortOrder[0x01000409, General]",
+        "Rows\t0",
+        "Indexes\t1",
+        "Created\t1899-12-30T00:00",
+        "Updated\t1899-12-30T00:00",
+        "BeforeSHA256\t337e03454d5aa233f66087301d5e8fe50092c4e90dfa4a65888430cdb9f61dd6",
+        "AfterSHA256\t628a1a8462a8ee971ffe3a72fffe94e72457ca39a760a0cd52cbb949272d18a6"
+      ],
+      "before_definition": {
+        "current_fields": 4,
+        "maximum_fields": 4,
+        "variable_fields": 0,
+        "definition_bytes": 323,
+        "index_tail_sha256": "b0ab7ea67e49161c2dc505360365ce445c2350c6f596fc2be178db3960d23dbd"
+      },
+      "after_definition": {
+        "current_fields": 5,
+        "maximum_fields": 5,
+        "variable_fields": 1,
+        "definition_bytes": 360,
+        "index_tail_sha256": "b0ab7ea67e49161c2dc505360365ce445c2350c6f596fc2be178db3960d23dbd"
+      },
+      "index_definition_tail_unchanged": true,
+      "before_catalog": {
+        "logical_root_word": "0x4d74",
+        "physical_slot": 8,
+        "physical_span": [
+          3359,
+          3444
+        ],
+        "slots": 9,
+        "free_bytes": 3327,
+        "property_descriptor_hex": "b3000040020a000000000000"
+      },
+      "after_catalog": {
+        "logical_root_word": "0x4d74",
+        "physical_slot": 8,
+        "physical_span": [
+          3359,
+          3444
+        ],
+        "slots": 9,
+        "free_bytes": 3327,
+        "property_descriptor_hex": "fb000040030a000000000000"
+      },
+      "changed_pages": [
+        4,
+        7,
+        10
+      ],
+      "field_hex": "0a59060000040000000400090400010201000000000000fe01",
+      "body_hex": "4d5232005200000080001800440065006600610075006c007400560061006c00750065001000520065007100750069007200650064001e0041006c006c006f0077005a00650072006f004c0065006e00670074006800290000000100100000000a00530063006f00720065000a00010c0000020030000900010101000100002b0000000100120000000c00530063006f007200650032000a00010c000002003000090001010100010000290000000100100000000a00540068006900720064000a00010c000002003000090001010100010000280000000100100000000a004c006100620065006c000900010101000100000900010102000100ff",
+      "dictionary": [
+        "DefaultValue",
+        "Required",
+        "AllowZeroLength"
+      ],
+      "old_property_rows": [
+        {
+          "slot": 0,
+          "span": [
+            4001,
+            4096
+          ],
+          "sha256": "eb32aba93278fe696ff06e0aa1d947a08c828f0bc5e335780fb70f9ef767451f",
+          "unchanged": true
+        },
+        {
+          "slot": 1,
+          "span": [
+            3863,
+            4001
+          ],
+          "sha256": "f718ca6fddd16d6ebe0384ebc52d06a15cf404d1dff60b5db8c29c7b76ac6644",
+          "unchanged": true
+        },
+        {
+          "slot": 2,
+          "span": [
+            3684,
+            3863
+          ],
+          "sha256": "3f94dfae682ac99e823f01896da60a95c0d7bb7070aba7f01d50abf4b218db49",
+          "unchanged": true
+        }
+      ],
+      "independent_sha256": "628a1a8462a8ee971ffe3a72fffe94e72457ca39a760a0cd52cbb949272d18a6",
+      "complete_match": true,
+      "first_differences": [],
+      "typed_read_only_properties": {
+        "case": "three-number-compressed",
+        "after_sha256": "628a1a8462a8ee971ffe3a72fffe94e72457ca39a760a0cd52cbb949272d18a6",
+        "metadata_read_only": true,
+        "default_present": false,
+        "lines": [
+          "Required\tBOOLEAN\tfalse",
+          "AllowZeroLength\tBOOLEAN\ttrue",
+          "DefaultValuePresent\tfalse"
+        ]
+      },
+      "compression_twin_differences": [
+        28863
+      ],
+      "source_page_9_index_unchanged": true,
+      "source_map_page_3_unchanged": true
+    },
+    {
+      "case": "repeat-label-on-id-only-compressed",
+      "column": "OtherLabel",
+      "source_location": "sdk_files",
+      "source": "id-only-compressed-after.accdb",
+      "output": "repeat-label-on-id-only-compressed-after.accdb",
+      "source_sha256": "5a47a64973b8847ff174cd6f94da6fc7b6fc7eb159b74e8e044a647bc02ac6fb",
+      "after_sha256": "6fad5df6b6d3809f69ffc3350396e0702cb349966d64661c0f8c5f02280fc71f",
+      "source_bytes": 45056,
+      "after_bytes": 45056,
+      "declaration": {
+        "type": "TEXT",
+        "units": 255,
+        "required": false,
+        "allow_zero_length": true,
+        "default": "absent",
+        "unicode_compression": true
+      },
+      "original_unchanged": true,
+      "stdout": [
+        "Column\tID\tLONG\tunits=4\tnumber=0\tvariable=0\tfixedOffset=0\tcompressed=false\trequired=null\tallowZeroLength=null\tdefault=null\tsort=null",
+        "Column\tLabel\tTEXT\tunits=255\tnumber=1\tvariable=0\tfixedOffset=0\tcompressed=true\trequired=false\tallowZeroLength=true\tdefault=null\tsort=SortOrder[0x01000409, General]",
+        "Column\tOtherLabel\tTEXT\tunits=255\tnumber=2\tvariable=1\tfixedOffset=0\tcompressed=true\trequired=false\tallowZeroLength=true\tdefault=null\tsort=SortOrder[0x01000409, General]",
+        "Rows\t0",
+        "Indexes\t1",
+        "Created\t1899-12-30T00:00",
+        "Updated\t1899-12-30T00:00",
+        "BeforeSHA256\t5a47a64973b8847ff174cd6f94da6fc7b6fc7eb159b74e8e044a647bc02ac6fb",
+        "AfterSHA256\t6fad5df6b6d3809f69ffc3350396e0702cb349966d64661c0f8c5f02280fc71f"
+      ],
+      "typed_read_only_properties": {
+        "default_present": false,
+        "lines": [
+          "Required\tBOOLEAN\tfalse",
+          "AllowZeroLength\tBOOLEAN\ttrue",
+          "DefaultValuePresent\tfalse"
+        ]
+      },
+      "before_definition": {
+        "current_fields": 2,
+        "maximum_fields": 2,
+        "variable_fields": 1,
+        "definition_bytes": 247,
+        "index_tail_sha256": "b0ab7ea67e49161c2dc505360365ce445c2350c6f596fc2be178db3960d23dbd"
+      },
+      "after_definition": {
+        "current_fields": 3,
+        "maximum_fields": 3,
+        "variable_fields": 2,
+        "definition_bytes": 294,
+        "index_tail_sha256": "b0ab7ea67e49161c2dc505360365ce445c2350c6f596fc2be178db3960d23dbd"
+      },
+      "index_definition_tail_unchanged": true,
+      "before_catalog": {
+        "logical_root_word": "0x4d74",
+        "physical_slot": 8,
+        "physical_span": [
+          3359,
+          3444
+        ],
+        "slots": 9,
+        "free_bytes": 3327,
+        "property_descriptor_hex": "64000040000a000000000000"
+      },
+      "after_catalog": {
+        "logical_root_word": "0x4d74",
+        "physical_slot": 8,
+        "physical_span": [
+          3359,
+          3444
+        ],
+        "slots": 9,
+        "free_bytes": 3327,
+        "property_descriptor_hex": "96000040010a000000000000"
+      },
+      "changed_pages": [
+        4,
+        7,
+        10
+      ],
+      "field_hex": "0a59060000020001000200090400010201000000000000fe01",
+      "body_hex": "4d5232003800000080001000520065007100750069007200650064001e0041006c006c006f0077005a00650072006f004c0065006e00670074006800280000000100100000000a004c006100620065006c000900010100000100000900010101000100ff3200000001001a00000014004f0074006800650072004c006100620065006c000900010100000100000900010101000100ff",
+      "dictionary": [
+        "Required",
+        "AllowZeroLength"
+      ],
+      "old_property_rows": [
+        {
+          "slot": 0,
+          "span": [
+            3996,
+            4096
+          ],
+          "sha256": "6354955e0c4690eb0dd781c21cf8d2bcb22888a70cc862d52f91c115e1944874",
+          "unchanged": true
+        }
+      ],
+      "independent_sha256": "6fad5df6b6d3809f69ffc3350396e0702cb349966d64661c0f8c5f02280fc71f",
+      "complete_match": true,
+      "first_differences": [],
+      "source_page_9_index_unchanged": true,
+      "source_map_page_3_unchanged": true
+    },
+    {
+      "case": "repeat-label-on-inline-number-compressed",
+      "column": "OtherLabel",
+      "source_location": "sdk_files",
+      "source": "inline-number-compressed-after.accdb",
+      "output": "repeat-label-on-inline-number-compressed-after.accdb",
+      "source_sha256": "08b43874ba150d4d7db4cbf5af409f4ded5fde69577fa43e62d520886ca3be10",
+      "after_sha256": "a6ff61144a4cc55c57b5fd69dbb1b269043610150a3e0f2c6083713b6522e960",
+      "source_bytes": 45056,
+      "after_bytes": 45056,
+      "declaration": {
+        "type": "TEXT",
+        "units": 255,
+        "required": false,
+        "allow_zero_length": true,
+        "default": "absent",
+        "unicode_compression": true
+      },
+      "original_unchanged": true,
+      "stdout": [
+        "Column\tID\tLONG\tunits=4\tnumber=0\tvariable=0\tfixedOffset=0\tcompressed=false\trequired=null\tallowZeroLength=null\tdefault=null\tsort=null",
+        "Column\tScore\tLONG\tunits=4\tnumber=1\tvariable=0\tfixedOffset=4\tcompressed=false\trequired=false\tallowZeroLength=null\tdefault=0\tsort=null",
+        "Column\tLabel\tTEXT\tunits=255\tnumber=2\tvariable=0\tfixedOffset=0\tcompressed=true\trequired=false\tallowZeroLength=true\tdefault=null\tsort=SortOrder[0x01000409, General]",
+        "Column\tOtherLabel\tTEXT\tunits=255\tnumber=3\tvariable=1\tfixedOffset=0\tcompressed=true\trequired=false\tallowZeroLength=true\tdefault=null\tsort=SortOrder[0x01000409, General]",
+        "Rows\t0",
+        "Indexes\t1",
+        "Created\t1899-12-30T00:00",
+        "Updated\t1899-12-30T00:00",
+        "BeforeSHA256\t08b43874ba150d4d7db4cbf5af409f4ded5fde69577fa43e62d520886ca3be10",
+        "AfterSHA256\ta6ff61144a4cc55c57b5fd69dbb1b269043610150a3e0f2c6083713b6522e960"
+      ],
+      "typed_read_only_properties": {
+        "default_present": false,
+        "lines": [
+          "Required\tBOOLEAN\tfalse",
+          "AllowZeroLength\tBOOLEAN\ttrue",
+          "DefaultValuePresent\tfalse"
+        ]
+      },
+      "before_definition": {
+        "current_fields": 3,
+        "maximum_fields": 3,
+        "variable_fields": 1,
+        "definition_bytes": 284,
+        "index_tail_sha256": "b0ab7ea67e49161c2dc505360365ce445c2350c6f596fc2be178db3960d23dbd"
+      },
+      "after_definition": {
+        "current_fields": 4,
+        "maximum_fields": 4,
+        "variable_fields": 2,
+        "definition_bytes": 331,
+        "index_tail_sha256": "b0ab7ea67e49161c2dc505360365ce445c2350c6f596fc2be178db3960d23dbd"
+      },
+      "index_definition_tail_unchanged": true,
+      "before_catalog": {
+        "logical_root_word": "0xd09",
+        "physical_slot": 7,
+        "physical_span": [
+          3337,
+          3517
+        ],
+        "slots": 8,
+        "free_bytes": 3307,
+        "property_descriptor_hex": "a7000040000a000000000000"
+      },
+      "after_catalog": {
+        "logical_root_word": "0xd09",
+        "physical_slot": 7,
+        "physical_span": [
+          3337,
+          3517
+        ],
+        "slots": 8,
+        "free_bytes": 3307,
+        "property_descriptor_hex": "d9000040010a000000000000"
+      },
+      "changed_pages": [
+        4,
+        7,
+        10
+      ],
+      "field_hex": "0a59060000030001000300090400010201000000000000fe01",
+      "body_hex": "4d5232005200000080001000520065007100750069007200650064001800440065006600610075006c007400560061006c00750065001e0041006c006c006f0077005a00650072006f004c0065006e00670074006800290000000100100000000a00530063006f00720065000900010100000100000a00010c010002003000280000000100100000000a004c006100620065006c000900010100000100000900010102000100ff3200000001001a00000014004f0074006800650072004c006100620065006c000900010100000100000900010102000100ff",
+      "dictionary": [
+        "Required",
+        "DefaultValue",
+        "AllowZeroLength"
+      ],
+      "old_property_rows": [
+        {
+          "slot": 0,
+          "span": [
+            3929,
+            4096
+          ],
+          "sha256": "39e91deb2b6f2ba8fd8fa03406848e07910a24a77b6463bad76f9dc57a4a23a6",
+          "unchanged": true
+        }
+      ],
+      "independent_sha256": "a6ff61144a4cc55c57b5fd69dbb1b269043610150a3e0f2c6083713b6522e960",
+      "complete_match": true,
+      "first_differences": [],
+      "source_page_9_index_unchanged": true,
+      "source_map_page_3_unchanged": true
+    },
+    {
+      "case": "repeat-label-on-two-number-compressed",
+      "column": "OtherLabel",
+      "source_location": "sdk_files",
+      "source": "two-number-compressed-after.accdb",
+      "output": "repeat-label-on-two-number-compressed-after.accdb",
+      "source_sha256": "21299f7253f2dbc22aab30e0b7989daf36b94645f5bee7cb2f9d7f5587a98fdd",
+      "after_sha256": "f2009440468a49da41d67a940278040ca5e462c0b36a607b23f1eb6af3f71e28",
+      "source_bytes": 45056,
+      "after_bytes": 45056,
+      "declaration": {
+        "type": "TEXT",
+        "units": 255,
+        "required": false,
+        "allow_zero_length": true,
+        "default": "absent",
+        "unicode_compression": true
+      },
+      "original_unchanged": true,
+      "stdout": [
+        "Column\tID\tLONG\tunits=4\tnumber=0\tvariable=0\tfixedOffset=0\tcompressed=false\trequired=null\tallowZeroLength=null\tdefault=null\tsort=null",
+        "Column\tScore\tLONG\tunits=4\tnumber=1\tvariable=0\tfixedOffset=4\tcompressed=false\trequired=false\tallowZeroLength=null\tdefault=0\tsort=null",
+        "Column\tScore2\tLONG\tunits=4\tnumber=2\tvariable=0\tfixedOffset=8\tcompressed=false\trequired=false\tallowZeroLength=null\tdefault=0\tsort=null",
+        "Column\tLabel\tTEXT\tunits=255\tnumber=3\tvariable=0\tfixedOffset=0\tcompressed=true\trequired=false\tallowZeroLength=true\tdefault=null\tsort=SortOrder[0x01000409, General]",
+        "Column\tOtherLabel\tTEXT\tunits=255\tnumber=4\tvariable=1\tfixedOffset=0\tcompressed=true\trequired=false\tallowZeroLength=true\tdefault=null\tsort=SortOrder[0x01000409, General]",
+        "Rows\t0",
+        "Indexes\t1",
+        "Created\t1899-12-30T00:00",
+        "Updated\t1899-12-30T00:00",
+        "BeforeSHA256\t21299f7253f2dbc22aab30e0b7989daf36b94645f5bee7cb2f9d7f5587a98fdd",
+        "AfterSHA256\tf2009440468a49da41d67a940278040ca5e462c0b36a607b23f1eb6af3f71e28"
+      ],
+      "typed_read_only_properties": {
+        "default_present": false,
+        "lines": [
+          "Required\tBOOLEAN\tfalse",
+          "AllowZeroLength\tBOOLEAN\ttrue",
+          "DefaultValuePresent\tfalse"
+        ]
+      },
+      "before_definition": {
+        "current_fields": 4,
+        "maximum_fields": 4,
+        "variable_fields": 1,
+        "definition_bytes": 323,
+        "index_tail_sha256": "b0ab7ea67e49161c2dc505360365ce445c2350c6f596fc2be178db3960d23dbd"
+      },
+      "after_definition": {
+        "current_fields": 5,
+        "maximum_fields": 5,
+        "variable_fields": 2,
+        "definition_bytes": 370,
+        "index_tail_sha256": "b0ab7ea67e49161c2dc505360365ce445c2350c6f596fc2be178db3960d23dbd"
+      },
+      "index_definition_tail_unchanged": true,
+      "before_catalog": {
+        "logical_root_word": "0x4d74",
+        "physical_slot": 8,
+        "physical_span": [
+          3359,
+          3444
+        ],
+        "slots": 9,
+        "free_bytes": 3327,
+        "property_descriptor_hex": "d2000040020a000000000000"
+      },
+      "after_catalog": {
+        "logical_root_word": "0x4d74",
+        "physical_slot": 8,
+        "physical_span": [
+          3359,
+          3444
+        ],
+        "slots": 9,
+        "free_bytes": 3327,
+        "property_descriptor_hex": "04010040030a000000000000"
+      },
+      "changed_pages": [
+        4,
+        7,
+        10
+      ],
+      "field_hex": "0a59060000040001000400090400010201000000000000fe01",
+      "body_hex": "4d5232005200000080001800440065006600610075006c007400560061006c00750065001000520065007100750069007200650064001e0041006c006c006f0077005a00650072006f004c0065006e00670074006800290000000100100000000a00530063006f00720065000a00010c0000020030000900010101000100002b0000000100120000000c00530063006f007200650032000a00010c000002003000090001010100010000280000000100100000000a004c006100620065006c000900010101000100000900010102000100ff3200000001001a00000014004f0074006800650072004c006100620065006c000900010101000100000900010102000100ff",
+      "dictionary": [
+        "DefaultValue",
+        "Required",
+        "AllowZeroLength"
+      ],
+      "old_property_rows": [
+        {
+          "slot": 0,
+          "span": [
+            4001,
+            4096
+          ],
+          "sha256": "eb32aba93278fe696ff06e0aa1d947a08c828f0bc5e335780fb70f9ef767451f",
+          "unchanged": true
+        },
+        {
+          "slot": 1,
+          "span": [
+            3863,
+            4001
+          ],
+          "sha256": "f718ca6fddd16d6ebe0384ebc52d06a15cf404d1dff60b5db8c29c7b76ac6644",
+          "unchanged": true
+        },
+        {
+          "slot": 2,
+          "span": [
+            3653,
+            3863
+          ],
+          "sha256": "e5aef85a4d626c337d4fd7c34dc8381f4ad0266404f1ef2fe44ec863224693b3",
+          "unchanged": true
+        }
+      ],
+      "independent_sha256": "f2009440468a49da41d67a940278040ca5e462c0b36a607b23f1eb6af3f71e28",
+      "complete_match": true,
+      "first_differences": [],
+      "source_page_9_index_unchanged": true,
+      "source_map_page_3_unchanged": true
+    },
+    {
+      "case": "repeat-label-on-three-number-compressed",
+      "column": "OtherLabel",
+      "source_location": "sdk_files",
+      "source": "three-number-compressed-after.accdb",
+      "output": "repeat-label-on-three-number-compressed-after.accdb",
+      "source_sha256": "628a1a8462a8ee971ffe3a72fffe94e72457ca39a760a0cd52cbb949272d18a6",
+      "after_sha256": "e92e4b083f17055936b34e23a7d0db84d681a78d7dbf44f5178ccbedc6d252a9",
+      "source_bytes": 45056,
+      "after_bytes": 45056,
+      "declaration": {
+        "type": "TEXT",
+        "units": 255,
+        "required": false,
+        "allow_zero_length": true,
+        "default": "absent",
+        "unicode_compression": true
+      },
+      "original_unchanged": true,
+      "stdout": [
+        "Column\tID\tLONG\tunits=4\tnumber=0\tvariable=0\tfixedOffset=0\tcompressed=false\trequired=null\tallowZeroLength=null\tdefault=null\tsort=null",
+        "Column\tScore\tLONG\tunits=4\tnumber=1\tvariable=0\tfixedOffset=4\tcompressed=false\trequired=false\tallowZeroLength=null\tdefault=0\tsort=null",
+        "Column\tScore2\tLONG\tunits=4\tnumber=2\tvariable=0\tfixedOffset=8\tcompressed=false\trequired=false\tallowZeroLength=null\tdefault=0\tsort=null",
+        "Column\tThird\tLONG\tunits=4\tnumber=3\tvariable=0\tfixedOffset=12\tcompressed=false\trequired=false\tallowZeroLength=null\tdefault=0\tsort=null",
+        "Column\tLabel\tTEXT\tunits=255\tnumber=4\tvariable=0\tfixedOffset=0\tcompressed=true\trequired=false\tallowZeroLength=true\tdefault=null\tsort=SortOrder[0x01000409, General]",
+        "Column\tOtherLabel\tTEXT\tunits=255\tnumber=5\tvariable=1\tfixedOffset=0\tcompressed=true\trequired=false\tallowZeroLength=true\tdefault=null\tsort=SortOrder[0x01000409, General]",
+        "Rows\t0",
+        "Indexes\t1",
+        "Created\t1899-12-30T00:00",
+        "Updated\t1899-12-30T00:00",
+        "BeforeSHA256\t628a1a8462a8ee971ffe3a72fffe94e72457ca39a760a0cd52cbb949272d18a6",
+        "AfterSHA256\te92e4b083f17055936b34e23a7d0db84d681a78d7dbf44f5178ccbedc6d252a9"
+      ],
+      "typed_read_only_properties": {
+        "default_present": false,
+        "lines": [
+          "Required\tBOOLEAN\tfalse",
+          "AllowZeroLength\tBOOLEAN\ttrue",
+          "DefaultValuePresent\tfalse"
+        ]
+      },
+      "before_definition": {
+        "current_fields": 5,
+        "maximum_fields": 5,
+        "variable_fields": 1,
+        "definition_bytes": 360,
+        "index_tail_sha256": "b0ab7ea67e49161c2dc505360365ce445c2350c6f596fc2be178db3960d23dbd"
+      },
+      "after_definition": {
+        "current_fields": 6,
+        "maximum_fields": 6,
+        "variable_fields": 2,
+        "definition_bytes": 407,
+        "index_tail_sha256": "b0ab7ea67e49161c2dc505360365ce445c2350c6f596fc2be178db3960d23dbd"
+      },
+      "index_definition_tail_unchanged": true,
+      "before_catalog": {
+        "logical_root_word": "0x4d74",
+        "physical_slot": 8,
+        "physical_span": [
+          3359,
+          3444
+        ],
+        "slots": 9,
+        "free_bytes": 3327,
+        "property_descriptor_hex": "fb000040030a000000000000"
+      },
+      "after_catalog": {
+        "logical_root_word": "0x4d74",
+        "physical_slot": 8,
+        "physical_span": [
+          3359,
+          3444
+        ],
+        "slots": 9,
+        "free_bytes": 3327,
+        "property_descriptor_hex": "2d010040040a000000000000"
+      },
+      "changed_pages": [
+        4,
+        7,
+        10
+      ],
+      "field_hex": "0a59060000050001000500090400010201000000000000fe01",
+      "body_hex": "4d5232005200000080001800440065006600610075006c007400560061006c00750065001000520065007100750069007200650064001e0041006c006c006f0077005a00650072006f004c0065006e00670074006800290000000100100000000a00530063006f00720065000a00010c0000020030000900010101000100002b0000000100120000000c00530063006f007200650032000a00010c000002003000090001010100010000290000000100100000000a00540068006900720064000a00010c000002003000090001010100010000280000000100100000000a004c006100620065006c000900010101000100000900010102000100ff3200000001001a00000014004f0074006800650072004c006100620065006c000900010101000100000900010102000100ff",
+      "dictionary": [
+        "DefaultValue",
+        "Required",
+        "AllowZeroLength"
+      ],
+      "old_property_rows": [
+        {
+          "slot": 0,
+          "span": [
+            4001,
+            4096
+          ],
+          "sha256": "eb32aba93278fe696ff06e0aa1d947a08c828f0bc5e335780fb70f9ef767451f",
+          "unchanged": true
+        },
+        {
+          "slot": 1,
+          "span": [
+            3863,
+            4001
+          ],
+          "sha256": "f718ca6fddd16d6ebe0384ebc52d06a15cf404d1dff60b5db8c29c7b76ac6644",
+          "unchanged": true
+        },
+        {
+          "slot": 2,
+          "span": [
+            3684,
+            3863
+          ],
+          "sha256": "3f94dfae682ac99e823f01896da60a95c0d7bb7070aba7f01d50abf4b218db49",
+          "unchanged": true
+        },
+        {
+          "slot": 3,
+          "span": [
+            3433,
+            3684
+          ],
+          "sha256": "1cd958cff1c4d22e6e5c2fa518c611a9d2481a8c0661723ce8c069f7842d3f0b",
+          "unchanged": true
+        }
+      ],
+      "independent_sha256": "e92e4b083f17055936b34e23a7d0db84d681a78d7dbf44f5178ccbedc6d252a9",
+      "complete_match": true,
+      "first_differences": [],
+      "source_page_9_index_unchanged": true,
+      "source_map_page_3_unchanged": true
+    },
+    {
+      "case": "number-after-label-on-id-only-compressed",
+      "column": "AfterLabel",
+      "source_location": "sdk_files",
+      "source": "id-only-compressed-after.accdb",
+      "output": "number-after-label-on-id-only-compressed-after.accdb",
+      "source_sha256": "5a47a64973b8847ff174cd6f94da6fc7b6fc7eb159b74e8e044a647bc02ac6fb",
+      "after_sha256": "57600b1b190ee87fed1d858076b00fd6f5f83431adc1ff38788a4f952aa0eb98",
+      "source_bytes": 45056,
+      "after_bytes": 45056,
+      "declaration": {
+        "type": "LONG",
+        "required": false,
+        "default": "typed Int32 zero"
+      },
+      "old_label_metadata_unchanged": true,
+      "original_unchanged": true,
+      "stdout": [
+        "ID\tLONG\ttrue\tnull\tRequired=null",
+        "Label\tTEXT\tfalse\tnull\tRequired=false",
+        "AfterLabel\tLONG\tfalse\t0\tRequired=false",
+        "Rows\t0",
+        "Indexes\t1",
+        "Created\t1899-12-30T00:00",
+        "Updated\t1899-12-30T00:00",
+        "BeforeSHA256\t5a47a64973b8847ff174cd6f94da6fc7b6fc7eb159b74e8e044a647bc02ac6fb",
+        "AfterSHA256\t57600b1b190ee87fed1d858076b00fd6f5f83431adc1ff38788a4f952aa0eb98"
+      ],
+      "before_definition": {
+        "current_fields": 2,
+        "maximum_fields": 2,
+        "variable_fields": 1,
+        "definition_bytes": 247,
+        "index_tail_sha256": "b0ab7ea67e49161c2dc505360365ce445c2350c6f596fc2be178db3960d23dbd"
+      },
+      "after_definition": {
+        "current_fields": 3,
+        "maximum_fields": 3,
+        "variable_fields": 1,
+        "definition_bytes": 294,
+        "index_tail_sha256": "b0ab7ea67e49161c2dc505360365ce445c2350c6f596fc2be178db3960d23dbd"
+      },
+      "index_definition_tail_unchanged": true,
+      "before_catalog": {
+        "logical_root_word": "0x4d74",
+        "physical_slot": 8,
+        "physical_span": [
+          3359,
+          3444
+        ],
+        "slots": 9,
+        "free_bytes": 3327,
+        "property_descriptor_hex": "64000040000a000000000000"
+      },
+      "after_catalog": {
+        "logical_root_word": "0x4d74",
+        "physical_slot": 8,
+        "physical_span": [
+          3359,
+          3444
+        ],
+        "slots": 9,
+        "free_bytes": 3327,
+        "property_descriptor_hex": "b1000040010a000000000000"
+      },
+      "changed_pages": [
+        4,
+        7,
+        10
+      ],
+      "field_hex": "04590600000200010002000000000003000000000004000400",
+      "body_hex": "4d5232005200000080001000520065007100750069007200650064001e0041006c006c006f0077005a00650072006f004c0065006e006700740068001800440065006600610075006c007400560061006c0075006500280000000100100000000a004c006100620065006c000900010100000100000900010101000100ff3300000001001a0000001400410066007400650072004c006100620065006c000900010100000100000a00010c020002003000",
+      "dictionary": [
+        "Required",
+        "AllowZeroLength",
+        "DefaultValue"
+      ],
+      "old_property_rows": [
+        {
+          "slot": 0,
+          "span": [
+            3996,
+            4096
+          ],
+          "sha256": "6354955e0c4690eb0dd781c21cf8d2bcb22888a70cc862d52f91c115e1944874",
+          "unchanged": true
+        }
+      ],
+      "independent_sha256": "57600b1b190ee87fed1d858076b00fd6f5f83431adc1ff38788a4f952aa0eb98",
+      "complete_match": true,
+      "first_differences": [],
+      "source_page_9_index_unchanged": true,
+      "source_map_page_3_unchanged": true
+    },
+    {
+      "case": "number-after-label-on-inline-number-compressed",
+      "column": "AfterLabel",
+      "source_location": "sdk_files",
+      "source": "inline-number-compressed-after.accdb",
+      "output": "number-after-label-on-inline-number-compressed-after.accdb",
+      "source_sha256": "08b43874ba150d4d7db4cbf5af409f4ded5fde69577fa43e62d520886ca3be10",
+      "after_sha256": "c8382c58a3a87248230985e2690ab15d8a978e65daa6d230228c43fd493ab73f",
+      "source_bytes": 45056,
+      "after_bytes": 45056,
+      "declaration": {
+        "type": "LONG",
+        "required": false,
+        "default": "typed Int32 zero"
+      },
+      "old_label_metadata_unchanged": true,
+      "original_unchanged": true,
+      "stdout": [
+        "ID\tLONG\ttrue\tnull\tRequired=null",
+        "Score\tLONG\tfalse\t0\tRequired=false",
+        "Label\tTEXT\tfalse\tnull\tRequired=false",
+        "AfterLabel\tLONG\tfalse\t0\tRequired=false",
+        "Rows\t0",
+        "Indexes\t1",
+        "Created\t1899-12-30T00:00",
+        "Updated\t1899-12-30T00:00",
+        "BeforeSHA256\t08b43874ba150d4d7db4cbf5af409f4ded5fde69577fa43e62d520886ca3be10",
+        "AfterSHA256\tc8382c58a3a87248230985e2690ab15d8a978e65daa6d230228c43fd493ab73f"
+      ],
+      "before_definition": {
+        "current_fields": 3,
+        "maximum_fields": 3,
+        "variable_fields": 1,
+        "definition_bytes": 284,
+        "index_tail_sha256": "b0ab7ea67e49161c2dc505360365ce445c2350c6f596fc2be178db3960d23dbd"
+      },
+      "after_definition": {
+        "current_fields": 4,
+        "maximum_fields": 4,
+        "variable_fields": 1,
+        "definition_bytes": 331,
+        "index_tail_sha256": "b0ab7ea67e49161c2dc505360365ce445c2350c6f596fc2be178db3960d23dbd"
+      },
+      "index_definition_tail_unchanged": true,
+      "before_catalog": {
+        "logical_root_word": "0xd09",
+        "physical_slot": 7,
+        "physical_span": [
+          3337,
+          3517
+        ],
+        "slots": 8,
+        "free_bytes": 3307,
+        "property_descriptor_hex": "a7000040000a000000000000"
+      },
+      "after_catalog": {
+        "logical_root_word": "0xd09",
+        "physical_slot": 7,
+        "physical_span": [
+          3337,
+          3517
+        ],
+        "slots": 8,
+        "free_bytes": 3307,
+        "property_descriptor_hex": "da000040010a000000000000"
+      },
+      "changed_pages": [
+        4,
+        7,
+        10
+      ],
+      "field_hex": "04590600000300010003000000000003000000000008000400",
+      "body_hex": "4d5232005200000080001000520065007100750069007200650064001800440065006600610075006c007400560061006c00750065001e0041006c006c006f0077005a00650072006f004c0065006e00670074006800290000000100100000000a00530063006f00720065000900010100000100000a00010c010002003000280000000100100000000a004c006100620065006c000900010100000100000900010102000100ff3300000001001a0000001400410066007400650072004c006100620065006c000900010100000100000a00010c010002003000",
+      "dictionary": [
+        "Required",
+        "DefaultValue",
+        "AllowZeroLength"
+      ],
+      "old_property_rows": [
+        {
+          "slot": 0,
+          "span": [
+            3929,
+            4096
+          ],
+          "sha256": "39e91deb2b6f2ba8fd8fa03406848e07910a24a77b6463bad76f9dc57a4a23a6",
+          "unchanged": true
+        }
+      ],
+      "independent_sha256": "c8382c58a3a87248230985e2690ab15d8a978e65daa6d230228c43fd493ab73f",
+      "complete_match": true,
+      "first_differences": [],
+      "source_page_9_index_unchanged": true,
+      "source_map_page_3_unchanged": true
+    },
+    {
+      "case": "number-after-label-on-two-number-compressed",
+      "column": "AfterLabel",
+      "source_location": "sdk_files",
+      "source": "two-number-compressed-after.accdb",
+      "output": "number-after-label-on-two-number-compressed-after.accdb",
+      "source_sha256": "21299f7253f2dbc22aab30e0b7989daf36b94645f5bee7cb2f9d7f5587a98fdd",
+      "after_sha256": "eec96c35704e9975ef2dbc0959cf697965b7bd0cf7029d58c16dece18049ce0b",
+      "source_bytes": 45056,
+      "after_bytes": 45056,
+      "declaration": {
+        "type": "LONG",
+        "required": false,
+        "default": "typed Int32 zero"
+      },
+      "old_label_metadata_unchanged": true,
+      "original_unchanged": true,
+      "stdout": [
+        "ID\tLONG\ttrue\tnull\tRequired=null",
+        "Score\tLONG\tfalse\t0\tRequired=false",
+        "Score2\tLONG\tfalse\t0\tRequired=false",
+        "Label\tTEXT\tfalse\tnull\tRequired=false",
+        "AfterLabel\tLONG\tfalse\t0\tRequired=false",
+        "Rows\t0",
+        "Indexes\t1",
+        "Created\t1899-12-30T00:00",
+        "Updated\t1899-12-30T00:00",
+        "BeforeSHA256\t21299f7253f2dbc22aab30e0b7989daf36b94645f5bee7cb2f9d7f5587a98fdd",
+        "AfterSHA256\teec96c35704e9975ef2dbc0959cf697965b7bd0cf7029d58c16dece18049ce0b"
+      ],
+      "before_definition": {
+        "current_fields": 4,
+        "maximum_fields": 4,
+        "variable_fields": 1,
+        "definition_bytes": 323,
+        "index_tail_sha256": "b0ab7ea67e49161c2dc505360365ce445c2350c6f596fc2be178db3960d23dbd"
+      },
+      "after_definition": {
+        "current_fields": 5,
+        "maximum_fields": 5,
+        "variable_fields": 1,
+        "definition_bytes": 370,
+        "index_tail_sha256": "b0ab7ea67e49161c2dc505360365ce445c2350c6f596fc2be178db3960d23dbd"
+      },
+      "index_definition_tail_unchanged": true,
+      "before_catalog": {
+        "logical_root_word": "0x4d74",
+        "physical_slot": 8,
+        "physical_span": [
+          3359,
+          3444
+        ],
+        "slots": 9,
+        "free_bytes": 3327,
+        "property_descriptor_hex": "d2000040020a000000000000"
+      },
+      "after_catalog": {
+        "logical_root_word": "0x4d74",
+        "physical_slot": 8,
+        "physical_span": [
+          3359,
+          3444
+        ],
+        "slots": 9,
+        "free_bytes": 3327,
+        "property_descriptor_hex": "05010040030a000000000000"
+      },
+      "changed_pages": [
+        4,
+        7,
+        10
+      ],
+      "field_hex": "0459060000040001000400000000000300000000000c000400",
+      "body_hex": "4d5232005200000080001800440065006600610075006c007400560061006c00750065001000520065007100750069007200650064001e0041006c006c006f0077005a00650072006f004c0065006e00670074006800290000000100100000000a00530063006f00720065000a00010c0000020030000900010101000100002b0000000100120000000c00530063006f007200650032000a00010c000002003000090001010100010000280000000100100000000a004c006100620065006c000900010101000100000900010102000100ff3300000001001a0000001400410066007400650072004c006100620065006c000a00010c000002003000090001010100010000",
+      "dictionary": [
+        "DefaultValue",
+        "Required",
+        "AllowZeroLength"
+      ],
+      "old_property_rows": [
+        {
+          "slot": 0,
+          "span": [
+            4001,
+            4096
+          ],
+          "sha256": "eb32aba93278fe696ff06e0aa1d947a08c828f0bc5e335780fb70f9ef767451f",
+          "unchanged": true
+        },
+        {
+          "slot": 1,
+          "span": [
+            3863,
+            4001
+          ],
+          "sha256": "f718ca6fddd16d6ebe0384ebc52d06a15cf404d1dff60b5db8c29c7b76ac6644",
+          "unchanged": true
+        },
+        {
+          "slot": 2,
+          "span": [
+            3653,
+            3863
+          ],
+          "sha256": "e5aef85a4d626c337d4fd7c34dc8381f4ad0266404f1ef2fe44ec863224693b3",
+          "unchanged": true
+        }
+      ],
+      "independent_sha256": "eec96c35704e9975ef2dbc0959cf697965b7bd0cf7029d58c16dece18049ce0b",
+      "complete_match": true,
+      "first_differences": [],
+      "source_page_9_index_unchanged": true,
+      "source_map_page_3_unchanged": true
+    },
+    {
+      "case": "number-after-label-on-three-number-compressed",
+      "column": "AfterLabel",
+      "source_location": "sdk_files",
+      "source": "three-number-compressed-after.accdb",
+      "output": "number-after-label-on-three-number-compressed-after.accdb",
+      "source_sha256": "628a1a8462a8ee971ffe3a72fffe94e72457ca39a760a0cd52cbb949272d18a6",
+      "after_sha256": "41d0da72909b53a86250b70d37b88b096d13c34aa09ef72f8e1e31cd4dd088c7",
+      "source_bytes": 45056,
+      "after_bytes": 45056,
+      "declaration": {
+        "type": "LONG",
+        "required": false,
+        "default": "typed Int32 zero"
+      },
+      "old_label_metadata_unchanged": true,
+      "original_unchanged": true,
+      "stdout": [
+        "ID\tLONG\ttrue\tnull\tRequired=null",
+        "Score\tLONG\tfalse\t0\tRequired=false",
+        "Score2\tLONG\tfalse\t0\tRequired=false",
+        "Third\tLONG\tfalse\t0\tRequired=false",
+        "Label\tTEXT\tfalse\tnull\tRequired=false",
+        "AfterLabel\tLONG\tfalse\t0\tRequired=false",
+        "Rows\t0",
+        "Indexes\t1",
+        "Created\t1899-12-30T00:00",
+        "Updated\t1899-12-30T00:00",
+        "BeforeSHA256\t628a1a8462a8ee971ffe3a72fffe94e72457ca39a760a0cd52cbb949272d18a6",
+        "AfterSHA256\t41d0da72909b53a86250b70d37b88b096d13c34aa09ef72f8e1e31cd4dd088c7"
+      ],
+      "before_definition": {
+        "current_fields": 5,
+        "maximum_fields": 5,
+        "variable_fields": 1,
+        "definition_bytes": 360,
+        "index_tail_sha256": "b0ab7ea67e49161c2dc505360365ce445c2350c6f596fc2be178db3960d23dbd"
+      },
+      "after_definition": {
+        "current_fields": 6,
+        "maximum_fields": 6,
+        "variable_fields": 1,
+        "definition_bytes": 407,
+        "index_tail_sha256": "b0ab7ea67e49161c2dc505360365ce445c2350c6f596fc2be178db3960d23dbd"
+      },
+      "index_definition_tail_unchanged": true,
+      "before_catalog": {
+        "logical_root_word": "0x4d74",
+        "physical_slot": 8,
+        "physical_span": [
+          3359,
+          3444
+        ],
+        "slots": 9,
+        "free_bytes": 3327,
+        "property_descriptor_hex": "fb000040030a000000000000"
+      },
+      "after_catalog": {
+        "logical_root_word": "0x4d74",
+        "physical_slot": 8,
+        "physical_span": [
+          3359,
+          3444
+        ],
+        "slots": 9,
+        "free_bytes": 3327,
+        "property_descriptor_hex": "2e010040040a000000000000"
+      },
+      "changed_pages": [
+        4,
+        7,
+        10
+      ],
+      "field_hex": "04590600000500010005000000000003000000000010000400",
+      "body_hex": "4d5232005200000080001800440065006600610075006c007400560061006c00750065001000520065007100750069007200650064001e0041006c006c006f0077005a00650072006f004c0065006e00670074006800290000000100100000000a00530063006f00720065000a00010c0000020030000900010101000100002b0000000100120000000c00530063006f007200650032000a00010c000002003000090001010100010000290000000100100000000a00540068006900720064000a00010c000002003000090001010100010000280000000100100000000a004c006100620065006c000900010101000100000900010102000100ff3300000001001a0000001400410066007400650072004c006100620065006c000a00010c000002003000090001010100010000",
+      "dictionary": [
+        "DefaultValue",
+        "Required",
+        "AllowZeroLength"
+      ],
+      "old_property_rows": [
+        {
+          "slot": 0,
+          "span": [
+            4001,
+            4096
+          ],
+          "sha256": "eb32aba93278fe696ff06e0aa1d947a08c828f0bc5e335780fb70f9ef767451f",
+          "unchanged": true
+        },
+        {
+          "slot": 1,
+          "span": [
+            3863,
+            4001
+          ],
+          "sha256": "f718ca6fddd16d6ebe0384ebc52d06a15cf404d1dff60b5db8c29c7b76ac6644",
+          "unchanged": true
+        },
+        {
+          "slot": 2,
+          "span": [
+            3684,
+            3863
+          ],
+          "sha256": "3f94dfae682ac99e823f01896da60a95c0d7bb7070aba7f01d50abf4b218db49",
+          "unchanged": true
+        },
+        {
+          "slot": 3,
+          "span": [
+            3433,
+            3684
+          ],
+          "sha256": "1cd958cff1c4d22e6e5c2fa518c611a9d2481a8c0661723ce8c069f7842d3f0b",
+          "unchanged": true
+        }
+      ],
+      "independent_sha256": "41d0da72909b53a86250b70d37b88b096d13c34aa09ef72f8e1e31cd4dd088c7",
+      "complete_match": true,
+      "first_differences": [],
+      "source_page_9_index_unchanged": true,
+      "source_map_page_3_unchanged": true
+    },
+    {
+      "case": "id-only-width1-compressed",
+      "column": "Label",
+      "source_location": "inputs",
+      "source": "generated-primary-before.accdb",
+      "output": "id-only-width1-compressed-after.accdb",
+      "source_sha256": "b52d124892cdaab8fbe9c5028c876f57f1f82ee280cea7984aad68f1ead5eb13",
+      "after_sha256": "06dd5d0cb676ba32fab564b8497e4ec5400d535a7b33a37cec86b5583d684067",
+      "source_bytes": 40960,
+      "after_bytes": 45056,
+      "declaration": {
+        "type": "TEXT",
+        "units": 1,
+        "required": false,
+        "allow_zero_length": true,
+        "default": "absent",
+        "unicode_compression": true
+      },
+      "original_unchanged": true,
+      "width_getter_observed": true,
+      "stdout": [
+        "Column\tID\tLONG\tunits=4\tnumber=0\tvariable=0\tfixedOffset=0\tcompressed=false\trequired=null\tallowZeroLength=null\tdefault=null\tsort=null",
+        "Column\tLabel\tTEXT\tunits=1\tnumber=1\tvariable=0\tfixedOffset=0\tcompressed=true\trequired=false\tallowZeroLength=true\tdefault=null\tsort=SortOrder[0x01000409, General]",
+        "Rows\t0",
+        "Indexes\t1",
+        "Created\t1899-12-30T00:00",
+        "Updated\t1899-12-30T00:00",
+        "BeforeSHA256\tb52d124892cdaab8fbe9c5028c876f57f1f82ee280cea7984aad68f1ead5eb13",
+        "AfterSHA256\t06dd5d0cb676ba32fab564b8497e4ec5400d535a7b33a37cec86b5583d684067"
+      ],
+      "before_definition": {
+        "current_fields": 1,
+        "maximum_fields": 1,
+        "variable_fields": 0,
+        "definition_bytes": 210,
+        "index_tail_sha256": "b0ab7ea67e49161c2dc505360365ce445c2350c6f596fc2be178db3960d23dbd"
+      },
+      "after_definition": {
+        "current_fields": 2,
+        "maximum_fields": 2,
+        "variable_fields": 1,
+        "definition_bytes": 247,
+        "index_tail_sha256": "b0ab7ea67e49161c2dc505360365ce445c2350c6f596fc2be178db3960d23dbd"
+      },
+      "index_definition_tail_unchanged": true,
+      "before_catalog": {
+        "logical_root_word": "0xd74",
+        "physical_slot": 7,
+        "physical_span": [
+          3444,
+          3517
+        ],
+        "slots": 8,
+        "free_bytes": 3414,
+        "property_descriptor_hex": ""
+      },
+      "after_catalog": {
+        "logical_root_word": "0x4d74",
+        "physical_slot": 8,
+        "physical_span": [
+          3359,
+          3444
+        ],
+        "slots": 9,
+        "free_bytes": 3327,
+        "property_descriptor_hex": "64000040000a000000000000"
+      },
+      "changed_pages": [
+        3,
+        4,
+        7,
+        10
+      ],
+      "field_hex": "0a590600000100000001000904000102010000000000000200",
+      "body_hex": "4d5232003800000080001000520065007100750069007200650064001e0041006c006c006f0077005a00650072006f004c0065006e00670074006800280000000100100000000a004c006100620065006c000900010100000100000900010101000100ff",
+      "dictionary": [
+        "Required",
+        "AllowZeroLength"
+      ],
+      "old_property_rows": [],
+      "independent_sha256": "06dd5d0cb676ba32fab564b8497e4ec5400d535a7b33a37cec86b5583d684067",
+      "complete_match": true,
+      "first_differences": [],
+      "source_page_9_index_unchanged": true,
+      "source_map_page_3_unchanged": false
+    },
+    {
+      "case": "id-only-width80-compressed",
+      "column": "Label",
+      "source_location": "inputs",
+      "source": "generated-primary-before.accdb",
+      "output": "id-only-width80-compressed-after.accdb",
+      "source_sha256": "b52d124892cdaab8fbe9c5028c876f57f1f82ee280cea7984aad68f1ead5eb13",
+      "after_sha256": "1c7c7d6128fdbbcd752591a7672b6a9ece24c82c3dee5a00e1ed964c08ef0b4c",
+      "source_bytes": 40960,
+      "after_bytes": 45056,
+      "declaration": {
+        "type": "TEXT",
+        "units": 80,
+        "required": false,
+        "allow_zero_length": true,
+        "default": "absent",
+        "unicode_compression": true
+      },
+      "original_unchanged": true,
+      "width_getter_observed": true,
+      "stdout": [
+        "Column\tID\tLONG\tunits=4\tnumber=0\tvariable=0\tfixedOffset=0\tcompressed=false\trequired=null\tallowZeroLength=null\tdefault=null\tsort=null",
+        "Column\tLabel\tTEXT\tunits=80\tnumber=1\tvariable=0\tfixedOffset=0\tcompressed=true\trequired=false\tallowZeroLength=true\tdefault=null\tsort=SortOrder[0x01000409, General]",
+        "Rows\t0",
+        "Indexes\t1",
+        "Created\t1899-12-30T00:00",
+        "Updated\t1899-12-30T00:00",
+        "BeforeSHA256\tb52d124892cdaab8fbe9c5028c876f57f1f82ee280cea7984aad68f1ead5eb13",
+        "AfterSHA256\t1c7c7d6128fdbbcd752591a7672b6a9ece24c82c3dee5a00e1ed964c08ef0b4c"
+      ],
+      "before_definition": {
+        "current_fields": 1,
+        "maximum_fields": 1,
+        "variable_fields": 0,
+        "definition_bytes": 210,
+        "index_tail_sha256": "b0ab7ea67e49161c2dc505360365ce445c2350c6f596fc2be178db3960d23dbd"
+      },
+      "after_definition": {
+        "current_fields": 2,
+        "maximum_fields": 2,
+        "variable_fields": 1,
+        "definition_bytes": 247,
+        "index_tail_sha256": "b0ab7ea67e49161c2dc505360365ce445c2350c6f596fc2be178db3960d23dbd"
+      },
+      "index_definition_tail_unchanged": true,
+      "before_catalog": {
+        "logical_root_word": "0xd74",
+        "physical_slot": 7,
+        "physical_span": [
+          3444,
+          3517
+        ],
+        "slots": 8,
+        "free_bytes": 3414,
+        "property_descriptor_hex": ""
+      },
+      "after_catalog": {
+        "logical_root_word": "0x4d74",
+        "physical_slot": 8,
+        "physical_span": [
+          3359,
+          3444
+        ],
+        "slots": 9,
+        "free_bytes": 3327,
+        "property_descriptor_hex": "64000040000a000000000000"
+      },
+      "changed_pages": [
+        3,
+        4,
+        7,
+        10
+      ],
+      "field_hex": "0a59060000010000000100090400010201000000000000a000",
+      "body_hex": "4d5232003800000080001000520065007100750069007200650064001e0041006c006c006f0077005a00650072006f004c0065006e00670074006800280000000100100000000a004c006100620065006c000900010100000100000900010101000100ff",
+      "dictionary": [
+        "Required",
+        "AllowZeroLength"
+      ],
+      "old_property_rows": [],
+      "independent_sha256": "1c7c7d6128fdbbcd752591a7672b6a9ece24c82c3dee5a00e1ed964c08ef0b4c",
+      "complete_match": true,
+      "first_differences": [],
+      "source_page_9_index_unchanged": true,
+      "source_map_page_3_unchanged": false
+    }
+  ],
+  "model": "docs/testing/short_text_add/model.py",
+  "model_sha256": "640514975f34cd3468f4672e0cd9e9a516f15a439c5005c71d3f3d3a5e969a5b",
+  "raw_helper": "docs/testing/number_column_repeat/raw.py",
+  "raw_helper_sha256": "4bba92ee109e8318ef9b47ac541ddbaf1068a14c5d939dca5db80e535acc182c",
+  "third_independent_complete_match": true,
+  "third_independent_sha256": "337e03454d5aa233f66087301d5e8fe50092c4e90dfa4a65888430cdb9f61dd6",
+  "date": "2026-11-08",
+  "helper": {
+    "source": "docs/testing/short_text_add/CreatedShortTextColumnOracle.java",
+    "sha256": "74b09b0ae88486dcf395d85c8fd4b4e454900c80e256c3a888e3894a3ac7f19e"
+  },
+  "property_observer": {
+    "source": "docs/testing/short_text_add/ShortTextProperties.java",
+    "sha256": "c471fabb0be3cbf2986bdfcd938c98d223a9088754dbe12234f07fe4fb6b35ad",
+    "read_only": true,
+    "all8_pass": true,
+    "followup_text_count": 4,
+    "old_label_after_number_count": 4
+  },
+  "retained_failure": {
+    "scope": "Observation-report augmentation only",
+    "error": "Local declaration dict shadowed observation helper name; corrected before portable model pass",
+    "expected_byte_algorithms_changed": false,
+    "SDK_outputs_changed": false
+  },
+  "native_access": "Unrun",
+  "native_short_text_add_candidate": "Not implemented; no new admission or wire",
+  "execution_history": {
+    "CreatedShortTextColumnOracle.java": "74b09b0ae88486dcf395d85c8fd4b4e454900c80e256c3a888e3894a3ac7f19e",
+    "ShortTextProperties.java": "c471fabb0be3cbf2986bdfcd938c98d223a9088754dbe12234f07fe4fb6b35ad",
+    "probe.py": "2640a7db322cdbffbde944d4e5dcf643dd7995508396256b7940f8b64f074a6b",
+    "repeat_probe.py": "e06d406fcd4bae2e4ccc23beb3524f89bfd8750b8d607e7e01c71d5235b30a99",
+    "mixed_number_probe.py": "cec9c03f56b0e2779669c7968721a23c992765ca97c5f98adc6e9f6d40a42cbb",
+    "model.py": "fa9d894e911ebbe6e0726979bbed409d0be62108d2ceb45b208cd92694baabf7",
+    "sdk-observations.json": "a251508ed123c92f339f4965ba62389b61effb6362a0eb4ff8c96d40bf822a9e",
+    "sdk-complete-observations.json": "d97a2fc2da8874aae3e3f87b34ad79b0694656c2f7932a96881263458f4b0a0b",
+    "sdk-mixed-complete-observations.json": "cd9fe8b522be1a945b18df9a0e5c4f1a6f8603553f7d4f240d100a2cb4b93494",
+    "independent-comparison.json": "a99e9bd6e3c9a5866edf1b4cfd1086510fd1d062fd21e2de8ee42d2c59f2a9e3",
+    "property-observations.json": "86bd6c67f938db75bbafa3df7cab175ec0059feb168b5a14a1a5bb0ba3c91d29",
+    "portable-observation-failure.json": "6f7606bb99485aa015cc8e0cdfbd91c4f371fa5b9235d15cf540f537b95135d5",
+    "width_probe.py": "96ba3944967b7418c976e7de9b8e44c4519c9d058160ef5e26beb40afbf37cf7",
+    "sdk-width-complete-observations.json": "ef55ed122a651eb8280cd28a9f8e1e43322e0e0c6210cbc733b47c89e5997d23"
+  },
+  "portable_model_rerun": "All18ShortText/mixed/width+thirdNumber complete matches; original SDK bytes unchanged",
+  "portable_probe_execution": "Not repeated; its unchanged Java helper owners executed in recorded original stages"
+}

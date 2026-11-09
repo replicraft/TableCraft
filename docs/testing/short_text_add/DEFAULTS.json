@@ -1,0 +1,83 @@
+{
+  "date": "2026-11-08",
+  "declaration_under_review": {
+    "native_type": "TEXT",
+    "length_utf16_units": 255,
+    "required": false,
+    "allow_zero_length": true,
+    "stored_default": "Absent",
+    "current_tablecraft_unicode_compression": false,
+    "documented_access_ui_unicode_compression": true
+  },
+  "primary_references": [
+    {
+      "title": "Required property (Access)",
+      "url": "https://learn.microsoft.com/en-us/office/vba/access/concepts/miscellaneous/required-property-access",
+      "observed": "2026-11-08",
+      "facts": "No/false is the documented default; the property distinguishes NULL validity and excludes AutoNumber. This does not define native serialized property bytes."
+    },
+    {
+      "title": "AllowZeroLength property",
+      "url": "https://learn.microsoft.com/en-us/office/vba/access/concepts/miscellaneous/allowzerolength-property",
+      "observed": "2026-11-08",
+      "facts": "The documented Access user-interface creation default is Yes/true, whereas programmatic creation defaults to No/false. With Required No, omitted blank input can be NULL while an explicitly entered empty string is valid."
+    },
+    {
+      "title": "Create or delete a Short Text field",
+      "url": "https://support.microsoft.com/en-us/access/create-or-delete-a-short-text-field",
+      "observed": "2026-11-08",
+      "facts": "Documents Click to Add, Short Text, naming and Save for an existing table, and Unicode Compression UI default Yes. The page inconsistently mentions 256 in places while other primary references specify 255; this experiment explicitly requests 255 and does not resolve broader application defaults."
+    },
+    {
+      "title": "Field.Size property (DAO)",
+      "url": "https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/field-size-property-dao",
+      "observed": "2026-11-08",
+      "facts": "Specifies a maximum text size of 255 for Access databases. The experiment's 255 UTF16-unit constraint is explicit and is not a claim about every Access UI version's default or supplementary-character counting."
+    },
+    {
+      "title": "Set the field size",
+      "url": "https://support.microsoft.com/en-us/access/set-the-field-size",
+      "observed": "2026-11-08",
+      "facts": "Modern desktop field-size instructions allow 1 through 255. An older FieldSize property reference separately states a default of 50; no universal native application-default size is inferred."
+    },
+    {
+      "title": "FieldSize property",
+      "url": "https://learn.microsoft.com/en-us/office/vba/access/concepts/miscellaneous/fieldsize-property",
+      "observed": "2026-11-08",
+      "facts": "States a Text default of 50; this is recorded as a primary-reference/version/settings distinction, not silently reconciled with the current TableDraft explicit 255 target."
+    }
+  ],
+  "owning_current_code": [
+    {
+      "path": "crates/presentation/tablecraft-builders/src/table/model/properties.rs",
+      "facts": "FieldProperties::new selects SHORT_TEXT_UNITS, ordinary Required Some(false), AllowZeroLength Some(true), and DraftDefaultMode::TypeDefault. The public getter exposes AllowZeroLength only for ShortText.",
+      "source_sha256": "e1616031e2173143b88854d9b530f6c5df9ecb27d13a0a99e1f69fc00d9d9b3f"
+    },
+    {
+      "path": "crates/application/tablecraft-runtime/src/editing/platform/native/table_creation/declaration.rs",
+      "facts": "ShortText lowers via CreateColumn::short_text; type_default returns None, and explicit Required/AllowZeroLength properties lower independently.",
+      "source_sha256": "aa8e87edf04818ef5afcff17c6ac710a366bfe36bd663ddea2df27a5a0d0b150"
+    },
+    {
+      "path": "crates/engines/tablecraft-ace/src/creation/definition.rs",
+      "facts": "The current creator writes the usual updatable variable-field flags and leaves extended flags zero, so UnicodeCompression is off. The SDK uncompressed twin matches this physical declaration; the compressed twin sets exactly the extended flag byte to 1.",
+      "source_sha256": "db9955b72c3ea4d36156f0fec0d5aa1863a859d2eae038a9fdc67b9f0c729dde"
+    },
+    {
+      "path": "crates/presentation/tablecraft-builders/src/table/mod.rs",
+      "facts": "SHORT_TEXT_UNITS is the explicit 255 constructor constant; MIN_SHORT_TEXT_UNITS is 1.",
+      "source_sha256": "3ac675cf9ecd4b5e7237505e5c102f4f2191fc8a0316606d6757eb4ef8c21a47"
+    }
+  ],
+  "limits": [
+    "No native Microsoft Access or Windows application execution was performed.",
+    "Microsoft conceptual true/false values do not supply native Boolean property encoding; the independent SDK/raw body comparison separately establishes 00 and ff in these explicit properties.",
+    "No new wire language, writer admission, runtime/GUI service or global creator default is changed.",
+    "Future UI ShortText ADD should explicitly select compression true only after the owning typed declaration and source-preservation contract is implemented; existing default false creator and frozen intents remain unchanged."
+  ],
+  "explicit_width_probe_units": [
+    1,
+    80,
+    255
+  ]
+}

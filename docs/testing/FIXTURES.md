@@ -11247,3 +11247,29 @@ all 13 retained SDK outputs. No production codec, third-party source or publishe
 database/class/JAR is used as an oracle. This is SDK/raw-model storage evidence,
 not native rollover, Microsoft Access, event/timestamp, compiled-cache, another
 allocation shape or older-profile qualification.
+
+
+## Explicit Short Text and mixed-column reference — 8 November 2026
+
+The [first-party Short Text helper, metadata observer and independent model](short_text_add/README.md)
+produce eighteen complete SDK/raw matches: compression-off/on twins on four
+source classes, another compressed Short Text field on those outputs, and the
+unchanged Number helper's explicit-zero declaration after compressed Short Text.
+A separate third Number operation also matches a complete independent image.
+Every SDK operation copies its input, disables expression evaluation, reopens
+read-only and preserves its original. The SDK is the same reviewed Apache-2.0
+Jackcess5.0.4 JAR; no third-party source/database, generated class or JAR is tracked.
+
+The [report](results/add-short-text-sdk-source-2026-11-08.json) pins every image,
+executed helper/model/report history and portable raw-model rerun. The raw model
+imports only the maintained first-party Number framing owner, never production
+or SDK encoders. It records exact property absence, typed Boolean/Memo carriers,
+field metadata and all untouched index/property-row bytes. The initial observation
+report helper-name collision is preserved separately from corrected full matches;
+expected byte algorithms and SDK outputs were unchanged.
+
+The [primary-reference/producer audit](short_text_add/DEFAULTS.json) distinguishes
+Required false, Access UI AllowZeroLength true versus programmatic false, explicit
+255-unit target, and the current creator's compression-off gap versus documented
+UI compression-on. These sources do not authorize a native writer, change a
+frozen constructor/default/wire language, or establish Microsoft Access behavior.

@@ -309,3 +309,22 @@ creation+journal without preview. This is bounded repeated ADD, not saved-field
 rename/drop, general column CRUD or Access 97–2019/native Microsoft Access
 qualification. The earlier native and consumer checkpoints, zero-match selection
 attempt and corrected test-helper build failure remain separately recorded.
+
+
+## Short Text and mixed-source evidence checkpoint
+
+The [new independent reference](../../testing/short_text_add/README.md) records
+eighteen complete SDK/raw AFTER matches for explicit TEXT255 with Required(false),
+AllowZeroLength(true), no DefaultValue property and separate compression-off/on
+twins; repeated Text and Number-after-Text compositions retain all original
+property rows and field facts. A separate third Number SDK image closes the
+earlier raw-only history observation. These are new source/target byte oracles,
+not native Short Text candidate, persistence or GUI admission.
+
+Actual current TableDraft metadata has the same declared width/policies/default
+absence but the existing creator leaves UnicodeCompression off. Microsoft
+documents the Access UI compression default as on. A future typed native opt-in
+can preserve old defaults and images while making that new target explicit;
+source reconstruction must preserve each original field's actual compression
+and AZL/default presence. No generic raw flags, silent global default flip or
+new wire version is introduced by this evidence checkpoint.
