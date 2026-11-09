@@ -1,5 +1,6 @@
 //! Thin host ownership of native Number review, save and full-witness reopening.
 mod completion;
+mod inspection_completion;
 
 use super::{ActiveSave, SaveOwner};
 use crate::workspace::{Desktop, PendingOperation, filtering::RestoreFilter};

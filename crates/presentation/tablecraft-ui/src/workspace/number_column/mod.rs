@@ -6,6 +6,7 @@
 mod close;
 mod dialog;
 pub(crate) mod header;
+mod inspection_completion;
 mod state;
 mod status;
 
@@ -65,6 +66,13 @@ pub(super) struct Inspection {
     request_id: Option<u64>,
     available: Option<bool>,
     error: Option<String>,
+    interrupted: bool,
+}
+
+impl Inspection {
+    fn pending(&self) -> bool {
+        self.available.is_none() && self.error.is_none() && !self.interrupted
+    }
 }
 
 #[derive(Default)]
@@ -140,18 +148,18 @@ impl Model {
             request_id: None,
             available: None,
             error: None,
+            interrupted: false,
         });
         self.inspections = storage;
         Ok(())
     }
 
     pub(super) fn bind_inspection(&mut self, tab: &ObjectTab, request_id: u64) -> bool {
-        let Some(inspection) = self.inspections.iter_mut().find(|item| {
-            item.tab == *tab
-                && item.request_id.is_none()
-                && item.available.is_none()
-                && item.error.is_none()
-        }) else {
+        let Some(inspection) = self
+            .inspections
+            .iter_mut()
+            .find(|item| item.tab == *tab && item.request_id.is_none() && item.pending())
+        else {
             return false;
         };
         inspection.request_id = Some(request_id);
@@ -162,7 +170,7 @@ impl Model {
     /// response must resolve before their cache slot may be retired.
     pub(super) fn prune_inspections(&mut self, mut live: impl FnMut(&ObjectTab) -> bool) {
         self.inspections
-            .retain(|item| live(&item.tab) || (item.available.is_none() && item.error.is_none()));
+            .retain(|item| live(&item.tab) || (item.pending()));
     }
 
     pub(super) fn needs_inspection(&self, tab: &ObjectTab) -> bool {
@@ -176,9 +184,11 @@ impl Model {
         if self.draft.is_some() {
             return false;
         }
-        let Some(position) = self.inspections.iter().position(|inspection| {
-            inspection.tab == *tab && (inspection.available.is_some() || inspection.error.is_some())
-        }) else {
+        let Some(position) = self
+            .inspections
+            .iter()
+            .position(|inspection| inspection.tab == *tab && !inspection.pending())
+        else {
             return false;
         };
         self.inspections.remove(position);
@@ -189,8 +199,7 @@ impl Model {
         let Some(inspection) = self.inspections.iter_mut().find(|inspection| {
             inspection.tab == *tab
                 && inspection.request_id == Some(request_id)
-                && inspection.available.is_none()
-                && inspection.error.is_none()
+                && inspection.pending()
         }) else {
             return false;
         };
@@ -207,8 +216,7 @@ impl Model {
         let Some(inspection) = self.inspections.iter_mut().find(|inspection| {
             inspection.tab == *tab
                 && inspection.request_id == Some(request_id)
-                && inspection.available.is_none()
-                && inspection.error.is_none()
+                && inspection.pending()
         }) else {
             return false;
         };

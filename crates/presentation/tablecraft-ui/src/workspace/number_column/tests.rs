@@ -260,7 +260,7 @@ fn inspection_capacity_keeps_existing_terminal_and_pending_owners() {
     assert!(model.observed(&tab(last_id, 19, &format!("Table{last_id}")), last_id, true));
 }
 
-mod interaction;
+pub(in crate::workspace::number_column) mod interaction;
 
 #[test]
 fn closed_pending_owner_resolves_before_retirement_and_sequential_tab_cycles_do_not_exhaust_cache()

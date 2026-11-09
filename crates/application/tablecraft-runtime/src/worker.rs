@@ -546,6 +546,13 @@ impl Worker {
         id
     }
 
+    /// Whether this exact readonly request still owns reply publication.
+    /// Superseding or cancelling revokes publication immediately; native work
+    /// may still be checking cancellation. This says nothing about SaveWorker.
+    pub fn publication_is_current(&self, id: u64) -> bool {
+        id != 0 && self.shared.generation.load(Ordering::Acquire) == id
+    }
+
     pub fn poll(&self) -> Option<Reply> {
         let response = self.shared.response.lock().unwrap().take()?;
         (response.0 == self.shared.generation.load(Ordering::Acquire)).then_some(response)

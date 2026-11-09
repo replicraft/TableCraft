@@ -89,3 +89,6 @@ datasheet-number-close-unavailable = 지금은 이 필드를 저장할 수 없�
 datasheet-number-close-save = 저장
 datasheet-number-close-discard = 저장 안 함
 datasheet-number-close-cancel = 취소
+
+# Interrupted readonly field eligibility observation.
+datasheet-number-inspection-interrupted = 필드 확인이 중단되었습니다. 이 테이블을 다시 확인하세요.

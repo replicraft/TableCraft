@@ -89,3 +89,6 @@ datasheet-number-close-unavailable = Сейчас это поле сохрани
 datasheet-number-close-save = Сохранить
 datasheet-number-close-discard = Не сохранять
 datasheet-number-close-cancel = Отмена
+
+# Interrupted readonly field eligibility observation.
+datasheet-number-inspection-interrupted = Проверка поля прервана. Повторите проверку этой таблицы.

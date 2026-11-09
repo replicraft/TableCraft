@@ -91,7 +91,7 @@ impl State {
             .iter()
             .find(|item| item.tab == *tab)?;
         Some((
-            observation.available.is_none() && observation.error.is_none(),
+            observation.pending(),
             observation.available,
             observation.error.as_deref(),
         ))

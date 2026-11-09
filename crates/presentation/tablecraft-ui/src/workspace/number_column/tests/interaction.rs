@@ -6,7 +6,7 @@ use egui_kittest::{
     kittest::{NodeT, Queryable},
 };
 
-fn state(available: bool) -> State {
+pub(in crate::workspace::number_column) fn state(available: bool) -> State {
     let mut state = State {
         number_column_available: available,
         database: Some(Database {

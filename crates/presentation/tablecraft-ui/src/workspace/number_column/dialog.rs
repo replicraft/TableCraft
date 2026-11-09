@@ -152,7 +152,11 @@ impl State {
                 diagnostics::show(ui, ui.id().with("number_source_error"), message);
             }
         }
-        if (error.is_some() || available == Some(false))
+        let interrupted = self.number_column_inspection_interrupted(&tab);
+        if interrupted {
+            ui.label(tr(ui, "datasheet-number-inspection-interrupted"));
+        }
+        if (error.is_some() || available == Some(false) || interrupted)
             && !self.busy
             && !self.number_column_open()
             && ui

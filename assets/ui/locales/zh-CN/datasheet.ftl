@@ -89,3 +89,6 @@ datasheet-number-close-unavailable = 当前无法保存此字段。
 datasheet-number-close-save = 保存
 datasheet-number-close-discard = 不保存
 datasheet-number-close-cancel = 取消
+
+# Interrupted readonly field eligibility observation.
+datasheet-number-inspection-interrupted = 字段检查已中断。请重试以再次检查此表。

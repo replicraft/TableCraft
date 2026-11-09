@@ -16,7 +16,7 @@ use tablecraft_ui::{ObjectKind, ObjectTarget};
 fn click(harness: &mut Harness<'_, Desktop>, label: &str) {
     harness
         .get_all_by_role_and_label(Role::Button, label)
-        .find(|node| !node.is_disabled())
+        .find(|node| !node.accesskit_node().is_disabled())
         .expect("enabled modal choice")
         .click_accesskit();
     harness.run_steps(1);

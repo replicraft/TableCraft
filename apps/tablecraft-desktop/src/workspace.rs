@@ -416,8 +416,10 @@ impl Desktop {
     }
 
     fn poll(&mut self) {
+        self.retire_number_inspection_publications();
         while let Some((generation, result)) = self.worker.poll() {
             if generation != self.generation {
+                self.finish_superseded_number_inspection(generation, result);
                 continue;
             }
             self.state.busy = false;

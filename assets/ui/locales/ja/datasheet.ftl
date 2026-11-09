@@ -89,3 +89,6 @@ datasheet-number-close-unavailable = 現在、このフィールドを保存で�
 datasheet-number-close-save = 保存
 datasheet-number-close-discard = 保存しない
 datasheet-number-close-cancel = キャンセル
+
+# Interrupted readonly field eligibility observation.
+datasheet-number-inspection-interrupted = フィールドの確認が中断されました。このテーブルを再確認してください。

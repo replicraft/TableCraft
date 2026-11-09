@@ -89,3 +89,6 @@ datasheet-number-close-unavailable = Não é possível salvar este campo agora.
 datasheet-number-close-save = Salvar
 datasheet-number-close-discard = Não salvar
 datasheet-number-close-cancel = Cancelar
+
+# Interrupted readonly field eligibility observation.
+datasheet-number-inspection-interrupted = A verificação do campo foi interrompida. Tente novamente para verificar esta tabela.
