@@ -75,29 +75,30 @@ datasheet-no-filter = Kein Filter
 datasheet-filtered = Gefiltert
 datasheet-page-tools = Seitenwerkzeuge
 
-# Saved-table Number field review and checked reopen.
-datasheet-number-inspecting = Die Möglichkeit zum Hinzufügen eines Zahlenfelds wird geprüft…
-datasheet-number-reviewing = Das neue Zahlenfeld wird geprüft…
-datasheet-number-reopening = Die gespeicherte Tabelle wird erneut geöffnet…
-datasheet-number-retry-inspection = Feldprüfung wiederholen
+# Saved-table field addition review and checked reopen.
+datasheet-field-title = Feld
+datasheet-field-inspecting = Die Möglichkeit zum Hinzufügen eines Felds wird geprüft…
+datasheet-field-reviewing = Das neue Feld wird geprüft…
+datasheet-field-reopening = Die gespeicherte Tabelle wird erneut geöffnet…
+datasheet-field-retry-inspection = Feldprüfung wiederholen
 
-# Saved Number field close confirmation
-datasheet-number-close-title = Feldänderungen speichern?
-datasheet-number-close-question = Das neue Feld „{ $column }“ in der Tabelle „{ $table }“ speichern?
-datasheet-number-close-stale = Der Feldname oder die Tabelle wurde geändert. Schließen Sie diese Abfrage und versuchen Sie es erneut.
-datasheet-number-close-unavailable = Dieses Feld kann momentan nicht gespeichert werden.
-datasheet-number-close-save = Speichern
-datasheet-number-close-discard = Nicht speichern
-datasheet-number-close-cancel = Abbrechen
+# Saved field close confirmation
+datasheet-field-close-title = Feldänderungen speichern?
+datasheet-field-close-question = Das neue Feld „{ $column }“ in der Tabelle „{ $table }“ speichern?
+datasheet-field-close-stale = Der Feldname oder die Tabelle wurde geändert. Schließen Sie diese Abfrage und versuchen Sie es erneut.
+datasheet-field-close-unavailable = Dieses Feld kann momentan nicht gespeichert werden.
+datasheet-field-close-save = Speichern
+datasheet-field-close-discard = Nicht speichern
+datasheet-field-close-cancel = Abbrechen
 
 # Interrupted readonly field eligibility observation.
-datasheet-number-inspection-interrupted = Die Feldprüfung wurde unterbrochen. Wiederholen Sie die Prüfung dieser Tabelle.
+datasheet-field-inspection-interrupted = Die Feldprüfung wurde unterbrochen. Wiederholen Sie die Prüfung dieser Tabelle.
 
 # Known saved field after failed checked reopening.
-datasheet-number-saved-warning = Das Feld wurde gespeichert, aber die Datenbank konnte nicht verifiziert werden. Öffnen Sie die Datenbank vor dem nächsten Speichern erneut.
-datasheet-number-abandon-title = Feldentwurf schließen?
-datasheet-number-abandon-question = Das Feld wurde gespeichert. Das Schließen dieses Entwurfs macht die Speicherung nicht rückgängig.
-datasheet-number-abandon-discard = Entwurf schließen
+datasheet-field-saved-warning = Das Feld wurde gespeichert, aber die Datenbank konnte nicht verifiziert werden. Öffnen Sie die Datenbank vor dem nächsten Speichern erneut.
+datasheet-field-abandon-title = Feldentwurf schließen?
+datasheet-field-abandon-question = Das Feld wurde gespeichert. Das Schließen dieses Entwurfs macht die Speicherung nicht rückgängig.
+datasheet-field-abandon-discard = Entwurf schließen
 
 # Leave failed checked reopening without undoing an acknowledged field save.
-datasheet-number-return-draft = Zum Feldentwurf zurückkehren
+datasheet-field-return-draft = Zum Feldentwurf zurückkehren

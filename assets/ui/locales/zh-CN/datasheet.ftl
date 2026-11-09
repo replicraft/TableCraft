@@ -75,29 +75,30 @@ datasheet-no-filter = 无筛选
 datasheet-filtered = 已筛选
 datasheet-page-tools = 页面工具
 
-# Saved-table Number field review and checked reopen.
-datasheet-number-inspecting = 正在检查能否添加数字字段…
-datasheet-number-reviewing = 正在检查新的数字字段…
-datasheet-number-reopening = 正在重新打开已保存的表…
-datasheet-number-retry-inspection = 重新检查字段添加条件
+# Saved-table field addition review and checked reopen.
+datasheet-field-title = 字段
+datasheet-field-inspecting = 正在检查能否添加字段…
+datasheet-field-reviewing = 正在检查新的字段…
+datasheet-field-reopening = 正在重新打开已保存的表…
+datasheet-field-retry-inspection = 重新检查字段添加条件
 
-# Saved Number field close confirmation
-datasheet-number-close-title = 是否保存字段更改？
-datasheet-number-close-question = 是否将新字段“{ $column }”保存到表“{ $table }”？
-datasheet-number-close-stale = 字段名称或表已更改。请关闭此提示后重试。
-datasheet-number-close-unavailable = 当前无法保存此字段。
-datasheet-number-close-save = 保存
-datasheet-number-close-discard = 不保存
-datasheet-number-close-cancel = 取消
+# Saved field close confirmation
+datasheet-field-close-title = 是否保存字段更改？
+datasheet-field-close-question = 是否将新字段“{ $column }”保存到表“{ $table }”？
+datasheet-field-close-stale = 字段名称或表已更改。请关闭此提示后重试。
+datasheet-field-close-unavailable = 当前无法保存此字段。
+datasheet-field-close-save = 保存
+datasheet-field-close-discard = 不保存
+datasheet-field-close-cancel = 取消
 
 # Interrupted readonly field eligibility observation.
-datasheet-number-inspection-interrupted = 字段检查已中断。请重试以再次检查此表。
+datasheet-field-inspection-interrupted = 字段检查已中断。请重试以再次检查此表。
 
 # Known saved field after failed checked reopening.
-datasheet-number-saved-warning = 字段已保存，但无法验证数据库。请重新打开数据库后再保存。
-datasheet-number-abandon-title = 关闭字段草稿？
-datasheet-number-abandon-question = 字段已保存。关闭此草稿不会撤销保存。
-datasheet-number-abandon-discard = 关闭草稿
+datasheet-field-saved-warning = 字段已保存，但无法验证数据库。请重新打开数据库后再保存。
+datasheet-field-abandon-title = 关闭字段草稿？
+datasheet-field-abandon-question = 字段已保存。关闭此草稿不会撤销保存。
+datasheet-field-abandon-discard = 关闭草稿
 
 # Leave failed checked reopening without undoing an acknowledged field save.
-datasheet-number-return-draft = 返回字段草稿
+datasheet-field-return-draft = 返回字段草稿

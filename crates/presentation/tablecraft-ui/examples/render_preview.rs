@@ -1,14 +1,14 @@
 //! Export deterministic shared UI frames, without opening an OS window or database.
 #[path = "render_preview/date_residue.rs"]
 mod date_residue;
+#[path = "render_preview/field_addition.rs"]
+mod field_addition;
 #[path = "render_preview/initial_numbers.rs"]
 mod initial_numbers;
 #[path = "render_preview/initial_properties.rs"]
 mod initial_properties;
 #[path = "render_preview/navigation.rs"]
 mod navigation;
-#[path = "render_preview/number_column.rs"]
-mod number_column;
 #[path = "render_preview/saved_sql.rs"]
 mod saved_sql;
 #[path = "render_preview/table_creation.rs"]
@@ -97,17 +97,17 @@ fn main() -> Result<(), Box<dyn Error>> {
     } else {
         ""
     };
-    let number_column = setting("TABLECRAFT_PREVIEW_NUMBER_COLUMN", "none")?;
-    if !number_column::is_mode(&number_column) {
+    let field_addition = setting("TABLECRAFT_PREVIEW_NUMBER_COLUMN", "none")?;
+    if !field_addition::is_mode(&field_addition) {
         return Err(io::Error::other("unknown Number column preview mode").into());
     }
-    if number_column != "none" && scenes != [Scene::Datasheet] {
+    if field_addition != "none" && scenes != [Scene::Datasheet] {
         return Err(io::Error::other("Number column preview requires datasheet").into());
     }
-    let number_column_suffix = if number_column == "none" {
+    let field_addition_suffix = if field_addition == "none" {
         String::new()
     } else {
-        format!("-number-{number_column}")
+        format!("-number-{field_addition}")
     };
     let saved_sql = setting("TABLECRAFT_PREVIEW_SAVED_SQL", "none")?;
     if !saved_sql::is_mode(&saved_sql) {
@@ -236,7 +236,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         + usize::from(!initial_suffix.is_empty())
         + usize::from(table_rename)
         + usize::from(saved_sql != "none")
-        + usize::from(number_column != "none");
+        + usize::from(field_addition != "none");
     if interaction_count > 1 {
         return Err(io::Error::other("choose one preview interaction workflow").into());
     }
@@ -371,12 +371,12 @@ fn main() -> Result<(), Box<dyn Error>> {
         if saved_sql != "none" {
             saved_sql::prepare(&mut harness, &saved_sql);
         }
-        if number_column != "none" {
-            number_column::prepare(&mut harness, &number_column);
+        if field_addition != "none" {
+            field_addition::prepare(&mut harness, &field_addition);
         }
         let image = harness.render().map_err(io::Error::other)?;
         let path = directory.join(format!(
-            "{}-{}-{}{}{}{ribbon_suffix}{gallery_suffix}{initial_suffix}{table_suffix}{navigation_suffix}{date_suffix}{rename_suffix}{saved_sql_suffix}{number_column_suffix}{}.png",
+            "{}-{}-{}{}{}{ribbon_suffix}{gallery_suffix}{initial_suffix}{table_suffix}{navigation_suffix}{date_suffix}{rename_suffix}{saved_sql_suffix}{field_addition_suffix}{}.png",
             locale.as_str(),
             theme_name,
             scene.as_str(),

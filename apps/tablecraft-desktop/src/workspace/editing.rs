@@ -1,7 +1,7 @@
 //! Native host dispatch only; typed admission, parsing and persistence stay runtime-owned.
 mod deleting;
+mod field_addition;
 mod inserting;
-mod number_column;
 #[cfg(test)]
 mod pasting;
 mod query_action;
@@ -27,7 +27,7 @@ use tablecraft_ui::{
 pub(super) struct Editing {
     worker: SaveWorker,
     query_definition: Option<query_definition::QueryDefinitionHost>,
-    number_column: Option<number_column::NumberColumnHost>,
+    field_addition: Option<field_addition::FieldAdditionHost>,
     review: Option<(u64, ReviewedEdit)>,
     insert_review: Option<(u64, ReviewedInsert)>,
     delete_review: Option<(u64, ReviewedDelete)>,
@@ -54,7 +54,7 @@ enum SaveOwner {
     Delete,
     TableCreation,
     TableRename,
-    NumberColumn,
+    FieldAddition,
     QueryAction,
     QueryDefinition,
 }
@@ -74,7 +74,7 @@ impl Editing {
         Self {
             worker: SaveWorker::new(move || ctx.request_repaint()),
             query_definition: None,
-            number_column: None,
+            field_addition: None,
             review: None,
             insert_review: None,
             delete_review: None,
@@ -92,7 +92,7 @@ impl Editing {
         self.save.is_some()
             || self.worker.is_busy()
             || self.query_definition.is_some()
-            || self.number_column.is_some()
+            || self.field_addition.is_some()
     }
 
     pub(super) fn clear_refresh(&mut self) {
@@ -269,8 +269,8 @@ impl Desktop {
             self.query_definition_save_report(report);
             return;
         }
-        if matches!(save.owner, SaveOwner::NumberColumn) {
-            self.number_column_save_report(report);
+        if matches!(save.owner, SaveOwner::FieldAddition) {
+            self.field_addition_save_report(report);
             return;
         }
         if matches!(save.owner, SaveOwner::TableRename) {
@@ -300,13 +300,13 @@ impl Desktop {
                 self.state.set_query_action_save_outcome(report.id, outcome);
             }
             SaveOwner::TableCreation => {}
-            SaveOwner::TableRename | SaveOwner::NumberColumn => {}
+            SaveOwner::TableRename | SaveOwner::FieldAddition => {}
             SaveOwner::QueryDefinition => {}
         }
     }
 
     pub(super) fn cancel_current_save(&mut self) {
-        if self.cancel_current_number_column_operation() {
+        if self.cancel_current_field_addition_operation() {
             return;
         }
         if self.cancel_query_definition_operation() {
@@ -320,7 +320,7 @@ impl Desktop {
     }
 
     pub(super) fn cancel_save(&mut self, id: u64) {
-        self.note_number_column_cancellation(id);
+        self.note_field_addition_cancellation(id);
         if self.editing.save.as_ref().is_some_and(|save| save.id == id) {
             self.note_query_definition_save_cancellation(id);
             self.editing.worker.cancel(id);
@@ -330,17 +330,17 @@ impl Desktop {
     pub(super) fn resolve_save(&mut self, id: u64, recover: bool) {
         if let Some(identity) = self
             .editing
-            .number_column
+            .field_addition
             .as_ref()
             .and_then(|host| host.identity)
             .filter(|identity| identity.save_id == id)
         {
-            self.number_column_save_command(
+            self.field_addition_save_command(
                 identity,
                 if recover {
-                    tablecraft_ui::NumberColumnSaveCommand::Recover
+                    tablecraft_ui::FieldAdditionSaveCommand::Recover
                 } else {
-                    tablecraft_ui::NumberColumnSaveCommand::Release
+                    tablecraft_ui::FieldAdditionSaveCommand::Release
                 },
             );
             return;
@@ -383,7 +383,7 @@ impl Desktop {
                     SaveOwner::QueryDefinition => {
                         self.query_definition_resolution_started(next);
                     }
-                    SaveOwner::NumberColumn => {}
+                    SaveOwner::FieldAddition => {}
                     SaveOwner::TableCreation => {}
                 }
             }
@@ -394,12 +394,12 @@ impl Desktop {
     pub(super) fn acknowledge_save(&mut self, id: u64) {
         if let Some(identity) = self
             .editing
-            .number_column
+            .field_addition
             .as_ref()
             .and_then(|host| host.identity)
             .filter(|identity| identity.save_id == id)
         {
-            self.acknowledge_number_column(identity);
+            self.acknowledge_field_addition(identity);
             return;
         }
         if self.editing.query_definition.is_some() {
@@ -475,7 +475,7 @@ impl Desktop {
                 self.state.acknowledge_query_action_save(id);
             }
             SaveOwner::TableCreation => {}
-            SaveOwner::TableRename | SaveOwner::NumberColumn => {}
+            SaveOwner::TableRename | SaveOwner::FieldAddition => {}
             SaveOwner::QueryDefinition => {}
         }
         if refresh_after_ack {

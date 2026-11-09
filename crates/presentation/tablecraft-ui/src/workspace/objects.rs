@@ -1,8 +1,8 @@
 //! Bounded object sessions move presentation state; they never clone native rows.
+mod field_addition_close;
 mod layout;
 pub(super) mod memory;
 mod names;
-mod number_column_close;
 mod ownership;
 mod saved_sql;
 mod saved_sql_close;
@@ -333,7 +333,7 @@ impl State {
     }
 
     pub fn can_close_object(&self, tab: &ObjectTab) -> bool {
-        if self.can_request_number_column_close(tab) {
+        if self.can_request_field_addition_close(tab) {
             return true;
         }
         self.object_switch_ready()
@@ -346,10 +346,10 @@ impl State {
             return false;
         }
         if self
-            .number_column_name()
+            .field_addition_name()
             .is_some_and(|(owner, _, _)| owner == tab)
         {
-            self.request_number_column_close(tab);
+            self.request_field_addition_close(tab);
             return false;
         }
         if self.saved_query_sql_revision_for(tab).is_some() {
@@ -375,7 +375,7 @@ impl State {
 
     pub(super) fn close_object_confirmed(&mut self, tab: &ObjectTab) -> bool {
         if self
-            .number_column_name()
+            .field_addition_name()
             .is_some_and(|(owner, _, _)| owner == tab)
             || self.saved_query_sql_revision_for(tab).is_some()
         {
@@ -411,12 +411,12 @@ impl State {
     }
 
     pub(super) fn object_switch_ready(&self) -> bool {
-        !self.number_column_open()
-            && !self.number_column_close_open()
-            && self.object_switch_ready_without_number_column()
+        !self.field_addition_open()
+            && !self.field_addition_close_open()
+            && self.object_switch_ready_without_field_addition()
     }
 
-    pub(super) fn object_switch_ready_without_number_column(&self) -> bool {
+    pub(super) fn object_switch_ready_without_field_addition(&self) -> bool {
         !self.busy
             && !self.saved_query_sql_close_open()
             && self.table_draft_close.is_none()
@@ -461,7 +461,7 @@ impl State {
             .as_ref()
             .map(|database| database.document_revision);
         if self.objects.revision != revision {
-            self.retire_unowned_number_warning(revision);
+            self.retire_unowned_field_addition_warning(revision);
             if self.has_modified_saved_query_sql() {
                 return;
             }

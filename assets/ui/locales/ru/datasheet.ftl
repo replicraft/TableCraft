@@ -75,29 +75,30 @@ datasheet-no-filter = Без фильтра
 datasheet-filtered = Отфильтровано
 datasheet-page-tools = Инструменты страниц
 
-# Saved-table Number field review and checked reopen.
-datasheet-number-inspecting = Проверяется возможность добавления числового поля…
-datasheet-number-reviewing = Проверяется новое числовое поле…
-datasheet-number-reopening = Сохранённая таблица открывается повторно…
-datasheet-number-retry-inspection = Повторить проверку возможности добавления поля
+# Saved-table field addition review and checked reopen.
+datasheet-field-title = Поле
+datasheet-field-inspecting = Проверяется возможность добавления поля…
+datasheet-field-reviewing = Проверяется новое поле…
+datasheet-field-reopening = Сохранённая таблица открывается повторно…
+datasheet-field-retry-inspection = Повторить проверку возможности добавления поля
 
-# Saved Number field close confirmation
-datasheet-number-close-title = Сохранить изменения поля?
-datasheet-number-close-question = Сохранить новое поле «{ $column }» в таблице «{ $table }»?
-datasheet-number-close-stale = Имя поля или таблица изменились. Закройте это окно и повторите попытку.
-datasheet-number-close-unavailable = Сейчас это поле сохранить нельзя.
-datasheet-number-close-save = Сохранить
-datasheet-number-close-discard = Не сохранять
-datasheet-number-close-cancel = Отмена
+# Saved field close confirmation
+datasheet-field-close-title = Сохранить изменения поля?
+datasheet-field-close-question = Сохранить новое поле «{ $column }» в таблице «{ $table }»?
+datasheet-field-close-stale = Имя поля или таблица изменились. Закройте это окно и повторите попытку.
+datasheet-field-close-unavailable = Сейчас это поле сохранить нельзя.
+datasheet-field-close-save = Сохранить
+datasheet-field-close-discard = Не сохранять
+datasheet-field-close-cancel = Отмена
 
 # Interrupted readonly field eligibility observation.
-datasheet-number-inspection-interrupted = Проверка поля прервана. Повторите проверку этой таблицы.
+datasheet-field-inspection-interrupted = Проверка поля прервана. Повторите проверку этой таблицы.
 
 # Known saved field after failed checked reopening.
-datasheet-number-saved-warning = Поле сохранено, но проверить базу данных не удалось. Перед следующим сохранением откройте базу заново.
-datasheet-number-abandon-title = Закрыть черновик поля?
-datasheet-number-abandon-question = Поле сохранено. Закрытие черновика не отменяет сохранение.
-datasheet-number-abandon-discard = Закрыть черновик
+datasheet-field-saved-warning = Поле сохранено, но проверить базу данных не удалось. Перед следующим сохранением откройте базу заново.
+datasheet-field-abandon-title = Закрыть черновик поля?
+datasheet-field-abandon-question = Поле сохранено. Закрытие черновика не отменяет сохранение.
+datasheet-field-abandon-discard = Закрыть черновик
 
 # Leave failed checked reopening without undoing an acknowledged field save.
-datasheet-number-return-draft = Вернуться к черновику поля
+datasheet-field-return-draft = Вернуться к черновику поля

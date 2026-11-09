@@ -108,7 +108,7 @@ impl Desktop {
         let Some(kind) = action_kind(&target) else {
             return;
         };
-        if self.state.number_column_source_stale() {
+        if self.state.field_addition_source_stale() {
             return;
         }
         self.editing.clear_review();

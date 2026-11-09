@@ -75,29 +75,30 @@ datasheet-no-filter = No Filter
 datasheet-filtered = Filtered
 datasheet-page-tools = Page tools
 
-# Saved-table Number field review and checked reopen.
-datasheet-number-inspecting = Checking whether a Number field can be added…
-datasheet-number-reviewing = Reviewing the new Number field…
-datasheet-number-reopening = Reopening the saved table…
-datasheet-number-retry-inspection = Retry field eligibility check
+# Saved-table field addition review and checked reopen.
+datasheet-field-title = Field
+datasheet-field-inspecting = Checking whether a field can be added…
+datasheet-field-reviewing = Reviewing the new field…
+datasheet-field-reopening = Reopening the saved table…
+datasheet-field-retry-inspection = Retry field eligibility check
 
-# Saved Number field close confirmation
-datasheet-number-close-title = Save field changes?
-datasheet-number-close-question = Save the new field “{ $column }” in table “{ $table }”?
-datasheet-number-close-stale = The field name or table changed. Close this prompt and try again.
-datasheet-number-close-unavailable = This field cannot be saved right now.
-datasheet-number-close-save = Save
-datasheet-number-close-discard = Don't Save
-datasheet-number-close-cancel = Cancel
+# Saved field close confirmation
+datasheet-field-close-title = Save field changes?
+datasheet-field-close-question = Save the new field “{ $column }” in table “{ $table }”?
+datasheet-field-close-stale = The field name or table changed. Close this prompt and try again.
+datasheet-field-close-unavailable = This field cannot be saved right now.
+datasheet-field-close-save = Save
+datasheet-field-close-discard = Don't Save
+datasheet-field-close-cancel = Cancel
 
 # Interrupted readonly field eligibility observation.
-datasheet-number-inspection-interrupted = Field check interrupted. Retry to check this table again.
+datasheet-field-inspection-interrupted = Field check interrupted. Retry to check this table again.
 
 # Known saved field after failed checked reopening.
-datasheet-number-saved-warning = The field was saved, but the database could not be verified. Reopen the database before another save.
-datasheet-number-abandon-title = Close field draft?
-datasheet-number-abandon-question = The field was saved. Closing this draft does not undo that save.
-datasheet-number-abandon-discard = Close draft
+datasheet-field-saved-warning = The field was saved, but the database could not be verified. Reopen the database before another save.
+datasheet-field-abandon-title = Close field draft?
+datasheet-field-abandon-question = The field was saved. Closing this draft does not undo that save.
+datasheet-field-abandon-discard = Close draft
 
 # Leave failed checked reopening without undoing an acknowledged field save.
-datasheet-number-return-draft = Return to draft
+datasheet-field-return-draft = Return to draft

@@ -203,8 +203,8 @@ impl State {
             count.add(update.retained_bytes()?);
         }
         count.add(self.saved_query.retained_bytes()?);
-        count.add(self.number_column.retained_bytes()?);
-        if let Some(status) = &self.number_column_status {
+        count.add(self.field_addition.retained_bytes()?);
+        if let Some(status) = &self.field_addition_status {
             count.add(status.heap_bytes()?);
         }
         if let Some(status) = &self.saved_query_sql_save {

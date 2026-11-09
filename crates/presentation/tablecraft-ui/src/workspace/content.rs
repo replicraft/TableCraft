@@ -36,7 +36,7 @@ impl State {
         if let Some(pane) = self.take_pane_entry(ui.ctx()) {
             self.prepare_pane_entry(pane, ui.ctx());
         }
-        self.number_column_saved_warning_status(ui);
+        self.field_addition_saved_warning_status(ui);
         if let Some(error) = &self.error {
             Frame::new()
                 .fill(ui.visuals().extreme_bg_color)
@@ -102,8 +102,8 @@ impl State {
                     });
             });
         }
-        let number_context = self.number_column_render_context();
-        let (number_tab, number_presentation) = match number_context {
+        let field_context = self.field_addition_render_context();
+        let (field_tab, field_presentation) = match field_context {
             Some((tab, presentation)) => (Some(tab), Some(presentation)),
             None => (None, None),
         };
@@ -146,7 +146,7 @@ impl State {
                 selection,
                 pane,
                 datasheet::Features {
-                    number_column: number_presentation,
+                    field_addition: field_presentation,
                     sort_header,
                     insert_target,
                     inline_insert: if self
@@ -163,13 +163,13 @@ impl State {
                     occurrence,
                 },
             );
-            if let Some(tab) = number_tab {
-                self.apply_number_column_header(&tab, output.number_column);
+            if let Some(tab) = field_tab {
+                self.apply_field_addition_header(&tab, output.field_addition);
             }
             actions.extend(output.actions);
             self.apply_totals_selection(output.selection);
             self.apply_total_choices(output.totals_choices);
-            self.number_column_inspection_status(ui, actions);
+            self.field_addition_inspection_status(ui, actions);
         } else if self.view == DocumentView::Query {
             Frame::new().inner_margin(10).show(ui, |ui| {
                 ui.weak(tr(

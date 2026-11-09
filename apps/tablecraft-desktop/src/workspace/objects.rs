@@ -83,8 +83,8 @@ impl Desktop {
         if self.state.active_object().as_ref() == Some(&tab) {
             return;
         }
-        if self.state.number_column_open() {
-            if self.state.can_request_number_column_transition(&tab) {
+        if self.state.field_addition_open() {
+            if self.state.can_request_field_addition_transition(&tab) {
                 let _ = self.guard_table_draft_action(
                     super::table_drafts::DeferredDraftAction::ActivateObject(tab),
                 );
@@ -104,15 +104,15 @@ impl Desktop {
         }
         self.park_filter(filter);
         self.bind_active_filter();
-        self.inspect_number_column_availability();
+        self.inspect_field_addition_availability();
         if let Some(open) = self.state.active_object_load() {
             self.load_object(open);
         }
     }
 
     pub(super) fn close_object(&mut self, tab: ObjectTab) {
-        if self.state.number_column_open() {
-            if self.state.can_request_number_column_transition(&tab) {
+        if self.state.field_addition_open() {
+            if self.state.can_request_field_addition_transition(&tab) {
                 let _ = self.guard_table_draft_action(
                     super::table_drafts::DeferredDraftAction::CloseObject(tab),
                 );

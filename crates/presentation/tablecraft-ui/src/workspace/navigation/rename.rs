@@ -56,7 +56,7 @@ impl State {
     /// Admit naming UI only for a closed, local user table on a supporting host.
     /// Native format, name and dependency checks remain the runtime's responsibility.
     pub fn can_rename_table(&self, target: &ObjectTarget) -> bool {
-        if self.number_column_source_stale()
+        if self.field_addition_source_stale()
             || !self.table_rename_available
             || !self.object_switch_ready()
             || !self.object_tabs().is_empty()
@@ -101,7 +101,7 @@ impl State {
 
     /// Check that a callback still belongs to the exact issued naming request.
     pub fn table_rename_request_current(&self, request: &TableRenameRequest) -> bool {
-        if self.number_column_source_stale() {
+        if self.field_addition_source_stale() {
             return false;
         }
         let current_document = self

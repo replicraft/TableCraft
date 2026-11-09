@@ -32,7 +32,7 @@ impl Desktop {
             return;
         }
         if self.editing.has_save()
-            || self.state.number_column_source_stale()
+            || self.state.field_addition_source_stale()
             || self.creating.is_busy()
             || self.file_dialog.is_open()
         {

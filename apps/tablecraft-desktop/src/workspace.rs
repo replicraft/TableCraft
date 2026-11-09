@@ -35,14 +35,14 @@ use tablecraft_ui::{
 use zeroize::Zeroize;
 
 enum PendingOperation {
-    NumberColumnAvailability {
+    FieldAdditionAvailability {
         request_id: u64,
         tab: tablecraft_ui::ObjectTab,
     },
-    NumberColumnReview {
+    FieldAdditionReview {
         request_id: u64,
     },
-    NumberColumnReopen {
+    FieldAdditionReopen {
         request_id: u64,
     },
     QueryDefinitionReview {
@@ -188,7 +188,7 @@ pub(super) struct Desktop {
     table_rename: Option<TableRenameHost>,
     resume_after_table_creation: bool,
     resume_after_query_definition: bool,
-    resume_after_number_column: bool,
+    resume_after_field_addition: bool,
     close_after_first_record: Option<ObjectTarget>,
     editing: Editing,
     recovery: Option<editing::recovery::RecoveryHost>,
@@ -225,7 +225,7 @@ impl Desktop {
             table_rename: None,
             resume_after_table_creation: false,
             resume_after_query_definition: false,
-            resume_after_number_column: false,
+            resume_after_field_addition: false,
             close_after_first_record: None,
             editing,
             recovery: None,
@@ -239,7 +239,7 @@ impl Desktop {
         app.state.creation_available = CreationWorker::is_supported();
         app.state.table_save_available = SaveWorker::supports_table_creation();
         app.state.table_rename_available = SaveWorker::supports_table_rename();
-        app.state.number_column_available = SaveWorker::supports_number_column();
+        app.state.field_addition_available = SaveWorker::supports_field_addition();
         app.state.saved_query_sql_edit_available = SaveWorker::supports_query_sql();
         app.state.font_families = crate::font_inventory::families();
         app.state.find_available = true;
@@ -417,10 +417,10 @@ impl Desktop {
     }
 
     fn poll(&mut self) {
-        self.retire_number_inspection_publications();
+        self.retire_field_addition_inspection_publications();
         while let Some((generation, result)) = self.worker.poll() {
             if generation != self.generation {
-                self.finish_superseded_number_inspection(generation, result);
+                self.finish_superseded_field_addition_inspection(generation, result);
                 continue;
             }
             self.state.busy = false;
@@ -438,14 +438,16 @@ impl Desktop {
                 }
                 Ok(Response::QueryExpressionReviewed { .. })
                 | Ok(Response::DatabaseOptionsReviewed { .. })
-                | Ok(Response::AddColumnReviewed { .. }) => {
+                | Ok(Response::AddColumnReviewed { .. })
+                | Ok(Response::NumberColumnReviewed { .. })
+                | Ok(Response::NumberColumnAvailability { .. }) => {
                     self.state.error = Some(self.state.localizer.text("ribbon-unavailable"));
                 }
-                Ok(Response::NumberColumnReviewed { review, capability }) => {
-                    self.start_reviewed_number_column(generation, review, capability);
+                Ok(Response::FieldAdditionReviewed { review, capability }) => {
+                    self.start_reviewed_field_addition(generation, review, capability);
                 }
-                Ok(Response::NumberColumnAvailability { availability }) => {
-                    self.publish_number_column_availability(generation, availability);
+                Ok(Response::FieldAdditionAvailability { availability }) => {
+                    self.publish_field_addition_availability(generation, availability);
                 }
                 Ok(Response::TableRenameReviewed { review, capability }) => {
                     self.start_reviewed_table_rename(generation, review, capability);
@@ -550,8 +552,8 @@ impl Desktop {
                             })
                             .collect(),
                     };
-                    if let PendingOperation::NumberColumnReopen { request_id } = self.pending {
-                        self.finish_number_column_reopen(
+                    if let PendingOperation::FieldAdditionReopen { request_id } = self.pending {
+                        self.finish_field_addition_reopen(
                             request_id,
                             database,
                             table_creation_available,
@@ -678,7 +680,7 @@ impl Desktop {
                         _ => {
                             if self.state.set_table_data(data) {
                                 self.filter = None;
-                                self.inspect_number_column_availability();
+                                self.inspect_field_addition_availability();
                             }
                         }
                     }
@@ -715,16 +717,16 @@ impl Desktop {
                     }
                 }
                 Err(error) => match &self.pending {
-                    PendingOperation::NumberColumnAvailability { .. } => {
-                        self.number_column_availability_failed(generation, error.to_string())
+                    PendingOperation::FieldAdditionAvailability { .. } => {
+                        self.field_addition_availability_failed(generation, error.to_string())
                     }
-                    PendingOperation::NumberColumnReview { request_id } => {
+                    PendingOperation::FieldAdditionReview { request_id } => {
                         let id = *request_id;
-                        self.number_column_review_failed(id, error.to_string());
+                        self.field_addition_review_failed(id, error.to_string());
                     }
-                    PendingOperation::NumberColumnReopen { request_id } => {
+                    PendingOperation::FieldAdditionReopen { request_id } => {
                         let id = *request_id;
-                        self.number_column_reopen_failed(id, error.to_string());
+                        self.field_addition_reopen_failed(id, error.to_string());
                     }
                     PendingOperation::TableRenameReview { request_id } => {
                         self.table_rename_review_failed(*request_id, error.to_string());
@@ -881,7 +883,7 @@ impl eframe::App for Desktop {
             }
             let table_transition = std::mem::take(&mut self.resume_after_table_creation);
             let query_transition = std::mem::take(&mut self.resume_after_query_definition);
-            let number_transition = std::mem::take(&mut self.resume_after_number_column);
+            let number_transition = std::mem::take(&mut self.resume_after_field_addition);
             if table_transition || query_transition || number_transition {
                 self.resume_table_draft_action(ctx);
             }
@@ -1036,18 +1038,18 @@ impl eframe::App for Desktop {
                 Action::SavedQuerySqlClose { result } => {
                     self.finish_saved_query_sql_close(result, ui.ctx());
                 }
-                Action::NumberColumnClose { result } => {
-                    self.finish_number_column_close(result, ui.ctx())
+                Action::FieldAdditionClose { result } => {
+                    self.finish_field_addition_close(result, ui.ctx())
                 }
-                Action::ReviewNumberColumn { request } => self.save_number_column(request),
-                Action::RetryNumberColumnInspection { tab } => {
-                    self.retry_number_column_availability(tab)
+                Action::ReviewFieldAddition { request } => self.save_field_addition(request),
+                Action::RetryFieldAdditionInspection { tab } => {
+                    self.retry_field_addition_availability(tab)
                 }
-                Action::CancelNumberColumnReview { request_id } => {
-                    self.cancel_number_column_review(request_id)
+                Action::CancelFieldAdditionReview { request_id } => {
+                    self.cancel_field_addition_review(request_id)
                 }
-                Action::NumberColumnSave { identity, command } => {
-                    self.number_column_save_command(identity, command)
+                Action::FieldAdditionSave { identity, command } => {
+                    self.field_addition_save_command(identity, command)
                 }
                 Action::ReviewSavedQuerySql { request } => {
                     self.save_query_definition(request);
@@ -1111,12 +1113,12 @@ impl eframe::App for Desktop {
                         self.state.clear_query_run();
                         self.clear_query_parameters();
                         match &self.pending {
-                            PendingOperation::NumberColumnAvailability { request_id, .. } => {
+                            PendingOperation::FieldAdditionAvailability { request_id, .. } => {
                                 // This exact readonly publication was revoked.
                                 // Keep its field-level interruption/retry state,
                                 // without creating an unrelated global error.
-                                self.state.interrupt_number_column_inspection(*request_id);
-                                self.state.prune_number_column_inspections();
+                                self.state.interrupt_field_addition_inspection(*request_id);
+                                self.state.prune_field_addition_inspections();
                                 self.pending = PendingOperation::Read;
                             }
                             PendingOperation::ReplaceFind { request_id } => {

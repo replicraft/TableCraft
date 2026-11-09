@@ -20,7 +20,7 @@ impl Desktop {
     /// Submit the exact shared naming request without parsing or mutating native data.
     pub(in crate::workspace) fn rename_table(&mut self, request: TableRenameRequest) {
         if self.table_rename.is_some()
-            || self.state.number_column_source_stale()
+            || self.state.field_addition_source_stale()
             || !self.state.table_rename_request_current(&request)
         {
             return;

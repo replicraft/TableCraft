@@ -75,29 +75,30 @@ datasheet-no-filter = Sem filtro
 datasheet-filtered = Filtrado
 datasheet-page-tools = Ferramentas de página
 
-# Saved-table Number field review and checked reopen.
-datasheet-number-inspecting = Verificando se um campo Número pode ser adicionado…
-datasheet-number-reviewing = Revisando o novo campo Número…
-datasheet-number-reopening = Reabrindo a tabela salva…
-datasheet-number-retry-inspection = Tentar novamente a verificação do campo
+# Saved-table field addition review and checked reopen.
+datasheet-field-title = Campo
+datasheet-field-inspecting = Verificando se um campo pode ser adicionado…
+datasheet-field-reviewing = Revisando o novo campo…
+datasheet-field-reopening = Reabrindo a tabela salva…
+datasheet-field-retry-inspection = Tentar novamente a verificação do campo
 
-# Saved Number field close confirmation
-datasheet-number-close-title = Salvar alterações no campo?
-datasheet-number-close-question = Salvar o novo campo “{ $column }” na tabela “{ $table }”?
-datasheet-number-close-stale = O nome do campo ou a tabela mudou. Feche esta caixa de diálogo e tente novamente.
-datasheet-number-close-unavailable = Não é possível salvar este campo agora.
-datasheet-number-close-save = Salvar
-datasheet-number-close-discard = Não salvar
-datasheet-number-close-cancel = Cancelar
+# Saved field close confirmation
+datasheet-field-close-title = Salvar alterações no campo?
+datasheet-field-close-question = Salvar o novo campo “{ $column }” na tabela “{ $table }”?
+datasheet-field-close-stale = O nome do campo ou a tabela mudou. Feche esta caixa de diálogo e tente novamente.
+datasheet-field-close-unavailable = Não é possível salvar este campo agora.
+datasheet-field-close-save = Salvar
+datasheet-field-close-discard = Não salvar
+datasheet-field-close-cancel = Cancelar
 
 # Interrupted readonly field eligibility observation.
-datasheet-number-inspection-interrupted = A verificação do campo foi interrompida. Tente novamente para verificar esta tabela.
+datasheet-field-inspection-interrupted = A verificação do campo foi interrompida. Tente novamente para verificar esta tabela.
 
 # Known saved field after failed checked reopening.
-datasheet-number-saved-warning = O campo foi salvo, mas não foi possível verificar o banco de dados. Reabra o banco antes de salvar novamente.
-datasheet-number-abandon-title = Fechar rascunho do campo?
-datasheet-number-abandon-question = O campo foi salvo. Fechar este rascunho não desfaz esse salvamento.
-datasheet-number-abandon-discard = Fechar rascunho
+datasheet-field-saved-warning = O campo foi salvo, mas não foi possível verificar o banco de dados. Reabra o banco antes de salvar novamente.
+datasheet-field-abandon-title = Fechar rascunho do campo?
+datasheet-field-abandon-question = O campo foi salvo. Fechar este rascunho não desfaz esse salvamento.
+datasheet-field-abandon-discard = Fechar rascunho
 
 # Leave failed checked reopening without undoing an acknowledged field save.
-datasheet-number-return-draft = Voltar ao rascunho do campo
+datasheet-field-return-draft = Voltar ao rascunho do campo

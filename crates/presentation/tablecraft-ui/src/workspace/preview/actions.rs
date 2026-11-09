@@ -48,23 +48,23 @@ impl Preview {
             return;
         }
         match action {
-            Action::NumberColumnClose { result } => {
+            Action::FieldAdditionClose { result } => {
                 match result.decision {
-                    crate::NumberColumnCloseDecision::Discard => {
+                    crate::FieldAdditionCloseDecision::Discard => {
                         self.state.close_object(&result.tab);
                     }
-                    crate::NumberColumnCloseDecision::Cancel => {}
-                    crate::NumberColumnCloseDecision::Save => {
+                    crate::FieldAdditionCloseDecision::Cancel => {}
+                    crate::FieldAdditionCloseDecision::Save => {
                         // No native capability, worker or witness exists here.
                         // Keep the field name dirty instead of fabricating save.
                         self.state.error = Some(self.state.localizer.text("ribbon-unavailable"));
                     }
                 }
             }
-            Action::ReviewNumberColumn { .. } | Action::RetryNumberColumnInspection { .. } => {
+            Action::ReviewFieldAddition { .. } | Action::RetryFieldAdditionInspection { .. } => {
                 self.state.error = Some(self.state.localizer.text("ribbon-unavailable"));
             }
-            Action::CancelNumberColumnReview { .. } | Action::NumberColumnSave { .. } => {}
+            Action::CancelFieldAdditionReview { .. } | Action::FieldAdditionSave { .. } => {}
             Action::RetryInsert { save_id } => {
                 // Illustrate a refused synthetic read; this host has no witness,
                 // database source or native capability to reopen.

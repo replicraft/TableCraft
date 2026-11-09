@@ -8,13 +8,13 @@ mod creation;
 mod deletion;
 mod diagnostics;
 mod editing;
+pub(crate) mod field_addition;
 mod filtering;
 mod find;
 pub(crate) mod focus;
 mod home;
 pub(crate) mod insertion;
 mod navigation;
-pub(crate) mod number_column;
 mod objects;
 pub mod preview;
 mod query;
@@ -35,6 +35,12 @@ pub use contents::{CollectionKind, ContentsTarget};
 pub use creation::{CreationOutcome, CreationRequest};
 pub use deletion::{DeleteReview, DeleteTarget};
 pub use editing::{EditDraft, EditInput, EditReview, EditSaveOutcome, EditTarget, InputHint};
+pub use field_addition::{
+    FieldAdditionChoices, FieldAdditionInspectionError, FieldAdditionRequest,
+    FieldAdditionSaveCommand, FieldAdditionSaveIdentity, FieldAdditionSavedWarning,
+    PreparedFieldAdditionSave,
+};
+pub use field_addition::{FieldAdditionCloseDecision, FieldAdditionCloseResult};
 pub use filtering::{
     FieldFilterDescription, FieldFilterOperator, FieldFilterPatternMode, FieldFilterTarget,
     FilterComparison, FilterPublication, FilterRestore, FilterSelectionTarget, FilterTarget,
@@ -48,11 +54,6 @@ pub use insertion::{
     InsertDraft, InsertField, InsertInput, InsertRetryPermission, InsertReview, InsertTarget,
 };
 pub use navigation::rename::TableRenameRequest;
-pub use number_column::{NumberColumnCloseDecision, NumberColumnCloseResult};
-pub use number_column::{
-    NumberColumnInspectionError, NumberColumnRequest, NumberColumnSaveCommand,
-    NumberColumnSaveIdentity, NumberColumnSavedWarning, PreparedNumberColumnSave,
-};
 pub use objects::{ObjectKind, ObjectOpen, ObjectTab, ObjectTarget, WorkspaceLayout};
 pub use query::actions::review::{QueryActionEffect, QueryActionKind, QueryActionReview};
 pub use query::parameters::{ParameterInput, ParameterSpec};
@@ -113,21 +114,21 @@ pub struct Data {
 
 /// User intents dispatched to the host's shared backend services.
 pub enum Action {
-    NumberColumnClose {
-        result: NumberColumnCloseResult,
+    FieldAdditionClose {
+        result: FieldAdditionCloseResult,
     },
-    ReviewNumberColumn {
-        request: NumberColumnRequest,
+    ReviewFieldAddition {
+        request: FieldAdditionRequest,
     },
-    RetryNumberColumnInspection {
+    RetryFieldAdditionInspection {
         tab: ObjectTab,
     },
-    CancelNumberColumnReview {
+    CancelFieldAdditionReview {
         request_id: u64,
     },
-    NumberColumnSave {
-        identity: NumberColumnSaveIdentity,
-        command: NumberColumnSaveCommand,
+    FieldAdditionSave {
+        identity: FieldAdditionSaveIdentity,
+        command: FieldAdditionSaveCommand,
     },
     /// Cancel an issued table-rename review before a save is accepted.
     CancelTableRenameReview {
@@ -401,9 +402,9 @@ pub struct State {
     query_action: Option<query::actions::review::Session>,
     table_rename: Option<navigation::rename::Rename>,
     /// Host opt-in remains false until the checked schema-reopen controller is connected.
-    pub number_column_available: bool,
-    number_column: number_column::Model,
-    number_column_status: Option<number_column::Status>,
+    pub field_addition_available: bool,
+    field_addition: field_addition::Model,
+    field_addition_status: Option<field_addition::Status>,
     /// Host can review and persist native table renames; false for synthetic hosts.
     pub table_rename_available: bool,
     table_selection: Selection,
@@ -784,8 +785,8 @@ impl State {
         let object_shortcut = self.begin_object_shortcut(ui);
         let paste_receipt = self.receive_requested_paste(ui.ctx(), &mut actions);
         self.consume_active_save_shortcut(ui.ctx());
-        let modal_open = self.number_column_close_open()
-            || self.number_column_modal_open()
+        let modal_open = self.field_addition_close_open()
+            || self.field_addition_modal_open()
             || self.saved_query_sql_save_open()
             || self.table_draft_save.is_some()
             || self.table_draft_field_delete_open()
@@ -851,7 +852,7 @@ impl State {
             }
         }
         let modal_open = modal_open
-            || self.number_column_modal_open()
+            || self.field_addition_modal_open()
             || self.parameter_prompt_open()
             || self.query_action_dialog_open()
             || self.table_rename_open()
@@ -889,8 +890,8 @@ impl State {
         self.table_draft_close_dialog(ui.ctx(), &mut actions);
         self.saved_query_sql_close_dialog(ui.ctx(), &mut actions);
         self.saved_query_sql_save_dialog(ui.ctx(), &mut actions);
-        self.number_column_close_dialog(ui.ctx(), &mut actions);
-        self.number_column_save_dialog(ui.ctx(), &mut actions);
+        self.field_addition_close_dialog(ui.ctx(), &mut actions);
+        self.field_addition_save_dialog(ui.ctx(), &mut actions);
         self.table_draft_save_dialog(ui.ctx(), &mut actions);
         self.table_draft_field_delete_dialog(ui.ctx());
         self.recovery_dialog(ui.ctx(), &mut actions);

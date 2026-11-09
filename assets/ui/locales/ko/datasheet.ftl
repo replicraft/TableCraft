@@ -75,29 +75,30 @@ datasheet-no-filter = 필터 없음
 datasheet-filtered = 필터 적용됨
 datasheet-page-tools = 페이지 도구
 
-# Saved-table Number field review and checked reopen.
-datasheet-number-inspecting = 숫자 필드를 추가할 수 있는지 확인하는 중…
-datasheet-number-reviewing = 새 숫자 필드를 검토하는 중…
-datasheet-number-reopening = 저장된 테이블을 다시 여는 중…
-datasheet-number-retry-inspection = 필드 추가 가능 여부 다시 확인
+# Saved-table field addition review and checked reopen.
+datasheet-field-title = 필드
+datasheet-field-inspecting = 필드를 추가할 수 있는지 확인하는 중…
+datasheet-field-reviewing = 새 필드를 검토하는 중…
+datasheet-field-reopening = 저장된 테이블을 다시 여는 중…
+datasheet-field-retry-inspection = 필드 추가 가능 여부 다시 확인
 
-# Saved Number field close confirmation
-datasheet-number-close-title = 필드 변경 내용을 저장하시겠습니까?
-datasheet-number-close-question = 테이블 ‘{ $table }’에 새 필드 ‘{ $column }’을(를) 저장하시겠습니까?
-datasheet-number-close-stale = 필드 이름이나 테이블이 변경되었습니다. 이 창을 닫고 다시 시도하세요.
-datasheet-number-close-unavailable = 지금은 이 필드를 저장할 수 없습니다.
-datasheet-number-close-save = 저장
-datasheet-number-close-discard = 저장 안 함
-datasheet-number-close-cancel = 취소
+# Saved field close confirmation
+datasheet-field-close-title = 필드 변경 내용을 저장하시겠습니까?
+datasheet-field-close-question = 테이블 ‘{ $table }’에 새 필드 ‘{ $column }’을(를) 저장하시겠습니까?
+datasheet-field-close-stale = 필드 이름이나 테이블이 변경되었습니다. 이 창을 닫고 다시 시도하세요.
+datasheet-field-close-unavailable = 지금은 이 필드를 저장할 수 없습니다.
+datasheet-field-close-save = 저장
+datasheet-field-close-discard = 저장 안 함
+datasheet-field-close-cancel = 취소
 
 # Interrupted readonly field eligibility observation.
-datasheet-number-inspection-interrupted = 필드 확인이 중단되었습니다. 이 테이블을 다시 확인하세요.
+datasheet-field-inspection-interrupted = 필드 확인이 중단되었습니다. 이 테이블을 다시 확인하세요.
 
 # Known saved field after failed checked reopening.
-datasheet-number-saved-warning = 필드는 저장되었지만 데이터베이스를 확인할 수 없습니다. 다시 저장하기 전에 데이터베이스를 다시 여세요.
-datasheet-number-abandon-title = 필드 초안을 닫을까요?
-datasheet-number-abandon-question = 필드는 저장되었습니다. 이 초안을 닫아도 저장은 취소되지 않습니다.
-datasheet-number-abandon-discard = 초안 닫기
+datasheet-field-saved-warning = 필드는 저장되었지만 데이터베이스를 확인할 수 없습니다. 다시 저장하기 전에 데이터베이스를 다시 여세요.
+datasheet-field-abandon-title = 필드 초안을 닫을까요?
+datasheet-field-abandon-question = 필드는 저장되었습니다. 이 초안을 닫아도 저장은 취소되지 않습니다.
+datasheet-field-abandon-discard = 초안 닫기
 
 # Leave failed checked reopening without undoing an acknowledged field save.
-datasheet-number-return-draft = 필드 초안으로 돌아가기
+datasheet-field-return-draft = 필드 초안으로 돌아가기

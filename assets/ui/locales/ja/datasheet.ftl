@@ -75,29 +75,30 @@ datasheet-no-filter = フィルターなし
 datasheet-filtered = フィルター適用済み
 datasheet-page-tools = ページ ツール
 
-# Saved-table Number field review and checked reopen.
-datasheet-number-inspecting = 数値型フィールドを追加できるか確認しています…
-datasheet-number-reviewing = 新しい数値型フィールドを確認しています…
-datasheet-number-reopening = 保存したテーブルを開き直しています…
-datasheet-number-retry-inspection = フィールドの追加可否を再確認
+# Saved-table field addition review and checked reopen.
+datasheet-field-title = フィールド
+datasheet-field-inspecting = フィールドを追加できるか確認しています…
+datasheet-field-reviewing = 新しいフィールドを確認しています…
+datasheet-field-reopening = 保存したテーブルを開き直しています…
+datasheet-field-retry-inspection = フィールドの追加可否を再確認
 
-# Saved Number field close confirmation
-datasheet-number-close-title = フィールドの変更を保存しますか？
-datasheet-number-close-question = テーブル「{ $table }」に新しいフィールド「{ $column }」を保存しますか？
-datasheet-number-close-stale = フィールド名またはテーブルが変更されました。この確認画面を閉じて、もう一度お試しください。
-datasheet-number-close-unavailable = 現在、このフィールドを保存できません。
-datasheet-number-close-save = 保存
-datasheet-number-close-discard = 保存しない
-datasheet-number-close-cancel = キャンセル
+# Saved field close confirmation
+datasheet-field-close-title = フィールドの変更を保存しますか？
+datasheet-field-close-question = テーブル「{ $table }」に新しいフィールド「{ $column }」を保存しますか？
+datasheet-field-close-stale = フィールド名またはテーブルが変更されました。この確認画面を閉じて、もう一度お試しください。
+datasheet-field-close-unavailable = 現在、このフィールドを保存できません。
+datasheet-field-close-save = 保存
+datasheet-field-close-discard = 保存しない
+datasheet-field-close-cancel = キャンセル
 
 # Interrupted readonly field eligibility observation.
-datasheet-number-inspection-interrupted = フィールドの確認が中断されました。このテーブルを再確認してください。
+datasheet-field-inspection-interrupted = フィールドの確認が中断されました。このテーブルを再確認してください。
 
 # Known saved field after failed checked reopening.
-datasheet-number-saved-warning = フィールドは保存されましたが、データベースを検証できませんでした。次に保存する前にデータベースを開き直してください。
-datasheet-number-abandon-title = フィールドの下書きを閉じますか？
-datasheet-number-abandon-question = フィールドは保存されています。この下書きを閉じても保存は取り消されません。
-datasheet-number-abandon-discard = 下書きを閉じる
+datasheet-field-saved-warning = フィールドは保存されましたが、データベースを検証できませんでした。次に保存する前にデータベースを開き直してください。
+datasheet-field-abandon-title = フィールドの下書きを閉じますか？
+datasheet-field-abandon-question = フィールドは保存されています。この下書きを閉じても保存は取り消されません。
+datasheet-field-abandon-discard = 下書きを閉じる
 
 # Leave failed checked reopening without undoing an acknowledged field save.
-datasheet-number-return-draft = フィールドの下書きに戻る
+datasheet-field-return-draft = フィールドの下書きに戻る

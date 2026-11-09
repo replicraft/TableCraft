@@ -22,23 +22,24 @@ pub use workspace::preview;
 pub use workspace::{
     Action, CollectionKind, ContentsTarget, CreationOutcome, CreationRequest, Data, Database,
     DeleteReview, DeleteTarget, EditDraft, EditInput, EditReview, EditSaveOutcome, EditTarget,
-    Field, FieldFilterDescription, FieldFilterOperator, FieldFilterPatternMode, FieldFilterTarget,
+    Field, FieldAdditionChoices, FieldAdditionInspectionError, FieldAdditionRequest,
+    FieldAdditionSaveCommand, FieldAdditionSaveIdentity, FieldAdditionSavedWarning,
+    FieldFilterDescription, FieldFilterOperator, FieldFilterPatternMode, FieldFilterTarget,
     FieldProperty, FieldPropertyValue, FilterComparison, FilterPublication, FilterRestore,
     FilterSelectionTarget, FilterTarget, FindDirection, FindMatch, FindPosition, FindRequest,
     FindScope, FindSpan, FindTarget, InitialRecord, InputHint, InsertDraft, InsertField,
-    InsertInput, InsertRetryPermission, InsertReview, InsertTarget, NumberColumnInspectionError,
-    NumberColumnRequest, NumberColumnSaveCommand, NumberColumnSaveIdentity,
-    NumberColumnSavedWarning, ObjectKind, ObjectOpen, ObjectTab, ObjectTarget, ParameterInput,
-    ParameterSpec, PreparedNumberColumnSave, QueryActionEffect, QueryActionKind, QueryActionReview,
-    QueryDesignCompletion, QueryDesignRequest, QueryDesignTarget, RecordTarget, RecoveryOutcome,
-    ReplaceFindRequest, RowOrdinalError, RowOrdinals, SaveCleanupNotice, SavedQuery,
-    SavedQuerySqlCloseDecision, SavedQuerySqlCloseResult, SavedQuerySqlEligibility,
-    SavedQuerySqlError, SavedQuerySqlRequest, SavedQuerySqlSaveCommand, SavedQuerySqlSaveIdentity,
-    SavedQuerySqlSaveOperation, SavedQueryTarget, Schema, SortSpec, SortTarget, State, Table,
-    TableDraftSaveCompletion, TableRenameRequest, TableSaveRequest, TotalAggregate, TotalSpec,
-    TotalsData, TotalsDescription, TotalsField, TotalsTarget, WorkspaceLayout,
+    InsertInput, InsertRetryPermission, InsertReview, InsertTarget, ObjectKind, ObjectOpen,
+    ObjectTab, ObjectTarget, ParameterInput, ParameterSpec, PreparedFieldAdditionSave,
+    QueryActionEffect, QueryActionKind, QueryActionReview, QueryDesignCompletion,
+    QueryDesignRequest, QueryDesignTarget, RecordTarget, RecoveryOutcome, ReplaceFindRequest,
+    RowOrdinalError, RowOrdinals, SaveCleanupNotice, SavedQuery, SavedQuerySqlCloseDecision,
+    SavedQuerySqlCloseResult, SavedQuerySqlEligibility, SavedQuerySqlError, SavedQuerySqlRequest,
+    SavedQuerySqlSaveCommand, SavedQuerySqlSaveIdentity, SavedQuerySqlSaveOperation,
+    SavedQueryTarget, Schema, SortSpec, SortTarget, State, Table, TableDraftSaveCompletion,
+    TableRenameRequest, TableSaveRequest, TotalAggregate, TotalSpec, TotalsData, TotalsDescription,
+    TotalsField, TotalsTarget, WorkspaceLayout,
 };
-pub use workspace::{NumberColumnCloseDecision, NumberColumnCloseResult};
+pub use workspace::{FieldAdditionCloseDecision, FieldAdditionCloseResult};
 
 #[cfg(test)]
 mod tests {

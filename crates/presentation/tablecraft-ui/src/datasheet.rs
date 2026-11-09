@@ -47,12 +47,12 @@ pub(crate) struct Output {
     pub selection: Option<SelectionOwner>,
     pub actions: Vec<Action>,
     pub totals_choices: Vec<crate::workspace::totals::Choice>,
-    pub number_column: Option<crate::workspace::number_column::header::Event>,
+    pub field_addition: Option<crate::workspace::field_addition::header::Event>,
 }
 
 #[derive(Default)]
 pub(crate) struct Features<'a> {
-    pub number_column: Option<crate::workspace::number_column::header::Presentation>,
+    pub field_addition: Option<crate::workspace::field_addition::header::Presentation>,
     pub sort_header: Option<SortHeader>,
     pub insert_target: Option<InsertTarget>,
     pub inline_insert: Option<crate::workspace::insertion::inline::Row<'a>>,
@@ -61,7 +61,7 @@ pub(crate) struct Features<'a> {
 }
 
 struct RowView<'a> {
-    number_column: Option<crate::workspace::number_column::header::Presentation>,
+    field_addition: Option<crate::workspace::field_addition::header::Presentation>,
     collection: bool,
     pane: Pane,
     sort_header: Option<SortHeader>,
@@ -89,7 +89,7 @@ pub(super) fn show(
         selection,
         RowView {
             collection: false,
-            number_column: features.number_column,
+            field_addition: features.field_addition,
             pane,
             sort_header: features.sort_header,
             insert_target: features.insert_target,
@@ -115,7 +115,7 @@ pub(crate) fn show_collection(ui: &mut Ui, data: &Data, selection: &mut Selectio
         selection,
         RowView {
             collection: true,
-            number_column: None,
+            field_addition: None,
             pane: Pane::Document,
             sort_header: None,
             insert_target: None,
@@ -144,7 +144,7 @@ fn show_rows(
         selection,
         RowView {
             collection: false,
-            number_column: None,
+            field_addition: None,
             pane,
             sort_header: None,
             insert_target: None,
@@ -170,7 +170,7 @@ fn render_rows(
         actions,
         totals_choices,
         selection: owner,
-        number_column: number_event,
+        field_addition: number_event,
     } = output;
     if data.validate_row_ordinals().is_err() {
         return ScrollArea::both().show(ui, |ui| {
@@ -315,9 +315,9 @@ fn render_rows(
                         }
                         if add_column {
                             header.col(|ui| {
-                                if let Some(presentation) = &view.number_column {
+                                if let Some(presentation) = &view.field_addition {
                                     grid_cell(ui, true);
-                                    *number_event = crate::workspace::number_column::header::show(
+                                    *number_event = crate::workspace::field_addition::header::show(
                                         ui,
                                         presentation,
                                     );

@@ -1,6 +1,6 @@
 //! Application-private real host glue shared by headless workflow acceptance tests.
 #[cfg(any(target_os = "macos", target_os = "linux", windows))]
-pub(super) mod number_column;
+pub(super) mod field_addition;
 use super::Desktop;
 use eframe::App;
 use egui::accesskit::Role;
