@@ -116,7 +116,14 @@ fn native_field_rename_preserves_true_identity_and_uses_the_complete_expected_im
             )
             .unwrap();
         assert_eq!(inspection["source_eligible"], true);
-        assert_eq!(inspection["same_width_ascii_utf16_units"], 5);
+        assert_eq!(
+            inspection["same_width_ascii_utf16_units"],
+            serde_json::Value::Null
+        );
+        assert_eq!(
+            inspection["name_profile"],
+            json!({"kind": "fitted_ascii", "original_units": 5})
+        );
         let review = session
             .execute(
                 "review_field_rename",

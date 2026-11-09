@@ -1,6 +1,7 @@
 //! Structured inert output; a serialized review never becomes native authority.
 use super::{Session, reviewed::Reviewed};
 use serde_json::{Value, json};
+use tablecraft_builders::table::field_rename::FieldRenameNameProfile;
 use tablecraft_runtime::{Cell, CellKind, Column, FieldPropertyValue, ParameterSpec, Response};
 
 pub(super) fn columns(values: &[Column]) -> Value {
@@ -115,7 +116,28 @@ impl Session {
             }
             Response::FieldAdditionAvailability { availability } => json!({"document_revision": availability.document_revision, "table": availability.table, "number_available": availability.number_available, "short_text_available": availability.short_text_available}),
             Response::FieldAdditionReviewed { review, capability } => return self.retain_review(Reviewed::FieldAddition(capability), json!({"native_review_id": review.id, "document_revision": review.document_revision, "table": review.table, "column": review.column, "declaration": format!("{:?}", review.declaration)})),
-            Response::FieldRenameSourceInspected { inspection } => json!({"document_revision": inspection.document_revision, "table": inspection.table, "column": inspection.column, "native_number": inspection.native_number, "source_eligible": inspection.source_eligible, "same_width_ascii_utf16_units": inspection.same_width_ascii_utf16_units}),
+            Response::FieldRenameSourceInspected { inspection } => {
+                let (name_profile, same_width) = match inspection.name_profile {
+                    Some(FieldRenameNameProfile::SameWidthAscii { units }) => (
+                        json!({"kind": "same_width_ascii", "original_units": units}),
+                        Some(units),
+                    ),
+                    Some(FieldRenameNameProfile::FittedAscii { original_units }) => (
+                        json!({"kind": "fitted_ascii", "original_units": original_units}),
+                        None,
+                    ),
+                    None => (Value::Null, None),
+                };
+                json!({
+                    "document_revision": inspection.document_revision,
+                    "table": inspection.table,
+                    "column": inspection.column,
+                    "native_number": inspection.native_number,
+                    "source_eligible": inspection.source_eligible,
+                    "name_profile": name_profile,
+                    "same_width_ascii_utf16_units": same_width
+                })
+            },
             Response::FieldRenameReviewed { review, capability } => return self.retain_review(Reviewed::FieldRename(capability), json!({"native_review_id": review.id, "document_revision": review.document_revision, "table": review.table, "column": review.column, "native_number": review.native_number, "new_name": review.new_name, "changed": review.changed})),
             Response::FieldDropSourceInspected { inspection } => json!({"document_revision": inspection.document_revision, "table": inspection.table, "column": inspection.column, "native_number": inspection.native_number, "source_eligible": inspection.source_eligible}),
             Response::FieldDropReviewed { review, capability } => return self.retain_review(Reviewed::FieldDrop(capability), json!({"native_review_id": review.id, "document_revision": review.document_revision, "table": review.table, "column": review.column, "native_number": review.native_number})),
