@@ -7,12 +7,13 @@ use std::path::Path;
 #[cfg(feature = "ace16-create")]
 use tablecraft_ace::{
     NativeAddColumnIntent, NativeAddTableIntent, NativeDatabaseOptionsIntent,
-    NativeDefaultZeroAddColumnIntent, NativeFieldAdditionIntent,
+    NativeDefaultZeroAddColumnIntent, NativeFieldAdditionAfterOffIntent, NativeFieldAdditionIntent,
     NativeFieldHistoryDatabaseOptionsIntent, NativeFieldRenameIntent, NativeFirstTableIntent,
     NativeRepeatedDefaultZeroAddColumnIntent, qualify_native_add_column_recovery,
     qualify_native_add_table_recovery, qualify_native_default_zero_add_column_recovery,
-    qualify_native_field_addition_recovery, qualify_native_field_rename_recovery,
-    qualify_native_first_table_recovery, qualify_native_repeated_default_zero_add_column_recovery,
+    qualify_native_field_addition_after_off_recovery, qualify_native_field_addition_recovery,
+    qualify_native_field_rename_recovery, qualify_native_first_table_recovery,
+    qualify_native_repeated_default_zero_add_column_recovery,
 };
 use tablecraft_ace::{
     NativeClockInsertIntent, NativeCompleteInsertIntent, NativeDeleteIntent, NativeEofInsertIntent,
@@ -152,6 +153,20 @@ impl OfflineWriteSession {
                         checked, intent, slot.scope, budget, cancelled,
                     )
                     .map_err(Cause::FieldAdditionIntent)?;
+                    qualified
+                        .recover(&mut target, budget, cancelled)
+                        .map_err(Cause::Recovery)
+                }
+                #[cfg(feature = "ace16-create")]
+                MutationIntent::FieldAdditionAfterOff(intent) => {
+                    let (mut target, mut journal) =
+                        pair.resizable_storage().map_err(Cause::Pair)?;
+                    let checked =
+                        inspect_v2(&mut journal, budget, cancelled).map_err(Cause::Recovery)?;
+                    let qualified = qualify_native_field_addition_after_off_recovery(
+                        checked, intent, slot.scope, budget, cancelled,
+                    )
+                    .map_err(Cause::FieldAdditionAfterOffIntent)?;
                     qualified
                         .recover(&mut target, budget, cancelled)
                         .map_err(Cause::Recovery)
@@ -449,6 +464,18 @@ impl OfflineWriteSession {
                         .map_err(Cause::Recovery)
                 }
                 #[cfg(feature = "ace16-create")]
+                MutationIntent::FieldAdditionAfterOff(intent) => {
+                    let checked =
+                        inspect_v2(&mut journal, budget, cancelled).map_err(Cause::Recovery)?;
+                    let qualified = qualify_native_field_addition_after_off_recovery(
+                        checked, intent, slot.scope, budget, cancelled,
+                    )
+                    .map_err(Cause::FieldAdditionAfterOffIntent)?;
+                    qualified
+                        .confirm_completed(&mut target, budget, cancelled)
+                        .map_err(Cause::Recovery)
+                }
+                #[cfg(feature = "ace16-create")]
                 MutationIntent::FieldRename(intent) => {
                     let checked =
                         inspect_v1(&mut journal, budget, cancelled).map_err(Cause::Recovery)?;
@@ -654,6 +681,7 @@ impl OfflineWriteSession {
             .max(NativeDefaultZeroAddColumnIntent::MAX_ENCODED_BYTES as u64)
             .max(NativeRepeatedDefaultZeroAddColumnIntent::MAX_ENCODED_BYTES as u64)
             .max(NativeFieldAdditionIntent::MAX_ENCODED_BYTES as u64)
+            .max(NativeFieldAdditionAfterOffIntent::MAX_ENCODED_BYTES as u64)
             .max(NativeFieldRenameIntent::MAX_ENCODED_BYTES as u64)
             .max(NativeDatabaseOptionsIntent::MAX_ENCODED_BYTES as u64)
             .max(NativeFieldHistoryDatabaseOptionsIntent::MAX_ENCODED_BYTES as u64);

@@ -8,7 +8,8 @@ use crate::editing::offline::{
 use std::{fs, io::Cursor, path::Path};
 use tablecraft_ace::{
     CreatedDefaultZeroColumnRequired, NativeImage, RecoverableDefaultZeroAddColumnPlan,
-    RecoverableFieldAdditionPlan, RecoverableRepeatedDefaultZeroAddColumnPlan,
+    RecoverableFieldAdditionAfterOffPlan, RecoverableFieldAdditionPlan,
+    RecoverableRepeatedDefaultZeroAddColumnPlan,
 };
 use tablecraft_io::journal::{RecoveryOutcome, filesystem::OfflineJournalPair};
 use tablecraft_testkit::fixtures::access::canonical_created_number as raw;
@@ -74,6 +75,7 @@ enum RetainedPlan {
     First(RecoverableDefaultZeroAddColumnPlan),
     Repeated(RecoverableRepeatedDefaultZeroAddColumnPlan),
     Typed(RecoverableFieldAdditionPlan),
+    AfterOff(RecoverableFieldAdditionAfterOffPlan),
 }
 
 fn retained_plan(
@@ -94,6 +96,11 @@ fn retained_plan(
             plan.after_bytes().to_vec(),
             plan.intent().encode(&mut budget(), &|| false).unwrap(),
         ),
+        RetainedPlan::AfterOff(plan) => (
+            plan.before_bytes().to_vec(),
+            plan.after_bytes().to_vec(),
+            plan.intent().encode(&mut budget(), &|| false).unwrap(),
+        ),
         RetainedPlan::Repeated(plan) => (
             plan.before_bytes().to_vec(),
             plan.after_bytes().to_vec(),
@@ -105,6 +112,7 @@ fn retained_plan(
         RetainedPlan::First(_) => b"TCAC0003",
         RetainedPlan::Repeated(_) => b"TCAC0004",
         RetainedPlan::Typed(_) => b"TCAC0005",
+        RetainedPlan::AfterOff(_) => b"TCAC0006",
     };
     assert!(intent.starts_with(framing));
 
@@ -130,6 +138,9 @@ fn retained_plan(
                 plan.prepare(&mut target, &mut journal, &mut budget(), &|| false)
             }
             RetainedPlan::Typed(plan) => {
+                plan.prepare(&mut target, &mut journal, &mut budget(), &|| false)
+            }
+            RetainedPlan::AfterOff(plan) => {
                 plan.prepare(&mut target, &mut journal, &mut budget(), &|| false)
             }
         }
@@ -247,3 +258,6 @@ mod repeated;
 
 #[path = "default_zero_tests/field_addition.rs"]
 mod field_addition;
+
+#[path = "default_zero_tests/after_off.rs"]
+mod after_off;

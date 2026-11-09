@@ -22,8 +22,9 @@ use tablecraft_access::editing::offline::{
 use tablecraft_ace::{
     AddColumnError, AddColumnIntentError, AddTableError, AddTableIntentError, CreateDatabaseError,
     CreatedAddColumnError, DatabaseOptionsError, DatabaseOptionsIntentError,
-    DefaultZeroAddColumnIntentError, FieldAdditionError, FieldAdditionIntentError, FirstTableError,
-    FirstTableIntentError, RepeatedDefaultZeroAddColumnIntentError,
+    DefaultZeroAddColumnIntentError, FieldAdditionAfterOffIntentError, FieldAdditionError,
+    FieldAdditionIntentError, FirstTableError, FirstTableIntentError,
+    RepeatedDefaultZeroAddColumnIntentError,
 };
 use tablecraft_ace::{
     EditError, InspectError, NativeIntentError, NativeRecoveryQualificationError,
@@ -257,6 +258,8 @@ fn typed_resource_failure(error: &(dyn StdError + 'static)) -> Option<SaveFailur
             #[cfg(feature = "ace16-create")]
             Cause::FieldAdditionIntent(error) => field_addition::intent(error),
             #[cfg(feature = "ace16-create")]
+            Cause::FieldAdditionAfterOffIntent(error) => field_addition_after_off::intent(error),
+            #[cfg(feature = "ace16-create")]
             Cause::RepeatedDefaultZeroAddColumnIntent(error) => {
                 number_column::repeated_intent(error)
             }
@@ -320,6 +323,10 @@ fn typed_resource_failure(error: &(dyn StdError + 'static)) -> Option<SaveFailur
     #[cfg(feature = "ace16-create")]
     if let Some(error) = error.downcast_ref::<FieldAdditionIntentError>() {
         return field_addition::intent(error);
+    }
+    #[cfg(feature = "ace16-create")]
+    if let Some(error) = error.downcast_ref::<FieldAdditionAfterOffIntentError>() {
+        return field_addition_after_off::intent(error);
     }
     #[cfg(feature = "ace16-create")]
     if let Some(error) = error.downcast_ref::<FieldAdditionError>() {
@@ -584,3 +591,6 @@ fn inspection_failure(error: &InspectError) -> Option<SaveFailureKind> {
 
 #[cfg(test)]
 mod tests;
+
+#[cfg(feature = "ace16-create")]
+mod field_addition_after_off;
