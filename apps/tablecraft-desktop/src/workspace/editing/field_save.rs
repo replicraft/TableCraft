@@ -1,6 +1,7 @@
 //! Shared mechanical native actor ownership for real addition and rename consumers.
 //! Request admission, operation scope and atomic publication stay with each feature.
 use super::SaveOwner;
+use crate::workspace::request_read;
 use crate::workspace::{Desktop, filtering::RestoreFilter};
 use std::sync::Arc;
 use tablecraft_runtime::{
@@ -98,12 +99,12 @@ impl Desktop {
 
     /// Issue only a real typed read witness. The operation has already admitted
     /// its exact native/no-op boundary; generic submit remains protected.
-    pub(super) fn issue_field_witness_read(&mut self, witness: FieldReadWitness) -> u64 {
+    pub(super) fn issue_field_witness_read(&mut self, witness: FieldReadWitness) -> Option<u64> {
         let command = match witness {
             FieldReadWitness::Addition(witness) => Command::OpenColumnAdded { witness },
             FieldReadWitness::Rename(witness) => Command::OpenFieldRenamed { witness },
         };
-        self.worker.request(command)
+        request_read(command, &self.worker, &mut self.state)
     }
 }
 
