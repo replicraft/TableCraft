@@ -189,6 +189,24 @@ Public APIs should expose engine-owned contracts and errors, not adapter/UI or
 upstream parser implementation types. C/Python/.NET consumers are future bindings,
 not currently available integrations.
 
+## Shared owned-LVAL mutation framing
+
+`table::mutation::owned_lval` owns the working represented-map and physical append
+machinery shared by the engineering long-value preview and the normal repeated
+Number-property operation. Preview consumers import this owner directly; no
+compatibility re-export or separate empty crate is introduced. The module is
+feature-scoped to preview or creation+journal. Preview-only ordinary-row mutation
+and its page-update dependencies remain gated to the preview feature.
+
+Sharing this byte machinery grants no content or system-catalog UPDATE admission.
+The normal property caller independently proves its complete canonical source
+history, actual catalog root and column ownership, requires a single fitted
+existing-page append and forbids allocation/map edits. The same record/MR2 and
+placement owners preserve old rows and all unrelated scopes. Original intent
+versions retain their own constructors and requalification; the repeated TCAC4
+purpose never widens earlier persisted requests. Native, adapter, runtime and
+host evidence remain separately accounted in the [ADD-column contract](../access/writes/ADD_COLUMN.md).
+
 ## Compatibility evidence
 
 The engineering-only `tablecraft-compat` boundary should run authored operations

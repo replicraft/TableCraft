@@ -19,11 +19,26 @@ the new menu/status/close surfaces remain adaptations without matching Access
 captures. Windows and native Access execution remain unqualified.
 
 Current native source limits remain explicit: empty, unencoded ACE16 canonical
-generated-primary tables with bounded properties. The first addition’s external
-property output is not yet a qualified second-add source. Three new independent
-[SDK observations](testing/number_column_repeat/README.md) establish same-page
-expected output for that next expansion, not current native admission. General
-column CRUD and broader profiles remain unfinished.
+generated-primary tables with bounded properties. Repeated Number addition now
+has a distinct TCAC0004 source/history proof, preserving the first addition's
+external property rows and appending a new body on the same owned LVAL page.
+Three independent [SDK observations](testing/number_column_repeat/README.md)
+match complete native second-ADD images; allocation/index pages remain unchanged.
+The same runtime/GUI service selects its exact source purpose, retains the sealed
+plan and requires complete-image checked reopen. Original TCAC1/2/3 stay frozen.
+
+The [repeated-add workflow record](testing/results/repeated-number-workflows-2026-11-08.json)
+retains 127 selected passing checks across native source/intent proof, adapter,
+runtime and desktop. They include three normal widget saves in one session,
+actual New-row insertion after three additions with all fields omitted, and a
+near-capacity save using the existing runtime limits. Strict affected-package
+lint passes both with all features and for normal creation+journal without
+preview. Earlier build and test-selection failures remain separate from passing
+gates. The third GUI image initially used a raw oracle; later independent SDK
+evidence is tracked separately rather than rewriting that execution record.
+Page-full allocation, additional tables/options composition, populated tables,
+unknown properties/history, rename/drop and broader profiles remain unfinished.
+Native Microsoft Access and Windows execution remain unqualified.
 
 ## Existing saved-query expression expansion — 8 November 2026
 

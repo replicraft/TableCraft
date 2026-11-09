@@ -1,0 +1,249 @@
+{
+  "date": "2026-11-08",
+  "scope": "Repeated Long Integer Number additions on known empty ACE16 generated-primary property history; fitted appends only",
+  "platform": "macOS 14.7.2 ARM64, headless; native Access and Windows/Linux execution unrun",
+  "implementation_commits": [
+    "33a80272",
+    "2335bcac",
+    "75684b00",
+    "50ff03be",
+    "a37c18b7",
+    "0741d898",
+    "90413e12"
+  ],
+  "unique_selected_tests": 127,
+  "unique_by_layer": {
+    "engine": 77,
+    "Access_adapter": 16,
+    "runtime": 17,
+    "desktop": 17
+  },
+  "counting": "Repeated reruns of the same logical test are not added to the unique count. The final capacity test and three-field New-row test add two cases to the earlier 125. The initial zero-match adapter filter counts as zero.",
+  "runs": [
+    {
+      "path": ".cache/repeated-number-native-summary-20261108.json",
+      "source_commit": "a37c18b7",
+      "sha256": "249d9aa31278f7e4698a54d3970a64081f1a42bd9d29b6598cb868a0001acfb6",
+      "results": [
+        {
+          "package": "tablecraft_ace",
+          "filter": "creation::add_column::",
+          "passed": 29,
+          "ignored": 0,
+          "note": ""
+        },
+        {
+          "package": "tablecraft_ace",
+          "filter": "transaction::intent::add_column::",
+          "passed": 9,
+          "ignored": 0,
+          "note": ""
+        },
+        {
+          "package": "tablecraft_ace",
+          "filter": "transaction::intent::default_zero_add_column::",
+          "passed": 8,
+          "ignored": 0,
+          "note": ""
+        },
+        {
+          "package": "tablecraft_ace",
+          "filter": "transaction::intent::repeated_default_zero_add_column::",
+          "passed": 8,
+          "ignored": 0,
+          "note": ""
+        },
+        {
+          "package": "tablecraft_ace",
+          "filter": "table::mutation::long_value::",
+          "passed": 9,
+          "ignored": 0,
+          "note": ""
+        },
+        {
+          "package": "tablecraft_ace",
+          "filter": "table::mutation::insert::long_values::",
+          "passed": 11,
+          "ignored": 0,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "path": ".cache/repeated-number-workflows-summary-20261108.json",
+      "source_commit": "90413e12",
+      "sha256": "19200ac426896432a13582e46b9a4c44f4448ca9ca58a3086c27d851daa9b0dd",
+      "results": [
+        {
+          "package": "tablecraft_ace",
+          "filter": "creation::add_column::created::default_zero::source_carrier::",
+          "passed": 3,
+          "ignored": 0,
+          "note": ""
+        },
+        {
+          "package": "tablecraft_access",
+          "filter": "editing::offline::add_column::default_zero_tests::",
+          "passed": 0,
+          "ignored": 0,
+          "note": "A zero-match filter is not passing evidence."
+        },
+        {
+          "package": "tablecraft_runtime",
+          "filter": "tests::number_column::",
+          "passed": 12,
+          "ignored": 0,
+          "note": ""
+        },
+        {
+          "package": "tablecraft_runtime",
+          "filter": "editing::platform::number_column::availability::tests::",
+          "passed": 1,
+          "ignored": 0,
+          "note": ""
+        },
+        {
+          "package": "tablecraft_runtime",
+          "filter": "editing::platform::save::outcomes::number_column::tests::",
+          "passed": 2,
+          "ignored": 0,
+          "note": ""
+        },
+        {
+          "package": "tablecraft-desktop",
+          "filter": "workspace::editing::number_column::",
+          "passed": 10,
+          "ignored": 0,
+          "note": ""
+        },
+        {
+          "package": "tablecraft-desktop",
+          "filter": "workspace::table_drafts::number_column::tests",
+          "passed": 5,
+          "ignored": 0,
+          "note": ""
+        },
+        {
+          "package": "tablecraft-desktop",
+          "filter": "workspace::editing::inserting::tests::number_column::",
+          "passed": 1,
+          "ignored": 0,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "path": ".cache/repeated-number-corrected-selection-summary-20261108.json",
+      "source_commit": "90413e12",
+      "sha256": "a559d0eb6a0f6178e36be96774fa81a723730aff30043ef0d2afc1332d91b331",
+      "results": [
+        {
+          "package": "tablecraft_access",
+          "filter": "editing::offline::add_column::tests::",
+          "passed": 16,
+          "ignored": 0,
+          "note": ""
+        },
+        {
+          "package": "tablecraft_runtime",
+          "filter": "editing::platform::save::outcomes::number_column::repeated_tests::",
+          "passed": 1,
+          "ignored": 0,
+          "note": ""
+        }
+      ]
+    },
+    {
+      "path": ".cache/repeated-number-capacity-row-summary-20261108.json",
+      "source_commit": "efa9a131",
+      "sha256": "3eff1badd0cd44707287d1e85083c6d0f084f6df7c49adedc8c7f3bf5244974c",
+      "results": [
+        {
+          "package": "tablecraft_runtime",
+          "filter": "tests::number_column::repeated::capacity::",
+          "passed": 1,
+          "ignored": 0,
+          "note": ""
+        },
+        {
+          "package": "tablecraft-desktop",
+          "filter": "workspace::editing::inserting::tests::number_column::",
+          "passed": 2,
+          "ignored": 0,
+          "note": ""
+        },
+        {
+          "package": "tablecraft-desktop",
+          "filter": "workspace::editing::number_column::tests::repeated::",
+          "passed": 1,
+          "ignored": 0,
+          "note": ""
+        }
+      ]
+    }
+  ],
+  "lint": [
+    {
+      "result": "PASS",
+      "scope": "Six affected libraries and desktop binary, all features, -D warnings",
+      "path": ".cache/repeated-number-workflows-clippy-20261108.log",
+      "source_commit": "90413e12"
+    },
+    {
+      "result": "PASS",
+      "scope": "ACE library, no default features, ace16-create+journal without engineering preview, -D warnings",
+      "path": ".cache/repeated-number-workflows-normal-clippy-20261108.log",
+      "source_commit": "90413e12"
+    }
+  ],
+  "earlier_failures": [
+    {
+      "path": ".cache/repeated-number-normal-clippy-20261108.jsonl",
+      "issue": "Preview-only retention of decoded ownership maps; fixed by exact normal-consumer cfg in 75684b00."
+    },
+    {
+      "path": ".cache/repeated-number-normal-corrected-clippy-20261108.jsonl",
+      "issue": "Shared audit metadata unused on normal path and needless borrow; fixed by meaningful append fact checks and a precise ordinary-family annotation in a37c18b7."
+    },
+    {
+      "path": ".cache/repeated-number-workflows-summary-20261108.json",
+      "issue": "One adapter filter matched zero tests. Corrected logical module filter then passed all sixteen add-column adapter cases."
+    },
+    {
+      "path": ".cache/repeated-number-capacity-row-build-20261108.jsonl",
+      "issue": "Moved app-private test helper accessed private controller field; fixed to use existing has_save observation in efa9a131."
+    },
+    {
+      "path": ".cache/repeated-number-final-format-20261108.log",
+      "issue": "Four cfg attributes needed multiline rustfmt layout; formatted before final commit. No semantic change."
+    }
+  ],
+  "evidence_boundaries": [
+    "Three complete second-add SDK pins are tested independently from native construction and real saves.",
+    "Third GUI image initially used raw-model expectation; later SDK evidence is recorded separately, without replacing the earlier execution.",
+    "Near-capacity runtime case saves N13 into the last fitting existing property page, reaches fourteen readable fields and preserves the native pool at 512 MiB/5M steps. This is cumulative admission accounting, not measured heap use.",
+    "Actual GUI first/second/third saves preserve tab identity and use fresh revisions, no forced host capability.",
+    "Actual New-row after three saves omits all added fields and reopens ID1 plus three non-NULL zeros.",
+    "No new visual widgets changed in this expansion; existing inspected offscreen Number scenes remain presentation evidence only."
+  ],
+  "limitations": [
+    "Source remains exact eleven-page empty creator/history layout; no additional tables/options insertion or unknown property histories.",
+    "Another LVAL page allocation, populated-table column changes, rename/drop/type conversion, other field types and older write profiles remain unfinished.",
+    "TCAC1/2/3 remain closed; TCAC4 uses checked V2 even though current before/after lengths are equal."
+  ],
+  "repository_checks": {
+    "format": {
+      "result": "PASS",
+      "path": ".cache/repeated-number-final-format-corrected-20261108.log",
+      "target_roots": 885
+    },
+    "documentation_links": {
+      "result": "PASS",
+      "path": ".cache/repeated-number-final-doc-links-corrected-20261108.log"
+    },
+    "dependency_boundaries": {
+      "result": "PASS",
+      "path": ".cache/repeated-number-final-boundaries-20261108.log"
+    }
+  }
+}

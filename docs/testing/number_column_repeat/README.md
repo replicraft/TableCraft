@@ -11,7 +11,12 @@ No database, class, JAR or third-party source is published.
 The [observation record](../results/repeated-number-add-sdk-2026-11-08.json)
 pins the complete images, helper and models. These are inert SDK observations,
 not passing native candidate/recovery/GUI tests or Microsoft Access save evidence.
-Native admission for this external-property source is still pending.
+The separately versioned [native repeated-ADD contract](../../access/writes/ADD_COLUMN.md#repeated-number-addition-with-existing-external-properties)
+now connects this bounded source through candidate, TCAC4 original intent, offline
+staging/recovery and the same runtime/GUI Number service. These subsequent Rust
+and host gates remain distinct from the original three SDK observations. The
+[workflow record](../results/repeated-number-workflows-2026-11-08.json) retains
+127 selected passing checks and their exact current limits.
 
 | Prior Number source | New name | Preserved existing policy |
 | --- | --- | --- |

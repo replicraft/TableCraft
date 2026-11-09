@@ -1607,6 +1607,28 @@ Native observations and current platform limits are recorded in the
 [desktop guide](../ui/DESKTOP.md). Payload-free diagnostics remain governed by
 [the tracing contract](../development/TRACING.md).
 
+## Reviewed existing-table Number additions
+
+`ReviewAddNumberColumn` retains the same consuming `ReviewedNumberColumn` and
+`SaveWorker::start_number_column` across the original first ADD and repeated ADD.
+The engine observes the selected table's actual LvProp carrier through native
+logical-root resolution; runtime calls one matching TCAC0003 or TCAC0004 planner,
+without retry on refusal. Each planner rechecks its complete source and exact
+Required(false)/typed-zero declaration. Read-only availability uses the same
+selection and source proof, grants no capability and distinguishes known Source
+refusals from failed/cancelled/resource-limited inspections. Older formats remain
+unavailable before incompatible carrier inspection.
+
+A private plan variant retains the sealed purpose through the nonreplaceable
+worker and adapter. Both stages reuse schema-only ColumnAdded receipts, retained
+failure/recovery ownership and the same complete-image AddedColumnReopen witness.
+The host publishes no new revision from receipt alone. Ordinary Click-to-Add,
+name and Save can therefore repeat after successful checked reopening; their
+saved facts, stale-source safeguards and other drafts retain the existing lifecycle.
+The [native contract](../access/writes/ADD_COLUMN.md#repeated-number-addition-with-existing-external-properties)
+defines the exact empty-table/property-history/page-capacity limits. No general
+column alteration or older-format write admission follows from service reuse.
+
 ## Reviewed explicit database options
 
 With `offline-edit` and `ace16-create`, the separate

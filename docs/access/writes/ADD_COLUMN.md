@@ -242,9 +242,70 @@ Return preserves the field name, save outcome and cleanup notice without rollbac
 or replay, and blocks mutation against the stale document until a fresh open.
 The actual GUI Number-save/New-row case verifies generated ID and an omitted
 Score stored as zero after native reopen; separate runtime cases retain explicit
-NULL and supplied-value observations. Required true, broader properties,
-populated sources, external source properties and native Access timestamps remain
-outside this profile. The [repeated-addition SDK reference](../../testing/number_column_repeat/README.md)
-records expected same-page property history, but does not yet qualify its source.
-SDK comparisons and macOS checks do not qualify Microsoft Access or Windows
-execution.
+NULL and supplied-value observations. TCAC0003 retains its original inline/absent
+property source; the repeated external-property route below is a separate captured
+purpose. Required true, broader properties, populated sources and native Access
+timestamps remain outside both profiles. SDK comparisons and macOS checks do not
+qualify Microsoft Access or Windows execution.
+
+## Repeated Number addition with existing external properties
+
+The distinct `RepeatedDefaultZeroAddColumnCandidate` and `TCAC0004`/profile 4
+original intent admit the same explicit nullable LONG, stored Required(false)
+and typed zero declaration on the output of the first Number save. The
+[three independent SDK observations](../../testing/number_column_repeat/README.md)
+match complete native candidates: the file stays 45,056 bytes, only catalog page 4,
+table-definition page 7 and existing property LVAL page 10 change, and allocation
+maps and the primary INDEX page remain exact. The new complete MR2 body appends
+as row 1; the prior row 0 body remains byte-exact. Dictionary/group order and absent
+versus explicit Required metadata remain distinct.
+
+Source admission is positive complete-image reconstruction, not a creator flag,
+fixture hash or normalized copy. The exact eleven-page empty ACE16 generated-key
+layout retains one property LVAL page. For n current fields and r occupied
+property rows, reconstruct the canonical n-r field prefix, apply the frozen first
+Number constructor, then replay the known same-page append for each historical
+Number field. Every historical appended field requires exact Int32/Required(false)
+/zero policies. The complete resulting source must equal the actual original,
+including catalog logical/hidden roots, descriptor selection of the last body,
+old property rows, maps, index ownership and untouched bytes. Work and allocations
+consume one cumulative native allowance across all stages.
+
+Candidate construction uses the existing declaration/MR2 serializer, catalog
+logical-root/record-placement owner and shared `owned_lval` append framing. Exactly
+one fitted existing-page append is permitted: no page allocation, map change,
+row reuse or property-history retirement. A body that cannot fit refuses without
+publishing a partial candidate. Fresh native reopen verifies the exact complete
+property body and field/index identity; all earlier row spans and contents remain
+unchanged. Additional tables/options insertion, unknown histories, populated
+sources, chained/other external storage and another LVAL page remain unsupported.
+
+TCAC0004 binds the original complete length/digest and exact names; decode returns
+request data only. Fresh reconstruction and both-image qualification use separate
+normal native/proof allowances and one cumulative recovery allowance. It reuses
+the checked resizable V2 journal even though this profile preserves file length;
+request version and journal version are independent. TCAC0001/0002/0003 retain
+their exact previous languages and reconstruct only their captured constructors.
+Cold/settled recovery dispatches the exact version with no decoder fallback.
+
+The public runtime/UI service stays `ReviewAddNumberColumn`,
+`ReviewedNumberColumn`, `start_number_column` and `OpenColumnAdded`. An engine-owned
+metadata observation resolves the actual catalog logical root (including
+forwarding), native field framing and LvProp carrier. Review and availability
+select one constructor from that fact, then fully qualify it; failed qualification
+never retries another profile. Known older-format Source refusal remains
+unavailable, while malformed/cancel/resource errors propagate. The worker retains
+the actual sealed purpose, same exclusive offline lifecycle, schema-only
+ColumnAdded receipt and full-image witness before publishing the fresh document.
+
+The [coordinated repeated-add record](../../testing/results/repeated-number-workflows-2026-11-08.json)
+retains 127 selected passing checks across engine, adapter, runtime and desktop.
+It includes three ordinary Click-to-Add/name/Save operations in one session,
+followed by actual GUI insertion of a row with generated ID and three omitted
+fields stored as zero. A near-capacity history save reaches fourteen readable
+fields using the existing runtime native pool; no resource allowance changed.
+Strict affected-package lint passes with all features and for normal
+creation+journal without preview. This is bounded repeated ADD, not saved-field
+rename/drop, general column CRUD or Access 97–2019/native Microsoft Access
+qualification. The earlier native and consumer checkpoints, zero-match selection
+attempt and corrected test-helper build failure remain separately recorded.

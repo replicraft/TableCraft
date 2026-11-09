@@ -9,9 +9,15 @@ use crate::{
 use std::io::Cursor;
 
 pub(in crate::table::mutation) struct Scope {
-    #[cfg(any(feature = "ace16-write-preview", all(feature = "journal", feature = "ace16-create")))]
+    #[cfg(any(
+        feature = "ace16-write-preview",
+        all(feature = "journal", feature = "ace16-create")
+    ))]
     pub owned: RepresentedMap,
-    #[cfg(any(feature = "ace16-write-preview", all(feature = "journal", feature = "ace16-create")))]
+    #[cfg(any(
+        feature = "ace16-write-preview",
+        all(feature = "journal", feature = "ace16-create")
+    ))]
     pub hint: RepresentedMap,
     pub pages: Vec<u32>,
     #[cfg(feature = "ace16-write-preview")]
@@ -48,9 +54,15 @@ impl Scope {
         }
 
         Ok(Self {
-            #[cfg(any(feature = "ace16-write-preview", all(feature = "journal", feature = "ace16-create")))]
+            #[cfg(any(
+                feature = "ace16-write-preview",
+                all(feature = "journal", feature = "ace16-create")
+            ))]
             owned,
-            #[cfg(any(feature = "ace16-write-preview", all(feature = "journal", feature = "ace16-create")))]
+            #[cfg(any(
+                feature = "ace16-write-preview",
+                all(feature = "journal", feature = "ace16-create")
+            ))]
             hint,
             pages,
             #[cfg(feature = "ace16-write-preview")]

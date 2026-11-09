@@ -336,14 +336,23 @@ requires Save/Don't Save/Cancel. A failed refresh can retry or explicitly Return
 to draft while retaining saved facts; stale-source mutation stays blocked until
 a fresh open. Closing that draft does not undo the completed native save.
 
-The current source is an empty, unencoded ACE 16 canonical generated-primary
-layout, with one to fifteen original scalar fields and qualified absent/default
-zero/Required false properties. Populated tables, external source properties,
-other field types/properties and other Jet/ACE profiles remain separate targets.
-Consequently the first Number addition's external-property output is not yet
-qualified for another Number addition. The [repeated-addition SDK record](../testing/number_column_repeat/README.md)
-establishes independent expected bytes for the next source expansion, not current
-write authority. See [native limits](../access/writes/ADD_COLUMN.md).
+The current source is an empty, unencoded ACE16 canonical generated-primary
+layout with bounded scalar declarations and known inert properties. The first
+Number save's external-property output now qualifies for repeated additions
+through a distinct source/history proof and TCAC0004 original intent. Actual
+carrier metadata selects one constructor; each still performs complete native
+qualification and exact whole-image checked reopening. An ordinary headless
+Click-to-Add/name/Save flow passes three times in one session without a capability
+override. The first two complete images have independent SDK pins; the third is
+an independent raw-history check. This supplies no native Microsoft Access
+interaction or save-timestamp evidence.
+
+Repeated addition preserves every earlier property body and appends to the same
+owned LVAL page. Page-full allocation, unknown/additional property storage,
+options/additional-table composition, populated tables, other field choices and
+other Jet/ACE write profiles remain separate targets. See the
+[native repeated-ADD limits](../access/writes/ADD_COLUMN.md#repeated-number-addition-with-existing-external-properties)
+and [independent SDK observations](../testing/number_column_repeat/README.md).
 
 The retained images show the trailing header. Expanded-menu, naming and save
 status surfaces lack corresponding Access captures and remain adaptations;
