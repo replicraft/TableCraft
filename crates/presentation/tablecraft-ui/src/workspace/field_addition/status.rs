@@ -266,7 +266,7 @@ impl State {
         if !self.matches_field_addition_save(request, identity) {
             return false;
         }
-        self.field_addition = super::Model::default();
+        self.finish_field_addition_presentation();
         self.field_addition_status = None;
         true
     }

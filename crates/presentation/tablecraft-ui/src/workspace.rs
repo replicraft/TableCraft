@@ -777,6 +777,7 @@ impl State {
         self.selected_field = self
             .take_field_rename_schema_selection(&schema)
             .or_else(|| self.take_field_drop_schema_selection(&schema))
+            .or_else(|| self.take_field_addition_schema_selection(&schema))
             .unwrap_or(0);
         self.schema = Some(schema);
         if std::mem::take(&mut self.schema_activation_pending) {

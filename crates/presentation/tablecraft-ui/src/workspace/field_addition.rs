@@ -9,6 +9,7 @@ pub(crate) mod design;
 mod dialog;
 pub(crate) mod header;
 mod inspection_completion;
+mod selection;
 mod state;
 mod status;
 
@@ -102,6 +103,7 @@ impl Inspection {
 
 #[derive(Default)]
 pub(super) struct Model {
+    selection: Option<selection::Selection>,
     inspections: Vec<Inspection>,
     draft: Option<Draft>,
     close: Option<close::Confirmation>,
@@ -464,6 +466,9 @@ impl Model {
             bytes = bytes
                 .checked_add(table_name(&draft.tab)?.capacity())?
                 .checked_add(draft.column.capacity())?;
+        }
+        if let Some(selection) = &self.selection {
+            bytes = bytes.checked_add(selection.heap_bytes()?)?;
         }
         if let Some(warning) = &self.warning {
             bytes = bytes.checked_add(warning.heap_bytes()?)?;
