@@ -7,6 +7,7 @@ mod deleting;
 mod inserting;
 #[cfg(feature = "ace16-create")]
 mod number_column;
+mod outcome_facts;
 mod query_action;
 mod query_delete;
 mod query_expression;
@@ -36,7 +37,10 @@ pub use inserting::{
     InsertTarget, ReviewedInsert,
 };
 #[cfg(feature = "ace16-create")]
-pub use number_column::{NumberColumnAvailability, ReviewedNumberColumn};
+pub use number_column::{
+    NumberColumnAvailability, NumberColumnOutcomeError, NumberColumnReopenFacts,
+    ReviewedNumberColumn,
+};
 pub use platform::save::SaveWorker;
 pub use query_delete::{QueryDeleteReview, ReviewedQueryDelete};
 pub use query_expression::{

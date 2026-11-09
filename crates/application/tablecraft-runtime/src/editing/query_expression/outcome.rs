@@ -1,5 +1,7 @@
 //! Query-definition receipt facts; a caller still needs its accepted AFTER witness.
-use crate::editing::{SaveKnownOutcome, SaveOutcome, SaveQueryChange, SaveReceipt};
+#[cfg(test)]
+use crate::editing::SaveKnownOutcome;
+use crate::editing::{SaveOutcome, SaveQueryChange, SaveReceipt, outcome_facts};
 
 /// Observed query-only completion facts, never permission to reopen or replay.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -18,15 +20,8 @@ pub enum QueryExpressionOutcomeError {
     UnqualifiedReplacementReceipt,
 }
 
-fn known_replacement(known: SaveKnownOutcome) -> bool {
-    matches!(
-        known,
-        SaveKnownOutcome::Committed | SaveKnownOutcome::ReplacementVerified
-    )
-}
-
 fn query_receipt(receipt: SaveReceipt) -> bool {
-    known_replacement(receipt.known)
+    outcome_facts::known_replacement(receipt.known)
         && receipt.query_change == Some(SaveQueryChange::ExpressionSaved)
         && receipt.schema_change.is_none()
         && receipt.database_options_change.is_none()
@@ -44,27 +39,11 @@ impl SaveOutcome {
     pub fn query_expression_reopen_facts(
         self,
     ) -> Result<QueryExpressionReopenFacts, QueryExpressionOutcomeError> {
-        let (replacement, completed) = match self {
-            Self::Saved { receipt } => {
-                if known_replacement(receipt.known) && !query_receipt(receipt) {
-                    return Err(QueryExpressionOutcomeError::UnqualifiedReplacementReceipt);
-                }
-                let replacement = query_receipt(receipt);
-                (replacement, replacement.then_some(receipt))
-            }
-            Self::Released {
-                current_outcome,
-                last_completed,
-            } => {
-                let completed = last_completed.filter(|receipt| query_receipt(*receipt));
-                let replacement = current_outcome.map_or(completed.is_some(), known_replacement);
-                (replacement, completed)
-            }
-            Self::Failed(_) => (false, None),
-        };
+        let facts = outcome_facts::reopen_facts(self, query_receipt)
+            .map_err(|()| QueryExpressionOutcomeError::UnqualifiedReplacementReceipt)?;
         Ok(QueryExpressionReopenFacts {
-            replacement,
-            completed,
+            replacement: facts.replacement,
+            completed: facts.completed,
         })
     }
 }

@@ -34,8 +34,9 @@ pub use creation::{
 #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
 pub use editing::{
     AddColumnReview, AddedColumnReopen, CreatedTableReopen, DatabaseOptionsReopen,
-    DatabaseOptionsReview, NumberColumnAvailability, ReviewedAddColumn, ReviewedDatabaseOptions,
-    ReviewedNumberColumn, ReviewedTableCreation,
+    DatabaseOptionsReview, NumberColumnAvailability, NumberColumnOutcomeError,
+    NumberColumnReopenFacts, ReviewedAddColumn, ReviewedDatabaseOptions, ReviewedNumberColumn,
+    ReviewedTableCreation,
 };
 #[cfg(feature = "offline-edit")]
 pub use editing::{

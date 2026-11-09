@@ -1,51 +1,8 @@
 //! Actor outcomes do not resolve the header; only the checked AFTER read does.
 use super::*;
 use crate::workspace::editing::{cleanup_notice, save_outcome};
-use tablecraft_runtime::{
-    SaveCompletion, SaveKnownOutcome, SaveOperation, SaveReceipt, SaveReport, SaveSchemaChange,
-};
+use tablecraft_runtime::{SaveCompletion, SaveOperation, SaveReport};
 use tablecraft_ui::{Database, NumberColumnSaveCommand};
-
-fn replacement_known(known: SaveKnownOutcome) -> bool {
-    matches!(
-        known,
-        SaveKnownOutcome::Committed | SaveKnownOutcome::ReplacementVerified
-    )
-}
-
-fn column_receipt(receipt: SaveReceipt) -> bool {
-    replacement_known(receipt.known)
-        && receipt.schema_change == Some(SaveSchemaChange::ColumnAdded)
-        && receipt.query_change.is_none()
-        && receipt.database_options_change.is_none()
-        && receipt.matched_rows.is_none()
-        && receipt.changed_rows.is_none()
-}
-
-/// Current original facts override an earlier receipt. Released AFTER may lack
-/// a finalization receipt; no completed receipt is manufactured in that case.
-fn reopen_facts(outcome: SaveOutcome) -> Result<(bool, Option<SaveReceipt>), ()> {
-    match outcome {
-        SaveOutcome::Saved { receipt } => {
-            if replacement_known(receipt.known) && !column_receipt(receipt) {
-                return Err(());
-            }
-            let replacement = column_receipt(receipt);
-            Ok((replacement, replacement.then_some(receipt)))
-        }
-        SaveOutcome::Released {
-            current_outcome,
-            last_completed,
-        } => {
-            let completed = last_completed.filter(|receipt| column_receipt(*receipt));
-            Ok((
-                current_outcome.map_or(completed.is_some(), replacement_known),
-                completed,
-            ))
-        }
-        SaveOutcome::Failed(_) => Ok((false, None)),
-    }
-}
 
 impl Desktop {
     pub(in crate::workspace) fn cancel_current_number_column_operation(&mut self) -> bool {
@@ -94,7 +51,7 @@ impl Desktop {
         );
         let ordinary_success = !host.cancelled
             && report.operation == SaveOperation::Apply
-            && matches!(report.outcome, SaveOutcome::Saved { receipt } if column_receipt(receipt) && receipt.completion == SaveCompletion::Applied);
+            && matches!(report.outcome, SaveOutcome::Saved { receipt } if report.outcome.number_column_reopen_facts().is_ok_and(|facts| facts.replacement) && receipt.completion == SaveCompletion::Applied);
         if ordinary_success {
             self.acknowledge_number_column(identity);
         }
@@ -187,10 +144,12 @@ impl Desktop {
         let Some(report) = save.report else {
             return;
         };
-        let Ok((replacement, completed)) = reopen_facts(report.outcome) else {
+        let Ok(facts) = report.outcome.number_column_reopen_facts() else {
             self.state.error = Some(self.state.localizer.text("objects-open-refused"));
             return;
         };
+        let replacement = facts.replacement;
+        let completed = facts.completed;
         if replacement && host.witness.is_none() {
             self.state.error = Some(self.state.localizer.text("objects-open-refused"));
             return;
@@ -221,7 +180,9 @@ impl Desktop {
             || host.reopening
             || self.editing.save.is_some()
             || !host.terminal.is_some_and(|outcome| {
-                reopen_facts(outcome).is_ok_and(|(replacement, _)| replacement)
+                outcome
+                    .number_column_reopen_facts()
+                    .is_ok_and(|facts| facts.replacement)
             })
         {
             return;
@@ -274,7 +235,9 @@ impl Desktop {
         if host.request_id != request_id
             || !host.reopening
             || !host.terminal.is_some_and(|outcome| {
-                reopen_facts(outcome).is_ok_and(|(replacement, _)| replacement)
+                outcome
+                    .number_column_reopen_facts()
+                    .is_ok_and(|facts| facts.replacement)
             })
         {
             return;
