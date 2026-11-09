@@ -12,8 +12,17 @@ const DESCRIPTION_UNITS: usize = 255;
 /// Only explicit supported field policies/defaults and Increment declarations are optional; native flags,
 /// offsets and mutation authority are not supplied.
 ///
-/// Retain each returned declaration when choosing policies. Discarding a
-/// configured copy leaves the original declaration unchanged:
+/// Retain each returned declaration when choosing policies:
+///
+/// ```
+/// use tablecraft_ace::CreateColumn;
+/// use tablecraft_schema::ScalarType;
+///
+/// let column = CreateColumn::new("Score", ScalarType::Int32).with_required(true);
+/// assert_eq!(column.required(), Some(true));
+/// ```
+///
+/// Discarding a configured copy leaves the original declaration unchanged:
 ///
 /// ```compile_fail
 /// #![deny(unused_must_use)]

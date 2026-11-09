@@ -41,6 +41,7 @@ impl Default for EvalLimits {
 /// One step is charged per visited node; Text allocation bytes are charged
 /// cumulatively before allocation, including literals, bindings and intermediates.
 /// Host bindings/collations own the limits and side effects of their callbacks.
+#[must_use = "use the returned evaluator to apply its configured policies"]
 pub struct Evaluator<'a> {
     pub(super) error_messages: Option<&'a dyn ErrorMessages>,
     pub(super) access_session: Option<AccessSessionContext<'a>>,

@@ -57,6 +57,7 @@ struct Entry {
 /// Referenced local saved SELECT/UNION queries are reconstructed lazily into stable owned
 /// metadata for the shared query binder. Cached definitions/tables avoid repeat
 /// I/O in joins/subqueries; budgets accumulate across catalog/query/schema/table reads. This synchronous source is not a concurrent host.
+#[must_use = "use the returned native source to apply its selected read policies"]
 pub struct NativeSource<'a, R> {
     source: RefCell<R>,
     budget: budget::Budget<'a>,

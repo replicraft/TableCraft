@@ -60,6 +60,7 @@ impl Default for IcuTextLimits {
 /// registration nor ICU locale data establishes Windows NLS/Access equivalence.
 /// Provider quotas accumulate across calls; ICU's internal scratch allocator is
 /// bounded by input ceilings but is not a fallible caller-owned allocator.
+#[must_use = "use the configured comparison provider to apply its policies"]
 pub struct IcuTextCollation<'a> {
     collator: CollatorBorrowed<'static>,
     database: Option<&'a dyn Collation>,

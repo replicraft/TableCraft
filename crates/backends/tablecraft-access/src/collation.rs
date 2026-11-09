@@ -27,6 +27,7 @@ use tablecraft_expressions::{
 /// The caller supplies cancellation and module/text-mode/LIKE policies separately.
 /// Database-mode search uses the explicit full-weight consumed-span model.
 /// No captured SQL, text values or sort keys enter tracing.
+#[must_use = "use the configured comparison provider to apply its policies"]
 pub struct GeneralCollation<'a> {
     order: NativeSortOrder,
     budget: budget::Budget<'a>,

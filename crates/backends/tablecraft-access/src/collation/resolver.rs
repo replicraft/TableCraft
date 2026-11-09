@@ -26,6 +26,7 @@ const _: () = assert!(GeneralEqualityPrefix::MAX_BYTES <= TextEqualityKey::MAX_B
 /// inferred. The weight/lineage models remain provisional without native SQL qualification.
 /// Hosts own the budget cell and cancellation lifetime; reentrant borrowing fails
 /// explicitly. No heap-owned cache, runtime or source discovery is introduced.
+#[must_use = "use the configured resolver to apply its comparison policies"]
 pub struct NativeCollationResolver<'a> {
     default: NativeSortOrder,
     deferred: DeferredDefault<'a>,

@@ -3,6 +3,31 @@ use crate::{TablePageRequest, TableSnapshotLimits};
 
 /// A stored collection page plus explicit complete parent/child snapshot limits.
 /// This is an operation request, not a persistent bookmark or live-file snapshot.
+///
+/// Keep the returned request when opting into stored calculations:
+///
+/// ```
+/// use tablecraft_ace::{CollectionPageRequest, TablePageRequest, TableSnapshotLimits};
+///
+/// let page = TablePageRequest::new(0, 1)?;
+/// let request = CollectionPageRequest::new(page, TableSnapshotLimits::default())
+///     .with_stored_calculations(true);
+/// assert!(request.includes_stored_calculations());
+/// # Ok::<(), tablecraft_ace::InspectError>(())
+/// ```
+///
+/// Discarding a configured copy is rejected:
+///
+/// ```compile_fail
+/// #![deny(unused_must_use)]
+/// use tablecraft_ace::{CollectionPageRequest, TablePageRequest, TableSnapshotLimits};
+///
+/// let page = TablePageRequest::new(0, 1)?;
+/// let request = CollectionPageRequest::new(page, TableSnapshotLimits::default());
+/// request.with_stored_calculations(true);
+/// # Ok::<(), tablecraft_ace::InspectError>(())
+/// ```
+#[must_use = "retain the returned request to apply its collection read settings"]
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct CollectionPageRequest {
     page: TablePageRequest,

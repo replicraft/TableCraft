@@ -27,6 +27,7 @@ const FRENCH_LEGACY_ORDER: [u8; 4] = [12, 4, 0, 0];
 /// This does not implement Windows Text/LCID comparison,
 /// equality-prefix hints or native Access SQL qualification. Binary operations
 /// and policy-independent search controls retain their existing evaluator rules.
+#[must_use = "use the configured comparison provider to apply its policies"]
 pub struct FrenchLegacyCollation<'a> {
     budget: budget::Budget<'a>,
     option_compare: Option<StringCompareMode>,
