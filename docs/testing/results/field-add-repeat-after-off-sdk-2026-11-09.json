@@ -35,7 +35,7 @@
     },
     {
       "source": "docs/testing/field_add_repeat_after_off/run.py",
-      "sha256": "14f515cf1321d817aa820c3a64f5656d75494f197d12bd2d37ccccc68d82cf59"
+      "sha256": "2f9cb4695b19602415ec968c909b5dabc68a79323dd6fb7da6173fe2b98ef38b"
     }
   ],
   "unchanged_owners": [
@@ -77,7 +77,8 @@
     "compile_exit": 0,
     "sdk_failures": 0,
     "identical_successful_sdk_commands_rerun": false,
-    "portable_sdk_runner_executed": false
+    "portable_sdk_runner_executed": false,
+    "portable_classpath": "os.pathsep; maintained runner unexecuted"
   },
   "observations": [
     {

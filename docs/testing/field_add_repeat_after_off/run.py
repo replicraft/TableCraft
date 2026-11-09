@@ -2,6 +2,7 @@
 from pathlib import Path
 import argparse
 import hashlib
+import os
 import json
 import subprocess
 import time
@@ -56,7 +57,7 @@ report['compile'] = execute([JAVA / 'javac', '-cp', JAR, '-d', ROOT / 'classes',
 (ROOT / 'execution.json').write_text(json.dumps(report, indent=2) + '\n')
 if report['compile']['exit'] != 0:
     raise SystemExit('Compile failed; retained logs and execution record')
-classpath = str(ROOT / 'classes') + ':' + str(JAR)
+classpath = os.pathsep.join([str(ROOT / 'classes'), str(JAR)])
 for case in frozen['cases']:
     original = args.sources_dir / case['source']
     source = ROOT / case['input']
