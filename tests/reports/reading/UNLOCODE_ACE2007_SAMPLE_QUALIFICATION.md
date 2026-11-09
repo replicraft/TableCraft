@@ -21,6 +21,7 @@ No database rows, field values or private absolute paths are reproduced here.
 | SDK other table metadata | 249 × 2, 10 × 2, 14 × 2 and 4,759 × 3 rows/columns; declared and actual counts agree |
 | SDK indexes | Zero on all five user tables |
 | Complete CLI streaming read of largest table | Exit 0; 100,969 decoded rows × 12 columns; 12,824,990 output bytes |
+| Complete remaining user tables | Release CLI decoded every row/column of all four smaller tables; counts 249, 10, 14 and 4,759 match the SDK; all five tables now total 106,001 completely decoded rows |
 | Independent derivation from that stream | 249 distinct country keys |
 | MCP opening and first pages | Five user tables; first-page counts 100, 100, 10, 100 and 14; all requests successful |
 | MCP late page of largest table | Offset 100,900 returned the final 69 rows and `has_more=false` |
@@ -29,8 +30,8 @@ No database rows, field values or private absolute paths are reproduced here.
 The SDK probe opens read-only, disables expression evaluation and rejects linked
 opens. Its cursor counts request no column values: its format/schema/count
 agreement is **not** a cell-by-cell comparison of the complete CLI output.
-The complete typed CLI read concerns the largest table; the MCP observations
-qualify bounded pages, not a complete MCP scan of all tables.
+The complete typed CLI reads now cover all five tables. The MCP observations
+qualify bounded pages and explicit counts, not a complete MCP scan of all tables.
 
 ## Query budgets and retained refusals
 
@@ -44,8 +45,8 @@ qualify bounded pages, not a complete MCP scan of all tables.
   part of the observation record.
 - **Current-binary General follow-up completed** with the same explicit allowances:
   exit 0, 20 groups, and every count matching the independent complete-stream
-  derivation. The recorded run took about 2.05 seconds; this is one observation,
-  not a portable benchmark. The original source hash remained unchanged.
+  derivation. The recorded **unoptimized debug** run took about 2.05 seconds; this is one
+  observation, not a portable benchmark. The original source hash remained unchanged.
 - The grouped/HAVING query using explicit ordinal comparison completed with
   20 groups and matched independently derived counts from the complete stream.
   Ordinal success does not qualify General or native locale-specific equivalence.
@@ -53,12 +54,51 @@ qualify bounded pages, not a complete MCP scan of all tables.
   and was rejected by clap. The corrected `--table TABLE --indexes` invocation
   succeeded; the argument error was not a database-format failure.
 
+## Release performance follow-up
+
+The original 2.05-second observation used an unoptimized development executable.
+A later Hyperfine 2.0.0 comparison measured the same complete CLI process, source,
+database-General `GROUP BY`/`HAVING`/`ORDER BY` query, output and explicit budgets.
+Each executable was checked against the independent complete-stream counts first;
+both returned the expected 20 groups. Both warmups and measured runs succeeded,
+and the original source hash remained unchanged.
+
+The local machine was an Apple M1 Pro with 32 GiB RAM, macOS 14.7.2 ARM64.
+Hyperfine used two warmups and ten measured runs per executable, without a shell.
+These are warm-cache local timings, not a cold-disk or native Access benchmark.
+
+| Build | Mean wall time ± sample standard deviation | Mean peak resident memory |
+| --- | --- | --- |
+| Development / unoptimized | 1,324.5 ± 35.0 ms | 55.4 MiB |
+| Release / optimized | 245.3 ± 6.8 ms | 46.2 MiB |
+
+The optimized executable was about 5.4 times faster than the contemporaneous
+development executable. This comparison changes the **build profile**, not the
+algorithm between the two binaries. The earlier algorithm change replaced a
+linear scan of retained group representatives with explicit policy-scoped bucket
+hints; every matching bucket still uses the full checked comparer. The sample
+has no indexes, and no index was created or used to achieve these results.
+
+Native projection already avoids decoding unreferenced columns. Remaining
+optimization candidates include repeated full General-key construction and
+per-row retained allocations. Those need separate release measurements and
+correctness qualification; no key cache or aggregate-storage rewrite is claimed
+here.
+
+Release executable SHA-256:
+`3879aa271625f3c404df6e7f7101a828ab97e4037dfe4e9545c0a6b79a886b41`.
+Development executable SHA-256:
+`55f5d203b6e17d041ecae2069e350d6eb495b290884dcbc051e0e196b6b1ba6e`.
+
 ## Evidence and scope
 
 Private observations remain in `.cache/unlocode-mdb-before.json`,
 `.cache/unlocode-mdb-cli.json`, `.cache/unlocode-complete-reading.json`,
 `.cache/unlocode-mcp-reader.json`, `.cache/unlocode-ordinal-group-query.json`,
-`.cache/unlocode-general-grouping-after.json` and
+`.cache/unlocode-general-grouping-after.json`,
+`.cache/unlocode-complete-all-tables.json`,
+`.cache/unlocode-grouping-hyperfine.json`,
+`.cache/unlocode-grouping-profile-summary.json` and
 `.cache/mdb-sample-qualification-20261109/`. Raw CLI captures can contain source
 values and are deliberately not copied into the public report.
 
