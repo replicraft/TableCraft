@@ -1,13 +1,15 @@
+mod result;
+
 use crate::{actor::Actor, permissions::Permissions, tools};
 use rmcp::{
     ErrorData, RoleServer, ServerHandler,
     model::{
-        CallToolRequestParams, CallToolResponse, CallToolResult, ListToolsResult,
-        PaginatedRequestParams, ServerCapabilities, ServerConfig, Tool,
+        CallToolRequestParams, CallToolResponse, ListToolsResult, PaginatedRequestParams,
+        ServerCapabilities, ServerConfig, Tool,
     },
     service::RequestContext,
 };
-use serde_json::{Value, json};
+use serde_json::Value;
 
 pub(super) struct Server {
     actor: Actor,
@@ -54,10 +56,6 @@ impl ServerHandler for Server {
             .actor
             .execute(request.name.into_owned(), arguments, context.ct.cancelled())
             .await;
-        Ok(match result {
-            Ok(value) => CallToolResult::structured(value),
-            Err(error) => CallToolResult::structured_error(json!({"error": error})),
-        }
-        .into())
+        Ok(result::encode(result).into())
     }
 }
