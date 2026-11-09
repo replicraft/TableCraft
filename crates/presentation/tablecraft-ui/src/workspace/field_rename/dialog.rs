@@ -14,6 +14,7 @@ use crate::{
     workspace::{diagnostics, save_display, schema_save::StatusPhase},
 };
 use egui::{Context, Id, Modal, Ui};
+use tablecraft_builders::table::field_rename::FieldRenameNameProfile;
 
 const MAX_WIDTH: f32 = 520.0;
 const MAX_REPORT_HEIGHT: f32 = 230.0;
@@ -293,11 +294,16 @@ impl State {
                     ui.spinner();
                     ui.label(tr(ui, "field-rename-inspecting"));
                 }
-                Observation::Eligible { units } => {
-                    let mut arguments = FluentArgs::new();
-                    arguments.set("units", *units as i64);
-                    ui.small(self.localizer.format("field-rename-profile", &arguments));
-                }
+                Observation::Eligible { profile } => match profile {
+                    FieldRenameNameProfile::SameWidthAscii { units } => {
+                        let mut arguments = FluentArgs::new();
+                        arguments.set("units", *units as i64);
+                        ui.small(self.localizer.format("field-rename-profile", &arguments));
+                    }
+                    FieldRenameNameProfile::FittedAscii { .. } => {
+                        ui.small(tr(ui, "field-rename-fitted-profile"));
+                    }
+                },
                 Observation::Unsupported => {
                     ui.label(tr(ui, "field-rename-source-unavailable"));
                 }

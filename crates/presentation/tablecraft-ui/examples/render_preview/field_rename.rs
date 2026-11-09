@@ -9,6 +9,7 @@ use egui_kittest::{
     Harness,
     kittest::{NodeT, Queryable},
 };
+use tablecraft_builders::table::field_rename::FieldRenameNameProfile;
 use tablecraft_ui::{
     Column, Data, EditSaveOutcome, FieldRenameSaveIdentity, FieldRenameTarget, ObjectKind,
     preview::Preview,
@@ -34,6 +35,8 @@ pub(super) fn is_mode(mode: &str) -> bool {
         "none"
             | "name"
             | "unsupported"
+            | "grow-name"
+            | "shrink-name"
             | "source-refused"
             | "unchanged"
             | "review"
@@ -106,13 +109,23 @@ pub(super) fn prepare(harness: &mut Harness<'_, Preview>, mode: &str) {
             ORIGINAL_NAME,
             NATIVE_NUMBER,
             source_eligible,
-            source_eligible.then_some(ORIGINAL_NAME.len()),
+            source_eligible.then_some(if matches!(mode, "grow-name" | "shrink-name") {
+                FieldRenameNameProfile::FittedAscii {
+                    original_units: ORIGINAL_NAME.len(),
+                }
+            } else {
+                FieldRenameNameProfile::SameWidthAscii {
+                    units: ORIGINAL_NAME.len(),
+                }
+            }),
         ));
         target
     };
 
     let proposed = match mode {
         "unsupported" => UNSUPPORTED_NAME,
+        "grow-name" => "LongerScore",
+        "shrink-name" => "Pts",
         "unchanged" | "unchanged-returned" | "source-refused" => ORIGINAL_NAME,
         _ => CHANGED_NAME,
     };
@@ -201,7 +214,7 @@ pub(super) fn prepare(harness: &mut Harness<'_, Preview>, mode: &str) {
     assert_eq!(state.active_object().unwrap().id, tab_id);
     assert_eq!(
         state.can_review_field_rename(),
-        matches!(mode, "name" | "unchanged"),
+        matches!(mode, "name" | "unchanged" | "grow-name" | "shrink-name"),
         "only the supported idle proposal permits a review request"
     );
     assert!(

@@ -3,6 +3,7 @@ use super::{confirming, design, harness, observed};
 use crate::{Action, FieldRenameTarget};
 use egui::{Key, Modifiers, accesskit::Role};
 use egui_kittest::kittest::{NodeT, Queryable};
+use tablecraft_builders::table::field_rename::FieldRenameNameProfile;
 
 #[test]
 fn unavailable_design_delete_rows_stays_visible_and_keyboard_cannot_dispatch() {
@@ -40,7 +41,15 @@ fn delete_in_saved_design_name_input_edits_proposal_without_deleting_the_field()
         .prepare_field_rename_inspection(&outgoing)
         .unwrap()
         .bind(81);
-    assert!(state.set_field_rename_inspection_by_id(81, 7, "Table1", "Score", 17, true, Some(5)));
+    assert!(state.set_field_rename_inspection_by_id(
+        81,
+        7,
+        "Table1",
+        "Score",
+        17,
+        true,
+        Some(FieldRenameNameProfile::SameWidthAscii { units: 5 })
+    ));
     let mut harness = harness(state);
     let label = harness.state().0.localizer.text("field-rename-name");
     harness

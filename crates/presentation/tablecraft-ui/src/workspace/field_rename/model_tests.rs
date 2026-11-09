@@ -1,6 +1,7 @@
 use super::model::{Model, Observation, Phase};
 use super::{FieldRenameRequest, FieldRenameTarget};
 use crate::workspace::{ObjectKind, ObjectTab, ObjectTarget};
+use tablecraft_builders::table::field_rename::FieldRenameNameProfile;
 
 fn target() -> FieldRenameTarget {
     FieldRenameTarget {
@@ -23,7 +24,12 @@ fn ready() -> (Model, FieldRenameTarget) {
     let mut model = Model::default();
     assert!(model.begin(target.copy().unwrap(), "Score".into()));
     assert!(model.bind_inspection(&target, 80));
-    assert!(model.observed(&target, 80, true, Some(5)));
+    assert!(model.observed(
+        &target,
+        80,
+        true,
+        Some(FieldRenameNameProfile::SameWidthAscii { units: 5 })
+    ));
     (model, target)
 }
 
@@ -44,13 +50,33 @@ fn inspection_binds_true_target_and_actual_id_while_preserving_newer_text() {
     assert!(model.bind_inspection(&target, 80));
     assert!(model.replace(&target, "Total".into()));
     let before = request(&model);
-    assert!(!model.observed(&target, 79, true, Some(5)));
+    assert!(!model.observed(
+        &target,
+        79,
+        true,
+        Some(FieldRenameNameProfile::SameWidthAscii { units: 5 })
+    ));
     let mut other = target.copy().unwrap();
     other.native_number = 0;
-    assert!(!model.observed(&other, 80, true, Some(5)));
-    assert!(!model.observed(&target, 80, true, Some(4)));
+    assert!(!model.observed(
+        &other,
+        80,
+        true,
+        Some(FieldRenameNameProfile::SameWidthAscii { units: 5 })
+    ));
+    assert!(!model.observed(
+        &target,
+        80,
+        true,
+        Some(FieldRenameNameProfile::SameWidthAscii { units: 4 })
+    ));
     assert_eq!(request(&model), before);
-    assert!(model.observed(&target, 80, true, Some(5)));
+    assert!(model.observed(
+        &target,
+        80,
+        true,
+        Some(FieldRenameNameProfile::SameWidthAscii { units: 5 })
+    ));
     assert_eq!(request(&model), before);
     assert!(model.profile_fits());
 }
@@ -104,7 +130,12 @@ fn exact_noop_and_case_only_still_need_positive_source_and_real_review() {
     let original = request(&model);
     assert!(!model.begin_review(&original, 90));
     assert!(model.bind_inspection(&target, 80));
-    assert!(model.observed(&target, 80, true, Some(5)));
+    assert!(model.observed(
+        &target,
+        80,
+        true,
+        Some(FieldRenameNameProfile::SameWidthAscii { units: 5 })
+    ));
     assert!(model.begin_review(&original, 90));
     assert!(model.release_review(&original, 90));
     assert!(model.replace(&target, "score".into()));

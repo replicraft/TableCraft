@@ -27,3 +27,5 @@ field-rename-close-confirm = 이름 편집기를 닫으시겠습니까? 파일�
 field-rename-warning-saved = 필드 이름이 기록되었지만 데이터베이스를 검증하지 못했습니다. 추가로 변경하기 전에 데이터베이스를 다시 여세요.
 field-rename-warning-unchanged = 필드 이름 변경 사항이 기록되지 않았지만 데이터베이스를 검증하지 못했습니다. 추가로 변경하기 전에 데이터베이스를 다시 여세요.
 field-rename-close-editor = 이름 편집기 닫기
+
+field-rename-fitted-profile = ASCII 필드 이름은 길이를 늘리거나 줄일 수 있습니다. 저장 시 쓰기 전에 파일 공간과 이름의 유효성을 검토합니다.

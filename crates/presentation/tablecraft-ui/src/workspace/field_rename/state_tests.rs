@@ -1,6 +1,7 @@
 //! Source-free UI ownership checks, not native qualification or fake save authority.
 use super::FieldRenameSaveIdentity;
 use crate::workspace::EditSaveOutcome;
+use tablecraft_builders::table::field_rename::FieldRenameNameProfile;
 
 use super::test_support::{accepted, naming};
 
@@ -25,11 +26,27 @@ fn actual_number_true_name_and_source_facts_are_independent_of_captions_and_ordi
         "Friendly",
         17,
         true,
-        Some(5)
+        Some(FieldRenameNameProfile::SameWidthAscii { units: 5 })
     ));
-    assert!(!state.set_field_rename_inspection_by_id(80, 7, "Table1", "Score", 1, true, Some(5)));
+    assert!(!state.set_field_rename_inspection_by_id(
+        80,
+        7,
+        "Table1",
+        "Score",
+        1,
+        true,
+        Some(FieldRenameNameProfile::SameWidthAscii { units: 5 })
+    ));
     state.busy = true;
-    assert!(state.set_field_rename_inspection_by_id(80, 7, "Table1", "Score", 17, true, Some(5)));
+    assert!(state.set_field_rename_inspection_by_id(
+        80,
+        7,
+        "Table1",
+        "Score",
+        17,
+        true,
+        Some(FieldRenameNameProfile::SameWidthAscii { units: 5 })
+    ));
     state.busy = false;
     assert!(state.can_edit_field_rename());
     assert!(state.set_field_rename_name(&target, "Longer".into()));
@@ -192,7 +209,15 @@ fn uncertain_actor_ack_keeps_proposal_revokes_retained_controls_and_survives_dis
     assert!(state.native_mutation_blocked());
     assert!(!state.can_create_table());
     // A late positive observation cannot revive the old revision.
-    assert!(!state.set_field_rename_inspection_by_id(80, 7, "Table1", "Score", 17, true, Some(5)));
+    assert!(!state.set_field_rename_inspection_by_id(
+        80,
+        7,
+        "Table1",
+        "Score",
+        17,
+        true,
+        Some(FieldRenameNameProfile::SameWidthAscii { units: 5 })
+    ));
     assert!(state.native_mutation_blocked());
     state.database.as_mut().unwrap().document_revision += 1;
     assert!(!state.native_source_stale());

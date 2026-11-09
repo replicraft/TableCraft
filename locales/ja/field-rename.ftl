@@ -27,3 +27,5 @@ field-rename-close-confirm = 名前の編集を閉じますか？ファイルに
 field-rename-warning-saved = フィールド名は書き込まれましたが、データベースを検証できませんでした。さらに変更する前に、データベースを開き直してください。
 field-rename-warning-unchanged = フィールド名の変更は書き込まれていませんが、データベースを検証できませんでした。さらに変更する前に、データベースを開き直してください。
 field-rename-close-editor = 名前の編集を閉じる
+
+field-rename-fitted-profile = ASCII のフィールド名は長くしたり短くしたりできます。保存時に、書き込む前にファイル内の空き領域と名前の有効性を確認します。

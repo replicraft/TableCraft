@@ -31,3 +31,5 @@ field-rename-close-confirm = Close the name editor? This does not undo any chang
 field-rename-warning-saved = The field name was written, but the database could not be verified. Reopen the database before making further changes.
 field-rename-warning-unchanged = No field name change was written, but the database could not be verified. Reopen the database before making further changes.
 field-rename-close-editor = Close name editor
+
+field-rename-fitted-profile = ASCII field names may grow or shrink. Save reviews native space and name validity before writing.

@@ -61,7 +61,7 @@ impl Desktop {
             &inspection.column,
             inspection.native_number,
             inspection.source_eligible,
-            inspection.same_width_ascii_utf16_units,
+            inspection.name_profile,
         ) {
             self.state.fail_field_rename_inspection_by_id(
                 generation,

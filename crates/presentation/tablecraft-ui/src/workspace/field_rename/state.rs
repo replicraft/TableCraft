@@ -4,6 +4,7 @@ use super::{
     model::{Observation, Phase},
 };
 use crate::workspace::{DocumentView, ObjectKind, State, objects::MAX_RETAINED_BYTES};
+use tablecraft_builders::table::field_rename::FieldRenameNameProfile;
 
 impl State {
     /// Read-only source inspection begins from exact current native metadata.
@@ -74,7 +75,7 @@ impl State {
         column: &str,
         native_number: usize,
         source_eligible: bool,
-        same_width_ascii_utf16_units: Option<usize>,
+        name_profile: Option<FieldRenameNameProfile>,
     ) -> bool {
         let Some(draft) = self.field_rename.draft.as_ref() else {
             return false;
@@ -88,7 +89,7 @@ impl State {
         }
 
         self.field_rename
-            .observed_by_id(request_id, source_eligible, same_width_ascii_utf16_units)
+            .observed_by_id(request_id, source_eligible, name_profile)
     }
 
     pub fn fail_field_rename_inspection_by_id(&mut self, request_id: u64, message: String) -> bool {
@@ -131,14 +132,10 @@ impl State {
         target: &FieldRenameTarget,
         request_id: u64,
         source_eligible: bool,
-        same_width_ascii_utf16_units: Option<usize>,
+        name_profile: Option<FieldRenameNameProfile>,
     ) -> bool {
-        self.field_rename.observed(
-            target,
-            request_id,
-            source_eligible,
-            same_width_ascii_utf16_units,
-        )
+        self.field_rename
+            .observed(target, request_id, source_eligible, name_profile)
     }
 
     pub fn fail_field_rename_inspection(
@@ -193,7 +190,7 @@ impl State {
             && matches!(draft.observation, Observation::Eligible { .. })
     }
 
-    /// Keep all bounded proposed text. ASCII/equal-width constraints control
+    /// Keep all bounded proposed text. The inspected ASCII name-shape policy controls
     /// review availability, never automatic truncation or spelling conversion.
     pub fn set_field_rename_name(&mut self, target: &FieldRenameTarget, name: String) -> bool {
         if !self.can_edit_field_rename()

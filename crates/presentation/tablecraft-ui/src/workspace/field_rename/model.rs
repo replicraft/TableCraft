@@ -2,6 +2,7 @@
 use super::{FieldRenameRequest, FieldRenameSaveIdentity, FieldRenameTarget};
 use crate::workspace::field_name::bounded_name;
 use crate::workspace::schema_save::Status;
+use tablecraft_builders::table::field_rename::FieldRenameNameProfile;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(super) enum Phase {
@@ -13,7 +14,7 @@ pub(super) enum Phase {
 
 pub(super) enum Observation {
     Pending { request_id: Option<u64> },
-    Eligible { units: usize },
+    Eligible { profile: FieldRenameNameProfile },
     Unsupported,
     Failed { message: String },
     Interrupted,
@@ -94,31 +95,29 @@ impl Model {
         target: &FieldRenameTarget,
         request_id: u64,
         source_eligible: bool,
-        units: Option<usize>,
+        profile: Option<FieldRenameNameProfile>,
     ) -> bool {
         self.inspection_matches(target, request_id)
-            && self.observed_by_id(request_id, source_eligible, units)
+            && self.observed_by_id(request_id, source_eligible, profile)
     }
 
     pub(super) fn observed_by_id(
         &mut self,
         request_id: u64,
         source_eligible: bool,
-        units: Option<usize>,
+        profile: Option<FieldRenameNameProfile>,
     ) -> bool {
         let Some(draft) = self.pending_mut(request_id) else {
             return false;
         };
-        if source_eligible != units.is_some()
-            || units.is_some_and(|units| {
-                !draft.target.column.is_ascii() || units != draft.target.column.len() || units == 0
-            })
+        if source_eligible != profile.is_some()
+            || profile.is_some_and(|profile| !profile.matches_original(&draft.target.column))
         {
             return false;
         }
 
-        draft.observation = match units {
-            Some(units) => Observation::Eligible { units },
+        draft.observation = match profile {
+            Some(profile) => Observation::Eligible { profile },
             None => Observation::Unsupported,
         };
 
@@ -197,8 +196,8 @@ impl Model {
 
     pub(super) fn profile_fits(&self) -> bool {
         self.draft.as_ref().is_some_and(|draft| {
-            matches!(draft.observation, Observation::Eligible { units }
-                if draft.proposed.is_ascii() && draft.proposed.len() == units)
+            matches!(draft.observation, Observation::Eligible { profile }
+                if profile.accepts_shape(&draft.target.column, &draft.proposed))
         })
     }
 

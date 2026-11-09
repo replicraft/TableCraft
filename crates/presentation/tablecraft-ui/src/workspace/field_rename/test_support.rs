@@ -3,6 +3,7 @@ use super::{FieldRenameRequest, FieldRenameTarget};
 use crate::workspace::test_support;
 use crate::{Action, Column, State};
 use egui_kittest::Harness;
+use tablecraft_builders::table::field_rename::FieldRenameNameProfile;
 
 pub(in crate::workspace) fn naming() -> (State, FieldRenameTarget) {
     let mut state = test_support::saved_table(
@@ -35,7 +36,15 @@ pub(in crate::workspace) fn observed() -> (State, FieldRenameTarget) {
     let outgoing = state.field_rename_inspection_target().unwrap();
     let prepared = state.prepare_field_rename_inspection(&outgoing).unwrap();
     prepared.bind(80);
-    assert!(state.set_field_rename_inspection_by_id(80, 7, "Table1", "Score", 17, true, Some(5)));
+    assert!(state.set_field_rename_inspection_by_id(
+        80,
+        7,
+        "Table1",
+        "Score",
+        17,
+        true,
+        Some(FieldRenameNameProfile::SameWidthAscii { units: 5 })
+    ));
     (state, target)
 }
 

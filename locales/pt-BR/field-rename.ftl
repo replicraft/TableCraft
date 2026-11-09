@@ -31,3 +31,5 @@ field-rename-close-confirm = Fechar o editor de nomes? Isso não desfaz as alter
 field-rename-warning-saved = O nome do campo foi gravado, mas não foi possível verificar o banco de dados. Reabra o banco de dados antes de fazer outras alterações.
 field-rename-warning-unchanged = Nenhuma alteração no nome do campo foi gravada, mas não foi possível verificar o banco de dados. Reabra o banco de dados antes de fazer outras alterações.
 field-rename-close-editor = Fechar editor de nomes
+
+field-rename-fitted-profile = Nomes de campos ASCII podem aumentar ou diminuir. Salvar verifica o espaço nativo e a validade do nome antes de gravar.

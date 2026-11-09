@@ -27,3 +27,5 @@ field-rename-close-confirm = Namenseditor schließen? Bereits in die Datei gesch
 field-rename-warning-saved = Der Feldname wurde geschrieben, die Datenbank konnte jedoch nicht überprüft werden. Öffnen Sie sie erneut, bevor Sie weitere Änderungen vornehmen.
 field-rename-warning-unchanged = Es wurde keine Änderung des Feldnamens geschrieben, die Datenbank konnte jedoch nicht überprüft werden. Öffnen Sie sie erneut, bevor Sie weitere Änderungen vornehmen.
 field-rename-close-editor = Namenseditor schließen
+
+field-rename-fitted-profile = ASCII-Feldnamen können länger oder kürzer werden. Speichern prüft vor dem Schreiben den nativen Platz und die Gültigkeit des Namens.

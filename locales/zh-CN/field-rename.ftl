@@ -27,3 +27,5 @@ field-rename-close-confirm = 关闭名称编辑器？这不会撤销已写入文
 field-rename-warning-saved = 字段名称已写入，但无法验证数据库。请先重新打开数据库，再进行其他更改。
 field-rename-warning-unchanged = 未写入任何字段名称更改，但无法验证数据库。请先重新打开数据库，再进行其他更改。
 field-rename-close-editor = 关闭名称编辑器
+
+field-rename-fitted-profile = ASCII 字段名可以加长或缩短。保存时会在写入前检查原生存储空间和名称有效性。
