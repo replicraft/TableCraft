@@ -41,8 +41,8 @@ pub(super) fn cell(ui: &mut Ui, text: &str, style: CellStyle) -> Response {
     } else {
         colors.ink
     };
-    // The layout API consumes this FontId; keep the original style or loop-local descriptor
-    // available for the next measurement.
+    // NO_CLONE: The layout API consumes this FontId; keep the original style or loop-local
+    // descriptor available for the next measurement.
     let font = ui.style().text_styles[&TextStyle::Body].clone();
     let mut layout = egui::text::LayoutJob::simple(
         text.to_owned(),

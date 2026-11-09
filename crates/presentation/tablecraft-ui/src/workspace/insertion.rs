@@ -65,16 +65,18 @@ impl FieldInput {
         match self.choice {
             Choice::Omitted => InsertInput::Omitted,
             Choice::Null => InsertInput::Value(EditInput {
-                // An independent insertion request/record snapshot or editable widget candidate
-                // keeps raw entry text; the original typed entry is retained for no-change,
-                // rejected-input and mode restoration semantics.
+                // NO_CLONE: An independent insertion request/record snapshot or editable widget
+                // candidate keeps raw entry text; the original typed entry is
+                // retained for no-change, rejected-input and mode restoration
+                // semantics.
                 text: self.text.clone(),
                 is_null: true,
             }),
             Choice::Value => InsertInput::Value(EditInput {
-                // An independent insertion request/record snapshot or editable widget candidate
-                // keeps raw entry text; the original typed entry is retained for no-change,
-                // rejected-input and mode restoration semantics.
+                // NO_CLONE: An independent insertion request/record snapshot or editable widget
+                // candidate keeps raw entry text; the original typed entry is
+                // retained for no-change, rejected-input and mode restoration
+                // semantics.
                 text: self.text.clone(),
                 is_null: false,
             }),
@@ -220,9 +222,9 @@ impl State {
         let data = self.data.as_ref()?;
         let target = InsertTarget {
             document_revision: data.source_revision?,
-            // Construct a typed owned target whose table/field identity is retained separately
-            // from the borrowed data/catalog/query snapshot. The source observation remains
-            // available after command dispatch.
+            // NO_CLONE: Construct a typed owned target whose table/field identity is retained
+            // separately from the borrowed data/catalog/query snapshot. The source
+            // observation remains available after command dispatch.
             table: data.table.clone(),
         };
         self.can_insert_row(&target).then_some(target)

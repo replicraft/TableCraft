@@ -300,11 +300,11 @@ fn footer_height(ui: &Ui, editor: &Editor) -> f32 {
     let font = egui::TextStyle::Body.resolve(ui.style());
     let line_height = ui.text_style_height(&egui::TextStyle::Body);
     let text_height = |key| {
+        // NO_CLONE: The layout API consumes this FontId; keep the original style or loop-local
+        // descriptor available for the next measurement.
         ui.painter()
             .layout(
                 tr(ui, key),
-                // The layout API consumes this FontId; keep the original style or loop-local
-                // descriptor available for the next measurement.
                 font.clone(),
                 ui.visuals().text_color(),
                 ui.available_width(),

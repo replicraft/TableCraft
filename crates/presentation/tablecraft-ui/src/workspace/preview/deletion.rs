@@ -22,13 +22,13 @@ impl Preview {
         let Some(position) = data.row_index(target.parent_ordinal) else {
             return;
         };
-        // DeleteReview owns independent column metadata while source Data stays live until
-        // actual save publication; preserves original row review context.
+        // NO_CLONE: DeleteReview owns independent column metadata while source Data stays live
+        // until actual save publication; preserves original row review context.
         let columns = data.columns.clone();
         let row = data.rows[position].iter().map(copy_cell).collect();
         let request = self.request();
-        // Checking owner retains target and simulated final DeleteReview must own same target
-        // independently; final review consumes original.
+        // NO_CLONE: Checking owner retains target and simulated final DeleteReview must own
+        // same target independently; final review consumes original.
         self.state.begin_delete(target.clone(), request);
         if publish {
             self.state.set_delete_review(

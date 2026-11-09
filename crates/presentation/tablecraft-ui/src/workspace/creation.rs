@@ -84,8 +84,9 @@ impl State {
         self.creation.issued = Some(self.creation.sequence);
         Some(CreationRequest {
             id: self.creation.sequence,
-            // CreationRequest retains the destination independently of the still-rendered
-            // creation naming state, allowing exact in-flight request ownership.
+            // NO_CLONE: CreationRequest retains the destination independently of the
+            // still-rendered creation naming state, allowing exact in-flight request
+            // ownership.
             destination: self.creation.destination.clone(),
         })
     }

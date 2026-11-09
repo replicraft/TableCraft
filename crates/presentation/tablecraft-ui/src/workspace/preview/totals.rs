@@ -42,8 +42,8 @@ impl Preview {
                     _ => vec![Aggregate::Count],
                 };
                 TotalsField {
-                    // Totals metadata owns independent Column declaration while original table
-                    // Data remains live for display and request validation.
+                    // NO_CLONE: Totals metadata owns independent Column declaration while
+                    // original table Data remains live for display and request validation.
                     column: column.clone(),
                     aggregates,
                 }
@@ -68,20 +68,20 @@ impl Preview {
         let Some(Action::DescribeTotals { target }) = self.state.take_totals_request() else {
             unreachable!("synthetic Totals row requests metadata only");
         };
-        // mock_describe_totals transfers its target into retained TotalsDescription; subsequent
-        // explicit choices and compute actions need original target.
+        // NO_CLONE: mock_describe_totals transfers its target into retained TotalsDescription;
+        // subsequent explicit choices and compute actions need original target.
         self.mock_describe_totals(target.clone());
+        // NO_CLONE: First Choice owns exact totals target independently of second Choice and
+        // subsequent compute/result; retained for action validation.
+        // NO_CLONE: Second Choice owns exact target; original remains needed for compute/result
+        // and optional error retry.
         self.state.apply_total_choices(vec![
             Choice {
-                // First Choice owns exact totals target independently of second Choice and
-                // subsequent compute/result; retained for action validation.
                 target: target.clone(),
                 column: "CustomerID".into(),
                 aggregate: Some(Aggregate::Count),
             },
             Choice {
-                // Second Choice owns exact target; original remains needed for compute/result
-                // and optional error retry.
                 target: target.clone(),
                 column: "Balance".into(),
                 aggregate: Some(Aggregate::Sum),
@@ -91,10 +91,10 @@ impl Preview {
             unreachable!("explicit synthetic aggregate choices request a result");
         };
         let request = self.request();
+        // NO_CLONE: Pending compute owns exact selected specs, independently of later result
+        // data and optional error retry. The result publisher compares complete specs.
         assert!(
             self.state
-                // Pending compute owns exact selected specs, independently of later result data
-                // and optional error retry. The result publisher compares complete specs.
                 .begin_totals_compute(request, &target, specs.clone())
         );
         let mut count = Cell::scalar("205");
@@ -110,15 +110,14 @@ impl Preview {
             }),
             kind: count.kind,
         };
+        // NO_CLONE: TotalsData owns target while optional later error-compute request retains
+        // original; exact matching does not permit dropping source identity.
+        // NO_CLONE: Published result retains spec snapshot; original is used for optional later
+        // failing compute to retain previous results. Pending compute has its own snapshot too.
         assert!(self.state.set_totals_result(
             request,
             TotalsData {
-                // TotalsData owns target while optional later error-compute request retains
-                // original; exact matching does not permit dropping source identity.
                 target: target.clone(),
-                // Published result retains spec snapshot; original is used for optional later
-                // failing compute to retain previous results. Pending compute has its own
-                // snapshot too.
                 specs: specs.clone(),
                 cells: vec![count, amount],
                 source_rows: fixtures::TOTAL_ROWS,

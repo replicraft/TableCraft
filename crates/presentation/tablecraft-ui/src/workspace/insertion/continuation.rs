@@ -70,9 +70,9 @@ impl Continuation {
         outcome: String,
     ) -> Self {
         Self {
-            // the retained command or exact-owner witness needs its own captured identity after
-            // this render/dispatch; keep the original catalog, input or owner available for the
-            // later checks in this operation.
+            // NO_CLONE: the retained command or exact-owner witness needs its own captured
+            // identity after this render/dispatch; keep the original catalog, input
+            // or owner available for the later checks in this operation.
             target: input.draft.target.clone(),
             source: Seed::Retained(input),
             request: None,
@@ -130,9 +130,9 @@ impl State {
         Ok(Continuation {
             target: InsertTarget {
                 document_revision: target.document_revision,
-                // InsertTarget needs its own captured identity after this render/dispatch; keep
-                // the original catalog, input or owner available for the later checks in this
-                // operation.
+                // NO_CLONE: InsertTarget needs its own captured identity after this
+                // render/dispatch; keep the original catalog, input or owner
+                // available for the later checks in this operation.
                 table: name.clone(),
             },
             source: Seed::Initial(record),
@@ -204,9 +204,9 @@ impl State {
         let target = ObjectTarget {
             document_revision: database.document_revision,
             kind: ObjectKind::Table {
-                // ObjectTarget needs its own captured identity after this render/dispatch; keep
-                // the original catalog, input or owner available for the later checks in this
-                // operation.
+                // NO_CLONE: ObjectTarget needs its own captured identity after this
+                // render/dispatch; keep the original catalog, input or owner
+                // available for the later checks in this operation.
                 name: owner.target.table.clone(),
             },
         };
@@ -341,9 +341,9 @@ impl State {
         let Some(owner) = &self.insert_continuation else {
             return;
         };
-        // the retained command or exact-owner witness needs its own captured identity after
-        // this render/dispatch; keep the original catalog, input or owner available for the
-        // later checks in this operation.
+        // NO_CLONE: the retained command or exact-owner witness needs its own captured identity
+        // after this render/dispatch; keep the original catalog, input or owner
+        // available for the later checks in this operation.
         let target = owner.target.clone();
         let ready = self.can_insert_row(&target);
         if owner.auto_start && ready {

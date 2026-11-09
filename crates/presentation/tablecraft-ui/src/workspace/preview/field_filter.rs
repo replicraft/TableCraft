@@ -8,7 +8,7 @@ use crate::{
 impl Preview {
     pub(super) fn mock_describe_field_filter(&mut self, target: FieldFilterTarget) {
         let request = self.request();
-        // Checking filter dialog owns target while fixture schema lookup and final
+        // NO_CLONE: Checking filter dialog owns target while fixture schema lookup and final
         // FieldFilterDescription need retained exact original target.
         if !self.state.begin_field_filter(target.clone(), request) {
             return;

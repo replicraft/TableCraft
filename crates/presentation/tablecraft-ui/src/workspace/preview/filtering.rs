@@ -59,8 +59,8 @@ impl Preview {
         let publication = FilterPublication {
             sort: None,
             filter_count: 1,
-            // Publication owns target while optional Error scenario later reuses exact target
-            // in a separate pending request; independent retained identities.
+            // NO_CLONE: Publication owns target while optional Error scenario later reuses
+            // exact target in a separate pending request; independent retained identities.
             target: target.clone(),
             enabled: true,
             matched_rows,

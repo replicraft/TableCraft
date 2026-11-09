@@ -328,9 +328,9 @@ fn edited_field(
         }) {
             return DesignExpression::Field(DesignField {
                 source_id,
-                // QBE expression/anchor identity and context-menu join reference are
-                // independent owners; metadata remains available and geometry anchors outlive
-                // this local row rendering.
+                // NO_CLONE: QBE expression/anchor identity and context-menu join reference are
+                // independent owners; metadata remains available and geometry anchors
+                // outlive this local row rendering.
                 column: field.name.clone(),
             });
         }

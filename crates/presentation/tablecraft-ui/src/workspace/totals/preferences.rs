@@ -12,9 +12,9 @@ impl Totals {
     pub(in crate::workspace) fn preferences(&self) -> Option<TotalsPreferences> {
         self.session.as_ref().map(|session| TotalsPreferences {
             visible: session.visible,
-            // Capture a distinct restoration/edit-input snapshot while the original live
-            // declarations, draft, tab or totals preferences remain in use; parameter edit text
-            // and declaration identity are separate owners.
+            // NO_CLONE: Capture a distinct restoration/edit-input snapshot while the original
+            // live declarations, draft, tab or totals preferences remain in use;
+            // parameter edit text and declaration identity are separate owners.
             specs: session.specs.clone(),
         })
     }

@@ -150,9 +150,9 @@ impl List {
                 response.scroll_to_me(None);
             }
             for (position, output) in outputs {
-                // the retained command or exact-owner witness needs its own captured identity
-                // after this render/dispatch; keep the original catalog, input or owner
-                // available for the later checks in this operation.
+                // NO_CLONE: the retained command or exact-owner witness needs its own captured
+                // identity after this render/dispatch; keep the original catalog,
+                // input or owner available for the later checks in this operation.
                 events.outputs.push((self.rows[position].1.clone(), output));
                 events.pair = None;
             }

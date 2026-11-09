@@ -54,8 +54,9 @@ impl Preview {
         }
 
         let request = self.request();
-        // Contents Loading owner retains exact target while immediate success/error reply needs
-        // caller-owned target for correlation; target remains through scene dispatch.
+        // NO_CLONE: Contents Loading owner retains exact target while immediate success/error
+        // reply needs caller-owned target for correlation; target remains through scene
+        // dispatch.
         self.state.begin_contents(target.clone(), request);
         match scene {
             Some(CollectionScene::Loading) => {}
@@ -115,8 +116,9 @@ impl Preview {
         self.state.table_selection.select(parent, 0, column_index);
 
         let request = self.request();
-        // Prepared collection scene retains target in dialog and compares same target on
-        // synthetic reply; original moves nowhere else but reply must inspect it after begin.
+        // NO_CLONE: Prepared collection scene retains target in dialog and compares same target
+        // on synthetic reply; original moves nowhere else but reply must inspect it after
+        // begin.
         self.state.begin_contents(target.clone(), request);
         match scene {
             CollectionScene::Loading => {}

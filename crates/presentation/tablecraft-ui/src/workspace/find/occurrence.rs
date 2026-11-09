@@ -18,8 +18,8 @@ impl State {
         session.pattern = "🦀".into();
         session.matching = FindMatch::Any;
         let request = self.current_find_request().expect("synthetic Find");
-        // The source-free scenario uses begin_find to retain the submitted request and
-        // set_find_result to retain the matching found-request receipt.
+        // NO_CLONE: The source-free scenario uses begin_find to retain the submitted request
+        // and set_find_result to retain the matching found-request receipt.
         self.begin_find(request_id, request.clone());
         assert!(self.set_find_result(
             request_id,

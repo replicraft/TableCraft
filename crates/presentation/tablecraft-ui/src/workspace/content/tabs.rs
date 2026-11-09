@@ -187,13 +187,13 @@ fn tab(
     } else {
         colors.muted
     };
-    // The layout API consumes this FontId; keep the original style or loop-local descriptor
-    // available for the next measurement.
+    // NO_CLONE: The layout API consumes this FontId; keep the original style or loop-local
+    // descriptor available for the next measurement.
     let font = ui.style().text_styles[&TextStyle::Button].clone();
+    // NO_CLONE: The layout API consumes this FontId; keep the original style or loop-local
+    // descriptor available for the next measurement.
     let natural_width = ui
         .painter()
-        // The layout API consumes this FontId; keep the original style or loop-local descriptor
-        // available for the next measurement.
         .layout_no_wrap(title.to_owned(), font.clone(), color)
         .size()
         .x;

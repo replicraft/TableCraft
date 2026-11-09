@@ -110,9 +110,9 @@ pub(in crate::workspace) fn tab(ui: &Ui, response: &Response, tab: Option<Tab>) 
         let reveal = with_frame(ui.ctx(), |frame| {
             frame.tabs.push(TabAnchor {
                 tab,
-                // Keyboard/focus/activation registries retain their own response while the
-                // original response remains needed for hover, focus, click state or returned
-                // geometry.
+                // NO_CLONE: Keyboard/focus/activation registries retain their own response
+                // while the original response remains needed for hover, focus, click
+                // state or returned geometry.
                 response: response.clone(),
             });
             frame.reveal == Some(response.id)
@@ -152,8 +152,9 @@ pub(super) fn command(ui: &Ui, response: &Response) {
         if !group.visible || group.layer != response.layer_id {
             return None;
         }
-        // Keyboard/focus/activation registries retain their own response while the original
-        // response remains needed for hover, focus, click state or returned geometry.
+        // NO_CLONE: Keyboard/focus/activation registries retain their own response while the
+        // original response remains needed for hover, focus, click state or returned
+        // geometry.
         group.commands.push(response.clone());
         Some(frame.reveal == Some(response.id))
     })

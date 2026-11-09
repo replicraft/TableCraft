@@ -14,8 +14,8 @@ struct DeleteMenuWitness {
 
 impl State {
     pub(super) fn select_menu(&mut self, ui: &mut Ui) {
-        // Share the immutable localization bundle across mutable widget work; Localizer clones
-        // its Arc owner, not the catalogs.
+        // NO_CLONE: Share the immutable localization bundle across mutable widget work;
+        // Localizer clones its Arc owner, not the catalogs.
         let t = self.localizer.clone();
         let enabled = self.can_select_record();
         let response = command_menu(
@@ -121,15 +121,15 @@ impl State {
                 return;
             };
             let captured = ui.data_mut(|data| {
+                // NO_CLONE: Popup opening captures a stable exact owner, then context storage
+                // and the current-frame validation need separate owned witnesses;
+                // later selection changes must not retarget the open menu.
                 let captured = data
                     .get_temp::<DeleteMenuWitness>(witness_id)
-                    // Popup opening captures a stable exact owner, then context storage and the
-                    // current-frame validation need separate owned witnesses; later selection
-                    // changes must not retarget the open menu.
                     .unwrap_or_else(|| current.clone());
-                // Popup opening captures a stable exact owner, then context storage and the
-                // current-frame validation need separate owned witnesses; later selection
-                // changes must not retarget the open menu.
+                // NO_CLONE: Popup opening captures a stable exact owner, then context storage
+                // and the current-frame validation need separate owned witnesses;
+                // later selection changes must not retarget the open menu.
                 data.insert_temp(witness_id, captured.clone());
                 captured
             });
@@ -153,8 +153,8 @@ impl State {
     }
 
     pub(super) fn zoom_menu(&mut self, ui: &mut Ui) {
-        // Share the immutable localization bundle across mutable widget work; Localizer clones
-        // its Arc owner, not the catalogs.
+        // NO_CLONE: Share the immutable localization bundle across mutable widget work;
+        // Localizer clones its Arc owner, not the catalogs.
         let t = self.localizer.clone();
         let enabled = self.can_zoom_cell();
         let response = command_menu(

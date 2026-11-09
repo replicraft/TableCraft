@@ -187,9 +187,9 @@ fn show_text(
         ui.spacing_mut().item_spacing = egui::Vec2::ZERO;
         ui.set_min_width(session.max_width);
         for range in &session.visible.rows {
-            // Range is a small non-Copy descriptor consumed by indexing/visible-row lookup
-            // while the same original bounds remain cached or iterated; no underlying text is
-            // copied.
+            // NO_CLONE: Range is a small non-Copy descriptor consumed by indexing/visible-row
+            // lookup while the same original bounds remain cached or iterated; no
+            // underlying text is copied.
             let Some(text) = value.get(range.clone()) else {
                 failure = Some(index::IndexError::Changed);
                 return;
@@ -199,9 +199,10 @@ fn show_text(
                     egui::vec2(viewport_width.max(session.max_width), row_height),
                     egui::Layout::left_to_right(egui::Align::Min),
                     |ui| {
+                        // NO_CLONE: The layout API consumes this FontId; keep the original
+                        // style or loop-local descriptor available for the next
+                        // measurement.
                         ui.add(
-                            // The layout API consumes this FontId; keep the original style or
-                            // loop-local descriptor available for the next measurement.
                             Label::new(egui::RichText::new(text).font(font.clone()))
                                 .wrap_mode(egui::TextWrapMode::Extend)
                                 .selectable(true),

@@ -28,9 +28,9 @@ impl State {
         }
         let active = self.active_object()?;
         let target = match shortcut {
-            // The restore or shortcut candidate retains its exact identity independently of the
-            // original layout/registry and active-owner witness before registry installation or
-            // deferred dispatch.
+            // NO_CLONE: The restore or shortcut candidate retains its exact identity
+            // independently of the original layout/registry and active-owner witness
+            // before registry installation or deferred dispatch.
             ObjectShortcut::Close => active.clone(),
             ObjectShortcut::Next | ObjectShortcut::Previous => {
                 if self.objects.entries.len() < 2 {
@@ -47,9 +47,9 @@ impl State {
                 } else {
                     (current + count - 1) % count
                 };
-                // The restore or shortcut candidate retains its exact identity independently of
-                // the original layout/registry and active-owner witness before registry
-                // installation or deferred dispatch.
+                // NO_CLONE: The restore or shortcut candidate retains its exact identity
+                // independently of the original layout/registry and active-owner
+                // witness before registry installation or deferred dispatch.
                 self.objects.entries[next].tab.clone()
             }
         };

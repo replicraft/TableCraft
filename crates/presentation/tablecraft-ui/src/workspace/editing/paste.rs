@@ -107,9 +107,9 @@ impl State {
             }
             Some(text) => {
                 actions.push(Action::PasteCell {
-                    // Action::PasteCell needs its own captured identity after this
-                    // render/dispatch; keep the original catalog, input or owner available for
-                    // the later checks in this operation.
+                    // NO_CLONE: Action::PasteCell needs its own captured identity after this
+                    // render/dispatch; keep the original catalog, input or owner
+                    // available for the later checks in this operation.
                     target: request.target.clone(),
                     text,
                 });

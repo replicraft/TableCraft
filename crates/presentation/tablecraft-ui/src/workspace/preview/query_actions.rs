@@ -67,11 +67,11 @@ impl Preview {
             _ => return None,
         };
         let inspection = self.request();
+        // NO_CLONE: Parameter acquisition keeps exact SQL snapshot while subsequent details and
+        // action-review admission compare original spelling; separate owned pending snapshot is
+        // intentional.
         if !self
             .state
-            // Parameter acquisition keeps exact SQL snapshot while subsequent details and
-            // action-review admission compare original spelling; separate owned pending
-            // snapshot is intentional.
             .begin_query_parameter_inspection(inspection, sql.clone())
         {
             return None;

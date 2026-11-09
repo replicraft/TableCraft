@@ -220,9 +220,9 @@ impl State {
         };
         let id = previous + 1;
         if let Some(editor) = self.table_draft_editor_mut(&save.tab) {
-            // the retained command or exact-owner witness needs its own captured identity after
-            // this render/dispatch; keep the original catalog, input or owner available for the
-            // later checks in this operation.
+            // NO_CLONE: the retained command or exact-owner witness needs its own captured
+            // identity after this render/dispatch; keep the original catalog, input
+            // or owner available for the later checks in this operation.
             editor.save_name = save.name.clone();
         }
         save.phase = Phase::Issued;
@@ -231,9 +231,9 @@ impl State {
         actions.push(Action::SaveTableDraft {
             request: TableSaveRequest {
                 id,
-                // TableSaveRequest needs its own captured identity after this render/dispatch;
-                // keep the original catalog, input or owner available for the later checks in
-                // this operation.
+                // NO_CLONE: TableSaveRequest needs its own captured identity after this
+                // render/dispatch; keep the original catalog, input or owner
+                // available for the later checks in this operation.
                 tab: save.tab.clone(),
                 snapshot,
                 record_revision: save.record_revision,

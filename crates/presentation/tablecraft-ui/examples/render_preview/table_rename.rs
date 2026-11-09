@@ -5,8 +5,8 @@ use egui_kittest::{Harness, kittest::Queryable};
 use tablecraft_ui::preview::Preview;
 
 pub(super) fn open(harness: &mut Harness<'_, Preview>) {
-    // Retain the independently expected catalog table name across closing tabs, F2 entry and
-    // post-frame field-value assertions; source State mutates during interaction.
+    // NO_CLONE: Retain the independently expected catalog table name across closing tabs, F2
+    // entry and post-frame field-value assertions; source State mutates during interaction.
     let name = harness
         .state()
         .state()

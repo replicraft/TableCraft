@@ -60,10 +60,10 @@ pub(super) fn show(
         colors.muted
     };
     let badge = badge.map(|label| {
+        // NO_CLONE: The layout API consumes this FontId; keep the original style or loop-local
+        // descriptor available for the next measurement.
         ui.painter().layout_no_wrap(
             label.to_owned(),
-            // The layout API consumes this FontId; keep the original style or loop-local
-            // descriptor available for the next measurement.
             ui.style().text_styles[&TextStyle::Small].clone(),
             badge_color,
         )
@@ -83,10 +83,10 @@ pub(super) fn show(
             badge_color,
         );
     }
+    // NO_CLONE: The layout API consumes this FontId; keep the original style or loop-local
+    // descriptor available for the next measurement.
     let mut layout = egui::text::LayoutJob::simple(
         name.to_owned(),
-        // The layout API consumes this FontId; keep the original style or loop-local descriptor
-        // available for the next measurement.
         ui.style().text_styles[&TextStyle::Body].clone(),
         colors.ink,
         (text_right - text_left).max(0.0),

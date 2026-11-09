@@ -28,13 +28,13 @@ pub(super) struct Pending {
 fn edit_target(request: &ReplaceFindRequest) -> EditTarget {
     EditTarget {
         document_revision: request.find.target.document_revision,
-        // Construct a typed owned target whose table/field identity is retained separately from
-        // the borrowed data/catalog/query snapshot. The source observation remains available
-        // after command dispatch.
+        // NO_CLONE: Construct a typed owned target whose table/field identity is retained
+        // separately from the borrowed data/catalog/query snapshot. The source
+        // observation remains available after command dispatch.
         table: request.find.target.table.clone(),
-        // Construct a typed owned target whose table/field identity is retained separately from
-        // the borrowed data/catalog/query snapshot. The source observation remains available
-        // after command dispatch.
+        // NO_CLONE: Construct a typed owned target whose table/field identity is retained
+        // separately from the borrowed data/catalog/query snapshot. The source
+        // observation remains available after command dispatch.
         column: request.found.column.clone(),
         parent_ordinal: request.found.parent_ordinal,
     }
@@ -87,25 +87,25 @@ impl State {
         }
         let session = self.find.as_ref()?;
         session.replacement.visible.then(|| ReplaceFindRequest {
+            // NO_CLONE: ReplaceFindRequest needs its own captured identity after this
+            // render/dispatch; keep the original catalog, input or owner available
+            // for the later checks in this operation.
             find: session
                 .found_request
                 .as_ref()
                 .expect("checked match receipt")
-                // ReplaceFindRequest needs its own captured identity after this
-                // render/dispatch; keep the original catalog, input or owner available for the
-                // later checks in this operation.
                 .clone(),
+            // NO_CLONE: ReplaceFindRequest needs its own captured identity after this
+            // render/dispatch; keep the original catalog, input or owner available
+            // for the later checks in this operation.
             found: session
                 .found
                 .as_ref()
                 .expect("checked match position")
-                // ReplaceFindRequest needs its own captured identity after this
-                // render/dispatch; keep the original catalog, input or owner available for the
-                // later checks in this operation.
                 .clone(),
-            // ReplaceFindRequest needs its own captured identity after this render/dispatch;
-            // keep the original catalog, input or owner available for the later checks in this
-            // operation.
+            // NO_CLONE: ReplaceFindRequest needs its own captured identity after this
+            // render/dispatch; keep the original catalog, input or owner available
+            // for the later checks in this operation.
             replacement: session.replacement.text.clone(),
         })
     }
@@ -176,9 +176,9 @@ impl State {
         // The runtime's complete candidate enters the ordinary editor unchanged.
         // No review, persistence, or NULL inference occurs at this transition.
         self.find = None;
-        // the retained command or exact-owner witness needs its own captured identity after
-        // this render/dispatch; keep the original catalog, input or owner available for the
-        // later checks in this operation.
+        // NO_CLONE: the retained command or exact-owner witness needs its own captured identity
+        // after this render/dispatch; keep the original catalog, input or owner
+        // available for the later checks in this operation.
         self.begin_edit(draft.target.clone(), request_id);
         self.set_edit_draft(request_id, draft);
         matches!(self.edit, Some(EditDialog::Draft { .. }))

@@ -186,8 +186,8 @@ impl State {
         search |= search_input.enabled()
             && (search_input.has_focus() || search_input.lost_focus())
             && ui.input_mut(|input| input.consume_key(egui::Modifiers::NONE, egui::Key::Enter));
-        // Search submission owns the pattern stored by the Find dialog; the toolbar search
-        // field stays populated for subsequent submissions.
+        // NO_CLONE: Search submission owns the pattern stored by the Find dialog; the toolbar
+        // search field stays populated for subsequent submissions.
         if search && let Some(action) = self.find_from_record_search(self.records.search.clone()) {
             actions.push(action);
         }

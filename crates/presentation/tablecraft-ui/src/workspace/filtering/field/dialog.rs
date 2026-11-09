@@ -21,8 +21,8 @@ impl State {
         let source_current = self.field_witness_current(current);
         let busy = self.busy;
         let popup_was_open = Popup::is_any_open(context);
-        // Share the immutable localization bundle across mutable widget work; Localizer clones
-        // its Arc owner, not the catalogs.
+        // NO_CLONE: Share the immutable localization bundle across mutable widget work;
+        // Localizer clones its Arc owner, not the catalogs.
         let localizer = self.localizer.clone();
         let field = self
             .table_filter
@@ -151,9 +151,10 @@ impl State {
                     .inner;
                 if response.clicked() {
                     actions.push(Action::ApplyFieldFilter {
-                        // Action::ApplyFieldFilter needs its own captured identity after this
-                        // render/dispatch; keep the original catalog, input or owner available
-                        // for the later checks in this operation.
+                        // NO_CLONE: Action::ApplyFieldFilter needs its own captured identity
+                        // after this render/dispatch; keep the original catalog,
+                        // input or owner available for the later checks in this
+                        // operation.
                         target: field.target.clone(),
                         operator: field.operator,
                         inputs: field.inputs(),

@@ -88,8 +88,8 @@ pub fn configure(ctx: &Context) {
     egui_extras::install_image_loaders(ctx);
     for selected in [egui::Theme::Light, egui::Theme::Dark] {
         let colors = colors(selected);
-        // An independent style is customized and installed; the shared original theme/widget
-        // style must remain unchanged.
+        // NO_CLONE: An independent style is customized and installed; the shared original
+        // theme/widget style must remain unchanged.
         let mut style = (*ctx.style_of(selected)).clone();
         style.visuals = match selected {
             egui::Theme::Light => Visuals::light(),

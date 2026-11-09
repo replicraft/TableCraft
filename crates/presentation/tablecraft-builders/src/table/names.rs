@@ -7,17 +7,18 @@ use super::{MAX_DRAFT_FIELDS, TableDraftError};
 pub fn next_field_name<'a>(
     names: impl Iterator<Item = &'a str> + Clone,
 ) -> Result<String, TableDraftError> {
-    // The bounded naming search replays the same borrowed names for candidate suffixes without
-    // materializing their text; cloning iterator state preserves the original traversal.
+    // NO_CLONE: The bounded naming search replays the same borrowed names for candidate
+    // suffixes without materializing their text; cloning iterator state preserves the
+    // original traversal.
     if names.clone().take(MAX_DRAFT_FIELDS + 1).count() >= MAX_DRAFT_FIELDS {
         return Err(TableDraftError::Limit);
     }
     for suffix in 1..=MAX_DRAFT_FIELDS {
         let candidate = format!("Field{suffix}");
+        // NO_CLONE: The bounded naming search replays the same borrowed names for candidate
+        // suffixes without materializing their text; cloning iterator state preserves
+        // the original traversal.
         if !names
-            // The bounded naming search replays the same borrowed names for candidate suffixes
-            // without materializing their text; cloning iterator state preserves the original
-            // traversal.
             .clone()
             .any(|name| name.eq_ignore_ascii_case(&candidate))
         {

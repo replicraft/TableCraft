@@ -11,8 +11,8 @@ impl State {
             self.query_design_ribbon(ui, actions);
             return;
         }
-        // Share the immutable localization bundle across mutable widget work; Localizer clones
-        // its Arc owner, not the catalogs.
+        // NO_CLONE: Share the immutable localization bundle across mutable widget work;
+        // Localizer clones its Arc owner, not the catalogs.
         let t = self.localizer.clone();
         let mut create_table = false;
         let mut create_design = false;
@@ -107,8 +107,8 @@ impl State {
     }
 
     fn find_commands(&mut self, ui: &mut egui::Ui, actions: &mut Vec<Action>) {
-        // Share the immutable localization bundle across mutable widget work; Localizer clones
-        // its Arc owner, not the catalogs.
+        // NO_CLONE: Share the immutable localization bundle across mutable widget work;
+        // Localizer clones its Arc owner, not the catalogs.
         let t = self.localizer.clone();
         group(ui, &t.text("ribbon-find-group"), |ui| {
             ui.horizontal(|ui| {
@@ -149,8 +149,8 @@ impl State {
     }
 
     fn read_commands(&mut self, ui: &mut egui::Ui, actions: &mut Vec<Action>) {
-        // Share the immutable localization bundle across mutable widget work; Localizer clones
-        // its Arc owner, not the catalogs.
+        // NO_CLONE: Share the immutable localization bundle across mutable widget work;
+        // Localizer clones its Arc owner, not the catalogs.
         let t = self.localizer.clone();
         group(ui, &t.text("ribbon-sort-filter"), |ui| {
             ui.horizontal(|ui| {
@@ -185,9 +185,9 @@ impl State {
                         && !self.parameter_prompt_open()
                 });
                 let refresh = page.map(|data| Action::Page {
-                    // Action::Page needs its own captured identity after this render/dispatch;
-                    // keep the original catalog, input or owner available for the later checks
-                    // in this operation.
+                    // NO_CLONE: Action::Page needs its own captured identity after this
+                    // render/dispatch; keep the original catalog, input or owner
+                    // available for the later checks in this operation.
                     table: data.table.clone(),
                     offset: data.offset,
                 });

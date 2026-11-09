@@ -48,8 +48,8 @@ impl State {
             return;
         };
         if save {
-            // Attempted save consumes an intent on success; the original close intent must be
-            // restored unchanged if save preparation refuses.
+            // NO_CLONE: Attempted save consumes an intent on success; the original close intent
+            // must be restored unchanged if save preparation refuses.
             if !self.start_table_draft_save(Some(intent.clone())) {
                 self.table_draft_close = Some(intent);
             }
@@ -65,10 +65,10 @@ impl State {
                         self.table_draft_record_revision_for(&tab),
                         self.table_draft_property_revision_for(&tab),
                     ) {
+                        // NO_CLONE: Action::CloseObject needs its own captured identity after
+                        // this render/dispatch; keep the original catalog, input or
+                        // owner available for the later checks in this operation.
                         self.table_draft_discard_approved =
-                            // Action::CloseObject needs its own captured identity after this
-                            // render/dispatch; keep the original catalog, input or owner
-                            // available for the later checks in this operation.
                             Some((tab.clone(), revision, record_revision, property_revision));
                         actions.push(Action::CloseObject { tab });
                     }

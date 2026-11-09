@@ -162,16 +162,16 @@ impl State {
         Some((
             FindTarget {
                 document_revision: revision,
-                // Construct a typed owned target whose table/field identity is retained
-                // separately from the borrowed data/catalog/query snapshot. The source
-                // observation remains available after command dispatch.
+                // NO_CLONE: Construct a typed owned target whose table/field identity is
+                // retained separately from the borrowed data/catalog/query snapshot.
+                // The source observation remains available after command dispatch.
                 table: data.table.clone(),
             },
             FindPosition {
                 parent_ordinal: data.parent_ordinal(row)?,
-                // Construct a typed owned target whose table/field identity is retained
-                // separately from the borrowed data/catalog/query snapshot. The source
-                // observation remains available after command dispatch.
+                // NO_CLONE: Construct a typed owned target whose table/field identity is
+                // retained separately from the borrowed data/catalog/query snapshot.
+                // The source observation remains available after command dispatch.
                 column: data.columns.get(column)?.name.clone(),
                 span: None,
             },
@@ -267,9 +267,10 @@ impl State {
             && found.parent_ordinal == position.parent_ordinal
             && found.column == position.column
         {
-            // Retain the exact prior source, selected column, scope, pattern or publication
-            // binding across mutation/publication. These owners reject stale work or preserve
-            // the other input; they cannot borrow the mutated State.
+            // NO_CLONE: Retain the exact prior source, selected column, scope, pattern or
+            // publication binding across mutation/publication. These owners reject
+            // stale work or preserve the other input; they cannot borrow the mutated
+            // State.
             position.span = found.span.clone();
         }
         Some(FindRequest {
@@ -277,23 +278,25 @@ impl State {
             scope: if session.whole_table {
                 FindScope::Table
             } else {
-                // Retain the exact prior source, selected column, scope, pattern or publication
-                // binding across mutation/publication. These owners reject stale work or
-                // preserve the other input; they cannot borrow the mutated State.
+                // NO_CLONE: Retain the exact prior source, selected column, scope, pattern or
+                // publication binding across mutation/publication. These owners
+                // reject stale work or preserve the other input; they cannot borrow
+                // the mutated State.
                 FindScope::Field(position.column.clone())
             },
-            // Retain the exact prior source, selected column, scope, pattern or publication
-            // binding across mutation/publication. These owners reject stale work or preserve
-            // the other input; they cannot borrow the mutated State.
+            // NO_CLONE: Retain the exact prior source, selected column, scope, pattern or
+            // publication binding across mutation/publication. These owners reject
+            // stale work or preserve the other input; they cannot borrow the mutated
+            // State.
             pattern: session.pattern.clone(),
             matching: session.matching,
             direction: session.direction,
             start: Some(position),
             match_case: session.match_case,
             formatted: session.formatted,
-            // Capture the actual formatting policy independently for cache invalidation,
-            // pending-result rejection or the displayed dialog binding; later preference edits
-            // must not mutate that snapshot.
+            // NO_CLONE: Capture the actual formatting policy independently for cache
+            // invalidation, pending-result rejection or the displayed dialog binding;
+            // later preference edits must not mutate that snapshot.
             format_options: self.formatting.clone(),
         })
     }
@@ -439,9 +442,10 @@ impl State {
                 );
                 session.pending = None;
                 session.publication = self.focus_publication;
-                // Retain the exact prior source, selected column, scope, pattern or publication
-                // binding across mutation/publication. These owners reject stale work or
-                // preserve the other input; they cannot borrow the mutated State.
+                // NO_CLONE: Retain the exact prior source, selected column, scope, pattern or
+                // publication binding across mutation/publication. These owners
+                // reject stale work or preserve the other input; they cannot borrow
+                // the mutated State.
                 session.field = found.column.clone();
                 session.found = Some(found);
                 session.found_request = Some(request);

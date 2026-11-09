@@ -83,11 +83,11 @@ pub(super) fn prepare(harness: &mut Harness<'_, Preview>, mode: &str) {
                     ));
                 }
                 "save-reopen-failed" => {
+                    // NO_CLONE: Actual source-free saved report and subsequent read failure
+                    // warning coexist in distinct retained status owners; sharing mutable
+                    // String storage would change ownership.
                     assert!(state.set_saved_query_sql_save_outcome(
                         identity,
-                        // Actual source-free saved report and subsequent read failure warning
-                        // coexist in distinct retained status owners; sharing mutable String
-                        // storage would change ownership.
                         EditSaveOutcome::Saved(report.clone())
                     ));
                     assert!(state.begin_saved_query_sql_reopen(identity));

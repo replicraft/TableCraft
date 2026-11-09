@@ -220,7 +220,7 @@ impl State {
             return false;
         }
         let table = table.as_str();
-        // Mutate and validate a candidate before replacing the editor: failed metadata
+        // NO_CLONE: Mutate and validate a candidate before replacing the editor: failed metadata
         // must preserve the original draft. Arc/Cow would detach on this first mutation,
         // so they cannot remove this rollback copy; no worker needs to share it.
         let mut candidate = session.draft.clone();
@@ -431,7 +431,7 @@ impl State {
             request,
             request_id,
             PendingKind::Run {
-                // Preserve the submitted SQL after the editable buffer changes so old
+                // NO_CLONE: Preserve the submitted SQL after the editable buffer changes so old
                 // results retain their true provenance. A borrow would alias that buffer;
                 // sharing requires one immutable SQL contract across all result owners.
                 sql: self.sql.clone(),
@@ -474,7 +474,7 @@ impl State {
             unreachable!("validated Design run");
         };
         if !self.set_query_data(Some(sql), data) {
-            // The global diagnostic and independently dismissible Design error both
+            // NO_CLONE: The global diagnostic and independently dismissible Design error both
             // retain this text. Cow cannot borrow mutable UI state; Arc per diagnostic
             // would replace both message contracts for a small exceptional-path copy.
             let message = self
@@ -538,9 +538,9 @@ impl State {
         } else if !self.query_design_visible() {
             Some(Action::ImportQueryDesign {
                 request,
-                // Import owns the submitted SQL while the editor keeps its mutable
-                // buffer after rejection. Rc cannot cross the worker; borrowing the
-                // editor through Cow cannot survive asynchronous dispatch.
+                // NO_CLONE: Import owns the submitted SQL while the editor keeps its mutable buffer
+                // after rejection. Rc cannot cross the worker; borrowing the editor
+                // through Cow cannot survive asynchronous dispatch.
                 sql: self.sql.clone(),
             })
         } else {
@@ -560,9 +560,10 @@ impl State {
         let session = self.query_design.session.as_ref()?;
         (session.mode == Mode::Design).then(|| Action::BuildQueryDesign {
             request,
-            // Capture a stable submitted snapshot while the editor keeps its mutable draft.
-            // Arc then shares this one immutable payload with UI pending and the worker;
-            // Rc cannot cross the worker thread and Cow cannot borrow mutable editor state.
+            // NO_CLONE: Capture a stable submitted snapshot while the editor keeps its mutable
+            // draft. Arc then shares this one immutable payload with UI pending and the
+            // worker; Rc cannot cross the worker thread and Cow cannot borrow mutable
+            // editor state.
             draft: Arc::new(session.draft.clone()),
             completion: QueryDesignCompletion::ShowSql,
         })
@@ -574,9 +575,10 @@ impl State {
         self.can_build_query_design(&request, &session.draft, QueryDesignCompletion::Run)
             .then(|| Action::BuildQueryDesign {
                 request,
-                // Capture a stable submitted snapshot while the editor keeps its mutable draft.
-                // Arc then shares this one immutable payload with UI pending and the worker;
-                // Rc cannot cross the worker thread and Cow cannot borrow mutable editor state.
+                // NO_CLONE: Capture a stable submitted snapshot while the editor keeps its mutable
+                // draft. Arc then shares this one immutable payload with UI pending and
+                // the worker; Rc cannot cross the worker thread and Cow cannot borrow
+                // mutable editor state.
                 draft: Arc::new(session.draft.clone()),
                 completion: QueryDesignCompletion::Run,
             })

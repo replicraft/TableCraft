@@ -48,16 +48,17 @@ impl Engine {
             .and_then(|name| name.parse::<Locale>().ok());
         let fallback_locale = parsed.is_none();
         let locale = parsed.unwrap_or(icu_locale_core::locale!("en-US"));
-        // Locale maximization mutates a separate identifier to infer region/currency without
-        // changing the actual locale used for formatting.
+        // NO_CLONE: Locale maximization mutates a separate identifier to infer region/currency
+        // without changing the actual locale used for formatting.
         let mut expanded = locale.id.clone();
         LocaleExpander::new_extended().maximize(&mut expanded);
         let system_currency = expanded.region.and_then(|region| {
             let country = region.to_string().parse::<iso_currency::Country>().ok()?;
             regional_currency(country)
         });
-        // Owned DateTimeFormatterPreferences conversion consumes its locale input while later
-        // currency formatters and the engine locale string still need the same original.
+        // NO_CLONE: Owned DateTimeFormatterPreferences conversion consumes its locale input
+        // while later currency formatters and the engine locale string still need the
+        // same original.
         let preferences: DateTimeFormatterPreferences = locale.clone().into();
         let mut twelve = preferences;
         twelve.hour_cycle = Some(HourCycle::H12);
@@ -72,10 +73,10 @@ impl Engine {
                 continue;
             }
             let currency: CurrencyType = code.parse().map_err(|_| FormatError)?;
+            // NO_CLONE: Each independently configured currency formatter consumes owned locale
+            // preferences while the original locale remains for the next currency and
+            // date/time output.
             let formatter = CurrencyFormatter::try_new_symbol(
-                // Each independently configured currency formatter consumes owned locale
-                // preferences while the original locale remains for the next currency and
-                // date/time output.
                 locale.clone().into(),
                 currency,
                 Default::default(),
@@ -83,9 +84,9 @@ impl Engine {
             .map_err(|_| FormatError)?;
             currencies.insert(code.to_owned(), formatter);
         }
+        // NO_CLONE: The no-currency EUR number formatter consumes owned locale preferences; the
+        // original locale remains required for the engine locale string.
         let euro_number = CurrencyFormatter::try_new_no_currency(
-            // The no-currency EUR number formatter consumes owned locale preferences; the
-            // original locale remains required for the engine locale string.
             locale.clone().into(),
             "EUR".parse().map_err(|_| FormatError)?,
             Default::default(),
@@ -93,8 +94,8 @@ impl Engine {
         .map_err(|_| FormatError)?;
 
         Ok(Self {
-            // The display engine captures a complete independent formatting policy rather than
-            // borrowing caller preferences that can subsequently change.
+            // NO_CLONE: The display engine captures a complete independent formatting policy
+            // rather than borrowing caller preferences that can subsequently change.
             options: options.clone(),
             locale: locale.to_string(),
             fallback_locale,

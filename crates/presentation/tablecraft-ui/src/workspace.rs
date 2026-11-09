@@ -703,8 +703,8 @@ impl State {
             let Some(cell) = self.selected_total_cell() else {
                 return false;
             };
-            // The clipboard output owns its text beyond this borrowed cell/retained editor; the
-            // existing source text must remain available.
+            // NO_CLONE: The clipboard output owns its text beyond this borrowed cell/retained
+            // editor; the existing source text must remain available.
             ctx.copy_text(cell.text.clone());
             return true;
         }

@@ -13,8 +13,8 @@ const ICON_TEXT_GAP: f32 = 12.0;
 
 /// Reserve translated interface labels without changing their wording or keys.
 pub(super) fn width(ui: &Ui, localizer: &Localizer) -> f32 {
-    // The layout API consumes this FontId; keep the original style or loop-local descriptor
-    // available for the next measurement.
+    // NO_CLONE: The layout API consumes this FontId; keep the original style or loop-local
+    // descriptor available for the next measurement.
     let font = ui.style().text_styles[&TextStyle::Body].clone();
     let labels = [
         "backstage-back",
@@ -33,9 +33,9 @@ pub(super) fn width(ui: &Ui, localizer: &Localizer) -> f32 {
     let text_width = labels
         .into_iter()
         .map(|key| {
+            // NO_CLONE: The layout API consumes this FontId; keep the original style or
+            // loop-local descriptor available for the next measurement.
             ui.painter()
-                // The layout API consumes this FontId; keep the original style or loop-local
-                // descriptor available for the next measurement.
                 .layout_no_wrap(localizer.text(key), font.clone(), palette(ui.ctx()).ink)
                 .size()
                 .x
@@ -90,10 +90,10 @@ pub(super) fn entry(ui: &mut Ui, icon: Icon, label: &str, selected: Option<bool>
     );
     icon.image(ui, ICON_SIZE).paint_at(ui, icon_rect);
     let text_left = icon_rect.right() + ICON_TEXT_GAP;
+    // NO_CLONE: The layout API consumes this FontId; keep the original style or loop-local
+    // descriptor available for the next measurement.
     let mut layout = egui::text::LayoutJob::simple(
         label.to_owned(),
-        // The layout API consumes this FontId; keep the original style or loop-local descriptor
-        // available for the next measurement.
         ui.style().text_styles[&TextStyle::Body].clone(),
         color,
         (rect.right() - CONTENT_PADDING - text_left).max(0.0),

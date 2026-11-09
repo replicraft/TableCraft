@@ -69,19 +69,20 @@ impl Preview {
                 }));
         }
         let built = build(&draft, &metadata).expect("bounded authored synthetic QBE");
-        // Current SQL editor and BuiltQueryDesign reply retain independent SQL spellings during
-        // import; later reply consumes built SQL after comparing pending editor snapshot.
+        // NO_CLONE: Current SQL editor and BuiltQueryDesign reply retain independent SQL
+        // spellings during import; later reply consumes built SQL after comparing pending
+        // editor snapshot.
         self.state.sql = built.sql.clone();
         let request = self
             .state
             .query_design_request()
             .expect("synthetic scratch tab");
         let id = self.request();
+        // NO_CLONE: PendingKind::Import owns exact editor SQL snapshot for stale-input
+        // comparison while visible editor remains mutable; no borrowed editor lifetime across
+        // pending state.
         assert!(
             self.state
-                // PendingKind::Import owns exact editor SQL snapshot for stale-input comparison
-                // while visible editor remains mutable; no borrowed editor lifetime across
-                // pending state.
                 .begin_query_design_import(request, self.state.sql.clone(), id)
         );
         assert!(
@@ -134,10 +135,10 @@ impl Preview {
             .query_design_request()
             .expect("synthetic scratch tab");
         let id = self.request();
+        // NO_CLONE: Pending import must retain exact editor snapshot independently of editor
+        // and built result; this instance exercises normal authored QBE import.
         assert!(
             self.state
-                // Pending import must retain exact editor snapshot independently of editor and
-                // built result; this instance exercises normal authored QBE import.
                 .begin_query_design_import(request, self.state.sql.clone(), id)
         );
         let mut name = DesignColumn::field(1, "CustomerName".into());
@@ -151,15 +152,14 @@ impl Preview {
             joins: Vec::new(),
             columns: vec![DesignColumn::field(1, "CustomerID".into()), name],
         };
+        // NO_CLONE: BuiltQueryDesign reply owns proposed SQL while State retains
+        // pending/current SQL until admission; final reply moves its SQL into editor.
         assert!(
             self.state
                 .set_query_design_built(
                     id,
                     BuiltQueryDesign {
                         draft,
-                        // BuiltQueryDesign reply owns proposed SQL while State retains
-                        // pending/current SQL until admission; final reply moves its SQL into
-                        // editor.
                         sql: self.state.sql.clone()
                     },
                     vec![table_metadata("Customers")],
@@ -174,8 +174,9 @@ impl Preview {
                 .state
                 .query_design_request()
                 .expect("same synthetic tab");
-            // Simulated failing build owns draft snapshot while visible QBE draft stays in
-            // State for rejected-build preservation; moving would discard current design.
+            // NO_CLONE: Simulated failing build owns draft snapshot while visible QBE draft
+            // stays in State for rejected-build preservation; moving would discard current
+            // design.
             let draft = self
                 .state
                 .query_design_draft()
@@ -199,10 +200,10 @@ impl Preview {
         table: String,
     ) {
         let id = self.request();
+        // NO_CLONE: Pending table description owns table name while fixture metadata generation
+        // later reads original after admission; result owns its independent table spelling.
         if self
             .state
-            // Pending table description owns table name while fixture metadata generation later
-            // reads original after admission; result owns its independent table spelling.
             .begin_query_design_description(request, table.clone(), id)
         {
             self.state

@@ -116,9 +116,9 @@ impl Model {
         tab: ObjectTab,
         request_id: u64,
     ) -> Result<(), FieldAdditionInspectionError> {
-        // The source-free preview/test helper retains a tab in prepare_inspection and
-        // immediately uses the same independent identity to bind the request; production native
-        // authority is not supplied.
+        // NO_CLONE: The source-free preview/test helper retains a tab in prepare_inspection and
+        // immediately uses the same independent identity to bind the request;
+        // production native authority is not supplied.
         self.prepare_inspection(tab.clone())?;
         assert!(self.bind_inspection(&tab, request_id));
         Ok(())

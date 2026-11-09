@@ -33,10 +33,10 @@ pub(super) fn minimum_height(ui: &Ui, editor: &Editor) -> f32 {
     };
     let font = egui::TextStyle::Body.resolve(ui.style());
     let line_height = |key| {
+        // NO_CLONE: The layout API consumes this FontId; keep the original style or loop-local
+        // descriptor available for the next measurement.
         let text_height = ui
             .painter()
-            // The layout API consumes this FontId; keep the original style or loop-local
-            // descriptor available for the next measurement.
             .layout_no_wrap(tr(ui, key), font.clone(), ui.visuals().text_color())
             .size()
             .y;

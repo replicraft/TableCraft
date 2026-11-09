@@ -12,9 +12,9 @@ impl QueryDesign {
     pub(in crate::workspace) fn preferences(&self) -> Option<Preferences> {
         let session = self.session.as_ref()?;
         Some(Preferences {
-            // Capture a distinct restoration/edit-input snapshot while the original live
-            // declarations, draft, tab or totals preferences remain in use; parameter edit text
-            // and declaration identity are separate owners.
+            // NO_CLONE: Capture a distinct restoration/edit-input snapshot while the original
+            // live declarations, draft, tab or totals preferences remain in use;
+            // parameter edit text and declaration identity are separate owners.
             draft: session.draft.clone(),
             mode: session.mode,
             revision: session.revision,

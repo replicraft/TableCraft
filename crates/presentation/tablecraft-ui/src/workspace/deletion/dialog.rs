@@ -271,11 +271,11 @@ fn footer_width(ui: &Ui, dialog: &Dialog) -> f32 {
     let widths: f32 = keys
         .iter()
         .map(|key| {
-            let text = ui
-                .painter()
-                // The layout API consumes this FontId; keep the original style or
-                // loop-local descriptor available for the next measurement.
-                .layout_no_wrap(tr(ui, key), font.clone(), ui.visuals().text_color());
+            // NO_CLONE: The layout API consumes this FontId; keep the original style or
+            // loop-local descriptor available for the next measurement.
+            let text =
+                ui.painter()
+                    .layout_no_wrap(tr(ui, key), font.clone(), ui.visuals().text_color());
             text.size().x + padding
         })
         .sum();

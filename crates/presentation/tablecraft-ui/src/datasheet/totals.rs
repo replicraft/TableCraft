@@ -82,8 +82,9 @@ fn total_cell(
     } else if row.error {
         "!".into()
     } else {
-        // The rendered totals text is consumed by multiple accessibility/hover/clipboard
-        // outputs while the stored result cell remains unchanged.
+        // NO_CLONE: The rendered totals text is consumed by multiple
+        // accessibility/hover/clipboard outputs while the stored result cell remains
+        // unchanged.
         cell.map_or_else(String::new, |cell| cell.text.clone())
     };
     let label = message(
@@ -103,13 +104,13 @@ fn total_cell(
                         .clicked()
                     {
                         choices.push(Choice {
-                            // Choice needs its own captured identity after this
-                            // render/dispatch; keep the original catalog, input or owner
-                            // available for the later checks in this operation.
+                            // NO_CLONE: Choice needs its own captured identity after this
+                            // render/dispatch; keep the original catalog, input or
+                            // owner available for the later checks in this operation.
                             target: row.target.clone(),
-                            // Choice needs its own captured identity after this
-                            // render/dispatch; keep the original catalog, input or owner
-                            // available for the later checks in this operation.
+                            // NO_CLONE: Choice needs its own captured identity after this
+                            // render/dispatch; keep the original catalog, input or
+                            // owner available for the later checks in this operation.
                             column: field.column.name.clone(),
                             aggregate: None,
                         });
@@ -122,13 +123,15 @@ fn total_cell(
                             .clicked()
                         {
                             choices.push(Choice {
-                                // Choice needs its own captured identity after this
-                                // render/dispatch; keep the original catalog, input or owner
-                                // available for the later checks in this operation.
+                                // NO_CLONE: Choice needs its own captured identity after this
+                                // render/dispatch; keep the original catalog, input
+                                // or owner available for the later checks in this
+                                // operation.
                                 target: row.target.clone(),
-                                // Choice needs its own captured identity after this
-                                // render/dispatch; keep the original catalog, input or owner
-                                // available for the later checks in this operation.
+                                // NO_CLONE: Choice needs its own captured identity after this
+                                // render/dispatch; keep the original catalog, input
+                                // or owner available for the later checks in this
+                                // operation.
                                 column: field.column.name.clone(),
                                 aggregate: Some(*aggregate),
                             });
@@ -143,13 +146,13 @@ fn total_cell(
     let (response, popup_open) = response;
     if response.enabled() && (response.has_focus() || response.clicked() || popup_open) {
         *owner = Some(super::SelectionOwner::Total {
-            // the retained command or exact-owner witness needs its own captured identity after
-            // this render/dispatch; keep the original catalog, input or owner available for the
-            // later checks in this operation.
+            // NO_CLONE: the retained command or exact-owner witness needs its own captured
+            // identity after this render/dispatch; keep the original catalog, input
+            // or owner available for the later checks in this operation.
             target: row.target.clone(),
-            // the retained command or exact-owner witness needs its own captured identity after
-            // this render/dispatch; keep the original catalog, input or owner available for the
-            // later checks in this operation.
+            // NO_CLONE: the retained command or exact-owner witness needs its own captured
+            // identity after this render/dispatch; keep the original catalog, input
+            // or owner available for the later checks in this operation.
             column: field.column.name.clone(),
         });
     }
@@ -165,9 +168,9 @@ fn total_cell(
     paint_value(ui, response.rect, &text, alignment);
     ui.ctx().accesskit_node_builder(response.id, |node| {
         node.set_label(label);
-        // Two real toolkit outputs retain the text independently (paint/layout, accessibility
-        // or hover/clipboard); the owning API consumes the String while the other output
-        // remains needed.
+        // NO_CLONE: Two real toolkit outputs retain the text independently (paint/layout,
+        // accessibility or hover/clipboard); the owning API consumes the String while
+        // the other output remains needed.
         node.set_value(text.clone());
     });
     if response.has_focus() && cell.is_some() && !row.pending && !row.error {
@@ -183,9 +186,9 @@ fn total_cell(
             });
         });
         if copy {
-            // Two real toolkit outputs retain the text independently (paint/layout,
-            // accessibility or hover/clipboard); the owning API consumes the String while the
-            // other output remains needed.
+            // NO_CLONE: Two real toolkit outputs retain the text independently (paint/layout,
+            // accessibility or hover/clipboard); the owning API consumes the String
+            // while the other output remains needed.
             ui.ctx().copy_text(text.clone());
         }
     }

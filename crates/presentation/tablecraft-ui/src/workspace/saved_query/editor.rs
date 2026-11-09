@@ -47,14 +47,14 @@ impl State {
             focus::register(ui, Pane::Document, &inspect, false);
             if inspect.clicked() {
                 actions.push(Action::InspectSavedQuery {
+                    // NO_CLONE: Return or dispatch an owned identity snapshot from retained
+                    // shared State; the caller may queue work or mutate State while
+                    // the source owner must remain intact.
                     target: self
                         .saved_query
                         .target
                         .as_ref()
                         .expect("selected saved query")
-                        // Return or dispatch an owned identity snapshot from retained shared
-                        // State; the caller may queue work or mutate State while the source
-                        // owner must remain intact.
                         .clone(),
                 });
             }

@@ -150,18 +150,19 @@ impl State {
                 .map(|database| database.document_revision),
             source_revision: data.source_revision,
             parent_ordinal: data.parent_ordinal(row),
-            // Retain the exact prior source, selected column, scope, pattern or publication
-            // binding across mutation/publication. These owners reject stale work or preserve
-            // the other input; they cannot borrow the mutated State.
+            // NO_CLONE: Retain the exact prior source, selected column, scope, pattern or
+            // publication binding across mutation/publication. These owners reject
+            // stale work or preserve the other input; they cannot borrow the mutated
+            // State.
             table: data.table.clone(),
             offset: data.offset,
             row,
             column,
             pointer: cell.text.as_ptr() as usize,
             bytes: cell.text.len(),
-            // Capture the actual formatting policy independently for cache invalidation,
-            // pending-result rejection or the displayed dialog binding; later preference edits
-            // must not mutate that snapshot.
+            // NO_CLONE: Capture the actual formatting policy independently for cache
+            // invalidation, pending-result rejection or the displayed dialog binding;
+            // later preference edits must not mutate that snapshot.
             formatting: self.formatting.clone(),
         };
         self.zoom.session = Some(Session {

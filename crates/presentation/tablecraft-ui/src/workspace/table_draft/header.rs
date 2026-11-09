@@ -21,9 +21,9 @@ pub(super) fn show(ui: &mut Ui, field: &DraftField, editable: bool) -> Option<Co
     response.widget_info(|| WidgetInfo::labeled(WidgetType::Button, ui.is_enabled(), field.name()));
     ui.ctx().accesskit_node_builder(response.id, |node| {
         node.set_role(egui::accesskit::Role::ColumnHeader);
-        // Two real toolkit outputs retain the text independently (paint/layout, accessibility
-        // or hover/clipboard); the owning API consumes the String while the other output
-        // remains needed.
+        // NO_CLONE: Two real toolkit outputs retain the text independently (paint/layout,
+        // accessibility or hover/clipboard); the owning API consumes the String while
+        // the other output remains needed.
         node.set_description(options.clone());
         if ui.is_enabled() && editable {
             node.add_action(egui::accesskit::Action::ShowContextMenu);

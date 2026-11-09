@@ -154,8 +154,9 @@ impl State {
         }
         Some(TotalsTarget {
             document_revision: revision,
-            // Return or dispatch an owned identity snapshot from retained shared State; the
-            // caller may queue work or mutate State while the source owner must remain intact.
+            // NO_CLONE: Return or dispatch an owned identity snapshot from retained shared
+            // State; the caller may queue work or mutate State while the source owner
+            // must remain intact.
             table: data.table.clone(),
             filter_id: self.active_filter_target().map(|target| target.filter_id),
             enabled: self.table_filter_enabled(),
@@ -291,9 +292,9 @@ impl State {
             request_id,
             object: self.active_object().expect("native totals object"),
             publication: self.focus_publication,
-            // Capture the actual formatting policy independently for cache invalidation,
-            // pending-result rejection or the displayed dialog binding; later preference edits
-            // must not mutate that snapshot.
+            // NO_CLONE: Capture the actual formatting policy independently for cache
+            // invalidation, pending-result rejection or the displayed dialog binding;
+            // later preference edits must not mutate that snapshot.
             formatting: self.formatting.clone(),
             specs,
         }
@@ -542,9 +543,9 @@ impl State {
         {
             Action::ComputeTotals {
                 target,
-                // ComputeTotals queues a snapshot of the selected aggregate specifications
-                // while the live totals selection remains available for comparison and
-                // rendering.
+                // NO_CLONE: ComputeTotals queues a snapshot of the selected aggregate
+                // specifications while the live totals selection remains available
+                // for comparison and rendering.
                 specs: session.specs.clone(),
             }
         } else {

@@ -37,9 +37,9 @@ impl Sheet {
         let label_width = LABELS
             .iter()
             .map(|key| {
+                // NO_CLONE: The layout API consumes this FontId; keep the original style or
+                // loop-local descriptor available for the next measurement.
                 ui.painter()
-                    // The layout API consumes this FontId; keep the original style or
-                    // loop-local descriptor available for the next measurement.
                     .layout_no_wrap(tr(ui, key), font.clone(), ui.visuals().text_color())
                     .size()
                     .x

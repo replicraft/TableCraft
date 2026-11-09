@@ -78,15 +78,17 @@ impl State {
                 .database
                 .as_ref()
                 .map(|database| database.document_revision),
-            // Retain the exact prior source, selected column, scope, pattern or publication
-            // binding across mutation/publication. These owners reject stale work or preserve
-            // the other input; they cannot borrow the mutated State.
+            // NO_CLONE: Retain the exact prior source, selected column, scope, pattern or
+            // publication binding across mutation/publication. These owners reject
+            // stale work or preserve the other input; they cannot borrow the mutated
+            // State.
             table: schema.table.clone(),
             position: self.selected_field,
             field_number: field.number,
-            // Retain the exact prior source, selected column, scope, pattern or publication
-            // binding across mutation/publication. These owners reject stale work or preserve
-            // the other input; they cannot borrow the mutated State.
+            // NO_CLONE: Retain the exact prior source, selected column, scope, pattern or
+            // publication binding across mutation/publication. These owners reject
+            // stale work or preserve the other input; they cannot borrow the mutated
+            // State.
             field_name: field.name.clone(),
             started_frame: frame,
             last_frame: frame,
@@ -120,8 +122,8 @@ impl State {
         let entry = self.take_design_pane_entry(ui.ctx());
         let enter_grid = entry.is_some();
         let mut entered_grid = false;
-        // Share the immutable localization bundle across mutable widget work; Localizer clones
-        // its Arc owner, not the catalogs.
+        // NO_CLONE: Share the immutable localization bundle across mutable widget work;
+        // Localizer clones its Arc owner, not the catalogs.
         let localizer = self.localizer.clone();
         let rename_tab = self.active_object();
         let rename_enabled = rename_tab

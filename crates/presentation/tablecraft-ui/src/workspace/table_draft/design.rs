@@ -393,9 +393,10 @@ pub(super) fn show(
                                         activation_request = Some(activation::Request {
                                             field: field.id(),
                                             target: activation::Target::Name,
-                                            // Keyboard/focus/activation registries retain their
-                                            // own response while the original response remains
-                                            // needed for hover, focus, click state or returned
+                                            // NO_CLONE: Keyboard/focus/activation registries
+                                            // retain their own response while the
+                                            // original response remains needed for
+                                            // hover, focus, click state or returned
                                             // geometry.
                                             response: response.clone(),
                                         });
@@ -473,9 +474,10 @@ pub(super) fn show(
                                         activation_request = Some(activation::Request {
                                             field: field.id(),
                                             target: activation::Target::Selector,
-                                            // Keyboard/focus/activation registries retain their
-                                            // own response while the original response remains
-                                            // needed for hover, focus, click state or returned
+                                            // NO_CLONE: Keyboard/focus/activation registries
+                                            // retain their own response while the
+                                            // original response remains needed for
+                                            // hover, focus, click state or returned
                                             // geometry.
                                             response: response.clone(),
                                         });
@@ -629,11 +631,11 @@ fn footer_height(ui: &Ui, editor: &Editor) -> f32 {
         + keys
             .iter()
             .map(|key| {
+                // NO_CLONE: The layout API consumes this FontId; keep the original style or
+                // loop-local descriptor available for the next measurement.
                 ui.painter()
                     .layout(
                         tr(ui, key),
-                        // The layout API consumes this FontId; keep the original style or
-                        // loop-local descriptor available for the next measurement.
                         font.clone(),
                         ui.visuals().text_color(),
                         ui.available_width(),

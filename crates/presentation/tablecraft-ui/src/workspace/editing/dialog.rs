@@ -171,9 +171,9 @@ impl State {
                     {
                         actions.push(Action::ReviewEdit {
                             draft_id: draft.id,
-                            // The review action owns the proposed text while the dialog keeps
-                            // the entered value for rendering/retry; the consuming native
-                            // review captures that input.
+                            // NO_CLONE: The review action owns the proposed text while the
+                            // dialog keeps the entered value for rendering/retry; the
+                            // consuming native review captures that input.
                             input: input.clone(),
                         });
                     }

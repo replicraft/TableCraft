@@ -239,16 +239,16 @@ fn build_bundle(locale: Locale) -> Result<Bundle, LocalizationError> {
 
 /// Install the selected language for nested presentation functions.
 pub(crate) fn install(ctx: &egui::Context, localizer: &Localizer) {
-    // Share the immutable localization bundle across mutable widget work; Localizer clones its
-    // Arc owner, not the catalogs.
+    // NO_CLONE: Share the immutable localization bundle across mutable widget work; Localizer
+    // clones its Arc owner, not the catalogs.
     ctx.data_mut(|data| data.insert_temp(egui::Id::new("ui_localizer"), localizer.clone()));
 }
 
 pub(crate) fn for_context(ctx: &egui::Context) -> Localizer {
     ctx.data_mut(|data| {
+        // NO_CLONE: Share the immutable localization bundle across mutable widget work;
+        // Localizer clones its Arc owner, not the catalogs.
         data.get_temp_mut_or_default::<Localizer>(egui::Id::new("ui_localizer"))
-            // Share the immutable localization bundle across mutable widget work; Localizer
-            // clones its Arc owner, not the catalogs.
             .clone()
     })
 }

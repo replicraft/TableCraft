@@ -164,14 +164,14 @@ impl State {
         let (row, column) = self.table_selection.position()?;
         let target = RecordTarget {
             document_revision: data.source_revision?,
-            // Construct a typed owned target whose table/field identity is retained separately
-            // from the borrowed data/catalog/query snapshot. The source observation remains
-            // available after command dispatch.
+            // NO_CLONE: Construct a typed owned target whose table/field identity is retained
+            // separately from the borrowed data/catalog/query snapshot. The source
+            // observation remains available after command dispatch.
             table: data.table.clone(),
             parent_ordinal: data.parent_ordinal(row)?,
-            // Construct a typed owned target whose table/field identity is retained separately
-            // from the borrowed data/catalog/query snapshot. The source observation remains
-            // available after command dispatch.
+            // NO_CLONE: Construct a typed owned target whose table/field identity is retained
+            // separately from the borrowed data/catalog/query snapshot. The source
+            // observation remains available after command dispatch.
             column: data.columns.get(column)?.name.clone(),
         };
         self.record_source_matches(&target).then_some(target)

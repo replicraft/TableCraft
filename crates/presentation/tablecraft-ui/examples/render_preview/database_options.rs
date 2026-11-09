@@ -102,11 +102,11 @@ pub(super) fn prepare(harness: &mut Harness<'_, Preview>, mode: &str) {
                     .expect("presentation reservation only")
                     .bind(PRESENTATION_SAVE_ID);
                 let report = state.localizer.text("editing-mock-diagnosis");
+                // NO_CLONE: Saved-outcome status and later failed-reopen warning retain
+                // independent report strings simultaneously; one display owner must not consume
+                // the other.
                 assert!(state.set_database_options_save_outcome(
                     identity,
-                    // Saved-outcome status and later failed-reopen warning retain independent
-                    // report strings simultaneously; one display owner must not consume the
-                    // other.
                     EditSaveOutcome::Saved(report.clone())
                 ));
                 assert!(state.begin_database_options_reopen(identity));

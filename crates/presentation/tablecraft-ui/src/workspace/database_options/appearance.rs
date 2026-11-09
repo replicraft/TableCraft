@@ -4,8 +4,8 @@ use egui::Ui;
 
 impl State {
     pub(in crate::workspace) fn appearance_options(&mut self, ui: &mut Ui) {
-        // Share the immutable localization bundle across mutable widget work; Localizer clones
-        // its Arc owner, not the catalogs.
+        // NO_CLONE: Share the immutable localization bundle across mutable widget work;
+        // Localizer clones its Arc owner, not the catalogs.
         let localizer = self.localizer.clone();
         ui.heading(localizer.text("settings-appearance"));
         ui.label(localizer.text("settings-theme"));
