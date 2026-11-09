@@ -29,7 +29,7 @@ fn malformed_user_records_keep_their_cause_without_partial_buffered_output_or_pr
 }
 
 #[test]
-fn native_query_row_allowance_reports_source_origin_and_never_publishes_a_prefix() {
+fn native_query_snapshot_ceiling_reports_source_origin_and_never_publishes_a_prefix() {
     let records = (1..=205).map(|id| (id, id * 10)).collect::<Vec<_>>();
     let original = mutation_fixture::with_rows(&records);
     let directory = tempfile::tempdir().unwrap();
@@ -47,8 +47,10 @@ fn native_query_row_allowance_reports_source_origin_and_never_publishes_a_prefix
     assert_eq!(output.status.code(), Some(2));
     assert!(output.stdout.is_empty());
     let error = String::from_utf8(output.stderr).unwrap();
+    // This CLI control also caps the complete native snapshot. Its structural
+    // check runs before the three-row-style cumulative native budget path.
     assert!(
-        error.contains("query source failed: Rows resource limit exceeded"),
+        error.contains("query source failed: structural limit exceeded"),
         "{error}"
     );
     assert_eq!(std::fs::read(path).unwrap(), original);
