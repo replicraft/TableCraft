@@ -6,6 +6,7 @@ use egui::{Key, Modifiers, accesskit::Role};
 use egui_kittest::kittest::Queryable;
 use tablecraft_builders::table::DraftFieldType;
 use tablecraft_runtime::{SaveOutcome, journal_path};
+use tablecraft_ui::FluentArgs;
 
 #[test]
 fn created_number_table_round_trips_insert_change_delete_and_automatic_reopen() {
@@ -35,8 +36,17 @@ fn created_number_table_round_trips_insert_change_delete_and_automatic_reopen() 
     assert_eq!(data.rows[1][1].text, "8");
     assert_eq!(std::fs::read(&path).unwrap(), inserted);
 
+    let mut arguments = FluentArgs::new();
+    arguments.set("column", "Field1");
+    arguments.set("row", "1");
+    arguments.set("text", "7");
+    let label = harness
+        .state()
+        .state
+        .localizer
+        .format("datasheet-cell-context", &arguments);
     harness
-        .get_by_role_and_label(Role::Label, "Field1, row 1: 7")
+        .get_by_role_and_label(Role::Label, &label)
         .click_secondary();
     harness.run_steps(2);
     harness
