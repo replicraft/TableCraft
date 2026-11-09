@@ -87,7 +87,8 @@ use std::path::PathBuf;
 use std::sync::Arc;
 #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
 use tablecraft_ace::{
-    AddColumnIntentError, AddTableError, DefaultZeroAddColumnIntentError, FieldAdditionIntentError,
+    AddColumnIntentError, AddTableError, DefaultZeroAddColumnIntentError,
+    FieldAdditionAfterOffIntentError, FieldAdditionIntentError, FieldAdditionSourceError,
     FirstTableError, RepeatedDefaultZeroAddColumnIntentError,
 };
 use tablecraft_builders::query::{
@@ -142,6 +143,14 @@ pub enum Error {
     #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
     #[error(transparent)]
     FieldAddition(#[from] FieldAdditionIntentError),
+    /// Exact ADD-after-OFF original request or complete native reconstruction refused.
+    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+    #[error(transparent)]
+    FieldAdditionAfterOff(#[from] FieldAdditionAfterOffIntentError),
+    /// Selected native field source or readonly capacity qualification failed.
+    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+    #[error(transparent)]
+    FieldAdditionSource(#[from] FieldAdditionSourceError),
     #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
     #[error(transparent)]
     FieldRenameSource(#[from] tablecraft_ace::FieldRenameError),

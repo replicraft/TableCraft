@@ -1,8 +1,8 @@
 //! Real captured original plans; target declarations are derived, never echoed.
 use std::num::NonZeroU8;
 use tablecraft_ace::{
-    FieldAdditionTarget, RecoverableDefaultZeroAddColumnPlan, RecoverableFieldAdditionPlan,
-    RecoverableRepeatedDefaultZeroAddColumnPlan,
+    FieldAdditionTarget, RecoverableDefaultZeroAddColumnPlan, RecoverableFieldAdditionAfterOffPlan,
+    RecoverableFieldAdditionPlan, RecoverableRepeatedDefaultZeroAddColumnPlan,
 };
 use tablecraft_builders::table::FieldAdditionDeclaration;
 
@@ -10,6 +10,7 @@ pub(in crate::editing) enum Plan {
     First(RecoverableDefaultZeroAddColumnPlan),
     Repeated(RecoverableRepeatedDefaultZeroAddColumnPlan),
     Typed(RecoverableFieldAdditionPlan),
+    AfterOff(RecoverableFieldAdditionAfterOffPlan),
 }
 
 impl Plan {
@@ -26,22 +27,8 @@ impl Plan {
                 FieldAdditionDeclaration::NumberLongZero
             }
             Self::Repeated(_) => FieldAdditionDeclaration::NumberLongZero,
-            Self::Typed(plan) => match plan.target() {
-                FieldAdditionTarget::NumberLongZero => FieldAdditionDeclaration::NumberLongZero,
-                FieldAdditionTarget::ShortText {
-                    max_utf16_units,
-                    unicode_compression,
-                } => {
-                    let width = u8::try_from(max_utf16_units)
-                        .ok()
-                        .and_then(NonZeroU8::new)
-                        .ok_or(crate::editing::EditError::InvalidInput)?;
-                    FieldAdditionDeclaration::ShortText {
-                        max_utf16_units: width,
-                        unicode_compression,
-                    }
-                }
-            },
+            Self::Typed(plan) => captured_target(plan.target())?,
+            Self::AfterOff(plan) => captured_target(plan.target())?,
         })
     }
 
@@ -50,6 +37,7 @@ impl Plan {
             Self::First(plan) => plan.table(),
             Self::Repeated(plan) => plan.table(),
             Self::Typed(plan) => plan.table(),
+            Self::AfterOff(plan) => plan.table(),
         }
     }
 
@@ -58,6 +46,7 @@ impl Plan {
             Self::First(plan) => plan.column(),
             Self::Repeated(plan) => plan.column(),
             Self::Typed(plan) => plan.column(),
+            Self::AfterOff(plan) => plan.column(),
         }
     }
 
@@ -66,6 +55,7 @@ impl Plan {
             Self::First(plan) => plan.before_bytes(),
             Self::Repeated(plan) => plan.before_bytes(),
             Self::Typed(plan) => plan.before_bytes(),
+            Self::AfterOff(plan) => plan.before_bytes(),
         }
     }
 
@@ -74,6 +64,26 @@ impl Plan {
             Self::First(plan) => plan.after_bytes(),
             Self::Repeated(plan) => plan.after_bytes(),
             Self::Typed(plan) => plan.after_bytes(),
+            Self::AfterOff(plan) => plan.after_bytes(),
         }
     }
+}
+
+fn captured_target(target: FieldAdditionTarget) -> Result<FieldAdditionDeclaration, crate::Error> {
+    Ok(match target {
+        FieldAdditionTarget::NumberLongZero => FieldAdditionDeclaration::NumberLongZero,
+        FieldAdditionTarget::ShortText {
+            max_utf16_units,
+            unicode_compression,
+        } => {
+            let width = u8::try_from(max_utf16_units)
+                .ok()
+                .and_then(NonZeroU8::new)
+                .ok_or(crate::editing::EditError::InvalidInput)?;
+            FieldAdditionDeclaration::ShortText {
+                max_utf16_units: width,
+                unicode_compression,
+            }
+        }
+    })
 }

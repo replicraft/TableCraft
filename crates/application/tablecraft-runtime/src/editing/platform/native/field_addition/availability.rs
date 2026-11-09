@@ -6,7 +6,7 @@ use crate::{
     document::Document,
     editing::FieldAdditionAvailability,
 };
-use tablecraft_ace::{FieldAdditionError, FieldAdditionIntentError, NativeImage};
+use tablecraft_ace::{FieldAdditionSourceAvailability, FieldAdditionSourceError, NativeImage};
 
 pub(in crate::editing) fn inspect(
     document: &mut Document,
@@ -23,68 +23,64 @@ pub(in crate::editing) fn inspect(
             &mut work,
             cancelled,
         )?;
-        // ACE selects the immutable source purpose before proof and shares
-        // that complete source owner with the typed candidate. This qualifies
-        // both closed field kinds without a second history reconstruction.
         source_result(
             image
-                .check_created_field_addition_source(table, &mut work, cancelled)
-                .map_err(|error| Error::FieldAddition(error.into())),
+                .inspect_field_addition_source(table, &mut work, cancelled)
+                .map_err(Error::from),
         )?
     } else {
-        false
+        None
     };
     let mut output = Presentation::new(cancelled);
     let availability = FieldAdditionAvailability {
         document_revision: document.revision,
         table: output.text(table)?,
-        number_available: available,
-        short_text_available: available,
+        number_available: available
+            .as_ref()
+            .is_some_and(FieldAdditionSourceAvailability::number_available),
+        short_text_available: available
+            .as_ref()
+            .is_some_and(FieldAdditionSourceAvailability::short_text_available),
     };
     check(cancelled)?;
     Ok(Response::FieldAdditionAvailability { availability })
 }
 
-fn source_result(result: Result<(), Error>) -> Result<bool, Error> {
+fn source_result(
+    result: Result<FieldAdditionSourceAvailability, Error>,
+) -> Result<Option<FieldAdditionSourceAvailability>, Error> {
     match result {
-        Ok(()) => Ok(true),
-        Err(Error::FieldAddition(FieldAdditionIntentError::Field(FieldAdditionError::Source))) => {
-            Ok(false)
-        }
+        Ok(facts) => Ok(Some(facts)),
+        Err(Error::FieldAdditionSource(FieldAdditionSourceError::Source)) => Ok(None),
         Err(error) => Err(error),
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use super::source_result;
-    use crate::Error;
-    use tablecraft_ace::{FieldAdditionError, FieldAdditionIntentError, InspectError};
+    use super::*;
+    use tablecraft_ace::InspectError;
 
     #[test]
-    fn only_typed_source_refusal_becomes_an_unavailable_fact() {
+    fn only_selected_source_refusal_becomes_an_unavailable_fact() {
         assert!(
-            !source_result(Err(Error::FieldAddition(FieldAdditionIntentError::Field(
-                FieldAdditionError::Source
-            ))))
+            source_result(Err(Error::FieldAdditionSource(
+                FieldAdditionSourceError::Source
+            )))
             .unwrap()
+            .is_none()
         );
-        for (input, expected) in [
+        for (error, expected) in [
             (InspectError::Cancelled, InspectError::Cancelled),
             (InspectError::Allocation, InspectError::Allocation),
             (InspectError::Malformed, InspectError::Malformed),
         ] {
-            let result = source_result(Err(Error::FieldAddition(FieldAdditionIntentError::Field(
-                FieldAdditionError::Inspect(input),
-            ))));
-            let Err(Error::FieldAddition(FieldAdditionIntentError::Field(
-                FieldAdditionError::Inspect(actual),
-            ))) = result
-            else {
-                panic!("failed inspection must retain its typed error");
-            };
-
-            assert_eq!(actual, expected);
+            let actual = source_result(Err(Error::FieldAdditionSource(
+                FieldAdditionSourceError::Inspect(error),
+            )));
+            assert!(
+                matches!(actual, Err(Error::FieldAdditionSource(FieldAdditionSourceError::Inspect(observed))) if observed == expected)
+            );
         }
     }
 }

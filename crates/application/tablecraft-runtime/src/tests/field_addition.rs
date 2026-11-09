@@ -242,3 +242,5 @@ fn broader_prefix_policies_select_typed_number_before_qualification() {
     );
     assert_eq!(std::fs::read(path).unwrap(), before.as_bytes());
 }
+
+mod after_off;

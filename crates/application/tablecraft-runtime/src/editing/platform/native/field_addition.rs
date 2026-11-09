@@ -14,8 +14,8 @@ use crate::{
 use plan::Plan;
 use std::sync::{Arc, atomic::AtomicBool};
 use tablecraft_ace::{
-    CreatedDefaultZeroColumnRequired, CreatedFieldAdditionSourcePurpose, FieldAdditionTarget,
-    NativeImage,
+    CreatedDefaultZeroColumnRequired, CreatedFieldAdditionSourcePurpose,
+    FieldAdditionSourcePurpose, FieldAdditionTarget, NativeImage,
 };
 use tablecraft_builders::table::FieldAdditionDeclaration;
 
@@ -59,26 +59,31 @@ pub(in crate::editing) fn review(
         cancelled,
     )?;
     let target = native_target(declaration);
-    let purpose = image
-        .created_field_addition_source_purpose(table, target, &mut work, cancelled)
-        .map_err(|error| Error::FieldAddition(error.into()))?;
+    let purpose = image.field_addition_source_purpose(table, target, &mut work, cancelled)?;
     let plan = match purpose {
-        CreatedFieldAdditionSourcePurpose::FirstNumber => Plan::First(
-            image.plan_recoverable_created_add_default_zero_int32_column(
-                table,
-                column,
-                CreatedDefaultZeroColumnRequired::StoredFalse,
-                &mut work,
-                cancelled,
-            )?,
-        ),
-        CreatedFieldAdditionSourcePurpose::RepeatedNumber => {
+        FieldAdditionSourcePurpose::Created(CreatedFieldAdditionSourcePurpose::FirstNumber) => {
+            Plan::First(
+                image.plan_recoverable_created_add_default_zero_int32_column(
+                    table,
+                    column,
+                    CreatedDefaultZeroColumnRequired::StoredFalse,
+                    &mut work,
+                    cancelled,
+                )?,
+            )
+        }
+        FieldAdditionSourcePurpose::Created(CreatedFieldAdditionSourcePurpose::RepeatedNumber) => {
             Plan::Repeated(image.plan_recoverable_repeated_default_zero_int32_column(
                 table, column, &mut work, cancelled,
             )?)
         }
-        CreatedFieldAdditionSourcePurpose::TypedField => {
+        FieldAdditionSourcePurpose::Created(CreatedFieldAdditionSourcePurpose::TypedField) => {
             Plan::Typed(image.plan_recoverable_created_field_addition(
+                table, column, target, &mut work, cancelled,
+            )?)
+        }
+        FieldAdditionSourcePurpose::AfterExplicitOff => {
+            Plan::AfterOff(image.plan_recoverable_created_field_addition_after_off(
                 table, column, target, &mut work, cancelled,
             )?)
         }

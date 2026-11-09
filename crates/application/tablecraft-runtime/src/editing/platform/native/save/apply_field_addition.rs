@@ -100,6 +100,12 @@ fn apply_plan(
             &mut proof,
             &cancel,
         ),
+        Plan::AfterOff(plan) => session.stage_reviewed_field_addition_after_off_with_budgets(
+            plan,
+            &mut native,
+            &mut proof,
+            &cancel,
+        ),
     };
     let staged = match staged {
         Ok(staged) => staged,
