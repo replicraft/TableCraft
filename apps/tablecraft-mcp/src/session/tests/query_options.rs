@@ -26,13 +26,42 @@ fn inspected_read_uses_the_requested_snapshot_ceiling_without_changing_source() 
         if succeeds {
             assert_eq!(result.unwrap()["rows"][0][0]["text"], "3");
         } else {
+            let error = result.expect_err("two rows cannot admit a three-row snapshot");
             assert!(
-                result.is_err(),
-                "two rows cannot admit a three-row snapshot"
+                error.contains("query source failed: structural limit exceeded"),
+                "{error}"
             );
         }
         assert_eq!(std::fs::read(path).unwrap(), before);
     }
+}
+
+#[test]
+fn corrupt_user_records_report_a_safe_source_cause_without_a_result_or_write() {
+    let original = mutation_fixture::with_invalid_row_page();
+    let (_directory, path, mut session) = opened(&original);
+    let revision = session.revision.unwrap();
+    let sql = "SELECT Id, Score FROM Items";
+    let inspection = session
+        .execute(
+            "inspect_query",
+            json!({"document_revision": revision, "sql": sql}),
+        )
+        .unwrap();
+    let error = session
+        .execute(
+            "run_query",
+            json!({"document_revision": revision, "query_id": inspection["query_id"]}),
+        )
+        .unwrap_err();
+    assert!(
+        error.contains("query source failed: invalid data"),
+        "{error}"
+    );
+    assert!(!error.contains(sql));
+    assert!(!error.contains(path.to_str().unwrap()));
+    assert!(session.reviewed.is_none());
+    assert_eq!(std::fs::read(path).unwrap(), original);
 }
 
 #[test]
