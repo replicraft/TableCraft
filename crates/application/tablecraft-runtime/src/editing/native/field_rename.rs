@@ -6,16 +6,17 @@ use crate::{Error, controls::SCOPE, document::Document};
 use tablecraft_ace::{
     FieldAdditionError, FieldHistoryDatabaseOptionsError, FieldRenameError, NativeImage,
 };
+use tablecraft_builders::table::field_rename::FieldRenameNameProfile;
 use tablecraft_core::limits::ResourceBudget;
 
-pub(in crate::editing) fn source_width(
+pub(in crate::editing) fn source_profile(
     document: &mut Document,
     table: &str,
     column: &str,
     native_number: usize,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
-) -> Result<Option<usize>, Error> {
+) -> Result<Option<FieldRenameNameProfile>, Error> {
     if !document.source.editable_native() {
         return Ok(None);
     }
@@ -27,6 +28,21 @@ pub(in crate::editing) fn source_width(
         budget,
         cancelled,
     )?;
+    let fitted = source_result(
+        image
+            .inspect_fitted_field_rename_source(table, column, budget, cancelled)
+            .map(|source| source.identity()),
+    )?;
+    if let Some(identity) = fitted {
+        if identity.column_number() != native_number {
+            return Err(Error::StaleFieldRenameTarget);
+        }
+        return Ok(Some(FieldRenameNameProfile::FittedAscii {
+            original_units: identity.name_utf16_units(),
+        }));
+    }
+    // A clean unsupported fitted source may independently qualify for the older
+    // strict profile. Corruption, cancellation and resource errors propagate above.
     let identity = source_result(
         image.inspect_same_width_field_rename_source(table, column, budget, cancelled),
     )?;
@@ -36,7 +52,9 @@ pub(in crate::editing) fn source_width(
     if identity.column_number() != native_number {
         return Err(Error::StaleFieldRenameTarget);
     }
-    Ok(Some(identity.name_utf16_units()))
+    Ok(Some(FieldRenameNameProfile::SameWidthAscii {
+        units: identity.name_utf16_units(),
+    }))
 }
 
 fn source_result(

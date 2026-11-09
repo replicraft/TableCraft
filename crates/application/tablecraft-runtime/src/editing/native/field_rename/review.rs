@@ -40,8 +40,13 @@ pub(in crate::editing) fn review(
         &mut work,
         cancelled,
     )?;
-    let plan = image
-        .plan_recoverable_same_width_field_rename(table, column, new_name, &mut work, cancelled)?;
+    let plan = if column.len() == new_name.len() {
+        image.plan_recoverable_same_width_field_rename(
+            table, column, new_name, &mut work, cancelled,
+        )?
+    } else {
+        image.plan_recoverable_fitted_field_rename(table, column, new_name, &mut work, cancelled)?
+    };
     if plan.table() != table
         || plan.column() != column
         || plan.identity().column_number() != native_number

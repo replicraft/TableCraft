@@ -3,6 +3,7 @@ mod service;
 
 use super::{request, stored::opened};
 use crate::{Command, Error, FieldRenameSourceInspection, Response, SortSpec, SortTarget};
+use tablecraft_builders::table::field_rename::FieldRenameNameProfile;
 use tablecraft_testkit::fixtures::access::canonical_created_number::{
     Source, mixed::after_off as raw, repeated,
 };
@@ -41,7 +42,10 @@ fn real_number_and_text_source_facts_preserve_originals_and_take_no_lease() {
         assert_eq!(facts.column, column);
         assert_eq!(facts.native_number, 1);
         assert!(facts.source_eligible);
-        assert_eq!(facts.same_width_ascii_utf16_units, Some(5));
+        assert_eq!(
+            facts.name_profile,
+            Some(FieldRenameNameProfile::FittedAscii { original_units: 5 })
+        );
         tablecraft_access::editing::offline::OfflineWriteSession::open(
             &path,
             crate::controls::SCOPE,
@@ -66,7 +70,7 @@ fn primary_and_missing_off_profiles_are_unavailable_but_keep_true_identity() {
         assert_eq!(facts.column, field);
         assert_eq!(facts.native_number, number);
         assert!(!facts.source_eligible);
-        assert_eq!(facts.same_width_ascii_utf16_units, None);
+        assert_eq!(facts.name_profile, None);
         assert_eq!(std::fs::read(path).unwrap(), before);
     }
 }

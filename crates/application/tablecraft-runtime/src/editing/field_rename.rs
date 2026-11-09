@@ -12,6 +12,7 @@ use crate::{
     editing::platform,
 };
 use tablecraft_ace::inspect_table_schema;
+use tablecraft_builders::table::field_rename::FieldRenameNameProfile;
 
 /// Read-only qualification of one exact native field on one document revision.
 /// This is not a consuming review, save capability or source proof token.
@@ -27,9 +28,9 @@ pub struct FieldRenameSourceInspection {
     pub native_number: usize,
     /// Positive complete source/profile qualification on this read host.
     pub source_eligible: bool,
-    /// When available, the required replacement width. A replacement must be
-    /// ASCII, have this UTF16 width and independently pass native name checks.
-    pub same_width_ascii_utf16_units: Option<usize>,
+    /// Explicit observed name policy; original width does not imply growth room.
+    /// Every replacement still requires fresh consuming native qualification.
+    pub name_profile: Option<FieldRenameNameProfile>,
 }
 
 impl Document {
@@ -56,7 +57,7 @@ impl Document {
         if schema.name() != table || field.name() != column {
             return Err(Error::StaleFieldRenameTarget);
         }
-        let units = platform::field_rename::source_width(
+        let name_profile = platform::field_rename::source_profile(
             self,
             schema.name(),
             field.name(),
@@ -70,8 +71,8 @@ impl Document {
             table: output.text(schema.name())?,
             column: output.text(field.name())?,
             native_number,
-            source_eligible: units.is_some(),
-            same_width_ascii_utf16_units: units,
+            source_eligible: name_profile.is_some(),
+            name_profile,
         };
         check(cancelled)?;
         Ok(Response::FieldRenameSourceInspected { inspection })
