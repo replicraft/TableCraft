@@ -51,7 +51,7 @@ impl RetainedDefinitionTail {
 
         // NO_CLONE: Retain an immutable slice of the already paid/shared image;
         // the row Source outlives its borrowed absence certificate. Bytes::slice
-        // shares the existing control block without copying the page payload.
+        // shares image storage without copying the page payload.
         let bytes = image.bytes.slice(start..end);
         Ok(Self {
             definition,
@@ -117,3 +117,6 @@ impl RetainedDefinitionTail {
         Ok(())
     }
 }
+
+#[cfg(test)]
+mod tests;
