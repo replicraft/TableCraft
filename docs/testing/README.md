@@ -1,5 +1,7 @@
 # Testing and evidence
 
+- [Raw nonprimary field deletion: orphan-property controls and inert SDK reads](saved_field_drop/README.md)
+
 - [Saved-field rename: coordinated raw names, TDEF-only controls and inert SDK reads](saved_field_rename/README.md)
 
 - [Normal ADD-after-OFF and reviewed field-rename services](results/field-schema-services-2026-11-09.json)

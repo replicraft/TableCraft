@@ -11319,3 +11319,27 @@ Apache-2.0 artifact is unchanged; only generated copies were mutated, with
 expression evaluation disabled. SDK bytes/getters are engineering evidence,
 not native repeated-source/write admission, GUI or Microsoft Access validation.
 No third-party database/source/binary or private machine path is included.
+
+## Raw nonprimary field deletion: 9 November 2026
+
+The original MIT [raw model, prepare/observation recipes and inert Java getter](saved_field_drop/README.md)
+use two independently pinned generated OFF-history sources from the
+[existing source record](results/nac-after-field-add-sdk-2026-11-08.json).
+Four complete raw hypotheses were frozen before one read-only SDK observation run.
+The [observation record](results/saved-field-drop-raw-sdk-read-2026-11-09.json)
+retains exact source/AFTER/helper hashes and native properties/index/settings facts.
+TDEF-only deletion leaves the selected live MR2 group orphaned; appending a new
+snapshot without it removes that orphan. Both remain readable with all surviving
+policies and the unrelated ID primary index intact. Every retained dictionary key
+is still used in these cases; unused-key behavior was not tested.
+
+The reviewed Apache-2.0 Jackcess 5.0.4 JAR hash remains
+`19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc`.
+No SDK code/fixture/binary was copied. Every open used a fresh copy, read-only,
+with expression evaluation disabled; source and observed bytes remained exact.
+One compile, two baseline reads and four hypothesis reads succeeded; no command
+was retried. Local database/class/log artifacts remain private. This is empty
+ACE16 raw/read evidence, not an SDK DROP, native Access Save, populated-row write,
+UI confirmation or normal schema-editing admission. Earlier
+[deleted-column history derivatives](COLUMN_HISTORIES.md) retain their separate
+populated-row read evidence and unchanged provenance.

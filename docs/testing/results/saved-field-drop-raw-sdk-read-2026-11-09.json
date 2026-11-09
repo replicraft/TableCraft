@@ -1,0 +1,1090 @@
+{
+  "date": "2026-11-09",
+  "scope": "Four independent raw field-deletion hypotheses followed by inert Jackcess reads; no SDK DROP or native Access Save",
+  "source_provenance": "docs/testing/results/nac-after-field-add-sdk-2026-11-08.json",
+  "sdk": {
+    "name": "Previously reviewed Apache-2.0 Jackcess 5.0.4",
+    "sha256": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc",
+    "new_downloads": false,
+    "third_party_code_copied": false
+  },
+  "execution": {
+    "prepare_runs": 1,
+    "compile_exit": 0,
+    "baseline_reads": 2,
+    "hypothesis_reads": 4,
+    "all_sdk_exits_zero": true,
+    "failed_commands": [],
+    "sdk_schema_or_data_mutations": 0,
+    "every_open_readonly_and_expression_evaluation_disabled": true,
+    "originals_and_observed_files_unchanged": true,
+    "frozen_prediction_record_sha256": "754abfe81afbf3270aee3ba1a7997256cff896155f5cfa3344e521815083ed93",
+    "executed_observation_record_sha256": "a72faa7e99068b1c4e7da17527479d93383441d13b44e5c209267a71384c844d",
+    "executed_helper_hashes": {
+      "model.py": "0d2d4213fe8c4feac79dd82888e9fa2b38b448eb7aeb8400734d045728880fc8",
+      "prepare.py": "788a1c520d62ace32fc43c38990660d9db20a7efda850aa4c1474ce63659aaeb",
+      "observe.py": "14effdf9431fb998b124db20e6888fe7e7cb74f356b52c9ca7b5e07132e08daf",
+      "FieldDropObserver.java": "bc6fb64c455d6420412463132ec9be8291dbded709a382efcb30d5d8ef7ab5d5",
+      "source_manifest.json": "35e4d71a210179cddc60e5a96e96592905aa5c7aa4edf1d7ffb31306a8fa7fdc"
+    },
+    "executed_shared_helper_hashes": {
+      "docs/testing/saved_field_rename/model.py": "1260f09855646cafe91414dd28afef61c0b98039285154737fafb468bea8ca49",
+      "docs/testing/short_text_add/model.py": "640514975f34cd3468f4672e0cd9e9a516f15a439c5005c71d3f3d3a5e969a5b"
+    }
+  },
+  "findings": [
+    "TDEF-only deletion hides the selected declaration but retains its two-property current live MR2 group as an orphan.",
+    "Appending a new complete user MR2 snapshot without the selected group removes that live orphan while protecting all previous snapshots and database OFF body.",
+    "Both representations retain all surviving field native numbers/IDs/storage/policies, the ID-only primary index and explicit stored OFF options.",
+    "Active count falls independently of native-column and variable-slot high-water; no identity or variable ordinal compaction.",
+    "All original dictionary keys are still used in these cases; unused-key dictionary behavior was not tested.",
+    "The SDK empty ID property map observed after getter calls is not a raw persisted MR2 group; observed file bytes remain unchanged."
+  ],
+  "qualification_limits": [
+    "Read compatibility of authored hypotheses only, not independent native writer output.",
+    "No Microsoft Access execution, DROP Save byte comparison, UI warning timing/text or native garbage-collection qualification.",
+    "Canonical empty ACE16 sources only; no populated-row/null-mask-tail, indexed-target, dependency repair, older-format write or subsequent schema/data mutation qualification.",
+    "No engine candidate, intent, adapter, normal runtime or GUI DROP admission is introduced.",
+    "Appending a new property snapshot is a chosen independent hypothesis, not evidence Access uses that physical save form."
+  ],
+  "frozen_predictions": [
+    {
+      "case": "number-history",
+      "source": "number-second.accdb",
+      "before_sha256": "6f9b095ddf3d724e34d5af98bea4e8ba88bc2b2bc70ade10814f85c27770c620",
+      "drop": "Score",
+      "variant": "td-only",
+      "after": "files/number-history-td-only.accdb",
+      "after_sha256": "ed4149ecab4ad9cc995728f13f45de8a7f484f959ccea5f253703bf0c750cf09",
+      "removed_native_number": 1,
+      "removed_stored_id": 1,
+      "before_active_count": 3,
+      "after_active_count": 2,
+      "max_columns": 3,
+      "variable_slots": 0,
+      "retained_index_prefix_exact": true,
+      "retained_definition_suffix_exact": true,
+      "surviving_names": [
+        "ID",
+        "Score2"
+      ],
+      "changed_pages": [
+        7
+      ],
+      "before_user_reference": 2561,
+      "after_user_reference": 2561,
+      "retired_rows_exact": true,
+      "database_body_exact": true,
+      "maps_and_data_index_exact": true,
+      "dictionary_policy": "unchanged; possibly unused keys, unqualified hypothesis"
+    },
+    {
+      "case": "number-history",
+      "source": "number-second.accdb",
+      "before_sha256": "6f9b095ddf3d724e34d5af98bea4e8ba88bc2b2bc70ade10814f85c27770c620",
+      "drop": "Score",
+      "variant": "append-live-group-removed",
+      "after": "files/number-history-append-live-group-removed.accdb",
+      "after_sha256": "6c08831dfe4d305064837d93a8d1942a1a87b691ca80e4834a130c202c72923b",
+      "removed_native_number": 1,
+      "removed_stored_id": 1,
+      "before_active_count": 3,
+      "after_active_count": 2,
+      "max_columns": 3,
+      "variable_slots": 0,
+      "retained_index_prefix_exact": true,
+      "retained_definition_suffix_exact": true,
+      "surviving_names": [
+        "ID",
+        "Score2"
+      ],
+      "changed_pages": [
+        4,
+        7,
+        10
+      ],
+      "before_user_reference": 2561,
+      "after_user_reference": 2563,
+      "retired_rows_exact": true,
+      "database_body_exact": true,
+      "maps_and_data_index_exact": true,
+      "dictionary_policy": "unchanged; possibly unused keys, unqualified hypothesis"
+    },
+    {
+      "case": "mixed-text-history",
+      "source": "text-number-text.accdb",
+      "before_sha256": "c28d3c1bf1de4e75f894ac80ae332aa2a5b4b8c3c9111700d989222b8d6267c3",
+      "drop": "Label",
+      "variant": "td-only",
+      "after": "files/mixed-text-history-td-only.accdb",
+      "after_sha256": "cca0263c25b7025771866666ff8631099a85b82c08003eb5c140ba6f21b44932",
+      "removed_native_number": 1,
+      "removed_stored_id": 1,
+      "before_active_count": 4,
+      "after_active_count": 3,
+      "max_columns": 4,
+      "variable_slots": 2,
+      "retained_index_prefix_exact": true,
+      "retained_definition_suffix_exact": true,
+      "surviving_names": [
+        "ID",
+        "AfterLabel",
+        "OtherLabel"
+      ],
+      "changed_pages": [
+        7
+      ],
+      "before_user_reference": 2562,
+      "after_user_reference": 2562,
+      "retired_rows_exact": true,
+      "database_body_exact": true,
+      "maps_and_data_index_exact": true,
+      "dictionary_policy": "unchanged; possibly unused keys, unqualified hypothesis"
+    },
+    {
+      "case": "mixed-text-history",
+      "source": "text-number-text.accdb",
+      "before_sha256": "c28d3c1bf1de4e75f894ac80ae332aa2a5b4b8c3c9111700d989222b8d6267c3",
+      "drop": "Label",
+      "variant": "append-live-group-removed",
+      "after": "files/mixed-text-history-append-live-group-removed.accdb",
+      "after_sha256": "d9432f5edadc0bfcd60551f747be5e6ac630585f5cfa78fffdced6f7e875b935",
+      "removed_native_number": 1,
+      "removed_stored_id": 1,
+      "before_active_count": 4,
+      "after_active_count": 3,
+      "max_columns": 4,
+      "variable_slots": 2,
+      "retained_index_prefix_exact": true,
+      "retained_definition_suffix_exact": true,
+      "surviving_names": [
+        "ID",
+        "AfterLabel",
+        "OtherLabel"
+      ],
+      "changed_pages": [
+        4,
+        7,
+        10
+      ],
+      "before_user_reference": 2562,
+      "after_user_reference": 2564,
+      "retired_rows_exact": true,
+      "database_body_exact": true,
+      "maps_and_data_index_exact": true,
+      "dictionary_policy": "unchanged; possibly unused keys, unqualified hypothesis"
+    }
+  ],
+  "observations": {
+    "baselines": {
+      "number-history": {
+        "sdk_exit": 0,
+        "readonly_bytes_exact": true,
+        "observed": {
+          "OPTION": [
+            [
+              "Track Name AutoCorrect Info",
+              "0"
+            ],
+            [
+              "Perform Name AutoCorrect",
+              "0"
+            ]
+          ],
+          "TABLE": [
+            [
+              "3",
+              "3",
+              "0"
+            ]
+          ],
+          "COLUMN": [
+            [
+              "0",
+              "0",
+              "ID",
+              "LONG",
+              "4",
+              "false",
+              "0",
+              "0"
+            ],
+            [
+              "1",
+              "1",
+              "Score",
+              "LONG",
+              "4",
+              "false",
+              "0",
+              "4"
+            ],
+            [
+              "2",
+              "2",
+              "Score2",
+              "LONG",
+              "4",
+              "false",
+              "0",
+              "8"
+            ]
+          ],
+          "PROPERTY": [
+            [
+              "Score",
+              "DefaultValue",
+              "MEMO",
+              "true",
+              "0"
+            ],
+            [
+              "Score",
+              "Required",
+              "BOOLEAN",
+              "true",
+              "false"
+            ],
+            [
+              "Score2",
+              "DefaultValue",
+              "MEMO",
+              "true",
+              "0"
+            ],
+            [
+              "Score2",
+              "Required",
+              "BOOLEAN",
+              "true",
+              "false"
+            ]
+          ],
+          "GROUP": [
+            [
+              "1",
+              "Score",
+              "2"
+            ],
+            [
+              "1",
+              "Score2",
+              "2"
+            ],
+            [
+              "1",
+              "ID",
+              "0"
+            ]
+          ],
+          "INDEX": [
+            [
+              "PrimaryKey",
+              "true",
+              "true",
+              "false"
+            ]
+          ],
+          "KEY": [
+            [
+              "ID",
+              "0"
+            ]
+          ]
+        }
+      },
+      "mixed-text-history": {
+        "sdk_exit": 0,
+        "readonly_bytes_exact": true,
+        "observed": {
+          "OPTION": [
+            [
+              "Track Name AutoCorrect Info",
+              "0"
+            ],
+            [
+              "Perform Name AutoCorrect",
+              "0"
+            ]
+          ],
+          "TABLE": [
+            [
+              "4",
+              "4",
+              "0"
+            ]
+          ],
+          "COLUMN": [
+            [
+              "0",
+              "0",
+              "ID",
+              "LONG",
+              "4",
+              "false",
+              "0",
+              "0"
+            ],
+            [
+              "1",
+              "1",
+              "Label",
+              "TEXT",
+              "255",
+              "true",
+              "0",
+              "0"
+            ],
+            [
+              "2",
+              "2",
+              "AfterLabel",
+              "LONG",
+              "4",
+              "false",
+              "1",
+              "4"
+            ],
+            [
+              "3",
+              "3",
+              "OtherLabel",
+              "TEXT",
+              "255",
+              "true",
+              "1",
+              "0"
+            ]
+          ],
+          "PROPERTY": [
+            [
+              "Label",
+              "Required",
+              "BOOLEAN",
+              "true",
+              "false"
+            ],
+            [
+              "Label",
+              "AllowZeroLength",
+              "BOOLEAN",
+              "true",
+              "true"
+            ],
+            [
+              "AfterLabel",
+              "Required",
+              "BOOLEAN",
+              "true",
+              "false"
+            ],
+            [
+              "AfterLabel",
+              "DefaultValue",
+              "MEMO",
+              "true",
+              "0"
+            ],
+            [
+              "OtherLabel",
+              "Required",
+              "BOOLEAN",
+              "true",
+              "false"
+            ],
+            [
+              "OtherLabel",
+              "AllowZeroLength",
+              "BOOLEAN",
+              "true",
+              "true"
+            ]
+          ],
+          "GROUP": [
+            [
+              "1",
+              "Label",
+              "2"
+            ],
+            [
+              "1",
+              "AfterLabel",
+              "2"
+            ],
+            [
+              "1",
+              "OtherLabel",
+              "2"
+            ],
+            [
+              "1",
+              "ID",
+              "0"
+            ]
+          ],
+          "INDEX": [
+            [
+              "PrimaryKey",
+              "true",
+              "true",
+              "false"
+            ]
+          ],
+          "KEY": [
+            [
+              "ID",
+              "0"
+            ]
+          ]
+        }
+      }
+    },
+    "cases": [
+      {
+        "case": "number-history",
+        "source": "number-second.accdb",
+        "before_sha256": "6f9b095ddf3d724e34d5af98bea4e8ba88bc2b2bc70ade10814f85c27770c620",
+        "drop": "Score",
+        "variant": "td-only",
+        "after": "files/number-history-td-only.accdb",
+        "after_sha256": "ed4149ecab4ad9cc995728f13f45de8a7f484f959ccea5f253703bf0c750cf09",
+        "removed_native_number": 1,
+        "removed_stored_id": 1,
+        "before_active_count": 3,
+        "after_active_count": 2,
+        "max_columns": 3,
+        "variable_slots": 0,
+        "retained_index_prefix_exact": true,
+        "retained_definition_suffix_exact": true,
+        "surviving_names": [
+          "ID",
+          "Score2"
+        ],
+        "changed_pages": [
+          7
+        ],
+        "before_user_reference": 2561,
+        "after_user_reference": 2561,
+        "retired_rows_exact": true,
+        "database_body_exact": true,
+        "maps_and_data_index_exact": true,
+        "dictionary_policy": "unchanged; possibly unused keys, unqualified hypothesis",
+        "sdk_exit": 0,
+        "readonly_bytes_exact": true,
+        "observed": {
+          "OPTION": [
+            [
+              "Track Name AutoCorrect Info",
+              "0"
+            ],
+            [
+              "Perform Name AutoCorrect",
+              "0"
+            ]
+          ],
+          "TABLE": [
+            [
+              "2",
+              "3",
+              "0"
+            ]
+          ],
+          "COLUMN": [
+            [
+              "0",
+              "0",
+              "ID",
+              "LONG",
+              "4",
+              "false",
+              "0",
+              "0"
+            ],
+            [
+              "2",
+              "2",
+              "Score2",
+              "LONG",
+              "4",
+              "false",
+              "0",
+              "8"
+            ]
+          ],
+          "PROPERTY": [
+            [
+              "Score2",
+              "DefaultValue",
+              "MEMO",
+              "true",
+              "0"
+            ],
+            [
+              "Score2",
+              "Required",
+              "BOOLEAN",
+              "true",
+              "false"
+            ]
+          ],
+          "GROUP": [
+            [
+              "1",
+              "Score",
+              "2"
+            ],
+            [
+              "1",
+              "Score2",
+              "2"
+            ],
+            [
+              "1",
+              "ID",
+              "0"
+            ]
+          ],
+          "INDEX": [
+            [
+              "PrimaryKey",
+              "true",
+              "true",
+              "false"
+            ]
+          ],
+          "KEY": [
+            [
+              "ID",
+              "0"
+            ]
+          ]
+        },
+        "comparisons": {
+          "surviving_native_identity_storage_matches": true,
+          "surviving_policies_match": true,
+          "active_count_changed_highwater_retained": true,
+          "group_hypothesis_matches": true,
+          "index_and_key_unchanged": true,
+          "explicit_off_unchanged": true
+        },
+        "original_bytes_exact": true
+      },
+      {
+        "case": "number-history",
+        "source": "number-second.accdb",
+        "before_sha256": "6f9b095ddf3d724e34d5af98bea4e8ba88bc2b2bc70ade10814f85c27770c620",
+        "drop": "Score",
+        "variant": "append-live-group-removed",
+        "after": "files/number-history-append-live-group-removed.accdb",
+        "after_sha256": "6c08831dfe4d305064837d93a8d1942a1a87b691ca80e4834a130c202c72923b",
+        "removed_native_number": 1,
+        "removed_stored_id": 1,
+        "before_active_count": 3,
+        "after_active_count": 2,
+        "max_columns": 3,
+        "variable_slots": 0,
+        "retained_index_prefix_exact": true,
+        "retained_definition_suffix_exact": true,
+        "surviving_names": [
+          "ID",
+          "Score2"
+        ],
+        "changed_pages": [
+          4,
+          7,
+          10
+        ],
+        "before_user_reference": 2561,
+        "after_user_reference": 2563,
+        "retired_rows_exact": true,
+        "database_body_exact": true,
+        "maps_and_data_index_exact": true,
+        "dictionary_policy": "unchanged; possibly unused keys, unqualified hypothesis",
+        "sdk_exit": 0,
+        "readonly_bytes_exact": true,
+        "observed": {
+          "OPTION": [
+            [
+              "Track Name AutoCorrect Info",
+              "0"
+            ],
+            [
+              "Perform Name AutoCorrect",
+              "0"
+            ]
+          ],
+          "TABLE": [
+            [
+              "2",
+              "3",
+              "0"
+            ]
+          ],
+          "COLUMN": [
+            [
+              "0",
+              "0",
+              "ID",
+              "LONG",
+              "4",
+              "false",
+              "0",
+              "0"
+            ],
+            [
+              "2",
+              "2",
+              "Score2",
+              "LONG",
+              "4",
+              "false",
+              "0",
+              "8"
+            ]
+          ],
+          "PROPERTY": [
+            [
+              "Score2",
+              "DefaultValue",
+              "MEMO",
+              "true",
+              "0"
+            ],
+            [
+              "Score2",
+              "Required",
+              "BOOLEAN",
+              "true",
+              "false"
+            ]
+          ],
+          "GROUP": [
+            [
+              "1",
+              "Score2",
+              "2"
+            ],
+            [
+              "1",
+              "ID",
+              "0"
+            ]
+          ],
+          "INDEX": [
+            [
+              "PrimaryKey",
+              "true",
+              "true",
+              "false"
+            ]
+          ],
+          "KEY": [
+            [
+              "ID",
+              "0"
+            ]
+          ]
+        },
+        "comparisons": {
+          "surviving_native_identity_storage_matches": true,
+          "surviving_policies_match": true,
+          "active_count_changed_highwater_retained": true,
+          "group_hypothesis_matches": true,
+          "index_and_key_unchanged": true,
+          "explicit_off_unchanged": true
+        },
+        "original_bytes_exact": true
+      },
+      {
+        "case": "mixed-text-history",
+        "source": "text-number-text.accdb",
+        "before_sha256": "c28d3c1bf1de4e75f894ac80ae332aa2a5b4b8c3c9111700d989222b8d6267c3",
+        "drop": "Label",
+        "variant": "td-only",
+        "after": "files/mixed-text-history-td-only.accdb",
+        "after_sha256": "cca0263c25b7025771866666ff8631099a85b82c08003eb5c140ba6f21b44932",
+        "removed_native_number": 1,
+        "removed_stored_id": 1,
+        "before_active_count": 4,
+        "after_active_count": 3,
+        "max_columns": 4,
+        "variable_slots": 2,
+        "retained_index_prefix_exact": true,
+        "retained_definition_suffix_exact": true,
+        "surviving_names": [
+          "ID",
+          "AfterLabel",
+          "OtherLabel"
+        ],
+        "changed_pages": [
+          7
+        ],
+        "before_user_reference": 2562,
+        "after_user_reference": 2562,
+        "retired_rows_exact": true,
+        "database_body_exact": true,
+        "maps_and_data_index_exact": true,
+        "dictionary_policy": "unchanged; possibly unused keys, unqualified hypothesis",
+        "sdk_exit": 0,
+        "readonly_bytes_exact": true,
+        "observed": {
+          "OPTION": [
+            [
+              "Track Name AutoCorrect Info",
+              "0"
+            ],
+            [
+              "Perform Name AutoCorrect",
+              "0"
+            ]
+          ],
+          "TABLE": [
+            [
+              "3",
+              "4",
+              "0"
+            ]
+          ],
+          "COLUMN": [
+            [
+              "0",
+              "0",
+              "ID",
+              "LONG",
+              "4",
+              "false",
+              "0",
+              "0"
+            ],
+            [
+              "2",
+              "2",
+              "AfterLabel",
+              "LONG",
+              "4",
+              "false",
+              "1",
+              "4"
+            ],
+            [
+              "3",
+              "3",
+              "OtherLabel",
+              "TEXT",
+              "255",
+              "true",
+              "1",
+              "0"
+            ]
+          ],
+          "PROPERTY": [
+            [
+              "AfterLabel",
+              "Required",
+              "BOOLEAN",
+              "true",
+              "false"
+            ],
+            [
+              "AfterLabel",
+              "DefaultValue",
+              "MEMO",
+              "true",
+              "0"
+            ],
+            [
+              "OtherLabel",
+              "Required",
+              "BOOLEAN",
+              "true",
+              "false"
+            ],
+            [
+              "OtherLabel",
+              "AllowZeroLength",
+              "BOOLEAN",
+              "true",
+              "true"
+            ]
+          ],
+          "GROUP": [
+            [
+              "1",
+              "Label",
+              "2"
+            ],
+            [
+              "1",
+              "AfterLabel",
+              "2"
+            ],
+            [
+              "1",
+              "OtherLabel",
+              "2"
+            ],
+            [
+              "1",
+              "ID",
+              "0"
+            ]
+          ],
+          "INDEX": [
+            [
+              "PrimaryKey",
+              "true",
+              "true",
+              "false"
+            ]
+          ],
+          "KEY": [
+            [
+              "ID",
+              "0"
+            ]
+          ]
+        },
+        "comparisons": {
+          "surviving_native_identity_storage_matches": true,
+          "surviving_policies_match": true,
+          "active_count_changed_highwater_retained": true,
+          "group_hypothesis_matches": true,
+          "index_and_key_unchanged": true,
+          "explicit_off_unchanged": true
+        },
+        "original_bytes_exact": true
+      },
+      {
+        "case": "mixed-text-history",
+        "source": "text-number-text.accdb",
+        "before_sha256": "c28d3c1bf1de4e75f894ac80ae332aa2a5b4b8c3c9111700d989222b8d6267c3",
+        "drop": "Label",
+        "variant": "append-live-group-removed",
+        "after": "files/mixed-text-history-append-live-group-removed.accdb",
+        "after_sha256": "d9432f5edadc0bfcd60551f747be5e6ac630585f5cfa78fffdced6f7e875b935",
+        "removed_native_number": 1,
+        "removed_stored_id": 1,
+        "before_active_count": 4,
+        "after_active_count": 3,
+        "max_columns": 4,
+        "variable_slots": 2,
+        "retained_index_prefix_exact": true,
+        "retained_definition_suffix_exact": true,
+        "surviving_names": [
+          "ID",
+          "AfterLabel",
+          "OtherLabel"
+        ],
+        "changed_pages": [
+          4,
+          7,
+          10
+        ],
+        "before_user_reference": 2562,
+        "after_user_reference": 2564,
+        "retired_rows_exact": true,
+        "database_body_exact": true,
+        "maps_and_data_index_exact": true,
+        "dictionary_policy": "unchanged; possibly unused keys, unqualified hypothesis",
+        "sdk_exit": 0,
+        "readonly_bytes_exact": true,
+        "observed": {
+          "OPTION": [
+            [
+              "Track Name AutoCorrect Info",
+              "0"
+            ],
+            [
+              "Perform Name AutoCorrect",
+              "0"
+            ]
+          ],
+          "TABLE": [
+            [
+              "3",
+              "4",
+              "0"
+            ]
+          ],
+          "COLUMN": [
+            [
+              "0",
+              "0",
+              "ID",
+              "LONG",
+              "4",
+              "false",
+              "0",
+              "0"
+            ],
+            [
+              "2",
+              "2",
+              "AfterLabel",
+              "LONG",
+              "4",
+              "false",
+              "1",
+              "4"
+            ],
+            [
+              "3",
+              "3",
+              "OtherLabel",
+              "TEXT",
+              "255",
+              "true",
+              "1",
+              "0"
+            ]
+          ],
+          "PROPERTY": [
+            [
+              "AfterLabel",
+              "Required",
+              "BOOLEAN",
+              "true",
+              "false"
+            ],
+            [
+              "AfterLabel",
+              "DefaultValue",
+              "MEMO",
+              "true",
+              "0"
+            ],
+            [
+              "OtherLabel",
+              "Required",
+              "BOOLEAN",
+              "true",
+              "false"
+            ],
+            [
+              "OtherLabel",
+              "AllowZeroLength",
+              "BOOLEAN",
+              "true",
+              "true"
+            ]
+          ],
+          "GROUP": [
+            [
+              "1",
+              "AfterLabel",
+              "2"
+            ],
+            [
+              "1",
+              "OtherLabel",
+              "2"
+            ],
+            [
+              "1",
+              "ID",
+              "0"
+            ]
+          ],
+          "INDEX": [
+            [
+              "PrimaryKey",
+              "true",
+              "true",
+              "false"
+            ]
+          ],
+          "KEY": [
+            [
+              "ID",
+              "0"
+            ]
+          ]
+        },
+        "comparisons": {
+          "surviving_native_identity_storage_matches": true,
+          "surviving_policies_match": true,
+          "active_count_changed_highwater_retained": true,
+          "group_hypothesis_matches": true,
+          "index_and_key_unchanged": true,
+          "explicit_off_unchanged": true
+        },
+        "original_bytes_exact": true
+      }
+    ]
+  },
+  "independent_raw_audit": [
+    {
+      "case": "number-history",
+      "variant": "td-only",
+      "raw_live_groups": [
+        "Score",
+        "Score2"
+      ],
+      "raw_dictionary": [
+        "DefaultValue",
+        "Required"
+      ],
+      "unused_dictionary_keys": [],
+      "selected_orphan_live_group": true,
+      "all_getter_comparisons_true": true,
+      "source_and_frozen_after_hashes_exact": true
+    },
+    {
+      "case": "number-history",
+      "variant": "append-live-group-removed",
+      "raw_live_groups": [
+        "Score2"
+      ],
+      "raw_dictionary": [
+        "DefaultValue",
+        "Required"
+      ],
+      "unused_dictionary_keys": [],
+      "selected_orphan_live_group": false,
+      "all_getter_comparisons_true": true,
+      "source_and_frozen_after_hashes_exact": true
+    },
+    {
+      "case": "mixed-text-history",
+      "variant": "td-only",
+      "raw_live_groups": [
+        "Label",
+        "AfterLabel",
+        "OtherLabel"
+      ],
+      "raw_dictionary": [
+        "Required",
+        "AllowZeroLength",
+        "DefaultValue"
+      ],
+      "unused_dictionary_keys": [],
+      "selected_orphan_live_group": true,
+      "all_getter_comparisons_true": true,
+      "source_and_frozen_after_hashes_exact": true
+    },
+    {
+      "case": "mixed-text-history",
+      "variant": "append-live-group-removed",
+      "raw_live_groups": [
+        "AfterLabel",
+        "OtherLabel"
+      ],
+      "raw_dictionary": [
+        "Required",
+        "AllowZeroLength",
+        "DefaultValue"
+      ],
+      "unused_dictionary_keys": [],
+      "selected_orphan_live_group": false,
+      "all_getter_comparisons_true": true,
+      "source_and_frozen_after_hashes_exact": true
+    }
+  ],
+  "maintained_recipe_hashes": {
+    "model.py": "0d2d4213fe8c4feac79dd82888e9fa2b38b448eb7aeb8400734d045728880fc8",
+    "prepare.py": "788a1c520d62ace32fc43c38990660d9db20a7efda850aa4c1474ce63659aaeb",
+    "observe.py": "14effdf9431fb998b124db20e6888fe7e7cb74f356b52c9ca7b5e07132e08daf",
+    "FieldDropObserver.java": "bc6fb64c455d6420412463132ec9be8291dbded709a382efcb30d5d8ef7ab5d5",
+    "source_manifest.json": "35e4d71a210179cddc60e5a96e96592905aa5c7aa4edf1d7ffb31306a8fa7fdc"
+  }
+}
