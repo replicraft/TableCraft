@@ -7,6 +7,7 @@ use std::path::PathBuf;
 use tablecraft_runtime::SaveOutcome;
 use tablecraft_testkit::fixtures::access::{canonical_creation, canonical_native17_creation};
 
+mod number_column;
 mod retry;
 
 fn opened() -> (
