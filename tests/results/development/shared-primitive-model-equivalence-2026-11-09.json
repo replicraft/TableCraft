@@ -1,0 +1,562 @@
+{
+  "scope": "Fresh independent finite-weight/map/metadata-tree helper equivalence; no native re-execution",
+  "groups": [
+    2,
+    3,
+    4,
+    5
+  ],
+  "extractions": [
+    {
+      "group": 2,
+      "function": "expected_encodings",
+      "paths": [
+        "tests/access/indexes/variable_index_split_originals/source_weights.py",
+        "tests/access/indexes/variable_encoded_split_sources/model.py",
+        "tests/access/indexes/variable_encoded_split_sources/action_model.py",
+        "tests/access/indexes/ordinary_hint_growth_sources/model.py",
+        "tests/access/indexes/ordinary_hint_growth_references/action_model.py"
+      ],
+      "helper": "tests/access/indexes/shared_keys/weights.py",
+      "body_ast_sha256": "8454ed4e93a7128517a9c71dbba2fde58982b7a7febb7868c74a80a4c10e7efb",
+      "bindings": [
+        "truncate_key"
+      ]
+    },
+    {
+      "group": 3,
+      "function": "cell",
+      "paths": [
+        "tests/access/indexes/variable_index_split_originals/candidate_model.py",
+        "tests/access/indexes/ordinary_hint_growth_candidates/candidate_model.py"
+      ],
+      "helper": "tests/access/storage/shared_maps/cells.py",
+      "body_ast_sha256": "40318466413ea751e6186d31aa0460593b2ca2987caa02534cf199eee6ed225a",
+      "bindings": {
+        "PAGE": 4096
+      },
+      "facade": "Direct dependency import; no forwarding wrapper for policy-free primitives."
+    },
+    {
+      "group": 4,
+      "function": "allocation",
+      "paths": [
+        "tests/access/indexes/variable_index_split_originals/candidate_model.py",
+        "tests/access/indexes/ordinary_hint_growth_candidates/candidate_model.py"
+      ],
+      "helper": "tests/access/storage/shared_maps/cells.py",
+      "body_ast_sha256": "686635bea0eec4240ccd924db1b3d7932a5a213238cf1fea3454dc7b55733b36",
+      "bindings": {
+        "PAGE": 4096
+      },
+      "facade": "Direct dependency import; no forwarding wrapper for policy-free primitives."
+    },
+    {
+      "group": 5,
+      "function": "tree",
+      "paths": [
+        "tests/access/indexes/variable_encoded_split_sources/model.py",
+        "tests/access/indexes/variable_encoded_split_sources/action_model.py",
+        "tests/access/indexes/encoded_index_split_sources/model.py",
+        "tests/access/indexes/encoded_index_split_sources/action_model.py",
+        "tests/access/indexes/ordinary_hint_growth_sources/model.py",
+        "tests/access/indexes/ordinary_hint_growth_references/action_model.py"
+      ],
+      "helper": "tests/access/indexes/shared_trees/metadata.py",
+      "body_ast_sha256": "612aadc65d63ff6e69d16f7253b381ddb6e6ce3fb57bf2daa73c3863602f9e55",
+      "bindings": {},
+      "facade": "Direct dependency import; no forwarding wrapper for policy-free primitives."
+    }
+  ],
+  "observations": [
+    {
+      "group": 2,
+      "module": "tests/access/indexes/variable_index_split_originals/source_weights.py",
+      "table": "BinaryOne",
+      "descending": false,
+      "old_new_equal": true,
+      "wire_sha256": [
+        "a78101b9614e64820eceded98930dbbb40cd831204f665d81c1c1bb0b98b88ac",
+        "771d35c41b7192c171afc897c1b8914295a63439fb0ee7c9572851c5611a6928"
+      ]
+    },
+    {
+      "group": 2,
+      "module": "tests/access/indexes/variable_index_split_originals/source_weights.py",
+      "table": "BinaryOne",
+      "descending": true,
+      "old_new_equal": true,
+      "wire_sha256": [
+        "046fe5e30adfa28db4833fb0d5adc2811f2a93f1b06c2c8fd8e2004e573a7de1",
+        "efe845cca7ad36952f117a73d3097cb01b4ded6ddc8702fde7a230e3373b6f92"
+      ]
+    },
+    {
+      "group": 2,
+      "module": "tests/access/indexes/variable_index_split_originals/source_weights.py",
+      "table": "TextLegacy",
+      "descending": false,
+      "old_new_equal": true,
+      "wire_sha256": [
+        "6bd000a95be678929175717d6f0ede8eeb601ac3672cdc57fcfd4c2ba8369b55",
+        "d9f869e76ba1c028e187c7bcb7b28a613264d74cf1935a679f3dbaf6cc339155"
+      ]
+    },
+    {
+      "group": 2,
+      "module": "tests/access/indexes/variable_index_split_originals/source_weights.py",
+      "table": "TextLegacy",
+      "descending": true,
+      "old_new_equal": true,
+      "wire_sha256": [
+        "e7672640df375a920d0738374b00a6d9aa45c50b8f2368ad5265c003b7302b09",
+        "9b07c487d3483bc317250a051dda9549c6cc49382c40a2fea5a8cc6f2af55f4b"
+      ]
+    },
+    {
+      "group": 2,
+      "module": "tests/access/indexes/variable_index_split_originals/source_weights.py",
+      "table": "TextModern",
+      "descending": false,
+      "old_new_equal": true,
+      "wire_sha256": [
+        "435e8188c34cb3fbe0ca8236797611a7e646abc0967857fe196a2aab047c88e7",
+        "2bff92d33795b1a4ca676e6ca8df94d39b328a1131aafd7a8d2165eb1eac446a"
+      ]
+    },
+    {
+      "group": 2,
+      "module": "tests/access/indexes/variable_index_split_originals/source_weights.py",
+      "table": "TextModern",
+      "descending": true,
+      "old_new_equal": true,
+      "wire_sha256": [
+        "2a7d49357384e6de8c8167342488c74cc03a444cc6ae79a3c1d8ff053498aa58",
+        "e244d4bbf9b6f2cf6ebe84ae0a36508e61a918b70a2ceda0fac9fe87d045f5d8"
+      ]
+    },
+    {
+      "group": 2,
+      "module": "tests/access/indexes/variable_encoded_split_sources/model.py",
+      "table": "BinaryOne",
+      "descending": false,
+      "old_new_equal": true,
+      "wire_sha256": [
+        "a78101b9614e64820eceded98930dbbb40cd831204f665d81c1c1bb0b98b88ac",
+        "771d35c41b7192c171afc897c1b8914295a63439fb0ee7c9572851c5611a6928"
+      ]
+    },
+    {
+      "group": 2,
+      "module": "tests/access/indexes/variable_encoded_split_sources/model.py",
+      "table": "BinaryOne",
+      "descending": true,
+      "old_new_equal": true,
+      "wire_sha256": [
+        "046fe5e30adfa28db4833fb0d5adc2811f2a93f1b06c2c8fd8e2004e573a7de1",
+        "efe845cca7ad36952f117a73d3097cb01b4ded6ddc8702fde7a230e3373b6f92"
+      ]
+    },
+    {
+      "group": 2,
+      "module": "tests/access/indexes/variable_encoded_split_sources/model.py",
+      "table": "TextLegacy",
+      "descending": false,
+      "old_new_equal": true,
+      "wire_sha256": [
+        "6bd000a95be678929175717d6f0ede8eeb601ac3672cdc57fcfd4c2ba8369b55",
+        "d9f869e76ba1c028e187c7bcb7b28a613264d74cf1935a679f3dbaf6cc339155"
+      ]
+    },
+    {
+      "group": 2,
+      "module": "tests/access/indexes/variable_encoded_split_sources/model.py",
+      "table": "TextLegacy",
+      "descending": true,
+      "old_new_equal": true,
+      "wire_sha256": [
+        "e7672640df375a920d0738374b00a6d9aa45c50b8f2368ad5265c003b7302b09",
+        "9b07c487d3483bc317250a051dda9549c6cc49382c40a2fea5a8cc6f2af55f4b"
+      ]
+    },
+    {
+      "group": 2,
+      "module": "tests/access/indexes/variable_encoded_split_sources/model.py",
+      "table": "TextModern",
+      "descending": false,
+      "old_new_equal": true,
+      "wire_sha256": [
+        "435e8188c34cb3fbe0ca8236797611a7e646abc0967857fe196a2aab047c88e7",
+        "2bff92d33795b1a4ca676e6ca8df94d39b328a1131aafd7a8d2165eb1eac446a"
+      ]
+    },
+    {
+      "group": 2,
+      "module": "tests/access/indexes/variable_encoded_split_sources/model.py",
+      "table": "TextModern",
+      "descending": true,
+      "old_new_equal": true,
+      "wire_sha256": [
+        "2a7d49357384e6de8c8167342488c74cc03a444cc6ae79a3c1d8ff053498aa58",
+        "e244d4bbf9b6f2cf6ebe84ae0a36508e61a918b70a2ceda0fac9fe87d045f5d8"
+      ]
+    },
+    {
+      "group": 2,
+      "module": "tests/access/indexes/variable_encoded_split_sources/action_model.py",
+      "table": "BinaryOne",
+      "descending": false,
+      "old_new_equal": true,
+      "wire_sha256": [
+        "a78101b9614e64820eceded98930dbbb40cd831204f665d81c1c1bb0b98b88ac",
+        "771d35c41b7192c171afc897c1b8914295a63439fb0ee7c9572851c5611a6928"
+      ]
+    },
+    {
+      "group": 2,
+      "module": "tests/access/indexes/variable_encoded_split_sources/action_model.py",
+      "table": "BinaryOne",
+      "descending": true,
+      "old_new_equal": true,
+      "wire_sha256": [
+        "046fe5e30adfa28db4833fb0d5adc2811f2a93f1b06c2c8fd8e2004e573a7de1",
+        "efe845cca7ad36952f117a73d3097cb01b4ded6ddc8702fde7a230e3373b6f92"
+      ]
+    },
+    {
+      "group": 2,
+      "module": "tests/access/indexes/variable_encoded_split_sources/action_model.py",
+      "table": "TextLegacy",
+      "descending": false,
+      "old_new_equal": true,
+      "wire_sha256": [
+        "6bd000a95be678929175717d6f0ede8eeb601ac3672cdc57fcfd4c2ba8369b55",
+        "d9f869e76ba1c028e187c7bcb7b28a613264d74cf1935a679f3dbaf6cc339155"
+      ]
+    },
+    {
+      "group": 2,
+      "module": "tests/access/indexes/variable_encoded_split_sources/action_model.py",
+      "table": "TextLegacy",
+      "descending": true,
+      "old_new_equal": true,
+      "wire_sha256": [
+        "e7672640df375a920d0738374b00a6d9aa45c50b8f2368ad5265c003b7302b09",
+        "9b07c487d3483bc317250a051dda9549c6cc49382c40a2fea5a8cc6f2af55f4b"
+      ]
+    },
+    {
+      "group": 2,
+      "module": "tests/access/indexes/variable_encoded_split_sources/action_model.py",
+      "table": "TextModern",
+      "descending": false,
+      "old_new_equal": true,
+      "wire_sha256": [
+        "435e8188c34cb3fbe0ca8236797611a7e646abc0967857fe196a2aab047c88e7",
+        "2bff92d33795b1a4ca676e6ca8df94d39b328a1131aafd7a8d2165eb1eac446a"
+      ]
+    },
+    {
+      "group": 2,
+      "module": "tests/access/indexes/variable_encoded_split_sources/action_model.py",
+      "table": "TextModern",
+      "descending": true,
+      "old_new_equal": true,
+      "wire_sha256": [
+        "2a7d49357384e6de8c8167342488c74cc03a444cc6ae79a3c1d8ff053498aa58",
+        "e244d4bbf9b6f2cf6ebe84ae0a36508e61a918b70a2ceda0fac9fe87d045f5d8"
+      ]
+    },
+    {
+      "group": 2,
+      "module": "tests/access/indexes/ordinary_hint_growth_sources/model.py",
+      "table": "BinaryOne",
+      "descending": false,
+      "old_new_equal": true,
+      "wire_sha256": [
+        "a78101b9614e64820eceded98930dbbb40cd831204f665d81c1c1bb0b98b88ac",
+        "771d35c41b7192c171afc897c1b8914295a63439fb0ee7c9572851c5611a6928"
+      ]
+    },
+    {
+      "group": 2,
+      "module": "tests/access/indexes/ordinary_hint_growth_sources/model.py",
+      "table": "BinaryOne",
+      "descending": true,
+      "old_new_equal": true,
+      "wire_sha256": [
+        "046fe5e30adfa28db4833fb0d5adc2811f2a93f1b06c2c8fd8e2004e573a7de1",
+        "efe845cca7ad36952f117a73d3097cb01b4ded6ddc8702fde7a230e3373b6f92"
+      ]
+    },
+    {
+      "group": 2,
+      "module": "tests/access/indexes/ordinary_hint_growth_sources/model.py",
+      "table": "TextLegacy",
+      "descending": false,
+      "old_new_equal": true,
+      "wire_sha256": [
+        "6bd000a95be678929175717d6f0ede8eeb601ac3672cdc57fcfd4c2ba8369b55",
+        "d9f869e76ba1c028e187c7bcb7b28a613264d74cf1935a679f3dbaf6cc339155"
+      ]
+    },
+    {
+      "group": 2,
+      "module": "tests/access/indexes/ordinary_hint_growth_sources/model.py",
+      "table": "TextLegacy",
+      "descending": true,
+      "old_new_equal": true,
+      "wire_sha256": [
+        "e7672640df375a920d0738374b00a6d9aa45c50b8f2368ad5265c003b7302b09",
+        "9b07c487d3483bc317250a051dda9549c6cc49382c40a2fea5a8cc6f2af55f4b"
+      ]
+    },
+    {
+      "group": 2,
+      "module": "tests/access/indexes/ordinary_hint_growth_sources/model.py",
+      "table": "TextModern",
+      "descending": false,
+      "old_new_equal": true,
+      "wire_sha256": [
+        "435e8188c34cb3fbe0ca8236797611a7e646abc0967857fe196a2aab047c88e7",
+        "2bff92d33795b1a4ca676e6ca8df94d39b328a1131aafd7a8d2165eb1eac446a"
+      ]
+    },
+    {
+      "group": 2,
+      "module": "tests/access/indexes/ordinary_hint_growth_sources/model.py",
+      "table": "TextModern",
+      "descending": true,
+      "old_new_equal": true,
+      "wire_sha256": [
+        "2a7d49357384e6de8c8167342488c74cc03a444cc6ae79a3c1d8ff053498aa58",
+        "e244d4bbf9b6f2cf6ebe84ae0a36508e61a918b70a2ceda0fac9fe87d045f5d8"
+      ]
+    },
+    {
+      "group": 2,
+      "module": "tests/access/indexes/ordinary_hint_growth_references/action_model.py",
+      "table": "BinaryOne",
+      "descending": false,
+      "old_new_equal": true,
+      "wire_sha256": [
+        "a78101b9614e64820eceded98930dbbb40cd831204f665d81c1c1bb0b98b88ac",
+        "771d35c41b7192c171afc897c1b8914295a63439fb0ee7c9572851c5611a6928"
+      ]
+    },
+    {
+      "group": 2,
+      "module": "tests/access/indexes/ordinary_hint_growth_references/action_model.py",
+      "table": "BinaryOne",
+      "descending": true,
+      "old_new_equal": true,
+      "wire_sha256": [
+        "046fe5e30adfa28db4833fb0d5adc2811f2a93f1b06c2c8fd8e2004e573a7de1",
+        "efe845cca7ad36952f117a73d3097cb01b4ded6ddc8702fde7a230e3373b6f92"
+      ]
+    },
+    {
+      "group": 2,
+      "module": "tests/access/indexes/ordinary_hint_growth_references/action_model.py",
+      "table": "TextLegacy",
+      "descending": false,
+      "old_new_equal": true,
+      "wire_sha256": [
+        "6bd000a95be678929175717d6f0ede8eeb601ac3672cdc57fcfd4c2ba8369b55",
+        "d9f869e76ba1c028e187c7bcb7b28a613264d74cf1935a679f3dbaf6cc339155"
+      ]
+    },
+    {
+      "group": 2,
+      "module": "tests/access/indexes/ordinary_hint_growth_references/action_model.py",
+      "table": "TextLegacy",
+      "descending": true,
+      "old_new_equal": true,
+      "wire_sha256": [
+        "e7672640df375a920d0738374b00a6d9aa45c50b8f2368ad5265c003b7302b09",
+        "9b07c487d3483bc317250a051dda9549c6cc49382c40a2fea5a8cc6f2af55f4b"
+      ]
+    },
+    {
+      "group": 2,
+      "module": "tests/access/indexes/ordinary_hint_growth_references/action_model.py",
+      "table": "TextModern",
+      "descending": false,
+      "old_new_equal": true,
+      "wire_sha256": [
+        "435e8188c34cb3fbe0ca8236797611a7e646abc0967857fe196a2aab047c88e7",
+        "2bff92d33795b1a4ca676e6ca8df94d39b328a1131aafd7a8d2165eb1eac446a"
+      ]
+    },
+    {
+      "group": 2,
+      "module": "tests/access/indexes/ordinary_hint_growth_references/action_model.py",
+      "table": "TextModern",
+      "descending": true,
+      "old_new_equal": true,
+      "wire_sha256": [
+        "2a7d49357384e6de8c8167342488c74cc03a444cc6ae79a3c1d8ff053498aa58",
+        "e244d4bbf9b6f2cf6ebe84ae0a36508e61a918b70a2ceda0fac9fe87d045f5d8"
+      ]
+    },
+    {
+      "group": [
+        3,
+        4
+      ],
+      "module": "tests/access/indexes/variable_index_split_originals/candidate_model.py",
+      "case": "inline",
+      "members": [
+        64,
+        71
+      ],
+      "old_new_equal": true
+    },
+    {
+      "group": [
+        3,
+        4
+      ],
+      "module": "tests/access/indexes/variable_index_split_originals/candidate_model.py",
+      "case": "indirect",
+      "members": [
+        0,
+        7
+      ],
+      "old_new_equal": true
+    },
+    {
+      "group": [
+        3,
+        4
+      ],
+      "module": "tests/access/indexes/ordinary_hint_growth_candidates/candidate_model.py",
+      "case": "inline",
+      "members": [
+        64,
+        71
+      ],
+      "old_new_equal": true
+    },
+    {
+      "group": [
+        3,
+        4
+      ],
+      "module": "tests/access/indexes/ordinary_hint_growth_candidates/candidate_model.py",
+      "case": "indirect",
+      "members": [
+        0,
+        7
+      ],
+      "old_new_equal": true
+    },
+    {
+      "group": 5,
+      "module": "tests/access/indexes/variable_encoded_split_sources/model.py",
+      "retained_tree_cases": 36,
+      "old_new_equal": true
+    },
+    {
+      "group": 5,
+      "module": "tests/access/indexes/variable_encoded_split_sources/action_model.py",
+      "retained_tree_cases": 36,
+      "old_new_equal": true
+    },
+    {
+      "group": 5,
+      "module": "tests/access/indexes/encoded_index_split_sources/model.py",
+      "retained_tree_cases": 36,
+      "old_new_equal": true
+    },
+    {
+      "group": 5,
+      "module": "tests/access/indexes/encoded_index_split_sources/action_model.py",
+      "retained_tree_cases": 36,
+      "old_new_equal": true
+    },
+    {
+      "group": 5,
+      "module": "tests/access/indexes/ordinary_hint_growth_sources/model.py",
+      "retained_tree_cases": 36,
+      "old_new_equal": true
+    },
+    {
+      "group": 5,
+      "module": "tests/access/indexes/ordinary_hint_growth_references/action_model.py",
+      "retained_tree_cases": 36,
+      "old_new_equal": true
+    }
+  ],
+  "finite_weight_cases": 30,
+  "map_family_cases": 4,
+  "retained_map_calls": 72,
+  "distinct_retained_tree_cases": 36,
+  "distinct_weight_inputs": 6,
+  "metadata_tree_calls": 216,
+  "fixture_processes": 0,
+  "native_access_execution": false,
+  "production_encoder_used": false,
+  "current_maintained_source_pins": [
+    {
+      "path": "tests/access/indexes/encoded_index_split_sources/action_model.py",
+      "bytes": 15863,
+      "sha256": "2c8a1f8d68056b39c2e574a77a2093f3efbc054b66ec7a77c813498caecc223d"
+    },
+    {
+      "path": "tests/access/indexes/encoded_index_split_sources/model.py",
+      "bytes": 15817,
+      "sha256": "a8d901e4514f82335ac88558b08ad4337284bc4fc6fa071eecabae961ce2b07c"
+    },
+    {
+      "path": "tests/access/indexes/ordinary_hint_growth_candidates/candidate_model.py",
+      "bytes": 11243,
+      "sha256": "af8dfb4ff1d6f120973bc51fbca075a7ac501bcd1c9cbf8e98ff075fda2b29cc"
+    },
+    {
+      "path": "tests/access/indexes/ordinary_hint_growth_references/action_model.py",
+      "bytes": 24603,
+      "sha256": "5ff82f1cd55d1571276ae962f0989690c01a53f93138d24c12aadc487d9063da"
+    },
+    {
+      "path": "tests/access/indexes/ordinary_hint_growth_sources/model.py",
+      "bytes": 21868,
+      "sha256": "fdaaae19ceae41864cfb1bfe70ac759d058495ba24272897ac5a8b9b5de00e79"
+    },
+    {
+      "path": "tests/access/indexes/shared_keys/weights.py",
+      "bytes": 1440,
+      "sha256": "d8c2372fbaa87078dacec013af3fa67b6da2bafdbf67dd61beec218f1479d481"
+    },
+    {
+      "path": "tests/access/indexes/shared_trees/metadata.py",
+      "bytes": 1271,
+      "sha256": "373c0f5955599cd7da832e3b5adfd70a49dd6e9583420fe2346812c3bf850b60"
+    },
+    {
+      "path": "tests/access/indexes/variable_encoded_split_sources/action_model.py",
+      "bytes": 22607,
+      "sha256": "dab5faf547e724f50a050080b13cc3a563334b93d3c523c77305848110578175"
+    },
+    {
+      "path": "tests/access/indexes/variable_encoded_split_sources/model.py",
+      "bytes": 19892,
+      "sha256": "85fa11df312ea9bc1df2d7f8a7598685e49d68b5baa1fbd9f32a292ae8042ed7"
+    },
+    {
+      "path": "tests/access/indexes/variable_index_split_originals/candidate_model.py",
+      "bytes": 11955,
+      "sha256": "e323826caf7051332503fe81c9dbfb2f27e28c7ac40b82de3bbdb5792f37b814"
+    },
+    {
+      "path": "tests/access/indexes/variable_index_split_originals/source_weights.py",
+      "bytes": 877,
+      "sha256": "931c5cad1fb386fef598d12abe36186551d7dd0c53e9a5420c9e5057cef9d58b"
+    },
+    {
+      "path": "tests/access/storage/shared_maps/cells.py",
+      "bytes": 1966,
+      "sha256": "7063be93194f4ffa906a952d2a998fc36216eaa074d7a0b8d8f2eb2572381a59"
+    }
+  ]
+}

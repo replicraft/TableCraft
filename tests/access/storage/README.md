@@ -14,4 +14,6 @@
 
 - [shared_long_values](shared_long_values/)
 
+- [shared_maps](shared_maps/)
+
 Run Python entry points through [`tests/run.py`](../../run.py).

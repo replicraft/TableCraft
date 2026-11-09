@@ -36,4 +36,8 @@
 
 - [shared_split](shared_split/)
 
+- [shared_keys](shared_keys/)
+
+- [shared_trees](shared_trees/)
+
 Run Python entry points through [`tests/run.py`](../../run.py).

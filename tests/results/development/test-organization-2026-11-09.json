@@ -626,6 +626,26 @@
     "22": {
       "status": "Preserved independent expected-transition oracles",
       "reason": "Public-reference and native-transition proofs keep independent ordered write/refusal/warning expectations; sharing this semantic helper would correlate their expected results."
+    },
+    "2": {
+      "status": "Shared live implementation extracted",
+      "owner": "tests/access/indexes/shared_keys/weights.py",
+      "evidence": "tests/results/development/shared-primitive-model-equivalence-2026-11-09.json"
+    },
+    "3": {
+      "status": "Shared live implementation extracted",
+      "owner": "tests/access/storage/shared_maps/cells.py",
+      "evidence": "tests/results/development/shared-primitive-model-equivalence-2026-11-09.json"
+    },
+    "4": {
+      "status": "Shared live implementation extracted",
+      "owner": "tests/access/storage/shared_maps/cells.py",
+      "evidence": "tests/results/development/shared-primitive-model-equivalence-2026-11-09.json"
+    },
+    "5": {
+      "status": "Shared live implementation extracted",
+      "owner": "tests/access/indexes/shared_trees/metadata.py",
+      "evidence": "tests/results/development/shared-primitive-model-equivalence-2026-11-09.json"
     }
   }
 }

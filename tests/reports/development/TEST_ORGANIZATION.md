@@ -107,3 +107,20 @@ match their pinned original source/reference/getter analysis. See the
   as the public-reference proof. Their separate ownership is intentional even
   where the present algorithms agree. Common transport primitives may be shared;
   expected-transition authority remains separate.
+
+Groups 2–5 now have live shared owners: finite independent key weights in
+[`shared_keys/weights.py`](../../access/indexes/shared_keys/weights.py), raw map
+cells/membership in [`shared_maps/cells.py`](../../access/storage/shared_maps/cells.py),
+and metadata-only tree traversal in
+[`shared_trees/metadata.py`](../../access/indexes/shared_trees/metadata.py).
+Weights keep each feature's truncation policy bound explicitly. Policy-free map
+and metadata traversal use direct dependency imports rather than forwarding
+wrappers. The map owner retains the same reviewed 4,096-byte format constant.
+
+All four bodies retain exact prior ASTs. Six finite weight inputs are checked
+through five policy bindings (30 calls); inline/indirect literal maps and pinned
+retained map rows check cell locations, complete cardinalities and file membership.
+Thirty-six retained tree descriptions are checked through six consumers (216
+calls). These are reused case/consumer combinations, not 216 independently
+observed database cases. See the
+[fresh primitive equivalence record](../../results/development/shared-primitive-model-equivalence-2026-11-09.json).
