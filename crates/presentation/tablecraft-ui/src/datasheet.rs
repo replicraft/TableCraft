@@ -48,11 +48,13 @@ pub(crate) struct Output {
     pub actions: Vec<Action>,
     pub totals_choices: Vec<crate::workspace::totals::Choice>,
     pub field_addition: Option<crate::workspace::field_addition::header::Event>,
+    pub field_rename: Option<crate::workspace::field_rename::widget::Event>,
 }
 
 #[derive(Default)]
 pub(crate) struct Features<'a> {
     pub field_addition: Option<crate::workspace::field_addition::header::Presentation>,
+    pub field_rename: Option<crate::workspace::field_rename::rendering::HeaderContext>,
     pub sort_header: Option<SortHeader>,
     pub insert_target: Option<InsertTarget>,
     pub inline_insert: Option<crate::workspace::insertion::inline::Row<'a>>,
@@ -62,6 +64,7 @@ pub(crate) struct Features<'a> {
 
 struct RowView<'a> {
     field_addition: Option<crate::workspace::field_addition::header::Presentation>,
+    field_rename: Option<crate::workspace::field_rename::rendering::HeaderContext>,
     collection: bool,
     pane: Pane,
     sort_header: Option<SortHeader>,
@@ -90,6 +93,7 @@ pub(super) fn show(
         RowView {
             collection: false,
             field_addition: features.field_addition,
+            field_rename: features.field_rename,
             pane,
             sort_header: features.sort_header,
             insert_target: features.insert_target,
@@ -116,6 +120,7 @@ pub(crate) fn show_collection(ui: &mut Ui, data: &Data, selection: &mut Selectio
         RowView {
             collection: true,
             field_addition: None,
+            field_rename: None,
             pane: Pane::Document,
             sort_header: None,
             insert_target: None,
@@ -145,6 +150,7 @@ fn show_rows(
         RowView {
             collection: false,
             field_addition: None,
+            field_rename: None,
             pane,
             sort_header: None,
             insert_target: None,
@@ -171,6 +177,7 @@ fn render_rows(
         totals_choices,
         selection: owner,
         field_addition: number_event,
+        field_rename: rename_event,
     } = output;
     if data.validate_row_ordinals().is_err() {
         return ScrollArea::both().show(ui, |ui| {
@@ -299,6 +306,8 @@ fn render_rows(
                                             data,
                                             index,
                                             view.sort_header.as_ref(),
+                                            view.field_rename.as_ref(),
+                                            rename_event,
                                             actions,
                                         );
                                         let description = message(
@@ -597,20 +606,25 @@ fn column_header(
     data: &Data,
     index: usize,
     sort_header: Option<&SortHeader>,
+    field_rename: Option<&crate::workspace::field_rename::rendering::HeaderContext>,
+    rename_event: &mut Option<crate::workspace::field_rename::widget::Event>,
     actions: &mut Vec<Action>,
 ) -> Response {
     let column = &data.columns[index];
     let rect = ui.max_rect();
     let sort_width = sort_header.map_or(0.0, |_| SORT_CONTROL_WIDTH);
     let caption = rect.shrink2(egui::vec2(sort_width, 0.0));
-    let label = ui
-        .put(
+    let label = if let Some(context) = field_rename {
+        crate::workspace::field_rename::header::show(ui, caption, column, context, rename_event)
+    } else {
+        ui.put(
             caption,
             egui::Label::new(column.label())
                 .halign(egui::Align::Center)
                 .truncate(),
         )
-        .on_hover_text(&column.name);
+        .on_hover_text(&column.name)
+    };
     if let Some(header) = sort_header {
         let control = egui::Rect::from_min_max(
             egui::pos2(rect.right() - sort_width, rect.top()),

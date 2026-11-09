@@ -75,7 +75,8 @@ impl State {
         identity: FieldRenameSaveIdentity,
         cleanup: Option<SaveCleanupNotice>,
     ) -> bool {
-        if !self.can_return_to_field_rename_draft(identity)
+        if matches!(identity, FieldRenameSaveIdentity::UnchangedReview { .. }) && cleanup.is_some()
+            || !self.can_return_to_field_rename_draft(identity)
             || !self.matches_field_rename_save(request, identity)
         {
             return false;

@@ -299,6 +299,10 @@ impl State {
     }
 
     fn field_rename_context(&self, target: &FieldRenameTarget) -> bool {
+        self.field_rename_context_without_close(target) && self.field_rename.close.is_none()
+    }
+
+    pub(super) fn field_rename_context_without_close(&self, target: &FieldRenameTarget) -> bool {
         self.field_rename_available
             && !self.native_mutation_blocked_without_field_rename()
             && self.object_switch_ready_without_saved_field_name()

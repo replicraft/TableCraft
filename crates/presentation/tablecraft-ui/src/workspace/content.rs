@@ -59,6 +59,7 @@ impl State {
         }
         if self.view == DocumentView::Design {
             self.design(ui);
+            self.field_rename_source_status(ui, actions);
             return;
         }
         self.query_editor(ui, actions);
@@ -102,6 +103,12 @@ impl State {
                     });
             });
         }
+        let rename_context = self.field_rename_header_context();
+        let rename_editor = rename_context
+            .as_ref()
+            .and_then(|context| context.editor.as_ref());
+        let rename_target = rename_editor.and_then(|editor| editor.target.copy());
+        let rename_enabled = rename_editor.is_some_and(|editor| editor.enabled);
         let field_context = self.field_addition_render_context();
         let (field_tab, field_presentation) = match field_context {
             Some((tab, presentation)) => (Some(tab), Some(presentation)),
@@ -147,6 +154,7 @@ impl State {
                 pane,
                 datasheet::Features {
                     field_addition: field_presentation,
+                    field_rename: rename_context,
                     sort_header,
                     insert_target,
                     inline_insert: if self
@@ -166,10 +174,21 @@ impl State {
             if let Some(tab) = field_tab {
                 self.apply_field_addition_header(&tab, output.field_addition);
             }
+            match output.field_rename {
+                Some(super::field_rename::widget::Event::Begin(target)) => {
+                    self.begin_field_rename(target);
+                }
+                event => {
+                    if let Some(target) = &rename_target {
+                        self.apply_field_rename_widget(target, rename_enabled, event);
+                    }
+                }
+            }
             actions.extend(output.actions);
             self.apply_totals_selection(output.selection);
             self.apply_total_choices(output.totals_choices);
             self.field_addition_inspection_status(ui, actions);
+            self.field_rename_source_status(ui, actions);
         } else if self.view == DocumentView::Query {
             Frame::new().inner_margin(10).show(ui, |ui| {
                 ui.weak(tr(

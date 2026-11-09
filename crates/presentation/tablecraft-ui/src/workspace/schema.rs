@@ -114,12 +114,25 @@ impl State {
         let enter_grid = entry.is_some();
         let mut entered_grid = false;
         let localizer = self.localizer.clone();
+        let rename_tab = self.active_object();
+        let rename_enabled = rename_tab
+            .as_ref()
+            .is_some_and(|tab| self.field_rename_table_entry_ready(tab));
+        let rename_editor = self.field_rename_editor_presentation();
+        let mut rename_event = None;
         let Some(schema) = &self.schema else {
             ui.weak(crate::localization::tr(ui, "design-choose"));
             return;
         };
-        ui.small(crate::localization::tr(ui, "design-read-only"))
-            .on_hover_text(crate::localization::tr(ui, "design-inert-help"));
+        ui.small(crate::localization::tr(
+            ui,
+            if self.field_rename_available {
+                "field-rename-design-help"
+            } else {
+                "design-read-only"
+            },
+        ))
+        .on_hover_text(crate::localization::tr(ui, "design-inert-help"));
         if schema.fields.is_empty() {
             ui.weak(crate::localization::tr(ui, "design-no-fields"));
             return;
@@ -194,20 +207,42 @@ impl State {
                             };
                             row.col(|ui| grid::selector(ui, position == self.selected_field));
                             row.col(|ui| {
-                                let response = grid::cell(
-                                    ui,
-                                    &field.name,
-                                    grid::CellStyle::FieldName {
-                                        selected: position == self.selected_field,
-                                        id: field_focus_id(
-                                            focus_scope,
-                                            document_revision,
-                                            &schema.table,
-                                            position,
-                                            field,
-                                        ),
-                                    },
-                                );
+                                let response = if let Some(editor) = &rename_editor
+                                    && editor.target.column == field.name
+                                    && editor.target.native_number == field.number
+                                {
+                                    let response = ui
+                                        .scope(|ui| super::field_rename::widget::show(ui, editor));
+                                    rename_event = response.inner;
+                                    response.response
+                                } else {
+                                    let response = grid::cell(
+                                        ui,
+                                        &field.name,
+                                        grid::CellStyle::FieldName {
+                                            selected: position == self.selected_field,
+                                            id: field_focus_id(
+                                                focus_scope,
+                                                document_revision,
+                                                &schema.table,
+                                                position,
+                                                field,
+                                            ),
+                                        },
+                                    );
+                                    if let Some(tab) = &rename_tab {
+                                        super::field_rename::header::entry_menu(
+                                            ui,
+                                            &response,
+                                            tab,
+                                            &field.name,
+                                            Some(field.number),
+                                            rename_enabled,
+                                            &mut rename_event,
+                                        );
+                                    }
+                                    response
+                                };
                                 if position == self.selected_field {
                                     if enter_grid {
                                         response.request_focus();
@@ -295,6 +330,16 @@ impl State {
             ),
             |ui| properties::show(ui, field),
         );
+        match rename_event {
+            Some(super::field_rename::widget::Event::Begin(target)) => {
+                self.begin_field_rename(target);
+            }
+            event => {
+                if let Some(editor) = &rename_editor {
+                    self.apply_field_rename_widget(&editor.target, editor.enabled, event);
+                }
+            }
+        }
     }
 }
 

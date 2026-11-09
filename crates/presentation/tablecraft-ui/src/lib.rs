@@ -45,6 +45,9 @@ pub use workspace::{
 };
 pub use workspace::{FieldAdditionCloseDecision, FieldAdditionCloseResult};
 pub use workspace::{
+    FieldRenameCloseDecision, FieldRenameCloseResult, PreparedCleanFieldRenameClose,
+};
+pub use workspace::{
     FieldRenameRequest, FieldRenameSaveCommand, FieldRenameSaveIdentity, FieldRenameTarget,
     FieldRenameWarning, PreparedFieldRenameInspection, PreparedFieldRenameResolution,
     PreparedFieldRenameSave, PreparedUnchangedFieldRename,

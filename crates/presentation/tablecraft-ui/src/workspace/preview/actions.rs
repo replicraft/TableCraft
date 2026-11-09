@@ -82,6 +82,17 @@ impl Preview {
                     }
                 }
             }
+            Action::InspectFieldRename { target } => {
+                drop(self.state.prepare_field_rename_inspection(&target));
+                self.state.error = Some(self.state.localizer.text("ribbon-unavailable"));
+            }
+            Action::ReviewFieldRename { .. } => {
+                self.state.error = Some(self.state.localizer.text("ribbon-unavailable"));
+            }
+            Action::CancelFieldRenameReview { .. }
+            | Action::FieldRenameSave { .. }
+            | Action::FieldRenameClose { .. }
+            | Action::CloseFieldRenameEditor => {}
             Action::ReviewFieldAddition { .. } | Action::RetryFieldAdditionInspection { .. } => {
                 self.state.error = Some(self.state.localizer.text("ribbon-unavailable"));
             }

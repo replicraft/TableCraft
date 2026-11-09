@@ -439,7 +439,7 @@ impl State {
             && !self.edit_save_pending()
     }
 
-    fn object_binding(&self, target: &ObjectTarget) -> bool {
+    pub(in crate::workspace) fn object_binding(&self, target: &ObjectTarget) -> bool {
         self.database.as_ref().is_some_and(|database| {
             database.document_revision == target.document_revision
                 && match &target.kind {

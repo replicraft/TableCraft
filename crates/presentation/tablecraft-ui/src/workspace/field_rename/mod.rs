@@ -1,5 +1,15 @@
 //! Source-observed saved-field proposals, separate from consuming native authority.
+mod close;
+mod dialog;
+#[cfg(test)]
+mod entry_tests;
+pub(crate) mod header;
+#[cfg(test)]
+mod interaction_tests;
 pub(super) mod model;
+pub(crate) mod rendering;
+pub(crate) mod widget;
+pub use close::{FieldRenameCloseDecision, FieldRenameCloseResult, PreparedCleanFieldRenameClose};
 mod preparation;
 mod state;
 mod status;
@@ -49,25 +59,33 @@ impl FieldRenameTarget {
     }
 
     pub(super) fn copy(&self) -> Option<Self> {
-        let ObjectKind::Table { name } = &self.tab.target.kind else {
+        Self::from_parts(&self.tab, &self.column, self.native_number)
+    }
+
+    pub(crate) fn from_parts(tab: &ObjectTab, column: &str, native_number: usize) -> Option<Self> {
+        let ObjectKind::Table { name } = &tab.target.kind else {
             return None;
         };
-        if !self.bounded() {
+        if name.is_empty()
+            || column.is_empty()
+            || !crate::workspace::field_name::bounded_name(name)
+            || !crate::workspace::field_name::bounded_name(column)
+        {
             return None;
         }
 
         Some(Self {
             tab: ObjectTab {
-                id: self.tab.id,
+                id: tab.id,
                 target: super::ObjectTarget {
-                    document_revision: self.tab.target.document_revision,
+                    document_revision: tab.target.document_revision,
                     kind: ObjectKind::Table {
                         name: copy_text(name)?,
                     },
                 },
             },
-            column: copy_text(&self.column)?,
-            native_number: self.native_number,
+            column: copy_text(column)?,
+            native_number,
         })
     }
 }
@@ -103,3 +121,5 @@ pub enum FieldRenameSaveIdentity {
 
 #[cfg(test)]
 mod state_tests;
+#[cfg(test)]
+pub(in crate::workspace) mod test_support;

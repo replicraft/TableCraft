@@ -25,6 +25,7 @@ pub(super) struct Draft {
     pub revision: u64,
     pub phase: Phase,
     pub observation: Observation,
+    pub focus: bool,
 }
 
 #[derive(Default)]
@@ -32,6 +33,7 @@ pub(in crate::workspace) struct Model {
     pub(super) draft: Option<Draft>,
     pub(super) status: Option<Status<FieldRenameSaveIdentity>>,
     pub(super) warning: Option<super::warning::Warning>,
+    pub(super) close: Option<super::close::Confirmation>,
 }
 
 impl Model {
@@ -40,6 +42,7 @@ impl Model {
         if self.draft.is_some()
             || self.status.is_some()
             || self.warning.is_some()
+            || self.close.is_some()
             || !target.bounded()
             || proposed != target.column
             || !bounded_name(&proposed)
@@ -53,6 +56,7 @@ impl Model {
             revision: 0,
             phase: Phase::Naming,
             observation: Observation::Pending { request_id: None },
+            focus: true,
         });
 
         true
@@ -307,6 +311,10 @@ impl Model {
         }
         if let Some(warning) = &self.warning {
             bytes = bytes.checked_add(warning.heap_bytes()?)?;
+        }
+
+        if let Some(close) = &self.close {
+            bytes = bytes.checked_add(close.target.heap_bytes()?)?;
         }
 
         Some(bytes)

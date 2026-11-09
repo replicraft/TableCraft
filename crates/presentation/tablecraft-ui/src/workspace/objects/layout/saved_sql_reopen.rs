@@ -46,7 +46,9 @@ impl State {
                     && query.name == request.target.name
             })
             .count();
-        target_count == 1
+        !self.field_rename_open()
+            && !self.field_rename_status_open()
+            && target_count == 1
             && boundary::current(self)
             && self.objects.revision == Some(database.document_revision)
             && !self.objects.entries.is_empty()

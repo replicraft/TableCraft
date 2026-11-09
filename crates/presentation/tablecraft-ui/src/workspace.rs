@@ -11,7 +11,7 @@ mod diagnostics;
 mod editing;
 pub(crate) mod field_addition;
 mod field_name;
-mod field_rename;
+pub(crate) mod field_rename;
 mod filtering;
 mod find;
 pub(crate) mod focus;
@@ -52,6 +52,9 @@ pub use field_addition::{
     PreparedFieldAdditionSave,
 };
 pub use field_addition::{FieldAdditionCloseDecision, FieldAdditionCloseResult};
+pub use field_rename::{
+    FieldRenameCloseDecision, FieldRenameCloseResult, PreparedCleanFieldRenameClose,
+};
 pub use field_rename::{
     FieldRenameRequest, FieldRenameSaveCommand, FieldRenameSaveIdentity, FieldRenameTarget,
     FieldRenameWarning, PreparedFieldRenameInspection, PreparedFieldRenameResolution,
@@ -130,6 +133,23 @@ pub struct Data {
 
 /// User intents dispatched to the host's shared backend services.
 pub enum Action {
+    InspectFieldRename {
+        target: FieldRenameTarget,
+    },
+    ReviewFieldRename {
+        request: FieldRenameRequest,
+    },
+    CancelFieldRenameReview {
+        request_id: u64,
+    },
+    FieldRenameSave {
+        identity: FieldRenameSaveIdentity,
+        command: FieldRenameSaveCommand,
+    },
+    FieldRenameClose {
+        result: FieldRenameCloseResult,
+    },
+    CloseFieldRenameEditor,
     InspectDatabaseOptions {
         document_revision: u64,
     },
@@ -826,6 +846,8 @@ impl State {
             || self.database_options_modal_open()
             || self.field_addition_close_open()
             || self.field_addition_modal_open()
+            || self.field_rename_modal_open()
+            || self.field_rename_close_open()
             || self.saved_query_sql_save_open()
             || self.table_draft_save.is_some()
             || self.table_draft_field_delete_open()
@@ -892,6 +914,8 @@ impl State {
         }
         let modal_open = modal_open
             || self.field_addition_modal_open()
+            || self.field_rename_modal_open()
+            || self.field_rename_close_open()
             || self.parameter_prompt_open()
             || self.query_action_dialog_open()
             || self.table_rename_open()
@@ -909,6 +933,7 @@ impl State {
             });
         });
         self.finish_active_save(&mut actions);
+        self.finish_field_rename_inspection(&mut actions);
         self.new_record_shortcut(ui, &mut actions);
         self.finish_ribbon_paste(ui, &actions);
         self.finish_paste(ui.ctx(), &mut actions, paste_receipt);
@@ -933,6 +958,8 @@ impl State {
         self.database_options_dialog(ui.ctx(), &mut actions);
         self.field_addition_close_dialog(ui.ctx(), &mut actions);
         self.field_addition_save_dialog(ui.ctx(), &mut actions);
+        self.field_rename_close_dialog(ui.ctx(), &mut actions);
+        self.field_rename_save_dialog(ui.ctx(), &mut actions);
         self.table_draft_save_dialog(ui.ctx(), &mut actions);
         self.table_draft_field_delete_dialog(ui.ctx());
         self.recovery_dialog(ui.ctx(), &mut actions);

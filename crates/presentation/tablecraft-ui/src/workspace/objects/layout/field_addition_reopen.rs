@@ -23,7 +23,9 @@ impl State {
         let Some(active) = self.objects.active else {
             return false;
         };
-        self.field_addition_request_is_current(request)
+        !self.field_rename_open()
+            && !self.field_rename_status_open()
+            && self.field_addition_request_is_current(request)
             && request.tab.target.document_revision == database.document_revision
             && matches!(&request.tab.target.kind, ObjectKind::Table { name }
                 if database.tables.iter().filter(|table| table.name == *name && table.local && !table.system).count() == 1)

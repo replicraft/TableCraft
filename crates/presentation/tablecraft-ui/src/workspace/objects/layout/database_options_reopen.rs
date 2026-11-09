@@ -24,6 +24,8 @@ impl State {
                     .any(|entry| entry.tab.id == active && entry.session.is_none())
             })
             && !self.field_addition_open()
+            && !self.field_rename_open()
+            && !self.field_rename_status_open()
             && !self.field_addition_source_stale()
             && replacement::ready(self)
             && self
