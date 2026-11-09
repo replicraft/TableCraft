@@ -45,3 +45,5 @@ pub fn append_text(before: &[u8], name: &str) -> Vec<u8> {
     let body = properties::append_text(&original_body, name);
     storage::append(before, after, &body)
 }
+
+pub mod history;
