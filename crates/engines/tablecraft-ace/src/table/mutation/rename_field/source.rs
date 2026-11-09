@@ -95,6 +95,12 @@ impl Observed {
                 Resource::Steps,
                 candidate.name().len().max(field.len()) as u64,
             )?;
+            // This first profile has no proved native locale identifier comparator.
+            // Every possible collision partner must belong to the ASCII namespace,
+            // not only the selected target and proposed replacement.
+            if !candidate.name().is_ascii() {
+                return Err(Error::Source);
+            }
             if candidate.name().eq_ignore_ascii_case(field) {
                 if selected.replace(index).is_some() {
                     return Err(Error::Source);

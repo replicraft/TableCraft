@@ -277,3 +277,33 @@ fn native_name_source_inspection_and_candidate_keep_cancellation_and_pool_limits
     ));
     assert_eq!(actual.as_bytes(), case.before);
 }
+
+#[test]
+fn unicode_collision_namespace_refuses_even_when_selected_and_new_names_are_ascii() {
+    let before = repeated::append(&repeated::source(Source::IdOnly), "Éxtra");
+    let off = canonical_database_options::append_explicit_off_to_owned_page(&before);
+    // The unchanged settled source language still accepts this actual Unicode
+    // declaration. Only the narrower rename comparison namespace refuses it.
+    image(&off)
+        .check_field_history_name_auto_correct_off_source(&mut budget(), &|| false)
+        .unwrap();
+    assert!(matches!(
+        image(&off).inspect_same_width_field_rename_source(
+            "Table1",
+            "Score",
+            &mut budget(),
+            &|| false,
+        ),
+        Err(FieldRenameError::Source)
+    ));
+    assert!(matches!(
+        image(&off).prepare_same_width_field_rename(
+            "Table1",
+            "Score",
+            "Total",
+            &mut budget(),
+            &|| false,
+        ),
+        Err(FieldRenameError::Source)
+    ));
+}
