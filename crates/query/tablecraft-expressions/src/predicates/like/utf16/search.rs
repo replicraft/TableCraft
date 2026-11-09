@@ -1,10 +1,11 @@
 //! One bounded wildcard frontier retaining the best consumed source origin.
 use super::{Origins, States, pattern};
+use crate::comparison::StringInput;
 use crate::{
     EvalError,
     comparison::{Collation, LikeProfile, LikeSpanState, StringSearch},
     predicates::like::{
-        HIGH_SURROGATES, LOW_SURROGATES, LikeCase, LikeMatch, LikeMode, LikeString, Work, reachable,
+        HIGH_SURROGATES, LOW_SURROGATES, LikeCase, LikeMatch, LikeMode, Work, reachable,
     },
 };
 use std::{cmp::Ordering, ops::Range};
@@ -72,7 +73,7 @@ impl PreparedLikeSearch {
     /// Compile the explicit ANSI grammar once. Invalid syntax refuses before a
     /// host scans source records; comparison-dependent ranges validate on use.
     pub fn new(
-        expression: LikeString<'_>,
+        expression: StringInput<'_>,
         mode: LikeMode,
         matching: LikeMatch,
         case: LikeCase,
@@ -98,7 +99,7 @@ impl PreparedLikeSearch {
     /// Return a source UTF-16 span under the selected provider and cursor bounds.
     pub fn find(
         &self,
-        text: LikeString<'_>,
+        text: StringInput<'_>,
         search: StringSearch,
         collation: &dyn Collation,
         budget: &mut tablecraft_core::limits::ResourceBudget,
@@ -109,7 +110,7 @@ impl PreparedLikeSearch {
 
     fn search(
         &self,
-        text: LikeString<'_>,
+        text: StringInput<'_>,
         search: StringSearch,
         collation: &dyn Collation,
         work: &mut Work<'_>,

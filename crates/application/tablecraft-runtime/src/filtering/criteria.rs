@@ -6,10 +6,11 @@ use tablecraft_core::{
     limits::{Resource, ResourceBudget},
     values::Value,
 };
+use tablecraft_expressions::comparison::StringInput;
 use tablecraft_expressions::{
     comparison::{Collation, Comparison, StringSearch, compare},
     logic::Truth,
-    predicates::{LikeString, PreparedLikeSearch, between},
+    predicates::{PreparedLikeSearch, between},
 };
 use tablecraft_schema::{ScalarType, TypeDescriptor};
 
@@ -167,7 +168,7 @@ pub(super) fn evaluate(
             let matcher = prepared.ok_or(super::FilterError::UnknownPatternMode)?;
             let matched = matcher
                 .find(
-                    LikeString::Text(text),
+                    StringInput::Text(text),
                     StringSearch::ForwardFrom(0),
                     collation,
                     pattern_work,

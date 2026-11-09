@@ -77,8 +77,8 @@ mod tests {
     use crate::{FrenchLegacyCollation, GeneralCollation};
     use tablecraft_ace::NativeSortOrder;
     use tablecraft_expressions::{
-        comparison::{Collation, StringSearch},
-        predicates::{LikeCase, LikeMatch, LikeMode, LikeString, find_like_utf16},
+        comparison::{Collation, StringInput, StringSearch},
+        predicates::{LikeCase, LikeMatch, LikeMode, find_like_utf16},
     };
 
     #[test]
@@ -100,8 +100,8 @@ mod tests {
             for (case, expected) in [(LikeCase::Database, 0..1), (LikeCase::Sensitive, 2..3)] {
                 assert_eq!(
                     find_like_utf16(
-                        LikeString::Text("A a"),
-                        LikeString::Text("a"),
+                        StringInput::Text("A a"),
+                        StringInput::Text("a"),
                         LikeMode::Ansi89,
                         LikeMatch::Any,
                         StringSearch::ForwardFrom(0),

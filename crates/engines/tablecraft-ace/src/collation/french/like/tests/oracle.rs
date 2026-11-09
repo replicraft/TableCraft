@@ -2,11 +2,12 @@
 //! It imports neither the production parser/frontiers nor dictionary/pruning.
 use super::*;
 use std::{cell::RefCell, sync::OnceLock};
+use tablecraft_expressions::comparison::StringInput;
 use tablecraft_expressions::{
     EvalError,
     comparison::{Collation, LikeProfile},
     logic::Truth,
-    predicates::{LikeMode, LikeString, like_utf16},
+    predicates::{LikeMode, like_utf16},
 };
 
 #[derive(Clone, Debug)]
@@ -205,8 +206,8 @@ fn actual(text: &[u16], atoms: &[Atom], mode: LikeMode) -> bool {
         pool: RefCell::new(budget()),
     };
     let result = like_utf16(
-        LikeString::Utf16Le(&text),
-        LikeString::Utf16Le(&pattern),
+        StringInput::Utf16Le(&text),
+        StringInput::Utf16Le(&pattern),
         mode,
         &provider,
         &mut budget(),

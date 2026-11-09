@@ -1,5 +1,6 @@
 use super::*;
 use crate::comparison::LikeProfile;
+use crate::comparison::StringInput;
 use proptest::prelude::*;
 use std::cell::Cell;
 use tablecraft_core::{limits::ResourceBudget, values::Value};
@@ -276,8 +277,8 @@ fn find_spans_preserve_weighted_consumption_reverse_bounds_and_repeated_occurren
 
     let find = |pattern: &str, matching, search| {
         find_like_utf16(
-            LikeString::Text("😀ss ss"),
-            LikeString::Text(pattern),
+            StringInput::Text("😀ss ss"),
+            StringInput::Text(pattern),
             LikeMode::Ansi89,
             matching,
             search,
@@ -329,8 +330,8 @@ fn find_zero_width_and_cursor_bounds_never_split_surrogate_pairs() {
 
     let find = |search| {
         find_like_utf16(
-            LikeString::Text("😀"),
-            LikeString::Text(""),
+            StringInput::Text("😀"),
+            StringInput::Text(""),
             LikeMode::Ansi89,
             LikeMatch::Any,
             search,
@@ -343,7 +344,7 @@ fn find_zero_width_and_cursor_bounds_never_split_surrogate_pairs() {
     assert_eq!(find(StringSearch::ForwardFrom(0)).unwrap(), Some(0..0));
     let units: Vec<_> = "😀".encode_utf16().collect();
     let shortest_nonempty = crate::predicates::PreparedLikeSearch::new(
-        LikeString::Text("*"),
+        StringInput::Text("*"),
         LikeMode::Ansi89,
         LikeMatch::Any,
         LikeCase::Database,
@@ -354,7 +355,7 @@ fn find_zero_width_and_cursor_bounds_never_split_surrogate_pairs() {
     assert_eq!(
         shortest_nonempty
             .find(
-                LikeString::Text("😀"),
+                StringInput::Text("😀"),
                 StringSearch::ForwardFrom(0),
                 &Weighted,
                 &mut ResourceBudget::new(1_000_000, 0, 1_000_000),
@@ -384,8 +385,8 @@ fn find_wildcard_grammars_provider_refusal_and_cumulative_limits_remain_explicit
 
     let find = |pattern: &str, mode, case, budget: &mut ResourceBudget, cancelled| {
         find_like_utf16(
-            LikeString::Text("x s2 s3"),
-            LikeString::Text(pattern),
+            StringInput::Text("x s2 s3"),
+            StringInput::Text(pattern),
             mode,
             LikeMatch::Any,
             StringSearch::ForwardFrom(0),
@@ -458,7 +459,7 @@ fn prepared_find_reuses_one_pattern_and_merges_origins_without_losing_best_span(
 
     let mut work = ResourceBudget::new(1_000_000, 0, 1_000_000);
     let prepared = PreparedLikeSearch::new(
-        LikeString::Text("a*b"),
+        StringInput::Text("a*b"),
         LikeMode::Ansi89,
         LikeMatch::Any,
         LikeCase::Database,
@@ -474,7 +475,7 @@ fn prepared_find_reuses_one_pattern_and_merges_origins_without_losing_best_span(
     ] {
         assert_eq!(
             prepared
-                .find(LikeString::Text(text), search, &Weighted, &mut work, None)
+                .find(StringInput::Text(text), search, &Weighted, &mut work, None)
                 .unwrap(),
             expected
         );

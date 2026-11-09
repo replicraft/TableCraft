@@ -1,10 +1,7 @@
 //! LIKE preparation separates String coercion from comparison-provider activation.
 use super::Evaluator;
-use crate::{
-    EvalError,
-    comparison::LikeProfile,
-    predicates::{LikeString, like_utf16},
-};
+use crate::comparison::StringInput;
+use crate::{EvalError, comparison::LikeProfile, predicates::like_utf16};
 use tablecraft_core::values::{ExpressionString, ExpressionValue, Value};
 
 mod preparation;
@@ -47,11 +44,11 @@ impl Operand<'_> {
         }
     }
 
-    fn string(&self) -> Result<LikeString<'_>, EvalError> {
+    fn string(&self) -> Result<StringInput<'_>, EvalError> {
         match self {
-            Self::Raw(value) => Ok(LikeString::Utf16Le(value.as_bytes())),
+            Self::Raw(value) => Ok(StringInput::Utf16Le(value.as_bytes())),
             Self::Scalar(Value::Text(value)) | Self::Converted(Value::Text(value)) => {
-                Ok(LikeString::Text(value))
+                Ok(StringInput::Text(value))
             }
             _ => Err(EvalError::TypeMismatch),
         }

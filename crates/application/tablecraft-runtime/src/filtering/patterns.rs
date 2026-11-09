@@ -6,10 +6,11 @@ use crate::{
 };
 use tablecraft_ace::{DatabaseQueryMode, NativeReadSource, inspect_database_properties};
 use tablecraft_core::limits::{Resource, ResourceBudget};
+use tablecraft_expressions::comparison::StringInput;
 use tablecraft_expressions::{
     EvalError,
     comparison::{Collation, LikeProfile},
-    predicates::{LikeCase, LikeMatch, LikeMode, LikeString, PreparedLikeSearch},
+    predicates::{LikeCase, LikeMatch, LikeMode, PreparedLikeSearch},
 };
 
 pub(super) const PATTERN_BYTES: u64 = 64 * 1024 * 1024;
@@ -108,7 +109,7 @@ pub(super) fn compile(
         pattern.push(wildcard);
     }
     Ok(Some(PreparedLikeSearch::new(
-        LikeString::Text(&pattern),
+        StringInput::Text(&pattern),
         mode,
         LikeMatch::Whole,
         LikeCase::Database,

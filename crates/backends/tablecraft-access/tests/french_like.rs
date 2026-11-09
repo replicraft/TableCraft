@@ -2,11 +2,12 @@ use std::{cell::RefCell, cmp::Ordering};
 use tablecraft_access::{FrenchLegacyCollation, NativeCollationResolver};
 use tablecraft_ace::NativeSortOrder;
 use tablecraft_core::{limits::ResourceBudget, values::Value};
+use tablecraft_expressions::comparison::StringInput;
 use tablecraft_expressions::{
     EvalError,
     comparison::{Collation, LikeProfile, StringCompareMode},
     logic::Truth,
-    predicates::{LikeMode, LikeString, like, like_utf16},
+    predicates::{LikeMode, like, like_utf16},
 };
 use tablecraft_query::{ExecutionOptions, QueryError, prepare, source::MemorySource};
 use tablecraft_sql::{ParseLimits, parse_query};
@@ -119,8 +120,8 @@ fn pattern_callbacks_are_untrimmed_while_sql_and_search_keep_their_own_policies(
     let bytes = [0x55, 0x00, 0xd8];
     assert_eq!(
         like_utf16(
-            LikeString::Utf16Le(&bytes[1..]),
-            LikeString::Text("?"),
+            StringInput::Utf16Le(&bytes[1..]),
+            StringInput::Text("?"),
             LikeMode::Ansi89,
             &provider,
             &mut budget(),
@@ -130,8 +131,8 @@ fn pattern_callbacks_are_untrimmed_while_sql_and_search_keep_their_own_policies(
     );
     assert_eq!(
         like_utf16(
-            LikeString::Utf16Le(&bytes[1..2]),
-            LikeString::Text("?"),
+            StringInput::Utf16Le(&bytes[1..2]),
+            StringInput::Text("?"),
             LikeMode::Ansi89,
             &provider,
             &mut budget(),

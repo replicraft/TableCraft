@@ -1,8 +1,9 @@
 //! Explicit UTF-16 wildcard counts and weighted literal/element transitions.
+use crate::comparison::StringInput;
 mod classes;
 mod pattern;
 pub(super) mod search;
-use super::{LikeMode, LikeString, Work, reachable};
+use super::{LikeMode, Work, reachable};
 use crate::{
     EvalError,
     comparison::{Collation, LikeSpanState},
@@ -28,8 +29,8 @@ pub(super) struct Origins {
 }
 
 pub(super) fn matches(
-    text: LikeString<'_>,
-    pattern: LikeString<'_>,
+    text: StringInput<'_>,
+    pattern: StringInput<'_>,
     mode: LikeMode,
     col: &dyn Collation,
     work: &mut Work<'_>,

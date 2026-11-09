@@ -1,7 +1,7 @@
 //! Bounded wildcard matching with explicit scalar/UTF-16 policies.
+use crate::comparison::StringInput;
 mod pattern;
 mod utf16;
-pub use crate::comparison::StringInput as LikeString;
 use crate::{
     EvalError,
     comparison::{Collation, LikeProfile},
@@ -56,8 +56,8 @@ pub enum LikeCase {
     reason = "matching, bounds and comparison policies are independent"
 )]
 pub fn find_like_utf16(
-    text: LikeString<'_>,
-    pattern: LikeString<'_>,
+    text: StringInput<'_>,
+    pattern: StringInput<'_>,
     mode: LikeMode,
     matching: LikeMatch,
     search: crate::comparison::StringSearch,
@@ -154,8 +154,8 @@ pub fn like(
     }
     if collation.like_profile() == LikeProfile::Utf16Weights {
         return utf16::matches(
-            LikeString::Text(text),
-            LikeString::Text(pattern),
+            StringInput::Text(text),
+            StringInput::Text(pattern),
             mode,
             collation,
             &mut work,
@@ -232,8 +232,8 @@ pub fn like(
 /// allocation/work budget. No decoding, alignment cast or replacement occurs.
 /// Scalar-only providers are refused; callers handle NULL and other value kinds.
 pub fn like_utf16(
-    value: LikeString<'_>,
-    pattern: LikeString<'_>,
+    value: StringInput<'_>,
+    pattern: StringInput<'_>,
     mode: LikeMode,
     collation: &dyn Collation,
     budget: &mut ResourceBudget,

@@ -8,9 +8,10 @@ use tablecraft_core::{
     values::Value,
 };
 use tablecraft_display::{Engine, NativeFormat, ScalarPresentation};
+use tablecraft_expressions::comparison::StringInput;
 use tablecraft_expressions::{
     comparison::{Collation, StringSearch},
-    predicates::{LikeCase, LikeMatch, LikeMode, LikeString, PreparedLikeSearch},
+    predicates::{LikeCase, LikeMatch, LikeMode, PreparedLikeSearch},
 };
 use tablecraft_schema::ScalarType;
 
@@ -61,7 +62,7 @@ impl Matcher {
                 || request.pattern.eq_ignore_ascii_case("Is Null"));
         let empty = typed && request.pattern == "\"\"";
         let pattern = PreparedLikeSearch::new(
-            LikeString::Text(&request.pattern),
+            StringInput::Text(&request.pattern),
             mode,
             matching,
             case,
@@ -174,7 +175,7 @@ impl Matcher {
     ) -> Result<Option<FindSpan>, Error> {
         self.pattern
             .find(
-                LikeString::Text(text),
+                StringInput::Text(text),
                 bounds,
                 collation,
                 work,

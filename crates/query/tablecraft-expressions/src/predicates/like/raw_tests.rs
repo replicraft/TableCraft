@@ -1,4 +1,5 @@
 use super::*;
+use crate::comparison::StringInput;
 use proptest::prelude::*;
 use std::{cell::Cell, cmp::Ordering};
 
@@ -28,8 +29,8 @@ fn bytes(units: &[u16]) -> Vec<u8> {
 
 fn run(text: &[u16], pattern: &[u16], mode: LikeMode) -> Result<Truth, EvalError> {
     like_utf16(
-        LikeString::Utf16Le(&bytes(text)),
-        LikeString::Utf16Le(&bytes(pattern)),
+        StringInput::Utf16Le(&bytes(text)),
+        StringInput::Utf16Le(&bytes(pattern)),
         mode,
         &Units,
         &mut ResourceBudget::new(1_000_000, 0, 1_000_000),
@@ -59,8 +60,8 @@ fn raw_like_retains_surrogates_classes_nuls_and_unaligned_unit_ranges() {
     let unaligned = [255, 0, 216, 255];
     assert_eq!(
         like_utf16(
-            LikeString::Utf16Le(&unaligned[1..3]),
-            LikeString::Text("_"),
+            StringInput::Utf16Le(&unaligned[1..3]),
+            StringInput::Text("_"),
             LikeMode::Ansi92,
             &Units,
             &mut ResourceBudget::new(1000, 0, 1000),
@@ -76,8 +77,8 @@ fn raw_like_checks_odd_ranges_budgets_and_every_observed_checkpoint() {
     for (text, pattern) in [(&[65][..], &[63, 0][..]), (&[65, 0][..], &[63][..])] {
         assert_eq!(
             like_utf16(
-                LikeString::Utf16Le(text),
-                LikeString::Utf16Le(pattern),
+                StringInput::Utf16Le(text),
+                StringInput::Utf16Le(pattern),
                 LikeMode::Ansi89,
                 &Units,
                 &mut ResourceBudget::new(1000, 0, 1000),
@@ -96,8 +97,8 @@ fn raw_like_checks_odd_ranges_budgets_and_every_observed_checkpoint() {
     };
     assert_eq!(
         like_utf16(
-            LikeString::Utf16Le(&text),
-            LikeString::Utf16Le(&pattern),
+            StringInput::Utf16Le(&text),
+            StringInput::Utf16Le(&pattern),
             LikeMode::Ansi89,
             &Units,
             &mut ResourceBudget::new(100_000, 0, 100_000),
@@ -114,8 +115,8 @@ fn raw_like_checks_odd_ranges_budgets_and_every_observed_checkpoint() {
         };
         assert_eq!(
             like_utf16(
-                LikeString::Utf16Le(&text),
-                LikeString::Utf16Le(&pattern),
+                StringInput::Utf16Le(&text),
+                StringInput::Utf16Le(&pattern),
                 LikeMode::Ansi89,
                 &Units,
                 &mut ResourceBudget::new(100_000, 0, 100_000),
@@ -131,8 +132,8 @@ fn raw_like_checks_odd_ranges_budgets_and_every_observed_checkpoint() {
     ] {
         assert!(matches!(
             like_utf16(
-                LikeString::Utf16Le(&text),
-                LikeString::Utf16Le(&pattern),
+                StringInput::Utf16Le(&text),
+                StringInput::Utf16Le(&pattern),
                 LikeMode::Ansi89,
                 &Units,
                 &mut budget,

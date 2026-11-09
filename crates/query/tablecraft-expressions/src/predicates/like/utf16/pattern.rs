@@ -1,6 +1,7 @@
-use super::super::{LikeMode, LikeString};
+use super::super::LikeMode;
 use super::Work;
 use crate::EvalError;
+use crate::comparison::StringInput;
 use std::ops::Range;
 
 const OPEN: u16 = b'[' as u16;
@@ -23,7 +24,7 @@ pub(super) struct Pattern {
 }
 
 pub(super) fn compile(
-    text: LikeString<'_>,
+    text: StringInput<'_>,
     mode: LikeMode,
     work: &mut Work<'_>,
 ) -> Result<Pattern, EvalError> {
