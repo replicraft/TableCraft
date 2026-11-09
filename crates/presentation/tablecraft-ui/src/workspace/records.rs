@@ -22,6 +22,7 @@ pub(super) struct RecordNavigation {
     position: String,
     search: String,
     error: Option<String>,
+    checked_count: Option<u64>,
 }
 
 #[derive(Debug, PartialEq, Eq)]
@@ -50,6 +51,39 @@ impl RecordNavigation {
 }
 
 impl State {
+    /// Carry checked EOF across pages of the same immutable native table only.
+    pub(super) fn next_checked_record_count(&self, next: &Data) -> Option<u64> {
+        if next.source_revision.is_none() || next.row_ordinals.is_some() {
+            return None;
+        }
+        let end = u64::from(next.offset) + next.rows.len() as u64;
+        if !next.has_more && (!next.rows.is_empty() || next.offset == 0) {
+            return Some(end);
+        }
+        let previous = self.data.as_ref()?;
+        if previous.source_revision != next.source_revision
+            || previous.table != next.table
+            || previous.row_ordinals.is_some()
+        {
+            return None;
+        }
+        self.records
+            .checked_count
+            .filter(|count| end <= *count && (!next.has_more || end < *count))
+    }
+
+    pub(super) fn retain_checked_record_count(&mut self, count: Option<u64>) {
+        self.records.checked_count = count;
+    }
+
+    fn checked_record_count(&self) -> Option<u64> {
+        let data = self.data.as_ref()?;
+        if data.row_ordinals.is_some() {
+            return None;
+        }
+        self.records.checked_count
+    }
+
     fn record_source_matches(&self, target: &RecordTarget) -> bool {
         if self.insertion_dialog_open() {
             return false;
@@ -267,7 +301,11 @@ impl State {
         let next = current
             .checked_add(1)
             .filter(|_| row + 1 < data.rows.len() || (!mapped && data.has_more));
-        let last = if data.has_more {
+        let last = if let Some(count) = self.checked_record_count() {
+            count
+                .checked_sub(1)
+                .and_then(|last| u32::try_from(last).ok())
+        } else if data.has_more {
             None
         } else {
             data.rows

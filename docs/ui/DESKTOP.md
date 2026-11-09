@@ -894,8 +894,19 @@ table, request, starting offset and requested field can publish its result.
 Checked EOF, invalid positions and failed/cancelled requests preserve the prior
 page and selection. Switching views or sources, or entering a collection/edit
 dialog, invalidates pending navigation. A save cannot be superseded by a record
-request. Declared row counts supply neither an observed total nor a Last-record
-operation; those broader navigation controls remain work.
+request. Declared row counts never supply an observed total. Once a nonempty
+native page reaches checked EOF (or the first page proves an empty table), its
+exact total remains available across earlier pages of that same document revision
+and table. The footer retains that count and its Last-record command without
+another full scan. Replaced sources/revisions and mapped views do not inherit
+this count; an empty out-of-range page never invents a relation length. The record
+input measures its font to fit up to ten digits while retaining a compact minimum.
+
+The checked-count retention and measured input width have headless regression
+coverage; native verification for this later change remains pending. The retained
+Windows Access datasheet capture was viewed headlessly for footer placement;
+its exact scale is unknown. Existing historical macOS observations below apply
+to the earlier navigator behavior.
 
 Incomplete save setup now offers explicit resource release without deleting or
 repairing retained files. Acknowledgment can then close that save outcome; the

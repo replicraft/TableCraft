@@ -7,6 +7,7 @@ use egui::{Response, Ui, WidgetInfo, WidgetType};
 const BUTTON_SIZE: f32 = 20.0;
 const ICON_SIZE: f32 = 12.0;
 const POSITION_WIDTH: f32 = 44.0;
+const POSITION_TEXT_PADDING: f32 = 8.0;
 const SEARCH_WIDTH: f32 = 120.0;
 const MAX_RECORD_DIGITS: usize = 10;
 const MAX_SEARCH_BYTES: usize = 64 * 1024;
@@ -27,10 +28,14 @@ impl State {
         let enabled = idle && current.is_some();
         let mut destination = None;
         let mut search = false;
-        let count = self.filtered_record_count().map(u64::from).or_else(|| {
-            let data = self.data.as_ref()?;
-            (!data.has_more).then_some(u64::from(data.offset) + data.rows.len() as u64)
-        });
+        let count = self
+            .filtered_record_count()
+            .map(u64::from)
+            .or_else(|| self.checked_record_count())
+            .or_else(|| {
+                let data = self.data.as_ref()?;
+                (!data.has_more).then_some(u64::from(data.offset) + data.rows.len() as u64)
+            });
 
         ui.spacing_mut().item_spacing.x = 2.0;
         ui.spacing_mut().button_padding = egui::vec2(2.0, 1.0);
@@ -65,12 +70,13 @@ impl State {
         ) {
             self.records.error = Some(tr(ui, "datasheet-record-input-help"));
         }
+        let position_width = record_position_width(ui, &self.records.position, count);
         let input = ui.add_enabled(
             enabled,
             egui::TextEdit::singleline(&mut self.records.position)
                 .id(input_id)
                 .char_limit(MAX_RECORD_DIGITS)
-                .desired_width(POSITION_WIDTH),
+                .desired_width(position_width),
         );
         let position_label = tr(ui, "datasheet-record-position");
         input.widget_info(|| WidgetInfo::labeled(WidgetType::TextEdit, enabled, &position_label));
@@ -214,3 +220,21 @@ fn record_button(ui: &mut Ui, icon: Icon, key: &str, enabled: bool) -> Response 
     response.widget_info(|| WidgetInfo::labeled(WidgetType::Button, enabled, &label));
     response.on_hover_text(label)
 }
+
+fn record_position_width(ui: &Ui, position: &str, count: Option<u64>) -> f32 {
+    let digits = position
+        .chars()
+        .count()
+        .max(count.map_or(1, |count| count.checked_ilog10().unwrap_or(0) as usize + 1))
+        .min(MAX_RECORD_DIGITS);
+    let font = egui::FontSelection::Default.resolve(ui.style());
+    let digit_width = ui.fonts_mut(|fonts| {
+        ('0'..='9')
+            .map(|digit| fonts.glyph_width(&font, digit))
+            .fold(0.0_f32, f32::max)
+    });
+    POSITION_WIDTH.max(digit_width * digits as f32 + POSITION_TEXT_PADDING)
+}
+
+#[cfg(test)]
+mod tests;

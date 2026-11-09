@@ -509,3 +509,43 @@ fn compact_position_editor_uses_original_record_numbers_and_refuses_an_unknown_l
     );
     assert_eq!(harness.state().0.data.as_ref().unwrap().offset, 100);
 }
+
+#[test]
+fn checked_final_page_count_survives_earlier_pages_without_trusting_out_of_range_eof() {
+    let mut state = state();
+    assert!(state.checked_record_count().is_none());
+    assert!(state.set_table_data(page(100900, 69, false)));
+    assert_eq!(state.checked_record_count(), Some(100969));
+    assert!(state.set_table_data(page(0, 100, true)));
+    assert_eq!(state.checked_record_count(), Some(100969));
+    assert_eq!(state.record_positions().unwrap().last, Some(100968));
+
+    state.reset_record_navigation();
+    assert!(state.set_table_data(page(200000, 0, false)));
+    assert!(state.checked_record_count().is_none());
+    assert!(state.set_table_data(page(0, 100, true)));
+    assert!(state.record_positions().unwrap().last.is_none());
+}
+
+#[test]
+fn checked_record_count_is_not_shared_with_another_table_revision_or_mapped_view() {
+    let mut state = state();
+    assert!(state.set_table_data(page(100, 5, false)));
+    let mut another_table = page(0, 100, true);
+    another_table.table = "Other".into();
+    assert!(state.set_table_data(another_table));
+    assert!(state.checked_record_count().is_none());
+
+    assert!(state.set_table_data(page(100, 5, false)));
+    let mut another_revision = page(0, 100, true);
+    another_revision.source_revision = Some(8);
+    state.database = None;
+    assert!(state.set_table_data(another_revision));
+    assert!(state.checked_record_count().is_none());
+
+    assert!(state.set_table_data(page(100, 5, false)));
+    let mut mapped = page(0, 2, false);
+    mapped.row_ordinals = Some(crate::RowOrdinals::new(vec![2, 4]).unwrap());
+    assert!(state.set_table_data(mapped));
+    assert!(state.checked_record_count().is_none());
+}

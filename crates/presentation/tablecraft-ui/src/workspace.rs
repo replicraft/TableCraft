@@ -620,7 +620,9 @@ impl State {
 
         self.reset_table_filter();
         self.bump_focus_publication();
+        let checked_count = self.next_checked_record_count(&data);
         self.reset_record_navigation();
+        self.retain_checked_record_count(checked_count);
         self.invalidate_edit();
         self.close_contents();
         self.table_selection.reset(&data);
