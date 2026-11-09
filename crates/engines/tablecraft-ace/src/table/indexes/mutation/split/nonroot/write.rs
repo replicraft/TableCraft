@@ -145,10 +145,10 @@ fn serialize<P: RetainedProfile, const N: usize>(
     reader.tick()?;
     let fresh = node.number >= operation.image.catalog().header().page_count();
     let (entries, tail) = match &node.contents {
+        // NO_CLONE: Read leaf entries from a borrowed normalized node without changing its
+        // retained membership. Only range bounds are copied, not the payload.
         Contents::Leaf(range) => (
             leaf_entries(
-                // Read leaf entries from a borrowed normalized node without changing its
-                // retained membership. Only range bounds are copied, not the payload.
                 &operation.keys[range.clone()],
                 reader.budget,
                 reader.cancelled,

@@ -103,8 +103,9 @@ impl<'u, P: Placement> Staged<'u, P> {
         self.plan.audit(budget, cancelled)?;
         for change in &self.facts.changes {
             check(budget, cancelled)?;
-            // Read candidate target bytes while keeping exact bounds inside the retained change
-            // audit fact. Only range bounds are copied, not the payload.
+            // NO_CLONE: Read candidate target bytes while keeping exact bounds inside the
+            // retained change audit fact. Only range bounds are copied, not the
+            // payload.
             let after = self.plan.target(change.target.clone(), budget, cancelled)?;
             if after != change.record {
                 return Err(EditError::Preservation);

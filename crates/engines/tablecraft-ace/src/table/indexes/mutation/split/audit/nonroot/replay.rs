@@ -171,11 +171,11 @@ impl<P: RetainedProfile, const N: usize> Replay<'_, '_, P, N> {
         if range.start >= range.end {
             return Err(EditError::Preservation);
         }
+        // NO_CLONE: Read leaf keys while retaining range bounds for certified leaf Child
+        // membership. Only range bounds are copied, not the payload.
         let keys = self
             .operation
             .keys
-            // Read leaf keys while retaining range bounds for certified leaf Child membership.
-            // Only range bounds are copied, not the payload.
             .get(range.clone())
             .ok_or(EditError::Preservation)?;
         let entries = leaf_entries(keys, actual.budget, actual.cancelled)?;

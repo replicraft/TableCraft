@@ -83,6 +83,8 @@ pub(super) fn reserve<T>(
 // must never bypass fallible allocation or the fixed writer's type boundary.
 pub(super) fn scalar(value: &Value) -> Result<Value, EditError> {
     match value {
+        // NO_CLONE: Produce an owned fixed carrier from a borrowed cascade fact; variable
+        // payloads are refused. This admitted carrier allocates no payload.
         Value::Null
         | Value::Boolean(_)
         | Value::Byte(_)
@@ -94,8 +96,6 @@ pub(super) fn scalar(value: &Value) -> Result<Value, EditError> {
         | Value::Double(_)
         | Value::DateTime(_)
         | Value::Decimal(_)
-        // Produce an owned fixed carrier from a borrowed cascade fact; variable payloads are
-        // refused. This admitted carrier allocates no payload.
         | Value::Guid(_) => Ok(value.clone()),
         _ => Err(EditError::Unsupported(WriteBlocker::Column)),
     }

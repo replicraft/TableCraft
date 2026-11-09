@@ -312,8 +312,9 @@ pub(super) fn patches(
         budget
             .charge(Resource::Steps, range.len() as u64)
             .map_err(InspectError::from)?;
-        // Use the same span for original/candidate comparisons and patch buffers while
-        // retaining its offset/length. Only range bounds are copied, not the payload.
+        // NO_CLONE: Use the same span for original/candidate comparisons and patch buffers
+        // while retaining its offset/length. Only range bounds are copied, not
+        // the payload.
         if original[range.clone()] == after[range.clone()] {
             continue;
         }
@@ -328,11 +329,13 @@ pub(super) fn patches(
         replacement
             .try_reserve_exact(range.len())
             .map_err(|_| InspectError::Allocation)?;
-        // Use the same span for original/candidate comparisons and patch buffers while
-        // retaining its offset/length. Only range bounds are copied, not the payload.
+        // NO_CLONE: Use the same span for original/candidate comparisons and patch buffers
+        // while retaining its offset/length. Only range bounds are copied, not
+        // the payload.
         before.extend_from_slice(&original[range.clone()]);
-        // Use the same span for original/candidate comparisons and patch buffers while
-        // retaining its offset/length. Only range bounds are copied, not the payload.
+        // NO_CLONE: Use the same span for original/candidate comparisons and patch buffers
+        // while retaining its offset/length. Only range bounds are copied, not
+        // the payload.
         replacement.extend_from_slice(&after[range.clone()]);
         budget
             .charge_allocation(1, size_of::<IndexDataPatch>() as u64)

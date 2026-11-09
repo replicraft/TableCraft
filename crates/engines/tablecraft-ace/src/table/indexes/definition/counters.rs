@@ -47,8 +47,8 @@ impl IndexHistoricalCounter {
     /// Exact four-byte range in the decoded native image.
     /// This location does not grant mutation or encoded-file patch permission.
     pub fn byte_range(&self) -> Range<usize> {
-        // Return owned two-bound byte location without consuming the reusable counter
-        // observation. Only range bounds are copied, not the payload.
+        // NO_CLONE: Return owned two-bound byte location without consuming the reusable
+        // counter observation. Only range bounds are copied, not the payload.
         self.range.clone()
     }
 }

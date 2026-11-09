@@ -227,8 +227,9 @@ fn validate_for<'index>(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<usize, EditError> {
     let mut logical_count = 0_usize;
-    // Validate and count every logical index without consuming the iterator needed for names
-    // and physical ownership passes. Only borrowed iterator state is copied.
+    // NO_CLONE: Validate and count every logical index without consuming the iterator
+    // needed for names and physical ownership passes. Only borrowed iterator
+    // state is copied.
     for index in indexes.clone() {
         check(budget, cancelled)?;
         match family {
@@ -240,14 +241,15 @@ fn validate_for<'index>(
     if logical_count != schema.layout.logical_indexes {
         return Err(refused());
     }
-    // Validate index names while preserving the iterator for every physical-index pass. Only
-    // borrowed iterator state is copied.
+    // NO_CLONE: Validate index names while preserving the iterator for every physical-index
+    // pass. Only borrowed iterator state is copied.
     let end = names(image, schema, indexes.clone(), budget, cancelled)?;
     for physical_number in 0..schema.layout.physical_indexes {
         check(budget, cancelled)?;
         let mut selected = None;
-        // Restart the borrowed iterator for each physical index alias group; underlying indexes
-        // are not copied. Only borrowed iterator state is copied.
+        // NO_CLONE: Restart the borrowed iterator for each physical index alias group;
+        // underlying indexes are not copied. Only borrowed iterator state is
+        // copied.
         for index in indexes.clone() {
             check(budget, cancelled)?;
             if index.data_number() as usize != physical_number {
@@ -260,13 +262,14 @@ fn validate_for<'index>(
             }
         }
         let index = selected.ok_or_else(refused)?;
+        // NO_CLONE: Independently validate a physical index against all logical aliases;
+        // underlying indexes remain borrowed. Only borrowed iterator state is
+        // copied.
         physical(
             image,
             schema,
             index,
             physical_number,
-            // Independently validate a physical index against all logical aliases; underlying
-            // indexes remain borrowed. Only borrowed iterator state is copied.
             indexes.clone(),
             budget,
             cancelled,

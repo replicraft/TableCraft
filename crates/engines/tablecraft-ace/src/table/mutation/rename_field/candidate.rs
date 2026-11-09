@@ -130,8 +130,9 @@ impl NativeImage {
             &source.observed.property_name,
         ] {
             check(budget, cancelled)?;
-            // Write the exact borrowed definition/property name span without moving it out of
-            // the source witness. Only range bounds are copied, not the payload.
+            // NO_CLONE: Write the exact borrowed definition/property name span without
+            // moving it out of the source witness. Only range bounds are copied,
+            // not the payload.
             let bytes = after.get_mut(span.clone()).ok_or(Error::Preservation)?;
             if bytes.len() != replacement.len() * size_of::<u16>() {
                 return Err(Error::Preservation);

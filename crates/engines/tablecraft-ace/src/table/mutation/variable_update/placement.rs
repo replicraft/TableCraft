@@ -358,18 +358,18 @@ impl Placement for Plan {
             let base = root_page as usize * PAGE_BYTES;
             let range = root.range.start - base..root.range.end - base;
             let word_offset = slot_offset(usize::from(reference_slot(root.reference)));
+            // NO_CLONE: Preserve root/target bounds across comparison, relocation, stored
+            // event construction and the returned target. Only range bounds are
+            // copied, not the payload.
             if u16_at(&page.after, word_offset)? != root.word
-                // Preserve root/target bounds across comparison, relocation, stored event
-                // construction and the returned target. Only range bounds are copied, not the
-                // payload.
                 || page.after.get(range.clone()) != image.as_bytes().get(root.range.clone())
             {
                 return Err(EditError::Preservation);
             }
             if root.word & RELOCATED_MASK == 0 {
-                // Preserve root/target bounds across comparison, relocation, stored event
-                // construction and the returned target. Only range bounds are copied, not the
-                // payload.
+                // NO_CLONE: Preserve root/target bounds across comparison, relocation,
+                // stored event construction and the returned target. Only range
+                // bounds are copied, not the payload.
                 page.after[range.clone()].fill(0);
             }
             page.after[range.start..range.start + POINTER_BYTES]
@@ -398,13 +398,13 @@ impl Placement for Plan {
         self.events.push(Event {
             root: root.reference,
             word: root.word,
-            // Preserve root/target bounds across comparison, relocation, stored event
-            // construction and the returned target. Only range bounds are copied, not the
-            // payload.
+            // NO_CLONE: Preserve root/target bounds across comparison, relocation, stored
+            // event construction and the returned target. Only range bounds are
+            // copied, not the payload.
             root_range: root.range.clone(),
-            // Preserve root/target bounds across comparison, relocation, stored event
-            // construction and the returned target. Only range bounds are copied, not the
-            // payload.
+            // NO_CLONE: Preserve root/target bounds across comparison, relocation, stored
+            // event construction and the returned target. Only range bounds are
+            // copied, not the payload.
             target: target.clone(),
             appended,
         });

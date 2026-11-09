@@ -191,11 +191,13 @@ pub(crate) fn append(
     {
         return Err(EditError::Preservation);
     }
-    // Detach the range from a borrowed placement event before consuming the plan pages for
-    // catalog/property role proof. Only range bounds are copied, not the payload.
+    // NO_CLONE: Detach the range from a borrowed placement event before consuming the plan
+    // pages for catalog/property role proof. Only range bounds are copied, not
+    // the payload.
     let catalog_range = root.range.clone();
-    // Detach the range from a borrowed placement event before consuming the plan pages for
-    // catalog/property role proof. Only range bounds are copied, not the payload.
+    // NO_CLONE: Detach the range from a borrowed placement event before consuming the plan
+    // pages for catalog/property role proof. Only range bounds are copied, not
+    // the payload.
     let property_range = property.range.clone();
     let root = root.reference;
     let property = property.reference;

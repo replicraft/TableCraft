@@ -51,6 +51,9 @@ pub(in crate::table::mutation) fn copy_value(
         }
         // Every remaining Value carrier is allocation-free. This match is
         // exhaustive so a future allocating carrier cannot inherit this path.
+        // NO_CLONE: Return a fixed-size owned value; allocating Text/Binary variants have
+        // separate charged fallible copy branches. This admitted carrier
+        // allocates no payload.
         Value::Null
         | Value::Boolean(_)
         | Value::Byte(_)
@@ -63,8 +66,6 @@ pub(in crate::table::mutation) fn copy_value(
         | Value::Decimal(_)
         | Value::Guid(_)
         | Value::DateTime(_)
-        // Return a fixed-size owned value; allocating Text/Binary variants have separate
-        // charged fallible copy branches. This admitted carrier allocates no payload.
         | Value::DateTimeExtended(_) => Ok(value.clone()),
     }
 }

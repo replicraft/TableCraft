@@ -69,8 +69,9 @@ fn routed(
 ) -> Result<Vec<usize>, EditError> {
     reader.tick()?;
     let payload = if original.height == 0 {
-        // Keep leaf range membership in normalized proof nodes while independently measuring or
-        // building payloads. Only range bounds are copied, not the payload.
+        // NO_CLONE: Keep leaf range membership in normalized proof nodes while
+        // independently measuring or building payloads. Only range bounds are
+        // copied, not the payload.
         Payload::Leaf(range.clone())
     } else {
         let mut children = Vec::new();
@@ -259,8 +260,9 @@ fn fits(
         Origin::Fresh | Origin::GrownRoot { .. } => 0,
     };
     match &node.payload {
-        // Keep leaf range membership in normalized proof nodes while independently measuring or
-        // building payloads. Only range bounds are copied, not the payload.
+        // NO_CLONE: Keep leaf range membership in normalized proof nodes while
+        // independently measuring or building payloads. Only range bounds are
+        // copied, not the payload.
         Payload::Leaf(range) => Ok(frames::measure(&entries[range.clone()], seed, reader)?.fits()),
         Payload::Branch { children, tail } => {
             let count = children

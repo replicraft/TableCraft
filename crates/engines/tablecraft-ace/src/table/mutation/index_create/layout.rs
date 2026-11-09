@@ -185,11 +185,13 @@ pub(super) fn compose(
     count[NEW_COUNTER_OFFSET..NEW_COUNTER_OFFSET + size_of::<u32>()]
         .copy_from_slice(&counter.to_le_bytes());
     active.extend_from_slice(&count);
-    // Read original column/physical/logical/name spans while the retained layout is needed for
-    // index creation. Only range bounds are copied, not the payload.
+    // NO_CLONE: Read original column/physical/logical/name spans while the retained layout
+    // is needed for index creation. Only range bounds are copied, not the
+    // payload.
     active.extend_from_slice(&raw[layout.columns.clone()]);
-    // Read original column/physical/logical/name spans while the retained layout is needed for
-    // index creation. Only range bounds are copied, not the payload.
+    // NO_CLONE: Read original column/physical/logical/name spans while the retained layout
+    // is needed for index creation. Only range bounds are copied, not the
+    // payload.
     active.extend_from_slice(&raw[layout.physical.clone()]);
     let mut physical = [0; PHYSICAL_BYTES];
     physical[..size_of::<u32>()].copy_from_slice(&INDEX_MAGIC.to_le_bytes());
@@ -207,8 +209,9 @@ pub(super) fn compose(
         .copy_from_slice(&descriptor.root.to_le_bytes());
     physical[FLAGS_OFFSET] = ORDINARY_FLAGS;
     active.extend_from_slice(&physical);
-    // Read original column/physical/logical/name spans while the retained layout is needed for
-    // index creation. Only range bounds are copied, not the payload.
+    // NO_CLONE: Read original column/physical/logical/name spans while the retained layout
+    // is needed for index creation. Only range bounds are copied, not the
+    // payload.
     active.extend_from_slice(&raw[layout.logical.clone()]);
     let mut logical = [0; LOGICAL_BYTES];
     logical[..size_of::<u32>()].copy_from_slice(&LOGICAL_MAGIC.to_le_bytes());
@@ -220,8 +223,9 @@ pub(super) fn compose(
         .copy_from_slice(&u32::MAX.to_le_bytes());
     logical[TYPE_OFFSET] = 0;
     active.extend_from_slice(&logical);
-    // Read original column/physical/logical/name spans while the retained layout is needed for
-    // index creation. Only range bounds are copied, not the payload.
+    // NO_CLONE: Read original column/physical/logical/name spans while the retained layout
+    // is needed for index creation. Only range bounds are copied, not the
+    // payload.
     active.extend_from_slice(&raw[layout.names.clone()]);
     active.extend_from_slice(
         &u16::try_from(name_bytes)

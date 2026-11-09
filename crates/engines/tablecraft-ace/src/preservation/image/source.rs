@@ -32,8 +32,8 @@ impl NativeImageSource {
         budget.charge_allocation(SHARING_CONTROL_BYTES, 1)?;
         let capacity = bytes.capacity();
         let bytes = Bytes::from(bytes);
-        // Exact-size vectors can defer their control allocation until first clone.
-        // Materialize it while the explicit control allowance is in scope.
+        // NO_CLONE: Exact-size vectors can defer their control allocation until first
+        // clone. Materialize it while the explicit control allowance is in scope.
         drop(bytes.clone());
 
         Ok(Self { bytes, capacity })
@@ -52,8 +52,8 @@ impl NativeImageSource {
     /// Share bytes with a read cursor. Derived/sliced `Bytes` cannot be admitted
     /// back as a whole native owner; only this original witness can be captured.
     pub fn shared_bytes(&self) -> Bytes {
-        // Return an independently owned cursor handle while retaining the complete original
-        // allocation witness.
+        // NO_CLONE: Return an independently owned cursor handle while retaining the
+        // complete original allocation witness.
         self.bytes.clone()
     }
 

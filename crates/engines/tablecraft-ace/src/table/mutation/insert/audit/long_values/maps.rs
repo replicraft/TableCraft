@@ -148,10 +148,11 @@ impl Record {
     }
 
     fn current<'a>(&self, proof: &'a ImageProof<'_>) -> Result<&'a [u8], EditError> {
+        // NO_CLONE: Read/rewrite or certify a map range retained by the mutable map witness
+        // for later bytes and event offsets. Only range bounds are copied, not
+        // the payload.
         proof
             .bytes
-            // Read/rewrite or certify a map range retained by the mutable map witness for later
-            // bytes and event offsets. Only range bounds are copied, not the payload.
             .get(self.range.clone())
             .ok_or(EditError::Preservation)
     }
@@ -172,18 +173,20 @@ impl Record {
                 return Err(EditError::Preservation);
             }
             reader.work(bytes.len())?;
-            // Read/rewrite or certify a map range retained by the mutable map witness for later
-            // bytes and event offsets. Only range bounds are copied, not the payload.
+            // NO_CLONE: Read/rewrite or certify a map range retained by the mutable map
+            // witness for later bytes and event offsets. Only range bounds are
+            // copied, not the payload.
             proof.bytes[self.range.clone()].copy_from_slice(bytes);
             self.rewritten = true;
             return Ok(());
         };
+        // NO_CLONE: Read/rewrite or certify a map range retained by the mutable map witness
+        // for later bytes and event offsets. Only range bounds are copied, not
+        // the payload.
         authority.inventory.require_record_rewrite(
             authority.schema,
             authority.column,
             kind,
-            // Read/rewrite or certify a map range retained by the mutable map witness for later
-            // bytes and event offsets. Only range bounds are copied, not the payload.
             (self.reference, self.range.clone()),
             reader.budget,
             reader.cancelled,
@@ -217,8 +220,9 @@ impl Record {
                 after,
             });
         }
-        // Read/rewrite or certify a map range retained by the mutable map witness for later
-        // bytes and event offsets. Only range bounds are copied, not the payload.
+        // NO_CLONE: Read/rewrite or certify a map range retained by the mutable map witness
+        // for later bytes and event offsets. Only range bounds are copied, not
+        // the payload.
         proof.bytes[self.range.clone()].copy_from_slice(bytes);
         self.rewritten = true;
         Ok(())

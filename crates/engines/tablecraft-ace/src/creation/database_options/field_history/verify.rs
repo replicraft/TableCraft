@@ -49,20 +49,19 @@ pub(super) fn candidate(
     let catalog_count = row_count(&before.as_bytes()[catalog_base..catalog_base + PAGE_BYTES])?;
     let property_count = row_count(&before.as_bytes()[property_base..property_base + PAGE_BYTES])?;
     let definition_count = CATALOG_DEFINITION * PAGE_BYTES + RECORD_COUNT_OFFSET;
+    // NO_CLONE: Retain placed catalog/property ranges for both allowed-scope byte checks
+    // and fresh native-property verification. Only range bounds are copied, not
+    // the payload.
     let scope = [
         definition_count..definition_count + size_of::<u32>(),
         catalog_base + FREE_OFFSET..catalog_base + FREE_OFFSET + SLOT_BYTES,
         catalog_base + ROW_COUNT_OFFSET..catalog_base + ROW_COUNT_OFFSET + SLOT_BYTES,
         catalog_base + slot_offset(catalog_count)..catalog_base + slot_offset(catalog_count + 1),
-        // Retain placed catalog/property ranges for both allowed-scope byte checks and fresh
-        // native-property verification. Only range bounds are copied, not the payload.
         placed.catalog_range.clone(),
         property_base + FREE_OFFSET..property_base + FREE_OFFSET + SLOT_BYTES,
         property_base + ROW_COUNT_OFFSET..property_base + ROW_COUNT_OFFSET + SLOT_BYTES,
         property_base + slot_offset(property_count)
             ..property_base + slot_offset(property_count + 1),
-        // Retain placed catalog/property ranges for both allowed-scope byte checks and fresh
-        // native-property verification. Only range bounds are copied, not the payload.
         placed.property_range.clone(),
     ];
     budget
@@ -122,12 +121,13 @@ pub(super) fn candidate(
     budget
         .charge(Resource::Steps, (2 * properties::ENCODED_BYTES) as u64)
         .map_err(InspectError::from)?;
+    // NO_CLONE: Retain placed catalog/property ranges for both allowed-scope byte checks
+    // and fresh native-property verification. Only range bounds are copied, not
+    // the payload.
     if database_properties.object_id() != database.object_id()
         || database_properties.name_auto_correct(budget, cancelled)?
             != DatabaseNameAutoCorrect::ExplicitOff
         || database_properties.raw_bytes().len() != properties::ENCODED_BYTES
-        // Retain placed catalog/property ranges for both allowed-scope byte checks and fresh
-        // native-property verification. Only range bounds are copied, not the payload.
         || database_properties.raw_bytes() != &after[placed.property_range.clone()]
     {
         return Err(Error::Preservation);

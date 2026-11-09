@@ -31,12 +31,12 @@ pub(super) fn candidate(
             return Err(Error::Preservation);
         }
     }
-    // Read both original and candidate definition entry bytes while preserving observed source
-    // metadata. Only range bounds are copied, not the payload.
+    // NO_CLONE: Read both original and candidate definition entry bytes while preserving
+    // observed source metadata. Only range bounds are copied, not the payload.
     let entry = observed.definition_entry.clone();
     budget.charge(Resource::Steps, (entry.len() * 2) as u64)?;
-    // Read both original and candidate definition entry bytes while preserving observed source
-    // metadata. Only range bounds are copied, not the payload.
+    // NO_CLONE: Read both original and candidate definition entry bytes while preserving
+    // observed source metadata. Only range bounds are copied, not the payload.
     if before.as_bytes().get(entry.clone()) != after.get(entry) {
         return Err(Error::Preservation);
     }

@@ -315,9 +315,9 @@ impl Encoded {
         if !chunk.linked && next != 0 {
             return Err(EditError::Preservation);
         }
+        // NO_CLONE: Read chunk payload using bounds borrowed from the retained
+        // serialization chunk. Only range bounds are copied, not the payload.
         let payload = bytes
-            // Read chunk payload using bounds borrowed from the retained serialization chunk.
-            // Only range bounds are copied, not the payload.
             .get(chunk.payload.clone())
             .filter(|payload| !payload.is_empty())
             .ok_or(EditError::Preservation)?;

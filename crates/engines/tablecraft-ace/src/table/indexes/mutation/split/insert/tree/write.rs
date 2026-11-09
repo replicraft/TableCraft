@@ -116,11 +116,11 @@ fn render<P: RetainedProfile, const N: usize>(
 ) -> Result<Vec<u8>, EditError> {
     let node = &operation.layout.nodes[index];
     let (entries, tail) = match &node.contents {
+        // NO_CLONE: Read leaf entries using bounds borrowed from the operation layout,
+        // which remains required for the write proof. Only range bounds are
+        // copied, not the payload.
         Contents::Leaf(range) => (
             leaf_entries(
-                // Read leaf entries using bounds borrowed from the operation layout, which
-                // remains required for the write proof. Only range bounds are copied, not the
-                // payload.
                 &operation.keys[range.clone()],
                 reader.budget,
                 reader.cancelled,

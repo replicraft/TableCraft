@@ -206,8 +206,9 @@ pub(super) fn prove(
         row.reference = reference(state.number, state.count as u8);
         row.range = base + start..base + state.end;
         reader.work(row.bytes.len() + 3 * size_of::<u16>())?;
-        // Copy row bytes into the candidate without moving its range out of the retained
-        // inserted-row proof. Only range bounds are copied, not the payload.
+        // NO_CLONE: Copy row bytes into the candidate without moving its range out of the
+        // retained inserted-row proof. Only range bounds are copied, not the
+        // payload.
         proof.bytes[row.range.clone()].copy_from_slice(&row.bytes);
         proof.bytes[base + slot_offset(state.count)..base + slot_offset(state.count + 1)]
             .copy_from_slice(&word.to_le_bytes());

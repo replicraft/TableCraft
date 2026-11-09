@@ -42,15 +42,15 @@ pub(super) fn stage(
             }
             let value = table.original_value(row, column, budget)?;
             let expected = match value {
+                // NO_CLONE: Own the original surviving fixed scalar in a nulling update;
+                // the source table remains needed for cascade staging. This
+                // admitted carrier allocates no payload.
                 Value::Byte(_)
                 | Value::Int16(_)
                 | Value::Int32(_)
                 | Value::Int64(_)
                 | Value::Currency(_)
                 | Value::Guid(_)
-                // Own the original surviving fixed scalar in a nulling update; the source table
-                // remains needed for cascade staging. This admitted carrier allocates no
-                // payload.
                 | Value::Decimal(_) => value.clone(),
                 _ => return Err(EditError::Unsupported(WriteBlocker::Column)),
             };

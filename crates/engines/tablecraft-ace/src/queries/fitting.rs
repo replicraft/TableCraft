@@ -119,8 +119,9 @@ impl NativeImage {
             .try_reserve_exact(length)
             .map_err(|_| InspectError::Allocation)?;
         after.extend_from_slice(self.as_bytes());
-        // Write replacement UTF-16 units inside the exact span, then retain that span for the
-        // full-image preservation check. Only range bounds are copied, not the payload.
+        // NO_CLONE: Write replacement UTF-16 units inside the exact span, then retain that
+        // span for the full-image preservation check. Only range bounds are
+        // copied, not the payload.
         for (pair, value) in after[span.clone()]
             .as_chunks_mut::<{ size_of::<u16>() }>()
             .0

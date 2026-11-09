@@ -77,11 +77,9 @@ pub(super) fn prove(
         .checked_add(delta)
         .ok_or(InspectError::StructureLimit)?;
     let range = counter.byte_range();
-    // Compare original and next counter bytes and return the same historical range. Only range
-    // bounds are copied, not the payload.
+    // NO_CLONE: Compare original and next counter bytes and return the same historical
+    // range. Only range bounds are copied, not the payload.
     if image.as_bytes().get(range.clone()) != Some(counter.value().to_le_bytes().as_slice())
-        // Compare original and next counter bytes and return the same historical range. Only
-        // range bounds are copied, not the payload.
         || after.get(range.clone()) != Some(next.to_le_bytes().as_slice())
     {
         return Err(EditError::Preservation);

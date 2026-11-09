@@ -108,8 +108,9 @@ fn build<P: RetainedProfile, const N: usize>(
         .get(original)
         .ok_or(EditError::Preservation)?;
     let contents = if source.children.is_empty() {
-        // Retain original range/node membership while assembling or measuring an independent
-        // normalized leaf layout. Only range bounds are copied, not the payload.
+        // NO_CLONE: Retain original range/node membership while assembling or measuring an
+        // independent normalized leaf layout. Only range bounds are copied, not
+        // the payload.
         Contents::Leaf(range.clone())
     } else {
         let mut children = Vec::new();
@@ -172,8 +173,9 @@ fn build<P: RetainedProfile, const N: usize>(
             children: std::mem::take(children),
             tail: true,
         },
-        // Retain original range/node membership while assembling or measuring an independent
-        // normalized leaf layout. Only range bounds are copied, not the payload.
+        // NO_CLONE: Retain original range/node membership while assembling or measuring an
+        // independent normalized leaf layout. Only range bounds are copied, not
+        // the payload.
         Contents::Leaf(range) => Contents::Leaf(range.clone()),
     };
     // An overflowing internal root moves its completed contents into a Fresh
@@ -312,10 +314,10 @@ fn fits<P: RetainedProfile, const N: usize>(
     let node = &layout.nodes[index];
     match &node.contents {
         Contents::Leaf(range) => {
+            // NO_CLONE: Retain original range/node membership while assembling or measuring
+            // an independent normalized leaf layout. Only range bounds are
+            // copied, not the payload.
             let entries = super::leaf_entries(
-                // Retain original range/node membership while assembling or measuring an
-                // independent normalized leaf layout. Only range bounds are copied, not the
-                // payload.
                 &context.keys[range.clone()],
                 reader.budget,
                 reader.cancelled,

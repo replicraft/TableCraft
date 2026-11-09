@@ -69,8 +69,9 @@ impl Reservation {
         self.destination.as_ref().map(|destination| Destination {
             page: destination.page,
             slot: destination.slot,
-            // Return an owned destination observation without consuming the retained
-            // reservation. Only range bounds are copied, not the payload.
+            // NO_CLONE: Return an owned destination observation without consuming the
+            // retained reservation. Only range bounds are copied, not the
+            // payload.
             range: destination.range.clone(),
         })
     }

@@ -50,9 +50,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 &mut work,
                 &|| false,
             )?,
+            // NO_CLONE: Each timed shared capture consumes a source owner; the benchmark
+            // retains the original across iterations and independently checks
+            // pointer identity.
             Mode::Shared => NativeImage::capture_shared(
-                // Each timed shared capture consumes a source owner; the benchmark retains the
-                // original across iterations and independently checks pointer identity.
                 source.clone(),
                 CatalogScope::new(1),
                 &mut work,

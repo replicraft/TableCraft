@@ -27,8 +27,9 @@ pub(super) fn derive(
     for number in &pages {
         let range = page_range(*number)?;
         reader.work(PAGE_BYTES)?;
-        // Reuse exact page/leaf bounds for original/candidate bytes and subsequent patch or
-        // tree proof. Only range bounds are copied, not the payload.
+        // NO_CLONE: Reuse exact page/leaf bounds for original/candidate bytes and
+        // subsequent patch or tree proof. Only range bounds are copied, not the
+        // payload.
         if proof.bytes.get(range.clone()) != image.as_bytes().get(range) {
             return Err(EditError::Preservation);
         }
@@ -103,12 +104,13 @@ pub(super) fn derive(
                 reader,
             )?;
             let after = match &node.payload {
+                // NO_CLONE: Reuse exact page/leaf bounds for original/candidate bytes and
+                // subsequent patch or tree proof. Only range bounds are copied,
+                // not the payload.
                 Payload::Leaf(range) => frames::leaf(
                     Some(&seed),
                     source.definition,
                     (previous, next),
-                    // Reuse exact page/leaf bounds for original/candidate bytes and subsequent
-                    // patch or tree proof. Only range bounds are copied, not the payload.
                     &entries[range.clone()],
                     reader,
                 )?,
@@ -243,16 +245,18 @@ pub(super) fn compare(
     let mut position = 0;
     for number in &change.pages {
         let range = page_range(*number)?;
+        // NO_CLONE: Reuse exact page/leaf bounds for original/candidate bytes and
+        // subsequent patch or tree proof. Only range bounds are copied, not the
+        // payload.
         let before = proof
             .original
-            // Reuse exact page/leaf bounds for original/candidate bytes and subsequent patch or
-            // tree proof. Only range bounds are copied, not the payload.
             .get(range.clone())
             .ok_or(EditError::Preservation)?;
+        // NO_CLONE: Reuse exact page/leaf bounds for original/candidate bytes and
+        // subsequent patch or tree proof. Only range bounds are copied, not the
+        // payload.
         let after = proof
             .bytes
-            // Reuse exact page/leaf bounds for original/candidate bytes and subsequent patch or
-            // tree proof. Only range bounds are copied, not the payload.
             .get(range.clone())
             .ok_or(EditError::Preservation)?;
         reader.work(PAGE_BYTES)?;

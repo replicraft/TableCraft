@@ -267,11 +267,11 @@ impl Writer<'_> {
                 .checked_sub(base)
                 .ok_or(EditError::Preservation)?;
             let at = slot_offset(usize::from(reference_slot(root.reference)));
+            // NO_CLONE: Compare native root bytes by a range borrowed from the retained
+            // root proof. Only range bounds are copied, not the payload.
             if u16_at(page, at)? != root.word
                 || !binding::equal_bytes(
                     &page[start..end],
-                    // Compare native root bytes by a range borrowed from the retained root
-                    // proof. Only range bounds are copied, not the payload.
                     &self.image.as_bytes()[root.range.clone()],
                     budget,
                     cancelled,

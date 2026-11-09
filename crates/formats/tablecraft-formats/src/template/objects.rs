@@ -120,15 +120,14 @@ impl TemplatePackage {
             {
                 return Err(TemplateError::Malformed);
             }
+            // NO_CLONE: The uniqueness index and returned object both retain the type
+            // spelling. Cow cannot borrow the temporary XML metadata; sharing
+            // these short, one-time keys would add reference-count control
+            // storage instead of removing ownership.
             let identity = (
                 if linked {
                     "Table".to_owned()
                 } else {
-                    // Retain independent duplicate-name/type key in the ordered set and
-                    // original spelling in returned TemplateObject; moving would invalidate one
-                    // live owner. Replacing this needs a representation change, not a last-use
-                    // move. Cow cannot outlive parsed metadata; sharing a tiny duplicate key
-                    // adds a control allocation.
                     type_name.clone()
                 },
                 name.as_str().to_ascii_lowercase(),

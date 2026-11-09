@@ -109,8 +109,8 @@ fn change(
         .ok_or(InspectError::StructureLimit)?;
     let range = historical.byte_range();
     let before = historical.value().to_le_bytes();
-    // Check original counter bytes and retain exact bounds in the new Change. Only range bounds
-    // are copied, not the payload.
+    // NO_CLONE: Check original counter bytes and retain exact bounds in the new Change.
+    // Only range bounds are copied, not the payload.
     if image.as_bytes().get(range.clone()) != Some(before.as_slice()) {
         return Err(EditError::Preservation);
     }

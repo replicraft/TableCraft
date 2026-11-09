@@ -233,14 +233,13 @@ fn reconstruct_history(
     )?;
     let range = original.byte_range();
     let before = original.value().to_le_bytes();
+    // NO_CLONE: Compare original and expected historical counter bytes while retaining
+    // range for the returned counter patch. Only range bounds are copied, not the
+    // payload.
     if original.definition_page() != schema.definition_page()
         || original.physical_index() != operation.index.data_number()
         || range.len() != size_of::<u32>()
-        // Compare original and expected historical counter bytes while retaining range for the
-        // returned counter patch. Only range bounds are copied, not the payload.
         || operation.image.as_bytes().get(range.clone()) != Some(before.as_slice())
-        // Compare original and expected historical counter bytes while retaining range for the
-        // returned counter patch. Only range bounds are copied, not the payload.
         || expected.get(range.clone()) != Some(before.as_slice())
     {
         return Err(EditError::Preservation);
