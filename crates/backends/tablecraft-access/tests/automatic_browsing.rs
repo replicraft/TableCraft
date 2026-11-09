@@ -1,11 +1,11 @@
 #[path = "automatic_browsing/projection.rs"]
 mod projection;
 use std::io::Cursor;
-use tablecraft_access::{
-    BrowsePage, CollectionPageRequest, NativeBrowser, StoredCollectionItem,
-    StoredCollectionPageValue, TablePageRequest,
+use tablecraft_access::{BrowsePage, NativeBrowser};
+use tablecraft_ace::{
+    CollectionPageRequest, InspectError, StoredCollectionItem, StoredCollectionPageValue,
+    TablePageRequest, TableSnapshotLimits,
 };
-use tablecraft_ace::{InspectError, TableSnapshotLimits};
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
 use tablecraft_testkit::fixtures::access as support;

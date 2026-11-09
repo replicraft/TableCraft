@@ -7,12 +7,11 @@ use crate::{
     display::Presentation,
     document::Document,
 };
-use tablecraft_access::{
-    BrowsePage, CollectionPageRequest, NativeBrowser, StoredCollectionColumn,
-    StoredCollectionPageValue, TablePageRequest,
+use tablecraft_access::{BrowsePage, NativeBrowser};
+use tablecraft_ace::{
+    CollectionPageRequest, InspectError, StoredCollectionColumn, StoredCollectionPageValue,
+    TablePageRequest, TableSchema, TableSnapshotLimits,
 };
-use tablecraft_ace::{InspectError, TableSchema, TableSnapshotLimits};
-
 /// A staleness precondition scoped to one runtime worker's immutable document.
 /// This is not a physical ROW, durable bookmark, or authorization token.
 #[derive(Clone, PartialEq, Eq)]

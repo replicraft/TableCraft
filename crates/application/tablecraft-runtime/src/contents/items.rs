@@ -1,8 +1,8 @@
 //! Projection through actual typed item accessors, retaining nullable metadata.
 use super::CollectionKind;
 use crate::{Cell, Error, display::Presentation};
-use tablecraft_access::StoredCollectionItem;
 use tablecraft_ace::InspectError;
+use tablecraft_ace::StoredCollectionItem;
 use tablecraft_core::values::{LegacyDateTime, Value};
 
 pub(super) fn headers(kind: CollectionKind) -> &'static [&'static str] {

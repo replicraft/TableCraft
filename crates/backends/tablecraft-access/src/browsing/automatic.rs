@@ -1,7 +1,8 @@
 //! Metadata-selected inert browsing without retrying failed record reads.
-use super::{CollectionPageRequest, NativeBrowser, StoredCollectionTablePage, TablePage};
-use tablecraft_ace::{InspectError, NativeReadSource};
-
+use super::NativeBrowser;
+use tablecraft_ace::{
+    CollectionPageRequest, InspectError, NativeReadSource, StoredCollectionTablePage, TablePage,
+};
 /// A buffered native page retaining ordinary scalar or explicit stored collection cells.
 /// Cached calculations are stored results only; attachment bytes remain encoded.
 pub enum BrowsePage {

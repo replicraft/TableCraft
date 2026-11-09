@@ -1,9 +1,7 @@
 //! Resumable browsing with the host's existing cumulative controls.
 use super::*;
-use tablecraft_ace::{TableCursor, TableSchema};
+use tablecraft_ace::{TableBatch, TableCursor, TableSchema};
 use tablecraft_schema::Column;
-
-pub use tablecraft_ace::TableBatch;
 
 /// A source-bound scalar cursor borrowing its browser's cumulative controls.
 /// Drop it before starting another operation on the browser. A failed fetch is

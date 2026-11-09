@@ -1,11 +1,9 @@
 //! Explicit stored attachments and visible-Memo history browsing.
 use super::NativeBrowser;
-pub use tablecraft_ace::{
-    AttachmentColumn, CollectionPageRequest, StoredAttachment, StoredCollectionColumn,
-    StoredCollectionItem, StoredCollectionPageCell, StoredCollectionPageValue,
-    StoredCollectionTablePage, StoredVersion, VersionHistoryColumn,
+use tablecraft_ace::{
+    AttachmentColumn, CollectionPageRequest, InspectError, StoredCollectionTablePage,
+    TableSnapshotLimits, VersionHistoryColumn, VersionHistoryReader,
 };
-use tablecraft_ace::{InspectError, TableSnapshotLimits, VersionHistoryReader};
 
 impl<R: tablecraft_ace::NativeReadSource> NativeBrowser<'_, R> {
     /// Open a source-bound typed multivalue reader under the original controls.

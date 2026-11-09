@@ -2,7 +2,8 @@
 use super::error::Error;
 use crate::{native, output::TableOutput};
 use std::path::Path;
-use tablecraft_access::{NativeBrowser, NativeTableStorage};
+use tablecraft_access::NativeBrowser;
+use tablecraft_ace::NativeTableStorage;
 
 #[derive(clap::Args)]
 pub(crate) struct Args {

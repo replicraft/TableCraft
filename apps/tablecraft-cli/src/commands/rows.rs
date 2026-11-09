@@ -1,8 +1,8 @@
 //! Bounded native scalar and stored-collection row display.
 use super::error::Error;
 use crate::{native, output::TableOutput};
-use tablecraft_access::{BrowsePage, CollectionPageRequest, NativeBrowser, TablePageRequest};
-use tablecraft_ace::{InspectError, TableSnapshotLimits};
+use tablecraft_access::{BrowsePage, NativeBrowser};
+use tablecraft_ace::{CollectionPageRequest, InspectError, TablePageRequest, TableSnapshotLimits};
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_core::values::Value;
 

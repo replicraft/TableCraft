@@ -1,10 +1,10 @@
 //! Complete typed collection summaries; no attachment decoding or child actions.
 use crate::{Cell, CellKind, Error, HorizontalAlignment, display::Presentation};
-use tablecraft_access::{
+use tablecraft_ace::InspectError;
+use tablecraft_ace::{
     StoredCollectionColumn, StoredCollectionItem, StoredCollectionPageValue,
     StoredCollectionTablePage,
 };
-use tablecraft_ace::InspectError;
 
 pub(super) fn rows(
     page: &StoredCollectionTablePage,

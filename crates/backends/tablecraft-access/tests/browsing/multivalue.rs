@@ -2,9 +2,10 @@
 mod reader;
 use super::support;
 use std::io::Cursor;
-use tablecraft_access::{CollectionPageRequest, NativeBrowser, TablePageRequest};
+use tablecraft_access::NativeBrowser;
 use tablecraft_ace::{
-    InspectError, TableSnapshotLimits, read_stored_collection_table_page_with_request,
+    CollectionPageRequest, InspectError, TablePageRequest, TableSnapshotLimits,
+    read_stored_collection_table_page_with_request,
 };
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
@@ -16,7 +17,7 @@ use tablecraft_testkit::fixtures::access::complex_links as links_fixture;
 
 #[test]
 fn multivalue_pages_keep_explicit_collection_cells_at_the_shared_browsing_boundary() {
-    use tablecraft_access::MultivaluePageValue;
+    use tablecraft_ace::MultivaluePageValue;
     let bytes = links_fixture::populated();
     let mut browser = NativeBrowser::new(
         Cursor::new(bytes),

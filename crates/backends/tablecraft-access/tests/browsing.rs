@@ -10,8 +10,9 @@ use tablecraft_testkit::fixtures::access::mutation_fixture as fixture;
 #[path = "browsing/multivalue.rs"]
 mod multivalue;
 use std::io::Cursor;
-use tablecraft_access::{NativeBrowser, TablePageRequest};
+use tablecraft_access::NativeBrowser;
 use tablecraft_ace::InspectError;
+use tablecraft_ace::TablePageRequest;
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
 use tablecraft_testkit::fixtures::access as support;
@@ -117,7 +118,7 @@ fn with_linked_tables() -> Vec<u8> {
 }
 #[test]
 fn inventory_exposes_storage_and_never_follows_linked_definitions() {
-    use tablecraft_access::NativeTableStorage as Storage;
+    use tablecraft_ace::NativeTableStorage as Storage;
     let bytes = with_linked_tables();
     let mut browser = NativeBrowser::new(
         Cursor::new(&bytes),

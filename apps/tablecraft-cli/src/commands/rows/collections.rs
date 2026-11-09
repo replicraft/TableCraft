@@ -1,6 +1,6 @@
 use super::super::error::Error;
 use crate::output::TableOutput;
-use tablecraft_access::{
+use tablecraft_ace::{
     StoredCollectionColumn, StoredCollectionItem, StoredCollectionPageValue,
     StoredCollectionTablePage,
 };

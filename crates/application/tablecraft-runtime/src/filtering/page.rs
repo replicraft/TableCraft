@@ -6,9 +6,11 @@ use crate::{
     display::Presentation,
     document::Document,
 };
-use tablecraft_access::{CollectionPageRequest, NativeBrowser, TablePageRequest};
-use tablecraft_ace::{InspectError, TableSnapshotLimits, inspect_table_schema};
-
+use tablecraft_access::NativeBrowser;
+use tablecraft_ace::{
+    CollectionPageRequest, InspectError, TablePageRequest, TableSnapshotLimits,
+    inspect_table_schema,
+};
 const VISIBLE_PAGE_ROWS: u32 = 100;
 
 impl Document {

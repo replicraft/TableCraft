@@ -6,19 +6,13 @@ pub use inventory::{ObjectEntry, ObjectInventory};
 mod cursor;
 mod description;
 mod projection;
-pub use cursor::{BrowserCursor, TableBatch};
+pub use cursor::BrowserCursor;
 pub use description::TableDescription;
-pub use tablecraft_ace::NativeTableStorage;
-pub use tablecraft_ace::StoredTablePage;
 mod collections;
-pub use collections::{
-    AttachmentColumn, CollectionPageRequest, StoredAttachment, StoredCollectionColumn,
-    StoredCollectionItem, StoredCollectionPageCell, StoredCollectionPageValue,
-    StoredCollectionTablePage, StoredVersion, VersionHistoryColumn,
+use tablecraft_ace::{
+    CollectionPageRequest, InspectError, MultivalueTablePage, StoredTablePage, TablePage,
+    TablePageRequest,
 };
-use tablecraft_ace::InspectError;
-pub use tablecraft_ace::{MultivaluePageCell, MultivaluePageValue, MultivalueTablePage};
-pub use tablecraft_ace::{TablePage, TablePageRequest};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_model::CatalogScope;
 

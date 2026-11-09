@@ -11,12 +11,7 @@ mod input;
 pub use input::{AccessInput, AccessInputError};
 mod browsing;
 pub use browsing::{
-    AttachmentColumn, BrowsePage, BrowserCursor, CollectionPageRequest, MultivaluePageCell,
-    MultivaluePageValue, MultivalueTablePage, NativeBrowser, NativeTableStorage, ObjectEntry,
-    ObjectInventory, StoredAttachment, StoredCollectionColumn, StoredCollectionItem,
-    StoredCollectionPageCell, StoredCollectionPageValue, StoredCollectionTablePage,
-    StoredTablePage, StoredVersion, TableBatch, TableDescription, TablePage, TablePageRequest,
-    VersionHistoryColumn,
+    BrowsePage, BrowserCursor, NativeBrowser, ObjectEntry, ObjectInventory, TableDescription,
 };
 mod source;
 pub use source::{

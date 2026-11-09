@@ -14,8 +14,9 @@ use super::{
     document::Document,
 };
 use page::PagePresentation;
-use tablecraft_access::{BrowsePage, CollectionPageRequest, NativeBrowser, TablePageRequest};
+use tablecraft_access::{BrowsePage, NativeBrowser};
 use tablecraft_ace::TableSnapshotLimits;
+use tablecraft_ace::{CollectionPageRequest, TablePageRequest};
 
 const PAGE_ROWS: u32 = 100;
 

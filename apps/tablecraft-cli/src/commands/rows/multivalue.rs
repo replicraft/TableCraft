@@ -2,8 +2,8 @@ use super::super::error::Error;
 use crate::output::TableOutput;
 use tablecraft_core::values::Value;
 
-pub(super) fn render(page: &tablecraft_access::MultivalueTablePage) -> Result<String, Error> {
-    use tablecraft_access::MultivaluePageValue;
+pub(super) fn render(page: &tablecraft_ace::MultivalueTablePage) -> Result<String, Error> {
+    use tablecraft_ace::MultivaluePageValue;
     let mut output = TableOutput::new();
     for (index, field) in page.schema().columns().iter().enumerate() {
         if index != 0 {

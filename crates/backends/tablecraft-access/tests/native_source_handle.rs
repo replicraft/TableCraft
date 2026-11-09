@@ -9,7 +9,8 @@ use std::{
     cell::{Cell, RefCell},
     io::{Cursor, Read, Seek, SeekFrom},
 };
-use tablecraft_access::{NativeSource, NativeTableStorage};
+use tablecraft_access::NativeSource;
+use tablecraft_ace::NativeTableStorage;
 use tablecraft_ace::{InspectError, NativeReadSource};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_model::CatalogScope;

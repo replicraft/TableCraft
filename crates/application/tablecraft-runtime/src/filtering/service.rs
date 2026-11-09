@@ -9,7 +9,8 @@ use crate::{
     document::Document,
 };
 use std::{cell::RefCell, sync::Arc};
-use tablecraft_access::{NativeBrowser, NativeCollationResolver, TablePageRequest};
+use tablecraft_access::{NativeBrowser, NativeCollationResolver};
+use tablecraft_ace::TablePageRequest;
 use tablecraft_ace::{inspect_database_sort_order, inspect_table_schema};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
