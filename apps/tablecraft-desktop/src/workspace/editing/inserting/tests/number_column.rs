@@ -7,6 +7,7 @@ use egui_kittest::{
     Harness,
     kittest::{NodeT, Queryable},
 };
+use std::path::Path;
 use tablecraft_runtime::{SaveOutcome, journal_path};
 use tablecraft_testkit::fixtures::access::canonical_created_number as raw;
 use tablecraft_ui::CellKind;
@@ -69,13 +70,23 @@ fn saved_numbers_then_new_row_omits_fields_and_generates_id(columns: &[&str]) {
     );
     assert!(page.rows.is_empty());
 
+    insert_omitted_fields(&mut harness, &path, &after_column, schema_revision, columns);
+}
+
+fn insert_omitted_fields(
+    harness: &mut Harness<'_, Desktop>,
+    path: &Path,
+    after_column: &[u8],
+    schema_revision: u64,
+    columns: &[&str],
+) {
     // The ordinary Ribbon starts a real source-bound insertion. Neither ID nor
     // any Number field is supplied; no display string becomes an edit value.
     let new = harness.get_by_role_and_label(Role::Button, "New");
     assert!(!new.accesskit_node().is_disabled());
     new.click_accesskit();
     harness.run_steps(1);
-    finish_reads(&mut harness);
+    finish_reads(harness);
     let generated = harness.get_by_role_and_label(Role::Label, "(New)");
     assert!(
         !generated
@@ -109,13 +120,13 @@ fn saved_numbers_then_new_row_omits_fields_and_generates_id(columns: &[&str]) {
         );
         // Exercise the actual mode menu, then explicitly omit each field. No
         // literal zero, NULL or empty numeric value is submitted.
-        omit_field(&mut harness, column);
+        omit_field(harness, column);
     }
-    review(&mut harness);
+    review(harness);
     let review_id = harness.state().editing.insert_review.as_ref().unwrap().0;
     assert!(harness.state().state.can_apply_insert(review_id));
     assert_eq!(
-        std::fs::read(&path).unwrap(),
+        std::fs::read(path).unwrap(),
         after_column,
         "row review is inert"
     );
@@ -123,7 +134,7 @@ fn saved_numbers_then_new_row_omits_fields_and_generates_id(columns: &[&str]) {
         .get_by_role_and_label(Role::Button, "Apply new row to original file")
         .click_accesskit();
     harness.run_steps(1);
-    let report = finish_save(&mut harness);
+    let report = finish_save(harness);
     assert!(
         matches!(report.outcome, SaveOutcome::Saved { receipt }
         if receipt.changed_rows == Some(1)
@@ -135,9 +146,9 @@ fn saved_numbers_then_new_row_omits_fields_and_generates_id(columns: &[&str]) {
         .get_by_role_and_label(Role::Button, "Close")
         .click_accesskit();
     harness.run_steps(1);
-    finish_reads(&mut harness);
+    finish_reads(harness);
     assert!(!harness.state().editing.has_save());
-    assert!(!journal_path(&path).exists());
+    assert!(!journal_path(path).exists());
     let reopened = harness.state().state.data.as_ref().unwrap();
     assert_eq!(reopened.table, "Table1");
     assert_ne!(reopened.source_revision, Some(schema_revision));
@@ -178,4 +189,47 @@ fn omit_field(harness: &mut Harness<'_, Desktop>, column: &str) {
             .click_accesskit();
         harness.run_steps(2);
     }
+}
+
+#[test]
+fn ordinary_number_rollover_then_new_row_omits_all_fourteen_fields() {
+    let mut before = raw::repeated::source(raw::Source::IdOnly);
+    let mut names = vec![String::from("Score")];
+    for number in 2..=13 {
+        let name = format!("N{number}");
+        before = raw::repeated::append(&before, &name);
+        names.push(name);
+    }
+    let expected = raw::repeated::append(&before, "N14");
+    assert_eq!(before.len(), 11 * 4096);
+    assert_eq!(expected.len(), 12 * 4096);
+    assert_eq!(&before[10 * 4096..], &expected[10 * 4096..11 * 4096]);
+    let (_directory, path, _, mut harness) = test_support::opened(before);
+    let original_tab = harness.state().state.active_object().unwrap();
+    // Ordinary Desktop::new performs source inspection; no flag/budget override
+    // or synthetic pre-qualification substitutes for the real native service.
+    add_number(&mut harness, "N14");
+    assert_eq!(std::fs::read(&path).unwrap(), expected);
+    assert!(!journal_path(&path).exists());
+    assert!(!harness.state().editing.has_save());
+    assert!(!harness.state().state.number_column_open());
+    let fresh_tab = harness.state().state.active_object().unwrap();
+    assert_eq!(fresh_tab.id, original_tab.id);
+    assert_ne!(
+        fresh_tab.target.document_revision,
+        original_tab.target.document_revision
+    );
+    let page = harness.state().state.data.as_ref().unwrap();
+    assert_eq!(page.columns.len(), 15);
+    assert_eq!(page.columns.last().unwrap().name, "N14");
+    assert!(page.rows.is_empty());
+    names.push(String::from("N14"));
+    let columns = names.iter().map(String::as_str).collect::<Vec<_>>();
+    insert_omitted_fields(
+        &mut harness,
+        &path,
+        &expected,
+        fresh_tab.target.document_revision,
+        &columns,
+    );
 }
