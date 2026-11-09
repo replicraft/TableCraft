@@ -179,8 +179,8 @@ pub(super) fn build<'u>(
             let next = placed
                 .get(position + 1)
                 .map_or(0, |&index| plan.appended[index].reference);
-            let range = plan.appended[placed[position]].range.clone();
-            let link = range.start..range.start + REFERENCE_BYTES;
+            let start = plan.appended[placed[position]].range.start;
+            let link = start..start + REFERENCE_BYTES;
             plan.bytes_mut(link, reader.budget, reader.cancelled)?
                 .copy_from_slice(&next.to_le_bytes());
         }
