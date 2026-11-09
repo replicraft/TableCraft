@@ -102,62 +102,83 @@ fn native_field_rename_preserves_true_identity_and_uses_the_complete_expected_im
         (SourceCase::Mixed, "Label", "Title"),
     ] {
         let [before, expected] = saved_field_rename::pair(case);
-        let (_directory, path, mut session) = opened(&before);
-        let revision = session.revision.unwrap();
-        let inspection = session
-            .execute(
-                "inspect_field_rename",
-                json!({
-                    "document_revision": revision,
-                    "table": "Table1",
-                    "column": original,
-                    "native_number": 1
-                }),
-            )
-            .unwrap();
-        assert_eq!(inspection["source_eligible"], true);
-        assert_eq!(
-            inspection["same_width_ascii_utf16_units"],
-            serde_json::Value::Null
-        );
-        assert_eq!(
-            inspection["name_profile"],
-            json!({"kind": "fitted_ascii", "original_units": 5})
-        );
-        let review = session
-            .execute(
-                "review_field_rename",
-                json!({
-                    "document_revision": revision,
-                    "table": "Table1",
-                    "column": original,
-                    "native_number": 1,
-                    "new_name": replacement
-                }),
-            )
-            .unwrap();
-        assert_eq!(review["changed"], true);
-        assert_eq!(std::fs::read(&path).unwrap(), before);
-        let id = save(&mut session, "apply_field_rename", review);
-        assert_eq!(std::fs::read(&path).unwrap(), expected);
-        acknowledge(&mut session, id, &path);
-        let metadata = session
-            .execute(
-                "describe_table",
-                json!({
-                    "document_revision": session.revision.unwrap(),
-                    "table": "Table1"
-                }),
-            )
-            .unwrap();
-        let fields = metadata["fields"].as_array().unwrap();
-        assert!(!fields.iter().any(|field| field["name"] == original));
-        let renamed = fields
-            .iter()
-            .find(|field| field["name"] == replacement)
-            .unwrap();
-        assert_eq!(renamed["native_number"], 1);
+        checked_field_rename(&before, &expected, original, replacement);
     }
+}
+
+#[test]
+fn fitted_field_rename_grows_and_shrinks_original_number_text_and_history_sources() {
+    use tablecraft_testkit::fixtures::access::saved_field_rename::fitting::{self, SourceCase};
+
+    for case in [
+        SourceCase::NumberFirst,
+        SourceCase::NumberHistory,
+        SourceCase::InlineNumberThenText,
+        SourceCase::TextNumberText,
+    ] {
+        for replacement in ["TaxAmount", "X"] {
+            let [before, expected] = fitting::pair(case, replacement);
+            checked_field_rename(&before, &expected, fitting::old_name(case), replacement);
+        }
+    }
+}
+
+fn checked_field_rename(before: &[u8], expected: &[u8], original: &str, replacement: &str) {
+    let (_directory, path, mut session) = opened(before);
+    let revision = session.revision.unwrap();
+    let inspection = session
+        .execute(
+            "inspect_field_rename",
+            json!({
+                "document_revision": revision,
+                "table": "Table1",
+                "column": original,
+                "native_number": 1
+            }),
+        )
+        .unwrap();
+    assert_eq!(inspection["source_eligible"], true);
+    assert_eq!(
+        inspection["same_width_ascii_utf16_units"],
+        serde_json::Value::Null
+    );
+    assert_eq!(
+        inspection["name_profile"],
+        json!({"kind": "fitted_ascii", "original_units": original.len()})
+    );
+    let review = session
+        .execute(
+            "review_field_rename",
+            json!({
+                "document_revision": revision,
+                "table": "Table1",
+                "column": original,
+                "native_number": 1,
+                "new_name": replacement
+            }),
+        )
+        .unwrap();
+    assert_eq!(review["changed"], true);
+    assert_eq!(std::fs::read(&path).unwrap(), before);
+    let id = save(&mut session, "apply_field_rename", review);
+    assert_eq!(std::fs::read(&path).unwrap(), expected);
+    acknowledge(&mut session, id, &path);
+    let metadata = session
+        .execute(
+            "describe_table",
+            json!({
+                "document_revision": session.revision.unwrap(),
+                "table": "Table1"
+            }),
+        )
+        .unwrap();
+    let fields = metadata["fields"].as_array().unwrap();
+    assert!(!fields.iter().any(|field| field["name"] == original));
+    let renamed = fields
+        .iter()
+        .find(|field| field["name"] == replacement)
+        .unwrap();
+    assert_eq!(renamed["native_number"], 1);
 }
 
 #[test]
