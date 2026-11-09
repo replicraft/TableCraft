@@ -3,6 +3,7 @@ use crate::workspace::editing::field_rename::widgets::propose_name;
 use crate::workspace::test_support::{self, finish_reads, finish_schema_save};
 use egui::{Key, Modifiers, accesskit::Role};
 use egui_kittest::kittest::{NodeT, Queryable};
+use std::time::{Duration, Instant};
 use tablecraft_runtime::journal_path;
 use tablecraft_testkit::fixtures::access::saved_field_rename::fitting::{self, SourceCase};
 
@@ -76,4 +77,89 @@ fn normal_datasheet_and_design_grow_and_shrink_real_number_and_text_names() {
             }
         }
     }
+}
+
+#[test]
+fn actual_field_rename_capacity_refusal_preserves_name_then_fresh_correction_saves_exact_after() {
+    let before = fitting::near_capacity_source();
+    let too_long = "A".repeat(29);
+    let fitting_name = "A".repeat(28);
+    let [expected_before, after] = fitting::near_capacity_pair(&fitting_name);
+    assert_eq!(expected_before, before);
+    let (_directory, path, _, mut harness) = test_support::opened(before.clone());
+    let original_tab = harness.state().state.active_object().unwrap();
+    propose_name(&mut harness, "Score", &too_long);
+    assert!(
+        harness.state().state.can_review_field_rename(),
+        "the observed fitted profile validates shape, not physical free capacity"
+    );
+    harness.key_press_modifiers(Modifiers::COMMAND, Key::S);
+    harness.run_steps(1);
+    let deadline = Instant::now() + Duration::from_secs(10);
+    while harness.state().state.busy || harness.state().editing.field_rename.is_some() {
+        assert!(
+            Instant::now() < deadline,
+            "native fitted review did not finish"
+        );
+        harness.run_steps(1);
+        std::thread::yield_now();
+    }
+    assert_eq!(
+        harness.state().state.error.as_deref(),
+        Some("fitted field rename exceeds the existing name capacity")
+    );
+    let (target, retained, rejected_revision) =
+        harness.state().state.field_rename_proposal().unwrap();
+    assert_eq!(target.column, "Score");
+    assert_eq!(retained, too_long);
+    assert_eq!(
+        harness
+            .get_by_role_and_label(Role::TextInput, "Field name")
+            .value()
+            .as_deref(),
+        Some(too_long.as_str())
+    );
+    assert!(harness.state().editing.save.is_none());
+    assert!(!harness.state().editing.worker.is_busy());
+    assert!(!journal_path(&path).exists());
+    assert_eq!(std::fs::read(&path).unwrap(), before);
+
+    harness
+        .get_by_role_and_label(Role::TextInput, "Field name")
+        .focus();
+    harness.run_steps(1);
+    harness.key_press_modifiers(Modifiers::COMMAND, Key::A);
+    harness
+        .get_by_role_and_label(Role::TextInput, "Field name")
+        .type_text(&fitting_name);
+    harness.run_steps(2);
+    let (_, corrected, revision) = harness.state().state.field_rename_proposal().unwrap();
+    assert_eq!(corrected, fitting_name);
+    assert!(revision > rejected_revision);
+    assert!(harness.state().state.can_review_field_rename());
+    assert_eq!(std::fs::read(&path).unwrap(), before);
+    harness.key_press_modifiers(Modifiers::COMMAND, Key::S);
+    harness.run_steps(1);
+    finish_schema_save(&mut harness);
+    assert_eq!(std::fs::read(&path).unwrap(), after);
+    assert!(!journal_path(&path).exists());
+    assert!(!harness.state().editing.has_save());
+    assert!(!harness.state().state.field_rename_open());
+    let fresh_tab = harness.state().state.active_object().unwrap();
+    assert_eq!(fresh_tab.id, original_tab.id);
+    assert_ne!(
+        fresh_tab.target.document_revision,
+        original_tab.target.document_revision
+    );
+    let column = harness
+        .state()
+        .state
+        .data
+        .as_ref()
+        .unwrap()
+        .columns
+        .iter()
+        .find(|column| column.name == fitting_name)
+        .unwrap();
+    assert_eq!(column.native_number, Some(1));
 }
