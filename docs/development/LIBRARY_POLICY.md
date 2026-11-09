@@ -115,7 +115,7 @@ libraries and feature choices, not adoption of new algorithm implementations.
   text and UTF-16LE, avoiding an intermediate UTF-16 allocation on the qualified
   ASCII path. No validated Value/Decimal/date type implements POD. Bitmap
   benchmarks selected the faster word iterator; SIMD remains a measured contender
-  in engineering code. See [native benchmarks](../testing/NATIVE_BENCHMARKS.md).
+  in engineering code. See [native benchmarks](../../tests/reports/general/NATIVE_BENCHMARKS.md).
 
 - `uuid`: native GUID byte-order conversion, canonical parsing and formatting;
   defaults disabled, with no random generation or semantic-ID substitution.
@@ -176,7 +176,7 @@ contracts and native evidence. Bigdecimal has a clearer role for larger intermed
 SQLParser's optional bigdecimal integration remains disabled here.
 `decimal-rs` is attractive when a 38-digit SQL decimal requirement becomes concrete.
 The alternative-library assessments are API reviews. The adopted CCur path has
-[measured conversion costs](../testing/CURRENCY_CONVERSIONS.md), but no native
+[measured conversion costs](../../tests/reports/queries/CURRENCY_CONVERSIONS.md), but no native
 Access conformance result. No candidate's rounding, byte encoding or equality
 semantics is adopted implicitly.
 
@@ -263,14 +263,16 @@ cover all new runtime/tool references; none is adopted or installed now.
 
 ## Agent interface and project verification tools
 
-Prefer the official Rust MCP SDK `rmcp` for a working future `tablecraft-mcp`
-adapter, not a custom protocol implementation. Select exact version/features and
-qualify negotiation/extensions with that consumer. Keep ordinary CLI/engine/query
-runtime closures unchanged; no SDK dependency is added by documenting it.
+The local `apps/tablecraft-mcp` host uses the official Rust MCP SDK `rmcp`
+with server/stdio features, Tokio transport and Schemars-derived request schemas.
+Keep its protocol dependencies outside ordinary CLI/engine/query closures.
+JSON DTOs belong to this adapter; native capability construction and mutation
+semantics remain in the shared runtime. Remote transports/extensions require
+their own working consumer and qualification.
 Ruff, a qualified type checker and pytest belong to explicitly managed project
 workflows. Checking is separate from authorized execution; pytest discovery/plugins
 can run code. [MCP direction](../interfaces/MCP.md) and
-[application scenarios](../testing/APPLICATION_SCENARIOS.md) own requirements.
+[application scenarios](../../tests/reports/reading/APPLICATION_SCENARIOS.md) own requirements.
 
 ## Working Unicode case mapping
 
@@ -324,7 +326,7 @@ Do not expose arbitrary-precision values as stored field carriers or enable
 serialization/random/provider features for this math consumer. Keep exponent/
 count bounds, scratch budgets and independent rational controls explicit. Exact
 versions/features and measured costs are in [DEPENDENCIES.md](DEPENDENCIES.md#bounded-exact-floating-means-22-october-2026)
-and [the verification record](../testing/FLOATING_MEANS.md).
+and [the verification record](../../tests/reports/general/FLOATING_MEANS.md).
 
 
 The [wider Decimal mean fallback](../query/aggregates/AVERAGES.md) also uses the existing BigInt

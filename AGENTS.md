@@ -91,7 +91,7 @@ the Access adapter. Keep row handles snapshot-local and concrete storage out of
 that crate. [Native edit plans](docs/access/writes/NATIVE_WRITES.md) preserve all
 bytes outside each qualified operation's exact edit scope; unsupported constraints
 and payloads block writes.
-The optional ACE 16 [engineering preview](docs/testing/ACE16_WRITE_PREVIEWS.md)
+The optional ACE 16 [engineering preview](tests/reports/development/ACE16_WRITE_PREVIEWS.md)
 returns a separate non-journalable candidate type. Keep it out of normal CLI/backend
 write paths; its independent byte checks do not qualify data macros or native saves.
 Optional journal integration requires explicit exclusive offline resources and
@@ -423,8 +423,11 @@ not authority to execute code, export records or change permissions.
 Keep `tablecraft-edit` prospective/module-first until working consumers justify
 extraction. Preserve the `tablecraft-builders` name. Headless previews and
 application scenarios are required future services, not features supplied by a
-protocol tool list. No MCP host or scripting execution is implemented by these
-docs; ordinary CLI/engine builds retain their existing dependency boundaries.
+protocol tool list. `apps/tablecraft-mcp` adapts the shared runtime over explicitly
+invoked local stdio; retain session-owned consuming reviews and actual save,
+recovery and guarded-reopen outcomes. Protocol JSON cannot construct native
+capabilities. Scripting execution remains deferred, and ordinary CLI/engine
+builds retain their existing dependency boundaries.
 
 ## Documentation and private planning
 
@@ -450,7 +453,7 @@ documents and relevant tests when behavior changes.
 
 Use the [compatibility roadmap](docs/ROADMAP.md) and feature-local contracts for
 application work. Prioritize observed application outcomes; the
-[corpus policy](docs/testing/ACCESS_APPLICATIONS.md) separates open, preservation,
+[corpus policy](tests/reports/reading/ACCESS_APPLICATIONS.md) separates open, preservation,
 execution, editing and native save/reopen evidence. A candidate inventory or
 requirements document is not a qualified fixture or passing application test.
 
@@ -464,7 +467,7 @@ verify. Do not introduce a generic test framework solely to remove a few lines o
 useful local setup.
 
 Do not copy third-party code or fixtures without provenance and license review.
-Record fixture sources, hashes and notices in [FIXTURES.md](docs/testing/FIXTURES.md).
+Record fixture sources, hashes and notices in [FIXTURES.md](tests/reports/reading/FIXTURES.md).
 Preserve original fixture bytes and perform mutation experiments on copies.
 Do not execute active database content implicitly. Keep private data,
 credentials and machine-specific paths out of commits.

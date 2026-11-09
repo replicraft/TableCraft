@@ -11,6 +11,7 @@ and ACE 12–16 CRUD/query work, desktop v0.1.0 gates and full application parit
 | Area | Contents |
 | --- | --- |
 | [CLI](cli/README.md) | Commands, browsing, parameters and streaming output |
+| [Local MCP](interfaces/MCP.md) | Scoped stdio host, typed tools and shared reviewed editing |
 | [Native Access](access/README.md) | Jet/ACE storage, indexes, queries, collections and writes |
 | [Query engine](query/README.md) | Parsing, binding, execution, keys and aggregates |
 | [Expressions](expressions/README.md) | Built-ins, numeric/text/date behavior and formatting |

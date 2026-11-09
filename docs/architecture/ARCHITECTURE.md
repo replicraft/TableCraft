@@ -181,7 +181,7 @@ not additional crates: [startup/session state](../features/ACCESS_APP_STARTUP.md
 [imported ribbons](../features/ACCESS_RIBBON_COMPAT.md), [DAO/ADO](../features/DAO_ADO.md),
 [advanced fields](../features/ACCESS_ADVANCED_FIELDS.md) and
 [distribution/signature profiles](../features/ACCESS_DISTRIBUTION.md).
-The [application corpus](../testing/ACCESS_APPLICATIONS.md) records the unqualified
+The [application corpus](../../tests/reports/reading/ACCESS_APPLICATIONS.md) records the unqualified
 candidate and defines separate open/preserve/execute/edit/save evidence.
 The [roadmap](../ROADMAP.md) maps [analysis tools](../features/DATABASE_ANALYSIS.md),
 [wizards](../features/APP_TEMPLATES_WIZARDS.md), [expression editing](../features/EXPRESSION_BUILDER.md)
@@ -255,7 +255,7 @@ compatibility package was introduced.
 
 See [crypto](../platform/CRYPTO.md), [package formats](../formats/ACCESS_PACKAGES.md),
 [DB views](../foundation/DB.md), [SQL construction](../query/SQL_PARSER.md) and
-[testkit](../testing/TESTKIT.md) for implemented boundaries. Normal native saves,
+[testkit](../../tests/reports/general/TESTKIT.md) for implemented boundaries. Normal native saves,
 signature verification and paused project/runtime work retain their prior status.
 
 ## Dependency and ownership rules
@@ -376,7 +376,7 @@ manifests and must not be scaffolded without working functionality.
 [application conversion](../features/PROJECT_MIGRATIONS.md) and
 [peer schema evolution](../features/COLLABORATIVE_SCHEMA_EVOLUTION.md) define the
 accepted contracts and remaining decisions. They are not working APIs or release
-claims. [Qualification](../testing/PROJECT_COMPATIBILITY.md) requires executable proofs.
+claims. [Qualification](../../tests/reports/reading/PROJECT_COMPATIBILITY.md) requires executable proofs.
 
 [Dependency boundaries](DEPENDENCY_BOUNDARIES.md) now have a runnable
 local-package guard and regression tests. New packages need an explicit policy
@@ -395,11 +395,15 @@ Runtime composes approved apply; MCP/CLI/designers adapt the same services.
 [Agent discovery/design](../features/AGENT_NATIVE.md),
 [changesets](APPLICATION_CHANGESETS.md),
 [headless previews](../features/HEADLESS_PREVIEWS.md),
-[deterministic scenarios](../testing/APPLICATION_SCENARIOS.md) and
-[MCP direction](../interfaces/MCP.md) are requirements, not implemented tools.
+[deterministic scenarios](../../tests/reports/reading/APPLICATION_SCENARIOS.md) and
+[MCP direction](../interfaces/MCP.md) describe requirements beyond the existing
+bounded local host. `apps/tablecraft-mcp` adapts the same runtime document,
+review, creation and save/recovery services as desktop, using typed protocol
+schemas and session-owned capabilities. It does not implement native mutations.
 Existing native edit plans remain a distinct bounded capability. No agent path
 may bypass version, authorization, native format or preservation restrictions.
-The actual workspace has fifteen packages and no MCP runtime dependency.
+MCP SDK/transport dependencies belong only to that explicit app; engine/query,
+ordinary CLI and desktop do not inherit them.
 
 ## Built-in backends and external data
 

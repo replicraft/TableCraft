@@ -65,7 +65,7 @@ feature to its development helper so minimal tests keep the helper disabled;
 ACE's base reader observer enables no journal feature. Query Source fixtures
 serve integration tests. Unit tests retain private glue for their own crate's
 types; external normal-crate types cannot replace those private types implicitly.
-See the [testkit guide](../testing/TESTKIT.md) for features and platform scope.
+See the [testkit guide](../../tests/reports/general/TESTKIT.md) for features and platform scope.
 
 Access also consumes the existing expression crate directly for its working
 `GeneralCollation` implementation of the backend-neutral `Collation` contract.
@@ -102,6 +102,13 @@ requires a policy review at introduction like any new package. The existing
 checker was not relaxed to permit speculative agent/runtime dependencies.
 
 ## Provider ownership
+
+The local `tablecraft-mcp` application depends on runtime and headless
+builder/value/display contracts, with testkit restricted to development use.
+Its SDK, Tokio transport and Schemars wire schemas do not enter library, desktop
+or ordinary CLI closures. It must not import desktop/UI or native adapter internals
+to bypass shared service admission. The executable owns only protocol/session
+lifetimes, scoped file arguments and actual runtime review/report handles.
 
 Shared DB contracts reside in `foundation/`; Access and SQLite integrations
 reside in `backends/`. Future `adapters/` packages connect external systems rather

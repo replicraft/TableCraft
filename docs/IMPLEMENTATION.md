@@ -1,5 +1,32 @@
 # Implementation status
 
+## Local shared-service MCP host — 9 November 2026
+
+`apps/tablecraft-mcp` now supplies an explicitly invoked local stdio host using
+`rmcp`, Schemars-derived input contracts and the existing runtime's bounded
+read, CRUD, action-query, visual-query, Find/Replace and native save/recovery
+services. It retains actual opaque capabilities, consuming reviews, save actors
+and complete-image reopen witnesses; it adds no independent native writer or
+format admission. Desktop/CLI/engine builds do not inherit the MCP transport.
+See the [host contract](interfaces/MCP.md) and
+[crate ownership review](development/CRATE_OWNERSHIP_REVIEW.md).
+
+The local host batch passes 30 unit/service cases and one actual stdio process
+integration case, with strict all-target host Clippy. The native batch passes
+1,615 ACE tests (263 existing ignored) and 213 Access adapter tests. Shared runtime
+passes 320 tests (one existing ignored), shared UI 691 and the four real desktop
+table-deletion host cases. These are local/headless checks, not Windows execution
+or a native Access compatibility qualification. Qualified table DROP currently
+requires an empty source and preserves allocated native storage.
+
+Locales now live at `locales/`; shared assets live at `assets/fonts/` and
+`assets/icons/`. Compatibility engineering material is feature-organized under
+`tests/`; Rust unit/integration tests retain their package locations. The move
+was committed as exact-content renames before maintained path/import updates.
+The [organization review](../tests/reports/development/TEST_ORGANIZATION.md)
+separates fresh tooling checks, duplicate-helper candidates and historical records.
+
+
 ## Complete non-test clone review — 9 November 2026
 
 The [ownership audit](development/CLONE_AUDIT.md) individually reviews all 707

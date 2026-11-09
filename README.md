@@ -111,6 +111,10 @@ light/dark themes and interface languages under File → Options.
 
 ## Documentation
 
+For local agent integration, run `cargo run -p tablecraft-mcp -- --root
+/absolute/path/to/databases` from an MCP client. The [MCP guide](docs/interfaces/MCP.md)
+describes the shared runtime's bounded read, review/apply and recovery workflows.
+
 - [Documentation index](docs/README.md)
 - [Compatibility and support tiers](docs/COMPATIBILITY.md)
 - [Backend roadmap](docs/ROADMAP.md)
