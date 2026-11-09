@@ -165,5 +165,5 @@ mod rich_before_change_sources;
 mod mixed_normal_sources;
 
 #[cfg(test)]
-#[path = "joint/proof/tests.rs"]
+#[path = "preserved/joint/proof/tests.rs"]
 mod joint_proof_tests;

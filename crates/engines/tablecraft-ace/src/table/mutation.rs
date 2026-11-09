@@ -156,7 +156,7 @@ mod normal_fixed_scalar_sources;
 mod normal_nullable_fixed_int32_sources;
 
 #[cfg(all(test, feature = "journal"))]
-#[path = "normal_nullable_fixed_int32_sources/anchors.rs"]
+#[path = "mutation/normal_nullable_fixed_int32_sources/anchors.rs"]
 mod normal_nullable_fixed_int32_anchors;
 
 #[cfg(all(test, feature = "journal"))]

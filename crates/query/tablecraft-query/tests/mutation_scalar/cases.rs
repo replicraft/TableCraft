@@ -9,6 +9,7 @@ use tablecraft_query::{QueryError, UpdateError, plan_batch_update, plan_delete, 
 use tablecraft_schema::{Column, NameComparison, ScalarType, SchemaPolicy};
 use tablecraft_sql::{ParseLimits, parse_query};
 
+#[path = "dates.rs"]
 mod dates;
 
 struct Editor {

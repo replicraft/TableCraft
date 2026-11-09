@@ -27,11 +27,13 @@ mod table_creation;
 mod table_rename;
 
 #[cfg(any(target_os = "macos", target_os = "linux", windows))]
-#[path = "platform/native/mod.rs"]
-pub(crate) mod platform;
+pub(crate) mod native;
+#[cfg(any(target_os = "macos", target_os = "linux", windows))]
+pub(crate) use native as platform;
 #[cfg(not(any(target_os = "macos", target_os = "linux", windows)))]
-#[path = "platform/unsupported/mod.rs"]
-pub(crate) mod platform;
+pub(crate) mod unsupported;
+#[cfg(not(any(target_os = "macos", target_os = "linux", windows)))]
+pub(crate) use unsupported as platform;
 
 #[cfg(feature = "ace16-create")]
 pub use add_column::{AddColumnReview, AddedColumnReopen, ReviewedAddColumn};

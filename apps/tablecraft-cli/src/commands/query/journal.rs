@@ -7,7 +7,7 @@ mod delete;
 #[cfg(any(target_os = "macos", target_os = "linux", windows))]
 mod error;
 #[cfg(not(any(target_os = "macos", target_os = "linux", windows)))]
-#[path = "unsupported.rs"]
+#[path = "journal/unsupported.rs"]
 mod error;
 #[cfg(any(target_os = "macos", target_os = "linux", windows))]
 mod insert;

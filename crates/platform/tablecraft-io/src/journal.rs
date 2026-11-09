@@ -35,7 +35,7 @@ pub mod filesystem_contracts;
 pub mod filesystem;
 
 #[cfg(all(windows, feature = "filesystem-journal"))]
-#[path = "filesystem_windows/mod.rs"]
+#[path = "journal/filesystem_windows.rs"]
 pub mod filesystem;
 
 #[cfg(all(feature = "filesystem-journal", any(windows, test)))]

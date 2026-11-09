@@ -1,7 +1,11 @@
 //! Local-NTFS flat journal pairing with explicit retained artifact outcomes.
+#[path = "filesystem_windows/pair.rs"]
 mod pair;
+#[path = "filesystem_windows/setup.rs"]
 mod setup;
+#[path = "filesystem_windows/storage.rs"]
 mod storage;
+#[path = "filesystem_windows/target.rs"]
 mod target;
 
 pub use super::filesystem_contracts::{
@@ -23,4 +27,5 @@ fn binding_identity(identity: FileIdentity) -> FlatIdentity {
 }
 
 #[cfg(test)]
+#[path = "filesystem_windows/tests.rs"]
 mod tests;
