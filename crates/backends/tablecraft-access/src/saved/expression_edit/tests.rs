@@ -39,8 +39,8 @@ fn reviewed(
 #[test]
 fn two_projection_sql_edit_matches_complete_raw_after_in_native_projection_order() {
     let before = raw::two_projections();
-    let original = "SELECT 42 AS Answer, 99 AS Second;";
-    let proposed = "SELECT 1000 AS Answer, 7000 AS Second;";
+    let original = "SELECT 42 AS Answer, 99 AS [Second];";
+    let proposed = "SELECT 1000 AS Answer, 7000 AS [Second];";
     let plan = reviewed(&before, original, proposed).unwrap();
     let oracle = raw::replace_at(&raw::replace_at(&before, 3, "1000"), 4, "7000");
     assert_eq!(plan.before_bytes(), before);
@@ -53,9 +53,9 @@ fn two_projection_sql_edit_matches_complete_raw_after_in_native_projection_order
 #[test]
 fn projection_and_where_preserve_sources_aliases_and_full_proposed_model() {
     let before = sql_raw::local_where();
-    let original = "SELECT 42 AS Answer, 99 AS Second FROM MSysObjects AS p WHERE [p].[Id] >= 2;";
+    let original = "SELECT 42 AS Answer, 99 AS [Second] FROM MSysObjects AS p WHERE [p].[Id] >= 2;";
     let proposed =
-        "SELECT [p].[Id] AS Answer, 99 AS Second FROM MSysObjects AS p WHERE [p].[Id] >= 1000;";
+        "SELECT [p].[Id] AS Answer, 99 AS [Second] FROM MSysObjects AS p WHERE [p].[Id] >= 1000;";
     let plan = reviewed(&before, original, proposed).unwrap();
     let oracle = raw::replace_at(
         &raw::replace_at(&before, 4, "[p].[Id]"),
@@ -90,8 +90,8 @@ fn projection_and_where_preserve_sources_aliases_and_full_proposed_model() {
 #[test]
 fn unchanged_native_spelling_and_format_only_sql_are_never_rewritten() {
     let before = sql_raw::retained_spelling();
-    let original = "SELECT 42 AS Answer, 99 AS Second;";
-    let proposed = "SELECT 42 AS Answer, 7000 AS Second;";
+    let original = "SELECT 42 AS Answer, 99 AS [Second];";
+    let proposed = "SELECT 42 AS Answer, 7000 AS [Second];";
     let plan = reviewed(&before, original, proposed).unwrap();
     assert_eq!(plan.after_bytes(), raw::replace_at(&before, 4, "7000"));
     assert_eq!(plan.intent().edits().len(), 1);
@@ -128,16 +128,16 @@ fn unchanged_native_spelling_and_format_only_sql_are_never_rewritten() {
 #[test]
 fn added_removed_alias_parameter_source_and_where_topology_changes_refuse() {
     let before = sql_raw::local_where();
-    let original = "SELECT 42 AS Answer, 99 AS Second FROM MSysObjects AS p WHERE [p].[Id] >= 2;";
+    let original = "SELECT 42 AS Answer, 99 AS [Second] FROM MSysObjects AS p WHERE [p].[Id] >= 2;";
     for proposed in [
         "SELECT 42 AS Answer FROM MSysObjects AS p WHERE [p].[Id] >= 2;",
-        "SELECT 42 AS Answer, 99 AS Second, 7 AS Third FROM MSysObjects AS p WHERE [p].[Id] >= 2;",
-        "SELECT 1000 AS Changed, 99 AS Second FROM MSysObjects AS p WHERE [p].[Id] >= 2;",
-        "SELECT 42 AS Answer, 99 AS Second FROM MSysQueries AS p WHERE [p].[Id] >= 2;",
-        "SELECT 42 AS Answer, 99 AS Second FROM MSysObjects AS q WHERE [q].[Id] >= 2;",
-        "SELECT 42 AS Answer, 99 AS Second FROM MSysObjects AS p;",
-        "PARAMETERS [n] LONG; SELECT 42 AS Answer, 99 AS Second FROM MSysObjects AS p WHERE [p].[Id] >= [n];",
-        "SELECT DISTINCT 42 AS Answer, 99 AS Second FROM MSysObjects AS p WHERE [p].[Id] >= 2;",
+        "SELECT 42 AS Answer, 99 AS [Second], 7 AS Third FROM MSysObjects AS p WHERE [p].[Id] >= 2;",
+        "SELECT 1000 AS Changed, 99 AS [Second] FROM MSysObjects AS p WHERE [p].[Id] >= 2;",
+        "SELECT 42 AS Answer, 99 AS [Second] FROM MSysQueries AS p WHERE [p].[Id] >= 2;",
+        "SELECT 42 AS Answer, 99 AS [Second] FROM MSysObjects AS q WHERE [q].[Id] >= 2;",
+        "SELECT 42 AS Answer, 99 AS [Second] FROM MSysObjects AS p;",
+        "PARAMETERS [n] LONG; SELECT 42 AS Answer, 99 AS [Second] FROM MSysObjects AS p WHERE [p].[Id] >= [n];",
+        "SELECT DISTINCT 42 AS Answer, 99 AS [Second] FROM MSysObjects AS p WHERE [p].[Id] >= 2;",
     ] {
         assert!(matches!(
             reviewed(&before, original, proposed),
@@ -147,7 +147,7 @@ fn added_removed_alias_parameter_source_and_where_topology_changes_refuse() {
     assert!(matches!(
         reviewed(
             &before,
-            "SELECT 43 AS Answer, 99 AS Second FROM MSysObjects AS p WHERE [p].[Id] >= 2;",
+            "SELECT 43 AS Answer, 99 AS [Second] FROM MSysObjects AS p WHERE [p].[Id] >= 2;",
             original
         ),
         Err(SavedQuerySqlEditError::OriginalChanged)
@@ -157,12 +157,12 @@ fn added_removed_alias_parameter_source_and_where_topology_changes_refuse() {
 #[test]
 fn oversized_or_nested_source_expression_changes_never_publish_partial_plan() {
     let before = raw::two_projections();
-    let original = "SELECT 42 AS Answer, 99 AS Second;";
+    let original = "SELECT 42 AS Answer, 99 AS [Second];";
     assert!(
         reviewed(
             &before,
             original,
-            "SELECT 1000 AS Answer, 'abcdefghijklmnopqrstuvwxyz0123456789' AS Second;"
+            "SELECT 1000 AS Answer, 'abcdefghijklmnopqrstuvwxyz0123456789' AS [Second];"
         )
         .is_err()
     );
@@ -170,7 +170,7 @@ fn oversized_or_nested_source_expression_changes_never_publish_partial_plan() {
         reviewed(
             &before,
             original,
-            "SELECT (SELECT 1 FROM [OpaqueSource]) AS Answer, 99 AS Second;"
+            "SELECT (SELECT 1 FROM [OpaqueSource]) AS Answer, 99 AS [Second];"
         ),
         Err(SavedQuerySqlEditError::Unsupported)
     ));
@@ -180,10 +180,13 @@ fn oversized_or_nested_source_expression_changes_never_publish_partial_plan() {
 #[test]
 fn independent_pools_cancellation_and_parser_output_limits_are_enforced() {
     let before = raw::two_projections();
-    let original =
-        parse_query("SELECT 42 AS Answer, 99 AS Second;", ParseLimits::default()).unwrap();
+    let original = parse_query(
+        "SELECT 42 AS Answer, 99 AS [Second];",
+        ParseLimits::default(),
+    )
+    .unwrap();
     let proposed = parse_query(
-        "SELECT 1000 AS Answer, 99 AS Second;",
+        "SELECT 1000 AS Answer, 99 AS [Second];",
         ParseLimits::default(),
     )
     .unwrap();
@@ -248,8 +251,8 @@ fn changed_quoted_text_uses_owned_sql_roundtrip_without_native_text_slicing() {
     let before = raw::two_projections();
     let plan = reviewed(
         &before,
-        "SELECT 42 AS Answer, 99 AS Second;",
-        "SELECT 'a''b' AS Answer, 99 AS Second;",
+        "SELECT 42 AS Answer, 99 AS [Second];",
+        "SELECT 'a''b' AS Answer, 99 AS [Second];",
     )
     .unwrap();
     assert_eq!(plan.after_bytes(), raw::replace_at(&before, 3, "'a''b'"));
@@ -263,8 +266,8 @@ fn unrepresentable_original_alias_is_refused_instead_of_quoted_or_repaired() {
     assert!(matches!(
         reviewed(
             &before,
-            "SELECT 42 AS Answer, 99 AS Second;",
-            "SELECT 1000 AS Answer, 99 AS Second;",
+            "SELECT 42 AS Answer, 99 AS [Second];",
+            "SELECT 1000 AS Answer, 99 AS [Second];",
         ),
         Err(SavedQuerySqlEditError::Metadata(
             SavedReadError::Unsupported
