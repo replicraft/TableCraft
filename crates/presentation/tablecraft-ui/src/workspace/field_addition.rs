@@ -5,6 +5,7 @@
 //! stored columns; merely naming a field must not invent a schema or a record.
 mod abandon;
 mod close;
+pub(crate) mod design;
 mod dialog;
 pub(crate) mod header;
 mod inspection_completion;
@@ -318,6 +319,27 @@ impl Model {
                 return false;
             };
             draft.column = column;
+            draft.revision = revision;
+        }
+        true
+    }
+
+    pub(super) fn replace_declaration(
+        &mut self,
+        tab: &ObjectTab,
+        declaration: FieldAdditionDeclaration,
+    ) -> bool {
+        let Some(draft) = &mut self.draft else {
+            return false;
+        };
+        if draft.tab != *tab || draft.phase != Phase::Naming {
+            return false;
+        }
+        if draft.declaration != declaration {
+            let Some(revision) = draft.revision.checked_add(1) else {
+                return false;
+            };
+            draft.declaration = declaration;
             draft.revision = revision;
         }
         true

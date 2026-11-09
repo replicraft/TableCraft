@@ -281,6 +281,16 @@ impl State {
                 .is_some_and(|(owner, _, _, phase)| owner == tab && phase == Phase::Naming)
     }
 
+    /// Change only the staged declaration through independently observed choices.
+    /// The next consuming review still qualifies the complete native source.
+    pub fn set_field_addition_kind(&mut self, tab: &ObjectTab, kind: FieldAdditionKind) -> bool {
+        self.can_edit_field_addition_name(tab)
+            && self.field_addition.available(tab, kind)
+            && self
+                .field_addition
+                .replace_declaration(tab, FieldAdditionDeclaration::ui_default(kind))
+    }
+
     pub fn set_field_addition_name(&mut self, tab: &ObjectTab, name: String) -> bool {
         if !self.can_edit_field_addition_name(tab)
             || !self.admit_object_bytes(Some(name.capacity()))
@@ -414,15 +424,20 @@ impl State {
             && !self.native_mutation_blocked()
             && !self.field_addition_close_open()
             && self.object_switch_ready_without_saved_field_name()
-            && self.view == DocumentView::Table
             && self.field_addition_binding(tab)
             && !self.has_unsaved_table_drafts()
             && !self.has_modified_saved_query_sql()
             && self.saved_query_sql_save_status().is_none()
-            && self.data.as_ref().is_some_and(|data| {
-                data.source_revision == Some(tab.target.document_revision)
-                    && table_name(tab).is_some_and(|name| data.table == *name)
-            })
+            && match self.view {
+                DocumentView::Table => self.data.as_ref().is_some_and(|data| {
+                    data.source_revision == Some(tab.target.document_revision)
+                        && table_name(tab).is_some_and(|name| data.table == *name)
+                }),
+                DocumentView::Design => self.schema.as_ref().is_some_and(|schema| {
+                    table_name(tab).is_some_and(|name| schema.table == *name)
+                }),
+                DocumentView::Query => false,
+            }
     }
 
     fn field_addition_inspection_binding(&self, tab: &ObjectTab) -> bool {

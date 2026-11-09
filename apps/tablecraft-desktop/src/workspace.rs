@@ -617,11 +617,14 @@ impl Desktop {
                     table,
                     declared_rows,
                     fields,
-                }) => self.state.set_schema(Schema {
-                    table,
-                    declared_rows,
-                    fields: crate::view_models::fields(fields),
-                }),
+                }) => {
+                    self.state.set_schema(Schema {
+                        table,
+                        declared_rows,
+                        fields: crate::view_models::fields(fields),
+                    });
+                    self.inspect_field_addition_availability();
+                }
                 Ok(Response::Opened {
                     document_revision,
                     source_path,

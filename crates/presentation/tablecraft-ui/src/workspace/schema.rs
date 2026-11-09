@@ -135,6 +135,11 @@ impl State {
         let pending_drop = self.field_drop_pending_target();
         let rename_editor = self.field_rename_editor_presentation();
         let mut saved_field_event = None;
+        let addition = self.field_addition_render_context();
+        let addition_kind = self
+            .field_addition_declaration()
+            .map(|declaration| declaration.kind());
+        let mut addition_event = None;
         let Some(schema) = &self.schema else {
             ui.weak(crate::localization::tr(ui, "design-choose"));
             return;
@@ -212,13 +217,38 @@ impl State {
                     .body(|body| {
                         let visible_slots =
                             ((grid_height - FIELD_ROW_HEIGHT) / FIELD_ROW_HEIGHT).ceil() as usize;
-                        let row_count = schema.fields.len().max(visible_slots);
+                        let row_count = schema.fields.len().saturating_add(1).max(visible_slots);
                         body.rows(FIELD_ROW_HEIGHT, row_count, |mut row| {
                             let position = row.index();
                             let Some(field) = schema.fields.get(position) else {
                                 row.col(|ui| grid::selector(ui, false));
-                                for _ in 0..3 {
-                                    row.col(grid::blank);
+                                if position == schema.fields.len()
+                                    && let Some((_, presentation)) = &addition
+                                {
+                                    row.col(|ui| {
+                                        addition_event =
+                                            super::field_addition::design::name(ui, presentation);
+                                    });
+                                    row.col(|ui| {
+                                        if let Some(event) =
+                                            super::field_addition::design::data_type(
+                                                ui,
+                                                presentation,
+                                                addition_kind,
+                                            )
+                                        {
+                                            addition_event = Some(event);
+                                        }
+                                    });
+                                    row.col(|ui| {
+                                        grid::cell(ui, "", grid::CellStyle::Value).on_hover_text(
+                                            crate::localization::tr(ui, "ribbon-unavailable"),
+                                        );
+                                    });
+                                } else {
+                                    for _ in 0..3 {
+                                        row.col(grid::blank);
+                                    }
                                 }
                                 return;
                             };
@@ -372,20 +402,27 @@ impl State {
                 RichText::new(crate::localization::tr(ui, "design-field-properties")).size(11.0),
             );
         });
-        let Some(field) = schema.fields.get(self.selected_field) else {
-            return;
-        };
-        ui.push_id(
-            (
-                document_revision,
-                &schema.table,
-                self.selected_field,
-                field.number,
-                &field.name,
-                self.focus_publication,
-            ),
-            |ui| properties::show(ui, field),
-        );
+        if addition
+            .as_ref()
+            .is_some_and(|(_, presentation)| presentation.name.is_some())
+        {
+            ui.weak(crate::localization::tr(ui, "ribbon-unavailable"));
+        } else if let Some(field) = schema.fields.get(self.selected_field) {
+            ui.push_id(
+                (
+                    document_revision,
+                    &schema.table,
+                    self.selected_field,
+                    field.number,
+                    &field.name,
+                    self.focus_publication,
+                ),
+                |ui| properties::show(ui, field),
+            );
+        }
+        if let Some((tab, _)) = &addition {
+            self.apply_design_field_addition(tab, addition_event);
+        }
         self.apply_saved_field_event(
             saved_field_event,
             rename_editor.as_ref().map(|editor| &editor.target),

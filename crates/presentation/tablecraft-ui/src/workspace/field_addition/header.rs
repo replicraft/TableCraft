@@ -15,7 +15,7 @@ const MAX_MENU_HEIGHT: f32 = 360.0;
 const VIEWPORT_MARGIN: f32 = 24.0;
 const NAME_PADDING: f32 = 2.0;
 
-const CHOICES: [&str; 13] = [
+pub(super) const CHOICES: [&str; 13] = [
     "table-draft-short-text",
     "table-draft-number",
     "table-draft-large-integer",
