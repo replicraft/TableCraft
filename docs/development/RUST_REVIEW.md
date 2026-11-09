@@ -1,5 +1,10 @@
 # Rust source review — 9 November 2026
 
+Historical baseline: the subsequent [265-rule review and fix batch](RUST_SKILLS_REVIEW.md)
+implements the uncertain-save protocol described below and records its accepted
+verification. The original scope, inventories and failed/unverified evidence here
+remain unchanged.
+
 This review covers reusable libraries and executable hosts under edition 2024,
 MSRV 1.99, using the Beautiful Rust best-practices and review skills. It combines
 repository-wide inventories, callsite and owner inspection, compiler/lint checks,
