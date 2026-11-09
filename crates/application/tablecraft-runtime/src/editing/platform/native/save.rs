@@ -5,9 +5,9 @@ mod apply_add_column;
 #[cfg(feature = "ace16-create")]
 mod apply_database_options;
 mod apply_delete;
-mod apply_insert;
 #[cfg(feature = "ace16-create")]
-mod apply_number_column;
+mod apply_field_addition;
+mod apply_insert;
 mod apply_query_action;
 mod apply_query_expression;
 mod apply_query_sql;
@@ -39,7 +39,8 @@ use crate::editing::save::{
 };
 #[cfg(feature = "ace16-create")]
 use crate::editing::{
-    ReviewedAddColumn, ReviewedDatabaseOptions, ReviewedNumberColumn, ReviewedTableCreation,
+    ReviewedAddColumn, ReviewedDatabaseOptions, ReviewedFieldAddition, ReviewedNumberColumn,
+    ReviewedTableCreation,
 };
 use crate::{
     controls::action_recovery_budget,
@@ -68,6 +69,8 @@ enum Task {
     ApplyAddColumn(ReviewedAddColumn, PathBuf),
     #[cfg(feature = "ace16-create")]
     ApplyNumberColumn(ReviewedNumberColumn, PathBuf),
+    #[cfg(feature = "ace16-create")]
+    ApplyFieldAddition(ReviewedFieldAddition, PathBuf),
     #[cfg(feature = "ace16-create")]
     ApplyTableCreation(ReviewedTableCreation, PathBuf),
     Apply(ReviewedEdit, PathBuf),
@@ -131,6 +134,11 @@ impl SaveWorker {
     }
 
     #[cfg(feature = "ace16-create")]
+    pub const fn supports_field_addition() -> bool {
+        true
+    }
+
+    #[cfg(feature = "ace16-create")]
     pub const fn supports_number_column() -> bool {
         true
     }
@@ -186,7 +194,9 @@ impl SaveWorker {
                     #[cfg(feature = "ace16-create")]
                     Task::ApplyTableCreation(..) => SaveOperation::Apply,
                     #[cfg(feature = "ace16-create")]
-                    Task::ApplyAddColumn(..) | Task::ApplyNumberColumn(..) => SaveOperation::Apply,
+                    Task::ApplyAddColumn(..)
+                    | Task::ApplyNumberColumn(..)
+                    | Task::ApplyFieldAddition(..) => SaveOperation::Apply,
                     Task::ApplyQueryExpression(..)
                     | Task::ApplyQuerySql(..)
                     | Task::Apply(..)
@@ -219,8 +229,17 @@ impl SaveWorker {
                         apply_query_sql(reviewed, bundle, &mut retained, &cancelled)
                     }
                     #[cfg(feature = "ace16-create")]
+                    Task::ApplyFieldAddition(reviewed, bundle) => {
+                        self::apply_field_addition::apply_field_addition(
+                            reviewed,
+                            bundle,
+                            &mut retained,
+                            &cancelled,
+                        )
+                    }
+                    #[cfg(feature = "ace16-create")]
                     Task::ApplyNumberColumn(reviewed, bundle) => {
-                        self::apply_number_column::apply_number_column(
+                        self::apply_field_addition::apply_number_column(
                             reviewed,
                             bundle,
                             &mut retained,
@@ -418,6 +437,16 @@ impl SaveWorker {
     }
 
     /// Consume the current source-qualified ADD-column review once.
+    #[cfg(feature = "ace16-create")]
+    pub fn start_field_addition(
+        &self,
+        reviewed: ReviewedFieldAddition,
+        bundle: PathBuf,
+    ) -> Result<u64, SaveStartError<ReviewedFieldAddition>> {
+        let valid = reviewed.state.valid.load(Ordering::Acquire);
+        self.start_reviewed(reviewed, bundle, valid, Task::ApplyFieldAddition)
+    }
+
     #[cfg(feature = "ace16-create")]
     pub fn start_number_column(
         &self,

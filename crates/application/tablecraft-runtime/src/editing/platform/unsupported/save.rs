@@ -2,7 +2,8 @@
 use crate::editing::save::{SaveReport, SaveStartError, SaveStartFailure};
 #[cfg(feature = "ace16-create")]
 use crate::editing::{
-    ReviewedAddColumn, ReviewedDatabaseOptions, ReviewedNumberColumn, ReviewedTableCreation,
+    ReviewedAddColumn, ReviewedDatabaseOptions, ReviewedFieldAddition, ReviewedNumberColumn,
+    ReviewedTableCreation,
 };
 use crate::editing::{
     ReviewedDelete, ReviewedEdit, ReviewedInsert, ReviewedQueryDelete, ReviewedQueryExpression,
@@ -60,6 +61,11 @@ impl SaveWorker {
             kind: SaveStartFailure::UnsupportedPlatform,
             reviewed: Some(reviewed),
         })
+    }
+
+    #[cfg(feature = "ace16-create")]
+    pub const fn supports_field_addition() -> bool {
+        false
     }
 
     #[cfg(feature = "ace16-create")]
@@ -153,6 +159,18 @@ impl SaveWorker {
         reviewed: ReviewedTableCreation,
         _bundle: PathBuf,
     ) -> Result<u64, SaveStartError<ReviewedTableCreation>> {
+        Err(SaveStartError {
+            kind: SaveStartFailure::UnsupportedPlatform,
+            reviewed: Some(reviewed),
+        })
+    }
+
+    #[cfg(feature = "ace16-create")]
+    pub fn start_field_addition(
+        &self,
+        reviewed: ReviewedFieldAddition,
+        _bundle: PathBuf,
+    ) -> Result<u64, SaveStartError<ReviewedFieldAddition>> {
         Err(SaveStartError {
             kind: SaveStartFailure::UnsupportedPlatform,
             reviewed: Some(reviewed),

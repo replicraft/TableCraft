@@ -4,6 +4,8 @@ mod add_column;
 #[cfg(feature = "ace16-create")]
 mod database_options;
 mod deleting;
+#[cfg(feature = "ace16-create")]
+mod field_addition;
 mod inserting;
 #[cfg(feature = "ace16-create")]
 mod number_column;
@@ -32,15 +34,17 @@ pub use add_column::{AddColumnReview, AddedColumnReopen, ReviewedAddColumn};
 #[cfg(feature = "ace16-create")]
 pub use database_options::{DatabaseOptionsReopen, DatabaseOptionsReview, ReviewedDatabaseOptions};
 pub use deleting::{DeleteReview, DeleteTarget, ReviewedDelete};
+#[cfg(feature = "ace16-create")]
+pub use field_addition::{
+    FieldAdditionAvailability, FieldAdditionOutcomeError, FieldAdditionReopenFacts,
+    FieldAdditionReview, ReviewedFieldAddition,
+};
 pub use inserting::{
     InsertDraft, InsertField, InsertInput, InsertRetryEvidence, InsertRetryWitness, InsertReview,
     InsertTarget, ReviewedInsert,
 };
 #[cfg(feature = "ace16-create")]
-pub use number_column::{
-    NumberColumnAvailability, NumberColumnOutcomeError, NumberColumnReopenFacts,
-    ReviewedNumberColumn,
-};
+pub use number_column::{NumberColumnAvailability, ReviewedNumberColumn};
 pub use platform::save::SaveWorker;
 pub use query_delete::{QueryDeleteReview, ReviewedQueryDelete};
 pub use query_expression::{

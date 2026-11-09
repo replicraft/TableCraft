@@ -1,6 +1,7 @@
 //! No-lock Number review binds the exact original Required(false)/zero request.
 pub(in crate::editing) mod availability;
 
+use super::field_addition::plan::Plan;
 use crate::{
     Error, Response,
     controls::{SCOPE, budget, check},
@@ -12,45 +13,7 @@ use crate::{
     },
 };
 use std::sync::{Arc, atomic::AtomicBool};
-use tablecraft_ace::{
-    CreatedDefaultZeroColumnRequired, NativeImage, RecoverableDefaultZeroAddColumnPlan,
-    RecoverableRepeatedDefaultZeroAddColumnPlan,
-};
-
-pub(in crate::editing) enum Plan {
-    First(RecoverableDefaultZeroAddColumnPlan),
-    Repeated(RecoverableRepeatedDefaultZeroAddColumnPlan),
-}
-
-impl Plan {
-    fn table(&self) -> &str {
-        match self {
-            Self::First(plan) => plan.table(),
-            Self::Repeated(plan) => plan.table(),
-        }
-    }
-
-    fn column(&self) -> &str {
-        match self {
-            Self::First(plan) => plan.column(),
-            Self::Repeated(plan) => plan.column(),
-        }
-    }
-
-    pub(in crate::editing) fn before_bytes(&self) -> &[u8] {
-        match self {
-            Self::First(plan) => plan.before_bytes(),
-            Self::Repeated(plan) => plan.before_bytes(),
-        }
-    }
-
-    pub(in crate::editing) fn after_bytes(&self) -> &[u8] {
-        match self {
-            Self::First(plan) => plan.after_bytes(),
-            Self::Repeated(plan) => plan.after_bytes(),
-        }
-    }
-}
+use tablecraft_ace::{CreatedDefaultZeroColumnRequired, NativeImage};
 
 pub(in crate::editing) struct State {
     pub(in crate::editing) reopen: Arc<AddedColumnReopen>,

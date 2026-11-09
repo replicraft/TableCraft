@@ -125,6 +125,24 @@ impl Worker {
                 Ok(response)
             }
             #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+            Command::InspectFieldAdditionAvailability {
+                document_revision,
+                table,
+            } => document
+                .as_mut()
+                .ok_or(Error::NoDatabase)?
+                .inspect_field_addition_availability(*document_revision, table, cancelled),
+            #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+            Command::ReviewAddField {
+                document_revision,
+                table,
+                column,
+                declaration,
+            } => document
+                .as_mut()
+                .ok_or(Error::NoDatabase)?
+                .review_add_field(*document_revision, table, column, *declaration, cancelled),
+            #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
             Command::InspectNumberColumnAvailability {
                 document_revision,
                 table,
@@ -456,6 +474,12 @@ impl Worker {
                     Command::OpenInsertOriginal { .. } => "open_insert_original",
                     #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
                     Command::ReviewTableCreation { .. } => "review_table_creation",
+                    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+                    Command::InspectFieldAdditionAvailability { .. } => {
+                        "inspect_field_addition_source"
+                    }
+                    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+                    Command::ReviewAddField { .. } => "review_add_field",
                     #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
                     Command::InspectNumberColumnAvailability { .. } => {
                         "inspect_number_column_source"

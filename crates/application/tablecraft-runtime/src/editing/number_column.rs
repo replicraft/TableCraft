@@ -1,8 +1,6 @@
 //! Explicit GUI Number semantics: nullable LONG, Required false, typed zero.
 mod availability;
-mod outcome;
 pub use availability::NumberColumnAvailability;
-pub use outcome::{NumberColumnOutcomeError, NumberColumnReopenFacts};
 
 use super::{AddedColumnReopen, platform};
 use crate::{Error, Response, document::Document};

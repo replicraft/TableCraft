@@ -34,9 +34,9 @@ pub use creation::{
 #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
 pub use editing::{
     AddColumnReview, AddedColumnReopen, CreatedTableReopen, DatabaseOptionsReopen,
-    DatabaseOptionsReview, NumberColumnAvailability, NumberColumnOutcomeError,
-    NumberColumnReopenFacts, ReviewedAddColumn, ReviewedDatabaseOptions, ReviewedNumberColumn,
-    ReviewedTableCreation,
+    DatabaseOptionsReview, FieldAdditionAvailability, FieldAdditionOutcomeError,
+    FieldAdditionReopenFacts, FieldAdditionReview, NumberColumnAvailability, ReviewedAddColumn,
+    ReviewedDatabaseOptions, ReviewedFieldAddition, ReviewedNumberColumn, ReviewedTableCreation,
 };
 #[cfg(feature = "offline-edit")]
 pub use editing::{
@@ -84,8 +84,8 @@ use std::path::PathBuf;
 use std::sync::Arc;
 #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
 use tablecraft_ace::{
-    AddColumnIntentError, AddTableError, DefaultZeroAddColumnIntentError, FirstTableError,
-    RepeatedDefaultZeroAddColumnIntentError,
+    AddColumnIntentError, AddTableError, DefaultZeroAddColumnIntentError, FieldAdditionIntentError,
+    FirstTableError, RepeatedDefaultZeroAddColumnIntentError,
 };
 use tablecraft_builders::query::{
     BuiltQueryDesign, DesignTableMetadata, QueryDesignDraft, QueryDesignError,
@@ -130,6 +130,9 @@ pub enum Error {
     #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
     #[error(transparent)]
     RepeatedDefaultZeroAddColumn(#[from] RepeatedDefaultZeroAddColumnIntentError),
+    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+    #[error(transparent)]
+    FieldAddition(#[from] FieldAdditionIntentError),
     #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
     #[error("saved column contents changed before reopening")]
     AddedColumnSourceChanged,
@@ -279,6 +282,18 @@ pub enum Command {
     #[cfg(feature = "offline-edit")]
     OpenInsertOriginal {
         witness: Arc<InsertRetryWitness>,
+    },
+    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+    InspectFieldAdditionAvailability {
+        document_revision: u64,
+        table: String,
+    },
+    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+    ReviewAddField {
+        document_revision: u64,
+        table: String,
+        column: String,
+        declaration: tablecraft_builders::table::FieldAdditionDeclaration,
     },
     #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
     InspectNumberColumnAvailability {
@@ -496,6 +511,15 @@ pub enum Response {
     TableRenameReviewed {
         review: TableRenameReview,
         capability: ReviewedTableRename,
+    },
+    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+    FieldAdditionAvailability {
+        availability: FieldAdditionAvailability,
+    },
+    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+    FieldAdditionReviewed {
+        review: FieldAdditionReview,
+        capability: ReviewedFieldAddition,
     },
     #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
     NumberColumnAvailability {

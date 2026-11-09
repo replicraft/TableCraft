@@ -4,7 +4,9 @@
 //! getters and immutable snapshots expose them only for Short Text. Required
 //! and default-mode choices persist across ordinary type changes without parsing
 //! or conversion. Native consumers still validate all syntax and compatibility.
+mod field_addition;
 mod model;
+pub use field_addition::{FieldAdditionDeclaration, FieldAdditionKind};
 mod names;
 pub use names::next_field_name;
 mod snapshot;

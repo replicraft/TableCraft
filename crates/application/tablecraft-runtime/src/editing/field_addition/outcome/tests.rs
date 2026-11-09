@@ -19,7 +19,7 @@ fn receipt() -> SaveReceipt {
 }
 
 fn facts(outcome: SaveOutcome) -> (bool, Option<SaveReceipt>) {
-    let facts = outcome.number_column_reopen_facts().unwrap();
+    let facts = outcome.field_addition_reopen_facts().unwrap();
     (facts.replacement, facts.completed)
 }
 
@@ -38,8 +38,8 @@ fn column_and_query_contracts_refuse_each_others_replacement_scope() {
     query.schema_change = None;
     query.query_change = Some(SaveQueryChange::ExpressionSaved);
     assert_eq!(
-        SaveOutcome::Saved { receipt: query }.number_column_reopen_facts(),
-        Err(NumberColumnOutcomeError::UnqualifiedReplacementReceipt)
+        SaveOutcome::Saved { receipt: query }.field_addition_reopen_facts(),
+        Err(FieldAdditionOutcomeError::UnqualifiedReplacementReceipt)
     );
     assert!(
         SaveOutcome::Saved { receipt: query }
@@ -61,8 +61,8 @@ fn column_and_query_contracts_refuse_each_others_replacement_scope() {
             }
         }
         assert_eq!(
-            SaveOutcome::Saved { receipt: wrong }.number_column_reopen_facts(),
-            Err(NumberColumnOutcomeError::UnqualifiedReplacementReceipt)
+            SaveOutcome::Saved { receipt: wrong }.field_addition_reopen_facts(),
+            Err(FieldAdditionOutcomeError::UnqualifiedReplacementReceipt)
         );
     }
 }

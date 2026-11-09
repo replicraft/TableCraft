@@ -1,0 +1,119 @@
+//! Exact field declaration review; select source purpose before any qualification.
+pub(in crate::editing) mod availability;
+pub(in crate::editing) mod plan;
+use crate::{
+    Error, Response,
+    controls::{SCOPE, budget, check},
+    display::Presentation,
+    document::Document,
+    editing::{
+        AddedColumnReopen, EditError, FieldAdditionReview, ReviewedFieldAddition,
+        platform::ids::issue_id,
+    },
+};
+use plan::Plan;
+use std::sync::{Arc, atomic::AtomicBool};
+use tablecraft_ace::{
+    CreatedDefaultZeroColumnRequired, CreatedFieldAdditionSourcePurpose, FieldAdditionTarget,
+    NativeImage,
+};
+use tablecraft_builders::table::FieldAdditionDeclaration;
+
+pub(in crate::editing) struct State {
+    pub(in crate::editing) reopen: Arc<AddedColumnReopen>,
+    pub(in crate::editing) plan: Plan,
+    pub(in crate::editing) declaration: FieldAdditionDeclaration,
+    pub(in crate::editing) valid: Arc<AtomicBool>,
+}
+
+fn native_target(declaration: FieldAdditionDeclaration) -> FieldAdditionTarget {
+    match declaration {
+        FieldAdditionDeclaration::NumberLongZero => FieldAdditionTarget::NumberLongZero,
+        FieldAdditionDeclaration::ShortText {
+            max_utf16_units,
+            unicode_compression,
+        } => FieldAdditionTarget::ShortText {
+            max_utf16_units: usize::from(max_utf16_units.get()),
+            unicode_compression,
+        },
+    }
+}
+
+pub(in crate::editing) fn review(
+    document: &mut Document,
+    table: &str,
+    column: &str,
+    declaration: FieldAdditionDeclaration,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Response, Error> {
+    let _span = tracing::debug_span!("application.review_add_field").entered();
+    if !document.source.editable_native() {
+        return Err(EditError::ReadOnlySource.into());
+    }
+    let mut work = budget();
+    check(cancelled)?;
+    let image = NativeImage::capture_shared(
+        document.edits.image_source.clone(),
+        SCOPE,
+        &mut work,
+        cancelled,
+    )?;
+    let target = native_target(declaration);
+    let purpose = image
+        .created_field_addition_source_purpose(table, target, &mut work, cancelled)
+        .map_err(|error| Error::FieldAddition(error.into()))?;
+    let plan = match purpose {
+        CreatedFieldAdditionSourcePurpose::FirstNumber => Plan::First(
+            image.plan_recoverable_created_add_default_zero_int32_column(
+                table,
+                column,
+                CreatedDefaultZeroColumnRequired::StoredFalse,
+                &mut work,
+                cancelled,
+            )?,
+        ),
+        CreatedFieldAdditionSourcePurpose::RepeatedNumber => {
+            Plan::Repeated(image.plan_recoverable_repeated_default_zero_int32_column(
+                table, column, &mut work, cancelled,
+            )?)
+        }
+        CreatedFieldAdditionSourcePurpose::TypedField => {
+            Plan::Typed(image.plan_recoverable_created_field_addition(
+                table, column, target, &mut work, cancelled,
+            )?)
+        }
+    };
+    let captured = plan.captured_declaration()?;
+    if captured != declaration {
+        return Err(EditError::InvalidInput.into());
+    }
+    let expected = super::reopen_image::capture(plan.after_bytes(), &mut work, cancelled)?;
+    let mut output = Presentation::new(cancelled);
+    let review = FieldAdditionReview {
+        id: issue_id()?,
+        document_revision: document.revision,
+        table: output.text(plan.table())?,
+        column: output.text(plan.column())?,
+        declaration: captured,
+    };
+    work.charge_allocation(document.edits.path.as_os_str().len() as u64, 1)?;
+    work.charge_allocation(1, size_of::<AddedColumnReopen>() as u64)?;
+    work.charge_allocation(1, size_of::<State>() as u64)?;
+    let reopen = Arc::new(AddedColumnReopen {
+        path: document.edits.path.clone(),
+        expected,
+        table: output.text(plan.table())?,
+        column: output.text(plan.column())?,
+        document_revision: document.revision,
+    });
+    let capability = ReviewedFieldAddition {
+        state: Box::new(State {
+            reopen,
+            declaration: captured,
+            plan,
+            valid: Arc::clone(&document.edits.valid),
+        }),
+    };
+    check(cancelled)?;
+    Ok(Response::FieldAdditionReviewed { review, capability })
+}

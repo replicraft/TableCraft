@@ -1,5 +1,7 @@
 //! Allocation-free outcome facts derived from the retained actual resource owner.
 #[cfg(feature = "ace16-create")]
+mod field_addition;
+#[cfg(feature = "ace16-create")]
 mod number_column;
 mod query_expression_edits;
 
@@ -18,8 +20,8 @@ use tablecraft_access::editing::offline::{
 use tablecraft_ace::{
     AddColumnError, AddColumnIntentError, AddTableError, AddTableIntentError, CreateDatabaseError,
     CreatedAddColumnError, DatabaseOptionsError, DatabaseOptionsIntentError,
-    DefaultZeroAddColumnIntentError, FirstTableError, FirstTableIntentError,
-    RepeatedDefaultZeroAddColumnIntentError,
+    DefaultZeroAddColumnIntentError, FieldAdditionError, FieldAdditionIntentError, FirstTableError,
+    FirstTableIntentError, RepeatedDefaultZeroAddColumnIntentError,
 };
 use tablecraft_ace::{
     EditError, InspectError, NativeIntentError, NativeRecoveryQualificationError,
@@ -251,6 +253,8 @@ fn typed_resource_failure(error: &(dyn StdError + 'static)) -> Option<SaveFailur
             #[cfg(feature = "ace16-create")]
             Cause::DefaultZeroAddColumnIntent(error) => number_column::intent(error),
             #[cfg(feature = "ace16-create")]
+            Cause::FieldAdditionIntent(error) => field_addition::intent(error),
+            #[cfg(feature = "ace16-create")]
             Cause::RepeatedDefaultZeroAddColumnIntent(error) => {
                 number_column::repeated_intent(error)
             }
@@ -306,6 +310,14 @@ fn typed_resource_failure(error: &(dyn StdError + 'static)) -> Option<SaveFailur
     #[cfg(feature = "ace16-create")]
     if let Some(error) = error.downcast_ref::<AddTableIntentError>() {
         return add_table_intent_failure(error);
+    }
+    #[cfg(feature = "ace16-create")]
+    if let Some(error) = error.downcast_ref::<FieldAdditionIntentError>() {
+        return field_addition::intent(error);
+    }
+    #[cfg(feature = "ace16-create")]
+    if let Some(error) = error.downcast_ref::<FieldAdditionError>() {
+        return field_addition::candidate(error);
     }
     #[cfg(feature = "ace16-create")]
     if let Some(error) = error.downcast_ref::<RepeatedDefaultZeroAddColumnIntentError>() {
