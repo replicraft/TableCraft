@@ -1,0 +1,606 @@
+{
+  "date": "2026-11-09",
+  "scope": "First-party independent fitting Number and compressed Short Text ADD after explicit OFF on generated ACE16 sources; SDK engineering evidence only",
+  "status": {
+    "complete_image_matches": 4,
+    "sdk_mutation_successes": 4,
+    "read_only_declaration_and_off_checks": 4,
+    "originals_preserved": true,
+    "native_writer_qualified": false,
+    "native_access_execution": "unrun",
+    "older_profiles": "unqualified"
+  },
+  "sdk": {
+    "artifact": "Jackcess5.0.4",
+    "license": "Apache-2.0",
+    "sha256": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc"
+  },
+  "prior_source_record": "nac-after-field-add-sdk-2026-11-08.json",
+  "frozen_prediction_sha256": "b376279cec9f9220a848e8009bbebe97e2abbacf8746a2f2df514955401fccff",
+  "executed_model": {
+    "source": "docs/testing/field_add_after_off/model.py",
+    "sha256": "af614027474785fa85cacfdde425f257f86967f8e31f578784c77c6b0dd2be33",
+    "byte_identical_to_maintained": true
+  },
+  "original_executed_recipe_hashes": {
+    "prepare.py": "b26fe4172dacc46e5fabefe1d2c884ee67317c4d61a017ec84bd4bfa87ff98c1",
+    "run.py": "7435357336b2569198ff57bea4cf88dafd425640e0919ee504ab6c40df020853"
+  },
+  "maintained_portable_recipes": [
+    {
+      "source": "docs/testing/field_add_after_off/prepare.py",
+      "sha256": "23f0755d27d76c8a435de04384135efa6abf652c824bbd7f1a8d64168de02b3a"
+    },
+    {
+      "source": "docs/testing/field_add_after_off/run.py",
+      "sha256": "3b8076308aae762bbb8feceb7c5cc70ff28974d7ced3890e773e8a456661a0e6"
+    }
+  ],
+  "unchanged_owners": [
+    {
+      "source": "docs/testing/short_text_add/model.py",
+      "sha256": "640514975f34cd3468f4672e0cd9e9a516f15a439c5005c71d3f3d3a5e969a5b"
+    },
+    {
+      "source": "docs/testing/number_column_repeat/raw.py",
+      "sha256": "4bba92ee109e8318ef9b47ac541ddbaf1068a14c5d939dca5db80e535acc182c"
+    },
+    {
+      "source": "docs/testing/CreatedNumberColumnOracle.java",
+      "sha256": "c805c038da5f0853c50a3b76753dab0577aa66322fe873c9e642e52a943d1886"
+    },
+    {
+      "source": "docs/testing/short_text_add/CreatedShortTextColumnOracle.java",
+      "sha256": "74b09b0ae88486dcf395d85c8fd4b4e454900c80e256c3a888e3894a3ac7f19e"
+    }
+  ],
+  "observer": {
+    "source": "docs/testing/field_add_after_off/AfterOffProperties.java",
+    "sha256": "9ffcc9c17d45052c22d09a40c55a00804f7c63028271a974b8d905e1305080e9",
+    "byte_identical_to_executed": true
+  },
+  "expression_evaluation": false,
+  "failure_history": {
+    "compile_exit": 0,
+    "failed_mutations": 0,
+    "rerun_identical_successful_mutations": false
+  },
+  "observations": [
+    {
+      "case": "number-first-long",
+      "source_sha256": "c88bc4cb1090d9b0c5e011010ec76cf9acc33da7ec9d58e67fa873bfaabe18ef",
+      "kind": "LONG",
+      "column": "AfterOff",
+      "expected_sha256": "fbcc7a8ab6fa4d10df64c376c80b99ca76d1200d64d8d4a5d31d7b3702cc7680",
+      "expected_bytes": 45056,
+      "after_sha256": "fbcc7a8ab6fa4d10df64c376c80b99ca76d1200d64d8d4a5d31d7b3702cc7680",
+      "after_bytes": 45056,
+      "complete_image_match": true,
+      "original_unchanged": true,
+      "input_unchanged": true,
+      "observer_bytes_unchanged": true,
+      "database_before": {
+        "catalog_slot": 9,
+        "property_row": 1,
+        "descriptor_hex": "98000040010a000000000000"
+      },
+      "database_after": {
+        "catalog_slot": 9,
+        "property_row": 1,
+        "descriptor_hex": "98000040010a000000000000"
+      },
+      "prediction_facts": {
+        "before_user_row": 0,
+        "after_user_row": 2,
+        "database_row": 1,
+        "database_catalog_slot": 9,
+        "before_column_rows": 2,
+        "after_column_rows": 3,
+        "before_user_descriptor": "5f000040000a000000000000",
+        "after_user_descriptor": "8e000040020a000000000000",
+        "database_body_bytes": 152,
+        "database_body_unchanged": true,
+        "database_catalog_record_unchanged": true,
+        "all_old_property_rows_unchanged": true,
+        "all_old_property_directory_unchanged": true,
+        "maps_unchanged": true,
+        "index_page_unchanged": true,
+        "catalog_logical_count": 9,
+        "catalog_physical_count": 10,
+        "new_field_hex": "04590600000200000002000000000003000000000008000400",
+        "before_definition": {
+          "current_fields": 2,
+          "maximum_fields": 2,
+          "variable_fields": 0,
+          "definition_bytes": 247,
+          "index_tail_sha256": "b0ab7ea67e49161c2dc505360365ce445c2350c6f596fc2be178db3960d23dbd"
+        },
+        "after_definition": {
+          "current_fields": 3,
+          "maximum_fields": 3,
+          "variable_fields": 0,
+          "definition_bytes": 290,
+          "index_tail_sha256": "b0ab7ea67e49161c2dc505360365ce445c2350c6f596fc2be178db3960d23dbd"
+        },
+        "changed_pages": [
+          4,
+          7,
+          10
+        ]
+      },
+      "facts": {
+        "before_user_row": 0,
+        "after_user_row": 2,
+        "database_row": 1,
+        "database_catalog_slot": 9,
+        "before_column_rows": 2,
+        "after_column_rows": 3,
+        "before_user_descriptor": "5f000040000a000000000000",
+        "after_user_descriptor": "8e000040020a000000000000",
+        "database_body_bytes": 152,
+        "database_body_unchanged": true,
+        "database_catalog_record_unchanged": true,
+        "all_old_property_rows_unchanged": true,
+        "all_old_property_directory_unchanged": true,
+        "maps_unchanged": true,
+        "index_page_unchanged": true,
+        "catalog_logical_count": 9,
+        "catalog_physical_count": 10,
+        "new_field_hex": "04590600000200000002000000000003000000000008000400",
+        "before_definition": {
+          "current_fields": 2,
+          "maximum_fields": 2,
+          "variable_fields": 0,
+          "definition_bytes": 247,
+          "index_tail_sha256": "b0ab7ea67e49161c2dc505360365ce445c2350c6f596fc2be178db3960d23dbd"
+        },
+        "after_definition": {
+          "current_fields": 3,
+          "maximum_fields": 3,
+          "variable_fields": 0,
+          "definition_bytes": 290,
+          "index_tail_sha256": "b0ab7ea67e49161c2dc505360365ce445c2350c6f596fc2be178db3960d23dbd"
+        },
+        "changed_pages": [
+          4,
+          7,
+          10
+        ]
+      },
+      "mismatch_offsets_first_64": [],
+      "source": "number-first.accdb",
+      "sdk_exit": 0,
+      "read_only_observer_exit": 0,
+      "pre_mutation_hashes": {
+        "original_sha256": "c88bc4cb1090d9b0c5e011010ec76cf9acc33da7ec9d58e67fa873bfaabe18ef",
+        "input_sha256": "c88bc4cb1090d9b0c5e011010ec76cf9acc33da7ec9d58e67fa873bfaabe18ef",
+        "expected_sha256": "fbcc7a8ab6fa4d10df64c376c80b99ca76d1200d64d8d4a5d31d7b3702cc7680",
+        "prediction_sha256": "b376279cec9f9220a848e8009bbebe97e2abbacf8746a2f2df514955401fccff",
+        "model_sha256": "af614027474785fa85cacfdde425f257f86967f8e31f578784c77c6b0dd2be33",
+        "number_helper_sha256": "c805c038da5f0853c50a3b76753dab0577aa66322fe873c9e642e52a943d1886",
+        "text_helper_sha256": "74b09b0ae88486dcf395d85c8fd4b4e454900c80e256c3a888e3894a3ac7f19e",
+        "observer_sha256": "9ffcc9c17d45052c22d09a40c55a00804f7c63028271a974b8d905e1305080e9"
+      },
+      "sdk_stdout": [
+        "ID\tLONG\ttrue\tnull\tRequired=null",
+        "Score\tLONG\tfalse\t0\tRequired=false",
+        "AfterOff\tLONG\tfalse\t0\tRequired=false",
+        "Rows\t0",
+        "Indexes\t1",
+        "Created\t1899-12-30T00:00",
+        "Updated\t1899-12-30T00:00",
+        "BeforeSHA256\tc88bc4cb1090d9b0c5e011010ec76cf9acc33da7ec9d58e67fa873bfaabe18ef",
+        "AfterSHA256\tfbcc7a8ab6fa4d10df64c376c80b99ca76d1200d64d8d4a5d31d7b3702cc7680"
+      ],
+      "read_only_stdout": [
+        "DatabaseProperty\tTrack Name AutoCorrect Info\tLONG\tDDL\t0",
+        "DatabaseProperty\tPerform Name AutoCorrect\tLONG\tDDL\t0",
+        "AddedDeclaration\tAfterOff\tLONG"
+      ]
+    },
+    {
+      "case": "number-first-text",
+      "source_sha256": "c88bc4cb1090d9b0c5e011010ec76cf9acc33da7ec9d58e67fa873bfaabe18ef",
+      "kind": "TEXT",
+      "column": "LabelOff",
+      "expected_sha256": "0ebbef86bf96f5079a2b666ab375f0da2d220322d3feb124f7c94e17d6280240",
+      "expected_bytes": 45056,
+      "after_sha256": "0ebbef86bf96f5079a2b666ab375f0da2d220322d3feb124f7c94e17d6280240",
+      "after_bytes": 45056,
+      "complete_image_match": true,
+      "original_unchanged": true,
+      "input_unchanged": true,
+      "observer_bytes_unchanged": true,
+      "database_before": {
+        "catalog_slot": 9,
+        "property_row": 1,
+        "descriptor_hex": "98000040010a000000000000"
+      },
+      "database_after": {
+        "catalog_slot": 9,
+        "property_row": 1,
+        "descriptor_hex": "98000040010a000000000000"
+      },
+      "prediction_facts": {
+        "before_user_row": 0,
+        "after_user_row": 2,
+        "database_row": 1,
+        "database_catalog_slot": 9,
+        "before_column_rows": 2,
+        "after_column_rows": 3,
+        "before_user_descriptor": "5f000040000a000000000000",
+        "after_user_descriptor": "ad000040020a000000000000",
+        "database_body_bytes": 152,
+        "database_body_unchanged": true,
+        "database_catalog_record_unchanged": true,
+        "all_old_property_rows_unchanged": true,
+        "all_old_property_directory_unchanged": true,
+        "maps_unchanged": true,
+        "index_page_unchanged": true,
+        "catalog_logical_count": 9,
+        "catalog_physical_count": 10,
+        "new_field_hex": "0a59060000020000000200090400010201000000000000fe01",
+        "before_definition": {
+          "current_fields": 2,
+          "maximum_fields": 2,
+          "variable_fields": 0,
+          "definition_bytes": 247,
+          "index_tail_sha256": "b0ab7ea67e49161c2dc505360365ce445c2350c6f596fc2be178db3960d23dbd"
+        },
+        "after_definition": {
+          "current_fields": 3,
+          "maximum_fields": 3,
+          "variable_fields": 1,
+          "definition_bytes": 290,
+          "index_tail_sha256": "b0ab7ea67e49161c2dc505360365ce445c2350c6f596fc2be178db3960d23dbd"
+        },
+        "changed_pages": [
+          4,
+          7,
+          10
+        ]
+      },
+      "facts": {
+        "before_user_row": 0,
+        "after_user_row": 2,
+        "database_row": 1,
+        "database_catalog_slot": 9,
+        "before_column_rows": 2,
+        "after_column_rows": 3,
+        "before_user_descriptor": "5f000040000a000000000000",
+        "after_user_descriptor": "ad000040020a000000000000",
+        "database_body_bytes": 152,
+        "database_body_unchanged": true,
+        "database_catalog_record_unchanged": true,
+        "all_old_property_rows_unchanged": true,
+        "all_old_property_directory_unchanged": true,
+        "maps_unchanged": true,
+        "index_page_unchanged": true,
+        "catalog_logical_count": 9,
+        "catalog_physical_count": 10,
+        "new_field_hex": "0a59060000020000000200090400010201000000000000fe01",
+        "before_definition": {
+          "current_fields": 2,
+          "maximum_fields": 2,
+          "variable_fields": 0,
+          "definition_bytes": 247,
+          "index_tail_sha256": "b0ab7ea67e49161c2dc505360365ce445c2350c6f596fc2be178db3960d23dbd"
+        },
+        "after_definition": {
+          "current_fields": 3,
+          "maximum_fields": 3,
+          "variable_fields": 1,
+          "definition_bytes": 290,
+          "index_tail_sha256": "b0ab7ea67e49161c2dc505360365ce445c2350c6f596fc2be178db3960d23dbd"
+        },
+        "changed_pages": [
+          4,
+          7,
+          10
+        ]
+      },
+      "mismatch_offsets_first_64": [],
+      "source": "number-first.accdb",
+      "sdk_exit": 0,
+      "read_only_observer_exit": 0,
+      "pre_mutation_hashes": {
+        "original_sha256": "c88bc4cb1090d9b0c5e011010ec76cf9acc33da7ec9d58e67fa873bfaabe18ef",
+        "input_sha256": "c88bc4cb1090d9b0c5e011010ec76cf9acc33da7ec9d58e67fa873bfaabe18ef",
+        "expected_sha256": "0ebbef86bf96f5079a2b666ab375f0da2d220322d3feb124f7c94e17d6280240",
+        "prediction_sha256": "b376279cec9f9220a848e8009bbebe97e2abbacf8746a2f2df514955401fccff",
+        "model_sha256": "af614027474785fa85cacfdde425f257f86967f8e31f578784c77c6b0dd2be33",
+        "number_helper_sha256": "c805c038da5f0853c50a3b76753dab0577aa66322fe873c9e642e52a943d1886",
+        "text_helper_sha256": "74b09b0ae88486dcf395d85c8fd4b4e454900c80e256c3a888e3894a3ac7f19e",
+        "observer_sha256": "9ffcc9c17d45052c22d09a40c55a00804f7c63028271a974b8d905e1305080e9"
+      },
+      "sdk_stdout": [
+        "Column\tID\tLONG\tunits=4\tnumber=0\tvariable=0\tfixedOffset=0\tcompressed=false\trequired=null\tallowZeroLength=null\tdefault=null\tsort=null",
+        "Column\tScore\tLONG\tunits=4\tnumber=1\tvariable=0\tfixedOffset=4\tcompressed=false\trequired=false\tallowZeroLength=null\tdefault=0\tsort=null",
+        "Column\tLabelOff\tTEXT\tunits=255\tnumber=2\tvariable=0\tfixedOffset=0\tcompressed=true\trequired=false\tallowZeroLength=true\tdefault=null\tsort=SortOrder[0x01000409, General]",
+        "Rows\t0",
+        "Indexes\t1",
+        "Created\t1899-12-30T00:00",
+        "Updated\t1899-12-30T00:00",
+        "BeforeSHA256\tc88bc4cb1090d9b0c5e011010ec76cf9acc33da7ec9d58e67fa873bfaabe18ef",
+        "AfterSHA256\t0ebbef86bf96f5079a2b666ab375f0da2d220322d3feb124f7c94e17d6280240"
+      ],
+      "read_only_stdout": [
+        "DatabaseProperty\tTrack Name AutoCorrect Info\tLONG\tDDL\t0",
+        "DatabaseProperty\tPerform Name AutoCorrect\tLONG\tDDL\t0",
+        "AddedDeclaration\tLabelOff\tTEXT"
+      ]
+    },
+    {
+      "case": "text-number-text-long",
+      "source_sha256": "c28d3c1bf1de4e75f894ac80ae332aa2a5b4b8c3c9111700d989222b8d6267c3",
+      "kind": "LONG",
+      "column": "AfterOff",
+      "expected_sha256": "9011e9cbe157a529a5c7e362d6555abc6f13c68179ab2e2cb59ddb2d36c15e66",
+      "expected_bytes": 45056,
+      "after_sha256": "9011e9cbe157a529a5c7e362d6555abc6f13c68179ab2e2cb59ddb2d36c15e66",
+      "after_bytes": 45056,
+      "complete_image_match": true,
+      "original_unchanged": true,
+      "input_unchanged": true,
+      "observer_bytes_unchanged": true,
+      "database_before": {
+        "catalog_slot": 9,
+        "property_row": 3,
+        "descriptor_hex": "98000040030a000000000000"
+      },
+      "database_after": {
+        "catalog_slot": 9,
+        "property_row": 3,
+        "descriptor_hex": "98000040030a000000000000"
+      },
+      "prediction_facts": {
+        "before_user_row": 2,
+        "after_user_row": 4,
+        "database_row": 3,
+        "database_catalog_slot": 9,
+        "before_column_rows": 4,
+        "after_column_rows": 5,
+        "before_user_descriptor": "e3000040020a000000000000",
+        "after_user_descriptor": "12010040040a000000000000",
+        "database_body_bytes": 152,
+        "database_body_unchanged": true,
+        "database_catalog_record_unchanged": true,
+        "all_old_property_rows_unchanged": true,
+        "all_old_property_directory_unchanged": true,
+        "maps_unchanged": true,
+        "index_page_unchanged": true,
+        "catalog_logical_count": 9,
+        "catalog_physical_count": 10,
+        "new_field_hex": "04590600000400020004000000000003000000000008000400",
+        "before_definition": {
+          "current_fields": 4,
+          "maximum_fields": 4,
+          "variable_fields": 2,
+          "definition_bytes": 341,
+          "index_tail_sha256": "b0ab7ea67e49161c2dc505360365ce445c2350c6f596fc2be178db3960d23dbd"
+        },
+        "after_definition": {
+          "current_fields": 5,
+          "maximum_fields": 5,
+          "variable_fields": 2,
+          "definition_bytes": 384,
+          "index_tail_sha256": "b0ab7ea67e49161c2dc505360365ce445c2350c6f596fc2be178db3960d23dbd"
+        },
+        "changed_pages": [
+          4,
+          7,
+          10
+        ]
+      },
+      "facts": {
+        "before_user_row": 2,
+        "after_user_row": 4,
+        "database_row": 3,
+        "database_catalog_slot": 9,
+        "before_column_rows": 4,
+        "after_column_rows": 5,
+        "before_user_descriptor": "e3000040020a000000000000",
+        "after_user_descriptor": "12010040040a000000000000",
+        "database_body_bytes": 152,
+        "database_body_unchanged": true,
+        "database_catalog_record_unchanged": true,
+        "all_old_property_rows_unchanged": true,
+        "all_old_property_directory_unchanged": true,
+        "maps_unchanged": true,
+        "index_page_unchanged": true,
+        "catalog_logical_count": 9,
+        "catalog_physical_count": 10,
+        "new_field_hex": "04590600000400020004000000000003000000000008000400",
+        "before_definition": {
+          "current_fields": 4,
+          "maximum_fields": 4,
+          "variable_fields": 2,
+          "definition_bytes": 341,
+          "index_tail_sha256": "b0ab7ea67e49161c2dc505360365ce445c2350c6f596fc2be178db3960d23dbd"
+        },
+        "after_definition": {
+          "current_fields": 5,
+          "maximum_fields": 5,
+          "variable_fields": 2,
+          "definition_bytes": 384,
+          "index_tail_sha256": "b0ab7ea67e49161c2dc505360365ce445c2350c6f596fc2be178db3960d23dbd"
+        },
+        "changed_pages": [
+          4,
+          7,
+          10
+        ]
+      },
+      "mismatch_offsets_first_64": [],
+      "source": "text-number-text.accdb",
+      "sdk_exit": 0,
+      "read_only_observer_exit": 0,
+      "pre_mutation_hashes": {
+        "original_sha256": "c28d3c1bf1de4e75f894ac80ae332aa2a5b4b8c3c9111700d989222b8d6267c3",
+        "input_sha256": "c28d3c1bf1de4e75f894ac80ae332aa2a5b4b8c3c9111700d989222b8d6267c3",
+        "expected_sha256": "9011e9cbe157a529a5c7e362d6555abc6f13c68179ab2e2cb59ddb2d36c15e66",
+        "prediction_sha256": "b376279cec9f9220a848e8009bbebe97e2abbacf8746a2f2df514955401fccff",
+        "model_sha256": "af614027474785fa85cacfdde425f257f86967f8e31f578784c77c6b0dd2be33",
+        "number_helper_sha256": "c805c038da5f0853c50a3b76753dab0577aa66322fe873c9e642e52a943d1886",
+        "text_helper_sha256": "74b09b0ae88486dcf395d85c8fd4b4e454900c80e256c3a888e3894a3ac7f19e",
+        "observer_sha256": "9ffcc9c17d45052c22d09a40c55a00804f7c63028271a974b8d905e1305080e9"
+      },
+      "sdk_stdout": [
+        "ID\tLONG\ttrue\tnull\tRequired=null",
+        "Label\tTEXT\tfalse\tnull\tRequired=false",
+        "AfterLabel\tLONG\tfalse\t0\tRequired=false",
+        "OtherLabel\tTEXT\tfalse\tnull\tRequired=false",
+        "AfterOff\tLONG\tfalse\t0\tRequired=false",
+        "Rows\t0",
+        "Indexes\t1",
+        "Created\t1899-12-30T00:00",
+        "Updated\t1899-12-30T00:00",
+        "BeforeSHA256\tc28d3c1bf1de4e75f894ac80ae332aa2a5b4b8c3c9111700d989222b8d6267c3",
+        "AfterSHA256\t9011e9cbe157a529a5c7e362d6555abc6f13c68179ab2e2cb59ddb2d36c15e66"
+      ],
+      "read_only_stdout": [
+        "DatabaseProperty\tTrack Name AutoCorrect Info\tLONG\tDDL\t0",
+        "DatabaseProperty\tPerform Name AutoCorrect\tLONG\tDDL\t0",
+        "AddedDeclaration\tAfterOff\tLONG"
+      ]
+    },
+    {
+      "case": "text-number-text-text",
+      "source_sha256": "c28d3c1bf1de4e75f894ac80ae332aa2a5b4b8c3c9111700d989222b8d6267c3",
+      "kind": "TEXT",
+      "column": "LabelOff",
+      "expected_sha256": "d5940a703ae582f27958b4369c8cdca97d9f566dd7cb79c63c4a39e72edf4002",
+      "expected_bytes": 45056,
+      "after_sha256": "d5940a703ae582f27958b4369c8cdca97d9f566dd7cb79c63c4a39e72edf4002",
+      "after_bytes": 45056,
+      "complete_image_match": true,
+      "original_unchanged": true,
+      "input_unchanged": true,
+      "observer_bytes_unchanged": true,
+      "database_before": {
+        "catalog_slot": 9,
+        "property_row": 3,
+        "descriptor_hex": "98000040030a000000000000"
+      },
+      "database_after": {
+        "catalog_slot": 9,
+        "property_row": 3,
+        "descriptor_hex": "98000040030a000000000000"
+      },
+      "prediction_facts": {
+        "before_user_row": 2,
+        "after_user_row": 4,
+        "database_row": 3,
+        "database_catalog_slot": 9,
+        "before_column_rows": 4,
+        "after_column_rows": 5,
+        "before_user_descriptor": "e3000040020a000000000000",
+        "after_user_descriptor": "11010040040a000000000000",
+        "database_body_bytes": 152,
+        "database_body_unchanged": true,
+        "database_catalog_record_unchanged": true,
+        "all_old_property_rows_unchanged": true,
+        "all_old_property_directory_unchanged": true,
+        "maps_unchanged": true,
+        "index_page_unchanged": true,
+        "catalog_logical_count": 9,
+        "catalog_physical_count": 10,
+        "new_field_hex": "0a59060000040002000400090400010201000000000000fe01",
+        "before_definition": {
+          "current_fields": 4,
+          "maximum_fields": 4,
+          "variable_fields": 2,
+          "definition_bytes": 341,
+          "index_tail_sha256": "b0ab7ea67e49161c2dc505360365ce445c2350c6f596fc2be178db3960d23dbd"
+        },
+        "after_definition": {
+          "current_fields": 5,
+          "maximum_fields": 5,
+          "variable_fields": 3,
+          "definition_bytes": 384,
+          "index_tail_sha256": "b0ab7ea67e49161c2dc505360365ce445c2350c6f596fc2be178db3960d23dbd"
+        },
+        "changed_pages": [
+          4,
+          7,
+          10
+        ]
+      },
+      "facts": {
+        "before_user_row": 2,
+        "after_user_row": 4,
+        "database_row": 3,
+        "database_catalog_slot": 9,
+        "before_column_rows": 4,
+        "after_column_rows": 5,
+        "before_user_descriptor": "e3000040020a000000000000",
+        "after_user_descriptor": "11010040040a000000000000",
+        "database_body_bytes": 152,
+        "database_body_unchanged": true,
+        "database_catalog_record_unchanged": true,
+        "all_old_property_rows_unchanged": true,
+        "all_old_property_directory_unchanged": true,
+        "maps_unchanged": true,
+        "index_page_unchanged": true,
+        "catalog_logical_count": 9,
+        "catalog_physical_count": 10,
+        "new_field_hex": "0a59060000040002000400090400010201000000000000fe01",
+        "before_definition": {
+          "current_fields": 4,
+          "maximum_fields": 4,
+          "variable_fields": 2,
+          "definition_bytes": 341,
+          "index_tail_sha256": "b0ab7ea67e49161c2dc505360365ce445c2350c6f596fc2be178db3960d23dbd"
+        },
+        "after_definition": {
+          "current_fields": 5,
+          "maximum_fields": 5,
+          "variable_fields": 3,
+          "definition_bytes": 384,
+          "index_tail_sha256": "b0ab7ea67e49161c2dc505360365ce445c2350c6f596fc2be178db3960d23dbd"
+        },
+        "changed_pages": [
+          4,
+          7,
+          10
+        ]
+      },
+      "mismatch_offsets_first_64": [],
+      "source": "text-number-text.accdb",
+      "sdk_exit": 0,
+      "read_only_observer_exit": 0,
+      "pre_mutation_hashes": {
+        "original_sha256": "c28d3c1bf1de4e75f894ac80ae332aa2a5b4b8c3c9111700d989222b8d6267c3",
+        "input_sha256": "c28d3c1bf1de4e75f894ac80ae332aa2a5b4b8c3c9111700d989222b8d6267c3",
+        "expected_sha256": "d5940a703ae582f27958b4369c8cdca97d9f566dd7cb79c63c4a39e72edf4002",
+        "prediction_sha256": "b376279cec9f9220a848e8009bbebe97e2abbacf8746a2f2df514955401fccff",
+        "model_sha256": "af614027474785fa85cacfdde425f257f86967f8e31f578784c77c6b0dd2be33",
+        "number_helper_sha256": "c805c038da5f0853c50a3b76753dab0577aa66322fe873c9e642e52a943d1886",
+        "text_helper_sha256": "74b09b0ae88486dcf395d85c8fd4b4e454900c80e256c3a888e3894a3ac7f19e",
+        "observer_sha256": "9ffcc9c17d45052c22d09a40c55a00804f7c63028271a974b8d905e1305080e9"
+      },
+      "sdk_stdout": [
+        "Column\tID\tLONG\tunits=4\tnumber=0\tvariable=0\tfixedOffset=0\tcompressed=false\trequired=null\tallowZeroLength=null\tdefault=null\tsort=null",
+        "Column\tLabel\tTEXT\tunits=255\tnumber=1\tvariable=0\tfixedOffset=0\tcompressed=true\trequired=false\tallowZeroLength=true\tdefault=null\tsort=SortOrder[0x01000409, General]",
+        "Column\tAfterLabel\tLONG\tunits=4\tnumber=2\tvariable=1\tfixedOffset=4\tcompressed=false\trequired=false\tallowZeroLength=null\tdefault=0\tsort=null",
+        "Column\tOtherLabel\tTEXT\tunits=255\tnumber=3\tvariable=1\tfixedOffset=0\tcompressed=true\trequired=false\tallowZeroLength=true\tdefault=null\tsort=SortOrder[0x01000409, General]",
+        "Column\tLabelOff\tTEXT\tunits=255\tnumber=4\tvariable=2\tfixedOffset=0\tcompressed=true\trequired=false\tallowZeroLength=true\tdefault=null\tsort=SortOrder[0x01000409, General]",
+        "Rows\t0",
+        "Indexes\t1",
+        "Created\t1899-12-30T00:00",
+        "Updated\t1899-12-30T00:00",
+        "BeforeSHA256\tc28d3c1bf1de4e75f894ac80ae332aa2a5b4b8c3c9111700d989222b8d6267c3",
+        "AfterSHA256\td5940a703ae582f27958b4369c8cdca97d9f566dd7cb79c63c4a39e72edf4002"
+      ],
+      "read_only_stdout": [
+        "DatabaseProperty\tTrack Name AutoCorrect Info\tLONG\tDDL\t0",
+        "DatabaseProperty\tPerform Name AutoCorrect\tLONG\tDDL\t0",
+        "AddedDeclaration\tLabelOff\tTEXT"
+      ]
+    }
+  ],
+  "portable_recipe_verification": {
+    "prepare_and_model_replay": "All four portable predictions match the frozen predictions and observed SDK images.",
+    "sdk_mutation_via_portable_run": "Not executed. The four recorded successful SDK commands used the original recipes and were not repeated."
+  }
+}

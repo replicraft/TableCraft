@@ -11273,3 +11273,18 @@ Required false, Access UI AllowZeroLength true versus programmatic false, explic
 255-unit target, and the current creator's compression-off gap versus documented
 UI compression-on. These sources do not authorize a native writer, change a
 frozen constructor/default/wire language, or establish Microsoft Access behavior.
+
+## Field ADD after explicit OFF: 9 November 2026
+
+The original MIT [role-bound raw model](field_add_after_off/model.py),
+[portable prepare/run recipes](field_add_after_off/README.md) and
+[read-only observer](field_add_after_off/AfterOffProperties.java) compare four
+complete predictions frozen before four fresh-copy SDK saves. They reuse the
+unchanged first-party Number/Short Text helpers and the previously reviewed
+Apache-2.0 Jackcess 5.0.4 artifact. The
+[observation record](results/field-add-after-off-sdk-2026-11-09.json) retains all
+source/prediction/helper hashes and the prior OFF source pins. Original files
+remain exact; no binaries or private paths are tracked. Every SDK open disables
+expression evaluation. The database ROW stays fixed while the next user body
+appends after it. This establishes engineering bytes and inert metadata, with
+native ADD-after-OFF admission, Access save behavior and older profiles unqualified.
