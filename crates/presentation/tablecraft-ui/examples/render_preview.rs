@@ -5,6 +5,8 @@ mod database_options;
 mod date_residue;
 #[path = "render_preview/field_addition.rs"]
 mod field_addition;
+#[path = "render_preview/field_rename.rs"]
+mod field_rename;
 #[path = "render_preview/initial_numbers.rs"]
 mod initial_numbers;
 #[path = "render_preview/initial_properties.rs"]
@@ -118,6 +120,18 @@ fn main() -> Result<(), Box<dyn Error>> {
         format!("-number-{field_addition}")
     } else {
         format!("-field-addition-{field_addition}")
+    };
+    let field_rename = setting("TABLECRAFT_PREVIEW_FIELD_RENAME", "none")?;
+    if !field_rename::is_mode(&field_rename) {
+        return Err(io::Error::other("unknown field rename preview mode").into());
+    }
+    if field_rename != "none" && scenes != [Scene::Datasheet] {
+        return Err(io::Error::other("field rename preview requires datasheet").into());
+    }
+    let field_rename_suffix = if field_rename == "none" {
+        String::new()
+    } else {
+        format!("-field-rename-{field_rename}")
     };
     let database_options = setting("TABLECRAFT_PREVIEW_DATABASE_OPTIONS", "none")?;
     if !database_options::is_mode(&database_options) {
@@ -259,6 +273,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         + usize::from(table_rename)
         + usize::from(saved_sql != "none")
         + usize::from(field_addition != "none")
+        + usize::from(field_rename != "none")
         + usize::from(database_options != "none");
     if interaction_count > 1 {
         return Err(io::Error::other("choose one preview interaction workflow").into());
@@ -397,12 +412,15 @@ fn main() -> Result<(), Box<dyn Error>> {
         if field_addition != "none" {
             field_addition::prepare(&mut harness, &field_addition);
         }
+        if field_rename != "none" {
+            field_rename::prepare(&mut harness, &field_rename);
+        }
         if database_options != "none" {
             database_options::prepare(&mut harness, &database_options);
         }
         let image = harness.render().map_err(io::Error::other)?;
         let path = directory.join(format!(
-            "{}-{}-{}{}{}{ribbon_suffix}{gallery_suffix}{initial_suffix}{table_suffix}{navigation_suffix}{date_suffix}{rename_suffix}{saved_sql_suffix}{field_addition_suffix}{database_options_suffix}{}.png",
+            "{}-{}-{}{}{}{ribbon_suffix}{gallery_suffix}{initial_suffix}{table_suffix}{navigation_suffix}{date_suffix}{rename_suffix}{saved_sql_suffix}{field_addition_suffix}{field_rename_suffix}{database_options_suffix}{}.png",
             locale.as_str(),
             theme_name,
             scene.as_str(),
