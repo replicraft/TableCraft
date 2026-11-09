@@ -1,6 +1,8 @@
 //! Unequal-width ASCII names fit existing owned pages and retain every row slot.
 mod build;
 mod layout;
+#[cfg(test)]
+mod tests;
 mod verify;
 
 use super::{FieldRenameError as Error, NativeFieldRenameIdentity, source::Qualified};
