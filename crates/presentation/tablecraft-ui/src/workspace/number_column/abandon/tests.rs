@@ -196,7 +196,7 @@ fn saved_sql_and_action_mutations_refuse_stale_source_while_read_intents_remain_
             .set_query_parameter_details(300, sql, Vec::new())
             .is_some()
     );
-    assert!(state.can_run_parameterized_query(300, sql, &[]));
+    assert!(state.can_run_parameterized_query(300, sql, &Vec::new()));
     assert!(!state.begin_query_action_review(300, sql, 301, Vec::new(), QueryActionKind::Update));
     let warning = state.number_column.warning.take();
     assert!(state.begin_query_action_review(300, sql, 301, Vec::new(), QueryActionKind::Update));
