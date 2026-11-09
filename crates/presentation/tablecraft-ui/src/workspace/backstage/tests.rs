@@ -2,7 +2,7 @@ use super::*;
 use crate::workspace::DocumentView;
 use crate::workspace::objects::{ObjectKind, ObjectTarget};
 use crate::{
-    Data, Database, ParameterSpec,
+    Data, Database, Locale, Localizer, ParameterSpec, Theme,
     preview::{Preview, Scene},
 };
 use egui::accesskit::Role;

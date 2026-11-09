@@ -1,6 +1,9 @@
 //! Number-specific publication never accepts query-only or stale save authority.
 use super::*;
-use crate::workspace::{ObjectTab, objects::session::Session};
+use crate::workspace::{
+    ObjectTab, ObjectTarget,
+    objects::{MAX_RETAINED_BYTES, session::Session},
+};
 use crate::{Cell, Data, SavedQuerySqlEligibility, SavedQueryTarget};
 use tablecraft_builders::table::FieldAdditionDeclaration;
 
@@ -310,7 +313,8 @@ fn staged_wrong_session_refuses_before_any_clean_sql_buffer_is_taken() {
     let target = open_table(&mut state, "A");
     let request = saving(&mut state, &target);
     let database = fresh(&state);
-    let mut prepared = capture::prepare(&mut state, &database).unwrap();
+    let mut prepared =
+        replacement::prepare(&mut state, &database, replacement::Transfer::KeepAll).unwrap();
     let wrong = prepared
         .objects
         .entries
@@ -318,7 +322,7 @@ fn staged_wrong_session_refuses_before_any_clean_sql_buffer_is_taken() {
         .find(|entry| entry.tab.id == saved.id)
         .unwrap();
     wrong.session = Some(Session::empty(&ObjectKind::Sql));
-    assert!(!publication::publish(&mut state, prepared, database));
+    assert!(!replacement::publish(&mut state, prepared, database));
     let original = state
         .objects
         .entries

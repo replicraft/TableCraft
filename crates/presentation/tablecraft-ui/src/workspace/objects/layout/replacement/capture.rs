@@ -11,7 +11,7 @@ use crate::{
 };
 
 pub(in crate::workspace::objects::layout) struct Prepared {
-    pub(super) objects: Objects,
+    pub(in crate::workspace::objects::layout) objects: Objects,
     pub(super) active: Option<Session>,
     pub(super) scratch_sql: String,
     pub(super) scratch_revision: u64,

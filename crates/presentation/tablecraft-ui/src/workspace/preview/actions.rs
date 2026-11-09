@@ -48,6 +48,27 @@ impl Preview {
             return;
         }
         match action {
+            Action::InspectDatabaseOptions { document_revision } => {
+                // Source-free previews cannot claim any stored settings state.
+                // Record an explicit inspection refusal so Unknown stays visible
+                // without dispatching the same request on every rendered frame.
+                let request_id = self.request();
+                if self
+                    .state
+                    .begin_database_options_inspection(document_revision, request_id)
+                {
+                    self.state.fail_database_options_inspection(
+                        document_revision,
+                        request_id,
+                        self.state.localizer.text("ribbon-unavailable"),
+                    );
+                }
+            }
+            Action::DisableNameAutoCorrect { .. }
+            | Action::CancelDatabaseOptionsReview { .. }
+            | Action::DatabaseOptionsSave { .. } => {
+                self.state.error = Some(self.state.localizer.text("ribbon-unavailable"));
+            }
             Action::FieldAdditionClose { result } => {
                 match result.decision {
                     crate::FieldAdditionCloseDecision::Discard => {
