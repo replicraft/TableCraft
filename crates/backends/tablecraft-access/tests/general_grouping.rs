@@ -15,14 +15,14 @@ const GENERAL_POLICY: TextCollationId = TextCollationId::from_host(1033);
 
 struct Rows {
     source: MemorySource,
-    policy: TextCollationId,
+    policy: [Option<TextCollationId>; 1],
 }
 
 impl Rows {
     fn new(source: MemorySource) -> Self {
         Self {
             source,
-            policy: GENERAL_POLICY,
+            policy: [Some(GENERAL_POLICY)],
         }
     }
 }
@@ -33,7 +33,7 @@ impl Source for Rows {
     }
 
     fn text_collations(&self, _: &str) -> Result<&[Option<TextCollationId>], QueryError> {
-        Ok(&[Some(self.policy)])
+        Ok(&self.policy)
     }
 
     fn scan(
@@ -265,7 +265,9 @@ fn native_general_hints_preserve_full_comparison_groups_for_both_sort_versions()
                 .unwrap(),
             ])
             .unwrap(),
-            policy: TextCollationId::from_host(1033 | (u64::from(version) << 24)),
+            policy: [Some(TextCollationId::from_host(
+                1033 | (u64::from(version) << 24),
+            ))],
         };
         let parsed = parse_query(
             "SELECT K,Count(*) FROM T GROUP BY K",
