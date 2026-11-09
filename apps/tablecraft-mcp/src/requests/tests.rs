@@ -36,7 +36,7 @@ fn validates_nested_field_declarations_and_native_widths_before_dispatch() {
 
 #[test]
 fn every_advertised_tool_has_a_derived_object_schema() {
-    let tools = crate::tools::definitions().unwrap();
+    let tools = crate::tools::definitions(crate::permissions::Permissions::all()).unwrap();
     assert!(tools.len() > 50);
     for tool in tools {
         assert_eq!(tool.input_schema["type"], "object", "{}", tool.name);

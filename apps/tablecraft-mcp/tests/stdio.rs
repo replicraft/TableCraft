@@ -21,10 +21,11 @@ struct Peer {
 }
 
 impl Peer {
-    fn start(root: &std::path::Path) -> Self {
+    fn start(root: &std::path::Path, grants: &[&str]) -> Self {
         let mut child = Command::new(env!("CARGO_BIN_EXE_tablecraft-mcp"))
             .arg("--root")
             .arg(root)
+            .args(grants)
             .stdin(Stdio::piped())
             .stdout(Stdio::piped())
             .stderr(Stdio::null())
@@ -130,7 +131,7 @@ fn stdio_initialize_discovery_native_creation_and_scoped_query_contracts() {
     let directory = tempfile::tempdir().unwrap();
     let root = directory.path().join("authorized");
     std::fs::create_dir(&root).unwrap();
-    let mut peer = Peer::start(&root);
+    let mut peer = Peer::start(&root, &["--allow-data-write", "--allow-schema-write"]);
     peer.initialize();
     let listed = peer.request("tools/list", json!({}));
     let tools = listed["tools"].as_array().unwrap();
@@ -223,4 +224,178 @@ fn stdio_initialize_discovery_native_creation_and_scoped_query_contracts() {
     assert_eq!(result["rows"][0][0]["text"], "1");
     assert_eq!(std::fs::read(destination).unwrap(), original);
     assert_eq!(std::fs::read(outside).unwrap(), original);
+}
+
+#[test]
+fn stdio_default_is_readonly_even_for_forced_calls_and_inert_action_query_reviews() {
+    use tablecraft_testkit::fixtures::access::mutation_fixture;
+
+    let directory = tempfile::tempdir().unwrap();
+    let path = directory.path().join("source.mdb");
+    let original = mutation_fixture::database();
+    std::fs::write(&path, &original).unwrap();
+    let mut peer = Peer::start(directory.path(), &[]);
+    peer.initialize();
+    let listed = peer.request("tools/list", json!({}));
+    let tools = listed["tools"].as_array().unwrap();
+    for operation in [
+        "apply_edit",
+        "apply_insert",
+        "apply_delete",
+        "apply_query_insert",
+        "apply_query_update",
+        "apply_query_delete",
+        "apply_table_drop",
+        "apply_field_addition",
+        "apply_query_sql",
+        "create_database",
+        "start_reserved_recovery",
+    ] {
+        assert!(
+            !tools.iter().any(|tool| tool["name"] == operation),
+            "{operation} must not be advertised without its startup grant"
+        );
+    }
+    assert!(
+        tools
+            .iter()
+            .any(|tool| tool["name"] == "review_query_delete")
+    );
+    assert!(
+        tools
+            .iter()
+            .any(|tool| tool["name"] == "apply_field_filter")
+    );
+    let opened = peer.successful_tool(
+        "open_database",
+        json!({
+            "path": path
+        }),
+    );
+    let revision = opened["catalog"]["document_revision"].as_u64().unwrap();
+    let draft = peer.successful_tool(
+        "begin_edit",
+        json!({
+            "document_revision": revision,
+            "table": "Items",
+            "column": "Score",
+            "parent_ordinal": 0
+        }),
+    );
+    let review = peer.successful_tool(
+        "review_edit",
+        json!({
+            "document_revision": revision,
+            "draft_id": draft["draft_id"],
+            "text": "77"
+        }),
+    );
+    let denied = peer.tool(
+        "apply_edit",
+        json!({
+            "review_id": review["review_id"]
+        }),
+    );
+    assert_eq!(denied["isError"], true);
+    assert!(
+        denied["structuredContent"]["error"]
+            .as_str()
+            .unwrap()
+            .contains("--allow-data-write")
+    );
+    let destination = directory.path().join("must-not-exist.accdb");
+    let denied = peer.tool(
+        "create_database",
+        json!({
+            "path": destination
+        }),
+    );
+    assert_eq!(denied["isError"], true);
+    assert!(
+        denied["structuredContent"]["error"]
+            .as_str()
+            .unwrap()
+            .contains("--allow-schema-write")
+    );
+    let denied = peer.tool(
+        "apply_query_sql",
+        json!({
+            "review_id": 1
+        }),
+    );
+    assert_eq!(denied["isError"], true);
+    assert!(
+        denied["structuredContent"]["error"]
+            .as_str()
+            .unwrap()
+            .contains("--allow-application-write")
+    );
+    let denied = peer.tool(
+        "start_reserved_recovery",
+        json!({
+            "path": path
+        }),
+    );
+    assert_eq!(denied["isError"], true);
+    assert!(
+        denied["structuredContent"]["error"]
+            .as_str()
+            .unwrap()
+            .contains("--allow-maintenance")
+    );
+    for operation in ["recover_save", "release_save", "acknowledge_save"] {
+        let refused = peer.tool(
+            operation,
+            json!({
+                "save_id": 1
+            }),
+        );
+        assert_eq!(
+            refused["isError"], true,
+            "lifecycle tools require an actual authorized owner"
+        );
+    }
+    let inspected = peer.successful_tool(
+        "inspect_query",
+        json!({
+            "document_revision": revision,
+            "sql": "DELETE FROM Items WHERE Id=1;"
+        }),
+    );
+    let refused = peer.tool(
+        "run_query",
+        json!({
+            "document_revision": revision,
+            "query_id": inspected["query_id"]
+        }),
+    );
+    assert_eq!(
+        refused["isError"], true,
+        "read execution never becomes an action-query writer"
+    );
+    let inspected = peer.successful_tool(
+        "inspect_query",
+        json!({
+            "document_revision": revision,
+            "sql": "SELECT 'DELETE FROM Items' AS Words;"
+        }),
+    );
+    let read = peer.successful_tool(
+        "run_query",
+        json!({
+            "document_revision": revision,
+            "query_id": inspected["query_id"]
+        }),
+    );
+    assert_eq!(read["rows"][0][0]["text"], "DELETE FROM Items");
+    let status = peer.successful_tool("session_status", json!({}));
+    assert!(status["active_save_id"].is_null());
+    assert!(status["active_creation_id"].is_null());
+    assert!(!destination.exists());
+    assert_eq!(std::fs::read(&path).unwrap(), original);
+    assert_eq!(
+        std::fs::read_dir(directory.path()).unwrap().count(),
+        1,
+        "no journal or staging side effect was authorized"
+    );
 }

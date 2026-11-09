@@ -1,4 +1,4 @@
-use crate::{requests, session::Session};
+use crate::{permissions::Permissions, requests, session::Session};
 use serde_json::Value;
 use std::{
     future::Future,
@@ -34,10 +34,11 @@ impl Drop for CancelOnDrop {
 
 pub(super) struct Actor {
     requests: mpsc::Sender<Request>,
+    permissions: Permissions,
 }
 
 impl Actor {
-    pub(super) fn start(root: PathBuf) -> io::Result<Self> {
+    pub(super) fn start(root: PathBuf, permissions: Permissions) -> io::Result<Self> {
         let root = root.canonicalize()?;
         if !root.is_dir() {
             return Err(io::Error::new(
@@ -57,6 +58,7 @@ impl Actor {
                     }
                     let result = match &mut session {
                         Ok(session) => requests::validate(&request.operation, &request.arguments)
+                            .and_then(|()| permissions.require(&request.operation))
                             .and_then(|()| {
                                 if request.cancelled.load(Ordering::Acquire) {
                                     return Err(
@@ -80,7 +82,14 @@ impl Actor {
                     let _ = request.reply.send(result);
                 }
             })?;
-        Ok(Self { requests })
+        Ok(Self {
+            requests,
+            permissions,
+        })
+    }
+
+    pub(super) fn permissions(&self) -> Permissions {
+        self.permissions
     }
 
     pub(super) async fn execute(

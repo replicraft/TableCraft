@@ -1,4 +1,7 @@
-use crate::requests;
+use crate::{
+    permissions::{Permissions, access},
+    requests,
+};
 use rmcp::model::Tool;
 
 // Names are protocol surface, not alternate implementations of these operations.
@@ -256,7 +259,10 @@ const APPLY_KINDS: &[&str] = &[
     "query_update",
 ];
 
-pub(super) fn definition(name: &str) -> Option<Tool> {
+pub(super) fn definition(name: &str, permissions: Permissions) -> Option<Tool> {
+    if !permissions.allows(name) {
+        return None;
+    }
     if let Some(kind) = name.strip_prefix("apply_")
         && APPLY_KINDS.contains(&kind)
     {
@@ -278,9 +284,31 @@ pub(super) fn known(name: &str) -> bool {
             .is_some_and(|kind| APPLY_KINDS.contains(&kind))
 }
 
-pub(super) fn definitions() -> Result<Vec<Tool>, &'static str> {
-    OPERATIONS.iter().map(|(name, description)| tool((*name).to_owned(), description))
-        .chain(APPLY_KINDS.iter().map(|kind| tool(format!("apply_{kind}"), "Consume the exact retained review capability and start its native save. Poll save_status and acknowledge the actual outcome.")))
+pub(super) fn definitions(permissions: Permissions) -> Result<Vec<Tool>, &'static str> {
+    if OPERATIONS.iter().any(|(name, _)| access(name).is_none())
+        || APPLY_KINDS
+            .iter()
+            .any(|kind| access(&format!("apply_{kind}")).is_none())
+    {
+        return Err("registered tool has no typed access classification");
+    }
+
+    let operations = OPERATIONS
+        .iter()
+        .filter(|(name, _)| permissions.allows(name))
+        .map(|(name, description)| tool((*name).to_owned(), description));
+    let applies = APPLY_KINDS
+        .iter()
+        .map(|kind| format!("apply_{kind}"))
+        .filter(|name| permissions.allows(name))
+        .map(|name| {
+            tool(
+                name,
+                "Consume the exact retained review capability and start its native save. Poll save_status and acknowledge the actual outcome.",
+            )
+        });
+    operations
+        .chain(applies)
         .map(|tool| tool.ok_or("registered tool has no request schema"))
         .collect()
 }
