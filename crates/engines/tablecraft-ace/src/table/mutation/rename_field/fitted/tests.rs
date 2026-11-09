@@ -62,6 +62,34 @@ fn grow_shrink_and_maximum_ascii_names_match_independent_complete_images() {
 }
 
 #[test]
+fn actual_owned_page_capacity_accepts_twenty_eight_units_and_refuses_twenty_nine() {
+    let name = "R".repeat(28);
+    let [before, after] = fitting::near_capacity_pair(&name);
+    let original = image(&before);
+    let facts = original
+        .inspect_fitted_field_rename_source("Table1", "Score", &mut budget(), &|| false)
+        .unwrap();
+    assert_eq!(facts.identity().name_utf16_units(), 5);
+    assert_eq!(facts.maximum_name_utf16_units(), 28);
+    let candidate = original
+        .prepare_fitted_field_rename("Table1", "Score", &name, &mut budget(), &|| false)
+        .unwrap();
+    equal_image(candidate.before_bytes(), &before);
+    equal_image(candidate.after_bytes(), &after);
+
+    assert!(matches!(
+        image(&before).prepare_fitted_field_rename(
+            "Table1",
+            "Score",
+            &"R".repeat(29),
+            &mut budget(),
+            &|| false,
+        ),
+        Err(Error::FittedCapacity)
+    ));
+}
+
+#[test]
 fn fitted_and_existing_same_width_languages_remain_separate() {
     let before = fitting::source(SourceCase::NumberFirst);
     assert!(matches!(
