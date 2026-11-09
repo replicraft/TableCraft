@@ -14,6 +14,13 @@ use std::sync::{
 use tablecraft_expressions::functions::dates::clock::Clock;
 
 const NO_REQUEST: u64 = 0;
+const EXHAUSTED_GENERATION: u64 = u64::MAX;
+
+/// This worker has permanently exhausted its monotonic read-request identities.
+/// Create a fresh worker and explicitly reopen the source before requesting more work.
+#[derive(Clone, Copy, Debug, Eq, PartialEq, thiserror::Error)]
+#[error("read request identities exhausted; restart the worker and reopen the database")]
+pub struct ReadRequestExhausted;
 
 type Reply = (u64, Result<Response, Error>);
 
@@ -34,6 +41,27 @@ struct Shared {
 }
 
 impl Shared {
+    fn issue_generation(&self) -> Result<u64, ReadRequestExhausted> {
+        self.generation
+            .fetch_update(Ordering::AcqRel, Ordering::Acquire, |generation| {
+                generation
+                    .checked_add(1)
+                    .filter(|next| *next < EXHAUSTED_GENERATION)
+            })
+            .map(|previous| previous + 1)
+            .map_err(|_| ReadRequestExhausted)
+    }
+
+    fn revoke_generation(&self) -> u64 {
+        // The final value is cancellation-only, never an issued request ID.
+        self.generation
+            .fetch_update(Ordering::AcqRel, Ordering::Acquire, |generation| {
+                Some(generation.saturating_add(1))
+            })
+            .expect("revocation always supplies a value")
+            .saturating_add(1)
+    }
+
     fn disconnected(&self) -> bool {
         match self
             .liveness
@@ -76,6 +104,8 @@ pub struct Worker {
 }
 
 impl Worker {
+    /// Start a dedicated native read actor. Startup failure is delivered by
+    /// `poll` for an accepted request rather than executing work on the caller.
     pub fn new(repaint: impl Fn() + Send + Sync + 'static) -> Self {
         Self::with_query_clock(repaint, Arc::new(crate::query::context::LocalClock))
     }
@@ -734,23 +764,32 @@ impl Worker {
     /// Supersede earlier work without waiting for that work to finish.
     /// A disconnected executor refuses execution and publishes ReadWorkerStopped
     /// for this request; it never resumes a document after an actor panic.
-    pub fn request(&self, command: Command) -> u64 {
+    ///
+    /// # Errors
+    /// Returns [`ReadRequestExhausted`] without replacing earlier work when no
+    /// fresh identity remains. The rejected command is dropped. Exhaustion is
+    /// permanent; cancellation can still revoke the final accepted request.
+    ///
+    /// # Panics
+    /// Panics if an internal live mailbox was poisoned. Poison is an invariant
+    /// failure, not permission to resume a potentially invalid document.
+    pub fn request(&self, command: Command) -> Result<u64, ReadRequestExhausted> {
         // The worker cannot take this command until its preceding response has
         // been cleared. Serializing generation issuance with replacement also
         // prevents a slower caller from replacing a newer caller's command.
         if self.shared.disconnected() {
-            let id = self.shared.generation.fetch_add(1, Ordering::AcqRel) + 1;
+            let id = self.shared.issue_generation()?;
             self.shared.active.fetch_max(id, Ordering::AcqRel);
             drop(command);
             self.shared.repaint();
-            return id;
+            return Ok(id);
         }
         let mut pending = self
             .shared
             .pending
             .lock()
             .expect("read request mailbox poisoned");
-        let id = self.shared.generation.fetch_add(1, Ordering::AcqRel) + 1;
+        let id = self.shared.issue_generation()?;
         self.shared.active.fetch_max(id, Ordering::AcqRel);
         let old_response = self
             .shared
@@ -763,16 +802,22 @@ impl Worker {
         self.shared.ready.notify();
         drop(old_response);
         drop(old_pending);
-        id
+        Ok(id)
     }
 
     /// Whether this exact readonly request still owns reply publication.
     /// Superseding or cancelling revokes publication immediately; native work
     /// may still be checking cancellation. This says nothing about SaveWorker.
     pub fn publication_is_current(&self, id: u64) -> bool {
-        id != 0 && self.shared.generation.load(Ordering::Acquire) == id
+        id != NO_REQUEST
+            && id < EXHAUSTED_GENERATION
+            && self.shared.generation.load(Ordering::Acquire) == id
     }
 
+    /// Take the current reply, or the exact accepted request's terminal actor error.
+    ///
+    /// # Panics
+    /// Panics if a live reply mailbox or the liveness guard is poisoned.
     pub fn poll(&self) -> Option<Reply> {
         if self.shared.disconnected() {
             let id = self.shared.active.swap(NO_REQUEST, Ordering::AcqRel);
@@ -800,9 +845,14 @@ impl Worker {
         Some(response)
     }
 
+    /// Revoke publication without joining the actor or waiting for native I/O.
+    /// This remains effective after request identities are exhausted.
+    ///
+    /// # Panics
+    /// Panics if a live mailbox or the liveness guard is poisoned.
     pub fn cancel(&self) {
         if self.shared.disconnected() {
-            let revoked = self.shared.generation.fetch_add(1, Ordering::AcqRel) + 1;
+            let revoked = self.shared.revoke_generation();
             self.shared
                 .active
                 .try_update(Ordering::AcqRel, Ordering::Acquire, |id| {
@@ -817,7 +867,7 @@ impl Worker {
             .pending
             .lock()
             .expect("read request mailbox poisoned");
-        let revoked = self.shared.generation.fetch_add(1, Ordering::AcqRel) + 1;
+        let revoked = self.shared.revoke_generation();
         self.shared
             .active
             .try_update(Ordering::AcqRel, Ordering::Acquire, |id| {
@@ -840,7 +890,9 @@ impl Worker {
 impl Drop for Worker {
     fn drop(&mut self) {
         self.shared.stopped.store(true, Ordering::Release);
-        self.shared.generation.fetch_add(1, Ordering::AcqRel);
+        self.shared
+            .generation
+            .store(EXHAUSTED_GENERATION, Ordering::Release);
         self.shared.active.store(NO_REQUEST, Ordering::Release);
         self.shared.ready.notify();
         // No explicit mailbox lock or join here. A live actor reclaims its
@@ -859,3 +911,6 @@ impl Worker {
 
 #[cfg(test)]
 mod liveness_tests;
+
+#[cfg(test)]
+mod generation_tests;

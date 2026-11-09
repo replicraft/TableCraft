@@ -92,7 +92,7 @@ pub use totals::{
     MAX_TOTAL_FIELDS, TotalAggregate, TotalSpec, TotalsData, TotalsDescription, TotalsError,
     TotalsField, TotalsTarget,
 };
-pub use worker::Worker;
+pub use worker::{ReadRequestExhausted, Worker};
 
 pub use command::Command;
 pub use error::Error;

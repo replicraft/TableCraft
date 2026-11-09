@@ -74,9 +74,11 @@ fn unlocked_review_commits_once_and_keeps_its_receipt_until_acknowledged() {
         .unwrap_err();
     assert_eq!(rejected.kind, SaveStartFailure::Busy);
     assert!(rejected.into_reviewed().is_some());
-    worker.request(Command::Query {
-        sql: "SELECT 1".into(),
-    });
+    worker
+        .request(Command::Query {
+            sql: "SELECT 1".into(),
+        })
+        .expect("fresh test worker identity");
     worker.cancel();
     let report = terminal(&saves);
     assert_eq!(report.id, id);

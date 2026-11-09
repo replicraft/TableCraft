@@ -60,7 +60,7 @@ fn worker_inherits_subscriber_without_recording_command_payloads() {
         },
     ];
     for command in commands {
-        let generation = worker.request(command);
+        let generation = worker.request(command).expect("fresh test worker identity");
         let deadline = Instant::now() + Duration::from_secs(10);
         let (actual, response) = loop {
             if let Some(reply) = worker.poll() {

@@ -51,9 +51,19 @@ fn executor_is_dropped_before_terminal_error_and_future_requests_never_reenter_i
         count.fetch_add(1, Ordering::AcqRel);
         panic!("injected read operation failure");
     });
-    terminal(&worker, worker.request(request()));
+    terminal(
+        &worker,
+        worker
+            .request(request())
+            .expect("fresh test worker identity"),
+    );
     assert!(invalidated.load(Ordering::Acquire));
-    terminal(&worker, worker.request(request()));
+    terminal(
+        &worker,
+        worker
+            .request(request())
+            .expect("fresh test worker identity"),
+    );
     assert_eq!(entered.load(Ordering::Acquire), 1);
 }
 
@@ -66,9 +76,13 @@ fn a_queued_successor_receives_terminal_failure_when_the_previous_executor_panic
         released.recv().unwrap();
         panic!("injected predecessor failure");
     });
-    let old = worker.request(request());
+    let old = worker
+        .request(request())
+        .expect("fresh test worker identity");
     entry.recv_timeout(Duration::from_secs(5)).unwrap();
-    let latest = worker.request(request());
+    let latest = worker
+        .request(request())
+        .expect("fresh test worker identity");
     assert!(latest > old);
     release.send(()).unwrap();
     terminal(&worker, latest);
@@ -86,12 +100,24 @@ fn cancellation_revokes_dead_publication_and_failure_requests_still_notify_the_h
             panic!("injected read failure");
         },
     );
-    terminal(&worker, worker.request(request()));
-    let failed = worker.request(request());
+    terminal(
+        &worker,
+        worker
+            .request(request())
+            .expect("fresh test worker identity"),
+    );
+    let failed = worker
+        .request(request())
+        .expect("fresh test worker identity");
     worker.cancel();
     assert!(!worker.publication_is_current(failed));
     assert!(worker.poll().is_none());
-    terminal(&worker, worker.request(request()));
+    terminal(
+        &worker,
+        worker
+            .request(request())
+            .expect("fresh test worker identity"),
+    );
     assert!(repaints.load(Ordering::Acquire) >= 2);
 }
 
@@ -160,7 +186,17 @@ fn spawn_failure_refuses_every_read_without_executing_or_opening_a_document() {
         },
         crate::thread_start::FailingSpawner,
     );
-    terminal(&worker, worker.request(request()));
-    terminal(&worker, worker.request(request()));
+    terminal(
+        &worker,
+        worker
+            .request(request())
+            .expect("fresh test worker identity"),
+    );
+    terminal(
+        &worker,
+        worker
+            .request(request())
+            .expect("fresh test worker identity"),
+    );
     assert_eq!(calls.load(Ordering::Acquire), 0);
 }

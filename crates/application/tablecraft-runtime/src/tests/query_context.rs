@@ -242,9 +242,13 @@ fn superseded_real_clock_execution_cannot_publish_over_the_latest_command() {
         }),
     );
     request(&worker, open(&path, "")).unwrap();
-    worker.request(query("SELECT Now()"));
+    worker
+        .request(query("SELECT Now()"))
+        .expect("fresh test worker identity");
     observed.recv_timeout(WAIT).unwrap();
-    let latest = worker.request(query("SELECT CurrentUser()"));
+    let latest = worker
+        .request(query("SELECT CurrentUser()"))
+        .expect("fresh test worker identity");
     release.send(()).unwrap();
     let (actual, response) = poll(&worker);
     assert_eq!(actual, latest);

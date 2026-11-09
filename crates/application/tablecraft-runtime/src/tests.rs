@@ -170,7 +170,7 @@ fn open(path: &Path, password: &str) -> Command {
 }
 
 pub(crate) fn request(worker: &Worker, command: Command) -> Result<Response, Error> {
-    let expected = worker.request(command);
+    let expected = worker.request(command).expect("fresh test worker identity");
     let (actual, response) = poll(worker);
     assert_eq!(actual, expected);
     response
@@ -371,9 +371,13 @@ fn invalid_path_error_is_discarded_when_a_new_open_supersedes_it() {
                 .unwrap();
         }
     });
-    worker.request(open(&directory.path().join("absent.accdb"), ""));
+    worker
+        .request(open(&directory.path().join("absent.accdb"), ""))
+        .expect("fresh test worker identity");
     published_rx.recv_timeout(Duration::from_secs(5)).unwrap();
-    let newest = worker.request(open(&path, ""));
+    let newest = worker
+        .request(open(&path, ""))
+        .expect("fresh test worker identity");
     assert!(worker.poll().is_none());
     release_tx.send(()).unwrap();
     let (actual, response) = poll(&worker);
@@ -410,10 +414,16 @@ fn latest_request_cancels_running_work_and_replaces_pending_work() {
             has_more: false,
         })
     });
-    worker.request(query("running"));
+    worker
+        .request(query("running"))
+        .expect("fresh test worker identity");
     started_rx.recv_timeout(Duration::from_secs(5)).unwrap();
-    worker.request(query("superseded pending"));
-    let latest = worker.request(query("latest"));
+    worker
+        .request(query("superseded pending"))
+        .expect("fresh test worker identity");
+    let latest = worker
+        .request(query("latest"))
+        .expect("fresh test worker identity");
     release_tx.send(()).unwrap();
     let (id, response) = poll(&worker);
     assert_eq!(id, latest);
@@ -447,7 +457,9 @@ fn explicit_cancel_discards_a_late_result() {
             queries: Vec::new(),
         })
     });
-    worker.request(query("running"));
+    worker
+        .request(query("running"))
+        .expect("fresh test worker identity");
     started_rx.recv_timeout(Duration::from_secs(5)).unwrap();
     worker.cancel();
     release_tx.send(()).unwrap();
@@ -485,7 +497,9 @@ fn concurrent_mailbox_requests_publish_the_highest_returned_generation() {
                 let mut last = None;
                 for ordinal in 0..32 {
                     let label = format!("{round}:{producer}:{ordinal}");
-                    let id = worker.request(query(&label));
+                    let id = worker
+                        .request(query(&label))
+                        .expect("fresh test worker identity");
                     last = Some((id, label));
                 }
                 last.unwrap()
