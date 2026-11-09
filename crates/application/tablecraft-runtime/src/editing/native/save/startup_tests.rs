@@ -1,6 +1,7 @@
 //! Unavailable save actors refuse capabilities before journal acceptance.
 use super::*;
 use crate::thread_start::{FailingSpawner, PausedSpawner};
+use crate::{Command, Response};
 use std::time::{Duration, Instant};
 use tablecraft_testkit::fixtures::access::mutation_fixture;
 
@@ -10,7 +11,7 @@ fn failed_thread_start_returns_real_review_without_target_or_journal_work() {
     let source = directory.path().join("source.accdb");
     let before = mutation_fixture::database();
     std::fs::write(&source, &before).unwrap();
-    let (_reader, capability) = super::test_support::review_source(&source);
+    let (reader, capability) = super::test_support::review_source(&source);
     let captured_path = capability
         .source_path()
         .as_os_str()
