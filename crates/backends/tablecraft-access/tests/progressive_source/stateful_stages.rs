@@ -1,6 +1,7 @@
 //! Native cursors feed nested barriers without a complete snapshot cache.
 use super::*;
 use std::ops::Range;
+use tablecraft_query::SourceFailure;
 use tablecraft_query::{ExecutionOptions, prepare};
 use tablecraft_sql::parse_query;
 
@@ -50,7 +51,7 @@ fn nested_groups_exceed_snapshot_limits_and_count_only_physical_input_rows() {
         }
         assert_eq!(
             native.scan("Items", &mut |_| Ok(())),
-            Err(QueryError::StructureLimit)
+            Err(QueryError::SourceFailure(SourceFailure::StructureLimit))
         );
     }
 }

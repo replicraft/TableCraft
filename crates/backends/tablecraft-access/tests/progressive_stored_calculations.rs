@@ -1,3 +1,4 @@
+use tablecraft_query::SourceFailure;
 use tablecraft_testkit::fixtures::access::calculated_storage as calculated_fixture;
 #[allow(dead_code)]
 #[path = "../../../engines/tablecraft-ace/tests/calculated_memos/fixture.rs"]
@@ -50,9 +51,15 @@ fn explicit_stored_projections_stream_cached_values_without_retention_or_cache_p
                 source.is_stored_calculation("Items", 1).unwrap(),
                 Some(true)
             );
-            assert_eq!(buffered(&source, &[1]), Err(QueryError::StructureLimit));
+            assert_eq!(
+                buffered(&source, &[1]),
+                Err(QueryError::SourceFailure(SourceFailure::StructureLimit))
+            );
             assert_eq!(collect(&source, &[0, 1]).unwrap(), expected);
-            assert_eq!(buffered(&source, &[0]), Err(QueryError::StructureLimit));
+            assert_eq!(
+                buffered(&source, &[0]),
+                Err(QueryError::SourceFailure(SourceFailure::StructureLimit))
+            );
             assert_eq!(collect(&source, &[]).unwrap(), vec![vec![], vec![], vec![]]);
             drop(source);
             assert_eq!(bytes, original);
@@ -112,7 +119,10 @@ fn unsupported_calculation_declarations_refuse_even_when_the_table_is_empty() {
             .any(|name| name.as_str() == "Score")
     );
     assert_eq!(collect(&source, &[0]).unwrap(), Vec::<Vec<Value>>::new());
-    assert!(matches!(collect(&source, &[1]), Err(QueryError::Source)));
+    assert!(matches!(
+        collect(&source, &[1]),
+        Err(QueryError::SourceFailure(SourceFailure::InvalidRequest))
+    ));
 }
 
 #[test]
@@ -135,7 +145,10 @@ fn cancelled_and_rejected_visitors_release_cursors_without_complete_cache_entrie
     assert_eq!(visits, 1);
     stopped.set(false);
     assert_eq!(collect(&source, &[1]).unwrap().len(), 3);
-    assert_eq!(buffered(&source, &[1]), Err(QueryError::StructureLimit));
+    assert_eq!(
+        buffered(&source, &[1]),
+        Err(QueryError::SourceFailure(SourceFailure::StructureLimit))
+    );
 
     visits = 0;
     let failure = source.scan_projected_progressive("Items", &[1], &mut |_| {

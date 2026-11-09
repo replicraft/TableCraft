@@ -1,6 +1,7 @@
 use super::*;
 use std::{cmp::Ordering, collections::BTreeMap};
 use tablecraft_expressions::{EvalError, comparison::Collation};
+use tablecraft_query::SourceFailure;
 use tablecraft_query::{ExecutionOptions, prepare, source::CollationResolver};
 use tablecraft_sql::parse_query;
 
@@ -86,7 +87,7 @@ fn original_native_text_groups_cross_snapshot_limits_with_explicit_or_stored_pol
         }
         assert_eq!(
             native.scan("ROULETTE_TB", &mut |_| Ok(())),
-            Err(QueryError::StructureLimit)
+            Err(QueryError::SourceFailure(SourceFailure::StructureLimit))
         );
     }
 }

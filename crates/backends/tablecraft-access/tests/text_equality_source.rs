@@ -9,6 +9,7 @@ use tablecraft_ace::{NativeReadSource, TableSnapshotLimits};
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_expressions::{EvalError, comparison::Collation};
 use tablecraft_model::CatalogScope;
+use tablecraft_query::SourceFailure;
 use tablecraft_query::{
     ExecutionOptions, QueryError, prepare,
     source::{CollationResolver, TextCollationId},
@@ -104,7 +105,10 @@ fn native_equality_requires_actual_comparer_agreement_and_keeps_partial_caches_s
             ..Default::default()
         },
     );
-    assert_eq!(refused.err(), Some(QueryError::StructureLimit));
+    assert_eq!(
+        refused.err(),
+        Some(QueryError::SourceFailure(SourceFailure::StructureLimit))
+    );
     assert_eq!(reads.get(), before);
 
     let result = plan
@@ -126,7 +130,7 @@ fn native_equality_requires_actual_comparer_agreement_and_keeps_partial_caches_s
             .unwrap()
             .execute(&source, &[], Default::default())
             .err(),
-        Some(QueryError::StructureLimit)
+        Some(QueryError::SourceFailure(SourceFailure::StructureLimit))
     );
 }
 

@@ -1,4 +1,5 @@
 //! Independent selection/cache controls over original stored-cache literals.
+use tablecraft_query::SourceFailure;
 use tablecraft_testkit::fixtures::access::calculated_storage as calculated_fixture;
 use tablecraft_testkit::fixtures::access::mutation_fixture as base;
 #[allow(dead_code)]
@@ -64,11 +65,11 @@ fn required_small_selection_succeeds_above_the_complete_snapshot_cap() {
             );
             assert_eq!(
                 run(&source, "SELECT Score FROM Items").err(),
-                Some(QueryError::StructureLimit)
+                Some(QueryError::SourceFailure(SourceFailure::StructureLimit))
             );
             assert_eq!(
                 run(&source, "SELECT Score FROM Items WHERE Id=10").err(),
-                Some(QueryError::StructureLimit)
+                Some(QueryError::SourceFailure(SourceFailure::StructureLimit))
             );
             assert_eq!(
                 run(&source, "SELECT Score FROM Items WHERE Id=20").unwrap(),
@@ -247,7 +248,7 @@ fn cancellation_and_cumulative_native_quotas_do_not_publish_partial_selections()
     for _ in 0..256 {
         match run(&source, "SELECT Score FROM Items WHERE Id=20") {
             Ok(rows) => assert_eq!(rows, [vec![Value::Int32(-7)]]),
-            Err(QueryError::Limit(_)) => {
+            Err(QueryError::SourceFailure(SourceFailure::Limit(_))) => {
                 exhausted = true;
                 break;
             }

@@ -8,6 +8,7 @@ use tablecraft_access::NativeSource;
 use tablecraft_ace::TableSnapshotLimits;
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
+use tablecraft_query::SourceFailure;
 use tablecraft_query::{ExecutionOptions, QueryError, Source, prepare, source::ScanConstraint};
 use tablecraft_sql::parse_query;
 #[allow(dead_code)]
@@ -98,7 +99,7 @@ fn lower_caps_and_late_failures_never_publish_visitors_or_cache_partial_rows() {
             source.scan("Items", &mut |_| panic!(
                 "no partial snapshot may reach a visitor"
             )),
-            Err(QueryError::StructureLimit)
+            Err(QueryError::SourceFailure(SourceFailure::StructureLimit))
         );
     }
     assert_eq!(reads.get(), 0);
@@ -138,13 +139,13 @@ fn scalar_retention_limits_also_cover_complete_and_partial_selected_indexes() {
         source.scan_constrained("Items", pair, &mut |_| panic!(
             "retained rows exceed the explicit cap"
         )),
-        Err(QueryError::StructureLimit)
+        Err(QueryError::SourceFailure(SourceFailure::StructureLimit))
     );
     assert_eq!(
         source.scan_projected("Items", &[0], Some(pair), &mut |_| panic!(
             "projected selected snapshots have the same cap"
         )),
-        Err(QueryError::StructureLimit)
+        Err(QueryError::SourceFailure(SourceFailure::StructureLimit))
     );
     let point = ScanConstraint::Int32 {
         column: 1,
@@ -163,6 +164,6 @@ fn scalar_retention_limits_also_cover_complete_and_partial_selected_indexes() {
         source.scan("Items", &mut |_| panic!(
             "a partial index selection cannot become a complete table"
         )),
-        Err(QueryError::StructureLimit)
+        Err(QueryError::SourceFailure(SourceFailure::StructureLimit))
     );
 }

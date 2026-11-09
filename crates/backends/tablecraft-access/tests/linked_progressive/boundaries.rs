@@ -1,6 +1,7 @@
 use super::*;
 use tablecraft_access::LinkSourceError;
 use tablecraft_expressions::EvalError;
+use tablecraft_query::SourceFailure;
 use tablecraft_query::StreamError;
 
 const DECLARED_ROWS_OFFSET: usize = 16;
@@ -45,7 +46,9 @@ fn shared_native_limits_and_cancellation_stop_the_mapped_cursor() {
         });
         assert_eq!(visits, 1);
         if let Some(resource) = resource {
-            assert!(matches!(result, Err(QueryError::Limit(limit)) if limit.resource == resource));
+            assert!(
+                matches!(result, Err(QueryError::SourceFailure(SourceFailure::Limit(limit))) if limit.resource == resource)
+            );
             assert_eq!(pool.borrow().remaining(resource), 0);
         } else {
             assert_eq!(result, Err(QueryError::Cancelled));
@@ -178,7 +181,7 @@ fn late_bad_selected_target_payload_keeps_only_valid_prefix_and_unselected_reads
             visits += 1;
             Ok(())
         }),
-        Err(QueryError::Source)
+        Err(QueryError::SourceFailure(SourceFailure::InvalidData))
     );
     assert_eq!(visits, 2);
     assert_eq!(
@@ -232,7 +235,9 @@ fn late_target_eof_and_expression_errors_do_not_start_the_following_union_arm() 
         if bad_count {
             assert!(matches!(
                 result,
-                Err(StreamError::Query(QueryError::Source))
+                Err(StreamError::Query(QueryError::SourceFailure(
+                    SourceFailure::InvalidData
+                )))
             ));
             assert_eq!(rows, [1, 2, 3].map(|id| vec![Value::Int32(id)]));
         } else {

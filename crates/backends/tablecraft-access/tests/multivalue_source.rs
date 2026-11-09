@@ -6,6 +6,7 @@ use std::{
 use tablecraft_access::NativeSource;
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
+use tablecraft_query::SourceFailure;
 use tablecraft_query::{ExecutionOptions, QueryError, Source, prepare};
 use tablecraft_sql::{ParseLimits, parse_query};
 use tablecraft_testkit::fixtures::access::complex_links as links_fixture;
@@ -346,7 +347,7 @@ fn attachment_opt_in_index_and_corrupt_child_boundaries_are_explicit() {
     assert_eq!(source.collection_members("Items").unwrap().len(), 6);
     assert_eq!(
         execute(&source, "SELECT Score.FileName FROM Items").err(),
-        Some(QueryError::Source)
+        Some(QueryError::SourceFailure(SourceFailure::InvalidData))
     );
 }
 
@@ -413,7 +414,12 @@ fn batched_collection_failures_publish_no_cache_and_explicit_retry_completes_onc
     .unwrap()
     .with_multivalues();
     let sql = "SELECT Id,Count(Score.Value) FROM Items GROUP BY Id ORDER BY Id";
-    assert_eq!(execute(&source, sql), Err(QueryError::Source));
+    assert_eq!(
+        execute(&source, sql),
+        Err(QueryError::SourceFailure(SourceFailure::Io(
+            std::io::ErrorKind::PermissionDenied
+        )))
+    );
     assert_eq!(child_reads.get(), 1);
 
     let expected = vec![

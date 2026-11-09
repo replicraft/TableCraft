@@ -1,4 +1,5 @@
 use super::*;
+use tablecraft_query::SourceFailure;
 
 #[test]
 fn scalar_publication_and_unsupported_list_operations_refuse_before_any_records() {
@@ -152,7 +153,7 @@ fn cancellation_and_independent_native_query_limits_return_no_collection_result(
         .unwrap();
     assert!(matches!(
         prepared.execute_collections(&source, &[], Default::default()),
-        Err(QueryError::Limit(_)),
+        Err(QueryError::SourceFailure(SourceFailure::Limit(_))),
     ));
 }
 

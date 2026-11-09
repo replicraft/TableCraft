@@ -1,5 +1,6 @@
 #[path = "../../../engines/tablecraft-ace/tests/currency_indexes/fixture.rs"]
 mod currency_fixture;
+use tablecraft_query::SourceFailure;
 use tablecraft_testkit::fixtures::access::mutation_fixture as fixture;
 #[allow(dead_code)]
 #[path = "../../../engines/tablecraft-ace/tests/ace16/int64_index_fixture.rs"]
@@ -70,7 +71,7 @@ fn currency_seeks_fit_small_retention_limits_without_publishing_partial_table_ca
                     .unwrap()
                     .execute(&source, &[], Default::default())
                     .err(),
-                Some(QueryError::StructureLimit)
+                Some(QueryError::SourceFailure(SourceFailure::StructureLimit))
             );
         }
     }

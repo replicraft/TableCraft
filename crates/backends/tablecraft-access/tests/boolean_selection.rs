@@ -1,4 +1,5 @@
 #[allow(dead_code)]
+use tablecraft_query::SourceFailure;
 use tablecraft_testkit::fixtures::access::index_tuples::numeric_fixture;
 
 use std::io::Cursor;
@@ -68,7 +69,7 @@ fn automatic_and_required_boolean_seeks_retain_table_order_and_never_complete_pa
                 }
                 assert_eq!(
                     run(&native, "SELECT Count(*) FROM Items").err(),
-                    Some(QueryError::StructureLimit)
+                    Some(QueryError::SourceFailure(SourceFailure::StructureLimit))
                 );
             }
         }
@@ -108,7 +109,10 @@ fn boolean_auto_hints_decline_null_ranges_coercions_and_unsafe_conjunctions() {
     ] {
         let native = source(database(6, false), 2).with_auto_indexes();
         let sql = format!("SELECT Id FROM Items WHERE {filter}");
-        assert_eq!(run(&native, &sql).err(), Some(QueryError::StructureLimit));
+        assert_eq!(
+            run(&native, &sql).err(),
+            Some(QueryError::SourceFailure(SourceFailure::StructureLimit))
+        );
     }
     let native = source(database(6, false), 10).with_auto_indexes();
     assert!(run(&native, "SELECT Id FROM Items WHERE Score=False AND 1/0=0").is_err());

@@ -1,5 +1,6 @@
 use super::*;
 use tablecraft_core::values::{Currency, Decimal, Double, Guid, LegacyDateTime, Single};
+use tablecraft_query::SourceFailure;
 
 #[test]
 fn cached_scalar_carriers_keep_stored_bits_scales_and_nullable_values() {
@@ -52,7 +53,10 @@ fn cached_scalar_carriers_keep_stored_bits_scales_and_nullable_values() {
                 collect(&source, &[1]).unwrap(),
                 [vec![expected.clone()], vec![Value::Null]]
             );
-            assert_eq!(buffered(&source, &[1]), Err(QueryError::StructureLimit));
+            assert_eq!(
+                buffered(&source, &[1]),
+                Err(QueryError::SourceFailure(SourceFailure::StructureLimit))
+            );
         }
     }
 }
@@ -79,6 +83,9 @@ fn cached_memo_projection_uses_existing_bounded_long_value_decoder() {
             collect(&source, &[1]).unwrap(),
             [vec![Value::Text(text.into())], vec![Value::Null]]
         );
-        assert_eq!(buffered(&source, &[1]), Err(QueryError::StructureLimit));
+        assert_eq!(
+            buffered(&source, &[1]),
+            Err(QueryError::SourceFailure(SourceFailure::StructureLimit))
+        );
     }
 }

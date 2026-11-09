@@ -1,5 +1,6 @@
 use super::*;
 use tablecraft_core::values::Double;
+use tablecraft_query::SourceFailure;
 use tablecraft_query::{ExecutionOptions, StreamError, prepare};
 use tablecraft_sql::parse_query;
 
@@ -50,7 +51,7 @@ fn extrema_cross_priority_native_batches_without_complete_snapshot_publication()
             );
             assert_eq!(
                 source.scan("Items", &mut |_| Ok(())),
-                Err(QueryError::StructureLimit)
+                Err(QueryError::SourceFailure(SourceFailure::StructureLimit))
             );
             assert_eq!(
                 execute(&source, "SELECT Min(Id),Max(Id) FROM Items").unwrap(),

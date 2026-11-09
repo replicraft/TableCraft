@@ -1,5 +1,6 @@
 #[path = "version_history_source/compression.rs"]
 mod compression;
+use tablecraft_query::SourceFailure;
 use tablecraft_testkit::fixtures::access::version_history as fixture;
 use tablecraft_testkit::fixtures::access::version_history::mixed;
 #[path = "version_history_source/visible_memo.rs"]
@@ -266,7 +267,7 @@ fn histories_respect_cumulative_limits_and_execution_cancellation() {
         ) {
             exhausted |= matches!(
                 execute(&source.with_collections(), "SELECT Score.Notes FROM Items"),
-                Err(QueryError::Limit(_))
+                Err(QueryError::SourceFailure(SourceFailure::Limit(_)))
             );
         }
     }

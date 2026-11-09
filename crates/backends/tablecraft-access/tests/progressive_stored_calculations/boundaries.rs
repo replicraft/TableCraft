@@ -1,6 +1,7 @@
 use super::*;
 use std::cell::RefCell;
 use tablecraft_core::limits::Resource;
+use tablecraft_query::SourceFailure;
 
 const TABLE_PAGE: usize = 10;
 const DECLARED_ROWS_OFFSET: usize = 16;
@@ -47,9 +48,15 @@ fn cached_stream_eof_counts_remain_checked_without_promoting_failed_prefixes() {
         rows.push(row.get(0).unwrap().clone());
         Ok(())
     });
-    assert_eq!(result, Err(QueryError::Source));
+    assert_eq!(
+        result,
+        Err(QueryError::SourceFailure(SourceFailure::InvalidData))
+    );
     assert_eq!(rows, [Value::Int32(999), Value::Null, Value::Int32(41)]);
-    assert_eq!(collect(&source, &[1]), Err(QueryError::Source));
+    assert_eq!(
+        collect(&source, &[1]),
+        Err(QueryError::SourceFailure(SourceFailure::InvalidData))
+    );
     assert!(buffered(&source, &[1]).is_err());
 }
 
@@ -70,13 +77,19 @@ fn cached_batches_share_native_limits_and_release_budget_before_visitors() {
         let mut seen = Vec::new();
         let failure = source.scan_projected_progressive("Items", &[1], &mut |row| {
             seen.push(row.get(0).unwrap().clone());
-            assert_eq!(collect(&source, &[1]), Err(QueryError::Source));
+            assert_eq!(
+                collect(&source, &[1]),
+                Err(QueryError::SourceFailure(SourceFailure::Busy))
+            );
             let mut available = pool.try_borrow_mut().unwrap();
             let remaining = available.remaining(resource);
             available.charge(resource, remaining).unwrap();
             Ok(())
         });
-        assert!(matches!(failure, Err(QueryError::Limit(_))));
+        assert!(matches!(
+            failure,
+            Err(QueryError::SourceFailure(SourceFailure::Limit(_)))
+        ));
         assert_eq!(seen, [Value::Int32(999)]);
         assert_eq!(pool.borrow().remaining(resource), 0);
     }

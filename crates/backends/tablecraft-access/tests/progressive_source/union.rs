@@ -1,5 +1,6 @@
 use super::*;
 use tablecraft_expressions::EvalError;
+use tablecraft_query::SourceFailure;
 use tablecraft_query::{ExecutionOptions, PreparedQuery, StreamError, prepare};
 use tablecraft_sql::parse_query;
 
@@ -104,11 +105,11 @@ fn successive_same_and_different_native_arms_release_cursors_and_preserve_origin
             );
             assert_eq!(
                 source.scan_projected("Items", &[0], None, &mut |_| Ok(())),
-                Err(QueryError::StructureLimit)
+                Err(QueryError::SourceFailure(SourceFailure::StructureLimit))
             );
             assert_eq!(
                 source.scan_projected("Other", &[0], None, &mut |_| Ok(())),
-                Err(QueryError::StructureLimit)
+                Err(QueryError::SourceFailure(SourceFailure::StructureLimit))
             );
             drop(source);
             assert_eq!(bytes, before);
@@ -132,7 +133,12 @@ fn later_native_read_failure_stops_before_second_arm_and_retry_restarts_first() 
         values.push(row[0].clone());
         Ok::<(), ()>(())
     });
-    assert!(matches!(error, Err(StreamError::Query(QueryError::Source))));
+    assert!(matches!(
+        error,
+        Err(StreamError::Query(QueryError::SourceFailure(
+            SourceFailure::Io(std::io::ErrorKind::Other)
+        )))
+    ));
     assert_eq!(values, [Value::Int32(1), Value::Int32(2), Value::Int32(3)]);
 
     failure.set(None);
@@ -149,7 +155,12 @@ fn later_native_read_failure_stops_before_second_arm_and_retry_restarts_first() 
 
     // A complete progressive retry must not publish a reusable snapshot either.
     failure.set(Some(ITEMS_DATA_PAGE));
-    assert_eq!(collect(&source, &[0]), Err(QueryError::Source));
+    assert_eq!(
+        collect(&source, &[0]),
+        Err(QueryError::SourceFailure(SourceFailure::Io(
+            std::io::ErrorKind::Other
+        )))
+    );
 }
 
 #[test]
@@ -184,7 +195,12 @@ fn late_expression_and_first_arm_eof_failures_never_start_the_following_arm() {
         values.push(row[0].clone());
         Ok::<(), ()>(())
     });
-    assert!(matches!(error, Err(StreamError::Query(QueryError::Source))));
+    assert!(matches!(
+        error,
+        Err(StreamError::Query(QueryError::SourceFailure(
+            SourceFailure::InvalidData
+        )))
+    ));
     assert_eq!(values, [1, 2, 3, 4].map(Value::Int32));
 }
 
@@ -218,7 +234,9 @@ fn cumulative_native_allowances_are_not_refilled_between_union_arms() {
         });
         assert!(matches!(
             error,
-            Err(StreamError::Query(QueryError::Limit(_)))
+            Err(StreamError::Query(QueryError::SourceFailure(
+                SourceFailure::Limit(_)
+            )))
         ));
         assert_eq!(values, [Value::Int32(1), Value::Int32(2), Value::Int32(3)]);
         assert_eq!(pool.borrow().remaining(resource), 0);
@@ -244,7 +262,10 @@ fn cancellation_and_sink_errors_release_cursor_borrows_without_promoting_caches(
     let mut count = 0;
     let error = query.execute_progressive(&source, &[], Default::default(), &mut |_| {
         count += 1;
-        assert_eq!(collect(&source, &[0]), Err(QueryError::Source));
+        assert_eq!(
+            collect(&source, &[0]),
+            Err(QueryError::SourceFailure(SourceFailure::Busy))
+        );
         stopped.set(count == 3);
         Ok::<(), ()>(())
     });
@@ -268,7 +289,7 @@ fn cancellation_and_sink_errors_release_cursor_borrows_without_promoting_caches(
     assert_eq!(collect(&source, &[0]).unwrap().len(), 3);
     assert_eq!(
         source.scan("Items", &mut |_| Ok(())),
-        Err(QueryError::StructureLimit)
+        Err(QueryError::SourceFailure(SourceFailure::StructureLimit))
     );
 }
 
@@ -287,7 +308,12 @@ fn top_capped_native_arm_still_validates_late_pages_before_next_arm() {
         values.push(row[0].clone());
         Ok::<(), ()>(())
     });
-    assert!(matches!(error, Err(StreamError::Query(QueryError::Source))));
+    assert!(matches!(
+        error,
+        Err(StreamError::Query(QueryError::SourceFailure(
+            SourceFailure::InvalidData
+        )))
+    ));
     assert_eq!(values, [Value::Int32(1)]);
 
     failure.set(None);

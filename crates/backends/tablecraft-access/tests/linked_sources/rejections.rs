@@ -1,4 +1,5 @@
 use super::*;
+use tablecraft_query::SourceFailure;
 
 #[test]
 fn owned_or_different_allowances_and_scope_collisions_are_refused() {
@@ -143,7 +144,7 @@ fn cancelled_or_exhausted_lookup_and_setup_never_refill_the_native_allowance() {
     let steps = pool.borrow().remaining(Resource::Steps);
     pool.borrow_mut().charge(Resource::Steps, steps).unwrap();
     assert!(
-        matches!(facade.columns("Linked"), Err(QueryError::Limit(limit)) if limit.resource == Resource::Steps)
+        matches!(facade.columns("Linked"), Err(QueryError::SourceFailure(SourceFailure::Limit(limit))) if limit.resource == Resource::Steps)
     );
     assert_eq!(pool.borrow().remaining(Resource::Steps), 0);
     assert!(matches!(

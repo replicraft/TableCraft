@@ -1,4 +1,5 @@
 #[allow(dead_code)]
+use tablecraft_query::SourceFailure;
 use tablecraft_testkit::fixtures::access::index_tuples::numeric_fixture as fixture;
 
 use std::{
@@ -144,7 +145,7 @@ fn automatic_date_points_remain_metadata_only_until_execution_and_do_not_cache_p
             );
             assert_eq!(
                 run(&source, "SELECT Count(*) FROM Items").err(),
-                Some(QueryError::StructureLimit)
+                Some(QueryError::SourceFailure(SourceFailure::StructureLimit))
             );
         }
     }
@@ -204,7 +205,7 @@ fn conservative_epoch_candidates_keep_their_explicit_retention_ceiling() {
             "SELECT Id FROM Items WHERE Score=#12/30/1899 12:00#"
         )
         .err(),
-        Some(QueryError::StructureLimit),
+        Some(QueryError::SourceFailure(SourceFailure::StructureLimit)),
     );
     assert_eq!(
         run(

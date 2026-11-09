@@ -1,3 +1,4 @@
+use tablecraft_query::SourceFailure;
 use tablecraft_testkit::fixtures::access::attachments as attachment_fixture;
 #[path = "attachment_data_source/limits.rs"]
 mod limits;
@@ -282,7 +283,7 @@ fn decoding_is_explicit_complete_and_not_hidden_by_filters_or_top() {
     ] {
         assert_eq!(
             execute(&source, sql).err(),
-            Some(QueryError::Source),
+            Some(QueryError::SourceFailure(SourceFailure::Truncated)),
             "{sql}"
         );
     }
@@ -344,7 +345,7 @@ fn selected_indexes_budgets_and_execution_cancellation_keep_their_boundaries() {
                     &source.with_decoded_attachments(),
                     "SELECT Score.FileData FROM Items"
                 ),
-                Err(QueryError::Limit(_))
+                Err(QueryError::SourceFailure(SourceFailure::Limit(_)))
             );
         }
     }

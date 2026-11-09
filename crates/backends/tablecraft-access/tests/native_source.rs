@@ -296,7 +296,7 @@ fn binding_reads_only_metadata_and_defers_corrupt_user_records_to_execution() {
     assert_eq!(
         plan.execute(&source, &[], ExecutionOptions::default())
             .err(),
-        Some(QueryError::SourceFailure(SourceFailure::Busy))
+        Some(QueryError::SourceFailure(SourceFailure::InvalidData))
     );
 }
 

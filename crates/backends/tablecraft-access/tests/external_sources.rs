@@ -1,3 +1,4 @@
+use tablecraft_query::SourceFailure;
 use tablecraft_testkit::fixtures::access::mutation_fixture as base;
 #[allow(dead_code)]
 #[path = "../../../engines/tablecraft-ace/tests/linked_tables/fixture.rs"]
@@ -350,7 +351,7 @@ fn cancellation_borrow_collisions_and_exhaustion_fail_without_refills() {
     let held = pool.borrow_mut();
     assert!(matches!(
         facade.external_source(request("remote")),
-        Err(QueryError::Source)
+        Err(QueryError::SourceFailure(SourceFailure::Busy))
     ));
     drop(held);
     cancelled.set(true);
@@ -365,7 +366,7 @@ fn cancellation_borrow_collisions_and_exhaustion_fail_without_refills() {
         .unwrap();
     assert!(matches!(
         facade.external_source(request("remote")),
-        Err(QueryError::Limit(_))
+        Err(QueryError::SourceFailure(SourceFailure::Limit(_)))
     ));
     assert_eq!(pool.borrow().remaining(Resource::Steps), 0);
 }

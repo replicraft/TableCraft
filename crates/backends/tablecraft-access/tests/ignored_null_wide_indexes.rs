@@ -1,3 +1,4 @@
+use tablecraft_query::SourceFailure;
 use tablecraft_testkit::fixtures::access::mutation_fixture as fixture;
 #[allow(dead_code)]
 #[path = "../../../engines/tablecraft-ace/tests/ignored_null_indexes/fixture.rs"]
@@ -203,7 +204,7 @@ fn exact_typed_wide_parameters_select_extremes_without_partial_cache_promotion()
             ] {
                 assert_eq!(
                     run(&source, query, &[]).err(),
-                    Some(QueryError::StructureLimit)
+                    Some(QueryError::SourceFailure(SourceFailure::StructureLimit))
                 );
             }
             assert_eq!(reads.get(), before);
@@ -249,7 +250,7 @@ fn chosen_wide_corruption_propagates_but_omitted_null_scans_are_independent() {
                     &[("P", point(currency, 20_000))]
                 )
                 .err(),
-                Some(QueryError::Source)
+                Some(QueryError::SourceFailure(SourceFailure::InvalidData))
             );
             assert_eq!(
                 run(&selected, "SELECT Count(*) FROM Items", &[])

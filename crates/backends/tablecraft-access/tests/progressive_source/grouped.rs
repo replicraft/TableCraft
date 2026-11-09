@@ -1,6 +1,7 @@
 use super::*;
 use std::ops::Range;
 use tablecraft_core::values::Double;
+use tablecraft_query::SourceFailure;
 use tablecraft_query::{ExecutionOptions, prepare};
 use tablecraft_sql::parse_query;
 
@@ -72,7 +73,7 @@ fn grouped_native_cursors_exceed_snapshot_retention_without_publishing_a_cache()
             }
             assert_eq!(
                 native.scan("Items", &mut |_| Ok(())),
-                Err(QueryError::StructureLimit)
+                Err(QueryError::SourceFailure(SourceFailure::StructureLimit))
             );
         }
     }

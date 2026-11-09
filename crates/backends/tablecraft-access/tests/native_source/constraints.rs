@@ -191,7 +191,7 @@ fn unrelated_constraints_use_the_required_full_index_and_preserve_errors() {
             &source
         )
         .err(),
-        Some(QueryError::Source)
+        Some(QueryError::SourceFailure(SourceFailure::InvalidData))
     );
 }
 
@@ -221,7 +221,9 @@ fn constrained_scans_stop_on_visitor_failure_and_keep_cancellation_and_retry_bud
     fail.set(true);
     assert_eq!(
         source.scan_constrained("ROULETTE_TB", constraint, &mut |_| panic!("partial row")),
-        Err(QueryError::Source)
+        Err(QueryError::SourceFailure(SourceFailure::Io(
+            std::io::ErrorKind::Other
+        )))
     );
     fail.set(false);
     let mut visited = 0;

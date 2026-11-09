@@ -1,4 +1,5 @@
 use super::*;
+use tablecraft_query::SourceFailure;
 
 #[test]
 fn legacy_scalar_publication_refuses_before_records_and_budgets_remain_separate() {
@@ -51,7 +52,7 @@ fn legacy_scalar_publication_refuses_before_records_and_budgets_remain_separate(
 
     assert!(matches!(
         prepared.execute_collections(&source, &[], Default::default()),
-        Err(QueryError::Limit(_))
+        Err(QueryError::SourceFailure(SourceFailure::Limit(_)))
     ));
 
     let fresh = NativeSource::new(

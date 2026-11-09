@@ -1,5 +1,6 @@
 use super::*;
 use tablecraft_core::limits::Resource;
+use tablecraft_query::SourceFailure;
 use tablecraft_query::source::SourceKey;
 
 #[test]
@@ -69,7 +70,7 @@ fn derived_member_failures_cancellation_and_cumulative_limits_return_no_result()
     pool.borrow_mut().charge(Resource::Rows, remaining).unwrap();
     assert!(matches!(
         plan.execute_collections(&source, &[], Default::default()),
-        Err(QueryError::Limit(_))
+        Err(QueryError::SourceFailure(SourceFailure::Limit(_)))
     ));
 
     let fresh = NativeSource::new(

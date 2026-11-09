@@ -1,4 +1,5 @@
 use super::*;
+use tablecraft_query::SourceFailure;
 
 const VALUES: [Option<i128>; 5] = [Some(1), None, Some(0), None, Some(-3)];
 
@@ -49,12 +50,12 @@ fn nullable_native_operands_keep_distinct_counters_without_snapshot_retention() 
         assert_eq!(streamed(&query, &native).unwrap(), (expected.clone(), 5, 1));
         assert_eq!(
             query.execute(&native, &[], Default::default()).err(),
-            Some(QueryError::StructureLimit),
+            Some(QueryError::SourceFailure(SourceFailure::StructureLimit)),
         );
         assert_eq!(streamed(&query, &native).unwrap().0, expected);
         assert_eq!(
             query.execute(&native, &[], Default::default()).err(),
-            Some(QueryError::StructureLimit),
+            Some(QueryError::SourceFailure(SourceFailure::StructureLimit)),
         );
 
         let filtered = plan("SELECT Count(Score) FROM Items WHERE ID<=2", &native);
@@ -193,7 +194,9 @@ fn union_count_operands_share_native_budgets_and_keep_only_completed_aggregates(
     });
     assert!(matches!(
         result,
-        Err(StreamError::Query(QueryError::Limit(_)))
+        Err(StreamError::Query(QueryError::SourceFailure(
+            SourceFailure::Limit(_)
+        )))
     ));
     assert_eq!(rows, [vec![Value::Int64(3)]]);
     assert!(!pages.borrow().contains(&other_data));

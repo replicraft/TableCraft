@@ -1,3 +1,4 @@
+use tablecraft_query::SourceFailure;
 use tablecraft_testkit::fixtures::access::mutation_fixture as fixture;
 #[path = "../../../engines/tablecraft-ace/tests/ace16/int64_index_fixture.rs"]
 mod int64_index_fixture;
@@ -182,7 +183,7 @@ fn int64_sources_preserve_required_index_errors_and_decline_wrong_width_hints() 
     .unwrap();
     assert_eq!(
         execute("SELECT Id FROM Items WHERE Score=1", &source).err(),
-        Some(QueryError::Source)
+        Some(QueryError::SourceFailure(SourceFailure::InvalidData))
     );
     let count = Rc::new(Cell::new(0));
     let index_reads = Rc::new(Cell::new(0));

@@ -1,5 +1,6 @@
 use super::*;
 use tablecraft_ace::TableSnapshotLimits;
+use tablecraft_query::SourceFailure;
 use tablecraft_query::StreamError;
 
 const TABLE_PAGE: usize = 10;
@@ -77,7 +78,7 @@ fn root_and_authorized_external_pipelines_keep_their_own_values_without_complete
     );
     assert_eq!(
         target.scan("Items", &mut |_| Ok(())),
-        Err(QueryError::StructureLimit)
+        Err(QueryError::SourceFailure(SourceFailure::StructureLimit))
     );
 }
 

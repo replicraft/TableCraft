@@ -2,6 +2,7 @@ use super::*;
 use std::ops::Range;
 use tablecraft_core::values::Currency;
 use tablecraft_query::ExecutionOptions;
+use tablecraft_query::SourceFailure;
 
 const COEFFICIENTS: [Option<i128>; 6] =
     [Some(10000), None, Some(-10000), Some(10000), Some(0), None];
@@ -94,7 +95,7 @@ fn fixed_native_group_keys_and_having_keep_exact_carriers_without_complete_snaps
             }
             assert_eq!(
                 source.scan("Items", &mut |_| Ok(())),
-                Err(QueryError::StructureLimit)
+                Err(QueryError::SourceFailure(SourceFailure::StructureLimit))
             );
         }
     }

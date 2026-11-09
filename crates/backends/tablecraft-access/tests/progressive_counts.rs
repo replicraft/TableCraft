@@ -1,6 +1,7 @@
 #[allow(dead_code)]
 #[path = "../../../engines/tablecraft-ace/tests/decimal_indexes/fixture.rs"]
 mod decimal_fixture;
+use tablecraft_query::SourceFailure;
 use tablecraft_testkit::fixtures::access::mutation_fixture as fixture;
 #[path = "../../../engines/tablecraft-ace/tests/large_maps/fixture.rs"]
 mod map_fixture;
@@ -83,7 +84,7 @@ fn count_reads_past_snapshot_retention_and_publishes_only_the_complete_aggregate
             let query = plan("SELECT Count(*) FROM Items", &native);
             assert_eq!(
                 query.execute(&native, &[], Default::default()).err(),
-                Some(QueryError::StructureLimit),
+                Some(QueryError::SourceFailure(SourceFailure::StructureLimit)),
             );
             assert_eq!(
                 streamed(&query, &native).unwrap().0,
@@ -91,7 +92,7 @@ fn count_reads_past_snapshot_retention_and_publishes_only_the_complete_aggregate
             );
             assert_eq!(
                 query.execute(&native, &[], Default::default()).err(),
-                Some(QueryError::StructureLimit),
+                Some(QueryError::SourceFailure(SourceFailure::StructureLimit)),
             );
             drop(native);
             assert_eq!(bytes, original);
@@ -170,7 +171,14 @@ fn late_native_page_count_and_io_failures_publish_no_count_and_never_start_later
             Ok::<(), ()>(())
         });
 
-        assert!(matches!(error, Err(StreamError::Query(QueryError::Source))));
+        let expected_failure = if failure == "io" {
+            SourceFailure::Io(std::io::ErrorKind::Other)
+        } else {
+            SourceFailure::InvalidData
+        };
+        assert!(
+            matches!(error, Err(StreamError::Query(QueryError::SourceFailure(kind))) if kind == expected_failure)
+        );
         assert!(rows.is_empty());
         let visited = observed.borrow();
         for page in FIRST_DATA_PAGE..FIRST_DATA_PAGE + 3 {
@@ -205,7 +213,9 @@ fn late_eager_filter_errors_discard_the_count_and_retries_have_no_cached_prefix(
     failure.set(Some(FIRST_DATA_PAGE + 3));
     assert!(matches!(
         refused_without_count(&count, &native),
-        StreamError::Query(QueryError::Source)
+        StreamError::Query(QueryError::SourceFailure(SourceFailure::Io(
+            std::io::ErrorKind::Other
+        )))
     ));
     failure.set(None);
     assert_eq!(
@@ -251,7 +261,9 @@ fn aggregate_publication_releases_native_budgets_and_later_arms_never_refill_the
 
             assert!(matches!(
                 error,
-                Err(StreamError::Query(QueryError::Limit(_)))
+                Err(StreamError::Query(QueryError::SourceFailure(
+                    SourceFailure::Limit(_)
+                )))
             ));
             let expected = if before_first {
                 vec![]
@@ -323,7 +335,7 @@ fn supported_integral_grouped_counts_stream_past_snapshot_retention() {
     }
     assert_eq!(
         query.execute(&native, &[], Default::default()).err(),
-        Some(QueryError::StructureLimit),
+        Some(QueryError::SourceFailure(SourceFailure::StructureLimit)),
     );
 }
 

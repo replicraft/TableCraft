@@ -1,3 +1,4 @@
+use tablecraft_query::SourceFailure;
 use tablecraft_testkit::fixtures::access::mutation_fixture as fixture;
 #[allow(dead_code)]
 #[path = "../../../engines/tablecraft-ace/tests/linked_tables/fixture.rs"]
@@ -382,7 +383,12 @@ fn progressive_scan_never_reuses_a_previous_complete_snapshot() {
     source.scan("Items", &mut |_| Ok(())).unwrap();
     fail.set(Some(12));
     source.scan("Items", &mut |_| Ok(())).unwrap();
-    assert_eq!(collect(&source, &[0]), Err(QueryError::Source));
+    assert_eq!(
+        collect(&source, &[0]),
+        Err(QueryError::SourceFailure(SourceFailure::Io(
+            std::io::ErrorKind::Other
+        )))
+    );
 }
 
 #[path = "progressive_source/grouped.rs"]

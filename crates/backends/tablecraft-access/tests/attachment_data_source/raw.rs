@@ -1,4 +1,5 @@
 use super::*;
+use tablecraft_query::SourceFailure;
 
 #[test]
 fn default_file_data_is_stored_binary_without_decoder_or_metadata_reads() {
@@ -222,7 +223,7 @@ fn stored_data_keeps_selected_index_cancellation_and_native_budget_failures() {
                     &source.with_collections(),
                     "SELECT Score.FileData FROM Items"
                 ),
-                Err(QueryError::Limit(_))
+                Err(QueryError::SourceFailure(SourceFailure::Limit(_)))
             );
         }
     }

@@ -1,4 +1,5 @@
 use super::*;
+use tablecraft_query::SourceFailure;
 
 #[test]
 fn unsupported_outer_and_list_predicates_refuse_before_native_records() {
@@ -93,6 +94,6 @@ fn cumulative_native_query_limits_and_cancellation_never_return_join_prefixes() 
         .unwrap();
     assert!(matches!(
         fresh_prepared.execute_collections(&fresh_source, &[], Default::default()),
-        Err(QueryError::Limit(_))
+        Err(QueryError::SourceFailure(SourceFailure::Limit(_)))
     ));
 }

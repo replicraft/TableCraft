@@ -1,3 +1,4 @@
+use tablecraft_query::SourceFailure;
 use tablecraft_testkit::fixtures::access::mutation_fixture as fixture;
 #[path = "../../../engines/tablecraft-ace/tests/large_maps/fixture.rs"]
 mod map_fixture;
@@ -108,7 +109,9 @@ fn late_failed_materialization_publishes_no_rows_or_cache_and_explicit_retry_is_
     fail.set(true);
     assert_eq!(
         source.scan("Items", &mut |_| panic!("partial table escaped")),
-        Err(QueryError::Source)
+        Err(QueryError::SourceFailure(SourceFailure::Io(
+            std::io::ErrorKind::Other
+        )))
     );
     fail.set(false);
     let mut count = 0;
@@ -134,7 +137,7 @@ fn batches_never_refill_the_original_byte_or_row_budget() {
         let source = NativeSource::new(input(6, false), SCOPE, controls, &|| false).unwrap();
         assert!(matches!(
             source.scan("Items", &mut |_| panic!("partial table escaped")),
-            Err(QueryError::Limit(_))
+            Err(QueryError::SourceFailure(SourceFailure::Limit(_)))
         ));
     }
 }

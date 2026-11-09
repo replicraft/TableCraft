@@ -3,6 +3,7 @@ use flate2::{Compression, write::ZlibEncoder};
 use std::io::Write;
 use tablecraft_ace::AttachmentDecodeLimits;
 use tablecraft_core::limits::Resource;
+use tablecraft_query::SourceFailure;
 
 fn large_encoded() -> Vec<u8> {
     // Independent complete wrapper with an empty type and 1,100,000 file bytes.
@@ -40,14 +41,20 @@ fn changing_file_limits_revalidates_decoded_cache_without_rereading_stored_rows(
         .unwrap()
         .with_decoded_attachments();
         let sql = "SELECT Count(Score.FileData) FROM Items";
-        assert_eq!(execute(&source, sql), Err(QueryError::StructureLimit));
+        assert_eq!(
+            execute(&source, sql),
+            Err(QueryError::SourceFailure(SourceFailure::StructureLimit))
+        );
 
         forbid_children.set(true);
         let larger = AttachmentDecodeLimits::new(1_100_000).unwrap();
         let source = source.with_decoded_attachment_limits(larger);
         assert_eq!(execute(&source, sql).unwrap(), [vec![Value::Int64(2)]]);
         let source = source.with_decoded_attachment_limits(AttachmentDecodeLimits::default());
-        assert_eq!(execute(&source, sql), Err(QueryError::StructureLimit));
+        assert_eq!(
+            execute(&source, sql),
+            Err(QueryError::SourceFailure(SourceFailure::StructureLimit))
+        );
         assert_eq!(
             execute(&source, "SELECT Count(Score.FileName) FROM Items").unwrap(),
             [vec![Value::Int64(2)]]
@@ -97,11 +104,14 @@ fn file_policy_changes_do_not_refund_the_original_native_budget() {
     let sql = "SELECT Count(Score.FileData) FROM Items";
     assert_eq!(execute(&source, sql).unwrap(), [vec![Value::Int64(2)]]);
     let source = source.with_decoded_attachment_limits(AttachmentDecodeLimits::default());
-    assert_eq!(execute(&source, sql), Err(QueryError::StructureLimit));
+    assert_eq!(
+        execute(&source, sql),
+        Err(QueryError::SourceFailure(SourceFailure::StructureLimit))
+    );
     let source =
         source.with_decoded_attachment_limits(AttachmentDecodeLimits::new(1_100_000).unwrap());
     assert!(
-        matches!(execute(&source, sql), Err(QueryError::Limit(error)) if error.resource == Resource::Bytes)
+        matches!(execute(&source, sql), Err(QueryError::SourceFailure(SourceFailure::Limit(error))) if error.resource == Resource::Bytes)
     );
 }
 
@@ -124,7 +134,10 @@ fn changing_only_encoded_allowance_invalidates_decoded_cache() {
         .with_encoded_bytes(encoded.len() as u32 - 1)
         .unwrap();
     let source = source.with_decoded_attachment_limits(smaller);
-    assert_eq!(execute(&source, sql), Err(QueryError::StructureLimit));
+    assert_eq!(
+        execute(&source, sql),
+        Err(QueryError::SourceFailure(SourceFailure::StructureLimit))
+    );
     assert_eq!(
         execute(&source, "SELECT Count(Score.FileName) FROM Items").unwrap(),
         [vec![Value::Int64(2)]]

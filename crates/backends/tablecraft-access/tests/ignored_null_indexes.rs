@@ -1,6 +1,7 @@
 #[allow(dead_code)]
 #[path = "../../../engines/tablecraft-ace/tests/ignored_null_indexes/fixture.rs"]
 mod ignored;
+use tablecraft_query::SourceFailure;
 use tablecraft_testkit::fixtures::access as support;
 #[allow(dead_code)]
 use tablecraft_testkit::fixtures::access::index_fixture;
@@ -141,7 +142,10 @@ fn omitted_nulls_and_partial_reads_never_become_a_complete_table_cache() {
             "SELECT Count(*) FROM Items",
             "SELECT Id FROM Items WHERE Score IS NULL",
         ] {
-            assert_eq!(run(&source, sql).err(), Some(QueryError::StructureLimit));
+            assert_eq!(
+                run(&source, sql).err(),
+                Some(QueryError::SourceFailure(SourceFailure::StructureLimit))
+            );
         }
         assert_eq!(
             reads.get(),
@@ -187,7 +191,7 @@ fn null_predicates_decline_ignoring_indexes_and_corrupt_chosen_indexes_never_fal
             .with_auto_indexes();
         assert_eq!(
             run(&selected, "SELECT Id FROM Items WHERE Score=20").err(),
-            Some(QueryError::Source)
+            Some(QueryError::SourceFailure(SourceFailure::InvalidData))
         );
         assert_eq!(
             run(&selected, "SELECT Count(*) FROM Items").unwrap().rows(),

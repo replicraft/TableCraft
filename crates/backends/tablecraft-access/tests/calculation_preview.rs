@@ -1,3 +1,4 @@
+use tablecraft_query::SourceFailure;
 use tablecraft_testkit::fixtures::access::calculated_storage as calculated_fixture;
 #[path = "calculation_preview/dependencies.rs"]
 mod dependencies;
@@ -250,7 +251,9 @@ fn native_preparation_limits_refuse_without_a_partial_plan() {
             exhausted |= matches!(
                 source.prepare_calculation("Items", "Score", ParseLimits::default()),
                 Err(CalculationError::Native(InspectError::Limit(_)))
-                    | Err(CalculationError::Query(QueryError::Limit(_)))
+                    | Err(CalculationError::Query(QueryError::SourceFailure(
+                        SourceFailure::Limit(_)
+                    )))
             );
         }
     }

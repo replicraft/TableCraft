@@ -1,3 +1,4 @@
+use tablecraft_query::SourceFailure;
 use tablecraft_testkit::fixtures::access::mutation_fixture as fixture;
 #[allow(dead_code)]
 #[path = "../../../engines/tablecraft-ace/tests/ace16/int64_index_fixture.rs"]
@@ -56,7 +57,7 @@ fn narrow_seeks_reuse_small_retention_limits_without_cache_contamination() {
                         .unwrap()
                         .execute(&source, &[], Default::default())
                         .err(),
-                    Some(QueryError::StructureLimit)
+                    Some(QueryError::SourceFailure(SourceFailure::StructureLimit))
                 );
             }
         }

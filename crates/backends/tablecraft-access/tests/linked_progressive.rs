@@ -1,6 +1,7 @@
 #[allow(dead_code)]
 #[path = "../../../engines/tablecraft-ace/tests/linked_tables/fixture.rs"]
 mod linked_fixture;
+use tablecraft_query::SourceFailure;
 use tablecraft_testkit::fixtures::access as support;
 use tablecraft_testkit::fixtures::access::mutation_fixture as target_fixture;
 
@@ -152,7 +153,10 @@ fn authorized_link_streams_without_binding_rows_or_promoting_a_complete_cache() 
                         .unwrap()
                         .charge(Resource::Steps, 1)
                         .unwrap();
-                    assert_eq!(collect(&facade, &[0]), Err(QueryError::Source));
+                    assert_eq!(
+                        collect(&facade, &[0]),
+                        Err(QueryError::SourceFailure(SourceFailure::Busy))
+                    );
                     rows.push(row.to_vec());
                     Ok::<(), ()>(())
                 })
@@ -162,12 +166,17 @@ fn authorized_link_streams_without_binding_rows_or_promoting_a_complete_cache() 
             assert_eq!(rows, [1, 2, 3, 1, 2, 3].map(|id| vec![Value::Int32(id)]));
             assert_eq!(
                 facade.scan_projected("Linked", &[0], None, &mut |_| Ok(())),
-                Err(QueryError::StructureLimit)
+                Err(QueryError::SourceFailure(SourceFailure::StructureLimit))
             );
             assert_eq!(collect(&facade, &[]).unwrap(), vec![vec![]; 3]);
 
             fail_rows.set(true);
-            assert_eq!(collect(&facade, &[0]), Err(QueryError::Source));
+            assert_eq!(
+                collect(&facade, &[0]),
+                Err(QueryError::SourceFailure(SourceFailure::Io(
+                    std::io::ErrorKind::Other
+                )))
+            );
             drop(facade);
             drop(target);
             drop(root);
@@ -234,6 +243,6 @@ fn facade_without_mappings_keeps_root_local_progressive_reads() {
     assert_eq!(rows, [10, 20, 30].map(|score| vec![Value::Int32(score)]));
     assert_eq!(
         facade.scan("Items", &mut |_| Ok(())),
-        Err(QueryError::StructureLimit)
+        Err(QueryError::SourceFailure(SourceFailure::StructureLimit))
     );
 }

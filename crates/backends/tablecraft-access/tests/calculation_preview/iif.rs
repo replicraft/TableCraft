@@ -1,4 +1,5 @@
 use super::*;
+use tablecraft_query::SourceFailure;
 
 #[test]
 fn direct_and_transitive_iif_recompute_every_dependency_without_cache_inputs() {
@@ -182,8 +183,9 @@ fn all_iif_arguments_retain_expansion_limits_cancellation_and_execution_quotas()
     ] {
         assert!(matches!(
             source.prepare_calculation("Items", "Root", limits),
-            Err(CalculationError::Query(QueryError::StructureLimit))
-                | Err(CalculationError::Parse(_))
+            Err(CalculationError::Query(QueryError::SourceFailure(
+                SourceFailure::StructureLimit
+            ))) | Err(CalculationError::Parse(_))
         ));
     }
     let preview = source

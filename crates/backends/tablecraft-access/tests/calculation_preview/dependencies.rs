@@ -1,5 +1,6 @@
 use super::*;
 use tablecraft_expressions::EvalError;
+use tablecraft_query::SourceFailure;
 
 #[path = "iif.rs"]
 mod iif;
@@ -138,7 +139,9 @@ fn dependency_chain_and_expanded_node_limits_refuse_before_rows() {
         .unwrap();
         assert!(matches!(
             source.prepare_calculation("Items", &format!("C{}", count - 1), ParseLimits::default()),
-            Err(CalculationError::Query(QueryError::StructureLimit))
+            Err(CalculationError::Query(QueryError::SourceFailure(
+                SourceFailure::StructureLimit
+            )))
         ));
     }
 }
@@ -168,7 +171,9 @@ fn caller_limits_apply_to_the_expanded_expression() {
         .unwrap();
         assert!(matches!(
             source.prepare_calculation("Items", "Root", limits),
-            Err(CalculationError::Query(QueryError::StructureLimit))
+            Err(CalculationError::Query(QueryError::SourceFailure(
+                SourceFailure::StructureLimit
+            )))
         ));
     }
 }

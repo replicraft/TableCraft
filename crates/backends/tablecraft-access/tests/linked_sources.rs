@@ -1,6 +1,7 @@
 #[allow(dead_code)]
 #[path = "../../../engines/tablecraft-ace/tests/linked_tables/fixture.rs"]
 mod linked_fixture;
+use tablecraft_query::SourceFailure;
 use tablecraft_testkit::fixtures::access as support;
 use tablecraft_testkit::fixtures::access::mutation_fixture as target_fixture;
 
@@ -238,7 +239,7 @@ fn late_target_failure_never_publishes_a_complete_cache_and_visitor_rejection_pr
     let before = pool.borrow().remaining(Resource::Bytes);
     assert!(matches!(
         execute(&facade, "SELECT Score FROM Linked"),
-        Err(QueryError::Source)
+        Err(QueryError::SourceFailure(SourceFailure::InvalidData))
     ));
     assert!(pool.borrow().remaining(Resource::Bytes) < before);
     fail.set(false);

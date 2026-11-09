@@ -1,6 +1,7 @@
 #[allow(dead_code)]
 #[path = "../../../engines/tablecraft-ace/tests/decimal_indexes/fixture.rs"]
 mod decimal_fixture;
+use tablecraft_query::SourceFailure;
 use tablecraft_testkit::fixtures::access::mutation_fixture as fixture;
 #[path = "../../../engines/tablecraft-ace/tests/large_maps/fixture.rs"]
 mod map_fixture;
@@ -103,12 +104,12 @@ fn native_decimal_and_integral_aggregates_finish_after_eof_without_snapshot_cach
             );
             assert_eq!(
                 query.execute(&source, &[], Default::default()).err(),
-                Some(QueryError::StructureLimit)
+                Some(QueryError::SourceFailure(SourceFailure::StructureLimit))
             );
             assert_eq!(streamed(&query, &source).unwrap().0, rows);
             assert_eq!(
                 query.execute(&source, &[], Default::default()).err(),
-                Some(QueryError::StructureLimit)
+                Some(QueryError::SourceFailure(SourceFailure::StructureLimit))
             );
         }
     }
@@ -218,9 +219,14 @@ fn late_native_failures_never_publish_numeric_aggregates_or_activate_later_arms(
             "SELECT Sum(Score),Avg(Score) FROM Items UNION ALL SELECT Sum(Score),Avg(Score) FROM Other",
             &source,
         );
+        let expected_failure = if failure == "io" {
+            SourceFailure::Io(std::io::ErrorKind::Other)
+        } else {
+            SourceFailure::InvalidData
+        };
         assert!(matches!(
             no_aggregate(&query, &source),
-            StreamError::Query(QueryError::Source)
+            StreamError::Query(QueryError::SourceFailure(kind)) if kind == expected_failure
         ));
         assert!(!pages.borrow().contains(&other_data));
     }
@@ -288,7 +294,9 @@ fn numeric_aggregate_arms_share_cumulative_native_limits_and_stop_before_later_i
         });
         assert!(matches!(
             failure,
-            Err(StreamError::Query(QueryError::Limit(_)))
+            Err(StreamError::Query(QueryError::SourceFailure(
+                SourceFailure::Limit(_)
+            )))
         ));
         assert_eq!(rows, [vec![Value::Int64(10)]]);
         assert!(!pages.borrow().contains(&other_data));
@@ -327,7 +335,9 @@ fn numeric_aggregates_honor_cancellation_and_ignore_previous_complete_snapshots(
     failed_page.set(Some(FIRST_DATA_PAGE + 3));
     assert!(matches!(
         no_aggregate(&query, &source),
-        StreamError::Query(QueryError::Source)
+        StreamError::Query(QueryError::SourceFailure(SourceFailure::Io(
+            std::io::ErrorKind::Other
+        )))
     ));
     assert_eq!(
         query

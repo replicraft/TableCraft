@@ -1,5 +1,6 @@
 #[path = "../../../engines/tablecraft-ace/tests/decimal_indexes/fixture.rs"]
 mod decimal_fixture;
+use tablecraft_query::SourceFailure;
 use tablecraft_testkit::fixtures::access as support;
 #[allow(dead_code)]
 use tablecraft_testkit::fixtures::access::index_tuples::numeric_fixture;
@@ -101,7 +102,7 @@ fn decimal_points_rescale_losslessly_and_never_complete_partial_caches() {
                 );
                 assert_eq!(
                     run(&native, "SELECT Count(*) FROM Items", &[]).err(),
-                    Some(QueryError::StructureLimit),
+                    Some(QueryError::SourceFailure(SourceFailure::StructureLimit)),
                 );
                 assert_eq!(
                     point(&native, Decimal::new(0, 0).unwrap()).unwrap(),
@@ -128,7 +129,7 @@ fn lossy_or_out_of_precision_points_and_non_decimal_forms_decline_seeks() {
         ] {
             assert_eq!(
                 point(&native, value).err(),
-                Some(QueryError::StructureLimit)
+                Some(QueryError::SourceFailure(SourceFailure::StructureLimit))
             );
         }
         for sql in [
@@ -138,7 +139,7 @@ fn lossy_or_out_of_precision_points_and_non_decimal_forms_decline_seeks() {
         ] {
             assert_eq!(
                 run(&native, sql, &[]).err(),
-                Some(QueryError::StructureLimit)
+                Some(QueryError::SourceFailure(SourceFailure::StructureLimit))
             );
         }
         assert_eq!(
@@ -148,7 +149,7 @@ fn lossy_or_out_of_precision_points_and_non_decimal_forms_decline_seeks() {
                 &[("P", Value::Double(Double::from_float(1.0)))],
             )
             .err(),
-            Some(QueryError::StructureLimit),
+            Some(QueryError::SourceFailure(SourceFailure::StructureLimit)),
         );
     }
 }
