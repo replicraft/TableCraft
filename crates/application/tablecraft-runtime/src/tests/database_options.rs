@@ -1,4 +1,5 @@
 //! Explicit option review/save ownership, independent facts and guarded reopen.
+mod field_history;
 mod inspection;
 use super::{open, request, stored::opened, terminal};
 use crate::{

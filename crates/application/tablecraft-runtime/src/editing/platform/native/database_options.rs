@@ -1,4 +1,6 @@
 //! Lease-free explicit OFF review, bound to the unchanged complete source image.
+pub(in crate::editing) mod plan;
+
 use crate::{
     Error, Response,
     controls::{SCOPE, budget, check},
@@ -9,16 +11,14 @@ use crate::{
         platform::{ids::issue_id, reopen_image},
     },
 };
+use plan::Plan;
 use std::sync::{Arc, atomic::AtomicBool};
-use tablecraft_ace::{
-    DatabaseOptionsError, DatabaseOptionsIntentError, NativeImage,
-    RecoverableNativeDatabaseOptionsPlan,
-};
+use tablecraft_ace::{DatabaseOptionsSourceError, DatabaseOptionsSourcePurpose, NativeImage};
 use tablecraft_core::limits::ResourceBudget;
 
 pub(in crate::editing) struct State {
     pub(in crate::editing) reopen: Arc<DatabaseOptionsReopen>,
-    pub(in crate::editing) plan: RecoverableNativeDatabaseOptionsPlan,
+    pub(in crate::editing) plan: Plan,
     pub(in crate::editing) valid: Arc<AtomicBool>,
 }
 
@@ -38,7 +38,18 @@ pub(in crate::editing) fn review(
         &mut work,
         cancelled,
     )?;
-    let plan = image.plan_recoverable_disable_name_auto_correct(&mut work, cancelled)?;
+    // Source purpose comes from the actual shared catalog-column ownership.
+    // Exactly one constructor proves the full original; refusal never retries.
+    let plan = match image.disable_name_auto_correct_source_purpose(&mut work, cancelled)? {
+        DatabaseOptionsSourcePurpose::Creator => {
+            Plan::Creator(image.plan_recoverable_disable_name_auto_correct(&mut work, cancelled)?)
+        }
+        DatabaseOptionsSourcePurpose::FieldHistory => Plan::FieldHistory(
+            image.plan_recoverable_disable_name_auto_correct_after_field_history(
+                &mut work, cancelled,
+            )?,
+        ),
+    };
     let expected = reopen_image::capture(plan.after_bytes(), &mut work, cancelled)?;
     let review = DatabaseOptionsReview {
         id: issue_id()?,
@@ -76,11 +87,9 @@ pub(in crate::editing) fn source_available(
     }
     let image =
         NativeImage::capture_shared(document.edits.image_source.clone(), SCOPE, work, cancelled)?;
-    match image.check_disable_name_auto_correct_source(work, cancelled) {
-        Ok(()) => Ok(true),
-        Err(DatabaseOptionsError::Source) => Ok(false),
-        Err(error) => Err(Error::DatabaseOptions(DatabaseOptionsIntentError::Options(
-            error,
-        ))),
+    match image.check_disable_name_auto_correct_for_source(work, cancelled) {
+        Ok(_) => Ok(true),
+        Err(DatabaseOptionsSourceError::Source) => Ok(false),
+        Err(error) => Err(error.into()),
     }
 }

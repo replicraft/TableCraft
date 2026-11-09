@@ -3,6 +3,7 @@ use super::{
     RetainedOwner,
     outcomes::{failed_open, finish, no_session, retain},
 };
+use crate::editing::platform::database_options::plan::Plan;
 use crate::{
     controls::{SCOPE, action_persistence_budget, action_proof_budget, budget},
     editing::{ReviewedDatabaseOptions, SaveFailureKind, SaveOutcome},
@@ -37,12 +38,22 @@ pub(super) fn apply_database_options(
             Ok(session) => session,
             Err(error) => return failed_open(&error),
         };
-    let staged = match session.stage_reviewed_disable_name_auto_correct_with_budgets(
-        reviewed.plan,
-        &mut native,
-        &mut proof,
-        &cancel,
-    ) {
+    let staged = match reviewed.plan {
+        Plan::Creator(plan) => session.stage_reviewed_disable_name_auto_correct_with_budgets(
+            plan,
+            &mut native,
+            &mut proof,
+            &cancel,
+        ),
+        Plan::FieldHistory(plan) => session
+            .stage_reviewed_field_history_disable_name_auto_correct_with_budgets(
+                plan,
+                &mut native,
+                &mut proof,
+                &cancel,
+            ),
+    };
+    let staged = match staged {
         Ok(staged) => staged,
         Err(failure) => return retain(failure, retained),
     };

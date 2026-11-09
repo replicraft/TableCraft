@@ -103,6 +103,12 @@ pub enum Error {
     #[error(transparent)]
     DatabaseOptions(#[from] tablecraft_ace::DatabaseOptionsIntentError),
     #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+    #[error(transparent)]
+    FieldHistoryDatabaseOptions(#[from] tablecraft_ace::FieldHistoryOptionsIntentError),
+    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+    #[error(transparent)]
+    DatabaseOptionsSource(#[from] tablecraft_ace::DatabaseOptionsSourceError),
+    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
     #[error("database option contents changed before reopening")]
     DatabaseOptionsSourceChanged,
     #[cfg(feature = "offline-edit")]

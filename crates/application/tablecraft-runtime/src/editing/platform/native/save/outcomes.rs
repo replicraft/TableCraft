@@ -1,5 +1,7 @@
 //! Allocation-free outcome facts derived from the retained actual resource owner.
 #[cfg(feature = "ace16-create")]
+mod database_options_field_history;
+#[cfg(feature = "ace16-create")]
 mod field_addition;
 #[cfg(feature = "ace16-create")]
 mod number_column;
@@ -262,6 +264,10 @@ fn typed_resource_failure(error: &(dyn StdError + 'static)) -> Option<SaveFailur
             Cause::AddColumnIntent(error) => add_column_intent_failure(error),
             #[cfg(feature = "ace16-create")]
             Cause::DatabaseOptionsIntent(error) => database_options_intent_failure(error),
+            #[cfg(feature = "ace16-create")]
+            Cause::FieldHistoryDatabaseOptionsIntent(error) => {
+                database_options_field_history::intent(error)
+            }
             _ => None,
         };
     }
@@ -338,6 +344,18 @@ fn typed_resource_failure(error: &(dyn StdError + 'static)) -> Option<SaveFailur
     #[cfg(feature = "ace16-create")]
     if let Some(error) = error.downcast_ref::<AddColumnError>() {
         return add_column_failure(error);
+    }
+    #[cfg(feature = "ace16-create")]
+    if let Some(error) = error.downcast_ref::<tablecraft_ace::FieldHistoryOptionsIntentError>() {
+        return database_options_field_history::intent(error);
+    }
+    #[cfg(feature = "ace16-create")]
+    if let Some(error) = error.downcast_ref::<tablecraft_ace::FieldHistoryDatabaseOptionsError>() {
+        return database_options_field_history::candidate(error);
+    }
+    #[cfg(feature = "ace16-create")]
+    if let Some(error) = error.downcast_ref::<tablecraft_ace::DatabaseOptionsSourceError>() {
+        return database_options_field_history::source(error);
     }
     #[cfg(feature = "ace16-create")]
     if let Some(error) = error.downcast_ref::<DatabaseOptionsIntentError>() {
