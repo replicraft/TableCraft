@@ -39,7 +39,8 @@ All cells describe current implementation, not the requested final state.
 | Add a table | Missing | Missing | Missing | Missing | Qualified bounded creation ledgers |
 | Rename a saved table | Missing | Missing | Missing | Missing | Restricted single-table, Name AutoCorrect OFF profile; retained Int32 index saves/recovery and headless workflow checked |
 | Drop a saved table | Missing | Missing | Missing | Missing | Missing |
-| Add/rename/alter/drop a saved column | Missing | Missing | Missing | Missing | Missing |
+| Add a saved column | Missing | Missing | Missing | Missing | Bounded empty-table Number/Short Text ADD, original-intent recovery and normal GUI save/reopen |
+| Rename/alter/drop a saved column | Missing | Missing | Missing | Missing | Missing |
 | Update rows | Restricted fixed non-NULL Int32 copy route | No normal writer admission | No normal writer admission | No independently qualified normal writer | Many qualified carrier/index/allocation profiles |
 | Insert/delete rows | No equivalent normal routes established | Missing normal routes | Missing normal routes | Missing normal routes | Qualified normal routes; restrictions remain |
 | Recoverable writes | Existing Jet 4 update integration | No CRUD-specific qualification | No CRUD-specific qualification | No CRUD-specific qualification | Original-intent journal/recovery for admitted actions |
@@ -68,7 +69,7 @@ writer qualifications remain in [native writes](../access/writes/NATIVE_WRITES.m
 | Profile coverage | Original Jet 3/4 and ACE 12/14/15/16 fixture inventories; actual version/features/encryption provenance; positive and negative write/recovery evidence for each family. |
 | Database lifecycle | Creators for the other targets, full supported declarations, database options, encrypted writes and explicit safe file lifecycle. Removing a database file is a host operation with document/resource ownership, not SQL DROP DATABASE. |
 | Saved table lifecycle | Broaden restricted rename to ordinary creator/indexed/multiple-table layouts and Name AutoCorrect behavior; implement DROP with dependency handling, identity preservation and allocation retirement. |
-| Saved column lifecycle | Add/rename/change/drop; existing-row migration, field numbers/null masks/variable offsets, defaults, indexes, properties and dependency updates. Empty-table rewrites must preserve native history and unknown metadata too. |
+| Saved column lifecycle | Broaden the implemented empty-table Number/Short Text ADD beyond its canonical ACE16 source, declaration/history and page limits. Implement persisted rename/change/drop, existing-row migration, broader defaults/indexes/properties and dependency updates. Preserve field numbers/null masks/variable offsets, native history and unknown metadata. |
 | Rows and storage | General scalar and supported advanced-field CRUD, all admitted key families/combinations, DATA/INDEX/LVAL growth and contraction, allocation-map growth, page reuse and reclamation. Remove fitting-only/short-ledger restrictions through real storage work. |
 | Defaults and identity | Omitted versus NULL versus supplied values, complete supported defaults, Increment/Random generation, reseeding/history and composition with constraints/indexes/allocation. |
 | Constraints and relationships | Required/AZL, field/record validation, primary/unique indexes, foreign keys, relationships, cascades and supported NULL/text comparison behavior. Author and preserve their native declarations. |
@@ -78,14 +79,21 @@ writer qualifications remain in [native writes](../access/writes/NATIVE_WRITES.m
 
 The first [persisted table rename](../access/writes/TABLE_RENAME.md) slice now has
 native catalog mutation, original intent, fresh reconstruction, recovery, runtime
-review and a connected Navigation Pane workflow. Its source profile is narrow:
-current creators retain missing/ON Name AutoCorrect and a different system catalog,
-so they do not enter this admission yet. The retained single-Int32 user-index route
-is now connected under a separate V2 intent; its focused engine, adapter, runtime
-and headless desktop acceptance checks pass. Next is explicit database-option handling and broader creator catalog
-qualification, followed by the rest of
-saved table/column CRUD. Neither parser nodes nor a “created by TableCraft” flag
-confer mutation authority.
+review and a connected Navigation Pane workflow. The retained single-Int32
+user-index route has a separate V2 intent, and a sealed creator V3 source admits
+qualified creator images after explicit Name AutoCorrect OFF. Missing settings
+never imply ON or OFF. The [explicit settings service](../access/writes/DATABASE_OPTIONS.md)
+now connects File Options, with final corrected GUI checks pending; source
+composition after existing field ADD remains unsupported. Ordinary populated or
+broader table/column rename and other lifecycle operations remain work. Neither
+parser nodes nor a “created by TableCraft” flag confer mutation authority.
+
+The normal saved-table gallery now adds [Number and Short Text](../access/writes/ADD_COLUMN.md)
+through engine, adapter, runtime, original-intent recovery and actual GUI saves.
+Admission remains bounded to empty canonical ACE16 sources with qualified
+properties/history, a sixteen-field source ceiling and the proved property-page
+allocation limits. Persisted field rename, type alteration and deletion are not
+implemented by that ADD route; unsaved Design authoring remains separate.
 
 ## Queries: current capability and missing work
 
@@ -96,8 +104,13 @@ queries. Native saved retrieval queries also have inspection/execution routes.
 The [visual designer](../ui/QUERY_DESIGN.md) supports a narrower SELECT subset.
 GUI Run now reviews and executes qualified local UPDATE, DELETE, single-record
 INSERT VALUES and SELECT append through the shared save owner. Broader action
-contexts and DDL remain unsupported, and editing SQL does not persist a native
-QueryDef. Query results currently buffer under 16 MiB/10,000-row limits;
+contexts and DDL remain unsupported. [Existing saved-query SQL edits](../application/SAVED_QUERY_EDITING.md)
+now persist qualified local SELECT projection/WHERE expression changes through
+consuming runtime review, original-intent recovery and complete-image checked
+reopening. Target identity, sources, aliases, fragment membership/order and other
+native fields remain protected. This does not create, Save As, rename or delete
+QueryDefs, admit broader query shapes/compiled payloads, or qualify older native
+write profiles. Query results currently buffer under 16 MiB/10,000-row limits;
 table-browser paging does not provide paged query results.
 
 The parser already models much more syntax than hosts can execute. Separate
@@ -114,7 +127,7 @@ See [parser scope](../query/SQL_PARSER.md),
 | Retrieval semantics | Full supported joins/subqueries, grouping/HAVING/TOP, UNION and pivot behavior, declared types, Variant/coercion/NULL/Error semantics, sort orders/LCIDs and database policy precedence. Finish the documented partial profiles rather than adding unrelated modern SQL. |
 | Action queries | [Fresh native UPDATE requalification and retained-session staging](../access/writes/REVIEWED_UPDATES.md) now exist, with independent query/native review-planning and native/proof requalification APIs. The runtime consumes qualified local UPDATE reviews through its save worker with explicit persistence allowances and stored field comparison policies; GUI declared-parameter prompts, Yes/No warning, confirmed save and fresh SQL-tab reopen now consume that route. [Sealed DELETE qualification](../access/writes/REVIEWED_DELETES.md) now supplies typed/policy-aware selection, runtime review/save and shared GUI confirmation through fresh offline staging. [Reviewed INSERT VALUES and SELECT append](../access/writes/REVIEWED_INSERTS.md) now use typed prompts, an Append confirmation with the actual inserted count (including zero or multiple records) and a distinct runtime/save capability. SELECT stages the complete original read before one native batch finish under shared allowances; native source gates remain unchanged. UPDATE, DELETE and INSERT retain distinct consuming native capabilities and original intents; accepted saves never replay SQL, parameters or captured clock providers. Complete broader reviewed UPDATE, append/INSERT and DELETE, their remaining parameter/expression contexts, assignments, qualified join/subquery targets, affected counts, warnings, validation, atomicity and recovery. Reuse the same native services as datasheet edits. |
 | Make-table and DDL | SELECT INTO/make-table and CREATE/ALTER/DROP TABLE/INDEX through real native schema/index owners, including dependencies and source-preserving failure. |
-| Query definitions | Create/save/rename/delete native saved queries and their properties, parameters and dependencies; CREATE/DROP VIEW and supported PROCEDURE/parameterized saved-action/retrieval workflows. Not just temporary SQL editor sessions or reconstructed read-only definitions. |
+| Query definitions | Broaden the implemented existing local SELECT projection/WHERE expression Save beyond its closed native fragment/source profile. Implement create/Save As/rename/delete, property/parameter/dependency changes, CREATE/DROP VIEW and supported PROCEDURE/parameterized saved-action/retrieval persistence. Readable or editable scratch SQL alone is not a saved QueryDef. |
 | Visual query work | Grouping/totals, crosstabs and action-query modes, parameter/property sheets and bounded faithful SQL/Design round trips. SQL-only query kinds must remain SQL-only where Access requires it. |
 | Result usability | Cancellable execution, progress, controlled budgets, complete materialization/paging or qualified progressive results, and Access-compatible query updatability/record identity where valid. Never give aggregate/UNION results invented native row handles. |
 | Pass-through | Explicit provider connections, credentials/trust and remote execution/result/error contracts. This is part of the full query target, not functionality supplied by the native parser or a mock button. |

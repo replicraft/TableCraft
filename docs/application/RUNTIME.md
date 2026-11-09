@@ -1718,33 +1718,62 @@ With `offline-edit` and `ace16-create`, the separate
 `ReviewDisableNameAutoCorrect { document_revision }` request reviews only the
 explicit source-bound disable-both operation. Its current creator source profile
 and preserved bytes are defined by the [native options contract](../access/writes/DATABASE_OPTIONS.md).
+The normal desktop now composes this service through its shared File Options
+dialog. `SaveWorker::supports_database_options()` reports native save-platform
+support independently of the current image's positive source eligibility. The
+corrected composed workflow and offscreen validation remain pending.
+
+`InspectDatabaseOptions { document_revision }` returns the same document revision,
+`NameAutoCorrectState::{Missing, Absent, ExplicitOff, Other}` and a separate
+`disable_available` fact. Stored-state inspection works on supported native read
+hosts independently of save support. Positive eligibility reuses the complete
+source preflight without allocating an AFTER candidate or retaining an exclusive
+file lease. UI Unknown means unobserved, never OFF. Neither observation nor
+eligibility grants native save authority; actual review requalifies the source.
+
 A successful unlocked review returns `DatabaseOptionsReview` and a consuming
 `ReviewedDatabaseOptions`; review never holds the native exclusive file owner,
-creates a journal or changes defaults.
-
-`SaveWorker::start_disable_name_auto_correct` uses the existing nonreplaceable
-worker and actual adapter resizable pair. It retains owners and terminal failures
-across cancellation/replacement, returns unconsumed capabilities for stale/busy
-start refusals, and rechecks the complete original before staging. Committed or
-verified replacement receipts report only
+creates a journal or changes defaults. `SaveWorker::start_disable_name_auto_correct`
+uses the existing nonreplaceable worker and adapter resizable pair. It retains
+owners and terminal failures across cancellation, returns unconsumed capabilities
+for stale/busy start refusals, and rechecks the complete original before staging.
+Committed or verified replacement receipts report only
 `SaveDatabaseOptionsChange::NameAutoCorrectDisabled`; table/query changes and
-matched/changed row counts remain absent.
+matched/changed row counts remain absent. `database_options_reopen_facts` keeps
+these scope checks in runtime rather than duplicating classification in the host.
 
 The capability's `DatabaseOptionsReopen` witness is a read-only full-AFTER guard.
-After explicit save acknowledgement, `OpenDatabaseOptionsSaved` creates a fresh
-read session only when every expected byte still matches; a changed file refuses
+Ordinary successful Apply acknowledges internally before this read; retained
+failure/cancellation and resource resolution retain explicit controls. After
+actual save acknowledgement, `OpenDatabaseOptionsSaved` creates a fresh
+read session only when every expected byte matches; a changed file refuses
 without replaying the option action. A later table rename requires its own
-explicit review/save. Unsupported hosts retain explicit refusals. No GUI option
-command or implicit Name AutoCorrect change is supplied by this service.
+explicit review/save. Unsupported save hosts retain explicit refusals.
 
-Five focused service tests cover exact independent images, separate rename
-composition, busy/stale owner boundaries, document invalidation and guarded
-reopen. All five now pass within the 248-runtime-case field workflow batch above.
-This does not qualify settings changes after an existing column ADD.
-The [completed prior 72-test SQL/creator batch](../testing/results/sql-creator-focused-2026-11-08.json)
-passes the earlier query, column and creator rename services. It predates the
-option service and shared expected-image copy extraction; those new tests and
-rewired-consumer regressions are not included in its passing count.
+Before review, the UI requires a separate exact close-objects confirmation bound
+to the current revision, graph order/owners, active tab and confirmation identity.
+Dirty stored-object drafts block this flow. On known replacement acknowledgement
+plus successful full witness, a distinct options publication closes the confirmed
+persisted tabs and invalidates native result/row handles. Source-free scratch SQL
+text, IDs and preferences remain a TableCraft tool boundary, not a claim that
+Access retains unsaved native Query objects. The neutral replacement graph owner
+also serves field additions with their existing KeepAll policy; it supplies no
+shared native write authority and never performs a generic Open/layout reset.
+
+Failed/original outcomes retain the current graph. Failed full-witness reads keep
+the accepted witness, saved outcome and cleanup state for retry. Explicit Return
+preserves that history and blocks mutations against the stale source until a fresh
+document open, while read/navigation/file/close transitions remain available.
+Readonly cancellation retires the exact host state immediately because the worker
+revokes reply publication; SaveWorker cancellation retains its terminal owner.
+No implicit Name AutoCorrect change or Rename hook is introduced.
+
+Earlier service-only and SQL/creator verification records remain historical
+checkpoints, separate from the current composed UI/desktop validation. This route
+does not qualify settings changes after an existing column ADD; independent SDK
+observations do not substitute for the unchanged native source admission.
+
+<!-- OPTIONS_GATE_STATUS: final coordinated UI/desktop and offscreen results pending; earlier per-service counts remain historical. -->
 
 ## Guarded saved-query SQL edits
 

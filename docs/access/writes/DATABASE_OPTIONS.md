@@ -1,10 +1,15 @@
 # Explicit database Name AutoCorrect options
 
-`NativeImage::plan_disable_name_auto_correct` now constructs an unpublished native
-candidate for an explicit request to disable Track/Perform Name AutoCorrect.
-This does not change constructor defaults, imply that missing metadata is zero,
-or implicitly save a file. The native candidate and separate original-intent
-lane retain their own explicit qualification below.
+The engine, Access adapter and shared runtime implement an explicit request to
+disable Track/Perform Name AutoCorrect. The normal desktop now composes that
+service through File → Options → Current Database, with a separate close-objects
+confirmation. The current composed UI/desktop validation remains pending.
+The native source and original-intent limits below remain unchanged; this is
+neither general settings editing nor complete Access compatibility.
+
+`NativeImage::plan_disable_name_auto_correct` constructs the unpublished native
+candidate. It does not change constructor defaults, imply that missing metadata
+is zero or implicitly save a file.
 
 The first source language is the existing canonical seven-system-role creator
 ledger with exactly one user table and no MSysDb. Source admission reuses the
@@ -115,29 +120,100 @@ replacement before creating a fresh read session. It neither replays the setting
 operation nor grants permission to rename. Unsupported hosts return explicit
 refusals and unconsumed save capabilities. A shared native helper owns the same
 fallible, budgeted expected-image copy used by option, rename, column and query
-reviews. Five focused runtime tests are authored; compilation/execution remains
-pending the coordinated batch.
+reviews. Earlier service-only checks remain separate from the current composed
+UI/desktop validation.
 
 `DatabaseProperties::name_auto_correct` provides an inert typed observation:
 `Absent` when neither named setting occurs in an unnamed default map,
 `ExplicitOff` only for one occurrence each of native LONG/DDL zero, and `Other`
 for partial, duplicated, differently typed/flagged or other values. A missing
 MSysDb remains the outer inspection's `None`. No missing or nonzero value is
-called enabled, and this observation alone never qualifies a mutation. The two
-focused observation tests are authored but unrun at this checkpoint.
+called enabled, and this observation alone never qualifies a mutation.
+
+`InspectDatabaseOptions { document_revision }` returns a revision-bound
+`DatabaseOptionsInspection`. Its four `NameAutoCorrectState` values preserve
+`Missing` separately from `Absent`, `ExplicitOff` and `Other`. Stored facts are
+read on supported native read hosts even when saves are unavailable. The separate
+`disable_available` fact reuses the complete native source preflight without
+constructing an AFTER image or acquiring an exclusive target lease. It is positive
+eligibility only: actual review and staging repeat native source qualification.
+Unknown is the UI's unobserved state, not a fifth runtime value or an inferred OFF.
 
 The [earlier completed SQL/creator batch](../../testing/results/sql-creator-focused-2026-11-08.json)
 passes 72 tests, including 35 engine rename, four runtime rename and six long-value
 cases. Its V3 positives establish bounded native option-then-rename composition.
-It predates this new runtime options service, metadata observer and expected-image
-copy extraction; the five service tests, two observer tests and rewired-consumer
-regressions remain unrun.
+It predates the runtime options service, metadata observer and expected-image
+copy extraction, and does not account for their later checks or the current UI
+composition.
 
-No GUI option command, native Microsoft Access comparison or Windows execution
-is supplied here. Existing add-table source admission still assumes the original
+No native Microsoft Access save comparison or Windows execution is supplied
+by the desktop implementation. Existing add-table source admission still assumes the original
 seven-role ledger. Rename V1/V2 retain their exact inline source grammar;
 [the separately sealed creator V3 source](TABLE_RENAME.md) now qualifies bounded
 rename after explicit OFF, with independent source/image/recovery tests passing.
 The setting change remains an explicit operation and never changes constructor
 defaults or runs automatically during rename. General CRUD composition remains
 incomplete.
+
+## File Options and exact close-objects approval
+
+The normal host uses `SaveWorker::supports_database_options()` for platform
+support and a separate positive native source fact for the opened image. A
+platform Boolean alone never authorizes the setting change.
+
+The shared Options dialog has separate General and Current Database categories.
+General retains the existing appearance, language and regional-format owners.
+Current Database displays the actual stored-state class, or Unknown while no
+observation is available. Missing, absent, partial and unqualified values never
+become unchecked OFF boxes. Disable Track and Perform is an explicit command;
+enabling and logging remain visible unavailable commands. Rename never invokes
+the settings change automatically.
+
+Microsoft documents File → Options → Current Database and a close-objects prompt
+when disabling Track. TableCraft therefore captures a separate UI-only approval
+for the exact document revision, monotonic confirmation identity, persisted tab
+owners, complete tab order and active owner. Approval itself closes no object and
+issues no native write capability. Dirty stored-query SQL, unsaved table/field
+or row drafts and incompatible pending owners block the operation rather than
+being discarded. [Microsoft's Name AutoCorrect contract](https://support.microsoft.com/en-us/access/set-name-autocorrect-options)
+
+An ordinary successful Apply is acknowledged internally and proceeds directly
+to checked reopening; no separate success-confirmation click is required.
+Retained failure, cancellation, recovery and release keep their explicit controls.
+
+After the consuming native save, the runtime's distinct database-options outcome
+facts determine whether the acknowledged image is the known replacement. Only
+that outcome followed by a successful full `DatabaseOptionsReopen` read permits
+publication. Successful publication closes the confirmed persisted table/query
+tabs; users reopen them normally. Source-free scratch SQL text, tab identity and
+preferences remain as a TableCraft app-tool boundary, not evidence that Access
+retains an unsaved native Query object.
+
+The source-neutral replacement graph owner is shared with field addition, whose
+KeepAll behavior remains unchanged. Options selects ClosePersisted and supports
+an empty graph or no active object. Operation-specific approval and native witness
+authority stay separate. Exact catalog consistency, owner validation and retained
+memory admission precede every owned move; old native rows, results and handles
+are invalidated rather than reused against the fresh document revision.
+
+Cancellation or failure preserves the original graph. A failed full-image read
+after acknowledged replacement keeps the saved outcome, exact witness and cleanup
+notice for Retry or Return to settings. Read cancellation explicitly retires its
+presentation because cancelling the read worker revokes response publication; it
+does not claim the native read has already stopped. Return keeps a stale-source
+warning and blocks further native mutations until an explicit fresh document
+open. File/read/navigation/close transitions remain usable. SaveWorker recovery,
+release and acknowledgement retain the established nonreplaceable owner lifecycle.
+
+All eight locale catalogs have their own sectioned database-options messages.
+The retained Windows Account screenshot informs the File rail only. No matching
+Options, Current Database or close-objects capture exists; these dialogs are
+uncaptured adaptations. Source-free offscreen scenes illustrate state and layout,
+not real saves or Windows/Access behavior. The composed UI/desktop and offscreen
+verification results remain pending the corrected coordinated batch.
+<!-- OPTIONS_GATE_STATUS: replace only after root supplies the final composed results; do not aggregate historical totals. -->
+
+The SDK OFF-after-ADD observations above do not expand the current source
+language: settings saves after Number/ShortText ADD still refuse. Enabling,
+logging, general NameMap removal, arbitrary imported settings, broad CRUD
+composition and older native write profiles remain unqualified here.

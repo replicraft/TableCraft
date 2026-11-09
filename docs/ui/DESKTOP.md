@@ -4,6 +4,51 @@ The [Open-time recovery flow](RECOVERY.md) handles an explicitly selected
 reserved active journal through the shared runtime owner. Opening and rendering
 its prompt make no changes; recovery requires an explicit action.
 
+## Explicit current-database Options — 8 November 2026
+
+The normal desktop opens a shared File → Options dialog. General retains the
+existing appearance, language and regional-format controls; Current Database
+uses revision-bound runtime settings inspection. Unknown, missing MSysDb, absent
+named settings, explicit OFF and other stored values remain distinct. Save
+availability is separate from stored facts and comes from positive native source
+qualification. The normal host uses the real
+`SaveWorker::supports_database_options()` platform capability, while each opened
+image must pass its separate source check. Enabling and logging remain visible
+disabled controls.
+
+Disable Track and Perform requests a separate close-objects confirmation for the
+exact current revision, tab graph/order and active owner. Dirty stored-object or
+row drafts block confirmation and native review. Confirming alone changes no file
+and closes no tab. A consuming runtime review/save, acknowledged known replacement
+and successful full-image witness are all required before confirmed persisted
+table/query tabs close. Ordinary successful saving acknowledges and enters
+checked reopening automatically; no extra success-confirmation click is required.
+Users reopen those objects normally. Source-free scratch
+SQL text, tab IDs and preferences remain a TableCraft app-tool boundary; this does
+not claim Access retains an unsaved native Query object.
+
+Failure/cancellation retains the old graph. A known saved replacement whose
+witness read fails retains outcome/cleanup and offers Retry or Return to settings;
+Return keeps stale-source mutation guards until an explicit fresh open. Read,
+file, navigation and close actions remain usable. A native read cancellation
+retires the exact presentation immediately because cancelled replies cannot be
+published. No setting changes automatically during Rename.
+
+The [owning options contract](../access/writes/DATABASE_OPTIONS.md) retains the
+current narrow creator source and original-intent boundaries. In particular,
+settings saves after an existing Number/ShortText ADD remain unsupported despite
+independent SDK composition observations. The connected normal-host implementation
+is separate from its current corrected batch: composed workflow, lint and
+offscreen verification remain pending.
+<!-- OPTIONS_GATE_STATUS: insert only root-confirmed final workflow/lint/render evidence here. -->
+
+The actual retained Windows Account image was reopened at 1920 × 1097 pixels,
+inside VirtualBox with unknown OS scale. It supports the File rail. No retained
+Options, Current Database or close-objects image exists; these dialog visuals are
+uncaptured adaptations. Eight dedicated sectioned Fluent catalogs own this flow's
+messages. No native window, Windows/Access save interaction or pixel parity is
+established by the source-free offscreen scenes.
+
 ## Saved SQL inspection and draft ownership — 8 November 2026
 
 Opening a saved query now follows parameter inspection with inert runtime SQL

@@ -5,6 +5,7 @@ or browser rendering. Hosts compose these services and present owned results.
 
 - [Read sessions, reviewed offline edits and worker tasks](RUNTIME.md)
 - [Guarded existing saved-query SQL edits](SAVED_QUERY_EDITING.md)
+- [Explicit database Options, close confirmation and witnessed publication](../access/writes/DATABASE_OPTIONS.md)
 - [Shared editing direction](../decisions/0002_SHARED_APPLICATION_EDITING.md)
 - [Package ownership](../architecture/ARCHITECTURE.md)
 
