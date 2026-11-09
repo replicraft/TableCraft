@@ -5,9 +5,10 @@ mod recovery;
 
 use super::{NativeIntentError, binding};
 use crate::{
-    FieldRenameError, InspectError, NativeFieldRenameCandidate, NativeFieldRenameIdentity,
-    NativeImage, NativeRecoveryQualificationError, header::check,
+    FieldRenameError, InspectError, NativeFieldRenameIdentity, NativeImage,
+    NativeRecoveryQualificationError, header::check,
 };
+use planning::Candidate;
 use tablecraft_core::limits::{LimitError, Resource, ResourceBudget};
 use thiserror::Error;
 
@@ -81,9 +82,35 @@ impl Identity {
     }
 }
 
+/// Persisted profiles select their own validation and native reconstruction.
+/// A malformed older request is never retried through the fitted profile.
+#[derive(Clone, Copy)]
+enum Profile {
+    SameWidth,
+    FittedAscii,
+}
+
+impl Profile {
+    const fn tag(self) -> u16 {
+        match self {
+            Self::SameWidth => 1,
+            Self::FittedAscii => 2,
+        }
+    }
+
+    fn decode(tag: u16) -> Result<Self, FieldRenameIntentError> {
+        match tag {
+            1 => Ok(Self::SameWidth),
+            2 => Ok(Self::FittedAscii),
+            _ => Err(FieldRenameIntentError::InvalidRecord),
+        }
+    }
+}
+
 /// Bounded raw request and complete BEFORE binding. Decoding grants no native
 /// source, replacement-image, journal, recovery or save authority.
 pub struct NativeFieldRenameIntent {
+    profile: Profile,
     identity: Identity,
     table: String,
     original: String,
@@ -97,11 +124,13 @@ impl NativeFieldRenameIntent {
     pub const MAX_ENCODED_BYTES: usize = codec::MAX_RECORD_BYTES;
 
     fn capture(
-        candidate: &NativeFieldRenameCandidate,
+        profile: Profile,
+        candidate: &Candidate,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, FieldRenameIntentError> {
         validate_request(
+            profile,
             candidate.table(),
             candidate.column(),
             candidate.new_name(),
@@ -113,6 +142,7 @@ impl NativeFieldRenameIntent {
         codec::validate_identity(identity, before_length, candidate.column().len())?;
         let before_binding = binding::digest(candidate.before_bytes(), budget, cancelled)?;
         Ok(Self {
+            profile,
             identity,
             table: copy_text(candidate.table(), budget)?,
             original: copy_text(candidate.column(), budget)?,
@@ -187,22 +217,28 @@ impl NativeFieldRenameIntent {
         image: NativeImage,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
-    ) -> Result<NativeFieldRenameCandidate, FieldRenameIntentError> {
-        let candidate = image.prepare_same_width_field_rename(
-            self.table(),
-            self.column(),
-            self.new_name(),
-            budget,
-            cancelled,
-        )?;
+    ) -> Result<Candidate, FieldRenameIntentError> {
+        let candidate = match self.profile {
+            Profile::SameWidth => Candidate::SameWidth(image.prepare_same_width_field_rename(
+                self.table(),
+                self.column(),
+                self.new_name(),
+                budget,
+                cancelled,
+            )?),
+            Profile::FittedAscii => Candidate::FittedAscii(image.prepare_fitted_field_rename(
+                self.table(),
+                self.column(),
+                self.new_name(),
+                budget,
+                cancelled,
+            )?),
+        };
         self.verify_candidate(&candidate)?;
         Ok(candidate)
     }
 
-    fn verify_candidate(
-        &self,
-        candidate: &NativeFieldRenameCandidate,
-    ) -> Result<(), FieldRenameIntentError> {
+    fn verify_candidate(&self, candidate: &Candidate) -> Result<(), FieldRenameIntentError> {
         if Identity::from_native(candidate.identity())? != self.identity
             || candidate.table() != self.table()
             || candidate.column() != self.column()
@@ -215,6 +251,7 @@ impl NativeFieldRenameIntent {
 }
 
 fn validate_request(
+    profile: Profile,
     table: &str,
     original: &str,
     replacement: &str,
@@ -224,7 +261,9 @@ fn validate_request(
     // Byte ceilings precede UTF16 traversal and all three owned allocations.
     if table.len() > MAX_TABLE_BYTES
         || original.len() > MAX_FIELD_BYTES
-        || replacement.len() != original.len()
+        || replacement.len() > MAX_FIELD_BYTES
+        || matches!(profile, Profile::SameWidth) && replacement.len() != original.len()
+        || matches!(profile, Profile::FittedAscii) && replacement.len() == original.len()
         || !original.is_ascii()
         || !replacement.is_ascii()
     {

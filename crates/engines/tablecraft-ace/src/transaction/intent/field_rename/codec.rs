@@ -1,13 +1,12 @@
-//! Closed TCFR0001/profile1 original-request framing, never replacement bytes.
+//! Closed TCFR0001 profiles select exact request semantics, never replacement bytes.
 use super::{
     FieldRenameIntentError as Error, Identity, MAX_FIELD_BYTES, MAX_TABLE_BYTES,
-    NativeFieldRenameIntent as Intent, binding, copy_text, validate_request,
+    NativeFieldRenameIntent as Intent, Profile, binding, copy_text, validate_request,
 };
 use crate::{format::page::PAGE_BYTES, header::check};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
 const MAGIC: &[u8; 8] = b"TCFR0001";
-const PROFILE: u16 = 1;
 const TOTAL_AT: usize = MAGIC.len();
 const PROFILE_AT: usize = TOTAL_AT + size_of::<u32>();
 const FLAGS_AT: usize = PROFILE_AT + size_of::<u16>();
@@ -57,6 +56,7 @@ pub(super) fn encode(
 ) -> Result<Vec<u8>, Error> {
     check(budget, cancelled)?;
     validate_request(
+        intent.profile,
         intent.table(),
         intent.column(),
         intent.new_name(),
@@ -74,7 +74,7 @@ pub(super) fn encode(
         .map_err(|_| crate::InspectError::Allocation)?;
     output.extend_from_slice(MAGIC);
     output.extend_from_slice(&(length as u32).to_le_bytes());
-    output.extend_from_slice(&PROFILE.to_le_bytes());
+    output.extend_from_slice(&intent.profile.tag().to_le_bytes());
     output.extend_from_slice(&0_u16.to_le_bytes());
     output.extend_from_slice(&intent.before_length.to_le_bytes());
     output.extend_from_slice(&intent.before_binding);
@@ -107,12 +107,12 @@ pub(super) fn decode(
     }
     budget.charge(Resource::Steps, input.len() as u64)?;
     if u32::from_le_bytes(bytes(input, TOTAL_AT)?) as usize != input.len()
-        || u16::from_le_bytes(bytes(input, PROFILE_AT)?) != PROFILE
         || u16::from_le_bytes(bytes(input, FLAGS_AT)?) != 0
         || u32::from_le_bytes(bytes(input, RESERVED_AT)?) != 0
     {
         return Err(Error::InvalidRecord);
     }
+    let profile = Profile::decode(u16::from_le_bytes(bytes(input, PROFILE_AT)?))?;
     let before_length = u64::from_le_bytes(bytes(input, BEFORE_LENGTH_AT)?);
     let identity = Identity {
         native_table: i32::from_le_bytes(bytes(input, NATIVE_TABLE_AT)?),
@@ -140,8 +140,9 @@ pub(super) fn decode(
         std::str::from_utf8(&input[table_end..original_end]).map_err(|_| Error::InvalidRecord)?;
     let replacement =
         std::str::from_utf8(&input[original_end..]).map_err(|_| Error::InvalidRecord)?;
-    validate_request(table, original, replacement, budget, cancelled)?;
+    validate_request(profile, table, original, replacement, budget, cancelled)?;
     let intent = Intent {
+        profile,
         identity,
         table: copy_text(table, budget)?,
         original: copy_text(original, budget)?,
