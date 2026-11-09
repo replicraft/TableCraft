@@ -52,3 +52,25 @@ pub(in crate::table) fn kind(descriptor: &[u8]) -> Result<Kind, InspectError> {
         _ => Err(InspectError::Unsupported),
     }
 }
+
+/// Match the exact canonical single-row producer descriptor without following it.
+/// Generic native reads continue to preserve uninterpreted reserved bytes.
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub(in crate::table) fn canonical_single(
+    bytes: &[u8],
+    reference: u32,
+    length: usize,
+) -> Result<bool, InspectError> {
+    if bytes.len() != size_of::<Definition>()
+        || length == 0
+        || length > (!LENGTH_TYPE_MASK) as usize
+    {
+        return Ok(false);
+    }
+    let definition = Definition::read(bytes)?;
+    Ok(
+        definition.tagged_length.get() == (SINGLE_ROW | length as u32)
+            && definition.reference.get() == reference
+            && definition.reserved_zero(),
+    )
+}

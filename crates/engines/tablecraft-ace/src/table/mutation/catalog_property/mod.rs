@@ -3,7 +3,9 @@
 //! its complete canonical source/history, including exact LVAL/map ownership and
 //! the last logical catalog root belonging to its selected single user table.
 mod carrier;
+mod descriptor;
 pub(crate) use carrier::external as properties_external;
+pub(crate) use descriptor::capture as capture_property_descriptor;
 mod maps;
 mod parent;
 mod record;
@@ -41,12 +43,12 @@ pub(super) fn catalog(
     )?)
 }
 
-pub(super) fn column(catalog: &TableSchema) -> Result<usize, EditError> {
+pub(crate) fn column(catalog: &TableSchema) -> Result<usize, InspectError> {
     catalog
         .columns()
         .iter()
         .position(|field| field.name() == "LvProp")
-        .ok_or(InspectError::Malformed.into())
+        .ok_or(InspectError::Malformed)
 }
 
 pub(crate) fn compose(

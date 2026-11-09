@@ -11,6 +11,11 @@ pub(super) struct Definition {
 }
 
 impl Definition {
+    #[cfg(all(feature = "journal", feature = "ace16-create"))]
+    pub(super) fn reserved_zero(&self) -> bool {
+        self._reserved == [0; size_of::<u32>()]
+    }
+
     pub fn read(bytes: &[u8]) -> Result<&Self, InspectError> {
         Self::ref_from_prefix(bytes)
             .map(|(definition, _)| definition)
