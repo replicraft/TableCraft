@@ -101,10 +101,8 @@ impl Observed {
             if !candidate.name().is_ascii() {
                 return Err(Error::Source);
             }
-            if candidate.name().eq_ignore_ascii_case(field) {
-                if selected.replace(index).is_some() {
-                    return Err(Error::Source);
-                }
+            if candidate.name().eq_ignore_ascii_case(field) && selected.replace(index).is_some() {
+                return Err(Error::Source);
             }
         }
         let index = selected.ok_or(Error::Source)?;
@@ -132,10 +130,11 @@ impl Observed {
                 Resource::Steps,
                 candidate.name().len().max(target.name().len()) as u64,
             )?;
-            if candidate.kind() == PropertyGroupKind::Column && candidate.name() == target.name() {
-                if group.replace(number).is_some() {
-                    return Err(Error::Source);
-                }
+            if candidate.kind() == PropertyGroupKind::Column
+                && candidate.name() == target.name()
+                && group.replace(number).is_some()
+            {
+                return Err(Error::Source);
             }
         }
         let group = group.ok_or(Error::Source)?;

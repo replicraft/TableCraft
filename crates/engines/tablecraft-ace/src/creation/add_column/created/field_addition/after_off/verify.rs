@@ -36,8 +36,8 @@ pub(super) fn candidate(
     }
     let base = CATALOG_PAGE * PAGE_BYTES;
     budget.charge(Resource::Steps, (2 * PAGE_BYTES) as u64)?;
-    for offset in base..base + PAGE_BYTES {
-        if before.as_bytes()[offset] != after[offset] && !source.descriptor.contains(&offset) {
+    for (offset, byte) in after.iter().enumerate().skip(base).take(PAGE_BYTES) {
+        if before.as_bytes()[offset] != *byte && !source.descriptor.contains(&offset) {
             return Err(Error::Preservation);
         }
     }

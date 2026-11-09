@@ -134,7 +134,9 @@ impl NativeImage {
                 .charge(Resource::Steps, bytes.len() as u64)
                 .map_err(InspectError::from)?;
             for (destination, unit) in bytes
-                .chunks_exact_mut(size_of::<u16>())
+                .as_chunks_mut::<{ size_of::<u16>() }>()
+                .0
+                .iter_mut()
                 .zip(replacement.encode_utf16())
             {
                 destination.copy_from_slice(&unit.to_le_bytes());
