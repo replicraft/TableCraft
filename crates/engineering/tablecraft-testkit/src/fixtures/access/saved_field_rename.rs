@@ -1,5 +1,7 @@
 //! Literal same-width TDEF/live-MR2 pairs frozen before inert SDK observation.
 //! Reuse the raw constructive source owners; no native parser/encoder participates.
+pub mod fitting;
+
 use super::canonical_created_number::mixed::after_off::{self, SourceCase};
 
 /// Complete original and independently observed coordinated raw AFTER.
