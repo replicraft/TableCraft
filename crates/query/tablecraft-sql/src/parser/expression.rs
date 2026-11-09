@@ -352,23 +352,23 @@ fn prefix(
             expect_token(parser, Token::RParen)?;
             value
         }
-        Token::Number(ref n, false) if valid_number(n) => {
+        Token::Number(n, false) if valid_number(&n) => {
             parser.next_token();
             n.parse::<i64>()
                 .map(E::Integer)
-                .unwrap_or_else(|_| E::Number(n.clone()))
+                .unwrap_or_else(|_| E::Number(n))
         }
-        Token::SingleQuotedString(ref text) | Token::DoubleQuotedString(ref text) => {
+        Token::SingleQuotedString(text) | Token::DoubleQuotedString(text) => {
             parser.next_token();
-            E::Text(text.clone())
+            E::Text(text)
         }
-        Token::Word(ref w) if w.quote_style == Some('{') => {
+        Token::Word(w) if w.quote_style == Some('{') => {
             parser.next_token();
-            E::GuidLiteral(w.value.clone())
+            E::GuidLiteral(w.value)
         }
-        Token::Word(ref w) if w.quote_style == Some('#') => {
+        Token::Word(w) if w.quote_style == Some('#') => {
             parser.next_token();
-            E::DateLiteral(w.value.clone())
+            E::DateLiteral(w.value)
         }
         Token::Word(ref w) if w.quote_style.is_none() && w.keyword == Keyword::NULL => {
             parser.next_token();

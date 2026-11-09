@@ -34,7 +34,7 @@ pub(super) fn member_name(p: &mut Parser<'_>) -> Result<Name, ParseError> {
 
 fn identifier(p: &mut Parser<'_>, allow_reserved: bool) -> Result<Name, ParseError> {
     match p.peek_token().token {
-        Token::Word(ref w)
+        Token::Word(w)
             if (w.quote_style == Some('[')
                 || (w.quote_style.is_none()
                     && (allow_reserved || super::identifiers::unreserved(&w.value))))
@@ -44,7 +44,7 @@ fn identifier(p: &mut Parser<'_>, allow_reserved: bool) -> Result<Name, ParseErr
                     .chars()
                     .any(|c| c.is_control() || "[]`.!".contains(c)) =>
         {
-            let name = Name(w.value.clone());
+            let name = Name(w.value);
             p.next_token();
             Ok(name)
         }

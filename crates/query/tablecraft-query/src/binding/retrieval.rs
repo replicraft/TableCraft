@@ -161,7 +161,8 @@ impl Binder<'_> {
                     let value = match self.collection_field(field, &source.slots, depth + 1)? {
                         Some(value) => value,
                         None => {
-                            self.expression(&E::Field(field.clone()), &scopes, true, depth + 1)?
+                            self.tick(depth + 1)?;
+                            self.field_expression(field, &scopes, true, depth + 1)?
                         }
                     };
                     projection.push(value);

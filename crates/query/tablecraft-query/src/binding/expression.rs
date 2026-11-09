@@ -7,9 +7,49 @@ use crate::{
 use tablecraft_expressions::datetime::{
     parse_query_literal, parse_query_literal_with_reference_year,
 };
-use tablecraft_sql::select::Expression as E;
+use tablecraft_sql::select::{Expression as E, FieldReference};
 
 impl Binder<'_> {
+    pub(super) fn field_expression(
+        &mut self,
+        field: &FieldReference,
+        scopes: &[&[Slot]],
+        aggregates: bool,
+        depth: usize,
+    ) -> Result<Expr, QueryError> {
+        for (depth, scope) in scopes.iter().enumerate() {
+            let ordinary = resolve(field, scope)?;
+            let member = if let Some(name) = &field.qualifier {
+                super::multivalue::resolve_member(None, name.as_str(), field.name.as_str(), scope)?
+            } else {
+                None
+            };
+            if ordinary.is_some() && member.is_some() {
+                return Err(QueryError::AmbiguousName);
+            }
+            if let Some(index) = ordinary.or(member) {
+                return self.field(depth, index, scope);
+            }
+        }
+        if field.qualifier.is_some() {
+            return Err(QueryError::UnknownName);
+        }
+        let parameter = self.parameter_scope.iter().copied().find(|index| {
+            let parameter = &self.parameters[*index];
+            crate::profile::SOURCE_SCHEMA_POLICY
+                .names
+                .equals(parameter.name.as_str(), field.name.as_str())
+        });
+        Ok(if let Some(index) = parameter {
+            Expr::Parameter(index)
+        } else if aggregates {
+            self.projection_alias(field.name.as_str(), depth + 1)?
+                .ok_or(QueryError::UnknownName)?
+        } else {
+            return Err(QueryError::UnknownName);
+        })
+    }
+
     pub(super) fn expression(
         &mut self,
         expr: &E,
@@ -19,44 +59,7 @@ impl Binder<'_> {
     ) -> Result<Expr, QueryError> {
         self.tick(depth)?;
         Ok(match expr {
-            E::Field(field) => {
-                for (depth, scope) in scopes.iter().enumerate() {
-                    let ordinary = resolve(field, scope)?;
-                    let member = if let Some(name) = &field.qualifier {
-                        super::multivalue::resolve_member(
-                            None,
-                            name.as_str(),
-                            field.name.as_str(),
-                            scope,
-                        )?
-                    } else {
-                        None
-                    };
-                    if ordinary.is_some() && member.is_some() {
-                        return Err(QueryError::AmbiguousName);
-                    }
-                    if let Some(index) = ordinary.or(member) {
-                        return self.field(depth, index, scope);
-                    }
-                }
-                if field.qualifier.is_some() {
-                    return Err(QueryError::UnknownName);
-                }
-                let parameter = self.parameter_scope.iter().copied().find(|index| {
-                    let parameter = &self.parameters[*index];
-                    crate::profile::SOURCE_SCHEMA_POLICY
-                        .names
-                        .equals(parameter.name.as_str(), field.name.as_str())
-                });
-                if let Some(index) = parameter {
-                    Expr::Parameter(index)
-                } else if aggregates {
-                    self.projection_alias(field.name.as_str(), depth + 1)?
-                        .ok_or(QueryError::UnknownName)?
-                } else {
-                    return Err(QueryError::UnknownName);
-                }
-            }
+            E::Field(field) => self.field_expression(field, scopes, aggregates, depth)?,
             E::Member {
                 expression,
                 member,

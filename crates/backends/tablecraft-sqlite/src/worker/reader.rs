@@ -35,7 +35,7 @@ const MAX_PARAMETERS: usize = 256;
 ///         ResourceBudget::new(16 * 1024 * 1024, 16_384, 1_000_000),
 ///         Arc::new(AtomicBool::new(false)),
 ///     );
-///     let result = reader.query(parsed.query().clone(), vec![], options).await?;
+///     let result = reader.query(parsed.into_query(), vec![], options).await?;
 ///     assert!(result.rows().len() <= 5);
 ///     reader.close().await?;
 ///     Ok(())
