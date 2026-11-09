@@ -1,5 +1,16 @@
 # Presentation preview
 
+## Ownership regression — 9 November 2026
+
+Headless-only verification was reinstated after the brief native review. The
+[clone ownership record](../testing/results/clone-ownership-audit-2026-11-09.json)
+includes directly inspected light/dark initial Table Design description frames
+at 1280 × 820 logical points/1×. The actual widgets preserve authored Unicode
+descriptions across Design/Datasheet transitions after locale and edit-buffer
+borrowing changes. Rendering used macOS 14.7.2 ARM64, WGPU and Windows input
+emulation; GPU adapter identity was not captured. These source-free frames open
+no native window and qualify no database write or Windows/Access parity.
+
 ## Saved-field deletion — 9 November 2026
 
 `TABLECRAFT_PREVIEW_FIELD_DROP` accepts `confirmation`, `inspecting`,

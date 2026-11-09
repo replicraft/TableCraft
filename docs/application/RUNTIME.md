@@ -1272,6 +1272,13 @@ execute SQL, open stored linked targets or modify saved queries or the database.
 A successful design is syntax and source metadata, not a promise that every
 expression or source is executable by the current query profile.
 
+`BuildQueryDesign` owns an immutable `Arc<QueryDesignDraft>` shared with the
+submitted UI witness. The worker borrows that payload while building; it does
+not copy the submitted draft at dispatch. The mutable editor stays independent,
+full content/revision checks remain, and UI retention charges complete logical
+payload plus shared-control/out-of-line storage. This changes ownership, not
+native admission or query execution rights.
+
 The initial editor permits eight source instances with optional explicit aliases,
 seven explicit field-equality join edges, 32 grid columns and eight alternative
 criteria rows. Fields selected from metadata become typed source-ID/column

@@ -1,5 +1,22 @@
 # Implementation status
 
+## Complete non-test clone review — 9 November 2026
+
+The [ownership audit](development/CLONE_AUDIT.md) individually reviews all 707
+baseline explicit non-test clone calls, the rustdoc example and 16 additional
+host clone forms. Current source has 596 explicit calls, reconciled per file with
+the retained ledger and marked `NO_CLONE` above complete statements/fields.
+Borrowed UI reply identities, moved parser payloads, conditional `Cow` text edits
+and shared `Arc` Query Design submissions remove redundant copies without
+weakening revision or budget checks. The earlier Jiff conclusion is corrected:
+the CLI now borrows its time zone for civil-time conversion.
+
+The consolidated batch passes 4,586 unit cases with 265 existing ignored, plus
+121 query and 84 CLI integration cases. Strict Clippy/rustdoc and headless
+light/dark preview checks pass; the record preserves failed attempts and focused
+corrections separately. Headless-only verification is reinstated. These changes
+add no native write admission, production dependency or Windows/Access evidence.
+
 ## Normal saved-field deletion and ownership follow-up — 9 November 2026
 
 The existing bounded ACE16 DROP service now has a normal desktop consumer through

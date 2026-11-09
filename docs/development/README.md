@@ -10,6 +10,7 @@ Contributing, dependency policy, tracing and CLI release packaging.
 - [Development baseline](DEVELOPMENT.md)
 - [Rust source review and follow-up](RUST_REVIEW.md)
 - [265-rule Rust skills review](RUST_SKILLS_REVIEW.md)
+- [Complete non-test clone ownership audit](CLONE_AUDIT.md)
 - [Library choices](LIBRARY_POLICY.md)
 - [CLI release preparation](RELEASING.md)
 - [Desktop archive preparation](DESKTOP_PACKAGING.md)

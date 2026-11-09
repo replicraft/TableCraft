@@ -162,12 +162,14 @@ tab titles, defer an inspection target copy until the action occurs, and avoid
 copying the query-grid original before constructing its necessary edit buffer.
 Buffered and progressive CLI query consumers now move parsed parameter values
 directly into bindings instead of cloning a second value vector. Parameter names
-borrow the raw arguments. The cached Jiff time-zone clone remains appropriate:
-the conversion requires an owned zone, whose representation supports shared data.
+borrow the raw arguments. The subsequent [complete clone audit](CLONE_AUDIT.md)
+corrected the initial Jiff conclusion: borrowed `TimeZone::to_datetime` avoids
+the zone clone and temporary `Zoned` entirely when only civil time is needed.
 
-This is scoped ownership work, not repository-wide clearance. The UI inventory
-contains 330 production-source candidates, of which 58 were individually read;
-272 remain open. The runtime/CLI follow-up considered 116 production clone sites
+This earlier pass was scoped ownership work, not repository-wide clearance.
+Its UI inventory contained 330 production-source candidates, of which 58 were
+individually read; 272 remained open at that checkpoint. The complete audit linked
+above supersedes that partial clone coverage. The runtime/CLI follow-up considered 116 production clone sites
 by carrier and ownership groups, without claiming complete independent workflow
 proof for all 116. Lexical counts alone do not establish unnecessary allocation.
 

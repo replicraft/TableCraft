@@ -34,6 +34,14 @@ Run displays Datasheet results for the scratch object. A pending or failed run
 retains previous results with a qualification message; it never treats those
 rows as the new draft's completed result.
 
+Submitted build drafts use immutable `Arc` ownership across the action, pending
+UI witness and runtime command. The editable session remains separate, so later
+changes cannot mutate submitted work. Full content/revision matching is retained;
+shared allocation does not discount logical retained text/vector limits. The
+[ownership audit](../development/CLONE_AUDIT.md) records pointer-sharing and
+retention checks. QBE text-edit candidates borrow with `Cow` until actual input;
+rejection preserves the original text and the existing input budgets.
+
 Results retain an explicit design origin and the validated submitted SQL, separate
 from scratch SQL results and their mutable editor draft. Switching views cannot
 reuse one origin's freshness witness for another. See the
