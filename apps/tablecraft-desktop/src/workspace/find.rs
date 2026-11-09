@@ -39,11 +39,16 @@ impl Desktop {
                 };
                 Command::FindFiltered {
                     handle,
+                    // Runtime conversion consumes its request while shared UI and host retain
+                    // the complete original Find request to validate source, pattern, format
+                    // and position.
                     request: runtime_request(request.clone()),
                     enabled: filter.enabled,
                 }
             }
             None => Command::FindNext {
+                // The unfiltered command also needs its own owned request beyond dispatch while
+                // shared UI/host retain the exact Find witness.
                 request: runtime_request(request.clone()),
             },
         };
@@ -52,6 +57,8 @@ impl Desktop {
             return;
         };
         self.generation = request_id;
+        // Shared Find pending actually stores the complete request; desktop pending separately
+        // stores it for runtime reply/continuation validation.
         self.state.begin_find(request_id, request.clone());
         self.pending = PendingOperation::Find {
             request_id,
@@ -83,7 +90,11 @@ impl Desktop {
         }
 
         let request_id = *request_id;
+        // Host pending is borrowed during validation; a new FindPage continuation and shared
+        // Find result must retain the original accepted request independently.
         let request = pending.clone();
+        // FindPage continuation retains filter id/enabled/source identity while the existing
+        // Find pending remains available through failed page issuance and cancellation.
         let filter = filter.clone();
         let Some(position) = position.map(ui_position) else {
             if filter.is_some() {
@@ -124,6 +135,8 @@ impl Desktop {
                 }
             }
             None => Command::Page {
+                // The Page command consumes the table name while the request target continues
+                // into the next exact FindPage pending witness.
                 table: request.target.table.clone(),
                 offset: position.parent_ordinal,
             },
@@ -156,7 +169,11 @@ impl Desktop {
             return;
         }
         let request_id = *request_id;
+        // Shared filtered result retains found_request; host FindPage witness survives for
+        // exact late-response/failure handling.
         let request = request.clone();
+        // Shared filtered result retains the selected found position while host pending retains
+        // the native matched position witness.
         let position = position.clone();
         let valid = result.target.filter_id == filter.target.filter_id
             && result.target.document_revision == filter.target.document_revision

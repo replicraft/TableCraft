@@ -136,6 +136,8 @@ impl Desktop {
             return;
         }
         let path = capability.source_path().to_path_buf();
+        // ReviewedInsert is consumed by the save worker; ActiveSave retains its target table
+        // independently for accepted-outcome reopening.
         let table = capability.target().table.clone();
         let retry = InsertRetryContext {
             witness: capability.retry_witness(),
@@ -172,6 +174,8 @@ impl Desktop {
 fn runtime_target(target: &InsertTarget) -> RuntimeTarget {
     RuntimeTarget {
         document_revision: target.document_revision,
+        // Runtime BeginInsert and shared pending insertion dialog each own target table
+        // identity through asynchronous schema acquisition.
         table: target.table.clone(),
     }
 }
@@ -187,6 +191,8 @@ fn runtime_input(input: &InsertInput) -> RuntimeInput {
     match input {
         InsertInput::Omitted => RuntimeInput::Omitted,
         InsertInput::Value(value) => RuntimeInput::Value(RuntimeEditInput {
+            // Runtime parses the supplied insertion value while shared insertion review retains
+            // original input alongside Omitted/NULL/Value distinctions.
             text: value.text.clone(),
             is_null: value.is_null,
         }),

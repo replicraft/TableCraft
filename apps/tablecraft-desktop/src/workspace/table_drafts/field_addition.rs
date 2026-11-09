@@ -14,6 +14,8 @@ impl Desktop {
             return Some(action);
         }
         let (tab, _, _) = self.state.field_addition_name()?;
+        // field_addition_name borrows shared UI state; a close request mutates that owner and
+        // must carry a stable independently owned exact tab identity.
         let tab = tab.clone();
         if self.state.request_field_addition_close(&tab) {
             self.deferred_draft_action = Some(action);
@@ -59,6 +61,8 @@ impl Desktop {
             return;
         }
         if let Some((tab, _, _)) = self.state.field_addition_name() {
+            // Restoring close after refusal mutates shared UI while the borrowed field-addition
+            // tab would otherwise alias it; the close owner must retain the identity.
             let tab = tab.clone();
             self.state.request_field_addition_close(&tab);
         }

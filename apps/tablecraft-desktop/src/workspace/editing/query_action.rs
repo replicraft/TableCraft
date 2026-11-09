@@ -116,14 +116,20 @@ impl Desktop {
         let inputs = runtime_inputs(&parameters);
         let command = match kind {
             QueryActionKind::Update => Command::ReviewQueryUpdate {
+                // UPDATE review command and retained query_action_pending each own a reference
+                // to the same immutable inspected SQL/binding; no AST deep copy.
                 target: Arc::clone(&target),
                 parameters: inputs,
             },
             QueryActionKind::Delete => Command::ReviewQueryDelete {
+                // DELETE review command and retained query_action_pending each own a reference
+                // to the same immutable inspected SQL/binding; no AST deep copy.
                 target: Arc::clone(&target),
                 parameters: inputs,
             },
             QueryActionKind::Insert => Command::ReviewQueryInsert {
+                // INSERT review command and retained query_action_pending each own a reference
+                // to the same immutable inspected SQL/binding; no AST deep copy.
                 target: Arc::clone(&target),
                 parameters: inputs,
             },

@@ -212,6 +212,8 @@ impl CreationWorker {
             .lock()
             .expect("creation mailbox poisoned")
             .report
+            // Poll returns a stable report owner after the mailbox guard drops while the
+            // mailbox retains the same terminal report until acknowledgement.
             .clone()
     }
 

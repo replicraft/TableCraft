@@ -133,6 +133,8 @@ impl Document {
         matcher.require_type(kind)?;
 
         let image = NativeImage::capture_shared(
+            // NativeImage owns the checked source while Document keeps using it; this shares
+            // immutable bytes instead of copying the database image.
             self.edits.image_source.clone(),
             SCOPE,
             &mut native,

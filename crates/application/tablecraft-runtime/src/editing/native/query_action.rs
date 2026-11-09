@@ -92,6 +92,8 @@ pub(in crate::editing) fn review(
     let image = {
         let mut native = native_pool.borrow_mut();
         NativeImage::capture_shared(
+            // NativeImage owns the checked source while Document keeps using it; this shares
+            // immutable bytes instead of copying the database image.
             document.edits.image_source.clone(),
             SCOPE,
             &mut native,
@@ -194,6 +196,8 @@ pub(in crate::editing) fn review(
 
     Ok(ReviewedAction {
         target: QueryActionTarget {
+            // The capability or reopen witness outlives this borrowed Document call and owns
+            // its source path; the live Document keeps its own path.
             path: document.edits.path.clone(),
             document_revision: document.revision,
             table,

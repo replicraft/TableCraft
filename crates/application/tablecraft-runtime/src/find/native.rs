@@ -74,6 +74,8 @@ fn copy_position(
     Ok(FindPosition {
         parent_ordinal: position.parent_ordinal,
         column: output.text(&position.column)?,
+        // TextSpan is a small non-Copy descriptor copied into an owned FindPosition while the
+        // borrowed source position remains valid; its text is separately charged.
         span: position.span.clone(),
     })
 }

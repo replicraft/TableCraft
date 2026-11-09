@@ -68,6 +68,8 @@ impl Desktop {
         let Some(request_id) = request_read(
             Command::InspectQuery {
                 document_revision,
+                // Worker inspection owns SQL while UI pending acquisition retains the exact
+                // captured draft to reject stale SQL/revision responses.
                 sql: sql.clone(),
             },
             &self.worker,
@@ -189,6 +191,8 @@ impl Desktop {
             return;
         }
 
+        // The inspected target is shared between the immutable runtime binding and dispatched
+        // run/action command; sharing avoids copying its parsed binding.
         let target = Arc::clone(&inspected.target);
         if matches!(
             target.operation(),
@@ -242,8 +246,14 @@ pub(in crate::workspace) fn runtime_inputs(parameters: &[ParameterInput]) -> Vec
     parameters
         .iter()
         .map(|input| RuntimeInput {
+            // Runtime parameter name DTO and shared retained prompt/run snapshot have separate
+            // asynchronous owners; input names participate in exact parameter identity.
             name: input.name.clone(),
+            // Runtime parameter kind DTO and shared retained prompt/run snapshot both retain
+            // explicit type choices for parsing and stale-reply validation.
             kind: input.kind.clone(),
+            // Runtime consumes parameter input text while UI retains original submitted values
+            // and previous-result provenance across cancellation/failure.
             text: input.text.clone(),
             is_null: input.is_null,
         })

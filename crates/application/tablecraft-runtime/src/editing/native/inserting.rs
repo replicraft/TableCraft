@@ -53,6 +53,8 @@ impl Document {
         let features =
             inspect_table_features(&mut self.source, SCOPE, &target.table, &mut work, cancelled)?;
         let image = NativeImage::capture_shared(
+            // NativeImage owns the checked source while Document keeps using it; this shares
+            // immutable bytes instead of copying the database image.
             self.edits.image_source.clone(),
             SCOPE,
             &mut work,
@@ -106,6 +108,8 @@ impl Document {
         let features =
             inspect_table_features(&mut self.source, SCOPE, &target.table, &mut work, cancelled)?;
         let image = NativeImage::capture_shared(
+            // NativeImage owns the checked source while Document keeps using it; this shares
+            // immutable bytes instead of copying the database image.
             self.edits.image_source.clone(),
             SCOPE,
             &mut work,
@@ -130,13 +134,21 @@ impl Document {
         output.allocation(self.edits.path.as_os_str().len(), 1)?;
         output.allocation(1, size_of::<InsertRetryWitness>())?;
         let retry = Arc::new(InsertRetryWitness {
+            // The capability or reopen witness outlives this borrowed Document call and owns
+            // its source path; the live Document keeps its own path.
             path: self.edits.path.clone(),
+            // The reader and retained native witness need independent lifetimes; Bytes shares
+            // the immutable original image rather than copying it.
             original: self.edits.original.clone(),
             target: copy_target(&target, &mut output)?,
         });
         let capability = ReviewedInsert {
             state: Box::new(State {
+                // The capability or reopen witness outlives this borrowed Document call and
+                // owns its source path; the live Document keeps its own path.
                 path: self.edits.path.clone(),
+                // The reader and retained native witness need independent lifetimes; Bytes
+                // shares the immutable original image rather than copying it.
                 original: self.edits.original.clone(),
                 target,
                 retry,

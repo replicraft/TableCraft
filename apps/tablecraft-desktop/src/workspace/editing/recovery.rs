@@ -61,6 +61,9 @@ impl Desktop {
             .show_recovery_prompt(generation, path.to_string_lossy().into_owned());
         self.recovery = Some(RecoveryHost {
             attempt: generation,
+            // Failed Open pending and recovery prompt owner independently retain the exact
+            // attempted path; recovery may outlive editable path text or the original read
+            // outcome.
             path: path.clone(),
             operation: None,
         });
@@ -79,6 +82,8 @@ impl Desktop {
         if self.editing.has_save() || !self.state.can_begin_recovery(attempt_id) {
             return;
         }
+        // Recovery worker owns the target path while the host retains the exact recovery
+        // attempt path for retry/acknowledgement and guarded reopening.
         match self
             .editing
             .worker

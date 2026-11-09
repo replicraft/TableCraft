@@ -37,6 +37,8 @@ impl Desktop {
             self.read_request_rejected();
             return;
         };
+        // Shared field-filter dialog stores source/column/revision while desktop pending
+        // separately validates the asynchronous metadata response.
         if !self.state.begin_field_filter(target.clone(), request_id) {
             self.worker.cancel();
             return;
@@ -67,6 +69,8 @@ impl Desktop {
             Command::ApplyFieldFilter {
                 target: native_target(&target),
                 operator: native_operator(operator),
+                // The runtime command owns parsing inputs and the shared field-filter pending
+                // state retains the exact inputs/operator for eventual response validation.
                 inputs: inputs.clone(),
                 base,
             },
@@ -122,6 +126,8 @@ impl Desktop {
             return;
         }
         let description = FieldFilterDescription {
+            // Published FieldFilterDescription retains its own exact target inside shared
+            // dialog while host pending remains a separate response witness.
             target: target.clone(),
             input_hint: view_models::input_hint(description.input_hint),
             nullable: description.nullable,
@@ -146,7 +152,11 @@ impl Desktop {
 fn native_target(target: &FieldFilterTarget) -> runtime::FieldFilterTarget {
     runtime::FieldFilterTarget {
         document_revision: target.document_revision,
+        // Runtime field-filter command owns table identity while the shared field-filter dialog
+        // and host retain source metadata/reply identity.
         table: target.table.clone(),
+        // Runtime field-filter command owns native column identity while shared dialog/host
+        // retain the selected field independently.
         column: target.column.clone(),
         filter_id: target.filter_id,
         enabled: target.enabled,

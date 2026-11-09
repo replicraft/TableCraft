@@ -12,6 +12,8 @@ impl Desktop {
 
         let Some(request_id) = request_read(
             Command::Page {
+                // The runtime Page command and shared/host RecordTarget independently retain
+                // table identity across navigation completion.
                 table: target.table.clone(),
                 offset: target.parent_ordinal,
             },
@@ -23,6 +25,8 @@ impl Desktop {
         };
         self.generation = request_id;
         self.pending = PendingOperation::Record {
+            // Shared record-navigation pending and desktop pending each own the exact target
+            // for source/offset validation and request cancellation.
             target: target.clone(),
             request_id,
         };

@@ -36,6 +36,9 @@ impl Desktop {
         };
         let Some(request_id) = request_read(
             Command::OpenInsertOriginal {
+                // The retry context survives guarded original reopen failure; background
+                // OpenInsertOriginal owns an independent reference without consuming retry
+                // authority.
                 witness: Arc::clone(&retry.context.witness),
             },
             &self.worker,

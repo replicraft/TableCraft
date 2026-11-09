@@ -124,6 +124,8 @@ impl Desktop {
         {
             return;
         }
+        // Options host retains exact complete-image witness while the guarded options-reopen
+        // read command owns a shared reference for retryable publication.
         let Some(witness) = host.witness.as_ref().map(Arc::clone) else {
             return;
         };

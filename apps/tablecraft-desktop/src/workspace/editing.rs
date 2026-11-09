@@ -159,7 +159,11 @@ impl Desktop {
             Command::BeginEdit {
                 target: RuntimeTarget {
                     document_revision: target.document_revision,
+                    // Worker BeginEdit and shared cell edit dialog independently retain exact
+                    // source table across asynchronous draft acquisition.
                     table: target.table.clone(),
+                    // Worker BeginEdit and shared cell edit dialog independently retain the
+                    // native field identity across asynchronous draft acquisition.
                     column: target.column.clone(),
                     parent_ordinal: target.parent_ordinal,
                 },
@@ -192,6 +196,9 @@ impl Desktop {
             Command::ReviewEdit {
                 draft_id,
                 input: RuntimeInput {
+                    // Worker review parses owned submitted text while shared UI retains the
+                    // exact original input for stale-edit and modal validation after
+                    // asynchronous completion.
                     text: input.text.clone(),
                     is_null: input.is_null,
                 },
@@ -269,6 +276,8 @@ impl Desktop {
             return;
         }
         let path = reviewed.source_path().to_path_buf();
+        // Consumed ReviewedEdit moves into SaveWorker; ActiveSave separately retains target
+        // table for guarded reopening and terminal reporting.
         let table = reviewed.target().table.clone();
         let offset = self.state.data.as_ref().map_or(0, |data| data.offset);
         match self.editing.worker.start(reviewed, journal_path(&path)) {

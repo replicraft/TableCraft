@@ -35,7 +35,11 @@ impl Desktop {
         let Some(request_id) = request_read(
             Command::ReviewFieldDrop {
                 document_revision: request.target.tab.target.document_revision,
+                // Runtime field-drop command and FieldSaveHost request independently retain
+                // original source table identity through review/save/reopen.
                 table: name.clone(),
+                // Runtime field-drop command owns selected native column name while shared/host
+                // exact request survives for consuming review and witness checks.
                 column: request.target.column.clone(),
                 native_number: request.target.native_number,
             },

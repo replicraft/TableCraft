@@ -116,6 +116,9 @@ impl Document {
         };
         check(cancelled)?;
         Ok(Response::FilteredData(FilteredData {
+            // A publication or no-change sorted result returns an independently owned immutable
+            // filter capability while the original handle remains valid; its map/criteria are
+            // shared, not copied.
             handle: handle.clone(),
             target,
             enabled,

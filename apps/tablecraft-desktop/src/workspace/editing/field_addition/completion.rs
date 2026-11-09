@@ -250,6 +250,8 @@ impl Desktop {
         {
             return;
         }
+        // ADD host retains complete-image witness through failed AFTER reads while the explicit
+        // guarded read command owns a shared reference.
         let Some(witness) = host.witness.as_ref().map(Arc::clone) else {
             return;
         };

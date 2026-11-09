@@ -241,7 +241,13 @@ enum FileDialogPurpose {
 
 impl Desktop {
     pub(super) fn new(ctx: egui::Context, path: Option<PathBuf>) -> Self {
+        // Editing's long-lived SaveWorker repaint closure owns its event-loop handle
+        // independently of Creating and the read worker. Context shares egui state rather than
+        // copying the UI.
         let editing = Editing::new(ctx.clone());
+        // Creating's long-lived creation-worker callback owns its event-loop handle
+        // independently of Editing and the read worker. Context shares egui state rather than
+        // copying the UI.
         let creating = Creating::new(ctx.clone());
         let worker = Worker::new(move || ctx.request_repaint());
         let mut app = Self {
@@ -332,6 +338,8 @@ impl Desktop {
         };
         let created_open = matches!(&command, Command::OpenCreated { .. });
         let opening_path = match &command {
+            // Command is consumed by the read worker; host Open pending state retains the exact
+            // attempted filesystem path for failure/recovery identity.
             Command::Open { path, .. } => Some(path.clone()),
             _ => None,
         };
@@ -343,6 +351,8 @@ impl Desktop {
         self.generation = generation;
         self.state.clear_query_run();
         self.pending = if let Some(target) = contents {
+            // The collection dialog and host pending record each retain exact request target
+            // identity for late-response and close/cancellation checks.
             self.state.begin_contents(target.clone(), self.generation);
             PendingOperation::Contents {
                 target,
@@ -594,6 +604,9 @@ impl Desktop {
                     tables,
                     queries,
                 }) => {
+                    // Database table names move into the published catalog; the first selected
+                    // table also needs an owned name for the separate explicit initial Open
+                    // operation.
                     let first_table = tables
                         .iter()
                         .find(|table| !table.system && table.local)
@@ -760,7 +773,13 @@ impl Desktop {
                             if filter.is_none() {
                                 self.state.set_find_result(
                                     *request_id,
+                                    // The shared Find publisher retains found_request and the
+                                    // host retains its pending witness; this is an actual
+                                    // separate retained request, not only a comparison.
                                     request.clone(),
+                                    // The shared Find state retains the chosen match while the
+                                    // host keeps its FindPage witness; the owned column/span
+                                    // identity belongs to both states.
                                     Some(position.clone()),
                                     Some(data),
                                 );
@@ -799,6 +818,9 @@ impl Desktop {
                         };
                         let data = Data {
                             row_ordinals: None,
+                            // Collection Data.table display label and the ContentsTarget field
+                            // identity are distinct owned DTO members; target must survive
+                            // through guarded publication.
                             table: target.column.clone(),
                             source_revision: None,
                             offset: 0,

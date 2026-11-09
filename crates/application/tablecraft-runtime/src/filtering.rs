@@ -165,6 +165,8 @@ impl FilterHandle {
     }
 
     pub fn definition(&self) -> FilterDefinition {
+        // The public definition snapshot is owned independently of the retained filter handle
+        // so hosts can preserve inert restore preferences after native source invalidation.
         self.state.definition.clone()
     }
 

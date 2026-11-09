@@ -42,6 +42,8 @@ impl Desktop {
         };
         self.generation = request_id;
         self.pending = PendingOperation::SavedInspection {
+            // Inspection pending state lives independently in desktop and shared UI; the shared
+            // inspection owner stores the actual target for saved SQL and run routing.
             target: target.clone(),
             request_id,
         };
@@ -66,8 +68,14 @@ impl Desktop {
         let inputs = parameters
             .iter()
             .map(|input| RuntimeInput {
+                // Runtime parameter DTO and retained shared saved-query prompt input each own
+                // their name through asynchronous execution.
                 name: input.name.clone(),
+                // Runtime parameter parsing and retained shared saved-query prompt input each
+                // own the explicit kind string through run completion.
                 kind: input.kind.clone(),
+                // Runtime consumes submitted parameter text while shared saved-query state
+                // retains original values for request/provenance checks and cancellation.
                 text: input.text.clone(),
                 is_null: input.is_null,
             })
@@ -128,6 +136,8 @@ fn runtime_target(target: &SavedQueryTarget) -> RuntimeTarget {
     RuntimeTarget {
         document_revision: target.document_revision,
         object_id: target.object_id,
+        // The runtime command target and shared saved-query state require independent names;
+        // runtime_target converts a borrowed retained UI target.
         name: target.name.clone(),
     }
 }

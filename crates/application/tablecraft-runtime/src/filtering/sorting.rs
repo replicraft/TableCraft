@@ -200,6 +200,9 @@ impl Document {
     ) -> Result<FilterHandle, Error> {
         self.check_filter(handle)?;
         let Some(sort) = &handle.state.definition.state.sort else {
+            // A publication or no-change sorted result returns an independently owned immutable
+            // filter capability while the original handle remains valid; its map/criteria are
+            // shared, not copied.
             return Ok(handle.clone());
         };
         if handle
@@ -208,6 +211,9 @@ impl Document {
             .as_ref()
             .is_some_and(|order| order.enabled == enabled)
         {
+            // A publication or no-change sorted result returns an independently owned immutable
+            // filter capability while the original handle remains valid; its map/criteria are
+            // shared, not copied.
             return Ok(handle.clone());
         }
 
