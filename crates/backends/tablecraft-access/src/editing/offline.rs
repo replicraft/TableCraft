@@ -27,6 +27,7 @@ mod reviewed_delete;
 mod reviewed_insert;
 mod reviewed_update;
 mod table;
+mod table_drop;
 mod update;
 
 #[cfg(all(test, any(target_os = "macos", target_os = "linux", windows)))]
@@ -52,6 +53,7 @@ pub use insert::{OfflineTableInserter, StagedInsert};
 pub use query_expression::StagedQueryExpression;
 pub use rename::StagedTableRename;
 pub use table::OfflineTableEditor;
+pub use table_drop::StagedTableDrop;
 pub use update::StagedUpdate;
 
 use std::path::Path;
@@ -104,6 +106,8 @@ pub enum SchemaChange {
     ColumnDropped,
     /// An existing table changed its catalog name without changing row identity.
     TableRenamed,
+    /// One qualified empty table was removed from the catalog; its storage remains retained.
+    TableDropped,
     /// A new empty table was appended while retaining existing database objects.
     TableAdded {
         /// Number of explicitly declared fields in the added table.

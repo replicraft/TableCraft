@@ -20,12 +20,13 @@ use tablecraft_ace::{
 use tablecraft_ace::{
     NativeClockInsertIntent, NativeCompleteInsertIntent, NativeDeleteIntent, NativeEofInsertIntent,
     NativeInsertIntent, NativeOmittedInsertIntent, NativeQueryExpressionEditsIntent,
-    NativeQueryExpressionIntent, NativeTableRenameIntent, NativeUpdateIntent, NativeUpdateProfile,
-    qualify_native_allocation_recovery, qualify_native_clock_insert_recovery,
-    qualify_native_complete_insert_recovery, qualify_native_delete_recovery,
-    qualify_native_eof_insert_recovery, qualify_native_insert_recovery,
-    qualify_native_omitted_insert_recovery, qualify_native_query_expression_edits_recovery,
-    qualify_native_query_expression_recovery, qualify_native_table_rename_recovery,
+    NativeQueryExpressionIntent, NativeTableDropIntent, NativeTableRenameIntent,
+    NativeUpdateIntent, NativeUpdateProfile, qualify_native_allocation_recovery,
+    qualify_native_clock_insert_recovery, qualify_native_complete_insert_recovery,
+    qualify_native_delete_recovery, qualify_native_eof_insert_recovery,
+    qualify_native_insert_recovery, qualify_native_omitted_insert_recovery,
+    qualify_native_query_expression_edits_recovery, qualify_native_query_expression_recovery,
+    qualify_native_table_drop_recovery, qualify_native_table_rename_recovery,
     qualify_native_update_recovery,
 };
 use tablecraft_core::limits::ResourceBudget;
@@ -209,6 +210,18 @@ impl OfflineWriteSession {
                         checked, intent, slot.scope, budget, cancelled,
                     )
                     .map_err(Cause::FieldRenameIntent)?;
+                    qualified
+                        .recover(&mut target, budget, cancelled)
+                        .map_err(Cause::Recovery)
+                }
+                MutationIntent::TableDrop(intent) => {
+                    let (mut target, mut journal) = pair.storage().map_err(Cause::Pair)?;
+                    let checked =
+                        inspect_v1(&mut journal, budget, cancelled).map_err(Cause::Recovery)?;
+                    let qualified = qualify_native_table_drop_recovery(
+                        checked, intent, slot.scope, budget, cancelled,
+                    )
+                    .map_err(Cause::TableDropIntent)?;
                     qualified
                         .recover(&mut target, budget, cancelled)
                         .map_err(Cause::Recovery)
@@ -540,6 +553,17 @@ impl OfflineWriteSession {
                         .confirm_completed(&mut target, budget, cancelled)
                         .map_err(Cause::Recovery)
                 }
+                MutationIntent::TableDrop(intent) => {
+                    let checked =
+                        inspect_v1(&mut journal, budget, cancelled).map_err(Cause::Recovery)?;
+                    let qualified = qualify_native_table_drop_recovery(
+                        checked, intent, slot.scope, budget, cancelled,
+                    )
+                    .map_err(Cause::TableDropIntent)?;
+                    qualified
+                        .confirm_completed(&mut target, budget, cancelled)
+                        .map_err(Cause::Recovery)
+                }
                 MutationIntent::TableRename(intent) => {
                     let checked =
                         inspect_v1(&mut journal, budget, cancelled).map_err(Cause::Recovery)?;
@@ -719,6 +743,7 @@ impl OfflineWriteSession {
         let limit = NativeQueryExpressionIntent::MAX_ENCODED_BYTES
             .max(NativeQueryExpressionEditsIntent::MAX_ENCODED_BYTES)
             .max(NativeTableRenameIntent::MAX_ENCODED_BYTES)
+            .max(NativeTableDropIntent::MAX_ENCODED_BYTES)
             .max(NativeUpdateIntent::MAX_ENCODED_BYTES)
             .max(NativeDeleteIntent::MAX_ENCODED_BYTES)
             .max(NativeInsertIntent::MAX_ENCODED_BYTES)

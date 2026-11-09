@@ -18,8 +18,9 @@ use tablecraft_ace::{
 use tablecraft_ace::{
     NativeClockInsertIntent, NativeCompleteInsertIntent, NativeDeleteIntent, NativeEofInsertIntent,
     NativeInsertIntent, NativeOmittedInsertIntent, NativeQueryExpressionEditsIntent,
-    NativeQueryExpressionIntent, NativeTableRenameIntent, NativeUpdateIntent, PreparedNativeUpdate,
-    RecoverableNativeDeletePlan, RecoverableNativeEditPlan, RecoverableNativeTableRenamePlan,
+    NativeQueryExpressionIntent, NativeTableDropIntent, NativeTableRenameIntent,
+    NativeUpdateIntent, PreparedNativeUpdate, RecoverableNativeDeletePlan,
+    RecoverableNativeEditPlan, RecoverableNativeTableRenamePlan, RecoverableTableDropPlan,
 };
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_io::journal::{DurableStorage, ResizableDurableStorage};
@@ -28,6 +29,7 @@ use tablecraft_io::journal::{DurableStorage, ResizableDurableStorage};
 const FIELD_RENAME_FAMILY: &[u8; 4] = b"TCFR";
 #[cfg(feature = "ace16-create")]
 const FIELD_DROP_FAMILY: &[u8; 4] = b"TCFD";
+const TABLE_DROP_FAMILY: &[u8; 4] = b"TCTD";
 
 pub(super) enum MutationPlan {
     #[cfg(feature = "ace16-create")]
@@ -42,6 +44,7 @@ pub(super) enum MutationPlan {
     #[cfg(feature = "ace16-create")]
     FieldDrop(RecoverableFieldDropPlan),
     TableRename(RecoverableNativeTableRenamePlan),
+    TableDrop(RecoverableTableDropPlan),
     Update(RecoverableNativeEditPlan),
     Delete(RecoverableNativeDeletePlan),
     Insert(NativeJournalInsertPlan),
@@ -78,6 +81,10 @@ impl MutationPlan {
                 .intent()
                 .encode(budget, cancelled)
                 .map_err(Cause::FieldRenameIntent),
+            Self::TableDrop(plan) => plan
+                .intent()
+                .encode(budget, cancelled)
+                .map_err(Cause::TableDropIntent),
             Self::TableRename(plan) => plan
                 .intent()
                 .encode(budget, cancelled)
@@ -142,6 +149,12 @@ impl MutationPlan {
                     .map_err(Cause::Prepare)?;
                 return prepared.commit(budget, cancelled).map_err(Cause::Commit);
             }
+            Self::TableDrop(plan) => {
+                let prepared = plan
+                    .prepare(target, journal, budget, cancelled)
+                    .map_err(Cause::Prepare)?;
+                return prepared.commit(budget, cancelled).map_err(Cause::Commit);
+            }
             Self::TableRename(plan) => {
                 let prepared = plan
                     .prepare(target, journal, budget, cancelled)
@@ -199,6 +212,7 @@ pub(super) enum MutationIntent {
     #[cfg(feature = "ace16-create")]
     FieldDrop(NativeFieldDropIntent),
     TableRename(NativeTableRenameIntent),
+    TableDrop(NativeTableDropIntent),
     Update(NativeUpdateIntent),
     Delete(NativeDeleteIntent),
     Insert(NativeInsertIntent),
@@ -236,6 +250,7 @@ impl MutationIntent {
             Self::FieldRename(intent) => {
                 (intent.column() != intent.new_name()).then_some(SchemaChange::ColumnRenamed)
             }
+            Self::TableDrop(_) => Some(SchemaChange::TableDropped),
             Self::TableRename(intent) => {
                 (intent.table() != intent.new_name()).then_some(SchemaChange::TableRenamed)
             }
@@ -337,6 +352,11 @@ impl MutationIntent {
             return NativeFieldRenameIntent::decode(raw, budget, cancelled)
                 .map(Self::FieldRename)
                 .map_err(Cause::FieldRenameIntent);
+        }
+        if raw.starts_with(TABLE_DROP_FAMILY) {
+            return NativeTableDropIntent::decode(raw, budget, cancelled)
+                .map(Self::TableDrop)
+                .map_err(Cause::TableDropIntent);
         }
         if raw.starts_with(b"TCRN") {
             return NativeTableRenameIntent::decode(raw, budget, cancelled)

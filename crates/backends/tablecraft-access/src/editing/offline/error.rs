@@ -12,7 +12,7 @@ use tablecraft_ace::{
 use tablecraft_ace::{
     InspectError, NativeIntentError, NativeRecoveryQualificationError,
     QueryExpressionEditsIntentError, QueryExpressionIntentError, QueryExpressionRecoveryError,
-    TableRenameIntentError,
+    TableDropIntentError, TableRenameIntentError,
 };
 use tablecraft_io::{
     IoError,
@@ -62,6 +62,9 @@ pub enum Phase {
 /// Sanitized typed cause. Resources remain in Failure rather than being discarded.
 #[derive(Debug, Error)]
 pub enum Cause {
+    /// Original table DROP request or complete native reconstruction refused.
+    #[error(transparent)]
+    TableDropIntent(TableDropIntentError),
     /// Explicit option intent, source admission or complete reconstruction failed.
     #[cfg(feature = "ace16-create")]
     #[error(transparent)]
