@@ -290,7 +290,7 @@ fn cancelled_real_build_receipt_cannot_run_after_the_sql_object_is_closed_and_re
         .as_ptr();
     harness.state_mut().build_query_design(
         request.clone(),
-        draft.clone(),
+        draft.clone().into(),
         QueryDesignCompletion::Run,
     );
     let request_id = harness.state().generation;
@@ -341,7 +341,7 @@ fn cancelled_real_build_receipt_cannot_run_after_the_sql_object_is_closed_and_re
         .publish_query_design_built(request_id, target, built, metadata);
     harness
         .state_mut()
-        .build_query_design(request, draft, QueryDesignCompletion::Run);
+        .build_query_design(request, draft.into(), QueryDesignCompletion::Run);
     harness.run_steps(2);
     assert_eq!(harness.state().generation, generation);
     assert_eq!(harness.state().state.sql, "SELECT 77 AS [NewScratch]");

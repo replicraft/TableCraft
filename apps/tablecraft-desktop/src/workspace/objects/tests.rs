@@ -185,7 +185,16 @@ fn table_tabs_keep_independent_pages_selections_and_native_view_definitions() {
             .any(|tab| tab.target == numbers)
     );
     assert_eq!(harness.state().state.data.as_ref().unwrap().offset, 1);
-    assert!(harness.state().filter_handle(&mixed_filter).is_some());
+    assert!(
+        harness
+            .state()
+            .filter_handle(
+                mixed_filter.document_revision,
+                &mixed_filter.table,
+                mixed_filter.filter_id,
+            )
+            .is_some()
+    );
     harness.state_mut().filter_page(mixed_filter, 0, false);
     finish_reads(&mut harness);
     assert_eq!(
