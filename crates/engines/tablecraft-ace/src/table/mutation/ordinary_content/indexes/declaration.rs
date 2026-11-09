@@ -177,7 +177,25 @@ pub(in crate::table::mutation::ordinary_content) fn validate_actions<'index>(
         image,
         schema,
         indexes,
-        KeyFamily::ActionIntegral,
+        KeyFamily::SparseIntegral,
+        budget,
+        cancelled,
+    )
+}
+
+/// INSERT owns its declaration proof while sharing actual native-number key lookup.
+pub(in crate::table::mutation::ordinary_content) fn validate_generated<'index>(
+    image: &NativeImage,
+    schema: &TableSchema,
+    indexes: impl Iterator<Item = &'index NativeIndex> + Clone,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<usize, EditError> {
+    validate_for(
+        image,
+        schema,
+        indexes,
+        KeyFamily::SparseIntegral,
         budget,
         cancelled,
     )
@@ -291,7 +309,7 @@ enum KeyFamily {
     GlobalInt32,
     SelectedIntegral,
     SelectedScalar,
-    ActionIntegral,
+    SparseIntegral,
 }
 
 fn qualify_for(
@@ -314,7 +332,7 @@ fn qualify_for(
         return Err(refused());
     };
     let constraints = index.constraints().ok_or_else(refused)?;
-    let field = if matches!(family, KeyFamily::ActionIntegral) {
+    let field = if matches!(family, KeyFamily::SparseIntegral) {
         let mut selected = None;
         for field in schema.columns() {
             check(budget, cancelled)?;
@@ -336,12 +354,12 @@ fn qualify_for(
     }
     let binary = matches!(
         family,
-        KeyFamily::ActionIntegral | KeyFamily::SelectedScalar
+        KeyFamily::SparseIntegral | KeyFamily::SelectedScalar
     ) && field.native_type() == SHORT_BINARY
         && field.scalar_type() == Some(ScalarType::Binary);
     let text = matches!(
         family,
-        KeyFamily::ActionIntegral | KeyFamily::SelectedScalar
+        KeyFamily::SparseIntegral | KeyFamily::SelectedScalar
     ) && field.native_type() == SHORT_TEXT
         && field.scalar_type() == Some(ScalarType::Text);
     let guid = matches!(family, KeyFamily::SelectedScalar)

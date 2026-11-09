@@ -39,6 +39,8 @@ pub(super) enum Role {
     SelectedUser,
     // Action-only native ordinals and stored IDs; old UPDATE stays canonical.
     SelectedActions,
+    // INSERT-only fixed LONG generation with ordered sparse native identities.
+    SelectedGenerated,
 }
 
 pub(super) struct Table<'image> {
@@ -135,6 +137,23 @@ pub(in crate::table::mutation) fn validate_actions(
     )
 }
 
+/// Exact sparse fixed-LONG declaration; program absence is still proved separately.
+pub(in crate::table::mutation) fn validate_generated(
+    image: &NativeImage,
+    schema: &TableSchema,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), EditError> {
+    validate_selected(
+        image,
+        schema,
+        Role::SelectedGenerated,
+        false,
+        budget,
+        cancelled,
+    )
+}
+
 /// Dense canonical field identities with complete readonly scalar index closure.
 pub(in crate::table::mutation) fn validate_retained_updates(
     image: &NativeImage,
@@ -170,6 +189,14 @@ fn validate_selected(
     }
     let position = if matches!(role, Role::SelectedActions) {
         indexes::declaration::validate_actions(
+            image,
+            inspection.schema(),
+            inspection.indexes().iter(),
+            budget,
+            cancelled,
+        )?
+    } else if role == Role::SelectedGenerated {
+        indexes::declaration::validate_generated(
             image,
             inspection.schema(),
             inspection.indexes().iter(),

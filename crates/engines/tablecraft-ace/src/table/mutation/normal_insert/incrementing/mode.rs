@@ -142,8 +142,9 @@ pub(super) fn capture(
 ) -> Result<autonumber_counter::Source, EditError> {
     let schema = source.table.schema();
 
+    let sparse = schema.layout.max_columns != schema.columns().len();
     if schema.columns().is_empty()
-        || schema.layout.max_columns != schema.columns().len()
+        || sparse && schema.layout.variable_slots != 0
         || schema.layout.physical_indexes == 0
         || schema.layout.logical_indexes != source.indexes.indexes().len()
     {
@@ -154,7 +155,11 @@ pub(super) fn capture(
 
     for (position, field) in schema.columns().iter().enumerate() {
         check(budget, cancelled)?;
-        if field.number() != position
+        if sparse && (!field.fixed() || field.native_type() != INT32)
+            || (!sparse && field.number() != position)
+            || (sparse
+                && (field.number() >= schema.layout.max_columns
+                    || position != 0 && schema.columns()[position - 1].number() >= field.number()))
             || !matches!(
                 field.native_type(),
                 BOOLEAN
@@ -183,7 +188,11 @@ pub(super) fn capture(
 
     let column = generated.ok_or(EditError::Unsupported(WriteBlocker::Column))?;
     let counter = autonumber_counter::capture(image, schema, column, budget, cancelled)?;
-    record_insertion::layout::incrementing_variables(schema, column, budget, cancelled)?;
+    if sparse {
+        record_insertion::layout::sparse_incrementing_variables(schema, column, budget, cancelled)?;
+    } else {
+        record_insertion::layout::incrementing_variables(schema, column, budget, cancelled)?;
+    }
 
     if schema.layout.physical_indexes == 1 {
         // All logical aliases must name the same actual physical owner. One is

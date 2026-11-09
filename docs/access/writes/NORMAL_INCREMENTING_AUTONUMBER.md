@@ -9,8 +9,13 @@ can use Boolean, Byte, Int16, Int32, Int64, finite Single/Double, Currency,
 Decimal, legacy Date, ordinary GUID, Short Text and Short Binary carriers, with
 NULL only where representable. Decimal input must exactly match declared precision
 and retained scale; no rounding or implicit rescaling occurs. Ordinary GUID values
-are supplied storage values, not replication or random-ID generation. Complete dense
-field layout and fixed/variable spans must qualify. An ascending required unique
+are supplied storage values, not replication or random-ID generation. The ordinary route requires complete dense field layout and fixed/variable
+spans. A separate current-source declaration grammar admits qualified generated
+fixed-Int32 tables with native-number holes, including the retained Number schema
+after [field deletion](FIELD_DROP.md). It maps actual native numbers to live
+positions, preserves stored IDs, fixed offsets and high-water/null-mask geometry,
+and retains the full no-required-programs and independent reconstruction checks.
+It does not admit variable-slot holes or trust a creation/deletion history flag. An ascending required unique
 primary root leaf remains required. A separate qualified multiple-owner profile
 also retains present manual Int32 ascending secondary leaves. Logical aliases
 must agree on each physical owner, with exactly one actual primary declaration.

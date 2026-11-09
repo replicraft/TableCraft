@@ -241,7 +241,7 @@ fn selected_manual_i32_omission_is_a_declaration_only_not_other_family_authority
         qualify_selected(inspection.schema(), index, &mut budget(), &|| false).unwrap();
         for family in [
             super::KeyFamily::GlobalInt32,
-            super::KeyFamily::ActionIntegral,
+            super::KeyFamily::SparseIntegral,
             super::KeyFamily::SelectedScalar,
         ] {
             assert_refused(super::qualify_for(
@@ -354,7 +354,7 @@ fn selected_scalar_guid_declarations_do_not_expand_other_source_families() {
                 for family in [
                     super::KeyFamily::GlobalInt32,
                     super::KeyFamily::SelectedIntegral,
-                    super::KeyFamily::ActionIntegral,
+                    super::KeyFamily::SparseIntegral,
                 ] {
                     assert_refused(super::qualify_for(
                         inspection.schema(),
@@ -471,7 +471,7 @@ fn tuple_physical_golden_closes_every_ordered_key_and_preserves_scope_guards() {
         for family in [
             super::KeyFamily::GlobalInt32,
             super::KeyFamily::SelectedIntegral,
-            super::KeyFamily::ActionIntegral,
+            super::KeyFamily::SparseIntegral,
         ] {
             assert_refused(super::qualify_for(
                 inspected.schema(),

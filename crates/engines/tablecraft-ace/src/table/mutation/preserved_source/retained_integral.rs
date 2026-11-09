@@ -97,7 +97,7 @@ pub(super) fn qualify(
             check(budget, cancelled)?;
             let field = match framing {
                 ColumnFraming::Dense => schema.columns().get(key.number()),
-                ColumnFraming::Actions => {
+                ColumnFraming::Actions | ColumnFraming::SparseGenerated => {
                     budget
                         .charge(Resource::Steps, schema.columns().len() as u64)
                         .map_err(InspectError::from)?;
@@ -140,7 +140,7 @@ pub(super) fn qualify(
         };
         let field = match framing {
             ColumnFraming::Dense => schema.columns().get(key.number()),
-            ColumnFraming::Actions => {
+            ColumnFraming::Actions | ColumnFraming::SparseGenerated => {
                 budget
                     .charge(Resource::Steps, schema.columns().len() as u64)
                     .map_err(InspectError::from)?;

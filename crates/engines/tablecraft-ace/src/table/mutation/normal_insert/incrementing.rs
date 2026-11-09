@@ -110,3 +110,6 @@ mod multi_index_sources;
 
 #[cfg(test)]
 mod multi_index_tests;
+
+#[cfg(test)]
+mod sparse_tests;

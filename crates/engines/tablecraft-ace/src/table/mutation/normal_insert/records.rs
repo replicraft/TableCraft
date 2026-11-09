@@ -110,8 +110,11 @@ pub(super) fn encode_incrementing(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Vec<Vec<u8>>, EditError> {
-    let variables =
-        record_insertion::layout::incrementing_variables(schema, column, budget, cancelled)?;
+    let variables = if schema.columns().len() != schema.layout.max_columns {
+        record_insertion::layout::sparse_incrementing_variables(schema, column, budget, cancelled)?
+    } else {
+        record_insertion::layout::incrementing_variables(schema, column, budget, cancelled)?
+    };
     encode_with_variables(schema, requests, &variables, budget, cancelled)
 }
 

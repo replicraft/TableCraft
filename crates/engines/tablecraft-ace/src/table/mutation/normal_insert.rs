@@ -96,7 +96,7 @@ fn capture_source(
     if catalog.columns().len() != NATIVE_CATALOG_FIELDS {
         return Err(EditError::Unsupported(WriteBlocker::ActiveContent));
     }
-    let source = normal_ordinary::capture(image, table, budget, cancelled)?;
+    let source = normal_ordinary::capture_insert(image, table, budget, cancelled)?;
 
     // Source already refuses any relationship involving this target and owns
     // complete properties, dependencies, catalog and LVAL preservation.

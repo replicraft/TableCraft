@@ -144,8 +144,12 @@ pub(super) fn reconstruct_incrementing(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(Vec<u8>, Vec<u32>), EditError> {
-    let shape =
-        records::layout::capture_incrementing(source.table.schema(), column, budget, cancelled)?;
+    let schema = source.table.schema();
+    let shape = if schema.columns().len() != schema.layout.max_columns {
+        records::layout::capture_sparse_incrementing(schema, column, budget, cancelled)?
+    } else {
+        records::layout::capture_incrementing(schema, column, budget, cancelled)?
+    };
     let encoded = encode_with_shape(image, source, requests, shape, budget, cancelled)?;
     reconstruct_encoded(image, source, requests, encoded, true, budget, cancelled)
 }

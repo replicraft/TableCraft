@@ -203,6 +203,32 @@ pub(in crate::table::mutation) fn capture(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Source, EditError> {
+    capture_for(image, table, CapturePurpose::Updates, budget, cancelled)
+}
+
+/// Ordinary INSERT can qualify sparse generated fields without granting UPDATE scope.
+pub(in crate::table::mutation) fn capture_insert(
+    image: &NativeImage,
+    table: &str,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Source, EditError> {
+    capture_for(image, table, CapturePurpose::Insert, budget, cancelled)
+}
+
+#[derive(Clone, Copy)]
+enum CapturePurpose {
+    Updates,
+    Insert,
+}
+
+fn capture_for(
+    image: &NativeImage,
+    table: &str,
+    purpose: CapturePurpose,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Source, EditError> {
     // Choose the catalog grammar from original metadata before attempting any
     // content admission. A failed native-profile check never retries globally.
     let catalog = crate::inspect_table_schema(
@@ -220,6 +246,20 @@ pub(in crate::table::mutation) fn capture(
             budget,
             cancelled,
         )?;
+        if matches!(purpose, CapturePurpose::Insert)
+            && target.columns().len() != target.layout.max_columns
+        {
+            let certificate = NoRequiredTablePrograms::capture_generated_insert(
+                image, &target, budget, cancelled,
+            )?;
+            return preserved_source::capture_no_required_generated_insert(
+                image,
+                table,
+                &certificate,
+                budget,
+                cancelled,
+            );
+        }
         let certificate =
             NoRequiredTablePrograms::capture_updates(image, &target, budget, cancelled)?;
         return preserved_source::capture_no_required_updates(

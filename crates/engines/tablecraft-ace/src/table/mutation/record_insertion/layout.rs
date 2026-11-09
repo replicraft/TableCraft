@@ -40,10 +40,31 @@ pub(in crate::table::mutation) fn incrementing_variables(
     variables_with_generated(schema, Some(column), false, budget, cancelled)
 }
 
+/// Explicit source-qualified fixed-LONG generated geometry with native holes.
+#[cfg(feature = "journal")]
+pub(in crate::table::mutation) fn sparse_incrementing_variables(
+    schema: &TableSchema,
+    column: usize,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Vec<usize>, EditError> {
+    check(budget, cancelled)?;
+    if schema.columns().len() >= schema.layout.max_columns || schema.layout.variable_slots != 0 {
+        return Err(EditError::Unsupported(WriteBlocker::RowLayout));
+    }
+    for field in schema.columns() {
+        check(budget, cancelled)?;
+        if !field.fixed() || field.native_type() != crate::format::data_type::INT32 {
+            return Err(EditError::Unsupported(WriteBlocker::Column));
+        }
+    }
+    variables_with_generated(schema, Some(column), true, budget, cancelled)
+}
+
 fn variables_with_generated(
     schema: &TableSchema,
     generated: Option<usize>,
-    actions: bool,
+    sparse: bool,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Vec<usize>, EditError> {
@@ -54,7 +75,7 @@ fn variables_with_generated(
         return Err(EditError::Unsupported(WriteBlocker::Column));
     }
     if count == 0
-        || (!actions && count != schema.layout.max_columns)
+        || (!sparse && count != schema.layout.max_columns)
         || count > schema.layout.max_columns
         || schema.layout.variable_slots > count
         || schema.layout.fixed_end < COLUMN_COUNT_BYTES
@@ -76,8 +97,8 @@ fn variables_with_generated(
     let mut fixed_end = COLUMN_COUNT_BYTES;
     for (position, column) in fields.iter().enumerate() {
         check(budget, cancelled)?;
-        if (!actions && column.number() != position)
-            || actions
+        if (!sparse && column.number() != position)
+            || sparse
                 && (column.number() >= schema.layout.max_columns
                     || position != 0 && fields[position - 1].number() >= column.number())
         {

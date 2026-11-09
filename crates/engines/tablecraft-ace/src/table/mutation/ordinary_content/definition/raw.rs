@@ -82,19 +82,31 @@ pub(super) fn capture(
     };
     if (!matches!(
         role,
-        Role::User | Role::SelectedUser | Role::SelectedActions
+        Role::User | Role::SelectedUser | Role::SelectedActions | Role::SelectedGenerated
     ) && (layout.physical_indexes != 0 || layout.logical_indexes != 0))
         || layout.fields.is_empty()
-        || (role != Role::SelectedActions && layout.fields.len() != layout.max_columns)
+        || (!matches!(role, Role::SelectedActions | Role::SelectedGenerated)
+            && layout.fields.len() != layout.max_columns)
         || layout.variable_slots != layout.fields.iter().filter(|field| !field.fixed).count()
     {
         return Err(refused());
     }
-    if role == Role::SelectedActions
+    if matches!(role, Role::SelectedActions | Role::SelectedGenerated)
         && layout.fields.len() != layout.max_columns
         && (layout.variable_slots != 0 || layout.fields.iter().any(|field| !field.fixed))
     {
         return Err(refused());
+    }
+    if role == Role::SelectedGenerated {
+        if layout.fields.len() >= layout.max_columns || layout.variable_slots != 0 {
+            return Err(refused());
+        }
+        for field in &layout.fields {
+            check(budget, cancelled)?;
+            if !field.fixed || field.kind != INT32 {
+                return Err(refused());
+            }
+        }
     }
     let length = u32_at(page, native_definition::LENGTH_OFFSET)? as usize;
     if !(HEADER_BYTES..=PAGE_BYTES).contains(&length)
@@ -117,7 +129,7 @@ pub(super) fn capture(
     expected[AUTO_SUPPORT_OFFSET] = AUTO_SUPPORT;
     expected[TABLE_ROLE_OFFSET] = if matches!(
         role,
-        Role::User | Role::SelectedUser | Role::SelectedActions
+        Role::User | Role::SelectedUser | Role::SelectedActions | Role::SelectedGenerated
     ) {
         USER_TABLE_ROLE
     } else {
@@ -158,8 +170,9 @@ pub(super) fn capture(
         .count();
     for (index, field) in layout.fields.iter().enumerate() {
         check(budget, cancelled)?;
-        if (role != Role::SelectedActions && field.number != index)
-            || (role == Role::SelectedActions
+        if (!matches!(role, Role::SelectedActions | Role::SelectedGenerated)
+            && field.number != index)
+            || (matches!(role, Role::SelectedActions | Role::SelectedGenerated)
                 && (field.number >= layout.max_columns
                     || index != 0 && layout.fields[index - 1].number >= field.number))
             || field.name.is_empty()
@@ -199,7 +212,7 @@ pub(super) fn capture(
         };
         descriptor[COLUMN_VARIABLE_OFFSET..COLUMN_VARIABLE_OFFSET + size_of::<u16>()]
             .copy_from_slice(&(variable as u16).to_le_bytes());
-        let stored_id = if role == Role::SelectedActions {
+        let stored_id = if matches!(role, Role::SelectedActions | Role::SelectedGenerated) {
             let id = u16_at(raw, COLUMN_ID_OFFSET)?;
             if id == u16::MAX {
                 return Err(refused());
@@ -207,8 +220,8 @@ pub(super) fn capture(
             for prior in 0..index {
                 check(budget, cancelled)?;
                 let previous = column_start + prior * COLUMN_BYTES + COLUMN_ID_OFFSET;
-                // Descriptor order is native order; this first action profile
-                // also requires the observed stored-ID order, allowing gaps.
+                // Descriptor order is native order; both sparse profiles
+                // also require the observed stored-ID order, allowing gaps.
                 if u16_at(page, previous)? >= id {
                     return Err(refused());
                 }
@@ -221,8 +234,10 @@ pub(super) fn capture(
             .copy_from_slice(&stored_id.to_le_bytes());
         if matches!(field.kind, SHORT_TEXT | LONG_TEXT) {
             let sort = &raw[COLUMN_SORT_OFFSET..COLUMN_SORT_OFFSET + GENERAL_SORT.len()];
-            let expected_sort = if matches!(role, Role::SelectedUser | Role::SelectedActions)
-                && sort == GENERAL_LEGACY_SORT
+            let expected_sort = if matches!(
+                role,
+                Role::SelectedUser | Role::SelectedActions | Role::SelectedGenerated
+            ) && sort == GENERAL_LEGACY_SORT
             {
                 GENERAL_LEGACY_SORT
             } else {
@@ -238,7 +253,7 @@ pub(super) fn capture(
         descriptor[COLUMN_FLAGS_OFFSET] = if generator_flags != 0 {
             if !matches!(
                 role,
-                Role::User | Role::SelectedUser | Role::SelectedActions
+                Role::User | Role::SelectedUser | Role::SelectedActions | Role::SelectedGenerated
             ) || has_counter
                 || field.kind != INT32
                 || !field.fixed
@@ -300,6 +315,9 @@ pub(super) fn capture(
     budget
         .charge(Resource::Steps, PAGE_BYTES as u64)
         .map_err(InspectError::from)?;
+    if role == Role::SelectedGenerated && !has_counter {
+        return Err(refused());
+    }
     if page[..HEADER_BYTES] != expected || page[length..].iter().any(|byte| *byte != 0) {
         return Err(refused());
     }
@@ -334,7 +352,10 @@ fn field_profile(field: &Field, role: Role) -> Result<(), EditError> {
             role,
             Role::Catalog | Role::SelectedUser | Role::SelectedActions
         ),
-        (LONG_TEXT, 0, false) => matches!(role, Role::SelectedUser | Role::SelectedActions),
+        (LONG_TEXT, 0, false) => matches!(
+            role,
+            Role::SelectedUser | Role::SelectedActions | Role::SelectedGenerated
+        ),
         _ => false,
     };
     if !valid
@@ -382,7 +403,9 @@ fn system_schema(layout: &Layout, role: Role) -> Result<(), EditError> {
             ("ObjectId", INT32, Some(4), 4),
             ("SID", SHORT_BINARY, None, 255),
         ],
-        Role::User | Role::SelectedUser | Role::SelectedActions => return Ok(()),
+        Role::User | Role::SelectedUser | Role::SelectedActions | Role::SelectedGenerated => {
+            return Ok(());
+        }
     };
     if layout.fields.len() != expected.len() {
         return Err(refused());

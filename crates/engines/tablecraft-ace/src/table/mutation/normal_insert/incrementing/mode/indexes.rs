@@ -77,9 +77,21 @@ pub(super) fn capture(
         let [key] = owner.columns() else {
             return Err(EditError::Preservation);
         };
+        let position = if schema.columns().len() == schema.layout.max_columns {
+            key.number()
+        } else {
+            let mut selected = None;
+            for (position, field) in schema.columns().iter().enumerate() {
+                check(budget, cancelled)?;
+                if field.number() == key.number() && selected.replace(position).is_some() {
+                    return Err(EditError::Preservation);
+                }
+            }
+            selected.ok_or(EditError::Preservation)?
+        };
         let field = schema
             .columns()
-            .get(key.number())
+            .get(position)
             .ok_or(EditError::Preservation)?;
         if key.number() == schema.columns()[generated].number() {
             generated_owners += 1;
@@ -93,7 +105,7 @@ pub(super) fn capture(
 
         for row in source.table.rows() {
             check(budget, cancelled)?;
-            if !matches!(row.get(key.number()), Some(Value::Int32(_))) {
+            if !matches!(row.get(position), Some(Value::Int32(_))) {
                 return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
             }
         }

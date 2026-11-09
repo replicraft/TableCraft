@@ -118,7 +118,7 @@ pub fn number_companions(nulls: bool) -> (Vec<u8>, Vec<u8>, Vec<Value>) {
     (before, after, row)
 }
 
-fn first_row_image(before: &[u8], record: Vec<u8>) -> Vec<u8> {
+pub(in crate::fixtures::access) fn first_row_image(before: &[u8], record: Vec<u8>) -> Vec<u8> {
     let mut after = before.to_vec();
 
     // Declared membership, LAST and physical unique-key history each advance once.

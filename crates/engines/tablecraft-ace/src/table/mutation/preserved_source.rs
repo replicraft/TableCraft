@@ -115,6 +115,8 @@ enum ColumnFraming {
     Dense,
     #[cfg(feature = "journal")]
     Actions,
+    #[cfg(feature = "journal")]
+    SparseGenerated,
 }
 
 #[cfg(feature = "journal")]
@@ -475,7 +477,7 @@ fn capture_framed(
             let column = match framing {
                 ColumnFraming::Dense => schema.columns().get(key.number()),
                 #[cfg(feature = "journal")]
-                ColumnFraming::Actions => {
+                ColumnFraming::Actions | ColumnFraming::SparseGenerated => {
                     budget
                         .charge(Resource::Steps, schema.columns().len() as u64)
                         .map_err(InspectError::from)?;
@@ -777,6 +779,29 @@ pub(in crate::table::mutation) fn capture_no_required_actions(
         table,
         PayloadAdmission::NoRequired(certificate),
         ReadProfile::retained(ColumnFraming::Actions),
+        budget,
+        cancelled,
+    )
+}
+
+/// INSERT-only sparse identities retain the complete actual absence certificate.
+#[cfg(feature = "journal")]
+pub(in crate::table::mutation) fn capture_no_required_generated_insert(
+    image: &NativeImage,
+    table: &str,
+    certificate: &NoRequiredTablePrograms<'_>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Source, EditError> {
+    certificate.require_generated_insert()?;
+    capture_framed(
+        image,
+        table,
+        PayloadAdmission::NoRequired(certificate),
+        ReadProfile {
+            columns: ColumnFraming::SparseGenerated,
+            keys: RetainedKeys::Integral,
+        },
         budget,
         cancelled,
     )

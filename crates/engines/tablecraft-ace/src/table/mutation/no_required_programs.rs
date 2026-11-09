@@ -21,6 +21,7 @@ enum Declaration {
     DenseIntegral,
     DenseRetained,
     Actions,
+    SparseGenerated,
 }
 
 /// No public constructor or serialized permission. This certificate binds the
@@ -51,6 +52,29 @@ impl<'image> NoRequiredTablePrograms<'image> {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, EditError> {
         Self::capture_with_declaration(image, schema, Declaration::Actions, budget, cancelled)
+    }
+
+    /// Original INSERT metadata selects one complete declaration attempt.
+    pub(in crate::table::mutation) fn capture_generated_insert(
+        image: &'image NativeImage,
+        schema: &TableSchema,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, EditError> {
+        Self::capture_with_declaration(
+            image,
+            schema,
+            Declaration::SparseGenerated,
+            budget,
+            cancelled,
+        )
+    }
+
+    pub(in crate::table::mutation) fn require_generated_insert(&self) -> Result<(), EditError> {
+        if self.declaration != Declaration::SparseGenerated {
+            return Err(EditError::Preservation);
+        }
+        Ok(())
     }
 
     /// Dense native UPDATE declarations retain checked readonly scalar indexes.
@@ -112,7 +136,7 @@ impl<'image> NoRequiredTablePrograms<'image> {
         match self.declaration {
             Declaration::DenseIntegral => Ok(false),
             Declaration::DenseRetained => Ok(true),
-            Declaration::Actions => Err(EditError::Preservation),
+            Declaration::Actions | Declaration::SparseGenerated => Err(EditError::Preservation),
         }
     }
 
@@ -152,6 +176,11 @@ impl<'image> NoRequiredTablePrograms<'image> {
             }
             Declaration::Actions => {
                 super::ordinary_content::definition::validate_actions(
+                    image, schema, budget, cancelled,
+                )?;
+            }
+            Declaration::SparseGenerated => {
+                super::ordinary_content::definition::validate_generated(
                     image, schema, budget, cancelled,
                 )?;
             }

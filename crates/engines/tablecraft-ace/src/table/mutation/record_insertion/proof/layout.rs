@@ -53,10 +53,31 @@ pub(in crate::table::mutation) fn capture_incrementing(
     capture_with_generated(schema, Some(column), false, budget, cancelled)
 }
 
+/// Explicit source-qualified fixed-LONG generated geometry with native holes.
+#[cfg(feature = "journal")]
+pub(in crate::table::mutation) fn capture_sparse_incrementing(
+    schema: &TableSchema,
+    column: usize,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Shape, EditError> {
+    check(budget, cancelled)?;
+    if schema.columns().len() >= schema.layout.max_columns || schema.layout.variable_slots != 0 {
+        return Err(EditError::Unsupported(WriteBlocker::RowLayout));
+    }
+    for field in schema.columns() {
+        check(budget, cancelled)?;
+        if !field.fixed() || field.native_type() != crate::format::data_type::INT32 {
+            return Err(EditError::Unsupported(WriteBlocker::Column));
+        }
+    }
+    capture_with_generated(schema, Some(column), true, budget, cancelled)
+}
+
 fn capture_with_generated(
     schema: &TableSchema,
     generated: Option<usize>,
-    actions: bool,
+    sparse: bool,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Shape, EditError> {
@@ -71,7 +92,7 @@ fn capture_with_generated(
         return Err(EditError::Unsupported(WriteBlocker::Column));
     }
     if count == 0
-        || (!actions && schema.layout.max_columns != count)
+        || (!sparse && schema.layout.max_columns != count)
         || count > schema.layout.max_columns
     {
         return Err(EditError::Unsupported(WriteBlocker::RowLayout));
@@ -90,8 +111,8 @@ fn capture_with_generated(
     let mut fixed_end = COLUMN_COUNT_BYTES;
     for (position, field) in schema.columns().iter().enumerate() {
         check(budget, cancelled)?;
-        if (!actions && field.number() != position)
-            || actions
+        if (!sparse && field.number() != position)
+            || sparse
                 && (field.number() >= schema.layout.max_columns
                     || position != 0 && schema.columns()[position - 1].number() >= field.number())
             || field.complex_type_id().is_some()
@@ -167,7 +188,7 @@ fn capture_with_generated(
 
     Ok(Shape {
         fixed_end,
-        mask_bytes: if actions {
+        mask_bytes: if sparse {
             schema.layout.max_columns
         } else {
             count
