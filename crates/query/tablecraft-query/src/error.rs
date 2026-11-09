@@ -1,3 +1,5 @@
+pub(crate) mod source;
+
 use thiserror::Error;
 
 /// Query errors omit source names, SQL and value payloads.
@@ -55,6 +57,9 @@ pub enum QueryError {
     /// Host source failed without exposing its private data.
     #[error("query source failed")]
     Source,
+    /// Classified source failure without backend types or private payloads.
+    #[error("query source failed: {0}")]
+    SourceFailure(#[from] source::SourceFailure),
     /// Invalid source schema/row.
     #[error(transparent)]
     Schema(#[from] tablecraft_schema::SchemaError),

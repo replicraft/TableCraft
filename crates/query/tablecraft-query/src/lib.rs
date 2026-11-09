@@ -38,6 +38,7 @@ pub use binding::{
     resolve_parameter_type,
 };
 pub use error::QueryError;
+pub use error::source::SourceFailure;
 pub use execution::{
     DeleteError, DeletePlan, MutationOptions, UpdateError, UpdatePlan, plan_batch_update,
     plan_batch_update_with_budgets, plan_batch_update_with_options, plan_delete,
