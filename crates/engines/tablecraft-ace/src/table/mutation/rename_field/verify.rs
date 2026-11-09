@@ -1,6 +1,9 @@
+#[cfg(test)]
+mod layout_tests;
+
 use super::{FieldRenameError as Error, source::Qualified};
 use crate::{
-    InspectError, format::page::PAGE_BYTES, header::check, inspect_catalog,
+    InspectError, TableSchema, format::page::PAGE_BYTES, header::check, inspect_catalog,
     inspect_table_properties, inspect_table_schema, properties::framing,
 };
 use std::io::Cursor;
@@ -45,6 +48,7 @@ pub(super) fn candidate(
         after,
         new_name,
         source.observed.properties.raw_bytes().len(),
+        0,
         budget,
         cancelled,
     )
@@ -55,6 +59,7 @@ pub(super) fn metadata(
     after: &[u8],
     new_name: &str,
     property_bytes: usize,
+    name_delta: isize,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), Error> {
@@ -90,7 +95,7 @@ pub(super) fn metadata(
     if schema.object_id() != observed.schema.object_id()
         || schema.name() != observed.schema.name()
         || schema.definition_page() != observed.schema.definition_page()
-        || schema.physical_layout() != observed.schema.physical_layout()
+        || !same_layout(&observed.schema, &schema, name_delta)
         || schema.columns().len() != observed.schema.columns().len()
     {
         return Err(Error::Preservation);
@@ -170,4 +175,25 @@ pub(super) fn metadata(
     }
     check(budget, cancelled)?;
     Ok(())
+}
+
+fn same_layout(original: &TableSchema, current: &TableSchema, name_delta: isize) -> bool {
+    let original = original.physical_layout();
+    let current = current.physical_layout();
+    if name_delta == 0 {
+        // Preserve the original same-width profile's complete layout equality.
+        return current == original;
+    }
+
+    // Only the names/index-tail byte boundary relocates. Stored field geometry,
+    // ownership, cardinality and physical/logical index counts remain exact.
+    current.fields == original.fields
+        && current.max_columns == original.max_columns
+        && current.variable_slots == original.variable_slots
+        && current.fixed_end == original.fixed_end
+        && current.records == original.records
+        && current.usage == original.usage
+        && original.index_start.checked_add_signed(name_delta) == Some(current.index_start)
+        && current.physical_indexes == original.physical_indexes
+        && current.logical_indexes == original.logical_indexes
 }

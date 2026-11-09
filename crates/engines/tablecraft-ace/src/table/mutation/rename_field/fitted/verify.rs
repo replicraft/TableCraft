@@ -144,5 +144,13 @@ pub(super) fn candidate(
         return Err(Error::Preservation);
     }
 
-    verify::metadata(source, after, name, property_bytes, budget, cancelled)
+    verify::metadata(
+        source,
+        after,
+        name,
+        property_bytes,
+        delta,
+        budget,
+        cancelled,
+    )
 }

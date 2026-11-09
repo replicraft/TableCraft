@@ -144,7 +144,11 @@ fn relocation_verifier_protects_payloads_descriptors_and_newly_free_stale_bytes(
         .unwrap();
         let mut offsets = vec![
             source.observed.definition_entry.start,
+            source.observed.property_descriptor.start,
             source.observed.property_descriptor.start + 4,
+            layout.definition_base
+                + build::shifted(source.observed.schema.physical_layout().index_start, delta)
+                    .unwrap(),
             layout.property_base + build::shifted(layout.database_start, -delta).unwrap(),
             layout.property_base + layout.property_end,
         ];
