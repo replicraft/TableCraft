@@ -1,4 +1,5 @@
 //! Actual options widgets, consuming review, durable save and full-witness reopen.
+mod failures;
 use super::*;
 use crate::workspace::test_support::{self, finish_reads};
 use egui::accesskit::Role;
