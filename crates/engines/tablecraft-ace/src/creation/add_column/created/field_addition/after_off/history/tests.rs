@@ -101,7 +101,7 @@ fn additional_raw_only_mixed_history_is_bounded_by_real_native_replay() {
 }
 
 #[test]
-fn inverse_erased_dictionary_spelling_and_definition_tail_cannot_authorize_themselves() {
+fn noncanonical_dictionary_refuses_and_erased_definition_tail_requires_full_replay() {
     let before = history::source(history::SourceCase::NumberThenNumber);
     let page =
         &before[PROPERTY_PAGE as usize * PAGE_BYTES..(PROPERTY_PAGE as usize + 1) * PAGE_BYTES];
@@ -113,6 +113,8 @@ fn inverse_erased_dictionary_spelling_and_definition_tail_cannot_authorize_thems
     let (_, start, _) = row_range(page, count - 1).unwrap();
     let name = PROPERTY_PAGE as usize * PAGE_BYTES + start + FIRST_DICTIONARY_NAME_BYTE;
     assert_eq!(before[name], b'R');
+    // Existing declaration capture requires exact canonical property keys.
+    // This refusal must stay at that source guard rather than be normalized.
     let mut dictionary = before.clone();
     dictionary[name] = b'r';
     let observed =
@@ -129,7 +131,9 @@ fn inverse_erased_dictionary_spelling_and_definition_tail_cannot_authorize_thems
     );
     assert!(matches!(
         check_source(&dictionary),
-        Err(FieldAdditionAfterOffHistoryError::Preservation)
+        Err(FieldAdditionAfterOffHistoryError::Field(
+            FieldAdditionAfterOffError::Field(FieldAdditionError::Source)
+        ))
     ));
 
     let mut tail = before;

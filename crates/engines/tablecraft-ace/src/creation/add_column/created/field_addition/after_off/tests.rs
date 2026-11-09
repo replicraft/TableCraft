@@ -2,10 +2,12 @@
 use super::*;
 use crate::{
     check_table,
+    creation::add_column::property_preservation,
     format::{
         reader::{row_count, row_range},
         row::reference_slot,
     },
+    table::mutation::catalog_property,
 };
 use sha2::{Digest, Sha256};
 use std::io::Cursor;
