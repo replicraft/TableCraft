@@ -1,4 +1,5 @@
-//! Cross-view read-only browser acceptance over an independent multirow image.
+//! Cross-view read-only browser acceptance over original and independent images.
+mod ace2007;
 use super::test_support::{choose_total, finish_reads, focus_cell, opened, show_totals};
 use egui::accesskit::Role;
 use egui_kittest::kittest::Queryable;
