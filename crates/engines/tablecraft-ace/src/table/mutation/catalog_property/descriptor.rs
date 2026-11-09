@@ -3,6 +3,7 @@ use crate::{
     InspectError, NativeObjectOrigin, NativeReadSource, TableSchema,
     format::{
         data_type::OLE,
+        layout::Layout,
         reader::{PhysicalRow, Reader},
     },
     table::{long_value::trace, record_layout},
@@ -83,12 +84,11 @@ impl Descriptor {
     pub(super) fn matches_origin<R: NativeReadSource>(
         &self,
         reader: &mut Reader<'_, R>,
-        catalog: &TableSchema,
+        layout: &Layout,
         origin: &NativeObjectOrigin,
         name: &str,
     ) -> Result<bool, InspectError> {
-        let actual =
-            crate::catalog::record::decode(&self.record.data, &catalog.layout, reader.budget)?;
+        let actual = crate::catalog::record::decode(&self.record.data, layout, reader.budget)?;
         Ok(actual.id == origin.native_id()
             && actual.parent == origin.parent_id()
             && actual.kind == origin.type_code()

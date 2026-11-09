@@ -4,6 +4,7 @@ use super::{column, descriptor, maps};
 use crate::{
     CatalogInspection, EditError, InspectError, NativeObjectOrigin,
     format::{
+        layout,
         page::PAGE_BYTES,
         reader::Reader,
         row::{reference, reference_page},
@@ -63,6 +64,10 @@ pub(crate) fn capture<'a>(
         cancelled,
         reads: 0,
     };
+    // TableSchema moves native fields into its columns. The catalog decoder
+    // needs the real retained Layout, not that drained schema layout shell.
+    let catalog_layout = layout::read(&mut reader, schema.definition_page())?;
+    layout::validate_catalog(&catalog_layout)?;
     let references = maps::references(&mut reader, &schema, selected)?;
     // This observes all allocated column pages, including a keyless options
     // page9. The existing property writer separately restricts pages10/11.
@@ -104,7 +109,12 @@ pub(crate) fn capture<'a>(
             .catalog()
             .get(origin.object_id())
             .ok_or(InspectError::Malformed)?;
-        if !descriptor.matches_origin(&mut reader, &schema, origin, object.name().as_str())? {
+        if !descriptor.matches_origin(
+            &mut reader,
+            &catalog_layout,
+            origin,
+            object.name().as_str(),
+        )? {
             return Err(InspectError::Malformed.into());
         }
         let traced = descriptor.traced(&mut reader)?;
