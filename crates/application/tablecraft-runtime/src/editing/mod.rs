@@ -32,7 +32,11 @@ pub(crate) mod platform;
 #[cfg(feature = "ace16-create")]
 pub use add_column::{AddColumnReview, AddedColumnReopen, ReviewedAddColumn};
 #[cfg(feature = "ace16-create")]
-pub use database_options::{DatabaseOptionsReopen, DatabaseOptionsReview, ReviewedDatabaseOptions};
+pub use database_options::{
+    DatabaseOptionsInspection, DatabaseOptionsOutcomeError, DatabaseOptionsReopen,
+    DatabaseOptionsReopenFacts, DatabaseOptionsReview, NameAutoCorrectState,
+    ReviewedDatabaseOptions,
+};
 pub use deleting::{DeleteReview, DeleteTarget, ReviewedDelete};
 #[cfg(feature = "ace16-create")]
 pub use field_addition::{

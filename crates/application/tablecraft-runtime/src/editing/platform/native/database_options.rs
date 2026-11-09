@@ -10,7 +10,11 @@ use crate::{
     },
 };
 use std::sync::{Arc, atomic::AtomicBool};
-use tablecraft_ace::{NativeImage, RecoverableNativeDatabaseOptionsPlan};
+use tablecraft_ace::{
+    DatabaseOptionsError, DatabaseOptionsIntentError, NativeImage,
+    RecoverableNativeDatabaseOptionsPlan,
+};
+use tablecraft_core::limits::ResourceBudget;
 
 pub(in crate::editing) struct State {
     pub(in crate::editing) reopen: Arc<DatabaseOptionsReopen>,
@@ -58,4 +62,25 @@ pub(in crate::editing) fn review(
     };
     check(cancelled)?;
     Ok(Response::DatabaseOptionsReviewed { review, capability })
+}
+
+/// A source proof for this fixed request; no candidate image or lease is created.
+pub(in crate::editing) fn source_available(
+    document: &Document,
+    work: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<bool, Error> {
+    check(cancelled)?;
+    if !document.source.editable_native() {
+        return Ok(false);
+    }
+    let image =
+        NativeImage::capture_shared(document.edits.image_source.clone(), SCOPE, work, cancelled)?;
+    match image.check_disable_name_auto_correct_source(work, cancelled) {
+        Ok(()) => Ok(true),
+        Err(DatabaseOptionsError::Source) => Ok(false),
+        Err(error) => Err(Error::DatabaseOptions(DatabaseOptionsIntentError::Options(
+            error,
+        ))),
+    }
 }

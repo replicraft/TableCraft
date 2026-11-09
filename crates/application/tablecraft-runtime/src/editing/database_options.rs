@@ -1,7 +1,12 @@
 //! Explicit reviewed database settings, independent of table and record edits.
+mod inspection;
+mod outcome;
+
 use super::{SaveDatabaseOptionsChange, platform};
 use crate::{Error, Response, document::Document};
 use bytes::Bytes;
+pub use inspection::{DatabaseOptionsInspection, NameAutoCorrectState};
+pub use outcome::{DatabaseOptionsOutcomeError, DatabaseOptionsReopenFacts};
 use std::{
     path::{Path, PathBuf},
     sync::Arc,

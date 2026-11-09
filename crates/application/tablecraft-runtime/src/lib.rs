@@ -33,10 +33,12 @@ pub use creation::{
 };
 #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
 pub use editing::{
-    AddColumnReview, AddedColumnReopen, CreatedTableReopen, DatabaseOptionsReopen,
+    AddColumnReview, AddedColumnReopen, CreatedTableReopen, DatabaseOptionsInspection,
+    DatabaseOptionsOutcomeError, DatabaseOptionsReopen, DatabaseOptionsReopenFacts,
     DatabaseOptionsReview, FieldAdditionAvailability, FieldAdditionOutcomeError,
-    FieldAdditionReopenFacts, FieldAdditionReview, NumberColumnAvailability, ReviewedAddColumn,
-    ReviewedDatabaseOptions, ReviewedFieldAddition, ReviewedNumberColumn, ReviewedTableCreation,
+    FieldAdditionReopenFacts, FieldAdditionReview, NameAutoCorrectState, NumberColumnAvailability,
+    ReviewedAddColumn, ReviewedDatabaseOptions, ReviewedFieldAddition, ReviewedNumberColumn,
+    ReviewedTableCreation,
 };
 #[cfg(feature = "offline-edit")]
 pub use editing::{
@@ -240,6 +242,10 @@ pub enum Error {
 
 /// Explicit host requests. Queued and consumed passwords are erased on drop.
 pub enum Command {
+    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+    InspectDatabaseOptions {
+        document_revision: u64,
+    },
     #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
     ReviewDisableNameAutoCorrect {
         document_revision: u64,
@@ -488,6 +494,10 @@ pub struct Table {
 }
 
 pub enum Response {
+    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+    DatabaseOptionsInspected {
+        inspection: DatabaseOptionsInspection,
+    },
     #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
     DatabaseOptionsReviewed {
         review: DatabaseOptionsReview,

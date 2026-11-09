@@ -44,6 +44,11 @@ impl Worker {
         let mut document_revision = 0_u64;
         Self::start(repaint, move |command, cancelled| match command {
             #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+            Command::InspectDatabaseOptions { document_revision } => document
+                .as_mut()
+                .ok_or(Error::NoDatabase)?
+                .inspect_database_options(*document_revision, cancelled),
+            #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
             Command::ReviewDisableNameAutoCorrect { document_revision } => document
                 .as_mut()
                 .ok_or(Error::NoDatabase)?
@@ -454,6 +459,8 @@ impl Worker {
                         || thread_shared.generation.load(Ordering::Acquire) != request.id
                 };
                 let operation = match &request.command {
+                    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+                    Command::InspectDatabaseOptions { .. } => "inspect_database_options",
                     #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
                     Command::ReviewDisableNameAutoCorrect { .. } => "review_database_options",
                     #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
