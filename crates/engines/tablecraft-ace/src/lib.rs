@@ -45,8 +45,8 @@ pub use creation::{
 #[cfg(all(feature = "ace16-create", feature = "journal"))]
 pub use creation::{
     CreatedDefaultZeroAddColumnCandidate, CreatedDefaultZeroAddColumnError,
-    CreatedDefaultZeroColumnRequired, FieldAdditionCandidate, FieldAdditionError,
-    FieldAdditionTarget, RepeatedDefaultZeroAddColumnCandidate,
+    CreatedDefaultZeroColumnRequired, CreatedFieldAdditionSourcePurpose, FieldAdditionCandidate,
+    FieldAdditionError, FieldAdditionTarget, RepeatedDefaultZeroAddColumnCandidate,
 };
 mod encryption;
 mod error;
@@ -321,4 +321,10 @@ pub use transaction::{
 pub use transaction::{
     DatabaseOptionsIntentError, NativeDatabaseOptionsIntent, QualifiedDatabaseOptionsRecovery,
     RecoverableNativeDatabaseOptionsPlan, qualify_native_database_options_recovery,
+};
+
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub use transaction::{
+    FieldAdditionIntentError, NativeFieldAdditionIntent, QualifiedFieldAdditionRecovery,
+    RecoverableFieldAdditionPlan, qualify_native_field_addition_recovery,
 };

@@ -1,5 +1,7 @@
 //! Typed Number/Short Text addition with its own positive whole-source proof.
 mod build;
+mod purpose;
+pub use purpose::CreatedFieldAdditionSourcePurpose;
 mod source;
 mod target;
 #[cfg(test)]

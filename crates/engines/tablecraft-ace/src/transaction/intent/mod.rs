@@ -125,3 +125,11 @@ pub use query_expression::{
     QueryExpressionIntentError, QueryExpressionRecoveryError, RecoverableNativeQueryExpressionPlan,
     RecoverableQueryExpressionError, qualify_native_query_expression_recovery,
 };
+
+#[cfg(feature = "ace16-create")]
+mod field_addition;
+#[cfg(feature = "ace16-create")]
+pub use field_addition::{
+    FieldAdditionIntentError, NativeFieldAdditionIntent, QualifiedFieldAdditionRecovery,
+    RecoverableFieldAdditionPlan, qualify_native_field_addition_recovery,
+};

@@ -22,7 +22,10 @@ mod source;
 #[cfg(feature = "journal")]
 pub use created::{CreatedAddColumnCandidate, CreatedAddColumnError};
 #[cfg(feature = "journal")]
-pub use created::{FieldAdditionCandidate, FieldAdditionError, FieldAdditionTarget};
+pub use created::{
+    CreatedFieldAdditionSourcePurpose, FieldAdditionCandidate, FieldAdditionError,
+    FieldAdditionTarget,
+};
 
 use super::{CreateDatabaseError, request};
 use crate::{InspectError, NativeImage, header::check};

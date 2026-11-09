@@ -6,7 +6,10 @@ pub use default_zero::{
     CreatedDefaultZeroAddColumnCandidate, CreatedDefaultZeroAddColumnError,
     CreatedDefaultZeroColumnRequired, RepeatedDefaultZeroAddColumnCandidate,
 };
-pub use field_addition::{FieldAdditionCandidate, FieldAdditionError, FieldAdditionTarget};
+pub use field_addition::{
+    CreatedFieldAdditionSourcePurpose, FieldAdditionCandidate, FieldAdditionError,
+    FieldAdditionTarget,
+};
 mod preservation;
 mod properties;
 mod source;
