@@ -291,6 +291,7 @@ impl Desktop {
             // UI source/request checks. Failed or cancelled candidates drop.
             self.complete_object_filter_restore(&handle.target().table);
             self.filter = Some(handle);
+            self.restore_saved_cell_selection(generation);
         }
     }
 }

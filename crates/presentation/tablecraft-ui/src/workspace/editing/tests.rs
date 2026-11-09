@@ -582,3 +582,30 @@ fn borrowed_cell_admission_keeps_exact_source_coordinates_and_modal_guards() {
     assert!(!state.can_edit_cell_at(7, "Items", "Amount", 100));
     assert!(!state.can_edit_cell(&target));
 }
+
+#[test]
+fn reopened_edit_selection_uses_native_identity_in_mapped_rows_and_rejects_stale_targets() {
+    let (mut state, mut target) = state();
+    assert!(state.set_table_data(Data {
+        row_ordinals: Some(crate::RowOrdinals::from_display_order(vec![104, 100]).unwrap()),
+        source_revision: Some(7),
+        table: "Items".into(),
+        offset: 0,
+        columns: vec!["Other".into(), "Amount".into()],
+        rows: vec![
+            vec!["first".into(), "unrelated".into()],
+            vec!["second".into(), "12".into()]
+        ],
+        has_more: false,
+    }));
+    assert!(state.select_reopened_edit_cell(&target));
+    assert_eq!(state.table_selection.position(), Some((1, 1)));
+    assert_eq!(state.selected_cell_text(), Some("12"));
+    target.document_revision = 6;
+    assert!(!state.select_reopened_edit_cell(&target));
+    assert_eq!(state.table_selection.position(), Some((1, 1)));
+    target.document_revision = 7;
+    target.parent_ordinal = 103;
+    assert!(!state.select_reopened_edit_cell(&target));
+    assert_eq!(state.table_selection.position(), Some((1, 1)));
+}

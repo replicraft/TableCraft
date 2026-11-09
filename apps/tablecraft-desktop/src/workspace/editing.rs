@@ -1,4 +1,5 @@
 //! Native host dispatch only; typed admission, parsing and persistence stay runtime-owned.
+mod cell_selection;
 mod database_options;
 mod deleting;
 mod field_addition;
@@ -51,6 +52,7 @@ pub(super) struct Editing {
     refresh: Option<(u64, String, u32)>,
     refresh_cleanup: Option<SaveCleanupNotice>,
     refresh_query_action: bool,
+    cell_selection: Option<cell_selection::Restore>,
 }
 
 #[cfg(all(test, any(target_os = "macos", target_os = "linux", windows)))]
@@ -112,6 +114,7 @@ impl Editing {
             refresh: None,
             refresh_cleanup: None,
             refresh_query_action: false,
+            cell_selection: None,
         }
     }
 
@@ -130,6 +133,7 @@ impl Editing {
         self.refresh = None;
         self.refresh_cleanup = None;
         self.refresh_query_action = false;
+        self.cell_selection = None;
     }
 
     pub(super) fn clear_review(&mut self) {
@@ -286,6 +290,9 @@ impl Desktop {
         // NO_CLONE: Consumed ReviewedEdit moves into SaveWorker; ActiveSave separately retains
         // target table for guarded reopening and terminal reporting.
         let table = reviewed.target().table.clone();
+        // NO_CLONE: The consuming native save owns its reviewed target while the host
+        // separately retains only presentation coordinates for the acknowledged reopen.
+        let selection = ui_target(reviewed.target().clone());
         let offset = self.state.data.as_ref().map_or(0, |data| data.offset);
         match self.editing.worker.start(reviewed, journal_path(&path)) {
             Ok(save_id) => {
@@ -297,6 +304,10 @@ impl Desktop {
                     offset,
                     report: None,
                     insert_retry: None,
+                });
+                self.editing.cell_selection = Some(cell_selection::Restore::Save {
+                    save_id,
+                    target: selection,
                 });
                 self.state.begin_edit_save(review_id, save_id);
                 self.state.busy = false;
@@ -676,8 +687,15 @@ impl Desktop {
             SaveOwner::QueryDefinition => {}
         }
         if refresh_after_ack {
+            let selection = self.editing.take_saved_cell_selection(id);
             self.select_file(save.path);
             self.open();
+            if let Some(target) = selection {
+                self.editing.cell_selection = Some(cell_selection::Restore::Open {
+                    request_id: self.generation,
+                    target,
+                });
+            }
             if let Some(restore) = workspace_restore {
                 self.retain_workspace_restore(restore);
             }
@@ -688,6 +706,7 @@ impl Desktop {
                 _ => None,
             };
         } else {
+            self.editing.cell_selection = None;
             self.filter = None;
             self.objects = Sessions::default();
             self.state.database = None;
@@ -724,7 +743,15 @@ impl Desktop {
             if !restored {
                 return true;
             }
+            let selection = self.editing.take_reopened_cell_selection(generation);
             self.load_active_object(offset);
+            if let (Some(mut target), Some(database)) = (selection, &self.state.database) {
+                target.document_revision = database.document_revision;
+                self.editing.cell_selection = Some(cell_selection::Restore::Page {
+                    request_id: self.generation,
+                    target,
+                });
+            }
             return true;
         }
         false

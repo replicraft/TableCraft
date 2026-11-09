@@ -829,6 +829,7 @@ impl Desktop {
                         }
                         _ => {
                             if self.state.set_table_data(data) {
+                                self.restore_saved_cell_selection(generation);
                                 self.filter = None;
                                 self.inspect_field_addition_availability();
                             }

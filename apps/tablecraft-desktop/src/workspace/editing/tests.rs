@@ -183,6 +183,7 @@ fn acknowledged_noop_save_refreshes_the_original_table_and_blocks_conflicting_ac
     assert_eq!(data.table, "Items");
     assert_eq!(data.offset, 0);
     assert_eq!(data.rows[1][1].text, "20");
+    assert_eq!(desktop.state.selected_cell_text(), Some("20"));
     assert_eq!(std::fs::read(&path).unwrap(), original);
     assert!(!journal_path(&path).exists());
 }
@@ -381,4 +382,47 @@ fn retained_private_artifact_is_reported_from_typed_cleanup_independently_of_dat
     assert!(!message.contains(&text));
     assert_eq!(cleanup_notice(receipt), None);
     assert_eq!(localizer.diagnostics(), Default::default());
+}
+
+#[test]
+fn acknowledged_changed_cell_save_reselects_the_exact_edited_field_and_record() {
+    let (_directory, path, original, context, mut desktop) = opened();
+    let (_, draft_id, _) = begin(&mut desktop);
+    desktop.review_edit(
+        draft_id,
+        EditInput {
+            text: "77".into(),
+            is_null: false,
+        },
+    );
+    finish_reads(&mut desktop, &context);
+    let review_id = desktop.editing.review.as_ref().unwrap().0;
+    desktop.apply_edit(review_id);
+    let report = finish_save(&mut desktop);
+    assert!(matches!(report.outcome, SaveOutcome::Saved { .. }));
+    desktop.acknowledge_save(report.id);
+    finish_reads(&mut desktop, &context);
+    assert_eq!(desktop.state.selected_cell_text(), Some("77"));
+    assert_eq!(desktop.state.data.as_ref().unwrap().rows[1][1].text, "77");
+    assert_ne!(std::fs::read(path).unwrap(), original);
+    assert!(desktop.editing.cell_selection.is_none());
+}
+
+#[test]
+fn unrelated_page_reply_cannot_replay_the_saved_cell_selection() {
+    let (_directory, _path, _original, _context, mut desktop) = opened();
+    let generation = desktop.generation;
+    desktop.editing.cell_selection = Some(super::cell_selection::Restore::Page {
+        request_id: generation,
+        target: EditTarget {
+            document_revision: desktop.state.database.as_ref().unwrap().document_revision,
+            table: "Items".into(),
+            column: "Score".into(),
+            parent_ordinal: 1,
+        },
+    });
+    desktop.restore_saved_cell_selection(generation + 1);
+    assert_eq!(desktop.state.selected_cell_text(), Some("1"));
+    desktop.restore_saved_cell_selection(generation);
+    assert_eq!(desktop.state.selected_cell_text(), Some("1"));
 }

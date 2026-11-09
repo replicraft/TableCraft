@@ -180,6 +180,24 @@ impl State {
                 })
     }
 
+    /// Restore presentation focus only after the host has reopened its acknowledged
+    /// cell save and published the exact target on the new document revision.
+    /// This selects a visible cell; it grants no native edit or write authority.
+    pub fn select_reopened_edit_cell(&mut self, target: &EditTarget) -> bool {
+        if !self.can_edit_cell(target) {
+            return false;
+        }
+        let data = self.data.as_ref().expect("admitted visible edit target");
+        let Some(row) = data.row_index(target.parent_ordinal) else {
+            return false;
+        };
+        let Some(column) = data.column_index(&target.column) else {
+            return false;
+        };
+        self.table_selection.select(data, row, column);
+        true
+    }
+
     pub fn begin_edit(&mut self, target: EditTarget, request_id: u64) {
         if !self.edit_save_pending() && self.can_edit_cell(&target) {
             self.reset_record_navigation();
