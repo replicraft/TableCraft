@@ -1,0 +1,903 @@
+{
+  "date": "2026-11-09",
+  "scope": "First-party fitted ASCII saved-field rename images plus inert independent-reader metadata observations",
+  "status": {
+    "baseline_reads": 4,
+    "variant_reads": 32,
+    "coordinated_positive_images": 8,
+    "coordinated_metadata_matches": 8,
+    "damaged_controls": 24,
+    "originals_and_observed_files_unchanged": true,
+    "sdk_rename_writes": 0,
+    "microsoft_access_execution": "not run",
+    "rust_fixture_goldens": "not run as of this frozen observation",
+    "native_fitted_writer_tests": "not run as of this frozen observation"
+  },
+  "reader_blindspot": "All four shrink images with stale catalog LVAL descriptor lengths open and match metadata. Jackcess getter success does not validate descriptor/ROW body-length agreement; strict native checks remain required.",
+  "sdk": {
+    "artifact": "Jackcess 5.0.4",
+    "license": "Apache-2.0",
+    "sha256": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc",
+    "reviewed_source_revision": "be0a2139b087a227d14cafd4ea231306a5a3a862",
+    "observer": "tests/access/schema/saved_field_rename/FieldRenameObserver.java",
+    "mode": "setReadOnly(true); setEvaluateExpressions(false); no database writes"
+  },
+  "provenance": {
+    "sources": "Same four first-party independently constructed empty/OFF images pinned in tests/access/schema/saved_field_rename/source_manifest.json",
+    "prior_same_width_observation": "tests/results/schema/saved-field-rename-raw-sdk-read-2026-11-09.json",
+    "fixture_commit": "b88d5a53a",
+    "observer_runner_commit": "27f2fde4b",
+    "prediction_frozen_utc": "2026-11-09T23:17:19.834803+00:00",
+    "prediction_sha256": "1ba428b6db82e94f5202b66c945de39b9feb0de4a69fac4c0b6072b85663fb36",
+    "observer_input_manifest_sha256": "0bcdc60a18af86421746178ab2b3c279af67f2d5d9323d56247378e5f47d3155",
+    "raw_observation_sha256": "220aa08a506e0ed2485b7feb2e6278cbf2ae779eacede29b904db4d8de45ae05",
+    "source_pins": {
+      "fitting.py": "218f1fac6ddc4991e338732d84dfe392db3022ab8f34769b78fcc36a4174461b",
+      "model.py": "1260f09855646cafe91414dd28afef61c0b98039285154737fafb468bea8ca49",
+      "run.py": "e954eb0bbf0f354d4817e466478af32ef09d834958b0ffb0fcadfcb6b43d6d93",
+      "run_fitting.py": "06f369a954d50f52640b231917755a44f074feafc55e169dbd914991add205eb",
+      "FieldRenameObserver.java": "7859c2ce0d77cfbc3085cb8a8d8fedd96c3d5b3130fc3ca8ccd9485ff53372fa"
+    },
+    "rust_fixture_sha256": "9317c73abeabf4338c56e1648683210a8b9a01e960793d9b65dc4a36a7ce5e1c",
+    "rust_golden_test_sha256": "89f2d0e63d750c3dd5ba4f8c61d6ee9edce4c8f414360b0966580a6cf7f9cbe9"
+  },
+  "command_templates": {
+    "normalization": "Only local source/output/JAR/JDK resource paths are replaced by placeholders; these templates describe the executed commands. Fresh output and exact input hashes are enforced.",
+    "prepare": "python3 tests/run.py tests/access/schema/saved_field_rename/prepare_fitting.py --sources-dir <four-pinned-sources> --output-dir <fresh-fitting-output>",
+    "observe": "python3 tests/run.py tests/access/schema/saved_field_rename/run_fitting.py --sources-dir <four-pinned-sources> --output-dir <fresh-fitting-output> --jar <pinned-jackcess-5.0.4.jar> --java-bin <JDK21-bin>"
+  },
+  "physical_model": {
+    "page_bytes": 4096,
+    "file_bytes": 45056,
+    "changed_pages": [
+      4,
+      7,
+      10
+    ],
+    "packing": "Original live user ROW end and retired histories stay fixed; live user start and following database OFF ROW move by minus name-byte delta. Slots, page roles, file length and LVAL references remain unchanged. Newly freed original TDEF/LVAL bytes remain unchanged.",
+    "changed_framing": "TDEF name u16 size, declared length/free bytes and trailing names/index tail; live MR2 group/name lengths/body; live/OFF ROW starts and LVAL free bytes; actual catalog LVAL descriptor length.",
+    "preserved": "All native field descriptors/numbers/IDs/types, property keys/type/flags/value/order, retired history bodies, database OFF payload, DATA/INDEX/maps and catalog identities."
+  },
+  "sources": [
+    {
+      "case": "number-first",
+      "source_basename": "number-first.accdb",
+      "sha256": "c88bc4cb1090d9b0c5e011010ec76cf9acc33da7ec9d58e67fa873bfaabe18ef",
+      "bytes": 45056,
+      "original_name": "Score",
+      "native_number": 1,
+      "stored_column_id": 1
+    },
+    {
+      "case": "number-second",
+      "source_basename": "number-second.accdb",
+      "sha256": "6f9b095ddf3d724e34d5af98bea4e8ba88bc2b2bc70ade10814f85c27770c620",
+      "bytes": 45056,
+      "original_name": "Score",
+      "native_number": 1,
+      "stored_column_id": 1
+    },
+    {
+      "case": "text-inline-number",
+      "source_basename": "text-inline-number.accdb",
+      "sha256": "e30ac2923f754892895a97231cee7cc6bd8f880c03f384a21546ed4b7e4b77f3",
+      "bytes": 45056,
+      "original_name": "Score",
+      "native_number": 1,
+      "stored_column_id": 1
+    },
+    {
+      "case": "text-number-text",
+      "source_basename": "text-number-text.accdb",
+      "sha256": "c28d3c1bf1de4e75f894ac80ae332aa2a5b4b8c3c9111700d989222b8d6267c3",
+      "bytes": 45056,
+      "original_name": "Label",
+      "native_number": 1,
+      "stored_column_id": 1
+    }
+  ],
+  "outcomes": [
+    {
+      "variant": "coordinated",
+      "direction": "grow",
+      "reads": 4,
+      "open_successes": 4,
+      "metadata_matches_except_name": 4,
+      "all_bytes_preserved": true
+    },
+    {
+      "variant": "coordinated",
+      "direction": "shrink",
+      "reads": 4,
+      "open_successes": 4,
+      "metadata_matches_except_name": 4,
+      "all_bytes_preserved": true
+    },
+    {
+      "variant": "tdef-only",
+      "direction": "grow",
+      "reads": 4,
+      "open_successes": 4,
+      "metadata_matches_except_name": 0,
+      "all_bytes_preserved": true
+    },
+    {
+      "variant": "tdef-only",
+      "direction": "shrink",
+      "reads": 4,
+      "open_successes": 4,
+      "metadata_matches_except_name": 0,
+      "all_bytes_preserved": true
+    },
+    {
+      "variant": "stale-descriptor",
+      "direction": "grow",
+      "reads": 4,
+      "open_successes": 0,
+      "metadata_matches_except_name": 0,
+      "all_bytes_preserved": true
+    },
+    {
+      "variant": "stale-descriptor",
+      "direction": "shrink",
+      "reads": 4,
+      "open_successes": 4,
+      "metadata_matches_except_name": 4,
+      "all_bytes_preserved": true
+    },
+    {
+      "variant": "stale-user-row",
+      "direction": "grow",
+      "reads": 4,
+      "open_successes": 0,
+      "metadata_matches_except_name": 0,
+      "all_bytes_preserved": true
+    },
+    {
+      "variant": "stale-user-row",
+      "direction": "shrink",
+      "reads": 4,
+      "open_successes": 0,
+      "metadata_matches_except_name": 0,
+      "all_bytes_preserved": true
+    }
+  ],
+  "cases": [
+    {
+      "case": "number-first",
+      "variant": "coordinated",
+      "old_name": "Score",
+      "new_name": "TaxAmount",
+      "before_sha256": "c88bc4cb1090d9b0c5e011010ec76cf9acc33da7ec9d58e67fa873bfaabe18ef",
+      "after_sha256": "dabf8c77e3f258acb0aa7478c3098652a566def5837e47b76b10cb2f3699d1b2",
+      "after_bytes": 45056,
+      "sdk_exit": 0,
+      "readonly_output_unchanged": true,
+      "original_unchanged": true,
+      "metadata_matches_except_name": true,
+      "stdout_sha256": "e3b81e17a1c611a793699a4b82c383bca71601d7432e19a9cb36df98aed02b39",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "framing": {
+        "delta_bytes": 8,
+        "catalog_physical_slot": 8,
+        "live_user_reference": 2560,
+        "descriptor_length_offset": 19787,
+        "before_live_body_span": [
+          44961,
+          45056
+        ],
+        "after_live_body_span": [
+          44953,
+          45056
+        ],
+        "before_db_body_span": [
+          44809,
+          44961
+        ],
+        "after_db_body_span": [
+          44801,
+          44953
+        ],
+        "before_tdef_length": 247,
+        "after_tdef_length": 255,
+        "changed_pages": [
+          4,
+          7,
+          10
+        ],
+        "retired_history_rows_unchanged": true,
+        "db_off_payload_unchanged": true,
+        "data_index_and_maps_unchanged": true
+      }
+    },
+    {
+      "case": "number-first",
+      "variant": "tdef-only",
+      "old_name": "Score",
+      "new_name": "TaxAmount",
+      "before_sha256": "c88bc4cb1090d9b0c5e011010ec76cf9acc33da7ec9d58e67fa873bfaabe18ef",
+      "after_sha256": "1e3b5fd23f6262966fe315bb02d1a66d1c39744cd9c36e3a1c182235b90ab9a4",
+      "after_bytes": 45056,
+      "sdk_exit": 0,
+      "readonly_output_unchanged": true,
+      "original_unchanged": true,
+      "metadata_matches_except_name": false,
+      "stdout_sha256": "0a39ec25879fbeed078b4a7143a9df208129e75fe0e79e9f95a1934467f62d18",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "case": "number-first",
+      "variant": "stale-descriptor",
+      "old_name": "Score",
+      "new_name": "TaxAmount",
+      "before_sha256": "c88bc4cb1090d9b0c5e011010ec76cf9acc33da7ec9d58e67fa873bfaabe18ef",
+      "after_sha256": "2fd286534fbe4194945ddf4653c22e05f246689b25de7617a2792af33c1cc1ba",
+      "after_bytes": 45056,
+      "sdk_exit": 1,
+      "readonly_output_unchanged": true,
+      "original_unchanged": true,
+      "metadata_matches_except_name": null,
+      "stdout_sha256": "73c89626ec2cf490d2a1367256b8f90a4d6507aba450e77612c27bc45fd99275",
+      "stderr_sha256": "9f31aa42721d7a4bf6c42848e51e943a03c6d8b9d29d04e9b5729126199482a9"
+    },
+    {
+      "case": "number-first",
+      "variant": "stale-user-row",
+      "old_name": "Score",
+      "new_name": "TaxAmount",
+      "before_sha256": "c88bc4cb1090d9b0c5e011010ec76cf9acc33da7ec9d58e67fa873bfaabe18ef",
+      "after_sha256": "ffa5b001a96c06e48cf363ef9ac287b96987e8be1b77709d47871c8cb81818de",
+      "after_bytes": 45056,
+      "sdk_exit": 1,
+      "readonly_output_unchanged": true,
+      "original_unchanged": true,
+      "metadata_matches_except_name": null,
+      "stdout_sha256": "73c89626ec2cf490d2a1367256b8f90a4d6507aba450e77612c27bc45fd99275",
+      "stderr_sha256": "902300ce33905089f70aa12485ea468d6b4eb44750fd50dbc6fd099e06d517ba"
+    },
+    {
+      "case": "number-first",
+      "variant": "coordinated",
+      "old_name": "Score",
+      "new_name": "X",
+      "before_sha256": "c88bc4cb1090d9b0c5e011010ec76cf9acc33da7ec9d58e67fa873bfaabe18ef",
+      "after_sha256": "3c0c3b38664199f8ff505b8b6ce0090a96fed1a53e48d8501fb1727412ee493d",
+      "after_bytes": 45056,
+      "sdk_exit": 0,
+      "readonly_output_unchanged": true,
+      "original_unchanged": true,
+      "metadata_matches_except_name": true,
+      "stdout_sha256": "dd1100896105d2a58ed00700aa17a2877aeb31f0a2de595e99106661e16a5a0c",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "framing": {
+        "delta_bytes": -8,
+        "catalog_physical_slot": 8,
+        "live_user_reference": 2560,
+        "descriptor_length_offset": 19787,
+        "before_live_body_span": [
+          44961,
+          45056
+        ],
+        "after_live_body_span": [
+          44969,
+          45056
+        ],
+        "before_db_body_span": [
+          44809,
+          44961
+        ],
+        "after_db_body_span": [
+          44817,
+          44969
+        ],
+        "before_tdef_length": 247,
+        "after_tdef_length": 239,
+        "changed_pages": [
+          4,
+          7,
+          10
+        ],
+        "retired_history_rows_unchanged": true,
+        "db_off_payload_unchanged": true,
+        "data_index_and_maps_unchanged": true
+      }
+    },
+    {
+      "case": "number-first",
+      "variant": "tdef-only",
+      "old_name": "Score",
+      "new_name": "X",
+      "before_sha256": "c88bc4cb1090d9b0c5e011010ec76cf9acc33da7ec9d58e67fa873bfaabe18ef",
+      "after_sha256": "648608bab7d7c691675b26011325afd6de325ba406201525b84cad5420b32297",
+      "after_bytes": 45056,
+      "sdk_exit": 0,
+      "readonly_output_unchanged": true,
+      "original_unchanged": true,
+      "metadata_matches_except_name": false,
+      "stdout_sha256": "ebfcfaf900a0b7c281ad1446f1aa143ce4d41314351da428f64557e1a189943d",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "case": "number-first",
+      "variant": "stale-descriptor",
+      "old_name": "Score",
+      "new_name": "X",
+      "before_sha256": "c88bc4cb1090d9b0c5e011010ec76cf9acc33da7ec9d58e67fa873bfaabe18ef",
+      "after_sha256": "068366c5da946b306c199efe119111348173c8f02a6a2e7039dc116fdb934dbf",
+      "after_bytes": 45056,
+      "sdk_exit": 0,
+      "readonly_output_unchanged": true,
+      "original_unchanged": true,
+      "metadata_matches_except_name": true,
+      "stdout_sha256": "dd1100896105d2a58ed00700aa17a2877aeb31f0a2de595e99106661e16a5a0c",
+      "stderr_sha256": "11e3521a4397a7da8c1f7e0c328cc8f309e4edde24d2415211ed2461870e765a"
+    },
+    {
+      "case": "number-first",
+      "variant": "stale-user-row",
+      "old_name": "Score",
+      "new_name": "X",
+      "before_sha256": "c88bc4cb1090d9b0c5e011010ec76cf9acc33da7ec9d58e67fa873bfaabe18ef",
+      "after_sha256": "fa1a65956d13b7136b32d66dc772e53f99e7bbe052a4209b39094de89d6f1fb3",
+      "after_bytes": 45056,
+      "sdk_exit": 1,
+      "readonly_output_unchanged": true,
+      "original_unchanged": true,
+      "metadata_matches_except_name": null,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "4659e584f6a73ccc6278298d56d227e74be4cffb40728f7c1f28dbaae5738138"
+    },
+    {
+      "case": "number-second",
+      "variant": "coordinated",
+      "old_name": "Score",
+      "new_name": "TaxAmount",
+      "before_sha256": "6f9b095ddf3d724e34d5af98bea4e8ba88bc2b2bc70ade10814f85c27770c620",
+      "after_sha256": "8d2153d357f5893b7599adcb90637a1cb81edf386e5e587285365fe16e528772",
+      "after_bytes": 45056,
+      "sdk_exit": 0,
+      "readonly_output_unchanged": true,
+      "original_unchanged": true,
+      "metadata_matches_except_name": true,
+      "stdout_sha256": "ddafb0d5d03f593712240db738c90e6d848db7fc7ca3fbd1f9e416e009cd4898",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "framing": {
+        "delta_bytes": 8,
+        "catalog_physical_slot": 8,
+        "live_user_reference": 2561,
+        "descriptor_length_offset": 19787,
+        "before_live_body_span": [
+          44823,
+          44961
+        ],
+        "after_live_body_span": [
+          44815,
+          44961
+        ],
+        "before_db_body_span": [
+          44671,
+          44823
+        ],
+        "after_db_body_span": [
+          44663,
+          44815
+        ],
+        "before_tdef_length": 286,
+        "after_tdef_length": 294,
+        "changed_pages": [
+          4,
+          7,
+          10
+        ],
+        "retired_history_rows_unchanged": true,
+        "db_off_payload_unchanged": true,
+        "data_index_and_maps_unchanged": true
+      }
+    },
+    {
+      "case": "number-second",
+      "variant": "tdef-only",
+      "old_name": "Score",
+      "new_name": "TaxAmount",
+      "before_sha256": "6f9b095ddf3d724e34d5af98bea4e8ba88bc2b2bc70ade10814f85c27770c620",
+      "after_sha256": "1623796116d79cf552f37e4cd80fe0853ed24e260c33444f51667362185444b8",
+      "after_bytes": 45056,
+      "sdk_exit": 0,
+      "readonly_output_unchanged": true,
+      "original_unchanged": true,
+      "metadata_matches_except_name": false,
+      "stdout_sha256": "9c2fe2e55a5de5e9517e8e9d9eeae25e5f762c06e1c2837fce9aee5932cd05aa",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "case": "number-second",
+      "variant": "stale-descriptor",
+      "old_name": "Score",
+      "new_name": "TaxAmount",
+      "before_sha256": "6f9b095ddf3d724e34d5af98bea4e8ba88bc2b2bc70ade10814f85c27770c620",
+      "after_sha256": "ca256935c0e79afecd3262a32725a3ed977f53afaf0e88c668a7a0d975533cf3",
+      "after_bytes": 45056,
+      "sdk_exit": 1,
+      "readonly_output_unchanged": true,
+      "original_unchanged": true,
+      "metadata_matches_except_name": null,
+      "stdout_sha256": "73c89626ec2cf490d2a1367256b8f90a4d6507aba450e77612c27bc45fd99275",
+      "stderr_sha256": "008c55ccedc36710b3c61d08edb8d38437f923320f31083fa8cf53b5e86ba366"
+    },
+    {
+      "case": "number-second",
+      "variant": "stale-user-row",
+      "old_name": "Score",
+      "new_name": "TaxAmount",
+      "before_sha256": "6f9b095ddf3d724e34d5af98bea4e8ba88bc2b2bc70ade10814f85c27770c620",
+      "after_sha256": "5a3e283228ea2c646cba16d9a71292e93247a22a98f50a6936317cb6381713c5",
+      "after_bytes": 45056,
+      "sdk_exit": 1,
+      "readonly_output_unchanged": true,
+      "original_unchanged": true,
+      "metadata_matches_except_name": null,
+      "stdout_sha256": "73c89626ec2cf490d2a1367256b8f90a4d6507aba450e77612c27bc45fd99275",
+      "stderr_sha256": "ec3171d08768c9e533c6d44007874cce2d70fbe4f42f0cb71b1a73bd79575ece"
+    },
+    {
+      "case": "number-second",
+      "variant": "coordinated",
+      "old_name": "Score",
+      "new_name": "X",
+      "before_sha256": "6f9b095ddf3d724e34d5af98bea4e8ba88bc2b2bc70ade10814f85c27770c620",
+      "after_sha256": "a0c92322b9e6f2d0ad6247b3b4ce58f64f0646f9b0dde0c6fd285db661050dfc",
+      "after_bytes": 45056,
+      "sdk_exit": 0,
+      "readonly_output_unchanged": true,
+      "original_unchanged": true,
+      "metadata_matches_except_name": true,
+      "stdout_sha256": "be5d5f38879b2dfe1e5511e58cc8e7631efe8fe309c9cea7a2703f55a2e055e3",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "framing": {
+        "delta_bytes": -8,
+        "catalog_physical_slot": 8,
+        "live_user_reference": 2561,
+        "descriptor_length_offset": 19787,
+        "before_live_body_span": [
+          44823,
+          44961
+        ],
+        "after_live_body_span": [
+          44831,
+          44961
+        ],
+        "before_db_body_span": [
+          44671,
+          44823
+        ],
+        "after_db_body_span": [
+          44679,
+          44831
+        ],
+        "before_tdef_length": 286,
+        "after_tdef_length": 278,
+        "changed_pages": [
+          4,
+          7,
+          10
+        ],
+        "retired_history_rows_unchanged": true,
+        "db_off_payload_unchanged": true,
+        "data_index_and_maps_unchanged": true
+      }
+    },
+    {
+      "case": "number-second",
+      "variant": "tdef-only",
+      "old_name": "Score",
+      "new_name": "X",
+      "before_sha256": "6f9b095ddf3d724e34d5af98bea4e8ba88bc2b2bc70ade10814f85c27770c620",
+      "after_sha256": "c23fd04241c658ddf480afb021103b3c34ec4bd522654cf161a634dfcdcc5c53",
+      "after_bytes": 45056,
+      "sdk_exit": 0,
+      "readonly_output_unchanged": true,
+      "original_unchanged": true,
+      "metadata_matches_except_name": false,
+      "stdout_sha256": "dbf4f3917092680030e627dadd81ecfb12f331c4e36f1cd8e97997af36f3e955",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "case": "number-second",
+      "variant": "stale-descriptor",
+      "old_name": "Score",
+      "new_name": "X",
+      "before_sha256": "6f9b095ddf3d724e34d5af98bea4e8ba88bc2b2bc70ade10814f85c27770c620",
+      "after_sha256": "e66767f830f30b407d96ecaed403e9554216432f18895abb13d577208ecfd28e",
+      "after_bytes": 45056,
+      "sdk_exit": 0,
+      "readonly_output_unchanged": true,
+      "original_unchanged": true,
+      "metadata_matches_except_name": true,
+      "stdout_sha256": "be5d5f38879b2dfe1e5511e58cc8e7631efe8fe309c9cea7a2703f55a2e055e3",
+      "stderr_sha256": "a27423dcdd76a69550d218a994670a4300194b024f4692ef8e9c9c58b7ab3dad"
+    },
+    {
+      "case": "number-second",
+      "variant": "stale-user-row",
+      "old_name": "Score",
+      "new_name": "X",
+      "before_sha256": "6f9b095ddf3d724e34d5af98bea4e8ba88bc2b2bc70ade10814f85c27770c620",
+      "after_sha256": "917e4c868e52c0ade83ad8303a534032f265d08001151d4a563b8e0a59d5001b",
+      "after_bytes": 45056,
+      "sdk_exit": 1,
+      "readonly_output_unchanged": true,
+      "original_unchanged": true,
+      "metadata_matches_except_name": null,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "32de59466d8bee37f14c2c70aa75ecaacd1fdc014510a890cb8d991d9468074b"
+    },
+    {
+      "case": "text-inline-number",
+      "variant": "coordinated",
+      "old_name": "Score",
+      "new_name": "TaxAmount",
+      "before_sha256": "e30ac2923f754892895a97231cee7cc6bd8f880c03f384a21546ed4b7e4b77f3",
+      "after_sha256": "e5f3215f5a1185b36bf79da23173930890d3786be3d14971f3d3bb59920e7d13",
+      "after_bytes": 45056,
+      "sdk_exit": 0,
+      "readonly_output_unchanged": true,
+      "original_unchanged": true,
+      "metadata_matches_except_name": true,
+      "stdout_sha256": "c3f3de8c502a59852591fa91043be71bf84d1bd2e1e44d6147b6991e413e5c39",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "framing": {
+        "delta_bytes": 8,
+        "catalog_physical_slot": 7,
+        "live_user_reference": 2560,
+        "descriptor_length_offset": 19765,
+        "before_live_body_span": [
+          44889,
+          45056
+        ],
+        "after_live_body_span": [
+          44881,
+          45056
+        ],
+        "before_db_body_span": [
+          44737,
+          44889
+        ],
+        "after_db_body_span": [
+          44729,
+          44881
+        ],
+        "before_tdef_length": 284,
+        "after_tdef_length": 292,
+        "changed_pages": [
+          4,
+          7,
+          10
+        ],
+        "retired_history_rows_unchanged": true,
+        "db_off_payload_unchanged": true,
+        "data_index_and_maps_unchanged": true
+      }
+    },
+    {
+      "case": "text-inline-number",
+      "variant": "tdef-only",
+      "old_name": "Score",
+      "new_name": "TaxAmount",
+      "before_sha256": "e30ac2923f754892895a97231cee7cc6bd8f880c03f384a21546ed4b7e4b77f3",
+      "after_sha256": "07d925b4cbe5d21542383d763e99ffc09611aba0852a2dabb41ac0354d749b40",
+      "after_bytes": 45056,
+      "sdk_exit": 0,
+      "readonly_output_unchanged": true,
+      "original_unchanged": true,
+      "metadata_matches_except_name": false,
+      "stdout_sha256": "eab17a3183be18bd671c78fee8f3405004ebc62bafa0e289bb9009dee2797614",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "case": "text-inline-number",
+      "variant": "stale-descriptor",
+      "old_name": "Score",
+      "new_name": "TaxAmount",
+      "before_sha256": "e30ac2923f754892895a97231cee7cc6bd8f880c03f384a21546ed4b7e4b77f3",
+      "after_sha256": "693fb582f1dccdff3c5b2ccff658fd818526dd5bec951d8b87b935c3d4a83a15",
+      "after_bytes": 45056,
+      "sdk_exit": 1,
+      "readonly_output_unchanged": true,
+      "original_unchanged": true,
+      "metadata_matches_except_name": null,
+      "stdout_sha256": "73c89626ec2cf490d2a1367256b8f90a4d6507aba450e77612c27bc45fd99275",
+      "stderr_sha256": "0b3263180739021f9714944c26aac3ebb32dd142ae536d82edee183c4bbddf7e"
+    },
+    {
+      "case": "text-inline-number",
+      "variant": "stale-user-row",
+      "old_name": "Score",
+      "new_name": "TaxAmount",
+      "before_sha256": "e30ac2923f754892895a97231cee7cc6bd8f880c03f384a21546ed4b7e4b77f3",
+      "after_sha256": "3f460cf6425173191f9c26b72b5a0dc31f3762f8585a20a31763d3f1e8bfdfd2",
+      "after_bytes": 45056,
+      "sdk_exit": 1,
+      "readonly_output_unchanged": true,
+      "original_unchanged": true,
+      "metadata_matches_except_name": null,
+      "stdout_sha256": "73c89626ec2cf490d2a1367256b8f90a4d6507aba450e77612c27bc45fd99275",
+      "stderr_sha256": "f72a47cdd6e448b8016d3ba10be8a0bc8160c7096823ae91469e9db9c753d607"
+    },
+    {
+      "case": "text-inline-number",
+      "variant": "coordinated",
+      "old_name": "Score",
+      "new_name": "X",
+      "before_sha256": "e30ac2923f754892895a97231cee7cc6bd8f880c03f384a21546ed4b7e4b77f3",
+      "after_sha256": "c783d079c1b937b2c31323186357de6b8f6714c5e20fcabca573671f6c2223e7",
+      "after_bytes": 45056,
+      "sdk_exit": 0,
+      "readonly_output_unchanged": true,
+      "original_unchanged": true,
+      "metadata_matches_except_name": true,
+      "stdout_sha256": "ac79d937ce11591ec39759bd04c397fa559797602f9eaf60efc98e7b39842dcd",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "framing": {
+        "delta_bytes": -8,
+        "catalog_physical_slot": 7,
+        "live_user_reference": 2560,
+        "descriptor_length_offset": 19765,
+        "before_live_body_span": [
+          44889,
+          45056
+        ],
+        "after_live_body_span": [
+          44897,
+          45056
+        ],
+        "before_db_body_span": [
+          44737,
+          44889
+        ],
+        "after_db_body_span": [
+          44745,
+          44897
+        ],
+        "before_tdef_length": 284,
+        "after_tdef_length": 276,
+        "changed_pages": [
+          4,
+          7,
+          10
+        ],
+        "retired_history_rows_unchanged": true,
+        "db_off_payload_unchanged": true,
+        "data_index_and_maps_unchanged": true
+      }
+    },
+    {
+      "case": "text-inline-number",
+      "variant": "tdef-only",
+      "old_name": "Score",
+      "new_name": "X",
+      "before_sha256": "e30ac2923f754892895a97231cee7cc6bd8f880c03f384a21546ed4b7e4b77f3",
+      "after_sha256": "1ebf4e2cd4599833f0068586eae27ff8d23af46ea4724b04809dd445d9563fb1",
+      "after_bytes": 45056,
+      "sdk_exit": 0,
+      "readonly_output_unchanged": true,
+      "original_unchanged": true,
+      "metadata_matches_except_name": false,
+      "stdout_sha256": "6433b39069591e2953edc2123103f93837ce958890fb29fc7f2c7b4c98f5c603",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "case": "text-inline-number",
+      "variant": "stale-descriptor",
+      "old_name": "Score",
+      "new_name": "X",
+      "before_sha256": "e30ac2923f754892895a97231cee7cc6bd8f880c03f384a21546ed4b7e4b77f3",
+      "after_sha256": "589377dce1a3bb6b88c5f8076fa1058864ef4d41bfe060e14e2b53c20a104744",
+      "after_bytes": 45056,
+      "sdk_exit": 0,
+      "readonly_output_unchanged": true,
+      "original_unchanged": true,
+      "metadata_matches_except_name": true,
+      "stdout_sha256": "ac79d937ce11591ec39759bd04c397fa559797602f9eaf60efc98e7b39842dcd",
+      "stderr_sha256": "ef8b1cee29f6402e947e9d8d82f0089c69e49062ffca21836e4fb91ba952ccb3"
+    },
+    {
+      "case": "text-inline-number",
+      "variant": "stale-user-row",
+      "old_name": "Score",
+      "new_name": "X",
+      "before_sha256": "e30ac2923f754892895a97231cee7cc6bd8f880c03f384a21546ed4b7e4b77f3",
+      "after_sha256": "5e2915524571632741e9d3b8541e16181fa9b8bbe4bd87a83708ed0f8337ba22",
+      "after_bytes": 45056,
+      "sdk_exit": 1,
+      "readonly_output_unchanged": true,
+      "original_unchanged": true,
+      "metadata_matches_except_name": null,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "5ae9fbece5d36849b36d0cab7837e1240ad1e996e558f862fd212cb852139c56"
+    },
+    {
+      "case": "text-number-text",
+      "variant": "coordinated",
+      "old_name": "Label",
+      "new_name": "TaxAmount",
+      "before_sha256": "c28d3c1bf1de4e75f894ac80ae332aa2a5b4b8c3c9111700d989222b8d6267c3",
+      "after_sha256": "cb9b3b1dc2a345348e38b08559f3d72cbc2c2949e49bec8609e7c645a2aab8f2",
+      "after_bytes": 45056,
+      "sdk_exit": 0,
+      "readonly_output_unchanged": true,
+      "original_unchanged": true,
+      "metadata_matches_except_name": true,
+      "stdout_sha256": "d7508198c6d5017b0bd49d915ed7ca231e7099373dacd81a32fb315068bb9e59",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "framing": {
+        "delta_bytes": 8,
+        "catalog_physical_slot": 8,
+        "live_user_reference": 2562,
+        "descriptor_length_offset": 19787,
+        "before_live_body_span": [
+          44552,
+          44779
+        ],
+        "after_live_body_span": [
+          44544,
+          44779
+        ],
+        "before_db_body_span": [
+          44400,
+          44552
+        ],
+        "after_db_body_span": [
+          44392,
+          44544
+        ],
+        "before_tdef_length": 341,
+        "after_tdef_length": 349,
+        "changed_pages": [
+          4,
+          7,
+          10
+        ],
+        "retired_history_rows_unchanged": true,
+        "db_off_payload_unchanged": true,
+        "data_index_and_maps_unchanged": true
+      }
+    },
+    {
+      "case": "text-number-text",
+      "variant": "tdef-only",
+      "old_name": "Label",
+      "new_name": "TaxAmount",
+      "before_sha256": "c28d3c1bf1de4e75f894ac80ae332aa2a5b4b8c3c9111700d989222b8d6267c3",
+      "after_sha256": "a855fceb19ce078b4f1dc539cae5989197d22edee38b838227493a62e1566a47",
+      "after_bytes": 45056,
+      "sdk_exit": 0,
+      "readonly_output_unchanged": true,
+      "original_unchanged": true,
+      "metadata_matches_except_name": false,
+      "stdout_sha256": "1bd402598d9672a0fbfbcbe73c319c568ada127d662539b3cbf0a4b92cb14b4a",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "case": "text-number-text",
+      "variant": "stale-descriptor",
+      "old_name": "Label",
+      "new_name": "TaxAmount",
+      "before_sha256": "c28d3c1bf1de4e75f894ac80ae332aa2a5b4b8c3c9111700d989222b8d6267c3",
+      "after_sha256": "b9dc734f437dd6e7820249a981a577cc59dd5a9d5abd7eea8892367b40512100",
+      "after_bytes": 45056,
+      "sdk_exit": 1,
+      "readonly_output_unchanged": true,
+      "original_unchanged": true,
+      "metadata_matches_except_name": null,
+      "stdout_sha256": "73c89626ec2cf490d2a1367256b8f90a4d6507aba450e77612c27bc45fd99275",
+      "stderr_sha256": "dbdc4c3c46a2c10aa388eeaafacf38d34246adc05e1c6a583ee5aac39c11e64f"
+    },
+    {
+      "case": "text-number-text",
+      "variant": "stale-user-row",
+      "old_name": "Label",
+      "new_name": "TaxAmount",
+      "before_sha256": "c28d3c1bf1de4e75f894ac80ae332aa2a5b4b8c3c9111700d989222b8d6267c3",
+      "after_sha256": "7803078c99578143a18a2283ed16d402b4421b6f151eba81105a5a6f1c44ef88",
+      "after_bytes": 45056,
+      "sdk_exit": 1,
+      "readonly_output_unchanged": true,
+      "original_unchanged": true,
+      "metadata_matches_except_name": null,
+      "stdout_sha256": "73c89626ec2cf490d2a1367256b8f90a4d6507aba450e77612c27bc45fd99275",
+      "stderr_sha256": "5c638609928e705dcbe9671577b7131abfa5965ae11e229fd07a8399d2b753f8"
+    },
+    {
+      "case": "text-number-text",
+      "variant": "coordinated",
+      "old_name": "Label",
+      "new_name": "X",
+      "before_sha256": "c28d3c1bf1de4e75f894ac80ae332aa2a5b4b8c3c9111700d989222b8d6267c3",
+      "after_sha256": "7cdec766b130d14bc3b4d395d7caf9366c71552cb2b40fb26f3ae92dfef7588e",
+      "after_bytes": 45056,
+      "sdk_exit": 0,
+      "readonly_output_unchanged": true,
+      "original_unchanged": true,
+      "metadata_matches_except_name": true,
+      "stdout_sha256": "ed9f3d6667859ed6da0faabc1223a769f761a0be820c38297e59fd9b836a647e",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "framing": {
+        "delta_bytes": -8,
+        "catalog_physical_slot": 8,
+        "live_user_reference": 2562,
+        "descriptor_length_offset": 19787,
+        "before_live_body_span": [
+          44552,
+          44779
+        ],
+        "after_live_body_span": [
+          44560,
+          44779
+        ],
+        "before_db_body_span": [
+          44400,
+          44552
+        ],
+        "after_db_body_span": [
+          44408,
+          44560
+        ],
+        "before_tdef_length": 341,
+        "after_tdef_length": 333,
+        "changed_pages": [
+          4,
+          7,
+          10
+        ],
+        "retired_history_rows_unchanged": true,
+        "db_off_payload_unchanged": true,
+        "data_index_and_maps_unchanged": true
+      }
+    },
+    {
+      "case": "text-number-text",
+      "variant": "tdef-only",
+      "old_name": "Label",
+      "new_name": "X",
+      "before_sha256": "c28d3c1bf1de4e75f894ac80ae332aa2a5b4b8c3c9111700d989222b8d6267c3",
+      "after_sha256": "72f4b6a6a90ba6fbec25c69e863a104c0fc11adef66f5cede52eea3a21c4cd03",
+      "after_bytes": 45056,
+      "sdk_exit": 0,
+      "readonly_output_unchanged": true,
+      "original_unchanged": true,
+      "metadata_matches_except_name": false,
+      "stdout_sha256": "67ed1f98b8cfc2b9546738baed05f3fff8dafbd2abf7818f3e4adae139d3b1c7",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "case": "text-number-text",
+      "variant": "stale-descriptor",
+      "old_name": "Label",
+      "new_name": "X",
+      "before_sha256": "c28d3c1bf1de4e75f894ac80ae332aa2a5b4b8c3c9111700d989222b8d6267c3",
+      "after_sha256": "6941efbc6dccc542f04b189a4945d6afa358d908da3fa471f304aa65f96ff6d3",
+      "after_bytes": 45056,
+      "sdk_exit": 0,
+      "readonly_output_unchanged": true,
+      "original_unchanged": true,
+      "metadata_matches_except_name": true,
+      "stdout_sha256": "ed9f3d6667859ed6da0faabc1223a769f761a0be820c38297e59fd9b836a647e",
+      "stderr_sha256": "bdddddc8124e59e4f5e50b6c933357036a6527a5e92c4346f4b8d0972cc39dd9"
+    },
+    {
+      "case": "text-number-text",
+      "variant": "stale-user-row",
+      "old_name": "Label",
+      "new_name": "X",
+      "before_sha256": "c28d3c1bf1de4e75f894ac80ae332aa2a5b4b8c3c9111700d989222b8d6267c3",
+      "after_sha256": "599df59cb9bb456dd5bab9d9668e22e22c02d542f4a739171c47c4cc1b8694dc",
+      "after_bytes": 45056,
+      "sdk_exit": 1,
+      "readonly_output_unchanged": true,
+      "original_unchanged": true,
+      "metadata_matches_except_name": null,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "29628379e58448136229efbfbca4237886525ccad9781dddb6b42f057475c142"
+    }
+  ]
+}
