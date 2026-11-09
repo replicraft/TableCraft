@@ -245,5 +245,14 @@
       "result": "PASS",
       "path": ".cache/repeated-number-final-boundaries-20261108.log"
     }
+  },
+  "third_save_sdk_follow_up": {
+    "source_commit": "02568d74",
+    "native_case": "creation::add_column::created::default_zero::repeated::tests::next_history_stage_is_reconstructed_with_all_old_property_rows_preserved",
+    "after_sha256": "337e03454d5aa233f66087301d5e8fe50092c4e90dfa4a65888430cdb9f61dd6",
+    "result": "PASS",
+    "record": ".cache/third-number-sdk-pin-summary-20261108.json",
+    "sdk_record": "docs/testing/results/add-short-text-sdk-source-2026-11-08.json",
+    "counting": "Existing third-history case updated to the actual SDK field name and pin, then rerun; not an additional unique test."
   }
 }
