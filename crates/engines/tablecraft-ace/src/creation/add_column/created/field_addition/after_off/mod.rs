@@ -19,6 +19,7 @@ use tablecraft_core::limits::ResourceBudget;
 use thiserror::Error;
 
 const TEXT_UNITS: usize = 255;
+const MAX_ASCII_NAME_BYTES: usize = 64;
 
 /// Refusal from the separate fitting ADD-after-explicit-OFF candidate profile.
 #[derive(Debug, Error)]
@@ -115,6 +116,13 @@ impl NativeImage {
     ) -> Result<FieldAdditionAfterOffCandidate, FieldAdditionAfterOffError> {
         let _span = tracing::debug_span!("native.field_addition.after_explicit_off").entered();
         check(budget, cancelled)?;
+        if table.len() > MAX_ASCII_NAME_BYTES || column.len() > MAX_ASCII_NAME_BYTES {
+            return Err(FieldAdditionAfterOffError::Namespace);
+        }
+        budget.charge(
+            tablecraft_core::limits::Resource::Steps,
+            (table.len() + column.len()) as u64,
+        )?;
         if !table.is_ascii() || !column.is_ascii() {
             return Err(FieldAdditionAfterOffError::Namespace);
         }

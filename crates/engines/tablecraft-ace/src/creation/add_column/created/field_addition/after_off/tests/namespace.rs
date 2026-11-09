@@ -54,3 +54,24 @@ fn unicode_requests_and_constructively_valid_unicode_source_names_refuse() {
         Err(FieldAdditionAfterOffError::Namespace)
     ));
 }
+
+#[test]
+fn overlong_requests_refuse_before_a_borrowed_ascii_scan() {
+    let before = raw::source(raw::SourceCase::Number);
+    let overlong = "a".repeat(65);
+    for (table, column) in [(overlong.as_str(), "AfterOff"), (TABLE, overlong.as_str())] {
+        // Initial cancellation polling may charge one step; no source work or
+        // request-length-proportional ASCII scan is authorized by this pool.
+        let mut work = ResourceBudget::new(0, 0, 1);
+        assert!(matches!(
+            image(&before).prepare_created_add_field_after_off_candidate(
+                table,
+                column,
+                FieldAdditionTarget::NumberLongZero,
+                &mut work,
+                &|| false,
+            ),
+            Err(FieldAdditionAfterOffError::Namespace)
+        ));
+    }
+}
