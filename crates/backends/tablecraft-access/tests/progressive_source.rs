@@ -1,4 +1,3 @@
-use tablecraft_query::SourceFailure;
 use tablecraft_testkit::fixtures::access::mutation_fixture as fixture;
 #[allow(dead_code)]
 #[path = "../../../engines/tablecraft-ace/tests/linked_tables/fixture.rs"]
