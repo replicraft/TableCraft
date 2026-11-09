@@ -515,3 +515,21 @@ cover the shared Text gallery, naming, close and review states under normal
 presentation gates. There are no matching native Access captures for those open
 surfaces, so the observations establish TableCraft layout/readability only.
 No native app windows were opened and no database behavior is inferred.
+
+## Saved-field deletion — 9 November 2026
+
+The retained Datasheet and Design references were reopened at 1920 × 1141 and
+1920 × 1165 pixels, respectively. Their Windows/VirtualBox display scale is
+unknown. Neither captures an expanded deletion command, confirmation, pending
+status or failure dialog; these are adaptations of the documented workflow,
+not visually verified Access parity.
+
+All sixteen [deletion preview frames](../testing/results/saved-field-drop-gui-2026-11-09.json)
+were directly inspected. The record pins locales, themes, pixel dimensions and
+scales. Offscreen rendering used macOS 14.7.2 ARM64 with Windows input emulation;
+GPU adapter identity was not captured. Native macOS startup and File/Open were
+also observed in a task-owned app after graphical permission resumed. Path-entry
+automation did not establish an opened database or a native save. The app was
+closed and generated input hashes remained unchanged. Native window scale was
+not independently measured; these observations do not qualify Windows rendering
+or Access database behavior.

@@ -1,8 +1,8 @@
 # Bounded saved-field DROP
 
 The native engine, original-intent recovery, Access adapter and consuming runtime
-implement a separate saved-field deletion operation. Normal GUI DROP activation
-is pending. The shared model has source-free ownership checks; it does not turn
+implement a separate saved-field deletion operation. The normal desktop route
+is connected and passes its real Number/Text interaction acceptance tests. The shared model has source-free ownership checks; it does not turn
 an eligibility fact or a Yes confirmation into write authority. This is not
 general ALTER TABLE, populated-table deletion or Access 97–2019 write completion.
 
@@ -72,7 +72,7 @@ with one cumulative recovery allowance. Existing pending/committed/torn-marker
 and settled semantics remain unchanged. Scope is issued by the current caller
 and rebound during reconstruction, never serialized as authority.
 
-## Runtime and pending GUI boundary
+## Runtime and shared GUI boundary
 
 [Runtime inspection, review, save and witnessed reopening](../../application/RUNTIME.md#reviewed-saved-field-deletion)
 use distinct DROP DTOs, consuming capability and full-image witness. Source
@@ -83,9 +83,16 @@ only the accepted full witness can publish a fresh document.
 
 The implemented shared state separates Yes/No confirmation, local pending
 deletion, explicit Save, reviewed request, retained save/recovery and checked
-publication. Dirty owners must be resolved, never silently discarded. Normal
-GUI dispatch/activation and actual end-to-end deletion interaction remain
-pending. No deletion dialog capture or native Windows/Access comparison exists.
+publication. Dirty owners must be resolved, never silently discarded. The normal
+desktop composes these services through the [shared deletion workflow](../../ui/FIELD_DROP.md);
+the [coordinated headless macOS record](../../testing/results/saved-field-drop-gui-2026-11-09.json)
+reports 681 shared UI tests passed and 201 desktop tests passed with one existing
+ignored desktop test. All seven focused DROP test functions are included in those
+totals. They use independently generated first-party byte fixtures, not original
+Access-authored databases. Offscreen rendering remains a separate pending gate.
+Only a successful full-image witness publishes the new schema or resumes an
+accepted close transition. No deletion dialog capture or native Windows/Access
+comparison exists.
 
 ## Evidence and current limits
 
@@ -102,8 +109,8 @@ are not vector positions. The [single raw first-row reader observation](../../te
 confirms one independent authored record, not a working INSERT writer. At the
 recorded service checkpoint, ordinary omitted INSERT refuses this source with
 Unsupported(ActiveContent) from the old dense declaration grammar; this does not
-mean an active program was found. A separate sparse-generated writer change is
-now passes the nine native writer/recovery cases and an actual runtime
+mean an active program was found. The separate sparse-generated writer change
+passes the nine native writer/recovery cases and an actual runtime
 DROP → checked reopen → omitted INSERT → save/ACK/readback journey in the
 coordinated Rust-review batch. The ordinary generated fixed-Int32 route derives
 admission from current metadata, retains native numbers/offsets/high-water marks,

@@ -1,5 +1,33 @@
 # Implementation status
 
+## Normal saved-field deletion and ownership follow-up — 9 November 2026
+
+The existing bounded ACE16 DROP service now has a normal desktop consumer through
+the shared Datasheet field menu and saved Design Delete Rows/Delete command.
+Readonly exact-field inspection enables Yes; confirmation creates only a local
+pending mark. Explicit Save uses the runtime's consuming review, shared save
+actor and operation-specific complete-image reopen witness. Captions, display
+positions and native field numbers remain distinct. Cancellation, retained
+release, unknown outcomes and failed AFTER reads preserve their actual ownership;
+no receipt or UI flag alone publishes a new schema.
+
+The [coordinated record](testing/results/saved-field-drop-gui-2026-11-09.json)
+contains real Number/Text saves, independent complete AFTER comparisons, retained
+scratch/tab identity, fresh Design selection and actual omitted INSERT following
+a Number deletion gap. The first batch passed 681 UI and 201 desktop tests with
+one existing desktop ignored case. Subsequent ownership changes passed all 201
+desktop and 112 CLI unit cases; a new retry-widget timing failure was corrected
+and all 32 DROP UI cases passed without repeating or summing unchanged coverage.
+Sixteen final source-free frames were directly inspected at recorded sizes and
+scales. Native macOS startup/File/Open review is separate; it does not qualify a
+native deletion interaction or Windows/Access behavior. See [the workflow and
+current limits](ui/FIELD_DROP.md).
+
+The [clone follow-up](development/RUST_SKILLS_REVIEW.md#clone-follow-up--9-november-2026)
+removes comparison-only test copies, readonly/per-frame UI copies and duplicate
+CLI parameter-value vectors. It explicitly does not certify every repository
+clone as necessary. No native writer profile or paused backend scope expanded.
+
 ## Normal ADD after OFF and reviewed field rename — 9 November 2026
 
 The existing Number/Short Text gallery now saves after qualified explicit-OFF

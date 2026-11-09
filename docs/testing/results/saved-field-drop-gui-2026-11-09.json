@@ -1,0 +1,570 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-09",
+  "scope": "Normal desktop saved-field DROP, current bounded ACE16 source profile; separate from general ALTER/DROP or Access parity",
+  "source_revision": "f9b1bd3a3572a30c1ab5e1d99bfdf4b9799c03cb",
+  "host": {
+    "os": "macOS",
+    "version": "14.7.2",
+    "architecture": "arm64",
+    "native_access_execution": false,
+    "windows_runtime": false
+  },
+  "implementation": {
+    "native_profile_expanded": false,
+    "gui_normal_capability": "SaveWorker::supports_field_drop()",
+    "source_specific_inspection_required": true,
+    "confirmation_is_write_authority": false,
+    "publication_requires_full_witness": true
+  },
+  "fixtures": [
+    {
+      "factory": "tablecraft_testkit::fixtures::access::canonical_created_number::mixed::after_off::deleted_field",
+      "case": "NumberHistory",
+      "target": "Score",
+      "before_bytes": 45056,
+      "before_sha256": "6f9b095ddf3d724e34d5af98bea4e8ba88bc2b2bc70ade10814f85c27770c620",
+      "expected_after_sha256": "6c08831dfe4d305064837d93a8d1942a1a87b691ca80e4834a130c202c72923b",
+      "expected_after_variant": "AppendedGroupRemoved",
+      "whole_saved_output_asserted_equal_to_expected": true,
+      "actual_saved_output_hash_exported_separately": false,
+      "surviving_native_columns": [
+        [
+          "ID",
+          0
+        ],
+        [
+          "Score2",
+          2
+        ]
+      ],
+      "source_kind": "independently generated first-party raw bytes, not Access-authored"
+    },
+    {
+      "factory": "tablecraft_testkit::fixtures::access::canonical_created_number::mixed::after_off::deleted_field",
+      "case": "MixedTextHistory",
+      "target": "Label",
+      "before_bytes": 45056,
+      "before_sha256": "c28d3c1bf1de4e75f894ac80ae332aa2a5b4b8c3c9111700d989222b8d6267c3",
+      "expected_after_sha256": "d9432f5edadc0bfcd60551f747be5e6ac630585f5cfa78fffdced6f7e875b935",
+      "expected_after_variant": "AppendedGroupRemoved",
+      "whole_saved_output_asserted_equal_to_expected": true,
+      "actual_saved_output_hash_exported_separately": false,
+      "surviving_native_columns": [
+        [
+          "ID",
+          0
+        ],
+        [
+          "AfterLabel",
+          2
+        ],
+        [
+          "OtherLabel",
+          3
+        ]
+      ],
+      "source_kind": "independently generated first-party raw bytes, not Access-authored"
+    }
+  ],
+  "suite_batches": [
+    {
+      "scope": "Initial coherent DROP UI/desktop suites before ownership polish",
+      "ui_passed": 681,
+      "desktop_passed": 201,
+      "desktop_ignored": 1,
+      "failed": 0,
+      "commands": [
+        "cargo test -p tablecraft-ui -p tablecraft-desktop --all-features --lib --bins --no-run --offline --locked",
+        "frozen unit executables --test-threads=4"
+      ],
+      "log_sha256": {
+        "ui": "aaf7388da928de1b802c383be5613224a5176a8ef02adaa22ed9f901a44d0b4b",
+        "desktop": "d20f79c4a00aadf3c9b1262c739cc0b1c07a1ced9275725255edef3cc8aa2ea7"
+      }
+    },
+    {
+      "scope": "Post-ownership follow-up; retry regression checked collector one frame too soon",
+      "ui_passed": 681,
+      "ui_failed": 1,
+      "desktop_passed": 201,
+      "desktop_ignored": 1,
+      "cli_unit_passed": 112,
+      "claim": "Not a green complete UI suite. Failed case retained; only its test timing changed afterward."
+    },
+    {
+      "scope": "Corrected post-modal retry test plus all DROP UI cases",
+      "passed": 32,
+      "failed": 0,
+      "filtered": 650,
+      "command": "cargo test -p tablecraft-ui --all-features --lib workspace::field_drop --offline --locked",
+      "log_sha256": "e18ebbcbbae554e961560ceb0498b71fcc0bd18aa21de7628a5dacee3f381b98",
+      "counting": "Repeated cases are not added to full-suite totals."
+    }
+  ],
+  "functional_cases": [
+    "Normal Number Datasheet and Text Design commands, No, Yes pending, Ctrl+S, complete independent AFTER comparison",
+    "Full-witness publication retains exact tabs and scratch SQL; Design resolves next native-number survivor",
+    "Number native-number gap followed by actual normal omitted INSERT/save/ACK/readback",
+    "No-OFF refusal without changing settings or source",
+    "Cancelled actual review ignores late consuming capability and permits explicit retry",
+    "Foreign source drift retains release; no automatic original-source recovery",
+    "Actual Saved ACK followed by cancelled/tampered witness retains old UI and saved warning",
+    "Exact Cancel then Save/Discard closes only the intended table and preserves scratch",
+    "Unlocked runtime review without confirmed UI owner starts no save",
+    "Eligible confirmation has only Yes/No; terminal inspection retry preserves exact target and waits for next collector frame"
+  ],
+  "visual": {
+    "renderer": "egui_kittest/wgpu offscreen; Windows input emulation",
+    "graphics_adapter_name": null,
+    "frames": [
+      {
+        "mode": "confirmation",
+        "locale": "en-US",
+        "theme": "light",
+        "logical_size": [
+          1280,
+          800
+        ],
+        "pixels_per_point": 1,
+        "exit_code": 0,
+        "image": ".cache/field-drop-acceptance-20261109/previews/en-US-light-datasheet-field-drop-confirmation.png",
+        "pixel_size": [
+          1280,
+          800
+        ],
+        "sha256": "38d950b31dd601d7b3a8f99f745ab5a328542a1358f6caad2ddfbb2c25b3925a",
+        "inspected": true
+      },
+      {
+        "mode": "confirmation",
+        "locale": "en-US",
+        "theme": "dark",
+        "logical_size": [
+          1280,
+          800
+        ],
+        "pixels_per_point": 1,
+        "exit_code": 0,
+        "image": ".cache/field-drop-acceptance-20261109/previews/en-US-dark-datasheet-field-drop-confirmation.png",
+        "pixel_size": [
+          1280,
+          800
+        ],
+        "sha256": "68cdee7341b3588041f1a68311250810a11576afe0e55a3d81525697b6fe3e0c",
+        "inspected": true
+      },
+      {
+        "mode": "source-refused",
+        "locale": "en-US",
+        "theme": "light",
+        "logical_size": [
+          1280,
+          800
+        ],
+        "pixels_per_point": 1,
+        "exit_code": 0,
+        "image": ".cache/field-drop-acceptance-20261109/previews/en-US-light-datasheet-field-drop-source-refused.png",
+        "pixel_size": [
+          1280,
+          800
+        ],
+        "sha256": "c5c1671101b68b7331a204f1505531a2ea511db2ae043543ba9836285d335a60",
+        "inspected": true
+      },
+      {
+        "mode": "source-refused",
+        "locale": "en-US",
+        "theme": "dark",
+        "logical_size": [
+          1280,
+          800
+        ],
+        "pixels_per_point": 1,
+        "exit_code": 0,
+        "image": ".cache/field-drop-acceptance-20261109/previews/en-US-dark-datasheet-field-drop-source-refused.png",
+        "pixel_size": [
+          1280,
+          800
+        ],
+        "sha256": "1a879bb376f8061539412ae79de44073b5ee229f257f5f4391effb2013ce854c",
+        "inspected": true
+      },
+      {
+        "mode": "pending",
+        "locale": "en-US",
+        "theme": "light",
+        "logical_size": [
+          1280,
+          800
+        ],
+        "pixels_per_point": 1,
+        "exit_code": 0,
+        "image": ".cache/field-drop-acceptance-20261109/previews/en-US-light-datasheet-field-drop-pending.png",
+        "pixel_size": [
+          1280,
+          800
+        ],
+        "sha256": "20b3dd058b1ff45fd399028181c94e6a5012d568c70747d55fc93715e89979c6",
+        "inspected": true
+      },
+      {
+        "mode": "pending",
+        "locale": "en-US",
+        "theme": "dark",
+        "logical_size": [
+          1280,
+          800
+        ],
+        "pixels_per_point": 1,
+        "exit_code": 0,
+        "image": ".cache/field-drop-acceptance-20261109/previews/en-US-dark-datasheet-field-drop-pending.png",
+        "pixel_size": [
+          1280,
+          800
+        ],
+        "sha256": "98fa728c21db1db7dca06f30ae82ef8479756620806be9ed2ff7ba9f07afd9ef",
+        "inspected": true
+      },
+      {
+        "mode": "close",
+        "locale": "en-US",
+        "theme": "light",
+        "logical_size": [
+          1280,
+          800
+        ],
+        "pixels_per_point": 1,
+        "exit_code": 0,
+        "image": ".cache/field-drop-acceptance-20261109/previews/en-US-light-datasheet-field-drop-close.png",
+        "pixel_size": [
+          1280,
+          800
+        ],
+        "sha256": "a5b918121b040421a60bfb4f13bd7a383d45f10db8fc84c9e00fb847d4c29682",
+        "inspected": true
+      },
+      {
+        "mode": "close",
+        "locale": "en-US",
+        "theme": "dark",
+        "logical_size": [
+          1280,
+          800
+        ],
+        "pixels_per_point": 1,
+        "exit_code": 0,
+        "image": ".cache/field-drop-acceptance-20261109/previews/en-US-dark-datasheet-field-drop-close.png",
+        "pixel_size": [
+          1280,
+          800
+        ],
+        "sha256": "d37b10ed93e3e5898ebc10f250a44c5143a639ca1c4f3f7d59bb0c41b4c9f438",
+        "inspected": true
+      },
+      {
+        "mode": "review",
+        "locale": "en-US",
+        "theme": "light",
+        "logical_size": [
+          1280,
+          800
+        ],
+        "pixels_per_point": 1,
+        "exit_code": 0,
+        "image": ".cache/field-drop-acceptance-20261109/previews/en-US-light-datasheet-field-drop-review.png",
+        "pixel_size": [
+          1280,
+          800
+        ],
+        "sha256": "c86e69697fc869ad49431710f181bcafa866e79627cebd50d0b8a6ec9d2bda05",
+        "inspected": true
+      },
+      {
+        "mode": "review",
+        "locale": "en-US",
+        "theme": "dark",
+        "logical_size": [
+          1280,
+          800
+        ],
+        "pixels_per_point": 1,
+        "exit_code": 0,
+        "image": ".cache/field-drop-acceptance-20261109/previews/en-US-dark-datasheet-field-drop-review.png",
+        "pixel_size": [
+          1280,
+          800
+        ],
+        "sha256": "5a3b47a44834da01b6bfff9c1258a95ef19046790144e561f5c43014196cf991",
+        "inspected": true
+      },
+      {
+        "mode": "inspecting",
+        "locale": "en-US",
+        "theme": "light",
+        "logical_size": [
+          1280,
+          800
+        ],
+        "pixels_per_point": 1,
+        "exit_code": 0,
+        "image": ".cache/field-drop-acceptance-20261109/previews/en-US-light-datasheet-field-drop-inspecting.png",
+        "pixel_size": [
+          1280,
+          800
+        ],
+        "sha256": "0e30fdc6a12b5a84cddb4939c528d7f8f17f165e064ba2713f8001f6bd8dabc4",
+        "inspected": true
+      },
+      {
+        "mode": "inspecting",
+        "locale": "en-US",
+        "theme": "dark",
+        "logical_size": [
+          1280,
+          800
+        ],
+        "pixels_per_point": 1,
+        "exit_code": 0,
+        "image": ".cache/field-drop-acceptance-20261109/previews/en-US-dark-datasheet-field-drop-inspecting.png",
+        "pixel_size": [
+          1280,
+          800
+        ],
+        "sha256": "cc37ece28005bc083bdefc48657b21ce185386bab979f3134e89964eeada6618",
+        "inspected": true
+      },
+      {
+        "mode": "close",
+        "locale": "ru",
+        "theme": "dark",
+        "logical_size": [
+          640,
+          480
+        ],
+        "pixels_per_point": 2,
+        "exit_code": 0,
+        "image": ".cache/field-drop-acceptance-20261109/previews/ru-dark-datasheet-field-drop-close@2x.png",
+        "pixel_size": [
+          1280,
+          960
+        ],
+        "sha256": "9e9086bf9f4aaccc0e3b0f9ce0134acd1ae49f2f91063cc0d91af3b6f1069c14",
+        "inspected": true
+      },
+      {
+        "mode": "confirmation",
+        "locale": "ja",
+        "theme": "light",
+        "logical_size": [
+          860,
+          640
+        ],
+        "pixels_per_point": 1,
+        "exit_code": 0,
+        "image": ".cache/field-drop-acceptance-20261109/previews/ja-light-datasheet-field-drop-confirmation.png",
+        "pixel_size": [
+          860,
+          640
+        ],
+        "sha256": "1966e96b0575e88031c6f7e94b18c83784f7c6200192043487045cbe3fb4b7b8",
+        "inspected": true
+      },
+      {
+        "mode": "pending",
+        "locale": "zh-CN",
+        "theme": "dark",
+        "logical_size": [
+          860,
+          640
+        ],
+        "pixels_per_point": 1,
+        "exit_code": 0,
+        "image": ".cache/field-drop-acceptance-20261109/previews/zh-CN-dark-datasheet-field-drop-pending.png",
+        "pixel_size": [
+          860,
+          640
+        ],
+        "sha256": "165b31f1e81ce2902bb617fff5112dd325775228de22183b01d707bbfcdaa8b6",
+        "inspected": true
+      },
+      {
+        "mode": "source-refused",
+        "locale": "de",
+        "theme": "light",
+        "logical_size": [
+          860,
+          640
+        ],
+        "pixels_per_point": 1,
+        "exit_code": 0,
+        "image": ".cache/field-drop-acceptance-20261109/previews/de-light-datasheet-field-drop-source-refused.png",
+        "pixel_size": [
+          860,
+          640
+        ],
+        "sha256": "ddc89c90b212d254fd9864280b8bc6213011e06b5fffb038d3c1014b430e6f1c",
+        "inspected": true
+      }
+    ],
+    "private_references_opened": [
+      "Bildschirmfoto_2026-10-28_12-07-35.png",
+      "Bildschirmfoto_2026-10-28_12-07-50.png"
+    ],
+    "reference_capture_scope": "Windows Access in VirtualBox; no expanded deletion dialog or pending-delete capture exists",
+    "qualification": "All 16 final images directly inspected. These are source-free adaptations, not native save evidence.",
+    "superseded": [
+      "Eligible dialog with redundant retry, excluded from final matrix"
+    ],
+    "failed_attempts": [
+      "Sandbox offscreen render had no GPU adapter; approved device-access retry succeeded"
+    ]
+  },
+  "native_gui": {
+    "permission_resumed": true,
+    "task_owned_app_only": true,
+    "observed": [
+      "Startup Home",
+      "File/Open Backstage",
+      "Dark theme at native window scale"
+    ],
+    "captured_image_pixels": [
+      2560,
+      1700
+    ],
+    "pixels_per_point_independently_measured": false,
+    "incomplete": [
+      "Path-entry automation did not establish an opened-database UI; no native DROP save interaction qualified"
+    ],
+    "task_app_exit_verified": true,
+    "generated_review_inputs_unchanged": true,
+    "original_user_databases_opened": false
+  },
+  "checks": {
+    "affected_strict_clippy": true,
+    "post_ownership_workspace_all_target_clippy": true,
+    "new_dependencies": false,
+    "native_windows_access_parity": false
+  },
+  "source_files": [
+    {
+      "path": "apps/tablecraft-desktop/src/workspace.rs",
+      "sha256": "df579b9cfb1dd6d3038639df7ba4996bc899fd6310b245e3e455121d493a2213"
+    },
+    {
+      "path": "apps/tablecraft-desktop/src/workspace/editing.rs",
+      "sha256": "fc7837bd45ffdbaf74d7d0ac13cf3613af43cea6ebb20b9180cc45f171386619"
+    },
+    {
+      "path": "apps/tablecraft-desktop/src/workspace/editing/field_addition/completion.rs",
+      "sha256": "e86a2b8844293802a4e9b60333b6351ee5bc2b44539406cad74662a0d7ca2182"
+    },
+    {
+      "path": "apps/tablecraft-desktop/src/workspace/editing/field_drop.rs",
+      "sha256": "025bd9d3d043ad68c6d61c1c32bcc9083a6abea4b347dd23327fc62c8ad2b54a"
+    },
+    {
+      "path": "apps/tablecraft-desktop/src/workspace/editing/field_drop/completion.rs",
+      "sha256": "9f2aab4117adb31579bfb4cd52ca7b58dc6b6f5aceb8a4d03c7d86eb1351e8ed"
+    },
+    {
+      "path": "apps/tablecraft-desktop/src/workspace/editing/field_drop/inspection.rs",
+      "sha256": "dccb604e659d495be266d42836c8ed6b28360414b86223503786b99e0b641e83"
+    },
+    {
+      "path": "apps/tablecraft-desktop/src/workspace/editing/field_drop/tests.rs",
+      "sha256": "4d65afd0cee4543ad2889ca1dbc2e3618de2b0bc77d3219a9bed88bd2ff50701"
+    },
+    {
+      "path": "apps/tablecraft-desktop/src/workspace/editing/field_drop/tests/close.rs",
+      "sha256": "73eb8dd62fe4fa754f41951d1caee941537134e8c646a7562bdff81b68e15282"
+    },
+    {
+      "path": "apps/tablecraft-desktop/src/workspace/editing/field_drop/tests/failures.rs",
+      "sha256": "67b168bc9d8bc8eb026c6a80eec143d92b37e77980c46e623b0758875a202e87"
+    },
+    {
+      "path": "apps/tablecraft-desktop/src/workspace/editing/field_drop/tests/ownership.rs",
+      "sha256": "6086f1f5fb62a46825e8fa6f1cbd4eebbbf5977730534cdd64a50386840803dd"
+    },
+    {
+      "path": "apps/tablecraft-desktop/src/workspace/editing/field_drop/tests/widgets.rs",
+      "sha256": "57b56e002c4669722bdd6c6770c844300ab47eaf01967c19e8b5b6928625ef70"
+    },
+    {
+      "path": "apps/tablecraft-desktop/src/workspace/editing/field_rename/completion.rs",
+      "sha256": "5ba2108ed533c24e7086854ce5d74f1db6e4f8195fa33b9395e415a00dd23e8f"
+    },
+    {
+      "path": "apps/tablecraft-desktop/src/workspace/editing/field_save.rs",
+      "sha256": "75e545c85a3c3de03b0708d1856ee696579320da5dafc70c4e908ed892cd75af"
+    },
+    {
+      "path": "apps/tablecraft-desktop/src/workspace/editing/uncertain.rs",
+      "sha256": "872e0b4bb04475c43e8363f7d078d8f5dae2d557f16f6bd96231b69b35e92bf4"
+    },
+    {
+      "path": "apps/tablecraft-desktop/src/workspace/objects.rs",
+      "sha256": "6c059dcfd03fe117a97a3288bdf62a2f85435d2dc2c90adb29b10b77f661bd69"
+    },
+    {
+      "path": "apps/tablecraft-desktop/src/workspace/read_failures.rs",
+      "sha256": "c5571c57cc5b651f619f5dd4f894f7c9fd5408e2d494d28d6db59048599b0543"
+    },
+    {
+      "path": "apps/tablecraft-desktop/src/workspace/table_drafts.rs",
+      "sha256": "8647d5e4ae7035919e584c265cea34fdde323282325b4c2f8d911212fa64adb3"
+    },
+    {
+      "path": "apps/tablecraft-desktop/src/workspace/table_drafts/field_drop.rs",
+      "sha256": "4454e8b75c024691014dc9c46fa59e2360d8489f006db9697699e80e40979d01"
+    },
+    {
+      "path": "crates/presentation/tablecraft-ui/src/workspace/field_drop/preparation.rs",
+      "sha256": "860ba4835863795dcdbcca61db78e4c83b5a497cf404727f908540d64de241b3"
+    },
+    {
+      "path": "crates/presentation/tablecraft-ui/src/workspace/field_drop/rendering.rs",
+      "sha256": "6285c4a34ee8fbd73bdbf1bb7e2cbd1fa15b57a8247d15f9aa3fd9831954d9c6"
+    },
+    {
+      "path": "crates/presentation/tablecraft-ui/src/workspace/field_drop/state.rs",
+      "sha256": "1afa658dabb55feb350379912889841965d2c97f841b9847ddbab3ddafe657ad"
+    },
+    {
+      "path": "crates/presentation/tablecraft-ui/src/workspace/field_drop/status.rs",
+      "sha256": "ff85ad4171bc0f39aaa9a6ceccfa48ca6ccfb45b8e93634ddb045da1adf871ad"
+    },
+    {
+      "path": "crates/presentation/tablecraft-ui/src/workspace/field_drop/tests.rs",
+      "sha256": "155def0a9a4b6c4dc02e19263b5a48caaf789737090520a64058356c487a8c7c"
+    },
+    {
+      "path": "crates/presentation/tablecraft-ui/src/workspace/field_drop/tests/activation.rs",
+      "sha256": "aefd1656085bfd4687d5b0c92e3fa25fb929687df910d1c1bb150a8884373bd8"
+    },
+    {
+      "path": "crates/presentation/tablecraft-ui/src/workspace/field_drop/tests/widgets.rs",
+      "sha256": "141a541fe6893e836e75e66efcd74eaec07397c1a13a192667ebe67c4a4438e9"
+    },
+    {
+      "path": "crates/presentation/tablecraft-ui/src/workspace/field_drop/tests/widgets/activation.rs",
+      "sha256": "12b51b844a188a213fc8ab708d5ad4d24a9cfbd17cbd6d99a2acb04381e20c71"
+    },
+    {
+      "path": "crates/presentation/tablecraft-ui/src/workspace/objects.rs",
+      "sha256": "2492bbfcba87ac126f07195dc8bbe6083111ff04204f313427bbbcbbb9dc9ec9"
+    },
+    {
+      "path": "crates/presentation/tablecraft-ui/src/workspace/objects/tests.rs",
+      "sha256": "8670ac8817a1ab1872fdabb0b5d29dc66f8dc2004d5562f47d14163011cd67a3"
+    }
+  ],
+  "limitations": [
+    "Unencoded empty canonical ACE16 field histories with explicit Name AutoCorrect OFF only",
+    "Qualified nonprimary/nonindexed Long Integer or Short Text targets only",
+    "No populated-table, indexed-target, dependency, repeated-DROP, older-profile or Text-variable-gap INSERT qualification",
+    "VBA execution remains deferred; no Windows/Access save claim",
+    "Local .cache artifacts are optional historical evidence, not CI fixtures"
+  ]
+}

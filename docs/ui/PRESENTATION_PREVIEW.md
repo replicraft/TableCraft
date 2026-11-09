@@ -1,5 +1,32 @@
 # Presentation preview
 
+## Saved-field deletion — 9 November 2026
+
+`TABLECRAFT_PREVIEW_FIELD_DROP` accepts `confirmation`, `inspecting`,
+`source-refused`, `pending`, `close` and `review`; `none` retains ordinary
+presentation. Use the datasheet scene and no other workflow preview setting.
+These source-free shared-widget scenarios contain no native capability, file
+open, save worker or completed deletion.
+
+The [evidence record](../testing/results/saved-field-drop-gui-2026-11-09.json)
+pins sixteen directly inspected frames: all six modes in English light/dark at
+1280 × 800 logical points/1×; Russian dark close at 640 × 480/2×; Japanese light
+confirmation, Chinese dark pending and German light refusal at 860 × 640/1×.
+Rendering used macOS 14.7.2 ARM64, WGPU and Windows input emulation; adapter
+identity was not captured. Assertions cover modal containment, exact targets,
+retained stored data and complete decisions. Ordinary confirmation offers Yes/No;
+Retry belongs to refused, interrupted or failed inspection.
+
+```sh
+TABLECRAFT_PREVIEW_HOST=normal TABLECRAFT_PREVIEW_SCENE=datasheet \
+TABLECRAFT_PREVIEW_FIELD_DROP=confirmation TABLECRAFT_PREVIEW_LOCALE=en-US \
+TABLECRAFT_PREVIEW_THEME=dark TABLECRAFT_PREVIEW_WIDTH=1280 \
+TABLECRAFT_PREVIEW_HEIGHT=800 TABLECRAFT_PREVIEW_SCALE=1 \
+TABLECRAFT_PREVIEW_DIR=.cache/ui-previews/field-drop \
+cargo run -p tablecraft-ui --example render_preview
+```
+
+
 ## Explicit database Options — 8 November 2026
 
 `TABLECRAFT_PREVIEW_DATABASE_OPTIONS` accepts `general`, `unknown`, `refused`,

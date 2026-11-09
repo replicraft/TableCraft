@@ -25,6 +25,7 @@ infrastructure or VBA execution.
 - [Scratch SQL drafts and result ownership](SQL_WORKSPACE.md)
 - [Native Find and reviewed replacement](FIND_REPLACE.md)
 - [Reviewed saved-field names](FIELD_RENAME.md)
+- [Reviewed saved-field deletion](FIELD_DROP.md)
 - [Ribbon presentation coverage and remaining qualification](RIBBON.md)
 - [Synthetic preview, themes and translations](PRESENTATION_PREVIEW.md)
 - [Native desktop kickoff, ownership and release gates](DESKTOP.md)

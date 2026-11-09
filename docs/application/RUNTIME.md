@@ -1928,6 +1928,12 @@ Cancellation, changed source and failed reopen do not become deletion success.
 
 The [checkpoint record](../testing/results/saved-field-drop-services-2026-11-09.json)
 retains corrected native/recovery, actual adapter-file and runtime service cases,
-plus source-free shared model/regression suites. Normal GUI DROP activation is
-pending; the service does not imply a connected Delete Field button. A separate
-applied-but-unrun sparse-generated INSERT change is outside these results.
+plus source-free shared model/regression suites. The subsequent
+[normal GUI workflow](../ui/FIELD_DROP.md) connects Datasheet Delete Field and
+saved Design Delete Rows/Delete to these exact services. Metadata inspection
+precedes local Yes confirmation; explicit Save repeats target admission through
+the consuming review. Only full-witness publication changes the visible stored
+schema. The [GUI record](../testing/results/saved-field-drop-gui-2026-11-09.json)
+separates real headless saves from source-free renders and incomplete native
+interaction. Sparse-generated INSERT was outside the earlier service checkpoint;
+the later GUI record separately checks omitted INSERT after witnessed Number DROP.

@@ -40,7 +40,7 @@ All cells describe current implementation, not the requested final state.
 | Rename a saved table | Missing | Missing | Missing | Missing | Restricted single-table, Name AutoCorrect OFF profile; retained Int32 index saves/recovery and headless workflow checked |
 | Drop a saved table | Missing | Missing | Missing | Missing | Missing |
 | Add a saved column | Missing | Missing | Missing | Missing | Bounded empty-table Number/Short Text ADD, original-intent recovery and normal GUI save/reopen |
-| Rename/alter/drop a saved column | Missing | Missing | Missing | Missing | Restricted same-width rename service and connected GUI workflow; headless GUI acceptance passed; alteration and deletion unfinished |
+| Rename/alter/drop a saved column | Missing | Missing | Missing | Missing | Restricted same-width rename and empty-table Number/Short Text deletion have connected normal GUI workflows; broader alteration/deletion remain unfinished |
 | Update rows | Restricted fixed non-NULL Int32 copy route | No normal writer admission | No normal writer admission | No independently qualified normal writer | Many qualified carrier/index/allocation profiles |
 | Insert/delete rows | No equivalent normal routes established | Missing normal routes | Missing normal routes | Missing normal routes | Qualified normal routes; restrictions remain |
 | Recoverable writes | Existing Jet 4 update integration | No CRUD-specific qualification | No CRUD-specific qualification | No CRUD-specific qualification | Original-intent journal/recovery for admitted actions |
@@ -69,7 +69,7 @@ writer qualifications remain in [native writes](../access/writes/NATIVE_WRITES.m
 | Profile coverage | Original Jet 3/4 and ACE 12/14/15/16 fixture inventories; actual version/features/encryption provenance; positive and negative write/recovery evidence for each family. |
 | Database lifecycle | Creators for the other targets, full supported declarations, database options, encrypted writes and explicit safe file lifecycle. Removing a database file is a host operation with document/resource ownership, not SQL DROP DATABASE. |
 | Saved table lifecycle | Broaden restricted rename to ordinary creator/indexed/multiple-table layouts and Name AutoCorrect behavior; implement DROP with dependency handling, identity preservation and allocation retirement. |
-| Saved column lifecycle | Broaden the implemented empty-table Number/Short Text ADD beyond its canonical ACE16 source, declaration/history and page limits. Broaden bounded persisted rename beyond its checked GUI profile; finish bounded DROP through GUI and broader deletion profiles, type changes, existing-row migration, defaults/indexes/properties and dependency updates. Preserve field numbers/null masks/variable offsets, native history and unknown metadata. |
+| Saved column lifecycle | Broaden the implemented empty-table Number/Short Text ADD beyond its canonical ACE16 source, declaration/history and page limits. Broaden bounded persisted rename beyond its checked GUI profile; broaden the connected bounded DROP GUI workflow to additional deletion profiles, type changes, existing-row migration, defaults/indexes/properties and dependency updates. Preserve field numbers/null masks/variable offsets, native history and unknown metadata. |
 | Rows and storage | General scalar and supported advanced-field CRUD, all admitted key families/combinations, DATA/INDEX/LVAL growth and contraction, allocation-map growth, page reuse and reclamation. Remove fitting-only/short-ledger restrictions through real storage work. |
 | Defaults and identity | Omitted versus NULL versus supplied values, complete supported defaults, Increment/Random generation, reseeding/history and composition with constraints/indexes/allocation. |
 | Constraints and relationships | Required/AZL, field/record validation, primary/unique indexes, foreign keys, relationships, cascades and supported NULL/text comparison behavior. Author and preserve their native declarations. |
@@ -107,8 +107,10 @@ properties/history, a sixteen-field source ceiling and the proved property-page
 allocation limits. A separate bounded [saved-field rename flow](../ui/FIELD_RENAME.md)
 passes bounded headless functional acceptance. A separate bounded
 [saved-field DROP](../access/writes/FIELD_DROP.md) now has native candidate,
-original-intent recovery, Access adapter and consuming runtime checks; normal GUI
-activation remains pending. Type alteration and broader deletion remain work.
+original-intent recovery, Access adapter and consuming runtime checks. Its
+[normal GUI workflow](../ui/FIELD_DROP.md) now passes headless Datasheet/Design,
+confirmation/Save, full-witness reopening, failure/close and Number sparse-INSERT
+acceptance. Type alteration and broader deletion remain work.
 Unsaved Design authoring remains separate.
 
 ## Queries: current capability and missing work
