@@ -31,11 +31,16 @@ pub(in crate::workspace) fn naming() -> (State, FieldRenameTarget) {
     (state, target)
 }
 
-pub(in crate::workspace) fn observed() -> (State, FieldRenameTarget) {
+pub(in crate::workspace) fn inspecting() -> (State, FieldRenameTarget) {
     let (mut state, target) = naming();
     let outgoing = state.field_rename_inspection_target().unwrap();
     let prepared = state.prepare_field_rename_inspection(&outgoing).unwrap();
     prepared.bind(80);
+    (state, target)
+}
+
+pub(in crate::workspace) fn observed() -> (State, FieldRenameTarget) {
+    let (mut state, target) = inspecting();
     assert!(state.set_field_rename_inspection_by_id(
         80,
         7,

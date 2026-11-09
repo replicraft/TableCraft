@@ -1,5 +1,5 @@
 //! Actual header editor actions retain the stored name until native publication.
-use super::test_support::{harness, naming, observed};
+use super::test_support::{harness, inspecting, observed};
 use crate::Action;
 use egui::{Key, accesskit::Role};
 use egui_kittest::kittest::Queryable;
@@ -53,7 +53,7 @@ fn unsupported_width_stays_visible_and_never_dispatches_a_review() {
 #[test]
 fn fitted_observation_allows_growing_and_shrinking_only_as_exact_review_requests() {
     for proposed in ["LongerScore", "Pts"] {
-        let (mut state, target) = naming();
+        let (mut state, target) = inspecting();
         assert!(state.set_field_rename_inspection_by_id(
             80,
             7,
@@ -89,7 +89,7 @@ fn fitted_observation_allows_growing_and_shrinking_only_as_exact_review_requests
 
 #[test]
 fn fitted_policy_still_refuses_invalid_observations_and_non_ascii_shapes() {
-    let (mut state, target) = naming();
+    let (mut state, target) = inspecting();
     for original_units in [0, 4, 65] {
         assert!(!state.set_field_rename_inspection_by_id(
             80,
