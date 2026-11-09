@@ -1,5 +1,6 @@
 //! Inert SQL inspection: runtime owns reconstruction and edit qualification.
 use super::runtime_target;
+use crate::workspace::request_read;
 use crate::workspace::{Desktop, PendingOperation};
 use tablecraft_runtime::{Command, QuerySqlDraft, QuerySqlEligibility};
 use tablecraft_ui::{
@@ -34,9 +35,16 @@ impl Desktop {
             return;
         }
 
-        let request_id = self.worker.request(Command::InspectQuerySqlDraft {
-            target: runtime_target(&target),
-        });
+        let Some(request_id) = request_read(
+            Command::InspectQuerySqlDraft {
+                target: runtime_target(&target),
+            },
+            &self.worker,
+            &mut self.state,
+        ) else {
+            self.read_request_rejected();
+            return;
+        };
         let Some(request) = self
             .state
             .begin_saved_query_sql_inspection(target, request_id)

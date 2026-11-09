@@ -1,4 +1,5 @@
 //! Exact recorded readonly inspection; no metadata fact becomes save authority.
+use crate::workspace::read_requests;
 use crate::workspace::{Desktop, PendingOperation};
 use tablecraft_runtime::{Command, Error, FieldRenameSourceInspection, Response};
 use tablecraft_ui::{FieldRenameTarget, ObjectKind};
@@ -15,12 +16,21 @@ impl Desktop {
         let ObjectKind::Table { name } = target.tab.target.kind else {
             return;
         };
-        let request_id = self.worker.request(Command::InspectFieldRenameSource {
+        let issued = self.worker.request(Command::InspectFieldRenameSource {
             document_revision: revision,
             table: name,
             column: target.column,
             native_number: target.native_number,
         });
+        let request_id = match issued {
+            Ok(id) => id,
+            Err(_) => {
+                drop(prepared);
+                read_requests::exhausted(&self.worker, &mut self.state);
+                self.read_request_rejected();
+                return;
+            }
+        };
         prepared.bind(request_id);
         self.generation = request_id;
         self.pending = PendingOperation::FieldRenameInspection { request_id };

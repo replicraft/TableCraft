@@ -4,6 +4,7 @@ mod completion;
 #[cfg(test)]
 mod tests;
 use super::{ActiveSave, SaveOwner, cleanup_notice, save_outcome};
+use crate::workspace::request_read;
 use crate::workspace::{Desktop, PendingOperation};
 use std::sync::Arc;
 use tablecraft_runtime::{
@@ -31,9 +32,22 @@ impl Desktop {
         if self.editing.has_save() || !self.state.prepare_database_options_inspection(revision) {
             return;
         }
-        let id = self.worker.request(Command::InspectDatabaseOptions {
-            document_revision: revision,
-        });
+        let Some(id) = request_read(
+            Command::InspectDatabaseOptions {
+                document_revision: revision,
+            },
+            &self.worker,
+            &mut self.state,
+        ) else {
+            self.read_request_rejected();
+            let message = self
+                .state
+                .localizer
+                .text("objects-read-identities-exhausted");
+            self.state
+                .fail_database_options_inspection(revision, 0, message);
+            return;
+        };
         if !self.state.bind_database_options_inspection(revision, id) {
             self.worker.cancel();
             self.state.fail_database_options_inspection(
@@ -137,9 +151,16 @@ impl Desktop {
         {
             return;
         }
-        let id = self.worker.request(Command::ReviewDisableNameAutoCorrect {
-            document_revision: revision,
-        });
+        let Some(id) = request_read(
+            Command::ReviewDisableNameAutoCorrect {
+                document_revision: revision,
+            },
+            &self.worker,
+            &mut self.state,
+        ) else {
+            self.read_request_rejected();
+            return;
+        };
         if !self.state.begin_database_options_review(revision, id) {
             self.worker.cancel();
             return;

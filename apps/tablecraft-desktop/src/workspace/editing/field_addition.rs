@@ -4,6 +4,7 @@ mod completion;
 mod inspection_completion;
 
 use super::{ActiveSave, SaveOwner};
+use crate::workspace::request_read;
 use crate::workspace::{Desktop, PendingOperation};
 use std::sync::Arc;
 use tablecraft_runtime::{
@@ -39,7 +40,12 @@ impl Desktop {
         if self.state.prepare_field_addition_inspection(&tab).is_err() {
             return;
         }
-        let request_id = self.worker.request(command);
+        let Some(request_id) = request_read(command, &self.worker, &mut self.state) else {
+            self.read_request_rejected();
+            self.state
+                .interrupt_prepared_field_addition_inspection(&tab);
+            return;
+        };
         if !self.state.bind_field_addition_inspection(&tab, request_id) {
             self.worker.cancel();
             self.state.error = Some(self.state.localizer.text("objects-open-refused"));
@@ -110,12 +116,19 @@ impl Desktop {
         let Some(filters) = self.capture_filter_restore_definitions() else {
             return;
         };
-        let request_id = self.worker.request(Command::ReviewAddField {
-            document_revision: request.tab.target.document_revision,
-            table: name.clone(),
-            column: request.column.clone(),
-            declaration: request.declaration,
-        });
+        let Some(request_id) = request_read(
+            Command::ReviewAddField {
+                document_revision: request.tab.target.document_revision,
+                table: name.clone(),
+                column: request.column.clone(),
+                declaration: request.declaration,
+            },
+            &self.worker,
+            &mut self.state,
+        ) else {
+            self.read_request_rejected();
+            return;
+        };
         if !self.state.begin_field_addition_review(&request, request_id) {
             self.worker.cancel();
             return;

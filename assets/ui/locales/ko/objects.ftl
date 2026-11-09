@@ -10,3 +10,5 @@ objects-not-loaded = 이 개체를 아직 불러오지 않았습니다.
 objects-load-failed = 이 개체를 불러올 수 없습니다.
 objects-retry = 다시 불러오기
 objects-mock-load-error = 합성된 네이티브 읽기 오류입니다. 데이터베이스를 열지 않았습니다.
+
+objects-read-identities-exhausted = 읽기 요청 식별자를 모두 사용했습니다. TableCraft를 다시 시작하고 데이터베이스를 다시 여세요.

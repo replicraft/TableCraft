@@ -468,6 +468,8 @@ pub struct State {
     pub creation_available: bool,
     creation: creation::Creation,
     pub database: Option<Database>,
+    /// A dead save actor invalidated this snapshot; only a fresh revision retires it.
+    uncertain_native_revision: Option<u64>,
     /// Last table page; query results have a separate slot.
     pub data: Option<Data>,
     pub query_data: Option<Data>,

@@ -197,6 +197,23 @@ impl State {
         }
     }
 
+    /// Actual actor teardown removes retained controls while preserving its name.
+    pub fn set_table_rename_actor_lost(&mut self, id: u64, message: String) {
+        let message = if message.capacity() <= MAX_REPORT_BYTES {
+            message
+        } else {
+            String::new()
+        };
+        if let Some(rename) = &mut self.table_rename
+            && matches!(rename.phase, Phase::Saving { id: current, .. } | Phase::Finished { id: current, .. } if current == id)
+        {
+            rename.phase = Phase::Finished {
+                id,
+                outcome: EditSaveOutcome::Failed(message),
+            };
+        }
+    }
+
     /// Expose only the recovery or release permission reported by this save owner.
     pub fn can_resolve_table_rename_save(&self, id: u64, recover: bool) -> bool {
         let Some(rename) = &self.table_rename else {
@@ -253,6 +270,19 @@ impl State {
             return false;
         }
         self.table_rename = None;
+        true
+    }
+
+    /// An acknowledged dead actor has no result authority. Keep the exact local
+    /// proposal while the revision-wide stale marker blocks native mutation.
+    pub fn acknowledge_uncertain_table_rename_save(&mut self, id: u64) -> bool {
+        if !self.can_acknowledge_table_rename_save(id) {
+            return false;
+        }
+
+        self.mark_native_save_uncertain();
+        let rename = self.table_rename.as_mut().unwrap();
+        rename.phase = Phase::Editing;
         true
     }
 

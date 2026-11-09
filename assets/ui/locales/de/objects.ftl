@@ -10,3 +10,5 @@ objects-not-loaded = Dieses Objekt wurde noch nicht geladen.
 objects-load-failed = Dieses Objekt konnte nicht geladen werden.
 objects-retry = Erneut laden
 objects-mock-load-error = Simulierter Fehler beim nativen Lesen; es wurde keine Datenbank geöffnet.
+
+objects-read-identities-exhausted = Die Kennungen für Leseanfragen sind aufgebraucht. Starten Sie TableCraft neu und öffnen Sie die Datenbank erneut.

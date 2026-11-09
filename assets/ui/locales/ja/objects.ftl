@@ -10,3 +10,5 @@ objects-not-loaded = このオブジェクトはまだ読み込まれていま�
 objects-load-failed = このオブジェクトを読み込めませんでした。
 objects-retry = 読み込みを再試行
 objects-mock-load-error = 合成されたネイティブ読み込みエラーです。データベースは開いていません。
+
+objects-read-identities-exhausted = 読み取り要求の識別子を使い切りました。TableCraft を再起動してデータベースを開き直してください。

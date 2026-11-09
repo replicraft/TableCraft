@@ -1,6 +1,7 @@
 //! Search the complete native source, then retrieve its checked result page.
 use super::filtering::filtered_publication;
 use super::{Desktop, PendingOperation};
+use crate::workspace::request_read;
 use tablecraft_runtime::{
     self as runtime, Command, FilteredData, FindPosition as RuntimePosition,
     FindRequest as RuntimeRequest,
@@ -42,7 +43,10 @@ impl Desktop {
                 request: runtime_request(request.clone()),
             },
         };
-        let request_id = self.worker.request(command);
+        let Some(request_id) = request_read(command, &self.worker, &mut self.state) else {
+            self.read_request_rejected();
+            return;
+        };
         self.generation = request_id;
         self.state.begin_find(request_id, request.clone());
         self.pending = PendingOperation::Find {
@@ -116,7 +120,11 @@ impl Desktop {
                 offset: position.parent_ordinal,
             },
         };
-        self.generation = self.worker.request(command);
+        let Some(generation) = request_read(command, &self.worker, &mut self.state) else {
+            self.read_request_rejected();
+            return;
+        };
+        self.generation = generation;
         self.pending = PendingOperation::FindPage {
             request_id,
             request,

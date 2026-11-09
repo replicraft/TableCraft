@@ -2,6 +2,7 @@
 pub(super) mod retry;
 
 use super::{ActiveSave, Desktop, PendingOperation, SaveOwner};
+use crate::workspace::request_read;
 use retry::InsertRetryContext;
 use tablecraft_runtime::{
     Command, EditInput as RuntimeEditInput, InsertDraft as RuntimeDraft,
@@ -16,9 +17,16 @@ impl Desktop {
             return;
         }
         self.editing.clear_review();
-        let id = self.worker.request(Command::BeginInsert {
-            target: runtime_target(&target),
-        });
+        let Some(id) = request_read(
+            Command::BeginInsert {
+                target: runtime_target(&target),
+            },
+            &self.worker,
+            &mut self.state,
+        ) else {
+            self.read_request_rejected();
+            return;
+        };
         self.generation = id;
         self.pending = PendingOperation::Insert { request_id: id };
         self.state.begin_insert(target, id);
@@ -30,10 +38,17 @@ impl Desktop {
             return;
         }
         self.editing.clear_review();
-        let id = self.worker.request(Command::ReviewInsert {
-            draft_id,
-            inputs: inputs.iter().map(runtime_input).collect(),
-        });
+        let Some(id) = request_read(
+            Command::ReviewInsert {
+                draft_id,
+                inputs: inputs.iter().map(runtime_input).collect(),
+            },
+            &self.worker,
+            &mut self.state,
+        ) else {
+            self.read_request_rejected();
+            return;
+        };
         self.generation = id;
         self.pending = PendingOperation::Insert { request_id: id };
         self.state.begin_insert_review(draft_id, inputs, id);

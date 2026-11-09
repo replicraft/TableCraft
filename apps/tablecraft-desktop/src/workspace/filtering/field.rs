@@ -1,5 +1,6 @@
 //! Field metadata and explicit predicate dispatch; native parsing stays in runtime.
 use crate::view_models;
+use crate::workspace::request_read;
 use crate::workspace::{Desktop, PendingOperation};
 use tablecraft_runtime::{
     self as runtime, Command, FieldFilterOperator as NativeOperator, FilterHandle,
@@ -31,9 +32,16 @@ impl Desktop {
             self.state.error = Some(self.state.localizer.text("filtering-stale"));
             return;
         }
-        let request_id = self.worker.request(Command::DescribeFieldFilter {
-            target: native_target(&target),
-        });
+        let Some(request_id) = request_read(
+            Command::DescribeFieldFilter {
+                target: native_target(&target),
+            },
+            &self.worker,
+            &mut self.state,
+        ) else {
+            self.read_request_rejected();
+            return;
+        };
         if !self.state.begin_field_filter(target.clone(), request_id) {
             self.worker.cancel();
             return;
@@ -60,12 +68,19 @@ impl Desktop {
             self.state.error = Some(self.state.localizer.text("filtering-stale"));
             return;
         };
-        let request_id = self.worker.request(Command::ApplyFieldFilter {
-            target: native_target(&target),
-            operator: native_operator(operator),
-            inputs: inputs.clone(),
-            base,
-        });
+        let Some(request_id) = request_read(
+            Command::ApplyFieldFilter {
+                target: native_target(&target),
+                operator: native_operator(operator),
+                inputs: inputs.clone(),
+                base,
+            },
+            &self.worker,
+            &mut self.state,
+        ) else {
+            self.read_request_rejected();
+            return;
+        };
         if !self
             .state
             .begin_field_filter_apply(request_id, target, operator, inputs)

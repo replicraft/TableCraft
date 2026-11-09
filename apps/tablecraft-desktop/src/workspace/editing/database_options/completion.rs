@@ -1,5 +1,6 @@
 //! Settings facts never publish a fresh document without their exact AFTER witness.
 use super::*;
+use crate::workspace::request_read;
 use tablecraft_runtime::{SaveCompletion, SaveOperation, SaveReport};
 use tablecraft_ui::Database;
 
@@ -39,7 +40,35 @@ impl Desktop {
         }
     }
 
+    pub(in crate::workspace) fn acknowledge_uncertain_database_options(
+        &mut self,
+        save_id: u64,
+    ) -> bool {
+        let Some(identity) = self
+            .editing
+            .database_options
+            .as_ref()
+            .and_then(|host| host.identity)
+            .filter(|identity| identity.save_id == save_id)
+        else {
+            return false;
+        };
+        if !self.state.can_acknowledge_database_options_save(identity)
+            || !self.editing.worker.acknowledge(save_id)
+        {
+            return false;
+        }
+        self.state
+            .acknowledge_uncertain_database_options_save(identity);
+        self.editing.database_options = None;
+        true
+    }
+
     pub(in crate::workspace) fn acknowledge_database_options(&mut self, identity: Identity) {
+        if self.acknowledge_uncertain_save(identity.save_id) {
+            return;
+        }
+
         let Some(host) = &self.editing.database_options else {
             return;
         };
@@ -102,12 +131,22 @@ impl Desktop {
             return;
         }
         host.reopening = true;
-        self.generation = self
-            .worker
-            .request(Command::OpenDatabaseOptionsSaved { witness });
-        self.pending = PendingOperation::DatabaseOptionsReopen {
-            request_id: host.request_id,
+        let request_id = host.request_id;
+        let Some(generation) = request_read(
+            Command::OpenDatabaseOptionsSaved { witness },
+            &self.worker,
+            &mut self.state,
+        ) else {
+            self.read_request_rejected();
+            let message = self
+                .state
+                .localizer
+                .text("objects-read-identities-exhausted");
+            self.database_options_reopen_failed(request_id, message);
+            return;
         };
+        self.generation = generation;
+        self.pending = PendingOperation::DatabaseOptionsReopen { request_id };
         self.state.busy = true;
     }
 

@@ -91,3 +91,6 @@ editing-paste-stale = La solicitud del portapapeles ya no corresponde a la celda
 editing-paste-multiple = El portapapeles devolvió varios textos. No se pegó nada.
 
 editing-save-retained-private-journal = Después de guardar, se conserva en disco un diario de recuperación privado.
+
+# An actor ended without a known current native outcome.
+editing-save-uncertain = El proceso de guardado se detuvo inesperadamente. Es posible que el archivo haya cambiado. Reinicie TableCraft y vuelva a abrir la base de datos antes de modificarla; revise cualquier diario de recuperación conservado. No se confirma una reversión ni un reintento.

@@ -91,3 +91,6 @@ editing-paste-stale = 剪贴板请求已与选中的单元格不匹配。文本�
 editing-paste-multiple = 剪贴板返回了多个文本内容。未粘贴任何内容。
 
 editing-save-retained-private-journal = 保存后，磁盘上仍保留私有恢复日志。
+
+# An actor ended without a known current native outcome.
+editing-save-uncertain = 保存任务意外停止。文件可能已经更改。请重新启动 TableCraft 并重新打开数据库后再进行更改；检查保留的恢复日志。尚未确认回滚或重试。

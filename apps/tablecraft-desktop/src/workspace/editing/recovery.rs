@@ -119,6 +119,9 @@ impl Desktop {
             return;
         }
         operation.report = Some(report);
+        if matches!(report.outcome, SaveOutcome::Uncertain { .. }) {
+            self.state.mark_native_save_uncertain();
+        }
         let outcome = recovery_outcome(&self.state.localizer, report.outcome);
         self.state.set_recovery_outcome(report.id, outcome);
     }

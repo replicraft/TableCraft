@@ -1,5 +1,6 @@
 //! Replace requests enter runtime admission before the existing reviewed edit UI.
 use super::{Desktop, PendingOperation, editing, find};
+use crate::workspace::request_read;
 use tablecraft_runtime::{Command, EditDraft, FindPosition, FindSpan};
 use tablecraft_ui::ReplaceFindRequest;
 
@@ -33,7 +34,10 @@ impl Desktop {
             filter,
         };
         self.editing.clear_review();
-        let request_id = self.worker.request(command);
+        let Some(request_id) = request_read(command, &self.worker, &mut self.state) else {
+            self.read_request_rejected();
+            return;
+        };
         if !self.state.begin_replace_find(request_id, request) {
             self.worker.cancel();
             return;

@@ -91,3 +91,6 @@ editing-paste-stale = The clipboard request no longer matches the selected cell.
 editing-paste-multiple = The clipboard returned multiple text payloads. Nothing was pasted.
 
 editing-save-retained-private-journal = A private recovery journal remains on disk after this save.
+
+# An actor ended without a known current native outcome.
+editing-save-uncertain = The save worker stopped unexpectedly. The file may already have changed. Restart TableCraft and reopen the database before making further changes; diagnose any retained recovery journal. No rollback or retry is confirmed.

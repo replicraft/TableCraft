@@ -35,12 +35,16 @@ fn native_text_width_or_compression_mismatch_refuses_before_worker_start_even_wi
             .state
             .field_addition_review_request()
             .unwrap();
-        let generation = harness.state().worker.request(Command::ReviewAddField {
-            document_revision: tab.target.document_revision,
-            table: "Table1".into(),
-            column: "Label".into(),
-            declaration: captured,
-        });
+        let generation = harness
+            .state()
+            .worker
+            .request(Command::ReviewAddField {
+                document_revision: tab.target.document_revision,
+                table: "Table1".into(),
+                column: "Label".into(),
+                declaration: captured,
+            })
+            .expect("fresh test worker identity");
         let deadline = Instant::now() + Duration::from_secs(10);
         let (id, result) = loop {
             if let Some(response) = harness.state_mut().worker.poll() {

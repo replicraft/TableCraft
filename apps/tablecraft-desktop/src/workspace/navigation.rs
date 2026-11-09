@@ -1,5 +1,6 @@
 //! Dispatch explicit global-record requests through the existing page service.
 use super::{Desktop, PendingOperation};
+use crate::workspace::request_read;
 use tablecraft_runtime::Command;
 use tablecraft_ui::RecordTarget;
 
@@ -9,10 +10,17 @@ impl Desktop {
             return;
         }
 
-        let request_id = self.worker.request(Command::Page {
-            table: target.table.clone(),
-            offset: target.parent_ordinal,
-        });
+        let Some(request_id) = request_read(
+            Command::Page {
+                table: target.table.clone(),
+                offset: target.parent_ordinal,
+            },
+            &self.worker,
+            &mut self.state,
+        ) else {
+            self.read_request_rejected();
+            return;
+        };
         self.generation = request_id;
         self.pending = PendingOperation::Record {
             target: target.clone(),

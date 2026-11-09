@@ -181,10 +181,40 @@ impl Desktop {
         }
     }
 
+    pub(in crate::workspace) fn acknowledge_uncertain_field_rename(
+        &mut self,
+        save_id: u64,
+    ) -> bool {
+        let Some(host) = &self.editing.field_rename else {
+            return false;
+        };
+        let Some(identity) = host
+            .identity
+            .filter(|identity| native_id(*identity) == Some(save_id))
+        else {
+            return false;
+        };
+        if !self.state.can_acknowledge_field_rename_save(identity)
+            || !self
+                .state
+                .matches_field_rename_save(&host.request, identity)
+            || !self.editing.worker.acknowledge(save_id)
+        {
+            return false;
+        }
+        self.state
+            .acknowledge_uncertain_field_rename_save(&host.request, identity);
+        self.editing.field_rename = None;
+        true
+    }
+
     pub(in crate::workspace) fn acknowledge_field_rename(
         &mut self,
         identity: FieldRenameSaveIdentity,
     ) {
+        if native_id(identity).is_some_and(|id| self.acknowledge_uncertain_save(id)) {
+            return;
+        }
         if self.acknowledge_field_rename_actor(identity) {
             self.reopen_field_rename(identity);
         }
@@ -254,7 +284,17 @@ impl Desktop {
         let witness = Arc::clone(host.witness.as_ref().unwrap());
         let request_id = host.request_id;
         self.editing.field_rename.as_mut().unwrap().reopening = true;
-        self.generation = self.issue_field_witness_read(FieldReadWitness::Rename(witness));
+        let Some(generation) = self.issue_field_witness_read(FieldReadWitness::Rename(witness))
+        else {
+            self.read_request_rejected();
+            let message = self
+                .state
+                .localizer
+                .text("objects-read-identities-exhausted");
+            self.field_rename_reopen_failed(request_id, message);
+            return;
+        };
+        self.generation = generation;
         self.pending = PendingOperation::FieldRenameReopen { request_id };
         self.state.busy = true;
     }

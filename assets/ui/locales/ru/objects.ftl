@@ -10,3 +10,5 @@ objects-not-loaded = Этот объект ещё не загружен.
 objects-load-failed = Не удалось загрузить этот объект.
 objects-retry = Повторить загрузку
 objects-mock-load-error = Синтетическая ошибка чтения; база данных не открывалась.
+
+objects-read-identities-exhausted = Идентификаторы запросов чтения исчерпаны. Перезапустите TableCraft и снова откройте базу данных.

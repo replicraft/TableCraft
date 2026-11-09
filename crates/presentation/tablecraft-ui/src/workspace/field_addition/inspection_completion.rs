@@ -65,6 +65,21 @@ impl State {
 mod tests;
 
 impl State {
+    /// Issuance failed before an identity existed. Retire only this exact unbound
+    /// reservation; no native source observation or availability is invented.
+    pub fn interrupt_prepared_field_addition_inspection(&mut self, tab: &crate::ObjectTab) -> bool {
+        let Some(item) = self
+            .field_addition
+            .inspections
+            .iter_mut()
+            .find(|item| item.tab == *tab && item.request_id.is_none() && item.pending())
+        else {
+            return false;
+        };
+        item.interrupted = true;
+        true
+    }
+
     /// Publication was revoked by the readonly worker's generation owner. This
     /// does not assert that its native computation has already stopped.
     pub fn interrupt_field_addition_inspection(&mut self, request_id: u64) -> bool {

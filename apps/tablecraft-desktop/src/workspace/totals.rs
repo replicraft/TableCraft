@@ -1,6 +1,7 @@
 //! Forward derived totals requests while keeping native capabilities host-owned.
 use super::{Desktop, PendingOperation};
 use crate::view_models;
+use crate::workspace::request_read;
 use tablecraft_runtime::{self as runtime, Command, FilterHandle};
 use tablecraft_ui::{
     Column, FilterTarget, TotalAggregate, TotalSpec, TotalsData, TotalsDescription, TotalsField,
@@ -31,9 +32,16 @@ impl Desktop {
             return;
         }
 
-        let request_id = self.worker.request(Command::DescribeTotals {
-            target: native_target(&target),
-        });
+        let Some(request_id) = request_read(
+            Command::DescribeTotals {
+                target: native_target(&target),
+            },
+            &self.worker,
+            &mut self.state,
+        ) else {
+            self.read_request_rejected();
+            return;
+        };
         if !self
             .state
             .begin_totals_description(target.clone(), request_id)
@@ -55,11 +63,18 @@ impl Desktop {
                 .reject_totals_request(&target, self.state.localizer.text("totals-stale"));
             return;
         };
-        let request_id = self.worker.request(Command::Totals {
-            target: native_target(&target),
-            specs: specs.iter().map(native_spec).collect(),
-            base,
-        });
+        let Some(request_id) = request_read(
+            Command::Totals {
+                target: native_target(&target),
+                specs: specs.iter().map(native_spec).collect(),
+                base,
+            },
+            &self.worker,
+            &mut self.state,
+        ) else {
+            self.read_request_rejected();
+            return;
+        };
         if !self
             .state
             .begin_totals_compute(request_id, target.clone(), specs.clone())

@@ -299,15 +299,17 @@ impl State {
 
     /// Called only after the host acknowledges a released, unresolved terminal
     /// outcome. The draft remains visible but cannot issue another save.
+    pub fn can_acknowledge_table_draft_save(&self, id: u64) -> bool {
+        self.table_draft_save.as_ref().is_some_and(|save| {
+            save.id == Some(id)
+                && save.phase == Phase::Retained
+                && save.can_acknowledge
+                && self.save_binding(save)
+        })
+    }
+
     pub fn acknowledge_table_draft_save(&mut self, id: u64) -> bool {
-        let Some(save) = &self.table_draft_save else {
-            return false;
-        };
-        if save.id != Some(id)
-            || save.phase != Phase::Retained
-            || !save.can_acknowledge
-            || !self.save_binding(save)
-        {
+        if !self.can_acknowledge_table_draft_save(id) {
             return false;
         }
         let save = self.table_draft_save.take().unwrap();

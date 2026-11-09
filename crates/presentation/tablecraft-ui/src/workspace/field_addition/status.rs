@@ -103,6 +103,34 @@ impl State {
         true
     }
 
+    /// Replace only this actual actor's presentation after observed teardown.
+    /// Historical retained facts no longer authorize recover/release.
+    pub fn set_field_addition_actor_lost(
+        &mut self,
+        identity: FieldAdditionSaveIdentity,
+        message: String,
+    ) -> bool {
+        if !self.field_addition_status.as_ref().is_some_and(|status| {
+            status.identity == identity
+                && matches!(
+                    status.phase,
+                    crate::workspace::schema_save::StatusPhase::Saving { .. }
+                        | crate::workspace::schema_save::StatusPhase::Finished
+                )
+        }) {
+            return false;
+        }
+
+        let outcome = EditSaveOutcome::Failed(message);
+        let admitted = self.admit_object_bytes(Some(outcome_bytes(&outcome)));
+        self.field_addition_status
+            .as_mut()
+            .unwrap()
+            .record_outcome(outcome, admitted);
+        self.mark_native_save_uncertain();
+        true
+    }
+
     pub fn can_resolve_field_addition_save(
         &self,
         identity: FieldAdditionSaveIdentity,
@@ -204,6 +232,25 @@ impl State {
         {
             return false;
         }
+        self.field_addition.draft.as_mut().unwrap().phase = Phase::Naming;
+        self.field_addition_status = None;
+        true
+    }
+
+    /// Host precondition: exact uncertain actor teardown and ACK. The proposed
+    /// field remains local; no original/replacement result is inferred.
+    pub fn acknowledge_uncertain_field_addition_save(
+        &mut self,
+        request: &FieldAdditionRequest,
+        identity: FieldAdditionSaveIdentity,
+    ) -> bool {
+        if !self.matches_field_addition_save(request, identity)
+            || !self.can_acknowledge_field_addition_save(identity)
+        {
+            return false;
+        }
+
+        self.mark_native_save_uncertain();
         self.field_addition.draft.as_mut().unwrap().phase = Phase::Naming;
         self.field_addition_status = None;
         true

@@ -146,10 +146,38 @@ impl Desktop {
         }
     }
 
+    pub(in crate::workspace) fn acknowledge_uncertain_field_addition(
+        &mut self,
+        save_id: u64,
+    ) -> bool {
+        let Some(host) = &self.editing.field_addition else {
+            return false;
+        };
+        let Some(identity) = host.identity.filter(|identity| identity.save_id == save_id) else {
+            return false;
+        };
+        if !self.state.can_acknowledge_field_addition_save(identity)
+            || !self
+                .state
+                .matches_field_addition_save(&host.request, identity)
+            || !self.editing.worker.acknowledge(save_id)
+        {
+            return false;
+        }
+        self.state
+            .acknowledge_uncertain_field_addition_save(&host.request, identity);
+        self.editing.field_addition = None;
+        true
+    }
+
     pub(in crate::workspace) fn acknowledge_field_addition(
         &mut self,
         identity: FieldAdditionSaveIdentity,
     ) {
+        if self.acknowledge_uncertain_save(identity.save_id) {
+            return;
+        }
+
         if self.acknowledge_field_addition_actor(identity) {
             self.reopen_field_addition(identity);
         }
@@ -233,7 +261,17 @@ impl Desktop {
         // Generic submit intentionally refuses while this exact schema owner
         // remains retained. Issue only its accepted full-image witness here,
         // after native ACK, just as the query-definition owner does.
-        self.generation = self.issue_field_witness_read(FieldReadWitness::Addition(witness));
+        let Some(generation) = self.issue_field_witness_read(FieldReadWitness::Addition(witness))
+        else {
+            self.read_request_rejected();
+            let message = self
+                .state
+                .localizer
+                .text("objects-read-identities-exhausted");
+            self.field_addition_reopen_failed(request_id, message);
+            return;
+        };
+        self.generation = generation;
         self.pending = PendingOperation::FieldAdditionReopen { request_id };
         self.state.busy = true;
     }

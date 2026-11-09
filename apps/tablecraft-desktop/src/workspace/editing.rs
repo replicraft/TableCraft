@@ -12,8 +12,10 @@ mod query_definition;
 pub(super) mod recovery;
 pub(super) mod table_creation;
 pub(super) mod table_rename;
+mod uncertain;
 use super::{Desktop, PendingOperation, objects::Sessions};
 use crate::view_models::cell;
+use crate::workspace::request_read;
 use inserting::retry::{InsertRetryContext, RetainedInsertRetry};
 use std::{path::PathBuf, sync::Arc};
 use tablecraft_runtime::{
@@ -148,14 +150,21 @@ impl Desktop {
 
     fn request_edit(&mut self, target: EditTarget, pasted_text: Option<String>) {
         self.editing.clear_review();
-        let id = self.worker.request(Command::BeginEdit {
-            target: RuntimeTarget {
-                document_revision: target.document_revision,
-                table: target.table.clone(),
-                column: target.column.clone(),
-                parent_ordinal: target.parent_ordinal,
+        let Some(id) = request_read(
+            Command::BeginEdit {
+                target: RuntimeTarget {
+                    document_revision: target.document_revision,
+                    table: target.table.clone(),
+                    column: target.column.clone(),
+                    parent_ordinal: target.parent_ordinal,
+                },
             },
-        });
+            &self.worker,
+            &mut self.state,
+        ) else {
+            self.read_request_rejected();
+            return;
+        };
         if let Some(text) = pasted_text {
             if !self.state.begin_paste_edit(target, text, id) {
                 self.worker.cancel();
@@ -174,13 +183,20 @@ impl Desktop {
             return;
         }
         self.editing.clear_review();
-        let id = self.worker.request(Command::ReviewEdit {
-            draft_id,
-            input: RuntimeInput {
-                text: input.text.clone(),
-                is_null: input.is_null,
+        let Some(id) = request_read(
+            Command::ReviewEdit {
+                draft_id,
+                input: RuntimeInput {
+                    text: input.text.clone(),
+                    is_null: input.is_null,
+                },
             },
-        });
+            &self.worker,
+            &mut self.state,
+        ) else {
+            self.read_request_rejected();
+            return;
+        };
         self.generation = id;
         self.pending = PendingOperation::Edit { request_id: id };
         self.state.busy = true;
@@ -283,6 +299,37 @@ impl Desktop {
             return;
         }
         save.report = Some(report);
+        if matches!(report.outcome, SaveOutcome::Uncertain { .. }) {
+            self.state.mark_native_save_uncertain();
+            let message = self.state.localizer.text("editing-save-uncertain");
+            match save.owner {
+                SaveOwner::FieldRename => {
+                    if let Some((identity, _)) = self.state.field_rename_save_status() {
+                        self.state.set_field_rename_actor_lost(identity, message);
+                    }
+                }
+                SaveOwner::FieldAddition => {
+                    if let Some((identity, _)) = self.state.field_addition_save_status() {
+                        self.state.set_field_addition_actor_lost(identity, message);
+                    }
+                }
+                SaveOwner::DatabaseOptions => {
+                    if let Some((identity, _)) = self.state.database_options_save_status() {
+                        self.state
+                            .set_database_options_actor_lost(identity, message);
+                    }
+                }
+                SaveOwner::QueryDefinition => {
+                    if let Some((identity, _)) = self.state.saved_query_sql_save_status() {
+                        self.state.set_saved_query_sql_actor_lost(identity, message);
+                    }
+                }
+                SaveOwner::TableRename => {
+                    self.state.set_table_rename_actor_lost(report.id, message);
+                }
+                _ => {}
+            }
+        }
         if let Some(retry) = &mut save.insert_retry {
             retry.evidence.observe(report);
         }
@@ -444,6 +491,9 @@ impl Desktop {
     }
 
     pub(super) fn acknowledge_save(&mut self, id: u64) {
+        if self.acknowledge_uncertain_save(id) {
+            return;
+        }
         if let Some(identity) = self.field_rename_native_identity(id) {
             self.acknowledge_field_rename(identity);
             return;
@@ -676,6 +726,9 @@ fn save_outcome(localizer: &Localizer, outcome: SaveOutcome) -> EditSaveOutcome 
             )],
         )),
         SaveOutcome::Failed(failure) => failure_outcome(localizer, failure),
+        SaveOutcome::Uncertain { .. } => {
+            EditSaveOutcome::Failed(localizer.text("editing-save-uncertain"))
+        }
     }
 }
 

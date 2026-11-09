@@ -18,6 +18,9 @@ pub enum Error {
     /// The read actor ended; no cached document or queued command is reused.
     #[error("the background read worker stopped unexpectedly")]
     ReadWorkerStopped,
+    /// No fresh read identity remains; recreate the worker and reopen explicitly.
+    #[error(transparent)]
+    ReadRequestExhausted(#[from] crate::ReadRequestExhausted),
     #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
     #[error(transparent)]
     DatabaseOptions(#[from] tablecraft_ace::DatabaseOptionsIntentError),

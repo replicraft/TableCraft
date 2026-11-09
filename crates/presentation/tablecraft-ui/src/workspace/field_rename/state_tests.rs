@@ -154,3 +154,46 @@ fn failed_witness_return_moves_exact_name_buffers_and_keeps_stale_guard_after_di
     assert_eq!(warning.proposed_name.as_ptr(), before);
     assert_eq!(warning.reopen_error, Some("full-image read failed"));
 }
+
+#[test]
+fn uncertain_actor_ack_keeps_proposal_revokes_retained_controls_and_survives_dismissal() {
+    let (mut state, request) = accepted(true);
+    let identity = state
+        .prepare_field_rename_save(&request, 81, 90)
+        .unwrap()
+        .bind(100);
+    assert!(state.set_field_rename_save_outcome(
+        identity,
+        EditSaveOutcome::Retained {
+            message: "real retained presentation".into(),
+            can_recover: true,
+            can_release: true,
+        }
+    ));
+    assert!(state.can_resolve_field_rename_save(identity, true));
+    assert!(state.set_field_rename_actor_lost(identity, "outcome is uncertain".into()));
+    assert!(!state.can_resolve_field_rename_save(identity, true));
+    assert!(!state.can_resolve_field_rename_save(identity, false));
+    assert!(state.can_acknowledge_field_rename_save(identity));
+    assert!(state.native_source_stale());
+    assert!(state.acknowledge_uncertain_field_rename_save(&request, identity));
+    assert_eq!(state.field_rename_proposal().unwrap().1, "Total");
+    assert!(state.field_rename_review_request().is_none());
+    assert!(!state.can_edit_field_rename());
+    assert!(state.request_current_field_rename_close());
+    assert!(!state.can_save_field_rename_close());
+    assert!(
+        state
+            .choose_field_rename_close(super::FieldRenameCloseDecision::Discard)
+            .is_some()
+    );
+    assert!(!state.field_rename_open());
+    assert!(state.native_source_stale());
+    assert!(state.native_mutation_blocked());
+    assert!(!state.can_create_table());
+    // A late positive observation cannot revive the old revision.
+    assert!(!state.set_field_rename_inspection_by_id(80, 7, "Table1", "Score", 17, true, Some(5)));
+    assert!(state.native_mutation_blocked());
+    state.database.as_mut().unwrap().document_revision += 1;
+    assert!(!state.native_source_stale());
+}

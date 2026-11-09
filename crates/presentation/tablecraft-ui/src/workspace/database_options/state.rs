@@ -212,6 +212,29 @@ impl State {
         ))
     }
 
+    /// Actual actor loss revokes retained controls without claiming original/AFTER.
+    pub fn set_database_options_actor_lost(&mut self, identity: Identity, message: String) -> bool {
+        if !self.matches_database_options_save(identity)
+            || !matches!(
+                self.database_options.phase,
+                Phase::Saving { .. } | Phase::Finished { .. }
+            )
+        {
+            return false;
+        }
+
+        let admitted = self.admit_object_bytes(Some(message.capacity()));
+        self.database_options.outcome = Some(EditSaveOutcome::Failed(if admitted {
+            message
+        } else {
+            String::new()
+        }));
+        self.database_options.omitted = !admitted;
+        self.database_options.phase = Phase::Finished { identity };
+        self.mark_native_save_uncertain();
+        true
+    }
+
     pub fn set_database_options_save_outcome(
         &mut self,
         identity: Identity,
@@ -304,6 +327,23 @@ impl State {
             return false;
         }
         self.database_options = Model::default();
+        true
+    }
+
+    /// Exact uncertain actor teardown and ACK ended ownership, not the settings
+    /// operation. Retain no misleading observation or recovery/save permission.
+    pub fn acknowledge_uncertain_database_options_save(&mut self, identity: Identity) -> bool {
+        if !self.matches_database_options_save(identity)
+            || !self.can_acknowledge_database_options_save(identity)
+        {
+            return false;
+        }
+
+        self.mark_native_save_uncertain();
+        self.database_options.phase = Phase::Idle;
+        self.database_options.observed = None;
+        self.database_options.confirmation = None;
+        self.database_options.outcome = None;
         true
     }
 

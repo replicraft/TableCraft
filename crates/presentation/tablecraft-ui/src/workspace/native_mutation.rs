@@ -3,10 +3,24 @@ use super::State;
 
 impl State {
     pub fn native_source_stale(&self) -> bool {
-        self.field_addition_source_stale()
+        self.uncertain_native_revision.is_some_and(|revision| {
+            self.database
+                .as_ref()
+                .is_some_and(|database| database.document_revision == revision)
+        }) || self.field_addition_source_stale()
             || self.database_options_source_stale()
             || self.field_rename_source_stale()
             || self.field_drop_source_stale()
+    }
+
+    /// The host observed actual save actor teardown without a native terminal
+    /// result. This retires no draft and certifies neither original nor AFTER.
+    /// The marker survives dismissal and clears only by a different source revision.
+    pub fn mark_native_save_uncertain(&mut self) {
+        self.uncertain_native_revision = self
+            .database
+            .as_ref()
+            .map(|database| database.document_revision);
     }
 
     pub fn native_mutation_blocked(&self) -> bool {

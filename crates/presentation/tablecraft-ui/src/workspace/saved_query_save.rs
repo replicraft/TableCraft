@@ -200,6 +200,33 @@ impl State {
     }
 
     /// A parked query or fresh catalog publication does not discard its outcome.
+    /// A dead actor owns no recovery controls. Keep the exact SQL request/text;
+    /// no original/replacement observation is created by this presentation change.
+    pub fn set_saved_query_sql_actor_lost(
+        &mut self,
+        identity: SavedQuerySqlSaveIdentity,
+        message: String,
+    ) -> bool {
+        if !self.saved_query_sql_save.as_ref().is_some_and(|status| {
+            status.identity == identity
+                && matches!(status.phase, Phase::Saving { .. } | Phase::Finished)
+        }) {
+            return false;
+        }
+
+        let admitted = self.admit_object_bytes(Some(message.capacity()));
+        let status = self.saved_query_sql_save.as_mut().unwrap();
+        status.outcome = Some(EditSaveOutcome::Failed(if admitted {
+            message
+        } else {
+            String::new()
+        }));
+        status.report_omitted = !admitted;
+        status.phase = Phase::Finished;
+        self.mark_native_save_uncertain();
+        true
+    }
+
     pub fn set_saved_query_sql_save_outcome(
         &mut self,
         identity: SavedQuerySqlSaveIdentity,

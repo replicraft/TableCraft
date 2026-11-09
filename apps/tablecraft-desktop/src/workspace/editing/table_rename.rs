@@ -44,8 +44,16 @@ impl Desktop {
             cleanup: None,
             terminal: None,
         });
-        self.submit(command);
-        self.pending = PendingOperation::TableRenameReview { request_id };
+        if self.submit(command) {
+            self.pending = PendingOperation::TableRenameReview { request_id };
+        } else {
+            let message = self
+                .state
+                .error
+                .clone()
+                .unwrap_or_else(|| self.state.localizer.text("objects-open-refused"));
+            self.table_rename_review_failed(request_id, message);
+        }
     }
 
     /// Accept only the current runtime review and transfer its capability to the save worker.
@@ -154,6 +162,10 @@ impl Desktop {
 
     /// Acknowledge a terminal save and explicitly reopen only its matching committed image.
     pub(in crate::workspace) fn acknowledge_table_rename(&mut self, id: u64) {
+        if self.acknowledge_uncertain_save(id) {
+            return;
+        }
+
         let Some(save) = &self.editing.save else {
             return;
         };
@@ -191,8 +203,13 @@ impl Desktop {
         if replacement && let Some(witness) = witness {
             self.table_rename.as_mut().unwrap().terminal = Some(report.outcome);
             let request_id = self.table_rename.as_ref().unwrap().request.id;
-            self.submit(Command::OpenTableRenamed { witness });
-            self.pending = PendingOperation::RenamedTableReopen { request_id };
+            if self.submit(Command::OpenTableRenamed { witness }) {
+                self.pending = PendingOperation::RenamedTableReopen { request_id };
+            } else {
+                self.fail_table_rename_reopen(&tablecraft_runtime::Error::ReadRequestExhausted(
+                    tablecraft_runtime::ReadRequestExhausted,
+                ));
+            }
         } else {
             self.table_rename = None;
         }
@@ -293,7 +310,7 @@ fn rename_replacement(outcome: SaveOutcome) -> (bool, Option<SaveReceipt>) {
             };
             (replacement, completed)
         }
-        SaveOutcome::Failed(_) => (false, None),
+        SaveOutcome::Failed(_) | SaveOutcome::Uncertain { .. } => (false, None),
     }
 }
 

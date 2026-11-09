@@ -1,6 +1,7 @@
 //! Route typed SQL action reviews without parsing or executing SQL in the host.
 use super::{ActiveSave, Desktop, PendingOperation, SaveOwner};
 use crate::workspace::query_parameters::runtime_inputs;
+use crate::workspace::request_read;
 use std::{
     path::{Path, PathBuf},
     sync::Arc,
@@ -127,7 +128,10 @@ impl Desktop {
                 parameters: inputs,
             },
         };
-        let request_id = self.worker.request(command);
+        let Some(request_id) = request_read(command, &self.worker, &mut self.state) else {
+            self.read_request_rejected();
+            return;
+        };
         self.generation = request_id;
         if !self.state.begin_query_action_review(
             inspection_id,

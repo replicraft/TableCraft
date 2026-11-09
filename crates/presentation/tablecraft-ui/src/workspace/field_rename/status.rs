@@ -73,6 +73,35 @@ impl State {
         true
     }
 
+    /// Replace only this actual actor's presentation after observed teardown.
+    /// Historical retained facts no longer authorize recover/release.
+    pub fn set_field_rename_actor_lost(
+        &mut self,
+        identity: FieldRenameSaveIdentity,
+        message: String,
+    ) -> bool {
+        if !self.field_rename.status.as_ref().is_some_and(|status| {
+            status.identity == identity
+                && matches!(
+                    status.phase,
+                    crate::workspace::schema_save::StatusPhase::Saving { .. }
+                        | crate::workspace::schema_save::StatusPhase::Finished
+                )
+        }) {
+            return false;
+        }
+
+        let outcome = EditSaveOutcome::Failed(message);
+        let admitted = self.admit_object_bytes(Some(outcome_bytes(&outcome)));
+        self.field_rename
+            .status
+            .as_mut()
+            .unwrap()
+            .record_outcome(outcome, admitted);
+        self.mark_native_save_uncertain();
+        true
+    }
+
     pub fn can_resolve_field_rename_save(
         &self,
         identity: FieldRenameSaveIdentity,
@@ -158,6 +187,25 @@ impl State {
         self.field_rename.draft.as_mut().unwrap().phase = Phase::Naming;
         self.field_rename.status = None;
 
+        true
+    }
+
+    /// Host precondition: this exact actor ended uncertainly and was ACKed.
+    /// Preserve the proposal, but invalidate this source before releasing UI ownership.
+    pub fn acknowledge_uncertain_field_rename_save(
+        &mut self,
+        request: &FieldRenameRequest,
+        identity: FieldRenameSaveIdentity,
+    ) -> bool {
+        if !self.matches_field_rename_save(request, identity)
+            || !self.can_acknowledge_field_rename_save(identity)
+        {
+            return false;
+        }
+
+        self.mark_native_save_uncertain();
+        self.field_rename.draft.as_mut().unwrap().phase = Phase::Naming;
+        self.field_rename.status = None;
         true
     }
 

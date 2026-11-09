@@ -68,11 +68,19 @@ impl Desktop {
             no_write: true,
             cleanup: None,
         });
-        self.submit(Command::ReviewTableCreation {
+        if self.submit(Command::ReviewTableCreation {
             document_revision: request.tab.target.document_revision,
             snapshot: request.snapshot,
-        });
-        self.pending = PendingOperation::TableCreationReview { request_id: id };
+        }) {
+            self.pending = PendingOperation::TableCreationReview { request_id: id };
+        } else {
+            let message = self
+                .state
+                .error
+                .clone()
+                .unwrap_or_else(|| self.state.localizer.text("objects-open-refused"));
+            self.table_creation_review_failed(id, message);
+        }
     }
 
     pub(in crate::workspace) fn start_reviewed_table_creation(
@@ -158,10 +166,18 @@ impl Desktop {
                 }
                 host.cleanup = cleanup_notice(receipt);
                 self.editing.save = None;
-                self.submit(Command::OpenTableCreated { witness });
-                self.pending = PendingOperation::CreatedTableReopen {
-                    request_id: request,
-                };
+                if self.submit(Command::OpenTableCreated { witness }) {
+                    self.pending = PendingOperation::CreatedTableReopen {
+                        request_id: request,
+                    };
+                } else {
+                    let message = self
+                        .state
+                        .error
+                        .clone()
+                        .unwrap_or_else(|| self.state.localizer.text("objects-open-refused"));
+                    self.table_creation_reopen_failed(request, message);
+                }
             }
             SaveOutcome::Saved { receipt }
                 if matches!(
@@ -368,7 +384,33 @@ impl Desktop {
         }
     }
 
+    pub(in crate::workspace) fn acknowledge_uncertain_table_creation(&mut self, id: u64) -> bool {
+        let Some(host) = &self.table_creation else {
+            return false;
+        };
+        let request = host.request;
+        if !self.editing.save.as_ref().is_some_and(|save| save.id == id)
+            || !self.state.can_acknowledge_table_draft_save(request)
+            || !self.editing.worker.acknowledge(id)
+        {
+            return false;
+        }
+        // The existing unresolved-terminal transition retains the actual table
+        // draft and blocks Save; it does not assert original or AFTER bytes.
+        if !self.state.acknowledge_table_draft_save(request) {
+            return false;
+        }
+        self.table_creation = None;
+        true
+    }
+
     pub(in crate::workspace) fn acknowledge_table_creation_save(&mut self, id: u64) {
+        if let Some(save) = &self.editing.save {
+            if self.acknowledge_uncertain_save(save.id) {
+                return;
+            }
+        }
+
         if !self
             .table_creation
             .as_ref()

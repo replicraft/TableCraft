@@ -10,6 +10,7 @@ use super::{
     ActiveSave, SaveOwner,
     field_save::{FieldReadWitness, FieldSaveHost},
 };
+use crate::workspace::request_read;
 use crate::workspace::{Desktop, PendingOperation};
 use tablecraft_runtime::{
     Command, FieldRenameReview, FieldRenamedReopen, ReviewedFieldRename, journal_path,
@@ -38,13 +39,20 @@ impl Desktop {
         let Some(filters) = self.capture_filter_restore_definitions() else {
             return;
         };
-        let request_id = self.worker.request(Command::ReviewFieldRename {
-            document_revision: request.target.tab.target.document_revision,
-            table: name.clone(),
-            column: request.target.column.clone(),
-            native_number: request.target.native_number,
-            new_name: request.new_name.clone(),
-        });
+        let Some(request_id) = request_read(
+            Command::ReviewFieldRename {
+                document_revision: request.target.tab.target.document_revision,
+                table: name.clone(),
+                column: request.target.column.clone(),
+                native_number: request.target.native_number,
+                new_name: request.new_name.clone(),
+            },
+            &self.worker,
+            &mut self.state,
+        ) else {
+            self.read_request_rejected();
+            return;
+        };
         if !self.state.begin_field_rename_review(&request, request_id) {
             self.worker.cancel();
             return;
@@ -205,7 +213,11 @@ impl Desktop {
         host.identity = Some(identity);
         host.witness = Some(std::sync::Arc::clone(&witness));
         host.reopening = true;
-        self.generation = self.issue_field_witness_read(FieldReadWitness::Rename(witness));
+        let Some(generation) = self.issue_field_witness_read(FieldReadWitness::Rename(witness))
+        else {
+            return;
+        };
+        self.generation = generation;
         self.pending = PendingOperation::FieldRenameReopen { request_id };
         self.state.busy = true;
     }

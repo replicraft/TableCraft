@@ -9,6 +9,8 @@ mod objects;
 mod opening;
 mod query_design;
 mod query_parameters;
+mod read_failures;
+mod read_requests;
 mod replacing;
 mod saved;
 mod table_drafts;
@@ -22,6 +24,7 @@ use creating::Creating;
 use editing::Editing;
 use editing::table_creation::TableCreationHost;
 use editing::table_rename::TableRenameHost;
+use read_requests::request_read;
 use std::path::PathBuf;
 use table_drafts::DeferredDraftAction;
 use tablecraft_runtime::{
@@ -276,13 +279,13 @@ impl Desktop {
         app
     }
 
-    fn submit(&mut self, command: Command) {
+    fn submit(&mut self, command: Command) -> bool {
         if self.editing.has_save()
             || self.creating.is_busy()
             || self.recovery.is_some()
             || self.state.table_draft_field_delete_open()
         {
-            return;
+            return false;
         }
         if self.state.table_draft_save_open()
             && !matches!(
@@ -290,7 +293,7 @@ impl Desktop {
                 Command::ReviewTableCreation { .. } | Command::OpenTableCreated { .. }
             )
         {
-            return;
+            return false;
         }
         let contents = match &command {
             Command::InspectCollection { target } => {
@@ -301,7 +304,7 @@ impl Desktop {
         if let Some(target) = &contents {
             if !self.state.can_view_contents(target) {
                 self.state.error = Some(self.state.localizer.text("collections-stale-view"));
-                return;
+                return false;
             }
         } else {
             self.state.close_contents();
@@ -311,7 +314,7 @@ impl Desktop {
         }
         let query_sql = if let Command::Query { sql } = &command {
             let Some(captured) = self.state.capture_query_sql(sql) else {
-                return;
+                return false;
             };
             Some(captured)
         } else {
@@ -323,7 +326,11 @@ impl Desktop {
             _ => None,
         };
         self.clear_query_parameters();
-        self.generation = self.worker.request(command);
+        let Some(generation) = request_read(command, &self.worker, &mut self.state) else {
+            self.read_request_rejected();
+            return false;
+        };
+        self.generation = generation;
         self.state.clear_query_run();
         self.pending = if let Some(target) = contents {
             self.state.begin_contents(target.clone(), self.generation);
@@ -335,7 +342,7 @@ impl Desktop {
             if !self.state.begin_query_run(self.generation, sql) {
                 self.worker.cancel();
                 self.state.busy = false;
-                return;
+                return false;
             }
             PendingOperation::Query {
                 request_id: self.generation,
@@ -352,6 +359,7 @@ impl Desktop {
         };
         self.state.busy = true;
         self.state.error = None;
+        true
     }
 
     fn select_file(&mut self, path: PathBuf) {
@@ -776,143 +784,7 @@ impl Desktop {
                         );
                     }
                 }
-                Err(error) => match &self.pending {
-                    PendingOperation::DatabaseOptionsInspection {
-                        revision,
-                        request_id,
-                    } => {
-                        let (revision, id) = (*revision, *request_id);
-                        self.fail_database_options_inspection(revision, id, error.to_string());
-                    }
-                    PendingOperation::DatabaseOptionsReview { request_id } => {
-                        let id = *request_id;
-                        self.database_options_review_failed(id, error.to_string());
-                    }
-                    PendingOperation::DatabaseOptionsReopen { request_id } => {
-                        let id = *request_id;
-                        self.database_options_reopen_failed(id, error.to_string());
-                    }
-                    PendingOperation::FieldRenameInspection { .. } => {
-                        self.field_rename_inspection_failed(generation, error.to_string());
-                    }
-                    PendingOperation::FieldRenameReview { request_id } => {
-                        let id = *request_id;
-                        self.field_rename_review_failed(id, error.to_string());
-                    }
-                    PendingOperation::FieldRenameReopen { request_id } => {
-                        let id = *request_id;
-                        self.field_rename_reopen_failed(id, error.to_string());
-                    }
-                    PendingOperation::FieldAdditionAvailability { .. } => {
-                        self.field_addition_availability_failed(generation, error.to_string())
-                    }
-                    PendingOperation::FieldAdditionReview { request_id } => {
-                        let id = *request_id;
-                        self.field_addition_review_failed(id, error.to_string());
-                    }
-                    PendingOperation::FieldAdditionReopen { request_id } => {
-                        let id = *request_id;
-                        self.field_addition_reopen_failed(id, error.to_string());
-                    }
-                    PendingOperation::TableRenameReview { request_id } => {
-                        self.table_rename_review_failed(*request_id, error.to_string());
-                    }
-                    PendingOperation::RenamedTableReopen { .. } => {
-                        self.fail_table_rename_reopen(&error);
-                    }
-
-                    PendingOperation::QueryActionReview { request_id } => {
-                        let request_id = *request_id;
-                        self.fail_query_action_review(request_id, error.to_string());
-                    }
-                    PendingOperation::QueryInspection { request_id } => {
-                        let request_id = *request_id;
-                        self.query_parameters = None;
-                        if self.state.fail_query_parameter_inspection(request_id) {
-                            self.state.error = Some(error.to_string());
-                        }
-                    }
-                    PendingOperation::QueryDefinitionReview { request_id } => {
-                        let request_id = *request_id;
-                        self.query_definition_review_failed(request_id, error.to_string());
-                    }
-                    PendingOperation::QueryDefinitionReopen { .. } => {
-                        self.fail_query_definition_reopen(&error);
-                    }
-                    PendingOperation::TableCreationReview { request_id } => {
-                        let request_id = *request_id;
-                        self.table_creation_review_failed(request_id, error.to_string());
-                    }
-                    PendingOperation::CreatedTableReopen { request_id } => {
-                        let request_id = *request_id;
-                        self.table_creation_reopen_failed(request_id, error.to_string());
-                    }
-                    PendingOperation::Query { .. } => {
-                        self.state.clear_query_run();
-                        self.state.error = Some(error.to_string());
-                    }
-                    PendingOperation::ReplaceFind { request_id } => {
-                        self.state.fail_replace_find(*request_id, error.to_string());
-                    }
-                    PendingOperation::QueryDesignDescribe { request_id, .. }
-                    | PendingOperation::QueryDesignBuild { request_id, .. }
-                    | PendingOperation::QueryDesignImport { request_id, .. }
-                    | PendingOperation::QueryDesignRun { request_id } => {
-                        self.state.fail_query_design(*request_id, error.to_string());
-                    }
-                    PendingOperation::TotalsDescribe { request_id, .. }
-                    | PendingOperation::TotalsCompute { request_id, .. } => {
-                        self.state.fail_totals(*request_id, error.to_string());
-                    }
-                    PendingOperation::FieldFilterDescribe { request_id, .. }
-                    | PendingOperation::FieldFilterApply { request_id } => {
-                        self.state.fail_field_filter(*request_id, error.to_string());
-                    }
-                    PendingOperation::FilterSelection { request_id }
-                    | PendingOperation::FilterPage { request_id }
-                    | PendingOperation::FilterRestore { request_id }
-                    | PendingOperation::SortView { request_id }
-                    | PendingOperation::ClearFilter { request_id } => {
-                        self.state.fail_filter(*request_id, error.to_string());
-                    }
-                    PendingOperation::Find { request_id, .. }
-                    | PendingOperation::FindPage { request_id, .. } => {
-                        self.state.fail_find(*request_id, error.to_string());
-                    }
-                    PendingOperation::SavedSqlInspection {
-                        request_id,
-                        request,
-                    } => {
-                        self.state
-                            .fail_saved_query_sql(*request_id, request, error.to_string());
-                    }
-                    PendingOperation::SavedInspection { target, request_id }
-                    | PendingOperation::SavedRun { target, request_id } => {
-                        self.state
-                            .fail_saved_query(*request_id, target.clone(), error.to_string());
-                    }
-                    PendingOperation::Record { request_id, .. } => {
-                        self.state
-                            .fail_record_navigation(*request_id, error.to_string());
-                    }
-                    PendingOperation::Edit { request_id } => {
-                        self.state.fail_edit(*request_id, error.to_string());
-                    }
-                    PendingOperation::Delete { request_id } => {
-                        self.state.fail_delete(*request_id, error.to_string());
-                    }
-                    PendingOperation::Insert { request_id } => {
-                        self.state.fail_insert(*request_id, error.to_string());
-                    }
-                    PendingOperation::InsertRetry { request_id, .. } => {
-                        self.state.fail_insert_retry(*request_id, error.to_string());
-                    }
-                    PendingOperation::Contents { target, request_id } => {
-                        self.state
-                            .fail_contents(*request_id, target.clone(), error.to_string());
-                    }
-                    _ => self.state.error = Some(error.to_string()),
-                },
+                Err(error) => self.fail_read(generation, &error),
             }
         }
     }
@@ -1114,14 +986,16 @@ impl eframe::App for Desktop {
                 Action::ReplaceFindMatch { request } => self.replace_find_match(request),
                 Action::CancelFind { request_id } => self.cancel_find(request_id),
                 Action::ViewSchema { table } => self.view_object_schema(table),
-                Action::ViewContents { target } => self.submit(Command::InspectCollection {
-                    target: RuntimeContentsTarget {
-                        document_revision: target.document_revision,
-                        table: target.table,
-                        column: target.column,
-                        parent_ordinal: target.parent_ordinal,
-                    },
-                }),
+                Action::ViewContents { target } => {
+                    self.submit(Command::InspectCollection {
+                        target: RuntimeContentsTarget {
+                            document_revision: target.document_revision,
+                            table: target.table,
+                            column: target.column,
+                            parent_ordinal: target.parent_ordinal,
+                        },
+                    });
+                }
                 Action::CloseContents { request_id } => self.close_contents(request_id),
                 Action::InspectSavedQuery { target } => self.inspect_saved_query(target),
                 Action::SavedQuerySqlClose { result } => {

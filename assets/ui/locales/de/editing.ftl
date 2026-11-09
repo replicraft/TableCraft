@@ -91,3 +91,6 @@ editing-paste-stale = Die Zwischenablageanforderung gehört nicht mehr zur ausge
 editing-paste-multiple = Die Zwischenablage hat mehrere Texte geliefert. Es wurde nichts eingefügt.
 
 editing-save-retained-private-journal = Nach dem Speichern bleibt ein privates Wiederherstellungsjournal auf dem Datenträger erhalten.
+
+# An actor ended without a known current native outcome.
+editing-save-uncertain = Der Speichervorgang wurde unerwartet beendet. Die Datei kann bereits geändert sein. Starten Sie TableCraft neu und öffnen Sie die Datenbank erneut, bevor Sie weitere Änderungen vornehmen. Prüfen Sie ein vorhandenes Wiederherstellungsjournal. Ein Zurücksetzen oder erneuter Versuch ist nicht bestätigt.

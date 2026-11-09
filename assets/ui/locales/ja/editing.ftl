@@ -91,3 +91,6 @@ editing-paste-stale = クリップボード要求が選択中のセルと一致�
 editing-paste-multiple = クリップボードから複数のテキストが返されました。貼り付けは行われませんでした。
 
 editing-save-retained-private-journal = 保存後も非公開の復旧ジャーナルがディスクに残ります。
+
+# An actor ended without a known current native outcome.
+editing-save-uncertain = 保存処理が予期せず停止しました。ファイルは既に変更されている可能性があります。TableCraft を再起動し、データベースを開き直してから変更してください。残っている復旧ジャーナルを確認してください。ロールバックや再試行は確認されていません。

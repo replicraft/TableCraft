@@ -10,3 +10,5 @@ objects-not-loaded = 此对象尚未加载。
 objects-load-failed = 无法加载此对象。
 objects-retry = 重试加载
 objects-mock-load-error = 模拟的原生读取失败；未打开任何数据库。
+
+objects-read-identities-exhausted = 读取请求标识符已耗尽。请重启 TableCraft 并重新打开数据库。

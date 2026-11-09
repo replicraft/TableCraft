@@ -1,4 +1,5 @@
 //! Route explicit retry through runtime-owned outcome evidence and guarded reads.
+use crate::workspace::request_read;
 use crate::workspace::{Desktop, PendingOperation, objects::Sessions};
 use std::sync::Arc;
 use tablecraft_runtime::{Command, InsertRetryEvidence, InsertRetryWitness};
@@ -33,9 +34,16 @@ impl Desktop {
         }) else {
             return;
         };
-        let request_id = self.worker.request(Command::OpenInsertOriginal {
-            witness: Arc::clone(&retry.context.witness),
-        });
+        let Some(request_id) = request_read(
+            Command::OpenInsertOriginal {
+                witness: Arc::clone(&retry.context.witness),
+            },
+            &self.worker,
+            &mut self.state,
+        ) else {
+            self.read_request_rejected();
+            return;
+        };
         if !self.state.begin_insert_retry(save_id, request_id) {
             self.worker.cancel();
             return;

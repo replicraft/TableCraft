@@ -10,3 +10,5 @@ objects-not-loaded = Este objeto ainda não foi carregado.
 objects-load-failed = Não foi possível carregar este objeto.
 objects-retry = Tentar carregar novamente
 objects-mock-load-error = Falha simulada de leitura nativa; nenhuma base de dados foi aberta.
+
+objects-read-identities-exhausted = Os identificadores de leitura se esgotaram. Reinicie o TableCraft e abra o banco de dados novamente.

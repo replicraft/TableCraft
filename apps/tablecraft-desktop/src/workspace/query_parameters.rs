@@ -1,5 +1,6 @@
 //! Scratch prompts retain runtime-issued SQL ownership; the host only routes DTOs.
 use super::{Desktop, PendingOperation};
+use crate::workspace::request_read;
 use std::sync::Arc;
 use tablecraft_runtime::{
     Command, InspectedQuery, ParameterInput as RuntimeInput, ParameterSpec as RuntimeSpec,
@@ -64,10 +65,17 @@ impl Desktop {
         };
 
         self.clear_query_parameters();
-        let request_id = self.worker.request(Command::InspectQuery {
-            document_revision,
-            sql: sql.clone(),
-        });
+        let Some(request_id) = request_read(
+            Command::InspectQuery {
+                document_revision,
+                sql: sql.clone(),
+            },
+            &self.worker,
+            &mut self.state,
+        ) else {
+            self.read_request_rejected();
+            return;
+        };
         self.generation = request_id;
         if !self.state.begin_query_parameter_inspection(request_id, sql) {
             self.worker.cancel();
@@ -199,10 +207,17 @@ impl Desktop {
 
         let inputs = runtime_inputs(&parameters);
 
-        let request_id = self.worker.request(Command::RunQuery {
-            target,
-            parameters: inputs,
-        });
+        let Some(request_id) = request_read(
+            Command::RunQuery {
+                target,
+                parameters: inputs,
+            },
+            &self.worker,
+            &mut self.state,
+        ) else {
+            self.read_request_rejected();
+            return;
+        };
         self.generation = request_id;
         if !self
             .state

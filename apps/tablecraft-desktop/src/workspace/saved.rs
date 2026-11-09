@@ -2,6 +2,7 @@
 mod sql;
 
 use super::{Desktop, PendingOperation};
+use crate::workspace::request_read;
 use tablecraft_runtime::{
     Command, ParameterInput as RuntimeInput, ParameterSpec as RuntimeSpec,
     SavedQueryTarget as RuntimeTarget,
@@ -25,9 +26,16 @@ impl Desktop {
             return;
         }
 
-        let request_id = self.worker.request(Command::InspectSavedQuery {
-            target: runtime_target(&target),
-        });
+        let Some(request_id) = request_read(
+            Command::InspectSavedQuery {
+                target: runtime_target(&target),
+            },
+            &self.worker,
+            &mut self.state,
+        ) else {
+            self.read_request_rejected();
+            return;
+        };
         self.generation = request_id;
         self.pending = PendingOperation::SavedInspection {
             target: target.clone(),
@@ -60,10 +68,17 @@ impl Desktop {
                 is_null: input.is_null,
             })
             .collect();
-        let request_id = self.worker.request(Command::RunSavedQuery {
-            target: runtime_target(&target),
-            parameters: inputs,
-        });
+        let Some(request_id) = request_read(
+            Command::RunSavedQuery {
+                target: runtime_target(&target),
+                parameters: inputs,
+            },
+            &self.worker,
+            &mut self.state,
+        ) else {
+            self.read_request_rejected();
+            return;
+        };
         self.generation = request_id;
         self.pending = PendingOperation::SavedRun {
             target: target.clone(),

@@ -1,5 +1,6 @@
 //! Bridge a source-bound deletion review into the shared native save owner.
 use super::{ActiveSave, Desktop, PendingOperation, SaveOwner};
+use crate::workspace::request_read;
 use tablecraft_runtime::{
     Command, DeleteReview as RuntimeReview, DeleteTarget as RuntimeTarget, ReviewedDelete,
     journal_path,
@@ -12,13 +13,20 @@ impl Desktop {
             return;
         }
         self.editing.clear_review();
-        let request_id = self.worker.request(Command::ReviewDelete {
-            target: RuntimeTarget {
-                document_revision: target.document_revision,
-                table: target.table.clone(),
-                parent_ordinal: target.parent_ordinal,
+        let Some(request_id) = request_read(
+            Command::ReviewDelete {
+                target: RuntimeTarget {
+                    document_revision: target.document_revision,
+                    table: target.table.clone(),
+                    parent_ordinal: target.parent_ordinal,
+                },
             },
-        });
+            &self.worker,
+            &mut self.state,
+        ) else {
+            self.read_request_rejected();
+            return;
+        };
         self.generation = request_id;
         self.pending = PendingOperation::Delete { request_id };
         self.state.begin_delete(target, request_id);

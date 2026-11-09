@@ -392,11 +392,34 @@ result clearing share the mailbox lock; backend work runs outside it. Dropping a
 worker requests cancellation without joining on the GUI thread. A blocking OS
 file-open/read call must return before a cooperative cancellation check can run.
 
+Read request admission returns a checked identity or `ReadRequestExhausted`.
+Zero is never issued; the maximum integer is reserved solely for cancellation.
+Exhaustion does not replace the preceding accepted command or consume another
+identity. Cancellation still revokes the final accepted publication, and repeated
+requests never wrap or reuse an identity. The desktop reports permanent exhaustion
+and requires restarting TableCraft and explicitly reopening the database.
+
 Read and save completion notifications run after publishing the owned result and
 outside mailbox locks. A panicking host repaint callback is contained at that
 notification boundary: the worker remains available, and a save retains its real
 recovery resources until explicit release and acknowledgement. Notification
 failure never retries a read or mutation or changes its recorded outcome.
+
+An unexpected native save actor exit is different from a notification failure.
+The lifetime channel becomes disconnected after native owners have unwound and
+the captured source is invalidated. An accepted Apply, Recover or Release then
+retains an exact-ID `Uncertain` report until acknowledgement. Any included previous
+outcome or receipt is historical: it grants no current-image, no-write, recovery,
+release, original-retry or replacement-reopen authority. Genuine completed results
+without a lost retained owner remain genuine. A failed actor accepts no more work.
+
+Desktop acknowledgement handles uncertainty before the normal original/AFTER
+branches. Local schema/SQL drafts retain their proposed values, and the source
+revision stays blocked for mutation even after dismissal or old read callbacks.
+Restart TableCraft and explicitly reopen the source to establish fresh authority;
+retained on-disk journals still need the normal diagnosis/recovery workflow.
+This protocol does not cover process abort, a double panic during destruction,
+or recovery of poisoned internal linked state.
 
 | Command | Owned response and scope |
 | --- | --- |

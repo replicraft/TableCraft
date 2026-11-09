@@ -1,5 +1,6 @@
 //! One exact saved-SQL request across runtime review, save and witnessed reopening.
 use super::{ActiveSave, SaveOwner, cleanup_notice, save_outcome};
+use crate::workspace::request_read;
 use crate::workspace::{Desktop, PendingOperation, filtering::RestoreFilter};
 use std::sync::Arc;
 use tablecraft_runtime::{
@@ -69,11 +70,18 @@ impl Desktop {
         };
         // Move the already issued outgoing strings; the shared owner separately
         // accounts for its retained pending snapshot and this returned binding.
-        let request_id = self.worker.request(Command::ReviewQuerySql {
-            target,
-            original_sql,
-            proposed_sql: request.proposed_sql,
-        });
+        let Some(request_id) = request_read(
+            Command::ReviewQuerySql {
+                target,
+                original_sql,
+                proposed_sql: request.proposed_sql,
+            },
+            &self.worker,
+            &mut self.state,
+        ) else {
+            self.read_request_rejected();
+            return;
+        };
         let Some(request) = self.state.begin_saved_query_sql_review(request_id) else {
             self.worker.cancel();
             return;
@@ -423,7 +431,35 @@ impl Desktop {
     }
 
     /// A receipt alone cannot resolve dirty text or publish a fresh revision.
+    pub(in crate::workspace) fn acknowledge_uncertain_query_definition(&mut self, id: u64) -> bool {
+        let Some(host) = &self.editing.query_definition else {
+            return false;
+        };
+        let (Some(review_id), Some(identity)) = (host.review_id, host.status) else {
+            return false;
+        };
+        if !self
+            .state
+            .matches_saved_query_sql_review(host.request_id, &host.request, review_id)
+            || !self.state.can_acknowledge_saved_query_sql_save(identity)
+            || !self.editing.worker.acknowledge(id)
+        {
+            return false;
+        }
+        // This API releases only pending presentation; its contract makes no
+        // claim about native resources or persisted original/replacement bytes.
+        self.state
+            .release_saved_query_sql_review(host.request_id, &host.request, review_id, None);
+        self.state.clear_saved_query_sql_save(identity);
+        self.editing.query_definition = None;
+        true
+    }
+
     pub(in crate::workspace) fn acknowledge_query_definition(&mut self, id: u64) {
+        if self.acknowledge_uncertain_save(id) {
+            return;
+        }
+
         if self.editing.save.is_none() {
             if self
                 .editing
@@ -522,9 +558,19 @@ impl Desktop {
         }
         host.reopen_started = true;
         host.reopening = true;
-        self.generation = self
-            .worker
-            .request(Command::OpenQueryExpressionSaved { witness });
+        let Some(generation) = request_read(
+            Command::OpenQueryExpressionSaved { witness },
+            &self.worker,
+            &mut self.state,
+        ) else {
+            self.read_request_rejected();
+            self.fail_query_definition_reopen(&tablecraft_runtime::Error::ReadRequestExhausted(
+                tablecraft_runtime::ReadRequestExhausted,
+            ));
+            self.state.busy = false;
+            return;
+        };
+        self.generation = generation;
         self.pending = PendingOperation::QueryDefinitionReopen {
             request_id: host.request_id,
         };

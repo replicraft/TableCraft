@@ -2,6 +2,7 @@
 mod field;
 use super::{Desktop, PendingOperation};
 use crate::view_models;
+use crate::workspace::request_read;
 use tablecraft_runtime::{
     self as runtime, Command, FilterDefinition, FilterHandle, FilteredData as RuntimeFilteredData,
 };
@@ -52,12 +53,19 @@ impl Desktop {
             sort: retained.sort,
             filter_count: retained.filter_count,
         };
-        let request_id = self.worker.request(Command::ReapplyFilter {
-            definition: retained.definition,
-            document_revision: database.document_revision,
-            enabled: retained.enabled,
-            offset: retained.offset,
-        });
+        let Some(request_id) = request_read(
+            Command::ReapplyFilter {
+                definition: retained.definition,
+                document_revision: database.document_revision,
+                enabled: retained.enabled,
+                offset: retained.offset,
+            },
+            &self.worker,
+            &mut self.state,
+        ) else {
+            self.read_request_rejected();
+            return;
+        };
         self.generation = request_id;
         if !self.state.begin_filter_restore(request_id, restore) {
             self.worker.cancel();
@@ -106,7 +114,10 @@ impl Desktop {
             },
             base,
         };
-        let request_id = self.worker.request(command);
+        let Some(request_id) = request_read(command, &self.worker, &mut self.state) else {
+            self.read_request_rejected();
+            return;
+        };
         self.generation = request_id;
         self.state
             .begin_filter_selection(request_id, target.clone(), comparison);
@@ -125,11 +136,18 @@ impl Desktop {
             self.state.error = Some(self.state.localizer.text("filtering-stale"));
             return;
         };
-        let request_id = self.worker.request(Command::FilterPage {
-            handle,
-            offset,
-            enabled,
-        });
+        let Some(request_id) = request_read(
+            Command::FilterPage {
+                handle,
+                offset,
+                enabled,
+            },
+            &self.worker,
+            &mut self.state,
+        ) else {
+            self.read_request_rejected();
+            return;
+        };
         self.generation = request_id;
         self.state
             .begin_filter_page(request_id, target, offset, enabled);
@@ -144,7 +162,14 @@ impl Desktop {
         let Some(handle) = self.filter_handle(&target) else {
             return;
         };
-        let request_id = self.worker.request(Command::ClearFilter { handle });
+        let Some(request_id) = request_read(
+            Command::ClearFilter { handle },
+            &self.worker,
+            &mut self.state,
+        ) else {
+            self.read_request_rejected();
+            return;
+        };
         self.generation = request_id;
         self.state.begin_clear_filter(request_id, target.clone());
         self.pending = PendingOperation::ClearFilter { request_id };
@@ -172,19 +197,26 @@ impl Desktop {
         } else {
             None
         };
-        let request_id = self.worker.request(Command::SortView {
-            target: runtime::SortTarget {
-                document_revision: target.document_revision,
-                table: target.table.clone(),
-                filter_id: target.filter_id,
+        let Some(request_id) = request_read(
+            Command::SortView {
+                target: runtime::SortTarget {
+                    document_revision: target.document_revision,
+                    table: target.table.clone(),
+                    filter_id: target.filter_id,
+                },
+                sort: sort.as_ref().map(|sort| runtime::SortSpec {
+                    column: sort.column.clone(),
+                    descending: sort.descending,
+                }),
+                base,
+                enabled,
             },
-            sort: sort.as_ref().map(|sort| runtime::SortSpec {
-                column: sort.column.clone(),
-                descending: sort.descending,
-            }),
-            base,
-            enabled,
-        });
+            &self.worker,
+            &mut self.state,
+        ) else {
+            self.read_request_rejected();
+            return;
+        };
         self.generation = request_id;
         if !self
             .state

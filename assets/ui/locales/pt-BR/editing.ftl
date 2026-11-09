@@ -91,3 +91,6 @@ editing-paste-stale = A solicitação da área de transferência não correspond
 editing-paste-multiple = A área de transferência retornou vários textos. Nada foi colado.
 
 editing-save-retained-private-journal = Um diário de recuperação privado permanece no disco após salvar.
+
+# An actor ended without a known current native outcome.
+editing-save-uncertain = O processo de salvamento parou inesperadamente. O arquivo pode já ter sido alterado. Reinicie o TableCraft e reabra o banco de dados antes de fazer alterações; examine qualquer diário de recuperação mantido. Não há confirmação de reversão nem de nova tentativa.

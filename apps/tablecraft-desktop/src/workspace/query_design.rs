@@ -1,5 +1,6 @@
 //! Query-design requests bridge shared editor state to headless runtime services.
 use super::{Desktop, PendingOperation};
+use crate::workspace::request_read;
 use tablecraft_builders::query::{BuiltQueryDesign, DesignTableMetadata, QueryDesignDraft};
 use tablecraft_runtime::{self as runtime, Command};
 use tablecraft_ui::{QueryDesignCompletion, QueryDesignRequest};
@@ -9,10 +10,17 @@ impl Desktop {
         if self.editing.has_save() || !self.state.can_describe_query_design(&request, &table) {
             return;
         }
-        let request_id = self.worker.request(Command::DescribeQueryDesign {
-            target: native_target(&request),
-            table: table.clone(),
-        });
+        let Some(request_id) = request_read(
+            Command::DescribeQueryDesign {
+                target: native_target(&request),
+                table: table.clone(),
+            },
+            &self.worker,
+            &mut self.state,
+        ) else {
+            self.read_request_rejected();
+            return;
+        };
         if !self
             .state
             .begin_query_design_description(request.clone(), table.clone(), request_id)
@@ -42,10 +50,17 @@ impl Desktop {
         {
             return;
         }
-        let request_id = self.worker.request(Command::BuildQueryDesign {
-            target: native_target(&request),
-            draft: draft.clone(),
-        });
+        let Some(request_id) = request_read(
+            Command::BuildQueryDesign {
+                target: native_target(&request),
+                draft: draft.clone(),
+            },
+            &self.worker,
+            &mut self.state,
+        ) else {
+            self.read_request_rejected();
+            return;
+        };
         if !self
             .state
             .begin_query_design_build(request.clone(), draft, completion, request_id)
@@ -65,10 +80,17 @@ impl Desktop {
         if self.editing.has_save() || !self.state.can_import_query_design(&request, &sql) {
             return;
         }
-        let request_id = self.worker.request(Command::ImportQueryDesign {
-            target: native_target(&request),
-            sql: sql.clone(),
-        });
+        let Some(request_id) = request_read(
+            Command::ImportQueryDesign {
+                target: native_target(&request),
+                sql: sql.clone(),
+            },
+            &self.worker,
+            &mut self.state,
+        ) else {
+            self.read_request_rejected();
+            return;
+        };
         if !self
             .state
             .begin_query_design_import(request.clone(), sql, request_id)
@@ -167,9 +189,16 @@ impl Desktop {
         if self.editing.has_save() {
             return;
         }
-        let request_id = self.worker.request(Command::Query {
-            sql: self.state.sql.clone(),
-        });
+        let Some(request_id) = request_read(
+            Command::Query {
+                sql: self.state.sql.clone(),
+            },
+            &self.worker,
+            &mut self.state,
+        ) else {
+            self.read_request_rejected();
+            return;
+        };
         if !self.state.begin_query_design_run(request_id) {
             self.worker.cancel();
             return;

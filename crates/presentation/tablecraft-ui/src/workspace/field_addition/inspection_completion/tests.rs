@@ -49,3 +49,32 @@ fn closed_pending_owner_is_retired_only_after_exact_terminal_report_even_at_payl
     state.prune_field_addition_inspections();
     assert!(state.field_addition_inspection(&owner).is_none());
 }
+
+#[test]
+fn unissued_inspection_interrupts_only_its_exact_reservation_without_inventing_an_id() {
+    let mut state = state(true);
+    let owner = state.active_object().unwrap();
+    assert!(state.prepare_field_addition_inspection(&owner).is_ok());
+    let mut other = owner.clone();
+    other.target.document_revision += 1;
+    assert!(!state.interrupt_prepared_field_addition_inspection(&other));
+    assert_eq!(
+        state.field_addition_inspection(&owner),
+        Some((true, None, None))
+    );
+    assert!(state.interrupt_prepared_field_addition_inspection(&owner));
+    assert!(!state.interrupt_prepared_field_addition_inspection(&owner));
+    assert_eq!(
+        state.field_addition_inspection(&owner),
+        Some((false, None, None))
+    );
+    assert!(state.field_addition_inspection_interrupted(&owner));
+    assert!(!state.bind_field_addition_inspection(&owner, 80));
+    assert!(!state.has_pending_field_addition_inspection(0));
+    assert!(state.retry_field_addition_inspection(&owner));
+    assert!(state.needs_field_addition_inspection(&owner));
+
+    assert!(state.begin_field_addition_inspection(&owner, 81).is_ok());
+    assert!(!state.interrupt_prepared_field_addition_inspection(&owner));
+    assert!(state.has_pending_field_addition_inspection(81));
+}
