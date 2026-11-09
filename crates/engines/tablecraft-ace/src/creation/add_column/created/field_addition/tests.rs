@@ -1,5 +1,6 @@
 //! Independent complete images and explicit frozen-profile/source refusals.
 mod dictionary;
+mod prefix;
 mod refusal;
 mod sdk;
 

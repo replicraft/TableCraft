@@ -1,7 +1,5 @@
 use super::*;
-use crate::{
-    CreateColumn, CreatedDefaultZeroColumnRequired, FirstTableDefinition, create_ace16_database,
-};
+use crate::{CreateColumn, CreatedDefaultZeroColumnRequired, FirstTableDefinition};
 use tablecraft_schema::ScalarType;
 
 const PAGE_BYTES: usize = 4096;
@@ -160,32 +158,4 @@ fn unknown_compression_flags_history_and_protected_complement_refuse() {
             );
         }
     }
-    // A valid canonical source with a different policy remains outside the
-    // new history language; creator compatibility is not inferred from shape.
-    let id = CreateColumn::new("ID", ScalarType::Int32)
-        .with_primary_key("PrimaryKey")
-        .unwrap()
-        .with_incrementing_autonumber()
-        .unwrap();
-    let required_text = CreateColumn::short_text("Label", 80)
-        .unwrap()
-        .with_required(true)
-        .with_allow_zero_length(true)
-        .unwrap();
-    let unrelated =
-        create_ace16_database("Table1", &[id, required_text], &[], &mut budget(), &|| {
-            false
-        })
-        .unwrap();
-    assert!(
-        image(unrelated.as_bytes())
-            .prepare_created_add_field_candidate(
-                "Table1",
-                "OtherLabel",
-                text(255, true),
-                &mut budget(),
-                &|| false
-            )
-            .is_err()
-    );
 }

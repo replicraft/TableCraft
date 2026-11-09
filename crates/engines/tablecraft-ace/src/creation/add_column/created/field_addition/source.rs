@@ -54,13 +54,10 @@ pub(super) fn capture(
     {
         return Err(Error::Source);
     }
-    // Every ordinary field belongs to one known semantic tuple. The complete
-    // image replay below still proves flags, dictionary indices and storage.
-    for field in &columns[1..] {
-        check(budget, cancelled)?;
-        FieldAdditionTarget::from_declaration(field)?;
-    }
-
+    // The initial prefix retains the constructive owner's checked inert
+    // declarations. Only the historical appended suffix must belong to this
+    // operation's closed target tuples. Canonical seed and complete history
+    // equality below independently prove every prefix policy and physical byte.
     let mut reconstructed_order = build::initial_order(&columns[..initial], budget, cancelled)?;
     let seed = build::canonical(
         checked.schema().name(),
