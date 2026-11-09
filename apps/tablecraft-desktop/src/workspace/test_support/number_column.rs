@@ -37,7 +37,7 @@ pub(in crate::workspace) fn add_number(harness: &mut Harness<'_, Desktop>, colum
     harness.key_press_modifiers(egui::Modifiers::COMMAND, Key::S);
     harness.run_steps(1);
     let deadline = Instant::now() + Duration::from_secs(10);
-    while harness.state().state.busy || harness.state().editing.number_column.is_some() {
+    while harness.state().state.busy || harness.state().editing.has_save() {
         assert!(
             Instant::now() < deadline,
             "repeated Number save stalled: column={column}, report={:?}, error={:?}",
