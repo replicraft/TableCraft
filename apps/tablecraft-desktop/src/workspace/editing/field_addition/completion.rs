@@ -1,5 +1,6 @@
 //! Actor outcomes do not resolve the header; only the checked AFTER read does.
 use super::*;
+use crate::workspace::editing::field_save::{FieldOperation, FieldReadWitness};
 use crate::workspace::editing::{cleanup_notice, save_outcome};
 use tablecraft_runtime::{SaveCompletion, SaveOperation, SaveReport};
 use tablecraft_ui::{Database, FieldAdditionSaveCommand};
@@ -53,10 +54,9 @@ impl Desktop {
             && report.operation == SaveOperation::Apply
             && match report.outcome {
                 SaveOutcome::Saved { receipt } => {
-                    report
-                        .outcome
-                        .field_addition_reopen_facts()
-                        .is_ok_and(|facts| facts.replacement)
+                    FieldOperation::Addition
+                        .facts(report.outcome)
+                        .is_some_and(|facts| facts.replacement)
                         && receipt.completion == SaveCompletion::Applied
                 }
                 _ => false,
@@ -170,15 +170,11 @@ impl Desktop {
         {
             return false;
         }
-        let Some(save) = self.editing.save.as_ref().filter(|save| {
-            save.id == identity.save_id && matches!(save.owner, SaveOwner::FieldAddition)
-        }) else {
+        let Some(report) = self.field_actor_report(FieldOperation::Addition, identity.save_id)
+        else {
             return false;
         };
-        let Some(report) = save.report else {
-            return false;
-        };
-        let Ok(facts) = report.outcome.field_addition_reopen_facts() else {
+        let Some(facts) = FieldOperation::Addition.facts(report.outcome) else {
             self.state.error = Some(self.state.localizer.text("objects-open-refused"));
             return false;
         };
@@ -188,11 +184,12 @@ impl Desktop {
             self.state.error = Some(self.state.localizer.text("objects-open-refused"));
             return false;
         }
-        if !self.editing.worker.acknowledge(identity.save_id) {
+        if self
+            .acknowledge_field_actor(FieldOperation::Addition, identity.save_id)
+            .is_none()
+        {
             return false;
         }
-        self.editing.save = None;
-        self.state.busy = false;
         if replacement {
             self.editing.field_addition.as_mut().unwrap().cleanup =
                 completed.and_then(cleanup_notice);
@@ -218,9 +215,9 @@ impl Desktop {
             || host.reopening
             || self.editing.save.is_some()
             || !host.terminal.is_some_and(|outcome| {
-                outcome
-                    .field_addition_reopen_facts()
-                    .is_ok_and(|facts| facts.replacement)
+                FieldOperation::Addition
+                    .facts(outcome)
+                    .is_some_and(|facts| facts.replacement)
             })
         {
             return;
@@ -236,7 +233,7 @@ impl Desktop {
         // Generic submit intentionally refuses while this exact schema owner
         // remains retained. Issue only its accepted full-image witness here,
         // after native ACK, just as the query-definition owner does.
-        self.generation = self.worker.request(Command::OpenColumnAdded { witness });
+        self.generation = self.issue_field_witness_read(FieldReadWitness::Addition(witness));
         self.pending = PendingOperation::FieldAdditionReopen { request_id };
         self.state.busy = true;
     }
@@ -277,9 +274,9 @@ impl Desktop {
         if host.request_id != request_id
             || !host.reopening
             || !host.terminal.is_some_and(|outcome| {
-                outcome
-                    .field_addition_reopen_facts()
-                    .is_ok_and(|facts| facts.replacement)
+                FieldOperation::Addition
+                    .facts(outcome)
+                    .is_some_and(|facts| facts.replacement)
             })
         {
             return;
@@ -312,7 +309,7 @@ impl Desktop {
         self.state.busy = false;
         self.pending = PendingOperation::Read;
         self.editing.field_addition = None;
-        self.resume_after_field_addition = true;
+        self.resume_after_field_schema = true;
         self.editing.clear_review();
         self.clear_query_parameters();
         if let Some(open) = self.state.active_object_load() {

@@ -4,27 +4,19 @@ mod completion;
 mod inspection_completion;
 
 use super::{ActiveSave, SaveOwner};
-use crate::workspace::{Desktop, PendingOperation, filtering::RestoreFilter};
+use crate::workspace::{Desktop, PendingOperation};
 use std::sync::Arc;
 use tablecraft_runtime::{
     AddedColumnReopen, Command, FieldAdditionAvailability, FieldAdditionReview,
     ReviewedFieldAddition, SaveOutcome, journal_path,
 };
-use tablecraft_ui::{
-    FieldAdditionRequest, FieldAdditionSaveIdentity, ObjectKind, ObjectTab, SaveCleanupNotice,
-};
+use tablecraft_ui::{FieldAdditionRequest, FieldAdditionSaveIdentity, ObjectKind, ObjectTab};
 
-pub(in crate::workspace) struct FieldAdditionHost {
-    request_id: u64,
-    request: FieldAdditionRequest,
-    pub(super) identity: Option<FieldAdditionSaveIdentity>,
-    witness: Option<Arc<AddedColumnReopen>>,
-    terminal: Option<SaveOutcome>,
-    cleanup: Option<SaveCleanupNotice>,
-    filters: Vec<RestoreFilter>,
-    reopening: bool,
-    cancelled: bool,
-}
+pub(in crate::workspace) type FieldAdditionHost = super::field_save::FieldSaveHost<
+    FieldAdditionRequest,
+    AddedColumnReopen,
+    FieldAdditionSaveIdentity,
+>;
 
 impl Desktop {
     /// Invoked after a table page is published/activated. The UI cache suppresses

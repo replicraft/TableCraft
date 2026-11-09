@@ -2,6 +2,8 @@
 mod database_options;
 mod deleting;
 mod field_addition;
+mod field_rename;
+mod field_save;
 mod inserting;
 #[cfg(test)]
 mod pasting;
@@ -29,6 +31,7 @@ pub(super) struct Editing {
     worker: SaveWorker,
     query_definition: Option<query_definition::QueryDefinitionHost>,
     field_addition: Option<field_addition::FieldAdditionHost>,
+    field_rename: Option<field_rename::FieldRenameHost>,
     database_options: Option<database_options::DatabaseOptionsHost>,
     database_options_inspection: Option<(u64, u64)>,
     review: Option<(u64, ReviewedEdit)>,
@@ -48,6 +51,10 @@ impl Editing {
     pub(super) fn save_report(&self) -> Option<SaveReport> {
         self.save.as_ref().and_then(|save| save.report)
     }
+
+    pub(super) fn insert_review_id(&self) -> Option<u64> {
+        self.insert_review.as_ref().map(|(id, _)| *id)
+    }
 }
 
 #[derive(Clone, Copy)]
@@ -58,6 +65,7 @@ enum SaveOwner {
     TableCreation,
     TableRename,
     FieldAddition,
+    FieldRename,
     DatabaseOptions,
     QueryAction,
     QueryDefinition,
@@ -79,6 +87,7 @@ impl Editing {
             worker: SaveWorker::new(move || ctx.request_repaint()),
             query_definition: None,
             field_addition: None,
+            field_rename: None,
             database_options: None,
             database_options_inspection: None,
             review: None,
@@ -99,6 +108,7 @@ impl Editing {
             || self.worker.is_busy()
             || self.query_definition.is_some()
             || self.field_addition.is_some()
+            || self.field_rename.is_some()
             || self.database_options.is_some()
     }
 
@@ -280,6 +290,10 @@ impl Desktop {
             self.database_options_save_report(report);
             return;
         }
+        if matches!(save.owner, SaveOwner::FieldRename) {
+            self.field_rename_save_report(report);
+            return;
+        }
         if matches!(save.owner, SaveOwner::FieldAddition) {
             self.field_addition_save_report(report);
             return;
@@ -311,13 +325,19 @@ impl Desktop {
                 self.state.set_query_action_save_outcome(report.id, outcome);
             }
             SaveOwner::TableCreation => {}
-            SaveOwner::TableRename | SaveOwner::FieldAddition | SaveOwner::DatabaseOptions => {}
+            SaveOwner::TableRename
+            | SaveOwner::FieldAddition
+            | SaveOwner::FieldRename
+            | SaveOwner::DatabaseOptions => {}
             SaveOwner::QueryDefinition => {}
         }
     }
 
     pub(super) fn cancel_current_save(&mut self) {
         if self.cancel_current_database_options_operation() {
+            return;
+        }
+        if self.cancel_current_field_rename_operation() {
             return;
         }
         if self.cancel_current_field_addition_operation() {
@@ -335,6 +355,7 @@ impl Desktop {
 
     pub(super) fn cancel_save(&mut self, id: u64) {
         self.note_field_addition_cancellation(id);
+        self.note_field_rename_cancellation(id);
         if self.editing.save.as_ref().is_some_and(|save| save.id == id) {
             self.note_query_definition_save_cancellation(id);
             self.editing.worker.cancel(id);
@@ -342,6 +363,17 @@ impl Desktop {
     }
 
     pub(super) fn resolve_save(&mut self, id: u64, recover: bool) {
+        if let Some(identity) = self.field_rename_native_identity(id) {
+            self.field_rename_save_command(
+                identity,
+                if recover {
+                    tablecraft_ui::FieldRenameSaveCommand::Recover
+                } else {
+                    tablecraft_ui::FieldRenameSaveCommand::Release
+                },
+            );
+            return;
+        }
         if let Some(identity) = self
             .editing
             .field_addition
@@ -397,7 +429,9 @@ impl Desktop {
                     SaveOwner::QueryDefinition => {
                         self.query_definition_resolution_started(next);
                     }
-                    SaveOwner::FieldAddition | SaveOwner::DatabaseOptions => {}
+                    SaveOwner::FieldAddition
+                    | SaveOwner::FieldRename
+                    | SaveOwner::DatabaseOptions => {}
                     SaveOwner::TableCreation => {}
                 }
             }
@@ -406,6 +440,10 @@ impl Desktop {
     }
 
     pub(super) fn acknowledge_save(&mut self, id: u64) {
+        if let Some(identity) = self.field_rename_native_identity(id) {
+            self.acknowledge_field_rename(identity);
+            return;
+        }
         if let Some(identity) = self
             .editing
             .field_addition
@@ -489,7 +527,10 @@ impl Desktop {
                 self.state.acknowledge_query_action_save(id);
             }
             SaveOwner::TableCreation => {}
-            SaveOwner::TableRename | SaveOwner::FieldAddition | SaveOwner::DatabaseOptions => {}
+            SaveOwner::TableRename
+            | SaveOwner::FieldAddition
+            | SaveOwner::FieldRename
+            | SaveOwner::DatabaseOptions => {}
             SaveOwner::QueryDefinition => {}
         }
         if refresh_after_ack {

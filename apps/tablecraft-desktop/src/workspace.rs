@@ -45,6 +45,15 @@ enum PendingOperation {
     DatabaseOptionsReopen {
         request_id: u64,
     },
+    FieldRenameInspection {
+        request_id: u64,
+    },
+    FieldRenameReview {
+        request_id: u64,
+    },
+    FieldRenameReopen {
+        request_id: u64,
+    },
     FieldAdditionAvailability {
         request_id: u64,
         tab: tablecraft_ui::ObjectTab,
@@ -198,7 +207,7 @@ pub(super) struct Desktop {
     table_rename: Option<TableRenameHost>,
     resume_after_table_creation: bool,
     resume_after_query_definition: bool,
-    resume_after_field_addition: bool,
+    resume_after_field_schema: bool,
     close_after_first_record: Option<ObjectTarget>,
     editing: Editing,
     recovery: Option<editing::recovery::RecoveryHost>,
@@ -235,7 +244,7 @@ impl Desktop {
             table_rename: None,
             resume_after_table_creation: false,
             resume_after_query_definition: false,
-            resume_after_field_addition: false,
+            resume_after_field_schema: false,
             close_after_first_record: None,
             editing,
             recovery: None,
@@ -430,8 +439,13 @@ impl Desktop {
     fn poll(&mut self) {
         self.retire_database_options_inspection_publication();
         self.retire_field_addition_inspection_publications();
+        self.retire_field_rename_inspection();
         while let Some((generation, result)) = self.worker.poll() {
             if generation != self.generation {
+                if self.state.pending_field_rename_inspection_id() == Some(generation) {
+                    self.finish_superseded_field_rename_inspection(generation, result);
+                    continue;
+                }
                 self.finish_superseded_field_addition_inspection(generation, result);
                 continue;
             }
@@ -451,9 +465,7 @@ impl Desktop {
                 Ok(Response::QueryExpressionReviewed { .. })
                 | Ok(Response::AddColumnReviewed { .. })
                 | Ok(Response::NumberColumnReviewed { .. })
-                | Ok(Response::NumberColumnAvailability { .. })
-                | Ok(Response::FieldRenameSourceInspected { .. })
-                | Ok(Response::FieldRenameReviewed { .. }) => {
+                | Ok(Response::NumberColumnAvailability { .. }) => {
                     self.state.error = Some(self.state.localizer.text("ribbon-unavailable"));
                 }
                 Ok(Response::DatabaseOptionsInspected { inspection }) => {
@@ -461,6 +473,12 @@ impl Desktop {
                 }
                 Ok(Response::DatabaseOptionsReviewed { review, capability }) => {
                     self.start_reviewed_database_options(generation, review, capability)
+                }
+                Ok(Response::FieldRenameSourceInspected { inspection }) => {
+                    self.publish_field_rename_inspection(generation, inspection);
+                }
+                Ok(Response::FieldRenameReviewed { review, capability }) => {
+                    self.start_reviewed_field_rename(generation, review, capability);
                 }
                 Ok(Response::FieldAdditionReviewed { review, capability }) => {
                     self.start_reviewed_field_addition(generation, review, capability);
@@ -573,6 +591,15 @@ impl Desktop {
                     };
                     if let PendingOperation::DatabaseOptionsReopen { request_id } = self.pending {
                         self.finish_database_options_reopen(
+                            request_id,
+                            database,
+                            table_creation_available,
+                            table_design_available,
+                        );
+                        continue;
+                    }
+                    if let PendingOperation::FieldRenameReopen { request_id } = self.pending {
+                        self.finish_field_rename_reopen(
                             request_id,
                             database,
                             table_creation_available,
@@ -760,6 +787,17 @@ impl Desktop {
                         let id = *request_id;
                         self.database_options_reopen_failed(id, error.to_string());
                     }
+                    PendingOperation::FieldRenameInspection { .. } => {
+                        self.field_rename_inspection_failed(generation, error.to_string());
+                    }
+                    PendingOperation::FieldRenameReview { request_id } => {
+                        let id = *request_id;
+                        self.field_rename_review_failed(id, error.to_string());
+                    }
+                    PendingOperation::FieldRenameReopen { request_id } => {
+                        let id = *request_id;
+                        self.field_rename_reopen_failed(id, error.to_string());
+                    }
                     PendingOperation::FieldAdditionAvailability { .. } => {
                         self.field_addition_availability_failed(generation, error.to_string())
                     }
@@ -926,8 +964,8 @@ impl eframe::App for Desktop {
             }
             let table_transition = std::mem::take(&mut self.resume_after_table_creation);
             let query_transition = std::mem::take(&mut self.resume_after_query_definition);
-            let number_transition = std::mem::take(&mut self.resume_after_field_addition);
-            if table_transition || query_transition || number_transition {
+            let field_transition = std::mem::take(&mut self.resume_after_field_schema);
+            if table_transition || query_transition || field_transition {
                 self.resume_table_draft_action(ctx);
             }
         }
@@ -1096,6 +1134,18 @@ impl eframe::App for Desktop {
                 Action::DatabaseOptionsSave { identity, command } => {
                     self.database_options_save_command(identity, command)
                 }
+                Action::InspectFieldRename { target } => self.inspect_field_rename_source(target),
+                Action::ReviewFieldRename { request } => self.save_field_rename(request),
+                Action::CancelFieldRenameReview { request_id } => {
+                    self.cancel_field_rename_review(request_id)
+                }
+                Action::FieldRenameSave { identity, command } => {
+                    self.field_rename_save_command(identity, command)
+                }
+                Action::FieldRenameClose { result } => {
+                    self.finish_field_rename_close(result, ui.ctx())
+                }
+                Action::CloseFieldRenameEditor => self.close_field_rename_editor(),
                 Action::ReviewFieldAddition { request } => self.save_field_addition(request),
                 Action::RetryFieldAdditionInspection { tab } => {
                     self.retry_field_addition_availability(tab)
@@ -1168,6 +1218,10 @@ impl eframe::App for Desktop {
                         self.state.clear_query_run();
                         self.clear_query_parameters();
                         match &self.pending {
+                            PendingOperation::FieldRenameInspection { request_id } => {
+                                self.state.interrupt_field_rename_inspection_id(*request_id);
+                                self.pending = PendingOperation::Read;
+                            }
                             PendingOperation::FieldAdditionAvailability { request_id, .. } => {
                                 // This exact readonly publication was revoked.
                                 // Keep its field-level interruption/retry state,

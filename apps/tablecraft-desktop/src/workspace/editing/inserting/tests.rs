@@ -1,6 +1,6 @@
 //! Real host dispatch and native save ownership through headless insertion widgets.
 use super::*;
-use crate::workspace::test_support::{self, finish_reads, finish_save};
+use crate::workspace::test_support::{self, finish_reads, finish_save, inserting::review_insert};
 use egui::accesskit::Role;
 use egui_kittest::{Harness, kittest::Queryable};
 use std::path::PathBuf;
@@ -66,19 +66,11 @@ fn begin(harness: &mut Harness<'_, Desktop>, id: &str) {
     enter_id(harness, id);
 }
 
-fn review(harness: &mut Harness<'_, Desktop>) {
-    harness
-        .get_by_role_and_label(Role::Button, "Review new row")
-        .click_accesskit();
-    harness.run_steps(1);
-    finish_reads(harness);
-}
-
 #[test]
 fn reviewed_insert_keeps_its_terminal_owner_until_ack_then_refreshes_the_same_table() {
     let (_directory, path, original, mut harness) = opened();
     begin(&mut harness, "4");
-    review(&mut harness);
+    review_insert(&mut harness);
     let review_id = harness.state().editing.insert_review.as_ref().unwrap().0;
     assert!(harness.state().state.can_apply_insert(review_id));
     assert_eq!(std::fs::read(&path).unwrap(), original);
@@ -136,7 +128,7 @@ fn reviewed_insert_keeps_its_terminal_owner_until_ack_then_refreshes_the_same_ta
 fn invalid_input_and_changed_or_cancelled_drafts_never_apply_an_old_review() {
     let (_directory, path, original, mut harness) = opened();
     begin(&mut harness, "bad");
-    review(&mut harness);
+    review_insert(&mut harness);
     assert!(harness.state().editing.insert_review.is_none());
     assert_eq!(std::fs::read(&path).unwrap(), original);
 
@@ -145,7 +137,7 @@ fn invalid_input_and_changed_or_cancelled_drafts_never_apply_an_old_review() {
     harness.run_steps(1);
     harness.key_press_modifiers(egui::Modifiers::COMMAND, egui::Key::A);
     enter_id(&mut harness, "4");
-    review(&mut harness);
+    review_insert(&mut harness);
     let review_id = harness.state().editing.insert_review.as_ref().unwrap().0;
     assert!(harness.state().state.can_apply_insert(review_id));
 

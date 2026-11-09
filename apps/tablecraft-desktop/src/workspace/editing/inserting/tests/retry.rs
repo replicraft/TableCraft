@@ -1,5 +1,5 @@
 //! Real failed Apply → release/ack → guarded original reopen → new review.
-use super::{begin, finish_reads, finish_save, opened, review};
+use super::{begin, finish_reads, finish_save, opened, review_insert};
 use egui::accesskit::Role;
 use egui_kittest::kittest::Queryable;
 use tablecraft_runtime::SaveOutcome;
@@ -9,7 +9,7 @@ use tablecraft_testkit::support::access::retained_target::assert_retained_target
 fn no_write_failure_keeps_input_and_retry_refuses_drift_until_original_bytes_match() {
     let (_directory, path, original, mut harness) = opened();
     begin(&mut harness, "4");
-    review(&mut harness);
+    review_insert(&mut harness);
     let original_revision = harness
         .state()
         .state
@@ -104,7 +104,7 @@ fn no_write_failure_keeps_input_and_retry_refuses_drift_until_original_bytes_mat
     assert!(harness.state().editing.insert_review.is_none());
     assert_eq!(std::fs::read(&path).unwrap(), original);
 
-    review(&mut harness);
+    review_insert(&mut harness);
     harness
         .get_by_role_and_label(Role::Button, "Apply new row to original file")
         .click_accesskit();

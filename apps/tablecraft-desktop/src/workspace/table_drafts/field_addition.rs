@@ -1,6 +1,6 @@
 //! Defer transitions until the exact field-addition naming owner is explicitly resolved.
 use super::{DeferredDraftAction, Desktop};
-use tablecraft_ui::{FieldAdditionCloseDecision, FieldAdditionCloseResult, ObjectTab};
+use tablecraft_ui::{FieldAdditionCloseDecision, FieldAdditionCloseResult};
 
 impl Desktop {
     /// One existing deferred owner covers table, file and window transitions.
@@ -62,18 +62,6 @@ impl Desktop {
             let tab = tab.clone();
             self.state.request_field_addition_close(&tab);
         }
-    }
-
-    /// Atomic schema publication retained these IDs and exact object kinds.
-    /// Rebase a prior user transition onto the fresh revision without reviving
-    /// any stale row handle, native result, filter handle or query capability.
-    pub(super) fn field_addition_transition_tab(&self, original: &ObjectTab) -> Option<ObjectTab> {
-        let revision = self.state.database.as_ref()?.document_revision;
-        self.state.object_tabs().into_iter().find(|tab| {
-            tab.id == original.id
-                && tab.target.kind == original.target.kind
-                && tab.target.document_revision == revision
-        })
     }
 }
 
