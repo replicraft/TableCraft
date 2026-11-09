@@ -1,5 +1,7 @@
 # Testing and evidence
 
+- [Saved-table catalog deletion and cursor-dependent SQL DROP observations](TABLE_DROP_CATALOG_OBSERVATIONS.md)
+
 - [Raw nonprimary field deletion: orphan-property controls and inert SDK reads](saved_field_drop/README.md)
 - [Saved-field DROP native, adapter and runtime checkpoint](results/saved-field-drop-services-2026-11-09.json)
 - [Gapped Number first-row raw prediction and inert reader observation](gapped_number_insert/README.md)

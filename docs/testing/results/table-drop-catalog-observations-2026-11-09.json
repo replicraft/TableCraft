@@ -1,0 +1,1013 @@
+{
+  "date": "2026-11-09",
+  "scope": "Independent first-party catalog tombstone models and public SDK observations. Catalog-row deletion, actual UCanAccess SQL DROP after ordinary loading, and explicit native-cursor reset preconditions are separated. No Microsoft Access execution.",
+  "operation": {
+    "public_api": "DatabaseImpl.getSystemCatalog().deleteRow(selectedRow)",
+    "target": "Native Id 7, Type 1, exact sole original user object",
+    "effects": [
+      "Catalog TDEF2 live-row count at offset16 changes9 to8.",
+      "Selected catalog DATA4 row-slot high byte gains0xc0; its row bytes remain unchanged."
+    ],
+    "unchanged": [
+      "Every other byte, including all user TDEF/DATA/INDEX/property pages.",
+      "All allocation/usage maps, original row payloads and file length."
+    ],
+    "allocation_retirement": false
+  },
+  "totals": {
+    "independent_pairs": 35,
+    "complete_after_matches": 35,
+    "reopened_zero_user_tables": 35,
+    "reopened_eight_live_catalog_rows": 35,
+    "exact_original_name_getters": 31,
+    "original_bom_name_getter_disagreements": 4
+  },
+  "source_matrix": {
+    "headers": [
+      5,
+      6
+    ],
+    "unindexed": {
+      "count": 12,
+      "names": [
+        "Items",
+        "雪🙂",
+        "﻿Items"
+      ],
+      "populated": [
+        false,
+        true
+      ]
+    },
+    "retained_int32_indexes": {
+      "count": 14,
+      "families": [
+        "CounterPrimary",
+        "UniqueManual",
+        "NullableOrdinary",
+        "AliasHistory",
+        "RetainedTree",
+        "InactiveIndexTail",
+        "UnknownIndexHeader"
+      ]
+    },
+    "creator": {
+      "count": 9,
+      "description": "Independent creator raw originals followed by explicit Name AutoCorrect OFF; user catalog slot7 rather than8."
+    }
+  },
+  "attempts": [
+    {
+      "id": "initial-name-strict",
+      "completed_writes": 4,
+      "result": "Four ASCII/Unicode cases passed full-image equality and fresh reopening. The next BOM source failed its original-name inventory assertion before any row deletion.",
+      "source": ".cache/table-drop-oracle-20261109/initial-CatalogDeleteObservation.java",
+      "source_sha256": "e4299eefba0da33e57878c42c981915272d54ef5334498388399ce24b9e8dba9",
+      "stdout_sha256": "4f684dfc2b2c566e9dde660868e75c5b37c3c3eab8b4ec2c168ab24fa672637b",
+      "stderr_sha256": "f1c2aca04eececa8749d3654dd9ee29d7becda2a7d85690e2aebfad251e0eeeb"
+    },
+    {
+      "id": "remaining-native-id-selected",
+      "completed_writes": 31,
+      "result": "Remaining sources selected nativeId7. Every AFTER matched exactly and reopened with zero user tables/eight live catalog rows. Four BOM name getter mismatches remain recorded; no earlier completed write repeated.",
+      "source": ".cache/table-drop-oracle-20261109/CatalogDeleteObservation.java",
+      "source_sha256": "938f324be641809bb28244f8c209837c35c389ad8060c342369f62e066311b9c",
+      "stdout_sha256": "eca60e36fdd02ffdffe0da635f16366cf6ca629b4cb4aac5354e13f8ed7ea333",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "id": "bom-getter-read-only",
+      "writes": 0,
+      "result": "SDK returns UTF16 units feff,fffd,0074,fffd,006d,fffd for the independently escaped source expected to name FEFF Items. This is a decoder disagreement, not evidence of simple leading-BOM removal.",
+      "source": ".cache/table-drop-oracle-20261109/BomNameObservation.java",
+      "source_sha256": "0410b7cab8e08bdfc71abb7a648c2eb7e1c20ebc1bad83350ced32e962cf7f3c",
+      "stdout_sha256": "7e4294a57b35ec6d27355337a47d8a5f2b32862b2deb9d638016647ffc7bb64f"
+    }
+  ],
+  "reference_artifacts": [
+    {
+      "coordinate": "io.github.spannm:jackcess:5.2.0",
+      "path": ".cache/ucanaccess-reference-20261025/jackcess-5.2.0.jar",
+      "sha256": "9451d6f336cfaa82f5af178d5f6668b933cda4f27e261f29a1faa83630f95775",
+      "use": "Executed independently as public catalog-row-delete writer and fresh reader. Existing Apache-2.0 artifact review retained; no production dependency."
+    },
+    {
+      "coordinate": "io.github.spannm:ucanaccess:5.2.0:sources",
+      "path": ".cache/ucanaccess-reference-20261025/ucanaccess-5.2.0-sources.jar",
+      "sha256": "0cb3a900d8368be474381a5f61aaef1b6366c2958342aa91a722d13c4b3a1045",
+      "use": "Inspected Persist2Jet.dropTable source and binary bytecode for native user-row cursor loop, Hibernate branch, ACE/catalog/relationship removal. Executed SQL observations are recorded separately above."
+    },
+    {
+      "coordinate": "com.healthmarketscience.jackcess:jackcess:5.0.4:sources",
+      "path": ".cache/ace16-insert-candidates-next-20261027/first-actual/executed-inputs/139-jackcess-5.0.4-sources.jar",
+      "sha256": "4de1bc2f1663b0946ce39057dd90eace355f4f74b8f818c0fe167f0c65815428",
+      "use": "Read TableImpl row-delete and PageChannel page-deallocation contracts separately. Page deallocation was not used in this model."
+    },
+    {
+      "coordinate": "org.hsqldb:hsqldb:2.7.4",
+      "path": ".cache/ucanaccess-reference-20261025/hsqldb-2.7.4.jar",
+      "sha256": "5fab2bb4384ac06b762638c8fa2740c944b8d080e4796c0c6c2af8b90dd4e5ad",
+      "use": "Cached UCanAccess SQL mirror engine; existing BSD-style artifact review retained, no production dependency."
+    },
+    {
+      "coordinate": "io.github.spannm:ucanaccess:5.2.0",
+      "path": ".cache/ucanaccess-reference-20261025/ucanaccess-5.2.0.jar",
+      "sha256": "ed8f33f30b9d08c7dc0bead139180ea70061beea915677ce2fe47e4b7aea2490",
+      "use": "Executed actual SQL DROP TABLE route with a writable controlled opener; existing Apache-2.0 review retained, no production dependency."
+    }
+  ],
+  "first_party_sources": {
+    "crates/engineering/tablecraft-testkit/src/fixtures/access/canonical_table_drop.rs": "3e55e2a6d263387798febb63283c9d1ab97cd1230a6b5a139795c167f2c64f55",
+    "crates/engineering/tablecraft-testkit/src/fixtures/access/canonical_table_drop/tests.rs": "18f4cd17d520f8e98f7e522649541ccb66ed9889383ac805a75440ab6900dc2f",
+    "crates/engineering/tablecraft-testkit/src/fixtures/access/canonical_catalog_names.rs": "55874e3506c8998244dc21c4ec0a29d6173a51a7dd5f247d834962280b3bf94f",
+    "crates/engineering/tablecraft-testkit/src/fixtures/access/canonical_indexed_rename.rs": "20735e5285335de0e2577bd935d498f72f2819c64743a7d17d1065f3d676cad2",
+    "crates/engineering/tablecraft-testkit/src/fixtures/access/canonical_creator_rename.rs": "7c746dad3919a0252587d6c94accc52cd94c6c591a8f46aaf2c19f06af421e2c"
+  },
+  "fixture_provenance": "Rust raw sources and literal expected patch laws are independently authored first-party testkit machinery. Java observation programs call public SDK operations and copy no third-party implementation. No third-party database bytes were added.",
+  "environment": {
+    "java": "Temurin OpenJDK21.0.8+9",
+    "gui_or_access_execution": false,
+    "expressions": "disabled",
+    "links": "refused by observation opener",
+    "time_zone": "UTC"
+  },
+  "limits": [
+    "No Microsoft Access-authored or native Access-executed DROP TABLE result.",
+    "No journal/recovery/runtime/GUI acceptance follows from SDK observations alone.",
+    "Populated-source DROP remains unqualified: reset vs after-last native cursor yields different physical AFTER images.",
+    "No general allocation reclamation/reuse, multi-table DROP, dependencies, relationship/ACE removal or macro execution qualified.",
+    "BOM escaped-name getter mismatch is retained rather than converted into positive name qualification.",
+    "New Rust fixture unit tests authored but not run by this agent; consolidated Cargo verification remains root-owned."
+  ],
+  "images": [
+    {
+      "label": "h5-ascii-false",
+      "catalog_slot": 8,
+      "name": "Items",
+      "before_sha256": "c11060a7694eda4a680d95ba79dc61279e4415c513c47c84f4f91da7e19af272",
+      "expected_sha256": "f334b54173e3b7f72ce4db323777755e623ffb7df034751397a8c4d2208617be",
+      "actual_sha256": "f334b54173e3b7f72ce4db323777755e623ffb7df034751397a8c4d2208617be",
+      "bytes": 36864,
+      "exact_image": true
+    },
+    {
+      "label": "h5-ascii-true",
+      "catalog_slot": 8,
+      "name": "Items",
+      "before_sha256": "8ed170abd432fb654fb49304a5bdddae9ef70e52559dae623d8f156a130cc52a",
+      "expected_sha256": "35aa8a2c3404721a42ad23e1cce7c5e5e9bb2ee721d14c3a5b06a6afc25aaae9",
+      "actual_sha256": "35aa8a2c3404721a42ad23e1cce7c5e5e9bb2ee721d14c3a5b06a6afc25aaae9",
+      "bytes": 36864,
+      "exact_image": true
+    },
+    {
+      "label": "h5-unicode-false",
+      "catalog_slot": 8,
+      "name": "雪🙂",
+      "before_sha256": "9a40153f91211dcda3e05cd6bc19a184656f7007021869e445fe9df966558377",
+      "expected_sha256": "bcf0fa98e9d6cfd59eddbc9eafe53d7a26a29f4e7374d138ec298615b9bba4fa",
+      "actual_sha256": "bcf0fa98e9d6cfd59eddbc9eafe53d7a26a29f4e7374d138ec298615b9bba4fa",
+      "bytes": 36864,
+      "exact_image": true
+    },
+    {
+      "label": "h5-unicode-true",
+      "catalog_slot": 8,
+      "name": "雪🙂",
+      "before_sha256": "b706fd58e3348ea740078c0e18b6506846964045d8c9df5541ad07d60adfdcfa",
+      "expected_sha256": "b95b29a70a3839d17779bdfeb9afc8415c1231c3ff8c103bf2eb42a0d933c19b",
+      "actual_sha256": "b95b29a70a3839d17779bdfeb9afc8415c1231c3ff8c103bf2eb42a0d933c19b",
+      "bytes": 36864,
+      "exact_image": true
+    },
+    {
+      "label": "h5-bom-false",
+      "catalog_slot": 8,
+      "name": "﻿Items",
+      "before_sha256": "4c475ee4aeeece3263633583d59f428014880e99b9528d72c51f24b31c7c186a",
+      "expected_sha256": "ef8bedd442373a75a84b08078af83684df20a615262438e9cdcb74a3003625e0",
+      "actual_sha256": "ef8bedd442373a75a84b08078af83684df20a615262438e9cdcb74a3003625e0",
+      "bytes": 36864,
+      "exact_image": true
+    },
+    {
+      "label": "h5-bom-true",
+      "catalog_slot": 8,
+      "name": "﻿Items",
+      "before_sha256": "418a822a60e0fa08bd450d34e6839a3312d2ab532f43419ce6ed5d905a8d3cdb",
+      "expected_sha256": "0fcda8274a0bd86f608f0315503d348054de77d7f6fd780b24dc2627342507db",
+      "actual_sha256": "0fcda8274a0bd86f608f0315503d348054de77d7f6fd780b24dc2627342507db",
+      "bytes": 36864,
+      "exact_image": true
+    },
+    {
+      "label": "h5-primary",
+      "catalog_slot": 8,
+      "name": "Items",
+      "before_sha256": "8b3d39272e2bf9555dbfaa0ed4e1fa9bd840639b004464e90d87ce708cf07204",
+      "expected_sha256": "6b03adc9b4e3e2c057cad5a4f5dbfcb5e0fdacb756eb13defc38db68d69392cf",
+      "actual_sha256": "6b03adc9b4e3e2c057cad5a4f5dbfcb5e0fdacb756eb13defc38db68d69392cf",
+      "bytes": 40960,
+      "exact_image": true
+    },
+    {
+      "label": "h5-unique",
+      "catalog_slot": 8,
+      "name": "Items",
+      "before_sha256": "87d9588cbdf3f8c5af13de60b623cfc57713e9b23dad88ba4ae224b461bcbeae",
+      "expected_sha256": "bfa02417560ecd4833b95efa9fa2c397c52b68388498c928a61c41671df20449",
+      "actual_sha256": "bfa02417560ecd4833b95efa9fa2c397c52b68388498c928a61c41671df20449",
+      "bytes": 40960,
+      "exact_image": true
+    },
+    {
+      "label": "h5-nullable",
+      "catalog_slot": 8,
+      "name": "Items",
+      "before_sha256": "49e2f8253dc94a305247ab277a262e97db0c2972210fa1eb8d7999c5dee536ba",
+      "expected_sha256": "4d5d8d3d9175340e7b683b3db313402d02c05de7c1bf17d54150e8f7c9bcfb12",
+      "actual_sha256": "4d5d8d3d9175340e7b683b3db313402d02c05de7c1bf17d54150e8f7c9bcfb12",
+      "bytes": 40960,
+      "exact_image": true
+    },
+    {
+      "label": "h5-aliases",
+      "catalog_slot": 8,
+      "name": "Items",
+      "before_sha256": "227eaf06b80deb0cfe0bee8c7cd74c5aaefb289d637d27179bab9f226aabaff9",
+      "expected_sha256": "9c2bce5ca2a630421fc32876a364f8ebb673621d276728af3b0d889a3afa6c45",
+      "actual_sha256": "9c2bce5ca2a630421fc32876a364f8ebb673621d276728af3b0d889a3afa6c45",
+      "bytes": 40960,
+      "exact_image": true
+    },
+    {
+      "label": "h5-tree",
+      "catalog_slot": 8,
+      "name": "Items",
+      "before_sha256": "e5e033598ecaff43772148dc96dee8671159ccb26b359444c737635e33399c02",
+      "expected_sha256": "7f9472631e676d62bb52c0a9b149aa68769153c5990b36b468507592d2f36532",
+      "actual_sha256": "7f9472631e676d62bb52c0a9b149aa68769153c5990b36b468507592d2f36532",
+      "bytes": 49152,
+      "exact_image": true
+    },
+    {
+      "label": "h5-tail",
+      "catalog_slot": 8,
+      "name": "Items",
+      "before_sha256": "22aba92ba8fdbbd19b85e85ca9a2452dd9d95047ac0d5820a2c4bb201022594d",
+      "expected_sha256": "46429047baeb1a6ba4efd3c527c821afeb2ea0850aa210388b49b049fb570ea6",
+      "actual_sha256": "46429047baeb1a6ba4efd3c527c821afeb2ea0850aa210388b49b049fb570ea6",
+      "bytes": 40960,
+      "exact_image": true
+    },
+    {
+      "label": "h5-opaque-header",
+      "catalog_slot": 8,
+      "name": "Items",
+      "before_sha256": "1bda2256479e7c16165b7d00ed143668a1d2a4c9a54a612e14605348010cf2de",
+      "expected_sha256": "874ca19c901e353c9dd837a6975ee27fa75d9d2cb3bf98bc0404f8b37eb150be",
+      "actual_sha256": "874ca19c901e353c9dd837a6975ee27fa75d9d2cb3bf98bc0404f8b37eb150be",
+      "bytes": 40960,
+      "exact_image": true
+    },
+    {
+      "label": "h6-ascii-false",
+      "catalog_slot": 8,
+      "name": "Items",
+      "before_sha256": "dfaeb4df72921bb407a143c797a1c2610d26efc1c4bf1610ce59012972e6e7b0",
+      "expected_sha256": "dcc4970d6c51cca9d9d8f24ae21672d49490695b46fd38d5e581b2777c0c0712",
+      "actual_sha256": "dcc4970d6c51cca9d9d8f24ae21672d49490695b46fd38d5e581b2777c0c0712",
+      "bytes": 36864,
+      "exact_image": true
+    },
+    {
+      "label": "h6-ascii-true",
+      "catalog_slot": 8,
+      "name": "Items",
+      "before_sha256": "0ca542c364f9fdf01e672f1c063f2082966b038fc4ffb12ff0d61d3ef669fbeb",
+      "expected_sha256": "20756797945a92b6986f16229203cf9c619c468d5d5cb52b589dd996334da8bf",
+      "actual_sha256": "20756797945a92b6986f16229203cf9c619c468d5d5cb52b589dd996334da8bf",
+      "bytes": 36864,
+      "exact_image": true
+    },
+    {
+      "label": "h6-unicode-false",
+      "catalog_slot": 8,
+      "name": "雪🙂",
+      "before_sha256": "5fc7f19acb19b53e79e91df6f7de04b4c49e7a97b26189ee86063b6928dd532d",
+      "expected_sha256": "75610c7bd06a92f9e93c0bd2856d964e6fd2b1a0f740ba395d4f581ad5f84aaa",
+      "actual_sha256": "75610c7bd06a92f9e93c0bd2856d964e6fd2b1a0f740ba395d4f581ad5f84aaa",
+      "bytes": 36864,
+      "exact_image": true
+    },
+    {
+      "label": "h6-unicode-true",
+      "catalog_slot": 8,
+      "name": "雪🙂",
+      "before_sha256": "42ed0aa36000a01b63f580a110546cd81c7c90b108fbd8ecd775feffa92c9c77",
+      "expected_sha256": "e94eae95df6f60b85e642ed4165bdaf2284dd41f0be1f3d572aeb86d041b4f71",
+      "actual_sha256": "e94eae95df6f60b85e642ed4165bdaf2284dd41f0be1f3d572aeb86d041b4f71",
+      "bytes": 36864,
+      "exact_image": true
+    },
+    {
+      "label": "h6-bom-false",
+      "catalog_slot": 8,
+      "name": "﻿Items",
+      "before_sha256": "720e5b451a2f635647d75a9a3c37ba03ff32b309acdb94474f812776c1c80721",
+      "expected_sha256": "c4c24c5b2b26e5c0e8d8a4915ba93042048adfe648a9ab10da8daf04689445f1",
+      "actual_sha256": "c4c24c5b2b26e5c0e8d8a4915ba93042048adfe648a9ab10da8daf04689445f1",
+      "bytes": 36864,
+      "exact_image": true
+    },
+    {
+      "label": "h6-bom-true",
+      "catalog_slot": 8,
+      "name": "﻿Items",
+      "before_sha256": "0c15a8d381815353a9e5b4fb451b3a7823a9d39689976580a8bbc47e08a66147",
+      "expected_sha256": "086ce051c62b05b4a223229644c0cb7158394951528b0d4d8a750f0c7e2a7530",
+      "actual_sha256": "086ce051c62b05b4a223229644c0cb7158394951528b0d4d8a750f0c7e2a7530",
+      "bytes": 36864,
+      "exact_image": true
+    },
+    {
+      "label": "h6-primary",
+      "catalog_slot": 8,
+      "name": "Items",
+      "before_sha256": "46f027ffc87f71e3247bce0433b2c4110a4b8148e4911d39bd81ea5d544c7259",
+      "expected_sha256": "75440e968031d0fcb00ffbebd6e92f9d7a269aa7c87138033c406411ad5288ce",
+      "actual_sha256": "75440e968031d0fcb00ffbebd6e92f9d7a269aa7c87138033c406411ad5288ce",
+      "bytes": 40960,
+      "exact_image": true
+    },
+    {
+      "label": "h6-unique",
+      "catalog_slot": 8,
+      "name": "Items",
+      "before_sha256": "883072718b387adcdc71b9dec7e01d7b6bff18e58d0d520822174cdec7f80b74",
+      "expected_sha256": "ff0f12172f6e7eb1d1f4405b47490770b2c8da374748fc93168b325cba36293f",
+      "actual_sha256": "ff0f12172f6e7eb1d1f4405b47490770b2c8da374748fc93168b325cba36293f",
+      "bytes": 40960,
+      "exact_image": true
+    },
+    {
+      "label": "h6-nullable",
+      "catalog_slot": 8,
+      "name": "Items",
+      "before_sha256": "a163d8a08e04e1cd56361539f48f3e8d49d881836428f39f7997219995027685",
+      "expected_sha256": "f6db7f9338c1a29d61c1a1ca4c974753489a6c5154e01e27424109f8a755ed0d",
+      "actual_sha256": "f6db7f9338c1a29d61c1a1ca4c974753489a6c5154e01e27424109f8a755ed0d",
+      "bytes": 40960,
+      "exact_image": true
+    },
+    {
+      "label": "h6-aliases",
+      "catalog_slot": 8,
+      "name": "Items",
+      "before_sha256": "82d7d2182a012a3f8c78fc3c1fa3c3c8b62f9179ce64a4d82b7c5692683c02c7",
+      "expected_sha256": "bcb120dd15007d43cbdc0cb766e0eeca1db9d0be514f9ca71fc51f0206f50163",
+      "actual_sha256": "bcb120dd15007d43cbdc0cb766e0eeca1db9d0be514f9ca71fc51f0206f50163",
+      "bytes": 40960,
+      "exact_image": true
+    },
+    {
+      "label": "h6-tree",
+      "catalog_slot": 8,
+      "name": "Items",
+      "before_sha256": "784ecb9d5be8099639e7700dffb23a15b259913a30aca9e74759cd70799fd2c8",
+      "expected_sha256": "d86ebc67154b4cd78be6e56cc36b746ee75719e0e017edaecfa85c30297169e5",
+      "actual_sha256": "d86ebc67154b4cd78be6e56cc36b746ee75719e0e017edaecfa85c30297169e5",
+      "bytes": 49152,
+      "exact_image": true
+    },
+    {
+      "label": "h6-tail",
+      "catalog_slot": 8,
+      "name": "Items",
+      "before_sha256": "8c12114d96b447729498cfa834879e50e0b09107e2edc1e19783d12341fdb09d",
+      "expected_sha256": "979c4ffff214607a7c031ee99e29c21e391b96379c64bec1a7f28b3ab75e6c23",
+      "actual_sha256": "979c4ffff214607a7c031ee99e29c21e391b96379c64bec1a7f28b3ab75e6c23",
+      "bytes": 40960,
+      "exact_image": true
+    },
+    {
+      "label": "h6-opaque-header",
+      "catalog_slot": 8,
+      "name": "Items",
+      "before_sha256": "1d5197f9ff1c0ab36babd5449d7f3585deddfdfc6fe634d7438cc1b7c89dae68",
+      "expected_sha256": "5545a0b3708e15ad08173871fc6b1134c0536ed8d08093f6cef9a53a81c21ee5",
+      "actual_sha256": "5545a0b3708e15ad08173871fc6b1134c0536ed8d08093f6cef9a53a81c21ee5",
+      "bytes": 40960,
+      "exact_image": true
+    },
+    {
+      "label": "creator-0",
+      "catalog_slot": 7,
+      "name": "Items",
+      "before_sha256": "098d9af7fb89b4b336382aba70e3055b1340a5e8a94db3cd47b2f3b59cfa43ed",
+      "expected_sha256": "7a1e313bba4c16272f2763e51a833a99799902cc50f35daaf9968e89154bcbef",
+      "actual_sha256": "7a1e313bba4c16272f2763e51a833a99799902cc50f35daaf9968e89154bcbef",
+      "bytes": 40960,
+      "exact_image": true
+    },
+    {
+      "label": "creator-1",
+      "catalog_slot": 7,
+      "name": "Items",
+      "before_sha256": "135f74b0e06b8ee885ad520800cb4b2875d637fea56ce4c856f8174e8e20d5f5",
+      "expected_sha256": "63ac68f5b7899bbf43af0d601d7d21d9eb8ca157760e2ea3428152ffd2a73ec2",
+      "actual_sha256": "63ac68f5b7899bbf43af0d601d7d21d9eb8ca157760e2ea3428152ffd2a73ec2",
+      "bytes": 40960,
+      "exact_image": true
+    },
+    {
+      "label": "creator-2",
+      "catalog_slot": 7,
+      "name": "Items",
+      "before_sha256": "1a00018ffe44286ac3479a1b00b78ea4ae8cd2346e62ffa5eda18f971e2a642f",
+      "expected_sha256": "586b77b73b8f0ca666fb1d21a162aa70d60126bd08a16e376c91b14163cc0748",
+      "actual_sha256": "586b77b73b8f0ca666fb1d21a162aa70d60126bd08a16e376c91b14163cc0748",
+      "bytes": 45056,
+      "exact_image": true
+    },
+    {
+      "label": "creator-3",
+      "catalog_slot": 7,
+      "name": "Items",
+      "before_sha256": "cb753b35cd216e0424f5d094bd1a67723d43b8bb83d8862bb5361dd7c6c0c87a",
+      "expected_sha256": "936b447612e675e37645bf86aedbd1187aafe70a023345ee6469854d727a9512",
+      "actual_sha256": "936b447612e675e37645bf86aedbd1187aafe70a023345ee6469854d727a9512",
+      "bytes": 45056,
+      "exact_image": true
+    },
+    {
+      "label": "creator-4",
+      "catalog_slot": 7,
+      "name": "Items",
+      "before_sha256": "94ddfae63a88efda2390572974508666218a7e18b84fe4c30ebecb51e0b5a3a2",
+      "expected_sha256": "5f8e4dfd591e9349ee5749bfddf8f936a625ff8a880632ebf2e93f1af6019be6",
+      "actual_sha256": "5f8e4dfd591e9349ee5749bfddf8f936a625ff8a880632ebf2e93f1af6019be6",
+      "bytes": 45056,
+      "exact_image": true
+    },
+    {
+      "label": "creator-5",
+      "catalog_slot": 7,
+      "name": "Items",
+      "before_sha256": "1493d87e4507da22bb36c9b7d7ab5e1c3ea3b0588d0f3cea035c463a47b8c103",
+      "expected_sha256": "8c769f4b0afea8b4c45b4229fae4eba7c311130ff9f807247773009b3fd5dea9",
+      "actual_sha256": "8c769f4b0afea8b4c45b4229fae4eba7c311130ff9f807247773009b3fd5dea9",
+      "bytes": 45056,
+      "exact_image": true
+    },
+    {
+      "label": "creator-6",
+      "catalog_slot": 7,
+      "name": "Items",
+      "before_sha256": "dd514f8ed9c671df630a93d54bc2e82f290a5e27f0fe05b5840a981b66169c3f",
+      "expected_sha256": "00d2b85bff79197c885d7faf72bfbba03bec2e977a8f7f4622698b89889b9dac",
+      "actual_sha256": "00d2b85bff79197c885d7faf72bfbba03bec2e977a8f7f4622698b89889b9dac",
+      "bytes": 40960,
+      "exact_image": true
+    },
+    {
+      "label": "creator-7",
+      "catalog_slot": 7,
+      "name": "Items",
+      "before_sha256": "9702627d4a09327711b91da494afc3abc4b2a70f7b18eaf0ac33d6a4affa3fa0",
+      "expected_sha256": "709415c9be37ed67d5b1c0aa62f46fb64bbf16be547e22fb496080dbacb41bf3",
+      "actual_sha256": "709415c9be37ed67d5b1c0aa62f46fb64bbf16be547e22fb496080dbacb41bf3",
+      "bytes": 40960,
+      "exact_image": true
+    },
+    {
+      "label": "creator-8",
+      "catalog_slot": 7,
+      "name": "Items",
+      "before_sha256": "6cb9c46f8fedb6ef8b26ccbed12e29260415e4bf5bbbef815e4e75bbd1c9d2fa",
+      "expected_sha256": "367a2982b676eb1e6fb3447984fd9706467c77f72dc30307539d5fa8ca5a6ce3",
+      "actual_sha256": "367a2982b676eb1e6fb3447984fd9706467c77f72dc30307539d5fa8ca5a6ce3",
+      "bytes": 40960,
+      "exact_image": true
+    }
+  ],
+  "full_sql_drop": {
+    "count": 31,
+    "source": ".cache/table-drop-oracle-20261109/SqlDropObservation.java",
+    "source_sha256": "699d658e916100a37dd99eb644732b5ae5b736098359fd898b53e7e5d2294452",
+    "stdout_sha256": "1c0395cf09d29ebc3d0be6364fe0b052104fa9f3910127fdbf846f527bfbfeda",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "route": "DriverManager writable first-party copy -> SQL DROP TABLE -> explicit commit -> close -> fresh readonly Jackcess catalog/table inventory.",
+    "opening_unchanged": true,
+    "context": "Ordinary UCanAccess database loading; subsequent reset probe establishes that the native default cursor is left after-last, with Hibernate support inactive.",
+    "before_to_after": "All31 outputs exactly match the two-byte catalog-only model, including populated tables whose EOF cursor prevents the native user-row loop from traversing them.",
+    "qualification": "Positive complete-operation observation for empty qualified sources. Populated catalog-only outcomes are cursor-state-dependent, not general populated DROP qualification.",
+    "bom_sources": "Four raw BOM sources skipped because original SDK name getters disagree.",
+    "images": [
+      {
+        "label": "h5-ascii-false",
+        "before_sha256": "c11060a7694eda4a680d95ba79dc61279e4415c513c47c84f4f91da7e19af272",
+        "expected_sha256": "f334b54173e3b7f72ce4db323777755e623ffb7df034751397a8c4d2208617be",
+        "actual_sha256": "f334b54173e3b7f72ce4db323777755e623ffb7df034751397a8c4d2208617be",
+        "exact_catalog_only_after": true,
+        "bytes": 36864
+      },
+      {
+        "label": "h5-ascii-true",
+        "before_sha256": "8ed170abd432fb654fb49304a5bdddae9ef70e52559dae623d8f156a130cc52a",
+        "expected_sha256": "35aa8a2c3404721a42ad23e1cce7c5e5e9bb2ee721d14c3a5b06a6afc25aaae9",
+        "actual_sha256": "35aa8a2c3404721a42ad23e1cce7c5e5e9bb2ee721d14c3a5b06a6afc25aaae9",
+        "exact_catalog_only_after": true,
+        "bytes": 36864
+      },
+      {
+        "label": "h5-unicode-false",
+        "before_sha256": "9a40153f91211dcda3e05cd6bc19a184656f7007021869e445fe9df966558377",
+        "expected_sha256": "bcf0fa98e9d6cfd59eddbc9eafe53d7a26a29f4e7374d138ec298615b9bba4fa",
+        "actual_sha256": "bcf0fa98e9d6cfd59eddbc9eafe53d7a26a29f4e7374d138ec298615b9bba4fa",
+        "exact_catalog_only_after": true,
+        "bytes": 36864
+      },
+      {
+        "label": "h5-unicode-true",
+        "before_sha256": "b706fd58e3348ea740078c0e18b6506846964045d8c9df5541ad07d60adfdcfa",
+        "expected_sha256": "b95b29a70a3839d17779bdfeb9afc8415c1231c3ff8c103bf2eb42a0d933c19b",
+        "actual_sha256": "b95b29a70a3839d17779bdfeb9afc8415c1231c3ff8c103bf2eb42a0d933c19b",
+        "exact_catalog_only_after": true,
+        "bytes": 36864
+      },
+      {
+        "label": "h5-primary",
+        "before_sha256": "8b3d39272e2bf9555dbfaa0ed4e1fa9bd840639b004464e90d87ce708cf07204",
+        "expected_sha256": "6b03adc9b4e3e2c057cad5a4f5dbfcb5e0fdacb756eb13defc38db68d69392cf",
+        "actual_sha256": "6b03adc9b4e3e2c057cad5a4f5dbfcb5e0fdacb756eb13defc38db68d69392cf",
+        "exact_catalog_only_after": true,
+        "bytes": 40960
+      },
+      {
+        "label": "h5-unique",
+        "before_sha256": "87d9588cbdf3f8c5af13de60b623cfc57713e9b23dad88ba4ae224b461bcbeae",
+        "expected_sha256": "bfa02417560ecd4833b95efa9fa2c397c52b68388498c928a61c41671df20449",
+        "actual_sha256": "bfa02417560ecd4833b95efa9fa2c397c52b68388498c928a61c41671df20449",
+        "exact_catalog_only_after": true,
+        "bytes": 40960
+      },
+      {
+        "label": "h5-nullable",
+        "before_sha256": "49e2f8253dc94a305247ab277a262e97db0c2972210fa1eb8d7999c5dee536ba",
+        "expected_sha256": "4d5d8d3d9175340e7b683b3db313402d02c05de7c1bf17d54150e8f7c9bcfb12",
+        "actual_sha256": "4d5d8d3d9175340e7b683b3db313402d02c05de7c1bf17d54150e8f7c9bcfb12",
+        "exact_catalog_only_after": true,
+        "bytes": 40960
+      },
+      {
+        "label": "h5-aliases",
+        "before_sha256": "227eaf06b80deb0cfe0bee8c7cd74c5aaefb289d637d27179bab9f226aabaff9",
+        "expected_sha256": "9c2bce5ca2a630421fc32876a364f8ebb673621d276728af3b0d889a3afa6c45",
+        "actual_sha256": "9c2bce5ca2a630421fc32876a364f8ebb673621d276728af3b0d889a3afa6c45",
+        "exact_catalog_only_after": true,
+        "bytes": 40960
+      },
+      {
+        "label": "h5-tree",
+        "before_sha256": "e5e033598ecaff43772148dc96dee8671159ccb26b359444c737635e33399c02",
+        "expected_sha256": "7f9472631e676d62bb52c0a9b149aa68769153c5990b36b468507592d2f36532",
+        "actual_sha256": "7f9472631e676d62bb52c0a9b149aa68769153c5990b36b468507592d2f36532",
+        "exact_catalog_only_after": true,
+        "bytes": 49152
+      },
+      {
+        "label": "h5-tail",
+        "before_sha256": "22aba92ba8fdbbd19b85e85ca9a2452dd9d95047ac0d5820a2c4bb201022594d",
+        "expected_sha256": "46429047baeb1a6ba4efd3c527c821afeb2ea0850aa210388b49b049fb570ea6",
+        "actual_sha256": "46429047baeb1a6ba4efd3c527c821afeb2ea0850aa210388b49b049fb570ea6",
+        "exact_catalog_only_after": true,
+        "bytes": 40960
+      },
+      {
+        "label": "h5-opaque-header",
+        "before_sha256": "1bda2256479e7c16165b7d00ed143668a1d2a4c9a54a612e14605348010cf2de",
+        "expected_sha256": "874ca19c901e353c9dd837a6975ee27fa75d9d2cb3bf98bc0404f8b37eb150be",
+        "actual_sha256": "874ca19c901e353c9dd837a6975ee27fa75d9d2cb3bf98bc0404f8b37eb150be",
+        "exact_catalog_only_after": true,
+        "bytes": 40960
+      },
+      {
+        "label": "h6-ascii-false",
+        "before_sha256": "dfaeb4df72921bb407a143c797a1c2610d26efc1c4bf1610ce59012972e6e7b0",
+        "expected_sha256": "dcc4970d6c51cca9d9d8f24ae21672d49490695b46fd38d5e581b2777c0c0712",
+        "actual_sha256": "dcc4970d6c51cca9d9d8f24ae21672d49490695b46fd38d5e581b2777c0c0712",
+        "exact_catalog_only_after": true,
+        "bytes": 36864
+      },
+      {
+        "label": "h6-ascii-true",
+        "before_sha256": "0ca542c364f9fdf01e672f1c063f2082966b038fc4ffb12ff0d61d3ef669fbeb",
+        "expected_sha256": "20756797945a92b6986f16229203cf9c619c468d5d5cb52b589dd996334da8bf",
+        "actual_sha256": "20756797945a92b6986f16229203cf9c619c468d5d5cb52b589dd996334da8bf",
+        "exact_catalog_only_after": true,
+        "bytes": 36864
+      },
+      {
+        "label": "h6-unicode-false",
+        "before_sha256": "5fc7f19acb19b53e79e91df6f7de04b4c49e7a97b26189ee86063b6928dd532d",
+        "expected_sha256": "75610c7bd06a92f9e93c0bd2856d964e6fd2b1a0f740ba395d4f581ad5f84aaa",
+        "actual_sha256": "75610c7bd06a92f9e93c0bd2856d964e6fd2b1a0f740ba395d4f581ad5f84aaa",
+        "exact_catalog_only_after": true,
+        "bytes": 36864
+      },
+      {
+        "label": "h6-unicode-true",
+        "before_sha256": "42ed0aa36000a01b63f580a110546cd81c7c90b108fbd8ecd775feffa92c9c77",
+        "expected_sha256": "e94eae95df6f60b85e642ed4165bdaf2284dd41f0be1f3d572aeb86d041b4f71",
+        "actual_sha256": "e94eae95df6f60b85e642ed4165bdaf2284dd41f0be1f3d572aeb86d041b4f71",
+        "exact_catalog_only_after": true,
+        "bytes": 36864
+      },
+      {
+        "label": "h6-primary",
+        "before_sha256": "46f027ffc87f71e3247bce0433b2c4110a4b8148e4911d39bd81ea5d544c7259",
+        "expected_sha256": "75440e968031d0fcb00ffbebd6e92f9d7a269aa7c87138033c406411ad5288ce",
+        "actual_sha256": "75440e968031d0fcb00ffbebd6e92f9d7a269aa7c87138033c406411ad5288ce",
+        "exact_catalog_only_after": true,
+        "bytes": 40960
+      },
+      {
+        "label": "h6-unique",
+        "before_sha256": "883072718b387adcdc71b9dec7e01d7b6bff18e58d0d520822174cdec7f80b74",
+        "expected_sha256": "ff0f12172f6e7eb1d1f4405b47490770b2c8da374748fc93168b325cba36293f",
+        "actual_sha256": "ff0f12172f6e7eb1d1f4405b47490770b2c8da374748fc93168b325cba36293f",
+        "exact_catalog_only_after": true,
+        "bytes": 40960
+      },
+      {
+        "label": "h6-nullable",
+        "before_sha256": "a163d8a08e04e1cd56361539f48f3e8d49d881836428f39f7997219995027685",
+        "expected_sha256": "f6db7f9338c1a29d61c1a1ca4c974753489a6c5154e01e27424109f8a755ed0d",
+        "actual_sha256": "f6db7f9338c1a29d61c1a1ca4c974753489a6c5154e01e27424109f8a755ed0d",
+        "exact_catalog_only_after": true,
+        "bytes": 40960
+      },
+      {
+        "label": "h6-aliases",
+        "before_sha256": "82d7d2182a012a3f8c78fc3c1fa3c3c8b62f9179ce64a4d82b7c5692683c02c7",
+        "expected_sha256": "bcb120dd15007d43cbdc0cb766e0eeca1db9d0be514f9ca71fc51f0206f50163",
+        "actual_sha256": "bcb120dd15007d43cbdc0cb766e0eeca1db9d0be514f9ca71fc51f0206f50163",
+        "exact_catalog_only_after": true,
+        "bytes": 40960
+      },
+      {
+        "label": "h6-tree",
+        "before_sha256": "784ecb9d5be8099639e7700dffb23a15b259913a30aca9e74759cd70799fd2c8",
+        "expected_sha256": "d86ebc67154b4cd78be6e56cc36b746ee75719e0e017edaecfa85c30297169e5",
+        "actual_sha256": "d86ebc67154b4cd78be6e56cc36b746ee75719e0e017edaecfa85c30297169e5",
+        "exact_catalog_only_after": true,
+        "bytes": 49152
+      },
+      {
+        "label": "h6-tail",
+        "before_sha256": "8c12114d96b447729498cfa834879e50e0b09107e2edc1e19783d12341fdb09d",
+        "expected_sha256": "979c4ffff214607a7c031ee99e29c21e391b96379c64bec1a7f28b3ab75e6c23",
+        "actual_sha256": "979c4ffff214607a7c031ee99e29c21e391b96379c64bec1a7f28b3ab75e6c23",
+        "exact_catalog_only_after": true,
+        "bytes": 40960
+      },
+      {
+        "label": "h6-opaque-header",
+        "before_sha256": "1d5197f9ff1c0ab36babd5449d7f3585deddfdfc6fe634d7438cc1b7c89dae68",
+        "expected_sha256": "5545a0b3708e15ad08173871fc6b1134c0536ed8d08093f6cef9a53a81c21ee5",
+        "actual_sha256": "5545a0b3708e15ad08173871fc6b1134c0536ed8d08093f6cef9a53a81c21ee5",
+        "exact_catalog_only_after": true,
+        "bytes": 40960
+      },
+      {
+        "label": "creator-0",
+        "before_sha256": "098d9af7fb89b4b336382aba70e3055b1340a5e8a94db3cd47b2f3b59cfa43ed",
+        "expected_sha256": "7a1e313bba4c16272f2763e51a833a99799902cc50f35daaf9968e89154bcbef",
+        "actual_sha256": "7a1e313bba4c16272f2763e51a833a99799902cc50f35daaf9968e89154bcbef",
+        "exact_catalog_only_after": true,
+        "bytes": 40960
+      },
+      {
+        "label": "creator-1",
+        "before_sha256": "135f74b0e06b8ee885ad520800cb4b2875d637fea56ce4c856f8174e8e20d5f5",
+        "expected_sha256": "63ac68f5b7899bbf43af0d601d7d21d9eb8ca157760e2ea3428152ffd2a73ec2",
+        "actual_sha256": "63ac68f5b7899bbf43af0d601d7d21d9eb8ca157760e2ea3428152ffd2a73ec2",
+        "exact_catalog_only_after": true,
+        "bytes": 40960
+      },
+      {
+        "label": "creator-2",
+        "before_sha256": "1a00018ffe44286ac3479a1b00b78ea4ae8cd2346e62ffa5eda18f971e2a642f",
+        "expected_sha256": "586b77b73b8f0ca666fb1d21a162aa70d60126bd08a16e376c91b14163cc0748",
+        "actual_sha256": "586b77b73b8f0ca666fb1d21a162aa70d60126bd08a16e376c91b14163cc0748",
+        "exact_catalog_only_after": true,
+        "bytes": 45056
+      },
+      {
+        "label": "creator-3",
+        "before_sha256": "cb753b35cd216e0424f5d094bd1a67723d43b8bb83d8862bb5361dd7c6c0c87a",
+        "expected_sha256": "936b447612e675e37645bf86aedbd1187aafe70a023345ee6469854d727a9512",
+        "actual_sha256": "936b447612e675e37645bf86aedbd1187aafe70a023345ee6469854d727a9512",
+        "exact_catalog_only_after": true,
+        "bytes": 45056
+      },
+      {
+        "label": "creator-4",
+        "before_sha256": "94ddfae63a88efda2390572974508666218a7e18b84fe4c30ebecb51e0b5a3a2",
+        "expected_sha256": "5f8e4dfd591e9349ee5749bfddf8f936a625ff8a880632ebf2e93f1af6019be6",
+        "actual_sha256": "5f8e4dfd591e9349ee5749bfddf8f936a625ff8a880632ebf2e93f1af6019be6",
+        "exact_catalog_only_after": true,
+        "bytes": 45056
+      },
+      {
+        "label": "creator-5",
+        "before_sha256": "1493d87e4507da22bb36c9b7d7ab5e1c3ea3b0588d0f3cea035c463a47b8c103",
+        "expected_sha256": "8c769f4b0afea8b4c45b4229fae4eba7c311130ff9f807247773009b3fd5dea9",
+        "actual_sha256": "8c769f4b0afea8b4c45b4229fae4eba7c311130ff9f807247773009b3fd5dea9",
+        "exact_catalog_only_after": true,
+        "bytes": 45056
+      },
+      {
+        "label": "creator-6",
+        "before_sha256": "dd514f8ed9c671df630a93d54bc2e82f290a5e27f0fe05b5840a981b66169c3f",
+        "expected_sha256": "00d2b85bff79197c885d7faf72bfbba03bec2e977a8f7f4622698b89889b9dac",
+        "actual_sha256": "00d2b85bff79197c885d7faf72bfbba03bec2e977a8f7f4622698b89889b9dac",
+        "exact_catalog_only_after": true,
+        "bytes": 40960
+      },
+      {
+        "label": "creator-7",
+        "before_sha256": "9702627d4a09327711b91da494afc3abc4b2a70f7b18eaf0ac33d6a4affa3fa0",
+        "expected_sha256": "709415c9be37ed67d5b1c0aa62f46fb64bbf16be547e22fb496080dbacb41bf3",
+        "actual_sha256": "709415c9be37ed67d5b1c0aa62f46fb64bbf16be547e22fb496080dbacb41bf3",
+        "exact_catalog_only_after": true,
+        "bytes": 40960
+      },
+      {
+        "label": "creator-8",
+        "before_sha256": "6cb9c46f8fedb6ef8b26ccbed12e29260415e4bf5bbbef815e4e75bbd1c9d2fa",
+        "expected_sha256": "367a2982b676eb1e6fb3447984fd9706467c77f72dc30307539d5fa8ca5a6ce3",
+        "actual_sha256": "367a2982b676eb1e6fb3447984fd9706467c77f72dc30307539d5fa8ca5a6ce3",
+        "exact_catalog_only_after": true,
+        "bytes": 40960
+      }
+    ]
+  },
+  "reset_sql_drop": {
+    "count": 4,
+    "source": ".cache/table-drop-oracle-20261109/SqlDropResetObservation.java",
+    "source_sha256": "f3921050e378e69316e863d2b872b67b44610639b116d9eaf587362858a6a61f",
+    "stdout_sha256": "4b555202e6a1d1b6e6d350f8d3c2237c842dd1f7629689041ad84baacf7f05ed",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "distinct_precondition": "Reset the existing native Table default cursor before SQL DROP; all other operation controls unchanged.",
+    "result": "Empty table retains exact catalog-only AFTER. Populated sources also alter user DATA/tombstones, definition count and selected INDEX/allocation state. These differ from the catalog-only model and remain separate future raw-oracle work.",
+    "images": [
+      {
+        "label": "h5-ascii-false",
+        "pre_native_rows": 0,
+        "pre_default_cursor_after_last": true,
+        "hibernate_active": false,
+        "explicit_native_cursor_reset": true,
+        "bytes": 36864,
+        "before_sha256": "c11060a7694eda4a680d95ba79dc61279e4415c513c47c84f4f91da7e19af272",
+        "actual_sha256": "f334b54173e3b7f72ce4db323777755e623ffb7df034751397a8c4d2208617be",
+        "catalog_only_after": true,
+        "differences": [
+          {
+            "offset": 8208,
+            "before": 9,
+            "after": 8
+          },
+          {
+            "offset": 16415,
+            "before": 12,
+            "after": 204
+          }
+        ],
+        "fresh_zero_user_tables": true,
+        "fresh_eight_live_catalog_rows": true
+      },
+      {
+        "label": "h5-ascii-true",
+        "pre_native_rows": 1,
+        "pre_default_cursor_after_last": true,
+        "hibernate_active": false,
+        "explicit_native_cursor_reset": true,
+        "bytes": 36864,
+        "before_sha256": "8ed170abd432fb654fb49304a5bdddae9ef70e52559dae623d8f156a130cc52a",
+        "actual_sha256": "faeb958b4df5a667fa8b02c123d11fd3d21e42fdb94f58a6821c4599d0572989",
+        "catalog_only_after": false,
+        "differences": [
+          {
+            "offset": 8208,
+            "before": 9,
+            "after": 8
+          },
+          {
+            "offset": 16415,
+            "before": 12,
+            "after": 204
+          },
+          {
+            "offset": 28688,
+            "before": 1,
+            "after": 0
+          },
+          {
+            "offset": 32783,
+            "before": 15,
+            "after": 207
+          }
+        ],
+        "fresh_zero_user_tables": true,
+        "fresh_eight_live_catalog_rows": true
+      },
+      {
+        "label": "h5-tree",
+        "pre_native_rows": 2,
+        "pre_default_cursor_after_last": true,
+        "hibernate_active": false,
+        "explicit_native_cursor_reset": true,
+        "bytes": 49152,
+        "before_sha256": "e5e033598ecaff43772148dc96dee8671159ccb26b359444c737635e33399c02",
+        "actual_sha256": "7e81a0332b5bc131d9844f20c59233fe97389fcb3e7a366769b6e6a2a233af47",
+        "catalog_only_after": false,
+        "differences": [
+          {
+            "offset": 8185,
+            "before": 0,
+            "after": 12
+          },
+          {
+            "offset": 8208,
+            "before": 9,
+            "after": 8
+          },
+          {
+            "offset": 16415,
+            "before": 12,
+            "after": 204
+          },
+          {
+            "offset": 28688,
+            "before": 2,
+            "after": 0
+          },
+          {
+            "offset": 32783,
+            "before": 15,
+            "after": 207
+          },
+          {
+            "offset": 32785,
+            "before": 15,
+            "after": 207
+          },
+          {
+            "offset": 36864,
+            "before": 3,
+            "after": 4
+          },
+          {
+            "offset": 36866,
+            "before": 19,
+            "after": 32
+          },
+          {
+            "offset": 36884,
+            "before": 11,
+            "after": 0
+          },
+          {
+            "offset": 36888,
+            "before": 4,
+            "after": 0
+          },
+          {
+            "offset": 36890,
+            "before": 1,
+            "after": 0
+          },
+          {
+            "offset": 36892,
+            "before": 32,
+            "after": 0
+          },
+          {
+            "offset": 37348,
+            "before": 1,
+            "after": 2
+          },
+          {
+            "offset": 37352,
+            "before": 0,
+            "after": 1
+          },
+          {
+            "offset": 37356,
+            "before": 10,
+            "after": 11
+          },
+          {
+            "offset": 40960,
+            "before": 4,
+            "after": 0
+          },
+          {
+            "offset": 40961,
+            "before": 1,
+            "after": 0
+          },
+          {
+            "offset": 40962,
+            "before": 23,
+            "after": 0
+          },
+          {
+            "offset": 40963,
+            "before": 14,
+            "after": 0
+          },
+          {
+            "offset": 45056,
+            "before": 4,
+            "after": 0
+          },
+          {
+            "offset": 45057,
+            "before": 1,
+            "after": 0
+          },
+          {
+            "offset": 45058,
+            "before": 23,
+            "after": 0
+          },
+          {
+            "offset": 45059,
+            "before": 14,
+            "after": 0
+          },
+          {
+            "offset": 45068,
+            "before": 10,
+            "after": 0
+          },
+          {
+            "offset": 45548,
+            "before": 0,
+            "after": 11
+          }
+        ],
+        "fresh_zero_user_tables": true,
+        "fresh_eight_live_catalog_rows": true
+      },
+      {
+        "label": "creator-4",
+        "pre_native_rows": 1,
+        "pre_default_cursor_after_last": true,
+        "hibernate_active": false,
+        "explicit_native_cursor_reset": true,
+        "bytes": 45056,
+        "before_sha256": "94ddfae63a88efda2390572974508666218a7e18b84fe4c30ebecb51e0b5a3a2",
+        "actual_sha256": "728fecc83110f3621e2b953069b455731110a8ddd90d78b38ad6afe541f5e18f",
+        "catalog_only_after": false,
+        "differences": [
+          {
+            "offset": 8208,
+            "before": 9,
+            "after": 8
+          },
+          {
+            "offset": 16413,
+            "before": 13,
+            "after": 205
+          },
+          {
+            "offset": 28688,
+            "before": 1,
+            "after": 0
+          },
+          {
+            "offset": 32783,
+            "before": 15,
+            "after": 207
+          },
+          {
+            "offset": 36866,
+            "before": 23,
+            "after": 32
+          },
+          {
+            "offset": 36892,
+            "before": 2,
+            "after": 0
+          }
+        ],
+        "fresh_zero_user_tables": true,
+        "fresh_eight_live_catalog_rows": true
+      }
+    ]
+  }
+}

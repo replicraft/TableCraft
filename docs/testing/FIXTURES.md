@@ -1,5 +1,22 @@
 # Candidate Access fixtures
 
+## Saved-table catalog tombstone literals — 9 November 2026
+
+The first-party `canonical_table_drop` builder composes only the independent raw
+rename-source families, then authors a literal catalog slot tombstone and live
+count decrement. Expected bytes never come from a native deletion planner. All
+historical user pages, usage maps and EOF remain unchanged. The
+[observation record](results/table-drop-catalog-observations-2026-11-09.json)
+pins the raw builder/test sources and 35 complete BEFORE/expected/SDK-written
+images, with failed BOM name-getter qualification preserved separately.
+
+Actual UCanAccess SQL DROP observations and a distinct native-cursor reset probe
+are separate evidence. Populated outputs depend on cursor state and do not
+qualify this catalog-only model for populated tables. The current positive target
+is independently admitted empty tables; allocation reuse and Microsoft Access
+execution remain unqualified. SDK jars stay external, reviewed references; no
+third-party implementation or database bytes are added to the repository.
+
 ## Creator external-OFF rename literals — 8 November 2026
 
 The repository-authored `canonical_creator_rename` fixture composes the existing
