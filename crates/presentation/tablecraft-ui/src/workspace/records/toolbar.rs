@@ -233,7 +233,7 @@ fn record_position_width(ui: &Ui, position: &str, count: Option<u64>) -> f32 {
             .map(|digit| fonts.glyph_width(&font, digit))
             .fold(0.0_f32, f32::max)
     });
-    POSITION_WIDTH.max(digit_width * digits as f32 + POSITION_TEXT_PADDING)
+    POSITION_WIDTH.max((digit_width * digits as f32).ceil() + POSITION_TEXT_PADDING)
 }
 
 #[cfg(test)]

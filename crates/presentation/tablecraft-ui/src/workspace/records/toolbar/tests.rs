@@ -15,7 +15,10 @@ fn record_position_width_fits_measured_six_and_ten_digit_text_without_unbounded_
                 .size()
                 .x;
             let width = record_position_width(ui, text, None);
-            assert!(width >= measured + POSITION_TEXT_PADDING);
+            assert!(
+                width >= measured + POSITION_TEXT_PADDING,
+                "{text}: field {width}, measured text {measured}"
+            );
             assert!(width > compact);
             assert_eq!(
                 record_position_width(ui, "1", Some(text.parse().unwrap())),
