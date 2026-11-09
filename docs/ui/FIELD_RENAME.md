@@ -100,3 +100,16 @@ contains four coordinated raw positives and four TDEF-only controls observed
 through inert SDK reads, not SDK-authored rename writes.
 
 [Desktop UI index](README.md)
+
+## Physical capacity and correction
+
+The fitted shape observation is not a promise that every 64-unit ASCII name fits.
+A normal-host headless case uses a genuinely near-full admitted history: a
+29-character name receives a consuming native capacity refusal, remains editable
+and starts no save worker or journal. Editing that same proposal to 28 characters
+creates a newer revision and saves only through a fresh review and complete-image
+witness. The final field retains its native number and tab identity.
+
+Subsequent row edits are not qualified by this schema save. In particular, shrink
+retains newly free historical TDEF bytes that existing ordinary-write source
+checks can refuse. No repeated-rename, ADD or row-CRUD authority is inferred.

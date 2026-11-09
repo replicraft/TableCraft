@@ -1,5 +1,40 @@
 # Implementation status
 
+## Fitting ASCII field names — 9 November 2026
+
+Qualified empty ACE16 explicit-OFF Number/Short Text fields now accept growing
+and shrinking ASCII names through a separate native candidate and closed TCFR
+profile2. Existing same-width/no-op profile1 behavior is retained. Both share the
+consuming runtime review, checked journal and full-image publication workflow;
+GUI and MCP consume an explicit observed name policy. No page/slot/file growth,
+populated-field rename or additional format support is implied.
+
+The selected integration batch passes 76 checks across Access, native intents,
+runtime, testkit, shared UI, desktop and MCP. Eleven separate native rename checks
+also pass. Three distinct later boundary checks add independent raw pins, native
+capacity admission and actual GUI refusal/correction: an admitted history with
+46 free bytes accepts a 28-character name exactly, refuses 29 without writing,
+retains the user's proposal, and saves only after explicit correction/fresh
+review. These gates total 90 distinct checks; they are not a full workspace run.
+Strict all-target/all-feature Clippy and rustdoc pass for all eight affected
+packages; formatting, documentation links and dependency guards pass.
+
+Initial batches exposed unbound inspection replies in the new test setup and an
+incorrect immutable index-tail offset in the shared verifier. The corrected
+setup preserves identity guards; the verifier permits only the exact expected
+name-byte relocation and retains all other storage/complement checks. Complete
+native AFTER images match independently authored fixtures. The separate
+[inert reader observations](../tests/reports/schema/FITTED_FIELD_RENAME_OBSERVATIONS.md)
+retain eight positives and all damaged controls, including the SDK's stale-length
+shrink blind spot. No SDK writes or Windows/Access saves are claimed. Five
+localized light/dark [offscreen frames](ui/PRESENTATION_PREVIEW.md#fitted-field-name-proposals--9-november-2026)
+were opened at 1×/2×.
+
+Subsequent row-CRUD/source qualification after a fitted rename remains separate:
+shrink deliberately preserves historical bytes in newly free TDEF space, which
+some existing ordinary-write source guards refuse. A successful schema save does
+not establish that later row or schema operations are admitted.
+
 ## Saved Design field addition — 9 November 2026
 
 Saved Design now exposes a blank Name/Type row for the existing positively

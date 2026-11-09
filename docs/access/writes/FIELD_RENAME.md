@@ -160,3 +160,17 @@ stale-descriptor shrink images that Jackcess opened successfully. That reader
 blind spot does not relax the native descriptor/body-extent checks or qualify
 Access saves. Native/writer test results remain separate from those inert SDK
 observations.
+
+## Natural fitting-capacity boundary
+
+A separate independently pinned source uses the existing N12 Number-history
+language with a legal 20-character early sibling name. Its retained histories
+leave 46 LVAL bytes: `Score` can grow to 28 ASCII units, but 29 does not fit.
+The raw Python/Rust BEFORE/AFTER pins agree; the native candidate exactly matches
+the complete 28-unit image and returns `FittedCapacity` at 29. The actual GUI
+retains the refused proposal without a save actor, journal or byte changes, then
+saves the explicitly corrected 28-unit name through a new review/witness.
+
+Shrink preserves newly free historical bytes. Existing ordinary-write source
+qualification can reject that retained TDEF tail; later row/schema editing needs
+its own composition proof and is not inferred from a successful rename.
