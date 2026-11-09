@@ -2,5 +2,6 @@
 mod action_queries;
 mod builder_properties;
 mod insertion_retry;
+mod other_services;
 mod recovery;
 mod schema;

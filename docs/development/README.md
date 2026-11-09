@@ -12,6 +12,7 @@ Contributing, dependency policy, tracing and CLI release packaging.
 - [265-rule Rust skills review](RUST_SKILLS_REVIEW.md)
 - [Complete non-test clone ownership audit](CLONE_AUDIT.md)
 - [Crate ownership and shared-host operation inventory](CRATE_OWNERSHIP_REVIEW.md)
+- [Every desktop action and runtime command: MCP acceptance docket](MCP_PARITY_ACCEPTANCE.md)
 - [Library choices](LIBRARY_POLICY.md)
 - [CLI release preparation](RELEASING.md)
 - [Desktop archive preparation](DESKTOP_PACKAGING.md)

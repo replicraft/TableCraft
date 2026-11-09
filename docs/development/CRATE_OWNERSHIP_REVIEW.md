@@ -33,11 +33,18 @@ composition shared by several UI operations. Its filter restoration, tab reload
 and UI identity checks are desktop concerns. Copying that module into MCP or
 moving its UI state into runtime would cross the boundary. MCP instead retains
 actual runtime capabilities and witnesses and uses the same `SaveWorker` API.
-Both hosts currently classify table-rename/table-creation schema receipts in
-small private helpers. Sharing those operation-specific outcome-facts methods
-inside runtime is a concrete follow-up now that two real consumers exist. It
-needs no new crate, protocol state in runtime or generic changeset framework.
-Field/query/options paths already consume runtime-owned outcome-facts methods.
+Table-rename and table-creation outcome classification now lives in runtime,
+following the existing field/query/options pattern. Desktop and MCP consume
+`SaveOutcome::table_rename_reopen_facts` and the witness-bound
+`SaveOutcome::table_creation_reopen_facts` directly. Creation binds the actual
+reviewed operation and column count; receipt scope excludes row, query and
+options changes. Current Original overrides history, Released AFTER can lack a
+completed receipt, and a failed retained owner grants no reopening. The complete
+accepted witness remains required after actual actor acknowledgement. Desktop's
+private rename classifier and MCP's private schema classifier were removed;
+creation no longer stores a second expected-schema field in its host state.
+This was a working extraction between two real consumers, not a new crate or
+protocol state added to runtime.
 
 The CLI intentionally consumes lower-level Access/query/creation services directly
 and does not depend on runtime. This is not evidence that its advanced commands
@@ -45,6 +52,94 @@ are available through desktop/runtime. Encryption management, explicit external
 source mapping, progressive TSV queries and detailed native diagnostics need
 separate shared service work before claiming MCP parity with those CLI features.
 SQLite, native projects, scripting and VBA execution remain paused/deferred.
+
+## Whole-workspace source and dependency pass
+
+The final placement pass covered all 21 current workspace packages. Membership
+and dependency-policy checks used the existing local Cargo metadata snapshot
+(`.cache/mcp-docket-metadata.json`); current manifests and source were read again
+after the MCP dependency cleanup. No Cargo command or new dependency resolution
+was run during this inventory. The existing boundary validator's pure
+`violations(metadata)` check returned no violations for that snapshot. Direct
+normal/optional/target dependency declarations were also compared with source
+imports, including aliases and derived-macro usage; development edges were kept
+separate from production edges.
+
+The source inventory followed feature folders and excluded files behind detected
+`cfg(test)` module declarations, test folders and private test-support files.
+Inline test modules were excluded from the counted file bodies. Counts below
+are approximate nonblank, non-line-comment source lines, not compiler-derived
+LOC, release code size, or a claim that every remaining line is business logic.
+The testkit is deliberately a development-only owner and its numbers describe
+fixture/observation machinery. Feature flags were retained as possible production
+paths rather than silently excluded from the review.
+
+| Package | Approximate lines | Largest current slices inspected | Placement conclusion |
+| --- | ---: | --- | --- |
+| `tablecraft-core` | 730 | values, identities, limits | Shared semantic carriers and budgets; no native layout or host dependencies. |
+| `tablecraft-schema` | 420 | relationships, columns, declared types | Small because declarations and validation are its responsibility; physical descriptors remain in ACE. |
+| `tablecraft-model` | 140 | catalog and inert objects | Appropriate metadata owner; object execution does not belong here. |
+| `tablecraft-db` | 330 | edit contracts, snapshots, row/collection views | Backend-neutral contracts; no concrete adapter edge. |
+| `tablecraft-io` | 6,280 | journal, Windows filesystem calls, publication | Generic durability/namespace work belongs here; Jet/ACE page and lock interpretation remains outside. |
+| `tablecraft-crypto` | 140 | AES, digests, stream primitives | Working checked primitives only; passwords, salts, spins and native encryption profiles remain in ACE. |
+| `tablecraft-formats` | 4,190 | template archive/data codecs, deployment packages | Inert container and XML interpretation; native payload qualification stays in Access. |
+| `tablecraft-sql` | 3,720 | parser, SELECT and query models | Owned syntax boundary with upstream AST confined to its parser adapter. |
+| `tablecraft-expressions` | 21,450 | functions, evaluation, predicates | Scalar semantics; no native I/O or application host dependencies. |
+| `tablecraft-query` | 26,280 | execution, binding, plans | Query-specific source contracts and execution; no concrete backend dependency. |
+| `tablecraft-ace` | 155,070 | table operations, transaction intents, creation | Native preservation/ownership logic dominates size; this does not justify moving native policy into generic I/O or crypto. |
+| `tablecraft-access` | 18,620 | offline editing, query sources, engineering views | Concrete adapter orchestration; engine carriers no longer acquire a second public owner here. |
+| `tablecraft-sqlite` | 700 | source snapshots and worker reads | Existing isolated backend remains paused; no new SQLite/project work was introduced. |
+| `tablecraft-builders` | 1,880 | query construction and table drafts | Headless models depend on schema/SQL, not UI widgets or native persistence. |
+| `tablecraft-display` | 580 | regional display engine and display facts | No egui/eframe dependency; input conversion remains an explicit application service. |
+| `tablecraft-runtime` | 16,730 | editing, filtering, read/save workers | Shared application ownership and interpretation for both desktop and MCP. |
+| `tablecraft-ui` | 47,700 | workspace interaction and datasheet rendering | Shared presentation; no native adapter, filesystem-open or durable-save dependency. |
+| `tablecraft-desktop` | 11,710 | workspace dispatch, restoration and platform dialogs | Window/host composition; shared receipt classification was extracted rather than copied again. |
+| `tablecraft-mcp` | 3,440 | session handles, typed wire requests, tool descriptions | Protocol serialization/authorization and host lifetime; native mutation remains in runtime services. |
+| `tablecraft-cli` | 11,250 | command dispatch/output and explicit native commands | Separate synchronous executable; no GUI runtime dependency introduced. |
+| `tablecraft-testkit` | 38,780 | independent fixtures and gated observations | Reusable test machinery; private subsystem glue remains local and no production package enables it as a normal dependency. |
+
+Size outliers were read in context. ACE's
+`table/mutation/append/state.rs` owns native allocation/append state; moving it to
+I/O would move format semantics across the boundary. UI's `datasheet.rs` owns
+widget rendering, while runtime's `worker.rs` owns application requests and
+thread publication. The large testkit `genuine_wide_node_update/pins.rs` is
+literal independent fixture evidence, not production logic needing another
+crate. Remaining crate-root exports expose their actual feature owner as a public
+API; they are not all compatibility aliases merely because they use `pub use`.
+
+### Concrete cleanup completed
+
+- Removed the unused direct `flate2` dependency from `tablecraft-formats` after
+  searching the complete package, including manifests, source, tests and benchmark
+  locations. ZIP decoding continues through its existing `zip::ZipArchive`
+  consumer. This does not remove `flate2` from other crates that actually use it.
+- Removed Access's pass-through re-exports of ACE row/page requests, collection
+  carriers, storage markers and batches. Their owner is `tablecraft-ace`.
+  CLI rows/tables, runtime rows/filtering/contents and Access integration tests now
+  import that owner directly using existing dependencies. Genuine Access APIs
+  (`NativeBrowser`, `BrowserCursor`, `BrowsePage`, inventories and descriptions)
+  remain in the adapter, with the same budgets and native reader behavior.
+- Removed unused MCP direct dependencies on core and Jiff in the preceding host
+  cleanup; protocol code imports its working runtime/builder/schema/display
+  consumers directly. The apparent unused `md-5` result from a lexical dependency
+  scan was checked and rejected: its Rust import is `md5::Md5` in crypto's actual
+  digest implementation.
+- Completed the runtime outcome-facts extraction described above and added
+  focused malformed-scope/current-image tests. Complete-image read witnesses,
+  actor identity, permissions and resource ownership remain with their original
+  services and hosts.
+
+No additional crate extraction is justified by this pass. No further unused
+normal dependency was established; a source-token survey is not a substitute for
+compiler-aware dead-dependency analysis. Source layout checks passed locally;
+compilation and regression results for these last changes belong to the separate
+central verification batch. This review does not qualify Windows behavior,
+WebAssembly, full Jet/ACE writing, or the paused browser/project implementation.
+
+The [action-by-action acceptance docket](MCP_PARITY_ACCEPTANCE.md) inventories
+every active desktop action and runtime command, distinguishes presentation-only
+work and low-level inactive primitives, and separates actual host acceptance from
+API presence.
 
 ## Required MCP service surface
 
