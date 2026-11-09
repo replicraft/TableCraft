@@ -343,7 +343,7 @@ async fn numeric_inspection_retains_request_policy_and_reuses_after_refusal() {
 #[tokio::test(flavor = "current_thread")]
 async fn cstr_date_and_numeric_policies_are_request_local_and_failures_allow_reuse() {
     use tablecraft_expressions::functions::{
-        conversions::text::NumberFormat, text::cstr::DateTextFormat,
+        conversions::text::NumberFormat, dates::parsing::DateTextFormat,
     };
     let fixture = Fixture::new();
     let original = std::fs::read(&fixture.0).unwrap();

@@ -4,7 +4,7 @@ use tablecraft_core::values::{
 };
 use tablecraft_expressions::{
     EvalError,
-    functions::{conversions::text::NumberFormat, text::cstr::DateTextFormat},
+    functions::{conversions::text::NumberFormat, dates::parsing::DateTextFormat},
 };
 use tablecraft_query::{
     ExecutionOptions, QueryError, Source, execute_with_schema_discovery, prepare,

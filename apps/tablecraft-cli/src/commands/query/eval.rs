@@ -1,10 +1,10 @@
 use super::{Error, output::TableOutput};
 use crate::commands::clock::HostClock;
 use tablecraft_core::limits::ResourceBudget;
+use tablecraft_expressions::functions::dates::parsing::DateTextFormat;
 use tablecraft_expressions::functions::error_messages::EnglishErrorMessages;
 use tablecraft_expressions::functions::session::AccessSessionContext;
 use tablecraft_expressions::functions::text::code_page::CharacterCodePage;
-use tablecraft_expressions::functions::text::cstr::DateTextFormat;
 use tablecraft_expressions::functions::{conversions::text::NumberFormat, math::random::RndState};
 use tablecraft_expressions::{
     EvalError,

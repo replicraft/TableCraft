@@ -11,7 +11,7 @@ pub struct TextContext<'a> {
     /// Numeric Text input and CStr/named numeric output profile.
     pub number_format: Option<crate::functions::conversions::text::NumberFormat>,
     /// Gregorian date/time input/output profile, independent of numeric formatting.
-    pub date_format: Option<super::cstr::DateTextFormat>,
+    pub date_format: Option<crate::functions::dates::parsing::DateTextFormat>,
     /// Two-digit year interpretation for explicit date Text input.
     pub year_window: crate::functions::dates::TwoDigitYearWindow,
     /// Caller-issued first day for WeekdayName system/default numbering.

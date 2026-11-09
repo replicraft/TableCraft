@@ -5,9 +5,9 @@ use crate::commands::clock;
 use clap::Subcommand;
 use tablecraft_expressions::functions::conversions::text::NumberFormat;
 use tablecraft_expressions::functions::dates::TwoDigitYearWindow;
+use tablecraft_expressions::functions::dates::parsing::DateTextFormat;
 use tablecraft_expressions::functions::math::random::RndState;
 use tablecraft_expressions::functions::text::code_page::CharacterCodePage;
-use tablecraft_expressions::functions::text::cstr::DateTextFormat;
 
 #[derive(Subcommand)]
 pub(crate) enum Command {

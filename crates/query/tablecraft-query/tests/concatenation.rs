@@ -3,7 +3,7 @@ use tablecraft_core::values::{Currency, Double, ExpressionValue, Value};
 use tablecraft_expressions::{
     EvalError,
     comparison::Collation,
-    functions::{conversions::text::NumberFormat, text::cstr::DateTextFormat},
+    functions::{conversions::text::NumberFormat, dates::parsing::DateTextFormat},
 };
 use tablecraft_query::{
     ExecutionOptions, OutputType, QueryError, Source, execute_with_schema_discovery, prepare,

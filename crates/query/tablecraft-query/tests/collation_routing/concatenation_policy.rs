@@ -1,6 +1,6 @@
 use super::{raw_support::RawResolver, support::*};
 use tablecraft_expressions::functions::{
-    conversions::text::NumberFormat, text::cstr::DateTextFormat,
+    conversions::text::NumberFormat, dates::parsing::DateTextFormat,
 };
 
 #[test]

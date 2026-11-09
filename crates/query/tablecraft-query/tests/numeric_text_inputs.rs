@@ -1,7 +1,7 @@
 use tablecraft_core::values::Value;
 use tablecraft_expressions::{
     EvalError,
-    functions::{conversions::text::NumberFormat, text::cstr::DateTextFormat},
+    functions::{conversions::text::NumberFormat, dates::parsing::DateTextFormat},
 };
 use tablecraft_query::{ExecutionOptions, QueryError, prepare, source::MemorySource};
 use tablecraft_sql::parse_query;

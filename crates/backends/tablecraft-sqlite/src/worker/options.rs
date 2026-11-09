@@ -25,7 +25,7 @@ pub struct AsyncOptions {
     /// Caller-owned year for omitted-year date text, isolated to this request.
     pub reference_year: Option<tablecraft_expressions::functions::dates::parsing::ReferenceYear>,
     /// Explicit per-request CStr date/time output profile.
-    pub date_format: Option<tablecraft_expressions::functions::text::cstr::DateTextFormat>,
+    pub date_format: Option<tablecraft_expressions::functions::dates::parsing::DateTextFormat>,
     /// Explicit per-request numeric Text input/output profile, independent of SQLite affinity.
     pub number_format: Option<tablecraft_expressions::functions::conversions::text::NumberFormat>,
     /// Cumulative metadata, row, allocation and SQLite VM work allowance.

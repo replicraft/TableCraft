@@ -35,7 +35,7 @@ impl TextOutput for Output<'_> {
     }
 }
 
-impl crate::functions::text::val::NumericBuffer for Output<'_> {
+impl crate::functions::text::output::NumericBuffer for Output<'_> {
     fn text(&self) -> &str {
         &self.text
     }

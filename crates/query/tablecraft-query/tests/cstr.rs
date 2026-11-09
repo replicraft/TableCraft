@@ -1,6 +1,6 @@
 use tablecraft_core::values::Value;
 use tablecraft_expressions::functions::{
-    conversions::text::NumberFormat, text::cstr::DateTextFormat,
+    conversions::text::NumberFormat, dates::parsing::DateTextFormat,
 };
 use tablecraft_query::{ExecutionOptions, prepare, source::MemorySource};
 use tablecraft_sql::{ParseLimits, parse_query};

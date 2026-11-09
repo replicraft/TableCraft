@@ -4,7 +4,7 @@ mod raw;
 
 use super::compare;
 // Preserve the existing public import while sharing the working sink contract.
-pub use super::output::TextOutput;
+use super::output::TextOutput;
 use crate::{
     EvalError,
     comparison::{Collation, StringCompareMode, StringSearch},

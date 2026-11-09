@@ -1,7 +1,7 @@
 use super::{raw_support::Units, support::*};
 use tablecraft_expressions::{
     EvalError,
-    functions::{conversions::text::NumberFormat, text::cstr::DateTextFormat},
+    functions::{conversions::text::NumberFormat, dates::parsing::DateTextFormat},
     predicates::LikeMode,
 };
 

@@ -3,7 +3,7 @@ mod radix;
 mod scan;
 mod suffix;
 use super::TextResult;
-pub use super::output::NumericBuffer;
+use super::output::NumericBuffer;
 use crate::EvalError;
 use tablecraft_core::values::{Double, Value};
 

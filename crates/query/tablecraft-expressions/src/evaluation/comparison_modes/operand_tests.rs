@@ -2,7 +2,7 @@ use super::*;
 use crate::functions::text::TextFunction;
 use crate::{
     evaluation::{EvalLimits, NoBindings},
-    functions::{conversions::text::NumberFormat, text::cstr::DateTextFormat},
+    functions::{conversions::text::NumberFormat, dates::parsing::DateTextFormat},
 };
 use std::cell::Cell;
 use tablecraft_core::{

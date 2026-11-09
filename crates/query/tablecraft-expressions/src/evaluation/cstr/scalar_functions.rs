@@ -2,8 +2,7 @@ use super::*;
 use crate::{
     evaluation::{EvalLimits, NoBindings},
     functions::{
-        conversions::text::NumberFormat,
-        text::{casing::CaseLocale, cstr::DateTextFormat},
+        conversions::text::NumberFormat, dates::parsing::DateTextFormat, text::casing::CaseLocale,
     },
 };
 use std::cell::Cell;

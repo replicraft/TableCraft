@@ -11,6 +11,7 @@ use std::{ffi::OsString, path::PathBuf};
 use tablecraft_ace::{AttachmentDecodeLimits, LongTextReadLimits, LongValueReadLimits};
 use tablecraft_expressions::functions::conversions::text::NumberFormat;
 use tablecraft_expressions::functions::dates::clock::ClockReading;
+use tablecraft_expressions::functions::dates::parsing::DateTextFormat;
 use tablecraft_expressions::functions::dates::parsing::ReferenceYear;
 use tablecraft_expressions::functions::dates::{
     FirstDayOfWeek, FirstWeekOfYear, TwoDigitYearWindow,
@@ -18,7 +19,6 @@ use tablecraft_expressions::functions::dates::{
 use tablecraft_expressions::functions::math::random::RndState;
 use tablecraft_expressions::functions::text::casing::CaseLocale;
 use tablecraft_expressions::functions::text::code_page::CharacterCodePage;
-use tablecraft_expressions::functions::text::cstr::DateTextFormat;
 use tablecraft_query::BindingDepth;
 
 #[derive(ClapArgs)]

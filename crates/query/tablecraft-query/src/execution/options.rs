@@ -67,7 +67,7 @@ pub struct ExecutionOptions<'a> {
     /// Already prepared date constants cannot be changed by this execution setting.
     pub reference_year: Option<tablecraft_expressions::functions::dates::parsing::ReferenceYear>,
     /// Explicit CStr date/time output profile, independent of number-format and locale discovery.
-    pub date_format: Option<tablecraft_expressions::functions::text::cstr::DateTextFormat>,
+    pub date_format: Option<tablecraft_expressions::functions::dates::parsing::DateTextFormat>,
     /// Explicit numeric Text input/output policy for conversion, recognition and formatting.
     pub number_format: Option<tablecraft_expressions::functions::conversions::text::NumberFormat>,
     /// Gregorian DateSerial year window; omitted uses the explicit 1930..2029 profile.

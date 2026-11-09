@@ -2,7 +2,7 @@ use super::*;
 use crate::{
     comparison::Collation,
     evaluation::{EvalLimits, NoBindings},
-    functions::{conversions::text::NumberFormat, text::cstr::DateTextFormat},
+    functions::{conversions::text::NumberFormat, dates::parsing::DateTextFormat},
     predicates::LikeMode,
 };
 use std::{cell::Cell, cmp::Ordering};

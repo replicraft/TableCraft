@@ -253,7 +253,7 @@ fn numeric_text_formats_charge_bytes_and_respect_cancellation() {
 
 #[test]
 fn cstr_charges_only_emitted_bytes_and_retains_shared_failures() {
-    use crate::functions::{conversions::text::NumberFormat, text::cstr::DateTextFormat};
+    use crate::functions::{conversions::text::NumberFormat, dates::parsing::DateTextFormat};
     let mut budget = ResourceBudget::new(4, 0, 100);
     assert_eq!(
         Evaluator::new(&NoBindings, &mut budget, EvalLimits::default())

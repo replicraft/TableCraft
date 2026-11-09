@@ -1,7 +1,7 @@
 use super::*;
 use crate::{
     evaluation::{EvalLimits, NoBindings},
-    functions::text::cstr::DateTextFormat,
+    functions::dates::parsing::DateTextFormat,
 };
 use std::cell::Cell;
 use tablecraft_core::{

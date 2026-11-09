@@ -1,6 +1,6 @@
 //! Explicit Gregorian short-date/long-time spellings, without ambient locale access.
 use super::super::{date_format, output::TextOutput};
-pub use crate::functions::dates::parsing::DateTextFormat;
+use crate::functions::dates::parsing::DateTextFormat;
 use crate::{EvalError, functions::dates::scalar_calendar};
 use tablecraft_core::values::Value;
 

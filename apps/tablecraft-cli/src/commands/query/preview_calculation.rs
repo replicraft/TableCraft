@@ -9,7 +9,7 @@ use tablecraft_ace::{
 };
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_expressions::functions::{
-    conversions::text::NumberFormat, text::cstr::DateTextFormat,
+    conversions::text::NumberFormat, dates::parsing::DateTextFormat,
 };
 use tablecraft_query::ExecutionOptions;
 use tablecraft_sql::ParseLimits;

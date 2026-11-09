@@ -12,7 +12,7 @@ use tablecraft_ace::{
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_expressions::comparison::Collation;
 use tablecraft_expressions::functions::conversions::text::NumberFormat;
-use tablecraft_expressions::functions::text::cstr::DateTextFormat;
+use tablecraft_expressions::functions::dates::parsing::DateTextFormat;
 use tablecraft_expressions::functions::{
     dates::TwoDigitYearWindow, text::code_page::CharacterCodePage,
 };

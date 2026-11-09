@@ -52,7 +52,7 @@ pub struct Evaluator<'a> {
     /// Caller-issued first-week rule for explicit system week options.
     pub(super) first_week_of_year: Option<crate::functions::dates::FirstWeekOfYear>,
     pub(super) reference_year: Option<crate::functions::dates::parsing::ReferenceYear>,
-    pub(super) date_format: Option<crate::functions::text::cstr::DateTextFormat>,
+    pub(super) date_format: Option<crate::functions::dates::parsing::DateTextFormat>,
     pub(super) number_format: Option<crate::functions::conversions::text::NumberFormat>,
     pub(super) character_code_page: Option<crate::functions::text::code_page::CharacterCodePage>,
     pub(super) year_window: crate::functions::dates::TwoDigitYearWindow,
@@ -155,7 +155,7 @@ impl<'a> Evaluator<'a> {
     /// Select explicit Gregorian date parsing/output syntax, without OS lookup.
     pub fn with_date_format(
         mut self,
-        format: crate::functions::text::cstr::DateTextFormat,
+        format: crate::functions::dates::parsing::DateTextFormat,
     ) -> Self {
         self.date_format = Some(format);
         self

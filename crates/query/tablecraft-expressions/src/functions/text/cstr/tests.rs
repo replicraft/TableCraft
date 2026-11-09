@@ -1,6 +1,7 @@
 use super::*;
 use crate::{
     functions::conversions::text::NumberFormat,
+    functions::dates::parsing::DateTextFormat,
     functions::text::{TextFunction, apply_with_context, output::TextOutput},
 };
 use proptest::prelude::*;
