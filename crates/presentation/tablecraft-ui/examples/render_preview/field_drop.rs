@@ -127,11 +127,9 @@ pub(super) fn prepare(harness: &mut Harness<'_, Preview>, mode: &str) {
         }
         "close" => close(harness),
         "pending" => {
+            let label = state.localizer.text("field-drop-close-save");
             let save = harness
-                .query_all_by_role_and_label(
-                    Role::Button,
-                    &state.localizer.text("field-drop-close-save"),
-                )
+                .query_all_by_role_and_label(Role::Button, &label)
                 .max_by(|left, right| left.rect().top().total_cmp(&right.rect().top()))
                 .expect("actual pending-deletion Save footer");
             assert!(!save.accesskit_node().is_disabled());
