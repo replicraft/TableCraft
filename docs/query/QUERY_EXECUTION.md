@@ -1599,3 +1599,39 @@ explicit numeric-rendering policy when UNION combines it with a numeric arm.
 Missing policy and eager unselected/fallback failures retain buffered refusal.
 This is the implemented successful-value contract; native Access conditional
 return promotion and exact field-constraint inference remain unqualified.
+
+## Single-Text GROUP BY candidate hints
+
+Buffered grouping can use an explicitly opted-in resolver `grouping_key` for one
+Text key with a complete policy cohort. This is a separate, stronger contract
+than the source-filter `equality_key`: strings equal under the exact comparer
+must produce identical stable, policy-scoped grouping keys. Equal keys are only
+candidates, and prefix/hash collisions always run the original strict full-cell
+comparison. Unknown providers return `None` by default. No physical index key,
+normalization shortcut or ordinal comparer replaces Text equality.
+
+Native General legacy/2010 opts in using its reviewed primary prefix. The entire
+full-string key, including secondary/unprintable streams, is constructed and
+checked before taking that prefix. Equal full General keys imply equal primary
+streams; unequal secondary weights or truncated-prefix collisions still compare
+in full. Inputs outside the existing short-literal hint width and unsupported
+families provide no hint. French and arbitrary host policies remain on the
+original comparison path unless they independently implement the contract.
+
+All grouping expressions and their complete retained policy cohort are evaluated
+before partitioning as before. A missing hint, unexpected carrier or changed
+policy permanently retires the lookup and exposes every retained representative
+to the original scan. Callback failures, cancellation, allocation limits and
+wrong returned policy identities propagate; no failed callback retries under a
+different comparer. NULL membership remains separate from Text.
+
+This reduces repeated temporary comparison-key construction for large repeated
+Text groups. Budgets still count cumulative allocation and work, not resident
+memory: hint generation, key hashing and fallible directory growth are charged.
+No default allowance was raised, no budget refund was added and the directory
+retains only group fingerprints/positions, not a cache of source text. Numeric
+keys, mixed tuples, DISTINCT/UNION and progressive Text grouping are unchanged.
+Synthetic regressions cover collisions, fallback, policy conflict, eager key
+failures, callback cancellation, singleton Unicode/overlong inputs and a
+100,000-row/249-group native General workload against the same explicit budget.
+Their execution results belong to the central verification record.

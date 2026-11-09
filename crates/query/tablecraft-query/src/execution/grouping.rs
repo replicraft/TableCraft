@@ -168,3 +168,6 @@ impl Runtime<'_, '_> {
         Ok(())
     }
 }
+
+#[cfg(test)]
+mod tests;

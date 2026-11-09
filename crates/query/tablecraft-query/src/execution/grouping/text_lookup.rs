@@ -46,7 +46,7 @@ impl TextLookup {
         if !self.enabled {
             return Ok(None);
         }
-        let result = self.key(cells, fallback, resolver)?;
+        let result = self.key(cells, fallback, resolver, budget)?;
         if result.is_none() {
             // Retire all hints permanently: every existing representative remains
             // in the retained groups and is visible to the original strict scan.
@@ -61,6 +61,7 @@ impl TextLookup {
         cells: &[CellValue],
         fallback: TextPolicy,
         resolver: Option<&dyn CollationResolver>,
+        budget: &mut ResourceBudget,
     ) -> Result<Option<u64>, QueryError> {
         let [cell] = cells else {
             return Ok(None);
@@ -91,6 +92,7 @@ impl TextLookup {
                     return Err(QueryError::Source);
                 }
                 self.policy = Some(policy);
+                budget.charge(Resource::Steps, key.as_bytes().len() as u64)?;
                 hash.write_u8(1);
                 hash.write(key.as_bytes());
             }
