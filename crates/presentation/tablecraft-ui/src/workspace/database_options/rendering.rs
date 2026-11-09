@@ -275,10 +275,10 @@ impl State {
                 _ => None,
             };
         }
-        if let Some(command) = command {
-            if command != Command::Cancel || self.cancel_database_options_operation(identity) {
-                actions.push(Action::DatabaseOptionsSave { identity, command });
-            }
+        if let Some(command) = command
+            && (command != Command::Cancel || self.cancel_database_options_operation(identity))
+        {
+            actions.push(Action::DatabaseOptionsSave { identity, command });
         }
     }
 

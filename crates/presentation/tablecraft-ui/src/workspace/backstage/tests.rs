@@ -56,7 +56,7 @@ fn click(state: &mut State, label: &str, context: &egui::Context) -> Vec<Action>
     let position = text
         .iter()
         .find(|(text, _)| text == label)
-        .expect("actual button label")
+        .unwrap_or_else(|| panic!("actual button label {label:?}"))
         .1
         .center();
     render(
@@ -379,8 +379,9 @@ fn options_round_trip_preserves_typed_saved_inputs_results_and_sql_draft() {
     assert!(click(harness.state_mut().state_mut(), "Dark", &context).is_empty());
     assert!(click(harness.state_mut().state_mut(), "English (US)", &context).is_empty());
     assert!(click(harness.state_mut().state_mut(), "日本語", &context).is_empty());
-    let back = harness.state().state().localizer.text("backstage-back");
-    assert!(click(harness.state_mut().state_mut(), &back, &context).is_empty());
+    let close = harness.state().state().localizer.text("backstage-close");
+    assert!(click(harness.state_mut().state_mut(), &close, &context).is_empty());
+    assert!(!harness.state().state().options_dialog_open());
     harness.run();
 
     let state = harness.state().state();

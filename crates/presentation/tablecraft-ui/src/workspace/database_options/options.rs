@@ -79,7 +79,15 @@ impl State {
             ui.separator();
             ui.button(tr(ui, "backstage-close")).clicked()
         });
-        if response.inner || response.should_close() {
+        // Options is an application-modal dialog: clicking the parent window
+        // does not dismiss it. In particular, neither its opening File command
+        // nor an appearance ComboBox popup may act as a backdrop dismissal.
+        // Escape first belongs to an open popup, then to this topmost dialog.
+        let escape = response.is_top_modal
+            && !response.any_popup_open
+            && context
+                .input_mut(|input| input.consume_key(egui::Modifiers::NONE, egui::Key::Escape));
+        if response.inner || escape {
             self.options_open = false;
         }
     }

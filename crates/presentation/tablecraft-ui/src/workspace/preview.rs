@@ -708,7 +708,7 @@ impl Preview {
                     .set_creation_destination("/preview/Database1.accdb".into());
             }
             Scene::Backstage => self.state.show_open(),
-            Scene::Options => self.state.backstage = super::backstage::Backstage::Options,
+            Scene::Options => self.state.show_options_dialog(),
             Scene::About => self.state.backstage = super::backstage::Backstage::About,
         }
     }
