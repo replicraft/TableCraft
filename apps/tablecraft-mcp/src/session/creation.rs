@@ -15,6 +15,7 @@ impl Session {
                 || self.saves.is_busy()
                 || self.creation.is_busy()
                 || self.uncertain
+                || self.refresh_required
             {
                 return Err("Resolve the active operation before creating another database".into());
             }

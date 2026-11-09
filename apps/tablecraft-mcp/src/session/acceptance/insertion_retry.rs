@@ -59,7 +59,7 @@ fn failed_insert() -> FailedInsert {
             }),
         )
         .unwrap();
-    let id = started["save_id"].as_u64().unwrap();
+    let mut id = started["save_id"].as_u64().unwrap();
     let report = terminal(&mut session, id);
     assert_eq!(report["outcome"]["kind"], "failed");
     assert!(
@@ -73,6 +73,42 @@ fn failed_insert() -> FailedInsert {
             .is_err(),
         "the real save actor must be acknowledged first"
     );
+    if report["outcome"]["can_release"] == true {
+        assert!(
+            session
+                .execute(
+                    "acknowledge_save",
+                    json!({
+                        "save_id": id
+                    })
+                )
+                .is_err(),
+            "the actual retained native owner cannot be forced through ACK"
+        );
+        let previous = id;
+        let released = session
+            .execute(
+                "release_save",
+                json!({
+                    "save_id": previous
+                }),
+            )
+            .unwrap();
+        id = released["save_id"].as_u64().unwrap();
+        assert_ne!(id, previous);
+        assert!(
+            session
+                .execute(
+                    "save_status",
+                    json!({
+                        "save_id": previous
+                    })
+                )
+                .is_err()
+        );
+        let released = terminal(&mut session, id);
+        assert_eq!(released["outcome"]["kind"], "released");
+    }
     let acknowledged = session
         .execute(
             "acknowledge_save",
@@ -110,6 +146,21 @@ fn failed_insert_reopens_only_actual_original_then_requires_fresh_inputs_and_rev
     let status = session.execute("session_status", json!({})).unwrap();
     assert_eq!(status["insert_retry"]["save_id"], id);
     assert_eq!(status["insert_retry"]["original_retry_eligible"], true);
+    assert_eq!(status["native_save_uncertain"], false);
+    if status["source_refresh_required"] == true {
+        assert!(
+            session
+                .execute(
+                    "begin_insert",
+                    json!({
+                        "document_revision": revision,
+                        "table": "Items"
+                    })
+                )
+                .is_err(),
+            "ordinary work cannot bypass exact original-image verification"
+        );
+    }
     assert!(
         session
             .execute(
@@ -144,6 +195,9 @@ fn failed_insert_reopens_only_actual_original_then_requires_fresh_inputs_and_rev
         .unwrap();
     assert_eq!(continued["original_verified"], true);
     assert_eq!(continued["native_write"], false);
+    let status = session.execute("session_status", json!({})).unwrap();
+    assert_eq!(status["source_refresh_required"], false);
+    assert_eq!(status["native_save_uncertain"], false);
     assert_eq!(
         std::fs::read(&path).unwrap(),
         original,

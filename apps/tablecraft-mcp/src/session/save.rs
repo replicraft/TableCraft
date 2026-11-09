@@ -190,6 +190,7 @@ impl Session {
             || self.saves.is_busy()
             || self.creation.is_busy()
             || self.uncertain
+            || self.refresh_required
         {
             return Err("An existing native owner blocks restart recovery".into());
         }
@@ -316,10 +317,10 @@ impl Session {
             SaveOutcome::Uncertain { .. } => false,
         };
         if !replacement && !current_original && !report.stopped_before_target_writes() {
-            self.uncertain = true;
+            self.refresh_required = true;
             self.active_save = None;
             return Ok(
-                json!({"save_id": id, "acknowledged": true, "reopened": false, "replacement": false, "source_verified": false, "source_uncertain": true}),
+                json!({"save_id": id, "acknowledged": true, "reopened": false, "replacement": false, "source_verified": false, "source_uncertain": true, "native_save_uncertain": self.uncertain, "source_refresh_required": true, "insert_retry": self.retry_status()}),
             );
         }
         if !replacement && !active.restart {

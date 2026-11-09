@@ -43,6 +43,7 @@ pub struct Session {
     created: Option<Arc<CreationReport>>,
     drop_source: Option<tablecraft_runtime::TableDropSourceInspection>,
     uncertain: bool,
+    refresh_required: bool,
     creation_id: Option<u64>,
     find_state: auxiliary::FindState,
     view_state: filtering::ViewState,
@@ -69,6 +70,7 @@ impl Session {
             created: None,
             drop_source: None,
             uncertain: false,
+            refresh_required: false,
             creation_id: None,
             find_state: auxiliary::FindState::default(),
             view_state: filtering::ViewState::default(),
@@ -102,7 +104,9 @@ impl Session {
                 "document_published": self.revision.is_some(),
                 "active_save_id": self.active_save.as_ref().map(|save| save.id),
                 "active_creation_id": self.creation_id.filter(|_| self.creation.is_busy()),
-                "source_uncertain": self.uncertain,
+                "source_uncertain": self.uncertain || self.refresh_required,
+                "native_save_uncertain": self.uncertain,
+                "source_refresh_required": self.refresh_required,
                 "catalog": &self.catalog,
                 "insert_retry": self.retry_status(),
             })),
@@ -127,6 +131,9 @@ impl Session {
                 }
                 if self.uncertain {
                     return Err("The native save result is uncertain; restart this session and inspect recovery before reopening".into());
+                }
+                if self.refresh_required {
+                    return Err("The released source image needs exact verification; use an eligible original-image insertion continuation or restart this session".into());
                 }
                 if matches!(operation, "find_next" | "continue_find" | "replace_found") {
                     return self.find_operation(operation, &args);

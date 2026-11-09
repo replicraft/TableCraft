@@ -72,6 +72,9 @@ impl Session {
         let table = retry.witness.target().table.clone();
         let response = self.request(Command::OpenInsertOriginal { witness })?;
         let catalog = self.response(response)?;
+        // Only the actual complete-original witness read resolves this released
+        // image restriction. Native actor uncertainty is never cleared here.
+        self.refresh_required = false;
         self.insert_retry = None;
         let revision = self
             .revision
