@@ -1,7 +1,9 @@
 //! Source-bound catalog rename review, separate from record edits and counts.
+mod outcome;
 use super::platform;
 use crate::{Error, Response, document::Document};
 use bytes::Bytes;
+pub use outcome::{TableRenameOutcomeError, TableRenameReopenFacts};
 use std::{
     path::{Path, PathBuf},
     sync::Arc,

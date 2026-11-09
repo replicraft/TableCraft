@@ -85,12 +85,17 @@ pub use save::{
     SaveStartError, SaveStartFailure,
 };
 #[cfg(feature = "ace16-create")]
-pub use table_creation::{CreatedTableReopen, ReviewedTableCreation};
+pub use table_creation::{
+    CreatedTableReopen, ReviewedTableCreation, TableCreationOutcomeError, TableCreationReopenFacts,
+};
 pub use table_drop::{
     ReviewedTableDrop, TableDropOutcomeError, TableDropReopenFacts, TableDropReview,
     TableDropSourceInspection, TableDroppedReopen,
 };
-pub use table_rename::{ReviewedTableRename, TableRenameReopen, TableRenameReview};
+pub use table_rename::{
+    ReviewedTableRename, TableRenameOutcomeError, TableRenameReopen, TableRenameReopenFacts,
+    TableRenameReview,
+};
 
 use crate::{Cell, scalar_input::InputHint};
 use std::{

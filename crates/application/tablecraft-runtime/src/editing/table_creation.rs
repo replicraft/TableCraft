@@ -1,6 +1,8 @@
 //! Source-bound table creation review; no file lease is held for presentation.
+mod outcome;
 use super::{SaveSchemaChange, platform};
 use bytes::Bytes;
+pub use outcome::{TableCreationOutcomeError, TableCreationReopenFacts};
 use std::{
     path::{Path, PathBuf},
     sync::Arc,

@@ -19,7 +19,7 @@ pub(super) fn known_replacement(known: SaveKnownOutcome) -> bool {
 /// The caller still needs its distinct native full-image witness after ACK.
 pub(super) fn reopen_facts(
     outcome: SaveOutcome,
-    qualified_receipt: fn(SaveReceipt) -> bool,
+    qualified_receipt: impl Fn(SaveReceipt) -> bool,
 ) -> Result<ReopenFacts, ()> {
     let (replacement, completed) = match outcome {
         SaveOutcome::Saved { receipt } => {

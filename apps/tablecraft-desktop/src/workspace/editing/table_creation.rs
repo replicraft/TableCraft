@@ -7,7 +7,7 @@ use crate::workspace::{
 use std::sync::Arc;
 use tablecraft_runtime::{
     Command, CreatedTableReopen, ReviewedTableCreation, SaveKnownOutcome, SaveOperation,
-    SaveOutcome, SaveReport, SaveSchemaChange, journal_path,
+    SaveOutcome, SaveReport, journal_path,
 };
 use tablecraft_ui::{Database, EditSaveOutcome, ObjectTab, SaveCleanupNotice, TableSaveRequest};
 
@@ -18,7 +18,6 @@ pub(in crate::workspace) struct TableCreationHost {
     table: String,
     columns: usize,
     witness: Option<Arc<CreatedTableReopen>>,
-    expected_schema_change: Option<SaveSchemaChange>,
     restore: Option<WorkspaceRestore>,
     no_write: bool,
     cleanup: Option<SaveCleanupNotice>,
@@ -64,7 +63,6 @@ impl Desktop {
             columns: request.snapshot.fields().len(),
             tab: request.tab,
             witness: None,
-            expected_schema_change: None,
             restore: Some(restore),
             no_write: true,
             cleanup: None,
@@ -120,7 +118,6 @@ impl Desktop {
             .start_table_creation(capability, journal_path(&path))
         {
             Ok(id) => {
-                host.expected_schema_change = Some(witness.expected_schema_change());
                 host.witness = Some(witness);
                 host.no_write = false;
                 self.editing.save = Some(ActiveSave {
@@ -157,40 +154,45 @@ impl Desktop {
             return;
         };
         let request = host.request;
-        match report.outcome {
-            SaveOutcome::Saved { receipt }
-                if matches!(
-                    receipt.known,
-                    SaveKnownOutcome::Committed | SaveKnownOutcome::ReplacementVerified
-                ) && host.expected_schema_change.is_some()
-                    && receipt.schema_change == host.expected_schema_change =>
-            {
-                // NO_CLONE: Host retains immutable complete-image witness for failed-read retry
-                // while the dispatched reopen command owns a shared reference.
-                let Some(witness) = host.witness.as_ref().map(Arc::clone) else {
-                    return;
-                };
-                if !self.editing.worker.acknowledge(report.id) {
-                    return;
-                }
-                host.cleanup = cleanup_notice(receipt);
-                self.editing.save = None;
-                if self.submit(Command::OpenTableCreated { witness }) {
-                    self.pending = PendingOperation::CreatedTableReopen {
-                        request_id: request,
-                    };
-                } else {
-                    // NO_CLONE: Global read rejection diagnostic and table-creation retained reopen
-                    // status separately retain the same failure message; cloning
-                    // preserves both presentations.
-                    let message = self
-                        .state
-                        .error
-                        .clone()
-                        .unwrap_or_else(|| self.state.localizer.text("objects-open-refused"));
-                    self.table_creation_reopen_failed(request, message);
-                }
+        let Some(witness) = host.witness.as_ref() else {
+            return;
+        };
+        let facts = match report.outcome.table_creation_reopen_facts(witness) {
+            Ok(facts) => facts,
+            Err(_) => {
+                self.state.error = Some(self.state.localizer.text("objects-open-refused"));
+                return;
             }
+        };
+        if facts.replacement {
+            // NO_CLONE: Host retains immutable complete-image witness for failed-read retry
+            // while the dispatched reopen command owns a shared reference.
+            let Some(witness) = host.witness.as_ref().map(Arc::clone) else {
+                return;
+            };
+            if !self.editing.worker.acknowledge(report.id) {
+                return;
+            }
+            host.cleanup = facts.completed.and_then(cleanup_notice);
+            self.editing.save = None;
+            if self.submit(Command::OpenTableCreated { witness }) {
+                self.pending = PendingOperation::CreatedTableReopen {
+                    request_id: request,
+                };
+            } else {
+                // NO_CLONE: Global read rejection diagnostic and table-creation retained reopen
+                // status separately retain the same failure message; cloning
+                // preserves both presentations.
+                let message = self
+                    .state
+                    .error
+                    .clone()
+                    .unwrap_or_else(|| self.state.localizer.text("objects-open-refused"));
+                self.table_creation_reopen_failed(request, message);
+            }
+            return;
+        }
+        match report.outcome {
             SaveOutcome::Saved { receipt }
                 if matches!(
                     receipt.known,

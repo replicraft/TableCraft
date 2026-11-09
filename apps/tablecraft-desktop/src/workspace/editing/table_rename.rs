@@ -3,8 +3,8 @@ use super::{ActiveSave, EditSaveOutcome, SaveOwner, cleanup_notice, save_outcome
 use crate::workspace::{Desktop, PendingOperation};
 use std::sync::Arc;
 use tablecraft_runtime::{
-    Command, ReviewedTableRename, SaveKnownOutcome, SaveOutcome, SaveReceipt, SaveReport,
-    SaveSchemaChange, TableRenameReopen, TableRenameReview, journal_path,
+    Command, ReviewedTableRename, SaveOutcome, SaveReport, TableRenameReopen, TableRenameReview,
+    journal_path,
 };
 use tablecraft_ui::{Database, ObjectKind, ObjectTarget, TableRenameRequest};
 
@@ -184,13 +184,15 @@ impl Desktop {
         let Some(report) = save.report else {
             return;
         };
-        let (replacement, completed) = rename_replacement(report.outcome);
-        if matches!(report.outcome, SaveOutcome::Saved { receipt } if known_replacement(receipt.known))
-            && !replacement
-        {
-            self.state.error = Some(self.state.localizer.text("objects-open-refused"));
-            return;
-        }
+        let facts = match report.outcome.table_rename_reopen_facts() {
+            Ok(facts) => facts,
+            Err(_) => {
+                self.state.error = Some(self.state.localizer.text("objects-open-refused"));
+                return;
+            }
+        };
+        let replacement = facts.replacement;
+        let completed = facts.completed;
         if let (Some(host), Some(receipt)) = (&mut self.table_rename, completed) {
             host.cleanup = cleanup_notice(receipt);
         }
@@ -283,45 +285,6 @@ impl Desktop {
             document_revision: revision,
             kind: ObjectKind::Table { name },
         });
-    }
-}
-
-fn known_replacement(known: SaveKnownOutcome) -> bool {
-    matches!(
-        known,
-        SaveKnownOutcome::Committed | SaveKnownOutcome::ReplacementVerified
-    )
-}
-
-fn rename_receipt(receipt: SaveReceipt) -> bool {
-    known_replacement(receipt.known)
-        && receipt.schema_change == Some(SaveSchemaChange::TableRenamed)
-        && receipt.matched_rows.is_none()
-        && receipt.changed_rows.is_none()
-}
-
-// Released current facts take precedence over an earlier finalized receipt.
-// A current replacement may lack a receipt after namespace finalization failed;
-// the same accepted host's exact AFTER witness authorizes only a guarded read.
-// No missing schema, retirement or cleanup receipt is manufactured here.
-fn rename_replacement(outcome: SaveOutcome) -> (bool, Option<SaveReceipt>) {
-    match outcome {
-        SaveOutcome::Saved { receipt } => {
-            let qualifies = rename_receipt(receipt);
-            (qualifies, qualifies.then_some(receipt))
-        }
-        SaveOutcome::Released {
-            current_outcome,
-            last_completed,
-        } => {
-            let completed = last_completed.filter(|receipt| rename_receipt(*receipt));
-            let replacement = match current_outcome {
-                Some(known) => known_replacement(known),
-                None => completed.is_some(),
-            };
-            (replacement, completed)
-        }
-        SaveOutcome::Failed(_) | SaveOutcome::Uncertain { .. } => (false, None),
     }
 }
 

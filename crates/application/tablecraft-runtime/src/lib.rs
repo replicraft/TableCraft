@@ -45,7 +45,8 @@ pub use editing::{
     FieldAdditionReopenFacts, FieldAdditionReview, FieldRenameOutcomeError, FieldRenameReopenFacts,
     FieldRenameReview, FieldRenameSourceInspection, FieldRenamedReopen, NameAutoCorrectState,
     NumberColumnAvailability, ReviewedAddColumn, ReviewedDatabaseOptions, ReviewedFieldAddition,
-    ReviewedFieldRename, ReviewedNumberColumn, ReviewedTableCreation,
+    ReviewedFieldRename, ReviewedNumberColumn, ReviewedTableCreation, TableCreationOutcomeError,
+    TableCreationReopenFacts,
 };
 #[cfg(feature = "offline-edit")]
 pub use editing::{
@@ -58,8 +59,8 @@ pub use editing::{
     SaveCleanupDisposition, SaveCompletion, SaveDatabaseOptionsChange, SaveFailure,
     SaveFailureKind, SaveKnownOutcome, SaveOperation, SaveOutcome, SavePhase, SaveQueryChange,
     SaveReceipt, SaveReport, SaveRetirementGuarantee, SaveSchemaChange, SaveSessionState,
-    SaveStartError, SaveStartFailure, SaveWorker, TableRenameReopen, TableRenameReview,
-    journal_path,
+    SaveStartError, SaveStartFailure, SaveWorker, TableRenameOutcomeError, TableRenameReopen,
+    TableRenameReopenFacts, TableRenameReview, journal_path,
 };
 #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
 pub use editing::{

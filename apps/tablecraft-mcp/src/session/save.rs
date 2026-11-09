@@ -5,7 +5,7 @@ use std::{path::PathBuf, sync::Arc};
 use tablecraft_runtime::{
     AddedColumnReopen, Command, CreatedTableReopen, DatabaseOptionsReopen, FieldDroppedReopen,
     FieldRenamedReopen, QueryExpressionReopen, SaveKnownOutcome, SaveOutcome, SaveReceipt,
-    SaveReport, SaveSchemaChange, TableDroppedReopen, TableRenameReopen,
+    SaveReport, TableDroppedReopen, TableRenameReopen,
 };
 
 pub(super) struct ActiveSave {
@@ -55,10 +55,14 @@ impl Reopen {
                 .database_options_reopen_facts()
                 .map(|facts| facts.replacement)
                 .map_err(|error| error.to_string()),
-            Self::TableRename(_) => schema_replacement(outcome, SaveSchemaChange::TableRenamed),
-            Self::TableCreation(witness) => {
-                schema_replacement(outcome, witness.expected_schema_change())
-            }
+            Self::TableRename(_) => outcome
+                .table_rename_reopen_facts()
+                .map(|facts| facts.replacement)
+                .map_err(|error| error.to_string()),
+            Self::TableCreation(witness) => outcome
+                .table_creation_reopen_facts(witness)
+                .map(|facts| facts.replacement)
+                .map_err(|error| error.to_string()),
         }
     }
 
@@ -150,31 +154,6 @@ fn replacement_receipt(outcome: SaveOutcome) -> Result<Option<SaveReceipt>, Stri
             }
         }
     }
-}
-
-fn schema_replacement(outcome: SaveOutcome, expected: SaveSchemaChange) -> Result<bool, String> {
-    if let SaveOutcome::Released {
-        current_outcome: Some(known),
-        last_completed: None,
-    } = outcome
-    {
-        // The actual actor observed its accepted AFTER, but supplied no historical
-        // receipt. Only the retained typed full-image witness may verify reopening.
-        return Ok(known_replacement(known));
-    }
-
-    let Some(receipt) = replacement_receipt(outcome)? else {
-        return Ok(false);
-    };
-    if receipt.schema_change != Some(expected)
-        || receipt.query_change.is_some()
-        || receipt.database_options_change.is_some()
-        || receipt.matched_rows.is_some()
-        || receipt.changed_rows.is_some()
-    {
-        return Err("Replacement receipt belongs to another operation scope".into());
-    }
-    Ok(true)
 }
 
 pub(super) fn report_json(report: SaveReport) -> Value {

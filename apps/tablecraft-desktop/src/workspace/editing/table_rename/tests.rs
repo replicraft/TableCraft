@@ -3,6 +3,7 @@ use super::*;
 use crate::workspace::test_support::{self, finish_reads, finish_save};
 use egui::{Key, accesskit::Role};
 use egui_kittest::{Harness, kittest::Queryable};
+use tablecraft_runtime::{SaveKnownOutcome, SaveSchemaChange};
 use tablecraft_testkit::fixtures::access::{
     canonical_catalog_names::rename_pair, canonical_indexed_rename,
     canonical_ordinary_indexed::Case,
@@ -94,7 +95,12 @@ fn released_known_replacement_reopens_but_current_original_takes_precedence() {
         let SaveOutcome::Saved { receipt } = report.outcome else {
             panic!("real rename save did not complete: {report:?}");
         };
-        assert!(rename_receipt(receipt));
+        assert!(
+            SaveOutcome::Saved { receipt }
+                .table_rename_reopen_facts()
+                .unwrap()
+                .replacement
+        );
         assert_eq!(std::fs::read(&path).unwrap(), source.after);
         report.outcome = SaveOutcome::Released {
             current_outcome,
@@ -142,7 +148,9 @@ fn released_commit_retains_known_result_when_reserved_journal_blocks_reopen() {
     let source = rename_pair(6, "Items", "雪 Customers", true);
     let (_directory, path, _before, mut harness) = test_support::opened(source.before);
     let mut report = save_rename(&mut harness);
-    assert!(matches!(report.outcome, SaveOutcome::Saved { receipt } if rename_receipt(receipt)));
+    assert!(
+        matches!(report.outcome, SaveOutcome::Saved { receipt } if SaveOutcome::Saved { receipt }.table_rename_reopen_facts().is_ok_and(|facts| facts.replacement))
+    );
     report.outcome = SaveOutcome::Released {
         current_outcome: Some(SaveKnownOutcome::Committed),
         last_completed: None,
