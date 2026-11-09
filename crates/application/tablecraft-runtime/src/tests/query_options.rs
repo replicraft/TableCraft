@@ -292,8 +292,11 @@ fn comparison_allowance_is_independent_and_inspection_does_not_consume_it() {
                 options: tiny,
             }
         ),
-        Err(Error::Query(QueryError::Evaluation(
-            tablecraft_expressions::EvalError::Limit(_)
+        Err(Error::Query(QueryError::Limit(
+            tablecraft_core::limits::LimitError {
+                resource: Resource::Bytes,
+                remaining: 1,
+            }
         )))
     ));
 
