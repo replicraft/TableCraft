@@ -5,6 +5,7 @@
 //! and default-mode choices persist across ordinary type changes without parsing
 //! or conversion. Native consumers still validate all syntax and compatibility.
 mod field_addition;
+pub mod field_rename;
 mod model;
 pub use field_addition::{FieldAdditionDeclaration, FieldAdditionKind};
 mod names;
