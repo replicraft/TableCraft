@@ -1,0 +1,29 @@
+# Current Database options: observed settings and explicit OFF workflow.
+
+database-options-current-database = 当前数据库
+database-options-no-database = 未打开数据库。
+database-options-name-autocorrect = 名称自动更正
+database-options-state-unknown = 尚未检查存储的设置。
+database-options-state-missing = 未存储数据库设置记录。
+database-options-state-absent = 未存储跟踪或执行名称自动更正的设置。
+database-options-state-off = 已明确关闭跟踪和执行名称自动更正。
+database-options-state-other = 存储的值与支持的关闭设置不匹配。
+database-options-help = 缺少设置并不意味着名称自动更正已关闭。
+database-options-disable = 关闭跟踪和执行名称自动更正
+database-options-inspecting = 正在检查存储的设置…
+database-options-reviewing = 正在审查设置更改…
+database-options-reopening = 正在重新打开并验证已保存的数据库…
+database-options-change-unavailable = 当前数据库或工作区无法使用此设置更改。
+database-options-retry-inspection = 重试设置检查
+database-options-inspection-interrupted = 设置检查已中断。请重试检查此数据库。
+database-options-return-settings = 返回设置
+database-options-saved-warning = 设置已保存，但无法验证数据库。请重新打开数据库后再进行其他更改。
+database-options-enable-unavailable = 启用名称自动更正
+database-options-log-unavailable = 记录名称自动更正的更改
+database-options-close-title = 关闭打开的对象？
+database-options-close-message = 继续将保存这些设置，并在验证后关闭列出的表和已保存查询。取消不会进行任何更改。
+database-options-close-count = 打开的对象：{ $count }
+database-options-close-continue = 继续
+database-options-close-cancel = 取消
+database-options-category-general = 常规
+database-options-read-interrupted = 重新打开验证已取消。设置可能已经保存；请重新打开数据库后再进行其他更改。

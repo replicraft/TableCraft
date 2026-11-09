@@ -1,0 +1,29 @@
+# Current Database options: observed settings and explicit OFF workflow.
+
+database-options-current-database = Aktuelle Datenbank
+database-options-no-database = Es ist keine Datenbank geöffnet.
+database-options-name-autocorrect = Objektnamen-Autokorrektur
+database-options-state-unknown = Die gespeicherten Einstellungen wurden noch nicht geprüft.
+database-options-state-missing = Es ist kein Datensatz mit Datenbankeinstellungen gespeichert.
+database-options-state-absent = Weder das Verfolgen noch das Durchführen der Objektnamen-Autokorrektur ist gespeichert.
+database-options-state-off = Das Verfolgen und Durchführen der Objektnamen-Autokorrektur sind ausdrücklich deaktiviert.
+database-options-state-other = Die gespeicherten Werte entsprechen nicht den qualifizierten AUS-Einstellungen.
+database-options-help = Fehlende Einstellungen bedeuten nicht, dass die Objektnamen-Autokorrektur deaktiviert ist.
+database-options-disable = Verfolgen und Durchführen der Objektnamen-Autokorrektur deaktivieren
+database-options-inspecting = Gespeicherte Einstellungen werden geprüft…
+database-options-reviewing = Die Einstellungsänderung wird geprüft…
+database-options-reopening = Gespeicherte Datenbank wird erneut geöffnet und geprüft…
+database-options-change-unavailable = Diese Einstellungsänderung ist für die aktuelle Datenbank oder den Arbeitsbereich nicht verfügbar.
+database-options-retry-inspection = Einstellungen erneut prüfen
+database-options-inspection-interrupted = Prüfung der Einstellungen unterbrochen. Prüfen Sie diese Datenbank erneut.
+database-options-return-settings = Zurück zu den Einstellungen
+database-options-saved-warning = Die Einstellungen wurden gespeichert, die Datenbank konnte jedoch nicht geprüft werden. Öffnen Sie die Datenbank erneut, bevor Sie weitere Änderungen vornehmen.
+database-options-enable-unavailable = Objektnamen-Autokorrektur aktivieren
+database-options-log-unavailable = Änderungen der Objektnamen-Autokorrektur protokollieren
+database-options-close-title = Geöffnete Objekte schließen?
+database-options-close-message = Fahren Sie fort, um diese Einstellungen zu speichern und die aufgeführten Tabellen und gespeicherten Abfragen nach der Prüfung zu schließen. Abbrechen nimmt keine Änderungen vor.
+database-options-close-count = Geöffnete Objekte: { $count }
+database-options-close-continue = Weiter
+database-options-close-cancel = Abbrechen
+database-options-category-general = Allgemein
+database-options-read-interrupted = Die Prüfung beim erneuten Öffnen wurde abgebrochen. Die Einstellungen sind möglicherweise bereits gespeichert. Öffnen Sie die Datenbank erneut, bevor Sie weitere Änderungen vornehmen.

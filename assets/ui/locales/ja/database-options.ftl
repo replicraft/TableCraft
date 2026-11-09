@@ -1,0 +1,29 @@
+# Current Database options: observed settings and explicit OFF workflow.
+
+database-options-current-database = 現在のデータベース
+database-options-no-database = データベースが開かれていません。
+database-options-name-autocorrect = 名前の自動修正
+database-options-state-unknown = 保存されている設定はまだ確認されていません。
+database-options-state-missing = データベース設定のレコードが保存されていません。
+database-options-state-absent = 名前の自動修正の追跡と実行の設定はどちらも保存されていません。
+database-options-state-off = 名前の自動修正の追跡と実行は明示的にオフになっています。
+database-options-state-other = 保存されている値は、対応しているオフ設定と一致しません。
+database-options-help = 設定がないことは、名前の自動修正がオフであることを意味しません。
+database-options-disable = 名前の自動修正の追跡と実行を無効にする
+database-options-inspecting = 保存されている設定を確認中…
+database-options-reviewing = 設定の変更を確認中…
+database-options-reopening = 保存したデータベースを開き直して検証中…
+database-options-change-unavailable = 現在のデータベースまたはワークスペースでは、この設定変更を利用できません。
+database-options-retry-inspection = 設定の確認を再試行
+database-options-inspection-interrupted = 設定の確認が中断されました。このデータベースの確認を再試行してください。
+database-options-return-settings = 設定に戻る
+database-options-saved-warning = 設定は保存されましたが、データベースを検証できませんでした。さらに変更する前にデータベースを開き直してください。
+database-options-enable-unavailable = 名前の自動修正を有効にする
+database-options-log-unavailable = 名前の自動修正の変更を記録する
+database-options-close-title = 開いているオブジェクトを閉じますか？
+database-options-close-message = 続行すると、設定を保存し、検証後に一覧のテーブルと保存済みクエリを閉じます。キャンセルした場合は変更しません。
+database-options-close-count = 開いているオブジェクト: { $count }
+database-options-close-continue = 続行
+database-options-close-cancel = キャンセル
+database-options-category-general = 全般
+database-options-read-interrupted = 開き直しの検証がキャンセルされました。設定は既に保存されている可能性があります。さらに変更する前にデータベースを開き直してください。

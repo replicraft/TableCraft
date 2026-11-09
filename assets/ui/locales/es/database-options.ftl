@@ -1,0 +1,29 @@
+# Current Database options: observed settings and explicit OFF workflow.
+
+database-options-current-database = Base de datos actual
+database-options-no-database = No hay ninguna base de datos abierta.
+database-options-name-autocorrect = Autocorrección de nombres
+database-options-state-unknown = Aún no se han comprobado las opciones almacenadas.
+database-options-state-missing = No hay ningún registro de opciones de base de datos almacenado.
+database-options-state-absent = No se almacena ninguna opción de seguimiento ni de aplicación de Autocorrección de nombres.
+database-options-state-off = El seguimiento y la aplicación de Autocorrección de nombres están desactivados explícitamente.
+database-options-state-other = Los valores almacenados no coinciden con las opciones de desactivación admitidas.
+database-options-help = La ausencia de opciones no implica que Autocorrección de nombres esté desactivada.
+database-options-disable = Desactivar el seguimiento y la aplicación de Autocorrección de nombres
+database-options-inspecting = Comprobando las opciones almacenadas…
+database-options-reviewing = Revisando el cambio de opciones…
+database-options-reopening = Reabriendo y verificando la base de datos guardada…
+database-options-change-unavailable = Este cambio de opciones no está disponible para la base de datos o el espacio de trabajo actual.
+database-options-retry-inspection = Reintentar la comprobación de opciones
+database-options-inspection-interrupted = Se interrumpió la comprobación de opciones. Vuelva a comprobar esta base de datos.
+database-options-return-settings = Volver a las opciones
+database-options-saved-warning = Se guardaron las opciones, pero no se pudo verificar la base de datos. Vuelva a abrirla antes de realizar más cambios.
+database-options-enable-unavailable = Activar Autocorrección de nombres
+database-options-log-unavailable = Registrar los cambios de Autocorrección de nombres
+database-options-close-title = ¿Cerrar los objetos abiertos?
+database-options-close-message = Continúe para guardar estas opciones y cerrar las tablas y consultas guardadas que se muestran después de la verificación. Cancelar no realiza cambios.
+database-options-close-count = Objetos abiertos: { $count }
+database-options-close-continue = Continuar
+database-options-close-cancel = Cancelar
+database-options-category-general = General
+database-options-read-interrupted = Se canceló la verificación al reabrir. Es posible que las opciones ya estén guardadas; vuelva a abrir la base de datos antes de realizar más cambios.

@@ -1,0 +1,29 @@
+# Current Database options: observed settings and explicit OFF workflow.
+
+database-options-current-database = Banco de dados atual
+database-options-no-database = Nenhum banco de dados está aberto.
+database-options-name-autocorrect = Correção Automática de Nomes
+database-options-state-unknown = As configurações armazenadas ainda não foram verificadas.
+database-options-state-missing = Nenhum registro de configurações do banco de dados está armazenado.
+database-options-state-absent = As configurações de rastreamento e execução da Correção Automática de Nomes não estão armazenadas.
+database-options-state-off = O rastreamento e a execução da Correção Automática de Nomes estão explicitamente desativados.
+database-options-state-other = Os valores armazenados não correspondem às configurações de desativação compatíveis.
+database-options-help = A ausência de configurações não significa que a Correção Automática de Nomes esteja desativada.
+database-options-disable = Desativar o rastreamento e a execução da Correção Automática de Nomes
+database-options-inspecting = Verificando as configurações armazenadas…
+database-options-reviewing = Revisando a alteração das configurações…
+database-options-reopening = Reabrindo e verificando o banco de dados salvo…
+database-options-change-unavailable = Esta alteração não está disponível para o banco de dados ou o espaço de trabalho atual.
+database-options-retry-inspection = Tentar verificar as configurações novamente
+database-options-inspection-interrupted = A verificação foi interrompida. Tente verificar este banco de dados novamente.
+database-options-return-settings = Voltar às configurações
+database-options-saved-warning = As configurações foram salvas, mas não foi possível verificar o banco de dados. Reabra-o antes de fazer outras alterações.
+database-options-enable-unavailable = Ativar a Correção Automática de Nomes
+database-options-log-unavailable = Registrar alterações da Correção Automática de Nomes
+database-options-close-title = Fechar os objetos abertos?
+database-options-close-message = Continue para salvar estas configurações e fechar as tabelas e consultas salvas listadas após a verificação. Cancelar não faz alterações.
+database-options-close-count = Objetos abertos: { $count }
+database-options-close-continue = Continuar
+database-options-close-cancel = Cancelar
+database-options-category-general = Geral
+database-options-read-interrupted = A verificação ao reabrir foi cancelada. As configurações já podem estar salvas; reabra o banco de dados antes de fazer outras alterações.

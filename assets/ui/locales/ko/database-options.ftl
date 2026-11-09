@@ -1,0 +1,29 @@
+# Current Database options: observed settings and explicit OFF workflow.
+
+database-options-current-database = 현재 데이터베이스
+database-options-no-database = 열려 있는 데이터베이스가 없습니다.
+database-options-name-autocorrect = 이름 자동 고침
+database-options-state-unknown = 저장된 설정을 아직 확인하지 않았습니다.
+database-options-state-missing = 저장된 데이터베이스 설정 레코드가 없습니다.
+database-options-state-absent = 이름 자동 고침 추적 및 실행 설정이 모두 저장되어 있지 않습니다.
+database-options-state-off = 이름 자동 고침 추적 및 실행이 명시적으로 꺼져 있습니다.
+database-options-state-other = 저장된 값이 지원되는 끄기 설정과 일치하지 않습니다.
+database-options-help = 설정이 없다고 해서 이름 자동 고침이 꺼져 있는 것은 아닙니다.
+database-options-disable = 이름 자동 고침 추적 및 실행 끄기
+database-options-inspecting = 저장된 설정 확인 중…
+database-options-reviewing = 설정 변경 검토 중…
+database-options-reopening = 저장된 데이터베이스를 다시 열고 검증하는 중…
+database-options-change-unavailable = 현재 데이터베이스 또는 작업 영역에서는 이 설정을 변경할 수 없습니다.
+database-options-retry-inspection = 설정 확인 다시 시도
+database-options-inspection-interrupted = 설정 확인이 중단되었습니다. 이 데이터베이스의 확인을 다시 시도하세요.
+database-options-return-settings = 설정으로 돌아가기
+database-options-saved-warning = 설정은 저장되었지만 데이터베이스를 검증하지 못했습니다. 추가로 변경하기 전에 데이터베이스를 다시 여세요.
+database-options-enable-unavailable = 이름 자동 고침 켜기
+database-options-log-unavailable = 이름 자동 고침 변경 내용 기록
+database-options-close-title = 열린 개체를 닫을까요?
+database-options-close-message = 계속하면 설정을 저장하고 검증 후 나열된 테이블과 저장된 쿼리를 닫습니다. 취소하면 변경하지 않습니다.
+database-options-close-count = 열린 개체: { $count }
+database-options-close-continue = 계속
+database-options-close-cancel = 취소
+database-options-category-general = 일반
+database-options-read-interrupted = 다시 열기 검증이 취소되었습니다. 설정이 이미 저장되었을 수 있습니다. 추가로 변경하기 전에 데이터베이스를 다시 여세요.

@@ -1,0 +1,29 @@
+# Current Database options: observed settings and explicit OFF workflow.
+
+database-options-current-database = Current Database
+database-options-no-database = No database is open.
+database-options-name-autocorrect = Name AutoCorrect
+database-options-state-unknown = Stored settings have not been checked.
+database-options-state-missing = No database settings record is stored.
+database-options-state-absent = Neither Track nor Perform Name AutoCorrect is stored.
+database-options-state-off = Track and Perform Name AutoCorrect are explicitly off.
+database-options-state-other = Stored Name AutoCorrect values do not match the qualified OFF settings.
+database-options-help = Missing settings do not imply that Name AutoCorrect is off.
+database-options-disable = Disable Track and Perform Name AutoCorrect
+database-options-inspecting = Checking stored settings…
+database-options-reviewing = Reviewing the settings change…
+database-options-reopening = Reopening and verifying the saved database…
+database-options-change-unavailable = This settings change is not available for the current database or workspace.
+database-options-retry-inspection = Retry settings check
+database-options-inspection-interrupted = Settings check interrupted. Retry to check this database again.
+database-options-return-settings = Return to settings
+database-options-saved-warning = Settings were saved, but the database could not be verified. Reopen the database before making further changes.
+database-options-enable-unavailable = Enable Name AutoCorrect
+database-options-log-unavailable = Log Name AutoCorrect changes
+database-options-close-title = Close open objects?
+database-options-close-message = Continue to save these settings and close the listed tables and saved queries after verification. Cancel makes no changes.
+database-options-close-count = Open objects: { $count }
+database-options-close-continue = Continue
+database-options-close-cancel = Cancel
+database-options-category-general = General
+database-options-read-interrupted = Reopen verification was cancelled. Settings may already be saved; reopen the database before making further changes.

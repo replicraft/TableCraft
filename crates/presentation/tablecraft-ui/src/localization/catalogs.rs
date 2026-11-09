@@ -42,11 +42,12 @@ macro_rules! sections {
             section!($locale, "totals"),
             section!($locale, "collections"),
             section!($locale, "settings"),
+            section!($locale, "database-options"),
         ]
     };
 }
 
-pub(super) fn sources(locale: Locale) -> [(&'static str, &'static str); 24] {
+pub(super) fn sources(locale: Locale) -> [(&'static str, &'static str); 25] {
     match locale {
         Locale::EnUs => sections!("en-US"),
         Locale::Es => sections!("es"),

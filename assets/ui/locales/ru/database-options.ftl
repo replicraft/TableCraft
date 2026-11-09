@@ -1,0 +1,29 @@
+# Current Database options: observed settings and explicit OFF workflow.
+
+database-options-current-database = Текущая база данных
+database-options-no-database = База данных не открыта.
+database-options-name-autocorrect = Автозамена имён
+database-options-state-unknown = Сохранённые параметры ещё не проверены.
+database-options-state-missing = Запись параметров базы данных не сохранена.
+database-options-state-absent = Параметры отслеживания и выполнения автозамены имён не сохранены.
+database-options-state-off = Отслеживание и выполнение автозамены имён явно отключены.
+database-options-state-other = Сохранённые значения не соответствуют поддерживаемым параметрам отключения.
+database-options-help = Отсутствие параметров не означает, что автозамена имён отключена.
+database-options-disable = Отключить отслеживание и выполнение автозамены имён
+database-options-inspecting = Проверка сохранённых параметров…
+database-options-reviewing = Проверка изменения параметров…
+database-options-reopening = Повторное открытие и проверка сохранённой базы данных…
+database-options-change-unavailable = Это изменение параметров недоступно для текущей базы данных или рабочей области.
+database-options-retry-inspection = Повторить проверку параметров
+database-options-inspection-interrupted = Проверка параметров прервана. Повторите проверку этой базы данных.
+database-options-return-settings = Вернуться к параметрам
+database-options-saved-warning = Параметры сохранены, но проверить базу данных не удалось. Откройте её заново перед внесением дальнейших изменений.
+database-options-enable-unavailable = Включить автозамену имён
+database-options-log-unavailable = Записывать изменения автозамены имён в журнал
+database-options-close-title = Закрыть открытые объекты?
+database-options-close-message = Продолжите, чтобы сохранить параметры и после проверки закрыть перечисленные таблицы и сохранённые запросы. Отмена не вносит изменений.
+database-options-close-count = Открытых объектов: { $count }
+database-options-close-continue = Продолжить
+database-options-close-cancel = Отмена
+database-options-category-general = Общие
+database-options-read-interrupted = Проверка при повторном открытии отменена. Параметры уже могут быть сохранены; откройте базу данных заново перед внесением дальнейших изменений.
