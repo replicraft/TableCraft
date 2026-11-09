@@ -191,3 +191,5 @@ fn encode_columns(columns: &'static [Column]) -> Source {
 
 #[path = "canonical_initial_table_creation/inserts.rs"]
 pub mod inserts;
+
+pub mod deletes;
