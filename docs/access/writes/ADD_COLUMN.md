@@ -115,6 +115,58 @@ creation-configuration lint pass. The earlier 336-case candidate record above
 retains its historical scope. Neither batch establishes Microsoft Access,
 Windows or older-format Save compatibility.
 
+## Number and Short Text after explicit OFF
+
+A separate `prepare_created_add_field_after_off_candidate` consumes the retained
+`FieldHistoryOffSource`: the complete nine-role explicit-OFF source must first
+be reconstructed through its real prior ADD history and OFF insertion. Merely
+observing two zero options or dropping the database role from a view supplies no
+authority. This profile is currently an empty, unencoded, fitting eleven-page
+ACE16 source with one generated-primary user table. Requested and compared table
+and field identifiers must be ASCII; native Unicode collision semantics remain
+unqualified. Existing TCAC1–5 comparison/source languages are unchanged.
+
+The new target is either NumberLongZero or TEXT(255) with compression enabled,
+Required(false), AllowZeroLength(true) and no default. It reuses the actual typed
+native declaration, property encoder and selected-origin placement owners. The
+user's descriptor selects its live body independently of the database ROW. The
+new user body appends after that database ROW without counting the DB body as an
+ADD event. Every retired row, the unchanged DB record/body/reference, maps/index
+bytes and all complement bytes remain protected. No allocation/rollover or later
+event source admission is added by this profile.
+
+`plan_recoverable_created_field_addition_after_off` seals that actual candidate as
+`RecoverableFieldAdditionAfterOffPlan` and `NativeFieldAdditionAfterOffIntent`.
+Its distinct TCAC0006/profile6 frame binds the complete original length/digest,
+exact table/new-field spelling and closed Number or Text255/compressed target.
+Width/compression combinations outside those tuples refuse before owned names.
+No arbitrary property/ROW/AFTER appears in the request. Fresh requalification
+rebuilds the complete owned proof and candidate, then compares both full images
+under separate native/proof pools. Recovery reconstructs from the original
+request under one cumulative pool, retaining the actual CheckedV2 session.
+These fitted candidates are equal length: truncated or grown targets receive no
+new repair permission. Semantic version6 is distinct from physical journal V2.
+
+The normal `field_addition_source_purpose` uses the database-properties owner's
+actual native containment role, then chooses exactly one complete old or OFF
+proof. Old purpose/check APIs and retained requests are unchanged. OFF source
+inspection measures the genuine encoder's non-name bytes against the actual
+allocator capacity, yielding per-kind ASCII name-unit limits. A shorter valid
+name may remain available when 64 units cannot fit. Named review still checks
+its exact complete proposal; no guessed default field name or AFTER is built by
+inspection. The generic runtime/adapter/GUI field workflow retains its existing
+consuming review, schema-only receipt and full-image witness publication.
+
+The [four SDK observations](../../testing/field_add_after_off/README.md) and
+independent raw fixtures anchor complete bytes. The
+[service record](../../testing/results/field-schema-services-2026-11-09.json)
+reports two separate passing batches: 1,290 recovery/adapter/presentation checks
+and 693 source/runtime/host checks. Their repeated coverage is not summed.
+Four actual headless widget cases save Number/Text after the two OFF histories,
+checking complete reopened bytes, tab identity and no retained journal. Subsequent
+ADD still refuses through fresh source inspection. Microsoft Access/Windows and
+older-format native Save remain unverified.
+
 ## Actual source and preservation
 
 `NativeImage::prepare_add_int32_column_candidate` requires a complete standard

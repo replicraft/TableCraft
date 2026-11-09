@@ -1607,6 +1607,35 @@ Native observations and current platform limits are recorded in the
 [desktop guide](../ui/DESKTOP.md). Payload-free diagnostics remain governed by
 [the tracing contract](../development/TRACING.md).
 
+## Reviewed saved-field rename
+
+`InspectFieldRenameSource` binds the document revision, true table/field names
+and actual native column number. It observes the complete qualified source
+without a proposed replacement, AFTER image or save lease. Direct native table
+headers now carry their actual optional native number; SQL aliases and synthetic
+headings do not acquire one from their displayed position or caption.
+
+`ReviewFieldRename` issues exact presentation facts and a separate consuming
+`ReviewedFieldRename` from the sealed native plan. Its initial profile is the
+empty ACE16, explicit-OFF, same-width ASCII Number/Short Text scope in
+[the native contract](../access/writes/FIELD_RENAME.md). No displayed boolean or
+review DTO constructs save authority. `SaveWorker::start_field_rename` uses the
+same retained offline worker and separate native/proof/persistence pools as the
+other schema operations. Failed saves retain their actual resource owners.
+
+Only ColumnRenamed-only receipts qualify the corresponding outcome facts;
+row, query or options effects refuse. `OpenFieldRenamed` requires the accepted
+capability's complete expected-image witness before a fresh document can publish.
+Acknowledged persistence alone does not prove that the reopened file still
+matches. An unchanged request still performs native review, then consumes to a
+read-only witness through `into_unchanged_reopen`; it receives no save ID or
+journal and must not be reported as a changed save.
+
+The [coordinated service record](../testing/results/field-schema-services-2026-11-09.json)
+includes actual runtime save/witness, unchanged, stale and retained-failure cases.
+Shared header interaction and normal desktop publication remain work.
+No Microsoft Access or Windows rename-save comparison is claimed.
+
 ## Reviewed existing-table field additions
 
 `InspectFieldAdditionAvailability` returns separate Number and Short Text source
@@ -1652,6 +1681,19 @@ profile. The typed route reconstructs the canonical inert prefix and every
 closed historical field-addition tuple before complete source comparison. Old
 Number service requests and recovery languages remain separate supported
 consumers; the unified gallery does not narrow their existing source admission.
+
+On sources with the actual native database containment role, the separate normal
+selector chooses the explicit-OFF purpose before any proof. The owned settled
+source must qualify; no failed TCAC3–5 plan retries TCAC6. This fitted eleven-page
+profile offers Number or TEXT(255)/compression enabled, and requires an ASCII
+comparison namespace. Its readonly source inspection measures genuine encoder and
+allocator capacity: the booleans mean some valid name can fit, while exact named
+review remains authoritative. Low-level old Number services and TCAC1–5 requests
+retain their original source languages. The same generic service consumes the
+sealed TCAC6 plan, so there is no extra host-specific save endpoint or automatic
+settings change. The [separate service record](../testing/results/field-schema-services-2026-11-09.json)
+covers actual runtime and headless GUI saves, complete reopened images and the
+fresh later-event refusal; it does not inherit the historical passing count below.
 
 One private plan composition and renamed `StagedFieldAddition` owner reuse fresh
 original-image requalification, the exclusive offline session and checked V2
@@ -1792,9 +1834,11 @@ passes 991 unique selected checks with five existing ignored cases, including al
 minimal ACE create+journal lint results. These checks exercise five independent
 field-history sources and actual Number/mixed-history GUI saves, with complete
 AFTER and scratch-text preservation. Prior UI suite/focused checks and renders
-are not repeated or counted in that total. Later ADD or rename on this new OFF
-source, repeated settings changes and broader storage/older native profiles remain
-unqualified; the existing creator-OFF→rename source stays separate.
+are not repeated or counted in that total. The later
+[ADD-after-OFF service](../access/writes/ADD_COLUMN.md#number-and-short-text-after-explicit-off)
+has its own source and verification record. Repeated settings changes and broader
+storage/older native profiles remain work; the existing creator-OFF→table-rename
+source stays separate.
 
 The [coordinated Options record](../testing/results/database-options-workflows-2026-11-08.json)
 includes all 253 passing runtime cases and one existing ignored case. The broader

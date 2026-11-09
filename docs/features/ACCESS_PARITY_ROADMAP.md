@@ -40,7 +40,7 @@ All cells describe current implementation, not the requested final state.
 | Rename a saved table | Missing | Missing | Missing | Missing | Restricted single-table, Name AutoCorrect OFF profile; retained Int32 index saves/recovery and headless workflow checked |
 | Drop a saved table | Missing | Missing | Missing | Missing | Missing |
 | Add a saved column | Missing | Missing | Missing | Missing | Bounded empty-table Number/Short Text ADD, original-intent recovery and normal GUI save/reopen |
-| Rename/alter/drop a saved column | Missing | Missing | Missing | Missing | Missing |
+| Rename/alter/drop a saved column | Missing | Missing | Missing | Missing | Restricted same-width rename service; GUI rename, alteration and deletion unfinished |
 | Update rows | Restricted fixed non-NULL Int32 copy route | No normal writer admission | No normal writer admission | No independently qualified normal writer | Many qualified carrier/index/allocation profiles |
 | Insert/delete rows | No equivalent normal routes established | Missing normal routes | Missing normal routes | Missing normal routes | Qualified normal routes; restrictions remain |
 | Recoverable writes | Existing Jet 4 update integration | No CRUD-specific qualification | No CRUD-specific qualification | No CRUD-specific qualification | Original-intent journal/recovery for admitted actions |
@@ -90,8 +90,11 @@ no old decoder/source failure is retried. The
 [composition record](../testing/results/field-history-options-workflows-2026-11-09.json)
 passes 991 unique selected checks. This remains an 11-page, existing-page-10 fitted
 profile: the observed N12 free space qualifies and N13 does not. Subsequent
-ADD/rename on that field-history OFF source remains unqualified, while the original
-creator-OFF→rename route retains its separate boundary. Ordinary populated or
+ADD on that field-history OFF source now has a separate fitted TCAC6 service and
+normal headless GUI save/reopen checks. Same-width field rename has a distinct
+native/adapter/runtime service; its GUI integration remains unfinished. See the
+[service record](../testing/results/field-schema-services-2026-11-09.json).
+The original creator-OFF→table-rename route retains its separate boundary. Ordinary populated or
 broader table/column rename and other lifecycle operations remain work. Neither
 parser nodes nor a “created by TableCraft” flag confer mutation authority.
 

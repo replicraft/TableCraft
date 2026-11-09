@@ -1,5 +1,27 @@
 # Implementation status
 
+## Normal ADD after OFF and reviewed field rename — 9 November 2026
+
+The existing Number/Short Text gallery now saves after qualified explicit-OFF
+field histories through its normal consuming service, save worker and checked
+reopen. Actual native role metadata selects one source proof; no failed old
+plan retries the new intent. Source inspection measures fitting name capacity
+without inventing a replacement field. Four headless widget cases preserve exact
+independent AFTER bytes, tab identity and resource cleanup. Subsequent ADD still
+refuses until its later history has a separate source proof.
+
+Field rename now has a consuming runtime review/save service and complete-image
+reopen witness. Actual native field numbers reach shared table headers separately
+from captions and display positions. Unchanged review creates no save actor or
+journal. The header interaction and normal desktop rename publication remain
+unfinished.
+
+The [service record](testing/results/field-schema-services-2026-11-09.json)
+reports separate passing batches of 1,290 and 693 checks; repeated coverage is
+not summed. Strict affected-library, desktop and preview lint passes. These
+results remain headless implementation evidence, with no new native Access,
+Windows or visual-parity claim.
+
 ## Native saved-field candidates — 9 November 2026
 
 The native engine now constructs same-width ASCII Number/Short Text field
@@ -14,8 +36,9 @@ while appending the new user property body after it.
 The [frozen candidate batch](testing/results/saved-field-candidates-2026-11-09.json)
 passes 2,188 tests across five complete affected suites, with 265 existing
 ignored cases excluded. Later adapter and TCAC6 integration and small follow-up
-corrections remain outside that batch. Persisted GUI field rename and normal
-ADD-after-OFF activation are still unfinished; this is not general ALTER or
+corrections remain outside that batch. That checkpoint did not activate GUI field
+rename or normal ADD-after-OFF; the later service record above covers subsequent
+integration. This is not general ALTER or
 native Windows/Access qualification. See the [field-rename contract](access/writes/FIELD_RENAME.md).
 
 ## Settings after saved field additions — 9 November 2026

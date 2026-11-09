@@ -2,6 +2,7 @@
 
 - [Saved-field rename: coordinated raw names, TDEF-only controls and inert SDK reads](saved_field_rename/README.md)
 
+- [Normal ADD-after-OFF and reviewed field-rename services](results/field-schema-services-2026-11-09.json)
 - [Saved-field candidates, parser spans and rename recovery](results/saved-field-candidates-2026-11-09.json)
 - [Settled field-history OFF source proof](results/settled-field-history-source-proof-2026-11-09.json)
 

@@ -1,8 +1,9 @@
 # Bounded native saved-field rename
 
 A separate native candidate constructs equal-width field renames on qualified
-empty ACE16 tables with explicit Name AutoCorrect OFF. It does not provide a
-connected runtime save or GUI rename action. General persisted field CRUD,
+empty ACE16 tables with explicit Name AutoCorrect OFF. Consuming runtime saves
+and checked reopening are implemented; normal GUI rename interaction remains
+unfinished. General persisted field CRUD,
 other native versions and native Access save comparison remain unfinished.
 
 ## Complete settled source
@@ -68,7 +69,7 @@ normalizes retired names or infers the original ADD history from current names.
 
 ## Original-request and recovery checkpoint
 
-<!-- FIELD_RENAME_INTENT_STATUS: native verification passed; adapter verification pending -->
+<!-- FIELD_RENAME_INTENT_STATUS: native, adapter and consuming runtime verified -->
 
 The TCFR0001/profile1 implementation binds the exact original table/field,
 proposed spelling, stable native identity and full BEFORE length/digest. It
@@ -83,13 +84,14 @@ checked fixed-image V1 BEFORE, validates stable identity and checks the complete
 stored AFTER before granting the same retained journal session. Pending,
 committed, torn-marker and settled states retain their existing V1 semantics.
 Other action families/versions are never tried after a refusal. The retained
-Access adapter now has a separate staging and recovery route, with schema-only
-receipts; its new file-based tests remain pending. Runtime consuming saves and
-GUI publication are not activated by the native checkpoint.
+Access adapter has a separate staging and recovery route, with schema-only
+receipts. Its file-based checks and consuming runtime save/witness cases pass in
+the [service record](../../testing/results/field-schema-services-2026-11-09.json).
+Normal GUI interaction and publication remain the next integration boundary.
 
 ## Evidence and verification status
 
-<!-- FIELD_RENAME_GATE_STATUS: native candidate/parser/namespace/intent verified; integration pending -->
+<!-- FIELD_RENAME_GATE_STATUS: native/adapter/runtime verified; GUI pending -->
 
 The [coordinated candidate batch](../../testing/results/saved-field-candidates-2026-11-09.json)
 passes 2,188 tests across the complete engine, Access adapter, runtime, desktop
@@ -98,7 +100,8 @@ new native rename candidates, both parser visitors, ASCII sibling refusal,
 TCFR original-intent/recovery and read-only runtime source inspection. The UI
 and builders compile in the same seven-package feature graph; their suites were
 not repeated. Later adapter/TCAC6 integration, scan-bound and iterator changes
-are explicitly outside that frozen batch and await the next gate.
+are explicitly outside that frozen batch; the separate service record above
+reports their later checks without summing repeated coverage.
 
 The [independent raw and reader record](../../testing/results/saved-field-rename-raw-sdk-read-2026-11-09.json)
 contains four coordinated TDEF-plus-live-group hypotheses and four TDEF-only

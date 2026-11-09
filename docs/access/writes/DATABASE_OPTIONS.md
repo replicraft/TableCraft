@@ -354,5 +354,9 @@ ADD. Later field events require a distinct chronological source language.
 Four independent [ADD-after-OFF SDK observations](../../testing/field_add_after_off/README.md)
 now establish the next event order: the database body stays at its original ROW,
 and the next user body appends after it. All old rows and directory entries stay
-exact. These engineering observations do not qualify a native ADD-after-OFF writer
-or widen this last-database-append checker.
+exact. These SDK observations alone do not qualify a native writer. The separate
+[ADD-after-OFF owner](ADD_COLUMN.md#number-and-short-text-after-explicit-off)
+reuses this complete settled source proof while preserving the last-database-append
+checker's source language; later events are not reinterpreted as another OFF
+source. Its coordinated native/runtime and headless GUI checks are recorded in
+that contract; the independent SDK observations remain separate evidence.

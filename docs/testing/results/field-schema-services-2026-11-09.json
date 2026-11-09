@@ -1,0 +1,193 @@
+{
+  "date": "2026-11-09",
+  "scope": "Normal fitted ADD after explicit OFF and consuming runtime field rename; GUI field rename remains unfinished",
+  "batches": [
+    {
+      "source_commit": "d726ea90c1777bf2ea9b003064996ce0d80620ab",
+      "scope": "TCAC6, both adapter routes and native field-number presentation; whole runtime/UI/desktop suites",
+      "passed": 1290,
+      "ignored": 2,
+      "cases": [
+        {
+          "package": "tablecraft_ace",
+          "filter": "creation::add_column::created::field_addition::after_off::",
+          "passed": 7,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "package": "tablecraft_ace",
+          "filter": "table::mutation::rename_field::",
+          "passed": 6,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "package": "tablecraft_ace",
+          "filter": "transaction::intent::field_rename::",
+          "passed": 8,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "package": "tablecraft_ace",
+          "filter": "transaction::intent::field_addition_after_off::",
+          "passed": 9,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "package": "tablecraft_runtime",
+          "filter": "whole suite",
+          "passed": 265,
+          "failed": 0,
+          "ignored": 1
+        },
+        {
+          "package": "tablecraft_access",
+          "filter": "whole suite",
+          "passed": 198,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "package": "tablecraft-desktop",
+          "filter": "whole suite",
+          "passed": 179,
+          "failed": 0,
+          "ignored": 1
+        },
+        {
+          "package": "tablecraft_ui",
+          "filter": "whole suite",
+          "passed": 618,
+          "failed": 0,
+          "ignored": 0
+        }
+      ],
+      "artifact": {
+        "path": ".cache/schema-recovery-tests-20261109.json",
+        "sha256": "6d8446350ab04f60ad00220a9435d3c9c8907446f1b17e6640237e551bb7e28a"
+      }
+    },
+    {
+      "source_commit": "9c6fd48e4f0519fa9b5e9aa2eb4e338e451d6781",
+      "scope": "Native source/capacity, consuming rename runtime service, same-width source proofs, exact raw fixture and normal ADD-after-OFF GUI",
+      "passed": 693,
+      "ignored": 7,
+      "cases": [
+        {
+          "package": "tablecraft_ace",
+          "filter": "properties::",
+          "passed": 14,
+          "failed": 0,
+          "ignored": 4
+        },
+        {
+          "package": "tablecraft_ace",
+          "filter": "transaction::intent::field_rename::",
+          "passed": 8,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "package": "tablecraft_ace",
+          "filter": "creation::",
+          "passed": 187,
+          "failed": 0,
+          "ignored": 1
+        },
+        {
+          "package": "tablecraft_access",
+          "filter": "editing::offline::field_rename::",
+          "passed": 6,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "package": "tablecraft_testkit",
+          "filter": "whole suite",
+          "passed": 20,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "package": "tablecraft_runtime",
+          "filter": "whole suite",
+          "passed": 278,
+          "failed": 0,
+          "ignored": 1
+        },
+        {
+          "package": "tablecraft-desktop",
+          "filter": "whole suite",
+          "passed": 180,
+          "failed": 0,
+          "ignored": 1
+        }
+      ],
+      "artifact": {
+        "path": ".cache/schema-acceptance-tests-20261109.json",
+        "sha256": "9eaf61afbc9d4a91056444f9f67a1099141df37f7fb4b7e74bdc48cd920b5064"
+      }
+    }
+  ],
+  "counting": "Batches are reported independently; repeated tests across batches are not summed as unique coverage.",
+  "outcomes": [
+    "Four actual headless ADD widget cases (two source histories times Number/Text) save and reopen exact independent images through normal capabilities.",
+    "ADD publication preserves the persisted tab identity, changes document revision, exposes the new field and leaves no retained save/journal/dialog owner.",
+    "The actual fresh later-event inspection still disables subsequent ADD; the test does not substitute a host capability flag.",
+    "Native source inspection derives per-kind fitting name capacity from actual encoder/allocator geometry without an AFTER; a 59-unit name fits where 60 does not.",
+    "Field rename runtime tests exercise actual Number/Text saves, consuming unchanged review without a save actor/journal, stale target/document, checked AFTER failure/cancellation and retained-source-drift release.",
+    "Actual native field number17 is presented in display position1, including the empty filtered declaration path; query aliases have no native number."
+  ],
+  "historical_failures": [
+    "Recovery build omitted the actual number argument in empty filtered column publication; fixed at its retained native schema owner before the accepted build.",
+    "A new SortView test omitted the existing enabled flag; corrected before accepted execution.",
+    "Strict lint identified a large rename plan enum variant; the native candidate now has one explicitly charged owning Box.",
+    "Strict lint identified an explicit drop of non-Drop prepared property data. A lexical borrow scope preserves the same measured value; corrected strict lint passes after the frozen test build."
+  ],
+  "checks": {
+    "strict_all_feature_lint": "Passed for seven libraries, desktop binary and render_preview example.",
+    "format": "885 target roots passed.",
+    "dependency_boundaries": "20 workspace packages passed.",
+    "documentation_links": "8338 local documentation targets passed.",
+    "minimal_native_lint": "Strict read-only and ace16-create+journal library configurations passed."
+  },
+  "limits": [
+    "Empty, unencoded, fitting eleven-page ACE16 sources with explicit OFF and the qualified complete history; ASCII comparison namespace and closed Number/TEXT255-compressed targets.",
+    "Persisted rename remains same-width, non-primary/non-key and is not connected to normal GUI interaction yet.",
+    "Repeated ADD after this new event still refuses; independent later observations do not grant source or write authority.",
+    "No new native app windows, rendered visual comparison, Windows execution, native Access comparison or general ALTER qualification."
+  ],
+  "artifacts": [
+    {
+      "path": ".cache/schema-recovery-corrected-build-20261109.log",
+      "sha256": "936b6129fccccdddc1585901dc950bba4e0a6d15fffaf15adecc46ce01d8bd3c"
+    },
+    {
+      "path": ".cache/schema-acceptance-build-20261109.log",
+      "sha256": "287f341b921f91ab8dff4cda948f64c71f0f82844b89b6f6457955f5e538f98c"
+    },
+    {
+      "path": ".cache/schema-acceptance-corrected-lint-20261109.log",
+      "sha256": "7dd872d6456f2fd74f1d8661a33d643fbac3fdbc0b208830c31b2520f9635357"
+    },
+    {
+      "path": ".cache/schema-acceptance-format-20261109.log",
+      "sha256": "9daba0146ddc8d69c678f2312a65cc2187e738222e909c3ba6f2812dcb56b214"
+    },
+    {
+      "path": ".cache/schema-acceptance-readonly-lint-20261109.log",
+      "sha256": "0cc2794bebfa48f9d585f64a660611345b82679b5d77f504620a6ca0229be776"
+    },
+    {
+      "path": ".cache/schema-acceptance-create-journal-lint-20261109.log",
+      "sha256": "99956b76a21240d5349c0c7c42d0200d57b633f50d71f44a8497cb9d2bf36516"
+    },
+    {
+      "path": ".cache/schema-services-final-doc-links-20261109.log",
+      "sha256": "2a899f5c42f00bc522e2ef444bf54e0719d7e0fc208b0f4b928c2f1cf4ca675b"
+    }
+  ]
+}
