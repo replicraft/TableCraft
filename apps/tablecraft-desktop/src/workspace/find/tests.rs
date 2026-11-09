@@ -91,3 +91,97 @@ fn closing_pending_result_page_cancels_the_original_find_request() {
     assert_eq!(harness.state().state.data.as_ref().unwrap().offset, before);
     assert!(!harness.state().state.find_window_open());
 }
+
+#[test]
+fn borrowed_reply_comparison_matches_every_request_coordinate_and_option() {
+    let request = FindRequest {
+        target: FindTarget {
+            document_revision: 7,
+            table: "Items".into(),
+        },
+        scope: FindScope::Field("Name".into()),
+        pattern: "needle".into(),
+        matching: FindMatch::Whole,
+        direction: FindDirection::Down,
+        start: Some(FindPosition {
+            parent_ordinal: 13,
+            column: "Name".into(),
+            span: Some(FindSpan {
+                start_utf16: 2,
+                end_utf16: 8,
+            }),
+        }),
+        match_case: true,
+        formatted: true,
+        format_options: Default::default(),
+    };
+    let reply = runtime_request(request.clone());
+    assert!(runtime_request_matches(&request, &reply));
+
+    let mismatches: [fn(&mut RuntimeRequest); 15] = [
+        |reply| reply.target.document_revision += 1,
+        |reply| reply.target.table.push('x'),
+        |reply| reply.scope = runtime::FindScope::Table,
+        |reply| reply.scope = runtime::FindScope::Field("Other".into()),
+        |reply| reply.pattern.push('x'),
+        |reply| reply.matching = runtime::FindMatch::Any,
+        |reply| reply.direction = runtime::FindDirection::Up,
+        |reply| reply.start = None,
+        |reply| reply.start.as_mut().unwrap().parent_ordinal += 1,
+        |reply| reply.start.as_mut().unwrap().column.push('x'),
+        |reply| reply.start.as_mut().unwrap().span = None,
+        |reply| {
+            reply
+                .start
+                .as_mut()
+                .unwrap()
+                .span
+                .as_mut()
+                .unwrap()
+                .start_utf16 += 1;
+        },
+        |reply| {
+            reply
+                .start
+                .as_mut()
+                .unwrap()
+                .span
+                .as_mut()
+                .unwrap()
+                .end_utf16 += 1;
+        },
+        |reply| reply.match_case = false,
+        |reply| reply.formatted = false,
+    ];
+    for (index, mismatch) in mismatches.into_iter().enumerate() {
+        let mut changed = reply.clone();
+        mismatch(&mut changed);
+        assert!(!runtime_request_matches(&request, &changed), "case {index}");
+    }
+    let mut changed = reply;
+    changed.format_options.system_locale = Some("fr-FR".into());
+    assert!(!runtime_request_matches(&request, &changed));
+
+    for matching in [FindMatch::Any, FindMatch::Whole, FindMatch::Start] {
+        for direction in [FindDirection::All, FindDirection::Up, FindDirection::Down] {
+            for scope in [FindScope::Table, FindScope::Field("Name".into())] {
+                let mut current = request.clone();
+                current.matching = matching;
+                current.direction = direction;
+                current.scope = scope;
+                for start in [None, request.start.clone()] {
+                    current.start = start;
+                    let reply = runtime_request(current.clone());
+                    assert!(runtime_request_matches(&current, &reply));
+                }
+                current.start = Some(FindPosition {
+                    parent_ordinal: 13,
+                    column: "Name".into(),
+                    span: None,
+                });
+                let reply = runtime_request(current.clone());
+                assert!(runtime_request_matches(&current, &reply));
+            }
+        }
+    }
+}

@@ -235,10 +235,14 @@ impl Desktop {
         let Some((id, reviewed)) = self.editing.review.take() else {
             return;
         };
+        let target = reviewed.target();
         if id != review_id
-            || !self
-                .state
-                .can_edit_cell(&ui_target(reviewed.target().clone()))
+            || !self.state.can_edit_cell_at(
+                target.document_revision,
+                &target.table,
+                &target.column,
+                target.parent_ordinal,
+            )
         {
             self.editing.review = Some((id, reviewed));
             return;

@@ -68,7 +68,7 @@ impl Desktop {
             return;
         };
         if generation != *request_id
-            || runtime_request(pending.clone()) != request
+            || !runtime_request_matches(pending, &request)
             || !self.state.accepts_find_reply(*request_id, pending)
         {
             return;
@@ -198,6 +198,53 @@ impl Desktop {
             self.pending = PendingOperation::Read;
         }
     }
+}
+
+/// Compare every mapped request field without copying the retained UI request.
+fn runtime_request_matches(pending: &FindRequest, reply: &RuntimeRequest) -> bool {
+    let scope_matches = match (&pending.scope, &reply.scope) {
+        (ui::FindScope::Field(left), runtime::FindScope::Field(right)) => left == right,
+        (ui::FindScope::Table, runtime::FindScope::Table) => true,
+        _ => false,
+    };
+    let matching_matches = matches!(
+        (pending.matching, reply.matching),
+        (ui::FindMatch::Any, runtime::FindMatch::Any)
+            | (ui::FindMatch::Whole, runtime::FindMatch::Whole)
+            | (ui::FindMatch::Start, runtime::FindMatch::Start)
+    );
+    let direction_matches = matches!(
+        (pending.direction, reply.direction),
+        (ui::FindDirection::All, runtime::FindDirection::All)
+            | (ui::FindDirection::Up, runtime::FindDirection::Up)
+            | (ui::FindDirection::Down, runtime::FindDirection::Down)
+    );
+    let start_matches = match (&pending.start, &reply.start) {
+        (None, None) => true,
+        (Some(left), Some(right)) => {
+            left.parent_ordinal == right.parent_ordinal
+                && left.column == right.column
+                && match (&left.span, &right.span) {
+                    (None, None) => true,
+                    (Some(left), Some(right)) => {
+                        left.start_utf16 == right.start_utf16 && left.end_utf16 == right.end_utf16
+                    }
+                    _ => false,
+                }
+        }
+        _ => false,
+    };
+
+    pending.target.document_revision == reply.target.document_revision
+        && pending.target.table == reply.target.table
+        && scope_matches
+        && pending.pattern == reply.pattern
+        && matching_matches
+        && direction_matches
+        && start_matches
+        && pending.match_case == reply.match_case
+        && pending.formatted == reply.formatted
+        && pending.format_options == reply.format_options
 }
 
 pub(super) fn runtime_request(request: FindRequest) -> RuntimeRequest {

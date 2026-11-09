@@ -556,3 +556,29 @@ fn received_home_paste_rechecks_same_frame_focus_and_rejects_duplicate_payloads(
         assert!(state.paste_request.is_none());
     }
 }
+
+#[test]
+fn borrowed_cell_admission_keeps_exact_source_coordinates_and_modal_guards() {
+    let (mut state, target) = state();
+    assert!(state.can_edit_cell_at(7, "Items", "Amount", 100));
+    assert!(state.can_edit_cell(&target));
+
+    for (revision, table, column, ordinal) in [
+        (8, "Items", "Amount", 100),
+        (7, "Other", "Amount", 100),
+        (7, "Items", "Other", 100),
+        (7, "Items", "Amount", 101),
+    ] {
+        assert!(!state.can_edit_cell_at(revision, table, column, ordinal));
+    }
+
+    state.data.as_mut().unwrap().source_revision = Some(6);
+    assert!(!state.can_edit_cell_at(7, "Items", "Amount", 100));
+    state.data.as_mut().unwrap().source_revision = Some(7);
+    assert!(state.can_edit_cell_at(7, "Items", "Amount", 100));
+
+    state.show_open();
+    assert!(state.backstage_visible());
+    assert!(!state.can_edit_cell_at(7, "Items", "Amount", 100));
+    assert!(!state.can_edit_cell(&target));
+}

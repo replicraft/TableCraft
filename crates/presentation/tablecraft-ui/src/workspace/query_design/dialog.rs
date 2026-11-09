@@ -22,15 +22,13 @@ impl State {
         }
         let request = self.query_design_request().expect("source-bound dialog");
         let pending = self.query_design_request_id();
-        let tables: Vec<String> = self
-            .database
-            .as_ref()
-            .expect("current source")
-            .tables
-            .iter()
-            .filter(|table| table.local && !table.system)
-            .map(|table| table.name.clone())
-            .collect();
+        let database = self.database.as_ref().expect("current source");
+        let tables = || {
+            database
+                .tables
+                .iter()
+                .filter(|table| table.local && !table.system)
+        };
         let mut session = self
             .query_design
             .session
@@ -39,9 +37,9 @@ impl State {
         if session
             .selected_table
             .as_ref()
-            .is_none_or(|selected| !tables.contains(selected))
+            .is_none_or(|selected| !tables().any(|table| &table.name == selected))
         {
-            session.selected_table = tables.first().cloned();
+            session.selected_table = tables().next().map(|table| table.name.clone());
         }
         let mut close = false;
         let mut row_clicked = false;
@@ -69,7 +67,8 @@ impl State {
                         .min_scrolled_height(list_height)
                         .auto_shrink([false, false])
                         .show(ui, |ui| {
-                            for table in &tables {
+                            for table in tables() {
+                                let table = &table.name;
                                 let selected = session.selected_table.as_ref() == Some(table);
                                 let response = ui
                                     .push_id(("qbe_table", table), |ui| {

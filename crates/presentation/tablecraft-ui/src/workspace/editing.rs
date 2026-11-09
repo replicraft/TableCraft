@@ -111,6 +111,23 @@ impl State {
 
     /// A candidate for fresh backend admission, never a write permission grant.
     pub fn can_edit_cell(&self, target: &EditTarget) -> bool {
+        self.can_edit_cell_at(
+            target.document_revision,
+            &target.table,
+            &target.column,
+            target.parent_ordinal,
+        )
+    }
+
+    /// Check borrowed source coordinates without constructing an owned UI target.
+    /// This is a candidate for fresh backend admission, never a write permission.
+    pub fn can_edit_cell_at(
+        &self,
+        document_revision: u64,
+        table: &str,
+        column: &str,
+        parent_ordinal: u32,
+    ) -> bool {
         if self.has_modified_saved_query_sql()
             || self.field_addition_open()
             || self.native_mutation_blocked()
@@ -127,22 +144,21 @@ impl State {
             || self.table_selection.row_selected()
             || self.backstage_visible()
             || self.contents_request_id().is_some()
-            || self.database.as_ref().map(|db| db.document_revision)
-                != Some(target.document_revision)
+            || self.database.as_ref().map(|db| db.document_revision) != Some(document_revision)
         {
             return false;
         }
         let Some(data) = &self.data else {
             return false;
         };
-        let Some(row) = data.row_index(target.parent_ordinal) else {
+        let Some(row) = data.row_index(parent_ordinal) else {
             return false;
         };
-        let Some(column) = data.column_index(&target.column) else {
+        let Some(column) = data.column_index(column) else {
             return false;
         };
-        data.source_revision == Some(target.document_revision)
-            && data.table == target.table
+        data.source_revision == Some(document_revision)
+            && data.table == table
             && data
                 .rows
                 .get(row)
