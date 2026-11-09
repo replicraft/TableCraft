@@ -50,26 +50,28 @@ pub(in crate::creation::add_column::created::field_addition) fn inspect(
         // source hypothesis or image. The real encoder owns all other bytes.
         columns.push(target.declaration("")?);
         let order = build::extend_order(source.order, &columns, target, budget, cancelled)?;
-        let prepared = properties::capture(
-            Columns::Values(&columns),
-            Rows::Values(&[]),
-            budget,
-            cancelled,
-        )
-        .map_err(FieldAdditionError::from)?
-        .ok_or(Error::Preservation)?
-        .with_order(order)
-        .map_err(FieldAdditionError::from)?;
-        let base = prepared
-            .inline_length()
-            .checked_sub(DESCRIPTOR_BYTES)
-            .ok_or(Error::Preservation)?;
+        let base = {
+            let prepared = properties::capture(
+                Columns::Values(&columns),
+                Rows::Values(&[]),
+                budget,
+                cancelled,
+            )
+            .map_err(FieldAdditionError::from)?
+            .ok_or(Error::Preservation)?
+            .with_order(order)
+            .map_err(FieldAdditionError::from)?;
+
+            prepared
+                .inline_length()
+                .checked_sub(DESCRIPTOR_BYTES)
+                .ok_or(Error::Preservation)?
+        };
         limits[index] = capacity
             .and_then(|available| available.checked_sub(base))
             .map(|remaining| (remaining / size_of::<u16>()).min(super::MAX_ASCII_NAME_BYTES))
             .filter(|units| *units != 0)
             .map(|units| units as u8);
-        drop(prepared);
         columns.pop();
     }
     check(budget, cancelled)?;
