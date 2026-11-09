@@ -387,14 +387,14 @@ fn retained_private_artifact_is_reported_from_typed_cleanup_independently_of_dat
 #[test]
 fn acknowledged_changed_cell_save_reselects_the_exact_edited_field_and_record() {
     let (_directory, path, original, context, mut desktop) = opened();
-    let (_, draft_id, _) = begin(&mut desktop);
-    desktop.review_edit(
-        draft_id,
-        EditInput {
-            text: "77".into(),
-            is_null: false,
-        },
-    );
+    let target = EditTarget {
+        document_revision: desktop.state.database.as_ref().unwrap().document_revision,
+        table: "Items".into(),
+        column: "Score".into(),
+        parent_ordinal: 1,
+    };
+    let (_, draft_id, input) = begin_target(&mut desktop, target, "20", Some("77".into()));
+    desktop.review_edit(draft_id, input);
     finish_reads(&mut desktop, &context);
     let review_id = desktop.editing.review.as_ref().unwrap().0;
     desktop.apply_edit(review_id);
