@@ -34,10 +34,10 @@ impl Desktop {
         }
         let command = Command::ReviewTableRename {
             document_revision: request.document_revision,
-            // Runtime review command and TableRenameHost each retain original table name; exact
-            // review/source validation must remain possible after dispatch.
+            // NO_CLONE: Runtime review command and TableRenameHost each retain original table name;
+            // exact review/source validation must remain possible after dispatch.
             table: request.table.clone(),
-            // Runtime review command and TableRenameHost each retain proposed new name;
+            // NO_CLONE: Runtime review command and TableRenameHost each retain proposed new name;
             // asynchronous review cannot consume the host's exact request.
             new_name: request.new_name.clone(),
         };
@@ -51,8 +51,8 @@ impl Desktop {
         if self.submit(command) {
             self.pending = PendingOperation::TableRenameReview { request_id };
         } else {
-            // Global submit failure diagnostic remains visible while the table rename failure
-            // state receives its own owned message.
+            // NO_CLONE: Global submit failure diagnostic remains visible while the table rename
+            // failure state receives its own owned message.
             let message = self
                 .state
                 .error
@@ -110,8 +110,9 @@ impl Desktop {
                     owner: SaveOwner::TableRename,
                     id,
                     path,
-                    // TableRenameHost keeps proposed name for full-image proof while ActiveSave
-                    // retains table identity for terminal routing and reopening.
+                    // NO_CLONE: TableRenameHost keeps proposed name for full-image proof while
+                    // ActiveSave retains table identity for terminal routing and
+                    // reopening.
                     table: host.request.new_name.clone(),
                     offset: 0,
                     report: None,
@@ -193,8 +194,8 @@ impl Desktop {
         if let (Some(host), Some(receipt)) = (&mut self.table_rename, completed) {
             host.cleanup = cleanup_notice(receipt);
         }
-        // The host retains its witness for retry; the read worker independently owns a shared
-        // witness in the guarded renamed-open command.
+        // NO_CLONE: The host retains its witness for retry; the read worker independently owns a
+        // shared witness in the guarded renamed-open command.
         let witness = self
             .table_rename
             .as_ref()

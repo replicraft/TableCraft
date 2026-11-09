@@ -171,7 +171,7 @@ impl Desktop {
         // Keep the complete receipt/failure after acknowledging worker ownership.
         // Opening is a separate guarded snapshot operation and can fail without
         // erasing the known fact that publication succeeded.
-        // Creation terminal report remains retained after worker acknowledgement while an
+        // NO_CLONE: Creation terminal report remains retained after worker acknowledgement while an
         // independently guarded OpenCreated command owns the same immutable report.
         self.creating.terminal = Some(Arc::clone(&report));
         if !self.creating.worker.acknowledge(report.id) {

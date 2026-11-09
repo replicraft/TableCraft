@@ -281,8 +281,8 @@ impl Desktop {
         {
             return;
         }
-        // Rename host retains complete-image witness for retry after failed AFTER read while
-        // the explicit read command owns a shared reference.
+        // NO_CLONE: Rename host retains complete-image witness for retry after failed AFTER read
+        // while the explicit read command owns a shared reference.
         let witness = Arc::clone(host.witness.as_ref().unwrap());
         let request_id = host.request_id;
         self.editing.field_rename.as_mut().unwrap().reopening = true;

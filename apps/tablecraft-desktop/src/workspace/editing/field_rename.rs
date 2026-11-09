@@ -42,15 +42,15 @@ impl Desktop {
         let Some(request_id) = request_read(
             Command::ReviewFieldRename {
                 document_revision: request.target.tab.target.document_revision,
-                // Runtime field-rename command and retained FieldSaveHost request each own the
-                // source table identity through asynchronous review.
+                // NO_CLONE: Runtime field-rename command and retained FieldSaveHost request each
+                // own the source table identity through asynchronous review.
                 table: name.clone(),
-                // Runtime field-rename command and retained FieldSaveHost exact request each
-                // own the original native column name.
+                // NO_CLONE: Runtime field-rename command and retained FieldSaveHost exact request
+                // each own the original native column name.
                 column: request.target.column.clone(),
                 native_number: request.target.native_number,
-                // Runtime command and retained FieldSaveHost request each own the proposed name
-                // for independent review/reopen validation.
+                // NO_CLONE: Runtime command and retained FieldSaveHost request each own the
+                // proposed name for independent review/reopen validation.
                 new_name: request.new_name.clone(),
             },
             &self.worker,
@@ -217,8 +217,8 @@ impl Desktop {
         let identity = prepared.bind();
         let host = self.editing.field_rename.as_mut().unwrap();
         host.identity = Some(identity);
-        // Unchanged rename host keeps a complete-image witness for retry while the explicit
-        // read command independently owns that same immutable witness.
+        // NO_CLONE: Unchanged rename host keeps a complete-image witness for retry while the
+        // explicit read command independently owns that same immutable witness.
         host.witness = Some(std::sync::Arc::clone(&witness));
         host.reopening = true;
         let Some(generation) = self.issue_field_witness_read(FieldReadWitness::Rename(witness))

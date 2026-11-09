@@ -68,11 +68,12 @@ pub(super) fn rows(rows: Vec<Vec<RuntimeCell>>) -> Vec<Vec<Cell>> {
 pub(super) fn contents_target(target: &RuntimeContentsTarget) -> ContentsTarget {
     ContentsTarget {
         document_revision: target.document_revision,
-        // Borrowed command ContentsTarget survives worker dispatch; the preflight UI/host
+        // NO_CLONE: Borrowed command ContentsTarget survives worker dispatch; the preflight UI/host
         // target conversion must own its table name beyond the borrow.
         table: target.table.clone(),
-        // Borrowed command ContentsTarget survives dispatch; the converted UI/host witness
-        // independently owns its column identity. Owned response conversion now moves instead.
+        // NO_CLONE: Borrowed command ContentsTarget survives dispatch; the converted UI/host
+        // witness independently owns its column identity. Owned response conversion now
+        // moves instead.
         column: target.column.clone(),
         parent_ordinal: target.parent_ordinal,
     }

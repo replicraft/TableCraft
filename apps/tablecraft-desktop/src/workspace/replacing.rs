@@ -23,13 +23,13 @@ impl Desktop {
             None => None,
         };
         let command = Command::ReplaceFindMatch {
-            // Runtime replacement review owns the found request while shared UI
+            // NO_CLONE: Runtime replacement review owns the found request while shared UI
             // begin_replace_find retains original Find/replacement identity for review
             // publication.
             request: find::runtime_request(request.find.clone()),
             found: FindPosition {
                 parent_ordinal: request.found.parent_ordinal,
-                // Runtime found-position DTO and retained shared ReplaceFindRequest
+                // NO_CLONE: Runtime found-position DTO and retained shared ReplaceFindRequest
                 // independently own the native column through review/cancellation.
                 column: request.found.column.clone(),
                 span: request.found.span.as_ref().map(|span| FindSpan {
@@ -37,8 +37,8 @@ impl Desktop {
                     end_utf16: span.end_utf16,
                 }),
             },
-            // Worker parses replacement text while UI retains the exact proposed replacement
-            // for modal review and stale-binding checks.
+            // NO_CLONE: Worker parses replacement text while UI retains the exact proposed
+            // replacement for modal review and stale-binding checks.
             replacement: request.replacement.clone(),
             filter,
         };

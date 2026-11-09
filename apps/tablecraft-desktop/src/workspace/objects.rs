@@ -245,9 +245,9 @@ impl Desktop {
                 if let Some(position) = definition {
                     // Keep the inert intent until a matching publication is accepted.
                     // A failed or cancelled retry must not become an ordinary page read.
-                    // The stored inert filter intent must remain until a matching reapplication
-                    // publishes successfully; the in-flight request owns a separate snapshot
-                    // for retry/failure preservation.
+                    // NO_CLONE: The stored inert filter intent must remain until a matching
+                    // reapplication publishes successfully; the in-flight request owns a
+                    // separate snapshot for retry/failure preservation.
                     let retained = self.objects.definitions[position].clone();
                     self.reapply_object_filter(retained);
                 } else {
@@ -305,7 +305,7 @@ impl Desktop {
             self.state.error = Some(self.state.localizer.text("objects-memory-limit"));
             return None;
         }
-        // Workspace-save preflight captures independent inert definitions while existing
+        // NO_CLONE: Workspace-save preflight captures independent inert definitions while existing
         // unloaded-tab preferences remain unchanged until accepted publication; iterator
         // cloning is intentional snapshot ownership.
         definitions.extend(self.objects.definitions.iter().cloned());

@@ -35,8 +35,8 @@ impl Desktop {
         };
         let command = Command::InspectFieldAdditionAvailability {
             document_revision: tab.target.document_revision,
-            // Field-addition availability command and host pending tab each own source table
-            // identity for asynchronous metadata-only inspection.
+            // NO_CLONE: Field-addition availability command and host pending tab each own source
+            // table identity for asynchronous metadata-only inspection.
             table: name.clone(),
         };
         if self.state.prepare_field_addition_inspection(&tab).is_err() {
@@ -121,11 +121,12 @@ impl Desktop {
         let Some(request_id) = request_read(
             Command::ReviewAddField {
                 document_revision: request.tab.target.document_revision,
-                // Runtime field-addition review command and retained FieldSaveHost request each
-                // own source table identity through admission/save/reopen.
+                // NO_CLONE: Runtime field-addition review command and retained FieldSaveHost
+                // request each own source table identity through admission/save/reopen.
                 table: name.clone(),
-                // Runtime field-addition review and retained FieldSaveHost request each own the
-                // new column name for exact request/capability/publication checks.
+                // NO_CLONE: Runtime field-addition review and retained FieldSaveHost request each
+                // own the new column name for exact request/capability/publication
+                // checks.
                 column: request.column.clone(),
                 declaration: request.declaration,
             },

@@ -67,7 +67,7 @@ impl Desktop {
             self.read_request_rejected();
             return;
         };
-        // Shared totals pending retains exact requested specifications, and host pending
+        // NO_CLONE: Shared totals pending retains exact requested specifications, and host pending
         // separately validates native returned specs before publication.
         if !self
             .state
@@ -181,8 +181,8 @@ impl Desktop {
 fn native_target(target: &TotalsTarget) -> runtime::TotalsTarget {
     runtime::TotalsTarget {
         document_revision: target.document_revision,
-        // Runtime totals target and host/UI totals witnesses each outlive dispatch; they need
-        // separately owned exact source table identities.
+        // NO_CLONE: Runtime totals target and host/UI totals witnesses each outlive dispatch; they
+        // need separately owned exact source table identities.
         table: target.table.clone(),
         filter_id: target.filter_id,
         enabled: target.enabled,
@@ -200,7 +200,7 @@ fn ui_target(target: runtime::TotalsTarget) -> TotalsTarget {
 
 fn native_spec(spec: &TotalSpec) -> runtime::TotalSpec {
     runtime::TotalSpec {
-        // Runtime aggregate spec and shared/host pending aggregate specs each retain the
+        // NO_CLONE: Runtime aggregate spec and shared/host pending aggregate specs each retain the
         // requested column until exact result comparison.
         column: spec.column.clone(),
         aggregate: match spec.aggregate {

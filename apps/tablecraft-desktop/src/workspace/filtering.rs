@@ -27,8 +27,9 @@ impl RestoreFilter {
             enabled,
             offset,
             sort: handle.sort().map(|sort| SortSpec {
-                // Retained filter restore preferences must survive invalidation of the source-
-                // bound FilterHandle; the sort column is an independent owned inert preference.
+                // NO_CLONE: Retained filter restore preferences must survive invalidation of the
+                // source- bound FilterHandle; the sort column is an independent owned
+                // inert preference.
                 column: sort.column.clone(),
                 descending: sort.descending,
             }),
@@ -101,12 +102,13 @@ impl Desktop {
         let command = Command::FilterSelection {
             target: runtime::FilterSelectionTarget {
                 document_revision: target.document_revision,
-                // The outgoing runtime filter-selection command and UI retained selection
-                // request each own the source table identity through asynchronous completion.
+                // NO_CLONE: The outgoing runtime filter-selection command and UI retained selection
+                // request each own the source table identity through asynchronous
+                // completion.
                 table: target.table.clone(),
                 parent_ordinal: target.parent_ordinal,
-                // The runtime command and UI pending selection each own the selected native
-                // column; dropping either owner must not invalidate the other.
+                // NO_CLONE: The runtime command and UI pending selection each own the selected
+                // native column; dropping either owner must not invalidate the other.
                 column: target.column.clone(),
                 filter_id: target.filter_id,
                 enabled: target.enabled,
@@ -205,14 +207,14 @@ impl Desktop {
             Command::SortView {
                 target: runtime::SortTarget {
                     document_revision: target.document_revision,
-                    // Runtime SortView and shared pending sort state both retain the exact
-                    // table; the request must remain valid after dispatch.
+                    // NO_CLONE: Runtime SortView and shared pending sort state both retain the
+                    // exact table; the request must remain valid after dispatch.
                     table: target.table.clone(),
                     filter_id: target.filter_id,
                 },
                 sort: sort.as_ref().map(|sort| runtime::SortSpec {
-                    // Runtime sort specification and UI pending sort independently own the
-                    // column; both are checked against eventual publication.
+                    // NO_CLONE: Runtime sort specification and UI pending sort independently own
+                    // the column; both are checked against eventual publication.
                     column: sort.column.clone(),
                     descending: sort.descending,
                 }),
@@ -246,7 +248,7 @@ impl Desktop {
         self.filter
             .as_ref()
             .filter(|handle| {
-                // Host and read worker share the immutable source-bound filter snapshot;
+                // NO_CLONE: Host and read worker share the immutable source-bound filter snapshot;
                 // FilterHandle::clone shares Arc storage rather than deep-copying rows.
                 let target = handle.target();
                 target.document_revision == document_revision
@@ -329,8 +331,8 @@ pub(super) fn filtered_publication(
     let target = ui_target(result.target);
     let data = Data {
         source_revision: Some(target.document_revision),
-        // Published filter target and Data.table both retain the table name in separate owned
-        // publication fields for downstream source validation.
+        // NO_CLONE: Published filter target and Data.table both retain the table name in separate
+        // owned publication fields for downstream source validation.
         table: target.table.clone(),
         offset: result.offset,
         columns: view_models::columns(result.columns),

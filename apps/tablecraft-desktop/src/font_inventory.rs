@@ -46,9 +46,9 @@ impl Catalog {
         {
             return;
         }
-        // Background font discovery needs one independently owned Context for completion
-        // repaint; the borrowed caller Context remains available for immediate spawn failure.
-        // Context shares egui state rather than copying the UI.
+        // NO_CLONE: Background font discovery needs one independently owned Context for completion
+        // repaint; the borrowed caller Context remains available for immediate spawn
+        // failure. Context shares egui state rather than copying the UI.
         let repaint = context.clone();
         let task = Box::new(move || {
             match catch_unwind(AssertUnwindSafe(discover)) {
@@ -99,8 +99,9 @@ impl FontInventory {
         if let Some(families) = catalog.families.get() {
             self.finished = true;
             context.request_repaint();
-            // The process OnceLock retains the canonical Arc<[String]> catalog; a host obtains
-            // a cheap shared owned FontFamilies without copying all family strings.
+            // NO_CLONE: The process OnceLock retains the canonical Arc<[String]> catalog; a host
+            // obtains a cheap shared owned FontFamilies without copying all family
+            // strings.
             return Some(families.clone());
         }
         if catalog.failed.load(Ordering::Acquire) {

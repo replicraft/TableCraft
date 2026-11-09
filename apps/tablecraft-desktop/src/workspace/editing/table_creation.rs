@@ -75,8 +75,8 @@ impl Desktop {
         }) {
             self.pending = PendingOperation::TableCreationReview { request_id: id };
         } else {
-            // Global shared diagnostic remains visible while the separate table-creation review
-            // failure state receives an owned contextual message; both may survive
+            // NO_CLONE: Global shared diagnostic remains visible while the separate table-creation
+            // review failure state receives an owned contextual message; both may survive
             // independently.
             let message = self
                 .state
@@ -127,8 +127,8 @@ impl Desktop {
                     owner: SaveOwner::TableCreation,
                     id,
                     path,
-                    // TableCreationHost retains the expected table through guarded full-image
-                    // reopen; ActiveSave independently retains it for save worker
+                    // NO_CLONE: TableCreationHost retains the expected table through guarded full-
+                    // image reopen; ActiveSave independently retains it for save worker
                     // outcome/report routing.
                     table: host.table.clone(),
                     offset: 0,
@@ -165,8 +165,8 @@ impl Desktop {
                 ) && host.expected_schema_change.is_some()
                     && receipt.schema_change == host.expected_schema_change =>
             {
-                // Host retains immutable complete-image witness for failed-read retry while the
-                // dispatched reopen command owns a shared reference.
+                // NO_CLONE: Host retains immutable complete-image witness for failed-read retry
+                // while the dispatched reopen command owns a shared reference.
                 let Some(witness) = host.witness.as_ref().map(Arc::clone) else {
                     return;
                 };
@@ -180,9 +180,9 @@ impl Desktop {
                         request_id: request,
                     };
                 } else {
-                    // Global read rejection diagnostic and table-creation retained reopen
-                    // status separately retain the same failure message; cloning preserves both
-                    // presentations.
+                    // NO_CLONE: Global read rejection diagnostic and table-creation retained reopen
+                    // status separately retain the same failure message; cloning
+                    // preserves both presentations.
                     let message = self
                         .state
                         .error
@@ -288,8 +288,9 @@ impl Desktop {
         }
         if completion.record_pending {
             self.resume_after_table_creation = completion.resume_transition;
-            // When a first record remains pending, the object is opened now and a separate
-            // close-after-first-record target must survive until that insert workflow resolves.
+            // NO_CLONE: When a first record remains pending, the object is opened now and a
+            // separate close-after-first-record target must survive until that insert
+            // workflow resolves.
             self.close_after_first_record = completion
                 .close_after_save
                 .then(|| completion.target.clone());

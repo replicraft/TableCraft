@@ -250,8 +250,8 @@ impl Desktop {
         {
             return;
         }
-        // DROP host retains complete-image witness for retry after failed AFTER read while the
-        // explicit guarded read command independently owns a shared reference.
+        // NO_CLONE: DROP host retains complete-image witness for retry after failed AFTER read
+        // while the explicit guarded read command independently owns a shared reference.
         let Some(witness) = host.witness.as_ref().map(Arc::clone) else {
             return;
         };

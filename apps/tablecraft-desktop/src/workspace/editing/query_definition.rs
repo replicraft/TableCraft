@@ -66,9 +66,9 @@ impl Desktop {
         let target = tablecraft_runtime::SavedQueryTarget {
             document_revision: request.target.document_revision,
             object_id: request.target.object_id,
-            // Runtime saved-query review consumes SQL/target while QueryDefinitionHost retains
-            // the exact object target for reply checks, close ownership and full-image
-            // publication.
+            // NO_CLONE: Runtime saved-query review consumes SQL/target while QueryDefinitionHost
+            // retains the exact object target for reply checks, close ownership and full-
+            // image publication.
             name: request.target.name.clone(),
         };
         // Move the already issued outgoing strings; the shared owner separately
@@ -548,7 +548,7 @@ impl Desktop {
         if self.editing.save.is_some() || !host.witnessed_reopen_authorized() || host.reopening {
             return;
         }
-        // Saved-query host retains immutable expected-content witness for retry while a
+        // NO_CLONE: Saved-query host retains immutable expected-content witness for retry while a
         // separate read command owns its guarded reopening reference.
         let Some(witness) = host.witness.as_ref().map(Arc::clone) else {
             return;

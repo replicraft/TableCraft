@@ -23,9 +23,9 @@ struct Pending {
 
 impl Pending {
     fn new(selection: Selection, context: &egui::Context) -> Self {
-        // The pending native-dialog Waker owns a Send/Sync repaint handle after the borrowed UI
-        // call returns; sharing Context is required for wake callbacks. Context shares egui
-        // state rather than copying the UI.
+        // NO_CLONE: The pending native-dialog Waker owns a Send/Sync repaint handle after the
+        // borrowed UI call returns; sharing Context is required for wake callbacks.
+        // Context shares egui state rather than copying the UI.
         let repaint = Arc::new(Repaint(context.clone()));
         Self {
             selection,

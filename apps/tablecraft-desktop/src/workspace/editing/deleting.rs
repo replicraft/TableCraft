@@ -17,8 +17,9 @@ impl Desktop {
             Command::ReviewDelete {
                 target: RuntimeTarget {
                     document_revision: target.document_revision,
-                    // Runtime delete review and shared pending delete confirmation
-                    // independently own table identity until reviewed row membership returns.
+                    // NO_CLONE: Runtime delete review and shared pending delete confirmation
+                    // independently own table identity until reviewed row membership
+                    // returns.
                     table: target.table.clone(),
                     parent_ordinal: target.parent_ordinal,
                 },
@@ -97,8 +98,8 @@ impl Desktop {
             return;
         }
         let path = capability.source_path().to_path_buf();
-        // ReviewedDelete moves into save worker; ActiveSave independently retains target table
-        // for accepted-outcome reporting/reopening.
+        // NO_CLONE: ReviewedDelete moves into save worker; ActiveSave independently retains target
+        // table for accepted-outcome reporting/reopening.
         let table = capability.target().table.clone();
         let offset = capability.refresh_ordinal();
         match self

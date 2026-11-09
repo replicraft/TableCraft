@@ -67,10 +67,10 @@ fn main() -> eframe::Result {
                     theme,
                 )))
             } else {
+                // NO_CLONE: eframe owns CreationContext; the desktop read worker moves an owned
+                // repaint Context into its long-lived callback. Context shares egui state
+                // rather than copying the UI.
                 Ok(Box::new(workspace::Desktop::new(
-                    // eframe owns CreationContext; the desktop read worker moves an owned
-                    // repaint Context into its long-lived callback. Context shares egui state
-                    // rather than copying the UI.
                     cc.egui_ctx.clone(),
                     args.database,
                 )))
