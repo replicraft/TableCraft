@@ -24,8 +24,9 @@ use tablecraft_access::editing::offline::{
 use tablecraft_ace::{
     AddColumnError, AddColumnIntentError, AddTableError, AddTableIntentError, CreateDatabaseError,
     CreatedAddColumnError, DatabaseOptionsError, DatabaseOptionsIntentError,
-    DefaultZeroAddColumnIntentError, FieldAdditionAfterOffIntentError, FieldAdditionError,
-    FieldAdditionIntentError, FieldAdditionSourceError, FirstTableError, FirstTableIntentError,
+    DefaultZeroAddColumnIntentError, FieldAdditionAfterOffHistoryIntentError,
+    FieldAdditionAfterOffIntentError, FieldAdditionError, FieldAdditionIntentError,
+    FieldAdditionSourceError, FirstTableError, FirstTableIntentError,
     RepeatedDefaultZeroAddColumnIntentError,
 };
 use tablecraft_ace::{
@@ -265,6 +266,10 @@ fn typed_resource_failure(error: &(dyn StdError + 'static)) -> Option<SaveFailur
             #[cfg(feature = "ace16-create")]
             Cause::FieldAdditionAfterOffIntent(error) => field_addition_after_off::intent(error),
             #[cfg(feature = "ace16-create")]
+            Cause::FieldAdditionAfterOffHistoryIntent(error) => {
+                field_addition_after_off_history::intent(error)
+            }
+            #[cfg(feature = "ace16-create")]
             Cause::RepeatedDefaultZeroAddColumnIntent(error) => {
                 number_column::repeated_intent(error)
             }
@@ -340,6 +345,10 @@ fn typed_resource_failure(error: &(dyn StdError + 'static)) -> Option<SaveFailur
     #[cfg(feature = "ace16-create")]
     if let Some(error) = error.downcast_ref::<FieldAdditionAfterOffIntentError>() {
         return field_addition_after_off::intent(error);
+    }
+    #[cfg(feature = "ace16-create")]
+    if let Some(error) = error.downcast_ref::<FieldAdditionAfterOffHistoryIntentError>() {
+        return field_addition_after_off_history::intent(error);
     }
     #[cfg(feature = "ace16-create")]
     if let Some(error) = error.downcast_ref::<FieldAdditionSourceError>() {
@@ -614,3 +623,6 @@ mod field_addition_after_off;
 
 #[cfg(feature = "ace16-create")]
 mod field_addition_source;
+
+#[cfg(feature = "ace16-create")]
+mod field_addition_after_off_history;

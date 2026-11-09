@@ -4,8 +4,9 @@ use std::{error::Error, fmt};
 #[cfg(feature = "ace16-create")]
 use tablecraft_ace::{
     AddColumnIntentError, AddTableError, AddTableIntentError, DatabaseOptionsIntentError,
-    DefaultZeroAddColumnIntentError, FieldAdditionAfterOffIntentError, FieldAdditionIntentError,
-    FieldHistoryOptionsIntentError, FieldRenameIntentError, FirstTableError, FirstTableIntentError,
+    DefaultZeroAddColumnIntentError, FieldAdditionAfterOffHistoryIntentError,
+    FieldAdditionAfterOffIntentError, FieldAdditionIntentError, FieldHistoryOptionsIntentError,
+    FieldRenameIntentError, FirstTableError, FirstTableIntentError,
     RepeatedDefaultZeroAddColumnIntentError,
 };
 use tablecraft_ace::{
@@ -89,6 +90,10 @@ pub enum Cause {
     #[cfg(feature = "ace16-create")]
     #[error(transparent)]
     FieldAdditionAfterOffIntent(FieldAdditionAfterOffIntentError),
+    /// Original repeated post-OFF field request or full native reconstruction refused.
+    #[cfg(feature = "ace16-create")]
+    #[error(transparent)]
+    FieldAdditionAfterOffHistoryIntent(FieldAdditionAfterOffHistoryIntentError),
     /// Original field-rename request or complete native reconstruction refused.
     #[cfg(feature = "ace16-create")]
     #[error(transparent)]

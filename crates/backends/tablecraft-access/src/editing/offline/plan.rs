@@ -10,9 +10,10 @@ use crate::editing::journal::NativeJournalInsertPlan;
 #[cfg(feature = "ace16-create")]
 use tablecraft_ace::{
     AddTablePlan, FirstTablePlan, NativeAddColumnIntent, NativeAddTableIntent,
-    NativeDefaultZeroAddColumnIntent, NativeFieldAdditionAfterOffIntent, NativeFieldAdditionIntent,
-    NativeFieldRenameIntent, NativeFirstTableIntent, NativeRepeatedDefaultZeroAddColumnIntent,
-    RecoverableAddColumnPlan, RecoverableFieldRenamePlan,
+    NativeDefaultZeroAddColumnIntent, NativeFieldAdditionAfterOffHistoryIntent,
+    NativeFieldAdditionAfterOffIntent, NativeFieldAdditionIntent, NativeFieldRenameIntent,
+    NativeFirstTableIntent, NativeRepeatedDefaultZeroAddColumnIntent, RecoverableAddColumnPlan,
+    RecoverableFieldRenamePlan,
 };
 use tablecraft_ace::{
     NativeClockInsertIntent, NativeCompleteInsertIntent, NativeDeleteIntent, NativeEofInsertIntent,
@@ -176,6 +177,8 @@ pub(super) enum MutationIntent {
     #[cfg(feature = "ace16-create")]
     FieldAdditionAfterOff(NativeFieldAdditionAfterOffIntent),
     #[cfg(feature = "ace16-create")]
+    FieldAdditionAfterOffHistory(NativeFieldAdditionAfterOffHistoryIntent),
+    #[cfg(feature = "ace16-create")]
     FieldRename(NativeFieldRenameIntent),
     TableRename(NativeTableRenameIntent),
     Update(NativeUpdateIntent),
@@ -207,7 +210,8 @@ impl MutationIntent {
             | Self::DefaultZeroAddColumn(_)
             | Self::RepeatedDefaultZeroAddColumn(_)
             | Self::FieldAddition(_)
-            | Self::FieldAdditionAfterOff(_) => Some(SchemaChange::ColumnAdded),
+            | Self::FieldAdditionAfterOff(_)
+            | Self::FieldAdditionAfterOffHistory(_) => Some(SchemaChange::ColumnAdded),
             #[cfg(feature = "ace16-create")]
             Self::FieldRename(intent) => {
                 (intent.column() != intent.new_name()).then_some(SchemaChange::ColumnRenamed)
@@ -265,6 +269,12 @@ impl MutationIntent {
             return NativeQueryExpressionIntent::decode(raw, budget, cancelled)
                 .map(Self::QueryExpression)
                 .map_err(Cause::QueryExpressionIntent);
+        }
+        #[cfg(feature = "ace16-create")]
+        if raw.starts_with(b"TCAC0007") {
+            return NativeFieldAdditionAfterOffHistoryIntent::decode(raw, budget, cancelled)
+                .map(Self::FieldAdditionAfterOffHistory)
+                .map_err(Cause::FieldAdditionAfterOffHistoryIntent);
         }
         #[cfg(feature = "ace16-create")]
         if raw.starts_with(b"TCAC0006") {

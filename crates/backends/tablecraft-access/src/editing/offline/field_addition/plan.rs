@@ -1,8 +1,9 @@
 //! Closed typed/first/repeated column request composition, never decoder fallback.
 use super::super::Cause;
 use tablecraft_ace::{
-    NativeImage, RecoverableDefaultZeroAddColumnPlan, RecoverableFieldAdditionAfterOffPlan,
-    RecoverableFieldAdditionPlan, RecoverableRepeatedDefaultZeroAddColumnPlan,
+    NativeImage, RecoverableDefaultZeroAddColumnPlan, RecoverableFieldAdditionAfterOffHistoryPlan,
+    RecoverableFieldAdditionAfterOffPlan, RecoverableFieldAdditionPlan,
+    RecoverableRepeatedDefaultZeroAddColumnPlan,
 };
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_io::journal::{DurableStorage, ResizableDurableStorage};
@@ -12,6 +13,7 @@ pub(in crate::editing::offline) enum Plan {
     Repeated(RecoverableRepeatedDefaultZeroAddColumnPlan),
     Typed(RecoverableFieldAdditionPlan),
     AfterOff(RecoverableFieldAdditionAfterOffPlan),
+    AfterOffHistory(RecoverableFieldAdditionAfterOffHistoryPlan),
 }
 
 impl Plan {
@@ -21,6 +23,7 @@ impl Plan {
             Self::Repeated(plan) => plan.before_bytes(),
             Self::Typed(plan) => plan.before_bytes(),
             Self::AfterOff(plan) => plan.before_bytes(),
+            Self::AfterOffHistory(plan) => plan.before_bytes(),
         }
     }
 
@@ -30,6 +33,7 @@ impl Plan {
             Self::Repeated(plan) => plan.table(),
             Self::Typed(plan) => plan.table(),
             Self::AfterOff(plan) => plan.table(),
+            Self::AfterOffHistory(plan) => plan.table(),
         }
     }
 
@@ -39,6 +43,7 @@ impl Plan {
             Self::Repeated(plan) => plan.column(),
             Self::Typed(plan) => plan.column(),
             Self::AfterOff(plan) => plan.column(),
+            Self::AfterOffHistory(plan) => plan.column(),
         }
     }
 
@@ -66,6 +71,10 @@ impl Plan {
                 .requalify_with_budgets(fresh, native, proof, cancelled)
                 .map(Self::AfterOff)
                 .map_err(Cause::FieldAdditionAfterOffIntent),
+            Self::AfterOffHistory(plan) => plan
+                .requalify_with_budgets(fresh, native, proof, cancelled)
+                .map(Self::AfterOffHistory)
+                .map_err(Cause::FieldAdditionAfterOffHistoryIntent),
         }
     }
 
@@ -91,6 +100,10 @@ impl Plan {
                 .intent()
                 .encode(budget, cancelled)
                 .map_err(Cause::FieldAdditionAfterOffIntent),
+            Self::AfterOffHistory(plan) => plan
+                .intent()
+                .encode(budget, cancelled)
+                .map_err(Cause::FieldAdditionAfterOffHistoryIntent),
         }
     }
 
@@ -108,6 +121,7 @@ impl Plan {
             Self::Repeated(plan) => plan.prepare(target, journal, budget, cancelled),
             Self::Typed(plan) => plan.prepare(target, journal, budget, cancelled),
             Self::AfterOff(plan) => plan.prepare(target, journal, budget, cancelled),
+            Self::AfterOffHistory(plan) => plan.prepare(target, journal, budget, cancelled),
         }
         .map_err(Cause::Prepare)?;
         prepared.commit(budget, cancelled).map_err(Cause::Commit)

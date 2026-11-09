@@ -8,8 +8,8 @@ use crate::editing::offline::{
 use std::{fs, io::Cursor, path::Path};
 use tablecraft_ace::{
     CreatedDefaultZeroColumnRequired, NativeImage, RecoverableDefaultZeroAddColumnPlan,
-    RecoverableFieldAdditionAfterOffPlan, RecoverableFieldAdditionPlan,
-    RecoverableRepeatedDefaultZeroAddColumnPlan,
+    RecoverableFieldAdditionAfterOffHistoryPlan, RecoverableFieldAdditionAfterOffPlan,
+    RecoverableFieldAdditionPlan, RecoverableRepeatedDefaultZeroAddColumnPlan,
 };
 use tablecraft_io::journal::{RecoveryOutcome, filesystem::OfflineJournalPair};
 use tablecraft_testkit::fixtures::access::canonical_created_number as raw;
@@ -76,6 +76,7 @@ enum RetainedPlan {
     Repeated(RecoverableRepeatedDefaultZeroAddColumnPlan),
     Typed(RecoverableFieldAdditionPlan),
     AfterOff(RecoverableFieldAdditionAfterOffPlan),
+    AfterOffHistory(RecoverableFieldAdditionAfterOffHistoryPlan),
 }
 
 fn retained_plan(
@@ -101,6 +102,11 @@ fn retained_plan(
             plan.after_bytes().to_vec(),
             plan.intent().encode(&mut budget(), &|| false).unwrap(),
         ),
+        RetainedPlan::AfterOffHistory(plan) => (
+            plan.before_bytes().to_vec(),
+            plan.after_bytes().to_vec(),
+            plan.intent().encode(&mut budget(), &|| false).unwrap(),
+        ),
         RetainedPlan::Repeated(plan) => (
             plan.before_bytes().to_vec(),
             plan.after_bytes().to_vec(),
@@ -113,6 +119,7 @@ fn retained_plan(
         RetainedPlan::Repeated(_) => b"TCAC0004",
         RetainedPlan::Typed(_) => b"TCAC0005",
         RetainedPlan::AfterOff(_) => b"TCAC0006",
+        RetainedPlan::AfterOffHistory(_) => b"TCAC0007",
     };
     assert!(intent.starts_with(framing));
 
@@ -141,6 +148,9 @@ fn retained_plan(
                 plan.prepare(&mut target, &mut journal, &mut budget(), &|| false)
             }
             RetainedPlan::AfterOff(plan) => {
+                plan.prepare(&mut target, &mut journal, &mut budget(), &|| false)
+            }
+            RetainedPlan::AfterOffHistory(plan) => {
                 plan.prepare(&mut target, &mut journal, &mut budget(), &|| false)
             }
         }
@@ -261,3 +271,6 @@ mod field_addition;
 
 #[path = "default_zero_tests/after_off.rs"]
 mod after_off;
+
+#[path = "default_zero_tests/after_off_history.rs"]
+mod after_off_history;
