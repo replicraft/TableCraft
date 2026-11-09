@@ -232,7 +232,12 @@ Preserve existing repository conventions and user changes. Prefer small,
 reviewable changes with meaningful acceptance checks. Organize code by feature
 or domain concept, with its implementation and focused tests together. Keep
 module entry points focused on composition and re-exports; avoid collecting
-unrelated concepts in one file. Place constants after all imports. Name format
+unrelated concepts in one file. Use the modern `feature.rs` plus `feature/`
+layout consistently; do not add `mod.rs`. Crate roots (`lib.rs`) contain module
+declarations and explicit public API exports, with implementation, types and tests
+in their owning feature files. A feature module may own its named domain logic;
+do not move unrelated logic into a generic implementation dump to satisfy a
+filename rule. Run `python3 scripts/check_rust_layout.py` after module changes. Place constants after all imports. Name format
 offsets, masks, tags and resource ceilings in their owning modules; derive widths
 from the represented types where possible. Keep explicit test inputs/golden bytes
 independent of production constants so they can catch format regressions. Keep interfaces narrow
@@ -244,6 +249,13 @@ hide failures through silent defaults or unconditional retries.
 When extracting code, update consumers to import its owning crate directly.
 Avoid compatibility re-exports or wrappers whose only purpose is to retain an
 old import path. Keep re-exports that define a genuine public API boundary.
+Review cloning and collection materialization by ownership, lifetime and resource
+cost; prefer borrowing or moving existing storage when equivalent, and preserve
+paid snapshots, immutable sharing and independent test oracles. Use typed failures
+for fallible input and allocation paths; test assertions are not production panic
+policy. Hosts keep filesystem, native database, process and expensive CPU work off
+UI/event and async executor threads. Synchronous libraries and CLI commands may
+block their caller; do not spawn a new thread for each low-level operation.
 
 `tablecraft-formats` owns inert package/template codecs; Access retains native
 payload qualification and query adapters. `tablecraft-crypto` owns checked

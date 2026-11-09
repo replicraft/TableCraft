@@ -16,6 +16,21 @@ stay under the ignored `docs/temp/` directory and are not required to build or
 test. Extract applicable guidance into current documentation as functionality is
 implemented; keep the remaining plans private.
 
+## Rust module layout and review
+
+Use `feature.rs` alongside `feature/`, including test modules. Crate roots contain
+module declarations and explicit API exports; implementation and tests belong in
+their domain files. Import an accessible owning module directly instead of adding
+another passthrough export. Genuine crate APIs and platform-selection boundaries
+remain explicit. Historical evidence retains its captured source paths and hashes.
+
+`python3 scripts/check_rust_layout.py` enforces modern filenames and composition-only
+crate roots in CI. The compiler and target/feature checks still validate module
+resolution, conditional platform branches and visibility. Review ownership and
+threading by call context: an Arc clone, a copied scalar, a paid snapshot, a fixture
+oracle and a deep buffer copy have different purposes. Do not replace them by a
+blanket search-and-replace.
+
 ## Shared compatibility artifact helpers
 
 Maintained saved-evidence verifiers use
@@ -455,7 +470,7 @@ for recorded fields, ownership and verification. Libraries never install a subsc
 ## CLI source organization
 
 All command arguments, dispatch and handlers live under
-`apps/tablecraft-cli/src/commands/`. `commands/mod.rs` composes the top-level
+`apps/tablecraft-cli/src/commands/`. `commands.rs` composes the top-level
 subcommands; `tables.rs`, `rows/`, `inspect/` and `query/` own their command
 features. Inspection and query argument declarations have dedicated `args.rs`
 modules. Native command errors are shared in `commands/error.rs`.

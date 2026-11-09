@@ -61,6 +61,8 @@ jobs:
           python-version: '3.13'
       - name: Check every Cargo target with bounded formatter arguments
         run: python scripts/check_rust_format.py
+      - name: Check Rust module layout
+        run: python scripts/check_rust_layout.py
       - name: Check dependency boundaries
         run: python scripts/check_dependency_boundaries.py
       - name: Check local documentation links
