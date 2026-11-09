@@ -76,6 +76,13 @@ impl State {
         self.objects.navigation.clone()
     }
 
+    pub(in crate::workspace) fn navigation_object_is_selected(
+        &self,
+        target: &ObjectTarget,
+    ) -> bool {
+        self.objects.navigation.as_ref() == Some(target)
+    }
+
     pub fn select_navigation_object(&mut self, target: ObjectTarget) -> bool {
         if !self.object_switch_ready() || !self.object_binding(&target) {
             return false;

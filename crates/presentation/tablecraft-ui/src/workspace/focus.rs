@@ -332,10 +332,15 @@ fn cycle(context: &Context, frame: &Frame, direction: Direction) -> Option<Pane>
         frame.panes.contains(&Pane::QuerySources) || frame.panes.contains(&Pane::QueryGrid);
     // Object tabs also publish Document anchors. In Query Design they must not
     // become an extra stop between the two working panes and the app chrome.
-    let panes: Vec<_> = Pane::ORDER
-        .into_iter()
-        .filter(|pane| frame.panes.contains(pane) && (!query_design || *pane != Pane::Document))
-        .collect();
+    let mut panes = Pane::ORDER;
+    let mut count = 0;
+    for pane in Pane::ORDER {
+        if frame.panes.contains(&pane) && (!query_design || pane != Pane::Document) {
+            panes[count] = pane;
+            count += 1;
+        }
+    }
+    let panes = &panes[..count];
     if panes.is_empty() {
         return None;
     }

@@ -115,8 +115,7 @@ impl State {
                                             name: table.name.clone(),
                                         },
                                     };
-                                    let selected =
-                                        self.selected_navigation_object() == Some(target.clone());
+                                    let selected = self.navigation_object_is_selected(&target);
                                     ui.push_id(
                                         ("table", db.document_revision, &table.name),
                                         |ui| {
@@ -223,8 +222,7 @@ impl State {
                                             name: query.name.clone(),
                                         },
                                     };
-                                    let selected =
-                                        self.selected_navigation_object() == Some(target.clone());
+                                    let selected = self.navigation_object_is_selected(&target);
                                     ui.push_id(
                                         ("query", db.document_revision, query.object_id),
                                         |ui| {
