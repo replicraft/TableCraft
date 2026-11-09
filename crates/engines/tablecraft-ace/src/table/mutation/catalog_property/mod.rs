@@ -3,6 +3,7 @@
 //! its complete canonical source/history, including exact LVAL/map ownership and
 //! the last logical catalog root belonging to its selected single user table.
 mod carrier;
+pub(crate) mod database_role;
 pub(crate) mod descriptor;
 pub(crate) use carrier::external as properties_external;
 pub(crate) mod ledger;

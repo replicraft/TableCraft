@@ -25,6 +25,22 @@ const FREE_OFFSET: usize = DATA_SIGNATURE.len();
 const POINTER_BYTES: usize = size_of::<u32>();
 const EMPTY_FREE: usize = PAGE_BYTES - ROW_COUNT_OFFSET - size_of::<u16>();
 
+enum OrdinaryVisibility {
+    Hidden,
+    #[cfg(all(feature = "journal", feature = "ace16-create"))]
+    LiveRoot,
+}
+
+impl OrdinaryVisibility {
+    fn flag(self) -> u16 {
+        match self {
+            Self::Hidden => DELETED_MASK,
+            #[cfg(all(feature = "journal", feature = "ace16-create"))]
+            Self::LiveRoot => 0,
+        }
+    }
+}
+
 pub(in crate::table::mutation) struct Page {
     pub number: u32,
     pub family: Family,
@@ -227,6 +243,44 @@ impl Plan {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<usize, EditError> {
+        self.append_with_visibility(
+            image,
+            family,
+            body,
+            OrdinaryVisibility::Hidden,
+            budget,
+            cancelled,
+        )
+    }
+
+    /// Append a new visible ordinary root, distinct from a hidden forward target.
+    #[cfg(all(feature = "journal", feature = "ace16-create"))]
+    pub fn append_live_root(
+        &mut self,
+        image: &NativeImage,
+        body: &[u8],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<usize, EditError> {
+        self.append_with_visibility(
+            image,
+            Family::Ordinary,
+            body,
+            OrdinaryVisibility::LiveRoot,
+            budget,
+            cancelled,
+        )
+    }
+
+    fn append_with_visibility(
+        &mut self,
+        image: &NativeImage,
+        family: Family,
+        body: &[u8],
+        ordinary: OrdinaryVisibility,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<usize, EditError> {
         check(budget, cancelled)?;
         let position = self.destination(image, family, body.len(), budget, cancelled)?;
         let page = &mut self.pages[position];
@@ -235,7 +289,7 @@ impl Plan {
         let start = end.checked_sub(body.len()).ok_or(EditError::Preservation)?;
         let word = u16::try_from(start).map_err(|_| InspectError::Malformed)?
             | match family {
-                Family::Ordinary => DELETED_MASK,
+                Family::Ordinary => ordinary.flag(),
                 Family::LongValue => 0,
             };
         budget

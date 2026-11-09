@@ -185,6 +185,47 @@ impl Ledger<'_> {
         Ok(found)
     }
 
+    /// Match exactly two supplied live native object/ROW/length observations.
+    /// This does not qualify either object's semantic role or grant mutation.
+    pub(crate) fn two_singles(
+        &self,
+        expected: [(ObjectId, u32, usize); 2],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<bool, InspectError> {
+        check(budget, cancelled)?;
+        if expected[0].0 == expected[1].0 {
+            return Ok(false);
+        }
+        let mut found = [false; 2];
+        for entry in &self.live {
+            check(budget, cancelled)?;
+            budget.charge(
+                tablecraft_core::limits::Resource::Steps,
+                expected.len() as u64,
+            )?;
+            if let Some(index) = expected
+                .iter()
+                .position(|value| value.0 == entry.origin.object_id())
+            {
+                let (_, reference, bytes) = expected[index];
+                if found[index]
+                    || !matches!(entry.kind, Kind::Single)
+                    || entry.bytes != bytes
+                    || entry.chunks.len() != 1
+                    || entry.chunks[0].reference != reference
+                    || !entry.descriptor.canonical_single(reference, bytes)?
+                {
+                    return Ok(false);
+                }
+                found[index] = true;
+            } else if matches!(entry.kind, Kind::Single | Kind::Chained) {
+                return Ok(false);
+            }
+        }
+        Ok(found == [true, true])
+    }
+
     /// Current ADD history policy remains sole-user and latest-row-only. The
     /// caller has already checked every row's count, flags and ordinary span.
     pub(crate) fn sole_user_history(

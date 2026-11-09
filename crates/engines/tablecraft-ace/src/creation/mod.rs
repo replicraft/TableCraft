@@ -43,7 +43,10 @@ pub use database::{
     create_ace16_int32_database, create_blank_ace16_database,
 };
 #[cfg(feature = "journal")]
-pub use database_options::{DatabaseOptionsError, NativeDatabaseOptionsPlan};
+pub use database_options::{
+    DatabaseOptionsError, FieldHistoryDatabaseOptionsCandidate, FieldHistoryDatabaseOptionsError,
+    NativeDatabaseOptionsPlan,
+};
 pub use first_table::{
     FirstTableDefinition, FirstTableError, FirstTablePlan, first_table_source_available,
 };
