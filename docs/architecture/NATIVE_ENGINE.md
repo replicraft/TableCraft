@@ -192,20 +192,54 @@ not currently available integrations.
 ## Shared owned-LVAL mutation framing
 
 `table::mutation::owned_lval` owns the working represented-map and physical append
-machinery shared by the engineering long-value preview and the normal repeated
-Number-property operation. Preview consumers import this owner directly; no
-compatibility re-export or separate empty crate is introduced. The module is
-feature-scoped to preview or creation+journal. Preview-only ordinary-row mutation
-and its page-update dependencies remain gated to the preview feature.
+machinery shared by the engineering long-value preview and normal field-property
+operations. Preview consumers import this owner directly; no compatibility
+re-export or separate empty crate is introduced. The module is feature-scoped to
+preview or creation+journal. Preview-only ordinary-row mutation and its page-update
+dependencies remain gated to the preview feature.
 
 Sharing this byte machinery grants no content or system-catalog UPDATE admission.
-The normal property caller independently proves its complete canonical source
-history, actual catalog root and column ownership, requires a single fitted
-existing-page append and forbids allocation/map edits. The same record/MR2 and
-placement owners preserve old rows and all unrelated scopes. Original intent
-versions retain their own constructors and requalification; the repeated TCAC4
-purpose never widens earlier persisted requests. Native, adapter, runtime and
-host evidence remain separately accounted in the [ADD-column contract](../access/writes/ADD_COLUMN.md).
+Each normal property caller independently proves its complete canonical source
+history, actual catalog root and column ownership. The shared property owner
+supports a fitted append to the last owned page, or exactly one independently
+qualified immediate-EOF rollover from page 10 to page 11. It retains every prior
+row and derives only the two selected owned/candidate map edits. A full page 11,
+further allocation, history retirement and unrelated map edits refuse. Preview's
+original free-EOF requirement remains separate from the canonical property
+route's allocated-EOF policy; neither bit grants page ownership by itself.
+
+Creation's existing MR2 encoder owns known property values and optional checked
+dictionary order. The native catalog owner owns logical-root/record placement;
+creation/add_column owns shared initial property-image application, historical
+ordinary-row census and final complement proofs. These helpers have real Number
+and typed-field consumers. They do not copy unknown property groups into an
+expected source or create an ordinary system-catalog UPDATE permission.
+
+The initial typed-field prefix uses checked constructive declarations and inert
+policies; historical suffixes use the closed appended target tuples. Seed order
+and append-only extensions derive independently of observed dictionary order;
+full source equality remains mandatory. The engine's metadata-only source-purpose
+selector chooses one legacy Number or typed constructor before admission. Hosts
+do not inspect native compression flags, property records or physical carriers,
+and a failed constructor never becomes a retry against another language.
+
+The typed source owner consumes the actual existing first/repeated Number proof
+when inert source metadata selects that language. It retains the checked native
+schema/declarations, generated-policy restrictions, historical row proof and
+construction-derived dictionary order. Mixed Text histories keep their own full
+replay. Runtime availability shares this single complete source proof for both
+closed target kinds; it does not prove the same history twice or derive Text
+permission from an old Number availability flag. The normal resource allowances
+remain unchanged, and each actual review still qualifies its complete candidate.
+
+Original intent versions retain their own constructors and requalification.
+TCAC0005 captures the complete typed target and BEFORE binding; it uses the same
+checked resizable V2 journal owner. TCAC0001 through TCAC0004 languages remain distinct. Native,
+adapter, runtime and host evidence are separately accounted in the
+[ADD-column contract](../access/writes/ADD_COLUMN.md). The
+[coordinated workflow record](../testing/results/field-addition-gui-workflows-2026-11-08.json)
+records 1,505 passing selected tests and retains the initial failures separately.
+Shared machinery and headless execution do not establish native Access parity.
 
 ## Compatibility evidence
 

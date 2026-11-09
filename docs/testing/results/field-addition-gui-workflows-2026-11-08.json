@@ -1,0 +1,312 @@
+{
+  "date": "2026-11-08",
+  "scope": "Normal reviewed Number and Short Text additions to qualified empty ACE16 tables, recovery, checked reopen and subsequent row input",
+  "platform": "macOS 14.7.2 ARM64, headless; native Microsoft Access and Windows/Linux execution unrun",
+  "implementation_commits": [
+    "328d4039",
+    "ab5f6d6a",
+    "0ca97ad1",
+    "15c6bf1c",
+    "57c2d466",
+    "7b2cfb80",
+    "39bb83be",
+    "df374545",
+    "d1fdae62"
+  ],
+  "unique_selected_tests": 1505,
+  "by_package": {
+    "tablecraft-ace": 358,
+    "tablecraft-access": 74,
+    "tablecraft-runtime": 248,
+    "tablecraft-builders": 42,
+    "tablecraft-ui": 606,
+    "tablecraft-desktop": 173,
+    "tablecraft-testkit": 4
+  },
+  "ignored_existing_cases": 5,
+  "counting": "Unique successful package/test names across the corrected nine-run batch plus four testkit goldens. Earlier runs, default-feature repeats and zero-match engine/adapter fixture filters are not added.",
+  "workflow_artifact": {
+    "path": ".cache/field-addition-corrected-workflow-summary-20261108.json",
+    "sha256": "990e44c3b7b8f800de6ab437c7737454488aa38e3008dd231d7e776492a39507"
+  },
+  "runs": [
+    {
+      "package": "tablecraft_ace",
+      "filter": "creation::",
+      "passed": 156,
+      "failed": 0,
+      "ignored": 1
+    },
+    {
+      "package": "tablecraft_ace",
+      "filter": "transaction::intent::",
+      "passed": 181,
+      "failed": 0,
+      "ignored": 2
+    },
+    {
+      "package": "tablecraft_ace",
+      "filter": "table::mutation::long_value::",
+      "passed": 10,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "package": "tablecraft_ace",
+      "filter": "table::mutation::insert::long_values::",
+      "passed": 11,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "package": "tablecraft_access",
+      "filter": "editing::offline::",
+      "passed": 74,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "package": "tablecraft_runtime",
+      "filter": "all",
+      "passed": 248,
+      "failed": 0,
+      "ignored": 1
+    },
+    {
+      "package": "tablecraft_builders",
+      "filter": "all",
+      "passed": 42,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "package": "tablecraft_ui",
+      "filter": "all",
+      "passed": 606,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "package": "tablecraft-desktop",
+      "filter": "all",
+      "passed": 173,
+      "failed": 0,
+      "ignored": 1
+    }
+  ],
+  "fixture_goldens": {
+    "path": ".cache/field-addition-fixture-goldens-20261108.log",
+    "sha256": "ab7ada51c01780cdd7a386e8f4f996d0b8caca58c55ab542c41db0c61dcf1a99",
+    "passed": 4
+  },
+  "checks": [
+    {
+      "name": "strict",
+      "command": [
+        "cargo",
+        "clippy",
+        "-p",
+        "tablecraft-ace",
+        "-p",
+        "tablecraft-access",
+        "-p",
+        "tablecraft-runtime",
+        "-p",
+        "tablecraft-builders",
+        "-p",
+        "tablecraft-ui",
+        "-p",
+        "tablecraft-desktop",
+        "-p",
+        "tablecraft-testkit",
+        "--all-features",
+        "--lib",
+        "--bin",
+        "tablecraft-desktop",
+        "--offline",
+        "--locked",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "log": ".cache/field-addition-final-strict-20261108.log",
+      "path": ".cache/field-addition-final-strict-20261108.log",
+      "sha256": "5b940f843a35f01442934616ad49071c211e64770036b707d15287839aaa8e4d"
+    },
+    {
+      "name": "create-only",
+      "command": [
+        "cargo",
+        "clippy",
+        "-p",
+        "tablecraft-ace",
+        "--no-default-features",
+        "--features",
+        "ace16-create",
+        "--lib",
+        "--offline",
+        "--locked",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "log": ".cache/field-addition-final-create-only-20261108.log",
+      "path": ".cache/field-addition-final-create-only-20261108.log",
+      "sha256": "ab13acf2649861e7a2cc1cf1faf7f0b3a325ee814d76e08894e0e24f94596dd1"
+    },
+    {
+      "name": "create-journal",
+      "command": [
+        "cargo",
+        "clippy",
+        "-p",
+        "tablecraft-ace",
+        "--no-default-features",
+        "--features",
+        "ace16-create,journal",
+        "--lib",
+        "--offline",
+        "--locked",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "log": ".cache/field-addition-final-create-journal-20261108.log",
+      "path": ".cache/field-addition-final-create-journal-20261108.log",
+      "sha256": "d64882c97e4fe34efb81507733ccfb79e49de1c0b805cce30d7291427953f440"
+    },
+    {
+      "name": "fixture-default",
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "tablecraft-testkit",
+        "--no-default-features",
+        "--lib",
+        "canonical_created_number::mixed",
+        "--offline",
+        "--locked"
+      ],
+      "exit_code": 0,
+      "log": ".cache/field-addition-final-fixture-default-20261108.log",
+      "path": ".cache/field-addition-final-fixture-default-20261108.log",
+      "sha256": "49a84d36fcbcce81ff5e5ef1d5f1f67a8cab4aab54885b680b7529eaf120cabf"
+    },
+    {
+      "name": "format",
+      "command": [
+        "python3",
+        "scripts/check_rust_format.py"
+      ],
+      "exit_code": 0,
+      "log": ".cache/field-addition-final-format-20261108.log",
+      "path": ".cache/field-addition-final-format-20261108.log",
+      "sha256": "9daba0146ddc8d69c678f2312a65cc2187e738222e909c3ba6f2812dcb56b214"
+    },
+    {
+      "name": "boundaries",
+      "command": [
+        "python3",
+        "scripts/check_dependency_boundaries.py"
+      ],
+      "exit_code": 0,
+      "log": ".cache/field-addition-final-boundaries-20261108.log",
+      "path": ".cache/field-addition-final-boundaries-20261108.log",
+      "sha256": "f7d52bf47bcc4b2e9710c09efd2c026f0e695fc3a18600d5fa56dc70ed065a7a"
+    }
+  ],
+  "visual_evidence": "field-addition-presentation-2026-11-08.json",
+  "independent_sdk_evidence": [
+    "add-short-text-sdk-source-2026-11-08.json",
+    "short-text-mixed-sequence-sdk-2026-11-08.json"
+  ],
+  "verified_workflows": [
+    "Closed TCAC5 exact target/width/compression framing, original binding, fresh reconstruction and V2 recovery, including initial and EOF growth.",
+    "Constructive inert prefix preservation, closed historical suffixes and frozen TCAC1-4 source/request languages.",
+    "Actual source-purpose selection, complete captured declaration equality and rejection of matching DTO with a mismatched opaque native capability.",
+    "Ordinary desktop Text, Number, Text saves match complete independent images, followed by omitted, explicit NULL, empty Text and supplied row values.",
+    "N13 Number availability and N14 rollover use the unchanged runtime allowance and then insert generated ID plus fourteen omitted zero defaults.",
+    "One UI/controller and nonreplaceable save owner retain review, cancellation, close/deferred transitions, outcomes and full-image reopen guards."
+  ],
+  "earlier_failures": {
+    "artifact": {
+      "path": ".cache/field-addition-workflow-summary-20261108.json",
+      "sha256": "572d0e19b4d8845e0dc55e077760c782280ba0194d517e7382c1cb5a8d31e33a"
+    },
+    "failed_runs": [
+      {
+        "package": "tablecraft_ace",
+        "filter": "transaction::intent::",
+        "failed_cases": [
+          "transaction::intent::field_addition::tests::native::sealed_plans_bind_complete_source_target_and_independent_request_bytes"
+        ]
+      },
+      {
+        "package": "tablecraft_access",
+        "filter": "editing::offline::",
+        "failed_cases": [
+          "editing::offline::add_column::tests::default_zero_tests::field_addition::cold_and_settled_typed_field_recovery_reconstruct_exact_v2_declaration"
+        ]
+      },
+      {
+        "package": "tablecraft_runtime",
+        "filter": "all",
+        "failed_cases": [
+          "tests::field_addition::largest_observed_number_history_inspects_both_kinds_under_actual_runtime_budget"
+        ]
+      },
+      {
+        "package": "tablecraft_ui",
+        "filter": "all",
+        "failed_cases": [
+          "workspace::field_addition::tests::interaction::saved_number_header_keeps_stored_schema_inert_and_ctrl_s_captures_final_text",
+          "workspace::field_addition::tests::interaction::saved_short_text_header_uses_the_same_editor_and_captures_its_full_declaration"
+        ]
+      },
+      {
+        "package": "tablecraft-desktop",
+        "filter": "all",
+        "failed_cases": [
+          "workspace::editing::inserting::tests::field_addition::ordinary_number_rollover_then_new_row_omits_all_fourteen_fields"
+        ]
+      }
+    ],
+    "corrections": [
+      "First Number test used a Required-absent raw helper outside its contract; corrected to the independently SDK-pinned StoredFalse source.",
+      "Cold versus settled recovery receipt expectations now match the established verified-image and schema-change semantics.",
+      "Duplicate full Number history reconstruction exhausted the original step allowance; actual complete native proof reuse removes the duplicate work without resetting or raising budgets.",
+      "Two interaction tests now query the actual Fluent Short Text label including its capacity."
+    ],
+    "build_failures": [
+      {
+        "path": ".cache/field-addition-composed-build-20261108.jsonl",
+        "sha256": "8dfa4b5b6528d76c67cb5264e653934283e33154a97d385875be7c54b6c539ae"
+      },
+      {
+        "path": ".cache/field-addition-composed-corrected-build-20261108.jsonl",
+        "sha256": "af228745da06ba43f4250032783c16ca556a4658a154a87951438f71f6214f42"
+      }
+    ],
+    "build_corrections": "Restored genuine UI SavedWarning export; corrected three typed test-glue mismatches; source-free builder declarations remain direct imports.",
+    "temporary_doc_link_failure": {
+      "path": ".cache/field-addition-final-links-20261108.log",
+      "sha256": "385c5039fbd0c2d6635da441d6a2fcbd00d8287269bf269cfc9fe3e0713f8766"
+    }
+  },
+  "limits": [
+    "Empty, unencoded canonical ACE16 generated-primary sources; bounded known inert declarations and positively reconstructed history only.",
+    "Sixteen fields in this profile and at most one checked property EOF rollover; these are implementation boundaries, not Access format maxima.",
+    "UI Short Text is explicitly 255 UTF-16 units, compression enabled, Required(false), AllowZeroLength(true), and no stored default.",
+    "Legacy creation defaults remain unchanged; populated-table ADD, field rename/drop and composition with database-option roles remain unfinished.",
+    "Independent SDK bytes and headless execution do not establish native Microsoft Access or Windows compatibility."
+  ],
+  "corrected_documentation_links": {
+    "path": ".cache/field-addition-completed-links-20261108.log",
+    "sha256": "5f42dde8750febf52167711e0e582fd52a21f38edc176d8de7f246ffda3cd11c",
+    "status": "passed"
+  }
+}

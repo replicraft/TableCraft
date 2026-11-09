@@ -140,3 +140,15 @@ The unchanged Java helpers disable expression evaluation; generated binaries and
 databases remain local. These are independent-reader save observations, not
 Microsoft Access or Windows execution, and do not by themselves activate GUI
 editing or qualify populated-table schema changes.
+
+## Native implementation cross-reference
+
+This retained SDK/model record remains an independent observation, with its
+original execution hashes and source classes unchanged. The separate native
+[typed-field contract](../../access/writes/ADD_COLUMN.md#typed-original-request-and-constructive-prefix)
+now describes the connected candidate, explicit compression opt-in, constructive
+prefix proof and TCAC0005 original request. Native intent, adapter/runtime and GUI
+workflow qualification are separate from these SDK comparisons. The
+[coordinated workflow record](../results/field-addition-gui-workflows-2026-11-08.json)
+now records the corrected native/application checks without changing these
+historical SDK results or inferring Microsoft Access/Windows execution.

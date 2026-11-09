@@ -1607,6 +1607,78 @@ Native observations and current platform limits are recorded in the
 [desktop guide](../ui/DESKTOP.md). Payload-free diagnostics remain governed by
 [the tracing contract](../development/TRACING.md).
 
+## Reviewed existing-table field additions
+
+`InspectFieldAdditionAvailability` returns separate Number and Short Text source
+facts bound to the exact document revision and table. One immutable image capture
+and one candidate-owned native source proof publish both current kind facts. The
+UI still requires the selected kind's exact positive fact before opening its
+naming editor; named review freshly qualifies the complete declaration. Inspection
+constructs neither a speculative named candidate nor a write capability. Known
+typed Source refusals produce unavailable facts; malformed, cancelled and
+resource-limited inspections remain errors. Older Jet/ACE formats gain no
+admission from an ACE16 proof.
+
+The typed candidate uses that same ACE source owner. For an original Number
+source, it reuses the complete canonical proof and original source-policy check.
+For repeated Number history, it retains the actual checked source, declarations
+and proven dictionary policy from the existing history owner. Generated-field
+restrictions, derived dictionary order, row-history bounds, allocation roles and
+complete source comparison remain required. Mixed sources keep their separate
+complete replay. This shares proof-bearing native state rather than inferring
+eligibility from an old availability Boolean, and avoids reconstructing a large
+Number history twice under the unchanged cumulative native allowance.
+
+`ReviewAddField` captures the complete source-free
+`tablecraft_builders::table::FieldAdditionDeclaration`: `NumberLongZero`, or
+`ShortText` with an explicit nonzero 1–255 UTF-16-unit width and Unicode
+compression permission. Number fixes nullable LONG, stored Required(false) and
+typed Int32 zero. Short Text fixes nullable TEXT, stored Required(false),
+AllowZeroLength(true) and absent DefaultValue. The current saved-table gallery
+requests Short Text with capacity 255 and compression enabled; this does not change the initial
+creator's existing compression default or enable arbitrary field properties.
+
+The consuming `ReviewedFieldAddition` derives its `captured_declaration()` from
+the sealed native plan. `FieldAdditionReview.declaration` is separate data. The
+host checks both against the exact submitted declaration, including width and
+compression, before starting the nonreplaceable `SaveWorker::start_field_addition`.
+A matching display DTO cannot substitute for the capability's declaration.
+
+Actual inert metadata selects one source purpose before native qualification.
+Number retains TCAC0003/0004 for their supported creator prefixes and property
+carriers; mixed fields or policies requiring the typed profile select TCAC0005.
+Short Text selects TCAC0005. A failed qualifier or decoder never retries another
+profile. The typed route reconstructs the canonical inert prefix and every
+closed historical field-addition tuple before complete source comparison. Old
+Number service requests and recovery languages remain separate supported
+consumers; the unified gallery does not narrow their existing source admission.
+
+One private plan composition and renamed `StagedFieldAddition` owner reuse fresh
+original-image requalification, the exclusive offline session and checked V2
+journal. Cold recovery and settled confirmation reconstruct the exact declaration
+under one cumulative allowance. Schema-only ColumnAdded receipts carry no row,
+query or database-options counts. `field_addition_reopen_facts()` classifies only
+that receipt scope; it grants no native authority. The same accepted capability's
+complete `AddedColumnReopen` witness is required before fresh catalog publication.
+
+The shared UI retains one naming/review/save/close controller for both kinds.
+Save/Discard/Cancel binds the exact owner, draft revision and declaration; native
+failure keeps the proposed name and deferred transition. Known saved AFTER plus
+failed checked reopen retains its outcome and stale-source mutation guards.
+Successful publication preserves tab identities/order, scratch SQL and preferences
+while invalidating old native row/results handles; unrelated dirty drafts still
+block the schema write. The bounded empty canonical ACE16 source, sixteen-field
+ceiling, actual property-page ledger and single-rollover limits remain explicit
+in the [native contract](../access/writes/ADD_COLUMN.md).
+
+The [field workflow record](../testing/results/field-addition-gui-workflows-2026-11-08.json)
+passes 1,505 unique selected checks, including all 248 runtime, 606 shared UI and
+173 desktop cases. Five existing ignored cases are excluded. Actual mixed-field
+saves and row inputs, declaration substitution refusal and N13/N14 budget/rollover
+workflows pass. Strict lint and feature-configuration checks pass. Native Microsoft
+Access interaction and actual Windows execution remain unqualified; earlier
+Number records below retain their original scope.
+
 ## Reviewed existing-table Number additions
 
 `ReviewAddNumberColumn` retains the same consuming `ReviewedNumberColumn` and
@@ -1622,8 +1694,8 @@ unavailable before incompatible carrier inspection.
 A private plan variant retains the sealed purpose through the nonreplaceable
 worker and adapter. Both stages reuse schema-only ColumnAdded receipts, retained
 failure/recovery ownership and the same complete-image AddedColumnReopen witness.
-The host publishes no new revision from receipt alone. Ordinary Click-to-Add,
-name and Save can therefore repeat after successful checked reopening; their
+The host publishes no new revision from receipt alone. The previously qualified
+Number Click-to-Add/name/Save flow repeats after successful checked reopening; their
 saved facts, stale-source safeguards and other drafts retain the existing lifecycle.
 The [native contract](../access/writes/ADD_COLUMN.md#repeated-number-addition-with-existing-external-properties)
 defines the exact empty-table/property-history/page-capacity limits. TCAC0004
@@ -1665,9 +1737,10 @@ without replaying the option action. A later table rename requires its own
 explicit review/save. Unsupported hosts retain explicit refusals. No GUI option
 command or implicit Name AutoCorrect change is supplied by this service.
 
-Five focused service tests are authored for exact independent images, separate
-rename composition, busy/stale owner boundaries, document invalidation,
-and guarded reopen. Runtime validation remains pending the coordinated batch.
+Five focused service tests cover exact independent images, separate rename
+composition, busy/stale owner boundaries, document invalidation and guarded
+reopen. All five now pass within the 248-runtime-case field workflow batch above.
+This does not qualify settings changes after an existing column ADD.
 The [completed prior 72-test SQL/creator batch](../testing/results/sql-creator-focused-2026-11-08.json)
 passes the earlier query, column and creator rename services. It predates the
 option service and shared expected-image copy extraction; those new tests and

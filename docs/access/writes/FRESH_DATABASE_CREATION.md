@@ -144,6 +144,32 @@ retains receipts. These are authored metadata sources, not native Access creatio
 or save/reopen qualification. Creator support is tested separately.
 
 
+## Explicit Short Text compression permission
+
+`CreateColumn::short_text(...).with_unicode_compression(bool)` now supplies an
+explicit semantic compression permission for sized Short Text. Other declaration
+families reject the option. All existing constructors continue with false; no
+stored raw flags, inferred application profile or global creator default changes.
+The engine writes the known native compression bit only for the opted-in Text
+field. This permits the existing native text carrier; it does not require every
+value to use compressed storage.
+
+The existing retained `FirstTableDefinition::capture` and `capture_manual` reject
+compression enabled, because their frozen creation request languages do not encode
+that choice. A separate internal typed-field capture retains the actual permission
+for [field-addition source reconstruction](ADD_COLUMN.md#typed-original-request-and-constructive-prefix).
+Old creation recovery cannot silently omit a new declaration field. Ordinary
+TableDraft creation's existing producer remains separate from the explicit new
+saved-column target; this option does not itself change that producer's default.
+
+Independent SDK compression twins and the separate native candidate gate are
+recorded in the [Short Text evidence](../../testing/short_text_add/README.md).
+They do not establish native Access creation/save behavior, broader Unicode
+storage or new creation-intent admission. The separate
+[field workflow batch](../../testing/results/field-addition-gui-workflows-2026-11-08.json)
+now records corrected TCAC0005, shared source proof and application checks;
+its evidence does not widen these frozen creation requests.
+
 ## Explicit Required and AllowZeroLength creation
 
 `CreateColumn::with_required(bool)` authors an explicit Required property.

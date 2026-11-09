@@ -1,10 +1,10 @@
 # Empty saved-table column addition
 
-The normal desktop supports restricted Number-column additions through reviewed
-native saves and complete-image reopen. The engine also supplies lower-level
-Int32 candidates and original-intent recovery profiles, plus a separate typed
-Number/Short Text candidate. General saved-column editing remains unfinished;
-the typed candidate alone does not enable Text saves in the GUI.
+The normal desktop supports restricted Number and Short Text additions through
+reviewed native saves and complete-image reopen. The engine retains lower-level
+Int32 candidates and frozen recovery languages alongside the typed TCAC0005
+request. General saved-column editing remains unfinished; current source,
+storage and declaration limits are explicit below.
 
 ## Typed Number and Short Text candidate
 
@@ -19,8 +19,9 @@ field/property-history stage. Dictionary order derives from that history; an
 arbitrary observed permutation cannot authorize itself. Original field widths,
 compression, variable ordinals, index bytes, property rows and the full image
 complement remain protected. Only the qualified one-EOF property rollover is
-available. This candidate supplies no normal persistence authority or GUI Text
-activation; the existing Number save service remains separate.
+available. The candidate alone supplies no persistence authority or GUI Text
+activation; the separate original request below owns native persistence. Legacy Number
+purposes remain distinct.
 
 The [candidate workflow batch](../../testing/results/typed-field-candidate-workflows-2026-11-08.json)
 passes 336 unique selected tests, including ten new candidate cases covering
@@ -28,6 +29,91 @@ passes 336 unique selected tests, including ten new candidate cases covering
 Strict engine/testkit all-feature lint, creation+journal lint and creation-only
 lint pass. Initial feature/lint failures remain recorded separately. Native
 Microsoft Access and Windows execution remain unqualified.
+
+## Typed original request and constructive prefix
+
+`plan_recoverable_created_field_addition` seals the actual typed candidate as
+`NativeFieldAdditionIntent` and `RecoverableFieldAdditionPlan`. Its captured
+`FieldAdditionTarget` is either nullable LONG with stored Required(false) and
+Int32 zero, or sized Short Text with stored Required(false), AllowZeroLength(true),
+absent DefaultValue and explicit compression permission. Width is 1–255 UTF-16
+units; a requested width or compression choice cannot be replaced by a host
+inference. The target is obtained from the actual sealed native plan.
+
+The initial source prefix and historical appended suffix have different roles.
+The prefix retains the constructive owner's known scalar declarations, constant
+defaults, Required/AllowZeroLength policies and inert descriptions. A prefix can
+therefore contain a Byte, an Int32 with no default, Required(true), Text with
+AllowZeroLength(false), or a typed nonzero constant without converting those
+fields into the newly appended declaration. Only historical appended fields
+must match the closed Number or Short Text target tuples. The generated LONG
+Increment primary keeps its existing policy restrictions. Populated sources,
+unknown properties/programs, additional objects and broader histories still
+refuse; no required program is skipped.
+
+For n current fields and r ordinary property rows in the actual owned-page ledger,
+the proof constructs the n-r field seed from those checked prefix declarations.
+Its dictionary order derives from the creator policy. Each historical target
+then extends that order only by newly required known keys. Both the derived final
+order and the entire resulting source image must equal the original. Existing
+Required(true), empty-value rules, defaults and descriptions remain byte-exact;
+an observed dictionary permutation cannot serve as its own expected source.
+
+`created_field_addition_source_purpose` is an engine-owned inert observation.
+For Number, it retains the original first/repeated Number purpose when the actual
+field policies belong to those languages. Native Text compression, any
+AllowZeroLength property, Required(true), present Description, or a constant
+default other than typed Int32 zero selects the new typed purpose. Short Text
+requests select the typed purpose. Header/capture checks precede property
+inspection. Exactly one constructor then performs full admission; a failed proof
+is never retried as another profile. This observation is not used to reinterpret
+old retained requests.
+
+Typed-source qualification reuses complete existing proofs when the observed
+source belongs to a legacy Number language. A first Number source consumes the
+existing canonical source proof and exact first-Number property policy. A repeated
+Number source consumes the actual retained repeated-source proof, including its
+checked schema, declarations, full historical ledger and proven initial dictionary
+policy. The typed owner still rechecks its generated-field restrictions and derives
+known dictionary order from that proved construction. A mixed Text source keeps
+its separate canonical-prefix/history replay. There is no second reconstruction
+or failed-proof fallback, and no availability Boolean supplies native authority.
+
+Runtime source availability now consumes that one complete engine proof for both
+closed field kinds. This replaces duplicate legacy-plus-typed history replay that
+exhausted the unchanged normal step allowance on a retained N13 source. Native,
+proof and persistence budgets are unchanged; no reset, larger allowance or hidden
+retry resolves the failure. Actual review still binds the selected original
+purpose and exact target, and performs complete candidate qualification.
+
+The closed `TCAC0005`/profile5 header is 64 bytes: magic, total length, profile,
+target tag, Text width, compression choice, complete original length/digest, and
+the two UTF-8 name lengths. Number fixes width/compression to zero; Text permits
+only width 1–255 and compression 0|1. The target tag fixes the complete policy tuple.
+No arbitrary property bytes, ROW selector or AFTER appears in the request.
+Unknown versions, combinations, framing and malformed names refuse before owned
+name allocation. Decode returns data only.
+
+Fresh normal requalification verifies full original bytes and binding, reconstructs
+the entire native candidate, then compares both complete images under separate
+native/proof pools. Native recovery spends one cumulative allowance, verifies the
+original binding first and reconstructs the same candidate before comparing both
+journal images. A valid width/compression/target substitution cannot qualify an
+unrelated AFTER. The existing checked resizable V2 session handles initial growth,
+fitted images and the qualified one-page property rollover; semantic request
+version5 is independent of journal format2. Settled confirmation cannot repair.
+TCAC0001 through TCAC0004 retain their own target/source constructors and wire
+languages. Shared storage/proof helpers do not widen those languages.
+
+The [coordinated workflow batch](../../testing/results/field-addition-gui-workflows-2026-11-08.json)
+passes 1,505 unique selected checks, including native intent/source/recovery,
+adapter, runtime and the complete shared UI/desktop suites. Five existing ignored
+cases are excluded. It covers ordinary Text → Number → Text saves, independent
+complete-image oracles, subsequent row input, and near-capacity Number inspection
+and rollover under the unchanged work allowance. Strict all-feature and smaller
+creation-configuration lint pass. The earlier 336-case candidate record above
+retains its historical scope. Neither batch establishes Microsoft Access,
+Windows or older-format Save compatibility.
 
 ## Actual source and preservation
 
@@ -329,8 +415,10 @@ source/placement admission changes neither the original declaration nor its
 TCAC0004 framing. TCAC0001/0002/0003 retain their exact previous languages and reconstruct only their captured constructors.
 Cold/settled recovery dispatches the exact version with no decoder fallback.
 
-The public runtime/UI service stays `ReviewAddNumberColumn`,
-`ReviewedNumberColumn`, `start_number_column` and `OpenColumnAdded`. An engine-owned
+The legacy runtime service retains `ReviewAddNumberColumn`,
+`ReviewedNumberColumn`, `start_number_column` and `OpenColumnAdded`. The unified
+UI uses `ReviewAddField`, `ReviewedFieldAddition` and `start_field_addition` with
+the same checked reopen boundary. An engine-owned
 metadata observation resolves the actual catalog logical root (including
 forwarding), native field framing and LvProp carrier. Review and availability
 select one constructor from that fact, then fully qualify it; failed qualification
@@ -386,12 +474,15 @@ AllowZeroLength(true), no DefaultValue property and separate compression-off/on
 twins; repeated Text and Number-after-Text compositions retain all original
 property rows and field facts. A separate third Number SDK image closes the
 earlier raw-only history observation. These are new source/target byte oracles,
-not native Short Text candidate, persistence or GUI admission.
+not native persistence, GUI or native Access admission by themselves. The typed
+candidate and version5 request above consume this evidence through separate
+source qualification; their workflow checks remain independently accounted.
 
 Actual current TableDraft metadata has the same declared width/policies/default
 absence but the existing creator leaves UnicodeCompression off. Microsoft
-documents the Access UI compression default as on. A future typed native opt-in
-can preserve old defaults and images while making that new target explicit;
-source reconstruction must preserve each original field's actual compression
-and AZL/default presence. No generic raw flags, silent global default flip or
-new wire version is introduced by this evidence checkpoint.
+documents the Access UI compression default as on. The explicit typed native opt-in
+now preserves old defaults and images while making that new target explicit.
+Source reconstruction preserves each original field's actual compression and
+AZL/default presence. The evidence-only checkpoint did not change a wire language;
+the separate TCAC0005 operation above binds its own full typed request. No generic
+raw flags or silent global default flip is supplied.

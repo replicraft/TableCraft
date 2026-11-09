@@ -1,5 +1,26 @@
 # Implementation status
 
+## Normal saved Number and Short Text fields — 8 November 2026
+
+The shared field-addition workflow now saves Number and Short Text on qualified
+empty ACE16 tables. One controller handles naming, consuming review, native save,
+close/deferred transitions and complete-image reopen. Short Text requests capacity
+255, Unicode compression, Required(false), AllowZeroLength(true), and no stored
+default. Existing creator defaults and old Number source/request routes remain
+unchanged. Desktop services compose runtime authority rather than implement edits.
+
+The [coordinated batch](testing/results/field-addition-gui-workflows-2026-11-08.json)
+passes 1,505 unique selected tests, including all shared UI and desktop cases;
+five existing ignored cases are excluded. Normal Text → Number → Text saves,
+subsequent omitted/NULL/empty/supplied row inputs, exact capability declaration
+checks and N13/N14 Number availability/rollover pass. Shared native proof reuse
+removes duplicate reconstruction without changing allowances. Strict lint,
+smaller feature configurations and eight inspected light/dark offscreen frames
+pass. Initial compile, fixture, receipt, label, budget and render failures remain
+separate from corrected evidence. Native Access and Windows execution remain
+unqualified. Populated-table ADD, persisted field rename/drop and composition
+with database-option roles are still unfinished; this is not general ALTER.
+
 ## Typed saved-field candidate — 8 November 2026
 
 A separate native Number/Short Text candidate reconstructs exact empty ACE16

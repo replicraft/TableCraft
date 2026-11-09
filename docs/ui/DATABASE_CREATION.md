@@ -319,25 +319,68 @@ historical test counts below; native Access comparison remains pending.
 
 ## Adding a column to an existing saved table
 
-Saved native datasheets use a name-independent native source inspection before
-Click to Add offers Number. The header remains outside stored fields: it cannot
-select, sort, copy or create a cell. Other gallery choices remain disabled with
-unavailable tooltips. Number starts a bounded field-name editor in that header;
-QAT Save or the Save shortcut captures its final text and reviews the exact name.
-It adds a Long Integer with stored Required false and typed default zero, without
-inserting a record. The separate older no-default primitive remains distinct.
+Saved native datasheets use one name-independent native inspection to obtain
+separate Number and Short Text availability facts for the exact table/revision.
+One captured image and one native source proof shared with the typed candidate
+publish both current facts; each gallery choice still requires its own positive
+fact. Existing canonical Number and repeated-history proof owners are reused,
+with generated-field, dictionary and history restrictions retained. Mixed sources
+keep their complete replay. The unchanged native allowance is not reset to
+reconstruct the same history for each choice.
 
-A consuming runtime review and dedicated save worker retain ownership through
-native persistence, acknowledgement and a fresh complete-image checked reopen.
-Only that successful reopen publishes the new schema and resolves the name.
-Other tabs, scratch SQL, view preferences and valid filters/sorts survive; native
-row handles and results are rebuilt. Closing the name or opening another file
-requires Save/Don't Save/Cancel. A failed refresh can retry or explicitly Return
-to draft while retaining saved facts; stale-source mutation stays blocked until
-a fresh open. Closing that draft does not undo the completed native save.
+The header remains outside stored fields: it cannot select, sort, copy or create
+a cell. All other gallery choices remain visible, disabled and explain that they
+are not available yet.
 
-The current source is an empty, unencoded ACE16 canonical generated-primary
-layout with bounded scalar declarations and known inert properties. The first
+Number requests nullable Long Integer with stored Required(false) and typed
+zero. Short Text requests 255 UTF-16 units, stored Required(false),
+AllowZeroLength(true), absent DefaultValue and Unicode compression enabled.
+These saved-field declarations are explicit; the Short Text choice does not
+silently change initial-table creation's compression default. Naming a field
+never inserts a record. New row remains a separate operation with Omitted,
+explicit NULL and supplied input preserved through normal native insertion.
+
+Both choices use the same bounded inline name editor, QAT/shortcut Save,
+review/save actor, status and close controller. The saved request binds its full
+declaration as well as the owner, raw name and draft revision. Before starting
+persistence, the host requires both the review DTO and opaque native capability
+to match the entire declaration, including exact width and compression.
+
+Native metadata selects one source purpose before full qualification. Existing
+Number creator prefixes keep their TCAC0003/0004 routes. Short Text and mixed
+histories or policies requiring the typed source use TCAC0005; refusal never
+falls back to another constructor. The source proof retains each inert prefix
+field/policy and every historical property row, reconstructs the complete image,
+and keeps old recovery languages separate. This remains a bounded empty,
+unencoded ACE16 generated-primary source profile, not imported arbitrary ALTER.
+
+The nonreplaceable save worker retains ownership through persistence,
+acknowledgement and complete-image checked reopen. Only successful checked reopen
+publishes the new schema and resolves the name. Other tabs, scratch SQL, view
+preferences and valid filters/sorts survive; native row handles and results are
+rebuilt. Unrelated dirty table/SQL drafts block the schema write. Closing the
+name or opening another file requires Save/Don't Save/Cancel for the exact
+owner/revision/declaration. Failed or cancelled saves keep the name and deferred
+transition. A failed AFTER refresh can retry or explicitly Return to draft while
+retaining saved facts; stale-source mutation stays blocked until a fresh open.
+Closing that draft does not undo a completed native save.
+
+The [field workflow record](../testing/results/field-addition-gui-workflows-2026-11-08.json)
+passes 1,505 unique selected checks, including all shared UI and desktop cases.
+Five existing ignored cases are excluded. The ordinary host saves Text → Number
+→ Text against complete independent images and then preserves omitted, NULL,
+empty Text and supplied row input. Near-capacity Number inspection and rollover
+pass under the original runtime allowance. Eight light/dark offscreen frames
+were visually reviewed; these are adaptations without matching Access gallery
+or dialog captures. Native Microsoft Access and Windows execution remain
+unqualified. The earlier Number evidence below remains historical and
+does not by itself qualify Short Text behavior.
+
+### Retained Number evidence and storage limits
+
+For the retained Number route, the source is an empty, unencoded ACE16 canonical
+generated-primary layout with bounded scalar declarations and its known inert
+property profile. The first
 Number save's external-property output now qualifies for repeated additions
 through a distinct source/history proof and TCAC0004 original intent. Actual
 carrier metadata selects one constructor; each still performs complete native
@@ -356,8 +399,8 @@ includes ordinary headless N13→N14 header/name/Save and checked reopen, follow
 by actual New row with all fourteen Number fields omitted: native reopen shows
 generated ID1 and fourteen non-NULL zeros. The normal viewport, host flags and
 budgets remain unchanged. Unknown/additional property storage,
-options/additional-table composition, populated tables, other field choices and
-other Jet/ACE write profiles remain separate targets. See the
+options/additional-table composition, populated tables, choices beyond the two
+closed declarations above and other Jet/ACE write profiles remain separate targets. See the
 [native repeated-ADD limits](../access/writes/ADD_COLUMN.md#repeated-number-addition-with-existing-external-properties)
 and [independent SDK observations](../testing/number_column_repeat/README.md).
 

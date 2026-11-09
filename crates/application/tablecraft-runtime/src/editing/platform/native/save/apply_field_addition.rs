@@ -1,4 +1,4 @@
-//! Rebuild the explicit Number original intent under the retained offline owner.
+//! Rebuild the exact field original intent under the retained offline owner.
 use super::{
     RetainedOwner,
     outcomes::{failed_open, finish, no_session, retain},
