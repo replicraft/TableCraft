@@ -64,6 +64,12 @@ impl State {
             .collect()
     }
 
+    /// Observe an exact live tab/source binding without activating it or copying tabs.
+    /// This supplies no transition, review or native save permission.
+    pub fn object_tab_is_current(&self, tab: &ObjectTab) -> bool {
+        self.objects.contains_tab(tab) && self.object_binding(&tab.target)
+    }
+
     pub fn active_object(&self) -> Option<ObjectTab> {
         self.objects
             .entries

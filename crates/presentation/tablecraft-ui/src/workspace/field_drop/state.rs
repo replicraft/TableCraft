@@ -86,6 +86,7 @@ impl State {
         let draft = self.field_drop.draft.as_ref()?;
         if draft.phase != Phase::Confirming
             || !matches!(draft.observation, Observation::Pending { request_id: None })
+            || !self.field_drop_context(&draft.target)
         {
             return None;
         }

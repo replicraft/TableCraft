@@ -86,7 +86,7 @@ impl State {
         &mut self,
         target: &FieldDropTarget,
     ) -> Option<PreparedFieldDropInspection<'_>> {
-        if !self.field_drop_owner_bound(target) {
+        if !self.field_drop_context(target) {
             return None;
         }
         let draft = self.field_drop.draft.as_mut()?;

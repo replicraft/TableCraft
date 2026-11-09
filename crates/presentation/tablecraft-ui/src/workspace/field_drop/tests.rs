@@ -1,4 +1,5 @@
 //! Source-free presentation/ownership checks, never native eligibility witnesses.
+mod activation;
 mod request_memory;
 mod widgets;
 

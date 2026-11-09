@@ -399,3 +399,5 @@ fn compact_and_normal_all_locale_controls_stay_inside_the_viewport() {
         }
     }
 }
+
+mod activation;

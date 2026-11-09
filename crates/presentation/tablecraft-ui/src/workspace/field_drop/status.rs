@@ -69,6 +69,35 @@ impl State {
         true
     }
 
+    /// Actual actor loss revokes retained controls without certifying either image.
+    /// The exact target and host request remain owned until explicit actor ACK.
+    pub fn set_field_drop_actor_lost(
+        &mut self,
+        identity: FieldDropSaveIdentity,
+        message: String,
+    ) -> bool {
+        if !self.field_drop.status.as_ref().is_some_and(|status| {
+            status.identity == identity
+                && matches!(
+                    status.phase,
+                    crate::workspace::schema_save::StatusPhase::Saving { .. }
+                        | crate::workspace::schema_save::StatusPhase::Finished
+                )
+        }) {
+            return false;
+        }
+
+        let outcome = EditSaveOutcome::Failed(message);
+        let admitted = self.admit_object_bytes(Some(outcome_bytes(&outcome)));
+        self.field_drop
+            .status
+            .as_mut()
+            .unwrap()
+            .record_outcome(outcome, admitted);
+        self.mark_native_save_uncertain();
+        true
+    }
+
     pub fn can_resolve_field_drop_save(
         &self,
         identity: FieldDropSaveIdentity,
@@ -144,6 +173,26 @@ impl State {
             .status
             .as_mut()
             .is_some_and(|status| status.cancel(identity))
+    }
+
+    /// Host prerequisite: this exact actor ended uncertainly and was ACKed.
+    /// Preserve the local pending deletion while the revision stays unwritable.
+    pub fn acknowledge_uncertain_field_drop_save(
+        &mut self,
+        request: &FieldDropRequest,
+        identity: FieldDropSaveIdentity,
+    ) -> bool {
+        if !self.matches_field_drop_save(request, identity)
+            || !self.can_acknowledge_field_drop_save(identity)
+        {
+            return false;
+        }
+
+        self.mark_native_save_uncertain();
+        self.field_drop.request_memory = None;
+        self.field_drop.draft.as_mut().unwrap().phase = Phase::PendingDeletion;
+        self.field_drop.status = None;
+        true
     }
 
     /// Host prerequisite: exact actor ACK has verified original/no-write.

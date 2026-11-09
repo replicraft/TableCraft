@@ -4,10 +4,14 @@ use crate::workspace::{Action, DocumentView, ObjectKind, ObjectTab, State};
 
 impl State {
     pub(in crate::workspace) fn field_drop_table_entry_ready(&self, tab: &ObjectTab) -> bool {
-        self.field_drop_available && self.field_drop.draft.is_none()
-            && self.field_drop.warning.is_none() && self.objects.is_active_tab(tab)
-            && !self.native_mutation_blocked() && self.object_switch_ready()
-            && !self.has_unsaved_table_drafts() && !self.has_modified_saved_query_sql()
+        self.field_drop_available
+            && self.field_drop.draft.is_none()
+            && self.field_drop.warning.is_none()
+            && self.objects.is_active_tab(tab)
+            && !self.native_mutation_blocked()
+            && self.object_switch_ready()
+            && !self.has_unsaved_table_drafts()
+            && !self.has_modified_saved_query_sql()
             && self.database.as_ref().is_some_and(|database| {
                 database.document_revision == tab.target.document_revision
                     && matches!(&tab.target.kind, ObjectKind::Table { name }

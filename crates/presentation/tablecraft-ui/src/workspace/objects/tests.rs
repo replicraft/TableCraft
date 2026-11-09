@@ -365,3 +365,33 @@ fn layout_sql_restore_advances_revision_or_refuses_before_replacing_the_workspac
         }
     }
 }
+
+#[test]
+fn borrowed_tab_binding_includes_parked_owners_but_grants_no_activation_permission() {
+    let mut state = state();
+    let a = state.prepare_object_open(table("A")).unwrap().tab;
+    let b = state.prepare_object_open(table("B")).unwrap().tab;
+    assert!(state.object_tab_is_current(&a));
+    assert!(state.object_tab_is_current(&b));
+
+    state.busy = true;
+    assert!(state.object_tab_is_current(&a));
+    assert!(!state.can_activate_object(&a));
+    let mut wrong = a.clone();
+    wrong.id += 100;
+    assert!(!state.object_tab_is_current(&wrong));
+    wrong = a.clone();
+    wrong.target = table("B");
+    assert!(!state.object_tab_is_current(&wrong));
+    state.busy = false;
+
+    assert!(state.close_object(&a));
+    assert!(!state.object_tab_is_current(&a));
+    let reopened = state.prepare_object_open(table("A")).unwrap().tab;
+    assert_ne!(reopened.id, a.id);
+    assert!(state.object_tab_is_current(&reopened));
+    assert!(!state.object_tab_is_current(&a));
+    state.database.as_mut().unwrap().document_revision = 8;
+    assert!(!state.object_tab_is_current(&reopened));
+    assert!(!state.object_tab_is_current(&b));
+}
