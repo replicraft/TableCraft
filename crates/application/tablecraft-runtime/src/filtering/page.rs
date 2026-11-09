@@ -99,6 +99,7 @@ impl Document {
             for column in schema.columns() {
                 columns.push(crate::column::native(
                     column.name(),
+                    column.number(),
                     properties.as_ref(),
                     &mut output,
                 )?);

@@ -21,8 +21,24 @@ pub(crate) fn present(
             output.work(1)?;
             crate::native_properties::require_binding(properties, page.schema())?;
             let mut columns = output.columns(page.columns().len())?;
+            // Scalar projections retain native logical order, but their shared
+            // Column carrier has no native number. Bind each name to the actual
+            // retained schema in that order; never publish the displayed index.
+            let mut native_fields = page.schema().columns().iter();
             for column in page.columns() {
-                columns.push(crate::column::native(column.name(), properties, output)?);
+                let native = loop {
+                    let native = native_fields.next().ok_or(InspectError::Malformed)?;
+                    output.work(1 + native.name().len() as u64 + column.name().len() as u64)?;
+                    if native.name() == column.name() {
+                        break native;
+                    }
+                };
+                columns.push(crate::column::native(
+                    column.name(),
+                    native.number(),
+                    properties,
+                    output,
+                )?);
             }
             let count = selected.map_or(page.rows().len(), <[usize]>::len);
             let mut rows = output.rows(count)?;
@@ -43,7 +59,12 @@ pub(crate) fn present(
             crate::native_properties::require_binding(properties, page.schema())?;
             let mut columns = output.columns(page.schema().columns().len())?;
             for column in page.schema().columns() {
-                columns.push(crate::column::native(column.name(), properties, output)?);
+                columns.push(crate::column::native(
+                    column.name(),
+                    column.number(),
+                    properties,
+                    output,
+                )?);
             }
             let rows = collections::rows(page, selected, output)?;
             (columns, rows, page.reached_end())

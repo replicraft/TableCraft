@@ -15,6 +15,8 @@ pub struct Column {
     /// Explicit qualified native Caption, including an explicitly empty value.
     /// This must never replace `name` in a target or metadata lookup.
     pub caption: Option<String>,
+    /// Actual direct native table column number; absent for SQL aliases and synthetic headings.
+    pub native_number: Option<usize>,
 }
 
 /// Publish a query alias or a synthetic child heading without native metadata.
@@ -22,17 +24,23 @@ pub(super) fn plain(name: &str, output: &mut Presentation<'_>) -> Result<Column,
     Ok(Column {
         name: output.text(name)?,
         caption: None,
+        native_number: None,
     })
 }
 
 pub(super) fn native(
     name: &str,
+    native_number: usize,
     properties: Option<&TableProperties>,
     output: &mut Presentation<'_>,
 ) -> Result<Column, Error> {
     let name = output.text(name)?;
     let caption = caption(&name, properties, output)?;
-    Ok(Column { name, caption })
+    Ok(Column {
+        name,
+        caption,
+        native_number: Some(native_number),
+    })
 }
 
 fn caption(

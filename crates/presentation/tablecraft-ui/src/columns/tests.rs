@@ -11,10 +11,12 @@ fn data() -> Data {
             Column {
                 name: "RawValue".into(),
                 caption: Some("Friendly".into()),
+                native_number: None,
             },
             Column {
                 name: "RawItems".into(),
                 caption: Some("Friendly".into()),
+                native_number: None,
             },
         ],
         rows: vec![vec![

@@ -31,11 +31,11 @@ fn captions_preserve_exact_identity_empty_values_and_column_scope() {
     for label in ["Visible score", "Id", "", "Größe"] {
         let properties = properties("Caption", label, 1, 10, 1);
         let mut output = Presentation::new(&|| false);
-        let column = native("sCoRe", Some(&properties), &mut output).unwrap();
+        let column = native("sCoRe", 1, Some(&properties), &mut output).unwrap();
         assert_eq!(column.name, "sCoRe");
         assert_eq!(column.caption.as_deref(), Some(label));
         assert_eq!(
-            native("Id", Some(&properties), &mut output)
+            native("Id", 0, Some(&properties), &mut output)
                 .unwrap()
                 .caption,
             None
@@ -54,14 +54,14 @@ fn absent_unqualified_and_non_column_captions_do_not_fabricate_labels() {
         let properties = properties(key, "Visible score", flags, native_type, scope);
         let mut output = Presentation::new(&|| false);
         assert_eq!(
-            native("Score", Some(&properties), &mut output)
+            native("Score", 1, Some(&properties), &mut output)
                 .unwrap()
                 .caption,
             None
         );
     }
     assert_eq!(
-        native("Score", None, &mut Presentation::new(&|| false))
+        native("Score", 1, None, &mut Presentation::new(&|| false))
             .unwrap()
             .caption,
         None
@@ -72,7 +72,21 @@ fn absent_unqualified_and_non_column_captions_do_not_fabricate_labels() {
 fn cancelled_caption_publication_is_not_an_absent_caption() {
     let properties = properties("Caption", "Visible score", 1, 10, 1);
     assert!(matches!(
-        native("Score", Some(&properties), &mut Presentation::new(&|| true)),
+        native(
+            "Score",
+            1,
+            Some(&properties),
+            &mut Presentation::new(&|| true)
+        ),
         Err(Error::Cancelled)
     ));
+}
+
+#[test]
+fn native_numbers_are_explicit_metadata_and_query_aliases_never_infer_them() {
+    let mut output = Presentation::new(&|| false);
+    let field = native("Score", 17, None, &mut output).unwrap();
+    assert_eq!(field.native_number, Some(17));
+    assert_eq!(plain("Score", &mut output).unwrap().native_number, None);
+    assert_eq!(plain("17", &mut output).unwrap().native_number, None);
 }

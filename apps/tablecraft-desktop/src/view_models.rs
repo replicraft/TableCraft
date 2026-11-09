@@ -54,6 +54,7 @@ pub(super) fn columns(columns: Vec<RuntimeColumn>) -> Vec<Column> {
         .map(|column| Column {
             name: column.name,
             caption: column.caption,
+            native_number: column.native_number,
         })
         .collect()
 }

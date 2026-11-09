@@ -50,7 +50,7 @@ impl Metadata {
             return Err(InspectError::Malformed.into());
         }
 
-        crate::column::native(name, self.properties.as_ref(), output)
+        crate::column::native(name, native.number(), self.properties.as_ref(), output)
     }
 
     #[cfg(all(

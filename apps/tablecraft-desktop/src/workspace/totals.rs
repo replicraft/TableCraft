@@ -114,6 +114,7 @@ impl Desktop {
                     column: Column {
                         name: field.column.name,
                         caption: field.column.caption,
+                        native_number: field.column.native_number,
                     },
                     aggregates: field.aggregates.into_iter().map(ui_aggregate).collect(),
                 })

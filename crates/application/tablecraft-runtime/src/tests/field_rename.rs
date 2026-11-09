@@ -98,3 +98,24 @@ fn cancelled_inspection_keeps_the_source_and_publishes_no_facts() {
     ));
     assert_eq!(std::fs::read(path).unwrap(), before);
 }
+
+#[test]
+fn published_native_number_comes_from_bound_schema_not_display_position() {
+    let mut bytes = repeated::source(Source::IdOnly);
+    bytes[7 * 4096 + 41..7 * 4096 + 43].copy_from_slice(&18_u16.to_le_bytes());
+    bytes[7 * 4096 + 105..7 * 4096 + 107].copy_from_slice(&17_u16.to_le_bytes());
+    let (_directory, _path, worker, _) = opened(&bytes);
+    let Response::Data { columns, .. } = request(
+        &worker,
+        Command::Page {
+            table: "Table1".into(),
+            offset: 0,
+        },
+    )
+    .unwrap() else {
+        panic!("expected actual native page metadata");
+    };
+    assert_eq!(columns[0].native_number, Some(0));
+    assert_eq!(columns[1].name, "Score");
+    assert_eq!(columns[1].native_number, Some(17));
+}

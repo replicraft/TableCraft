@@ -134,6 +134,7 @@ fn columns(table: &str) -> Vec<Column> {
         .map(|(name, caption)| Column {
             name: (*name).into(),
             caption: Some((*caption).into()),
+            native_number: None,
         })
         .collect()
 }

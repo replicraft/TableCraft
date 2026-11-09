@@ -107,6 +107,7 @@ mod tests {
                         .map(|index| crate::Column {
                             name: format!("Raw{index}"),
                             caption: Some(format!("Caption{index}")),
+                            native_number: None,
                         })
                         .collect(),
                     rows: vec![values],

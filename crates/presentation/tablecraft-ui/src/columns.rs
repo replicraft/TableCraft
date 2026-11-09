@@ -5,6 +5,9 @@ use crate::workspace::Data;
 pub struct Column {
     pub name: String,
     pub caption: Option<String>,
+    /// Actual native logical number for a direct source-bound table field.
+    /// Query aliases and synthetic headings have no native field identity.
+    pub native_number: Option<usize>,
 }
 
 impl Column {
@@ -21,6 +24,7 @@ impl From<String> for Column {
         Self {
             name,
             caption: None,
+            native_number: None,
         }
     }
 }
