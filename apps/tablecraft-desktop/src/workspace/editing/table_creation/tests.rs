@@ -361,3 +361,5 @@ fn saving_from_the_close_confirmation_resumes_the_original_file_open() {
     );
     assert_eq!(std::fs::read(&other).unwrap(), other_bytes);
 }
+
+mod created_crud;
