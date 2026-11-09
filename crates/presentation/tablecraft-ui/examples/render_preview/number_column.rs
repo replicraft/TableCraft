@@ -3,6 +3,7 @@
 //! The retained datasheet image informs the trailing header. No expanded menu,
 //! naming or close capture exists; these scenes verify an adaptation, not Access
 //! appearance or native write eligibility. Example-only facts never grant writes.
+#[path = "number_column/returned.rs"]
 mod returned;
 
 use super::LAYOUT_SETTLE_STEPS;
