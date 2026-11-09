@@ -1,0 +1,245 @@
+{
+  "schema": 1,
+  "scope": "Independent repeated Number ADD full-image model vs unchanged first-party SDK helper; no engine/native Access execution",
+  "model": "docs/testing/number_column_repeat/model.py",
+  "model_sha256": "e09611e66a3fece93b66562a2b2fdddc8196b09aa53e3d824149cf5c700475c5",
+  "raw_helper": {
+    "path": "docs/testing/number_column_repeat/raw.py",
+    "sha256": "4bba92ee109e8318ef9b47ac541ddbaf1068a14c5d939dca5db80e535acc182c",
+    "production_codecs": false
+  },
+  "observations": [
+    {
+      "case": "id-only",
+      "source": "id-only-number-sdk-after.accdb",
+      "output": "id-only-second-number-sdk-after.accdb",
+      "table": "Table1",
+      "column": "Score2",
+      "before_sha256": "a6a9e18cd35dc2bf018e5cd554a68b5b60d56023fd78a4a0ecba627ab9041d72",
+      "after_sha256": "8ca406b45272b6225d8f44b37ba74336250257cb5b37f0d074200d1837ef9ff9",
+      "before_bytes": 45056,
+      "after_bytes": 45056,
+      "original_unchanged": true,
+      "sdk_stdout": [
+        "ID\tLONG\ttrue\tnull\tRequired=null",
+        "Score\tLONG\tfalse\t0\tRequired=false",
+        "Score2\tLONG\tfalse\t0\tRequired=false",
+        "Rows\t0",
+        "Indexes\t1",
+        "Created\t1899-12-30T00:00",
+        "Updated\t1899-12-30T00:00",
+        "BeforeSHA256\ta6a9e18cd35dc2bf018e5cd554a68b5b60d56023fd78a4a0ecba627ab9041d72",
+        "AfterSHA256\t8ca406b45272b6225d8f44b37ba74336250257cb5b37f0d074200d1837ef9ff9"
+      ],
+      "catalog_root_slot": 7,
+      "catalog_physical_slot": 8,
+      "catalog_physical_span": [
+        3359,
+        3444
+      ],
+      "descriptor_before_hex": "5f000040000a000000000000",
+      "descriptor_after_hex": "8a000040010a000000000000",
+      "old_lval_row": 0,
+      "new_lval_row": 1,
+      "old_body_bytes": 95,
+      "new_body_bytes": 138,
+      "old_body_sha256": "eb32aba93278fe696ff06e0aa1d947a08c828f0bc5e335780fb70f9ef767451f",
+      "new_body_sha256": "f718ca6fddd16d6ebe0384ebc52d06a15cf404d1dff60b5db8c29c7b76ac6644",
+      "new_body_hex": "4d5232003200000080001800440065006600610075006c007400560061006c0075006500100052006500710075006900720065006400290000000100100000000a00530063006f00720065000a00010c0000020030000900010101000100002b0000000100120000000c00530063006f007200650032000a00010c000002003000090001010100010000",
+      "old_body_preserved_exact": true,
+      "dictionary_order": [
+        "DefaultValue",
+        "Required"
+      ],
+      "lval_before_free_bytes": 3985,
+      "lval_after_free_bytes": 3845,
+      "lval_before_slots": 1,
+      "lval_after_slots": 2,
+      "independent_after": "id-only-independent-after.accdb",
+      "independent_after_sha256": "8ca406b45272b6225d8f44b37ba74336250257cb5b37f0d074200d1837ef9ff9",
+      "full_image_match": true,
+      "first_differences": [],
+      "changed_pages": [
+        4,
+        7,
+        10
+      ],
+      "maps_page_3_unchanged": true,
+      "index_page_9_unchanged": true,
+      "all_other_pages_unchanged": true
+    },
+    {
+      "case": "gui-number-inline",
+      "source": "gui-number-inline-number-sdk-after.accdb",
+      "output": "gui-number-inline-second-number-sdk-after.accdb",
+      "table": "Table1",
+      "column": "Extra2",
+      "before_sha256": "b314c02b5f67c8deebb564f7e4deae5cd5a5e28e1f67f3122b1cb8d14507c3a4",
+      "after_sha256": "d3313771325a70522d7c52e7f2094fd1ef1e17e349651a25c029c88fe858cba1",
+      "before_bytes": 45056,
+      "after_bytes": 45056,
+      "original_unchanged": true,
+      "sdk_stdout": [
+        "ID\tLONG\ttrue\tnull\tRequired=null",
+        "Score\tLONG\tfalse\t0\tRequired=false",
+        "Extra\tLONG\tfalse\t0\tRequired=false",
+        "Extra2\tLONG\tfalse\t0\tRequired=false",
+        "Rows\t0",
+        "Indexes\t1",
+        "Created\t1899-12-30T00:00",
+        "Updated\t1899-12-30T00:00",
+        "BeforeSHA256\tb314c02b5f67c8deebb564f7e4deae5cd5a5e28e1f67f3122b1cb8d14507c3a4",
+        "AfterSHA256\td3313771325a70522d7c52e7f2094fd1ef1e17e349651a25c029c88fe858cba1"
+      ],
+      "catalog_root_slot": 7,
+      "catalog_physical_slot": 7,
+      "catalog_physical_span": [
+        3337,
+        3517
+      ],
+      "descriptor_before_hex": "88000040000a000000000000",
+      "descriptor_after_hex": "b3000040010a000000000000",
+      "old_lval_row": 0,
+      "new_lval_row": 1,
+      "old_body_bytes": 136,
+      "new_body_bytes": 179,
+      "old_body_sha256": "c88e2e35fda822b259a3688dd11e14917c9bd726a2481abb37dceaee6b357c21",
+      "new_body_sha256": "688038ce93cb8d389183aeff6495081283762c356ac56c61fc7b045714120817",
+      "new_body_hex": "4d5232003200000080001000520065007100750069007200650064001800440065006600610075006c007400560061006c0075006500290000000100100000000a00530063006f00720065000900010100000100000a00010c010002003000290000000100100000000a00450078007400720061000900010100000100000a00010c0100020030002b0000000100120000000c004500780074007200610032000900010100000100000a00010c010002003000",
+      "old_body_preserved_exact": true,
+      "dictionary_order": [
+        "Required",
+        "DefaultValue"
+      ],
+      "lval_before_free_bytes": 3944,
+      "lval_after_free_bytes": 3763,
+      "lval_before_slots": 1,
+      "lval_after_slots": 2,
+      "independent_after": "gui-number-inline-independent-after.accdb",
+      "independent_after_sha256": "d3313771325a70522d7c52e7f2094fd1ef1e17e349651a25c029c88fe858cba1",
+      "full_image_match": true,
+      "first_differences": [],
+      "changed_pages": [
+        4,
+        7,
+        10
+      ],
+      "maps_page_3_unchanged": true,
+      "index_page_9_unchanged": true,
+      "all_other_pages_unchanged": true
+    },
+    {
+      "case": "existing-default-only",
+      "source": "existing-default-only-number-sdk-after.accdb",
+      "output": "existing-default-only-second-number-sdk-after.accdb",
+      "table": "Items",
+      "column": "Extra2",
+      "before_sha256": "05dcae27ffd63cba552e47740c60649d46bb265730b6b202a384e69ebb249072",
+      "after_sha256": "d8e3fdfc029324c38784bb93be352ffef9df0a383ecd4f8952596df9ad78b647",
+      "before_bytes": 45056,
+      "after_bytes": 45056,
+      "original_unchanged": true,
+      "sdk_stdout": [
+        "Id\tLONG\ttrue\tnull\tRequired=null",
+        "Score\tLONG\tfalse\t0\tRequired=null",
+        "Extra\tLONG\tfalse\t0\tRequired=false",
+        "Extra2\tLONG\tfalse\t0\tRequired=false",
+        "Rows\t0",
+        "Indexes\t1",
+        "Created\t1899-12-30T00:00",
+        "Updated\t1899-12-30T00:00",
+        "BeforeSHA256\t05dcae27ffd63cba552e47740c60649d46bb265730b6b202a384e69ebb249072",
+        "AfterSHA256\td8e3fdfc029324c38784bb93be352ffef9df0a383ecd4f8952596df9ad78b647"
+      ],
+      "catalog_root_slot": 7,
+      "catalog_physical_slot": 7,
+      "catalog_physical_span": [
+        3366,
+        3517
+      ],
+      "descriptor_before_hex": "7f000040000a000000000000",
+      "descriptor_after_hex": "aa000040010a000000000000",
+      "old_lval_row": 0,
+      "new_lval_row": 1,
+      "old_body_bytes": 127,
+      "new_body_bytes": 170,
+      "old_body_sha256": "5a74c094c4fc3f7186a81db7b6510f72ee425ae0226f6211093f28930bc95c97",
+      "new_body_sha256": "14d064cfb832a4686d49c70c18009fdf66f58e30daebdb530cb2d845396c7ec8",
+      "new_body_hex": "4d5232003200000080001800440065006600610075006c007400560061006c0075006500100052006500710075006900720065006400200000000100100000000a00530063006f00720065000a00010c000002003000290000000100100000000a00450078007400720061000a00010c0000020030000900010101000100002b0000000100120000000c004500780074007200610032000a00010c000002003000090001010100010000",
+      "old_body_preserved_exact": true,
+      "dictionary_order": [
+        "DefaultValue",
+        "Required"
+      ],
+      "lval_before_free_bytes": 3953,
+      "lval_after_free_bytes": 3781,
+      "lval_before_slots": 1,
+      "lval_after_slots": 2,
+      "independent_after": "existing-default-only-independent-after.accdb",
+      "independent_after_sha256": "d8e3fdfc029324c38784bb93be352ffef9df0a383ecd4f8952596df9ad78b647",
+      "full_image_match": true,
+      "first_differences": [],
+      "changed_pages": [
+        4,
+        7,
+        10
+      ],
+      "maps_page_3_unchanged": true,
+      "index_page_9_unchanged": true,
+      "all_other_pages_unchanged": true
+    }
+  ],
+  "sdk": {
+    "artifact": "Jackcess5.0.4",
+    "sha256": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc",
+    "license": "Apache-2.0"
+  },
+  "helper": {
+    "source": "docs/testing/CreatedNumberColumnOracle.java",
+    "sha256": "c805c038da5f0853c50a3b76753dab0577aa66322fe873c9e642e52a943d1886",
+    "unchanged": true
+  },
+  "date": "2026-11-08",
+  "native_candidate_tests": "Not implemented or run for repeated external source",
+  "native_access": "Unrun",
+  "execution_history": {
+    "original_probe_sha256": "0202c67606818702c64bc83619c6767663370988589a30a9f28ae7356642eef9",
+    "original_model_sha256": "89fb78f9e4bd851d7709fde91e7b7dc8544204d17aff78c664d3a45bd774fe10",
+    "original_sdk_report_sha256": "3439eb3d6640afd7bece69feeab445b0907f9e7a756e8bac1de5d21e9f2177e1",
+    "portable_model_rerun": "All3 complete AFTER matches; SDK original outputs unchanged",
+    "portable_probe_sdk_execution": "Not repeated; underlying Java helper byte-identical to executed helper"
+  },
+  "raw_extraction": {
+    "source_sha256": "c5c6ebf45c39aaad9333cbc1c02795dc96182d6757c76da7cf9c1235cec46786",
+    "extracted_functions": [
+      {
+        "function": "short",
+        "sha256": "9d0b81501fc04e86829f411258bdf4b0e20ef7ea928a818ff28397dfa0a4a984"
+      },
+      {
+        "function": "long",
+        "sha256": "0c18a73949910f3648550b0862c954c8669684d76a08355749e6afb790ee6508"
+      },
+      {
+        "function": "put_short",
+        "sha256": "7954e386f9869180d1484c76b085a73bd68e7c7214c8ed25ee4961be5df8ee63"
+      },
+      {
+        "function": "put_long",
+        "sha256": "c43b88bb15422411b8a88b91b803e4ce3c00b2e218d6fd484568d9d18e55dbaa"
+      },
+      {
+        "function": "utf16",
+        "sha256": "95cb1d04f2b3d6df4bfa2fab7906bf525d10a04dbf8e273fd45461a919bdc819"
+      },
+      {
+        "function": "append_definition",
+        "sha256": "1def3a8e25f1225235ff4b3fc5d54042da21e34f238898dd9a06f2121acbb4d4"
+      },
+      {
+        "function": "number_group",
+        "sha256": "4c97b3dab0935f8c96d5431a7f941ba89d69f513a7a77a16e1ea29c70954311f"
+      }
+    ]
+  }
+}

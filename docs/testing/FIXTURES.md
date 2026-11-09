@@ -11212,3 +11212,19 @@ retains nine normal candidate/binding cases and two separately executed ignored
 SDK cases within its broader gates. Native Access execution, broader SQL Save,
 compiled caches, external edited bodies and older formats remain unqualified.
 Generated SDK database/class/JAR bytes remain local and untracked.
+
+
+## Repeated Number addition with external properties — 8 November 2026
+
+The [first-party recipe and raw model](number_column_repeat/README.md) use the
+unchanged maintained CreatedNumberColumnOracle Java helper and reviewed Apache-2.0
+Jackcess 5.0.4 JAR. The three original sources are the exact pinned prior Number
+AFTERs; each SDK mutation operates on a fresh copy with evaluation disabled.
+All originals remain unchanged. The [evidence record](results/repeated-number-add-sdk-2026-11-08.json)
+pins each complete BEFORE/AFTER, the exact helper, original execution scripts and
+portable independent raw-model rerun. Three full expected images match SDK bytes.
+The literal raw framing is original first-party work extracted unchanged from the
+earlier Number oracle, with per-function provenance hashes; no production encoder
+or third-party source/fixture is imported. Generated databases/classes/JAR remain
+local and untracked. This establishes existing-page property-row append evidence,
+not native writer/recovery admission, page exhaustion or Microsoft Access behavior.
