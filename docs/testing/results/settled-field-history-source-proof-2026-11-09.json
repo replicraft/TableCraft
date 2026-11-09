@@ -1,0 +1,47 @@
+{
+  "date": "2026-11-09",
+  "scope": "Inert qualification of complete settled OFF-after-field-history images; no rename or ADD authority",
+  "implementation_commit": "a40680fc",
+  "platform": "macOS 14.7.2 ARM64, headless",
+  "selected_native_tests_passed": 174,
+  "existing_ignored_tests": 1,
+  "new_focused_tests": [
+    "creation::database_options::field_history::settled_source::tests::explicit_off_body_and_cancellation_resource_checks_are_not_skipped",
+    "creation::database_options::field_history::settled_source::tests::full_replay_rejects_bytes_erased_by_hypothesis_even_when_live_policy_is_off",
+    "creation::database_options::field_history::settled_source::tests::five_sdk_after_sources_qualify_only_through_complete_native_source_and_replay",
+    "creation::database_options::field_history::settled_source::tests::highest_fitting_n12_history_replays_under_the_unchanged_native_pool",
+    "creation::database_options::field_history::settled_source::tests::hypothesis_does_not_admit_changed_original_tails_or_retired_history"
+  ],
+  "counting": "Five focused cases are included in the 174 selected native creation matches, not added to them. Earlier composition and UI batches are not included.",
+  "tests": {
+    "path": ".cache/settled-field-history-tests-20261109.json",
+    "sha256": "ea0f71593706887fd12db193c77fcd767f7c5e780397115a1d18384cc3387af1"
+  },
+  "checks": [
+    {
+      "path": ".cache/settled-field-history-clippy-20261109.log",
+      "sha256": "b092a5af4044e0dc5b3e11a6923dc8f38d660069863ce6fb7fdde38953027648"
+    },
+    {
+      "path": ".cache/settled-field-history-minimal-clippy-20261109.log",
+      "sha256": "e7d77fc58ef53d61623a7cea6ec2c6e8d1039fc7ff45e090f9948311dd43ef4d"
+    },
+    {
+      "path": ".cache/settled-field-history-format-20261109.log",
+      "sha256": "9daba0146ddc8d69c678f2312a65cc2187e738222e909c3ba6f2812dcb56b214"
+    }
+  ],
+  "verified": [
+    "Five independently SDK-pinned current OFF images qualify only after actual database role, canonical Single descriptor and last physical slot checks.",
+    "The bounded inverse yields an eight-role hypothesis; the real OFF candidate constructor must prove full Source5 and reconstruct the entire current image exactly.",
+    "Changes erased by the hypothesis, including a date payload under a NULL carrier and differently cased property dictionary bytes, remain rejected by full-current replay even when inert settings still read ExplicitOff.",
+    "Original protected tails, retired property bodies, altered OFF values, cancellation and exhausted resources remain checked.",
+    "The highest-fitting N12 history plus OFF passes the same complete source replay under the unchanged 512 MiB/5M-step source-check pool.",
+    "Old source/request languages remain closed and no target file is written."
+  ],
+  "limits": [
+    "Current source is the fitted eleven-page ACE16 shared-column profile with the database append last.",
+    "Images containing a subsequent user ADD or rename require their own source proof; the checker is not relaxed to accept them.",
+    "No native rename candidate, persistence, GUI rename completion, Windows execution or Microsoft Access save comparison is established."
+  ]
+}

@@ -330,3 +330,29 @@ layouts remain unsupported. Subsequent ADD or rename after this field-history
 OFF still needs its own native source/intent qualification; the existing
 creator-OFF→rename V3 route is a separate already-qualified source. This slice
 closes ADD→OFF for the fitted profile, not general bidirectional CRUD composition.
+
+
+## Settled shared-history source proof — 9 November 2026
+
+`NativeImage::check_field_history_name_auto_correct_off_source` is a separate
+inert checker for the complete current nine-role result above. It binds the actual
+database role, canonical Single descriptor and final catalog/LVAL append. The
+bounded inverse recovers only a hypothetical prior image. The real OFF candidate
+constructor must then qualify its complete Source5 history and reproduce every
+current byte, including both live objects, retired rows and protected tails.
+Removing a role from a view or observing two zero settings is not source proof.
+
+The [source-proof record](../../testing/results/settled-field-history-source-proof-2026-11-09.json)
+passes five focused cases within 174 selected native checks; one existing ignored
+case is excluded. It covers all five independent SDK sources and the highest
+fitting N12 history under the unchanged 512 MiB/5M pool. Erased date-carrier and
+dictionary-case differences still fail complete-current replay even when inert
+settings remain ExplicitOff. Strict full/minimal native lint and formatting pass.
+This checker issues no mutation capability and does not enable rename or further
+ADD. Later field events require a distinct chronological source language.
+
+Four independent [ADD-after-OFF SDK observations](../../testing/field_add_after_off/README.md)
+now establish the next event order: the database body stays at its original ROW,
+and the next user body appends after it. All old rows and directory entries stay
+exact. These engineering observations do not qualify a native ADD-after-OFF writer
+or widen this last-database-append checker.

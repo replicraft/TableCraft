@@ -1,5 +1,7 @@
 # Testing and evidence
 
+- [Settled field-history OFF source proof](results/settled-field-history-source-proof-2026-11-09.json)
+
 - [Settings after field histories: native, recovery and normal GUI workflows](results/field-history-options-workflows-2026-11-09.json)
 
 - [Database Options, shared property ownership and candidate workflow checks](results/database-options-workflows-2026-11-08.json)
