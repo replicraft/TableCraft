@@ -1,13 +1,13 @@
 //! Private action composition; row and schema operations retain distinct intents.
 #[cfg(feature = "ace16-create")]
-use super::default_zero_add_column::plan::Plan as DefaultZeroColumnPlan;
+use super::field_addition::plan::Plan as FieldAdditionPlan;
 use super::{Cause, QueryChange, SchemaChange, query_expression::QueryExpressionPlan};
 use crate::editing::journal::NativeJournalInsertPlan;
 #[cfg(feature = "ace16-create")]
 use tablecraft_ace::{
     AddTablePlan, FirstTablePlan, NativeAddColumnIntent, NativeAddTableIntent,
-    NativeDatabaseOptionsIntent, NativeDefaultZeroAddColumnIntent, NativeFirstTableIntent,
-    NativeRepeatedDefaultZeroAddColumnIntent, RecoverableAddColumnPlan,
+    NativeDatabaseOptionsIntent, NativeDefaultZeroAddColumnIntent, NativeFieldAdditionIntent,
+    NativeFirstTableIntent, NativeRepeatedDefaultZeroAddColumnIntent, RecoverableAddColumnPlan,
     RecoverableNativeDatabaseOptionsPlan,
 };
 use tablecraft_ace::{
@@ -26,7 +26,7 @@ pub(super) enum MutationPlan {
     #[cfg(feature = "ace16-create")]
     AddColumn(RecoverableAddColumnPlan),
     #[cfg(feature = "ace16-create")]
-    DefaultZeroAddColumn(DefaultZeroColumnPlan),
+    FieldAddition(FieldAdditionPlan),
     TableRename(RecoverableNativeTableRenamePlan),
     Update(RecoverableNativeEditPlan),
     Delete(RecoverableNativeDeletePlan),
@@ -56,7 +56,7 @@ impl MutationPlan {
                 .encode(budget, cancelled)
                 .map_err(Cause::AddColumnIntent),
             #[cfg(feature = "ace16-create")]
-            Self::DefaultZeroAddColumn(plan) => plan.encode_intent(budget, cancelled),
+            Self::FieldAddition(plan) => plan.encode_intent(budget, cancelled),
             Self::TableRename(plan) => plan
                 .intent()
                 .encode(budget, cancelled)
@@ -107,7 +107,7 @@ impl MutationPlan {
                 return prepared.commit(budget, cancelled).map_err(Cause::Commit);
             }
             #[cfg(feature = "ace16-create")]
-            Self::DefaultZeroAddColumn(plan) => {
+            Self::FieldAddition(plan) => {
                 return plan.commit(target, journal, budget, cancelled);
             }
             Self::TableRename(plan) => {
@@ -156,6 +156,8 @@ pub(super) enum MutationIntent {
     DefaultZeroAddColumn(NativeDefaultZeroAddColumnIntent),
     #[cfg(feature = "ace16-create")]
     RepeatedDefaultZeroAddColumn(NativeRepeatedDefaultZeroAddColumnIntent),
+    #[cfg(feature = "ace16-create")]
+    FieldAddition(NativeFieldAdditionIntent),
     TableRename(NativeTableRenameIntent),
     Update(NativeUpdateIntent),
     Delete(NativeDeleteIntent),
@@ -184,7 +186,8 @@ impl MutationIntent {
             #[cfg(feature = "ace16-create")]
             Self::AddColumn(_)
             | Self::DefaultZeroAddColumn(_)
-            | Self::RepeatedDefaultZeroAddColumn(_) => Some(SchemaChange::ColumnAdded),
+            | Self::RepeatedDefaultZeroAddColumn(_)
+            | Self::FieldAddition(_) => Some(SchemaChange::ColumnAdded),
             Self::TableRename(intent) => {
                 (intent.table() != intent.new_name()).then_some(SchemaChange::TableRenamed)
             }
@@ -239,6 +242,12 @@ impl MutationIntent {
             return NativeQueryExpressionIntent::decode(raw, budget, cancelled)
                 .map(Self::QueryExpression)
                 .map_err(Cause::QueryExpressionIntent);
+        }
+        #[cfg(feature = "ace16-create")]
+        if raw.starts_with(b"TCAC0005") {
+            return NativeFieldAdditionIntent::decode(raw, budget, cancelled)
+                .map(Self::FieldAddition)
+                .map_err(Cause::FieldAdditionIntent);
         }
         #[cfg(feature = "ace16-create")]
         if raw.starts_with(b"TCAC0004") {

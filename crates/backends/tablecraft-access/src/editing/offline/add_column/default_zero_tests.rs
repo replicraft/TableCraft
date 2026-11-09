@@ -8,7 +8,7 @@ use crate::editing::offline::{
 use std::{fs, io::Cursor, path::Path};
 use tablecraft_ace::{
     CreatedDefaultZeroColumnRequired, NativeImage, RecoverableDefaultZeroAddColumnPlan,
-    RecoverableRepeatedDefaultZeroAddColumnPlan,
+    RecoverableFieldAdditionPlan, RecoverableRepeatedDefaultZeroAddColumnPlan,
 };
 use tablecraft_io::journal::{RecoveryOutcome, filesystem::OfflineJournalPair};
 use tablecraft_testkit::fixtures::access::canonical_created_number as raw;
@@ -73,6 +73,7 @@ fn retained(path: &Path, bundle: &Path, committed: bool, retired: bool) -> Vec<u
 enum RetainedPlan {
     First(RecoverableDefaultZeroAddColumnPlan),
     Repeated(RecoverableRepeatedDefaultZeroAddColumnPlan),
+    Typed(RecoverableFieldAdditionPlan),
 }
 
 fn retained_plan(
@@ -88,6 +89,11 @@ fn retained_plan(
             plan.after_bytes().to_vec(),
             plan.intent().encode(&mut budget(), &|| false).unwrap(),
         ),
+        RetainedPlan::Typed(plan) => (
+            plan.before_bytes().to_vec(),
+            plan.after_bytes().to_vec(),
+            plan.intent().encode(&mut budget(), &|| false).unwrap(),
+        ),
         RetainedPlan::Repeated(plan) => (
             plan.before_bytes().to_vec(),
             plan.after_bytes().to_vec(),
@@ -98,6 +104,7 @@ fn retained_plan(
     let framing: &[u8] = match &plan {
         RetainedPlan::First(_) => b"TCAC0003",
         RetainedPlan::Repeated(_) => b"TCAC0004",
+        RetainedPlan::Typed(_) => b"TCAC0005",
     };
     assert!(intent.starts_with(framing));
 
@@ -120,6 +127,9 @@ fn retained_plan(
                 plan.prepare(&mut target, &mut journal, &mut budget(), &|| false)
             }
             RetainedPlan::Repeated(plan) => {
+                plan.prepare(&mut target, &mut journal, &mut budget(), &|| false)
+            }
+            RetainedPlan::Typed(plan) => {
                 plan.prepare(&mut target, &mut journal, &mut budget(), &|| false)
             }
         }
@@ -234,3 +244,6 @@ mod failures;
 
 #[path = "default_zero_tests/repeated.rs"]
 mod repeated;
+
+#[path = "default_zero_tests/field_addition.rs"]
+mod field_addition;

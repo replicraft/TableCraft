@@ -1,15 +1,16 @@
-//! Fresh explicit-zero ADD-column reconstruction through the retained exclusive target owner.
+//! Typed column reconstruction through the retained exclusive target owner.
 use super::plan::MutationPlan;
 use super::{Cause, Failure, OfflineWriteSession, Phase, Receipt, SchemaChange, SessionState};
 use plan::Plan;
 use std::path::Path;
 use tablecraft_ace::{
-    NativeImage, RecoverableDefaultZeroAddColumnPlan, RecoverableRepeatedDefaultZeroAddColumnPlan,
+    NativeImage, RecoverableDefaultZeroAddColumnPlan, RecoverableFieldAdditionPlan,
+    RecoverableRepeatedDefaultZeroAddColumnPlan,
 };
 use tablecraft_core::limits::ResourceBudget;
 
 /// A checked schema operation; journal setup begins only on consuming apply.
-pub struct StagedDefaultZeroAddColumn {
+pub struct StagedFieldAddition {
     session: OfflineWriteSession,
     plan: Plan,
 }
@@ -24,10 +25,10 @@ impl OfflineWriteSession {
         native: &mut ResourceBudget,
         proof: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
-    ) -> Result<StagedDefaultZeroAddColumn, Failure> {
+    ) -> Result<StagedFieldAddition, Failure> {
         let _span =
             tracing::debug_span!("access.offline.stage_reviewed_default_zero_add_column").entered();
-        self.stage_default_zero_add_column(Plan::First(reviewed), native, proof, cancelled)
+        self.stage_field_addition(Plan::First(reviewed), native, proof, cancelled)
     }
 
     /// Reconstruct the distinct repeated StoredFalse/zero request against this retained target.
@@ -37,20 +38,33 @@ impl OfflineWriteSession {
         native: &mut ResourceBudget,
         proof: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
-    ) -> Result<StagedDefaultZeroAddColumn, Failure> {
+    ) -> Result<StagedFieldAddition, Failure> {
         let _span =
             tracing::debug_span!("access.offline.stage_reviewed_repeated_default_zero_add_column")
                 .entered();
-        self.stage_default_zero_add_column(Plan::Repeated(reviewed), native, proof, cancelled)
+        self.stage_field_addition(Plan::Repeated(reviewed), native, proof, cancelled)
     }
 
-    fn stage_default_zero_add_column(
+    /// Reconstruct the exact typed declaration against this retained original.
+    /// This route never retries a first/repeated Number language after refusal.
+    pub fn stage_reviewed_field_addition_with_budgets(
+        self,
+        reviewed: RecoverableFieldAdditionPlan,
+        native: &mut ResourceBudget,
+        proof: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<StagedFieldAddition, Failure> {
+        let _span = tracing::debug_span!("access.offline.stage_reviewed_field_addition").entered();
+        self.stage_field_addition(Plan::Typed(reviewed), native, proof, cancelled)
+    }
+
+    fn stage_field_addition(
         mut self,
         reviewed: Plan,
         native: &mut ResourceBudget,
         proof: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
-    ) -> Result<StagedDefaultZeroAddColumn, Failure> {
+    ) -> Result<StagedFieldAddition, Failure> {
         let result = (|| {
             self.require_ready()?;
             let slot = self.slot_mut()?;
@@ -73,7 +87,7 @@ impl OfflineWriteSession {
             reviewed.requalify_with_budgets(image, native, proof, cancelled)
         })();
         match result {
-            Ok(plan) => Ok(StagedDefaultZeroAddColumn {
+            Ok(plan) => Ok(StagedFieldAddition {
                 session: self,
                 plan,
             }),
@@ -82,7 +96,7 @@ impl OfflineWriteSession {
     }
 }
 
-impl StagedDefaultZeroAddColumn {
+impl StagedFieldAddition {
     /// Exact original table spelling retained by the checked request.
     pub fn table(&self) -> &str {
         self.plan.table()
@@ -108,7 +122,7 @@ impl StagedDefaultZeroAddColumn {
     ) -> Result<(OfflineWriteSession, Receipt), Failure> {
         super::apply::apply(
             self.session,
-            MutationPlan::DefaultZeroAddColumn(self.plan),
+            MutationPlan::FieldAddition(self.plan),
             super::apply::CompletionFacts::Schema(Some(SchemaChange::ColumnAdded)),
             bundle,
             budget,

@@ -8,10 +8,10 @@ mod add_table;
 mod apply;
 #[cfg(feature = "ace16-create")]
 mod database_options;
-#[cfg(feature = "ace16-create")]
-mod default_zero_add_column;
 mod delete;
 mod error;
+#[cfg(feature = "ace16-create")]
+mod field_addition;
 #[cfg(feature = "ace16-create")]
 mod first_table;
 mod insert;
@@ -34,10 +34,10 @@ pub use add_column::StagedAddColumn;
 pub use add_table::StagedAddTable;
 #[cfg(feature = "ace16-create")]
 pub use database_options::StagedDatabaseOptions;
-#[cfg(feature = "ace16-create")]
-pub use default_zero_add_column::StagedDefaultZeroAddColumn;
 pub use delete::StagedDelete;
 pub use error::{Cause, Failure, OpenError, Phase};
+#[cfg(feature = "ace16-create")]
+pub use field_addition::StagedFieldAddition;
 #[cfg(feature = "ace16-create")]
 pub use first_table::StagedFirstTable;
 pub use insert::{OfflineTableInserter, StagedInsert};

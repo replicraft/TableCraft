@@ -1,7 +1,8 @@
-//! Closed first/repeated Number request composition, never decoder fallback.
+//! Closed typed/first/repeated column request composition, never decoder fallback.
 use super::super::Cause;
 use tablecraft_ace::{
-    NativeImage, RecoverableDefaultZeroAddColumnPlan, RecoverableRepeatedDefaultZeroAddColumnPlan,
+    NativeImage, RecoverableDefaultZeroAddColumnPlan, RecoverableFieldAdditionPlan,
+    RecoverableRepeatedDefaultZeroAddColumnPlan,
 };
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_io::journal::{DurableStorage, ResizableDurableStorage};
@@ -9,6 +10,7 @@ use tablecraft_io::journal::{DurableStorage, ResizableDurableStorage};
 pub(in crate::editing::offline) enum Plan {
     First(RecoverableDefaultZeroAddColumnPlan),
     Repeated(RecoverableRepeatedDefaultZeroAddColumnPlan),
+    Typed(RecoverableFieldAdditionPlan),
 }
 
 impl Plan {
@@ -16,6 +18,7 @@ impl Plan {
         match self {
             Self::First(plan) => plan.before_bytes(),
             Self::Repeated(plan) => plan.before_bytes(),
+            Self::Typed(plan) => plan.before_bytes(),
         }
     }
 
@@ -23,6 +26,7 @@ impl Plan {
         match self {
             Self::First(plan) => plan.table(),
             Self::Repeated(plan) => plan.table(),
+            Self::Typed(plan) => plan.table(),
         }
     }
 
@@ -30,6 +34,7 @@ impl Plan {
         match self {
             Self::First(plan) => plan.column(),
             Self::Repeated(plan) => plan.column(),
+            Self::Typed(plan) => plan.column(),
         }
     }
 
@@ -49,6 +54,10 @@ impl Plan {
                 .requalify_with_budgets(fresh, native, proof, cancelled)
                 .map(Self::Repeated)
                 .map_err(Cause::RepeatedDefaultZeroAddColumnIntent),
+            Self::Typed(plan) => plan
+                .requalify_with_budgets(fresh, native, proof, cancelled)
+                .map(Self::Typed)
+                .map_err(Cause::FieldAdditionIntent),
         }
     }
 
@@ -66,6 +75,10 @@ impl Plan {
                 .intent()
                 .encode(budget, cancelled)
                 .map_err(Cause::RepeatedDefaultZeroAddColumnIntent),
+            Self::Typed(plan) => plan
+                .intent()
+                .encode(budget, cancelled)
+                .map_err(Cause::FieldAdditionIntent),
         }
     }
 
@@ -76,11 +89,12 @@ impl Plan {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<(), Cause> {
-        // Both profiles remain checked V2 operations even when their current
+        // All profiles remain checked V2 operations even when their current
         // source and replacement happen to have equal lengths.
         let prepared = match self {
             Self::First(plan) => plan.prepare(target, journal, budget, cancelled),
             Self::Repeated(plan) => plan.prepare(target, journal, budget, cancelled),
+            Self::Typed(plan) => plan.prepare(target, journal, budget, cancelled),
         }
         .map_err(Cause::Prepare)?;
         prepared.commit(budget, cancelled).map_err(Cause::Commit)
