@@ -22793,3 +22793,21 @@ notice is retained. It has not been parsed, executed or qualified against Access
 
 Real Access comparison still requires a separately provisioned Windows oracle.
 The fixture has not established native format or application compatibility.
+
+## Saved-field DROP service checkpoint — 9 November 2026
+
+A separate empty ACE16 explicit-OFF native field deletion candidate, TCFD0001
+original request/recovery, retained Access adapter and consuming runtime
+inspection/review/save/full-image reopen now pass focused checks. The native
+profile preserves surviving native/stored identities and history instead of
+compacting fields. Normal GUI DROP activation remains pending; shared model
+ownership checks do not constitute end-to-end GUI acceptance.
+
+The [service record](testing/results/saved-field-drop-services-2026-11-09.json)
+keeps nine initial native guard failures and the corrected post-DROP INSERT
+refusal prediction. It lists passing selected 14 native, 208 Access, 12 DROP runtime,
+650 UI and 188 desktop checks separately without adding repeated scopes. The
+[single raw gapped-row reader observation](testing/gapped_number_insert/README.md)
+is not an SDK INSERT write. A separate sparse-generated writer change is applied
+but unrun. See the [bounded contract](access/writes/FIELD_DROP.md); populated-row,
+older-format and Microsoft Access save parity remain open.

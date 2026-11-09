@@ -1,0 +1,231 @@
+{
+  "date": "2026-11-09",
+  "scope": "Bounded saved-field DROP native/recovery/adapter/runtime and shared-state checkpoint; normal GUI activation pending",
+  "counting_policy": "Executions are chronological and overlap. No aggregate is claimed. Use latest scoped passing results; do not add earlier full suites or the repeated desktop/runtime classifier scopes. Root owns final acceptance totals.",
+  "executions": [
+    {
+      "artifact_name": "field-drop-native-tests-20261109.json",
+      "sha256": "9157b1fc0098a049f31ef65a114e10a43f9a6f5d208e7a89e981e94fd1fd87ad",
+      "executions": [
+        {
+          "package": "tablecraft_testkit",
+          "filter": "",
+          "exit_code": 0,
+          "passed": 25,
+          "failed": 0,
+          "ignored": 0,
+          "failed_tests": []
+        },
+        {
+          "package": "tablecraft_runtime",
+          "filter": "",
+          "exit_code": 0,
+          "passed": 282,
+          "failed": 0,
+          "ignored": 1,
+          "failed_tests": []
+        },
+        {
+          "package": "tablecraft_access",
+          "filter": "",
+          "exit_code": 0,
+          "passed": 202,
+          "failed": 0,
+          "ignored": 0,
+          "failed_tests": []
+        },
+        {
+          "package": "tablecraft-desktop",
+          "filter": "",
+          "exit_code": 0,
+          "passed": 188,
+          "failed": 0,
+          "ignored": 1,
+          "failed_tests": []
+        },
+        {
+          "package": "tablecraft_ace",
+          "filter": "",
+          "exit_code": 101,
+          "passed": 1585,
+          "failed": 9,
+          "ignored": 263,
+          "failed_tests": [
+            "table::mutation::drop_field::tests::live_group_removal_preserves_other_native_properties_and_explicit_database_off",
+            "table::mutation::drop_field::tests::measured_complete_candidate_pool_and_middle_terminal_cancellation_never_publish_prefixes",
+            "table::mutation::drop_field::tests::two_candidates_match_appended_group_removed_pins_not_readable_orphan_controls",
+            "transaction::intent::field_drop::tests::changed_original_binding_native_identity_and_missing_field_never_gain_authority",
+            "transaction::intent::field_drop::tests::checked_journal_with_patched_after_or_matching_digest_bad_source_is_not_authority",
+            "transaction::intent::field_drop::tests::independent_wire_and_both_complete_raw_afters_survive_caller_scope_rebinding",
+            "transaction::intent::field_drop::tests::recovery_uses_one_cumulative_pool_and_initial_cancellation_never_writes",
+            "transaction::intent::field_drop::tests::same_checked_v1_covers_pending_committed_torn_marker_and_settled_without_replay",
+            "transaction::intent::field_drop::tests::split_pools_terminal_cancellation_and_stale_target_preserve_original_resources"
+          ]
+        }
+      ]
+    },
+    {
+      "artifact_name": "field-drop-adapter-tests-20261109.json",
+      "sha256": "e3d7cd1e6b62fa3af701dfff833f133259bd802d9d18d6894356835748eb3abc",
+      "executions": [
+        {
+          "package": "tablecraft_ace",
+          "filter": "table::mutation::drop_field::",
+          "exit_code": 0,
+          "passed": 7,
+          "failed": 0,
+          "ignored": 0,
+          "failed_tests": []
+        },
+        {
+          "package": "tablecraft_ace",
+          "filter": "transaction::intent::field_drop::",
+          "exit_code": 0,
+          "passed": 7,
+          "failed": 0,
+          "ignored": 0,
+          "failed_tests": []
+        },
+        {
+          "package": "tablecraft_runtime",
+          "filter": "field_drop",
+          "exit_code": 0,
+          "passed": 1,
+          "failed": 0,
+          "ignored": 0,
+          "failed_tests": []
+        },
+        {
+          "package": "tablecraft_access",
+          "filter": "",
+          "exit_code": 0,
+          "passed": 208,
+          "failed": 0,
+          "ignored": 0,
+          "failed_tests": []
+        }
+      ]
+    },
+    {
+      "artifact_name": "field-drop-runtime-tests-20261109.json",
+      "sha256": "9166d7b7ee75f27fecd70b3c3c9954da7f00efc068140147c4f433f016a4871b",
+      "executions": [
+        {
+          "package": "tablecraft_runtime",
+          "filter": "",
+          "exit_code": 101,
+          "passed": 293,
+          "failed": 1,
+          "ignored": 1,
+          "failed_tests": [
+            "tests::field_drop::service::inserting::gapped_number_schema_after_actual_drop_refuses_omitted_insert_without_writes"
+          ]
+        },
+        {
+          "package": "tablecraft-desktop",
+          "filter": "",
+          "exit_code": 0,
+          "passed": 188,
+          "failed": 0,
+          "ignored": 1,
+          "failed_tests": []
+        }
+      ]
+    },
+    {
+      "artifact_name": "field-drop-core-tests-20261109.json",
+      "sha256": "df7e5270f5acb968653f86fe9deaa2f3cc412aa117295097899eca492b3f4ffd",
+      "executions": [
+        {
+          "package": "tablecraft_runtime",
+          "filter": "field_drop",
+          "exit_code": 0,
+          "passed": 12,
+          "failed": 0,
+          "ignored": 0,
+          "failed_tests": []
+        },
+        {
+          "package": "tablecraft-desktop",
+          "filter": "",
+          "exit_code": 0,
+          "passed": 188,
+          "failed": 0,
+          "ignored": 1,
+          "failed_tests": []
+        },
+        {
+          "package": "tablecraft_ui",
+          "filter": "",
+          "exit_code": 0,
+          "passed": 650,
+          "failed": 0,
+          "ignored": 0,
+          "failed_tests": []
+        }
+      ]
+    }
+  ],
+  "diagnostic": {
+    "artifact_name": "field-drop-diagnostic-test-20261109.log",
+    "sha256": "5a2bd07c877025ffb1db44df3e4db0f4ca36720c4473c0e74966dfd1670fc6e6",
+    "passed": 0,
+    "failed": 1,
+    "observed": "Preservation at drop_field/verify.rs:71",
+    "correction_commit": "0dda1987",
+    "reader_contract_commit": "51d63ee5",
+    "cause": "reader::row_range returns the raw directory word including offset. The original flags!=0 guard rejected valid nonzero offsets. The correction checks row_word & !OFFSET_MASK and previous_word & !OFFSET_MASK, retaining all offset/body/size/free/directory/complement checks. Temporary diagnostics were removed."
+  },
+  "insert_baseline": {
+    "original_prediction": "Unsupported(RowLayout)",
+    "actual_typed_refusal": "Edit(Plan(Plan(Edit(Unsupported(ActiveContent)))))",
+    "cause": "The old dense no-required-program declaration grammar rejects live count2 != native high-water 3 before later row-layout admission; this does not establish actual active content.",
+    "followup": "Corrected assertion passes in the later twelve-case DROP runtime filter. Sparse-generated writer19 is applied but UNRUN and is not qualified by this record."
+  },
+  "latest_passing_scopes": [
+    {
+      "package": "tablecraft_ace",
+      "filters": [
+        "table::mutation::drop_field::",
+        "transaction::intent::field_drop::"
+      ],
+      "passed": 14,
+      "ignored": 0
+    },
+    {
+      "package": "tablecraft_access",
+      "scope": "whole suite",
+      "passed": 208,
+      "ignored": 0
+    },
+    {
+      "package": "tablecraft_runtime",
+      "filter": "field_drop",
+      "passed": 12,
+      "ignored": 0
+    },
+    {
+      "package": "tablecraft_ui",
+      "scope": "whole suite",
+      "passed": 650,
+      "ignored": 0
+    },
+    {
+      "package": "tablecraft-desktop",
+      "scope": "whole suite",
+      "passed": 188,
+      "ignored": 1
+    }
+  ],
+  "boundaries": {
+    "normal_gui_drop_activation": false,
+    "new_native_windows": false,
+    "microsoft_access_save_comparison": false,
+    "sdk_drop_or_insert_writes": 0,
+    "sparse_generated_writer_tests": "UNRUN; outside this checkpoint"
+  },
+  "independent_oracles": [
+    "docs/testing/results/saved-field-drop-raw-sdk-read-2026-11-09.json",
+    "docs/testing/results/gapped-number-insert-raw-sdk-read-2026-11-09.json"
+  ]
+}

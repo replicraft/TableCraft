@@ -1878,3 +1878,33 @@ literal TCQE0001 service remains unchanged. The [coordinated record](../testing/
 retains its selected passing checks and corrected failures. This route does not establish general
 QueryDef creation/Save As,
 Access 97–2019 write parity or native Microsoft Access save behavior.
+
+## Reviewed saved-field deletion
+
+`InspectFieldDropSource` binds the exact document revision, true table/field
+names and actual native number. `FieldDropSourceInspection.source_eligible` is
+metadata only, with no candidate AFTER, lease, save support or physical-fit
+promise. Only explicit unsupported source/target leaves become false; malformed,
+cancelled and resource-limited reads retain typed errors. Unsupported builds
+retain ordinary metadata and refuse unsupported editing explicitly.
+
+`ReviewFieldDrop` creates `FieldDropReview` presentation facts and a separate
+consuming `ReviewedFieldDrop` from the actual sealed native plan. The profile is
+[empty canonical ACE16 with settled field history and explicit OFF](../access/writes/FIELD_DROP.md).
+There is no unchanged/no-op branch. No write lease is held during confirmation.
+`SaveWorker::start_field_drop` consumes the capability through the real adapter
+and the existing nonreplaceable retained worker, with separate native/proof/
+persistence allowances. Failures retain actual resources and typed causes.
+
+Only a ColumnDropped-only receipt qualifies `field_drop_reopen_facts`; ADD,
+rename, rows, queries and options effects are distinct. The exact accepted
+`FieldDroppedReopen` must match the complete expected image in `OpenFieldDropped`.
+A terminal save and its ACK leave the original read session/revision/schema
+intact; publication is allowed only after this full-image read succeeds.
+Cancellation, changed source and failed reopen do not become deletion success.
+
+The [checkpoint record](../testing/results/saved-field-drop-services-2026-11-09.json)
+retains corrected native/recovery, actual adapter-file and runtime service cases,
+plus source-free shared model/regression suites. Normal GUI DROP activation is
+pending; the service does not imply a connected Delete Field button. A separate
+applied-but-unrun sparse-generated INSERT change is outside these results.
