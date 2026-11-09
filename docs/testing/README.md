@@ -1,5 +1,7 @@
 # Testing and evidence
 
+- [Saved Number field offscreen presentation](results/number-column-presentation-2026-11-08.json)
+
 - [Focused schema save workflow results](results/schema-save-workflows-2026-11-08.json)
 - [Completed SQL/creator focused batch](results/sql-creator-focused-2026-11-08.json)
 - [Current saved-query save/rebind lifecycle](results/query-save-rebind-2026-11-08.json)

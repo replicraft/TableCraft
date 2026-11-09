@@ -476,3 +476,24 @@ screenshot-qualified native parity. The actual cached parameter-prompt image was
 reopened at 233×123 pixels; it supports only the existing compact prompt reference,
 with unknown application build/platform/DPI. It does not verify UPDATE layout.
 See the [offscreen rendering record](PRESENTATION_PREVIEW.md#reviewed-sql-update--8-november-2026).
+
+## Saved Number field presentation — 8 November 2026
+
+The actual retained `Bildschirmfoto_2026-10-28_12-07-35.png` was reopened at
+1920×1141. It shows Windows Access inside VirtualBox, with an unknown display
+scale, the Home Ribbon and the trailing italic Click to Add header. The captured
+application account record identifies Microsoft 365 Apps version 2610; the
+Access 2016 file title is a file-format label rather than an application release.
+
+Eight source-free offscreen frames were rendered and individually inspected on
+macOS 14.7.2 ARM64: English/light at 1280×820 logical points, scale 1, and
+German/dark at 960×640, scale 1.25. They cover the type menu, bounded field-name
+editor and close confirmation with Save available or unavailable. Menu entries,
+name text and all three confirmation choices remain visible. The complete Ribbon
+uses horizontal scrolling in the compact localized scene.
+
+Expanded-menu, naming, close-confirmation and dark Access captures are missing;
+those controls remain adaptations. These scenes contain no database or save actor
+and establish presentation only. The separate desktop workflow gate currently
+contains unresolved cancellation and save-completion failures, so normal Number
+saves remain disabled. See the [frame record](../testing/results/number-column-presentation-2026-11-08.json).

@@ -1,0 +1,135 @@
+{
+  "kind": "source-free Number presentation only",
+  "renderer": "egui_kittest offscreen, Windows input emulation",
+  "actual_platform_gpu": "macOS 14.7.2 (23H311), ARM64 host; egui_kittest offscreen GPU rendering, no native app windows",
+  "reference": {
+    "opened_actual_image": "docs/temp/Access Sample/Bildschirmfoto_2026-10-28_12-07-35.png",
+    "sha256": "4ef9f30af6dcafb72c39060e1d40a9b85c0c121999740425c11bfe3e66be91d7",
+    "pixels": [
+      1920,
+      1141
+    ],
+    "platform": "Windows Access inside VirtualBox; source display scale unknown",
+    "application_account_record": "Microsoft 365 Apps version 2610, build 20527.20088; file title Access 2016 does not establish application release",
+    "observed": "Home Ribbon, navigation, separate table tab, dense datasheet, trailing italic Click to Add header with arrow",
+    "missing_captures": [
+      "expanded saved-table field type menu",
+      "saved Number naming editor",
+      "saved Number Save/Discard/Cancel close confirmation",
+      "dark theme"
+    ],
+    "qualification": "Header placement follows actual retained capture; new controls and dark theme are adaptations, not verified Access visual parity"
+  },
+  "results": [
+    {
+      "mode": "menu",
+      "locale": "en-US",
+      "theme": "light",
+      "width": 1280,
+      "height": 820,
+      "scale": 1,
+      "exit_code": 0,
+      "stderr": "",
+      "visual_review": "Inspected actual PNG: field menu/name and confirmation are readable; all choices remain in bounds. Full Ribbon retained with horizontal scroll on compact localized frame.",
+      "artifact": ".cache/ui-previews/saved-number-20261108/en-US-light-datasheet-number-menu.png",
+      "sha256": "8428c664b393980cf42e16f8032a58f39806a90796fd706730be5e64db57f5a4"
+    },
+    {
+      "mode": "name",
+      "locale": "en-US",
+      "theme": "light",
+      "width": 1280,
+      "height": 820,
+      "scale": 1,
+      "exit_code": 0,
+      "stderr": "",
+      "visual_review": "Inspected actual PNG: field menu/name and confirmation are readable; all choices remain in bounds. Full Ribbon retained with horizontal scroll on compact localized frame.",
+      "artifact": ".cache/ui-previews/saved-number-20261108/en-US-light-datasheet-number-name.png",
+      "sha256": "f1e7119329f0e3100680a0c7acf97de92ead781cf0c5ccb887f3a2aa4d5aa4d9"
+    },
+    {
+      "mode": "close",
+      "locale": "en-US",
+      "theme": "light",
+      "width": 1280,
+      "height": 820,
+      "scale": 1,
+      "exit_code": 0,
+      "stderr": "",
+      "visual_review": "Inspected actual PNG: field menu/name and confirmation are readable; all choices remain in bounds. Full Ribbon retained with horizontal scroll on compact localized frame.",
+      "artifact": ".cache/ui-previews/saved-number-20261108/en-US-light-datasheet-number-close.png",
+      "sha256": "ba9053b3f5619cda0e0bcc38a1cc1c07e5e60a019d93ba9e4c8772ddc686e378"
+    },
+    {
+      "mode": "close-unavailable",
+      "locale": "en-US",
+      "theme": "light",
+      "width": 1280,
+      "height": 820,
+      "scale": 1,
+      "exit_code": 0,
+      "stderr": "",
+      "visual_review": "Inspected actual PNG: field menu/name and confirmation are readable; all choices remain in bounds. Full Ribbon retained with horizontal scroll on compact localized frame.",
+      "artifact": ".cache/ui-previews/saved-number-20261108/en-US-light-datasheet-number-close-unavailable.png",
+      "sha256": "14bbc751dc084ff7e9c6dec91473fa222b21cb663c35d3b21056cb6311f61225"
+    },
+    {
+      "mode": "menu",
+      "locale": "de",
+      "theme": "dark",
+      "width": 960,
+      "height": 640,
+      "scale": 1.25,
+      "exit_code": 0,
+      "stderr": "",
+      "visual_review": "Inspected actual PNG: field menu/name and confirmation are readable; all choices remain in bounds. Full Ribbon retained with horizontal scroll on compact localized frame.",
+      "artifact": ".cache/ui-previews/saved-number-20261108/de-dark-datasheet-number-menu@1.25x.png",
+      "sha256": "1ddf29283b8dac43ba831e1ac4b2b8fad06931653749a36dbcdd447672ca74a2"
+    },
+    {
+      "mode": "name",
+      "locale": "de",
+      "theme": "dark",
+      "width": 960,
+      "height": 640,
+      "scale": 1.25,
+      "exit_code": 0,
+      "stderr": "",
+      "visual_review": "Inspected actual PNG: field menu/name and confirmation are readable; all choices remain in bounds. Full Ribbon retained with horizontal scroll on compact localized frame.",
+      "artifact": ".cache/ui-previews/saved-number-20261108/de-dark-datasheet-number-name@1.25x.png",
+      "sha256": "9ea7ccaf9603eda613484f4ea418756597ca93c8bb38d78d76898433d104f84f"
+    },
+    {
+      "mode": "close",
+      "locale": "de",
+      "theme": "dark",
+      "width": 960,
+      "height": 640,
+      "scale": 1.25,
+      "exit_code": 0,
+      "stderr": "",
+      "visual_review": "Inspected actual PNG: field menu/name and confirmation are readable; all choices remain in bounds. Full Ribbon retained with horizontal scroll on compact localized frame.",
+      "artifact": ".cache/ui-previews/saved-number-20261108/de-dark-datasheet-number-close@1.25x.png",
+      "sha256": "a3428063fcf96ff96425663080c38a93ea915f48d894adbe66868c51de6924f4"
+    },
+    {
+      "mode": "close-unavailable",
+      "locale": "de",
+      "theme": "dark",
+      "width": 960,
+      "height": 640,
+      "scale": 1.25,
+      "exit_code": 0,
+      "stderr": "",
+      "visual_review": "Inspected actual PNG: field menu/name and confirmation are readable; all choices remain in bounds. Full Ribbon retained with horizontal scroll on compact localized frame.",
+      "artifact": ".cache/ui-previews/saved-number-20261108/de-dark-datasheet-number-close-unavailable@1.25x.png",
+      "sha256": "ea4aab0373f439febe64e34cdca381c8f2ff7445433abb7c1cdaa4e14cc6c76e"
+    }
+  ],
+  "implementation_commit": "3df4f27a",
+  "limitations": [
+    "Synthetic presentation only; no database writes or runtime actor in these scenes.",
+    "No retained native captures for expanded menu, field naming, confirmation or dark theme; these remain adaptations.",
+    "Windows/Linux execution and native Access interaction parity unverified."
+  ]
+}
