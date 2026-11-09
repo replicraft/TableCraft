@@ -43,7 +43,7 @@ struct Shared {
 impl Shared {
     fn issue_generation(&self) -> Result<u64, ReadRequestExhausted> {
         self.generation
-            .fetch_update(Ordering::AcqRel, Ordering::Acquire, |generation| {
+            .try_update(Ordering::AcqRel, Ordering::Acquire, |generation| {
                 generation
                     .checked_add(1)
                     .filter(|next| *next < EXHAUSTED_GENERATION)
@@ -55,7 +55,7 @@ impl Shared {
     fn revoke_generation(&self) -> u64 {
         // The final value is cancellation-only, never an issued request ID.
         self.generation
-            .fetch_update(Ordering::AcqRel, Ordering::Acquire, |generation| {
+            .try_update(Ordering::AcqRel, Ordering::Acquire, |generation| {
                 Some(generation.saturating_add(1))
             })
             .expect("revocation always supplies a value")
