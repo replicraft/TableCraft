@@ -1,5 +1,6 @@
-use super::super::{Ace16WritePreview, EditError, WriteBlocker, preview::qualify_fixed};
-use super::{FixedColumnUpdates, FixedScalarUpdate, masked, preserved};
+use super::super::{Ace16WritePreview, EditError, WriteBlocker, ace_profile::qualify_fixed};
+use super::{masked, preserved};
+use crate::table::mutation::requests::{FixedColumnUpdates, FixedScalarUpdate};
 use crate::{
     InspectError, NativeImage, format::data_type::NUMERIC_BYTES, header::check,
     inspect_table_schema, limits::MAX_LIVE_ROWS,

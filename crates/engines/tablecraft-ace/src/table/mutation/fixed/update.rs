@@ -1,4 +1,3 @@
-pub use super::super::requests::FixedScalarUpdate;
 use super::super::{physical::FixedAssignment, rows::RowAssignment};
 
 pub(in crate::table::mutation) struct EncodedUpdate<const WIDTH: usize> {

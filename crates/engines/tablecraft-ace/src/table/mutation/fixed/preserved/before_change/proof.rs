@@ -1,5 +1,6 @@
 //! Fresh program/intent replay supplies the sole physical byte authority.
 use super::super::{copy, source};
+use crate::table::mutation::ace_profile;
 use crate::{
     BeforeChangePreviewError, BeforeEventGuardError, BeforeEventGuardSelector, FixedColumnUpdates,
     InspectError, NativeImage,
@@ -8,7 +9,6 @@ use crate::{
     table::mutation::{
         fixed_records::proof as fixed_audit,
         guards::fields::batch::{self, Prepared, SelectedPrograms, SourceFacts},
-        preview,
     },
 };
 use tablecraft_core::{
@@ -32,7 +32,7 @@ pub(super) fn prove(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), BeforeChangePreviewError> {
     check(budget, cancelled).map_err(BeforeEventGuardError::from)?;
-    preview::qualify(image)?;
+    ace_profile::qualify(image)?;
     let schema = inspect_table_schema(
         &mut image.reader(),
         image.catalog().catalog().scope(),

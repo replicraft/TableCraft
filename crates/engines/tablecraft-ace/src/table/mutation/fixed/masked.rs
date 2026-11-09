@@ -3,7 +3,8 @@ use super::super::{
     patch::BytePatch,
     rows::{self, RowAssignment},
 };
-use super::{FixedScalarUpdate, encoding};
+use super::encoding;
+use crate::table::mutation::requests::FixedScalarUpdate;
 use crate::{
     InspectError, NativeImage, TableCheck,
     format::{

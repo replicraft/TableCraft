@@ -9,8 +9,7 @@ use crate::{
     EditError, InspectError, NativeImage,
     format::{page::PAGE_BYTES, row::reference_page},
     table::mutation::{
-        page_update::{roots, stage::Placement},
-        variable_split::metadata::Metadata,
+        page_update::stage::Placement, record_roots as roots, variable_split::metadata::Metadata,
         variable_update::placement::Plan,
     },
 };

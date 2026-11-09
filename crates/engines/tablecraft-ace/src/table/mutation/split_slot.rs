@@ -1,10 +1,11 @@
 //! Exact existing-slot replacements with independently certified index growth.
+use crate::table::mutation::ace_profile;
 mod authority;
 mod finish;
 #[cfg(test)]
 mod tests;
 
-use super::{EditError, SlotScalarUpdate, gates, preview, slot};
+use super::{EditError, SlotScalarUpdate, gates, slot};
 use crate::{
     Ace16WritePreview, InspectError, NativeImage, TableCheck,
     header::check,
@@ -69,7 +70,7 @@ fn preflight(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(TableCheck, usize), EditError> {
     check(budget, cancelled)?;
-    preview::qualify(image)?;
+    ace_profile::qualify(image)?;
     if operation.requests.len() > MAX_LIVE_ROWS {
         return Err(InspectError::StructureLimit.into());
     }

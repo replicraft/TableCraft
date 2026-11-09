@@ -1,10 +1,11 @@
 //! One original-image fixed/variable statement, with no page allocation.
+use crate::table::mutation::ace_profile;
 pub(in crate::table) mod growing;
 mod record_proof;
 mod request;
 mod stage;
 
-use super::{Ace16WritePreview, EditError, gates, preview};
+use super::{Ace16WritePreview, EditError, gates};
 use crate::{
     FittedColumnUpdates, InspectError, NativeImage, inspect_table_schema,
     table::{indexes::index_row_patches, mutation::fixed::preserved},
@@ -33,7 +34,7 @@ impl NativeImage {
     ) -> Result<Ace16WritePreview, EditError> {
         let _span = tracing::debug_span!("native.edit.fitted_preview").entered();
         request::check(budget, cancelled)?;
-        preview::qualify(&self)?;
+        ace_profile::qualify(&self)?;
         if groups.len() > Self::MAX_FIXED_BATCH_GROUPS {
             return Err(InspectError::StructureLimit.into());
         }

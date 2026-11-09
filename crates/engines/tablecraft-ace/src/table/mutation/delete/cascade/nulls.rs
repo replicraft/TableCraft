@@ -6,10 +6,7 @@ use crate::{
     header::check,
     table::{
         indexes::IndexKeyUpdate,
-        mutation::{
-            fixed::{FixedScalarUpdate, masked},
-            patch::spans,
-        },
+        mutation::{fixed::masked, patch::spans, requests::FixedScalarUpdate},
     },
 };
 use tablecraft_core::{

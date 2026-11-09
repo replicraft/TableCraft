@@ -9,7 +9,7 @@ use original::{Family, PAGE};
 fn qualify_growing_mixed_sources_and_complete_expected_before_preview() {
     use crate::NativeImage;
     use crate::table::mutation::{
-        gates, page_update::roots, rows::RowAssignment, variable_split::metadata::Metadata,
+        gates, record_roots as roots, rows::RowAssignment, variable_split::metadata::Metadata,
     };
     use std::io::Cursor;
     use tablecraft_model::CatalogScope;

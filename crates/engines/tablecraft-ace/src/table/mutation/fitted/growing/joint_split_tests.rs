@@ -5,7 +5,7 @@ use crate::{
     IndexCheckStatus, NativeImage, RuleCheckStatus, check_table, check_table_constraints,
     inspect_table_index_counter, read_table,
     table::mutation::{
-        gates, page_update::roots, rows::RowAssignment, variable_split::metadata::Metadata,
+        gates, record_roots as roots, rows::RowAssignment, variable_split::metadata::Metadata,
     },
 };
 use model::{Family, Shape};

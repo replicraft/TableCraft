@@ -2,7 +2,7 @@
 #[cfg(test)]
 mod tests;
 use super::super::{
-    EditError, SlotScalarUpdate, WriteBlocker, page_update::roots, record_serialization::storage,
+    EditError, SlotScalarUpdate, WriteBlocker, record_roots as roots, record_serialization::storage,
 };
 use super::placement::{DataView, Plan};
 use crate::table::mutation::record_serialization::proof as record_proof;

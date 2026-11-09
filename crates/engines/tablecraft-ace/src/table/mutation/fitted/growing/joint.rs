@@ -1,5 +1,6 @@
 //! One original mixed record operation continues through DATA and INDEX growth.
 use crate::FittedColumnUpdates;
+use crate::table::mutation::ace_profile;
 pub(in crate::table) mod certified;
 mod finish;
 
@@ -12,7 +13,7 @@ use crate::{
             SplitIndexPlan,
             mutation::split::rows::{self, Changes},
         },
-        mutation::{preview, variable_update::placement::Data},
+        mutation::variable_update::placement::Data,
     },
 };
 use tablecraft_core::limits::ResourceBudget;
@@ -39,7 +40,7 @@ impl NativeImage {
     ) -> Result<Ace16WritePreview, EditError> {
         let _span = tracing::debug_span!("native.edit.mixed_split_preview").entered();
         request::check(budget, cancelled)?;
-        preview::qualify(&self)?;
+        ace_profile::qualify(&self)?;
 
         let staged = prepare(&self, table, groups, budget, cancelled)?;
 

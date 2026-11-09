@@ -1,12 +1,13 @@
 //! Bounded existing-page forwarding with stable logical roots and full checks.
+use crate::table::mutation::ace_profile;
 pub(super) mod audit;
-pub(super) use super::record_roots as roots;
+use super::record_roots as roots;
 pub(super) mod stage;
 #[cfg(test)]
 mod tests;
 
 use super::{
-    Ace16WritePreview, EditError, SlotScalarUpdate, WriteBlocker, gates, preview,
+    Ace16WritePreview, EditError, SlotScalarUpdate, WriteBlocker, gates,
     record_placement::audit as placement_audit, record_serialization::storage,
 };
 use crate::{
@@ -37,7 +38,7 @@ impl NativeImage {
         let _span =
             tracing::debug_span!("native.edit.preview.page", assignments = updates.len()).entered();
         check(budget, cancelled)?;
-        preview::qualify(&self)?;
+        ace_profile::qualify(&self)?;
         if updates.len() > MAX_LIVE_ROWS {
             return Err(InspectError::StructureLimit.into());
         }

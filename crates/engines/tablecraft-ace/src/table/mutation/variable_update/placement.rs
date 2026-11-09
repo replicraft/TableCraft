@@ -1,10 +1,7 @@
 //! Real alternate-page placement and bounded EOF data-page initialization.
 use super::super::{
-    EditError, WriteBlocker,
-    append::State,
-    page_update::{roots::Root, stage::Placement},
-    record_placement::space::Space,
-    rows::RowAssignment,
+    EditError, WriteBlocker, append::State, page_update::stage::Placement,
+    record_placement::space::Space, record_roots::Root, rows::RowAssignment,
     variable_split::metadata::Metadata,
 };
 use super::maps::Maps;

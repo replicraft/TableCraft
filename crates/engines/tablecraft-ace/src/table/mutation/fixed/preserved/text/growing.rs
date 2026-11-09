@@ -1,4 +1,5 @@
 //! Explicit DATA placement for one preserved, ordinary Short Text target.
+use crate::table::mutation::ace_profile;
 mod finish;
 #[cfg(test)]
 mod genuine_sources;
@@ -10,7 +11,6 @@ mod tests;
 use super::super::source;
 use crate::{
     Ace16WritePreview, EditError, InspectError, NativeImage, SlotScalarUpdate, header::check,
-    table::mutation::preview,
 };
 use tablecraft_core::limits::ResourceBudget;
 
@@ -30,7 +30,7 @@ impl NativeImage {
     ) -> Result<Ace16WritePreview, EditError> {
         let _span = tracing::debug_span!("native.edit.preserved_text_growth").entered();
         check(budget, cancelled)?;
-        preview::qualify(&self)?;
+        ace_profile::qualify(&self)?;
         if updates.len() > Self::MAX_FIXED_BATCH_ASSIGNMENTS {
             return Err(InspectError::StructureLimit.into());
         }

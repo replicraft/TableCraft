@@ -10,8 +10,7 @@ use crate::{
     table::{
         indexes::{SlotKeyUpdate, qualify_split_slot_indexes},
         mutation::{
-            gates,
-            page_update::roots,
+            gates, record_roots as roots,
             variable_split::metadata::Metadata,
             variable_update::{
                 authority::{Operation, Verified},

@@ -1,4 +1,5 @@
 //! Request-bound INSERT proof, separate from construction and composition.
+use crate::table::mutation::ace_profile;
 mod data;
 mod defaults;
 mod global;
@@ -18,8 +19,7 @@ use crate::{
     header::check,
     limits::MAX_LIVE_ROWS,
     table::mutation::{
-        gates, preview, variable_split::metadata::Metadata,
-        variable_update::map_audit::ExpectedByte,
+        gates, variable_split::metadata::Metadata, variable_update::map_audit::ExpectedByte,
     },
 };
 use std::{io::Cursor, ops::Range};
@@ -131,7 +131,7 @@ pub(super) fn prove_with_clock(
         return Err(EditError::Preservation);
     }
     check(budget, cancelled)?;
-    preview::qualify(image)?;
+    ace_profile::qualify(image)?;
     let (checked, count) = match input {
         AuditRequest::Explicit(requests) => {
             if staged.autonumber.is_some() {

@@ -1,6 +1,7 @@
 //! Explicit multi-table final-image candidates; no action expansion or early output.
 use super::{Ace16DeletePreview, TableRowDeletes, cascade, patches, relationships};
 use crate::table::indexes::{IndexKeyUpdate, index_delete_update_patches};
+use crate::table::mutation::ace_profile;
 use crate::table::mutation::patch::spans;
 use crate::{
     EditError, InspectError, NativeImage, TableCheck,
@@ -12,7 +13,7 @@ use crate::{
             DeleteIndexPlan, IndexDataPatch, RetirementTable, audit_global, audit_retirements,
             audit_siblings, compose_retirements, index_delete_patches,
         },
-        mutation::{gates, preview, rows},
+        mutation::{gates, rows},
     },
 };
 use tablecraft_core::limits::{Resource, ResourceBudget};
@@ -74,7 +75,7 @@ pub(super) fn run(
         Admission::Cascading(proof) => Some(proof.into_tables().into_iter()),
     };
     check(budget, cancelled)?;
-    preview::qualify(&image)?;
+    ace_profile::qualify(&image)?;
     if groups.len() > NativeImage::MAX_DELETE_BATCH_TABLES {
         return Err(InspectError::StructureLimit.into());
     }

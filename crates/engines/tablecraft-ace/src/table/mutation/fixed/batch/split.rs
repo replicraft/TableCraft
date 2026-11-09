@@ -1,7 +1,7 @@
 //! Existing record patches and multiple growing index owners form one candidate.
 mod authority;
 
-use super::FixedColumnUpdates;
+use crate::table::mutation::requests::FixedColumnUpdates;
 use crate::{
     Ace16WritePreview, EditError, IndexCheckStatus, InspectError, NativeImage, WriteBlocker,
     check_table,

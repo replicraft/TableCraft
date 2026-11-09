@@ -1,11 +1,12 @@
 use super::super::super::{
-    Ace16WritePreview, EditError, WriteBlocker, gates,
-    preview::{qualify, qualify_fixed},
+    Ace16WritePreview, EditError, WriteBlocker,
+    ace_profile::{qualify, qualify_fixed},
+    gates,
 };
 use super::super::masked;
-use super::FixedColumnUpdates;
 use crate::table::mutation::guards::fields::physical::SourceWitness;
 use crate::table::mutation::patch::spans;
+use crate::table::mutation::requests::FixedColumnUpdates;
 use crate::{
     InspectError, NativeImage, TableCheck,
     format::data_type::NUMERIC_BYTES,

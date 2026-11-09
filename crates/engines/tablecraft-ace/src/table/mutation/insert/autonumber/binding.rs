@@ -1,10 +1,7 @@
 //! Qualified generated-column binding for an explicitly selected increment policy.
 use super::{IncrementingAutoNumber, counter};
-use crate::{
-    EditError, InspectError, NativeImage,
-    header::check,
-    table::mutation::{gates, preview},
-};
+use crate::table::mutation::ace_profile;
+use crate::{EditError, InspectError, NativeImage, header::check, table::mutation::gates};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
 #[cfg(test)]
@@ -46,7 +43,7 @@ impl NativeImage {
     ) -> Result<Ace16IncrementingInsertBinding, EditError> {
         let _span = tracing::debug_span!("native.insert.increment_binding").entered();
         check(budget, cancelled)?;
-        preview::qualify(self)?;
+        ace_profile::qualify(self)?;
         let checked = gates::before_incrementing_insert(self, table, budget, cancelled)?;
         let source = counter::source(self, &checked, budget, cancelled)?;
         let column = checked

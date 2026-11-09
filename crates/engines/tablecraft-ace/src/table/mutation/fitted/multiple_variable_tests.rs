@@ -16,7 +16,7 @@ use crate::format::reader::Reader;
 use crate::inspect_table_index_counter;
 use crate::read_table;
 use crate::table::mutation::gates;
-use crate::table::mutation::page_update::roots;
+use crate::table::mutation::record_roots as roots;
 use crate::table::mutation::rows::RowAssignment;
 use crate::table::mutation::variable_split::metadata::Metadata;
 use model::{Family, Placement, Recipe};

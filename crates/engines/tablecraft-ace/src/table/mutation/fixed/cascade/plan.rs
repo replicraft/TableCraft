@@ -1,7 +1,7 @@
-use super::super::super::{Ace16WritePreview, EditError, WriteBlocker, preview::qualify};
-use super::super::{FixedColumnUpdates, FixedScalarUpdate};
+use super::super::super::{Ace16WritePreview, EditError, WriteBlocker, ace_profile::qualify};
 use super::cells::{Cell, Cells, reserve, scalar};
 use super::graph;
+use crate::table::mutation::requests::{FixedColumnUpdates, FixedScalarUpdate};
 use crate::{InspectError, NativeImage, header::check, inspect_relationships};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 

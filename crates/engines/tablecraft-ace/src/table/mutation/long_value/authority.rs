@@ -1,5 +1,5 @@
 //! Final authority is rebound from the immutable original operation and image.
-use super::super::{EditError, page_update::roots};
+use super::super::{EditError, record_roots as roots};
 use super::{
     Operation,
     admission::{self, Prepared},

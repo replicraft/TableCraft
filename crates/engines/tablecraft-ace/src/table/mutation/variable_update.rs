@@ -1,4 +1,5 @@
 //! Separate alternative-owned-page and represented-EOF forwarding previews.
+use crate::table::mutation::ace_profile;
 pub(super) mod audit;
 pub(super) mod authority;
 pub(super) mod finish;
@@ -8,7 +9,7 @@ pub(super) mod placement;
 
 use super::{
     Ace16WritePreview, EditError, SlotScalarUpdate, WriteBlocker, gates, page_update::stage,
-    preview, record_serialization::storage,
+    record_serialization::storage,
 };
 use crate::{
     InspectError, NativeImage,
@@ -40,7 +41,7 @@ impl NativeImage {
             tracing::debug_span!("native.edit.preview.variable", assignments = updates.len())
                 .entered();
         check(budget, cancelled)?;
-        preview::qualify(&self)?;
+        ace_profile::qualify(&self)?;
         if updates.len() > MAX_LIVE_ROWS {
             return Err(InspectError::StructureLimit.into());
         }

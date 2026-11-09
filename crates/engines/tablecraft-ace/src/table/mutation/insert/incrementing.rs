@@ -1,8 +1,9 @@
 //! Caller-selected generation feeds the existing complete INSERT pipeline.
 use super::{
     Ace16AutoNumberInsertPreview, AuditRequest, AutoNumberRowInsert, IncrementingAutoNumber,
-    RowInsert, Staged, autonumber, finish_with, gates, prepare_with, preview, record,
+    RowInsert, Staged, autonumber, finish_with, gates, prepare_with, record,
 };
+use crate::table::mutation::ace_profile;
 use crate::table::mutation::{autonumber_counter, insert_defaults::values::copy_value};
 use crate::{EditError, InspectError, NativeImage, TableCheck, WriteBlocker, header::check};
 use tablecraft_core::{
@@ -31,7 +32,7 @@ impl NativeImage {
         )
         .entered();
         check(budget, cancelled)?;
-        preview::qualify(&self)?;
+        ace_profile::qualify(&self)?;
         if requests.len() > crate::limits::MAX_LIVE_ROWS {
             return Err(InspectError::StructureLimit.into());
         }

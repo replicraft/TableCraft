@@ -1,11 +1,12 @@
 //! Snapshot-local ordinal selection for exact engineering DELETE requests.
 use super::RowDelete;
+use crate::table::mutation::ace_profile;
 use crate::{
     EditError, InspectError, NativeImage,
     format::reader::Reader,
     header::check,
     limits::MAX_LIVE_ROWS,
-    table::mutation::{gates, preview, rows},
+    table::mutation::{gates, rows},
 };
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
@@ -38,7 +39,7 @@ impl NativeImage {
     ) -> Result<Vec<RowDelete>, EditError> {
         let _span = tracing::debug_span!("native.delete.select", rows = ordinals.len()).entered();
         check(budget, cancelled)?;
-        preview::qualify(self)?;
+        ace_profile::qualify(self)?;
         if ordinals.len() > MAX_LIVE_ROWS {
             return Err(InspectError::StructureLimit.into());
         }

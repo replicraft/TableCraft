@@ -1,7 +1,8 @@
 //! Existing-slot Text/Binary changes with mandatory index and constraint proof.
+use crate::table::mutation::ace_profile;
 pub(super) mod stage;
 
-use super::{Ace16WritePreview, EditError, SlotScalarUpdate, WriteBlocker, gates, preview};
+use super::{Ace16WritePreview, EditError, SlotScalarUpdate, WriteBlocker, gates};
 use crate::table::mutation::record_serialization::storage;
 use crate::{
     InspectError, NativeImage, TableSchema,
@@ -30,7 +31,7 @@ impl NativeImage {
         let _span =
             tracing::debug_span!("native.edit.preview.slot", assignments = updates.len()).entered();
         check(budget, cancelled)?;
-        preview::qualify(&self)?;
+        ace_profile::qualify(&self)?;
         if updates.len() > MAX_LIVE_ROWS {
             return Err(InspectError::StructureLimit.into());
         }

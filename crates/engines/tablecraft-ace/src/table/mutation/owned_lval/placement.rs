@@ -1,7 +1,7 @@
 //! Explicit ordinary/LVAL page owners share only bounded physical append framing.
 use super::super::{EditError, WriteBlocker};
 #[cfg(feature = "ace16-write-preview")]
-use super::super::{SlotScalarUpdate, page_update::roots::Root, record_placement::space::Space};
+use super::super::{SlotScalarUpdate, record_placement::space::Space, record_roots::Root};
 use super::maps::{Family, Maps};
 #[cfg(feature = "ace16-write-preview")]
 use crate::format::row::{OFFSET_MASK, RELOCATED_MASK, reference_page, reference_slot};

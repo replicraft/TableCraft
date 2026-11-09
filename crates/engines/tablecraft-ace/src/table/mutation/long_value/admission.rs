@@ -1,5 +1,6 @@
 //! Mutation authority is narrower than the read-only long-value report.
-use super::super::{EditError, WriteBlocker, gates, preview};
+use super::super::{EditError, WriteBlocker, gates};
+use crate::table::mutation::ace_profile;
 use crate::table::mutation::record_serialization::long_value as encode;
 use crate::{
     InspectError, LongValueCheckStatus, NativeImage, PropertyGroupKind, TableCheck,
@@ -20,7 +21,7 @@ pub(super) fn prepare(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Prepared, EditError> {
-    preview::qualify(image)?;
+    ace_profile::qualify(image)?;
     let structural = gates::before_slot(image, table, budget, cancelled)?;
     let schema = structural.schema();
     let position = schema

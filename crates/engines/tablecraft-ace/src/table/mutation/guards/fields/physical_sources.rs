@@ -10,7 +10,7 @@ use crate::{
         reader::Reader,
     },
     read_table, read_table_index,
-    table::mutation::{gates, page_update::roots, variable_split::metadata::Metadata},
+    table::mutation::{gates, record_roots as roots, variable_split::metadata::Metadata},
 };
 use std::{collections::BTreeMap, io::Cursor};
 use tablecraft_core::{limits::ResourceBudget, values::Value};

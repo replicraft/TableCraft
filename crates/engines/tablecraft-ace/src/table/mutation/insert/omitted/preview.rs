@@ -1,12 +1,11 @@
 //! Source-bound omission entry points reuse one preparation and final proof.
 use super::{OmittedRowInsert, Original, stage};
+use crate::table::mutation::ace_profile;
 use crate::table::mutation::insert::{AuditRequest, finish_with};
 use crate::{
     Ace16AutoNumberInsertPreview, Ace16WritePreview, EditError, IncrementingAutoNumber,
-    InspectError, NativeImage, TableCheck,
-    header::check,
-    limits::MAX_LIVE_ROWS,
-    table::mutation::{gates, preview},
+    InspectError, NativeImage, TableCheck, header::check, limits::MAX_LIVE_ROWS,
+    table::mutation::gates,
 };
 use tablecraft_core::limits::ResourceBudget;
 
@@ -82,7 +81,7 @@ pub(in crate::table::mutation::insert) fn qualify(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<TableCheck, EditError> {
     check(budget, cancelled)?;
-    preview::qualify(image)?;
+    ace_profile::qualify(image)?;
     let count = original.requests().len();
     if count > MAX_LIVE_ROWS {
         return Err(InspectError::StructureLimit.into());

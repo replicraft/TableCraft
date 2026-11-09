@@ -6,7 +6,7 @@ use crate::{
     header::check,
     limits::MAX_LIVE_ROWS,
     table::{
-        mutation::{page_update::roots, rows::RowAssignment},
+        mutation::{record_roots as roots, rows::RowAssignment},
         record_layout,
     },
 };

@@ -12,7 +12,7 @@ use crate::{
     },
     table::{
         indexes::RowKeyUpdate,
-        mutation::{page_update, patch::BytePatch, variable_split::metadata::Metadata},
+        mutation::{patch::BytePatch, record_roots, variable_split::metadata::Metadata},
         record, record_layout,
     },
 };
@@ -156,7 +156,7 @@ pub(super) fn build_with(
         }
     }
 
-    let captured = page_update::roots::capture(image, schema, &bound.rows, budget, cancelled)?;
+    let captured = record_roots::capture(image, schema, &bound.rows, budget, cancelled)?;
 
     if matches!(policy, RecordPolicy::FittedDeclared) {
         let metadata = Metadata::capture_for_fitted_updates(

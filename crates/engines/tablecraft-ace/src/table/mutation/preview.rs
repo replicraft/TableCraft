@@ -4,7 +4,7 @@ use crate::{NativeImage, header::check};
 use bytes::Bytes;
 use tablecraft_core::limits::ResourceBudget;
 
-pub(super) use super::ace_profile::{qualify, qualify_fixed};
+use super::ace_profile::qualify;
 
 /// An unqualified ACE 16 physical candidate for independent/native comparisons.
 ///

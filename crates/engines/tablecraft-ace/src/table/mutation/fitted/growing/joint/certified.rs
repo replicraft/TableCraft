@@ -11,7 +11,7 @@ use crate::{
     table::{
         indexes::RowKeyUpdate,
         mutation::{
-            page_update::roots,
+            record_roots as roots,
             variable_split::metadata::Metadata,
             variable_update::{
                 map_audit::{

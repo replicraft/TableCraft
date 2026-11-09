@@ -1,14 +1,12 @@
 //! Mixed complete-row placement with the existing represented allocation policy.
 use crate::FittedColumnUpdates;
+use crate::table::mutation::ace_profile;
 mod finish;
 pub(in crate::table) mod joint;
 mod stage;
 
 use super::request;
-use crate::{
-    Ace16WritePreview, EditError, NativeImage,
-    table::{indexes::index_row_patches, mutation::preview},
-};
+use crate::{Ace16WritePreview, EditError, NativeImage, table::indexes::index_row_patches};
 use tablecraft_core::limits::ResourceBudget;
 
 impl NativeImage {
@@ -25,7 +23,7 @@ impl NativeImage {
     ) -> Result<Ace16WritePreview, EditError> {
         let _span = tracing::debug_span!("native.edit.mixed_preview").entered();
         request::check(budget, cancelled)?;
-        preview::qualify(&self)?;
+        ace_profile::qualify(&self)?;
         let prepared = stage::prepare(&self, table, groups, budget, cancelled)?;
         let keys = prepared.verified.keys(budget, cancelled)?;
         let indexes = index_row_patches(

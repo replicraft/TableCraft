@@ -6,9 +6,9 @@ mod scalar;
 mod stage;
 mod text;
 
-use super::FixedColumnUpdates;
 use crate::table::mutation::fixed_records::{copy, name_work, unique};
 use crate::table::mutation::preserved_source::{self as source, validation};
+use crate::table::mutation::requests::FixedColumnUpdates;
 use crate::{
     Ace16WritePreview, EditError, InspectError, NativeImage, WriteBlocker, header::check,
     inspect_table_schema, table::mutation::patch::BytePatch,

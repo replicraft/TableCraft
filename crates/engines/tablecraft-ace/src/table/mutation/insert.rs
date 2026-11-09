@@ -1,4 +1,5 @@
 //! Explicit engineering INSERT with request-bound record and allocation proof.
+use crate::table::mutation::ace_profile;
 mod audit;
 mod autonumber;
 mod compose;
@@ -14,7 +15,7 @@ mod record;
 #[cfg(test)]
 pub(in crate::table::mutation) mod tests;
 
-use super::{autonumber_counter, gates, preview, requests::RowInsert};
+use super::{autonumber_counter, gates, requests::RowInsert};
 use crate::{
     Ace16WritePreview, EditError, IndexCheckStatus, InspectError, NativeImage, TableCheck,
     WriteBlocker, check_table, check_table_constraints,
@@ -100,7 +101,7 @@ fn preflight(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<TableCheck, EditError> {
     check(budget, cancelled)?;
-    preview::qualify(image)?;
+    ace_profile::qualify(image)?;
     if requests.len() > MAX_LIVE_ROWS {
         return Err(InspectError::StructureLimit.into());
     }

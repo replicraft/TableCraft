@@ -1,4 +1,5 @@
 //! Source-bound creation of one real ordinary Int32 secondary index.
+use crate::table::mutation::ace_profile;
 mod audit;
 pub(in crate::table) mod buffer;
 #[cfg(test)]
@@ -8,7 +9,7 @@ mod model;
 pub(in crate::table) mod source;
 mod stage;
 
-use crate::{EditError, NativeImage, header::check, table::mutation::preview};
+use crate::{EditError, NativeImage, header::check};
 use tablecraft_core::limits::ResourceBudget;
 
 pub use model::{Ace16IndexCreatePreview, SecondaryIndexCreate};
@@ -28,7 +29,7 @@ impl NativeImage {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Ace16IndexCreatePreview, EditError> {
         let _span = tracing::debug_span!("native.edit.preview.create_secondary_index").entered();
-        preview::qualify(&self)?;
+        ace_profile::qualify(&self)?;
         check(budget, cancelled)?;
 
         let original = source::qualify(&self, table, request, budget, cancelled)?;

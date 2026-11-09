@@ -1,5 +1,6 @@
 //! Original presence and payload observations for one qualified Int32 field.
-use super::{FixedColumnUpdates, PAYLOAD_BYTES, Payload, unique};
+use super::{PAYLOAD_BYTES, Payload, unique};
+use crate::table::mutation::requests::FixedColumnUpdates;
 use crate::{
     EditError, InspectError, NativeImage, TableSchema,
     format::row::{COLUMN_COUNT_BYTES, MASK_BITS},

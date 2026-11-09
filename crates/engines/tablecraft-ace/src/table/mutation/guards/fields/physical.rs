@@ -4,9 +4,10 @@ use super::super::{
     BeforeGuardProgramRevision, BeforeGuardRejection, BeforeGuardTrace, buffer, compile, source,
 };
 use super::{BeforeChangeAssignment, Prepared, prepare};
+use crate::table::mutation::ace_profile;
 use crate::{
     Ace16WritePreview, EditError, FixedColumnUpdates, FixedScalarUpdate, InspectError, NativeImage,
-    TableSchema, TableSnapshot, WriteBlocker, header::check, table::mutation::preview,
+    TableSchema, TableSnapshot, WriteBlocker, header::check,
 };
 use std::fmt;
 use tablecraft_core::{
@@ -292,7 +293,7 @@ impl NativeImage {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Ace16BeforeChangePreview, BeforeChangePreviewError> {
         let _span = tracing::debug_span!("native.before_change.preview").entered();
-        preview::qualify(&self)?;
+        ace_profile::qualify(&self)?;
         let original = BeforeEventIntents::FixedUpdate {
             column,
             updates: original_updates,

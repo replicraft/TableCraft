@@ -6,10 +6,8 @@ use crate::{
     header::check,
     table::{
         mutation::{
-            page_update::{roots, stage::Placement},
-            record_serialization::record,
-            record_serialization::storage,
-            variable_split::metadata::Metadata,
+            page_update::stage::Placement, record_roots as roots, record_serialization::record,
+            record_serialization::storage, variable_split::metadata::Metadata,
             variable_update::placement::Plan,
         },
         record as native_record,

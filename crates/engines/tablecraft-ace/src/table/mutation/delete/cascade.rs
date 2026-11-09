@@ -1,4 +1,5 @@
 //! Frozen original-association expansion for the separate acyclic cascade service.
+use crate::table::mutation::ace_profile;
 mod capture;
 mod facts;
 mod graph;
@@ -8,9 +9,7 @@ mod updates;
 
 use super::{Ace16DeletePreview, RowDelete, TableRowDeletes, batch};
 use crate::table::{indexes::IndexKeyUpdate, mutation::patch::spans};
-use crate::{
-    EditError, InspectError, NativeImage, TableCheck, header::check, table::mutation::preview,
-};
+use crate::{EditError, InspectError, NativeImage, TableCheck, header::check};
 use tablecraft_core::limits::ResourceBudget;
 
 /// This proof can only be constructed after the cascade component and its complete
@@ -77,7 +76,7 @@ impl NativeImage {
         let _span =
             tracing::debug_span!("native.delete.cascade_preview", groups = groups.len()).entered();
         check(budget, cancelled)?;
-        preview::qualify(&self)?;
+        ace_profile::qualify(&self)?;
         let mut state = state::State::prepare(&self, groups, budget, cancelled)?;
         state.expand(&self, budget, cancelled)?;
         state.close(budget, cancelled)?;

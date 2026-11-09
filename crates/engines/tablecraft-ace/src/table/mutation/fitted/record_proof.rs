@@ -14,7 +14,7 @@ use crate::{
     table::{
         indexes::{IndexDataPatch, qualify_row_indexes},
         mutation::{
-            gates, page_update::roots, record_serialization::proof as record_proof,
+            gates, record_roots as roots, record_serialization::proof as record_proof,
             variable_split::metadata::Metadata,
         },
         record, record_layout,

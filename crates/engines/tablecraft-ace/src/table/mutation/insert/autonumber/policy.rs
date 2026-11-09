@@ -1,10 +1,7 @@
 //! Explicit increment-policy selection from one immutable captured source.
 use super::{IncrementingAutoNumber, counter};
-use crate::{
-    EditError, NativeImage,
-    header::check,
-    table::mutation::{gates, preview},
-};
+use crate::table::mutation::ace_profile;
+use crate::{EditError, NativeImage, header::check, table::mutation::gates};
 use tablecraft_core::limits::ResourceBudget;
 
 impl NativeImage {
@@ -27,7 +24,7 @@ impl NativeImage {
     ) -> Result<IncrementingAutoNumber, EditError> {
         let _span = tracing::debug_span!("native.insert.increment_policy").entered();
         check(budget, cancelled)?;
-        preview::qualify(self)?;
+        ace_profile::qualify(self)?;
         let checked = gates::before_incrementing_insert(self, table, budget, cancelled)?;
         let source = counter::source(self, &checked, budget, cancelled)?;
         check(budget, cancelled)?;

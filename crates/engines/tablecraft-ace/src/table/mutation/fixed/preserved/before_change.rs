@@ -1,4 +1,5 @@
 //! Explicit selected-program rich fixed batch, never a normal save or journal.
+use crate::table::mutation::ace_profile;
 mod proof;
 
 use super::{copy, source, stage};
@@ -10,7 +11,6 @@ use crate::{
     table::mutation::{
         guards::fields::batch::{self, SelectedPrograms, SourceFacts},
         patch::BytePatch,
-        preview as native_preview,
     },
 };
 use tablecraft_core::limits::ResourceBudget;
@@ -50,7 +50,7 @@ fn preview(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Ace16BeforeChangePreview, BeforeChangePreviewError> {
     check(budget, cancelled).map_err(BeforeEventGuardError::from)?;
-    native_preview::qualify(&image)?;
+    ace_profile::qualify(&image)?;
     let schema = inspect_table_schema(
         &mut image.reader(),
         image.catalog().catalog().scope(),

@@ -1,4 +1,5 @@
 use super::{SecondaryIndexCreate, buffer, layout::DefinitionLayout};
+use crate::table::mutation::ace_profile;
 use crate::{
     EditError, InspectError, NativeImage, TableCheck, WriteBlocker,
     format::{
@@ -7,7 +8,7 @@ use crate::{
     },
     header::check,
     limits::MAX_INDEXES,
-    table::mutation::{gates, preview},
+    table::mutation::gates,
 };
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_schema::SchemaName;
@@ -31,7 +32,7 @@ pub(in crate::table) fn qualify(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Original, EditError> {
     // Also guards private fresh-owner construction, before any read/allocation.
-    preview::qualify(image)?;
+    ace_profile::qualify(image)?;
     check(budget, cancelled)?;
     if request.column.is_empty()
         || request.column.len() > MAX_INDEX_NAME_UNITS

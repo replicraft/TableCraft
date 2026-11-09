@@ -1,4 +1,5 @@
 //! Variable DATA placement and encoded index growth share one append operation.
+use crate::table::mutation::ace_profile;
 mod finish;
 pub(super) mod metadata;
 #[cfg(test)]
@@ -7,7 +8,6 @@ mod tests;
 use super::{
     EditError, SlotScalarUpdate, gates,
     page_update::stage,
-    preview,
     record_serialization::storage,
     slot,
     variable_update::{
@@ -73,7 +73,7 @@ fn preflight(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(TableCheck, usize), EditError> {
     check(budget, cancelled)?;
-    preview::qualify(image)?;
+    ace_profile::qualify(image)?;
     if operation.requests().len() > MAX_LIVE_ROWS {
         return Err(InspectError::StructureLimit.into());
     }

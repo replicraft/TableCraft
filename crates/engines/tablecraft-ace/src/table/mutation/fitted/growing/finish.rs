@@ -9,7 +9,7 @@ use crate::{
     table::{
         indexes::IndexDataPatch,
         mutation::{
-            page_update::roots,
+            record_roots as roots,
             variable_split::metadata::Metadata,
             variable_update::{finish::compose, map_audit},
         },

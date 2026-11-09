@@ -1,5 +1,5 @@
 //! Original-source body and allocation protection for explicit extended captures.
-use super::FixedScalarUpdate;
+use crate::table::mutation::requests::FixedScalarUpdate;
 use crate::{
     EditError, InspectError, NativeImage, TableCheck, WriteBlocker,
     format::{

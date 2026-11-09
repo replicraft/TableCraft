@@ -1,4 +1,5 @@
 //! Separate fixed integral/Currency candidates with qualified recursive index splitting.
+use crate::table::mutation::ace_profile;
 mod authority;
 mod binding;
 mod finish;
@@ -7,7 +8,7 @@ mod fixed;
 mod tests;
 
 use super::physical::Patch;
-use super::{Ace16WritePreview, EditError, Int32Update, gates, preview};
+use super::{Ace16WritePreview, EditError, Int32Update, gates};
 use crate::{
     InspectError, NativeImage, TableCheck,
     format::reader::Reader,
@@ -89,7 +90,7 @@ fn preflight(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<TableCheck, EditError> {
     check(budget, cancelled)?;
-    preview::qualify(image)?;
+    ace_profile::qualify(image)?;
     if operation.request_count() > MAX_LIVE_ROWS {
         return Err(InspectError::StructureLimit.into());
     }

@@ -11,7 +11,7 @@ use crate::{
 use std::io::Cursor;
 use tablecraft_core::limits::ResourceBudget;
 
-pub(in crate::table) use crate::table::mutation::append::Edit;
+use crate::table::mutation::append::Edit;
 
 pub(super) fn allocate_nonroot(
     image: &NativeImage,

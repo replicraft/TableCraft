@@ -1,4 +1,5 @@
 //! One fitting Short Text replacement profile with retained advanced payloads.
+use crate::table::mutation::ace_profile;
 mod growing;
 mod joint;
 pub(super) mod proof;
@@ -7,8 +8,7 @@ mod stage;
 use super::{copy, source};
 use crate::{
     Ace16WritePreview, EditError, FittedColumnUpdates, InspectError, NativeImage, SlotScalarUpdate,
-    header::check,
-    table::mutation::{patch::BytePatch, preview},
+    header::check, table::mutation::patch::BytePatch,
 };
 use tablecraft_core::limits::ResourceBudget;
 
@@ -27,7 +27,7 @@ impl NativeImage {
     ) -> Result<Ace16WritePreview, EditError> {
         let _span = tracing::debug_span!("native.edit.preserved_text_preview").entered();
         check(budget, cancelled)?;
-        preview::qualify(&self)?;
+        ace_profile::qualify(&self)?;
         if updates.len() > Self::MAX_FIXED_BATCH_ASSIGNMENTS {
             return Err(InspectError::StructureLimit.into());
         }
@@ -77,7 +77,7 @@ impl NativeImage {
     ) -> Result<Ace16WritePreview, EditError> {
         let _span = tracing::debug_span!("native.edit.preserved_fitted_preview").entered();
         check(budget, cancelled)?;
-        preview::qualify(&self)?;
+        ace_profile::qualify(&self)?;
 
         let original = source::capture(&self, table, budget, cancelled)?;
         let (patches, changed) = joint::stage::prepare(&original, groups, budget, cancelled)?;
