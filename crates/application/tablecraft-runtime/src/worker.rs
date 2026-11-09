@@ -1,11 +1,19 @@
 use super::{Command, Error, Response, document::Document};
+use crate::{
+    task_signal,
+    thread_start::{Spawner, ThreadSpawner},
+};
+use std::convert::Infallible;
 use std::panic::{AssertUnwindSafe, catch_unwind};
 use std::sync::{
-    Arc, Condvar, Mutex,
+    Arc, Mutex,
     atomic::{AtomicBool, AtomicU64, Ordering},
+    mpsc::{Receiver, TryRecvError, sync_channel},
 };
 
 use tablecraft_expressions::functions::dates::clock::Clock;
+
+const NO_REQUEST: u64 = 0;
 
 type Reply = (u64, Result<Response, Error>);
 
@@ -16,10 +24,49 @@ struct Pending {
 
 struct Shared {
     generation: AtomicU64,
+    active: AtomicU64,
+    liveness: Mutex<Receiver<Infallible>>,
+    repaint: Arc<dyn Fn() + Send + Sync>,
     stopped: AtomicBool,
     pending: Mutex<Option<Pending>>,
-    ready: Condvar,
+    ready: task_signal::Signal,
     response: Mutex<Option<Reply>>,
+}
+
+impl Shared {
+    fn disconnected(&self) -> bool {
+        match self
+            .liveness
+            .lock()
+            .expect("liveness receiver has no panicking callback")
+            .try_recv()
+        {
+            Err(TryRecvError::Disconnected) => true,
+            Err(TryRecvError::Empty) => false,
+            Ok(never) => match never {},
+        }
+    }
+
+    fn repaint(&self) {
+        if catch_unwind(AssertUnwindSafe(|| (self.repaint)())).is_err() {
+            tracing::error!("read completion callback panicked");
+        }
+    }
+
+    // Only after terminal disconnection: never recover or execute a poisoned
+    // mailbox. Its remaining payload is dropped when the failed worker is replaced.
+    fn discard_dead_mailboxes(&self) {
+        let pending = match self.pending.lock() {
+            Ok(mut pending) => pending.take(),
+            Err(_) => None,
+        };
+        let response = match self.response.lock() {
+            Ok(mut response) => response.take(),
+            Err(_) => None,
+        };
+        drop(pending);
+        drop(response);
+    }
 }
 
 /// One worker, one replaceable pending request and one replaceable owned response.
@@ -508,166 +555,214 @@ impl Worker {
 
     fn start(
         repaint: impl Fn() + Send + Sync + 'static,
-        mut execute: impl FnMut(&mut Command, &dyn Fn() -> bool) -> Result<Response, Error>
-        + Send
-        + 'static,
+        execute: impl FnMut(&mut Command, &dyn Fn() -> bool) -> Result<Response, Error> + Send + 'static,
     ) -> Self {
+        Self::start_with_spawner(repaint, execute, ThreadSpawner)
+    }
+
+    fn start_with_spawner(
+        repaint: impl Fn() + Send + Sync + 'static,
+        execute: impl FnMut(&mut Command, &dyn Fn() -> bool) -> Result<Response, Error> + Send + 'static,
+        spawner: impl Spawner,
+    ) -> Self {
+        let (alive, liveness) = sync_channel::<Infallible>(0);
+        let (ready, wake) = task_signal::channel();
         let shared = Arc::new(Shared {
             generation: AtomicU64::new(0),
+            active: AtomicU64::new(NO_REQUEST),
+            liveness: Mutex::new(liveness),
+            repaint: Arc::new(repaint),
             stopped: AtomicBool::new(false),
             pending: Mutex::new(None),
-            ready: Condvar::new(),
+            ready,
             response: Mutex::new(None),
         });
         let thread_shared = Arc::clone(&shared);
         let dispatch = tracing::dispatcher::get_default(Clone::clone);
-        std::thread::spawn(move || {
-            let _subscriber = tracing::dispatcher::set_default(&dispatch);
-            loop {
-                let mut pending = thread_shared.pending.lock().unwrap();
-                while pending.is_none() && !thread_shared.stopped.load(Ordering::Acquire) {
-                    pending = thread_shared.ready.wait(pending).unwrap();
-                }
-                if thread_shared.stopped.load(Ordering::Acquire) {
-                    break;
-                }
-                let Some(mut request) = pending.take() else {
-                    continue;
-                };
-                drop(pending);
+        let started = spawner.spawn(move || {
+            let actor_shared = Arc::clone(&thread_shared);
+            // A panic is terminal. The owned executor/document is dropped before
+            // disconnecting; no possibly invalid cache is resumed afterward.
+            let result = catch_unwind(AssertUnwindSafe(move || {
+                let mut execute = execute;
+                let _subscriber = tracing::dispatcher::set_default(&dispatch);
+                while wake.wait() {
+                    let mut pending = actor_shared
+                        .pending
+                        .lock()
+                        .expect("read request mailbox poisoned");
+                    if actor_shared.stopped.load(Ordering::Acquire) {
+                        break;
+                    }
+                    let Some(mut request) = pending.take() else {
+                        continue;
+                    };
+                    drop(pending);
 
-                let cancelled = || {
-                    thread_shared.stopped.load(Ordering::Acquire)
-                        || thread_shared.generation.load(Ordering::Acquire) != request.id
-                };
-                let operation = match &request.command {
-                    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
-                    Command::InspectDatabaseOptions { .. } => "inspect_database_options",
-                    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
-                    Command::ReviewDisableNameAutoCorrect { .. } => "review_database_options",
-                    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
-                    Command::OpenDatabaseOptionsSaved { .. } => "open_database_options_saved",
-                    #[cfg(feature = "offline-edit")]
-                    Command::ReviewTableRename { .. } => "review_table_rename",
-                    #[cfg(feature = "offline-edit")]
-                    Command::InspectQuerySqlDraft { .. } => "inspect_query_sql_draft",
-                    #[cfg(feature = "offline-edit")]
-                    Command::ReviewQuerySql { .. } => "review_query_sql",
-                    #[cfg(feature = "offline-edit")]
-                    Command::ReviewQueryLiteralExpression { .. } => "review_query_expression",
-                    #[cfg(feature = "offline-edit")]
-                    Command::OpenQueryExpressionSaved { .. } => "open_query_expression_saved",
-                    #[cfg(feature = "offline-edit")]
-                    Command::OpenTableRenamed { .. } => "open_table_renamed",
-                    #[cfg(feature = "offline-edit")]
-                    Command::OpenInsertOriginal { .. } => "open_insert_original",
-                    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
-                    Command::ReviewTableCreation { .. } => "review_table_creation",
-                    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
-                    Command::ReviewFieldRename { .. } => "review_field_rename",
-                    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
-                    Command::ReviewFieldDrop { .. } => "review_field_drop",
-                    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
-                    Command::OpenFieldRenamed { .. } => "open_field_renamed",
-                    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
-                    Command::OpenFieldDropped { .. } => "open_field_dropped",
-                    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
-                    Command::InspectFieldRenameSource { .. } => "inspect_field_rename_source",
-                    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
-                    Command::InspectFieldDropSource { .. } => "inspect_field_drop_source",
-                    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
-                    Command::InspectFieldAdditionAvailability { .. } => {
-                        "inspect_field_addition_source"
-                    }
-                    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
-                    Command::ReviewAddField { .. } => "review_add_field",
-                    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
-                    Command::InspectNumberColumnAvailability { .. } => {
-                        "inspect_number_column_source"
-                    }
-                    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
-                    Command::ReviewAddNumberColumn { .. } => "review_add_number_column",
-                    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
-                    Command::ReviewAddInt32Column { .. } => "review_add_column",
-                    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
-                    Command::OpenColumnAdded { .. } => "open_column_added",
-                    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
-                    Command::OpenTableCreated { .. } => "open_table_created",
-                    Command::Open { .. } => "open",
-                    #[cfg(feature = "ace16-create")]
-                    Command::OpenCreated { .. } => "open_created",
-                    #[cfg(feature = "offline-edit")]
-                    Command::BeginEdit { .. } => "begin_edit",
-                    #[cfg(feature = "offline-edit")]
-                    Command::ReviewEdit { .. } => "review_edit",
-                    #[cfg(feature = "offline-edit")]
-                    Command::BeginInsert { .. } => "begin_insert",
-                    #[cfg(feature = "offline-edit")]
-                    Command::ReviewInsert { .. } => "review_insert",
-                    #[cfg(feature = "offline-edit")]
-                    Command::ReviewDelete { .. } => "review_delete",
-                    Command::SortView { .. } => "sort_view",
-                    Command::ClearFilter { .. } => "clear_filter",
-                    Command::ReapplyFilter { .. } => "reapply_filter",
-                    Command::DescribeQueryDesign { .. } => "describe_query_design",
-                    Command::BuildQueryDesign { .. } => "build_query_design",
-                    Command::ImportQueryDesign { .. } => "import_query_design",
-                    #[cfg(feature = "offline-edit")]
-                    Command::ReplaceFindMatch { .. } => "replace_find_match",
-                    Command::DescribeTotals { .. } => "describe_totals",
-                    Command::Totals { .. } => "totals",
-                    Command::DescribeFieldFilter { .. } => "describe_field_filter",
-                    Command::ApplyFieldFilter { .. } => "apply_field_filter",
-                    Command::FilterSelection { .. } => "filter_selection",
-                    Command::FilterPage { .. } => "filter_page",
-                    Command::FindFiltered { .. } => "find_filtered",
-                    Command::FindNext { .. } => "find_next",
-                    Command::Page { .. } => "page",
-                    Command::Describe { .. } => "describe",
-                    Command::InspectCollection { .. } => "inspect_collection",
-                    Command::Query { .. } => "query",
-                    Command::InspectQuery { .. } => "inspect_query",
-                    #[cfg(feature = "offline-edit")]
-                    Command::ReviewQueryUpdate { .. } => "review_query_update",
-                    #[cfg(feature = "offline-edit")]
-                    Command::ReviewQueryDelete { .. } => "review_query_delete",
-                    #[cfg(feature = "offline-edit")]
-                    Command::ReviewQueryInsert { .. } => "review_query_insert",
-                    Command::RunQuery { .. } => "run_query",
-                    Command::InspectSavedQuery { .. } => "inspect_saved_query",
-                    Command::RunSavedQuery { .. } => "run_saved_query",
-                };
-                let span = tracing::debug_span!("application read task", operation);
-                let _entered = span.enter();
-                let result = execute(&mut request.command, &cancelled);
-                let superseded = cancelled();
-                tracing::debug!(
-                    success = result.is_ok(),
-                    superseded,
-                    "application read task completed"
-                );
-                if !superseded {
-                    *thread_shared.response.lock().unwrap() = Some((request.id, result));
-                    if catch_unwind(AssertUnwindSafe(&repaint)).is_err() {
-                        tracing::error!("read completion callback panicked");
+                    let cancelled = || {
+                        actor_shared.stopped.load(Ordering::Acquire)
+                            || actor_shared.generation.load(Ordering::Acquire) != request.id
+                    };
+                    let operation = match &request.command {
+                        #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+                        Command::InspectDatabaseOptions { .. } => "inspect_database_options",
+                        #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+                        Command::ReviewDisableNameAutoCorrect { .. } => "review_database_options",
+                        #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+                        Command::OpenDatabaseOptionsSaved { .. } => "open_database_options_saved",
+                        #[cfg(feature = "offline-edit")]
+                        Command::ReviewTableRename { .. } => "review_table_rename",
+                        #[cfg(feature = "offline-edit")]
+                        Command::InspectQuerySqlDraft { .. } => "inspect_query_sql_draft",
+                        #[cfg(feature = "offline-edit")]
+                        Command::ReviewQuerySql { .. } => "review_query_sql",
+                        #[cfg(feature = "offline-edit")]
+                        Command::ReviewQueryLiteralExpression { .. } => "review_query_expression",
+                        #[cfg(feature = "offline-edit")]
+                        Command::OpenQueryExpressionSaved { .. } => "open_query_expression_saved",
+                        #[cfg(feature = "offline-edit")]
+                        Command::OpenTableRenamed { .. } => "open_table_renamed",
+                        #[cfg(feature = "offline-edit")]
+                        Command::OpenInsertOriginal { .. } => "open_insert_original",
+                        #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+                        Command::ReviewTableCreation { .. } => "review_table_creation",
+                        #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+                        Command::ReviewFieldRename { .. } => "review_field_rename",
+                        #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+                        Command::ReviewFieldDrop { .. } => "review_field_drop",
+                        #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+                        Command::OpenFieldRenamed { .. } => "open_field_renamed",
+                        #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+                        Command::OpenFieldDropped { .. } => "open_field_dropped",
+                        #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+                        Command::InspectFieldRenameSource { .. } => "inspect_field_rename_source",
+                        #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+                        Command::InspectFieldDropSource { .. } => "inspect_field_drop_source",
+                        #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+                        Command::InspectFieldAdditionAvailability { .. } => {
+                            "inspect_field_addition_source"
+                        }
+                        #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+                        Command::ReviewAddField { .. } => "review_add_field",
+                        #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+                        Command::InspectNumberColumnAvailability { .. } => {
+                            "inspect_number_column_source"
+                        }
+                        #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+                        Command::ReviewAddNumberColumn { .. } => "review_add_number_column",
+                        #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+                        Command::ReviewAddInt32Column { .. } => "review_add_column",
+                        #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+                        Command::OpenColumnAdded { .. } => "open_column_added",
+                        #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+                        Command::OpenTableCreated { .. } => "open_table_created",
+                        Command::Open { .. } => "open",
+                        #[cfg(feature = "ace16-create")]
+                        Command::OpenCreated { .. } => "open_created",
+                        #[cfg(feature = "offline-edit")]
+                        Command::BeginEdit { .. } => "begin_edit",
+                        #[cfg(feature = "offline-edit")]
+                        Command::ReviewEdit { .. } => "review_edit",
+                        #[cfg(feature = "offline-edit")]
+                        Command::BeginInsert { .. } => "begin_insert",
+                        #[cfg(feature = "offline-edit")]
+                        Command::ReviewInsert { .. } => "review_insert",
+                        #[cfg(feature = "offline-edit")]
+                        Command::ReviewDelete { .. } => "review_delete",
+                        Command::SortView { .. } => "sort_view",
+                        Command::ClearFilter { .. } => "clear_filter",
+                        Command::ReapplyFilter { .. } => "reapply_filter",
+                        Command::DescribeQueryDesign { .. } => "describe_query_design",
+                        Command::BuildQueryDesign { .. } => "build_query_design",
+                        Command::ImportQueryDesign { .. } => "import_query_design",
+                        #[cfg(feature = "offline-edit")]
+                        Command::ReplaceFindMatch { .. } => "replace_find_match",
+                        Command::DescribeTotals { .. } => "describe_totals",
+                        Command::Totals { .. } => "totals",
+                        Command::DescribeFieldFilter { .. } => "describe_field_filter",
+                        Command::ApplyFieldFilter { .. } => "apply_field_filter",
+                        Command::FilterSelection { .. } => "filter_selection",
+                        Command::FilterPage { .. } => "filter_page",
+                        Command::FindFiltered { .. } => "find_filtered",
+                        Command::FindNext { .. } => "find_next",
+                        Command::Page { .. } => "page",
+                        Command::Describe { .. } => "describe",
+                        Command::InspectCollection { .. } => "inspect_collection",
+                        Command::Query { .. } => "query",
+                        Command::InspectQuery { .. } => "inspect_query",
+                        #[cfg(feature = "offline-edit")]
+                        Command::ReviewQueryUpdate { .. } => "review_query_update",
+                        #[cfg(feature = "offline-edit")]
+                        Command::ReviewQueryDelete { .. } => "review_query_delete",
+                        #[cfg(feature = "offline-edit")]
+                        Command::ReviewQueryInsert { .. } => "review_query_insert",
+                        Command::RunQuery { .. } => "run_query",
+                        Command::InspectSavedQuery { .. } => "inspect_saved_query",
+                        Command::RunSavedQuery { .. } => "run_saved_query",
+                    };
+                    let span = tracing::debug_span!("application read task", operation);
+                    let _entered = span.enter();
+                    let result = execute(&mut request.command, &cancelled);
+                    let superseded = cancelled();
+                    tracing::debug!(
+                        success = result.is_ok(),
+                        superseded,
+                        "application read task completed"
+                    );
+                    if !superseded {
+                        let replaced = actor_shared
+                            .response
+                            .lock()
+                            .expect("read reply mailbox poisoned")
+                            .replace((request.id, result));
+                        drop(replaced);
+                        actor_shared.repaint();
                     }
                 }
+            }));
+            drop(alive);
+            if result.is_err() && !thread_shared.stopped.load(Ordering::Acquire) {
+                thread_shared.repaint();
             }
         });
+        if started.is_err() {
+            tracing::error!("read worker could not start");
+        }
         Self { shared }
     }
 
     /// Supersede earlier work without waiting for that work to finish.
+    /// A disconnected executor refuses execution and publishes ReadWorkerStopped
+    /// for this request; it never resumes a document after an actor panic.
     pub fn request(&self, command: Command) -> u64 {
         // The worker cannot take this command until its preceding response has
         // been cleared. Serializing generation issuance with replacement also
         // prevents a slower caller from replacing a newer caller's command.
-        let mut pending = self.shared.pending.lock().unwrap();
+        if self.shared.disconnected() {
+            let id = self.shared.generation.fetch_add(1, Ordering::AcqRel) + 1;
+            self.shared.active.fetch_max(id, Ordering::AcqRel);
+            drop(command);
+            self.shared.repaint();
+            return id;
+        }
+        let mut pending = self
+            .shared
+            .pending
+            .lock()
+            .expect("read request mailbox poisoned");
         let id = self.shared.generation.fetch_add(1, Ordering::AcqRel) + 1;
-        self.shared.response.lock().unwrap().take();
-        *pending = Some(Pending { id, command });
+        self.shared.active.fetch_max(id, Ordering::AcqRel);
+        let old_response = self
+            .shared
+            .response
+            .lock()
+            .expect("read reply mailbox poisoned")
+            .take();
+        let old_pending = pending.replace(Pending { id, command });
         drop(pending);
-        self.shared.ready.notify_one();
+        self.shared.ready.notify();
+        drop(old_response);
+        drop(old_pending);
         id
     }
 
@@ -679,25 +774,77 @@ impl Worker {
     }
 
     pub fn poll(&self) -> Option<Reply> {
-        let response = self.shared.response.lock().unwrap().take()?;
-        (response.0 == self.shared.generation.load(Ordering::Acquire)).then_some(response)
+        if self.shared.disconnected() {
+            let id = self.shared.active.swap(NO_REQUEST, Ordering::AcqRel);
+            if id == NO_REQUEST || id != self.shared.generation.load(Ordering::Acquire) {
+                return None;
+            }
+            self.shared.discard_dead_mailboxes();
+            return Some((id, Err(Error::ReadWorkerStopped)));
+        }
+        let response = self
+            .shared
+            .response
+            .lock()
+            .expect("read reply mailbox poisoned")
+            .take()?;
+        if response.0 != self.shared.generation.load(Ordering::Acquire)
+            || self
+                .shared
+                .active
+                .compare_exchange(response.0, NO_REQUEST, Ordering::AcqRel, Ordering::Acquire)
+                .is_err()
+        {
+            return None;
+        }
+        Some(response)
     }
 
     pub fn cancel(&self) {
-        let mut pending = self.shared.pending.lock().unwrap();
-        self.shared.generation.fetch_add(1, Ordering::AcqRel);
-        pending.take();
-        self.shared.response.lock().unwrap().take();
+        if self.shared.disconnected() {
+            let revoked = self.shared.generation.fetch_add(1, Ordering::AcqRel) + 1;
+            self.shared
+                .active
+                .try_update(Ordering::AcqRel, Ordering::Acquire, |id| {
+                    (id <= revoked).then_some(NO_REQUEST)
+                })
+                .ok();
+            self.shared.discard_dead_mailboxes();
+            return;
+        }
+        let mut pending = self
+            .shared
+            .pending
+            .lock()
+            .expect("read request mailbox poisoned");
+        let revoked = self.shared.generation.fetch_add(1, Ordering::AcqRel) + 1;
+        self.shared
+            .active
+            .try_update(Ordering::AcqRel, Ordering::Acquire, |id| {
+                (id <= revoked).then_some(NO_REQUEST)
+            })
+            .ok();
+        let old_pending = pending.take();
+        let old_response = self
+            .shared
+            .response
+            .lock()
+            .expect("read reply mailbox poisoned")
+            .take();
+        drop(pending);
+        drop(old_pending);
+        drop(old_response);
     }
 }
 
 impl Drop for Worker {
     fn drop(&mut self) {
         self.shared.stopped.store(true, Ordering::Release);
-        self.cancel();
-        self.shared.ready.notify_one();
-        // No join on the GUI thread: a currently blocking filesystem call may
-        // return later. The owned worker closes its source when it observes stop.
+        self.shared.generation.fetch_add(1, Ordering::AcqRel);
+        self.shared.active.store(NO_REQUEST, Ordering::Release);
+        self.shared.ready.notify();
+        // No explicit mailbox lock or join here. A live actor reclaims its
+        // owned source/queued data after any blocking read returns.
     }
 }
 
@@ -709,3 +856,6 @@ impl Worker {
         Self::start(|| {}, execute)
     }
 }
+
+#[cfg(test)]
+mod liveness_tests;

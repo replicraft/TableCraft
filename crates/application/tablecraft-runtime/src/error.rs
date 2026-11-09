@@ -15,6 +15,9 @@ use tablecraft_builders::query::QueryDesignError;
 /// A typed task failure. Display text contains no credentials or row payloads.
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
+    /// The read actor ended; no cached document or queued command is reused.
+    #[error("the background read worker stopped unexpectedly")]
+    ReadWorkerStopped,
     #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
     #[error(transparent)]
     DatabaseOptions(#[from] tablecraft_ace::DatabaseOptionsIntentError),

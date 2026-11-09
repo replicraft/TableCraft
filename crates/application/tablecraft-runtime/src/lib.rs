@@ -23,6 +23,8 @@ mod scalar_input;
 mod schema;
 mod source;
 mod table;
+mod task_signal;
+mod thread_start;
 mod totals;
 mod worker;
 

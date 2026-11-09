@@ -70,6 +70,8 @@ impl fmt::Debug for CreationReport {
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum CreationStartFailure {
+    /// The OS refused the worker thread before any request was accepted.
+    ThreadStart(std::io::ErrorKind),
     Busy,
     Exhausted,
     UnsupportedPlatform,

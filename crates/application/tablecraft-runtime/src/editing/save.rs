@@ -174,6 +174,8 @@ impl SaveReport {
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum SaveStartFailure {
+    /// The OS refused the worker thread; the original capability is returned.
+    ThreadStart(std::io::ErrorKind),
     Busy,
     StaleDocument,
     InvalidState,

@@ -1349,7 +1349,7 @@ impl eframe::App for Desktop {
 impl Drop for Desktop {
     fn drop(&mut self) {
         self.state.password.zeroize();
-        self.worker.cancel();
+        // Worker::drop revokes reads without taking GUI-thread mailbox locks.
     }
 }
 

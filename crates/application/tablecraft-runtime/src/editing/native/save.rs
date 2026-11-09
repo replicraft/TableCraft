@@ -54,11 +54,15 @@ use crate::{
         platform::query_action::Plan,
     },
 };
+use crate::{
+    task_signal,
+    thread_start::{Spawner, ThreadSpawner},
+};
 use std::{
     panic::{AssertUnwindSafe, catch_unwind},
     path::PathBuf,
     sync::{
-        Arc, Condvar, Mutex,
+        Arc, Mutex,
         atomic::{AtomicBool, Ordering},
     },
 };
@@ -117,13 +121,14 @@ struct Mailbox {
 
 struct Shared {
     mailbox: Mutex<Mailbox>,
-    ready: Condvar,
+    ready: task_signal::Signal,
     cancelled: AtomicBool,
     stopped: AtomicBool,
 }
 
 pub struct SaveWorker {
     shared: Arc<Shared>,
+    startup: Result<(), std::io::ErrorKind>,
 }
 
 impl SaveWorker {
@@ -177,6 +182,11 @@ impl SaveWorker {
     }
 
     pub fn new(repaint: impl Fn() + Send + Sync + 'static) -> Self {
+        Self::with_spawner(repaint, ThreadSpawner)
+    }
+
+    fn with_spawner(repaint: impl Fn() + Send + Sync + 'static, spawner: impl Spawner) -> Self {
+        let (signal, receiver) = task_signal::channel();
         let shared = Arc::new(Shared {
             mailbox: Mutex::new(Mailbox {
                 next: 0,
@@ -185,209 +195,223 @@ impl SaveWorker {
                 pending: None,
                 report: None,
             }),
-            ready: Condvar::new(),
+            ready: signal,
             cancelled: AtomicBool::new(false),
             stopped: AtomicBool::new(false),
         });
         let owner = Arc::clone(&shared);
         let dispatch = tracing::dispatcher::get_default(Clone::clone);
-        std::thread::spawn(move || {
-            let _subscriber = tracing::dispatcher::set_default(&dispatch);
-            let mut retained: Option<RetainedOwner> = None;
-            loop {
-                let mut mailbox = owner.mailbox.lock().unwrap();
-                while mailbox.pending.is_none() && !owner.stopped.load(Ordering::Acquire) {
-                    mailbox = owner.ready.wait(mailbox).unwrap();
-                }
-                if mailbox.pending.is_none() && owner.stopped.load(Ordering::Acquire) {
-                    break;
-                }
-                let Some((id, task)) = mailbox.pending.take() else {
-                    continue;
-                };
-                drop(mailbox);
-                let cancelled = || owner.cancelled.load(Ordering::Acquire);
-                let operation = match &task {
-                    #[cfg(feature = "ace16-create")]
-                    Task::ApplyDatabaseOptions(..) => SaveOperation::Apply,
-                    #[cfg(feature = "ace16-create")]
-                    Task::ApplyTableCreation(..) => SaveOperation::Apply,
-                    #[cfg(feature = "ace16-create")]
-                    Task::ApplyAddColumn(..)
-                    | Task::ApplyNumberColumn(..)
-                    | Task::ApplyFieldAddition(..)
-                    | Task::ApplyFieldRename(..)
-                    | Task::ApplyFieldDrop(..) => SaveOperation::Apply,
-                    Task::ApplyQueryExpression(..)
-                    | Task::ApplyQuerySql(..)
-                    | Task::Apply(..)
-                    | Task::ApplyTableRename(..)
-                    | Task::ApplyInsert(..)
-                    | Task::ApplyDelete(..)
-                    | Task::ApplyQueryInsert(..)
-                    | Task::ApplyQueryDelete(..)
-                    | Task::ApplyQueryUpdate(..) => SaveOperation::Apply,
-                    Task::Restart(..) | Task::Recover => SaveOperation::Recover,
-                    Task::Release => SaveOperation::Release,
-                };
-                let operation_name = match operation {
-                    SaveOperation::Apply => "apply",
-                    SaveOperation::Recover => "recover",
-                    SaveOperation::Release => "release",
-                };
-                let span =
-                    tracing::debug_span!("application save task", operation = operation_name);
-                let _entered = span.enter();
-                let outcome = match task {
-                    #[cfg(feature = "ace16-create")]
-                    Task::ApplyDatabaseOptions(reviewed, bundle) => {
-                        apply_database_options(reviewed, bundle, &mut retained, &cancelled)
+        let startup = spawner
+            .spawn(move || {
+                let _subscriber = tracing::dispatcher::set_default(&dispatch);
+                let mut retained: Option<RetainedOwner> = None;
+                loop {
+                    // A stop wake may have coalesced with the task's wake.
+                    // Drain accepted work, then exit before blocking again.
+                    if owner.stopped.load(Ordering::Acquire)
+                        && owner
+                            .mailbox
+                            .lock()
+                            .expect("save mailbox poisoned")
+                            .pending
+                            .is_none()
+                    {
+                        break;
                     }
-                    Task::ApplyQueryExpression(reviewed, bundle) => {
-                        apply_query_expression(reviewed, bundle, &mut retained, &cancelled)
+                    if !receiver.wait() {
+                        break;
                     }
-                    Task::ApplyQuerySql(reviewed, bundle) => {
-                        apply_query_sql(reviewed, bundle, &mut retained, &cancelled)
-                    }
-                    #[cfg(feature = "ace16-create")]
-                    Task::ApplyFieldDrop(reviewed, bundle) => {
-                        self::apply_field_drop::apply_field_drop(
-                            reviewed,
-                            bundle,
-                            &mut retained,
-                            &cancelled,
-                        )
-                    }
-                    #[cfg(feature = "ace16-create")]
-                    Task::ApplyFieldRename(reviewed, bundle) => {
-                        self::apply_field_rename::apply_field_rename(
-                            reviewed,
-                            bundle,
-                            &mut retained,
-                            &cancelled,
-                        )
-                    }
-                    #[cfg(feature = "ace16-create")]
-                    Task::ApplyFieldAddition(reviewed, bundle) => {
-                        self::apply_field_addition::apply_field_addition(
-                            reviewed,
-                            bundle,
-                            &mut retained,
-                            &cancelled,
-                        )
-                    }
-                    #[cfg(feature = "ace16-create")]
-                    Task::ApplyNumberColumn(reviewed, bundle) => {
-                        self::apply_field_addition::apply_number_column(
-                            reviewed,
-                            bundle,
-                            &mut retained,
-                            &cancelled,
-                        )
-                    }
-                    #[cfg(feature = "ace16-create")]
-                    Task::ApplyAddColumn(reviewed, bundle) => {
-                        apply_add_column(reviewed, bundle, &mut retained, &cancelled)
-                    }
-                    #[cfg(feature = "ace16-create")]
-                    Task::ApplyTableCreation(reviewed, bundle) => {
-                        apply_table_creation(reviewed, bundle, &mut retained, &cancelled)
-                    }
-                    Task::ApplyTableRename(reviewed, bundle) => {
-                        apply_table_rename(reviewed, bundle, &mut retained, &cancelled)
-                    }
-                    Task::Apply(reviewed, bundle) => {
-                        apply(reviewed, bundle, &mut retained, &cancelled)
-                    }
-                    Task::ApplyInsert(reviewed, bundle) => {
-                        apply_insert(reviewed, bundle, &mut retained, &cancelled)
-                    }
-                    Task::ApplyDelete(reviewed, bundle) => {
-                        apply_delete(reviewed, bundle, &mut retained, &cancelled)
-                    }
-                    Task::ApplyQueryUpdate(reviewed, bundle) => {
-                        let reviewed = *reviewed.state;
-                        apply_query_action(
-                            reviewed.target,
-                            Plan::Update(reviewed.plan),
-                            reviewed.valid,
-                            bundle,
-                            &mut retained,
-                            &cancelled,
-                        )
-                    }
-                    Task::ApplyQueryDelete(reviewed, bundle) => {
-                        let reviewed = *reviewed.state;
-                        apply_query_action(
-                            reviewed.target,
-                            Plan::Delete(reviewed.plan),
-                            reviewed.valid,
-                            bundle,
-                            &mut retained,
-                            &cancelled,
-                        )
-                    }
-                    Task::ApplyQueryInsert(reviewed, bundle) => {
-                        let reviewed = *reviewed.state;
-                        apply_query_action(
-                            reviewed.target,
-                            Plan::Insert(reviewed.plan),
-                            reviewed.valid,
-                            bundle,
-                            &mut retained,
-                            &cancelled,
-                        )
-                    }
-                    Task::Restart(source, bundle) => {
-                        restart(source, bundle, &mut retained, &cancelled)
-                    }
-                    Task::Recover => match retained.take().map(RetainedOwner::into_session) {
-                        Some(session) => {
-                            // Recovery includes complete journal image validation and
-                            // fresh native reconstruction, separately from the normal
-                            // native planning allowance used before an initial write.
-                            let mut work = action_recovery_budget();
-                            finish(
-                                session.recover_pending(&mut work, &cancelled),
+                    let mut mailbox = owner.mailbox.lock().expect("save mailbox poisoned");
+                    let Some((id, task)) = mailbox.pending.take() else {
+                        if owner.stopped.load(Ordering::Acquire) {
+                            break;
+                        }
+                        continue;
+                    };
+                    drop(mailbox);
+                    let cancelled = || owner.cancelled.load(Ordering::Acquire);
+                    let operation = match &task {
+                        #[cfg(feature = "ace16-create")]
+                        Task::ApplyDatabaseOptions(..) => SaveOperation::Apply,
+                        #[cfg(feature = "ace16-create")]
+                        Task::ApplyTableCreation(..) => SaveOperation::Apply,
+                        #[cfg(feature = "ace16-create")]
+                        Task::ApplyAddColumn(..)
+                        | Task::ApplyNumberColumn(..)
+                        | Task::ApplyFieldAddition(..)
+                        | Task::ApplyFieldRename(..)
+                        | Task::ApplyFieldDrop(..) => SaveOperation::Apply,
+                        Task::ApplyQueryExpression(..)
+                        | Task::ApplyQuerySql(..)
+                        | Task::Apply(..)
+                        | Task::ApplyTableRename(..)
+                        | Task::ApplyInsert(..)
+                        | Task::ApplyDelete(..)
+                        | Task::ApplyQueryInsert(..)
+                        | Task::ApplyQueryDelete(..)
+                        | Task::ApplyQueryUpdate(..) => SaveOperation::Apply,
+                        Task::Restart(..) | Task::Recover => SaveOperation::Recover,
+                        Task::Release => SaveOperation::Release,
+                    };
+                    let operation_name = match operation {
+                        SaveOperation::Apply => "apply",
+                        SaveOperation::Recover => "recover",
+                        SaveOperation::Release => "release",
+                    };
+                    let span =
+                        tracing::debug_span!("application save task", operation = operation_name);
+                    let _entered = span.enter();
+                    let outcome = match task {
+                        #[cfg(feature = "ace16-create")]
+                        Task::ApplyDatabaseOptions(reviewed, bundle) => {
+                            apply_database_options(reviewed, bundle, &mut retained, &cancelled)
+                        }
+                        Task::ApplyQueryExpression(reviewed, bundle) => {
+                            apply_query_expression(reviewed, bundle, &mut retained, &cancelled)
+                        }
+                        Task::ApplyQuerySql(reviewed, bundle) => {
+                            apply_query_sql(reviewed, bundle, &mut retained, &cancelled)
+                        }
+                        #[cfg(feature = "ace16-create")]
+                        Task::ApplyFieldDrop(reviewed, bundle) => {
+                            self::apply_field_drop::apply_field_drop(
+                                reviewed,
+                                bundle,
                                 &mut retained,
+                                &cancelled,
                             )
                         }
-                        None => SaveOutcome::Failed(no_session(SaveFailureKind::InvalidState)),
-                    },
-                    Task::Release => match retained.take().map(RetainedOwner::into_session) {
-                        Some(session) => {
-                            let current_outcome = session.current_outcome().map(known);
-                            let last_completed = session.last_completed().map(receipt);
-                            match session.release() {
-                                Ok(()) => SaveOutcome::Released {
-                                    current_outcome,
-                                    last_completed,
-                                },
-                                Err(failure) => retain(failure, &mut retained),
-                            }
+                        #[cfg(feature = "ace16-create")]
+                        Task::ApplyFieldRename(reviewed, bundle) => {
+                            self::apply_field_rename::apply_field_rename(
+                                reviewed,
+                                bundle,
+                                &mut retained,
+                                &cancelled,
+                            )
                         }
-                        None => SaveOutcome::Failed(no_session(SaveFailureKind::InvalidState)),
-                    },
-                };
-                tracing::debug!(
-                    retained_resources = retained.is_some(),
-                    "application save task completed"
-                );
-                let mut mailbox = owner.mailbox.lock().unwrap();
-                mailbox.active = false;
-                mailbox.retained = retained.is_some();
-                mailbox.report = Some(SaveReport {
-                    id,
-                    operation,
-                    outcome,
-                });
-                drop(mailbox);
-                if catch_unwind(AssertUnwindSafe(&repaint)).is_err() {
-                    tracing::error!("save completion callback panicked");
+                        #[cfg(feature = "ace16-create")]
+                        Task::ApplyFieldAddition(reviewed, bundle) => {
+                            self::apply_field_addition::apply_field_addition(
+                                reviewed,
+                                bundle,
+                                &mut retained,
+                                &cancelled,
+                            )
+                        }
+                        #[cfg(feature = "ace16-create")]
+                        Task::ApplyNumberColumn(reviewed, bundle) => {
+                            self::apply_field_addition::apply_number_column(
+                                reviewed,
+                                bundle,
+                                &mut retained,
+                                &cancelled,
+                            )
+                        }
+                        #[cfg(feature = "ace16-create")]
+                        Task::ApplyAddColumn(reviewed, bundle) => {
+                            apply_add_column(reviewed, bundle, &mut retained, &cancelled)
+                        }
+                        #[cfg(feature = "ace16-create")]
+                        Task::ApplyTableCreation(reviewed, bundle) => {
+                            apply_table_creation(reviewed, bundle, &mut retained, &cancelled)
+                        }
+                        Task::ApplyTableRename(reviewed, bundle) => {
+                            apply_table_rename(reviewed, bundle, &mut retained, &cancelled)
+                        }
+                        Task::Apply(reviewed, bundle) => {
+                            apply(reviewed, bundle, &mut retained, &cancelled)
+                        }
+                        Task::ApplyInsert(reviewed, bundle) => {
+                            apply_insert(reviewed, bundle, &mut retained, &cancelled)
+                        }
+                        Task::ApplyDelete(reviewed, bundle) => {
+                            apply_delete(reviewed, bundle, &mut retained, &cancelled)
+                        }
+                        Task::ApplyQueryUpdate(reviewed, bundle) => {
+                            let reviewed = *reviewed.state;
+                            apply_query_action(
+                                reviewed.target,
+                                Plan::Update(reviewed.plan),
+                                reviewed.valid,
+                                bundle,
+                                &mut retained,
+                                &cancelled,
+                            )
+                        }
+                        Task::ApplyQueryDelete(reviewed, bundle) => {
+                            let reviewed = *reviewed.state;
+                            apply_query_action(
+                                reviewed.target,
+                                Plan::Delete(reviewed.plan),
+                                reviewed.valid,
+                                bundle,
+                                &mut retained,
+                                &cancelled,
+                            )
+                        }
+                        Task::ApplyQueryInsert(reviewed, bundle) => {
+                            let reviewed = *reviewed.state;
+                            apply_query_action(
+                                reviewed.target,
+                                Plan::Insert(reviewed.plan),
+                                reviewed.valid,
+                                bundle,
+                                &mut retained,
+                                &cancelled,
+                            )
+                        }
+                        Task::Restart(source, bundle) => {
+                            restart(source, bundle, &mut retained, &cancelled)
+                        }
+                        Task::Recover => match retained.take().map(RetainedOwner::into_session) {
+                            Some(session) => {
+                                // Recovery includes complete journal image validation and
+                                // fresh native reconstruction, separately from the normal
+                                // native planning allowance used before an initial write.
+                                let mut work = action_recovery_budget();
+                                finish(
+                                    session.recover_pending(&mut work, &cancelled),
+                                    &mut retained,
+                                )
+                            }
+                            None => SaveOutcome::Failed(no_session(SaveFailureKind::InvalidState)),
+                        },
+                        Task::Release => match retained.take().map(RetainedOwner::into_session) {
+                            Some(session) => {
+                                let current_outcome = session.current_outcome().map(known);
+                                let last_completed = session.last_completed().map(receipt);
+                                match session.release() {
+                                    Ok(()) => SaveOutcome::Released {
+                                        current_outcome,
+                                        last_completed,
+                                    },
+                                    Err(failure) => retain(failure, &mut retained),
+                                }
+                            }
+                            None => SaveOutcome::Failed(no_session(SaveFailureKind::InvalidState)),
+                        },
+                    };
+                    tracing::debug!(
+                        retained_resources = retained.is_some(),
+                        "application save task completed"
+                    );
+                    let mut mailbox = owner.mailbox.lock().expect("save mailbox poisoned");
+                    mailbox.active = false;
+                    mailbox.retained = retained.is_some();
+                    mailbox.report = Some(SaveReport {
+                        id,
+                        operation,
+                        outcome,
+                    });
+                    drop(mailbox);
+                    if catch_unwind(AssertUnwindSafe(&repaint)).is_err() {
+                        tracing::error!("save completion callback panicked");
+                    }
                 }
-            }
-        });
-        Self { shared }
+            })
+            .map_err(|error| error.kind());
+        Self { shared, startup }
     }
 
     /// Consume only the explicitly reviewed option request through this save owner.
@@ -568,13 +592,19 @@ impl SaveWorker {
         valid: bool,
         task: fn(T, PathBuf) -> Task,
     ) -> Result<u64, SaveStartError<T>> {
+        if let Err(kind) = self.startup {
+            return Err(SaveStartError {
+                kind: SaveStartFailure::ThreadStart(kind),
+                reviewed: Some(reviewed),
+            });
+        }
         if !valid {
             return Err(SaveStartError {
                 kind: SaveStartFailure::StaleDocument,
                 reviewed: Some(reviewed),
             });
         }
-        let mut mailbox = self.shared.mailbox.lock().unwrap();
+        let mut mailbox = self.shared.mailbox.lock().expect("save mailbox poisoned");
         if mailbox.active || mailbox.report.is_some() || mailbox.retained {
             return Err(SaveStartError {
                 kind: SaveStartFailure::Busy,
@@ -592,22 +622,26 @@ impl SaveWorker {
         mailbox.pending = Some((id, task(reviewed, bundle)));
         self.shared.cancelled.store(false, Ordering::Release);
         drop(mailbox);
-        self.shared.ready.notify_one();
+        self.shared.ready.notify();
         Ok(id)
     }
 
     /// Repeated polling observes the SAME terminal report until explicit acknowledgement.
     pub fn poll(&self) -> Option<SaveReport> {
-        self.shared.mailbox.lock().unwrap().report
+        self.shared
+            .mailbox
+            .lock()
+            .expect("save mailbox poisoned")
+            .report
     }
 
     pub fn is_busy(&self) -> bool {
-        let mailbox = self.shared.mailbox.lock().unwrap();
+        let mailbox = self.shared.mailbox.lock().expect("save mailbox poisoned");
         mailbox.active || mailbox.report.is_some() || mailbox.retained
     }
 
     pub fn cancel(&self, id: u64) -> bool {
-        let mailbox = self.shared.mailbox.lock().unwrap();
+        let mailbox = self.shared.mailbox.lock().expect("save mailbox poisoned");
         if mailbox.next != id || !mailbox.active {
             return false;
         }
@@ -616,7 +650,7 @@ impl SaveWorker {
     }
 
     pub fn acknowledge(&self, id: u64) -> bool {
-        let mut mailbox = self.shared.mailbox.lock().unwrap();
+        let mut mailbox = self.shared.mailbox.lock().expect("save mailbox poisoned");
         if mailbox.active
             || mailbox.retained
             || !mailbox.report.is_some_and(|report| report.id == id)
@@ -635,7 +669,13 @@ impl SaveWorker {
     }
 
     fn continue_retained(&self, id: u64, recover: bool) -> Result<u64, SaveStartError> {
-        let mut mailbox = self.shared.mailbox.lock().unwrap();
+        if let Err(kind) = self.startup {
+            return Err(SaveStartError {
+                kind: SaveStartFailure::ThreadStart(kind),
+                reviewed: None,
+            });
+        }
+        let mut mailbox = self.shared.mailbox.lock().expect("save mailbox poisoned");
         let allowed = mailbox.report.is_some_and(|report| {
             report.id == id
                 && match report.outcome {
@@ -672,7 +712,7 @@ impl SaveWorker {
         ));
         self.shared.cancelled.store(false, Ordering::Release);
         drop(mailbox);
-        self.shared.ready.notify_one();
+        self.shared.ready.notify();
         Ok(next)
     }
 }
@@ -682,6 +722,9 @@ impl Drop for SaveWorker {
         // Never interrupt publication or auto-clean retained bundles. The host
         // must resolve busy/retained state before allowing application exit.
         self.shared.stopped.store(true, Ordering::Release);
-        self.shared.ready.notify_one();
+        self.shared.ready.notify();
     }
 }
+
+#[cfg(test)]
+mod startup_tests;
