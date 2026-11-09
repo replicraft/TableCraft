@@ -405,10 +405,10 @@ impl Desktop {
     }
 
     pub(in crate::workspace) fn acknowledge_table_creation_save(&mut self, id: u64) {
-        if let Some(save) = &self.editing.save {
-            if self.acknowledge_uncertain_save(save.id) {
-                return;
-            }
+        if let Some(save) = &self.editing.save
+            && self.acknowledge_uncertain_save(save.id)
+        {
+            return;
         }
 
         if !self
