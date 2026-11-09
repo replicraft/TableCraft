@@ -50,7 +50,9 @@ fn click(harness: &mut Harness<'_, Desktop>, key: &str) {
         .find(|node| !node.accesskit_node().is_disabled())
         .unwrap_or_else(|| panic!("enabled button missing: {key}"))
         .click_accesskit();
-    harness.run_steps(1);
+    // Actions are consumed after drawing. Paint the resulting dialog before
+    // querying its controls rather than using the previous frame's tree.
+    harness.run_steps(2);
 }
 
 fn take_review(
