@@ -7,6 +7,8 @@ mod apply_database_options;
 mod apply_delete;
 #[cfg(feature = "ace16-create")]
 mod apply_field_addition;
+#[cfg(feature = "ace16-create")]
+mod apply_field_rename;
 mod apply_insert;
 mod apply_query_action;
 mod apply_query_expression;
@@ -39,8 +41,8 @@ use crate::editing::save::{
 };
 #[cfg(feature = "ace16-create")]
 use crate::editing::{
-    ReviewedAddColumn, ReviewedDatabaseOptions, ReviewedFieldAddition, ReviewedNumberColumn,
-    ReviewedTableCreation,
+    ReviewedAddColumn, ReviewedDatabaseOptions, ReviewedFieldAddition, ReviewedFieldRename,
+    ReviewedNumberColumn, ReviewedTableCreation,
 };
 use crate::{
     controls::action_recovery_budget,
@@ -71,6 +73,8 @@ enum Task {
     ApplyNumberColumn(ReviewedNumberColumn, PathBuf),
     #[cfg(feature = "ace16-create")]
     ApplyFieldAddition(ReviewedFieldAddition, PathBuf),
+    #[cfg(feature = "ace16-create")]
+    ApplyFieldRename(ReviewedFieldRename, PathBuf),
     #[cfg(feature = "ace16-create")]
     ApplyTableCreation(ReviewedTableCreation, PathBuf),
     Apply(ReviewedEdit, PathBuf),
@@ -130,6 +134,11 @@ impl SaveWorker {
 
     /// Whether this host can consume native full-SQL review capabilities.
     pub const fn supports_query_sql() -> bool {
+        true
+    }
+
+    #[cfg(feature = "ace16-create")]
+    pub const fn supports_field_rename() -> bool {
         true
     }
 
@@ -196,7 +205,8 @@ impl SaveWorker {
                     #[cfg(feature = "ace16-create")]
                     Task::ApplyAddColumn(..)
                     | Task::ApplyNumberColumn(..)
-                    | Task::ApplyFieldAddition(..) => SaveOperation::Apply,
+                    | Task::ApplyFieldAddition(..)
+                    | Task::ApplyFieldRename(..) => SaveOperation::Apply,
                     Task::ApplyQueryExpression(..)
                     | Task::ApplyQuerySql(..)
                     | Task::Apply(..)
@@ -227,6 +237,15 @@ impl SaveWorker {
                     }
                     Task::ApplyQuerySql(reviewed, bundle) => {
                         apply_query_sql(reviewed, bundle, &mut retained, &cancelled)
+                    }
+                    #[cfg(feature = "ace16-create")]
+                    Task::ApplyFieldRename(reviewed, bundle) => {
+                        self::apply_field_rename::apply_field_rename(
+                            reviewed,
+                            bundle,
+                            &mut retained,
+                            &cancelled,
+                        )
                     }
                     #[cfg(feature = "ace16-create")]
                     Task::ApplyFieldAddition(reviewed, bundle) => {
@@ -436,7 +455,23 @@ impl SaveWorker {
         self.start_reviewed(reviewed, bundle, valid, Task::ApplyQueryExpression)
     }
 
-    /// Consume the current source-qualified ADD-column review once.
+    /// Consume the exact original-field rename review once.
+    #[cfg(feature = "ace16-create")]
+    pub fn start_field_rename(
+        &self,
+        reviewed: ReviewedFieldRename,
+        bundle: PathBuf,
+    ) -> Result<u64, SaveStartError<ReviewedFieldRename>> {
+        if !reviewed.changed() {
+            return Err(SaveStartError {
+                kind: SaveStartFailure::InvalidState,
+                reviewed: Some(reviewed),
+            });
+        }
+        let valid = reviewed.state.valid.load(Ordering::Acquire);
+        self.start_reviewed(reviewed, bundle, valid, Task::ApplyFieldRename)
+    }
+
     #[cfg(feature = "ace16-create")]
     pub fn start_field_addition(
         &self,

@@ -452,7 +452,8 @@ impl Desktop {
                 | Ok(Response::AddColumnReviewed { .. })
                 | Ok(Response::NumberColumnReviewed { .. })
                 | Ok(Response::NumberColumnAvailability { .. })
-                | Ok(Response::FieldRenameSourceInspected { .. }) => {
+                | Ok(Response::FieldRenameSourceInspected { .. })
+                | Ok(Response::FieldRenameReviewed { .. }) => {
                     self.state.error = Some(self.state.localizer.text("ribbon-unavailable"));
                 }
                 Ok(Response::DatabaseOptionsInspected { inspection }) => {

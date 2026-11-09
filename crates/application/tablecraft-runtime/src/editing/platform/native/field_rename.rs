@@ -1,4 +1,7 @@
 //! Native source inspection consumes neither a save lease nor an AFTER image.
+mod review;
+pub(in crate::editing) use review::{State, review};
+
 use crate::{Error, controls::SCOPE, document::Document};
 use tablecraft_ace::{
     FieldAdditionError, FieldHistoryDatabaseOptionsError, FieldRenameError, NativeImage,

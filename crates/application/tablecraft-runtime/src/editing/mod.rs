@@ -46,7 +46,10 @@ pub use field_addition::{
     FieldAdditionReview, ReviewedFieldAddition,
 };
 #[cfg(feature = "ace16-create")]
-pub use field_rename::FieldRenameSourceInspection;
+pub use field_rename::{
+    FieldRenameOutcomeError, FieldRenameReopenFacts, FieldRenameReview,
+    FieldRenameSourceInspection, FieldRenamedReopen, ReviewedFieldRename,
+};
 pub use inserting::{
     InsertDraft, InsertField, InsertInput, InsertRetryEvidence, InsertRetryWitness, InsertReview,
     InsertTarget, ReviewedInsert,

@@ -1,4 +1,7 @@
 //! Unsupported write hosts retain exact read metadata without rename support.
+mod review;
+pub(in crate::editing) use review::{State, review};
+
 use crate::{Error, controls::check, document::Document};
 use tablecraft_core::limits::ResourceBudget;
 

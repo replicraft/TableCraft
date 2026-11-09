@@ -130,6 +130,35 @@ impl Worker {
                 Ok(response)
             }
             #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+            Command::ReviewFieldRename {
+                document_revision,
+                table,
+                column,
+                native_number,
+                new_name,
+            } => document
+                .as_mut()
+                .ok_or(Error::NoDatabase)?
+                .review_field_rename(
+                    *document_revision,
+                    table,
+                    column,
+                    *native_number,
+                    new_name,
+                    cancelled,
+                ),
+            #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+            Command::OpenFieldRenamed { witness } => {
+                document = None;
+                document_revision = document_revision
+                    .checked_add(1)
+                    .ok_or(Error::RevisionExhausted)?;
+                let (opened, response) =
+                    Document::open_field_renamed(witness, document_revision, cancelled)?;
+                document = Some(opened);
+                Ok(response)
+            }
+            #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
             Command::InspectFieldRenameSource {
                 document_revision,
                 table,
@@ -497,6 +526,10 @@ impl Worker {
                     Command::OpenInsertOriginal { .. } => "open_insert_original",
                     #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
                     Command::ReviewTableCreation { .. } => "review_table_creation",
+                    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+                    Command::ReviewFieldRename { .. } => "review_field_rename",
+                    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+                    Command::OpenFieldRenamed { .. } => "open_field_renamed",
                     #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
                     Command::InspectFieldRenameSource { .. } => "inspect_field_rename_source",
                     #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]

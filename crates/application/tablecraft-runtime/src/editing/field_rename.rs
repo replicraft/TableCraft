@@ -1,4 +1,9 @@
-//! Exact read-session field facts without any proposed replacement or write owner.
+//! Exact field-source facts, consuming rename reviews and checked reopen witnesses.
+mod outcome;
+mod review;
+pub use outcome::{FieldRenameOutcomeError, FieldRenameReopenFacts};
+pub use review::{FieldRenameReview, FieldRenamedReopen, ReviewedFieldRename};
+
 use crate::{
     Error, Response,
     controls::{SCOPE, budget, check},

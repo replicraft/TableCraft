@@ -36,9 +36,10 @@ pub use editing::{
     AddColumnReview, AddedColumnReopen, CreatedTableReopen, DatabaseOptionsInspection,
     DatabaseOptionsOutcomeError, DatabaseOptionsReopen, DatabaseOptionsReopenFacts,
     DatabaseOptionsReview, FieldAdditionAvailability, FieldAdditionOutcomeError,
-    FieldAdditionReopenFacts, FieldAdditionReview, FieldRenameSourceInspection,
-    NameAutoCorrectState, NumberColumnAvailability, ReviewedAddColumn, ReviewedDatabaseOptions,
-    ReviewedFieldAddition, ReviewedNumberColumn, ReviewedTableCreation,
+    FieldAdditionReopenFacts, FieldAdditionReview, FieldRenameOutcomeError, FieldRenameReopenFacts,
+    FieldRenameReview, FieldRenameSourceInspection, FieldRenamedReopen, NameAutoCorrectState,
+    NumberColumnAvailability, ReviewedAddColumn, ReviewedDatabaseOptions, ReviewedFieldAddition,
+    ReviewedFieldRename, ReviewedNumberColumn, ReviewedTableCreation,
 };
 #[cfg(feature = "offline-edit")]
 pub use editing::{
@@ -147,6 +148,12 @@ pub enum Error {
     #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
     #[error("native field identity no longer matches the selected target")]
     StaleFieldRenameTarget,
+    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+    #[error(transparent)]
+    FieldRenameIntent(#[from] tablecraft_ace::FieldRenameIntentError),
+    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+    #[error("saved field rename contents changed before reopening")]
+    FieldRenamedSourceChanged,
     #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
     #[error("saved column contents changed before reopening")]
     AddedColumnSourceChanged,
@@ -300,6 +307,18 @@ pub enum Command {
     #[cfg(feature = "offline-edit")]
     OpenInsertOriginal {
         witness: Arc<InsertRetryWitness>,
+    },
+    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+    ReviewFieldRename {
+        document_revision: u64,
+        table: String,
+        column: String,
+        native_number: usize,
+        new_name: String,
+    },
+    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+    OpenFieldRenamed {
+        witness: Arc<FieldRenamedReopen>,
     },
     #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
     InspectFieldRenameSource {
@@ -540,6 +559,11 @@ pub enum Response {
     TableRenameReviewed {
         review: TableRenameReview,
         capability: ReviewedTableRename,
+    },
+    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+    FieldRenameReviewed {
+        review: FieldRenameReview,
+        capability: ReviewedFieldRename,
     },
     #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
     FieldRenameSourceInspected {

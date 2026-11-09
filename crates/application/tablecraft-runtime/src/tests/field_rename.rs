@@ -1,6 +1,8 @@
 //! Actual read-session qualification, with no hypothetical replacement or save.
+mod service;
+
 use super::{request, stored::opened};
-use crate::{Command, Error, FieldRenameSourceInspection, Response};
+use crate::{Command, Error, FieldRenameSourceInspection, Response, SortSpec, SortTarget};
 use tablecraft_testkit::fixtures::access::canonical_created_number::{
     Source, mixed::after_off as raw, repeated,
 };
@@ -104,7 +106,7 @@ fn published_native_number_comes_from_bound_schema_not_display_position() {
     let mut bytes = repeated::source(Source::IdOnly);
     bytes[7 * 4096 + 41..7 * 4096 + 43].copy_from_slice(&18_u16.to_le_bytes());
     bytes[7 * 4096 + 105..7 * 4096 + 107].copy_from_slice(&17_u16.to_le_bytes());
-    let (_directory, _path, worker, _) = opened(&bytes);
+    let (_directory, _path, worker, revision) = opened(&bytes);
     let Response::Data { columns, .. } = request(
         &worker,
         Command::Page {
@@ -118,4 +120,29 @@ fn published_native_number_comes_from_bound_schema_not_display_position() {
     assert_eq!(columns[0].native_number, Some(0));
     assert_eq!(columns[1].name, "Score");
     assert_eq!(columns[1].native_number, Some(17));
+
+    // An actual empty sorted view takes filtering/page's declaration-only path.
+    let Response::FilteredData(filtered) = request(
+        &worker,
+        Command::SortView {
+            target: SortTarget {
+                document_revision: revision,
+                table: "Table1".into(),
+                filter_id: None,
+            },
+            sort: Some(SortSpec {
+                column: "Score".into(),
+                descending: false,
+            }),
+            base: None,
+            enabled: true,
+        },
+    )
+    .unwrap() else {
+        panic!("expected empty filtered declarations from the retained native schema");
+    };
+    assert!(filtered.rows.is_empty());
+    assert_eq!(filtered.source_rows, 0);
+    assert_eq!(filtered.columns[0].native_number, Some(0));
+    assert_eq!(filtered.columns[1].native_number, Some(17));
 }
