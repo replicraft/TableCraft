@@ -252,3 +252,5 @@ fn cancellation_before_review_does_not_issue_a_capability_or_change_bytes() {
     ));
     assert_eq!(std::fs::read(path).unwrap(), before);
 }
+
+mod fitting;

@@ -170,3 +170,5 @@ fn actual_ack_then_failed_witness_can_return_with_saved_facts_and_block_stale_wr
     assert_eq!(std::fs::read(&path).unwrap(), drifted);
     assert!(!journal_path(&path).exists());
 }
+
+mod fitting;
