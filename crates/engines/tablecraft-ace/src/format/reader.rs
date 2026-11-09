@@ -187,6 +187,9 @@ pub(crate) fn row_count(page: &[u8]) -> Result<usize, InspectError> {
     }
     Ok(count)
 }
+/// Return the raw directory word and the validated row start/end offsets.
+/// The first value includes the offset; isolate flags with `word & !OFFSET_MASK`.
+/// This validates framing but leaves supported deleted/relocated flags to callers.
 pub(crate) fn row_range(page: &[u8], slot: usize) -> Result<(u16, usize, usize), InspectError> {
     let count = row_count(page)?;
     if slot >= count {

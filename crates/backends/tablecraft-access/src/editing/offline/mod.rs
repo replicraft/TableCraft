@@ -13,6 +13,8 @@ mod error;
 #[cfg(feature = "ace16-create")]
 mod field_addition;
 #[cfg(feature = "ace16-create")]
+mod field_drop;
+#[cfg(feature = "ace16-create")]
 mod field_rename;
 #[cfg(feature = "ace16-create")]
 mod first_table;
@@ -40,6 +42,8 @@ pub use delete::StagedDelete;
 pub use error::{Cause, Failure, OpenError, Phase};
 #[cfg(feature = "ace16-create")]
 pub use field_addition::StagedFieldAddition;
+#[cfg(feature = "ace16-create")]
+pub use field_drop::StagedFieldDrop;
 #[cfg(feature = "ace16-create")]
 pub use field_rename::StagedFieldRename;
 #[cfg(feature = "ace16-create")]
@@ -96,6 +100,8 @@ pub enum SchemaChange {
     ColumnAdded,
     /// One existing field changed its true name without changing native identity.
     ColumnRenamed,
+    /// One nonprimary field was removed while preserving all surviving native identities.
+    ColumnDropped,
     /// An existing table changed its catalog name without changing row identity.
     TableRenamed,
     /// A new empty table was appended while retaining existing database objects.

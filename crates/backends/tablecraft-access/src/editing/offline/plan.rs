@@ -11,9 +11,9 @@ use crate::editing::journal::NativeJournalInsertPlan;
 use tablecraft_ace::{
     AddTablePlan, FirstTablePlan, NativeAddColumnIntent, NativeAddTableIntent,
     NativeDefaultZeroAddColumnIntent, NativeFieldAdditionAfterOffHistoryIntent,
-    NativeFieldAdditionAfterOffIntent, NativeFieldAdditionIntent, NativeFieldRenameIntent,
-    NativeFirstTableIntent, NativeRepeatedDefaultZeroAddColumnIntent, RecoverableAddColumnPlan,
-    RecoverableFieldRenamePlan,
+    NativeFieldAdditionAfterOffIntent, NativeFieldAdditionIntent, NativeFieldDropIntent,
+    NativeFieldRenameIntent, NativeFirstTableIntent, NativeRepeatedDefaultZeroAddColumnIntent,
+    RecoverableAddColumnPlan, RecoverableFieldDropPlan, RecoverableFieldRenamePlan,
 };
 use tablecraft_ace::{
     NativeClockInsertIntent, NativeCompleteInsertIntent, NativeDeleteIntent, NativeEofInsertIntent,
@@ -26,6 +26,8 @@ use tablecraft_io::journal::{DurableStorage, ResizableDurableStorage};
 
 #[cfg(feature = "ace16-create")]
 const FIELD_RENAME_FAMILY: &[u8; 4] = b"TCFR";
+#[cfg(feature = "ace16-create")]
+const FIELD_DROP_FAMILY: &[u8; 4] = b"TCFD";
 
 pub(super) enum MutationPlan {
     #[cfg(feature = "ace16-create")]
@@ -37,6 +39,8 @@ pub(super) enum MutationPlan {
     FieldAddition(FieldAdditionPlan),
     #[cfg(feature = "ace16-create")]
     FieldRename(RecoverableFieldRenamePlan),
+    #[cfg(feature = "ace16-create")]
+    FieldDrop(RecoverableFieldDropPlan),
     TableRename(RecoverableNativeTableRenamePlan),
     Update(RecoverableNativeEditPlan),
     Delete(RecoverableNativeDeletePlan),
@@ -64,6 +68,11 @@ impl MutationPlan {
                 .map_err(Cause::AddColumnIntent),
             #[cfg(feature = "ace16-create")]
             Self::FieldAddition(plan) => plan.encode_intent(budget, cancelled),
+            #[cfg(feature = "ace16-create")]
+            Self::FieldDrop(plan) => plan
+                .intent()
+                .encode(budget, cancelled)
+                .map_err(Cause::FieldDropIntent),
             #[cfg(feature = "ace16-create")]
             Self::FieldRename(plan) => plan
                 .intent()
@@ -118,6 +127,13 @@ impl MutationPlan {
             #[cfg(feature = "ace16-create")]
             Self::FieldAddition(plan) => {
                 return plan.commit(target, journal, budget, cancelled);
+            }
+            #[cfg(feature = "ace16-create")]
+            Self::FieldDrop(plan) => {
+                let prepared = plan
+                    .prepare(target, journal, budget, cancelled)
+                    .map_err(Cause::Prepare)?;
+                return prepared.commit(budget, cancelled).map_err(Cause::Commit);
             }
             #[cfg(feature = "ace16-create")]
             Self::FieldRename(plan) => {
@@ -180,6 +196,8 @@ pub(super) enum MutationIntent {
     FieldAdditionAfterOffHistory(NativeFieldAdditionAfterOffHistoryIntent),
     #[cfg(feature = "ace16-create")]
     FieldRename(NativeFieldRenameIntent),
+    #[cfg(feature = "ace16-create")]
+    FieldDrop(NativeFieldDropIntent),
     TableRename(NativeTableRenameIntent),
     Update(NativeUpdateIntent),
     Delete(NativeDeleteIntent),
@@ -212,6 +230,8 @@ impl MutationIntent {
             | Self::FieldAddition(_)
             | Self::FieldAdditionAfterOff(_)
             | Self::FieldAdditionAfterOffHistory(_) => Some(SchemaChange::ColumnAdded),
+            #[cfg(feature = "ace16-create")]
+            Self::FieldDrop(_) => Some(SchemaChange::ColumnDropped),
             #[cfg(feature = "ace16-create")]
             Self::FieldRename(intent) => {
                 (intent.column() != intent.new_name()).then_some(SchemaChange::ColumnRenamed)
@@ -255,6 +275,12 @@ impl MutationIntent {
     ) -> Result<Self, Cause> {
         // Closed framing selection occurs before decode; a failed decoder is
         // never retried as another action or promoted from its record prefix.
+        #[cfg(feature = "ace16-create")]
+        if raw.starts_with(FIELD_DROP_FAMILY) {
+            return NativeFieldDropIntent::decode(raw, budget, cancelled)
+                .map(Self::FieldDrop)
+                .map_err(Cause::FieldDropIntent);
+        }
         #[cfg(feature = "ace16-create")]
         if raw.starts_with(b"TCDO") {
             return DatabaseOptionsIntent::decode(raw, budget, cancelled)

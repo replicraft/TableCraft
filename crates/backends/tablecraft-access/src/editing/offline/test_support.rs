@@ -1,4 +1,7 @@
 //! Adapter-private receipt and held-lease assertions shared by native save tests.
+#[cfg(feature = "ace16-create")]
+pub(super) mod saved_field;
+
 use super::Receipt;
 #[cfg(any(unix, feature = "ace16-create"))]
 use std::fs;
