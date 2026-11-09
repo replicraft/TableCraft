@@ -6,6 +6,7 @@
 
 mod filtering;
 mod query_design;
+pub(crate) mod read_query;
 
 use schemars::JsonSchema;
 use serde::Deserialize;
@@ -84,6 +85,16 @@ struct QueryRun<'a> {
 
 #[derive(Deserialize, JsonSchema)]
 #[serde(deny_unknown_fields)]
+struct ReadQueryRun<'a> {
+    document_revision: u64,
+    query_id: u64,
+    #[serde(borrow)]
+    parameters: Option<Vec<Parameter<'a>>>,
+    options: Option<read_query::ReadQueryOptions>,
+}
+
+#[derive(Deserialize, JsonSchema)]
+#[serde(deny_unknown_fields)]
 struct Saved<'a> {
     document_revision: u64,
     object_id: &'a str,
@@ -98,6 +109,7 @@ struct SavedRun<'a> {
     name: &'a str,
     #[serde(borrow)]
     parameters: Option<Vec<Parameter<'a>>>,
+    options: Option<read_query::ReadQueryOptions>,
 }
 
 #[derive(Deserialize, JsonSchema)]
@@ -409,7 +421,8 @@ pub(super) fn schema(operation: &str) -> Option<Map<String, Value>> {
         "inspect_collection" | "begin_edit" => schemars::schema_for!(Cell<'_>),
         "review_delete" => schemars::schema_for!(Row<'_>),
         "inspect_query" => schemars::schema_for!(Query<'_>),
-        "run_query" | "review_query_insert" | "review_query_delete" | "review_query_update" => {
+        "run_query" => schemars::schema_for!(ReadQueryRun<'_>),
+        "review_query_insert" | "review_query_delete" | "review_query_update" => {
             schemars::schema_for!(QueryRun<'_>)
         }
         "inspect_saved_query" | "inspect_query_sql" => {
@@ -492,11 +505,18 @@ pub(super) fn validate(operation: &str, arguments: &Value) -> Result<(), String>
         "inspect_collection" | "begin_edit" => check::<Cell<'_>>(arguments),
         "review_delete" => check::<Row<'_>>(arguments),
         "inspect_query" => check::<Query<'_>>(arguments),
-        "run_query" | "review_query_insert" | "review_query_delete" | "review_query_update" => {
+        "run_query" => {
+            check::<ReadQueryRun<'_>>(arguments)?;
+            read_query::options(arguments).map(|_| ())
+        }
+        "review_query_insert" | "review_query_delete" | "review_query_update" => {
             check::<QueryRun<'_>>(arguments)
         }
         "inspect_saved_query" | "inspect_query_sql" => check::<Saved<'_>>(arguments),
-        "run_saved_query" => check::<SavedRun<'_>>(arguments),
+        "run_saved_query" => {
+            check::<SavedRun<'_>>(arguments)?;
+            read_query::options(arguments).map(|_| ())
+        }
         "review_edit" => check::<Edit<'_>>(arguments),
         "review_insert" => check::<Insert<'_>>(arguments),
         "review_table_rename" => check::<TableRename<'_>>(arguments),

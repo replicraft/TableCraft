@@ -113,7 +113,7 @@ const OPERATIONS: &[(&str, &str)] = &[
     ),
     (
         "run_query",
-        "Execute a retained inspected read query with explicit parameters.",
+        "Execute a retained inspected read query with explicit parameters and bounded per-run options.",
     ),
     (
         "inspect_saved_query",
@@ -121,7 +121,7 @@ const OPERATIONS: &[(&str, &str)] = &[
     ),
     (
         "run_saved_query",
-        "Execute an explicitly selected saved read query.",
+        "Execute an explicitly selected saved read query with bounded per-run options.",
     ),
     ("begin_edit", "Obtain a native cell edit draft."),
     (

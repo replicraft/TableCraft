@@ -1,4 +1,5 @@
 //! Real local-file adapter flows reuse independent subsystem fixtures.
+mod query_options;
 use super::*;
 use std::{
     path::Path,

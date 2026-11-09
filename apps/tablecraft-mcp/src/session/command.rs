@@ -51,6 +51,7 @@ impl Session {
             "run_query" => Command::RunQuery {
                 target: self.query_handle(args)?,
                 parameters: arg::parameters(args)?,
+                options: crate::requests::read_query::options(args)?,
             },
             "review_query_insert" => Command::ReviewQueryInsert {
                 target: self.query_handle(args)?,
@@ -70,6 +71,7 @@ impl Session {
             "run_saved_query" => Command::RunSavedQuery {
                 target: arg::saved(args, revision)?,
                 parameters: arg::parameters(args)?,
+                options: crate::requests::read_query::options(args)?,
             },
             "begin_edit" => Command::BeginEdit {
                 target: EditTarget {

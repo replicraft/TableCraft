@@ -79,6 +79,54 @@ infer query collation or edit syntax from display preferences. Filter, sort and
 totals tools use actual runtime handles. Visual query tools import/build/rebuild
 the shared checked model against native metadata; execution remains explicit.
 
+### Per-run read-query allowances
+
+`run_query` and `run_saved_query` accept an optional `options` object. Missing or
+null options, blocks and fields retain the shared runtime defaults. Overrides
+are captured by that one read command; they do not change later requests,
+inspected query/object identities, source permissions or native write limits.
+Action-query review tools reject this read-only `options` field.
+
+The object can override `snapshot_rows`, `batch_rows`, and the independent
+`native`, `execution`, `comparison` and `presentation` pools. Each pool can supply
+`bytes`, `rows` and `steps`. These are cumulative allocation/work allowances,
+not resident-memory measurements. Runtime constructors validate every override
+before database dispatch; invalid limits are refused rather than clamped.
+
+| Pool | Default bytes | Default rows | Default steps |
+| --- | ---: | ---: | ---: |
+| Native | 512 MiB | 100,000 | 5,000,000 |
+| Execution | 16 MiB | 10,000 | 1,000,000 |
+| Comparison | 16 MiB | 0 | 1,000,000 |
+| Presentation | 8 MiB | 0 | 100,000 |
+
+The complete-table snapshot defaults to 16,384 rows with 256-row fetches. Its
+ceiling is 1,000,000 rows; fetch batches must be 1–16,384. Execution admits at
+most 256 MiB, 1,000,000 rows and 100,000,000 steps. Other pools admit at most
+4 GiB, 10,000,000 rows and 1,000,000,000 steps, with positive bytes/steps.
+Native/execution rows must be positive; comparison/presentation rows must stay
+zero. Increasing one allowance does not increase another or qualify unsupported
+SQL, native types, indexes or file formats. The MCP's separate 4 MiB logical
+result cap still applies.
+
+For a larger supported read, an existing valid run request can include:
+
+```json
+{
+  "options": {
+    "snapshot_rows": 200000,
+    "native": {"bytes": 268435456, "rows": 200000, "steps": 100000000},
+    "execution": {"bytes": 268435456, "rows": 1000000, "steps": 100000000},
+    "comparison": {"bytes": 268435456, "steps": 100000000}
+  }
+}
+```
+
+The run still requires its actual current document revision and inspected query
+ID, or the exact published saved-query object ID and name. No source path,
+collation substitution, capability grant or caller-authored plan can be supplied
+through these controls.
+
 Blank creation uses `create_database`, `creation_status`,
 `acknowledge_creation`, then `open_created_database` with the real creation ID.
 Existing destinations are never overwritten. `review_table_creation` consumes a
