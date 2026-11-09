@@ -1,7 +1,9 @@
 //! Explicit OFF metadata on the original closed creator ledger, never a default.
 mod field_history;
 mod properties;
+mod purpose;
 pub use field_history::{FieldHistoryDatabaseOptionsCandidate, FieldHistoryDatabaseOptionsError};
+pub use purpose::{DatabaseOptionsSourceError, DatabaseOptionsSourcePurpose};
 mod source;
 #[cfg(test)]
 mod tests;

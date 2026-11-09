@@ -85,6 +85,22 @@ impl FieldHistoryDatabaseOptionsCandidate {
     }
 }
 
+fn catalog_record_length() -> Result<usize, FieldHistoryDatabaseOptionsError> {
+    record::catalog_length(stored_text::Plan::ascii_literal("MSysDb"))
+        .checked_add(LONG_DESCRIPTOR_BYTES)
+        .ok_or(FieldHistoryDatabaseOptionsError::Capacity)
+}
+
+/// Full source-only admission; the final candidate still proves placement/AFTER.
+pub(super) fn check_source(
+    image: &NativeImage,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), FieldHistoryDatabaseOptionsError> {
+    source::capture(image, budget, cancelled)?;
+    Ok(())
+}
+
 impl NativeImage {
     /// Explicitly insert OFF settings after a completely qualified ADD history.
     ///
@@ -101,9 +117,7 @@ impl NativeImage {
         let _span = tracing::debug_span!("native.database_options.after_field_history").entered();
         let source = source::capture(&self, budget, cancelled)?;
         let body = properties::encode(budget, cancelled)?;
-        let length = record::catalog_length(stored_text::Plan::ascii_literal("MSysDb"))
-            .checked_add(LONG_DESCRIPTOR_BYTES)
-            .ok_or(FieldHistoryDatabaseOptionsError::Capacity)?;
+        let length = catalog_record_length()?;
         budget
             .charge_allocation(length as u64, 1)
             .map_err(InspectError::from)?;

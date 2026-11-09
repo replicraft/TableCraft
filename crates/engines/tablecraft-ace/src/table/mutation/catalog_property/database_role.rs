@@ -2,14 +2,14 @@
 //! This is physical composition only; creation owns the encoded role and proof.
 use super::{catalog, column, maps};
 use crate::{
-    EditError, InspectError, NativeImage,
+    EditError, InspectError, NativeImage, TableSchema,
     format::{
         page::PAGE_BYTES,
         row::{MAX_SLOTS, SLOT_BYTES, reference, reference_slot, slot_offset},
     },
     header::check,
     table::mutation::owned_lval::{
-        maps::Family,
+        maps::{Family, Maps},
         placement::{Plan, geometry},
         property,
     },
@@ -32,14 +32,33 @@ pub(crate) struct RoleAppend {
     pub property: u32,
 }
 
-pub(crate) fn append(
+struct Source {
+    catalog: TableSchema,
+    maps: Maps,
+    catalog_count: usize,
+    catalog_end: usize,
+    property_count: usize,
+    property_end: usize,
+}
+
+impl Source {
+    fn fits(&self, body_bytes: usize, record_bytes: usize) -> bool {
+        self.catalog_count < MAX_SLOTS
+            && self.property_count < MAX_SLOTS
+            && record_bytes
+                .checked_add(SLOT_BYTES)
+                .is_some_and(|needed| needed <= self.catalog_end - slot_offset(self.catalog_count))
+            && body_bytes.checked_add(SLOT_BYTES).is_some_and(|needed| {
+                needed <= self.property_end - slot_offset(self.property_count)
+            })
+    }
+}
+
+fn capture(
     image: &NativeImage,
-    body: &[u8],
-    record: &[u8],
-    expected_property: u32,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
-) -> Result<RoleAppend, EditError> {
+) -> Result<Source, EditError> {
     check(budget, cancelled)?;
     if image.as_bytes().len() != SOURCE_PAGES * PAGE_BYTES {
         return Err(EditError::Preservation);
@@ -65,30 +84,61 @@ pub(crate) fn append(
         geometry(&image.as_bytes()[catalog_start..catalog_start + PAGE_BYTES])?;
     let (property_count, property_end) =
         geometry(&image.as_bytes()[property_start..property_start + PAGE_BYTES])?;
-    if (catalog_count != DIRECT_CATALOG_SLOTS && catalog_count != FORWARDED_CATALOG_SLOTS)
-        || expected_property
-            != reference(
-                PROPERTY_PAGE,
-                u8::try_from(property_count).map_err(|_| InspectError::Malformed)?,
-            )
+    if catalog_count != DIRECT_CATALOG_SLOTS && catalog_count != FORWARDED_CATALOG_SLOTS {
+        return Err(EditError::Preservation);
+    }
+    Ok(Source {
+        catalog,
+        maps,
+        catalog_count,
+        catalog_end,
+        property_count,
+        property_end,
+    })
+}
+
+/// Read actual candidate geometry without appending pages or constructing AFTER.
+/// A true result is not source/content admission; the caller still proves both.
+pub(crate) fn fits(
+    image: &NativeImage,
+    body_bytes: usize,
+    record_bytes: usize,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<bool, EditError> {
+    Ok(capture(image, budget, cancelled)?.fits(body_bytes, record_bytes))
+}
+
+pub(crate) fn append(
+    image: &NativeImage,
+    body: &[u8],
+    record: &[u8],
+    expected_property: u32,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<RoleAppend, EditError> {
+    let source = capture(image, budget, cancelled)?;
+    if expected_property
+        != reference(
+            PROPERTY_PAGE,
+            u8::try_from(source.property_count).map_err(|_| InspectError::Malformed)?,
+        )
     {
         return Err(EditError::Preservation);
     }
-    // This profile cannot allocate or roll over either family. The actual
-    // allocator still independently proves both single fitted placements.
-    if catalog_count >= MAX_SLOTS
-        || property_count >= MAX_SLOTS
-        || !record
-            .len()
-            .checked_add(SLOT_BYTES)
-            .is_some_and(|needed| needed <= catalog_end - slot_offset(catalog_count))
-        || !body
-            .len()
-            .checked_add(SLOT_BYTES)
-            .is_some_and(|needed| needed <= property_end - slot_offset(property_count))
-    {
+    if !source.fits(body.len(), record.len()) {
         return Err(EditError::Unsupported(crate::WriteBlocker::RowLayout));
     }
+    let Source {
+        catalog,
+        maps,
+        catalog_count,
+        catalog_end,
+        property_end,
+        ..
+    } = source;
+    let catalog_start = CATALOG_PAGE as usize * PAGE_BYTES;
+    let property_start = PROPERTY_PAGE as usize * PAGE_BYTES;
     let mut plan = Plan::new(image, catalog.definition_page(), maps);
     let property_index = plan.append(image, Family::LongValue, body, budget, cancelled)?;
     let catalog_index = plan.append_live_root(image, record, budget, cancelled)?;

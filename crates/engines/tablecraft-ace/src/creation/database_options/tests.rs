@@ -17,7 +17,7 @@ fn capture(bytes: &[u8]) -> NativeImage {
     NativeImage::capture(&mut Cursor::new(bytes), SCOPE, &mut budget(), &|| false).unwrap()
 }
 
-fn originals() -> Vec<Vec<u8>> {
+pub(super) fn originals() -> Vec<Vec<u8>> {
     let mut result = Vec::new();
     for case in [
         canonical_creation::Case::Empty,

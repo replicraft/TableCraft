@@ -9,7 +9,7 @@ use crate::{
     },
     header::check,
     inspect_table_properties, inspect_table_schema,
-    table::mutation::catalog_property::ledger,
+    table::mutation::catalog_property::{database_role, ledger},
 };
 use tablecraft_core::limits::ResourceBudget;
 
@@ -53,6 +53,18 @@ pub(super) fn capture(
         .catalog()
         .get(user.object_id())
         .ok_or(Error::Source)?;
+    // Refuse impossible capacity before replaying a long history. This paid
+    // geometry observation grants nothing; eligible sources still prove every
+    // original byte below, and final allocation independently rechecks fit.
+    if !database_role::fits(
+        image,
+        super::super::properties::ENCODED_BYTES,
+        super::catalog_record_length()?,
+        budget,
+        cancelled,
+    )? {
+        return Err(Error::Source);
+    }
     // This consumes the real complete Source5 proof on these immutable bytes,
     // including canonical seed/history equality, macros, aliases and all roles.
     image.check_created_field_addition_source(object.name().as_str(), budget, cancelled)?;

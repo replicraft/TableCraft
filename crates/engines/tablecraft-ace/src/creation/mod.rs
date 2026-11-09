@@ -44,7 +44,8 @@ pub use database::{
 };
 #[cfg(feature = "journal")]
 pub use database_options::{
-    DatabaseOptionsError, FieldHistoryDatabaseOptionsCandidate, FieldHistoryDatabaseOptionsError,
+    DatabaseOptionsError, DatabaseOptionsSourceError, DatabaseOptionsSourcePurpose,
+    FieldHistoryDatabaseOptionsCandidate, FieldHistoryDatabaseOptionsError,
     NativeDatabaseOptionsPlan,
 };
 pub use first_table::{

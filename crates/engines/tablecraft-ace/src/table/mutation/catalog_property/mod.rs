@@ -11,6 +11,7 @@ mod maps;
 mod parent;
 mod record;
 mod repeated;
+pub(crate) mod storage;
 pub(crate) use repeated::{RepeatedChange, compose_repeated, repeated_property_pages};
 
 use super::EditError;
