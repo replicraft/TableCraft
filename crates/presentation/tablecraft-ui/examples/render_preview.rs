@@ -124,8 +124,16 @@ fn main() -> Result<(), Box<dyn Error>> {
     if !field_addition::is_mode(&field_addition) {
         return Err(io::Error::other("unknown field-addition preview mode").into());
     }
-    if field_addition != "none" && scenes != [Scene::Datasheet] {
-        return Err(io::Error::other("field-addition preview requires datasheet").into());
+    let field_scene = if field_addition.starts_with("design-") {
+        Scene::Design
+    } else {
+        Scene::Datasheet
+    };
+    if field_addition != "none" && scenes != [field_scene] {
+        return Err(io::Error::other(
+            "field-addition preview requires its Design or datasheet scene",
+        )
+        .into());
     }
     let field_addition_suffix = if field_addition == "none" {
         String::new()

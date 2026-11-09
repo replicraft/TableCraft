@@ -3,6 +3,8 @@
 //! The retained datasheet image informs the trailing header. No expanded menu,
 //! naming or close capture exists; these scenes verify an adaptation, not Access
 //! appearance or native write eligibility. Example-only facts never grant writes.
+#[path = "field_addition/design.rs"]
+mod design;
 #[path = "field_addition/returned.rs"]
 mod returned;
 
@@ -19,7 +21,8 @@ const INSPECTION_ID: u64 = 810;
 const PRESENTATION_REQUEST_ID: u64 = 814;
 
 pub(super) fn is_mode(mode: &str) -> bool {
-    returned::is_mode(mode)
+    design::is_mode(mode)
+        || returned::is_mode(mode)
         || matches!(
             mode,
             "none"
@@ -36,6 +39,10 @@ pub(super) fn is_mode(mode: &str) -> bool {
 }
 
 pub(super) fn prepare(harness: &mut Harness<'_, Preview>, mode: &str) {
+    if design::is_mode(mode) {
+        design::prepare(harness, mode);
+        return;
+    }
     let text = mode.starts_with("text-");
     let mode = mode.strip_prefix("text-").unwrap_or(mode);
     let kind = if text {
