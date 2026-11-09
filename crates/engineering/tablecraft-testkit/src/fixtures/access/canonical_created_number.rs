@@ -1,4 +1,5 @@
 //! Independent Number ADD property ordering, native records and full SDK goldens.
+pub mod mixed;
 pub mod repeated;
 
 use super::{canonical_created_add_column, canonical_created_default_zero, put16, put32};
@@ -26,14 +27,14 @@ fn wide(text: &str) -> Vec<u8> {
     text.encode_utf16().flat_map(u16::to_le_bytes).collect()
 }
 
-fn group(name: &str, required: bool, required_first: bool) -> Vec<u8> {
+fn number_group(name: &str, required: bool, dictionary: &[&str]) -> Vec<u8> {
     let mut values = Vec::new();
-    for (index, is_required) in [required_first, !required_first].into_iter().enumerate() {
-        if is_required && required {
+    for (index, key) in dictionary.iter().enumerate() {
+        if *key == "Required" && required {
             values.extend([9, 0, 1, 1]);
             values.extend((index as u16).to_le_bytes());
             values.extend([1, 0, 0]);
-        } else if !is_required {
+        } else if *key == "DefaultValue" {
             values.extend([10, 0, 1, 12]);
             values.extend((index as u16).to_le_bytes());
             values.extend([2, 0, b'0', 0]);
@@ -68,7 +69,7 @@ fn body(fields: &[(&str, bool)], required_first: bool) -> Vec<u8> {
     bytes.extend(128_u16.to_le_bytes());
     bytes.extend(names);
     for (name, required) in fields {
-        bytes.extend(group(name, *required, required_first));
+        bytes.extend(number_group(name, *required, &dictionary));
     }
     bytes
 }

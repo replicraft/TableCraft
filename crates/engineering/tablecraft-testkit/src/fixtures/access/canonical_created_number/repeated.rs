@@ -1,6 +1,6 @@
 //! Independently framed bounded Number property histories, without ACE codecs.
 use super::{
-    DIRECTORY, MASK_BYTES, PAGE, PROPERTY_VARIABLE, Source, append as first, group,
+    DIRECTORY, MASK_BYTES, PAGE, PROPERTY_VARIABLE, Source, append as first, number_group,
     source as initial, word,
 };
 use crate::fixtures::access::{canonical_created_add_column, put16, put32};
@@ -62,7 +62,12 @@ pub fn append(before: &[u8], name: &str) -> Vec<u8> {
     )
     .unwrap();
     assert!(first_name == "Required" || first_name == "DefaultValue");
-    body.extend(group(name, true, first_name == "Required"));
+    let dictionary = if first_name == "Required" {
+        ["Required", "DefaultValue"]
+    } else {
+        ["DefaultValue", "Required"]
+    };
+    body.extend(number_group(name, true, &dictionary));
     let directory_end = DIRECTORY + SHORT_BYTES * (count + 1);
     let fitted = body.len() + directory_end <= old_start;
     let (target_page, target_slot, target_end) = if fitted {
