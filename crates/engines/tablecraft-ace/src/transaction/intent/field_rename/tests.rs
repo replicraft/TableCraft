@@ -388,3 +388,5 @@ fn stale_target_refuses_before_journal_or_target_writes() {
     assert_eq!(journal.writes, 0);
     assert_eq!(target.bytes.get_ref(), &stale);
 }
+
+mod fitting;
