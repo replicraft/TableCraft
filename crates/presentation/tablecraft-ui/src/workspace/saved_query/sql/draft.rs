@@ -4,7 +4,7 @@ use crate::workspace::{objects::memory::Counter, query::parameters::copy_text};
 /// Host-reported eligibility observation, without an editing capability.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub enum SavedQuerySqlEligibility {
-    QualifiedConstantSelect,
+    QualifiedExpressionSelect,
     #[default]
     Unavailable,
 }

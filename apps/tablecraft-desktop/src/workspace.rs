@@ -239,7 +239,7 @@ impl Desktop {
         app.state.creation_available = CreationWorker::is_supported();
         app.state.table_save_available = SaveWorker::supports_table_creation();
         app.state.table_rename_available = SaveWorker::supports_table_rename();
-        app.state.saved_query_sql_edit_available = SaveWorker::supports_query_expression();
+        app.state.saved_query_sql_edit_available = SaveWorker::supports_query_sql();
         app.state.font_families = crate::font_inventory::families();
         app.state.find_available = true;
         app.state.find_formatted_available = true;

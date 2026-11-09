@@ -44,7 +44,7 @@ fn open_saved(state: &mut State, proposed: Option<String>) -> ObjectTab {
         101,
         &inspection,
         Some(" select 42 AS [Answer];\n".into()),
-        SavedQuerySqlEligibility::QualifiedConstantSelect,
+        SavedQuerySqlEligibility::QualifiedExpressionSelect,
     ));
     if let Some(text) = proposed {
         assert!(state.set_saved_query_sql_text(text));

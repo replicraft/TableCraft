@@ -49,7 +49,7 @@ impl State {
             && self.saved_query.sql.as_ref().is_some_and(|draft| {
                 self.saved_sql_target_active(&draft.target)
                     && draft.original.is_some()
-                    && draft.eligibility == SavedQuerySqlEligibility::QualifiedConstantSelect
+                    && draft.eligibility == SavedQuerySqlEligibility::QualifiedExpressionSelect
             })
     }
 

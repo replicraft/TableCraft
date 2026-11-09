@@ -14,6 +14,7 @@ pub(in crate::editing) mod query_action;
 pub(in crate::editing) mod query_delete;
 pub(in crate::editing) mod query_expression;
 pub(in crate::editing) mod query_insert;
+pub(in crate::editing) mod query_sql;
 pub(in crate::editing) mod query_update;
 mod reopen_image;
 pub(in crate::editing) mod replacing;

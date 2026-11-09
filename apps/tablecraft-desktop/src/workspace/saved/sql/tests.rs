@@ -45,7 +45,7 @@ fn opening_saved_query_inspects_sql_without_executing_or_changing_bytes() {
     assert_eq!(proposed_sql, original_sql);
     assert_eq!(
         eligibility,
-        SavedQuerySqlEligibility::QualifiedConstantSelect
+        SavedQuerySqlEligibility::QualifiedExpressionSelect
     );
     assert!(desktop.state.can_edit_saved_query_sql());
     assert!(!desktop.state.can_review_saved_query_sql());

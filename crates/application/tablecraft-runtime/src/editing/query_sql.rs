@@ -1,56 +1,76 @@
-//! Inert native definition drafts and owned SQL qualification for existing queries.
+//! Inert native SQL presentation and distinct complete-SQL mutation review.
+mod capability;
 mod display;
+pub use capability::ReviewedQuerySql;
 
+use super::platform;
 use crate::{
-    Error, QueryExpressionReview, Response, SavedQueryTarget,
+    Error, Response, SavedQueryTarget,
     controls::{SCOPE, budget, check},
     display::Presentation,
     document::Document,
 };
-use tablecraft_access::{NativeSource, SavedRead};
-#[cfg(any(target_os = "macos", target_os = "linux", windows))]
-use tablecraft_ace::{NativeImage, QueryExpressionError, RecoverableQueryExpressionError};
-use tablecraft_sql::{
-    ParseLimits, parse_query,
-    query::{Query, ReadBody, Statement},
-    select::{Expression, Projection, SelectPredicate},
-};
+use tablecraft_access::{NativeSource, SavedQuerySqlEditError, SavedRead};
+use tablecraft_sql::ParseLimits;
 use thiserror::Error;
-
-const MAX_LITERAL_BYTES: usize = 10;
 
 /// A read-only eligibility observation, never authority to mutate or execute.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum QuerySqlEligibility {
-    /// Fresh native physical qualification admits the existing constant SELECT.
-    QualifiedConstantSelect,
+    /// Fresh native physical qualification admits existing SELECT expression edits.
+    QualifiedExpressionSelect,
     /// The definition, storage, source or host is outside the current writer.
     Unavailable,
 }
 
-/// Source-bound reconstructed SQL, with separate native write eligibility.
+/// Source-bound reconstructed SQL, with independent native write eligibility.
 pub struct QuerySqlDraft {
+    /// Document-owned target whose read syntax was reconstructed.
     pub target: SavedQueryTarget,
-    /// Canonical readable syntax, independent of physical write qualification.
-    /// This is not an original stored SQL byte stream or an editing capability.
+    /// Canonical readable syntax, not original stored bytes or a capability.
     pub sql: Option<String>,
+    /// Independent native write-profile observation, never a capability.
     pub eligibility: QuerySqlEligibility,
 }
 
-/// The complete submitted SQL paired with the actual native expression review.
+/// Complete submitted SQL and actual document-owned native query review facts.
 pub struct QuerySqlReview {
-    pub expression: QueryExpressionReview,
+    /// Process-issued identity of this exact consuming review.
+    pub id: u64,
+    /// Exact captured document/query selected for this review.
+    pub target: SavedQueryTarget,
+    /// Signed persistent native query identity, not a table/page number.
+    pub native_id: i32,
+    /// Whether actual native expression bodies change; formatting alone does not.
+    pub changed: bool,
+    /// Exact original editor text, whose owned syntax matches the actual definition.
     pub original_sql: String,
+    /// Exact complete submitted text, without native fragment interpolation.
     pub proposed_sql: String,
 }
 
-/// Refusal before a complete SQL edit can acquire a native save capability.
-#[derive(Debug, Error, PartialEq, Eq)]
+/// Refusal before complete SQL can acquire its distinct native save capability.
+#[derive(Debug, Error)]
 pub enum QuerySqlEditError {
-    #[error("saved query SQL is outside the existing constant SELECT edit profile")]
+    /// Non-expression syntax or a changed expression is outside the profile.
+    #[error("saved SQL changes unsupported topology or expression syntax")]
     Unsupported,
+    /// Complete original owned SQL differs from the actual captured definition.
     #[error("original saved query SQL no longer matches its definition")]
     OriginalChanged,
+    /// Exact metadata/native/source/proof refusal from the owning Access bridge.
+    #[error(transparent)]
+    Backend(SavedQuerySqlEditError),
+}
+
+impl From<SavedQuerySqlEditError> for QuerySqlEditError {
+    fn from(error: SavedQuerySqlEditError) -> Self {
+        match error {
+            SavedQuerySqlEditError::Unsupported => Self::Unsupported,
+            SavedQuerySqlEditError::OriginalChanged => Self::OriginalChanged,
+            other => Self::Backend(other),
+        }
+    }
 }
 
 impl Document {
@@ -60,19 +80,17 @@ impl Document {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Response, Error> {
         let saved = self.read_query_sql_target(target, cancelled)?;
-        let query = saved.query();
         let mut output = Presentation::new(cancelled);
-        let sql = display::query(query, &mut output)?;
-        let eligibility = if let Some(value) = constant_literal(query) {
-            let literal = literal_text(value, &mut output)?;
-            qualify_source(self, target, &literal, cancelled)?
-        } else {
-            QuerySqlEligibility::Unavailable
-        };
+        let sql = display::query(saved.query(), &mut output)?;
+        let eligibility = platform::query_sql::eligibility(self, target, &sql, cancelled)?;
         check(cancelled)?;
         Ok(Response::QuerySqlDraft {
             draft: QuerySqlDraft {
-                target: copy_target(target, &mut output)?,
+                target: SavedQueryTarget {
+                    document_revision: target.document_revision,
+                    object_id: target.object_id,
+                    name: output.text(&target.name)?,
+                },
                 sql: Some(sql),
                 eligibility,
             },
@@ -87,43 +105,10 @@ impl Document {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Response, Error> {
         check(cancelled)?;
-        // Parse into TableCraft-owned syntax, never infer an edit from UI text
-        // slicing or treat formatted SQL as native fragment storage.
-        let original = parse_query(original_sql, ParseLimits::default())?;
-        check(cancelled)?;
-        let proposed = parse_query(proposed_sql, ParseLimits::default())?;
-        check(cancelled)?;
-        let saved = self.read_query_sql_target(target, cancelled)?;
-        let actual = saved.query();
-        if original.query() != actual {
-            return Err(QuerySqlEditError::OriginalChanged.into());
+        if target.document_revision != self.revision {
+            return Err(Error::StaleSavedQuery);
         }
-        constant_literal(actual).ok_or(QuerySqlEditError::Unsupported)?;
-        constant_literal(proposed.query()).ok_or(QuerySqlEditError::Unsupported)?;
-        let expected = original
-            .canonical_integer_projection_spelling()
-            .ok_or(QuerySqlEditError::Unsupported)?;
-        let replacement = proposed
-            .canonical_integer_projection_spelling()
-            .ok_or(QuerySqlEditError::Unsupported)?;
-        let mut output = Presentation::new(cancelled);
-        let original_sql = output.text(original_sql)?;
-        let proposed_sql = output.text(proposed_sql)?;
-        // This requalifies physical storage and identity independently. The read
-        // draft is deliberately not a token that can bypass fresh native review.
-        let Response::QueryExpressionReviewed { review, capability } =
-            self.review_query_literal_expression(target, expected, replacement, cancelled)?
-        else {
-            unreachable!("literal review returns only its owning review response");
-        };
-        Ok(Response::QuerySqlReviewed {
-            review: QuerySqlReview {
-                expression: review,
-                original_sql,
-                proposed_sql,
-            },
-            capability,
-        })
+        platform::query_sql::review(self, target, original_sql, proposed_sql, cancelled)
     }
 
     fn read_query_sql_target(
@@ -143,102 +128,4 @@ impl Document {
         }
         Ok(saved)
     }
-}
-
-fn constant_literal(query: &Query) -> Option<i64> {
-    if !query.parameters.is_empty() {
-        return None;
-    }
-    let Statement::Read(read) = &query.statement else {
-        return None;
-    };
-    if !read.order_by.is_empty() || read.owner_access {
-        return None;
-    }
-    let ReadBody::Select(select) = &read.body else {
-        return None;
-    };
-    let [
-        Projection::Expression {
-            expression: Expression::Integer(value),
-            alias: Some(alias),
-        },
-    ] = select.projection.as_slice()
-    else {
-        return None;
-    };
-    if !(0..=i64::from(i32::MAX)).contains(value) || alias.as_str() != "Answer" {
-        return None;
-    }
-    if select.predicate != SelectPredicate::All
-        || !select.from.is_empty()
-        || !select.group_by.is_empty()
-        || select.having.is_some()
-        || select.into.is_some()
-        || select.into_external.is_some()
-        || select.external.is_some()
-        || select.owner_access
-        || select.selection.is_some()
-        || !select.order_by.is_empty()
-    {
-        return None;
-    }
-    Some(*value)
-}
-
-fn literal_text(value: i64, output: &mut Presentation<'_>) -> Result<String, Error> {
-    output.allocation(1, MAX_LITERAL_BYTES)?;
-    Ok(value.to_string())
-}
-
-fn copy_target(
-    target: &SavedQueryTarget,
-    output: &mut Presentation<'_>,
-) -> Result<SavedQueryTarget, Error> {
-    Ok(SavedQueryTarget {
-        document_revision: target.document_revision,
-        object_id: target.object_id,
-        name: output.text(&target.name)?,
-    })
-}
-
-#[cfg(any(target_os = "macos", target_os = "linux", windows))]
-fn qualify_source(
-    document: &Document,
-    target: &SavedQueryTarget,
-    literal: &str,
-    cancelled: &dyn Fn() -> bool,
-) -> Result<QuerySqlEligibility, Error> {
-    if !document.source.editable_native() {
-        return Ok(QuerySqlEligibility::Unavailable);
-    }
-    let mut work = budget();
-    let image = NativeImage::capture_shared(
-        document.edits.image_source.clone(),
-        SCOPE,
-        &mut work,
-        cancelled,
-    )?;
-    match image.plan_query_literal_expression(&target.name, literal, literal, &mut work, cancelled)
-    {
-        Ok(_) => Ok(QuerySqlEligibility::QualifiedConstantSelect),
-        Err(
-            QueryExpressionError::Source
-            | QueryExpressionError::Definition
-            | QueryExpressionError::Literal
-            | QueryExpressionError::Capacity,
-        ) => Ok(QuerySqlEligibility::Unavailable),
-        Err(error) => Err(RecoverableQueryExpressionError::from(error).into()),
-    }
-}
-
-#[cfg(not(any(target_os = "macos", target_os = "linux", windows)))]
-fn qualify_source(
-    _document: &Document,
-    _target: &SavedQueryTarget,
-    _literal: &str,
-    cancelled: &dyn Fn() -> bool,
-) -> Result<QuerySqlEligibility, Error> {
-    check(cancelled)?;
-    Ok(QuerySqlEligibility::Unavailable)
 }

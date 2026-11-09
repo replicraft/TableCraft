@@ -19,7 +19,7 @@ fn native(target: &SavedQueryTarget, sql: &str) -> QuerySqlDraft {
             name: target.name.clone(),
         },
         sql: Some(sql.to_owned()),
-        eligibility: QuerySqlEligibility::QualifiedConstantSelect,
+        eligibility: QuerySqlEligibility::QualifiedExpressionSelect,
     }
 }
 
@@ -169,7 +169,7 @@ fn late_reply_for_parked_dirty_owner_cannot_touch_current_saved_query() {
         12,
         &request,
         Some("SELECT 7 AS [Other];".into()),
-        SavedQuerySqlEligibility::QualifiedConstantSelect,
+        SavedQuerySqlEligibility::QualifiedExpressionSelect,
     ));
     let current_tab = desktop.state.active_object().unwrap();
     let expected = text(&desktop);

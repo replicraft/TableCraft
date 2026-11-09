@@ -53,7 +53,9 @@ pub use editing::{
     journal_path,
 };
 #[cfg(feature = "offline-edit")]
-pub use editing::{QuerySqlDraft, QuerySqlEditError, QuerySqlEligibility, QuerySqlReview};
+pub use editing::{
+    QuerySqlDraft, QuerySqlEditError, QuerySqlEligibility, QuerySqlReview, ReviewedQuerySql,
+};
 pub use filtering::{
     FieldFilterDescription, FieldFilterOperator, FieldFilterPatternMode, FieldFilterTarget,
     FilterComparison, FilterDefinition, FilterError, FilterHandle, FilterSelectionTarget,
@@ -479,7 +481,7 @@ pub enum Response {
     #[cfg(feature = "offline-edit")]
     QuerySqlReviewed {
         review: QuerySqlReview,
-        capability: ReviewedQueryExpression,
+        capability: ReviewedQuerySql,
     },
     #[cfg(feature = "offline-edit")]
     QueryExpressionReviewed {

@@ -6,7 +6,7 @@ use crate::editing::{
 };
 use crate::editing::{
     ReviewedDelete, ReviewedEdit, ReviewedInsert, ReviewedQueryDelete, ReviewedQueryExpression,
-    ReviewedQueryInsert, ReviewedQueryUpdate, ReviewedTableRename,
+    ReviewedQueryInsert, ReviewedQuerySql, ReviewedQueryUpdate, ReviewedTableRename,
 };
 use std::path::PathBuf;
 
@@ -32,6 +32,23 @@ impl SaveWorker {
 
     pub const fn supports_query_expression() -> bool {
         false
+    }
+
+    /// Full-SQL saves remain explicitly unavailable on this host.
+    pub const fn supports_query_sql() -> bool {
+        false
+    }
+
+    /// Return the exact unconsumed capability without starting native work.
+    pub fn start_query_sql(
+        &self,
+        reviewed: ReviewedQuerySql,
+        _bundle: PathBuf,
+    ) -> Result<u64, SaveStartError<ReviewedQuerySql>> {
+        Err(SaveStartError {
+            kind: SaveStartFailure::UnsupportedPlatform,
+            reviewed: Some(reviewed),
+        })
     }
 
     pub fn start_query_expression(

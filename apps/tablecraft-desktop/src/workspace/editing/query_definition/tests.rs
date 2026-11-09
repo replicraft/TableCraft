@@ -38,9 +38,7 @@ fn query(harness: &mut Harness<'_, Desktop>) {
     );
 }
 
-fn take_review_response(
-    harness: &Harness<'_, Desktop>,
-) -> (u64, QuerySqlReview, ReviewedQueryExpression) {
+fn take_review_response(harness: &Harness<'_, Desktop>) -> (u64, QuerySqlReview, ReviewedQuerySql) {
     let deadline = std::time::Instant::now() + std::time::Duration::from_secs(10);
     loop {
         assert!(

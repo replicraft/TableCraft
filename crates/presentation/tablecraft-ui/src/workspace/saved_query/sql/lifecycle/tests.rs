@@ -30,7 +30,7 @@ fn reviewed() -> (State, SavedQuerySqlRequest) {
         2,
         &request,
         Some("SELECT 42 AS Answer".into()),
-        SavedQuerySqlEligibility::QualifiedConstantSelect
+        SavedQuerySqlEligibility::QualifiedExpressionSelect
     ));
     assert!(state.set_saved_query_sql_text(" select 43 as [Answer];\n".into()));
     let request = state.begin_saved_query_sql_review(3).unwrap();

@@ -70,8 +70,8 @@ impl Desktop {
         }
 
         let eligibility = match draft.eligibility {
-            QuerySqlEligibility::QualifiedConstantSelect => {
-                SavedQuerySqlEligibility::QualifiedConstantSelect
+            QuerySqlEligibility::QualifiedExpressionSelect => {
+                SavedQuerySqlEligibility::QualifiedExpressionSelect
             }
             QuerySqlEligibility::Unavailable => SavedQuerySqlEligibility::Unavailable,
         };

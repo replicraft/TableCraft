@@ -1,4 +1,5 @@
-//! Full SQL review uses the native target and never writes or executes a draft.
+//! Full SQL review uses distinct TCQE2 capabilities; literal TCQE1 stays separate.
+mod workflow;
 use super::{request, saved::opened};
 use crate::{
     Command, Error, QuerySqlDraft, QuerySqlEditError, QuerySqlEligibility, Response,
@@ -44,7 +45,7 @@ fn inert_draft_and_formatting_only_review_preserve_every_source_byte() {
     let draft = inspect(&worker, &target);
     assert_eq!(
         draft.eligibility,
-        QuerySqlEligibility::QualifiedConstantSelect
+        QuerySqlEligibility::QualifiedExpressionSelect
     );
     let original = draft.sql.unwrap();
     assert_eq!(original, "SELECT 42 AS [Answer];");
@@ -54,8 +55,8 @@ fn inert_draft_and_formatting_only_review_preserve_every_source_byte() {
     else {
         panic!("expected formatting-only owning review");
     };
-    assert!(!review.expression.changed);
-    assert_eq!(review.expression.target, target);
+    assert!(!review.changed);
+    assert_eq!(review.target, target);
     assert_eq!(review.original_sql, original);
     assert_eq!(review.proposed_sql, formatted);
     assert_eq!(capability.source_path(), path);
@@ -75,10 +76,8 @@ fn changed_literal_review_retains_complete_submitted_sql_and_exact_target() {
     ) else {
         panic!("expected qualified literal change");
     };
-    assert!(review.expression.changed);
-    assert_eq!(review.expression.target, target);
-    assert_eq!(review.expression.expected, "42");
-    assert_eq!(review.expression.replacement, "43");
+    assert!(review.changed);
+    assert_eq!(review.target, target);
     assert_eq!(review.original_sql, "select 42 as Answer;");
     assert_eq!(review.proposed_sql, "SELECT 43 AS [Answer];");
     assert_eq!(capability.reopen_witness().query_name(), "Saved");
@@ -86,7 +85,7 @@ fn changed_literal_review_retains_complete_submitted_sql_and_exact_target() {
 }
 
 #[test]
-fn changed_alias_sources_clauses_parameters_and_expressions_cannot_gain_authority() {
+fn changed_alias_sources_clauses_and_parameters_cannot_gain_authority() {
     let [before, _] = storage_pair();
     let (directory, path, worker, target) = opened(&before);
     for proposed in [
@@ -100,16 +99,6 @@ fn changed_alias_sources_clauses_parameters_and_expressions_cannot_gain_authorit
         "PARAMETERS p LONG; SELECT 43 AS Answer;",
         "SELECT 43 AS Answer WITH OWNERACCESS OPTION;",
         "SELECT 43 AS Answer UNION SELECT 44 AS Answer;",
-        "SELECT 40 + 3 AS Answer;",
-        "SELECT NeverExecuteMe() AS Answer;",
-        "SELECT -1 AS Answer;",
-        "SELECT 043 AS Answer;",
-        "SELECT (43) AS Answer;",
-        "SELECT +43 AS Answer;",
-        "SELECT 43.0 AS Answer;",
-        "SELECT 43e0 AS Answer;",
-        "SELECT &H2B AS Answer;",
-        "SELECT 2147483648 AS Answer;",
     ] {
         assert!(
             matches!(
@@ -131,7 +120,7 @@ fn changed_alias_sources_clauses_parameters_and_expressions_cannot_gain_authorit
 }
 
 #[test]
-fn original_definition_width_and_stale_target_checks_remain_independent() {
+fn original_definition_growth_and_stale_target_checks_remain_independent() {
     let [before, _] = storage_pair();
     let (_directory, path, worker, target) = opened(&before);
     assert!(matches!(
@@ -145,17 +134,18 @@ fn original_definition_width_and_stale_target_checks_remain_independent() {
         ),
         Err(Error::QuerySqlEdit(QuerySqlEditError::OriginalChanged))
     ));
-    assert!(matches!(
-        request(
-            &worker,
-            Command::ReviewQuerySql {
-                target: target.clone(),
-                original_sql: "SELECT 42 AS Answer;".into(),
-                proposed_sql: "SELECT 100 AS Answer;".into(),
-            }
-        ),
-        Err(Error::QueryExpression(_))
-    ));
+    let Response::QuerySqlReviewed {
+        review: growing, ..
+    } = review(
+        &worker,
+        &target,
+        "SELECT 42 AS Answer;",
+        "SELECT 100 AS Answer;",
+    )
+    else {
+        panic!("full SQL review admits qualified inline growth");
+    };
+    assert!(growing.changed);
     let mut wrong_identity = target.clone();
     wrong_identity.object_id ^= 1;
     let mut wrong_revision = target.clone();
@@ -186,7 +176,7 @@ fn original_definition_width_and_stale_target_checks_remain_independent() {
 }
 
 #[test]
-fn nonprofile_reconstructed_queries_have_no_editable_sql_or_capability() {
+fn source_resolved_alias_spelling_can_qualify_without_native_rewriting() {
     let [mut before, _] = storage_pair();
     let alias: Vec<u8> = "Answer".encode_utf16().flat_map(u16::to_le_bytes).collect();
     let matches: Vec<usize> = before
@@ -199,7 +189,10 @@ fn nonprofile_reconstructed_queries_have_no_editable_sql_or_capability() {
     before[matches[0] + 10] = b's';
     let (_directory, path, worker, target) = opened(&before);
     let draft = inspect(&worker, &target);
-    assert_eq!(draft.eligibility, QuerySqlEligibility::Unavailable);
+    assert_eq!(
+        draft.eligibility,
+        QuerySqlEligibility::QualifiedExpressionSelect
+    );
     assert_eq!(draft.sql.as_deref(), Some("SELECT 42 AS [Answes];"));
     assert_eq!(std::fs::read(&path).unwrap(), before);
 }
@@ -249,54 +242,76 @@ fn readable_table_query_sql_is_visible_without_scanning_rows_or_qualifying_write
 }
 
 #[test]
-fn original_sql_and_native_expression_spelling_cannot_be_silently_normalized() {
+fn full_sql_binds_actual_native_spelling_instead_of_inventing_original_literal() {
     let [before, _] = storage_pair();
     let (_directory, path, worker, target) = opened(&before);
-    for original in [
-        "SELECT 042 AS Answer;",
-        "SELECT (42) AS Answer;",
-        "SELECT +42 AS Answer;",
-    ] {
-        assert!(matches!(
-            request(
-                &worker,
-                Command::ReviewQuerySql {
-                    target: target.clone(),
-                    original_sql: original.into(),
-                    proposed_sql: "SELECT 43 AS Answer;".into(),
-                }
-            ),
-            Err(Error::QuerySqlEdit(QuerySqlEditError::Unsupported))
-        ));
+    for original in ["SELECT 042 AS Answer;", "SELECT (42) AS Answer;"] {
+        let Response::QuerySqlReviewed { review: actual, .. } =
+            review(&worker, &target, original, "SELECT 43 AS Answer;")
+        else {
+            panic!("owned original model matches actual despite presentation trivia");
+        };
+        assert_eq!(actual.original_sql, original);
+        assert!(actual.changed);
     }
-    assert_eq!(std::fs::read(&path).unwrap(), before);
-
-    let mut noncanonical = before;
-    let expression = [b'4', 0, b'2', 0];
-    let matches: Vec<usize> = noncanonical
-        .windows(expression.len())
-        .enumerate()
-        .filter_map(|(offset, bytes)| (bytes == expression).then_some(offset))
-        .collect();
-    assert_eq!(matches.len(), 1);
-    noncanonical[matches[0]] = b'0';
-    noncanonical[matches[0] + 2] = b'4';
-    let (_directory, path, worker, target) = opened(&noncanonical);
-    let draft = inspect(&worker, &target);
-    assert_eq!(draft.eligibility, QuerySqlEligibility::Unavailable);
-    assert_eq!(draft.sql.as_deref(), Some("SELECT 4 AS [Answer];"));
-    // Read-only reconstruction may normalize spelling, but that displayed
-    // representation cannot bypass the native original-expression check.
     assert!(matches!(
         request(
             &worker,
             Command::ReviewQuerySql {
-                target,
-                original_sql: draft.sql.unwrap(),
-                proposed_sql: "SELECT 5 AS Answer;".into(),
+                target: target.clone(),
+                original_sql: "SELECT +42 AS Answer;".into(),
+                proposed_sql: "SELECT 43 AS Answer;".into(),
             }
         ),
-        Err(Error::QueryExpression(_))
+        Err(Error::QuerySqlEdit(QuerySqlEditError::OriginalChanged))
     ));
+    assert_eq!(std::fs::read(&path).unwrap(), before);
+
+    let mut noncanonical = before;
+    let matches = noncanonical
+        .windows(4)
+        .enumerate()
+        .filter_map(|(offset, bytes)| (bytes == [b'4', 0, b'2', 0]).then_some(offset))
+        .collect::<Vec<_>>();
+    assert_eq!(matches.len(), 1);
+    noncanonical[matches[0]..matches[0] + 4].copy_from_slice(&[b'0', 0, b'4', 0]);
+    let (_directory, path, worker, target) = opened(&noncanonical);
+    let draft = inspect(&worker, &target);
+    assert_eq!(
+        draft.eligibility,
+        QuerySqlEligibility::QualifiedExpressionSelect
+    );
+    assert_eq!(draft.sql.as_deref(), Some("SELECT 4 AS [Answer];"));
+    let Response::QuerySqlReviewed {
+        review: actual,
+        capability,
+    } = review(
+        &worker,
+        &target,
+        draft.sql.as_deref().unwrap(),
+        "SELECT 5 AS Answer;",
+    )
+    else {
+        panic!("new full-SQL intent binds the actual stored04 expression");
+    };
+    assert!(actual.changed);
+    let bytes = capability.reopen_witness();
+    let definition = tablecraft_ace::read_saved_query_definition(
+        &mut std::io::Cursor::new(bytes.expected_bytes()),
+        crate::controls::SCOPE,
+        "Saved",
+        &mut crate::controls::budget(),
+        &|| false,
+    )
+    .unwrap();
+    assert_eq!(
+        definition
+            .rows()
+            .iter()
+            .find(|row| row.attribute() == Some(tablecraft_ace::QueryAttribute::Column))
+            .unwrap()
+            .expression(),
+        Some("5")
+    );
     assert_eq!(std::fs::read(&path).unwrap(), noncanonical);
 }

@@ -11,6 +11,7 @@ pub(in crate::editing) mod number_column;
 pub(in crate::editing) mod query_delete;
 pub(in crate::editing) mod query_expression;
 pub(in crate::editing) mod query_insert;
+pub(in crate::editing) mod query_sql;
 pub(in crate::editing) mod query_update;
 pub(in crate::editing) mod replacing;
 pub(in crate::editing) mod save;

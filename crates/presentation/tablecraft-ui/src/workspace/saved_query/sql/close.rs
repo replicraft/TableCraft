@@ -39,7 +39,7 @@ impl Confirmation {
 impl Draft {
     pub(in crate::workspace) fn close_save_eligible(&self) -> bool {
         self.dirty()
-            && self.eligibility == SavedQuerySqlEligibility::QualifiedConstantSelect
+            && self.eligibility == SavedQuerySqlEligibility::QualifiedExpressionSelect
             && self.original.is_some()
             && self.pending.is_none()
     }

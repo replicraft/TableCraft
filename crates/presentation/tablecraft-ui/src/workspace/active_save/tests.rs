@@ -34,7 +34,7 @@ pub(in crate::workspace) fn inspected_state(edit_available: bool) -> (State, Sav
         2,
         &request,
         Some("SELECT 42 AS [Answer];".into()),
-        SavedQuerySqlEligibility::QualifiedConstantSelect,
+        SavedQuerySqlEligibility::QualifiedExpressionSelect,
     ));
     (state, target)
 }

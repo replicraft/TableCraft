@@ -56,7 +56,7 @@ fn unchanged_review_witness_failure_never_invents_saved_or_original_facts() {
     let revision = request.draft_revision;
     harness.state_mut().save_query_definition(request);
     let (generation, review, capability) = take_review_response(&harness);
-    assert!(!review.expression.changed);
+    assert!(!review.changed);
     let mut changed = before;
     *changed.last_mut().unwrap() ^= 1;
     std::fs::write(&path, &changed).unwrap();

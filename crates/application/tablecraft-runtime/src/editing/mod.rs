@@ -48,7 +48,9 @@ pub use query_expression::{
     QueryExpressionReview, ReviewedQueryExpression,
 };
 pub use query_insert::{QueryInsertReview, ReviewedQueryInsert};
-pub use query_sql::{QuerySqlDraft, QuerySqlEditError, QuerySqlEligibility, QuerySqlReview};
+pub use query_sql::{
+    QuerySqlDraft, QuerySqlEditError, QuerySqlEligibility, QuerySqlReview, ReviewedQuerySql,
+};
 pub use query_update::{QueryUpdateReview, ReviewedQueryUpdate};
 pub use replacing::ReplaceError;
 pub use save::{

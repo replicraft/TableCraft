@@ -10,6 +10,7 @@ mod apply_insert;
 mod apply_number_column;
 mod apply_query_action;
 mod apply_query_expression;
+mod apply_query_sql;
 #[cfg(feature = "ace16-create")]
 mod apply_table_creation;
 mod apply_table_rename;
@@ -28,6 +29,7 @@ use self::{
     apply_insert::apply_insert,
     apply_query_action::apply_query_action,
     apply_query_expression::apply_query_expression,
+    apply_query_sql::apply_query_sql,
     apply_table_rename::apply_table_rename,
     outcomes::{finish, known, no_session, receipt, retain},
     restart::restart,
@@ -43,7 +45,7 @@ use crate::{
     controls::action_recovery_budget,
     editing::{
         ReviewedDelete, ReviewedEdit, ReviewedInsert, ReviewedQueryDelete, ReviewedQueryExpression,
-        ReviewedQueryInsert, ReviewedQueryUpdate, ReviewedTableRename,
+        ReviewedQueryInsert, ReviewedQuerySql, ReviewedQueryUpdate, ReviewedTableRename,
         platform::query_action::Plan,
     },
 };
@@ -61,6 +63,7 @@ enum Task {
     #[cfg(feature = "ace16-create")]
     ApplyDatabaseOptions(ReviewedDatabaseOptions, PathBuf),
     ApplyQueryExpression(ReviewedQueryExpression, PathBuf),
+    ApplyQuerySql(ReviewedQuerySql, PathBuf),
     #[cfg(feature = "ace16-create")]
     ApplyAddColumn(ReviewedAddColumn, PathBuf),
     #[cfg(feature = "ace16-create")]
@@ -122,6 +125,11 @@ impl SaveWorker {
         true
     }
 
+    /// Whether this host can consume native full-SQL review capabilities.
+    pub const fn supports_query_sql() -> bool {
+        true
+    }
+
     #[cfg(feature = "ace16-create")]
     pub const fn supports_number_column() -> bool {
         true
@@ -180,6 +188,7 @@ impl SaveWorker {
                     #[cfg(feature = "ace16-create")]
                     Task::ApplyAddColumn(..) | Task::ApplyNumberColumn(..) => SaveOperation::Apply,
                     Task::ApplyQueryExpression(..)
+                    | Task::ApplyQuerySql(..)
                     | Task::Apply(..)
                     | Task::ApplyTableRename(..)
                     | Task::ApplyInsert(..)
@@ -205,6 +214,9 @@ impl SaveWorker {
                     }
                     Task::ApplyQueryExpression(reviewed, bundle) => {
                         apply_query_expression(reviewed, bundle, &mut retained, &cancelled)
+                    }
+                    Task::ApplyQuerySql(reviewed, bundle) => {
+                        apply_query_sql(reviewed, bundle, &mut retained, &cancelled)
                     }
                     #[cfg(feature = "ace16-create")]
                     Task::ApplyNumberColumn(reviewed, bundle) => {
@@ -383,6 +395,16 @@ impl SaveWorker {
     ) -> Result<u64, SaveStartError<ReviewedQueryInsert>> {
         let valid = reviewed.state.valid.load(Ordering::Acquire);
         self.start_reviewed(reviewed, bundle, valid, Task::ApplyQueryInsert)
+    }
+
+    /// Consume the exact full-SQL review, without reparsing or executing SQL.
+    pub fn start_query_sql(
+        &self,
+        reviewed: ReviewedQuerySql,
+        bundle: PathBuf,
+    ) -> Result<u64, SaveStartError<ReviewedQuerySql>> {
+        let valid = reviewed.state.valid.load(Ordering::Acquire);
+        self.start_reviewed(reviewed, bundle, valid, Task::ApplyQuerySql)
     }
 
     /// Consume one document-owned existing-query review without SQL replay.

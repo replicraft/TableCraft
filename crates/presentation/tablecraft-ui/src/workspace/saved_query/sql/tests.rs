@@ -40,7 +40,7 @@ fn inspected() -> (State, SavedQueryTarget) {
         10,
         &request,
         Some("SELECT 42 AS Answer".into()),
-        SavedQuerySqlEligibility::QualifiedConstantSelect
+        SavedQuerySqlEligibility::QualifiedExpressionSelect
     ));
     (state, target)
 }
@@ -70,7 +70,7 @@ fn host_inspection_is_readonly_fact_and_exact_object_identity_is_required() {
             10,
             &stale,
             Some("SQL".into()),
-            SavedQuerySqlEligibility::QualifiedConstantSelect
+            SavedQuerySqlEligibility::QualifiedExpressionSelect
         ));
     }
     assert!(state.set_saved_query_sql_inspection(
@@ -96,7 +96,7 @@ fn exact_user_text_is_dirty_and_edit_invalidates_inspection_reply() {
         11,
         &pending,
         Some("SELECT 42 AS Answer".into()),
-        SavedQuerySqlEligibility::QualifiedConstantSelect
+        SavedQuerySqlEligibility::QualifiedExpressionSelect
     ));
     let (original, proposed, revision, _) = state.saved_query_sql().unwrap();
     assert_eq!(original, "SELECT 42 AS Answer");
@@ -113,7 +113,7 @@ fn changed_original_on_reinspection_keeps_dirty_text_and_disables_eligibility() 
         11,
         &pending,
         Some("SELECT 99 AS Answer".into()),
-        SavedQuerySqlEligibility::QualifiedConstantSelect
+        SavedQuerySqlEligibility::QualifiedExpressionSelect
     ));
     assert_eq!(
         state.saved_query_sql_error(),

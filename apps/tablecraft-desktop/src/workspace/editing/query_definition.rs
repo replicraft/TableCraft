@@ -3,7 +3,7 @@ use super::{ActiveSave, SaveOwner, cleanup_notice, save_outcome};
 use crate::workspace::{Desktop, PendingOperation, filtering::RestoreFilter};
 use std::sync::Arc;
 use tablecraft_runtime::{
-    Command, QueryExpressionReopen, QuerySqlReview, ReviewedQueryExpression, SaveCompletion,
+    Command, QueryExpressionReopen, QuerySqlReview, ReviewedQuerySql, SaveCompletion,
     SaveOperation, SaveOutcome, SaveReport, journal_path,
 };
 use tablecraft_ui::{
@@ -119,7 +119,7 @@ impl Desktop {
         &mut self,
         generation: u64,
         review: QuerySqlReview,
-        capability: ReviewedQueryExpression,
+        capability: ReviewedQuerySql,
     ) {
         let Some(host) = &self.editing.query_definition else {
             return;
@@ -132,20 +132,20 @@ impl Desktop {
         }
         let request = &host.request;
         let witness = capability.reopen_witness();
-        let exact = review.expression.target.document_revision == request.target.document_revision
-            && review.expression.target.object_id == request.target.object_id
-            && review.expression.target.name == request.target.name
+        let exact = review.target.document_revision == request.target.document_revision
+            && review.target.object_id == request.target.object_id
+            && review.target.name == request.target.name
             && Some(review.original_sql.as_str()) == request.original_sql.as_deref()
             && review.proposed_sql == request.proposed_sql
             && witness.document_revision() == request.target.document_revision
             && witness.query_name() == request.target.name
-            && witness.native_id() == review.expression.native_id
+            && witness.native_id() == review.native_id
             && witness.source_path() == capability.source_path()
             && self.state.can_rebind_saved_query_sql_layout(request);
         if !exact
             || !self
                 .state
-                .set_saved_query_sql_review(generation, request, review.expression.id)
+                .set_saved_query_sql_review(generation, request, review.id)
         {
             self.query_definition_review_failed(
                 generation,
@@ -154,13 +154,13 @@ impl Desktop {
             return;
         }
         let host = self.editing.query_definition.as_mut().unwrap();
-        host.review_id = Some(review.expression.id);
+        host.review_id = Some(review.id);
         host.witness = Some(witness);
-        if !review.expression.changed {
+        if !review.changed {
             let Some(status) = self.state.begin_saved_query_sql_unchanged_reopen(
                 generation,
                 &host.request,
-                review.expression.id,
+                review.id,
             ) else {
                 self.query_definition_review_failed(
                     generation,
@@ -174,11 +174,10 @@ impl Desktop {
             self.reopen_query_definition();
             return;
         }
-        let Some(prepared) = self.state.prepare_saved_query_sql_save(
-            generation,
-            &host.request,
-            review.expression.id,
-        ) else {
+        let Some(prepared) =
+            self.state
+                .prepare_saved_query_sql_save(generation, &host.request, review.id)
+        else {
             self.query_definition_review_failed(
                 generation,
                 self.state.localizer.text("objects-memory-limit"),
@@ -190,7 +189,7 @@ impl Desktop {
         match self
             .editing
             .worker
-            .start_query_expression(capability, journal_path(&path))
+            .start_query_sql(capability, journal_path(&path))
         {
             Ok(id) => {
                 self.editing.save = Some(ActiveSave {

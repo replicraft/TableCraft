@@ -55,7 +55,7 @@ pub(super) fn prepare(harness: &mut Harness<'_, Preview>, mode: &str) {
             SQL_INSPECTION_ID,
             &request,
             Some(ORIGINAL.into()),
-            SavedQuerySqlEligibility::QualifiedConstantSelect,
+            SavedQuerySqlEligibility::QualifiedExpressionSelect,
         ));
         if mode != "editor" && mode != "read-only" {
             assert!(state.set_saved_query_sql_text(PROPOSED.into()));

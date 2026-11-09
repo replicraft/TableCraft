@@ -44,7 +44,7 @@ fn open_sql(
         2,
         &inspection,
         Some(original.into()),
-        SavedQuerySqlEligibility::QualifiedConstantSelect
+        SavedQuerySqlEligibility::QualifiedExpressionSelect
     ));
     if let Some(proposed) = proposed {
         assert!(state.set_saved_query_sql_text(proposed));
