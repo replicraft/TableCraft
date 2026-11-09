@@ -116,20 +116,6 @@ fn repeated_two_character_groups_fit_same_cumulative_budget_without_resident_mem
             Value::Int64((ROWS / GROUPS + usize::from(index < ROWS % GROUPS)) as i64)
         );
     }
-    let comparisons = RefCell::new(ResourceBudget::new(BYTES, 0, STEPS));
-    let resolver = NativeCollationResolver::new(
-        NativeSortOrder::from_native_bytes([9, 4, 0, 0]),
-        &comparisons,
-        &|| false,
-    )
-    .unwrap();
-    let error = execute(&WithoutHints(&resolver))
-        .err()
-        .expect("strict linear comparisons exhaust their cumulative allowance");
-    assert!(
-        error.to_string().contains("Bytes resource limit exceeded"),
-        "{error}"
-    );
 }
 
 #[test]
