@@ -106,7 +106,13 @@ pub(crate) fn ordered_names<'a>(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Vec<&'a [u8]>, InspectError> {
-    ordered_names_impl(properties, budget, cancelled, None::<GroupVisitor>)
+    ordered_names_impl(
+        properties,
+        budget,
+        cancelled,
+        None::<GroupVisitor>,
+        None::<GroupVisitor>,
+    )
 }
 
 type GroupVisitor = fn(usize, Range<usize>) -> Result<(), InspectError>;
@@ -121,7 +127,31 @@ pub(crate) fn ordered_names_with_groups<'a>(
     cancelled: &dyn Fn() -> bool,
     visit: impl FnMut(usize, Range<usize>) -> Result<(), InspectError>,
 ) -> Result<Vec<&'a [u8]>, InspectError> {
-    ordered_names_impl(properties, budget, cancelled, Some(visit))
+    ordered_names_impl(
+        properties,
+        budget,
+        cancelled,
+        Some(visit),
+        None::<GroupVisitor>,
+    )
+}
+
+/// Visit complete group blocks through the same successful framing traversal.
+/// Relative ranges are evidence only after the whole function succeeds.
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub(crate) fn ordered_group_blocks<'a>(
+    properties: &'a TableProperties,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+    visit: impl FnMut(usize, Range<usize>) -> Result<(), InspectError>,
+) -> Result<Vec<&'a [u8]>, InspectError> {
+    ordered_names_impl(
+        properties,
+        budget,
+        cancelled,
+        None::<GroupVisitor>,
+        Some(visit),
+    )
 }
 
 fn ordered_names_impl<'a>(
@@ -129,6 +159,7 @@ fn ordered_names_impl<'a>(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
     mut visit: Option<impl FnMut(usize, Range<usize>) -> Result<(), InspectError>>,
+    mut block_visit: Option<impl FnMut(usize, Range<usize>) -> Result<(), InspectError>>,
 ) -> Result<Vec<&'a [u8]>, InspectError> {
     let _span = tracing::debug_span!("native.properties.complete_framing").entered();
     check(budget, cancelled)?;
@@ -240,6 +271,11 @@ fn ordered_names_impl<'a>(
         }
         if property_number != group.properties().len() {
             return Err(InspectError::Malformed);
+        }
+        if let Some(visit) = block_visit.as_mut() {
+            budget.charge(Resource::Steps, 1)?;
+            let start = block_start - BLOCK_HEADER;
+            visit(group_number, start..start + length)?;
         }
         group_number += 1;
     }
