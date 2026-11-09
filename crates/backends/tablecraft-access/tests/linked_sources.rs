@@ -239,7 +239,9 @@ fn late_target_failure_never_publishes_a_complete_cache_and_visitor_rejection_pr
     let before = pool.borrow().remaining(Resource::Bytes);
     assert!(matches!(
         execute(&facade, "SELECT Score FROM Linked"),
-        Err(QueryError::SourceFailure(SourceFailure::InvalidData))
+        Err(QueryError::SourceFailure(SourceFailure::Io(
+            std::io::ErrorKind::Other
+        )))
     ));
     assert!(pool.borrow().remaining(Resource::Bytes) < before);
     fail.set(false);

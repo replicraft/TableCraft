@@ -311,7 +311,7 @@ fn top_capped_native_arm_still_validates_late_pages_before_next_arm() {
     assert!(matches!(
         error,
         Err(StreamError::Query(QueryError::SourceFailure(
-            SourceFailure::InvalidData
+            SourceFailure::Io(std::io::ErrorKind::Other)
         )))
     ));
     assert_eq!(values, [Value::Int32(1)]);
