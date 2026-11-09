@@ -124,10 +124,9 @@ fn limits_and_invalid_joins_refuse_without_mutating_the_old_draft() {
         Err(QueryDesignError::Limit)
     ));
     invalid = old.clone();
-    invalid
-        .columns
-        .iter_mut()
-        .for_each(|column| column.show = false);
+    for column in &mut invalid.columns {
+        column.show = false;
+    }
     assert!(matches!(
         build(&invalid, &metadata()),
         Err(QueryDesignError::NoProjection)

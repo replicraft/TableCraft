@@ -170,14 +170,18 @@ fn wire(
             output.push(if descending { 0x80 } else { 0x7f });
             let mut bytes = ((value as u32) ^ I32_SIGN_MASK).to_be_bytes();
             if descending {
-                bytes.iter_mut().for_each(|byte| *byte = !*byte);
+                for byte in bytes.iter_mut() {
+                    *byte = !*byte;
+                }
             }
             output.extend_from_slice(&bytes);
         }
         Some(Key::Guid(mut bytes)) if guid => {
             output.push(if descending { 0x80 } else { 0x7f });
             if descending {
-                bytes.iter_mut().for_each(|byte| *byte = !*byte);
+                for byte in bytes.iter_mut() {
+                    *byte = !*byte;
+                }
             }
             output.extend_from_slice(&bytes[..GUID_SEGMENT_BYTES]);
             output.push(GUID_CONTINUED_TAG);

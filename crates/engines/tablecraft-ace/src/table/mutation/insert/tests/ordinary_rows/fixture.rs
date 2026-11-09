@@ -46,7 +46,9 @@ fn component(id: i32, descending: bool) -> Vec<u8> {
     let mut bytes = vec![if descending { 128 } else { 127 }];
     let mut value = ((id as u32) ^ 0x80000000).to_be_bytes();
     if descending {
-        value.iter_mut().for_each(|byte| *byte = !*byte);
+        for byte in value.iter_mut() {
+            *byte = !*byte;
+        }
     }
     bytes.extend(value);
     bytes

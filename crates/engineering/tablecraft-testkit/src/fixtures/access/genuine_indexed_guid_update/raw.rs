@@ -335,7 +335,9 @@ pub fn entries(
                 Value::Guid(value) => {
                     let mut bytes = value.to_bytes();
                     if descending {
-                        bytes.iter_mut().for_each(|byte| *byte = !*byte);
+                        for byte in bytes.iter_mut() {
+                            *byte = !*byte;
+                        }
                     }
                     let mut wire = vec![if descending { 0x80 } else { 0x7f }];
                     wire.extend_from_slice(&bytes[..8]);

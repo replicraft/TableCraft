@@ -171,7 +171,9 @@ fn component(value: &Value, descending: bool) -> Vec<u8> {
         Value::Guid(value) => {
             let mut data = value.to_bytes();
             if descending {
-                data.iter_mut().for_each(|byte| *byte = !*byte);
+                for byte in data.iter_mut() {
+                    *byte = !*byte;
+                }
             }
             let mut result = vec![if descending { 128 } else { 127 }];
             result.extend_from_slice(&data[..8]);
@@ -184,7 +186,9 @@ fn component(value: &Value, descending: bool) -> Vec<u8> {
             let mut result = vec![127];
             result.extend_from_slice(&((*value as u32) ^ 0x8000_0000).to_be_bytes());
             if descending {
-                result.iter_mut().for_each(|byte| *byte = !*byte);
+                for byte in result.iter_mut() {
+                    *byte = !*byte;
+                }
             }
             result
         }

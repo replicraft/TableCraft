@@ -117,7 +117,9 @@ fn wire(row: Row, data: u32, physical: usize) -> Vec<u8> {
                     .to_vec()
             };
             if physical == 2 {
-                payload.iter_mut().for_each(|byte| *byte = !*byte);
+                for byte in payload.iter_mut() {
+                    *byte = !*byte;
+                }
             }
             result.extend_from_slice(&payload);
         }

@@ -199,7 +199,9 @@ fn name_key(value: Option<&[u8]>, family: Family, descending: bool) -> Vec<u8> {
         _ => panic!("closed literal name family"),
     };
     if descending {
-        weights.iter_mut().for_each(|byte| *byte = !*byte);
+        for byte in weights.iter_mut() {
+            *byte = !*byte;
+        }
         weights.push(0);
     }
     bytes.extend(weights);
