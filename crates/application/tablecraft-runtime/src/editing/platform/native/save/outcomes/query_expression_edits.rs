@@ -22,7 +22,7 @@ pub(super) fn intent(error: &QueryExpressionEditsIntentError) -> Option<SaveFail
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::editing::platform::native::save::outcomes::resource_failure;
+    use crate::editing::platform::save::outcomes::resource_failure;
     use tablecraft_access::editing::offline::Cause;
     use tablecraft_ace::{InspectError, NativeIntentError, NativeRecoveryQualificationError};
     use tablecraft_core::limits::{LimitError, Resource};

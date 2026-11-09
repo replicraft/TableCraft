@@ -2,11 +2,12 @@
 mod edits;
 use super::*;
 use crate::editing::offline::{
-    CompletionKind, VerifiedImage,
+    Cause, CompletionKind, Phase, SessionState, VerifiedImage,
     plan::MutationIntent,
     test_support::{assert_completion, assert_staged_read_state},
 };
 use std::{fs, io::Cursor, path::PathBuf};
+use tablecraft_ace::NativeImage;
 use tablecraft_io::{
     IoError, SharedFile,
     journal::{RecoveryOutcome, filesystem::OfflineJournalPair},
