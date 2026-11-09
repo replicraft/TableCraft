@@ -150,3 +150,12 @@ pub use field_rename::{
     FieldRenameIntentError, NativeFieldRenameIntent, QualifiedFieldRenameRecovery,
     RecoverableFieldRenamePlan, qualify_native_field_rename_recovery,
 };
+
+#[cfg(feature = "ace16-create")]
+mod field_addition_after_off;
+#[cfg(feature = "ace16-create")]
+pub use field_addition_after_off::{
+    FieldAdditionAfterOffIntentError, NativeFieldAdditionAfterOffIntent,
+    QualifiedFieldAdditionAfterOffRecovery, RecoverableFieldAdditionAfterOffPlan,
+    qualify_native_field_addition_after_off_recovery,
+};
