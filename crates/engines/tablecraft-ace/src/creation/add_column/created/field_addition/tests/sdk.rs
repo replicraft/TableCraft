@@ -166,3 +166,38 @@ fn number_target_reuses_the_same_candidate_and_complete_third_sdk_pin() {
         "337e03454d5aa233f66087301d5e8fe50092c4e90dfa4a65888430cdb9f61dd6",
     );
 }
+
+#[test]
+fn third_text_after_number_matches_four_complete_sdk_images() {
+    for (case, expected_hash) in [
+        (
+            raw::SourceCase::IdOnly,
+            "fb5cf8454223e2a5513d4645d28a885823df76edf9852550afd173200155d356",
+        ),
+        (
+            raw::SourceCase::InlineNumber,
+            "4c133c3b9c0abd0dd84b7376de0bca6ea4c59a960bdda38696ea4593b76f6d01",
+        ),
+        (
+            raw::SourceCase::TwoNumberHistory,
+            "66235a4b2fea952cf793d2ea945f82f192bc7655f1ed8bfe3d96f9feebef5a10",
+        ),
+        (
+            raw::SourceCase::ThreeNumberHistory,
+            "b1a30352d573092e2ffd22cda254177efda351fbbcb38a70d259a92dbae85cc5",
+        ),
+    ] {
+        let initial = raw::source(case);
+        let label = raw::append_text(&initial, "Label", 255, true);
+        let before = raw::append_number(&label, "AfterLabel");
+        let after = raw::append_text(&before, "OtherLabel", 255, true);
+
+        qualify(
+            &before,
+            &after,
+            "OtherLabel",
+            text(255, true),
+            expected_hash,
+        );
+    }
+}

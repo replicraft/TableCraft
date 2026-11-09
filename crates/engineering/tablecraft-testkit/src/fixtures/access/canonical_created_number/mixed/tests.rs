@@ -131,3 +131,33 @@ fn every_old_external_property_slot_span_and_body_survives_mixed_appends() {
         assert_eq!(&old[start..end], &new[start..end]);
     }
 }
+
+#[cfg(any(feature = "access-support", feature = "cli-support"))]
+#[test]
+fn text_number_text_matches_four_complete_third_step_sdk_images() {
+    for (case, expected) in [
+        (
+            SourceCase::IdOnly,
+            "fb5cf8454223e2a5513d4645d28a885823df76edf9852550afd173200155d356",
+        ),
+        (
+            SourceCase::InlineNumber,
+            "4c133c3b9c0abd0dd84b7376de0bca6ea4c59a960bdda38696ea4593b76f6d01",
+        ),
+        (
+            SourceCase::TwoNumberHistory,
+            "66235a4b2fea952cf793d2ea945f82f192bc7655f1ed8bfe3d96f9feebef5a10",
+        ),
+        (
+            SourceCase::ThreeNumberHistory,
+            "b1a30352d573092e2ffd22cda254177efda351fbbcb38a70d259a92dbae85cc5",
+        ),
+    ] {
+        let before = source(case);
+        let label = append_text(&before, "Label", 255, true);
+        let number = append_number(&label, "AfterLabel");
+        let after = append_text(&number, "OtherLabel", 255, true);
+
+        assert_eq!(hash(&after), expected, "{case:?}");
+    }
+}

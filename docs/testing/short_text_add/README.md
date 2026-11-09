@@ -116,3 +116,27 @@ bytes and SDK outputs were unaffected. No CI test depends on private local datab
 paths. Zero native dates are preserved; save timing/events, full Unicode behavior,
 row migration, page exhaustion, arbitrary properties and native Access parity
 remain unqualified.
+
+## Text → Number → Text composition
+
+Four additional inert SDK saves append compressed `OtherLabel` (255 units) to
+those four retained Number-after-Label outputs. Every complete AFTER matches the
+independent model constructed before invoking the SDK. The originals remain
+unchanged, and the read-only typed observer confirms Required(false),
+AllowZeroLength(true), and absent DefaultValue. The
+[third-step record](../results/short-text-mixed-sequence-sdk-2026-11-08.json)
+keeps these observations separate from the original eighteen cases.
+
+Reproduce from the repository root with the retained SDK files and a fresh output
+directory:
+
+```sh
+python3 docs/testing/short_text_add/mixed_sequence.py \
+  --jar "$JACKCESS_JAR" --sources-dir "$SDK_OUTPUT/files" \
+  --output-dir "$THIRD_STEP_OUTPUT"
+```
+
+The unchanged Java helpers disable expression evaluation; generated binaries and
+databases remain local. These are independent-reader save observations, not
+Microsoft Access or Windows execution, and do not by themselves activate GUI
+editing or qualify populated-table schema changes.

@@ -1,0 +1,187 @@
+{
+  "scope": "Third Text save after retained Text/Number SDK saves; no native Microsoft Access execution",
+  "sdk": {
+    "artifact": "Jackcess5.0.4",
+    "sha256": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc",
+    "license": "Apache-2.0"
+  },
+  "helpers": [
+    {
+      "source": "docs/testing/CreatedNumberColumnOracle.java",
+      "sha256": "c805c038da5f0853c50a3b76753dab0577aa66322fe873c9e642e52a943d1886"
+    },
+    {
+      "source": "docs/testing/short_text_add/CreatedShortTextColumnOracle.java",
+      "sha256": "74b09b0ae88486dcf395d85c8fd4b4e454900c80e256c3a888e3894a3ac7f19e"
+    },
+    {
+      "source": "docs/testing/short_text_add/ShortTextProperties.java",
+      "sha256": "c471fabb0be3cbf2986bdfcd938c98d223a9088754dbe12234f07fe4fb6b35ad"
+    }
+  ],
+  "model_sha256": "640514975f34cd3468f4672e0cd9e9a516f15a439c5005c71d3f3d3a5e969a5b",
+  "raw_model_sha256": "4bba92ee109e8318ef9b47ac541ddbaf1068a14c5d939dca5db80e535acc182c",
+  "recipe_sha256": "261c79567a6b149dedde4bce6fabcbca490d7d79a3edac01737a1ee9700419db",
+  "observations": [
+    {
+      "case": "text-after-number-after-label-on-id-only-compressed",
+      "source": "number-after-label-on-id-only-compressed-after.accdb",
+      "output": "text-after-number-after-label-on-id-only-compressed-after.accdb",
+      "source_sha256": "57600b1b190ee87fed1d858076b00fd6f5f83431adc1ff38788a4f952aa0eb98",
+      "after_sha256": "fb5cf8454223e2a5513d4645d28a885823df76edf9852550afd173200155d356",
+      "independent_sha256": "fb5cf8454223e2a5513d4645d28a885823df76edf9852550afd173200155d356",
+      "source_bytes": 45056,
+      "after_bytes": 45056,
+      "original_unchanged": true,
+      "complete_image_equal": true,
+      "declaration": {
+        "column": "OtherLabel",
+        "type": "TEXT",
+        "units": 255,
+        "unicode_compression": true,
+        "required": false,
+        "allow_zero_length": true,
+        "default": "absent"
+      },
+      "stdout": [
+        "Column\tID\tLONG\tunits=4\tnumber=0\tvariable=0\tfixedOffset=0\tcompressed=false\trequired=null\tallowZeroLength=null\tdefault=null\tsort=null",
+        "Column\tLabel\tTEXT\tunits=255\tnumber=1\tvariable=0\tfixedOffset=0\tcompressed=true\trequired=false\tallowZeroLength=true\tdefault=null\tsort=SortOrder[0x01000409, General]",
+        "Column\tAfterLabel\tLONG\tunits=4\tnumber=2\tvariable=1\tfixedOffset=4\tcompressed=false\trequired=false\tallowZeroLength=null\tdefault=0\tsort=null",
+        "Column\tOtherLabel\tTEXT\tunits=255\tnumber=3\tvariable=1\tfixedOffset=0\tcompressed=true\trequired=false\tallowZeroLength=true\tdefault=null\tsort=SortOrder[0x01000409, General]",
+        "Rows\t0",
+        "Indexes\t1",
+        "Created\t1899-12-30T00:00",
+        "Updated\t1899-12-30T00:00",
+        "BeforeSHA256\t57600b1b190ee87fed1d858076b00fd6f5f83431adc1ff38788a4f952aa0eb98",
+        "AfterSHA256\tfb5cf8454223e2a5513d4645d28a885823df76edf9852550afd173200155d356"
+      ],
+      "typed_read_only_properties": [
+        "Required\tBOOLEAN\tfalse",
+        "AllowZeroLength\tBOOLEAN\ttrue",
+        "DefaultValuePresent\tfalse"
+      ]
+    },
+    {
+      "case": "text-after-number-after-label-on-inline-number-compressed",
+      "source": "number-after-label-on-inline-number-compressed-after.accdb",
+      "output": "text-after-number-after-label-on-inline-number-compressed-after.accdb",
+      "source_sha256": "c8382c58a3a87248230985e2690ab15d8a978e65daa6d230228c43fd493ab73f",
+      "after_sha256": "4c133c3b9c0abd0dd84b7376de0bca6ea4c59a960bdda38696ea4593b76f6d01",
+      "independent_sha256": "4c133c3b9c0abd0dd84b7376de0bca6ea4c59a960bdda38696ea4593b76f6d01",
+      "source_bytes": 45056,
+      "after_bytes": 45056,
+      "original_unchanged": true,
+      "complete_image_equal": true,
+      "declaration": {
+        "column": "OtherLabel",
+        "type": "TEXT",
+        "units": 255,
+        "unicode_compression": true,
+        "required": false,
+        "allow_zero_length": true,
+        "default": "absent"
+      },
+      "stdout": [
+        "Column\tID\tLONG\tunits=4\tnumber=0\tvariable=0\tfixedOffset=0\tcompressed=false\trequired=null\tallowZeroLength=null\tdefault=null\tsort=null",
+        "Column\tScore\tLONG\tunits=4\tnumber=1\tvariable=0\tfixedOffset=4\tcompressed=false\trequired=false\tallowZeroLength=null\tdefault=0\tsort=null",
+        "Column\tLabel\tTEXT\tunits=255\tnumber=2\tvariable=0\tfixedOffset=0\tcompressed=true\trequired=false\tallowZeroLength=true\tdefault=null\tsort=SortOrder[0x01000409, General]",
+        "Column\tAfterLabel\tLONG\tunits=4\tnumber=3\tvariable=1\tfixedOffset=8\tcompressed=false\trequired=false\tallowZeroLength=null\tdefault=0\tsort=null",
+        "Column\tOtherLabel\tTEXT\tunits=255\tnumber=4\tvariable=1\tfixedOffset=0\tcompressed=true\trequired=false\tallowZeroLength=true\tdefault=null\tsort=SortOrder[0x01000409, General]",
+        "Rows\t0",
+        "Indexes\t1",
+        "Created\t1899-12-30T00:00",
+        "Updated\t1899-12-30T00:00",
+        "BeforeSHA256\tc8382c58a3a87248230985e2690ab15d8a978e65daa6d230228c43fd493ab73f",
+        "AfterSHA256\t4c133c3b9c0abd0dd84b7376de0bca6ea4c59a960bdda38696ea4593b76f6d01"
+      ],
+      "typed_read_only_properties": [
+        "Required\tBOOLEAN\tfalse",
+        "AllowZeroLength\tBOOLEAN\ttrue",
+        "DefaultValuePresent\tfalse"
+      ]
+    },
+    {
+      "case": "text-after-number-after-label-on-two-number-compressed",
+      "source": "number-after-label-on-two-number-compressed-after.accdb",
+      "output": "text-after-number-after-label-on-two-number-compressed-after.accdb",
+      "source_sha256": "eec96c35704e9975ef2dbc0959cf697965b7bd0cf7029d58c16dece18049ce0b",
+      "after_sha256": "66235a4b2fea952cf793d2ea945f82f192bc7655f1ed8bfe3d96f9feebef5a10",
+      "independent_sha256": "66235a4b2fea952cf793d2ea945f82f192bc7655f1ed8bfe3d96f9feebef5a10",
+      "source_bytes": 45056,
+      "after_bytes": 45056,
+      "original_unchanged": true,
+      "complete_image_equal": true,
+      "declaration": {
+        "column": "OtherLabel",
+        "type": "TEXT",
+        "units": 255,
+        "unicode_compression": true,
+        "required": false,
+        "allow_zero_length": true,
+        "default": "absent"
+      },
+      "stdout": [
+        "Column\tID\tLONG\tunits=4\tnumber=0\tvariable=0\tfixedOffset=0\tcompressed=false\trequired=null\tallowZeroLength=null\tdefault=null\tsort=null",
+        "Column\tScore\tLONG\tunits=4\tnumber=1\tvariable=0\tfixedOffset=4\tcompressed=false\trequired=false\tallowZeroLength=null\tdefault=0\tsort=null",
+        "Column\tScore2\tLONG\tunits=4\tnumber=2\tvariable=0\tfixedOffset=8\tcompressed=false\trequired=false\tallowZeroLength=null\tdefault=0\tsort=null",
+        "Column\tLabel\tTEXT\tunits=255\tnumber=3\tvariable=0\tfixedOffset=0\tcompressed=true\trequired=false\tallowZeroLength=true\tdefault=null\tsort=SortOrder[0x01000409, General]",
+        "Column\tAfterLabel\tLONG\tunits=4\tnumber=4\tvariable=1\tfixedOffset=12\tcompressed=false\trequired=false\tallowZeroLength=null\tdefault=0\tsort=null",
+        "Column\tOtherLabel\tTEXT\tunits=255\tnumber=5\tvariable=1\tfixedOffset=0\tcompressed=true\trequired=false\tallowZeroLength=true\tdefault=null\tsort=SortOrder[0x01000409, General]",
+        "Rows\t0",
+        "Indexes\t1",
+        "Created\t1899-12-30T00:00",
+        "Updated\t1899-12-30T00:00",
+        "BeforeSHA256\teec96c35704e9975ef2dbc0959cf697965b7bd0cf7029d58c16dece18049ce0b",
+        "AfterSHA256\t66235a4b2fea952cf793d2ea945f82f192bc7655f1ed8bfe3d96f9feebef5a10"
+      ],
+      "typed_read_only_properties": [
+        "Required\tBOOLEAN\tfalse",
+        "AllowZeroLength\tBOOLEAN\ttrue",
+        "DefaultValuePresent\tfalse"
+      ]
+    },
+    {
+      "case": "text-after-number-after-label-on-three-number-compressed",
+      "source": "number-after-label-on-three-number-compressed-after.accdb",
+      "output": "text-after-number-after-label-on-three-number-compressed-after.accdb",
+      "source_sha256": "41d0da72909b53a86250b70d37b88b096d13c34aa09ef72f8e1e31cd4dd088c7",
+      "after_sha256": "b1a30352d573092e2ffd22cda254177efda351fbbcb38a70d259a92dbae85cc5",
+      "independent_sha256": "b1a30352d573092e2ffd22cda254177efda351fbbcb38a70d259a92dbae85cc5",
+      "source_bytes": 45056,
+      "after_bytes": 45056,
+      "original_unchanged": true,
+      "complete_image_equal": true,
+      "declaration": {
+        "column": "OtherLabel",
+        "type": "TEXT",
+        "units": 255,
+        "unicode_compression": true,
+        "required": false,
+        "allow_zero_length": true,
+        "default": "absent"
+      },
+      "stdout": [
+        "Column\tID\tLONG\tunits=4\tnumber=0\tvariable=0\tfixedOffset=0\tcompressed=false\trequired=null\tallowZeroLength=null\tdefault=null\tsort=null",
+        "Column\tScore\tLONG\tunits=4\tnumber=1\tvariable=0\tfixedOffset=4\tcompressed=false\trequired=false\tallowZeroLength=null\tdefault=0\tsort=null",
+        "Column\tScore2\tLONG\tunits=4\tnumber=2\tvariable=0\tfixedOffset=8\tcompressed=false\trequired=false\tallowZeroLength=null\tdefault=0\tsort=null",
+        "Column\tThird\tLONG\tunits=4\tnumber=3\tvariable=0\tfixedOffset=12\tcompressed=false\trequired=false\tallowZeroLength=null\tdefault=0\tsort=null",
+        "Column\tLabel\tTEXT\tunits=255\tnumber=4\tvariable=0\tfixedOffset=0\tcompressed=true\trequired=false\tallowZeroLength=true\tdefault=null\tsort=SortOrder[0x01000409, General]",
+        "Column\tAfterLabel\tLONG\tunits=4\tnumber=5\tvariable=1\tfixedOffset=16\tcompressed=false\trequired=false\tallowZeroLength=null\tdefault=0\tsort=null",
+        "Column\tOtherLabel\tTEXT\tunits=255\tnumber=6\tvariable=1\tfixedOffset=0\tcompressed=true\trequired=false\tallowZeroLength=true\tdefault=null\tsort=SortOrder[0x01000409, General]",
+        "Rows\t0",
+        "Indexes\t1",
+        "Created\t1899-12-30T00:00",
+        "Updated\t1899-12-30T00:00",
+        "BeforeSHA256\t41d0da72909b53a86250b70d37b88b096d13c34aa09ef72f8e1e31cd4dd088c7",
+        "AfterSHA256\tb1a30352d573092e2ffd22cda254177efda351fbbcb38a70d259a92dbae85cc5"
+      ],
+      "typed_read_only_properties": [
+        "Required\tBOOLEAN\tfalse",
+        "AllowZeroLength\tBOOLEAN\ttrue",
+        "DefaultValuePresent\tfalse"
+      ]
+    }
+  ],
+  "date": "2026-11-08",
+  "platform": "macOS ARM64; inert Java SDK, no native Access or Windows execution"
+}
