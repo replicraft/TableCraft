@@ -116,11 +116,7 @@ pub(super) fn run(
             .map_err(Error::Native)?
     };
     let policy = collation.as_ref().map(|c| c as &dyn Collation);
-    let parameters = parameters::parse(raw)?;
-    let bindings = parameters
-        .iter()
-        .map(|(name, value)| (name.as_str(), value.clone()))
-        .collect::<Vec<_>>();
+    let bindings = parameters::parse(raw)?;
     let result = if let Some(path) = sqlite {
         let source = tablecraft_sqlite::SqliteSource::open(
             path,

@@ -41,11 +41,7 @@ impl RunArgs {
             return Err(Error::Parameter.into());
         }
         let controls = self.controls();
-        let parameters = parameters::parse(&self.parameters)?;
-        let bindings = parameters
-            .iter()
-            .map(|(name, value)| (name.as_str(), value.clone()))
-            .collect::<Vec<_>>();
+        let bindings = parameters::parse(&self.parameters)?;
         let batch_rows = self.batch_rows.unwrap_or(DEFAULT_BATCH_ROWS);
         let mut budget = ResourceBudget::new(
             self.native_bytes.unwrap_or(native::DEFAULT_NATIVE_BYTES),
