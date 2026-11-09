@@ -1,5 +1,6 @@
 //! Independent mixed field AFTERs from the maintained Short Text literal model.
 //! No engine/SDK serializer, parser or inspection API participates in these bytes.
+pub mod after_off;
 mod properties;
 mod storage;
 #[cfg(test)]
@@ -55,6 +56,22 @@ pub fn source(case: SourceCase) -> Vec<u8> {
 /// Append TEXT with explicit stored Required(false), AllowZeroLength(true),
 /// absent DefaultValue, chosen UTF16 width and Unicode compression bit.
 pub fn append_text(before: &[u8], name: &str, units: u16, compressed: bool) -> Vec<u8> {
+    let after = append_text_definition(before, name, units, compressed);
+    let original_body = storage::body(before);
+    let body = properties::append_text(&original_body, name);
+    storage::append(before, after, &body)
+}
+
+/// Append nullable LONG with stored Required(false) and a literal zero default,
+/// retaining all previous Text descriptors, flags, ordinals and property groups.
+pub fn append_number(before: &[u8], name: &str) -> Vec<u8> {
+    let after = append_definition(before, name);
+    let original_body = storage::body(before);
+    let body = properties::append_number(&original_body, name);
+    storage::append(before, after, &body)
+}
+
+fn append_text_definition(before: &[u8], name: &str, units: u16, compressed: bool) -> Vec<u8> {
     assert!((1..=MAX_TEXT_UNITS).contains(&units));
     let original = &before[DEFINITION_PAGE * PAGE..(DEFINITION_PAGE + 1) * PAGE];
     let mut after = append_definition(before, name);
@@ -71,18 +88,7 @@ pub fn append_text(before: &[u8], name: &str, units: u16, compressed: bool) -> V
         VARIABLE_COUNT_OFFSET,
         (word(original, VARIABLE_COUNT_OFFSET) + 1) as u16,
     );
-    let original_body = storage::body(before);
-    let body = properties::append_text(&original_body, name);
-    storage::append(before, after, &body)
-}
-
-/// Append nullable LONG with stored Required(false) and a literal zero default,
-/// retaining all previous Text descriptors, flags, ordinals and property groups.
-pub fn append_number(before: &[u8], name: &str) -> Vec<u8> {
-    let after = append_definition(before, name);
-    let original_body = storage::body(before);
-    let body = properties::append_number(&original_body, name);
-    storage::append(before, after, &body)
+    after
 }
 
 fn append_definition(before: &[u8], name: &str) -> Vec<u8> {

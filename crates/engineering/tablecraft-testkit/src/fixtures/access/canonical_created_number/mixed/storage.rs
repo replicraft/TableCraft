@@ -70,6 +70,36 @@ fn record(before: &[u8]) -> Record<'_> {
 }
 
 pub(super) fn body(before: &[u8]) -> Vec<u8> {
+    read_body(before, |page, slot| {
+        assert_eq!(slot, word(page, ROW_COUNT_OFFSET) - 1);
+    })
+}
+
+/// Select the user body through its actual descriptor after a separate database
+/// properties ROW has appended. This deliberately does not relax body()'s
+/// latest-row-only fixture profile.
+pub(super) fn selected_body(before: &[u8]) -> Vec<u8> {
+    let record = record(before);
+    let descriptor = &record.row[record.begin..record.finish];
+    assert_eq!(descriptor.len(), DESCRIPTOR_BYTES);
+    assert_eq!(
+        u32::from_le_bytes(descriptor[..LONG_BYTES].try_into().unwrap()) & !LENGTH_MASK,
+        SINGLE_FLAG
+    );
+    assert_eq!(&descriptor[LONG_BYTES * 2..], &[0; LONG_BYTES]);
+    read_body(before, |page, slot| {
+        assert!(slot < word(page, ROW_COUNT_OFFSET));
+        assert_eq!(word(page, DIRECTORY + slot * SHORT_BYTES) & !OFFSET_MASK, 0);
+        if slot > 0 {
+            assert_eq!(
+                word(page, DIRECTORY + (slot - 1) * SHORT_BYTES) & !OFFSET_MASK,
+                0
+            );
+        }
+    })
+}
+
+fn read_body(before: &[u8], check_slot: impl FnOnce(&[u8], usize)) -> Vec<u8> {
     let record = record(before);
     if record.begin == record.finish {
         return Vec::new();
@@ -86,7 +116,7 @@ pub(super) fn body(before: &[u8]) -> Vec<u8> {
     assert_eq!(reference >> REFERENCE_SHIFT, PROPERTY_PAGE as u32);
     let page = &before[PROPERTY_PAGE * PAGE..(PROPERTY_PAGE + 1) * PAGE];
     let slot = (reference & REFERENCE_SLOT_MASK) as usize;
-    assert_eq!(slot, word(page, ROW_COUNT_OFFSET) - 1);
+    check_slot(page, slot);
     let start = word(page, DIRECTORY + slot * SHORT_BYTES);
     let end = if slot == 0 {
         PAGE
