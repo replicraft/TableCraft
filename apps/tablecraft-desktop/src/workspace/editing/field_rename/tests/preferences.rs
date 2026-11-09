@@ -2,6 +2,7 @@
 use super::accept_review;
 use crate::workspace::test_support;
 use crate::workspace::test_support::finish_reads;
+use egui_kittest::kittest::Queryable;
 use std::time::{Duration, Instant};
 use tablecraft_runtime::journal_path;
 use tablecraft_testkit::fixtures::access::{
@@ -41,10 +42,10 @@ fn renamed_field_sort_is_retained_after_explicit_fresh_schema_restoration_failur
     assert_eq!(std::fs::read(&path).unwrap(), after);
     assert!(!journal_path(&path).exists());
     assert!(!harness.state().state.field_rename_open());
-    assert!(
-        harness.state().state.error.is_some(),
-        "unknown old sort key must be reported"
-    );
+    // Fresh-catalog filter failures have their own retained report, not the
+    // global workspace error. Require its actual visible native diagnosis.
+    harness.run_steps(2);
+    harness.get_by_label("native column has no binding");
     assert_eq!(harness.state().state.table_sort(), Some(original_sort));
     assert!(
         harness.state().filter.is_none(),

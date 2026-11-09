@@ -45,6 +45,7 @@ fn dirty_close_cancel_retains_name_then_save_closes_only_after_checked_publicati
     assert!(harness.state().state.field_rename_close_open());
     assert!(harness.state().deferred_draft_action.is_some());
     harness
+        .get_by_role(Role::Dialog)
         .get_by_role_and_label(Role::Button, "Cancel")
         .click_accesskit();
     harness.run_steps(2);
@@ -61,6 +62,7 @@ fn dirty_close_cancel_retains_name_then_save_closes_only_after_checked_publicati
     harness.state_mut().close_object(table.clone());
     harness.run_steps(2);
     harness
+        .get_by_role(Role::Dialog)
         .get_by_role_and_label(Role::Button, "Save")
         .click_accesskit();
     harness.run_steps(1);

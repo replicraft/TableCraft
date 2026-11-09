@@ -39,33 +39,34 @@ fn both_declarations_on_both_off_histories_use_real_widgets_and_full_native_imag
             assert!(data.rows.is_empty());
             assert_eq!(data.source_revision, Some(fresh.target.document_revision));
 
-            // Wait for the real service response on the new revision. There is
-            // no synthetic capability, manual availability flag or second Save.
+            // Wait for the actual distinct history service on the new revision.
+            // The old settled engine language remains closed; no UI flag grants
+            // the next Save and no source fact is carried from the old revision.
             let deadline = Instant::now() + Duration::from_secs(10);
             loop {
                 if harness
                     .state()
                     .state
                     .field_addition_inspection(&fresh)
-                    .is_some_and(|inspection| inspection.1 == Some(false))
+                    .is_some_and(|inspection| !inspection.0 && inspection.1 == Some(true))
                 {
                     break;
                 }
                 assert!(
                     Instant::now() < deadline,
-                    "fresh later-event inspection did not settle"
+                    "fresh history inspection did not settle"
                 );
                 harness.run_steps(1);
                 std::thread::yield_now();
             }
             assert!(
-                !harness
+                harness
                     .state()
                     .state
                     .can_name_field_addition(&fresh, FieldAdditionKind::Number)
             );
             assert!(
-                !harness
+                harness
                     .state()
                     .state
                     .can_name_field_addition(&fresh, FieldAdditionKind::ShortText)
