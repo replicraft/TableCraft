@@ -131,6 +131,10 @@ impl Session {
         };
         let path = capability.source_path().to_path_buf();
         let witness = capability.witness();
+        let insert_retry = match &capability {
+            Reviewed::Insert(capability) => Some(capability.retry_witness()),
+            _ => None,
+        };
         let bundle = journal_path(&path);
         macro_rules! start {
             ($method:ident, $capability:expr, $variant:ident) => {
@@ -188,6 +192,11 @@ impl Session {
             acknowledged: false,
             report: None,
             restart: false,
+        });
+        self.insert_retry = insert_retry.map(|witness| super::retry::InsertRetry {
+            save_id,
+            witness,
+            evidence: tablecraft_runtime::InsertRetryEvidence::default(),
         });
         self.query = None;
         self.find_state = super::auxiliary::FindState::default();

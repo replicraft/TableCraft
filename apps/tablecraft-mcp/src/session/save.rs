@@ -210,6 +210,7 @@ impl Session {
             restart: true,
         });
         self.reviewed = None;
+        self.insert_retry = None;
         self.query = None;
         self.find_state = super::auxiliary::FindState::default();
         self.view_state.retire_native();
@@ -226,9 +227,13 @@ impl Session {
         let Some(active) = self.active_save.as_ref().filter(|active| active.id == id) else {
             return Err("Unknown or superseded save handle".into());
         };
+        let acknowledged = active.acknowledged;
         let report = active
             .report
             .or_else(|| self.saves.poll().filter(|report| report.id == id));
+        if let Some(report) = report {
+            self.observe_insert_retry(report);
+        }
         match operation {
             "save_status" => {
                 if let Some(report) = report {
@@ -243,7 +248,7 @@ impl Session {
                 Ok(json!({"save_id": id, "cancellation_requested": self.saves.cancel(id)}))
             }
             "recover_save" | "release_save" => {
-                if active.acknowledged {
+                if acknowledged {
                     return Err("This actor is already acknowledged; only its exact reopening may be retried".into());
                 }
                 let next = if operation == "recover_save" {
@@ -257,6 +262,13 @@ impl Session {
                 };
                 active.id = next;
                 active.report = None;
+                if let Some(retry) = self
+                    .insert_retry
+                    .as_mut()
+                    .filter(|retry| retry.save_id == id)
+                {
+                    retry.save_id = next;
+                }
                 Ok(json!({"save_id": next, "previous_save_id": id, "status": "pending"}))
             }
             "acknowledge_save" => {
@@ -313,7 +325,7 @@ impl Session {
         if !replacement && !active.restart {
             self.active_save = None;
             return Ok(
-                json!({"save_id": id, "acknowledged": true, "reopened": false, "replacement": false}),
+                json!({"save_id": id, "acknowledged": true, "reopened": false, "replacement": false, "insert_retry": self.retry_status()}),
             );
         }
         let command = match &active.witness {
@@ -326,6 +338,7 @@ impl Session {
         let response = self.request(command)?;
         let catalog = self.response(response)?;
         self.active_save = None;
+        self.insert_retry = None;
         Ok(
             json!({"save_id": id, "acknowledged": true, "reopened": true, "replacement": replacement, "source_verified": true, "result": catalog}),
         )

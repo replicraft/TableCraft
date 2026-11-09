@@ -27,6 +27,7 @@ impl Session {
                 .start(CreationRequest::blank(destination))
                 .map_err(|error| error.to_string())?;
             self.created = None;
+            self.insert_retry = None;
             self.creation_id = Some(id);
             self.find_state = super::auxiliary::FindState::default();
             self.view_state.retire_native();

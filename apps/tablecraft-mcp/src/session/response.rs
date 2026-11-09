@@ -57,6 +57,7 @@ impl Session {
                     self.view_state = super::filtering::ViewState::default();
                 }
                 self.reviewed = None;
+                self.insert_retry = None;
                 self.catalog = json!({
                     "document_revision": document_revision, "title": title, "format": format,
                     "table_creation_available": table_creation_available, "table_design_available": table_design_available,

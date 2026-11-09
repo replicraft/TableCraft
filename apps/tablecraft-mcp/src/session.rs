@@ -6,6 +6,7 @@ mod creation;
 mod filtering;
 mod query_design;
 mod response;
+mod retry;
 mod reviewed;
 mod save;
 
@@ -37,6 +38,7 @@ pub struct Session {
     query: Option<(u64, Arc<InspectedQuery>)>,
     reviewed: Option<(u64, Reviewed)>,
     active_save: Option<ActiveSave>,
+    insert_retry: Option<retry::InsertRetry>,
     next_handle: u64,
     created: Option<Arc<CreationReport>>,
     drop_source: Option<tablecraft_runtime::TableDropSourceInspection>,
@@ -62,6 +64,7 @@ impl Session {
             query: None,
             reviewed: None,
             active_save: None,
+            insert_retry: None,
             next_handle: 0,
             created: None,
             drop_source: None,
@@ -101,7 +104,11 @@ impl Session {
                 "active_creation_id": self.creation_id.filter(|_| self.creation.is_busy()),
                 "source_uncertain": self.uncertain,
                 "catalog": &self.catalog,
+                "insert_retry": self.retry_status(),
             })),
+            "retry_insert" | "discard_insert_retry" => {
+                self.insertion_retry_operation(operation, &args)
+            }
             "start_reserved_recovery" => self.start_reserved_recovery(&args),
             "list_tables" => Ok(json!({"catalog": &self.catalog})),
             "save_status" | "cancel_save" | "recover_save" | "release_save"

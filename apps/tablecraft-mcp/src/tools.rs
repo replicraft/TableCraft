@@ -4,6 +4,14 @@ use rmcp::model::Tool;
 // Names are protocol surface, not alternate implementations of these operations.
 const OPERATIONS: &[(&str, &str)] = &[
     (
+        "retry_insert",
+        "Verify the retained complete original image and obtain a fresh insertion draft; never replay the old review or inputs.",
+    ),
+    (
+        "discard_insert_retry",
+        "Discard only the acknowledged insertion retry context; never roll back or release an active native owner.",
+    ),
+    (
         "session_status",
         "Discover the current revision and actual save/creation owner IDs after a lost response.",
     ),
