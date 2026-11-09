@@ -248,7 +248,7 @@ impl Desktop {
         app.state.file_picker_available = true;
         app.state.creation_available = CreationWorker::is_supported();
         app.state.table_save_available = SaveWorker::supports_table_creation();
-        app.state.table_source_eligible = SaveWorker::supports_table_rename();
+        app.state.table_rename_available = SaveWorker::supports_table_rename();
         app.state.field_addition_available = SaveWorker::supports_field_addition();
         app.state.database_options_available = SaveWorker::supports_database_options();
         app.state.saved_query_sql_edit_available = SaveWorker::supports_query_sql();
