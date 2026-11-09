@@ -1,0 +1,27 @@
+[
+  {
+    "case": "number-first",
+    "source": "local-generated-inputs/number-first.accdb",
+    "source_sha256": "a6a9e18cd35dc2bf018e5cd554a68b5b60d56023fd78a4a0ecba627ab9041d72"
+  },
+  {
+    "case": "number-second",
+    "source": "local-generated-inputs/number-second.accdb",
+    "source_sha256": "8ca406b45272b6225d8f44b37ba74336250257cb5b37f0d074200d1837ef9ff9"
+  },
+  {
+    "case": "text-first",
+    "source": "local-generated-inputs/text-first.accdb",
+    "source_sha256": "5a47a64973b8847ff174cd6f94da6fc7b6fc7eb159b74e8e044a647bc02ac6fb"
+  },
+  {
+    "case": "text-inline-number",
+    "source": "local-generated-inputs/text-inline-number.accdb",
+    "source_sha256": "08b43874ba150d4d7db4cbf5af409f4ded5fde69577fa43e62d520886ca3be10"
+  },
+  {
+    "case": "text-number-text",
+    "source": "local-generated-inputs/text-number-text.accdb",
+    "source_sha256": "fb5cf8454223e2a5513d4645d28a885823df76edf9852550afd173200155d356"
+  }
+]

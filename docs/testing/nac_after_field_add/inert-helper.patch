@@ -1,0 +1,48 @@
+--- docs/testing/ace16_database_options/InsertOptions.java
++++ InsertOptions.java
+@@ -44,12 +44,14 @@
+         File file = new File(args[1]);
+         if ("read".equals(args[0])) {
+             try (Database database = new DatabaseBuilder(file).setReadOnly(true).open()) {
++                database.setEvaluateExpressions(false);
+                 observe(database);
+             }
+             return;
+         }
+         if ("missing-role-save".equals(args[0])) {
+             try (Database database = new DatabaseBuilder(file).open()) {
++                database.setEvaluateExpressions(false);
+                 PropertyMap properties = database.getDatabaseProperties();
+                 require(properties.isEmpty(), "expected absent database properties");
+                 properties.put("Track Name AutoCorrect Info", DataType.LONG, 0, true);
+@@ -60,6 +62,7 @@
+         }
+         require("insert-off".equals(args[0]) || "insert-complete-off".equals(args[0]), "unsupported mode");
+         try (Database database = new DatabaseBuilder(file).open()) {
++            database.setEvaluateExpressions(false);
+             Table catalog = database.getSystemTable("MSysObjects");
+             for (Row row : catalog) {
+                 require(!"MSysDb".equals(row.getString("Name")), "MSysDb already exists");
+@@ -83,12 +86,14 @@
+         }
+         if ("insert-complete-off".equals(args[0])) {
+             try (Database database = new DatabaseBuilder(file).setReadOnly(true).open()) {
++                database.setEvaluateExpressions(false);
+                 observe(database);
+             }
+             return;
+         }
+         // The missing-role getter caches a row-less map, so reopen the new role.
+         try (Database database = new DatabaseBuilder(file).open()) {
++            database.setEvaluateExpressions(false);
+             PropertyMap properties = database.getDatabaseProperties();
+             require(properties.isEmpty(), "expected an empty new default map");
+             properties.put("Track Name AutoCorrect Info", DataType.LONG, 0, true);
+@@ -96,6 +101,7 @@
+             properties.save();
+         }
+         try (Database database = new DatabaseBuilder(file).setReadOnly(true).open()) {
++            database.setEvaluateExpressions(false);
+             observe(database);
+         }
+     }

@@ -21,6 +21,7 @@
 - [Saved-query save lifecycle](results/query-save-lifecycle-2026-11-08.json)
 
 - [Explicit database-option insertion reference](ACE16_DATABASE_OPTIONS_SOURCES.md)
+- [Explicit OFF after Number/ShortText ADD: independent SDK images and portable recipe](nac_after_field_add/README.md)
 - [Creator external-OFF rename source evidence](ACE16_CREATOR_RENAME_SOURCES.md)
 - [Existing QueryDef fitting-expression reference](NATIVE_QUERYDEF_FITTING_SAVE.md)
 - [Multi-query expression growth/shrink reference and proposed Save V2](querydef_existing_save/README.md)

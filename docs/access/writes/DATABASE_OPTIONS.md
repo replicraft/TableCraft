@@ -39,6 +39,18 @@ raw fixtures author six empty/populated keyless/manual/generated-primary pairs
 with retained sentinels for the native candidate tests. Authored tests and SDK
 write observations remain distinct from executed native planner checks.
 
+A separate [OFF-after-ADD SDK experiment](../../testing/nac_after_field_add/README.md)
+now compares five first-party Number/ShortText ADD sources with complete raw
+images frozen before SDK mutation. All five match exactly. The explicit new
+MSysDb role appends its 152-byte body to the existing catalog-column LvProp page;
+old user descriptors, property rows and all map bytes stay unchanged. Forwarded
+user catalog sources append database physical slot 9, while the ordinary source
+uses slot 8. These observations require object/role-specific history accounting;
+the number of LVAL rows alone is not the number of user ADD events. This is SDK
+engineering evidence, not native Access UI qualification or expanded native
+option admission. In particular, frozen `TCDO0001` still rejects these 11-page
+inputs. The portable wrapper's later classpath adjustment is explicitly unrun.
+
 The focused native checks pass all three candidate tests, including six complete
 independent images with retained catalog/map/definition sentinels. Initial runs
 exposed two verification mistakes: complete Header equality included page count
