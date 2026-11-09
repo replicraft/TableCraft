@@ -1,22 +1,21 @@
-//! Separate unpublished ADD over one completely owned settled explicit-OFF source.
+//! Fitted ADD and chronological source replay after explicit Name AutoCorrect OFF.
+pub(super) mod availability;
+mod history;
+mod kernel;
 mod source;
 #[cfg(test)]
 mod tests;
 mod verify;
 
-use super::{FieldAdditionError, FieldAdditionTarget, build};
+use super::{FieldAdditionError, FieldAdditionTarget};
 use crate::{
-    CreateColumn, EditError, FieldHistoryDatabaseOptionsError, InspectError, NativeImage,
-    creation::{
-        FieldHistoryOffSource,
-        add_column::{common, property_preservation},
-    },
-    format::page::PAGE_BYTES,
-    header::check,
-    table::mutation::catalog_property,
+    EditError, FieldHistoryDatabaseOptionsError, InspectError, NativeImage,
+    creation::FieldHistoryOffSource, header::check,
 };
 use tablecraft_core::limits::ResourceBudget;
 use thiserror::Error;
+
+pub use history::FieldAdditionAfterOffHistoryError;
 
 const TEXT_UNITS: usize = 255;
 pub(super) const MAX_ASCII_NAME_BYTES: usize = 64;
@@ -115,98 +114,48 @@ impl NativeImage {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<FieldAdditionAfterOffCandidate, FieldAdditionAfterOffError> {
         let _span = tracing::debug_span!("native.field_addition.after_explicit_off").entered();
-        check(budget, cancelled)?;
-        if table.len() > MAX_ASCII_NAME_BYTES || column.len() > MAX_ASCII_NAME_BYTES {
-            return Err(FieldAdditionAfterOffError::Namespace);
-        }
-        budget.charge(
-            tablecraft_core::limits::Resource::Steps,
-            (table.len() + column.len()) as u64,
-        )?;
-        if !table.is_ascii() || !column.is_ascii() {
-            return Err(FieldAdditionAfterOffError::Namespace);
-        }
-        if !matches!(
-            target,
-            FieldAdditionTarget::NumberLongZero
-                | FieldAdditionTarget::ShortText {
-                    max_utf16_units: TEXT_UNITS,
-                    unicode_compression: true
-                }
-        ) {
-            return Err(FieldAdditionAfterOffError::Target);
-        }
-        crate::creation::request::name(column, budget, cancelled)
-            .map_err(FieldAdditionError::from)?;
+        check_request(table, column, target, budget, cancelled)?;
         let source = source::Source::capture(self, table, budget, cancelled)?;
-        let mut columns = source
-            .definition
-            .borrowed_columns(budget, cancelled)
-            .map_err(FieldAdditionError::from)?;
-        budget.charge_allocation(1, size_of::<CreateColumn<'_>>() as u64)?;
-        columns
-            .try_reserve_exact(1)
-            .map_err(|_| InspectError::Allocation)?;
-        columns.push(target.declaration(column)?);
-        let order = build::extend_order(source.order, &columns, target, budget, cancelled)?;
-        let image = source.proof.image();
-        let rebuilt = build::canonical(
-            source.checked.schema().name(),
-            &columns,
-            order,
-            budget,
-            cancelled,
-        )?;
-        let mut after = common::copy_definition(
-            image,
-            &rebuilt,
-            source.checked.schema().definition_page() as usize * PAGE_BYTES,
-            budget,
-            cancelled,
-        )?;
-        super::verify::definition(
-            image,
-            &after,
-            &source.checked,
-            column,
-            target,
-            budget,
-            cancelled,
-        )?;
-        let body = build::property_body(&columns, order, budget, cancelled)?;
-        let change = catalog_property::compose_fitted_at_origin(
-            image,
-            source.checked.schema(),
-            body,
-            budget,
-            cancelled,
-        )?;
-        change.apply(&mut after, budget, cancelled)?;
-        property_preservation::repeated(
-            image,
-            &after,
-            &source.checked,
-            column,
-            &change,
-            budget,
-            cancelled,
-        )
-        .map_err(FieldAdditionError::from)?;
-        verify::candidate(&source, &after, &change, budget, cancelled)?;
-        let table = super::super::super::owned(source.checked.schema().name(), budget)?;
-        let column = super::super::super::owned(column, budget)?;
-        let count = columns.len();
-        drop(columns);
-        check(budget, cancelled)?;
+        let built = kernel::append(source, column, target, budget, cancelled)?;
         Ok(FieldAdditionAfterOffCandidate {
-            proof: source.proof,
-            after,
-            table,
-            column,
+            proof: built.proof,
+            after: built.after,
+            table: built.table,
+            column: built.column,
             target,
-            columns: count,
+            columns: built.columns,
         })
     }
 }
 
-pub(super) mod availability;
+fn check_request(
+    table: &str,
+    column: &str,
+    target: FieldAdditionTarget,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), FieldAdditionAfterOffError> {
+    check(budget, cancelled)?;
+    if table.len() > MAX_ASCII_NAME_BYTES || column.len() > MAX_ASCII_NAME_BYTES {
+        return Err(FieldAdditionAfterOffError::Namespace);
+    }
+    budget.charge(
+        tablecraft_core::limits::Resource::Steps,
+        (table.len() + column.len()) as u64,
+    )?;
+    if !table.is_ascii() || !column.is_ascii() {
+        return Err(FieldAdditionAfterOffError::Namespace);
+    }
+    if !matches!(
+        target,
+        FieldAdditionTarget::NumberLongZero
+            | FieldAdditionTarget::ShortText {
+                max_utf16_units: TEXT_UNITS,
+                unicode_compression: true
+            }
+    ) {
+        return Err(FieldAdditionAfterOffError::Target);
+    }
+    crate::creation::request::name(column, budget, cancelled).map_err(FieldAdditionError::from)?;
+    Ok(())
+}

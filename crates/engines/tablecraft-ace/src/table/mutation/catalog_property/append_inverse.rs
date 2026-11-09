@@ -1,4 +1,5 @@
 //! Recover a bounded fitted-append hypothesis, never source or write authority.
+use super::super::record_serialization::long_value::{Encoded, StorageChoice};
 use crate::{
     EditError, InspectError, NativeImage,
     format::{
@@ -20,6 +21,7 @@ const CATALOG_PAGE: u32 = 4;
 const PROPERTY_PAGE: u32 = 10;
 const FREE_OFFSET: usize = 2;
 const COPY_BYTES: usize = 16 * 1024;
+const SINGLE_DESCRIPTOR_BYTES: usize = 3 * size_of::<u32>();
 
 /// Actual append locations and framed widths supplied by the operation owner.
 /// These observations grant no permission to drop a catalog role or body.
@@ -115,5 +117,84 @@ fn undo(
     page[ROW_COUNT_OFFSET..ROW_COUNT_OFFSET + size_of::<u16>()]
         .copy_from_slice(&previous_count.to_le_bytes());
     page[FREE_OFFSET..FREE_OFFSET + size_of::<u16>()].copy_from_slice(&previous_free.to_le_bytes());
+    Ok(())
+}
+
+/// Remove only the observed post-DB snapshot suffix in a hypothetical image.
+/// Real source qualification and full chronological replay MUST follow.
+pub(crate) fn user_snapshots(
+    bytes: &mut [u8],
+    descriptor: std::ops::Range<usize>,
+    database: u32,
+    user: u32,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), EditError> {
+    check(budget, cancelled)?;
+    if reference_page(database) != PROPERTY_PAGE
+        || reference_page(user) != PROPERTY_PAGE
+        || reference_slot(database) == 0
+        || reference_slot(user) <= reference_slot(database)
+        || descriptor.start.checked_add(SINGLE_DESCRIPTOR_BYTES) != Some(descriptor.end)
+        || descriptor.start / PAGE_BYTES != CATALOG_PAGE as usize
+        || descriptor.end > (CATALOG_PAGE as usize + 1) * PAGE_BYTES
+    {
+        return Err(EditError::Preservation);
+    }
+
+    let page_start = PROPERTY_PAGE as usize * PAGE_BYTES;
+    let page = bytes
+        .get_mut(page_start..page_start + PAGE_BYTES)
+        .ok_or(InspectError::Malformed)?;
+    let (count, _) = geometry(page)?;
+    if count.checked_sub(1) != Some(usize::from(reference_slot(user))) {
+        return Err(EditError::Preservation);
+    }
+
+    let previous_slot = usize::from(reference_slot(database)) - 1;
+    let (flags, previous_start, previous_end) = row_range(page, previous_slot)?;
+    if flags & !OFFSET_MASK != 0 || previous_start == previous_end {
+        return Err(EditError::Preservation);
+    }
+
+    budget
+        .charge_allocation((previous_end - previous_start) as u64, 1)
+        .map_err(InspectError::from)?;
+    let mut previous_body = Vec::new();
+    previous_body
+        .try_reserve_exact(previous_end - previous_start)
+        .map_err(|_| InspectError::Allocation)?;
+    budget
+        .charge(Resource::Steps, (previous_end - previous_start) as u64)
+        .map_err(InspectError::from)?;
+    previous_body.extend_from_slice(&page[previous_start..previous_end]);
+
+    for slot in (usize::from(reference_slot(database)) + 1..count).rev() {
+        check(budget, cancelled)?;
+        let (flags, start, end) = row_range(page, slot)?;
+        if flags & !OFFSET_MASK != 0 || start == end {
+            return Err(EditError::Preservation);
+        }
+        undo(page, slot, end - start, budget)?;
+    }
+
+    let previous = crate::format::row::reference(
+        PROPERTY_PAGE,
+        u8::try_from(previous_slot).map_err(|_| InspectError::Malformed)?,
+    );
+    let encoded = Encoded::Present(previous_body);
+    let replacement =
+        encoded.descriptor(StorageChoice::Single, Some(previous), budget, cancelled)?;
+
+    let target = bytes.get_mut(descriptor).ok_or(InspectError::Malformed)?;
+    if replacement.len() != target.len() {
+        return Err(EditError::Preservation);
+    }
+
+    budget
+        .charge(Resource::Steps, replacement.len() as u64)
+        .map_err(InspectError::from)?;
+    target.copy_from_slice(&replacement);
+    check(budget, cancelled)?;
     Ok(())
 }

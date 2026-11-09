@@ -48,9 +48,10 @@ pub use creation::{
 pub use creation::{
     CreatedDefaultZeroAddColumnCandidate, CreatedDefaultZeroAddColumnError,
     CreatedDefaultZeroColumnRequired, CreatedFieldAdditionSourcePurpose,
-    FieldAdditionAfterOffCandidate, FieldAdditionAfterOffError, FieldAdditionCandidate,
-    FieldAdditionError, FieldAdditionSourceAvailability, FieldAdditionSourceError,
-    FieldAdditionSourcePurpose, FieldAdditionTarget, RepeatedDefaultZeroAddColumnCandidate,
+    FieldAdditionAfterOffCandidate, FieldAdditionAfterOffError, FieldAdditionAfterOffHistoryError,
+    FieldAdditionCandidate, FieldAdditionError, FieldAdditionSourceAvailability,
+    FieldAdditionSourceError, FieldAdditionSourcePurpose, FieldAdditionTarget,
+    RepeatedDefaultZeroAddColumnCandidate,
 };
 mod encryption;
 mod error;

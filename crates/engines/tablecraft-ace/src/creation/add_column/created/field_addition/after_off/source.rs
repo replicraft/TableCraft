@@ -11,8 +11,18 @@ use crate::{
 use std::ops::Range;
 use tablecraft_core::limits::ResourceBudget;
 
-pub(super) struct Source {
-    pub proof: FieldHistoryOffSource,
+pub(super) trait ProvedImage {
+    fn image(&self) -> &NativeImage;
+}
+
+impl ProvedImage for FieldHistoryOffSource {
+    fn image(&self) -> &NativeImage {
+        FieldHistoryOffSource::image(self)
+    }
+}
+
+pub(super) struct Source<P: ProvedImage = FieldHistoryOffSource> {
+    pub proof: P,
     pub checked: TableCheck,
     pub definition: FirstTableDefinition,
     pub order: Order,
@@ -22,7 +32,7 @@ pub(super) struct Source {
     pub database_reference: u32,
 }
 
-impl Source {
+impl Source<FieldHistoryOffSource> {
     pub(super) fn capture(
         image: NativeImage,
         table: &str,
@@ -30,6 +40,17 @@ impl Source {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, Error> {
         let proof = FieldHistoryOffSource::capture(image, budget, cancelled)?;
+        Self::from_proof(proof, table, budget, cancelled)
+    }
+}
+
+impl<P: ProvedImage> Source<P> {
+    pub(super) fn from_proof(
+        proof: P,
+        table: &str,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, Error> {
         let image = proof.image();
         let (checked, definition) =
             super::super::super::source::inspect_field_addition(image, table, budget, cancelled)

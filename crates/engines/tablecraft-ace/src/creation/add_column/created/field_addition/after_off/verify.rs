@@ -13,8 +13,8 @@ const CATALOG_PAGE: usize = 4;
 const PROPERTY_PAGE: usize = 10;
 const MAP_PAGE: usize = 3;
 
-pub(super) fn candidate(
-    source: &Source,
+pub(super) fn candidate<P: super::source::ProvedImage>(
+    source: &Source<P>,
     after: &[u8],
     change: &RepeatedChange,
     budget: &mut ResourceBudget,

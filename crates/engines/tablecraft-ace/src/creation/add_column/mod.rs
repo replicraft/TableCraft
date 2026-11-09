@@ -24,8 +24,9 @@ pub use created::{CreatedAddColumnCandidate, CreatedAddColumnError};
 #[cfg(feature = "journal")]
 pub use created::{
     CreatedFieldAdditionSourcePurpose, FieldAdditionAfterOffCandidate, FieldAdditionAfterOffError,
-    FieldAdditionCandidate, FieldAdditionError, FieldAdditionSourceAvailability,
-    FieldAdditionSourceError, FieldAdditionSourcePurpose, FieldAdditionTarget,
+    FieldAdditionAfterOffHistoryError, FieldAdditionCandidate, FieldAdditionError,
+    FieldAdditionSourceAvailability, FieldAdditionSourceError, FieldAdditionSourcePurpose,
+    FieldAdditionTarget,
 };
 
 use super::{CreateDatabaseError, request};

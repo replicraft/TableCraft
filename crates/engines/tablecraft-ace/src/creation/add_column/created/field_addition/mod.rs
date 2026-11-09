@@ -1,7 +1,9 @@
 //! Typed Number/Short Text addition with its own positive whole-source proof.
 mod after_off;
 mod build;
-pub use after_off::{FieldAdditionAfterOffCandidate, FieldAdditionAfterOffError};
+pub use after_off::{
+    FieldAdditionAfterOffCandidate, FieldAdditionAfterOffError, FieldAdditionAfterOffHistoryError,
+};
 mod purpose;
 pub use purpose::CreatedFieldAdditionSourcePurpose;
 mod source;
