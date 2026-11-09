@@ -16,6 +16,13 @@ const BITMAP: usize = 27;
 const ENTRIES: usize = 480;
 const DELETED: u16 = 0xc000;
 const RECORD_BYTES: usize = 11;
+const COLUMN_BLOCK: usize = 75;
+const COLUMN_BYTES: usize = 25;
+const NATIVE_NUMBER: usize = 5;
+const STORED_ID: usize = 9;
+const FLAGS: usize = 15;
+const FIXED_OFFSET: usize = 21;
+const WIDTH: usize = 23;
 const ID_ONE_KEY: [u8; 9] = [127, 128, 0, 0, 1, 0, 0, 8, 0];
 
 fn word(bytes: &[u8], at: usize) -> u16 {
@@ -40,6 +47,16 @@ pub fn only_long_row(before: &[u8]) -> Vec<u8> {
     assert_eq!(long(before, definition + LIVE_ROWS), 1);
     assert_eq!(long(before, definition + LAST_ISSUED), 1);
     assert_eq!(long(before, definition + UNIQUE_HISTORY), 1);
+
+    for (number, flags) in [(0, 7), (1, 3)] {
+        let column = definition + COLUMN_BLOCK + number * COLUMN_BYTES;
+        assert_eq!(before[column], 4);
+        assert_eq!(word(before, column + NATIVE_NUMBER) as usize, number);
+        assert_eq!(word(before, column + STORED_ID) as usize, number);
+        assert_eq!(before[column + FLAGS], flags);
+        assert_eq!(word(before, column + FIXED_OFFSET) as usize, number * 4);
+        assert_eq!(word(before, column + WIDTH), 4);
+    }
 
     let data = DATA * PAGE;
     assert_eq!(&before[data..data + 2], &[1, 1]);
