@@ -28,7 +28,7 @@ pub struct NativeColumn {
 }
 impl NativeColumn {
     /// Borrow this column's owned decoded physical declaration for native proofs.
-    #[cfg(all(feature = "ace16-create", feature = "journal"))]
+    #[cfg(feature = "ace16-create")]
     pub(crate) fn physical_field(&self) -> &Field {
         &self.field
     }

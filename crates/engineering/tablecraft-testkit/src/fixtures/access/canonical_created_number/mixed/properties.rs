@@ -32,8 +32,10 @@ fn dictionary(body: &[u8]) -> (Vec<String>, &[u8]) {
         let length = word(body, position);
         position += SHORT_BYTES;
         let units = body[position..position + length]
-            .chunks_exact(SHORT_BYTES)
-            .map(|pair| u16::from_le_bytes(pair.try_into().unwrap()))
+            .as_chunks::<SHORT_BYTES>()
+            .0
+            .iter()
+            .map(|pair| u16::from_le_bytes(*pair))
             .collect::<Vec<_>>();
         names.push(String::from_utf16(&units).unwrap());
         position += length;

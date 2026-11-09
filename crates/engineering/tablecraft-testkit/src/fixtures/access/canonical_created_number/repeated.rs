@@ -56,8 +56,10 @@ pub fn append(before: &[u8], name: &str) -> Vec<u8> {
     let first_length = word(&body, FIRST_DICTIONARY_NAME_LENGTH);
     let first_name = String::from_utf16(
         &body[FIRST_DICTIONARY_NAME..FIRST_DICTIONARY_NAME + first_length]
-            .chunks_exact(SHORT_BYTES)
-            .map(|pair| u16::from_le_bytes(pair.try_into().unwrap()))
+            .as_chunks::<SHORT_BYTES>()
+            .0
+            .iter()
+            .map(|pair| u16::from_le_bytes(*pair))
             .collect::<Vec<_>>(),
     )
     .unwrap();
