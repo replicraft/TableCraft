@@ -1,4 +1,5 @@
 //! Explicit OFF after complete canonical ADD history, without old-intent admission.
+mod settled_source;
 mod source;
 #[cfg(test)]
 mod tests;

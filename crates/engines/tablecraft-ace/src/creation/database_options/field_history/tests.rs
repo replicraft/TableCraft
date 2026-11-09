@@ -19,15 +19,15 @@ use tablecraft_testkit::support::bytes::hex;
 const SCOPE: CatalogScope = CatalogScope::new(970);
 const PAGE: usize = 4096;
 
-fn budget() -> ResourceBudget {
+pub(super) fn budget() -> ResourceBudget {
     ResourceBudget::new(512 * 1024 * 1024, 100_000, 5_000_000)
 }
 
-fn image(bytes: &[u8]) -> NativeImage {
+pub(super) fn image(bytes: &[u8]) -> NativeImage {
     NativeImage::capture(&mut Cursor::new(bytes), SCOPE, &mut budget(), &|| false).unwrap()
 }
 
-fn sources() -> Vec<Vec<u8>> {
+pub(super) fn sources() -> Vec<Vec<u8>> {
     let number = repeated::source(NumberSource::IdOnly);
     let text = mixed::append_text(
         &mixed::source(mixed::SourceCase::IdOnly),

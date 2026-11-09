@@ -2,6 +2,7 @@
 //! This module grants no catalog UPDATE admission. Each caller must first prove
 //! its complete canonical source/history, including exact LVAL/map ownership and
 //! the last logical catalog root belonging to its selected single user table.
+pub(crate) mod append_inverse;
 mod carrier;
 pub(crate) mod database_role;
 pub(crate) mod descriptor;
