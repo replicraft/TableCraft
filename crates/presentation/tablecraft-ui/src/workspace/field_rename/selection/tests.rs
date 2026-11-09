@@ -1,6 +1,7 @@
 //! Selection is inert UI preference; these cases do not supply native save evidence.
+use crate::workspace::DocumentView;
 use crate::workspace::field_rename::test_support::accepted;
-use crate::{DocumentView, Field, Schema, State};
+use crate::{Field, Schema, State};
 
 fn schema(number: usize, name: &str) -> Schema {
     let field = |number, name: &str| Field {
@@ -52,7 +53,7 @@ fn published() -> State {
 fn fresh_schema_resolves_native_number_seventeen_to_position_one_once() {
     let mut state = published();
     state.set_schema(schema(17, "Total"));
-    assert_eq!(state.view, DocumentView::Design);
+    assert!(state.view == DocumentView::Design);
     assert_eq!(state.selected_field, 1);
     assert!(state.field_rename.selection.is_none());
     assert!(state.error.is_none());

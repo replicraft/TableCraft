@@ -2,7 +2,10 @@
 use super::test_support::{harness, naming};
 use crate::{Action, Field, FieldProperty, FieldPropertyValue, Schema, State};
 use egui::{Key, Modifiers, accesskit::Role};
-use egui_kittest::{Harness, kittest::Queryable};
+use egui_kittest::{
+    Harness,
+    kittest::{NodeT, Queryable},
+};
 
 fn unopened_editor() -> State {
     let (mut state, _) = naming();
