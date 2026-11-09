@@ -298,5 +298,8 @@ fn accepted_save_cancellation_never_discards_the_terminal_outcome() {
             }
         }
         SaveOutcome::Released { .. } => panic!("apply cannot manufacture a release-only result"),
+        SaveOutcome::Uncertain { .. } => {
+            panic!("ordinary cancellation must retain a known native outcome, not actor death")
+        }
     }
 }

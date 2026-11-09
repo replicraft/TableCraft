@@ -84,7 +84,8 @@ impl Evidence {
             .position(|column| column.number() == observed.identity.column_number())
             .ok_or(Error::Source)?;
         budget.charge(Resource::Steps, columns.len() as u64)?;
-        columns.remove(position);
+        // Discard the removed declaration; encode only surviving field policies.
+        let _ = columns.remove(position);
         let order = properties::Order::capture(&observed.properties, budget, cancelled)?;
         // The genuine encoder's exact-order check refuses orphan dictionary keys
         // and a missing remaining group; neither case is in the executed evidence.

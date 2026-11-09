@@ -1,6 +1,7 @@
 //! Actual actor teardown, distinct from native publication and rollback evidence.
 use super::*;
 use crate::{
+    SaveFailure,
     controls::{SCOPE, budget},
     thread_start::PausedSpawner,
 };
