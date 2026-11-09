@@ -38,6 +38,9 @@ pub enum FieldAdditionAfterOffError {
     /// The requested declaration is outside the independently observed target tuples.
     #[error("field declaration is outside ADD-after-OFF candidate scope")]
     Target,
+    /// Requested or compared native names are outside the qualified ASCII namespace.
+    #[error("ADD-after-OFF requires an ASCII comparison namespace")]
+    Namespace,
     /// Complete original identity, properties or byte complement changed unexpectedly.
     #[error("ADD-after-OFF preservation check failed")]
     Preservation,
@@ -98,7 +101,9 @@ impl NativeImage {
     /// The input retains the settled checker's original nine-role, eleven-page,
     /// empty generated-primary source language. The database body/ROW and every
     /// old property body remain exact. The new user body fits after the database
-    /// row; allocation, rollover, later-event source admission and normal saves
+    /// row. Requested and compared table/field names must be ASCII; Unicode
+    /// collision semantics are not qualified by this profile. Allocation, rollover,
+    /// later-event source admission and normal saves
     /// remain outside this separate unpublished candidate.
     pub fn prepare_created_add_field_after_off_candidate(
         self,
@@ -110,6 +115,9 @@ impl NativeImage {
     ) -> Result<FieldAdditionAfterOffCandidate, FieldAdditionAfterOffError> {
         let _span = tracing::debug_span!("native.field_addition.after_explicit_off").entered();
         check(budget, cancelled)?;
+        if !table.is_ascii() || !column.is_ascii() {
+            return Err(FieldAdditionAfterOffError::Namespace);
+        }
         if !matches!(
             target,
             FieldAdditionTarget::NumberLongZero

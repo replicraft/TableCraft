@@ -314,3 +314,5 @@ fn exact_after_guards_reject_database_catalog_and_retired_row_tampering() {
         assert!(check_after(&changed).is_err());
     }
 }
+
+mod namespace;

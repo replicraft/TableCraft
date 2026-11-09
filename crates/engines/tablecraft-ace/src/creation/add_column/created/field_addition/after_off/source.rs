@@ -34,6 +34,20 @@ impl Source {
         let (checked, definition) =
             super::super::super::source::inspect_field_addition(image, table, budget, cancelled)
                 .map_err(FieldAdditionError::from)?;
+        // Duplicate checks below use the existing ASCII-fold comparison owner.
+        // Qualify every name in that comparison namespace before deriving a target.
+        check(budget, cancelled)?;
+        if !checked.schema().name().is_ascii() {
+            return Err(Error::Namespace);
+        }
+        for column in checked.schema().columns() {
+            check(budget, cancelled)?;
+            budget.charge(tablecraft_core::limits::Resource::Steps, 1)?;
+            if !column.name().is_ascii() {
+                return Err(Error::Namespace);
+            }
+        }
+
         let scope = image.catalog().catalog().scope();
         let properties =
             inspect_table_properties(&mut image.reader(), scope, table, budget, cancelled)?;
