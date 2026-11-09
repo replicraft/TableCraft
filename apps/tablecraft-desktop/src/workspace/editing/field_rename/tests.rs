@@ -1,20 +1,25 @@
 //! Real read/save actors at the rename-specific publication boundaries.
 mod close;
+mod design;
 mod preferences;
 use super::*;
 use crate::workspace::test_support::{self, finish_reads};
 use egui_kittest::Harness;
 use std::time::{Duration, Instant};
-use tablecraft_runtime::{Response, SaveOutcome};
+use tablecraft_runtime::{Response, SaveOutcome, SaveWorker};
 use tablecraft_testkit::fixtures::access::{
     canonical_created_number::mixed::after_off::SourceCase, saved_field_rename,
 };
 use tablecraft_ui::{EditSaveOutcome, FieldRenameTarget};
 
 fn inspected(harness: &mut Harness<'_, Desktop>, column: &str) -> FieldRenameTarget {
-    // Activation remains separate from these real native-boundary tests. The
-    // explicit host fact does not substitute for the subsequent source proof.
-    harness.state_mut().state.field_rename_available = true;
+    // The ordinary host supplies only platform support; the following real
+    // source inspection and named review still qualify every native request.
+    assert_eq!(
+        harness.state().state.field_rename_available,
+        SaveWorker::supports_field_rename()
+    );
+    assert!(harness.state().state.field_rename_available);
     let tab = harness.state().state.active_object().unwrap();
     let native_number = harness
         .state()

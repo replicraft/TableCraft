@@ -1,8 +1,10 @@
 //! Deferred close composes actual local choices, native ACK and full witness read.
 use super::{finish_schema, inspected};
+use crate::workspace::Desktop;
 use crate::workspace::test_support::{self, finish_reads};
-use egui::accesskit::Role;
-use egui_kittest::kittest::Queryable;
+use egui::{Id, accesskit::Role};
+use egui_kittest::Harness;
+use egui_kittest::kittest::{NodeT, Queryable};
 use tablecraft_runtime::journal_path;
 use tablecraft_testkit::fixtures::access::{
     canonical_created_number::mixed::after_off::SourceCase, saved_field_rename,
@@ -44,10 +46,7 @@ fn dirty_close_cancel_retains_name_then_save_closes_only_after_checked_publicati
     harness.run_steps(2);
     assert!(harness.state().state.field_rename_close_open());
     assert!(harness.state().deferred_draft_action.is_some());
-    harness
-        .get_by_role(Role::Dialog)
-        .get_by_role_and_label(Role::Button, "Cancel")
-        .click_accesskit();
+    click_close_choice(&mut harness, "Cancel");
     harness.run_steps(2);
     assert!(!harness.state().state.field_rename_close_open());
     assert!(harness.state().deferred_draft_action.is_none());
@@ -61,10 +60,7 @@ fn dirty_close_cancel_retains_name_then_save_closes_only_after_checked_publicati
 
     harness.state_mut().close_object(table.clone());
     harness.run_steps(2);
-    harness
-        .get_by_role(Role::Dialog)
-        .get_by_role_and_label(Role::Button, "Save")
-        .click_accesskit();
+    click_close_choice(&mut harness, "Save");
     harness.run_steps(1);
     assert!(harness.state().deferred_draft_action.is_some());
     assert!(harness.state().editing.field_rename.is_some());
@@ -96,4 +92,22 @@ fn dirty_close_cancel_retains_name_then_save_closes_only_after_checked_publicati
         scratch.target.document_revision
     );
     assert_eq!(harness.state().state.sql, exact_scratch);
+}
+
+fn click_close_choice(harness: &mut Harness<'_, Desktop>, label: &str) {
+    let modal = harness
+        .ctx
+        .memory(|memory| memory.area_rect(Id::new("field_rename_close")))
+        .expect("actual rename close modal");
+    let choices = harness
+        .get_all_by_role_and_label(Role::Button, label)
+        .filter(|button| modal.contains_rect(button.rect()))
+        .collect::<Vec<_>>();
+    assert_eq!(
+        choices.len(),
+        1,
+        "exact choice in actual rename close modal"
+    );
+    assert!(!choices[0].accesskit_node().is_disabled());
+    choices[0].click_accesskit();
 }

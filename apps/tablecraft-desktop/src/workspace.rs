@@ -259,6 +259,7 @@ impl Desktop {
         app.state.table_save_available = SaveWorker::supports_table_creation();
         app.state.table_rename_available = SaveWorker::supports_table_rename();
         app.state.field_addition_available = SaveWorker::supports_field_addition();
+        app.state.field_rename_available = SaveWorker::supports_field_rename();
         app.state.database_options_available = SaveWorker::supports_database_options();
         app.state.saved_query_sql_edit_available = SaveWorker::supports_query_sql();
         app.state.font_families = crate::font_inventory::families();

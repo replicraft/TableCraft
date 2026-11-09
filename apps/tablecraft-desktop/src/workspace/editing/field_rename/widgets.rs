@@ -8,7 +8,7 @@ use egui_kittest::{
     kittest::{NodeT, Queryable},
 };
 use std::time::{Duration, Instant};
-use tablecraft_runtime::{Error, journal_path};
+use tablecraft_runtime::{SaveWorker, journal_path};
 use tablecraft_testkit::fixtures::access::{
     canonical_created_number::mixed::{self, after_off::SourceCase},
     canonical_database_options, saved_field_rename,
@@ -42,9 +42,13 @@ fn actual_header_rename_and_save_preserve_tabs_and_scratch_then_omitted_default_
         harness.state_mut().activate_object(table.clone());
         finish_reads(&mut harness);
         let old_tabs = harness.state().state.object_tabs();
-        // Initial staging explicitly supplies only the host support fact. The
-        // actual header action must still inspect and review real native bytes.
-        harness.state_mut().state.field_rename_available = true;
+        // Ordinary Desktop::new supplies platform support. The actual header
+        // must still inspect and review real native bytes for this exact field.
+        assert_eq!(
+            harness.state().state.field_rename_available,
+            SaveWorker::supports_field_rename()
+        );
+        assert!(harness.state().state.field_rename_available);
         harness.run_steps(2);
         propose_name(&mut harness, original_name, replacement);
         assert_eq!(
@@ -93,7 +97,11 @@ fn actual_header_rename_and_save_preserve_tabs_and_scratch_then_omitted_default_
     }
 }
 
-fn propose_name(harness: &mut Harness<'_, Desktop>, original_name: &str, replacement: &str) {
+pub(super) fn propose_name(
+    harness: &mut Harness<'_, Desktop>,
+    original_name: &str,
+    replacement: &str,
+) {
     harness.get_by_label(original_name).click();
     harness.run_steps(1);
     harness.key_press_modifiers(Modifiers::SHIFT, Key::F10);
@@ -126,7 +134,11 @@ fn actual_duplicate_proposal_reaches_native_review_and_retains_exact_name_withou
     );
     let before = canonical_database_options::append_explicit_off_to_owned_page(&fields);
     let (_directory, path, _, mut harness) = test_support::opened(before.clone());
-    harness.state_mut().state.field_rename_available = true;
+    assert_eq!(
+        harness.state().state.field_rename_available,
+        SaveWorker::supports_field_rename()
+    );
+    assert!(harness.state().state.field_rename_available);
     harness.run_steps(2);
     propose_name(&mut harness, "Label", "Score");
     assert!(
@@ -135,29 +147,19 @@ fn actual_duplicate_proposal_reaches_native_review_and_retains_exact_name_withou
     );
     harness.key_press_modifiers(Modifiers::COMMAND, Key::S);
     harness.run_steps(1);
-    assert!(
-        harness.state().editing.field_rename.is_some(),
-        "actual Review action must start the real native service"
-    );
+    // A genuine native refusal can finish during the first paint. Observe the
+    // terminal public result rather than requiring a transient pending actor.
     let deadline = Instant::now() + Duration::from_secs(10);
-    let (generation, result) = loop {
-        if let Some(reply) = harness.state().worker.poll() {
-            break reply;
-        }
+    while harness.state().state.busy || harness.state().editing.field_rename.is_some() {
         assert!(Instant::now() < deadline, "duplicate review did not finish");
+        harness.run_steps(1);
         std::thread::yield_now();
-    };
-    let Err(error) = result else {
-        panic!("duplicate review must issue no consuming capability");
-    };
-    assert!(matches!(error, Error::FieldRenameIntent(_)), "{error}");
+    }
     assert_eq!(
-        error.to_string(),
-        "field rename conflicts with an existing field"
+        harness.state().state.error.as_deref(),
+        Some("field rename conflicts with an existing field"),
+        "real native duplicate refusal must survive the host presentation boundary"
     );
-    harness
-        .state_mut()
-        .field_rename_review_failed(generation, error.to_string());
     assert_eq!(
         harness.state().state.field_rename_proposal().unwrap().1,
         "Score"

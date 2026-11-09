@@ -165,7 +165,6 @@ impl Desktop {
                         save.report = None;
                     }
                     Err(error) => {
-                        drop(prepared);
                         self.state.error = Some(error.to_string());
                     }
                 }
