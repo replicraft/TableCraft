@@ -11,6 +11,7 @@ use tablecraft_ace::{
     CollectionPageRequest, InspectError, TablePageRequest, TableSnapshotLimits,
     inspect_table_schema,
 };
+
 const VISIBLE_PAGE_ROWS: u32 = 100;
 
 impl Document {

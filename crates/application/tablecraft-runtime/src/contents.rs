@@ -12,6 +12,7 @@ use tablecraft_ace::{
     CollectionPageRequest, InspectError, StoredCollectionColumn, StoredCollectionPageValue,
     TablePageRequest, TableSchema, TableSnapshotLimits,
 };
+
 /// A staleness precondition scoped to one runtime worker's immutable document.
 /// This is not a physical ROW, durable bookmark, or authorization token.
 #[derive(Clone, PartialEq, Eq)]
