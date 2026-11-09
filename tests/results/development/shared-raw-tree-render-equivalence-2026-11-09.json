@@ -1,0 +1,202 @@
+{
+  "scope": "Fresh raw tree/renderer extraction equivalence over pinned retained source/request/image/action cases, not new native execution",
+  "groups": [
+    6,
+    7,
+    8,
+    12,
+    13
+  ],
+  "extractions": [
+    {
+      "group": 6,
+      "function": "tree",
+      "paths": [
+        "tests/access/indexes/ace16_insert_guid_tuple_indexes/model.py",
+        "tests/access/indexes/ace16_insert_scalar_indexes/model.py",
+        "tests/access/indexes/ace16_insert_decimal_indexes/model.py"
+      ],
+      "helper": "tests/access/indexes/shared_trees/model.py",
+      "body_ast_sha256": "f87757f2bbce37acd19bf8a975b3acdf59b0d11b5e559da2549ab64a9296956b",
+      "bindings": [
+        "CAPACITY",
+        "ENTRY_START",
+        "PAGE",
+        "n"
+      ]
+    },
+    {
+      "group": 7,
+      "function": "tree",
+      "paths": [
+        "tests/access/indexes/ace16_insert_guid_tuple_indexes/reference.py",
+        "tests/access/indexes/ace16_insert_decimal_indexes/reference.py"
+      ],
+      "helper": "tests/access/indexes/shared_trees/reference.py",
+      "body_ast_sha256": "c470795f785d73576ea922a8f12da2fcc110d570181c61915f370db4925d85b6",
+      "bindings": [
+        "CAPACITY",
+        "PAGE",
+        "decode_entry",
+        "n"
+      ]
+    },
+    {
+      "group": 8,
+      "function": "tree",
+      "paths": [
+        "tests/access/indexes/repeated_split_originals/model.py",
+        "tests/access/indexes/integral_split_originals/model.py"
+      ],
+      "helper": "tests/access/indexes/shared_trees/integral.py",
+      "body_ast_sha256": "8b605cd08b658bc97ae2895cfe209012aabf69ab19a9334a48340091ffc30498",
+      "bindings": [
+        "CAPACITY",
+        "CHILD_BYTES",
+        "ENTRY",
+        "MASK",
+        "MAX_DEPTH",
+        "PAGE",
+        "ROW_BYTES",
+        "hashlib",
+        "number"
+      ]
+    },
+    {
+      "group": 12,
+      "function": "decode_tree",
+      "paths": [
+        "tests/access/indexes/repeated_split_originals/candidate_model.py",
+        "tests/access/indexes/integral_split_originals/candidate_model.py"
+      ],
+      "helper": "tests/access/indexes/shared_split/candidates.py",
+      "body_ast_sha256": "ac0e9816f324c6c56498755282e537714ece7eec819e19a7a206ca4bb476d5ba",
+      "bindings": [
+        "BITMAP",
+        "CAPACITY",
+        "CHILD_BYTES",
+        "ENTRY",
+        "FREE",
+        "HEIGHT",
+        "NEXT",
+        "OWNER",
+        "PAGE",
+        "PREFIX",
+        "PREVIOUS",
+        "ROW_BYTES",
+        "TAIL",
+        "decode_key",
+        "number"
+      ]
+    },
+    {
+      "group": 13,
+      "function": "render",
+      "paths": [
+        "tests/access/indexes/ace16_insert_child_split/model.py",
+        "tests/access/indexes/ace16_insert_general_height_one/model.py"
+      ],
+      "helper": "tests/access/indexes/shared_split/render.py",
+      "body_ast_sha256": "83c2e3ef65fdbf2f8817dea910188087947d893138ac3591ead12e1203538302",
+      "bindings": [
+        "PAGE",
+        "common",
+        "put"
+      ]
+    }
+  ],
+  "counts": {
+    "model_tree_calls": 384,
+    "reference_tree_calls": 320,
+    "integral_tree_calls": 216,
+    "candidate_tree_calls": 216,
+    "full_insert_image_cases": 96,
+    "full_renderer_image_cases": 8
+  },
+  "oracle_separation": "Raw model/reference/candidate decoders keep different bodies and feature typed callbacks; they were not merged with each other.",
+  "fixture_processes": 0,
+  "native_access_execution": false,
+  "production_encoder_used": false,
+  "current_maintained_source_pins": [
+    {
+      "path": "tests/access/indexes/ace16_insert_child_split/model.py",
+      "bytes": 8278,
+      "sha256": "4431500e298d1ae48d7941088a9c833a428b54cd7220b4dd51fa108c4ae1106a"
+    },
+    {
+      "path": "tests/access/indexes/ace16_insert_decimal_indexes/model.py",
+      "bytes": 9344,
+      "sha256": "94adf5ad52442c735cbf0fb239e71b458cb8084a509b851381bf28df8edf9e4c"
+    },
+    {
+      "path": "tests/access/indexes/ace16_insert_decimal_indexes/reference.py",
+      "bytes": 20716,
+      "sha256": "4cf4cc0ff2581fde76a573e45febe044e3518651a425924b30194f07df059457"
+    },
+    {
+      "path": "tests/access/indexes/ace16_insert_general_height_one/model.py",
+      "bytes": 12263,
+      "sha256": "b48a7f694428c2ed29130790e956a0700655f67764235039c83fcb6f4b683f76"
+    },
+    {
+      "path": "tests/access/indexes/ace16_insert_guid_tuple_indexes/model.py",
+      "bytes": 6246,
+      "sha256": "d94759d72ecb093f59eda4d79e1c27d2228ac1b114e45190fe05ecc1205d1a4e"
+    },
+    {
+      "path": "tests/access/indexes/ace16_insert_guid_tuple_indexes/reference.py",
+      "bytes": 18029,
+      "sha256": "bd3be0bc26c5549d2c656a2bef465e2827216165c327bf93775a5839487656bf"
+    },
+    {
+      "path": "tests/access/indexes/ace16_insert_scalar_indexes/model.py",
+      "bytes": 11247,
+      "sha256": "d11e57b7fdd9a80f7b1a23db0f93f5c40878f9136dc965a2ba9f623346458e6e"
+    },
+    {
+      "path": "tests/access/indexes/integral_split_originals/candidate_model.py",
+      "bytes": 6402,
+      "sha256": "ffea2f962e98a14d6527b77b60d19a9a6847298f6a779460accc31e4499d72a8"
+    },
+    {
+      "path": "tests/access/indexes/integral_split_originals/model.py",
+      "bytes": 12933,
+      "sha256": "29a8c0012a2f72f006099f67cdf126ee1aa6f4f21ad6f10a7a38b7cc83c85238"
+    },
+    {
+      "path": "tests/access/indexes/repeated_split_originals/candidate_model.py",
+      "bytes": 9131,
+      "sha256": "af8edf1ecc2618af29059c8dc9ba562ef248eb9b0423f6cf44ad97cee9f526e8"
+    },
+    {
+      "path": "tests/access/indexes/repeated_split_originals/model.py",
+      "bytes": 13345,
+      "sha256": "dcee46ed672361d646a8ccc670406c7e74dd4b79ac61cd85359adc0734d72d63"
+    },
+    {
+      "path": "tests/access/indexes/shared_split/candidates.py",
+      "bytes": 2773,
+      "sha256": "056209f51a135ec6846a7780a0cdf09312c7c634e37ef1be3573dce05a0f284c"
+    },
+    {
+      "path": "tests/access/indexes/shared_split/render.py",
+      "bytes": 1727,
+      "sha256": "742520a281a3fc72760a6764ce4da326258784fda26e1acdc6d6875c0951e32e"
+    },
+    {
+      "path": "tests/access/indexes/shared_trees/integral.py",
+      "bytes": 2798,
+      "sha256": "e67f963aee11dd0565e01eece1f83184ae66304879e5c33cd539549d8e0581ce"
+    },
+    {
+      "path": "tests/access/indexes/shared_trees/model.py",
+      "bytes": 2740,
+      "sha256": "026438938ff1475001ba8aa1cabeb7beed65e81e9b876364bb9ef8b75926f516"
+    },
+    {
+      "path": "tests/access/indexes/shared_trees/reference.py",
+      "bytes": 3256,
+      "sha256": "b2afeda345fc74eeec893ae82befc4c78776f5192f3929da664d32ec44848fde"
+    }
+  ]
+}

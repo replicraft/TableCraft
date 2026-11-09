@@ -124,3 +124,22 @@ Thirty-six retained tree descriptions are checked through six consumers (216
 calls). These are reused case/consumer combinations, not 216 independently
 observed database cases. See the
 [fresh primitive equivalence record](../../results/development/shared-primitive-model-equivalence-2026-11-09.json).
+
+Groups 6–8, 12 and 13 now share their respective raw tree/renderer mechanics,
+with distinct owners for
+[model trees](../../access/indexes/shared_trees/model.py),
+[reference trees](../../access/indexes/shared_trees/reference.py),
+[integral framing](../../access/indexes/shared_trees/integral.py),
+[candidate decoding](../../access/indexes/shared_split/candidates.py) and
+[page rendering](../../access/indexes/shared_split/render.py).
+Typed `decode_entry`/`decode_key`, numeric readers and source limits remain bound
+by their original feature. Model and reference validation bodies remain separate;
+this does not turn two independent proof paths into one decoder.
+
+Fresh checks compare exact old/new bodies/bindings and decoded results over pinned
+retained sources and expected images: 384 model-tree calls, 320 reference-tree
+calls, 216 integral-framing calls and 216 candidate-tree calls. Those are consumer
+and before/after combinations, not new native observations. Complete construction
+also still matches 96 scalar/GUID/decimal image-and-fact goldens plus eight complete
+child/general-height-one renderer goldens. See the
+[fresh raw tree/render equivalence record](../../results/development/shared-raw-tree-render-equivalence-2026-11-09.json).

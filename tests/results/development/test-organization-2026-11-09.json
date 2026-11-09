@@ -646,6 +646,31 @@
       "status": "Shared live implementation extracted",
       "owner": "tests/access/indexes/shared_trees/metadata.py",
       "evidence": "tests/results/development/shared-primitive-model-equivalence-2026-11-09.json"
+    },
+    "6": {
+      "status": "Shared live implementation extracted with oracle separation",
+      "owner": "tests/access/indexes/shared_trees/model.py",
+      "evidence": "tests/results/development/shared-raw-tree-render-equivalence-2026-11-09.json"
+    },
+    "7": {
+      "status": "Shared live implementation extracted with oracle separation",
+      "owner": "tests/access/indexes/shared_trees/reference.py",
+      "evidence": "tests/results/development/shared-raw-tree-render-equivalence-2026-11-09.json"
+    },
+    "8": {
+      "status": "Shared live implementation extracted with oracle separation",
+      "owner": "tests/access/indexes/shared_trees/integral.py",
+      "evidence": "tests/results/development/shared-raw-tree-render-equivalence-2026-11-09.json"
+    },
+    "12": {
+      "status": "Shared live implementation extracted with oracle separation",
+      "owner": "tests/access/indexes/shared_split/candidates.py",
+      "evidence": "tests/results/development/shared-raw-tree-render-equivalence-2026-11-09.json"
+    },
+    "13": {
+      "status": "Shared live implementation extracted with oracle separation",
+      "owner": "tests/access/indexes/shared_split/render.py",
+      "evidence": "tests/results/development/shared-raw-tree-render-equivalence-2026-11-09.json"
     }
   }
 }
