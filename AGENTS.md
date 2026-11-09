@@ -40,12 +40,12 @@ workflow, backed by shared runtime services, alongside screenshot-guided polish,
 light/dark themes and sectioned Fluent catalogs. The user expanded this scope on
 7 November 2026. Follow [presentation preview](docs/ui/PRESENTATION_PREVIEW.md)
 and the [CRUD/query and release accounting](docs/features/ACCESS_PARITY_ROADMAP.md).
-The user resumed native graphical checks on 9 November 2026. Headless interaction
-tests and offscreen rendering remain useful for broad checks; native application
-review is also authorized for the current GUI work. Use task-owned windows and
-temporary database copies, preserving the user's open documents and original
-files. Record native observations separately from headless evidence and from
-Windows/Access parity. Earlier headless-only restrictions are historical.
+The user reinstated headless-only verification on 9 November 2026 after a brief
+native review. Use headless interaction tests and offscreen rendering; do not
+launch, activate, manipulate or close native application windows until explicitly
+authorized again. Preserve original databases and the user's open documents.
+Keep historical native observations separate from headless evidence and from
+Windows/Access parity.
 Develop the Access browser/query UI alongside the backend; full backend completion
 is not a prerequisite for the first UI. Keep existing editing limits explicit.
 
@@ -260,6 +260,9 @@ the concrete independent owner, mutation, snapshot or iterator requirement and
 why a useful borrowed/shared alternative does not fit. Distinguish deep payload
 copies from shared handles and allocation-free bounds/carriers. A consuming API
 alone does not justify copying: change unnecessarily owning APIs to borrow.
+Start each justification block with `// NO_CLONE:`. Place it above the complete
+statement or field being explained, never between a declaration's parts, chained
+method calls or continued arguments. Continuation lines use ordinary `//`.
 Do not hide an equivalent copy behind `.cloned()`, `to_owned()` or a helper to
 make the clone count smaller. Revisit the representation when repeated large
 immutable snapshots can share storage; preserve admission budgets and exact
