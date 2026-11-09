@@ -21,7 +21,6 @@ tracing.workspace = true
 cab.workspace = true
 zip.workspace = true
 iri-string.workspace = true
-flate2.workspace = true
 quick-xml.workspace = true
 jiff.workspace = true
 rust_decimal.workspace = true
