@@ -38,12 +38,14 @@ impl State {
 
     fn query_editor_contents(&mut self, ui: &mut Ui, actions: &mut Vec<Action>) {
         if self.view == DocumentView::Query {
-            self.query_run_limits_button(ui);
             if self.saved_query.active {
                 self.saved_query_editor(ui, actions);
                 return;
             }
             self.query_design_report(ui);
+            if self.query_design_visible() || self.query_design_results_visible() {
+                self.query_run_limits_button(ui);
+            }
             if self.query_design_results_visible() {
                 let designed = matches!(self.query_result, ResultOrigin::Design(_));
                 if designed && self.query_data.is_some() && self.query_results_previous() {
@@ -115,13 +117,16 @@ impl State {
             });
             let run_in_ribbon =
                 self.ribbon_tab == ribbon::Tab::QueryDesign && self.query_design_context();
-            if !run_in_ribbon
-                && ui
-                    .add_enabled(self.query_ready(), egui::Button::new(tr(ui, "query-run")))
-                    .clicked()
-            {
-                actions.push(Action::Query);
-            }
+            ui.horizontal(|ui| {
+                if !run_in_ribbon
+                    && ui
+                        .add_enabled(self.query_ready(), egui::Button::new(tr(ui, "query-run")))
+                        .clicked()
+                {
+                    actions.push(Action::Query);
+                }
+                self.query_run_limits_button(ui);
+            });
             ui.separator();
         }
     }

@@ -37,10 +37,20 @@ fn apply_requires_host_validation_and_keeps_draft_sql_and_previous_results_on_re
     state.sql = "SELECT 99".into();
     assert!(state.set_query_data(Some("SELECT 99".into()), result("99")));
     state.set_query_run_limits(limits());
-    assert!(state.open_query_run_limits());
-    state.query_limits.draft.as_mut().unwrap().snapshot_rows = 200_000;
     let previous = state.query_data.as_ref().unwrap().rows.as_ptr();
     let mut harness = harness(state);
+    harness.run();
+    harness.get_by_label("Read query limits…").click();
+    harness.run();
+    assert!(harness.state().0.query_run_limits_open());
+    harness
+        .state_mut()
+        .0
+        .query_limits
+        .draft
+        .as_mut()
+        .unwrap()
+        .snapshot_rows = 200_000;
     harness.run();
     harness.get_by_label("Use for next runs").click();
     harness.run();
