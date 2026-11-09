@@ -52,15 +52,14 @@ pub(super) fn validate(
     let mut used = vec![false; fields.len()];
     for (column, stored) in schema.columns.iter().zip(&schema.fields) {
         check(budget, cancelled)?;
-        let matching: Vec<_> = fields
+        let mut matching = fields
             .iter()
             .enumerate()
-            .filter(|(_, field)| field.matches_column(column.name(), &stored.xml_name))
-            .collect();
-        if matching.len() != 1 {
+            .filter(|(_, field)| field.matches_column(column.name(), &stored.xml_name));
+        let (index, field) = matching.next().ok_or(TemplateError::Malformed)?;
+        if matching.next().is_some() {
             return Err(TemplateError::Malformed);
         }
-        let (index, field) = matching[0];
         if used[index] {
             return Err(TemplateError::Malformed);
         }
