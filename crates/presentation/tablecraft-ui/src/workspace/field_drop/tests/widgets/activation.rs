@@ -1,6 +1,6 @@
 //! Source-free keyboard/disabled-command checks, separate from host qualification.
-use super::{design, harness};
-use crate::FieldRenameTarget;
+use super::{confirming, design, harness, observed};
+use crate::{Action, FieldRenameTarget};
 use egui::{Key, Modifiers, accesskit::Role};
 use egui_kittest::kittest::{NodeT, Queryable};
 
@@ -61,4 +61,73 @@ fn delete_in_saved_design_name_input_edits_proposal_without_deleting_the_field()
     let field = &harness.state().0.schema.as_ref().unwrap().fields[0];
     assert_eq!(field.name, "Score");
     assert_eq!(field.number, 17);
+}
+
+#[test]
+fn confirmation_retry_is_only_for_terminal_inspection_and_keeps_the_exact_target() {
+    for eligible in [false, true] {
+        let (mut state, _) = if eligible { observed() } else { confirming() };
+        if !eligible {
+            let target = state.field_drop_inspection_target().unwrap();
+            state
+                .prepare_field_drop_inspection(&target)
+                .unwrap()
+                .bind(80);
+        }
+        let label = state.localizer.text("field-drop-retry-inspection");
+        let harness = harness(state);
+        assert!(
+            harness
+                .query_by_role_and_label(Role::Button, &label)
+                .is_none()
+        );
+        assert_eq!(
+            harness
+                .get_by_role_and_label(Role::Button, "Yes")
+                .accesskit_node()
+                .is_disabled(),
+            !eligible
+        );
+        harness.get_by_role_and_label(Role::Button, "No");
+        assert!(harness.state().1.is_empty());
+    }
+
+    for terminal in 0..3 {
+        let (mut state, target) = confirming();
+        state
+            .prepare_field_drop_inspection(&target)
+            .unwrap()
+            .bind(80);
+        match terminal {
+            0 => assert!(state.set_field_drop_source(&target, 80, false)),
+            1 => assert!(state.interrupt_field_drop_inspection_id(80)),
+            _ => assert!(state.fail_field_drop_inspection_by_id(80, "Inspection failed".into())),
+        }
+        let label = state.localizer.text("field-drop-retry-inspection");
+        let mut harness = harness(state);
+        assert!(
+            harness
+                .get_by_role_and_label(Role::Button, "Yes")
+                .accesskit_node()
+                .is_disabled()
+        );
+        harness
+            .get_by_role_and_label(Role::Button, &label)
+            .click_accesskit();
+        harness.run_steps(1);
+        let [Action::InspectFieldDrop { target: outgoing }] = harness.state().1.as_slice() else {
+            panic!("retry emits only the exact readonly inspection");
+        };
+        assert_eq!(outgoing, &target);
+        assert!(!harness.state().0.field_drop_dirty());
+        assert_eq!(
+            harness.state().0.data.as_ref().unwrap().columns[1].name,
+            "Score"
+        );
+        assert!(
+            harness
+                .query_by_role_and_label(Role::Button, &label)
+                .is_none()
+        );
+    }
 }

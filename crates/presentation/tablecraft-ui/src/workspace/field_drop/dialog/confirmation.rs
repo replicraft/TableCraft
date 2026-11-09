@@ -27,7 +27,10 @@ impl State {
         let can_yes = self.can_confirm_field_drop(&draft.target, draft.revision);
         let can_retry = !self.busy
             && self.field_drop_context(&draft.target)
-            && !matches!(draft.observation, Observation::Pending { .. });
+            && matches!(
+                draft.observation,
+                Observation::Unsupported | Observation::Failed { .. } | Observation::Interrupted
+            );
         let mut choice = None;
         let mut retry = false;
         // The frame exclusively borrows the actual retained owner. No target

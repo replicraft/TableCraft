@@ -123,7 +123,7 @@ pub(super) fn prepare(harness: &mut Harness<'_, Preview>, mode: &str) {
 
     match mode {
         "confirmation" | "inspecting" | "source-refused" => {
-            confirmation(harness, mode == "confirmation");
+            confirmation(harness, mode);
         }
         "close" => close(harness),
         "pending" => {
@@ -142,7 +142,8 @@ pub(super) fn prepare(harness: &mut Harness<'_, Preview>, mode: &str) {
     }
 }
 
-fn confirmation(harness: &Harness<'_, Preview>, eligible: bool) {
+fn confirmation(harness: &Harness<'_, Preview>, mode: &str) {
+    let eligible = mode == "confirmation";
     let modal = harness
         .ctx
         .memory(|memory| memory.area_rect(Id::new("field_drop_confirmation")))
@@ -154,6 +155,16 @@ fn confirmation(harness: &Harness<'_, Preview>, eligible: bool) {
         assert!(modal.contains_rect(button.rect()));
         assert_eq!(!button.accesskit_node().is_disabled(), enabled);
     }
+    let retry = harness
+        .state()
+        .state()
+        .localizer
+        .text("field-drop-retry-inspection");
+    let retry_count = harness
+        .query_all_by_role_and_label(Role::Button, &retry)
+        .filter(|button| modal.contains_rect(button.rect()))
+        .count();
+    assert_eq!(retry_count, usize::from(mode == "source-refused"));
 }
 
 fn close(harness: &Harness<'_, Preview>) {
