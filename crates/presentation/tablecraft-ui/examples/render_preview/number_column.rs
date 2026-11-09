@@ -3,6 +3,8 @@
 //! The retained datasheet image informs the trailing header. No expanded menu,
 //! naming or close capture exists; these scenes verify an adaptation, not Access
 //! appearance or native write eligibility. Example-only facts never grant writes.
+mod returned;
+
 use super::LAYOUT_SETTLE_STEPS;
 use egui::{Shape, accesskit::Role};
 use egui_kittest::{
@@ -14,10 +16,11 @@ use tablecraft_ui::{Data, ObjectKind, preview::Preview};
 const INSPECTION_ID: u64 = 810;
 
 pub(super) fn is_mode(mode: &str) -> bool {
-    matches!(
-        mode,
-        "none" | "menu" | "name" | "close" | "close-unavailable"
-    )
+    returned::is_mode(mode)
+        || matches!(
+            mode,
+            "none" | "menu" | "name" | "close" | "close-unavailable"
+        )
 }
 
 pub(super) fn prepare(harness: &mut Harness<'_, Preview>, mode: &str) {
@@ -87,6 +90,9 @@ pub(super) fn prepare(harness: &mut Harness<'_, Preview>, mode: &str) {
         let editor = harness.get_by_role_and_label(Role::TextInput, &label);
         assert!(!editor.accesskit_node().is_disabled());
         assert_eq!(editor.value().as_deref(), Some("Field1"));
+        if returned::is_mode(mode) {
+            returned::prepare(harness, mode);
+        }
         if mode.starts_with("close") {
             let state = harness.state_mut().state_mut();
             assert!(state.request_number_column_close(&tab));
