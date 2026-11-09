@@ -54,6 +54,8 @@ mod encryption;
 mod error;
 mod format;
 mod header;
+#[cfg(any(feature = "ace16-create", feature = "journal"))]
+mod identifier;
 mod limits;
 mod source;
 pub use source::{
@@ -337,3 +339,6 @@ pub use transaction::{
     FieldAdditionIntentError, NativeFieldAdditionIntent, QualifiedFieldAdditionRecovery,
     RecoverableFieldAdditionPlan, qualify_native_field_addition_recovery,
 };
+
+#[cfg(all(feature = "ace16-create", feature = "journal"))]
+pub use table::{FieldRenameError, NativeFieldRenameCandidate, NativeFieldRenameIdentity};

@@ -68,6 +68,8 @@ pub use mutation::{
     FixedScalarUpdate,
 };
 pub use mutation::{EditError, Int32Update, NativeEditPlan, WriteBlocker};
+#[cfg(all(feature = "ace16-create", feature = "journal"))]
+pub use mutation::{FieldRenameError, NativeFieldRenameCandidate, NativeFieldRenameIdentity};
 #[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
 pub use mutation::{FittedColumnUpdates, FixedColumnUpdates, SlotScalarUpdate};
 #[cfg(feature = "journal")]

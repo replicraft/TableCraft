@@ -263,22 +263,8 @@ pub(super) fn name(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), CreateDatabaseError> {
-    if value.is_empty() || value.starts_with(' ') {
+    if !crate::identifier::valid_name(value, budget, cancelled)? {
         return Err(CreateDatabaseError::InvalidName);
-    }
-    let mut units = 0;
-    for character in value.chars() {
-        check(budget, cancelled)?;
-        units += character.len_utf16();
-        // Borrowed form of SchemaName's nonempty/control-free contract,
-        // plus native identifier punctuation from the qualified creation
-        // profile (Jackcess DatabaseImpl.java:271-272,2133-2151).
-        if character.is_control()
-            || matches!(character, '.' | '!' | '`' | '[' | ']')
-            || units > profile::MAX_NAME_UNITS
-        {
-            return Err(CreateDatabaseError::InvalidName);
-        }
     }
     Ok(())
 }

@@ -2,6 +2,7 @@
 //! Semantic key/type qualification remains with preserved_source::properties.
 use super::{PropertyGroupKind, TableProperties};
 use crate::{InspectError, header::check};
+use std::ops::Range;
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
 const SIGNATURE: &[u8; 4] = b"MR2\0";
@@ -105,6 +106,30 @@ pub(crate) fn ordered_names<'a>(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Vec<&'a [u8]>, InspectError> {
+    ordered_names_impl(properties, budget, cancelled, None::<GroupVisitor>)
+}
+
+type GroupVisitor = fn(usize, Range<usize>) -> Result<(), InspectError>;
+
+/// Retain raw group-name spans while performing the same complete framing proof.
+/// The ranges are relative to these exact raw property bytes. Callers must wait
+/// for successful completion before using a visited span as mutation evidence.
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub(crate) fn ordered_names_with_groups<'a>(
+    properties: &'a TableProperties,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+    visit: impl FnMut(usize, Range<usize>) -> Result<(), InspectError>,
+) -> Result<Vec<&'a [u8]>, InspectError> {
+    ordered_names_impl(properties, budget, cancelled, Some(visit))
+}
+
+fn ordered_names_impl<'a>(
+    properties: &'a TableProperties,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+    mut visit: Option<impl FnMut(usize, Range<usize>) -> Result<(), InspectError>>,
+) -> Result<Vec<&'a [u8]>, InspectError> {
     let _span = tracing::debug_span!("native.properties.complete_framing").entered();
     check(budget, cancelled)?;
     let mut cursor = Cursor::new(properties.raw_bytes());
@@ -159,6 +184,7 @@ pub(crate) fn ordered_names<'a>(
         {
             return Err(InspectError::Unsupported);
         }
+        let block_start = cursor.position;
         let mut block = Cursor::new(
             cursor.take(
                 length
@@ -174,8 +200,14 @@ pub(crate) fn ordered_names<'a>(
                     .ok_or(InspectError::Malformed)?,
             )?,
         );
-        if !name_equal(group_name.name()?, group.name(), budget)? || group_name.remaining() != 0 {
+        let raw_name = group_name.name()?;
+        if !name_equal(raw_name, group.name(), budget)? || group_name.remaining() != 0 {
             return Err(InspectError::Unsupported);
+        }
+        if let Some(visit) = visit.as_mut() {
+            budget.charge(Resource::Steps, 1)?;
+            let name_start = block_start + size_of::<u32>() + size_of::<u16>();
+            visit(group_number, name_start..name_start + raw_name.len())?;
         }
         let mut property_number = 0_usize;
         while block.remaining() != 0 {
@@ -226,3 +258,6 @@ pub(crate) fn ordered_names<'a>(
 
 #[cfg(test)]
 pub(crate) mod tests;
+
+#[cfg(all(test, feature = "ace16-create", feature = "journal"))]
+mod name_spans;

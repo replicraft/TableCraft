@@ -19,8 +19,6 @@ use tablecraft_core::{
 };
 use thiserror::Error;
 
-const MAX_NAME_UNITS: usize = 64;
-
 /// Payload-free refusal of an unqualified native table rename.
 #[derive(Debug, Error, PartialEq, Eq)]
 pub enum TableRenameError {
@@ -289,19 +287,8 @@ fn validate_name(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), TableRenameError> {
     check(budget, cancelled)?;
-    if name.is_empty() || name.starts_with(' ') {
+    if !crate::identifier::valid_name(name, budget, cancelled)? {
         return Err(TableRenameError::InvalidName);
-    }
-    let mut units = 0;
-    for character in name.chars() {
-        check(budget, cancelled)?;
-        units += character.len_utf16();
-        if character.is_control()
-            || matches!(character, '.' | '!' | '`' | '[' | ']')
-            || units > MAX_NAME_UNITS
-        {
-            return Err(TableRenameError::InvalidName);
-        }
     }
     Ok(())
 }

@@ -68,6 +68,8 @@ mod record_protection;
 mod record_roots;
 #[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
 mod record_serialization;
+#[cfg(all(feature = "ace16-create", feature = "journal"))]
+mod rename_field;
 #[cfg(feature = "journal")]
 mod rename_table;
 #[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
@@ -201,3 +203,6 @@ pub(crate) mod query_expression;
 pub(crate) mod query_expression_edit;
 #[cfg(feature = "journal")]
 mod query_expression_source;
+
+#[cfg(all(feature = "ace16-create", feature = "journal"))]
+pub use rename_field::{FieldRenameError, NativeFieldRenameCandidate, NativeFieldRenameIdentity};

@@ -13,7 +13,6 @@ pub(super) const PAGE_COUNT: usize = 9;
 pub(super) const IMAGE_BYTES: usize = PAGE_COUNT * PAGE_BYTES;
 pub(super) const MAX_COLUMNS: usize = 16;
 pub(super) const MAX_ROWS: usize = 64;
-pub(super) const MAX_NAME_UNITS: usize = 64;
 pub(super) const ROOT_ID: u32 = 0x0f00_0000;
 pub(super) const TABLES_ID: u32 = ROOT_ID + 1;
 pub(super) const DATABASES_ID: u32 = ROOT_ID + 2;

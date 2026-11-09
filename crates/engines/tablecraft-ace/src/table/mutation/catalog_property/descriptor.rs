@@ -96,11 +96,30 @@ impl Descriptor {
             && actual.name == name)
     }
 
+    /// Observe the actual physical descriptor frame, including a forwarded
+    /// record's resolved location. This grants no mutation or role authority.
+    pub(crate) fn absolute_range(&self) -> Result<Option<Range<usize>>, InspectError> {
+        let Some(range) = &self.range else {
+            return Ok(None);
+        };
+        let start = self
+            .record
+            .offset
+            .checked_add(range.start)
+            .ok_or(InspectError::Malformed)?;
+        let end = self
+            .record
+            .offset
+            .checked_add(range.end)
+            .ok_or(InspectError::Malformed)?;
+        Ok(Some(start..end))
+    }
+
     pub(super) fn physical_offset(&self) -> usize {
         self.record.offset
     }
 
-    pub(super) fn traced<R: NativeReadSource>(
+    pub(in crate::table) fn traced<R: NativeReadSource>(
         &self,
         reader: &mut Reader<'_, R>,
     ) -> Result<trace::Traced, InspectError> {

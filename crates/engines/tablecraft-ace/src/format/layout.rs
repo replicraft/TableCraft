@@ -7,6 +7,8 @@ use super::{data_type, definition, row::COLUMN_COUNT_BYTES};
 use crate::InspectError;
 use crate::limits::{MAX_COLUMNS, MAX_INDEXES};
 
+use std::ops::Range;
+
 // Jet 4 / initial ACE table/column definition offsets; see docs/access/storage/NATIVE_TABLES.md.
 pub(crate) const RECORD_COUNT_OFFSET: usize = 16;
 pub(crate) const MAX_COLUMN_COUNT_OFFSET: usize = 41;
@@ -22,6 +24,7 @@ pub(crate) const INDEX_ENTRY_BYTES: usize = 12;
 pub(crate) const COLUMN_ENTRY_BYTES: usize = 25;
 const COLUMN_TYPE_OFFSET: usize = 0;
 const COLUMN_NUMBER_OFFSET: usize = 5;
+const COLUMN_ID_OFFSET: usize = 9;
 const VARIABLE_INDEX_OFFSET: usize = 7;
 const NUMERIC_PRECISION_OFFSET: usize = 11;
 const NUMERIC_SCALE_OFFSET: usize = 12;
@@ -60,6 +63,40 @@ pub(crate) struct Field {
     pub complex_type_id: Option<u32>,
     pub sort_order: Option<crate::NativeSortOrder>,
 }
+impl Field {
+    /// Compare every decoded storage fact while the caller separately binds names.
+    #[cfg(all(feature = "journal", feature = "ace16-create"))]
+    pub(crate) fn same_storage(&self, other: &Self) -> bool {
+        let Self {
+            number,
+            variable,
+            fixed,
+            offset,
+            length,
+            kind,
+            precision,
+            scale,
+            name: _,
+            flags,
+            extended_flags,
+            complex_type_id,
+            sort_order,
+        } = other;
+        self.number == *number
+            && self.variable == *variable
+            && self.fixed == *fixed
+            && self.offset == *offset
+            && self.length == *length
+            && self.kind == *kind
+            && self.precision == *precision
+            && self.scale == *scale
+            && self.flags == *flags
+            && self.extended_flags == *extended_flags
+            && self.complex_type_id == *complex_type_id
+            && self.sort_order == *sort_order
+    }
+}
+
 #[derive(PartialEq, Eq)]
 pub(crate) struct Layout {
     pub fields: Vec<Field>,
@@ -88,6 +125,30 @@ impl Layout {
 pub(crate) fn read<R: crate::NativeReadSource>(
     reader: &mut Reader<'_, R>,
     definition: u32,
+) -> Result<Layout, InspectError> {
+    read_impl(reader, definition, None::<FieldNameVisitor>)
+}
+
+type FieldNameVisitor = fn(usize, u16, Range<usize>, Range<usize>) -> Result<(), InspectError>;
+
+/// Visit names owned by this complete table-definition parser. Ranges address
+/// logical definition bytes; they are not physical offsets for continued TDEFs.
+/// A later parsing/visitor error publishes no completed layout or span authority.
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub(crate) fn read_with_field_names<R: crate::NativeReadSource>(
+    reader: &mut Reader<'_, R>,
+    definition: u32,
+    visit: impl FnMut(usize, u16, Range<usize>, Range<usize>) -> Result<(), InspectError>,
+) -> Result<Layout, InspectError> {
+    read_impl(reader, definition, Some(visit))
+}
+
+fn read_impl<R: crate::NativeReadSource>(
+    reader: &mut Reader<'_, R>,
+    definition: u32,
+    mut visit: Option<
+        impl FnMut(usize, u16, Range<usize>, Range<usize>) -> Result<(), InspectError>,
+    >,
 ) -> Result<Layout, InspectError> {
     let page = definition::read(reader, definition)?;
     let count = usize::from(u16_at(&page, COLUMN_COUNT_OFFSET)?);
@@ -178,6 +239,16 @@ pub(crate) fn read<R: crate::NativeReadSource>(
                 return Err(InspectError::Malformed);
             }
         }
+        if let Some(visit) = visit.as_mut() {
+            reader.work(size_of::<u16>())?;
+            let entry = start + i * COLUMN_ENTRY_BYTES..start + (i + 1) * COLUMN_ENTRY_BYTES;
+            visit(
+                field.number,
+                u16_at(c, COLUMN_ID_OFFSET)?,
+                entry,
+                position - length..position,
+            )?;
+        }
         fields.push(field);
     }
     let layout = Layout {
@@ -211,3 +282,6 @@ pub(crate) fn validate_catalog(layout: &Layout) -> Result<(), InspectError> {
     }
     Ok(())
 }
+
+#[cfg(all(test, feature = "ace16-create", feature = "journal"))]
+mod name_spans;
