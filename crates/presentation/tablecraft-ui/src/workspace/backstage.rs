@@ -4,7 +4,7 @@ mod rail;
 
 use super::{Action, State, diagnostics, ribbon::Icon};
 use crate::localization::tr;
-use crate::{Locale, Localizer, Theme, theme::palette};
+use crate::theme::palette;
 use egui::{Frame, Margin, ScrollArea, TextEdit, Ui};
 
 const FOOTER_ENTRIES: usize = 3;
@@ -86,7 +86,7 @@ impl State {
                                 Backstage::New => self.new_pane(ui, actions),
                                 Backstage::Open => self.open_pane(ui, actions, path_id),
                                 Backstage::About => self.about_pane(ui),
-                                Backstage::Options => self.options_pane(ui),
+                                Backstage::Options => {}
                                 Backstage::Closed => {}
                             });
                         });
@@ -127,7 +127,11 @@ impl State {
     fn file_section(&mut self, ui: &mut Ui, view: Backstage, icon: Icon, key: &str) {
         ui.push_id(key, |ui| {
             if rail::entry(ui, icon, &tr(ui, key), Some(self.backstage == view)).clicked() {
-                self.backstage = view;
+                if view == Backstage::Options {
+                    self.show_options_dialog();
+                } else {
+                    self.backstage = view;
+                }
             }
         });
     }
@@ -197,57 +201,6 @@ impl State {
         ui.add_space(12.0);
         ui.label(tr(ui, "backstage-stable-copy-help"));
         ui.small(tr(ui, "backstage-read-only-help"));
-    }
-
-    fn options_pane(&mut self, ui: &mut Ui) {
-        let localizer = self.localizer.clone();
-        ui.heading(localizer.text("settings-title"));
-        ui.add_space(18.0);
-        ui.heading(localizer.text("settings-appearance"));
-        ui.label(localizer.text("settings-theme"));
-        ui.horizontal(|ui| {
-            ui.selectable_value(
-                &mut self.theme,
-                Theme::System,
-                localizer.text("settings-theme-system"),
-            );
-            ui.selectable_value(
-                &mut self.theme,
-                Theme::Light,
-                localizer.text("settings-light"),
-            );
-            ui.selectable_value(
-                &mut self.theme,
-                Theme::Dark,
-                localizer.text("settings-dark"),
-            );
-        });
-        ui.add_space(18.0);
-        let language_label = ui.label(localizer.text("settings-language"));
-        let mut locale = localizer.locale();
-        egui::ComboBox::from_id_salt("ui_language")
-            .selected_text(locale.native_name())
-            .show_ui(ui, |ui| {
-                for choice in Locale::ALL {
-                    ui.selectable_value(&mut locale, choice, choice.native_name());
-                }
-            })
-            .response
-            .labelled_by(language_label.id);
-        if locale != localizer.locale() {
-            match Localizer::new(locale) {
-                Ok(next) => self.localizer = next,
-                Err(_) => {
-                    ui.label(localizer.text("settings-translation-unavailable"));
-                }
-            }
-            ui.ctx().request_repaint();
-        }
-        crate::formatting::show_options(ui, &mut self.formatting, &self.format_cache, &localizer);
-        if self.mock_preview {
-            ui.add_space(18.0);
-            ui.label(localizer.text("settings-preview-help"));
-        }
     }
 
     fn about_pane(&self, ui: &mut Ui) {

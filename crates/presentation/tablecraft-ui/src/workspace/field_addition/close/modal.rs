@@ -29,7 +29,7 @@ impl State {
         let mut choice = None;
         let response = Modal::new(egui::Id::new("field_addition_close")).show(context, |ui| {
             ui.set_max_width(MODAL_WIDTH);
-            let saved = self.field_addition_source_stale();
+            let saved = self.native_mutation_blocked();
             ui.heading(tr(
                 ui,
                 if saved {

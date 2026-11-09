@@ -411,7 +411,7 @@ impl State {
 
     fn field_addition_context(&self, tab: &ObjectTab) -> bool {
         self.field_addition_available
-            && !self.field_addition_source_stale()
+            && !self.native_mutation_blocked()
             && !self.field_addition_close_open()
             && self.object_switch_ready_without_field_addition()
             && self.view == DocumentView::Table

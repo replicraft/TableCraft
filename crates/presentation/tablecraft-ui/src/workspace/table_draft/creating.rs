@@ -53,7 +53,7 @@ impl State {
     }
 
     fn can_start_table_draft(&self) -> bool {
-        if self.has_modified_saved_query_sql() || self.field_addition_source_stale() {
+        if self.has_modified_saved_query_sql() || self.native_mutation_blocked() {
             return false;
         }
 

@@ -1,43 +1,16 @@
 //! Distinct atomic publication after a host-proven field schema replacement.
-mod admission;
-mod capture;
-mod publication;
 #[cfg(test)]
 mod tests;
 
-use super::{boundary, catalog};
+use super::{catalog, replacement};
 use crate::{
     Database,
     workspace::{
         State,
         field_addition::{FieldAdditionRequest, FieldAdditionSaveIdentity},
-        objects::{MAX_OBJECTS, MAX_RETAINED_BYTES, ObjectKind, ObjectTarget},
+        objects::{MAX_OBJECTS, ObjectKind},
     },
 };
-
-fn bound(database: &Database, target: &ObjectTarget) -> bool {
-    target.document_revision == database.document_revision
-        && match &target.kind {
-            ObjectKind::Table { name } => {
-                database
-                    .tables
-                    .iter()
-                    .filter(|table| table.name == *name)
-                    .count()
-                    == 1
-            }
-            ObjectKind::SavedQuery { object_id, name } => {
-                database
-                    .queries
-                    .iter()
-                    .filter(|query| query.object_id == *object_id && query.name == *name)
-                    .count()
-                    == 1
-            }
-            ObjectKind::Sql => true,
-            ObjectKind::DraftTable { .. } => false,
-        }
-}
 
 impl State {
     /// Structural preflight for this exact retained field-addition naming request.
@@ -67,45 +40,8 @@ impl State {
                 .entries
                 .iter()
                 .any(|entry| entry.tab.id == active && entry.session.is_none())
-            && self
-                .objects
-                .entries
-                .iter()
-                .enumerate()
-                .all(|(position, entry)| {
-                    bound(database, &entry.tab.target)
-                        && self.objects.entries[..position].iter().all(|old| {
-                            old.tab.id != entry.tab.id && old.tab.target != entry.tab.target
-                        })
-                })
-            && self
-                .objects
-                .navigation
-                .as_ref()
-                .is_none_or(|target| bound(database, target))
-            && boundary::current(self)
-            && !self.has_unsaved_table_drafts()
-            && !self.has_modified_saved_query_sql()
-            && self.table_draft.is_none()
-            && !self.saved_query_sql_close_open()
-            && !self.field_addition_close_open()
-            && self.saved_query_sql_save_status().is_none()
-            && self.table_draft_close.is_none()
-            && !self.zoom_dialog_open()
-            && !self.edit_dialog_open()
-            && !self.insertion_dialog_open()
-            && !self.deletion_dialog_open()
-            && !self.recovery_prompt_open()
-            && self.contents_request_id().is_none()
-            && !self.parameter_prompt_open()
-            && !self.query_action_dialog_open()
-            && !self.table_draft_save_open()
-            && !self.table_draft_field_delete_open()
-            && self.query_sql_revision.checked_add(1).is_some()
-            && self
-                .object_bytes()
-                .is_some_and(|bytes| bytes <= MAX_RETAINED_BYTES)
-            && admission::fits(self, database) == Some(true)
+            && replacement::ready(self)
+            && replacement::fits(self, database) == Some(true)
     }
 
     /// Publish only after the host acknowledged a known AFTER field-addition
@@ -139,13 +75,14 @@ impl State {
                 .database
                 .as_ref()
                 .is_none_or(|old| !catalog::matches(old, &database))
-            || admission::fits(self, &database) != Some(true)
+            || replacement::fits(self, &database) != Some(true)
         {
             return false;
         }
-        let Some(prepared) = capture::prepare(self, &database) else {
+        let Some(prepared) = replacement::prepare(self, &database, replacement::Transfer::KeepAll)
+        else {
             return false;
         };
-        publication::publish(self, prepared, database)
+        replacement::publish(self, prepared, database)
     }
 }

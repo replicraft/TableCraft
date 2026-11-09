@@ -1,4 +1,5 @@
 //! Revalidate every old/new presentation owner before transferring any buffer.
+use crate::Database;
 use crate::workspace::{
     DocumentView, State,
     objects::{ObjectKind, ObjectTarget, Objects, session::Session},
@@ -82,4 +83,71 @@ pub(super) fn staged(state: &State, objects: &Objects, active_session: &Session)
                 .is_some_and(|session| session_matches(&entry.tab.target, session))
         }
     })
+}
+
+/// A database-wide replacement may have no active object. Every parked owner
+/// must still match its exact tab; orphan active SQL/native results refuse.
+pub(super) fn current_optional(state: &State) -> bool {
+    if let Some(active) = state.objects.active {
+        return state
+            .objects
+            .entries
+            .iter()
+            .any(|entry| entry.tab.id == active)
+            && current(state);
+    }
+    state.view != DocumentView::Query
+        && !state.saved_query.active
+        && state.saved_query.target.is_none()
+        && state.saved_query.sql.is_none()
+        && state.data.is_none()
+        && state.schema.is_none()
+        && state.query_data.is_none()
+        && state.query_pending.is_none()
+        && state.objects.entries.iter().all(|entry| {
+            entry
+                .session
+                .as_ref()
+                .is_some_and(|session| session_matches(&entry.tab.target, session))
+        })
+}
+
+pub(super) fn staged_optional(state: &State, objects: &Objects, active: Option<&Session>) -> bool {
+    match (objects.active, active) {
+        (Some(_), Some(active)) => staged(state, objects, active),
+        (None, None) => {
+            current_optional(state)
+                && objects.entries.iter().all(|entry| {
+                    entry
+                        .session
+                        .as_ref()
+                        .is_some_and(|session| session_matches(&entry.tab.target, session))
+                })
+        }
+        _ => false,
+    }
+}
+
+pub(super) fn bound(database: &Database, target: &ObjectTarget) -> bool {
+    target.document_revision == database.document_revision
+        && match &target.kind {
+            ObjectKind::Table { name } => {
+                database
+                    .tables
+                    .iter()
+                    .filter(|table| table.name == *name)
+                    .count()
+                    == 1
+            }
+            ObjectKind::SavedQuery { object_id, name } => {
+                database
+                    .queries
+                    .iter()
+                    .filter(|query| query.object_id == *object_id && query.name == *name)
+                    .count()
+                    == 1
+            }
+            ObjectKind::Sql => true,
+            ObjectKind::DraftTable { .. } => false,
+        }
 }

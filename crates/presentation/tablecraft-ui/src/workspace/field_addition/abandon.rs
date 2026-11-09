@@ -98,7 +98,7 @@ impl State {
             .field_addition
             .warning
             .as_ref()
-            .filter(|_| self.field_addition_source_stale())?;
+            .filter(|_| self.native_mutation_blocked())?;
         Some(FieldAdditionSavedWarning {
             identity: warning.status.identity,
             outcome: warning.status.outcome.as_ref(),
@@ -113,7 +113,7 @@ impl State {
             .field_addition
             .warning
             .as_ref()
-            .filter(|_| self.field_addition_source_stale())?;
+            .filter(|_| self.native_mutation_blocked())?;
         Some((&warning.owner.tab, &warning.owner.column))
     }
 
@@ -122,7 +122,7 @@ impl State {
             .field_addition
             .warning
             .as_ref()
-            .filter(|_| self.field_addition_source_stale())
+            .filter(|_| self.native_mutation_blocked())
         else {
             return;
         };

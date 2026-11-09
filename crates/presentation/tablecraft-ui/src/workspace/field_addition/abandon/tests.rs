@@ -107,7 +107,7 @@ fn return_moves_exact_name_outcome_and_cleanup_without_allocation_even_at_payloa
         state.field_addition_saved_warning_name().unwrap(),
         (&request.tab, "Score")
     );
-    assert!(state.field_addition_source_stale());
+    assert!(state.native_mutation_blocked());
     state.database.as_mut().unwrap().document_revision += 1;
     state.retire_unowned_field_addition_warning(Some(8));
     assert!(state.field_addition.warning.is_none());

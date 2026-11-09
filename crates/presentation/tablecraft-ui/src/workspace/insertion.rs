@@ -222,7 +222,7 @@ impl State {
     pub fn can_insert_row(&self, target: &InsertTarget) -> bool {
         if self.has_modified_saved_query_sql()
             || self.field_addition_open()
-            || self.field_addition_source_stale()
+            || self.native_mutation_blocked()
         {
             return false;
         }
@@ -356,7 +356,7 @@ impl State {
     pub fn can_apply_insert(&self, review_id: u64) -> bool {
         if self.has_modified_saved_query_sql()
             || self.field_addition_open()
-            || self.field_addition_source_stale()
+            || self.native_mutation_blocked()
         {
             return false;
         }

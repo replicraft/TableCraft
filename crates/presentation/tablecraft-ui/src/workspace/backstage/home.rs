@@ -38,7 +38,7 @@ impl State {
                     self.backstage = Backstage::About;
                 }
                 if startup_entry(ui, &tr(ui, "backstage-options")).clicked() {
-                    self.backstage = Backstage::Options;
+                    self.show_options_dialog();
                 }
             });
         egui::CentralPanel::default()

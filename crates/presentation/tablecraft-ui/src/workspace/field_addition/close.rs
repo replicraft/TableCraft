@@ -123,7 +123,7 @@ impl State {
 
     pub fn can_save_field_addition_close(&self) -> bool {
         self.field_addition_close_current()
-            && !self.field_addition_source_stale()
+            && !self.native_mutation_blocked()
             && self.field_addition_available
             && self.object_switch_ready_without_field_addition()
             && self.field_addition_status.is_none()

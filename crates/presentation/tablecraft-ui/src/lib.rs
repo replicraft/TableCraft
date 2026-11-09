@@ -39,6 +39,10 @@ pub use workspace::{
     TableRenameRequest, TableSaveRequest, TotalAggregate, TotalSpec, TotalsData, TotalsDescription,
     TotalsField, TotalsTarget, WorkspaceLayout,
 };
+pub use workspace::{
+    DatabaseOptionsCloseRequest, DatabaseOptionsSaveCommand, DatabaseOptionsSaveIdentity,
+    NameAutoCorrectState, PreparedDatabaseOptionsSave,
+};
 pub use workspace::{FieldAdditionCloseDecision, FieldAdditionCloseResult};
 
 #[cfg(test)]

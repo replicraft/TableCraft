@@ -113,7 +113,7 @@ impl State {
     pub fn can_edit_cell(&self, target: &EditTarget) -> bool {
         if self.has_modified_saved_query_sql()
             || self.field_addition_open()
-            || self.field_addition_source_stale()
+            || self.native_mutation_blocked()
         {
             return false;
         }
@@ -263,7 +263,7 @@ impl State {
     pub fn can_apply_edit(&self, review_id: u64) -> bool {
         if self.has_modified_saved_query_sql()
             || self.field_addition_open()
-            || self.field_addition_source_stale()
+            || self.native_mutation_blocked()
         {
             return false;
         }
@@ -358,6 +358,7 @@ impl State {
 
     pub fn edit_save_pending(&self) -> bool {
         self.saved_query_sql_save_open()
+            || self.database_options_pending()
             || self.insert_save_pending()
             || self.delete_save_pending()
             || matches!(

@@ -204,6 +204,8 @@ impl State {
         }
         count.add(self.saved_query.retained_bytes()?);
         count.add(self.field_addition.retained_bytes()?);
+        count.add(size_of::<super::super::database_options::Model>());
+        count.add(self.database_options.heap_bytes()?);
         if let Some(status) = &self.field_addition_status {
             count.add(status.heap_bytes()?);
         }

@@ -244,7 +244,7 @@ fn options_changes_the_actual_theme_and_language_without_database_actions() {
     let context = egui::Context::default();
     crate::configure(&context);
     let mut state = State {
-        backstage: Backstage::Options,
+        options_open: true,
         ..Default::default()
     };
 
@@ -600,9 +600,10 @@ fn startup_has_no_empty_workspace_return_and_file_pages_return_to_home() {
         .get_by_role_and_label(Role::Button, "Options")
         .click();
     harness.run_steps(2);
-    assert_eq!(harness.state().0.backstage, Backstage::Options);
+    assert!(harness.state().0.options_dialog_open());
     harness.key_press(egui::Key::Escape);
     harness.step();
+    assert!(!harness.state().0.options_dialog_open());
     assert_eq!(harness.state().0.backstage, Backstage::Home);
 
     harness.get_by_role_and_label(Role::Button, "About").click();

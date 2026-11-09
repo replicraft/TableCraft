@@ -41,7 +41,7 @@ impl State {
     }
 
     pub fn can_edit_saved_query_sql(&self) -> bool {
-        !self.field_addition_source_stale()
+        !self.native_mutation_blocked()
             && self.saved_query_sql_edit_available
             && self.object_switch_ready()
             && !self.has_unsaved_table_drafts()

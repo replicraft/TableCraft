@@ -1,7 +1,9 @@
 //! Source-free workspace preferences cannot restore old row or tab authority.
 mod boundary;
 mod catalog;
+mod database_options_reopen;
 mod field_addition_reopen;
+mod replacement;
 mod restoration;
 mod saved_sql_reopen;
 

@@ -418,6 +418,8 @@ impl State {
 
     pub(super) fn object_switch_ready_without_field_addition(&self) -> bool {
         !self.busy
+            && !self.options_dialog_open()
+            && !self.database_options_modal_open()
             && !self.saved_query_sql_close_open()
             && self.table_draft_close.is_none()
             && self.table_draft_save.is_none()
@@ -462,6 +464,7 @@ impl State {
             .map(|database| database.document_revision);
         if self.objects.revision != revision {
             self.retire_unowned_field_addition_warning(revision);
+            self.retire_database_options_warning(revision);
             if self.has_modified_saved_query_sql() {
                 return;
             }

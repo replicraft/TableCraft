@@ -12,7 +12,7 @@ use crate::{
     },
 };
 
-pub(super) fn fits(state: &State, fresh: &Database) -> Option<bool> {
+pub(in crate::workspace::objects::layout) fn fits(state: &State, fresh: &Database) -> Option<bool> {
     let mut count = Counter::new(state.object_bytes()?);
     count.add(catalog::retained_bytes(state.database.as_ref()?)?);
     count.add(catalog::retained_bytes(fresh)?);

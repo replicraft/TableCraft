@@ -5,6 +5,7 @@ mod click;
 mod content;
 mod contents;
 mod creation;
+mod database_options;
 mod deletion;
 mod diagnostics;
 mod editing;
@@ -14,6 +15,7 @@ mod find;
 pub(crate) mod focus;
 mod home;
 pub(crate) mod insertion;
+mod native_mutation;
 mod navigation;
 mod objects;
 pub mod preview;
@@ -33,6 +35,10 @@ pub(crate) mod zoom;
 
 pub use contents::{CollectionKind, ContentsTarget};
 pub use creation::{CreationOutcome, CreationRequest};
+pub use database_options::{
+    DatabaseOptionsCloseRequest, DatabaseOptionsSaveCommand, DatabaseOptionsSaveIdentity,
+    NameAutoCorrectState, PreparedDatabaseOptionsSave,
+};
 pub use deletion::{DeleteReview, DeleteTarget};
 pub use editing::{EditDraft, EditInput, EditReview, EditSaveOutcome, EditTarget, InputHint};
 pub use field_addition::{
@@ -114,6 +120,19 @@ pub struct Data {
 
 /// User intents dispatched to the host's shared backend services.
 pub enum Action {
+    InspectDatabaseOptions {
+        document_revision: u64,
+    },
+    DisableNameAutoCorrect {
+        request: DatabaseOptionsCloseRequest,
+    },
+    CancelDatabaseOptionsReview {
+        request_id: u64,
+    },
+    DatabaseOptionsSave {
+        identity: DatabaseOptionsSaveIdentity,
+        command: DatabaseOptionsSaveCommand,
+    },
     FieldAdditionClose {
         result: FieldAdditionCloseResult,
     },
@@ -404,6 +423,11 @@ pub struct State {
     /// Host opt-in remains false until the checked schema-reopen controller is connected.
     pub field_addition_available: bool,
     field_addition: field_addition::Model,
+    database_options: database_options::Model,
+    pub database_options_available: bool,
+    database_options_confirmation_sequence: u64,
+    options_open: bool,
+    options_current_database: bool,
     field_addition_status: Option<field_addition::Status>,
     /// Host can review and persist native table renames; false for synthetic hosts.
     pub table_rename_available: bool,
@@ -785,7 +809,9 @@ impl State {
         let object_shortcut = self.begin_object_shortcut(ui);
         let paste_receipt = self.receive_requested_paste(ui.ctx(), &mut actions);
         self.consume_active_save_shortcut(ui.ctx());
-        let modal_open = self.field_addition_close_open()
+        let modal_open = self.options_dialog_open()
+            || self.database_options_modal_open()
+            || self.field_addition_close_open()
             || self.field_addition_modal_open()
             || self.saved_query_sql_save_open()
             || self.table_draft_save.is_some()
@@ -890,6 +916,8 @@ impl State {
         self.table_draft_close_dialog(ui.ctx(), &mut actions);
         self.saved_query_sql_close_dialog(ui.ctx(), &mut actions);
         self.saved_query_sql_save_dialog(ui.ctx(), &mut actions);
+        self.options_dialog(ui.ctx(), &mut actions);
+        self.database_options_dialog(ui.ctx(), &mut actions);
         self.field_addition_close_dialog(ui.ctx(), &mut actions);
         self.field_addition_save_dialog(ui.ctx(), &mut actions);
         self.table_draft_save_dialog(ui.ctx(), &mut actions);

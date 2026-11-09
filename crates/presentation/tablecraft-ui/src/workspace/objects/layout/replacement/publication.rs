@@ -19,25 +19,49 @@ pub(super) struct SqlSlot<'a> {
     target_error: &'a mut Option<String>,
 }
 
-pub(super) fn publish(state: &mut State, prepared: Prepared, database: Database) -> bool {
+pub(in crate::workspace::objects::layout) fn publish(
+    state: &mut State,
+    prepared: Prepared,
+    database: Database,
+) -> bool {
     let Prepared {
         mut objects,
         mut active,
         scratch_sql,
         scratch_revision,
         old_revision,
+        transfer,
     } = prepared;
     if state.database.as_ref().is_none_or(|old| {
         old.document_revision != old_revision || !catalog::matches(old, &database)
     }) || state.has_unsaved_table_drafts()
         || state.has_modified_saved_query_sql()
-        || objects.entries.len() != state.objects.entries.len()
-        || objects.active != state.objects.active
-        || !boundary::staged(state, &objects, &active)
+        || objects.entries.len()
+            != state
+                .objects
+                .entries
+                .iter()
+                .filter(|entry| transfer.retains(&entry.tab.target.kind))
+                .count()
+        || objects.active
+            != state.objects.active.filter(|id| {
+                state
+                    .objects
+                    .entries
+                    .iter()
+                    .any(|entry| entry.tab.id == *id && transfer.retains(&entry.tab.target.kind))
+            })
+        || !boundary::staged_optional(state, &objects, active.as_ref())
         || !objects
             .entries
             .iter()
-            .zip(&state.objects.entries)
+            .zip(
+                state
+                    .objects
+                    .entries
+                    .iter()
+                    .filter(|entry| transfer.retains(&entry.tab.target.kind)),
+            )
             .all(|(new, old)| {
                 new.tab.id == old.tab.id
                     && new.tab.target.kind == old.tab.target.kind
@@ -47,9 +71,7 @@ pub(super) fn publish(state: &mut State, prepared: Prepared, database: Database)
     {
         return false;
     }
-    let Some(active_id) = objects.active else {
-        return false;
-    };
+    let active_id = objects.active;
     let mut slots = Vec::new();
     if slots.try_reserve_exact(objects.entries.len()).is_err() {
         return false;
@@ -66,7 +88,7 @@ pub(super) fn publish(state: &mut State, prepared: Prepared, database: Database)
     let Some(object_bytes) = objects.retained_bytes() else {
         return false;
     };
-    let Some(active_bytes) = active.retained_bytes() else {
+    let Some(active_bytes) = active.as_ref().map_or(Some(0), Session::retained_bytes) else {
         return false;
     };
     let mut transient = Counter::new(current_bytes);
@@ -84,23 +106,29 @@ pub(super) fn publish(state: &mut State, prepared: Prepared, database: Database)
     }
 
     let mut old_active = Some((&mut state.saved_query, &mut state.error));
-    let mut new_active = match &mut active {
-        Session::Saved {
+    let mut new_active = match active.as_mut() {
+        Some(Session::Saved {
             state: saved,
             error,
-        } => Some((saved.as_mut(), error)),
+        }) => Some((saved.as_mut(), error)),
         _ => None,
     };
-    for (old, new) in state.objects.entries.iter_mut().zip(&mut objects.entries) {
+    for (old, new) in state
+        .objects
+        .entries
+        .iter_mut()
+        .filter(|entry| transfer.retains(&entry.tab.target.kind))
+        .zip(&mut objects.entries)
+    {
         if !matches!(old.tab.target.kind, ObjectKind::SavedQuery { .. }) {
             continue;
         }
-        let base_bytes = if new.tab.id == active_id {
+        let base_bytes = if Some(new.tab.id) == active_id {
             Some(0)
         } else {
             new.session.as_ref().and_then(Session::retained_bytes)
         };
-        let (source, source_error) = if old.tab.id == active_id {
+        let (source, source_error) = if Some(old.tab.id) == active_id {
             let Some(owner) = old_active.take() else {
                 return false;
             };
@@ -115,7 +143,7 @@ pub(super) fn publish(state: &mut State, prepared: Prepared, database: Database)
             };
             (saved.as_mut(), error)
         };
-        let (target, target_error) = if new.tab.id == active_id {
+        let (target, target_error) = if Some(new.tab.id) == active_id {
             let Some(owner) = new_active.take() else {
                 return false;
             };
@@ -130,7 +158,7 @@ pub(super) fn publish(state: &mut State, prepared: Prepared, database: Database)
             };
             (saved.as_mut(), error)
         };
-        if new.tab.id != active_id {
+        if Some(new.tab.id) != active_id {
             let Some(bytes) = base_bytes.and_then(|base| {
                 base.checked_add(source.moved_sql_payload_bytes(None)?)?
                     .checked_add(source_error.as_ref().map_or(0, String::capacity))
@@ -160,7 +188,11 @@ pub(super) fn publish(state: &mut State, prepared: Prepared, database: Database)
     state.query_sql_revision = scratch_revision;
     state.table_creation = None;
     state.table_design = None;
-    active.install(state);
+    if let Some(active) = active {
+        active.install(state);
+    } else {
+        state.clear_object_slots();
+    }
     state.bump_focus_publication();
     state.schema_activation_pending = false;
     state.ribbon_tab = if state.view == crate::workspace::DocumentView::Design {
