@@ -368,3 +368,9 @@ pub use transaction::{
     QualifiedFieldAdditionAfterOffHistoryRecovery, RecoverableFieldAdditionAfterOffHistoryPlan,
     qualify_native_field_addition_after_off_history_recovery,
 };
+
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub use transaction::{
+    FieldDropIntentError, NativeFieldDropIntent, QualifiedFieldDropRecovery,
+    RecoverableFieldDropPlan, qualify_native_field_drop_recovery,
+};

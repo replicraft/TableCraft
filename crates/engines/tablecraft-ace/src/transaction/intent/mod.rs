@@ -168,3 +168,11 @@ pub use field_addition_after_off_history::{
     QualifiedFieldAdditionAfterOffHistoryRecovery, RecoverableFieldAdditionAfterOffHistoryPlan,
     qualify_native_field_addition_after_off_history_recovery,
 };
+
+#[cfg(feature = "ace16-create")]
+mod field_drop;
+#[cfg(feature = "ace16-create")]
+pub use field_drop::{
+    FieldDropIntentError, NativeFieldDropIntent, QualifiedFieldDropRecovery,
+    RecoverableFieldDropPlan, qualify_native_field_drop_recovery,
+};
