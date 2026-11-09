@@ -1,0 +1,605 @@
+{
+  "date": "2026-11-09",
+  "scope": "Bounded ACE16 saved-field rename GUI and repeated post-OFF column additions; no general ALTER/DROP or native Access save qualification.",
+  "accepted_jobs": [
+    {
+      "package": "tablecraft_ace",
+      "filter": "creation::",
+      "exit_code": 0,
+      "passed": 202,
+      "failed": 0,
+      "ignored": 1,
+      "failures": []
+    },
+    {
+      "package": "tablecraft_ace",
+      "filter": "field_addition_after_off_history",
+      "exit_code": 0,
+      "passed": 9,
+      "failed": 0,
+      "ignored": 0,
+      "failures": []
+    },
+    {
+      "package": "tablecraft_ace",
+      "filter": "field_rename",
+      "exit_code": 0,
+      "passed": 8,
+      "failed": 0,
+      "ignored": 0,
+      "failures": []
+    },
+    {
+      "package": "tablecraft_runtime",
+      "filter": "",
+      "exit_code": 0,
+      "passed": 282,
+      "failed": 0,
+      "ignored": 1,
+      "failures": []
+    },
+    {
+      "package": "tablecraft_access",
+      "filter": "",
+      "exit_code": 0,
+      "passed": 202,
+      "failed": 0,
+      "ignored": 0,
+      "failures": []
+    },
+    {
+      "package": "tablecraft_ui",
+      "filter": "",
+      "exit_code": 0,
+      "passed": 642,
+      "failed": 0,
+      "ignored": 0,
+      "failures": []
+    },
+    {
+      "package": "tablecraft-desktop",
+      "filter": "",
+      "exit_code": 0,
+      "passed": 188,
+      "failed": 0,
+      "ignored": 1,
+      "failures": []
+    }
+  ],
+  "accepted_distinct_passes": 1533,
+  "accepted_ignored": 3,
+  "overlap_policy": "UI selected reruns and earlier overlapping batches are retained but not added to the accepted distinct count.",
+  "retained_batches": {
+    "field-workbench-tests": {
+      "record_sha256": "d4bece4968263db0ee824ebbba8dabbb53b27a645c745ca43614622c88385f54",
+      "jobs": [
+        {
+          "package": "tablecraft_runtime",
+          "filter": "",
+          "exit_code": 0,
+          "passed": 279,
+          "failed": 0,
+          "ignored": 1,
+          "failures": []
+        },
+        {
+          "package": "tablecraft_ace",
+          "filter": "creation::",
+          "exit_code": 101,
+          "passed": 197,
+          "failed": 1,
+          "ignored": 1,
+          "failures": [
+            "creation::add_column::created::field_addition::after_off::history::tests::noncanonical_dictionary_refuses_and_erased_definition_tail_requires_full_replay"
+          ]
+        },
+        {
+          "package": "tablecraft_access",
+          "filter": "",
+          "exit_code": 0,
+          "passed": 202,
+          "failed": 0,
+          "ignored": 0,
+          "failures": []
+        },
+        {
+          "package": "tablecraft_ace",
+          "filter": "field_rename",
+          "exit_code": 0,
+          "passed": 8,
+          "failed": 0,
+          "ignored": 0,
+          "failures": []
+        },
+        {
+          "package": "tablecraft_ace",
+          "filter": "field_addition_after_off_history",
+          "exit_code": 0,
+          "passed": 9,
+          "failed": 0,
+          "ignored": 0,
+          "failures": []
+        },
+        {
+          "package": "tablecraft-desktop",
+          "filter": "",
+          "exit_code": 101,
+          "passed": 180,
+          "failed": 6,
+          "ignored": 1,
+          "failures": [
+            "workspace::editing::field_rename::tests::actual_ack_then_failed_witness_can_return_with_saved_facts_and_block_stale_writes",
+            "workspace::editing::field_rename::tests::close::dirty_close_cancel_retains_name_then_save_closes_only_after_checked_publication",
+            "workspace::editing::field_rename::tests::preferences::renamed_field_sort_is_retained_after_explicit_fresh_schema_restoration_failure",
+            "workspace::editing::field_rename::tests::unchanged_review_owns_only_a_real_read_witness_and_never_a_native_actor",
+            "workspace::editing::field_rename::widgets::actual_duplicate_proposal_reaches_native_review_and_retains_exact_name_without_writing",
+            "workspace::editing::field_rename::widgets::actual_header_rename_and_save_preserve_tabs_and_scratch_then_omitted_default_uses_new_name"
+          ]
+        },
+        {
+          "package": "tablecraft_ui",
+          "filter": "",
+          "exit_code": 101,
+          "passed": 635,
+          "failed": 3,
+          "ignored": 0,
+          "failures": [
+            "workspace::field_rename::entry_tests::saved_design_name_cell_uses_actual_number_and_keeps_declarations_readonly",
+            "workspace::field_rename::interaction_tests::ctrl_s_captures_post_widget_true_name_and_actual_native_number",
+            "workspace::field_rename::interaction_tests::unsupported_width_stays_visible_and_never_dispatches_a_review"
+          ]
+        }
+      ]
+    },
+    "field-workbench-repaired-tests": {
+      "record_sha256": "fc3f7c2cc9adc6aeb677cfe11572e6aa926d71afdf1f6ec0b3a6a0b8fa0073ca",
+      "jobs": [
+        {
+          "package": "tablecraft_ui",
+          "filter": "field_rename",
+          "exit_code": 101,
+          "passed": 19,
+          "failed": 1,
+          "ignored": 0,
+          "failures": [
+            "workspace::field_rename::entry_tests::saved_design_name_cell_uses_actual_number_and_keeps_declarations_readonly"
+          ]
+        },
+        {
+          "package": "tablecraft_ace",
+          "filter": "creation::",
+          "exit_code": 0,
+          "passed": 198,
+          "failed": 0,
+          "ignored": 1,
+          "failures": []
+        },
+        {
+          "package": "tablecraft-desktop",
+          "filter": "",
+          "exit_code": 101,
+          "passed": 184,
+          "failed": 2,
+          "ignored": 1,
+          "failures": [
+            "workspace::editing::field_rename::tests::close::dirty_close_cancel_retains_name_then_save_closes_only_after_checked_publication",
+            "workspace::editing::field_rename::tests::preferences::renamed_field_sort_is_retained_after_explicit_fresh_schema_restoration_failure"
+          ]
+        }
+      ]
+    },
+    "field-workbench-connected-tests": {
+      "record_sha256": "3818399b9758635f2e1a9014a5e8f3b4f51438034ee4cf4bbd97c434eb4bcba9",
+      "jobs": [
+        {
+          "package": "tablecraft_ui",
+          "filter": "field_rename",
+          "exit_code": 0,
+          "passed": 23,
+          "failed": 0,
+          "ignored": 0,
+          "failures": []
+        },
+        {
+          "package": "tablecraft_ace",
+          "filter": "creation::",
+          "exit_code": 0,
+          "passed": 202,
+          "failed": 0,
+          "ignored": 1,
+          "failures": []
+        },
+        {
+          "package": "tablecraft_ace",
+          "filter": "field_addition_after_off_history",
+          "exit_code": 0,
+          "passed": 9,
+          "failed": 0,
+          "ignored": 0,
+          "failures": []
+        },
+        {
+          "package": "tablecraft_ace",
+          "filter": "field_rename",
+          "exit_code": 0,
+          "passed": 8,
+          "failed": 0,
+          "ignored": 0,
+          "failures": []
+        },
+        {
+          "package": "tablecraft-desktop",
+          "filter": "field_rename",
+          "exit_code": 101,
+          "passed": 3,
+          "failed": 3,
+          "ignored": 0,
+          "failures": [
+            "workspace::editing::field_rename::tests::close::dirty_close_cancel_retains_name_then_save_closes_only_after_checked_publication",
+            "workspace::editing::field_rename::tests::preferences::renamed_field_sort_is_retained_after_explicit_fresh_schema_restoration_failure",
+            "workspace::editing::field_rename::widgets::actual_duplicate_proposal_reaches_native_review_and_retains_exact_name_without_writing"
+          ]
+        },
+        {
+          "package": "tablecraft_runtime",
+          "filter": "",
+          "exit_code": 0,
+          "passed": 282,
+          "failed": 0,
+          "ignored": 1,
+          "failures": []
+        },
+        {
+          "package": "tablecraft_access",
+          "filter": "",
+          "exit_code": 0,
+          "passed": 202,
+          "failed": 0,
+          "ignored": 0,
+          "failures": []
+        }
+      ]
+    },
+    "field-workbench-normal-tests": {
+      "record_sha256": "9828cff6dc34ba051ea3deeb0283e86a03853a96a55c95e19c4bd66603accbb1",
+      "jobs": [
+        {
+          "package": "tablecraft-desktop",
+          "filter": "",
+          "exit_code": 101,
+          "passed": 186,
+          "failed": 2,
+          "ignored": 1,
+          "failures": [
+            "workspace::editing::field_rename::tests::design::saved_design_rename_reopens_design_with_same_native_field_selected_and_other_properties_readonly",
+            "workspace::editing::field_rename::tests::preferences::renamed_field_sort_is_retained_after_explicit_fresh_schema_restoration_failure"
+          ]
+        },
+        {
+          "package": "tablecraft_ui",
+          "filter": "",
+          "exit_code": 0,
+          "passed": 642,
+          "failed": 0,
+          "ignored": 0,
+          "failures": []
+        }
+      ]
+    },
+    "field-workbench-observed-tests": {
+      "record_sha256": "8534312f1e635eba04569b24ecc22867d4a39f575dd72f7d9945b6ec405b9e3a",
+      "jobs": [
+        {
+          "package": "tablecraft_ui",
+          "filter": "field_rename",
+          "exit_code": 0,
+          "passed": 24,
+          "failed": 0,
+          "ignored": 0,
+          "failures": []
+        },
+        {
+          "package": "tablecraft-desktop",
+          "filter": "",
+          "exit_code": 0,
+          "passed": 188,
+          "failed": 0,
+          "ignored": 1,
+          "failures": []
+        }
+      ]
+    }
+  },
+  "corrections": [
+    "Precompute localized accessibility label before egui widget_info holds the context lock.",
+    "Mutate the actual first DefaultValue dictionary key in the independent noncanonical-key refusal.",
+    "Use the retained accessibility tree, rather than requiring an incremental update on a settled frame.",
+    "Reserve a bounded source/warning panel before Datasheet or Design consumes the viewport.",
+    "Restore Design selection by native number, accepted name, tab and fresh revision.",
+    "Scope close actions to the actual modal rectangle, not a nonexistent Dialog role or duplicate Ribbon Save controls.",
+    "Observe duplicate review terminal outcome rather than transient worker presence.",
+    "Retain and explicitly retry the original opaque sort; a failed sort is not marked applied."
+  ],
+  "visual": {
+    "platform": "macOS-14.7.2-arm64-arm-64bit-Mach-O",
+    "renderer": "egui_kittest offscreen wgpu; no native windows",
+    "input_os": "synthetic Windows",
+    "matrix_sha256": "6f83421320ab044ca88bee430d2d5a65b3d37b529056997e2be1402d9b3149b7",
+    "frames": [
+      {
+        "locale": "en-US",
+        "theme": "light",
+        "mode": "name",
+        "width": 1280,
+        "height": 820,
+        "scale": "1",
+        "file": "en-US-light-datasheet-field-rename-name.png",
+        "sha256": "b8c8517ee08449779cf89f1ce2ec1bbf5a674733345584b95ff2fb85ef58c291",
+        "directly_reviewed": true
+      },
+      {
+        "locale": "en-US",
+        "theme": "light",
+        "mode": "unsupported",
+        "width": 1280,
+        "height": 820,
+        "scale": "1",
+        "file": "en-US-light-datasheet-field-rename-unsupported.png",
+        "sha256": "610ef89fba514b36ccd9390fa5fe1527dfee93ac2aac040f7047bebba91fa404",
+        "directly_reviewed": true
+      },
+      {
+        "locale": "en-US",
+        "theme": "light",
+        "mode": "source-refused",
+        "width": 1280,
+        "height": 820,
+        "scale": "1",
+        "file": "en-US-light-datasheet-field-rename-source-refused.png",
+        "sha256": "c1ff704f57caee57cd3493efbceb8ba84a560b1c8545878d171d7d7553024fc5",
+        "directly_reviewed": true
+      },
+      {
+        "locale": "en-US",
+        "theme": "light",
+        "mode": "unchanged",
+        "width": 1280,
+        "height": 820,
+        "scale": "1",
+        "file": "en-US-light-datasheet-field-rename-unchanged.png",
+        "sha256": "2eadd0e86f2eb573bdb78becd9aad99f3cef853aa09a85318c5f33de776cafa3",
+        "directly_reviewed": true
+      },
+      {
+        "locale": "en-US",
+        "theme": "light",
+        "mode": "review",
+        "width": 1280,
+        "height": 820,
+        "scale": "1",
+        "file": "en-US-light-datasheet-field-rename-review.png",
+        "sha256": "7e85b8e600776557e3232feb0094865d92dd1985c62d6feb68d1753df035aa73",
+        "directly_reviewed": true
+      },
+      {
+        "locale": "en-US",
+        "theme": "light",
+        "mode": "close",
+        "width": 1280,
+        "height": 820,
+        "scale": "1",
+        "file": "en-US-light-datasheet-field-rename-close.png",
+        "sha256": "d19596b803737535fe51df879e44ed8d04b28d9666851a6e894467b2883ba213",
+        "directly_reviewed": true
+      },
+      {
+        "locale": "en-US",
+        "theme": "light",
+        "mode": "returned",
+        "width": 1280,
+        "height": 820,
+        "scale": "1",
+        "file": "en-US-light-datasheet-field-rename-returned.png",
+        "sha256": "4b29fc4fbc57cc665366403f24a4ad437fb7f504798704b3688b18b10a4aee18",
+        "directly_reviewed": true
+      },
+      {
+        "locale": "en-US",
+        "theme": "light",
+        "mode": "unchanged-returned",
+        "width": 1280,
+        "height": 820,
+        "scale": "1",
+        "file": "en-US-light-datasheet-field-rename-unchanged-returned.png",
+        "sha256": "8d82eb299a91c173d98236ac99563d018a450d236a5071c8a49ce5e9077b2bcd",
+        "directly_reviewed": true
+      },
+      {
+        "locale": "en-US",
+        "theme": "dark",
+        "mode": "name",
+        "width": 1280,
+        "height": 820,
+        "scale": "1",
+        "file": "en-US-dark-datasheet-field-rename-name.png",
+        "sha256": "81653d9a6aace3a027c4efd2269b676e6c88a1b40761e06a03dac8ed7f65e04c",
+        "directly_reviewed": true
+      },
+      {
+        "locale": "en-US",
+        "theme": "dark",
+        "mode": "unsupported",
+        "width": 1280,
+        "height": 820,
+        "scale": "1",
+        "file": "en-US-dark-datasheet-field-rename-unsupported.png",
+        "sha256": "44de8f7fb8043c70c1db717716f1c7bb4ffb0604df16ba2b746f8f806d9a67d4",
+        "directly_reviewed": true
+      },
+      {
+        "locale": "en-US",
+        "theme": "dark",
+        "mode": "source-refused",
+        "width": 1280,
+        "height": 820,
+        "scale": "1",
+        "file": "en-US-dark-datasheet-field-rename-source-refused.png",
+        "sha256": "b9b503de549e711034711f9d9974af6ade22942b93f9d42ea8f6ba3c1c22f312",
+        "directly_reviewed": true
+      },
+      {
+        "locale": "en-US",
+        "theme": "dark",
+        "mode": "unchanged",
+        "width": 1280,
+        "height": 820,
+        "scale": "1",
+        "file": "en-US-dark-datasheet-field-rename-unchanged.png",
+        "sha256": "623ba628d3dc078e462440e94a19db374ada9e44d7e3a467bc2f97c091769256",
+        "directly_reviewed": true
+      },
+      {
+        "locale": "en-US",
+        "theme": "dark",
+        "mode": "review",
+        "width": 1280,
+        "height": 820,
+        "scale": "1",
+        "file": "en-US-dark-datasheet-field-rename-review.png",
+        "sha256": "25527a09345c62ed44dc2c60f1476a83f670e63a10f115995921334ba7f2a774",
+        "directly_reviewed": true
+      },
+      {
+        "locale": "en-US",
+        "theme": "dark",
+        "mode": "close",
+        "width": 1280,
+        "height": 820,
+        "scale": "1",
+        "file": "en-US-dark-datasheet-field-rename-close.png",
+        "sha256": "b21579a3564c2b029243e0570520222a2b38d9297bd56e9ff0bc287b87f65425",
+        "directly_reviewed": true
+      },
+      {
+        "locale": "en-US",
+        "theme": "dark",
+        "mode": "returned",
+        "width": 1280,
+        "height": 820,
+        "scale": "1",
+        "file": "en-US-dark-datasheet-field-rename-returned.png",
+        "sha256": "f9e4e8717dc5f5ad971174d5f1b6afd695c85ed52870370d73aa7a78cae28b1f",
+        "directly_reviewed": true
+      },
+      {
+        "locale": "en-US",
+        "theme": "dark",
+        "mode": "unchanged-returned",
+        "width": 1280,
+        "height": 820,
+        "scale": "1",
+        "file": "en-US-dark-datasheet-field-rename-unchanged-returned.png",
+        "sha256": "c165fd35fac4ed349f6fd5a69cb10ca8fc172b8747f18f5d15c6c3cf17fdcd64",
+        "directly_reviewed": true
+      },
+      {
+        "locale": "de",
+        "theme": "light",
+        "mode": "close",
+        "width": 1100,
+        "height": 760,
+        "scale": "1.25",
+        "file": "de-light-datasheet-field-rename-close@1.25x.png",
+        "sha256": "6cf955582392cfe098df56216675835a414b9ee41e339e3f07adaa8ac2644272",
+        "directly_reviewed": true
+      },
+      {
+        "locale": "de",
+        "theme": "dark",
+        "mode": "returned",
+        "width": 1100,
+        "height": 760,
+        "scale": "1.25",
+        "file": "de-dark-datasheet-field-rename-returned@1.25x.png",
+        "sha256": "521434ee7faeb8b006e72f9252536ca1893bfcfe026b8e3de920202c87bc6127",
+        "directly_reviewed": true
+      },
+      {
+        "locale": "de",
+        "theme": "light",
+        "mode": "unchanged-returned",
+        "width": 1100,
+        "height": 760,
+        "scale": "1.25",
+        "file": "de-light-datasheet-field-rename-unchanged-returned@1.25x.png",
+        "sha256": "da3c06d82a3f65ac7a657b2b12f8a3eb4289635eae396e1ef1f2e48177f43bb6",
+        "directly_reviewed": true
+      },
+      {
+        "locale": "ja",
+        "theme": "light",
+        "mode": "close",
+        "width": 1100,
+        "height": 760,
+        "scale": "1",
+        "file": "ja-light-datasheet-field-rename-close.png",
+        "sha256": "6ecf25316c365771cf204701b6cfdb095b69a73933e5ac3b6c2ac354bb674649",
+        "directly_reviewed": true
+      },
+      {
+        "locale": "ja",
+        "theme": "dark",
+        "mode": "returned",
+        "width": 1100,
+        "height": 760,
+        "scale": "1",
+        "file": "ja-dark-datasheet-field-rename-returned.png",
+        "sha256": "418044c22384d13a796e03c89d2190272bb411ef4cdcffbb346b7908e3dc03e9",
+        "directly_reviewed": true
+      },
+      {
+        "locale": "ja",
+        "theme": "light",
+        "mode": "unchanged-returned",
+        "width": 1100,
+        "height": 760,
+        "scale": "1",
+        "file": "ja-light-datasheet-field-rename-unchanged-returned.png",
+        "sha256": "b2505fccd37752862509d81454d0fb28183c6852a9776cca5b7444f9f0054a5c",
+        "directly_reviewed": true
+      }
+    ],
+    "reference": "Retained Windows Access Datasheet 1920x1141 and Design 1920x1152, VirtualBox; original OS scale unrecorded.",
+    "limits": "Rename menu/editor/confirmation/status have no retained Access capture. Compact German/Japanese retain horizontally scrollable Ribbon overflow. No Windows/Access behavior or pixel-parity claim."
+  },
+  "checks": {
+    "strict_clippy": {
+      "sha256": "d6ffcdeb5d52bde82f9a7e026ab801f74c1c94aa0ca94174574749e4bdc4f0fd",
+      "passed": true
+    },
+    "rustfmt": {
+      "sha256": "9daba0146ddc8d69c678f2312a65cc2187e738222e909c3ba6f2812dcb56b214",
+      "passed": true
+    },
+    "dependency_boundaries": {
+      "sha256": "f7d52bf47bcc4b2e9710c09efd2c026f0e695fc3a18600d5fa56dc70ed065a7a",
+      "passed": true
+    },
+    "native_read_only_build": {
+      "sha256": "ecb0506b69467cc2e44ba2fb7efcf80546a5eb9e8d678e93cc6962d46d869a00",
+      "passed": true
+    },
+    "native_create_journal_build": {
+      "sha256": "a0ff28e4b610bd1cca2f52e9a74ba6eae3ca76b6e65f66a3fafc341c0cb96c16",
+      "passed": true
+    },
+    "documentation_links": {
+      "sha256": "a2948266173d52451fa5f2001e40f649800ff1feec01f98691f53e2c4bf2e4ce",
+      "passed": true
+    }
+  },
+  "external_checks_unrun": [
+    "Microsoft Access rename/add save comparisons",
+    "Native Windows/Linux desktop and filesystem qualification"
+  ]
+}

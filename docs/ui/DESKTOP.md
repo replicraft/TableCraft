@@ -4,6 +4,20 @@ The [Open-time recovery flow](RECOVERY.md) handles an explicitly selected
 reserved active journal through the shared runtime owner. Opening and rendering
 its prompt make no changes; recovery requires an explicit action.
 
+## Saved-field name proposals — 9 November 2026
+
+The [shared saved-field rename flow](FIELD_RENAME.md) connects actual true-name
+and native-number targets to the consuming runtime service. Datasheet and Design
+share bounded local editing, explicit Save, exact dirty-close decisions and an
+operation-specific full-witness publication. Unchanged spelling performs review
+and a readonly check without a native save actor. Normal-host save/reopen,
+Design selection, close, duplicate and failed-sort retry journeys pass headlessly.
+See the [coordinated record](../testing/results/field-workbench-workflows-2026-11-09.json).
+The separate source-free status-panel matrix has 22 successful renders and direct review of every image without clipping. Compact
+German/Japanese layouts retain the complete Ribbon through horizontal overflow. Retained
+captures supply no rename popup/status reference, and no Windows/Access rename
+execution or save parity is claimed.
+
 ## Explicit current-database Options — 8 November 2026
 
 The normal desktop opens a shared File → Options dialog. General retains the

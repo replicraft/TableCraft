@@ -27,8 +27,13 @@ N12's observed free space qualifies, N13 does not. The
 [8–9 November composition record](testing/results/field-history-options-workflows-2026-11-09.json)
 passes 991 unique selected checks plus strict all-feature and minimal ACE
 create+journal lint. Earlier UI/renders are excluded from that count. Old
-`TCDO0001` is unchanged; subsequent ADD/rename after this field-history OFF,
-populated/broader layouts and native Windows/Access save comparison remain open.
+`TCDO0001` is unchanged. Separate TCAC6/7 services now support qualified fitted
+ADD and repeated ADD after this OFF history. The bounded same-width saved-field
+rename now passes normal Datasheet/Design save, close and fresh-schema selection
+checks. The [current workbench record](testing/results/field-workbench-workflows-2026-11-09.json)
+retains failed batches and the accepted 1,533 distinct checks plus 22 reviewed
+offscreen frames. Saved-field alteration/deletion, populated/broader layouts
+and native Windows/Access save comparison remain open.
 
 [Coordinated wider root promotion](access/writes/NORMAL_WIDE_ROOT_PROMOTION.md)
 now passes complete-image, recovery, retained-session and CLI acceptance for

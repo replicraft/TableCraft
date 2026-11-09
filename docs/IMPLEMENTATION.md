@@ -7,16 +7,28 @@ field histories through its normal consuming service, save worker and checked
 reopen. Actual native role metadata selects one source proof; no failed old
 plan retries the new intent. Source inspection measures fitting name capacity
 without inventing a replacement field. Four headless widget cases preserve exact
-independent AFTER bytes, tab identity and resource cleanup. Subsequent ADD still
-refuses until its later history has a separate source proof.
+independent AFTER bytes, tab identity and resource cleanup. A distinct repeated
+post-OFF history candidate, TCAC0007 recovery and normal source-selection/runtime
+route pass coordinated native, runtime and normal desktop consumer checks.
+Full original chronology is replayed rather than treating current names or a
+source-check result as write authority.
 
 Field rename now has a consuming runtime review/save service and complete-image
 reopen witness. Actual native field numbers reach shared table headers separately
 from captions and display positions. Unchanged review creates no save actor or
-journal. The header interaction and normal desktop rename publication remain
-unfinished.
+journal. The shared Datasheet/Design name editor, exact dirty-close choices and
+operation-specific checked desktop publication pass normal-host functional
+acceptance, including real Design selection/save/reopen, dirty close, duplicate
+refusal and explicit retry of a retained failed sort. Failed batches and
+corrections remain retained. The source-free
+status-panel matrix rendered all 22 cases on macOS arm64; every frame is directly
+reviewed without clipping. These renders remain separate from the functional
+gate and establish neither general field CRUD nor native Access parity. See the [shared rename workflow](ui/FIELD_RENAME.md).
 
-The [service record](testing/results/field-schema-services-2026-11-09.json)
+The [current workbench record](testing/results/field-workbench-workflows-2026-11-09.json)
+reports 1,533 distinct accepted checks and three ignored cases, including the
+642-test UI and 188-test desktop suites. The earlier
+[service record](testing/results/field-schema-services-2026-11-09.json)
 reports separate passing batches of 1,290 and 693 checks; repeated coverage is
 not summed. Strict affected-library, desktop and preview lint passes. These
 results remain headless implementation evidence, with no new native Access,

@@ -107,3 +107,7 @@ Apache-2.0 artifact is unchanged; only generated copies were mutated, with
 expression evaluation disabled. SDK bytes/getters are engineering evidence,
 not native repeated-source/write admission, GUI or Microsoft Access validation.
 No third-party database/source/binary or private machine path is included.
+
+- [Saved-field workbench workflows](results/field-workbench-workflows-2026-11-09.json):
+  accepted native/runtime/GUI checks, retained failed batches and 22 directly reviewed
+  offscreen frames; native Access and other-platform qualification remain open.

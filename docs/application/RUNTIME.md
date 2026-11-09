@@ -1633,7 +1633,17 @@ journal and must not be reported as a changed save.
 
 The [coordinated service record](../testing/results/field-schema-services-2026-11-09.json)
 includes actual runtime save/witness, unchanged, stale and retained-failure cases.
-Shared header interaction and normal desktop publication remain work.
+The [shared field-name UI](../ui/FIELD_RENAME.md) now connects Datasheet/Design
+proposals, exact close decisions and distinct checked replacement publication.
+Normal-host interaction checks now pass, including real Design save/reopen,
+unchanged review, close, duplicate rejection and retained sort retry. The
+[coordinated record](../testing/results/field-workbench-workflows-2026-11-09.json)
+retains failures and final evidence separately. The separate
+source-free status-panel matrix has 22 successful renders and direct review of every image without clipping; compact
+German/Japanese layouts retain the complete Ribbon through horizontal overflow. No-op review consumes
+only its readonly
+witness, and its presentation never claims a changed save. Scratch SQL remains
+byte-exact; native filter/sort intent is freshly revalidated without rewriting.
 No Microsoft Access or Windows rename-save comparison is claimed.
 
 ## Reviewed existing-table field additions
@@ -1693,7 +1703,13 @@ retain their original source languages. The same generic service consumes the
 sealed TCAC6 plan, so there is no extra host-specific save endpoint or automatic
 settings change. The [separate service record](../testing/results/field-schema-services-2026-11-09.json)
 covers actual runtime and headless GUI saves, complete reopened images and the
-fresh later-event refusal; it does not inherit the historical passing count below.
+historical later-event refusal; it does not inherit the historical passing count below.
+The separate metadata-selected `AfterExplicitOffHistory` route now consumes a
+sealed chronological replay plan and TCAC7 staged owner through these same
+services. Runtime and actual GUI saves match four independently observed second
+additions; a further raw-only case stays separate. Complete-image reconstruction,
+per-kind measured capacity, one actor and the checked reopen witness remain
+mandatory. See the [current coordinated record](../testing/results/field-workbench-workflows-2026-11-09.json).
 
 One private plan composition and renamed `StagedFieldAddition` owner reuse fresh
 original-image requalification, the exclusive offline session and checked V2

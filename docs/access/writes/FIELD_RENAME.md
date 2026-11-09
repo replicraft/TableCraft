@@ -2,8 +2,9 @@
 
 A separate native candidate constructs equal-width field renames on qualified
 empty ACE16 tables with explicit Name AutoCorrect OFF. Consuming runtime saves
-and checked reopening are implemented; normal GUI rename interaction remains
-unfinished. General persisted field CRUD,
+and checked reopening are implemented. The [shared GUI proposal/close/publication
+flow](../../ui/FIELD_RENAME.md) passes its normal-host headless functional gate. Its source-free 22-case render matrix is separate evidence,
+with direct review of all 22 images complete. General persisted field CRUD,
 other native versions and native Access save comparison remain unfinished.
 
 ## Complete settled source
@@ -91,7 +92,7 @@ Normal GUI interaction and publication remain the next integration boundary.
 
 ## Evidence and verification status
 
-<!-- FIELD_RENAME_GATE_STATUS: native/adapter/runtime verified; GUI pending -->
+<!-- FIELD_RENAME_GATE_STATUS: native/adapter/runtime and bounded GUI headless gate verified; native Access comparison open -->
 
 The [coordinated candidate batch](../../testing/results/saved-field-candidates-2026-11-09.json)
 passes 2,188 tests across the complete engine, Access adapter, runtime, desktop

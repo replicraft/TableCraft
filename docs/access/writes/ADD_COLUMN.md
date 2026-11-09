@@ -163,9 +163,35 @@ independent raw fixtures anchor complete bytes. The
 reports two separate passing batches: 1,290 recovery/adapter/presentation checks
 and 693 source/runtime/host checks. Their repeated coverage is not summed.
 Four actual headless widget cases save Number/Text after the two OFF histories,
-checking complete reopened bytes, tab identity and no retained journal. Subsequent
-ADD still refuses through fresh source inspection. Microsoft Access/Windows and
+checking complete reopened bytes, tab identity and no retained journal. That
+historical batch retained the later-event refusal; the separate route below now
+qualifies subsequent fitted additions. Microsoft Access/Windows and
 older-format native Save remain unverified.
+
+## Repeated fitted additions after OFF
+
+`AfterExplicitOffHistory` is a separate metadata-selected purpose. Actual user and
+database Single references on their shared property page select its chronology;
+row count or a failed old proof never selects this route. Qualification rebuilds
+the settled OFF source, replays every later append through the real native kernel
+and compares the entire result to the current original image. The private replay
+owner then permits the next append. Current names alone supply no authority.
+
+The distinct `TCAC0007`/profile7 request carries only the original binding and
+closed target declaration. Cold recovery reconstructs both full images through
+that same chronology and checked V2 owner. Old TCAC1–6 languages stay unchanged.
+Readonly inspection measures the actual qualified encoder capacity; one normal
+runtime review, save worker and complete-image witness serve the GUI. There is
+no post-failure retry into another source language or unchecked AFTER payload.
+
+The [independent second-event SDK record](../../testing/field_add_repeat_after_off/README.md)
+anchors four complete second additions. Headless runtime and actual GUI cases
+match those bytes; a further raw-only history case is explicitly separate from
+SDK save evidence. The [coordinated workbench record](../../testing/results/field-workbench-workflows-2026-11-09.json)
+contains passing creation, original-intent recovery, adapter, runtime and GUI
+checks. Empty canonical ACE16, ASCII identifiers, existing-page capacity and
+sixteen-field source limits remain. This adds no rollover, populated-table or
+older-profile write permission and no native Access save qualification.
 
 ## Actual source and preservation
 
