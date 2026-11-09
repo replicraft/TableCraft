@@ -33,7 +33,9 @@ const LONG_WIDTH: usize = size_of::<i32>();
 const WIDE_WIDTH: usize = size_of::<i64>();
 const CATALOG_PROPERTY_FIELD: usize = 14;
 const CATALOG_PROPERTY_VARIABLE: usize = 8;
+#[cfg(feature = "journal")]
 const EXTERNAL_PROPERTY_BYTES: usize = 3 * size_of::<u32>();
+#[cfg(feature = "journal")]
 const SINGLE_PROPERTY_FLAG: u32 = 0x4000_0000;
 pub(super) const DATABASE_SYSTEM_FLAGS: u32 = 0x8000_0000;
 
@@ -291,6 +293,7 @@ pub(super) fn catalog_with_properties(
 }
 
 /// A database metadata role with one already qualified external property body.
+#[cfg(feature = "journal")]
 pub(super) fn database_properties_catalog(
     record: &mut [u8],
     id: u32,

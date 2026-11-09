@@ -241,6 +241,7 @@ impl Writer<'_, '_> {
 impl Prepared<'_> {
     /// Preserve the independently observed ADD ordering when no Required
     /// dictionary entry existed. Ordinary constructive creation keeps its order.
+    #[cfg(feature = "journal")]
     pub(super) fn with_default_first(mut self) -> Self {
         self.default_first = true;
         self
