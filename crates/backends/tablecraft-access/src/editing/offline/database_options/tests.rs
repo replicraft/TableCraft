@@ -1,4 +1,5 @@
 //! Reviewed OFF saves and explicit V2 recovery over actual retained file owners.
+mod field_history;
 use super::*;
 use crate::editing::offline::{
     CompletionKind, VerifiedImage,
@@ -117,13 +118,17 @@ fn retained_pair(
     path: &Path,
     bundle: &Path,
     before: &[u8],
+    plan: Plan,
     committed: bool,
     retired: bool,
 ) -> OfflineWriteSession {
     fs::write(path, before).unwrap();
-    let plan = review(before);
-    let raw = plan.intent().encode(&mut budget(), &|| false).unwrap();
-    assert_eq!(&raw[..8], b"TCDO0001");
+    let expected_magic = match &plan {
+        Plan::Creator(_) => b"TCDO0001",
+        Plan::FieldHistory(_) => b"TCDO0002",
+    };
+    let raw = plan.encode_intent(&mut budget(), &|| false).unwrap();
+    assert_eq!(&raw[..8], expected_magic);
     let mut owner = open(path);
     let slot = owner.slot_mut().unwrap();
     let mut pair = OfflineJournalPair::create(
@@ -170,7 +175,14 @@ fn retained_and_cold_recovery_report_options_only_for_verified_commits() {
             let directory = tempfile::tempdir().unwrap();
             let path = directory.path().join("recovery.accdb");
             let bundle = directory.path().join("journal");
-            let owner = retained_pair(&path, &bundle, &before, committed, false);
+            let owner = retained_pair(
+                &path,
+                &bundle,
+                &before,
+                Plan::Creator(review(&before)),
+                committed,
+                false,
+            );
             let (owner, receipt) = if cold {
                 owner.release().unwrap();
                 open(&path)
@@ -221,9 +233,16 @@ fn settled_confirmation_preserves_bytes_and_does_not_reapply_explicit_off() {
         let directory = tempfile::tempdir().unwrap();
         let path = directory.path().join("confirmed.accdb");
         let bundle = directory.path().join("journal");
-        retained_pair(&path, &bundle, &before, committed, true)
-            .release()
-            .unwrap();
+        retained_pair(
+            &path,
+            &bundle,
+            &before,
+            Plan::Creator(review(&before)),
+            committed,
+            true,
+        )
+        .release()
+        .unwrap();
         let retired = retired_bundle(directory.path());
         let (owner, receipt) = open(&path)
             .confirm_retired(&retired, &mut budget(), &|| false)

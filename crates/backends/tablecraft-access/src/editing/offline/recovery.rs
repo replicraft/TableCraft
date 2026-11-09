@@ -7,7 +7,8 @@ use std::path::Path;
 #[cfg(feature = "ace16-create")]
 use tablecraft_ace::{
     NativeAddColumnIntent, NativeAddTableIntent, NativeDatabaseOptionsIntent,
-    NativeDefaultZeroAddColumnIntent, NativeFieldAdditionIntent, NativeFirstTableIntent,
+    NativeDefaultZeroAddColumnIntent, NativeFieldAdditionIntent,
+    NativeFieldHistoryDatabaseOptionsIntent, NativeFirstTableIntent,
     NativeRepeatedDefaultZeroAddColumnIntent, qualify_native_add_column_recovery,
     qualify_native_add_table_recovery, qualify_native_default_zero_add_column_recovery,
     qualify_native_field_addition_recovery, qualify_native_first_table_recovery,
@@ -72,7 +73,9 @@ impl OfflineWriteSession {
             match intent {
                 #[cfg(feature = "ace16-create")]
                 MutationIntent::DatabaseOptions(intent) => {
-                    super::database_options::recover(pair, intent, slot.scope, budget, cancelled)
+                    super::database_options::recovery::recover(
+                        pair, intent, slot.scope, budget, cancelled,
+                    )
                 }
                 MutationIntent::QueryExpressionEdits(intent) => {
                     let (mut target, mut journal) = pair.storage().map_err(Cause::Pair)?;
@@ -357,10 +360,7 @@ impl OfflineWriteSession {
                 MutationIntent::DatabaseOptions(intent) => {
                     let checked =
                         inspect_v2(&mut journal, budget, cancelled).map_err(Cause::Recovery)?;
-                    let qualified = tablecraft_ace::qualify_native_database_options_recovery(
-                        checked, intent, slot.scope, budget, cancelled,
-                    )
-                    .map_err(Cause::DatabaseOptionsIntent)?;
+                    let qualified = intent.qualify(checked, slot.scope, budget, cancelled)?;
                     qualified
                         .confirm_completed(&mut target, budget, cancelled)
                         .map_err(Cause::Recovery)
@@ -629,7 +629,8 @@ impl OfflineWriteSession {
             .max(NativeDefaultZeroAddColumnIntent::MAX_ENCODED_BYTES as u64)
             .max(NativeRepeatedDefaultZeroAddColumnIntent::MAX_ENCODED_BYTES as u64)
             .max(NativeFieldAdditionIntent::MAX_ENCODED_BYTES as u64)
-            .max(NativeDatabaseOptionsIntent::MAX_ENCODED_BYTES as u64);
+            .max(NativeDatabaseOptionsIntent::MAX_ENCODED_BYTES as u64)
+            .max(NativeFieldHistoryDatabaseOptionsIntent::MAX_ENCODED_BYTES as u64);
         let result = if retired {
             OfflineJournalPair::open_retired(target, bundle, limit, budget, cancelled)
         } else {

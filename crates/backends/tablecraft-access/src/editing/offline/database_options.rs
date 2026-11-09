@@ -1,19 +1,23 @@
 //! Explicit source-bound OFF staging on the same retained native target owner.
-mod recovery;
-pub(super) use recovery::recover;
+pub(super) mod intent;
+pub(super) mod plan;
+pub(super) mod recovery;
 
 use super::plan::MutationPlan;
 use super::{
     Cause, DatabaseOptionsChange, Failure, OfflineWriteSession, Phase, Receipt, SessionState,
 };
+use plan::Plan;
 use std::path::Path;
-use tablecraft_ace::{NativeImage, RecoverableNativeDatabaseOptionsPlan};
+use tablecraft_ace::{
+    NativeImage, RecoverableFieldHistoryDatabaseOptionsPlan, RecoverableNativeDatabaseOptionsPlan,
+};
 use tablecraft_core::limits::ResourceBudget;
 
 /// A reviewed explicit OFF operation; no journal exists until consuming apply.
 pub struct StagedDatabaseOptions {
     session: OfflineWriteSession,
-    plan: RecoverableNativeDatabaseOptionsPlan,
+    plan: Plan,
 }
 
 impl OfflineWriteSession {
@@ -21,8 +25,31 @@ impl OfflineWriteSession {
     /// Native admission and complete source/image proof spend separate pools.
     /// No missing metadata is interpreted as disabled and no creator default changes.
     pub fn stage_reviewed_disable_name_auto_correct_with_budgets(
-        mut self,
+        self,
         reviewed: RecoverableNativeDatabaseOptionsPlan,
+        native: &mut ResourceBudget,
+        proof: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<StagedDatabaseOptions, Failure> {
+        self.stage_database_options_plan(Plan::Creator(reviewed), native, proof, cancelled)
+    }
+
+    /// Reconstruct the distinct OFF-after-field-history original request.
+    /// The caller selected this sealed plan before native qualification; failed
+    /// creator qualification is never retried as this source language.
+    pub fn stage_reviewed_field_history_disable_name_auto_correct_with_budgets(
+        self,
+        reviewed: RecoverableFieldHistoryDatabaseOptionsPlan,
+        native: &mut ResourceBudget,
+        proof: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<StagedDatabaseOptions, Failure> {
+        self.stage_database_options_plan(Plan::FieldHistory(reviewed), native, proof, cancelled)
+    }
+
+    fn stage_database_options_plan(
+        mut self,
+        reviewed: Plan,
         native: &mut ResourceBudget,
         proof: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
@@ -48,9 +75,7 @@ impl OfflineWriteSession {
                 proof,
                 cancelled,
             )?;
-            reviewed
-                .requalify_with_budgets(image, native, proof, cancelled)
-                .map_err(Cause::DatabaseOptionsIntent)
+            reviewed.requalify_with_budgets(image, native, proof, cancelled)
         })();
         match result {
             Ok(plan) => Ok(StagedDatabaseOptions {

@@ -1,14 +1,17 @@
 //! Private action composition; row and schema operations retain distinct intents.
 #[cfg(feature = "ace16-create")]
+use super::database_options::{
+    intent::Intent as DatabaseOptionsIntent, plan::Plan as DatabaseOptionsPlan,
+};
+#[cfg(feature = "ace16-create")]
 use super::field_addition::plan::Plan as FieldAdditionPlan;
 use super::{Cause, QueryChange, SchemaChange, query_expression::QueryExpressionPlan};
 use crate::editing::journal::NativeJournalInsertPlan;
 #[cfg(feature = "ace16-create")]
 use tablecraft_ace::{
     AddTablePlan, FirstTablePlan, NativeAddColumnIntent, NativeAddTableIntent,
-    NativeDatabaseOptionsIntent, NativeDefaultZeroAddColumnIntent, NativeFieldAdditionIntent,
-    NativeFirstTableIntent, NativeRepeatedDefaultZeroAddColumnIntent, RecoverableAddColumnPlan,
-    RecoverableNativeDatabaseOptionsPlan,
+    NativeDefaultZeroAddColumnIntent, NativeFieldAdditionIntent, NativeFirstTableIntent,
+    NativeRepeatedDefaultZeroAddColumnIntent, RecoverableAddColumnPlan,
 };
 use tablecraft_ace::{
     NativeClockInsertIntent, NativeCompleteInsertIntent, NativeDeleteIntent, NativeEofInsertIntent,
@@ -21,7 +24,7 @@ use tablecraft_io::journal::{DurableStorage, ResizableDurableStorage};
 
 pub(super) enum MutationPlan {
     #[cfg(feature = "ace16-create")]
-    DatabaseOptions(RecoverableNativeDatabaseOptionsPlan),
+    DatabaseOptions(DatabaseOptionsPlan),
     QueryExpression(QueryExpressionPlan),
     #[cfg(feature = "ace16-create")]
     AddColumn(RecoverableAddColumnPlan),
@@ -45,10 +48,7 @@ impl MutationPlan {
     ) -> Result<Vec<u8>, Cause> {
         match self {
             #[cfg(feature = "ace16-create")]
-            Self::DatabaseOptions(plan) => plan
-                .intent()
-                .encode(budget, cancelled)
-                .map_err(Cause::DatabaseOptionsIntent),
+            Self::DatabaseOptions(plan) => plan.encode_intent(budget, cancelled),
             Self::QueryExpression(plan) => plan.encode_intent(budget, cancelled),
             #[cfg(feature = "ace16-create")]
             Self::AddColumn(plan) => plan
@@ -91,10 +91,7 @@ impl MutationPlan {
         let prepared = match self {
             #[cfg(feature = "ace16-create")]
             Self::DatabaseOptions(plan) => {
-                let prepared = plan
-                    .prepare(target, journal, budget, cancelled)
-                    .map_err(Cause::Prepare)?;
-                return prepared.commit(budget, cancelled).map_err(Cause::Commit);
+                return plan.commit(target, journal, budget, cancelled);
             }
             Self::QueryExpression(plan) => {
                 return plan.commit(target, journal, budget, cancelled);
@@ -147,7 +144,7 @@ impl MutationPlan {
 
 pub(super) enum MutationIntent {
     #[cfg(feature = "ace16-create")]
-    DatabaseOptions(NativeDatabaseOptionsIntent),
+    DatabaseOptions(DatabaseOptionsIntent),
     QueryExpression(NativeQueryExpressionIntent),
     QueryExpressionEdits(NativeQueryExpressionEditsIntent),
     #[cfg(feature = "ace16-create")]
@@ -229,9 +226,8 @@ impl MutationIntent {
         // never retried as another action or promoted from its record prefix.
         #[cfg(feature = "ace16-create")]
         if raw.starts_with(b"TCDO") {
-            return NativeDatabaseOptionsIntent::decode(raw, budget, cancelled)
-                .map(Self::DatabaseOptions)
-                .map_err(Cause::DatabaseOptionsIntent);
+            return DatabaseOptionsIntent::decode(raw, budget, cancelled)
+                .map(Self::DatabaseOptions);
         }
         if raw.starts_with(b"TCQE0002") {
             return NativeQueryExpressionEditsIntent::decode(raw, budget, cancelled)

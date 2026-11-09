@@ -4,8 +4,8 @@ use std::{error::Error, fmt};
 #[cfg(feature = "ace16-create")]
 use tablecraft_ace::{
     AddColumnIntentError, AddTableError, AddTableIntentError, DatabaseOptionsIntentError,
-    DefaultZeroAddColumnIntentError, FieldAdditionIntentError, FirstTableError,
-    FirstTableIntentError, RepeatedDefaultZeroAddColumnIntentError,
+    DefaultZeroAddColumnIntentError, FieldAdditionIntentError, FieldHistoryOptionsIntentError,
+    FirstTableError, FirstTableIntentError, RepeatedDefaultZeroAddColumnIntentError,
 };
 use tablecraft_ace::{
     InspectError, NativeIntentError, NativeRecoveryQualificationError,
@@ -64,6 +64,10 @@ pub enum Cause {
     #[cfg(feature = "ace16-create")]
     #[error(transparent)]
     DatabaseOptionsIntent(DatabaseOptionsIntentError),
+    /// OFF-after-field-history original request or complete reconstruction failed.
+    #[cfg(feature = "ace16-create")]
+    #[error(transparent)]
+    FieldHistoryDatabaseOptionsIntent(FieldHistoryOptionsIntentError),
     /// ADD-column framing, source qualification or exact reconstruction failed.
     #[cfg(feature = "ace16-create")]
     #[error(transparent)]
