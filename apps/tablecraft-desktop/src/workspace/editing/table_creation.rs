@@ -31,7 +31,11 @@ impl Desktop {
             // owned by this host, including its pending save/recovery status.
             return;
         }
-        if self.editing.has_save() || self.creating.is_busy() || self.file_dialog.is_open() {
+        if self.editing.has_save()
+            || self.state.number_column_source_stale()
+            || self.creating.is_busy()
+            || self.file_dialog.is_open()
+        {
             // Shared UI has already issued this exact request. Refusing before
             // review has no storage effects, so return it to the naming phase
             // instead of leaving an issued request with no host owner.

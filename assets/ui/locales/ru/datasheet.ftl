@@ -92,3 +92,9 @@ datasheet-number-close-cancel = Отмена
 
 # Interrupted readonly field eligibility observation.
 datasheet-number-inspection-interrupted = Проверка поля прервана. Повторите проверку этой таблицы.
+
+# Known saved field after failed checked reopening.
+datasheet-number-saved-warning = Поле сохранено, но проверить базу данных не удалось. Перед следующим сохранением откройте базу заново.
+datasheet-number-abandon-title = Закрыть черновик поля?
+datasheet-number-abandon-question = Поле сохранено. Закрытие черновика не отменяет сохранение.
+datasheet-number-abandon-discard = Закрыть черновик

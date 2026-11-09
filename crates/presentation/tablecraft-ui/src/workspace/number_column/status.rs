@@ -18,6 +18,7 @@ pub enum NumberColumnSaveCommand {
     Release,
     Acknowledge,
     RetryReopen,
+    ReturnToDraft,
 }
 
 #[derive(Clone, Copy, PartialEq, Eq)]

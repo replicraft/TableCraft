@@ -1,4 +1,5 @@
 //! Thin host ownership of native Number review, save and full-witness reopening.
+mod abandon;
 mod completion;
 mod inspection_completion;
 
@@ -97,6 +98,7 @@ impl Desktop {
 
     pub(in crate::workspace) fn save_number_column(&mut self, request: NumberColumnRequest) {
         if self.editing.has_save()
+            || self.state.number_column_source_stale()
             || self.creating.is_busy()
             || self.file_dialog.is_open()
             || self.recovery.is_some()

@@ -111,7 +111,10 @@ impl State {
 
     /// A candidate for fresh backend admission, never a write permission grant.
     pub fn can_edit_cell(&self, target: &EditTarget) -> bool {
-        if self.has_modified_saved_query_sql() || self.number_column_open() {
+        if self.has_modified_saved_query_sql()
+            || self.number_column_open()
+            || self.number_column_source_stale()
+        {
             return false;
         }
 
@@ -258,7 +261,10 @@ impl State {
 
     /// Check the still-visible accepted input before consuming a save capability.
     pub fn can_apply_edit(&self, review_id: u64) -> bool {
-        if self.has_modified_saved_query_sql() || self.number_column_open() {
+        if self.has_modified_saved_query_sql()
+            || self.number_column_open()
+            || self.number_column_source_stale()
+        {
             return false;
         }
 

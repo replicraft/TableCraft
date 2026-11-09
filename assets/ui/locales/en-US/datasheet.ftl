@@ -92,3 +92,9 @@ datasheet-number-close-cancel = Cancel
 
 # Interrupted readonly field eligibility observation.
 datasheet-number-inspection-interrupted = Field check interrupted. Retry to check this table again.
+
+# Known saved field after failed checked reopening.
+datasheet-number-saved-warning = The field was saved, but the database could not be verified. Reopen the database before another save.
+datasheet-number-abandon-title = Close field draft?
+datasheet-number-abandon-question = The field was saved. Closing this draft does not undo that save.
+datasheet-number-abandon-discard = Close draft

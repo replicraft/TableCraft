@@ -180,7 +180,7 @@ impl State {
         parameters: Vec<ParameterInput>,
         kind: QueryActionKind,
     ) -> bool {
-        if request_id == 0 || self.query_action.is_some() {
+        if self.number_column_source_stale() || request_id == 0 || self.query_action.is_some() {
             return false;
         }
         let Some(origin) = self.take_query_action_origin(inspection_id, sql, &parameters) else {
@@ -266,7 +266,7 @@ impl State {
     }
 
     pub fn can_apply_query_action(&self, review_id: u64) -> bool {
-        if self.has_modified_saved_query_sql() {
+        if self.number_column_source_stale() || self.has_modified_saved_query_sql() {
             return false;
         }
 

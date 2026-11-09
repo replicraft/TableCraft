@@ -90,6 +90,11 @@ impl State {
                 {
                     command = Some(Command::RetryReopen);
                 }
+                if self.can_return_to_number_column_draft(identity)
+                    && ui.button(tr(ui, "saved-query-save-return-draft")).clicked()
+                {
+                    command = Some(Command::ReturnToDraft);
+                }
             });
         });
         if command.is_none() && response.should_close() {
@@ -101,6 +106,7 @@ impl State {
                 StatusPhase::Finished if self.can_acknowledge_number_column_save(identity) => {
                     Some(Command::Acknowledge)
                 }
+                StatusPhase::ReopenFailed => Some(Command::ReturnToDraft),
                 _ => None,
             };
         }

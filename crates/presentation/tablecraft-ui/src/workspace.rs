@@ -51,7 +51,7 @@ pub use navigation::rename::TableRenameRequest;
 pub use number_column::{NumberColumnCloseDecision, NumberColumnCloseResult};
 pub use number_column::{
     NumberColumnInspectionError, NumberColumnRequest, NumberColumnSaveCommand,
-    NumberColumnSaveIdentity, PreparedNumberColumnSave,
+    NumberColumnSaveIdentity, NumberColumnSavedWarning, PreparedNumberColumnSave,
 };
 pub use objects::{ObjectKind, ObjectOpen, ObjectTab, ObjectTarget, WorkspaceLayout};
 pub use query::actions::review::{QueryActionEffect, QueryActionKind, QueryActionReview};

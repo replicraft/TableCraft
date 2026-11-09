@@ -29,12 +29,24 @@ impl State {
         let mut choice = None;
         let response = Modal::new(egui::Id::new("number_column_close")).show(context, |ui| {
             ui.set_max_width(MODAL_WIDTH);
-            ui.heading(tr(ui, "datasheet-number-close-title"));
-            ui.label(message(
+            let saved = self.number_column_source_stale();
+            ui.heading(tr(
                 ui,
-                "datasheet-number-close-question",
-                &[("table", table.as_str().into()), ("column", column.into())],
+                if saved {
+                    "datasheet-number-abandon-title"
+                } else {
+                    "datasheet-number-close-title"
+                },
             ));
+            if saved {
+                ui.label(tr(ui, "datasheet-number-abandon-question"));
+            } else {
+                ui.label(message(
+                    ui,
+                    "datasheet-number-close-question",
+                    &[("table", table.as_str().into()), ("column", column.into())],
+                ));
+            }
             if !current {
                 ui.label(tr(ui, "datasheet-number-close-stale"));
             } else if !can_save {
@@ -54,7 +66,14 @@ impl State {
                 if ui
                     .add_enabled(
                         current,
-                        egui::Button::new(tr(ui, "datasheet-number-close-discard")),
+                        egui::Button::new(tr(
+                            ui,
+                            if saved {
+                                "datasheet-number-abandon-discard"
+                            } else {
+                                "datasheet-number-close-discard"
+                            },
+                        )),
                     )
                     .clicked()
                 {

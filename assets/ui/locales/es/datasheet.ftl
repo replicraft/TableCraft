@@ -92,3 +92,9 @@ datasheet-number-close-cancel = Cancelar
 
 # Interrupted readonly field eligibility observation.
 datasheet-number-inspection-interrupted = La comprobación del campo se interrumpió. Reinténtela para comprobar esta tabla.
+
+# Known saved field after failed checked reopening.
+datasheet-number-saved-warning = El campo se guardó, pero no se pudo verificar la base de datos. Vuelva a abrirla antes de guardar de nuevo.
+datasheet-number-abandon-title = ¿Cerrar el borrador del campo?
+datasheet-number-abandon-question = El campo se guardó. Cerrar este borrador no deshace ese guardado.
+datasheet-number-abandon-discard = Cerrar borrador

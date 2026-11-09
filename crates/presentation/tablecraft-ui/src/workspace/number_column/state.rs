@@ -171,8 +171,7 @@ impl State {
         }
         let draft = self
             .number_column
-            .draft
-            .as_ref()
+            .presented_draft()
             .filter(|draft| draft.tab == tab);
         let name = match draft {
             Some(draft) => Some((super::copy_text(&draft.column)?, draft.revision)),
@@ -377,6 +376,7 @@ impl State {
 
     fn number_column_context(&self, tab: &ObjectTab) -> bool {
         self.number_column_available
+            && !self.number_column_source_stale()
             && !self.number_column_close_open()
             && self.object_switch_ready_without_number_column()
             && self.view == DocumentView::Table

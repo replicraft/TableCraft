@@ -53,7 +53,7 @@ impl State {
     }
 
     fn can_start_table_draft(&self) -> bool {
-        if self.has_modified_saved_query_sql() {
+        if self.has_modified_saved_query_sql() || self.number_column_source_stale() {
             return false;
         }
 

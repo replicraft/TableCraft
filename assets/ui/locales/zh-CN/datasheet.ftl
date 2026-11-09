@@ -92,3 +92,9 @@ datasheet-number-close-cancel = 取消
 
 # Interrupted readonly field eligibility observation.
 datasheet-number-inspection-interrupted = 字段检查已中断。请重试以再次检查此表。
+
+# Known saved field after failed checked reopening.
+datasheet-number-saved-warning = 字段已保存，但无法验证数据库。请重新打开数据库后再保存。
+datasheet-number-abandon-title = 关闭字段草稿？
+datasheet-number-abandon-question = 字段已保存。关闭此草稿不会撤销保存。
+datasheet-number-abandon-discard = 关闭草稿

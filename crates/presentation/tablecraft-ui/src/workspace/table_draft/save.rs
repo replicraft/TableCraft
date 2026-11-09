@@ -92,7 +92,8 @@ impl State {
     }
 
     pub fn can_save_table_draft(&self) -> bool {
-        !self.has_modified_saved_query_sql()
+        !self.number_column_source_stale()
+            && !self.has_modified_saved_query_sql()
             && self.table_save_available
             && self.object_switch_ready()
             && !self.creation_is_pending()
@@ -117,7 +118,8 @@ impl State {
         &mut self,
         close: Option<CloseIntent>,
     ) -> bool {
-        if self.has_modified_saved_query_sql()
+        if self.number_column_source_stale()
+            || self.has_modified_saved_query_sql()
             || !self.table_save_available
             || self.busy
             || self.creation_is_pending()
@@ -182,6 +184,9 @@ impl State {
 
     /// Consume the issued witness before the host starts reviewing or writing.
     pub fn begin_table_draft_save(&mut self, request: &TableSaveRequest) -> bool {
+        if self.number_column_source_stale() {
+            return false;
+        }
         let Some(save) = &self.table_draft_save else {
             return false;
         };
@@ -317,7 +322,11 @@ impl State {
     }
 
     pub(in crate::workspace) fn can_save_table_draft_close(&self) -> bool {
-        if !self.table_save_available || self.busy || self.table_draft_save.is_some() {
+        if self.number_column_source_stale()
+            || !self.table_save_available
+            || self.busy
+            || self.table_draft_save.is_some()
+        {
             return false;
         }
         match &self.table_draft_close {

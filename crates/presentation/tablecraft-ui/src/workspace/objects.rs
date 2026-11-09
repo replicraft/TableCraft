@@ -461,6 +461,7 @@ impl State {
             .as_ref()
             .map(|database| database.document_revision);
         if self.objects.revision != revision {
+            self.retire_unowned_number_warning(revision);
             if self.has_modified_saved_query_sql() {
                 return;
             }

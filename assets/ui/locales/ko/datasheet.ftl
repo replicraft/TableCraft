@@ -92,3 +92,9 @@ datasheet-number-close-cancel = 취소
 
 # Interrupted readonly field eligibility observation.
 datasheet-number-inspection-interrupted = 필드 확인이 중단되었습니다. 이 테이블을 다시 확인하세요.
+
+# Known saved field after failed checked reopening.
+datasheet-number-saved-warning = 필드는 저장되었지만 데이터베이스를 확인할 수 없습니다. 다시 저장하기 전에 데이터베이스를 다시 여세요.
+datasheet-number-abandon-title = 필드 초안을 닫을까요?
+datasheet-number-abandon-question = 필드는 저장되었습니다. 이 초안을 닫아도 저장은 취소되지 않습니다.
+datasheet-number-abandon-discard = 초안 닫기

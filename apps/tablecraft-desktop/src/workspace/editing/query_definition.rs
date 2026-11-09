@@ -45,6 +45,7 @@ impl Desktop {
     /// Rebind preflight belongs to the shared object owner, not tab-order guesses.
     pub(in crate::workspace) fn save_query_definition(&mut self, request: SavedQuerySqlRequest) {
         if self.editing.has_save()
+            || self.state.number_column_source_stale()
             || self.creating.is_busy()
             || self.file_dialog.is_open()
             || self.recovery.is_some()

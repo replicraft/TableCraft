@@ -118,6 +118,9 @@ impl Desktop {
                     self.reopen_number_column(identity);
                 }
             }
+            NumberColumnSaveCommand::ReturnToDraft => {
+                self.return_to_number_column_draft(identity);
+            }
         }
     }
 
@@ -125,8 +128,17 @@ impl Desktop {
         &mut self,
         identity: NumberColumnSaveIdentity,
     ) {
+        if self.acknowledge_number_column_actor(identity) {
+            self.reopen_number_column(identity);
+        }
+    }
+
+    pub(in crate::workspace) fn acknowledge_number_column_actor(
+        &mut self,
+        identity: NumberColumnSaveIdentity,
+    ) -> bool {
         let Some(host) = &self.editing.number_column else {
-            return;
+            return false;
         };
         if host.identity != Some(identity)
             || !self
@@ -134,45 +146,49 @@ impl Desktop {
                 .matches_number_column_save(&host.request, identity)
             || !self.state.can_acknowledge_number_column_save(identity)
         {
-            return;
+            return false;
         }
         let Some(save) = self.editing.save.as_ref().filter(|save| {
             save.id == identity.save_id && matches!(save.owner, SaveOwner::NumberColumn)
         }) else {
-            return;
+            return false;
         };
         let Some(report) = save.report else {
-            return;
+            return false;
         };
         let Ok(facts) = report.outcome.number_column_reopen_facts() else {
             self.state.error = Some(self.state.localizer.text("objects-open-refused"));
-            return;
+            return false;
         };
         let replacement = facts.replacement;
         let completed = facts.completed;
         if replacement && host.witness.is_none() {
             self.state.error = Some(self.state.localizer.text("objects-open-refused"));
-            return;
+            return false;
         }
         if !self.editing.worker.acknowledge(identity.save_id) {
-            return;
+            return false;
         }
         self.editing.save = None;
         self.state.busy = false;
         if replacement {
             self.editing.number_column.as_mut().unwrap().cleanup =
                 completed.and_then(cleanup_notice);
-            self.reopen_number_column(identity);
+            true
         } else {
             let host = self.editing.number_column.as_ref().unwrap();
             self.state
                 .release_number_column_save(&host.request, identity);
             self.editing.number_column = None;
             self.restore_number_column_close_after_refusal();
+            false
         }
     }
 
-    fn reopen_number_column(&mut self, identity: NumberColumnSaveIdentity) {
+    pub(in crate::workspace) fn reopen_number_column(
+        &mut self,
+        identity: NumberColumnSaveIdentity,
+    ) {
         let Some(host) = &mut self.editing.number_column else {
             return;
         };

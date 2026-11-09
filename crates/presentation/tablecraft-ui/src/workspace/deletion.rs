@@ -81,7 +81,10 @@ impl State {
     }
 
     pub fn can_delete_row(&self, target: &DeleteTarget) -> bool {
-        if self.has_modified_saved_query_sql() || self.number_column_open() {
+        if self.has_modified_saved_query_sql()
+            || self.number_column_open()
+            || self.number_column_source_stale()
+        {
             return false;
         }
 
@@ -133,7 +136,10 @@ impl State {
     }
 
     pub fn can_apply_delete(&self, review_id: u64) -> bool {
-        if self.has_modified_saved_query_sql() || self.number_column_open() {
+        if self.has_modified_saved_query_sql()
+            || self.number_column_open()
+            || self.number_column_source_stale()
+        {
             return false;
         }
 

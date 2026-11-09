@@ -36,6 +36,7 @@ impl State {
         if let Some(pane) = self.take_pane_entry(ui.ctx()) {
             self.prepare_pane_entry(pane, ui.ctx());
         }
+        self.number_column_saved_warning_status(ui);
         if let Some(error) = &self.error {
             Frame::new()
                 .fill(ui.visuals().extreme_bg_color)

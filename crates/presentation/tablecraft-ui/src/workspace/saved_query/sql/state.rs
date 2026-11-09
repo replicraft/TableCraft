@@ -41,7 +41,8 @@ impl State {
     }
 
     pub fn can_edit_saved_query_sql(&self) -> bool {
-        self.saved_query_sql_edit_available
+        !self.number_column_source_stale()
+            && self.saved_query_sql_edit_available
             && self.object_switch_ready()
             && !self.has_unsaved_table_drafts()
             && self.saved_query.pending.is_none()

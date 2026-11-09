@@ -92,3 +92,9 @@ datasheet-number-close-cancel = Abbrechen
 
 # Interrupted readonly field eligibility observation.
 datasheet-number-inspection-interrupted = Die Feldprüfung wurde unterbrochen. Wiederholen Sie die Prüfung dieser Tabelle.
+
+# Known saved field after failed checked reopening.
+datasheet-number-saved-warning = Das Feld wurde gespeichert, aber die Datenbank konnte nicht verifiziert werden. Öffnen Sie die Datenbank vor dem nächsten Speichern erneut.
+datasheet-number-abandon-title = Feldentwurf schließen?
+datasheet-number-abandon-question = Das Feld wurde gespeichert. Das Schließen dieses Entwurfs macht die Speicherung nicht rückgängig.
+datasheet-number-abandon-discard = Entwurf schließen

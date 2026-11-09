@@ -13,9 +13,7 @@ impl Desktop {
         if !self.state.number_column_open() {
             return Some(action);
         }
-        let Some((tab, _, _)) = self.state.number_column_name() else {
-            return None;
-        };
+        let (tab, _, _) = self.state.number_column_name()?;
         let tab = tab.clone();
         if self.state.request_number_column_close(&tab) {
             self.deferred_draft_action = Some(action);

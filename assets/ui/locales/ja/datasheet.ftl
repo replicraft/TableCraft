@@ -92,3 +92,9 @@ datasheet-number-close-cancel = キャンセル
 
 # Interrupted readonly field eligibility observation.
 datasheet-number-inspection-interrupted = フィールドの確認が中断されました。このテーブルを再確認してください。
+
+# Known saved field after failed checked reopening.
+datasheet-number-saved-warning = フィールドは保存されましたが、データベースを検証できませんでした。次に保存する前にデータベースを開き直してください。
+datasheet-number-abandon-title = フィールドの下書きを閉じますか？
+datasheet-number-abandon-question = フィールドは保存されています。この下書きを閉じても保存は取り消されません。
+datasheet-number-abandon-discard = 下書きを閉じる

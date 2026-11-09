@@ -54,6 +54,17 @@ impl State {
     }
 
     pub fn request_number_column_close(&mut self, tab: &ObjectTab) -> bool {
+        let previous = self.backstage;
+        self.dismiss_backstage();
+        if self.request_number_column_close_in_document(tab) {
+            true
+        } else {
+            self.backstage = previous;
+            false
+        }
+    }
+
+    fn request_number_column_close_in_document(&mut self, tab: &ObjectTab) -> bool {
         if let Some(existing) = &self.number_column.close {
             return existing.tab == *tab && self.number_column_close_current();
         }
@@ -101,6 +112,7 @@ impl State {
 
     pub fn can_save_number_column_close(&self) -> bool {
         self.number_column_close_current()
+            && !self.number_column_source_stale()
             && self.number_column_available
             && self.object_switch_ready_without_number_column()
             && self.number_column_status.is_none()

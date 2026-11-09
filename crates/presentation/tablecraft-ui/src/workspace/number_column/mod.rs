@@ -3,6 +3,7 @@
 //! The host owns source inspection, consuming reviews, worker resources and the
 //! complete AFTER witness. The datasheet renders this name separately from its
 //! stored columns; merely naming a field must not invent a schema or a record.
+mod abandon;
 mod close;
 mod dialog;
 pub(crate) mod header;
@@ -10,6 +11,7 @@ mod inspection_completion;
 mod state;
 mod status;
 
+pub use abandon::NumberColumnSavedWarning;
 pub use close::{NumberColumnCloseDecision, NumberColumnCloseResult};
 
 pub(super) use status::Status;
@@ -80,6 +82,7 @@ pub(super) struct Model {
     inspections: Vec<Inspection>,
     draft: Option<Draft>,
     close: Option<close::Confirmation>,
+    warning: Option<abandon::SavedWarning>,
 }
 
 impl Model {
@@ -251,8 +254,16 @@ impl Model {
         true
     }
 
+    pub(super) fn presented_draft(&self) -> Option<&Draft> {
+        self.draft.as_ref().or_else(|| {
+            self.warning
+                .as_ref()
+                .and_then(abandon::SavedWarning::presented)
+        })
+    }
+
     pub(super) fn draft(&self) -> Option<(&ObjectTab, &str, u64, Phase)> {
-        let draft = self.draft.as_ref()?;
+        let draft = self.presented_draft()?;
         Some((&draft.tab, &draft.column, draft.revision, draft.phase))
     }
 
@@ -348,6 +359,12 @@ impl Model {
     }
 
     pub(super) fn discard(&mut self, tab: &ObjectTab, revision: u64) -> bool {
+        if self.draft.is_none() {
+            return self
+                .warning
+                .as_mut()
+                .is_some_and(|warning| warning.discard(tab, revision));
+        }
         if !self.draft.as_ref().is_some_and(|draft| {
             draft.tab == *tab && draft.revision == revision && draft.phase == Phase::Naming
         }) {
@@ -384,6 +401,9 @@ impl Model {
             bytes = bytes
                 .checked_add(table_name(&draft.tab)?.capacity())?
                 .checked_add(draft.column.capacity())?;
+        }
+        if let Some(warning) = &self.warning {
+            bytes = bytes.checked_add(warning.heap_bytes()?)?;
         }
         if let Some(close) = &self.close {
             bytes = bytes.checked_add(close.heap_bytes()?)?;
