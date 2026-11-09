@@ -1,0 +1,1575 @@
+{
+  "date": "2026-11-09",
+  "scope": "Original same-width raw saved-field mutations plus independent inert SDK metadata reads; no SDK rename writes",
+  "status": {
+    "raw_mutation_variants": 8,
+    "coordinated_metadata_matches": 4,
+    "tdef_only_controls_with_expected_property_lookup_divergence": 4,
+    "baseline_reads": 4,
+    "variant_reads": 8,
+    "all_readonly_opens_succeeded": true,
+    "all_observed_files_unchanged": true,
+    "all_originals_preserved": true,
+    "sdk_rename_writes": 0,
+    "native_access_execution": "unrun",
+    "native_writer_qualification": "separate work, not established by these reads"
+  },
+  "sdk": {
+    "artifact": "Jackcess 5.0.4",
+    "license": "Apache-2.0",
+    "sha256": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc",
+    "reviewed_source_revision": "be0a2139b087a227d14cafd4ea231306a5a3a862",
+    "provenance": "docs/testing/FIXTURES.md"
+  },
+  "prior_source_record": "nac-after-field-add-sdk-2026-11-08.json",
+  "prediction_frozen_utc": "2026-11-09T07:23:59.741206+00:00",
+  "original_results": {
+    "frozen_predictions_sha256": "1b68d756ee3cc3823adfe8d48c4b00578fcb4eb807c15bdfad4237a66e6c7e60",
+    "observations_sha256": "c2e6b6f3f5f3da523d087a936f31a09ced592b1f05d86f367e1cb35768f40405",
+    "original_results_preserved": true,
+    "successful_observations_repeated": false
+  },
+  "executed_sources": [
+    {
+      "source": "docs/testing/saved_field_rename/model.py",
+      "sha256": "1260f09855646cafe91414dd28afef61c0b98039285154737fafb468bea8ca49",
+      "byte_identical_to_maintained": true
+    },
+    {
+      "source": "docs/testing/saved_field_rename/FieldRenameObserver.java",
+      "sha256": "7859c2ce0d77cfbc3085cb8a8d8fedd96c3d5b3130fc3ca8ccd9485ff53372fa",
+      "byte_identical_to_maintained": true
+    }
+  ],
+  "original_executed_wrapper_hashes": {
+    "freeze.py": "b356e548c5e062fd3b0986bc8b556a892916677b27ccc2364262f95fd415fd0c",
+    "observe.py": "744c9178d2922d0d282f786e39942049813bbe0ee2afef359d0f73775262329b"
+  },
+  "maintained_portable_wrappers": [
+    {
+      "source": "docs/testing/saved_field_rename/prepare.py",
+      "sha256": "5ec9266cf9be55f53a791bca1cead57f9ba5416f870b40a0e92075f8b6aa594d",
+      "execution": "unrun"
+    },
+    {
+      "source": "docs/testing/saved_field_rename/run.py",
+      "sha256": "e954eb0bbf0f354d4817e466478af32ef09d834958b0ffb0fcadfcb6b43d6d93",
+      "execution": "unrun"
+    }
+  ],
+  "compile": {
+    "exit_code": 0,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "source_manifest": "docs/testing/saved_field_rename/source_manifest.json",
+  "baselines": [
+    {
+      "case": "number-first",
+      "observation": {
+        "columns": [
+          {
+            "index": 0,
+            "id": 0,
+            "name": "ID",
+            "type": "LONG",
+            "units": 4,
+            "compressed": "false",
+            "properties": []
+          },
+          {
+            "index": 1,
+            "id": 1,
+            "name": "Score",
+            "type": "LONG",
+            "units": 4,
+            "compressed": "false",
+            "properties": [
+              [
+                "DefaultValue",
+                "MEMO",
+                "true",
+                "0"
+              ],
+              [
+                "Required",
+                "BOOLEAN",
+                "true",
+                "false"
+              ]
+            ]
+          }
+        ],
+        "options": [
+          [
+            "Track Name AutoCorrect Info",
+            "LONG",
+            "true",
+            "0"
+          ],
+          [
+            "Perform Name AutoCorrect",
+            "LONG",
+            "true",
+            "0"
+          ]
+        ],
+        "table": [
+          "Table1",
+          "2",
+          "0",
+          "1"
+        ]
+      },
+      "stdout_sha256": "2105b21748b01fc2d33aa2596a4b4298998f634446f1cdc29d3612badec0282a",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "OPTION\tTrack Name AutoCorrect Info\tLONG\ttrue\t0\nOPTION\tPerform Name AutoCorrect\tLONG\ttrue\t0\nCOLUMN\t0\t0\tID\tLONG\t4\tfalse\nCOLUMN\t1\t1\tScore\tLONG\t4\tfalse\nPROPERTY\t1\tDefaultValue\tMEMO\ttrue\t0\nPROPERTY\t1\tRequired\tBOOLEAN\ttrue\tfalse\nTABLE\tTable1\t2\t0\t1\n",
+      "stderr": ""
+    },
+    {
+      "case": "number-second",
+      "observation": {
+        "columns": [
+          {
+            "index": 0,
+            "id": 0,
+            "name": "ID",
+            "type": "LONG",
+            "units": 4,
+            "compressed": "false",
+            "properties": []
+          },
+          {
+            "index": 1,
+            "id": 1,
+            "name": "Score",
+            "type": "LONG",
+            "units": 4,
+            "compressed": "false",
+            "properties": [
+              [
+                "DefaultValue",
+                "MEMO",
+                "true",
+                "0"
+              ],
+              [
+                "Required",
+                "BOOLEAN",
+                "true",
+                "false"
+              ]
+            ]
+          },
+          {
+            "index": 2,
+            "id": 2,
+            "name": "Score2",
+            "type": "LONG",
+            "units": 4,
+            "compressed": "false",
+            "properties": [
+              [
+                "DefaultValue",
+                "MEMO",
+                "true",
+                "0"
+              ],
+              [
+                "Required",
+                "BOOLEAN",
+                "true",
+                "false"
+              ]
+            ]
+          }
+        ],
+        "options": [
+          [
+            "Track Name AutoCorrect Info",
+            "LONG",
+            "true",
+            "0"
+          ],
+          [
+            "Perform Name AutoCorrect",
+            "LONG",
+            "true",
+            "0"
+          ]
+        ],
+        "table": [
+          "Table1",
+          "3",
+          "0",
+          "1"
+        ]
+      },
+      "stdout_sha256": "5b1a79807130e775d4f80868d32706e90c6e0ca93e76dc6618b2ee9f925bad26",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "OPTION\tTrack Name AutoCorrect Info\tLONG\ttrue\t0\nOPTION\tPerform Name AutoCorrect\tLONG\ttrue\t0\nCOLUMN\t0\t0\tID\tLONG\t4\tfalse\nCOLUMN\t1\t1\tScore\tLONG\t4\tfalse\nPROPERTY\t1\tDefaultValue\tMEMO\ttrue\t0\nPROPERTY\t1\tRequired\tBOOLEAN\ttrue\tfalse\nCOLUMN\t2\t2\tScore2\tLONG\t4\tfalse\nPROPERTY\t2\tDefaultValue\tMEMO\ttrue\t0\nPROPERTY\t2\tRequired\tBOOLEAN\ttrue\tfalse\nTABLE\tTable1\t3\t0\t1\n",
+      "stderr": ""
+    },
+    {
+      "case": "text-inline-number",
+      "observation": {
+        "columns": [
+          {
+            "index": 0,
+            "id": 0,
+            "name": "ID",
+            "type": "LONG",
+            "units": 4,
+            "compressed": "false",
+            "properties": []
+          },
+          {
+            "index": 1,
+            "id": 1,
+            "name": "Score",
+            "type": "LONG",
+            "units": 4,
+            "compressed": "false",
+            "properties": [
+              [
+                "Required",
+                "BOOLEAN",
+                "true",
+                "false"
+              ],
+              [
+                "DefaultValue",
+                "MEMO",
+                "true",
+                "0"
+              ]
+            ]
+          },
+          {
+            "index": 2,
+            "id": 2,
+            "name": "Label",
+            "type": "TEXT",
+            "units": 255,
+            "compressed": "true",
+            "properties": [
+              [
+                "Required",
+                "BOOLEAN",
+                "true",
+                "false"
+              ],
+              [
+                "AllowZeroLength",
+                "BOOLEAN",
+                "true",
+                "true"
+              ]
+            ]
+          }
+        ],
+        "options": [
+          [
+            "Track Name AutoCorrect Info",
+            "LONG",
+            "true",
+            "0"
+          ],
+          [
+            "Perform Name AutoCorrect",
+            "LONG",
+            "true",
+            "0"
+          ]
+        ],
+        "table": [
+          "Table1",
+          "3",
+          "0",
+          "1"
+        ]
+      },
+      "stdout_sha256": "8d92ea730e9200ece669f7e40e09709f6579d05808c6ad8ed23798752e21780b",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "OPTION\tTrack Name AutoCorrect Info\tLONG\ttrue\t0\nOPTION\tPerform Name AutoCorrect\tLONG\ttrue\t0\nCOLUMN\t0\t0\tID\tLONG\t4\tfalse\nCOLUMN\t1\t1\tScore\tLONG\t4\tfalse\nPROPERTY\t1\tRequired\tBOOLEAN\ttrue\tfalse\nPROPERTY\t1\tDefaultValue\tMEMO\ttrue\t0\nCOLUMN\t2\t2\tLabel\tTEXT\t255\ttrue\nPROPERTY\t2\tRequired\tBOOLEAN\ttrue\tfalse\nPROPERTY\t2\tAllowZeroLength\tBOOLEAN\ttrue\ttrue\nTABLE\tTable1\t3\t0\t1\n",
+      "stderr": ""
+    },
+    {
+      "case": "text-number-text",
+      "observation": {
+        "columns": [
+          {
+            "index": 0,
+            "id": 0,
+            "name": "ID",
+            "type": "LONG",
+            "units": 4,
+            "compressed": "false",
+            "properties": []
+          },
+          {
+            "index": 1,
+            "id": 1,
+            "name": "Label",
+            "type": "TEXT",
+            "units": 255,
+            "compressed": "true",
+            "properties": [
+              [
+                "Required",
+                "BOOLEAN",
+                "true",
+                "false"
+              ],
+              [
+                "AllowZeroLength",
+                "BOOLEAN",
+                "true",
+                "true"
+              ]
+            ]
+          },
+          {
+            "index": 2,
+            "id": 2,
+            "name": "AfterLabel",
+            "type": "LONG",
+            "units": 4,
+            "compressed": "false",
+            "properties": [
+              [
+                "Required",
+                "BOOLEAN",
+                "true",
+                "false"
+              ],
+              [
+                "DefaultValue",
+                "MEMO",
+                "true",
+                "0"
+              ]
+            ]
+          },
+          {
+            "index": 3,
+            "id": 3,
+            "name": "OtherLabel",
+            "type": "TEXT",
+            "units": 255,
+            "compressed": "true",
+            "properties": [
+              [
+                "Required",
+                "BOOLEAN",
+                "true",
+                "false"
+              ],
+              [
+                "AllowZeroLength",
+                "BOOLEAN",
+                "true",
+                "true"
+              ]
+            ]
+          }
+        ],
+        "options": [
+          [
+            "Track Name AutoCorrect Info",
+            "LONG",
+            "true",
+            "0"
+          ],
+          [
+            "Perform Name AutoCorrect",
+            "LONG",
+            "true",
+            "0"
+          ]
+        ],
+        "table": [
+          "Table1",
+          "4",
+          "0",
+          "1"
+        ]
+      },
+      "stdout_sha256": "15579a60d07c89ae6ffe63d56dd36d14d5b6bc9a34c832afef8e4e8bf5ea1244",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "OPTION\tTrack Name AutoCorrect Info\tLONG\ttrue\t0\nOPTION\tPerform Name AutoCorrect\tLONG\ttrue\t0\nCOLUMN\t0\t0\tID\tLONG\t4\tfalse\nCOLUMN\t1\t1\tLabel\tTEXT\t255\ttrue\nPROPERTY\t1\tRequired\tBOOLEAN\ttrue\tfalse\nPROPERTY\t1\tAllowZeroLength\tBOOLEAN\ttrue\ttrue\nCOLUMN\t2\t2\tAfterLabel\tLONG\t4\tfalse\nPROPERTY\t2\tRequired\tBOOLEAN\ttrue\tfalse\nPROPERTY\t2\tDefaultValue\tMEMO\ttrue\t0\nCOLUMN\t3\t3\tOtherLabel\tTEXT\t255\ttrue\nPROPERTY\t3\tRequired\tBOOLEAN\ttrue\tfalse\nPROPERTY\t3\tAllowZeroLength\tBOOLEAN\ttrue\ttrue\nTABLE\tTable1\t4\t0\t1\n",
+      "stderr": ""
+    }
+  ],
+  "cases": [
+    {
+      "case": "number-first",
+      "variant": "td-only",
+      "old_name": "Score",
+      "new_name": "Total",
+      "before_sha256": "c88bc4cb1090d9b0c5e011010ec76cf9acc33da7ec9d58e67fa873bfaabe18ef",
+      "after_sha256": "0ca3ceb36e5eff15b9a9d2e2a2f63e66ea7e2ddd72b2bcc70ca0eead6bd624bd",
+      "after_bytes": 45056,
+      "index": 1,
+      "native_number": 1,
+      "variable_ordinal": 0,
+      "column_id": 1,
+      "type": 4,
+      "flags": 3,
+      "extended_flags": 0,
+      "width_bytes": 4,
+      "descriptor_hex": "04590600000100000001000000000003000000000004000400",
+      "catalog_physical_slot": 8,
+      "live_user_reference": 2560,
+      "live_body_span": [
+        44961,
+        45056
+      ],
+      "changed_spans": [
+        [
+          28805,
+          28815
+        ]
+      ],
+      "live_group_name_span": [
+        45027,
+        45037
+      ],
+      "changed_pages": [
+        7
+      ],
+      "maps_and_catalog_unchanged": true,
+      "all_old_history_rows_unchanged": true,
+      "new_db_role_body_unchanged": true,
+      "user_data_index_pages_unchanged": true,
+      "sdk_exit": 0,
+      "readonly_output_unchanged": true,
+      "original_unchanged": true,
+      "observation": {
+        "columns": [
+          {
+            "index": 0,
+            "id": 0,
+            "name": "ID",
+            "type": "LONG",
+            "units": 4,
+            "compressed": "false",
+            "properties": []
+          },
+          {
+            "index": 1,
+            "id": 1,
+            "name": "Total",
+            "type": "LONG",
+            "units": 4,
+            "compressed": "false",
+            "properties": []
+          }
+        ],
+        "options": [
+          [
+            "Track Name AutoCorrect Info",
+            "LONG",
+            "true",
+            "0"
+          ],
+          [
+            "Perform Name AutoCorrect",
+            "LONG",
+            "true",
+            "0"
+          ]
+        ],
+        "table": [
+          "Table1",
+          "2",
+          "0",
+          "1"
+        ]
+      },
+      "metadata_except_requested_name_matches": false,
+      "selected_field_properties_before": [
+        [
+          "DefaultValue",
+          "MEMO",
+          "true",
+          "0"
+        ],
+        [
+          "Required",
+          "BOOLEAN",
+          "true",
+          "false"
+        ]
+      ],
+      "selected_field_properties_after": [],
+      "source_id": "number-first",
+      "output_id": "number-first-td-only",
+      "stdout_sha256": "e16b35cf38d64a7799c558d42fe0c2f25429c4564101cb1f47696ccbb7b6e44a",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "OPTION\tTrack Name AutoCorrect Info\tLONG\ttrue\t0\nOPTION\tPerform Name AutoCorrect\tLONG\ttrue\t0\nCOLUMN\t0\t0\tID\tLONG\t4\tfalse\nCOLUMN\t1\t1\tTotal\tLONG\t4\tfalse\nTABLE\tTable1\t2\t0\t1\n",
+      "stderr": ""
+    },
+    {
+      "case": "number-first",
+      "variant": "live-group",
+      "old_name": "Score",
+      "new_name": "Total",
+      "before_sha256": "c88bc4cb1090d9b0c5e011010ec76cf9acc33da7ec9d58e67fa873bfaabe18ef",
+      "after_sha256": "235a57e709bb65bc6a1d0cc6483c2b204f1d3b78924108ff20e96a6671ba263d",
+      "after_bytes": 45056,
+      "index": 1,
+      "native_number": 1,
+      "variable_ordinal": 0,
+      "column_id": 1,
+      "type": 4,
+      "flags": 3,
+      "extended_flags": 0,
+      "width_bytes": 4,
+      "descriptor_hex": "04590600000100000001000000000003000000000004000400",
+      "catalog_physical_slot": 8,
+      "live_user_reference": 2560,
+      "live_body_span": [
+        44961,
+        45056
+      ],
+      "changed_spans": [
+        [
+          28805,
+          28815
+        ],
+        [
+          45027,
+          45037
+        ]
+      ],
+      "live_group_name_span": [
+        45027,
+        45037
+      ],
+      "changed_pages": [
+        7,
+        10
+      ],
+      "maps_and_catalog_unchanged": true,
+      "all_old_history_rows_unchanged": true,
+      "new_db_role_body_unchanged": true,
+      "user_data_index_pages_unchanged": true,
+      "sdk_exit": 0,
+      "readonly_output_unchanged": true,
+      "original_unchanged": true,
+      "observation": {
+        "columns": [
+          {
+            "index": 0,
+            "id": 0,
+            "name": "ID",
+            "type": "LONG",
+            "units": 4,
+            "compressed": "false",
+            "properties": []
+          },
+          {
+            "index": 1,
+            "id": 1,
+            "name": "Total",
+            "type": "LONG",
+            "units": 4,
+            "compressed": "false",
+            "properties": [
+              [
+                "DefaultValue",
+                "MEMO",
+                "true",
+                "0"
+              ],
+              [
+                "Required",
+                "BOOLEAN",
+                "true",
+                "false"
+              ]
+            ]
+          }
+        ],
+        "options": [
+          [
+            "Track Name AutoCorrect Info",
+            "LONG",
+            "true",
+            "0"
+          ],
+          [
+            "Perform Name AutoCorrect",
+            "LONG",
+            "true",
+            "0"
+          ]
+        ],
+        "table": [
+          "Table1",
+          "2",
+          "0",
+          "1"
+        ]
+      },
+      "metadata_except_requested_name_matches": true,
+      "selected_field_properties_before": [
+        [
+          "DefaultValue",
+          "MEMO",
+          "true",
+          "0"
+        ],
+        [
+          "Required",
+          "BOOLEAN",
+          "true",
+          "false"
+        ]
+      ],
+      "selected_field_properties_after": [
+        [
+          "DefaultValue",
+          "MEMO",
+          "true",
+          "0"
+        ],
+        [
+          "Required",
+          "BOOLEAN",
+          "true",
+          "false"
+        ]
+      ],
+      "source_id": "number-first",
+      "output_id": "number-first-live-group",
+      "stdout_sha256": "92680e77d87f6f99e846c70b1e3325a7478888fb66456407071fa267bbbc249c",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "OPTION\tTrack Name AutoCorrect Info\tLONG\ttrue\t0\nOPTION\tPerform Name AutoCorrect\tLONG\ttrue\t0\nCOLUMN\t0\t0\tID\tLONG\t4\tfalse\nCOLUMN\t1\t1\tTotal\tLONG\t4\tfalse\nPROPERTY\t1\tDefaultValue\tMEMO\ttrue\t0\nPROPERTY\t1\tRequired\tBOOLEAN\ttrue\tfalse\nTABLE\tTable1\t2\t0\t1\n",
+      "stderr": ""
+    },
+    {
+      "case": "number-second",
+      "variant": "td-only",
+      "old_name": "Score",
+      "new_name": "Total",
+      "before_sha256": "6f9b095ddf3d724e34d5af98bea4e8ba88bc2b2bc70ade10814f85c27770c620",
+      "after_sha256": "6ff23f682fab15daad8314699f0de4a2a2a852e39769b32d16e4ac797848e77b",
+      "after_bytes": 45056,
+      "index": 1,
+      "native_number": 1,
+      "variable_ordinal": 0,
+      "column_id": 1,
+      "type": 4,
+      "flags": 3,
+      "extended_flags": 0,
+      "width_bytes": 4,
+      "descriptor_hex": "04590600000100000001000000000003000000000004000400",
+      "catalog_physical_slot": 8,
+      "live_user_reference": 2561,
+      "live_body_span": [
+        44823,
+        44961
+      ],
+      "changed_spans": [
+        [
+          28830,
+          28840
+        ]
+      ],
+      "live_group_name_span": [
+        44889,
+        44899
+      ],
+      "changed_pages": [
+        7
+      ],
+      "maps_and_catalog_unchanged": true,
+      "all_old_history_rows_unchanged": true,
+      "new_db_role_body_unchanged": true,
+      "user_data_index_pages_unchanged": true,
+      "sdk_exit": 0,
+      "readonly_output_unchanged": true,
+      "original_unchanged": true,
+      "observation": {
+        "columns": [
+          {
+            "index": 0,
+            "id": 0,
+            "name": "ID",
+            "type": "LONG",
+            "units": 4,
+            "compressed": "false",
+            "properties": []
+          },
+          {
+            "index": 1,
+            "id": 1,
+            "name": "Total",
+            "type": "LONG",
+            "units": 4,
+            "compressed": "false",
+            "properties": []
+          },
+          {
+            "index": 2,
+            "id": 2,
+            "name": "Score2",
+            "type": "LONG",
+            "units": 4,
+            "compressed": "false",
+            "properties": [
+              [
+                "DefaultValue",
+                "MEMO",
+                "true",
+                "0"
+              ],
+              [
+                "Required",
+                "BOOLEAN",
+                "true",
+                "false"
+              ]
+            ]
+          }
+        ],
+        "options": [
+          [
+            "Track Name AutoCorrect Info",
+            "LONG",
+            "true",
+            "0"
+          ],
+          [
+            "Perform Name AutoCorrect",
+            "LONG",
+            "true",
+            "0"
+          ]
+        ],
+        "table": [
+          "Table1",
+          "3",
+          "0",
+          "1"
+        ]
+      },
+      "metadata_except_requested_name_matches": false,
+      "selected_field_properties_before": [
+        [
+          "DefaultValue",
+          "MEMO",
+          "true",
+          "0"
+        ],
+        [
+          "Required",
+          "BOOLEAN",
+          "true",
+          "false"
+        ]
+      ],
+      "selected_field_properties_after": [],
+      "source_id": "number-second",
+      "output_id": "number-second-td-only",
+      "stdout_sha256": "fa088367578c196badc9a26dc61d1ca41279d44faeb45f7eb21fbf662b076ec6",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "OPTION\tTrack Name AutoCorrect Info\tLONG\ttrue\t0\nOPTION\tPerform Name AutoCorrect\tLONG\ttrue\t0\nCOLUMN\t0\t0\tID\tLONG\t4\tfalse\nCOLUMN\t1\t1\tTotal\tLONG\t4\tfalse\nCOLUMN\t2\t2\tScore2\tLONG\t4\tfalse\nPROPERTY\t2\tDefaultValue\tMEMO\ttrue\t0\nPROPERTY\t2\tRequired\tBOOLEAN\ttrue\tfalse\nTABLE\tTable1\t3\t0\t1\n",
+      "stderr": ""
+    },
+    {
+      "case": "number-second",
+      "variant": "live-group",
+      "old_name": "Score",
+      "new_name": "Total",
+      "before_sha256": "6f9b095ddf3d724e34d5af98bea4e8ba88bc2b2bc70ade10814f85c27770c620",
+      "after_sha256": "361b12800d168eff4260d715d6053c611d6773210a6e84dd4dcabbd932e91212",
+      "after_bytes": 45056,
+      "index": 1,
+      "native_number": 1,
+      "variable_ordinal": 0,
+      "column_id": 1,
+      "type": 4,
+      "flags": 3,
+      "extended_flags": 0,
+      "width_bytes": 4,
+      "descriptor_hex": "04590600000100000001000000000003000000000004000400",
+      "catalog_physical_slot": 8,
+      "live_user_reference": 2561,
+      "live_body_span": [
+        44823,
+        44961
+      ],
+      "changed_spans": [
+        [
+          28830,
+          28840
+        ],
+        [
+          44889,
+          44899
+        ]
+      ],
+      "live_group_name_span": [
+        44889,
+        44899
+      ],
+      "changed_pages": [
+        7,
+        10
+      ],
+      "maps_and_catalog_unchanged": true,
+      "all_old_history_rows_unchanged": true,
+      "new_db_role_body_unchanged": true,
+      "user_data_index_pages_unchanged": true,
+      "sdk_exit": 0,
+      "readonly_output_unchanged": true,
+      "original_unchanged": true,
+      "observation": {
+        "columns": [
+          {
+            "index": 0,
+            "id": 0,
+            "name": "ID",
+            "type": "LONG",
+            "units": 4,
+            "compressed": "false",
+            "properties": []
+          },
+          {
+            "index": 1,
+            "id": 1,
+            "name": "Total",
+            "type": "LONG",
+            "units": 4,
+            "compressed": "false",
+            "properties": [
+              [
+                "DefaultValue",
+                "MEMO",
+                "true",
+                "0"
+              ],
+              [
+                "Required",
+                "BOOLEAN",
+                "true",
+                "false"
+              ]
+            ]
+          },
+          {
+            "index": 2,
+            "id": 2,
+            "name": "Score2",
+            "type": "LONG",
+            "units": 4,
+            "compressed": "false",
+            "properties": [
+              [
+                "DefaultValue",
+                "MEMO",
+                "true",
+                "0"
+              ],
+              [
+                "Required",
+                "BOOLEAN",
+                "true",
+                "false"
+              ]
+            ]
+          }
+        ],
+        "options": [
+          [
+            "Track Name AutoCorrect Info",
+            "LONG",
+            "true",
+            "0"
+          ],
+          [
+            "Perform Name AutoCorrect",
+            "LONG",
+            "true",
+            "0"
+          ]
+        ],
+        "table": [
+          "Table1",
+          "3",
+          "0",
+          "1"
+        ]
+      },
+      "metadata_except_requested_name_matches": true,
+      "selected_field_properties_before": [
+        [
+          "DefaultValue",
+          "MEMO",
+          "true",
+          "0"
+        ],
+        [
+          "Required",
+          "BOOLEAN",
+          "true",
+          "false"
+        ]
+      ],
+      "selected_field_properties_after": [
+        [
+          "DefaultValue",
+          "MEMO",
+          "true",
+          "0"
+        ],
+        [
+          "Required",
+          "BOOLEAN",
+          "true",
+          "false"
+        ]
+      ],
+      "source_id": "number-second",
+      "output_id": "number-second-live-group",
+      "stdout_sha256": "717748c6a7913a0a48581601fc04e53fd1192b984882a41a397e9a243873733c",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "OPTION\tTrack Name AutoCorrect Info\tLONG\ttrue\t0\nOPTION\tPerform Name AutoCorrect\tLONG\ttrue\t0\nCOLUMN\t0\t0\tID\tLONG\t4\tfalse\nCOLUMN\t1\t1\tTotal\tLONG\t4\tfalse\nPROPERTY\t1\tDefaultValue\tMEMO\ttrue\t0\nPROPERTY\t1\tRequired\tBOOLEAN\ttrue\tfalse\nCOLUMN\t2\t2\tScore2\tLONG\t4\tfalse\nPROPERTY\t2\tDefaultValue\tMEMO\ttrue\t0\nPROPERTY\t2\tRequired\tBOOLEAN\ttrue\tfalse\nTABLE\tTable1\t3\t0\t1\n",
+      "stderr": ""
+    },
+    {
+      "case": "text-inline-number",
+      "variant": "td-only",
+      "old_name": "Score",
+      "new_name": "Total",
+      "before_sha256": "e30ac2923f754892895a97231cee7cc6bd8f880c03f384a21546ed4b7e4b77f3",
+      "after_sha256": "b68d44e3a2e9908e68b7b4162908e98b1c51fca93bb475572213090ec08d0c4d",
+      "after_bytes": 45056,
+      "index": 1,
+      "native_number": 1,
+      "variable_ordinal": 0,
+      "column_id": 1,
+      "type": 4,
+      "flags": 3,
+      "extended_flags": 0,
+      "width_bytes": 4,
+      "descriptor_hex": "04590600000100000001000000000003000000000004000400",
+      "catalog_physical_slot": 7,
+      "live_user_reference": 2560,
+      "live_body_span": [
+        44889,
+        45056
+      ],
+      "changed_spans": [
+        [
+          28830,
+          28840
+        ]
+      ],
+      "live_group_name_span": [
+        44987,
+        44997
+      ],
+      "changed_pages": [
+        7
+      ],
+      "maps_and_catalog_unchanged": true,
+      "all_old_history_rows_unchanged": true,
+      "new_db_role_body_unchanged": true,
+      "user_data_index_pages_unchanged": true,
+      "sdk_exit": 0,
+      "readonly_output_unchanged": true,
+      "original_unchanged": true,
+      "observation": {
+        "columns": [
+          {
+            "index": 0,
+            "id": 0,
+            "name": "ID",
+            "type": "LONG",
+            "units": 4,
+            "compressed": "false",
+            "properties": []
+          },
+          {
+            "index": 1,
+            "id": 1,
+            "name": "Total",
+            "type": "LONG",
+            "units": 4,
+            "compressed": "false",
+            "properties": []
+          },
+          {
+            "index": 2,
+            "id": 2,
+            "name": "Label",
+            "type": "TEXT",
+            "units": 255,
+            "compressed": "true",
+            "properties": [
+              [
+                "Required",
+                "BOOLEAN",
+                "true",
+                "false"
+              ],
+              [
+                "AllowZeroLength",
+                "BOOLEAN",
+                "true",
+                "true"
+              ]
+            ]
+          }
+        ],
+        "options": [
+          [
+            "Track Name AutoCorrect Info",
+            "LONG",
+            "true",
+            "0"
+          ],
+          [
+            "Perform Name AutoCorrect",
+            "LONG",
+            "true",
+            "0"
+          ]
+        ],
+        "table": [
+          "Table1",
+          "3",
+          "0",
+          "1"
+        ]
+      },
+      "metadata_except_requested_name_matches": false,
+      "selected_field_properties_before": [
+        [
+          "Required",
+          "BOOLEAN",
+          "true",
+          "false"
+        ],
+        [
+          "DefaultValue",
+          "MEMO",
+          "true",
+          "0"
+        ]
+      ],
+      "selected_field_properties_after": [],
+      "source_id": "text-inline-number",
+      "output_id": "text-inline-number-td-only",
+      "stdout_sha256": "097780503b884a0bdf0b3b1f29d970de20fc7ad3332bc1c11c718134e4445e51",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "OPTION\tTrack Name AutoCorrect Info\tLONG\ttrue\t0\nOPTION\tPerform Name AutoCorrect\tLONG\ttrue\t0\nCOLUMN\t0\t0\tID\tLONG\t4\tfalse\nCOLUMN\t1\t1\tTotal\tLONG\t4\tfalse\nCOLUMN\t2\t2\tLabel\tTEXT\t255\ttrue\nPROPERTY\t2\tRequired\tBOOLEAN\ttrue\tfalse\nPROPERTY\t2\tAllowZeroLength\tBOOLEAN\ttrue\ttrue\nTABLE\tTable1\t3\t0\t1\n",
+      "stderr": ""
+    },
+    {
+      "case": "text-inline-number",
+      "variant": "live-group",
+      "old_name": "Score",
+      "new_name": "Total",
+      "before_sha256": "e30ac2923f754892895a97231cee7cc6bd8f880c03f384a21546ed4b7e4b77f3",
+      "after_sha256": "b91b069f96057640704a41df1091b4b7de13b7647c44e297746d55050fbbfaa4",
+      "after_bytes": 45056,
+      "index": 1,
+      "native_number": 1,
+      "variable_ordinal": 0,
+      "column_id": 1,
+      "type": 4,
+      "flags": 3,
+      "extended_flags": 0,
+      "width_bytes": 4,
+      "descriptor_hex": "04590600000100000001000000000003000000000004000400",
+      "catalog_physical_slot": 7,
+      "live_user_reference": 2560,
+      "live_body_span": [
+        44889,
+        45056
+      ],
+      "changed_spans": [
+        [
+          28830,
+          28840
+        ],
+        [
+          44987,
+          44997
+        ]
+      ],
+      "live_group_name_span": [
+        44987,
+        44997
+      ],
+      "changed_pages": [
+        7,
+        10
+      ],
+      "maps_and_catalog_unchanged": true,
+      "all_old_history_rows_unchanged": true,
+      "new_db_role_body_unchanged": true,
+      "user_data_index_pages_unchanged": true,
+      "sdk_exit": 0,
+      "readonly_output_unchanged": true,
+      "original_unchanged": true,
+      "observation": {
+        "columns": [
+          {
+            "index": 0,
+            "id": 0,
+            "name": "ID",
+            "type": "LONG",
+            "units": 4,
+            "compressed": "false",
+            "properties": []
+          },
+          {
+            "index": 1,
+            "id": 1,
+            "name": "Total",
+            "type": "LONG",
+            "units": 4,
+            "compressed": "false",
+            "properties": [
+              [
+                "Required",
+                "BOOLEAN",
+                "true",
+                "false"
+              ],
+              [
+                "DefaultValue",
+                "MEMO",
+                "true",
+                "0"
+              ]
+            ]
+          },
+          {
+            "index": 2,
+            "id": 2,
+            "name": "Label",
+            "type": "TEXT",
+            "units": 255,
+            "compressed": "true",
+            "properties": [
+              [
+                "Required",
+                "BOOLEAN",
+                "true",
+                "false"
+              ],
+              [
+                "AllowZeroLength",
+                "BOOLEAN",
+                "true",
+                "true"
+              ]
+            ]
+          }
+        ],
+        "options": [
+          [
+            "Track Name AutoCorrect Info",
+            "LONG",
+            "true",
+            "0"
+          ],
+          [
+            "Perform Name AutoCorrect",
+            "LONG",
+            "true",
+            "0"
+          ]
+        ],
+        "table": [
+          "Table1",
+          "3",
+          "0",
+          "1"
+        ]
+      },
+      "metadata_except_requested_name_matches": true,
+      "selected_field_properties_before": [
+        [
+          "Required",
+          "BOOLEAN",
+          "true",
+          "false"
+        ],
+        [
+          "DefaultValue",
+          "MEMO",
+          "true",
+          "0"
+        ]
+      ],
+      "selected_field_properties_after": [
+        [
+          "Required",
+          "BOOLEAN",
+          "true",
+          "false"
+        ],
+        [
+          "DefaultValue",
+          "MEMO",
+          "true",
+          "0"
+        ]
+      ],
+      "source_id": "text-inline-number",
+      "output_id": "text-inline-number-live-group",
+      "stdout_sha256": "206f926995518bc9704327c8962f42242971fff40cf3f43b70f680beb1919c8a",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "OPTION\tTrack Name AutoCorrect Info\tLONG\ttrue\t0\nOPTION\tPerform Name AutoCorrect\tLONG\ttrue\t0\nCOLUMN\t0\t0\tID\tLONG\t4\tfalse\nCOLUMN\t1\t1\tTotal\tLONG\t4\tfalse\nPROPERTY\t1\tRequired\tBOOLEAN\ttrue\tfalse\nPROPERTY\t1\tDefaultValue\tMEMO\ttrue\t0\nCOLUMN\t2\t2\tLabel\tTEXT\t255\ttrue\nPROPERTY\t2\tRequired\tBOOLEAN\ttrue\tfalse\nPROPERTY\t2\tAllowZeroLength\tBOOLEAN\ttrue\ttrue\nTABLE\tTable1\t3\t0\t1\n",
+      "stderr": ""
+    },
+    {
+      "case": "text-number-text",
+      "variant": "td-only",
+      "old_name": "Label",
+      "new_name": "Title",
+      "before_sha256": "c28d3c1bf1de4e75f894ac80ae332aa2a5b4b8c3c9111700d989222b8d6267c3",
+      "after_sha256": "5fc3b8aa2a19bb2690b41e9e819d9258f5bb63f43ea5868be80fa1231b7eaee5",
+      "after_bytes": 45056,
+      "index": 1,
+      "native_number": 1,
+      "variable_ordinal": 0,
+      "column_id": 1,
+      "type": 10,
+      "flags": 2,
+      "extended_flags": 1,
+      "width_bytes": 510,
+      "descriptor_hex": "0a59060000010000000100090400010201000000000000fe01",
+      "catalog_physical_slot": 8,
+      "live_user_reference": 2562,
+      "live_body_span": [
+        44552,
+        44779
+      ],
+      "changed_spans": [
+        [
+          28855,
+          28865
+        ]
+      ],
+      "live_group_name_span": [
+        44650,
+        44660
+      ],
+      "changed_pages": [
+        7
+      ],
+      "maps_and_catalog_unchanged": true,
+      "all_old_history_rows_unchanged": true,
+      "new_db_role_body_unchanged": true,
+      "user_data_index_pages_unchanged": true,
+      "sdk_exit": 0,
+      "readonly_output_unchanged": true,
+      "original_unchanged": true,
+      "observation": {
+        "columns": [
+          {
+            "index": 0,
+            "id": 0,
+            "name": "ID",
+            "type": "LONG",
+            "units": 4,
+            "compressed": "false",
+            "properties": []
+          },
+          {
+            "index": 1,
+            "id": 1,
+            "name": "Title",
+            "type": "TEXT",
+            "units": 255,
+            "compressed": "true",
+            "properties": []
+          },
+          {
+            "index": 2,
+            "id": 2,
+            "name": "AfterLabel",
+            "type": "LONG",
+            "units": 4,
+            "compressed": "false",
+            "properties": [
+              [
+                "Required",
+                "BOOLEAN",
+                "true",
+                "false"
+              ],
+              [
+                "DefaultValue",
+                "MEMO",
+                "true",
+                "0"
+              ]
+            ]
+          },
+          {
+            "index": 3,
+            "id": 3,
+            "name": "OtherLabel",
+            "type": "TEXT",
+            "units": 255,
+            "compressed": "true",
+            "properties": [
+              [
+                "Required",
+                "BOOLEAN",
+                "true",
+                "false"
+              ],
+              [
+                "AllowZeroLength",
+                "BOOLEAN",
+                "true",
+                "true"
+              ]
+            ]
+          }
+        ],
+        "options": [
+          [
+            "Track Name AutoCorrect Info",
+            "LONG",
+            "true",
+            "0"
+          ],
+          [
+            "Perform Name AutoCorrect",
+            "LONG",
+            "true",
+            "0"
+          ]
+        ],
+        "table": [
+          "Table1",
+          "4",
+          "0",
+          "1"
+        ]
+      },
+      "metadata_except_requested_name_matches": false,
+      "selected_field_properties_before": [
+        [
+          "Required",
+          "BOOLEAN",
+          "true",
+          "false"
+        ],
+        [
+          "AllowZeroLength",
+          "BOOLEAN",
+          "true",
+          "true"
+        ]
+      ],
+      "selected_field_properties_after": [],
+      "source_id": "text-number-text",
+      "output_id": "text-number-text-td-only",
+      "stdout_sha256": "93cd8e589f520b2283b4f642556de930b95c0a0d7640aa0569eae2c70b3fe5fe",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "OPTION\tTrack Name AutoCorrect Info\tLONG\ttrue\t0\nOPTION\tPerform Name AutoCorrect\tLONG\ttrue\t0\nCOLUMN\t0\t0\tID\tLONG\t4\tfalse\nCOLUMN\t1\t1\tTitle\tTEXT\t255\ttrue\nCOLUMN\t2\t2\tAfterLabel\tLONG\t4\tfalse\nPROPERTY\t2\tRequired\tBOOLEAN\ttrue\tfalse\nPROPERTY\t2\tDefaultValue\tMEMO\ttrue\t0\nCOLUMN\t3\t3\tOtherLabel\tTEXT\t255\ttrue\nPROPERTY\t3\tRequired\tBOOLEAN\ttrue\tfalse\nPROPERTY\t3\tAllowZeroLength\tBOOLEAN\ttrue\ttrue\nTABLE\tTable1\t4\t0\t1\n",
+      "stderr": ""
+    },
+    {
+      "case": "text-number-text",
+      "variant": "live-group",
+      "old_name": "Label",
+      "new_name": "Title",
+      "before_sha256": "c28d3c1bf1de4e75f894ac80ae332aa2a5b4b8c3c9111700d989222b8d6267c3",
+      "after_sha256": "7604ae8af88cbcaf1be537e03cfc65c6f8095ed20a8f4c1113359c7d176ddfdc",
+      "after_bytes": 45056,
+      "index": 1,
+      "native_number": 1,
+      "variable_ordinal": 0,
+      "column_id": 1,
+      "type": 10,
+      "flags": 2,
+      "extended_flags": 1,
+      "width_bytes": 510,
+      "descriptor_hex": "0a59060000010000000100090400010201000000000000fe01",
+      "catalog_physical_slot": 8,
+      "live_user_reference": 2562,
+      "live_body_span": [
+        44552,
+        44779
+      ],
+      "changed_spans": [
+        [
+          28855,
+          28865
+        ],
+        [
+          44650,
+          44660
+        ]
+      ],
+      "live_group_name_span": [
+        44650,
+        44660
+      ],
+      "changed_pages": [
+        7,
+        10
+      ],
+      "maps_and_catalog_unchanged": true,
+      "all_old_history_rows_unchanged": true,
+      "new_db_role_body_unchanged": true,
+      "user_data_index_pages_unchanged": true,
+      "sdk_exit": 0,
+      "readonly_output_unchanged": true,
+      "original_unchanged": true,
+      "observation": {
+        "columns": [
+          {
+            "index": 0,
+            "id": 0,
+            "name": "ID",
+            "type": "LONG",
+            "units": 4,
+            "compressed": "false",
+            "properties": []
+          },
+          {
+            "index": 1,
+            "id": 1,
+            "name": "Title",
+            "type": "TEXT",
+            "units": 255,
+            "compressed": "true",
+            "properties": [
+              [
+                "Required",
+                "BOOLEAN",
+                "true",
+                "false"
+              ],
+              [
+                "AllowZeroLength",
+                "BOOLEAN",
+                "true",
+                "true"
+              ]
+            ]
+          },
+          {
+            "index": 2,
+            "id": 2,
+            "name": "AfterLabel",
+            "type": "LONG",
+            "units": 4,
+            "compressed": "false",
+            "properties": [
+              [
+                "Required",
+                "BOOLEAN",
+                "true",
+                "false"
+              ],
+              [
+                "DefaultValue",
+                "MEMO",
+                "true",
+                "0"
+              ]
+            ]
+          },
+          {
+            "index": 3,
+            "id": 3,
+            "name": "OtherLabel",
+            "type": "TEXT",
+            "units": 255,
+            "compressed": "true",
+            "properties": [
+              [
+                "Required",
+                "BOOLEAN",
+                "true",
+                "false"
+              ],
+              [
+                "AllowZeroLength",
+                "BOOLEAN",
+                "true",
+                "true"
+              ]
+            ]
+          }
+        ],
+        "options": [
+          [
+            "Track Name AutoCorrect Info",
+            "LONG",
+            "true",
+            "0"
+          ],
+          [
+            "Perform Name AutoCorrect",
+            "LONG",
+            "true",
+            "0"
+          ]
+        ],
+        "table": [
+          "Table1",
+          "4",
+          "0",
+          "1"
+        ]
+      },
+      "metadata_except_requested_name_matches": true,
+      "selected_field_properties_before": [
+        [
+          "Required",
+          "BOOLEAN",
+          "true",
+          "false"
+        ],
+        [
+          "AllowZeroLength",
+          "BOOLEAN",
+          "true",
+          "true"
+        ]
+      ],
+      "selected_field_properties_after": [
+        [
+          "Required",
+          "BOOLEAN",
+          "true",
+          "false"
+        ],
+        [
+          "AllowZeroLength",
+          "BOOLEAN",
+          "true",
+          "true"
+        ]
+      ],
+      "source_id": "text-number-text",
+      "output_id": "text-number-text-live-group",
+      "stdout_sha256": "1942d6a0d32c7150dd76863f4c728e05523a64831852e26f5dda39f01a8c6cbe",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "OPTION\tTrack Name AutoCorrect Info\tLONG\ttrue\t0\nOPTION\tPerform Name AutoCorrect\tLONG\ttrue\t0\nCOLUMN\t0\t0\tID\tLONG\t4\tfalse\nCOLUMN\t1\t1\tTitle\tTEXT\t255\ttrue\nPROPERTY\t1\tRequired\tBOOLEAN\ttrue\tfalse\nPROPERTY\t1\tAllowZeroLength\tBOOLEAN\ttrue\ttrue\nCOLUMN\t2\t2\tAfterLabel\tLONG\t4\tfalse\nPROPERTY\t2\tRequired\tBOOLEAN\ttrue\tfalse\nPROPERTY\t2\tDefaultValue\tMEMO\ttrue\t0\nCOLUMN\t3\t3\tOtherLabel\tTEXT\t255\ttrue\nPROPERTY\t3\tRequired\tBOOLEAN\ttrue\tfalse\nPROPERTY\t3\tAllowZeroLength\tBOOLEAN\ttrue\ttrue\nTABLE\tTable1\t4\t0\t1\n",
+      "stderr": ""
+    }
+  ],
+  "limitations": [
+    "Raw copies were authored by the first-party Python model, not SDK rename operations.",
+    "Read-only SDK compatibility and exact property lookup are not Microsoft Access write/interaction qualification.",
+    "No general rename writer, dependencies/NameMaps, differing-width/Unicode names, populated layouts, timestamp/event behavior or older-profile admission follows."
+  ]
+}

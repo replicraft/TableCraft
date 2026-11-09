@@ -11288,3 +11288,23 @@ remain exact; no binaries or private paths are tracked. Every SDK open disables
 expression evaluation. The database ROW stays fixed while the next user body
 appends after it. This establishes engineering bytes and inert metadata, with
 native ADD-after-OFF admission, Access save behavior and older profiles unqualified.
+
+
+## Saved-field same-width raw rename: 9 November 2026
+
+The original MIT [literal model and portable recipe](saved_field_rename/README.md)
+and byte-identical `FieldRenameObserver.java` compare four coordinated raw
+mutations with four TDEF-only controls on pinned generated nine-role OFF sources.
+The same reviewed Apache-2.0 Jackcess 5.0.4 JAR only opens files read-only, with
+expression evaluation disabled. All twelve baseline/variant reads succeed and
+preserve their inputs. Coordinated TDEF/live-user-MR2 name edits retain observed
+metadata except the selected name; TDEF-only edits stop exposing that field's
+original policies under the new name, while their raw property bytes remain.
+
+The [record](results/saved-field-rename-raw-sdk-read-2026-11-09.json) preserves
+source/model/helper pins, all baselines and eight observations, frozen prediction
+and original wrapper/result hashes. Portable wrappers are unrun; successful
+observations were not repeated during promotion. No third-party source or binary,
+database/class/JAR, private path or production encoder is included as an oracle.
+These are raw mutations plus inert SDK reads, **not SDK rename writes**, native
+Access behavior, dependency/NameMap updates or normal writer/recovery admission.

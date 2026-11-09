@@ -1,0 +1,33 @@
+{
+  "source_record": "../results/nac-after-field-add-sdk-2026-11-08.json",
+  "sources": [
+    {
+      "case": "number-first",
+      "source": "number-first.accdb",
+      "before_sha256": "c88bc4cb1090d9b0c5e011010ec76cf9acc33da7ec9d58e67fa873bfaabe18ef",
+      "old_name": "Score",
+      "new_name": "Total"
+    },
+    {
+      "case": "number-second",
+      "source": "number-second.accdb",
+      "before_sha256": "6f9b095ddf3d724e34d5af98bea4e8ba88bc2b2bc70ade10814f85c27770c620",
+      "old_name": "Score",
+      "new_name": "Total"
+    },
+    {
+      "case": "text-inline-number",
+      "source": "text-inline-number.accdb",
+      "before_sha256": "e30ac2923f754892895a97231cee7cc6bd8f880c03f384a21546ed4b7e4b77f3",
+      "old_name": "Score",
+      "new_name": "Total"
+    },
+    {
+      "case": "text-number-text",
+      "source": "text-number-text.accdb",
+      "before_sha256": "c28d3c1bf1de4e75f894ac80ae332aa2a5b4b8c3c9111700d989222b8d6267c3",
+      "old_name": "Label",
+      "new_name": "Title"
+    }
+  ]
+}
