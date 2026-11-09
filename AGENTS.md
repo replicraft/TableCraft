@@ -494,3 +494,6 @@ headless build does not qualify database behavior or another platform.
 
 Use explicit path-scoped staging and focused commits. CI actions use version
 tags rather than commit hashes. Do not push unless requested.
+Explicitly user-staged changes are intended for inclusion: review and commit them
+in an appropriate logical chunk rather than excluding them merely because they
+were authored or staged by the user. Preserve unrelated unstaged changes.
