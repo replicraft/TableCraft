@@ -30,7 +30,9 @@ MR2 body as row 1 on the same LVAL page, retaining row 0 and its entire old body
 The catalog physical slot/span, forwarding root, all allocation maps and primary
 INDEX page remain unchanged. Only the selected property's descriptor length and
 row reference change. Dictionary order, existing group order and policies remain
-exact. No new LVAL page is allocated. Page-full behavior is unobserved here.
+exact. No new LVAL page is allocated. Page-full behavior is outside these three observations; the subsequent
+[ID-only rollover record](../number_column_rollover/README.md) observes its first
+EOF allocation separately.
 
 The independent [model](model.py) consumes BEFORE bytes and the explicit new
 name, constructs the entire expected image and only then compares SDK AFTER.

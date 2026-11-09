@@ -11228,3 +11228,22 @@ earlier Number oracle, with per-function provenance hashes; no production encode
 or third-party source/fixture is imported. Generated databases/classes/JAR remain
 local and untracked. This establishes existing-page property-row append evidence,
 not native writer/recovery admission, page exhaustion or Microsoft Access behavior.
+
+## Number property-page rollover — 8 November 2026
+
+The [portable first-party recipe/model](number_column_rollover/README.md) reuses
+the unchanged maintained Number Java helper and reviewed Apache-2.0 Jackcess 5.0.4
+JAR. It starts from the exact pinned ID-only first Number AFTER, adds N2 through
+N13 on fresh copies, and independently matches every complete SDK image. N14
+allocates immediate EOF LVAL page 11 while preserving all of page 10 and its 13
+historical bodies. Its complete independent AFTER also matches SDK bytes.
+The [record](results/number-column-rollover-sdk-2026-11-08.json) pins all steps,
+original/portable helper hashes, map/descriptor binding and preserved dates.
+
+An initial independent model asserted catalog-owned map 3:0 was the global-free
+map. That failed draft/hash and correction to map 3:1 remain separate evidence;
+the SDK operations were not repeated. The portable raw model was replayed against
+all 13 retained SDK outputs. No production codec, third-party source or published
+database/class/JAR is used as an oracle. This is SDK/raw-model storage evidence,
+not native rollover, Microsoft Access, event/timestamp, compiled-cache, another
+allocation shape or older-profile qualification.

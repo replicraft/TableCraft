@@ -1,0 +1,344 @@
+{
+  "schema": 1,
+  "date": "2026-11-08",
+  "scope": "Independent SDK and complete-image raw-model Number property history through first page rollover; separate from native write/recovery/runtime/GUI or Microsoft Access evidence",
+  "sdk": {
+    "artifact": "Jackcess 5.0.4",
+    "sha256": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc",
+    "license": "Apache-2.0",
+    "source_pin": "be0a2139b087a227d14cafd4ea231306a5a3a862"
+  },
+  "helper": {
+    "source": "docs/testing/CreatedNumberColumnOracle.java",
+    "sha256": "c805c038da5f0853c50a3b76753dab0577aa66322fe873c9e642e52a943d1886",
+    "unchanged": true,
+    "fresh_copy_per_operation": true,
+    "evaluate_expressions": false,
+    "read_only_reopen": true,
+    "all_originals_unchanged": true
+  },
+  "execution": {
+    "platform": "Darwin 23.6.0 arm64",
+    "sdk_driver_sha256": "dec6cdaa0010bda1b41702c6dcfe79c9c52b8b27b1b543de506887a11c9acede",
+    "corrected_rollover_model_sha256": "298d04f160c9b24f943ce2e1dda232c4d36537f6b40bff7fc9bbf68245bee725",
+    "sdk_operations": 13,
+    "sdk_repeated_for_model_correction": false,
+    "sdk_repeated_for_portable_replay": false,
+    "all_database_and_class_bytes_untracked": true,
+    "java": "OpenJDK 21.0.8, Temurin-21.0.8+9 LTS"
+  },
+  "maintained_recipe": {
+    "driver": "docs/testing/number_column_rollover/probe.py",
+    "driver_sha256": "03687316490b41a91f93b77a5988a68c5bbd73783f10f1ce8fc8d17e54c4d6f5",
+    "driver_sdk_execution": "Not rerun; syntax-checked portable extraction of observed first-party orchestration",
+    "model": "docs/testing/number_column_rollover/model.py",
+    "model_sha256": "e755614f75fb683788f823aff0fc8df159146674112c181fae0be2590088d9fa",
+    "same_page_and_corrected_rollover_core_ast_identical": true,
+    "portable_model_replay": "PASS: all thirteen complete AFTERs match retained SDK outputs",
+    "raw_owner": "docs/testing/number_column_repeat/raw.py",
+    "raw_owner_sha256": "4bba92ee109e8318ef9b47ac541ddbaf1068a14c5d939dca5db80e535acc182c",
+    "production_codecs_used": false
+  },
+  "initial_source": {
+    "record": "docs/testing/results/add-column-number-sdk-source-2026-11-08.json",
+    "case": "ID-only initial Score addition AFTER",
+    "sha256": "a6a9e18cd35dc2bf018e5cd554a68b5b60d56023fd78a4a0ecba627ab9041d72",
+    "bytes": 45056,
+    "table": "Table1",
+    "fields": [
+      "ID generated primary",
+      "Score LONG Required false DefaultValue0"
+    ]
+  },
+  "history": [
+    {
+      "column": "N2",
+      "before_bytes": 45056,
+      "after_bytes": 45056,
+      "before_sha256": "a6a9e18cd35dc2bf018e5cd554a68b5b60d56023fd78a4a0ecba627ab9041d72",
+      "after_sha256": "60792b6edf3a1db6ec69c17a8a425de7accdcb45364625f54d44226a6bf4001b",
+      "source_unchanged": true,
+      "changed_existing_pages": [
+        4,
+        7,
+        10
+      ],
+      "added_pages": [],
+      "complete_independent_match": true
+    },
+    {
+      "column": "N3",
+      "before_bytes": 45056,
+      "after_bytes": 45056,
+      "before_sha256": "60792b6edf3a1db6ec69c17a8a425de7accdcb45364625f54d44226a6bf4001b",
+      "after_sha256": "ce5e44bc3c321ff0876c843651c076944736ebae01f0159ac4832fd533ed8d54",
+      "source_unchanged": true,
+      "changed_existing_pages": [
+        4,
+        7,
+        10
+      ],
+      "added_pages": [],
+      "complete_independent_match": true
+    },
+    {
+      "column": "N4",
+      "before_bytes": 45056,
+      "after_bytes": 45056,
+      "before_sha256": "ce5e44bc3c321ff0876c843651c076944736ebae01f0159ac4832fd533ed8d54",
+      "after_sha256": "1e4943482d3b33aadb7b0a3513621434480ccde9a1af881b7ee22aed64f5a49d",
+      "source_unchanged": true,
+      "changed_existing_pages": [
+        4,
+        7,
+        10
+      ],
+      "added_pages": [],
+      "complete_independent_match": true
+    },
+    {
+      "column": "N5",
+      "before_bytes": 45056,
+      "after_bytes": 45056,
+      "before_sha256": "1e4943482d3b33aadb7b0a3513621434480ccde9a1af881b7ee22aed64f5a49d",
+      "after_sha256": "03f82a6849b3384c3668fdb8e19661f77f517d2a9e1d35261c6195a262127201",
+      "source_unchanged": true,
+      "changed_existing_pages": [
+        4,
+        7,
+        10
+      ],
+      "added_pages": [],
+      "complete_independent_match": true
+    },
+    {
+      "column": "N6",
+      "before_bytes": 45056,
+      "after_bytes": 45056,
+      "before_sha256": "03f82a6849b3384c3668fdb8e19661f77f517d2a9e1d35261c6195a262127201",
+      "after_sha256": "e6e0aeeece00d0c303160c4c2642859fc2e37bf4fbda49d3ab21562bc8aa6a9d",
+      "source_unchanged": true,
+      "changed_existing_pages": [
+        4,
+        7,
+        10
+      ],
+      "added_pages": [],
+      "complete_independent_match": true
+    },
+    {
+      "column": "N7",
+      "before_bytes": 45056,
+      "after_bytes": 45056,
+      "before_sha256": "e6e0aeeece00d0c303160c4c2642859fc2e37bf4fbda49d3ab21562bc8aa6a9d",
+      "after_sha256": "544c14a35cf90aeab6cc16141ee41612c1bb8b29e5b232e095622e6a3fc7b6d4",
+      "source_unchanged": true,
+      "changed_existing_pages": [
+        4,
+        7,
+        10
+      ],
+      "added_pages": [],
+      "complete_independent_match": true
+    },
+    {
+      "column": "N8",
+      "before_bytes": 45056,
+      "after_bytes": 45056,
+      "before_sha256": "544c14a35cf90aeab6cc16141ee41612c1bb8b29e5b232e095622e6a3fc7b6d4",
+      "after_sha256": "3764f0a858af276d27a38c8cfe8b6dd26a1d875ff6225ae471849dbd99847bc8",
+      "source_unchanged": true,
+      "changed_existing_pages": [
+        4,
+        7,
+        10
+      ],
+      "added_pages": [],
+      "complete_independent_match": true
+    },
+    {
+      "column": "N9",
+      "before_bytes": 45056,
+      "after_bytes": 45056,
+      "before_sha256": "3764f0a858af276d27a38c8cfe8b6dd26a1d875ff6225ae471849dbd99847bc8",
+      "after_sha256": "a37d0465ebb00e89faa03511e98b964eae7bb1bfa7c5b6b8ffb7ff417a3835b7",
+      "source_unchanged": true,
+      "changed_existing_pages": [
+        4,
+        7,
+        10
+      ],
+      "added_pages": [],
+      "complete_independent_match": true
+    },
+    {
+      "column": "N10",
+      "before_bytes": 45056,
+      "after_bytes": 45056,
+      "before_sha256": "a37d0465ebb00e89faa03511e98b964eae7bb1bfa7c5b6b8ffb7ff417a3835b7",
+      "after_sha256": "c14f0c619e798680ad42c65c32953dc77902104d021c93677c40d56ca84176fc",
+      "source_unchanged": true,
+      "changed_existing_pages": [
+        4,
+        7,
+        10
+      ],
+      "added_pages": [],
+      "complete_independent_match": true
+    },
+    {
+      "column": "N11",
+      "before_bytes": 45056,
+      "after_bytes": 45056,
+      "before_sha256": "c14f0c619e798680ad42c65c32953dc77902104d021c93677c40d56ca84176fc",
+      "after_sha256": "6122877b788fdf52f39274e3c45d08a698e750f31c09ef6cfb48fabdb474824e",
+      "source_unchanged": true,
+      "changed_existing_pages": [
+        4,
+        7,
+        10
+      ],
+      "added_pages": [],
+      "complete_independent_match": true
+    },
+    {
+      "column": "N12",
+      "before_bytes": 45056,
+      "after_bytes": 45056,
+      "before_sha256": "6122877b788fdf52f39274e3c45d08a698e750f31c09ef6cfb48fabdb474824e",
+      "after_sha256": "d6fac97ebebc9a9a793b65ab06f0cc934ac45c72b7b389af41d0eda7c5b1bbad",
+      "source_unchanged": true,
+      "changed_existing_pages": [
+        4,
+        7,
+        10
+      ],
+      "added_pages": [],
+      "complete_independent_match": true
+    },
+    {
+      "column": "N13",
+      "before_bytes": 45056,
+      "after_bytes": 45056,
+      "before_sha256": "d6fac97ebebc9a9a793b65ab06f0cc934ac45c72b7b389af41d0eda7c5b1bbad",
+      "after_sha256": "392e135acfc93ffe116c772fc9e728892a118a5792edd7a29b975d4e38b6c282",
+      "source_unchanged": true,
+      "changed_existing_pages": [
+        4,
+        7,
+        10
+      ],
+      "added_pages": [],
+      "complete_independent_match": true
+    },
+    {
+      "column": "N14",
+      "before_bytes": 45056,
+      "after_bytes": 49152,
+      "before_sha256": "392e135acfc93ffe116c772fc9e728892a118a5792edd7a29b975d4e38b6c282",
+      "after_sha256": "97fb669a90e6a733ddd09e47d548ca4743a833e68f9c2fe46631a8398c31c64d",
+      "source_unchanged": true,
+      "changed_existing_pages": [
+        3,
+        4,
+        7
+      ],
+      "added_pages": [
+        11
+      ],
+      "complete_independent_match": true
+    }
+  ],
+  "rollover": {
+    "before_bytes": 45056,
+    "after_bytes": 49152,
+    "before_sha256": "392e135acfc93ffe116c772fc9e728892a118a5792edd7a29b975d4e38b6c282",
+    "after_sha256": "97fb669a90e6a733ddd09e47d548ca4743a833e68f9c2fe46631a8398c31c64d",
+    "independent_after_sha256": "97fb669a90e6a733ddd09e47d548ca4743a833e68f9c2fe46631a8398c31c64d",
+    "complete_independent_match": true,
+    "changed_existing_pages": [
+      3,
+      4,
+      7
+    ],
+    "new_page": 11,
+    "new_page_signature": "0101",
+    "new_page_owner_ascii": "LVAL",
+    "new_page_row_count": 1,
+    "new_page_row": 0,
+    "new_body_bytes": 560,
+    "new_body_sha256": "ccf6206d17c14f91f9e0c574ad7992fe628c05bf6e936dc3b449e210152bdf74",
+    "new_row_start": 3536,
+    "new_page_free_bytes": 3520,
+    "old_page": 10,
+    "old_page_row_count": 13,
+    "old_page_free_bytes": 71,
+    "old_page_entirely_unchanged": true,
+    "catalog_physical_slot": 8,
+    "catalog_physical_span": [
+      3359,
+      3444
+    ],
+    "catalog_descriptor_before": "0b0200400c0a000000000000",
+    "catalog_descriptor_after": "30020040000b000000000000",
+    "map_declaration": {
+      "definition_page": 2,
+      "offset": 802,
+      "physical_column": 14,
+      "owned_reference": "3:16",
+      "candidate_reference": "3:17",
+      "bytes": "0e001003000011030000"
+    },
+    "owned_map_bits_before": [
+      10
+    ],
+    "owned_map_bits_after": [
+      10,
+      11
+    ],
+    "candidate_map_bits_before": [
+      10
+    ],
+    "candidate_map_bits_after": [
+      11
+    ],
+    "global_free_reference": "3:1",
+    "global_free_map_unchanged": true,
+    "page3_changed_bytes": [
+      {
+        "at": 3868,
+        "before": 4,
+        "after": 8
+      },
+      {
+        "at": 3881,
+        "before": 4,
+        "after": 12
+      }
+    ]
+  },
+  "retained_failed_observation": {
+    "kind": "Independent model assertion failure, not an SDK divergence",
+    "model_sha256": "26a8442cace25d504bc4e0bae5967670402d9e2bb29bbf2a850baeb3fd1c5d45",
+    "assertion": "bits(row(maps, 0)[2]) == []",
+    "observed_bits": [
+      4
+    ],
+    "cause": "Map3:0 is catalog-owned; global-free is map3:1",
+    "correction": "Check global-free map3:1; the corrected complete model matches every SDK AFTER",
+    "failed_draft_retained_separately": true,
+    "sdk_execution_unchanged": true
+  },
+  "native_observation_limits": {
+    "rows": 0,
+    "indexes": 1,
+    "field_count_after_n14": 15,
+    "generated_id": true,
+    "number_required": false,
+    "number_default": "Stored literal MEMO UTF16 0",
+    "created_and_updated": "Zero native days, unchanged (SDK displays 1899-12-30T00:00)",
+    "microsoft_access_execution": "UNRUN",
+    "native_rollover_implementation_or_test_claim": false,
+    "broader_allocation_shapes_or_source_classes": "Unqualified by this observation"
+  }
+}
