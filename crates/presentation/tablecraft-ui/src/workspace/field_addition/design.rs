@@ -39,9 +39,8 @@ pub(crate) fn name(ui: &mut Ui, presentation: &Presentation) -> Option<Event> {
             .desired_width(ui.available_width())
             .margin(egui::vec2(NAME_PADDING, 1.0)),
     );
-    response.widget_info(|| {
-        WidgetInfo::labeled(WidgetType::TextEdit, enabled, tr(ui, "design-new-field"))
-    });
+    let name_label = tr(ui, "design-new-field");
+    response.widget_info(|| WidgetInfo::labeled(WidgetType::TextEdit, enabled, &name_label));
     if enabled && presentation.focus {
         response.request_focus();
     }
@@ -95,12 +94,9 @@ pub(crate) fn data_type(
             })
             .response
     });
+    let type_label = tr(ui, "design-data-type");
     response.inner.widget_info(|| {
-        WidgetInfo::labeled(
-            WidgetType::ComboBox,
-            presentation.enabled,
-            tr(ui, "design-data-type"),
-        )
+        WidgetInfo::labeled(WidgetType::ComboBox, presentation.enabled, &type_label)
     });
     event
 }
