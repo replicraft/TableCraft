@@ -494,9 +494,9 @@ uses horizontal scrolling in the compact localized scene.
 
 Expanded-menu, naming, close-confirmation and dark Access captures are missing;
 those controls remain adaptations. These scenes contain no database or save actor
-and establish presentation only. The separate desktop workflow gate currently
-contains unresolved cancellation and save-completion failures, so normal Number
-saves remain disabled. See the [frame record](../testing/results/number-column-presentation-2026-11-08.json).
+and establish presentation only. The initial desktop workflow gate contained cancellation and save-completion
+failures; the later [normal-host acceptance](../testing/results/number-column-gui-workflows-2026-11-08.json)
+records their corrected workflows and activation. See the [frame record](../testing/results/number-column-presentation-2026-11-08.json).
 
 The failed-refresh follow-up adds three inspected source-free scenes: English
 light at 1280×820, scale 1; German dark at 900×580, scale 1.25; and English dark

@@ -1,5 +1,7 @@
 # Testing and evidence
 
+- [Normal desktop Number-column workflow acceptance](results/number-column-gui-workflows-2026-11-08.json)
+
 - [Repeated Number addition on existing property LVAL](number_column_repeat/README.md)
 
 - [Full saved-SQL expression workflow checks](results/full-sql-expression-workflows-2026-11-08.json)

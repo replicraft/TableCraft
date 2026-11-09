@@ -1,5 +1,30 @@
 # Implementation status
 
+## Normal desktop Number-column saves — 8 November 2026
+
+Saved-table Click to Add now offers Number when native host support and an actual
+source inspection both qualify the table. Bounded naming, exact review, native
+save acknowledgement and complete-image checked reopen form one owned workflow.
+Closing uses explicit Save/Don’t Save/Cancel; failed refresh can Return while
+retaining saved facts and blocking stale-source mutation until fresh open.
+Other tabs, scratch SQL and valid filter/sort preferences survive publication.
+The composed GUI Number-save/New-row path verifies generated ID and an omitted
+field’s stored zero default after reopen.
+
+The [activation batch](testing/results/number-column-gui-workflows-2026-11-08.json)
+passes 785 checks: all 604 shared UI tests, 168 desktop tests and 13 selected
+runtime/naming checks, with one existing desktop test ignored. Strict affected
+library/desktop lint passes. Eleven light/dark offscreen frames were inspected;
+the new menu/status/close surfaces remain adaptations without matching Access
+captures. Windows and native Access execution remain unqualified.
+
+Current native source limits remain explicit: empty, unencoded ACE16 canonical
+generated-primary tables with bounded properties. The first addition’s external
+property output is not yet a qualified second-add source. Three new independent
+[SDK observations](testing/number_column_repeat/README.md) establish same-page
+expected output for that next expansion, not current native admission. General
+column CRUD and broader profiles remain unfinished.
+
 ## Existing saved-query expression expansion — 8 November 2026
 
 The connected full-SQL route now targets existing local SELECT projections and
@@ -33,7 +58,8 @@ Required(false): three complete SDK images match independent native candidates.
 Its distinct TCAC0003 request, resizable V2 journal, offline recovery and consuming
 runtime review/save/reopen services pass the [65-case follow-up batch](testing/results/number-column-runtime-batch-2026-11-08.json).
 The actual GUI TableDraft producer matches both source classes. Saved-column
-GUI naming/save controls remain disabled while their lifecycle is implemented.
+At that earlier checkpoint, GUI naming/save controls remained disabled while
+their lifecycle was implemented.
 New source-availability and failure cases await the next coordinated batch.
 The [combined batch record](testing/results/gui-query-column-batch-2026-11-08.json)
 retains 60 passing focused checks, strict affected-package lint and two inspected

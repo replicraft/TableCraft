@@ -1,0 +1,94 @@
+{
+  "date": "2026-11-08",
+  "source_commit": "480a83e6",
+  "scope": "Normal desktop source-qualified Number-column addition, checked schema publication, cancellation and failed-refresh exit; composed GUI row insertion",
+  "platform": "macOS 14.7.2 ARM64, headless only; no native windows",
+  "build": {
+    "result": "PASS",
+    "record": ".cache/normal-number-activation-build-20261108.log"
+  },
+  "suites": [
+    {
+      "package": "tablecraft-desktop",
+      "filter": "ALL",
+      "passed": 168,
+      "failed": 0,
+      "ignored": 1
+    },
+    {
+      "package": "tablecraft_ui",
+      "filter": "ALL",
+      "passed": 604,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "package": "tablecraft_runtime",
+      "filter": "tests::number_column::",
+      "passed": 8,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "package": "tablecraft_runtime",
+      "filter": "editing::number_column::outcome::tests::",
+      "passed": 3,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "package": "tablecraft_builders",
+      "filter": "table::names::",
+      "passed": 2,
+      "failed": 0,
+      "ignored": 0
+    }
+  ],
+  "total_passed": 785,
+  "total_ignored": 1,
+  "test_record": ".cache/normal-number-activation-summary-20261108.json",
+  "test_record_sha256": "7f10b381b4cc5d9a5dda621dd37c177927e581da5f841a53618e130ae54198ad",
+  "lint": {
+    "result": "PASS",
+    "record": ".cache/normal-number-activation-clippy-20261108.log",
+    "scope": "Six affected packages, all features, libraries and desktop binary; -D warnings"
+  },
+  "behavior_checked": [
+    "Normal Desktop::new capability plus actual source inspection enables header; unsupported source remains disabled and ordinary mock has no write support.",
+    "Actual Click to Add/Number/name/Save issues native consuming review, save and whole-image checked reopen while preserving tab identities and scratch SQL.",
+    "Save-before-close waits for witnessed publication; explicit discard/cancel preserve intended native behavior.",
+    "Readonly inspection cancellation/supersession terminates exact pending state without losing newer owners or waiting on revoked replies.",
+    "Known AFTER followed by whole-image tamper refuses reopen; explicit Return retains actual name/outcome/cleanup and blocks stale mutation, permits Backstage close and fresh reopen without replay.",
+    "Filter and sort preferences revalidate on fresh schema.",
+    "Actual Number save then Ribbon New/explicit Omitted mode/Review/Apply/ACK/reopen produces generated ID1 and stored Score0; explicit NULL and supplied values remain separate runtime cases."
+  ],
+  "visual_record": "docs/testing/results/number-column-presentation-2026-11-08.json",
+  "earlier_failures_preserved": [
+    {
+      "record": ".cache/number-gui-publication-host-summary-20261108.json",
+      "cause": "Four desktop cancellation/save-dispatch failures; corrected in 2669134f and 15e506ad."
+    },
+    {
+      "record": ".cache/number-return-query-build-20261108.log",
+      "cause": "One test Vec-input compile correction 85a63af4."
+    },
+    {
+      "record": ".cache/number-return-query-summary-20261108.json",
+      "cause": "New Return case found SQL-specific label; filter setup bypassed retained dialog choices; corrected d859d52f."
+    },
+    {
+      "record": ".cache/number-return-row-summary-20261108.json",
+      "cause": "New composed GUI test hard-coded a Fluent-isolated button label; corrected 1ca97a1f."
+    },
+    {
+      "record": ".cache/number-return-preview-build-20261108.log",
+      "cause": "Nested explicit example module path corrected 58af112d before all three successful renders."
+    }
+  ],
+  "limitations": [
+    "Native Microsoft Access, Windows/Linux execution and native UI behavior remain unqualified.",
+    "Existing source remains empty unencoded ACE16 canonical generated-primary layout with bounded fields and properties.",
+    "Another Number addition to external-property output remains unsupported pending separate native source qualification despite independent SDK evidence.",
+    "Other saved-column types, rename/drop/type conversion, populated source growth and older profiles remain unfinished."
+  ]
+}

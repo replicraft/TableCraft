@@ -103,7 +103,9 @@ That record then uses a separate reviewed row save. Create → Table Design star
 sources, with supported manual numeric keys or an explicit keyless save. General
 schema authoring and native allocation growth remain in development. Windows saves retain an intact retired journal
 artifact rather than claiming durable deletion.
-See [database creation](docs/ui/DATABASE_CREATION.md) for its limits.
+Qualified empty ACE 16 tables also support Click to Add → Number with a stored
+zero default and a checked schema save/reopen. General column editing remains
+in development. See [database creation](docs/ui/DATABASE_CREATION.md) for its limits.
 Use `--mock` for [synthetic UI review](docs/ui/PRESENTATION_PREVIEW.md), with
 light/dark themes and interface languages under File → Options.
 
