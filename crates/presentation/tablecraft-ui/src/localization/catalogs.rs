@@ -43,12 +43,15 @@ macro_rules! sections {
             section!($locale, "collections"),
             section!($locale, "settings"),
             section!($locale, "database-options"),
+            section!($locale, "field-rename"),
         ]
     };
 }
 
-pub(super) fn sources(locale: Locale) -> [(&'static str, &'static str); 25] {
-    match locale {
+pub(super) fn sources(
+    locale: Locale,
+) -> impl ExactSizeIterator<Item = (&'static str, &'static str)> {
+    let sources = match locale {
         Locale::EnUs => sections!("en-US"),
         Locale::Es => sections!("es"),
         Locale::De => sections!("de"),
@@ -57,5 +60,7 @@ pub(super) fn sources(locale: Locale) -> [(&'static str, &'static str); 25] {
         Locale::Ko => sections!("ko"),
         Locale::ZhCn => sections!("zh-CN"),
         Locale::PtBr => sections!("pt-BR"),
-    }
+    };
+
+    sources.into_iter()
 }

@@ -1,0 +1,29 @@
+# 已保存字段的名称：检查、更改和重新打开验证。
+
+field-rename-title = 重命名字段
+field-rename-name = 字段名称
+field-rename-design-help = 使用“{ field-rename-title }”提出新的字段名称。其他字段属性仍为只读。
+field-rename-original = 原字段：{ $column }
+field-rename-proposed = 新名称：{ $column }
+field-rename-inspecting = 正在检查能否重命名此字段…
+field-rename-inspection-interrupted = 字段检查已中断。请重试以再次检查此字段。
+field-rename-retry-inspection = 重试字段检查
+field-rename-source-unavailable = 此数据库不支持重命名该字段。
+field-rename-profile = 目前仅支持长度恰好为 { $units } 个字符的 ASCII 字段名称。
+field-rename-reviewing = 正在审核字段名称…
+field-rename-reopening = 正在重新打开并验证已重命名的字段…
+field-rename-unchanged-reopening = 正在检查未更改的数据库…
+field-rename-unchanged = 未写入任何字段名称更改。
+field-rename-cancel = 取消重命名
+field-rename-return = 返回名称编辑器
+field-rename-close-title = 字段名称更改
+field-rename-close-question = 是否在关闭前保存 { $table } 中 { $column } 的名称更改？
+field-rename-close-save = 保存
+field-rename-close-discard = 放弃
+field-rename-close-cancel = 取消
+field-rename-close-unavailable = 无法保存此名称。请放弃更改或返回名称编辑器。
+field-rename-close-stale = 新名称已更改。请取消关闭，然后重试。
+field-rename-close-confirm = 关闭名称编辑器？这不会撤销已写入文件的更改。
+field-rename-warning-saved = 字段名称已写入，但无法验证数据库。请先重新打开数据库，再进行其他更改。
+field-rename-warning-unchanged = 未写入任何字段名称更改，但无法验证数据库。请先重新打开数据库，再进行其他更改。
+field-rename-close-editor = 关闭名称编辑器

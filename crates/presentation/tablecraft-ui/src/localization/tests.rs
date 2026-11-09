@@ -105,6 +105,7 @@ fn every_section_has_complete_keys_variables_and_successful_translations() {
                         | "missing"
                         | "formatting"
                         | "fallbacks"
+                        | "units"
                 ) {
                     arguments.set(*name, 2);
                 } else {
