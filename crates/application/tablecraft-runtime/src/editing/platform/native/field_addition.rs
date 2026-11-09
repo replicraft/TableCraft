@@ -87,6 +87,11 @@ pub(in crate::editing) fn review(
                 table, column, target, &mut work, cancelled,
             )?)
         }
+        FieldAdditionSourcePurpose::AfterExplicitOffHistory => Plan::AfterOffHistory(
+            image.plan_recoverable_created_field_addition_after_off_history(
+                table, column, target, &mut work, cancelled,
+            )?,
+        ),
     };
     let captured = plan.captured_declaration()?;
     if captured != declaration {

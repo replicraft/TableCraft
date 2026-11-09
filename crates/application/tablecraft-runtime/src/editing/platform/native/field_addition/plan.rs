@@ -1,7 +1,8 @@
 //! Real captured original plans; target declarations are derived, never echoed.
 use std::num::NonZeroU8;
 use tablecraft_ace::{
-    FieldAdditionTarget, RecoverableDefaultZeroAddColumnPlan, RecoverableFieldAdditionAfterOffPlan,
+    FieldAdditionTarget, RecoverableDefaultZeroAddColumnPlan,
+    RecoverableFieldAdditionAfterOffHistoryPlan, RecoverableFieldAdditionAfterOffPlan,
     RecoverableFieldAdditionPlan, RecoverableRepeatedDefaultZeroAddColumnPlan,
 };
 use tablecraft_builders::table::FieldAdditionDeclaration;
@@ -11,6 +12,7 @@ pub(in crate::editing) enum Plan {
     Repeated(RecoverableRepeatedDefaultZeroAddColumnPlan),
     Typed(RecoverableFieldAdditionPlan),
     AfterOff(RecoverableFieldAdditionAfterOffPlan),
+    AfterOffHistory(RecoverableFieldAdditionAfterOffHistoryPlan),
 }
 
 impl Plan {
@@ -29,6 +31,7 @@ impl Plan {
             Self::Repeated(_) => FieldAdditionDeclaration::NumberLongZero,
             Self::Typed(plan) => captured_target(plan.target())?,
             Self::AfterOff(plan) => captured_target(plan.target())?,
+            Self::AfterOffHistory(plan) => captured_target(plan.target())?,
         })
     }
 
@@ -38,6 +41,7 @@ impl Plan {
             Self::Repeated(plan) => plan.table(),
             Self::Typed(plan) => plan.table(),
             Self::AfterOff(plan) => plan.table(),
+            Self::AfterOffHistory(plan) => plan.table(),
         }
     }
 
@@ -47,6 +51,7 @@ impl Plan {
             Self::Repeated(plan) => plan.column(),
             Self::Typed(plan) => plan.column(),
             Self::AfterOff(plan) => plan.column(),
+            Self::AfterOffHistory(plan) => plan.column(),
         }
     }
 
@@ -56,6 +61,7 @@ impl Plan {
             Self::Repeated(plan) => plan.before_bytes(),
             Self::Typed(plan) => plan.before_bytes(),
             Self::AfterOff(plan) => plan.before_bytes(),
+            Self::AfterOffHistory(plan) => plan.before_bytes(),
         }
     }
 
@@ -65,6 +71,7 @@ impl Plan {
             Self::Repeated(plan) => plan.after_bytes(),
             Self::Typed(plan) => plan.after_bytes(),
             Self::AfterOff(plan) => plan.after_bytes(),
+            Self::AfterOffHistory(plan) => plan.after_bytes(),
         }
     }
 }

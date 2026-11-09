@@ -51,10 +51,10 @@ fn four_sdk_pinned_saves_use_normal_field_save_and_full_witness_reopen() {
                 panic!("expected exact witness reopen");
             };
             assert_ne!(document_revision, revision);
-            // The current later-event profile stays outside the settled source
-            // language. Selection never retries a legacy plan after refusal.
+            // The new normal history purpose qualifies the next event through
+            // its own complete replay; the original settled language stays closed.
             let facts = inspect(&worker, document_revision);
-            assert!(!facts.number_available && !facts.short_text_available);
+            assert!(facts.number_available && facts.short_text_available);
         }
     }
 }

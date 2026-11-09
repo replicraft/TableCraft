@@ -1,5 +1,7 @@
 //! Source-only refusal is not cancellation, allocation or malformed inspection.
-use super::{field_addition, field_addition_after_off, inspection_failure};
+use super::{
+    field_addition, field_addition_after_off, field_addition_after_off_history, inspection_failure,
+};
 use crate::editing::SaveFailureKind;
 use tablecraft_ace::FieldAdditionSourceError;
 
@@ -8,6 +10,9 @@ pub(super) fn failure(error: &FieldAdditionSourceError) -> Option<SaveFailureKin
         FieldAdditionSourceError::Inspect(error) => inspection_failure(error),
         FieldAdditionSourceError::Created(error) => field_addition::candidate(error),
         FieldAdditionSourceError::AfterOff(error) => field_addition_after_off::candidate(error),
+        FieldAdditionSourceError::History(error) => {
+            field_addition_after_off_history::candidate(error)
+        }
         FieldAdditionSourceError::Source => None,
     }
 }
@@ -16,8 +21,8 @@ pub(super) fn failure(error: &FieldAdditionSourceError) -> Option<SaveFailureKin
 mod tests {
     use super::*;
     use tablecraft_ace::{
-        EditError, FieldAdditionAfterOffError, FieldAdditionError,
-        FieldHistoryDatabaseOptionsError, InspectError,
+        EditError, FieldAdditionAfterOffError, FieldAdditionAfterOffHistoryError,
+        FieldAdditionError, FieldHistoryDatabaseOptionsError, InspectError,
     };
 
     #[test]
@@ -37,6 +42,12 @@ mod tests {
             });
             for error in [
                 FieldAdditionSourceError::Inspect(inspect()),
+                FieldAdditionSourceError::History(FieldAdditionAfterOffHistoryError::Inspect(
+                    inspect(),
+                )),
+                FieldAdditionSourceError::History(FieldAdditionAfterOffHistoryError::Field(
+                    FieldAdditionAfterOffError::Placement(EditError::Inspect(inspect())),
+                )),
                 FieldAdditionSourceError::Created(FieldAdditionError::Placement(
                     EditError::Inspect(inspect()),
                 )),

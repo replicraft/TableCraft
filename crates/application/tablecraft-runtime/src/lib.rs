@@ -88,8 +88,9 @@ use std::sync::Arc;
 #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
 use tablecraft_ace::{
     AddColumnIntentError, AddTableError, DefaultZeroAddColumnIntentError,
-    FieldAdditionAfterOffIntentError, FieldAdditionIntentError, FieldAdditionSourceError,
-    FirstTableError, RepeatedDefaultZeroAddColumnIntentError,
+    FieldAdditionAfterOffHistoryIntentError, FieldAdditionAfterOffIntentError,
+    FieldAdditionIntentError, FieldAdditionSourceError, FirstTableError,
+    RepeatedDefaultZeroAddColumnIntentError,
 };
 use tablecraft_builders::query::{
     BuiltQueryDesign, DesignTableMetadata, QueryDesignDraft, QueryDesignError,
@@ -147,6 +148,10 @@ pub enum Error {
     #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
     #[error(transparent)]
     FieldAdditionAfterOff(#[from] FieldAdditionAfterOffIntentError),
+    /// Original repeated post-OFF field request or complete native replay refused.
+    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+    #[error(transparent)]
+    FieldAdditionAfterOffHistory(#[from] FieldAdditionAfterOffHistoryIntentError),
     /// Selected native field source or readonly capacity qualification failed.
     #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
     #[error(transparent)]
