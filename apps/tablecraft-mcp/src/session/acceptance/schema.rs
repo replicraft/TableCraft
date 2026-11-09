@@ -72,6 +72,25 @@ fn number_and_explicit_text_field_addition_use_real_declarations_and_independent
             .unwrap();
         assert_eq!(field["native_number"], 1);
         assert_eq!(field["storage_bytes"], if text { 160 } else { 4 });
+        if !text {
+            let properties = field["properties"].as_array().unwrap();
+            let required = properties
+                .iter()
+                .find(|property| property["name"] == "Required")
+                .unwrap();
+            assert_eq!(
+                required["observation"],
+                json!({"kind": "boolean", "value": false})
+            );
+            let default = properties
+                .iter()
+                .find(|property| property["name"] == "DefaultValue")
+                .unwrap();
+            assert_eq!(
+                default["observation"],
+                json!({"kind": "text", "value": "0"})
+            );
+        }
     }
 }
 

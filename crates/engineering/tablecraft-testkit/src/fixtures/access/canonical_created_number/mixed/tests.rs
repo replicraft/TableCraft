@@ -11,6 +11,21 @@ fn hash(bytes: &[u8]) -> String {
         .collect()
 }
 
+#[test]
+fn first_number_add_creates_both_default_and_required_dictionary_entries() {
+    use super::super::{Source, append};
+    let before = source(SourceCase::IdOnly);
+    let after = append_number(&before, "Score");
+    assert_eq!(after, append(&before, Source::IdOnly, "Score"));
+    assert_eq!(after.len(), 45_056);
+    // Frozen complete SDK AFTER, including the 95-byte DefaultValue/Required bag.
+    #[cfg(any(feature = "access-support", feature = "cli-support"))]
+    assert_eq!(
+        hash(&after),
+        "a6a9e18cd35dc2bf018e5cd554a68b5b60d56023fd78a4a0ecba627ab9041d72"
+    );
+}
+
 #[cfg(any(feature = "access-support", feature = "cli-support"))]
 #[test]
 fn all_eighteen_short_text_sdk_images_and_third_number_match_independent_hashes() {

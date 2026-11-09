@@ -96,6 +96,9 @@ pub(super) fn append_number(original: &[u8], name: &str) -> Vec<u8> {
     if !names.iter().any(|name| name == "DefaultValue") {
         names.push("DefaultValue".into());
     }
+    if !names.iter().any(|name| name == "Required") {
+        names.push("Required".into());
+    }
     let dictionary = names.iter().map(String::as_str).collect::<Vec<_>>();
     let group = number_group(name, true, &dictionary);
     encode(&names, groups, &group)
