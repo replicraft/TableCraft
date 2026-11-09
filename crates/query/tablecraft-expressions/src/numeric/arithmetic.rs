@@ -164,8 +164,9 @@ fn currency(operator: Arithmetic, left: &Value, right: &Value) -> Result<Value, 
         Arithmetic::Add => scaled(left)? + scaled(right)?,
         Arithmetic::Subtract => scaled(left)? - scaled(right)?,
         Arithmetic::Multiply => match (left, right) {
-            (Value::Currency(a), b) | (b, Value::Currency(a)) if integer(b).is_some() => {
-                i128::from(a.scaled()) * i128::from(integer(b).unwrap())
+            (Value::Currency(a), b) | (b, Value::Currency(a)) => {
+                let factor = integer(b).ok_or(EvalError::UnsupportedNumericCombination)?;
+                i128::from(a.scaled()) * i128::from(factor)
             }
             _ => return Err(EvalError::UnsupportedNumericCombination),
         },
