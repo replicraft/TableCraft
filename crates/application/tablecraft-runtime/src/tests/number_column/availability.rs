@@ -44,15 +44,11 @@ fn all_three_qualified_sources_produce_positive_facts_without_writes_or_lease() 
 }
 
 #[test]
-fn empty_external_property_and_keyless_sources_never_inherit_availability() {
-    let before = raw::source(raw::Source::IdOnly);
-    let external = raw::append(&before, raw::Source::IdOnly, "Score");
-    let keyless = canonical_creation::source(canonical_creation::Case::Empty).bytes;
-    for (before, table) in [(external, "Table1"), (keyless, "Items")] {
-        let (_directory, path, worker, revision) = crate::tests::stored::opened(&before);
-        assert!(!inspect(&worker, revision, table).available);
-        assert_eq!(std::fs::read(&path).unwrap(), before);
-    }
+fn empty_keyless_source_never_inherits_number_availability() {
+    let before = canonical_creation::source(canonical_creation::Case::Empty).bytes;
+    let (_directory, path, worker, revision) = crate::tests::stored::opened(&before);
+    assert!(!inspect(&worker, revision, "Items").available);
+    assert_eq!(std::fs::read(&path).unwrap(), before);
 }
 
 #[test]
@@ -72,4 +68,20 @@ fn replaced_document_rejects_the_old_inspection_revision_before_source_work() {
         Err(Error::StaleDocument)
     ));
     assert_eq!(std::fs::read(&path).unwrap(), before);
+}
+
+#[test]
+fn legacy_jet4_and_ace12_still_report_unavailable_before_carrier_inspection() {
+    use tablecraft_testkit::fixtures::access::{image, mutation_fixture};
+    for (profile, before, table) in [
+        ("Jet4", mutation_fixture::database(), "Items"),
+        ("Ace2007", image(false, false), "Table"),
+    ] {
+        let (_directory, path, worker, revision) = crate::tests::stored::opened(&before);
+        assert!(
+            !inspect(&worker, revision, table).available,
+            "unexpected Number source: {profile}"
+        );
+        assert_eq!(std::fs::read(&path).unwrap(), before);
+    }
 }

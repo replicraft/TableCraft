@@ -14,11 +14,47 @@ use crate::{
 use std::sync::{Arc, atomic::AtomicBool};
 use tablecraft_ace::{
     CreatedDefaultZeroColumnRequired, NativeImage, RecoverableDefaultZeroAddColumnPlan,
+    RecoverableRepeatedDefaultZeroAddColumnPlan,
 };
+
+pub(in crate::editing) enum Plan {
+    First(RecoverableDefaultZeroAddColumnPlan),
+    Repeated(RecoverableRepeatedDefaultZeroAddColumnPlan),
+}
+
+impl Plan {
+    fn table(&self) -> &str {
+        match self {
+            Self::First(plan) => plan.table(),
+            Self::Repeated(plan) => plan.table(),
+        }
+    }
+
+    fn column(&self) -> &str {
+        match self {
+            Self::First(plan) => plan.column(),
+            Self::Repeated(plan) => plan.column(),
+        }
+    }
+
+    pub(in crate::editing) fn before_bytes(&self) -> &[u8] {
+        match self {
+            Self::First(plan) => plan.before_bytes(),
+            Self::Repeated(plan) => plan.before_bytes(),
+        }
+    }
+
+    pub(in crate::editing) fn after_bytes(&self) -> &[u8] {
+        match self {
+            Self::First(plan) => plan.after_bytes(),
+            Self::Repeated(plan) => plan.after_bytes(),
+        }
+    }
+}
 
 pub(in crate::editing) struct State {
     pub(in crate::editing) reopen: Arc<AddedColumnReopen>,
-    pub(in crate::editing) plan: RecoverableDefaultZeroAddColumnPlan,
+    pub(in crate::editing) plan: Plan,
     pub(in crate::editing) valid: Arc<AtomicBool>,
 }
 
@@ -40,15 +76,26 @@ pub(in crate::editing) fn review(
         &mut work,
         cancelled,
     )?;
-    // This command declares both native policies explicitly. It never selects a
-    // no-default profile from index metadata or retries another writer on error.
-    let plan = image.plan_recoverable_created_add_default_zero_int32_column(
-        table,
-        column,
-        CreatedDefaultZeroColumnRequired::StoredFalse,
-        &mut work,
-        cancelled,
-    )?;
+    // Select from actual native carrier metadata exactly once. Both captured
+    // constructors retain their own complete proof; refusal never retries another.
+    let external = image
+        .number_column_uses_external_properties(table, &mut work, cancelled)
+        .map_err(|error| Error::DefaultZeroAddColumn(error.into()))?;
+    let plan = if external {
+        Plan::Repeated(image.plan_recoverable_repeated_default_zero_int32_column(
+            table, column, &mut work, cancelled,
+        )?)
+    } else {
+        Plan::First(
+            image.plan_recoverable_created_add_default_zero_int32_column(
+                table,
+                column,
+                CreatedDefaultZeroColumnRequired::StoredFalse,
+                &mut work,
+                cancelled,
+            )?,
+        )
+    };
     let expected = super::reopen_image::capture(plan.after_bytes(), &mut work, cancelled)?;
     let mut output = Presentation::new(cancelled);
     let review = AddColumnReview {

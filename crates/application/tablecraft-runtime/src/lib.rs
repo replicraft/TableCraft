@@ -85,6 +85,7 @@ use std::sync::Arc;
 #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
 use tablecraft_ace::{
     AddColumnIntentError, AddTableError, DefaultZeroAddColumnIntentError, FirstTableError,
+    RepeatedDefaultZeroAddColumnIntentError,
 };
 use tablecraft_builders::query::{
     BuiltQueryDesign, DesignTableMetadata, QueryDesignDraft, QueryDesignError,
@@ -126,6 +127,9 @@ pub enum Error {
     #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
     #[error(transparent)]
     DefaultZeroAddColumn(#[from] DefaultZeroAddColumnIntentError),
+    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+    #[error(transparent)]
+    RepeatedDefaultZeroAddColumn(#[from] RepeatedDefaultZeroAddColumnIntentError),
     #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
     #[error("saved column contents changed before reopening")]
     AddedColumnSourceChanged,

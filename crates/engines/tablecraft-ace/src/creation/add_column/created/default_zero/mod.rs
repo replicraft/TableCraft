@@ -2,6 +2,7 @@
 //! TCAC0001/0002 source languages and normal save APIs are unchanged.
 mod build;
 mod repeated;
+mod source_carrier;
 pub use repeated::RepeatedDefaultZeroAddColumnCandidate;
 #[cfg(test)]
 mod tests;

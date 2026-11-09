@@ -23,7 +23,16 @@ pub(in crate::editing) fn inspect(
             &mut work,
             cancelled,
         )?;
-        match image.check_created_default_zero_add_column_source(table, &mut work, cancelled) {
+        let checked = (|| {
+            let external =
+                image.number_column_uses_external_properties(table, &mut work, cancelled)?;
+            if external {
+                image.check_repeated_default_zero_add_column_source(table, &mut work, cancelled)
+            } else {
+                image.check_created_default_zero_add_column_source(table, &mut work, cancelled)
+            }
+        })();
+        match checked {
             Ok(()) => true,
             Err(error) => source_refusal(error)?,
         }

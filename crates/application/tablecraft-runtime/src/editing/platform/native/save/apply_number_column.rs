@@ -3,6 +3,7 @@ use super::{
     RetainedOwner,
     outcomes::{failed_open, finish, no_session, retain},
 };
+use crate::editing::platform::number_column::Plan;
 use crate::{
     controls::{SCOPE, action_persistence_budget, action_proof_budget, budget},
     editing::{ReviewedNumberColumn, SaveFailureKind, SaveOutcome},
@@ -36,12 +37,22 @@ pub(super) fn apply_number_column(
             Ok(session) => session,
             Err(error) => return failed_open(&error),
         };
-    let staged = match session.stage_reviewed_default_zero_add_column_with_budgets(
-        reviewed.plan,
-        &mut native,
-        &mut proof,
-        &cancel,
-    ) {
+    let staged = match reviewed.plan {
+        Plan::First(plan) => session.stage_reviewed_default_zero_add_column_with_budgets(
+            plan,
+            &mut native,
+            &mut proof,
+            &cancel,
+        ),
+        Plan::Repeated(plan) => session
+            .stage_reviewed_repeated_default_zero_add_column_with_budgets(
+                plan,
+                &mut native,
+                &mut proof,
+                &cancel,
+            ),
+    };
+    let staged = match staged {
         Ok(staged) => staged,
         Err(failure) => return retain(failure, retained),
     };
