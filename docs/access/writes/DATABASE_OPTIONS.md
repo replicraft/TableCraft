@@ -3,7 +3,8 @@
 The engine, Access adapter and shared runtime implement an explicit request to
 disable Track/Perform Name AutoCorrect. The normal desktop now composes that
 service through File → Options → Current Database, with a separate close-objects
-confirmation. The current composed UI/desktop validation remains pending.
+confirmation. The corrected composed functional gates and final offscreen
+review pass within the scope recorded below.
 The native source and original-intent limits below remain unchanged; this is
 neither general settings editing nor complete Access compatibility.
 
@@ -209,11 +210,60 @@ All eight locale catalogs have their own sectioned database-options messages.
 The retained Windows Account screenshot informs the File rail only. No matching
 Options, Current Database or close-objects capture exists; these dialogs are
 uncaptured adaptations. Source-free offscreen scenes illustrate state and layout,
-not real saves or Windows/Access behavior. The composed UI/desktop and offscreen
-verification results remain pending the corrected coordinated batch.
-<!-- OPTIONS_GATE_STATUS: replace only after root supplies the final composed results; do not aggregate historical totals. -->
+not real saves or Windows/Access behavior.
+
+The [coordinated Options record](../../testing/results/database-options-workflows-2026-11-08.json)
+reports 2,787 unique successful cases across seven selected package suites and
+265 existing ignored cases. This combines the broad seven-package run with its
+focused corrections, not a full-workspace run. The sixteen repeated Options and
+localization follow-ups are a subset, not extra unique successes. Actual native
+ACK, Escape cancellation, checked-read Retry, witness drift, Return with retained
+saved facts, Hide details and outer-dialog Close are included. Nineteen
+light/dark and translated offscreen frames pass layout assertions and direct
+visual review, including four final Return frames. Actual Windows and Microsoft
+Access save/reopen remain unrun.
 
 The SDK OFF-after-ADD observations above do not expand the current source
 language: settings saves after Number/ShortText ADD still refuse. Enabling,
 logging, general NameMap removal, arbitrary imported settings, broad CRUD
 composition and older native write profiles remain unqualified here.
+
+## Unpublished OFF-after-ADD candidate
+
+`NativeImage::prepare_disable_name_auto_correct_after_field_history` now returns
+an owning `FieldHistoryDatabaseOptionsCandidate` for a separate source profile.
+It first runs the complete existing field-addition source qualification on the
+immutable original: canonical seed/history equality, empty generated-primary
+user table, exact native roles/properties/indexes and allocation ownership. This
+profile additionally requires an 11-page ACE16 image, a missing MSysDb role and a
+single existing property page 10 with room for the OFF body. No missing value is
+interpreted as disabled.
+
+The candidate appends the 152-byte database-property body to that already-owned
+catalog-column LVAL page and inserts a new visible catalog root. The existing
+native allocator proves two fitted placements with no map edits or new pages.
+A forwarded user root keeps its old physical target and uses new database slot 9;
+an ordinary user root uses new database slot 8. Visible root flags stay distinct
+from hidden forwarding-target flags. The whole-image complement and independent
+native inspection verify unchanged original catalog identities/descriptors,
+user properties and historical bodies, both exact live user/database roles, and
+all map/header/user TDEF/DATA/INDEX bytes outside the precise append/count scope.
+The MSysDb body is not another user ADD event.
+
+All three focused candidate cases pass in the root-coordinated native batch.
+Their five complete raw AFTER images match the separately retained
+[SDK hashes](../../testing/results/nac-after-field-add-sdk-2026-11-08.json), covering
+first/repeated Number, compressed Text, ordinary versus forwarded user roots and
+Text→Number→Text history. Complement/body tampering, absent history, foreign source
+bytes, cancellation and exhausted budgets refuse. This is engine construction
+and independent-reader evidence, not a native Microsoft Access save comparison.
+
+The candidate exposes complete before/after bytes and the actual property ROW
+reference, but supplies no journal, consuming runtime review, GUI settings-save
+activation or recovery request. In particular, it cannot be consumed as the
+frozen `TCDO0001` plan; no TCDO0002 activation is supplied by this checkpoint.
+Existing TCDO0001, TCAC0001–0005 and rename source/request languages stay unchanged.
+The normal File Options service therefore still refuses settings saves after an
+existing field ADD. Repeated settings writes, page rollover, populated sources,
+ADD after explicit OFF, field rename and general NameMap handling remain separate
+implementation work.

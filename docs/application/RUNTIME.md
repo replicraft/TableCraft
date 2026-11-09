@@ -1721,7 +1721,7 @@ and preserved bytes are defined by the [native options contract](../access/write
 The normal desktop now composes this service through its shared File Options
 dialog. `SaveWorker::supports_database_options()` reports native save-platform
 support independently of the current image's positive source eligibility. The
-corrected composed workflow and offscreen validation remain pending.
+corrected composed functional workflow and scoped offscreen review pass.
 
 `InspectDatabaseOptions { document_revision }` returns the same document revision,
 `NameAutoCorrectState::{Missing, Absent, ExplicitOff, Other}` and a separate
@@ -1773,7 +1773,13 @@ checkpoints, separate from the current composed UI/desktop validation. This rout
 does not qualify settings changes after an existing column ADD; independent SDK
 observations do not substitute for the unchanged native source admission.
 
-<!-- OPTIONS_GATE_STATUS: final coordinated UI/desktop and offscreen results pending; earlier per-service counts remain historical. -->
+The [coordinated Options record](../testing/results/database-options-workflows-2026-11-08.json)
+includes all 253 passing runtime cases and one existing ignored case. The broader
+selected-package run and focused corrections also cover actual host cancellation
+of acknowledged replacement reads, exact-witness Retry and failed-read Return.
+These results are not a full-workspace or native Windows/Access qualification.
+Nineteen offscreen frames pass layout assertions and direct visual review;
+the final Return frames distinguish Hide details from closing Options.
 
 ## Guarded saved-query SQL edits
 

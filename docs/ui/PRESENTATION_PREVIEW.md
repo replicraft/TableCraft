@@ -1,5 +1,34 @@
 # Presentation preview
 
+## Explicit database Options — 8 November 2026
+
+`TABLECRAFT_PREVIEW_DATABASE_OPTIONS` accepts `general`, `unknown`, `refused`,
+`close`, `review` and `returned` with the existing datasheet scene and exclusive
+workflow setting. `none` retains ordinary presentation. These are source-free
+illustrations through actual shared state/widgets: they create no database,
+native capability, SaveWorker, journal or full-image witness.
+
+The [Options evidence record](../testing/results/database-options-workflows-2026-11-08.json)
+pins nineteen directly reviewed frames: every mode in English light/dark at
+1280 × 820 logical points/1×; German dark General/refused/close/returned at
+1000 × 720/1.25×; and Japanese light unknown/review/returned at 1100 × 760/1×.
+Rendering used macOS 14.7.2 ARM64, WGPU and Windows input emulation. GPU adapter
+identity was not captured. Final four Return images replace superseded Return
+frames after stale observations, duplicate errors and ambiguous Close labels
+were corrected. Earlier failed layout assertions and images remain separate.
+
+The renderer checks actual modal containment, selected category, complete labels,
+disabled commands and retained warning facts. General and Current Database panes
+have explicit vertical geometry; the fixed footer Close remains outside the pane
+scroll. Return displays the known saved outcome and failed-read warning, keeps
+mutations blocked, and distinguishes Hide details from closing the dialog.
+
+The retained Windows Access Account capture was reopened at 1920 × 1097 pixels
+inside VirtualBox, with unknown display scale. It supports the File rail only.
+No Options/Current Database/close-objects capture exists; these dialogs remain
+uncaptured adaptations. No native app windows were opened, and offscreen results
+do not establish Access save behavior or platform visual parity.
+
 ## Saved-query SQL editor and close states — 8 November 2026
 
 The existing offscreen renderer now accepts `TABLECRAFT_PREVIEW_SAVED_SQL` with

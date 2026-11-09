@@ -1,0 +1,315 @@
+{
+  "date": "2026-11-08",
+  "scope": "Normal explicit database Options, exact confirmed object closure, retained save/reopen lifecycle, shared catalog-property ledger, and unpublished OFF-after-field-history native candidate",
+  "platform": "macOS 14.7.2 ARM64; headless tests and offscreen WGPU rendering with Windows input emulation",
+  "source_checkpoint": "e99120aa and test-only modal-settling correction 15dfad16",
+  "unique_successful_tests": 2787,
+  "existing_ignored_tests": 265,
+  "counting": "Unique package/test names from the broad seven-package library/desktop batch, replacing its failed desktop run with the corrected complete desktop run. The sixteen repeated UI Options/localization checks are a successful subset and add no unique tests. This is not a full-workspace test run. Ignored tests are not passes.",
+  "runs": [
+    {
+      "package": "tablecraft_runtime",
+      "passed": 253,
+      "ignored": 1,
+      "scope": "complete library test binary"
+    },
+    {
+      "package": "tablecraft_builders",
+      "passed": 42,
+      "ignored": 0,
+      "scope": "complete library test binary"
+    },
+    {
+      "package": "tablecraft_access",
+      "passed": 183,
+      "ignored": 0,
+      "scope": "complete library test binary"
+    },
+    {
+      "package": "tablecraft_testkit",
+      "passed": 16,
+      "ignored": 0,
+      "scope": "complete library test binary"
+    },
+    {
+      "package": "tablecraft_ui",
+      "passed": 618,
+      "ignored": 0,
+      "scope": "complete library test binary"
+    },
+    {
+      "package": "tablecraft_ace",
+      "passed": 1497,
+      "ignored": 263,
+      "scope": "complete library test binary"
+    },
+    {
+      "package": "tablecraft-desktop",
+      "passed": 178,
+      "ignored": 1,
+      "scope": "complete desktop unit-test binary after modal correction"
+    }
+  ],
+  "raw_test_evidence": [
+    {
+      "path": ".cache/database-options-final-summary-20261108.json",
+      "sha256": "570528524f6d2820acdefcfbe205e320aeb20f5b544a6fa884fda6513786fdc5"
+    },
+    {
+      "path": ".cache/database-options-controls-summary-20261108.json",
+      "sha256": "97232bbbfab70f411d3475013cc8c9b9690281000ac75a9fa6b6b0b73ddb1e24"
+    }
+  ],
+  "checks": [
+    {
+      "scope": "all-feature affected libraries, desktop and preview strict Clippy",
+      "path": ".cache/database-options-controls-clippy-20261108.log",
+      "sha256": "725ce975586ff42b9a05e7bec219c7b8a0dce6f096971e5e358f58816b71f748"
+    },
+    {
+      "scope": "ACE create+journal without preview strict Clippy",
+      "path": ".cache/database-options-candidate-minimal-clippy-20261108.log",
+      "sha256": "19bc94e4643a9570024bed220ee10989f404c2080cd07f4910c03ce16a9f0f97"
+    },
+    {
+      "scope": "repository rustfmt",
+      "path": ".cache/database-options-final-format-20261108.log",
+      "sha256": "9daba0146ddc8d69c678f2312a65cc2187e738222e909c3ba6f2812dcb56b214"
+    },
+    {
+      "scope": "dependency boundaries",
+      "path": ".cache/database-options-final-boundaries-20261108.log",
+      "sha256": "f7d52bf47bcc4b2e9710c09efd2c026f0e695fc3a18600d5fa56dc70ed065a7a"
+    }
+  ],
+  "verified_workflows": [
+    "Stored Missing, Absent, ExplicitOff and Other remain distinct; Unknown is unobserved. Eligibility checks use the original complete source preflight without creating AFTER or holding a file lease.",
+    "Normal host SaveWorker capability, explicit graph/nonce-bound close confirmation, dirty-owner refusal, consuming review, ordinary automatic ACK and full-image witness publication.",
+    "Confirmed persisted tabs close only after successful checked publication; exact scratch tool text/IDs/preferences survive.",
+    "Genuine saved replacement read cancellation retains witness/outcome/cleanup. Retry succeeds on exact content; changed content refuses. Return preserves known saved facts and stale mutation guards; fresh open retires the warning without replay.",
+    "Hide details retains the warning and source guards; the distinct footer Close dismisses Options.",
+    "Actual catalog origin, resolved record and live property references stay separate from shared column map ownership. Old source/intent profiles remain unchanged.",
+    "Unpublished native OFF-after-field-history candidate matches all five independent full-image SDK pins, preserves original user/history/map/index bytes, and passes cancellation/resource/tamper controls. It has no journal or normal-save authority.",
+    "Existing N13 field availability and subsequent rollover/row workflows retain the original 512MiB/5M-step runtime allowance."
+  ],
+  "visual": {
+    "accepted_frames": 19,
+    "review": "All listed frames directly opened and reviewed by the root or delegated reviewer. Four Return frames were rerendered after distinct-button correction; the other fifteen surfaces are unchanged.",
+    "reference": "Retained Windows Access Account capture reopened at1920x1097 inside VirtualBox; display scale unknown. It informs the File rail only. No matching Options/Current Database/close-objects capture exists.",
+    "limits": "Options surfaces are uncaptured adaptations. No native app windows were opened. GPU adapter identity was not captured.",
+    "images": [
+      {
+        "path": ".cache/ui-previews/database-options-corrected-20261108/de-dark-datasheet-database-options-close@1.25x.png",
+        "sha256": "5e04e550922f58ed25b9d3aff8914d9fb593ee8f64660a20f558cfa259763ad8",
+        "pixels": [
+          1250,
+          900
+        ],
+        "review": "Direct visual review accepted; corresponding layout assertions pass."
+      },
+      {
+        "path": ".cache/ui-previews/database-options-corrected-20261108/de-dark-datasheet-database-options-general@1.25x.png",
+        "sha256": "c4804363c6e78e871a88043b3b7b4c6da6cceafdd28f7beb9371a283c12a3919",
+        "pixels": [
+          1250,
+          900
+        ],
+        "review": "Direct visual review accepted; corresponding layout assertions pass."
+      },
+      {
+        "path": ".cache/ui-previews/database-options-corrected-20261108/de-dark-datasheet-database-options-refused@1.25x.png",
+        "sha256": "c82ce8d00bc1ded0b923da39b239e8746b57242724346e695e15c5de853d031b",
+        "pixels": [
+          1250,
+          900
+        ],
+        "review": "Direct visual review accepted; corresponding layout assertions pass."
+      },
+      {
+        "path": ".cache/ui-previews/database-options-corrected-20261108/en-US-dark-datasheet-database-options-close.png",
+        "sha256": "ce1d0823576a2ec0fbaaec32e87ae50af81f98c6bc101c3cba50e97100668060",
+        "pixels": [
+          1280,
+          820
+        ],
+        "review": "Direct visual review accepted; corresponding layout assertions pass."
+      },
+      {
+        "path": ".cache/ui-previews/database-options-corrected-20261108/en-US-dark-datasheet-database-options-general.png",
+        "sha256": "77a9aa41c5514cc8587230d49c0d5f179de36c09d823509b3c15756954d796cc",
+        "pixels": [
+          1280,
+          820
+        ],
+        "review": "Direct visual review accepted; corresponding layout assertions pass."
+      },
+      {
+        "path": ".cache/ui-previews/database-options-corrected-20261108/en-US-dark-datasheet-database-options-refused.png",
+        "sha256": "5db67570562cafe060935b74b2b5ee195fa9bc56116743e3a8b9fb879a8c2e52",
+        "pixels": [
+          1280,
+          820
+        ],
+        "review": "Direct visual review accepted; corresponding layout assertions pass."
+      },
+      {
+        "path": ".cache/ui-previews/database-options-corrected-20261108/en-US-dark-datasheet-database-options-review.png",
+        "sha256": "64e3326b1a831ca780b6c734e0d242cd5f0f18cb81dccccf2cfc71c0857f695f",
+        "pixels": [
+          1280,
+          820
+        ],
+        "review": "Direct visual review accepted; corresponding layout assertions pass."
+      },
+      {
+        "path": ".cache/ui-previews/database-options-corrected-20261108/en-US-dark-datasheet-database-options-unknown.png",
+        "sha256": "7b8da5ae3538d9bfae146a93219a5b4148b17785b81d87b6b5c0ef3bbc161ce1",
+        "pixels": [
+          1280,
+          820
+        ],
+        "review": "Direct visual review accepted; corresponding layout assertions pass."
+      },
+      {
+        "path": ".cache/ui-previews/database-options-corrected-20261108/en-US-light-datasheet-database-options-close.png",
+        "sha256": "01d4ce8c6c1e52020f1faabddee40b6d6c514ca3e42a582c962d78ee10df694a",
+        "pixels": [
+          1280,
+          820
+        ],
+        "review": "Direct visual review accepted; corresponding layout assertions pass."
+      },
+      {
+        "path": ".cache/ui-previews/database-options-corrected-20261108/en-US-light-datasheet-database-options-general.png",
+        "sha256": "9e1378580e0c5eb618a4ea025c9de50a2c17e971948814a30f38ae69e6c2eca3",
+        "pixels": [
+          1280,
+          820
+        ],
+        "review": "Direct visual review accepted; corresponding layout assertions pass."
+      },
+      {
+        "path": ".cache/ui-previews/database-options-corrected-20261108/en-US-light-datasheet-database-options-refused.png",
+        "sha256": "2ca6d2b2bc52622be482ece9c0673647fb54ececebc057e6f92bf203ad38e755",
+        "pixels": [
+          1280,
+          820
+        ],
+        "review": "Direct visual review accepted; corresponding layout assertions pass."
+      },
+      {
+        "path": ".cache/ui-previews/database-options-corrected-20261108/en-US-light-datasheet-database-options-review.png",
+        "sha256": "8d5c3d29114aa8e6a2fed08b6c3813552dc769c5604bbfce355583a6b3818d5c",
+        "pixels": [
+          1280,
+          820
+        ],
+        "review": "Direct visual review accepted; corresponding layout assertions pass."
+      },
+      {
+        "path": ".cache/ui-previews/database-options-corrected-20261108/en-US-light-datasheet-database-options-unknown.png",
+        "sha256": "d9edce319eb8475451dcd14a38279950abe9bfc84780ceb866376b3fac3d2f68",
+        "pixels": [
+          1280,
+          820
+        ],
+        "review": "Direct visual review accepted; corresponding layout assertions pass."
+      },
+      {
+        "path": ".cache/ui-previews/database-options-corrected-20261108/ja-light-datasheet-database-options-review.png",
+        "sha256": "7d4747eff061e8fe7e0f81f142e8f3cc8ddbb70d843521dcb8543ff9c2ae2f2a",
+        "pixels": [
+          1100,
+          760
+        ],
+        "review": "Direct visual review accepted; corresponding layout assertions pass."
+      },
+      {
+        "path": ".cache/ui-previews/database-options-corrected-20261108/ja-light-datasheet-database-options-unknown.png",
+        "sha256": "201e36b156a165b186277d642d8cd71fb1486c6f8358c10a07ca017c37db1af8",
+        "pixels": [
+          1100,
+          760
+        ],
+        "review": "Direct visual review accepted; corresponding layout assertions pass."
+      },
+      {
+        "path": ".cache/ui-previews/database-options-distinct-controls-20261108/de-dark-datasheet-database-options-returned@1.25x.png",
+        "sha256": "722b71a4e3d79cdff110333b5a5adfb8f5e16cca8d146ddab32c428bbb66cb22",
+        "pixels": [
+          1250,
+          900
+        ],
+        "review": "Direct visual review accepted; corresponding layout assertions pass."
+      },
+      {
+        "path": ".cache/ui-previews/database-options-distinct-controls-20261108/en-US-dark-datasheet-database-options-returned.png",
+        "sha256": "2bf610412c032009574b416808ec01cfea0c9eac6002fc2233e1e08476760447",
+        "pixels": [
+          1280,
+          820
+        ],
+        "review": "Direct visual review accepted; corresponding layout assertions pass."
+      },
+      {
+        "path": ".cache/ui-previews/database-options-distinct-controls-20261108/en-US-light-datasheet-database-options-returned.png",
+        "sha256": "16b02d7246c4737fe1f2465755c7ab238a52a739e4ac462700b72001f55e9f9b",
+        "pixels": [
+          1280,
+          820
+        ],
+        "review": "Direct visual review accepted; corresponding layout assertions pass."
+      },
+      {
+        "path": ".cache/ui-previews/database-options-distinct-controls-20261108/ja-light-datasheet-database-options-returned.png",
+        "sha256": "69459ea9b14832b46b5db82075640d37d31e038bf181efdfd214da3c0b9b41e7",
+        "pixels": [
+          1100,
+          760
+        ],
+        "review": "Direct visual review accepted; corresponding layout assertions pass."
+      }
+    ]
+  },
+  "earlier_failures": {
+    "retained_artifacts": [
+      {
+        "path": ".cache/database-options-composed-build-20261108.jsonl",
+        "sha256": "7851288a84798e4fa0000e78d48f652512e4fffefe1397f8ac974cfe1be67328"
+      },
+      {
+        "path": ".cache/database-options-composed-corrected-build-20261108.jsonl",
+        "sha256": "c11ba856337997b3d146c2f4076a580ce0bbae24c24a8fa4cc3511ad5461cde7"
+      },
+      {
+        "path": ".cache/database-options-composed-summary-20261108.json",
+        "sha256": "7fe1671b662022e753ce981fbf5a1bc67baa444b6455ec945abe285d5aceb5d1"
+      },
+      {
+        "path": ".cache/database-options-repaired-summary-20261108.json",
+        "sha256": "8646d3d3ff6fa50f0c9eb77c61f9eb3c3967ce4b9bfaf623a9d615efec4a3b51"
+      },
+      {
+        "path": ".cache/database-options-layout-summary-20261108.json",
+        "sha256": "fa696d8a10cfa4f26709f3cf2ef7905ec760feb8a0ec34eb98ebab0c548360b7"
+      },
+      {
+        "path": ".cache/database-options-render-results-20261108.json",
+        "sha256": "30cda1b2a8ef1861985c5bd90829107a5fa9cf5f3163788518c01cf382829b6d"
+      }
+    ],
+    "corrections": [
+      "Missing real-owner imports, moved private test references and inert preview dispatch were connected.",
+      "The owner ledger now reads a retained native catalog Layout instead of a TableSchema layout whose fields were moved into columns; no validation guard was weakened.",
+      "Options content now has explicit vertical finite pane geometry rather than inheriting a horizontal layout.",
+      "Unknown remains unknown; old BEFORE observations and duplicate read errors are suppressed only during known-AFTER Return presentation.",
+      "Host tests settle the new top-modal frame before querying its controls; genuine save/read outcomes remain unchanged."
+    ]
+  },
+  "remaining": [
+    "TCDO2 original-intent/recovery, adapter/runtime source-purpose selection and normal settings saves after field ADD.",
+    "OFF to further ADD and saved-column rename/change/drop remain separately unqualified.",
+    "Broader imported/populated/encrypted/schema/allocation/older-profile writes.",
+    "Native Microsoft Access save/reopen and Windows/Linux runtime execution and physical durability qualification."
+  ]
+}

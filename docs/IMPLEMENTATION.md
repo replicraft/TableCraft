@@ -1,5 +1,31 @@
 # Implementation status
 
+## Explicit database Options and shared property ownership — 8 November 2026
+
+The normal File → Options dialog now observes stored Name AutoCorrect settings
+without inventing defaults. Disabling Track/Perform uses separate exact
+close-objects confirmation, consuming native review/save and complete-image
+checked reopening. Dirty owners block the operation. Acknowledged saves close
+confirmed persisted tabs only after successful verification; scratch tool text
+and identity survive. Failed or cancelled verification retains saved facts,
+Retry/Return and stale-source mutation guards. Hide details and Close have
+distinct effects. Dedicated Fluent catalogs cover all eight locales.
+
+The [coordinated record](testing/results/database-options-workflows-2026-11-08.json)
+contains 2,787 unique successful tests across seven affected package suites plus
+focused corrections; 265 existing ignored cases remain excluded. Nineteen
+light/dark and translated offscreen frames pass layout checks and direct review.
+This is not a full-workspace run or native Windows/Access qualification.
+Historical compile, source-layout, overflow and modal-frame failures are retained
+separately from corrected results.
+
+Native property observation now separates shared column page ownership from each
+live object's descriptor and historical rows. A separate unpublished settings
+candidate after Number/Text additions matches five independent complete-image
+SDK pins. Its journal, adapter/runtime activation and subsequent schema mutation
+composition remain unfinished. Existing normal settings saves retain their
+original narrow creator source; no new save authority follows from the candidate.
+
 ## Normal saved Number and Short Text fields — 8 November 2026
 
 The shared field-addition workflow now saves Number and Short Text on qualified

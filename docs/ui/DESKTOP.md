@@ -37,10 +37,15 @@ published. No setting changes automatically during Rename.
 The [owning options contract](../access/writes/DATABASE_OPTIONS.md) retains the
 current narrow creator source and original-intent boundaries. In particular,
 settings saves after an existing Number/ShortText ADD remain unsupported despite
-independent SDK composition observations. The connected normal-host implementation
-is separate from its current corrected batch: composed workflow, lint and
-offscreen verification remain pending.
-<!-- OPTIONS_GATE_STATUS: insert only root-confirmed final workflow/lint/render evidence here. -->
+independent SDK composition observations. The
+[coordinated Options record](../testing/results/database-options-workflows-2026-11-08.json)
+includes all 178 passing desktop cases (one existing ignored) and 618 passing
+shared UI cases. The broad selected-package run plus focused corrections verifies
+actual native ACK, Escape/Retry, witness mismatch, Return, Hide details and the
+outer Options Close action. Repeated focused follow-ups are not counted twice.
+This is not a full-workspace run. Nineteen offscreen frames pass layout
+assertions and direct visual review, including the four final Return frames;
+actual Windows/Access execution remains unrun.
 
 The actual retained Windows Account image was reopened at 1920 × 1097 pixels,
 inside VirtualBox with unknown OS scale. It supports the File rail. No retained

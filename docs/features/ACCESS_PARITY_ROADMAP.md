@@ -83,7 +83,8 @@ review and a connected Navigation Pane workflow. The retained single-Int32
 user-index route has a separate V2 intent, and a sealed creator V3 source admits
 qualified creator images after explicit Name AutoCorrect OFF. Missing settings
 never imply ON or OFF. The [explicit settings service](../access/writes/DATABASE_OPTIONS.md)
-now connects File Options, with final corrected GUI checks pending; source
+now connects File Options and passes coordinated functional checks; final
+offscreen label review remains pending. Source
 composition after existing field ADD remains unsupported. Ordinary populated or
 broader table/column rename and other lifecycle operations remain work. Neither
 parser nodes nor a “created by TableCraft” flag confer mutation authority.
