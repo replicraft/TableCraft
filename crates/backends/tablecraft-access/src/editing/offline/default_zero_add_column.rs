@@ -1,14 +1,17 @@
 //! Fresh explicit-zero ADD-column reconstruction through the retained exclusive target owner.
 use super::plan::MutationPlan;
 use super::{Cause, Failure, OfflineWriteSession, Phase, Receipt, SchemaChange, SessionState};
+use plan::Plan;
 use std::path::Path;
-use tablecraft_ace::{NativeImage, RecoverableDefaultZeroAddColumnPlan};
+use tablecraft_ace::{
+    NativeImage, RecoverableDefaultZeroAddColumnPlan, RecoverableRepeatedDefaultZeroAddColumnPlan,
+};
 use tablecraft_core::limits::ResourceBudget;
 
 /// A checked schema operation; journal setup begins only on consuming apply.
 pub struct StagedDefaultZeroAddColumn {
     session: OfflineWriteSession,
-    plan: RecoverableDefaultZeroAddColumnPlan,
+    plan: Plan,
 }
 
 impl OfflineWriteSession {
@@ -16,7 +19,7 @@ impl OfflineWriteSession {
     /// Native admission and complete source/image proof consume separate pools.
     /// Refusal retains this owner without creating a journal namespace.
     pub fn stage_reviewed_default_zero_add_column_with_budgets(
-        mut self,
+        self,
         reviewed: RecoverableDefaultZeroAddColumnPlan,
         native: &mut ResourceBudget,
         proof: &mut ResourceBudget,
@@ -24,6 +27,30 @@ impl OfflineWriteSession {
     ) -> Result<StagedDefaultZeroAddColumn, Failure> {
         let _span =
             tracing::debug_span!("access.offline.stage_reviewed_default_zero_add_column").entered();
+        self.stage_default_zero_add_column(Plan::First(reviewed), native, proof, cancelled)
+    }
+
+    /// Reconstruct the distinct repeated StoredFalse/zero request against this retained target.
+    pub fn stage_reviewed_repeated_default_zero_add_column_with_budgets(
+        self,
+        reviewed: RecoverableRepeatedDefaultZeroAddColumnPlan,
+        native: &mut ResourceBudget,
+        proof: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<StagedDefaultZeroAddColumn, Failure> {
+        let _span =
+            tracing::debug_span!("access.offline.stage_reviewed_repeated_default_zero_add_column")
+                .entered();
+        self.stage_default_zero_add_column(Plan::Repeated(reviewed), native, proof, cancelled)
+    }
+
+    fn stage_default_zero_add_column(
+        mut self,
+        reviewed: Plan,
+        native: &mut ResourceBudget,
+        proof: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<StagedDefaultZeroAddColumn, Failure> {
         let result = (|| {
             self.require_ready()?;
             let slot = self.slot_mut()?;
@@ -43,9 +70,7 @@ impl OfflineWriteSession {
                 proof,
                 cancelled,
             )?;
-            reviewed
-                .requalify_with_budgets(image, native, proof, cancelled)
-                .map_err(Cause::DefaultZeroAddColumnIntent)
+            reviewed.requalify_with_budgets(image, native, proof, cancelled)
         })();
         match result {
             Ok(plan) => Ok(StagedDefaultZeroAddColumn {
@@ -91,3 +116,5 @@ impl StagedDefaultZeroAddColumn {
         )
     }
 }
+
+pub(super) mod plan;

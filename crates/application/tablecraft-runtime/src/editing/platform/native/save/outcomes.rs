@@ -19,6 +19,7 @@ use tablecraft_ace::{
     AddColumnError, AddColumnIntentError, AddTableError, AddTableIntentError, CreateDatabaseError,
     CreatedAddColumnError, DatabaseOptionsError, DatabaseOptionsIntentError,
     DefaultZeroAddColumnIntentError, FirstTableError, FirstTableIntentError,
+    RepeatedDefaultZeroAddColumnIntentError,
 };
 use tablecraft_ace::{
     EditError, InspectError, NativeIntentError, NativeRecoveryQualificationError,
@@ -250,6 +251,10 @@ fn typed_resource_failure(error: &(dyn StdError + 'static)) -> Option<SaveFailur
             #[cfg(feature = "ace16-create")]
             Cause::DefaultZeroAddColumnIntent(error) => number_column::intent(error),
             #[cfg(feature = "ace16-create")]
+            Cause::RepeatedDefaultZeroAddColumnIntent(error) => {
+                number_column::repeated_intent(error)
+            }
+            #[cfg(feature = "ace16-create")]
             Cause::AddColumnIntent(error) => add_column_intent_failure(error),
             #[cfg(feature = "ace16-create")]
             Cause::DatabaseOptionsIntent(error) => database_options_intent_failure(error),
@@ -301,6 +306,10 @@ fn typed_resource_failure(error: &(dyn StdError + 'static)) -> Option<SaveFailur
     #[cfg(feature = "ace16-create")]
     if let Some(error) = error.downcast_ref::<AddTableIntentError>() {
         return add_table_intent_failure(error);
+    }
+    #[cfg(feature = "ace16-create")]
+    if let Some(error) = error.downcast_ref::<RepeatedDefaultZeroAddColumnIntentError>() {
+        return number_column::repeated_intent(error);
     }
     #[cfg(feature = "ace16-create")]
     if let Some(error) = error.downcast_ref::<DefaultZeroAddColumnIntentError>() {

@@ -7,9 +7,10 @@ use std::path::Path;
 #[cfg(feature = "ace16-create")]
 use tablecraft_ace::{
     NativeAddColumnIntent, NativeAddTableIntent, NativeDatabaseOptionsIntent,
-    NativeDefaultZeroAddColumnIntent, NativeFirstTableIntent, qualify_native_add_column_recovery,
+    NativeDefaultZeroAddColumnIntent, NativeFirstTableIntent,
+    NativeRepeatedDefaultZeroAddColumnIntent, qualify_native_add_column_recovery,
     qualify_native_add_table_recovery, qualify_native_default_zero_add_column_recovery,
-    qualify_native_first_table_recovery,
+    qualify_native_first_table_recovery, qualify_native_repeated_default_zero_add_column_recovery,
 };
 use tablecraft_ace::{
     NativeClockInsertIntent, NativeCompleteInsertIntent, NativeDeleteIntent, NativeEofInsertIntent,
@@ -119,6 +120,20 @@ impl OfflineWriteSession {
                         checked, intent, slot.scope, budget, cancelled,
                     )
                     .map_err(Cause::DefaultZeroAddColumnIntent)?;
+                    qualified
+                        .recover(&mut target, budget, cancelled)
+                        .map_err(Cause::Recovery)
+                }
+                #[cfg(feature = "ace16-create")]
+                MutationIntent::RepeatedDefaultZeroAddColumn(intent) => {
+                    let (mut target, mut journal) =
+                        pair.resizable_storage().map_err(Cause::Pair)?;
+                    let checked =
+                        inspect_v2(&mut journal, budget, cancelled).map_err(Cause::Recovery)?;
+                    let qualified = qualify_native_repeated_default_zero_add_column_recovery(
+                        checked, intent, slot.scope, budget, cancelled,
+                    )
+                    .map_err(Cause::RepeatedDefaultZeroAddColumnIntent)?;
                     qualified
                         .recover(&mut target, budget, cancelled)
                         .map_err(Cause::Recovery)
@@ -381,6 +396,18 @@ impl OfflineWriteSession {
                         .confirm_completed(&mut target, budget, cancelled)
                         .map_err(Cause::Recovery)
                 }
+                #[cfg(feature = "ace16-create")]
+                MutationIntent::RepeatedDefaultZeroAddColumn(intent) => {
+                    let checked =
+                        inspect_v2(&mut journal, budget, cancelled).map_err(Cause::Recovery)?;
+                    let qualified = qualify_native_repeated_default_zero_add_column_recovery(
+                        checked, intent, slot.scope, budget, cancelled,
+                    )
+                    .map_err(Cause::RepeatedDefaultZeroAddColumnIntent)?;
+                    qualified
+                        .confirm_completed(&mut target, budget, cancelled)
+                        .map_err(Cause::Recovery)
+                }
                 MutationIntent::TableRename(intent) => {
                     let checked =
                         inspect_v1(&mut journal, budget, cancelled).map_err(Cause::Recovery)?;
@@ -573,6 +600,7 @@ impl OfflineWriteSession {
             .max(NativeAddTableIntent::MAX_ENCODED_BYTES as u64)
             .max(NativeAddColumnIntent::MAX_ENCODED_BYTES as u64)
             .max(NativeDefaultZeroAddColumnIntent::MAX_ENCODED_BYTES as u64)
+            .max(NativeRepeatedDefaultZeroAddColumnIntent::MAX_ENCODED_BYTES as u64)
             .max(NativeDatabaseOptionsIntent::MAX_ENCODED_BYTES as u64);
         let result = if retired {
             OfflineJournalPair::open_retired(target, bundle, limit, budget, cancelled)

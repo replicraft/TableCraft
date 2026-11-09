@@ -8,6 +8,7 @@ use crate::editing::offline::{
 use std::{fs, io::Cursor, path::Path};
 use tablecraft_ace::{
     CreatedDefaultZeroColumnRequired, NativeImage, RecoverableDefaultZeroAddColumnPlan,
+    RecoverableRepeatedDefaultZeroAddColumnPlan,
 };
 use tablecraft_io::journal::{RecoveryOutcome, filesystem::OfflineJournalPair};
 use tablecraft_testkit::fixtures::access::canonical_created_number as raw;
@@ -66,9 +67,39 @@ fn all_number_declarations_commit_exact_sdk_images_with_schema_only_receipts() {
 fn retained(path: &Path, bundle: &Path, committed: bool, retired: bool) -> Vec<u8> {
     let before = raw::source(raw::Source::IdOnly);
     let plan = review(&before, "Table1", "Score");
-    let after = plan.after_bytes().to_vec();
-    let intent = plan.intent().encode(&mut budget(), &|| false).unwrap();
-    assert!(intent.starts_with(b"TCAC0003"));
+    retained_plan(path, bundle, RetainedPlan::First(plan), committed, retired)
+}
+
+enum RetainedPlan {
+    First(RecoverableDefaultZeroAddColumnPlan),
+    Repeated(RecoverableRepeatedDefaultZeroAddColumnPlan),
+}
+
+fn retained_plan(
+    path: &Path,
+    bundle: &Path,
+    plan: RetainedPlan,
+    committed: bool,
+    retired: bool,
+) -> Vec<u8> {
+    let (before, after, intent) = match &plan {
+        RetainedPlan::First(plan) => (
+            plan.before_bytes().to_vec(),
+            plan.after_bytes().to_vec(),
+            plan.intent().encode(&mut budget(), &|| false).unwrap(),
+        ),
+        RetainedPlan::Repeated(plan) => (
+            plan.before_bytes().to_vec(),
+            plan.after_bytes().to_vec(),
+            plan.intent().encode(&mut budget(), &|| false).unwrap(),
+        ),
+    };
+
+    let framing: &[u8] = match &plan {
+        RetainedPlan::First(_) => b"TCAC0003",
+        RetainedPlan::Repeated(_) => b"TCAC0004",
+    };
+    assert!(intent.starts_with(framing));
 
     fs::write(path, &before).unwrap();
     let mut owner = open(path);
@@ -84,9 +115,15 @@ fn retained(path: &Path, bundle: &Path, committed: bool, retired: bool) -> Vec<u
 
     {
         let (mut target, mut journal) = pair.resizable_storage().unwrap();
-        let prepared = plan
-            .prepare(&mut target, &mut journal, &mut budget(), &|| false)
-            .unwrap();
+        let prepared = match plan {
+            RetainedPlan::First(plan) => {
+                plan.prepare(&mut target, &mut journal, &mut budget(), &|| false)
+            }
+            RetainedPlan::Repeated(plan) => {
+                plan.prepare(&mut target, &mut journal, &mut budget(), &|| false)
+            }
+        }
+        .unwrap();
         if committed {
             prepared.commit(&mut budget(), &|| false).unwrap();
         } else if retired {
@@ -194,3 +231,6 @@ fn malformed_version_three_never_retries_a_frozen_add_column_decoder() {
 
 #[path = "default_zero_tests/failures.rs"]
 mod failures;
+
+#[path = "default_zero_tests/repeated.rs"]
+mod repeated;
