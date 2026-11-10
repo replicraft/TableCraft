@@ -21,9 +21,11 @@ semantics, other declarations and Required(true) remain separate work.
 Existing records retain their exact bytes and expose the absent new field as
 NULL. A later omitted insertion uses zero, while explicit NULL remains NULL.
 Independent complete-image oracles and connected desktop insertion/reopen checks
-cover those distinctions. Updating the newly added absent field in an older
-record is still separate work; this addition does not qualify arbitrary record
-expansion.
+cover those distinctions. The separate operation below can fill one absent
+Number field in a qualified dense fixed-record source; the ADD itself still
+does not rewrite old records or qualify arbitrary record expansion.
+
+### Editing an existing field
 
 Existing unindexed Int32 fields in those historical records now have a separate
 normal UPDATE route. `plan_historical_present_fixed_updates` requires its own
@@ -46,9 +48,46 @@ proof never retries ordinary editing.
 Two headless desktop journeys pass through actual ADD widgets, replacement/NULL
 inputs, review, consuming Save and guarded fresh reopen. Independent complete
 images confirm `Score` value-to-value, NULL-to-value and value-to-NULL edits while
-every absent `Bonus` remains NULL, with no remaining journal. A separate review
-of `Bonus` itself refuses without changing the original. These are constructed
+every absent `Bonus` remains NULL, with no remaining journal. An explicitly
+issued absent NULL-to-NULL review refuses without changing the original. These are constructed
 ACE16 source outcomes, not imported-database or native Access qualification.
+
+### Filling an absent Number field
+
+`plan_recoverable_historical_number_materialization` implements one absent
+nullable, unindexed LONG field's NULL-to-Int32 change in the same closed
+eleven-page source, with dense all-LONG declarations and no variable tails.
+It shares the positive current-source/program/constraint proof with existing-field
+editing, then separately qualifies the actual original stored count and one-cell
+request. Bulk requests, indexed/generated fields, NULL-to-NULL materialization,
+non-Int32 input, variable layouts, exhausted physical slots and unavailable owned
+space refuse. This is neither EOF allocation nor a full-row insertion/default
+evaluation path.
+
+The new serializer copies original fixed payloads, including ignored NULL bytes,
+and rebuilds the declared fixed extent. Other newly represented fields remain
+NULL; stored defaults are not applied. Unused mask bits remain opaque unless
+the new count makes them meaningful. Independent reconstruction verifies the
+complete record before existing owned-space reservations and forwarding append
+one hidden target. The original logical root becomes a forwarding pointer within
+its audited edit scope; ID index references and logical row counts stay unchanged.
+The independent placement proof checks every other byte and ownership role.
+
+`TCNI0012`/profile12 retains only the original request and complete BEFORE binding,
+never a physical target or pointer. Fresh review and cold recovery reconstruct
+the exact full AFTER before using the checked V1 journal. The shared normal
+selector inspects actual original field presence before choosing profile11 or12;
+neither planner is retried after the other fails. Both data records remain
+decodable without the optional writer capability, but reconstruction then refuses
+with `UnsupportedProfile`.
+
+The connected headless journey adds `Bonus`, saves values in all three old rows,
+edits `Score` through the resulting forwarded root and opens a fresh desktop host.
+Every step matches a complete independently authored image and leaves no journal.
+Native tests separately cover another absent field staying NULL, opaque payload
+and mask bits, slot exhaustion, original-intent bytes, crossed profiles,
+pending/committed cold recovery and forged-journal metadata refusal. These are
+implementation checks, not Microsoft Access or native Windows save qualification.
 
 The closed `TCAC0008`/profile8 request binds the complete original and exact names,
 fixing this Number declaration. Recovery reconstructs both complete images under
@@ -64,7 +103,7 @@ These tests do not establish Windows or Microsoft Access Save/reopen behavior.
 
 Earlier constructive ADD families still require an empty table. The separate
 current-metadata operation above implements part of the following contract;
-the remaining historical-record UPDATE and broader source cases stay open.
+broader historical-record UPDATE and source cases stay open.
 
 Microsoft documents adding Number fields through both Datasheet's Click to Add
 and Design's first blank Field Name/Data Type row, followed by Save. Its field
