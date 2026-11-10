@@ -60,6 +60,12 @@ Access application/oracle qualification.
   and [Jackcess](https://github.com/spannm/jackcess) inform native page/row/index
   research. Existing pinned source/JAR comparison baselines remain in the native
   documents; this review does not upgrade them or copy upstream implementation.
+  Current use: General Notes corroborate preserving uninitialized page residue;
+  the TDEF free-space subtraction does not establish a universal trailing footer.
+  Properties and Name Maps inform paired field/property renames and dependency
+  handling; absent Name AutoCorrect properties must not be treated as OFF.
+  Its Jet3/4 focus and later ACE observations still need profile-specific fixtures
+  and native comparison before broadening admission.
 - [UCanAccess](https://github.com/spannm/ucanaccess) is a high-value reference for
   SQL translation, Access functions and native-file changes over Jackcess/HSQLDB.
   Study where storage and SQL behavior diverge; no JVM dependency is adopted and
