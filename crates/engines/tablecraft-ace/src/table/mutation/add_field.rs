@@ -269,10 +269,6 @@ impl NativeImage {
 
     /// Append nullable Short Text without modifying or backfilling any old record.
     /// Required(false), AllowZeroLength(true), and absent DefaultValue remain distinct.
-    #[expect(
-        clippy::too_many_arguments,
-        reason = "Keep the exact declaration, source, budget and cancellation explicit."
-    )]
     pub fn prepare_current_short_text_field_addition(
         self,
         table: &str,

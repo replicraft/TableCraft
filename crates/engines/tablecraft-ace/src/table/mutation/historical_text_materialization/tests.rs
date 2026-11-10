@@ -48,7 +48,7 @@ fn historical_short_text_materialization_matches_independent_images_and_keeps_id
                 );
             }
             let updates = [SlotScalarUpdate::new(
-                0,
+                slot,
                 Value::Null,
                 Value::Text(value.into()),
             )];
@@ -74,7 +74,16 @@ fn historical_short_text_materialization_matches_independent_images_and_keeps_id
                     &|| false,
                 )
                 .unwrap();
-            assert_eq!(plan.after_bytes(), &expected);
+            assert!(
+                plan.after_bytes() == expected,
+                "row {slot}, value {value:?}, difference {:?}",
+                plan.after_bytes()
+                    .iter()
+                    .zip(&expected)
+                    .enumerate()
+                    .find(|(_, (actual, expected))| actual != expected)
+                    .map(|(offset, (actual, expected))| (offset, *actual, *expected))
+            );
             assert_eq!(plan.changed_rows(), 1);
             let rows = read_table(
                 &mut Cursor::new(&expected),

@@ -198,7 +198,7 @@ fn independent_after_verification_rejects_unrelated_and_live_metadata_changes() 
 }
 
 #[test]
-fn number_availability_is_not_derived_from_the_old_empty_text_source_language() {
+fn current_addition_availability_is_not_derived_from_empty_creator_replay() {
     use tablecraft_testkit::fixtures::access::saved_field_rename::fitting::{self, SourceCase};
 
     let before = fitting::pair(SourceCase::NumberFirst, "X")[1].clone();
@@ -216,7 +216,7 @@ fn number_availability_is_not_derived_from_the_old_empty_text_source_language() 
         .inspect_field_addition_source("Table1", &mut budget(), &|| false)
         .unwrap();
     assert!(source.number_available());
-    assert!(!source.short_text_available());
+    assert!(source.short_text_available());
 }
 
 #[test]
