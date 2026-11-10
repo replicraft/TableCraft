@@ -6,6 +6,7 @@ pub mod deletes;
 pub mod desktop;
 pub mod field_changes;
 pub mod fields;
+pub mod fixed_scalars;
 pub mod opaque_rows;
 pub mod rows;
 pub mod updates;
