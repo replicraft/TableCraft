@@ -19,7 +19,8 @@ pub use snapshot::{SnapshotField, TableDraftSnapshot};
 
 use thiserror::Error;
 
-pub const MAX_DRAFT_FIELDS: usize = 16;
+/// Native Access table field count, including a generated primary key.
+pub const MAX_DRAFT_FIELDS: usize = 255;
 pub const MAX_DRAFT_NAME_UNITS: usize = 64;
 pub const MAX_DRAFT_NAME_BYTES: usize = MAX_DRAFT_NAME_UNITS * 4;
 pub const SHORT_TEXT_UNITS: u16 = 255;

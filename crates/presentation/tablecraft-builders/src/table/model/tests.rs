@@ -27,3 +27,23 @@ fn type_change_revision_exhaustion_refuses_without_changing_any_draft_state() {
 }
 
 mod named;
+
+#[test]
+fn native_255_field_bound_counts_the_generated_key_and_retains_256th_refusal() {
+    let mut draft = TableDraft::initial();
+    for index in 1..255 {
+        draft.add_field(DraftFieldType::Number).unwrap();
+        assert_eq!(
+            draft.fields().last().unwrap().name(),
+            format!("Field{index}")
+        );
+    }
+    let before = draft.snapshot("Table1").unwrap();
+    assert_eq!(before.fields().len(), 255);
+    assert_eq!(before.fields()[0].name(), "ID");
+    assert_eq!(
+        draft.add_field(DraftFieldType::Number),
+        Err(TableDraftError::Limit)
+    );
+    assert!(draft.snapshot("Table1").unwrap() == before);
+}

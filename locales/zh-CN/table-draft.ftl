@@ -97,3 +97,5 @@ table-draft-no-key-failed = 无法添加主键。请保留当前设计或删除�
 
 table-draft-design-new-name = 新字段名称
 table-draft-design-new-type = 新字段数据类型
+
+table-draft-field-limit = Access 表最多支持 255 个字段，包括主键。

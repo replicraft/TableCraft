@@ -97,3 +97,5 @@ table-draft-no-key-failed = Der Primärschlüssel konnte nicht hinzugefügt werd
 
 table-draft-design-new-name = Name des neuen Felds
 table-draft-design-new-type = Datentyp des neuen Felds
+
+table-draft-field-limit = Access-Tabellen unterstützen bis zu 255 Felder einschließlich des Primärschlüssels.

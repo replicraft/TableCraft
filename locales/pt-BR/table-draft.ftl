@@ -97,3 +97,5 @@ table-draft-no-key-failed = Não foi possível adicionar a chave primária. Mant
 
 table-draft-design-new-name = Nome do novo campo
 table-draft-design-new-type = Tipo de dados do novo campo
+
+table-draft-field-limit = As tabelas do Access aceitam até 255 campos, incluindo a chave primária.

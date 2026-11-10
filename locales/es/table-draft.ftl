@@ -97,3 +97,5 @@ table-draft-no-key-failed = No se pudo agregar la clave principal. Conserve el d
 
 table-draft-design-new-name = Nombre del nuevo campo
 table-draft-design-new-type = Tipo de datos del nuevo campo
+
+table-draft-field-limit = Las tablas de Access admiten hasta 255 campos, incluida la clave principal.

@@ -211,6 +211,9 @@ impl State {
         let event = ui
             .add_enabled_ui(enabled, |ui| {
                 ui.push_id(("initial_table_editor", tab.id), |ui| {
+                    if editor.draft.fields().len() == tablecraft_builders::table::MAX_DRAFT_FIELDS {
+                        ui.label(tr(ui, "table-draft-field-limit"));
+                    }
                     if editor.design.active {
                         design::show(ui, editor, can_save, can_delete)
                     } else {

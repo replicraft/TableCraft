@@ -97,3 +97,5 @@ table-draft-no-key-failed = The primary key could not be added. Keep the current
 
 table-draft-design-new-name = New field name
 table-draft-design-new-type = New field data type
+
+table-draft-field-limit = Access tables support up to 255 fields, including the primary key.
