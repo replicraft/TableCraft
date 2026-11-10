@@ -141,12 +141,23 @@ impl Evidence {
                 .ok_or(Error::Source)?
         };
         let mut removed = None;
-        framing::ordered_group_blocks(&observed.properties, budget, cancelled, |group, span| {
+        let visit = |group, span| {
             if group == observed.group && removed.replace(span).is_some() {
                 return Err(crate::InspectError::Malformed);
             }
             Ok(())
-        })?;
+        };
+        match purpose {
+            Purpose::SettledEmpty => {
+                framing::ordered_group_blocks(&observed.properties, budget, cancelled, visit)?
+            }
+            Purpose::CurrentTail => framing::current_schema_group_blocks(
+                &observed.properties,
+                budget,
+                cancelled,
+                visit,
+            )?,
+        };
         let removed = removed.ok_or(Error::Source)?;
         let original = observed.properties.raw_bytes();
         budget.charge(Resource::Steps, (original.len() * 2) as u64)?;
@@ -208,12 +219,17 @@ fn current_body(
         }
     }
     let mut removed = None;
-    framing::ordered_group_blocks(&observed.properties, budget, cancelled, |group, span| {
-        if group == observed.group && removed.replace(span).is_some() {
-            return Err(crate::InspectError::Malformed);
-        }
-        Ok(())
-    })?;
+    framing::current_schema_group_blocks(
+        &observed.properties,
+        budget,
+        cancelled,
+        |group, span| {
+            if group == observed.group && removed.replace(span).is_some() {
+                return Err(crate::InspectError::Malformed);
+            }
+            Ok(())
+        },
+    )?;
     let removed = removed.ok_or(Error::Source)?;
     let raw = observed.properties.raw_bytes();
     let length = raw.len().checked_sub(removed.len()).ok_or(Error::Source)?;

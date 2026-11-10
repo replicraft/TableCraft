@@ -1,4 +1,5 @@
 //! Raw BEFORE/AFTER pairs are authored outside every native mutation producer.
+mod readdition;
 use super::*;
 use crate::{EditError, InspectError, read_table};
 use std::{cell::Cell, io::Cursor};

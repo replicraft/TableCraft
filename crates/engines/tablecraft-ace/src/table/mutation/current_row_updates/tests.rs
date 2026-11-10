@@ -104,8 +104,8 @@ fn current_text_repeated_growth_empty_and_null_preserve_other_historical_fields(
                 raw::replace_text(&before, 0, Some(text))
             };
             let value = Value::Text(text.into());
-            // NO_CLONE: the request owns its expected snapshot while the next
-            // iteration retains the newly supplied scalar as its expectation.
+            // NO_CLONE: the request owns its replacement payload while the loop
+            // retains an independent expected value for the next consuming edit.
             let updates = [SlotScalarUpdate::new(0, previous, value.clone())];
             let groups = [FittedColumnUpdates::Variable {
                 column: target.name(),

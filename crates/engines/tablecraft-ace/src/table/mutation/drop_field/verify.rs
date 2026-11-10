@@ -180,11 +180,11 @@ pub(super) fn candidate(
         Purpose::SettledEmpty => framing::validate(&properties, budget, cancelled)?,
         Purpose::CurrentTail => {
             // The complete original dictionary and every original group have
-            // strict frame/entry coverage. The exact group-omission proof below
+            // complete frame/entry coverage. The exact group-omission proof below
             // carries that coverage to AFTER, including dictionary names whose
             // last use was removed and a dictionary with no surviving groups.
             // Those retained bytes are not permission for an orphan live group.
-            framing::validate(&observed.properties, budget, cancelled)?;
+            framing::current_schema_names(&observed.properties, budget, cancelled)?;
         }
     }
     if properties.object_id() != observed.properties.object_id()
@@ -195,12 +195,20 @@ pub(super) fn candidate(
         return Err(Error::Preservation);
     }
     let mut removed = None;
-    framing::ordered_group_blocks(&observed.properties, budget, cancelled, |group, span| {
+    let visit = |group, span| {
         if group == observed.group && removed.replace(span).is_some() {
             return Err(crate::InspectError::Malformed);
         }
         Ok(())
-    })?;
+    };
+    match evidence.purpose {
+        Purpose::SettledEmpty => {
+            framing::ordered_group_blocks(&observed.properties, budget, cancelled, visit)?
+        }
+        Purpose::CurrentTail => {
+            framing::current_schema_group_blocks(&observed.properties, budget, cancelled, visit)?
+        }
+    };
     let removed = removed.ok_or(Error::Preservation)?;
     let raw = observed.properties.raw_bytes();
     budget.charge(Resource::Steps, raw.len() as u64)?;

@@ -244,17 +244,23 @@ impl Observed {
             return Err(Error::Source);
         }
         let mut group_span = None;
-        framing::ordered_names_with_groups(
-            &properties,
-            reader.budget,
-            cancelled,
-            |number, span| {
-                if number == group && group_span.replace(span).is_some() {
-                    return Err(crate::InspectError::Malformed);
-                }
-                Ok(())
-            },
-        )?;
+        let visit = |number, span| {
+            if number == group && group_span.replace(span).is_some() {
+                return Err(crate::InspectError::Malformed);
+            }
+            Ok(())
+        };
+        match purpose {
+            Purpose::SavedField => {
+                framing::ordered_names_with_groups(&properties, reader.budget, cancelled, visit)?
+            }
+            Purpose::CurrentTail => framing::current_schema_names_with_groups(
+                &properties,
+                reader.budget,
+                cancelled,
+                visit,
+            )?,
+        };
         let name = group_span.ok_or(Error::Source)?;
         if name.len() != target.name().len() * size_of::<u16>() || name.end > chunk.bytes {
             return Err(Error::Source);
