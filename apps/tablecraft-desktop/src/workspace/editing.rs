@@ -12,6 +12,8 @@ mod pasting;
 mod query_action;
 mod query_definition;
 pub(super) mod recovery;
+#[cfg(all(test, any(target_os = "macos", target_os = "linux", windows)))]
+mod retained_cells;
 pub(super) mod table_creation;
 mod table_drop;
 pub(super) mod table_rename;
