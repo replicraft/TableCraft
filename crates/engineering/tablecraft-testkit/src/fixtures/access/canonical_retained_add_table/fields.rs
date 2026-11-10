@@ -1,4 +1,5 @@
 //! Independent nullable field ADD at actual retained native definitions/catalog roots.
+pub mod property_pages;
 use crate::fixtures::access::{
     canonical_created_number::mixed::properties,
     canonical_table_drop::retained as dropped,
@@ -66,6 +67,16 @@ fn word(bytes: &[u8], at: usize) -> usize {
 /// Old records remain byte-identical and the new logical native field is NULL.
 /// A new complete MR2 snapshot is appended; old inline/body bytes remain history.
 pub fn after(before: &[u8], definition: u32, catalog_root: usize, target: Target) -> Vec<u8> {
+    after_on_property_page(before, definition, catalog_root, target, 10)
+}
+
+fn after_on_property_page(
+    before: &[u8],
+    definition: u32,
+    catalog_root: usize,
+    target: Target,
+    property_page: u32,
+) -> Vec<u8> {
     let range = raw_forwarding_chain::terminal_range(before, 4, catalog_root);
     let row = &before[range.clone()];
     assert_eq!(&row[..2], &[17, 0]);
@@ -108,13 +119,14 @@ pub fn after(before: &[u8], definition: u32, catalog_root: usize, target: Target
         ),
     };
     let mut after = raw_schema_add::append(before, definition, target.name(), kind);
-    let slot = word(before, 10 * PAGE + 12);
-    append_record(&mut after[10 * PAGE..11 * PAGE], &body);
+    let page = property_page as usize * PAGE;
+    let slot = word(before, page + 12);
+    append_record(&mut after[page..page + PAGE], &body);
     let descriptor = range.start + start;
     after[descriptor..descriptor + 4]
         .copy_from_slice(&(0x4000_0000 | body.len() as u32).to_le_bytes());
     after[descriptor + 4..descriptor + 8]
-        .copy_from_slice(&((10u32 << 8) | slot as u32).to_le_bytes());
+        .copy_from_slice(&((property_page << 8) | slot as u32).to_le_bytes());
     after[descriptor + 8..descriptor + 12].fill(0);
     // The twelve-byte descriptor consumes less than the prior inline footprint.
     // Preserve ignored original inline bytes and the complete physical row size.

@@ -193,3 +193,78 @@ fn retained_added_fields_materialize_old_rows_then_insert_literal_defaults_null_
         }
     }
 }
+
+#[test]
+fn retained_property_add_uses_the_other_actual_owned_hinted_lval_page_when_one_is_full() {
+    for case in property_pages::CASES {
+        let source = property_pages::source(case);
+        let original = read_table(
+            &mut Cursor::new(&source.bytes),
+            CatalogScope::new(3706),
+            "Table1",
+            &mut budget(),
+            &|| false,
+        )
+        .unwrap();
+        for target in [Target::Number, Target::ShortText] {
+            let after = property_pages::after(&source, target);
+            let observed = read_table(
+                &mut Cursor::new(&after),
+                CatalogScope::new(3707),
+                "Table1",
+                &mut budget(),
+                &|| false,
+            )
+            .unwrap();
+            let mut expected = original.rows().to_vec();
+            for row in &mut expected {
+                row.push(Value::Null);
+            }
+            assert_eq!(observed.rows(), expected);
+            inspect_table_properties(
+                &mut Cursor::new(&after),
+                CatalogScope::new(3708),
+                "Table1",
+                &mut budget(),
+                &|| false,
+            )
+            .unwrap();
+            check_table(
+                &mut Cursor::new(&after),
+                CatalogScope::new(3709),
+                "Table1",
+                &mut budget(),
+                &|| false,
+            )
+            .unwrap();
+            let unchanged = source.other_page as usize * 4096;
+            assert_eq!(
+                &after[unchanged..unchanged + 4096],
+                &source.bytes[unchanged..unchanged + 4096]
+            );
+            assert_eq!(after[source.owned_cell], source.bytes[source.owned_cell]);
+            assert_eq!(after[source.hint_cell], source.bytes[source.hint_cell]);
+            let directory = tempfile::tempdir().unwrap();
+            let path = directory.path().join("property-pages.accdb");
+            fs::write(&path, &after).unwrap();
+            let fresh = NativeSource::new(
+                fs::File::open(&path).unwrap(),
+                CatalogScope::new(3710),
+                budget(),
+                &|| false,
+            )
+            .unwrap();
+            let query =
+                parse_query("SELECT * FROM Table1 ORDER BY ID", Default::default()).unwrap();
+            assert_eq!(
+                prepare(query.query(), &fresh)
+                    .unwrap()
+                    .execute(&fresh, &[], ExecutionOptions::default())
+                    .unwrap()
+                    .rows(),
+                expected
+            );
+            assert_eq!(fs::read(path).unwrap(), after);
+        }
+    }
+}
