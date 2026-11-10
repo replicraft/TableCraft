@@ -1,5 +1,6 @@
 //! Whole independently authored AFTER and bounded append/source refusals.
 use crate::creation::catalog_page::Page;
+mod authored;
 mod legacy_source_targets;
 mod mixed;
 mod repeated;
