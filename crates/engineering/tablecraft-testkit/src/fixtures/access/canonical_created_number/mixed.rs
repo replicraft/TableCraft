@@ -1,7 +1,7 @@
 //! Independent mixed field AFTERs from the maintained Short Text literal model.
 //! No engine/SDK serializer, parser or inspection API participates in these bytes.
 pub mod after_off;
-mod properties;
+pub(in crate::fixtures::access) mod properties;
 pub(in crate::fixtures::access) mod storage;
 #[cfg(test)]
 mod tests;

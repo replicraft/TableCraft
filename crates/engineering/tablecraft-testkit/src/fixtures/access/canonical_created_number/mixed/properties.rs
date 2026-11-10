@@ -60,7 +60,7 @@ fn encode(names: &[String], groups: &[u8], group: &[u8]) -> Vec<u8> {
     body
 }
 
-pub(super) fn append_text(original: &[u8], name: &str) -> Vec<u8> {
+pub(in crate::fixtures::access) fn append_text(original: &[u8], name: &str) -> Vec<u8> {
     let (mut names, groups) = dictionary(original);
     for key in ["Required", "AllowZeroLength"] {
         if !names.iter().any(|name| name == key) {
@@ -91,7 +91,7 @@ pub(super) fn append_text(original: &[u8], name: &str) -> Vec<u8> {
     encode(&names, groups, &group)
 }
 
-pub(super) fn append_number(original: &[u8], name: &str) -> Vec<u8> {
+pub(in crate::fixtures::access) fn append_number(original: &[u8], name: &str) -> Vec<u8> {
     let (mut names, groups) = dictionary(original);
     if !names.iter().any(|name| name == "DefaultValue") {
         names.push("DefaultValue".into());

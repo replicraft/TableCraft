@@ -125,3 +125,13 @@ pub(in crate::fixtures::access) fn replace_terminal(
     after[page + start..page + end].copy_from_slice(record);
     after
 }
+
+/// Actual terminal location for independent byte edits in shared raw builders.
+pub(in crate::fixtures::access) fn terminal_range(
+    before: &[u8],
+    page: u32,
+    root: usize,
+) -> std::ops::Range<usize> {
+    let (_, start, end) = terminal(before, page, root);
+    page as usize * PAGE + start..page as usize * PAGE + end
+}
