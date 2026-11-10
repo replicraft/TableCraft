@@ -85,7 +85,12 @@ fn reveal(harness: &mut Harness<'_, Desktop>, field: &str, right: bool) {
     let header = harness
         .get_all_by_role(Role::ColumnHeader)
         .map(|node| node.rect().intersect(viewport))
-        .find(|rect| rect.width() > 40.0 && rect.height() > 5.0)
+        // Offscreen table headers can extend behind the navigation pane. A
+        // header in the right half of the host is inside the actual document.
+        .filter(|rect| {
+            rect.width() > 40.0 && rect.height() > 5.0 && rect.center().x > viewport.center().x
+        })
+        .max_by(|left, right| left.center().x.total_cmp(&right.center().x))
         .expect("a real visible field header owns horizontal scrolling");
     harness.event(egui::Event::PointerMoved(header.center()));
     harness.event(egui::Event::MouseWheel {
@@ -142,8 +147,15 @@ fn retained_fixed_scalar_cells_keep_typed_precision_nulls_and_refills_after_actu
     }
     view(&mut harness, "ribbon-datasheet");
     for (index, (column, text)) in raw::COLUMNS_TO_EDIT.into_iter().zip(INPUT).enumerate() {
-        reveal(&mut harness, column.name(), index >= 2);
+        reveal(&mut harness, column.name(), index >= 3);
         let label = field_label(&harness, "table-draft-record-field", column.name());
+        assert!(
+            harness
+                .query_by_role_and_label(Role::TextInput, &label)
+                .is_some(),
+            "actual initial editor for {} is still clipped after scrolling",
+            column.name()
+        );
         replace(&mut harness, Role::TextInput, &label, text);
     }
     assert_image(&path, &original);
@@ -167,7 +179,7 @@ fn retained_fixed_scalar_cells_keep_typed_precision_nulls_and_refills_after_actu
             (false, None, None),
             (true, Some(value), Some(text)),
         ] {
-            reveal(&mut harness, column.name(), column.number() >= 4);
+            reveal(&mut harness, column.name(), column.number() >= 5);
             begin_replacement(&mut harness, 0, column.name(), was_null, input);
             let after = raw::update(&expected, definition, 0, column, supplied);
             review_and_save(&mut harness, &path, &expected, &after);
