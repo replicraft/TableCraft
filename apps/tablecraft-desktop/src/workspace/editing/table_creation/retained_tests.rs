@@ -35,7 +35,7 @@ use tablecraft_testkit::fixtures::access::{
     canonical_table_drop::current::{self as dropped, History},
 };
 
-fn draft(harness: &mut Harness<'_, Desktop>, target: Target) {
+pub(in crate::workspace::editing) fn draft(harness: &mut Harness<'_, Desktop>, target: Target) {
     create_table(harness);
     harness
         .get_by_role_and_label(Role::Tab, "Home")
@@ -51,7 +51,7 @@ fn draft(harness: &mut Harness<'_, Desktop>, target: Target) {
     }
 }
 
-fn save_schema(
+pub(in crate::workspace::editing) fn save_schema(
     harness: &mut Harness<'_, Desktop>,
     path: &Path,
     before: &[u8],

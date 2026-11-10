@@ -490,4 +490,4 @@ mod addition_tests;
 mod manual_tests;
 
 #[cfg(all(test, any(target_os = "macos", target_os = "linux", windows)))]
-mod retained_tests;
+pub(in crate::workspace::editing) mod retained_tests;

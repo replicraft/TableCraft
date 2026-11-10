@@ -1,5 +1,6 @@
 //! Headless desktop acceptance uses real native reads, saves and full-image witnesses.
 pub(in crate::workspace::editing) mod current;
+mod retained;
 
 use crate::workspace::{
     Desktop,
