@@ -40,7 +40,11 @@ pub(in crate::table::mutation) fn qualify(
         return Err(EditError::Unsupported(WriteBlocker::RowLayout));
     }
     let selected = schema.columns().get(column).ok_or(EditError::Conflict)?;
-    if selected.number() < count || !selected.fixed() || selected.native_type() != INT32 {
+    if selected.number() < count
+        || !selected.fixed()
+        || selected.native_type() != INT32
+        || selected.storage_length() != size_of::<i32>()
+    {
         return Err(EditError::Unsupported(WriteBlocker::RowLayout));
     }
     let mut fixed = COLUMN_COUNT_BYTES;

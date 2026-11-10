@@ -107,7 +107,7 @@ pub(in crate::fixtures::access::canonical_created_number::mixed::after_off) fn p
     assert_eq!(free, frontier - DIRECTORY - count * 2);
     assert!(target >= DIRECTORY + (count + 1) * 2);
     let mut after = before.to_vec();
-    after[data + target..data + frontier].copy_from_slice(&record);
+    after[data + target..data + frontier].copy_from_slice(record);
     put16(
         &mut after,
         data + DIRECTORY + count * 2,

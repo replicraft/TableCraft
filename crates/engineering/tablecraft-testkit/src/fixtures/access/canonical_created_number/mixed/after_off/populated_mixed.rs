@@ -40,7 +40,7 @@ fn empty(case: Case) -> Vec<u8> {
 /// values, NULLs with nonempty opaque payloads, and stationary trailer padding.
 pub fn pair(case: Case) -> [Vec<u8>; 2] {
     let mut rows = Vec::new();
-    for position in 0..3 {
+    for position in 0_i32..3 {
         let (first, second, score, mask, padding): (&[u8], &[u8], i32, u8, &[u8]) = match position {
             0 => (
                 &[255, 254, b'a', b'l', b'p', b'h', b'a'],
@@ -73,7 +73,7 @@ pub fn pair(case: Case) -> [Vec<u8>; 2] {
             ),
         };
         let mut row = vec![4, 0];
-        row.extend(((position + 1) as i32).to_le_bytes());
+        row.extend((position + 1).to_le_bytes());
         row.extend(score.to_le_bytes());
         let first_end = row.len() + first.len();
         row.extend(first);
