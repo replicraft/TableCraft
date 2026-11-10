@@ -3,10 +3,11 @@ use crate::editing::{NativeEditError, journal, sql};
 use std::{error::Error, fmt};
 #[cfg(feature = "ace16-create")]
 use tablecraft_ace::{
-    AddColumnIntentError, AddTableError, AddTableIntentError, DatabaseOptionsIntentError,
-    DefaultZeroAddColumnIntentError, FieldAdditionAfterOffHistoryIntentError,
-    FieldAdditionAfterOffIntentError, FieldAdditionIntentError, FieldDropIntentError,
-    FieldHistoryOptionsIntentError, FieldRenameIntentError, FirstTableError, FirstTableIntentError,
+    AddColumnIntentError, AddTableError, AddTableIntentError, CurrentFieldAdditionIntentError,
+    DatabaseOptionsIntentError, DefaultZeroAddColumnIntentError,
+    FieldAdditionAfterOffHistoryIntentError, FieldAdditionAfterOffIntentError,
+    FieldAdditionIntentError, FieldDropIntentError, FieldHistoryOptionsIntentError,
+    FieldRenameIntentError, FirstTableError, FirstTableIntentError,
     RepeatedDefaultZeroAddColumnIntentError,
 };
 use tablecraft_ace::{
@@ -97,6 +98,10 @@ pub enum Cause {
     #[cfg(feature = "ace16-create")]
     #[error(transparent)]
     FieldAdditionAfterOffHistoryIntent(FieldAdditionAfterOffHistoryIntentError),
+    /// Current metadata ADD request or fresh native reconstruction refused.
+    #[cfg(feature = "ace16-create")]
+    #[error(transparent)]
+    CurrentFieldAdditionIntent(CurrentFieldAdditionIntentError),
     /// Original field-rename request or complete native reconstruction refused.
     #[cfg(feature = "ace16-create")]
     #[error(transparent)]
