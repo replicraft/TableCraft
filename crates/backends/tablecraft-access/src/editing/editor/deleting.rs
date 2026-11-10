@@ -5,6 +5,12 @@ use tablecraft_ace::{EditError, InspectError, RecoverableNativeDeletePlan};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_db::RowHandle;
 
+enum Family {
+    Ordinary,
+    #[cfg(feature = "ace16-create")]
+    Current,
+}
+
 impl NativeEditor {
     pub(in crate::editing) fn plan_recoverable_deletes(
         self,
@@ -26,10 +32,38 @@ impl NativeEditor {
             tick(budget, cancelled)?;
             ordinals.push(self.snapshot.ordinal(*row).map_err(NativeEditError::from)?);
         }
-        let mut original = self
+
+        let family = Family::Ordinary;
+        #[cfg(feature = "ace16-create")]
+        let family = if self
             .image
-            .prepare_ordinary_row_deletes(self.snapshot.name(), &ordinals, budget, cancelled)
-            .map_err(NativeEditError::from)?;
+            .select_native_current_delete_source(self.snapshot.name(), budget, cancelled)
+            .map_err(NativeEditError::from)?
+        {
+            Family::Current
+        } else {
+            family
+        };
+
+        // The original metadata selects one source language. A failed current
+        // witness proof must not be retried through ordinary DELETE admission.
+        let mut original = match family {
+            Family::Ordinary => self.image.prepare_ordinary_row_deletes(
+                self.snapshot.name(),
+                &ordinals,
+                budget,
+                cancelled,
+            ),
+            #[cfg(feature = "ace16-create")]
+            Family::Current => self.image.prepare_current_row_deletes(
+                self.snapshot.name(),
+                &ordinals,
+                budget,
+                cancelled,
+            ),
+        }
+        .map_err(NativeEditError::from)?;
+
         // Native traversal returns source order. Retain the caller's written
         // request order in TCND without cloning any raw witness payload.
         for (position, ordinal) in ordinals.iter().enumerate() {
@@ -44,12 +78,22 @@ impl NativeEditor {
             let index = found.ok_or_else(|| NativeEditError::from(EditError::Preservation))?;
             original.swap(position, index);
         }
-        Ok(self.image.plan_recoverable_ordinary_row_deletes(
-            self.snapshot.name(),
-            original,
-            budget,
-            cancelled,
-        )?)
+
+        Ok(match family {
+            Family::Ordinary => self.image.plan_recoverable_ordinary_row_deletes(
+                self.snapshot.name(),
+                original,
+                budget,
+                cancelled,
+            )?,
+            #[cfg(feature = "ace16-create")]
+            Family::Current => self.image.plan_recoverable_current_row_deletes(
+                self.snapshot.name(),
+                original,
+                budget,
+                cancelled,
+            )?,
+        })
     }
 }
 

@@ -774,6 +774,7 @@ impl OfflineWriteSession {
             .max(NativeTableDropIntent::MAX_ENCODED_BYTES)
             .max(NativeUpdateIntent::MAX_ENCODED_BYTES)
             .max(NativeDeleteIntent::MAX_ENCODED_BYTES)
+            .max(NativeDeleteIntent::MAX_CURRENT_ENCODED_BYTES)
             .max(NativeInsertIntent::MAX_ENCODED_BYTES)
             .max(NativeOmittedInsertIntent::MAX_ENCODED_BYTES)
             .max(NativeOmittedInsertIntent::MAX_CURRENT_ENCODED_BYTES)

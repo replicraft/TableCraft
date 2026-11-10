@@ -400,7 +400,9 @@ impl MutationIntent {
                 .map_err(Cause::FirstTableIntent);
         }
 
-        let decoded = if raw.starts_with(b"TCND") {
+        let decoded = if raw.starts_with(b"TCND0002") {
+            NativeDeleteIntent::decode_current(raw, budget, cancelled).map(Self::Delete)
+        } else if raw.starts_with(b"TCND") {
             NativeDeleteIntent::decode(raw, budget, cancelled).map(Self::Delete)
         } else if raw.starts_with(b"TCNA0005") {
             NativeClockInsertIntent::decode(raw, budget, cancelled).map(Self::ClockInsert)
