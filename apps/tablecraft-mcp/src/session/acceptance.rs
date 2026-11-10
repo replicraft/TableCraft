@@ -4,6 +4,7 @@ mod builder_properties;
 mod field_row_composition;
 mod insertion_retry;
 mod other_services;
+mod populated_row_composition;
 mod recovery;
 mod schema;
 
