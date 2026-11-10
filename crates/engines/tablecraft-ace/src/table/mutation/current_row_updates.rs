@@ -33,6 +33,7 @@ const USER_DEFINITION: u32 = 7;
 pub(super) enum Family {
     Current,
     Retained,
+    RetainedOpaque,
 }
 
 impl Family {
@@ -45,6 +46,18 @@ impl Family {
     ) -> Result<Source<'image>, EditError> {
         match self {
             Self::Current => Source::capture_current_rows(image, table, budget, cancelled),
+            Self::RetainedOpaque => {
+                if !image.has_retained_table_source(table, budget, cancelled)? {
+                    return Err(EditError::Unsupported(WriteBlocker::RowLayout));
+                }
+                let source = Source::capture_retained_opaque_rows(image, table, budget, cancelled)?;
+                if !super::retained_opaque_row_updates::source_has_ambiguous(
+                    &source, budget, cancelled,
+                )? {
+                    return Err(EditError::Unsupported(WriteBlocker::RowLayout));
+                }
+                Ok(source)
+            }
             Self::Retained => {
                 if !image.has_retained_table_source(table, budget, cancelled)? {
                     return Err(EditError::Unsupported(WriteBlocker::RowLayout));
@@ -62,7 +75,9 @@ impl Family {
     ) -> Result<Vec<u8>, EditError> {
         match self {
             Self::Current => record_serialization::copy(image.as_bytes(), budget, cancelled),
-            Self::Retained => fixed_records::copy(image.as_bytes(), budget, cancelled),
+            Self::Retained | Self::RetainedOpaque => {
+                fixed_records::copy(image.as_bytes(), budget, cancelled)
+            }
         }
     }
 
@@ -76,7 +91,7 @@ impl Family {
     ) -> Result<record_roots::Roots<'u, U>, EditError> {
         match self {
             Self::Current => record_roots::capture(image, schema, requests, budget, cancelled),
-            Self::Retained => {
+            Self::Retained | Self::RetainedOpaque => {
                 record_roots::capture_retained(image, schema, requests, budget, cancelled)
             }
         }
@@ -92,7 +107,79 @@ impl Family {
     ) -> Result<Space, EditError> {
         match self {
             Self::Current => Space::capture_normal(image, schema, owned, budget, cancelled),
-            Self::Retained => Space::capture_retained(image, schema, owned, budget, cancelled),
+            Self::Retained | Self::RetainedOpaque => {
+                Space::capture_retained(image, schema, owned, budget, cancelled)
+            }
+        }
+    }
+
+    pub(super) fn qualify_record(
+        self,
+        schema: &crate::TableSchema,
+        column: usize,
+        before: &[u8],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(), EditError> {
+        if matches!(self, Self::RetainedOpaque) {
+            if schema
+                .columns()
+                .get(column)
+                .is_none_or(|field| field.native_type() != INT32)
+            {
+                return Err(EditError::Unsupported(WriteBlocker::Column));
+            }
+            if record_serialization::opaque_rows::is_ambiguous(schema, before, budget, cancelled)? {
+                return record_serialization::opaque_rows::qualify(
+                    schema, column, before, budget, cancelled,
+                );
+            }
+        }
+        record_serialization::current_rows::qualify(schema, column, before, budget, cancelled)?;
+        Ok(())
+    }
+
+    fn build_record(
+        self,
+        schema: &crate::TableSchema,
+        column: usize,
+        before: &[u8],
+        value: &Value,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Vec<u8>, EditError> {
+        if matches!(self, Self::RetainedOpaque)
+            && record_serialization::opaque_rows::is_ambiguous(schema, before, budget, cancelled)?
+        {
+            record_serialization::opaque_rows::build(
+                schema, column, before, value, budget, cancelled,
+            )
+        } else {
+            record_serialization::current_rows::build(
+                schema, column, before, value, budget, cancelled,
+            )
+        }
+    }
+
+    pub(super) fn reconstruct_record(
+        self,
+        schema: &crate::TableSchema,
+        column: usize,
+        before: &[u8],
+        value: &Value,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Vec<u8>, EditError> {
+        if matches!(self, Self::RetainedOpaque)
+            && record_serialization::opaque_rows::is_ambiguous(schema, before, budget, cancelled)?
+        {
+            record_serialization::proof::opaque_rows::reconstruct(
+                schema, column, before, value, budget, cancelled,
+            )
+        } else {
+            record_serialization::proof::current_rows::reconstruct(
+                schema, column, before, value, budget, cancelled,
+            )
         }
     }
 }
@@ -121,7 +208,7 @@ pub(super) fn bind_for(
         return Err(EditError::Unsupported(WriteBlocker::RowLayout));
     }
     let schema = source.facts().table.schema();
-    let column = if matches!(family, Family::Retained) {
+    let column = if matches!(family, Family::Retained | Family::RetainedOpaque) {
         retained_column(source, &groups[0], budget, cancelled)?
     } else {
         match &groups[0] {
@@ -175,7 +262,7 @@ pub(super) fn bind_for(
         .records
         .get(update.row)
         .ok_or(EditError::Conflict)?;
-    record_serialization::current_rows::qualify(schema, column, &record.data, budget, cancelled)?;
+    family.qualify_record(schema, column, &record.data, budget, cancelled)?;
     Ok(Selected {
         ordinal: update.row,
         column,
@@ -318,7 +405,7 @@ pub(super) fn plan(
     let value = groups[0].cell(0).ok_or(EditError::Preservation)?.value;
     let changed = root.update.changed;
     let record = if changed {
-        record_serialization::current_rows::build(
+        family.build_record(
             schema,
             root.update.column,
             &original.data,

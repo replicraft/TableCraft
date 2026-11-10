@@ -149,6 +149,8 @@ enum PayloadAdmission<'admission, 'image> {
     #[cfg(all(feature = "journal", feature = "ace16-create"))]
     RetainedRowsNoRequired(&'admission NoRequiredTablePrograms<'image>),
     #[cfg(all(feature = "journal", feature = "ace16-create"))]
+    RetainedOpaqueRowsNoRequired(&'admission NoRequiredTablePrograms<'image>),
+    #[cfg(all(feature = "journal", feature = "ace16-create"))]
     RetainedDeleteNoRequired(&'admission NoRequiredTablePrograms<'image>),
     #[cfg(all(feature = "journal", feature = "ace16-create"))]
     CurrentDeleteNoRequired(&'admission NoRequiredTablePrograms<'image>),
@@ -387,6 +389,10 @@ fn capture_framed_with_records(
             certificate.require_retained_rows_source(image, schema, budget, cancelled)?;
         }
         #[cfg(all(feature = "journal", feature = "ace16-create"))]
+        PayloadAdmission::RetainedOpaqueRowsNoRequired(certificate) => {
+            certificate.require_retained_opaque_rows_source(image, schema, budget, cancelled)?;
+        }
+        #[cfg(all(feature = "journal", feature = "ace16-create"))]
         PayloadAdmission::RetainedInsertNoRequired(certificate) => {
             certificate.require_retained_insert_source(image, schema, budget, cancelled)?;
         }
@@ -421,6 +427,7 @@ fn capture_framed_with_records(
         | PayloadAdmission::CurrentInsertNoRequired(certificate)
         | PayloadAdmission::RetainedInsertNoRequired(certificate)
         | PayloadAdmission::RetainedRowsNoRequired(certificate)
+        | PayloadAdmission::RetainedOpaqueRowsNoRequired(certificate)
         | PayloadAdmission::RetainedDeleteNoRequired(certificate)
         | PayloadAdmission::CurrentDeleteNoRequired(certificate)
         | PayloadAdmission::HistoricalFixedRows(certificate) => certificate.share_definition_tail(),
@@ -471,6 +478,7 @@ fn capture_framed_with_records(
     #[cfg(all(feature = "journal", feature = "ace16-create"))]
     let roots = match &payload {
         PayloadAdmission::RetainedRowsNoRequired(_)
+        | PayloadAdmission::RetainedOpaqueRowsNoRequired(_)
         | PayloadAdmission::RetainedSchemaNoRequired(_)
         | PayloadAdmission::RetainedDeleteNoRequired(_)
         | PayloadAdmission::RetainedInsertNoRequired(_) => {
@@ -507,6 +515,7 @@ fn capture_framed_with_records(
     #[cfg(all(feature = "journal", feature = "ace16-create"))]
     let long_values = match &payload {
         PayloadAdmission::RetainedRowsNoRequired(_)
+        | PayloadAdmission::RetainedOpaqueRowsNoRequired(_)
         | PayloadAdmission::RetainedSchemaNoRequired(_)
         | PayloadAdmission::RetainedDeleteNoRequired(_)
         | PayloadAdmission::RetainedInsertNoRequired(_) => {
@@ -543,6 +552,10 @@ fn capture_framed_with_records(
             (
                 PayloadAdmission::RetainedSchemaNoRequired(_),
                 RecordAdmission::HistoricalSchemaReadonly,
+            ) => record_layout::parse_values(&root.final_record.data, schema, budget)?,
+            (
+                PayloadAdmission::RetainedOpaqueRowsNoRequired(_),
+                RecordAdmission::RetainedOpaqueRows,
             ) => record_layout::parse_values(&root.final_record.data, schema, budget)?,
             _ => record_layout::parse(&root.final_record.data, schema, budget)?,
         };
@@ -607,6 +620,7 @@ fn capture_framed_with_records(
         | PayloadAdmission::CurrentInsertNoRequired(_)
         | PayloadAdmission::RetainedInsertNoRequired(_)
         | PayloadAdmission::RetainedRowsNoRequired(_)
+        | PayloadAdmission::RetainedOpaqueRowsNoRequired(_)
         | PayloadAdmission::RetainedDeleteNoRequired(_)
         | PayloadAdmission::CurrentDeleteNoRequired(_)
         | PayloadAdmission::HistoricalFixedRows(_) => true,
@@ -859,6 +873,7 @@ impl PayloadAdmission<'_, '_> {
             | Self::CurrentInsertNoRequired(_)
             | Self::RetainedInsertNoRequired(_)
             | Self::RetainedRowsNoRequired(_)
+            | Self::RetainedOpaqueRowsNoRequired(_)
             | Self::RetainedDeleteNoRequired(_)
             | Self::CurrentDeleteNoRequired(_)
             | Self::HistoricalFixedRows(_) => true,
@@ -1072,6 +1087,29 @@ pub(in crate::table::mutation) fn capture_retained_rows(
             keys: RetainedKeys::Integral,
         },
         RecordAdmission::CurrentRows,
+        budget,
+        cancelled,
+    )
+}
+
+/// Original retained rows observed for a separately qualified opaque-tail writer.
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub(in crate::table::mutation) fn capture_retained_opaque_rows(
+    image: &NativeImage,
+    table: &str,
+    certificate: &NoRequiredTablePrograms<'_>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Source, EditError> {
+    capture_framed_with_records(
+        image,
+        table,
+        PayloadAdmission::RetainedOpaqueRowsNoRequired(certificate),
+        ReadProfile {
+            columns: ColumnFraming::Actions,
+            keys: RetainedKeys::Integral,
+        },
+        RecordAdmission::RetainedOpaqueRows,
         budget,
         cancelled,
     )

@@ -5,9 +5,7 @@ use crate::{
     format::row::{OFFSET_MASK, RELOCATED_MASK},
     header::check,
     preservation::COPY_CHUNK_BYTES,
-    table::mutation::{
-        preserved_source::validation, record_placement::proof as placement, record_serialization,
-    },
+    table::mutation::{preserved_source::validation, record_placement::proof as placement},
 };
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
@@ -38,7 +36,7 @@ pub(super) fn prove(
         }
         return Ok(());
     }
-    let record = record_serialization::proof::current_rows::reconstruct(
+    let record = family.reconstruct_record(
         schema,
         root.update.column,
         &root.final_record.data,

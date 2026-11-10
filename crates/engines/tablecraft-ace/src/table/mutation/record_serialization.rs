@@ -46,3 +46,6 @@ pub(in crate::table::mutation) mod historical_text;
 
 #[cfg(all(feature = "journal", feature = "ace16-create"))]
 pub(in crate::table::mutation) mod current_rows;
+
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub(in crate::table::mutation) mod opaque_rows;

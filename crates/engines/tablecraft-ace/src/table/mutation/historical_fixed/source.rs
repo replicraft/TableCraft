@@ -64,6 +64,38 @@ impl<'image> Source<'image> {
         Ok(Self { image, facts })
     }
 
+    /// Retained replacement proves actual target metadata and surrounding roles
+    /// independently of the fixed current-schema creator geometry.
+    pub(in crate::table::mutation) fn capture_retained_opaque_rows(
+        image: &'image NativeImage,
+        table: &str,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, EditError> {
+        image.require_retained_capture()?;
+        let schema = inspect_table_schema(
+            &mut image.reader(),
+            image.catalog().catalog().scope(),
+            table,
+            budget,
+            cancelled,
+        )?;
+        let certificate = NoRequiredTablePrograms::capture_retained_opaque_rows(
+            image, &schema, budget, cancelled,
+        )?;
+        let facts = preserved_source::capture_retained_opaque_rows(
+            image,
+            table,
+            &certificate,
+            budget,
+            cancelled,
+        )?;
+        if !facts.dependencies.is_empty() {
+            return Err(EditError::Unsupported(WriteBlocker::Column));
+        }
+        Ok(Self { image, facts })
+    }
+
     fn capture_with_purpose(
         image: &'image NativeImage,
         table: &str,
