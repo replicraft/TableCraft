@@ -7,6 +7,8 @@ on:
       - '.github/workflows/desktop-packaging.yml'
       - 'scripts/packaging/**'
       - 'scripts/tests/test_update_signatures.py'
+      - 'scripts/tests/test_package_*.py'
+      - 'scripts/tests/test_installer_contract.py'
       - 'packaging/**'
       - 'Cargo.toml'
       - 'Cargo.lock'
@@ -31,6 +33,8 @@ jobs:
       - uses: actions/setup-python@v7
         with:
           python-version: '3.13'
+      - name: Check native installer identity contracts
+        run: python -m unittest discover -s scripts/tests -p 'test_installer_contract.py'
       - run: cargo fetch --locked
       - run: mkdir resources
       - run: python scripts/packaging/desktop_notices.py fetch
@@ -69,6 +73,9 @@ jobs:
       - uses: actions/setup-python@v7
         with:
           python-version: '3.13'
+      - name: Validate the workspace release version
+        id: version
+        run: python scripts/packaging/package_cli.py validate
       - uses: actions/download-artifact@v8
         with:
           name: desktop-packaging-resources
@@ -97,17 +104,88 @@ jobs:
       - name: Package and smoke-test extracted help and version only
         shell: bash
         env:
+          RELEASE_VERSION: ${{ steps.version.outputs.version }}
           RELEASE_TARGET: ${{ matrix.target }}
           RELEASE_BINARY: target/${{ matrix.target }}/release/${{ matrix.binary }}
         run: |
           set -euo pipefail
-          python scripts/packaging/package_cli.py validate
-          version=$(python -c 'import tomllib; print(tomllib.load(open("Cargo.toml", "rb"))["workspace"]["package"]["version"])')
+          version="$RELEASE_VERSION"
           icon=()
           if [[ "$RELEASE_TARGET" == *apple* ]]; then icon=(--icon resources/icons/application.icns); fi
           python scripts/packaging/package_desktop.py package --version "$version" --target "$RELEASE_TARGET" --binary "$RELEASE_BINARY" --notices resources/DesktopThirdPartyLicenses.txt "${icon[@]}" --output dist
           archive=$(find dist -maxdepth 1 -type f \( -name '*.zip' -o -name '*.tar.gz' \))
           python scripts/packaging/package_desktop.py verify --version "$version" --target "$RELEASE_TARGET" --archive "$archive" --notices resources/DesktopThirdPartyLicenses.txt "${icon[@]}" --smoke
+      - name: Install the supported native .NET SDK for WiX
+        if: runner.os == 'Windows'
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: '10.0.x'
+      - name: Install the official WiX 6 command-line tool
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $toolDirectory = Join-Path $env:RUNNER_TEMP 'tablecraft-wix'
+          dotnet tool install --tool-path $toolDirectory wix --version 6.0.2 --allow-roll-forward
+          if ($LASTEXITCODE -ne 0) { throw 'WiX tool installation failed' }
+          $wix = Join-Path $toolDirectory 'wix.exe'
+          & $wix --version
+          if ($LASTEXITCODE -ne 0) { throw 'The native WiX tool could not start' }
+          "TABLECRAFT_WIX=$wix" >> $env:GITHUB_ENV
+      - name: Build and independently verify the native MSI
+        if: runner.os == 'Windows'
+        shell: pwsh
+        env:
+          RELEASE_VERSION: ${{ steps.version.outputs.version }}
+          RELEASE_TARGET: ${{ matrix.target }}
+          RELEASE_BINARY: target/${{ matrix.target }}/release/${{ matrix.binary }}
+        run: |
+          $arguments = @(
+            'scripts/packaging/package_windows.py',
+            '--version', $env:RELEASE_VERSION, '--target', $env:RELEASE_TARGET,
+            '--binary', $env:RELEASE_BINARY,
+            '--notices', 'resources/DesktopThirdPartyLicenses.txt',
+            '--icon', 'resources/icons/application.ico',
+            '--wix', $env:TABLECRAFT_WIX, '--output', 'dist'
+          )
+          & python @arguments
+          if ($LASTEXITCODE -ne 0) { throw 'Native MSI packaging or verification failed' }
+      - name: Verify headless MSI install, registration and uninstall on the disposable runner
+        if: runner.os == 'Windows'
+        shell: pwsh
+        env:
+          RELEASE_VERSION: ${{ steps.version.outputs.version }}
+          RELEASE_TARGET: ${{ matrix.target }}
+        run: |
+          $name = python -c 'import sys; sys.path.insert(0, "scripts/packaging"); import installer_contract; print(installer_contract.name(*sys.argv[1:]))' $env:RELEASE_VERSION $env:RELEASE_TARGET msi
+          if ($LASTEXITCODE -ne 0) { throw 'Could not identify the MSI artifact' }
+          $installer = Join-Path 'dist' $name
+          $evidence = Join-Path $env:RUNNER_TEMP "tablecraft-msi-lifecycle-$env:RELEASE_TARGET-$env:GITHUB_RUN_ID-$env:GITHUB_RUN_ATTEMPT"
+          & powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass `
+            -File packaging/windows/test_lifecycle.ps1 `
+            -Installer $installer -Version $env:RELEASE_VERSION -Target $env:RELEASE_TARGET `
+            -EvidenceDirectory $evidence
+          if ($LASTEXITCODE -ne 0) { throw 'The native MSI lifecycle check failed; inspect its evidence artifact' }
+      - name: Retain MSI lifecycle evidence even when checks fail
+        if: always() && runner.os == 'Windows'
+        uses: actions/upload-artifact@v7
+        with:
+          name: desktop-msi-lifecycle-${{ matrix.target }}
+          path: ${{ runner.temp }}/tablecraft-msi-lifecycle-${{ matrix.target }}-${{ github.run_id }}-${{ github.run_attempt }}/**
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Install macOS disk-image packaging tools
+        if: runner.os == 'macOS'
+        run: python -m pip install -r packaging/macos/requirements.txt
+      - name: Build and headlessly verify the custom drag-to-Applications DMG
+        if: runner.os == 'macOS'
+        shell: bash
+        env:
+          RELEASE_VERSION: ${{ steps.version.outputs.version }}
+          RELEASE_TARGET: ${{ matrix.target }}
+        run: |
+          set -euo pipefail
+          archive=$(python -c 'import sys; sys.path.insert(0, "scripts/packaging"); import package_desktop; print(package_desktop.archive_name(*sys.argv[1:]))' "$RELEASE_VERSION" "$RELEASE_TARGET")
+          python scripts/packaging/package_macos.py package --version "$RELEASE_VERSION" --target "$RELEASE_TARGET" --archive "dist/$archive" --notices resources/DesktopThirdPartyLicenses.txt --icon resources/icons/application.icns --output dist
       - uses: actions/upload-artifact@v7
         with:
           name: desktop-package-${{ matrix.target }}
