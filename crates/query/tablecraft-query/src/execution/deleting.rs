@@ -7,7 +7,6 @@ use crate::{
         Environment, Runtime,
         mutation::{MutationOptions, source::MutationSource},
     },
-    profile::MAX_BIND_BYTES,
     source::validate_text_collations,
 };
 use tablecraft_core::limits::{Resource, ResourceBudget};
@@ -127,9 +126,6 @@ fn select_rows<E: DeletableTable>(
         return Err(QueryError::Unsupported);
     }
 
-    budget
-        .charge(Resource::Bytes, MAX_BIND_BYTES as u64)
-        .map_err(QueryError::from)?;
     if !options.text_collations.is_empty() {
         budget.charge(Resource::Steps, options.text_collations.len() as u64)?;
         validate_text_collations(snapshot.columns(), options.text_collations)?;

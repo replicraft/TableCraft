@@ -210,3 +210,19 @@ fn delete_selection_capacity_exact_and_one_below_bounds_precede_finish() {
     ));
     assert_eq!(calls.get(), 0);
 }
+
+#[test]
+fn delete_binding_uses_actual_allocations_under_a_small_explicit_byte_budget() {
+    let query = parse_query("DELETE FROM Items WHERE Id=2", ParseLimits::default()).unwrap();
+    let (candidate, calls) = source(false);
+    let plan = plan_delete(
+        candidate,
+        query.query(),
+        &mut ResourceBudget::new(16_384, 100, 100_000),
+        None,
+        &|| false,
+    )
+    .unwrap();
+    assert_eq!(plan.into_backend(), [1]);
+    assert_eq!(calls.get(), 1);
+}

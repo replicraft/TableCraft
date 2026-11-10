@@ -5,7 +5,6 @@ use crate::{
     binding::{BoundUpdate, bind_batch_update, bind_update},
     discovery::DiscoveryState,
     execution::{Environment, Runtime},
-    profile::MAX_BIND_BYTES,
     source::validate_text_collations,
 };
 use tablecraft_core::limits::{Resource, ResourceBudget};
@@ -215,9 +214,6 @@ fn prepare<E: EditableTable>(
         return Err(QueryError::Unsupported);
     }
 
-    // The same bounded binder owns names/depth/nodes for either entrypoint.
-    // Its maximum retained allocation is prepaid to this cumulative edit pool.
-    budget.charge(Resource::Bytes, MAX_BIND_BYTES as u64)?;
     let snapshot = editor.snapshot();
     if !comparison.text_collations.is_empty() {
         budget.charge(Resource::Steps, comparison.text_collations.len() as u64)?;
@@ -240,7 +236,7 @@ fn prepare<E: EditableTable>(
             cancelled,
         )?
     } else {
-        bind_update(query, &source)?
+        bind_update(query, &source, budget, cancelled)?
     };
 
     snapshot

@@ -2,9 +2,13 @@ use std::{cell::Cell, rc::Rc};
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_db::{CellUpdate, EditableTable, Snapshot, SnapshotError, UpdateProfile};
 use tablecraft_expressions::{EvalError, comparison::Collation};
-use tablecraft_query::{UpdateError, plan_update};
+use tablecraft_query::{QueryError, UpdateError, plan_update};
 use tablecraft_schema::{Column, NameComparison, ScalarType, SchemaPolicy};
-use tablecraft_sql::{ParseLimits, parse_query};
+use tablecraft_sql::{
+    ParseLimits, parse_query,
+    query::Statement,
+    select::{Expression, FunctionArgument},
+};
 
 struct OrdinalCollation;
 impl Collation for OrdinalCollation {
@@ -201,7 +205,7 @@ fn cancellation_and_shared_budget_exhaustion_publish_no_backend_candidate() {
     let (first, calls) = editor(false);
     assert!(matches!(
         plan_update(first, query.query(), &mut budget(), None, &|| true),
-        Err(UpdateError::Query(tablecraft_query::QueryError::Cancelled))
+        Err(UpdateError::Query(QueryError::Cancelled))
     ));
     assert_eq!(calls.get(), 0);
     let (second, calls) = editor(false);
@@ -233,8 +237,7 @@ fn cancellation_and_shared_budget_exhaustion_publish_no_backend_candidate() {
         assert!(matches!(
             plan_update(candidate, query.query(), &mut budget(), None, &cancelled),
             Err(UpdateError::Query(
-                tablecraft_query::QueryError::Cancelled
-                    | tablecraft_query::QueryError::Evaluation(EvalError::Cancelled)
+                QueryError::Cancelled | QueryError::Evaluation(EvalError::Cancelled)
             ))
         ));
         assert_eq!(calls.get(), 0);
@@ -335,4 +338,61 @@ fn deterministic_calls_bind_on_empty_sources_without_widening_assignment_carrier
         assert!(plan_update(editor, query.query(), &mut budget(), None, &|| false).is_err());
         assert_eq!(calls.get(), 0);
     }
+}
+
+#[test]
+fn update_binding_charges_actual_retained_bytes_before_backend_preparation() {
+    let parsed = parse_query("UPDATE Items SET Score=7", ParseLimits::default()).unwrap();
+    let (candidate, calls) = editor(false);
+    let plan = plan_update(
+        candidate,
+        parsed.query(),
+        &mut ResourceBudget::new(16_384, 100, 100_000),
+        None,
+        &|| false,
+    )
+    .unwrap();
+    assert_eq!(plan.matched_rows(), 3);
+    assert_eq!(calls.get(), 1);
+
+    let mut query = parse_query("UPDATE Items SET Score=Len('x')", ParseLimits::default())
+        .unwrap()
+        .into_query();
+    let Statement::Update(update) = &mut query.statement else {
+        panic!()
+    };
+    let Expression::Call { arguments, .. } = &mut update.assignments[0].value else {
+        panic!()
+    };
+    arguments[0] = FunctionArgument::Expression(Expression::Text("x".repeat(1_048_577)));
+    let (candidate, calls) = editor(false);
+    let plan = plan_update(
+        candidate,
+        &query,
+        &mut ResourceBudget::new(32 * 1024 * 1024, 100, 10_000_000),
+        None,
+        &|| false,
+    )
+    .unwrap();
+    assert_eq!(
+        plan.into_backend(),
+        [
+            (0, Value::Int32(1_048_577)),
+            (1, Value::Int32(1_048_577)),
+            (2, Value::Int32(1_048_577))
+        ]
+    );
+    assert_eq!(calls.get(), 1);
+    let (candidate, calls) = editor(false);
+    assert!(matches!(
+        plan_update(
+            candidate,
+            &query,
+            &mut ResourceBudget::new(1_048_576, 100, 10_000_000),
+            None,
+            &|| false
+        ),
+        Err(UpdateError::Query(QueryError::Limit(_)))
+    ));
+    assert_eq!(calls.get(), 0);
 }

@@ -73,6 +73,14 @@ All nine neutral INSERT checks passed on their first run, followed by 78 query
 library and 16 existing editing integration tests. Strict checks for five packages and minimal checks for four libraries also pass;
 native mutation and publication qualification remain separate.
 
+Shared mutation binding charges actual retained names, scalar literals and plan
+containers to its caller's byte pool, using fallible reservation before copying.
+UPDATE, DELETE and optioned VALUES pay no fixed 1 MiB reservation. VALUES shape
+validation has no aggregate literal-byte quota; its borrowed syntax traversal
+still pays work before literal interpretation, and materialized values spend the
+actual evaluation allowance. Structural guards, native field restrictions and
+all-or-nothing backend preparation remain unchanged.
+
 The explicit `plan_insert_with_options` and
 `plan_insert_with_omissions_and_options` APIs add strict declared parameter inputs
 and independent query/backend pools to the same one-row VALUES profile. Original

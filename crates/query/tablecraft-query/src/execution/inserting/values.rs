@@ -5,7 +5,6 @@ use crate::{
     binding::{BoundInsertValues, ValuesSource, bind_insert_values},
     discovery::DiscoveryState,
     execution::{Environment, Runtime},
-    profile::MAX_BIND_BYTES,
 };
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
@@ -66,9 +65,6 @@ pub(super) fn prepare<E: InsertableTable>(
     if let Some(options) = options {
         // Keep declaration provenance in the query runtime. VALUES never gains
         // input-field identities or a source that can service hidden scans.
-        budget
-            .charge(Resource::Bytes, MAX_BIND_BYTES as u64)
-            .map_err(QueryError::from)?;
         let source = ValuesSource;
         let BoundInsertValues {
             parameters,

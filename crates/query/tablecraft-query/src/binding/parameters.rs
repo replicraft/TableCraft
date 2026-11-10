@@ -97,9 +97,7 @@ pub(crate) fn bind_declared_parameters<'a>(
     cancelled: &'a dyn Fn() -> bool,
 ) -> Result<Vec<Parameter>, QueryError> {
     super::mutation_parameters::admit(declarations, Some(budget), cancelled)?;
-    let mut binder = Binder::mutation(source);
-    binder.budget = Some(budget);
-    binder.cancelled = Some(cancelled);
+    let mut binder = Binder::mutation(source, budget, cancelled);
     binder.bind_parameters(declarations)
 }
 

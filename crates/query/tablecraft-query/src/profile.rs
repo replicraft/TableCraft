@@ -18,7 +18,6 @@ pub(crate) const MAX_DOMAIN_DEPTH: usize = 16;
 // suspended named-definition syntax; not a native Access or raw stack-frame limit.
 pub(crate) const MAX_RUNTIME_READ_DEPTH: usize = 128;
 pub(crate) const MAX_BIND_NODES: usize = 2048;
-pub(crate) const MAX_BIND_BYTES: usize = 1_048_576;
 pub(crate) const MAX_PARAMETERS: usize = 256;
 pub(crate) const MAX_UNION_BRANCHES: usize = 256;
 pub(crate) const MAX_IN_VALUES: usize = 256;

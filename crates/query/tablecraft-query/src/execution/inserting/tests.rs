@@ -386,3 +386,5 @@ fn duplicate_or_overwide_metadata_is_bounded_before_expression_evaluation() {
     ));
     assert_eq!(calls.get(), 0);
 }
+
+mod budgets;

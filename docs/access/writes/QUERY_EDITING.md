@@ -49,12 +49,15 @@ using positions from a different image. Matched rows include unchanged assignmen
 the native plan separately reports changed rows. Neither count is a native Access
 RecordsAffected equivalence claim.
 
-Caller budgets accumulate across binding allowance, evaluation and backend checks.
-The existing binder retains its hard byte/node/depth ceilings, with its maximum
-retained allocation allowance precharged. Temporary parser/binder work is bounded
-structurally rather than a strict allocator quota. Retrieval retains its existing
-QueryLimits behavior; edit planning does not reset its supplied shared budget.
-Cancellation is checked before/after bounded binding and between evaluation units.
+Caller budgets accumulate across actual retained binding allocations, evaluation
+and backend checks. The binder retains its structural node/depth guards; it has
+no implicit retained-byte quota and prepays no fixed 1 MiB reservation. Owned
+names, scalar literal text and plan containers charge the caller before fallible
+reservation/copy. An explicit smaller quota can stop binding before evaluation;
+no backend candidate is prepared after any query failure. Edit planning does not
+reset the supplied shared budget. Cancellation remains checked during binding
+and between evaluation units. These are logical allocation charges rather than
+exact allocator-resident memory measurements.
 
 ## Fresh-copy CLI
 

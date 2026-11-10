@@ -4,7 +4,7 @@ use crate::{
     source::{ExternalSourceRequest, ResolvedExternalSource, SourceKey},
 };
 use std::cell::Cell;
-use tablecraft_core::values::Value;
+use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_schema::{Column, ScalarType};
 use tablecraft_sql::{parse_query, query::Statement, select::TableSource};
 
@@ -47,7 +47,15 @@ fn per_table_read_selectors_never_authorize_an_edit_target() {
     let mut query = parse_query("UPDATE T SET Id=7", Default::default())
         .unwrap()
         .into_query();
-    assert!(bind_update(&query, &source).is_ok());
+    assert!(
+        bind_update(
+            &query,
+            &source,
+            &mut ResourceBudget::new(u64::MAX, u64::MAX, u64::MAX),
+            &|| false
+        )
+        .is_ok()
+    );
     assert!(source.metadata.get() > 0);
     source.metadata.set(0);
 
@@ -59,7 +67,12 @@ fn per_table_read_selectors_never_authorize_an_edit_target() {
     };
     table.database = Some("explicitly-authorized-read-source".into());
     assert!(matches!(
-        bind_update(&query, &source),
+        bind_update(
+            &query,
+            &source,
+            &mut ResourceBudget::new(u64::MAX, u64::MAX, u64::MAX),
+            &|| false
+        ),
         Err(QueryError::Unsupported)
     ));
     assert_eq!(source.lookups.get(), 0);

@@ -1,9 +1,7 @@
 //! Closed single-row VALUES syntax, checked before metadata or scalar evaluation.
 use crate::{
     QueryError,
-    profile::{
-        MAX_BIND_BYTES, MAX_BIND_NODES, MAX_PARAMETERS, MAX_TEXT_BYTES, SOURCE_SCHEMA_POLICY,
-    },
+    profile::{MAX_BIND_NODES, MAX_PARAMETERS, MAX_TEXT_BYTES, SOURCE_SCHEMA_POLICY},
 };
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_expressions::evaluation::EvalLimits;
@@ -41,14 +39,12 @@ pub fn local_insert_table<'a>(
     }
 
     let mut nodes = 0;
-    let mut bytes = 0;
     for expression in expressions {
         expression_shape(
             expression,
             allow_parameters.then_some(query.parameters.as_slice()),
             1,
             &mut nodes,
-            &mut bytes,
             budget,
             cancelled,
         )?;
@@ -84,7 +80,6 @@ fn expression_shape(
     parameters: Option<&[Parameter]>,
     depth: usize,
     nodes: &mut usize,
-    bytes: &mut usize,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), QueryError> {
@@ -102,10 +97,7 @@ fn expression_shape(
     | Expression::DateLiteral(text)
     | Expression::GuidLiteral(text) = expression
     {
-        *bytes = bytes
-            .checked_add(text.len())
-            .ok_or(QueryError::StructureLimit)?;
-        if text.len() > MAX_TEXT_BYTES || *bytes > MAX_BIND_BYTES {
+        if text.len() > MAX_TEXT_BYTES {
             return Err(QueryError::StructureLimit);
         }
         // Prepay the raw literal scan before numeric/date/GUID parsing as well
@@ -114,15 +106,7 @@ fn expression_shape(
     }
 
     let mut child = |expression: &Expression| {
-        expression_shape(
-            expression,
-            parameters,
-            depth + 1,
-            nodes,
-            bytes,
-            budget,
-            cancelled,
-        )
+        expression_shape(expression, parameters, depth + 1, nodes, budget, cancelled)
     };
     match expression {
         Expression::Field(field) if field.qualifier.is_none() => {

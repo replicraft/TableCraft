@@ -44,7 +44,7 @@ pub(crate) fn bind_delete(
         super::mutation_parameters::admit(&query.parameters, Some(budget), cancelled)?;
     }
 
-    let mut binder = Binder::mutation(source);
+    let mut binder = Binder::mutation(source, budget, cancelled);
 
     binder.parameters = binder.bind_parameters(&query.parameters)?;
     binder.parameter_scope = binder.scope_indices(binder.parameters.len())?;

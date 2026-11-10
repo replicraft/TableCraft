@@ -17,8 +17,13 @@ pub(crate) struct BoundUpdate {
     pub filter: Option<Expr>,
 }
 
-pub(crate) fn bind_update(query: &Query, source: &dyn Source) -> Result<BoundUpdate, QueryError> {
-    bind_assignments(query, source, false, false, None, &|| false)
+pub(crate) fn bind_update(
+    query: &Query,
+    source: &dyn Source,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<BoundUpdate, QueryError> {
+    bind_assignments(query, source, false, false, budget, cancelled)
 }
 
 pub(crate) fn bind_batch_update(
@@ -28,14 +33,7 @@ pub(crate) fn bind_batch_update(
     allow_parameters: bool,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<BoundUpdate, QueryError> {
-    bind_assignments(
-        query,
-        source,
-        true,
-        allow_parameters,
-        Some(budget),
-        cancelled,
-    )
+    bind_assignments(query, source, true, allow_parameters, budget, cancelled)
 }
 
 fn bind_assignments(
@@ -43,7 +41,7 @@ fn bind_assignments(
     source: &dyn Source,
     multiple: bool,
     allow_parameters: bool,
-    mut budget: Option<&mut ResourceBudget>,
+    budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<BoundUpdate, QueryError> {
     if !allow_parameters && !query.parameters.is_empty() {
@@ -61,10 +59,10 @@ fn bind_assignments(
     }
 
     if allow_parameters {
-        super::mutation_parameters::admit(&query.parameters, budget.as_deref_mut(), cancelled)?;
+        super::mutation_parameters::admit(&query.parameters, Some(budget), cancelled)?;
     }
 
-    let mut binder = Binder::mutation(source);
+    let mut binder = Binder::mutation(source, budget, cancelled);
 
     binder.parameters = binder.bind_parameters(&query.parameters)?;
     binder.parameter_scope = binder.scope_indices(binder.parameters.len())?;
@@ -86,12 +84,10 @@ fn bind_assignments(
         .try_reserve_exact(count)
         .map_err(|_| QueryError::Allocation)?;
     for assignment in &update.assignments {
-        if cancelled() {
-            return Err(QueryError::Cancelled);
-        }
-        if let Some(budget) = budget.as_deref_mut() {
+        binder.work()?;
+        if let Some(budget) = &mut binder.budget {
             // Pay the complete duplicate scan before inspecting prior targets.
-            budget.charge(Resource::Steps, columns.len() as u64 + 1)?;
+            budget.charge(Resource::Steps, columns.len() as u64)?;
         }
 
         let column =
