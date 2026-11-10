@@ -34,11 +34,18 @@ impl NativeEditor {
             .image
             .has_retained_table_source(self.snapshot.name(), budget, cancelled)?
         {
-            if self.image.select_native_retained_opaque_rows_table(
+            let opaque = match self.image.select_native_retained_opaque_rows_table(
                 self.snapshot.name(),
                 budget,
                 cancelled,
-            )? {
+            ) {
+                Ok(selected) => selected,
+                Err(EditError::Unsupported(_)) => {
+                    return Ok((UpdateProfile::Unavailable, JournalRoute::RetainedOpaqueRows));
+                }
+                Err(error) => return Err(error.into()),
+            };
+            if opaque {
                 return match self.image.check_native_retained_opaque_rows_table(
                     self.snapshot.name(),
                     budget,
@@ -454,3 +461,6 @@ impl NativeEditor {
         )
     }
 }
+
+#[cfg(all(test, feature = "journal", feature = "ace16-create"))]
+mod tests;
