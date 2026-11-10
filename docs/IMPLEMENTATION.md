@@ -10,7 +10,7 @@ complete-image reconstruction on cold recovery. Earlier row request languages
 remain closed to their original sources. Repeated current-tail DROP also
 preserves unused property dictionary names and prior record storage.
 
-The focused native row/recovery batch passes five tests. Metadata ADD passes
+The focused native row/recovery batch passes six tests. Metadata ADD passes
 eleven tests, while the field-drop family passes fourteen, including twenty-eight
 unfilled/filled repeat-deletion images. Shared framing/source-purpose checks and
 strict Access/runtime/desktop/MCP checks pass separately. Independent file reads
@@ -18,7 +18,9 @@ verify first-fill and repeated Text replacement images. Fourteen headless GUI
 DROP → ADD → fill journeys pass, including forty-four consuming cell saves,
 complete-image oracles and fresh reopen. Schema saves retain tab identities;
 ordinary cell saves preserve the source-free layout while issuing fresh identities
-and invalidating old handles. Native Access/Windows comparison remains pending.
+and invalidating old handles. The complete affected desktop field-addition and
+field-deletion families pass 68 tests. Native Access/Windows comparison remains
+pending.
 See [column addition](access/writes/ADD_COLUMN.md) and
 [field deletion](access/writes/FIELD_DROP.md).
 

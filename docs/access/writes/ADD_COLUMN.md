@@ -41,7 +41,7 @@ and desktop use their existing consuming review/save/reopen services. Decoding
 program, constraint, ownership, placement and complete-image evidence. Original
 `TCNI0011`–`TCNI0015` request meanings remain unchanged.
 
-The focused native row batch passes five tests, including fourteen source/target
+The focused native row batch passes six tests, including fourteen source/target
 combinations, original wire bytes, fresh-scope reconstruction, pending/committed
 cold recovery and forged AFTER refusal. Eleven metadata tests and the retained
 framing/source-purpose tests pass separately. Independent file reads verify
