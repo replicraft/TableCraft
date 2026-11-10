@@ -17,4 +17,5 @@ Contributing, dependency policy, tracing and CLI release packaging.
 - [CLI release preparation](RELEASING.md)
 - [Desktop archive preparation](DESKTOP_PACKAGING.md)
 - [Signed desktop updates and release gates](SELF_UPDATE.md)
+- [Headless native AppImage update qualification](APPIMAGE_UPDATE_QUALIFICATION.md)
 - [Structured operation diagnostics](TRACING.md)

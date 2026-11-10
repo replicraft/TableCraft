@@ -16,6 +16,8 @@ on:
       - 'Cargo.toml'
       - 'Cargo.lock'
       - 'apps/tablecraft-desktop/**'
+      - 'crates/platform/tablecraft-update/**'
+      - 'scripts/tests/test_appimage_update_qualification.py'
   workflow_call:
 
 permissions:
@@ -158,6 +160,23 @@ jobs:
             --appimage-runtime .cache/linux-tools/runtime \
             --appimage-runtime-notices .cache/linux-tools/RuntimeThirdPartyLicenses.txt \
             --appimage-runtime-source .cache/linux-tools/RuntimeSource.tar.gz
+      - name: Provision authenticated native Minisign for headless updater qualification
+        if: runner.os == 'Linux'
+        run: python scripts/packaging/minisign_tool.py --output "$RUNNER_TEMP/tablecraft-native-minisign"
+      - name: Qualify actual AppImage source and normal-exit headless receiver handoff
+        if: runner.os == 'Linux'
+        shell: bash
+        env:
+          RELEASE_VERSION: ${{ steps.version.outputs.version }}
+          RELEASE_TARGET: ${{ matrix.target }}
+        run: |
+          set -euo pipefail
+          package=$(python -c 'import sys; sys.path.insert(0, "scripts/packaging"); import installer_contract; print(installer_contract.name(*sys.argv[1:]))' "$RELEASE_VERSION" "$RELEASE_TARGET" appimage)
+          python scripts/packaging/appimage_update_qualification.py \
+            --image "dist/$package" --version "$RELEASE_VERSION" --target "$RELEASE_TARGET" \
+            --minisign "$RUNNER_TEMP/tablecraft-native-minisign/minisign" \
+            --appimagetool .cache/linux-tools/appimagetool --runtime .cache/linux-tools/runtime \
+            --evidence "$RUNNER_TEMP/tablecraft-appimage-update-$RELEASE_TARGET-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
       - name: Verify headless DEB installation and removal on the disposable runner
         if: runner.os == 'Linux'
         shell: bash
@@ -189,6 +208,7 @@ jobs:
             .cache/linux-tools/receipt.json
             .cache/linux-tools/relink-check.json
             ${{ runner.temp }}/tablecraft-linux-lifecycle-${{ matrix.target }}-${{ github.run_id }}-${{ github.run_attempt }}/**
+            ${{ runner.temp }}/tablecraft-appimage-update-${{ matrix.target }}-${{ github.run_id }}-${{ github.run_attempt }}/**
           if-no-files-found: warn
           retention-days: 14
       - name: Install the supported native .NET SDK for WiX
