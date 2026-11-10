@@ -11,8 +11,6 @@ use tablecraft_core::{
 use tablecraft_db::InsertableTable;
 use tablecraft_expressions::functions::dates::clock::Clock;
 
-const MAX_ROWS: usize = 4096;
-
 pub(in crate::engineering) struct Request<'a> {
     pub fields: &'a [String],
     pub rows: Vec<Vec<InsertFieldValue>>,
@@ -36,7 +34,7 @@ impl AccessEngineeringInserter {
             clock,
         } = request;
 
-        if rows.is_empty() || rows.len() > MAX_ROWS {
+        if rows.is_empty() {
             return Err(NativeEditError::Unsupported);
         }
 
