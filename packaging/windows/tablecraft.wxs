@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+  <Package Name="TableCraft" Manufacturer="Replicraft" Version="$(var.Version)"
+           Language="1033" Scope="perMachine" InstallerVersion="500"
+           UpgradeCode="$(var.UpgradeCode)">
+    <MajorUpgrade DowngradeErrorMessage="A newer TableCraft version is already installed."
+                  Schedule="afterInstallInitialize" />
+    <MediaTemplate EmbedCab="yes" />
+    <Icon Id="TableCraftIcon" SourceFile="$(var.Icon)" />
+    <Property Id="ARPPRODUCTICON" Value="TableCraftIcon" />
+    <Property Id="ARPHELPLINK" Value="https://github.com/replicraft/TableCraft" />
+    <StandardDirectory Id="ProgramFiles6432Folder">
+      <Directory Id="INSTALLFOLDER" Name="TableCraft">
+        <Component Id="DesktopApplication" Guid="*" Bitness="always64">
+          <File Id="TableCraftDesktop" Name="tablecraft-desktop.exe"
+                Source="$(var.Payload)/tablecraft-desktop.exe" KeyPath="yes">
+            <Shortcut Id="TableCraftStartMenu" Name="TableCraft" Directory="ProgramMenuFolder"
+                      Advertise="yes" WorkingDirectory="INSTALLFOLDER" Icon="TableCraftIcon" />
+          </File>
+        </Component>
+        <Component Id="ProjectLicense" Guid="*" Bitness="always64">
+          <File Id="ProjectLicenseFile" Name="LICENSE" Source="$(var.Payload)/LICENSE" KeyPath="yes" />
+        </Component>
+        <Component Id="ThirdPartyNotices" Guid="*" Bitness="always64">
+          <File Id="ThirdPartyNoticesFile" Name="ThirdPartyLicenses.txt"
+                Source="$(var.Payload)/ThirdPartyLicenses.txt" KeyPath="yes" />
+        </Component>
+        <Component Id="ReleaseManifest" Guid="*" Bitness="always64">
+          <File Id="ReleaseManifestFile" Name="RELEASE.json"
+                Source="$(var.Payload)/RELEASE.json" KeyPath="yes" />
+        </Component>
+        <Component Id="ApplicationRegistration" Guid="*" Bitness="always64">
+          <?include $(var.RegistryInclude) ?>
+        </Component>
+      </Directory>
+    </StandardDirectory>
+    <StandardDirectory Id="ProgramMenuFolder" />
+    <Feature Id="DesktopFeature" Title="TableCraft" Level="1">
+      <ComponentRef Id="DesktopApplication" />
+      <ComponentRef Id="ProjectLicense" />
+      <ComponentRef Id="ThirdPartyNotices" />
+      <ComponentRef Id="ReleaseManifest" />
+      <ComponentRef Id="ApplicationRegistration" />
+    </Feature>
+  </Package>
+</Wix>
