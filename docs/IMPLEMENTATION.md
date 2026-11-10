@@ -1,5 +1,26 @@
 # Implementation status
 
+## Signed updater and native packaging — 9 November 2026
+
+The desktop now connects a headless signed-update service through a separate
+worker and shared translated About controls. Fixed publisher trust, release
+identity, bounded download/extraction, stale-input guards, draft/native-worker
+restart gates and retained terminal resources are implemented. The updater's full
+batch passes 58 cases; the desktop's full batch passes 235 with one existing Jet 4
+fixture ignore, and strict lint passes. Portable/macOS replacement is implemented;
+signed MSI/AppImage replacement and actual native relaunch qualification remain.
+See [signed update scope](development/SELF_UPDATE.md).
+
+Native builders and no-tag CI cover MSI, custom dmgbuild DMG, DEB, RPM and
+AppImage packages on x64/ARM64, alongside portable downloads. A real ARM64 DMG
+passed native read-only verification locally; Windows/Linux native installers and
+the AppImage source/relink proof await CI. The portable baseline built and
+headlessly checked all twelve platform archives, then exposed a GitHub upload DNS
+failure and, after retry, an unavailable Ubuntu APT Minisign package. Reviewed
+binary provisioning now replaces that APT assumption. No tag or release has been
+published. See [release preparation](development/RELEASING.md).
+
+
 ## Repeated field renames and current metadata — 9 November 2026
 
 Normal desktop/MCP field renames now use a separate current-metadata proof and

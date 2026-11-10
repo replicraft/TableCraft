@@ -51,31 +51,54 @@ CI secrets. An unencrypted key remains supported but is not required. Partial si
 failure. Never commit a private signing key or promote a dry-run key to release
 trust. Keep a recoverable offline backup of the real key.
 
-## Remaining release gates
+## Implemented updater and remaining release gates
 
-- Provision a dedicated production public key and protected CI signing secrets.
-- Implement a working shared updater with a fixed release repository/public key,
-  strict newer-version/platform selection, bounded HTTPS downloads, checked
-  redirects and cancellation. Reject tampered or mismatched signatures before
-  archive processing. No production endpoint/key override through settings or
-  environment variables.
-- Stage verified archives privately on the installation filesystem, validate
-  archive paths/types and product identity, recheck the payload before apply,
-  implement safe platform replacement/relaunch and retain rollback on failures.
-  Development and unsupported/package-manager installations need explicit manual
-  update behavior.
-- Connect desktop checking/progress/cancellation on a worker. Never apply an update
-  while a native save/recovery worker or unsaved edits still owns the document;
-  resolve those through normal application workflows first.
-- Require real production signatures for release publication; dry-run signatures
-  must not pass that gate. Integrate desktop assets and signature verification
-  into the existing tag publication flow.
-- Run the no-tag six-platform packaging workflow and retain its result. Verify
-  update selection/download/tamper refusal and installation behavior separately;
-  packaging smoke checks do not establish platform apply success.
+`tablecraft-update` owns fixed-origin release selection, the maintained public
+key, bounded HTTPS/signature-first downloads, streaming authentication, checked
+archive extraction and post-review source/staging revalidation. Native portable
+replacement and macOS bundle replacement retain rollback backups; detached
+helpers wait for normal host exit before relaunch. These are process-failure
+rollback guarantees, not power-loss-atomic multi-file installation.
 
-No tag, push, workflow dispatch or release publication was performed by this
-implementation. The in-app updater is not implemented yet.
+The desktop's About panel uses shared Fluent presentation state and an independent
+host worker. The UI thread never performs networking, hashing, extraction or
+replacement. Draft/native-worker gates are checked again at Install, interaction
+is frozen during replacement, and late native outcomes retain their original
+owners outside replaceable progress messages. Unexpected worker exits release
+busy state and report an uncertain installation instead of freezing the UI.
+
+The maintainer supplied the public key and configured the `release-signing`
+environment. Production signing and independent verification now gate both
+products. Manual `sign-packages=true` runs on main exercise that pipeline without
+creating a tag or publishing. The original portable rehearsal built and checked
+all twelve platform packages; its first attempt hit an artifact-service DNS
+failure, and its retry reached assembly but exposed unavailable APT Minisign.
+The workflow now provisions reviewed official Minisign 0.12 bytes with a fixed
+SHA-256 before signing credentials are present. The expanded installer rehearsal
+must verify this correction and the new native packages remotely.
+
+Remaining gates before claiming the updater/release complete:
+
+- Complete signed MSI and original-AppImage update routes with actual local
+  installation authority. Program Files and AppImage runtime directories are
+  currently manual; they must not be fed to the portable writer. DEB/RPM remain
+  deliberately owned by their package manager.
+- Obtain passing native CI evidence for all requested installers, runtime
+  source/relink checks, complete assembly and real production-key signatures.
+- Qualify helper execution and update/relaunch behavior on the supported native
+  platforms. Headless argument/filesystem tests are distinct from native relaunch.
+- Complete the agreed CRUD scope and ensure release notes describe the actual
+  operation/profile limits. Packaging does not establish database compatibility.
+
+## Connected verification — 9 November 2026
+
+The full updater service batch passes 58 tests. The complete desktop batch passes
+235 tests with one existing hash-pinned Jet 4 fixture ignore. Strict all-target,
+all-feature Clippy passes for both. Focused UI checks and three reviewed source-free
+About frames cover translated update controls, late-input identity and draft-safe
+restart gates. No native application window or relaunch helper was executed.
+The generated desktop notices include the updater's actual dependency closure;
+expanded bundles and inventories are not tracked.
 
 ## Local verification — 9 November 2026
 
