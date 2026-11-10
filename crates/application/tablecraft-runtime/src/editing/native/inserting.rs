@@ -60,7 +60,7 @@ impl Document {
         let inserter = NativeJournalInserter::new(image, &target.table, &mut work, cancelled)
             .map_err(EditError::from)?;
         let columns = inserter.columns();
-        if columns.is_empty() || columns.len() > MAX_INSERT_FIELDS {
+        if columns.is_empty() {
             return Err(EditError::Unavailable.into());
         }
         let mut output = Presentation::new(cancelled);
