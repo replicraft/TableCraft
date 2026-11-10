@@ -127,7 +127,6 @@ pub(super) fn candidate(
 fn metadata(
     proof: &current_schema::Source,
     plan: &Plan,
-    descriptor: &DescriptorPatch,
     after: &[u8],
     name: &str,
     body: &[u8],
