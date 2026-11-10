@@ -82,6 +82,20 @@ try {
     if ($LASTEXITCODE -ne 0 -or $reported -ne "tablecraft-desktop $Version") {
         throw 'Installed executable failed its headless version check'
     }
+    $oldMsiFixture = $env:TABLECRAFT_TEST_MSI_PATH
+    $oldInstalledFixture = $env:TABLECRAFT_TEST_INSTALLED_EXE
+    try {
+        $env:TABLECRAFT_TEST_MSI_PATH = $installerPath
+        $env:TABLECRAFT_TEST_INSTALLED_EXE = $executable
+        & cargo test --locked -p tablecraft-update --lib --target $Target 'msi::tests::native_' -- --ignored *> (Join-Path $temporary 'updater-native-policy.log')
+        if ($LASTEXITCODE -ne 0) { throw 'Native updater MSI policy checks failed; inspect retained evidence' }
+        if (-not (Select-String -LiteralPath (Join-Path $temporary 'updater-native-policy.log') -SimpleMatch 'test result: ok. 2 passed;' -Quiet)) {
+            throw 'Both explicit native updater policy tests must execute successfully'
+        }
+    } finally {
+        $env:TABLECRAFT_TEST_MSI_PATH = $oldMsiFixture
+        $env:TABLECRAFT_TEST_INSTALLED_EXE = $oldInstalledFixture
+    }
     foreach ($extension in @('mdb', 'accdb')) {
         $progid = "TableCraft.Database.$extension"
         $command = (Get-Item -LiteralPath "HKLM:\Software\Classes\$progid\shell\open\command").GetValue('')

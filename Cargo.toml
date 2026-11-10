@@ -112,7 +112,7 @@ fst = { version = "0.4.7", default-features = false }
 # Native attachment compression, using the pure Rust backend
 flate2 = { version = "1.1.10", default-features = false, features = ["rust_backend"] }
 
-# Access deployment CAB containers (pure Rust, read-only consumer)
+# Access deployment and authenticated MSI CAB payloads (pure Rust, read-only)
 cab = { version = "0.6.0", default-features = false }
 
 # Access template OPC containers and RFC URI/IRI validation (no network runtime)

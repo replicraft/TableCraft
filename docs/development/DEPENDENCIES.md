@@ -25,6 +25,22 @@ Ed25519 key bytes. No Relay source, fixtures or signing keys were copied.
 See [updater gates](SELF_UPDATE.md).
 
 
+### Inert signed-MSI payload inspection
+
+The updater also consumes the already locked `cab` 0.6.0 with default features
+still disabled. After Minisign authentication and read-only native MSI table
+validation, it decodes the one embedded cabinet into exactly four fixed payload
+files. File IDs, duplicate members, declared and observed lengths, cumulative
+output, cancellation and manifest hashes are checked. Preparation never invokes
+an administrative installation or executes MSI actions. Windows Installer owns
+the later explicit elevated upgrade and its transaction.
+
+This direct consumer introduces no new registry version or third-party source
+package. The existing `cab` MIT notice and its locked byteorder/lzxd/time closure
+remain in the generated desktop notice inventory; no generated legal files are
+checked into source. Native cabinet/table calls and upgrade behavior require
+Windows CI evidence independently of host-side policy tests.
+
 ### Native host outcome mailbox
 
 The desktop uses `parking_lot` 0.12 (already resolved as 0.12.5 in the GUI
