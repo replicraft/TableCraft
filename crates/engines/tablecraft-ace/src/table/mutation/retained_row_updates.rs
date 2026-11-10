@@ -1,4 +1,6 @@
 //! Row replacement consumes retained storage through a distinct update purpose.
+#[cfg(test)]
+mod tests;
 use super::{
     current_row_updates::{self, Family},
     field, record_serialization,

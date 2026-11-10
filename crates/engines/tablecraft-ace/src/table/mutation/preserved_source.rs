@@ -454,6 +454,14 @@ fn capture_framed_with_records(
         check(budget, cancelled)?;
         ordinals.push(Ordinal(ordinal));
     }
+    #[cfg(all(feature = "journal", feature = "ace16-create"))]
+    let roots = match &payload {
+        PayloadAdmission::RetainedRowsNoRequired(_) => {
+            roots::capture_retained(image, schema, &ordinals, budget, cancelled)?
+        }
+        _ => roots::capture(image, schema, &ordinals, budget, cancelled)?,
+    };
+    #[cfg(not(all(feature = "journal", feature = "ace16-create")))]
     let roots = roots::capture(image, schema, &ordinals, budget, cancelled)?;
     let global = {
         let mut bytes = image.reader();
@@ -491,6 +499,7 @@ fn capture_framed_with_records(
     #[cfg(not(all(feature = "journal", feature = "ace16-create")))]
     let long_values =
         crate::table::mutation::lval_ownership::Inventory::capture(image, budget, cancelled)?;
+    long_values.require_no_long_value_data_overlap(&roots.owned, budget, cancelled)?;
 
     budget
         .charge_allocation(roots.selected.len() as u64, size_of::<Record>() as u64)

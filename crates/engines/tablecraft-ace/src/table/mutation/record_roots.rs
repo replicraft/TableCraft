@@ -215,7 +215,17 @@ fn capture_with_traversal<'u, U: RowAssignment>(
         return Err(EditError::Conflict);
     }
     let levels = owners.len().checked_ilog2().unwrap_or(0) as usize + 1;
-    reader.work(owners.len() * levels * size_of::<TargetOwner>())?;
+    let sorting_work = (owners.len() as u64)
+        .checked_mul(levels as u64)
+        .and_then(|steps| steps.checked_mul(size_of::<TargetOwner>() as u64))
+        .ok_or(InspectError::StructureLimit)?;
+    if (reader.cancelled)() {
+        return Err(InspectError::Cancelled.into());
+    }
+    reader
+        .budget
+        .charge(Resource::Steps, sorting_work)
+        .map_err(InspectError::from)?;
     owners.sort_unstable_by_key(|owner| (owner.offset, owner.root));
     for root in &selected {
         reader.work(2 * levels)?;
