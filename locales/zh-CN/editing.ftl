@@ -86,7 +86,6 @@ editing-input-date-extended = 扩展日期时间: ISO格式本地日期时间（
 
 editing-paste-text = 粘贴文本
 editing-paste-help = 将原样文本粘贴到一个选中的原生单元格中，然后审核。请使用字段的不受区域设置影响的输入格式；不会解析带格式的值或 Access 的类型化剪贴板格式。多行文本保留在一个单元格中。
-editing-paste-too-large = 剪贴板文本超过 1 MiB 限制。未粘贴任何内容。
 editing-paste-stale = 剪贴板请求已与选中的单元格不匹配。文本已丢弃。
 editing-paste-multiple = 剪贴板返回了多个文本内容。未粘贴任何内容。
 

@@ -471,7 +471,7 @@ impl Preview {
                 }
             }
             Action::PasteCell { target, text } => {
-                if self.state.can_paste_text(&target, &text) {
+                if self.state.can_paste_cell(&target) {
                     self.edit(target);
                     if let Some(EditDialog::Draft { input, .. }) = &mut self.state.edit {
                         *input = crate::EditInput {

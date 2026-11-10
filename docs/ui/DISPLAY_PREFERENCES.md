@@ -317,7 +317,8 @@ request remains a tombstone until the next clipboard response is consumed. It
 cannot be replaced by another Home request or redirected into a new cell or text
 editor. Discarding that response produces an explicit stale-request warning.
 
-The input is literal UTF-8 text, limited to 1 MiB without truncation. Empty text
+The input is complete literal UTF-8 text with no separate clipboard byte cap.
+Native field validation and explicit runtime resource policies apply during review. Empty text
 and the literal word `NULL` remain non-NULL input, and tabs/newlines remain in the
 same cell. Review uses the field's invariant input contract; the UI does not parse
 localized display strings or decode Access private clipboard formats. This first

@@ -86,7 +86,6 @@ editing-input-date-extended = Extended date-time: ISO civil date-time (100 ns pr
 
 editing-paste-text = Paste text
 editing-paste-help = Paste literal text into one selected native cell, then review it. Use the field’s invariant input format; formatted values and typed Access clipboard formats are not interpreted. Multiline text stays in one cell.
-editing-paste-too-large = Clipboard text exceeds the 1 MiB limit. Nothing was pasted.
 editing-paste-stale = The clipboard request no longer matches the selected cell. The text was discarded.
 editing-paste-multiple = The clipboard returned multiple text payloads. Nothing was pasted.
 

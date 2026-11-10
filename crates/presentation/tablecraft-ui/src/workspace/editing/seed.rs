@@ -73,7 +73,7 @@ impl State {
 
     pub fn can_begin_seeded_edit(&self, target: &EditTarget, seed: &EditSeed) -> bool {
         match seed {
-            EditSeed::Text(text) => self.can_paste_text(target, text),
+            EditSeed::Text(_) => self.can_paste_cell(target),
             EditSeed::Boolean(toggle) => {
                 if self.busy || self.edit_dialog_open() || !self.can_edit_cell(target) {
                     return false;

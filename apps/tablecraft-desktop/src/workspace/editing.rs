@@ -162,7 +162,7 @@ impl Desktop {
     }
 
     pub(super) fn begin_paste_edit(&mut self, target: EditTarget, text: String) {
-        if self.editing.has_save() || !self.state.can_paste_text(&target, &text) {
+        if self.editing.has_save() || !self.state.can_paste_cell(&target) {
             return;
         }
         self.request_edit(target, Some(EditSeed::Text(text)));

@@ -86,7 +86,6 @@ editing-input-date-extended = Erweiterte Datumszeit: lokales Datum und Uhrzeit i
 
 editing-paste-text = Text einfügen
 editing-paste-help = Fügen Sie wörtlichen Text in eine ausgewählte native Zelle ein und prüfen Sie ihn. Verwenden Sie das gebietsschemaunabhängige Eingabeformat des Felds; formatierte Werte und typisierte Access-Zwischenablageformate werden nicht interpretiert. Mehrzeiliger Text bleibt in einer Zelle.
-editing-paste-too-large = Der Zwischenablagetext überschreitet die Grenze von 1 MiB. Es wurde nichts eingefügt.
 editing-paste-stale = Die Zwischenablageanforderung gehört nicht mehr zur ausgewählten Zelle. Der Text wurde verworfen.
 editing-paste-multiple = Die Zwischenablage hat mehrere Texte geliefert. Es wurde nichts eingefügt.
 

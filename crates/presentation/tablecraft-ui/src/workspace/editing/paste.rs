@@ -3,8 +3,6 @@ use super::{EditSeed, EditTarget};
 use crate::workspace::{Action, DocumentView, State};
 use std::mem;
 
-const MAX_PASTE_BYTES: usize = 1024 * 1024;
-
 pub(in crate::workspace) struct ClipboardRequest {
     target: EditTarget,
     publication: u64,
@@ -21,10 +19,6 @@ impl State {
             && !self.table_filter_pending()
             && self.can_edit_cell(target)
             && self.current_paste_target_unchecked().as_ref() == Some(target)
-    }
-
-    pub fn can_paste_text(&self, target: &EditTarget, text: &str) -> bool {
-        text.len() <= MAX_PASTE_BYTES && self.can_paste_cell(target)
     }
 
     fn current_paste_target_unchecked(&self) -> Option<EditTarget> {
@@ -44,12 +38,6 @@ impl State {
     }
 
     pub fn begin_paste_edit(&mut self, target: EditTarget, text: String, request_id: u64) -> bool {
-        if !self.can_paste_text(&target, &text) {
-            if text.len() > MAX_PASTE_BYTES {
-                self.error = Some(self.localizer.text("editing-paste-too-large"));
-            }
-            return false;
-        }
         self.begin_seeded_edit(target, EditSeed::Text(text), request_id)
     }
 
@@ -145,13 +133,9 @@ impl State {
             self.paste_request = Some(request);
         }
         actions.retain(|action| {
-            let Action::PasteCell { target, text } = action else {
+            let Action::PasteCell { target, .. } = action else {
                 return true;
             };
-            if text.len() > MAX_PASTE_BYTES {
-                self.error = Some(self.localizer.text("editing-paste-too-large"));
-                return false;
-            }
             receipt_current && self.paste_request.is_none() && self.can_paste_cell(target)
         });
     }

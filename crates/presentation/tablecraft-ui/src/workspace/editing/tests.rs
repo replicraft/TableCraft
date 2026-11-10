@@ -454,17 +454,22 @@ fn literal_paste_seeds_only_matching_draft_without_review_or_null_conversion() {
     }
 
     let (mut state, target) = state();
-    let oversized = "é".repeat(512 * 1024 + 1);
-    assert!(!state.begin_paste_edit(target.clone(), oversized, 1));
-    assert!(!state.edit_dialog_open());
-    assert!(state.error.as_ref().unwrap().contains("1 MiB"));
-
-    state.begin_edit(target.clone(), 2);
+    let text = "é".repeat(512 * 1024 + 1);
+    assert!(state.begin_paste_edit(target.clone(), text.clone(), 2));
     state.set_edit_draft(2, draft(target));
-    let Some(EditDialog::Draft { input, .. }) = &state.edit else {
-        panic!("ordinary draft remains available");
+    let Some(EditDialog::Draft {
+        input,
+        review,
+        pending,
+        ..
+    }) = &state.edit
+    else {
+        panic!("large literal paste receives a checked draft");
     };
-    assert_eq!(input.text, "12");
+    assert_eq!(input.text, text);
+    assert!(!input.is_null);
+    assert!(review.is_none());
+    assert!(pending.is_none());
 }
 
 #[test]

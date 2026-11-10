@@ -43,7 +43,7 @@ fn pasted_localized_numeric_text_is_not_silently_reinterpreted_or_saved() {
 }
 
 #[test]
-fn stale_or_oversized_paste_does_not_replace_the_native_request() {
+fn stale_paste_does_not_replace_the_native_request() {
     let (_directory, path, original, mut harness) = opened(mutation_fixture::database());
     focus_cell(&mut harness, "Score", "2", "20");
     let revision = harness
@@ -65,10 +65,6 @@ fn stale_or_oversized_paste_does_not_replace_the_native_request() {
         ..target.clone()
     };
     harness.state_mut().begin_paste_edit(stale, "25".into());
-    assert_eq!(harness.state().generation, generation);
-    harness
-        .state_mut()
-        .begin_paste_edit(target, "x".repeat(1024 * 1024 + 1));
     assert_eq!(harness.state().generation, generation);
     assert!(!harness.state().state.edit_dialog_open());
     assert_eq!(std::fs::read(path).unwrap(), original);
