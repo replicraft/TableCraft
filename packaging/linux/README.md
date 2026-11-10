@@ -15,7 +15,8 @@ included. Package-manager installations require package-manager updates.
 DEB dependencies combine actual `dpkg-shlibdeps` symbol-version results with the
 X11, Wayland, graphics and Fontconfig libraries opened dynamically by enabled
 backends. RPM keeps automatic ELF dependencies and adds the corresponding
-runtime sonames. RPM stripping is disabled so installed bytes retain their
+runtime sonames. Both require the system CA certificate package for the updater's
+platform trust store. RPM stripping is disabled so installed bytes retain their
 captured manifest hashes. The script verifies native metadata and complete
 payload bytes/digests before publishing each package and its SHA-256 sidecar.
 The packaging maintainer label is Replicraft, matching the existing project
@@ -32,9 +33,8 @@ A separately reviewed AppImage-runtime notice bundle and corresponding-source/
 relinking kit are mandatory. The pinned static runtime's kit is shipped inside
 the AppImage at `usr/share/licenses/tablecraft/RuntimeSource.tar.gz`; packaging
 copies it as data and never extracts or executes its build instructions.
-GPU drivers,
-the display server/compositor and excluded base-system libraries remain host
-requirements. An AppImage is not a fully static executable.
+GPU drivers, the display server/compositor, system CA trust store and excluded
+base-system libraries remain host requirements. An AppImage is not a fully static executable.
 
 The current updater must treat an AppImage mount as manual-only until an actual
 AppImage replacement service is implemented: `$APPDIR` is the temporary mounted

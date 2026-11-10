@@ -170,6 +170,7 @@ class LinuxPackagingTests(unittest.TestCase):
         with patch.object(linux, "run", return_value="shlibs:Depends=libc6 (>= 2.35), libgcc-s1 (>= 3.0)\n"):
             dependencies = linux.debian_dependencies(self.inputs, temporary)
         self.assertIn("libc6 (>= 2.35)", dependencies)
+        self.assertIn("ca-certificates", dependencies)
         self.assertIn("libfontconfig1", dependencies)
         self.assertIn("libxkbcommon0", dependencies)
         self.assertIn("libxkbcommon-x11-0", dependencies)
@@ -211,7 +212,7 @@ class LinuxPackagingTests(unittest.TestCase):
                 linux.verify_deb_files(self.root / "unexecuted.deb", root)
         self.assertFalse((self.root / "unowned").exists())
 
-    def test_apprun_keeps_literal_filenames_and_runs_without_changing_host_defaults(self):
+    def test_apprun_preserves_end_of_options_and_literal_filenames(self):
         root = self.root / "AppDir with spaces"
         binary = root / "usr/bin/tablecraft-desktop"
         binary.parent.mkdir(parents=True)
@@ -224,6 +225,30 @@ class LinuxPackagingTests(unittest.TestCase):
         environment.pop("APPDIR", None)
         result = subprocess.run([launcher, "--", "folder with spaces/日本語.accdb"], capture_output=True, text=True, check=True, env=environment)
         self.assertEqual(result.stdout.splitlines(), ["--", "folder with spaces/日本語.accdb"])
+
+    def test_registration_refresh_only_updates_caches_without_selecting_a_default(self):
+        commands = self.root / "commands"
+        commands.mkdir()
+        log = self.root / "cache-commands.txt"
+        for name in ("update-desktop-database", "update-mime-database", "xdg-mime"):
+            script = commands / name
+            script.write_text(
+                '#!/bin/sh\n'
+                'printf "%s" "${0##*/}" >> "$TEST_CACHE_LOG"\n'
+                'for argument do\n'
+                '    printf " %s" "$argument" >> "$TEST_CACHE_LOG"\n'
+                'done\n'
+                'printf "\\n" >> "$TEST_CACHE_LOG"\n'
+            )
+            script.chmod(0o755)
+        environment = os.environ.copy()
+        environment["PATH"] = str(commands)
+        environment["TEST_CACHE_LOG"] = str(log)
+        subprocess.run(["/bin/sh", linux.ASSETS / "refresh-caches.sh"], env=environment, capture_output=True, check=True)
+        self.assertEqual(log.read_text().splitlines(), [
+            "update-desktop-database -q /usr/share/applications",
+            "update-mime-database /usr/share/mime",
+        ])
 
     def test_native_tools_do_not_inherit_release_signing_secrets(self):
         with patch.dict(os.environ, {
@@ -265,7 +290,7 @@ print("clean")
                     linux.validate_runtime_source(kit)
                 self.assertFalse((self.root / "unowned").exists())
 
-    def test_prerelease_version_sorts_before_its_final_native_package(self):
+    def test_native_prerelease_metadata_uses_the_documented_tilde_syntax(self):
         self.assertEqual(linux.package_version("0.1.0"), "0.1.0")
         self.assertEqual(linux.package_version("0.1.0-rc.1"), "0.1.0~rc.1")
 

@@ -47,7 +47,7 @@ DLOPEN_LIBRARIES = (
     "libwayland-egl.so.1", "libfontconfig.so.1",
 )
 DEBIAN_RUNTIME_DEPENDENCIES = (
-    "desktop-file-utils", "shared-mime-info", "libx11-6", "libx11-xcb1", "libxcursor1", "libxi6",
+    "ca-certificates", "desktop-file-utils", "shared-mime-info", "libx11-6", "libx11-xcb1", "libxcursor1", "libxi6",
     "libxrandr2", "libxcb1", "libxcb-render0", "libxcb-shape0", "libxcb-xfixes0",
     "libxkbcommon0", "libxkbcommon-x11-0", "libwayland-client0", "libwayland-cursor0", "libwayland-egl1",
     "libegl1", "libgl1", "libfontconfig1",
@@ -228,7 +228,7 @@ def build_rpm(inputs, root, output, temporary):
         "Summary: Access-compatible database workspace\nLicense: Apache-2.0\n"
         "URL: https://github.com/replicraft/TableCraft\n"
         f"BuildArch: {TARGETS[inputs.target][0]}\n"
-        f"Requires: {required}\nRequires: desktop-file-utils, shared-mime-info\n"
+        f"Requires: {required}\nRequires: ca-certificates, desktop-file-utils, shared-mime-info\n"
         "AutoReqProv: yes\n\n%description\n"
         "Browse and edit Microsoft Access databases. Compatibility is in development.\n\n"
         "%install\nmkdir -p \"%{buildroot}\"\ncp -a \"%{_sourcedir}/payload/.\" \"%{buildroot}/\"\n\n"
