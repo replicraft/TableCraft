@@ -20,18 +20,9 @@ pub struct QueryPoolLimits {
 }
 
 impl QueryPoolLimits {
-    pub const MAX_BYTES: u64 = 4 * 1024 * 1024 * 1024;
-    pub const MAX_ROWS: u64 = 10_000_000;
-    pub const MAX_STEPS: u64 = 1_000_000_000;
-
     /// Bytes and steps must be positive; non-row pools use zero rows.
     pub fn new(bytes: u64, rows: u64, steps: u64) -> Result<Self, QueryRunOptionsError> {
-        if bytes == 0
-            || bytes > Self::MAX_BYTES
-            || rows > Self::MAX_ROWS
-            || steps == 0
-            || steps > Self::MAX_STEPS
-        {
+        if bytes == 0 || steps == 0 {
             return Err(QueryRunOptionsError::PoolBounds);
         }
 
@@ -67,25 +58,12 @@ impl QueryPoolLimits {
 #[derive(Clone, Copy, Debug, Eq, PartialEq, thiserror::Error)]
 pub enum QueryRunOptionsError {
     #[error(
-        "query snapshot rows must be 1..={rows}; batch rows must be 1..={batch}",
-        rows = TableSnapshotLimits::MAX_ROWS,
+        "query snapshot rows must be positive; batch rows must be 1..={batch}",
         batch = TablePageRequest::MAX_ROWS,
     )]
     SnapshotBounds,
-    #[error(
-        "query pool bytes must be 1..={bytes}; rows must be 0..={rows}; steps must be 1..={steps}",
-        bytes = QueryPoolLimits::MAX_BYTES,
-        rows = QueryPoolLimits::MAX_ROWS,
-        steps = QueryPoolLimits::MAX_STEPS,
-    )]
+    #[error("query pool bytes and steps must be positive")]
     PoolBounds,
-    #[error(
-        "query execution bytes must be 1..={bytes}; rows must be 1..={rows}; steps must be 1..={steps}",
-        bytes = QueryLimits::MAX_BYTES,
-        rows = QueryLimits::MAX_ROWS,
-        steps = QueryLimits::MAX_STEPS,
-    )]
-    QueryBounds,
     #[error("native and query pools require a positive row allowance")]
     RowAllowance,
     #[error("comparison and presentation pools do not admit source rows")]
@@ -131,13 +109,6 @@ impl QueryRunOptions {
         if comparison.rows != 0 || presentation.rows != 0 {
             return Err(QueryRunOptionsError::NonRowPool);
         }
-        if query.bytes > QueryLimits::MAX_BYTES
-            || query.rows > QueryLimits::MAX_ROWS
-            || query.steps > QueryLimits::MAX_STEPS
-        {
-            return Err(QueryRunOptionsError::QueryBounds);
-        }
-
         Ok(Self {
             snapshot,
             native,

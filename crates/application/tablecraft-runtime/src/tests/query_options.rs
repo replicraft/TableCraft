@@ -52,13 +52,7 @@ fn default_limits_preserve_previous_pools_and_invalid_configuration_is_rejected(
     assert_eq!(defaults.presentation().rows(), 0);
     assert_eq!(defaults.presentation().steps(), 100_000);
 
-    for limits in [
-        (0, 0, 1),
-        (1, 0, 0),
-        (u64::MAX, 0, 1),
-        (1, u64::MAX, 1),
-        (1, 0, u64::MAX),
-    ] {
+    for limits in [(0, 0, 1), (1, 0, 0)] {
         assert_eq!(
             QueryPoolLimits::new(limits.0, limits.1, limits.2),
             Err(QueryRunOptionsError::PoolBounds)
@@ -97,16 +91,21 @@ fn default_limits_preserve_previous_pools_and_invalid_configuration_is_rejected(
         ),
         Err(QueryRunOptionsError::SnapshotBounds)
     );
-    assert_eq!(
-        QueryRunOptions::new(
-            defaults.snapshot(),
-            defaults.native(),
-            QueryPoolLimits::new(257 * 1024 * 1024, 10_000, 1_000_000).unwrap(),
-            defaults.comparison(),
-            defaults.presentation(),
-        ),
-        Err(QueryRunOptionsError::QueryBounds)
-    );
+    let explicit = QueryPoolLimits::new(5 * 1024 * 1024 * 1024, 11_000_000, 2_000_000_000).unwrap();
+    let configured = QueryRunOptions::new(
+        defaults.snapshot(),
+        explicit,
+        explicit,
+        defaults.comparison(),
+        defaults.presentation(),
+    )
+    .unwrap();
+    assert_eq!(configured.native(), explicit);
+    assert_eq!(configured.query(), explicit);
+    let representable = QueryPoolLimits::new(u64::MAX, u64::MAX, u64::MAX).unwrap();
+    assert_eq!(representable.bytes(), u64::MAX);
+    assert_eq!(representable.rows(), u64::MAX);
+    assert_eq!(representable.steps(), u64::MAX);
 }
 
 #[test]
