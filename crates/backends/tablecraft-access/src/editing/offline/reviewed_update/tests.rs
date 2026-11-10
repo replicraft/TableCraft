@@ -328,3 +328,6 @@ fn native_and_proof_refusals_retain_the_same_lease_and_distinct_capture_state() 
 
 #[cfg(feature = "ace16-create")]
 mod opaque;
+
+#[cfg(feature = "ace16-create")]
+mod currency;
