@@ -1,4 +1,5 @@
 //! Literal TCAT framing is independent of its production encoder and template codec.
+mod native;
 mod retained;
 
 use super::{AddTableIntentError, NativeAddTableIntent};
