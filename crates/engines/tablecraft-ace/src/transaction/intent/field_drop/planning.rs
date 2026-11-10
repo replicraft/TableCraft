@@ -1,7 +1,7 @@
 //! Owning saved-field DROP plus original request, never decoded write authority.
-use super::{FieldDropIntentError as Error, NativeFieldDropIntent as Intent};
+use super::{FieldDropIntentError as Error, NativeFieldDropIntent as Intent, candidate::Candidate};
 use crate::{
-    NativeFieldDropCandidate, NativeFieldDropIdentity, NativeImage, header::check,
+    NativeFieldDropIdentity, NativeImage, SavedFieldDropSourcePurpose, header::check,
     transaction::qualified_recovery::equal_image,
 };
 use tablecraft_core::limits::ResourceBudget;
@@ -9,7 +9,7 @@ use tablecraft_io::journal::{self, DurableStorage, JournalError, PreparedImage};
 
 /// Sealed exact saved-field DROP candidate, complete source and original request.
 pub struct RecoverableFieldDropPlan {
-    candidate: Box<NativeFieldDropCandidate>,
+    candidate: Box<Candidate>,
     intent: Intent,
 }
 
@@ -24,22 +24,59 @@ impl NativeImage {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<RecoverableFieldDropPlan, Error> {
         let _span = tracing::debug_span!("native.field_drop.plan_recoverable").entered();
-        let candidate = self.prepare_saved_field_drop(table, column, budget, cancelled)?;
+        let candidate =
+            Candidate::Empty(self.prepare_saved_field_drop(table, column, budget, cancelled)?);
         let intent = Intent::capture(&candidate, budget, cancelled)?;
         check(budget, cancelled)?;
         RecoverableFieldDropPlan::new(candidate, intent, budget, cancelled)
+    }
+    /// Bind the separate current populated-tail request after native qualification.
+    pub fn plan_recoverable_current_tail_field_drop(
+        self,
+        table: &str,
+        column: &str,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<RecoverableFieldDropPlan, Error> {
+        let _span =
+            tracing::debug_span!("native.current_tail_field_drop.plan_recoverable").entered();
+        let candidate = Candidate::PopulatedTail(
+            self.prepare_current_tail_field_drop(table, column, budget, cancelled)?,
+        );
+        let intent = Intent::capture(&candidate, budget, cancelled)?;
+        check(budget, cancelled)?;
+        RecoverableFieldDropPlan::new(candidate, intent, budget, cancelled)
+    }
+
+    /// Select one source language from original metadata before its full proof.
+    /// No refused DROP is retried through another implementation.
+    pub fn plan_recoverable_field_drop(
+        self,
+        table: &str,
+        column: &str,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<RecoverableFieldDropPlan, Error> {
+        match self.field_drop_source_purpose(table, budget, cancelled)? {
+            SavedFieldDropSourcePurpose::Empty => {
+                self.plan_recoverable_saved_field_drop(table, column, budget, cancelled)
+            }
+            SavedFieldDropSourcePurpose::PopulatedTail => {
+                self.plan_recoverable_current_tail_field_drop(table, column, budget, cancelled)
+            }
+        }
     }
 }
 
 impl RecoverableFieldDropPlan {
     fn new(
-        candidate: NativeFieldDropCandidate,
+        candidate: Candidate,
         intent: Intent,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, Error> {
         check(budget, cancelled)?;
-        budget.charge_allocation(1, size_of::<NativeFieldDropCandidate>() as u64)?;
+        budget.charge_allocation(1, size_of::<Candidate>() as u64)?;
 
         Ok(Self {
             candidate: Box::new(candidate),

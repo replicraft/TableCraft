@@ -391,3 +391,5 @@ fn recovery_uses_one_cumulative_pool_and_initial_cancellation_never_writes() {
         assert_eq!(target.bytes.get_ref(), &before);
     }
 }
+
+mod current_tail;

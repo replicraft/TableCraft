@@ -7,7 +7,9 @@ mod read;
 
 pub(super) use codec::MAGIC;
 pub use model::{NativeFittedEditIntent, NativeFittedIntentGroup, NativeFittedUpdates};
-pub(super) use profile::{EOF_ALLOCATION_MAGIC, HISTORICAL_TEXT_MAGIC, OWNED_GROWTH_MAGIC, WireProfile};
+pub(super) use profile::{
+    EOF_ALLOCATION_MAGIC, HISTORICAL_TEXT_MAGIC, OWNED_GROWTH_MAGIC, WireProfile,
+};
 
 #[cfg(test)]
 mod tests;

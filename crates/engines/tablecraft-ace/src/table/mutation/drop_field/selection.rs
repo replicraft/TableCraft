@@ -1,5 +1,5 @@
 //! Metadata selects a source language before either complete proof is attempted.
-use super::FieldDropError;
+use super::{FieldDropError, NativeFieldDropIdentity};
 use crate::{NativeImage, header::check, inspect_table_schema};
 use tablecraft_core::limits::ResourceBudget;
 
@@ -13,6 +13,25 @@ pub enum SavedFieldDropSourcePurpose {
 }
 
 impl NativeImage {
+    /// Inspect one positively selected DROP source without producing AFTER bytes.
+    /// Metadata chooses the source language before its complete native proof.
+    pub fn inspect_field_drop_source(
+        &self,
+        table: &str,
+        column: &str,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<NativeFieldDropIdentity, FieldDropError> {
+        match self.field_drop_source_purpose(table, budget, cancelled)? {
+            SavedFieldDropSourcePurpose::Empty => {
+                self.inspect_saved_field_drop_source(table, column, budget, cancelled)
+            }
+            SavedFieldDropSourcePurpose::PopulatedTail => {
+                self.inspect_current_tail_field_drop_source(table, column, budget, cancelled)
+            }
+        }
+    }
+
     /// Select the original source language without scanning user records.
     /// Complete source, dependencies and target identity are checked by the
     /// selected operation. A failed proof is never retried under another purpose.

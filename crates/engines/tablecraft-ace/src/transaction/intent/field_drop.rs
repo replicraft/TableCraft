@@ -1,4 +1,5 @@
 //! Closed original saved-field DROP requests, separate from native authority.
+mod candidate;
 mod codec;
 mod planning;
 mod recovery;
@@ -8,9 +9,11 @@ mod tests;
 
 use super::{NativeIntentError, binding};
 use crate::{
-    FieldDropError, InspectError, NativeFieldDropCandidate, NativeFieldDropIdentity, NativeImage,
+    FieldDropError, InspectError, NativeFieldDropIdentity, NativeImage,
     NativeRecoveryQualificationError, header::check,
 };
+use candidate::Candidate;
+use codec::Profile;
 use tablecraft_core::limits::{LimitError, Resource, ResourceBudget};
 use thiserror::Error;
 
@@ -78,6 +81,7 @@ impl Identity {
 /// Data-only original action and complete BEFORE binding. Decode grants no
 /// source, property cleanup, replacement, journal or recovery permission.
 pub struct NativeFieldDropIntent {
+    profile: Profile,
     identity: Identity,
     table: String,
     column: String,
@@ -90,7 +94,7 @@ impl NativeFieldDropIntent {
     pub const MAX_ENCODED_BYTES: usize = codec::MAX_RECORD_BYTES;
 
     fn capture(
-        candidate: &NativeFieldDropCandidate,
+        candidate: &Candidate,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, FieldDropIntentError> {
@@ -100,6 +104,7 @@ impl NativeFieldDropIntent {
         codec::validate_identity(identity, before_length)?;
         let before_binding = binding::digest(candidate.before_bytes(), budget, cancelled)?;
         Ok(Self {
+            profile: candidate.profile(),
             identity,
             table: copy_text(candidate.table(), budget)?,
             column: copy_text(candidate.column(), budget)?,
@@ -143,7 +148,17 @@ impl NativeFieldDropIntent {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, FieldDropIntentError> {
-        codec::decode(bytes, budget, cancelled)
+        codec::decode(bytes, Profile::Empty, budget, cancelled)
+    }
+
+    /// Decode only TCFD0002/profile2 populated-tail requests before allocation.
+    /// The original empty-source decoder remains closed to this language.
+    pub fn decode_current_tail(
+        bytes: &[u8],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, FieldDropIntentError> {
+        codec::decode(bytes, Profile::PopulatedTail, budget, cancelled)
     }
 
     /// Verify complete original bytes before native source reconstruction.
@@ -168,9 +183,23 @@ impl NativeFieldDropIntent {
         image: NativeImage,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
-    ) -> Result<NativeFieldDropCandidate, FieldDropIntentError> {
-        let candidate =
-            image.prepare_saved_field_drop(self.table(), self.column(), budget, cancelled)?;
+    ) -> Result<Candidate, FieldDropIntentError> {
+        let candidate = match self.profile {
+            Profile::Empty => Candidate::Empty(image.prepare_saved_field_drop(
+                self.table(),
+                self.column(),
+                budget,
+                cancelled,
+            )?),
+            Profile::PopulatedTail => {
+                Candidate::PopulatedTail(image.prepare_current_tail_field_drop(
+                    self.table(),
+                    self.column(),
+                    budget,
+                    cancelled,
+                )?)
+            }
+        };
         if Identity::from_native(candidate.identity())? != self.identity
             || candidate.table() != self.table()
             || candidate.column() != self.column()

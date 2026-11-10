@@ -1,4 +1,4 @@
-//! TCFD0001/profile1 contains an original action, never replacement bytes.
+//! Explicit TCFD0001/2 source languages share framing, never decoder fallback.
 use super::{
     FieldDropIntentError as Error, Identity, MAX_NAME_BYTES, NativeFieldDropIntent as Intent,
     binding, copy_text, validate_request,
@@ -8,6 +8,8 @@ use tablecraft_core::limits::{Resource, ResourceBudget};
 
 const MAGIC: &[u8; 8] = b"TCFD0001";
 const PROFILE: u16 = 1;
+const CURRENT_TAIL_MAGIC: &[u8; 8] = b"TCFD0002";
+const CURRENT_TAIL_PROFILE: u16 = 2;
 const TOTAL_AT: usize = MAGIC.len();
 const PROFILE_AT: usize = TOTAL_AT + size_of::<u32>();
 const FLAGS_AT: usize = PROFILE_AT + size_of::<u16>();
@@ -22,6 +24,28 @@ const COLUMN_LENGTH_AT: usize = TABLE_LENGTH_AT + size_of::<u16>();
 const RESERVED_AT: usize = COLUMN_LENGTH_AT + size_of::<u16>();
 const HEADER_BYTES: usize = RESERVED_AT + size_of::<u32>();
 pub(super) const MAX_RECORD_BYTES: usize = HEADER_BYTES + 2 * MAX_NAME_BYTES;
+
+#[derive(Clone, Copy)]
+pub(super) enum Profile {
+    Empty,
+    PopulatedTail,
+}
+
+impl Profile {
+    fn magic(self) -> &'static [u8; 8] {
+        match self {
+            Self::Empty => MAGIC,
+            Self::PopulatedTail => CURRENT_TAIL_MAGIC,
+        }
+    }
+
+    fn number(self) -> u16 {
+        match self {
+            Self::Empty => PROFILE,
+            Self::PopulatedTail => CURRENT_TAIL_PROFILE,
+        }
+    }
+}
 
 fn bytes<const N: usize>(input: &[u8], at: usize) -> Result<[u8; N], Error> {
     input
@@ -58,9 +82,9 @@ pub(super) fn encode(
     output
         .try_reserve_exact(length)
         .map_err(|_| crate::InspectError::Allocation)?;
-    output.extend_from_slice(MAGIC);
+    output.extend_from_slice(intent.profile.magic());
     output.extend_from_slice(&(length as u32).to_le_bytes());
-    output.extend_from_slice(&PROFILE.to_le_bytes());
+    output.extend_from_slice(&intent.profile.number().to_le_bytes());
     output.extend_from_slice(&0_u16.to_le_bytes());
     output.extend_from_slice(&intent.before_length.to_le_bytes());
     output.extend_from_slice(&intent.before_binding);
@@ -79,18 +103,19 @@ pub(super) fn encode(
 
 pub(super) fn decode(
     input: &[u8],
+    profile: Profile,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Intent, Error> {
     check(budget, cancelled)?;
     if !(HEADER_BYTES..=MAX_RECORD_BYTES).contains(&input.len())
-        || input.get(..MAGIC.len()) != Some(MAGIC)
+        || input.get(..MAGIC.len()) != Some(profile.magic())
     {
         return Err(Error::InvalidRecord);
     }
     budget.charge(Resource::Steps, input.len() as u64)?;
     if u32::from_le_bytes(bytes(input, TOTAL_AT)?) as usize != input.len()
-        || u16::from_le_bytes(bytes(input, PROFILE_AT)?) != PROFILE
+        || u16::from_le_bytes(bytes(input, PROFILE_AT)?) != profile.number()
         || u16::from_le_bytes(bytes(input, FLAGS_AT)?) != 0
         || u32::from_le_bytes(bytes(input, RESERVED_AT)?) != 0
     {
@@ -118,6 +143,7 @@ pub(super) fn decode(
     let column = std::str::from_utf8(&input[table_end..]).map_err(|_| Error::InvalidRecord)?;
     validate_request(table, column, budget, cancelled)?;
     let intent = Intent {
+        profile,
         identity,
         table: copy_text(table, budget)?,
         column: copy_text(column, budget)?,
