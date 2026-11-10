@@ -133,7 +133,20 @@ fn cancelled(case: Case, target: Target) {
     let source = raw::source(case, target, true, History::Inserted);
     let (_directory, path, before, mut harness) = opened(source.bytes);
     let table = harness.state().state.active_object().unwrap();
-    let original_rows = harness.state().state.data.as_ref().unwrap().rows.clone();
+    let original_rows = harness
+        .state()
+        .state
+        .data
+        .as_ref()
+        .unwrap()
+        .rows
+        .iter()
+        .map(|row| {
+            row.iter()
+                .map(|cell| (cell.text.clone(), cell.kind))
+                .collect::<Vec<_>>()
+        })
+        .collect::<Vec<_>>();
     let scratch_tab = scratch(&mut harness, &table);
     delete_navigation(&mut harness);
     assert!(!harness.state().state.table_drop_open());
@@ -168,9 +181,10 @@ fn cancelled(case: Case, target: Target) {
     let rows = &reopened.state().state.data.as_ref().unwrap().rows;
     assert_eq!(rows.len(), original_rows.len());
     for (actual, original) in rows.iter().zip(&original_rows) {
-        for (actual, original) in actual.iter().zip(original) {
-            assert_eq!(actual.text, original.text);
-            assert_eq!(actual.kind, original.kind);
+        assert_eq!(actual.len(), original.len());
+        for (actual, (text, kind)) in actual.iter().zip(original) {
+            assert_eq!(&actual.text, text);
+            assert!(actual.kind == *kind);
         }
     }
     assert_eq!(std::fs::read(&path).unwrap(), before);
