@@ -52,9 +52,13 @@ impl<'a> Cursor<'a> {
                 .map_err(|_| InspectError::Malformed)?,
         ) as usize)
     }
-    fn name(&mut self, budget: &mut ResourceBudget) -> Result<String, InspectError> {
+    fn name(
+        &mut self,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<String, InspectError> {
         let length = self.short()?;
-        text::decode(self.take(length)?, false, budget)
+        text::decode_framed(self.take(length)?, false, budget, cancelled)
     }
 }
 
@@ -89,7 +93,7 @@ pub(super) fn decode(
             let mut parsed: Vec<SchemaName> = Vec::new();
             while block.remaining() != 0 {
                 check(budget, cancelled)?;
-                let name = SchemaName::new(block.name(budget)?)?;
+                let name = SchemaName::new(block.name(budget, cancelled)?)?;
                 for other in &parsed {
                     check(budget, cancelled)?;
                     budget.charge(
@@ -113,7 +117,7 @@ pub(super) fn decode(
             .checked_sub(size_of::<u32>())
             .ok_or(InspectError::Malformed)?;
         let mut name_block = Cursor::new(block.take(name_block_bytes)?);
-        let name = name_block.name(budget)?;
+        let name = name_block.name(budget, cancelled)?;
         if name_block.remaining() != 0 {
             return Err(InspectError::Unsupported);
         }

@@ -86,3 +86,14 @@ fn wide_ascii_still_obeys_encoded_decoded_allocation_and_cancellation_limits() {
         Err(InspectError::Cancelled)
     );
 }
+
+#[test]
+fn framed_short_codec_does_not_invent_a_2048_byte_input_ceiling() {
+    let bytes = [0x2d, 0x4e].repeat(1500);
+    let text = super::decode(&bytes, false, &mut ResourceBudget::new(20_000, 0, 0)).unwrap();
+    assert_eq!(text, "中".repeat(1500));
+    assert!(matches!(
+        super::decode(&bytes, false, &mut ResourceBudget::new(1024, 0, 0)),
+        Err(InspectError::Limit(_))
+    ));
+}

@@ -357,3 +357,43 @@ fn property_name_group_and_entry_counts_are_paid_from_framed_input() {
         Err(InspectError::Limit(_))
     ));
 }
+
+#[test]
+fn framed_property_names_above_2048_bytes_retain_exact_spelling_and_fail_closed() {
+    // Raw MR2 lengths, not the production text encoder, frame this unknown name.
+    let property_name = "未".repeat(1500);
+    let bytes = [
+        b"MR2\0".as_slice(),
+        &block(0x80, &name(&property_name)),
+        &group(0, "", &value(0, 1, 0, &[0xff])),
+    ]
+    .concat();
+    let groups = decode(&bytes, &mut budget(), &|| false).unwrap();
+    assert!(groups[0].get(&property_name).unwrap().boolean().unwrap());
+    assert!(matches!(
+        decode(&bytes, &mut ResourceBudget::new(1024, 0, 100_000), &|| {
+            false
+        }),
+        Err(InspectError::Limit(_))
+    ));
+    assert!(matches!(
+        decode(&bytes, &mut ResourceBudget::new(1_048_576, 0, 100), &|| {
+            false
+        }),
+        Err(InspectError::Limit(_))
+    ));
+    let checks = std::cell::Cell::new(0_u32);
+    let cancelled = || {
+        checks.set(checks.get() + 1);
+        checks.get() > 5
+    };
+    assert!(matches!(
+        decode(&bytes, &mut budget(), &cancelled),
+        Err(InspectError::Cancelled)
+    ));
+
+    let mut malformed = bytes;
+    // The first framed name advertises one byte beyond its own block.
+    malformed[10..12].copy_from_slice(&3001_u16.to_le_bytes());
+    assert!(decode(&malformed, &mut budget(), &|| false).is_err());
+}

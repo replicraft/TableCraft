@@ -1,6 +1,5 @@
 mod ascii;
 use crate::InspectError;
-use crate::limits::MAX_ENCODED_TEXT_BYTES;
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
 pub(crate) const UTF16_UNIT_BYTES: usize = size_of::<u16>();
@@ -65,17 +64,21 @@ pub(crate) fn decode(
     compressed: bool,
     budget: &mut ResourceBudget,
 ) -> Result<String, InspectError> {
-    decode_bounded(
-        bytes,
-        compressed,
-        MAX_ENCODED_TEXT_BYTES,
-        None,
-        budget,
-        None,
-    )
+    // The caller has already framed this exact slice and retains its semantic
+    // field/name limits. This shared codec imposes no unrelated text ceiling.
+    decode_bounded(bytes, compressed, bytes.len(), None, budget, None)
 }
 pub(crate) fn decode_long(
     bytes: &[u8],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<String, InspectError> {
+    decode_framed(bytes, true, budget, cancelled)
+}
+
+pub(crate) fn decode_framed(
+    bytes: &[u8],
+    compressed: bool,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<String, InspectError> {
@@ -84,7 +87,14 @@ pub(crate) fn decode_long(
     }
     let work = bytes.len().checked_mul(4).ok_or(InspectError::Malformed)?;
     budget.charge(Resource::Steps, work as u64)?;
-    decode_bounded(bytes, true, bytes.len(), None, budget, Some(cancelled))
+    decode_bounded(
+        bytes,
+        compressed,
+        bytes.len(),
+        None,
+        budget,
+        Some(cancelled),
+    )
 }
 pub(crate) fn decode_long_with_limits(
     bytes: &[u8],
