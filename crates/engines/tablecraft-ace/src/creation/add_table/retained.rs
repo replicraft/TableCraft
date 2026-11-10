@@ -3,6 +3,9 @@ mod audit;
 mod build;
 mod source;
 
+#[cfg(test)]
+mod tests;
+
 use super::{AddTableError, AddTablePlan, AddTableSourceCapabilities, AddTableSourceProfile};
 use crate::{FirstTableDefinition, NativeImage, NativeImageSource, header::check};
 use tablecraft_core::limits::ResourceBudget;
