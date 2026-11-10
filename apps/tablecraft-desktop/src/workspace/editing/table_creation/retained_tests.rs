@@ -1,4 +1,6 @@
 //! Real DROP → Create → save journeys retain history and separate schema/row saves.
+mod old_target;
+
 use super::{
     creating_tests::create_table,
     design_tests::view,
