@@ -1,6 +1,6 @@
 {
   "date": "2026-11-10",
-  "source_commit": "9a17067cc",
+  "source_commit": "c24177f6f",
   "ui_tree": "67fdb3e740eb8073bf06cea63fd0933777150d81",
   "host": "macOS ARM64",
   "rendering": "offscreen GPU; Windows keyboard conventions; normal presentation gates; synthetic data",
@@ -13,31 +13,33 @@
   "fields": 255,
   "tests": {
     "builders_passed": 42,
-    "draft_and_insertion_passed": 154
+    "draft_and_insertion_passed": 154,
+    "mechanics_source_commit": "9a17067cc",
+    "neutral_catalogs_checked": 8
   },
   "frames": [
     {
       "theme": "light",
       "edge": "first",
-      "sha256": "3076dff3717b4a9b09f097516f2390b48f19755c6a10d1b30e3a5fd4b882089c",
+      "sha256": "92b245d0b823a5af4874116127e1c5eef90e360fff31f33f6c136593d194333a",
       "artifact": ".cache/ui-previews/native255/en-US-light-initial-table-draft-initial-wide-first.png"
     },
     {
       "theme": "light",
       "edge": "last",
-      "sha256": "2d43611f68c2d5a27c07f086ab6a3b29464eb80d4c075656f0e785308de570d2",
+      "sha256": "d2bf725803d693e532f570cb4a98d96eb55bde5264e60ba1790f16407cce236c",
       "artifact": ".cache/ui-previews/native255/en-US-light-initial-table-draft-initial-wide-last.png"
     },
     {
       "theme": "dark",
       "edge": "first",
-      "sha256": "21d45c04b353c95d8683b92f701ae001009ffac7169219c5754be44fa08b4f68",
+      "sha256": "b26577e78755789b1d14ffc84672174424094b1d6f9a74e523fd7a2b346a25fd",
       "artifact": ".cache/ui-previews/native255/en-US-dark-initial-table-draft-initial-wide-first.png"
     },
     {
       "theme": "dark",
       "edge": "last",
-      "sha256": "e258ac6c9b2a4d2fc41575b674bdca10cb7dcf952fe1a785c579d04cabe610b3",
+      "sha256": "603c2430a8f77f8ed40e24c64cae4dccf88a56ce33ae43628c6ae5089ecb01f4",
       "artifact": ".cache/ui-previews/native255/en-US-dark-initial-table-draft-initial-wide-last.png"
     }
   ],
@@ -45,11 +47,13 @@
     "First and last field headers remain visible at their respective scroll ends.",
     "Horizontal filler rules span the visible grid at both scroll ends.",
     "Click to Add remains disabled and outside the stored field list at 255 fields.",
-    "The complete Ribbon remains present in light and dark themes."
+    "The complete Ribbon remains present in light and dark themes.",
+    "The field-count message uses product-neutral wording in all eight catalogs."
   ],
   "limits": [
     "No native window was launched.",
     "No retained Access capture establishes the exact maximum-field-count status surface.",
     "These synthetic renders do not establish database mutation or Windows/Access parity."
-  ]
+  ],
+  "locales_tree": "800e840156a35bf2fc67e4fd742d8556a9698c71"
 }
