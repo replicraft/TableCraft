@@ -12,6 +12,13 @@ use tempfile::TempDir;
 const RUNNING: &str = "0.1.0";
 const EXECUTABLE: &[u8] = b"independent local desktop executable payload";
 
+fn hash(bytes: &[u8]) -> String {
+    Sha256::digest(bytes)
+        .iter()
+        .map(|byte| format!("{byte:02x}"))
+        .collect()
+}
+
 struct Fixture {
     _directory: TempDir,
     executable: PathBuf,
@@ -42,9 +49,9 @@ impl Fixture {
             "version": RUNNING,
             "target": platform.target(),
             "files": {
-                filename: format!("{:x}", Sha256::digest(EXECUTABLE)),
-                "LICENSE": format!("{:x}", Sha256::digest(b"project license")),
-                "ThirdPartyLicenses.txt": format!("{:x}", Sha256::digest(b"dependency notices")),
+                filename: hash(EXECUTABLE),
+                "LICENSE": hash(b"project license"),
+                "ThirdPartyLicenses.txt": hash(b"dependency notices"),
             },
         });
         let fixture = Self {
@@ -79,11 +86,11 @@ impl Fixture {
             "version": RUNNING,
             "target": "aarch64-apple-darwin",
             "files": {
-                "TableCraft.app/Contents/MacOS/tablecraft-desktop": format!("{:x}", Sha256::digest(EXECUTABLE)),
-                "TableCraft.app/Contents/Info.plist": format!("{:x}", Sha256::digest(b"independent bundle plist")),
-                "TableCraft.app/Contents/Resources/LICENSE": format!("{:x}", Sha256::digest(b"independent resource")),
-                "TableCraft.app/Contents/Resources/ThirdPartyLicenses.txt": format!("{:x}", Sha256::digest(b"independent resource")),
-                "TableCraft.app/Contents/Resources/TableCraft.icns": format!("{:x}", Sha256::digest(b"independent resource")),
+                "TableCraft.app/Contents/MacOS/tablecraft-desktop": hash(EXECUTABLE),
+                "TableCraft.app/Contents/Info.plist": hash(b"independent bundle plist"),
+                "TableCraft.app/Contents/Resources/LICENSE": hash(b"independent resource"),
+                "TableCraft.app/Contents/Resources/ThirdPartyLicenses.txt": hash(b"independent resource"),
+                "TableCraft.app/Contents/Resources/TableCraft.icns": hash(b"independent resource"),
             },
         });
         let fixture = Self {
@@ -112,7 +119,7 @@ impl Fixture {
     }
 }
 
-fn installed(plan: InstallPlan) -> Installed {
+fn accepted(plan: InstallPlan) -> Installed {
     match plan {
         InstallPlan::Portable(installed) | InstallPlan::MacBundle(installed) => installed,
         InstallPlan::Manual(reason) => panic!("expected installed package, got {reason:?}"),
@@ -132,7 +139,7 @@ fn detects_manifest_owned_flat_packages_and_rechecks_without_mutation() {
         Platform::LinuxArm64,
     ] {
         let fixture = Fixture::portable(platform);
-        let installed = installed(fixture.plan());
+        let installed = accepted(fixture.plan());
         assert_eq!(
             installed.executable(),
             fixture.executable.canonicalize().unwrap()
@@ -171,7 +178,7 @@ fn dragged_mac_bundle_keeps_its_own_manifest_and_staging_parent() {
 
     let plan = fixture.plan();
     assert!(matches!(plan, InstallPlan::MacBundle(_)));
-    let installed = installed(plan);
+    let installed = accepted(plan);
     assert_eq!(
         installed.directory(),
         destination.path().canonicalize().unwrap()
@@ -255,7 +262,7 @@ fn wrong_product_target_version_hash_and_file_membership_are_manual() {
 #[test]
 fn changed_executable_or_manifest_invalidates_a_previously_detected_package() {
     let fixture = Fixture::portable(Platform::LinuxX64);
-    let installed = installed(fixture.plan());
+    let installed = accepted(fixture.plan());
     fs::write(&fixture.executable, b"changed after detection").unwrap();
     assert!(matches!(
         installed.revalidate(),
@@ -263,7 +270,7 @@ fn changed_executable_or_manifest_invalidates_a_previously_detected_package() {
     ));
 
     let fixture = Fixture::portable(Platform::LinuxX64);
-    let installed = installed(fixture.plan());
+    let installed = accepted(fixture.plan());
     let mut bytes = fs::read(&fixture.manifest).unwrap();
     bytes.push(b'\n');
     fs::write(&fixture.manifest, bytes).unwrap();
