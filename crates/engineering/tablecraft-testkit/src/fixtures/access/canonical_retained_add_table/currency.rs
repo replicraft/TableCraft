@@ -2,10 +2,9 @@
 pub mod mixed;
 use super::desktop;
 use crate::fixtures::access::{
-    canonical_created_default_zero, canonical_creation_properties,
-    canonical_initial_table_creation::{self as initial, Column},
+    canonical_initial_table_creation::Column,
     generated_record_insert::placement::{self, Pages},
-    put16, raw_forwarding_chain,
+    raw_forwarding_chain,
 };
 use tablecraft_core::values::{Currency, Value};
 
@@ -79,22 +78,7 @@ fn properties() -> Vec<u8> {
 /// Empty Table1(ID Increment PrimaryKey, Amount Currency RequiredFalse/default0).
 /// Metadata, properties and records are authored without production codecs.
 pub fn source() -> Vec<u8> {
-    let mut bytes =
-        canonical_created_default_zero::source(canonical_created_default_zero::Source::IdOnly);
-    let declaration = initial::encode_columns(&COLUMNS);
-    bytes[7 * PAGE..8 * PAGE].copy_from_slice(&declaration.bytes[7 * PAGE..8 * PAGE]);
-    desktop::definition(&mut bytes[7 * PAGE..8 * PAGE]);
-
-    let page = &mut bytes[4 * PAGE..5 * PAGE];
-    assert_eq!(word(page, 12), 8);
-    let old_start = word(page, 28);
-    let end = word(page, 26);
-    let record = canonical_creation_properties::attach(&page[old_start..end], &properties());
-    let start = end - record.len();
-    page[start..end].copy_from_slice(&record);
-    put16(page, 28, start as u16);
-    put16(page, 2, (start - 30) as u16);
-    bytes
+    desktop::initial::table(&COLUMNS, &properties())
 }
 
 /// Append the exact desktop Currency declaration at actual EOF, preserving all

@@ -1,4 +1,5 @@
 //! Exact current desktop draft defaults, independently authored in raw metadata.
+pub(super) mod initial;
 use super::{PAGE, Target, append_profile, put16, put32, word};
 
 /// Actual desktop ID/PrimaryKey names and ordinary field properties. This does
