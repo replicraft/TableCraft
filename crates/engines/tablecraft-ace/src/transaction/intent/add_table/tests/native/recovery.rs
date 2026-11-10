@@ -2,6 +2,7 @@
 use crate::{
     AddTableIntentError, AddTableSourceProfile, CreateColumn, FirstTableDefinition,
     NativeAddTableIntent, NativeImage, NativeRecoveryQualificationError,
+    qualify_native_add_table_recovery,
 };
 use std::io::Cursor;
 use tablecraft_core::{limits::ResourceBudget, values::Value};
@@ -157,6 +158,59 @@ fn native_append_old_preparation_and_cohort_forgery_never_authorize_target_write
             AddTableIntentError::UnsupportedProfile
         ))
     ));
+    let retained_journal_bytes = journal_file.bytes.get_ref().clone();
+    let retained_journal_writes = journal_file.writes;
+    let old = NativeAddTableIntent::new_retained(
+        super::super::definition(1),
+        &before,
+        &mut budget(),
+        &|| false,
+    )
+    .unwrap();
+    let checked = journal::inspect_v3(&mut journal_file, &mut budget(), &|| false).unwrap();
+    assert!(matches!(
+        old.qualify_native_recovery(checked, CatalogScope::new(7114), &mut budget(), &|| false),
+        Err(NativeRecoveryQualificationError::AddTableIntent(
+            AddTableIntentError::UnsupportedProfile
+        ))
+    ));
+    assert_eq!(target.writes, 0);
+    assert_eq!(target.bytes.get_ref(), &before);
+    assert_eq!(journal_file.bytes.get_ref(), &retained_journal_bytes);
+    assert_eq!(journal_file.writes, retained_journal_writes);
+
+    let mut old_journal = MemoryStorage::new(Vec::new());
+    drop(
+        journal::prepare_resizable_expected(
+            &mut target,
+            &mut old_journal,
+            &before,
+            &expected,
+            &mut budget(),
+            &|| false,
+        )
+        .unwrap(),
+    );
+    let old_journal_bytes = old_journal.bytes.get_ref().clone();
+    let old_journal_writes = old_journal.writes;
+    let checked = journal::inspect_v2(&mut old_journal, &mut budget(), &|| false).unwrap();
+    assert!(matches!(
+        qualify_native_add_table_recovery(
+            checked,
+            NativeAddTableIntent::decode_native(&intent_bytes, &mut budget(), &|| false).unwrap(),
+            CatalogScope::new(7115),
+            &mut budget(),
+            &|| false,
+        ),
+        Err(NativeRecoveryQualificationError::AddTableIntent(
+            AddTableIntentError::UnsupportedProfile
+        ))
+    ));
+    assert_eq!(target.writes, 0);
+    assert_eq!(target.bytes.get_ref(), &before);
+    assert_eq!(old_journal.bytes.get_ref(), &old_journal_bytes);
+    assert_eq!(old_journal.writes, old_journal_writes);
+
     let mut wrong_cohort = intent_bytes;
     wrong_cohort[14] = 0;
     let checked = journal::inspect_v3(&mut journal_file, &mut budget(), &|| false).unwrap();
