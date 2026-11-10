@@ -21,6 +21,14 @@ $upgrade = (Resolve-Path -LiteralPath $UpgradeInstaller).ProviderPath
 $evidence = [IO.Path]::GetFullPath($EvidenceDirectory)
 if (Test-Path -LiteralPath $evidence) { throw 'Upgrade evidence directory must be new and test-owned' }
 New-Item -ItemType Directory -Path $evidence | Out-Null
+$fixtureReceiptPath = Join-Path (Split-Path -LiteralPath $upgrade) 'TEST-ONLY.json'
+$fixtureReceipt = Get-Content -LiteralPath $fixtureReceiptPath -Raw | ConvertFrom-Json
+if ($fixtureReceipt.fixture_only -ne $true -or $fixtureReceipt.release_asset -ne $false -or
+    $fixtureReceipt.binary_workspace_version -ne $Version -or $fixtureReceipt.declared_fixture_version -ne $UpgradeVersion -or
+    (Get-FileHash -LiteralPath $upgrade -Algorithm SHA256).Hash.ToLowerInvariant() -ne $fixtureReceipt.msi_sha256) {
+    throw 'Disposable upgrade MSI lacks the exact TEST-ONLY fixture identity'
+}
+Copy-Item -LiteralPath $fixtureReceiptPath -Destination (Join-Path $evidence 'TEST-ONLY.fixture.json')
 $msiexec = Join-Path $env:SystemRoot 'System32\msiexec.exe'
 $powershell = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
 $installSource = Get-Content -LiteralPath (Join-Path $PSScriptRoot '../../crates/platform/tablecraft-update/src/msi/install.ps1') -Raw

@@ -70,7 +70,13 @@ and [ComponentPath](https://learn.microsoft.com/en-us/windows/win32/msi/installe
 
 `test_upgrade.ps1` is a separate disposable-runner fixture for the fixed native
 installer helper. CI builds a temporary next-patch MSI from the same executable,
-outside `dist/`. Its declared MSI/manifest version differs, while the actual
+outside the checkout using `msi_update_fixture.py`. The fixture builder creates
+isolated next-version workspace metadata and uses the unchanged producer's strict
+version checks there; it never modifies the real Cargo metadata or relaxes release
+validation. Its only exported carrier is explicitly named
+`TEST-ONLY-tablecraft-msi-update.msi`, with a digest-bound `TEST-ONLY.json` receipt.
+The native harness checks and retains that receipt before installation.
+Its declared MSI/manifest version differs, while the actual
 executable remains the current version. The fixture checks parent-instance and
 READY/COMMIT gates, corrupts only a copied fixture CAB to exercise native
 rollback, checks native product registration and installed payload hashes,
@@ -79,3 +85,23 @@ upgrade and uninstall. These artifacts cannot enter the release asset assembly.
 The helper never launches the desktop during this test; UAC bootstrap and GUI
 relaunch are explicitly separate qualification gaps. This demonstrates native
 installer workflow, not compatibility of two different application binaries.
+
+### Observed Windows rehearsal
+
+At source `7bb2990eb`, rehearsal
+[42771822975](https://github.com/replicraft/TableCraft/actions/runs/42771822975)
+passed native MSI creation, table/payload verification, installation, handler and
+advertised-shortcut checks, user-file preservation and uninstall on both
+[x64](https://github.com/replicraft/TableCraft/actions/runs/42771822975/job/129682002318)
+and [ARM64](https://github.com/replicraft/TableCraft/actions/runs/42771822975/job/129682002304).
+Each target also executed both explicit native updater policy tests successfully
+(two passed, zero failed or ignored): inert cabinet/payload decoding and actual
+registered component/manifest/file ownership. Their stdout receipts are retained
+in the respective `desktop-msi-lifecycle-*` artifacts.
+
+The jobs subsequently failed while constructing the disposable next-version
+fixture: the production producer correctly refused metadata version `0.1.1`
+against the real `0.1.0` workspace. No helper upgrade/rollback test ran. The
+separate fixture builder now supplies isolated, labelled test metadata without
+weakening that production check; its native execution still requires another
+rehearsal. UAC/bootstrap and GUI relaunch remain separate unqualified behavior.
