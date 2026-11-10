@@ -51,6 +51,7 @@ impl NativeImage {
                     schema,
                     position,
                     &record.data,
+                    record_serialization::current_rows::Language::LongText,
                     budget,
                     cancelled,
                 )?;

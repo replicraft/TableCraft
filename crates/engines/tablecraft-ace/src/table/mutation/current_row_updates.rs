@@ -13,7 +13,7 @@ use crate::{
     EditError, FittedColumnUpdates, FixedColumnUpdates, InspectError, NativeEditPlan, NativeImage,
     WriteBlocker,
     format::{
-        data_type::{INT32, SHORT_TEXT},
+        data_type::{CURRENCY, INT32, SHORT_TEXT},
         layout::{FIXED_FLAG, UPDATABLE_FLAG},
         page::PAGE_BYTES,
         row::{OFFSET_MASK, RELOCATED_MASK},
@@ -34,6 +34,7 @@ pub(super) enum Family {
     Current,
     Retained,
     RetainedOpaque,
+    RetainedCurrency,
 }
 
 impl Family {
@@ -58,7 +59,7 @@ impl Family {
                 }
                 Ok(source)
             }
-            Self::Retained => {
+            Self::Retained | Self::RetainedCurrency => {
                 if !image.has_retained_table_source(table, budget, cancelled)? {
                     return Err(EditError::Unsupported(WriteBlocker::RowLayout));
                 }
@@ -75,7 +76,7 @@ impl Family {
     ) -> Result<Vec<u8>, EditError> {
         match self {
             Self::Current => record_serialization::copy(image.as_bytes(), budget, cancelled),
-            Self::Retained | Self::RetainedOpaque => {
+            Self::Retained | Self::RetainedOpaque | Self::RetainedCurrency => {
                 fixed_records::copy(image.as_bytes(), budget, cancelled)
             }
         }
@@ -91,7 +92,7 @@ impl Family {
     ) -> Result<record_roots::Roots<'u, U>, EditError> {
         match self {
             Self::Current => record_roots::capture(image, schema, requests, budget, cancelled),
-            Self::Retained | Self::RetainedOpaque => {
+            Self::Retained | Self::RetainedOpaque | Self::RetainedCurrency => {
                 record_roots::capture_retained(image, schema, requests, budget, cancelled)
             }
         }
@@ -107,8 +108,17 @@ impl Family {
     ) -> Result<Space, EditError> {
         match self {
             Self::Current => Space::capture_normal(image, schema, owned, budget, cancelled),
-            Self::Retained | Self::RetainedOpaque => {
+            Self::Retained | Self::RetainedOpaque | Self::RetainedCurrency => {
                 Space::capture_retained(image, schema, owned, budget, cancelled)
+            }
+        }
+    }
+
+    fn language(self) -> record_serialization::current_rows::Language {
+        match self {
+            Self::RetainedCurrency => record_serialization::current_rows::Language::Currency,
+            Self::Current | Self::Retained | Self::RetainedOpaque => {
+                record_serialization::current_rows::Language::LongText
             }
         }
     }
@@ -135,7 +145,14 @@ impl Family {
                 );
             }
         }
-        record_serialization::current_rows::qualify(schema, column, before, budget, cancelled)?;
+        record_serialization::current_rows::qualify(
+            schema,
+            column,
+            before,
+            self.language(),
+            budget,
+            cancelled,
+        )?;
         Ok(())
     }
 
@@ -156,7 +173,13 @@ impl Family {
             )
         } else {
             record_serialization::current_rows::build(
-                schema, column, before, value, budget, cancelled,
+                schema,
+                column,
+                before,
+                value,
+                self.language(),
+                budget,
+                cancelled,
             )
         }
     }
@@ -178,7 +201,13 @@ impl Family {
             )
         } else {
             record_serialization::proof::current_rows::reconstruct(
-                schema, column, before, value, budget, cancelled,
+                schema,
+                column,
+                before,
+                value,
+                self.language(),
+                budget,
+                cancelled,
             )
         }
     }
@@ -208,8 +237,11 @@ pub(super) fn bind_for(
         return Err(EditError::Unsupported(WriteBlocker::RowLayout));
     }
     let schema = source.facts().table.schema();
-    let column = if matches!(family, Family::Retained | Family::RetainedOpaque) {
-        retained_column(source, &groups[0], budget, cancelled)?
+    let column = if matches!(
+        family,
+        Family::Retained | Family::RetainedOpaque | Family::RetainedCurrency
+    ) {
+        retained_column(source, &groups[0], family, budget, cancelled)?
     } else {
         match &groups[0] {
             FittedColumnUpdates::Fixed { column, updates } => {
@@ -242,6 +274,9 @@ pub(super) fn bind_for(
             if matches!(groups[0], FittedColumnUpdates::Fixed { .. }) => {}
         (SHORT_TEXT, Value::Text(_) | Value::Null)
             if matches!(groups[0], FittedColumnUpdates::Variable { .. }) => {}
+        (CURRENCY, Value::Currency(_) | Value::Null)
+            if matches!(family, Family::RetainedCurrency)
+                && matches!(groups[0], FittedColumnUpdates::Fixed { .. }) => {}
         _ => return Err(EditError::Unsupported(WriteBlocker::Column)),
     }
     let values = super::normal_fitted::original_values(
@@ -343,6 +378,7 @@ impl NativeImage {
                     schema,
                     column,
                     &record.data,
+                    record_serialization::current_rows::Language::LongText,
                     budget,
                     cancelled,
                 )?;
@@ -465,6 +501,7 @@ pub(super) fn plan(
 fn retained_column(
     source: &Source<'_>,
     group: &FittedColumnUpdates<'_>,
+    family: Family,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<usize, EditError> {
@@ -482,10 +519,18 @@ fn retained_column(
     let field = &schema.columns()[column];
     match group {
         FittedColumnUpdates::Fixed { updates, .. } => {
-            field::fixed_column_at(schema, column, ScalarType::Int32, size_of::<i32>())?;
+            let (kind, width) = if matches!(family, Family::RetainedCurrency) {
+                (ScalarType::Currency, size_of::<i64>())
+            } else {
+                (ScalarType::Int32, size_of::<i32>())
+            };
+            field::fixed_column_at(schema, column, kind, width)?;
             rows::unique_identities(updates, budget, cancelled)?;
         }
         FittedColumnUpdates::Variable { updates, .. } => {
+            if matches!(family, Family::RetainedCurrency) {
+                return Err(EditError::Unsupported(WriteBlocker::Column));
+            }
             record_serialization::storage::qualify(field)?;
             if field.native_type() != SHORT_TEXT {
                 return Err(EditError::Unsupported(WriteBlocker::Column));
@@ -498,6 +543,10 @@ fn retained_column(
         INT32 => {
             matches!(cell.expected, Value::Int32(_) | Value::Null)
                 && matches!(cell.value, Value::Int32(_) | Value::Null)
+        }
+        CURRENCY if matches!(family, Family::RetainedCurrency) => {
+            matches!(cell.expected, Value::Currency(_) | Value::Null)
+                && matches!(cell.value, Value::Currency(_) | Value::Null)
         }
         SHORT_TEXT => {
             matches!(cell.expected, Value::Text(_) | Value::Null)

@@ -3,7 +3,7 @@ use super::storage;
 use crate::{
     EditError, InspectError, TableSchema, WriteBlocker,
     format::{
-        data_type::{INT32, SHORT_TEXT},
+        data_type::{CURRENCY, INT32, SHORT_TEXT},
         layout::{FIXED_FLAG, UPDATABLE_FLAG},
         row::{COLUMN_COUNT_BYTES, MASK_BITS, VARIABLE_COUNT_BYTES, VARIABLE_OFFSET_BYTES},
     },
@@ -14,6 +14,13 @@ use tablecraft_core::{
     limits::{Resource, ResourceBudget},
     values::Value,
 };
+
+/// Each consuming action keeps its original declared scalar language closed.
+#[derive(Clone, Copy)]
+pub(in crate::table::mutation) enum Language {
+    LongText,
+    Currency,
+}
 
 pub(in crate::table::mutation) struct Frame {
     original: RecordLayout,
@@ -26,17 +33,22 @@ pub(in crate::table::mutation) fn qualify(
     schema: &TableSchema,
     column: usize,
     before: &[u8],
+    language: Language,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Frame, EditError> {
     check(budget, cancelled)?;
     let field = schema.columns().get(column).ok_or(EditError::Conflict)?;
-    match (field.native_type(), field.fixed()) {
-        (INT32, true)
+    match (language, field.native_type(), field.fixed()) {
+        (Language::Currency, CURRENCY, true)
+            if field.flags() == (FIXED_FLAG | UPDATABLE_FLAG)
+                && field.extended_flags() == 0
+                && field.storage_length() == size_of::<i64>() => {}
+        (Language::LongText, INT32, true)
             if field.flags() == (FIXED_FLAG | UPDATABLE_FLAG)
                 && field.extended_flags() == 0
                 && field.storage_length() == size_of::<i32>() => {}
-        (SHORT_TEXT, false) => storage::qualify(field)?,
+        (Language::LongText, SHORT_TEXT, false) => storage::qualify(field)?,
         _ => return Err(EditError::Unsupported(WriteBlocker::Column)),
     }
     let original = record_layout::parse(before, schema, budget)?;
@@ -73,15 +85,17 @@ pub(in crate::table::mutation) fn build(
     column: usize,
     before: &[u8],
     value: &Value,
+    language: Language,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Vec<u8>, EditError> {
-    let frame = qualify(schema, column, before, budget, cancelled)?;
+    let frame = qualify(schema, column, before, language, budget, cancelled)?;
     let field = &schema.columns()[column];
     let variable = (!field.fixed()).then_some(field.physical_field().variable);
-    let payload = match (field.native_type(), value) {
-        (INT32, Value::Int32(_) | Value::Null) => Vec::new(),
-        (SHORT_TEXT, Value::Text(_) | Value::Null) => {
+    let payload = match (language, field.native_type(), value) {
+        (Language::LongText, INT32, Value::Int32(_) | Value::Null)
+        | (Language::Currency, CURRENCY, Value::Currency(_) | Value::Null) => Vec::new(),
+        (Language::LongText, SHORT_TEXT, Value::Text(_) | Value::Null) => {
             storage::encode_preferred(field, value, budget, cancelled)?
         }
         _ => return Err(EditError::Unsupported(WriteBlocker::Column)),
@@ -139,12 +153,24 @@ pub(in crate::table::mutation) fn build(
     after[..COLUMN_COUNT_BYTES].copy_from_slice(&count.to_le_bytes());
     after[COLUMN_COUNT_BYTES..frame.fixed]
         .copy_from_slice(&before[COLUMN_COUNT_BYTES..frame.fixed]);
-    if let Value::Int32(value) = value {
-        let start = COLUMN_COUNT_BYTES + field.physical_field().offset;
-        after
+    let start = COLUMN_COUNT_BYTES + field.physical_field().offset;
+    match value {
+        Value::Int32(value) => after
             .get_mut(start..start + size_of::<i32>())
             .ok_or(EditError::Preservation)?
-            .copy_from_slice(&value.to_le_bytes());
+            .copy_from_slice(&value.to_le_bytes()),
+        Value::Currency(_) => {
+            let encoded = crate::table::scalar_encoding::encode::<{ size_of::<i64>() }>(
+                tablecraft_schema::ScalarType::Currency,
+                value,
+            )
+            .ok_or(EditError::Preservation)?;
+            after
+                .get_mut(start..start + encoded.len())
+                .ok_or(EditError::Preservation)?
+                .copy_from_slice(&encoded);
+        }
+        _ => {}
     }
     let mut position = frame.expanded;
     if frame.variables != 0 {

@@ -2,11 +2,11 @@
 use crate::{
     EditError, InspectError, TableSchema,
     format::{
-        data_type::{INT32, SHORT_TEXT},
+        data_type::{CURRENCY, INT32, SHORT_TEXT},
         row::{COLUMN_COUNT_BYTES, MASK_BITS},
     },
     header::check,
-    table::record_layout,
+    table::{mutation::record_serialization::current_rows::Language, record_layout},
 };
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
@@ -18,6 +18,7 @@ pub(in crate::table::mutation) fn reconstruct(
     column: usize,
     before: &[u8],
     value: &Value,
+    language: Language,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Vec<u8>, EditError> {
@@ -27,9 +28,14 @@ pub(in crate::table::mutation) fn reconstruct(
         .columns()
         .get(column)
         .ok_or(EditError::Preservation)?;
-    let payload = match (field.native_type(), value) {
-        (INT32, Value::Int32(_) | Value::Null) if field.fixed() => Vec::new(),
-        (SHORT_TEXT, Value::Text(_) | Value::Null) if !field.fixed() => {
+    let payload = match (language, field.native_type(), value) {
+        (Language::LongText, INT32, Value::Int32(_) | Value::Null) if field.fixed() => Vec::new(),
+        (Language::Currency, CURRENCY, Value::Currency(_) | Value::Null)
+            if field.fixed() && field.storage_length() == size_of::<i64>() =>
+        {
+            Vec::new()
+        }
+        (Language::LongText, SHORT_TEXT, Value::Text(_) | Value::Null) if !field.fixed() => {
             super::payload::encode(field, value, budget, cancelled)?
         }
         _ => return Err(EditError::Preservation),
@@ -118,6 +124,13 @@ pub(in crate::table::mutation) fn reconstruct(
             .get_mut(start..start + size_of::<i32>())
             .ok_or(EditError::Preservation)?
             .copy_from_slice(&value.to_le_bytes());
+    }
+    if let Value::Currency(value) = value {
+        let start = COLUMN_COUNT_BYTES + field.physical_field().offset;
+        expected
+            .get_mut(start..start + size_of::<i64>())
+            .ok_or(EditError::Preservation)?
+            .copy_from_slice(&value.scaled().to_le_bytes());
     }
     for segment in &segments {
         check(budget, cancelled)?;
