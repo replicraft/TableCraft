@@ -16,7 +16,6 @@ pub(super) const COLUMNS: [&str; 8] = [
     "szReferencedColumn",
     "szColumn",
 ];
-const MAX_RELATIONSHIPS: usize = 256;
 
 struct Pending {
     name: SchemaName,
@@ -53,9 +52,6 @@ pub(super) fn decode(
         {
             position
         } else {
-            if pending.len() == MAX_RELATIONSHIPS {
-                return Err(InspectError::StructureLimit);
-            }
             budget.charge_allocation(1, size_of::<Pending>() as u64)?;
             pending
                 .try_reserve(1)

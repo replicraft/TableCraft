@@ -134,3 +134,65 @@ proptest! {
         }
     }
 }
+
+fn many_relationships() -> Vec<Vec<Value>> {
+    (0..257)
+        .map(|index| {
+            let mut values = row(1, 0);
+            values[0] = Value::Text(format!("Relationship{index}"));
+            values[4] = Value::Text(format!("Parent{index}"));
+            values[5] = Value::Text(format!("Child{index}"));
+            values
+        })
+        .collect()
+}
+
+#[test]
+fn complete_relationship_inventory_is_not_capped_at_256_database_groups() {
+    let relationships =
+        decode(&columns(), &many_relationships(), &mut budget(), &|| false).unwrap();
+    assert_eq!(relationships.len(), 257);
+    for (index, relationship) in relationships.iter().enumerate() {
+        let declaration = relationship.declaration();
+        assert_eq!(
+            declaration.parent_table().as_str(),
+            format!("Parent{index}")
+        );
+        assert_eq!(declaration.child_table().as_str(), format!("Child{index}"));
+        assert_eq!(declaration.columns()[0].parent().as_str(), "P0");
+        assert_eq!(declaration.columns()[0].child().as_str(), "C0");
+    }
+}
+
+#[test]
+fn large_relationship_inventory_rejects_late_bad_ordinal_without_partial_result() {
+    let mut rows = many_relationships();
+    rows[256][3] = Value::Int32(1);
+    assert!(matches!(
+        decode(&columns(), &rows, &mut budget(), &|| false),
+        Err(InspectError::Malformed)
+    ));
+}
+
+#[test]
+fn large_relationship_inventory_retains_paid_growth_and_cancellation() {
+    let rows = many_relationships();
+    for mut limit in [
+        ResourceBudget::new(1024, 1000, 100_000),
+        ResourceBudget::new(1_048_576, 1000, 256),
+    ] {
+        assert!(matches!(
+            decode(&columns(), &rows, &mut limit, &|| false),
+            Err(InspectError::Limit(_))
+        ));
+    }
+    let checks = std::cell::Cell::new(0_u32);
+    let cancelled = || {
+        checks.set(checks.get() + 1);
+        checks.get() > 256
+    };
+    assert!(matches!(
+        decode(&columns(), &rows, &mut budget(), &cancelled),
+        Err(InspectError::Cancelled)
+    ));
+}
