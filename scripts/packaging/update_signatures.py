@@ -3,6 +3,7 @@
 import argparse
 import base64
 import os
+import re
 from pathlib import Path
 import subprocess
 import tempfile
@@ -35,15 +36,23 @@ def check_key(path, *, production):
     if len(raw) != 42 or raw[:2] != b"Ed":
         raise ValueError("Expected an Ed25519 Minisign public key")
     if production:
+        label = re.sub(r"[^A-Z0-9]", "", lines[0].upper())
+        if "TESTONLY" in label:
+            raise ValueError("Production signing refuses a test-only public key")
         trusted = contract.regular(PUBLIC_KEY, MAX_KEY_BYTES).read_text("utf-8")
-        if text != trusted or "TEST ONLY" in text.upper():
+        if text != trusted:
             raise ValueError("Production signing requires the pinned TableCraft release key")
     return raw
 
 
 def execute(command):
     # Captured diagnostics may contain key details; report only the operation failure.
-    result = subprocess.run(command, capture_output=True, check=False, timeout=120)
+    environment = os.environ.copy()
+    environment.pop("TABLECRAFT_UPDATE_SIGNING_KEY", None)
+    result = subprocess.run(
+        command, stdin=subprocess.DEVNULL, env=environment,
+        capture_output=True, check=False, timeout=120,
+    )
     if result.returncode:
         raise ValueError("Minisign operation failed")
 
@@ -69,11 +78,16 @@ def run(version, product, assets, output, public_key, tool, *, signing, dry_run)
             secret = os.environ.get("TABLECRAFT_UPDATE_SIGNING_KEY", "")
             if not secret.strip():
                 raise ValueError("TABLECRAFT_UPDATE_SIGNING_KEY is required")
+            if len(secret.encode("utf-8")) > MAX_KEY_BYTES:
+                raise ValueError("Signing key exceeds the key-size limit")
             # An isolated signing environment provides an unencrypted Minisign key.
             # File permissions protect it; never put the secret in argv or logs.
             with tempfile.TemporaryDirectory(prefix="tablecraft-sign-") as temporary:
                 key_file = Path(temporary) / "key"
-                with open(key_file, "x", encoding="utf-8", opener=lambda path, flags: os.open(path, flags, 0o600)) as stream:
+                with open(
+                    key_file, "x", encoding="utf-8",
+                    opener=lambda path, flags: os.open(path, flags, 0o600),
+                ) as stream:
                     stream.write(secret)
                 for archive in archives:
                     signature = output / (archive.name + ".minisig")

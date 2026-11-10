@@ -75,6 +75,41 @@ class UpdateSignatureTests(unittest.TestCase):
         self.assertFalse(self.output.exists())
         self.assertEqual(before, {p.name: p.read_bytes() for p in self.assets.iterdir()})
 
+    def test_minisign_child_has_no_secret_environment_or_interactive_input(self):
+        signatures.execute([sys.executable, "-c", """
+import os
+import sys
+
+assert "TABLECRAFT_UPDATE_SIGNING_KEY" not in os.environ
+assert sys.stdin.read() == ""
+"""])
+        self.assertEqual(os.environ["TABLECRAFT_UPDATE_SIGNING_KEY"], self.secret.read_text())
+
+    def test_production_refuses_alternative_and_test_labeled_pinned_keys(self):
+        real_text = self.public.read_text()
+        with patch.object(signatures, "PUBLIC_KEY", self.public):
+            signatures.check_key(self.public, production=True)
+            alternative = self.root / "alternative.pub"
+            subprocess.run(["minisign", "-G", "-W", "-p", str(alternative),
+                            "-s", str(self.root / "alternative.key")],
+                           capture_output=True, check=True)
+            with self.assertRaisesRegex(ValueError, "pinned"):
+                signatures.check_key(alternative, production=True)
+            for marker in ("TEST ONLY", "TEST-ONLY", "TEST_ONLY"):
+                self.public.write_text(
+                    f"untrusted comment: {marker} update public key\n"
+                    + real_text.splitlines()[1] + "\n"
+                )
+                with self.subTest(marker=marker):
+                    with self.assertRaisesRegex(ValueError, "test-only"):
+                        signatures.check_key(self.public, production=True)
+
+    def test_oversized_signing_key_cleans_output(self):
+        with patch.dict(os.environ, {"TABLECRAFT_UPDATE_SIGNING_KEY": "x" * 4097}):
+            with self.assertRaisesRegex(ValueError, "key-size"):
+                self.run_signatures(signing=True)
+        self.assertFalse(self.output.exists())
+
     def test_production_refuses_missing_pinned_key_and_symlinked_payload(self):
         with patch.object(signatures, "PUBLIC_KEY", self.root / "missing-release-key.pub"):
             with self.assertRaises(ValueError):
