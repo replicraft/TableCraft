@@ -82,7 +82,8 @@ impl NativeJournalEditor {
                 let supported = matches!(kind, ScalarType::Int32 | ScalarType::Text);
                 #[cfg(feature = "ace16-create")]
                 let supported = supported
-                    || self.route == JournalRoute::RetainedRows && kind == ScalarType::Currency;
+                    || self.route == JournalRoute::RetainedRows
+                        && matches!(kind, ScalarType::Currency | ScalarType::Boolean);
                 if columns.len() != 1 || !supported {
                     return Err(NativeEditError::Unsupported.into());
                 }
@@ -197,6 +198,11 @@ impl NativeJournalEditor {
             #[cfg(feature = "ace16-create")]
             JournalRoute::RetainedRows => {
                 if positions.first().is_some_and(|&position| {
+                    self.snapshot().columns()[position].data_type() == ScalarType::Boolean
+                }) {
+                    self.editor
+                        .plan_recoverable_retained_boolean_rows(groups, budget, cancelled)?
+                } else if positions.first().is_some_and(|&position| {
                     self.snapshot().columns()[position].data_type() == ScalarType::Currency
                 }) {
                     self.editor

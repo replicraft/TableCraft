@@ -188,6 +188,7 @@ impl MutationPlan {
                     NativeUpdateProfile::Ace16RetainedRows
                         | NativeUpdateProfile::Ace16RetainedOpaqueRows
                         | NativeUpdateProfile::Ace16RetainedCurrencyRows
+                        | NativeUpdateProfile::Ace16RetainedBooleanRows
                 ) {
                     plan.prepare_retained(target, journal, budget, cancelled)
                         .map(PreparedNativeUpdate::Resizable)
@@ -350,6 +351,7 @@ impl MutationIntent {
         if raw.starts_with(b"TCNI0017")
             || raw.starts_with(b"TCNI0018")
             || raw.starts_with(b"TCNI0019")
+            || raw.starts_with(b"TCNI0020")
         {
             return NativeUpdateIntent::decode(raw, budget, cancelled)
                 .map(Self::RetainedUpdate)

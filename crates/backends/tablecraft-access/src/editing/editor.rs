@@ -418,6 +418,21 @@ impl NativeEditor {
     }
 
     #[cfg(feature = "ace16-create")]
+    pub(super) fn plan_recoverable_retained_boolean_rows(
+        self,
+        groups: Vec<NativeFittedIntentGroup>,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<RecoverableNativeEditPlan, RecoverableEditError> {
+        self.image.plan_recoverable_retained_boolean_row_updates(
+            self.snapshot.name(),
+            groups,
+            budget,
+            cancelled,
+        )
+    }
+
+    #[cfg(feature = "ace16-create")]
     pub(super) fn plan_recoverable_retained_currency_rows(
         self,
         groups: Vec<NativeFittedIntentGroup>,
