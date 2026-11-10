@@ -331,3 +331,6 @@ mod opaque;
 
 #[cfg(feature = "ace16-create")]
 mod currency;
+
+#[cfg(feature = "ace16-create")]
+mod boolean;
