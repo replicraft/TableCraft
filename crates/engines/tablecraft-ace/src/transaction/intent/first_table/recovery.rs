@@ -92,12 +92,13 @@ fn qualify_checked<'a, J: DurableStorage>(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<QualifiedFirstTableRecovery<'a, J>, NativeRecoveryQualificationError> {
     intent.verify_before(checked.before_bytes(), budget, cancelled)?;
-    let image = NativeImage::capture(
-        &mut Cursor::new(checked.before_bytes()),
-        scope,
-        budget,
-        cancelled,
-    )?;
+    let mut input = Cursor::new(checked.before_bytes());
+    let image = match &checked {
+        CheckedJournal::Original(_) => NativeImage::capture(&mut input, scope, budget, cancelled)?,
+        CheckedJournal::Native(_) => {
+            NativeImage::capture_retained(&mut input, scope, budget, cancelled)?
+        }
+    };
     let plan = match &checked {
         CheckedJournal::Original(_) => {
             image.plan_first_table(intent.definition, budget, cancelled)?

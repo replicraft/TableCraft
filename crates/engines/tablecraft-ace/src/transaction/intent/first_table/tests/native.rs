@@ -1,4 +1,5 @@
 //! Native declarations remain a distinct original request, including at small counts.
+mod recovery;
 use super::{FirstTableIntentError, NativeFirstTableIntent, budget, literal};
 use crate::{CreateColumn, FirstTableDefinition};
 use sha2::{Digest, Sha256};

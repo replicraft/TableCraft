@@ -1,4 +1,5 @@
 //! TCAT7 binds native request language and source cohort independently.
+mod recovery;
 use super::{budget, template};
 use crate::{
     AddTableIntentError, AddTableSourceProfile, CreateColumn, FirstTableDefinition,
