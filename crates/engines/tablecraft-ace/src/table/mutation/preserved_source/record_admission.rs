@@ -56,3 +56,6 @@ impl RecordAdmission {
         Err(EditError::Unsupported(WriteBlocker::RowLayout))
     }
 }
+
+#[cfg(all(test, feature = "journal"))]
+mod tests;
