@@ -90,3 +90,31 @@ fn populated_field_rename_inspection_review_save_and_reopen_preserve_the_actual_
         assert!(!has_more);
     }
 }
+
+#[test]
+fn populated_field_rename_unchanged_review_consumes_only_a_read_witness() {
+    let empty = fitting::source(SourceCase::NumberFirst);
+    let before = inserting::first_number_row(&empty, &[(0, Some(1)), (1, Some(42))]);
+    let (directory, path, worker, revision) = opened(&before);
+    let (facts, capability) = review(&worker, revision, "Score", 1, "Score").unwrap();
+    assert!(!facts.changed);
+    let saves = SaveWorker::new(|| {});
+    let bundle = directory.path().join("unchanged-populated.journal");
+    let refused = saves
+        .start_field_rename(capability, bundle.clone())
+        .unwrap_err();
+    assert_eq!(refused.kind, SaveStartFailure::InvalidState);
+    assert!(saves.poll().is_none());
+    let witness = match refused.into_reviewed().unwrap().into_unchanged_reopen() {
+        Ok(witness) => witness,
+        Err(_) => panic!("the genuine unchanged populated review must yield a read witness"),
+    };
+    assert!(!witness.changed());
+    assert_eq!(witness.expected_bytes(), before);
+    assert!(matches!(
+        request(&worker, Command::OpenFieldRenamed { witness }),
+        Ok(Response::Opened { .. })
+    ));
+    assert!(!bundle.exists());
+    assert_eq!(std::fs::read(path).unwrap(), before);
+}

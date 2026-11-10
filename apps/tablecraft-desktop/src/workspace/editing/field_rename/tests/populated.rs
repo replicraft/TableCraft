@@ -8,6 +8,7 @@ use tablecraft_testkit::fixtures::access::{
     canonical_created_number::mixed::after_off::deleted_field::inserting,
     saved_field_rename::fitting::{self, SourceCase},
 };
+use tablecraft_ui::FieldRenameSaveIdentity;
 
 #[test]
 fn normal_populated_field_rename_preserves_the_row_index_and_generator_through_fresh_open() {
@@ -57,4 +58,29 @@ fn normal_populated_field_rename_preserves_the_row_index_and_generator_through_f
         assert_eq!(std::fs::read(&path).unwrap(), after);
         assert!(!journal_path(&path).exists());
     }
+}
+
+#[test]
+fn normal_populated_field_rename_unchanged_review_never_starts_a_save_actor() {
+    let empty = fitting::source(SourceCase::NumberFirst);
+    let before = inserting::first_number_row(&empty, &[(0, Some(1)), (1, Some(42))]);
+    let (_directory, path, _, mut harness) = opened(before.clone());
+    super::accept_review(&mut harness, "Score");
+    let host = harness.state().editing.field_rename.as_ref().unwrap();
+    assert!(matches!(
+        host.identity,
+        Some(FieldRenameSaveIdentity::UnchangedReview { .. })
+    ));
+    assert!(host.reopening);
+    assert!(host.terminal.is_none());
+    assert!(!harness.state().editing.has_save());
+    assert!(!harness.state().editing.worker.is_busy());
+    assert!(!journal_path(&path).exists());
+    assert_eq!(std::fs::read(&path).unwrap(), before);
+    finish_schema_save(&mut harness);
+    assert!(!harness.state().state.field_rename_open());
+    let page = harness.state().state.data.as_ref().unwrap();
+    assert_eq!(page.columns[1].name, "Score");
+    assert_eq!(page.rows[0][1].text, "42");
+    assert_eq!(std::fs::read(&path).unwrap(), before);
 }
