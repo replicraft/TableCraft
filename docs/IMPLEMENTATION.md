@@ -5025,7 +5025,7 @@ readback separate. These checks do not establish Microsoft Access qualification.
 ## Explicit larger fixed SQL copies
 
 `query preview-update --image-bytes N` now selects the existing fixed fitting
-service with a retained validated capture ceiling up to 80 MiB. Standard capture
+service with a retained validated capture ceiling up to 2 GiB. Standard capture
 and Default routing remain unchanged without the flag. Byte/step work limits
 remain independent; conflicting variable/LVAL/growth/cascade modes refuse before
 opening files. The [host contract](access/writes/SQL_ENGINEERING_COPIES.md) records
