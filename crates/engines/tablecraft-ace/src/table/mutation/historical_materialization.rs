@@ -12,7 +12,11 @@ use super::{
 use crate::{
     EditError, FixedColumnUpdates, FixedScalarUpdate, InspectError, NativeEditPlan, NativeImage,
     WriteBlocker,
-    format::{data_type::INT32, page::PAGE_BYTES, row::OFFSET_MASK},
+    format::{
+        data_type::INT32,
+        page::PAGE_BYTES,
+        row::{OFFSET_MASK, RELOCATED_MASK},
+    },
     header::check,
 };
 use tablecraft_core::{
@@ -24,6 +28,28 @@ use tablecraft_core::{
 pub(super) enum Layout {
     Fixed,
     Mixed,
+}
+
+#[derive(Clone, Copy)]
+pub(super) enum RootKind {
+    Direct,
+    Forwarded,
+}
+
+#[derive(Clone, Copy)]
+pub(super) struct Profile {
+    layout: Layout,
+    root_kind: RootKind,
+}
+
+impl RootKind {
+    pub(super) fn accepts(self, word: u16) -> bool {
+        word & !OFFSET_MASK
+            == match self {
+                Self::Direct => 0,
+                Self::Forwarded => RELOCATED_MASK,
+            }
+    }
 }
 
 pub(super) struct Selected {
@@ -85,6 +111,81 @@ pub(super) fn bind(
 }
 
 impl NativeImage {
+    /// Positively select an absent field whose logical root is already moved.
+    /// Request/source eligibility is checked by the consuming dedicated planner.
+    pub(crate) fn historical_forwarded_number_materialization_selected(
+        &self,
+        table: &str,
+        groups: &[FixedColumnUpdates<'_>],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<bool, EditError> {
+        if self
+            .missing_historical_layout(table, groups, budget, cancelled)?
+            .is_none()
+        {
+            return Ok(false);
+        }
+        let source = Source::capture(self, table, budget, cancelled)?;
+        let schema = source.facts().table.schema();
+        for group in groups {
+            for (column, field) in schema.columns().iter().enumerate() {
+                check(budget, cancelled)?;
+                if !field.name().eq_ignore_ascii_case(group.column()) {
+                    continue;
+                }
+                for update in group.updates() {
+                    check(budget, cancelled)?;
+                    let record = source
+                        .facts()
+                        .records
+                        .get(update.row())
+                        .ok_or(EditError::Conflict)?;
+                    if field.number() < usize::from(crate::format::bytes::u16_at(&record.data, 0)?)
+                    {
+                        continue;
+                    }
+                    let requests = [Selected {
+                        ordinal: update.row(),
+                        column,
+                    }];
+                    let captured =
+                        record_roots::capture(self, schema, &requests, budget, cancelled)?;
+                    if captured
+                        .selected
+                        .first()
+                        .is_some_and(|root| RootKind::Forwarded.accepts(root.word))
+                    {
+                        return Ok(true);
+                    }
+                }
+            }
+        }
+        Ok(false)
+    }
+
+    pub(crate) fn plan_historical_forwarded_number_materialization(
+        self,
+        table: &str,
+        groups: &[FixedColumnUpdates<'_>],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<NativeEditPlan, EditError> {
+        let layout = self
+            .missing_historical_layout(table, groups, budget, cancelled)?
+            .ok_or(EditError::Unsupported(WriteBlocker::RowLayout))?;
+        self.plan_historical_materialization(
+            table,
+            groups,
+            Profile {
+                layout,
+                root_kind: RootKind::Forwarded,
+            },
+            budget,
+            cancelled,
+        )
+    }
+
     /// Select the original absent-field shape before either historical planner.
     /// A positive selection still needs complete source and request admission.
     pub(crate) fn historical_number_materialization_selected(
@@ -156,7 +257,16 @@ impl NativeImage {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<NativeEditPlan, EditError> {
-        self.plan_historical_materialization(table, groups, Layout::Fixed, budget, cancelled)
+        self.plan_historical_materialization(
+            table,
+            groups,
+            Profile {
+                layout: Layout::Fixed,
+                root_kind: RootKind::Direct,
+            },
+            budget,
+            cancelled,
+        )
     }
 
     pub(crate) fn plan_historical_mixed_number_materialization(
@@ -166,25 +276,34 @@ impl NativeImage {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<NativeEditPlan, EditError> {
-        self.plan_historical_materialization(table, groups, Layout::Mixed, budget, cancelled)
+        self.plan_historical_materialization(
+            table,
+            groups,
+            Profile {
+                layout: Layout::Mixed,
+                root_kind: RootKind::Direct,
+            },
+            budget,
+            cancelled,
+        )
     }
 
     fn plan_historical_materialization(
         self,
         table: &str,
         groups: &[FixedColumnUpdates<'_>],
-        layout: Layout,
+        profile: Profile,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<NativeEditPlan, EditError> {
         let _span = tracing::debug_span!("native.historical_number_materialization.plan").entered();
         let source = Source::capture(&self, table, budget, cancelled)?;
-        let selected = bind(&source, groups, layout, budget, cancelled)?;
+        let selected = bind(&source, groups, profile.layout, budget, cancelled)?;
         let requests = [selected];
         let schema = source.facts().table.schema();
         let captured = record_roots::capture(&self, schema, &requests, budget, cancelled)?;
         let root = captured.selected.first().ok_or(EditError::Conflict)?;
-        if captured.selected.len() != 1 || root.word & !OFFSET_MASK != 0 {
+        if captured.selected.len() != 1 || !profile.root_kind.accepts(root.word) {
             return Err(EditError::Unsupported(WriteBlocker::RowLayout));
         }
         let original = source
@@ -199,7 +318,7 @@ impl NativeImage {
             return Err(EditError::Preservation);
         }
         let update: &FixedScalarUpdate = &groups[0].updates()[0];
-        let record = match layout {
+        let record = match profile.layout {
             Layout::Fixed => historical_fixed::build(
                 schema,
                 root.update.column,
@@ -252,7 +371,7 @@ impl NativeImage {
         }
         audit::final_pages(&placement, &after, budget, cancelled)?;
         space.audit(self.as_bytes(), &after, budget, cancelled)?;
-        proof::prove(&self, table, groups, layout, &after, budget, cancelled)?;
+        proof::prove(&self, table, groups, profile, &after, budget, cancelled)?;
         drop(source);
         Ok(NativeEditPlan {
             before: self.bytes,

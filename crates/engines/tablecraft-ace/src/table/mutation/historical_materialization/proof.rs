@@ -1,10 +1,10 @@
 //! Original bytes independently reconstruct the row and physical placement.
-use super::{Layout, Selected, bind};
+use super::{Layout, Profile, Selected, bind};
 use crate::{
     EditError, FixedColumnUpdates, InspectError, NativeImage, TableSchema, WriteBlocker,
     format::{
         bytes::u16_at,
-        row::{COLUMN_COUNT_BYTES, MASK_BITS, OFFSET_MASK},
+        row::{COLUMN_COUNT_BYTES, MASK_BITS},
     },
     header::check,
     preservation::COPY_CHUNK_BYTES,
@@ -29,7 +29,7 @@ pub(super) fn prove(
     image: &NativeImage,
     table: &str,
     groups: &[FixedColumnUpdates<'_>],
-    layout: Layout,
+    profile: Profile,
     after: &[u8],
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
@@ -38,15 +38,15 @@ pub(super) fn prove(
     source
         .facts()
         .require_preserved_definition_tail(image, after, budget, cancelled)?;
-    let requests = [bind(&source, groups, layout, budget, cancelled)?];
+    let requests = [bind(&source, groups, profile.layout, budget, cancelled)?];
     let schema = source.facts().table.schema();
     let captured = record_roots::capture(image, schema, &requests, budget, cancelled)?;
     let root = captured.selected.first().ok_or(EditError::Conflict)?;
-    if captured.selected.len() != 1 || root.word & !OFFSET_MASK != 0 {
+    if captured.selected.len() != 1 || !profile.root_kind.accepts(root.word) {
         return Err(EditError::Unsupported(WriteBlocker::RowLayout));
     }
     let value = groups[0].updates()[0].value();
-    let record = match layout {
+    let record = match profile.layout {
         Layout::Fixed => reconstruct(
             schema,
             root.update,
