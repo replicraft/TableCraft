@@ -115,7 +115,7 @@ fn context_edit(harness: &mut Harness<'_, Desktop>, row: usize, value: bool) {
         .find(|node| {
             node.accesskit_node()
                 .label()
-                .is_some_and(|label| enabled_cell_label(label, row))
+                .is_some_and(|label| enabled_cell_label(&label, row))
         })
         .expect("the actual displayed native Boolean cell")
         .click_secondary();
@@ -212,7 +212,7 @@ fn created_yes_no_checkbox_click_and_space_propose_reviewed_toggles() {
             .find(|node| {
                 node.accesskit_node()
                     .label()
-                    .is_some_and(|label| enabled_cell_label(label, 0))
+                    .is_some_and(|label| enabled_cell_label(&label, 0))
             })
             .expect("actual displayed native checkbox");
         if keyboard {
