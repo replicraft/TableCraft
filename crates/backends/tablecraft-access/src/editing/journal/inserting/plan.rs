@@ -17,7 +17,7 @@ pub enum NativeJournalInsertPlan {
     Complete(RecoverableNativeInsertPlan),
     /// Original complete rows with one represented EOF DATA page, TCNA3/V2.
     AllocateEof(RecoverableNativeEofInsertPlan),
-    /// Original supplied/omitted fields, retaining the distinct TCNA0002 body.
+    /// Original supplied/omitted fields, retaining their selected TCNA2/6/7 family.
     Omitted(RecoverableNativeOmittedInsertPlan),
     /// Original presence and one retained civil clock input, TCNA5/V1.
     Clock(RecoverableNativeClockInsertPlan),

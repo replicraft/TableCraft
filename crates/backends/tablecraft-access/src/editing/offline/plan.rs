@@ -408,6 +408,9 @@ impl MutationIntent {
             NativeCompleteInsertIntent::decode(raw, budget, cancelled).map(Self::CompleteInsert)
         } else if raw.starts_with(b"TCNA0003") {
             NativeEofInsertIntent::decode(raw, budget, cancelled).map(Self::EofInsert)
+        } else if raw.starts_with(b"TCNA0007") {
+            NativeOmittedInsertIntent::decode_current(raw, budget, cancelled)
+                .map(Self::OmittedInsert)
         } else if raw.starts_with(b"TCNA0002") || raw.starts_with(b"TCNA0006") {
             NativeOmittedInsertIntent::decode(raw, budget, cancelled).map(Self::OmittedInsert)
         } else if raw.starts_with(b"TCNA") {

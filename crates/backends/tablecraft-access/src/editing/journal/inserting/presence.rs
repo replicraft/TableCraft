@@ -45,9 +45,20 @@ impl NativeJournalInserter {
                 );
             }
         }
-        // Each encoded row needs its two-u32 envelope. Native default/profile
-        // checks retain their tighter row, capacity and intent-size bounds.
-        if rows.len() > NativeOmittedInsertIntent::MAX_ENCODED_BYTES / (2 * size_of::<u32>()) {
+        // Derive this preallocation bound from the selected wire envelope.
+        // Actual native capacity and original presence remain consuming checks.
+        let maximum_bytes = NativeOmittedInsertIntent::MAX_ENCODED_BYTES;
+        #[cfg(feature = "ace16-create")]
+        let maximum_bytes = if self
+            .image
+            .select_native_current_insert_source(&self.name, budget, cancelled)
+            .map_err(RecoverableEditError::from)?
+        {
+            NativeOmittedInsertIntent::MAX_CURRENT_ENCODED_BYTES
+        } else {
+            maximum_bytes
+        };
+        if rows.len() > maximum_bytes / (2 * size_of::<u32>()) {
             return Err(NativeEditError::from(InspectError::StructureLimit).into());
         }
         budget
@@ -75,6 +86,18 @@ impl NativeJournalInserter {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<NativeJournalInsertPlan, Error> {
+        #[cfg(feature = "ace16-create")]
+        if self
+            .image
+            .select_native_current_insert_source(&self.name, budget, cancelled)
+            .map_err(RecoverableEditError::from)?
+        {
+            return self
+                .image
+                .plan_recoverable_current_omitted_row_inserts(&self.name, rows, budget, cancelled)
+                .map(NativeJournalInsertPlan::Omitted)
+                .map_err(Error::from);
+        }
         if let Some(provider) = provider
             && self
                 .image

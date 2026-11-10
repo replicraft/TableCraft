@@ -776,6 +776,7 @@ impl OfflineWriteSession {
             .max(NativeDeleteIntent::MAX_ENCODED_BYTES)
             .max(NativeInsertIntent::MAX_ENCODED_BYTES)
             .max(NativeOmittedInsertIntent::MAX_ENCODED_BYTES)
+            .max(NativeOmittedInsertIntent::MAX_CURRENT_ENCODED_BYTES)
             .max(NativeClockInsertIntent::MAX_ENCODED_BYTES)
             .max(NativeEofInsertIntent::MAX_ENCODED_BYTES)
             .max(NativeCompleteInsertIntent::MAX_ENCODED_BYTES) as u64;
