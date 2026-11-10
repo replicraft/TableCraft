@@ -97,3 +97,18 @@ rename write, Microsoft Access save or expanded native admission by themselves.
 Use the same reviewed JAR and JDK arguments as above, a fresh fitting output
 directory, and invoke `prepare_fitting.py` followed by `run_fitting.py` through
 `tests/run.py`. Existing same-width recipes and captured observations are unchanged.
+
+## Populated synthetic rows
+
+`prepare_populated.py` independently authors dense generated IDs with nullable LONG
+companions, then checks that row construction and raw name changes commute.
+It freezes one-row, mixed NULL/negative three-row and NULL-first two-row images
+for growth, shrinkage, equal-width and no-op names. No native writer supplies bytes.
+
+`run_populated.py` requires those frozen hashes and the same pinned SDK/JDK inputs.
+Its small read-only `PopulatedRenameObserver` traverses actual sequential and
+primary-index cursors, checking every ID/value/NULL and stored field identity,
+properties and explicit OFF settings. Expressions and linked opens are refused.
+The [populated observation record](../../../results/schema/populated-field-rename-sdk-read-2026-11-09.json)
+separates the fifteen opens from twelve distinct images; three no-op files repeat
+baseline hashes. This adds reader evidence, not SDK/native Access writes.

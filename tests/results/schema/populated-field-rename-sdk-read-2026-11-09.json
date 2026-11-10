@@ -1,0 +1,664 @@
+{
+  "date": "2026-11-09",
+  "scope": "Independent read-only SDK traversal of synthetic dense populated rename images; no native writer output supplied these bytes",
+  "status": {
+    "baseline_opens": 3,
+    "requested_after_opens": 12,
+    "total_opens": 15,
+    "distinct_complete_images": 12,
+    "no_op_copies_identical_to_baselines": 3,
+    "sequential_cursor_traversals": 15,
+    "primary_index_cursor_traversals": 15,
+    "actual_row_visits_both_cursor_modes": 60,
+    "metadata_and_rows_matching": 12,
+    "failed_or_excluded_cases": 0,
+    "all_observed_images_unchanged": true,
+    "sdk_database_writes": 0,
+    "microsoft_access_execution": "not run",
+    "native_writer_qualification": "separate native/adapter/runtime/host checks, not granted by these observations"
+  },
+  "sdk": {
+    "artifact": "Jackcess 5.0.4",
+    "license": "Apache-2.0",
+    "sha256": "19a7494a56f439a57fda85c059b019b665802085cec5ae8186d1e028cc1bdfbc",
+    "reviewed_source_revision": "be0a2139b087a227d14cafd4ea231306a5a3a862",
+    "mode": "setReadOnly(true); setEvaluateExpressions(false); linked target resolver throws; no mutation calls"
+  },
+  "provenance": {
+    "fixture_commit": "5f73370f7",
+    "observer_commit": "7d0cb1f2c",
+    "source_sha256": "c88bc4cb1090d9b0c5e011010ec76cf9acc33da7ec9d58e67fa873bfaabe18ef",
+    "prediction_sha256": "0a6a660f43bf719f1706b2b6c716a98de9daa8cd4deff17f6135a82f95120b1b",
+    "inputs_before_observation_sha256": "a4ff72122982d7b2281fe41c8ad5a1da184b5468f9b0bf0c7b8b0500066ee41a",
+    "raw_observations_sha256": "9c1b282178c717759a9428628992a8fcb11abbb43162120b2158d667ba435265",
+    "raw_model_pins": {
+      "prepare_populated.py": "e2800464586627508dfe9549a1f1ed974d87e5e2e8b3ab576f5de844305d0a15",
+      "fitting.py": "218f1fac6ddc4991e338732d84dfe392db3022ab8f34769b78fcc36a4174461b",
+      "model.py": "1260f09855646cafe91414dd28afef61c0b98039285154737fafb468bea8ca49",
+      "prepare_rows.py": "2aff2363532abaea37ae990f23756cb51209e9c8b525671efb8bf39fa86c62fe"
+    },
+    "observer_source_pins": {
+      "PopulatedRenameObserver.java": "d11ac53d66f92d9454f3f7cce351159f4aba07b4c8e76e4209598a484a2e362d",
+      "run_populated.py": "a2e37e75e539646d13179fc242cd19e25235201f867d17754ea61cdf6a750531",
+      "run.py": "e954eb0bbf0f354d4817e466478af32ef09d834958b0ffb0fcadfcb6b43d6d93"
+    }
+  },
+  "command_template": {
+    "normalization": "Only local resource paths are replaced by placeholders; input hashes and fresh output are checked.",
+    "command": "python3 tests/run.py tests/access/schema/saved_field_rename/run_populated.py --predictions-dir <frozen-populated-predictions> --output-dir <fresh-sdk-output> --jar <pinned-jackcess-5.0.4.jar> --java-bin <JDK21-bin>"
+  },
+  "shared_metadata": {
+    "native_field_identity_offset_generation": [
+      [
+        "0",
+        "0",
+        "0",
+        "true"
+      ],
+      [
+        "1",
+        "1",
+        "4",
+        "false"
+      ]
+    ],
+    "original_columns_and_properties": [
+      {
+        "index": 0,
+        "id": 0,
+        "name": "ID",
+        "type": "LONG",
+        "units": 4,
+        "compressed": "false",
+        "properties": []
+      },
+      {
+        "index": 1,
+        "id": 1,
+        "name": "Score",
+        "type": "LONG",
+        "units": 4,
+        "compressed": "false",
+        "properties": [
+          [
+            "DefaultValue",
+            "MEMO",
+            "true",
+            "0"
+          ],
+          [
+            "Required",
+            "BOOLEAN",
+            "true",
+            "false"
+          ]
+        ]
+      }
+    ],
+    "explicit_off_options": [
+      [
+        "Track Name AutoCorrect Info",
+        "LONG",
+        "true",
+        "0"
+      ],
+      [
+        "Perform Name AutoCorrect",
+        "LONG",
+        "true",
+        "0"
+      ]
+    ],
+    "table_name": "Table1",
+    "declared_columns": 2,
+    "primary_indexes": 1,
+    "index_contract": "Primary, unique, nonforeign, one ID column; both cursor paths checked exact IDs and typed values."
+  },
+  "limitations": [
+    "Three exact-name no-op copies duplicate baseline hashes and are not twelve additional distinct inputs.",
+    "The twenty-four empty-source damaged controls belong to the separate fitted-field-rename-raw-sdk-read-2026-11-09.json record; this populated phase introduces no damaged control and records no failed/excluded observation.",
+    "Read-only cursor/getter success is not descriptor-complement, native journal, Windows/Access save or full CRUD compatibility proof."
+  ],
+  "cases": [
+    {
+      "label": "one-before",
+      "kind": "baseline",
+      "sha256": "3c73d182c8279e3050c056812059de6c8ea26c99d53c40ac9b0e1467ee49d2e6",
+      "field": "Score",
+      "expected_values": [
+        42
+      ],
+      "sdk_exit": 0,
+      "bytes_unchanged": true,
+      "declared_rows": 1,
+      "actual_sequential_rows": [
+        [
+          1,
+          42
+        ]
+      ],
+      "actual_primary_index_rows": [
+        [
+          1,
+          42
+        ]
+      ],
+      "metadata_and_rows_match_except_requested_name": null,
+      "stdout_sha256": "5b76844dc06e3852d1c2086c23711ecb9e02f65e4b4360b9320c9cc8ee298ffe",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "one-TaxAmount",
+      "kind": "changed AFTER",
+      "sha256": "544da0e202f81fbca77952c7e8851db8c71c0af40f3935d1dd89ad84d395ae14",
+      "field": "TaxAmount",
+      "expected_values": [
+        42
+      ],
+      "sdk_exit": 0,
+      "bytes_unchanged": true,
+      "declared_rows": 1,
+      "actual_sequential_rows": [
+        [
+          1,
+          42
+        ]
+      ],
+      "actual_primary_index_rows": [
+        [
+          1,
+          42
+        ]
+      ],
+      "metadata_and_rows_match_except_requested_name": true,
+      "stdout_sha256": "c38ef0ddafaaa256a335993f06827b8bb1e4f920524f19dcfbd9d73cc111ae0d",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "one-X",
+      "kind": "changed AFTER",
+      "sha256": "afd3c1f9a66ad014fca113bbc08c2c921ed7b4cdeabaa3d53818d9bd0ba2e762",
+      "field": "X",
+      "expected_values": [
+        42
+      ],
+      "sdk_exit": 0,
+      "bytes_unchanged": true,
+      "declared_rows": 1,
+      "actual_sequential_rows": [
+        [
+          1,
+          42
+        ]
+      ],
+      "actual_primary_index_rows": [
+        [
+          1,
+          42
+        ]
+      ],
+      "metadata_and_rows_match_except_requested_name": true,
+      "stdout_sha256": "e574f529fc3e5cd13f963fc0357b2b6a4cf3a1e195e485bf45131d3ce6a461e5",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "one-Total",
+      "kind": "changed AFTER",
+      "sha256": "e6786da4a6b2cb609a761472bc98437016fd329559335b69d0a798e3c86062b5",
+      "field": "Total",
+      "expected_values": [
+        42
+      ],
+      "sdk_exit": 0,
+      "bytes_unchanged": true,
+      "declared_rows": 1,
+      "actual_sequential_rows": [
+        [
+          1,
+          42
+        ]
+      ],
+      "actual_primary_index_rows": [
+        [
+          1,
+          42
+        ]
+      ],
+      "metadata_and_rows_match_except_requested_name": true,
+      "stdout_sha256": "f76415ae0b11db34c937726e4072e0ddf9e2f917c1473760485251aab0cddd09",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "one-Score",
+      "kind": "no-op copy of baseline",
+      "sha256": "3c73d182c8279e3050c056812059de6c8ea26c99d53c40ac9b0e1467ee49d2e6",
+      "field": "Score",
+      "expected_values": [
+        42
+      ],
+      "sdk_exit": 0,
+      "bytes_unchanged": true,
+      "declared_rows": 1,
+      "actual_sequential_rows": [
+        [
+          1,
+          42
+        ]
+      ],
+      "actual_primary_index_rows": [
+        [
+          1,
+          42
+        ]
+      ],
+      "metadata_and_rows_match_except_requested_name": true,
+      "stdout_sha256": "5b76844dc06e3852d1c2086c23711ecb9e02f65e4b4360b9320c9cc8ee298ffe",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "mixed-before",
+      "kind": "baseline",
+      "sha256": "8e85e6456b412204afb1c21532209108f4300d25ad55151900fdd52c4c006569",
+      "field": "Score",
+      "expected_values": [
+        42,
+        null,
+        -7
+      ],
+      "sdk_exit": 0,
+      "bytes_unchanged": true,
+      "declared_rows": 3,
+      "actual_sequential_rows": [
+        [
+          1,
+          42
+        ],
+        [
+          2,
+          null
+        ],
+        [
+          3,
+          -7
+        ]
+      ],
+      "actual_primary_index_rows": [
+        [
+          1,
+          42
+        ],
+        [
+          2,
+          null
+        ],
+        [
+          3,
+          -7
+        ]
+      ],
+      "metadata_and_rows_match_except_requested_name": null,
+      "stdout_sha256": "539deb72faa7b76b59cbbeef57283e28434fa3dbe3bd8fd718212cde37f8abc1",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "mixed-TaxAmount",
+      "kind": "changed AFTER",
+      "sha256": "47757edee60d755af3e44e6961b01156d5d816239d001cfca71a03cd1ca5f7f2",
+      "field": "TaxAmount",
+      "expected_values": [
+        42,
+        null,
+        -7
+      ],
+      "sdk_exit": 0,
+      "bytes_unchanged": true,
+      "declared_rows": 3,
+      "actual_sequential_rows": [
+        [
+          1,
+          42
+        ],
+        [
+          2,
+          null
+        ],
+        [
+          3,
+          -7
+        ]
+      ],
+      "actual_primary_index_rows": [
+        [
+          1,
+          42
+        ],
+        [
+          2,
+          null
+        ],
+        [
+          3,
+          -7
+        ]
+      ],
+      "metadata_and_rows_match_except_requested_name": true,
+      "stdout_sha256": "c38329eb6df5d1672574f79a20db70b6834c41571cc6d2c34d1ebbef3e4577d4",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "mixed-X",
+      "kind": "changed AFTER",
+      "sha256": "643a114ba1e3b624a940272564b7aaea0a566ec143e700fd8afd8857da21ff06",
+      "field": "X",
+      "expected_values": [
+        42,
+        null,
+        -7
+      ],
+      "sdk_exit": 0,
+      "bytes_unchanged": true,
+      "declared_rows": 3,
+      "actual_sequential_rows": [
+        [
+          1,
+          42
+        ],
+        [
+          2,
+          null
+        ],
+        [
+          3,
+          -7
+        ]
+      ],
+      "actual_primary_index_rows": [
+        [
+          1,
+          42
+        ],
+        [
+          2,
+          null
+        ],
+        [
+          3,
+          -7
+        ]
+      ],
+      "metadata_and_rows_match_except_requested_name": true,
+      "stdout_sha256": "5ea40d37ef3ea72bccd03d884e25dcb57caf850ff6c9d6e8af9700dff41b100a",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "mixed-Total",
+      "kind": "changed AFTER",
+      "sha256": "e03d4f4909ee4b16cfd7b09686316f04a24a05cba657a35d24492b0c7b37a079",
+      "field": "Total",
+      "expected_values": [
+        42,
+        null,
+        -7
+      ],
+      "sdk_exit": 0,
+      "bytes_unchanged": true,
+      "declared_rows": 3,
+      "actual_sequential_rows": [
+        [
+          1,
+          42
+        ],
+        [
+          2,
+          null
+        ],
+        [
+          3,
+          -7
+        ]
+      ],
+      "actual_primary_index_rows": [
+        [
+          1,
+          42
+        ],
+        [
+          2,
+          null
+        ],
+        [
+          3,
+          -7
+        ]
+      ],
+      "metadata_and_rows_match_except_requested_name": true,
+      "stdout_sha256": "bae5fa72c69be80f1a08c466f1fa006019413d0087ef76d3b81caed5cf8b3ba4",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "mixed-Score",
+      "kind": "no-op copy of baseline",
+      "sha256": "8e85e6456b412204afb1c21532209108f4300d25ad55151900fdd52c4c006569",
+      "field": "Score",
+      "expected_values": [
+        42,
+        null,
+        -7
+      ],
+      "sdk_exit": 0,
+      "bytes_unchanged": true,
+      "declared_rows": 3,
+      "actual_sequential_rows": [
+        [
+          1,
+          42
+        ],
+        [
+          2,
+          null
+        ],
+        [
+          3,
+          -7
+        ]
+      ],
+      "actual_primary_index_rows": [
+        [
+          1,
+          42
+        ],
+        [
+          2,
+          null
+        ],
+        [
+          3,
+          -7
+        ]
+      ],
+      "metadata_and_rows_match_except_requested_name": true,
+      "stdout_sha256": "539deb72faa7b76b59cbbeef57283e28434fa3dbe3bd8fd718212cde37f8abc1",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "null-first-before",
+      "kind": "baseline",
+      "sha256": "36a1aaf20409f77a96fc30a58337cb6554573339a8688ae9d6af594b703bc8ab",
+      "field": "Score",
+      "expected_values": [
+        null,
+        42
+      ],
+      "sdk_exit": 0,
+      "bytes_unchanged": true,
+      "declared_rows": 2,
+      "actual_sequential_rows": [
+        [
+          1,
+          null
+        ],
+        [
+          2,
+          42
+        ]
+      ],
+      "actual_primary_index_rows": [
+        [
+          1,
+          null
+        ],
+        [
+          2,
+          42
+        ]
+      ],
+      "metadata_and_rows_match_except_requested_name": null,
+      "stdout_sha256": "f038d289223b61656e27f3c40ad10528ee3c9605a03e2b7d67244d60140dc5b5",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "null-first-TaxAmount",
+      "kind": "changed AFTER",
+      "sha256": "5a8c4aa0cc8b0b89fa61e246fbe938ef3f09f8971d5b614fe95fa7a4c354ca01",
+      "field": "TaxAmount",
+      "expected_values": [
+        null,
+        42
+      ],
+      "sdk_exit": 0,
+      "bytes_unchanged": true,
+      "declared_rows": 2,
+      "actual_sequential_rows": [
+        [
+          1,
+          null
+        ],
+        [
+          2,
+          42
+        ]
+      ],
+      "actual_primary_index_rows": [
+        [
+          1,
+          null
+        ],
+        [
+          2,
+          42
+        ]
+      ],
+      "metadata_and_rows_match_except_requested_name": true,
+      "stdout_sha256": "748be18df5d486a6c32b8dde619fa0fa9e9a7ea8adef47f301b59503e503c833",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "null-first-X",
+      "kind": "changed AFTER",
+      "sha256": "77f044e636122c297cc38856b27e015f256fa10137fa1d8a8cce5518c4333e0c",
+      "field": "X",
+      "expected_values": [
+        null,
+        42
+      ],
+      "sdk_exit": 0,
+      "bytes_unchanged": true,
+      "declared_rows": 2,
+      "actual_sequential_rows": [
+        [
+          1,
+          null
+        ],
+        [
+          2,
+          42
+        ]
+      ],
+      "actual_primary_index_rows": [
+        [
+          1,
+          null
+        ],
+        [
+          2,
+          42
+        ]
+      ],
+      "metadata_and_rows_match_except_requested_name": true,
+      "stdout_sha256": "d18ae4608ba0d96f3ab756bf7ee41df6fde0ab360834c1fc03ad97c9be283211",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "null-first-Total",
+      "kind": "changed AFTER",
+      "sha256": "52cabcfbc858f1f44e250b790c6571505a0d53a0391b8b172ebf7e738d47d6e6",
+      "field": "Total",
+      "expected_values": [
+        null,
+        42
+      ],
+      "sdk_exit": 0,
+      "bytes_unchanged": true,
+      "declared_rows": 2,
+      "actual_sequential_rows": [
+        [
+          1,
+          null
+        ],
+        [
+          2,
+          42
+        ]
+      ],
+      "actual_primary_index_rows": [
+        [
+          1,
+          null
+        ],
+        [
+          2,
+          42
+        ]
+      ],
+      "metadata_and_rows_match_except_requested_name": true,
+      "stdout_sha256": "f3f10d069185b496aaae2a88e1fdc0e86cae97d19bfbd1d9f0f2e66ad311f194",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "null-first-Score",
+      "kind": "no-op copy of baseline",
+      "sha256": "36a1aaf20409f77a96fc30a58337cb6554573339a8688ae9d6af594b703bc8ab",
+      "field": "Score",
+      "expected_values": [
+        null,
+        42
+      ],
+      "sdk_exit": 0,
+      "bytes_unchanged": true,
+      "declared_rows": 2,
+      "actual_sequential_rows": [
+        [
+          1,
+          null
+        ],
+        [
+          2,
+          42
+        ]
+      ],
+      "actual_primary_index_rows": [
+        [
+          1,
+          null
+        ],
+        [
+          2,
+          42
+        ]
+      ],
+      "metadata_and_rows_match_except_requested_name": true,
+      "stdout_sha256": "f038d289223b61656e27f3c40ad10528ee3c9605a03e2b7d67244d60140dc5b5",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}
