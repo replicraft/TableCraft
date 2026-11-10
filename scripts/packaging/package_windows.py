@@ -174,6 +174,8 @@ def check_tables(report, version, target, payload):
     if installed.get("parent") not in ("ProgramFiles64Folder", "ProgramFiles6432Folder") or installed.get("name", "").split("|")[-1] != "TableCraft":
         raise ValueError("MSI installation directory differs")
     shortcuts = report["shortcuts"]
+    if len(shortcuts) == 1:
+        shortcuts = [{**shortcuts[0], "name": shortcuts[0]["name"].split("|")[-1]}]
     if len(shortcuts) != 1 or shortcuts[0] != {"id": "TableCraftStartMenu", "directory": "ProgramMenuFolder",
             "name": "TableCraft", "component": "DesktopApplication", "target": "DesktopFeature", "icon": "TableCraftIcon"}:
         raise ValueError("MSI Start Menu shortcut is missing or unexpected")

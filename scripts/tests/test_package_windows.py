@@ -182,6 +182,14 @@ class WindowsInstallerTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 windows.check_tables(modified, VERSION, TARGET, payload)
 
+    def test_windows_installer_short_and_long_name_encoding_preserves_receiver_identity(self):
+        payload = self.stage()
+        report = self.report(payload)
+        report["shortcuts"][0]["name"] = "TABLEC~1|TableCraft"
+        report["directories"][0]["name"] = "TABLEC~1|TableCraft"
+        report["files"][0]["name"] = "TABLEC~1.EXE|tablecraft-desktop.exe"
+        windows.check_tables(report, VERSION, TARGET, payload)
+
     def test_tool_failure_preserves_existing_outputs_and_removes_only_own_staging(self):
         self.output.mkdir()
         sentinel = self.output / "unrelated.accdb"
