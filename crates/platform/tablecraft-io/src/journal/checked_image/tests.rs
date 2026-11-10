@@ -71,7 +71,9 @@ fn exact_discriminator_retains_one_fully_checked_fixed_or_growing_session() {
             assert_eq!(checked.before_bytes(), b"original");
             assert_eq!(checked.after_bytes(), b"modified");
         }
-        CheckedImage::Resizable(_) => panic!("fixed framing selected V2"),
+        CheckedImage::Resizable(_) | CheckedImage::ResizableV3(_) => {
+            panic!("fixed framing selected resizable")
+        }
     }
 
     let mut growing = b"TCIMG002\x08\0\0\0\0\0\0\0\x0c\0\0\0\0\0\0\0".to_vec();
@@ -85,7 +87,9 @@ fn exact_discriminator_retains_one_fully_checked_fixed_or_growing_session() {
             assert_eq!(checked.before_bytes(), b"original");
             assert_eq!(checked.after_bytes(), b"modifiedtail");
         }
-        CheckedImage::Fixed(_) => panic!("growing framing selected V1"),
+        CheckedImage::Fixed(_) | CheckedImage::ResizableV3(_) => {
+            panic!("V2 framing selected another protocol")
+        }
     }
 }
 
@@ -253,6 +257,7 @@ fn every_body_truncation_and_committed_byte_corruption_refuses_but_marker_prefix
                         }
                     );
                 }
+                CheckedImage::ResizableV3(_) => panic!("old framing selected V3"),
             }
             assert_eq!(trace.lengths.get(), 2);
         }

@@ -18,12 +18,50 @@ pub(super) const HEADER_BYTES: usize = DIGEST_OFFSET + DIGEST_BYTES;
 const MARKER_BYTES: usize = COMMITTED.len() + DIGEST_BYTES;
 
 #[derive(Clone, Copy, Eq, PartialEq)]
+pub(super) enum Protocol {
+    V2,
+    V3,
+}
+
+impl Protocol {
+    pub fn magic(self) -> &'static [u8; 8] {
+        match self {
+            Self::V2 => MAGIC,
+            Self::V3 => b"TCIMG003",
+        }
+    }
+
+    fn committed(self) -> &'static [u8; 8] {
+        match self {
+            Self::V2 => COMMITTED,
+            Self::V3 => b"COMMIT03",
+        }
+    }
+
+    pub fn body_end(self, before: u64, after: u64) -> Result<u64, JournalError> {
+        if self == Self::V2 && (before > MAX_IMAGE_BYTES || after > MAX_IMAGE_BYTES) {
+            return Err(JournalError::InvalidJournal);
+        }
+        usize::try_from(before).map_err(|_| JournalError::InvalidJournal)?;
+        usize::try_from(after).map_err(|_| JournalError::InvalidJournal)?;
+        let end = (HEADER_BYTES as u64)
+            .checked_add(before)
+            .and_then(|size| size.checked_add(after))
+            .ok_or(JournalError::InvalidJournal)?;
+        end.checked_add(MARKER_BYTES as u64)
+            .ok_or(JournalError::InvalidJournal)?;
+        Ok(end)
+    }
+}
+
+#[derive(Clone, Copy, Eq, PartialEq)]
 pub(super) enum State {
     Pending,
     Committed,
 }
 
 pub(super) struct Record {
+    pub protocol: Protocol,
     pub before: Vec<u8>,
     pub after: Vec<u8>,
     pub digest: [u8; DIGEST_BYTES],
@@ -37,7 +75,7 @@ impl Record {
 
     pub fn header(&self) -> [u8; HEADER_BYTES] {
         let mut bytes = [0; HEADER_BYTES];
-        bytes[..BEFORE_LENGTH_OFFSET].copy_from_slice(MAGIC);
+        bytes[..BEFORE_LENGTH_OFFSET].copy_from_slice(self.protocol.magic());
         bytes[BEFORE_LENGTH_OFFSET..AFTER_LENGTH_OFFSET]
             .copy_from_slice(&(self.before.len() as u64).to_le_bytes());
         bytes[AFTER_LENGTH_OFFSET..DIGEST_OFFSET]
@@ -48,20 +86,21 @@ impl Record {
 
     pub fn marker(&self) -> [u8; MARKER_BYTES] {
         let mut bytes = [0; MARKER_BYTES];
-        bytes[..COMMITTED.len()].copy_from_slice(COMMITTED);
+        bytes[..COMMITTED.len()].copy_from_slice(self.protocol.committed());
         bytes[COMMITTED.len()..].copy_from_slice(&self.digest);
         bytes
     }
 }
 
 pub(super) fn digest(
+    protocol: Protocol,
     before: &[u8],
     after: &[u8],
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<[u8; DIGEST_BYTES], JournalError> {
     let mut hash = Sha256::new();
-    hash.update(MAGIC);
+    hash.update(protocol.magic());
     hash.update((before.len() as u64).to_le_bytes());
     hash.update((after.len() as u64).to_le_bytes());
     for image in [before, after] {
@@ -77,6 +116,7 @@ pub(super) fn digest(
 
 pub(super) fn load<J: DurableStorage>(
     journal: &mut J,
+    protocol: Protocol,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Record, JournalError> {
@@ -87,7 +127,7 @@ pub(super) fn load<J: DurableStorage>(
     }
     let mut header = [0; HEADER_BYTES];
     storage::read_at(journal, 0, &mut header, budget, cancelled)?;
-    if &header[..BEFORE_LENGTH_OFFSET] != MAGIC {
+    if &header[..BEFORE_LENGTH_OFFSET] != protocol.magic() {
         return Err(JournalError::InvalidJournal);
     }
     let before = u64::from_le_bytes(
@@ -100,16 +140,8 @@ pub(super) fn load<J: DurableStorage>(
             .try_into()
             .map_err(|_| JournalError::InvalidJournal)?,
     );
-    if before > MAX_IMAGE_BYTES || after > MAX_IMAGE_BYTES {
-        return Err(JournalError::InvalidJournal);
-    }
-    let body_end = (HEADER_BYTES as u64)
-        .checked_add(before)
-        .and_then(|size| size.checked_add(after))
-        .ok_or(JournalError::InvalidJournal)?;
-    let maximum = body_end
-        .checked_add(MARKER_BYTES as u64)
-        .ok_or(JournalError::InvalidJournal)?;
+    let body_end = protocol.body_end(before, after)?;
+    let maximum = body_end + MARKER_BYTES as u64;
     if !(body_end..=maximum).contains(&length) {
         return Err(JournalError::InvalidJournal);
     }
@@ -128,11 +160,12 @@ pub(super) fn load<J: DurableStorage>(
         budget,
         cancelled,
     )?;
-    let actual = digest(&before, &after, budget, cancelled)?;
+    let actual = digest(protocol, &before, &after, budget, cancelled)?;
     if header[DIGEST_OFFSET..] != actual {
         return Err(JournalError::InvalidJournal);
     }
     let mut record = Record {
+        protocol,
         before,
         after,
         digest: actual,

@@ -2,7 +2,7 @@ use super::super::{
     JournalError, RecoveryOutcome,
     storage::{self, BLOCK_BYTES, DurableStorage, ResizableDurableStorage},
 };
-use super::format::{self, Record, State};
+use super::format::{self, Protocol, Record, State};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
 const LEGACY_MAGIC: &[u8; 8] = b"TCIMG001";
@@ -42,7 +42,18 @@ pub fn recover_resizable<D: ResizableDurableStorage, J: DurableStorage>(
         return Err(JournalError::InvalidJournal);
     }
 
-    let record = format::load(journal, budget, cancelled)?;
+    let record = format::load(journal, Protocol::V2, budget, cancelled)?;
+    recover_loaded(target, journal, &record, budget, cancelled)
+}
+
+/// Recover V3 only; older framing is rejected before target effects.
+pub fn recover_resizable_v3<D: ResizableDurableStorage, J: DurableStorage>(
+    target: &mut D,
+    journal: &mut J,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<RecoveryOutcome, JournalError> {
+    let record = format::load(journal, Protocol::V3, budget, cancelled)?;
     recover_loaded(target, journal, &record, budget, cancelled)
 }
 

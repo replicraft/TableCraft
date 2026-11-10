@@ -1,16 +1,15 @@
 use super::super::{
     CommitError, JournalError, RecoveryOutcome,
-    format::MAX_IMAGE_BYTES,
     storage::{self, DurableStorage, ResizableDurableStorage},
 };
 use super::{
-    format::{self, HEADER_BYTES, Record, State},
+    format::{self, HEADER_BYTES, Protocol, Record, State},
     images,
-    recovery::{Verification, recover_resizable, verify_target},
+    recovery::{Verification, recover_loaded, verify_target},
 };
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
-/// A synchronized V2 journal retaining independently sized original and
+/// A synchronized V2 or V3 journal retaining independently sized original and
 /// replacement images. Target writes require the explicit resizable capability.
 /// Dropping retains the journal and requires recovery before ordinary access.
 #[must_use = "commit or explicitly recover the retained image journal"]
@@ -48,15 +47,58 @@ pub fn prepare_resizable_expected<'a, D: ResizableDurableStorage, J: DurableStor
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<PreparedResizableImage<'a, D, J>, JournalError> {
+    prepare(
+        target,
+        journal,
+        expected,
+        after,
+        Protocol::V2,
+        budget,
+        cancelled,
+    )
+}
+
+/// Prepare a V3 resizable journal without an implicit image-size quota.
+/// Checked wire arithmetic, addressable buffers, fallible allocation and the
+/// caller's explicit resources bound both images. Host pairing and durability
+/// obligations are identical to `prepare_resizable_expected`.
+pub fn prepare_resizable_v3_expected<'a, D: ResizableDurableStorage, J: DurableStorage>(
+    target: &'a mut D,
+    journal: &'a mut J,
+    expected: &[u8],
+    after: &[u8],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<PreparedResizableImage<'a, D, J>, JournalError> {
+    prepare(
+        target,
+        journal,
+        expected,
+        after,
+        Protocol::V3,
+        budget,
+        cancelled,
+    )
+}
+
+fn prepare<'a, D: ResizableDurableStorage, J: DurableStorage>(
+    target: &'a mut D,
+    journal: &'a mut J,
+    expected: &[u8],
+    after: &[u8],
+    protocol: Protocol,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<PreparedResizableImage<'a, D, J>, JournalError> {
     let _span = tracing::debug_span!("io.journal.prepare_resizable").entered();
     storage::check(budget, cancelled)?;
     if journal.storage_len()? != 0 {
         return Err(JournalError::JournalNotEmpty);
     }
     let length = target.storage_len()?;
-    if length > MAX_IMAGE_BYTES || after.len() as u64 > MAX_IMAGE_BYTES {
-        return Err(JournalError::ImageSize);
-    }
+    protocol
+        .body_end(length, after.len() as u64)
+        .map_err(|_| JournalError::ImageSize)?;
     if length != expected.len() as u64 {
         return Err(JournalError::TargetMismatch);
     }
@@ -74,8 +116,9 @@ pub fn prepare_resizable_expected<'a, D: ResizableDurableStorage, J: DurableStor
         }
     }
     let after = images::copy(after, budget, cancelled)?;
-    let digest = format::digest(&before, &after, budget, cancelled)?;
+    let digest = format::digest(protocol, &before, &after, budget, cancelled)?;
     let record = Record {
+        protocol,
         before,
         after,
         digest,
@@ -162,7 +205,10 @@ impl<D: ResizableDurableStorage, J: DurableStorage> PreparedResizableImage<'_, D
             journal,
             record,
         } = self;
+        // Reload only the captured protocol; rollback never selects by failure.
+        let protocol = record.protocol;
         drop(record);
-        recover_resizable(target, journal, budget, cancelled)
+        let loaded = format::load(journal, protocol, budget, cancelled)?;
+        recover_loaded(target, journal, &loaded, budget, cancelled)
     }
 }

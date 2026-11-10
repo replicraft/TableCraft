@@ -1,9 +1,13 @@
 //! Select one closed image framing from its exact magic, without decoder retries.
-use super::{CheckedV1, CheckedV2, DurableStorage, JournalError, inspect_v1, inspect_v2, storage};
+use super::{
+    CheckedV1, CheckedV2, CheckedV3, DurableStorage, JournalError, inspect_v1, inspect_v2,
+    inspect_v3, storage,
+};
 use tablecraft_core::limits::ResourceBudget;
 
 const MAGIC_BYTES: usize = 8;
 const FIXED_MAGIC: &[u8; MAGIC_BYTES] = b"TCIMG001";
+const RESIZABLE_V3_MAGIC: &[u8; MAGIC_BYTES] = b"TCIMG003";
 const RESIZABLE_MAGIC: &[u8; MAGIC_BYTES] = b"TCIMG002";
 
 /// One fully inspected journal, retaining its original exclusive storage borrow.
@@ -25,6 +29,8 @@ pub enum CheckedImage<'a, J: DurableStorage> {
     Fixed(CheckedV1<'a, J>),
     /// Independently length-bound V2 images with integrity and marker checks.
     Resizable(CheckedV2<'a, J>),
+    /// Independently length-bound V3 images without an implicit image quota.
+    ResizableV3(CheckedV3<'a, J>),
 }
 
 /// Read the exact framing discriminator, then invoke only that closed inspector.
@@ -46,6 +52,7 @@ pub fn inspect_image<'a, J: DurableStorage>(
     match &magic {
         FIXED_MAGIC => inspect_v1(journal, budget, cancelled).map(CheckedImage::Fixed),
         RESIZABLE_MAGIC => inspect_v2(journal, budget, cancelled).map(CheckedImage::Resizable),
+        RESIZABLE_V3_MAGIC => inspect_v3(journal, budget, cancelled).map(CheckedImage::ResizableV3),
         _ => Err(JournalError::InvalidJournal),
     }
 }

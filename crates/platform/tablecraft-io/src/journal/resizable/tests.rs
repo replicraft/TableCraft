@@ -2,6 +2,7 @@
 mod generated;
 pub(in crate::journal) mod goldens;
 mod transactions;
+mod v3;
 mod validation;
 
 use super::super::{DurableStorage, ResizableDurableStorage, tests::MemoryStorage};

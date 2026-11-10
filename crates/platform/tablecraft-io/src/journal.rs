@@ -14,8 +14,9 @@ mod storage;
 pub use storage::{DurableStorage, ResizableDurableStorage};
 mod resizable;
 pub use resizable::{
-    CheckedV2, PreparedResizableImage, V2State, inspect_v2, prepare_resizable_expected,
-    recover_resizable,
+    CheckedResizableImage, CheckedV2, CheckedV3, PreparedResizableImage, ResizableState, V2State,
+    V3State, inspect_v2, inspect_v3, prepare_resizable_expected, prepare_resizable_v3_expected,
+    recover_resizable, recover_resizable_v3,
 };
 mod format;
 mod recovery;
