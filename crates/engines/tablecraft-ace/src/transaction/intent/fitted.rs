@@ -34,3 +34,6 @@ mod opaque_tests;
 
 #[cfg(test)]
 mod currency_tests;
+
+#[cfg(test)]
+mod boolean_tests;
