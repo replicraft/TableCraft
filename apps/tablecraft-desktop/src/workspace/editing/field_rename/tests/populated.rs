@@ -88,14 +88,20 @@ fn normal_populated_field_rename_unchanged_review_never_starts_a_save_actor() {
     ));
     assert!(host.reopening);
     assert!(host.terminal.is_none());
-    assert!(!harness.state().editing.has_save());
+    // The retained read witness intentionally blocks conflicting edits until
+    // its exact source has reopened; it is not a native save actor or receipt.
+    assert!(harness.state().editing.has_save());
+    assert!(harness.state().editing.save.is_none());
     assert!(!harness.state().editing.worker.is_busy());
     assert!(!journal_path(&path).exists());
     assert_eq!(std::fs::read(&path).unwrap(), before);
     finish_schema_save(&mut harness);
     assert!(!harness.state().state.field_rename_open());
+    assert!(!harness.state().editing.has_save());
+    assert!(harness.state().editing.field_rename.is_none());
     let page = harness.state().state.data.as_ref().unwrap();
     assert_eq!(page.columns[1].name, "Score");
     assert_eq!(page.rows[0][1].text, "42");
+    assert!(!journal_path(&path).exists());
     assert_eq!(std::fs::read(&path).unwrap(), before);
 }
