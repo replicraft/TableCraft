@@ -77,6 +77,20 @@ The workflow now provisions reviewed official Minisign 0.12 bytes with a fixed
 SHA-256 before signing credentials are present. The expanded installer rehearsal
 must verify this correction and the new native packages remotely.
 
+The [expanded rehearsal on `d638ef7aa`](https://github.com/replicraft/TableCraft/actions/runs/42760189264)
+passed all six CLI packages and both macOS desktop ZIP/custom DMG checks.
+Both Linux jobs then failed the required runtime relink step because Alpine's
+mirror no longer supplied the pinned musl/zlib binary package revisions. The
+follow-up helper builds those dependencies from the exact verified source and
+patch inputs already conveyed in the runtime source kit; the distributed upstream
+runtime is unchanged. Passing native relink evidence is still required. Both
+Windows jobs built their MSI successfully, then failed while validating the
+native COM table report. The follow-up inspector suppresses COM method return
+values from row streams, normalizes nullable strings and checks report shape
+explicitly; its raw report is retained for native diagnosis. Both corrections
+still require the next native rehearsal. Assembly and production signing did not
+pass this run.
+
 Remaining gates before claiming the updater/release complete:
 
 - Complete signed MSI and original-AppImage update routes with actual local
