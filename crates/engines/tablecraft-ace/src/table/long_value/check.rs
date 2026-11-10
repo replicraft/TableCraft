@@ -5,6 +5,8 @@ use super::{
     profile,
     trace::{self, Kind},
 };
+#[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
+use crate::limits::MAX_LIVE_ROWS;
 use crate::{
     FileFormat, InspectError, NativeReadSource,
     format::{
@@ -15,7 +17,6 @@ use crate::{
         reader::{Reader, live_row_range, row_count},
         row::{MASK_BITS, reference_page},
     },
-    limits::MAX_LIVE_ROWS,
     table::{long_text, record_layout, schema::inspect_table_schema},
 };
 use tablecraft_core::limits::{Resource, ResourceBudget};
@@ -119,7 +120,9 @@ fn check_with_purpose<R: NativeReadSource>(
 ) -> Result<TableLongValueCheck, InspectError> {
     let _span = tracing::debug_span!("native.table.long_value.check").entered();
     let schema = inspect_table_schema(source, scope, table, budget, cancelled)?;
-    if schema.declared_rows() as usize > MAX_LIVE_ROWS {
+    #[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
+    if matches!(purpose, CheckPurpose::Mutation) && schema.declared_rows() as usize > MAX_LIVE_ROWS
+    {
         return Err(InspectError::StructureLimit);
     }
 
