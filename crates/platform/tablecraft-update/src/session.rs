@@ -56,11 +56,14 @@ pub enum UpdateEvent {
     },
     /// A prepared update is about to enter its non-cancellable replacement phase.
     Installing,
-    /// Replacement succeeded and the helper now awaits normal host shutdown.
+    /// The native handoff is ready and its helper awaits normal host shutdown.
+    /// Inspect the outcome stage to distinguish replacement from a scheduled installer.
     ///
     /// This is a terminal ownership transfer. A closed presentation channel must
     /// not turn it into a cancellation or discard retained recovery information.
-    RestartScheduled(AppliedUpdate),
+    // Keep ordinary observations independent of platform-specific process-handle
+    // size. Only the consuming native terminal allocates this unique owner.
+    RestartScheduled(Box<AppliedUpdate>),
 }
 
 /// A command failure distinct from presentation events and installed outcomes.
@@ -281,9 +284,9 @@ impl Session {
         check_cancelled(cancelled)?;
         let applied = prepared.apply(cancelled)?;
         self.state = State::RestartScheduled;
-        // Replacement has already happened. Never report cancellation because
+        // The native handoff has already committed. Never report cancellation because
         // a presentation receiver disappears after this terminal transition.
-        let _ = emit(UpdateEvent::RestartScheduled(applied));
+        let _ = emit(UpdateEvent::RestartScheduled(Box::new(applied)));
         Ok(())
     }
 }

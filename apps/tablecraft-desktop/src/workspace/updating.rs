@@ -135,7 +135,7 @@ impl Desktop {
             UpdateEvent::Installing => UpdateStatus::Installing,
             UpdateEvent::RestartScheduled(applied) => {
                 self.retain_update_outcome(
-                    Arc::new(RetainedOutcome::RestartScheduled(applied)),
+                    Arc::new(RetainedOutcome::RestartScheduled(*applied)),
                     true,
                 );
                 UpdateStatus::Installing

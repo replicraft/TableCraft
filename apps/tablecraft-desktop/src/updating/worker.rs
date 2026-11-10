@@ -350,7 +350,7 @@ fn split_retained(reply: Reply) -> Result<RetainedEntry<RetainedOutcome>, Reply>
             event: UpdateEvent::RestartScheduled(applied),
         } => Ok(RetainedEntry {
             generation,
-            outcome: Arc::new(RetainedOutcome::RestartScheduled(applied)),
+            outcome: Arc::new(RetainedOutcome::RestartScheduled(*applied)),
         }),
         Reply::Failed {
             generation,
