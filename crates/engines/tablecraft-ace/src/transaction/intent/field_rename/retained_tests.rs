@@ -26,19 +26,29 @@ fn retained_schema_wire_is_closed_and_checks_borrowed_fields_before_allocation()
         Intent::decode(&good, &mut budget(), &|| false),
         Err(Error::InvalidRecord)
     ));
-    for at in [0, 8, 12, 14, 16, 56, 60, 64] {
+    for at in [0, 8, 12, 14, 16, 64, 76] {
         let mut invalid = good.clone();
         invalid[at] ^= 1;
-        // Identity56/64 may still be syntactically valid. Zero allocation then
-        // proves that no owned request escapes the explicit caller budget.
-        assert!(
+        assert!(matches!(
             Intent::decode_retained_schema(
                 &invalid,
                 &mut ResourceBudget::new(0, 100, 100_000),
                 &|| false
-            )
-            .is_err()
-        );
+            ),
+            Err(Error::InvalidRecord | Error::Binding(_))
+        ));
+    }
+    for (start, value) in [(56, 0_u32), (60, u32::MAX)] {
+        let mut invalid = good.clone();
+        invalid[start..start + 4].copy_from_slice(&value.to_le_bytes());
+        assert!(matches!(
+            Intent::decode_retained_schema(
+                &invalid,
+                &mut ResourceBudget::new(0, 100, 100_000),
+                &|| false
+            ),
+            Err(Error::InvalidRecord)
+        ));
     }
     let mut old_magic = good.clone();
     old_magic[..8].copy_from_slice(b"TCFR0001");
