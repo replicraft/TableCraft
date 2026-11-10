@@ -50,6 +50,7 @@ pub(in crate::table::mutation) fn capture(
         .try_reserve_exact(declaration.variable_slots)
         .map_err(|_| InspectError::Allocation)?;
     variables.resize(declaration.variable_slots, None);
+
     let mut fixed_end = COLUMN_COUNT_BYTES;
     for (position, field) in schema.columns().iter().enumerate() {
         check(budget, cancelled)?;
@@ -113,6 +114,7 @@ pub(in crate::table::mutation) fn capture(
     if !schema.columns()[generated].fixed() || fixed_end != declaration.fixed_end {
         return Err(EditError::Unsupported(WriteBlocker::RowLayout));
     }
+
     Ok(Shape {
         fixed_end,
         variables,
@@ -129,6 +131,7 @@ pub(in crate::table::mutation) fn reconstruct(
     if values.len() != schema.columns().len() {
         return Err(EditError::Preservation);
     }
+
     budget
         .charge_allocation(shape.variables.len() as u64, size_of::<Vec<u8>>() as u64)
         .map_err(InspectError::from)?;

@@ -17,6 +17,8 @@ use tablecraft_core::{
     values::Value,
 };
 
+/// An unassigned retained slot is deleted storage, distinct from an omitted
+/// caller field or an explicitly supplied NULL in a live descriptor position.
 pub(in crate::table::mutation) fn variables(
     schema: &TableSchema,
     generated: usize,
@@ -35,6 +37,7 @@ pub(in crate::table::mutation) fn variables(
     {
         return Err(EditError::Unsupported(WriteBlocker::RowLayout));
     }
+
     budget
         .charge_allocation(
             layout.variable_slots as u64,
@@ -46,6 +49,7 @@ pub(in crate::table::mutation) fn variables(
         .try_reserve_exact(layout.variable_slots)
         .map_err(|_| InspectError::Allocation)?;
     variables.resize(layout.variable_slots, None);
+
     let mut fixed_end = COLUMN_COUNT_BYTES;
     for (position, field) in schema.columns().iter().enumerate() {
         check(budget, cancelled)?;
@@ -98,9 +102,11 @@ pub(in crate::table::mutation) fn variables(
             }
         }
     }
+
     if fixed_end != layout.fixed_end {
         return Err(EditError::Unsupported(WriteBlocker::RowLayout));
     }
+
     Ok(variables)
 }
 
@@ -117,6 +123,7 @@ pub(in crate::table::mutation) fn build(
     {
         return Err(EditError::Preservation);
     }
+
     budget
         .charge_allocation(variables.len() as u64, size_of::<Vec<u8>>() as u64)
         .map_err(InspectError::from)?;
@@ -161,6 +168,7 @@ pub(in crate::table::mutation) fn build(
     {
         return Err(EditError::Unsupported(WriteBlocker::RowLayout));
     }
+
     budget
         .charge_allocation(length as u64, 1)
         .map_err(InspectError::from)?;
