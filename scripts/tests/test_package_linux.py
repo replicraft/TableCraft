@@ -172,6 +172,8 @@ class LinuxPackagingTests(unittest.TestCase):
         self.assertIn("libc6 (>= 2.35)", dependencies)
         self.assertIn("libfontconfig1", dependencies)
         self.assertIn("libxkbcommon0", dependencies)
+        self.assertIn("libxkbcommon-x11-0", dependencies)
+        self.assertIn("libx11-xcb1", dependencies)
         self.assertIn("libegl1", dependencies)
         self.assertIn("libgl1", dependencies)
 
@@ -237,6 +239,31 @@ assert sys.stdin.read() == ""
 print("clean")
 """])
         self.assertEqual(output, "clean\n")
+
+    def test_runtime_source_is_bounded_data_and_cannot_be_a_miswired_plaintext_key(self):
+        kit = self.root / "RuntimeSource.tar.gz"
+        with tarfile.open(kit, "w:gz") as archive:
+            content = b"First-party source-kit framing test, not a corresponding-source claim.\n"
+            entry = tarfile.TarInfo("README.txt")
+            entry.size = len(content)
+            archive.addfile(entry, io.BytesIO(content))
+        linux.validate_runtime_source(kit)
+        kit.write_bytes(b"untrusted comment: first-party private-key path confusion test\n")
+        with self.assertRaisesRegex(ValueError, "gzip-compressed"):
+            linux.validate_runtime_source(kit)
+
+    def test_runtime_source_rejects_escape_paths_and_special_members_without_extracting(self):
+        kit = self.root / "RuntimeSource.tar.gz"
+        for name, kind in (("../unowned", tarfile.REGTYPE), ("link", tarfile.SYMTYPE)):
+            with self.subTest(name=name):
+                with tarfile.open(kit, "w:gz") as archive:
+                    entry = tarfile.TarInfo(name)
+                    entry.type = kind
+                    entry.linkname = "outside"
+                    archive.addfile(entry)
+                with self.assertRaises(ValueError):
+                    linux.validate_runtime_source(kit)
+                self.assertFalse((self.root / "unowned").exists())
 
     def test_prerelease_version_sorts_before_its_final_native_package(self):
         self.assertEqual(linux.package_version("0.1.0"), "0.1.0")

@@ -28,7 +28,11 @@ manifest beside `usr/bin/tablecraft-desktop`, regenerates its executable hash
 after linuxdeploy modifies RPATH, and uses a small first-party AppRun wrapper.
 Bundled native libraries retain package/version attribution, original/deployed
 hashes, their distribution copyright texts and referenced common licenses.
-A separately reviewed AppImage-runtime notice bundle is mandatory. GPU drivers,
+A separately reviewed AppImage-runtime notice bundle and corresponding-source/
+relinking kit are mandatory. The pinned static runtime's kit is shipped inside
+the AppImage at `usr/share/licenses/tablecraft/RuntimeSource.tar.gz`; packaging
+copies it as data and never extracts or executes its build instructions.
+GPU drivers,
 the display server/compositor and excluded base-system libraries remain host
 requirements. An AppImage is not a fully static executable.
 
@@ -48,7 +52,8 @@ python scripts/packaging/package_linux.py --version 0.1.0 \
   --linuxdeploy .cache/linux-tools/linuxdeploy \
   --appimagetool .cache/linux-tools/appimagetool \
   --appimage-runtime .cache/linux-tools/runtime \
-  --appimage-runtime-notices .cache/linux-tools/RuntimeThirdPartyLicenses.txt
+  --appimage-runtime-notices .cache/linux-tools/RuntimeThirdPartyLicenses.txt \
+  --appimage-runtime-source .cache/linux-tools/RuntimeSource.tar.gz
 ```
 
 The native job additionally installs/removes the DEB on its disposable runner and

@@ -33,6 +33,7 @@ SYSTEM_PAYLOAD = Path("usr/lib/tablecraft")
 APPIMAGE_PAYLOAD = Path("usr/bin")
 ICON_SIZE = 256
 MAX_TOOL_OUTPUT_BYTES = 4 * 1024 * 1024
+MAX_RUNTIME_SOURCE_MEMBERS = 4096
 TARGETS = {
     "x86_64-unknown-linux-gnu": ("x86_64", "amd64", "x86-64"),
     "aarch64-unknown-linux-gnu": ("aarch64", "arm64", "AArch64"),
@@ -40,15 +41,15 @@ TARGETS = {
 # These are loaded dynamically by the enabled X11/Wayland/font backends and are
 # not all discoverable from the main executable's DT_NEEDED entries.
 DLOPEN_LIBRARIES = (
-    "libX11.so.6", "libXcursor.so.1", "libXi.so.6", "libXrandr.so.2",
+    "libX11.so.6", "libX11-xcb.so.1", "libXcursor.so.1", "libXi.so.6", "libXrandr.so.2",
     "libxcb.so.1", "libxcb-render.so.0", "libxcb-shape.so.0", "libxcb-xfixes.so.0",
-    "libxkbcommon.so.0", "libwayland-client.so.0", "libwayland-cursor.so.0",
+    "libxkbcommon.so.0", "libxkbcommon-x11.so.0", "libwayland-client.so.0", "libwayland-cursor.so.0",
     "libwayland-egl.so.1", "libfontconfig.so.1",
 )
 DEBIAN_RUNTIME_DEPENDENCIES = (
-    "desktop-file-utils", "shared-mime-info", "libx11-6", "libxcursor1", "libxi6",
+    "desktop-file-utils", "shared-mime-info", "libx11-6", "libx11-xcb1", "libxcursor1", "libxi6",
     "libxrandr2", "libxcb1", "libxcb-render0", "libxcb-shape0", "libxcb-xfixes0",
-    "libxkbcommon0", "libwayland-client0", "libwayland-cursor0", "libwayland-egl1",
+    "libxkbcommon0", "libxkbcommon-x11-0", "libwayland-client0", "libwayland-cursor0", "libwayland-egl1",
     "libegl1", "libgl1", "libfontconfig1",
 )
 PACKAGE_NAME = re.compile(r"[a-z0-9][a-z0-9+.-]*(?::[a-z0-9-]+)?\Z")
@@ -70,6 +71,7 @@ class AppImageTools:
     appimagetool: Path
     runtime: Path
     runtime_notices: Path
+    runtime_source: Path
 
 
 class ToolFailure(ValueError):
@@ -458,16 +460,42 @@ def native_library_notices(appdir, libraries):
     return "\n".join(sections), {"libraries": records, "packages": versions}
 
 
-def build_appimage(inputs, root, output, temporary, tools):
+def validate_runtime_source(path):
+    contract.regular(path, installers.MAX_INSTALLER_BYTES)
+    with path.open("rb") as stream:
+        if stream.read(2) != b"\x1f\x8b":
+            raise ValueError("AppImage runtime source must be a gzip-compressed source kit")
+    count = 0
+    total = 0
+    with tarfile.open(path, "r:gz") as archive:
+        for member in archive:
+            count += 1
+            total += member.size
+            if count > MAX_RUNTIME_SOURCE_MEMBERS or total > installers.MAX_INSTALLER_BYTES:
+                raise ValueError("AppImage runtime source kit exceeds its bounds")
+            parts = member.name.split("/")
+            if member.name.startswith("/") or ".." in parts or "\\" in member.name:
+                raise ValueError("AppImage runtime source kit has unsafe member paths")
+            if not member.isfile() and not member.isdir():
+                raise ValueError("AppImage runtime source kit must contain regular files and directories")
+    if count == 0:
+        raise ValueError("AppImage runtime source kit is empty")
+
+
+def validate_appimage_tools(inputs, tools):
     if tools is None:
-        raise ValueError("AppImage requires explicit linuxdeploy, appimagetool, runtime and runtime notices")
+        raise ValueError("AppImage requires tools, a reviewed runtime, notices and corresponding source")
     for tool in (tools.linuxdeploy, tools.appimagetool, tools.runtime):
         contract.regular(tool)
+    validate_runtime_source(tools.runtime_source)
     contract.regular(tools.runtime_notices, contract.MAX_LEGAL_BYTES)
     if not tools.runtime_notices.read_text("utf-8").strip():
         raise ValueError("Reviewed AppImage runtime notices are required")
     with tools.runtime.open("rb") as stream:
         contract.architecture(stream, tools.runtime.stat().st_size, inputs.target)
+
+
+def build_appimage(inputs, root, output, temporary, tools):
     libraries = library_sources(inputs.target)
     command = [tools.linuxdeploy.resolve(), "--appdir", root.resolve(), "--executable", (root / APPIMAGE_PAYLOAD / BINARY).resolve(), "--desktop-file", (root / f"usr/share/applications/{APPLICATION_ID}.desktop").resolve(), "--icon-file", (root / f"usr/share/icons/hicolor/{ICON_SIZE}x{ICON_SIZE}/apps/{APPLICATION_ID}.png").resolve()]
     for name in DLOPEN_LIBRARIES:
@@ -488,6 +516,8 @@ def build_appimage(inputs, root, output, temporary, tools):
     native_notices, provenance = native_library_notices(root, libraries)
     provenance["runtime_sha256"] = contract.digest(tools.runtime)
     provenance["runtime_notices_sha256"] = contract.digest(tools.runtime_notices)
+    provenance["runtime_source_sha256"] = contract.digest(tools.runtime_source)
+    copy(tools.runtime_source, root / LICENSE_DIRECTORY / "RuntimeSource.tar.gz")
     provenance["linuxdeploy_sha256"] = contract.digest(tools.linuxdeploy)
     provenance["appimagetool_sha256"] = contract.digest(tools.appimagetool)
     write(root / LICENSE_DIRECTORY / "LinuxRuntimeSources.json", (json.dumps(provenance, indent=2, sort_keys=True) + "\n").encode("utf-8"))
@@ -505,8 +535,8 @@ def package(inputs, output, formats, tools=None):
     formats = tuple(formats)
     if not formats or len(set(formats)) != len(formats) or any(kind not in installers.formats(inputs.target) for kind in formats):
         raise ValueError("Choose distinct supported Linux formats")
-    if "appimage" in formats and tools is None:
-        raise ValueError("AppImage tooling and reviewed runtime inputs must be supplied")
+    if "appimage" in formats:
+        validate_appimage_tools(inputs, tools)
     if output.is_symlink():
         raise ValueError("Output directory cannot be a symlink")
     output.mkdir(parents=True, exist_ok=True)
@@ -562,12 +592,13 @@ def main():
     parser.add_argument("--appimagetool", type=Path)
     parser.add_argument("--appimage-runtime", type=Path)
     parser.add_argument("--appimage-runtime-notices", type=Path)
+    parser.add_argument("--appimage-runtime-source", type=Path)
     args = parser.parse_args()
     tools = None
-    values = (args.linuxdeploy, args.appimagetool, args.appimage_runtime, args.appimage_runtime_notices)
+    values = (args.linuxdeploy, args.appimagetool, args.appimage_runtime, args.appimage_runtime_notices, args.appimage_runtime_source)
     if any(value is not None for value in values):
         if not all(value is not None for value in values):
-            parser.error("Supply all four AppImage tool/runtime inputs")
+            parser.error("Supply all five AppImage tool/runtime inputs")
         tools = AppImageTools(*values)
     try:
         package(Inputs(args.version, args.target, args.binary, args.notices, args.icon), args.output, args.formats, tools)
