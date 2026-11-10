@@ -148,7 +148,7 @@ The connected MSI/AppImage updater service batch passes 74 tests on macOS.
 The twelve signing-tool tests pass, including production refusal of both test
 keys after comment/key-ID changes. Native Windows registration/CAB integration
 tests remain explicit native-CI cases. The complete desktop batch passes
-237 tests with two explicit private-fixture ignores. The original UN/LOCODE
+238 tests with two explicit private-fixture ignores. The original UN/LOCODE
 desktop journey passed separately with its hash-pinned source; the Jet 4 ignored
 case was not executed in this batch. Strict all-target Clippy passes for both;
 strict all-feature ACE/Access lint also passes for the connected editing changes.

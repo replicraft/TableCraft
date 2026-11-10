@@ -6,7 +6,7 @@ The desktop now connects a headless signed-update service through a separate
 worker and shared translated About controls. Fixed publisher trust, release
 identity, bounded download/extraction, stale-input guards, draft/native-worker
 restart gates and retained terminal resources are implemented. The updater's full
-batch passes 74 cases; the desktop's full batch passes 237 with two explicit
+batch passes 74 cases; the desktop's full batch passes 238 with two explicit
 private-fixture ignores, and strict lint passes. The original UN/LOCODE desktop
 journey also passed separately with its hash-pinned source. Portable/macOS, native
 MSI and authenticated original-AppImage update routes are implemented; actual
@@ -32,9 +32,20 @@ now accepts existing unindexed Int32 fields in the qualified historical-record
 source. Whole-image oracles cover value-to-value, NULL-to-value and value-to-NULL,
 retaining every absent later field as NULL and all unrelated bytes. The separate
 `TCNI0011`/profile11 language and fresh mutation-purpose source proof keep older
-ordinary admission closed. Missing-field materialization, other sources and
-native Access comparisons remain separate work. See the
+ordinary admission closed. A separate `TCNI0012`/profile12 operation now fills one
+absent Number field within existing owned DATA capacity, preserving logical IDs
+through checked forwarding. The actual headless journey fills all three old rows,
+then edits a forwarded field and freshly reopens against independent whole images.
+Other sources, bulk materialization and native Access comparisons remain separate work. See the
 [column addition contract](access/writes/ADD_COLUMN.md).
+
+The combined all-feature library regression batch passes 1,676 ACE tests with
+263 existing fixture/export ignores, 215 Access tests without ignores and 337
+runtime tests with one explicit private-fixture ignore. The desktop binary batch
+passes 238 with two explicit private-fixture ignores. These counts are separate
+from native platform and Access comparison evidence. The native source-replay
+negative cases still reject corrupted originals as `Source` before mutation;
+their stale `Preservation` assertions were corrected without loosening admission.
 
 
 ## Repeated field renames and current metadata — 9 November 2026

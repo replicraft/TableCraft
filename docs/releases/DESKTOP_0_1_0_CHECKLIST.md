@@ -23,9 +23,9 @@ implementation and remaining signing/install gates.
 
 - [ ] **Complete signed self-update before the first release.** The maintainer's
   production key and protected signing environment are configured. The shared
-  updater, desktop worker and portable/macOS install flow are implemented, and
-  publication requires signatures. Complete the MSI/original-AppImage update
-  routes, qualify native replacement/relaunch, and record a successful signed
+  updater, desktop worker, portable/macOS install flow and sealed MSI/original-
+  AppImage update routes are implemented, and publication requires signatures.
+  Qualify native replacement/relaunch and record a successful signed
   no-tag packaging dry run. Disposable-key CI artifacts are test evidence, not
   release signatures.
 
