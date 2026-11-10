@@ -150,7 +150,7 @@ fn append_template(
     bytes
 }
 
-fn extend_global_map(bytes: &mut [u8], old_pages: usize) {
+pub(in crate::fixtures::access) fn extend_global_map(bytes: &mut [u8], old_pages: usize) {
     let pages = bytes.len() / PAGE;
     let page = &mut bytes[PAGE..2 * PAGE];
     assert_eq!(&page[..2], &[1, 1]);

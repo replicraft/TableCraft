@@ -1,5 +1,7 @@
 //! Independent 255-column initial table, chained definition and external MR2.
 //! No native creator, schema/property decoder or mutation planner builds bytes.
+pub mod appended;
+pub mod rows;
 use super::{
     canonical_blank_creation, canonical_created_default_zero, canonical_creation,
     canonical_creation_properties, canonical_native17_creation, packed_record::append_record,
@@ -71,13 +73,21 @@ fn properties() -> Vec<u8> {
     body
 }
 
-fn logical_definition(seed: &[u8]) -> Vec<u8> {
+fn logical_definition(
+    seed: &[u8],
+    owned: u32,
+    candidate: u32,
+    index_map: u32,
+    index_page: u32,
+) -> Vec<u8> {
     let original = &seed[7 * PAGE..8 * PAGE];
     let old_length = u32::from_le_bytes(original[8..12].try_into().unwrap()) as usize;
     let mut logical = original[..75].to_vec();
     put16(&mut logical, 41, FIELD_COUNT as u16);
     put16(&mut logical, 43, 0);
     put16(&mut logical, 45, FIELD_COUNT as u16);
+    put32(&mut logical, 55, owned);
+    put32(&mut logical, 59, candidate);
     for index in 0..FIELD_COUNT {
         let mut column = [0; 25];
         column[0] = 4;
@@ -97,14 +107,14 @@ fn logical_definition(seed: &[u8]) -> Vec<u8> {
     // declaration and its six-byte ID name before the primary index metadata.
     assert_eq!(&original[100..106], &[4, 0, b'I', 0, b'D', 0]);
     logical.extend_from_slice(&original[106..old_length]);
-    put32(&mut logical, index_start + 34, (3 << 8) | 22);
-    put32(&mut logical, index_start + 38, INDEX as u32);
+    put32(&mut logical, index_start + 34, index_map);
+    put32(&mut logical, index_start + 38, index_page);
     let length = logical.len();
     put32(&mut logical, 8, length as u32);
     logical
 }
 
-fn definition_pages(logical: &[u8]) -> Vec<Vec<u8>> {
+fn definition_pages(logical: &[u8], root: usize) -> Vec<Vec<u8>> {
     let mut pages = Vec::new();
     let mut cursor = 0;
     while cursor < logical.len() {
@@ -115,7 +125,7 @@ fn definition_pages(logical: &[u8]) -> Vec<Vec<u8>> {
         page[header..header + take].copy_from_slice(&logical[cursor..cursor + take]);
         cursor += take;
         let next = if cursor < logical.len() {
-            DEFINITION + pages.len() + 1
+            root + pages.len() + 1
         } else {
             0
         };
@@ -160,8 +170,14 @@ pub fn source() -> Source {
     let before = canonical_blank_creation::source();
     let seed =
         canonical_created_default_zero::source(canonical_created_default_zero::Source::IdOnly);
-    let logical = logical_definition(&seed);
-    let definitions = definition_pages(&logical);
+    let logical = logical_definition(
+        &seed,
+        (3 << 8) | 3,
+        (3 << 8) | 7,
+        (3 << 8) | 22,
+        INDEX as u32,
+    );
+    let definitions = definition_pages(&logical, DEFINITION);
     let body = properties();
     let chunks = body.chunks(PROPERTY_CHUNK).collect::<Vec<_>>();
     assert_eq!(chunks.len(), 3);
