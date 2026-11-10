@@ -13,6 +13,8 @@ mod field_rename;
 mod initial_numbers;
 #[path = "render_preview/initial_properties.rs"]
 mod initial_properties;
+#[path = "render_preview/initial_wide.rs"]
+mod initial_wide;
 #[path = "render_preview/navigation.rs"]
 mod navigation;
 #[path = "render_preview/query_limits.rs"]
@@ -217,6 +219,8 @@ fn main() -> Result<(), Box<dyn Error>> {
     let initial_edit = setting("TABLECRAFT_PREVIEW_INITIAL_EDIT", "none")?;
     let initial_suffix = match initial_edit.as_str() {
         "none" => "",
+        "wide-first" => "-initial-wide-first",
+        "wide-last" => "-initial-wide-last",
         "rename" => "-initial-rename",
         "record" => "-initial-record",
         "boolean" => "-initial-boolean",
@@ -232,7 +236,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         "design-decimal" => "-initial-design-decimal",
         _ => {
             return Err(io::Error::other(
-                "initial edit must be none, rename, record, boolean, boolean-omitted, field-menu, delete-field, design, design-type, design-properties, design-description, design-default, design-number-size or design-decimal",
+                "initial edit must be none, wide-first, wide-last, rename, record, boolean, boolean-omitted, field-menu, delete-field, design, design-type, design-properties, design-description, design-default, design-number-size or design-decimal",
             )
             .into());
         }
@@ -500,6 +504,10 @@ fn main() -> Result<(), Box<dyn Error>> {
 }
 
 fn edit_initial_table(harness: &mut Harness<'_, Preview>, mode: &str) {
+    if matches!(mode, "wide-first" | "wide-last") {
+        initial_wide::show(harness, mode == "wide-last");
+        return;
+    }
     // NO_CLONE: Retain one shared locale handle while repeatedly mutating harness frames and
     // resolving field/type/record/delete/design labels. No Fluent catalog duplication.
     let localizer = harness.state().state().localizer.clone();

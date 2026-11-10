@@ -1552,6 +1552,15 @@ local renderer. Animated pending and focused-text scenes advance exactly three f
 for their spinners to become idle. The development-only renderer requires a GPU adapter; it does not
 open an OS window. Keep generated images in ignored local output directories.
 
+For the source-free 255-field draft, select `initial-table-draft` with
+`TABLECRAFT_PREVIEW_INITIAL_EDIT=wide-first` or `wide-last`. These modes use the
+shared draft commands, move focus away from Click to Add and send horizontal
+wheel input to show the first or last field with the active field-count feedback.
+They assert that the requested field header is inside the rendered viewport.
+Use both themes for the ordinary 1280×820, 1× review; these modes neither open a
+database nor qualify native creation or insertion. No retained Access capture
+shows this exact maximum-count status surface.
+
 Set `TABLECRAFT_PREVIEW_WIDTH` and `TABLECRAFT_PREVIEW_HEIGHT` to review another
 viewport, for example the desktop minimum of 900 × 580. Use a different output
 directory to keep those artifacts separate from the default-size review.

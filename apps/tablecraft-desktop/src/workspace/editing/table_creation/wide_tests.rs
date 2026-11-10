@@ -7,7 +7,10 @@ use crate::workspace::{
     test_support::{app_harness, finish_reads},
 };
 use egui::accesskit::Role;
-use egui_kittest::kittest::Queryable;
+use egui_kittest::{
+    Harness,
+    kittest::{NodeT, Queryable},
+};
 use std::path::Path;
 use tablecraft_builders::table::DraftFieldType;
 use tablecraft_runtime::journal_path;
@@ -25,6 +28,26 @@ fn assert_image(path: &Path, expected: &[u8]) {
         actual.len(),
         expected.len(),
         mismatch
+    );
+}
+
+fn scroll_to_end(harness: &mut Harness<'_, Desktop>, last: bool) {
+    harness.get_by_role_and_label(Role::Tab, "Home").focus();
+    harness.run_steps(2);
+    harness.event(egui::Event::PointerMoved(egui::pos2(700.0, 400.0)));
+    harness.event(egui::Event::MouseWheel {
+        unit: egui::MouseWheelUnit::Point,
+        delta: egui::vec2(if last { -100_000.0 } else { 100_000.0 }, 0.0),
+        phase: egui::TouchPhase::Move,
+        modifiers: egui::Modifiers::NONE,
+    });
+    harness.run_steps(10);
+    let field = if last { "Field254" } else { "Field1" };
+    assert!(
+        harness
+            .get_by_role_and_label(Role::ColumnHeader, field)
+            .rect()
+            .intersects(harness.ctx.content_rect())
     );
 }
 
@@ -53,6 +76,7 @@ fn all_255_fields_save_and_first_and_last_inputs_survive_both_reviewed_commits()
     harness.key_press(egui::Key::Enter);
     harness.run_steps(2);
     for (field, value) in [("Field1", "17"), ("Field254", "-29")] {
+        scroll_to_end(&mut harness, field == "Field254");
         let label = field_label(&harness, "table-draft-record-field", field);
         harness
             .get_by_role_and_label(Role::TextInput, &label)
