@@ -189,7 +189,8 @@ fn qualified_visible_memo(field: &NativeColumn) -> bool {
 fn qualified(field: &NativeColumn, kind: u8) -> bool {
     let flags = UPDATABLE_FLAG | if field.fixed() { FIXED_FLAG } else { 0 };
     field.native_type() == kind
-        && field.fixed() == (kind == data_type::DATE_TIME)
+        && (!field.fixed() || kind == data_type::DATE_TIME)
+        && (kind != data_type::DATE_TIME || field.storage_length() == data_type::DATE_TIME_BYTES)
         && field.flags() == flags
         && field.extended_flags() == 0
         && field.scalar_type().is_some()

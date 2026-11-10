@@ -44,7 +44,10 @@ pub fn read_version_history_column_with_limits<R: crate::NativeReadSource>(
     let schema = inspect_complex_schema(source, scope, table, budget, cancelled)?;
     if !matches!(
         schema.owner().header.read_profile()?,
-        crate::ReadProfile::Ace2007 | crate::ReadProfile::Ace2016 | crate::ReadProfile::Ace2019
+        crate::ReadProfile::Ace2007
+            | crate::ReadProfile::Ace2010
+            | crate::ReadProfile::Ace2016
+            | crate::ReadProfile::Ace2019
     ) {
         return Err(InspectError::Unsupported);
     }

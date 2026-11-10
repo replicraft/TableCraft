@@ -51,3 +51,62 @@ pub fn database() -> Vec<u8> {
     bytes[22 * PAGE..23 * PAGE].copy_from_slice(&data_page(20, &rows));
     bytes
 }
+
+/// Original variable Date/Time member records in the known history template.
+pub fn variable_modified() -> Vec<u8> {
+    const PAGE: usize = 4096;
+    const FIELD: usize = 63;
+    let mut bytes = database();
+
+    let template = 17 * PAGE + FIELD + 25;
+    bytes[template + 15] = 2;
+    put16(&mut bytes, template + 7, 1);
+    put16(&mut bytes, 17 * PAGE + 43, 2);
+
+    let modified = 20 * PAGE + FIELD + 50;
+    bytes[modified + 15] = 2;
+    put16(&mut bytes, modified + 7, 2);
+    put16(&mut bytes, 20 * PAGE + FIELD + 75 + 7, 3);
+    put16(&mut bytes, 20 * PAGE + 43, 4);
+
+    let rows = [
+        (
+            10_i32,
+            2_i32,
+            Some("é🦀\0older"),
+            Some((-0.25_f64).to_bits()),
+        ),
+        (10, 9, Some("newer"), Some(0.25_f64.to_bits())),
+        (20, 7, Some(""), Some(1_u64)),
+        (20, 3, None, None),
+    ]
+    .into_iter()
+    .map(|(owner, identity, value, modified)| {
+        let mut row = vec![4, 0];
+        row.extend(owner.to_le_bytes());
+        if let Some(value) = value {
+            let text = value
+                .encode_utf16()
+                .flat_map(u16::to_le_bytes)
+                .collect::<Vec<_>>();
+            row.extend((0x8000_0000 | text.len() as u32).to_le_bytes());
+            row.extend([0; 8]);
+            row.extend(text);
+        }
+        let memo_end = row.len() as u16;
+        if let Some(modified) = modified {
+            row.extend(modified.to_le_bytes());
+        }
+        let modified_end = row.len() as u16;
+        row.extend(identity.to_le_bytes());
+        row.extend((row.len() as u16).to_le_bytes());
+        row.extend(modified_end.to_le_bytes());
+        row.extend(memo_end.to_le_bytes());
+        row.extend([6, 0, 2, 0, 4, 0]);
+        row.push(9 | u8::from(value.is_some()) << 1 | u8::from(modified.is_some()) << 2);
+        (0, row)
+    })
+    .collect::<Vec<_>>();
+    bytes[22 * PAGE..23 * PAGE].copy_from_slice(&data_page(20, &rows));
+    bytes
+}

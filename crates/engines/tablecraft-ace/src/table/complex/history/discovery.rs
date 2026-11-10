@@ -25,7 +25,10 @@ pub fn inspect_version_history_declarations<R: crate::NativeReadSource>(
     let complex = inspect_complex_schema(source, scope, table, budget, cancelled)?;
     if !matches!(
         complex.owner().header.read_profile()?,
-        crate::ReadProfile::Ace2007 | crate::ReadProfile::Ace2016 | crate::ReadProfile::Ace2019
+        crate::ReadProfile::Ace2007
+            | crate::ReadProfile::Ace2010
+            | crate::ReadProfile::Ace2016
+            | crate::ReadProfile::Ace2019
     ) {
         return Err(InspectError::Unsupported);
     }

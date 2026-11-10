@@ -56,7 +56,10 @@ impl<'a, R: NativeReadSource> VersionHistoryReader<'a, R> {
         let definition = inspect_complex_schema(source, scope, table, budget, cancelled)?;
         if !matches!(
             definition.owner().header.read_profile()?,
-            ReadProfile::Ace2007 | ReadProfile::Ace2016 | ReadProfile::Ace2019
+            ReadProfile::Ace2007
+                | ReadProfile::Ace2010
+                | ReadProfile::Ace2016
+                | ReadProfile::Ace2019
         ) {
             return Err(InspectError::Unsupported);
         }

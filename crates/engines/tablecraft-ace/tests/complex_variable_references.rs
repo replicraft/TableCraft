@@ -25,7 +25,7 @@ fn variable_multivalue_references_preserve_values_through_complete_and_parent_re
             &mut budget(),
             &|| false,
         )
-        .unwrap();
+        .unwrap_or_else(|error| panic!("profile code {code}: {error:?}"));
         assert_eq!(
             complete.values(0).unwrap().cloned().collect::<Vec<_>>(),
             [Value::Int32(100), Value::Int32(101)]
@@ -68,8 +68,13 @@ fn variable_multivalue_references_preserve_values_through_complete_and_parent_re
 
 #[test]
 fn variable_history_references_retain_stored_order_text_nulls_and_date_bits() {
-    for code in [2, 3, 5, 6] {
-        let mut bytes = version_history::variable::database();
+    for (mut bytes, code) in [
+        version_history::variable::database,
+        version_history::variable::variable_modified,
+    ]
+    .into_iter()
+    .flat_map(|fixture| [2, 3, 5, 6].map(|code| (fixture(), code)))
+    {
         bytes[20] = code;
         let history = read_version_history_column(
             &mut Cursor::new(&bytes),
@@ -79,7 +84,7 @@ fn variable_history_references_retain_stored_order_text_nulls_and_date_bits() {
             &mut budget(),
             &|| false,
         )
-        .unwrap();
+        .unwrap_or_else(|error| panic!("profile code {code}: {error:?}"));
         let first = history
             .stored_versions(0)
             .unwrap()
@@ -172,5 +177,28 @@ fn variable_reference_payloads_require_exact_nonnull_int32_and_unique_identities
             )
             .is_err()
         );
+    }
+}
+
+#[test]
+fn variable_history_modified_members_reject_unknown_flags_and_non_date_widths() {
+    for (template_flags, flat_flags, width) in [(0x12, 0x02, 8), (0x02, 0x12, 8), (0x02, 0x02, 7)] {
+        let mut bytes = version_history::variable::variable_modified();
+        let template = 17 * 4096 + 63 + 25;
+        let flat = 20 * 4096 + 63 + 50;
+        bytes[template + 15] = template_flags;
+        bytes[flat + 15] = flat_flags;
+        bytes[template + 23..template + 25].copy_from_slice(&u16::to_le_bytes(width));
+        bytes[flat + 23..flat + 25].copy_from_slice(&u16::to_le_bytes(width));
+        assert!(matches!(
+            inspect_complex_schema(
+                &mut Cursor::new(&bytes),
+                CatalogScope::new(1),
+                "Items",
+                &mut budget(),
+                &|| false,
+            ),
+            Err(InspectError::Unsupported)
+        ));
     }
 }
