@@ -1,6 +1,7 @@
 //! Independent raw field deletion hypotheses with inert SDK reader observations.
 //! This is not SDK DROP output or a native Access save/reopen qualification.
 pub mod inserting;
+pub mod populated;
 
 #[cfg(test)]
 mod tests;
