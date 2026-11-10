@@ -724,8 +724,8 @@ precision differences at the signed subnormal/zero boundary. The exact
 `0.5 ^ 1075` halfway case rounds to zero, retaining a negative sign for an odd
 integer power of a negative base; adjacent representable exponents retain the
 neighboring subnormal. General real-power accuracy remains nearly rounded,
-without a universal correctly-rounded or native Access parity claim. Invalid real powers and a
-converted zero base raised to a negative exponent fail with Domain. This includes
+without a universal correctly-rounded or native Access parity claim. Invalid
+real powers and a converted zero base raised to a negative exponent fail with Domain. This includes
 both zero signs and inputs whose existing conversion yields zero. A non-NULL
 zero base with a zero exponent returns Double 1. This follows the explicit
 [MS-VBAL power error contract](https://learn.microsoft.com/en-us/openspecs/microsoft_general_purpose_programming_languages/ms-vbal/c3f526af-9d58-47f9-a6be-22ab81e8747a).
@@ -733,8 +733,11 @@ Operand admission, conversion and eager failures still precede the power kernel;
 an actual division-by-zero expression used as an operand keeps its own error.
 The [Power replay](../../tests/reports/general/POWER.md) checks 627 CLI commands against exact
 bounded-power and explicit error models; broader real-power/native qualification
-remains separate. Integer division and Mod
-retain the existing half-even-to-Int64 coercion and checked range contracts.
+remains separate. The [Windows expression test receipt](../../tests/reports/general/POWER.md#windows-expression-regression-9-november-2026-pacific)
+records 419 passing tests on each of Windows x64 and ARM64, including the retained
+signed-underflow oracle; it is separate from Microsoft Access comparison.
+Integer division and Mod retain the existing half-even-to-Int64 coercion and
+checked range contracts.
 Decimal/float comparisons are not enabled by arithmetic support. Currency-only
 operations and the non-Decimal promotion ladder are unchanged.
 

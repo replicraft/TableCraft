@@ -82,3 +82,32 @@ only supported modes and preserves all intended retrieval profiles.
 Full suites, release/performance tests and Windows Access comparisons were not
 run. Complete Variant promotion, Error semantics and the remaining read/query
 roadmap remain open.
+
+## Windows expression regression (9 November 2026 Pacific)
+
+CI run [42768447941](https://github.com/replicraft/TableCraft/actions/runs/42768447941)
+at source `74f1fb66c` ran the full standalone expression suite on native Windows
+x64 and ARM64. Both targets passed **419 tests, zero failures and zero ignored**
+using `cargo test --lib --bins --tests -p tablecraft-expressions
+--no-default-features --locked` with their respective `CARGO_BUILD_TARGET`.
+The [x64 job](https://github.com/replicraft/TableCraft/actions/runs/42768447941/job/129670365161)
+recorded its result at 06:29:22 UTC on 10 November; the
+[ARM64 job](https://github.com/replicraft/TableCraft/actions/runs/42768447941/job/129670365576)
+recorded its result at 06:32:08 UTC. These are 9 November Pacific observations.
+
+This verifies the `aa14df718` software-power correction against the retained
+signed-zero oracle and adjacent binary64 boundary tests on both Windows targets.
+The exact half-minimum-subnormal expectation was not relaxed: odd negative
+powers retain negative zero, and representable neighbors retain nonzero
+subnormals. The direct `libm::pow` kernel replaces host-CRT power evaluation;
+operand admission, domain checks and finite-result handling remain unchanged.
+
+Both overall jobs subsequently failed a separate Windows updater-helper lint
+(`HelperPlan.kind` was unused on Windows). This receipt records the successful
+expression steps, not a passing overall CI run. Complete job logs were retained
+locally as `.cache/main-ci-x64-42768447941.log` and
+`.cache/main-ci-arm64-42768447941.log`.
+
+These are Rust expression tests executed on Windows. They do not execute
+Microsoft Access, establish its native edge-range rounding, or establish
+universally correctly-rounded real exponentiation.
