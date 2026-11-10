@@ -30,10 +30,19 @@ packages use their [documented read profiles](docs/COMPATIBILITY.md).
 
 ## Install
 
-Prebuilt archives will be available from
-[Releases](https://github.com/replicraft/TableCraft/releases) for Windows, macOS
-and Linux. Extract `tablecraft` (`tablecraft.exe` on Windows) onto your `PATH`.
-Archives include license notices and SHA-256 checksums accompany each release.
+Packages are being prepared for the first
+[release](https://github.com/replicraft/TableCraft/releases), on x64 and ARM64:
+
+| Platform | Desktop packages |
+| --- | --- |
+| Windows | MSI installer and portable ZIP |
+| macOS | Custom DMG and portable archive |
+| Linux | DEB, RPM, AppImage and portable archive |
+
+The CLI has separate portable archives. Extract `tablecraft` (`tablecraft.exe`
+on Windows) onto your `PATH`. Packages include license notices; releases will
+include SHA-256 checksums and signed update assets. No release has been published
+yet. See [release preparation](docs/development/RELEASING.md) for validation status.
 
 To build from source, install the pinned Rust toolchain and run:
 
