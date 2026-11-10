@@ -6,7 +6,10 @@ use crate::{
         row::{COLUMN_COUNT_BYTES, MASK_BITS},
     },
     header::check,
-    table::{mutation::record_serialization::current_rows::Language, record_layout},
+    table::{
+        mutation::record_serialization::current_rows::{self, Language},
+        record_layout,
+    },
 };
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
@@ -32,6 +35,14 @@ pub(in crate::table::mutation) fn reconstruct(
         (Language::LongText, INT32, Value::Int32(_) | Value::Null) if field.fixed() => Vec::new(),
         (Language::Currency, CURRENCY, Value::Currency(_) | Value::Null)
             if field.fixed() && field.storage_length() == size_of::<i64>() =>
+        {
+            Vec::new()
+        }
+        (Language::FixedScalars, native, value)
+            if field.fixed()
+                && current_rows::fixed_scalar_kind(native)
+                    .is_some_and(|(_, width)| field.storage_length() == width)
+                && current_rows::fixed_scalar_value(native, value) =>
         {
             Vec::new()
         }
@@ -131,6 +142,25 @@ pub(in crate::table::mutation) fn reconstruct(
             .get_mut(start..start + size_of::<i64>())
             .ok_or(EditError::Preservation)?
             .copy_from_slice(&value.scaled().to_le_bytes());
+    }
+    if matches!(language, Language::FixedScalars) {
+        // Independent scalar reconstruction writes literal carrier bytes into
+        // the separately assembled fixed prefix, without the producer cursor.
+        let start = COLUMN_COUNT_BYTES + field.physical_field().offset;
+        let width = field.storage_length();
+        let target = expected
+            .get_mut(start..start + width)
+            .ok_or(EditError::Preservation)?;
+        match value {
+            Value::Byte(value) => target.copy_from_slice(&[*value]),
+            Value::Int16(value) => target.copy_from_slice(&value.to_le_bytes()),
+            Value::Int64(value) => target.copy_from_slice(&value.to_le_bytes()),
+            Value::Single(value) => target.copy_from_slice(&value.to_bits().to_le_bytes()),
+            Value::Double(value) => target.copy_from_slice(&value.to_bits().to_le_bytes()),
+            Value::DateTime(value) => target.copy_from_slice(&value.to_bits().to_le_bytes()),
+            Value::Null => {}
+            _ => return Err(EditError::Preservation),
+        }
     }
     for segment in &segments {
         check(budget, cancelled)?;

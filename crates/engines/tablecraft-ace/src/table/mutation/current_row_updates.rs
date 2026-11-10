@@ -36,6 +36,7 @@ pub(super) enum Family {
     RetainedOpaque,
     RetainedCurrency,
     RetainedBoolean,
+    RetainedFixedScalars,
 }
 
 impl Family {
@@ -60,7 +61,10 @@ impl Family {
                 }
                 Ok(source)
             }
-            Self::Retained | Self::RetainedCurrency | Self::RetainedBoolean => {
+            Self::Retained
+            | Self::RetainedCurrency
+            | Self::RetainedBoolean
+            | Self::RetainedFixedScalars => {
                 if !image.has_retained_table_source(table, budget, cancelled)? {
                     return Err(EditError::Unsupported(WriteBlocker::RowLayout));
                 }
@@ -80,7 +84,10 @@ impl Family {
             Self::Retained
             | Self::RetainedOpaque
             | Self::RetainedCurrency
-            | Self::RetainedBoolean => fixed_records::copy(image.as_bytes(), budget, cancelled),
+            | Self::RetainedBoolean
+            | Self::RetainedFixedScalars => {
+                fixed_records::copy(image.as_bytes(), budget, cancelled)
+            }
         }
     }
 
@@ -97,7 +104,8 @@ impl Family {
             Self::Retained
             | Self::RetainedOpaque
             | Self::RetainedCurrency
-            | Self::RetainedBoolean => {
+            | Self::RetainedBoolean
+            | Self::RetainedFixedScalars => {
                 record_roots::capture_retained(image, schema, requests, budget, cancelled)
             }
         }
@@ -116,7 +124,8 @@ impl Family {
             Self::Retained
             | Self::RetainedOpaque
             | Self::RetainedCurrency
-            | Self::RetainedBoolean => {
+            | Self::RetainedBoolean
+            | Self::RetainedFixedScalars => {
                 Space::capture_retained(image, schema, owned, budget, cancelled)
             }
         }
@@ -125,6 +134,9 @@ impl Family {
     fn language(self) -> Result<record_serialization::current_rows::Language, EditError> {
         match self {
             Self::RetainedCurrency => Ok(record_serialization::current_rows::Language::Currency),
+            Self::RetainedFixedScalars => {
+                Ok(record_serialization::current_rows::Language::FixedScalars)
+            }
             Self::Current | Self::Retained | Self::RetainedOpaque => {
                 Ok(record_serialization::current_rows::Language::LongText)
             }
@@ -266,6 +278,7 @@ pub(super) fn bind_for(
             | Family::RetainedOpaque
             | Family::RetainedCurrency
             | Family::RetainedBoolean
+            | Family::RetainedFixedScalars
     ) {
         retained_column(source, &groups[0], family, budget, cancelled)?
     } else {
@@ -306,6 +319,10 @@ pub(super) fn bind_for(
         (CURRENCY, Value::Currency(_) | Value::Null)
             if matches!(family, Family::RetainedCurrency)
                 && matches!(groups[0], FittedColumnUpdates::Fixed { .. }) => {}
+        (native, value)
+            if matches!(family, Family::RetainedFixedScalars)
+                && matches!(groups[0], FittedColumnUpdates::Fixed { .. })
+                && record_serialization::current_rows::fixed_scalar_value(native, value) => {}
         _ => return Err(EditError::Unsupported(WriteBlocker::Column)),
     }
     let values = super::normal_fitted::original_values(
@@ -551,13 +568,20 @@ fn retained_column(
             let (kind, width) = match family {
                 Family::RetainedCurrency => (ScalarType::Currency, size_of::<i64>()),
                 Family::RetainedBoolean => (ScalarType::Boolean, 0),
+                Family::RetainedFixedScalars => {
+                    record_serialization::current_rows::fixed_scalar_kind(field.native_type())
+                        .ok_or(EditError::Unsupported(WriteBlocker::Column))?
+                }
                 _ => (ScalarType::Int32, size_of::<i32>()),
             };
             field::fixed_column_at(schema, column, kind, width)?;
             rows::unique_identities(updates, budget, cancelled)?;
         }
         FittedColumnUpdates::Variable { updates, .. } => {
-            if matches!(family, Family::RetainedCurrency | Family::RetainedBoolean) {
+            if matches!(
+                family,
+                Family::RetainedCurrency | Family::RetainedBoolean | Family::RetainedFixedScalars
+            ) {
                 return Err(EditError::Unsupported(WriteBlocker::Column));
             }
             record_serialization::storage::qualify(field)?;
@@ -583,6 +607,10 @@ fn retained_column(
         SHORT_TEXT => {
             matches!(cell.expected, Value::Text(_) | Value::Null)
                 && matches!(cell.value, Value::Text(_) | Value::Null)
+        }
+        native if matches!(family, Family::RetainedFixedScalars) => {
+            record_serialization::current_rows::fixed_scalar_value(native, cell.expected)
+                && record_serialization::current_rows::fixed_scalar_value(native, cell.value)
         }
         _ => false,
     };
