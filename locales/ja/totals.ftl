@@ -16,5 +16,5 @@ totals-choices-unavailable = 一部の集計方法はこのフィールドでは
 totals-cancelled = 集計をキャンセルしました。再試行するには集計方法をもう一度選んでください。
 totals-stale = 集計元は現在の状態と一致しなくなりました。
 totals-error-help = 集計を更新できませんでした。再試行するには、集計方法をもう一度選択してください。
-totals-limit = 集計を選べるフィールドは最大32個です。
+totals-limit = このテーブルのフィールドだけに集計を選択してください。
 totals-mock-unavailable = 合成された集計のみです。データベースは読み取っていません。

@@ -14,8 +14,8 @@ use tablecraft_core::{
 use tablecraft_query::keys::{compare_stored_keys, validate_stored_key};
 use tablecraft_schema::{ScalarType, TypeDescriptor};
 
-const KEY_BYTES: u64 = 64 * 1024 * 1024;
-const KEY_STEPS: u64 = 10_000_000;
+const KEY_BYTES: u64 = u64::MAX;
+const KEY_STEPS: u64 = u64::MAX;
 const KEY_BATCH_ROWS: u32 = 100;
 const INITIAL_KEYS: usize = 64;
 

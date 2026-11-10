@@ -79,8 +79,7 @@ pub use editing::{
 pub use filtering::{
     FieldFilterDescription, FieldFilterOperator, FieldFilterPatternMode, FieldFilterTarget,
     FilterComparison, FilterDefinition, FilterError, FilterHandle, FilterSelectionTarget,
-    FilterTarget, FilteredData, MAX_FIELD_FILTER_INPUT_BYTES, MAX_FILTER_FIELDS, SortSpec,
-    SortTarget,
+    FilterTarget, FilteredData, MAX_FIELD_FILTER_INPUT_BYTES, SortSpec, SortTarget,
 };
 pub use find::{
     FindDirection, FindError, FindMatch, FindPosition, FindRequest, FindScope, FindSpan,
@@ -96,8 +95,8 @@ pub use saved::{SavedQuery, SavedQueryTarget};
 pub use scalar_input::InputHint;
 pub use schema::{Field, FieldProperty, FieldPropertyValue};
 pub use totals::{
-    MAX_TOTAL_FIELDS, TotalAggregate, TotalSpec, TotalsData, TotalsDescription, TotalsError,
-    TotalsField, TotalsTarget,
+    TotalAggregate, TotalSpec, TotalsData, TotalsDescription, TotalsError, TotalsField,
+    TotalsTarget,
 };
 pub use worker::{ReadRequestExhausted, Worker};
 

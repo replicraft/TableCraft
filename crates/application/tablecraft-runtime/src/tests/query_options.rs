@@ -40,7 +40,7 @@ fn defaults_preserve_representable_pools_and_invalid_configuration_is_rejected()
     assert_eq!(defaults.snapshot().maximum_rows(), u32::MAX);
     assert_eq!(defaults.snapshot().batch_rows(), 256);
     assert_eq!(defaults.native().bytes(), u64::MAX);
-    assert_eq!(defaults.native().rows(), u32::MAX as u64);
+    assert_eq!(defaults.native().rows(), u64::MAX);
     assert_eq!(defaults.native().steps(), u64::MAX);
     assert_eq!(defaults.query().bytes(), u64::MAX);
     assert_eq!(defaults.query().rows(), u64::MAX);

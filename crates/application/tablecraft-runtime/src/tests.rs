@@ -112,6 +112,8 @@ mod table_rename;
 mod text_policy;
 mod totals;
 
+mod view_service_limits;
+
 use super::{Command, Error, Response, SortSpec, SortTarget, Worker};
 use std::{
     io::Cursor,

@@ -1,7 +1,7 @@
 //! Qualify one typed selection, then publish complete immutable membership only.
 use super::{
     Criterion, FILTER_STEPS, FilterComparison, FilterError, FilterHandle, FilterSelectionTarget,
-    MAX_FILTER_FIELDS, RETAINED_BYTES, criteria, patterns,
+    RETAINED_BYTES, criteria, patterns,
 };
 use crate::{
     Error, Response,
@@ -141,9 +141,13 @@ pub(super) fn replacement_criteria(
     work: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Vec<Criterion>, Error> {
-    work.charge_allocation(MAX_FILTER_FIELDS as u64, size_of::<Criterion>() as u64)?;
+    let retained = base
+        .filter(|_| enabled)
+        .map_or(0, |base| base.state.definition.state.criteria.len());
+    let capacity = retained.checked_add(1).ok_or(FilterError::CriterionLimit)?;
+    work.charge_allocation(capacity as u64, size_of::<Criterion>() as u64)?;
     let mut predicates = Vec::new();
-    predicates.try_reserve_exact(MAX_FILTER_FIELDS)?;
+    predicates.try_reserve_exact(capacity)?;
     if let Some(base) = base.filter(|_| enabled) {
         for criterion in &base.state.definition.state.criteria {
             check(cancelled)?;
@@ -155,9 +159,6 @@ pub(super) fn replacement_criteria(
                 predicates.push(criteria::copy(criterion, work, cancelled)?);
             }
         }
-    }
-    if predicates.len() == MAX_FILTER_FIELDS {
-        return Err(FilterError::CriterionLimit.into());
     }
     Ok(predicates)
 }

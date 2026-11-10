@@ -22,8 +22,8 @@ use tablecraft_expressions::{
 use tablecraft_schema::ScalarType;
 
 const SCAN_BATCH_ROWS: u32 = 100;
-const MATCH_BYTES: u64 = 64 * 1024 * 1024;
-const MATCH_STEPS: u64 = 10_000_000;
+const MATCH_BYTES: u64 = u64::MAX;
+const MATCH_STEPS: u64 = u64::MAX;
 const HIGH_SURROGATES: std::ops::RangeInclusive<u16> = 0xd800..=0xdbff;
 const LOW_SURROGATES: std::ops::RangeInclusive<u16> = 0xdc00..=0xdfff;
 

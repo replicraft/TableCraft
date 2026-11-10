@@ -23,9 +23,8 @@ use tablecraft_expressions::comparison::Comparison;
 use tablecraft_schema::TypeDescriptor;
 use thiserror::Error as ThisError;
 
-pub const MAX_FILTER_FIELDS: usize = 16;
-const RETAINED_BYTES: u64 = 8 * 1024 * 1024;
-const FILTER_STEPS: u64 = 1_000_000;
+const RETAINED_BYTES: u64 = u64::MAX;
+const FILTER_STEPS: u64 = u64::MAX;
 static NEXT_FILTER_ID: AtomicU64 = AtomicU64::new(0);
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -232,7 +231,7 @@ pub enum FilterError {
     StaleHandle,
     #[error("the selected native field or record is not part of this filter source")]
     InvalidSelection,
-    #[error("filter criteria exceed the sixteen distinct-field limit")]
+    #[error("filter criteria exceed the observed table field count")]
     CriterionLimit,
     #[error("the field does not support this common-filter operator")]
     UnsupportedOperator,

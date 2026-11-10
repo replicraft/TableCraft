@@ -10,7 +10,7 @@ use tablecraft_core::{
 use tablecraft_display::{DateRepresentation, NativeFormat, ScalarPresentation};
 
 const NANOS_PER_EXTENDED_TICK: u32 = 100;
-const OUTPUT_BYTES: u64 = 8 * 1024 * 1024;
+const OUTPUT_BYTES: u64 = u64::MAX;
 
 pub(super) struct Presentation<'a> {
     work: ResourceBudget,
@@ -19,7 +19,7 @@ pub(super) struct Presentation<'a> {
 
 impl<'a> Presentation<'a> {
     pub(super) fn new(cancelled: &'a dyn Fn() -> bool) -> Self {
-        Self::with_budget(ResourceBudget::new(OUTPUT_BYTES, 0, 100_000), cancelled)
+        Self::with_budget(ResourceBudget::new(OUTPUT_BYTES, 0, u64::MAX), cancelled)
     }
 
     pub(super) fn with_budget(work: ResourceBudget, cancelled: &'a dyn Fn() -> bool) -> Self {

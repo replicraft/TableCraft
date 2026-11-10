@@ -1,8 +1,8 @@
 //! Native admission, complete membership and one existing owned aggregate plan.
 use super::snapshot::{self, Policies, SOURCE_NAME, Snapshot};
 use super::{
-    MAX_TOTAL_FIELDS, TotalAggregate, TotalSpec, TotalsData, TotalsDescription, TotalsError,
-    TotalsField, TotalsTarget,
+    TotalAggregate, TotalSpec, TotalsData, TotalsDescription, TotalsError, TotalsField,
+    TotalsTarget,
 };
 use crate::{
     Error, FilterHandle, Response,
@@ -29,9 +29,9 @@ use tablecraft_sql::{
     },
 };
 
-const RETAINED_BYTES: u64 = 16 * 1024 * 1024;
-const RETAINED_STEPS: u64 = 1_000_000;
-const QUERY_ROWS: u64 = 10_000;
+const RETAINED_BYTES: u64 = u64::MAX;
+const RETAINED_STEPS: u64 = u64::MAX;
+const QUERY_ROWS: u64 = u64::MAX;
 const SCAN_BATCH_ROWS: u32 = 100;
 const NUMERIC: &[TotalAggregate] = &[
     TotalAggregate::Count,
@@ -158,9 +158,6 @@ impl Document {
     ) -> Result<Response, Error> {
         check(cancelled)?;
         self.check_totals(target, base)?;
-        if specs.len() > MAX_TOTAL_FIELDS {
-            return Err(TotalsError::FieldLimit.into());
-        }
         let mut native = budget();
         let schema = inspect_table_schema(
             &mut self.source,
@@ -169,6 +166,9 @@ impl Document {
             &mut native,
             cancelled,
         )?;
+        if specs.len() > schema.columns().len() {
+            return Err(TotalsError::FieldLimit.into());
+        }
         let metadata = Metadata::inspect(&mut self.source, &target.table, &mut native, cancelled)?;
         let mut retained = ResourceBudget::new(RETAINED_BYTES, 0, RETAINED_STEPS);
         retained.charge_allocation(specs.len() as u64, size_of::<usize>() as u64)?;

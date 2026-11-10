@@ -10,8 +10,8 @@ use super::{
 use tablecraft_access::NativeBrowser;
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
-const DESCRIPTOR_BYTES: u64 = 8 * 1024 * 1024;
-const DESCRIPTOR_STEPS: u64 = 1_000_000;
+const DESCRIPTOR_BYTES: u64 = u64::MAX;
+const DESCRIPTOR_STEPS: u64 = u64::MAX;
 const CARRIER_NAME_BYTES: u64 = 32;
 
 /// Original native declarations and separately qualified scalar-reader facts.

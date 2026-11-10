@@ -1,5 +1,5 @@
 //! The Ribbon toggles visibility; aggregate choices remain local until submitted.
-use super::{MAX_TOTAL_FIELDS, Session, TotalAggregate, TotalSpec, TotalsTarget};
+use super::{Session, TotalAggregate, TotalSpec, TotalsTarget};
 use crate::localization::tr;
 use crate::workspace::{
     Action, State, diagnostics,
@@ -117,7 +117,11 @@ impl State {
                 (Some(index), None) => {
                     session.specs.remove(index);
                 }
-                (None, Some(aggregate)) if session.specs.len() < MAX_TOTAL_FIELDS => {
+                (None, Some(aggregate))
+                    if session.description.as_ref().is_some_and(|description| {
+                        session.specs.len() < description.fields.len()
+                    }) =>
+                {
                     session.specs.push(TotalSpec {
                         column: choice.column,
                         aggregate,

@@ -16,5 +16,5 @@ totals-choices-unavailable = 这些字段不支持某些汇总方式。请选择
 totals-cancelled = 已取消汇总计算。再次选择汇总方式可重试。
 totals-stale = 汇总来源已不是当前状态。
 totals-error-help = 无法刷新汇总。请重新选择汇总函数以重试。
-totals-limit = 最多为 32 个字段选择汇总方式。
+totals-limit = 只能为此表中的字段选择汇总方式。
 totals-mock-unavailable = 仅显示模拟汇总；未读取任何数据库。

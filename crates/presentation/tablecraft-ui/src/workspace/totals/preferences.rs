@@ -1,5 +1,5 @@
 //! Only visibility and field choices survive a fresh database revision.
-use super::{MAX_TOTAL_FIELDS, Session, TotalSpec, Totals};
+use super::{Session, TotalSpec, Totals};
 use crate::workspace::objects::memory::Counter;
 
 #[derive(Clone)]
@@ -23,9 +23,6 @@ impl Totals {
         let Some(preferences) = preferences else {
             return Self::default();
         };
-        if preferences.specs.len() > MAX_TOTAL_FIELDS {
-            return Self::default();
-        }
         Self {
             session: Some(Box::new(Session {
                 visible: preferences.visible,

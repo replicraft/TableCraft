@@ -16,5 +16,5 @@ totals-choices-unavailable = Some total choices are unavailable for these fields
 totals-cancelled = Totals calculation cancelled. Choose a total again to retry.
 totals-stale = The totals source is no longer current.
 totals-error-help = Totals could not be refreshed. Choose a total again to retry.
-totals-limit = Choose totals for at most 32 fields.
+totals-limit = Choose totals only for fields in this table.
 totals-mock-unavailable = Synthetic totals only; no database was read.

@@ -16,5 +16,5 @@ totals-choices-unavailable = Einige Berechnungen sind für diese Felder nicht ve
 totals-cancelled = Berechnung abgebrochen. Wählen Sie erneut eine Berechnung, um es noch einmal zu versuchen.
 totals-stale = Die Quelle der Gesamtwerte ist nicht mehr aktuell.
 totals-error-help = Gesamtwerte konnten nicht aktualisiert werden. Wählen Sie erneut eine Funktion, um es nochmals zu versuchen.
-totals-limit = Wählen Sie Berechnungen für höchstens 32 Felder.
+totals-limit = Wählen Sie Berechnungen nur für Felder dieser Tabelle.
 totals-mock-unavailable = Nur simulierte Gesamtwerte; es wurde keine Datenbank gelesen.

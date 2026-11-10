@@ -7,8 +7,7 @@ use tablecraft_schema::{Column, ScalarType};
 use tablecraft_sql::parse_query;
 
 #[test]
-fn larger_ordered_reads_need_an_explicit_shared_work_allowance() {
-    assert_eq!(QueryLimits::default().steps, 1_000_000);
+fn larger_ordered_reads_honor_explicit_shared_work_allowances() {
     let source = MemorySource::new(vec![
         MemoryTable::new(
             "T".into(),
@@ -23,16 +22,20 @@ fn larger_ordered_reads_need_an_explicit_shared_work_allowance() {
     let parsed = parse_query("SELECT TOP 3 N FROM T ORDER BY N DESC", Default::default()).unwrap();
     let plan = prepare(parsed.query(), &source).unwrap();
     assert!(matches!(
-        plan.execute(&source, &[], Default::default()),
+        plan.execute(
+            &source,
+            &[],
+            ExecutionOptions {
+                limits: QueryLimits {
+                    steps: 1_000_000,
+                    ..Default::default()
+                },
+                ..Default::default()
+            }
+        ),
         Err(QueryError::Limit(_))
     ));
-    let options = ExecutionOptions {
-        limits: QueryLimits {
-            steps: 10_000_000,
-            ..Default::default()
-        },
-        ..Default::default()
-    };
+    let options = ExecutionOptions::default();
     assert_eq!(
         plan.execute(&source, &[], options).unwrap().rows(),
         &[

@@ -145,7 +145,7 @@ impl Default for QueryRunOptions {
             snapshot: TableSnapshotLimits::default(),
             native: QueryPoolLimits {
                 bytes: u64::MAX,
-                rows: u32::MAX as u64,
+                rows: u64::MAX,
                 steps: u64::MAX,
             },
             query: QueryPoolLimits {

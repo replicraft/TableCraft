@@ -17,11 +17,11 @@ use super::Error;
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_model::CatalogScope;
 
-const NATIVE_BYTES: u64 = 512 * 1024 * 1024;
-const NATIVE_ROWS: u64 = 100_000;
-const NATIVE_STEPS: u64 = 5_000_000;
-const COMPARISON_BYTES: u64 = 16 * 1024 * 1024;
-const COMPARISON_STEPS: u64 = 1_000_000;
+const NATIVE_BYTES: u64 = u64::MAX;
+const NATIVE_ROWS: u64 = u64::MAX;
+const NATIVE_STEPS: u64 = u64::MAX;
+const COMPARISON_BYTES: u64 = u64::MAX;
+const COMPARISON_STEPS: u64 = u64::MAX;
 pub(super) const SCOPE: CatalogScope = CatalogScope::new(1);
 
 pub(super) fn budget() -> ResourceBudget {

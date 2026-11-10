@@ -10,7 +10,6 @@ use super::{Action, Cell, Column, DocumentView, ObjectKind, ObjectTab, State};
 use crate::{CellKind, DisplayControl};
 use tablecraft_display::Options;
 
-const MAX_TOTAL_FIELDS: usize = 32;
 const MAX_AGGREGATES: usize = 7;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -600,7 +599,7 @@ fn specs_supported(session: &Session, specs: &[TotalSpec]) -> bool {
     let Some(description) = &session.description else {
         return false;
     };
-    specs.len() <= MAX_TOTAL_FIELDS
+    specs.len() <= description.fields.len()
         && specs.iter().enumerate().all(|(index, spec)| {
             !specs[..index]
                 .iter()

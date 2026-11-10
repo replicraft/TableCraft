@@ -13,8 +13,8 @@ use tablecraft_expressions::{
     predicates::{LikeCase, LikeMatch, LikeMode, PreparedLikeSearch},
 };
 
-pub(super) const PATTERN_BYTES: u64 = 64 * 1024 * 1024;
-pub(super) const PATTERN_STEPS: u64 = 10_000_000;
+pub(super) const PATTERN_BYTES: u64 = u64::MAX;
+pub(super) const PATTERN_STEPS: u64 = u64::MAX;
 
 pub(super) fn mode<R: NativeReadSource>(
     source: &mut R,

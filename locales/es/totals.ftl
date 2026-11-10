@@ -16,5 +16,5 @@ totals-choices-unavailable = Algunos cálculos no están disponibles para estos 
 totals-cancelled = Cálculo cancelado. Vuelva a elegir un cálculo para reintentarlo.
 totals-stale = La fuente de los totales ya no está vigente.
 totals-error-help = No se pudieron actualizar los totales. Vuelva a elegir un total para reintentarlo.
-totals-limit = Elija totales para un máximo de 32 campos.
+totals-limit = Elija totales solo para campos de esta tabla.
 totals-mock-unavailable = Solo totales simulados; no se leyó ninguna base de datos.

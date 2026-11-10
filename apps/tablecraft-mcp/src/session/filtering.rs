@@ -180,9 +180,6 @@ impl Session {
                             .get("specs")
                             .and_then(Value::as_array)
                             .ok_or("specs must be an array")?;
-                        if values.len() > tablecraft_runtime::MAX_TOTAL_FIELDS {
-                            return Err("Too many total fields".into());
-                        }
                         let specs = values
                             .iter()
                             .map(|value| {

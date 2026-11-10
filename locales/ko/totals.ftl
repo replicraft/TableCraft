@@ -16,5 +16,5 @@ totals-choices-unavailable = 이 필드에서는 일부 집계를 사용할 수 
 totals-cancelled = 집계를 취소했습니다. 다시 시도하려면 집계를 다시 선택하세요.
 totals-stale = 집계 원본이 더 이상 현재 상태와 일치하지 않습니다.
 totals-error-help = 합계를 새로 고치지 못했습니다. 다시 시도하려면 집계 함수를 다시 선택하세요.
-totals-limit = 최대 32개 필드의 집계를 선택하세요.
+totals-limit = 이 테이블의 필드에 대해서만 집계를 선택하세요.
 totals-mock-unavailable = 합성 집계만 표시합니다. 데이터베이스를 읽지 않았습니다.

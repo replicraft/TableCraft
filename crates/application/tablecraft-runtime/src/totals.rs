@@ -5,8 +5,6 @@ mod snapshot;
 use crate::{Cell, Column};
 use thiserror::Error;
 
-pub const MAX_TOTAL_FIELDS: usize = 32;
-
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct TotalsTarget {
     pub document_revision: u64,
@@ -55,7 +53,7 @@ pub struct TotalsData {
 pub enum TotalsError {
     #[error("totals target does not match the current native view")]
     InvalidTarget,
-    #[error("totals allow at most 32 distinct fields")]
+    #[error("totals fields must fit the observed table schema")]
     FieldLimit,
     #[error("the total is not supported for this native field")]
     UnsupportedAggregate,

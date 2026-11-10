@@ -1,7 +1,7 @@
 //! Explicit fresh-source reapplication of preferences, never old row identities.
 use super::{
     BoundSort, Criterion, DefinitionState, FILTER_STEPS, FilterDefinition, FilterError,
-    MAX_FILTER_FIELDS, RETAINED_BYTES, criteria, patterns,
+    RETAINED_BYTES, criteria, patterns,
 };
 use crate::{
     Error, Response,
@@ -44,10 +44,6 @@ impl Document {
         if document_revision != self.revision {
             return Err(Error::StaleDocument);
         }
-        if definition.state.criteria.len() > MAX_FILTER_FIELDS {
-            return Err(FilterError::CriterionLimit.into());
-        }
-
         let mut native_work = budget();
         let schema = inspect_table_schema(
             &mut self.source,
@@ -56,6 +52,9 @@ impl Document {
             &mut native_work,
             cancelled,
         )?;
+        if definition.state.criteria.len() > schema.columns().len() {
+            return Err(FilterError::CriterionLimit.into());
+        }
         let order = inspect_database_sort_order(&mut self.source, &mut native_work, cancelled)?;
         let comparisons = RefCell::new(comparison_budget());
         let resolver =

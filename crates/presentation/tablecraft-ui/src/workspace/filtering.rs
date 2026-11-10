@@ -12,8 +12,6 @@ use super::{Data, DocumentView, State};
 use crate::CellKind;
 use tablecraft_display::Options;
 
-const MAX_FILTER_FIELDS: u32 = 16;
-
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct FilterTarget {
     pub document_revision: u64,
@@ -699,7 +697,7 @@ fn valid_publication(publication: &FilterPublication) -> bool {
         publication.source_rows
     };
     publication.target.filter_id != 0
-        && publication.filter_count <= MAX_FILTER_FIELDS
+        && usize::try_from(publication.filter_count).is_ok_and(|count| count <= data.columns.len())
         && (publication.filter_count > 0
             || (!publication.enabled && publication.matched_rows == publication.source_rows))
         && publication
