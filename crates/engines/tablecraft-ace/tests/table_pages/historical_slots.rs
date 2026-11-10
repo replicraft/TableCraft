@@ -41,11 +41,12 @@ fn historical_capacity_is_metadata_not_a_speculative_full_mask_allocation() {
     put16(&mut bytes, 10 * 4096 + 41, u16::MAX);
     put32(&mut bytes, 10 * 4096 + 16, 0);
     bytes[12 * 4096..13 * 4096].copy_from_slice(&data_page(10, &[]));
+    // Metadata inspection still pays for the three ordinary catalog records.
     let schema = inspect_table_schema(
         &mut Cursor::new(&bytes),
         SCOPE,
         "Items",
-        &mut ResourceBudget::new(131_072, 0, 100_000),
+        &mut ResourceBudget::new(131_072, 3, 100_000),
         &|| false,
     )
     .unwrap();
