@@ -1,6 +1,7 @@
 //! Independent fitting ADD after an explicit database OFF body.
 //! Source and AFTER pins come from the maintained first-party SDK experiment;
 //! no production parser, encoder or native mutation participates in this oracle.
+pub mod current_delete;
 pub mod current_insert;
 pub mod deleted_field;
 pub mod populated;
