@@ -216,3 +216,5 @@ fn cold_current_number_recovery_checks_full_images_and_retains_actual_records() 
 }
 
 mod short_text;
+
+mod retained;
