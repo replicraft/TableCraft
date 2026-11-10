@@ -1,7 +1,9 @@
 //! Fresh raw DELETE replay before consuming the same checked V1 session.
+mod retained;
 use super::NativeDeleteIntent;
 use crate::transaction::{NativeRecoveryQualificationError, qualified_recovery::equal_image};
 use crate::{NativeImage, header::check};
+pub use retained::QualifiedRetainedNativeDeleteRecovery;
 use std::io::Cursor;
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_io::journal::{CheckedV1, DurableStorage, JournalError, RecoveryOutcome, V1State};
@@ -24,6 +26,9 @@ pub fn qualify_native_delete_recovery<'a, J: DurableStorage>(
 ) -> Result<QualifiedNativeDeleteRecovery<'a, J>, NativeRecoveryQualificationError> {
     let _span = tracing::debug_span!("native.delete_recovery.qualify").entered();
     check(budget, cancelled)?;
+    if intent.is_retained() {
+        return Err(crate::NativeIntentError::UnsupportedVersion.into());
+    }
     intent.verify_before(checked.before_bytes(), budget, cancelled)?;
     let image = NativeImage::capture(
         &mut Cursor::new(checked.before_bytes()),

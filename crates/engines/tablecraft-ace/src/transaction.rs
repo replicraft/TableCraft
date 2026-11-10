@@ -139,8 +139,8 @@ impl Seek for OfflineReadTransaction {
 
 #[cfg(feature = "journal")]
 pub use intent::{
-    NativeDeleteIntent, QualifiedNativeDeleteRecovery, RecoverableNativeDeletePlan,
-    qualify_native_delete_recovery,
+    NativeDeleteIntent, QualifiedNativeDeleteRecovery, QualifiedRetainedNativeDeleteRecovery,
+    RecoverableNativeDeletePlan, qualify_native_delete_recovery,
 };
 
 #[cfg(feature = "journal")]

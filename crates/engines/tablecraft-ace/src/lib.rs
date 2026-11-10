@@ -240,8 +240,8 @@ pub use table::{
 
 #[cfg(feature = "journal")]
 pub use transaction::{
-    NativeDeleteIntent, QualifiedNativeDeleteRecovery, RecoverableNativeDeletePlan,
-    qualify_native_delete_recovery,
+    NativeDeleteIntent, QualifiedNativeDeleteRecovery, QualifiedRetainedNativeDeleteRecovery,
+    RecoverableNativeDeletePlan, qualify_native_delete_recovery,
 };
 
 #[cfg(any(feature = "journal", feature = "ace16-write-preview"))]

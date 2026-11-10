@@ -9,7 +9,10 @@ mod current_tests;
 mod tests;
 
 pub use planning::RecoverableNativeDeletePlan;
-pub use recovery::{QualifiedNativeDeleteRecovery, qualify_native_delete_recovery};
+pub use recovery::{
+    QualifiedNativeDeleteRecovery, QualifiedRetainedNativeDeleteRecovery,
+    qualify_native_delete_recovery,
+};
 
 use super::{NativeIntentError, binding, model as names};
 use crate::{EditError, InspectError, NativeEditPlan, NativeImage, RowDelete, header::check};
@@ -20,6 +23,7 @@ use tablecraft_schema::SchemaName;
 enum SourceFamily {
     Ordinary,
     Current,
+    Retained,
 }
 
 /// Original ordered deletion witnesses and an exact complete BEFORE binding.
@@ -38,6 +42,9 @@ impl NativeDeleteIntent {
 
     /// Current deletion stores its total record length in a u32.
     pub const MAX_CURRENT_ENCODED_BYTES: usize = u32::MAX as usize;
+
+    /// Actual complete TCND0003 record-length representation.
+    pub const MAX_RETAINED_ENCODED_BYTES: usize = u32::MAX as usize;
 
     /// Validate and retain original requests in their written order.
     /// Actual raw record framing, target eligibility and stale witnesses are
@@ -78,6 +85,30 @@ impl NativeDeleteIntent {
         )
     }
 
+    /// Bind retained-source witnesses to the distinct TCND0003 family.
+    /// This data grants no source, tombstone or recovery permission.
+    pub fn new_retained(
+        table: &str,
+        deletes: Vec<RowDelete>,
+        before: &[u8],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, NativeIntentError> {
+        Self::capture(
+            table,
+            deletes,
+            before,
+            SourceFamily::Retained,
+            budget,
+            cancelled,
+        )
+    }
+
+    /// Exact retained record identity, independently of native qualification.
+    pub fn is_retained(&self) -> bool {
+        self.family == SourceFamily::Retained
+    }
+
     fn capture(
         table: &str,
         deletes: Vec<RowDelete>,
@@ -88,9 +119,9 @@ impl NativeDeleteIntent {
     ) -> Result<Self, NativeIntentError> {
         let _span = tracing::debug_span!("native.delete_intent.capture").entered();
         check(budget, cancelled)?;
-        names::validate_name(table, budget, cancelled)?;
+        family.validate_name(table, budget, cancelled)?;
         codec::validate_requests(table.len(), &deletes, family, budget, cancelled)?;
-        let before_binding = binding::digest(before, budget, cancelled)?;
+        let before_binding = family.digest(before, budget, cancelled)?;
         let table = names::copy_name(table, budget)?;
         check(budget, cancelled)?;
         Ok(Self {
@@ -116,8 +147,14 @@ impl NativeDeleteIntent {
             SourceFamily::Current => {
                 image.plan_current_row_deletes(self.table(), self.deletes(), budget, cancelled)
             }
+            #[cfg(feature = "ace16-create")]
+            SourceFamily::Retained => {
+                image.plan_retained_row_deletes(self.table(), self.deletes(), budget, cancelled)
+            }
             #[cfg(not(feature = "ace16-create"))]
-            SourceFamily::Current => Err(EditError::Unsupported(crate::WriteBlocker::RowLayout)),
+            SourceFamily::Current | SourceFamily::Retained => {
+                Err(EditError::Unsupported(crate::WriteBlocker::RowLayout))
+            }
         }
     }
 
@@ -142,7 +179,7 @@ impl NativeDeleteIntent {
         if before.len() as u64 != self.before_length {
             return Err(NativeIntentError::BeforeMismatch);
         }
-        let actual = binding::digest(before, budget, cancelled)?;
+        let actual = self.family.digest(before, budget, cancelled)?;
         budget
             .charge(Resource::Steps, actual.len() as u64)
             .map_err(InspectError::from)?;
@@ -153,3 +190,39 @@ impl NativeDeleteIntent {
         Ok(())
     }
 }
+
+impl SourceFamily {
+    fn validate_name(
+        self,
+        name: &str,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(), NativeIntentError> {
+        match self {
+            Self::Retained => names::validate_retained_name(name, budget, cancelled),
+            Self::Ordinary | Self::Current => names::validate_name(name, budget, cancelled),
+        }
+    }
+
+    fn length(self, length: u64) -> Result<(), NativeIntentError> {
+        match self {
+            Self::Retained => binding::retained_length(length),
+            Self::Ordinary | Self::Current => binding::length(length),
+        }
+    }
+
+    fn digest(
+        self,
+        before: &[u8],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<[u8; 32], NativeIntentError> {
+        match self {
+            Self::Retained => binding::digest_retained(before, budget, cancelled),
+            Self::Ordinary | Self::Current => binding::digest(before, budget, cancelled),
+        }
+    }
+}
+
+#[cfg(test)]
+mod retained_tests;

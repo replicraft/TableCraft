@@ -1,6 +1,6 @@
 //! Separate TCND0001 and TCND0002 framing, checked before copying decoded witnesses.
 use super::super::row_ordinals::RowOrdinals;
-use super::{NativeDeleteIntent, NativeIntentError, SourceFamily, binding, names};
+use super::{NativeDeleteIntent, NativeIntentError, SourceFamily, names};
 use crate::{
     EditError, InspectError, RowDelete, format::page::PAGE_BYTES, header::check,
     limits::MAX_LIVE_ROWS,
@@ -12,6 +12,8 @@ const PREFIX: &[u8; 4] = b"TCND";
 const PROFILE: u16 = 1;
 const CURRENT_MAGIC: &[u8; 8] = b"TCND0002";
 const CURRENT_PROFILE: u16 = 2;
+const RETAINED_MAGIC: &[u8; 8] = b"TCND0003";
+const RETAINED_PROFILE: u16 = 3;
 const TOTAL_AT: usize = MAGIC.len();
 const PROFILE_AT: usize = TOTAL_AT + size_of::<u32>();
 const FLAGS_AT: usize = PROFILE_AT + size_of::<u16>();
@@ -34,13 +36,14 @@ impl SourceFamily {
         match self {
             Self::Ordinary => MAX_RECORD_BYTES,
             Self::Current => NativeDeleteIntent::MAX_CURRENT_ENCODED_BYTES,
+            Self::Retained => NativeDeleteIntent::MAX_RETAINED_ENCODED_BYTES,
         }
     }
 
     const fn maximum_rows(self) -> usize {
         match self {
             Self::Ordinary => MAX_LIVE_ROWS,
-            Self::Current => u32::MAX as usize,
+            Self::Current | Self::Retained => u32::MAX as usize,
         }
     }
 
@@ -48,6 +51,7 @@ impl SourceFamily {
         match self {
             Self::Ordinary => MAGIC,
             Self::Current => CURRENT_MAGIC,
+            Self::Retained => RETAINED_MAGIC,
         }
     }
 
@@ -55,6 +59,7 @@ impl SourceFamily {
         match self {
             Self::Ordinary => PROFILE,
             Self::Current => CURRENT_PROFILE,
+            Self::Retained => RETAINED_PROFILE,
         }
     }
 }
@@ -113,7 +118,12 @@ pub(super) fn validate_requests(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<usize, NativeIntentError> {
     check(budget, cancelled)?;
-    if deletes.len() > family.maximum_rows() || name_bytes > names::MAX_NAME_BYTES {
+    let maximum_name_bytes = if family == SourceFamily::Retained {
+        u32::MAX as usize
+    } else {
+        names::MAX_NAME_BYTES
+    };
+    if deletes.len() > family.maximum_rows() || name_bytes > maximum_name_bytes {
         return Err(InspectError::StructureLimit.into());
     }
     let mut bitmap;
@@ -125,10 +135,11 @@ pub(super) fn validate_requests(
             bitmap = [0_u64; ROW_WORDS];
             Seen::Ordinary(&mut bitmap)
         }
-        SourceFamily::Current => Seen::Current(RowOrdinals::default()),
+        SourceFamily::Current | SourceFamily::Retained => Seen::Current(RowOrdinals::default()),
     };
     let mut length = HEADER_BYTES
         .checked_add(name_bytes)
+        .filter(|length| *length <= family.maximum_bytes())
         .ok_or(InspectError::StructureLimit)?;
     for request in deletes {
         check(budget, cancelled)?;
@@ -229,11 +240,16 @@ fn preflight<'a>(
         return Err(NativeIntentError::UnsupportedProfile);
     }
     let before_length = u64::from_le_bytes(raw[BEFORE_LENGTH_AT..BINDING_AT].try_into().unwrap());
-    binding::length(before_length)?;
+    family.length(before_length)?;
     let before_binding = raw[BINDING_AT..NAME_LENGTH_AT].try_into().unwrap();
     let count = u32_at(COUNT_AT) as usize;
     let name_bytes = u32_at(NAME_LENGTH_AT) as usize;
-    if count > family.maximum_rows() || name_bytes == 0 || name_bytes > names::MAX_NAME_BYTES {
+    let maximum_name_bytes = if family == SourceFamily::Retained {
+        u32::MAX as usize
+    } else {
+        names::MAX_NAME_BYTES
+    };
+    if count > family.maximum_rows() || name_bytes == 0 || name_bytes > maximum_name_bytes {
         return Err(NativeIntentError::InvalidRecord);
     }
     let mut cursor = Cursor {
@@ -243,7 +259,7 @@ fn preflight<'a>(
     let name = cursor.take(name_bytes)?;
     scan(name, budget, cancelled)?;
     let table = std::str::from_utf8(name).map_err(|_| NativeIntentError::InvalidRecord)?;
-    names::validate_name(table, budget, cancelled)?;
+    family.validate_name(table, budget, cancelled)?;
     let rows = &raw[cursor.at..];
     let mut bitmap;
     let mut seen = match family {
@@ -254,7 +270,7 @@ fn preflight<'a>(
             bitmap = [0_u64; ROW_WORDS];
             Seen::Ordinary(&mut bitmap)
         }
-        SourceFamily::Current => Seen::Current(RowOrdinals::default()),
+        SourceFamily::Current | SourceFamily::Retained => Seen::Current(RowOrdinals::default()),
     };
     for _ in 0..count {
         check(budget, cancelled)?;
@@ -343,6 +359,15 @@ impl NativeDeleteIntent {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, NativeIntentError> {
         Self::decode_family(raw, SourceFamily::Current, budget, cancelled)
+    }
+
+    /// Decode only TCND0003; older versions never enter retained source proof.
+    pub fn decode_retained(
+        raw: &[u8],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, NativeIntentError> {
+        Self::decode_family(raw, SourceFamily::Retained, budget, cancelled)
     }
 
     fn decode_family(

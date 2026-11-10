@@ -19,8 +19,8 @@ mod tests;
 
 mod delete;
 pub use delete::{
-    NativeDeleteIntent, QualifiedNativeDeleteRecovery, RecoverableNativeDeletePlan,
-    qualify_native_delete_recovery,
+    NativeDeleteIntent, QualifiedNativeDeleteRecovery, QualifiedRetainedNativeDeleteRecovery,
+    RecoverableNativeDeletePlan, qualify_native_delete_recovery,
 };
 
 mod insert;
