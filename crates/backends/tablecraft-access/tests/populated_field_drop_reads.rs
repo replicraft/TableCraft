@@ -129,3 +129,61 @@ fn fresh_file_queries_use_surviving_schema_and_refuse_deleted_names() {
         assert_eq!(fs::read(&path).unwrap(), after);
     }
 }
+
+#[test]
+fn readded_fields_keep_every_historical_value_and_start_as_null() {
+    use raw::readdition::{self, Target};
+
+    for case in raw::CASES {
+        let before = readdition::source(case);
+        for target in [Target::Number, Target::ShortText] {
+            let after = readdition::after(&before, target);
+            assert_eq!(&after[8 * PAGE..10 * PAGE], &before[8 * PAGE..10 * PAGE]);
+            let old_definition = &before[7 * PAGE..8 * PAGE];
+            let definition = &after[7 * PAGE..8 * PAGE];
+            let word =
+                |bytes: &[u8], at: usize| u16::from_le_bytes(bytes[at..at + 2].try_into().unwrap());
+            assert_eq!(word(definition, 41), word(old_definition, 41) + 1);
+            assert_eq!(word(definition, 45), word(old_definition, 45) + 1);
+            let table = read_table(
+                &mut Cursor::new(&after),
+                SCOPE,
+                "Table1",
+                &mut budget(),
+                &|| false,
+            )
+            .unwrap_or_else(|error| panic!("{case:?}/{target:?}: {error:?}"));
+            assert_eq!(
+                table.rows(),
+                readdition::expected(case),
+                "{case:?}/{target:?}"
+            );
+
+            let directory = tempfile::tempdir().unwrap();
+            let path = directory.path().join("readded.accdb");
+            fs::write(&path, &after).unwrap();
+            let source =
+                NativeSource::new(fs::File::open(&path).unwrap(), SCOPE, budget(), &|| false)
+                    .unwrap();
+            let query =
+                parse_query("SELECT * FROM Table1 ORDER BY ID", Default::default()).unwrap();
+            assert_eq!(
+                prepare(query.query(), &source)
+                    .unwrap()
+                    .execute(&source, &[], ExecutionOptions::default())
+                    .unwrap()
+                    .rows(),
+                readdition::expected(case),
+                "{case:?}/{target:?}",
+            );
+            let removed = parse_query(
+                &format!("SELECT [{}] FROM Table1", raw::column(case)),
+                Default::default(),
+            )
+            .unwrap();
+            assert!(prepare(removed.query(), &source).is_err());
+            drop(source);
+            assert_eq!(fs::read(path).unwrap(), after);
+        }
+    }
+}

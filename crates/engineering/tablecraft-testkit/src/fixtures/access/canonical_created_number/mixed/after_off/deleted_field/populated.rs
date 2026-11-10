@@ -1,4 +1,5 @@
 //! Independent populated tail-field deletion images and literal survivor values.
+pub mod readdition;
 use super::super::{populated as number_rows, populated_mixed, populated_text};
 use super::{Variant, remove_nonprimary};
 use tablecraft_core::values::Value;
