@@ -249,7 +249,9 @@ impl NativeJournalEditor {
                 .editor
                 .plan_recoverable_ordinary_fixed(groups, budget, cancelled)?,
             #[cfg(feature = "ace16-create")]
-            JournalRoute::CurrentRows | JournalRoute::RetainedRows => {
+            JournalRoute::CurrentRows
+            | JournalRoute::RetainedRows
+            | JournalRoute::RetainedOpaqueRows => {
                 return Err(NativeEditError::Unsupported.into());
             }
             JournalRoute::Existing => self

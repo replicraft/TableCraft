@@ -72,6 +72,12 @@ impl NativeJournalEditor {
             if self.route.historical_rows() && (columns.len() != 1 || kind != ScalarType::Text) {
                 return Err(NativeEditError::Unsupported.into());
             }
+            #[cfg(feature = "ace16-create")]
+            if self.route == JournalRoute::RetainedOpaqueRows
+                && (columns.len() != 1 || kind != ScalarType::Int32)
+            {
+                return Err(NativeEditError::Unsupported.into());
+            }
             if self.route.row_updates()
                 && (columns.len() != 1 || !matches!(kind, ScalarType::Int32 | ScalarType::Text))
             {
@@ -180,6 +186,10 @@ impl NativeJournalEditor {
             JournalRoute::CurrentRows => self
                 .editor
                 .plan_recoverable_current_rows(groups, budget, cancelled)?,
+            #[cfg(feature = "ace16-create")]
+            JournalRoute::RetainedOpaqueRows => self
+                .editor
+                .plan_recoverable_retained_opaque_rows(groups, budget, cancelled)?,
             #[cfg(feature = "ace16-create")]
             JournalRoute::RetainedRows => self
                 .editor

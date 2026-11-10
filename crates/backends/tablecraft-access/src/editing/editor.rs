@@ -34,6 +34,26 @@ impl NativeEditor {
             .image
             .has_retained_table_source(self.snapshot.name(), budget, cancelled)?
         {
+            if self.image.select_native_retained_opaque_rows_table(
+                self.snapshot.name(),
+                budget,
+                cancelled,
+            )? {
+                return match self.image.check_native_retained_opaque_rows_table(
+                    self.snapshot.name(),
+                    budget,
+                    cancelled,
+                ) {
+                    Ok(()) => Ok((
+                        UpdateProfile::StoredScalar,
+                        JournalRoute::RetainedOpaqueRows,
+                    )),
+                    Err(EditError::Unsupported(_)) => {
+                        Ok((UpdateProfile::Unavailable, JournalRoute::RetainedOpaqueRows))
+                    }
+                    Err(error) => Err(error.into()),
+                };
+            }
             return match self.image.check_native_retained_rows_table(
                 self.snapshot.name(),
                 budget,
@@ -383,6 +403,21 @@ impl NativeEditor {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<RecoverableNativeEditPlan, RecoverableEditError> {
         self.image.plan_recoverable_current_row_updates(
+            self.snapshot.name(),
+            groups,
+            budget,
+            cancelled,
+        )
+    }
+
+    #[cfg(feature = "ace16-create")]
+    pub(super) fn plan_recoverable_retained_opaque_rows(
+        self,
+        groups: Vec<NativeFittedIntentGroup>,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<RecoverableNativeEditPlan, RecoverableEditError> {
+        self.image.plan_recoverable_retained_opaque_row_updates(
             self.snapshot.name(),
             groups,
             budget,

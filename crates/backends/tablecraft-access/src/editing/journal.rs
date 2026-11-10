@@ -47,13 +47,15 @@ pub(super) enum JournalRoute {
     CurrentRows,
     #[cfg(feature = "ace16-create")]
     RetainedRows,
+    #[cfg(feature = "ace16-create")]
+    RetainedOpaqueRows,
 }
 
 impl JournalRoute {
     fn retained_rows(self) -> bool {
         match self {
             #[cfg(feature = "ace16-create")]
-            Self::RetainedRows => true,
+            Self::RetainedRows | Self::RetainedOpaqueRows => true,
             _ => false,
         }
     }
@@ -61,7 +63,7 @@ impl JournalRoute {
     fn row_updates(self) -> bool {
         match self {
             #[cfg(feature = "ace16-create")]
-            Self::CurrentRows | Self::RetainedRows => true,
+            Self::CurrentRows | Self::RetainedRows | Self::RetainedOpaqueRows => true,
             _ => false,
         }
     }
@@ -72,7 +74,7 @@ impl JournalRoute {
             Self::HistoricalRows => true,
             Self::Existing | Self::Ordinary => false,
             #[cfg(feature = "ace16-create")]
-            Self::CurrentRows | Self::RetainedRows => false,
+            Self::CurrentRows | Self::RetainedRows | Self::RetainedOpaqueRows => false,
         }
     }
 }

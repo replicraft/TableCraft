@@ -58,7 +58,11 @@ impl OfflineWriteSession {
             slot.current = None;
             slot.state = SessionState::RefreshRequired;
             let source = slot.target.as_mut().ok_or(Cause::InvalidState)?;
-            let image = if reviewed.intent().profile() == NativeUpdateProfile::Ace16RetainedRows {
+            let image = if matches!(
+                reviewed.intent().profile(),
+                NativeUpdateProfile::Ace16RetainedRows
+                    | NativeUpdateProfile::Ace16RetainedOpaqueRows
+            ) {
                 #[cfg(feature = "ace16-create")]
                 {
                     NativeImage::capture_retained(source, slot.scope, native, cancelled)
