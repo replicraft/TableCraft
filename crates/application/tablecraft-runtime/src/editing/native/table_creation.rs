@@ -80,11 +80,7 @@ impl Document {
                 (expected, plan.column_count(), plan.into_definition())
             }
             TableCreationProfile::Added | TableCreationProfile::AddedNative => {
-                let plan = if definition.is_native() {
-                    image.plan_add_table_native(definition, &mut work, cancelled)?
-                } else {
-                    image.plan_add_table(definition, &mut work, cancelled)?
-                };
+                let plan = image.plan_authored_add_table(definition, &mut work, cancelled)?;
                 let expected = copy_expected(plan.after_bytes(), &mut work, cancelled)?;
                 (expected, plan.column_count(), plan.into_definition())
             }
