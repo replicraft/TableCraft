@@ -26,6 +26,12 @@ certificates cannot replace it. Complete storage inventory precedes admission of
 retired catalog roots. Actual target program absence, property meaning, defaults,
 constraints, indexes and record layout are checked separately.
 
+Retained insertion uses the same paid, owned catalog/property traversal and
+dynamic LVAL ownership observation as retained table creation and row editing.
+Long forwarding histories do not acquire a fixed hop quota. Ownership, cycles,
+terminal uniqueness and DATA/LVAL overlap remain checked; sharing observations
+does not broaden the separate schema, index, allocation or action languages.
+
 TCNA8 retains original omission, supplied NULL and supplied values through its
 closed length-prefixed scalar framing. It uses checked V3 image journals, a
 separate `prepare_retained` entry point and typed retained recovery. V1 preparation

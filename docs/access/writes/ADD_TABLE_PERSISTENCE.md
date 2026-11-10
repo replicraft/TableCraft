@@ -27,6 +27,10 @@ including live table/index membership and retained DATA, INDEX and LVAL roles.
 Protected orphaned or tombstoned storage is preserved; recognizing its ownership
 does not grant permission to overwrite it. Existing object programs, unsupported
 properties, dependency roles and required validation remain independent refusals.
+
+Retained ADD, INSERT, UPDATE and DELETE share paid, owned catalog and property
+traversal. Forwarding depth is bounded by the actual source and caller resources,
+with per-hop ownership, cycle and alias checks; it has no fixed hop quota.
 The newly authored declaration still uses the existing checked first-table
 constructor profile; this does not imply a complete Access table designer.
 
