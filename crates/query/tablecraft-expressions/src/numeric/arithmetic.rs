@@ -111,7 +111,10 @@ pub fn arithmetic(operator: Arithmetic, left: &Value, right: &Value) -> Result<V
             if a == 0.0 && b < 0.0 {
                 return Err(EvalError::Domain);
             }
-            a.powf(b)
+            // The host CRT's powf precision is unspecified, including its
+            // rounding at half the minimum subnormal. Use the reviewed software
+            // kernel so signed underflow does not depend on the native CRT.
+            libm::pow(a, b)
         }
         Arithmetic::IntegerDivide | Arithmetic::Modulo => unreachable!("handled above"),
     };

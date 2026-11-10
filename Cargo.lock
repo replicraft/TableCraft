@@ -5227,6 +5227,7 @@ dependencies = [
  "icu_collator",
  "icu_locale_core",
  "jiff",
+ "libm",
  "memchr",
  "proptest",
  "rust_decimal",

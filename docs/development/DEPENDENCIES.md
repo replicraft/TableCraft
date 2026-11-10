@@ -1,5 +1,26 @@
 # Adopted dependency and licensing baseline
 
+## Portable power kernel — 9 November 2026
+
+The scalar `^` operator directly consumes already locked `libm` 0.2.16 (MIT,
+Rust 1.63; default features disabled). Rust documents `f64::powf` precision as
+platform-dependent. Windows x64 CI exposed its rounding of the exact halfway
+value `0.5 ^ 1075` to the minimum subnormal instead of zero. The software
+`libm::pow` kernel retains signed ties-to-even underflow while preserving the
+existing operand, domain and finite-result checks. Independent tests retain
+neighboring subnormals and both sides of the halfway exponent; the failing
+signed-zero expectation is unchanged.
+
+Upstream describes general `pow` accuracy as nearly rounded, not universally
+correctly rounded. This change does not establish native Access edge-case parity
+or alter other transcendental/financial kernels. The locked package/source hash
+and complete `LICENSE.txt` already belong to the generated notice closure; this
+consumer introduces no registry package/version. Primary contracts/source:
+[Rust powf](https://doc.rust-lang.org/std/primitive.f64.html#method.powf),
+[libm pow](https://docs.rs/libm/0.2.16/libm/fn.pow.html) and its reviewed published
+`src/math/pow.rs` implementation (Sun/FreeBSD-derived underflow handling).
+
+
 ## Signed desktop updater — 9 November 2026
 
 `tablecraft-update` owns blocking native release retrieval and signed archive

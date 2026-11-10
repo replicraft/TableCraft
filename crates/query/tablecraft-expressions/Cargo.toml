@@ -24,6 +24,7 @@ icu_locale_core.workspace = true
 writeable.workspace = true
 jiff.workspace = true
 rust_decimal.workspace = true
+libm.workspace = true
 
 uuid.workspace = true
 fluent-bundle = { workspace = true, optional = true }

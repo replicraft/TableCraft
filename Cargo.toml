@@ -80,6 +80,9 @@ rayon = { version = "1.12", default-features = false }
 # Checked decimal calculations (domain wrappers retain Access bounds)
 rust_decimal = { version = "1.43", default-features = false, features = ["std"] }
 
+# Portable floating-point power without host CRT precision differences
+libm = { version = "0.2.16", default-features = false }
+
 # Calendar values and GUID interchange
 jiff = { version = "0.2.38", default-features = false, features = ["std", "perf-inline"] }
 uuid = { version = "1.28.0", default-features = false }

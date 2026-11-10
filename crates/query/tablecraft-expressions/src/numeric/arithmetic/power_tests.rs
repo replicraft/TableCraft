@@ -74,3 +74,34 @@ fn power_admission_still_precedes_null_propagation() {
         Err(EvalError::TypeMismatch)
     );
 }
+
+#[test]
+fn power_rounds_each_side_of_half_minimum_subnormal_without_flushing_neighbors() {
+    // These expected encodings come from exact powers of two and round-to-nearest
+    // ties-to-even, rather than another pow implementation. At exponent 1075,
+    // (1/2)^n is exactly halfway between zero and the minimum subnormal.
+    for (base, exponent, expected_bits) in [
+        (0.5, 1073.0, 2_u64),
+        (0.5, 1074.0, 1),
+        (0.5, 1075.0_f64.next_down(), 1),
+        (0.5, 1075.0, 0),
+        (0.5, 1075.0_f64.next_up(), 0),
+        (0.5, 1076.0, 0),
+        (-0.5, 1073.0, 0x8000_0000_0000_0002),
+        (-0.5, 1074.0, 1),
+        (-0.5, 1075.0, 0x8000_0000_0000_0000),
+        (2.0, -1074.0, 1),
+        (2.0, -1075.0, 0),
+    ] {
+        let Value::Double(result) =
+            arithmetic(Arithmetic::Power, &double(base), &double(exponent)).unwrap()
+        else {
+            panic!("Power must produce Double");
+        };
+        assert_eq!(
+            result.to_float().to_bits(),
+            expected_bits,
+            "base={base}, exponent={exponent}"
+        );
+    }
+}
