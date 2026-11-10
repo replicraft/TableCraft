@@ -193,12 +193,26 @@ pub(super) fn show(ui: &mut Ui, editor: &mut Editor, can_save: bool) -> Option<E
                                     ],
                                     ui.visuals().widgets.inactive.fg_stroke,
                                 ));
+                                let manual_scroll = ui.rect_contains_pointer(viewport)
+                                    && ui.input(|input| {
+                                        input.events.iter().any(|event| {
+                                            matches!(event, egui::Event::MouseWheel { .. })
+                                        })
+                                    });
                                 if editor.focus_add {
-                                    response.request_focus();
-                                    response.scroll_to_me(None);
+                                    if enabled {
+                                        response.request_focus();
+                                        response.scroll_to_me(None);
+                                    }
                                     editor.focus_add = false;
                                 } else if response.has_focus() {
-                                    response.scroll_to_me(None);
+                                    if manual_scroll {
+                                        // Explicit viewport navigation takes over from
+                                        // the initial trailing-column focus request.
+                                        response.surrender_focus();
+                                    } else {
+                                        response.scroll_to_me(None);
+                                    }
                                 }
                             });
                         });

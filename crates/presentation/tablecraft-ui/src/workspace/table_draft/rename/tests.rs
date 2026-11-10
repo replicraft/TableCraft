@@ -180,3 +180,108 @@ fn same_frame_text_and_save_shortcut_commit_the_current_header_before_naming() {
     assert!(state.table_draft_save_open());
     assert!(harness.state().1.is_empty());
 }
+
+#[test]
+fn full_draft_keeps_last_name_and_manual_scroll_does_not_refocus_disabled_placeholder() {
+    let mut harness = harness();
+    // The initial helper adds Field1. Add the remaining companion declarations
+    // through the same shared command without manufacturing editor state.
+    for _ in 2..255 {
+        assert!(
+            harness
+                .state_mut()
+                .0
+                .add_table_draft_field(DraftFieldType::Number)
+        );
+    }
+    harness.run_steps(2);
+    harness.key_press(egui::Key::Enter);
+    harness.run_steps(3);
+    let before = harness
+        .state()
+        .0
+        .table_draft
+        .as_ref()
+        .unwrap()
+        .draft
+        .snapshot("Table1")
+        .unwrap();
+    assert_eq!(before.fields().len(), 255);
+    assert_eq!(before.fields()[254].name(), "Field254");
+    assert!(
+        !harness
+            .get_by_role_and_label(Role::Button, "Click to Add")
+            .is_focused()
+    );
+    harness.event(egui::Event::PointerMoved(egui::pos2(700.0, 400.0)));
+    harness.event(egui::Event::MouseWheel {
+        unit: egui::MouseWheelUnit::Point,
+        delta: egui::vec2(100_000.0, 0.0),
+        phase: egui::TouchPhase::Move,
+        modifiers: egui::Modifiers::NONE,
+    });
+    harness.run_steps(10);
+    let first = harness
+        .get_by_role_and_label(Role::ColumnHeader, "Field1")
+        .rect();
+    assert!(first.intersects(harness.ctx.content_rect()));
+    harness.run_steps(4);
+    assert_eq!(
+        harness
+            .get_by_role_and_label(Role::ColumnHeader, "Field1")
+            .rect(),
+        first
+    );
+    let editor = harness.state().0.table_draft.as_ref().unwrap();
+    assert!(editor.draft.snapshot("Table1").unwrap() == before);
+    assert!(editor.rename.is_none());
+    assert!(harness.state().1.is_empty());
+}
+
+#[test]
+fn manual_horizontal_scroll_releases_trailing_add_focus_and_keeps_first_field_visible() {
+    let mut harness = harness();
+    for _ in 2..20 {
+        assert!(
+            harness
+                .state_mut()
+                .0
+                .add_table_draft_field(DraftFieldType::Number)
+        );
+    }
+    harness.run_steps(2);
+    harness.key_press(egui::Key::Enter);
+    harness.run_steps(3);
+    assert!(
+        harness
+            .get_by_role_and_label(Role::Button, "Click to Add")
+            .is_focused()
+    );
+    harness.event(egui::Event::PointerMoved(egui::pos2(700.0, 400.0)));
+    harness.event(egui::Event::MouseWheel {
+        unit: egui::MouseWheelUnit::Point,
+        delta: egui::vec2(100_000.0, 0.0),
+        phase: egui::TouchPhase::Move,
+        modifiers: egui::Modifiers::NONE,
+    });
+    harness.run_steps(10);
+    assert!(
+        !harness
+            .get_by_role_and_label(Role::Button, "Click to Add")
+            .is_focused()
+    );
+    assert!(
+        harness
+            .get_by_role_and_label(Role::ColumnHeader, "Field1")
+            .rect()
+            .intersects(harness.ctx.content_rect())
+    );
+    harness.run_steps(4);
+    assert!(
+        harness
+            .get_by_role_and_label(Role::ColumnHeader, "Field1")
+            .rect()
+            .intersects(harness.ctx.content_rect())
+    );
+    assert!(harness.state().1.is_empty());
+}

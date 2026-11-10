@@ -370,6 +370,11 @@ impl RowDraft {
 
     /// Render one cell; typing is explicit Value intent, not type inference.
     pub(super) fn show_cell(&mut self, ui: &mut Ui, field: &DraftField) -> bool {
+        // The table already allocated this cell. Offscreen cells retain their
+        // exact input without cloning or laying out a hidden editor payload.
+        if !ui.is_rect_visible(ui.max_rect()) {
+            return false;
+        }
         if field.kind() == DraftFieldType::AutoNumberIncrement {
             ui.label(tr(ui, "table-draft-new-record"))
                 .on_hover_text(tr(ui, "insertion-auto-number-help"));
