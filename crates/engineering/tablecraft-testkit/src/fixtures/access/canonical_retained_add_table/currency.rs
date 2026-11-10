@@ -96,6 +96,12 @@ pub fn source() -> Vec<u8> {
     bytes
 }
 
+/// Append the exact desktop Currency declaration at actual EOF, preserving all
+/// old tables, properties, physical slots and retired storage roles.
+pub fn append_table(before: &[u8], name: &str) -> Vec<u8> {
+    super::append_template(before, name, &source(), Some(&properties()))
+}
+
 fn declaration(before: &[u8], definition: u32) {
     let at = definition as usize * PAGE;
     assert_eq!(&before[at + 41..at + 47], &[2, 0, 0, 0, 2, 0]);

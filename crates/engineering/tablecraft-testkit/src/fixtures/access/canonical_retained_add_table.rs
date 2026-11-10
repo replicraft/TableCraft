@@ -68,6 +68,31 @@ pub fn append(before: &[u8], name: &str, target: Target) -> Vec<u8> {
 }
 
 fn append_profile(before: &[u8], name: &str, target: Target, desktop: bool) -> Vec<u8> {
+    let mut original = template(target);
+    let properties = desktop.then(|| self::desktop::properties(target));
+    if desktop {
+        let declaration = &mut original[DEFINITION..DEFINITION + PAGE];
+        let first_name = 75 + 25 * word(declaration, 45);
+        assert_eq!(
+            &declaration[first_name..first_name + 6],
+            &[4, 0, b'I', 0, b'd', 0]
+        );
+        declaration[first_name + 4] = b'D';
+        self::desktop::definition(declaration);
+    }
+    append_template(before, name, &original, properties.as_deref())
+}
+
+/// Share actual catalog/map allocation and page rebinding across independent
+/// declaration templates. The template owns its scalar metadata and policies.
+fn append_template(
+    before: &[u8],
+    name: &str,
+    original: &[u8],
+    properties: Option<&[u8]>,
+) -> Vec<u8> {
+    let keyed = word(original, DEFINITION + 47) != 0;
+    assert!(word(original, DEFINITION + 47) <= 1);
     assert_eq!(before.len() % PAGE, 0);
     assert!(!name.is_empty());
     let definition = before.len() / PAGE;
@@ -77,7 +102,7 @@ fn append_profile(before: &[u8], name: &str, target: Target, desktop: bool) -> V
 
     for member in [definition + 1, definition + 1]
         .into_iter()
-        .chain(target.keyed().then_some(definition + 2))
+        .chain(keyed.then_some(definition + 2))
     {
         let mut map = [0; 13];
         let base = member / 64 * 64;
@@ -87,27 +112,18 @@ fn append_profile(before: &[u8], name: &str, target: Target, desktop: bool) -> V
     }
     let raw = canonical_creation::catalog_record(definition as u32, 0x0f00_0001, name, 1, 0);
     let row = canonical_native17_creation::catalog_row(&raw);
-    let row = if desktop {
-        super::canonical_creation_properties::attach(&row, &self::desktop::properties(target))
+    let row = if let Some(properties) = properties {
+        super::canonical_creation_properties::attach(&row, properties)
     } else {
         row
     };
     append_record(&mut bytes[CATALOG..CATALOG + PAGE], &row);
     put32(&mut bytes, CATALOG_LIVE, old_live + 1);
 
-    let original = template(target);
     let mut declaration = original[DEFINITION..DEFINITION + PAGE].to_vec();
-    if desktop {
-        let first_name = 75 + 25 * word(&declaration, 45);
-        assert_eq!(
-            &declaration[first_name..first_name + 6],
-            &[4, 0, b'I', 0, b'd', 0]
-        );
-        declaration[first_name + 4] = b'D';
-    }
     put32(&mut declaration, 55, (3 << 8) | owned as u32);
     put32(&mut declaration, 59, (3 << 8) | (owned + 1) as u32);
-    if target.keyed() {
+    if keyed {
         let count = word(&declaration, 45);
         let mut index = 75 + 25 * count;
         for _ in 0..count {
@@ -116,19 +132,16 @@ fn append_profile(before: &[u8], name: &str, target: Target, desktop: bool) -> V
         put32(&mut declaration, index + 34, (3 << 8) | (owned + 2) as u32);
         put32(&mut declaration, index + 38, (definition + 2) as u32);
     }
-    if desktop {
-        self::desktop::definition(&mut declaration);
-    }
     bytes.extend(declaration);
     let mut data = original[8 * PAGE..9 * PAGE].to_vec();
     put32(&mut data, 4, definition as u32);
     bytes.extend(data);
-    if target.keyed() {
+    if keyed {
         let mut root = original[9 * PAGE..10 * PAGE].to_vec();
         put32(&mut root, 4, definition as u32);
         bytes.extend(root);
     }
-    assert_eq!(bytes.len(), before.len() + target.pages() * PAGE);
+    assert_eq!(bytes.len(), before.len() + (2 + usize::from(keyed)) * PAGE);
     extend_global_map(&mut bytes, before.len() / PAGE);
     assert_eq!(&bytes[7 * PAGE..before.len()], &before[7 * PAGE..]);
     // Explicit empty pages keep their source-template free-space accounting.
