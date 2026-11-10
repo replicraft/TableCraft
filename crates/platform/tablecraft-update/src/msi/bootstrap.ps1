@@ -32,7 +32,7 @@ try {
     # replacement or forced uninstall is attempted after an installer failure.
     $failure = Join-Path $request.stage 'FAILED.json'
     if (-not (Test-Path -LiteralPath $failure)) {
-        @{ state = 'handoff-failed' } | ConvertTo-Json -Compress | Set-Content -LiteralPath $failure -Encoding UTF8
+        @{ state = 'handoff-failed'; phase = 'bootstrap' } | ConvertTo-Json -Compress | Set-Content -LiteralPath $failure -Encoding UTF8
     }
     exit 1
 }

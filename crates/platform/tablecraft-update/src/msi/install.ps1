@@ -41,15 +41,18 @@ function Hash-Equals([string]$path, [string]$expected) {
     return (Get-FileHash -LiteralPath $path -Algorithm SHA256).Hash.ToLowerInvariant() -eq $expected
 }
 
+$phase = 'parent'
 try {
     $parent = Get-Process -Id ([int]$request.parent)
     if ($parent.StartTime.ToUniversalTime().Ticks -ne $request.parent_start) { throw 'The parent process identity changed' }
+    $phase = 'source'
     $registered = Registered-Executable ([string]$request.old_product)
     if ([IO.Path]::GetFullPath($registered) -ne [IO.Path]::GetFullPath([string]$request.executable)) { throw 'Registered destination changed' }
     $manifest = Join-Path (Split-Path -LiteralPath $registered) 'RELEASE.json'
     if (-not (Hash-Equals $registered $request.old_executable_hash) -or -not (Hash-Equals $manifest $request.old_manifest_hash)) { throw 'Installed source changed' }
 
     # Deny writes/deletion while this authenticated path is used by msiexec.
+    $phase = 'payload'
     $lock = New-Object IO.FileStream($msi, [IO.FileMode]::Open, [IO.FileAccess]::Read, [IO.FileShare]::Read)
     $sha = [Security.Cryptography.SHA256]::Create()
     try {
@@ -59,25 +62,30 @@ try {
         $lock.Position = 0
     }
     if ($hash -ne $request.msi_hash) { throw 'Authenticated MSI changed before elevation' }
+    $phase = 'identity'
     $database = $installer.OpenDatabase($msi, 0)
     if ((Read-Value $database 'ProductCode') -ne $request.new_product -or
         (Read-Value $database 'UpgradeCode') -ne $upgradeCode -or
         (Read-Value $database 'ProductVersion') -ne $request.version -or
         (Read-Value $database 'ALLUSERS') -ne '1') { throw 'MSI identity changed' }
+    $phase = 'shutdown'
     $pendingReady = Join-Path $stage 'READY.pending'
     [IO.File]::WriteAllText($pendingReady, [string]$request.msi_hash)
     [IO.File]::Move($pendingReady, (Join-Path $stage 'READY'))
     if (-not $parent.WaitForExit($parentExitTimeoutMilliseconds)) { throw 'The document-safe shutdown did not finish' }
 
+    $phase = 'commit'
     $commit = Join-Path $stage 'COMMIT'
     if ((Test-Path -LiteralPath (Join-Path $stage 'ABORT')) -or
         -not (Test-Path -LiteralPath $commit) -or
         [IO.File]::ReadAllText($commit) -cne $request.msi_hash) { throw 'The update handoff was not committed' }
 
+    $phase = 'source-recheck'
     if ((Registered-Executable ([string]$request.old_product)) -ne $registered -or
         -not (Hash-Equals $registered $request.old_executable_hash) -or
         -not (Hash-Equals $manifest $request.old_manifest_hash)) { throw 'Installed source changed during shutdown' }
 
+    $phase = 'install'
     $arguments = @('/i', ('"' + $msi + '"'), '/qn', '/norestart', 'REBOOT=ReallySuppress',
         ('INSTALLFOLDER="' + (Split-Path -LiteralPath $registered) + '"'),
         '/l*v', ('"' + (Join-Path $stage 'install.log') + '"'))
@@ -85,13 +93,15 @@ try {
         -ArgumentList $arguments -Wait -PassThru
     $exitCode = $process.ExitCode
     if ($exitCode -ne 0) { throw 'Windows Installer did not complete without a pending reboot' }
-    if ((Registered-Executable ([string]$request.new_product)) -ne $registered -or
+    $phase = 'result'
+    if ($installer.ProductInfo([string]$request.new_product, 'VersionString') -ne $request.version -or
+        (Registered-Executable ([string]$request.new_product)) -ne $registered -or
         -not (Hash-Equals $registered $request.executable_hash) -or
         -not (Hash-Equals $manifest $request.manifest_hash)) { throw 'Installed update did not match the prepared payload' }
-    @{ state = 'installed'; product = $request.new_product; exit_code = 0 } |
+    @{ state = 'installed'; phase = 'complete'; product = $request.new_product; version = $request.version; exit_code = 0 } |
         ConvertTo-Json -Compress | Set-Content -LiteralPath (Join-Path $stage 'RESULT.json') -Encoding UTF8
 } catch {
-    @{ state = 'installer-failed'; exit_code = $exitCode } |
+    @{ state = 'installer-failed'; phase = $phase; exit_code = $exitCode } |
         ConvertTo-Json -Compress | Set-Content -LiteralPath (Join-Path $stage 'FAILED.json') -Encoding UTF8
     exit 1
 } finally {

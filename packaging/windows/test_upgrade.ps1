@@ -154,6 +154,8 @@ try {
     $activeHelper = $case.Helper
     if (-not $case.Helper.WaitForExit($maximumWaitMilliseconds) -or $case.Helper.ExitCode -eq 0 -or
         (Test-Path -LiteralPath (Join-Path $case.Stage 'READY'))) { throw 'A stale parent instance was accepted' }
+    $staleFailure = Get-Content -LiteralPath (Join-Path $case.Stage 'FAILED.json') -Raw | ConvertFrom-Json
+    if ($staleFailure.phase -ne 'parent') { throw 'Stale-parent refusal did not identify its fixed phase' }
     Stop-Process -Id $case.Parent.Id -ErrorAction SilentlyContinue
     Assert-Original
 
@@ -166,6 +168,8 @@ try {
     if ($case.Helper.ExitCode -eq 0 -or -not (Test-Path -LiteralPath (Join-Path $case.Stage 'FAILED.json'))) {
         throw 'A missing COMMIT was not refused with retained evidence'
     }
+    $uncommittedFailure = Get-Content -LiteralPath (Join-Path $case.Stage 'FAILED.json') -Raw | ConvertFrom-Json
+    if ($uncommittedFailure.phase -ne 'commit') { throw 'Missing COMMIT failed at an unexpected native phase' }
     Assert-Original
 
     # Deliberately corrupt only a disposable fixture's embedded CAB. Production
@@ -198,6 +202,10 @@ try {
     [IO.File]::WriteAllText((Join-Path $case.Stage 'COMMIT'), $case.Digest)
     Finish-Helper $case
     if ($case.Helper.ExitCode -eq 0) { throw 'A corrupt native cabinet was installed successfully' }
+    $rollbackFailure = Get-Content -LiteralPath (Join-Path $case.Stage 'FAILED.json') -Raw | ConvertFrom-Json
+    if ($rollbackFailure.phase -ne 'install' -or $rollbackFailure.exit_code -eq 0) {
+        throw 'The rollback fixture did not reach the actual failing native installer operation'
+    }
     Assert-Original
     $rollbackLog = Get-Content -LiteralPath (Join-Path $case.Stage 'install.log') -Raw
     if ($rollbackLog -notmatch 'RemoveExistingProducts' -or $rollbackLog -notmatch 'Rollback:') {

@@ -288,3 +288,18 @@ fn native_msi_paths_keep_local_file_identity_without_legacy_incompatible_prefixe
         .is_err()
     );
 }
+
+#[test]
+fn encoded_native_bootstrap_reserves_space_within_the_windows_command_limit() {
+    // CreateProcess allows 32,767 UTF-16 characters. Reserve 2,767 for the
+    // native program path, switches, separators and terminating character.
+    let command = native::command(
+        std::path::Path::new("powershell.exe"),
+        &super::handoff::source(),
+    );
+    let encoded = command.get_args().last().unwrap().to_str().unwrap();
+    assert!(
+        encoded.len() < 30_000,
+        "fixed native bootstrap exceeds the reserved command budget"
+    );
+}

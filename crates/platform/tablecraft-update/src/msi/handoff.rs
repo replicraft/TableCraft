@@ -16,14 +16,18 @@ const ELEVATED: &str = include_str!("install.ps1");
 const HANDOFF_TIMEOUT: Duration = Duration::from_secs(120);
 const POLL_INTERVAL: Duration = Duration::from_millis(50);
 
+pub(super) fn source() -> String {
+    BOOTSTRAP.replace(
+        "__TABLECRAFT_INSTALLER_SOURCE__",
+        &STANDARD.encode(ELEVATED.as_bytes()),
+    )
+}
+
 pub(super) fn spawn(request: &Value) -> Result<Child, UpdateError> {
     if !cfg!(windows) {
         return Err(UpdateError::Archive);
     }
-    let script = BOOTSTRAP.replace(
-        "__TABLECRAFT_INSTALLER_SOURCE__",
-        &STANDARD.encode(ELEVATED.as_bytes()),
-    );
+    let script = source();
     let mut child = native::command(&native::powershell()?, &script)
         .stdin(Stdio::piped())
         .stdout(Stdio::null())

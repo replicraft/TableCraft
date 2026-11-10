@@ -86,6 +86,13 @@ The helper never launches the desktop during this test; UAC bootstrap and GUI
 relaunch are explicitly separate qualification gaps. This demonstrates native
 installer workflow, not compatibility of two different application binaries.
 
+Retained helper failures include a fixed, payload-free `phase` category, such as
+`parent`, `commit` or `install`; they do not include paths or exception text. The
+harness asserts these categories so a prerequisite refusal cannot masquerade as
+native installer rollback. Successful outcomes also confirm the registered product
+version. A host unit test measures the actual encoded bootstrap and reserves space
+within the Windows process command-line limit.
+
 ### Observed Windows rehearsal
 
 At source `7bb2990eb`, rehearsal
