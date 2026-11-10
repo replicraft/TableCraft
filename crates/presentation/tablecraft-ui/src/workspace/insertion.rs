@@ -125,9 +125,19 @@ fn within_input_limits(proposed: &[InsertInput]) -> bool {
 }
 
 fn entries_within_limits(entries: &[FieldInput]) -> bool {
+    // Private entries are validated when edited or seeded. Per-frame button
+    // availability needs only those rejection facts and checked byte lengths;
+    // submission revalidates all content before issuing a runtime request.
     entries.len() <= MAX_INSERT_FIELDS
-        && entries.iter().all(|entry| !entry.input_rejected)
-        && editor_texts_fit(entries.iter().map(|entry| entry.text.as_str()))
+        && entries
+            .iter()
+            .try_fold(0usize, |bytes, entry| {
+                if entry.input_rejected {
+                    return None;
+                }
+                bytes.checked_add(entry.text.len())
+            })
+            .is_some()
 }
 
 fn remaining_input_bytes(entries: &[FieldInput], position: usize) -> usize {
@@ -309,6 +319,7 @@ impl State {
         !self.busy
             && draft.id == draft_id
             && within_input_limits(proposed)
+            && editor_texts_fit(entries.iter().map(|entry| entry.text.as_str()))
             && self.insert_draft_current(draft)
             && inputs_match(&draft.fields, entries, proposed)
     }

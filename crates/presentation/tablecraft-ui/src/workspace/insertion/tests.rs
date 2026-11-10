@@ -679,3 +679,30 @@ fn many_individually_valid_editors_can_review_more_than_eight_mib_without_render
     assert_eq!(pending.len(), 129);
     assert!(pending.iter().all(|input| matches!(input, InsertInput::Value(value) if value.text.len() == 65_535 && !value.is_null)));
 }
+
+#[test]
+fn submission_revalidates_all_retained_text_even_when_cached_rejection_is_clear() {
+    for omitted in [false, true] {
+        let (mut state, _) = state();
+        let Some(Dialog::Draft { entries, .. }) = &mut state.insertion else {
+            panic!("expected insertion draft");
+        };
+        // Bypass the private event/seed boundary deliberately: a clear cached
+        // rejection bit must never authorize an oversized supplied or hidden
+        // value when the host actually submits the row.
+        entries[0].choice = if omitted {
+            Choice::Omitted
+        } else {
+            Choice::Value
+        };
+        entries[0].text = "x".repeat(65_536);
+        entries[0].input_rejected = false;
+        let proposed = inputs(entries);
+        assert!(!state.can_review_insert(20, &proposed));
+        state.begin_insert_review(20, proposed, 2);
+        assert!(matches!(
+            state.insertion,
+            Some(Dialog::Draft { pending: None, .. })
+        ));
+    }
+}

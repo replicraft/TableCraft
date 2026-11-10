@@ -1,5 +1,7 @@
 //! Exact insertion input retained independently of an expired native capability.
-use super::{Dialog, FieldInput, InsertDraft, InsertTarget, State, entries_within_limits};
+use super::{
+    Dialog, FieldInput, InsertDraft, InsertTarget, State, editor_texts_fit, entries_within_limits,
+};
 use crate::localization::tr;
 use crate::workspace::objects::memory::Counter;
 use egui::Ui;
@@ -146,6 +148,7 @@ impl State {
             || draft.fields.len() != retained.draft.fields.len()
             || !inline.can_seed_initial()
             || !entries_within_limits(&retained.entries)
+            || !editor_texts_fit(retained.entries.iter().map(|entry| entry.text.as_str()))
             || entries.iter().any(|entry| entry != &FieldInput::default())
             || !draft
                 .fields
