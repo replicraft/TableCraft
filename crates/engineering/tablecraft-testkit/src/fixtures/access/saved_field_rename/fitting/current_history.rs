@@ -98,3 +98,61 @@ pub fn rename(before: &[u8], old_name: &str, new_name: &str) -> Vec<u8> {
     );
     storage::append_current(before, after, &renamed)
 }
+
+/// Sparse variable identities with the legacy user-then-OFF live placement.
+/// The current dictionary is fully used: Score owns Required/DefaultValue and
+/// NextText owns Required/AllowZeroLength. Historical rows are not repacked.
+pub fn adjacent_live_roles() -> Vec<u8> {
+    const CATALOG_PAGE: usize = 4;
+    const DIRECTORY: usize = 14;
+    const ROW_COUNT_OFFSET: usize = 12;
+    const OFFSET_MASK: usize = 0x1fff;
+    const DATABASE_ID: u32 = 0x0f00_0004;
+    const CATALOG_FIELDS: usize = 17;
+    const FOOTER_BYTES: usize = 5;
+    const PROPERTY_START: usize = 18;
+    const PROPERTY_END: usize = 20;
+    const DESCRIPTOR_BYTES: usize = 12;
+
+    let before = source(Case::TextPresent, Target::ShortText, false);
+    let selected = catalog_descriptor(&before);
+    let user_reference = long(&before, selected + 4);
+    let user = row(&before, PROPERTY, user_reference as usize & 255);
+    let body = &before[user];
+    let after = storage::append_current(&before, before.to_vec(), body);
+
+    let mut database_descriptor = None;
+    for slot in 0..word(&after, CATALOG_PAGE * PAGE + ROW_COUNT_OFFSET) {
+        let raw = word(&after, CATALOG_PAGE * PAGE + DIRECTORY + 2 * slot);
+        if raw & !OFFSET_MASK != 0 {
+            continue;
+        }
+        let record = row(&after, CATALOG_PAGE, slot);
+        if word(&after, record.start) == CATALOG_FIELDS
+            && long(&after, record.start + 2) == DATABASE_ID
+        {
+            let footer = record.end - FOOTER_BYTES;
+            let start = word(&after, footer - PROPERTY_START);
+            let end = word(&after, footer - PROPERTY_END);
+            assert_eq!(end - start, DESCRIPTOR_BYTES);
+            assert!(database_descriptor.replace(record.start + start).is_none());
+        }
+    }
+    let descriptor = database_descriptor.unwrap();
+    let tagged = long(&after, descriptor);
+    assert_eq!(tagged & !LENGTH_MASK, SINGLE);
+    let reference = long(&after, descriptor + 4);
+    assert_eq!(reference >> 8, PROPERTY as u32);
+    let original = row(&after, PROPERTY, reference as usize & 255);
+    assert_eq!(original.len(), (tagged & LENGTH_MASK) as usize);
+    let off = after[original].to_vec();
+    let live = after;
+    let mut result = live.to_vec();
+    let appended = storage::append_body(&live, &mut result, &off);
+    put32(&mut result, descriptor + 4, appended);
+    assert_eq!(
+        appended as usize & 255,
+        word(&result, PROPERTY * PAGE + ROW_COUNT_OFFSET) - 1
+    );
+    result
+}

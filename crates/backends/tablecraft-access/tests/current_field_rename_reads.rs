@@ -145,3 +145,36 @@ fn retained_rename_fresh_queries_use_current_names_and_literal_values() {
         }
     }
 }
+
+#[test]
+fn adjacent_live_roles_keep_sparse_values_and_both_current_property_owners() {
+    let before = raw::adjacent_live_roles();
+    let table = read_table(
+        &mut Cursor::new(&before),
+        SCOPE,
+        "Table1",
+        &mut budget(),
+        &|| false,
+    )
+    .unwrap();
+    let expected = raw::expected(dropped::Case::TextPresent, Target::ShortText, false);
+    assert_eq!(table.rows(), expected);
+    let after = raw::rename(&before, "NextText", "RenamedField");
+    assert_eq!(&after[8 * PAGE..10 * PAGE], &before[8 * PAGE..10 * PAGE]);
+    let directory = tempfile::tempdir().unwrap();
+    let path = directory.path().join("adjacent.accdb");
+    fs::write(&path, &after).unwrap();
+    let source =
+        NativeSource::new(fs::File::open(&path).unwrap(), SCOPE, budget(), &|| false).unwrap();
+    let query = parse_query("SELECT * FROM Table1 ORDER BY ID", Default::default()).unwrap();
+    assert_eq!(
+        prepare(query.query(), &source)
+            .unwrap()
+            .execute(&source, &[], ExecutionOptions::default())
+            .unwrap()
+            .rows(),
+        expected
+    );
+    drop(source);
+    assert_eq!(fs::read(path).unwrap(), after);
+}

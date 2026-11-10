@@ -162,7 +162,11 @@ pub(in crate::fixtures::access) fn append_current(
     after
 }
 
-fn append_body(before: &[u8], after: &mut Vec<u8>, body: &[u8]) -> u32 {
+pub(in crate::fixtures::access) fn append_body(
+    before: &[u8],
+    after: &mut Vec<u8>,
+    body: &[u8],
+) -> u32 {
     let (mut page, count, end) = if before.len() == PROPERTY_PAGE * PAGE {
         let mut page = vec![0; PAGE];
         page[..2].copy_from_slice(&DATA_PAGE_PREFIX);
