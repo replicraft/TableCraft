@@ -231,6 +231,18 @@ impl OfflineWriteSession {
                         .recover(&mut target, budget, cancelled)
                         .map_err(Cause::Recovery)
                 }
+                MutationIntent::RetainedTableDrop(intent) => {
+                    let (mut target, mut journal) =
+                        pair.resizable_storage().map_err(Cause::Pair)?;
+                    let checked =
+                        inspect_v3(&mut journal, budget, cancelled).map_err(Cause::Recovery)?;
+                    let qualified = intent
+                        .qualify_retained_recovery(checked, slot.scope, budget, cancelled)
+                        .map_err(Cause::TableDropIntent)?;
+                    qualified
+                        .recover_retained(&mut target, budget, cancelled)
+                        .map_err(Cause::Recovery)
+                }
                 MutationIntent::TableDrop(intent) => {
                     let (mut target, mut journal) = pair.storage().map_err(Cause::Pair)?;
                     let checked =
@@ -621,6 +633,16 @@ impl OfflineWriteSession {
                         checked, intent, slot.scope, budget, cancelled,
                     )
                     .map_err(Cause::FieldRenameIntent)?;
+                    qualified
+                        .confirm_completed(&mut target, budget, cancelled)
+                        .map_err(Cause::Recovery)
+                }
+                MutationIntent::RetainedTableDrop(intent) => {
+                    let checked =
+                        inspect_v3(&mut journal, budget, cancelled).map_err(Cause::Recovery)?;
+                    let qualified = intent
+                        .qualify_retained_recovery(checked, slot.scope, budget, cancelled)
+                        .map_err(Cause::TableDropIntent)?;
                     qualified
                         .confirm_completed(&mut target, budget, cancelled)
                         .map_err(Cause::Recovery)

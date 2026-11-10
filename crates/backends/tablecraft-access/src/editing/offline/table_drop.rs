@@ -1,11 +1,13 @@
 //! Fresh source-bound table DROP under the retained exclusive target owner.
 use super::plan::MutationPlan;
 use super::{Cause, Failure, OfflineWriteSession, Phase, Receipt, SchemaChange, SessionState};
+#[cfg(not(feature = "ace16-create"))]
+use crate::editing::NativeEditError;
 use std::path::Path;
 use tablecraft_ace::{NativeImage, NativeTableDropIdentity, RecoverableTableDropPlan};
 use tablecraft_core::limits::ResourceBudget;
 
-/// A reviewed empty-table DROP; no journal exists until explicit consuming apply.
+/// A reviewed source-qualified table DROP; no journal exists until explicit consuming apply.
 /// Historical table storage remains allocated; this operation does not reclaim it.
 pub struct StagedTableDrop {
     session: OfflineWriteSession,
@@ -29,12 +31,19 @@ impl OfflineWriteSession {
             let slot = self.slot_mut()?;
             slot.current = None;
             slot.state = SessionState::RefreshRequired;
-            let image = NativeImage::capture(
-                slot.target.as_mut().ok_or(Cause::InvalidState)?,
-                slot.scope,
-                native,
-                cancelled,
-            )
+            let source = slot.target.as_mut().ok_or(Cause::InvalidState)?;
+            let image = if reviewed.intent().is_retained() {
+                #[cfg(feature = "ace16-create")]
+                {
+                    NativeImage::capture_retained(source, slot.scope, native, cancelled)
+                }
+                #[cfg(not(feature = "ace16-create"))]
+                {
+                    return Err(Cause::Editor(NativeEditError::Unsupported));
+                }
+            } else {
+                NativeImage::capture(source, slot.scope, native, cancelled)
+            }
             .map_err(Cause::Native)?;
             slot.state = SessionState::Ready;
             super::table::require_original(
@@ -64,7 +73,7 @@ impl StagedTableDrop {
         self.plan.table()
     }
 
-    /// Stored source row count; current native admission requires an empty table.
+    /// Stored source row count before the qualified table and row deletion.
     pub fn declared_rows(&self) -> u32 {
         self.plan.declared_rows()
     }

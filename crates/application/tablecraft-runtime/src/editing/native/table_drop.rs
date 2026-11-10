@@ -10,7 +10,8 @@ use crate::{
     },
 };
 use std::sync::{Arc, atomic::AtomicBool};
-use tablecraft_ace::{NativeImage, RecoverableTableDropPlan, TableDropError, inspect_table_schema};
+use tablecraft_access::editing::journal::NativeJournalEditor;
+use tablecraft_ace::{RecoverableTableDropPlan, TableDropError, inspect_table_schema};
 
 pub(in crate::editing) struct State {
     pub(in crate::editing) reopen: Arc<TableDroppedReopen>,
@@ -31,9 +32,10 @@ pub(in crate::editing) fn inspect(
     let mut work = budget();
     // NO_CLONE: NativeImage retains the source while Document remains usable after inspection.
     // The existing Bytes-backed owner shares immutable storage without copying the database.
-    let image = NativeImage::capture_shared(
+    let image = NativeJournalEditor::capture_shared_image(
         document.edits.image_source.clone(),
         SCOPE,
+        table,
         &mut work,
         cancelled,
     )?;
@@ -84,9 +86,10 @@ pub(in crate::editing) fn review(
     let mut work = budget();
     // NO_CLONE: The plan owns the checked source while Document retains its current revision.
     // Bytes-backed sharing avoids another database payload; Rc cannot cross the save worker.
-    let image = NativeImage::capture_shared(
+    let image = NativeJournalEditor::capture_shared_image(
         document.edits.image_source.clone(),
         SCOPE,
+        table,
         &mut work,
         cancelled,
     )?;

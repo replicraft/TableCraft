@@ -151,6 +151,12 @@ impl MutationPlan {
                 return prepared.commit(budget, cancelled).map_err(Cause::Commit);
             }
             Self::TableDrop(plan) => {
+                if plan.intent().is_retained() {
+                    let prepared = plan
+                        .prepare_retained(target, journal, budget, cancelled)
+                        .map_err(Cause::Prepare)?;
+                    return prepared.commit(budget, cancelled).map_err(Cause::Commit);
+                }
                 let prepared = plan
                     .prepare(target, journal, budget, cancelled)
                     .map_err(Cause::Prepare)?;
@@ -229,6 +235,7 @@ pub(super) enum MutationIntent {
     FieldDrop(NativeFieldDropIntent),
     TableRename(NativeTableRenameIntent),
     TableDrop(NativeTableDropIntent),
+    RetainedTableDrop(NativeTableDropIntent),
     Update(NativeUpdateIntent),
     RetainedUpdate(NativeUpdateIntent),
     Delete(NativeDeleteIntent),
@@ -271,7 +278,7 @@ impl MutationIntent {
             Self::FieldRename(intent) => {
                 (intent.column() != intent.new_name()).then_some(SchemaChange::ColumnRenamed)
             }
-            Self::TableDrop(_) => Some(SchemaChange::TableDropped),
+            Self::TableDrop(_) | Self::RetainedTableDrop(_) => Some(SchemaChange::TableDropped),
             Self::TableRename(intent) => {
                 (intent.table() != intent.new_name()).then_some(SchemaChange::TableRenamed)
             }
@@ -407,6 +414,11 @@ impl MutationIntent {
             return NativeFieldRenameIntent::decode(raw, budget, cancelled)
                 .map(Self::FieldRename)
                 .map_err(Cause::FieldRenameIntent);
+        }
+        if raw.starts_with(b"TCTD0003") {
+            return NativeTableDropIntent::decode_retained(raw, budget, cancelled)
+                .map(Self::RetainedTableDrop)
+                .map_err(Cause::TableDropIntent);
         }
         if raw.starts_with(b"TCTD0002") {
             return NativeTableDropIntent::decode_current(raw, budget, cancelled)
