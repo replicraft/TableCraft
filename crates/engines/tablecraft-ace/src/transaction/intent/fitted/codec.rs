@@ -302,6 +302,24 @@ impl NativeFittedEditIntent {
         read::decode(bytes, WireProfile::RetainedCurrencyRows, budget, cancelled)
     }
 
+    /// Encode exact TCNI20 Boolean requests; this grants no source authority.
+    pub fn encode_retained_boolean(
+        &self,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Vec<u8>, NativeIntentError> {
+        self.encode_profile(WireProfile::RetainedBooleanRows, budget, cancelled)
+    }
+
+    /// Decode only TCNI0020/profile20; older fitted families remain closed.
+    pub fn decode_retained_boolean(
+        bytes: &[u8],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, NativeIntentError> {
+        read::decode(bytes, WireProfile::RetainedBooleanRows, budget, cancelled)
+    }
+
     /// Decode profile5 only, with complete nonallocating preflight first.
     pub fn decode(
         bytes: &[u8],
