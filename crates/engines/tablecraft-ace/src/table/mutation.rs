@@ -236,7 +236,7 @@ pub use drop_field::{
 pub use rename_field::{
     FieldRenameError, FittedFieldRenameSource, NativeCurrentFieldRenameCandidate,
     NativeFieldRenameCandidate, NativeFieldRenameIdentity, NativeFittedFieldRenameCandidate,
-    NativePopulatedFieldRenameCandidate,
+    NativePopulatedFieldRenameCandidate, NativeRetainedFieldRenameCandidate,
 };
 
 #[cfg(all(test, feature = "journal", feature = "ace16-create"))]

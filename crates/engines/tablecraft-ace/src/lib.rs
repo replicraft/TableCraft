@@ -368,7 +368,7 @@ pub use table::{
 pub use table::{
     FieldRenameError, FittedFieldRenameSource, NativeCurrentFieldRenameCandidate,
     NativeFieldRenameCandidate, NativeFieldRenameIdentity, NativeFittedFieldRenameCandidate,
-    NativePopulatedFieldRenameCandidate,
+    NativePopulatedFieldRenameCandidate, NativeRetainedFieldRenameCandidate,
 };
 
 #[cfg(all(feature = "journal", feature = "ace16-create"))]

@@ -17,8 +17,8 @@ use tablecraft_core::limits::{Resource, ResourceBudget};
 /// Complete original source/packing facts, not permission to rename or save.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct FittedFieldRenameSource {
-    identity: NativeFieldRenameIdentity,
-    maximum_name_units: usize,
+    pub(super) identity: NativeFieldRenameIdentity,
+    pub(super) maximum_name_units: usize,
 }
 
 impl FittedFieldRenameSource {

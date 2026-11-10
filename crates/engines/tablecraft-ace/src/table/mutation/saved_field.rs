@@ -75,6 +75,7 @@ pub(super) struct Observed {
 enum Purpose {
     SavedField,
     CurrentTail,
+    CurrentRename,
 }
 
 impl Observed {
@@ -100,6 +101,23 @@ impl Observed {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, Error> {
         Self::capture_for(image, table, field, Purpose::CurrentTail, budget, cancelled)
+    }
+
+    pub(in crate::table::mutation) fn capture_current_rename(
+        image: &NativeImage,
+        table: &str,
+        field: &str,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, Error> {
+        Self::capture_for(
+            image,
+            table,
+            field,
+            Purpose::CurrentRename,
+            budget,
+            cancelled,
+        )
     }
 
     fn capture_for(
@@ -254,12 +272,14 @@ impl Observed {
             Purpose::SavedField => {
                 framing::ordered_names_with_groups(&properties, reader.budget, cancelled, visit)?
             }
-            Purpose::CurrentTail => framing::current_schema_names_with_groups(
-                &properties,
-                reader.budget,
-                cancelled,
-                visit,
-            )?,
+            Purpose::CurrentTail | Purpose::CurrentRename => {
+                framing::current_schema_names_with_groups(
+                    &properties,
+                    reader.budget,
+                    cancelled,
+                    visit,
+                )?
+            }
         };
         let name = group_span.ok_or(Error::Source)?;
         if name.len() != target.name().len() * size_of::<u16>() || name.end > chunk.bytes {
@@ -350,7 +370,7 @@ fn qualify_declaration(
                 column.storage_length() == OBSERVED_TEXT_BYTES
                     && column.extended_flags() == UNICODE_COMPRESSION_FLAG
             }
-            Purpose::CurrentTail => {
+            Purpose::CurrentTail | Purpose::CurrentRename => {
                 (size_of::<u16>()..=OBSERVED_TEXT_BYTES).contains(&column.storage_length())
                     && column.storage_length().is_multiple_of(size_of::<u16>())
                     && column.extended_flags() & !UNICODE_COMPRESSION_FLAG == 0

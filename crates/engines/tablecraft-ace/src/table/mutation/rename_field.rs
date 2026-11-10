@@ -5,6 +5,7 @@ mod error;
 mod fitted;
 mod identity;
 mod populated_source;
+mod retained;
 mod source;
 #[cfg(test)]
 mod tests;
@@ -17,3 +18,4 @@ pub use fitted::{
     NativePopulatedFieldRenameCandidate,
 };
 pub use identity::NativeFieldRenameIdentity;
+pub use retained::NativeRetainedFieldRenameCandidate;
