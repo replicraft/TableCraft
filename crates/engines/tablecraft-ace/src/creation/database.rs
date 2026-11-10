@@ -42,6 +42,28 @@ impl CreatedDatabase {
     }
 }
 
+pub(super) fn create_native(
+    table: &str,
+    columns: &[CreateColumn<'_>],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<CreatedDatabase, CreateDatabaseError> {
+    let request = request::validate_native(
+        table,
+        Columns::Values(columns),
+        Rows::Values(&[]),
+        budget,
+        cancelled,
+    )?;
+    let bytes = super::native::first(&request, budget, cancelled)?;
+    Ok(CreatedDatabase {
+        bytes,
+        rows: 0,
+        columns: columns.len(),
+        tables: 1,
+    })
+}
+
 /// Serialize a fresh, unencrypted ACE 16 image containing only the authored
 /// system catalog and definitions, with no user tables, fields or rows.
 ///

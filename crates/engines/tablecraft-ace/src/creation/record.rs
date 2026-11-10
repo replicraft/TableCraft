@@ -299,6 +299,38 @@ pub(super) fn catalog_with_properties(
     )
 }
 
+/// A new user role with an external, explicitly linked native MR2 body.
+pub(super) fn catalog_with_linked_properties(
+    record: &mut [u8],
+    object: &profile::CatalogObject<'_>,
+    reference: u32,
+    length: usize,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), CreateDatabaseError> {
+    let length = u32::try_from(length).map_err(|_| CreateDatabaseError::Layout)?;
+    if length == 0 || length > crate::LongValueReadLimits::MAX_BYTES {
+        return Err(CreateDatabaseError::Layout);
+    }
+    catalog_record(
+        record,
+        object,
+        false,
+        3 * size_of::<u32>(),
+        |destination, budget, cancelled| {
+            check(budget, cancelled)?;
+            budget
+                .charge(Resource::Steps, destination.len() as u64)
+                .map_err(InspectError::from)?;
+            put32(destination, 0, length)?;
+            put32(destination, size_of::<u32>(), reference)?;
+            put32(destination, 2 * size_of::<u32>(), 0)
+        },
+        budget,
+        cancelled,
+    )
+}
+
 /// A database metadata role with one already qualified external property body.
 #[cfg(feature = "journal")]
 pub(super) fn database_properties_catalog(

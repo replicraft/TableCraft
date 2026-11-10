@@ -332,8 +332,31 @@ impl Prepared<'_> {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<(), CreateDatabaseError> {
+        self.write_encoded(bytes, true, budget, cancelled)
+    }
+
+    pub fn body_length(&self) -> usize {
+        self.length
+    }
+
+    pub fn write_body(
+        &self,
+        bytes: &mut [u8],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(), CreateDatabaseError> {
+        self.write_encoded(bytes, false, budget, cancelled)
+    }
+
+    fn write_encoded(
+        &self,
+        bytes: &mut [u8],
+        inline: bool,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(), CreateDatabaseError> {
         check(budget, cancelled)?;
-        if bytes.len() != self.inline_length() {
+        if bytes.len() != self.length + if inline { INLINE_HEADER } else { 0 } {
             return Err(CreateDatabaseError::Layout);
         }
         let required_length = if self.required {
@@ -362,8 +385,10 @@ impl Prepared<'_> {
             budget,
             cancelled,
         };
-        writer.put(&(INLINE_FLAG | self.length as u32).to_le_bytes())?;
-        writer.put(&[0; 2 * size_of::<u32>()])?;
+        if inline {
+            writer.put(&(INLINE_FLAG | self.length as u32).to_le_bytes())?;
+            writer.put(&[0; 2 * size_of::<u32>()])?;
+        }
         writer.put(SIGNATURE)?;
         writer.long(
             BLOCK_HEADER + required_length + empty_length + default_length + description_length,

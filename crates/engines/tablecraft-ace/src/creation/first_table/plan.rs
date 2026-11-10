@@ -56,6 +56,38 @@ impl NativeImage {
             definition,
         })
     }
+    /// Construct the first table using native-count declarations, joined TDEF
+    /// pages and external MR2 storage. The exact canonical blank is still required.
+    pub fn plan_first_table_native(
+        self,
+        definition: FirstTableDefinition,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<FirstTablePlan, FirstTableError> {
+        check(budget, cancelled)?;
+        if !definition.is_native() {
+            return Err(CreateDatabaseError::Declaration.into());
+        }
+        #[cfg(feature = "journal")]
+        self.require_retained_capture()?;
+        #[cfg(not(feature = "journal"))]
+        self.require_standard_capture()?;
+        require_canonical_blank(self.as_bytes(), budget, cancelled)?;
+        let columns = definition.borrowed_columns(budget, cancelled)?;
+        let after = crate::creation::database::create_native(
+            definition.table(),
+            &columns,
+            budget,
+            cancelled,
+        )?;
+        drop(columns);
+        check(budget, cancelled)?;
+        Ok(FirstTablePlan {
+            before: self,
+            after,
+            definition,
+        })
+    }
 }
 
 impl FirstTablePlan {

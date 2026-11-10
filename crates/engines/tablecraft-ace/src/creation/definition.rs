@@ -135,6 +135,23 @@ pub(super) fn write_role_with_primary(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), CreateDatabaseError> {
+    if page.len() != PAGE_BYTES {
+        return Err(CreateDatabaseError::Layout);
+    }
+    write_logical_role(page, fields, rows, role, primary, budget, cancelled)
+}
+
+/// Encode one logical definition independently of its physical page topology.
+/// The caller supplies either the original page or exact logical-byte storage.
+pub(super) fn write_logical_role(
+    page: &mut [u8],
+    fields: Fields<'_>,
+    rows: usize,
+    role: Role,
+    primary: Option<PrimaryRole<'_, '_>>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), CreateDatabaseError> {
     let catalog = role.catalog;
     if primary.is_some() && (!role.user || catalog) {
         return Err(CreateDatabaseError::Layout);
@@ -142,7 +159,7 @@ pub(super) fn write_role_with_primary(
     let prepared = primary.as_ref().map(|index| index.prepared);
     let length = length_with_primary(fields, catalog, prepared)?;
     let column_start = HEADER_BYTES + prepared.map_or(0, primary::Prepared::column_shift);
-    if page.len() != PAGE_BYTES || length > PAGE_BYTES {
+    if length > page.len() || (page.len() != PAGE_BYTES && page.len() != length) {
         return Err(CreateDatabaseError::Layout);
     }
     page[..TABLE_DEFINITION_SIGNATURE.len()].copy_from_slice(&TABLE_DEFINITION_SIGNATURE);
