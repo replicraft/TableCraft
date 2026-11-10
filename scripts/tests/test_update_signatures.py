@@ -1,4 +1,5 @@
 """Exercise the real signature tool against tampering and release identity changes."""
+import base64
 import os
 from pathlib import Path
 import shutil
@@ -103,6 +104,21 @@ assert sys.stdin.read() == ""
                 with self.subTest(marker=marker):
                     with self.assertRaisesRegex(ValueError, "test-only"):
                         signatures.check_key(self.public, production=True)
+
+    def test_production_refuses_real_fixture_key_after_label_or_key_id_changes(self):
+        fixture = signatures.TEST_PUBLIC_KEY.read_text().splitlines()[1]
+        changed_id = bytearray(base64.b64decode(fixture))
+        changed_id[2] ^= 1
+        variants = (fixture, base64.b64encode(changed_id).decode("ascii"))
+        with patch.object(signatures, "PUBLIC_KEY", self.public):
+            for encoded in variants:
+                self.public.write_text(
+                    "untrusted comment: TableCraft release public key\n" + encoded + "\n"
+                )
+                with self.subTest(encoded=encoded):
+                    with self.assertRaisesRegex(ValueError, "known test-only"):
+                        self.run_signatures(signing=True, dry_run=False)
+                self.assertFalse(self.output.exists())
 
     def test_oversized_signing_key_cleans_output(self):
         with patch.dict(os.environ, {"TABLECRAFT_UPDATE_SIGNING_KEY": "x" * 4097}):

@@ -12,8 +12,13 @@ import package_desktop
 import release_contract as contract
 
 PUBLIC_KEY = contract.ROOT / "packaging/update-key.pub"
+TEST_PUBLIC_KEY = (
+    contract.ROOT / "crates/platform/tablecraft-update/src/download/tests/TEST-ONLY.pub"
+)
 MAX_KEY_BYTES = 4096
 MAX_SIGNATURE_BYTES = 4096
+MINISIGN_KEY_ID_BYTES = 8
+PUBLIC_KEY_MATERIAL_OFFSET = len(b"Ed") + MINISIGN_KEY_ID_BYTES
 
 
 def names(version, product):
@@ -27,15 +32,26 @@ def comment(version, name):
     return f"tablecraft-update {version} {name}"
 
 
-def check_key(path, *, production):
-    text = contract.regular(path, MAX_KEY_BYTES).read_text("utf-8")
+def key_bytes(text):
     lines = text.splitlines()
     if len(lines) != 2 or not lines[0].startswith("untrusted comment:"):
         raise ValueError("Expected a Minisign public key file")
     raw = base64.b64decode(lines[1], validate=True)
     if len(raw) != 42 or raw[:2] != b"Ed":
         raise ValueError("Expected an Ed25519 Minisign public key")
+    return raw
+
+
+def check_key(path, *, production):
+    text = contract.regular(path, MAX_KEY_BYTES).read_text("utf-8")
+    raw = key_bytes(text)
     if production:
+        fixture = contract.regular(TEST_PUBLIC_KEY, MAX_KEY_BYTES).read_text("utf-8")
+        # Compare the Ed25519 key itself: comments and the eight-byte Minisign
+        # key ID can change without changing which private key is trusted.
+        if raw[PUBLIC_KEY_MATERIAL_OFFSET:] == key_bytes(fixture)[PUBLIC_KEY_MATERIAL_OFFSET:]:
+            raise ValueError("Production signing refuses the known test-only public key")
+        lines = text.splitlines()
         label = re.sub(r"[^A-Z0-9]", "", lines[0].upper())
         if "TESTONLY" in label:
             raise ValueError("Production signing refuses a test-only public key")
