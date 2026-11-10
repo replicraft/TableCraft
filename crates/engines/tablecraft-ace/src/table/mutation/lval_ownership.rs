@@ -40,7 +40,7 @@ pub(in crate::table::mutation) enum ColumnMapKind {
     Candidate,
 }
 
-pub(in crate::table::mutation) struct Inventory {
+pub(in crate::table) struct Inventory {
     claims: Vec<Claim>,
     live: Vec<Claim>,
     protected: Vec<u32>,

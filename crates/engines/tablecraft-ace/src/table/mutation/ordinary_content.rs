@@ -8,7 +8,7 @@ mod inline;
 mod ledger;
 mod records;
 #[cfg(all(feature = "journal", feature = "ace16-create"))]
-pub(super) mod schema_dependencies;
+pub(in crate::table) mod schema_dependencies;
 
 use crate::{EditError, NativeImage, TableSchema, WriteBlocker, header::check, read_table};
 use ledger::Ledger;

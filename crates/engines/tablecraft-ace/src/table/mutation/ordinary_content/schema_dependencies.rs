@@ -5,7 +5,7 @@ use tablecraft_core::limits::ResourceBudget;
 
 /// Validate actual system declarations and both native maps, not catalog names alone.
 /// The caller independently qualifies their ancestry and the complete application graph.
-pub(in crate::table::mutation) fn require_empty(
+pub(in crate::table) fn require_empty(
     image: &NativeImage,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,

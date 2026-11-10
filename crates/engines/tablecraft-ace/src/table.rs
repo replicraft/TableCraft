@@ -165,3 +165,6 @@ pub(crate) mod scalar_encoding;
 
 #[cfg(any(feature = "journal", feature = "ace16-write-preview"))]
 pub use mutation::{InsertFieldValue, OmittedRowInsert, RowInsert};
+
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub(crate) mod table_append;

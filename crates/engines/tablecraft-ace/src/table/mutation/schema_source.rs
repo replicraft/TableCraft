@@ -34,7 +34,7 @@ const SYSTEM_ROLES: [&str; 8] = [
 ];
 
 #[derive(Debug, Error)]
-pub(in crate::table::mutation) enum Error {
+pub(in crate::table) enum Error {
     #[error(transparent)]
     Inspect(#[from] InspectError),
     #[error("native schema source is outside the supported role graph")]
@@ -189,7 +189,7 @@ pub(in crate::table::mutation) fn observe<'image>(
     })
 }
 
-pub(in crate::table::mutation) fn find_role<'a>(
+pub(in crate::table) fn find_role<'a>(
     image: &'a NativeImage,
     name: &str,
     budget: &mut ResourceBudget,

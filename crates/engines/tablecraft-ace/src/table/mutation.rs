@@ -48,7 +48,7 @@ mod insert;
 #[cfg(feature = "ace16-write-preview")]
 mod long_value;
 #[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
-mod lval_ownership;
+pub(in crate::table) mod lval_ownership;
 #[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
 pub(in crate::table) mod map_authority;
 #[cfg(feature = "journal")]
@@ -88,7 +88,7 @@ mod rows;
 #[cfg(all(feature = "ace16-create", feature = "journal"))]
 mod saved_field;
 #[cfg(feature = "journal")]
-mod schema_source;
+pub(in crate::table) mod schema_source;
 #[cfg(feature = "journal")]
 pub use drop_table::{
     NativeTableDropIdentity, NativeTableDropInspection, NativeTableDropPlan, TableDropError,
@@ -180,7 +180,7 @@ mod normal_fixed_sql_sources;
 mod normal_ordinary_sources;
 
 #[cfg(feature = "journal")]
-mod ordinary_content;
+pub(in crate::table) mod ordinary_content;
 
 #[cfg(feature = "journal")]
 mod normal_ordinary;
