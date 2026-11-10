@@ -37,8 +37,7 @@ pub use add_column::{
     FieldAdditionAfterOffCandidate, FieldAdditionAfterOffError,
     FieldAdditionAfterOffHistoryCandidate, FieldAdditionAfterOffHistoryError,
     FieldAdditionCandidate, FieldAdditionError, FieldAdditionSourceAvailability,
-    FieldAdditionSourceError, FieldAdditionSourcePurpose, FieldAdditionTarget,
-    RepeatedDefaultZeroAddColumnCandidate,
+    FieldAdditionSourceError, FieldAdditionSourcePurpose, RepeatedDefaultZeroAddColumnCandidate,
 };
 #[cfg(feature = "journal")]
 pub use add_table::{

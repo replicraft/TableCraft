@@ -177,13 +177,15 @@ pub use field_addition_after_off_history::{
     qualify_native_field_addition_after_off_history_recovery,
 };
 
-#[cfg(feature = "ace16-create")]
 mod current_field_addition;
-#[cfg(feature = "ace16-create")]
 pub use current_field_addition::{
     CurrentFieldAdditionIntentError, NativeCurrentFieldAdditionIntent,
-    QualifiedCurrentFieldAdditionRecovery, QualifiedRetainedFieldAdditionRecovery,
-    RecoverableCurrentFieldAdditionPlan, qualify_native_current_field_addition_recovery,
+    QualifiedRetainedFieldAdditionRecovery,
+};
+#[cfg(feature = "ace16-create")]
+pub use current_field_addition::{
+    QualifiedCurrentFieldAdditionRecovery, RecoverableCurrentFieldAdditionPlan,
+    qualify_native_current_field_addition_recovery,
 };
 
 #[cfg(feature = "ace16-create")]

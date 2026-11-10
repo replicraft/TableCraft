@@ -1,5 +1,8 @@
 //! Independent retained wire framing and original complete-image bindings.
-use super::{Error, Intent, literal};
+use super::super::record::{
+    CurrentFieldAdditionIntentError as Error, NativeCurrentFieldAdditionIntent as Intent,
+};
+use super::wire::literal;
 use tablecraft_core::limits::ResourceBudget;
 
 #[cfg(feature = "ace16-create")]
@@ -33,14 +36,17 @@ fn retained_wire_is_closed_to_original_languages_and_validates_before_allocation
         intent
             .verify_before(&before, &mut work(), &|| false)
             .unwrap();
-        assert!(matches!(
-            Intent::decode(&good, &mut work(), &|| false),
-            Err(Error::InvalidRecord)
-        ));
-        assert!(matches!(
-            Intent::decode_short_text(&good, &mut work(), &|| false),
-            Err(Error::InvalidRecord)
-        ));
+        #[cfg(feature = "ace16-create")]
+        {
+            assert!(matches!(
+                Intent::decode(&good, &mut work(), &|| false),
+                Err(Error::InvalidRecord)
+            ));
+            assert!(matches!(
+                Intent::decode_short_text(&good, &mut work(), &|| false),
+                Err(Error::InvalidRecord)
+            ));
+        }
         for at in [0, 8, 12, 14, 20, 60, 62] {
             let mut malformed = good.clone();
             malformed[at] ^= 1;
@@ -106,41 +112,55 @@ fn retained_binding_accepts_native_lengths_above_the_original_image_profile_only
         ),
         Err(Error::Binding(_))
     ));
-    let old = literal(&before, "Table1", "NextNumber");
-    assert!(matches!(
-        Intent::decode(&old, &mut work(), &|| false),
-        Err(Error::Binding(_))
-    ));
+    #[cfg(feature = "ace16-create")]
+    {
+        let old = literal(&before, "Table1", "NextNumber");
+        assert!(matches!(
+            Intent::decode(&old, &mut work(), &|| false),
+            Err(Error::Binding(_))
+        ));
+    }
 }
 
 #[cfg(not(feature = "ace16-create"))]
 #[test]
-fn recognized_retained_data_cannot_qualify_mutation_without_creation_support() {
+fn retained_data_decodes_without_enabling_native_creation() {
     use tablecraft_io::journal;
     use tablecraft_model::CatalogScope;
     use tablecraft_testkit::support::io::journal::MemoryStorage;
 
-    let before = vec![0; 4096];
-    let encoded = wire(&before, false);
-    let mut target = MemoryStorage::new(before.clone());
-    let mut journal = MemoryStorage::new(Vec::new());
-    drop(
-        journal::prepare_resizable_v3_expected(
-            &mut target,
-            &mut journal,
-            &before,
-            &before,
-            &mut work(),
-            &|| false,
-        )
-        .unwrap(),
-    );
-    let checked = journal::inspect_v3(&mut journal, &mut work(), &|| false).unwrap();
-    let intent = Intent::decode_retained(&encoded, &mut work(), &|| false).unwrap();
-    assert!(matches!(
-        intent.qualify_retained_recovery(checked, CatalogScope::new(1515), &mut work(), &|| false),
-        Err(Error::Field(crate::CurrentFieldAdditionError::Source))
-    ));
-    assert_eq!(target.writes, 0);
-    assert_eq!(target.bytes.get_ref(), &before);
+    for short_text in [false, true] {
+        let encoded = wire(&vec![0; 4096], short_text);
+        let intent = Intent::decode_retained(&encoded, &mut work(), &|| false).unwrap();
+        assert!(intent.is_retained());
+        assert_eq!(intent.encode(&mut work(), &|| false).unwrap(), encoded);
+        // The inert binding cannot validate any database. The disabled native
+        // capability refuses before consulting or acting on journal payloads.
+        let before = vec![0; 4096];
+        let mut storage = MemoryStorage::new(before.clone());
+        let mut journal = MemoryStorage::new(Vec::new());
+        drop(
+            journal::prepare_resizable_v3_expected(
+                &mut storage,
+                &mut journal,
+                &before,
+                &before,
+                &mut work(),
+                &|| false,
+            )
+            .unwrap(),
+        );
+        let checked = journal::inspect_v3(&mut journal, &mut work(), &|| false).unwrap();
+        assert!(matches!(
+            intent.qualify_retained_recovery(
+                checked,
+                CatalogScope::new(1515),
+                &mut work(),
+                &|| false
+            ),
+            Err(Error::Field(crate::CurrentFieldAdditionError::Source))
+        ));
+        assert_eq!(storage.writes, 0);
+        assert_eq!(storage.bytes.get_ref(), &before);
+    }
 }

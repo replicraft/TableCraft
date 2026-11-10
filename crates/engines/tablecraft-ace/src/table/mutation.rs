@@ -2,6 +2,10 @@
 mod ace_profile;
 #[cfg(all(feature = "journal", feature = "ace16-create"))]
 mod add_field;
+#[cfg(feature = "journal")]
+mod field_addition_error;
+#[cfg(feature = "journal")]
+pub use field_addition_error::CurrentFieldAdditionError;
 #[cfg(feature = "ace16-write-preview")]
 pub(in crate::table) mod append;
 mod apply;
@@ -226,7 +230,7 @@ mod query_expression_source;
 
 #[cfg(all(feature = "ace16-create", feature = "journal"))]
 pub use add_field::{
-    CurrentFieldAdditionError, CurrentFieldAdditionSource, NativeCurrentFieldAdditionCandidate,
+    CurrentFieldAdditionSource, NativeCurrentFieldAdditionCandidate,
     NativeCurrentShortTextFieldAdditionCandidate,
 };
 #[cfg(all(feature = "ace16-create", feature = "journal"))]

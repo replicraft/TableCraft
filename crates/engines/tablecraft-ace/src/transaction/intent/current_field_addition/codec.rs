@@ -35,7 +35,9 @@ pub(super) const HEADER_BYTES: usize = COLUMN_LENGTH_AT + size_of::<u16>();
 
 #[derive(Clone, Copy)]
 pub(super) enum Language {
+    #[cfg(feature = "ace16-create")]
     Number,
+    #[cfg(feature = "ace16-create")]
     ShortText,
     RetainedNumber,
     RetainedShortText,
@@ -56,7 +58,9 @@ pub(super) fn decode(
 ) -> Result<Intent, Error> {
     check(budget, cancelled)?;
     let (magic, profile, tag) = match language {
+        #[cfg(feature = "ace16-create")]
         Language::Number => (MAGIC, PROFILE, NUMBER_LONG_ZERO),
+        #[cfg(feature = "ace16-create")]
         Language::ShortText => (SHORT_TEXT_MAGIC, SHORT_TEXT_PROFILE, SHORT_TEXT),
         Language::RetainedNumber => (
             RETAINED_NUMBER_MAGIC,
@@ -79,15 +83,14 @@ pub(super) fn decode(
     }
     let width = u16::from_le_bytes(field(bytes, WIDTH_AT)?);
     let compression = u16::from_le_bytes(field(bytes, COMPRESSION_AT)?);
-    let target = match language {
-        Language::Number | Language::RetainedNumber
-            if width == RESERVED_WIDTH && compression == RESERVED_COMPRESSION =>
-        {
+    let number = matches!(language, Language::RetainedNumber);
+    #[cfg(feature = "ace16-create")]
+    let number = number || matches!(language, Language::Number);
+    let target = match number {
+        true if width == RESERVED_WIDTH && compression == RESERVED_COMPRESSION => {
             FieldAdditionTarget::NumberLongZero
         }
-        Language::ShortText | Language::RetainedShortText
-            if (1..=MAX_SHORT_TEXT_UNITS).contains(&width) && compression <= 1 =>
-        {
+        false if (1..=MAX_SHORT_TEXT_UNITS).contains(&width) && compression <= 1 => {
             FieldAdditionTarget::ShortText {
                 max_utf16_units: usize::from(width),
                 unicode_compression: compression == 1,

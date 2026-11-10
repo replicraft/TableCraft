@@ -13,14 +13,13 @@ mod target;
 mod tests;
 mod verify;
 
-pub use target::FieldAdditionTarget;
-
 use super::super::{
     AddColumnCandidate, initial_property::InitialPropertyError, owned,
     property_history::PropertyHistoryError, property_preservation::PropertyPreservationError,
 };
 use crate::{
-    CreateColumn, CreateDatabaseError, EditError, InspectError, NativeImage, header::check,
+    CreateColumn, CreateDatabaseError, EditError, FieldAdditionTarget, InspectError, NativeImage,
+    header::check,
 };
 use tablecraft_core::limits::ResourceBudget;
 use thiserror::Error;

@@ -1,3 +1,7 @@
+#[cfg(any(feature = "journal", feature = "ace16-create"))]
+mod field_addition;
+#[cfg(any(feature = "journal", feature = "ace16-create"))]
+pub use field_addition::FieldAdditionTarget;
 #[cfg(feature = "journal")]
 pub(crate) use mutation::fixed_records::FixedCarriers;
 #[cfg(feature = "journal")]
@@ -48,6 +52,8 @@ mod short_text;
 pub use features::{ColumnFeatures, TableFeatures, inspect_table_features};
 pub use indexes::{IndexCheck, IndexCheckStatus, TableCheck, check_table};
 pub use indexes::{IndexedTableSnapshot, read_table_index_with_references};
+#[cfg(feature = "journal")]
+pub use mutation::CurrentFieldAdditionError;
 #[cfg(feature = "ace16-write-preview")]
 pub use mutation::{
     Ace16AutoNumberInsertPreview, Ace16IncrementingInsertBinding, AutoNumberRowInsert,
@@ -69,7 +75,7 @@ pub use mutation::{
 };
 #[cfg(all(feature = "ace16-create", feature = "journal"))]
 pub use mutation::{
-    CurrentFieldAdditionError, CurrentFieldAdditionSource, NativeCurrentFieldAdditionCandidate,
+    CurrentFieldAdditionSource, NativeCurrentFieldAdditionCandidate,
     NativeCurrentShortTextFieldAdditionCandidate,
 };
 pub use mutation::{EditError, Int32Update, NativeEditPlan, WriteBlocker};

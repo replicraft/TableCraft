@@ -1,12 +1,13 @@
 //! Original declaration and source binding; serialized data grants no native authority.
+#[cfg(feature = "ace16-create")]
+use super::candidate::Candidate;
 use super::{
     super::{NativeIntentError, binding},
-    candidate::Candidate,
     codec,
 };
-use crate::{
-    CurrentFieldAdditionError, FieldAdditionTarget, InspectError, NativeImage, header::check,
-};
+#[cfg(feature = "ace16-create")]
+use crate::NativeImage;
+use crate::{CurrentFieldAdditionError, FieldAdditionTarget, InspectError, header::check};
 use tablecraft_core::limits::{LimitError, Resource, ResourceBudget};
 use tablecraft_schema::SchemaName;
 use thiserror::Error;
@@ -68,6 +69,7 @@ impl NativeCurrentFieldAdditionIntent {
     /// Bound checked before a persisted request buffer or names are retained.
     pub const MAX_ENCODED_BYTES: usize = codec::HEADER_BYTES + 2 * MAX_NAME_BYTES;
 
+    #[cfg(feature = "ace16-create")]
     pub(super) fn capture(
         candidate: &Candidate,
         budget: &mut ResourceBudget,
@@ -88,6 +90,7 @@ impl NativeCurrentFieldAdditionIntent {
         })
     }
 
+    #[cfg(feature = "ace16-create")]
     pub(super) fn reconstruct(
         &self,
         image: NativeImage,
@@ -124,6 +127,7 @@ impl NativeCurrentFieldAdditionIntent {
         Ok(candidate)
     }
 
+    #[cfg(feature = "ace16-create")]
     fn reconstruct_retained(
         &self,
         image: NativeImage,
@@ -214,6 +218,7 @@ impl NativeCurrentFieldAdditionIntent {
     }
 
     /// Decode only TCAC0008/profile8 and its fixed Number declaration before allocation.
+    #[cfg(feature = "ace16-create")]
     pub fn decode(
         bytes: &[u8],
         budget: &mut ResourceBudget,
@@ -224,6 +229,7 @@ impl NativeCurrentFieldAdditionIntent {
 
     /// Decode only TCAC0009/profile9 and its nullable Short Text declaration.
     /// The Number decoder remains closed to this language.
+    #[cfg(feature = "ace16-create")]
     pub fn decode_short_text(
         bytes: &[u8],
         budget: &mut ResourceBudget,

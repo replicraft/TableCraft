@@ -9,7 +9,7 @@ pub use field_addition::{
     CreatedFieldAdditionSourcePurpose, FieldAdditionAfterOffCandidate, FieldAdditionAfterOffError,
     FieldAdditionAfterOffHistoryCandidate, FieldAdditionAfterOffHistoryError,
     FieldAdditionCandidate, FieldAdditionError, FieldAdditionSourceAvailability,
-    FieldAdditionSourceError, FieldAdditionSourcePurpose, FieldAdditionTarget,
+    FieldAdditionSourceError, FieldAdditionSourcePurpose,
 };
 mod preservation;
 mod source;

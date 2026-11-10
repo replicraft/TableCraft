@@ -1,6 +1,9 @@
 //! Independent bounded Jet/ACE reads and offline edit plans. No active content.
 #![deny(missing_docs)]
 
+#[cfg(any(feature = "journal", feature = "ace16-create"))]
+pub use table::FieldAdditionTarget;
+
 #[cfg(all(test, feature = "ace16-write-preview"))]
 extern crate self as tablecraft_ace;
 
@@ -51,8 +54,7 @@ pub use creation::{
     FieldAdditionAfterOffCandidate, FieldAdditionAfterOffError,
     FieldAdditionAfterOffHistoryCandidate, FieldAdditionAfterOffHistoryError,
     FieldAdditionCandidate, FieldAdditionError, FieldAdditionSourceAvailability,
-    FieldAdditionSourceError, FieldAdditionSourcePurpose, FieldAdditionTarget,
-    RepeatedDefaultZeroAddColumnCandidate,
+    FieldAdditionSourceError, FieldAdditionSourcePurpose, RepeatedDefaultZeroAddColumnCandidate,
 };
 mod encryption;
 mod error;
@@ -356,9 +358,11 @@ pub use transaction::{
     RecoverableFieldAdditionPlan, qualify_native_field_addition_recovery,
 };
 
+#[cfg(feature = "journal")]
+pub use table::CurrentFieldAdditionError;
 #[cfg(all(feature = "ace16-create", feature = "journal"))]
 pub use table::{
-    CurrentFieldAdditionError, CurrentFieldAdditionSource, NativeCurrentFieldAdditionCandidate,
+    CurrentFieldAdditionSource, NativeCurrentFieldAdditionCandidate,
     NativeCurrentShortTextFieldAdditionCandidate,
 };
 #[cfg(all(feature = "ace16-create", feature = "journal"))]
@@ -386,13 +390,18 @@ pub use transaction::{
     qualify_native_field_addition_after_off_recovery,
 };
 
+#[cfg(feature = "journal")]
+pub use transaction::{
+    CurrentFieldAdditionIntentError, NativeCurrentFieldAdditionIntent,
+    QualifiedRetainedFieldAdditionRecovery,
+};
+
 #[cfg(all(feature = "journal", feature = "ace16-create"))]
 pub use transaction::{
-    CurrentFieldAdditionIntentError, FieldAdditionAfterOffHistoryIntentError,
-    NativeCurrentFieldAdditionIntent, NativeFieldAdditionAfterOffHistoryIntent,
+    FieldAdditionAfterOffHistoryIntentError, NativeFieldAdditionAfterOffHistoryIntent,
     QualifiedCurrentFieldAdditionRecovery, QualifiedFieldAdditionAfterOffHistoryRecovery,
-    QualifiedRetainedFieldAdditionRecovery, RecoverableCurrentFieldAdditionPlan,
-    RecoverableFieldAdditionAfterOffHistoryPlan, qualify_native_current_field_addition_recovery,
+    RecoverableCurrentFieldAdditionPlan, RecoverableFieldAdditionAfterOffHistoryPlan,
+    qualify_native_current_field_addition_recovery,
     qualify_native_field_addition_after_off_history_recovery,
 };
 

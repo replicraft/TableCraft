@@ -2,22 +2,29 @@
 mod retained;
 pub use retained::QualifiedRetainedFieldAdditionRecovery;
 
+#[cfg(feature = "ace16-create")]
 use super::{
     planning::same_image,
     record::{
         CurrentFieldAdditionIntentError as Error, NativeCurrentFieldAdditionIntent as Intent,
     },
 };
+#[cfg(feature = "ace16-create")]
 use crate::{NativeImage, header::check};
+#[cfg(feature = "ace16-create")]
 use std::io::Cursor;
+#[cfg(feature = "ace16-create")]
 use tablecraft_core::limits::ResourceBudget;
+#[cfg(feature = "ace16-create")]
 use tablecraft_io::journal::{
     CheckedV2, DurableStorage, JournalError, RecoveryOutcome, ResizableDurableStorage, V2State,
 };
+#[cfg(feature = "ace16-create")]
 use tablecraft_model::CatalogScope;
 
 /// Original checked V2 session after exact current-source and declaration proof.
 #[must_use = "recover explicitly or retain the qualified typed-field journal"]
+#[cfg(feature = "ace16-create")]
 pub struct QualifiedCurrentFieldAdditionRecovery<'a, J: DurableStorage> {
     checked: CheckedV2<'a, J>,
 }
@@ -25,6 +32,7 @@ pub struct QualifiedCurrentFieldAdditionRecovery<'a, J: DurableStorage> {
 /// Rebuild exact BEFORE/AFTER; neither the decoded request nor generic IO AFTER
 /// grants native authority. Source binding, current metadata qualification and
 /// every complete image comparison spend the SAME caller cumulative allowance.
+#[cfg(feature = "ace16-create")]
 pub fn qualify_native_current_field_addition_recovery<'a, J: DurableStorage>(
     checked: CheckedV2<'a, J>,
     intent: Intent,
@@ -61,6 +69,7 @@ pub fn qualify_native_current_field_addition_recovery<'a, J: DurableStorage>(
     Ok(QualifiedCurrentFieldAdditionRecovery { checked })
 }
 
+#[cfg(feature = "ace16-create")]
 impl<J: DurableStorage> QualifiedCurrentFieldAdditionRecovery<'_, J> {
     /// Framing state of this exact retained V2 journal.
     pub fn state(&self) -> V2State {

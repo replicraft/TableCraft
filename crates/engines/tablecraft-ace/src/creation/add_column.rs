@@ -26,7 +26,7 @@ pub use created::{
     CreatedFieldAdditionSourcePurpose, FieldAdditionAfterOffCandidate, FieldAdditionAfterOffError,
     FieldAdditionAfterOffHistoryCandidate, FieldAdditionAfterOffHistoryError,
     FieldAdditionCandidate, FieldAdditionError, FieldAdditionSourceAvailability,
-    FieldAdditionSourceError, FieldAdditionSourcePurpose, FieldAdditionTarget,
+    FieldAdditionSourceError, FieldAdditionSourcePurpose,
 };
 
 use super::{CreateDatabaseError, request};

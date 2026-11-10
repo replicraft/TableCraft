@@ -251,13 +251,18 @@ pub use intent::{
     qualify_native_field_addition_after_off_recovery,
 };
 
+#[cfg(feature = "journal")]
+pub use intent::{
+    CurrentFieldAdditionIntentError, NativeCurrentFieldAdditionIntent,
+    QualifiedRetainedFieldAdditionRecovery,
+};
+
 #[cfg(all(feature = "journal", feature = "ace16-create"))]
 pub use intent::{
-    CurrentFieldAdditionIntentError, FieldAdditionAfterOffHistoryIntentError,
-    NativeCurrentFieldAdditionIntent, NativeFieldAdditionAfterOffHistoryIntent,
+    FieldAdditionAfterOffHistoryIntentError, NativeFieldAdditionAfterOffHistoryIntent,
     QualifiedCurrentFieldAdditionRecovery, QualifiedFieldAdditionAfterOffHistoryRecovery,
-    QualifiedRetainedFieldAdditionRecovery, RecoverableCurrentFieldAdditionPlan,
-    RecoverableFieldAdditionAfterOffHistoryPlan, qualify_native_current_field_addition_recovery,
+    RecoverableCurrentFieldAdditionPlan, RecoverableFieldAdditionAfterOffHistoryPlan,
+    qualify_native_current_field_addition_recovery,
     qualify_native_field_addition_after_off_history_recovery,
 };
 
