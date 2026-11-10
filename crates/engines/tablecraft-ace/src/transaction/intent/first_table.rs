@@ -42,7 +42,8 @@ pub enum FirstTableIntentError {
 /// Original owned declarations and full-source binding for TCNT0001/profile 1,
 /// default-bearing TCNT0002/profile 2, explicit-policy TCNT0003/profile 3 or
 /// wider-target-default TCNT0004/profile 4, described TCNT0005/profile 5, or
-/// manual/keyless TCNT0006/profile 6. Older profiles retain their generated ID.
+/// manual/keyless TCNT0006/profile 6. Native TCNT0007/profile 7 retains its
+/// distinct native-count declaration language. Older generated profiles remain closed.
 /// Decoding this record supplies no native write, recovery or absence authority.
 pub struct NativeFirstTableIntent {
     definition: FirstTableDefinition,
@@ -53,6 +54,7 @@ pub struct NativeFirstTableIntent {
 /// Bound on the shared closed declaration template, not an AddTable source.
 pub(super) const MAX_DECLARATION_TEMPLATE_BYTES: usize = codec::MAX_RECORD_BYTES;
 pub(super) const LEGACY_MAX_DECLARATION_TEMPLATE_BYTES: usize = codec::LEGACY_MAX_RECORD_BYTES;
+pub(super) const MAX_NATIVE_DECLARATION_TEMPLATE_BYTES: usize = codec::NATIVE_MAX_RECORD_BYTES;
 
 pub(super) fn encode_declaration_template(
     definition: &FirstTableDefinition,
@@ -70,6 +72,14 @@ pub(super) fn decode_declaration_template(
     Ok(codec::decode(raw, budget, cancelled)?.definition)
 }
 
+pub(super) fn decode_native_declaration_template(
+    raw: &[u8],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<FirstTableDefinition, FirstTableIntentError> {
+    Ok(codec::decode_native(raw, budget, cancelled)?.definition)
+}
+
 impl NativeFirstTableIntent {
     /// Maximum complete record, checked before decoded name/vector allocations.
     pub const MAX_ENCODED_BYTES: usize = codec::MAX_RECORD_BYTES;
@@ -81,6 +91,23 @@ impl NativeFirstTableIntent {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, FirstTableIntentError> {
         codec::decode(raw, budget, cancelled)
+    }
+
+    /// Maximum TCNT7 record derived from its actual native field policies.
+    pub const MAX_NATIVE_ENCODED_BYTES: usize = codec::NATIVE_MAX_RECORD_BYTES;
+
+    /// Decode only native construction TCNT0007; older records stay separate.
+    pub fn decode_native(
+        raw: &[u8],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, FirstTableIntentError> {
+        codec::decode_native(raw, budget, cancelled)
+    }
+
+    /// Original constructive language, separate from source or recovery authority.
+    pub fn is_native(&self) -> bool {
+        self.definition.is_native()
     }
 
     /// Exact original table name, not a target path or SQL fragment.

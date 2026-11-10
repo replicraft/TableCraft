@@ -5,7 +5,7 @@ use tablecraft_io::journal::{
     ResizableDurableStorage,
 };
 
-/// The canonical first-table transition prepared through one V2 image journal.
+/// The canonical first-table transition prepared through its selected V2 or V3 image journal.
 /// Dropping retains the journal; callers must explicitly recover before access.
 #[must_use = "commit or explicitly recover the retained first-table journal"]
 pub struct PreparedFirstTable<'a, D, J> {
@@ -24,7 +24,33 @@ impl FirstTablePlan {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<PreparedFirstTable<'a, D, J>, JournalError> {
         let _span = tracing::debug_span!("native.first_table.prepare").entered();
+        if self.definition().is_native() {
+            return Err(JournalError::InvalidJournal);
+        }
         let prepared = journal::prepare_resizable_expected(
+            target,
+            journal,
+            self.before_bytes(),
+            self.after_bytes(),
+            budget,
+            cancelled,
+        )?;
+        Ok(PreparedFirstTable { prepared })
+    }
+
+    /// Prepare a native declaration through V3 against the exact canonical BEFORE.
+    /// Original construction families cannot enter this journal route.
+    pub fn prepare_native<'a, D: ResizableDurableStorage, J: DurableStorage>(
+        self,
+        target: &'a mut D,
+        journal: &'a mut J,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<PreparedFirstTable<'a, D, J>, JournalError> {
+        if !self.definition().is_native() {
+            return Err(JournalError::InvalidJournal);
+        }
+        let prepared = journal::prepare_resizable_v3_expected(
             target,
             journal,
             self.before_bytes(),
