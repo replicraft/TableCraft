@@ -3,6 +3,7 @@ mod close;
 mod failures;
 mod ownership;
 mod populated;
+mod readdition;
 mod widgets;
 
 use crate::workspace::{Desktop, test_support::finish_reads};
