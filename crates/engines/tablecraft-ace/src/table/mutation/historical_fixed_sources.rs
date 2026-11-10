@@ -119,3 +119,52 @@ fn historical_missing_target_indexed_target_and_conflicts_still_refuse() {
         }
     }
 }
+
+#[test]
+fn unused_short_record_mask_bits_stay_opaque_and_empty_requests_still_requalify() {
+    use crate::{FixedColumnUpdates, FixedScalarUpdate};
+
+    let [_, mut before] = populated::pair("Bonus", &[Some(42), None, Some(-7)]);
+    let data = 8 * PAGE;
+    let first = usize::from(u16::from_le_bytes(
+        before[data + 14..data + 16].try_into().unwrap(),
+    ));
+    // Count=2: the stored mask's Bonus bit and final unused bit are not values.
+    // They must remain untouched rather than becoming a materialized default.
+    before[data + first + 10] |= 0x84;
+    let expected = populated::update_scores(&before, &[(0, Some(8))]);
+    let updates = [FixedScalarUpdate::new(0, Value::Int32(42), Value::Int32(8))];
+    let groups = [FixedColumnUpdates::new("Table1", "Score", &updates)];
+    let image =
+        NativeImage::capture(&mut Cursor::new(&before), SCOPE, &mut budget(), &|| false).unwrap();
+    let plan = image
+        .plan_historical_present_fixed_updates("Table1", &groups, &mut budget(), &|| false)
+        .unwrap();
+    assert_eq!(plan.after_bytes(), expected);
+    let decoded = read_table(
+        &mut Cursor::new(plan.after_bytes()),
+        SCOPE,
+        "Table1",
+        &mut budget(),
+        &|| false,
+    )
+    .unwrap();
+    assert_eq!(decoded.rows()[0][2], Value::Null);
+
+    let empty = [FixedColumnUpdates::new("Table1", "Score", &[])];
+    let image =
+        NativeImage::capture(&mut Cursor::new(&before), SCOPE, &mut budget(), &|| false).unwrap();
+    let plan = image
+        .plan_historical_present_fixed_updates("Table1", &empty, &mut budget(), &|| false)
+        .unwrap();
+    assert_eq!(plan.after_bytes(), before);
+    assert_eq!(plan.changed_rows(), 0);
+
+    let image =
+        NativeImage::capture(&mut Cursor::new(&before), SCOPE, &mut budget(), &|| false).unwrap();
+    assert!(
+        image
+            .plan_historical_present_fixed_updates("Table1", &empty, &mut budget(), &|| true)
+            .is_err()
+    );
+}
