@@ -171,7 +171,7 @@ fn consecutive_mixed_growth_keeps_forwarded_existing_number_updates_available() 
         NativeImage::capture(&mut Cursor::new(&before), SCOPE, &mut budget(), &|| false).unwrap();
     assert!(
         image
-            .select_native_historical_present_fixed_table("Table1", &mut budget(), &|| false)
+            .select_native_historical_row_table("Table1", &mut budget(), &|| false)
             .unwrap()
     );
     image

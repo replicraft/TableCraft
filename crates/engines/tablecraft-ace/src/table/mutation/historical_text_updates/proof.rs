@@ -12,10 +12,7 @@ use crate::{
         record_roots, record_serialization,
     },
 };
-use tablecraft_core::{
-    limits::{Resource, ResourceBudget},
-    values::Value,
-};
+use tablecraft_core::limits::{Resource, ResourceBudget};
 
 pub(super) fn prove(
     image: &NativeImage,
@@ -29,7 +26,7 @@ pub(super) fn prove(
     source
         .facts()
         .require_preserved_definition_tail(image, after, budget, cancelled)?;
-    let requests = [bind(&source, groups, budget, cancelled)?];
+    let requests = [bind(image, &source, groups, budget, cancelled)?];
     let schema = source.facts().table.schema();
     let captured = record_roots::capture(image, schema, &requests, budget, cancelled)?;
     let root = captured.selected.first().ok_or(EditError::Conflict)?;
@@ -37,6 +34,12 @@ pub(super) fn prove(
         return Err(EditError::Unsupported(WriteBlocker::RowLayout));
     }
     let value = groups[0].cell(0).ok_or(EditError::Preservation)?.value;
+    if !root.update.changed {
+        if !super::binding::equal_bytes(image.as_bytes(), after, budget, cancelled)? {
+            return Err(EditError::Preservation);
+        }
+        return Ok(());
+    }
     let record = record_serialization::proof::historical_text::reconstruct(
         schema,
         root.update.column,
@@ -45,12 +48,6 @@ pub(super) fn prove(
         budget,
         cancelled,
     )?;
-    if matches!(value, Value::Null) {
-        if image.as_bytes() != after || record != root.final_record.data {
-            return Err(EditError::Preservation);
-        }
-        return Ok(());
-    }
     let space = Space::capture_normal(image, schema, &captured.owned, budget, cancelled)?;
     let mut physical =
         placement::Placement::capture(image, &space, &captured.owned, budget, cancelled)?;

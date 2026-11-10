@@ -32,7 +32,7 @@ pub(super) fn frame(
     let original = record_layout::parse(before, schema, budget)?;
     let count = original.count;
     if count == 0
-        || count >= schema.layout.max_columns
+        || count > schema.layout.max_columns
         || schema.columns().len() != schema.layout.max_columns
         || schema.layout.variable_slots == 0
     {
@@ -133,7 +133,7 @@ pub(in crate::table::mutation) fn qualify(
     {
         return Err(EditError::Unsupported(WriteBlocker::RowLayout));
     }
-    if frame.expanded <= frame.fixed {
+    if frame.count >= schema.layout.max_columns || frame.expanded <= frame.fixed {
         return Err(EditError::Unsupported(WriteBlocker::RowLayout));
     }
     Ok(frame)

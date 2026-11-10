@@ -5,10 +5,11 @@ use super::{
     patch::BytePatch,
 };
 use crate::{
-    EditError, FixedColumnUpdates, InspectError, NativeEditPlan, NativeImage, WriteBlocker,
+    EditError, FittedColumnUpdates, FixedColumnUpdates, InspectError, NativeEditPlan, NativeImage,
+    WriteBlocker,
     format::{
         bytes::{u16_at, u32_at},
-        data_type::INT32,
+        data_type::{INT32, SHORT_TEXT},
         layout::{FIXED_FLAG, UPDATABLE_FLAG},
         page::{DATA_SIGNATURE, OWNER_OFFSET, PAGE_BYTES},
         reader::{live_row_range, row_count},
@@ -139,7 +140,7 @@ impl NativeImage {
 impl NativeImage {
     /// Select one historical-record attempt from inert current metadata/headers.
     /// This grants no permission and never retries failed current-source admission.
-    pub fn select_native_historical_present_fixed_table(
+    pub fn select_native_historical_row_table(
         &self,
         table: &str,
         budget: &mut ResourceBudget,
@@ -193,6 +194,48 @@ impl NativeImage {
             }
         }
         Ok(false)
+    }
+
+    /// Qualify the historical row source and one supported unindexed target kind.
+    /// This observes availability only; every consuming update rechecks its
+    /// original carrier, actual stored presence and exact replacement value.
+    pub fn check_native_historical_row_table(
+        &self,
+        table: &str,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(), EditError> {
+        let source = Source::capture(self, table, budget, cancelled)?;
+        for field in source.facts.table.schema().columns() {
+            check(budget, cancelled)?;
+            let supported = (field.native_type() == INT32 && field.fixed())
+                || (field.native_type() == SHORT_TEXT && !field.fixed());
+            if !supported {
+                continue;
+            }
+            let mut indexed = false;
+            for index in source.facts.indexes.indexes() {
+                for key in index.columns() {
+                    check(budget, cancelled)?;
+                    indexed |= key.number() == field.number();
+                }
+            }
+            if indexed {
+                continue;
+            }
+            if field.fixed() {
+                let groups = [FixedColumnUpdates::new(table, field.name(), &[])];
+                source.qualify(&groups, budget, cancelled)?;
+            } else {
+                let groups = [FittedColumnUpdates::Variable {
+                    column: field.name(),
+                    updates: &[],
+                }];
+                super::normal_fitted::binding::all(source.facts(), &groups, budget, cancelled)?;
+            }
+            return Ok(());
+        }
+        Err(EditError::Unsupported(WriteBlocker::Column))
     }
 
     /// Fully qualify the separate current-source purpose and at least one

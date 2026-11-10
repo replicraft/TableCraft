@@ -1,4 +1,4 @@
-//! Distinct original-request admission for absent Short Text materialization.
+//! Original-value Short Text updates select actual stored presence without fallback.
 mod proof;
 
 use super::{
@@ -26,6 +26,7 @@ use tablecraft_core::{
 pub(super) struct Selected {
     ordinal: usize,
     column: usize,
+    changed: bool,
 }
 
 impl RowAssignment for Selected {
@@ -35,6 +36,7 @@ impl RowAssignment for Selected {
 }
 
 pub(super) fn bind(
+    image: &NativeImage,
     source: &Source<'_>,
     groups: &[FittedColumnUpdates<'_>],
     budget: &mut ResourceBudget,
@@ -53,11 +55,22 @@ pub(super) fn bind(
         return Err(EditError::Unsupported(WriteBlocker::Column));
     }
     let update = groups[0].cell(0).ok_or(EditError::Preservation)?;
-    if !matches!(update.expected, Value::Null)
-        || !matches!(update.value, Value::Text(_) | Value::Null)
-    {
+    if !matches!(update.value, Value::Text(_) | Value::Null) {
+        return Err(EditError::Unsupported(WriteBlocker::Column));
+    }
+    let values = super::normal_fitted::original_values(
+        image,
+        source.facts(),
+        update.row,
+        &[column],
+        budget,
+        cancelled,
+    )?;
+    let original = values.first().ok_or(EditError::Preservation)?;
+    if !binding::equal(original, update.expected, budget, cancelled)? {
         return Err(EditError::Conflict);
     }
+    let changed = !binding::equal(original, update.value, budget, cancelled)?;
     let record = source
         .facts()
         .records
@@ -73,12 +86,13 @@ pub(super) fn bind(
     Ok(Selected {
         ordinal: update.row,
         column,
+        changed,
     })
 }
 
 impl NativeImage {
-    /// Observe an actual absent Short Text target before choosing a request language.
-    pub(crate) fn historical_short_text_materialization_selected(
+    /// Observe an actual Short Text target before choosing the separate request language.
+    pub(crate) fn historical_short_text_updates_selected(
         &self,
         table: &str,
         groups: &[FittedColumnUpdates<'_>],
@@ -94,33 +108,36 @@ impl NativeImage {
                 {
                     continue;
                 }
-                for index in 0..group.len() {
-                    let cell = group.cell(index).ok_or(EditError::Preservation)?;
+                if let Some(cell) = group.cell(0) {
                     let record = source
                         .facts()
                         .records
                         .get(cell.row)
                         .ok_or(EditError::Conflict)?;
-                    if field.number() >= usize::from(u16_at(&record.data, 0)?) {
-                        return Ok(true);
+                    // Actual record framing is inspected before a consuming
+                    // planner chooses Present or Absent; no failed operation
+                    // is retried under another interpretation.
+                    let count = usize::from(u16_at(&record.data, 0)?);
+                    if count == 0 || count > source.facts().table.schema().layout.max_columns {
+                        return Err(EditError::Unsupported(WriteBlocker::RowLayout));
                     }
+                    return Ok(true);
                 }
             }
         }
         Ok(false)
     }
 
-    pub(crate) fn plan_historical_short_text_materialization(
+    pub(crate) fn plan_historical_short_text_updates(
         self,
         table: &str,
         groups: &[FittedColumnUpdates<'_>],
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<NativeEditPlan, EditError> {
-        let _span =
-            tracing::debug_span!("native.historical_short_text_materialization.plan").entered();
+        let _span = tracing::debug_span!("native.historical_short_text_updates.plan").entered();
         let source = Source::capture(&self, table, budget, cancelled)?;
-        let requests = [bind(&source, groups, budget, cancelled)?];
+        let requests = [bind(&self, &source, groups, budget, cancelled)?];
         let schema = source.facts().table.schema();
         let captured = record_roots::capture(&self, schema, &requests, budget, cancelled)?;
         let root = captured.selected.first().ok_or(EditError::Conflict)?;
@@ -136,16 +153,21 @@ impl NativeImage {
             return Err(EditError::Preservation);
         }
         let value = groups[0].cell(0).ok_or(EditError::Preservation)?.value;
-        let record = record_serialization::historical_text::build(
-            schema,
-            root.update.column,
-            &original.data,
-            value,
-            budget,
-            cancelled,
-        )?;
+        let changed = root.update.changed;
+        let record = if changed {
+            record_serialization::historical_text::build(
+                schema,
+                root.update.column,
+                &original.data,
+                value,
+                budget,
+                cancelled,
+            )?
+        } else {
+            record_serialization::copy(&original.data, budget, cancelled)?
+        };
         let mut after = record_serialization::copy(self.as_bytes(), budget, cancelled)?;
-        if !matches!(value, Value::Null) {
+        if changed {
             let space = Space::capture_normal(&self, schema, &captured.owned, budget, cancelled)?;
             let mut reservations =
                 Reservations::capture(&self, &space, &captured.owned, budget, cancelled)?;
@@ -186,7 +208,7 @@ impl NativeImage {
         Ok(NativeEditPlan {
             before: self.bytes,
             after,
-            changed_rows: usize::from(!matches!(value, Value::Null)),
+            changed_rows: usize::from(changed),
         })
     }
 }

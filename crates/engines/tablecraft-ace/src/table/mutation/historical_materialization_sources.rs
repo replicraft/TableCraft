@@ -193,7 +193,7 @@ fn consecutive_materializations_keep_normal_existing_field_edits_available_after
                 .unwrap();
         assert!(
             image
-                .select_native_historical_present_fixed_table("Table1", &mut budget(), &|| false)
+                .select_native_historical_row_table("Table1", &mut budget(), &|| false)
                 .unwrap()
         );
         let plan = image
@@ -213,7 +213,7 @@ fn consecutive_materializations_keep_normal_existing_field_edits_available_after
         NativeImage::capture(&mut Cursor::new(&before), SCOPE, &mut budget(), &|| false).unwrap();
     assert!(
         image
-            .select_native_historical_present_fixed_table("Table1", &mut budget(), &|| false)
+            .select_native_historical_row_table("Table1", &mut budget(), &|| false)
             .unwrap()
     );
     image

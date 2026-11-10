@@ -256,4 +256,4 @@ mod historical_forwarded_materialization_sources;
 mod value_limits;
 
 #[cfg(all(feature = "journal", feature = "ace16-create"))]
-mod historical_text_materialization;
+mod historical_text_updates;
