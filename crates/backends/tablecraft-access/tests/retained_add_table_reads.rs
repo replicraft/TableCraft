@@ -178,7 +178,7 @@ fn repeated_appends_cross_inline_map_base_windows_and_keep_off_and_dead_roots() 
                     .execute(&source, &[], ExecutionOptions::default())
                     .unwrap()
                     .rows(),
-                &[vec![Value::Int32(0)]],
+                &[vec![Value::Int64(0)]],
             );
         }
         let old = parse_query("SELECT * FROM Table1", Default::default()).unwrap();
