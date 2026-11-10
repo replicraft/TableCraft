@@ -95,7 +95,11 @@ fn selected(
     let mut selected: Option<Selected> = None;
     for &page in maps.pages(Family::LongValue).iter().rev() {
         reader.tick()?;
-        let hint = maps.long_value.hint.cell(&mut reader, page)?;
+        let hint = match maps.long_value.hint.cell(&mut reader, page) {
+            Ok(hint) => hint,
+            Err(InspectError::Unsupported) => continue,
+            Err(error) => return Err(error.into()),
+        };
         if hint.before & hint.mask == 0 {
             continue;
         }
