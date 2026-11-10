@@ -1,7 +1,9 @@
 """The signing bootstrap must authenticate before creating executable output."""
 import hashlib
 import io
+import os
 from pathlib import Path
+import stat
 import sys
 import tarfile
 import tempfile
@@ -36,13 +38,20 @@ class MinisignBootstrapTests(unittest.TestCase):
                 tool.install(b"changed upstream bytes", output)
             self.assertFalse(output.exists())
 
-    def test_verified_member_is_extracted_exclusively_with_executable_permissions(self):
+    def test_verified_member_is_extracted_exclusively_with_platform_permissions(self):
         data = archive(native_binary("x86_64-unknown-linux-gnu"))
         with tempfile.TemporaryDirectory() as temporary, patch.object(tool, "SHA256", hashlib.sha256(data).hexdigest()):
             output = Path(temporary) / "tool"
             binary = tool.install(data, output)
             self.assertEqual(binary.read_bytes(), native_binary("x86_64-unknown-linux-gnu"))
-            self.assertEqual(binary.stat().st_mode & 0o777, 0o755)
+            self.assertTrue(stat.S_ISREG(binary.stat().st_mode))
+            self.assertFalse(binary.is_symlink())
+            self.assertEqual({entry.name for entry in output.iterdir()}, {"minisign"})
+            if os.name == "posix":
+                self.assertEqual(binary.stat().st_mode & 0o777, 0o755)
+            elif os.name == "nt":
+                # Windows chmod controls the DOS read-only flag, not Unix exec bits.
+                self.assertEqual(binary.stat().st_file_attributes & stat.FILE_ATTRIBUTE_READONLY, 0)
             with self.assertRaises(FileExistsError):
                 tool.install(data, output)
             self.assertEqual(binary.read_bytes(), native_binary("x86_64-unknown-linux-gnu"))
