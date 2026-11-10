@@ -873,11 +873,12 @@ pub(in crate::table::mutation) fn capture_schema(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Source, EditError> {
-    capture_framed(
+    capture_framed_with_records(
         image,
         table,
         PayloadAdmission::SchemaNoRequired(certificate),
         ReadProfile::retained(ColumnFraming::Actions),
+        RecordAdmission::HistoricalSchemaReadonly,
         budget,
         cancelled,
     )

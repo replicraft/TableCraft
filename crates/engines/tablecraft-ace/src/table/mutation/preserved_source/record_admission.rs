@@ -14,6 +14,9 @@ pub(super) enum RecordAdmission {
     /// INSERT preserves historical records; it only serializes the new rows.
     #[cfg(feature = "journal")]
     HistoricalInsert,
+    /// Schema-only observation retains every original record byte, never targets it.
+    #[cfg(all(feature = "journal", feature = "ace16-create"))]
+    HistoricalSchemaReadonly,
 }
 
 impl RecordAdmission {
@@ -33,6 +36,8 @@ impl RecordAdmission {
             Self::Complete => false,
             #[cfg(feature = "journal")]
             Self::HistoricalInsert => true,
+            #[cfg(all(feature = "journal", feature = "ace16-create"))]
+            Self::HistoricalSchemaReadonly => true,
         };
         if historical
             && layout.count > 0

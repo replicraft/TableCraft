@@ -1,7 +1,17 @@
 //! Actual historical sources retain their original bytes across normal INSERT.
+#[cfg(feature = "ace16-create")]
+use super::RecordAdmission;
 use crate::{
     EditError, FixedColumnUpdates, FixedScalarUpdate, InsertFieldValue, NativeImage,
     OmittedRowInsert, WriteBlocker, table::mutation::normal_ordinary,
+};
+#[cfg(feature = "ace16-create")]
+use crate::{
+    inspect_table_schema,
+    table::{
+        mutation::{no_required_programs::NoRequiredTablePrograms, preserved_source},
+        record_layout,
+    },
 };
 use std::io::Cursor;
 use tablecraft_core::{limits::ResourceBudget, values::Value};
@@ -48,6 +58,16 @@ fn omitted_default_and_explicit_null_inserts_match_independent_mixed_width_image
             &plan.after_bytes()[9 * PAGE - 33..9 * PAGE],
             &current[9 * PAGE - 33..9 * PAGE]
         );
+        #[cfg(feature = "ace16-create")]
+        {
+            let native = image(plan.after_bytes());
+            let observed =
+                normal_ordinary::capture_schema(&native, "Table1", &mut budget(), &|| false)
+                    .unwrap();
+            for record in &observed.records[..3] {
+                assert_eq!(&record.data[..2], &[2, 0]);
+            }
+        }
         current = expected;
     }
 }
@@ -79,6 +99,15 @@ fn historical_admission_uses_native_counts_instead_of_a_two_to_three_special_cas
         assert_eq!(record.data, fourth[end - 11..end]);
         assert_eq!(&record.data[..2], &[2, 0]);
     }
+    #[cfg(feature = "ace16-create")]
+    {
+        let schema_source =
+            normal_ordinary::capture_schema(&native, "Table1", &mut budget(), &|| false).unwrap();
+        assert_eq!(schema_source.table.rows(), source.table.rows());
+        for (original, observed) in source.records.iter().zip(&schema_source.records) {
+            assert_eq!(original.data, observed.data);
+        }
+    }
     assert_eq!(native.as_bytes(), fourth);
 }
 
@@ -106,6 +135,77 @@ fn historical_insert_admission_does_not_grant_update_expansion_or_accept_invalid
         assert!(
             normal_ordinary::capture_insert(&native, "Table1", &mut budget(), &|| false).is_err()
         );
+        #[cfg(feature = "ace16-create")]
+        assert!(
+            normal_ordinary::capture_schema(&native, "Table1", &mut budget(), &|| false).is_err()
+        );
         assert_eq!(native.as_bytes(), damaged);
     }
+}
+
+#[cfg(feature = "ace16-create")]
+#[test]
+fn historical_schema_observation_retains_distinct_authority_and_rejects_invented_values() {
+    let [_, before] = populated::pair("Bonus", &[Some(42), None, Some(-7)]);
+    let native = image(&before);
+    let schema = inspect_table_schema(
+        &mut native.reader(),
+        SCOPE,
+        "Table1",
+        &mut budget(),
+        &|| false,
+    )
+    .unwrap();
+    let schema_certificate =
+        NoRequiredTablePrograms::capture_schema(&native, &schema, &mut budget(), &|| false)
+            .unwrap();
+    let row_certificate =
+        NoRequiredTablePrograms::capture_updates(&native, &schema, &mut budget(), &|| false)
+            .unwrap();
+    let observed = preserved_source::capture_schema(
+        &native,
+        "Table1",
+        &schema_certificate,
+        &mut budget(),
+        &|| false,
+    )
+    .unwrap();
+    assert!(matches!(
+        preserved_source::capture_schema(
+            &native,
+            "Table1",
+            &row_certificate,
+            &mut budget(),
+            &|| false
+        ),
+        Err(EditError::Preservation)
+    ));
+    assert!(matches!(
+        preserved_source::capture_no_required_insert(
+            &native,
+            "Table1",
+            &schema_certificate,
+            &mut budget(),
+            &|| false
+        ),
+        Err(EditError::Preservation)
+    ));
+
+    let record = &observed.records[0];
+    let layout = record_layout::parse(&record.data, &schema, &mut budget()).unwrap();
+    let mut invented = observed.table.rows()[0].clone();
+    invented[2] = Value::Int32(7);
+    assert!(matches!(
+        RecordAdmission::HistoricalSchemaReadonly.validate(
+            &layout,
+            &schema,
+            &invented,
+            &mut budget(),
+            &|| false
+        ),
+        Err(EditError::Unsupported(WriteBlocker::RowLayout))
+    ));
+    assert_eq!(&record.data[..2], &[2, 0]);
+    assert_eq!(observed.table.rows()[0][2], Value::Null);
+    assert_eq!(native.as_bytes(), before);
 }
