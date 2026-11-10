@@ -188,7 +188,11 @@ fn show_text(
 ) -> Result<(), index::IndexError> {
     let font = FontId::proportional(f32::from(size));
     let row_height = ui.fonts_mut(|fonts| fonts.row_height(&font)).ceil();
-    if ui.input(|input| input.raw_scroll_delta != egui::Vec2::ZERO || input.pointer.any_pressed()) {
+    if ui.input(|input| {
+        input.raw.events.iter().any(|event| {
+            matches!(event, egui::Event::MouseWheel { delta, .. } if *delta != egui::Vec2::ZERO)
+        }) || input.pointer.any_pressed()
+    }) {
         session.follow_end = false;
     }
     if session.follow_end {
