@@ -1,7 +1,7 @@
 //! Typed table editing over the same retained offline target and normal planner.
 use super::{Cause, Failure, OfflineWriteSession, Phase, SessionState, StagedUpdate};
 use crate::editing::journal::NativeJournalEditor;
-use tablecraft_ace::{InspectError, NativeImage};
+use tablecraft_ace::InspectError;
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_db::{
     CellUpdate, ColumnUpdates, EditableBatch, EditableTable, Snapshot, UpdateProfile,
@@ -63,9 +63,10 @@ impl OfflineWriteSession {
             let slot = self.slot_mut()?;
             slot.current = None;
             slot.state = SessionState::RefreshRequired;
-            let image = NativeImage::capture(
+            let image = NativeJournalEditor::capture_image(
                 slot.target.as_mut().ok_or(Cause::InvalidState)?,
                 slot.scope,
+                table,
                 budget,
                 cancelled,
             )

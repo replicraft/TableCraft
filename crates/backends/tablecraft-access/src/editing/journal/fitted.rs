@@ -49,7 +49,7 @@ impl NativeJournalEditor {
         check(budget, cancelled)?;
         if (self.route != JournalRoute::Ordinary
             && !self.route.historical_rows()
-            && !self.route.current_rows())
+            && !self.route.row_updates())
             || self.profile != UpdateProfile::StoredScalar
         {
             return Err(NativeEditError::Unsupported.into());
@@ -72,7 +72,7 @@ impl NativeJournalEditor {
             if self.route.historical_rows() && (columns.len() != 1 || kind != ScalarType::Text) {
                 return Err(NativeEditError::Unsupported.into());
             }
-            if self.route.current_rows()
+            if self.route.row_updates()
                 && (columns.len() != 1 || !matches!(kind, ScalarType::Int32 | ScalarType::Text))
             {
                 return Err(NativeEditError::Unsupported.into());
@@ -91,6 +91,11 @@ impl NativeJournalEditor {
             }
             positions.push(position);
         }
+        let maximum_variable_bytes = if self.route.retained_rows() {
+            NativeFittedEditIntent::MAX_RETAINED_VARIABLE_BYTES
+        } else {
+            NativeFittedEditIntent::MAX_VARIABLE_BYTES
+        };
         for (column, &position) in columns.iter().zip(&positions) {
             check(budget, cancelled)?;
             let target = &self.snapshot().columns()[position];
@@ -142,17 +147,25 @@ impl NativeJournalEditor {
                     NativeFittedUpdates::Variable(updates) => {
                         updates.push(SlotScalarUpdate::new(
                             ordinal,
-                            variable(original, kind, budget, cancelled)?,
-                            variable(update.value(), kind, budget, cancelled)?,
+                            variable(original, kind, maximum_variable_bytes, budget, cancelled)?,
+                            variable(
+                                update.value(),
+                                kind,
+                                maximum_variable_bytes,
+                                budget,
+                                cancelled,
+                            )?,
                         ));
                     }
                 }
                 rows.push(ordinal);
             }
-            groups.push(
+            let group = if self.route.retained_rows() {
+                NativeFittedIntentGroup::new_retained(target.name(), requests, budget, cancelled)
+            } else {
                 NativeFittedIntentGroup::new(target.name(), requests, budget, cancelled)
-                    .map_err(RecoverableEditError::from)?,
-            );
+            };
+            groups.push(group.map_err(RecoverableEditError::from)?);
         }
         let matched = matched_rows(rows, budget, cancelled)?;
         let plan = match self.route {
@@ -167,6 +180,10 @@ impl NativeJournalEditor {
             JournalRoute::CurrentRows => self
                 .editor
                 .plan_recoverable_current_rows(groups, budget, cancelled)?,
+            #[cfg(feature = "ace16-create")]
+            JournalRoute::RetainedRows => self
+                .editor
+                .plan_recoverable_retained_rows(groups, budget, cancelled)?,
             JournalRoute::Existing => return Err(NativeEditError::Unsupported.into()),
         };
         Ok((plan, matched))
@@ -176,6 +193,7 @@ impl NativeJournalEditor {
 fn variable(
     value: &Value,
     kind: ScalarType,
+    maximum_bytes: usize,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Value, NativeEditError> {
@@ -187,7 +205,7 @@ fn variable(
         _ => return Err(NativeEditError::Unsupported),
     };
     // This is an intent-data ceiling, not native field/nullability admission.
-    if length > NativeFittedEditIntent::MAX_VARIABLE_BYTES {
+    if length > maximum_bytes {
         return Err(InspectError::StructureLimit.into());
     }
     budget

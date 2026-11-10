@@ -11,7 +11,7 @@ use crate::{
 };
 use std::{cell::RefCell, ops::Range};
 use tablecraft_access::{NativeCollationResolver, editing::journal::NativeJournalEditor};
-use tablecraft_ace::{NativeImage, inspect_database_sort_order, inspect_table_schema};
+use tablecraft_ace::{inspect_database_sort_order, inspect_table_schema};
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
     values::Value,
@@ -127,9 +127,10 @@ impl Document {
 
         // NO_CLONE: NativeImage owns the checked source while Document keeps using it; this
         // shares immutable bytes instead of copying the database image.
-        let image = NativeImage::capture_shared(
+        let image = NativeJournalEditor::capture_shared_image(
             self.edits.image_source.clone(),
             SCOPE,
+            &request.target.table,
             &mut native,
             cancelled,
         )?;

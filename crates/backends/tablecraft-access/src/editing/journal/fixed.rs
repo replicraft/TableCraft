@@ -23,7 +23,7 @@ impl NativeJournalEditor {
     ) -> Result<bool, NativeEditError> {
         if self.route == JournalRoute::Ordinary
             || self.route.historical_rows()
-            || self.route.current_rows()
+            || self.route.row_updates()
         {
             if self.profile != UpdateProfile::StoredScalar {
                 return Err(NativeEditError::Unsupported);
@@ -96,7 +96,20 @@ impl NativeJournalEditor {
             let plan = self.plan_updates(column.column, column.updates, budget, cancelled)?;
             return Ok((plan, matched));
         }
-        if columns.is_empty() || columns.len() > NativeImage::MAX_FIXED_BATCH_GROUPS {
+        // TCNI17 counts are u32 wire fields; old request families keep their
+        // original framing. Native target capacity is checked by the planner.
+        let maximum_groups = if self.route.retained_rows() {
+            u32::MAX as usize
+        } else {
+            NativeImage::MAX_FIXED_BATCH_GROUPS
+        };
+        let maximum_assignments = if self.route.retained_rows() {
+            u32::MAX as usize
+        } else {
+            NativeImage::MAX_FIXED_BATCH_ASSIGNMENTS
+        };
+
+        if columns.is_empty() || columns.len() > maximum_groups {
             return Err(NativeEditError::Unsupported.into());
         }
         let mut count = 0_usize;
@@ -104,11 +117,11 @@ impl NativeJournalEditor {
             check(budget, cancelled)?;
             count = count
                 .checked_add(column.updates.len())
-                .filter(|count| *count <= NativeImage::MAX_FIXED_BATCH_ASSIGNMENTS)
+                .filter(|count| *count <= maximum_assignments)
                 .ok_or(InspectError::StructureLimit)
                 .map_err(NativeEditError::from)?;
         }
-        if self.route.current_rows()
+        if self.route.row_updates()
             || ((self.route == JournalRoute::Ordinary || self.route.historical_rows())
                 && self.variable_columns_requested(columns, budget, cancelled)?)
         {
@@ -236,7 +249,9 @@ impl NativeJournalEditor {
                 .editor
                 .plan_recoverable_ordinary_fixed(groups, budget, cancelled)?,
             #[cfg(feature = "ace16-create")]
-            JournalRoute::CurrentRows => return Err(NativeEditError::Unsupported.into()),
+            JournalRoute::CurrentRows | JournalRoute::RetainedRows => {
+                return Err(NativeEditError::Unsupported.into());
+            }
             JournalRoute::Existing => self
                 .editor
                 .plan_recoverable_fixed(groups, budget, cancelled)?,

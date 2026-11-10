@@ -1,4 +1,5 @@
 //! Snapshot-local request conversion for explicitly recoverable native edits.
+mod capture;
 mod deleting;
 mod fitted;
 pub(in crate::editing) mod inserting;
@@ -44,13 +45,23 @@ pub(super) enum JournalRoute {
     HistoricalRows,
     #[cfg(feature = "ace16-create")]
     CurrentRows,
+    #[cfg(feature = "ace16-create")]
+    RetainedRows,
 }
 
 impl JournalRoute {
-    fn current_rows(self) -> bool {
+    fn retained_rows(self) -> bool {
         match self {
             #[cfg(feature = "ace16-create")]
-            Self::CurrentRows => true,
+            Self::RetainedRows => true,
+            _ => false,
+        }
+    }
+
+    fn row_updates(self) -> bool {
+        match self {
+            #[cfg(feature = "ace16-create")]
+            Self::CurrentRows | Self::RetainedRows => true,
             _ => false,
         }
     }
@@ -61,7 +72,7 @@ impl JournalRoute {
             Self::HistoricalRows => true,
             Self::Existing | Self::Ordinary => false,
             #[cfg(feature = "ace16-create")]
-            Self::CurrentRows => false,
+            Self::CurrentRows | Self::RetainedRows => false,
         }
     }
 }

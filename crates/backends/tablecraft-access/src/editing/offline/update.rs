@@ -1,8 +1,8 @@
 use super::plan::MutationPlan;
 use super::{Cause, Failure, OfflineWriteSession, Phase, Receipt, SessionState};
-use crate::editing::sql;
+use crate::editing::{journal::NativeJournalEditor, sql};
 use std::path::Path;
-use tablecraft_ace::{NativeImage, RecoverableNativeDeletePlan, RecoverableNativeEditPlan};
+use tablecraft_ace::{RecoverableNativeDeletePlan, RecoverableNativeEditPlan};
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_expressions::comparison::Collation;
 use tablecraft_sql::query::Query;
@@ -30,14 +30,15 @@ impl OfflineWriteSession {
         let _span = tracing::debug_span!("access.offline.plan_update").entered();
         let result = (|| {
             self.require_ready()?;
-            sql::local_update_table(query)
+            let table = sql::local_update_table(query)
                 .map_err(|error| Cause::Planning(sql::RecoverableError::Shape(error)))?;
             let slot = self.slot_mut()?;
             slot.current = None;
             slot.state = SessionState::RefreshRequired;
-            let image = NativeImage::capture(
+            let image = NativeJournalEditor::capture_image(
                 slot.target.as_mut().ok_or(Cause::InvalidState)?,
                 slot.scope,
+                table,
                 budget,
                 cancelled,
             )
@@ -71,14 +72,15 @@ impl OfflineWriteSession {
         let _span = tracing::debug_span!("access.offline.plan_batch_update").entered();
         let result = (|| {
             self.require_ready()?;
-            sql::local_batch_update_table(query, false)
+            let table = sql::local_batch_update_table(query, false)
                 .map_err(|error| Cause::Planning(sql::RecoverableError::Shape(error)))?;
             let slot = self.slot_mut()?;
             slot.current = None;
             slot.state = SessionState::RefreshRequired;
-            let image = NativeImage::capture(
+            let image = NativeJournalEditor::capture_image(
                 slot.target.as_mut().ok_or(Cause::InvalidState)?,
                 slot.scope,
+                table,
                 budget,
                 cancelled,
             )

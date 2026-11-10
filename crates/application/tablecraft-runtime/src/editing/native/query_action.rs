@@ -18,7 +18,7 @@ use std::{
 use tablecraft_access::{
     NativeSource,
     editing::{
-        journal::{NativeJournalInsertPlan, NativeJournalInserter},
+        journal::{NativeJournalEditor, NativeJournalInsertPlan, NativeJournalInserter},
         sql,
     },
 };
@@ -102,9 +102,14 @@ pub(in crate::editing) fn review(
                 &mut native,
                 cancelled,
             )?,
-            Kind::Update | Kind::Delete => {
-                NativeImage::capture_shared(source, SCOPE, &mut native, cancelled)?
-            }
+            Kind::Update => NativeJournalEditor::capture_shared_image(
+                source,
+                SCOPE,
+                table,
+                &mut native,
+                cancelled,
+            )?,
+            Kind::Delete => NativeImage::capture_shared(source, SCOPE, &mut native, cancelled)?,
         }
     };
 

@@ -11,7 +11,6 @@ use crate::{
 };
 use std::sync::Arc;
 use tablecraft_access::editing::journal::NativeJournalEditor;
-use tablecraft_ace::NativeImage;
 use tablecraft_core::limits::Resource;
 use tablecraft_db::{CellUpdate, EditableTable, UpdateProfile};
 
@@ -39,9 +38,10 @@ impl Document {
         let mut work = budget();
         // NO_CLONE: NativeImage owns the checked source while Document keeps using it; this
         // shares immutable bytes instead of copying the database image.
-        let image = NativeImage::capture_shared(
+        let image = NativeJournalEditor::capture_shared_image(
             self.edits.image_source.clone(),
             SCOPE,
+            &target.table,
             &mut work,
             cancelled,
         )?;
@@ -104,9 +104,10 @@ impl Document {
         let mut work = budget();
         // NO_CLONE: NativeImage owns the checked source while Document keeps using it; this
         // shares immutable bytes instead of copying the database image.
-        let image = NativeImage::capture_shared(
+        let image = NativeJournalEditor::capture_shared_image(
             self.edits.image_source.clone(),
             SCOPE,
+            &target.table,
             &mut work,
             cancelled,
         )?;
