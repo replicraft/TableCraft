@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Inventory normal desktop dependencies and assemble explicitly reviewed notices.
+"""Inventory normal native-product dependencies and assemble explicitly reviewed notices.
 
 Cargo reads are locked/offline. Inventory, source hashes and consolidated texts
 are generated at packaging time. License alternatives, exceptional source pins
@@ -20,6 +20,7 @@ import urllib.request
 
 import release_contract as contract
 
+PRODUCTS = {"desktop": "tablecraft-desktop", "cli": "tablecraft-cli"}
 SCHEMA = 1
 ROLES = {"license", "notice", "attribution"}
 MAX_TEXT_BYTES = 16 * 1024 * 1024
@@ -59,14 +60,17 @@ def cargo(arguments, root):
     return result.stdout
 
 
-def collect(root, metadata=None, trees=None):
+def collect(root, metadata=None, trees=None, product="desktop"):
+    package_root = PRODUCTS.get(product)
+    if package_root is None:
+        raise ValueError("Unsupported notice product")
     root = root.resolve()
     if metadata is None:
         metadata = json.loads(cargo(["metadata", "--format-version", "1"], root))
     if trees is None:
         trees = {
             target: cargo([
-                "tree", "-p", "tablecraft-desktop", "--target", target,
+                "tree", "-p", package_root, "--target", target,
                 "--edges", "normal,no-proc-macro", "--prefix", "none",
                 "--format", "{p}|{f}",
             ], root)
@@ -83,7 +87,7 @@ def collect(root, metadata=None, trees=None):
         for package in lock["package"]
     }
     members = set(metadata["workspace_members"])
-    inventory = {"schema": SCHEMA, "product": "tablecraft-desktop", "packages": [], "targets": {}}
+    inventory = {"schema": SCHEMA, "product": package_root, "packages": [], "targets": {}}
     packages = {}
     locations = {}
     for target, text in sorted(trees.items()):
@@ -131,8 +135,8 @@ def collect(root, metadata=None, trees=None):
                 raise ValueError("Inconsistent per-target resolved features")
             closure[key] = features
         version = tomllib.loads((root / "Cargo.toml").read_text(encoding="utf-8"))["workspace"]["package"]["version"]
-        if ("tablecraft-desktop", version) not in closure:
-            raise ValueError("Feature tree does not contain the desktop root")
+        if (package_root, version) not in closure:
+            raise ValueError("Feature tree does not contain its selected product root")
         inventory["targets"][target] = [
             {"name": name, "version": version, "features": features}
             for (name, version), features in sorted(closure.items())
@@ -338,7 +342,7 @@ def assemble(root, inventory, locations, policy, upstream, cache):
     if not assets:
         raise ValueError("Compiled asset/data notices must be explicitly reviewed")
     header = (
-        "Third-party licenses for TableCraft desktop\n\n"
+        f"Third-party licenses for TableCraft {'CLI' if inventory['product'] == PRODUCTS['cli'] else 'desktop'}\n\n"
         f"Generated inventory SHA-256: {digest}\n"
         "This bundle covers the six-target normal dependency/feature closure\n"
         "and explicitly listed compiled assets. Build tools and proc macros are excluded.\n"
@@ -461,7 +465,7 @@ def load_inventory(root, args):
             if not separator or target in trees:
                 raise ValueError("Tree caches require unique TARGET=PATH entries")
             trees[target] = Path(path).read_text(encoding="utf-8")
-    return collect(root, metadata, trees)
+    return collect(root, metadata, trees, args.product)
 
 
 def write_new(path, content):
@@ -481,7 +485,10 @@ def bind_source(source, base):
     result = copy.deepcopy(source)
     if "path" in result:
         path = relative_file(base, result["path"])
-        result.update(bytes=path.stat().st_size, sha256=contract.digest(path))
+        facts = {"bytes": path.stat().st_size, "sha256": contract.digest(path)}
+        if any(field in result and result[field] != value for field, value in facts.items()):
+            raise ValueError("Maintained local source pin changed")
+        result.update(facts)
     return result
 
 
@@ -519,10 +526,21 @@ def published_sources(base, selected, declared):
     return sources
 
 
+def includes_product(entry, product):
+    products = entry.get("products", ["desktop"])
+    if (not isinstance(products, list) or not products or len(products) != len(set(products))
+            or any(value not in PRODUCTS for value in products)):
+        raise ValueError("Compiled content requires explicit supported product scopes")
+    return product in products
+
+
 def expand_policy(root, inventory, locations, policy):
     """Resolve compact human decisions into a disposable source manifest."""
     if policy.get("schema") != SCHEMA:
         raise ValueError("Unsupported desktop notice policy schema")
+    product = next((name for name, package in PRODUCTS.items() if package == inventory["product"]), None)
+    if product is None:
+        raise ValueError("Inventory requires a supported native product")
     exceptions = {}
     for entry in policy.get("packages", []):
         key = (entry["name"], entry["version"])
@@ -567,20 +585,28 @@ def expand_policy(root, inventory, locations, policy):
             selected = policy.get("license_choices", {}).get(declared)
             if not selected:
                 raise ValueError(f"Declared license needs explicit choice policy: {declared}")
+            try:
+                sources = published_sources(base, selected, declared)
+            except ValueError as error:
+                raise ValueError(f"{key[0]} {key[1]}: {error}") from error
             entry = {
                 "name": key[0], "version": key[1], "declared_license": declared,
                 "selected_license": selected,
-                "sources": published_sources(base, selected, declared),
+                "sources": sources,
             }
         entry["review_status"] = "generated"
         generated["packages"].append(entry)
     # Stale version-specific exceptions are inert; no source is fetched for them.
     for entry in policy.get("assets", []):
+        if not includes_product(entry, product):
+            continue
         entry = copy.deepcopy(entry)
         entry["review_status"] = "generated"
         entry["sources"] = [bind_source(source, root) for source in entry["sources"]]
         generated["assets"].append(entry)
     for binding in policy.get("content_bindings", []):
+        if not includes_product(binding, product):
+            continue
         owner = binding.get("package", {})
         key = (owner.get("name"), owner.get("version"))
         base = root if binding["root"] == "repository" else locations.get(key)
@@ -593,13 +619,13 @@ def expand_policy(root, inventory, locations, policy):
     return generated
 
 
-def generate(root, policy, cache):
+def generate(root, policy, cache, product="desktop"):
     """Generate fresh notices from locked Cargo sources and maintained policy.
 
     Missing upstream text must be fetched explicitly before packaging. Network
     access and policy decisions are never implicit packaging side effects.
     """
-    inventory, locations = collect(root)
+    inventory, locations = collect(root, product=product)
     expanded = expand_policy(root, inventory, locations, read_json(policy))
     content = assemble(root, inventory, locations, expanded,
                        {"schema": SCHEMA, "review_status": "generated", "packages": []}, cache)
@@ -607,12 +633,12 @@ def generate(root, policy, cache):
 
 
 @contextmanager
-def bundle(path=None, policy=POLICY, cache=CACHE):
+def bundle(path=None, policy=POLICY, cache=CACHE, product="desktop"):
     """Own generated intermediate text for the duration of an archive operation."""
     if path is not None:
         yield path
         return
-    _, _, content = generate(contract.ROOT, policy, cache)
+    _, _, content = generate(contract.ROOT, policy, cache, product)
     with tempfile.TemporaryDirectory(prefix="tablecraft-desktop-notices-") as directory:
         generated = Path(directory) / "ThirdPartyLicenses.txt"
         write_new(generated, content)
@@ -622,6 +648,7 @@ def bundle(path=None, policy=POLICY, cache=CACHE):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("command", choices=("inventory", "sources", "generate", "fetch"))
+    parser.add_argument("--product", choices=PRODUCTS, default="desktop")
     parser.add_argument("--metadata", type=Path)
     parser.add_argument("--tree", action="append", help="Feature-bearing TARGET=PATH cache; supply all six")
     parser.add_argument("--output", type=Path)
@@ -630,7 +657,7 @@ def main():
     args = parser.parse_args()
     try:
         if args.command == "fetch":
-            inventory, locations = collect(contract.ROOT)
+            inventory, locations = collect(contract.ROOT, product=args.product)
             expanded = expand_policy(contract.ROOT, inventory, locations, read_json(args.policy))
             fetch_sources([expanded], args.cache)
             return
@@ -651,7 +678,7 @@ def main():
                                    {"schema": SCHEMA, "review_status": "generated", "packages": []}, args.cache)
         write_new(args.output, content)
     except (OSError, ValueError, KeyError, TypeError, subprocess.SubprocessError) as error:
-        parser.exit(1, f"Desktop notices refused: {error}\n")
+        parser.exit(1, f"Native product notices refused: {error}\n")
 
 
 if __name__ == "__main__":

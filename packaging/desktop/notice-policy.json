@@ -1629,6 +1629,49 @@
           "role": "license"
         }
       ]
+    },
+    {
+      "name": "libm",
+      "version": "0.2.16",
+      "declared_license": "MIT",
+      "selected_license": "MIT",
+      "additional_obligations": [
+        "Preserve the Sun Microsystems pow copyright and permission notice"
+      ],
+      "sources": [
+        {
+          "path": "LICENSE.txt",
+          "role": "license",
+          "bytes": 14088,
+          "sha256": "3823dda7cf046602f4b4e77ec8e227863dc4736037cc85bb33d9f19febe16bb7"
+        },
+        {
+          "path": "src/math/pow.rs",
+          "role": "attribution",
+          "bytes": 21449,
+          "sha256": "c5566d0f48682d107e8803b0ed204ff3521503348f18a4f26cbe3f47fef15192",
+          "extraction": {
+            "start_line": 1,
+            "end_line": 10
+          }
+        }
+      ],
+      "rationale": "Retain the complete published LICENSE.txt and complete ten-line Sun Microsystems copyright/permission header from pow.rs. Current scalbn delegates to the generic Rust implementation without a separate third-party notice."
+    },
+    {
+      "name": "objc2-io-kit",
+      "version": "0.3.2",
+      "declared_license": "Zlib OR Apache-2.0 OR MIT",
+      "selected_license": "Apache-2.0",
+      "sources": [
+        {
+          "source": "source-71"
+        },
+        {
+          "source": "source-58"
+        }
+      ],
+      "rationale": "Select Apache-2.0 from the exact declared trio-license and root LICENSE.md grant by reference. Preserve the full root Apple-SDK licensing/provenance caveat and the official Apache terms it references, without inferring SDK redistribution permissions or inventing authors."
     }
   ],
   "assets": [
@@ -1640,6 +1683,9 @@
           "path": "assets/fonts/OFL-Selawik.txt",
           "role": "license"
         }
+      ],
+      "products": [
+        "desktop"
       ]
     },
     {
@@ -1663,6 +1709,9 @@
           },
           "url": "https://raw.githubusercontent.com/notofonts/noto-cjk/f8d157532fbfaeda587e826d4cd5b21a49186f7c/Sans/SubsetOTF/JP/NotoSansJP-Regular.otf"
         }
+      ],
+      "products": [
+        "desktop"
       ]
     },
     {
@@ -1673,6 +1722,9 @@
           "path": "assets/fonts/OFL-NotoEmoji.txt",
           "role": "license"
         }
+      ],
+      "products": [
+        "desktop"
       ]
     },
     {
@@ -1687,6 +1739,10 @@
           "path": "crates/engines/tablecraft-ace/data/general/LICENSE-APACHE-2.0.txt",
           "role": "license"
         }
+      ],
+      "products": [
+        "desktop",
+        "cli"
       ]
     },
     {
@@ -1701,6 +1757,10 @@
           "path": "crates/query/tablecraft-expressions/data/error_messages/NOTICE",
           "role": "notice"
         }
+      ],
+      "products": [
+        "desktop",
+        "cli"
       ]
     }
   ],
@@ -1711,7 +1771,10 @@
       "package": {
         "name": "epaint_default_fonts",
         "version": "0.36.2"
-      }
+      },
+      "products": [
+        "desktop"
+      ]
     },
     {
       "root": "package",
@@ -1719,7 +1782,10 @@
       "package": {
         "name": "epaint_default_fonts",
         "version": "0.36.2"
-      }
+      },
+      "products": [
+        "desktop"
+      ]
     },
     {
       "root": "package",
@@ -1727,7 +1793,10 @@
       "package": {
         "name": "epaint_default_fonts",
         "version": "0.36.2"
-      }
+      },
+      "products": [
+        "desktop"
+      ]
     },
     {
       "root": "package",
@@ -1735,56 +1804,101 @@
       "package": {
         "name": "epaint_default_fonts",
         "version": "0.36.2"
-      }
+      },
+      "products": [
+        "desktop"
+      ]
     },
     {
       "root": "repository",
-      "path": "assets/fonts/NotoEmoji-Variable.ttf"
+      "path": "assets/fonts/NotoEmoji-Variable.ttf",
+      "products": [
+        "desktop"
+      ]
     },
     {
       "root": "repository",
-      "path": "assets/fonts/NotoSansJP-Regular.otf"
+      "path": "assets/fonts/NotoSansJP-Regular.otf",
+      "products": [
+        "desktop"
+      ]
     },
     {
       "root": "repository",
-      "path": "assets/fonts/NotoSansKR-Regular.otf"
+      "path": "assets/fonts/NotoSansKR-Regular.otf",
+      "products": [
+        "desktop"
+      ]
     },
     {
       "root": "repository",
-      "path": "assets/fonts/NotoSansSC-Regular.otf"
+      "path": "assets/fonts/NotoSansSC-Regular.otf",
+      "products": [
+        "desktop"
+      ]
     },
     {
       "root": "repository",
-      "path": "assets/fonts/selawk.ttf"
+      "path": "assets/fonts/selawk.ttf",
+      "products": [
+        "desktop"
+      ]
     },
     {
       "root": "repository",
-      "path": "crates/engines/tablecraft-ace/data/general/general-2010.bin"
+      "path": "crates/engines/tablecraft-ace/data/general/general-2010.bin",
+      "products": [
+        "desktop",
+        "cli"
+      ]
     },
     {
       "root": "repository",
-      "path": "crates/engines/tablecraft-ace/data/general/general-legacy.bin"
+      "path": "crates/engines/tablecraft-ace/data/general/general-legacy.bin",
+      "products": [
+        "desktop",
+        "cli"
+      ]
     },
     {
       "root": "repository",
-      "path": "crates/engines/tablecraft-ace/data/general/kana-vowels.bin"
+      "path": "crates/engines/tablecraft-ace/data/general/kana-vowels.bin",
+      "products": [
+        "desktop",
+        "cli"
+      ]
     },
     {
       "root": "repository",
-      "path": "crates/engines/tablecraft-ace/data/general/like-2010.fst"
+      "path": "crates/engines/tablecraft-ace/data/general/like-2010.fst",
+      "products": [
+        "desktop",
+        "cli"
+      ]
     },
     {
       "root": "repository",
-      "path": "crates/engines/tablecraft-ace/data/general/like-french-legacy.fst"
+      "path": "crates/engines/tablecraft-ace/data/general/like-french-legacy.fst",
+      "products": [
+        "desktop",
+        "cli"
+      ]
     },
     {
       "root": "repository",
-      "path": "crates/engines/tablecraft-ace/data/general/like-legacy.fst"
+      "path": "crates/engines/tablecraft-ace/data/general/like-legacy.fst",
+      "products": [
+        "desktop",
+        "cli"
+      ]
     },
     {
       "name": "Shared UI font registration scope",
       "root": "repository",
-      "path": "crates/presentation/tablecraft-ui/src/fonts.rs"
+      "path": "crates/presentation/tablecraft-ui/src/fonts.rs",
+      "products": [
+        "desktop"
+      ]
     }
   ],
   "workspace_license_exceptions": {

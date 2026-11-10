@@ -137,6 +137,47 @@ checksum="bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
         (alpha / "nested/NOTICE").write_bytes(b"Nested attribution.\n")
         return policy
 
+    def test_cli_scope_keeps_shared_engine_data_and_excludes_desktop_fonts(self):
+        metadata = copy.deepcopy(self.metadata)
+        metadata["workspace_members"].append("cli")
+        metadata["packages"].append({
+            "name": "tablecraft-cli", "version": "0.1.0", "id": "cli",
+            "license": "Apache-2.0", "source": None,
+            "manifest_path": str(self.root / "cli/Cargo.toml"),
+        })
+        trees = {target: text.replace("tablecraft-desktop", "tablecraft-cli")
+                 for target, text in self.trees.items()}
+        inventory, locations = notices.collect(self.root, metadata, trees, "cli")
+        self.assertEqual(inventory["product"], "tablecraft-cli")
+        self.assertNotIn("tablecraft-desktop", {entry["name"] for entry in inventory["packages"]})
+        policy = self.compact_policy()
+        policy["assets"].append({
+            "name": "Shared engine data", "selected_license": "Apache-2.0",
+            "products": ["desktop", "cli"],
+            "sources": [self.source(self.root, "engine-notice.txt", b"Engine data grant.\n", "notice")],
+        })
+        binding = self.source(self.root, "engine.bin", b"Independent shared engine bytes", "attribution")
+        binding.pop("role")
+        binding.update(root="repository", products=["desktop", "cli"])
+        policy["content_bindings"].append(binding)
+        expanded = notices.expand_policy(self.root, inventory, locations, policy)
+        output = notices.assemble(self.root, inventory, locations, expanded, self.upstream, self.root / "cache")
+        self.assertIn(b"Third-party licenses for TableCraft CLI", output)
+        self.assertIn(b"Engine data grant.", output)
+        self.assertNotIn(b"Complete font notice.", output)
+        self.assertEqual([entry["name"] for entry in expanded["assets"]], ["Shared engine data"])
+        self.assertEqual([entry["path"] for entry in expanded["content_bindings"]], ["engine.bin"])
+        policy["assets"][0]["products"] = ["unreviewed-product"]
+        with self.assertRaisesRegex(ValueError, "product scopes"):
+            notices.expand_policy(self.root, inventory, locations, policy)
+
+    def test_maintained_source_pin_refuses_registry_text_drift_before_regeneration(self):
+        policy = self.compact_policy()
+        beta = self.locations[("beta", "2.0.0")]
+        (beta / "LICENSE.txt").write_bytes(b"Different published source text")
+        with self.assertRaisesRegex(ValueError, "source pin changed"):
+            notices.expand_policy(self.root, self.inventory, self.locations, policy)
+
     def test_compact_policy_generates_local_sources_hashes_and_project_authority(self):
         policy = self.compact_policy()
         expanded = notices.expand_policy(self.root, self.inventory, self.locations, policy)
