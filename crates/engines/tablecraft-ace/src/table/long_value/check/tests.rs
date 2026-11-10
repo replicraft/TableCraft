@@ -105,16 +105,17 @@ fn public_consistency_read_counts_all_rows_and_honors_an_explicit_row_allowance(
         Err(crate::InspectError::Limit(_))
     ));
     #[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
-    assert!(matches!(
-        super::check_for_mutation(
+    {
+        let report = super::check_for_mutation(
             &mut Cursor::new(&bytes),
             CatalogScope::new(1),
             "Items",
             &mut ResourceBudget::new(64 * 1024 * 1024, 20_000, 10_000_000),
             &|| false,
-        ),
-        Err(crate::InspectError::StructureLimit)
-    ));
+        )
+        .unwrap();
+        assert_eq!(report.rows(), 16_385);
+    }
 
     let mut inconsistent = bytes;
     inconsistent[10 * 4096 + 16..10 * 4096 + 20].copy_from_slice(&16_384_u32.to_le_bytes());

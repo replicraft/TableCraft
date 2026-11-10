@@ -427,4 +427,5 @@ pub mod canonical_created_number;
 /// Frozen same-width field rename pairs, without production codecs.
 pub mod saved_field_rename;
 
+pub mod canonical_large_memo;
 pub mod large_tables;

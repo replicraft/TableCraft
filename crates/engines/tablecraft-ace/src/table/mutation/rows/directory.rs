@@ -1,6 +1,6 @@
 //! Original request positions, sorted by live-row ordinal for a monotone walk.
 use super::{EditError, RowAssignment};
-use crate::{InspectError, header::check, limits::MAX_LIVE_ROWS};
+use crate::{InspectError, header::check};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
 #[cfg(test)]
@@ -23,9 +23,6 @@ impl Directory {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, EditError> {
-        if requests.len() > MAX_LIVE_ROWS {
-            return Err(InspectError::StructureLimit.into());
-        }
         check(budget, cancelled)?;
         budget
             .charge_allocation(requests.len() as u64, size_of::<Entry>() as u64)

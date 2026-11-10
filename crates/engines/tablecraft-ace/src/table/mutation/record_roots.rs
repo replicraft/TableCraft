@@ -13,7 +13,6 @@ use crate::{
         row::reference,
     },
     header::check,
-    limits::MAX_LIVE_ROWS,
 };
 use std::ops::Range;
 use tablecraft_core::limits::{Resource, ResourceBudget};
@@ -67,20 +66,12 @@ pub(in crate::table::mutation) fn capture<'u, U: RowAssignment>(
 ) -> Result<Roots<'u, U>, EditError> {
     let mut directory = Directory::new(updates, budget, cancelled)?;
     directory.require_unique(budget, cancelled)?;
-    let declared = usize::try_from(schema.declared_rows())
-        .ok()
-        .filter(|count| *count <= MAX_LIVE_ROWS)
-        .ok_or(InspectError::StructureLimit)?;
-    budget
-        .charge_allocation(declared as u64, size_of::<TargetOwner>() as u64)
-        .map_err(InspectError::from)?;
+    let declared =
+        usize::try_from(schema.declared_rows()).map_err(|_| InspectError::StructureLimit)?;
     budget
         .charge_allocation(updates.len() as u64, size_of::<Root<'_, U>>() as u64)
         .map_err(InspectError::from)?;
     let mut owners = Vec::new();
-    owners
-        .try_reserve_exact(declared)
-        .map_err(|_| InspectError::Allocation)?;
     let mut selected = Vec::new();
     selected
         .try_reserve_exact(updates.len())
@@ -134,6 +125,13 @@ pub(in crate::table::mutation) fn capture<'u, U: RowAssignment>(
             if owned.binary_search(&final_page).is_err() {
                 return Err(EditError::Unsupported(WriteBlocker::RowLayout));
             }
+            reader
+                .budget
+                .charge_allocation(1, size_of::<TargetOwner>() as u64)
+                .map_err(InspectError::from)?;
+            owners
+                .try_reserve(1)
+                .map_err(|_| InspectError::Allocation)?;
             owners.push(TargetOwner {
                 offset: final_record.offset,
                 root,
