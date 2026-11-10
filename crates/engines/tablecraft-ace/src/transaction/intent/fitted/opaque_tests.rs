@@ -6,6 +6,9 @@ use crate::{
 use sha2::{Digest, Sha256};
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 
+#[cfg(feature = "ace16-create")]
+mod recovery;
+
 fn budget() -> ResourceBudget {
     ResourceBudget::new(512 * 1024 * 1024, 100_000, 2_000_000_000)
 }
@@ -27,9 +30,19 @@ fn groups(row: usize, expected: Option<i32>, value: Option<i32>) -> Vec<NativeFi
 }
 
 fn literal(before: &[u8], row: u64, expected: Option<i32>, value: Option<i32>) -> Vec<u8> {
+    literal_column(before, row, "Score", expected, value)
+}
+
+fn literal_column(
+    before: &[u8],
+    row: u64,
+    column: &str,
+    expected: Option<i32>,
+    value: Option<i32>,
+) -> Vec<u8> {
     let payload = 4 * (usize::from(expected.is_some()) + usize::from(value.is_some()));
     let mut wire = b"TCNI0018".to_vec();
-    wire.extend((131_u32 + payload as u32).to_le_bytes());
+    wire.extend((126_u32 + column.len() as u32 + payload as u32).to_le_bytes());
     wire.extend([18, 0, 0, 0]);
     wire.extend((before.len() as u64).to_le_bytes());
     let mut digest = Sha256::new();
@@ -41,11 +54,11 @@ fn literal(before: &[u8], row: u64, expected: Option<i32>, value: Option<i32>) -
         wire.extend(number.to_le_bytes());
     }
     wire.extend(b"Table1");
-    wire.extend((53_u32 + payload as u32).to_le_bytes());
-    wire.extend(5_u32.to_le_bytes());
+    wire.extend((48_u32 + column.len() as u32 + payload as u32).to_le_bytes());
+    wire.extend((column.len() as u32).to_le_bytes());
     wire.extend(1_u32.to_le_bytes());
     wire.extend([0; 8]);
-    wire.extend(b"Score");
+    wire.extend(column.as_bytes());
     wire.extend((28_u32 + payload as u32).to_le_bytes());
     wire.extend(row.to_le_bytes());
     for cell in [expected, value] {
