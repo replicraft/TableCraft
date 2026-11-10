@@ -144,5 +144,45 @@ pub fn append_row(before: &[u8], score: Option<i32>, bonus: Option<i32>) -> Vec<
     after
 }
 
+/// Independently patch an existing nullable Score in historical or current rows.
+/// Record counts, absent later fields, indexes and metadata remain byte-exact.
+/// Clearing Score preserves its ignored stored payload, changing only its bit.
+pub fn update_scores(before: &[u8], updates: &[(usize, Option<i32>)]) -> Vec<u8> {
+    const DIRECTORY: usize = 14;
+    const ROW_COUNT: usize = 12;
+    const SCORE_OFFSET: usize = 6;
+    const SCORE_PRESENT: u8 = 2;
+
+    assert_eq!(before.len(), 11 * PAGE);
+    let data = DATA * PAGE;
+    let count = usize::from(u16::from_le_bytes(
+        before[data + ROW_COUNT..data + ROW_COUNT + 2]
+            .try_into()
+            .unwrap(),
+    ));
+    let mut after = before.to_vec();
+    for (position, &(slot, value)) in updates.iter().enumerate() {
+        assert!(slot < count);
+        assert!(!updates[..position].iter().any(|(prior, _)| *prior == slot));
+        let directory = data + DIRECTORY + slot * 2;
+        let start = usize::from(u16::from_le_bytes(
+            before[directory..directory + 2].try_into().unwrap(),
+        ));
+        let fields = usize::from(u16::from_le_bytes(
+            before[data + start..data + start + 2].try_into().unwrap(),
+        ));
+        assert!([2, 3].contains(&fields));
+        let mask = data + start + 2 + fields * 4;
+        if let Some(value) = value {
+            after[data + start + SCORE_OFFSET..data + start + SCORE_OFFSET + 4]
+                .copy_from_slice(&value.to_le_bytes());
+            after[mask] |= SCORE_PRESENT;
+        } else {
+            after[mask] &= !SCORE_PRESENT;
+        }
+    }
+    after
+}
+
 #[cfg(all(test, feature = "access-support"))]
 mod tests;
