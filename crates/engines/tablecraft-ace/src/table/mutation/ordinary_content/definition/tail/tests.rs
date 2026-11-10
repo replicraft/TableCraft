@@ -12,6 +12,7 @@ use tablecraft_model::CatalogScope;
 use tablecraft_testkit::fixtures::access::{
     canonical_created_number::mixed::after_off::deleted_field::inserting,
     canonical_initial_table_creation::deletes,
+    canonical_ordinary_content::{self as ordinary, Case},
     saved_field_rename::fitting::{self, SourceCase},
 };
 use tablecraft_testkit::support::io::journal::MemoryStorage;
@@ -136,7 +137,7 @@ fn retained_witness_binds_source_definition_end_and_every_tail_byte() {
     let witness = super::super::validate_rows(
         &original,
         snapshot.schema(),
-        super::super::RowDeclaration::SparseGenerated,
+        super::super::RowDeclaration::DenseIntegral,
         &mut budget(),
         &|| false,
     )
@@ -188,8 +189,16 @@ fn nonzero_slack_remains_refused_for_global_roles_other_profiles_and_reserved_ma
     }
 
     // Use the actual catalog declaration as well as the row-role API guard.
-    raw::capture(&original, 2, Role::Catalog, &mut budget(), &|| false).unwrap();
-    let mut catalog_tail = before.clone();
+    let ordinary = ordinary::source(Case::Extrema);
+    raw::capture(
+        &image(&ordinary.bytes),
+        2,
+        Role::Catalog,
+        &mut budget(),
+        &|| false,
+    )
+    .unwrap();
+    let mut catalog_tail = ordinary.bytes;
     let catalog_length = u32::from_le_bytes(
         catalog_tail[2 * 4096 + 8..2 * 4096 + 12]
             .try_into()
