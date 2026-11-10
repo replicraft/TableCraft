@@ -197,13 +197,8 @@ fn sixty_two_page_source_keeps_keyless_capacity_distinct_from_keyed_and_old_prof
         )
         .unwrap();
     assert_eq!(plan.after_bytes(), expected.bytes);
-    let full = add_table_source_capabilities(
-        plan.after_bytes(),
-        SCOPE,
-        &mut ResourceBudget::new(0, 0, 1),
-        &|| false,
-    )
-    .unwrap();
+    let full =
+        add_table_source_capabilities(plan.after_bytes(), SCOPE, &mut budget(), &|| false).unwrap();
     assert!(!full.can_add_keyless() && !full.can_add_keyed());
     assert!(matches!(
         image(&before.bytes).plan_add_table(

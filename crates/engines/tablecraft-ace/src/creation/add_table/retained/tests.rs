@@ -151,6 +151,9 @@ fn retained_append_repeats_across_live_tables_and_native_bitmap_base_windows() {
         );
     }
     assert_eq!(before.len(), 65 * 4096);
+    let available =
+        add_table_source_capabilities(&before, SCOPE, &mut budget(), &|| false).unwrap();
+    assert!(available.can_add_keyed() && available.can_add_keyless());
     let expected = raw::append(&before, "Beyond", Target::GeneratedText);
     let plan = image(&before)
         .plan_add_table(

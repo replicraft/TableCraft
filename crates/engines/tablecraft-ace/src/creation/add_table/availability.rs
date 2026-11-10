@@ -1,7 +1,7 @@
 //! Advisory source facts use the actual operation's complete native qualification.
 use super::{AddTableError, geometry::MAPPED_PAGES, retained, source};
 use crate::format::page::PAGE_BYTES;
-use crate::{InspectError, NativeImage, header::check};
+use crate::{Header, InspectError, NativeImage, header::check};
 use std::io::Cursor;
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_model::CatalogScope;
@@ -44,7 +44,8 @@ pub fn add_table_source_available(
 }
 
 /// Qualify immutable source roles, keeping two-page keyless and three-page keyed
-/// capacity separate. Unsupported lengths refuse before capture/allocation.
+/// capacity separate. Invalid framing refuses before capture/allocation; source
+/// dialect and placement capacity require native metadata discovery.
 /// Malformed or unsupported sources return unavailable facts; cancellation,
 /// resources and host errors remain errors rather than silent unavailability.
 pub fn add_table_source_capabilities(
@@ -55,7 +56,9 @@ pub fn add_table_source_capabilities(
 ) -> Result<AddTableSourceCapabilities, AddTableError> {
     let _span = tracing::debug_span!("native.add_table.source_available").entered();
     check(budget, cancelled)?;
-    if !captured.len().is_multiple_of(PAGE_BYTES) {
+    if !captured.len().is_multiple_of(PAGE_BYTES)
+        || Header::parse(captured, captured.len() as u64).is_err()
+    {
         return Ok(AddTableSourceCapabilities::default());
     }
     let result = (|| {

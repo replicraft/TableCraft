@@ -48,6 +48,10 @@ pub(super) fn verify(
     if bytes.len() != source.after_bytes {
         return Err(AddTableError::Preservation);
     }
+    source
+        .allocation
+        .verify_after(bytes, budget, cancelled)
+        .map_err(super::source::allocation_preservation_error)?;
     let catalog = Page::capture_retained(
         page(bytes, source.catalog_page)?,
         source.inventory.catalog_definition(),
@@ -83,7 +87,12 @@ pub(super) fn verify(
             .map_err(InspectError::from)?;
         for (offset, (old, new)) in old.iter().zip(new).enumerate() {
             let at = page_index * PAGE_BYTES + offset;
-            let permitted = (count_offset..count_offset + 4).contains(&at)
+            let permitted = source
+                .allocation
+                .allowed_before_ranges()
+                .iter()
+                .any(|range| range.contains(&at))
+                || (count_offset..count_offset + 4).contains(&at)
                 || (page_index == source.catalog_page as usize
                     && append_scope(offset, &source.catalog, &catalog))
                 || (page_index == source.map_page as usize

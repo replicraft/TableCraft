@@ -79,15 +79,18 @@ fn names_and_every_existing_table_ownership_are_requalified() {
 }
 
 #[test]
-fn advisory_stops_at_bitmap_capacity_before_capture_and_propagates_control_errors() {
+fn advisory_discovers_legacy_bitmap_capacity_and_propagates_control_errors() {
     let fixture = fixtures::source();
     assert!(add_table_source_available(&fixture.before, SCOPE, &mut budget(), &|| false).unwrap());
     let capacity = fixtures::capacity_source();
-    let mut work = ResourceBudget::new(0, 0, 1);
-    assert!(!add_table_source_available(&capacity, SCOPE, &mut work, &|| false).unwrap());
-    for resource in POOLS {
-        assert_eq!(work.remaining(resource), 0);
-    }
+    assert!(!add_table_source_available(&capacity, SCOPE, &mut budget(), &|| false).unwrap());
+    // Valid framing requires dialect discovery before legacy capacity is known.
+    assert!(matches!(
+        add_table_source_available(&capacity, SCOPE, &mut ResourceBudget::new(0, 0, 1), &|| {
+            false
+        }),
+        Err(AddTableError::Inspect(InspectError::Limit(_)))
+    ));
     assert!(matches!(
         add_table_source_available(&capacity, SCOPE, &mut ResourceBudget::new(0, 0, 0), &|| {
             false

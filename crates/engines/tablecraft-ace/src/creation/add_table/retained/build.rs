@@ -72,6 +72,11 @@ pub(super) fn build(
         .map_err(InspectError::from)?;
     after.resize(source.after_bytes, 0);
 
+    source
+        .allocation
+        .apply(&mut after, budget, cancelled)
+        .map_err(super::source::allocation_preservation_error)?;
+
     let role = source.added;
     let primary = request.primary.as_ref();
     if primary.is_some() != role.primary.is_some() {

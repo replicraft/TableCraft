@@ -14,7 +14,10 @@ use crate::{
     format::page::PAGE_BYTES,
     header::check,
     limits::MAX_READ_FILE_BYTES,
-    table::table_append::Inventory,
+    table::table_append::{
+        Inventory,
+        allocation::{Allocation, AllocationError},
+    },
 };
 use std::cmp::Ordering;
 use tablecraft_core::limits::{Resource, ResourceBudget};
@@ -26,6 +29,7 @@ const MAX_SLOTS: usize = u8::MAX as usize + 1;
 
 pub(super) struct Source<'image> {
     pub inventory: Inventory<'image>,
+    pub allocation: Allocation<'image>,
     pub catalog: Page,
     pub catalog_page: u32,
     pub maps: Page,
@@ -203,6 +207,11 @@ pub(super) fn capture<'image>(
     let definition_page =
         usize::try_from(inventory.before_pages()).map_err(|_| AddTableError::Capacity)?;
     let after_bytes = after_bytes(inventory.before_pages(), keyed)?;
+    let after_pages =
+        u32::try_from(after_bytes / PAGE_BYTES).map_err(|_| AddTableError::Capacity)?;
+    let allocation = inventory
+        .plan_allocation(after_pages, budget, cancelled)
+        .map_err(allocation_error)?;
     let added = Role {
         definition: definition_page,
         data: definition_page
@@ -218,6 +227,7 @@ pub(super) fn capture<'image>(
     };
     Ok(Source {
         inventory,
+        allocation,
         catalog,
         catalog_page,
         maps,
@@ -265,6 +275,17 @@ pub(super) fn capabilities(
                 Err(AddTableError::Capacity) => false,
                 Err(error) => return Err(error),
             };
+        let available = if available {
+            let length = after_bytes(inventory.before_pages(), keyed)?;
+            let pages = u32::try_from(length / PAGE_BYTES).map_err(|_| AddTableError::Capacity)?;
+            match inventory.plan_allocation(pages, budget, cancelled) {
+                Ok(_) => true,
+                Err(AllocationError::Capacity) => false,
+                Err(error) => return Err(allocation_error(error)),
+            }
+        } else {
+            false
+        };
         if keyed {
             capabilities.keyed = available;
         } else {
@@ -279,5 +300,20 @@ pub(super) fn inventory_error(error: crate::EditError) -> AddTableError {
         crate::EditError::Inspect(error) => AddTableError::Inspect(error),
         crate::EditError::Preservation => AddTableError::Preservation,
         _ => AddTableError::Source,
+    }
+}
+
+pub(super) fn allocation_error(error: AllocationError) -> AddTableError {
+    match error {
+        AllocationError::Inspect(error) => AddTableError::Inspect(error),
+        AllocationError::Capacity => AddTableError::Capacity,
+        AllocationError::Source => AddTableError::Source,
+    }
+}
+
+pub(super) fn allocation_preservation_error(error: AllocationError) -> AddTableError {
+    match error {
+        AllocationError::Source => AddTableError::Preservation,
+        error => allocation_error(error),
     }
 }
