@@ -2,6 +2,7 @@
 mod declaration;
 mod historical_updates;
 mod materialization;
+mod mixed_materialization;
 mod populated;
 mod repeated;
 use super::*;

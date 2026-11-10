@@ -196,6 +196,7 @@ fn consecutive_mixed_growth_keeps_forwarded_existing_number_updates_available() 
     let plan = image
         .plan_historical_present_fixed_updates("Table1", &groups, &mut budget(), &|| false)
         .unwrap();
+    assert_eq!(plan.after_bytes(), raw::update_number(&before, 0, Some(99)));
     let table = read_table(
         &mut Cursor::new(plan.after_bytes()),
         SCOPE,

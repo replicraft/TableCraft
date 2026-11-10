@@ -151,3 +151,40 @@ pub fn after(before: &[u8], slot: usize, value: i32) -> Vec<u8> {
     record.push(mask | 16);
     materialization::place_record(before, slot, &record)
 }
+
+/// Independently edit original native2 AfterLabel, following a materialized root.
+/// Only its fixed payload/presence bit changes; raw variable regions stay exact.
+pub fn update_number(before: &[u8], slot: usize, value: Option<i32>) -> Vec<u8> {
+    let field = DEFINITION + COLUMN_START + 2 * COLUMN_BYTES;
+    assert_eq!(before[field], 4);
+    assert_eq!(word(before, field + 21), 4);
+    assert_eq!(word(before, field + 23), 4);
+    let data = 8 * PAGE;
+    let root = word(before, data + 14 + slot * 2);
+    let physical = if root & 0x4000 == 0 {
+        assert_eq!(root & !0x1fff, 0);
+        slot
+    } else {
+        let at = data + (root & 0x1fff);
+        let reference = u32::from_le_bytes(before[at..at + 4].try_into().unwrap());
+        assert_eq!(reference >> 8, 8);
+        reference as usize & 255
+    };
+    let start = word(before, data + 14 + physical * 2) & 0x1fff;
+    let end = if physical == 0 {
+        PAGE
+    } else {
+        word(before, data + 14 + (physical - 1) * 2) & 0x1fff
+    };
+    let count = word(before, data + start);
+    assert!((4..=6).contains(&count));
+    let mask = data + end - count.div_ceil(8);
+    let mut after = before.to_vec();
+    if let Some(value) = value {
+        after[data + start + 6..data + start + 10].copy_from_slice(&value.to_le_bytes());
+        after[mask] |= 4;
+    } else {
+        after[mask] &= !4;
+    }
+    after
+}
