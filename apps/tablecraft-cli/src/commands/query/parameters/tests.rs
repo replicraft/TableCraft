@@ -38,6 +38,8 @@ fn borrowed_names_keep_duplicate_and_invalid_name_refusals() {
 fn text_arguments_are_not_limited_to_sixty_four_kibibytes() {
     let text = "é".repeat(35_000);
     let raw = [format!("P=text:{text}")];
-    let bindings = parse(&raw).unwrap();
+    let Ok(bindings) = parse(&raw) else {
+        panic!("valid large text binding must parse");
+    };
     assert_eq!(bindings, [("P", Value::Text(text))]);
 }

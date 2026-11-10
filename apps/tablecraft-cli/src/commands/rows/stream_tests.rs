@@ -36,12 +36,7 @@ fn output_write_and_flush_errors_stop_cursor_continuation() {
         for flush in [false, true] {
             let mut browser = new_browser();
             let mut cursor = browser.cursor("Items").unwrap();
-            let result = publish(
-                &mut cursor,
-                1,
-                MAX_STREAM_OUTPUT_BYTES,
-                &mut FailingWriter { kind, flush },
-            );
+            let result = publish(&mut cursor, 1, u64::MAX, &mut FailingWriter { kind, flush });
             assert!(matches!(result, Err(ExecutionError::Output(error)) if error.kind() == kind));
             assert_eq!(cursor.position(), 1);
         }
@@ -96,7 +91,7 @@ fn cancellation_between_batches_stops_after_the_previous_publication() {
         bytes: Vec::new(),
     };
     assert!(matches!(
-        publish(&mut cursor, 1, MAX_STREAM_OUTPUT_BYTES, &mut writer),
+        publish(&mut cursor, 1, u64::MAX, &mut writer),
         Err(ExecutionError::Operation(_))
     ));
     assert_eq!(writer.bytes, b"Id\tScore\n1\t10\n");
