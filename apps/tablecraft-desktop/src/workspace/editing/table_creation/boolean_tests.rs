@@ -113,11 +113,30 @@ fn context_edit(harness: &mut Harness<'_, Desktop>, row: usize, value: bool) {
         .get_all_by_role(Role::CheckBox)
         .chain(harness.get_all_by_role(Role::Label))
         .find(|node| {
-            node.accesskit_node()
-                .label()
+            let node = node.accesskit_node();
+            node.label()
                 .is_some_and(|label| enabled_cell_label(&label, row))
+                || node
+                    .value()
+                    .is_some_and(|value| enabled_cell_label(&value, row))
         })
-        .expect("the actual displayed native Boolean cell")
+        .unwrap_or_else(|| {
+            let candidates = harness
+                .get_all_by_role(Role::CheckBox)
+                .chain(harness.get_all_by_role(Role::Label))
+                .map(|node| (node.accesskit_node().label(), node.value()))
+                .filter(|(label, value)| {
+                    label
+                        .as_deref()
+                        .is_some_and(|text| text.contains("Enabled"))
+                        || value
+                            .as_deref()
+                            .is_some_and(|text| text.contains("Enabled"))
+                })
+                .take(4)
+                .collect::<Vec<_>>();
+            panic!("Boolean row {row} cell is missing; visible field nodes: {candidates:?}");
+        })
         .click_secondary();
     harness.run_steps(2);
     harness
@@ -210,9 +229,12 @@ fn created_yes_no_checkbox_click_and_space_propose_reviewed_toggles() {
         let checkbox = harness
             .get_all_by_role(Role::CheckBox)
             .find(|node| {
-                node.accesskit_node()
-                    .label()
+                let node = node.accesskit_node();
+                node.label()
                     .is_some_and(|label| enabled_cell_label(&label, 0))
+                    || node
+                        .value()
+                        .is_some_and(|value| enabled_cell_label(&value, 0))
             })
             .expect("actual displayed native checkbox");
         if keyboard {
