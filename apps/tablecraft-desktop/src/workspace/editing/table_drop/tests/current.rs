@@ -84,7 +84,10 @@ fn journey(case: Case, target: Target, history: History) {
     let revision = table.target.document_revision;
     let scratch_tab = scratch(&mut harness, &table);
     close_table(&mut harness, &table);
-    assert_eq!(harness.state().state.object_tabs(), [scratch_tab.clone()]);
+    assert_eq!(
+        harness.state().state.object_tabs().as_slice(),
+        std::slice::from_ref(&scratch_tab)
+    );
     delete_navigation(&mut harness);
     confirmation(&harness, source.roots.len());
     assert_eq!(std::fs::read(&path).unwrap(), before);
