@@ -475,10 +475,25 @@ fn staged_revalidation_is_cancellable_and_refuses_changed_executable_permissions
     #[cfg(unix)]
     {
         use std::os::unix::fs::PermissionsExt;
-        fs::set_permissions(extracted.executable(), fs::Permissions::from_mode(0o4755)).unwrap();
-        assert!(matches!(
-            extracted.revalidate(Platform::MacosArm64, &Version::new(0, 1, 0), &|| false),
-            Err(UpdateError::PayloadChanged)
-        ));
+        // Some hosts silently remove setuid, leaving the original 0755 mode.
+        // Establish a real permission change before testing its refusal.
+        for mode in [0o775, 0o644] {
+            fs::set_permissions(extracted.executable(), fs::Permissions::from_mode(mode)).unwrap();
+            let actual = fs::metadata(extracted.executable())
+                .unwrap()
+                .permissions()
+                .mode()
+                & 0o7777;
+            assert_eq!(
+                actual, mode,
+                "the permission change must actually be present"
+            );
+            let result =
+                extracted.revalidate(Platform::MacosArm64, &Version::new(0, 1, 0), &|| false);
+            assert!(
+                matches!(result, Err(UpdateError::PayloadChanged)),
+                "{result:?}"
+            );
+        }
     }
 }
