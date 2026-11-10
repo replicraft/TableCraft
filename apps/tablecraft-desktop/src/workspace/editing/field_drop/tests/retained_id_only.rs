@@ -12,13 +12,15 @@ use crate::workspace::{
         opened,
     },
 };
-use egui::{Key, Modifiers};
+use egui::{Key, Modifiers, accesskit::Role};
+use egui_kittest::kittest::Queryable;
 use tablecraft_builders::table::FieldAdditionKind;
 use tablecraft_core::values::Value;
 use tablecraft_runtime::journal_path;
 use tablecraft_testkit::fixtures::access::canonical_retained_add_table::{
     field_changes,
     fields::{self, Case, Target},
+    opaque_rows,
     rows::Input,
 };
 
@@ -90,6 +92,24 @@ fn retained_id_only_after_all_nonkey_drops_can_add_fill_and_insert_again() {
     choose_field_mode(&mut harness, "NextNumber", "Omitted");
     review_and_save_insert(&mut harness, &path, &filled);
     assert_eq!(std::fs::read(&path).unwrap(), expected);
+
+    // INSERT must not force the untouched historical record into a guessed
+    // layout. Its next real edit still uses the opaque-row source language.
+    let materialized = opaque_rows::after(&expected, source.definition, source.roots[1], Some(77));
+    begin_replacement(&mut harness, 1, "NextNumber", true, Some("77"));
+    review_and_save(&mut harness, &path, &expected, &materialized);
+
+    // Every record is now fully framed. The ordinary retained-row route must
+    // become available again rather than leaving the table on its old family.
+    let expected = fields::fill(
+        &materialized,
+        source.definition,
+        source.roots[0],
+        Target::Number,
+        Some(Value::Int32(124)),
+    );
+    begin_replacement(&mut harness, 0, "NextNumber", false, Some("124"));
+    review_and_save(&mut harness, &path, &materialized, &expected);
     assert_eq!(harness.state().state.sql, EXACT_SCRATCH);
     assert!(!journal_path(&path).exists());
     drop(harness);
@@ -109,8 +129,16 @@ fn retained_id_only_after_all_nonkey_drops_can_add_fill_and_insert_again() {
                 .map(|cell| cell.text.as_str())
                 .collect::<Vec<_>>())
             .collect::<Vec<_>>(),
-        [vec!["1", "123"], vec!["2", "NULL"], vec!["3", "0"]],
+        [vec!["1", "124"], vec!["2", "77"], vec!["3", "0"]],
     );
+    fresh.get_by_role_and_label(Role::Button, "Other").focus();
+    fresh.run_steps(1);
+    fresh.key_press(Key::Enter);
+    fresh.run_steps(1);
+    finish_reads(&mut fresh);
+    let sibling = fresh.state().state.data.as_ref().unwrap();
+    assert_eq!(sibling.table, "Other");
+    assert!(sibling.rows.is_empty());
     assert_eq!(std::fs::read(&path).unwrap(), expected);
     assert!(!journal_path(&path).exists());
 }
