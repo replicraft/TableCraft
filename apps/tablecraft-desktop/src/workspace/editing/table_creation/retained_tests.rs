@@ -1,4 +1,5 @@
 //! Real DROP → Create → save journeys retain history and separate schema/row saves.
+mod cross_operation;
 mod old_target;
 
 use super::{
