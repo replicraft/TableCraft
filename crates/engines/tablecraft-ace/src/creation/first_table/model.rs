@@ -130,6 +130,97 @@ impl FirstTableDefinition {
         )
     }
 
+    /// Validate an authored generated declaration once and retain the original
+    /// storage language only when its complete measured shape fits it.
+    pub fn capture_authored(
+        table: &str,
+        columns: &[CreateColumn<'_>],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, CreateDatabaseError> {
+        if !columns
+            .first()
+            .is_some_and(|column| column.incrementing_autonumber())
+        {
+            return Err(CreateDatabaseError::Declaration);
+        }
+        let request = request::validate_native(
+            table,
+            Columns::Values(columns),
+            Rows::Values(&[]),
+            budget,
+            cancelled,
+        )?;
+        let construction = if request.original_compatible(budget, cancelled)? {
+            Construction::Original
+        } else {
+            Construction::Native
+        };
+        drop(request);
+        let primary = columns[0]
+            .primary_key_name()
+            .ok_or(CreateDatabaseError::Declaration)?;
+        Self::retain(
+            table,
+            columns,
+            Some((0, primary)),
+            Retention {
+                manual: false,
+                allow_compression: false,
+                construction,
+            },
+            budget,
+            cancelled,
+        )
+    }
+
+    /// Select original or native storage for an authored manual/keyless schema
+    /// from positive sizing facts, retaining the actual optional primary position.
+    pub fn capture_manual_authored(
+        table: &str,
+        columns: &[CreateColumn<'_>],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, CreateDatabaseError> {
+        let request = request::validate_native(
+            table,
+            Columns::Values(columns),
+            Rows::Values(&[]),
+            budget,
+            cancelled,
+        )?;
+        let construction = if request.original_compatible(budget, cancelled)? {
+            Construction::Original
+        } else {
+            Construction::Native
+        };
+        drop(request);
+        let mut primary = None;
+        for (position, column) in columns.iter().enumerate() {
+            check(budget, cancelled)?;
+            if column.incrementing_autonumber() {
+                return Err(CreateDatabaseError::Declaration);
+            }
+            if let Some(name) = column.primary_key_name()
+                && primary.replace((position, name)).is_some()
+            {
+                return Err(CreateDatabaseError::Declaration);
+            }
+        }
+        Self::retain(
+            table,
+            columns,
+            primary,
+            Retention {
+                manual: true,
+                allow_compression: false,
+                construction,
+            },
+            budget,
+            cancelled,
+        )
+    }
+
     /// Retain up to 255 native declarations for the separate joined-definition
     /// creation language. Existing capture methods retain their original limits.
     pub fn capture_native(
@@ -338,6 +429,10 @@ impl FirstTableDefinition {
     /// Whether the original request uses manual fields rather than Increment.
     pub fn is_manual(&self) -> bool {
         self.manual
+    }
+
+    pub(in crate::creation) fn select_native_construction(&mut self) {
+        self.construction = Construction::Native;
     }
 
     /// Number of original ordered declarations.

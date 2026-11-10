@@ -255,3 +255,88 @@ fn native_active_column_error_reports_255_before_allocating_owned_fields() {
         "native creation requires between one and 255 scalar columns"
     );
 }
+
+#[test]
+fn authored_capture_preserves_original_small_images_and_selects_native_for_large_properties() {
+    let source = tablecraft_testkit::fixtures::access::canonical_initial_table_creation::source(
+        tablecraft_testkit::fixtures::access::canonical_initial_table_creation::Case::IdOnly,
+    );
+    let before = raw::source().before;
+    let tiny = [CreateColumn::new("Id", ScalarType::Int32)
+        .with_primary_key("PrimaryId")
+        .unwrap()
+        .with_incrementing_autonumber()
+        .unwrap()];
+    let definition =
+        FirstTableDefinition::capture_authored("Items", &tiny, &mut budget(), &|| false).unwrap();
+    assert!(!definition.is_native());
+    let plan = capture(&before)
+        .plan_first_table(definition, &mut budget(), &|| false)
+        .unwrap();
+    assert_eq!(plan.after_bytes(), source.bytes);
+
+    let names = (1..16)
+        .map(raw::property_windows::field_name)
+        .collect::<Vec<_>>();
+    let default = Value::Text("d".repeat(253));
+    let description = raw::property_windows::description();
+    let mut columns = vec![tiny[0]];
+    columns.extend(names.iter().map(|name| {
+        CreateColumn::short_text(name, 255)
+            .unwrap()
+            .with_required(false)
+            .with_allow_zero_length(true)
+            .unwrap()
+            .with_default_literal(&default)
+            .unwrap()
+            .with_description(&description)
+            .unwrap()
+    }));
+    let definition =
+        FirstTableDefinition::capture_authored("Items", &columns, &mut budget(), &|| false)
+            .unwrap();
+    assert!(definition.is_native());
+    let manual = FirstTableDefinition::capture_manual_authored(
+        "Manual",
+        &columns[1..],
+        &mut budget(),
+        &|| false,
+    )
+    .unwrap();
+    assert!(manual.is_native());
+    assert!(
+        !FirstTableDefinition::capture_manual_authored(
+            "Manual",
+            &columns[1..2],
+            &mut budget(),
+            &|| false
+        )
+        .unwrap()
+        .is_native()
+    );
+}
+
+#[cfg(feature = "journal")]
+#[test]
+fn authored_advice_qualifies_wide_and_property_bitmap_sources_without_changing_original_advice() {
+    for source in [raw::source(), raw::property_windows::source()] {
+        let original = crate::add_table_source_capabilities(
+            &source.after,
+            CatalogScope::new(7301),
+            &mut budget(),
+            &|| false,
+        )
+        .unwrap();
+        assert!(!original.can_add_keyed());
+        let authored = crate::authored_add_table_source_capabilities(
+            &source.after,
+            CatalogScope::new(7301),
+            &mut budget(),
+            &|| false,
+        )
+        .unwrap();
+        assert!(authored.can_add_keyed());
+        assert!(authored.can_add_keyless());
+        assert!(authored.requires_native());
+    }
+}

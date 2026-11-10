@@ -1,7 +1,9 @@
 //! Native-count append reuses actual packed or retained physical ownership.
 mod maps;
 
-use super::{AddTableError, AddTablePlan, AddTableSourceProfile, retained};
+use super::{
+    AddTableError, AddTablePlan, AddTableSourceCapabilities, AddTableSourceProfile, retained,
+};
 use crate::{
     FirstTableDefinition, InspectError, NativeImage, NativeImageSource, compare_general_text,
     creation::{
@@ -96,6 +98,124 @@ fn map_record(destination: &mut [u8], member: Option<usize>) -> Result<(), AddTa
     Ok(())
 }
 
+fn capture_inventory<'image>(
+    image: &'image NativeImage,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(Inventory<'image>, bool), AddTableError> {
+    let is_retained = retained::selected(image, budget, cancelled)?;
+    let inventory = if is_retained {
+        Inventory::capture(image, budget, cancelled)
+    } else {
+        Inventory::capture_packed(image, budget, cancelled)
+    }
+    .map_err(map_error)?;
+    Ok((inventory, is_retained))
+}
+
+/// Check the original plan's actual catalog hosts for the complete inline row.
+/// The caller has independently proved its frozen source/map eligibility.
+pub(super) fn original_catalog_fits(
+    image: &NativeImage,
+    length: usize,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<bool, AddTableError> {
+    if !retained::selected(image, budget, cancelled)? {
+        // Frozen packed eligibility was positively proved by the caller. Do not
+        // add a native census requirement to an otherwise valid Original plan.
+        let captured = Page::capture(
+            page(image.as_bytes(), super::source::CATALOG_PAGE as u32)?,
+            profile::CATALOG_DEFINITION as u32,
+            budget,
+            cancelled,
+        )?;
+        return Ok(captured.count < MAX_SLOTS
+            && captured.start >= slot_offset(captured.count + 1) + length);
+    }
+    let inventory = Inventory::capture(image, budget, cancelled).map_err(map_error)?;
+    for &host in inventory.catalog_pages() {
+        check(budget, cancelled)?;
+        let captured = Page::capture_retained(
+            page(image.as_bytes(), host)?,
+            inventory.catalog_definition(),
+            budget,
+            cancelled,
+        )?;
+        if captured.count < MAX_SLOTS && captured.start >= slot_offset(captured.count + 1) + length
+        {
+            return Ok(true);
+        }
+    }
+    Ok(false)
+}
+
+/// Advertise a minimal named schema from actual catalog/map/global capacity.
+/// This is complete source qualification, never a draft or an apply capability.
+pub(super) fn capabilities(
+    image: &NativeImage,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<AddTableSourceCapabilities, AddTableError> {
+    let (inventory, _) = capture_inventory(image, budget, cancelled)?;
+    let length = record::catalog_length(crate::creation::stored_text::Plan::ascii_literal("T"));
+    let mut fits_catalog = false;
+    for &host in inventory.catalog_pages() {
+        check(budget, cancelled)?;
+        let captured = Page::capture_retained(
+            page(image.as_bytes(), host)?,
+            inventory.catalog_definition(),
+            budget,
+            cancelled,
+        )?;
+        if captured.count < MAX_SLOTS && captured.start >= slot_offset(captured.count + 1) + length
+        {
+            fits_catalog = true;
+            break;
+        }
+    }
+    if !fits_catalog {
+        return Ok(AddTableSourceCapabilities::default());
+    }
+    let mut capabilities = AddTableSourceCapabilities::default();
+    for keyed in [false, true] {
+        check(budget, cancelled)?;
+        let added = 2 + usize::from(keyed);
+        let mut fits_maps = false;
+        for &host in inventory.map_pages() {
+            let captured =
+                Page::capture_retained(page(image.as_bytes(), host)?, 0, budget, cancelled)?;
+            if map_capacity(host, &captured, &[], added)? {
+                fits_maps = true;
+                break;
+            }
+        }
+        let pages = inventory.before_pages().checked_add(added as u32);
+        let fits_native = pages.is_some_and(|pages| {
+            u64::from(pages) * PAGE_BYTES as u64 <= crate::limits::MAX_READ_FILE_BYTES
+        });
+        let fits_allocation = if fits_maps && fits_native {
+            match inventory.plan_allocation(
+                pages.ok_or(AddTableError::Capacity)?,
+                budget,
+                cancelled,
+            ) {
+                Ok(_) => true,
+                Err(crate::table::table_append::allocation::AllocationError::Capacity) => false,
+                Err(error) => return Err(super::retained::source::allocation_error(error)),
+            }
+        } else {
+            false
+        };
+        if keyed {
+            capabilities.keyed = fits_allocation;
+        } else {
+            capabilities.keyless = fits_allocation;
+        }
+    }
+    Ok(capabilities)
+}
+
 pub(super) fn plan(
     image: NativeImage,
     declaration: FirstTableDefinition,
@@ -106,13 +226,7 @@ pub(super) fn plan(
     if !declaration.is_native() {
         return Err(crate::CreateDatabaseError::Declaration.into());
     }
-    let is_retained = retained::selected(&image, budget, cancelled)?;
-    let inventory = if is_retained {
-        Inventory::capture(&image, budget, cancelled)
-    } else {
-        Inventory::capture_packed(&image, budget, cancelled)
-    }
-    .map_err(map_error)?;
+    let (inventory, is_retained) = capture_inventory(&image, budget, cancelled)?;
     for (object, origin) in image
         .catalog()
         .catalog()

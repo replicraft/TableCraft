@@ -94,6 +94,49 @@ impl Request<'_> {
             .map_or(self.row_bytes, |plans| plans.row_length(row))
     }
 
+    /// Decide original storage from validated declaration facts, without trying
+    /// a bounded constructor and retrying its failure as another language.
+    pub fn original_compatible(
+        &self,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<bool, CreateDatabaseError> {
+        if self.columns.count() > profile::MAX_COLUMNS {
+            return Ok(false);
+        }
+        for field in &self.fields {
+            check(budget, cancelled)?;
+            budget
+                .charge(Resource::Steps, field.name.len() as u64)
+                .map_err(InspectError::from)?;
+        }
+        if super::definition::length_with_primary(self.fields(), false, self.primary.as_ref())?
+            > PAGE_BYTES
+            || self
+                .properties
+                .as_ref()
+                .is_some_and(|body| body.inline_length() > PAGE_BYTES)
+        {
+            return Ok(false);
+        }
+        let mut length = super::record::DATA_HEADER_BYTES;
+        for object in super::build::systems() {
+            check(budget, cancelled)?;
+            length = length
+                .checked_add(super::record::catalog_length(object.name))
+                .and_then(|length| length.checked_add(size_of::<u16>()))
+                .ok_or(CreateDatabaseError::PageCapacity)?;
+        }
+        let user = super::record::catalog_length_with_properties(
+            self.catalog_name,
+            self.properties.as_ref(),
+        )?;
+        Ok(length
+            .checked_add(user)
+            .and_then(|length| length.checked_add(size_of::<u16>()))
+            .is_some_and(|length| length <= PAGE_BYTES))
+    }
+
     pub fn minimum_row_fits(&self) -> bool {
         self.minimum_row_bytes
             .checked_add(size_of::<u16>())

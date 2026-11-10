@@ -9,7 +9,7 @@ pub(in crate::creation) mod source;
 
 use super::{CreateDatabaseError, FirstTableDefinition};
 use crate::{InspectError, NativeImage, NativeImageSource, header::check};
-use tablecraft_core::limits::ResourceBudget;
+use tablecraft_core::limits::{Resource, ResourceBudget};
 use thiserror::Error;
 
 impl From<super::catalog_page::PageError> for AddTableError {
@@ -23,7 +23,8 @@ impl From<super::catalog_page::PageError> for AddTableError {
 }
 
 pub use availability::{
-    AddTableSourceCapabilities, add_table_source_available, add_table_source_capabilities,
+    AddTableSourceCapabilities, AuthoredAddTableSourceCapabilities, add_table_source_available,
+    add_table_source_capabilities, authored_add_table_source_capabilities,
 };
 
 /// Refusal before an existing source receives a new table.
@@ -87,6 +88,55 @@ impl NativeImage {
             return self.plan_add_table_retained(definition, budget, cancelled);
         }
         self.plan_add_table_mixed(definition, budget, cancelled)
+    }
+
+    /// Choose one authored construction from validated request and actual source
+    /// capacity facts before planning. No failed old plan is retried as native.
+    pub fn plan_authored_add_table(
+        self,
+        mut definition: FirstTableDefinition,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<AddTablePlan, AddTableError> {
+        check(budget, cancelled)?;
+        if !definition.is_native() {
+            let columns = definition.borrowed_columns(budget, cancelled)?;
+            let request = super::request::validate_native(
+                definition.table(),
+                super::input::Columns::Values(&columns),
+                super::input::Rows::Values(&[]),
+                budget,
+                cancelled,
+            )?;
+            budget
+                .charge(Resource::Steps, definition.table().len() as u64)
+                .map_err(InspectError::from)?;
+            let original_shape =
+                request.original_compatible(budget, cancelled)? && definition.table().is_ascii();
+            let original_source = original_shape
+                && availability::original_source_supports(
+                    &self,
+                    definition.primary_position().is_some(),
+                    budget,
+                    cancelled,
+                )?;
+            let inline_length = super::record::catalog_length_with_properties(
+                request.catalog_name,
+                request.properties.as_ref(),
+            )?;
+            let original_fits = original_source
+                && native::original_catalog_fits(&self, inline_length, budget, cancelled)?;
+            drop(request);
+            drop(columns);
+            if !original_fits {
+                definition.select_native_construction();
+            }
+        }
+        if definition.is_native() {
+            self.plan_add_table_native(definition, budget, cancelled)
+        } else {
+            self.plan_add_table(definition, budget, cancelled)
+        }
     }
 
     /// Append a native-count declaration to its positively selected packed or
