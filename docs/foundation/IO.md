@@ -60,6 +60,29 @@ callbacks still own timeouts; cancellation cannot interrupt a callback that has
 not returned. These read/write helpers do not allocate payload buffers or choose
 byte ceilings; optional image journaling has explicit allocation/size policies.
 
+## Explicit V3 resizable image journals
+
+The resizable journal now has a separate V3 protocol, selected explicitly through
+`prepare_resizable_v3_expected`, `inspect_v3` and `recover_resizable_v3`.
+`CheckedV3` is a distinct capability from `CheckedV2`; an old recovery consumer
+cannot acquire the newer protocol by retrying a failed decoder. V1/V2 framing,
+size policies and recovery entry points remain unchanged.
+
+V3 checks its actual before/after lengths, journal arithmetic, platform allocation
+representation, fallible allocation and caller-owned cumulative resource budgets.
+It adds no database-size ceiling: the native engine owns format geometry and the
+host owns any explicit resource policy. The expected BEFORE image is compared
+before effects; commit, rollback and recovery retain the existing durable-storage
+and target-resizing requirements. Inspection alone does not authorize a native
+mutation or namespace cleanup.
+
+The Windows prefix-protected journal region admits the checked representable
+remaining file extent instead of assuming two 64 MiB images. Prefix identity,
+source binding, retirement and target permissions remain independently checked.
+Local tests pass 144 IO unit tests and four documentation tests. Strict checks and
+x64/ARM64 Windows cross-compilation pass; these are not Windows filesystem runtime
+or Access behavior evidence.
+
 ## Prefix-protected image journal storage
 
 The optional `journal` feature exposes `BoundedJournalRegion`. It exclusively

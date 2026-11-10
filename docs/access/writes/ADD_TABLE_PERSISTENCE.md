@@ -11,9 +11,53 @@ from the engine qualification described here. See the [runtime contract](../../a
 and [database-creation workflow](../../ui/DATABASE_CREATION.md). The native CLI
 has no new add-table command from this change.
 
+## Retained allocation and deleted-table histories
+
+The current retained source family derives physical storage from the complete
+captured catalog and allocation inventory. It supports appending after deleting
+the last user table and after further table additions, without treating retired
+pages or catalog tombstones as reusable free space. Live catalog counts remain
+separate from physical record slots. Fresh table identities and definition/DATA
+pages start at the actual EOF; a primary root is added only for a keyed target.
+The existing system/database-property dialect selects this family before source
+qualification. A failed retained proof never retries a legacy source family.
+
+`AddTableSourceProfile::Retained` requires a complete source-bound inventory,
+including live table/index membership and retained DATA, INDEX and LVAL roles.
+Protected orphaned or tombstoned storage is preserved; recognizing its ownership
+does not grant permission to overwrite it. Existing object programs, unsupported
+properties, dependency roles and required validation remain independent refusals.
+The newly authored declaration still uses the existing checked first-table
+constructor profile; this does not imply a complete Access table designer.
+
+Owned/candidate/primary usage maps use the actual page's bitmap window rather
+than assuming every page lies below page 64. The global inline allocation bitmap
+can grow into proven adjacent free record capacity. Indirect-map promotion and
+adding catalog/map container pages are not implemented; exhausted actual carrier
+capacity refuses before saving. These are implementation gaps, not Access
+page-count or table-count limits. Retained capture accepts the native database
+size bound with fallible allocation, cancellation and cumulative caller budgets;
+it does not inherit the older 64 MiB capture ceiling.
+
+`TCAT0006` carries this exact source family and a closed TCNT1–6 declaration.
+`NativeAddTableIntent::new_retained` binds request data only. Preparation uses the
+V3 image journal, and `qualify_retained_recovery` requires the same checked V3
+session before fresh native reconstruction and complete BEFORE/AFTER comparison.
+TCAT1–5 retain their original V2 grammars and source admission. Relabeling an older
+request or journal does not acquire retained-source authority.
+
+Local macOS ARM64 checks pass 29 creation tests, 16 add-table request/recovery
+tests and six capture tests. Three headless GUI journeys pass replacement-table
+and subsequent-table saves, including independent whole-image comparisons and
+fresh reopening. The pending first-record continuation exposed a separate INSERT
+source refusal; table creation alone does not establish that row-save workflow.
+Native Windows execution and Microsoft Access save/reopen comparison remain
+unqualified. The following sections retain the earlier source-family contracts
+and their historical evidence; their geometry ceilings do not constrain TCAT6.
+
 ## Source and request profiles
 
-Two source languages remain distinct. The retained generated-table language has
+The two older source languages remain distinct. The retained generated-table language has
 `n` existing local tables, for `1 <= n <= 18`, exactly `7 + 3n` 4-KiB pages,
 `7 + n` catalog records and `20 + 3n` inline usage-map records. Its old source
 qualification is retained for TCAT1–4 replay.
