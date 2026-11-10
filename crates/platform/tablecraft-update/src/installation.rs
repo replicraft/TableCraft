@@ -1,15 +1,13 @@
 //! Installation ownership checks independent of release-controlled filenames.
 
-use crate::{UpdateError, platform::Platform};
-use semver::Version;
-use serde::{
-    Deserialize, Deserializer,
-    de::{self, MapAccess, Visitor},
+use crate::{
+    UpdateError,
+    package::{self, Manifest},
+    platform::Platform,
 };
+use semver::Version;
 use sha2::{Digest, Sha256};
 use std::{
-    collections::BTreeMap,
-    fmt,
     fs::{self, File},
     io::{self, Read},
     path::{Path, PathBuf},
@@ -19,22 +17,6 @@ use std::{
 // ceiling bounds metadata parsing before any claimed payload paths are considered.
 const MAX_MANIFEST_BYTES: u64 = 64 * 1024;
 const MAX_EXECUTABLE_BYTES: u64 = 512 * 1024 * 1024;
-const HASH_BUFFER_BYTES: usize = 64 * 1024;
-const SHA256_HEX_BYTES: usize = 2 * 32;
-const HEX_DIGITS: &[u8; 16] = b"0123456789abcdef";
-const FLAT_FILES: [&str; 3] = ["tablecraft-desktop", "LICENSE", "ThirdPartyLicenses.txt"];
-const WINDOWS_FILES: [&str; 3] = [
-    "tablecraft-desktop.exe",
-    "LICENSE",
-    "ThirdPartyLicenses.txt",
-];
-const MAC_FILES: [&str; 5] = [
-    "TableCraft.app/Contents/MacOS/tablecraft-desktop",
-    "TableCraft.app/Contents/Info.plist",
-    "TableCraft.app/Contents/Resources/LICENSE",
-    "TableCraft.app/Contents/Resources/ThirdPartyLicenses.txt",
-    "TableCraft.app/Contents/Resources/TableCraft.icns",
-];
 
 /// Why this installation must use a manual update instead of replacement.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -149,16 +131,6 @@ pub fn detect(current: &Version, platform: Platform) -> Result<InstallPlan, Upda
     classify(&executable, platform, current, cfg!(debug_assertions))
 }
 
-#[derive(Deserialize)]
-#[serde(deny_unknown_fields)]
-struct Manifest {
-    product: String,
-    version: String,
-    target: String,
-    #[serde(deserialize_with = "file_hashes")]
-    files: BTreeMap<String, String>,
-}
-
 pub(crate) fn classify(
     executable: &Path,
     platform: Platform,
@@ -182,14 +154,11 @@ pub(crate) fn classify(
     let Some(parent) = executable.parent() else {
         return Ok(InstallPlan::Manual(ManualReason::UnrecognizedLayout));
     };
-    let mac = matches!(platform, Platform::MacosX64 | Platform::MacosArm64);
-    let windows = matches!(platform, Platform::WindowsX64 | Platform::WindowsArm64);
-    let expected_executable = if windows {
-        "tablecraft-desktop.exe"
-    } else {
-        "tablecraft-desktop"
-    };
-    if executable.file_name().and_then(|name| name.to_str()) != Some(expected_executable) {
+    let mac = package::is_mac(platform);
+    let expected_executable = Path::new(package::executable(platform))
+        .file_name()
+        .and_then(|name| name.to_str());
+    if executable.file_name().and_then(|name| name.to_str()) != expected_executable {
         return Ok(InstallPlan::Manual(ManualReason::UnrecognizedLayout));
     }
 
@@ -243,24 +212,9 @@ pub(crate) fn classify(
     let Ok(version) = Version::parse(&metadata.version) else {
         return Ok(InstallPlan::Manual(ManualReason::InvalidManifest));
     };
-    let expected_files = if mac {
-        MAC_FILES.as_slice()
-    } else if windows {
-        WINDOWS_FILES.as_slice()
-    } else {
-        FLAT_FILES.as_slice()
-    };
-    if metadata.product != "tablecraft-desktop"
-        || metadata.target != platform.target()
-        || version != *current
-        || metadata.files.len() != expected_files.len()
-        || !expected_files.iter().all(|name| {
-            metadata
-                .files
-                .get(*name)
-                .is_some_and(|hash| valid_hash(hash))
-        })
-    {
+    let expected_files = package::files(platform);
+    let manifest_name = package::manifest(platform);
+    if !metadata.matches_release(platform, current) {
         return Ok(InstallPlan::Manual(ManualReason::InvalidManifest));
     }
 
@@ -275,7 +229,7 @@ pub(crate) fn classify(
             return Ok(InstallPlan::Manual(ManualReason::InvalidManifest));
         }
     }
-    for name in expected_files {
+    for name in expected_files.iter().filter(|name| **name != manifest_name) {
         let path = if let Some(bundle) = &bundle {
             let Some(relative) = name.strip_prefix("TableCraft.app/") else {
                 return Ok(InstallPlan::Manual(ManualReason::InvalidManifest));
@@ -289,11 +243,12 @@ pub(crate) fn classify(
         }
     }
 
-    let expected_hash = &metadata.files[expected_files[0]];
-    let Some(executable_digest) = hash_executable(&executable)? else {
+    let expected_hash = &metadata.files[package::executable(platform)];
+    let Some(executable_digest) = package::hash_file(&executable, MAX_EXECUTABLE_BYTES, &|| false)?
+    else {
         return Ok(InstallPlan::Manual(ManualReason::InvalidManifest));
     };
-    if !hash_matches(expected_hash, &executable_digest) {
+    if !package::hash_matches(expected_hash, &executable_digest) {
         return Ok(InstallPlan::Manual(ManualReason::InvalidManifest));
     }
     let installed = Installed {
@@ -346,80 +301,6 @@ fn managed_location(executable: &Path, platform: Platform) -> bool {
         }),
         Platform::MacosX64 | Platform::MacosArm64 => false,
     }
-}
-
-fn valid_hash(hash: &str) -> bool {
-    hash.len() == SHA256_HEX_BYTES
-        && hash
-            .bytes()
-            .all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte))
-}
-
-fn hash_matches(expected: &str, actual: &[u8; 32]) -> bool {
-    expected
-        .as_bytes()
-        .chunks_exact(2)
-        .zip(actual)
-        .all(|(digits, byte)| {
-            digits[0] == HEX_DIGITS[usize::from(byte >> 4)]
-                && digits[1] == HEX_DIGITS[usize::from(byte & 0x0f)]
-        })
-}
-
-fn hash_executable(path: &Path) -> Result<Option<[u8; 32]>, UpdateError> {
-    let mut file = File::open(path).map_err(UpdateError::Io)?;
-    let size = file.metadata().map_err(UpdateError::Io)?.len();
-    if size == 0 || size > MAX_EXECUTABLE_BYTES {
-        return Ok(None);
-    }
-    let mut digest = Sha256::new();
-    let mut buffer = [0; HASH_BUFFER_BYTES];
-    let mut received = 0;
-    loop {
-        let count = file.read(&mut buffer).map_err(UpdateError::Io)?;
-        if count == 0 {
-            break;
-        }
-        received += count as u64;
-        if received > size {
-            return Ok(None);
-        }
-        digest.update(&buffer[..count]);
-    }
-    if received != size {
-        return Ok(None);
-    }
-    Ok(Some(digest.finalize().into()))
-}
-
-fn file_hashes<'de, D>(deserializer: D) -> Result<BTreeMap<String, String>, D::Error>
-where
-    D: Deserializer<'de>,
-{
-    struct Hashes;
-
-    impl<'de> Visitor<'de> for Hashes {
-        type Value = BTreeMap<String, String>;
-
-        fn expecting(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
-            formatter.write_str("unique installed file hashes")
-        }
-
-        fn visit_map<M>(self, mut map: M) -> Result<Self::Value, M::Error>
-        where
-            M: MapAccess<'de>,
-        {
-            let mut files = BTreeMap::new();
-            while let Some((name, hash)) = map.next_entry::<String, String>()? {
-                if files.insert(name, hash).is_some() {
-                    return Err(de::Error::custom("duplicate installed file hash"));
-                }
-            }
-            Ok(files)
-        }
-    }
-
-    deserializer.deserialize_map(Hashes)
 }
 
 #[cfg(test)]

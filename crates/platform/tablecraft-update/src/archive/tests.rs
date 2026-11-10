@@ -1,4 +1,4 @@
-use super::extract;
+use super::{ExtractedUpdate, extract};
 use crate::{UpdateError, platform::Platform};
 use flate2::{Compression, write::GzEncoder};
 use semver::Version;
@@ -161,6 +161,20 @@ fn source(root: &Path, bytes: &[u8]) -> File {
     File::open(path).unwrap()
 }
 
+fn staged(platform: Platform) -> (TempDir, ExtractedUpdate) {
+    let parent = TempDir::new().unwrap();
+    let bytes = zip(&files(platform, "0.1.0"));
+    let extracted = extract(
+        source(parent.path(), &bytes),
+        platform,
+        &Version::new(0, 1, 0),
+        parent.path(),
+        &|| false,
+    )
+    .unwrap();
+    (parent, extracted)
+}
+
 fn refused(bytes: &[u8], platform: Platform) {
     let parent = TempDir::new().unwrap();
     let result = extract(
@@ -199,6 +213,9 @@ fn all_six_platforms_extract_exact_payloads_and_cleanup_with_the_owner() {
             &|| false,
         )
         .unwrap();
+        extracted
+            .revalidate(platform, &Version::new(0, 1, 0), &|| false)
+            .unwrap();
         let root = extracted.root().to_path_buf();
         for (name, expected) in files {
             assert_eq!(fs::read(root.join(name)).unwrap(), expected);
@@ -397,4 +414,71 @@ fn cancellation_removes_partial_staging_without_touching_the_input() {
         fs::read(parent.path().join("authenticated-input")).unwrap(),
         bytes
     );
+}
+
+#[test]
+fn staged_payload_and_coordinated_manifest_changes_refuse_after_review_wait() {
+    for rehash_manifest in [false, true] {
+        let (_parent, extracted) = staged(Platform::WindowsX64);
+        let changed = b"different executable after confirmation";
+        fs::write(extracted.executable(), changed).unwrap();
+        if rehash_manifest {
+            let path = extracted.root().join("RELEASE.json");
+            let mut metadata: serde_json::Value =
+                serde_json::from_slice(&fs::read(&path).unwrap()).unwrap();
+            metadata["files"]["tablecraft-desktop.exe"] = json!(hash_text(changed));
+            fs::write(path, serde_json::to_vec(&metadata).unwrap()).unwrap();
+        }
+        assert!(matches!(
+            extracted.revalidate(Platform::WindowsX64, &Version::new(0, 1, 0), &|| false),
+            Err(UpdateError::PayloadChanged)
+        ));
+    }
+}
+
+#[test]
+fn staged_missing_extra_and_symlinked_members_do_not_gain_update_authority() {
+    for kind in ["missing", "extra"] {
+        let (_parent, extracted) = staged(Platform::WindowsX64);
+        if kind == "missing" {
+            fs::remove_file(extracted.root().join("LICENSE")).unwrap();
+        } else {
+            fs::write(extracted.root().join("extra.dll"), b"unverified library").unwrap();
+        }
+        assert!(matches!(
+            extracted.revalidate(Platform::WindowsX64, &Version::new(0, 1, 0), &|| false),
+            Err(UpdateError::PayloadChanged)
+        ));
+    }
+    #[cfg(unix)]
+    {
+        let (parent, extracted) = staged(Platform::WindowsX64);
+        let external = parent.path().join("external-license");
+        fs::write(&external, b"project license fixture").unwrap();
+        let path = extracted.root().join("LICENSE");
+        fs::remove_file(&path).unwrap();
+        std::os::unix::fs::symlink(external, path).unwrap();
+        assert!(matches!(
+            extracted.revalidate(Platform::WindowsX64, &Version::new(0, 1, 0), &|| false),
+            Err(UpdateError::PayloadChanged)
+        ));
+    }
+}
+
+#[test]
+fn staged_revalidation_is_cancellable_and_refuses_changed_executable_permissions() {
+    let (_parent, extracted) = staged(Platform::MacosArm64);
+    assert!(matches!(
+        extracted.revalidate(Platform::MacosArm64, &Version::new(0, 1, 0), &|| true),
+        Err(UpdateError::Cancelled)
+    ));
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        fs::set_permissions(extracted.executable(), fs::Permissions::from_mode(0o4755)).unwrap();
+        assert!(matches!(
+            extracted.revalidate(Platform::MacosArm64, &Version::new(0, 1, 0), &|| false),
+            Err(UpdateError::PayloadChanged)
+        ));
+    }
 }

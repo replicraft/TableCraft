@@ -1,17 +1,16 @@
 //! Bounded extraction of authenticated, exactly shaped desktop release archives.
 
-use crate::{UpdateError, platform::Platform};
+use crate::{
+    UpdateError,
+    package::{self, Limits, MAC_PLIST, Manifest},
+    platform::Platform,
+};
 use flate2::bufread::GzDecoder;
 use semver::Version;
-use serde::{
-    Deserialize, Deserializer,
-    de::{self, MapAccess, Visitor},
-};
-use sha2::{Digest, Sha256, digest::Output};
+use sha2::{Digest, Sha256};
 use std::{
     cell::Cell,
     collections::BTreeMap,
-    fmt,
     fs::{self, File, OpenOptions},
     io::{self, BufReader, Read, Seek, SeekFrom, Write},
     ops::Range,
@@ -43,32 +42,13 @@ const REGULAR_FILE_TYPE: u32 = 0o100000;
 const PERMISSION_MASK: u32 = 0o7777;
 const EXECUTABLE_MODE: u32 = 0o755;
 const DATA_MODE: u32 = 0o644;
-const HEX_DIGITS: &[u8; 16] = b"0123456789abcdef";
-const NIBBLE_BITS: u32 = 4;
-const NIBBLE_MASK: u8 = 0x0f;
-const MAC_EXECUTABLE: &str = "TableCraft.app/Contents/MacOS/tablecraft-desktop";
-const MAC_MANIFEST: &str = "TableCraft.app/Contents/Resources/RELEASE.json";
-const MAC_PLIST: &str = "TableCraft.app/Contents/Info.plist";
-const MAC_FILES: [&str; 6] = [
-    MAC_EXECUTABLE,
-    "TableCraft.app/Contents/Resources/LICENSE",
-    "TableCraft.app/Contents/Resources/ThirdPartyLicenses.txt",
-    MAC_PLIST,
-    "TableCraft.app/Contents/Resources/TableCraft.icns",
-    MAC_MANIFEST,
-];
-const WINDOWS_FILES: [&str; 4] = [
-    "tablecraft-desktop.exe",
-    "LICENSE",
-    "ThirdPartyLicenses.txt",
-    "RELEASE.json",
-];
-const LINUX_FILES: [&str; 4] = [
-    "tablecraft-desktop",
-    "LICENSE",
-    "ThirdPartyLicenses.txt",
-    "RELEASE.json",
-];
+const LIMITS: Limits = Limits {
+    executable: MAX_EXECUTABLE_BYTES,
+    legal: MAX_LEGAL_BYTES,
+    icon: MAX_ICON_BYTES,
+    metadata: MAX_METADATA_BYTES,
+    total: MAX_OUTPUT_BYTES,
+};
 
 /// An owned private staging tree, not an installed application.
 #[derive(Debug)]
@@ -76,6 +56,7 @@ pub(crate) struct ExtractedUpdate {
     directory: TempDir,
     executable: PathBuf,
     bundle: Option<PathBuf>,
+    manifest_digest: [u8; 32],
 }
 
 impl ExtractedUpdate {
@@ -90,6 +71,22 @@ impl ExtractedUpdate {
     pub(crate) fn bundle(&self) -> Option<&Path> {
         self.bundle.as_deref()
     }
+
+    pub(crate) fn revalidate(
+        &self,
+        platform: Platform,
+        version: &Version,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(), UpdateError> {
+        package::validate_directory(
+            self.root(),
+            platform,
+            version,
+            &self.manifest_digest,
+            &LIMITS,
+            cancelled,
+        )
+    }
 }
 
 /// Extract only an already authenticated file handle supplied by the update owner.
@@ -102,7 +99,7 @@ pub(crate) fn extract(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<ExtractedUpdate, UpdateError> {
     check_cancelled(cancelled)?;
-    let expected = expected_files(platform);
+    let expected = package::files(platform);
     let directory = tempfile::Builder::new()
         .prefix(".tablecraft-extracted-")
         .tempdir_in(parent)
@@ -113,32 +110,22 @@ pub(crate) fn extract(
         hashes: BTreeMap::new(),
         written: 0,
         cancelled,
+        platform,
     };
 
     match platform {
         Platform::LinuxX64 | Platform::LinuxArm64 => extract_tar(reader, &mut extracted)?,
         _ => extract_zip(reader, &mut extracted)?,
     }
-    extracted.validate(platform, version)?;
+    let manifest_digest = extracted.validate(platform, version)?;
     check_cancelled(cancelled)?;
 
     Ok(ExtractedUpdate {
-        executable: directory.path().join(expected[0]),
-        bundle: is_mac(platform).then(|| directory.path().join("TableCraft.app")),
+        executable: directory.path().join(package::executable(platform)),
+        bundle: package::is_mac(platform).then(|| directory.path().join(package::MAC_BUNDLE)),
         directory,
+        manifest_digest,
     })
-}
-
-fn is_mac(platform: Platform) -> bool {
-    matches!(platform, Platform::MacosX64 | Platform::MacosArm64)
-}
-
-fn expected_files(platform: Platform) -> &'static [&'static str] {
-    match platform {
-        Platform::MacosX64 | Platform::MacosArm64 => &MAC_FILES,
-        Platform::WindowsX64 | Platform::WindowsArm64 => &WINDOWS_FILES,
-        Platform::LinuxX64 | Platform::LinuxArm64 => &LINUX_FILES,
-    }
 }
 
 struct Contents<'a> {
@@ -147,6 +134,7 @@ struct Contents<'a> {
     hashes: BTreeMap<&'static str, String>,
     written: u64,
     cancelled: &'a dyn Fn() -> bool,
+    platform: Platform,
 }
 
 impl Contents<'_> {
@@ -175,15 +163,7 @@ impl Contents<'_> {
         } else {
             DATA_MODE
         };
-        let maximum = if executable {
-            MAX_EXECUTABLE_BYTES
-        } else if name.ends_with(".json") || name.ends_with(".plist") {
-            MAX_METADATA_BYTES
-        } else if name.ends_with(".icns") {
-            MAX_ICON_BYTES
-        } else {
-            MAX_LEGAL_BYTES
-        };
+        let maximum = LIMITS.maximum(name, self.platform);
         if size == 0 || size > maximum || mode != expected_mode {
             return Err(UpdateError::Archive);
         }
@@ -226,27 +206,20 @@ impl Contents<'_> {
         #[cfg(unix)]
         fs::set_permissions(&destination, fs::Permissions::from_mode(expected_mode))
             .map_err(UpdateError::Io)?;
-        self.hashes.insert(name, hash_text(hash.finalize()));
+        self.hashes
+            .insert(name, package::hash_text(&hash.finalize().into()));
         Ok(())
     }
 
-    fn validate(&self, platform: Platform, version: &Version) -> Result<(), UpdateError> {
+    fn validate(&self, platform: Platform, version: &Version) -> Result<[u8; 32], UpdateError> {
         if self.hashes.len() != self.expected.len() {
             return Err(UpdateError::Archive);
         }
-        let manifest_name = if is_mac(platform) {
-            MAC_MANIFEST
-        } else {
-            "RELEASE.json"
-        };
+        let manifest_name = package::manifest(platform);
         let bytes = fs::read(self.root.join(manifest_name)).map_err(UpdateError::Io)?;
         let manifest: Manifest =
             serde_json::from_slice(&bytes).map_err(|_| UpdateError::Archive)?;
-        if manifest.product != "tablecraft-desktop"
-            || manifest.version != version.to_string()
-            || manifest.target != platform.target()
-            || manifest.files.len() + 1 != self.hashes.len()
-            || manifest.files.contains_key(manifest_name)
+        if !manifest.matches_release(platform, version)
             || !manifest
                 .files
                 .iter()
@@ -254,23 +227,14 @@ impl Contents<'_> {
         {
             return Err(UpdateError::Archive);
         }
-        if is_mac(platform) {
+        if package::is_mac(platform) {
             let actual = fs::read(self.root.join(MAC_PLIST)).map_err(UpdateError::Io)?;
             if actual != canonical_plist(version).as_bytes() {
                 return Err(UpdateError::Archive);
             }
         }
-        Ok(())
+        Ok(Sha256::digest(bytes).into())
     }
-}
-
-fn hash_text(hash: Output<Sha256>) -> String {
-    let mut text = String::with_capacity(hash.len() * 2);
-    for byte in hash {
-        text.push(char::from(HEX_DIGITS[usize::from(byte >> NIBBLE_BITS)]));
-        text.push(char::from(HEX_DIGITS[usize::from(byte & NIBBLE_MASK)]));
-    }
-    text
 }
 
 fn extract_zip(mut reader: File, output: &mut Contents<'_>) -> Result<(), UpdateError> {
@@ -428,44 +392,6 @@ fn extract_tar(reader: File, output: &mut Contents<'_>) -> Result<(), UpdateErro
         return Err(UpdateError::Archive);
     }
     Ok(())
-}
-
-#[derive(Deserialize)]
-#[serde(deny_unknown_fields)]
-struct Manifest {
-    product: String,
-    version: String,
-    target: String,
-    #[serde(deserialize_with = "unique_hashes")]
-    files: BTreeMap<String, String>,
-}
-
-fn unique_hashes<'de, D>(deserializer: D) -> Result<BTreeMap<String, String>, D::Error>
-where
-    D: Deserializer<'de>,
-{
-    struct Hashes;
-    impl<'de> Visitor<'de> for Hashes {
-        type Value = BTreeMap<String, String>;
-
-        fn expecting(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
-            formatter.write_str("unique archive payload hashes")
-        }
-
-        fn visit_map<M>(self, mut map: M) -> Result<Self::Value, M::Error>
-        where
-            M: MapAccess<'de>,
-        {
-            let mut files = BTreeMap::new();
-            while let Some((name, hash)) = map.next_entry::<String, String>()? {
-                if files.insert(name, hash).is_some() {
-                    return Err(de::Error::custom("duplicate archive payload hash"));
-                }
-            }
-            Ok(files)
-        }
-    }
-    deserializer.deserialize_map(Hashes)
 }
 
 fn check_cancelled(cancelled: &dyn Fn() -> bool) -> Result<(), UpdateError> {
