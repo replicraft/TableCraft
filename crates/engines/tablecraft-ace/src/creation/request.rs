@@ -116,17 +116,9 @@ pub(super) fn validate<'a>(
         return Err(CreateDatabaseError::ColumnLimit);
     }
 
-    // Field metadata borrows the caller's declarations; only the actual number
-    // of validated fields owns storage, charged before its fallible allocation.
-    budget
-        .charge_allocation(columns.count() as u64, size_of::<Field<'_>>() as u64)
-        .map_err(InspectError::from)?;
-    let mut fields = Vec::new();
-    fields
-        .try_reserve_exact(columns.count())
-        .map_err(|_| InspectError::Allocation)?;
     let mut fixed_bytes = 0_usize;
     let mut incrementing = None;
+    let mut variables = 0_usize;
     for position in 0..columns.count() {
         let column = columns.name(position);
         name(column, budget, cancelled)?;
@@ -137,20 +129,17 @@ pub(super) fn validate<'a>(
                 return Err(CreateDatabaseError::DuplicateColumn);
             }
         }
-        let mut field = profile::bind(column, columns.declaration(position), fixed_bytes)?;
-        field.unicode_compression = columns.unicode_compression(position);
-        if columns.incrementing(position) {
-            if incrementing.replace(position).is_some() {
-                return Err(CreateDatabaseError::Declaration);
-            }
-            field.native_flags = Some(super::autonumber::LONG_INCREMENT_FLAGS);
+        let field = profile::bind(column, columns.declaration(position), fixed_bytes)?;
+        if columns.incrementing(position) && incrementing.replace(position).is_some() {
+            return Err(CreateDatabaseError::Declaration);
         }
         if field.offset.is_some() {
             fixed_bytes = fixed_bytes
                 .checked_add(field.width)
                 .ok_or(CreateDatabaseError::Layout)?;
+        } else {
+            variables += 1;
         }
-        fields.push(field);
     }
     super::autonumber::qualify(columns, rows, incrementing, budget, cancelled)?;
     if rows.count() > profile::MAX_ROWS {
@@ -206,7 +195,6 @@ pub(super) fn validate<'a>(
         .checked_add(fixed_bytes)
         .and_then(|length| length.checked_add(columns.count().div_ceil(u8::BITS as usize)))
         .ok_or(CreateDatabaseError::Layout)?;
-    let variables = Fields::new(&fields).variable_count();
     let variable = if variables == 0 {
         None
     } else {
@@ -232,6 +220,36 @@ pub(super) fn validate<'a>(
             .ok_or(CreateDatabaseError::PageCapacity)?;
         (free_bytes, row_bytes)
     };
+    // Complete borrow-only semantic validation precedes field storage. Invalid
+    // names, carriers, constraints and keys retain their errors even when the
+    // caller permits no allocation. The immutable declarations are rebound only
+    // after those checks, without cloning any caller payload.
+    budget
+        .charge_allocation(columns.count() as u64, size_of::<Field<'_>>() as u64)
+        .map_err(InspectError::from)?;
+    let mut fields = Vec::new();
+    fields
+        .try_reserve_exact(columns.count())
+        .map_err(|_| InspectError::Allocation)?;
+    let mut fixed_offset = 0_usize;
+    for position in 0..columns.count() {
+        check(budget, cancelled)?;
+        let mut field = profile::bind(
+            columns.name(position),
+            columns.declaration(position),
+            fixed_offset,
+        )?;
+        field.unicode_compression = columns.unicode_compression(position);
+        if columns.incrementing(position) {
+            field.native_flags = Some(super::autonumber::LONG_INCREMENT_FLAGS);
+        }
+        if field.offset.is_some() {
+            fixed_offset = fixed_offset
+                .checked_add(field.width)
+                .ok_or(CreateDatabaseError::Layout)?;
+        }
+        fields.push(field);
+    }
     if super::definition::length_with_primary(Fields::new(&fields), false, primary.as_ref())?
         > PAGE_BYTES
     {

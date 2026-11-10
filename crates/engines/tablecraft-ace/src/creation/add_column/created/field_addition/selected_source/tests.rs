@@ -298,28 +298,31 @@ fn opaque_history_is_not_text_authority_and_nested_inspection_failures_are_prese
 }
 
 #[test]
-fn readable_small_role_catalog_refuses_before_specialized_map_observation() {
+fn missing_target_in_small_role_catalog_refuses_before_specialized_map_observation() {
     let mut current = tablecraft_testkit::fixtures::access::database_properties::database(None);
     let header = mixed::source(mixed::SourceCase::IdOnly);
     current[..4096].copy_from_slice(&header[..4096]);
     let captured = image(&current);
     assert_eq!(captured.catalog().header().format(), FileFormat::Ace2016);
     assert_eq!(captured.catalog().origins().len(), 5);
-    assert_eq!(
-        captured
-            .field_addition_source_purpose(
-                "Missing",
-                FieldAdditionTarget::NumberLongZero,
-                &mut budget(),
-                &|| false
-            )
-            .unwrap(),
-        FieldAdditionSourcePurpose::CurrentNumber
-    );
+    // The actual MSysDb role makes target resolution part of metadata selection.
+    // A missing target must remain UnknownTable rather than a fabricated source
+    // purpose or a later specialized-map failure.
+    assert!(matches!(
+        captured.field_addition_source_purpose(
+            "Missing",
+            FieldAdditionTarget::NumberLongZero,
+            &mut budget(),
+            &|| false
+        ),
+        Err(FieldAdditionSourceError::Inspect(
+            InspectError::UnknownTable
+        ))
+    ));
     assert!(matches!(
         image(&current).inspect_field_addition_source("Missing", &mut budget(), &|| false),
-        Err(FieldAdditionSourceError::Current(
-            CurrentFieldAdditionError::Source
+        Err(FieldAdditionSourceError::Inspect(
+            InspectError::UnknownTable
         ))
     ));
 }
