@@ -331,6 +331,22 @@ impl NativeEditor {
 
 #[cfg(feature = "journal")]
 impl NativeEditor {
+    #[cfg(feature = "ace16-create")]
+    pub(super) fn plan_recoverable_historical_short_text(
+        self,
+        groups: Vec<NativeFittedIntentGroup>,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<RecoverableNativeEditPlan, RecoverableEditError> {
+        self.image
+            .plan_recoverable_historical_short_text_materialization(
+                self.snapshot.name(),
+                groups,
+                budget,
+                cancelled,
+            )
+    }
+
     pub(super) fn plan_recoverable_ordinary_variable(
         self,
         groups: Vec<NativeFittedIntentGroup>,

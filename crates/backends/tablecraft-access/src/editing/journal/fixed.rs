@@ -105,7 +105,7 @@ impl NativeJournalEditor {
                 .ok_or(InspectError::StructureLimit)
                 .map_err(NativeEditError::from)?;
         }
-        if self.route == JournalRoute::Ordinary
+        if (self.route == JournalRoute::Ordinary || self.route.historical_present_fixed())
             && self.variable_columns_requested(columns, budget, cancelled)?
         {
             return self.plan_variable_columns_with_count(columns, count, budget, cancelled);

@@ -47,7 +47,9 @@ impl NativeJournalEditor {
     ) -> Result<(RecoverableNativeEditPlan, usize), Error> {
         let _span = tracing::debug_span!("access.journal.plan_variable_columns").entered();
         check(budget, cancelled)?;
-        if self.route != JournalRoute::Ordinary || self.profile != UpdateProfile::StoredScalar {
+        if (self.route != JournalRoute::Ordinary && !self.route.historical_present_fixed())
+            || self.profile != UpdateProfile::StoredScalar
+        {
             return Err(NativeEditError::Unsupported.into());
         }
         let mut positions = vector(columns.len(), budget)?;
@@ -65,6 +67,11 @@ impl NativeJournalEditor {
                 return Err(NativeEditError::Unsupported.into());
             }
             let kind = self.snapshot().columns()[position].data_type();
+            if self.route.historical_present_fixed()
+                && (columns.len() != 1 || kind != ScalarType::Text)
+            {
+                return Err(NativeEditError::Unsupported.into());
+            }
             if !matches!(
                 kind,
                 ScalarType::Boolean
@@ -143,9 +150,16 @@ impl NativeJournalEditor {
             );
         }
         let matched = matched_rows(rows, budget, cancelled)?;
-        let plan = self
-            .editor
-            .plan_recoverable_ordinary_variable(groups, budget, cancelled)?;
+        let plan = match self.route {
+            JournalRoute::Ordinary => self
+                .editor
+                .plan_recoverable_ordinary_variable(groups, budget, cancelled)?,
+            #[cfg(feature = "ace16-create")]
+            JournalRoute::HistoricalPresentFixed => self
+                .editor
+                .plan_recoverable_historical_short_text(groups, budget, cancelled)?,
+            JournalRoute::Existing => return Err(NativeEditError::Unsupported.into()),
+        };
         Ok((plan, matched))
     }
 }
