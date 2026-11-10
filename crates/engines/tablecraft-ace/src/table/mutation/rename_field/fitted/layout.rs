@@ -78,11 +78,12 @@ impl Layout {
             return Err(Error::Source);
         }
 
-        let property_base = reference_page(observed.property_reference) as usize * PAGE_BYTES;
+        let property_reference = observed.property_reference.ok_or(Error::Source)?;
+        let property_base = reference_page(property_reference) as usize * PAGE_BYTES;
         let page = bytes
             .get(property_base..property_base + PAGE_BYTES)
             .ok_or(Error::Source)?;
-        let property_slot = usize::from(reference_slot(observed.property_reference));
+        let property_slot = usize::from(reference_slot(property_reference));
         let count = row_count(page)?;
         // The settled source proves the last row is the separate MSysDb OFF
         // owner. Only that final row may move after the selected live user row.

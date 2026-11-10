@@ -1,7 +1,7 @@
 //! Independent name frames, exact metadata append and immutable record proof.
 use super::{Error, source::Source};
 use crate::{
-    NativeImage, PropertyGroupKind,
+    PropertyGroupKind,
     format::{
         bytes::{u16_at, u32_at},
         definition::{LENGTH_OFFSET, PAGE_HEADER_BYTES},
@@ -12,7 +12,10 @@ use crate::{
     header::check,
     properties::framing,
     read_table,
-    table::mutation::{catalog_property::RepeatedChange, current_schema},
+    table::mutation::{
+        catalog_property::{RepeatedChange, retained_snapshot::Snapshot},
+        current_schema,
+    },
 };
 use std::io::Cursor;
 use tablecraft_core::limits::{Resource, ResourceBudget};
@@ -35,46 +38,10 @@ pub(super) fn candidate(
         return Err(Error::Preservation);
     }
 
-    let base = observed.schema.definition_page() as usize * PAGE_BYTES;
-    let length = u32_at(before, base + LENGTH_OFFSET)? as usize;
-    let difference =
-        name.len() as isize * size_of::<u16>() as isize - observed.definition_name.len() as isize;
-    let next_length = length
-        .checked_add_signed(difference)
-        .ok_or(Error::Preservation)?;
-    let next_end = observed
-        .definition_name
-        .end
-        .checked_add_signed(difference)
-        .ok_or(Error::Preservation)?;
-    if u32_at(after, base + LENGTH_OFFSET)? as usize != next_length
-        || usize::from(u16_at(after, base + FREE_OFFSET)?)
-            != PAGE_BYTES - next_length - PAGE_HEADER_BYTES
-        || u16_at(after, observed.definition_name.start - size_of::<u16>())? as usize
-            != name.len() * size_of::<u16>()
-        || after[next_end..base + next_length]
-            != before[observed.definition_name.end..base + length]
-        || next_length < length
-            && after[base + next_length..base + length] != before[base + next_length..base + length]
-    {
-        return Err(Error::Preservation);
-    }
-    let encoded = after
-        .get(observed.definition_name.start..next_end)
-        .ok_or(Error::Preservation)?;
-    if !encoded
-        .as_chunks::<2>()
-        .0
-        .iter()
-        .map(|word| u16::from_le_bytes(*word))
-        .eq(name.encode_utf16())
-    {
-        return Err(Error::Preservation);
-    }
-
+    let (base, length, next_length) = definition_frames(source, after, name)?;
     let reference = change.property_reference();
     let property_page = reference_page(reference);
-    if property_page != reference_page(observed.property_reference)
+    if property_page != reference_page(observed.property_reference.ok_or(Error::Source)?)
         || property_page != change.lval_page()
     {
         return Err(Error::Preservation);
@@ -118,6 +85,98 @@ pub(super) fn candidate(
     metadata(source, after, name, reference, budget, cancelled)
 }
 
+fn definition_frames(
+    source: &Source,
+    after: &[u8],
+    name: &str,
+) -> Result<(usize, usize, usize), Error> {
+    let before = source.image.as_bytes();
+    let observed = &source.observed;
+    let base = observed.schema.definition_page() as usize * PAGE_BYTES;
+    let length = u32_at(before, base + LENGTH_OFFSET)? as usize;
+    let difference =
+        name.len() as isize * size_of::<u16>() as isize - observed.definition_name.len() as isize;
+    let next_length = length
+        .checked_add_signed(difference)
+        .ok_or(Error::Preservation)?;
+    let next_end = observed
+        .definition_name
+        .end
+        .checked_add_signed(difference)
+        .ok_or(Error::Preservation)?;
+    if u32_at(after, base + LENGTH_OFFSET)? as usize != next_length
+        || usize::from(u16_at(after, base + FREE_OFFSET)?)
+            != PAGE_BYTES - next_length - PAGE_HEADER_BYTES
+        || u16_at(after, observed.definition_name.start - size_of::<u16>())? as usize
+            != name.len() * size_of::<u16>()
+        || after[next_end..base + next_length]
+            != before[observed.definition_name.end..base + length]
+        || next_length < length
+            && after[base + next_length..base + length] != before[base + next_length..base + length]
+    {
+        return Err(Error::Preservation);
+    }
+    let encoded = after
+        .get(observed.definition_name.start..next_end)
+        .ok_or(Error::Preservation)?;
+    if !encoded
+        .as_chunks::<2>()
+        .0
+        .iter()
+        .map(|word| u16::from_le_bytes(*word))
+        .eq(name.encode_utf16())
+    {
+        return Err(Error::Preservation);
+    }
+
+    Ok((base, length, next_length))
+}
+
+pub(super) fn retained_candidate(
+    source: &Source,
+    after: &[u8],
+    name: &str,
+    snapshot: &Snapshot<'_>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), Error> {
+    let before = source.image.as_bytes();
+    if before.len() != after.len() {
+        return Err(Error::Preservation);
+    }
+    let (base, length, next_length) = definition_frames(source, after, name)?;
+    snapshot.verify_placement(after, budget, cancelled)?;
+    let allowed = [
+        base + FREE_OFFSET..base + FREE_OFFSET + size_of::<u16>(),
+        base + LENGTH_OFFSET..base + LENGTH_OFFSET + size_of::<u32>(),
+        source.observed.definition_name.start - size_of::<u16>()..base + length.max(next_length),
+        snapshot.catalog_page_range(),
+        snapshot.property_page_range(),
+    ];
+    budget.charge(
+        Resource::Steps,
+        (before.len() as u64)
+            .checked_mul(allowed.len() as u64)
+            .ok_or(crate::InspectError::StructureLimit)?,
+    )?;
+    for (offset, (old, new)) in before.iter().zip(after).enumerate() {
+        if offset.is_multiple_of(PAGE_BYTES) {
+            check(budget, cancelled)?;
+        }
+        if old != new && !allowed.iter().any(|range| range.contains(&offset)) {
+            return Err(Error::Preservation);
+        }
+    }
+    metadata(
+        source,
+        after,
+        name,
+        snapshot.property_reference(),
+        budget,
+        cancelled,
+    )
+}
+
 fn metadata(
     source: &Source,
     after: &[u8],
@@ -128,8 +187,10 @@ fn metadata(
 ) -> Result<(), Error> {
     let original = &source.observed;
     let scope = source.image.catalog().catalog().scope();
-    let replacement = NativeImage::capture(&mut Cursor::new(after), scope, budget, cancelled)?;
-    let current = current_schema::observe(&replacement, original.schema.name(), budget, cancelled)
+    let replacement = source.family.image(after, scope, budget, cancelled)?;
+    let current = source
+        .family
+        .observe(&replacement, original.schema.name(), budget, cancelled)
         .map_err(super::super::current_source::source_error)?;
     let current_schema::UserStorage::Single { reference: actual } = current.user_storage else {
         return Err(Error::Preservation);
@@ -158,18 +219,31 @@ fn metadata(
             return Err(Error::Preservation);
         }
     }
-    let selected = crate::table::mutation::saved_field::Observed::capture_current_rename(
-        &replacement,
-        original.schema.name(),
-        name,
-        budget,
-        cancelled,
-    )?;
+    let selected = match source.family {
+        current_schema::Family::Current => {
+            crate::table::mutation::saved_field::Observed::capture_current_rename(
+                &replacement,
+                original.schema.name(),
+                name,
+                budget,
+                cancelled,
+            )?
+        }
+        current_schema::Family::Retained => {
+            crate::table::mutation::saved_field::Observed::capture_retained_schema_rename(
+                &replacement,
+                original.schema.name(),
+                name,
+                budget,
+                cancelled,
+            )?
+        }
+    };
     if selected.identity.native_table != original.identity.native_table
         || selected.identity.definition != original.identity.definition
         || selected.identity.number != original.identity.number
         || selected.identity.column_id != original.identity.column_id
-        || selected.property_reference != reference
+        || selected.property_reference != Some(reference)
     {
         return Err(Error::Preservation);
     }

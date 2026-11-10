@@ -59,7 +59,7 @@ fn selected(
     // This operation's packing still moves the user row and following OFF row.
     // The shared source proof itself does not require a particular live-row order.
     if current.schema.object_id() != observed.schema.object_id()
-        || *reference != observed.property_reference
+        || Some(*reference) != observed.property_reference
         || usize::from(reference_slot(current.database_reference))
             != usize::from(reference_slot(*reference)) + 1
     {

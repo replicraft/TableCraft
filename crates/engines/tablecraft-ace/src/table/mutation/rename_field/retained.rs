@@ -10,7 +10,7 @@ use super::{FieldRenameError as Error, FittedFieldRenameSource, NativeFieldRenam
 use crate::{
     NativeImage,
     header::check,
-    table::mutation::{catalog_property, normal_fitted::binding},
+    table::mutation::{catalog_property, current_schema::Family, normal_fitted::binding},
 };
 use tablecraft_core::limits::ResourceBudget;
 
@@ -23,6 +23,11 @@ pub struct NativeRetainedFieldRenameCandidate {
 }
 
 impl NativeRetainedFieldRenameCandidate {
+    /// Whether this source belongs to retained-schema rename, distinct from TCFR5.
+    pub fn is_retained_schema(&self) -> bool {
+        self.source.family == Family::Retained
+    }
+
     /// Complete source-qualified original, including old property snapshots.
     pub fn before_bytes(&self) -> &[u8] {
         self.source.image.as_bytes()
@@ -96,38 +101,117 @@ impl NativeImage {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<NativeRetainedFieldRenameCandidate, Error> {
-        check(budget, cancelled)?;
-        if !crate::identifier::valid_name(new_name, budget, cancelled)? {
-            return Err(Error::InvalidName);
-        }
-        if !new_name.is_ascii() {
-            return Err(Error::CurrentNameShape);
-        }
-
-        let source = source::Source::capture(self, table, column, budget, cancelled)?;
-        source::request(&source, new_name, budget, cancelled)?;
-
-        let mut after = build::definition(&source, new_name, budget, cancelled)?;
-        if source.observed.column().name() != new_name {
-            let body = build::properties(&source.observed, new_name, budget, cancelled)?;
-            let change = catalog_property::compose_retained_single_at_origin(
-                &source.image,
-                &source.observed.schema,
-                body,
-                budget,
-                cancelled,
-            )?;
-            change.apply(&mut after, budget, cancelled)?;
-            verify::candidate(&source, &after, new_name, &change, budget, cancelled)?;
-        } else if !binding::equal_bytes(source.image.as_bytes(), &after, budget, cancelled)? {
-            return Err(Error::Preservation);
-        }
-
-        let new_name = build::owned_name(new_name, budget)?;
-        Ok(NativeRetainedFieldRenameCandidate {
-            source,
-            after,
+        prepare(
+            self,
+            table,
+            column,
             new_name,
+            Family::Current,
+            budget,
+            cancelled,
+        )
+    }
+
+    /// Inspect the distinct retained-schema rename source without a proposed name.
+    pub fn inspect_retained_schema_field_rename_source(
+        &self,
+        table: &str,
+        column: &str,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<FittedFieldRenameSource, Error> {
+        let (observed, maximum_name_units) =
+            source::observe_retained_schema(self, table, column, budget, cancelled)?;
+        Ok(FittedFieldRenameSource {
+            identity: NativeFieldRenameIdentity::from_observed(observed.identity),
+            maximum_name_units,
         })
     }
+
+    /// Rename one qualified retained field and its actual live property group.
+    /// Existing table records, indexes and earlier property snapshots remain intact.
+    pub fn prepare_retained_schema_field_rename(
+        self,
+        table: &str,
+        column: &str,
+        new_name: &str,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<NativeRetainedFieldRenameCandidate, Error> {
+        prepare(
+            self,
+            table,
+            column,
+            new_name,
+            Family::Retained,
+            budget,
+            cancelled,
+        )
+    }
+}
+
+fn prepare(
+    image: NativeImage,
+    table: &str,
+    column: &str,
+    new_name: &str,
+    family: Family,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<NativeRetainedFieldRenameCandidate, Error> {
+    check(budget, cancelled)?;
+    if !crate::identifier::valid_name(new_name, budget, cancelled)? {
+        return Err(Error::InvalidName);
+    }
+    if !new_name.is_ascii() {
+        return Err(Error::CurrentNameShape);
+    }
+    let (source, retained) = match family {
+        Family::Current => (
+            source::Source::capture(image, table, column, budget, cancelled)?,
+            None,
+        ),
+        Family::Retained => {
+            let (source, table) =
+                source::Source::capture_retained_schema(image, table, column, budget, cancelled)?;
+            (source, Some(table))
+        }
+    };
+    source::request(&source, new_name, budget, cancelled)?;
+    let mut after = build::definition(&source, new_name, budget, cancelled)?;
+    if source.observed.column().name() != new_name {
+        let body = build::properties(&source.observed, new_name, budget, cancelled)?;
+        match retained {
+            None => {
+                let change = catalog_property::compose_retained_single_at_origin(
+                    &source.image,
+                    &source.observed.schema,
+                    body,
+                    budget,
+                    cancelled,
+                )?;
+                change.apply(&mut after, budget, cancelled)?;
+                verify::candidate(&source, &after, new_name, &change, budget, cancelled)?;
+            }
+            Some(table) => {
+                let change = catalog_property::retained_snapshot::compose(
+                    &source.image,
+                    &table,
+                    body,
+                    budget,
+                    cancelled,
+                )?;
+                change.apply(&mut after, budget, cancelled)?;
+                verify::retained_candidate(&source, &after, new_name, &change, budget, cancelled)?;
+            }
+        }
+    } else if !binding::equal_bytes(source.image.as_bytes(), &after, budget, cancelled)? {
+        return Err(Error::Preservation);
+    }
+    let new_name = build::owned_name(new_name, budget)?;
+    Ok(NativeRetainedFieldRenameCandidate {
+        source,
+        after,
+        new_name,
+    })
 }

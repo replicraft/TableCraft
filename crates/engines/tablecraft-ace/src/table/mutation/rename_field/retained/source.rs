@@ -30,6 +30,7 @@ const REFERENCE_OFFSET: usize = size_of::<u32>();
 
 pub(super) struct Source {
     pub image: NativeImage,
+    pub family: current_schema::Family,
     pub observed: Observed,
     pub maximum_name_units: usize,
 }
@@ -48,9 +49,34 @@ impl Source {
             facts(proof.image(), proof.table(), field, budget, cancelled)?;
         Ok(Self {
             image: proof.into_image(),
+            family: current_schema::Family::Current,
             observed,
             maximum_name_units,
         })
+    }
+
+    pub fn capture_retained_schema(
+        image: NativeImage,
+        table: &str,
+        field: &str,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(Self, current_schema::Table), Error> {
+        let proof = current_schema::Family::Retained
+            .capture(image, table, budget, cancelled)
+            .map_err(source_error)?;
+        let (observed, maximum_name_units) =
+            facts(proof.image(), proof.table(), field, budget, cancelled)?;
+        let (image, table) = proof.into_parts();
+        Ok((
+            Self {
+                image,
+                family: current_schema::Family::Retained,
+                observed,
+                maximum_name_units,
+            },
+            table,
+        ))
     }
 }
 
@@ -65,6 +91,19 @@ pub(super) fn observe(
     facts(image, &current, field, budget, cancelled)
 }
 
+pub(super) fn observe_retained_schema(
+    image: &NativeImage,
+    table: &str,
+    field: &str,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(Observed, usize), Error> {
+    let current = current_schema::Family::Retained
+        .observe(image, table, budget, cancelled)
+        .map_err(source_error)?;
+    facts(image, &current, field, budget, cancelled)
+}
+
 fn facts(
     image: &NativeImage,
     current: &current_schema::Table,
@@ -72,14 +111,32 @@ fn facts(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(Observed, usize), Error> {
-    let observed =
-        Observed::capture_current_rename(image, current.schema.name(), field, budget, cancelled)?;
-    let current_schema::UserStorage::Single { reference } = &current.user_storage else {
-        return Err(Error::Source);
+    let observed = match current.family {
+        current_schema::Family::Current => Observed::capture_current_rename(
+            image,
+            current.schema.name(),
+            field,
+            budget,
+            cancelled,
+        )?,
+        current_schema::Family::Retained => Observed::capture_retained_schema_rename(
+            image,
+            current.schema.name(),
+            field,
+            budget,
+            cancelled,
+        )?,
     };
-    if *reference != observed.property_reference
-        || current.schema.object_id() != observed.schema.object_id()
-    {
+    let storage_matches = match (&current.user_storage, observed.property_reference) {
+        (current_schema::UserStorage::Single { reference }, Some(actual)) => *reference == actual,
+        (current_schema::UserStorage::Inline, None)
+            if current.family == current_schema::Family::Retained =>
+        {
+            true
+        }
+        _ => false,
+    };
+    if !storage_matches || current.schema.object_id() != observed.schema.object_id() {
         return Err(Error::Source);
     }
     let base = observed.schema.definition_page() as usize * PAGE_BYTES;
@@ -94,8 +151,15 @@ fn facts(
     if usize::from(u16_at(page, FREE_OFFSET)?) != free {
         return Err(Error::Source);
     }
-    let capacity =
-        catalog_property::fitted_property_capacity(image, budget, cancelled)?.unwrap_or(0);
+    let capacity = match current.family {
+        current_schema::Family::Current => {
+            catalog_property::fitted_property_capacity(image, budget, cancelled)?
+        }
+        current_schema::Family::Retained => {
+            catalog_property::retained_fitted_property_capacity(image, budget, cancelled)?
+        }
+    }
+    .unwrap_or(0);
     let unchanged = observed
         .properties
         .raw_bytes()
