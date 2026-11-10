@@ -13,8 +13,6 @@ pub(crate) mod catalog_property;
 mod create_index_tests;
 #[cfg(all(feature = "journal", feature = "ace16-create"))]
 mod current_row_updates;
-#[cfg(all(feature = "journal", feature = "ace16-create"))]
-mod retained_row_updates;
 mod data_ownership;
 #[cfg(feature = "ace16-write-preview")]
 mod delete;
@@ -37,6 +35,8 @@ pub(in crate::table) mod index_create;
 mod index_ownership;
 #[cfg(feature = "journal")]
 pub(super) mod normal_eof;
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+mod retained_row_updates;
 #[cfg(feature = "ace16-write-preview")]
 pub use index_create::{Ace16IndexCreatePreview, SecondaryIndexCreate};
 #[cfg(all(feature = "ace16-create", feature = "journal"))]
