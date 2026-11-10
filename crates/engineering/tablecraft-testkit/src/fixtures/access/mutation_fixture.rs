@@ -1,5 +1,6 @@
 //! Original literal native fixture owner, shared by actual tests.
 pub mod inline_values;
+pub mod wide;
 
 use super::{data_page, image, put16, put32, record};
 
