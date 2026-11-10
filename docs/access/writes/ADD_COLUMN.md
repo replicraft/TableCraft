@@ -6,6 +6,61 @@ Int32 candidates and frozen recovery languages alongside the typed TCAC0005
 request. General saved-column editing remains unfinished; current source,
 storage and declaration limits are explicit below.
 
+## Retained tables and live siblings
+
+The retained route adds nullable LONG with Required(false) and literal default
+zero, or nullable Short Text with Required(false), AllowZeroLength(true), explicit
+width/compression and no default. It uses the current descriptor/property encoders
+under a separate retained-schema source family. Existing records are not rewritten
+or backfilled: historical absent fields read NULL; later omitted insertion uses
+the actual stored default or absence of a default.
+
+Metadata selects retained capture before allocation. The schema source proves
+the complete retained cohort, explicit Name AutoCorrect OFF, actual empty
+permission/relationship storage, target declarations, dependencies and program
+absence. Its schema-purpose certificate cannot substitute for INSERT, UPDATE or
+DELETE certificates. Dynamic owned catalog/row/LVAL traversal retains ownership,
+cycle, terminal-alias and cross-role overlap checks. Appended tables and original
+sparse tables beside live siblings do not inherit the older eleven-page/TD7
+geometry restriction. General imported application/schema support remains
+unfinished.
+
+Native column-number high water, greatest live stored ID and fixed/variable
+placement come from the actual declaration. The new complete property snapshot
+is appended into an actually allocated, hinted catalog-property LVAL page with
+measured fitting capacity, selecting a fitting candidate from the actual map.
+The parser-bound selected catalog terminal receives its Single descriptor;
+inactive record padding and old property bodies remain retained. This route
+does not allocate pages or rewrite usage hints. Exhausted physical capacity
+refuses before saving rather than imposing a new Access size/count quota.
+
+The independent AFTER proof uses the same captured source family, checks the
+exact new declaration and property group, and preserves complete DATA/INDEX,
+sibling, map, counter and historical bytes outside the proven metadata effects.
+The existing qualified ASCII naming and scalar/index/program admission remain
+implementation boundaries, not Access restrictions.
+
+`TCAC0010` binds retained Number addition and `TCAC0011` binds retained Short Text
+addition. They retain original names, declaration parameters and complete BEFORE
+binding under the native file envelope. Exact retained decoding, checked V3
+preparation, fresh reconstruction and a separate retained recovery owner protect
+both complete images. Older TCAC8/9 keep their original source, V2 preparation and
+decoding contracts; failures never retry another family. Journal-only builds can
+recognize retained request data but refuse native reconstruction without the
+creation feature. Runtime/Access own capture, review and durable sessions;
+desktop composes those services through the existing field-addition workflow.
+
+Local macOS ARM64 verification passes 112 retained native tests (twelve existing
+ignored cases remain unqualified), fourteen native ADD tests and twelve
+field-addition intent/recovery tests. The latter retain exact forged-image and
+wrong-journal refusals. Three journal-only tests execute data decoding and the
+disabled-writer refusal. Three independent Access read/query cases and two
+Access staging/recovery cases pass. All 42 headless GUI field-addition tests
+pass, including six retained ADD/fill/omitted-INSERT/NULL-INSERT sequences with
+fresh reopening and independent whole-file comparisons; all 38 table-creation
+regressions pass. These observations do not establish Windows/Access parity or
+general imported ALTER support.
+
 ## Addition after a populated field deletion
 
 The current-schema route distinguishes the active descriptor count from retained

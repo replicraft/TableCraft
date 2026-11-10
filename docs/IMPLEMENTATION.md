@@ -1,5 +1,45 @@
 # Implementation status
 
+## Retained nullable column addition — 10 November 2026
+
+The existing shared field-addition workflow now adds nullable LONG/default-zero
+and Short Text/AllowZeroLength declarations after retained table creation and
+row editing. A separate schema-purpose proof checks the complete cohort, target
+programs/dependencies, original declarations, property ownership and historical
+rows. The existing serializers allocate actual native field numbers and stored
+IDs; dynamic owned traversal and measured property-page candidates replace
+single-table geometry assumptions without broadening old request languages.
+Data/index bytes, live siblings, counters and inactive property history remain
+preserved. General imported schema editing and other declarations remain unfinished.
+
+TCAC10/11 bind the original names, declaration and complete BEFORE under the
+native envelope, with exact V3 preparation/reconstruction/recovery. Older TCAC8/9
+keep their original source and V2 boundaries. Pure request target/error types now
+live outside creation-only implementation; journal-only builds decode retained
+data and explicitly refuse native reconstruction without creation support.
+Runtime/Access retain metadata-first capture, consuming review, exclusive fresh
+validation, schema-only receipts and the same durable recovery owner. No native
+editing logic was added to desktop.
+
+The retained native family passes 112 tests, with twelve existing ignored cases;
+the complete native ADD family passes fourteen and its intent/recovery family
+twelve. Two property-page alternatives prove fitting selection from actual maps,
+including refusal of hinted-but-unowned storage. Three independent Access read/
+query cases and two Access session/recovery tests pass. All 42 headless GUI
+field-addition tests pass, including six ADD→historical NULL→cell fill→omitted/
+explicit-NULL INSERT workflows across appended and original sparse tables; all
+38 table-creation regressions pass. Three journal-only data/refusal tests pass.
+Strict all-target/all-feature ACE/Access/runtime/desktop/MCP and journal-only
+minimal ACE/Access checks pass, along with engine rustdoc, formatting,
+module/dependency guards and local documentation links.
+No Windows or Microsoft Access save/reopen qualification is claimed. See
+[column addition](access/writes/ADD_COLUMN.md) and
+[the saved-table workflow](ui/DATABASE_CREATION.md#adding-a-column-to-an-existing-saved-table).
+
+Next is retained tail-column DROP and field rename using the same schema
+foundation. Those mutation and recovery languages still need their own retained
+source, exact effect proofs and connected UI acceptance.
+
 ## Retained table deletion — 10 November 2026
 
 The shared reviewed table-delete service now works after retained table creation
@@ -29,11 +69,8 @@ No Windows or Microsoft Access save/reopen qualification is claimed. See
 [native table deletion](access/writes/NATIVE_TABLE_DROP.md) and
 [its connected workflow](ui/TABLE_DROP.md).
 
-Next is retained column ADD, followed by tail DROP and rename. Those schema
-operations still enter the original eleven-page/definition-seven source and
-cannot yet compose across appended tables and live siblings. The existing
-serializers/property placement should share a separate retained schema proof;
-inventory alone must not become schema-edit permission.
+Retained column ADD is now connected above. Tail DROP and rename still need
+their own retained mutation proofs; inventory alone is not schema-edit permission.
 
 ## Shared retained traversal — 10 November 2026
 

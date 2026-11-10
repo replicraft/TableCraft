@@ -370,9 +370,9 @@ historical test counts below; native Access comparison remains pending.
 
 Saved native table views use one name-independent native inspection to obtain
 separate Number and Short Text availability facts for the exact table/revision.
-One captured image and one native source proof shared with the typed candidate
-publish both current facts; each gallery choice still requires its own positive
-fact. Existing canonical Number and repeated-history proof owners are reused,
+One captured image supplies the typed availability facts; each gallery choice
+still requires its own positive native qualification. Existing canonical Number
+and repeated-history proof owners are reused,
 with generated-field, dictionary and history restrictions retained. Mixed sources
 keep their complete replay. The unchanged native allowance is not reset to
 reconstruct the same history for each choice.
@@ -394,6 +394,22 @@ review/save actor, status and close controller. The saved request binds its full
 declaration as well as the owner, raw name and draft revision. Before starting
 persistence, the host requires both the review DTO and opaque native capability
 to match the entire declaration, including exact width and compression.
+
+The connected retained route also supports newly appended tables and original
+sparse tables beside live siblings after row edits. Number and Short Text ADD
+preserve historical records as NULL without backfill. Subsequent cell edits and
+new-row insertion use their separate row services: omitted Number uses its stored
+zero default, while omitted Short Text and explicit NULL remain NULL. Retained
+schema capture, property-page placement and V3 recovery stay in the engine,
+Access adapter and runtime.
+
+Three headless journeys cover both types across appended Number, long-forwarded
+Text and original sparse sources. Actual ADD, first historical-cell fill, omitted
+and explicit-NULL insertions, acknowledgement and fresh reopening match independent
+complete images while preserving the sibling and SQL scratch. The complete
+field-addition family passes 42 tests; 38 table-creation regressions also pass.
+This does not establish native Windows/Access interaction or general imported ALTER
+compatibility. See [saved-table column addition](../access/writes/ADD_COLUMN.md).
 
 ### Saved Design blank-row addition
 
