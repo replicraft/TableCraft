@@ -494,3 +494,6 @@ pub(in crate::workspace::editing) mod retained_tests;
 
 #[cfg(all(test, any(target_os = "macos", target_os = "linux", windows)))]
 mod currency_tests;
+
+#[cfg(all(test, any(target_os = "macos", target_os = "linux", windows)))]
+mod boolean_tests;
