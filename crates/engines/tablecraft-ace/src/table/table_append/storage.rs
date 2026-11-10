@@ -135,10 +135,17 @@ fn physical(
         match census.roles[number as usize] {
             Some(Role::Maps) => {
                 let page = reader.page(number)?;
-                if page[..DATA_SIGNATURE.len()] == DATA_SIGNATURE
-                    && u32_at(&page, OWNER_OFFSET)? == 0
-                {
-                    let count = pages::framing(&page, 0, &mut reader)?;
+                if page[..DATA_SIGNATURE.len()] == DATA_SIGNATURE {
+                    let owner = u32_at(&page, OWNER_OFFSET)?;
+                    let count = pages::framing(&page, owner, &mut reader)?;
+                    if owner != 0 {
+                        if number != crate::format::row::reference_page(GLOBAL_FREE_REFERENCE)
+                            || owner != number
+                        {
+                            return Err(refused());
+                        }
+                        continue;
+                    }
                     for slot in 0..count {
                         let slot = u8::try_from(slot).map_err(|_| refused())?;
                         let value = reference(number, slot);
