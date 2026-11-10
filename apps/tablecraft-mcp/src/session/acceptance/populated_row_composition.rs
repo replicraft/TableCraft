@@ -6,7 +6,9 @@ use crate::session::{
 use serde_json::{Value, json};
 use std::path::Path;
 use tablecraft_runtime::journal_path;
-use tablecraft_testkit::fixtures::access::saved_field_rename::fitting;
+use tablecraft_testkit::fixtures::access::{
+    canonical_initial_table_creation::deletes::long_row, saved_field_rename::fitting,
+};
 
 #[test]
 fn populated_renamed_field_keeps_rows_and_generated_history_across_protocol_edits() {
@@ -39,6 +41,9 @@ fn populated_renamed_field_keeps_rows_and_generated_history_across_protocol_edit
         assert_eq!(std::fs::read(&path).unwrap(), renamed);
         let id = save(&mut session, "apply_edit", review);
         acknowledge(&mut session, id, &path);
+        let [_, expected_update] =
+            fitting::populated_number_pair(column, &[Some(99), None, Some(-7)]);
+        assert_eq!(std::fs::read(&path).unwrap(), expected_update);
         assert_rows(
             &mut session,
             column,
@@ -67,6 +72,9 @@ fn populated_renamed_field_keeps_rows_and_generated_history_across_protocol_edit
         assert_eq!(std::fs::read(&path).unwrap(), before);
         let id = save(&mut session, "apply_insert", review);
         acknowledge(&mut session, id, &path);
+        let [_, expected_insert] =
+            fitting::populated_number_pair(column, &[Some(99), None, Some(-7), Some(0)]);
+        assert_eq!(std::fs::read(&path).unwrap(), expected_insert);
         assert_rows(
             &mut session,
             column,
@@ -88,11 +96,14 @@ fn populated_renamed_field_keeps_rows_and_generated_history_across_protocol_edit
         assert_eq!(std::fs::read(&path).unwrap(), before);
         let id = save(&mut session, "apply_delete", review);
         acknowledge(&mut session, id, &path);
+        let expected_delete = long_row(&expected_insert, 1);
+        assert_eq!(std::fs::read(&path).unwrap(), expected_delete);
         assert_rows(&mut session, column, &["1", "3", "4"], &["99", "-7", "0"]);
         assert!(!journal_path(&path).exists());
         drop(session);
 
         let mut reopened = reopen(&path);
+        assert_eq!(std::fs::read(&path).unwrap(), expected_delete);
         assert_rows(&mut reopened, column, &["1", "3", "4"], &["99", "-7", "0"]);
         assert!(!journal_path(&path).exists());
     }
