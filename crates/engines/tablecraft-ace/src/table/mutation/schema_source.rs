@@ -217,6 +217,13 @@ pub(in crate::table::mutation) fn find_role<'a>(
     matched.ok_or(Error::Source)
 }
 
+/// Exact supported property storage, independently bound to decoded metadata.
+#[cfg(feature = "ace16-create")]
+pub(in crate::table::mutation) enum PropertyPayload<'a> {
+    Inline(&'a [u8]),
+    Single(u32, usize),
+}
+
 /// Require every live variable payload to be the name or the exact supplied
 /// external property descriptor. This excludes code/provider/dependency cells;
 /// callers separately establish the referenced body's framing and ownership.
@@ -225,7 +232,7 @@ pub(in crate::table::mutation) fn require_external_payload(
     image: &NativeImage,
     schema: &TableSchema,
     origin: &NativeObjectOrigin,
-    expected: Option<(u32, usize)>,
+    expected: Option<PropertyPayload<'_>>,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), Error> {
@@ -269,10 +276,24 @@ pub(in crate::table::mutation) fn require_external_payload(
         if !column.name().eq_ignore_ascii_case("LvProp") {
             return Err(Error::Dependency);
         }
-        let (reference, length) = expected.ok_or(Error::Dependency)?;
+        let expected = expected.as_ref().ok_or(Error::Dependency)?;
         let value = &row[framed.offsets[field.variable]..framed.offsets[field.variable + 1]];
         reader.work(value.len())?;
-        if seen || !trace::canonical_single(value, reference, length)? {
+        if seen {
+            return Err(Error::Dependency);
+        }
+        let matches = match expected {
+            PropertyPayload::Single(reference, length) => {
+                trace::canonical_single(value, *reference, *length)?
+            }
+            PropertyPayload::Inline(body) => {
+                if !matches!(trace::kind(value)?, trace::Kind::Inline) {
+                    return Err(Error::Dependency);
+                }
+                trace::read(&mut reader, value)?.value.as_deref() == Some(*body)
+            }
+        };
+        if !matches {
             return Err(Error::Dependency);
         }
         seen = true;

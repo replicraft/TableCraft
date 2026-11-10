@@ -39,12 +39,15 @@ fn selected(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Observed, Error> {
     let observed = Observed::capture(image, current.schema.name(), field, budget, cancelled)?;
+    let current_schema::UserStorage::Single { reference, .. } = &current.user_storage else {
+        return Err(Error::Source);
+    };
     // This operation's packing still moves the user row and following OFF row.
     // The shared source proof itself does not require a particular live-row order.
     if current.schema.object_id() != observed.schema.object_id()
-        || current.user_reference != observed.property_reference
+        || *reference != observed.property_reference
         || usize::from(reference_slot(current.database_reference))
-            != usize::from(reference_slot(current.user_reference)) + 1
+            != usize::from(reference_slot(*reference)) + 1
     {
         return Err(Error::Source);
     }

@@ -11,6 +11,7 @@ use crate::{
     },
     header::check,
     inspect_table_properties, inspect_table_schema,
+    table::long_value::trace::Kind,
     table::mutation::{
         catalog_property::{column, descriptor, ledger},
         insert_defaults::literal,
@@ -19,7 +20,6 @@ use crate::{
         schema_source::{self, Error as SchemaSourceError},
     },
 };
-use std::ops::Range;
 use tablecraft_core::limits::{LimitError, Resource, ResourceBudget};
 use thiserror::Error;
 
@@ -49,10 +49,16 @@ pub(crate) struct Table {
     pub schema: TableSchema,
     pub properties: TableProperties,
     pub catalog: TableSchema,
-    pub descriptor: Range<usize>,
-    pub user_reference: u32,
+    pub user_storage: UserStorage,
     pub database: DatabaseProperties,
     pub database_reference: u32,
+}
+
+/// Actual user-property carrier; no external storage is inferred for NULL/inline.
+pub(crate) enum UserStorage {
+    Absent,
+    Inline,
+    Single { reference: u32 },
 }
 
 pub(crate) struct Source {
@@ -148,25 +154,37 @@ pub(crate) fn observe(
         cancelled,
         reads: 0,
     };
-    let descriptor = descriptor::capture(&mut reader, &catalog, property_column, graph.user)?
-        .absolute_range()?
-        .ok_or(Error::Source)?;
+    let descriptor = descriptor::capture(&mut reader, &catalog, property_column, graph.user)?;
+    let kind = descriptor.kind()?;
     let ledger = ledger::capture(image.as_bytes(), image.catalog(), budget, cancelled)?;
-    let (user_reference, user_bytes) = ledger
-        .single_reference(schema.object_id(), budget, cancelled)?
-        .ok_or(Error::Source)?;
     let (database_reference, database_bytes) = ledger
         .single_reference(graph.database.object_id(), budget, cancelled)?
         .ok_or(Error::Source)?;
-    if user_bytes != properties.raw_bytes().len()
-        || database_bytes != graph.properties.raw_bytes().len()
-        || !ledger.two_singles(
+    if database_bytes != graph.properties.raw_bytes().len() {
+        return Err(Error::Source);
+    }
+
+    let user_storage = match kind {
+        Kind::Null if properties.raw_bytes().is_empty() => UserStorage::Absent,
+        Kind::Inline if !properties.raw_bytes().is_empty() => UserStorage::Inline,
+        Kind::Single => {
+            let (reference, bytes) = ledger
+                .single_reference(schema.object_id(), budget, cancelled)?
+                .ok_or(Error::Source)?;
+            if bytes != properties.raw_bytes().len()
+                || reference == database_reference
+                || reference_page(reference) != reference_page(database_reference)
+            {
+                return Err(Error::Source);
+            }
+            UserStorage::Single { reference }
+        }
+        _ => return Err(Error::Source),
+    };
+    let owned = match &user_storage {
+        UserStorage::Single { reference, .. } => ledger.two_singles(
             [
-                (
-                    schema.object_id(),
-                    user_reference,
-                    properties.raw_bytes().len(),
-                ),
+                (schema.object_id(), *reference, properties.raw_bytes().len()),
                 (
                     graph.database.object_id(),
                     database_reference,
@@ -175,14 +193,19 @@ pub(crate) fn observe(
             ],
             budget,
             cancelled,
-        )?
-    {
+        )?,
+        UserStorage::Absent | UserStorage::Inline => ledger.sole_single(
+            graph.database.object_id(),
+            database_reference,
+            database_bytes,
+            budget,
+            cancelled,
+        )?,
+    };
+    if !owned {
         return Err(Error::Source);
     }
-    let property_page = reference_page(user_reference);
-    if reference_page(database_reference) != property_page || user_reference == database_reference {
-        return Err(Error::Source);
-    }
+    let property_page = reference_page(database_reference);
     let inventory = Inventory::capture(image, budget, cancelled)?;
     inventory.require_exclusive(
         &catalog,
@@ -196,9 +219,23 @@ pub(crate) fn observe(
     for origin in image.catalog().origins() {
         check(budget, cancelled)?;
         let expected = if origin.object_id() == schema.object_id() {
-            Some((user_reference, properties.raw_bytes().len()))
+            match &user_storage {
+                UserStorage::Absent => None,
+                UserStorage::Inline => Some(schema_source::PropertyPayload::Inline(
+                    properties.raw_bytes(),
+                )),
+                UserStorage::Single { reference, .. } => {
+                    Some(schema_source::PropertyPayload::Single(
+                        *reference,
+                        properties.raw_bytes().len(),
+                    ))
+                }
+            }
         } else if origin.object_id() == graph.database.object_id() {
-            Some((database_reference, database_bytes))
+            Some(schema_source::PropertyPayload::Single(
+                database_reference,
+                database_bytes,
+            ))
         } else {
             None
         };
@@ -211,8 +248,7 @@ pub(crate) fn observe(
         schema,
         properties,
         catalog,
-        descriptor,
-        user_reference,
+        user_storage,
         database: graph.properties,
         database_reference,
     })

@@ -77,6 +77,10 @@ impl Descriptor {
         }
     }
 
+    pub(crate) fn kind(&self) -> Result<trace::Kind, InspectError> {
+        trace::kind(self.bytes())
+    }
+
     pub(crate) fn external(&self) -> Result<bool, InspectError> {
         Ok(matches!(
             trace::kind(self.bytes())?,
