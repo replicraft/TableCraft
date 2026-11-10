@@ -138,9 +138,6 @@ pub enum EvalError {
     /// A concatenated result exceeds the caller's byte ceiling.
     #[error("text output limit exceeded")]
     TextLimit,
-    /// An expression array exceeds its explicit element ceiling.
-    #[error("expression array limit exceeded")]
-    ArrayLimit,
     /// An array bound or requested dimension cannot be represented.
     #[error("invalid array bounds or dimension")]
     ArrayBounds,

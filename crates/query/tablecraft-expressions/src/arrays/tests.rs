@@ -31,16 +31,9 @@ fn bounds_retain_explicit_bases_empty_extents_and_checked_long_arithmetic() {
         ArrayValue::from_owned(vec![Value::Null; 2], i32::MAX).unwrap_err(),
         EvalError::ArrayBounds
     );
-    assert_eq!(
-        ArrayValue::from_owned(vec![Value::Null; 65_537], 0).unwrap_err(),
-        EvalError::ArrayLimit
-    );
-    assert_eq!(
-        ArrayValue::from_owned(vec![Value::Null; 65_536], 0)
-            .unwrap()
-            .upper_bound(),
-        65_535
-    );
+    let array = ArrayValue::from_owned(vec![Value::Null; 65_537], i32::MAX - 65_536).unwrap();
+    assert_eq!(array.elements().len(), 65_537);
+    assert_eq!(array.upper_bound(), i32::MAX);
 
     let array = ArrayValue::from_owned(vec![Value::Text("secret".into())], -1).unwrap();
     assert_eq!(

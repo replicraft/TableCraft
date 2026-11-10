@@ -145,7 +145,7 @@ fn mirr_keeps_trailing_zero_periods_and_scales_extreme_cashflows() {
 }
 
 #[test]
-fn constructors_enforce_carriers_limits_budgets_and_payload_redaction() {
+fn constructors_enforce_carriers_budgets_and_payload_redaction() {
     for (value, error) in [
         (Value::Null, EvalError::InvalidNullConversion),
         (Value::Text("secret".into()), EvalError::TypeMismatch),
@@ -157,13 +157,18 @@ fn constructors_enforce_carriers_limits_budgets_and_payload_redaction() {
         );
     }
     let input = vec![Value::Int32(123456); 65_537];
-    assert_eq!(
-        CashFlows::new(&input, &mut budget(), None).unwrap_err(),
-        EvalError::ArrayLimit
-    );
-    let full = CashFlows::new(&input[..65_536], &mut budget(), None).unwrap();
-    assert_eq!(full.len(), 65_536);
+    let full = CashFlows::new(&input, &mut budget(), None).unwrap();
+    assert_eq!(full.len(), 65_537);
     assert!(!full.is_empty());
+    assert_eq!(
+        full.npv(0.0, &mut budget(), None).unwrap(),
+        (65_537_i64 * 123_456) as f64,
+    );
+    let mut selected = ResourceBudget::new(65_536 * 8, 0, 1_000_000);
+    assert!(matches!(
+        CashFlows::new(&input, &mut selected, None),
+        Err(EvalError::Limit(_))
+    ));
 
     let mut limited = ResourceBudget::new(7, 0, 100);
     assert!(matches!(

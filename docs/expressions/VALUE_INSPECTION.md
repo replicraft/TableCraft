@@ -74,10 +74,14 @@ The core's expression-state-to-storage rejection remains unchanged.
 sequence of stored scalar elements and explicit Long lower/upper bounds. It is
 an expression intermediate, not a new stored Value, field type or parameter type.
 `from_owned` adopts a caller-allocated and caller-charged Vec without copying;
-it validates at most 65,536 elements and checked Long extents. Empty upper bounds
-are lower minus one. Empty arrays based at Long::MIN and overflowing extents fail.
-Debug exposes bounds/length only. CashFlows shares this element ceiling while
-retaining its separate finite-Double conversion and financial period rules.
+it validates checked Long extents without an extra element-count quota. Empty
+upper bounds are lower minus one. Empty arrays based at Long::MIN and overflowing
+extents fail. Extent arithmetic uses a wider intermediate, so the element count
+itself need not fit a signed Long when both subscripts do. Debug exposes only
+bounds/length. Microsoft describes array size as depending on available memory;
+see [declaring arrays](https://learn.microsoft.com/en-us/office/vba/language/concepts/getting-started/declaring-arrays).
+CashFlows retains its separate finite-Double conversion, caller budgets and
+financial period rules, without inheriting a product element-count cutoff.
 
 Array(...) and VBA.Array(...) can supply direct scalar-element intermediates to
 these inspection/bound functions as well as [cashflow functions](financial/CASHFLOW_FUNCTIONS.md).

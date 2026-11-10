@@ -1,6 +1,6 @@
 //! Immutable ordered numeric cashflows and their bounded construction.
 use super::{Work, irr, mirr, npv, number};
-use crate::{EvalError, arrays::ArrayValue, functions::financial::FinancialFunction};
+use crate::{EvalError, functions::financial::FinancialFunction};
 use std::fmt;
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 
@@ -21,9 +21,6 @@ impl fmt::Debug for CashFlows {
 }
 
 impl CashFlows {
-    /// Maximum elements accepted before allocation or conversion.
-    pub const MAX_ELEMENTS: usize = ArrayValue::MAX_ELEMENTS;
-
     /// Copy scalars admitted by checked Double conversion, including legacy DATE,
     /// under the caller's cumulative budget. NULL and unsupported values fail. Empty sequences are data; operations may
     /// reject them. Debug output never prints payloads. No source/provider is read.
@@ -44,10 +41,6 @@ impl CashFlows {
         element: &mut impl FnMut(usize) -> Result<&'a Value, EvalError>,
         work: &mut Work<'_>,
     ) -> Result<Self, EvalError> {
-        if count > Self::MAX_ELEMENTS {
-            return Err(EvalError::ArrayLimit);
-        }
-
         work.check()?;
         work.budget
             .charge_allocation(count as u64, size_of::<f64>() as u64)?;

@@ -20,8 +20,8 @@ conversion, including finite numeric/Boolean carriers and legacy DATE serials.
 Every zero and position is retained. Its constructor rejects NULL, nonnumeric and
 non-finite values rather than dropping them, silently coercing them or changing
 periods. It permits an empty sequence as data, but each financial operation rejects
-empty input. Debug output reports length only. The constructor accepts at most
-65,536 elements, charges the numeric buffer before fallible allocation, and checks
+empty input. Debug output reports length only. The constructor adds no element
+quota: it charges the actual numeric buffer before fallible allocation and checks
 cancellation/work before copying each element and before publication. SQL parsing
 and binding retain their existing smaller structural ceilings.
 

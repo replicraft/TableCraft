@@ -12,18 +12,10 @@ pub struct ArrayValue {
 }
 
 impl ArrayValue {
-    /// Hard ceiling on Variant-element positions, independent of host budgets.
-    pub const MAX_ELEMENTS: usize = 65_536;
-
     /// Adopt an already allocated, charged element buffer without copying it.
     /// An empty array has upper = lower - 1; unrepresentable bounds fail.
     pub fn from_owned(elements: Vec<Value>, lower: i32) -> Result<Self, EvalError> {
-        if elements.len() > Self::MAX_ELEMENTS {
-            return Err(EvalError::ArrayLimit);
-        }
-
-        let offset = i32::try_from(elements.len()).map_err(|_| EvalError::ArrayBounds)? - 1;
-        let upper = lower.checked_add(offset).ok_or(EvalError::ArrayBounds)?;
+        let upper = checked_upper_bound(lower, elements.len())?;
 
         Ok(Self {
             elements,
@@ -47,6 +39,18 @@ impl ArrayValue {
         self.upper
     }
 }
+
+fn checked_upper_bound(lower: i32, length: usize) -> Result<i32, EvalError> {
+    let length = i64::try_from(length).map_err(|_| EvalError::ArrayBounds)?;
+    let upper = i64::from(lower)
+        .checked_add(length)
+        .and_then(|end| end.checked_sub(1))
+        .ok_or(EvalError::ArrayBounds)?;
+    i32::try_from(upper).map_err(|_| EvalError::ArrayBounds)
+}
+
+#[cfg(test)]
+mod tests;
 
 impl fmt::Debug for ArrayValue {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
