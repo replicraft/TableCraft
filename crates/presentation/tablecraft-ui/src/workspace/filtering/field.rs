@@ -3,10 +3,10 @@ mod dialog;
 
 use super::{Operation, State};
 use crate::InputHint;
+use crate::text_input::MAX_EDITOR_SCALARS;
 use crate::workspace::objects::{ObjectKind, ObjectTab};
 use tablecraft_display::Options;
 
-const MAX_INPUT_BYTES: usize = 64 * 1024;
 const MAX_OPERATORS: usize = 16;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -108,7 +108,7 @@ impl Session {
     fn inputs_fit(&self) -> bool {
         self.inputs[..self.operator.operand_count()]
             .iter()
-            .all(|input| input.len() <= MAX_INPUT_BYTES)
+            .all(|input| input.chars().nth(MAX_EDITOR_SCALARS).is_none())
     }
 
     pub(super) fn retained_bytes(&self) -> Option<usize> {

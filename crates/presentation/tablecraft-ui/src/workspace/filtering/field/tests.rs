@@ -114,7 +114,7 @@ fn metadata_and_apply_bind_exact_draft_and_failure_preserves_inputs_and_previous
     assert_eq!(field.inputs(), inputs);
     assert!(field.error.is_some());
     assert_eq!(state.data.as_ref().unwrap().rows.as_ptr(), rows);
-    state.table_filter.field.as_mut().unwrap().inputs[0] = "é".repeat(MAX_INPUT_BYTES / 2 + 1);
+    state.table_filter.field.as_mut().unwrap().inputs[0] = "é".repeat(65_536);
     assert!(!state.can_apply_field_filter(
         &target,
         Op::Between,
@@ -195,10 +195,7 @@ fn actual_dialog_emits_entered_range_and_escape_closes_only_after_operator_popup
     harness.run();
     harness.key_press(egui::Key::End);
     harness.run();
-    for incoming in [
-        "é".repeat(MAX_INPUT_BYTES / 2 + 1),
-        "x".repeat(MAX_INPUT_BYTES),
-    ] {
+    for incoming in ["é".repeat(65_536), "é".repeat(65_535)] {
         harness.event(egui::Event::Paste(incoming));
         harness.run();
         assert_eq!(
@@ -225,7 +222,7 @@ fn actual_dialog_emits_entered_range_and_escape_closes_only_after_operator_popup
         );
         assert!(harness.state().1.is_empty());
     }
-    for replacement in ["x".repeat(MAX_INPUT_BYTES), "12".into()] {
+    for replacement in ["é".repeat(65_535), "12".into()] {
         harness.event(egui::Event::Key {
             key: egui::Key::A,
             physical_key: None,
@@ -335,7 +332,7 @@ fn cursor_movement_before_paste_cannot_use_a_stale_selection_to_admit_a_prefix()
     let (mut state, target) = state();
     assert!(state.begin_field_filter(target.clone(), 1));
     assert!(state.set_field_filter_description(1, description(target)));
-    let near_limit = "x".repeat(MAX_INPUT_BYTES - 1);
+    let near_limit = "x".repeat(65_534);
     state.table_filter.field.as_mut().unwrap().inputs[0] = near_limit.clone();
     let mut harness = Harness::builder()
         .with_size(egui::vec2(900.0, 580.0))
@@ -359,7 +356,7 @@ fn cursor_movement_before_paste_cannot_use_a_stale_selection_to_admit_a_prefix()
         .unwrap()
         .as_sorted_char_range();
     assert_eq!(usize::from(selection.start), 0);
-    assert_eq!(usize::from(selection.end), MAX_INPUT_BYTES - 1);
+    assert_eq!(usize::from(selection.end), 65_534);
     harness.input_mut().events.push(egui::Event::Key {
         key: egui::Key::ArrowRight,
         physical_key: None,

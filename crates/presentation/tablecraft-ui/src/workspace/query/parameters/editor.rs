@@ -1,6 +1,7 @@
 //! Typed literal controls shared by saved and scratch query prompts.
 use super::{ParameterInput, ParameterSpec};
 use crate::localization::tr;
+use crate::text_input::MAX_EDITOR_SCALARS;
 use crate::theme::input_border;
 use crate::workspace::focus::{self, Pane};
 
@@ -95,7 +96,7 @@ pub(in crate::workspace) fn parameters(
                                 value_id,
                                 &input.text,
                                 text_limit,
-                                super::MAX_INPUT_BYTES,
+                                MAX_EDITOR_SCALARS,
                             );
                             let owns_default = ui.memory(|memory| memory.has_focus(value_id))
                                 && !egui::Popup::is_any_open(ui.ctx());
@@ -108,7 +109,7 @@ pub(in crate::workspace) fn parameters(
                                     !input.is_null,
                                     egui::TextEdit::singleline(&mut bounded)
                                         .id(value_id)
-                                        .char_limit(super::MAX_INPUT_BYTES)
+                                        .char_limit(MAX_EDITOR_SCALARS)
                                         .desired_width(f32::INFINITY),
                                 )
                                 .labelled_by(label.id);

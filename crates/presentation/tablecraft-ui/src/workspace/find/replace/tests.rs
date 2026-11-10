@@ -152,7 +152,7 @@ fn actual_replace_tabs_preserve_inputs_on_oversized_events_and_invalidate_change
     harness
         .input_mut()
         .events
-        .push(egui::Event::Paste("x".repeat(MAX_REPLACEMENT_BYTES + 1)));
+        .push(egui::Event::Paste("x".repeat(65_536)));
     harness.run_steps(2);
     assert_eq!(
         harness.state().0.find.as_ref().unwrap().replacement.text,

@@ -508,8 +508,8 @@ fn cancelling_staged_input_retains_committed_inputs_results_and_source_identity(
     harness.run();
     assert_eq!(harness.state().0.saved_query.inputs, original);
 
-    // Staging still obeys the aggregate byte allowance, including the prompt
-    // name and kind in addition to the literal value being edited.
+    // Staging retains the textbox character policy without treating UTF-8 bytes
+    // or parameter names as a shared data-service limit.
     harness
         .state_mut()
         .0
@@ -519,7 +519,7 @@ fn cancelling_staged_input_retains_committed_inputs_results_and_source_identity(
         .unwrap()
         .body
         .draft[0]
-        .text = "x".repeat(crate::workspace::query::parameters::MAX_INPUT_BYTES);
+        .text = "x".repeat(65_536);
     harness.run();
     let limit_label = harness.state().0.localizer.text("saved-query-input-limit");
     let reason = harness
@@ -533,7 +533,7 @@ fn cancelling_staged_input_retains_committed_inputs_results_and_source_identity(
             )),
             _ => None,
         })
-        .expect("the existing aggregate-limit reason remains visible");
+        .expect("the editor character-limit reason remains visible");
     assert!(reason.1.contains_rect(reason.0));
     assert!(
         harness

@@ -197,9 +197,7 @@ fn oversized_literal_is_rejected_whole_and_cancel_preserves_prior_results() {
     harness.event(egui::Event::Text("accepted".into()));
     harness.run_steps(1);
     harness.key_press_modifiers(Modifiers::COMMAND, Key::A);
-    harness.event(egui::Event::Paste(
-        "é".repeat(super::super::MAX_INPUT_BYTES),
-    ));
+    harness.event(egui::Event::Paste("é".repeat(65_536)));
     harness.run_steps(1);
     assert_eq!(
         harness

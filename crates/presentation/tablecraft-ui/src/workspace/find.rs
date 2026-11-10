@@ -7,9 +7,8 @@ pub use replace::ReplaceFindRequest;
 use super::filtering::{FilterPublication, FilterTarget};
 use super::{Data, DocumentView, State};
 use crate::CellKind;
+use crate::text_input::MAX_EDITOR_SCALARS;
 use tablecraft_display::Options;
-
-const MAX_FIND_PATTERN_BYTES: usize = 64 * 1024;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct FindTarget {
@@ -117,7 +116,10 @@ impl State {
         &mut self,
         pattern: String,
     ) -> Option<super::Action> {
-        if pattern.is_empty() || pattern.len() > MAX_FIND_PATTERN_BYTES || !self.can_open_find() {
+        if pattern.is_empty()
+            || pattern.chars().nth(MAX_EDITOR_SCALARS).is_some()
+            || !self.can_open_find()
+        {
             return None;
         }
         self.open_find();
@@ -307,7 +309,7 @@ impl State {
                 session.pending.is_none() && session.replacement.pending.is_none()
             })
             && !request.pattern.is_empty()
-            && request.pattern.len() <= MAX_FIND_PATTERN_BYTES
+            && request.pattern.chars().nth(MAX_EDITOR_SCALARS).is_none()
             && (!request.formatted || self.find_formatted_available || self.mock_preview)
             && self.current_find_request().as_ref() == Some(request)
     }

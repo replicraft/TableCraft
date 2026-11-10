@@ -3,7 +3,7 @@
 saved-query-choose = Wählen Sie im Objektbereich eine gespeicherte Abfrage aus.
 saved-query-help = Die Prüfung führt die Abfrage nicht aus. Ausführen prüft sie und verwendet die geöffnete Momentaufnahme.
 saved-query-working = Die ausgewählte gespeicherte Abfrage wird bearbeitet…
-saved-query-input-limit = Die Parameter überschreiten das Limit von 256 Einträgen oder 1 MiB.
+saved-query-input-limit = Die Eingaben überschreiten die Parameter-, Zeichen- oder Speichergrenze dieses Editors.
 saved-query-run = Gespeicherte Abfrage ausführen
 saved-query-inspect = Erneut prüfen
 saved-query-previous-results = Die letzten erfolgreichen Ergebnisse bleiben unten sichtbar, bis ein vollständiger Lauf erfolgreich ist.

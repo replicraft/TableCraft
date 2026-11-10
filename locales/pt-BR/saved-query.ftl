@@ -3,7 +3,7 @@
 saved-query-choose = Escolha uma consulta salva no painel de objetos.
 saved-query-help = Inspecionar não executa a consulta. Executar valida e consulta o instantâneo aberto.
 saved-query-working = Processando a consulta salva selecionada…
-saved-query-input-limit = Os parâmetros excedem o limite de 256 entradas ou 1 MiB.
+saved-query-input-limit = As entradas excedem o limite de parâmetros, caracteres ou memória deste editor.
 saved-query-run = Executar consulta salva
 saved-query-inspect = Inspecionar novamente
 saved-query-previous-results = Os últimos resultados bem-sucedidos permanecem abaixo até uma execução completa terminar com sucesso.

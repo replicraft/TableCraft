@@ -1,7 +1,7 @@
 //! Staged prompt controls, independent of query identity or execution authority.
 use super::{
-    MAX_INPUT_BYTES, ParameterInput, ParameterSpec, copy_inputs, copy_text, editor, input_admitted,
-    input_bytes, input_copy_bytes, inputs_admitted, inputs_within_limits, retained_inputs,
+    ParameterInput, ParameterSpec, copy_inputs, copy_text, editor, input_admitted, input_bytes,
+    input_copy_bytes, inputs_admitted, inputs_within_limits, retained_inputs,
 };
 use crate::localization::tr;
 use crate::workspace::objects::memory::Counter;
@@ -94,7 +94,7 @@ impl PromptBody {
             ui.separator();
             let used_bytes = input_bytes(&self.draft).unwrap_or(usize::MAX);
             let other_bytes = used_bytes.saturating_sub(self.draft[self.index].text.len());
-            let text_limit = MAX_INPUT_BYTES.saturating_sub(other_bytes);
+            let text_limit = available_bytes.saturating_sub(other_bytes);
             let response = ui
                 .push_id(self.index, |ui| {
                     self.edit_current(ui, text_limit, available_bytes)

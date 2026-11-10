@@ -1,5 +1,5 @@
 //! Native type metadata determines the available common-filter controls.
-use super::{FieldFilterPatternMode, MAX_INPUT_BYTES};
+use super::FieldFilterPatternMode;
 use crate::localization::tr;
 use crate::text_input;
 use crate::workspace::{Action, State, diagnostics};
@@ -97,7 +97,7 @@ impl State {
                                     ui,
                                     id,
                                     &field.inputs[index],
-                                    MAX_INPUT_BYTES,
+                                    usize::MAX,
                                 ) {
                                     field.error = Some(localizer.text("filtering-field-limit"));
                                 }

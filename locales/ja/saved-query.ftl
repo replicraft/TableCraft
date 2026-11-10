@@ -3,7 +3,7 @@
 saved-query-choose = オブジェクト ウィンドウで保存済みクエリを選択してください。
 saved-query-help = 確認だけではクエリは実行されません。実行時に検証し、開いているスナップショットに対して処理します。
 saved-query-working = 選択した保存済みクエリを処理中…
-saved-query-input-limit = パラメーター入力が上限の 256 件または 1 MiB を超えています。
+saved-query-input-limit = 入力がこのエディターのパラメーター数、文字数、またはメモリの上限を超えています。
 saved-query-run = 保存済みクエリの実行
 saved-query-inspect = もう一度確認
 saved-query-previous-results = 完全な実行が成功するまで、前回成功した結果が下に表示されます。

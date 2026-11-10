@@ -3,7 +3,7 @@
 saved-query-choose = 개체 창에서 저장된 쿼리를 선택하세요.
 saved-query-help = 검사는 쿼리를 실행하지 않습니다. 실행 시 쿼리를 검증하고 열린 스냅샷에 대해 수행합니다.
 saved-query-working = 선택한 저장된 쿼리를 처리하는 중…
-saved-query-input-limit = 매개 변수 입력이 256개 항목 또는 1 MiB 제한을 초과합니다.
+saved-query-input-limit = 입력이 이 편집기의 매개 변수 수, 문자 수 또는 메모리 한도를 초과합니다.
 saved-query-run = 저장된 쿼리 실행
 saved-query-inspect = 다시 검사
 saved-query-previous-results = 완전한 실행이 성공할 때까지 이전에 성공한 결과가 아래에 유지됩니다.

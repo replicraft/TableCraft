@@ -1,6 +1,5 @@
 use super::*;
 use crate::workspace::objects::{ObjectKind, ObjectTarget};
-use crate::workspace::query::parameters::MAX_INPUT_BYTES;
 use crate::{Database, SavedQuery};
 
 fn state() -> (State, SavedQueryTarget) {
@@ -141,7 +140,7 @@ fn target_revision_refused(state: &State, mut target: SavedQueryTarget) {
 }
 
 #[test]
-fn typed_inputs_are_bound_and_limited_before_any_action_clone_including_null_text() {
+fn typed_inputs_preserve_editor_character_policy_and_exact_action_binding() {
     let (mut state, target) = state();
     state.begin_saved_query_inspection(target.clone(), 1);
     assert!(state.set_saved_query_details(
@@ -154,10 +153,10 @@ fn typed_inputs_are_bound_and_limited_before_any_action_clone_including_null_tex
             nullable: true,
         }]
     ));
-    state.saved_query.inputs[0].text = "x".repeat(MAX_INPUT_BYTES - 5);
+    state.saved_query.inputs[0].text = "é".repeat(65_530);
     assert!(state.can_run_saved_query(&target, &state.saved_query.inputs));
     state.saved_query.inputs[0].is_null = true;
-    state.saved_query.inputs[0].text.push('é');
+    state.saved_query.inputs[0].text.push_str("éééééé");
     assert!(!state.can_run_saved_query(&target, &state.saved_query.inputs));
     assert!(state.saved_query_run_action().is_none());
     state.saved_query.inputs[0].text.clear();

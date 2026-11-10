@@ -3,7 +3,7 @@
 saved-query-choose = 在对象窗格中选择已保存的查询。
 saved-query-help = 检查操作不执行查询。运行时会验证查询并对打开的快照执行。
 saved-query-working = 正在处理所选的已保存查询…
-saved-query-input-limit = 参数输入超过 256 项或 1 MiB 的限制。
+saved-query-input-limit = 输入超出了此编辑器的参数数量、字符数或内存限制。
 saved-query-run = 运行已保存查询
 saved-query-inspect = 重新检查
 saved-query-previous-results = 在完整运行成功之前，下方保留上次成功的结果。

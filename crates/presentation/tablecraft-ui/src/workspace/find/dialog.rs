@@ -1,11 +1,10 @@
 //! Modeless Find follows Microsoft's public dialog layout; matching is host-owned.
-use super::replace::MAX_REPLACEMENT_BYTES;
-use super::{FindDirection, FindMatch, MAX_FIND_PATTERN_BYTES, Session};
+use super::{FindDirection, FindMatch, Session};
 use crate::localization::{message, tr};
+use crate::text_input::MAX_EDITOR_SCALARS;
 use crate::workspace::{Action, State, diagnostics};
 use egui::{ComboBox, Id, Ui};
 
-const MAX_EDITOR_SCALARS: usize = crate::text_input::MAX_EDITOR_SCALARS;
 const FIND_WINDOW_WIDTH: f32 = 560.0;
 const FIND_BUTTON_WIDTH: f32 = 110.0;
 const FIND_VERTICAL_RESERVE: f32 = 160.0;
@@ -133,7 +132,11 @@ impl State {
                                     enabled
                                         && ready
                                         && !session.pattern.is_empty()
-                                        && session.pattern.len() <= MAX_FIND_PATTERN_BYTES,
+                                        && session
+                                            .pattern
+                                            .chars()
+                                            .nth(MAX_EDITOR_SCALARS)
+                                            .is_none(),
                                     egui::Button::new(tr(ui, "find-next"))
                                         .min_size(egui::vec2(FIND_BUTTON_WIDTH, 0.0)),
                                 );
@@ -161,7 +164,7 @@ impl State {
                                     .clicked();
                             });
                         });
-                        if session.pattern.len() > MAX_FIND_PATTERN_BYTES {
+                        if session.pattern.chars().nth(MAX_EDITOR_SCALARS).is_some() {
                             ui.label(tr(ui, "find-pattern-limit"));
                         }
                         if session.replacement.visible {
@@ -247,18 +250,14 @@ fn controls(ui: &mut Ui, session: &mut Session, formatted_available: bool) -> bo
         .show(ui, |ui| {
             let label = ui.label(tr(ui, "find-what"));
             let id = ui.make_persistent_id("find_pattern");
-            let rejected_pattern = crate::text_input::reject_oversized_events(
-                ui,
-                id,
-                &session.pattern,
-                MAX_FIND_PATTERN_BYTES,
-            );
+            let rejected_pattern =
+                crate::text_input::reject_oversized_events(ui, id, &session.pattern, usize::MAX);
             let input = ui
                 .add(
                     egui::TextEdit::singleline(&mut session.pattern)
                         .id(id)
-                        // Bound editor layout by scalars. The independent UTF-8
-                        // request byte limit still rejects large non-ASCII input.
+                        // The textbox policy uses characters, independently of
+                        // the shared service and native stored-value validation.
                         .char_limit(MAX_EDITOR_SCALARS)
                         .desired_width(ui.available_width()),
                 )
@@ -282,7 +281,7 @@ fn controls(ui: &mut Ui, session: &mut Session, formatted_available: bool) -> bo
                     ui,
                     id,
                     &session.replacement.text,
-                    MAX_REPLACEMENT_BYTES,
+                    usize::MAX,
                 );
                 ui.add(
                     egui::TextEdit::singleline(&mut session.replacement.text)

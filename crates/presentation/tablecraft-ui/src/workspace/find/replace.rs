@@ -1,8 +1,7 @@
 //! Replace carries a successful native match into the existing reviewed edit service.
 use super::{FilterWitness, FindPosition, FindRequest, State};
+use crate::text_input::MAX_EDITOR_SCALARS;
 use crate::workspace::editing::{EditDialog, EditDraft, EditTarget};
-
-pub(super) const MAX_REPLACEMENT_BYTES: usize = 64 * 1024;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct ReplaceFindRequest {
@@ -113,7 +112,11 @@ impl State {
     pub fn can_replace_find(&self, request: &ReplaceFindRequest) -> bool {
         (self.replace_available || self.mock_preview)
             && self.can_open_find()
-            && request.replacement.len() <= MAX_REPLACEMENT_BYTES
+            && request
+                .replacement
+                .chars()
+                .nth(MAX_EDITOR_SCALARS)
+                .is_none()
             && self.current_replace_find_request().as_ref() == Some(request)
             && self.find.as_ref().is_some_and(|session| {
                 session.pending.is_none() && session.replacement.pending.is_none()

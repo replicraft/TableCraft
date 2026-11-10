@@ -3,7 +3,7 @@
 saved-query-choose = Choose a saved query in the object pane.
 saved-query-help = Inspection does not execute the query. Run validates and executes it against the opened snapshot.
 saved-query-working = Working on the selected saved query…
-saved-query-input-limit = Parameter inputs exceed the 256-entry or 1 MiB input limit.
+saved-query-input-limit = The inputs exceed this editor’s parameter count, character or memory limit.
 saved-query-run = Run saved query
 saved-query-inspect = Inspect again
 saved-query-previous-results = Previous successful results remain below until a complete run succeeds.

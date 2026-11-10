@@ -3,8 +3,9 @@ pub(in crate::workspace) mod editor;
 pub(in crate::workspace) mod prompt;
 pub(in crate::workspace) mod scratch;
 
+use crate::text_input::MAX_EDITOR_SCALARS;
+
 pub(in crate::workspace) const MAX_PARAMETERS: usize = 256;
-pub(in crate::workspace) const MAX_INPUT_BYTES: usize = 1_048_576;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct ParameterSpec {
@@ -24,7 +25,10 @@ pub struct ParameterInput {
 
 pub(in crate::workspace) fn inputs_within_limits(parameters: &[ParameterInput]) -> bool {
     parameters.len() <= MAX_PARAMETERS
-        && input_bytes(parameters).is_some_and(|bytes| bytes <= MAX_INPUT_BYTES)
+        && input_bytes(parameters).is_some()
+        && parameters
+            .iter()
+            .all(|input| input.text.chars().nth(MAX_EDITOR_SCALARS).is_none())
 }
 
 pub(in crate::workspace) fn input_bytes(parameters: &[ParameterInput]) -> Option<usize> {

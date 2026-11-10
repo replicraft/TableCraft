@@ -2,9 +2,10 @@
 use egui::text_edit::TextEditState;
 use egui::{Event, Id, ImeEvent, Key, Ui};
 
-// Scalar layout and UTF-8 publication limits are separate units. UTF-8 admission
-// can reject an insertion below this scalar ceiling; neither accepts a prefix.
-pub(crate) const MAX_EDITOR_SCALARS: usize = 64 * 1024;
+// Presentation-only textbox policy: Microsoft documents 65,535 characters.
+// This is not a shared service or stored-value byte ceiling. Native field
+// character-unit validation remains with the field owner.
+pub(crate) const MAX_EDITOR_SCALARS: usize = 65_535;
 
 pub(crate) fn reject_oversized_events(ui: &mut Ui, id: Id, text: &str, max_bytes: usize) -> bool {
     reject_events_with_limits(ui, id, text, max_bytes, MAX_EDITOR_SCALARS)
