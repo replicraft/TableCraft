@@ -108,8 +108,12 @@ fn properties() -> Vec<u8> {
         let mut group = ((4 + label.len()) as u32).to_le_bytes().to_vec();
         group.extend(label);
         group.extend([9, 0, 1, 1, 0, 0, 1, 0, 0]); // Required=false.
-        if column.native_type != 8 {
-            group.extend([10, 0, 1, 12, 1, 0, 2, 0, b'0', 0]);
+        match column.native_type {
+            // Typed IEEE defaults use the creator's exact finite scientific
+            // spelling, including the exponent for positive floating zero.
+            6 | 7 => group.extend([14, 0, 1, 12, 1, 0, 6, 0, b'0', 0, b'e', 0, b'0', 0]),
+            8 => {}
+            _ => group.extend([10, 0, 1, 12, 1, 0, 2, 0, b'0', 0]),
         }
         body.extend(block(1, &group));
     }
