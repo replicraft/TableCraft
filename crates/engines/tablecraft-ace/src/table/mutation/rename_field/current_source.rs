@@ -3,7 +3,11 @@ use super::{FieldRenameError as Error, source::Qualified};
 use crate::{
     NativeImage,
     format::row::reference_slot,
-    table::mutation::{current_schema, saved_field::Observed},
+    table::mutation::{
+        current_schema,
+        ordinary_content::definition::{self, RowDeclaration},
+        saved_field::Observed,
+    },
 };
 use tablecraft_core::limits::ResourceBudget;
 
@@ -38,6 +42,16 @@ fn selected(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Observed, Error> {
+    // Profile four retains its original declaration language even though the
+    // shared current-schema observer now supports additional metadata history.
+    // The retained-storage profile selects its separate proof before admission.
+    definition::validate_rows(
+        image,
+        &current.schema,
+        RowDeclaration::Actions,
+        budget,
+        cancelled,
+    )?;
     let observed = Observed::capture(image, current.schema.name(), field, budget, cancelled)?;
     let current_schema::UserStorage::Single { reference, .. } = &current.user_storage else {
         return Err(Error::Source);

@@ -184,3 +184,54 @@ fn retained_rename_checks_actual_dependencies_names_and_terminal_controls_even_f
         Err(Error::Inspect(InspectError::Limit(_)))
     ));
 }
+
+#[test]
+fn retained_rename_independent_proof_rejects_descriptor_and_inactive_history_corruption() {
+    let before = raw::source(CASES[0], Target::ShortText, true);
+    let source = source::Source::capture(
+        image(&before),
+        "Table1",
+        Target::ShortText.name(),
+        &mut budget(),
+        &|| false,
+    )
+    .unwrap();
+    let body = build::properties(&source.observed, "Revenue", &mut budget(), &|| false).unwrap();
+    let change = catalog_property::compose_retained_single_at_origin(
+        &source.image,
+        &source.observed.schema,
+        body,
+        &mut budget(),
+        &|| false,
+    )
+    .unwrap();
+    let mut after = build::definition(&source, "Revenue", &mut budget(), &|| false).unwrap();
+    change.apply(&mut after, &mut budget(), &|| false).unwrap();
+    verify::candidate(&source, &after, "Revenue", &change, &mut budget(), &|| {
+        false
+    })
+    .unwrap();
+
+    for offset in [
+        source.observed.property_descriptor.start + 8,
+        source.observed.property_body.start,
+        8 * 4096 + 4095,
+    ] {
+        // NO_CLONE: each corruption owns a separate candidate while the exact
+        // positive baseline remains available for the next independent refusal.
+        let mut corrupt = after.clone();
+        corrupt[offset] ^= 1;
+        assert!(
+            verify::candidate(
+                &source,
+                &corrupt,
+                "Revenue",
+                &change,
+                &mut budget(),
+                &|| false,
+            )
+            .is_err(),
+            "forged byte {offset}"
+        );
+    }
+}

@@ -1,11 +1,21 @@
 //! Current metadata is proved without erasing previous names or row history.
 use super::*;
+use crate::{
+    format::{
+        page::PAGE_BYTES,
+        reader::row_count,
+        row::{reference_page, reference_slot},
+    },
+    properties::framing,
+    table::mutation::{current_schema, saved_field::Observed},
+};
 use std::io::Cursor;
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
 use tablecraft_testkit::fixtures::access::{
+    canonical_created_number::mixed::after_off::deleted_field::populated::readdition::Target as ReaddedTarget,
     canonical_initial_table_creation::deletes,
-    saved_field_rename::fitting::{self, SourceCase},
+    saved_field_rename::fitting::{self, SourceCase, current_history as retained_raw},
 };
 
 const SCOPE: CatalogScope = CatalogScope::new(994);
@@ -178,4 +188,60 @@ fn later_text_group_retains_existing_same_width_duplicate_review_eligibility() {
         ),
         Err(Error::DuplicateName)
     ));
+}
+
+#[test]
+fn retained_schema_does_not_expand_legacy_current_declarations_when_live_roles_are_adjacent() {
+    let before = retained_raw::adjacent_live_roles();
+    let native = image(&before);
+    let current = current_schema::observe(&native, "Table1", &mut budget(), &|| false).unwrap();
+    framing::validate(&current.properties, &mut budget(), &|| false).unwrap();
+    let observed = Observed::capture(
+        &native,
+        "Table1",
+        ReaddedTarget::ShortText.name(),
+        &mut budget(),
+        &|| false,
+    )
+    .unwrap();
+    Layout::capture_current(&native, &observed, &mut budget(), &|| false).unwrap();
+    assert_eq!(observed.identity.number, 3);
+    assert_eq!(observed.identity.column_id, 2);
+    let current_schema::UserStorage::Single { reference } = current.user_storage else {
+        panic!("independent source must retain its external Single property role");
+    };
+    assert_eq!(
+        reference_page(reference),
+        reference_page(current.database_reference)
+    );
+    assert_eq!(
+        usize::from(reference_slot(reference)) + 1,
+        usize::from(reference_slot(current.database_reference)),
+    );
+    let base = reference_page(reference) as usize * PAGE_BYTES;
+    assert_eq!(
+        usize::from(reference_slot(current.database_reference)) + 1,
+        row_count(&before[base..base + PAGE_BYTES]).unwrap(),
+    );
+
+    assert!(matches!(
+        native.inspect_current_field_rename_source(
+            "Table1",
+            ReaddedTarget::ShortText.name(),
+            &mut budget(),
+            &|| false,
+        ),
+        Err(Error::RowSource(crate::EditError::Unsupported(_)))
+    ));
+    let expected = retained_raw::rename(&before, ReaddedTarget::ShortText.name(), "NewCaption");
+    let candidate = native
+        .prepare_retained_field_rename(
+            "Table1",
+            ReaddedTarget::ShortText.name(),
+            "NewCaption",
+            &mut budget(),
+            &|| false,
+        )
+        .unwrap();
+    equal_image(candidate.after_bytes(), &expected);
 }
