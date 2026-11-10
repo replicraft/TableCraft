@@ -291,6 +291,11 @@ fn data_only_historical_wire_cannot_reconstruct_without_the_native_writer_capabi
             13,
             NativeUpdateProfile::Ace16HistoricalMixedNumberMaterialization,
         ),
+        (
+            b"TCNI0014",
+            14,
+            NativeUpdateProfile::Ace16HistoricalForwardedNumberMaterialization,
+        ),
     ] {
         let mut wire = literal(&before);
         wire[..8].copy_from_slice(magic);

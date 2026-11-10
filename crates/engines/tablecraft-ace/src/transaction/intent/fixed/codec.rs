@@ -22,6 +22,8 @@ const MATERIALIZATION_HEADER_MAGIC: &[u8; 8] = b"TCNI0012";
 const MATERIALIZATION_PROFILE: u16 = 12;
 const MIXED_MATERIALIZATION_HEADER_MAGIC: &[u8; 8] = b"TCNI0013";
 const MIXED_MATERIALIZATION_PROFILE: u16 = 13;
+const FORWARDED_MATERIALIZATION_HEADER_MAGIC: &[u8; 8] = b"TCNI0014";
+const FORWARDED_MATERIALIZATION_PROFILE: u16 = 14;
 const TOTAL_AT: usize = MAGIC.len();
 const PROFILE_AT: usize = TOTAL_AT + size_of::<u32>();
 const FLAGS_AT: usize = PROFILE_AT + size_of::<u16>();
@@ -67,6 +69,38 @@ fn maximum_record_bytes(carriers: carrier::Carriers) -> usize {
 }
 
 impl NativeFixedEditIntent {
+    pub(in crate::transaction::intent) const FORWARDED_MATERIALIZATION_MAGIC: &'static [u8; 8] =
+        FORWARDED_MATERIALIZATION_HEADER_MAGIC;
+
+    pub(in crate::transaction::intent) fn encode_historical_forwarded_materialization(
+        &self,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Vec<u8>, NativeIntentError> {
+        self.encode_profile(
+            FORWARDED_MATERIALIZATION_HEADER_MAGIC,
+            FORWARDED_MATERIALIZATION_PROFILE,
+            carrier::Carriers::HistoricalInt32,
+            budget,
+            cancelled,
+        )
+    }
+
+    pub(in crate::transaction::intent) fn decode_historical_forwarded_materialization(
+        bytes: &[u8],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, NativeIntentError> {
+        Self::decode_profile(
+            bytes,
+            FORWARDED_MATERIALIZATION_HEADER_MAGIC,
+            FORWARDED_MATERIALIZATION_PROFILE,
+            carrier::Carriers::HistoricalInt32,
+            budget,
+            cancelled,
+        )
+    }
+
     pub(in crate::transaction::intent) const MIXED_MATERIALIZATION_MAGIC: &'static [u8; 8] =
         MIXED_MATERIALIZATION_HEADER_MAGIC;
 

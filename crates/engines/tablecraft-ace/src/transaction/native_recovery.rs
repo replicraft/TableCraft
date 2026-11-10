@@ -119,6 +119,9 @@ pub fn qualify_native_update_recovery<'a, J: DurableStorage>(
         | NativeUpdateProfile::Ace16OrdinaryOwnedGrowth => Qualified::Ordinary(checked),
         NativeUpdateProfile::Ace16HistoricalPresentFixed => Qualified::Ordinary(checked),
         NativeUpdateProfile::Ace16HistoricalNumberMaterialization => Qualified::Ordinary(checked),
+        NativeUpdateProfile::Ace16HistoricalForwardedNumberMaterialization => {
+            Qualified::Ordinary(checked)
+        }
         NativeUpdateProfile::Ace16HistoricalMixedNumberMaterialization => {
             Qualified::Ordinary(checked)
         }

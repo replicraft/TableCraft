@@ -1,6 +1,8 @@
 #[cfg(feature = "ace16-create")]
 mod historical_fixed;
 #[cfg(feature = "ace16-create")]
+mod historical_forwarded_materialization;
+#[cfg(feature = "ace16-create")]
 mod historical_materialization;
 #[cfg(feature = "ace16-create")]
 mod historical_mixed_materialization;

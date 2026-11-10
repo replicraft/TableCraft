@@ -13,6 +13,8 @@ const ACE_PROFILE: u16 = 2;
 /// A versioned validation route, never a serialized native permission.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum NativeUpdateProfile {
+    /// One absent Number materialized through a qualified relocated historical root.
+    Ace16HistoricalForwardedNumberMaterialization,
     /// One absent Number in a qualified historical row with retained variable fields.
     Ace16HistoricalMixedNumberMaterialization,
     /// One absent nullable Number field materialized within qualified owned DATA capacity.
@@ -53,7 +55,7 @@ pub struct NativeUpdateIntent {
 pub enum NativeUpdateBody {
     /// Original single-column Int32 requests for TCNI0001 or TCNI0002.
     Int32(NativeInt32EditIntent),
-    /// Original ordered fixed groups for closed TCNI0003/4/8/9/10/11/12/13 records.
+    /// Original ordered fixed groups for closed TCNI0003/4/8/9/10/11/12/13/14 records.
     Fixed(NativeFixedEditIntent),
     /// Ordered original fixed/variable requests for TCNI0005.
     Fitted(NativeFittedEditIntent),
@@ -64,6 +66,15 @@ pub enum NativeUpdateBody {
 }
 
 impl NativeUpdateIntent {
+    pub(super) fn from_historical_forwarded_number_materialization(
+        original: NativeFixedEditIntent,
+    ) -> Self {
+        Self {
+            profile: NativeUpdateProfile::Ace16HistoricalForwardedNumberMaterialization,
+            body: NativeUpdateBody::Fixed(original),
+        }
+    }
+
     pub(super) fn from_historical_mixed_number_materialization(
         original: NativeFixedEditIntent,
     ) -> Self {
@@ -281,6 +292,10 @@ impl NativeUpdateIntent {
         match (&self.body, self.profile) {
             (
                 NativeUpdateBody::Fixed(original),
+                NativeUpdateProfile::Ace16HistoricalForwardedNumberMaterialization,
+            ) => original.encode_historical_forwarded_materialization(budget, cancelled),
+            (
+                NativeUpdateBody::Fixed(original),
                 NativeUpdateProfile::Ace16HistoricalMixedNumberMaterialization,
             ) => original.encode_historical_mixed_materialization(budget, cancelled),
             (
@@ -335,6 +350,15 @@ impl NativeUpdateIntent {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, NativeIntentError> {
+        if bytes.get(..NativeFixedEditIntent::FORWARDED_MATERIALIZATION_MAGIC.len())
+            == Some(NativeFixedEditIntent::FORWARDED_MATERIALIZATION_MAGIC.as_slice())
+        {
+            return Ok(Self::from_historical_forwarded_number_materialization(
+                NativeFixedEditIntent::decode_historical_forwarded_materialization(
+                    bytes, budget, cancelled,
+                )?,
+            ));
+        }
         if bytes.get(..NativeFixedEditIntent::MIXED_MATERIALIZATION_MAGIC.len())
             == Some(NativeFixedEditIntent::MIXED_MATERIALIZATION_MAGIC.as_slice())
         {

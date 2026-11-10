@@ -16,20 +16,29 @@ impl NativeImage {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<RecoverableNativeEditPlan, RecoverableEditError> {
         let _span = tracing::debug_span!("native.historical_fixed.select_recoverable").entered();
-        let (materialize, mixed) = {
+        let (materialize, mixed, forwarded) = {
             let borrowed = crate::transaction::intent::fixed::borrow_groups(
                 table, &groups, budget, cancelled,
             )?;
             let materialize = self
                 .historical_number_materialization_selected(table, &borrowed, budget, cancelled)?;
+            let forwarded = materialize
+                && self.historical_forwarded_number_materialization_selected(
+                    table, &borrowed, budget, cancelled,
+                )?;
             let mixed = materialize
+                && !forwarded
                 && self.historical_mixed_number_materialization_selected(
                     table, &borrowed, budget, cancelled,
                 )?;
-            (materialize, mixed)
+            (materialize, mixed, forwarded)
         };
 
-        if mixed {
+        if forwarded {
+            self.plan_recoverable_historical_forwarded_number_materialization(
+                table, groups, budget, cancelled,
+            )
+        } else if mixed {
             self.plan_recoverable_historical_mixed_number_materialization(
                 table, groups, budget, cancelled,
             )
