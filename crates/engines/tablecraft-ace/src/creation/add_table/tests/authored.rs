@@ -30,6 +30,74 @@ fn catalog_gap(bytes: &[u8]) -> usize {
     start - (14 + count * 2)
 }
 
+fn long(bytes: &[u8], offset: usize) -> usize {
+    u32::from_le_bytes(bytes[offset..offset + 4].try_into().unwrap()) as usize
+}
+
+fn map_record(bytes: &[u8], page: usize, slot: usize) -> &[u8] {
+    let page = &bytes[page * 4096..(page + 1) * 4096];
+    assert!(slot < word(page, 12));
+    let start = word(page, 14 + slot * 2) & 0x1fff;
+    let end = if slot == 0 {
+        4096
+    } else {
+        word(page, 14 + (slot - 1) * 2) & 0x1fff
+    };
+    &page[start..end]
+}
+
+fn expected_bitmap(inline: &[u8], additional: usize) -> Vec<u8> {
+    assert_eq!(inline[0], 0);
+    let base = long(inline, 1);
+    let mut bitmap = vec![0; 4096];
+    bitmap[..4].copy_from_slice(&[5, 1, 0, 0]);
+    for (byte_index, byte) in inline[5..].iter().enumerate() {
+        for bit in 0..8 {
+            if byte & (1 << bit) != 0 {
+                let member = base + byte_index * 8 + bit;
+                bitmap[4 + member / 8] |= 1 << (member % 8);
+            }
+        }
+    }
+    bitmap[4 + additional / 8] |= 1 << (additional % 8);
+    bitmap
+}
+
+fn assert_promoted_property_maps(before: &[u8], after: &[u8]) {
+    let root = before.len() / 4096;
+    assert!(root > 64);
+    let property = root + 3;
+    assert_eq!(after.len(), before.len() + 6 * 4096);
+    let mut bitmap_pages = Vec::new();
+    for (slot, expected_page) in [(16, root + 4), (17, root + 5)] {
+        let original = map_record(before, 3, slot);
+        let promoted = map_record(after, 3, slot);
+        assert_eq!(promoted.len(), original.len());
+        assert_eq!(promoted[0], 1);
+        let number = long(promoted, 1);
+        assert_eq!(number, expected_page);
+        assert!(promoted[5..].iter().all(|byte| *byte == 0));
+        bitmap_pages.push(number);
+        assert_eq!(
+            &after[number * 4096..(number + 1) * 4096],
+            expected_bitmap(original, property),
+            "complete bitmap for property map slot {slot}",
+        );
+    }
+    assert_ne!(bitmap_pages[0], bitmap_pages[1]);
+    let free = map_record(after, 1, 0);
+    assert_eq!(free[0], 0);
+    let base = long(free, 1);
+    for member in root..root + 6 {
+        let bit = member - base;
+        assert_eq!(
+            free[5 + bit / 8] & (1 << (bit % 8)),
+            0,
+            "allocated appended page {member}"
+        );
+    }
+}
+
 fn before() -> Vec<u8> {
     let mut bytes = fields::source(fields::Case::FirstNumber).bytes;
     let mut ordinal = 0;
@@ -132,9 +200,7 @@ fn authored_append_uses_actual_catalog_gap_for_small_declaration_properties() {
         b"TCAT0007"
     );
     assert_eq!(plan.before_bytes(), before);
-    // The new two-field definition, DATA, primary root and property carrier
-    // append; separate bitmap pages may also be required by actual map windows.
-    assert!(plan.after_bytes().len() >= before.len() + 4 * 4096);
+    assert_promoted_property_maps(&before, plan.after_bytes());
     for (number, page) in before.chunks_exact(4096).enumerate() {
         if [1, 2, 3, 4].contains(&number) {
             continue;
@@ -171,4 +237,14 @@ fn authored_append_uses_actual_catalog_gap_for_small_declaration_properties() {
     .unwrap();
     assert_eq!(table.columns().len(), 2);
     assert!(table.rows().is_empty());
+    let subsequent =
+        authored_add_table_source_capabilities(plan.after_bytes(), SCOPE, &mut budget(), &|| false)
+            .unwrap();
+    assert!(subsequent.can_add_keyed());
+    assert!(subsequent.can_add_keyless());
+    assert!(subsequent.requires_native());
+    let original =
+        add_table_source_capabilities(plan.after_bytes(), SCOPE, &mut budget(), &|| false).unwrap();
+    assert!(!original.can_add_keyed());
+    assert!(!original.can_add_keyless());
 }
