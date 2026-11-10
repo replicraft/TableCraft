@@ -33,6 +33,38 @@ agreement is **not** a cell-by-cell comparison of the complete CLI output.
 The complete typed CLI reads now cover all five tables. The MCP observations
 qualify bounded pages and explicit counts, not a complete MCP scan of all tables.
 
+## Headless desktop journey — 9 November 2026
+
+An opt-in desktop scenario now loads only the exact source hash above through
+`tablecraft-testkit::support::access::registered_unlocode`. It uses a temporary
+copy, the actual desktop worker, shared UI and headless widget harness. No native
+application window opens and no private source values are retained in the report.
+
+The scenario passed on macOS ARM64 in 1.89 seconds after compilation. It verifies
+automatic first-table opening, five distinct user tables, Design/Datasheet visits
+with the independently observed row/field counts, and a largest-table page at
+offset 100,900 with 69 rows, 12 fields and checked EOF. An explicit COUNT query
+returns 100,969, with no editable native row identity or source revision attached
+to the result. Both the untouched original and the temporary working file are
+compared against the complete initial bytes after all operations.
+
+The query explicitly selects a 200,000-row snapshot ceiling, 1,000-row batches,
+256 MiB per pool, 200,000 native rows, 1,000,000 query rows and 100,000,000 steps
+per pool. Default limits are unchanged. These checks do not exercise all cells,
+all GUI workflows, writes, native application launches or Microsoft Access.
+In particular this `.mdb`-named ACE 2007 sample is not a Jet 4 UI qualification.
+
+To rerun locally, set `TABLECRAFT_UNLOCODE_SOURCE` to the original's **absolute**
+path and run:
+
+```sh
+cargo test -p tablecraft-desktop --locked original_ace2007_catalog_last_page_and_query_keep_the_source_unchanged -- --ignored
+```
+
+Ordinary tests never look for a private file implicitly. The source-free test
+implementation is tracked; the source and local log
+`.cache/unlocode-desktop-original-journey.log` remain private.
+
 ## Query budgets and retained refusals
 
 - Under default allowances, the largest-table `COUNT(*)` refused with
