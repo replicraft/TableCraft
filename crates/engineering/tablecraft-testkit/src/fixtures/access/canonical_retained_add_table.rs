@@ -55,6 +55,20 @@ fn word(bytes: &[u8], at: usize) -> usize {
 /// Append fresh pages and physical metadata slots. Deleted native identities,
 /// slots, payloads and property snapshots are never recycled or reconstructed.
 pub fn append(before: &[u8], name: &str, target: Target) -> Vec<u8> {
+    append_named_id(before, name, target, false)
+}
+
+/// Desktop generated drafts retain the protected field's literal uppercase ID.
+/// Other metadata and placement remain the independently authored target schema.
+pub fn append_with_uppercase_id(before: &[u8], name: &str, target: Target) -> Vec<u8> {
+    assert!(matches!(
+        target,
+        Target::GeneratedNumber | Target::GeneratedText
+    ));
+    append_named_id(before, name, target, true)
+}
+
+fn append_named_id(before: &[u8], name: &str, target: Target, uppercase: bool) -> Vec<u8> {
     assert_eq!(before.len() % PAGE, 0);
     assert!(!name.is_empty());
     let definition = before.len() / PAGE;
@@ -81,6 +95,14 @@ pub fn append(before: &[u8], name: &str, target: Target) -> Vec<u8> {
 
     let original = template(target);
     let mut declaration = original[DEFINITION..DEFINITION + PAGE].to_vec();
+    if uppercase {
+        let first_name = 75 + 25 * word(&declaration, 45);
+        assert_eq!(
+            &declaration[first_name..first_name + 6],
+            &[4, 0, b'I', 0, b'd', 0]
+        );
+        declaration[first_name + 4] = b'D';
+    }
     put32(&mut declaration, 55, (3 << 8) | owned as u32);
     put32(&mut declaration, 59, (3 << 8) | (owned + 1) as u32);
     if target.keyed() {

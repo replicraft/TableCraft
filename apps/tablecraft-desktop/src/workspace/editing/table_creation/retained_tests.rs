@@ -20,7 +20,7 @@ use crate::workspace::{
         opened,
     },
 };
-use egui::{Key, Modifiers, accesskit::Role};
+use egui::accesskit::Role;
 use egui_kittest::{Harness, kittest::Queryable};
 use std::path::Path;
 use tablecraft_runtime::journal_path;
@@ -31,7 +31,6 @@ use tablecraft_testkit::fixtures::access::{
     canonical_retained_add_table::{self as raw, Target},
     canonical_table_drop::current::{self as dropped, History},
 };
-use tablecraft_ui::FluentArgs;
 
 fn draft(harness: &mut Harness<'_, Desktop>, target: Target) {
     create_table(harness);
@@ -39,27 +38,8 @@ fn draft(harness: &mut Harness<'_, Desktop>, target: Target) {
         .get_by_role_and_label(Role::Tab, "Home")
         .click_accesskit();
     harness.run_steps(2);
-    // The independent templates spell the generated field Id. Use the real
-    // Design rename widget so the saved request has exactly that declaration.
     view(harness, "ribbon-table-design");
-    let mut arguments = FluentArgs::new();
-    arguments.set("field", "ID");
-    let label = harness
-        .state()
-        .state
-        .localizer
-        .format("table-draft-design-name", &arguments);
-    harness
-        .get_by_role_and_label(Role::Button, &label)
-        .click_accesskit();
-    harness.run_steps(2);
-    harness.key_press_modifiers(Modifiers::COMMAND, Key::A);
-    harness
-        .get_by_role_and_label(Role::TextInput, "Field name")
-        .type_text("Id");
-    harness.run_steps(1);
-    harness.key_press(Key::Enter);
-    harness.run_steps(2);
+    // The generated ID stays protected and retains its actual uppercase name.
     view(harness, "ribbon-datasheet");
     match target {
         Target::GeneratedNumber => add_named_field(harness, "table-draft-number", "Score"),
@@ -77,7 +57,7 @@ fn save_schema(
 ) -> Vec<u8> {
     assert_eq!(std::fs::read(path).unwrap(), before);
     assert!(!journal_path(path).exists());
-    let expected = raw::append(before, name, target);
+    let expected = raw::append_with_uppercase_id(before, name, target);
     start_save(harness, name);
     finish_reads(harness);
     assert_eq!(std::fs::read(path).unwrap(), expected);
