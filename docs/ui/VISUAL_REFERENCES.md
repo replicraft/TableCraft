@@ -552,3 +552,18 @@ shared draft/recovery readiness. Source-free headless interaction checks cover
 queued clicks, cancellation, download/install gating and all eight locales in
 both themes. No native application window was opened. New offscreen render
 observations must be recorded separately before claiming visual verification.
+
+Three update frames were subsequently rendered and opened directly on macOS
+14.7.2 ARM64 using the headless wgpu harness with Windows input emulation:
+English/light Ready at 1280 × 820 logical points, scale 1; German/dark
+restart-blocked at 900 × 580, scale 1.25 (1125 × 725 pixels); and Korean/dark
+signature failure at 900 × 580, scale 1. The status, command and blocking
+explanation remain visible. GPU adapter identity was not recorded. Initial
+sandboxed attempts failed before rendering with “No adapter found”; rerunning
+the existing renderer with GPU access produced these frames without a window.
+The images remain in ignored `.cache/update-ui-20261109/`, with SHA-256 values
+`36b8ac132192d74d3f4caf4ea9025039387369a9a7b5ba347634d416560c4ff1`,
+`4271156f8f47ef97f78c38f290ac2aa22ce98d49ba17d151791e5e0ea2101f01` and
+`f6021f87840b951bb9c935cb276b9b0f02879d95b17c9dc436c630d33d2a942c`,
+respectively. These source-free observations qualify layout only, not network,
+installation, recovery or Microsoft Access behavior.
