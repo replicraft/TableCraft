@@ -49,14 +49,15 @@ class PackagingTests(unittest.TestCase):
         (self.root / "LICENSE").write_text("Original fixture license text.\n")
         resources = self.root / "packaging"
         resources.mkdir()
-        (resources / "ThirdPartyLicenses.txt").write_text("Original fixture attribution.\n")
+        self.notices = resources / "ThirdPartyLicenses.txt"
+        self.notices.write_text("Original fixture attribution.\n")
         self.addCleanup(patch.stopall)
         patch.object(contract, "ROOT", self.root).start()
 
     def build_archive(self, target):
         binary = self.root / (target + ".bin")
         binary.write_bytes(native_binary(target))
-        return package.package(VERSION, target, binary, self.root / "dist")
+        return package.package(VERSION, target, binary, self.root / "dist", notices=self.notices)
 
     def test_six_independent_headers_and_wrong_architecture_refusals(self):
         for target in contract.TARGETS:
@@ -107,10 +108,25 @@ class PackagingTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             contract.validate_version(VERSION)
 
+    def test_default_packaging_uses_fresh_cli_generation_instead_of_a_stale_source_bundle(self):
+        target = "x86_64-pc-windows-msvc"
+        binary = self.root / "native.bin"
+        binary.write_bytes(native_binary(target))
+        generated = b"Fresh generated CLI attribution.\n"
+        with patch.object(package.desktop_notices, "generate", return_value=(None, None, generated)) as generate:
+            archive = package.package(VERSION, target, binary, self.root / "dist")
+        generate.assert_called_once_with(
+            self.root, package.desktop_notices.POLICY, package.desktop_notices.CACHE, "cli",
+        )
+        with zipfile.ZipFile(archive) as stream:
+            self.assertEqual(stream.read("ThirdPartyLicenses.txt"), generated)
+        self.assertEqual((archive.parent / "ThirdPartyLicenses.txt").read_bytes(), generated)
+        self.assertNotEqual(self.notices.read_bytes(), generated)
+
     def test_every_target_archive_contains_exact_legal_payload_and_binary(self):
         for target in contract.TARGETS:
             archive = self.build_archive(target)
-            package.verify_archive(archive, VERSION, target)
+            package.verify_archive(archive, VERSION, target, notices=self.notices)
             self.assertEqual(archive.with_name(archive.name + ".sha256").read_bytes(), package.checksum(archive))
             if "windows" in target:
                 with zipfile.ZipFile(archive) as source:
@@ -135,7 +151,7 @@ class PackagingTests(unittest.TestCase):
             with patch("zipfile.time.localtime", return_value=clock):
                 archive = package.package(
                     VERSION, target, binary, self.root / f"output-{position}",
-                )
+                notices=self.notices)
             archives.append(archive.read_bytes())
             with zipfile.ZipFile(archive) as source:
                 for entry in source.infolist():
@@ -150,22 +166,22 @@ class PackagingTests(unittest.TestCase):
         for target in contract.TARGETS:
             self.build_archive(target)
         directory = self.root / "dist"
-        package.finalize(VERSION, directory)
+        package.finalize(VERSION, directory, notices=self.notices)
         self.assertEqual(len(list(directory.iterdir())), 14)
         self.assertEqual(len((directory / package.SUMS).read_text().splitlines()), 13)
-        package.finalize(VERSION, directory, verify_only=True)
+        package.finalize(VERSION, directory, verify_only=True, notices=self.notices)
         self.assertEqual(
             (directory / "ThirdPartyLicenses.txt").read_bytes(),
-            (self.root / "packaging" / "ThirdPartyLicenses.txt").read_bytes(),
+            (self.notices).read_bytes(),
         )
         (directory / "stale.zip").write_text("stale")
         with self.assertRaises(ValueError):
-            package.finalize(VERSION, directory, verify_only=True)
+            package.finalize(VERSION, directory, verify_only=True, notices=self.notices)
 
     def test_incomplete_release_never_creates_complete_manifest(self):
         self.build_archive("aarch64-apple-darwin")
         with self.assertRaises(ValueError):
-            package.finalize(VERSION, self.root / "dist")
+            package.finalize(VERSION, self.root / "dist", notices=self.notices)
         self.assertFalse((self.root / "dist" / package.SUMS).exists())
 
     def test_modified_sidecar_or_archive_is_refused(self):
@@ -175,7 +191,7 @@ class PackagingTests(unittest.TestCase):
         sidecar = next(directory.glob("*.sha256"))
         sidecar.write_text("0" * 64 + "  wrong\n")
         with self.assertRaises(ValueError):
-            package.finalize(VERSION, directory)
+            package.finalize(VERSION, directory, notices=self.notices)
         self.assertFalse((directory / package.SUMS).exists())
 
     def test_archive_duplicate_and_unexpected_paths_are_refused(self):
@@ -184,7 +200,7 @@ class PackagingTests(unittest.TestCase):
         with zipfile.ZipFile(archive, "a") as stream:
             stream.writestr("../outside", b"not extracted")
         with self.assertRaises(ValueError):
-            package.verify_archive(archive, VERSION, target)
+            package.verify_archive(archive, VERSION, target, notices=self.notices)
         self.assertFalse((self.root / "outside").exists())
 
     def test_missing_and_changed_legal_resources_are_refused(self):
@@ -192,20 +208,20 @@ class PackagingTests(unittest.TestCase):
         archive = self.build_archive(target)
         (self.root / "LICENSE").write_text("changed license")
         with self.assertRaises(ValueError):
-            package.verify_archive(archive, VERSION, target)
-        (self.root / "packaging" / "ThirdPartyLicenses.txt").unlink()
+            package.verify_archive(archive, VERSION, target, notices=self.notices)
+        (self.notices).unlink()
         with self.assertRaises(ValueError):
-            contract.legal_payload()
+            contract.legal_payload(self.notices)
 
     def test_symlinked_notice_is_refused_when_platform_permits_creation(self):
-        notice = self.root / "packaging" / "ThirdPartyLicenses.txt"
+        notice = self.notices
         notice.unlink()
         try:
             notice.symlink_to(self.root / "LICENSE")
         except OSError as error:
             self.skipTest(f"Host does not permit creating symlink fixtures: {error}")
         with self.assertRaises(ValueError):
-            contract.legal_payload()
+            contract.legal_payload(self.notices)
 
     def test_duplicate_zip_entries_and_tar_links_are_refused(self):
         target = "x86_64-pc-windows-msvc"
@@ -214,7 +230,7 @@ class PackagingTests(unittest.TestCase):
             with zipfile.ZipFile(archive, "a") as stream:
                 stream.writestr("LICENSE", b"duplicate")
         with self.assertRaisesRegex(ValueError, "duplicate"):
-            package.verify_archive(archive, VERSION, target)
+            package.verify_archive(archive, VERSION, target, notices=self.notices)
         target = "aarch64-apple-darwin"
         archive = self.build_archive(target)
         with tarfile.open(archive, "w:gz") as stream:
@@ -223,7 +239,7 @@ class PackagingTests(unittest.TestCase):
             entry.linkname = "../outside"
             stream.addfile(entry)
         with self.assertRaisesRegex(ValueError, "regular"):
-            package.verify_archive(archive, VERSION, target)
+            package.verify_archive(archive, VERSION, target, notices=self.notices)
 
     def test_fresh_asset_paths_prevent_overwrite(self):
         target = "aarch64-unknown-linux-gnu"
@@ -311,13 +327,13 @@ class PackagingTests(unittest.TestCase):
             type("Result", (), {"returncode": 0, "stderr": "", "stdout": "Usage: tablecraft query\n"})(),
         ]
         with patch.object(package.subprocess, "run", side_effect=responses) as run:
-            package.verify_archive(archive, VERSION, target, run_smoke=True)
+            package.verify_archive(archive, VERSION, target, run_smoke=True, notices=self.notices)
         self.assertEqual([call.args[0][1] for call in run.call_args_list], ["--version", "--help"])
         self.assertTrue(all(call.kwargs["timeout"] == 30 for call in run.call_args_list))
         responses[0].stdout = "tablecraft wrong\n"
         with patch.object(package.subprocess, "run", return_value=responses[0]):
             with self.assertRaises(ValueError):
-                package.verify_archive(archive, VERSION, target, run_smoke=True)
+                package.verify_archive(archive, VERSION, target, run_smoke=True, notices=self.notices)
 
 
 if __name__ == "__main__":

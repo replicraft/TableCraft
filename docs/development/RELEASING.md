@@ -63,6 +63,39 @@ are not Developer ID signed or notarized. Windows builds link the CRT statically
 macOS targets 13.0 or newer. Linux builds use Ubuntu 22.04/glibc 2.35 and require
 compatible host runtime libraries.
 
+## Generated notices
+
+CLI notices are generated at packaging time from the locked, six-target normal
+runtime dependency/feature closure, excluding build dependencies and proc macros.
+The shared [collector](../../scripts/packaging/desktop_notices.py) and
+[maintained policy](../../packaging/desktop/notice-policy.json) have an explicit
+`cli` product scope. It retains native collation and Access error-message data
+notices while excluding desktop fonts, icons and UI packages. No expanded bundle
+or inventory is checked in.
+
+The release workflow generates one `CliThirdPartyLicenses.txt` resource before
+building platform archives. Every builder and later assembly, signing and
+publication verifier uses that same independently generated reference through
+`--notices`. Archive contents, fourteen-file pre-signature membership and exact
+signed asset identities remain unchanged. Without `--notices`, the packaging
+commands generate a temporary bundle from current locked sources; fetch missing
+pinned source texts explicitly first. Generation performs no implicit networking.
+
+```sh
+cargo fetch --locked
+python3 scripts/packaging/desktop_notices.py fetch --product cli
+python3 scripts/packaging/desktop_notices.py generate --product cli \
+  --output /tmp/CliThirdPartyLicenses.txt
+```
+
+The reviewed `libm` 0.2.16 entry includes its complete published `LICENSE.txt`
+and full Sun Microsystems copyright/permission header from `pow.rs`. Its current
+`scalbn` implementation delegates to generic Rust without an additional notice.
+The CLI-only `objc2-io-kit` framework crate uses the exact reviewed upstream root
+license corresponding to its published VCS commit, as its crate archive omits that
+license text. Sources and product decisions live in the compact maintained policy;
+expanded manifests and consolidated copies remain generated artifacts.
+
 ## Local verification
 
 Use the toolchain in `rust-toolchain.toml` and locked dependencies:

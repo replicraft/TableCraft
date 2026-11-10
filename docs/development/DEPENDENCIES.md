@@ -14,12 +14,32 @@ signed-zero expectation is unchanged.
 Upstream describes general `pow` accuracy as nearly rounded, not universally
 correctly rounded. This change does not establish native Access edge-case parity
 or alter other transcendental/financial kernels. The locked package/source hash
-and complete `LICENSE.txt` already belong to the generated notice closure; this
+now bind its complete `LICENSE.txt` and complete Sun copyright/permission header
+from `pow.rs` in both generated native-product notice closures. The scalar
 consumer introduces no registry package/version. Primary contracts/source:
 [Rust powf](https://doc.rust-lang.org/std/primitive.f64.html#method.powf),
 [libm pow](https://docs.rs/libm/0.2.16/libm/fn.pow.html) and its reviewed published
 `src/math/pow.rs` implementation (Sun/FreeBSD-derived underflow handling).
 
+
+## Generated CLI notice closure — 9 November 2026
+
+CLI packaging now uses the same locked six-target collector and compact policy as
+desktop, with an explicit product scope. The current CLI inventory contains 175
+packages, including 161 third-party entries. It includes the native collation and
+Access error-message assets and excludes UI/font packages and assets. Generated
+bundles, inventories and expanded manifests stay outside tracked source; the old
+static CLI bundle is removed. Release builders and all later verifiers share the
+same generated resource rather than trusting an archive's own notice text.
+
+The libm source exception preserves the complete published aggregate license and
+full Sun 2004 `pow.rs` notice/grant. Current `scalbn` delegates to the generic Rust
+implementation and has no separate third-party header. The CLI-only
+`objc2-io-kit` 0.3.2 archive omits its license; its published VCS commit exactly
+matches the maintained objc2 upstream source pin used by the other framework
+crates. Its explicit Apache selection retains the root SDK-provenance caveat.
+These are reviewed source/packaging facts, not a claim of legal completeness.
+See [generated notices](RELEASING.md#generated-notices).
 
 ## Signed desktop updater — 9 November 2026
 

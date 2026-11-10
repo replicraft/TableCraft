@@ -565,7 +565,7 @@ def expand_policy(root, inventory, locations, policy):
                 exception = policy.get("workspace_license_exceptions", {}).get(item["name"])
                 if not exception or exception["declared_license"] != item["declared_license"]:
                     raise ValueError("Workspace license needs an explicit asset/source exception")
-                if not exception.get("asset") or exception["asset"] not in {entry["name"] for entry in policy.get("assets", [])}:
+                if not exception.get("asset") or exception["asset"] not in {entry["name"] for entry in policy.get("assets", []) if includes_product(entry, product)}:
                     raise ValueError("Workspace license exception requires its maintained asset notice")
                 additional_licenses.add(item["declared_license"])
             continue

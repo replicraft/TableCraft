@@ -60,6 +60,17 @@ jobs:
       - run: python -m unittest discover -s scripts/tests -p 'test_file_associations.py'
       - run: python -m unittest discover -s scripts/tests -p 'test_desktop_notices.py'
       - run: python -m unittest discover -s scripts/tests -p 'test_minisign_tool.py'
+      - run: cargo fetch --locked
+      - name: Generate the locked six-target CLI notice closure
+        run: |
+          python scripts/packaging/desktop_notices.py fetch --product cli
+          mkdir resources
+          python scripts/packaging/desktop_notices.py generate --product cli --output resources/CliThirdPartyLicenses.txt
+      - uses: actions/upload-artifact@v7
+        with:
+          name: cli-packaging-resources
+          path: resources
+          if-no-files-found: error
 
   build:
     name: Build and smoke-test ${{ matrix.target }}
@@ -97,6 +108,10 @@ jobs:
       - uses: actions/setup-python@v7
         with:
           python-version: '3.13'
+      - uses: actions/download-artifact@v8
+        with:
+          name: cli-packaging-resources
+          path: resources
       - name: Install repository-pinned Rust and native target
         run: rustup target add ${{ matrix.target }}
       - uses: Swatinem/rust-cache@v2
@@ -118,9 +133,9 @@ jobs:
           RELEASE_BINARY: target/${{ matrix.target }}/release/${{ matrix.executable }}
         run: |
           set -euo pipefail
-          python scripts/packaging/package_cli.py package --version "$RELEASE_VERSION" --target "$RELEASE_TARGET" --binary "$RELEASE_BINARY" --output dist
+          python scripts/packaging/package_cli.py package --version "$RELEASE_VERSION" --target "$RELEASE_TARGET" --binary "$RELEASE_BINARY" --output dist --notices resources/CliThirdPartyLicenses.txt
           archive=$(find dist -maxdepth 1 -type f \( -name '*.tar.gz' -o -name '*.zip' \) -print)
-          python scripts/packaging/package_cli.py verify-archive --version "$RELEASE_VERSION" --target "$RELEASE_TARGET" --archive "$archive" --smoke
+          python scripts/packaging/package_cli.py verify-archive --version "$RELEASE_VERSION" --target "$RELEASE_TARGET" --archive "$archive" --smoke --notices resources/CliThirdPartyLicenses.txt
       - uses: actions/upload-artifact@v7
         with:
           name: tablecraft-cli-${{ needs.version.outputs.version }}-${{ matrix.target }}
@@ -145,12 +160,16 @@ jobs:
           pattern: tablecraft-cli-${{ needs.version.outputs.version }}-*
           path: dist
           merge-multiple: true
+      - uses: actions/download-artifact@v8
+        with:
+          name: cli-packaging-resources
+          path: resources
       - name: Require the exact six-platform release set
         env:
           RELEASE_VERSION: ${{ needs.version.outputs.version }}
         run: |
-          python scripts/packaging/package_cli.py finalize --version "$RELEASE_VERSION" --output dist
-          python scripts/packaging/package_cli.py verify --version "$RELEASE_VERSION" --output dist
+          python scripts/packaging/package_cli.py finalize --version "$RELEASE_VERSION" --output dist --notices resources/CliThirdPartyLicenses.txt
+          python scripts/packaging/package_cli.py verify --version "$RELEASE_VERSION" --output dist --notices resources/CliThirdPartyLicenses.txt
       - name: Independently verify archives and sidecar checksums
         working-directory: dist
         run: sha256sum --check SHA256SUMS.txt
@@ -202,6 +221,10 @@ jobs:
       - name: Install the signature verifier
         run: python scripts/packaging/minisign_tool.py --output "$RUNNER_TEMP/tablecraft-minisign"
       - run: minisign -v
+      - uses: actions/download-artifact@v8
+        with:
+          name: cli-packaging-resources
+          path: resources
       - name: Require both exact archive sets before opening signing secrets
         env:
           RELEASE_TAG: ${{ github.ref_type == 'tag' && github.ref_name || '' }}
@@ -214,7 +237,7 @@ jobs:
           else
             python scripts/packaging/package_cli.py validate
           fi
-          python scripts/packaging/package_cli.py verify --version "$RELEASE_VERSION" --output release-input/cli
+          python scripts/packaging/package_cli.py verify --version "$RELEASE_VERSION" --output release-input/cli --notices resources/CliThirdPartyLicenses.txt
           python scripts/packaging/desktop_release.py verify --version "$RELEASE_VERSION" --output desktop-dry-run/dist --notices resources/DesktopThirdPartyLicenses.txt --icon resources/icons/application.icns
           (cd release-input/cli && sha256sum --check SHA256SUMS.txt)
           (cd desktop-dry-run/dist && sha256sum --check SHA256SUMS-desktop.txt)
@@ -273,6 +296,10 @@ jobs:
       - name: Install the independent signature verifier
         run: python scripts/packaging/minisign_tool.py --output "$RUNNER_TEMP/tablecraft-minisign"
       - run: minisign -v
+      - uses: actions/download-artifact@v8
+        with:
+          name: cli-packaging-resources
+          path: resources
       - name: Reverify both products and signatures before any publication
         env:
           RELEASE_TAG: ${{ github.ref_name }}
@@ -281,7 +308,7 @@ jobs:
         run: |
           set -euo pipefail
           python scripts/packaging/package_cli.py validate --tag "$RELEASE_TAG"
-          python scripts/packaging/package_cli.py verify --version "$RELEASE_VERSION" --output release-input/cli
+          python scripts/packaging/package_cli.py verify --version "$RELEASE_VERSION" --output release-input/cli --notices resources/CliThirdPartyLicenses.txt
           python scripts/packaging/desktop_release.py verify --version "$RELEASE_VERSION" --output release-input/desktop --notices resources/DesktopThirdPartyLicenses.txt --icon resources/icons/application.icns
           (cd release-input/cli && sha256sum --check SHA256SUMS.txt)
           (cd release-input/desktop && sha256sum --check SHA256SUMS-desktop.txt)

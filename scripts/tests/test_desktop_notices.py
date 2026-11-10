@@ -167,6 +167,14 @@ checksum="bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
         self.assertNotIn(b"Complete font notice.", output)
         self.assertEqual([entry["name"] for entry in expanded["assets"]], ["Shared engine data"])
         self.assertEqual([entry["path"] for entry in expanded["content_bindings"]], ["engine.bin"])
+        metadata["packages"][-1]["license"] = "CC-BY-4.0"
+        licensed_inventory, licensed_locations = notices.collect(self.root, metadata, trees, "cli")
+        policy["workspace_license_exceptions"] = {
+            "tablecraft-cli": {"declared_license": "CC-BY-4.0", "asset": "Shared engine data"},
+        }
+        policy["assets"][1]["products"] = ["desktop"]
+        with self.assertRaisesRegex(ValueError, "maintained asset notice"):
+            notices.expand_policy(self.root, licensed_inventory, licensed_locations, policy)
         policy["assets"][0]["products"] = ["unreviewed-product"]
         with self.assertRaisesRegex(ValueError, "product scopes"):
             notices.expand_policy(self.root, inventory, locations, policy)

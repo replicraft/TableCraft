@@ -122,11 +122,11 @@ def architecture(stream, size, target):
         raise ValueError(f"Executable header does not match {target}")
 
 
-def legal_payload():
+def legal_payload(notices):
     return {
         "LICENSE": regular(ROOT / "LICENSE", MAX_LEGAL_BYTES),
         "ThirdPartyLicenses.txt": regular(
-            ROOT / "packaging" / "ThirdPartyLicenses.txt", MAX_LEGAL_BYTES,
+            notices, MAX_LEGAL_BYTES,
         ),
     }
 

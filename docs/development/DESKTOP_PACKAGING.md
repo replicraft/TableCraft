@@ -34,7 +34,9 @@ local paths, source hashes and expanded manifests are generated outputs.
 
 The original development manifests are preserved in ignored cache. They are not
 release inputs or tracked generated files. The generator and its tests are
-maintained source code. The existing CLI notice bundle has a separate scope.
+maintained source code. The same collector and policy also generate the separate
+[CLI closure](RELEASING.md#generated-notices) with `--product cli`; desktop-only
+fonts and assets are excluded from it.
 
 Prepare a fresh staging directory, fetch any missing pinned upstream text, and
 generate optional inspection artifacts with:

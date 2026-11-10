@@ -126,4 +126,4 @@ describes the shared runtime's bounded read, review/apply and recovery workflows
 ## License
 
 [Apache-2.0](LICENSE). Distributed builds also include
-[third-party notices](packaging/ThirdPartyLicenses.txt).
+[generated third-party notices](docs/development/RELEASING.md#generated-notices).
