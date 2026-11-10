@@ -115,18 +115,19 @@ fn retained_gap_cannot_overlap_footer_or_activate_a_code_carrier() {
     active_body[row_start + row_len - MASK_BYTES + BODY_NUMBER / 8] |= 1 << (BODY_NUMBER % 8);
 
     for bytes in [malformed_offset, active_body] {
-        let original = image(&bytes);
-        let schema = inspect_table_schema(
-            &mut original.reader(),
-            SCOPE,
-            "Table1",
-            &mut budget(),
-            &|| false,
-        )
-        .unwrap();
-        assert!(
+        let admit = || -> Result<(), EditError> {
+            let original =
+                NativeImage::capture(&mut Cursor::new(&bytes), SCOPE, &mut budget(), &|| false)?;
+            let schema = inspect_table_schema(
+                &mut original.reader(),
+                SCOPE,
+                "Table1",
+                &mut budget(),
+                &|| false,
+            )?;
             NoRequiredTablePrograms::capture_schema(&original, &schema, &mut budget(), &|| false)
-                .is_err()
-        );
+                .map(drop)
+        };
+        assert!(admit().is_err());
     }
 }
