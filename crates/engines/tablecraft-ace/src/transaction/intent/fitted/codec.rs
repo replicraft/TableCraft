@@ -284,6 +284,24 @@ impl NativeFittedEditIntent {
         read::decode(bytes, WireProfile::RetainedOpaqueRows, budget, cancelled)
     }
 
+    /// Encode exact TCNI19 Currency requests; this grants no source authority.
+    pub fn encode_retained_currency(
+        &self,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Vec<u8>, NativeIntentError> {
+        self.encode_profile(WireProfile::RetainedCurrencyRows, budget, cancelled)
+    }
+
+    /// Decode only TCNI0019/profile19; older fitted families remain closed.
+    pub fn decode_retained_currency(
+        bytes: &[u8],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, NativeIntentError> {
+        read::decode(bytes, WireProfile::RetainedCurrencyRows, budget, cancelled)
+    }
+
     /// Decode profile5 only, with complete nonallocating preflight first.
     pub fn decode(
         bytes: &[u8],

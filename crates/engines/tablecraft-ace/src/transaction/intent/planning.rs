@@ -14,6 +14,8 @@ mod historical_present;
 mod historical_text;
 mod requalify;
 #[cfg(feature = "ace16-create")]
+mod retained_currency_rows;
+#[cfg(feature = "ace16-create")]
 mod retained_opaque_rows;
 #[cfg(feature = "ace16-create")]
 mod retained_rows;
@@ -311,6 +313,7 @@ impl RecoverableNativeEditPlan {
             NativeUpdateProfile::Ace16OrdinaryEofAllocation
                 | NativeUpdateProfile::Ace16RetainedRows
                 | NativeUpdateProfile::Ace16RetainedOpaqueRows
+                | NativeUpdateProfile::Ace16RetainedCurrencyRows
         ) {
             return Err(JournalError::ImageSize);
         }
@@ -327,7 +330,9 @@ impl RecoverableNativeEditPlan {
     ) -> Result<crate::PreparedResizableNativeEdit<'a, D, J>, JournalError> {
         if !matches!(
             self.intent.profile(),
-            NativeUpdateProfile::Ace16RetainedRows | NativeUpdateProfile::Ace16RetainedOpaqueRows
+            NativeUpdateProfile::Ace16RetainedRows
+                | NativeUpdateProfile::Ace16RetainedOpaqueRows
+                | NativeUpdateProfile::Ace16RetainedCurrencyRows
         ) {
             return Err(JournalError::ImageSize);
         }
@@ -348,7 +353,9 @@ impl RecoverableNativeEditPlan {
     ) -> Result<PreparedNativeUpdate<'a, D, J>, JournalError> {
         if matches!(
             self.intent.profile(),
-            NativeUpdateProfile::Ace16RetainedRows | NativeUpdateProfile::Ace16RetainedOpaqueRows
+            NativeUpdateProfile::Ace16RetainedRows
+                | NativeUpdateProfile::Ace16RetainedOpaqueRows
+                | NativeUpdateProfile::Ace16RetainedCurrencyRows
         ) {
             return Err(JournalError::ImageSize);
         }

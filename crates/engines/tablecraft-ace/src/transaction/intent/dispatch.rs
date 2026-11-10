@@ -13,6 +13,8 @@ const ACE_PROFILE: u16 = 2;
 /// A versioned validation route, never a serialized native permission.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum NativeUpdateProfile {
+    /// Complete retained Currency cells with exact scaled original witnesses.
+    Ace16RetainedCurrencyRows,
     /// Retained historical opaque tails with exact original LONG cell witnesses.
     Ace16RetainedOpaqueRows,
     /// Retained surroundings with exact current Number/Text request witnesses.
@@ -65,7 +67,7 @@ pub enum NativeUpdateBody {
     Int32(NativeInt32EditIntent),
     /// Original ordered fixed groups for closed TCNI0003/4/8/9/10/11/12/13/14 records.
     Fixed(NativeFixedEditIntent),
-    /// Ordered original variable/fixed requests for TCNI0005/15/16/17/18.
+    /// Ordered original variable/fixed requests for TCNI0005/15/16/17/18/19.
     Fitted(NativeFittedEditIntent),
     /// Original fixed/variable groups for explicit TCNI0006 owned-page growth.
     OwnedGrowth(NativeFittedEditIntent),
@@ -74,6 +76,13 @@ pub enum NativeUpdateBody {
 }
 
 impl NativeUpdateIntent {
+    pub(super) fn from_retained_currency_rows(original: NativeFittedEditIntent) -> Self {
+        Self {
+            profile: NativeUpdateProfile::Ace16RetainedCurrencyRows,
+            body: NativeUpdateBody::Fitted(original),
+        }
+    }
+
     pub(super) fn from_retained_opaque_rows(original: NativeFittedEditIntent) -> Self {
         Self {
             profile: NativeUpdateProfile::Ace16RetainedOpaqueRows,
@@ -88,7 +97,7 @@ impl NativeUpdateIntent {
         }
     }
 
-    /// Actual retained TCNI17/18 u32 complete-record length representation.
+    /// Actual retained TCNI17/18/19 u32 complete-record length representation.
     pub const MAX_RETAINED_ENCODED_BYTES: usize =
         NativeFittedEditIntent::MAX_RETAINED_ENCODED_BYTES;
 
@@ -330,6 +339,10 @@ impl NativeUpdateIntent {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Vec<u8>, NativeIntentError> {
         match (&self.body, self.profile) {
+            (
+                NativeUpdateBody::Fitted(original),
+                NativeUpdateProfile::Ace16RetainedCurrencyRows,
+            ) => original.encode_retained_currency(budget, cancelled),
             (NativeUpdateBody::Fitted(original), NativeUpdateProfile::Ace16RetainedOpaqueRows) => {
                 original.encode_retained_opaque(budget, cancelled)
             }
@@ -407,6 +420,12 @@ impl NativeUpdateIntent {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, NativeIntentError> {
+        if bytes.get(..super::fitted::RETAINED_CURRENCY_ROWS_MAGIC.len())
+            == Some(super::fitted::RETAINED_CURRENCY_ROWS_MAGIC.as_slice())
+        {
+            return NativeFittedEditIntent::decode_retained_currency(bytes, budget, cancelled)
+                .map(Self::from_retained_currency_rows);
+        }
         if bytes.get(..super::fitted::RETAINED_OPAQUE_ROWS_MAGIC.len())
             == Some(super::fitted::RETAINED_OPAQUE_ROWS_MAGIC.as_slice())
         {

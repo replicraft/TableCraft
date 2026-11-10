@@ -17,6 +17,8 @@ pub(in crate::transaction::intent) const RETAINED_ROWS_MAGIC: &[u8; 8] = b"TCNI0
 const RETAINED_ROWS_PROFILE: u16 = 17;
 pub(in crate::transaction::intent) const RETAINED_OPAQUE_ROWS_MAGIC: &[u8; 8] = b"TCNI0018";
 const RETAINED_OPAQUE_ROWS_PROFILE: u16 = 18;
+pub(in crate::transaction::intent) const RETAINED_CURRENCY_ROWS_MAGIC: &[u8; 8] = b"TCNI0019";
+const RETAINED_CURRENCY_ROWS_PROFILE: u16 = 19;
 
 #[derive(Clone, Copy)]
 pub(in crate::transaction::intent) enum WireProfile {
@@ -27,12 +29,15 @@ pub(in crate::transaction::intent) enum WireProfile {
     CurrentRows,
     RetainedRows,
     RetainedOpaqueRows,
+    RetainedCurrencyRows,
 }
 
 impl WireProfile {
     pub(super) const fn grammar(self) -> Grammar {
         match self {
-            Self::RetainedRows | Self::RetainedOpaqueRows => Grammar::Retained,
+            Self::RetainedRows | Self::RetainedOpaqueRows | Self::RetainedCurrencyRows => {
+                Grammar::Retained
+            }
             _ => Grammar::Legacy,
         }
     }
@@ -46,6 +51,7 @@ impl WireProfile {
             Self::CurrentRows => CURRENT_ROWS_MAGIC,
             Self::RetainedRows => RETAINED_ROWS_MAGIC,
             Self::RetainedOpaqueRows => RETAINED_OPAQUE_ROWS_MAGIC,
+            Self::RetainedCurrencyRows => RETAINED_CURRENCY_ROWS_MAGIC,
         }
     }
 
@@ -58,6 +64,7 @@ impl WireProfile {
             Self::CurrentRows => CURRENT_ROWS_PROFILE,
             Self::RetainedRows => RETAINED_ROWS_PROFILE,
             Self::RetainedOpaqueRows => RETAINED_OPAQUE_ROWS_PROFILE,
+            Self::RetainedCurrencyRows => RETAINED_CURRENCY_ROWS_PROFILE,
         }
     }
 }

@@ -36,7 +36,9 @@ impl NativeUpdateIntent {
         check(budget, cancelled)?;
         if !matches!(
             self.profile(),
-            NativeUpdateProfile::Ace16RetainedRows | NativeUpdateProfile::Ace16RetainedOpaqueRows
+            NativeUpdateProfile::Ace16RetainedRows
+                | NativeUpdateProfile::Ace16RetainedOpaqueRows
+                | NativeUpdateProfile::Ace16RetainedCurrencyRows
         ) {
             return Err(NativeIntentError::UnsupportedProfile.into());
         }
