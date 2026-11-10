@@ -1,0 +1,102 @@
+{
+  "observed_on": "2026-11-09",
+  "scope": "Local headless fitted-name to native row CRUD composition; no Windows/Access qualification",
+  "raw_predictions": {
+    "scope": "Independent raw row composition, no production encoder/SDK/native writer output",
+    "model_sha256": "2aff2363532abaea37ae990f23756cb51209e9c8b525671efb8bf39fa86c62fe",
+    "delete_reference_owner": "tests/access/indexes/indexed_delete_originals/model.py",
+    "delete_reference_sha256": "ab7eb277891769a240bf0059cd2dcffa73a31d2a4fb77a1f589424783279c8d4",
+    "cases": [
+      {
+        "new_name": "TaxAmount",
+        "images": {
+          "renamed": "dabf8c77e3f258acb0aa7478c3098652a566def5837e47b76b10cb2f3699d1b2",
+          "inserted": "d2cdf7f4ffefdc4ef185d7b0a8a071473a6ecf3947ee4aaa808f3658859b08da",
+          "updated": "544da0e202f81fbca77952c7e8851db8c71c0af40f3935d1dd89ad84d395ae14",
+          "deleted": "359dcac26c0ec392468deafb684725ff35a83cef5c7fbcf629a5c8aedd62ce53"
+        },
+        "bytes": 45056,
+        "live_after_delete": 0,
+        "last_issued_after_delete": 1,
+        "unique_history_after_delete": 1,
+        "tombstoned_record_hex": "0200010000002a00000003",
+        "inactive_key_hex": "7f8000000100000800"
+      },
+      {
+        "new_name": "X",
+        "images": {
+          "renamed": "3c0c3b38664199f8ff505b8b6ce0090a96fed1a53e48d8501fb1727412ee493d",
+          "inserted": "6d052ed5e3e6bddff9df8592feadde689d077d108f9090155d2d59733b9eeb77",
+          "updated": "afd3c1f9a66ad014fca113bbc08c2c921ed7b4cdeabaa3d53818d9bd0ba2e762",
+          "deleted": "ffc57cc9c3bba7cdcbd732eea578cbf382817df3dc75ef3323fd7d0170d28787"
+        },
+        "bytes": 45056,
+        "live_after_delete": 0,
+        "last_issued_after_delete": 1,
+        "unique_history_after_delete": 1,
+        "tombstoned_record_hex": "0200010000002a00000003",
+        "inactive_key_hex": "7f8000000100000800"
+      }
+    ]
+  },
+  "implemented_boundary": {
+    "format": "Ace2016 only for newly admitted nonzero selected user TDEF slack",
+    "active_framing": "Complete original header/field/index/LVAL termination remains required",
+    "global_and_system": "Strict zero-tail path unchanged",
+    "margin": "Final eight bytes remain zero under this retained profile",
+    "witness": "Original allocation identity, selected definition, declared end and exact original slack/page-end bytes",
+    "authority": "No serialized witness, schema growth or allocation authority"
+  },
+  "observations": [
+    "Before fix: growth admitted omitted insert; shrink failed consuming review with Unsupported(ActiveContent), without writes or journal",
+    "After fix: independent native full-image INSERT, non-no-op UPDATE and DELETE pass on natural retained shrink tail",
+    "Desktop: actual header rename/save/witness then insertion, clipboard edit to42 and deletion pass for growth and shrink",
+    "MCP: fresh open of each independent renamed image then consuming insert/update/delete reviews and full-file comparisons pass",
+    "Fresh TCNA0002 and cold pending/committed recovery rederive source qualification",
+    "Integrity-valid forged AFTER tail is refused before target writes"
+  ],
+  "verification": {
+    "native_mutations": {
+      "passed_distinct": 839,
+      "existing_ignored": 253,
+      "method": "837 initial passes plus corrected two new setup controls; focused five-test rerun passed"
+    },
+    "access_unit": {
+      "passed": 215,
+      "ignored": 0
+    },
+    "runtime_unit": {
+      "passed": 334,
+      "existing_ignored": 1
+    },
+    "desktop_unit": {
+      "passed": 220,
+      "existing_ignored": 1
+    },
+    "mcp_unit": {
+      "passed": 64,
+      "ignored": 0
+    },
+    "testkit_unit": {
+      "passed": 31,
+      "ignored": 0
+    },
+    "checks": {
+      "clippy": "PASS: six affected packages, all targets/features, -D warnings",
+      "rustdoc": "PASS: six affected packages, all features/no dependencies, -D warnings",
+      "ace_feature_matrix": "PASS: no default features; standalone ace16-write-preview; standalone journal",
+      "visual_scope": "No presentation renderer changed; actual normal widgets were exercised headlessly, with no native windows"
+    }
+  },
+  "retained_failures": [
+    "Initial compile: two LimitError conversions missing; fixed via InspectError conversion without new blanket conversion",
+    "Two new controls used an unsupported sparse declaration on a dense source and an extended creator catalog outside the closed Catalog profile; corrected fixtures/policy, not guards or expected images",
+    "Shared desktop test helper initially crossed private editing-field ownership; moved under editing without changing visibility or assertions"
+  ],
+  "limits": [
+    "No complete workspace claim",
+    "No SDK writes or Microsoft Access execution",
+    "Other row/source/constraint/program limits remain",
+    "Schema mutation and repeated rename remain separately qualified"
+  ]
+}

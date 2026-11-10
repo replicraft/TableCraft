@@ -1,5 +1,31 @@
 # Implementation status
 
+## Row CRUD after fitted field names — 9 November 2026
+
+Growing and shrinking a qualified field name now compose with normal row
+insertion, a non-no-op Number update and deletion. Desktop uses the actual
+rename/review/save/witness and row widgets; MCP starts fresh from independently
+renamed files. Complete native images agree at each stage, including generated
+history, tombstoned records, inactive index keys and retained name/property bytes.
+The initial growth success/shrink refusal was reproduced before the fix.
+
+A private row-only witness retains exact opaque Ace2016 user-definition slack.
+Complete active framing, program/constraint checks and global/system strictness
+remain; no schema capacity, allocation permission or serialized authority is
+introduced. Fresh original requests and cold recovery rederive the same proof.
+See the [contract](access/writes/RETAINED_DEFINITION_TAILS.md) and
+[qualification record](../tests/results/schema/fitted-rename-row-crud-2026-11-09.json).
+
+Across the broad native mutation batch and corrected two new control setups,
+839 distinct native cases pass (253 existing ignores). Complete Access/runtime/
+desktop/MCP/testkit unit batches pass 215/334/220/64/31 cases respectively; runtime
+and desktop each retain one pre-existing ignore. Initial typed-error conversions
+and a test-helper privacy boundary were corrected separately. These are local
+headless checks, not a full workspace run or native Windows/Access parity.
+Strict all-target/all-feature Clippy and rustdoc pass for the six affected
+packages. Reader-only, standalone preview and standalone journal ACE feature
+builds pass separately. No presentation renderer changed or native window opened.
+
 ## Fitting ASCII field names — 9 November 2026
 
 Qualified empty ACE16 explicit-OFF Number/Short Text fields now accept growing
@@ -30,10 +56,10 @@ shrink blind spot. No SDK writes or Windows/Access saves are claimed. Five
 localized light/dark [offscreen frames](ui/PRESENTATION_PREVIEW.md#fitted-field-name-proposals--9-november-2026)
 were opened at 1×/2×.
 
-Subsequent row-CRUD/source qualification after a fitted rename remains separate:
-shrink deliberately preserves historical bytes in newly free TDEF space, which
-some existing ordinary-write source guards refuse. A successful schema save does
-not establish that later row or schema operations are admitted.
+Subsequent operations still require their own source qualification. The
+[row-only retained-tail proof](access/writes/RETAINED_DEFINITION_TAILS.md) now
+qualifies the demonstrated insertion/update/deletion composition after shrink.
+A successful schema save does not grant broader row or schema authority.
 
 ## Saved Design field addition — 9 November 2026
 
