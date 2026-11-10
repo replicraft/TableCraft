@@ -242,22 +242,23 @@ fn sparse_v3_image_above_legacy_64mib_is_admitted_only_by_new_grammar() {
     file.write_all(&hash.finalize()).unwrap();
     file.set_len(prefix.len() as u64 + 56 + length).unwrap();
     let mut backing = Sparse(file);
-    let mut journal = BoundedJournalRegion::new(
-        &mut backing,
-        prefix.len() as u64,
-        u64::MAX - prefix.len() as u64,
-        &mut budget(),
-        &|| false,
-    )
-    .unwrap();
-    assert!(inspect_v2(&mut journal, &mut budget(), &|| false).is_err());
-    let mut enough = ResourceBudget::new(2 * length + 56, 0, 1024 * 1024 * 1024);
-    let checked = inspect_v3(&mut journal, &mut enough, &|| false).unwrap();
-    assert!(checked.before_bytes().is_empty());
-    assert_eq!(checked.after_bytes().len() as u64, length);
-    assert!(checked.after_bytes().iter().all(|byte| *byte == 0));
-    drop(checked);
-    drop(journal);
+    {
+        let mut journal = BoundedJournalRegion::new(
+            &mut backing,
+            prefix.len() as u64,
+            u64::MAX - prefix.len() as u64,
+            &mut budget(),
+            &|| false,
+        )
+        .unwrap();
+        assert!(inspect_v2(&mut journal, &mut budget(), &|| false).is_err());
+        let mut enough = ResourceBudget::new(2 * length + 56, 0, 1024 * 1024 * 1024);
+        let checked = inspect_v3(&mut journal, &mut enough, &|| false).unwrap();
+        assert!(checked.before_bytes().is_empty());
+        assert_eq!(checked.after_bytes().len() as u64, length);
+        assert!(checked.after_bytes().iter().all(|byte| *byte == 0));
+        drop(checked);
+    }
     backing.0.seek(SeekFrom::Start(0)).unwrap();
     let mut original = vec![0; prefix.len()];
     backing.0.read_exact(&mut original).unwrap();
