@@ -148,7 +148,7 @@ pending/committed cold recovery and forged AFTER rejection. A synthetic Unicode
 request also confirms that successful decoding grants no native write authority.
 These tests do not establish Windows or Microsoft Access Save/reopen behavior.
 
-## Current Short Text addition and first stored values
+## Current Short Text addition and row editing
 
 `prepare_current_short_text_field_addition` and consuming
 `plan_recoverable_current_short_text_field_addition` add nullable Short Text to
@@ -166,22 +166,37 @@ selected Short Text decoder accepts only TCAC0009. Both use the same current
 candidate, source-binding, exact-image comparison and checked V2 journal owners.
 Neither a decoded request nor a generic journal AFTER authorizes native recovery.
 
-The `TCNI0015`/profile15 operation fills one absent Short Text field through a
-direct or already-forwarded historical root in existing owned DATA capacity.
-Original NULL-to-Text requests retain empty text, compressed text and wide text
-as distinct native values; NULL-to-NULL preserves the complete original image.
+The `TCNI0015`/profile15 operation updates one unindexed Short Text field through
+a direct or already-forwarded historical root in existing owned DATA capacity.
+`plan_recoverable_historical_short_text_updates` binds the actual original
+NULL/Text carrier before selecting the present-field or absent-field serializer
+from the stored record count. A refused branch is never retried. Replacement,
+growth, shrinkage, empty text, clearing to NULL and refilling are supported within
+that source. Equal values preserve the complete original image, including ignored
+bytes beneath NULL. Final row constraints are revalidated before a plan is issued.
+
 The serializer independently verifies historical field counts, variable offsets,
-NULL masks, unchanged other payloads and complete physical placement. Recovery
-reconstructs that same operation from the original source and request. Earlier
-ordinary and fixed historical request languages retain their existing proofs.
+NULL masks, unchanged sibling payloads and padding, and complete physical
+placement. Present fields retain the original stored field count and variable
+slots; an absent field expands only its selected record. Recovery reconstructs
+the same operation from the original source and expected/replacement carriers.
+Earlier ordinary and fixed historical request languages retain their proofs.
+The shared row capability can admit an ID-only table with a supported Text field;
+it does not require an unrelated editable Number field.
 
 The shared Access editor connects this operation to the existing runtime review,
-consuming Save and guarded reopen; desktop adds no native editing logic. Headless
-widget journeys add the field, fill three historical rows and freshly reopen,
-checking independent complete database images throughout. These are constructed
-source checks, not Windows or native Access Save/reopen qualification. Updating
-an already-present historical Text field, broader source layouts, bulk requests
-and EOF allocation remain separate implementation work. These restrictions are
+consuming Save and guarded reopen; desktop adds no native editing logic. The full
+headless field-addition family passes 39 cases. Four complete widget journeys
+cover direct, mixed, forwarded and ID-only tables, each adding the field, filling,
+replacing, shrinking, clearing and refilling before fresh reopen. Independent
+complete database images verify every save. A separate New-row journey verifies
+omitted/explicit NULL, empty and Unicode Text, generated IDs and preservation of
+old rows. Native original-request tests cover exact wire bytes, fresh-scope
+requalification, both cold journal states, stale expected values and forged AFTERs.
+
+These are constructed source checks, not Windows or native Access Save/reopen
+qualification. Broader source layouts, bulk requests, indexed Text targets and
+EOF allocation remain separate implementation work. These restrictions are
 current writer limitations, not Access format limits.
 
 ## Populated-table behavior references

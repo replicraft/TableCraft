@@ -1777,10 +1777,12 @@ TCAC0009 Short Text requests. Both retain the existing review, nonreplaceable Sa
 worker and guarded reopen. The captured native plan reports its actual declaration;
 it never labels a Short Text request as Number. Short Text keeps old records
 unchanged/NULL, with explicit width and compression and no default. Its separate
-TCNI0015 operation can save the first non-NULL value into an absent historical
-Text field, including empty text. It uses the same typed cell-edit service as
-other supported edits; desktop and MCP gain no independent native write path.
-Already-present historical Text edits and broader sources remain unqualified.
+TCNI0015 operation updates present or absent historical Text fields using actual
+stored field counts and checked expected values. It supports replacement, empty
+Text, NULL and refill through the same typed cell-edit service as other supported
+edits. The shared row capability also supports ID-only tables with an eligible
+Text field. Desktop and MCP gain no independent native write path. Broader source
+layouts, indexed targets and bulk historical Text updates remain unqualified.
 
 Actual inert metadata selects one source purpose before native qualification.
 Number retains TCAC0003/0004 for their supported creator prefixes and property
