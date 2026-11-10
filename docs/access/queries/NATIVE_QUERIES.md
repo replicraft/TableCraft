@@ -614,13 +614,13 @@ published only after every child succeeds. A later corrupt payload fails even
 under TOP or a filter that would omit it; errors publish no CLI rows. Failed
 decoding does not invalidate an already cached metadata projection. Shared native budgets
 charge buffers, decoding/copy work and cancellation checkpoints; query/output
-budgets still apply separately. Native decoding retains a 2 MiB encoded default
-with an explicit [32 MiB encoded allowance](../storage/LARGER_ENCODED_VALUES.md),
-1 MiB default file data and a 4 KiB header. Explicit
-[file allowances](../collections/LARGER_DECODED_ATTACHMENTS.md) can raise decoded file bytes to
-16 MiB; they do not raise encoded storage or cumulative pools. Changing an
-allowance clears decoded caches so a lower policy cannot reuse oversized values.
-Separate query Text and CLI output limits remain; see [larger payloads](../storage/LARGE_PAYLOADS.md).
+budgets still apply separately. Encoded native values default to the descriptor's
+[30-bit payload bound](../storage/LARGER_ENCODED_VALUES.md). Decoded attachment
+files use Access's documented [256 MiB maximum](../collections/LARGER_DECODED_ATTACHMENTS.md);
+wrapper headers are checked against their actual framed payload rather than an
+invented 4 KiB ceiling. A caller may select lower positive allowances, which clear
+decoded caches so a lower policy cannot reuse oversized values. Explicit native,
+query and output budgets remain independent; see [larger payloads](../storage/LARGE_PAYLOADS.md).
 Required parent indexes retain complete checked reference alignment without
 fallback. Binary comparison, ordering and arbitrary Binary
 function overloads are not introduced by the projection/Count/NULL-test profile.

@@ -43,7 +43,7 @@ pub(crate) struct PreviewCalculationArgs {
     /// Optional cumulative native read/allocation byte budget.
     #[arg(long, value_name = "BYTES", value_parser = clap::value_parser!(u64).range(1..=native::MAX_QUERY_READ_BYTES))]
     native_bytes: Option<u64>,
-    /// Cumulative native rows and dependency snapshot ceiling; default 16,384.
+    /// Optional cumulative native row budget shared by dependency snapshots.
     #[arg(long, value_name = "ROWS", value_parser = clap::value_parser!(u64).range(1..=native::MAX_NATIVE_READ_ROWS))]
     native_rows: Option<u64>,
     /// Optional cumulative native work budget.
