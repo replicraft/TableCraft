@@ -392,6 +392,12 @@ impl MutationIntent {
         }
 
         #[cfg(feature = "ace16-create")]
+        if raw.starts_with(b"TCAT0006") {
+            return NativeAddTableIntent::decode_retained(raw, budget, cancelled)
+                .map(Self::AddTable)
+                .map_err(Cause::AddTableIntent);
+        }
+        #[cfg(feature = "ace16-create")]
         if raw.starts_with(b"TCAT") {
             return NativeAddTableIntent::decode(raw, budget, cancelled)
                 .map(Self::AddTable)

@@ -244,6 +244,12 @@ pub struct OfflineWriteSession {
     resources: Vec<Resources>,
 }
 
+#[cfg(feature = "ace16-create")]
+enum SchemaCapture {
+    FirstTable,
+    TableAppend,
+}
+
 impl OfflineWriteSession {
     /// Acquire one explicit existing target after paying the retained-owner allocation.
     /// The caller supplies catalog scope and excludes noncooperating writers and
@@ -327,6 +333,7 @@ impl OfflineWriteSession {
     fn capture_schema_source(
         &mut self,
         expected: Option<&[u8]>,
+        purpose: SchemaCapture,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<NativeImage, Cause> {
@@ -334,12 +341,15 @@ impl OfflineWriteSession {
         let slot = self.slot_mut()?;
         slot.current = None;
         slot.state = SessionState::RefreshRequired;
-        let image = NativeImage::capture(
-            slot.target.as_mut().ok_or(Cause::InvalidState)?,
-            slot.scope,
-            budget,
-            cancelled,
-        )
+        let target = slot.target.as_mut().ok_or(Cause::InvalidState)?;
+        let image = match purpose {
+            SchemaCapture::FirstTable => {
+                NativeImage::capture(target, slot.scope, budget, cancelled)
+            }
+            SchemaCapture::TableAppend => {
+                NativeImage::capture_for_table_append(target, slot.scope, budget, cancelled)
+            }
+        }
         .map_err(Cause::Native)?;
         slot.state = SessionState::Ready;
         if let Some(expected) = expected {

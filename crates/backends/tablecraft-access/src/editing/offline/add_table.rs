@@ -45,7 +45,12 @@ impl OfflineWriteSession {
     ) -> Result<StagedAddTable, Failure> {
         let _span = tracing::debug_span!("access.offline.plan_add_table").entered();
         let result = self
-            .capture_schema_source(expected, budget, cancelled)
+            .capture_schema_source(
+                expected,
+                super::SchemaCapture::TableAppend,
+                budget,
+                cancelled,
+            )
             .and_then(|image| {
                 image
                     .plan_add_table(definition, budget, cancelled)

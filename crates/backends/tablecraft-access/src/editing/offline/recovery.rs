@@ -6,13 +6,13 @@ use super::{
 use std::path::Path;
 #[cfg(feature = "ace16-create")]
 use tablecraft_ace::{
-    NativeAddColumnIntent, NativeAddTableIntent, NativeCurrentFieldAdditionIntent,
-    NativeDatabaseOptionsIntent, NativeDefaultZeroAddColumnIntent,
-    NativeFieldAdditionAfterOffHistoryIntent, NativeFieldAdditionAfterOffIntent,
-    NativeFieldAdditionIntent, NativeFieldDropIntent, NativeFieldHistoryDatabaseOptionsIntent,
-    NativeFieldRenameIntent, NativeFirstTableIntent, NativeRepeatedDefaultZeroAddColumnIntent,
-    qualify_native_add_column_recovery, qualify_native_add_table_recovery,
-    qualify_native_current_field_addition_recovery,
+    AddTableSourceProfile, NativeAddColumnIntent, NativeAddTableIntent,
+    NativeCurrentFieldAdditionIntent, NativeDatabaseOptionsIntent,
+    NativeDefaultZeroAddColumnIntent, NativeFieldAdditionAfterOffHistoryIntent,
+    NativeFieldAdditionAfterOffIntent, NativeFieldAdditionIntent, NativeFieldDropIntent,
+    NativeFieldHistoryDatabaseOptionsIntent, NativeFieldRenameIntent, NativeFirstTableIntent,
+    NativeRepeatedDefaultZeroAddColumnIntent, qualify_native_add_column_recovery,
+    qualify_native_add_table_recovery, qualify_native_current_field_addition_recovery,
     qualify_native_default_zero_add_column_recovery,
     qualify_native_field_addition_after_off_history_recovery,
     qualify_native_field_addition_after_off_recovery, qualify_native_field_addition_recovery,
@@ -32,6 +32,8 @@ use tablecraft_ace::{
     qualify_native_update_recovery,
 };
 use tablecraft_core::limits::ResourceBudget;
+#[cfg(feature = "ace16-create")]
+use tablecraft_io::journal::inspect_v3;
 use tablecraft_io::journal::{
     RecoveryOutcome, filesystem::OfflineJournalPair, inspect_image, inspect_v1, inspect_v2,
 };
@@ -272,11 +274,17 @@ impl OfflineWriteSession {
                 MutationIntent::AddTable(intent) => {
                     let (mut target, mut journal) =
                         pair.resizable_storage().map_err(Cause::Pair)?;
-                    let checked =
-                        inspect_v2(&mut journal, budget, cancelled).map_err(Cause::Recovery)?;
-                    let qualified = qualify_native_add_table_recovery(
-                        checked, intent, slot.scope, budget, cancelled,
-                    )
+                    let qualified = if intent.source_profile() == AddTableSourceProfile::Retained {
+                        let checked =
+                            inspect_v3(&mut journal, budget, cancelled).map_err(Cause::Recovery)?;
+                        intent.qualify_retained_recovery(checked, slot.scope, budget, cancelled)
+                    } else {
+                        let checked =
+                            inspect_v2(&mut journal, budget, cancelled).map_err(Cause::Recovery)?;
+                        qualify_native_add_table_recovery(
+                            checked, intent, slot.scope, budget, cancelled,
+                        )
+                    }
                     .map_err(Cause::Qualification)?;
                     qualified
                         .recover(&mut target, budget, cancelled)
@@ -617,11 +625,17 @@ impl OfflineWriteSession {
                 }
                 #[cfg(feature = "ace16-create")]
                 MutationIntent::AddTable(intent) => {
-                    let checked =
-                        inspect_v2(&mut journal, budget, cancelled).map_err(Cause::Recovery)?;
-                    let qualified = qualify_native_add_table_recovery(
-                        checked, intent, slot.scope, budget, cancelled,
-                    )
+                    let qualified = if intent.source_profile() == AddTableSourceProfile::Retained {
+                        let checked =
+                            inspect_v3(&mut journal, budget, cancelled).map_err(Cause::Recovery)?;
+                        intent.qualify_retained_recovery(checked, slot.scope, budget, cancelled)
+                    } else {
+                        let checked =
+                            inspect_v2(&mut journal, budget, cancelled).map_err(Cause::Recovery)?;
+                        qualify_native_add_table_recovery(
+                            checked, intent, slot.scope, budget, cancelled,
+                        )
+                    }
                     .map_err(Cause::Qualification)?;
                     qualified
                         .confirm_completed(&mut target, budget, cancelled)
