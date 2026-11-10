@@ -4,7 +4,7 @@ use crate::{QueryError, Source};
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_schema::Column;
 
-struct NoSource;
+pub(in crate::binding) struct NoSource;
 impl Source for NoSource {
     fn columns(&self, _: &str) -> Result<&[Column], QueryError> {
         panic!("constant metadata must not request source columns")

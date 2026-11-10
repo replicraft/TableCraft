@@ -35,9 +35,11 @@ data-dependent discovery remains an explicit execution phase.
 ## Independent limits and failure behavior
 
 The scalar evaluator's absolute depth envelope remains 32. Parser ceilings,
-2,048 combined planning nodes, 1 MiB retained-plan estimates, named dependency
-path length fifty, cycle detection, schema widths and source allowances remain
-independent. The named path ceiling does not reset the composed interpreter
+2,048 combined planning nodes, named dependency path length fifty, cycle
+detection, schema widths and source allowances remain
+independent. Retained-plan estimates have no implicit byte quota; staged
+preparation spends the caller's cumulative byte allowance and copies scalar
+literal text through fallible reservation. The named path ceiling does not reset the composed interpreter
 allowance below.
 Raising structural depth grants no additional consumable bytes, rows, output or
 work. Text-policy and projection-pruning visitors also check cancellation and

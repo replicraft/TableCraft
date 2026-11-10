@@ -1,5 +1,5 @@
 use crate::profile::{
-    MAX_BIND_BYTES, MAX_BIND_NODES, MAX_PARAMETERS, MAX_RUNTIME_READ_DEPTH, SOURCE_SCHEMA_POLICY,
+    MAX_BIND_NODES, MAX_PARAMETERS, MAX_RUNTIME_READ_DEPTH, SOURCE_SCHEMA_POLICY,
 };
 use crate::{
     OutputType, QueryError, Source,
@@ -141,6 +141,9 @@ impl Binder<'_> {
     }
 
     fn charge(&mut self, bytes: usize) -> Result<(), QueryError> {
+        if self.cancelled.is_some_and(|cancel| cancel()) {
+            return Err(QueryError::Cancelled);
+        }
         if let Some(budget) = &mut self.budget {
             budget.charge(tablecraft_core::limits::Resource::Bytes, bytes as u64)?;
         }
@@ -148,9 +151,6 @@ impl Binder<'_> {
             .bytes
             .checked_add(bytes)
             .ok_or(QueryError::StructureLimit)?;
-        if self.bytes > MAX_BIND_BYTES {
-            return Err(QueryError::StructureLimit);
-        }
         Ok(())
     }
 }
@@ -395,3 +395,6 @@ impl PreparedQuery {
         }
     }
 }
+
+#[cfg(test)]
+mod budget_tests;

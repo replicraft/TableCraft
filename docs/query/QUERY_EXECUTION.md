@@ -492,11 +492,12 @@ Preparation defaults recursive syntax planning depth within each definition to 1
 Explicit [binding depth](QUERY_BINDING_LIMITS.md) can select 1 through 32; plans
 capture the selection, including subsequent runtime domain preparation.
 Preparation still bounds combined plan visits to 2,048,
-retained-plan estimates to 1 MiB, input/output width to 256, top-level FROM items
+input/output width to 256, top-level FROM items
 per SELECT to 32, grouping/sort keys to 10 and IN/UNION arm counts to 256. These
 include work on publicly constructed syntax models, independently of parser limits.
-Larger names
-or literal carriers are rejected. Depth counts planning helper calls as well as
+Names outside the captured schema policy and invalid literal carriers are rejected.
+Retained-plan estimates have no implicit byte quota; staged preparation charges
+the caller's byte budget, and owned literal strings reserve storage fallibly. Depth counts planning helper calls as well as
 syntax nesting, so the accepted syntax subset can be shallower than the parser's.
 
 The 32-item FROM allowance admits flat comma lists through ordinary SELECT and
@@ -727,7 +728,7 @@ Microsoft's published [nested-query target](https://support.microsoft.com/en-us/
 This does not promise that every compound fifty-definition plan fits the separate
 structural and consumable allowances. Each definition retains the captured
 helper-depth ceiling (default 16, maximum 32); expanded work and allocations share
-the 2,048-node and 1 MiB planning limits. An additional operation-wide active
+the 2,048-node planning limit and explicit caller byte allowances. An additional operation-wide active
 interpreter allowance bounds composed runtime reads and suspended named syntax;
 see [binding limits](QUERY_BINDING_LIMITS.md#composed-interpreter-nesting). Parameter/name/map reservations are fallible and
 charged before allocation. UPDATE binding never resolves named query targets.

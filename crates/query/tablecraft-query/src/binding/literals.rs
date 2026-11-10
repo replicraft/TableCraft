@@ -11,6 +11,27 @@ use tablecraft_sql::select::Expression;
 
 const LITERAL_EVALUATION_STEPS: u64 = 1;
 
+pub(super) fn owned_text(text: &str) -> Result<String, QueryError> {
+    let mut owned = String::new();
+    owned
+        .try_reserve_exact(text.len())
+        .map_err(|_| QueryError::Allocation)?;
+    owned.push_str(text);
+    Ok(owned)
+}
+
+pub(super) fn owned_literal(expression: &Expression) -> Result<Expression, QueryError> {
+    Ok(match expression {
+        Expression::Null => Expression::Null,
+        Expression::Boolean(value) => Expression::Boolean(*value),
+        Expression::Integer(value) => Expression::Integer(*value),
+        Expression::Text(value) => Expression::Text(owned_text(value)?),
+        Expression::Number(value) => Expression::Number(owned_text(value)?),
+        Expression::GuidLiteral(value) => Expression::GuidLiteral(owned_text(value)?),
+        _ => return Err(QueryError::Unsupported),
+    })
+}
+
 impl Binder<'_> {
     pub(super) fn wide_integer_literal(&mut self, text: &str) -> Result<Expr, QueryError> {
         if let Ok(value) = text.parse::<i64>() {

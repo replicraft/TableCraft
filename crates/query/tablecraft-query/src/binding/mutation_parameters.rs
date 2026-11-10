@@ -27,7 +27,7 @@ pub(super) fn admit(
             return Err(QueryError::StructureLimit);
         }
         // Prepay declaration validation and every prior-name duplicate
-        // comparison. Retained binder bytes remain covered by MAX_BIND_BYTES.
+        // comparison. Staged binding separately charges retained bytes to its caller.
         let work = name_bytes
             .checked_mul(position + PARAMETER_NAME_PASSES)
             .and_then(|work| work.checked_add(preceding_name_bytes))
