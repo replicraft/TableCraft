@@ -10,13 +10,19 @@ without claiming the full [ACE 16 compatibility target](../ROADMAP.md). Existing
 restricted offline writes remain separately qualified capabilities, not general
 Access editing.
 
-The user's 7 November expanded target is full Jet 4 and ACE 12/14/15/16 CRUD
-and Access queries. The [scope accounting](../features/ACCESS_PARITY_ROADMAP.md)
-separates that unfinished implementation from this existing preview checklist.
-If the release promises full CRUD/query, those operation/profile acceptance gates
-must also pass; finishing packaging alone cannot satisfy the expanded target.
+The 9 November release priority is to finish the agreed native CRUD work and
+signed self-updates, then publish v0.1.0 after a no-tag packaging dry run. Broader
+query/application parity follows later; `tablecraft-web` is the next frontend.
+The [scope accounting](../features/ACCESS_PARITY_ROADMAP.md) retains the full
+long-term target. The [updater plan](../development/SELF_UPDATE.md) records actual
+implementation and remaining signing/install gates.
 
 ## Remaining gates
+
+- [ ] **Complete signed self-update before the first release.** Provision the
+  production key, implement the shared updater and desktop worker/install flow,
+  require signatures at publication, and record a successful no-tag packaging
+  dry run. Disposable-key CI artifacts are test evidence, not release signatures.
 
 - [x] **Implement and headlessly verify Ribbon focus navigation.** Verify F10 entry, tab arrows,
   Down, Ctrl+Left/Right, Tab/Shift+Tab and layered Escape using the actual

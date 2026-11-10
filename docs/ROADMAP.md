@@ -1,5 +1,14 @@
 # Compatibility-driven roadmap
 
+## Release sequencing — 9 November 2026
+
+Finish the agreed native CRUD work and signed desktop self-updates for v0.1.0.
+Require a packaging dry run without a tag before publication. Broader query and
+application parity can follow; the next frontend is `tablecraft-web`. This changes
+release sequencing, not the long-term format/behavior compatibility target.
+See [signed updates](development/SELF_UPDATE.md) for current implementation and
+the remaining signing, packaging and safe-install gates.
+
 ## Current target — 8 November 2026
 
 Target full native CRUD and Access query support for **Access 97–2019: Jet 3/4
