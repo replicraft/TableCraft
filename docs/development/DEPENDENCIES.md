@@ -25,6 +25,49 @@ Ed25519 key bytes. No Relay source, fixtures or signing keys were copied.
 See [updater gates](SELF_UPDATE.md).
 
 
+### AWS-LC TLS notice coverage
+
+The newly resolved `hyper-rustls` 0.27.10, `rustls` 0.23.46 and
+`rustls-native-certs` 0.8.5 each publish complete MIT, Apache-2.0 and ISC alternatives.
+The explicit `Apache-2.0 OR ISC OR MIT` policy chooses MIT and retains the actual
+published documents, including Joseph Birr-Pixton's original attribution.
+Identical license texts are deduplicated by the existing generator.
+
+The updater's resolved TLS provider includes `aws-lc-rs` 1.18.2 and
+`aws-lc-sys` 0.46.0. Their exact published source packages were reviewed; the
+[compact notice policy](../../packaging/desktop/notice-policy.json) has explicit
+version-specific source exceptions rather than weakening automatic license
+selection. The root Rust wrapper license permits the ISC alternative for AWS
+changes while retaining mandatory ISC-derived code. Its complete combined
+LICENSE is kept, together with each distinct leading copyright/SPDX attribution
+from its source headers. That retains Brian Smith, Google, Trent Clarke and
+Amazon notices which the wrapper's root ISC text alone does not all name.
+
+For the sys package, ISC is selected for offered alternatives while mandatory
+Apache-2.0, MIT and BSD-3-Clause terms remain. Its complete aggregate LICENSE
+contains the original AWS/BoringSSL/OpenSSL/SSLeay and compiled-third-party
+attributions plus full grants. The additional complete Fiat Cryptography grant
+retains its original author reference. The vendored aggregate is not duplicated:
+its only difference is whitespace in the unselected MIT-0 text. The aggregate
+explicitly separates linked libraries from test/build-only dependencies; those
+unrelated test sources and grants are not recursively imported into desktop
+notices. Public-domain acknowledgments in the aggregate are retained unchanged.
+
+Sources are read from the exact locked registry packages during packaging.
+Only source paths, reviewed choices and attribution ranges are maintained;
+inventory, source hashes and the consolidated notice text remain generated
+outputs. No AWS-LC source code or expanded legal bundle is added to this repo.
+See the exact published-revision
+[wrapper license](https://github.com/aws/aws-lc-rs/blob/9df497501436596d4da77109217806b3af7f56cb/aws-lc-rs/LICENSE)
+and [sys aggregate](https://github.com/aws/aws-lc-rs/blob/9df497501436596d4da77109217806b3af7f56cb/aws-lc-sys/LICENSE).
+
+All 20 notice-policy tests pass. A fresh locked/offline desktop inventory generates
+925,744 bytes of consolidated notices; checks confirm the wrapper's complete
+license and twelve distinct attribution excerpts, the sys aggregate and the Fiat
+grant are present. The generated bundle remains in ignored cache. This is source
+and packaging evidence, not a new native-platform or application qualification.
+
+
 ## Local MCP transport and typed schemas — 9 November 2026
 
 `apps/tablecraft-mcp` adopts `rmcp` 3.8.0 (official Rust SDK, Apache-2.0), with default

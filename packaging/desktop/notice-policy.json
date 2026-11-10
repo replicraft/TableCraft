@@ -28,7 +28,10 @@
     "Apache-2.0 OR GPL-2.0-only": "Apache-2.0",
     "BSD-3-Clause": "BSD-3-Clause",
     "(MIT OR Apache-2.0) AND Unicode-3.0": "MIT AND Unicode-3.0",
-    "BSD-2-Clause OR Apache-2.0 OR MIT": "MIT"
+    "BSD-2-Clause OR Apache-2.0 OR MIT": "MIT",
+    "ISC AND (Apache-2.0 OR ISC)": "ISC",
+    "ISC AND (Apache-2.0 OR ISC) AND Apache-2.0 AND MIT AND BSD-3-Clause AND (Apache-2.0 OR ISC OR MIT) AND (Apache-2.0 OR ISC OR MIT-0)": "ISC AND Apache-2.0 AND MIT AND BSD-3-Clause",
+    "Apache-2.0 OR ISC OR MIT": "MIT"
   },
   "sources": {
     "source-1": {
@@ -1011,6 +1014,132 @@
         }
       ],
       "rationale": "Select the exact upstream Apache-2.0 alternative. Preserve every distinct leading source attribution reviewed against the published crate, with derived Chromium BSD and zbus MIT terms where cited. No MIT copyright holder is inferred."
+    },
+    {
+      "name": "aws-lc-rs",
+      "version": "1.18.2",
+      "declared_license": "ISC AND (Apache-2.0 OR ISC)",
+      "selected_license": "ISC",
+      "sources": [
+        {
+          "path": "LICENSE",
+          "role": "license"
+        },
+        {
+          "path": "src/aead/aead_ctx.rs",
+          "role": "attribution",
+          "extraction": {
+            "start_line": 1,
+            "end_line": 2
+          }
+        },
+        {
+          "path": "src/aead/chacha.rs",
+          "role": "attribution",
+          "extraction": {
+            "start_line": 1,
+            "end_line": 5
+          }
+        },
+        {
+          "path": "src/aead/chacha20_poly1305_openssh.rs",
+          "role": "attribution",
+          "extraction": {
+            "start_line": 1,
+            "end_line": 4
+          }
+        },
+        {
+          "path": "src/aead/nonce.rs",
+          "role": "attribution",
+          "extraction": {
+            "start_line": 1,
+            "end_line": 4
+          }
+        },
+        {
+          "path": "src/aead/poly1305.rs",
+          "role": "attribution",
+          "extraction": {
+            "start_line": 1,
+            "end_line": 4
+          }
+        },
+        {
+          "path": "src/agreement.rs",
+          "role": "attribution",
+          "extraction": {
+            "start_line": 1,
+            "end_line": 4
+          }
+        },
+        {
+          "path": "src/constant_time.rs",
+          "role": "attribution",
+          "extraction": {
+            "start_line": 1,
+            "end_line": 4
+          }
+        },
+        {
+          "path": "src/debug.rs",
+          "role": "attribution",
+          "extraction": {
+            "start_line": 1,
+            "end_line": 4
+          }
+        },
+        {
+          "path": "src/digest.rs",
+          "role": "attribution",
+          "extraction": {
+            "start_line": 1,
+            "end_line": 4
+          }
+        },
+        {
+          "path": "src/endian.rs",
+          "role": "attribution",
+          "extraction": {
+            "start_line": 1,
+            "end_line": 4
+          }
+        },
+        {
+          "path": "src/hkdf.rs",
+          "role": "attribution",
+          "extraction": {
+            "start_line": 1,
+            "end_line": 4
+          }
+        },
+        {
+          "path": "src/pkcs8.rs",
+          "role": "attribution",
+          "extraction": {
+            "start_line": 1,
+            "end_line": 4
+          }
+        }
+      ],
+      "rationale": "Select ISC for the optional AWS-authored alternative while retaining the mandatory ISC-derived code. Keep the complete published combined LICENSE and every distinct leading copyright/SPDX header under src, including Brian Smith, Google, Trent Clarke and Amazon; the root license alone names only Amazon. Only attribution comments are extracted, never executable source or partial license grants."
+    },
+    {
+      "name": "aws-lc-sys",
+      "version": "0.46.0",
+      "declared_license": "ISC AND (Apache-2.0 OR ISC) AND Apache-2.0 AND MIT AND BSD-3-Clause AND (Apache-2.0 OR ISC OR MIT) AND (Apache-2.0 OR ISC OR MIT-0)",
+      "selected_license": "ISC AND Apache-2.0 AND MIT AND BSD-3-Clause",
+      "sources": [
+        {
+          "path": "LICENSE",
+          "role": "license"
+        },
+        {
+          "path": "aws-lc/third_party/fiat/LICENSE",
+          "role": "license"
+        }
+      ],
+      "rationale": "Select ISC for the AWS, mlkem/mldsa and s2n-bignum alternatives, retaining mandatory Apache-2.0, MIT and BSD-3-Clause terms. The complete published root LICENSE includes all corresponding grants, original AWS/BoringSSL/OpenSSL/SSLeay/contributor/compiled-third-party attributions and its explicit distinction between linked code and test/build-only dependencies. Keep the additional complete Fiat grant with its original author-reference text. The vendored aws-lc/LICENSE differs only by a trailing space in the unselected MIT-0 text, so do not duplicate the aggregate or import unrelated test/build licenses."
     },
     {
       "name": "block2",
