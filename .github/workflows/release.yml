@@ -1,4 +1,4 @@
-name: Release CLI
+name: Release
 
 on:
   push:
@@ -6,12 +6,16 @@ on:
   pull_request:
     paths:
       - '.github/workflows/release.yml'
+      - '.github/workflows/desktop-packaging.yml'
       - '.gitattributes'
       - 'scripts/packaging/**'
       - 'scripts/tests/test_package_*.py'
       - 'scripts/tests/test_file_associations.py'
       - 'scripts/tests/test_desktop_notices.py'
+      - 'scripts/tests/test_update_signatures.py'
+      - 'crates/platform/tablecraft-update/**'
       - 'packaging/desktop/notice-policy.json'
+      - 'packaging/update-key.pub'
       - 'packaging/ThirdPartyLicenses.txt'
       - 'LICENSE'
       - 'Cargo.toml'
@@ -25,7 +29,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: release-cli-${{ github.ref }}
+  group: release-${{ github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
@@ -156,9 +160,87 @@ jobs:
           compression-level: 0
           retention-days: 14
 
+  desktop:
+    name: Build and verify desktop packages without publishing
+    needs: version
+    uses: ./.github/workflows/desktop-packaging.yml
+    permissions:
+      contents: read
+
+  sign:
+    name: Authenticate the complete CLI and desktop release
+    needs: [version, assemble, desktop]
+    if: github.event_name == 'push' && github.ref_type == 'tag'
+    runs-on: ubuntu-22.04
+    environment: update-signing
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.13'
+      - uses: actions/download-artifact@v8
+        with:
+          name: tablecraft-cli-release-${{ needs.version.outputs.version }}
+          path: release-input/cli
+      - uses: actions/download-artifact@v8
+        with:
+          name: desktop-packaging-dry-run
+          path: desktop-dry-run
+      - uses: actions/download-artifact@v8
+        with:
+          name: desktop-packaging-resources
+          path: resources
+      - name: Install the signature verifier
+        run: |
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y minisign
+      - name: Require both exact archive sets before opening signing secrets
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+          RELEASE_VERSION: ${{ needs.version.outputs.version }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/packaging/package_cli.py validate --tag "$RELEASE_TAG"
+          python scripts/packaging/package_cli.py verify --version "$RELEASE_VERSION" --output release-input/cli
+          python scripts/packaging/desktop_release.py verify --version "$RELEASE_VERSION" --output desktop-dry-run/dist --notices resources/DesktopThirdPartyLicenses.txt --icon resources/icons/application.icns
+          (cd release-input/cli && sha256sum --check SHA256SUMS.txt)
+          (cd desktop-dry-run/dist && sha256sum --check SHA256SUMS-desktop.txt)
+          # The reusable build also contains disposable-key tests. Copy only the
+          # verified archive directory; never copy its signature/test-key folder.
+          cp -R desktop-dry-run/dist release-input/desktop
+      - name: Sign archives with the maintained TableCraft release key
+        env:
+          TABLECRAFT_UPDATE_SIGNING_KEY: ${{ secrets.TABLECRAFT_UPDATE_SIGNING_KEY }}
+          RELEASE_VERSION: ${{ needs.version.outputs.version }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/packaging/update_signatures.py sign --version "$RELEASE_VERSION" --product cli --assets release-input/cli --output release-input/signatures-cli
+          python scripts/packaging/update_signatures.py sign --version "$RELEASE_VERSION" --product desktop --assets release-input/desktop --output release-input/signatures-desktop
+      - name: Verify every signature independently without signing secrets
+        env:
+          RELEASE_VERSION: ${{ needs.version.outputs.version }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/packaging/update_signatures.py verify --version "$RELEASE_VERSION" --product cli --assets release-input/cli --output release-input/signatures-cli
+          python scripts/packaging/update_signatures.py verify --version "$RELEASE_VERSION" --product desktop --assets release-input/desktop --output release-input/signatures-desktop
+      - uses: actions/upload-artifact@v7
+        with:
+          name: tablecraft-signed-release-${{ needs.version.outputs.version }}
+          path: release-input
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 14
+
   publish:
-    name: Publish the complete GitHub release
-    needs: [version, assemble]
+    name: Publish the complete signed GitHub release
+    needs: [version, sign]
     if: github.event_name == 'push' && github.ref_type == 'tag'
     runs-on: ubuntu-22.04
     permissions:
@@ -172,9 +254,35 @@ jobs:
           python-version: '3.13'
       - uses: actions/download-artifact@v8
         with:
-          name: tablecraft-cli-release-${{ needs.version.outputs.version }}
-          path: dist
-      - name: Publish only the verified complete asset set
+          name: tablecraft-signed-release-${{ needs.version.outputs.version }}
+          path: release-input
+      - uses: actions/download-artifact@v8
+        with:
+          name: desktop-packaging-resources
+          path: resources
+      - name: Install the independent signature verifier
+        run: |
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y minisign
+      - name: Reverify both products and signatures before any publication
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+          RELEASE_VERSION: ${{ needs.version.outputs.version }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/packaging/package_cli.py validate --tag "$RELEASE_TAG"
+          python scripts/packaging/package_cli.py verify --version "$RELEASE_VERSION" --output release-input/cli
+          python scripts/packaging/desktop_release.py verify --version "$RELEASE_VERSION" --output release-input/desktop --notices resources/DesktopThirdPartyLicenses.txt --icon resources/icons/application.icns
+          (cd release-input/cli && sha256sum --check SHA256SUMS.txt)
+          (cd release-input/desktop && sha256sum --check SHA256SUMS-desktop.txt)
+          python scripts/packaging/update_signatures.py verify --version "$RELEASE_VERSION" --product cli --assets release-input/cli --output release-input/signatures-cli
+          python scripts/packaging/update_signatures.py verify --version "$RELEASE_VERSION" --product desktop --assets release-input/desktop --output release-input/signatures-desktop
+          mkdir dist
+          # Both archive verifiers and both signature verifiers require exact
+          # directory membership. Only these four checked sets become downloads.
+          cp release-input/cli/* release-input/desktop/* release-input/signatures-cli/* release-input/signatures-desktop/* dist/
+      - name: Publish only the verified signed asset set
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
@@ -183,9 +291,6 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python scripts/packaging/package_cli.py validate --tag "$RELEASE_TAG"
-          python scripts/packaging/package_cli.py verify --version "$RELEASE_VERSION" --output dist
-          (cd dist && sha256sum --check SHA256SUMS.txt)
           notes="docs/releases/v${RELEASE_VERSION}.md"
           if gh release view "$RELEASE_TAG" --json isDraft > release.json; then
             if ! jq -e '.isDraft == true' release.json >/dev/null; then
