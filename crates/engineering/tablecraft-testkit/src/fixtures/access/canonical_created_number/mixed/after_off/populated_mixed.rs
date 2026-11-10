@@ -152,6 +152,37 @@ pub fn after(before: &[u8], slot: usize, value: i32) -> Vec<u8> {
     materialization::place_record(before, slot, &record)
 }
 
+/// First grow row0 for Bonus, then add another absent Number declaration.
+pub fn forwarded_pair(case: Case) -> [Vec<u8>; 2] {
+    let [_, initial] = pair(case);
+    let first = after(&initial, 0, 37);
+    let declared = materialization::append_number(&first, "SecondBonus");
+    [first, declared]
+}
+
+/// Insert another fixed LONG before the unchanged raw variable body/footer.
+/// Only root0's pointer changes; its old hidden terminal remains untouched.
+pub fn forwarded_after(before: &[u8], value: i32) -> Vec<u8> {
+    let old = materialization::forwarded::record(before);
+    let fields = word(before, DEFINITION + 41);
+    assert!([6, 7].contains(&fields));
+    assert_eq!(word(old, 0), fields - 1);
+    let variables = word(old, old.len() - 3);
+    assert!([2, 3].contains(&variables));
+    let footer = old.len() - 3 - (variables + 1) * 2;
+    let mut row = old[..14].to_vec();
+    put16(&mut row, 0, fields as u16);
+    row.extend(value.to_le_bytes());
+    row.extend_from_slice(&old[14..footer]);
+    for index in 0..=variables {
+        let offset = word(old, footer + index * 2);
+        row.extend(((offset + 4) as u16).to_le_bytes());
+    }
+    row.extend((variables as u16).to_le_bytes());
+    row.push(old[old.len() - 1] | (1 << (fields - 1)));
+    materialization::forwarded::place(before, &row)
+}
+
 /// Independently edit original native2 AfterLabel, following a materialized root.
 /// Only its fixed payload/presence bit changes; raw variable regions stay exact.
 pub fn update_number(before: &[u8], slot: usize, value: Option<i32>) -> Vec<u8> {

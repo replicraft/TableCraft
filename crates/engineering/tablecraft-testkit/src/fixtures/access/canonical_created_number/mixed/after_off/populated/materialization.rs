@@ -1,4 +1,6 @@
 //! Independent fixed-row materialization and logical-root forwarding oracle.
+pub mod forwarded;
+
 use super::{COUNTERS, DATA, DEFINITION, INDEX, PAGE, SourceCase, source};
 use crate::fixtures::access::{put16, put32};
 
