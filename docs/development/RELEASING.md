@@ -1,21 +1,36 @@
-# CLI release preparation
+# CLI and desktop release preparation
 
-The [release workflow](../../.github/workflows/release.yml) builds the headless
-`tablecraft` executable on six native runners. Each runner packages its binary
-and tests the extracted `--version` and `--help`. The workflow follows the
-portable CLI and complete-release gates used by the local PaintCraft project.
-There are no GUI installers or system file associations.
-File-handler preparation is reserved for the
-[future desktop UI](../architecture/FILE_ASSOCIATIONS.md), rather than terminal
-launches from the current CLI release.
+The [release workflow](../../.github/workflows/release.yml) builds the CLI and
+portable desktop on six native targets. Each package is extracted and checked
+with `--version` and `--help`; these checks open no desktop window. There are no
+MSI/DMG/DEB/RPM/AppImage installers or packaged MCP/web builds yet.
 
-The version is **0.1.0**. Local verification does not push, tag, dispatch a workflow
-or publish a release. Manual workflow runs are build-only; publication requires a
-separate maintainer-authorized version-tag push.
+The version is **0.1.0**. Each product has six archives, six SHA-256 sidecars, a
+consolidated notice file and a checksum manifest. Production publication adds a
+Minisign `.minisig` signature for each of the twelve archives: forty release
+assets in total. The twelve platform archives follow the naming contracts below
+and in [desktop packaging](DESKTOP_PACKAGING.md).
 
-Desktop artifact preparation has a separate
-[0.1.0 checklist](../releases/DESKTOP_0_1_0_CHECKLIST.md). The workflow and archive
-contract described here remain CLI-only.
+Production signing uses the `release-signing` environment with
+`UPDATE_SIGNING_KEY` and `UPDATE_SIGNING_PASSWORD`, checked against
+`packaging/tablecraft-update-key.pub`. Neither secret reaches verification or
+child environments; encrypted-key passphrases are passed only through stdin.
+The protected environment should admit `main` and version tags.
+
+For a full signed rehearsal without creating a tag or publishing a release:
+
+```sh
+gh workflow run release.yml --repo replicraft/TableCraft --ref main \
+  -f sign-packages=true
+```
+
+A manual run without `sign-packages=true` builds and performs disposable-key
+signature tests only. Production signing is limited to version-tag pushes or
+explicit signed rehearsals on `main`. Publication is limited to a version-tag
+push after both products and production signatures pass independent checks.
+Pull requests and all manual runs cannot publish. See
+[signed update gates](SELF_UPDATE.md) and the
+[desktop release checklist](../releases/DESKTOP_0_1_0_CHECKLIST.md).
 
 ## Downloads
 
@@ -39,8 +54,8 @@ into a directory of your choice and add that directory to PATH.
 Each archive has a `.sha256` sidecar. The complete set has fourteen assets:
 six archives, six sidecars, one shared `ThirdPartyLicenses.txt` alongside the
 archives, and `SHA256SUMS.txt`. The checksum manifest covers all thirteen other
-files, excluding itself. These are integrity checks, not
-publisher signatures. Windows binaries are not Authenticode-signed; macOS packages
+files, excluding itself. These are integrity checks; the additional archive
+Minisign signatures establish publisher authentication. Windows binaries are not Authenticode-signed; macOS packages
 are not Developer ID signed or notarized. Windows builds link the CRT statically;
 macOS targets 13.0 or newer. Linux builds use Ubuntu 22.04/glibc 2.35 and require
 compatible host runtime libraries.
@@ -127,7 +142,9 @@ tests and eight association-metadata tests locally on macOS. Both workflow files
 pass the retained actionlint 1.7.12 check. The updated six-platform headless
 [CI configuration](DEVELOPMENT.md#configured-native-ci-coverage--7-november-2026)
 has not been remotely rerun here; no workflow, tag, push or release was initiated.
-The release workflow remains CLI-only. Desktop archives now support
+The current release workflow also builds desktop artifacts and requires
+production archive signatures. Desktop archives support
 [packaging-time notice generation](DESKTOP_PACKAGING.md) from maintained exception
 policy and locked sources; generated inventories and notice bundles stay in
-release staging. This does not add desktop publication or native build evidence.
+release staging. The earlier audit above remains historical local evidence;
+new remote build results must be recorded separately.
