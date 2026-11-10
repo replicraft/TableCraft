@@ -948,3 +948,25 @@ The New form is a headless presentation adaptation of the retained Backstage
 layout and documented Microsoft workflow. No native Access New-form capture or
 cross-platform visual/interaction parity is claimed. See
 [visual references](VISUAL_REFERENCES.md).
+
+
+## Native field-count and retained-row continuation — 10 November 2026
+
+The shared draft admits up to 255 fields, including a generated primary key.
+A rejected 256th addition preserves the exact draft and revision. The disabled
+add placeholder stays outside the field list and receives no forced focus.
+Horizontal wheel input and empty row rules remain correct at both scroll ends;
+[offscreen presentation checks](PRESENTATION_PREVIEW.md#native-field-count-viewport--10-november-2026)
+cover light and dark themes.
+
+Schema review chooses inline or joined-definition/external-property construction
+from the complete declaration and actual source capacity before one planner runs.
+The actual desktop saves a 255-field table and its first/last supplied values.
+A separate retained/MSysDb source with a small remaining catalog gap saves a
+described table and then its separately reviewed first row. Runtime checks also
+cover subsequent updates, NULL/refill and deletion against independent complete
+images. Represented catalog observation grants no schema or writable LVAL-map
+authority. Existing action-specific editing restrictions still apply.
+
+The [workflow receipt](../../tests/results/schema/native-field-creation-row-crud-2026-11-10.json)
+records the passing local checks and their native Access qualification boundary.

@@ -23,11 +23,20 @@ Native construction supports 255 fields with checked table-definition
 continuations, external MR2 properties and explicit TCNT7/TCAT7 V3 recovery.
 Shared runtime review/save and UI drafts use the native path when required by
 the declaration or captured source geometry. Inline-compatible requests retain
-their exact existing layouts and action families. The complete host integration
-batch is pending; the native writer, wide-reader and wide-row checks pass.
+their exact existing layouts and action families. Complete independent images
+cover wide declarations and first/last supplied values through the desktop.
 
-Verification passes the affected 26 creation checks, 45 CLI unit checks, two
-named-mapping tests, two fixed-preview CLI controls and three wide-reader checks,
+Retained DATA certificates observe fully represented inline/indirect catalog
+property maps, keeping source ownership, allocation, overlap and program checks.
+This permits row insertion, updates, NULL/refill and deletion after native table
+creation promotes those maps. Schema certificates and writable LVAL-map factories
+retain their separate restrictions. The [creation/row-workflow receipt](../tests/results/schema/native-field-creation-row-crud-2026-11-10.json)
+records 347 runtime tests, 49 desktop workflows, 128 native checks and 17 adapter
+checks passing, plus strict Clippy, feature checks and rustdoc. Ignored tests and
+unrun native Access comparisons remain explicit in the receipt.
+
+Fixed-preview/CLI verification passes the affected 26 creation checks, 45 CLI unit
+checks, two named-mapping tests, two fixed-preview controls and four wide-reader checks,
 with strict Clippy across seven packages and minimal/creation-only feature checks.
 These are local implementation checks, not Microsoft Access differential evidence.
 

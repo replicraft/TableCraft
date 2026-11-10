@@ -1,0 +1,117 @@
+{
+  "date": "2026-11-10",
+  "source_commit": "d3a667324986a53934daf514e2eaace1b6f3c53b",
+  "source_tree": "bba8409cb24f65cb66be0bcbed62731b1af8d1d5",
+  "platform": "macOS ARM64",
+  "verification": "local native APIs and headless application workflows",
+  "results": [
+    {
+      "job": "api",
+      "returncode": 0,
+      "seconds": 7.91,
+      "log": ".cache/retained-gap-final-api.log",
+      "log_sha256": "319fce6d976ac9962d4bbd84275d739ebd71580bfebe8d462b72729aed663f0d"
+    },
+    {
+      "job": "runtime",
+      "returncode": 0,
+      "seconds": 15.31,
+      "log": ".cache/retained-gap-final-runtime.log",
+      "log_sha256": "f229a9def56621998e12aa8af5eb6d63b0d68377e1d4e69db24e262650d2b418"
+    },
+    {
+      "job": "desktop",
+      "returncode": 0,
+      "seconds": 62.47,
+      "log": ".cache/retained-gap-final-desktop.log",
+      "log_sha256": "84f226b90295c1f2eeb66f555cb726bb9b04b8d39eae4ec6e174c406720870d1"
+    },
+    {
+      "job": "access",
+      "returncode": 0,
+      "seconds": 21.99,
+      "log": ".cache/retained-gap-final-access.log",
+      "log_sha256": "4a24346bfee232b1a2e34fd454375027b6d21fd1a9bbe10231fb93ae4e5b97ae"
+    },
+    {
+      "job": "native",
+      "returncode": 0,
+      "seconds": 37.54,
+      "log": ".cache/retained-gap-final-native.log",
+      "log_sha256": "b3677fa34cc3e10ee5d7c6ec98c4335d90ff64f09eeefcac0b3a337b1cb209aa"
+    },
+    {
+      "job": "lint",
+      "returncode": 0,
+      "seconds": 55.56,
+      "log": ".cache/retained-gap-final-lint.log",
+      "log_sha256": "dc99dc2104af6ee5ce5eb3fbc8a084ae865492be1193fa44c1cd7336397ecaba"
+    },
+    {
+      "job": "minimal",
+      "returncode": 0,
+      "seconds": 3.22,
+      "log": ".cache/retained-gap-final-minimal.log",
+      "log_sha256": "f54f276b8494851fd82bee80a6b12ef4eb4f4f40bdc08d1471ae022172006863"
+    },
+    {
+      "job": "creation",
+      "returncode": 0,
+      "seconds": 0.23,
+      "log": ".cache/retained-gap-final-creation.log",
+      "log_sha256": "833aaefbfc017566bf9ccd0166ef21c4cd8a7f21124f8ca33aa4dec09e53aea6"
+    },
+    {
+      "job": "journal",
+      "returncode": 0,
+      "seconds": 2.03,
+      "log": ".cache/retained-gap-final-journal.log",
+      "log_sha256": "acf10a4d1e554c7894b419fe0a21a334b1c7c50602173866fa94485bb3f00e6d"
+    },
+    {
+      "job": "docs",
+      "returncode": 0,
+      "seconds": 8.65,
+      "log": ".cache/retained-gap-final-docs.log",
+      "log_sha256": "fe4bbe22fcddc56afdc10a2e4341174010e7bb0e14bf28033c910c6cc2852700"
+    }
+  ],
+  "test_counts": {
+    "runtime": {
+      "passed": 347,
+      "ignored": 1
+    },
+    "desktop": {
+      "passed": 49,
+      "ignored": 0
+    },
+    "native": {
+      "passed": 128,
+      "ignored": 11
+    },
+    "access": {
+      "passed": 17,
+      "ignored": 0
+    }
+  },
+  "workflows": [
+    "Create and reopen 255-field first and appended tables using independent complete-image fixtures.",
+    "Persist the first and last supplied values of a 255-field initial record through the desktop.",
+    "Choose external properties from the actual retained catalog gap before selecting one planner.",
+    "Create a described table on the retained/MSysDb source and save its first row through the actual desktop.",
+    "Retained source: insert 123, update 124, set NULL, refill -42 and delete; compare independent complete images and reopen after each save.",
+    "Observe represented catalog maps for retained DATA certificates while keeping schema certificates and writable LVAL map factories strict.",
+    "Reconstruct native7 first/append actions and recover through their exact V3 journal owners."
+  ],
+  "baseline": {
+    "runtime_log": ".cache/retained-property-gap-baseline-runtime.log",
+    "desktop_log": ".cache/retained-property-gap-baseline-desktop.log",
+    "failure": "Schema save and reopen succeeded; first-row review refused RowLayout before the certificate change."
+  },
+  "boundaries": [
+    "Independent first-party byte oracles and local tests do not establish Microsoft Access save/reopen parity.",
+    "Windows native execution and Access comparison were not run.",
+    "Existing action-specific scalar, index, constraint, required-program and payload restrictions remain in force.",
+    "Represented catalog observation does not grant writable LVAL-map or schema-edit authority."
+  ]
+}

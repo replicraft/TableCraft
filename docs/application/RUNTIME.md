@@ -166,6 +166,16 @@ silent type inference. After each acknowledged Save, a fresh Open qualifies the 
 before another Create → Table can become available. Retained prior availability
 or table count alone cannot enable it.
 
+Retained row insertion, cell updates, opaque-row updates/insertion and deletion
+use a source certificate that observes fully represented inline/indirect catalog
+property maps. It retains complete allocation, ownership and required-program
+checks; it does not authorize editing those maps. Schema certificates and mutable
+LVAL-map owners keep their distinct admission rules. A described-table workflow
+on a retained/MSysDb source now saves its first row, updates through NULL/refill
+and deletes it with independent whole-image checks and fresh reopening. The
+[workflow receipt](../../tests/results/schema/native-field-creation-row-crud-2026-11-10.json)
+separates runtime, desktop, native and adapter verification.
+
 Canonical blank and qualified populated-source Open publish the separate
 revision-bound `table_design_available` fact. It enables an empty manual Design
 draft whenever a supported target can fit; it does not depend on the generated
