@@ -8,7 +8,7 @@ use std::io::Cursor;
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
 use tablecraft_schema::ScalarType;
-use tablecraft_testkit::fixtures::access::canonical_retained_add_table::{self as raw, fields};
+use tablecraft_testkit::fixtures::access::retained_catalog_gap::{catalog_gap, source};
 
 const SCOPE: CatalogScope = CatalogScope::new(7361);
 
@@ -18,16 +18,6 @@ fn budget() -> ResourceBudget {
 
 fn word(bytes: &[u8], offset: usize) -> usize {
     u16::from_le_bytes(bytes[offset..offset + 2].try_into().unwrap()) as usize
-}
-
-fn catalog_gap(bytes: &[u8]) -> usize {
-    let page = &bytes[4 * 4096..5 * 4096];
-    let count = word(page, 12);
-    let start = (0..count)
-        .map(|slot| word(page, 14 + 2 * slot) & 0x1fff)
-        .min()
-        .unwrap();
-    start - (14 + count * 2)
 }
 
 fn long(bytes: &[u8], offset: usize) -> usize {
@@ -98,19 +88,6 @@ fn assert_promoted_property_maps(before: &[u8], after: &[u8]) {
     }
 }
 
-fn before() -> Vec<u8> {
-    let mut bytes = fields::source(fields::Case::FirstNumber).bytes;
-    let mut ordinal = 0;
-    while catalog_gap(&bytes) > 400 {
-        bytes = raw::append(&bytes, &format!("T{ordinal}"), raw::Target::GeneratedNumber);
-        ordinal += 1;
-    }
-    // The independent source has room for the named external descriptor and
-    // directory cell, while even the target's Description payload cannot fit.
-    assert!((150..=400).contains(&catalog_gap(&bytes)));
-    bytes
-}
-
 fn name(text: &str) -> Vec<u8> {
     let wide = text
         .encode_utf16()
@@ -153,7 +130,7 @@ fn properties(description: &str) -> Vec<u8> {
 
 #[test]
 fn authored_append_uses_actual_catalog_gap_for_small_declaration_properties() {
-    let before = before();
+    let before = source();
     assert!(
         add_table_source_capabilities(&before, SCOPE, &mut budget(), &|| false)
             .unwrap()
@@ -201,7 +178,7 @@ fn authored_append_uses_actual_catalog_gap_for_small_declaration_properties() {
     );
     assert_eq!(plan.before_bytes(), before);
     assert_promoted_property_maps(&before, plan.after_bytes());
-    for (number, page) in before.chunks_exact(4096).enumerate() {
+    for (number, page) in before.as_chunks::<4096>().0.iter().enumerate() {
         if [1, 2, 3, 4].contains(&number) {
             continue;
         }
