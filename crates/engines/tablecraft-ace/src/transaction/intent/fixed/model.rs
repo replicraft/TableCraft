@@ -12,6 +12,23 @@ pub struct NativeFixedIntentGroup {
 }
 
 impl NativeFixedIntentGroup {
+    /// Retain only NULL/Int32 originals for the historical-present fixed route.
+    /// Native source, present-field and constraint qualification is still required.
+    pub fn new_historical_present_int32(
+        column: &str,
+        updates: Vec<FixedScalarUpdate>,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, NativeIntentError> {
+        Self::new_with_carriers(
+            column,
+            updates,
+            carrier::Carriers::HistoricalInt32,
+            budget,
+            cancelled,
+        )
+    }
+
     /// Move requests unchanged and copy the column spelling under the budget.
     pub fn new(
         column: &str,

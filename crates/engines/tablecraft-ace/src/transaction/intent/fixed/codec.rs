@@ -16,6 +16,8 @@ const SCALAR_HEADER_MAGIC: &[u8; 8] = b"TCNI0009";
 const SCALAR_PROFILE: u16 = 9;
 const GUID_HEADER_MAGIC: &[u8; 8] = b"TCNI0010";
 const GUID_PROFILE: u16 = 10;
+const HISTORICAL_HEADER_MAGIC: &[u8; 8] = b"TCNI0011";
+const HISTORICAL_PROFILE: u16 = 11;
 const TOTAL_AT: usize = MAGIC.len();
 const PROFILE_AT: usize = TOTAL_AT + size_of::<u32>();
 const FLAGS_AT: usize = PROFILE_AT + size_of::<u16>();
@@ -61,6 +63,38 @@ fn maximum_record_bytes(carriers: carrier::Carriers) -> usize {
 }
 
 impl NativeFixedEditIntent {
+    pub(in crate::transaction::intent) const HISTORICAL_MAGIC: &'static [u8; 8] =
+        HISTORICAL_HEADER_MAGIC;
+
+    pub(in crate::transaction::intent) fn encode_historical_present(
+        &self,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Vec<u8>, NativeIntentError> {
+        self.encode_profile(
+            HISTORICAL_HEADER_MAGIC,
+            HISTORICAL_PROFILE,
+            carrier::Carriers::HistoricalInt32,
+            budget,
+            cancelled,
+        )
+    }
+
+    pub(in crate::transaction::intent) fn decode_historical_present(
+        bytes: &[u8],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, NativeIntentError> {
+        Self::decode_profile(
+            bytes,
+            HISTORICAL_HEADER_MAGIC,
+            HISTORICAL_PROFILE,
+            carrier::Carriers::HistoricalInt32,
+            budget,
+            cancelled,
+        )
+    }
+
     pub(in crate::transaction::intent) const ORDINARY_MAGIC: &'static [u8; 8] =
         ORDINARY_HEADER_MAGIC;
 
@@ -377,6 +411,11 @@ impl NativeFixedEditIntent {
                 updates.push(cursor.update(budget, cancelled)?);
             }
             let group = match carriers {
+                carrier::Carriers::HistoricalInt32 => {
+                    NativeFixedIntentGroup::new_historical_present_int32(
+                        column, updates, budget, cancelled,
+                    )?
+                }
                 carrier::Carriers::Legacy => {
                     NativeFixedIntentGroup::new(column, updates, budget, cancelled)?
                 }

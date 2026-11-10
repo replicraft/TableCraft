@@ -13,6 +13,8 @@ const ACE_PROFILE: u16 = 2;
 /// A versioned validation route, never a serialized native permission.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum NativeUpdateProfile {
+    /// Existing unindexed Int32 fields in positively qualified historical records.
+    Ace16HistoricalPresentFixed,
     /// Unchanged ordinary Jet4 Int32 request record and planner.
     Jet4Int32,
     /// Positive source-derived pure BeforeChange ACE16 Int32 UPDATE.
@@ -47,7 +49,7 @@ pub struct NativeUpdateIntent {
 pub enum NativeUpdateBody {
     /// Original single-column Int32 requests for TCNI0001 or TCNI0002.
     Int32(NativeInt32EditIntent),
-    /// Original ordered fixed column groups for TCNI0003, TCNI0004, TCNI0008, TCNI0009 or TCNI0010.
+    /// Original ordered fixed column groups for the closed TCNI0003/4/8/9/10/11 families.
     Fixed(NativeFixedEditIntent),
     /// Ordered original fixed/variable requests for TCNI0005.
     Fitted(NativeFittedEditIntent),
@@ -58,6 +60,13 @@ pub enum NativeUpdateBody {
 }
 
 impl NativeUpdateIntent {
+    pub(super) fn from_historical_present_fixed(original: NativeFixedEditIntent) -> Self {
+        Self {
+            profile: NativeUpdateProfile::Ace16HistoricalPresentFixed,
+            body: NativeUpdateBody::Fixed(original),
+        }
+    }
+
     /// Maximum of the implemented closed data records, for bounded host capture.
     pub const MAX_ENCODED_BYTES: usize = if NativeFittedEditIntent::MAX_ENCODED_BYTES
         > NativeFixedEditIntent::MAX_GUID_ENCODED_BYTES
@@ -250,6 +259,10 @@ impl NativeUpdateIntent {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Vec<u8>, NativeIntentError> {
         match (&self.body, self.profile) {
+            (
+                NativeUpdateBody::Fixed(original),
+                NativeUpdateProfile::Ace16HistoricalPresentFixed,
+            ) => original.encode_historical_present(budget, cancelled),
             (NativeUpdateBody::Int32(original), NativeUpdateProfile::Jet4Int32) => {
                 original.encode(budget, cancelled)
             }
@@ -294,6 +307,13 @@ impl NativeUpdateIntent {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, NativeIntentError> {
+        if bytes.get(..NativeFixedEditIntent::HISTORICAL_MAGIC.len())
+            == Some(NativeFixedEditIntent::HISTORICAL_MAGIC.as_slice())
+        {
+            return Ok(Self::from_historical_present_fixed(
+                NativeFixedEditIntent::decode_historical_present(bytes, budget, cancelled)?,
+            ));
+        }
         if bytes.get(..super::fitted::EOF_ALLOCATION_MAGIC.len())
             == Some(super::fitted::EOF_ALLOCATION_MAGIC.as_slice())
         {

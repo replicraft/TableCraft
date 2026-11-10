@@ -22,6 +22,7 @@ pub(super) const GUID_WIDTH: usize = TAG_BYTES + Guid::BYTE_LEN;
 
 #[derive(Clone, Copy, PartialEq, Eq)]
 pub(super) enum Carriers {
+    HistoricalInt32,
     Legacy,
     Ieee,
     Scalar,
@@ -62,6 +63,10 @@ impl Carriers {
 
     pub(super) fn encode(self, value: &Value) -> Result<[u8; WIDTH], NativeIntentError> {
         match self {
+            Self::HistoricalInt32 if matches!(value, Value::Null | Value::Int32(_)) => {
+                encode(value)
+            }
+            Self::HistoricalInt32 => Err(NativeIntentError::InvalidRecord),
             Self::Legacy => encode(value),
             Self::Ieee => encode_ieee(value),
             Self::Scalar => encode_scalar(value),
@@ -71,6 +76,14 @@ impl Carriers {
 
     pub(super) fn decode(self, raw: &[u8; WIDTH]) -> Result<Value, NativeIntentError> {
         match self {
+            Self::HistoricalInt32 => {
+                let value = decode(raw)?;
+                if matches!(value, Value::Null | Value::Int32(_)) {
+                    Ok(value)
+                } else {
+                    Err(NativeIntentError::InvalidRecord)
+                }
+            }
             Self::Legacy => decode(raw),
             Self::Ieee => decode_ieee(raw),
             Self::Scalar => decode_scalar(raw),

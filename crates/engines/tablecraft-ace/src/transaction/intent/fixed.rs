@@ -22,3 +22,6 @@ mod scalar_tests;
 
 #[cfg(test)]
 mod guid_tests;
+
+#[cfg(test)]
+mod historical_present_tests;
