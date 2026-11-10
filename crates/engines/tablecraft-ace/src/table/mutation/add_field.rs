@@ -6,7 +6,7 @@ mod retained;
 mod verify;
 
 use crate::{
-    CurrentFieldAdditionError, EditError, InspectError, NativeImage,
+    CurrentFieldAdditionError, InspectError, NativeImage,
     format::page::PAGE_BYTES,
     header::check,
     table::mutation::{
