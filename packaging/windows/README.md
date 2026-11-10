@@ -112,3 +112,17 @@ against the real `0.1.0` workspace. No helper upgrade/rollback test ran. The
 separate fixture builder now supplies isolated, labelled test metadata without
 weakening that production check; its native execution still requires another
 rehearsal. UAC/bootstrap and GUI relaunch remain separate unqualified behavior.
+
+Rehearsal [42775035933](https://github.com/replicraft/TableCraft/actions/runs/42775035933)
+then built both isolated next-version fixtures and passed the stale-parent and
+missing-COMMIT refusals. Both targets reached the deliberate corrupt-cabinet
+installer failure, preserving the old registration, all four payload hashes and
+user sentinel. The harness stopped on an incorrect assumption that verbose logs
+contain a literal `Rollback:` label, so the subsequent successful upgrade did not
+run. The retained x64 log instead records successful `RemoveExistingProducts`,
+CAB error 2356/status 1603, and a `ScriptType=2` rollback restoring all four files
+from `.rbf` backups. The replacement verifier requires those ordered operations
+and exact destinations, alongside the existing live registration/hash checks;
+policy mentions and a generic installer failure cannot satisfy it. Its host tests
+and the retained x64 log pass, while native execution of the corrected complete
+harness still requires a new rehearsal.

@@ -207,10 +207,10 @@ try {
         throw 'The rollback fixture did not reach the actual failing native installer operation'
     }
     Assert-Original
-    $rollbackLog = Get-Content -LiteralPath (Join-Path $case.Stage 'install.log') -Raw
-    if ($rollbackLog -notmatch 'RemoveExistingProducts' -or $rollbackLog -notmatch 'Rollback:') {
-        throw 'Native rollback evidence did not capture the major-upgrade removal and rollback phases'
-    }
+    & python (Join-Path $PSScriptRoot '../../scripts/packaging/verify_msi_rollback.py') `
+        --log (Join-Path $case.Stage 'install.log') --installation $installedDirectory `
+        --old-product $oldProduct --evidence (Join-Path $case.Stage 'rollback-operations.json')
+    if ($LASTEXITCODE -ne 0) { throw 'Native rollback did not prove ordered removal and exact backup restoration' }
 
     $case = Start-Helper 'successful-upgrade' $upgrade
     $activeParent = $case.Parent
