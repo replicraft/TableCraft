@@ -56,8 +56,12 @@ The packaging command owns its temporary generated notice file and cleans it up.
 Archive names start with `tablecraft-desktop-<version>-`. Windows uses ZIP with
 the executable, project license, notices and `RELEASE.json`. Linux uses tar.gz
 with the same resources. macOS uses ZIP with a `TableCraft.app` bundle, including
-the executable, generated Info.plist, supplied ICNS, license and notices. The
-manifest hashes every payload file; a SHA-256 sidecar accompanies each archive.
+the executable, generated Info.plist, supplied ICNS, license and notices.
+The macOS `RELEASE.json` lives at
+`TableCraft.app/Contents/Resources/RELEASE.json`, so dragging only the application
+bundle to its installation directory preserves its release identity and hashes.
+Windows/Linux keep `RELEASE.json` beside the executable. The manifest hashes
+every other payload file; a SHA-256 sidecar accompanies each archive.
 
 After building the appropriate binary and preparing pinned notice sources, a
 macOS preparation command can use default notice generation:

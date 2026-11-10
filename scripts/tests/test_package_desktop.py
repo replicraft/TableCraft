@@ -116,6 +116,44 @@ class DesktopPackagingTests(unittest.TestCase):
                 with self.assertRaisesRegex(ValueError, "fresh paths"):
                     self.package(target)
 
+    def test_drag_install_preserves_the_macos_release_manifest_and_payload_hashes(self):
+        archive = self.package("aarch64-apple-darwin")
+        installed = self.root / "Applications" / "TableCraft.app"
+        with zipfile.ZipFile(archive) as stream:
+            self.assertNotIn("RELEASE.json", stream.namelist())
+            for entry in stream.infolist():
+                relative = Path(entry.filename).relative_to("TableCraft.app")
+                destination = installed / relative
+                destination.parent.mkdir(parents=True, exist_ok=True)
+                destination.write_bytes(stream.read(entry))
+
+        manifest = installed / "Contents/Resources/RELEASE.json"
+        self.assertTrue(manifest.is_file())
+        self.assertFalse((installed.parent / "RELEASE.json").exists())
+        metadata = json.loads(manifest.read_bytes())
+        self.assertEqual(metadata["product"], "tablecraft-desktop")
+        self.assertEqual(metadata["version"], VERSION)
+        self.assertEqual(metadata["target"], "aarch64-apple-darwin")
+        for name, digest in metadata["files"].items():
+            relative = Path(name).relative_to("TableCraft.app")
+            self.assertEqual(hashlib.sha256((installed / relative).read_bytes()).hexdigest(), digest)
+
+    def test_external_root_macos_manifest_is_not_an_installable_package(self):
+        target = "aarch64-apple-darwin"
+        archive = self.package(target)
+
+        def move_manifest_outside_bundle(entries):
+            for index, (entry, content) in enumerate(entries):
+                if entry.filename == "TableCraft.app/Contents/Resources/RELEASE.json":
+                    moved = zipfile.ZipInfo("RELEASE.json")
+                    moved.external_attr = entry.external_attr
+                    entries[index] = (moved, content)
+            return entries
+
+        self.rewrite_zip(archive, move_manifest_outside_bundle)
+        with self.assertRaisesRegex(ValueError, "Unexpected or duplicate"):
+            desktop.verify_archive(archive, VERSION, target, self.notices, self.icon)
+
     def test_reviewed_notices_and_actual_icon_pixels_are_required(self):
         target = "aarch64-apple-darwin"
         binary = self.root / "binary"
@@ -240,7 +278,7 @@ class DesktopPackagingTests(unittest.TestCase):
                     changed = plistlib.dumps(metadata)
                     entries[index] = (entry, changed)
             for index, (entry, content) in enumerate(entries):
-                if entry.filename == desktop.MANIFEST:
+                if entry.filename == "TableCraft.app/Contents/Resources/RELEASE.json":
                     metadata = json.loads(content)
                     metadata["files"][info_path] = hashlib.sha256(changed).hexdigest()
                     entries[index] = (entry, json.dumps(metadata).encode())

@@ -238,7 +238,7 @@ def manifest(version, target, files):
 def package(version, target, binary, notices, output, icon=None):
     contract.validate_version(version)
     files = payload(version, target, binary, notices, icon)
-    files[MANIFEST] = manifest(version, target, files)
+    files[resource_path(target, MANIFEST)] = manifest(version, target, files)
     if output.is_symlink():
         raise ValueError("Output directory must not be a symlink")
     output.mkdir(parents=True, exist_ok=True)
@@ -314,7 +314,8 @@ def verify_archive(archive, version, target, notices, icon=None, run_smoke=False
     }
     if not notices.read_text(encoding="utf-8").strip():
         raise ValueError("Desktop notices must not be blank")
-    expected = {executable, *references, MANIFEST}
+    manifest_name = resource_path(target, MANIFEST)
+    expected = {executable, *references, manifest_name}
     if "apple" in target:
         if icon is None:
             raise ValueError("macOS verification requires the reviewed icon")
@@ -337,7 +338,7 @@ def verify_archive(archive, version, target, notices, icon=None, run_smoke=False
                 maximum = contract.MAX_EXECUTABLE_BYTES
             elif name.endswith(".icns"):
                 maximum = MAX_ICON_BYTES
-            elif name == MANIFEST or name.endswith(".plist"):
+            elif name == manifest_name or name.endswith(".plist"):
                 maximum = MAX_MANIFEST_BYTES
             else:
                 maximum = contract.MAX_LEGAL_BYTES
@@ -376,10 +377,10 @@ def verify_archive(archive, version, target, notices, icon=None, run_smoke=False
         if set(hashes) != expected:
             raise ValueError("Incomplete desktop payload")
         metadata = json.loads(
-            (directory / MANIFEST).read_text(encoding="utf-8"),
+            (directory / manifest_name).read_text(encoding="utf-8"),
             object_pairs_hook=unique_members,
         )
-        hashes.pop(MANIFEST)
+        hashes.pop(manifest_name)
         expected_metadata = {
             "product": PRODUCT, "version": version, "target": target, "files": hashes,
         }
