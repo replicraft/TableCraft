@@ -3,6 +3,7 @@ mod audit;
 mod availability;
 mod build;
 mod geometry;
+mod native;
 mod retained;
 pub(in crate::creation) mod source;
 
@@ -86,6 +87,17 @@ impl NativeImage {
             return self.plan_add_table_retained(definition, budget, cancelled);
         }
         self.plan_add_table_mixed(definition, budget, cancelled)
+    }
+
+    /// Append a native-count declaration to its positively selected packed or
+    /// retained catalog, with actual continuation, property and bitmap storage.
+    pub fn plan_add_table_native(
+        self,
+        definition: FirstTableDefinition,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<AddTablePlan, AddTableError> {
+        native::plan(self, definition, budget, cancelled)
     }
 
     /// Reconstruct the frozen TCAT5 mixed-source language without retained selection.

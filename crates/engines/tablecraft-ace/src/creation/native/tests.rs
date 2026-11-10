@@ -1,3 +1,5 @@
+#[cfg(feature = "journal")]
+use crate::AddTableSourceProfile;
 use crate::{
     CreateColumn, CreateDatabaseError, FirstTableDefinition, FirstTableError, NativeImage,
 };
@@ -5,6 +7,8 @@ use std::io::Cursor;
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
 use tablecraft_schema::ScalarType;
+#[cfg(feature = "journal")]
+use tablecraft_testkit::fixtures::access::canonical_retained_add_table::fields;
 use tablecraft_testkit::fixtures::access::canonical_wide_table_creation as raw;
 
 fn budget() -> ResourceBudget {
@@ -84,4 +88,36 @@ fn original_planner_rejects_native_request_even_when_its_column_count_fits_origi
         capture(&source.before).plan_first_table(definition, &mut budget(), &|| false),
         Err(FirstTableError::Create(CreateDatabaseError::Declaration))
     ));
+}
+
+#[cfg(feature = "journal")]
+#[test]
+fn native_count_append_preserves_packed_and_retained_source_cohorts_and_complete_images() {
+    let initial = raw::source();
+    let retained = fields::source(fields::Case::FirstNumber);
+    let names = (0..255).map(raw::field_name).collect::<Vec<_>>();
+    let zero = Value::Int32(0);
+    let columns = declarations(&names, &zero);
+    for (before, profile) in [
+        (initial.after.as_slice(), AddTableSourceProfile::Mixed),
+        (retained.bytes.as_slice(), AddTableSourceProfile::Retained),
+    ] {
+        let expected = raw::appended::source(before, "Wide");
+        let definition =
+            FirstTableDefinition::capture_native("Wide", &columns, &mut budget(), &|| false)
+                .unwrap();
+        let plan = capture(before)
+            .plan_add_table_native(definition, &mut budget(), &|| false)
+            .unwrap();
+        assert!(plan.is_native());
+        assert_eq!(plan.source_profile(), profile);
+        assert_eq!(plan.after_bytes().len(), expected.after.len());
+        assert_eq!(
+            plan.after_bytes()
+                .iter()
+                .zip(&expected.after)
+                .position(|(left, right)| left != right),
+            None
+        );
+    }
 }

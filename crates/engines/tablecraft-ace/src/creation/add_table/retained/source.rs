@@ -303,7 +303,7 @@ pub(super) fn inventory_error(error: crate::EditError) -> AddTableError {
     }
 }
 
-pub(super) fn allocation_error(error: AllocationError) -> AddTableError {
+pub(in crate::creation::add_table) fn allocation_error(error: AllocationError) -> AddTableError {
     match error {
         AllocationError::Inspect(error) => AddTableError::Inspect(error),
         AllocationError::Capacity => AddTableError::Capacity,
@@ -311,7 +311,9 @@ pub(super) fn allocation_error(error: AllocationError) -> AddTableError {
     }
 }
 
-pub(super) fn allocation_preservation_error(error: AllocationError) -> AddTableError {
+pub(in crate::creation::add_table) fn allocation_preservation_error(
+    error: AllocationError,
+) -> AddTableError {
     match error {
         AllocationError::Source => AddTableError::Preservation,
         error => allocation_error(error),

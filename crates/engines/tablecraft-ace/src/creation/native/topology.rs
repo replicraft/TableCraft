@@ -2,16 +2,18 @@
 use crate::{InspectError, creation::CreateDatabaseError, format::page::PAGE_BYTES};
 use std::ops::Range;
 
-pub(super) const DEFINITION_HEADER: usize = 8;
-pub(super) const CHAIN_PAYLOAD: usize = PAGE_BYTES - 24;
-pub(super) const BITMAP_OFFSET: usize = 4;
-pub(super) const BITMAP_PAGES: usize = (PAGE_BYTES - BITMAP_OFFSET) * u8::BITS as usize;
+pub(in crate::creation) const DEFINITION_HEADER: usize = 8;
+pub(in crate::creation) const CHAIN_PAYLOAD: usize = PAGE_BYTES - 24;
+pub(in crate::creation) const BITMAP_OFFSET: usize = 4;
+pub(in crate::creation) const BITMAP_PAGES: usize =
+    (PAGE_BYTES - BITMAP_OFFSET) * u8::BITS as usize;
 
-pub(super) struct Topology {
+pub(in crate::creation) struct Topology {
     pub definition: Range<usize>,
     pub data: usize,
     pub index: Option<usize>,
     pub properties: Range<usize>,
+    pub candidate: Option<usize>,
     pub bitmaps: Range<usize>,
     pub end: usize,
 }
@@ -29,7 +31,14 @@ impl Topology {
         let data = root
             .checked_add(1 + continuation)
             .ok_or(CreateDatabaseError::PageCapacity)?;
-        let index = keyed.then_some(data + 1);
+        let index = if keyed {
+            Some(
+                data.checked_add(1)
+                    .ok_or(CreateDatabaseError::PageCapacity)?,
+            )
+        } else {
+            None
+        };
         let property_start = data
             .checked_add(1 + usize::from(keyed))
             .ok_or(CreateDatabaseError::PageCapacity)?;
@@ -57,6 +66,11 @@ impl Topology {
             data,
             index,
             properties: property_start..property_end,
+            candidate: if property_bytes != 0 && !property_bytes.is_multiple_of(CHAIN_PAYLOAD) {
+                property_end.checked_sub(1)
+            } else {
+                None
+            },
             bitmaps: property_end..end,
             end,
         })

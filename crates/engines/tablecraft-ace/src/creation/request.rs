@@ -155,7 +155,7 @@ fn validate_with<'a>(
     let catalog_name = stored_text::Plan::capture(table, budget, cancelled)?;
     let maximum_columns = match construction {
         Construction::Original => profile::MAX_COLUMNS,
-        Construction::Native => usize::from(u8::MAX),
+        Construction::Native => crate::limits::MAX_USER_COLUMNS,
     };
     if columns.count() == 0 || columns.count() > maximum_columns {
         return Err(CreateDatabaseError::ColumnLimit);

@@ -43,6 +43,30 @@ impl<'image> Inventory<'image> {
         })
     }
 
+    /// Observe the known packed catalog without inventing an MSysDb role.
+    /// Physical ownership uses the same complete census as retained append;
+    /// the distinct catalog predicate keeps the source cohorts separate.
+    pub(crate) fn capture_packed(
+        image: &'image NativeImage,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, EditError> {
+        check(budget, cancelled)?;
+        image.require_retained_capture()?;
+        let facts = catalog::capture_packed(image, budget, cancelled)?;
+        let storage = storage::capture(image, &facts.schema, budget, cancelled)?;
+        Ok(Self {
+            image,
+            before_pages: image.catalog().header().page_count(),
+            catalog_definition: facts.schema.definition_page(),
+            catalog_pages: storage.catalog,
+            map_pages: storage.maps,
+            catalog_live_rows: facts.schema.declared_rows(),
+            tables_parent: facts.tables_parent,
+            catalog_name_order: facts.name_order,
+        })
+    }
+
     pub(crate) fn require_source(&self, image: &NativeImage) -> Result<(), EditError> {
         if !std::ptr::eq(self.image, image) {
             return Err(EditError::Preservation);

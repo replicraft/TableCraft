@@ -1,7 +1,7 @@
 //! Append construction over live and retired roles, independent of packed history.
 mod audit;
 mod build;
-mod source;
+pub(in crate::creation::add_table) mod source;
 
 #[cfg(test)]
 mod tests;

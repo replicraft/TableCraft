@@ -1,5 +1,5 @@
 //! Native-count creation separates logical definitions from physical storage.
-mod topology;
+pub(in crate::creation) mod topology;
 
 #[cfg(test)]
 mod tests;
@@ -99,49 +99,20 @@ pub(super) fn first(
         )?;
     }
 
-    let mut logical = zeroed(length, budget, cancelled)?;
-    definition::write_logical_role(
-        &mut logical,
-        request.fields(),
-        0,
-        definition::Role {
-            user: true,
-            catalog: false,
+    write_table(
+        &mut bytes,
+        request,
+        &topology,
+        MapReferences {
             owned: reference(profile::MAP_PAGE as u32, profile::USER_MAP_SLOT as u8),
             candidate: reference(profile::MAP_PAGE as u32, profile::USER_CANDIDATE_SLOT as u8),
+            index: topology
+                .index
+                .map(|_| reference(profile::MAP_PAGE as u32, profile::MAP_ROWS as u8)),
         },
-        request
-            .primary
-            .as_ref()
-            .zip(topology.index)
-            .map(|(prepared, root)| definition::PrimaryRole {
-                prepared,
-                root,
-                map: reference(profile::MAP_PAGE as u32, profile::MAP_ROWS as u8),
-            }),
         budget,
         cancelled,
     )?;
-    pack_definition(&mut bytes, &logical, &topology, budget, cancelled)?;
-    DataPage::new(
-        build::page(&mut bytes, topology.data)?,
-        profile::USER_DEFINITION,
-    )?
-    .finish()?;
-    if let Some((primary, index)) = request.primary.as_ref().zip(topology.index) {
-        primary.write_leaf(
-            build::page(&mut bytes, index)?,
-            profile::USER_DEFINITION,
-            topology.data,
-            budget,
-            cancelled,
-        )?;
-    }
-    if let Some(properties) = &request.properties {
-        let mut body = zeroed(properties.body_length(), budget, cancelled)?;
-        properties.write_body(&mut body, budget, cancelled)?;
-        write_properties(&mut bytes, &body, &topology, budget, cancelled)?;
-    }
     {
         let mut catalog = DataPage::new(
             build::page(&mut bytes, profile::CATALOG_DATA)?,
@@ -196,6 +167,69 @@ pub(super) fn first(
     }
     check(budget, cancelled)?;
     Ok(bytes)
+}
+
+pub(in crate::creation) struct MapReferences {
+    pub owned: u32,
+    pub candidate: u32,
+    pub index: Option<u32>,
+}
+
+pub(in crate::creation) fn write_table(
+    bytes: &mut [u8],
+    request: &Request<'_>,
+    topology: &Topology,
+    maps: MapReferences,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), CreateDatabaseError> {
+    let primary = match (request.primary.as_ref(), topology.index, maps.index) {
+        (Some(prepared), Some(root), Some(map)) => Some(definition::PrimaryRole {
+            prepared,
+            root,
+            map,
+        }),
+        (None, None, None) => None,
+        _ => return Err(CreateDatabaseError::Layout),
+    };
+    let length =
+        definition::length_with_primary(request.fields(), false, request.primary.as_ref())?;
+    let mut logical = zeroed(length, budget, cancelled)?;
+    definition::write_logical_role(
+        &mut logical,
+        request.fields(),
+        0,
+        definition::Role {
+            user: true,
+            catalog: false,
+            owned: maps.owned,
+            candidate: maps.candidate,
+        },
+        primary,
+        budget,
+        cancelled,
+    )?;
+    pack_definition(bytes, &logical, topology, budget, cancelled)?;
+    DataPage::new(
+        build::page(bytes, topology.data)?,
+        topology.definition.start,
+    )?
+    .finish()?;
+    if let Some((primary, index)) = request.primary.as_ref().zip(topology.index) {
+        primary.write_leaf(
+            build::page(bytes, index)?,
+            topology.definition.start,
+            topology.data,
+            budget,
+            cancelled,
+        )?;
+    }
+    if let Some(properties) = &request.properties {
+        let mut body = zeroed(properties.body_length(), budget, cancelled)?;
+        properties.write_body(&mut body, budget, cancelled)?;
+        write_properties(bytes, &body, topology, budget, cancelled)?;
+    }
+    Ok(())
 }
 
 fn pack_definition(
@@ -314,11 +348,7 @@ fn write_maps(
                     Some(profile::CATALOG_DATA)
                 }
                 profile::USER_MAP_SLOT | profile::USER_CANDIDATE_SLOT => Some(topology.data),
-                PROPERTY_CANDIDATE_SLOT => topology
-                    .properties
-                    .end
-                    .checked_sub(1)
-                    .filter(|_| !topology.properties.is_empty()),
+                PROPERTY_CANDIDATE_SLOT => topology.candidate,
                 profile::MAP_ROWS => topology.index,
                 _ => None,
             };

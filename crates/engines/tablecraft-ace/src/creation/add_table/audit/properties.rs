@@ -47,7 +47,13 @@ pub(in crate::creation::add_table) fn verify(
     if properties.raw_bytes().len() != expected_length {
         return Err(AddTableError::Preservation);
     }
-    let mut seen = [false; 16];
+    budget
+        .charge_allocation(columns.len() as u64, size_of::<bool>() as u64)
+        .map_err(crate::InspectError::from)?;
+    let mut seen = Vec::new();
+    seen.try_reserve_exact(columns.len())
+        .map_err(|_| crate::InspectError::Allocation)?;
+    seen.resize(columns.len(), false);
     for group in properties.groups() {
         check(budget, cancelled)?;
         if group.kind() != PropertyGroupKind::Column {

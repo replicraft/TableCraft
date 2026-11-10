@@ -38,6 +38,23 @@ pub(super) fn capture(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Facts, EditError> {
+    capture_with(image, true, budget, cancelled)
+}
+
+pub(super) fn capture_packed(
+    image: &NativeImage,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Facts, EditError> {
+    capture_with(image, false, budget, cancelled)
+}
+
+fn capture_with(
+    image: &NativeImage,
+    retained: bool,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Facts, EditError> {
     let header = image.catalog().header();
     if header.format() != FileFormat::Ace2016 || header.subversion() != 0 || header.encoded_pages()
     {
@@ -52,8 +69,17 @@ pub(super) fn capture(
     let root = role("DatabaseRoot", budget)?;
     let tables = role("Tables", budget)?;
     let databases = role("Databases", budget)?;
-    let db = role("MSysDb", budget)?;
-    for name in ROLES {
+    let db = if retained {
+        Some(role("MSysDb", budget)?)
+    } else {
+        None
+    };
+    let roles = if retained {
+        &ROLES[..]
+    } else {
+        &ROLES[..ROLES.len() - 1]
+    };
+    for &name in roles {
         let origin = role(name, budget)?;
         let (kind, parent) = match name {
             "DatabaseRoot" => (3, 0),
@@ -82,7 +108,7 @@ pub(super) fn capture(
             .charge(Resource::Steps, object.name().as_str().len() as u64)
             .map_err(InspectError::from)?;
         if origin.is_system() {
-            if !ROLES.contains(&object.name().as_str()) {
+            if !roles.contains(&object.name().as_str()) {
                 return Err(refused());
             }
         } else if object.kind() != ObjectKind::Table
@@ -106,39 +132,45 @@ pub(super) fn capture(
         }
     }
     let scope = image.catalog().catalog().scope();
-    let properties = inspect_database_properties(&mut image.reader(), scope, budget, cancelled)?
-        .ok_or_else(refused)?;
-    if properties.object_id() != db.object_id() || properties.groups().len() != 1 {
-        return Err(refused());
-    }
-    let group = &properties.groups()[0];
-    if group.kind() != PropertyGroupKind::Table
-        || !group.name().is_empty()
-        || group.properties().len() != NAME_OPTIONS.len()
-    {
-        return Err(refused());
-    }
-    for name in NAME_OPTIONS {
-        let mut found = None;
-        for property in group.properties() {
-            check(budget, cancelled)?;
-            budget
-                .charge(
-                    Resource::Steps,
-                    property.name().len().max(name.len()) as u64,
-                )
-                .map_err(InspectError::from)?;
-            if property.name().eq_ignore_ascii_case(name) && found.replace(property).is_some() {
-                return Err(refused());
-            }
+    if let Some(db) = db {
+        let properties =
+            inspect_database_properties(&mut image.reader(), scope, budget, cancelled)?
+                .ok_or_else(refused)?;
+        if properties.object_id() != db.object_id() || properties.groups().len() != 1 {
+            return Err(refused());
         }
-        let property = found.ok_or_else(refused)?;
-        if property.native_type() != data_type::INT32
-            || property.flags() != 1
-            || property.raw_value() != 0_i32.to_le_bytes()
+        let group = &properties.groups()[0];
+        if group.kind() != PropertyGroupKind::Table
+            || !group.name().is_empty()
+            || group.properties().len() != NAME_OPTIONS.len()
         {
             return Err(refused());
         }
+        for name in NAME_OPTIONS {
+            let mut found = None;
+            for property in group.properties() {
+                check(budget, cancelled)?;
+                budget
+                    .charge(
+                        Resource::Steps,
+                        property.name().len().max(name.len()) as u64,
+                    )
+                    .map_err(InspectError::from)?;
+                if property.name().eq_ignore_ascii_case(name) && found.replace(property).is_some() {
+                    return Err(refused());
+                }
+            }
+            let property = found.ok_or_else(refused)?;
+            if property.native_type() != data_type::INT32
+                || property.flags() != 1
+                || property.raw_value() != 0_i32.to_le_bytes()
+            {
+                return Err(refused());
+            }
+        }
+    } else if inspect_database_properties(&mut image.reader(), scope, budget, cancelled)?.is_some()
+    {
+        return Err(refused());
     }
     schema_dependencies::require_empty(image, budget, cancelled)?;
     let schema =
