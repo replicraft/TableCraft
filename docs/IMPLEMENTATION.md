@@ -1,5 +1,26 @@
 # Implementation status
 
+## Large-cell clipboard and Zoom — 10 November 2026
+
+Displayed-record Copy no longer imposes a 1 MiB TSV cap. It keeps CSV quoting,
+checked platform-size arithmetic and fallible allocation, with translated error
+messages that no longer describe an invented Access limit. Binary display also
+reserves its hexadecimal output fallibly.
+
+The shared full-cell Zoom dialog no longer rejects values above 8 MiB. Opening
+retains the original source-bound text without copying or scanning it in full.
+Sparse indexing and complete clipboard preparation advance in bounded frame
+chunks; those scheduling sizes do not limit total value length. End follows
+index growth to checked EOF using the actual viewport. Closing or an accepted
+replacement discards pending copies; rejected stale publications retain the
+original binding. Clipboard publication occurs only after the complete value is
+ready and the live binding and dismissal controls have been checked.
+
+All 19 selected headless Zoom, TSV and localization tests pass, including a value
+above the former Zoom cap with its final text fully inside the viewport and an
+exact complete copy. This is local functional evidence, not a new graphical or
+Windows/Access parity claim. See [display preferences](ui/DISPLAY_PREFERENCES.md).
+
 ## Retained field DROP and rename — 10 November 2026
 
 The shared field workbench now renames qualified Number/Short Text declarations

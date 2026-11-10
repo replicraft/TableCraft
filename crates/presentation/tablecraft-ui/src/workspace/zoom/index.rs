@@ -53,7 +53,7 @@ impl Index {
             && self.cursor - initial_cursor < INDEX_BYTES_PER_FRAME
             && self.rows - initial_rows < INDEX_ROWS_PER_FRAME
         {
-            if self.rows % CHECKPOINT_ROWS == 0 {
+            if self.rows.is_multiple_of(CHECKPOINT_ROWS) {
                 self.checkpoints
                     .try_reserve(1)
                     .map_err(|_| IndexError::Allocation)?;

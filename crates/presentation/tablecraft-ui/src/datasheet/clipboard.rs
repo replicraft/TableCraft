@@ -119,17 +119,10 @@ mod tests {
     fn large_quoted_unicode_record_copies_every_value_without_a_byte_quota() {
         let text = "日本語🦀\t\"value\"\r\n".repeat(90_000);
         assert!(text.len() > 1024 * 1024);
-        let values = [
-            Cell::scalar(text.clone()),
-            Cell::scalar(""),
-            Cell::scalar("NULL"),
-        ];
+        let expected = format!("\"{}\"\t\tNULL\n", text.replace('"', "\"\""));
+        let values = [Cell::scalar(text), Cell::scalar(""), Cell::scalar("NULL")];
         let encoded = encode(&values)
             .unwrap_or_else(|error| panic!("{}", error.message(&Localizer::default())));
-        assert_eq!(
-            encoded,
-            format!("\"{}\"\t\tNULL\n", text.replace('"', "\"\""))
-        );
-        assert_eq!(values[0].text, text);
+        assert_eq!(encoded, expected);
     }
 }

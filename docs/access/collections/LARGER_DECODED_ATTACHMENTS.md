@@ -1,7 +1,7 @@
 # Explicit larger decoded attachment files
 
-`AttachmentDecodeLimits` defaults to Access's documented 256 MiB individual
-attachment bound. Callers can explicitly select a lower positive file allowance
+`AttachmentDecodeLimits` defaults to the 256 MiB individual attachment bound
+recorded in [Microsoft's attachment guidance](https://support.microsoft.com/en-us/access/attach-files-and-graphics-to-the-records-in-your-database). Callers can explicitly select a lower positive file allowance
 with `decode_attachment_with_limits`, `AttachmentDecoder::new_with_limits`, or
 `NativeSource::with_decoded_attachment_limits`. The former 1 MiB default and
 16 MiB product ceiling are removed. Reading bytes does not execute/open content.
