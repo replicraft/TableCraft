@@ -118,24 +118,68 @@ pub fn number_companions(nulls: bool) -> (Vec<u8>, Vec<u8>, Vec<Value>) {
     (before, after, row)
 }
 
+/// Independently author a dense generated ID1..N / nullable LONG companion batch.
+/// The supplied original is empty; names/properties and free TDEF tails stay opaque.
+pub fn long_rows(before: &[u8], values: &[Option<i32>]) -> Vec<u8> {
+    assert!((1..=255).contains(&values.len()));
+    let definition = &before[7 * 4096..8 * 4096];
+    assert_eq!(&definition[41..47], &[2, 0, 0, 0, 2, 0]);
+    for (number, flags) in [(0, 7), (1, 3)] {
+        let column = 75 + number * 25;
+        assert_eq!(definition[column], 4);
+        assert_eq!(definition[column + 15], flags);
+        assert_eq!(
+            &definition[column + 21..column + 25],
+            &[(number * 4) as u8, 0, 4, 0]
+        );
+    }
+    let mut records = Vec::new();
+    for (position, value) in values.iter().enumerate() {
+        let mut record = vec![2, 0];
+        record.extend(((position + 1) as i32).to_le_bytes());
+        record.extend(value.unwrap_or(0).to_le_bytes());
+        record.push(if value.is_some() { 3 } else { 1 });
+        records.push((0, record));
+    }
+    initial_rows_image(before, records)
+}
+
 pub(in crate::fixtures::access) fn first_row_image(before: &[u8], record: Vec<u8>) -> Vec<u8> {
+    initial_rows_image(before, vec![(0, record)])
+}
+
+fn initial_rows_image(before: &[u8], records: Vec<(u16, Vec<u8>)>) -> Vec<u8> {
+    assert!((1..=255).contains(&records.len()));
+    for at in [16, 20, 67] {
+        assert_eq!(&before[7 * 4096 + at..7 * 4096 + at + 4], &[0; 4]);
+    }
+    assert_eq!(&before[8 * 4096 + 12..8 * 4096 + 14], &[0, 0]);
     let mut after = before.to_vec();
+    let count = records.len();
 
-    // Declared membership, LAST and physical unique-key history each advance once.
-    put32(&mut after, 7 * 4096 + 16, 1);
-    put32(&mut after, 7 * 4096 + 20, 1);
-    put32(&mut after, 7 * 4096 + 67, 1);
+    // Declared membership, LAST and physical unique-key history advance together.
+    put32(&mut after, 7 * 4096 + 16, count as u32);
+    put32(&mut after, 7 * 4096 + 20, count as u32);
+    put32(&mut after, 7 * 4096 + 67, count as u32);
 
-    let length = record.len();
-    let mut data = data_page(7, &[(0, record)]);
-    put16(&mut data, 2, (4096 - 14 - 2 - length) as u16);
+    let length: usize = records.iter().map(|(_, record)| record.len()).sum();
+    let mut data = data_page(7, &records);
+    put16(&mut data, 2, (4096 - 14 - 2 * count - length) as u16);
     after[8 * 4096..9 * 4096].copy_from_slice(&data);
 
-    // Ascending signed LONG 1 followed by page 8 / slot 0; one complete key.
+    // Prefix-free ascending signed LONG IDs and their original physical slots.
     let leaf = &mut after[9 * 4096..10 * 4096];
-    put16(leaf, 2, 3607);
-    leaf[28] = 2;
-    leaf[480..489].copy_from_slice(&[127, 128, 0, 0, 1, 0, 0, 8, 0]);
-
+    assert_eq!(&leaf[2..4], &3616_u16.to_le_bytes());
+    assert!(leaf[27..480].iter().all(|byte| *byte == 0));
+    for position in 0..count {
+        let start = 480 + position * 9;
+        leaf[start] = 127;
+        leaf[start + 1..start + 5]
+            .copy_from_slice(&((position as u32 + 1) ^ 0x8000_0000).to_be_bytes());
+        leaf[start + 5..start + 9].copy_from_slice(&((8 << 8) | position as u32).to_be_bytes());
+        let end = (position + 1) * 9;
+        leaf[27 + end / 8] |= 1 << (end % 8);
+    }
+    put16(leaf, 2, (3616 - count * 9) as u16);
     after
 }

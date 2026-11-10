@@ -1,7 +1,9 @@
 //! Independent fitted TDEF/MR2/LVAL images with fixed source pages and row slots.
 use crate::fixtures::access::{
     canonical_created_number::{Source, mixed, repeated},
-    canonical_database_options, put16, put32,
+    canonical_database_options,
+    canonical_initial_table_creation::inserts::long_rows,
+    put16, put32,
 };
 use std::ops::Range;
 
@@ -73,8 +75,18 @@ pub fn source(case: SourceCase) -> Vec<u8> {
 /// Complete fixed-length pair. Only unequal-width ASCII proposals are modeled;
 /// identity, data/index pages, retired histories and database OFF payload survive.
 pub fn pair(case: SourceCase, new_name: &str) -> [Vec<u8>; 2] {
+    assert_ne!(old_name(case).len(), new_name.len());
     let before = source(case);
     let after = rename(&before, old_name(case), new_name);
+    [before, after]
+}
+
+/// Dense generated ID1..N rows are independently authored before renaming.
+/// All ASCII widths, including unchanged spelling, use the same populated family.
+/// Empty-source metadata/history and every active row/key/counter stay intact.
+pub fn populated_number_pair(new_name: &str, values: &[Option<i32>]) -> [Vec<u8>; 2] {
+    let before = long_rows(&source(SourceCase::NumberFirst), values);
+    let after = rename(&before, "Score", new_name);
     [before, after]
 }
 
@@ -95,6 +107,7 @@ pub fn near_capacity_source() -> Vec<u8> {
 /// A complete independent AFTER only when the requested unequal ASCII name fits
 /// the actual existing row page. Score's five units can grow to 28, but not 29.
 pub fn near_capacity_pair(new_name: &str) -> [Vec<u8>; 2] {
+    assert_ne!("Score".len(), new_name.len());
     let before = near_capacity_source();
     let after = rename(&before, "Score", new_name);
     [before, after]
@@ -195,7 +208,6 @@ fn group_name(bytes: &[u8], body: &Range<usize>, old: &[u8]) -> Range<usize> {
 fn rename(before: &[u8], old_name: &str, new_name: &str) -> Vec<u8> {
     assert!(old_name.is_ascii() && new_name.is_ascii());
     assert!((1..=NAME_LIMIT).contains(&new_name.len()));
-    assert_ne!(old_name.len(), new_name.len());
     assert_eq!(before.len(), 11 * PAGE);
     let old = utf16(old_name);
     let new = utf16(new_name);
@@ -287,3 +299,6 @@ fn rename(before: &[u8], old_name: &str, new_name: &str) -> Vec<u8> {
 
 #[cfg(all(test, feature = "access-support"))]
 mod tests;
+
+#[cfg(all(test, feature = "access-support"))]
+mod populated_tests;
