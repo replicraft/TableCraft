@@ -84,9 +84,12 @@ fn map_capacity(
     Ok(used <= PAGE_BYTES)
 }
 
-fn map_record(destination: &mut [u8], member: usize) -> Result<(), AddTableError> {
-    let base = member / 64 * 64;
+fn map_record(destination: &mut [u8], member: Option<usize>) -> Result<(), AddTableError> {
     destination.fill(0);
+    let Some(member) = member else {
+        return Ok(());
+    };
+    let base = member / 64 * 64;
     definition::put32(destination, 1, base as u32)?;
     let bit = member - base;
     destination[5 + bit / 8] = 1 << (bit % 8);
@@ -310,9 +313,13 @@ pub(super) fn plan(
                 .copy_from_slice(record);
         }
         if append != 0 {
-            for member in [Some(topology.data), Some(topology.data), topology.index]
-                .into_iter()
-                .flatten()
+            for member in [
+                Some(topology.data),
+                request.minimum_row_fits().then_some(topology.data),
+                topology.index,
+            ]
+            .into_iter()
+            .take(additional_maps)
             {
                 map_record(writer.append(MAP_BYTES, budget, cancelled)?, member)?;
             }

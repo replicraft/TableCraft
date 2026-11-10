@@ -30,9 +30,12 @@ pub enum CreateDatabaseError {
     /// The user table name conflicts with an authored system table.
     #[error("creation table name conflicts with a required system table")]
     SystemTableName,
-    /// The selected constructive request exceeds its admitted column count.
-    #[error("creation column count is outside the selected constructive profile")]
+    /// Original constructive requests admit one through sixteen user columns.
+    #[error("creation requires between one and sixteen scalar columns")]
     ColumnLimit,
+    /// Native-count construction admits at most 255 active user columns.
+    #[error("native creation requires between one and 255 scalar columns")]
+    NativeColumnLimit,
     /// This bounded profile admits at most sixty-four user rows.
     #[error("creation admits at most sixty-four rows")]
     RowLimit,
@@ -89,6 +92,12 @@ impl Request<'_> {
         self.variable
             .as_ref()
             .map_or(self.row_bytes, |plans| plans.row_length(row))
+    }
+
+    pub fn minimum_row_fits(&self) -> bool {
+        self.minimum_row_bytes
+            .checked_add(size_of::<u16>())
+            .is_some_and(|needed| needed <= self.free_bytes)
     }
 
     pub fn fields(&self) -> Fields<'_> {
@@ -158,7 +167,10 @@ fn validate_with<'a>(
         Construction::Native => crate::limits::MAX_USER_COLUMNS,
     };
     if columns.count() == 0 || columns.count() > maximum_columns {
-        return Err(CreateDatabaseError::ColumnLimit);
+        return Err(match construction {
+            Construction::Original => CreateDatabaseError::ColumnLimit,
+            Construction::Native => CreateDatabaseError::NativeColumnLimit,
+        });
     }
 
     let mut fixed_bytes = 0_usize;

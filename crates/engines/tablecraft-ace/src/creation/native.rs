@@ -153,7 +153,13 @@ pub(super) fn first(
         }
         catalog.finish()?;
     }
-    write_maps(&mut bytes, &topology, budget, cancelled)?;
+    write_maps(
+        &mut bytes,
+        &topology,
+        request.minimum_row_fits(),
+        budget,
+        cancelled,
+    )?;
     // All authored pages are allocated. The free-page bitmap represents the
     // actual output extent, growing its real row instead of imposing page 63.
     {
@@ -311,6 +317,7 @@ fn write_properties(
 fn write_maps(
     bytes: &mut [u8],
     topology: &Topology,
+    data_candidate: bool,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), CreateDatabaseError> {
@@ -347,7 +354,8 @@ fn write_maps(
                 profile::CATALOG_MAP_SLOT | profile::CATALOG_CANDIDATE_SLOT => {
                     Some(profile::CATALOG_DATA)
                 }
-                profile::USER_MAP_SLOT | profile::USER_CANDIDATE_SLOT => Some(topology.data),
+                profile::USER_MAP_SLOT => Some(topology.data),
+                profile::USER_CANDIDATE_SLOT if data_candidate => Some(topology.data),
                 PROPERTY_CANDIDATE_SLOT => topology.candidate,
                 profile::MAP_ROWS => topology.index,
                 _ => None,
