@@ -6,8 +6,9 @@ use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
 use tablecraft_query::{ExecutionOptions, prepare};
 use tablecraft_sql::parse_query;
-use tablecraft_testkit::fixtures::access::canonical_retained_add_table::fields::{
-    self as raw, Target,
+use tablecraft_testkit::fixtures::access::canonical_retained_add_table::{
+    fields::{self as raw, Target, property_pages},
+    rows::Input,
 };
 
 fn budget() -> ResourceBudget {
