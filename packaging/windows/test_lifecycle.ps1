@@ -87,9 +87,17 @@ try {
     try {
         $env:TABLECRAFT_TEST_MSI_PATH = $installerPath
         $env:TABLECRAFT_TEST_INSTALLED_EXE = $executable
-        & cargo test --locked -p tablecraft-update --lib --target $Target 'msi::tests::native_' -- --ignored *> (Join-Path $temporary 'updater-native-policy.log')
-        if ($LASTEXITCODE -ne 0) { throw 'Native updater MSI policy checks failed; inspect retained evidence' }
-        if (-not (Select-String -LiteralPath (Join-Path $temporary 'updater-native-policy.log') -SimpleMatch 'test result: ok. 2 passed;' -Quiet)) {
+        $nativeOutput = Join-Path $temporary 'updater-native-policy.stdout.log'
+        $nativeErrors = Join-Path $temporary 'updater-native-policy.stderr.log'
+        # Windows PowerShell 5 promotes a native stderr pipeline record to a
+        # terminating error under Stop, even for ordinary Cargo compile progress.
+        # Direct process redirection keeps diagnostics and uses the real status.
+        $nativeTests = Start-Process -FilePath (Get-Command cargo.exe).Source -NoNewWindow `
+            -ArgumentList @('test', '--locked', '-p', 'tablecraft-update', '--lib', '--target', $Target,
+                            'msi::tests::native_', '--', '--ignored') `
+            -RedirectStandardOutput $nativeOutput -RedirectStandardError $nativeErrors -Wait -PassThru
+        if ($nativeTests.ExitCode -ne 0) { throw 'Native updater MSI policy checks failed; inspect retained evidence' }
+        if (-not (Select-String -LiteralPath $nativeOutput -SimpleMatch 'test result: ok. 2 passed;' -Quiet)) {
             throw 'Both explicit native updater policy tests must execute successfully'
         }
     } finally {
