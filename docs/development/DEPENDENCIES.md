@@ -1,5 +1,30 @@
 # Adopted dependency and licensing baseline
 
+## Signed desktop updater — 9 November 2026
+
+`tablecraft-update` owns blocking native release retrieval and signed archive
+staging independently of runtime, UI and database engines. It adopts Reqwest
+0.13.5 (MIT/Apache-2.0) with defaults disabled and `blocking`/`rustls`,
+`minisign-verify` 0.3.0 (MIT) for prehashed streaming Ed25519/BLAKE2b verification,
+and Semver 1 for strict release precedence. Existing Serde/serde_json parse the
+explicit GitHub JSON boundary; tempfile owns private staging, SHA-256 detects
+post-verification changes, and Base64 validates the maintained key format.
+Reqwest's rustls feature uses AWS-LC and platform trust verification. No cookie,
+compression, JSON convenience, HTTP/2, proxy discovery or async stream feature is
+requested. These dependencies are confined to the updater package; desktop
+integration is separate and the ordinary CLI/engine/browser do not acquire it.
+
+The published/local upstream manifests and APIs were inspected before adoption:
+[Reqwest](https://docs.rs/reqwest/0.13.5/reqwest/),
+[Minisign verification](https://docs.rs/minisign-verify/0.3.0/minisign_verify/).
+The selected Minisign implementation verifies both the payload and authenticated
+trusted comment; stream admission rejects its optional legacy direct-signature
+mode. Signature fixtures are newly generated first-party public material; their
+private key was deleted, and production trust must differ from their actual
+Ed25519 key bytes. No Relay source, fixtures or signing keys were copied.
+See [updater gates](SELF_UPDATE.md).
+
+
 ## Local MCP transport and typed schemas — 9 November 2026
 
 `apps/tablecraft-mcp` adopts `rmcp` 3.8.0 (official Rust SDK, Apache-2.0), with default

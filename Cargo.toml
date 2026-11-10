@@ -11,6 +11,7 @@ members = [
     "crates/engines/tablecraft-ace",
     "crates/platform/tablecraft-io",
     "crates/platform/tablecraft-crypto",
+    "crates/platform/tablecraft-update",
     "crates/formats/tablecraft-formats",
     "crates/engineering/tablecraft-testkit",
     "crates/backends/tablecraft-access",
@@ -45,6 +46,12 @@ tablecraft-runtime = { path = "crates/application/tablecraft-runtime", default-f
 tablecraft-ui = { path = "crates/presentation/tablecraft-ui", default-features = false }
 tablecraft-display = { path = "crates/presentation/tablecraft-display", default-features = false }
 tablecraft-builders = { path = "crates/presentation/tablecraft-builders", default-features = false }
+
+# Signed desktop updates; engine, ordinary CLI and browser builds do not inherit HTTP.
+tablecraft-update = { path = "crates/platform/tablecraft-update" }
+reqwest = { version = "0.13.5", default-features = false }
+minisign-verify = "0.3"
+semver = "1"
 
 # CLI arguments, table presentation and host diagnostics
 csv = "1.4"

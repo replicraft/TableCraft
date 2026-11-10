@@ -116,3 +116,10 @@ than owning native storage. This relocation changes no allowed dependency edges.
 Shared task/link services compose providers through narrow contracts; provider
 packages must not import runtime or UI. The standalone ACE engine remains
 independent of DB and all concrete providers. See [External Data](../features/EXTERNAL_DATA.md).
+
+`tablecraft-update` is a native platform service with no workspace dependencies.
+It owns HTTP/release identity and signature-verified staging, with no database,
+runtime, presentation or host imports. Its blocking operations require a
+host-owned worker. Concrete desktop integration may consume this service;
+shared UI and eventual browser hosts must not acquire native HTTP/replacement
+mechanics. The ordinary CLI dependency closure remains unchanged.

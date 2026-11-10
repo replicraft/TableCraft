@@ -1,0 +1,101 @@
+use crate::{
+    UpdateError,
+    download::{self, DownloadProgress, VerifiedDownload},
+    http::{Http, Transport},
+    platform::Platform,
+    release::{self, AvailableUpdate},
+    trust, verification,
+};
+use minisign_verify::PublicKey;
+use semver::Version;
+use std::{cmp::Ordering, path::Path};
+
+const LATEST_RELEASE: &str = "https://api.github.com/repos/replicraft/TableCraft/releases/latest";
+
+/// A blocking updater with a fixed release origin and compiled publisher trust.
+#[derive(Debug)]
+pub struct Updater {
+    version: Version,
+    platform: Platform,
+    key: PublicKey,
+    http: Http,
+}
+
+impl Updater {
+    /// Construct an updater for the running application and native target.
+    ///
+    /// # Errors
+    /// Refuses missing/malformed compiled trust or HTTP client initialization.
+    /// Construction and all subsequent operations belong on a worker thread.
+    pub fn new(version: Version, platform: Platform) -> Result<Self, UpdateError> {
+        let key = trust::release_key()?;
+        let http = Http::new(&version.to_string())?;
+        Ok(Self {
+            version,
+            platform,
+            key,
+            http,
+        })
+    }
+
+    /// Check the fixed release endpoint for a newer matching signed asset set.
+    ///
+    /// # Errors
+    /// Refuses cancellation, network failures and invalid or oversized metadata.
+    pub fn check(
+        &self,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Option<AvailableUpdate>, UpdateError> {
+        check(&self.http, &self.version, self.platform, cancelled)
+    }
+
+    /// Download and authenticate an update into an owned directory beside the installation.
+    ///
+    /// `parent` is selected by installation detection, never release metadata.
+    /// Returning `false` from progress cancels and removes unpublished staging.
+    ///
+    /// # Errors
+    /// Refuses download/size/signature failures, cancellation and staging failures.
+    pub fn download(
+        &self,
+        available: &AvailableUpdate,
+        parent: &Path,
+        progress: &mut dyn FnMut(DownloadProgress) -> bool,
+    ) -> Result<VerifiedDownload, UpdateError> {
+        if available.platform() != self.platform
+            || available.version().cmp_precedence(&self.version) != Ordering::Greater
+            || (self.version.pre.is_empty() && !available.version().pre.is_empty())
+        {
+            return Err(UpdateError::ReleaseMetadata);
+        }
+        download::download(&self.http, &self.key, available, parent, progress)
+    }
+}
+
+fn check(
+    transport: &dyn Transport,
+    current: &Version,
+    platform: Platform,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Option<AvailableUpdate>, UpdateError> {
+    if cancelled() {
+        return Err(UpdateError::Cancelled);
+    }
+    let mut response = transport.get(LATEST_RELEASE)?;
+    if response
+        .length
+        .is_some_and(|size| size > release::MAX_METADATA_BYTES as u64)
+    {
+        return Err(UpdateError::ReleaseTooLarge);
+    }
+    let bytes =
+        verification::bounded_bytes(&mut response.reader, release::MAX_METADATA_BYTES, cancelled)
+            .map_err(|error| match error {
+            UpdateError::AssetTooLarge => UpdateError::ReleaseTooLarge,
+            other => other,
+        })?;
+    release::select(&bytes, current, platform)
+}
+
+#[cfg(test)]
+mod tests;

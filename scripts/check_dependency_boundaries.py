@@ -13,6 +13,7 @@ ALLOWED = {
     "tablecraft-model": {"tablecraft-core", "tablecraft-schema"},
     "tablecraft-io": {"tablecraft-core"},
     "tablecraft-crypto": set(),
+    "tablecraft-update": set(),
     "tablecraft-testkit": {"tablecraft-core", "tablecraft-ace", "tablecraft-access",
                            "tablecraft-query", "tablecraft-db", "tablecraft-model",
                            "tablecraft-schema", "tablecraft-sql", "tablecraft-io"},
