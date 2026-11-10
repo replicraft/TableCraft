@@ -89,6 +89,13 @@ fn journey(case: Case, history: History, target: Target, name: &str) {
     draft(&mut harness, target);
     let first = save_schema(&mut harness, &path, &deleted, name, target);
     let first_tab = harness.state().state.active_object().unwrap();
+    let first_layout = harness
+        .state()
+        .state
+        .object_tabs()
+        .into_iter()
+        .map(|tab| tab.target.kind)
+        .collect::<Vec<_>>();
     assert!(harness.state().state.data.as_ref().unwrap().rows.is_empty());
     assert!(harness.state().state.can_create_table());
 
@@ -104,9 +111,23 @@ fn journey(case: Case, history: History, target: Target, name: &str) {
         .state
         .object_tabs()
         .iter()
-        .find(|tab| tab.id == first_tab.id)
+        .find(|tab| tab.target.kind == first_tab.target.kind)
         .unwrap()
         .clone();
+    // Schema reopen restores source-free presentation preferences with fresh
+    // object identities; the old tab must not retain revision authority.
+    assert_ne!(refreshed_first.id, first_tab.id);
+    assert!(refreshed_first.target.document_revision > first_tab.target.document_revision);
+    assert!(!harness.state().state.can_activate_object(&first_tab));
+    let retained_layout = harness
+        .state()
+        .state
+        .object_tabs()
+        .into_iter()
+        .filter(|tab| first_layout.contains(&tab.target.kind))
+        .map(|tab| tab.target.kind)
+        .collect::<Vec<_>>();
+    assert_eq!(retained_layout, first_layout);
     harness.state_mut().activate_object(refreshed_first);
     finish_reads(&mut harness);
     assert_eq!(harness.state().state.data.as_ref().unwrap().table, name);
@@ -187,7 +208,15 @@ fn first_record_after_retained_creation_uses_the_real_review_and_save_route() {
     );
     wait_for_bound_record(&mut harness, "Replacement");
     review(&mut harness);
-    assert!(harness.state().editing.insert_review.is_some());
+    assert!(
+        harness.state().editing.insert_review.is_some(),
+        "new-table row review failed: {:?}; visible messages: {:?}",
+        harness.state().state.error,
+        harness
+            .get_all_by_role(Role::Label)
+            .filter_map(|node| node.value())
+            .collect::<Vec<_>>(),
+    );
     assert_eq!(std::fs::read(&path).unwrap(), schema);
     apply_and_acknowledge(&mut harness);
     let data = harness.state().state.data.as_ref().unwrap();
