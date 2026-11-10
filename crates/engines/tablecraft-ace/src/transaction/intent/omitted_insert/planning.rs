@@ -83,6 +83,37 @@ impl NativeImage {
         Ok(RecoverableNativeOmittedInsertPlan { plan, intent })
     }
 
+    /// Opaque retained surroundings require positive original geometry and TCNA0009.
+    #[cfg(feature = "ace16-create")]
+    pub fn plan_recoverable_retained_opaque_omitted_row_inserts(
+        self,
+        table: &str,
+        rows: Vec<OmittedRowInsert>,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<RecoverableNativeOmittedInsertPlan, RecoverableEditError> {
+        let _span = tracing::debug_span!("native.retained_opaque_omitted_insert.plan_recoverable")
+            .entered();
+        if !self.select_native_retained_opaque_insert_table(table, budget, cancelled)? {
+            return Err(EditError::Unsupported(crate::WriteBlocker::RowLayout).into());
+        }
+        let intent = NativeOmittedInsertIntent::new_retained_opaque(
+            table,
+            rows,
+            self.as_bytes(),
+            budget,
+            cancelled,
+        )?;
+        let plan = intent.plan(self, budget, cancelled)?;
+        if plan.before_bytes().len() != plan.after_bytes().len()
+            || plan.changed_rows() != intent.rows().len()
+        {
+            return Err(EditError::Preservation.into());
+        }
+        check(budget, cancelled).map_err(EditError::from)?;
+        Ok(RecoverableNativeOmittedInsertPlan { plan, intent })
+    }
+
     /// Qualify native target-local absence and reconstruct original presence/default insertion.
     /// The retained intent contains requests, not final patches or permissions.
     pub fn plan_recoverable_ordinary_omitted_row_inserts(
@@ -138,13 +169,13 @@ impl RecoverableNativeOmittedInsertPlan {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<PreparedNativeEdit<'a, D, J>, JournalError> {
-        if self.intent.is_retained() {
+        if self.intent.is_retained() || self.intent.is_retained_opaque() {
             return Err(JournalError::ImageSize);
         }
         self.plan.prepare(target, journal, budget, cancelled)
     }
 
-    /// Prepare only TCNA8 through the V3 journal; original V1 families refuse.
+    /// Prepare only TCNA8/9 through the V3 journal; original V1 families refuse.
     pub fn prepare_retained<'a, D: ResizableDurableStorage, J: DurableStorage>(
         self,
         target: &'a mut D,
@@ -152,7 +183,7 @@ impl RecoverableNativeOmittedInsertPlan {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<PreparedResizableNativeEdit<'a, D, J>, JournalError> {
-        if !self.intent.is_retained() {
+        if !(self.intent.is_retained() || self.intent.is_retained_opaque()) {
             return Err(JournalError::ImageSize);
         }
         self.plan
