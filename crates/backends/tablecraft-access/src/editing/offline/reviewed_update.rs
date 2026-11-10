@@ -1,6 +1,8 @@
 //! Fresh native qualification of a lease-free reviewed UPDATE, without SQL replay.
 use super::{Cause, Failure, OfflineWriteSession, Phase, SessionState, StagedUpdate};
-use tablecraft_ace::{NativeImage, RecoverableNativeEditPlan};
+#[cfg(not(feature = "ace16-create"))]
+use crate::editing::NativeEditError;
+use tablecraft_ace::{NativeImage, NativeUpdateProfile, RecoverableNativeEditPlan};
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_query::UpdatePlan;
 
@@ -55,12 +57,19 @@ impl OfflineWriteSession {
             let slot = self.slot_mut()?;
             slot.current = None;
             slot.state = SessionState::RefreshRequired;
-            let image = NativeImage::capture(
-                slot.target.as_mut().ok_or(Cause::InvalidState)?,
-                slot.scope,
-                native,
-                cancelled,
-            )
+            let source = slot.target.as_mut().ok_or(Cause::InvalidState)?;
+            let image = if reviewed.intent().profile() == NativeUpdateProfile::Ace16RetainedRows {
+                #[cfg(feature = "ace16-create")]
+                {
+                    NativeImage::capture_retained(source, slot.scope, native, cancelled)
+                }
+                #[cfg(not(feature = "ace16-create"))]
+                {
+                    return Err(Cause::Editor(NativeEditError::Unsupported));
+                }
+            } else {
+                NativeImage::capture(source, slot.scope, native, cancelled)
+            }
             .map_err(Cause::Native)?;
             slot.state = SessionState::Ready;
 

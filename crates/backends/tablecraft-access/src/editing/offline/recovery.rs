@@ -21,18 +21,17 @@ use tablecraft_ace::{
 };
 use tablecraft_ace::{
     NativeClockInsertIntent, NativeCompleteInsertIntent, NativeDeleteIntent, NativeEofInsertIntent,
-    NativeInsertIntent, NativeOmittedInsertIntent, NativeQueryExpressionEditsIntent,
-    NativeQueryExpressionIntent, NativeTableDropIntent, NativeTableRenameIntent,
-    NativeUpdateIntent, NativeUpdateProfile, qualify_native_allocation_recovery,
-    qualify_native_clock_insert_recovery, qualify_native_complete_insert_recovery,
-    qualify_native_delete_recovery, qualify_native_eof_insert_recovery,
-    qualify_native_insert_recovery, qualify_native_omitted_insert_recovery,
-    qualify_native_query_expression_edits_recovery, qualify_native_query_expression_recovery,
-    qualify_native_table_drop_recovery, qualify_native_table_rename_recovery,
-    qualify_native_update_recovery,
+    NativeFittedEditIntent, NativeInsertIntent, NativeOmittedInsertIntent,
+    NativeQueryExpressionEditsIntent, NativeQueryExpressionIntent, NativeTableDropIntent,
+    NativeTableRenameIntent, NativeUpdateIntent, NativeUpdateProfile,
+    qualify_native_allocation_recovery, qualify_native_clock_insert_recovery,
+    qualify_native_complete_insert_recovery, qualify_native_delete_recovery,
+    qualify_native_eof_insert_recovery, qualify_native_insert_recovery,
+    qualify_native_omitted_insert_recovery, qualify_native_query_expression_edits_recovery,
+    qualify_native_query_expression_recovery, qualify_native_table_drop_recovery,
+    qualify_native_table_rename_recovery, qualify_native_update_recovery,
 };
 use tablecraft_core::limits::ResourceBudget;
-#[cfg(feature = "ace16-create")]
 use tablecraft_io::journal::inspect_v3;
 use tablecraft_io::journal::{
     RecoveryOutcome, filesystem::OfflineJournalPair, inspect_image, inspect_v1, inspect_v2,
@@ -375,6 +374,18 @@ impl OfflineWriteSession {
                     .map_err(Cause::Qualification)?;
                     qualified
                         .recover(&mut target, budget, cancelled)
+                        .map_err(Cause::Recovery)
+                }
+                MutationIntent::RetainedUpdate(intent) => {
+                    let (mut target, mut journal) =
+                        pair.resizable_storage().map_err(Cause::Pair)?;
+                    let checked =
+                        inspect_v3(&mut journal, budget, cancelled).map_err(Cause::Recovery)?;
+                    let qualified = intent
+                        .qualify_retained_recovery(checked, slot.scope, budget, cancelled)
+                        .map_err(Cause::Qualification)?;
+                    qualified
+                        .recover_retained(&mut target, budget, cancelled)
                         .map_err(Cause::Recovery)
                 }
                 MutationIntent::Update(intent) => {
@@ -731,6 +742,16 @@ impl OfflineWriteSession {
                         .confirm_completed(&mut target, budget, cancelled)
                         .map_err(Cause::Recovery)
                 }
+                MutationIntent::RetainedUpdate(intent) => {
+                    let checked =
+                        inspect_v3(&mut journal, budget, cancelled).map_err(Cause::Recovery)?;
+                    let qualified = intent
+                        .qualify_retained_recovery(checked, slot.scope, budget, cancelled)
+                        .map_err(Cause::Qualification)?;
+                    qualified
+                        .confirm_completed(&mut target, budget, cancelled)
+                        .map_err(Cause::Recovery)
+                }
                 MutationIntent::Update(intent) => {
                     if intent.profile() == NativeUpdateProfile::Ace16OrdinaryEofAllocation {
                         let checked =
@@ -811,6 +832,7 @@ impl OfflineWriteSession {
             .max(NativeTableRenameIntent::MAX_ENCODED_BYTES)
             .max(NativeTableDropIntent::MAX_ENCODED_BYTES)
             .max(NativeUpdateIntent::MAX_ENCODED_BYTES)
+            .max(NativeFittedEditIntent::MAX_RETAINED_ENCODED_BYTES)
             .max(NativeDeleteIntent::MAX_ENCODED_BYTES)
             .max(NativeDeleteIntent::MAX_CURRENT_ENCODED_BYTES)
             .max(NativeInsertIntent::MAX_ENCODED_BYTES)

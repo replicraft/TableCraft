@@ -20,7 +20,7 @@ use tablecraft_ace::{
     NativeClockInsertIntent, NativeCompleteInsertIntent, NativeDeleteIntent, NativeEofInsertIntent,
     NativeInsertIntent, NativeOmittedInsertIntent, NativeQueryExpressionEditsIntent,
     NativeQueryExpressionIntent, NativeTableDropIntent, NativeTableRenameIntent,
-    NativeUpdateIntent, PreparedNativeUpdate, RecoverableNativeDeletePlan,
+    NativeUpdateIntent, NativeUpdateProfile, PreparedNativeUpdate, RecoverableNativeDeletePlan,
     RecoverableNativeEditPlan, RecoverableNativeTableRenamePlan, RecoverableTableDropPlan,
 };
 use tablecraft_core::limits::ResourceBudget;
@@ -162,7 +162,14 @@ impl MutationPlan {
                     .map_err(Cause::Prepare)?;
                 return prepared.commit(budget, cancelled).map_err(Cause::Commit);
             }
-            Self::Update(plan) => plan.prepare_update(target, journal, budget, cancelled),
+            Self::Update(plan) => {
+                if plan.intent().profile() == NativeUpdateProfile::Ace16RetainedRows {
+                    plan.prepare_retained(target, journal, budget, cancelled)
+                        .map(PreparedNativeUpdate::Resizable)
+                } else {
+                    plan.prepare_update(target, journal, budget, cancelled)
+                }
+            }
             Self::Delete(plan) => plan
                 .prepare(target, journal, budget, cancelled)
                 .map(PreparedNativeUpdate::Fixed),
@@ -217,6 +224,7 @@ pub(super) enum MutationIntent {
     TableRename(NativeTableRenameIntent),
     TableDrop(NativeTableDropIntent),
     Update(NativeUpdateIntent),
+    RetainedUpdate(NativeUpdateIntent),
     Delete(NativeDeleteIntent),
     Insert(NativeInsertIntent),
     EofInsert(NativeEofInsertIntent),
@@ -294,6 +302,11 @@ impl MutationIntent {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, Cause> {
+        if raw.starts_with(b"TCNI0017") {
+            return NativeUpdateIntent::decode(raw, budget, cancelled)
+                .map(Self::RetainedUpdate)
+                .map_err(Cause::Intent);
+        }
         #[cfg(feature = "ace16-create")]
         if raw.starts_with(b"TCNA0008") {
             return NativeOmittedInsertIntent::decode_retained(raw, budget, cancelled)
