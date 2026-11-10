@@ -65,6 +65,14 @@ NULL and a negative Number through growth, shrink and equal-width changes. They
 compare complete independently authored replacement bytes, then open the saved
 file in a separate desktop host and check the actual fields and records again.
 The generated counter and index bytes remain part of that complete-image proof.
+The populated workflow also continues through a real row edit (ID1: 42→99),
+an omitted-field insertion (generated ID4 and stored Number default0), deletion
+of the ID2 NULL row and a separate host reopen. Both growing and shrinking names
+retain IDs1/3/4 and values99/-7/0; each write compares the complete independent
+image, including inactive records/keys and generation history. MCP exercises the
+same row services from a fresh renamed-file session. The shared insertion widget
+helper retains the original empty-table checks while allowing populated journeys.
+No additional engine admission exception is introduced by these tests.
 This is headless workflow evidence, not Windows/Access rename-save qualification
 or admission for every populated database.
 

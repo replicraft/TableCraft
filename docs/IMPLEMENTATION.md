@@ -1,5 +1,27 @@
 # Implementation status
 
+## Row CRUD after populated field rename — 9 November 2026
+
+The populated Number rename flow now has a complete follow-through using the
+normal desktop widgets: rename, edit ID1 from 42 to 99, omit both insertion fields
+to generate ID4/default0, delete the ID2 NULL row and open the saved file in a
+separate host. Growing and shrinking names preserve IDs1/3/4 and values99/-7/0.
+Every write matches a complete independently authored image, including retained
+inactive records/keys, generated counters and name/property slack. A fresh MCP
+session exercises the same services and complete expected images. Existing row
+proofs handle the composition; no new engine exception was needed.
+
+The complete desktop and MCP unit batches pass 223 and 67 cases respectively;
+desktop retains one pre-existing ignore. All 33 testkit cases pass, including
+separate Python full-image pins and exact changed-byte/tombstone/key-tail checks.
+Strict all-target/all-feature Clippy passes for desktop, MCP and testkit; testkit
+rustdoc, workspace formatting, documentation links and dependency guards pass.
+These are headless local workflows, not Windows/Access save comparisons or
+broader populated-source admission.
+The existing empty-table insertion helper now shares its actual widget sequence
+with this populated journey while retaining its original assertions. See the
+[workflow](ui/FIELD_RENAME.md) and [retained-tail contract](access/writes/RETAINED_DEFINITION_TAILS.md).
+
 ## Populated Number field rename — 9 November 2026
 
 The existing Datasheet/Design rename workflow now handles the qualified populated
