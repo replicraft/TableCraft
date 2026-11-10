@@ -1,5 +1,6 @@
 //! Independent append-only tables beside retained current schemas and tombstones.
 pub mod cross_operation;
+pub mod currency;
 pub mod deletes;
 pub mod desktop;
 pub mod field_changes;

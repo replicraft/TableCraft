@@ -130,7 +130,7 @@ pub fn number_companions() -> Source {
     encode_columns(&NUMBER_COMPANIONS)
 }
 
-fn encode_columns(columns: &'static [Column]) -> Source {
+pub(in crate::fixtures::access) fn encode_columns(columns: &'static [Column]) -> Source {
     let mut bytes =
         canonical_creation_primary::source(canonical_creation_primary::Case::Empty).bytes;
     let original = &bytes[7 * 4096..8 * 4096];
