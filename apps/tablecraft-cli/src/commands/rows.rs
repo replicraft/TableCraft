@@ -77,8 +77,7 @@ impl Args {
         }
         let page = TablePageRequest::new(self.offset, self.limit).map_err(Error::Read)?;
         let row_allowance = self.native_rows.unwrap_or(native::DEFAULT_NATIVE_ROWS);
-        let maximum_rows =
-            u32::try_from(row_allowance).map_err(|_| Error::Read(InspectError::StructureLimit))?;
+        let maximum_rows = native::snapshot_rows(row_allowance);
         let limits =
             TableSnapshotLimits::new(maximum_rows, TableSnapshotLimits::default().batch_rows())
                 .map_err(Error::Read)?;

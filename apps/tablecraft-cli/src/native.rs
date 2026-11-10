@@ -14,12 +14,17 @@ use tablecraft_model::CatalogScope;
 pub(crate) const CATALOG_SCOPE: CatalogScope = CatalogScope::new(1);
 pub(crate) const DEFAULT_NATIVE_BYTES: u64 = u64::MAX;
 pub(crate) const MAX_QUERY_READ_BYTES: u64 = u64::MAX;
-// Snapshot and live-row ordinal APIs use u32; this is a representation bound.
-pub(crate) const MAX_NATIVE_READ_ROWS: u64 = u32::MAX as u64;
+pub(crate) const MAX_NATIVE_READ_ROWS: u64 = u64::MAX;
 pub(crate) const MAX_NATIVE_READ_STEPS: u64 = u64::MAX;
 pub(crate) const DEFAULT_NATIVE_ROWS: u64 = MAX_NATIVE_READ_ROWS;
 pub(crate) const DEFAULT_NATIVE_STEPS: u64 = u64::MAX;
 const MAX_HEADER_STEPS: u64 = 10;
+/// A cumulative pool spans tables/scans; one snapshot retains u32 row ordinals.
+/// Narrow only the snapshot representation, preserving the caller's full pool.
+pub(crate) fn snapshot_rows(allowance: u64) -> u32 {
+    allowance.min(u64::from(u32::MAX)) as u32
+}
+
 pub(crate) fn budget() -> ResourceBudget {
     read_budget(DEFAULT_NATIVE_BYTES)
 }

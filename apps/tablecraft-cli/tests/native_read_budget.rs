@@ -179,7 +179,10 @@ fn minimum_allowance_is_applied_and_maximum_is_accepted_without_changing_rows() 
 #[test]
 fn native_row_and_work_controls_are_scoped_and_checked_before_io() {
     for (name, values) in [
-        ("--native-rows", vec!["0", "4294967296", "-1", "many"]),
+        (
+            "--native-rows",
+            vec!["0", "18446744073709551616", "-1", "many"],
+        ),
         (
             "--native-steps",
             vec!["0", "18446744073709551616", "-1", "many"],
@@ -237,7 +240,7 @@ fn explicit_query_native_controls_keep_buffering_and_do_not_change_default_profi
         "--database",
         db.path(),
         "--native-rows",
-        "100000",
+        "4294967296",
         "--native-steps",
         "10000000",
     ]);

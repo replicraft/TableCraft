@@ -130,7 +130,7 @@ pub(super) fn run(
         Results::Expressions(result)
     } else if let Some(input_config) = native_input {
         let snapshot_limits = TableSnapshotLimits::new(
-            u32::try_from(input_config.rows).map_err(|_| Error::Parameter)?,
+            native::snapshot_rows(input_config.rows),
             TableSnapshotLimits::default().batch_rows(),
         )
         .map_err(Error::Native)?;

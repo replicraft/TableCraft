@@ -84,7 +84,7 @@ pub(super) fn run(args: PreviewCalculationArgs, password: Option<&str>) -> Resul
         .unwrap_or_default();
     let file = LongValueReadSource::new(file, value_limits).with_text_limits(text_limits);
     let snapshots = TableSnapshotLimits::new(
-        u32::try_from(rows).map_err(|_| Error::Parameter)?,
+        native::snapshot_rows(rows),
         TableSnapshotLimits::default().batch_rows(),
     )
     .map_err(Error::Native)?;

@@ -64,8 +64,7 @@ impl RunArgs {
             .unwrap_or_default();
         let file = LongValueReadSource::new(file, value_limits).with_text_limits(text_limits);
         let snapshot_limits = TableSnapshotLimits::new(
-            u32::try_from(self.native_rows.unwrap_or(native::DEFAULT_NATIVE_ROWS))
-                .map_err(|_| Error::Parameter)?,
+            native::snapshot_rows(self.native_rows.unwrap_or(native::DEFAULT_NATIVE_ROWS)),
             batch_rows,
         )
         .map_err(Error::Native)?;
