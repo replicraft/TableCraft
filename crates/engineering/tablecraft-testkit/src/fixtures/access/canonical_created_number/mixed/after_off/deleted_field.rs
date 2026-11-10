@@ -126,7 +126,7 @@ fn definition(before: &[u8], selected: &str) -> Vec<u8> {
     rebuilt
 }
 
-fn without_group(body: &[u8], selected: &str) -> Vec<u8> {
+pub(super) fn without_group(body: &[u8], selected: &str) -> Vec<u8> {
     assert_eq!(&body[..DICTIONARY_OFFSET], b"MR2\0");
     assert_eq!(word(body, DICTIONARY_KIND), NAME_LIST);
     let mut position = DICTIONARY_OFFSET + long(body, DICTIONARY_OFFSET);

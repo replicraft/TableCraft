@@ -244,3 +244,6 @@ mod historical_materialization_sources;
 
 #[cfg(all(feature = "journal", feature = "ace16-create"))]
 mod historical_materialization;
+
+#[cfg(all(test, feature = "journal", feature = "ace16-create"))]
+mod historical_mixed_materialization_sources;

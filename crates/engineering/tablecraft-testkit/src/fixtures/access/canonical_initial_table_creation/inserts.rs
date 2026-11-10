@@ -148,7 +148,10 @@ pub(in crate::fixtures::access) fn first_row_image(before: &[u8], record: Vec<u8
     initial_rows_image(before, vec![(0, record)])
 }
 
-fn initial_rows_image(before: &[u8], records: Vec<(u16, Vec<u8>)>) -> Vec<u8> {
+pub(in crate::fixtures::access) fn initial_rows_image(
+    before: &[u8],
+    records: Vec<(u16, Vec<u8>)>,
+) -> Vec<u8> {
     assert!((1..=255).contains(&records.len()));
     for at in [16, 20, 67] {
         assert_eq!(&before[7 * 4096 + at..7 * 4096 + at + 4], &[0; 4]);

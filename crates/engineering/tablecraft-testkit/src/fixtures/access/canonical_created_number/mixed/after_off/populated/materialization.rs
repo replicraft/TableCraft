@@ -27,7 +27,6 @@ pub fn append_number(before: &[u8], name: &str) -> Vec<u8> {
 pub fn after(before: &[u8], slot: usize, column: usize, value: i32) -> Vec<u8> {
     const DIRECTORY: usize = 14;
     const ROW_COUNT: usize = 12;
-    const FREE: usize = 2;
     const FIELD_START: usize = 75;
     const FIELD_BYTES: usize = 25;
 
@@ -72,6 +71,36 @@ pub fn after(before: &[u8], slot: usize, column: usize, value: i32) -> Vec<u8> {
     record[2 + column * 4..2 + (column + 1) * 4].copy_from_slice(&value.to_le_bytes());
     record[mask + column / 8] |= 1 << (column % 8);
 
+    place_record(before, slot, &record)
+}
+
+/// Independent direct-root placement shared by fixed and mixed record oracles.
+/// The caller supplies the independently constructed complete new row bytes.
+pub(in crate::fixtures::access::canonical_created_number::mixed::after_off) fn place_record(
+    before: &[u8],
+    slot: usize,
+    record: &[u8],
+) -> Vec<u8> {
+    const DIRECTORY: usize = 14;
+    const ROW_COUNT: usize = 12;
+    const FREE: usize = 2;
+
+    fn word(bytes: &[u8], at: usize) -> usize {
+        usize::from(u16::from_le_bytes(bytes[at..at + 2].try_into().unwrap()))
+    }
+
+    assert_eq!(before.len(), 11 * PAGE);
+    let data = DATA * PAGE;
+    let count = word(before, data + ROW_COUNT);
+    assert!(slot < count && count < 255);
+    let original = word(before, data + DIRECTORY + slot * 2);
+    assert_eq!(original & !0x1fff, 0);
+    let end = if slot == 0 {
+        PAGE
+    } else {
+        word(before, data + DIRECTORY + (slot - 1) * 2) & 0x1fff
+    };
+    assert!(record.len() > end - original);
     let frontier = word(before, data + DIRECTORY + (count - 1) * 2) & 0x1fff;
     let target = frontier.checked_sub(record.len()).unwrap();
     let free = word(before, data + FREE);
