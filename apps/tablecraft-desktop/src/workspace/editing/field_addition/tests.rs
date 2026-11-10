@@ -5,6 +5,7 @@ mod materialization;
 mod mixed_materialization;
 mod populated;
 mod repeated;
+mod repeated_materialization;
 use super::*;
 use crate::workspace::test_support::{self, finish_reads};
 use egui::{Key, accesskit::Role};
