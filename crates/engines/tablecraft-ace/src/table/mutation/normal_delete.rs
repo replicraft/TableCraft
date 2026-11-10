@@ -1,4 +1,7 @@
 //! Fixed-length ordinary DELETE with fresh program absence and raw-row proof.
+#[cfg(feature = "ace16-create")]
+mod current;
+
 mod indexed;
 mod proof;
 mod selection;
@@ -27,52 +30,86 @@ impl NativeImage {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<NativeEditPlan, EditError> {
-        let _span = tracing::debug_span!("native.ordinary.delete.plan").entered();
-        let source = capture(&self, table, budget, cancelled)?;
-        rows::unique(deletes, budget, cancelled)?;
-        for request in deletes {
-            check(budget, cancelled)?;
-            if request.expected_bytes().len() > crate::format::page::PAGE_BYTES {
-                return Err(InspectError::StructureLimit.into());
-            }
-        }
-
-        let staged = stage::prepare(&self, &source, deletes, budget, cancelled)?;
-        let indexes = if source.indexes.indexes().is_empty() {
-            Vec::new()
-        } else {
-            indexed::patches(&self, &source, deletes, budget, cancelled)?
-        };
-        let mut after = fixed_records::copy(self.as_bytes(), budget, cancelled)?;
-        staged.apply(&mut after, budget, cancelled)?;
-        for patch in indexes {
-            check(budget, cancelled)?;
-            budget
-                .charge(Resource::Steps, patch.before.len() as u64)
-                .map_err(InspectError::from)?;
-            let end = patch
-                .offset
-                .checked_add(patch.before.len())
-                .ok_or(EditError::Preservation)?;
-            let output = after
-                .get_mut(patch.offset..end)
-                .ok_or(EditError::Preservation)?;
-            if output != patch.before {
-                return Err(EditError::Preservation);
-            }
-            output.copy_from_slice(&patch.after);
-        }
-
-        let scope = self.catalog().catalog().scope();
-        let plan = NativeEditPlan {
-            before: self.bytes,
-            after,
-            changed_rows: deletes.len(),
-        };
-        proof::prove(&plan, scope, table, deletes, budget, cancelled)?;
-        check(budget, cancelled)?;
-        Ok(plan)
+        plan(self, table, deletes, Family::Ordinary, budget, cancelled)
     }
+}
+
+#[derive(Clone, Copy)]
+enum Family {
+    Ordinary,
+    #[cfg(feature = "ace16-create")]
+    Current,
+}
+
+impl Family {
+    fn capture(
+        self,
+        image: &NativeImage,
+        table: &str,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Source, EditError> {
+        match self {
+            Self::Ordinary => capture(image, table, budget, cancelled),
+            #[cfg(feature = "ace16-create")]
+            Self::Current => current::capture(image, table, budget, cancelled),
+        }
+    }
+}
+
+fn plan(
+    image: NativeImage,
+    table: &str,
+    deletes: &[RowDelete],
+    family: Family,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<NativeEditPlan, EditError> {
+    let _span = tracing::debug_span!("native.row.delete.plan").entered();
+    let source = family.capture(&image, table, budget, cancelled)?;
+    rows::unique(deletes, budget, cancelled)?;
+    for request in deletes {
+        check(budget, cancelled)?;
+        if request.expected_bytes().len() > crate::format::page::PAGE_BYTES {
+            return Err(InspectError::StructureLimit.into());
+        }
+    }
+
+    let staged = stage::prepare(&image, &source, deletes, budget, cancelled)?;
+    let indexes = if source.indexes.indexes().is_empty() {
+        Vec::new()
+    } else {
+        indexed::patches(&image, &source, deletes, budget, cancelled)?
+    };
+    let mut after = fixed_records::copy(image.as_bytes(), budget, cancelled)?;
+    staged.apply(&mut after, budget, cancelled)?;
+    for patch in indexes {
+        check(budget, cancelled)?;
+        budget
+            .charge(Resource::Steps, patch.before.len() as u64)
+            .map_err(InspectError::from)?;
+        let end = patch
+            .offset
+            .checked_add(patch.before.len())
+            .ok_or(EditError::Preservation)?;
+        let output = after
+            .get_mut(patch.offset..end)
+            .ok_or(EditError::Preservation)?;
+        if output != patch.before {
+            return Err(EditError::Preservation);
+        }
+        output.copy_from_slice(&patch.after);
+    }
+
+    let scope = image.catalog().catalog().scope();
+    let plan = NativeEditPlan {
+        before: image.bytes,
+        after,
+        changed_rows: deletes.len(),
+    };
+    proof::prove_with_source(&plan, scope, table, deletes, family, budget, cancelled)?;
+    check(budget, cancelled)?;
+    Ok(plan)
 }
 
 fn capture(

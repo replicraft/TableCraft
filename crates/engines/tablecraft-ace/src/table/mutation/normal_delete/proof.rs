@@ -16,11 +16,32 @@ use std::io::Cursor;
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_model::CatalogScope;
 
+#[cfg(test)]
 pub(super) fn prove(
     plan: &NativeEditPlan,
     scope: CatalogScope,
     table: &str,
     deletes: &[RowDelete],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), EditError> {
+    prove_with_source(
+        plan,
+        scope,
+        table,
+        deletes,
+        super::Family::Ordinary,
+        budget,
+        cancelled,
+    )
+}
+
+pub(super) fn prove_with_source(
+    plan: &NativeEditPlan,
+    scope: CatalogScope,
+    table: &str,
+    deletes: &[RowDelete],
+    family: super::Family,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), EditError> {
@@ -30,7 +51,7 @@ pub(super) fn prove(
         budget,
         cancelled,
     )?;
-    let source = super::capture(&image, table, budget, cancelled)?;
+    let source = family.capture(&image, table, budget, cancelled)?;
     source.require_preserved_definition_tail(&image, plan.after_bytes(), budget, cancelled)?;
     rows::unique(deletes, budget, cancelled)?;
     if plan.before_bytes().len() != plan.after_bytes().len()
@@ -108,7 +129,7 @@ pub(super) fn prove(
     // This is a new Source and complete final scalar constraint check, not the
     // UPDATE validator, whose invariant intentionally requires equal row counts.
     let after = NativeImage::capture(&mut Cursor::new(&expected), scope, budget, cancelled)?;
-    let final_source = super::capture(&after, table, budget, cancelled)?;
+    let final_source = family.capture(&after, table, budget, cancelled)?;
     if final_source.table.schema().object_id() != schema.object_id()
         || final_source.table.schema().definition_page() != schema.definition_page()
         || final_source.table.schema().declared_rows() != remaining

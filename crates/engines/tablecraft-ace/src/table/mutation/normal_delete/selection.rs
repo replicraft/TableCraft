@@ -3,6 +3,7 @@ use crate::{
     EditError, InspectError, NativeImage, RowDelete,
     header::check,
     table::mutation::{
+        preserved_source::Source,
         record_roots,
         rows::{self, RowAssignment},
     },
@@ -39,58 +40,68 @@ impl NativeImage {
             return Err(InspectError::StructureLimit.into());
         }
 
-        budget
-            .charge_allocation(ordinals.len() as u64, size_of::<Ordinal>() as u64)
-            .map_err(InspectError::from)?;
-        let mut selected = Vec::new();
-        selected
-            .try_reserve_exact(ordinals.len())
-            .map_err(|_| InspectError::Allocation)?;
-        for &ordinal in ordinals {
-            check(budget, cancelled)?;
-            selected.push(Ordinal(ordinal));
-        }
-        rows::unique(&selected, budget, cancelled)?;
-
-        budget
-            .charge_allocation(selected.len() as u64, size_of::<RowDelete>() as u64)
-            .map_err(InspectError::from)?;
-        let mut requests = Vec::new();
-        requests
-            .try_reserve_exact(selected.len())
-            .map_err(|_| InspectError::Allocation)?;
-        let captured =
-            record_roots::capture(self, source.table.schema(), &selected, budget, cancelled)?;
-        for root in captured.selected {
-            check(budget, cancelled)?;
-            let record = source
-                .records
-                .get(root.update.0)
-                .ok_or(EditError::Conflict)?;
-            budget
-                .charge(Resource::Steps, record.data.len() as u64)
-                .map_err(InspectError::from)?;
-            if record.reference != root.reference
-                || record.offset != root.final_record.offset
-                || record.data != root.final_record.data
-            {
-                return Err(EditError::Preservation);
-            }
-            let data = &root.final_record.data;
-            budget
-                .charge_allocation(data.len() as u64, size_of::<u8>() as u64)
-                .map_err(InspectError::from)?;
-            budget
-                .charge(Resource::Steps, data.len() as u64)
-                .map_err(InspectError::from)?;
-            let mut payload = Vec::new();
-            payload
-                .try_reserve_exact(data.len())
-                .map_err(|_| InspectError::Allocation)?;
-            payload.extend_from_slice(data);
-            requests.push(RowDelete::new(root.update.0, payload));
-        }
-        check(budget, cancelled)?;
-        Ok(requests)
+        prepare(self, &source, ordinals, budget, cancelled)
     }
+}
+
+pub(super) fn prepare(
+    image: &NativeImage,
+    source: &Source,
+    ordinals: &[usize],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Vec<RowDelete>, EditError> {
+    budget
+        .charge_allocation(ordinals.len() as u64, size_of::<Ordinal>() as u64)
+        .map_err(InspectError::from)?;
+    let mut selected = Vec::new();
+    selected
+        .try_reserve_exact(ordinals.len())
+        .map_err(|_| InspectError::Allocation)?;
+    for &ordinal in ordinals {
+        check(budget, cancelled)?;
+        selected.push(Ordinal(ordinal));
+    }
+    rows::unique(&selected, budget, cancelled)?;
+
+    budget
+        .charge_allocation(selected.len() as u64, size_of::<RowDelete>() as u64)
+        .map_err(InspectError::from)?;
+    let mut requests = Vec::new();
+    requests
+        .try_reserve_exact(selected.len())
+        .map_err(|_| InspectError::Allocation)?;
+    let captured =
+        record_roots::capture(image, source.table.schema(), &selected, budget, cancelled)?;
+    for root in captured.selected {
+        check(budget, cancelled)?;
+        let record = source
+            .records
+            .get(root.update.0)
+            .ok_or(EditError::Conflict)?;
+        budget
+            .charge(Resource::Steps, record.data.len() as u64)
+            .map_err(InspectError::from)?;
+        if record.reference != root.reference
+            || record.offset != root.final_record.offset
+            || record.data != root.final_record.data
+        {
+            return Err(EditError::Preservation);
+        }
+        let data = &root.final_record.data;
+        budget
+            .charge_allocation(data.len() as u64, size_of::<u8>() as u64)
+            .map_err(InspectError::from)?;
+        budget
+            .charge(Resource::Steps, data.len() as u64)
+            .map_err(InspectError::from)?;
+        let mut payload = Vec::new();
+        payload
+            .try_reserve_exact(data.len())
+            .map_err(|_| InspectError::Allocation)?;
+        payload.extend_from_slice(data);
+        requests.push(RowDelete::new(root.update.0, payload));
+    }
+    check(budget, cancelled)?;
+    Ok(requests)
 }
