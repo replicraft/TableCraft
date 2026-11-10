@@ -135,3 +135,15 @@ pub fn after(before: &[u8], definition: u32, logical_root: usize, value: Option<
         value.map(Value::Int32),
     )
 }
+
+/// Append a fresh row without interpreting or rewriting opaque original tails.
+/// The independent existing field-append oracle keeps its literal defaults,
+/// retained footer count and physical-root allocation policy.
+pub fn append(before: &[u8], definition: u32, input: super::rows::Input<'_>) -> Vec<u8> {
+    let declaration = &before[definition as usize * PAGE..(definition as usize + 1) * PAGE];
+    assert_eq!(word(declaration, 41), 5);
+    assert_eq!(word(declaration, 45), 2);
+    assert_eq!(&declaration[100..110], &[4, 89, 6, 0, 0, 4, 0, 0, 0, 1]);
+    assert_eq!(word(declaration, 121), 4);
+    fields::append(before, definition, Target::Number, input)
+}
