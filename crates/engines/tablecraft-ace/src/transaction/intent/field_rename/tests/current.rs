@@ -77,7 +77,7 @@ fn current_profile_never_reinterprets_legacy_requests_or_unknown_tags() {
             "legacy profile {tag} must retain its original source proof"
         );
     }
-    for tag in [0_u16, 5, u16::MAX] {
+    for tag in [0_u16, 6, u16::MAX] {
         let mut wire = current_literal(&before, "X", "Revenue");
         wire[12..14].copy_from_slice(&tag.to_le_bytes());
         assert!(matches!(

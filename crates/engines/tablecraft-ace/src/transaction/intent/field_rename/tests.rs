@@ -1,6 +1,7 @@
 //! Independent request framing and real retained-journal reconstruction boundaries.
 mod current;
 mod populated;
+mod retained;
 use super::*;
 use sha2::{Digest, Sha256};
 use std::{cell::Cell, io::Cursor};

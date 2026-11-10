@@ -50,7 +50,7 @@ fn explicit_populated_wire_and_fresh_requalification_preserve_all_widths_and_noo
 fn closed_profile_tags_refuse_unknown_values_and_never_retry_other_native_families() {
     let [before, _] = fitting::populated_number_pair("Total", &[Some(42), None]);
     let good = populated_literal(&before, "Total");
-    for tag in [0_u16, 5, u16::MAX] {
+    for tag in [0_u16, 6, u16::MAX] {
         let mut wire = good.clone();
         wire[12..14].copy_from_slice(&tag.to_le_bytes());
         assert!(matches!(

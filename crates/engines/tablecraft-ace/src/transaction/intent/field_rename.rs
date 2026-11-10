@@ -90,6 +90,7 @@ enum Profile {
     FittedAscii,
     PopulatedAscii,
     CurrentAscii,
+    RetainedAscii,
 }
 
 impl Profile {
@@ -99,6 +100,7 @@ impl Profile {
             Self::FittedAscii => 2,
             Self::PopulatedAscii => 3,
             Self::CurrentAscii => 4,
+            Self::RetainedAscii => 5,
         }
     }
 
@@ -108,6 +110,7 @@ impl Profile {
             2 => Ok(Self::FittedAscii),
             3 => Ok(Self::PopulatedAscii),
             4 => Ok(Self::CurrentAscii),
+            5 => Ok(Self::RetainedAscii),
             _ => Err(FieldRenameIntentError::InvalidRecord),
         }
     }
@@ -255,6 +258,15 @@ impl NativeFieldRenameIntent {
                 budget,
                 cancelled,
             )?),
+            Profile::RetainedAscii => {
+                Candidate::RetainedAscii(image.prepare_retained_field_rename(
+                    self.table(),
+                    self.column(),
+                    self.new_name(),
+                    budget,
+                    cancelled,
+                )?)
+            }
         };
         self.verify_candidate(&candidate)?;
         Ok(candidate)
