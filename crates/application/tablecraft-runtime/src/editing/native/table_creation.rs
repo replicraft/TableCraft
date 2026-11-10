@@ -67,7 +67,7 @@ impl Document {
                 NativeImage::capture_shared(source, SCOPE, &mut work, cancelled)
             }
             TableCreationProfile::Added => {
-                NativeImage::capture_shared_for_table_append(source, SCOPE, &mut work, cancelled)
+                NativeImage::capture_shared_retained(source, SCOPE, &mut work, cancelled)
             }
         }?;
         let (expected, columns, definition) = match profile {

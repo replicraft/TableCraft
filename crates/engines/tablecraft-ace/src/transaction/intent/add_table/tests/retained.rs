@@ -79,7 +79,7 @@ fn literal(before: &[u8], target: Added) -> Vec<u8> {
 }
 
 fn image(before: &[u8], scope: u64) -> NativeImage {
-    NativeImage::capture_for_table_append(
+    NativeImage::capture_retained(
         &mut Cursor::new(before),
         CatalogScope::new(scope),
         &mut budget(),
@@ -233,7 +233,7 @@ fn large_retained_before_hash_is_data_only_and_not_capped_by_old_image_quota() {
     );
     // No native source or journal permission follows from a valid data hash.
     assert!(
-        NativeImage::capture_for_table_append(
+        NativeImage::capture_retained(
             &mut Cursor::new(before),
             CatalogScope::new(3042),
             &mut budget(),

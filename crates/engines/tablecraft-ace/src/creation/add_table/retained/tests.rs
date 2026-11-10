@@ -23,8 +23,7 @@ fn budget() -> ResourceBudget {
 }
 
 fn image(bytes: &[u8]) -> NativeImage {
-    NativeImage::capture_for_table_append(&mut Cursor::new(bytes), SCOPE, &mut budget(), &|| false)
-        .unwrap()
+    NativeImage::capture_retained(&mut Cursor::new(bytes), SCOPE, &mut budget(), &|| false).unwrap()
 }
 
 fn definition(name: &str, target: Target) -> FirstTableDefinition {

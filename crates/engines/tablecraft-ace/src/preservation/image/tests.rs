@@ -118,10 +118,9 @@ fn append_capture_preserves_whole_ownership_without_promoting_other_purposes() {
     let pointer = bytes.as_ptr();
     let source = NativeImageSource::from_vec(bytes, &mut budget(), &|| false).unwrap();
     let shared =
-        NativeImage::capture_shared_for_table_append(source, SCOPE, &mut budget(), &|| false)
-            .unwrap();
+        NativeImage::capture_shared_retained(source, SCOPE, &mut budget(), &|| false).unwrap();
     assert_eq!(shared.as_bytes().as_ptr(), pointer);
-    shared.require_table_append_capture().unwrap();
+    shared.require_retained_capture().unwrap();
     assert!(matches!(
         shared.require_standard_capture(),
         Err(InspectError::StructureLimit)
@@ -132,22 +131,20 @@ fn append_capture_preserves_whole_ownership_without_promoting_other_purposes() {
         Err(InspectError::StructureLimit)
     ));
 
-    let streamed = NativeImage::capture_for_table_append(
-        &mut Cursor::new(original()),
-        SCOPE,
-        &mut budget(),
-        &|| false,
-    )
-    .unwrap();
+    let streamed =
+        NativeImage::capture_retained(&mut Cursor::new(original()), SCOPE, &mut budget(), &|| {
+            false
+        })
+        .unwrap();
     assert_eq!(streamed.as_bytes(), shared.as_bytes());
-    streamed.require_table_append_capture().unwrap();
+    streamed.require_retained_capture().unwrap();
 
     let standard =
         NativeImage::capture(&mut Cursor::new(original()), SCOPE, &mut budget(), &|| {
             false
         })
         .unwrap();
-    standard.require_table_append_capture().unwrap();
+    standard.require_retained_capture().unwrap();
     let fixed = NativeImage::capture_for_fixed_updates(
         &mut Cursor::new(original()),
         SCOPE,
@@ -157,7 +154,7 @@ fn append_capture_preserves_whole_ownership_without_promoting_other_purposes() {
     )
     .unwrap();
     assert!(matches!(
-        fixed.require_table_append_capture(),
+        fixed.require_retained_capture(),
         Err(InspectError::StructureLimit)
     ));
 }
@@ -171,7 +168,7 @@ fn append_capture_retains_large_images_and_explicit_resource_checks() {
     let source = NativeImageSource::from_vec(bytes, &mut budget(), &|| false).unwrap();
     let required_capacity = source.retained_capacity();
     assert!(matches!(
-        NativeImage::capture_shared_for_table_append(
+        NativeImage::capture_shared_retained(
             source.clone(),
             SCOPE,
             &mut ResourceBudget::new(required_capacity as u64 - 1, ROWS, STEPS),
@@ -179,7 +176,7 @@ fn append_capture_retains_large_images_and_explicit_resource_checks() {
         ),
         Err(InspectError::Limit(_))
     ));
-    let appended = NativeImage::capture_shared_for_table_append(
+    let appended = NativeImage::capture_shared_retained(
         source.clone(),
         SCOPE,
         &mut ResourceBudget::new(256 * 1024 * 1024, ROWS, STEPS),
@@ -197,7 +194,7 @@ fn append_capture_retains_large_images_and_explicit_resource_checks() {
         Err(InspectError::StructureLimit)
     ));
     assert!(matches!(
-        NativeImage::capture_shared_for_table_append(source, SCOPE, &mut budget(), &|| true),
+        NativeImage::capture_shared_retained(source, SCOPE, &mut budget(), &|| true),
         Err(InspectError::Cancelled)
     ));
 }

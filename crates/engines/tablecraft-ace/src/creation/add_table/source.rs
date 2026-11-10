@@ -107,7 +107,7 @@ pub(in crate::creation) fn qualify_geometry(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Source, AddTableError> {
     check(budget, cancelled)?;
-    image.require_table_append_capture()?;
+    image.require_retained_capture()?;
     let bytes = image.as_bytes();
     let canonical = create_blank_ace16_database(budget, cancelled)?;
     // These system-only roles must have their exact qualified native structure.

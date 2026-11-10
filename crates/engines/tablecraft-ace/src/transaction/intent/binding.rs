@@ -29,7 +29,7 @@ pub(super) fn digest(
     digest_checked(before, budget, cancelled)
 }
 
-pub(super) fn table_append_length(length: u64) -> Result<(), NativeIntentError> {
+pub(super) fn retained_length(length: u64) -> Result<(), NativeIntentError> {
     if length == 0
         || length > MAX_READ_FILE_BYTES
         || !length.is_multiple_of(crate::format::page::PAGE_BYTES as u64)
@@ -39,13 +39,13 @@ pub(super) fn table_append_length(length: u64) -> Result<(), NativeIntentError> 
     Ok(())
 }
 
-pub(super) fn digest_for_table_append(
+pub(super) fn digest_retained(
     before: &[u8],
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<[u8; DIGEST_BYTES], NativeIntentError> {
     check(budget, cancelled)?;
-    table_append_length(before.len() as u64)?;
+    retained_length(before.len() as u64)?;
     digest_checked(before, budget, cancelled)
 }
 

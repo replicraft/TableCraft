@@ -98,7 +98,7 @@ fn qualify_checked<'a, J: DurableStorage>(
     let image = match &checked {
         CheckedJournal::Original(_) => NativeImage::capture(&mut input, scope, budget, cancelled)?,
         CheckedJournal::Retained(_) => {
-            NativeImage::capture_for_table_append(&mut input, scope, budget, cancelled)?
+            NativeImage::capture_retained(&mut input, scope, budget, cancelled)?
         }
     };
     let plan = match intent.profile {

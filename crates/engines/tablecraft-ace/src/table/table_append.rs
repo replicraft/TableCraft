@@ -25,7 +25,7 @@ impl<'image> Inventory<'image> {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, EditError> {
         check(budget, cancelled)?;
-        image.require_table_append_capture()?;
+        image.require_retained_capture()?;
         let facts = catalog::capture(image, budget, cancelled)?;
         let storage = storage::capture(image, &facts.schema, budget, cancelled)?;
         Ok(Self {

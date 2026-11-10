@@ -171,7 +171,7 @@ pub(super) fn capture<'image>(
     if !selected(image, budget, cancelled)? {
         return Err(AddTableError::Source);
     }
-    image.require_table_append_capture()?;
+    image.require_retained_capture()?;
     let inventory = Inventory::capture(image, budget, cancelled).map_err(inventory_error)?;
     require_name(image, &inventory, definition.table(), budget, cancelled)?;
     let columns = definition.borrowed_columns(budget, cancelled)?;
@@ -242,7 +242,7 @@ pub(super) fn capabilities(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<AddTableSourceCapabilities, AddTableError> {
-    image.require_table_append_capture()?;
+    image.require_retained_capture()?;
     let inventory = Inventory::capture(image, budget, cancelled).map_err(inventory_error)?;
     let minimum_catalog = record::catalog_length(stored_text::Plan::ascii_literal("x"));
     match choose(

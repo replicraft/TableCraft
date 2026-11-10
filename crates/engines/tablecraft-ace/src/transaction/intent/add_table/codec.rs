@@ -93,7 +93,7 @@ impl Profile {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<BeforeBinding, super::NativeIntentError> {
         match self {
-            Self::Retained => super::binding::digest_for_table_append(before, budget, cancelled),
+            Self::Retained => super::binding::digest_retained(before, budget, cancelled),
             _ => super::binding::digest(before, budget, cancelled),
         }
     }
@@ -131,7 +131,7 @@ pub(super) fn mixed_before_length(length: u64, keyless: bool) -> bool {
 }
 
 pub(super) fn retained_before_length(length: u64) -> bool {
-    super::binding::table_append_length(length).is_ok()
+    super::binding::retained_length(length).is_ok()
 }
 
 fn repeated_length(length: u64) -> bool {

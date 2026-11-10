@@ -132,7 +132,7 @@ pub(super) fn verify(
     // inspection owns the same complete-allocation witness. Sharing avoids copying
     // a potentially large image; a borrowed slice cannot supply that capture owner.
     let audit_owner = after.clone();
-    let image = NativeImage::capture_shared_for_table_append(
+    let image = NativeImage::capture_shared_retained(
         audit_owner,
         before.catalog().catalog().scope(),
         budget,

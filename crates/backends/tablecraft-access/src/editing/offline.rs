@@ -347,7 +347,7 @@ impl OfflineWriteSession {
                 NativeImage::capture(target, slot.scope, budget, cancelled)
             }
             SchemaCapture::TableAppend => {
-                NativeImage::capture_for_table_append(target, slot.scope, budget, cancelled)
+                NativeImage::capture_retained(target, slot.scope, budget, cancelled)
             }
         }
         .map_err(Cause::Native)?;

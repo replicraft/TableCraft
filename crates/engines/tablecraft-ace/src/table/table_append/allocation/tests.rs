@@ -17,7 +17,7 @@ fn budget() -> ResourceBudget {
 }
 
 fn image(bytes: &[u8]) -> NativeImage {
-    NativeImage::capture_for_table_append(
+    NativeImage::capture_retained(
         &mut Cursor::new(bytes),
         CatalogScope::new(899),
         &mut budget(),

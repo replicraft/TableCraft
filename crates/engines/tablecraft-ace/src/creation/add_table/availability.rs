@@ -62,12 +62,8 @@ pub fn add_table_source_capabilities(
         return Ok(AddTableSourceCapabilities::default());
     }
     let result = (|| {
-        let image = NativeImage::capture_for_table_append(
-            &mut Cursor::new(captured),
-            scope,
-            budget,
-            cancelled,
-        )?;
+        let image =
+            NativeImage::capture_retained(&mut Cursor::new(captured), scope, budget, cancelled)?;
         if retained::selected(&image, budget, cancelled)? {
             return retained::capabilities(&image, budget, cancelled);
         }
