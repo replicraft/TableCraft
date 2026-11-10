@@ -88,7 +88,7 @@ fn populated_images_match_python_pins_and_commute_with_row_authoring() {
         let [before, after] = populated_number_pair(name, values);
         assert_eq!(digest(&before), before_pin);
         assert_eq!(digest(&after), after_pin);
-        let renamed_empty = rename(&source(SourceCase::NumberFirst), "Score", name);
+        let renamed_empty = rename_current(&source(SourceCase::NumberFirst), "Score", name);
         assert_eq!(after, long_rows(&renamed_empty, values));
         assert_eq!(&before[8 * 4096..10 * 4096], &after[8 * 4096..10 * 4096]);
         for offset in [16, 20, 67] {

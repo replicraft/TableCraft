@@ -112,3 +112,14 @@ properties and explicit OFF settings. Expressions and linked opens are refused.
 The [populated observation record](../../../results/schema/populated-field-rename-sdk-read-2026-11-09.json)
 separates the fifteen opens from twelve distinct images; three no-op files repeat
 baseline hashes. This adds reader evidence, not SDK/native Access writes.
+
+## Sequential current-image renames
+
+`prepare_repeated.py` applies `Score → TaxAmount → X → Revenue → Score` to the
+actual previous image for an empty source, retained Number-property history and
+a nullable three-row source. It freezes twelve full-image pins and checks that
+DATA/INDEX bytes survive. Returning to the initial spelling deliberately retains
+different physical free-space history. The Rust raw `fitting::rename_current`
+helper follows the same current-image contract; it does not grant native admission.
+Existing retired property bodies and the separate database OFF payload stay exact.
+No SDK or Microsoft Access execution is supplied by these model predictions.

@@ -77,7 +77,7 @@ pub fn source(case: SourceCase) -> Vec<u8> {
 pub fn pair(case: SourceCase, new_name: &str) -> [Vec<u8>; 2] {
     assert_ne!(old_name(case).len(), new_name.len());
     let before = source(case);
-    let after = rename(&before, old_name(case), new_name);
+    let after = rename_current(&before, old_name(case), new_name);
     [before, after]
 }
 
@@ -86,7 +86,7 @@ pub fn pair(case: SourceCase, new_name: &str) -> [Vec<u8>; 2] {
 /// Empty-source metadata/history and every active row/key/counter stay intact.
 pub fn populated_number_pair(new_name: &str, values: &[Option<i32>]) -> [Vec<u8>; 2] {
     let before = long_rows(&source(SourceCase::NumberFirst), values);
-    let after = rename(&before, "Score", new_name);
+    let after = rename_current(&before, "Score", new_name);
     [before, after]
 }
 
@@ -109,7 +109,7 @@ pub fn near_capacity_source() -> Vec<u8> {
 pub fn near_capacity_pair(new_name: &str) -> [Vec<u8>; 2] {
     assert_ne!("Score".len(), new_name.len());
     let before = near_capacity_source();
-    let after = rename(&before, "Score", new_name);
+    let after = rename_current(&before, "Score", new_name);
     [before, after]
 }
 
@@ -205,7 +205,11 @@ fn group_name(bytes: &[u8], body: &Range<usize>, old: &[u8]) -> Range<usize> {
     selected.unwrap()
 }
 
-fn rename(before: &[u8], old_name: &str, new_name: &str) -> Vec<u8> {
+/// Rename the actual current image without reconstructing its prior history.
+/// Both live names must match; retained property rows, physical records, indexes
+/// and stale free-space bytes remain opaque. This is independent raw machinery,
+/// not authority for a native writer to admit the same source.
+pub fn rename_current(before: &[u8], old_name: &str, new_name: &str) -> Vec<u8> {
     assert!(old_name.is_ascii() && new_name.is_ascii());
     assert!((1..=NAME_LIMIT).contains(&new_name.len()));
     assert_eq!(before.len(), 11 * PAGE);
@@ -302,3 +306,6 @@ mod tests;
 
 #[cfg(all(test, feature = "access-support"))]
 mod populated_tests;
+
+#[cfg(all(test, feature = "access-support"))]
+mod repeated_tests;
