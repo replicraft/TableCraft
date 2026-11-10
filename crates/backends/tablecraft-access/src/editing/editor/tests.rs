@@ -15,11 +15,28 @@ fn budget() -> ResourceBudget {
 #[test]
 fn unsupported_opaque_source_keeps_readable_editor_unavailable_without_fallback() {
     let mut source = raw::source(raw::Case::FixedRetired);
-    // The LONG descriptor's unknown extended flag remains readable metadata,
-    // but it cannot certify absence of required native behavior for any writer.
-    let extended = source.definition as usize * 4096 + 100 + 16;
-    assert_eq!(source.bytes[extended], 0);
-    source.bytes[extended] = 0x80;
+    // Keep MR2 lengths and property carriers intact while replacing a known
+    // dictionary key with an equally sized key whose native behavior is unknown.
+    // Inert reading preserves it; mutation cannot certify its semantics.
+    let known: Vec<u8> = "DefaultValue"
+        .encode_utf16()
+        .flat_map(u16::to_le_bytes)
+        .collect();
+    let unknown: Vec<u8> = "UnknownValue"
+        .encode_utf16()
+        .flat_map(u16::to_le_bytes)
+        .collect();
+    assert_eq!(known.len(), unknown.len());
+    let offsets: Vec<usize> = source
+        .bytes
+        .windows(known.len())
+        .enumerate()
+        .filter_map(|(at, bytes)| (bytes == known).then_some(at))
+        .collect();
+    assert!(!offsets.is_empty());
+    for at in offsets {
+        source.bytes[at..at + unknown.len()].copy_from_slice(&unknown);
+    }
     let image = NativeImage::capture_retained(
         &mut Cursor::new(&source.bytes),
         CatalogScope::new(1648),
@@ -27,10 +44,15 @@ fn unsupported_opaque_source_keeps_readable_editor_unavailable_without_fallback(
         &|| false,
     )
     .unwrap();
-    assert!(matches!(
-        image.select_native_retained_opaque_rows_table("Table1", &mut budget(), &|| false),
-        Err(EditError::Unsupported(WriteBlocker::ActiveContent))
-    ));
+    let selected =
+        image.select_native_retained_opaque_rows_table("Table1", &mut budget(), &|| false);
+    assert!(
+        matches!(
+            selected,
+            Err(EditError::Unsupported(WriteBlocker::Properties))
+        ),
+        "{selected:?}"
+    );
     let editor = NativeEditor::new_journal(image, "Table1", &mut budget(), &|| false).unwrap();
     let (profile, route) = editor.journal_profile(&mut budget(), &|| false).unwrap();
     assert_eq!(profile, UpdateProfile::Unavailable);
