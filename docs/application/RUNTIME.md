@@ -1688,22 +1688,28 @@ headers now carry their actual optional native number; SQL aliases and synthetic
 headings do not acquire one from their displayed position or caption.
 
 `ReviewFieldRename` issues exact presentation facts and a separate consuming
-`ReviewedFieldRename` from the sealed native plan. The original empty ACE16,
-explicit-OFF ASCII Number/Short Text profiles remain unchanged: equal widths use
-profile1; unequal widths use fitted profile2. A separate populated profile3
-qualifies the existing eleven-page Number history with two Int32 fields, dense
-generated IDs1..N, Int32/NULL companion values and the existing single DATA/root
-index geometry. It must reconstruct the original empty history/OFF source and
-replay real native insertion to recover every original byte. Arbitrary populated
-tables, gaps/deletions, other layouts and populated Short Text remain unqualified.
-See [the native contract](../access/writes/FIELD_RENAME.md).
+`ReviewedFieldRename` from the sealed native plan. The normal runtime now selects
+the separate current-metadata profile4 for every inspection and consuming review,
+independently of row count or prior name/row operations. The original empty
+same-width profile1, empty fitted profile2 and dense populated Number replay
+profile3 remain unchanged for explicit native callers and old intent recovery;
+they are not fallback paths from a refused current source. See
+[the native contract](../access/writes/FIELD_RENAME.md).
 
-Both inspection and consuming review read fresh schema metadata from their own
-captured source. Nonzero declared rows select profile3 before any candidate
-attempt, including equal-width, case-only and unchanged requests; refusal never
-retries an empty-source profile. Empty-source inspection retains the independent
-fitted/same-width checks. Inspection returns the explicit shared name policy only
-after native source proof; fitted shape is not a physical capacity guarantee.
+Profile4 qualifies the current unencoded ACE16/subversion-zero eleven-page image:
+the actual single-user-table role graph, explicit Name AutoCorrect OFF, ordinary
+row/index/constraint and NoRequired evidence, target metadata and exclusive
+property ownership must all agree. NameMap/expression dependencies, calculated
+fields, nonempty validation rules and nonliteral defaults refuse. Existing
+record deletions, counter history and inactive name/row bytes do not themselves
+require a creator-history replay or disqualify the source. Actual parser-bound
+definition/property capacity still limits each proposal, and every byte outside
+the proved metadata scope remains protected. This is not general imported-file,
+arbitrary field-type, allocation-growth or native-program support.
+
+Inspection returns the explicit shared fitted-ASCII policy only after this source
+proof; equal-width, case-only, unchanged and differently sized proposals share
+that same current family. Fitted shape is not a physical capacity guarantee.
 Only clean unsupported-source failures become unavailable. Corruption,
 cancellation, resource, conflict and preservation failures retain their typed
 errors. No displayed boolean or review DTO constructs save authority.
@@ -1736,6 +1742,13 @@ only its readonly
 witness, and its presentation never claims a changed save. Scratch SQL remains
 byte-exact; native filter/sort intent is freshly revalidated without rewriting.
 No Microsoft Access or Windows rename-save comparison is claimed.
+
+Current-profile acceptance now passes repeated grow/shrink/regrow and
+row-edit/insert/delete-then-rename cases with independent complete images.
+Normal desktop widgets and fresh MCP sessions retain nullable rows, tombstones,
+generated history and checked reopening. These are separate executed checks,
+not inferred from earlier profile3 or single-rename results. See the current
+[verification accounting](../IMPLEMENTATION.md#repeated-field-renames-and-current-metadata--9-november-2026).
 
 ## Reviewed existing-table field additions
 

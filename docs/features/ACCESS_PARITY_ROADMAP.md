@@ -40,7 +40,7 @@ All cells describe current implementation, not the requested final state.
 | Rename a saved table | Missing | Missing | Missing | Missing | Restricted single-table, Name AutoCorrect OFF profile; retained Int32 index saves/recovery and headless workflow checked |
 | Drop a saved table | Missing | Missing | Missing | Missing | Qualified empty-table DROP with original-intent recovery and normal GUI/MCP save/reopen; no storage reclamation |
 | Add a saved column | Missing | Missing | Missing | Missing | Bounded empty-table Number/Short Text ADD, original-intent recovery and normal Datasheet/Design save/reopen |
-| Rename/alter/drop a saved column | Missing | Missing | Missing | Missing | Restricted same-width/fitted ASCII rename, including reconstructible populated Number rows, and empty-table Number/Short Text deletion have connected normal GUI workflows; broader alteration/deletion remain unfinished |
+| Rename/alter/drop a saved column | Missing | Missing | Missing | Missing | Bounded current-metadata ASCII Number/Short Text rename, including demonstrated populated/deleted-row histories, and empty-table Number/Short Text deletion have connected normal GUI workflows; broader alteration/deletion remain unfinished |
 | Update rows | Restricted fixed non-NULL Int32 copy route | No normal writer admission | No normal writer admission | No independently qualified normal writer | Many qualified carrier/index/allocation profiles |
 | Insert/delete rows | No equivalent normal routes established | Missing normal routes | Missing normal routes | Missing normal routes | Qualified normal routes; restrictions remain |
 | Recoverable writes | Existing Jet 4 update integration | No CRUD-specific qualification | No CRUD-specific qualification | No CRUD-specific qualification | Original-intent journal/recovery for admitted actions |
@@ -105,11 +105,13 @@ native/adapter/runtime service and connected Datasheet/Design proposal, close
 and full-witness publication flow. Normal-host headless acceptance now passes;
 22 source-free panel renders are separate evidence with all images directly reviewed. See the
 [service record](../../tests/results/schema/field-schema-services-2026-11-09.json).
-A separate populated Number rename source now proves a nonempty dense ID/Int32-or-NULL
-batch by complete original-image INSERT replay. It supports fitting ASCII name
-changes through the same GUI review/save/reopen flow while preserving all rows.
-This does not qualify populated Short Text, deleted/reordered histories or
-arbitrary imported layouts; see [field rename](../access/writes/FIELD_RENAME.md).
+The current-metadata field rename source now checks actual ownership, roles,
+OFF settings and dependencies rather than requiring initial-history replay.
+Repeated growth/shrink/regrowth and another rename after row deletion pass
+normal GUI/MCP review/save/reopen with complete independent images. The earlier
+dense populated INSERT-replay profile remains a separate legacy language.
+The current eleven-page ACE2016 boundary does not qualify arbitrary imported
+layouts or other field types; see [field rename](../access/writes/FIELD_RENAME.md).
 The original creator-OFF→table-rename route retains its separate boundary. Broader
 table/column rename and other lifecycle operations remain work. Neither
 parser nodes nor a “created by TableCraft” flag confer mutation authority.

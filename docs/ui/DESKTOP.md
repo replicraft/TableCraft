@@ -53,16 +53,23 @@ German/Japanese layouts retain the complete Ribbon through horizontal overflow. 
 captures supply no rename popup/status reference, and no Windows/Access rename
 execution or save parity is claimed.
 
-The same normal heading workflow now saves a separately qualified populated
-Number source: two Int32 fields, dense generated IDs1..N, Int32/NULL companion
-values and the reconstructible eleven-page history/OFF layout. Growth, shrink
-and equal-width changes preserve complete independent row/index/generator images
-and pass fresh separate-host reopening. Unchanged spelling consumes only its
-checked read witness, retaining the conflict guard until publication without
-starting a native save actor. Runtime dispatch selects the populated source
-profile from fresh schema before qualification; an unsupported source never
-falls back to an empty-table profile. Arbitrary populated tables, other layouts
-and populated Short Text remain unsupported. See
+The normal heading workflow now uses one separate current-metadata source family
+for empty and populated tables, prior name changes and retained row histories,
+including tombstones. It checks actual roles, explicit Name AutoCorrect OFF,
+ordinary row/index/constraint and NoRequired evidence, safe dependencies,
+exclusive property ownership and fitting capacity in the bounded eleven-page
+ACE16 image. No row-count dispatch or fallback to old source profiles remains in
+the runtime. Unsupported targets, other layouts and native programs still refuse.
+Unchanged spelling retains only its checked read witness and conflict guard,
+without starting a native save actor.
+
+Earlier populated Number observations preserve positive/NULL/negative rows,
+index/generator bytes and fresh separate-host reads. The new repeated-name and
+rename-after-row-deletion regressions now pass through actual desktop widgets,
+complete independent images and separate fresh reopening. The complete desktop
+unit batch passes 225 cases with one existing ignore; MCP passes 68 cases.
+These qualify the demonstrated current-family composition. No arbitrary populated-file or populated Short Text support
+is inferred from the earlier Number cases. See
 [the precise shared workflow boundary](FIELD_RENAME.md#identity-and-supported-proposals).
 
 ## Explicit current-database Options — 8 November 2026

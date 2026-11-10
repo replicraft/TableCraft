@@ -1,15 +1,16 @@
 # Bounded native saved-field rename
 
 Separate native candidates construct ASCII field renames on qualified ACE16
-sources with explicit Name AutoCorrect OFF. Empty-table profiles retain their
-same-width and fitting unequal-width operations. A separate populated profile
-admits fitting names at every width after complete row-source reconstruction.
+sources with explicit Name AutoCorrect OFF. Current normal-host requests use a
+separate current-metadata proof, independent of earlier name and row histories.
+The original empty same-width/fitted profiles and replay-qualified populated
+profile remain available with their original closed source languages.
 Consuming runtime saves and checked reopening are implemented. The [shared GUI proposal/close/publication
 flow](../../ui/FIELD_RENAME.md) passes its normal-host headless functional gate. Its source-free 22-case render matrix is separate evidence,
 with direct review of all 22 images complete. General persisted field CRUD,
 other native versions and native Access save comparison remain unfinished.
 
-## Empty settled-source profiles
+## Legacy empty settled-source profiles
 
 The input must pass the shared complete field-history-plus-OFF source proof.
 It retains the exact nine-role image, actual user and database property owners,
@@ -29,7 +30,7 @@ an enabled/disabled observation alone cannot establish source authority.
 The borrowed check and private owning `FieldHistoryOffSource` use one validation
 core; an owning candidate cannot be constructed from a caller-supplied boolean.
 
-## Populated source profile
+## Legacy populated source profile
 
 `inspect_populated_field_rename_source` and
 `prepare_populated_field_rename` use a separate nonempty source family. The
@@ -58,21 +59,68 @@ Gapped/deleted/reordered histories, broader storage geometry and noncanonical
 inactive NULL bytes refuse rather than being normalized or erased.
 
 The source observer returns the actual native identity and fitting capacity
-without a proposed replacement or AFTER allocation. Runtime inspection and
-consuming review select the populated family from the freshly captured native
-schema's nonzero declared count **before** qualification. Full replay still
-checks actual membership and counts; failed populated admission never retries
-an empty-source candidate. Cancellation, limits, malformed data and other native
-failures retain typed errors. A constructive-source mismatch is an unsupported
-source, not a successful partial proof.
+without a proposed replacement or AFTER allocation. Explicit profile3 callers
+retain full replay of actual membership and counts; failed populated admission
+never retries an empty-source candidate. The normal runtime now selects the
+separate current-metadata family below. Cancellation, limits, malformed data and
+other native failures retain typed errors. A constructive-source mismatch is
+an unsupported source, not a successful partial proof.
+
+## Current metadata and ownership source
+
+`inspect_current_field_rename_source` and `prepare_current_field_rename` qualify
+the actual source without trying to recreate its original field-addition or row
+history. The sealed `NativeCurrentFieldRenameCandidate` admits fitting ASCII
+names at any width, including unchanged and case-only names. Empty, populated,
+previously renamed and tombstoned sources use one proof; there is no new profile
+for each row count, previous spelling or edit sequence.
+
+The current physical boundary remains ACE2016/subversion0, unencoded pages,
+eleven complete pages and the existing native definition7 field/property
+geometry. Actual ordinary-row Source admission proves declarations, program
+absence, constraints, records, indexes and ownership. Generated counts, deleted
+slots, NULL backing bytes and key history are observed and retained; they are
+not reset to a hypothetical initial batch.
+
+A shared closed schema census requires the known system/container roles, one
+ordinary local user table and the explicit MSysDb OFF owner. Saved queries,
+forms/reports, unknown children and other name dependencies refuse. Actual
+catalog payload checks follow checked logical-row forwarding before examining
+the physical record; row numbers are not assumed to be physical slot numbers.
+Its schema-purpose absence certificate exhausts all declared catalog cells,
+mask bits, offsets and footer, while allowing the bounded inactive interval
+between the last variable cell and the checked footer to remain opaque. Ordinary
+row certificates keep their strict framing, and cannot consume this separate
+schema-purpose certificate. Physical protection and the candidate complement
+preserve the original inactive catalog bytes exactly. Live properties receive additional schema-dependency checks beyond row-write
+admission: NameMap and Expression refuse, ValidationRule must be empty, and every
+DefaultValue must resolve through the bounded literal grammar without executing
+SQL, clocks or programs. A dependency-free selected field does not exempt its
+siblings or table properties from these checks.
+
+The property ledger must identify exactly the selected user and database live
+single-value references. Both share the existing property page as its final two
+rows; the long-value ownership inventory proves exclusive use. All physical row
+boundaries, free count, owner and payload descriptors must agree. Retired
+property rows and opaque free bytes remain part of the original image. The
+current-only fitting layout uses proven owned capacity while preserving bytes
+outside the exact active relocation and newly consumed space. The older layout
+keeps its zero-free-space requirement. A row-only retained-tail witness is never
+used as permission to allocate metadata space.
+
+Runtime inspection and consuming review both select this family directly from
+fresh source capture. A refusal does not retry profiles1/2/3. The inspection fact
+remains a presentation policy, not a save capability; every review and cold
+recovery rederives all source, dependency and ownership checks.
 
 ## Exact field and name profile
 
 For the empty profiles, the selected field must be a non-primary, non-key Number Long with stored
 Required(false) and literal zero default, or Short Text255 with Unicode
 compression, stored Required(false)/AllowZeroLength(true) and no stored default.
-The generated ID and selected indexed fields refuse. This does not alter source
-fields or infer a new declaration from their displayed values.
+The generated ID and selected indexed fields refuse. Current-metadata requests
+retain these same selected Number/Short Text declaration constraints. This does
+not alter source fields or infer a new declaration from their displayed values.
 
 Original and proposed field names must be ASCII. The retained same-width
 candidate requires equal UTF-16 widths; the separate fitted candidate admits
@@ -108,10 +156,11 @@ actual native column storage facts and every property key/type/flag/value/order.
 Retired property rows keep their original names. Indexes, allocation/maps,
 settings, ROW framing, descriptors, dates and unknown tails remain unchanged.
 
-No candidate grants further ADD or repeated-rename authority. A renamed
-first-snapshot source can happen to equal another valid constructive source;
-histories with retained old names require their actual event history. No guard
-normalizes retired names or infers the original ADD history from current names.
+No candidate grants further ADD or unchecked schema authority. A later rename
+requires fresh complete source qualification. The legacy constructive profiles
+can refuse retained histories even when a current source is valid. Profile4
+checks the current source independently; no guard normalizes retired names or
+infers an original ADD history from the current spelling.
 
 ## Fitting unequal-width names
 
@@ -157,8 +206,9 @@ proposed spelling, stable native identity and full BEFORE length/digest. It
 contains no replacement bytes, physical spans or caller-scoped model identity.
 Its closed profile discriminator also admits profile2 for unequal-width empty
 fitted ASCII requests and profile3 for the separately reconstructed populated
-ASCII family at every width. Profile1 remains strictly same-width and profile2
-remains empty/unequal-width. Decode and fresh reconstruction dispatch only the
+ASCII family at every width. Profile4 binds the separate current-metadata family
+at every width, regardless of empty/populated state or earlier edits. Profile1
+remains strictly same-width and profile2 remains empty/unequal-width. Decode and fresh reconstruction dispatch only the
 recorded profile, and unknown profiles refuse before string allocation. No failed
 profile is retried through another decoder or native candidate. A valid profile3
 envelope over an empty source remains inert data and fails native reconstruction.
@@ -177,9 +227,10 @@ receipts. Its file-based checks and consuming runtime save/witness cases pass in
 the [service record](../../../tests/results/schema/field-schema-services-2026-11-09.json).
 The normal [saved-field GUI workflow](../../ui/FIELD_RENAME.md) now consumes
 that route for the same bounded source/name profile, including Design selection
-and checked replacement publication. Its populated route uses the same explicit
-profile3, including same-width and no-op requests. Broader source families remain
-unsupported; GUI availability does not widen native admission.
+and checked replacement publication. The current normal-host route selects
+profile4 directly, including unchanged and case-only requests. Explicit legacy
+profile3 requests retain their original reconstruction behavior. Broader source
+families remain unsupported; GUI availability does not widen native admission.
 
 ## Evidence and verification status
 

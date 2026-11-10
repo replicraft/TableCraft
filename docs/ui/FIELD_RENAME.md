@@ -21,26 +21,31 @@ The runtime inspects the original source without a proposed name, AFTER image,
 write lease or save capability. Only positive source facts permit editing;
 unsupported or interrupted checks remain visible and may be retried explicitly.
 
-The original [empty ACE16 explicit-OFF profiles](../access/writes/FIELD_RENAME.md) support
-a non-key ordinary Number Long with stored Required(false)/zero default, or
-compressed Short Text255 with stored Required(false)/AllowZeroLength(true) and
-no default. Original and proposed names are ASCII. A positively inspected fitted
-source allows growth/shrink within existing native capacity; an older same-width
-observation still requires its exact original width. The native identifier ceiling
-and duplicate rules still apply. A larger proposal can still refuse during the
-consuming review when either physical owner lacks space. A non-ASCII
-sibling, generated ID, unsupported declaration or unknown source refuses.
+Normal desktop inspection and review now use the separate
+[current-metadata profile4](../access/writes/FIELD_RENAME.md). The target remains
+a qualified non-key Number Long or compressed Short Text255 declaration; original
+and proposed names are ASCII. The unencoded ACE16/subversion-zero eleven-page
+source must prove its actual single-user-table roles, explicit Name AutoCorrect
+OFF, ordinary row/index/constraint and NoRequired evidence, safe dependencies and
+exclusive property ownership. Missing settings never imply OFF. NameMap,
+expression/calculated dependencies, nonempty validation and nonliteral defaults
+remain refusal conditions.
 
-A separate populated Number profile now supports the reconstructible eleven-page
-source with two Int32 fields, dense generated IDs1..N and Int32/NULL companion
-values in the existing DATA/root-index geometry. Native source proof must recover
-the complete original through empty-history/OFF reconstruction and real insertion
-replay. Growth, shrink, equal-width and unchanged spelling use this populated
-profile; the original empty profiles are not fallback decoders. Arbitrary
-populated tables, ID gaps/deletions, other layouts and populated Short Text remain
-unqualified. These are TableCraft's current qualification limits, not general
-Access name restrictions. A bounded unsupported proposal remains visible without
-acquiring save authority.
+That proof observes the actual current image rather than reconstructing how it
+was created. Empty rows, populated rows, prior name changes, retained counters and
+tombstones all enter the same proof; none independently supplies rename
+authority. Fitting growth/shrink, equal widths, case-only changes and unchanged
+spelling share this family. Existing parser-bound definition/property capacity,
+identifier and duplicate checks still apply, so a shape-valid proposal may refuse
+during consuming review. Unknown roles, unsupported declarations, generated IDs,
+other layouts and native programs do not become qualified merely because an
+earlier operation succeeded.
+
+The original empty same-width/fitted profiles and dense populated Number replay
+profile remain separate native/recovery languages. The normal runtime neither
+selects them by row count nor retries them after a current-source refusal. An
+older same-width presentation observation still requires its exact width. These
+are TableCraft qualification limits, not general Access name restrictions.
 
 The shared `tablecraft-builders::table::field_rename::FieldRenameNameProfile`
 keeps the observed original width and supported name shape explicit. UI rejects
@@ -72,7 +77,15 @@ retain IDs1/3/4 and values99/-7/0; each write compares the complete independent
 image, including inactive records/keys and generation history. MCP exercises the
 same row services from a fresh renamed-file session. The shared insertion widget
 helper retains the original empty-table checks while allowing populated journeys.
-No additional engine admission exception is introduced by these tests.
+These are earlier populated-profile observations, not evidence for every current
+metadata source. The new current-profile regressions require repeated
+grow/shrink/regrow saves and another rename after that row deletion, with exact
+independent images and fresh reopening. These now pass in the complete desktop
+and MCP unit batches. Native controls additionally preserve opaque free bytes,
+nonzero NULL backing and the inactive catalog capacity of the existing inline
+Number/Short Text source. Schema-purpose certificates cannot authorize ordinary
+row writes. Populated Short Text or arbitrary imported databases cannot be
+inferred from the Number journey.
 This is headless workflow evidence, not Windows/Access rename-save qualification
 or admission for every populated database.
 
@@ -139,4 +152,5 @@ witness. The final field retains its native number and tab identity.
 Subsequent row edits require independent qualification after this schema save.
 The [retained-tail row proof](../access/writes/RETAINED_DEFINITION_TAILS.md) now
 supports the demonstrated insertion/update/deletion journey while preserving
-newly free historical TDEF bytes. No repeated-rename or ADD authority is inferred.
+newly free historical TDEF bytes. Every later rename must freshly qualify its
+current source; ADD retains its separate admission and cannot inherit authority.

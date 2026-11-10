@@ -1,5 +1,47 @@
 # Implementation status
 
+## Repeated field renames and current metadata — 9 November 2026
+
+Normal desktop/MCP field renames now use a separate current-metadata proof and
+closed TCFR profile4. It accepts the demonstrated grow/shrink/regrow sequence
+`Score → TaxAmount → X → Revenue → Score`, exact no-ops/case changes and another
+rename after row update/insertion/deletion leaves ID gaps, tombstones and retained
+counter history. Old profiles1/2/3 retain their source/recovery languages; the
+runtime selects profile4 directly without decoder or candidate fallback.
+
+Actual rows/indexes, a closed role census, explicit Name AutoCorrect OFF,
+reference-free metadata and exclusive live-property ownership replace initial
+creator/INSERT replay for this family. Every candidate and fresh recovery still
+checks the exact source and complete metadata complement. The physical target
+remains the documented eleven-page ACE2016/subversion-zero, ordinary Number or
+Short Text profile. No other formats, arbitrary imported layouts or general
+schema migration are claimed. See the [native contract](access/writes/FIELD_RENAME.md)
+and [shared workflow](ui/FIELD_RENAME.md).
+
+The original GUI regression saved its first two renames and refused `X → Revenue`.
+The first integration then over-refused a previously supported Short Text source
+with inactive catalog capacity. A separate schema-purpose absence certificate
+now retains that parser-bounded capacity; ordinary row certificates stay strict
+and cannot consume schema-only evidence. Independent review also corrected
+logical catalog forwarding. New raw controls initially used the wrong physical
+slot and incorrectly assumed an MR2 prefix in the retained gap; their corrected
+locator and independently checked 95-byte zero golden preserve the original
+source and refusal assertions. Production admission remained unchanged during
+those test corrections.
+
+The complete ACE unit batch passed 1,643 cases and failed the two new fixture
+controls; their corrected focused rerun passes both (1,645 distinct passing
+cases, 263 existing ignores). Complete runtime, testkit,
+desktop and MCP batches pass 337/36/225/68 cases; runtime and desktop each retain
+one existing ignore. Complete images match independent raw models, including
+cumulative rename history and valid-digest forged-AFTER refusals. Strict six-package
+all-target/all-feature Clippy and rustdoc pass, alongside reader-only, standalone
+create/preview/journal and create-plus-journal feature builds. Formatting,
+module-layout, documentation-link and dependency checks pass. This is scoped
+local/headless evidence, not a full workspace run, SDK writes or native
+Windows/Access rename-save qualification. Presentation geometry did not change;
+no native app window was opened.
+
 ## Row CRUD after populated field rename — 9 November 2026
 
 The populated Number rename flow now has a complete follow-through using the
