@@ -1,57 +1,35 @@
-# Explicit larger encoded native values
+# Native encoded long values
 
-`LongValueReadLimits` validates a positive encoded MEMO/OLE allowance up to
-32 MiB. `LongValueReadSource::new(source, limits)` attaches it to a stable/offline
-native source, outside any encryption/container wrapper. Raw Read/Seek retain
-original bytes, while header qualification and page decoding delegate unchanged.
-Reborrowing the source retains its policy. Existing sources keep the 2 MiB default.
+Encoded Memo/OLE length uses the native descriptor's 30-bit payload field, up to
+`0x3fffffff` bytes. `LongValueReadLimits` defaults to that wire bound; the former
+2 MiB default and 32 MiB product ceiling are removed. A caller may deliberately
+select a lower positive budget. Microsoft documents OLE fields as up to about
+1 GB in the [Access specifications](https://support.microsoft.com/en-us/access/access-specifications).
 
-`query run --native-value-bytes BYTES --database PATH` supplies this policy for
-scalar and opted-in collection reads, including saved queries. It rejects SQLite
-and template sources. This is a consumer ceiling, not the native format maximum.
-The allowance covers encoded storage only: decoded Memo defaults to 1 MiB
-UTF-8, with a separate [explicit 16 MiB allowance](LARGER_MEMOS.md); decoded attachment files default to 1 MiB and can independently reach
-16 MiB with `--attachment-bytes`. Four-KiB attachment headers, cumulative native
-and query pools, row/work limits and buffered output limits remain separate.
+`LongValueReadSource::new(source, limits)` wraps a stable native source outside
+its encryption/container wrapper. Raw I/O and native header/page decoding retain
+their original owner. Both `rows` and `query run` accept `--native-value-bytes`
+when a lower encoded-value budget is wanted. Decoded Memo UTF-8 has its own
+[representation policy](LARGER_MEMOS.md); text length is not encoded byte length.
 
-For example, the original larger OLE corpus can be queried with:
+Chain traversal is bounded by the actual advertised payload and source geometry,
+with visited-reference cycle checks, cumulative caller budgets and cancellation.
+There is no separate 1,024-reference or scaled-size quota. Actual payload storage
+grows fallibly as validated chunks arrive; an advertised large length does not
+cause an immediate giant Vec reservation. Owner, slot, reference, terminal and
+length checks precede publication. Partial values do not publish.
 
-```sh
-tablecraft query run 'SELECT Count(Payload) AS N FROM EncodedValues' \
-  --database .cache/tablecraft-fixtures/larger-encoded-values-20261024/encoded-2016.accdb \
-  --native-value-bytes 33554432 \
-  --native-bytes 268435456 --native-steps 100000000 \
-  --execution-bytes 268435456 --execution-steps 100000000
-```
+CLI publication has no implicit 1/16 MiB quota. Explicit output and resource
+budgets remain independent. Reading inert OLE bytes does not execute their
+contents or qualify native writes. Streaming individual payloads and broader
+native behavior remain separate implementation work.
 
-An encoded attachment above 2 MiB also needs `--collections
---decoded-attachments --attachment-bytes BYTES`; the CLI aligns the decoder's
-encoded allowance with `--native-value-bytes`. Direct decoder consumers select
-`AttachmentDecodeLimits::with_encoded_bytes` separately from native source policy.
-Changing either decoder allowance invalidates decoded caches without refunds.
-Metadata-only queries still avoid file payloads. FileData remains an explicit
-TableCraft decoded view; native Access SQL representation is unqualified.
+## Historical verification
 
-## Bounded chains and publication
+The following records retain the behavior and budgets of their captured builds;
+former default/product ceilings are superseded by the current policy above.
 
-The reference ceiling scales by 1,024 rows per rounded-up two MiB of allowance,
-up to 16,384 references. Default reads retain their existing fixed reference scan
-and physical reader counter. Explicit allowances above 2 MiB use a growing,
-fallibly reserved visited-reference set with charged logical allocation and work.
-Its hash iteration order is never exposed. This avoids a quadratic scan at the
-larger ceiling; no performance claim is established by that design choice.
-
-Extended external values use a local physical reader in batches of 256 chain
-rows. Only that local physical counter resets; source, header, cancellation and
-cumulative byte/allocation/work pools remain shared throughout. No cumulative
-pool is renewed or refunded, and the enclosing table reader is unchanged.
-Owners, row flags, lengths, cycles, terminal references and page bounds are checked
-for every row. Partial values never publish. Unknown encodings do not fall back.
-Memo Unicode conversion now checks cancellation before/after conversion and
-within bounded conversion chunks under its [decoded policy](LARGER_MEMOS.md).
-Page and attachment-codec operations retain their existing checkpoints.
-
-## Evidence and remaining limits
+### Recorded evidence and remaining work
 
 Engine controls read 32 MiB through 16,384 independently authored LVAL pages for
 Jet 4 and ACE 2007/2016/2019. Other controls cover default and explicit bounds,

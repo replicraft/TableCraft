@@ -510,19 +510,22 @@ that large products fit those allowances. Focused host-source tests cover all
 32 projected fields, filtered/empty inputs, crosstabs, refusal and controls;
 this is engineering acceptance, not native Access execution qualification.
 
-Execution defaults to 16 MiB cumulative logical payload/container allocation,
-100,000 cumulative scanned/intermediate/output rows and 1,000,000 work steps. Byte/row
-defaults remain unchanged; explicit allowances clamp at 256 MiB, 1,000,000 rows
-and 100,000,000 steps. Native reads and output have independent controls. The CLI
-`query run --execution-bytes`, `--execution-rows` and `--execution-steps` options
-share those pools across discovery, nested reads and comparisons. [Larger native query controls](../access/queries/LARGER_NATIVE_QUERIES.md) remain
-independent from this execution allowance.
-These are work allowances, not returned-row counts or exact allocator/OS memory
-measurements. Text values default to 65,536 UTF-8 bytes; explicit
-`ExecutionOptions::max_text_bytes` permits up to 16 MiB per value under the same
-cumulative pool, across nested/domain/discovery execution. Parser/binding limits
-remain unchanged. The CLI exposes this as `query run --text-bytes`, with a separate
-`--output-bytes` allowance for complete output; see [larger payloads](../access/storage/LARGE_PAYLOADS.md).
+Execution has no implicit product quota for cumulative allocation, scanned or
+intermediate rows, or work. `QueryLimits` retains checked unsigned counters;
+caller-selected budgets are honored without silent maximum clamps. Native reads,
+comparison providers and output have independent controls. The CLI's optional
+`--execution-bytes`, `--execution-rows` and `--execution-steps` share their selected
+pools across discovery, nested reads and comparisons. See
+[native query controls](../access/queries/LARGER_NATIVE_QUERIES.md).
+
+Individual Text values have no implicit 65,536-byte or 16 MiB product ceiling.
+An explicit `ExecutionOptions::max_text_bytes` / `query run --text-bytes` remains
+a caller UTF-8 quota across nested, domain and discovery execution. The optional
+`--output-bytes` separately bounds complete publication. Budgets are cumulative
+accounting, not exact allocator/OS measurements or up-front reservations. Actual
+allocation, representation, cancellation and corruption checks remain active.
+Parser and binding implementation restrictions are separate from stored-value
+limits. See [payload policies](../access/storage/LARGE_PAYLOADS.md).
 Failed queries return
 no partial result; budget is shared by joins, aggregates, comparisons and nested
 queries. Cancellation is checked before row/node/comparison/sort work. Host source

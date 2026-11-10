@@ -1,103 +1,61 @@
-# Explicit larger native scalar query snapshots
+# Native scalar query snapshots and explicit budgets
 
-Native scalar query loading can now exceed the default 16,384-row
-snapshot ceiling under explicit caller controls. Complete-table and complete
-projection caches still publish only after EOF, row-count, schema and resource
-checks. Binding remains metadata-only. Query evaluation and CLI output remain
-materialized/buffered; this is not streaming SQL execution or native shared-file
-snapshot/locking support.
+Native scalar query loading has no implicit 16,384-row snapshot ceiling.
+Complete-table and projection caches publish only after successful EOF, schema,
+row-count and resource checks. Binding remains metadata-only. Buffered retrieval
+and explicit progressive execution retain their separate publication contracts.
 
 ```sh
-tablecraft query run 'SELECT TOP 3 ID FROM StreamRows ORDER BY ID DESC' \
-  --database example.accdb --native-bytes 67108864 --native-rows 100000 \
-  --native-steps 10000000 --execution-steps 10000000
+tablecraft query run 'SELECT TOP 3 ID FROM Items ORDER BY ID DESC' \
+  --database example.accdb
 ```
 
-## Independent resource controls
+## Optional resource controls
 
-| Control | Default | Maximum | Scope |
-| --- | --- | --- | --- |
-| `--native-bytes` | 16 MiB | 256 MiB | Cumulative native reads/allocations |
-| `--native-rows` | 16,384 | 1,000,000 | Cumulative native metadata/data rows and scalar/collection-table retention ceiling |
-| `--native-steps` | 1,000,000 | 100,000,000 | Cumulative native decoding/traversal work |
-| `--execution-bytes` | 16 MiB | 256 MiB | Shared cumulative query allocations |
-| `--execution-rows` | 100,000 | 1,000,000 | Shared scanned/intermediate/output rows |
-| `--execution-steps` | 1,000,000 | 100,000,000 | Shared query comparison/evaluation/discovery work |
+`--native-bytes`, `--native-rows` and `--native-steps` select cumulative native
+budgets. `--execution-bytes`, `--execution-rows` and `--execution-steps` select
+independent cumulative query budgets. Omitting a control adds no product quota;
+explicit values are honored without silently clamping them to former maxima.
+Individual snapshots use the existing unsigned 32-bit row API representation.
+Cumulative native and query counters use unsigned 64-bit representations, so
+one row pool may span multiple tables and scans.
 
-Native budgets include catalog, query-definition and schema reads, failed work and
-all tables/projections loaded during one invocation. Row counts include metadata,
-so an allowance equal to a table's declared row count can still fail. Budgets never
-refill between internal batches. Existing per-fetch physical read quotas remain.
-Native flags require `--database` and explicitly conflict with `--sqlite`; they
-cannot be silently ignored by another provider. Numeric ranges fail before I/O.
+Native accounting includes metadata, failed work and every selected source.
+Query accounting includes intermediate rows, dependencies, domains, comparisons
+and sorting. Counters do not refill between batches. Explicit limits can stop an
+operation with a resource error; they are neither Access format limits nor
+up-front allocation reservations. Cancellation, fallible allocation and checked
+counter arithmetic remain active.
 
-The three execution options apply to query run over any existing source host.
-It changes no database-provider permissions or source budgets. Library
-`QueryLimits::default()` still uses one million steps; `DEFAULT_STEPS` preserves
-that default, and `MAX_STEPS` now bounds explicit requests at one hundred million.
-The same execution pool covers nested reads, named dependencies, domain operations,
-schema discovery, comparisons and sorting; cancellation checks remain active.
-
-Query allocations retain the default 16 MiB logical allowance and 100,000-row
-cumulative scanned/intermediate/output allowance. Explicit `--execution-bytes`
-and `--execution-rows` can raise those separate pools to 256 MiB and 1,000,000.
-Library DEFAULT_BYTES/DEFAULT_ROWS retain the original defaults; MAX_BYTES/MAX_ROWS
-clamp explicit library requests to the same maxima. Budgets are cumulative
-accounting, not up-front reservations or a process-wide heap quota. CLI output defaults to its 1 MiB
-buffered ceiling. Larger native limits do not imply that every equally sized query
-fits those independent controls. Large joins, wide values or output can still fail
-without stdout. For progressive scalar export use [rows --stream](../../cli/STREAMING_ROWS.md).
+Per-value encoded/native text policies use actual wire and representation bounds;
+see [encoded values](../storage/LARGER_ENCODED_VALUES.md) and
+[decoded Memos](../storage/LARGER_MEMOS.md). Individual query Text and final CLI
+output likewise have no implicit product-size quota. Explicit `--text-bytes` and
+`--output-bytes` still select separate caller budgets. These controls do not
+waive native declaration validation or permit unsupported query semantics.
 
 ## Engine and adapter APIs
 
-`tablecraft-ace::TableSnapshotLimits::new(maximum_rows, batch_rows)` validates a
-positive snapshot cap up to 1,000,000 and a batch size up to 16,384, without I/O.
-Defaults remain 16,384 rows and 256 rows per batch. These are consumer limits,
-not native format maxima or claims that every table of that size is qualified.
+`TableSnapshotLimits::new(maximum_rows, batch_rows)` accepts a positive unsigned
+32-bit retained-row budget. Its default uses that representation bound; it does
+not allocate that many slots. Batch sizes continue to select fetch granularity.
+Cursor materialization grows only for actual rows and publishes a complete cache
+only after EOF. An advanced or failed cursor cannot publish its suffix as a
+complete relation.
 
-A freshly opened `TableCursor` can be consumed by
-`into_snapshot(limits, budget, cancelled)`. The same original controls cover
-opening, fetching and retained storage. A cursor that has returned any rows fails
-with `CursorAdvanced`; a previously failed cursor retains `CursorFailed` and does
-not resume or call cancellation. A remaining suffix therefore cannot become a
-complete-table snapshot. Default `read_table_batched` and
-`read_table_projection_batched` retain their original ceilings and behavior.
+Explicit index requests retain selected-read failures and no-fallback semantics.
+Source geometry, key/owner validation and revision checks remain mandatory.
+Some legacy traversal and implementation restrictions are still separate work;
+removing an arbitrary snapshot cap does not establish full native compatibility.
+Mutation qualification, constraints, required programs and preservation remain
+independent of read resource controls.
 
-`NativeSource::new_with_snapshot_limits` supplies these limits to sequential and
-indexed full/projected scalar loads and [complete collection tables](../collections/LARGER_NATIVE_COLLECTIONS.md). Indexed requests use
-`read_table_index_with_request` and `IndexReadRequest`: optional scalar column
-names, a typed selection and a positive retained-row ceiling up to 1,000,000.
-Complete index reads require the declared count to fit and agree with the result.
-Partial seeks cap matching rows rather than the declared table size; a small point
-lookup may therefore succeed in a table larger than the default snapshot ceiling.
-Only visited index pages and selected roots are checked by a partial seek, which
-never certifies a complete table or populates a complete-table cache.
+## Historical verification
 
-Legacy engine index entry points retain their original 16,384-row table guard.
-Required index errors retain their no-fallback contract. Index depth, mapped-page,
-physical-read and resource quotas remain independent. Explicit IndexReadRequest
-calls validate/materialize selected keys under the original tree/map pass quota,
-then fetch referenced rows in internal 256-row groups, each with the existing
-4,096-read quota and the same cumulative caller budgets. Groups begin at fixed
-boundaries; failures are not retried and no result is published until completion.
-The single current-page buffer may survive a boundary; root/row/hidden-key checks
-still apply to every returned record. Legacy index APIs retain their original
-operation-wide read quota. [Scattered modern histories](../../../tests/reports/rows/MODERN_SCALAR_HISTORIES.md)
-exposed and now exercise this distinction. This is not streaming index execution.
-Independent 20,000-row indexed comparisons now cover the profiles below; the accepted ceiling is not
-evidence that all tables up to 1,000,000 rows can be read.
-Legacy collection/attachment/history entry points, template readers, editing,
-image retention and writes retain separate default limits and qualification.
-Explicit larger collection APIs are described [separately](../collections/LARGER_NATIVE_COLLECTIONS.md).
-No read option waives constraints, required macros, preservation or native write
-qualification.
+The following records describe their captured implementations and selected
+budgets. Their former product ceilings are superseded by the policy above.
 
-Complete caches remain available to reentrant/nested queries without holding a
-mutable I/O borrow across evaluation callbacks. Failed loads publish neither
-partial caches nor visitor rows; consumed budgets are not refunded. No new
-library, runtime, storage format or coercion is introduced.
-
-## Evidence
+### Recorded evidence
 
 Authored 20,000-row native layouts exercise all four priority header profiles at
 batch sizes 1/127/5,000, comparing exact values and one physical read per data page.

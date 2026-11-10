@@ -73,21 +73,17 @@ counts and byte totals, never rows, selected names, paths or credentials.
 
 ## Cumulative controls
 
-| Allowance | Default | Maximum |
-| --- | --- | --- |
-| `--native-bytes` | 16 MiB | 256 MiB |
-| `--native-rows` | 16,384 | 1,000,000 |
-| `--native-steps` | 1,000,000 | 100,000,000 |
-| Encoded/logical output per batch | 1 MiB | 1 MiB |
-| Encoded output over the entire stream | 256 MiB | 256 MiB |
+`--native-bytes`, `--native-rows` and `--native-steps` are optional cumulative
+caller budgets. Omitted controls impose no extra product quota. Explicit lower
+budgets include opening/unlocking, metadata, failed reads and allocations, and
+never refill between batches. Cumulative native counters retain unsigned 64-bit arithmetic; individual
+snapshot row ordinals retain their unsigned 32-bit representation.
 
-Read budgets include opening/unlocking, schema/catalog metadata and failed reads
-or allocations. Native row allowances include metadata rows, so they are not an
-exact requested count of displayed records. Counters never refill between batches.
-Per-fetch physical read quotas remain separate. Output caps are checked before
-publishing each encoded batch. Existing formatter/dependency allocation boundaries
-still apply; these controls are not a process-wide heap quota. This is scalar
-browsing continuation, not larger or streaming SQL execution.
+Encoded/logical batch output no longer has a 1 MiB quota, and total row-stream
+publication no longer has a 256 MiB quota. Counter overflow, allocation failure
+and stdout write/flush failures remain errors. A completed earlier batch remains
+published if later work fails; no partial batch is published. Fetch batch sizes
+remain independent of database or recordset size.
 
 ## Evidence
 

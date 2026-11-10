@@ -1,65 +1,33 @@
-# Explicit larger decoded Memo reads
+# Native decoded Memo reads
 
-`query run --native-text-bytes BYTES` selects a native decoded Memo UTF-8
-allowance from one byte through 16 MiB. The default remains 1 MiB. It requires
-`--database`, refuses SQLite and template inputs, and changes no source bytes.
-Ordinary browsing and other commands retain their existing defaults.
+Decoded Memo UTF-8 no longer has a 1 MiB default or a 16 MiB product ceiling.
+`LongTextReadLimits` defaults to the maximum UTF-8 expansion implied by the
+native encoded-value bound: twice `0x3fffffff` bytes. This is a representation
+bound for supported compressed/UTF-16 forms, not an extra Access text quota.
+Microsoft describes Long Text storage as up to about 1 GB; form/report display
+limits are distinct from stored data. See
+[Microsoft's Long Text reference](https://support.microsoft.com/en-us/access/the-memo-data-type-is-now-called-long-text).
 
-The engine owns `LongTextReadLimits` and the `NativeReadSource::long_text_limits`
-hook. `LongValueReadSource::with_text_limits` applies a validated decoded policy
-outside existing encryption/container sources while preserving original raw I/O
-and native header/page hooks. An encoded-only outer wrapper preserves its inner
-decoded policy; mutable reborrows forward it. Policy construction performs no I/O.
-The source policy is fixed before snapshots/caches are created.
+Both `rows` and `query run` accept `--native-text-bytes` to request an explicitly
+lower native decoding budget. `LongValueReadSource::with_text_limits` applies the
+policy outside existing native encryption/container sources. The encoded
+[long-value policy](LARGER_ENCODED_VALUES.md) remains independent. UTF-8 byte
+length, native encoded bytes, Unicode scalars and Access UTF-16 `Len` units are
+not interchangeable.
 
-Encoded storage remains a separate [long-value policy](LARGER_ENCODED_VALUES.md),
-with a 2 MiB default and explicit 32 MiB ceiling. A decoded UTF-8 byte count is not
-the encoded UTF-16/compressed byte count, Unicode scalar count or SQL Len result.
-For example, 600,000 Chinese characters occupy 1,800,000 UTF-8 bytes while Len is
-600,000; supplementary characters consume two UTF-16 units each for Len.
+Decoding validates Unicode, charges work/allocation, checks cancellation and
+publishes only complete values. Original owner, cycle, page, terminal-reference
+and length checks remain. Individual query Text and CLI output also have no
+implicit product-size ceilings; `--text-bytes` and `--output-bytes` remain explicit
+caller budgets. Removing invented limits does not establish arbitrary native
+query or mutation compatibility.
 
-Memo decoding validates Unicode and measures actual UTF-8 size before allocating
-the output String. The ASCII path checks length before output allocation; the
-other path retains a bounded, charged UTF-16 scratch buffer and checks the decoded
-ceiling before reserving exactly the required UTF-8 bytes. Native work reserves
-four logical encoded-input passes for classification, unit conversion, sizing
-and emission. Cancellation is checked before/after decoding and at bounded checkpoints within
-classification, unit construction, sizing and emission. A checkpoint covers at
-most 4,096 bytes, UTF-16 units or decoded scalars, so the longest loop interval
-covers at most 16,384 encoded bytes. Allocation calls themselves are not
-interruptible. Failed decoding never publishes a
-partial Memo. Existing length, owner, cycle, terminal-reference and page checks
-remain mandatory.
+## Historical verification
 
-## Query and output controls
+The following evidence describes captured builds and deliberately selected
+budgets. Their old product ceilings are superseded by the policy above.
 
-Individual query Text values still default to 65,536 bytes. An explicit
-`--text-bytes BYTES` / `ExecutionOptions::max_text_bytes` can now request up to
-16 MiB. This applies to all query sources, parameters and generated intermediates;
-it does not increase native admission, parser/binder limits, cumulative query
-allocations/work or buffered output. Source-free eval retains its defaults.
-
-A stable/offline file containing larger Memos can be queried with separate limits:
-
-```sh
-tablecraft query run 'SELECT ID,Len([Memo]) FROM LargeMemos' \
-  --database example.accdb \
-  --native-value-bytes 16777216 --native-text-bytes 16777216 \
-  --text-bytes 16777216 --native-bytes 268435456 \
-  --native-steps 100000000 --execution-bytes 268435456 \
-  --execution-steps 100000000 --format tsv
-```
-
-Displaying the actual Memo additionally needs enough `--output-bytes` (maximum
-16 MiB) for escaped display cells and final CSV quoting. A maximum-sized Text
-value can exceed the output cap after rendering overhead; Len/count/filter work
-need not publish the payload. Higher per-value limits never guarantee that a
-whole table, intermediate or rendered result fits the independent cumulative
-pools. These are consumer ceilings, not native format maxima or an unlimited
-query/streaming profile. Native Access qualification remains separate.
-
-
-## Independent evidence
+### Recorded independent evidence
 
 The original [generator/getter](../../../tests/access/storage/native/LargerMemoFixture.java) supplies fresh
 inert Jet 4, ACE 2007, ACE 2016 and ACE 2019 inputs. Each stores 3 MiB ASCII,

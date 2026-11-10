@@ -26,7 +26,7 @@ The library consumes core/schema/model and thiserror; no TableCraft host is need
 `tablecraft inspect <path>` opens that explicit file read-only and buffers a small
 header summary before stdout. `--catalog` adds shared descriptors and native
 origins: object ID, category, native ID, parent ID, signed type, raw flags and name.
-Names/headers use the shared escaped formatter and 1 MiB final output ceiling.
+Names/headers use the shared escaped formatter without an implicit output-size quota.
 CLI inspection uses compact bordered sections on terminals, with CSV-encoded escaped-display
 TSV when redirected or explicitly selected; `--format table` forces borders.
 System tables are hidden by default; `--catalog --show-system` includes them.
@@ -259,7 +259,8 @@ declared lengths, signatures, links/cycles, allocation and I/O. See
 [chained definition evidence](storage/NATIVE_TABLES.md#bounded-chained-table-definitions).
 Unsupported usage maps/column profiles, encoded pages,
 newer ACE catalog layouts and names invalid under SchemaName are rejected.
-The CLI supplies 16 MiB cumulative bytes, 16,384 rows and 1,000,000 steps.
+The CLI accepts optional cumulative byte/row/work budgets; omitted controls no
+longer impose those former 16 MiB/16,384-row/1,000,000-step quotas.
 IDs use a caller-issued namespace; the CLI's scope 1 is local to one invocation
 and is not a persisted identifier, file hash or native revision.
 
