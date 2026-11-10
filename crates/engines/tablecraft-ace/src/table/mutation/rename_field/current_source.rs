@@ -224,3 +224,6 @@ fn graph_error(error: SchemaSourceError) -> Error {
         SchemaSourceError::Source | SchemaSourceError::Dependency => Error::Source,
     }
 }
+
+#[cfg(test)]
+mod tests;
