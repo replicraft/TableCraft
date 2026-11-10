@@ -36,3 +36,6 @@ impl NativeImage {
         )
     }
 }
+
+#[cfg(test)]
+mod tests;
