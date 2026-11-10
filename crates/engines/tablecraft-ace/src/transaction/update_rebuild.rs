@@ -27,6 +27,20 @@ pub(super) fn rebuild_verified_binding(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<NativeEditPlan, NativeRecoveryQualificationError> {
     let plan = match (intent.profile(), intent.body()) {
+        #[cfg(feature = "ace16-create")]
+        (
+            NativeUpdateProfile::Ace16HistoricalNumberMaterialization,
+            NativeUpdateBody::Fixed(original),
+        ) => {
+            let groups = original.borrowed_groups(budget, cancelled)?;
+            image.plan_historical_number_materialization(
+                original.table(),
+                &groups,
+                budget,
+                cancelled,
+            )?
+        }
+        #[cfg(feature = "ace16-create")]
         (NativeUpdateProfile::Ace16HistoricalPresentFixed, NativeUpdateBody::Fixed(original)) => {
             let groups = original.borrowed_groups(budget, cancelled)?;
             image.plan_historical_present_fixed_updates(

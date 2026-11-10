@@ -25,3 +25,6 @@ mod guid_tests;
 
 #[cfg(test)]
 mod historical_present_tests;
+
+#[cfg(all(test, feature = "ace16-create"))]
+mod historical_materialization_tests;

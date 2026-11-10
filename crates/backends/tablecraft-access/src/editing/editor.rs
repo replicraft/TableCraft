@@ -306,13 +306,12 @@ impl NativeEditor {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<RecoverableNativeEditPlan, RecoverableEditError> {
-        self.image
-            .plan_recoverable_historical_present_fixed_updates(
-                self.snapshot.name(),
-                groups,
-                budget,
-                cancelled,
-            )
+        self.image.plan_recoverable_historical_fixed_updates(
+            self.snapshot.name(),
+            groups,
+            budget,
+            cancelled,
+        )
     }
 
     pub(super) fn plan_recoverable_ordinary_fixed(

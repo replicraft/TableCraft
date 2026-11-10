@@ -13,6 +13,8 @@ const ACE_PROFILE: u16 = 2;
 /// A versioned validation route, never a serialized native permission.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum NativeUpdateProfile {
+    /// One absent nullable Number field materialized within qualified owned DATA capacity.
+    Ace16HistoricalNumberMaterialization,
     /// Existing unindexed Int32 fields in positively qualified historical records.
     Ace16HistoricalPresentFixed,
     /// Unchanged ordinary Jet4 Int32 request record and planner.
@@ -49,7 +51,7 @@ pub struct NativeUpdateIntent {
 pub enum NativeUpdateBody {
     /// Original single-column Int32 requests for TCNI0001 or TCNI0002.
     Int32(NativeInt32EditIntent),
-    /// Original ordered fixed column groups for the closed TCNI0003/4/8/9/10/11 families.
+    /// Original ordered fixed column groups for the closed TCNI0003/4/8/9/10/11/12 families.
     Fixed(NativeFixedEditIntent),
     /// Ordered original fixed/variable requests for TCNI0005.
     Fitted(NativeFittedEditIntent),
@@ -60,6 +62,13 @@ pub enum NativeUpdateBody {
 }
 
 impl NativeUpdateIntent {
+    pub(super) fn from_historical_number_materialization(original: NativeFixedEditIntent) -> Self {
+        Self {
+            profile: NativeUpdateProfile::Ace16HistoricalNumberMaterialization,
+            body: NativeUpdateBody::Fixed(original),
+        }
+    }
+
     pub(super) fn from_historical_present_fixed(original: NativeFixedEditIntent) -> Self {
         Self {
             profile: NativeUpdateProfile::Ace16HistoricalPresentFixed,
@@ -261,6 +270,10 @@ impl NativeUpdateIntent {
         match (&self.body, self.profile) {
             (
                 NativeUpdateBody::Fixed(original),
+                NativeUpdateProfile::Ace16HistoricalNumberMaterialization,
+            ) => original.encode_historical_materialization(budget, cancelled),
+            (
+                NativeUpdateBody::Fixed(original),
                 NativeUpdateProfile::Ace16HistoricalPresentFixed,
             ) => original.encode_historical_present(budget, cancelled),
             (NativeUpdateBody::Int32(original), NativeUpdateProfile::Jet4Int32) => {
@@ -307,6 +320,13 @@ impl NativeUpdateIntent {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, NativeIntentError> {
+        if bytes.get(..NativeFixedEditIntent::MATERIALIZATION_MAGIC.len())
+            == Some(NativeFixedEditIntent::MATERIALIZATION_MAGIC.as_slice())
+        {
+            return Ok(Self::from_historical_number_materialization(
+                NativeFixedEditIntent::decode_historical_materialization(bytes, budget, cancelled)?,
+            ));
+        }
         if bytes.get(..NativeFixedEditIntent::HISTORICAL_MAGIC.len())
             == Some(NativeFixedEditIntent::HISTORICAL_MAGIC.as_slice())
         {

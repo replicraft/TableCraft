@@ -275,22 +275,31 @@ fn forged_journal_complements_never_gain_historical_update_authority() {
 #[test]
 fn data_only_historical_wire_cannot_reconstruct_without_the_native_writer_capability() {
     let before = source();
-    let wire = literal(&before);
-    let decoded = NativeUpdateIntent::decode(&wire, &mut budget(), &|| false).unwrap();
-    assert_eq!(
-        decoded.profile(),
-        NativeUpdateProfile::Ace16HistoricalPresentFixed
-    );
-    assert_eq!(decoded.encode(&mut budget(), &|| false).unwrap(), wire);
-    assert!(matches!(
-        crate::transaction::update_rebuild::rebuild(
-            image(&before, 18),
-            &decoded,
-            &mut budget(),
-            &|| false
+    let present = literal(&before);
+    // NO_CLONE: Retain both distinct version/profile records for the feature-disabled refusal checks.
+    let mut materialization = present.clone();
+    materialization[..8].copy_from_slice(b"TCNI0012");
+    materialization[12..14].copy_from_slice(&12_u16.to_le_bytes());
+    for (wire, profile) in [
+        (present, NativeUpdateProfile::Ace16HistoricalPresentFixed),
+        (
+            materialization,
+            NativeUpdateProfile::Ace16HistoricalNumberMaterialization,
         ),
-        Err(crate::NativeRecoveryQualificationError::Intent(
-            NativeIntentError::UnsupportedProfile
-        ))
-    ));
+    ] {
+        let decoded = NativeUpdateIntent::decode(&wire, &mut budget(), &|| false).unwrap();
+        assert_eq!(decoded.profile(), profile);
+        assert_eq!(decoded.encode(&mut budget(), &|| false).unwrap(), wire);
+        assert!(matches!(
+            crate::transaction::update_rebuild::rebuild(
+                image(&before, 18),
+                &decoded,
+                &mut budget(),
+                &|| false
+            ),
+            Err(crate::NativeRecoveryQualificationError::Intent(
+                NativeIntentError::UnsupportedProfile
+            ))
+        ));
+    }
 }
