@@ -15,7 +15,7 @@ use tablecraft_core::limits::{Resource, ResourceBudget};
 const COPY_BYTES: usize = 4096;
 
 #[derive(Clone, Copy)]
-enum Purpose {
+pub(super) enum Purpose {
     SettledEmpty,
     CurrentTail,
 }
@@ -27,6 +27,7 @@ pub(super) struct Source {
 
 /// Metadata alone is not mutation authority; Source retains the consumed proof.
 pub(super) struct Evidence {
+    pub purpose: Purpose,
     pub observed: Observed,
     pub descriptor: Range<usize>,
     pub body: Vec<u8>,
@@ -176,6 +177,7 @@ impl Evidence {
             .absolute_range()?
             .ok_or(Error::Source)?;
         Ok(Self {
+            purpose,
             observed,
             descriptor,
             body,

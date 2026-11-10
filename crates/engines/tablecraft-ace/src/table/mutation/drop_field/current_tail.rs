@@ -84,7 +84,7 @@ impl NativeImage {
         after[base..base + page.len()].copy_from_slice(&page);
 
         let body = std::mem::take(&mut source.evidence.body);
-        let change = catalog_property::compose_fitted_at_origin(
+        let change = catalog_property::compose_retained_single_at_origin(
             source.proof.image(),
             &source.evidence.observed.schema,
             body,

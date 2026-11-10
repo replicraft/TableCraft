@@ -1,5 +1,8 @@
 //! Independent decoded survivors and exact byte complement after fitted append.
-use super::{FieldDropError as Error, source::Evidence};
+use super::{
+    FieldDropError as Error,
+    source::{Evidence, Purpose},
+};
 use crate::{
     format::{
         bytes::{u16_at, u32_at},
@@ -173,7 +176,17 @@ pub(super) fn candidate(
         budget,
         cancelled,
     )?;
-    framing::validate(&properties, budget, cancelled)?;
+    match evidence.purpose {
+        Purpose::SettledEmpty => framing::validate(&properties, budget, cancelled)?,
+        Purpose::CurrentTail => {
+            // The complete original dictionary and every original group have
+            // strict frame/entry coverage. The exact group-omission proof below
+            // carries that coverage to AFTER, including dictionary names whose
+            // last use was removed and a dictionary with no surviving groups.
+            // Those retained bytes are not permission for an orphan live group.
+            framing::validate(&observed.properties, budget, cancelled)?;
+        }
+    }
     if properties.object_id() != observed.properties.object_id()
         || properties.name() != observed.properties.name()
         || properties.raw_bytes() != change.body

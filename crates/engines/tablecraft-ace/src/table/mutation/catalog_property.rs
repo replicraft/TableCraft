@@ -14,7 +14,8 @@ mod record;
 mod repeated;
 pub(crate) mod storage;
 pub(crate) use repeated::{
-    RepeatedChange, compose_fitted_at_origin, compose_repeated, repeated_property_pages,
+    RepeatedChange, compose_fitted_at_origin, compose_repeated, compose_retained_single_at_origin,
+    repeated_property_pages,
 };
 
 use super::EditError;

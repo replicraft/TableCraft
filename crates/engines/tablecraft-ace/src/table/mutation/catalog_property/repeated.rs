@@ -58,6 +58,12 @@ enum Parent {
     ActualOrigin,
 }
 
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum SingleStorage {
+    Preferred,
+    Retained,
+}
+
 pub(crate) fn compose_repeated(
     image: &NativeImage,
     table: &TableSchema,
@@ -65,7 +71,15 @@ pub(crate) fn compose_repeated(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<RepeatedChange, EditError> {
-    compose(image, table, body, Parent::LastLogical, budget, cancelled)
+    compose(
+        image,
+        table,
+        body,
+        Parent::LastLogical,
+        SingleStorage::Preferred,
+        budget,
+        cancelled,
+    )
 }
 
 pub(crate) fn compose_fitted_at_origin(
@@ -75,7 +89,36 @@ pub(crate) fn compose_fitted_at_origin(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<RepeatedChange, EditError> {
-    compose(image, table, body, Parent::ActualOrigin, budget, cancelled)
+    compose(
+        image,
+        table,
+        body,
+        Parent::ActualOrigin,
+        SingleStorage::Preferred,
+        budget,
+        cancelled,
+    )
+}
+
+/// Preserve an independently qualified original external Single property role.
+/// The checked allocator/descriptor still validates the complete new body; a
+/// shorter retained dictionary need not change its parent's storage convention.
+pub(crate) fn compose_retained_single_at_origin(
+    image: &NativeImage,
+    table: &TableSchema,
+    body: Vec<u8>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<RepeatedChange, EditError> {
+    compose(
+        image,
+        table,
+        body,
+        Parent::ActualOrigin,
+        SingleStorage::Retained,
+        budget,
+        cancelled,
+    )
 }
 
 fn compose(
@@ -83,6 +126,7 @@ fn compose(
     table: &TableSchema,
     body: Vec<u8>,
     selection: Parent,
+    single: SingleStorage,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<RepeatedChange, EditError> {
@@ -101,7 +145,7 @@ fn compose(
             }
         };
         let encoded = Encoded::Present(body);
-        if encoded.preferred() != StorageChoice::Single {
+        if single == SingleStorage::Preferred && encoded.preferred() != StorageChoice::Single {
             return Err(InspectError::Unsupported.into());
         }
         let descriptor = encoded.descriptor(
