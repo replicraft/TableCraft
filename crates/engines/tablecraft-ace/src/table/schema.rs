@@ -133,8 +133,7 @@ impl NativeColumn {
             (data_type::DOUBLE, data_type::DOUBLE_BYTES) => ScalarType::Double,
             (data_type::DATE_TIME, data_type::DATE_TIME_BYTES) => ScalarType::DateTime,
             (data_type::NUMERIC, data_type::NUMERIC_BYTES)
-                if !self.field.fixed
-                    && (1..=DecimalConstraints::MAX_PRECISION).contains(&self.field.precision)
+                if (1..=DecimalConstraints::MAX_PRECISION).contains(&self.field.precision)
                     && self.field.scale <= self.field.precision =>
             {
                 ScalarType::Decimal
