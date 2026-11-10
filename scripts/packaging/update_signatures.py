@@ -9,6 +9,7 @@ import subprocess
 import tempfile
 
 import package_desktop
+import installer_contract
 import release_contract as contract
 
 PUBLIC_KEY = contract.ROOT / "packaging/tablecraft-update-key.pub"
@@ -24,9 +25,13 @@ PUBLIC_KEY_MATERIAL_OFFSET = len(b"Ed") + MINISIGN_KEY_ID_BYTES
 
 def names(version, product):
     contract.validate_version(version)
-    archive_name = (package_desktop.archive_name if product == "desktop"
-                    else contract.archive_name)
-    return sorted(archive_name(version, target) for target in contract.TARGETS)
+    if product == "desktop":
+        return sorted(
+            {package_desktop.archive_name(version, target) for target in contract.TARGETS}
+            | installer_contract.names(version)
+        )
+    return sorted(contract.archive_name(version, target) for target in contract.TARGETS)
+
 
 
 def comment(version, name):

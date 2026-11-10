@@ -8,6 +8,7 @@ import zipfile
 import zlib
 
 import package_desktop as desktop
+import installer_contract as installers
 import release_contract as contract
 
 NOTICES = "DesktopThirdPartyLicenses.txt"
@@ -28,7 +29,9 @@ def finalize(version, output, notices, icon, verify_only=False):
     archives = {
         desktop.archive_name(version, target) for target in contract.TARGETS
     }
-    payloads = archives | {name + ".sha256" for name in archives}
+    native = installers.names(version)
+    packages = archives | native
+    payloads = packages | {name + ".sha256" for name in packages}
     expected = payloads | ({NOTICES, CHECKSUMS} if verify_only else set())
     actual = {path.name for path in output.iterdir()}
     if actual != expected:
@@ -48,6 +51,17 @@ def finalize(version, output, notices, icon, verify_only=False):
         )
         if sidecar.read_bytes() != checksum(archive):
             raise ValueError(f"Desktop checksum sidecar differs: {archive.name}")
+
+    # Native builders already performed their tool-based payload and metadata
+    # checks. Assembly independently checks container framing and exact bytes;
+    # foreign installers are never executed here.
+    for target in contract.TARGETS:
+        for kind in installers.formats(target):
+            package = output / installers.name(version, target, kind)
+            installers.verify_container(package, version, target, kind)
+            sidecar = contract.regular(output / (package.name + ".sha256"), MAX_SIDECAR_BYTES)
+            if sidecar.read_bytes() != checksum(package):
+                raise ValueError(f"Desktop installer sidecar differs: {package.name}")
 
     notices_bytes = notice_source.read_bytes()
     bundled_notices = output / NOTICES

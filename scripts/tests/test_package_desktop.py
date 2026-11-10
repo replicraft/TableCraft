@@ -20,6 +20,8 @@ import package_desktop as desktop
 import desktop_release as release
 import release_contract as contract
 from test_package_cli import VERSION, native_binary
+from test_installer_contract import minimal_container
+import installer_contract
 
 
 def outline_icon():
@@ -301,7 +303,19 @@ class DesktopPackagingTests(unittest.TestCase):
             self.assertTrue(Path(call.args[0][0]).is_absolute())
             self.assertNotIn("shell", call.kwargs)
 
+    def native_installers(self):
+        output = self.root / "dist"
+        output.mkdir(exist_ok=True)
+        for target in contract.TARGETS:
+            for kind in installer_contract.formats(target):
+                path = output / installer_contract.name(VERSION, target, kind)
+                path.write_bytes(minimal_container(target, kind))
+                path.with_name(path.name + ".sha256").write_bytes(
+                    f"{hashlib.sha256(path.read_bytes()).hexdigest()}  {path.name}\n".encode()
+                )
+
     def test_complete_desktop_set_has_independent_notices_and_checksums(self):
+        self.native_installers()
         for target in contract.TARGETS:
             self.package(target)
         output = self.root / "dist"
@@ -309,19 +323,20 @@ class DesktopPackagingTests(unittest.TestCase):
         release.finalize(VERSION, output, self.notices, self.icon, verify_only=True)
 
         names = {path.name for path in output.iterdir()}
-        self.assertEqual(len(names), 14)
+        self.assertEqual(len(names), 34)
         self.assertIn("DesktopThirdPartyLicenses.txt", names)
         self.assertIn("SHA256SUMS-desktop.txt", names)
         self.assertNotIn("ThirdPartyLicenses.txt", names)
         self.assertNotIn("SHA256SUMS.txt", names)
         self.assertEqual((output / release.NOTICES).read_bytes(), self.notices.read_bytes())
         manifest = (output / release.CHECKSUMS).read_text().splitlines()
-        self.assertEqual(len(manifest), 13)
+        self.assertEqual(len(manifest), 33)
         for entry in manifest:
             digest, name = entry.split("  ")
             self.assertEqual(digest, hashlib.sha256((output / name).read_bytes()).hexdigest())
 
     def test_missing_platform_or_bad_sidecar_cannot_create_assembly_outputs(self):
+        self.native_installers()
         targets = list(contract.TARGETS)
         for target in targets[:-1]:
             self.package(target)
@@ -340,6 +355,7 @@ class DesktopPackagingTests(unittest.TestCase):
         self.assertFalse((output / release.CHECKSUMS).exists())
 
     def test_assembled_set_rejects_changed_notices_manifest_and_extra_assets(self):
+        self.native_installers()
         for target in contract.TARGETS:
             self.package(target)
         output = self.root / "dist"
@@ -362,7 +378,24 @@ class DesktopPackagingTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "release set differs"):
             release.finalize(VERSION, output, self.notices, self.icon, verify_only=True)
 
+    def test_each_native_installer_is_required_before_assembly_outputs(self):
+        self.native_installers()
+        for target in contract.TARGETS:
+            self.package(target)
+        output = self.root / "dist"
+        for target in contract.TARGETS:
+            for kind in installer_contract.formats(target):
+                path = output / installer_contract.name(VERSION, target, kind)
+                original = path.read_bytes()
+                path.unlink()
+                with self.assertRaisesRegex(ValueError, "release set differs"):
+                    release.finalize(VERSION, output, self.notices, self.icon)
+                self.assertFalse((output / release.NOTICES).exists())
+                self.assertFalse((output / release.CHECKSUMS).exists())
+                path.write_bytes(original)
+
     def test_failed_assembly_write_removes_only_its_new_outputs(self):
+        self.native_installers()
         for target in contract.TARGETS:
             self.package(target)
         output = self.root / "dist"
