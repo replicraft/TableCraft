@@ -1,4 +1,6 @@
 //! Current fixed Number declaration reconstruction over the checked V2 owner.
+mod retained;
+
 use super::candidate::Candidate;
 use super::record::{
     CurrentFieldAdditionIntentError as Error, NativeCurrentFieldAdditionIntent as Intent,
@@ -141,6 +143,9 @@ impl RecoverableCurrentFieldAdditionPlan {
     ) -> Result<PreparedResizableImage<'a, D, J>, JournalError> {
         let _span =
             tracing::debug_span!("native.current_field_addition.prepare_resizable").entered();
+        if self.intent.is_retained() {
+            return Err(JournalError::ImageSize);
+        }
         journal::prepare_resizable_expected(
             target,
             journal,

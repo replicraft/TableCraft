@@ -56,6 +56,7 @@ impl From<LimitError> for CurrentFieldAdditionIntentError {
 /// The original complete image binds every native origin and field identity.
 /// Actual current ownership and complete candidate images are requalified.
 pub struct NativeCurrentFieldAdditionIntent {
+    pub(super) retained: bool,
     pub(super) target: FieldAdditionTarget,
     pub(super) table: SchemaName,
     pub(super) column: SchemaName,
@@ -74,11 +75,16 @@ impl NativeCurrentFieldAdditionIntent {
     ) -> Result<Self, CurrentFieldAdditionIntentError> {
         validate_column(candidate.column(), budget, cancelled)?;
         Ok(Self {
+            retained: candidate.is_retained(),
             target: candidate.target(),
             table: copy_name(candidate.table(), budget, cancelled)?,
             column: copy_name(candidate.column(), budget, cancelled)?,
             before_length: candidate.before_bytes().len() as u64,
-            before_binding: binding::digest(candidate.before_bytes(), budget, cancelled)?,
+            before_binding: if candidate.is_retained() {
+                binding::digest_retained(candidate.before_bytes(), budget, cancelled)?
+            } else {
+                binding::digest(candidate.before_bytes(), budget, cancelled)?
+            },
         })
     }
 
@@ -88,6 +94,9 @@ impl NativeCurrentFieldAdditionIntent {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Candidate, CurrentFieldAdditionIntentError> {
+        if self.retained {
+            return self.reconstruct_retained(image, budget, cancelled);
+        }
         let candidate = match self.target {
             FieldAdditionTarget::NumberLongZero => {
                 Candidate::Number(image.prepare_current_number_field_addition(
@@ -113,6 +122,71 @@ impl NativeCurrentFieldAdditionIntent {
             return Err(CurrentFieldAdditionIntentError::IdentityMismatch);
         }
         Ok(candidate)
+    }
+
+    fn reconstruct_retained(
+        &self,
+        image: NativeImage,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Candidate, CurrentFieldAdditionIntentError> {
+        #[cfg(feature = "ace16-create")]
+        {
+            let candidate = match self.target {
+                FieldAdditionTarget::NumberLongZero => {
+                    Candidate::Number(image.prepare_retained_number_field_addition(
+                        self.table(),
+                        self.column(),
+                        budget,
+                        cancelled,
+                    )?)
+                }
+                FieldAdditionTarget::ShortText {
+                    max_utf16_units,
+                    unicode_compression,
+                } => Candidate::ShortText(image.prepare_retained_short_text_field_addition(
+                    self.table(),
+                    self.column(),
+                    max_utf16_units,
+                    unicode_compression,
+                    budget,
+                    cancelled,
+                )?),
+            };
+            if candidate.table() != self.table()
+                || candidate.column() != self.column()
+                || !candidate.is_retained()
+            {
+                return Err(CurrentFieldAdditionIntentError::IdentityMismatch);
+            }
+            Ok(candidate)
+        }
+        #[cfg(not(feature = "ace16-create"))]
+        {
+            let _ = (image, budget, cancelled);
+            Err(CurrentFieldAdditionError::Source.into())
+        }
+    }
+
+    /// Whether this request belongs exclusively to the retained image language.
+    pub const fn is_retained(&self) -> bool {
+        self.retained
+    }
+
+    /// Decode only retained Number10 or Short Text11, without legacy fallback.
+    pub fn decode_retained(
+        bytes: &[u8],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, CurrentFieldAdditionIntentError> {
+        let language = if bytes.starts_with(b"TCAC0010") {
+            codec::Language::RetainedNumber
+        } else if bytes.starts_with(b"TCAC0011") {
+            codec::Language::RetainedShortText
+        } else {
+            return Err(CurrentFieldAdditionIntentError::InvalidRecord);
+        };
+        codec::decode(bytes, language, budget, cancelled)
     }
 
     /// Exact source-resolved table spelling, independent of page addresses.
@@ -166,9 +240,15 @@ impl NativeCurrentFieldAdditionIntent {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<(), CurrentFieldAdditionIntentError> {
         check(budget, cancelled)?;
-        if bytes.len() as u64 != self.before_length
-            || binding::digest(bytes, budget, cancelled)? != self.before_binding
-        {
+        if bytes.len() as u64 != self.before_length {
+            return Err(CurrentFieldAdditionIntentError::BeforeMismatch);
+        }
+        let actual = if self.retained {
+            binding::digest_retained(bytes, budget, cancelled)?
+        } else {
+            binding::digest(bytes, budget, cancelled)?
+        };
+        if actual != self.before_binding {
             return Err(CurrentFieldAdditionIntentError::BeforeMismatch);
         }
         check(budget, cancelled)?;

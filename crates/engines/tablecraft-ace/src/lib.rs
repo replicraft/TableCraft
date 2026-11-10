@@ -391,8 +391,8 @@ pub use transaction::{
     CurrentFieldAdditionIntentError, FieldAdditionAfterOffHistoryIntentError,
     NativeCurrentFieldAdditionIntent, NativeFieldAdditionAfterOffHistoryIntent,
     QualifiedCurrentFieldAdditionRecovery, QualifiedFieldAdditionAfterOffHistoryRecovery,
-    RecoverableCurrentFieldAdditionPlan, RecoverableFieldAdditionAfterOffHistoryPlan,
-    qualify_native_current_field_addition_recovery,
+    QualifiedRetainedFieldAdditionRecovery, RecoverableCurrentFieldAdditionPlan,
+    RecoverableFieldAdditionAfterOffHistoryPlan, qualify_native_current_field_addition_recovery,
     qualify_native_field_addition_after_off_history_recovery,
 };
 

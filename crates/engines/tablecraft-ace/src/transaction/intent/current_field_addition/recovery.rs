@@ -1,4 +1,7 @@
 //! Checked V2 recovery after current source and complete image qualification.
+mod retained;
+pub use retained::QualifiedRetainedFieldAdditionRecovery;
+
 use super::{
     planning::same_image,
     record::{
@@ -30,6 +33,10 @@ pub fn qualify_native_current_field_addition_recovery<'a, J: DurableStorage>(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<QualifiedCurrentFieldAdditionRecovery<'a, J>, Error> {
     let _span = tracing::debug_span!("native.current_field_addition.recovery_qualify").entered();
+    check(budget, cancelled)?;
+    if intent.is_retained() {
+        return Err(Error::InvalidRecord);
+    }
     intent.verify_before(checked.before_bytes(), budget, cancelled)?;
     let image = NativeImage::capture(
         &mut Cursor::new(checked.before_bytes()),

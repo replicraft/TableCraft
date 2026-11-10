@@ -15,6 +15,10 @@ const NUMBER_LONG_ZERO: u16 = 1;
 const SHORT_TEXT_MAGIC: &[u8; 8] = b"TCAC0009";
 const SHORT_TEXT_PROFILE: u16 = 9;
 const SHORT_TEXT: u16 = 2;
+const RETAINED_NUMBER_MAGIC: &[u8; 8] = b"TCAC0010";
+const RETAINED_NUMBER_PROFILE: u16 = 10;
+const RETAINED_SHORT_TEXT_MAGIC: &[u8; 8] = b"TCAC0011";
+const RETAINED_SHORT_TEXT_PROFILE: u16 = 11;
 const MAX_SHORT_TEXT_UNITS: u16 = 255;
 const RESERVED_WIDTH: u16 = 0;
 const RESERVED_COMPRESSION: u16 = 0;
@@ -29,9 +33,12 @@ const TABLE_LENGTH_AT: usize = BINDING_AT + BINDING_BYTES;
 const COLUMN_LENGTH_AT: usize = TABLE_LENGTH_AT + size_of::<u16>();
 pub(super) const HEADER_BYTES: usize = COLUMN_LENGTH_AT + size_of::<u16>();
 
+#[derive(Clone, Copy)]
 pub(super) enum Language {
     Number,
     ShortText,
+    RetainedNumber,
+    RetainedShortText,
 }
 
 fn field<const N: usize>(input: &[u8], at: usize) -> Result<[u8; N], Error> {
@@ -51,6 +58,16 @@ pub(super) fn decode(
     let (magic, profile, tag) = match language {
         Language::Number => (MAGIC, PROFILE, NUMBER_LONG_ZERO),
         Language::ShortText => (SHORT_TEXT_MAGIC, SHORT_TEXT_PROFILE, SHORT_TEXT),
+        Language::RetainedNumber => (
+            RETAINED_NUMBER_MAGIC,
+            RETAINED_NUMBER_PROFILE,
+            NUMBER_LONG_ZERO,
+        ),
+        Language::RetainedShortText => (
+            RETAINED_SHORT_TEXT_MAGIC,
+            RETAINED_SHORT_TEXT_PROFILE,
+            SHORT_TEXT,
+        ),
     };
     if !(HEADER_BYTES..=Intent::MAX_ENCODED_BYTES).contains(&bytes.len())
         || field::<8>(bytes, 0)? != *magic
@@ -63,10 +80,14 @@ pub(super) fn decode(
     let width = u16::from_le_bytes(field(bytes, WIDTH_AT)?);
     let compression = u16::from_le_bytes(field(bytes, COMPRESSION_AT)?);
     let target = match language {
-        Language::Number if width == RESERVED_WIDTH && compression == RESERVED_COMPRESSION => {
+        Language::Number | Language::RetainedNumber
+            if width == RESERVED_WIDTH && compression == RESERVED_COMPRESSION =>
+        {
             FieldAdditionTarget::NumberLongZero
         }
-        Language::ShortText if (1..=MAX_SHORT_TEXT_UNITS).contains(&width) && compression <= 1 => {
+        Language::ShortText | Language::RetainedShortText
+            if (1..=MAX_SHORT_TEXT_UNITS).contains(&width) && compression <= 1 =>
+        {
             FieldAdditionTarget::ShortText {
                 max_utf16_units: usize::from(width),
                 unicode_compression: compression == 1,
@@ -76,7 +97,15 @@ pub(super) fn decode(
     };
 
     let before_length = u64::from_le_bytes(field(bytes, BEFORE_LENGTH_AT)?);
-    binding::length(before_length)?;
+    let retained = matches!(
+        language,
+        Language::RetainedNumber | Language::RetainedShortText
+    );
+    if retained {
+        binding::retained_length(before_length)?;
+    } else {
+        binding::length(before_length)?;
+    }
     let table_length = usize::from(u16::from_le_bytes(field(bytes, TABLE_LENGTH_AT)?));
     let column_length = usize::from(u16::from_le_bytes(field(bytes, COLUMN_LENGTH_AT)?));
     if HEADER_BYTES + table_length + column_length != bytes.len() {
@@ -90,6 +119,7 @@ pub(super) fn decode(
     validate_column(column, budget, cancelled)?;
 
     Ok(Intent {
+        retained,
         target,
         table: copy_name(table, budget, cancelled)?,
         column: copy_name(column, budget, cancelled)?,
@@ -108,8 +138,16 @@ pub(super) fn encode(
     validate_column(intent.column(), budget, cancelled)?;
     let (magic, profile, tag, width, compression) = match intent.target() {
         FieldAdditionTarget::NumberLongZero => (
-            MAGIC,
-            PROFILE,
+            if intent.is_retained() {
+                RETAINED_NUMBER_MAGIC
+            } else {
+                MAGIC
+            },
+            if intent.is_retained() {
+                RETAINED_NUMBER_PROFILE
+            } else {
+                PROFILE
+            },
             NUMBER_LONG_ZERO,
             RESERVED_WIDTH,
             RESERVED_COMPRESSION,
@@ -123,8 +161,16 @@ pub(super) fn encode(
                 return Err(Error::InvalidRecord);
             }
             (
-                SHORT_TEXT_MAGIC,
-                SHORT_TEXT_PROFILE,
+                if intent.is_retained() {
+                    RETAINED_SHORT_TEXT_MAGIC
+                } else {
+                    SHORT_TEXT_MAGIC
+                },
+                if intent.is_retained() {
+                    RETAINED_SHORT_TEXT_PROFILE
+                } else {
+                    SHORT_TEXT_PROFILE
+                },
                 SHORT_TEXT,
                 width,
                 u16::from(unicode_compression),

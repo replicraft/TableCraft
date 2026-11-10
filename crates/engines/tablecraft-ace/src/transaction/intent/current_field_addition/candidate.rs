@@ -10,6 +10,13 @@ pub(super) enum Candidate {
 }
 
 impl Candidate {
+    pub(super) fn is_retained(&self) -> bool {
+        match self {
+            Self::Number(candidate) => candidate.is_retained(),
+            Self::ShortText(candidate) => candidate.is_retained(),
+        }
+    }
+
     pub(super) fn before_bytes(&self) -> &[u8] {
         match self {
             Self::Number(candidate) => candidate.before_bytes(),

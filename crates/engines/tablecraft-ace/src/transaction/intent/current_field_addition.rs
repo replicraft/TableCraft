@@ -8,7 +8,8 @@ mod recovery;
 pub use planning::RecoverableCurrentFieldAdditionPlan;
 pub use record::{CurrentFieldAdditionIntentError, NativeCurrentFieldAdditionIntent};
 pub use recovery::{
-    QualifiedCurrentFieldAdditionRecovery, qualify_native_current_field_addition_recovery,
+    QualifiedCurrentFieldAdditionRecovery, QualifiedRetainedFieldAdditionRecovery,
+    qualify_native_current_field_addition_recovery,
 };
 
 #[cfg(test)]
