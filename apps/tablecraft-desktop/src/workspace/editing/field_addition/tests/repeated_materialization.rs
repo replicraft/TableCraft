@@ -21,6 +21,8 @@ fn repeat_add_and_fill(images: [Vec<u8>; 5], original_columns: usize) {
         after_second_fill,
     ] = images;
     let (_directory, path, _, mut harness) = opened(before);
+    // NO_CLONE: Keep an independent pre-edit display oracle after both Desktop
+    // instances are dropped; borrowing their cells cannot outlive those owners.
     let original_cells = harness
         .state()
         .state
@@ -42,6 +44,8 @@ fn repeat_add_and_fill(images: [Vec<u8>; 5], original_columns: usize) {
     review_and_save(&mut harness, &path, &after_first_add, &after_first_fill);
     drop(harness);
 
+    // NO_CLONE: The new Desktop owns its open path; retain our path separately
+    // for independent source-image and journal checks after its saves.
     let mut harness = app_harness(Desktop::new(egui::Context::default(), Some(path.clone())));
     finish_reads(&mut harness);
     assert_eq!(harness.state().state.data.as_ref().unwrap().rows.len(), 3);
@@ -62,6 +66,8 @@ fn repeat_add_and_fill(images: [Vec<u8>; 5], original_columns: usize) {
     review_and_save(&mut harness, &path, &after_second_add, &after_second_fill);
     drop(harness);
 
+    // NO_CLONE: The reopened Desktop owns its open path while the independent
+    // final source-image and journal checks below still need our path.
     let mut reopened = app_harness(Desktop::new(egui::Context::default(), Some(path.clone())));
     finish_reads(&mut reopened);
     let page = reopened.state().state.data.as_ref().unwrap();
