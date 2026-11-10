@@ -6,6 +6,7 @@ mod fitted;
 mod fixed;
 mod model;
 mod planning;
+mod row_ordinals;
 
 pub use dispatch::{NativeUpdateBody, NativeUpdateIntent, NativeUpdateProfile};
 pub use fitted::{NativeFittedEditIntent, NativeFittedIntentGroup, NativeFittedUpdates};

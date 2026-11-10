@@ -1,4 +1,5 @@
 //! Complete bounded framing and identity preflight before any decoded allocation.
+use super::super::row_ordinals::RowOrdinals;
 use super::{
     carrier::{self, Borrowed},
     codec,
@@ -10,12 +11,8 @@ use crate::{
     header::check,
     transaction::intent::{NativeIntentError, binding, model as names},
 };
-use std::collections::HashSet;
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
-// Logical per-identity allowance includes hash metadata/spare capacity; this
-// is not an exact resident-allocation measurement. It depends on real entries.
-const ROW_IDENTITY_ALLOCATION_BYTES: u64 = 4 * size_of::<usize>() as u64;
 const UPDATE_TOTAL_AT: usize = 0;
 const UPDATE_ROW_AT: usize = UPDATE_TOTAL_AT + size_of::<u32>();
 
@@ -283,25 +280,14 @@ fn scan<'a>(
                 return Err(EditError::Conflict.into());
             }
         }
-        let mut seen = HashSet::new();
+        let mut seen = RowOrdinals::default();
         let mut cells = Cursor {
             bytes: group.cells,
             at: 0,
         };
         for _ in 0..group.count {
             let update = cells.update(group.family, budget, cancelled)?;
-            check(budget, cancelled)?;
-            budget
-                .charge(Resource::Steps, 1)
-                .map_err(InspectError::from)?;
-            if seen.contains(&update.row) {
-                return Err(EditError::Conflict.into());
-            }
-            budget
-                .charge_allocation(1, ROW_IDENTITY_ALLOCATION_BYTES)
-                .map_err(InspectError::from)?;
-            seen.try_reserve(1).map_err(|_| InspectError::Allocation)?;
-            seen.insert(update.row);
+            seen.insert(update.row, budget, cancelled)?;
         }
         if cells.at != group.cells.len() {
             return Err(NativeIntentError::InvalidRecord);
