@@ -113,8 +113,30 @@ whole image. Forty-four focused native historical tests cover the combined
 profiles, including independent wire bytes, crossed-profile rejection, cold
 pending/committed recovery and forged offset-directory rejection. The connected
 field-addition batch passes fifteen cases. These observations do not qualify
-arbitrary imported layouts, bulk changes or materializing another absent field
-through an already-forwarded root; that repeated-growth workflow remains work.
+arbitrary imported layouts or bulk changes. Repeated growth through a forwarded
+root uses the separate operation below.
+
+### Filling another Number through a forwarded root
+
+The separate `TCNI0014`/profile14 operation accepts one absent Number field through
+an already-forwarded logical root in the same qualified fixed or mixed source.
+The original request and complete BEFORE binding are retained; source, record
+serialization and placement proofs are reconstructed during review and recovery.
+The previous hidden terminal remains byte-for-byte intact. A new hidden terminal
+is appended within owned capacity, and only the original logical root's pointer
+is retargeted. Index references, logical row counts, other values and absent-field
+NULL semantics remain unchanged.
+
+Normal historical UPDATE selection checks actual missing-field and root metadata
+before choosing the operation. Profile14 refuses direct roots and present fields;
+profiles12/13 retain their direct-root requirement. No refused planner is retried
+as another profile. Five focused native tests pass across fixed, Text, Binary and
+later-absent-Text sources. Independent complete images, exact request bytes,
+fresh-scope review, crossed-language refusals, pending/committed cold recovery
+and a forged journal AFTER are checked. The data-only journal feature also
+decodes profile14 but refuses native reconstruction without the writer feature.
+The connected two-add desktop journey and native Access comparison remain
+separate verification work.
 
 The closed `TCAC0008`/profile8 request binds the complete original and exact names,
 fixing this Number declaration. Recovery reconstructs both complete images under
