@@ -1,8 +1,10 @@
 //! TCAC0010/11 replays only after requalifying the same checked V3 journal.
-use super::super::record::{CurrentFieldAdditionIntentError, NativeCurrentFieldAdditionIntent};
-use crate::header::check;
 #[cfg(feature = "ace16-create")]
-use crate::{NativeImage, transaction::qualified_recovery::equal_image};
+use super::super::planning::same_image;
+use super::super::record::{CurrentFieldAdditionIntentError, NativeCurrentFieldAdditionIntent};
+#[cfg(feature = "ace16-create")]
+use crate::NativeImage;
+use crate::header::check;
 #[cfg(feature = "ace16-create")]
 use std::io::Cursor;
 use tablecraft_core::limits::ResourceBudget;
@@ -44,13 +46,13 @@ impl NativeCurrentFieldAdditionIntent {
                 cancelled,
             )?;
             let plan = self.reconstruct(image, budget, cancelled)?;
-            equal_image(
+            same_image(
                 plan.before_bytes(),
                 checked.before_bytes(),
                 budget,
                 cancelled,
             )?;
-            equal_image(plan.after_bytes(), checked.after_bytes(), budget, cancelled)?;
+            same_image(plan.after_bytes(), checked.after_bytes(), budget, cancelled)?;
             check(budget, cancelled)?;
             Ok(QualifiedRetainedFieldAdditionRecovery { checked })
         }
