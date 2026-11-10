@@ -14,6 +14,7 @@ use tablecraft_core::{
     limits::{Resource, ResourceBudget},
     values::Value,
 };
+use tablecraft_schema::ScalarType;
 
 /// Each consuming action keeps its original declared scalar language closed.
 #[derive(Clone, Copy)]
@@ -161,7 +162,7 @@ pub(in crate::table::mutation) fn build(
             .copy_from_slice(&value.to_le_bytes()),
         Value::Currency(_) => {
             let encoded = crate::table::scalar_encoding::encode::<{ size_of::<i64>() }>(
-                tablecraft_schema::ScalarType::Currency,
+                ScalarType::Currency,
                 value,
             )
             .ok_or(EditError::Preservation)?;

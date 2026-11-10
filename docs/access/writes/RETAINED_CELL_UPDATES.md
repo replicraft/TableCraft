@@ -1,11 +1,83 @@
 # Cell updates across retained table storage
 
-The normal reviewed cell editor can update a qualified unindexed LONG or Short
-Text field after table replacement, subsequent table creation and retained row
+The normal reviewed cell editor can update a qualified unindexed LONG, Short
+Text or Currency field after table replacement, subsequent table creation and retained row
 insertion. This separate ACE16 source family uses actual catalog/allocation
 ownership rather than the original eleven-page, definition-7 geometry. Desktop
 and MCP consume the shared runtime and Access adapter; no native editing logic
 was added to the desktop host.
+
+## Exact Currency edits and mixed tables
+
+TCNI0019/profile19 supplies a separate single-Currency-cell action for complete
+retained row frames. It reuses the existing retained-row source certificate,
+actual catalog/allocation ownership and complete-record admission. No additional
+program-absence purpose, INSERT encoder or crate is introduced. Unknown required
+programs, indexed targets and opaque record geometry remain refused.
+
+A source capability check admits a genuinely qualified LONG, Text or Currency
+editor from one captured source. Planning selects the action from the actual
+edited column: Currency uses TCNI19, while LONG/Text keep TCNI17. It never retries
+a failed proof under another family. TCNI18 retains its separate Int32-only opaque
+tail scope. Mixed tables therefore keep existing Number/Text edits when Currency
+becomes available.
+
+Currency writes use the existing exact scaled-integer codec; the independent
+proof reconstructs the selected eight bytes separately. NULL preserves ignored
+payload bytes, and no-ops retain the complete original image after full admission.
+Native identity, mask, variable footer, unrelated cells, siblings, indexes,
+counters and the complete protected complement remain checked. Display rounding
+never becomes edit input or changes stored precision.
+
+The retained original-request grammar already carries exact Currency values.
+TCNI19 adds an exact profile discriminator and native reconstruction, without
+changing TCNI17/18 decoding or action admission. The checked V3 owner replays the
+explicit family before recovery or settled confirmation. V1/V2 preparation refuse
+it; journal-only builds decode original data but cannot enable native mutation.
+
+Actual GUI coverage distinguishes two catalog dialects. A newly created packed
+catalog without `MSysDb` already uses the ordinary scalar route, even after adding
+a sibling. The new retained case creates `MoneyTable` on a settled `MSysDb` cohort,
+then inserts default/supplied Currency, edits, sets NULL, refills and reopens. A
+mixed appended table edits Currency, LONG and growing Text in sequence. Every
+save is compared with an independent complete image; typed four-decimal values,
+siblings and scratch SQL survive. A page number or sibling alone does not prove
+which native family was selected.
+
+### Representation references
+
+[Microsoft's Access field types](https://support.microsoft.com/en-au/access/data-types-for-access-desktop-databases)
+describe eight-byte Currency storage with four decimal places. The
+[provider Currency contract](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/datatypeenum)
+describes the signed integer scaled by 10,000; provider enumeration values are
+not ACE storage tags. [Jackcess ColumnImpl](https://raw.githubusercontent.com/jahlborn/jackcess/master/src/main/java/com/healthmarketscience/jackcess/impl/ColumnImpl.java)
+independently reads/writes a long at scale four. These are format references;
+no third-party implementation or fixture was copied. The native codec and core
+Currency carrier already existed.
+
+SQL examples use the existing typed assignment contract, for example
+`UPDATE MoneyTable SET Amount=CCur(-2.0001) WHERE ID=2`. Bare fractional literals
+produce Double carriers and remain outside current implicit assignment support;
+see [SQL stored assignment](../../query/QUERY_EXECUTION.md#sql-stored-assignment).
+That remaining query compatibility gap is separate from Currency persistence.
+
+### Local verification
+
+The selected native/request/recovery batch passes 43 tests. The three focused
+native Currency tests also pass after the independent mixed-property dictionary
+order correction, covering exact scaled extremes, NULL/no-op/conflicts, twenty
+user/catalog forwarding hops, whole-image protection and same-table interleaving.
+Two real SQL save-session tests pass six save/acknowledgement transitions. Three
+connected Currency GUI journeys and two existing Currency view controls pass;
+eight retained schema/row GUI regressions passed in the same initial batch.
+
+Three journal-only data/refusal tests, minimal journal-only Access/runtime and
+creation-only ACE checks pass. Strict all-target/all-feature Clippy for ACE,
+Access, runtime, UI, desktop and MCP, ACE rustdoc and repository guards pass.
+These are local macOS ARM64 headless and independent-byte results; they do not
+qualify Windows or Microsoft Access save/reopen parity. Saved-field Currency ADD,
+indexed Currency edits, other scalar actions and generic imported schema editing
+remain separate work.
 
 ## Opaque retired tails
 
@@ -71,7 +143,7 @@ indexes, row ownership and expected original values. Missing/unknown required
 programs are not treated as absent. Existing scalar/read compatibility does not
 authorize a mutation.
 
-The operation currently changes one unindexed LONG or Short Text cell. Native
+The operation currently changes one unindexed LONG, Short Text or Currency cell. Native
 field numbers, fixed offsets, variable-slot history and null masks remain distinct
 from visible column positions. Supplied NULL and empty text are separate; defaults
 are not applied to UPDATE. No-ops preserve original representations, including
@@ -102,7 +174,7 @@ assignment, 8 KiB carrier/name or 64 MiB image/request ceilings. Native field an
 physical storage restrictions are checked independently of inert request data.
 
 Retained and legacy request grammars remain explicit. The generic update decoder
-selects TCNI17 exactly; older direct decoders and encode methods cannot reinterpret
+selects TCNI17/18/19 from exact framing; older direct decoders and encode methods cannot reinterpret
 its retained body as their own grammar. Fresh reviewed requalification preserves
 the selected family and reconstructs the complete BEFORE/AFTER under separate
 native/proof allowances.

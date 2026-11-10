@@ -1,5 +1,33 @@
 # Implementation status
 
+## Currency editing across retained tables — 10 November 2026
+
+Qualified ACE16 Currency cells now use an exact TCNI19 action over complete
+retained row frames. It reuses the existing retained-row source certificate,
+scaled Currency codec, shared placement and independent whole-image proof.
+Currency targets select TCNI19; Number/Text targets keep TCNI17 in the same table.
+Opaque Int32 work remains TCNI18. No native editing logic moved into desktop.
+
+Three connected Currency GUI journeys pass: initial packed-catalog creation and
+editing, actual appended Currency-table creation/insertion/NULL/refill on a
+settled retained cohort, and mixed Currency/Number/growing-Text edits. Every save
+matches independent complete bytes; fresh typed values retain all four decimal
+places independently of display rounding, with siblings and scratch preserved.
+The first workflow already used the ordinary route; its passing baseline did not
+justify a new retained action until the distinct appended-table failure was shown.
+
+The native/request/recovery batch passes 43 selected tests, with the three native
+Currency cases rechecked after the mixed-oracle correction. Two shared SQL tests
+pass six actual save/acknowledgement transitions. Five selected Currency GUI/view
+tests, eight retained GUI regressions, three journal-only data/refusal tests,
+strict Clippy across six packages, minimal Access/runtime, creation-only ACE,
+ACE rustdoc and repository guards pass. No Windows/Access parity claim follows.
+
+SQL fractional assignments still require an explicit typed conversion such as
+`CCur(1.2345)`; generic implicit fractional conversion remains unfinished. Currency
+column ADD, indexed targets, broader scalar actions and general imported schema
+editing are separate gaps. See [retained cell updates](access/writes/RETAINED_CELL_UPDATES.md#exact-currency-edits-and-mixed-tables).
+
 ## Complete retained historical-row editing journey — 10 November 2026
 
 The headless GUI journey now completes successive field DROP to an ID-only

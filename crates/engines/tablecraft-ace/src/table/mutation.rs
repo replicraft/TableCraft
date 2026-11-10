@@ -40,11 +40,11 @@ mod index_ownership;
 #[cfg(feature = "journal")]
 pub(super) mod normal_eof;
 #[cfg(all(feature = "journal", feature = "ace16-create"))]
+mod retained_currency_row_updates;
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
 mod retained_opaque_row_updates;
 #[cfg(all(feature = "journal", feature = "ace16-create"))]
 mod retained_row_updates;
-#[cfg(all(feature = "journal", feature = "ace16-create"))]
-mod retained_currency_row_updates;
 #[cfg(feature = "ace16-write-preview")]
 pub use index_create::{Ace16IndexCreatePreview, SecondaryIndexCreate};
 #[cfg(all(feature = "ace16-create", feature = "journal"))]
