@@ -216,6 +216,27 @@ pub(in crate::table::mutation) fn capture_insert(
     capture_for(image, table, CapturePurpose::Insert, budget, cancelled)
 }
 
+/// Current schema operations inspect actual rows without granting row-write
+/// authority for retained inactive catalog padding. No failed ordinary admission
+/// is retried here; callers explicitly select the schema-purpose certificate.
+#[cfg(feature = "ace16-create")]
+pub(in crate::table::mutation) fn capture_schema(
+    image: &NativeImage,
+    table: &str,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Source, EditError> {
+    let target = crate::inspect_table_schema(
+        &mut image.reader(),
+        image.catalog().catalog().scope(),
+        table,
+        budget,
+        cancelled,
+    )?;
+    let certificate = NoRequiredTablePrograms::capture_schema(image, &target, budget, cancelled)?;
+    preserved_source::capture_schema(image, table, &certificate, budget, cancelled)
+}
+
 #[derive(Clone, Copy)]
 enum CapturePurpose {
     Updates,

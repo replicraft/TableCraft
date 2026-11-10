@@ -134,6 +134,8 @@ enum PayloadAdmission<'admission, 'image> {
     Closed(&'admission ClosedContent<'image>),
     #[cfg(feature = "journal")]
     NoRequired(&'admission NoRequiredTablePrograms<'image>),
+    #[cfg(all(feature = "journal", feature = "ace16-create"))]
+    SchemaNoRequired(&'admission NoRequiredTablePrograms<'image>),
 }
 
 #[derive(Clone, Copy)]
@@ -330,6 +332,10 @@ fn capture_framed(
         PayloadAdmission::NoRequired(certificate) => {
             certificate.require_source(image, schema, budget, cancelled)?
         }
+        #[cfg(all(feature = "journal", feature = "ace16-create"))]
+        PayloadAdmission::SchemaNoRequired(certificate) => {
+            certificate.require_schema_source(image, schema, budget, cancelled)?
+        }
         #[cfg(feature = "journal")]
         PayloadAdmission::Closed(certificate) => {
             certificate.require_source(image, schema, budget, cancelled)?
@@ -338,6 +344,8 @@ fn capture_framed(
     #[cfg(feature = "journal")]
     let definition_tail = match &payload {
         PayloadAdmission::NoRequired(certificate) => certificate.share_definition_tail(),
+        #[cfg(feature = "ace16-create")]
+        PayloadAdmission::SchemaNoRequired(certificate) => certificate.share_definition_tail(),
         _ => None,
     };
     let properties = inspect_table_properties(
@@ -471,15 +479,19 @@ fn capture_framed(
     }
 
     #[cfg(feature = "journal")]
+    let retain_native_keys = match &payload {
+        PayloadAdmission::Closed(_) | PayloadAdmission::NoRequired(_) => true,
+        #[cfg(feature = "ace16-create")]
+        PayloadAdmission::SchemaNoRequired(_) => true,
+        _ => false,
+    };
+
+    #[cfg(feature = "journal")]
     let retained_integral = retained_integral::qualify(
         image,
         &indexes,
         &projected,
-        matches!(
-            &payload,
-            PayloadAdmission::Closed(_) | PayloadAdmission::NoRequired(_)
-        )
-        .then_some(profile),
+        retain_native_keys.then_some(profile),
         &long_values,
         budget,
         cancelled,
@@ -713,6 +725,8 @@ impl PayloadAdmission<'_, '_> {
             | Self::NativeChecked(_, _)
             | Self::Closed(_)
             | Self::NoRequired(_) => true,
+            #[cfg(all(feature = "journal", feature = "ace16-create"))]
+            Self::SchemaNoRequired(_) => true,
             #[cfg(feature = "ace16-write-preview")]
             Self::Inert | Self::Selected(_) => false,
         }
@@ -813,6 +827,27 @@ pub(in crate::table::mutation) fn capture_no_required_actions(
         image,
         table,
         PayloadAdmission::NoRequired(certificate),
+        ReadProfile::retained(ColumnFraming::Actions),
+        budget,
+        cancelled,
+    )
+}
+
+/// Metadata-only source admission retains complete rows, constraints, indexes
+/// and physical ownership while requiring its distinct schema-purpose proof.
+/// A schema certificate cannot enter the ordinary row-mutation capture routes.
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub(in crate::table::mutation) fn capture_schema(
+    image: &NativeImage,
+    table: &str,
+    certificate: &NoRequiredTablePrograms<'_>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Source, EditError> {
+    capture_framed(
+        image,
+        table,
+        PayloadAdmission::SchemaNoRequired(certificate),
         ReadProfile::retained(ColumnFraming::Actions),
         budget,
         cancelled,

@@ -72,9 +72,36 @@ pub(super) struct Selected {
     pub properties_present: bool,
 }
 
+#[derive(Clone, Copy)]
+enum Padding {
+    Strict,
+    #[cfg(feature = "ace16-create")]
+    RetainedMetadata,
+}
+
 pub(super) fn validate(
     image: &NativeImage,
     target: &TableSchema,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Selected, EditError> {
+    validate_with_padding(image, target, Padding::Strict, budget, cancelled)
+}
+
+#[cfg(feature = "ace16-create")]
+pub(super) fn validate_schema(
+    image: &NativeImage,
+    target: &TableSchema,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Selected, EditError> {
+    validate_with_padding(image, target, Padding::RetainedMetadata, budget, cancelled)
+}
+
+fn validate_with_padding(
+    image: &NativeImage,
+    target: &TableSchema,
+    padding: Padding,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Selected, EditError> {
@@ -107,10 +134,19 @@ pub(super) fn validate(
         let native_slot = row.slot;
         let raw = row.physical.data.as_slice();
         let layout = record_layout::parse(raw, &schema, reader.budget)?;
+        let variable_end = layout.offsets.last().copied().ok_or_else(refused)?;
+        let invalid_padding = match padding {
+            Padding::Strict => variable_end != layout.data_end,
+            #[cfg(feature = "ace16-create")]
+            Padding::RetainedMetadata => variable_end > layout.data_end,
+        };
+        // Complete declared columns and monotone offsets still bind every live
+        // variable cell. Only the unreferenced interval before the checked footer
+        // may be retained by the metadata-only purpose, never reinterpreted.
         if layout.count != FIELD_COUNT
             || layout.offsets.len() != VARIABLE_COUNT + 1
             || layout.offsets.first() != Some(&FIXED_END)
-            || layout.offsets.last() != Some(&layout.data_end)
+            || invalid_padding
             || raw.len() - layout.mask_start != FIELD_COUNT.div_ceil(MASK_BITS)
             || raw[raw.len() - 1] & !1 != 0
         {

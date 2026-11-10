@@ -27,6 +27,13 @@ enum Declaration {
     SparseGenerated,
 }
 
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum Purpose {
+    Rows,
+    #[cfg(feature = "ace16-create")]
+    Schema,
+}
+
 /// No public constructor or serialized permission. This certificate binds the
 /// actual image and strict target catalog row, never an empty program selection.
 pub(in crate::table::mutation) struct NoRequiredTablePrograms<'image> {
@@ -35,6 +42,7 @@ pub(in crate::table::mutation) struct NoRequiredTablePrograms<'image> {
     definition: u32,
     catalog_reference: u32,
     declaration: Declaration,
+    purpose: Purpose,
     definition_tail: Option<RetainedDefinitionTail>,
 }
 
@@ -75,7 +83,7 @@ impl<'image> NoRequiredTablePrograms<'image> {
     }
 
     pub(in crate::table::mutation) fn require_generated_insert(&self) -> Result<(), EditError> {
-        if self.declaration != Declaration::SparseGenerated {
+        if self.purpose != Purpose::Rows || self.declaration != Declaration::SparseGenerated {
             return Err(EditError::Preservation);
         }
         Ok(())
@@ -137,6 +145,9 @@ impl<'image> NoRequiredTablePrograms<'image> {
     }
 
     pub(in crate::table::mutation) fn retained_update_keys(&self) -> Result<bool, EditError> {
+        if self.purpose != Purpose::Rows {
+            return Err(EditError::Preservation);
+        }
         match self.declaration {
             Declaration::DenseIntegral => Ok(false),
             Declaration::DenseRetained => Ok(true),
@@ -151,6 +162,36 @@ impl<'image> NoRequiredTablePrograms<'image> {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, EditError> {
+        Self::capture_with_purpose(image, schema, declaration, Purpose::Rows, budget, cancelled)
+    }
+
+    /// Metadata-only source evidence. The bounded native gap lies outside every
+    /// declared live catalog cell; ordinary row certificates retain strict framing.
+    #[cfg(feature = "ace16-create")]
+    pub(in crate::table::mutation) fn capture_schema(
+        image: &'image NativeImage,
+        schema: &TableSchema,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, EditError> {
+        Self::capture_with_purpose(
+            image,
+            schema,
+            Declaration::Actions,
+            Purpose::Schema,
+            budget,
+            cancelled,
+        )
+    }
+
+    fn capture_with_purpose(
+        image: &'image NativeImage,
+        schema: &TableSchema,
+        declaration: Declaration,
+        purpose: Purpose,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, EditError> {
         let _span = tracing::debug_span!("native.table.no_required_programs.capture").entered();
         check(budget, cancelled)?;
         image.require_standard_capture()?;
@@ -161,7 +202,11 @@ impl<'image> NoRequiredTablePrograms<'image> {
         {
             return Err(refused());
         }
-        let selected = catalog::validate(image, schema, budget, cancelled)?;
+        let selected = match purpose {
+            Purpose::Rows => catalog::validate(image, schema, budget, cancelled)?,
+            #[cfg(feature = "ace16-create")]
+            Purpose::Schema => catalog::validate_schema(image, schema, budget, cancelled)?,
+        };
         if selected.properties_present {
             properties::capture(image, schema, budget, cancelled)?;
         }
@@ -198,6 +243,7 @@ impl<'image> NoRequiredTablePrograms<'image> {
             definition: schema.definition_page(),
             catalog_reference,
             declaration,
+            purpose,
             definition_tail,
         })
     }
@@ -211,6 +257,33 @@ impl<'image> NoRequiredTablePrograms<'image> {
     }
 
     pub(in crate::table::mutation) fn require_source(
+        &self,
+        image: &NativeImage,
+        schema: &TableSchema,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(), EditError> {
+        if self.purpose != Purpose::Rows {
+            return Err(EditError::Preservation);
+        }
+        self.require_binding(image, schema, budget, cancelled)
+    }
+
+    #[cfg(feature = "ace16-create")]
+    pub(in crate::table::mutation) fn require_schema_source(
+        &self,
+        image: &NativeImage,
+        schema: &TableSchema,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(), EditError> {
+        if self.purpose != Purpose::Schema {
+            return Err(EditError::Preservation);
+        }
+        self.require_binding(image, schema, budget, cancelled)
+    }
+
+    fn require_binding(
         &self,
         image: &NativeImage,
         schema: &TableSchema,
@@ -257,3 +330,6 @@ mod ignore_null_prior_stages;
 
 #[cfg(test)]
 mod guid_prior_stages;
+
+#[cfg(all(test, feature = "ace16-create"))]
+mod schema_tests;

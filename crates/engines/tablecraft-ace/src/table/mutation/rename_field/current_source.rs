@@ -57,7 +57,7 @@ pub(super) fn observe(
 
     // Actual row/index/program/constraint evidence is independent of empty
     // creator seeds and retained counters, deleted slots or previous spellings.
-    let source = normal_ordinary::capture_insert(image, table, budget, cancelled)?;
+    let source = normal_ordinary::capture_schema(image, table, budget, cancelled)?;
     if !source.dependencies.is_empty()
         || source
             .table
