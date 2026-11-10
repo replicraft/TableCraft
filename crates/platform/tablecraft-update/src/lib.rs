@@ -11,11 +11,13 @@ mod download;
 mod error;
 mod http;
 pub mod installation;
+pub mod msi;
 mod package;
 pub mod platform;
 mod preparation;
 pub mod release;
 pub mod session;
+pub mod target;
 mod trust;
 mod verification;
 

@@ -17,6 +17,13 @@ pub struct RetainedRecovery {
 }
 
 impl RetainedRecovery {
+    pub(crate) fn new(backup: PathBuf, installation: PathBuf) -> Self {
+        Self {
+            backup,
+            installation,
+        }
+    }
+
     /// Returns the private directory containing any originals not restored.
     pub fn backup_directory(&self) -> &Path {
         &self.backup
@@ -59,10 +66,7 @@ impl AppliedUpdate {
         stage: ApplyStage,
     ) -> Self {
         Self {
-            recovery: RetainedRecovery {
-                backup: staging,
-                installation,
-            },
+            recovery: RetainedRecovery::new(staging, installation),
             helper,
             stage,
         }

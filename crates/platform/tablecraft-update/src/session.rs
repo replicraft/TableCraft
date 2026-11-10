@@ -4,13 +4,17 @@ use crate::{
     DownloadProgress, PreparedUpdate, UpdateError, Updater,
     apply::{AppliedUpdate, ApplyError},
     artifact::ArtifactKind,
-    installation::{self, InstallPlan, Installed, ManualReason},
+    installation::{self, InstallPlan, ManualReason},
     platform::Platform,
     release::AvailableUpdate,
+    target::UpdateTarget,
 };
 use semver::Version;
 use std::mem;
 use thiserror::Error;
+
+#[cfg(windows)]
+use crate::msi;
 
 /// An explicitly requested operation on one worker-owned update session.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -87,12 +91,15 @@ pub struct Session {
 #[derive(Debug)]
 enum State {
     Idle,
-    Available {
-        release: AvailableUpdate,
-        installed: Installed,
-    },
+    Available(Box<AvailableState>),
     Ready(PreparedUpdate),
     RestartScheduled,
+}
+
+#[derive(Debug)]
+struct AvailableState {
+    release: AvailableUpdate,
+    target: UpdateTarget,
 }
 
 impl Session {
@@ -148,6 +155,20 @@ impl Session {
     ) -> Result<(), UpdateTaskError> {
         self.state = State::Idle;
         publish(UpdateEvent::Checking, cancelled, emit)?;
+        #[cfg(windows)]
+        if msi::hint(self.updater.platform())? {
+            let Some(release) = self.updater.check(ArtifactKind::WindowsMsi, cancelled)? else {
+                return publish(UpdateEvent::Current, cancelled, emit);
+            };
+            let installed =
+                msi::detect(self.updater.version(), self.updater.platform(), cancelled)?;
+            return self.accept_target(
+                release,
+                UpdateTarget::WindowsMsi(installed),
+                cancelled,
+                emit,
+            );
+        }
         let available = self
             .updater
             .check(ArtifactKind::PortableArchive, cancelled)?;
@@ -176,12 +197,25 @@ impl Session {
                 emit,
             ),
             InstallPlan::Portable(installed) | InstallPlan::MacBundle(installed) => {
-                let version = release.version().to_string();
-                publish(UpdateEvent::Available { version }, cancelled, emit)?;
-                self.state = State::Available { release, installed };
-                Ok(())
+                self.accept_target(release, UpdateTarget::Package(installed), cancelled, emit)
             }
         }
+    }
+
+    fn accept_target(
+        &mut self,
+        release: AvailableUpdate,
+        target: UpdateTarget,
+        cancelled: &dyn Fn() -> bool,
+        emit: &mut dyn FnMut(UpdateEvent) -> bool,
+    ) -> Result<(), UpdateTaskError> {
+        if release.kind() != target.kind() || release.platform() != target.platform() {
+            return Err(UpdateError::ReleaseMetadata.into());
+        }
+        let version = release.version().to_string();
+        publish(UpdateEvent::Available { version }, cancelled, emit)?;
+        self.state = State::Available(Box::new(AvailableState { release, target }));
+        Ok(())
     }
 
     fn download(
@@ -189,17 +223,17 @@ impl Session {
         cancelled: &dyn Fn() -> bool,
         emit: &mut dyn FnMut(UpdateEvent) -> bool,
     ) -> Result<(), UpdateTaskError> {
-        let State::Available { release, installed } = mem::replace(&mut self.state, State::Idle)
-        else {
+        let State::Available(available) = mem::replace(&mut self.state, State::Idle) else {
             return Err(UpdateTaskError::InvalidState);
         };
+        let AvailableState { release, target } = *available;
         check_cancelled(cancelled)?;
-        let verified = self
-            .updater
-            .download(&release, installed.directory(), &mut |progress| {
-                !cancelled() && emit(UpdateEvent::Downloading(progress))
-            })?;
-        let prepared = verified.prepare(installed, cancelled)?;
+        let verified =
+            self.updater
+                .download(&release, target.staging_parent(), &mut |progress| {
+                    !cancelled() && emit(UpdateEvent::Downloading(progress))
+                })?;
+        let prepared = verified.prepare(target, cancelled)?;
         let version = prepared.version().to_string();
         publish(UpdateEvent::Ready { version }, cancelled, emit)?;
         self.state = State::Ready(prepared);

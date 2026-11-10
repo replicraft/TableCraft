@@ -42,6 +42,10 @@ pub struct VerifiedDownload {
 }
 
 impl VerifiedDownload {
+    pub(crate) fn digest(&self) -> &[u8; 32] {
+        &self.digest
+    }
+
     pub(crate) fn into_version(self) -> Version {
         self.version
     }
