@@ -11,6 +11,8 @@ mod autonumber_counter;
 pub(crate) mod catalog_property;
 #[cfg(all(test, feature = "ace16-write-preview"))]
 mod create_index_tests;
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+mod current_row_updates;
 mod data_ownership;
 #[cfg(feature = "ace16-write-preview")]
 mod delete;

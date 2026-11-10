@@ -5,6 +5,11 @@ use super::super::{
 use crate::{EditError, NativeImage, WriteBlocker};
 use tablecraft_core::limits::ResourceBudget;
 
+enum Purpose {
+    Historical,
+    CurrentRows,
+}
+
 /// This proof has a separate purpose from ordinary and readonly schema sources.
 /// Each consumer independently qualifies its present or absent field requests.
 pub(in crate::table::mutation) struct Source<'image> {
@@ -19,6 +24,27 @@ impl<'image> Source<'image> {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, EditError> {
+        Self::capture_with_purpose(image, table, Purpose::Historical, budget, cancelled)
+    }
+
+    /// Current logical gaps use their own row certificate and serializer.
+    /// Historical request decoders continue selecting the original purpose.
+    pub(in crate::table::mutation) fn capture_current_rows(
+        image: &'image NativeImage,
+        table: &str,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, EditError> {
+        Self::capture_with_purpose(image, table, Purpose::CurrentRows, budget, cancelled)
+    }
+
+    fn capture_with_purpose(
+        image: &'image NativeImage,
+        table: &str,
+        purpose: Purpose,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, EditError> {
         let current = current_schema::observe(image, table, budget, cancelled).map_err(
             |error| match error {
                 current_schema::Error::Inspect(error) => EditError::Inspect(error),
@@ -26,16 +52,33 @@ impl<'image> Source<'image> {
                 current_schema::Error::Source => EditError::Unsupported(WriteBlocker::RowLayout),
             },
         )?;
-        let certificate = NoRequiredTablePrograms::capture_historical_fixed_rows(
-            image, &current, budget, cancelled,
-        )?;
-        let facts = preserved_source::capture_historical_fixed_rows(
-            image,
-            table,
-            &certificate,
-            budget,
-            cancelled,
-        )?;
+        let certificate = match purpose {
+            Purpose::Historical => NoRequiredTablePrograms::capture_historical_fixed_rows(
+                image, &current, budget, cancelled,
+            )?,
+            Purpose::CurrentRows => NoRequiredTablePrograms::capture_current_rows(
+                image,
+                &current.schema,
+                budget,
+                cancelled,
+            )?,
+        };
+        let facts = match purpose {
+            Purpose::Historical => preserved_source::capture_historical_fixed_rows(
+                image,
+                table,
+                &certificate,
+                budget,
+                cancelled,
+            )?,
+            Purpose::CurrentRows => preserved_source::capture_current_rows(
+                image,
+                table,
+                &certificate,
+                budget,
+                cancelled,
+            )?,
+        };
         if !facts.dependencies.is_empty() {
             return Err(EditError::Unsupported(WriteBlocker::Column));
         }
