@@ -25,7 +25,7 @@ enum Purpose {
     #[cfg(all(feature = "journal", feature = "ace16-create"))]
     Retained,
     #[cfg(all(feature = "journal", feature = "ace16-create"))]
-    NativeCreation,
+    Represented,
 }
 
 struct Live<'a> {
@@ -63,16 +63,16 @@ pub(crate) fn capture_retained<'a>(
     capture_with_purpose(bytes, catalog, Purpose::Retained, budget, cancelled)
 }
 
-/// Observe native7 catalog property maps, including fully represented indirect
-/// candidates. This is not an older property/row mutation source certificate.
+/// Observe fully represented catalog property maps without granting property
+/// allocation authority. Each consuming action retains its own source certificate.
 #[cfg(all(feature = "journal", feature = "ace16-create"))]
-pub(crate) fn capture_native_creation<'a>(
+pub(crate) fn capture_represented<'a>(
     bytes: &'a [u8],
     catalog: &'a CatalogInspection,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Ledger<'a>, EditError> {
-    capture_with_purpose(bytes, catalog, Purpose::NativeCreation, budget, cancelled)
+    capture_with_purpose(bytes, catalog, Purpose::Represented, budget, cancelled)
 }
 
 fn capture_with_purpose<'a>(
@@ -114,8 +114,8 @@ fn capture_with_purpose<'a>(
     // Writing property bodies remains separately source/placement-qualified.
     let owned = match purpose {
         #[cfg(all(feature = "journal", feature = "ace16-create"))]
-        Purpose::NativeCreation => {
-            ObservedScopes::capture_native_creation(&mut reader, &schema, references)?
+        Purpose::Represented => {
+            ObservedScopes::capture_represented(&mut reader, &schema, references)?
         }
         _ => ObservedScopes::capture(&mut reader, &schema, references)?,
     };
@@ -135,7 +135,7 @@ fn capture_with_purpose<'a>(
         let descriptor = match purpose {
             Purpose::Original => descriptor::capture(&mut reader, &schema, selected, origin)?,
             #[cfg(all(feature = "journal", feature = "ace16-create"))]
-            Purpose::Retained | Purpose::NativeCreation => descriptor::capture_retained(
+            Purpose::Retained | Purpose::Represented => descriptor::capture_retained(
                 &mut reader,
                 &schema,
                 selected,

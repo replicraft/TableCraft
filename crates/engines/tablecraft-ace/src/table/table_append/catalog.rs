@@ -30,7 +30,7 @@ const NAME_OPTIONS: [&str; 2] = ["Track Name AutoCorrect Info", "Perform Name Au
 #[derive(Clone, Copy)]
 enum PropertyObservation {
     Existing,
-    NativeCreation,
+    Represented,
 }
 
 pub(super) struct Facts {
@@ -61,13 +61,13 @@ pub(super) fn capture_packed(
     capture_with(
         image,
         false,
-        PropertyObservation::NativeCreation,
+        PropertyObservation::Represented,
         budget,
         cancelled,
     )
 }
 
-pub(super) fn capture_native(
+pub(super) fn capture_represented(
     image: &NativeImage,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
@@ -75,7 +75,7 @@ pub(super) fn capture_native(
     capture_with(
         image,
         true,
-        PropertyObservation::NativeCreation,
+        PropertyObservation::Represented,
         budget,
         cancelled,
     )
@@ -223,8 +223,8 @@ fn capture_with(
         PropertyObservation::Existing => {
             ledger::capture_retained(image.as_bytes(), image.catalog(), budget, cancelled)?
         }
-        PropertyObservation::NativeCreation => {
-            ledger::capture_native_creation(image.as_bytes(), image.catalog(), budget, cancelled)?
+        PropertyObservation::Represented => {
+            ledger::capture_represented(image.as_bytes(), image.catalog(), budget, cancelled)?
         }
     };
     drop(properties);

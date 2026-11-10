@@ -18,7 +18,7 @@ const INDIRECT_MAP: u8 = 1;
 enum HintGrammar {
     Inline,
     #[cfg(all(feature = "journal", feature = "ace16-create"))]
-    NativeCreation,
+    Represented,
 }
 
 /// Full allocated storage and membership observations. This type has no edits,
@@ -38,15 +38,15 @@ impl ObservedScopes {
         Self::capture_with(reader, schema, references, HintGrammar::Inline)
     }
 
-    /// Native table creation observes represented indirect candidates without
-    /// granting that shape to older row or property mutation factories.
+    /// Observe fully represented candidates without granting mutable LVAL
+    /// allocation authority. The consuming source still proves its action purpose.
     #[cfg(all(feature = "journal", feature = "ace16-create"))]
-    pub fn capture_native_creation(
+    pub fn capture_represented(
         reader: &mut Reader<'_, Cursor<&[u8]>>,
         schema: &TableSchema,
         references: LongValueMapReferences,
     ) -> Result<Self, EditError> {
-        Self::capture_with(reader, schema, references, HintGrammar::NativeCreation)
+        Self::capture_with(reader, schema, references, HintGrammar::Represented)
     }
 
     fn capture_with(
@@ -77,7 +77,7 @@ impl ObservedScopes {
         let hint_supported = match grammar {
             HintGrammar::Inline => long_value.hint.kind() == INLINE_MAP,
             #[cfg(all(feature = "journal", feature = "ace16-create"))]
-            HintGrammar::NativeCreation => {
+            HintGrammar::Represented => {
                 matches!(long_value.hint.kind(), INLINE_MAP | INDIRECT_MAP)
             }
         };

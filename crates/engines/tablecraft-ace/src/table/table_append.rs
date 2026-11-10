@@ -67,16 +67,16 @@ impl<'image> Inventory<'image> {
         })
     }
 
-    /// Native-count creation separately proves represented indirect catalog
-    /// candidates. Older retained action sources continue through `capture`.
-    pub(crate) fn capture_native(
+    /// Observe represented catalog candidates for read-only metadata consumers.
+    /// Schema and mutable property sources retain the stricter `capture` policy.
+    pub(crate) fn capture_represented(
         image: &'image NativeImage,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, EditError> {
         check(budget, cancelled)?;
         image.require_retained_capture()?;
-        let facts = catalog::capture_native(image, budget, cancelled)?;
+        let facts = catalog::capture_represented(image, budget, cancelled)?;
         let storage = storage::capture(image, &facts.schema, budget, cancelled)?;
         Ok(Self {
             image,

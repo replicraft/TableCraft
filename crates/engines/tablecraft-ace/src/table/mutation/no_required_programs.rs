@@ -442,8 +442,14 @@ impl<'image> NoRequiredTablePrograms<'image> {
             | Purpose::RetainedOpaqueRows
             | Purpose::RetainedOpaqueInsert
             | Purpose::RetainedDelete
-            | Purpose::RetainedInsert
-            | Purpose::RetainedSchema => {
+            | Purpose::RetainedInsert => {
+                let inventory = crate::table::table_append::Inventory::capture_represented(
+                    image, budget, cancelled,
+                )?;
+                catalog::validate_retained(image, schema, &inventory, budget, cancelled)?
+            }
+            #[cfg(feature = "ace16-create")]
+            Purpose::RetainedSchema => {
                 let inventory =
                     crate::table::table_append::Inventory::capture(image, budget, cancelled)?;
                 catalog::validate_retained(image, schema, &inventory, budget, cancelled)?
@@ -745,3 +751,6 @@ mod current_delete_tests;
 
 #[cfg(all(test, feature = "ace16-create"))]
 mod retained_insert_tests;
+
+#[cfg(all(test, feature = "ace16-create"))]
+mod represented_catalog_tests;

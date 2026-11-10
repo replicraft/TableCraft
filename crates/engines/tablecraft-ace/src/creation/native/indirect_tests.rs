@@ -38,8 +38,7 @@ fn native_creation_observes_indirect_candidates_and_preserves_them_on_next_appen
         ledger::capture_retained(&source.after, image.catalog(), &mut budget(), &|| false),
         Err(EditError::Unsupported(WriteBlocker::RowLayout))
     ));
-    ledger::capture_native_creation(&source.after, image.catalog(), &mut budget(), &|| false)
-        .unwrap();
+    ledger::capture_represented(&source.after, image.catalog(), &mut budget(), &|| false).unwrap();
     Inventory::capture_packed(&image, &mut budget(), &|| false).unwrap();
     let columns = [
         CreateColumn::new("Id", ScalarType::Int32)
