@@ -1,4 +1,5 @@
 //! Reserve visible slots against original owned capacity before staging bytes.
+use super::indexed::LvalScope;
 use crate::{
     EditError, InspectError, NativeImage, WriteBlocker,
     format::{
@@ -56,7 +57,7 @@ pub(super) fn reserve(
         image,
         source,
         records,
-        super::indexed::LvalScope::Original,
+        LvalScope::Original,
         budget,
         cancelled,
     )
@@ -66,7 +67,7 @@ pub(super) fn reserve_scoped(
     image: &NativeImage,
     source: &Source,
     records: &[Vec<u8>],
-    scope: super::indexed::LvalScope,
+    scope: LvalScope,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Staged, EditError> {
@@ -85,7 +86,7 @@ pub(super) fn reserve_growing(
         source,
         records,
         true,
-        super::indexed::LvalScope::Original,
+        LvalScope::Original,
         budget,
         cancelled,
     )
@@ -96,7 +97,7 @@ fn reserve_with(
     source: &Source,
     records: &[Vec<u8>],
     allow_eof: bool,
-    scope: super::indexed::LvalScope,
+    scope: LvalScope,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Staged, EditError> {
@@ -119,13 +120,9 @@ fn reserve_with(
     }
 
     let space = match scope {
-        super::indexed::LvalScope::Original => {
-            Space::capture_normal(image, schema, &owned, budget, cancelled)?
-        }
+        LvalScope::Original => Space::capture_normal(image, schema, &owned, budget, cancelled)?,
         #[cfg(feature = "ace16-create")]
-        super::indexed::LvalScope::Retained => {
-            Space::capture_retained(image, schema, &owned, budget, cancelled)?
-        }
+        LvalScope::Retained => Space::capture_retained(image, schema, &owned, budget, cancelled)?,
     };
 
     budget

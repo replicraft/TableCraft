@@ -1,4 +1,5 @@
 //! Fresh independent record encoding and original-capacity placement replay.
+use super::indexed::LvalScope;
 use crate::{
     EditError, InspectError, NativeEditPlan, NativeImage, RowInsert,
     format::{
@@ -172,7 +173,7 @@ pub(in crate::table::mutation::normal_insert) fn reconstruct_encoded(
         Reconstruction {
             retain_references,
             maximum_rows: Some(crate::limits::MAX_LIVE_ROWS),
-            scope: super::indexed::LvalScope::Original,
+            scope: LvalScope::Original,
         },
         budget,
         cancelled,
@@ -197,7 +198,7 @@ pub(in crate::table::mutation::normal_insert) fn reconstruct_retained_encoded(
         Reconstruction {
             retain_references,
             maximum_rows: None,
-            scope: super::indexed::LvalScope::Retained,
+            scope: LvalScope::Retained,
         },
         budget,
         cancelled,
@@ -207,7 +208,7 @@ pub(in crate::table::mutation::normal_insert) fn reconstruct_retained_encoded(
 struct Reconstruction {
     retain_references: bool,
     maximum_rows: Option<usize>,
-    scope: super::indexed::LvalScope,
+    scope: LvalScope,
 }
 
 fn reconstruct_encoded_with_limit(
@@ -414,19 +415,13 @@ pub(super) fn capacities(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(Vec<Capacity>, Space), EditError> {
-    capacities_scoped(
-        image,
-        source,
-        super::indexed::LvalScope::Original,
-        budget,
-        cancelled,
-    )
+    capacities_scoped(image, source, LvalScope::Original, budget, cancelled)
 }
 
 fn capacities_scoped(
     image: &NativeImage,
     source: &Source,
-    scope: super::indexed::LvalScope,
+    scope: LvalScope,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(Vec<Capacity>, Space), EditError> {
@@ -444,11 +439,11 @@ fn capacities_scoped(
     let reference = u32_at(&definition, TABLE_FREE_MAP_OFFSET)?;
     let hint = RepresentedMap::read(&mut reader, reference, MapRole::TableFreeSpace)?;
     let space = match scope {
-        super::indexed::LvalScope::Original => {
+        LvalScope::Original => {
             Space::capture_normal(image, schema, &owned, reader.budget, cancelled)?
         }
         #[cfg(feature = "ace16-create")]
-        super::indexed::LvalScope::Retained => {
+        LvalScope::Retained => {
             Space::capture_retained(image, schema, &owned, reader.budget, cancelled)?
         }
     };
