@@ -68,6 +68,25 @@ pub(in crate::editing) fn review(
                 table, column, &mut work, cancelled,
             )?,
         )),
+        FieldAdditionSourcePurpose::CurrentShortText => {
+            let FieldAdditionTarget::ShortText {
+                max_utf16_units,
+                unicode_compression,
+            } = target
+            else {
+                return Err(EditError::InvalidInput.into());
+            };
+            Plan::Current(Box::new(
+                image.plan_recoverable_current_short_text_field_addition(
+                    table,
+                    column,
+                    max_utf16_units,
+                    unicode_compression,
+                    &mut work,
+                    cancelled,
+                )?,
+            ))
+        }
         FieldAdditionSourcePurpose::Created(CreatedFieldAdditionSourcePurpose::FirstNumber) => {
             Plan::First(
                 image.plan_recoverable_created_add_default_zero_int32_column(

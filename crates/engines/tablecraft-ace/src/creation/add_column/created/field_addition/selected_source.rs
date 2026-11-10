@@ -25,6 +25,8 @@ const POST_OFF_OBJECTS: usize = crate::creation::profile::CATALOG_OBJECT_COUNT +
 pub enum FieldAdditionSourcePurpose {
     /// Current metadata with explicit OFF, preserving existing rows and histories.
     CurrentNumber,
+    /// Populated current metadata with nullable Short Text and unchanged old records.
+    CurrentShortText,
     /// Existing explicit first/repeated/typed language and its unchanged proof.
     Created(CreatedFieldAdditionSourcePurpose),
     /// Actual native database role; only full settled OFF proof can admit it.
@@ -175,6 +177,9 @@ impl NativeImage {
                 budget,
                 cancelled,
             )?;
+            if schema.declared_rows() != 0 {
+                return Ok(FieldAdditionSourcePurpose::CurrentShortText);
+            }
             let live = ledger::capture(self.as_bytes(), self.catalog(), budget, cancelled)
                 .map_err(FieldAdditionAfterOffError::from)?;
             let user = live.single_reference(schema.object_id(), budget, cancelled)?;
@@ -224,6 +229,17 @@ impl NativeImage {
                     cancelled,
                 )?;
                 let text = match text_purpose {
+                    FieldAdditionSourcePurpose::CurrentShortText => self
+                        .inspect_current_short_text_field_addition_source(table, budget, cancelled)
+                        .map(|source| {
+                            (
+                                None,
+                                u8::try_from(source.maximum_name_utf16_units())
+                                    .ok()
+                                    .filter(|width| *width != 0),
+                            )
+                        })
+                        .map_err(FieldAdditionSourceError::from),
                     FieldAdditionSourcePurpose::AfterExplicitOff => {
                         after_off::availability::inspect(self, table, budget, cancelled)
                             .map_err(FieldAdditionSourceError::from)
@@ -240,6 +256,9 @@ impl NativeImage {
                     Err(error) => return Err(error),
                 };
                 Some(((number != 0).then_some(number), text))
+            }
+            FieldAdditionSourcePurpose::CurrentShortText => {
+                return Err(FieldAdditionSourceError::Source);
             }
             FieldAdditionSourcePurpose::Created(_) => {
                 self.check_created_field_addition_source(table, budget, cancelled)?;

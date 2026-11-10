@@ -316,6 +316,12 @@ impl MutationIntent {
                 .map_err(Cause::QueryExpressionIntent);
         }
         #[cfg(feature = "ace16-create")]
+        if raw.starts_with(b"TCAC0009") {
+            return NativeCurrentFieldAdditionIntent::decode_short_text(raw, budget, cancelled)
+                .map(Self::CurrentFieldAddition)
+                .map_err(Cause::CurrentFieldAdditionIntent);
+        }
+        #[cfg(feature = "ace16-create")]
         if raw.starts_with(b"TCAC0008") {
             return NativeCurrentFieldAdditionIntent::decode(raw, budget, cancelled)
                 .map(Self::CurrentFieldAddition)

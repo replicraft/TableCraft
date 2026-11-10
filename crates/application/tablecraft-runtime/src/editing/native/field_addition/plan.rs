@@ -29,7 +29,8 @@ impl Plan {
                 }
                 FieldAdditionDeclaration::NumberLongZero
             }
-            Self::Repeated(_) | Self::Current(_) => FieldAdditionDeclaration::NumberLongZero,
+            Self::Repeated(_) => FieldAdditionDeclaration::NumberLongZero,
+            Self::Current(plan) => captured_target(plan.target())?,
             Self::Typed(plan) => captured_target(plan.target())?,
             Self::AfterOff(plan) => captured_target(plan.target())?,
             Self::AfterOffHistory(plan) => captured_target(plan.target())?,
