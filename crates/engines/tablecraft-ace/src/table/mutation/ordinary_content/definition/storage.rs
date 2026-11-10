@@ -106,6 +106,12 @@ pub(in crate::table::mutation::ordinary_content) fn read(
         }
         if continuations.len() == continuations.capacity() {
             let growth = continuations.capacity().max(1);
+            reader.work(
+                continuations
+                    .len()
+                    .checked_mul(size_of::<u32>())
+                    .ok_or(InspectError::StructureLimit)?,
+            )?;
             reader
                 .budget
                 .charge_allocation(growth as u64, size_of::<u32>() as u64)?;

@@ -1,4 +1,4 @@
-//! Structural ceilings for the current bounded reader, not format maxima.
+//! Native Access bounds and explicit operation-profile envelopes.
 // Addressable read-source envelope; bounded operations need not retain the file.
 pub(crate) const MAX_READ_FILE_BYTES: u64 = 2 * 1024 * 1024 * 1024;
 // Complete capture and mutation paths retain a separate memory ceiling.
