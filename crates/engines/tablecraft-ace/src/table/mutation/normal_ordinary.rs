@@ -236,6 +236,27 @@ pub(in crate::table::mutation) fn capture_current_schema(
     preserved_source::capture_current_schema(image, table, &certificate, budget, cancelled)
 }
 
+/// Current INSERT observes sparse metadata through its own absence certificate.
+/// Existing generated INSERT and UPDATE source languages remain unchanged.
+#[cfg(feature = "ace16-create")]
+pub(in crate::table::mutation) fn capture_current_insert(
+    image: &NativeImage,
+    table: &str,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Source, EditError> {
+    let target = crate::inspect_table_schema(
+        &mut image.reader(),
+        image.catalog().catalog().scope(),
+        table,
+        budget,
+        cancelled,
+    )?;
+    let certificate =
+        NoRequiredTablePrograms::capture_current_insert(image, &target, budget, cancelled)?;
+    preserved_source::capture_current_insert(image, table, &certificate, budget, cancelled)
+}
+
 #[derive(Clone, Copy)]
 enum CapturePurpose {
     Updates,

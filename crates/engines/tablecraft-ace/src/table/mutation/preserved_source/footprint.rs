@@ -36,6 +36,7 @@ impl Footprint {
             #[cfg(all(feature = "journal", feature = "ace16-create"))]
             PayloadAdmission::CurrentSchemaNoRequired(_)
             | PayloadAdmission::CurrentRowsNoRequired(_)
+            | PayloadAdmission::CurrentInsertNoRequired(_)
             | PayloadAdmission::HistoricalFixedRows(_) => Ok(Self::Normal(Protection::capture(
                 image, schema, budget, cancelled,
             )?)),

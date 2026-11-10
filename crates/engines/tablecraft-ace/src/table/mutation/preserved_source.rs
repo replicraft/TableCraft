@@ -141,6 +141,8 @@ enum PayloadAdmission<'admission, 'image> {
     #[cfg(all(feature = "journal", feature = "ace16-create"))]
     CurrentRowsNoRequired(&'admission NoRequiredTablePrograms<'image>),
     #[cfg(all(feature = "journal", feature = "ace16-create"))]
+    CurrentInsertNoRequired(&'admission NoRequiredTablePrograms<'image>),
+    #[cfg(all(feature = "journal", feature = "ace16-create"))]
     HistoricalFixedRows(&'admission NoRequiredTablePrograms<'image>),
 }
 
@@ -363,6 +365,10 @@ fn capture_framed_with_records(
             certificate.require_current_rows_source(image, schema, budget, cancelled)?;
         }
         #[cfg(all(feature = "journal", feature = "ace16-create"))]
+        PayloadAdmission::CurrentInsertNoRequired(certificate) => {
+            certificate.require_current_insert_source(image, schema, budget, cancelled)?;
+        }
+        #[cfg(all(feature = "journal", feature = "ace16-create"))]
         PayloadAdmission::CurrentSchemaNoRequired(certificate) => {
             certificate.require_current_schema_source(image, schema, budget, cancelled)?;
         }
@@ -381,6 +387,7 @@ fn capture_framed_with_records(
         #[cfg(feature = "ace16-create")]
         PayloadAdmission::CurrentSchemaNoRequired(certificate)
         | PayloadAdmission::CurrentRowsNoRequired(certificate)
+        | PayloadAdmission::CurrentInsertNoRequired(certificate)
         | PayloadAdmission::HistoricalFixedRows(certificate) => certificate.share_definition_tail(),
         _ => None,
     };
@@ -527,6 +534,7 @@ fn capture_framed_with_records(
         #[cfg(feature = "ace16-create")]
         PayloadAdmission::CurrentSchemaNoRequired(_)
         | PayloadAdmission::CurrentRowsNoRequired(_)
+        | PayloadAdmission::CurrentInsertNoRequired(_)
         | PayloadAdmission::HistoricalFixedRows(_) => true,
         _ => false,
     };
@@ -773,6 +781,7 @@ impl PayloadAdmission<'_, '_> {
             #[cfg(all(feature = "journal", feature = "ace16-create"))]
             Self::CurrentSchemaNoRequired(_)
             | Self::CurrentRowsNoRequired(_)
+            | Self::CurrentInsertNoRequired(_)
             | Self::HistoricalFixedRows(_) => true,
             #[cfg(feature = "ace16-write-preview")]
             Self::Inert | Self::Selected(_) => false,
@@ -917,6 +926,28 @@ pub(in crate::table::mutation) fn capture_current_rows(
         PayloadAdmission::CurrentRowsNoRequired(certificate),
         ReadProfile::retained(ColumnFraming::Actions),
         RecordAdmission::CurrentRows,
+        budget,
+        cancelled,
+    )
+}
+
+/// Preserve original historical rows under a distinct current-INSERT purpose.
+/// The consuming writer must independently prove every newly encoded row,
+/// generated value, physical placement and index/counter change.
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub(in crate::table::mutation) fn capture_current_insert(
+    image: &NativeImage,
+    table: &str,
+    certificate: &NoRequiredTablePrograms<'_>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Source, EditError> {
+    capture_framed_with_records(
+        image,
+        table,
+        PayloadAdmission::CurrentInsertNoRequired(certificate),
+        ReadProfile::retained(ColumnFraming::Actions),
+        RecordAdmission::HistoricalInsert,
         budget,
         cancelled,
     )

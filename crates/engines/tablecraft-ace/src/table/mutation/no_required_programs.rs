@@ -38,6 +38,8 @@ enum Purpose {
     CurrentSchema,
     #[cfg(feature = "ace16-create")]
     CurrentRows,
+    #[cfg(feature = "ace16-create")]
+    CurrentInsert,
 }
 
 /// No public constructor or serialized permission. This certificate binds the
@@ -192,6 +194,25 @@ impl<'image> NoRequiredTablePrograms<'image> {
         )
     }
 
+    /// Current INSERT retains its own source-bound absence purpose. Neither
+    /// schema observation nor current-row replacement grants this authority.
+    #[cfg(feature = "ace16-create")]
+    pub(in crate::table::mutation) fn capture_current_insert(
+        image: &'image NativeImage,
+        schema: &TableSchema,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, EditError> {
+        Self::capture_with_purpose(
+            image,
+            schema,
+            Declaration::CurrentSchema,
+            Purpose::CurrentInsert,
+            budget,
+            cancelled,
+        )
+    }
+
     /// Distinct current-row evidence shares checked sparse metadata framing,
     /// but cannot be substituted by a readonly schema certificate.
     #[cfg(feature = "ace16-create")]
@@ -265,13 +286,17 @@ impl<'image> NoRequiredTablePrograms<'image> {
         let selected = match purpose {
             Purpose::Rows => catalog::validate(image, schema, budget, cancelled)?,
             #[cfg(feature = "ace16-create")]
-            Purpose::HistoricalFixedRows | Purpose::CurrentSchema | Purpose::CurrentRows => {
-                catalog::validate_schema(image, schema, budget, cancelled)?
-            }
+            Purpose::HistoricalFixedRows
+            | Purpose::CurrentSchema
+            | Purpose::CurrentRows
+            | Purpose::CurrentInsert => catalog::validate_schema(image, schema, budget, cancelled)?,
         };
         if selected.properties_present {
             #[cfg(feature = "ace16-create")]
-            if matches!(purpose, Purpose::CurrentSchema | Purpose::CurrentRows) {
+            if matches!(
+                purpose,
+                Purpose::CurrentSchema | Purpose::CurrentRows | Purpose::CurrentInsert
+            ) {
                 properties::capture_current_schema(image, schema, budget, cancelled)?;
             } else {
                 properties::capture(image, schema, budget, cancelled)?;
@@ -368,6 +393,20 @@ impl<'image> NoRequiredTablePrograms<'image> {
         self.require_binding(image, schema, budget, cancelled)
     }
 
+    #[cfg(feature = "ace16-create")]
+    pub(in crate::table::mutation) fn require_current_insert_source(
+        &self,
+        image: &NativeImage,
+        schema: &TableSchema,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(), EditError> {
+        if self.purpose != Purpose::CurrentInsert {
+            return Err(EditError::Preservation);
+        }
+        self.require_binding(image, schema, budget, cancelled)
+    }
+
     fn require_binding(
         &self,
         image: &NativeImage,
@@ -418,3 +457,6 @@ mod guid_prior_stages;
 
 #[cfg(all(test, feature = "ace16-create"))]
 mod schema_tests;
+
+#[cfg(all(test, feature = "ace16-create"))]
+mod current_insert_tests;
