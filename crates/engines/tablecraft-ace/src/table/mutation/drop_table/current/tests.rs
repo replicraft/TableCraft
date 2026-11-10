@@ -139,8 +139,21 @@ fn current_table_drop_requires_actual_empty_permission_and_relationship_storage(
         );
     }
     let mut renamed_schema = original.bytes.to_vec();
-    assert_eq!(&renamed_schema[6 * 4096 + 175..6 * 4096 + 177], &[6, 0]);
-    renamed_schema[6 * 4096 + 177..6 * 4096 + 183].copy_from_slice(&[b'B', 0, b'A', 0, b'D', 0]);
+    let definition = 6 * 4096;
+    let columns = word(&renamed_schema, definition + 45);
+    let indexes = u32::from_le_bytes(
+        renamed_schema[definition + 51..definition + 55]
+            .try_into()
+            .unwrap(),
+    ) as usize;
+    assert_eq!(columns, 4);
+    assert_eq!(indexes, 0);
+    let name = definition + 63 + indexes * 12 + columns * 25;
+    assert_eq!(
+        &renamed_schema[name..name + 8],
+        &[6, 0, b'A', 0, b'C', 0, b'M', 0]
+    );
+    renamed_schema[name + 2..name + 8].copy_from_slice(&[b'B', 0, b'A', 0, b'D', 0]);
     let native = image(&renamed_schema);
     let parsed = inspect_table_schema(
         &mut native.reader(),
