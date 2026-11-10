@@ -1,4 +1,5 @@
 //! Independent metadata-only Number ADD over the canonical existing row family.
+pub mod materialization;
 use super::{SourceCase, source};
 use crate::fixtures::access::{canonical_initial_table_creation::inserts::long_rows, put16, put32};
 

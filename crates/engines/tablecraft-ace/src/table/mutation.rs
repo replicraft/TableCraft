@@ -238,3 +238,6 @@ mod historical_fixed_sources;
 
 #[cfg(all(feature = "journal", feature = "ace16-create"))]
 mod historical_fixed;
+
+#[cfg(all(test, feature = "journal", feature = "ace16-create"))]
+mod historical_materialization_sources;
