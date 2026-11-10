@@ -1,5 +1,26 @@
 # Implementation status
 
+## Populated table deletion through the GUI — 10 November 2026
+
+Qualified current ACE16 tables now support closed-table deletion after field and
+row histories, including populated and fully emptied tables. The existing
+Navigation Pane Delete command and confirmation consume the same runtime/save
+services; no desktop production editing logic was added. Native composition
+removes user row/index membership and the catalog owner while retaining allocated
+storage, payloads, counters and property history outside the proven action scope.
+Actual empty permission/relationship maps are required. TCTD0002 preserves this
+source through fresh review and cold recovery; TCTD0001 profiles remain closed.
+
+The independent read/query batch passes two tests across 119 catalog/image
+observations and 126 fresh query/reopen hosts. Fourteen native/wire tests pass,
+including 119 complete source images, system-role negatives, forwarded catalog
+roots, fresh scopes, pending/committed recovery and forged-AFTER refusal. The
+complete desktop table-deletion family passes sixteen tests with ten actual
+table save/acknowledgement operations; nineteen row-deletion regressions also
+pass. Strict affected-package and minimal engine feature checks pass. Native
+Windows/Access comparison, wider geometry and nonempty dependency cleanup remain
+unqualified. See [native table deletion](access/writes/NATIVE_TABLE_DROP.md).
+
 ## DELETE after retained schema histories — 10 November 2026
 
 Qualified current ACE16 tables now delete rows after DROP → ADD → rename and

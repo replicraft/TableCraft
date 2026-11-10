@@ -41,6 +41,11 @@ The retained Navigation Pane screenshot was opened during this work: Windows
 Access in a 1920×1141 VirtualBox capture, with unknown display scale. It contains
 neither an expanded Delete menu nor a deletion dialog. Those surfaces follow the
 primary documented workflow, not a claim of screenshot-verified dialog parity.
-Current interaction checks are headless source-free presentation tests; they are
-separate from engine admission, native saves, independent-reader reopen evidence
-and Windows Access behavior.
+Headless interaction checks now include the actual desktop runtime and offline
+save path for qualified current ACE16 sources. Twelve new journeys cover ten
+complete table saves across populated and retained field/row histories, plus
+open-object, cancellation and stale-request safeguards. Independent whole-file
+oracles and fresh application reopening verify the saved results; source-free
+presentation tests remain separate checks. No native Windows/Access comparison
+is established by these results. See [native table deletion](../access/writes/NATIVE_TABLE_DROP.md)
+for the source, preservation and recovery boundaries.
