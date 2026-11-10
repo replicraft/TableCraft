@@ -25,6 +25,17 @@ pub fn values(input: LastFieldInput) -> Vec<Value> {
 /// Build only the first inserted row: arbitrary sequential placement/candidate
 /// changes are not inferred from this one-row oracle.
 pub fn after(before: &[u8], source: &Source, input: LastFieldInput) -> Vec<u8> {
+    after_end_fields(before, source, None, input)
+}
+
+/// Independent first-row image with a supplied first companion and final-field
+/// presence; all intervening companions keep their literal default zero.
+pub fn after_end_fields(
+    before: &[u8],
+    source: &Source,
+    first: Option<i32>,
+    input: LastFieldInput,
+) -> Vec<u8> {
     let definition = source.definition_pages[0] as usize;
     let pages = Pages {
         definition,
@@ -44,6 +55,9 @@ pub fn after(before: &[u8], source: &Source, input: LastFieldInput) -> Vec<u8> {
     record.extend(1_i32.to_le_bytes());
     for _ in 1..255 {
         record.extend(0_i32.to_le_bytes());
+    }
+    if let Some(value) = first {
+        record[6..10].copy_from_slice(&value.to_le_bytes());
     }
     if let LastFieldInput::Value(value) = input {
         record[1018..1022].copy_from_slice(&value.to_le_bytes());
