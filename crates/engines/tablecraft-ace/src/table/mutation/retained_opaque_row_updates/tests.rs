@@ -6,9 +6,8 @@ use crate::{
 use std::io::Cursor;
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::fixtures::access::{
-    canonical_retained_add_table::opaque_rows::{self as raw, CASES, Case},
-    raw_forwarding_chain,
+use tablecraft_testkit::fixtures::access::canonical_retained_add_table::opaque_rows::{
+    self as raw, CASES, Case,
 };
 
 const SCOPE: CatalogScope = CatalogScope::new(4318);
@@ -53,8 +52,8 @@ fn equal_image(actual: &[u8], expected: &[u8]) {
 }
 
 fn prefix_preserved(before: &[u8], after: &[u8], definition: u32, root: usize) {
-    let old = raw_forwarding_chain::record(before, definition + 1, root);
-    let new = raw_forwarding_chain::record(after, definition + 1, root);
+    let old = raw::record(before, definition, root);
+    let new = raw::record(after, definition, root);
     let count = usize::from(u16::from_le_bytes(old[..2].try_into().unwrap()));
     let mask = old.len() - count.div_ceil(8);
     for at in 2..mask {
@@ -176,7 +175,7 @@ fn retained_opaque_rows_materialize_long_cells_and_transition_back_to_complete_r
 fn retained_opaque_rows_preserve_inactive_footer_bytes_and_reject_bad_fixed_bounds() {
     let source = raw::source(Case::VariableRetired);
     let mut before = source.bytes;
-    let old = raw_forwarding_chain::record(&before, source.definition + 1, 0);
+    let old = raw::record(&before, source.definition, 0);
     let count = usize::from(u16::from_le_bytes(old[..2].try_into().unwrap()));
     let mask = old.len() - count.div_ceil(8);
     assert!(mask > 10);

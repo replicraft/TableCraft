@@ -91,6 +91,16 @@ pub fn source(case: Case) -> Source {
     }
 }
 
+/// Observe the actual terminal record of this opaque LONG fixture family.
+/// The selected declaration remains bound to logical field 4 and fixed offset 4.
+pub fn record(before: &[u8], definition: u32, logical_root: usize) -> &[u8] {
+    let declaration = &before[definition as usize * PAGE..(definition as usize + 1) * PAGE];
+    assert_eq!(word(declaration, 45), 2);
+    assert_eq!(&declaration[100..110], &[4, 89, 6, 0, 0, 4, 0, 0, 0, 1]);
+    assert_eq!(word(declaration, 121), 4);
+    raw_forwarding_chain::record(before, definition + 1, logical_root)
+}
+
 /// Compare actual logical presence, never ignored old bytes, before issuing an
 /// independent complete-record AFTER. No-op requests retain the original image.
 pub fn after(before: &[u8], definition: u32, logical_root: usize, value: Option<i32>) -> Vec<u8> {
