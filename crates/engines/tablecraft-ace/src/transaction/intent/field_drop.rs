@@ -185,20 +185,21 @@ impl NativeFieldDropIntent {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Candidate, FieldDropIntentError> {
         let candidate = match self.profile {
-            Profile::Empty => Candidate::Empty(image.prepare_saved_field_drop(
-                self.table(),
-                self.column(),
+            Profile::Empty => Candidate::empty(
+                image.prepare_saved_field_drop(self.table(), self.column(), budget, cancelled)?,
                 budget,
                 cancelled,
-            )?),
-            Profile::PopulatedTail => {
-                Candidate::PopulatedTail(image.prepare_current_tail_field_drop(
+            )?,
+            Profile::PopulatedTail => Candidate::populated_tail(
+                image.prepare_current_tail_field_drop(
                     self.table(),
                     self.column(),
                     budget,
                     cancelled,
-                )?)
-            }
+                )?,
+                budget,
+                cancelled,
+            )?,
         };
         if Identity::from_native(candidate.identity())? != self.identity
             || candidate.table() != self.table()

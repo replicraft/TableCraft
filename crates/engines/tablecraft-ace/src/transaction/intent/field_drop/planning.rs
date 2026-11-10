@@ -9,7 +9,7 @@ use tablecraft_io::journal::{self, DurableStorage, JournalError, PreparedImage};
 
 /// Sealed exact saved-field DROP candidate, complete source and original request.
 pub struct RecoverableFieldDropPlan {
-    candidate: Box<Candidate>,
+    candidate: Candidate,
     intent: Intent,
 }
 
@@ -24,12 +24,16 @@ impl NativeImage {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<RecoverableFieldDropPlan, Error> {
         let _span = tracing::debug_span!("native.field_drop.plan_recoverable").entered();
-        let candidate =
-            Candidate::Empty(self.prepare_saved_field_drop(table, column, budget, cancelled)?);
+        let candidate = Candidate::empty(
+            self.prepare_saved_field_drop(table, column, budget, cancelled)?,
+            budget,
+            cancelled,
+        )?;
         let intent = Intent::capture(&candidate, budget, cancelled)?;
         check(budget, cancelled)?;
         RecoverableFieldDropPlan::new(candidate, intent, budget, cancelled)
     }
+
     /// Bind the separate current populated-tail request after native qualification.
     pub fn plan_recoverable_current_tail_field_drop(
         self,
@@ -40,9 +44,11 @@ impl NativeImage {
     ) -> Result<RecoverableFieldDropPlan, Error> {
         let _span =
             tracing::debug_span!("native.current_tail_field_drop.plan_recoverable").entered();
-        let candidate = Candidate::PopulatedTail(
+        let candidate = Candidate::populated_tail(
             self.prepare_current_tail_field_drop(table, column, budget, cancelled)?,
-        );
+            budget,
+            cancelled,
+        )?;
         let intent = Intent::capture(&candidate, budget, cancelled)?;
         check(budget, cancelled)?;
         RecoverableFieldDropPlan::new(candidate, intent, budget, cancelled)
@@ -76,12 +82,7 @@ impl RecoverableFieldDropPlan {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, Error> {
         check(budget, cancelled)?;
-        budget.charge_allocation(1, size_of::<Candidate>() as u64)?;
-
-        Ok(Self {
-            candidate: Box::new(candidate),
-            intent,
-        })
+        Ok(Self { candidate, intent })
     }
 
     /// Bounded original request data, never serialized storage authority.
