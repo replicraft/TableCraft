@@ -1,5 +1,7 @@
 //! Original table DROP requests bind the complete source, never replacement authority.
 mod codec;
+#[cfg(test)]
+mod current_tests;
 mod planning;
 mod recovery;
 #[cfg(test)]
