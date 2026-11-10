@@ -213,6 +213,7 @@ fn full_draft_keeps_last_name_and_manual_scroll_does_not_refocus_disabled_placeh
             .get_by_role_and_label(Role::Button, "Click to Add")
             .is_focused()
     );
+    assert_horizontal_filler(&harness);
     harness.event(egui::Event::PointerMoved(egui::pos2(700.0, 400.0)));
     harness.event(egui::Event::MouseWheel {
         unit: egui::MouseWheelUnit::Point,
@@ -235,6 +236,7 @@ fn full_draft_keeps_last_name_and_manual_scroll_does_not_refocus_disabled_placeh
     let editor = harness.state().0.table_draft.as_ref().unwrap();
     assert!(editor.draft.snapshot("Table1").unwrap() == before);
     assert!(editor.rename.is_none());
+    assert_horizontal_filler(&harness);
     assert!(harness.state().1.is_empty());
 }
 
@@ -257,7 +259,20 @@ fn manual_horizontal_scroll_releases_trailing_add_focus_and_keeps_first_field_vi
             .get_by_role_and_label(Role::Button, "Click to Add")
             .is_focused()
     );
-    harness.event(egui::Event::PointerMoved(egui::pos2(700.0, 400.0)));
+    let ordinary_header = harness
+        .get_by_role_and_label(Role::ColumnHeader, "Field19")
+        .rect()
+        .intersect(harness.ctx.content_rect());
+    assert!(ordinary_header.is_positive());
+    let pointer = ordinary_header.center();
+    assert!(
+        !harness
+            .get_by_role_and_label(Role::Button, "Click to Add")
+            .rect()
+            .contains(pointer)
+    );
+    assert_horizontal_filler(&harness);
+    harness.event(egui::Event::PointerMoved(pointer));
     harness.event(egui::Event::MouseWheel {
         unit: egui::MouseWheelUnit::Point,
         delta: egui::vec2(100_000.0, 0.0),
@@ -283,5 +298,39 @@ fn manual_horizontal_scroll_releases_trailing_add_focus_and_keeps_first_field_vi
             .rect()
             .intersects(harness.ctx.content_rect())
     );
+    assert_horizontal_filler(&harness);
     assert!(harness.state().1.is_empty());
+}
+
+fn assert_horizontal_filler(harness: &Harness<'_, (State, Vec<Action>)>) {
+    let color = crate::theme::palette(&harness.ctx)
+        .grid_line
+        .gamma_multiply(0.4);
+    let rows = harness
+        .output()
+        .shapes
+        .iter()
+        .find_map(|clipped| {
+            let egui::Shape::Vec(lines) = &clipped.shape else {
+                return None;
+            };
+            let horizontal = lines
+                .iter()
+                .filter_map(|shape| match shape {
+                    egui::Shape::LineSegment { points, stroke }
+                        if stroke.color == color && points[0].y == points[1].y =>
+                    {
+                        Some(points)
+                    }
+                    _ => None,
+                })
+                .collect::<Vec<_>>();
+            (horizontal.len() > 3).then_some(horizontal)
+        })
+        .expect("empty draft space retains horizontal filler at this scroll end");
+    for points in rows {
+        assert!(points[1].x - points[0].x > 500.0);
+        assert!(harness.ctx.content_rect().contains(points[0]));
+        assert!(harness.ctx.content_rect().contains(points[1]));
+    }
 }

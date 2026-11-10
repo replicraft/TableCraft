@@ -39,6 +39,13 @@ pub(super) fn show(ui: &mut Ui, editor: &mut Editor, can_save: bool) -> Option<E
     let mut rename = None;
     let mut delete_field = None;
     let mut rename_outcome = None;
+    // The visible viewport belongs to the unscrolled owner. The horizontal
+    // content UI's cursor moves with its scroll offset and is not this origin.
+    let viewport = egui::Rect::from_min_size(
+        ui.cursor().min,
+        egui::vec2(ui.available_width(), grid_height),
+    )
+    .intersect(ui.clip_rect());
     ui.scope(|ui| {
         ui.spacing_mut().item_spacing = egui::Vec2::ZERO;
         ui.spacing_mut().scroll = egui::style::ScrollStyle::solid();
@@ -47,12 +54,7 @@ pub(super) fn show(ui: &mut Ui, editor: &mut Editor, can_save: bool) -> Option<E
             .max_height(grid_height)
             .auto_shrink([false, false])
             .show(ui, |ui| {
-                let viewport = egui::Rect::from_min_size(
-                    ui.cursor().min,
-                    egui::vec2(ui.available_width(), grid_height),
-                )
-                .intersect(ui.clip_rect());
-                let manual_scroll = ui.rect_contains_pointer(viewport)
+                let manual_scroll = ui.ctx().rect_contains_pointer(ui.layer_id(), viewport)
                     && ui.input(|input| {
                         input
                             .events
