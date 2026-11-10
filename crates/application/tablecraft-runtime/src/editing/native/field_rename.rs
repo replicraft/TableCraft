@@ -5,7 +5,6 @@ pub(in crate::editing) use review::{State, review};
 use crate::{Error, controls::SCOPE, document::Document};
 use tablecraft_ace::{
     FieldAdditionError, FieldHistoryDatabaseOptionsError, FieldRenameError, NativeImage,
-    inspect_table_schema,
 };
 use tablecraft_builders::table::field_rename::FieldRenameNameProfile;
 use tablecraft_core::limits::ResourceBudget;
@@ -29,43 +28,13 @@ pub(in crate::editing) fn source_profile(
         budget,
         cancelled,
     )?;
-    let schema = inspect_table_schema(&mut image.reader(), SCOPE, table, budget, cancelled)?;
-    if schema.declared_rows() != 0 {
-        // Populated sources have a separate replay proof and intent profile. A
-        // refusal must not retry either empty-table profile against this source.
-        return source_result(
-            image
-                .inspect_populated_field_rename_source(table, column, budget, cancelled)
-                .map(|source| source.identity()),
-        )?
-        .map(|identity| {
-            if identity.column_number() != native_number {
-                return Err(Error::StaleFieldRenameTarget);
-            }
-            Ok(FieldRenameNameProfile::FittedAscii {
-                original_units: identity.name_utf16_units(),
-            })
-        })
-        .transpose();
-    }
-
-    let fitted = source_result(
-        image
-            .inspect_fitted_field_rename_source(table, column, budget, cancelled)
-            .map(|source| source.identity()),
-    )?;
-    if let Some(identity) = fitted {
-        if identity.column_number() != native_number {
-            return Err(Error::StaleFieldRenameTarget);
-        }
-        return Ok(Some(FieldRenameNameProfile::FittedAscii {
-            original_units: identity.name_utf16_units(),
-        }));
-    }
-    // A clean unsupported fitted source may independently qualify for the older
-    // strict profile. Corruption, cancellation and resource errors propagate above.
+    // Current metadata is a separate source family, independent of row count
+    // and earlier rename history. Native proof still checks the complete source;
+    // no refusal is retried through a legacy empty/populated candidate.
     let identity = source_result(
-        image.inspect_same_width_field_rename_source(table, column, budget, cancelled),
+        image
+            .inspect_current_field_rename_source(table, column, budget, cancelled)
+            .map(|source| source.identity()),
     )?;
     let Some(identity) = identity else {
         return Ok(None);
@@ -73,8 +42,8 @@ pub(in crate::editing) fn source_profile(
     if identity.column_number() != native_number {
         return Err(Error::StaleFieldRenameTarget);
     }
-    Ok(Some(FieldRenameNameProfile::SameWidthAscii {
-        units: identity.name_utf16_units(),
+    Ok(Some(FieldRenameNameProfile::FittedAscii {
+        original_units: identity.name_utf16_units(),
     }))
 }
 

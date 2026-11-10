@@ -10,7 +10,7 @@ use crate::{
     },
 };
 use std::sync::{Arc, atomic::AtomicBool};
-use tablecraft_ace::{NativeImage, RecoverableFieldRenamePlan, inspect_table_schema};
+use tablecraft_ace::{NativeImage, RecoverableFieldRenamePlan};
 
 pub(in crate::editing) struct State {
     pub(in crate::editing) reopen: Arc<FieldRenamedReopen>,
@@ -40,20 +40,10 @@ pub(in crate::editing) fn review(
         &mut work,
         cancelled,
     )?;
-    let schema = inspect_table_schema(&mut image.reader(), SCOPE, table, &mut work, cancelled)?;
-    let plan = if schema.declared_rows() != 0 {
-        // Select profile 3 from this captured source's actual schema before
-        // preparing a candidate, including equal-width and unchanged requests.
-        image.plan_recoverable_populated_field_rename(
-            table, column, new_name, &mut work, cancelled,
-        )?
-    } else if column.len() == new_name.len() {
-        image.plan_recoverable_same_width_field_rename(
-            table, column, new_name, &mut work, cancelled,
-        )?
-    } else {
-        image.plan_recoverable_fitted_field_rename(table, column, new_name, &mut work, cancelled)?
-    };
+    // Select the current-metadata request family before any native candidate.
+    // Old serialized profiles retain their own closed reconstruction languages.
+    let plan = image
+        .plan_recoverable_current_field_rename(table, column, new_name, &mut work, cancelled)?;
     if plan.table() != table
         || plan.column() != column
         || plan.identity().column_number() != native_number
