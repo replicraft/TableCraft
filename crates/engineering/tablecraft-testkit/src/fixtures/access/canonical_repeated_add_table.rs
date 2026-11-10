@@ -1,6 +1,7 @@
 //! Independently authored populated repeated-table appends, without native writers.
 use super::{
-    canonical_add_table, canonical_creation, canonical_native17_creation, data_page, put16, put32,
+    canonical_add_table, canonical_creation, canonical_native17_creation, data_page,
+    packed_record::append_record, put16, put32,
 };
 use tablecraft_core::values::Value;
 
@@ -130,20 +131,4 @@ fn append_table(bytes: &mut Vec<u8>, name: &str) {
     put16(&mut root, 2, 3616);
     put32(&mut root, 4, definition_page as u32);
     bytes.extend(root);
-}
-
-fn append_record(page: &mut [u8], row: &[u8]) {
-    assert_eq!(&page[..2], &[1, 1]);
-    let count = u16::from_le_bytes(page[12..14].try_into().unwrap()) as usize;
-    let free = u16::from_le_bytes(page[2..4].try_into().unwrap()) as usize;
-    let slot = 14 + 2 * count;
-    let end = slot + free;
-    let start = end.checked_sub(row.len()).unwrap();
-    assert!(start >= slot + 2);
-    assert!(page[slot..slot + 2].iter().all(|byte| *byte == 0));
-    assert!(page[start..end].iter().all(|byte| *byte == 0));
-    page[start..end].copy_from_slice(row);
-    put16(page, slot, start as u16);
-    put16(page, 12, (count + 1) as u16);
-    put16(page, 2, (free - row.len() - 2) as u16);
 }

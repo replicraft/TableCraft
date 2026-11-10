@@ -429,3 +429,6 @@ pub mod saved_field_rename;
 
 pub mod canonical_large_memo;
 pub mod large_tables;
+
+pub mod canonical_retained_add_table;
+mod packed_record;
