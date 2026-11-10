@@ -1,5 +1,6 @@
 //! Actual DROP, re-ADD and first-fill cycles never revive retired field values.
-use super::{EXACT_SCRATCH, Entry, choose, inspect, scratch};
+use super::{Entry, choose, inspect};
+use crate::workspace::test_support::objects::{EXACT_SCRATCH, scratch};
 use crate::workspace::Desktop;
 use crate::workspace::test_support::cell_edit::{begin_replacement, review_and_save};
 use crate::workspace::test_support::field_addition::add_field;

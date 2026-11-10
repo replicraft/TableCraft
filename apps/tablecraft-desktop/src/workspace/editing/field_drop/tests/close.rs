@@ -1,5 +1,6 @@
 //! Exact deferred table closure preserves the parked raw SQL owner.
-use super::{EXACT_SCRATCH, choose, pending, scratch};
+use super::{choose, pending};
+use crate::workspace::test_support::objects::{EXACT_SCRATCH, scratch};
 use crate::workspace::test_support::{finish_reads, finish_schema_save, opened};
 use tablecraft_runtime::journal_path;
 use tablecraft_testkit::fixtures::access::canonical_created_number::mixed::after_off::deleted_field as raw;

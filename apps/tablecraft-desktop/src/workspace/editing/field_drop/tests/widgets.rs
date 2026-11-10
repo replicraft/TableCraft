@@ -1,5 +1,6 @@
 //! Actual Datasheet/Design deletion, witnessed publication and sparse Number INSERT.
-use super::{EXACT_SCRATCH, Entry, choose, inspect, scratch};
+use super::{Entry, choose, inspect};
+use crate::workspace::test_support::objects::{EXACT_SCRATCH, scratch};
 use crate::workspace::test_support::{
     self, finish_reads, finish_schema_save, inserting::insert_omitted_fields,
 };

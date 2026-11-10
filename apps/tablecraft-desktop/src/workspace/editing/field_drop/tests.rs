@@ -14,35 +14,12 @@ use egui_kittest::{
 };
 use std::time::{Duration, Instant};
 use tablecraft_runtime::{FieldDropReview, Response, ReviewedFieldDrop, SaveWorker};
-use tablecraft_ui::{FluentArgs, ObjectKind, ObjectTab, ObjectTarget};
-
-const EXACT_SCRATCH: &str = " SELECT [Score], [Label] FROM [Table1]; -- keep raw scratch\n";
+use tablecraft_ui::FluentArgs;
 
 #[derive(Clone, Copy)]
 enum Entry {
     Datasheet,
     Design,
-}
-
-fn scratch(harness: &mut Harness<'_, Desktop>, table: &ObjectTab) -> ObjectTab {
-    let scratch = harness
-        .state_mut()
-        .state
-        .prepare_object_open(ObjectTarget {
-            document_revision: table.target.document_revision,
-            kind: ObjectKind::Sql,
-        })
-        .unwrap()
-        .tab;
-    assert!(
-        harness
-            .state_mut()
-            .state
-            .replace_query_sql(EXACT_SCRATCH.into())
-    );
-    harness.state_mut().activate_object(table.clone());
-    finish_reads(harness);
-    scratch
 }
 
 fn inspect(harness: &mut Harness<'_, Desktop>, column: &str, entry: Entry) {
