@@ -266,7 +266,7 @@ fn every_body_truncation_and_committed_byte_corruption_refuses_but_marker_prefix
 
 #[test]
 fn known_corrupt_frame_selects_one_inspector_and_unknown_magic_selects_none() {
-    for (magic, header) in [(b"TCIMG001", 48), (b"TCIMG002", 56)] {
+    for (magic, header) in [(b"TCIMG001", 48), (b"TCIMG002", 56), (b"TCIMG003", 56)] {
         let mut zero_length = vec![0; 80];
         zero_length[..8].copy_from_slice(magic);
         let (mut bytes, trace) = traced(zero_length);
@@ -279,7 +279,7 @@ fn known_corrupt_frame_selects_one_inspector_and_unknown_magic_selects_none() {
         assert_eq!(&*trace.reads.borrow(), &[(0, 8), (0, header)]);
         assert_eq!(trace.lengths.get(), 2);
     }
-    let (mut bytes, trace) = traced(b"TCIMG003xxxxxxxxxxxxxxxx".to_vec());
+    let (mut bytes, trace) = traced(b"TCIMG004xxxxxxxxxxxxxxxx".to_vec());
     assert!(matches!(
         inspect_image(&mut bytes, &mut budget(), &|| false),
         Err(JournalError::InvalidJournal)
