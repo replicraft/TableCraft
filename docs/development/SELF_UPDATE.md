@@ -19,9 +19,9 @@ Its use of Minisign, version/filename-bound trusted comments and verification
 before extraction is the design reference. Relay's code, fixtures and signing
 key have not been copied. OS code signing/notarization is a separate concern.
 
-TableCraft's signing contract is `tablecraft-update <version> <archive-name>`.
+TableCraft's signing contract is `tablecraft-update <version> <asset-name>`.
 Use prehashed Ed25519 Minisign signatures (`ED`), not legacy direct signatures.
-Every platform archive has a `.minisig` sidecar. Verify the cryptographic
+Every platform archive and installer has a `.minisig` sidecar. Verify the cryptographic
 signature and its exact trusted comment before extracting or executing anything.
 SHA-256 sidecars remain useful integrity checks; they are not publisher trust.
 
@@ -38,7 +38,7 @@ permission or access to production signing secrets. Remote execution remains
 unverified until a real workflow run is recorded.
 
 [`update_signatures.py`](../../scripts/packaging/update_signatures.py) signs or
-verifies the exact six CLI or desktop archive names. Production mode requires
+verifies the exact six CLI archives or sixteen desktop archives/installers. Production mode requires
 `packaging/tablecraft-update-key.pub` and refuses a different supplied public key; the user is replacing the initial generated public key with their own. Dry-run mode accepts an explicit test
 key. Signing uses `UPDATE_SIGNING_KEY` in the protected
 `release-signing` environment. Encrypted keys use the separate
@@ -93,9 +93,9 @@ pass this run.
 
 Remaining gates before claiming the updater/release complete:
 
-- Complete signed MSI and original-AppImage update routes with actual local
-  installation authority. Program Files and AppImage runtime directories are
-  currently manual; they must not be fed to the portable writer. DEB/RPM remain
+- Qualify the connected signed MSI and original-AppImage routes on their native
+  platforms. Both have explicit installation authority and separate payload
+  preparation; neither uses the portable-directory writer. DEB/RPM remain
   deliberately owned by their package manager.
 - Obtain passing native CI evidence for all requested installers, runtime
   source/relink checks, complete assembly and real production-key signatures.
@@ -104,9 +104,40 @@ Remaining gates before claiming the updater/release complete:
 - Complete the agreed CRUD scope and ensure release notes describe the actual
   operation/profile limits. Packaging does not establish database compatibility.
 
+## Original AppImage ownership and replacement
+
+Linux AppImage context selects the AppImage artifact rather than the portable
+archive. `APPIMAGE` and `APPDIR` only identify candidates: detection checks the
+running AppDir's exact executable and release manifest, then authenticates the
+complete original image against the current version's publisher-signed sidecar
+from the fixed TableCraft release origin. Its trusted comment must identify the
+exact current version, product and native architecture. A missing old signature,
+changed runtime, unrelated image, wrong key or mismatched identity refuses
+replacement. Release retention must preserve old AppImage signatures so installed
+versions can establish that authority. Renaming the original image is supported.
+
+Preparation verifies the independently signed new image, checks its inert Type 2
+ELF header/architecture, strips special permission bits and preserves ordinary
+access bits. It never executes or mounts downloaded bytes. Original and candidate
+content witnesses are rechecked before mutation. Only the original image pathname
+is replaced; private same-filesystem backup and reverse rollback use the same
+transaction mechanics as portable packages. AppDir remains untouched. The helper
+waits for normal exit, clears the old AppImage runtime identity environment and
+relaunches the original image pathname. Failed helper startup rolls back; failed
+rollback or later relaunch retains the original image for explicit recovery.
+These are process-failure guarantees, not power-loss atomicity.
+
+First-party signed inert ELF carriers and injected filesystem/helper tests establish
+source authentication, preparation, cancellation and backup retention. They do
+not establish actual Linux runtime mounting or successful native relaunch. The
+fixture provenance is [recorded with the carriers](../../crates/platform/tablecraft-update/src/appimage/tests/README.md).
+
 ## Connected verification — 9 November 2026
 
-The full updater service batch passes 58 tests. The complete desktop batch passes
+The connected MSI/AppImage updater service batch passes 74 tests on macOS.
+The twelve signing-tool tests pass, including production refusal of both test
+keys after comment/key-ID changes. Native Windows registration/CAB integration
+tests remain explicit native-CI cases. The complete desktop batch passes
 235 tests with one existing hash-pinned Jet 4 fixture ignore. Strict all-target,
 all-feature Clippy passes for both. Focused UI checks and three reviewed source-free
 About frames cover translated update controls, late-input identity and draft-safe

@@ -1,7 +1,8 @@
 //! Sealed local installation proofs consumed by matching signed payload routes.
 
 use crate::{
-    artifact::ArtifactKind, installation::Installed, msi::MsiInstallation, platform::Platform,
+    appimage::InstalledAppImage, artifact::ArtifactKind, installation::Installed,
+    msi::MsiInstallation, platform::Platform,
 };
 use semver::Version;
 use std::path::Path;
@@ -13,6 +14,8 @@ pub enum UpdateTarget {
     Package(Installed),
     /// A Windows Installer product bound through native registration and components.
     WindowsMsi(MsiInstallation),
+    /// An original AppImage authenticated by its publisher and running runtime.
+    AppImage(InstalledAppImage),
 }
 
 impl UpdateTarget {
@@ -21,6 +24,7 @@ impl UpdateTarget {
         match self {
             Self::Package(installed) => installed.version(),
             Self::WindowsMsi(installed) => installed.version(),
+            Self::AppImage(installed) => installed.version(),
         }
     }
 
@@ -29,6 +33,7 @@ impl UpdateTarget {
         match self {
             Self::Package(installed) => installed.platform(),
             Self::WindowsMsi(installed) => installed.platform(),
+            Self::AppImage(installed) => installed.platform(),
         }
     }
 
@@ -37,6 +42,7 @@ impl UpdateTarget {
         match self {
             Self::Package(_) => ArtifactKind::PortableArchive,
             Self::WindowsMsi(_) => ArtifactKind::WindowsMsi,
+            Self::AppImage(_) => ArtifactKind::AppImage,
         }
     }
 
@@ -48,6 +54,7 @@ impl UpdateTarget {
         match self {
             Self::Package(installed) => installed.directory(),
             Self::WindowsMsi(installed) => installed.staging_parent(),
+            Self::AppImage(installed) => installed.staging_parent(),
         }
     }
 }

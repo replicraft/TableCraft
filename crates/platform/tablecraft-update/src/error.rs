@@ -47,6 +47,9 @@ pub enum UpdateError {
     /// A signed archive failed path, membership or content validation.
     #[error("The update archive is invalid")]
     Archive,
+    /// The candidate installation has no authenticated replacement authority.
+    #[error("The installed application could not be authenticated")]
+    UnqualifiedInstallation,
     /// Staged bytes changed after verification.
     #[error("The staged update changed after signature verification")]
     PayloadChanged,

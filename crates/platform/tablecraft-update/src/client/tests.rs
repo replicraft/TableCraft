@@ -79,7 +79,7 @@ fn bounded_reader_checks_cancellation_between_chunks_and_surfaces_read_failure()
     let cancelled = Cell::new(false);
     let mut reader = Cursor::new(vec![b' '; 70_000]);
     let result =
-        crate::verification::bounded_bytes(&mut reader, 100_000, &|| cancelled.replace(true));
+        crate::verification::bounded_bytes(&mut reader, 100_000, &mut || cancelled.replace(true));
     assert!(matches!(result, Err(UpdateError::Cancelled)));
 
     struct Broken;
@@ -89,7 +89,7 @@ fn bounded_reader_checks_cancellation_between_chunks_and_surfaces_read_failure()
         }
     }
     assert!(matches!(
-        crate::verification::bounded_bytes(&mut Broken, 100, &|| false),
+        crate::verification::bounded_bytes(&mut Broken, 100, &mut || false),
         Err(UpdateError::Io(_))
     ));
 }

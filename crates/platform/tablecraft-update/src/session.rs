@@ -2,6 +2,7 @@
 
 use crate::{
     DownloadProgress, PreparedUpdate, UpdateError, Updater,
+    appimage::{self, RuntimeContext},
     apply::{AppliedUpdate, ApplyError},
     artifact::ArtifactKind,
     installation::{self, InstallPlan, ManualReason},
@@ -168,6 +169,31 @@ impl Session {
                 cancelled,
                 emit,
             );
+        }
+        match appimage::capture(self.updater.platform()) {
+            RuntimeContext::Candidate(context) => {
+                let Some(release) = self.updater.check(ArtifactKind::AppImage, cancelled)? else {
+                    return publish(UpdateEvent::Current, cancelled, emit);
+                };
+                let installed = self.updater.authenticate_appimage(context, cancelled)?;
+                return self.accept_target(
+                    release,
+                    UpdateTarget::AppImage(installed),
+                    cancelled,
+                    emit,
+                );
+            }
+            RuntimeContext::Manual(reason) => {
+                return publish(
+                    UpdateEvent::Manual {
+                        version: None,
+                        reason,
+                    },
+                    cancelled,
+                    emit,
+                );
+            }
+            RuntimeContext::Absent => {}
         }
         let available = self
             .updater

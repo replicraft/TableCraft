@@ -1,5 +1,6 @@
 use crate::{
     UpdateError,
+    appimage::PreparedAppImage,
     apply::{AppliedUpdate, ApplyError, transaction},
     archive::{self, ExtractedUpdate},
     download::VerifiedDownload,
@@ -23,6 +24,7 @@ pub struct PreparedUpdate {
 enum Prepared {
     Package(Box<PreparedPackage>),
     WindowsMsi(Box<PreparedMsi>),
+    AppImage(Box<PreparedAppImage>),
 }
 
 #[derive(Debug)]
@@ -62,6 +64,7 @@ impl PreparedUpdate {
                 transaction::apply(installed, extracted)
             }
             Prepared::WindowsMsi(prepared) => prepared.apply(cancelled),
+            Prepared::AppImage(prepared) => prepared.apply(cancelled),
         }
     }
 
@@ -70,6 +73,7 @@ impl PreparedUpdate {
         match &self.prepared {
             Prepared::Package(prepared) => &prepared.version,
             Prepared::WindowsMsi(prepared) => prepared.version(),
+            Prepared::AppImage(prepared) => prepared.version(),
         }
     }
 }
@@ -115,6 +119,9 @@ impl VerifiedDownload {
                     version: self.into_version(),
                 }))
             }
+            UpdateTarget::AppImage(installed) => Prepared::AppImage(Box::new(
+                PreparedAppImage::prepare(self, installed, cancelled)?,
+            )),
             UpdateTarget::WindowsMsi(installed) => {
                 Prepared::WindowsMsi(Box::new(PreparedMsi::prepare(self, installed, cancelled)?))
             }

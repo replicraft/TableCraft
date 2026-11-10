@@ -23,6 +23,9 @@ fi
 if [ "$kind" = bundle ]; then
     /usr/bin/open -n "$launch" || exit 1
 else
+    if [ "$kind" = appimage ]; then
+        unset APPIMAGE APPDIR ARGV0 OWD
+    fi
     cd "$working_directory" || exit 1
     "$launch" </dev/null >/dev/null 2>&1 &
     application=$!

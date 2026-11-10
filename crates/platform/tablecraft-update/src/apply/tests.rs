@@ -1,6 +1,6 @@
 use super::{
     ApplyError,
-    helper::{HelperPlan, unix_command, windows_command},
+    helper::{HelperPlan, LaunchKind, unix_command, windows_command},
     transaction::{FileMoves, apply_with},
 };
 use crate::{
@@ -198,7 +198,7 @@ fn flat_replacement_retains_complete_originals_and_preserves_user_files() {
                         .unwrap()
                         .join(&fixture.original[0].0)
                 );
-                assert!(!plan.bundle);
+                assert!(matches!(plan.kind, LaunchKind::Portable));
                 assert!(plan.backup.join("READY").is_file());
                 started = true;
                 Ok(None)
@@ -230,7 +230,7 @@ fn mac_bundle_replacement_retains_original_bundle_and_uses_its_actual_launch_anc
         fixture.extracted(),
         &mut Moves::succeed(),
         &mut |plan| {
-            assert!(plan.bundle);
+            assert!(matches!(plan.kind, LaunchKind::Bundle));
             assert_eq!(
                 plan.launch,
                 fixture
@@ -393,7 +393,7 @@ fn native_helper_commands_keep_paths_out_of_fixed_script_source() {
         launch,
         working_directory: working,
         backup,
-        bundle: false,
+        kind: LaunchKind::Portable,
     };
     let unix = unix_command(&plan);
     assert_eq!(unix.get_program(), OsStr::new("/bin/sh"));
@@ -426,4 +426,77 @@ fn native_helper_commands_keep_paths_out_of_fixed_script_source() {
         OsStr::new("TABLECRAFT_UPDATE_BACKUP"),
         Some(backup.as_os_str())
     )));
+}
+
+#[test]
+fn appimage_replacement_retains_original_and_relaunches_only_original_image_path() {
+    let root = tempfile::tempdir().unwrap();
+    let image = root.path().join("TableCraft renamed.AppImage");
+    let staged = root.path().join("authenticated-new-image");
+    let database = root.path().join("private.accdb");
+    fs::write(&image, b"old image").unwrap();
+    fs::write(&staged, b"new image").unwrap();
+    fs::write(&database, b"untouched database").unwrap();
+    let outcome = super::transaction::apply_image_with(
+        &image,
+        &staged,
+        root.path(),
+        &mut Moves::succeed(),
+        &mut |plan| {
+            assert_eq!(plan.launch, image);
+            assert!(matches!(plan.kind, LaunchKind::AppImage));
+            let command = unix_command(plan);
+            let arguments: Vec<_> = command.get_args().collect();
+            assert_eq!(arguments.last().unwrap(), &OsStr::new("appimage"));
+            assert!(
+                arguments[1]
+                    .to_string_lossy()
+                    .contains("unset APPIMAGE APPDIR ARGV0 OWD")
+            );
+            Ok(None)
+        },
+    )
+    .unwrap();
+    assert_eq!(fs::read(&image).unwrap(), b"new image");
+    assert_eq!(
+        fs::read(outcome.retained_directory().join("original.AppImage")).unwrap(),
+        b"old image"
+    );
+    assert_eq!(fs::read(database).unwrap(), b"untouched database");
+    assert!(!staged.exists());
+}
+
+#[test]
+fn appimage_failed_replace_or_helper_restores_original_and_failed_rollback_keeps_backup() {
+    for failures in [vec![2], vec![], vec![2, 3]] {
+        let root = tempfile::tempdir().unwrap();
+        let image = root.path().join("old.AppImage");
+        let staged = root.path().join("new.AppImage");
+        fs::write(&image, b"original").unwrap();
+        fs::write(&staged, b"candidate").unwrap();
+        let outcome = super::transaction::apply_image_with(
+            &image,
+            &staged,
+            root.path(),
+            &mut Moves::failing(failures.iter().copied()),
+            &mut |_| Err(io::Error::other("injected helper failure")),
+        );
+        let Err(ApplyError::Filesystem { recovery, .. }) = outcome else {
+            panic!("expected injected failure");
+        };
+        if failures == [2, 3] {
+            let recovery = recovery.unwrap();
+            let retained = recovery.backup_directory().to_path_buf();
+            drop(recovery);
+            assert_eq!(
+                fs::read(retained.join("original.AppImage")).unwrap(),
+                b"original"
+            );
+            assert!(!image.exists());
+        } else {
+            assert!(recovery.is_none());
+            assert_eq!(fs::read(&image).unwrap(), b"original");
+            assert_eq!(fs::read(&staged).unwrap(), b"candidate");
+        }
+    }
 }

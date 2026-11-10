@@ -1,5 +1,6 @@
 use crate::{
     UpdateError,
+    appimage::{self, InstalledAppImage, context::Context},
     artifact::ArtifactKind,
     download::{self, DownloadProgress, VerifiedDownload},
     http::{Http, Transport},
@@ -23,6 +24,21 @@ pub struct Updater {
 }
 
 impl Updater {
+    pub(crate) fn authenticate_appimage(
+        &self,
+        context: Context,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<InstalledAppImage, UpdateError> {
+        appimage::authenticate(
+            &self.http,
+            &self.key,
+            context,
+            &self.version,
+            self.platform,
+            cancelled,
+        )
+    }
+
     pub(crate) fn version(&self) -> &Version {
         &self.version
     }
@@ -105,12 +121,15 @@ fn check(
     {
         return Err(UpdateError::ReleaseTooLarge);
     }
-    let bytes =
-        verification::bounded_bytes(&mut response.reader, release::MAX_METADATA_BYTES, cancelled)
-            .map_err(|error| match error {
-            UpdateError::AssetTooLarge => UpdateError::ReleaseTooLarge,
-            other => other,
-        })?;
+    let bytes = verification::bounded_bytes(
+        &mut response.reader,
+        release::MAX_METADATA_BYTES,
+        &mut || cancelled(),
+    )
+    .map_err(|error| match error {
+        UpdateError::AssetTooLarge => UpdateError::ReleaseTooLarge,
+        other => other,
+    })?;
     release::select(&bytes, current, platform, kind)
 }
 

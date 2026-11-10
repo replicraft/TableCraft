@@ -3,6 +3,7 @@
 //! Operations block and belong on a host-owned worker. Production trust is
 //! compiled from the maintained public key; network metadata never selects it.
 
+pub mod appimage;
 pub mod apply;
 mod archive;
 pub mod artifact;

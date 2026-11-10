@@ -1,14 +1,16 @@
-use crate::{
-    UpdateError,
-    release::{AvailableUpdate, MAX_SIGNATURE_BYTES},
-};
+use crate::{UpdateError, release::MAX_SIGNATURE_BYTES};
 use minisign_verify::{PublicKey, Signature};
+use semver::Version;
 use sha2::{Digest, Sha256};
 use std::io::{Read, Write};
 
 const TRANSFER_BYTES: usize = 64 * 1024;
 
-pub(crate) fn signature(text: &[u8], release: &AvailableUpdate) -> Result<Signature, UpdateError> {
+pub(crate) fn signature(
+    text: &[u8],
+    version: &Version,
+    asset_name: &str,
+) -> Result<Signature, UpdateError> {
     if text.len() as u64 > MAX_SIGNATURE_BYTES {
         return Err(UpdateError::AssetTooLarge);
     }
@@ -17,11 +19,7 @@ pub(crate) fn signature(text: &[u8], release: &AvailableUpdate) -> Result<Signat
         return Err(UpdateError::Signature);
     }
     let signature = Signature::decode(text).map_err(|_| UpdateError::Signature)?;
-    let expected = format!(
-        "tablecraft-update {} {}",
-        release.version(),
-        release.asset_name()
-    );
+    let expected = format!("tablecraft-update {version} {asset_name}");
     if signature.trusted_comment() != expected {
         return Err(UpdateError::Signature);
     }
@@ -78,7 +76,7 @@ pub(crate) fn transfer(
 pub(crate) fn bounded_bytes(
     source: &mut dyn Read,
     limit: usize,
-    cancelled: &dyn Fn() -> bool,
+    cancelled: &mut dyn FnMut() -> bool,
 ) -> Result<Vec<u8>, UpdateError> {
     let mut bytes = Vec::new();
     let mut buffer = [0; TRANSFER_BYTES];

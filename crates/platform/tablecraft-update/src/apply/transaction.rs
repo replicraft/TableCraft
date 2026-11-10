@@ -1,5 +1,5 @@
 use super::{
-    helper::{self, HelperPlan},
+    helper::{self, HelperPlan, LaunchKind},
     outcome::{AppliedUpdate, ApplyError, ApplyStage, RetainedRecovery},
 };
 use crate::{archive::ExtractedUpdate, installation::Installed, platform::Platform};
@@ -84,10 +84,81 @@ pub(super) fn apply_with(
         })?;
     let mut replacements = replacements(&installed, &extracted, backup.path())?;
 
+    let kind = if installed.bundle().is_some() {
+        LaunchKind::Bundle
+    } else {
+        LaunchKind::Portable
+    };
+    apply_moves(
+        &mut replacements,
+        backup,
+        installed.bundle().unwrap_or_else(|| installed.executable()),
+        installed.directory(),
+        kind,
+        files,
+        spawn,
+    )
+}
+
+pub(crate) fn apply_image(
+    image: &Path,
+    staged: &Path,
+    directory: &Path,
+) -> Result<AppliedUpdate, ApplyError> {
+    apply_image_with(
+        image,
+        staged,
+        directory,
+        &mut NativeFiles,
+        &mut helper::spawn,
+    )
+}
+
+pub(super) fn apply_image_with(
+    image: &Path,
+    staged: &Path,
+    directory: &Path,
+    files: &mut dyn FileMoves,
+    spawn: &mut dyn FnMut(&HelperPlan<'_>) -> io::Result<Option<Child>>,
+) -> Result<AppliedUpdate, ApplyError> {
+    let backup = tempfile::Builder::new()
+        .prefix(".tablecraft-backup-")
+        .tempdir_in(directory)
+        .map_err(|source| ApplyError::Filesystem {
+            source,
+            recovery: None,
+        })?;
+    let mut replacements = [Replacement {
+        installed: image.to_path_buf(),
+        staged: staged.to_path_buf(),
+        backup: backup.path().join("original.AppImage"),
+        original_moved: false,
+        replacement_moved: false,
+    }];
+    apply_moves(
+        &mut replacements,
+        backup,
+        image,
+        directory,
+        LaunchKind::AppImage,
+        files,
+        spawn,
+    )
+}
+
+fn apply_moves(
+    replacements: &mut [Replacement],
+    backup: tempfile::TempDir,
+    launch: &Path,
+    directory: &Path,
+    kind: LaunchKind,
+    files: &mut dyn FileMoves,
+    spawn: &mut dyn FnMut(&HelperPlan<'_>) -> io::Result<Option<Child>>,
+) -> Result<AppliedUpdate, ApplyError> {
     // This is intentionally permanent before any original moves. Neither an
     // error return nor TempDir Drop may delete the only remaining original.
     let backup = backup.keep();
-    let result = replace(&mut replacements, files)
+    let result = replace(replacements, files)
         .and_then(|()| {
             OpenOptions::new()
                 .write(true)
@@ -98,10 +169,10 @@ pub(super) fn apply_with(
         .and_then(|()| {
             let plan = HelperPlan {
                 process: std::process::id(),
-                launch: installed.bundle().unwrap_or_else(|| installed.executable()),
-                working_directory: installed.directory(),
+                launch,
+                working_directory: directory,
                 backup: &backup,
-                bundle: installed.bundle().is_some(),
+                kind,
             };
             spawn(&plan)
         });
@@ -111,12 +182,12 @@ pub(super) fn apply_with(
         // after the consumed installation proof and extracted staging are dropped.
         Ok(helper) => Ok(AppliedUpdate::handoff(
             backup,
-            installed.directory().to_path_buf(),
+            directory.to_path_buf(),
             helper,
             ApplyStage::Replaced,
         )),
         Err(source) => {
-            let restored = rollback(&mut replacements, files);
+            let restored = rollback(replacements, files);
             let recovery = if restored && cleanup_empty_backup(&backup).is_ok() {
                 None
             } else {
@@ -124,7 +195,7 @@ pub(super) fn apply_with(
                 // anchor after the source proof and staged update are dropped.
                 Some(RetainedRecovery {
                     backup,
-                    installation: installed.directory().to_path_buf(),
+                    installation: directory.to_path_buf(),
                 })
             };
             Err(ApplyError::Filesystem { source, recovery })

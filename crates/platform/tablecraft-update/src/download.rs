@@ -18,16 +18,16 @@ use tempfile::{NamedTempFile, TempDir};
 
 const HASH_BUFFER_BYTES: usize = 64 * 1024;
 
-/// Byte progress for the archive; signature retrieval precedes archive transfer.
+/// Byte progress for the selected payload; signature retrieval precedes transfer.
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub struct DownloadProgress {
     /// Authenticated-transfer bytes received so far (not yet an accepted update).
     pub received: u64,
-    /// Exact archive size captured from validated release metadata.
+    /// Exact payload size captured from validated release metadata.
     pub total: u64,
 }
 
-/// A signature-verified archive with owned private staging and automatic cleanup.
+/// A signature-verified payload with owned private staging and automatic cleanup.
 #[derive(Debug)]
 pub struct VerifiedDownload {
     // Drop the file before its containing directory, including on Windows.
@@ -42,6 +42,10 @@ pub struct VerifiedDownload {
 }
 
 impl VerifiedDownload {
+    pub(crate) fn staged_path(&self) -> &Path {
+        self.file.path()
+    }
+
     pub(crate) fn digest(&self) -> &[u8; 32] {
         &self.digest
     }
@@ -50,17 +54,17 @@ impl VerifiedDownload {
         self.version
     }
 
-    /// The authenticated version associated with this archive.
+    /// The authenticated version associated with this payload.
     pub fn version(&self) -> &Version {
         &self.version
     }
 
-    /// The exact authenticated platform archive filename.
+    /// The exact authenticated native asset filename.
     pub fn asset_name(&self) -> &str {
         &self.asset_name
     }
 
-    /// The native target authenticated by this archive identity.
+    /// The native target authenticated by this asset identity.
     pub fn platform(&self) -> Platform {
         self.platform
     }
@@ -127,14 +131,15 @@ pub(crate) fn download(
         return Err(UpdateError::LengthMismatch);
     }
     // The bounded signature is fetched before any large archive or disk staging.
-    let bytes =
-        verification::bounded_bytes(&mut response.reader, MAX_SIGNATURE_BYTES as usize, &|| {
-            false
-        })?;
+    let bytes = verification::bounded_bytes(
+        &mut response.reader,
+        MAX_SIGNATURE_BYTES as usize,
+        &mut || !progress(DownloadProgress { received: 0, total }),
+    )?;
     if bytes.len() as u64 != release.signature_bytes() {
         return Err(UpdateError::LengthMismatch);
     }
-    let signature = verification::signature(&bytes, release)?;
+    let signature = verification::signature(&bytes, release.version(), release.asset_name())?;
     // Key-id and prehash admission happen before fetching the payload.
     key.verify_stream(&signature)
         .map_err(|_| UpdateError::Signature)?;

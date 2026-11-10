@@ -21,12 +21,19 @@ const WINDOWS_SCRIPT: &str = include_str!("helper/relaunch.ps1");
 #[cfg(windows)]
 const CREATE_NO_WINDOW: u32 = 0x0800_0000;
 
+#[derive(Clone, Copy)]
+pub(super) enum LaunchKind {
+    Portable,
+    Bundle,
+    AppImage,
+}
+
 pub(super) struct HelperPlan<'a> {
     pub(super) process: u32,
     pub(super) launch: &'a Path,
     pub(super) working_directory: &'a Path,
     pub(super) backup: &'a Path,
-    pub(super) bundle: bool,
+    pub(super) kind: LaunchKind,
 }
 
 pub(super) fn spawn(plan: &HelperPlan<'_>) -> io::Result<Option<Child>> {
@@ -76,7 +83,11 @@ pub(super) fn unix_command(plan: &HelperPlan<'_>) -> Command {
         .arg(plan.launch)
         .arg(plan.working_directory)
         .arg(plan.backup)
-        .arg(if plan.bundle { "bundle" } else { "portable" });
+        .arg(match plan.kind {
+            LaunchKind::Portable => "portable",
+            LaunchKind::Bundle => "bundle",
+            LaunchKind::AppImage => "appimage",
+        });
     command
 }
 

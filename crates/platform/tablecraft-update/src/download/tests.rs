@@ -194,7 +194,7 @@ fn false_content_length_refuses_and_duplicate_signature_lines_refuse() {
     no_staging(parent.path());
     let extra = [SIGNATURE, b"unexpected fifth line\n"].concat();
     assert!(matches!(
-        crate::verification::signature(&extra, &release),
+        crate::verification::signature(&extra, release.version(), release.asset_name()),
         Err(UpdateError::Signature)
     ));
 }
