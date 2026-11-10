@@ -131,6 +131,11 @@ fn current_delete_rechecks_original_requests_and_exact_after_complements() {
             .prepare_ordinary_row_deletes("Table1", &[], &mut budget(), &|| false)
             .is_err()
     );
+    let oversized = vec![0; source.rows.len() + 1];
+    assert!(matches!(
+        native.prepare_current_row_deletes("Table1", &oversized, &mut budget(), &|| false),
+        Err(EditError::Conflict)
+    ));
     let dense = model::source(model::Source::GuiRequiredZero);
     assert!(
         image(&dense)
@@ -195,4 +200,48 @@ fn current_delete_rechecks_original_requests_and_exact_after_complements() {
         )
         .is_err()
     );
+}
+
+#[test]
+fn current_delete_identity_validation_uses_cardinality_without_the_legacy_request_quota() {
+    let requests: Vec<_> = (0..16_385)
+        .map(|ordinal| RowDelete::new(ordinal, vec![2, 0, 1]))
+        .collect();
+    // Identity validation alone does not supply a native Source. This count
+    // proves the helper has no policy quota while the current planner separately
+    // proves the actual captured table cardinality and physical roots.
+    Family::Current
+        .unique(&requests, requests.len(), &mut budget(), &|| false)
+        .unwrap();
+    assert!(matches!(
+        Family::Ordinary.unique(&requests, requests.len(), &mut budget(), &|| false),
+        Err(EditError::Inspect(crate::InspectError::StructureLimit))
+    ));
+    assert!(matches!(
+        Family::Current.unique(&requests, requests.len() - 1, &mut budget(), &|| false),
+        Err(EditError::Conflict)
+    ));
+    assert!(
+        Family::Current
+            .unique(&requests, requests.len(), &mut budget(), &|| true)
+            .is_err()
+    );
+    assert!(
+        Family::Current
+            .unique(
+                &requests,
+                requests.len(),
+                &mut ResourceBudget::new(0, 0, 100_000_000),
+                &|| false,
+            )
+            .is_err()
+    );
+    let duplicate = [
+        RowDelete::new(4, vec![2, 0, 1]),
+        RowDelete::new(4, vec![2, 0, 1]),
+    ];
+    assert!(matches!(
+        Family::Current.unique(&duplicate, 2, &mut budget(), &|| false),
+        Err(EditError::Conflict)
+    ));
 }

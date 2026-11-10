@@ -95,7 +95,10 @@ impl NativeImage {
     ) -> Result<Vec<RowDelete>, EditError> {
         let _span = tracing::debug_span!("native.current.delete.select").entered();
         let source = capture(self, table, budget, cancelled)?;
-        selection::prepare(self, &source, ordinals, budget, cancelled)
+        if ordinals.len() > source.records.len() {
+            return Err(EditError::Conflict);
+        }
+        selection::prepare(self, &source, ordinals, Family::Current, budget, cancelled)
     }
 
     pub(crate) fn plan_current_row_deletes(

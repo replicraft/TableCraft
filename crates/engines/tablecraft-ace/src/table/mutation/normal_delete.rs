@@ -55,6 +55,26 @@ impl Family {
             Self::Current => current::capture(image, table, budget, cancelled),
         }
     }
+
+    fn unique<U: rows::RowAssignment>(
+        self,
+        requests: &[U],
+        source_rows: usize,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(), EditError> {
+        match (self, requests.len() > source_rows) {
+            (Self::Ordinary, _) => rows::unique(requests, budget, cancelled),
+            #[cfg(feature = "ace16-create")]
+            (Self::Current, exceeds_source) => {
+                check(budget, cancelled)?;
+                if exceeds_source {
+                    return Err(EditError::Conflict);
+                }
+                rows::unique_identities(requests, budget, cancelled)
+            }
+        }
+    }
 }
 
 fn plan(
@@ -67,7 +87,7 @@ fn plan(
 ) -> Result<NativeEditPlan, EditError> {
     let _span = tracing::debug_span!("native.row.delete.plan").entered();
     let source = family.capture(&image, table, budget, cancelled)?;
-    rows::unique(deletes, budget, cancelled)?;
+    family.unique(deletes, source.records.len(), budget, cancelled)?;
     for request in deletes {
         check(budget, cancelled)?;
         if request.expected_bytes().len() > crate::format::page::PAGE_BYTES {

@@ -2,11 +2,7 @@
 use crate::{
     EditError, InspectError, NativeImage, RowDelete,
     header::check,
-    table::mutation::{
-        preserved_source::Source,
-        record_roots,
-        rows::{self, RowAssignment},
-    },
+    table::mutation::{preserved_source::Source, record_roots, rows::RowAssignment},
 };
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
@@ -40,7 +36,14 @@ impl NativeImage {
             return Err(InspectError::StructureLimit.into());
         }
 
-        prepare(self, &source, ordinals, budget, cancelled)
+        prepare(
+            self,
+            &source,
+            ordinals,
+            super::Family::Ordinary,
+            budget,
+            cancelled,
+        )
     }
 }
 
@@ -48,6 +51,7 @@ pub(super) fn prepare(
     image: &NativeImage,
     source: &Source,
     ordinals: &[usize],
+    family: super::Family,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Vec<RowDelete>, EditError> {
@@ -62,7 +66,7 @@ pub(super) fn prepare(
         check(budget, cancelled)?;
         selected.push(Ordinal(ordinal));
     }
-    rows::unique(&selected, budget, cancelled)?;
+    family.unique(&selected, source.records.len(), budget, cancelled)?;
 
     budget
         .charge_allocation(selected.len() as u64, size_of::<RowDelete>() as u64)

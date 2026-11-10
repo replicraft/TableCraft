@@ -31,6 +31,16 @@ pub(super) fn unique<U: RowAssignment>(
     if updates.len() > MAX_LIVE_ROWS {
         return Err(InspectError::StructureLimit.into());
     }
+    unique_identities(updates, budget, cancelled)
+}
+
+/// Check original request identities using paid storage and caller-owned work.
+/// Source/action admission supplies any operation-specific cardinality rules.
+pub(super) fn unique_identities<U: RowAssignment>(
+    updates: &[U],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), EditError> {
     match updates.len() {
         0 => Ok(()),
         1 => check(budget, cancelled).map_err(EditError::from),

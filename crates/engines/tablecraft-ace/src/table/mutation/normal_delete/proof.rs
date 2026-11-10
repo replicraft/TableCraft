@@ -10,7 +10,7 @@ use crate::{
         },
     },
     header::check,
-    table::mutation::{fixed_records, record_roots, rows},
+    table::mutation::{fixed_records, record_roots},
 };
 use std::io::Cursor;
 use tablecraft_core::limits::{Resource, ResourceBudget};
@@ -53,7 +53,7 @@ pub(super) fn prove_with_source(
     )?;
     let source = family.capture(&image, table, budget, cancelled)?;
     source.require_preserved_definition_tail(&image, plan.after_bytes(), budget, cancelled)?;
-    rows::unique(deletes, budget, cancelled)?;
+    family.unique(deletes, source.records.len(), budget, cancelled)?;
     if plan.before_bytes().len() != plan.after_bytes().len()
         || plan.changed_rows() != deletes.len()
         || source.records.len() != source.table.rows().len()
