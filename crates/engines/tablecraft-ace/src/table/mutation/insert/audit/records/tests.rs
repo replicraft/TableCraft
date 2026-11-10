@@ -256,12 +256,22 @@ fn boolean_offsets_cannot_invent_payload_extent_and_invalid_layouts_refuse() {
         [2, 0, 7, 0, 0, 0, 3]
     );
 
-    let mut beyond = source(&fields, &[]);
-    literal::put16(&mut beyond, TABLE + FIELDS + FIELD_BYTES + 21, 100);
-    assert!(matches!(
-        qualify(&schema(&beyond), &mut budget(), &|| false),
-        Err(EditError::Unsupported(WriteBlocker::RowLayout))
-    ));
+    for offset in [100, 65535] {
+        let mut ignored = source(&fields, &[]);
+        literal::put16(&mut ignored, TABLE + FIELDS + FIELD_BYTES + 21, offset);
+        let metadata = schema(&ignored);
+        qualify(&metadata, &mut budget(), &|| false).unwrap();
+        assert_eq!(
+            reconstruct(
+                &ignored,
+                &metadata,
+                0,
+                vec![Value::Int32(7), Value::Boolean(true)]
+            )
+            .unwrap(),
+            [2, 0, 7, 0, 0, 0, 3]
+        );
+    }
     let mut overlap = source(&[("ID", 4, 0, 4), ("Other", 4, 2, 4)], &[]);
     assert!(matches!(
         qualify(&schema(&overlap), &mut budget(), &|| false),

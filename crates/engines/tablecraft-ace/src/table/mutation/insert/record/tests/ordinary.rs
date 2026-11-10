@@ -235,7 +235,7 @@ fn nullable_fixed_cells_do_not_turn_boolean_null_into_false() {
 }
 
 #[test]
-fn physical_overlap_variable_holes_and_boolean_phantom_extent_refuse() {
+fn physical_overlap_and_variable_holes_refuse_while_boolean_offsets_own_no_payload() {
     let good = ordinary(
         6,
         &[("ID", 4, 0, 4), ("Other", 4, 4, 4), ("Flag", 1, 2, 0)],
@@ -243,15 +243,32 @@ fn physical_overlap_variable_holes_and_boolean_phantom_extent_refuse() {
     );
     let schema = metadata_schema(&good);
     assert!(Profile::bind(&schema, &mut budget(), &|| false).is_ok());
-    for (offset, value) in [(63 + 25 + 21, 2), (63 + 50 + 21, 20)] {
-        let mut bytes = good.clone();
-        support::put16(&mut bytes, DEFINITION + offset, value);
-        let schema = metadata_schema(&bytes);
-        assert!(matches!(
-            Profile::bind(&schema, &mut budget(), &|| false),
-            Err(EditError::Unsupported(WriteBlocker::RowLayout))
-        ));
+    let mut overlap = good.clone();
+    support::put16(&mut overlap, DEFINITION + 63 + 25 + 21, 2);
+    assert!(matches!(
+        Profile::bind(&metadata_schema(&overlap), &mut budget(), &|| false),
+        Err(EditError::Unsupported(WriteBlocker::RowLayout))
+    ));
+    let values = [Value::Int32(7), Value::Int32(11), Value::Boolean(true)];
+    for offset in [20, 65535] {
+        let mut ignored = good.clone();
+        support::put16(&mut ignored, DEFINITION + 63 + 50 + 21, offset);
+        let metadata = metadata_schema(&ignored);
+        let profile = Profile::bind(&metadata, &mut budget(), &|| false).unwrap();
+        let row = profile.build(&values, &mut budget(), &|| false).unwrap();
+        assert_eq!(row, [3, 0, 7, 0, 0, 0, 11, 0, 0, 0, 7]);
+        assert_eq!(decoded(&ignored, &metadata, &row), values);
     }
+    // A real non-Boolean payload offset still contributes to the fixed extent.
+    // This declaration cannot produce a record that fits on one native DATA page.
+    let mut oversized = good;
+    support::put16(&mut oversized, DEFINITION + 63 + 25 + 21, 65535);
+    let metadata = metadata_schema(&oversized);
+    let profile = Profile::bind(&metadata, &mut budget(), &|| false).unwrap();
+    assert!(matches!(
+        profile.build(&values, &mut budget(), &|| false),
+        Err(EditError::Unsupported(WriteBlocker::RowLayout))
+    ));
     let good = ordinary(
         6,
         &[("ID", 4, 0, 4), ("A", 9, 0, 510), ("B", 10, 0, 510)],

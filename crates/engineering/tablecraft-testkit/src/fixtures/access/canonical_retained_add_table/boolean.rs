@@ -87,7 +87,10 @@ fn declaration(before: &[u8], definition: u32) {
     assert_eq!(before[at + 90], 7);
     assert_eq!(before[at + 100], 1);
     assert_eq!(before[at + 115], 3);
-    assert_eq!(&before[at + 121..at + 125], &[0; 4]);
+    assert_eq!(&before[at + 105..at + 107], &[1, 0]);
+    // Native Boolean has no payload; only its declared width is constrained.
+    // The unused offset word at121 is preserved without interpreting an address.
+    assert_eq!(&before[at + 123..at + 125], &[0; 2]);
 }
 
 fn resolved(input: Input) -> bool {
