@@ -245,7 +245,10 @@ pub(crate) fn classify(
     };
     let expected_files = package::files(platform);
     let manifest_name = package::manifest(platform);
-    if !metadata.matches_release(platform, current) {
+    if !metadata.matches_installation(platform, current)
+        || (metadata.installation.is_some()
+            && !matches!(platform, Platform::WindowsX64 | Platform::WindowsArm64))
+    {
         return Ok(InstallPlan::Manual(ManualReason::InvalidManifest));
     }
 
@@ -282,6 +285,13 @@ pub(crate) fn classify(
     if !package::hash_matches(expected_hash, &executable_digest) {
         return Ok(InstallPlan::Manual(ManualReason::InvalidManifest));
     }
+    if metadata.installation.is_some() {
+        // Windows Installer retains ownership at custom INSTALLFOLDER paths too.
+        // A verified manifest identifies the package; it does not authorize
+        // bypassing MSI component, registry or rollback management.
+        return Ok(InstallPlan::Manual(ManualReason::UnsupportedLocation));
+    }
+
     let installed = Installed {
         executable,
         directory,

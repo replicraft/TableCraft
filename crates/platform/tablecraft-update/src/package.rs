@@ -61,17 +61,29 @@ const EXECUTABLE_MODE: u32 = 0o755;
 const DATA_MODE: u32 = 0o644;
 
 #[derive(Deserialize)]
+#[serde(rename_all = "kebab-case")]
+pub(crate) enum InstallationKind {
+    WindowsMsi,
+}
+
+#[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
 pub(crate) struct Manifest {
     product: String,
     pub(crate) version: String,
     target: String,
+    #[serde(default)]
+    pub(crate) installation: Option<InstallationKind>,
     #[serde(deserialize_with = "unique_hashes")]
     pub(crate) files: BTreeMap<String, String>,
 }
 
 impl Manifest {
     pub(crate) fn matches_release(&self, platform: Platform, version: &Version) -> bool {
+        self.installation.is_none() && self.matches_installation(platform, version)
+    }
+
+    pub(crate) fn matches_installation(&self, platform: Platform, version: &Version) -> bool {
         let expected = files(platform);
         let manifest = manifest(platform);
         self.product == "tablecraft-desktop"

@@ -119,7 +119,13 @@ def stage_payload(version, target, binary, notices, stage):
                          ("ThirdPartyLicenses.txt", notices)):
         shutil.copyfile(source, stage / name)
     files = {name: stage / name for name in ("tablecraft-desktop.exe", "LICENSE", "ThirdPartyLicenses.txt")}
-    (stage / "RELEASE.json").write_bytes(desktop.manifest(version, target, files))
+    metadata = json.loads(desktop.manifest(version, target, files))
+    # Windows Installer owns these files even when INSTALLFOLDER is customized.
+    # Keep this identity distinct from a replaceable portable archive.
+    metadata["installation"] = "windows-msi"
+    (stage / "RELEASE.json").write_text(
+        json.dumps(metadata, indent=2, sort_keys=True) + "\n", encoding="utf-8", newline="\n"
+    )
 
 
 def build_command(version, target, stage, icon, registration, output, tool):

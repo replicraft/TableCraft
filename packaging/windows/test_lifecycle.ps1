@@ -68,7 +68,7 @@ try {
     $installed = $true
     $manifestPath = Join-Path $install 'RELEASE.json'
     $manifest = Get-Content -LiteralPath $manifestPath -Raw | ConvertFrom-Json
-    if ($manifest.product -ne 'tablecraft-desktop' -or $manifest.version -ne $Version -or $manifest.target -ne $Target) {
+    if ($manifest.product -ne 'tablecraft-desktop' -or $manifest.version -ne $Version -or $manifest.target -ne $Target -or $manifest.installation -ne 'windows-msi') {
         throw 'Installed manifest identity differs from the requested release'
     }
     foreach ($property in $manifest.files.PSObject.Properties) {

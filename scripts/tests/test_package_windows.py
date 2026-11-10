@@ -102,6 +102,7 @@ class WindowsInstallerTests(unittest.TestCase):
         self.assertEqual(manifest["product"], "tablecraft-desktop")
         self.assertEqual(manifest["version"], VERSION)
         self.assertEqual(manifest["target"], TARGET)
+        self.assertEqual(manifest["installation"], "windows-msi")
         for name, digest in manifest["files"].items():
             self.assertEqual(digest, contract.digest(payload / name))
         before = (payload / "tablecraft-desktop.exe").read_bytes()

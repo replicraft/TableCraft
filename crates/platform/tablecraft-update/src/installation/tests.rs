@@ -403,3 +403,33 @@ fn appimage_runtime_cannot_be_mistaken_for_a_writable_portable_installation() {
     .unwrap();
     assert!(matches!(standalone, InstallPlan::Portable(_)));
 }
+
+#[test]
+fn msi_marker_preserves_installer_ownership_at_custom_windows_locations() {
+    for platform in [Platform::WindowsX64, Platform::WindowsArm64] {
+        let mut fixture = Fixture::portable(platform);
+        fixture.metadata["installation"] = json!("windows-msi");
+        fixture.write_manifest();
+        manual(fixture.plan(), ManualReason::UnsupportedLocation);
+
+        fs::write(&fixture.executable, b"changed installed executable").unwrap();
+        manual(fixture.plan(), ManualReason::InvalidManifest);
+    }
+}
+
+#[test]
+fn installer_markers_cannot_be_admitted_as_portable_release_archives() {
+    let mut fixture = Fixture::portable(Platform::WindowsX64);
+    fixture.metadata["installation"] = json!("windows-msi");
+    let manifest: crate::package::Manifest = serde_json::from_value(fixture.metadata).unwrap();
+    assert!(!manifest.matches_release(Platform::WindowsX64, &Version::parse(RUNNING).unwrap()));
+
+    let mut fixture = Fixture::portable(Platform::LinuxX64);
+    fixture.metadata["installation"] = json!("windows-msi");
+    fixture.write_manifest();
+    manual(fixture.plan(), ManualReason::InvalidManifest);
+
+    fixture.metadata["installation"] = json!("unknown-installer");
+    fixture.write_manifest();
+    manual(fixture.plan(), ManualReason::InvalidManifest);
+}

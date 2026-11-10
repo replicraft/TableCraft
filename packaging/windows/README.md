@@ -3,7 +3,9 @@
 `tablecraft.wxs` builds a desktop-only MSI for x64 or ARM64 with WiX 6. The CLI
 retains its separate release archives. The installer owns four files under the
 machine's 64-bit Program Files directory: the desktop executable, project license,
-consolidated notices and `RELEASE.json`. Its stable TableCraft-specific UpgradeCode
+consolidated notices and `RELEASE.json`. The manifest carries a typed
+`installation: "windows-msi"` marker, preserving Windows Installer ownership even
+when `INSTALLFOLDER` is customized. Its stable TableCraft-specific UpgradeCode
 supports native major upgrades with old-product removal inside the installation
 transaction. There are no application-launch custom actions.
 
@@ -49,7 +51,8 @@ a developer's machine automatically.
 
 Minisign release authentication and Windows Authenticode are distinct. This
 packager does not Authenticode-sign the executable or MSI. The updater currently
-classifies Program Files installations as manual; automatic signed-MSI upgrade
+classifies marked MSI installations as manual after checking their local
+manifest and executable, including custom installation folders; automatic signed-MSI upgrade
 is a separate integration requirement. Host-side synthetic/preflight tests are
 not evidence of a working native MSI build or installation.
 
