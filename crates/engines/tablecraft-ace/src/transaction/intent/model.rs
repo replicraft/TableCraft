@@ -1,10 +1,11 @@
 use super::binding;
-use crate::{EditError, InspectError, Int32Update, header::check, limits::MAX_ENCODED_TEXT_BYTES};
+use crate::{EditError, InspectError, Int32Update, header::check};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_schema::SchemaName;
 use thiserror::Error;
 
-pub(super) const MAX_NAME_BYTES: usize = MAX_ENCODED_TEXT_BYTES * char::MAX.len_utf8();
+// Retained journal name envelope; independent of native text read framing.
+pub(super) const MAX_NAME_BYTES: usize = 8 * 1024;
 const NAME_CHECK_SCALARS: usize = 4096;
 
 /// Invalid request data, source binding or bounded processing failure.

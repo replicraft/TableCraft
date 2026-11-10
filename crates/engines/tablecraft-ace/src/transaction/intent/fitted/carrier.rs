@@ -6,8 +6,8 @@ use tablecraft_core::{
     values::{Currency, LegacyDateTime, Value},
 };
 
-pub(in crate::transaction::intent) const MAX_VARIABLE_BYTES: usize =
-    crate::limits::MAX_ENCODED_TEXT_BYTES * char::MAX.len_utf8();
+// Retained fitted-carrier envelope; native reads do not inherit this policy.
+pub(in crate::transaction::intent) const MAX_VARIABLE_BYTES: usize = 8 * 1024;
 pub(in crate::transaction::intent) const HEADER_BYTES: usize = 8;
 pub(in crate::transaction::intent) const COPY_BYTES: usize = 4096;
 const NULL: u8 = 0;

@@ -9,6 +9,5 @@ pub(crate) const MAX_RELOCATION_HOPS: usize = 16;
 pub(crate) const MAX_COLUMNS: usize = 256;
 pub(crate) const MAX_INDEXES: usize = 256;
 pub(crate) const MAX_LIVE_ROWS: usize = 16_384;
-pub(crate) const MAX_ENCODED_TEXT_BYTES: usize = 2048;
 
 pub(crate) const MAX_INDEX_DEPTH: usize = 16;
