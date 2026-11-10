@@ -50,7 +50,7 @@ fn repeated_names(populated: bool) {
             harness.state().state.error,
             harness
                 .get_all_by_role(Role::Label)
-                .filter_map(|node| node.accesskit_node().label().map(str::to_owned))
+                .filter_map(|node| node.accesskit_node().label())
                 .collect::<Vec<_>>()
         );
         assert_eq!(std::fs::read(&path).unwrap(), expected);
