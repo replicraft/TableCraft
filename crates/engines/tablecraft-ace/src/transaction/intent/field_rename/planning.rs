@@ -1,4 +1,6 @@
 //! Owning candidate plus original request; no constructor from decoded authority.
+mod retained;
+
 use super::{FieldRenameIntentError as Error, NativeFieldRenameIntent as Intent, Profile};
 use crate::{
     NativeCurrentFieldRenameCandidate, NativeFieldRenameCandidate, NativeFieldRenameIdentity,
@@ -292,6 +294,9 @@ impl RecoverableFieldRenamePlan {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<PreparedImage<'a, D, J>, JournalError> {
         let _span = tracing::debug_span!("native.field_rename.prepare_v1").entered();
+        if self.intent.is_retained_schema() {
+            return Err(JournalError::ImageSize);
+        }
         journal::prepare_expected(
             target,
             journal,

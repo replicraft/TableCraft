@@ -7,9 +7,14 @@ use crate::{format::page::PAGE_BYTES, header::check};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
 const MAGIC: &[u8; 8] = b"TCFD0001";
+#[cfg(feature = "ace16-create")]
 const PROFILE: u16 = 1;
+#[cfg(feature = "ace16-create")]
 const CURRENT_TAIL_MAGIC: &[u8; 8] = b"TCFD0002";
+#[cfg(feature = "ace16-create")]
 const CURRENT_TAIL_PROFILE: u16 = 2;
+const RETAINED_MAGIC: &[u8; 8] = b"TCFD0003";
+const RETAINED_PROFILE: u16 = 3;
 const TOTAL_AT: usize = MAGIC.len();
 const PROFILE_AT: usize = TOTAL_AT + size_of::<u32>();
 const FLAGS_AT: usize = PROFILE_AT + size_of::<u16>();
@@ -27,22 +32,31 @@ pub(super) const MAX_RECORD_BYTES: usize = HEADER_BYTES + 2 * MAX_NAME_BYTES;
 
 #[derive(Clone, Copy)]
 pub(super) enum Profile {
+    #[cfg(feature = "ace16-create")]
     Empty,
+    #[cfg(feature = "ace16-create")]
     PopulatedTail,
+    RetainedTail,
 }
 
 impl Profile {
     fn magic(self) -> &'static [u8; 8] {
         match self {
+            #[cfg(feature = "ace16-create")]
             Self::Empty => MAGIC,
+            #[cfg(feature = "ace16-create")]
             Self::PopulatedTail => CURRENT_TAIL_MAGIC,
+            Self::RetainedTail => RETAINED_MAGIC,
         }
     }
 
     fn number(self) -> u16 {
         match self {
+            #[cfg(feature = "ace16-create")]
             Self::Empty => PROFILE,
+            #[cfg(feature = "ace16-create")]
             Self::PopulatedTail => CURRENT_TAIL_PROFILE,
+            Self::RetainedTail => RETAINED_PROFILE,
         }
     }
 }
@@ -54,8 +68,16 @@ fn bytes<const N: usize>(input: &[u8], at: usize) -> Result<[u8; N], Error> {
         .ok_or(Error::InvalidRecord)
 }
 
-pub(super) fn validate_identity(identity: Identity, before_length: u64) -> Result<(), Error> {
-    binding::length(before_length)?;
+pub(super) fn validate_identity(
+    identity: Identity,
+    before_length: u64,
+    profile: Profile,
+) -> Result<(), Error> {
+    if matches!(profile, Profile::RetainedTail) {
+        binding::retained_length(before_length)?;
+    } else {
+        binding::length(before_length)?;
+    }
     if !before_length.is_multiple_of(PAGE_BYTES as u64)
         || identity.native_table <= 0
         || identity.definition == 0
@@ -74,7 +96,7 @@ pub(super) fn encode(
 ) -> Result<Vec<u8>, Error> {
     check(budget, cancelled)?;
     validate_request(intent.table(), intent.column(), budget, cancelled)?;
-    validate_identity(intent.identity, intent.before_length)?;
+    validate_identity(intent.identity, intent.before_length, intent.profile)?;
     let length = HEADER_BYTES + intent.table.len() + intent.column.len();
     budget.charge_allocation(length as u64, 1)?;
     budget.charge(Resource::Steps, length as u64)?;
@@ -136,7 +158,7 @@ pub(super) fn decode(
     {
         return Err(Error::InvalidRecord);
     }
-    validate_identity(identity, before_length)?;
+    validate_identity(identity, before_length, profile)?;
     let table_end = HEADER_BYTES + table_length;
     let table =
         std::str::from_utf8(&input[HEADER_BYTES..table_end]).map_err(|_| Error::InvalidRecord)?;

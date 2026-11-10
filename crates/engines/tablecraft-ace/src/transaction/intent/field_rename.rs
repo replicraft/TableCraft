@@ -1,22 +1,27 @@
 //! Closed original field-rename requests, separate from sealed native authority.
 mod codec;
+#[cfg(feature = "ace16-create")]
 mod planning;
 mod recovery;
 
 use super::{NativeIntentError, binding};
-use crate::{
-    FieldRenameError, InspectError, NativeFieldRenameIdentity, NativeImage,
-    NativeRecoveryQualificationError, header::check,
-};
+#[cfg(feature = "ace16-create")]
+use crate::{FieldRenameError, NativeFieldRenameIdentity, NativeImage};
+use crate::{InspectError, NativeRecoveryQualificationError, header::check};
+#[cfg(feature = "ace16-create")]
 use planning::Candidate;
 use tablecraft_core::limits::{LimitError, Resource, ResourceBudget};
 use thiserror::Error;
 
+#[cfg(feature = "ace16-create")]
 pub use planning::RecoverableFieldRenamePlan;
+#[cfg(feature = "ace16-create")]
 pub use recovery::{QualifiedFieldRenameRecovery, qualify_native_field_rename_recovery};
 
-#[cfg(test)]
+#[cfg(all(test, feature = "ace16-create"))]
 mod tests;
+
+pub use recovery::QualifiedRetainedFieldRenameRecovery;
 
 const MAX_NAME_UNITS: usize = 64;
 const MAX_TABLE_BYTES: usize = MAX_NAME_UNITS * char::MAX.len_utf8();
@@ -33,7 +38,11 @@ pub enum FieldRenameIntentError {
     Binding(#[from] NativeIntentError),
     /// The original source, selected field or proposed spelling is unqualified.
     #[error(transparent)]
+    #[cfg(feature = "ace16-create")]
     Rename(#[from] FieldRenameError),
+    /// This build cannot reconstruct native retained schema edits.
+    #[error("native retained schema editing is not enabled")]
+    UnsupportedSource,
     /// Complete original or replacement image proof failed.
     #[error(transparent)]
     Proof(#[from] NativeRecoveryQualificationError),
@@ -65,6 +74,7 @@ struct Identity {
 }
 
 impl Identity {
+    #[cfg(feature = "ace16-create")]
     fn from_native(identity: NativeFieldRenameIdentity) -> Result<Self, FieldRenameIntentError> {
         Ok(Self {
             native_table: identity.native_table_id(),
@@ -86,24 +96,37 @@ impl Identity {
 /// A malformed older request is never retried through the fitted profile.
 #[derive(Clone, Copy)]
 enum Profile {
+    #[cfg(feature = "ace16-create")]
     SameWidth,
+    #[cfg(feature = "ace16-create")]
     FittedAscii,
+    #[cfg(feature = "ace16-create")]
     PopulatedAscii,
+    #[cfg(feature = "ace16-create")]
     CurrentAscii,
+    #[cfg(feature = "ace16-create")]
     RetainedAscii,
+    RetainedSchemaAscii,
 }
 
 impl Profile {
     const fn tag(self) -> u16 {
         match self {
+            #[cfg(feature = "ace16-create")]
             Self::SameWidth => 1,
+            #[cfg(feature = "ace16-create")]
             Self::FittedAscii => 2,
+            #[cfg(feature = "ace16-create")]
             Self::PopulatedAscii => 3,
+            #[cfg(feature = "ace16-create")]
             Self::CurrentAscii => 4,
+            #[cfg(feature = "ace16-create")]
             Self::RetainedAscii => 5,
+            Self::RetainedSchemaAscii => 6,
         }
     }
 
+    #[cfg(feature = "ace16-create")]
     fn decode(tag: u16) -> Result<Self, FieldRenameIntentError> {
         match tag {
             1 => Ok(Self::SameWidth),
@@ -132,12 +155,17 @@ impl NativeFieldRenameIntent {
     /// Closed upper bound, checked before any persisted string allocation.
     pub const MAX_ENCODED_BYTES: usize = codec::MAX_RECORD_BYTES;
 
+    #[cfg(feature = "ace16-create")]
     fn capture(
         profile: Profile,
         candidate: &Candidate,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, FieldRenameIntentError> {
+        let retained = matches!(candidate, Candidate::RetainedAscii(candidate) if candidate.is_retained_schema());
+        if retained != matches!(profile, Profile::RetainedSchemaAscii) {
+            return Err(FieldRenameIntentError::InvalidRecord);
+        }
         validate_request(
             profile,
             candidate.table(),
@@ -148,8 +176,12 @@ impl NativeFieldRenameIntent {
         )?;
         let identity = Identity::from_native(candidate.identity())?;
         let before_length = candidate.before_bytes().len() as u64;
-        codec::validate_identity(identity, before_length, candidate.column().len())?;
-        let before_binding = binding::digest(candidate.before_bytes(), budget, cancelled)?;
+        codec::validate_identity(identity, before_length, candidate.column().len(), profile)?;
+        let before_binding = if matches!(profile, Profile::RetainedSchemaAscii) {
+            binding::digest_retained(candidate.before_bytes(), budget, cancelled)?
+        } else {
+            binding::digest(candidate.before_bytes(), budget, cancelled)?
+        };
         Ok(Self {
             profile,
             identity,
@@ -159,6 +191,20 @@ impl NativeFieldRenameIntent {
             before_length,
             before_binding,
         })
+    }
+
+    /// Whether the original request belongs exclusively to retained schema6.
+    pub const fn is_retained_schema(&self) -> bool {
+        matches!(self.profile, Profile::RetainedSchemaAscii)
+    }
+
+    /// Decode only TCFR0006/profile6, without trying the original request decoder.
+    pub fn decode_retained_schema(
+        bytes: &[u8],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, FieldRenameIntentError> {
+        codec::decode_retained_schema(bytes, budget, cancelled)
     }
 
     /// Actual source-resolved table spelling.
@@ -196,6 +242,7 @@ impl NativeFieldRenameIntent {
     }
 
     /// Reject every other family/version/profile without decoder fallback.
+    #[cfg(feature = "ace16-create")]
     pub fn decode(
         bytes: &[u8],
         budget: &mut ResourceBudget,
@@ -212,15 +259,22 @@ impl NativeFieldRenameIntent {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<(), FieldRenameIntentError> {
         check(budget, cancelled)?;
-        if before.len() as u64 != self.before_length
-            || binding::digest(before, budget, cancelled)? != self.before_binding
-        {
+        if before.len() as u64 != self.before_length {
+            return Err(FieldRenameIntentError::BeforeMismatch);
+        }
+        let actual = if self.is_retained_schema() {
+            binding::digest_retained(before, budget, cancelled)?
+        } else {
+            binding::digest(before, budget, cancelled)?
+        };
+        if actual != self.before_binding {
             return Err(FieldRenameIntentError::BeforeMismatch);
         }
         check(budget, cancelled)?;
         Ok(())
     }
 
+    #[cfg(feature = "ace16-create")]
     fn reconstruct(
         &self,
         image: NativeImage,
@@ -258,6 +312,15 @@ impl NativeFieldRenameIntent {
                 budget,
                 cancelled,
             )?),
+            Profile::RetainedSchemaAscii => {
+                Candidate::RetainedAscii(image.prepare_retained_schema_field_rename(
+                    self.table(),
+                    self.column(),
+                    self.new_name(),
+                    budget,
+                    cancelled,
+                )?)
+            }
             Profile::RetainedAscii => {
                 Candidate::RetainedAscii(image.prepare_retained_field_rename(
                     self.table(),
@@ -272,6 +335,7 @@ impl NativeFieldRenameIntent {
         Ok(candidate)
     }
 
+    #[cfg(feature = "ace16-create")]
     fn verify_candidate(&self, candidate: &Candidate) -> Result<(), FieldRenameIntentError> {
         if Identity::from_native(candidate.identity())? != self.identity
             || candidate.table() != self.table()
@@ -296,8 +360,8 @@ fn validate_request(
     if table.len() > MAX_TABLE_BYTES
         || original.len() > MAX_FIELD_BYTES
         || replacement.len() > MAX_FIELD_BYTES
-        || matches!(profile, Profile::SameWidth) && replacement.len() != original.len()
-        || matches!(profile, Profile::FittedAscii) && replacement.len() == original.len()
+        || profile.tag() == 1 && replacement.len() != original.len()
+        || profile.tag() == 2 && replacement.len() == original.len()
         || !original.is_ascii()
         || !replacement.is_ascii()
     {

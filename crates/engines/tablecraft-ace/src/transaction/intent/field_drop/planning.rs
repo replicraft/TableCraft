@@ -1,4 +1,6 @@
 //! Owning saved-field DROP plus original request, never decoded write authority.
+mod retained;
+
 use super::{FieldDropIntentError as Error, NativeFieldDropIntent as Intent, candidate::Candidate};
 use crate::{
     NativeFieldDropIdentity, NativeImage, SavedFieldDropSourcePurpose, header::check,
@@ -63,6 +65,10 @@ impl NativeImage {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<RecoverableFieldDropPlan, Error> {
+        if self.has_retained_table_source(table, budget, cancelled)? {
+            return self
+                .plan_recoverable_retained_tail_field_drop(table, column, budget, cancelled);
+        }
         match self.field_drop_source_purpose(table, budget, cancelled)? {
             SavedFieldDropSourcePurpose::Empty => {
                 self.plan_recoverable_saved_field_drop(table, column, budget, cancelled)
@@ -156,6 +162,9 @@ impl RecoverableFieldDropPlan {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<PreparedImage<'a, D, J>, JournalError> {
         let _span = tracing::debug_span!("native.field_drop.prepare_v1").entered();
+        if self.intent.is_retained() {
+            return Err(JournalError::ImageSize);
+        }
         journal::prepare_expected(
             target,
             journal,

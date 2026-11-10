@@ -1,24 +1,30 @@
 //! Closed original saved-field DROP requests, separate from native authority.
+#[cfg(feature = "ace16-create")]
 mod candidate;
 mod codec;
+#[cfg(feature = "ace16-create")]
 mod planning;
 mod recovery;
 
-#[cfg(test)]
+#[cfg(all(test, feature = "ace16-create"))]
 mod tests;
 
 use super::{NativeIntentError, binding};
-use crate::{
-    FieldDropError, InspectError, NativeFieldDropIdentity, NativeImage,
-    NativeRecoveryQualificationError, header::check,
-};
+#[cfg(feature = "ace16-create")]
+use crate::{FieldDropError, NativeFieldDropIdentity, NativeImage};
+use crate::{InspectError, NativeRecoveryQualificationError, header::check};
+#[cfg(feature = "ace16-create")]
 use candidate::Candidate;
 use codec::Profile;
 use tablecraft_core::limits::{LimitError, Resource, ResourceBudget};
 use thiserror::Error;
 
+#[cfg(feature = "ace16-create")]
 pub use planning::RecoverableFieldDropPlan;
+#[cfg(feature = "ace16-create")]
 pub use recovery::{QualifiedFieldDropRecovery, qualify_native_field_drop_recovery};
+
+pub use recovery::QualifiedRetainedFieldDropRecovery;
 
 const MAX_NAME_UNITS: usize = 64;
 const MAX_NAME_BYTES: usize = MAX_NAME_UNITS;
@@ -34,7 +40,11 @@ pub enum FieldDropIntentError {
     Binding(#[from] NativeIntentError),
     /// The selected source, field or property cleanup is not qualified.
     #[error(transparent)]
+    #[cfg(feature = "ace16-create")]
     Drop(#[from] FieldDropError),
+    /// This build cannot reconstruct native retained schema edits.
+    #[error("native retained schema editing is not enabled")]
+    UnsupportedSource,
     /// Complete original or replacement image proof failed.
     #[error(transparent)]
     Proof(#[from] NativeRecoveryQualificationError),
@@ -65,6 +75,7 @@ struct Identity {
 }
 
 impl Identity {
+    #[cfg(feature = "ace16-create")]
     fn from_native(identity: NativeFieldDropIdentity) -> Result<Self, FieldDropIntentError> {
         Ok(Self {
             native_table: identity.native_table_id(),
@@ -93,6 +104,7 @@ impl NativeFieldDropIntent {
     /// Closed upper bound checked before allocating persisted request strings.
     pub const MAX_ENCODED_BYTES: usize = codec::MAX_RECORD_BYTES;
 
+    #[cfg(feature = "ace16-create")]
     fn capture(
         candidate: &Candidate,
         budget: &mut ResourceBudget,
@@ -101,8 +113,12 @@ impl NativeFieldDropIntent {
         validate_request(candidate.table(), candidate.column(), budget, cancelled)?;
         let identity = Identity::from_native(candidate.identity())?;
         let before_length = candidate.before_bytes().len() as u64;
-        codec::validate_identity(identity, before_length)?;
-        let before_binding = binding::digest(candidate.before_bytes(), budget, cancelled)?;
+        codec::validate_identity(identity, before_length, candidate.profile())?;
+        let before_binding = if matches!(candidate.profile(), Profile::RetainedTail) {
+            binding::digest_retained(candidate.before_bytes(), budget, cancelled)?
+        } else {
+            binding::digest(candidate.before_bytes(), budget, cancelled)?
+        };
         Ok(Self {
             profile: candidate.profile(),
             identity,
@@ -111,6 +127,20 @@ impl NativeFieldDropIntent {
             before_length,
             before_binding,
         })
+    }
+
+    /// Whether this request belongs exclusively to the retained schema language.
+    pub const fn is_retained(&self) -> bool {
+        matches!(self.profile, Profile::RetainedTail)
+    }
+
+    /// Decode only retained TCFD0003/profile3; no legacy decoder is attempted.
+    pub fn decode_retained(
+        bytes: &[u8],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, FieldDropIntentError> {
+        codec::decode(bytes, Profile::RetainedTail, budget, cancelled)
     }
 
     /// Exact original native table spelling.
@@ -143,6 +173,7 @@ impl NativeFieldDropIntent {
     }
 
     /// Reject all other action families, versions and profiles without retry.
+    #[cfg(feature = "ace16-create")]
     pub fn decode(
         bytes: &[u8],
         budget: &mut ResourceBudget,
@@ -153,6 +184,7 @@ impl NativeFieldDropIntent {
 
     /// Decode only TCFD0002/profile2 populated-tail requests before allocation.
     /// The original empty-source decoder remains closed to this language.
+    #[cfg(feature = "ace16-create")]
     pub fn decode_current_tail(
         bytes: &[u8],
         budget: &mut ResourceBudget,
@@ -169,15 +201,22 @@ impl NativeFieldDropIntent {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<(), FieldDropIntentError> {
         check(budget, cancelled)?;
-        if before.len() as u64 != self.before_length
-            || binding::digest(before, budget, cancelled)? != self.before_binding
-        {
+        if before.len() as u64 != self.before_length {
+            return Err(FieldDropIntentError::BeforeMismatch);
+        }
+        let actual = if self.is_retained() {
+            binding::digest_retained(before, budget, cancelled)?
+        } else {
+            binding::digest(before, budget, cancelled)?
+        };
+        if actual != self.before_binding {
             return Err(FieldDropIntentError::BeforeMismatch);
         }
         check(budget, cancelled)?;
         Ok(())
     }
 
+    #[cfg(feature = "ace16-create")]
     fn reconstruct(
         &self,
         image: NativeImage,
@@ -187,6 +226,16 @@ impl NativeFieldDropIntent {
         let candidate = match self.profile {
             Profile::Empty => Candidate::empty(
                 image.prepare_saved_field_drop(self.table(), self.column(), budget, cancelled)?,
+                budget,
+                cancelled,
+            )?,
+            Profile::RetainedTail => Candidate::populated_tail(
+                image.prepare_retained_tail_field_drop(
+                    self.table(),
+                    self.column(),
+                    budget,
+                    cancelled,
+                )?,
                 budget,
                 cancelled,
             )?,

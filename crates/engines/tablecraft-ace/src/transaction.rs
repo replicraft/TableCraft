@@ -238,10 +238,13 @@ pub use intent::{
     RecoverableFieldAdditionPlan, qualify_native_field_addition_recovery,
 };
 
+#[cfg(feature = "journal")]
+pub use intent::{
+    FieldRenameIntentError, NativeFieldRenameIntent, QualifiedRetainedFieldRenameRecovery,
+};
 #[cfg(all(feature = "journal", feature = "ace16-create"))]
 pub use intent::{
-    FieldRenameIntentError, NativeFieldRenameIntent, QualifiedFieldRenameRecovery,
-    RecoverableFieldRenamePlan, qualify_native_field_rename_recovery,
+    QualifiedFieldRenameRecovery, RecoverableFieldRenamePlan, qualify_native_field_rename_recovery,
 };
 
 #[cfg(all(feature = "journal", feature = "ace16-create"))]
@@ -266,8 +269,9 @@ pub use intent::{
     qualify_native_field_addition_after_off_history_recovery,
 };
 
+#[cfg(feature = "journal")]
+pub use intent::{FieldDropIntentError, NativeFieldDropIntent, QualifiedRetainedFieldDropRecovery};
 #[cfg(all(feature = "journal", feature = "ace16-create"))]
 pub use intent::{
-    FieldDropIntentError, NativeFieldDropIntent, QualifiedFieldDropRecovery,
-    RecoverableFieldDropPlan, qualify_native_field_drop_recovery,
+    QualifiedFieldDropRecovery, RecoverableFieldDropPlan, qualify_native_field_drop_recovery,
 };

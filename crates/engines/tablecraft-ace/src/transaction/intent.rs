@@ -151,12 +151,13 @@ pub use field_addition::{
     RecoverableFieldAdditionPlan, qualify_native_field_addition_recovery,
 };
 
-#[cfg(feature = "ace16-create")]
 mod field_rename;
+pub use field_rename::{
+    FieldRenameIntentError, NativeFieldRenameIntent, QualifiedRetainedFieldRenameRecovery,
+};
 #[cfg(feature = "ace16-create")]
 pub use field_rename::{
-    FieldRenameIntentError, NativeFieldRenameIntent, QualifiedFieldRenameRecovery,
-    RecoverableFieldRenamePlan, qualify_native_field_rename_recovery,
+    QualifiedFieldRenameRecovery, RecoverableFieldRenamePlan, qualify_native_field_rename_recovery,
 };
 
 #[cfg(feature = "ace16-create")]
@@ -188,10 +189,11 @@ pub use current_field_addition::{
     qualify_native_current_field_addition_recovery,
 };
 
-#[cfg(feature = "ace16-create")]
 mod field_drop;
+pub use field_drop::{
+    FieldDropIntentError, NativeFieldDropIntent, QualifiedRetainedFieldDropRecovery,
+};
 #[cfg(feature = "ace16-create")]
 pub use field_drop::{
-    FieldDropIntentError, NativeFieldDropIntent, QualifiedFieldDropRecovery,
-    RecoverableFieldDropPlan, qualify_native_field_drop_recovery,
+    QualifiedFieldDropRecovery, RecoverableFieldDropPlan, qualify_native_field_drop_recovery,
 };

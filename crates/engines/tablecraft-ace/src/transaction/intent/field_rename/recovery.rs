@@ -1,76 +1,8 @@
-//! Original-request reconstruction before the retained checked V1 gains authority.
-use super::{FieldRenameIntentError as Error, NativeFieldRenameIntent as Intent};
-use crate::{NativeImage, header::check, transaction::qualified_recovery::equal_image};
-use std::io::Cursor;
-use tablecraft_core::limits::ResourceBudget;
-use tablecraft_io::journal::{CheckedV1, DurableStorage, JournalError, RecoveryOutcome, V1State};
-use tablecraft_model::CatalogScope;
+//! Journal protocols retain independent original-action qualification owners.
+#[cfg(feature = "ace16-create")]
+mod legacy;
+mod retained;
 
-/// The same checked V1 session after complete native source/request/image proof.
-#[must_use = "recover explicitly or retain this qualified field-rename journal"]
-pub struct QualifiedFieldRenameRecovery<'a, J: DurableStorage> {
-    checked: CheckedV1<'a, J>,
-}
-
-/// Reconstruct the real candidate from the complete BEFORE and original request.
-/// A valid raw intent or independently readable stored AFTER grants no authority.
-/// One cumulative pool covers binding, source replay, reconstruction and comparison.
-pub fn qualify_native_field_rename_recovery<'a, J: DurableStorage>(
-    checked: CheckedV1<'a, J>,
-    intent: Intent,
-    scope: CatalogScope,
-    budget: &mut ResourceBudget,
-    cancelled: &dyn Fn() -> bool,
-) -> Result<QualifiedFieldRenameRecovery<'a, J>, Error> {
-    let _span = tracing::debug_span!("native.field_rename_recovery.qualify").entered();
-    check(budget, cancelled)?;
-    intent.verify_before(checked.before_bytes(), budget, cancelled)?;
-    let image = NativeImage::capture(
-        &mut Cursor::new(checked.before_bytes()),
-        scope,
-        budget,
-        cancelled,
-    )?;
-    let candidate = intent.reconstruct(image, budget, cancelled)?;
-    equal_image(
-        candidate.before_bytes(),
-        checked.before_bytes(),
-        budget,
-        cancelled,
-    )?;
-    equal_image(
-        candidate.after_bytes(),
-        checked.after_bytes(),
-        budget,
-        cancelled,
-    )?;
-    check(budget, cancelled)?;
-    Ok(QualifiedFieldRenameRecovery { checked })
-}
-
-impl<J: DurableStorage> QualifiedFieldRenameRecovery<'_, J> {
-    /// Exact retained journal framing state, without recapture.
-    pub fn state(&self) -> V1State {
-        self.checked.state()
-    }
-
-    /// Recover the caller-bound target through this same qualified session.
-    pub fn recover<D: DurableStorage>(
-        self,
-        target: &mut D,
-        budget: &mut ResourceBudget,
-        cancelled: &dyn Fn() -> bool,
-    ) -> Result<RecoveryOutcome, JournalError> {
-        self.checked.recover(target, budget, cancelled)
-    }
-
-    /// Confirm complete settled current bytes without replaying mutation writes.
-    pub fn confirm_completed<D: DurableStorage>(
-        self,
-        target: &mut D,
-        budget: &mut ResourceBudget,
-        cancelled: &dyn Fn() -> bool,
-    ) -> Result<RecoveryOutcome, JournalError> {
-        self.checked.confirm_completed(target, budget, cancelled)
-    }
-}
+#[cfg(feature = "ace16-create")]
+pub use legacy::{QualifiedFieldRenameRecovery, qualify_native_field_rename_recovery};
+pub use retained::QualifiedRetainedFieldRenameRecovery;

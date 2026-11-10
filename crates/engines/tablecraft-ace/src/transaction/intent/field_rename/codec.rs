@@ -7,6 +7,7 @@ use crate::{format::page::PAGE_BYTES, header::check};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
 const MAGIC: &[u8; 8] = b"TCFR0001";
+const RETAINED_SCHEMA_MAGIC: &[u8; 8] = b"TCFR0006";
 const TOTAL_AT: usize = MAGIC.len();
 const PROFILE_AT: usize = TOTAL_AT + size_of::<u32>();
 const FLAGS_AT: usize = PROFILE_AT + size_of::<u16>();
@@ -35,8 +36,13 @@ pub(super) fn validate_identity(
     identity: Identity,
     before_length: u64,
     original_length: usize,
+    profile: Profile,
 ) -> Result<(), Error> {
-    binding::length(before_length)?;
+    if matches!(profile, Profile::RetainedSchemaAscii) {
+        binding::retained_length(before_length)?;
+    } else {
+        binding::length(before_length)?;
+    }
     if !before_length.is_multiple_of(PAGE_BYTES as u64)
         || identity.native_table <= 0
         || identity.definition == 0
@@ -63,7 +69,12 @@ pub(super) fn encode(
         budget,
         cancelled,
     )?;
-    validate_identity(intent.identity, intent.before_length, intent.column().len())?;
+    validate_identity(
+        intent.identity,
+        intent.before_length,
+        intent.column().len(),
+        intent.profile,
+    )?;
     let length =
         HEADER_BYTES + intent.table.len() + intent.original.len() + intent.replacement.len();
     budget.charge_allocation(length as u64, 1)?;
@@ -72,7 +83,11 @@ pub(super) fn encode(
     output
         .try_reserve_exact(length)
         .map_err(|_| crate::InspectError::Allocation)?;
-    output.extend_from_slice(MAGIC);
+    output.extend_from_slice(if intent.is_retained_schema() {
+        RETAINED_SCHEMA_MAGIC
+    } else {
+        MAGIC
+    });
     output.extend_from_slice(&(length as u32).to_le_bytes());
     output.extend_from_slice(&intent.profile.tag().to_le_bytes());
     output.extend_from_slice(&0_u16.to_le_bytes());
@@ -94,14 +109,20 @@ pub(super) fn encode(
     Ok(output)
 }
 
-pub(super) fn decode(
+fn decode_selected(
     input: &[u8],
+    retained: bool,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Intent, Error> {
     check(budget, cancelled)?;
     if !(HEADER_BYTES..=MAX_RECORD_BYTES).contains(&input.len())
-        || input.get(..MAGIC.len()) != Some(MAGIC)
+        || input.get(..MAGIC.len())
+            != Some(if retained {
+                RETAINED_SCHEMA_MAGIC
+            } else {
+                MAGIC
+            })
     {
         return Err(Error::InvalidRecord);
     }
@@ -112,7 +133,22 @@ pub(super) fn decode(
     {
         return Err(Error::InvalidRecord);
     }
-    let profile = Profile::decode(u16::from_le_bytes(bytes(input, PROFILE_AT)?))?;
+    let tag = u16::from_le_bytes(bytes(input, PROFILE_AT)?);
+    let profile = if retained {
+        if tag != 6 {
+            return Err(Error::InvalidRecord);
+        }
+        Profile::RetainedSchemaAscii
+    } else {
+        #[cfg(feature = "ace16-create")]
+        {
+            Profile::decode(tag)?
+        }
+        #[cfg(not(feature = "ace16-create"))]
+        {
+            return Err(Error::InvalidRecord);
+        }
+    };
     let before_length = u64::from_le_bytes(bytes(input, BEFORE_LENGTH_AT)?);
     let identity = Identity {
         native_table: i32::from_le_bytes(bytes(input, NATIVE_TABLE_AT)?),
@@ -131,7 +167,7 @@ pub(super) fn decode(
     {
         return Err(Error::InvalidRecord);
     }
-    validate_identity(identity, before_length, original_length)?;
+    validate_identity(identity, before_length, original_length, profile)?;
     let table_end = HEADER_BYTES + table_length;
     let original_end = table_end + original_length;
     let table =
@@ -152,4 +188,21 @@ pub(super) fn decode(
     };
     check(budget, cancelled)?;
     Ok(intent)
+}
+
+#[cfg(feature = "ace16-create")]
+pub(super) fn decode(
+    input: &[u8],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Intent, Error> {
+    decode_selected(input, false, budget, cancelled)
+}
+
+pub(super) fn decode_retained_schema(
+    input: &[u8],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Intent, Error> {
+    decode_selected(input, true, budget, cancelled)
 }

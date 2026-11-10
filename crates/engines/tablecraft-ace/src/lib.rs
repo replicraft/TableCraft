@@ -377,10 +377,13 @@ pub use table::{
     NativePopulatedFieldRenameCandidate, NativeRetainedFieldRenameCandidate,
 };
 
+#[cfg(feature = "journal")]
+pub use transaction::{
+    FieldRenameIntentError, NativeFieldRenameIntent, QualifiedRetainedFieldRenameRecovery,
+};
 #[cfg(all(feature = "journal", feature = "ace16-create"))]
 pub use transaction::{
-    FieldRenameIntentError, NativeFieldRenameIntent, QualifiedFieldRenameRecovery,
-    RecoverableFieldRenamePlan, qualify_native_field_rename_recovery,
+    QualifiedFieldRenameRecovery, RecoverableFieldRenamePlan, qualify_native_field_rename_recovery,
 };
 
 #[cfg(all(feature = "journal", feature = "ace16-create"))]
@@ -405,8 +408,11 @@ pub use transaction::{
     qualify_native_field_addition_after_off_history_recovery,
 };
 
+#[cfg(feature = "journal")]
+pub use transaction::{
+    FieldDropIntentError, NativeFieldDropIntent, QualifiedRetainedFieldDropRecovery,
+};
 #[cfg(all(feature = "journal", feature = "ace16-create"))]
 pub use transaction::{
-    FieldDropIntentError, NativeFieldDropIntent, QualifiedFieldDropRecovery,
-    RecoverableFieldDropPlan, qualify_native_field_drop_recovery,
+    QualifiedFieldDropRecovery, RecoverableFieldDropPlan, qualify_native_field_drop_recovery,
 };

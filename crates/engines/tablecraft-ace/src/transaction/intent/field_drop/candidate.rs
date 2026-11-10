@@ -70,6 +70,7 @@ impl Candidate {
     pub(super) fn profile(&self) -> Profile {
         match self {
             Self::Empty(_) => Profile::Empty,
+            Self::PopulatedTail(candidate) if candidate.is_retained() => Profile::RetainedTail,
             Self::PopulatedTail(_) => Profile::PopulatedTail,
         }
     }
