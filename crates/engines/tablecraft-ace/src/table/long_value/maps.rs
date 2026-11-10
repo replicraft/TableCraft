@@ -123,7 +123,14 @@ pub(in crate::table) fn declarations<R: NativeReadSource>(
         Err(error) => return Err(error),
     };
     let bytes = definition::read(reader, schema.definition)?;
-    parse(&bytes, definitions.tail, reader, schema, &[])
+    parse(
+        &bytes,
+        definitions.tail,
+        reader,
+        schema.columns.len(),
+        |number| known_long_value(schema, number),
+        &[],
+    )
 }
 
 /// Explicit INSERT initialization parses zero pairs without treating unknown
@@ -135,7 +142,14 @@ pub(in crate::table) fn declarations_for_initialization<R: NativeReadSource>(
 ) -> Result<Declarations, InspectError> {
     let definitions = indexes::definitions_with_tail(reader, schema)?;
     let bytes = definition::read(reader, schema.definition)?;
-    let declarations = parse(&bytes, definitions.tail, reader, schema, columns)?;
+    let declarations = parse(
+        &bytes,
+        definitions.tail,
+        reader,
+        schema.columns.len(),
+        |number| known_long_value(schema, number),
+        columns,
+    )?;
     if bytes.len() > PAGE_BYTES {
         reader.work(declarations.entries.len())?;
         if declarations
@@ -190,7 +204,8 @@ fn parse<R: NativeReadSource>(
     bytes: &[u8],
     mut position: usize,
     reader: &mut Reader<'_, R>,
-    schema: &TableSchema,
+    columns: usize,
+    known_long_value: impl Fn(usize) -> bool,
     initializing: &[usize],
 ) -> Result<Declarations, InspectError> {
     let mut entries: Vec<Declaration> = Vec::new();
@@ -216,14 +231,8 @@ fn parse<R: NativeReadSource>(
         let number = usize::from(pair.column.get());
         reader.work(entries.len())?;
         if entries.iter().any(|entry| entry.number == number) {
-            reader.work(schema.columns.len())?;
-            let known = schema.columns.iter().any(|column| {
-                column.number() == number
-                    && matches!(
-                        column.native_type(),
-                        crate::format::data_type::LONG_TEXT | crate::format::data_type::OLE
-                    )
-            });
+            reader.work(columns)?;
+            let known = known_long_value(number);
             if known {
                 return Err(InspectError::Malformed);
             }
@@ -253,15 +262,8 @@ fn parse<R: NativeReadSource>(
         let selected_zero =
             if pair.owned.get() == 0 && pair.candidate.get() == 0 && !initializing.is_empty() {
                 reader.work(initializing.len())?;
-                reader.work(schema.columns.len())?;
-                initializing.contains(&number)
-                    && schema.columns.iter().any(|field| {
-                        field.number() == number
-                            && matches!(
-                                field.native_type(),
-                                crate::format::data_type::LONG_TEXT | crate::format::data_type::OLE
-                            )
-                    })
+                reader.work(columns)?;
+                initializing.contains(&number) && known_long_value(number)
             } else {
                 false
             };
@@ -410,4 +412,42 @@ mod tests {
             assert!(Pair::ref_from_prefix(&bytes[1..10]).is_err());
         }
     }
+}
+
+fn known_long_value(schema: &TableSchema, number: usize) -> bool {
+    schema.columns.iter().any(|column| {
+        column.number() == number
+            && matches!(
+                column.native_type(),
+                crate::format::data_type::LONG_TEXT | crate::format::data_type::OLE
+            )
+    })
+}
+
+/// Read the same trailing pairs for a retained physical definition whose catalog
+/// root has been deleted. No live object or writable column identity is invented.
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub(in crate::table) fn declarations_for_layout<R: NativeReadSource>(
+    reader: &mut Reader<'_, R>,
+    definition: u32,
+    layout: &crate::format::layout::Layout,
+    tail: usize,
+) -> Result<Declarations, InspectError> {
+    let bytes = definition::read(reader, definition)?;
+    parse(
+        &bytes,
+        tail,
+        reader,
+        layout.fields.len(),
+        |number| {
+            layout.fields.iter().any(|field| {
+                field.number == number
+                    && matches!(
+                        field.kind,
+                        crate::format::data_type::LONG_TEXT | crate::format::data_type::OLE
+                    )
+            })
+        },
+        &[],
+    )
 }

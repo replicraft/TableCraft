@@ -67,13 +67,7 @@ pub(in crate::table) fn read_with_tail<R: crate::NativeReadSource>(
         reader.tick()?;
         let logical =
             &page[logical_start + i * LOGICAL_BYTES..logical_start + (i + 1) * LOGICAL_BYTES];
-        let length = usize::from(u16_at(&page, position)?);
-        position += size_of::<u16>();
-        let encoded = page
-            .get(position..position + length)
-            .ok_or(InspectError::Truncated)?;
-        position += length;
-        let name = SchemaName::new(text::decode(encoded, false, reader.budget)?)?;
+        let name = read_name(reader, &page, &mut position)?;
         let number = u32_at(logical, NUMBER_OFFSET)?;
         let data_number = u32_at(logical, DATA_NUMBER_OFFSET)?;
         if indexes
@@ -192,4 +186,89 @@ pub(in crate::table) fn physical_owned_maps<R: crate::NativeReadSource>(
     }
 
     Ok(maps)
+}
+
+/// Physical storage metadata for retained definitions with no live catalog object.
+/// This does not fabricate object identity or qualify any index for modification.
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub(in crate::table) struct PhysicalStorage {
+    pub maps: Vec<u32>,
+    pub roots: Vec<u32>,
+    pub tail: usize,
+}
+
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub(in crate::table) fn physical_storage<R: crate::NativeReadSource>(
+    reader: &mut Reader<'_, R>,
+    definition: u32,
+    layout: &Layout,
+) -> Result<PhysicalStorage, InspectError> {
+    let maps = physical_owned_maps(reader, definition, layout)?;
+    let bytes = definition::read(reader, definition)?;
+    let logical_start = layout
+        .index_start
+        .checked_add(
+            layout
+                .physical_indexes
+                .checked_mul(PHYSICAL_BYTES)
+                .ok_or(InspectError::StructureLimit)?,
+        )
+        .ok_or(InspectError::StructureLimit)?;
+    let mut position = logical_start
+        .checked_add(
+            layout
+                .logical_indexes
+                .checked_mul(LOGICAL_BYTES)
+                .ok_or(InspectError::StructureLimit)?,
+        )
+        .ok_or(InspectError::StructureLimit)?;
+    if position > bytes.len() {
+        return Err(InspectError::Truncated);
+    }
+    for _ in 0..layout.logical_indexes {
+        reader.tick()?;
+        read_name(reader, &bytes, &mut position)?;
+    }
+    reader
+        .budget
+        .charge_allocation(layout.physical_indexes as u64, size_of::<u32>() as u64)?;
+    let mut roots = Vec::new();
+    roots
+        .try_reserve_exact(layout.physical_indexes)
+        .map_err(|_| InspectError::Allocation)?;
+    for physical in 0..layout.physical_indexes {
+        reader.tick()?;
+        let at = layout.index_start + physical * PHYSICAL_BYTES;
+        let root = u32_at(&bytes, at + ROOT_OFFSET)?;
+        if root == 0 || root >= reader.header.page_count() {
+            return Err(InspectError::Malformed);
+        }
+        roots.push(root);
+    }
+    Ok(PhysicalStorage {
+        maps,
+        roots,
+        tail: position,
+    })
+}
+
+fn read_name<R: crate::NativeReadSource>(
+    reader: &mut Reader<'_, R>,
+    bytes: &[u8],
+    position: &mut usize,
+) -> Result<SchemaName, InspectError> {
+    let length = usize::from(u16_at(bytes, *position)?);
+    *position = position
+        .checked_add(size_of::<u16>())
+        .ok_or(InspectError::StructureLimit)?;
+    let end = position
+        .checked_add(length)
+        .ok_or(InspectError::StructureLimit)?;
+    let encoded = bytes.get(*position..end).ok_or(InspectError::Truncated)?;
+    *position = end;
+    Ok(SchemaName::new(text::decode(
+        encoded,
+        false,
+        reader.budget,
+    )?)?)
 }
