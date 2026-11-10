@@ -1,7 +1,7 @@
 //! Independently authored wide metadata is readable before creator admission.
 use std::io::Cursor;
 use tablecraft_ace::{
-    inspect_table_properties, inspect_table_schema, read_table, PropertyGroupKind,
+    PropertyGroupKind, inspect_table_properties, inspect_table_schema, read_table,
 };
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_model::CatalogScope;
@@ -70,14 +70,16 @@ fn cyclic_or_non_definition_continuations_do_not_yield_a_partial_schema() {
     for next in [8_u32, 10] {
         let mut source = raw::source();
         source.after[8 * 4096 + 4..8 * 4096 + 8].copy_from_slice(&next.to_le_bytes());
-        assert!(inspect_table_schema(
-            &mut Cursor::new(&source.after),
-            SCOPE,
-            "Table1",
-            &mut budget(),
-            &|| false,
-        )
-        .is_err());
+        assert!(
+            inspect_table_schema(
+                &mut Cursor::new(&source.after),
+                SCOPE,
+                "Table1",
+                &mut budget(),
+                &|| false,
+            )
+            .is_err()
+        );
     }
 }
 
@@ -87,14 +89,16 @@ fn cyclic_external_property_storage_returns_no_partial_property_map() {
     // The first literal LVAL record starts at byte20 of page12. Repeating that
     // reference must not publish its valid prefix as a complete property stream.
     source.after[12 * 4096 + 20..12 * 4096 + 24].copy_from_slice(&(12_u32 << 8).to_le_bytes());
-    assert!(inspect_table_properties(
-        &mut Cursor::new(&source.after),
-        SCOPE,
-        "Table1",
-        &mut budget(),
-        &|| false,
-    )
-    .is_err());
+    assert!(
+        inspect_table_properties(
+            &mut Cursor::new(&source.after),
+            SCOPE,
+            "Table1",
+            &mut budget(),
+            &|| false,
+        )
+        .is_err()
+    );
 }
 
 #[test]
