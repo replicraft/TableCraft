@@ -54,11 +54,11 @@ fn dictionary_extension_and_new_group_match_independent_raw_number_models() {
         let actual = append_number(&original, "Bonus", &mut budget(), &|| false).unwrap();
         assert_eq!(actual, independently_authored.raw_bytes());
         assert_eq!(
-            body_bytes(&original, 5, &mut budget(), &|| false).unwrap(),
+            body_bytes(&original, 5, Target::Number, &mut budget(), &|| false).unwrap(),
             actual.len()
         );
         assert_eq!(
-            body_bytes(&original, 0, &mut budget(), &|| false).unwrap() + 10,
+            body_bytes(&original, 0, Target::Number, &mut budget(), &|| false).unwrap() + 10,
             actual.len()
         );
         if !original.raw_bytes().is_empty() {

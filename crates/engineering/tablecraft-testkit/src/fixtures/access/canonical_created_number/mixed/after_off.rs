@@ -3,6 +3,7 @@
 //! no production parser, encoder or native mutation participates in this oracle.
 pub mod deleted_field;
 pub mod populated;
+pub mod populated_text;
 #[cfg(test)]
 mod tests;
 

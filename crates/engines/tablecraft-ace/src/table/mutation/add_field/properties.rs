@@ -1,5 +1,5 @@
 //! Append one column map while retaining the original dictionary and groups.
-use super::CurrentFieldAdditionError as Error;
+use super::{CurrentFieldAdditionError as Error, Target};
 use crate::{InspectError, TableProperties, header::check, properties::framing};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
@@ -15,14 +15,14 @@ const COLUMN_GROUP: u16 = 1;
 const DDL_FLAG: u8 = 1;
 const BOOLEAN: u8 = 1;
 const LONG_TEXT: u8 = 12;
-const KEYS: [&str; 2] = ["DefaultValue", "Required"];
+const KEY_COUNT: usize = 2;
 const COPY_BYTES: usize = 256;
 
 struct Plan {
     dictionary_end: usize,
     dictionary_length: usize,
-    missing: [bool; KEYS.len()],
-    indices: [u16; KEYS.len()],
+    missing: [bool; KEY_COUNT],
+    indices: [u16; KEY_COUNT],
     name_bytes: u16,
     group_bytes: u32,
     total_bytes: usize,
@@ -44,10 +44,12 @@ fn key_matches(raw: &[u8], key: &str) -> bool {
 fn plan(
     properties: &TableProperties,
     name_units: usize,
+    target: Target,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Plan, Error> {
     check(budget, cancelled)?;
+    let keys = target.property_keys();
     let raw = properties.raw_bytes();
     let (names, dictionary_length, dictionary_end, original_bytes) = if raw.is_empty() {
         if !properties.groups().is_empty() {
@@ -73,11 +75,11 @@ fn plan(
         }
         (names, length, end, raw.len())
     };
-    let mut indices = [None; KEYS.len()];
+    let mut indices = [None; KEY_COUNT];
     for (index, name) in names.iter().enumerate() {
         check(budget, cancelled)?;
-        budget.charge(Resource::Steps, (name.len() * KEYS.len()) as u64)?;
-        for (key, target) in KEYS.iter().enumerate() {
+        budget.charge(Resource::Steps, (name.len() * KEY_COUNT) as u64)?;
+        for (key, target) in keys.iter().enumerate() {
             if key_matches(name, target)
                 && indices[key]
                     .replace(u16::try_from(index).map_err(|_| Error::Capacity)?)
@@ -90,8 +92,8 @@ fn plan(
     let missing = indices.map(|index| index.is_none());
     let mut next = names.len();
     let mut growth = 0_usize;
-    let mut resolved = [0; KEYS.len()];
-    for (key, name) in KEYS.iter().enumerate() {
+    let mut resolved = [0; KEY_COUNT];
+    for (key, name) in keys.iter().enumerate() {
         resolved[key] = match indices[key] {
             Some(index) => index,
             None => {
@@ -109,7 +111,12 @@ fn plan(
         .ok_or(Error::Capacity)?;
     let group_bytes = GROUP_PREFIX_BYTES
         .checked_add(name_bytes)
-        .and_then(|length| length.checked_add(REQUIRED_BYTES + DEFAULT_BYTES))
+        .and_then(|length| {
+            length.checked_add(match target {
+                Target::Number => REQUIRED_BYTES + DEFAULT_BYTES,
+                Target::ShortText { .. } => 2 * REQUIRED_BYTES,
+            })
+        })
         .ok_or(Error::Capacity)?;
     let total_bytes = original_bytes
         .checked_add(growth)
@@ -133,10 +140,11 @@ fn plan(
 pub(super) fn body_bytes(
     properties: &TableProperties,
     name_units: usize,
+    target: Target,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<usize, Error> {
-    Ok(plan(properties, name_units, budget, cancelled)?.total_bytes)
+    Ok(plan(properties, name_units, target, budget, cancelled)?.total_bytes)
 }
 
 fn copy(
@@ -167,9 +175,10 @@ fn append_name(
     Ok(())
 }
 
-pub(super) fn append_number(
+pub(super) fn append(
     properties: &TableProperties,
     name: &str,
+    target: Target,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Vec<u8>, Error> {
@@ -177,7 +186,8 @@ pub(super) fn append_number(
     if name.is_empty() || !name.is_ascii() {
         return Err(Error::InvalidName);
     }
-    let plan = plan(properties, name.len(), budget, cancelled)?;
+    let keys = target.property_keys();
+    let plan = plan(properties, name.len(), target, budget, cancelled)?;
     budget.charge_allocation(plan.total_bytes as u64, size_of::<u8>() as u64)?;
     let mut output = Vec::new();
     output
@@ -198,7 +208,7 @@ pub(super) fn append_number(
         output[SIGNATURE_BYTES..SIGNATURE_BYTES + size_of::<u32>()]
             .copy_from_slice(&(plan.dictionary_length as u32).to_le_bytes());
     }
-    for (key, missing) in KEYS.iter().zip(plan.missing) {
+    for (key, missing) in keys.iter().zip(plan.missing) {
         if missing {
             append_name(&mut output, key, budget, cancelled)?;
         }
@@ -221,10 +231,10 @@ pub(super) fn append_number(
         [1, 0]
     };
     for key in order {
-        let (kind, value) = if key == 0 {
-            (LONG_TEXT, &[b'0', 0][..])
-        } else {
-            (BOOLEAN, &[0][..])
+        let (kind, value) = match (target, key) {
+            (Target::Number, 0) => (LONG_TEXT, &[b'0', 0][..]),
+            (Target::ShortText { .. }, 1) => (BOOLEAN, &[255][..]),
+            _ => (BOOLEAN, &[0][..]),
         };
         copy(
             &mut output,
@@ -256,3 +266,13 @@ pub(super) fn append_number(
 
 #[cfg(test)]
 mod tests;
+
+#[cfg(test)]
+fn append_number(
+    properties: &TableProperties,
+    name: &str,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Vec<u8>, Error> {
+    append(properties, name, Target::Number, budget, cancelled)
+}

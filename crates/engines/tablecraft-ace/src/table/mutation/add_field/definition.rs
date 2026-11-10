@@ -1,10 +1,10 @@
 //! Append a descriptor/name while retaining every original native byte frame.
-use super::CurrentFieldAdditionError as Error;
+use super::{CurrentFieldAdditionError as Error, Target};
 use crate::{
     InspectError, NativeImage, TableSchema,
     format::{
         bytes::{u16_at, u32_at},
-        data_type::INT32,
+        data_type::{INT32, SHORT_TEXT},
         definition::{LENGTH_OFFSET, PAGE_HEADER_BYTES},
         layout::{
             self, COLUMN_COUNT_OFFSET, COLUMN_ENTRY_BYTES, FIXED_FLAG, MAX_COLUMN_COUNT_OFFSET,
@@ -27,6 +27,8 @@ const STORED_ID_OFFSET: usize = 9;
 const FLAGS_OFFSET: usize = 15;
 const FIXED_OFFSET: usize = 21;
 const WIDTH_OFFSET: usize = 23;
+const GENERAL_SORT_ORDER: [u8; 4] = [9, 4, 0, 1];
+const SORT_ORDER_OFFSET: usize = 11;
 const NAME_LENGTH_BYTES: usize = size_of::<u16>();
 const COPY_BYTES: usize = 16 * 1024;
 
@@ -159,6 +161,7 @@ impl Plan {
         &self,
         image: &NativeImage,
         name: &str,
+        target: Target,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Vec<u8>, Error> {
@@ -194,15 +197,38 @@ impl Plan {
 
         let descriptor = &mut root[self.descriptor_end..self.descriptor_end + COLUMN_ENTRY_BYTES];
         descriptor.fill(0);
-        descriptor[0] = INT32;
+        descriptor[0] = match target {
+            Target::Number => INT32,
+            Target::ShortText { .. } => SHORT_TEXT,
+        };
         descriptor[MAGIC_OFFSET..MAGIC_OFFSET + size_of::<u32>()]
             .copy_from_slice(&FIELD_MAGIC.to_le_bytes());
         put16(descriptor, NUMBER_OFFSET, self.number)?;
         put16(descriptor, VARIABLE_OFFSET, self.variable)?;
         put16(descriptor, STORED_ID_OFFSET, usize::from(self.column_id))?;
-        descriptor[FLAGS_OFFSET] = FIXED_FLAG | UPDATABLE_FLAG;
-        put16(descriptor, FIXED_OFFSET, self.fixed_offset)?;
-        put16(descriptor, WIDTH_OFFSET, size_of::<i32>())?;
+        match target {
+            Target::Number => {
+                descriptor[FLAGS_OFFSET] = FIXED_FLAG | UPDATABLE_FLAG;
+                put16(descriptor, FIXED_OFFSET, self.fixed_offset)?;
+                put16(descriptor, WIDTH_OFFSET, size_of::<i32>())?;
+            }
+            Target::ShortText {
+                max_utf16_units,
+                unicode_compression,
+            } => {
+                descriptor[FLAGS_OFFSET] = UPDATABLE_FLAG;
+                descriptor[FLAGS_OFFSET + 1] = if unicode_compression {
+                    layout::UNICODE_COMPRESSION_FLAG
+                } else {
+                    0
+                };
+                // New text inherits the table's stored sort order from the
+                // existing creation owner; current source only admits General.
+                descriptor[SORT_ORDER_OFFSET..FLAGS_OFFSET].copy_from_slice(&GENERAL_SORT_ORDER);
+                put16(descriptor, WIDTH_OFFSET, max_utf16_units * size_of::<u16>())?;
+                put16(root, layout::VARIABLE_SLOT_COUNT_OFFSET, self.variable + 1)?;
+            }
+        }
 
         let at = self.index_start + COLUMN_ENTRY_BYTES;
         put16(root, at, name.len() * size_of::<u16>())?;

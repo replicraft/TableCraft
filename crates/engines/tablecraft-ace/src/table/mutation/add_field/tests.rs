@@ -141,8 +141,14 @@ fn independent_after_verification_rejects_unrelated_and_live_metadata_changes() 
         &|| false,
     )
     .unwrap();
-    let body =
-        properties::append_number(&current.properties, "Bonus", &mut budget(), &|| false).unwrap();
+    let body = properties::append(
+        &current.properties,
+        "Bonus",
+        Target::Number,
+        &mut budget(),
+        &|| false,
+    )
+    .unwrap();
     let append = catalog_property::append_fitted_body(
         candidate.proof.image(),
         &body,
@@ -176,6 +182,7 @@ fn independent_after_verification_rejects_unrelated_and_live_metadata_changes() 
             verify::candidate(
                 &candidate.proof,
                 &plan,
+                Target::Number,
                 &descriptor,
                 &forged,
                 "Bonus",
@@ -241,5 +248,80 @@ fn non_ascii_existing_namespace_refuses_ascii_addition_before_duplicate_matching
             &|| false,
         ),
         Err(CurrentFieldAdditionError::Source)
+    ));
+}
+
+#[test]
+fn populated_short_text_add_preserves_records_and_independent_full_images() {
+    use tablecraft_testkit::fixtures::access::canonical_created_number::mixed::after_off::populated_text;
+    for (units, compressed) in [(255, true), (1, false), (37, true)] {
+        let [before, _] = populated_text::pair("Label", &[Some(42), None, Some(-7)]);
+        let expected = populated_text::append_text_declaration(&before, "Label", units, compressed);
+        let facts = image(&before)
+            .inspect_current_short_text_field_addition_source("Table1", &mut budget(), &|| false)
+            .unwrap();
+        let candidate = image(&before)
+            .prepare_current_short_text_field_addition(
+                "Table1",
+                "Label",
+                units as usize,
+                compressed,
+                &mut budget(),
+                &|| false,
+            )
+            .unwrap();
+        equal_image(candidate.before_bytes(), &before);
+        equal_image(candidate.after_bytes(), &expected);
+        assert_eq!(candidate.native_number(), 2);
+        assert_eq!(candidate.native_number(), facts.native_number());
+        assert_eq!(candidate.max_utf16_units(), units as usize);
+        assert_eq!(candidate.unicode_compression(), compressed);
+        assert_eq!(&expected[8 * PAGE..10 * PAGE], &before[8 * PAGE..10 * PAGE]);
+        let rows = crate::read_table(
+            &mut Cursor::new(&expected),
+            SCOPE,
+            "Table1",
+            &mut budget(),
+            &|| false,
+        )
+        .unwrap();
+        assert_eq!(
+            rows.rows(),
+            &[
+                vec![Value::Int32(1), Value::Int32(42), Value::Null],
+                vec![Value::Int32(2), Value::Null, Value::Null],
+                vec![Value::Int32(3), Value::Int32(-7), Value::Null]
+            ]
+        );
+    }
+}
+
+#[test]
+fn current_short_text_invalid_declarations_and_cancellation_do_not_produce_candidates() {
+    let before = populated::pair("Unused", &[Some(42)])[0].to_vec();
+    for units in [0, 256, usize::MAX] {
+        assert!(
+            image(&before)
+                .prepare_current_short_text_field_addition(
+                    "Table1",
+                    "Label",
+                    units,
+                    true,
+                    &mut budget(),
+                    &|| false
+                )
+                .is_err()
+        );
+    }
+    assert!(matches!(
+        image(&before).prepare_current_short_text_field_addition(
+            "Table1",
+            "Label",
+            255,
+            true,
+            &mut budget(),
+            &|| true
+        ),
+        Err(CurrentFieldAdditionError::Inspect(InspectError::Cancelled))
     ));
 }

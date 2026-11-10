@@ -1,14 +1,16 @@
 //! Independent physical complement and decoded-state checks for metadata ADD.
-use super::{CurrentFieldAdditionError as Error, catalog::DescriptorPatch, definition::Plan};
+use super::{
+    CurrentFieldAdditionError as Error, Target, catalog::DescriptorPatch, definition::Plan,
+};
 use crate::{
     InspectError, NativeImage, PropertyGroupKind, TableProperties,
     format::{
         bytes::{u16_at, u32_at},
-        data_type::{BOOLEAN, INT32, LONG_TEXT},
+        data_type::{BOOLEAN, INT32, LONG_TEXT, SHORT_TEXT},
         definition::{LENGTH_OFFSET, PAGE_HEADER_BYTES},
         layout::{
             self, COLUMN_COUNT_OFFSET, COLUMN_ENTRY_BYTES, FIXED_FLAG, MAX_COLUMN_COUNT_OFFSET,
-            UPDATABLE_FLAG,
+            UNICODE_COMPRESSION_FLAG, UPDATABLE_FLAG, VARIABLE_SLOT_COUNT_OFFSET,
         },
         page::PAGE_BYTES,
         reader::{Reader, row_count, row_range},
@@ -37,6 +39,7 @@ const DDL_FLAG: u8 = 1;
 pub(super) fn candidate(
     proof: &current_schema::Source,
     plan: &Plan,
+    target: Target,
     descriptor: &DescriptorPatch,
     after: &[u8],
     name: &str,
@@ -85,6 +88,8 @@ pub(super) fn candidate(
         definition + MAX_COLUMN_COUNT_OFFSET
             ..definition + MAX_COLUMN_COUNT_OFFSET + size_of::<u16>(),
         definition + COLUMN_COUNT_OFFSET..definition + COLUMN_COUNT_OFFSET + size_of::<u16>(),
+        definition + VARIABLE_SLOT_COUNT_OFFSET
+            ..definition + VARIABLE_SLOT_COUNT_OFFSET + size_of::<u16>(),
         definition + plan.descriptor_end..definition + new_length,
         property_base + FREE_OFFSET..property_base + FREE_OFFSET + size_of::<u16>(),
         property_base + ROW_COUNT_OFFSET..property_base + ROW_COUNT_OFFSET + size_of::<u16>(),
@@ -110,6 +115,8 @@ pub(super) fn candidate(
             != PAGE_BYTES - new_length - PAGE_HEADER_BYTES
         || usize::from(u16_at(new_definition, MAX_COLUMN_COUNT_OFFSET)?) != plan.number + 1
         || usize::from(u16_at(new_definition, COLUMN_COUNT_OFFSET)?) != plan.number + 1
+        || usize::from(u16_at(new_definition, VARIABLE_SLOT_COUNT_OFFSET)?)
+            != plan.variable + usize::from(matches!(target, Target::ShortText { .. }))
         || old_definition[plan.descriptor_start..plan.descriptor_end]
             != new_definition[plan.descriptor_start..plan.descriptor_end]
         || old_definition[plan.descriptor_end..plan.index_start]
@@ -121,12 +128,13 @@ pub(super) fn candidate(
         return Err(Error::Preservation);
     }
 
-    metadata(proof, plan, after, name, body, budget, cancelled)
+    metadata(proof, plan, target, after, name, body, budget, cancelled)
 }
 
 fn metadata(
     proof: &current_schema::Source,
     plan: &Plan,
+    target: Target,
     after: &[u8],
     name: &str,
     body: &[u8],
@@ -177,14 +185,40 @@ fn metadata(
     let field = schema.columns().last().ok_or(Error::Preservation)?;
     if field.name() != name
         || field.number() != plan.number
-        || field.native_type() != INT32
-        || !field.fixed()
-        || field.storage_length() != size_of::<i32>()
-        || field.flags() != (FIXED_FLAG | UPDATABLE_FLAG)
-        || field.extended_flags() != 0
-        || field.physical_field().offset != plan.fixed_offset
         || field.physical_field().variable != plan.variable
     {
+        return Err(Error::Preservation);
+    }
+    let declaration_matches = match target {
+        Target::Number => {
+            field.native_type() == INT32
+                && field.fixed()
+                && field.storage_length() == size_of::<i32>()
+                && field.flags() == (FIXED_FLAG | UPDATABLE_FLAG)
+                && field.extended_flags() == 0
+                && field.physical_field().offset == plan.fixed_offset
+        }
+        Target::ShortText {
+            max_utf16_units,
+            unicode_compression,
+        } => {
+            field.native_type() == SHORT_TEXT
+                && !field.fixed()
+                && field.storage_length() == max_utf16_units * size_of::<u16>()
+                && field.flags() == UPDATABLE_FLAG
+                && field.extended_flags()
+                    == if unicode_compression {
+                        UNICODE_COMPRESSION_FLAG
+                    } else {
+                        0
+                    }
+                && field.physical_field().offset == 0
+                && field.text_sort_order().is_some_and(|order| {
+                    order.general_family() == Some(crate::GeneralSortFamily::General2010)
+                })
+        }
+    };
+    if !declaration_matches {
         return Err(Error::Preservation);
     }
 
@@ -250,7 +284,7 @@ fn metadata(
         return Err(Error::Preservation);
     }
     let mut required = false;
-    let mut default_value = false;
+    let mut second = false;
     for property in group.properties() {
         if property.flags() != DDL_FLAG {
             return Err(Error::Preservation);
@@ -261,17 +295,26 @@ fn metadata(
             && property.raw_value() == [0]
         {
             required = true;
-        } else if property.name().eq_ignore_ascii_case("DefaultValue")
-            && !default_value
-            && property.native_type() == LONG_TEXT
-            && property.raw_value() == [b'0', 0]
+        } else if !second
+            && match target {
+                Target::Number => {
+                    property.name().eq_ignore_ascii_case("DefaultValue")
+                        && property.native_type() == LONG_TEXT
+                        && property.raw_value() == [b'0', 0]
+                }
+                Target::ShortText { .. } => {
+                    property.name().eq_ignore_ascii_case("AllowZeroLength")
+                        && property.native_type() == BOOLEAN
+                        && property.raw_value() == [255]
+                }
+            }
         {
-            default_value = true;
+            second = true;
         } else {
             return Err(Error::Preservation);
         }
     }
-    if !required || !default_value {
+    if !required || !second {
         return Err(Error::Preservation);
     }
 
