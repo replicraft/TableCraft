@@ -108,18 +108,70 @@ outside the exact active relocation and newly consumed space. The older layout
 keeps its zero-free-space requirement. A row-only retained-tail witness is never
 used as permission to allocate metadata space.
 
-Runtime inspection and consuming review both select this family directly from
-fresh source capture. A refusal does not retry profiles1/2/3. The inspection fact
+The original current-metadata profile4 remains available through these explicit
+APIs. Normal runtime inspection and review select it or the retained-storage
+family below from original metadata. A refusal does not retry profiles1/2/3. The inspection fact
 remains a presentation policy, not a save capability; every review and cold
 recovery rederives all source, dependency and ownership checks.
+
+## Retained current-storage source
+
+The separate `inspect_retained_field_rename_source`,
+`prepare_retained_field_rename` and consuming
+`plan_recoverable_retained_field_rename` support current metadata after qualified
+field deletion/re-addition and earlier appended property snapshots. The sealed
+`NativeRetainedFieldRenameCandidate` keeps the existing current-schema ownership,
+program, dependency and record checks. Its selected field uses its actual native
+number and stored creation ID, even when these differ from its visible position
+or each other. Current MR2 framing permits unused dictionary names while still
+requiring complete coverage of every live group and entry.
+
+This operation appends a new renamed property snapshot within the qualified owned
+Single storage and repoints only its exact catalog descriptor. It shifts the
+selected TDEF name frame and its trailing metadata within the existing owned
+page. Old MR2 snapshots, OFF records, retired payloads, masks, DATA/index pages,
+field descriptors and native high-water counts remain unchanged. It does not
+move a prior OFF row or repack the old property history. Physical capacity derives
+from the actual owned pages; this implementation does not yet grow metadata
+allocation beyond that source geometry.
+
+Profile5 of the existing TCFR0001 request binds the original name, replacement,
+separate native identities and complete BEFORE digest. Cold recovery reconstructs
+this source and exact AFTER anew. Profile4 retains its original two-live-row
+packing proof; profiles1–4 are never retried as profile5. Runtime inspection and
+consuming review select the family from original metadata before source admission.
+A selected source's corruption, cancellation or resource failure remains an error.
+
+Number LONG retains its explicit nullable/zero-default declaration. Selected
+Short Text supports its actual 1–255 UTF-16-unit width, Required(false),
+AllowZeroLength(true), either stored compression setting and absent default. Names remain in the existing ASCII
+namespace. Growth, shrink, case-only and exact no-op requests share this source
+family; no-op validates the complete source and request without appending a row.
+This is a qualified current-storage extension, not general imported-file or
+Windows/Access write qualification.
+
+Independent raw/file-reader checks cover 112 growth, shrink, case-only and no-op
+transitions over twenty-eight filled/unfilled source/target combinations. The
+headless desktop adds sixteen journeys through actual rename widgets and reviewed
+save/reopen: sixty-four name transitions preserve source values, schema tab IDs,
+object order and scratch SQL. Two opaque-binary sibling cases then edit the
+renamed field through the normal cell service and match complete independent
+images. The full affected desktop rename/deletion families pass sixty tests.
+These are headless implementation observations, not native Access comparisons.
+The complete native rename and original-request/recovery families pass 26 and 19
+tests respectively. A separate raw counterexample proves that a sparse source can
+satisfy the older dictionary and live-row packing checks while still requiring
+the new declaration family; profile4 explicitly rechecks its original declaration
+proof rather than inheriting broader shared-schema admission.
 
 ## Exact field and name profile
 
 For the empty profiles, the selected field must be a non-primary, non-key Number Long with stored
 Required(false) and literal zero default, or Short Text255 with Unicode
 compression, stored Required(false)/AllowZeroLength(true) and no stored default.
-The generated ID and selected indexed fields refuse. Current-metadata requests
-retain these same selected Number/Short Text declaration constraints. This does
+The generated ID and selected indexed fields refuse. The original current-metadata
+profile4 retains these same selected Number/Short Text declaration constraints.
+Retained-storage profile5 uses the actual width/compression policy described above. This does
 not alter source fields or infer a new declaration from their displayed values.
 
 Original and proposed field names must be ASCII. The retained same-width

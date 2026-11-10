@@ -1,5 +1,25 @@
 # Implementation status
 
+## Rename after retained field histories — 10 November 2026
+
+Normal runtime now selects a separate TCFR0001/profile5 rename source for
+qualified current ACE16 metadata with retired native ordinals or appended live
+property snapshots. It preserves every old MR2/OFF row and DATA/index byte,
+renames the actual field/group, and binds distinct native numbers and stored IDs
+to the original request. Growth, shrink, case-only and fully qualified no-op
+requests use existing shared review/save/reopen services. Desktop adds no native
+editing logic. Profile4 explicitly retains its original declaration proof;
+shared current-schema support cannot broaden its cold-recovery language.
+
+The complete native rename family passes 26 tests and its request/recovery family
+passes 19. Independent read/query checks cover 112 source/target transitions plus
+a sparse counterexample with legacy live-row placement. Sixteen new headless GUI
+journeys pass, including 64 name transitions and two subsequent reviewed cell
+edits of the renamed field. The affected desktop rename/deletion families pass
+60 tests. Strict affected-package checks pass; native Windows/Access comparison
+remains pending. Wider source geometry, Unicode name comparison and general
+persisted schema CRUD remain unfinished. See [field rename](access/writes/FIELD_RENAME.md).
+
 ## Populated field deletion and re-addition — 10 November 2026
 
 Current-schema Number/Short Text ADD now separates active counts from retained
