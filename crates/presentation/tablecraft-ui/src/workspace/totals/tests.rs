@@ -262,7 +262,7 @@ fn page_changes_and_parked_display_preferences_preserve_typed_full_view_totals()
 }
 
 #[test]
-fn totals_refuses_a_thirty_third_choice_and_exposes_toggle_state() {
+fn totals_accepts_all_observed_fields_and_exposes_toggle_state() {
     let mut preview = Preview::new(Scene::Datasheet);
     let state = preview.state_mut();
     let mut data = state.data.take().unwrap();
@@ -282,8 +282,7 @@ fn totals_refuses_a_thirty_third_choice_and_exposes_toggle_state() {
         })
         .collect();
     state.apply_total_choices(choices);
-    let retained = state.totals.session.as_ref().unwrap().specs.clone();
-    assert_eq!(retained.len(), 32);
+    assert_eq!(state.totals.session.as_ref().unwrap().specs.len(), 32);
 
     state.apply_total_choices(vec![Choice {
         target,
@@ -291,11 +290,13 @@ fn totals_refuses_a_thirty_third_choice_and_exposes_toggle_state() {
         aggregate: Some(TotalAggregate::Count),
     }]);
     let session = state.totals.session.as_ref().unwrap();
-    assert_eq!(session.specs, retained);
-    assert_eq!(
-        session.error.as_deref(),
-        Some(state.localizer.text("totals-limit").as_str())
-    );
+    assert_eq!(session.specs.len(), 33);
+    assert_eq!(session.specs[32].column, "Field32");
+    assert!(session.error.is_none());
+    let Some(Action::ComputeTotals { specs, .. }) = state.take_totals_request() else {
+        panic!("every observed field can request its total");
+    };
+    assert_eq!(specs.len(), 33);
     assert!(state.take_totals_request().is_none());
     assert!(state.totals_request_id().is_none());
 

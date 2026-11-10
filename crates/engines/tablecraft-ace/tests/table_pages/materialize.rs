@@ -1,9 +1,11 @@
 use super::*;
-use tablecraft_ace::{read_table_batched, read_table_projection_batched};
+use tablecraft_ace::{
+    TableCursor, TableSnapshotLimits, read_table_batched, read_table_projection_batched,
+};
 
 #[test]
 fn batched_snapshots_match_independent_sequences_at_batch_and_empty_boundaries() {
-    for count in [0, 1, 255, 256, 257, 600, 16_384] {
+    for count in [0, 1, 255, 256, 257, 600, 16_384, 16_385] {
         let bytes = database(count);
         let snapshot = read_table_batched(
             &mut Cursor::new(&bytes),
@@ -27,8 +29,14 @@ fn batched_snapshots_match_independent_sequences_at_batch_and_empty_boundaries()
         assert!(empty.rows().iter().all(Vec::is_empty));
     }
     let mut input = PageReads::new(database(16_385));
+    let mut work = budget();
+    let cursor = TableCursor::open(&mut input, SCOPE, "Items", &mut work, &|| false).unwrap();
     assert!(matches!(
-        read_table_batched(&mut input, SCOPE, "Items", &mut budget(), &|| false),
+        cursor.into_snapshot(
+            TableSnapshotLimits::new(16_384, 256).unwrap(),
+            &mut work,
+            &|| false
+        ),
         Err(InspectError::StructureLimit)
     ));
     assert_eq!(input.count(FIRST_DATA_PAGE as u64), 0);
