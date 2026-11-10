@@ -35,31 +35,20 @@ agree with the retained handle. Failed or cancelled requests publish no prefix
 and do not modify the old handle or records. Totals describe the captured source;
 they do not reopen a file or silently consult newer external writes.
 
-The current service allows 32 distinct selected fields. It retains one bounded
-projection for the aggregate plan: native reads retain their existing 100,000-row
-ceiling, while the query plan retains its independent 10,000-row ceiling. Retained
-projection, query, native comparison and output pools remain separate. Exceeding
-a limit refuses the result rather than substituting visible-page totals.
+Distinct selected fields must belong to the observed source schema; there is no
+separate 32-field product ceiling. Retained projection, query, native comparison
+and output accounting remain separate, without implicit row/byte/work quotas.
+Actual allocation, checked EOF and cancellation still apply. Explicit caller
+quotas refuse an incomplete result rather than substituting visible-page totals.
 
-## Derived display
-
-Fixed Currency Sum/Minimum/Maximum retain their typed result. Currency Average
-retains the query's Double result with a distinct derived display fact. Formatting
-applies the selected currency's minor-unit rounding once; it does not pass through
-a four-place stored Currency conversion. Raw exposes the original Double spelling.
-
-Legacy Date/Time Average retains an explicit checked Automation-date display
-projection. Recognized source date/time formats apply to the derived date value.
-Count and statistics do not inherit checkbox controls or stored-calculation
-provenance. Display choices never change aggregate inputs or source values.
 
 ## Shared interaction
 
 Home Totals toggles the row. Initial fields are None; enabling the row requests
 metadata, and choosing an aggregate explicitly requests computation. Each field,
 including the first, has its own eligible menu. A retained unsupported choice
-still offers None so it can be removed. Exceeding the 32-field ceiling shows a
-refusal and preserves the existing choices.
+still offers None so it can be removed. Invalid or unavailable field choices
+refuse while preserving the existing choices.
 
 Visibility and choices belong to the table object. Same-view page changes reuse
 complete results; filter/view changes invalidate them. After reviewed save/reopen,
@@ -115,7 +104,7 @@ observes a total of 65 rather than 60. It also refuses the old revision's target
 The final UI gate passed 197 functional checks plus the separate full preview
 matrix: 63 scenes × eight locales × two themes (1,008 combinations), for 198 UI
 checks. Focused Totals cases cover source ownership and refusal, no-record
-geometry, the 32-field boundary, accessible toggle state, same-view page reuse,
+geometry, observed-schema field admission, accessible toggle state, same-view page reuse,
 parked formatting, failed-hide refresh and cancellation. Strict eight-package
 Clippy and repository format/documentation/dependency checks passed.
 

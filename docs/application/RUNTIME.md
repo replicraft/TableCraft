@@ -14,28 +14,21 @@ execute a query or consume its eventual run allowance. Issued SQL and saved-quer
 targets retain their existing document/revision checks before supplied inputs are
 processed. Action-query reviews and write/save allowances are unchanged.
 
-The options separate complete native snapshot row/batch ceilings from cumulative
-native, query, comparison and presentation resource pools. Defaults preserve the
-existing limits: snapshots retain at most 16,384 rows, decoded in batches of 256;
-native work has 512 MiB, 100,000 rows and 5,000,000 steps; query execution has
-16 MiB, 10,000 rows and 1,000,000 steps; comparison has 16 MiB and 1,000,000 steps;
-presentation has 8 MiB and 100,000 steps. Parameter conversion and final result
-publication share the run's presentation allowance. Results remain completely
-buffered: a failure publishes no partial result.
+The options separate snapshot fetch granularity from cumulative native, query,
+comparison and presentation resource pools. Defaults impose no extra product
+quota: counters use their representation bounds, and individual snapshots use
+unsigned 32-bit row ordinals. Fetch batches remain 256 rows. Materialization grows
+only for actual source rows; it never reserves the maximum row count up front.
+Parameter conversion and final result publication share the run's presentation
+pool. Buffered failures publish no partial result.
 
-Hosts can use `QueryPoolLimits::new` and `QueryRunOptions::with_limits` without
-importing native engine types. Explicit pool ceilings are 4 GiB, 10,000,000 rows
-and 1,000,000,000 steps; bytes and steps are positive, native/query rows are
-positive, and comparison/presentation pools have no row allowance.
-The query pool additionally respects the retrieval service's smaller ceilings:
-256 MiB, 1,000,000 rows and 100,000,000 steps; exceeding them is rejected rather
-than silently clamped. Snapshot rows
-remain limited by the native checked constructor (currently at most 1,000,000);
-batch rows retain the separate native traversal ceiling. These are cumulative
-charges, not a resident-memory promise. Increasing one pool does not increase
-another, refill between scans, relax format/index/payload restrictions, authorize
-external sources or change cancellation and preservation behavior. There is no
-automatic unlimited retry.
+Hosts can select explicit positive quotas through `QueryPoolLimits::new` and
+`QueryRunOptions::with_limits`. Native/query pools carry row allowances;
+comparison/presentation pools do not. Requests are not silently clamped to former
+4 GiB/10-million-row or smaller query maxima. Budgets remain cumulative accounting,
+not a resident-memory guarantee. Cancellation, source/format validation, checked
+arithmetic and fallible allocation remain required. Batch limits do not become
+database row-count limits, and there is no automatic retry after exhaustion.
 
 Native initialization, classified native-source limits during execution and
 presentation failures expose `Error::ReadQueryLimit` with their actual pool and
@@ -408,13 +401,23 @@ See [the SQL workspace](../ui/SQL_WORKSPACE.md).
 
 ## Session and task ownership
 
-Open captures an immutable image of a stable/offline file up to 64 MiB, closing
-the original handle after the bounded copy. It checks length before and after;
+Open validates the native header/file envelope (up to the native 2 GiB bound)
+or the supported deployment-container geometry before capturing immutable bytes.
+Capture grows fallibly from actual reads, without an invented 64 MiB opening cap
+or a reservation for the maximum permitted file size. It closes the original
+handle after capture and checks length before and after;
 this does not establish a transactional snapshot against same-size concurrent
 writes. Close other writers first. Package selection and native password/page
 decoding use the existing Access/ACE services. Passwords are consumed into
 zeroizing storage, including on failures. Opening a source never executes its
 active content or follows stored external paths.
+
+The standard native writer's existing complete-image qualification envelope is
+separate from opening. Larger readable sources expose unavailable edit/design
+capabilities successfully; they do not become failed read sessions. This read
+change does not expand mutation source profiles or establish general large-file
+writes. Capture still retains the actual immutable file in memory; it is not a
+disk-backed snapshot implementation.
 
 The captured plain source transfers its complete vector into the engine's
 [`NativeImageSource`](../access/NATIVE_READING.md#shared-immutable-native-image-ownership).
@@ -788,26 +791,18 @@ the actual session for explicit release, and later failures use the existing
 journal recovery/terminal receipt lifecycle. Busy/stale admission returns the
 original capability; cancellation requests never fabricate rollback.
 
-The runtime supplies finite phase allowances in `controls/action.rs`:
+Action phases retain separate native/query/reconstruction/persistence pools.
+Default work counters add no product quota. Complete BEFORE/AFTER lengths and
+framing are still validated before source binding or journal operations. Fresh
+proof work uses checked length-derived allowances for complete comparisons and
+hashes; these are not added to an already-unbounded default counter.
 
-- Query binding, evaluation and complete request materialization: 16 MiB,
-  10,000 row charges and one million work steps, independently from native work.
-- Initial native review: existing 512 MiB/100,000 row limits, with five million
-  steps plus one actual BEFORE length and framing allowance for initial binding.
-  This is a combined native planning/hash allowance, not an independent hash pool.
-- Fresh requalification: ordinary native capture/rebuild allowance plus a proof
-  pool with two BEFORE lengths in bytes, no rows and a checked allowance for
-  complete comparison/hash traversals. No counters transfer between these pools.
-- Journal persistence: separate bounded allowance derived from reviewed BEFORE
-  and AFTER lengths, retaining 512 MiB/100,000 row ceilings. Retained and restart
-  recovery use a fixed finite envelope based on the existing 64 MiB document
-  limit, before trusting any journal lengths. Recovery reconstruction and
-  persistence share that explicitly named pool; they are not represented as the
-  ordinary five-million-step planner quota.
-
-Each phase spends its allowance cumulatively and fails explicitly on exhaustion.
-Image sizes must be nonzero and within the existing document envelope. These
-ceilings do not guarantee that every database within 64 MiB admits an UPDATE.
+The existing standard writer image envelope remains a mutation qualification
+restriction, separate from the native read-opening envelope. Restart recovery
+uses that known writer envelope before trusting journal lengths. Every phase
+still enforces an explicitly selected budget and cancellation. Neither an image
+size within the writer envelope nor a larger read allowance grants UPDATE
+permission or bypasses source/program/constraint/preservation checks.
 Matched counts include unchanged assignments; changed counts describe the native
 plan. A successful save is followed by an explicit fresh open; the old read
 snapshot is not silently relabeled as updated.
@@ -1163,7 +1158,7 @@ Text remains distinct. Reapplication resolves the fresh source's pattern mode
 and field policy instead of retaining an old compiled matcher. Arbitrary SQL
 filter expressions and dynamic date presets are not supplied.
 
-At most sixteen distinct native fields are retained. Applying a new criterion to
+Distinct retained fields are bounded by the observed native schema. Applying a criterion to
 the same exact field replaces that field's previous criterion; different fields
 combine with eager AND semantics. Every criterion evaluates for every traversed
 source row, even after an earlier false/unknown result. Native field comparison
@@ -1204,20 +1199,13 @@ fields or reset the budget for each selected row. Existing complete collection
 snapshot limits remain unchanged. An empty filtered page publishes qualified
 metadata headings without fetching an unrelated source row.
 
-Map construction has an 8 MiB retained-work allowance and one million steps,
-including typed criterion/name copies, schema-name comparisons, map capacity and
-handle/definition storage. Entered operands have a 64 KiB UTF-8 ceiling each and
-exact operator arity (zero, one or two); parsing uses the existing cumulative
-8 MiB/100,000-step scalar presentation allowance. Compiled native patterns share
-one separate 64 MiB/ten-million-step pool across preparation and all source
-rows. Pattern, scalar and comparison work never resets for each candidate.
-A smaller work allowance may refuse an input below the byte ceiling. Selection
-capture and its cursor scan share one native allowance (512 MiB, 100,000 rows, five million steps), with the separate existing
-16 MiB/one-million-step native comparison pool. The first page and subsequent
-FilterPage calls use a separately named native band-read allowance with the same
-bounds, plus the normal cumulative 8 MiB/100,000-step presentation pool. No pool
-resets per batch, source row, field or selected output row. These are explicit
-phase limits; a valid but larger source can return a resource error.
+Map construction charges actual criterion/name copies, schema-name comparisons,
+map capacity and handle storage. It no longer has a fixed implicit byte/work
+quota. Entered operands retain the current 64 KiB host-entry restriction and exact
+operator arity; that input restriction remains separate review work. Native,
+comparison, pattern and presentation phases retain distinct cumulative counters
+and cancellation. No counter refills per source row, field or page. Explicit
+caller quotas can refuse work; failure never substitutes an incomplete row map.
 
 Saving/reopening changes the document witness, so old filter handles must refuse.
 `FilterHandle.definition()` instead returns opaque cloneable preferences with
@@ -1277,15 +1265,13 @@ fresh leased source checks. This reviewed workflow is a deliberate current
 interaction difference from Access's immediate Replace button. Refused candidates
 leave the earlier valid edit draft intact.
 
-Match preparation and ordinary BeginEdit are separate bounded snapshot passes,
-with no offline lease held while the user considers the result. The first pass
-shares the ordinary native allowance across metadata and normal-editor snapshot,
-a 16 MiB/one-million-step native comparison pool, a cumulative
-64 MiB/ten-million-step match pool and the normal 8 MiB presentation pool. The
-second BeginEdit retains its existing native/presentation allowances. Literal
-replacement and final edit input have the existing 1 MiB input ceiling; normal
-Review and Apply retain their own existing bounds. Pools do not reset per row
-or substring. Replace All is not supplied by this single-occurrence operation:
+Match preparation and ordinary BeginEdit are separate snapshot passes, with no
+offline lease held while the user considers the result. Native, comparison,
+match and presentation counters remain independent without implicit product-size
+quotas. Literal replacement/final edit input still has its existing 1 MiB
+host-entry restriction; native Review and Apply retain their actual qualification
+and reconstruction contracts. Counters do not reset per row or substring.
+Replace All is not supplied by this single-occurrence operation:
 a complete batch requires its own one-image native admission and consuming
 batch save capability, rather than a loop of independent cell commits.
 
@@ -1360,7 +1346,8 @@ is introduced.
 without reading user records. This metadata is informational. `Totals` accepts an
 exact document revision, table, optional issued view ID, enabled/off mode and
 opaque base handle. Another worker's handle refuses even if its public revision
-counter matches. At most 32 distinct fields may be requested; omission means no
+counter matches. Requested distinct fields must belong to the observed native
+schema; omission means no
 aggregate, rather than an invented count or default operation.
 
 The service reads one projected native cursor through checked EOF, using the
@@ -1437,9 +1424,9 @@ Find uses the current display rank while retaining physical source ordinals.
 After a successful save, explicit definition reapplication rebinds the selected
 key and predicates against the newly opened source and issues fresh row rights.
 
-Sorting has its own cumulative 64 MiB/ten-million-step key-work pool and one
-ordinary native cursor allowance, separate from membership construction and page
-publication. Retained permutations/ranks are charged to the 8 MiB view allowance;
+Sorting has separate cumulative key-work, native cursor and membership/presentation
+counters, without implicit product-size quotas. Retained permutations/ranks are
+charged to the view's actual allocation accounting;
 text comparisons use the existing independent native comparison pool. Full cursor
 work, admitted key copies, fallible stable merge comparisons and rank construction
 remain cancellable. A mode change uses a fresh explicit sorting phase, never a
@@ -1507,15 +1494,12 @@ are never treated as searchable displayed values. A current collection cell does
 not enable Find; table-wide search refuses a complex scoped field, while ordinary
 field-specific searches retain their existing qualification.
 
-The command has a 64 KiB UTF-8 pattern ceiling. Metadata and cursor reads share
-one native allowance (512 MiB, 100,000 rows, five million steps), with a separate
-cumulative native-comparison pool (16 MiB and one million steps). Pattern/span
-work has a separate cumulative 64 MiB/ten-million-step pool; presentation uses
-its existing 8 MiB/100,000-step allowance, including the once-captured request
-and every retained candidate name. None resets per batch or field. Resource
-failure is an error, not a completed negative search. The host retrieves the
-matching page with a second explicit command and its own operation allowance;
-publication requires the same source revision, ordinal and original field.
+Find still has its existing 64 KiB host pattern-entry restriction, which needs
+separate native workflow review. Metadata, cursor, comparisons, pattern/span and
+presentation counters otherwise have no implicit product-size quotas. Explicit
+resource failure is an error, not a completed negative search. Counters do not
+reset per field or batch. Retrieving a matching page is a second explicit command,
+and publication requires the same source revision, ordinal and original field.
 
 Microsoft's [Find dialog contract](https://support.microsoft.com/en-us/access/use-the-find-and-replace-dialog-box-to-change-data),
 [FindRecord behavior](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/findrecord-macro-action)
@@ -1657,18 +1641,17 @@ See [database properties](../access/schema/NATIVE_PROPERTIES.md) and
 
 ## Limits and verification
 
-Each native operation currently receives 512 MiB of charged bytes, 100,000 rows
-and 5,000,000 work steps. Visible pages request 100 records. Stored-field pages
-also retain the existing default complete parent/child snapshot ceiling of
-16,384 rows; a small visible page does not bypass that ceiling. Ordinary scalar
-pages keep their paged profile instead of taking that complete snapshot.
+Native, query, comparison and presentation work no longer receive fixed implicit
+byte/row/step quotas. Explicit caller controls remain cumulative and independent.
+Visible pages request 100 records; complete parent/child retention uses actual
+source rows under the snapshot representation and any selected quota. A fetch
+batch is not a database-size limit. Default page publication has no separate
+8 MiB product ceiling.
 
-Query execution independently uses 16 MiB, 10,000 rows and 1,000,000 steps, with a
-64 KiB SQL input ceiling. Display publication has an 8 MiB budget and 100,000
-steps, including typed row/cell envelopes and collection iteration. These are
-consumer controls, not format limits or an exact process-heap cap. Partial
-pages/counts are not published after failure. Generation checks remain necessary
-even when cancellation is requested.
+Partial pages/counts are not published after failure. Generation checks remain
+necessary even when cancellation is requested. Some host-entry and supported
+operation restrictions still require individual review; removing invented data
+quotas does not establish complete Access functionality.
 
 Feature-local runtime tests use the public Worker and existing testkit inputs.
 They cover immutable reads, failed opens/password retry, real queries, metadata,
