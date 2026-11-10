@@ -164,6 +164,59 @@ pub(in crate::table::mutation::normal_insert) fn reconstruct_encoded(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(Vec<u8>, Vec<u32>), EditError> {
+    reconstruct_encoded_with_limit(
+        image,
+        source,
+        requests,
+        encoded,
+        Reconstruction {
+            retain_references,
+            maximum_rows: Some(crate::limits::MAX_LIVE_ROWS),
+        },
+        budget,
+        cancelled,
+    )
+}
+
+#[cfg(feature = "ace16-create")]
+pub(in crate::table::mutation::normal_insert) fn reconstruct_retained_encoded(
+    image: &NativeImage,
+    source: &Source,
+    requests: &[RowInsert],
+    encoded: Vec<Vec<u8>>,
+    retain_references: bool,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(Vec<u8>, Vec<u32>), EditError> {
+    reconstruct_encoded_with_limit(
+        image,
+        source,
+        requests,
+        encoded,
+        Reconstruction {
+            retain_references,
+            maximum_rows: None,
+        },
+        budget,
+        cancelled,
+    )
+}
+
+struct Reconstruction {
+    retain_references: bool,
+    maximum_rows: Option<usize>,
+}
+
+fn reconstruct_encoded_with_limit(
+    image: &NativeImage,
+    source: &Source,
+    requests: &[RowInsert],
+    encoded: Vec<Vec<u8>>,
+    options: Reconstruction,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(Vec<u8>, Vec<u32>), EditError> {
+    let retain_references = options.retain_references;
     let (mut capacities, space) = capacities(image, source, budget, cancelled)?;
     let mut expected = fixed_records::copy(image.as_bytes(), budget, cancelled)?;
 
@@ -252,9 +305,11 @@ pub(in crate::table::mutation::normal_insert) fn reconstruct_encoded(
         .checked_add(added)
         .ok_or(InspectError::StructureLimit)?;
     if count != schema.declared_rows()
-        || usize::try_from(total)
-            .ok()
-            .is_none_or(|value| value > crate::limits::MAX_LIVE_ROWS)
+        || options.maximum_rows.is_some_and(|maximum| {
+            usize::try_from(total)
+                .ok()
+                .is_none_or(|value| value > maximum)
+        })
     {
         return Err(EditError::Preservation);
     }

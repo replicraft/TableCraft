@@ -1,5 +1,6 @@
 //! Fresh original presence, scalar arithmetic, row bytes and physical placement.
 use super::super::{incrementing, indexed};
+use super::Family;
 use crate::{
     EditError, InspectError, NativeEditPlan, NativeImage, OmittedRowInsert,
     header::check,
@@ -17,6 +18,7 @@ pub(super) fn prove(
     scope: CatalogScope,
     table: &str,
     original: &[OmittedRowInsert],
+    family: Family,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), EditError> {
@@ -25,13 +27,14 @@ pub(super) fn prove(
     {
         return Err(EditError::Preservation);
     }
-    let image = NativeImage::capture(
+    let image = capture_image(
+        family,
         &mut Cursor::new(plan.before_bytes()),
         scope,
         budget,
         cancelled,
     )?;
-    let source = super::capture(&image, table, budget, cancelled)?;
+    let source = family.capture(&image, table, budget, cancelled)?;
     source.require_preserved_definition_tail(&image, plan.after_bytes(), budget, cancelled)?;
     let counter = incrementing::mode::capture_current(&image, &source, budget, cancelled)?;
     let derived =
@@ -64,7 +67,11 @@ pub(super) fn prove(
             cancelled,
         )?);
     }
-    let (mut expected, references) = super::super::proof::reconstruct_encoded(
+    let reconstruct = match family {
+        Family::Current => super::super::proof::reconstruct_encoded,
+        Family::Retained => super::super::proof::reconstruct_retained_encoded,
+    };
+    let (mut expected, references) = reconstruct(
         &image,
         &source,
         &derived.rows,
@@ -98,8 +105,14 @@ pub(super) fn prove(
         .copy_from_slice(&derived.last.to_le_bytes());
     super::super::compare(&expected, plan.after_bytes(), budget, cancelled)?;
 
-    let after = NativeImage::capture(&mut Cursor::new(&expected), scope, budget, cancelled)?;
-    let final_source = super::capture(&after, table, budget, cancelled)?;
+    let after = capture_image(
+        family,
+        &mut Cursor::new(expected.as_slice()),
+        scope,
+        budget,
+        cancelled,
+    )?;
+    let final_source = family.capture(&after, table, budget, cancelled)?;
     let final_counter =
         incrementing::mode::capture_current(&after, &final_source, budget, cancelled)?;
     let (final_facts, _) = indexed::qualify(&after, &final_source, table, &[], budget, cancelled)?;
@@ -112,4 +125,19 @@ pub(super) fn prove(
         return Err(EditError::Preservation);
     }
     Ok(())
+}
+
+fn capture_image(
+    family: Family,
+    input: &mut Cursor<&[u8]>,
+    scope: CatalogScope,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<NativeImage, EditError> {
+    match family {
+        Family::Current => Ok(NativeImage::capture(input, scope, budget, cancelled)?),
+        Family::Retained => Ok(NativeImage::capture_retained(
+            input, scope, budget, cancelled,
+        )?),
+    }
 }

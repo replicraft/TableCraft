@@ -3,8 +3,12 @@ mod clock;
 #[cfg(feature = "ace16-create")]
 mod current;
 mod eof;
+#[cfg(feature = "ace16-create")]
+mod generated;
 mod incrementing;
 mod indexed;
+#[cfg(feature = "ace16-create")]
+mod retained;
 pub(crate) use eof::OrdinaryInsertPlanKind;
 mod omitted;
 mod placement;
