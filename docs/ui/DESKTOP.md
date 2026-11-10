@@ -854,29 +854,44 @@ cells, full grid accessibility, Windows/Linux behavior or native Access parity.
 
 ## Native Yes/No display controls
 
-The renderer now receives exact Boolean facts separately from stored field
-display-control metadata. A checked or unchecked read-only checkbox requires a
-non-NULL Boolean and an explicit native checkbox declaration (106). A literal
-text `true`, numeric -1/0 or NULL cannot become a checkbox from its spelling or
-value. Cache provenance remains independent, and Copy retains the original full
-cell text. Clicking, Space and Enter select/focus the cell without changing data.
-Accessibility exposes the checked state and read-only property without a toggle
-action; platform screen-reader qualification remains separate.
+The renderer receives exact Boolean facts separately from stored field
+control metadata. A non-NULL Boolean uses a centered checkbox when its inspected
+DisplayControl is absent (the native default) or explicitly Check Box (106).
+Inspected absence remains absence in metadata; rendering does not write an
+invented property. Uninspected settings remain distinct. Literal text `true`,
+numeric -1/0 and NULL never become checkboxes from their spelling or value.
+Copy retains the complete original cell text.
 
-Text-box declarations (109) retain text, and combo boxes (111) or other
-unsupported controls do not silently become checkboxes. Absent and uninspected
-settings remain distinct, with explanatory context. Query results and child
-contents do not inherit a native field control through an alias or parent name.
-Field Format/lookup rendering, inferred defaults and general display-control
-support remain work.
+An eligible table checkbox can propose the opposite value by clicking its box,
+pressing Space while focused, or using its accessibility Click action. The
+proposal captures the original typed Boolean and source-bound cell target. The
+existing BeginEdit read must return the same target and a matching non-NULL,
+noncalculated Boolean draft with Boolean input and NULL disabled. A stale or
+incompatible reply discards the proposal. The widget does not change its checked
+state or save automatically: Review, Apply, acknowledgement and guarded reopen
+remain the ordinary edit workflow. Desktop only forwards the typed proposal to
+those shared services. Enter retains its existing selection/navigation meaning.
+
+Query-result and calculated checkboxes remain read-only. Text-box declarations
+(109), combo boxes (111), unsupported controls and uninspected metadata do not
+silently acquire checkbox interactions. Child contents do not inherit a native
+field control through an alias or parent name. Native write eligibility is
+independently checked by the runtime and engine; an edit proposal is not a save
+permission. Field Format/lookup rendering and general display-control support
+remain separate work.
 
 Microsoft documents that DisplayControl affects datasheet presentation and allows
 Yes/No fields to use checkbox, text-box or combo-box controls. See the
 [DisplayControl reference](https://learn.microsoft.com/en-us/previous-versions/office/aa195849(v=office.11))
 and [control-code enumeration](https://learn.microsoft.com/en-us/office/vba/api/access.accontroltype).
 The [default-new-field guidance](https://support.microsoft.com/en-gb/access/add-a-check-box-control-to-show-yes-no-values)
-does not establish the declaration of an existing field whose metadata was not
-inspected. The retained Access screenshot supplies the actual visual reference.
+establishes Check Box as the new Yes/No field default. It does not establish
+uninspected metadata or override an explicit stored control. The retained
+1920 × 1141 Windows/VirtualBox datasheet capture was reopened headlessly for
+this change; its display scale is unrecorded. It shows centered checked and
+unchecked cells, not a captured click/keyboard or review-dialog interaction.
+The explicit reviewed-save interaction remains a TableCraft safety workflow;
+no Windows/Access interaction parity is claimed.
 
 The rebuilt macOS preview displayed both actual sample Yes/No declarations as
 checked boxes. Repeated arrow navigation reached the field; mouse click, Space
