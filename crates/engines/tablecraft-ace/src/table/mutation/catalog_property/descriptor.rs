@@ -77,7 +77,7 @@ impl Descriptor {
         }
     }
 
-    pub(crate) fn kind(&self) -> Result<trace::Kind, InspectError> {
+    pub(in crate::table) fn kind(&self) -> Result<trace::Kind, InspectError> {
         trace::kind(self.bytes())
     }
 
