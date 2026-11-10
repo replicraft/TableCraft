@@ -40,7 +40,13 @@ pub fn after(before: &[u8], target: Target) -> Vec<u8> {
         Target::Number => crate::fixtures::access::raw_schema_add::Kind::Number,
         Target::ShortText => crate::fixtures::access::raw_schema_add::Kind::ShortText,
     };
-    let output = crate::fixtures::access::raw_schema_add::append(before, 7, target.name(), kind);
+    let output = crate::fixtures::access::raw_schema_add::append(
+        before,
+        7,
+        target.name(),
+        kind,
+        crate::fixtures::access::raw_schema_add::Slack::Zero,
+    );
     let original = storage::current_body(before);
     let body = match target {
         Target::Number => properties::append_number(&original, target.name()),

@@ -111,7 +111,13 @@ fn after_with_page(
     let property_page = selected_page.unwrap_or_else(|| {
         crate::fixtures::access::raw_catalog_properties::candidate(before, body.len())
     });
-    let after = raw_schema_add::append(before, definition, target.name(), kind);
+    let after = raw_schema_add::append(
+        before,
+        definition,
+        target.name(),
+        kind,
+        raw_schema_add::Slack::Preserve,
+    );
     crate::fixtures::access::raw_catalog_properties::append(
         before,
         after,

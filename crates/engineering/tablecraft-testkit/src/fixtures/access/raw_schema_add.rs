@@ -11,6 +11,12 @@ pub(in crate::fixtures::access) enum Kind {
     ShortText,
 }
 
+#[derive(Clone, Copy)]
+pub(in crate::fixtures::access) enum Slack {
+    Zero,
+    Preserve,
+}
+
 fn word(bytes: &[u8], at: usize) -> usize {
     usize::from(u16::from_le_bytes(bytes[at..at + 2].try_into().unwrap()))
 }
@@ -20,6 +26,7 @@ pub(in crate::fixtures::access) fn append(
     definition: u32,
     name: &str,
     target: Kind,
+    slack: Slack,
 ) -> Vec<u8> {
     let definition_start = definition as usize * PAGE;
     let old = &before[definition_start..definition_start + PAGE];
@@ -84,6 +91,9 @@ pub(in crate::fixtures::access) fn append(
         put16(&mut definition, 43, (variable_high + 1) as u16);
     }
     definition.resize(PAGE, 0);
+    if matches!(slack, Slack::Preserve) {
+        definition[size..].copy_from_slice(&old[size..]);
+    }
     let mut output = before.to_vec();
     output[definition_start..definition_start + PAGE].copy_from_slice(&definition);
     output
