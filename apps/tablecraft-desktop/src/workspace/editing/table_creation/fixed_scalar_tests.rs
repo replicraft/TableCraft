@@ -100,11 +100,31 @@ fn reveal(harness: &mut Harness<'_, Desktop>, field: &str, right: bool) {
         modifiers: egui::Modifiers::NONE,
     });
     harness.run_steps(10);
+    // Draft headers carry their label directly. Persisted datasheets expose
+    // the same name on a child Label of the ColumnHeader container.
+    let target = harness.get_all_by_role(Role::ColumnHeader).find(|header| {
+        header.accesskit_node().label().as_deref() == Some(field)
+            || header.get_all_by_role(Role::Label).any(|label| {
+                label.value().as_deref() == Some(field)
+                    || label.accesskit_node().label().as_deref() == Some(field)
+            })
+    });
+    let Some(target) = target else {
+        let names = harness
+            .get_all_by_role(Role::ColumnHeader)
+            .flat_map(|header| {
+                header
+                    .get_all_by_role(Role::Label)
+                    .filter_map(|label| label.value())
+                    .collect::<Vec<_>>()
+            })
+            .take(8)
+            .collect::<Vec<_>>();
+        panic!("requested field header {field} missing; current names: {names:?}");
+    };
     assert!(
-        harness
-            .get_by_role_and_label(Role::ColumnHeader, field)
-            .rect()
-            .intersects(viewport)
+        target.rect().intersects(viewport),
+        "field header {field} is still outside the viewport"
     );
 }
 
