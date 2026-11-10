@@ -298,3 +298,17 @@ fn hashing_checks_every_multiblock_cancellation_boundary() {
         assert_eq!(result, Err(BindingError::Io(IoError::Cancelled)));
     }
 }
+
+#[test]
+fn journal_extent_uses_actual_prefix_without_inheriting_a_protocol_image_quota() {
+    let binding = captured();
+    assert_eq!(binding.journal_offset().unwrap(), 227);
+    assert_eq!(binding.journal_capacity().unwrap(), u64::MAX - 227);
+    assert!(binding.journal_capacity().unwrap() > 2 * 64 * 1024 * 1024 + 4096);
+    let mut overflow = binding;
+    overflow.intent_length = u64::MAX;
+    assert!(matches!(
+        overflow.journal_capacity(),
+        Err(BindingError::InvalidOffset)
+    ));
+}

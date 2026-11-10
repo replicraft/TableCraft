@@ -26,9 +26,6 @@ const MAX_INTENT_BYTES: u64 = 16 * 1024 * 1024;
 const SETUP_RENAME_STEPS: u64 = 1024;
 pub(super) const RETIRED_UNITS: usize = RETIRED_PREFIX.len() + NONCE_BYTES * HEX_PER_BYTE;
 const STAGE_UNITS: usize = STAGE_PREFIX.len() + NONCE_BYTES * HEX_PER_BYTE;
-const IMAGE_JOURNAL_OVERHEAD_BYTES: u64 = 4096;
-pub(super) const MAX_JOURNAL_BYTES: u64 =
-    2 * super::super::format::MAX_IMAGE_BYTES + IMAGE_JOURNAL_OVERHEAD_BYTES;
 
 #[derive(Clone, Copy, Debug)]
 pub(super) enum SetupPhase {
@@ -336,7 +333,7 @@ pub(super) fn reopen(
         let prefix = binding.journal_offset()?;
         check(budget, cancelled)?;
         let length = sidecar.file()?.metadata().map_err(IoError::from)?.len();
-        if length < prefix || length - prefix > MAX_JOURNAL_BYTES {
+        if length < prefix {
             return Err(IoError::Io(ErrorKind::InvalidData).into());
         }
         let count = usize::try_from(binding.intent_length).map_err(|_| PairError::IntentLimit)?;

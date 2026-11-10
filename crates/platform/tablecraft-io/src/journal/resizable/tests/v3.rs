@@ -3,9 +3,9 @@ use super::{Observed, budget, memory};
 use crate::{
     IoError,
     journal::{
-        CheckedImage, DurableStorage, JournalError, RecoveryOutcome, V3State, inspect_image,
-        inspect_v2, inspect_v3, prepare_resizable_expected, prepare_resizable_v3_expected,
-        recover_resizable, recover_resizable_v3,
+        BoundedJournalRegion, CheckedImage, DurableStorage, JournalError, RecoveryOutcome, V3State,
+        inspect_image, inspect_v2, inspect_v3, prepare_resizable_expected,
+        prepare_resizable_v3_expected, recover_resizable, recover_resizable_v3,
     },
 };
 use sha2::{Digest, Sha256};
@@ -220,7 +220,8 @@ impl DurableStorage for Sparse {
 
 #[test]
 fn sparse_v3_image_above_legacy_64mib_is_admitted_only_by_new_grammar() {
-    let length = 64 * 1024 * 1024 + 1_u64;
+    // Exceed both the V2 image cap and the former Windows flat-sidecar envelope.
+    let length = 2 * 64 * 1024 * 1024 + 4097_u64;
     let mut hash = Sha256::new();
     hash.update(b"TCIMG003");
     hash.update(0_u64.to_le_bytes());
@@ -232,13 +233,23 @@ fn sparse_v3_image_above_legacy_64mib_is_admitted_only_by_new_grammar() {
         hash.update(&zeros[..count as usize]);
         remaining -= count;
     }
+    let prefix = b"host-owned sidecar binding and intent";
     let mut file = tempfile::tempfile().unwrap();
+    file.write_all(prefix).unwrap();
     file.write_all(b"TCIMG003").unwrap();
     file.write_all(&0_u64.to_le_bytes()).unwrap();
     file.write_all(&length.to_le_bytes()).unwrap();
     file.write_all(&hash.finalize()).unwrap();
-    file.set_len(56 + length).unwrap();
-    let mut journal = Sparse(file);
+    file.set_len(prefix.len() as u64 + 56 + length).unwrap();
+    let mut backing = Sparse(file);
+    let mut journal = BoundedJournalRegion::new(
+        &mut backing,
+        prefix.len() as u64,
+        u64::MAX - prefix.len() as u64,
+        &mut budget(),
+        &|| false,
+    )
+    .unwrap();
     assert!(inspect_v2(&mut journal, &mut budget(), &|| false).is_err());
     let mut enough = ResourceBudget::new(2 * length + 56, 0, 1024 * 1024 * 1024);
     let checked = inspect_v3(&mut journal, &mut enough, &|| false).unwrap();
@@ -246,6 +257,11 @@ fn sparse_v3_image_above_legacy_64mib_is_admitted_only_by_new_grammar() {
     assert_eq!(checked.after_bytes().len() as u64, length);
     assert!(checked.after_bytes().iter().all(|byte| *byte == 0));
     drop(checked);
+    drop(journal);
+    backing.0.seek(SeekFrom::Start(0)).unwrap();
+    let mut original = vec![0; prefix.len()];
+    backing.0.read_exact(&mut original).unwrap();
+    assert_eq!(original, prefix);
     // V2 keeps its explicit 64MiB prepare refusal before trying to own buffers.
     let mut target = memory(b"");
     let after = vec![0; length as usize];

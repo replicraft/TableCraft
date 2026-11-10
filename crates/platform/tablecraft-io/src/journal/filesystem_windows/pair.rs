@@ -209,13 +209,10 @@ impl OfflineJournalPair {
         writable: bool,
     ) -> Result<(PairedStorage<'_>, PairedStorage<'_>), PairError> {
         let prefix = self.sidecar.binding()?.journal_offset()?;
+        let capacity = self.sidecar.binding()?.journal_capacity()?;
         let target = PairedStorage::target(self.target.file_mut()?, writable);
-        let journal = PairedStorage::journal(
-            &mut self.sidecar.storage,
-            prefix,
-            setup::MAX_JOURNAL_BYTES,
-            writable,
-        )?;
+        let journal =
+            PairedStorage::journal(&mut self.sidecar.storage, prefix, capacity, writable)?;
         Ok((target, journal))
     }
 

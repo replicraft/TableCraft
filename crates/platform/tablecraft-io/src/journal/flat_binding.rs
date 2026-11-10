@@ -100,6 +100,12 @@ impl FlatBindingData {
             .ok_or(BindingError::InvalidOffset)
     }
 
+    /// Remaining representable physical extent after the immutable prefix.
+    /// This is stream geometry, not an image protocol or native file-size limit.
+    pub(crate) fn journal_capacity(&self) -> Result<u64, BindingError> {
+        Ok(u64::MAX - self.journal_offset()?)
+    }
+
     pub(crate) fn verify_objects(
         &self,
         actual: &FlatObjects,
