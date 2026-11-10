@@ -141,8 +141,9 @@ not infer settings or scan data to invent headings.
 Already materialized Text/NULL operands are borrowed during the join. Scalar-to-
 Text conversions charge their emitted intermediate bytes through CStr; the final
 joined Text is charged separately before fallible allocation. Shared cancellation,
-work and the selected per-value Text ceiling (64 KiB default, up to 1 MiB by
-explicit execution option) remain active. Failed work is
+work and any explicitly selected per-value UTF-8 Text quota remain active.
+Omitting the quota does not impose an additional product-specific size ceiling;
+addressability and fallible allocation still apply. Failed work is
 not refunded. Queries and ordinary CLI output remain buffered, with no success
 stdout on a later conversion, quota or formatting failure.
 

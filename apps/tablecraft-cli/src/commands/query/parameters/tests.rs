@@ -33,3 +33,11 @@ fn borrowed_names_keep_duplicate_and_invalid_name_refusals() {
         assert!(matches!(parse(&raw), Err(Error::Parameter)));
     }
 }
+
+#[test]
+fn text_arguments_are_not_limited_to_sixty_four_kibibytes() {
+    let text = "é".repeat(35_000);
+    let raw = [format!("P=text:{text}")];
+    let bindings = parse(&raw).unwrap();
+    assert_eq!(bindings, [("P", Value::Text(text))]);
+}

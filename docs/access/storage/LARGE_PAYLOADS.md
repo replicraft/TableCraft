@@ -25,23 +25,21 @@ No source bytes change and no attachment/OLE/VBA content executes.
 ## Separate query and output limits
 
 Native stored-value admission and query execution have separate controls. The
-SQL evaluator and query runtime default to 65,536 bytes per Text value. An explicit
-`ExecutionOptions::max_text_bytes` or `query run --text-bytes BYTES` raises that
-limit up to 16,777,216 UTF-8 bytes. It applies to source/parameter copies, generated
-intermediates, nested queries, domain calls and discovery execution under the same
-options. Binding/parser literal limits remain unchanged; preparing a plan never
-scans records to decide a value's size. Reusing a plan with default options again
-restores the default limit.
+SQL evaluator and query runtime impose no additional product-specific per-value
+Text quota by default. An explicit `ExecutionOptions::max_text_bytes` or
+`query run --text-bytes BYTES` selects a UTF-8 byte quota for source/parameter
+copies, generated intermediates, nested queries, domain calls and discovery under
+the same options. Addressable buffer sizes and fallible allocation still apply.
+Binding/parser literal controls remain independent; preparing a plan never scans
+records to decide a value's size. Reusing a plan does not retain an earlier run's
+optional quota.
 
-CLI output defaults to 1 MiB. `query run --output-bytes BYTES` allows up to 16 MiB
-for both escaped display buffering and the final CSV TSV/comfy-table rendering.
-CSV quote expansion counts toward the final allowance. Bordered output retains
-its separate conservative layout bound and may require `--format tsv`. Failed
-admission, execution or formatting publishes no result rows. These controls apply
-to `query run`; source-free eval and ordinary browsing defaults remain unchanged.
-Source-free eval also retains one cumulative 65,536-byte allocation allowance
-across all output columns and intermediates. That budget derives from its default
-EvalLimits, not the larger optional per-value ceiling.
+CLI output has no implicit publication quota. An explicit
+`query run --output-bytes BYTES` bounds escaped display buffering and final CSV
+TSV/comfy-table rendering. CSV quote expansion counts toward that allowance.
+Failed admission, execution or formatting publishes no result rows. Source-free
+`query eval` likewise has no implicit Text allocation or operation-count quota;
+its representation checks and fallible allocation remain active.
 
 For example, with a stable offline input:
 
@@ -52,11 +50,11 @@ tablecraft query run 'SELECT [Memo] FROM LargeValues' --database example.accdb \
 ```
 
 `--native-bytes`, `--native-steps` and `--execution-steps` govern separate budgets.
-A larger per-value allowance does not waive cumulative query allocations (16 MiB),
-row limits, comparison-provider bounds or function-specific semantic restrictions.
-Large projections/compositions can still exhaust that pool. No native format
-maximum, unlimited query profile, streaming query execution or performance gain
-is claimed. Source/image envelopes and write gates remain unchanged.
+An omitted per-value quota does not waive explicitly selected cumulative query
+allocation/work/row allowances, comparison-provider bounds or function-specific
+semantic restrictions. Large projections/compositions can still exhaust an
+explicit pool. Removing an invented product quota does not establish native
+compatibility or a performance gain. Source/image envelopes and write gates remain unchanged.
 
 ## Independent verification
 

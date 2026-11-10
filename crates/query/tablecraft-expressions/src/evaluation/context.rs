@@ -12,21 +12,22 @@ use tablecraft_core::{
 };
 use tablecraft_sql::select::Expression;
 
-/// Per-evaluation hard ceilings; larger supplied values are clamped to the documented maxima.
+/// Caller-selected evaluation controls, separate from Access value semantics.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct EvalLimits {
     /// Expression-node nesting, including the root (maximum 32).
     pub max_depth: usize,
-    /// Bytes in any individual materialized Text value (default 64 KiB, maximum 16 MiB).
+    /// Optional host quota expressed as a byte allowance for each materialized Text value.
+    /// The default adds no quota below the largest addressable Rust buffer.
     pub max_text_bytes: usize,
 }
 impl EvalLimits {
     /// Maximum expression-node nesting including the root.
     pub const MAX_DEPTH: usize = 32;
-    /// Maximum bytes in one materialized Text value.
-    pub const MAX_TEXT_BYTES: usize = 16 * 1024 * 1024;
-    /// Default bytes in one materialized Text value.
-    pub const DEFAULT_TEXT_BYTES: usize = 65_536;
+    /// Largest addressable Rust buffer, rather than an Access text-size restriction.
+    pub const MAX_TEXT_BYTES: usize = isize::MAX as usize;
+    /// No implicit per-value quota; explicit smaller host allowances remain supported.
+    pub const DEFAULT_TEXT_BYTES: usize = Self::MAX_TEXT_BYTES;
 }
 impl Default for EvalLimits {
     fn default() -> Self {
@@ -83,7 +84,7 @@ impl<'a> Evaluator<'a> {
             budget,
             limits: EvalLimits {
                 max_depth: limits.max_depth.min(ceiling.max_depth),
-                max_text_bytes: limits.max_text_bytes.min(EvalLimits::MAX_TEXT_BYTES),
+                max_text_bytes: limits.max_text_bytes,
             },
             year_window: crate::functions::dates::TwoDigitYearWindow::ACCESS_DEFAULT,
             collation: None,

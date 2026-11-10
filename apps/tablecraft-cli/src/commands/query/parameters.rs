@@ -6,16 +6,16 @@ mod numeric;
 
 const MAX_BINDINGS: usize = 256;
 const MAX_NAME_BYTES: usize = 255;
-const MAX_ARGUMENT_BYTES: usize = 65_536;
-const MAX_CONVERSION_BYTES: u64 = 4 * MAX_ARGUMENT_BYTES as u64;
-const MAX_CONVERSION_STEPS: u64 = 4 * MAX_ARGUMENT_BYTES as u64;
 
 pub(super) fn parse(raw: &[String]) -> Result<Vec<(&str, Value)>, Error> {
-    if raw.len() > MAX_BINDINGS || raw.iter().map(String::len).sum::<usize>() > MAX_ARGUMENT_BYTES {
+    if raw.len() > MAX_BINDINGS {
         return Err(Error::Parameter);
     }
     let mut result: Vec<(&str, Value)> = Vec::new();
-    let mut conversion_budget = ResourceBudget::new(MAX_CONVERSION_BYTES, 0, MAX_CONVERSION_STEPS);
+    result
+        .try_reserve_exact(raw.len())
+        .map_err(|_| Error::Parameter)?;
+    let mut conversion_budget = ResourceBudget::new(u64::MAX, 0, u64::MAX);
     for raw in raw {
         let (name, literal) = assignment(raw)?;
         if name.is_empty()
@@ -48,7 +48,14 @@ pub(super) fn parse(raw: &[String]) -> Result<Vec<(&str, Value)>, Error> {
             "guid" => Value::Guid(
                 tablecraft_expressions::guid::parse_literal(text).map_err(|_| Error::Parameter)?,
             ),
-            "text" => Value::Text(text.into()),
+            "text" => {
+                let mut value = String::new();
+                value
+                    .try_reserve_exact(text.len())
+                    .map_err(|_| Error::Parameter)?;
+                value.push_str(text);
+                Value::Text(value)
+            }
             _ => return Err(Error::Parameter),
         };
         result.push((name, value));

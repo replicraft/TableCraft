@@ -32,21 +32,23 @@ fn options(limit: usize) -> ExecutionOptions<'static> {
 }
 
 #[test]
-fn execution_opt_in_preserves_default_and_reuses_prepared_plans() {
+fn explicit_text_quota_is_optional_and_does_not_change_reused_prepared_plans() {
     let text = "a".repeat(70_000);
     let source = source(text.clone());
     let parsed = parse_query("SELECT S FROM T", Default::default()).unwrap();
     let plan = prepare(parsed.query(), &source).unwrap();
-    assert!(matches!(
-        plan.execute(&source, &[], Default::default()),
-        Err(QueryError::Evaluation(EvalError::TextLimit))
-    ));
+    assert_eq!(
+        plan.execute(&source, &[], Default::default())
+            .unwrap()
+            .rows(),
+        &[vec![Value::Text(text.clone())]]
+    );
     assert_eq!(
         plan.execute(&source, &[], options(70_000)).unwrap().rows(),
         &[vec![Value::Text(text)]]
     );
     assert!(plan.execute(&source, &[], options(69_999)).is_err());
-    assert!(plan.execute(&source, &[], Default::default()).is_err());
+    assert!(plan.execute(&source, &[], Default::default()).is_ok());
 }
 
 #[test]
@@ -75,18 +77,25 @@ fn nested_and_domain_calls_share_the_selected_limit() {
 }
 
 #[test]
-fn cap_counts_utf8_bytes_and_clamps_to_sixteen_mib() {
-    for (text, accepted) in [
-        ("é".repeat(8_388_608), true),
-        ("a".repeat(16_777_217), false),
-    ] {
+fn explicit_quota_counts_utf8_bytes_without_a_sixteen_mib_product_ceiling() {
+    for text in ["é".repeat(8_388_608), "a".repeat(16_777_217)] {
+        let bytes = text.len();
+        let units = text.encode_utf16().count() as i32;
         let source = source(text);
         let parsed = parse_query("SELECT Len(S) FROM T", Default::default()).unwrap();
         let plan = prepare(parsed.query(), &source).unwrap();
         let mut options = options(usize::MAX);
         options.limits.bytes = 268_435_456;
         options.limits.steps = 100_000_000;
-        assert_eq!(plan.execute(&source, &[], options).is_ok(), accepted);
+        assert_eq!(
+            plan.execute(&source, &[], options).unwrap().rows(),
+            &[vec![Value::Int32(units)]]
+        );
+        options.max_text_bytes = Some(bytes - 1);
+        assert!(matches!(
+            plan.execute(&source, &[], options),
+            Err(QueryError::Evaluation(EvalError::TextLimit))
+        ));
     }
 }
 
@@ -100,9 +109,11 @@ fn parameters_and_generated_intermediates_obey_execution_limit() {
     .unwrap();
     let plan = prepare(parsed.query(), &source).unwrap();
     let bindings = [("P", Value::Text("x".repeat(70_000)))];
-    assert!(
+    assert_eq!(
         plan.execute(&source, &bindings, Default::default())
-            .is_err()
+            .unwrap()
+            .rows(),
+        &[vec![Value::Int32(70_000), Value::Int32(70_000)]]
     );
     assert_eq!(
         plan.execute(&source, &bindings, options(70_000))

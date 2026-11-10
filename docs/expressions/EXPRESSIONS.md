@@ -154,9 +154,10 @@ ignored failure cannot produce a successful finish. Pure conversion/selection
 kernels remain caller-metered. These guards do not change conversion values or
 the selectors' eager semantic-error rules.
 
-`EvalLimits` clamps maximum depth to 32 nodes. Each Text value defaults to 65,536
-UTF-8 bytes; explicit `max_text_bytes` can request up to 16 MiB, including manually
-constructed trees. Callers can lower either limit; cumulative allocation/work
+`EvalLimits` clamps maximum depth to 32 nodes. Text values have no additional
+product-specific size quota by default; allocation must still fit an addressable
+Rust buffer and succeed. An explicit `max_text_bytes` applies the caller's UTF-8
+byte quota, including manually constructed trees. Cumulative allocation/work
 budgets remain independent. See [larger payloads](../access/storage/LARGE_PAYLOADS.md).
 An optional host cancellation callback runs before every node, before bindings.
 Hosts own the boundedness and side effects of resolver/collation/cancellation

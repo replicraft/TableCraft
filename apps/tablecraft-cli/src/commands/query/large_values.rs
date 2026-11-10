@@ -5,7 +5,7 @@ use tablecraft_expressions::evaluation::EvalLimits;
 
 #[derive(ClapArgs)]
 pub(crate) struct Args {
-    /// Individual query Text bytes; default 65,536, maximum 16,777,216.
+    /// Optional per-value query Text quota; no extra quota when omitted.
     #[arg(long, value_name = "BYTES", value_parser = clap::value_parser!(u64).range(1..=EvalLimits::MAX_TEXT_BYTES as u64))]
     pub(crate) text_bytes: Option<u64>,
     /// Optional buffered display and final transport budget; no extra quota when omitted.

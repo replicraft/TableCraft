@@ -16,8 +16,6 @@ use tablecraft_sql::{
     select::{Projection, Select, SelectPredicate},
 };
 
-const MAX_EVAL_STEPS: u64 = 1024;
-
 pub(super) struct Controls {
     pub random_seed: u32,
     pub case_locale: Option<tablecraft_expressions::functions::text::casing::CaseLocale>,
@@ -44,9 +42,10 @@ pub(super) fn run(query: &Query, controls: Controls) -> Result<String, Error> {
         first_week_of_year,
     } = controls;
     let select = scalar_select(query)?;
-    // One shared allowance across all output columns, including intermediates.
+    // Meter cumulative work across all output columns without inventing an
+    // implicit query-size quota; allocation and representation checks still apply.
     let limits = EvalLimits::default();
-    let mut budget = ResourceBudget::new(limits.max_text_bytes as u64, 0, MAX_EVAL_STEPS);
+    let mut budget = ResourceBudget::new(u64::MAX, 0, u64::MAX);
     let clock = HostClock::new(clock);
     let error_messages = EnglishErrorMessages::default();
     let random = RndState::new(random_seed).map_err(|_| Error::Parameter)?;

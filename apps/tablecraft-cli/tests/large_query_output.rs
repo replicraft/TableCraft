@@ -3,11 +3,25 @@ use tablecraft_testkit::support::cli::Runner;
 const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 #[test]
-fn explicit_text_limit_controls_generated_values_without_changing_eval() {
+fn omitted_text_quota_accepts_long_function_results_and_explicit_lower_quota_refuses() {
     let sql = "SELECT Len(String(70000,'a')) AS N";
     let default = CLI.run(&["query", "run", sql]);
-    assert_eq!(default.status.code(), Some(2));
-    assert!(default.stdout.is_empty());
+    assert!(
+        default.status.success(),
+        "{}",
+        String::from_utf8_lossy(&default.stderr)
+    );
+    assert_eq!(default.stdout, b"N\n70000\n");
+    let eval = CLI.run(&["query", "eval", sql]);
+    assert!(
+        eval.status.success(),
+        "{}",
+        String::from_utf8_lossy(&eval.stderr)
+    );
+    assert_eq!(eval.stdout, b"N\n70000\n");
+    let limited = CLI.run(&["query", "run", sql, "--text-bytes", "69999"]);
+    assert_eq!(limited.status.code(), Some(2));
+    assert!(limited.stdout.is_empty());
     let allowed = CLI.run(&["query", "run", sql, "--text-bytes", "70000"]);
     assert!(
         allowed.status.success(),
@@ -74,7 +88,7 @@ fn output_limit_applies_to_intermediate_display_and_final_csv_expansion() {
 fn large_text_and_output_ranges_are_checked_before_execution() {
     for (flag, value) in [
         ("--text-bytes", "0"),
-        ("--text-bytes", "16777217"),
+        ("--text-bytes", "18446744073709551615"),
         ("--output-bytes", "0"),
         ("--output-bytes", "18446744073709551615"),
     ] {
@@ -82,7 +96,7 @@ fn large_text_and_output_ranges_are_checked_before_execution() {
         assert_eq!(rejected.status.code(), Some(2));
         assert!(rejected.stdout.is_empty());
     }
-    for (flag, value) in [("--text-bytes", "16777216"), ("--output-bytes", "16777217")] {
+    for (flag, value) in [("--text-bytes", "16777217"), ("--output-bytes", "16777217")] {
         let allowed = CLI.run(&["query", "run", "SELECT 1 AS N", flag, value]);
         assert!(allowed.status.success());
         assert_eq!(allowed.stdout, b"N\n1\n");
