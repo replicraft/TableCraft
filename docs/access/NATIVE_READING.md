@@ -251,16 +251,18 @@ cycle/hop checks. There is no cache across pages or calls, and a stable/offline
 source remains required. Byte/read limits count the physical reads actually made;
 row allocations and row/work charges remain explicit.
 
-Structural ceilings also apply: 4,096 page reads, 4,096 allocated catalog
-pages, 16 relocation hops, 256 column/index metadata entries, 16,384 live objects
-and 2,048 encoded name bytes (also bounded by the declared column length).
-Table definitions now join at most 64 pages (261,640 logical bytes), with bounded
-declared lengths, signatures, links/cycles, allocation and I/O. See
-[chained definition evidence](storage/NATIVE_TABLES.md#bounded-chained-table-definitions).
-Unsupported usage maps/column profiles, encoded pages,
-newer ACE catalog layouts and names invalid under SchemaName are rejected.
-The CLI accepts optional cumulative byte/row/work budgets; omitted controls no
-longer impose those former 16 MiB/16,384-row/1,000,000-step quotas.
+Ordinary read traversal uses source geometry, checked row/page bounds, paid
+visited-reference tracking and cancellation instead of fixed page/hop/catalog-row
+quotas. Definition chains use their native declared length and physical source
+capacity rather than a 64-page ceiling. Allocation maps retain strictly ordered,
+unique membership below the source page count without a 4,096-page collector cap.
+The CLI's byte/row/work controls are optional caller budgets.
+
+Other implementation restrictions still require individual qualification,
+including some column/index metadata, name and index traversal profiles. Qualified
+mutation scopes retain separate proof/representation requirements; read admission
+does not grant write authority. Unsupported usage maps, column profiles, unknown
+codecs/layouts and names invalid under SchemaName still refuse explicitly.
 IDs use a caller-issued namespace; the CLI's scope 1 is local to one invocation
 and is not a persisted identifier, file hash or native revision.
 

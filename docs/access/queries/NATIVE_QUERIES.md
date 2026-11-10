@@ -15,12 +15,13 @@ joins and subqueries; bounded selected snapshots are ephemeral.
 Sequential full/projected loads now use checked 256-row cursor batches, then
 publish one complete cached snapshot. This removes the materialized 4,096-address
 list from those loads; a host with an explicitly sufficient native byte budget
-can query tables spanning more pages. The default 16,384-row snapshot ceiling remains,
-and budgets never refill between batches. Explicit indexed reads retain their
+can query tables spanning more pages. There is no default 16,384-row snapshot
+quota, and selected caller budgets never refill between batches. Explicit indexed reads retain their
 existing ownership/range checks. See [batched-query evidence](../../../tests/reports/queries/BATCHED_QUERY_SNAPSHOTS.md).
 No application host, native provider, GUI, network runtime or new registry dependency
 is required. ACE and query do not depend on the adapter; query still performs no
-native I/O. Backend-neutral connection/cursor/runtime services remain unimplemented.
+native I/O. Backend-neutral connection services and application runtime composition stay
+outside this adapter.
 
 The CLI opens an explicit `--database PATH`, read-only. Optional repeatable
 [`--link ALIAS PATH`](NATIVE_LINKED_QUERIES.md#cli-target-selection) mappings authorize
@@ -138,16 +139,13 @@ for General legacy/General 2010, including entry-level overflow digests. Library
 adapter does not push text predicates into them or replace the supplied SQL collation.
 See [text eligibility and evidence](../indexes/NATIVE_TEXT.md#checked-short-text-index-reads).
 
-The CLI supplies 16 MiB cumulative native bytes,
-16,384 cumulative catalog/table rows and 1,000,000 native steps by default across the adapter;
-each reader also enforces structural ceilings. Repeated catalog/schema reads for
-new tables consume that shared budget. Sequential cursor loads enforce the physical
-read quota per batch and charge aggregate row-vector storage as well as batch
-allocations; they still consume the same cumulative native byte/row/work controls.
-The CLI's 16 MiB native allowance can therefore still refuse large valid tables.
-`query run --database PATH --native-bytes BYTES` explicitly replaces only that
-cumulative native read/allocation allowance (1 through 268,435,456 bytes). Omitting
-it retains 16,777,216 bytes. For example:
+The CLI adds no implicit native byte/row/work quota. Metadata and table loads
+charge cumulative counters; explicit `--native-bytes`, `--native-rows` and
+`--native-steps` select lower caller budgets without arbitrary upper clamps.
+Source geometry, cancellation, checked allocation and all format/index validation
+still apply. Single snapshot row ordinals use their native unsigned 32-bit API
+representation; cumulative accounting uses unsigned 64-bit counters.
+For example:
 
 ```sh
 tablecraft query run "SELECT TOP 5 ID FROM LargeRows ORDER BY ID DESC" --database copy.accdb --native-bytes 67108864

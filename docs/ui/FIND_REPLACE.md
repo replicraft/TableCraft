@@ -19,9 +19,12 @@ changing the source or altering the view invalidates that authority. A cancelled
 or superseded response cannot open an edit in a new Find session. Replace does
 not operate on an arbitrary selected cell.
 
-Find What and Replace With each have a 64 KiB UTF-8 UI limit and a separate scalar
-layout ceiling. An oversized insertion is rejected whole before layout, leaving
-the prior input visible with a diagnosis. Replacement text is literal: an empty
+Find What and Replace With use a presentation textbox policy of 65,535 Unicode
+characters, rather than a UTF-8 byte cutoff. Microsoft lists a 65,535-character
+textbox limit in [Access specifications](https://support.microsoft.com/en-us/access/access-specifications).
+An oversized insertion is rejected whole before layout, leaving the prior input
+visible with a diagnosis. Shared runtime input/search services impose no such
+textbox quota; native field validation and explicit caller budgets remain separate. Replacement text is literal: an empty
 replacement removes the matched text, and the text `NULL` is not SQL NULL.
 
 ## Display the occurrence
@@ -90,3 +93,9 @@ profile.
 Light/dark themes and sectioned translations share the existing `find.ftl`
 catalogs. These controls are screenshot-guided approximations. No native Access
 or Windows interaction qualification is claimed by the headless preview.
+
+The cached Microsoft Find dialog reference was reopened at its original 360 × 147
+pixels during the input-policy review. Its application build and display scale
+are unknown. No reference capture shows the oversized-input error state; that
+state remains a TableCraft adaptation. Verification used headless interaction
+checks, with no new native-window or Windows/Access interaction claim.

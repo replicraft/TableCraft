@@ -65,8 +65,9 @@ Microsoft Access comparison has not been performed.
 
 ## Bounded chained table definitions
 
-The shared native definition reader handles one page or a chain of at most 64
-pages, with a maximum 261,640 logical bytes. The first page retains its header;
+The shared native definition reader handles one page or linked definition
+pages under the native declared length and actual source geometry, without a
+fixed page-count or 261,640-byte product quota. The first page retains its header;
 continuations contribute payload after their eight-byte header. Column blocks,
 UTF-16 names and physical/logical index definitions may cross those boundaries.
 The one-page path retains a stack buffer without a join allocation.
@@ -112,8 +113,9 @@ unrun. Generated inputs/JARs are not tracked or required by CI.
 shared input columns and owned rows. All columns must fit the scalar profile;
 unsupported columns fail even if a later query would project only supported ones.
 Each call shares the caller's catalog/schema/row byte, row and step budgets.
-The snapshot is bounded to 16,384 live records and the native structural ceilings;
-failures return no partial snapshot. This read_table entry point performs an owned-page
+The snapshot retains actual rows through checked EOF, without an additional
+16,384-record quota. Native representation, source validation, cancellation and
+explicit caller budgets remain; failures return no partial snapshot. This read_table entry point performs an owned-page
 scan; the separate [read_table_index](../indexes/NATIVE_INDEXES.md#bounded-indexed-reads) path
 uses a qualified named native index. The range API supplies storage selections;
 the adapter can push safe filters through it. TOP remains in the query executor.

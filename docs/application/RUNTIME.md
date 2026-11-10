@@ -680,9 +680,9 @@ admission. It does not infer typed NULL from `NULL` or an empty string, recover
 clipboard source precision, or parse regional display formatting. An exact match
 with this target's initial DATE/Single/Double edit text retains the target's exact
 stored carrier, including residual DATE bits and NaN payloads. This unchanged-edit
-rule is target preservation, not a lossless typed clipboard transfer. The 1 MiB
-UTF-8 input ceiling is checked before that preservation rule; cumulative work and
-publication limits still apply.
+rule is target preservation, not a lossless typed clipboard transfer. Shared
+input conversion has no separate 1 MiB UTF-8 quota; native field/type validation,
+checked allocation, cancellation and explicit caller budgets still apply.
 
 The capture is shared through Bytes between the reader and review precondition.
 Apply acquires the existing exclusive offline session and compares the complete
@@ -1012,8 +1012,9 @@ An acknowledged successful insertion reopens the actual source and refreshes the
 same table from its first page. It does not invent an inserted native row identity
 or promise that a later-page row is visible on that first page.
 
-Current bounds are one row, at most 256 fields, 1 MiB per supplied input and 8 MiB
-of total input text. The normal planner decides actual format/schema/index and
+The current operation supplies one row, with fields selected from the admitted
+native insertion schema. There is no separate host field-count or per-cell/total
+UTF-8 quota. The normal planner decides actual format/schema/index and
 required-program eligibility. Qualified constant defaults, NULL fallback and
 Increment AutoNumber use ordinary admission. This service supplies no clock or
 random provider, so defaults needing those capabilities remain refused. Encrypted
@@ -1201,8 +1202,8 @@ metadata headings without fetching an unrelated source row.
 
 Map construction charges actual criterion/name copies, schema-name comparisons,
 map capacity and handle storage. It no longer has a fixed implicit byte/work
-quota. Entered operands retain the current 64 KiB host-entry restriction and exact
-operator arity; that input restriction remains separate review work. Native,
+quota. Entered operands retain exact operator arity without a separate 64 KiB
+UTF-8 input cutoff. Native,
 comparison, pattern and presentation phases retain distinct cumulative counters
 and cancellation. No counter refills per source row, field or page. Explicit
 caller quotas can refuse work; failure never substitutes an incomplete row map.
@@ -1268,9 +1269,9 @@ leave the earlier valid edit draft intact.
 Match preparation and ordinary BeginEdit are separate snapshot passes, with no
 offline lease held while the user considers the result. Native, comparison,
 match and presentation counters remain independent without implicit product-size
-quotas. Literal replacement/final edit input still has its existing 1 MiB
-host-entry restriction; native Review and Apply retain their actual qualification
-and reconstruction contracts. Counters do not reset per row or substring.
+quotas. Literal replacement/final edit input has no additional host byte quota;
+native Review and Apply retain their actual qualification and reconstruction
+contracts. Counters do not reset per row or substring.
 Replace All is not supplied by this single-occurrence operation:
 a complete batch requires its own one-image native admission and consuming
 batch save capability, rather than a loop of independent cell commits.
@@ -1494,9 +1495,9 @@ are never treated as searchable displayed values. A current collection cell does
 not enable Find; table-wide search refuses a complex scoped field, while ordinary
 field-specific searches retain their existing qualification.
 
-Find still has its existing 64 KiB host pattern-entry restriction, which needs
-separate native workflow review. Metadata, cursor, comparisons, pattern/span and
-presentation counters otherwise have no implicit product-size quotas. Explicit
+Find has no additional 64 KiB UTF-8 pattern quota. Metadata, cursor, comparison,
+pattern/span and presentation counters have no implicit product-size quotas.
+GUI textbox presentation policy is separate from this shared runtime service. Explicit
 resource failure is an error, not a completed negative search. Counters do not
 reset per field or batch. Retrieving a matching page is a second explicit command,
 and publication requires the same source revision, ordinal and original field.
@@ -1537,7 +1538,8 @@ that inspection scans no records, consults no clock and changes no bytes.
 
 Scratch and saved queries share the actual declaration/input owner at
 `query::parameters`: type constraints come from `tablecraft-query`, with at most
-256 parameters and 1 MiB of cumulative names/kinds/text. VALUE requires a chosen
+256 parameters under the existing parameter profile, without an aggregate UTF-8
+byte quota. VALUE requires a chosen
 concrete kind; SQL-looking text stays literal, and NULL remains a separate flag.
 Input validation finishes before native source construction or context use.
 The desktop's explicit scratch Run now uses this service to acquire declared
@@ -1577,11 +1579,11 @@ parameter prompts. Text is literal data, with no SQL interpolation or VBA call.
 The same shared scalar conversion service supports editing and these inputs;
 editing retains its exact unchanged DATE/float-carrier rule separately.
 
-Input admission is at most 256 parameters and 1 MiB of cumulative UTF-8 names,
-kinds and text, including retained text beside NULL. The UI checks before cloning
-an action; runtime checks independently. Metadata/input conversion has its own
-bounded scratch allowance, separate from query execution and final display
-publication. A single native source and cumulative native allowance cover saved
+Input admission retains the existing 256-parameter profile guard; it adds no
+aggregate UTF-8 quota for names, kinds or text, including text retained beside
+NULL. Actual allocation/work accounting and cancellation apply independently of
+query execution and final display publication. GUI textbox policy and retention
+accounting do not become native parameter-value limits. A single native source and cumulative native allowance cover saved
 reconstruction and subsequent execution/schema discovery. Query and display
 limits remain the existing controls below.
 
