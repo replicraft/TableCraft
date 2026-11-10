@@ -1,5 +1,6 @@
 use crate::{
     UpdateError,
+    apply::{AppliedUpdate, ApplyError, transaction},
     archive::{self, ExtractedUpdate},
     download::VerifiedDownload,
     installation::Installed,
@@ -19,6 +20,27 @@ pub struct PreparedUpdate {
 }
 
 impl PreparedUpdate {
+    /// Replace the captured installation and schedule relaunch after normal exit.
+    ///
+    /// The host must resolve unsaved documents and stop database work before
+    /// calling this consuming operation. This method never closes the host.
+    /// Cancellation is checked before filesystem mutation; an active replacement
+    /// runs to a terminal result with rollback or retained recovery resources.
+    ///
+    /// # Errors
+    /// Refuses changed staging/source bytes, cancellation, unsupported layouts,
+    /// filesystem failures and helper startup failures. Failed rollback retains
+    /// original files through the returned recovery information.
+    pub fn apply(self, cancelled: &dyn Fn() -> bool) -> Result<AppliedUpdate, ApplyError> {
+        self.extracted
+            .revalidate(self.installed.platform(), &self.version, cancelled)
+            .map_err(ApplyError::Installation)?;
+        if cancelled() {
+            return Err(ApplyError::Installation(UpdateError::Cancelled));
+        }
+        transaction::apply(self.installed, self.extracted)
+    }
+
     /// The authenticated version to be installed.
     pub fn version(&self) -> &Version {
         &self.version

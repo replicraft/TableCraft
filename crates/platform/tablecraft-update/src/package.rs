@@ -307,7 +307,9 @@ pub(crate) fn hash_matches(expected: &str, actual: &[u8; 32]) -> bool {
     valid_hash(expected)
         && expected
             .as_bytes()
-            .chunks_exact(2)
+            .as_chunks::<2>()
+            .0
+            .iter()
             .zip(actual)
             .all(|(digits, byte)| {
                 digits[0] == HEX_DIGITS[usize::from(byte >> NIBBLE_BITS)]

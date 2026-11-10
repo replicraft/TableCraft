@@ -22,6 +22,14 @@ pub struct Updater {
 }
 
 impl Updater {
+    pub(crate) fn version(&self) -> &Version {
+        &self.version
+    }
+
+    pub(crate) fn platform(&self) -> Platform {
+        self.platform
+    }
+
     /// Construct an updater for the running application and native target.
     ///
     /// # Errors

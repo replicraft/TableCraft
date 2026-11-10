@@ -3,15 +3,18 @@
 //! Operations block and belong on a host-owned worker. Production trust is
 //! compiled from the maintained public key; network metadata never selects it.
 
+pub mod apply;
 mod archive;
 mod client;
 mod download;
 mod error;
 mod http;
 pub mod installation;
+mod package;
 pub mod platform;
 mod preparation;
 pub mod release;
+pub mod session;
 mod trust;
 mod verification;
 

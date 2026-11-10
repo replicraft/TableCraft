@@ -410,7 +410,9 @@ fn native_helper_commands_keep_paths_out_of_fixed_script_source() {
     assert_eq!(arguments[3], "-EncodedCommand");
     let encoded = STANDARD.decode(arguments[4].to_str().unwrap()).unwrap();
     let units: Vec<_> = encoded
-        .chunks_exact(2)
+        .as_chunks::<2>()
+        .0
+        .iter()
         .map(|bytes| u16::from_le_bytes([bytes[0], bytes[1]]))
         .collect();
     let script = String::from_utf16(&units).unwrap();

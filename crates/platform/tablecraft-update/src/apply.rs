@@ -2,10 +2,9 @@
 
 mod helper;
 mod outcome;
-mod transaction;
+pub(crate) mod transaction;
 
 pub use outcome::{AppliedUpdate, ApplyError, RetainedRecovery};
-pub(crate) use transaction::apply;
 
 #[cfg(test)]
 mod tests;

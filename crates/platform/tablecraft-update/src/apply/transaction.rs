@@ -67,13 +67,13 @@ pub(super) fn apply_with(
     spawn: &mut dyn FnMut(&HelperPlan<'_>) -> io::Result<Option<Child>>,
 ) -> Result<AppliedUpdate, ApplyError> {
     installed.revalidate().map_err(ApplyError::Installation)?;
-    if let Some(bundle) = installed.bundle() {
-        if !owned_bundle(bundle).map_err(|source| ApplyError::Filesystem {
+    if let Some(bundle) = installed.bundle()
+        && !owned_bundle(bundle).map_err(|source| ApplyError::Filesystem {
             source,
             recovery: None,
-        })? {
-            return Err(ApplyError::Layout);
-        }
+        })?
+    {
+        return Err(ApplyError::Layout);
     }
     let backup = tempfile::Builder::new()
         .prefix(".tablecraft-backup-")
@@ -162,7 +162,11 @@ fn replacements(
         .iter()
         .map(|name| Replacement {
             installed: installed.directory().join(name),
-            staged: extracted.root().join(name),
+            staged: if *name == members[0] {
+                extracted.executable().to_path_buf()
+            } else {
+                extracted.root().join(name)
+            },
             backup: backup.join(name),
             original_moved: false,
             replacement_moved: false,
