@@ -2,7 +2,8 @@
 use crate::workspace::Desktop;
 use crate::workspace::editing::field_rename::widgets::propose_name;
 use crate::workspace::test_support::{app_harness, finish_reads, finish_schema_save, opened};
-use egui::{Key, Modifiers};
+use egui::{Key, Modifiers, accesskit::Role};
+use egui_kittest::kittest::{NodeT, Queryable};
 use tablecraft_runtime::journal_path;
 use tablecraft_testkit::fixtures::access::saved_field_rename::fitting::{self, SourceCase};
 use tablecraft_ui::CellKind;
@@ -36,7 +37,22 @@ fn repeated_names(populated: bool) {
             .unwrap()
             .document_revision;
         propose_name(&mut harness, original_name, replacement);
-        assert!(harness.state().state.can_review_field_rename());
+        assert!(
+            harness.state().state.can_review_field_rename(),
+            "{original_name:?} -> {replacement:?}, populated={populated}: \
+             editable={}, dirty={}, busy={}, inspection={:?}, proposal={:?}, error={:?}, \
+             rendered source/name-policy labels={:?}",
+            harness.state().state.can_edit_field_rename(),
+            harness.state().state.field_rename_dirty(),
+            harness.state().state.busy,
+            harness.state().state.pending_field_rename_inspection_id(),
+            harness.state().state.field_rename_proposal(),
+            harness.state().state.error,
+            harness
+                .get_all_by_role(Role::Label)
+                .filter_map(|node| node.accesskit_node().label().map(str::to_owned))
+                .collect::<Vec<_>>()
+        );
         assert_eq!(std::fs::read(&path).unwrap(), expected);
         assert!(!journal_path(&path).exists());
         assert!(!harness.state().editing.worker.is_busy());
