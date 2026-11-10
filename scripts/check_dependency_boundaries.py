@@ -53,6 +53,10 @@ ALLOWED = {
 }
 
 
+# Typed acceptance assertions may import values without adding production host edges.
+DEVELOPMENT_ONLY = {"tablecraft-desktop": {"tablecraft-core"}}
+
+
 DISPLAY_GUI_DEPENDENCIES = {"egui", "egui_extras", "eframe", "winit", "rfd", "wgpu"}
 
 
@@ -96,7 +100,10 @@ def violations(metadata):
             target_directory = Path(packages[target]["manifest_path"]).resolve().parent
             if is_library and target_directory.is_relative_to(root / "apps"):
                 errors.append(f"{name} -> {target}: library must not depend on an application")
-            if target not in ALLOWED[name]:
+            if target in DEVELOPMENT_ONLY.get(name, set()):
+                if dep.get("kind") != "dev":
+                    errors.append(f"{name} -> {target}: reviewed edge is development-only")
+            elif target not in ALLOWED[name]:
                 errors.append(f"{name} -> {target}: violates reviewed package boundary")
         if is_library and not directory.is_relative_to(root / "crates"):
             errors.append(f"{name}: library belongs under crates/")

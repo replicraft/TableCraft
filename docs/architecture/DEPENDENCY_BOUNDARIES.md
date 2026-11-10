@@ -36,7 +36,9 @@ and emits typed actions without opening databases. `tablecraft-runtime` owns hea
 reads and application operations, and can share the pure formatter without
 importing UI or desktop. Testkit remains development-only. The binary-only
 `tablecraft-desktop` composes runtime, UI, display and builders directly; backend services
-remain behind runtime. Neither runtime nor desktop imports CLI or SQLite. These
+remain behind runtime. Desktop acceptance tests may import core value types
+through a development-only dependency; normal, optional normal and build edges
+remain forbidden by the guard. Neither runtime nor desktop imports CLI or SQLite. These
 edges grant no permission for foundation, engine, adapter, query or CLI packages
 to import UI/runtime. Libraries still cannot depend on application packages.
 

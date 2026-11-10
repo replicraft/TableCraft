@@ -99,6 +99,22 @@ class BoundaryTests(unittest.TestCase):
         data, _, _ = self.desktop_workspace()
         self.assertEqual(violations(data), [])
 
+    def test_desktop_acceptance_can_import_core_values_only_as_a_dev_dependency(self):
+        data, _, desktop = self.desktop_workspace()
+        desktop["dependencies"].append({"name": "tablecraft-core", "kind": "dev"})
+        self.assertEqual(violations(data), [])
+
+        for kind in [None, "build"]:
+            with self.subTest(kind=kind):
+                changed = deepcopy(data)
+                dependency = next(package for package in changed["packages"]
+                                  if package["name"] == "tablecraft-desktop")["dependencies"][-1]
+                dependency.update(kind=kind, optional=True, target="cfg(windows)", rename="values")
+                self.assertIn(
+                    "tablecraft-desktop -> tablecraft-core: reviewed edge is development-only",
+                    violations(changed),
+                )
+
     def test_ui_can_consume_validated_schema_constraints_without_backend_services(self):
         data, ui, _ = self.desktop_workspace()
         ui["dependencies"].append({"name": "tablecraft-schema"})
