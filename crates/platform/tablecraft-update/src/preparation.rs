@@ -32,6 +32,7 @@ impl PreparedUpdate {
     /// filesystem failures and helper startup failures. Failed rollback retains
     /// original files through the returned recovery information.
     pub fn apply(self, cancelled: &dyn Fn() -> bool) -> Result<AppliedUpdate, ApplyError> {
+        let _span = tracing::debug_span!("update.apply").entered();
         self.extracted
             .revalidate(self.installed.platform(), &self.version, cancelled)
             .map_err(ApplyError::Installation)?;
@@ -67,6 +68,7 @@ impl VerifiedDownload {
         installed: Installed,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<PreparedUpdate, UpdateError> {
+        let _span = tracing::debug_span!("update.prepare").entered();
         if self.platform() != installed.platform()
             || self.version().cmp_precedence(installed.version()) != Ordering::Greater
             || (installed.version().pre.is_empty() && !self.version().pre.is_empty())

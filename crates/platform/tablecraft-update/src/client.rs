@@ -54,6 +54,7 @@ impl Updater {
         &self,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Option<AvailableUpdate>, UpdateError> {
+        let _span = tracing::debug_span!("update.check").entered();
         check(&self.http, &self.version, self.platform, cancelled)
     }
 
@@ -70,6 +71,7 @@ impl Updater {
         parent: &Path,
         progress: &mut dyn FnMut(DownloadProgress) -> bool,
     ) -> Result<VerifiedDownload, UpdateError> {
+        let _span = tracing::debug_span!("update.download").entered();
         if available.platform() != self.platform
             || available.version().cmp_precedence(&self.version) != Ordering::Greater
             || (self.version.pre.is_empty() && !available.version().pre.is_empty())
