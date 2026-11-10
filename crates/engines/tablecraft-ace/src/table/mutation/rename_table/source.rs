@@ -1,8 +1,9 @@
 //! Closed native role/dependency and physical-ownership admission.
+use super::super::schema_source::{self, Error as SchemaSourceError};
 use super::{NativeTableRenameIdentity, TableRenameError, copy_text, record};
 use crate::{
-    EditError, FileFormat, InspectError, NativeColumn, NativeImage, NativeObjectOrigin,
-    NativeTableStorage, PropertyGroupKind, TableSchema, compare_general_text,
+    EditError, FileFormat, InspectError, NativeColumn, NativeImage, NativeTableStorage,
+    TableSchema, compare_general_text,
     format::{
         allocation::{self, GLOBAL_FREE_REFERENCE, MapRole, RepresentedMap},
         bytes::u32_at,
@@ -15,34 +16,16 @@ use crate::{
         row::OFFSET_MASK,
     },
     header::check,
-    inspect_catalog, inspect_database_properties, inspect_table_schema,
+    inspect_catalog, inspect_table_schema,
 };
 use std::{cmp::Ordering, io::Cursor};
 use tablecraft_core::limits::{Resource, ResourceBudget};
-use tablecraft_model::ObjectKind;
 
 const COMPARISON_CHUNK_BYTES: usize = 64 * 1024;
-const SYSTEM_FLAGS: u32 = 0x8000_0002;
-const CONTAINER_TYPE: i16 = 3;
-const DATABASE_TYPE: i16 = 2;
-const DDL_FLAG: u8 = 1;
-const TRACK_NAMES: &str = "Track Name AutoCorrect Info";
-const PERFORM_NAMES: &str = "Perform Name AutoCorrect";
 const SYSTEM_COLUMN_FLAG: u8 = 0x10;
 const CATALOG_VARIABLE_FLAGS: u8 = SYSTEM_COLUMN_FLAG | UPDATABLE_FLAG;
 const COLUMN_MAP_BYTES: usize = size_of::<u16>() + 2 * size_of::<u32>();
 const DECLARATION_TERMINATOR_BYTES: usize = size_of::<u16>();
-const SYSTEM_ROLES: [&str; 8] = [
-    "DatabaseRoot",
-    "Tables",
-    "Databases",
-    "Relationships",
-    "MSysObjects",
-    "MSysRelationships",
-    "MSysACEs",
-    "MSysDb",
-];
-
 pub(in crate::table::mutation) struct Qualified {
     pub catalog_schema: TableSchema,
     pub identity: NativeTableRenameIdentity,
@@ -88,94 +71,20 @@ pub(in crate::table::mutation) fn qualify(
     {
         return Err(TableRenameError::Source);
     }
+    let graph =
+        schema_source::observe(image, requested, budget, cancelled).map_err(schema_error)?;
     let inventory = image.catalog();
     let objects = inventory.catalog().objects();
     let origins = inventory.origins();
-    if objects.len() != SYSTEM_ROLES.len() + 1 {
-        return Err(TableRenameError::Dependency);
-    }
-    let root = find_role(image, "DatabaseRoot", budget, cancelled)?;
-    let tables = find_role(image, "Tables", budget, cancelled)?;
-    let databases = find_role(image, "Databases", budget, cancelled)?;
-    let relationships = find_role(image, "Relationships", budget, cancelled)?;
-    for container in [root, tables, databases, relationships] {
-        if container.type_code() != CONTAINER_TYPE
-            || !container.is_system()
-            || container.flags() & !SYSTEM_FLAGS != 0
-            || container.parent_id()
-                != if container.object_id() == root.object_id() {
-                    0
-                } else {
-                    root.native_id()
-                }
-        {
-            return Err(TableRenameError::Source);
-        }
-    }
-    let catalog = find_role(image, "MSysObjects", budget, cancelled)?;
-    let system_relationships = find_role(image, "MSysRelationships", budget, cancelled)?;
-    let aces = find_role(image, "MSysACEs", budget, cancelled)?;
-    for origin in [catalog, system_relationships, aces] {
-        if origin.table_storage() != Some(NativeTableStorage::Local)
-            || !origin.is_system()
-            || origin.flags() & !SYSTEM_FLAGS != 0
-            || origin.parent_id() != tables.native_id()
-        {
-            return Err(TableRenameError::Source);
-        }
-    }
-    let db = find_role(image, "MSysDb", budget, cancelled)?;
-    if db.type_code() != DATABASE_TYPE
-        || !db.is_system()
-        || db.flags() & !SYSTEM_FLAGS != 0
-        || db.parent_id() != databases.native_id()
-    {
-        return Err(TableRenameError::Dependency);
-    }
-
-    let mut user = None;
-    for (object, origin) in objects.iter().zip(origins) {
-        check(budget, cancelled)?;
-        if !origin.is_system() {
-            if user.replace((object, origin)).is_some()
-                || object.kind() != ObjectKind::Table
-                || origin.table_storage() != Some(NativeTableStorage::Local)
-                || origin.flags() != 0
-                || origin.parent_id() != tables.native_id()
-            {
-                return Err(TableRenameError::Dependency);
-            }
-        } else if ![
-            root,
-            tables,
-            databases,
-            relationships,
-            catalog,
-            system_relationships,
-            aces,
-            db,
-        ]
-        .iter()
-        .any(|known| known.object_id() == origin.object_id())
-        {
-            return Err(TableRenameError::Dependency);
-        }
-    }
-    let (object, origin) = user.ok_or(TableRenameError::Source)?;
-    budget
-        .charge(
-            Resource::Steps,
-            (requested.len() + object.name().as_str().len()) as u64,
-        )
-        .map_err(InspectError::from)?;
-    if !object.name().as_str().eq_ignore_ascii_case(requested) {
-        return Err(TableRenameError::Source);
-    }
+    let origin = graph.user;
+    let db = graph.database;
+    let properties = graph.properties;
+    let object = inventory
+        .catalog()
+        .get(origin.object_id())
+        .ok_or(TableRenameError::Source)?;
     let definition_page =
         u32::try_from(origin.native_id()).map_err(|_| TableRenameError::Source)?;
-    if definition_page == 0 || definition_page & !PAGE_NUMBER_MASK != 0 {
-        return Err(TableRenameError::Source);
-    }
     let identity = NativeTableRenameIdentity {
         object_id: origin.object_id(),
         native_id: origin.native_id(),
@@ -184,44 +93,7 @@ pub(in crate::table::mutation) fn qualify(
         catalog_page: origin.page(),
         catalog_slot: origin.slot(),
     };
-
     let scope = inventory.catalog().scope();
-    let properties = inspect_database_properties(&mut image.reader(), scope, budget, cancelled)?
-        .ok_or(TableRenameError::Dependency)?;
-    if properties.object_id() != db.object_id() || properties.groups().len() != 1 {
-        return Err(TableRenameError::Dependency);
-    }
-    let group = &properties.groups()[0];
-    if group.kind() != PropertyGroupKind::Table
-        || !group.name().is_empty()
-        || group.properties().len() != 2
-    {
-        return Err(TableRenameError::Dependency);
-    }
-    for name in [TRACK_NAMES, PERFORM_NAMES] {
-        budget
-            .charge(
-                Resource::Steps,
-                group
-                    .properties()
-                    .iter()
-                    .map(|property| property.name().len().max(name.len()) as u64)
-                    .sum(),
-            )
-            .map_err(InspectError::from)?;
-        let mut matching = group
-            .properties()
-            .iter()
-            .filter(|property| property.name().eq_ignore_ascii_case(name));
-        let property = matching.next().ok_or(TableRenameError::Dependency)?;
-        if matching.next().is_some()
-            || property.native_type() != data_type::INT32
-            || property.flags() != DDL_FLAG
-            || property.raw_value() != 0_i32.to_le_bytes()
-        {
-            return Err(TableRenameError::Dependency);
-        }
-    }
 
     let catalog_schema =
         inspect_table_schema(&mut image.reader(), scope, "MSysObjects", budget, cancelled)?;
@@ -341,32 +213,12 @@ pub(super) fn closed_catalog_geometry(
     Ok(())
 }
 
-fn find_role<'a>(
-    image: &'a NativeImage,
-    name: &str,
-    budget: &mut ResourceBudget,
-    cancelled: &dyn Fn() -> bool,
-) -> Result<&'a NativeObjectOrigin, TableRenameError> {
-    let mut matched = None;
-    for (object, origin) in image
-        .catalog()
-        .catalog()
-        .objects()
-        .iter()
-        .zip(image.catalog().origins())
-    {
-        check(budget, cancelled)?;
-        budget
-            .charge(
-                Resource::Steps,
-                object.name().as_str().len().max(name.len()) as u64,
-            )
-            .map_err(InspectError::from)?;
-        if object.name().as_str().eq_ignore_ascii_case(name) && matched.replace(origin).is_some() {
-            return Err(TableRenameError::Source);
-        }
+fn schema_error(error: SchemaSourceError) -> TableRenameError {
+    match error {
+        SchemaSourceError::Inspect(error) => TableRenameError::Inspect(error),
+        SchemaSourceError::Source => TableRenameError::Source,
+        SchemaSourceError::Dependency => TableRenameError::Dependency,
     }
-    matched.ok_or(TableRenameError::Source)
 }
 
 fn qualify_storage(
@@ -649,7 +501,8 @@ pub(in crate::table::mutation) fn database_properties_external(
 ) -> Result<bool, TableRenameError> {
     check(budget, cancelled)?;
     image.require_standard_capture()?;
-    let database = find_role(image, "MSysDb", budget, cancelled)?;
+    let database =
+        schema_source::find_role(image, "MSysDb", budget, cancelled).map_err(schema_error)?;
     let schema = inspect_table_schema(
         &mut image.reader(),
         image.catalog().catalog().scope(),
