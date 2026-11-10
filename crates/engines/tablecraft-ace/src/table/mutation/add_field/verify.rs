@@ -131,6 +131,10 @@ pub(super) fn candidate(
     metadata(proof, plan, target, after, name, body, budget, cancelled)
 }
 
+#[expect(
+    clippy::too_many_arguments,
+    reason = "Compare the original source, exact typed append and independent retained metadata."
+)]
 fn metadata(
     proof: &current_schema::Source,
     plan: &Plan,

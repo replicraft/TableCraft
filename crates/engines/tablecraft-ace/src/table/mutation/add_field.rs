@@ -36,7 +36,7 @@ impl Target {
     }
 }
 
-/// Payload-free failure of current native Number column addition.
+/// Payload-free failure of current native column addition.
 #[derive(Debug, Error)]
 pub enum CurrentFieldAdditionError {
     /// Native parsing, I/O, cancellation, allocation or cumulative limits failed.
@@ -49,7 +49,7 @@ pub enum CurrentFieldAdditionError {
     #[error("native table is outside the current field-addition source profile")]
     Source,
     /// The proposed name is not a valid qualified ASCII identifier.
-    #[error("current Number addition requires a valid ASCII field name")]
+    #[error("current field addition requires a valid ASCII field name")]
     InvalidName,
     /// An existing native field has the proposed name under ASCII folding.
     #[error("field addition conflicts with an existing field")]
@@ -269,6 +269,10 @@ impl NativeImage {
 
     /// Append nullable Short Text without modifying or backfilling any old record.
     /// Required(false), AllowZeroLength(true), and absent DefaultValue remain distinct.
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "Keep the exact declaration, source, budget and cancellation explicit."
+    )]
     pub fn prepare_current_short_text_field_addition(
         self,
         table: &str,

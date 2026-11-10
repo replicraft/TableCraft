@@ -15,16 +15,15 @@ use tablecraft_core::{
 };
 
 pub(in crate::table::mutation) struct Frame {
-    count: usize,
-    fixed: usize,
-    expanded: usize,
-    variables: usize,
-    original: RecordLayout,
+    pub(super) count: usize,
+    pub(super) fixed: usize,
+    pub(super) expanded: usize,
+    pub(super) variables: usize,
+    pub(super) original: RecordLayout,
 }
 
-pub(in crate::table::mutation) fn qualify(
+pub(super) fn frame(
     schema: &TableSchema,
-    column: usize,
     before: &[u8],
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
@@ -36,14 +35,6 @@ pub(in crate::table::mutation) fn qualify(
         || count >= schema.layout.max_columns
         || schema.columns().len() != schema.layout.max_columns
         || schema.layout.variable_slots == 0
-    {
-        return Err(EditError::Unsupported(WriteBlocker::RowLayout));
-    }
-    let selected = schema.columns().get(column).ok_or(EditError::Conflict)?;
-    if selected.number() < count
-        || !selected.fixed()
-        || selected.native_type() != INT32
-        || selected.storage_length() != size_of::<i32>()
     {
         return Err(EditError::Unsupported(WriteBlocker::RowLayout));
     }
@@ -113,7 +104,6 @@ pub(in crate::table::mutation) fn qualify(
         || variables != schema.layout.variable_slots
         || fixed > original.data_end
         || expanded != schema.layout.fixed_end
-        || expanded <= fixed
     {
         return Err(EditError::Unsupported(WriteBlocker::RowLayout));
     }
@@ -124,6 +114,29 @@ pub(in crate::table::mutation) fn qualify(
         variables,
         original,
     })
+}
+
+pub(in crate::table::mutation) fn qualify(
+    schema: &TableSchema,
+    column: usize,
+    before: &[u8],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Frame, EditError> {
+    let frame = frame(schema, before, budget, cancelled)?;
+    let count = frame.count;
+    let selected = schema.columns().get(column).ok_or(EditError::Conflict)?;
+    if selected.number() < count
+        || !selected.fixed()
+        || selected.native_type() != INT32
+        || selected.storage_length() != size_of::<i32>()
+    {
+        return Err(EditError::Unsupported(WriteBlocker::RowLayout));
+    }
+    if frame.expanded <= frame.fixed {
+        return Err(EditError::Unsupported(WriteBlocker::RowLayout));
+    }
+    Ok(frame)
 }
 
 pub(in crate::table::mutation) fn build(
