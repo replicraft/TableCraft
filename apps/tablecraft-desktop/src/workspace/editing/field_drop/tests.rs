@@ -5,6 +5,7 @@ mod ownership;
 mod populated;
 mod readdition;
 mod retained;
+mod retained_id_only;
 mod widgets;
 
 use crate::workspace::{Desktop, test_support::finish_reads};
