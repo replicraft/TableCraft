@@ -5,10 +5,12 @@ on:
   pull_request:
     paths:
       - '.github/workflows/desktop-packaging.yml'
+      - '.github/workflows/release.yml'
       - 'scripts/packaging/**'
       - 'scripts/tests/test_update_signatures.py'
       - 'scripts/tests/test_package_*.py'
       - 'scripts/tests/test_installer_contract.py'
+      - 'scripts/tests/test_linux_tools.py'
       - 'packaging/**'
       - 'Cargo.toml'
       - 'Cargo.lock'
@@ -84,7 +86,13 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
-          sudo apt-get install --no-install-recommends -y libxcb-render0-dev libxcb-shape0-dev libxcb-xfixes0-dev libxkbcommon-dev libwayland-dev libssl-dev libfontconfig1
+          sudo apt-get install --no-install-recommends -y \
+            libxcb-render0-dev libxcb-shape0-dev libxcb-xfixes0-dev \
+            libxkbcommon-dev libwayland-dev libssl-dev libfontconfig1 \
+            libx11-6 libx11-xcb1 libxcursor1 libxi6 libxrandr2 libegl1 libgl1 \
+            libxkbcommon-x11-0 \
+            ca-certificates dpkg-dev rpm desktop-file-utils shared-mime-info appstream \
+            patchelf file binutils libfuse2 squashfs-tools
       - name: Select native Rust host and target
         shell: bash
         env:
@@ -115,6 +123,73 @@ jobs:
           python scripts/packaging/package_desktop.py package --version "$version" --target "$RELEASE_TARGET" --binary "$RELEASE_BINARY" --notices resources/DesktopThirdPartyLicenses.txt "${icon[@]}" --output dist
           archive=$(find dist -maxdepth 1 -type f \( -name '*.zip' -o -name '*.tar.gz' \))
           python scripts/packaging/package_desktop.py verify --version "$version" --target "$RELEASE_TARGET" --archive "$archive" --notices resources/DesktopThirdPartyLicenses.txt "${icon[@]}" --smoke
+      - name: Test Linux preparation and reviewed tool provisioning
+        if: runner.os == 'Linux'
+        run: |
+          python -m unittest discover -s scripts/tests -p 'test_package_linux.py'
+          python -m unittest discover -s scripts/tests -p 'test_linux_tools.py'
+      - name: Fetch verified native Linux tools and runtime notices
+        if: runner.os == 'Linux'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TARGET: ${{ matrix.target }}
+        run: python scripts/packaging/linux_tools.py fetch --target "$RELEASE_TARGET" --output .cache/linux-tools
+      - name: Verify that the shipped runtime sources can relink a changed library
+        if: runner.os == 'Linux'
+        env:
+          RELEASE_TARGET: ${{ matrix.target }}
+        run: python scripts/packaging/linux_tools.py verify-relink --target "$RELEASE_TARGET" --output .cache/linux-tools
+      - name: Build and verify native DEB, RPM and AppImage packages
+        if: runner.os == 'Linux'
+        shell: bash
+        env:
+          RELEASE_VERSION: ${{ steps.version.outputs.version }}
+          RELEASE_TARGET: ${{ matrix.target }}
+          RELEASE_BINARY: target/${{ matrix.target }}/release/${{ matrix.binary }}
+        run: |
+          set -euo pipefail
+          python scripts/packaging/package_linux.py \
+            --version "$RELEASE_VERSION" --target "$RELEASE_TARGET" \
+            --binary "$RELEASE_BINARY" --notices resources/DesktopThirdPartyLicenses.txt \
+            --icon resources/icons/application-256.png --output dist --formats deb rpm appimage \
+            --linuxdeploy .cache/linux-tools/linuxdeploy \
+            --appimagetool .cache/linux-tools/appimagetool \
+            --appimage-runtime .cache/linux-tools/runtime \
+            --appimage-runtime-notices .cache/linux-tools/RuntimeThirdPartyLicenses.txt \
+            --appimage-runtime-source .cache/linux-tools/RuntimeSource.tar.gz
+      - name: Verify headless DEB installation and removal on the disposable runner
+        if: runner.os == 'Linux'
+        shell: bash
+        env:
+          RELEASE_VERSION: ${{ steps.version.outputs.version }}
+          RELEASE_TARGET: ${{ matrix.target }}
+        run: |
+          set -euo pipefail
+          package=$(python -c 'import sys; sys.path.insert(0, "scripts/packaging"); import installer_contract; print(installer_contract.name(*sys.argv[1:]))' "$RELEASE_VERSION" "$RELEASE_TARGET" deb)
+          evidence="$RUNNER_TEMP/tablecraft-linux-lifecycle-$RELEASE_TARGET-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+          mkdir "$evidence"
+          { sudo dpkg --install "dist/$package"; } > "$evidence/install.log" 2>&1
+          /usr/bin/tablecraft-desktop --version > "$evidence/version.txt"
+          /usr/bin/tablecraft-desktop --help > "$evidence/help.txt"
+          desktop-file-validate /usr/share/applications/org.replicraft.tablecraft.desktop
+          test -f /usr/share/mime/packages/org.replicraft.tablecraft.xml
+          test -f /usr/lib/tablecraft/RELEASE.json
+          { sudo dpkg --remove tablecraft-desktop; } > "$evidence/remove.log" 2>&1
+          test ! -e /usr/bin/tablecraft-desktop
+          test ! -L /usr/bin/tablecraft-desktop
+          test ! -e /usr/share/applications/org.replicraft.tablecraft.desktop
+          test ! -e /usr/share/mime/packages/org.replicraft.tablecraft.xml
+      - name: Retain Linux installer and tool evidence
+        if: always() && runner.os == 'Linux'
+        uses: actions/upload-artifact@v7
+        with:
+          name: desktop-linux-evidence-${{ matrix.target }}
+          path: |
+            .cache/linux-tools/receipt.json
+            .cache/linux-tools/relink-check.json
+            ${{ runner.temp }}/tablecraft-linux-lifecycle-${{ matrix.target }}-${{ github.run_id }}-${{ github.run_attempt }}/**
+          if-no-files-found: warn
+          retention-days: 14
       - name: Install the supported native .NET SDK for WiX
         if: runner.os == 'Windows'
         uses: actions/setup-dotnet@v6
