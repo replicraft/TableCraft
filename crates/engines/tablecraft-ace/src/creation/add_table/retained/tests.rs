@@ -12,8 +12,13 @@ use tablecraft_testkit::fixtures::access::{
     canonical_created_number::mixed::after_off::deleted_field::populated::{
         CASES, Case, readdition::Target as ExistingTarget,
     },
-    canonical_retained_add_table::{self as raw, TARGETS, Target},
+    canonical_retained_add_table::{
+        self as raw, TARGETS, Target, deletes,
+        rows::{self, Input, Profile},
+        updates,
+    },
     canonical_table_drop::current::{self as dropped, History},
+    raw_forwarding_chain,
 };
 
 const SCOPE: CatalogScope = CatalogScope::new(3006);
@@ -305,4 +310,90 @@ fn retained_append_keeps_source_binding_and_protected_spans_under_refusal() {
             .is_err()
     );
     equal_image(native.as_bytes(), &before);
+}
+
+#[test]
+fn retained_append_preserves_long_user_and_catalog_chains_after_delete() {
+    let original = dropped::source(
+        Case::TextPresent,
+        ExistingTarget::ShortText,
+        true,
+        History::Inserted,
+    );
+    let before = dropped::after(&original);
+    let page = (before.len() / 4096) as u32;
+    let empty = raw::append(&before, "Added", Target::GeneratedText);
+    let populated = rows::append(&empty, page, Profile::NativeText, Input::Text("before"));
+    let base = updates::text(&populated, page, 0, Some(&"forwarded text ".repeat(10)));
+    let native = image(&base);
+    let schema = inspect_table_schema(&mut native.reader(), SCOPE, "Added", &mut budget(), &|| {
+        false
+    })
+    .unwrap();
+    let origin = native
+        .catalog()
+        .origins()
+        .iter()
+        .find(|origin| origin.object_id() == schema.object_id())
+        .unwrap();
+    assert_eq!(origin.page(), 4);
+    let user = raw_forwarding_chain::extend(&base, page + 1, 0, 20);
+    let catalog = raw_forwarding_chain::extend(&base, 4, usize::from(origin.slot()), 20);
+    let both = raw_forwarding_chain::extend(&user, 4, usize::from(origin.slot()), 20);
+    for (scenario, source) in [("user", &user), ("catalog", &catalog), ("both", &both)] {
+        for deleted in [false, true] {
+            let after_delete;
+            let before = if deleted {
+                let requests = image(source)
+                    .prepare_retained_row_deletes("Added", &[0], &mut budget(), &|| false)
+                    .unwrap();
+                let plan = image(source)
+                    .plan_retained_row_deletes("Added", &requests, &mut budget(), &|| false)
+                    .unwrap();
+                after_delete = deletes::after(source, page, &[0]);
+                equal_image(plan.after_bytes(), &after_delete);
+                after_delete.as_slice()
+            } else {
+                source.as_slice()
+            };
+            for target in TARGETS {
+                let expected = raw::append(before, "Next", target);
+                let plan = image(before)
+                    .plan_add_table(definition("Next", target), &mut budget(), &|| false)
+                    .unwrap_or_else(|error| panic!("{scenario}/{deleted}/{target:?}: {error:?}"));
+                equal_image(plan.before_bytes(), before);
+                equal_image(plan.after_bytes(), &expected);
+            }
+        }
+    }
+    let data = (page as usize + 1) * 4096;
+    let count = usize::from(u16::from_le_bytes(
+        user[data + 12..data + 14].try_into().unwrap(),
+    ));
+    let entry = data + 14 + (count - 1) * 2;
+    let terminal = u16::from_le_bytes(user[entry..entry + 2].try_into().unwrap());
+    let at = data + usize::from(terminal & 0x1fff);
+    let mut cycle = user;
+    cycle[entry..entry + 2].copy_from_slice(&(terminal | 0x4000).to_le_bytes());
+    cycle[at..at + 4].copy_from_slice(&((page + 1) << 8).to_le_bytes());
+    assert!(
+        image(&cycle)
+            .plan_add_table(
+                definition("Next", Target::GeneratedNumber),
+                &mut budget(),
+                &|| false
+            )
+            .is_err()
+    );
+    let mut wrong_owner = both;
+    wrong_owner[data + 4..data + 8].copy_from_slice(&7_u32.to_le_bytes());
+    assert!(
+        image(&wrong_owner)
+            .plan_add_table(
+                definition("Next", Target::GeneratedNumber),
+                &mut budget(),
+                &|| false
+            )
+            .is_err()
+    );
 }

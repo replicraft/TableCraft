@@ -11,10 +11,12 @@ use tablecraft_testkit::fixtures::access::{
         deleted_field::populated::{CASES, Case, readdition::Target as Field},
     },
     canonical_retained_add_table::{
-        self as raw, Target, desktop,
+        self as raw, Target, deletes, desktop,
         rows::{self, Input, Profile},
+        updates,
     },
     canonical_table_drop::current::{self as dropped, History},
+    raw_forwarding_chain,
 };
 
 const SCOPE: CatalogScope = CatalogScope::new(3608);
@@ -248,4 +250,117 @@ fn retained_generated_insert_returns_to_the_original_sparse_table_after_appendin
             original = original_after;
         }
     }
+}
+
+#[test]
+fn retained_generated_insert_preserves_long_chains_and_delete_history() {
+    let empty = source();
+    let definition = (empty.len() / 4096 - 3) as u32;
+    let populated = rows::append(
+        &empty,
+        definition,
+        Profile::DesktopText,
+        Input::Text("before"),
+    );
+    let base = updates::text(
+        &populated,
+        definition,
+        0,
+        Some(&"forwarded text ".repeat(10)),
+    );
+    let native = image(&base);
+    let schema = inspect_table_schema(
+        &mut native.reader(),
+        SCOPE,
+        "Table1",
+        &mut budget(),
+        &|| false,
+    )
+    .unwrap();
+    let origin = native
+        .catalog()
+        .origins()
+        .iter()
+        .find(|origin| origin.object_id() == schema.object_id())
+        .unwrap();
+    assert_eq!(origin.page(), 4);
+    let user = raw_forwarding_chain::extend(&base, definition + 1, 0, 20);
+    let catalog = raw_forwarding_chain::extend(&base, 4, usize::from(origin.slot()), 20);
+    let both = raw_forwarding_chain::extend(&user, 4, usize::from(origin.slot()), 20);
+    for (scenario, before) in [("user", &user), ("catalog", &catalog), ("both", &both)] {
+        image(before)
+            .check_native_retained_insert_table("Table1", &mut budget(), &|| false)
+            .unwrap_or_else(|error| panic!("{scenario}: source: {error:?}"));
+        let empty = image(before)
+            .plan_retained_omitted_row_inserts("Table1", &[], &mut budget(), &|| false)
+            .unwrap();
+        equal_image(empty.after_bytes(), before);
+        let expected = rows::append(
+            before,
+            definition,
+            Profile::DesktopText,
+            Input::Text("日本語🦀"),
+        );
+        let plan = image(before)
+            .plan_retained_omitted_row_inserts(
+                "Table1",
+                &[request(Input::Text("日本語🦀"))],
+                &mut budget(),
+                &|| false,
+            )
+            .unwrap_or_else(|error| panic!("{scenario}: insert: {error:?}"));
+        equal_image(plan.after_bytes(), &expected);
+        let requests = image(before)
+            .prepare_retained_row_deletes("Table1", &[0], &mut budget(), &|| false)
+            .unwrap();
+        let deleted = image(before)
+            .plan_retained_row_deletes("Table1", &requests, &mut budget(), &|| false)
+            .unwrap();
+        equal_image(
+            deleted.after_bytes(),
+            &deletes::after(before, definition, &[0]),
+        );
+        let expected = rows::append(
+            deleted.after_bytes(),
+            definition,
+            Profile::DesktopText,
+            Input::Omitted,
+        );
+        let inserted = image(deleted.after_bytes())
+            .plan_retained_omitted_row_inserts(
+                "Table1",
+                &[request(Input::Omitted)],
+                &mut budget(),
+                &|| false,
+            )
+            .unwrap();
+        equal_image(inserted.after_bytes(), &expected);
+    }
+    let data = (definition as usize + 1) * 4096;
+    let count = usize::from(u16::from_le_bytes(
+        user[data + 12..data + 14].try_into().unwrap(),
+    ));
+    let entry = data + 14 + (count - 1) * 2;
+    let terminal = u16::from_le_bytes(user[entry..entry + 2].try_into().unwrap());
+    let at = data + usize::from(terminal & 0x1fff);
+    let mut cycle = user;
+    cycle[entry..entry + 2].copy_from_slice(&(terminal | 0x4000).to_le_bytes());
+    cycle[at..at + 4].copy_from_slice(&((definition + 1) << 8).to_le_bytes());
+    assert!(
+        image(&cycle)
+            .plan_retained_omitted_row_inserts("Table1", &[], &mut budget(), &|| false)
+            .is_err()
+    );
+    let mut wrong_owner = both;
+    wrong_owner[data + 4..data + 8].copy_from_slice(&7_u32.to_le_bytes());
+    assert!(
+        image(&wrong_owner)
+            .plan_retained_omitted_row_inserts(
+                "Table1",
+                &[request(Input::Omitted)],
+                &mut budget(),
+                &|| false
+            )
+            .is_err()
+    );
 }
