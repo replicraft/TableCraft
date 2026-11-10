@@ -67,14 +67,21 @@ pub(in crate::workspace) fn apply_omitted_fields(
         // literal zero, NULL or empty numeric value is submitted.
         choose_field_mode(harness, column, "Omitted");
     }
+    review_and_save_insert(harness, path, after_column);
+    let reopened = harness.state().state.data.as_ref().unwrap();
+    assert_eq!(reopened.table, "Table1");
+    assert_ne!(reopened.source_revision, Some(schema_revision));
+}
+
+pub(in crate::workspace) fn review_and_save_insert(
+    harness: &mut Harness<'_, Desktop>,
+    path: &Path,
+    before: &[u8],
+) {
     review_insert(harness);
     let review_id = harness.state().editing.insert_review_id().unwrap();
     assert!(harness.state().state.can_apply_insert(review_id));
-    assert_eq!(
-        std::fs::read(path).unwrap(),
-        after_column,
-        "row review is inert"
-    );
+    assert_eq!(std::fs::read(path).unwrap(), before, "row review is inert");
     harness
         .get_by_role_and_label(Role::Button, "Apply new row to original file")
         .click_accesskit();
@@ -94,9 +101,6 @@ pub(in crate::workspace) fn apply_omitted_fields(
     finish_reads(harness);
     assert!(!harness.state().editing.has_save());
     assert!(!journal_path(path).exists());
-    let reopened = harness.state().state.data.as_ref().unwrap();
-    assert_eq!(reopened.table, "Table1");
-    assert_ne!(reopened.source_revision, Some(schema_revision));
 }
 
 pub(in crate::workspace) fn insert_omitted_fields(
