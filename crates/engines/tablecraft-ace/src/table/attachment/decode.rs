@@ -18,13 +18,12 @@ const TYPE_UNITS_OFFSET: usize = HEADER_TAG_OFFSET + size_of::<u32>();
 const HEADER_BYTES: usize = TYPE_UNITS_OFFSET + size_of::<u32>();
 const SUPPORTED_HEADER_TAG: u32 = 1;
 const UTF16_BYTES: usize = size_of::<u16>();
-const MAX_HEADER_BYTES: usize = 4096;
 
 /// Decode an explicitly supplied native FileData attachment wrapper without
 /// opening content or writing files. Ordinary decoding admits Access's 256 MiB
 /// individual-file envelope and the native 30-bit encoded storage envelope;
 /// explicit lower caller limits and cumulative budgets remain independent.
-/// The qualified type-header grammar remains bounded to 4 KiB.
+/// Header and type-label lengths are checked against their native frames.
 /// Unknown encodings/header variants are unsupported; malformed lengths, invalid
 /// zlib/checksums, trailing streams and excess output fail without partial data.
 /// Budgets/cancellation apply between bounded copy/codec blocks. The selected
@@ -37,7 +36,7 @@ pub fn decode_attachment(
     AttachmentDecoder::new(budget, cancelled).decode(encoded)
 }
 
-/// Decode with an explicit file ceiling while retaining encoded/header bounds.
+/// Decode with an explicit file ceiling while retaining encoded/frame bounds.
 /// A larger allowance does not waive checksum, exact-length or resource checks.
 pub fn decode_attachment_with_limits(
     encoded: &[u8],
@@ -70,9 +69,6 @@ pub(super) fn using_inflater(
         _ => return Err(InspectError::Unsupported),
     };
     let length = u32_at(encoded, LENGTH_OFFSET)? as usize;
-    if length > MAX_HEADER_BYTES + limits.maximum_file_bytes() as usize {
-        return Err(InspectError::StructureLimit);
-    }
     if length < HEADER_BYTES + UTF16_BYTES {
         return Err(InspectError::Malformed);
     }
@@ -100,11 +96,14 @@ pub(super) fn using_inflater(
     if u32_at(&body, HEADER_TAG_OFFSET)? != SUPPORTED_HEADER_TAG {
         return Err(InspectError::Unsupported);
     }
-    if !(HEADER_BYTES + UTF16_BYTES..=MAX_HEADER_BYTES).contains(&header)
+    let framed_header = units
+        .checked_mul(UTF16_BYTES)
+        .and_then(|bytes| HEADER_BYTES.checked_add(bytes))
+        .ok_or(InspectError::Malformed)?;
+    if header < HEADER_BYTES + UTF16_BYTES
         || header > body.len()
         || units == 0
-        || units > (MAX_HEADER_BYTES - HEADER_BYTES) / UTF16_BYTES
-        || header != HEADER_BYTES + units * UTF16_BYTES
+        || header != framed_header
         || body[header - UTF16_BYTES..header] != [0, 0]
     {
         return Err(InspectError::Malformed);
@@ -112,7 +111,12 @@ pub(super) fn using_inflater(
     if body.len() - header > limits.maximum_file_bytes() as usize {
         return Err(InspectError::StructureLimit);
     }
-    let type_label = text::decode(&body[HEADER_BYTES..header - UTF16_BYTES], false, budget)?;
+    let type_label = text::decode_framed(
+        &body[HEADER_BYTES..header - UTF16_BYTES],
+        false,
+        budget,
+        cancelled,
+    )?;
     check(budget, cancelled)?;
     Ok(DecodedAttachment {
         body,

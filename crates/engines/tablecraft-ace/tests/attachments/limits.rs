@@ -50,12 +50,15 @@ fn limits_are_validated_and_encoded_header_ceilings_remain_separate() {
             .err(),
         Some(InspectError::StructureLimit)
     );
-    let header_too_large = encoded(&"t".repeat(3000), &[], false);
-    assert_eq!(
-        decode_attachment_with_limits(&header_too_large, limits, &mut large_budget(), &|| false)
-            .err(),
-        Some(InspectError::Malformed)
-    );
+    for compressed in [false, true] {
+        let label = "t".repeat(3000);
+        let framed_header = encoded(&label, &[1, 2, 3], compressed);
+        let decoded =
+            decode_attachment_with_limits(&framed_header, limits, &mut large_budget(), &|| false)
+                .unwrap();
+        assert_eq!(decoded.type_label(), label);
+        assert_eq!(decoded.data(), [1, 2, 3]);
+    }
 }
 
 #[test]
@@ -197,4 +200,57 @@ fn native_maximum_advertised_body_does_not_allocate_before_stream_validation() {
         decode_attachment(&bytes, &mut large_budget(), &|| false).err(),
         Some(InspectError::StructureLimit)
     );
+}
+
+#[test]
+fn larger_headers_keep_exact_native_frames_lower_file_limits_and_paid_decoding() {
+    let label = "未".repeat(5000);
+    for compressed in [false, true] {
+        let original = encoded(&label, &[1, 2, 3], compressed);
+        let decoded = decode_attachment(&original, &mut large_budget(), &|| false).unwrap();
+        assert_eq!(decoded.type_label(), label);
+        assert_eq!(decoded.data(), [1, 2, 3]);
+        let limits = AttachmentDecodeLimits::new(2).unwrap();
+        assert!(matches!(
+            decode_attachment_with_limits(&original, limits, &mut large_budget(), &|| false),
+            Err(InspectError::StructureLimit)
+        ));
+        assert!(matches!(
+            decode_attachment(
+                &original,
+                &mut ResourceBudget::new(1024, 0, 100_000),
+                &|| false
+            ),
+            Err(InspectError::Limit(_))
+        ));
+
+        let calls = Cell::new(0_u32);
+        let count = || {
+            calls.set(calls.get() + 1);
+            false
+        };
+        decode_attachment(&original, &mut large_budget(), &count).unwrap();
+        let total = calls.get();
+        calls.set(0);
+        let cancel = || {
+            calls.set(calls.get() + 1);
+            calls.get() >= total - 1
+        };
+        assert!(matches!(
+            decode_attachment(&original, &mut large_budget(), &cancel),
+            Err(InspectError::Cancelled)
+        ));
+    }
+
+    let original = encoded(&label, &[1, 2, 3], false);
+    for (offset, number) in [(8, 14_u32), (16, u32::MAX), (16, 0)] {
+        // NO_CLONE: Each raw corruption must start from the same independent
+        // complete frame; the original remains the next corruption's oracle.
+        let mut changed = original.clone();
+        changed[offset..offset + 4].copy_from_slice(&number.to_le_bytes());
+        assert!(matches!(
+            decode_attachment(&changed, &mut large_budget(), &|| false),
+            Err(InspectError::Malformed)
+        ));
+    }
 }
