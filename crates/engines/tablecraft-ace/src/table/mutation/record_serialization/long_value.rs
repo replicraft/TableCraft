@@ -1,7 +1,7 @@
 //! Qualified Memo/OLE payloads and exact descriptor/chunk framing.
 use super::super::{EditError, WriteBlocker};
 #[cfg(feature = "ace16-write-preview")]
-use crate::limits::MAX_LONG_VALUE_CHUNKS;
+use crate::table::mutation::value_limits::QUALIFIED_LONG_VALUE_CHUNKS;
 use crate::{
     InspectError, NativeColumn,
     format::{
@@ -9,8 +9,8 @@ use crate::{
         text,
     },
     header::check,
-    limits::{MAX_LONG_TEXT_BYTES, MAX_LONG_VALUE_BYTES},
     table::long_value::profile,
+    table::mutation::value_limits::{QUALIFIED_LONG_TEXT_BYTES, QUALIFIED_LONG_VALUE_BYTES},
 };
 #[cfg(feature = "ace16-write-preview")]
 use std::ops::Range;
@@ -77,7 +77,7 @@ pub(in crate::table::mutation) fn encode(
         Value::Null => return Ok(Encoded::Null),
         Value::Binary(bytes) if field.native_type() == OLE => bytes.len(),
         Value::Text(value) if field.native_type() == LONG_TEXT => {
-            if value.len() > MAX_LONG_TEXT_BYTES {
+            if value.len() > QUALIFIED_LONG_TEXT_BYTES {
                 return Err(InspectError::StructureLimit.into());
             }
             budget
@@ -108,7 +108,7 @@ pub(in crate::table::mutation) fn encode(
         }
         _ => return Err(EditError::Unsupported(WriteBlocker::Column)),
     };
-    if length > MAX_LONG_VALUE_BYTES {
+    if length > QUALIFIED_LONG_VALUE_BYTES {
         return Err(InspectError::StructureLimit.into());
     }
 
@@ -147,8 +147,8 @@ pub(in crate::table::mutation) fn encode(
             }
             let decoded = text::decode_long_with_limits(
                 &bytes,
-                MAX_LONG_VALUE_BYTES,
-                MAX_LONG_TEXT_BYTES,
+                QUALIFIED_LONG_VALUE_BYTES,
+                QUALIFIED_LONG_TEXT_BYTES,
                 budget,
                 cancelled,
             )?;
@@ -230,7 +230,7 @@ impl Encoded {
             EXTERNAL_ROW_BYTES
         };
         let count = bytes.len().div_ceil(capacity);
-        if count > MAX_LONG_VALUE_CHUNKS {
+        if count > QUALIFIED_LONG_VALUE_CHUNKS {
             return Err(InspectError::StructureLimit.into());
         }
         budget

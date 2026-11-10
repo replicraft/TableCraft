@@ -250,3 +250,6 @@ mod historical_mixed_materialization_sources;
 
 #[cfg(all(test, feature = "journal", feature = "ace16-create"))]
 mod historical_forwarded_materialization_sources;
+
+#[cfg(any(feature = "journal", feature = "ace16-write-preview"))]
+mod value_limits;

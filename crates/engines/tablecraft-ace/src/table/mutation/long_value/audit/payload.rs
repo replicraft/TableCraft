@@ -6,7 +6,7 @@ use crate::{
     InspectError, NativeColumn,
     format::text,
     header::check,
-    limits::{MAX_LONG_TEXT_BYTES, MAX_LONG_VALUE_BYTES},
+    table::mutation::value_limits::{QUALIFIED_LONG_TEXT_BYTES, QUALIFIED_LONG_VALUE_BYTES},
 };
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
@@ -101,8 +101,8 @@ pub(super) fn prove<'a>(
 
             let decoded = text::decode_long_with_limits(
                 bytes,
-                MAX_LONG_VALUE_BYTES,
-                MAX_LONG_TEXT_BYTES,
+                QUALIFIED_LONG_VALUE_BYTES,
+                QUALIFIED_LONG_TEXT_BYTES,
                 budget,
                 cancelled,
             )?;

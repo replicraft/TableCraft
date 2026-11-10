@@ -15,8 +15,8 @@ use crate::{
         reader::Reader,
         row::{SLOT_BYTES, VARIABLE_COUNT_BYTES, VARIABLE_OFFSET_BYTES, slot_offset},
     },
-    limits::MAX_LONG_VALUE_CHUNKS,
     table::mutation::insert::RowInsert,
+    table::mutation::value_limits::QUALIFIED_LONG_VALUE_CHUNKS,
 };
 use std::io::Cursor;
 
@@ -115,7 +115,7 @@ fn derive_with_generated(
                     (Storage::Single, DESCRIPTOR_BYTES)
                 }
                 Payload::Present(bytes) => {
-                    if bytes.len().div_ceil(CHAIN_BYTES) > MAX_LONG_VALUE_CHUNKS {
+                    if bytes.len().div_ceil(CHAIN_BYTES) > QUALIFIED_LONG_VALUE_CHUNKS {
                         return Err(InspectError::StructureLimit.into());
                     }
                     (Storage::Chained, DESCRIPTOR_BYTES)

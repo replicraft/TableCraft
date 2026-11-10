@@ -6,7 +6,7 @@ use crate::{
         text,
     },
     header::check,
-    limits::{MAX_LONG_TEXT_BYTES, MAX_LONG_VALUE_BYTES},
+    table::mutation::value_limits::{QUALIFIED_LONG_TEXT_BYTES, QUALIFIED_LONG_VALUE_BYTES},
 };
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
@@ -37,7 +37,7 @@ pub(in crate::table::mutation) fn requested(
         (LONG_TEXT | OLE, Value::Null) => return Ok(Payload::Null),
         (OLE, Value::Binary(bytes)) => (bytes.len(), false),
         (LONG_TEXT, Value::Text(value)) => {
-            if value.len() > MAX_LONG_TEXT_BYTES {
+            if value.len() > QUALIFIED_LONG_TEXT_BYTES {
                 return Err(InspectError::StructureLimit.into());
             }
             let mut count = 0_usize;
@@ -63,7 +63,7 @@ pub(in crate::table::mutation) fn requested(
         }
         _ => return Err(EditError::Unsupported(WriteBlocker::Column)),
     };
-    if length > MAX_LONG_VALUE_BYTES {
+    if length > QUALIFIED_LONG_VALUE_BYTES {
         return Err(InspectError::StructureLimit.into());
     }
 
@@ -98,8 +98,8 @@ pub(in crate::table::mutation) fn requested(
             }
             let decoded = text::decode_long_with_limits(
                 &bytes,
-                MAX_LONG_VALUE_BYTES,
-                MAX_LONG_TEXT_BYTES,
+                QUALIFIED_LONG_VALUE_BYTES,
+                QUALIFIED_LONG_TEXT_BYTES,
                 budget,
                 cancelled,
             )?;

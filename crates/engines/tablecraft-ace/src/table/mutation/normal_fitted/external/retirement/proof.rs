@@ -11,7 +11,7 @@ use crate::{
         row::{DELETED_MASK, RELOCATED_MASK, reference_page, reference_slot},
     },
     header::check,
-    limits::MAX_LONG_VALUE_CHUNKS,
+    table::mutation::value_limits::QUALIFIED_LONG_VALUE_CHUNKS,
     table::{
         mutation::{
             normal_fitted::{
@@ -58,7 +58,7 @@ pub(in crate::table::mutation::normal_fitted::external) fn references(
     let length = (word & !TYPE_MASK) as usize;
     let mut reference = u32_at(descriptor, WORD_BYTES)?;
     let mut consumed = 0_usize;
-    let mut visited = binding::vector(MAX_LONG_VALUE_CHUNKS, budget)?;
+    let mut visited = binding::vector(QUALIFIED_LONG_VALUE_CHUNKS, budget)?;
     let mut bytes = image.reader();
     let mut reader = Reader {
         source: &mut bytes,
@@ -67,7 +67,7 @@ pub(in crate::table::mutation::normal_fitted::external) fn references(
         cancelled,
         reads: 0,
     };
-    for _ in 0..MAX_LONG_VALUE_CHUNKS {
+    for _ in 0..QUALIFIED_LONG_VALUE_CHUNKS {
         reader.tick()?;
         reader.work(visited.len())?;
         if reference == 0 || visited.contains(&reference) {
