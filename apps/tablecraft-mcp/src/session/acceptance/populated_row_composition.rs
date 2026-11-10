@@ -105,6 +105,29 @@ fn populated_renamed_field_keeps_rows_and_generated_history_across_protocol_edit
         let mut reopened = reopen(&path);
         assert_eq!(std::fs::read(&path).unwrap(), expected_delete);
         assert_rows(&mut reopened, column, &["1", "3", "4"], &["99", "-7", "0"]);
+        let review = reopened
+            .execute(
+                "review_field_rename",
+                json!({
+                    "document_revision": reopened.revision.unwrap(),
+                    "table": "Table1",
+                    "column": column,
+                    "native_number": 1,
+                    "new_name": "Revenue"
+                }),
+            )
+            .unwrap();
+        assert_eq!(std::fs::read(&path).unwrap(), expected_delete);
+        let id = save(&mut reopened, "apply_field_rename", review);
+        let renamed_again = fitting::rename_current(&expected_delete, column, "Revenue");
+        assert_eq!(std::fs::read(&path).unwrap(), renamed_again);
+        acknowledge(&mut reopened, id, &path);
+        assert_rows(
+            &mut reopened,
+            "Revenue",
+            &["1", "3", "4"],
+            &["99", "-7", "0"],
+        );
         assert!(!journal_path(&path).exists());
     }
 }
