@@ -59,7 +59,7 @@ fn execute(
                 declared_integral: declared,
                 limits: QueryLimits {
                     rows,
-                    steps: QueryLimits::MAX_STEPS,
+                    steps: 100_000_000,
                     ..Default::default()
                 },
                 ..Default::default()

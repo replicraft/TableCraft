@@ -7,29 +7,23 @@ use tablecraft_expressions::{
     },
 };
 
-/// Consumable ceilings; caller limits are clamped to the documented maxima.
+/// Explicit caller-selected cumulative allowances; no format maximum is inferred.
 #[derive(Clone, Copy, Debug)]
 pub struct QueryLimits {
-    /// Cumulative scalar/row payload and buffer allocation bytes (default 16 MiB).
+    /// Cumulative scalar/row payload and buffer allocation bytes.
     pub bytes: u64,
-    /// Cumulative scanned/intermediate/output rows (default 100,000).
+    /// Cumulative scanned/intermediate/output rows.
     pub rows: u64,
-    /// Expression, comparison and row work (default 1,000,000).
+    /// Expression, comparison and row work.
     pub steps: u64,
 }
 impl QueryLimits {
     /// Default cumulative allocation bytes in the retrieval profile.
-    pub const DEFAULT_BYTES: u64 = 16 * 1024 * 1024;
-    /// Maximum explicitly requested cumulative allocation bytes.
-    pub const MAX_BYTES: u64 = 256 * 1024 * 1024;
+    pub const DEFAULT_BYTES: u64 = u64::MAX;
     /// Default cumulative scanned/intermediate/output rows.
-    pub const DEFAULT_ROWS: u64 = 100_000;
-    /// Maximum explicitly requested cumulative scanned/intermediate/output rows.
-    pub const MAX_ROWS: u64 = 1_000_000;
+    pub const DEFAULT_ROWS: u64 = u64::MAX;
     /// Default expression, comparison and row work units.
-    pub const DEFAULT_STEPS: u64 = 1_000_000;
-    /// Maximum explicitly requested expression, comparison and row work units.
-    pub const MAX_STEPS: u64 = 100_000_000;
+    pub const DEFAULT_STEPS: u64 = u64::MAX;
 }
 impl Default for QueryLimits {
     fn default() -> Self {
@@ -88,7 +82,7 @@ pub struct ExecutionOptions<'a> {
     /// Staged preparation also captures decimal integer-literal widths; execution
     /// never retypes literals in an already prepared plan.
     pub declared_integral: bool,
-    /// Individual materialized Text bytes; omitted uses 64 KiB, clamped to 1 MiB.
+    /// Optional per-value Text quota; omitted adds no product-specific byte ceiling.
     /// Shared allocation/work budgets and parser/binding limits remain separate.
     pub max_text_bytes: Option<usize>,
     /// Consumable execution ceilings.
@@ -111,6 +105,5 @@ impl ExecutionOptions<'_> {
     pub(crate) fn text_limit(self) -> usize {
         self.max_text_bytes
             .unwrap_or(EvalLimits::DEFAULT_TEXT_BYTES)
-            .min(EvalLimits::MAX_TEXT_BYTES)
     }
 }

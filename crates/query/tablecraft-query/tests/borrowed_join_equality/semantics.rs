@@ -107,7 +107,7 @@ fn eleven_hundred_matching_rows_fit_without_a_million_discarded_rows() {
         ExecutionOptions {
             limits: QueryLimits {
                 rows: 20_000,
-                steps: QueryLimits::MAX_STEPS,
+                steps: 100_000_000,
                 ..Default::default()
             },
             ..Default::default()

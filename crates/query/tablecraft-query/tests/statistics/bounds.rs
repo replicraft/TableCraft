@@ -115,7 +115,7 @@ fn statistical_value_buffer_is_charged_beyond_the_existing_group_storage() {
     let var = parse("SELECT Var(X) FROM T");
     let var = prepare(var.query(), &data).unwrap();
     let mut low = 0;
-    let mut high = QueryLimits::MAX_BYTES;
+    let mut high = 256 * 1024 * 1024;
     while low < high {
         let middle = (low + high) / 2;
         let result = min.execute(

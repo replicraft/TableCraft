@@ -132,7 +132,7 @@ fn fixed_offset_storage_is_bounded_and_charged_in_addition_to_the_original_lane(
         let parsed = parse_query(sql, Default::default()).unwrap();
         let plan = prepare(parsed.query(), &data).unwrap();
         let mut low = 0;
-        let mut high = QueryLimits::MAX_BYTES;
+        let mut high = 256 * 1024 * 1024;
         while low < high {
             let middle = (low + high) / 2;
             if plan

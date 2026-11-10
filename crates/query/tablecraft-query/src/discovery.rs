@@ -1,5 +1,7 @@
 //! Explicit execution staging for named crosstab schemas; binding never scans.
 mod bindings;
+#[cfg(test)]
+mod budget_tests;
 use crate::{
     ExecutionOptions, ExpressionQueryResult, PreparedQuery, QueryError, QueryLimits, Source,
     binding::{PreparationOptions, StageOptions, prepare_insert_stage, prepare_stage},
@@ -146,11 +148,7 @@ pub fn execute_collections_with_schema_discovery<'a>(
 }
 
 pub(crate) fn budget(limits: QueryLimits) -> ResourceBudget {
-    ResourceBudget::new(
-        limits.bytes.min(QueryLimits::MAX_BYTES),
-        limits.rows.min(QueryLimits::MAX_ROWS),
-        limits.steps.min(QueryLimits::MAX_STEPS),
-    )
+    ResourceBudget::new(limits.bytes, limits.rows, limits.steps)
 }
 
 /// Shared only within one synchronous execution. Borrows are confined to metadata
