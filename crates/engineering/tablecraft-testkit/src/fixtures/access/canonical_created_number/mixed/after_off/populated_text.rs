@@ -1,5 +1,6 @@
 //! Independent metadata-only Short Text ADD over unchanged historical records.
 pub mod insertion;
+pub mod present;
 
 use super::{SourceCase, source};
 use crate::fixtures::access::{canonical_initial_table_creation::inserts::long_rows, put32};
@@ -162,6 +163,28 @@ pub fn after(before: &[u8], slot: usize, value: &str) -> Vec<u8> {
 /// An already forwarded Number record precedes the new Text declaration.
 pub fn forwarded_pair() -> [Vec<u8>; 2] {
     let before = super::populated::materialization::forwarded::pair()[0].to_vec();
+    let after = append_text(&before, "NewLabel");
+    [before, after]
+}
+
+/// A generated-ID-only table has no incidental unindexed LONG companion.
+pub fn id_only_pair() -> [Vec<u8>; 2] {
+    use crate::fixtures::access::{
+        canonical_created_number, canonical_database_options,
+        canonical_initial_table_creation::inserts::initial_rows_image,
+    };
+    let empty = canonical_database_options::explicit_off(&canonical_created_number::source(
+        canonical_created_number::Source::IdOnly,
+    ));
+    let records = (1_i32..=3)
+        .map(|id| {
+            let mut record = vec![1, 0];
+            record.extend(id.to_le_bytes());
+            record.push(1);
+            (0, record)
+        })
+        .collect();
+    let before = initial_rows_image(&empty, records);
     let after = append_text(&before, "NewLabel");
     [before, after]
 }
