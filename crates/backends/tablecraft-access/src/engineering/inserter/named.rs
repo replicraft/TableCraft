@@ -322,4 +322,37 @@ mod tests {
         ));
         assert!(matches!(mapped[0][3], InsertFieldValue::Omitted));
     }
+
+    #[test]
+    fn named_mapping_above_4096_rows_preserves_presence_and_explicit_resource_failures() {
+        let rows = || {
+            (0..5000)
+                .map(|value| vec![InsertFieldValue::Supplied(Value::Int32(value))])
+                .collect::<Vec<_>>()
+        };
+        let mut budget = ResourceBudget::new(4 * 1024 * 1024, 10_000, 1_000_000);
+        let (mapped, omitted) = map_rows(2, &[1], rows(), &mut budget, &|| false).unwrap();
+        assert!(omitted);
+        assert_eq!(mapped.len(), 5000);
+        for (index, row) in mapped.iter().enumerate() {
+            assert!(matches!(row[0], InsertFieldValue::Omitted));
+            assert!(
+                matches!(row[1], InsertFieldValue::Supplied(Value::Int32(value)) if value == index as i32)
+            );
+        }
+        assert!(matches!(
+            map_rows(
+                2,
+                &[1],
+                rows(),
+                &mut ResourceBudget::new(0, 10_000, 1_000_000),
+                &|| false,
+            ),
+            Err(NativeEditError::Inspect(InspectError::Limit(_)))
+        ));
+        assert!(matches!(
+            map_rows(2, &[1], rows(), &mut budget, &|| true),
+            Err(NativeEditError::Inspect(InspectError::Cancelled))
+        ));
+    }
 }
