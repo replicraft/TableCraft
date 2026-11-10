@@ -247,6 +247,16 @@ dependency, testing or platform boundary. Avoid empty scaffolding. Use typed
 errors in libraries and contextual reporting at executable boundaries. Do not
 hide failures through silent defaults or unconditional retries.
 
+Do not invent database, value, text or row-count limits that Access does not have.
+Use documented Access limits, actual format geometry and representation bounds.
+Caller-selected resource budgets remain explicit, cumulative and cancellable;
+do not silently clamp them or impose hidden compatibility ceilings through
+defaults. Batch sizes and pagination control work granularity, not the total
+records or values a database may contain. Preserve corruption, cycle, overflow,
+allocation and source-revision checks. Where an implementation still cannot
+handle a native case, report that limitation accurately rather than presenting
+an arbitrary cap as an Access restriction.
+
 When extracting code, update consumers to import its owning crate directly.
 Avoid compatibility re-exports or wrappers whose only purpose is to retain an
 old import path. Keep re-exports that define a genuine public API boundary.
