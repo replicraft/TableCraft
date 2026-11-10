@@ -6,6 +6,47 @@ Int32 candidates and frozen recovery languages alongside the typed TCAC0005
 request. General saved-column editing remains unfinished; current source,
 storage and declaration limits are explicit below.
 
+## Next populated-table slice: researched contract, not implemented
+
+The current ADD candidates still require an empty table. The next proposed slice
+is an ordinary nullable Long Integer field with the existing explicit stored
+zero default, added to a positively qualified populated ACE16 source. This plan
+does not relax that guard, extend any existing request language or qualify a
+write. Other declarations, Required(true) and broader layouts remain separate work.
+
+Microsoft documents adding Number fields through both Datasheet's Click to Add
+and Design's first blank Field Name/Data Type row, followed by Save. Its field
+reference defines Long Integer as a four-byte integer and describes DefaultValue
+as applying when a new record is created. See
+[Create or delete a Number or Currency field](https://support.microsoft.com/en-us/access/create-or-delete-a-number-or-currency-field)
+and [DefaultValue](https://support.microsoft.com/en-us/access/defaultvalue-property).
+The latter explicitly distinguishes future-record defaults from existing records;
+it does not establish a physical ADD encoding or an Access16 GUI save observation.
+
+The proposed historical-row behavior is **NULL, not a zero backfill**, even when
+the new field stores DefaultValue zero. This is an inference from Microsoft's
+default contract and the independent Jackcess implementation:
+[`TableImpl.mutateAddColumn`](https://github.com/jahlborn/jackcess/blob/master/src/main/java/com/healthmarketscience/jackcess/impl/TableImpl.java)
+changes ordinary field definitions/properties without rewriting existing records,
+and [`NullMask.isNull`](https://github.com/jahlborn/jackcess/blob/master/src/main/java/com/healthmarketscience/jackcess/impl/NullMask.java)
+treats a new column beyond an old record's stored column count as NULL. The
+retained local Jackcess source agrees for ordinary Number fields. This evidence
+does not yet verify that exact Click to Add/Design sequence in native Access16;
+Windows comparison remains deferred.
+
+Acceptance should therefore distinguish old records from later inserts: existing
+records expose the added field as NULL; a later omitted value resolves to the
+stored zero default; explicit NULL remains NULL; and an unrelated edit to an old
+record preserves its added-field NULL. Complete independent images, actual
+record decoding, journal recovery and runtime/GUI witness reopening must qualify
+the eventual implementation without inventing a data backfill.
+
+Keep Required(false) explicit initially. Microsoft offers an independent check of
+existing records when enabling Required, while enforcing the property for new
+records regardless of that choice. Required(true) needs its own validation and
+confirmation contract; it must not silently turn historical NULL into zero. See
+[Require a value in a field](https://support.microsoft.com/en-us/access/require-a-value-in-a-field).
+
 ## Typed Number and Short Text candidate
 
 The separate `prepare_created_add_field_candidate` API now constructs a typed
