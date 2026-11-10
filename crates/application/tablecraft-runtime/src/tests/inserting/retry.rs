@@ -63,7 +63,7 @@ fn insert_original_witness_reopens_only_complete_original_bytes_without_replayin
 }
 
 #[test]
-fn guarded_insert_original_open_retains_cancellation_and_snapshot_bounds() {
+fn guarded_insert_original_open_retains_cancellation_and_exact_source_length() {
     let (_directory, path, worker, revision) = opened(&source());
     let (_, capability) = review(
         &worker,
@@ -80,7 +80,7 @@ fn guarded_insert_original_open_retains_cancellation_and_snapshot_bounds() {
     drop(file);
     assert!(matches!(
         request(&worker, Command::OpenInsertOriginal { witness }),
-        Err(Error::SnapshotLimit)
+        Err(Error::InsertOriginalSourceChanged)
     ));
     assert!(!journal_path(&path).exists());
 }

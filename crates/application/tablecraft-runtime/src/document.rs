@@ -46,12 +46,9 @@ use tablecraft_ace::create_blank_ace16_database;
     any(target_os = "macos", target_os = "linux", windows)
 ))]
 use tablecraft_ace::{add_table_source_capabilities, first_table_source_available};
-use tablecraft_core::limits::Resource;
 use tablecraft_io::SharedFile;
 use tablecraft_model::ObjectKind;
 use zeroize::Zeroizing;
-
-const COPY_CHUNK: usize = 64 * 1024;
 
 pub(super) struct Document {
     pub(crate) filter_source: Arc<()>,
@@ -300,24 +297,15 @@ impl Document {
             Err(error) => return Err(InspectError::from(error).into()),
         }
         let mut file = SharedFile::open(path)?;
-        let bytes = capture::read(&mut file, &mut work, cancelled)?;
+        let bytes = capture::read(&mut file, expected, &mut work, cancelled).map_err(|error| {
+            #[cfg(feature = "ace16-create")]
+            if expected.is_some() && matches!(error, Error::SourceChanged) {
+                return Error::CreatedSourceChanged;
+            }
+            error
+        })?;
         file.close()?;
         check(cancelled)?;
-        if let Some(expected) = expected {
-            let mut matches = expected.len() == bytes.len();
-            for (original, captured) in expected.chunks(COPY_CHUNK).zip(bytes.chunks(COPY_CHUNK)) {
-                check(cancelled)?;
-                work.charge(Resource::Steps, original.len() as u64)?;
-                matches &= original == captured;
-            }
-            check(cancelled)?;
-            if !matches {
-                #[cfg(feature = "ace16-create")]
-                return Err(Error::CreatedSourceChanged);
-                #[cfg(not(feature = "ace16-create"))]
-                return Err(Error::SourceChanged);
-            }
-        }
         let image_source =
             tablecraft_ace::NativeImageSource::from_vec(bytes, &mut work, cancelled)?;
         let bytes = image_source.shared_bytes();

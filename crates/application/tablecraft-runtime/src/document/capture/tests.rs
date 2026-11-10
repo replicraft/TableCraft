@@ -17,6 +17,7 @@ fn capture_uses_caller_resources_and_cancellation_without_returning_a_prefix() {
     assert!(
         read(
             &mut Cursor::new(&bytes),
+            None,
             &mut ResourceBudget::new(64, 0, 1_000_000),
             &|| false
         )
@@ -31,6 +32,7 @@ fn capture_uses_caller_resources_and_cancellation_without_returning_a_prefix() {
     assert!(
         read(
             &mut source,
+            None,
             &mut ResourceBudget::new(u64::MAX, 0, u64::MAX),
             &cancelled
         )
@@ -41,6 +43,7 @@ fn capture_uses_caller_resources_and_cancellation_without_returning_a_prefix() {
     assert_eq!(
         read(
             &mut Cursor::new(&bytes),
+            None,
             &mut ResourceBudget::new(u64::MAX, 0, u64::MAX),
             &|| false
         )
@@ -59,9 +62,51 @@ fn native_geometry_rejects_an_oversized_sparse_source_before_body_allocation() {
     drop(file);
     let mut file = File::open(path).unwrap();
     assert!(matches!(
-        read(&mut file, &mut ResourceBudget::new(4096, 0, 100), &|| false),
+        read(
+            &mut file,
+            None,
+            &mut ResourceBudget::new(4096, 0, 100),
+            &|| false
+        ),
         Err(Error::Input(AccessInputError::Native(
             InspectError::StructureLimit
         )))
     ));
+}
+
+#[test]
+fn guarded_capture_keeps_exact_witness_precedence_over_changed_source_format() {
+    let original = mutation_fixture::database();
+    for position in [0, original.len() - 1] {
+        let mut changed = original.clone();
+        changed[position] ^= 0xff;
+        assert!(matches!(
+            read(
+                &mut Cursor::new(changed),
+                Some(&original),
+                &mut ResourceBudget::new(u64::MAX, 0, u64::MAX),
+                &|| false
+            ),
+            Err(Error::SourceChanged)
+        ));
+    }
+    assert!(matches!(
+        read(
+            &mut Cursor::new(&original[..4]),
+            Some(&original),
+            &mut ResourceBudget::new(u64::MAX, 0, u64::MAX),
+            &|| false
+        ),
+        Err(Error::SourceChanged)
+    ));
+    assert_eq!(
+        read(
+            &mut Cursor::new(&original),
+            Some(&original),
+            &mut ResourceBudget::new(u64::MAX, 0, u64::MAX),
+            &|| false
+        )
+        .unwrap(),
+        original
+    );
 }
