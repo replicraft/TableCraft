@@ -1,8 +1,8 @@
 use std::{cell::Cell, io::Cursor, ops::Bound};
 use tablecraft_ace::{
     IndexProjectionSelection, IndexReadRequest, InspectError, Int32IndexSelection,
-    NativeRowReference, TableSnapshotLimits, inspect_table_schema, read_attachment_column,
-    read_attachment_metadata, read_table_index_with_references, read_table_index_with_request,
+    NativeRowReference, inspect_table_schema, read_attachment_column, read_attachment_metadata,
+    read_table_index_with_references, read_table_index_with_request,
 };
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
@@ -304,7 +304,7 @@ fn reference_retention_spends_extra_budget_and_never_publishes_cancelled_results
             "Items",
             "ScoreKey",
             IndexReadRequest {
-                maximum_rows: TableSnapshotLimits::MAX_ROWS + 1,
+                maximum_rows: 0,
                 ..request(IndexProjectionSelection::All)
             },
             &mut budget(),

@@ -42,7 +42,7 @@ pub fn read_table_index_with_references<R: NativeReadSource>(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<IndexedTableSnapshot, InspectError> {
-    if request.maximum_rows == 0 || request.maximum_rows > crate::TableSnapshotLimits::MAX_ROWS {
+    if request.maximum_rows == 0 {
         return Err(InspectError::InvalidSnapshotLimits);
     }
     let mut references = Vec::new();

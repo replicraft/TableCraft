@@ -12,7 +12,7 @@ mod guards;
 
 use tablecraft_ace::{
     IndexProjectionSelection, IndexReadRequest, InspectError, NativeReadSource,
-    TableSnapshotLimits, read_table_index_with_request,
+    read_table_index_with_request,
 };
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_model::CatalogScope;

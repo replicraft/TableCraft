@@ -31,7 +31,7 @@ struct Arguments {
     #[arg(long, default_value_t = BYTES, value_parser = clap::value_parser!(u64).range(1..=MAX_BYTES))]
     bytes: u64,
     /// Cumulative native rows and complete parent/child snapshot ceiling.
-    #[arg(long, default_value_t = DEFAULT_ROWS, value_parser = clap::value_parser!(u32).range(1..=i64::from(TableSnapshotLimits::MAX_ROWS)))]
+    #[arg(long, default_value_t = DEFAULT_ROWS, value_parser = clap::value_parser!(u32).range(1..))]
     rows: u32,
     /// Explicit native/decoder work allowance.
     #[arg(long, default_value_t = STEPS, value_parser = clap::value_parser!(u64).range(1..=MAX_STEPS))]

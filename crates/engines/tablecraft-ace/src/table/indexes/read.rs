@@ -182,7 +182,7 @@ pub fn read_table_index_with_request<R: crate::NativeReadSource>(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<TableSnapshot, InspectError> {
-    if request.maximum_rows == 0 || request.maximum_rows > crate::TableSnapshotLimits::MAX_ROWS {
+    if request.maximum_rows == 0 {
         return Err(InspectError::InvalidSnapshotLimits);
     }
 
@@ -220,7 +220,7 @@ pub fn read_table_index_in_table_order<R: crate::NativeReadSource>(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<TableSnapshot, InspectError> {
-    if request.maximum_rows == 0 || request.maximum_rows > crate::TableSnapshotLimits::MAX_ROWS {
+    if request.maximum_rows == 0 {
         return Err(InspectError::InvalidSnapshotLimits);
     }
 

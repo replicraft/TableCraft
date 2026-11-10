@@ -30,7 +30,8 @@ fn read(
 
 #[test]
 fn invalid_limits_fail_before_reading_an_empty_source() {
-    for maximum_rows in [0, 1_000_001] {
+    {
+        let maximum_rows = 0;
         assert_eq!(
             read(&[], maximum_rows, None, IndexProjectionSelection::All).err(),
             Some(InspectError::InvalidSnapshotLimits)
@@ -50,6 +51,14 @@ fn complete_and_zero_width_reads_keep_exact_retention_caps() {
         &|| false,
     )
     .unwrap();
+    for maximum_rows in [1_000_001, u32::MAX] {
+        assert_eq!(
+            read(&bytes, maximum_rows, None, IndexProjectionSelection::All)
+                .unwrap()
+                .rows(),
+            expected.rows()
+        );
+    }
     assert_eq!(
         read(&bytes, 2, None, IndexProjectionSelection::All)
             .unwrap()

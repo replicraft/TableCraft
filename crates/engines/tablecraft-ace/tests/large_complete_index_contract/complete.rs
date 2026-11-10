@@ -78,8 +78,9 @@ fn caller_caps_are_checked_without_turning_a_complete_request_into_a_selection()
         assert_eq!(source.data_reads, 0);
     }
 
-    // This deliberately exceeds the public allowance; validation precedes I/O.
-    for cap in [0, TableSnapshotLimits::MAX_ROWS + 1] {
+    // A zero retention allowance is malformed before native I/O.
+    {
+        let cap = 0;
         let mut source = fixture::Sparse::new(6, true);
         let result = read_table_index_with_request(
             &mut source,

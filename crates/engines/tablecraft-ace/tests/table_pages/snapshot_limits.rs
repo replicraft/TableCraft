@@ -6,7 +6,7 @@ fn larger_budget() -> ResourceBudget {
 }
 
 #[test]
-fn explicit_snapshot_limits_materialize_large_tables_without_changing_default_reads() {
+fn default_and_explicit_snapshot_limits_materialize_only_actual_rows() {
     for code in [1, 2, 5, 6] {
         let mut bytes = database(20_000);
         bytes[20] = code;
@@ -14,11 +14,11 @@ fn explicit_snapshot_limits_materialize_large_tables_without_changing_default_re
             bytes[4..20].copy_from_slice(b"Standard ACE DB\0");
         }
         let mut source = PageReads::new(bytes.clone());
-        assert_eq!(
-            read_table_batched(&mut source, SCOPE, "Items", &mut larger_budget(), &|| false).err(),
-            Some(InspectError::StructureLimit)
-        );
-        assert_eq!(source.count(FIRST_DATA_PAGE as u64), 0);
+        let default =
+            read_table_batched(&mut source, SCOPE, "Items", &mut larger_budget(), &|| false)
+                .unwrap();
+        assert_eq!(default.rows(), expected(0, 20_000));
+        assert_eq!(source.count(FIRST_DATA_PAGE as u64), 1);
         for batch in [1, 127, 5000] {
             let mut source = PageReads::new(bytes.clone());
             let mut budget = larger_budget();
@@ -45,11 +45,24 @@ fn explicit_snapshot_limits_materialize_large_tables_without_changing_default_re
 
 #[test]
 fn snapshot_limits_are_checked_and_advanced_or_failed_cursors_cannot_publish_partial_tables() {
-    for (rows, batch) in [(0, 1), (1_000_001, 1), (1, 0), (1, 16_385)] {
+    for (rows, batch) in [(0, 1), (1, 0), (1, 16_385)] {
         assert_eq!(
             TableSnapshotLimits::new(rows, batch),
             Err(InspectError::InvalidSnapshotLimits)
         );
+    }
+    for maximum_rows in [1_000_001, u32::MAX] {
+        let mut source = Cursor::new(database(3));
+        let mut work = larger_budget();
+        let snapshot = TableCursor::open(&mut source, SCOPE, "Items", &mut work, &|| false)
+            .unwrap()
+            .into_snapshot(
+                TableSnapshotLimits::new(maximum_rows, 1).unwrap(),
+                &mut work,
+                &|| false,
+            )
+            .unwrap();
+        assert_eq!(snapshot.rows(), expected(0, 3));
     }
     let limits = TableSnapshotLimits::new(3, 1).unwrap();
     let mut source = Cursor::new(database(3));

@@ -414,7 +414,8 @@ fn indexed_live_roots_follow_bounded_relocation_to_a_deleted_target_slot() {
 
 #[test]
 fn table_order_requests_validate_row_limits_before_native_io() {
-    for maximum_rows in [0, u32::MAX] {
+    {
+        let maximum_rows = 0;
         let mut source = Cursor::new(Vec::<u8>::new());
         let result = read_table_index_in_table_order(
             &mut source,

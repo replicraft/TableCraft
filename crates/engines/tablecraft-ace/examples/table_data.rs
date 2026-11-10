@@ -47,7 +47,7 @@ struct Arguments {
     #[arg(long = "column", requires = "batch_size")]
     columns: Vec<String>,
     /// Explicit cumulative collection rows and parent/child snapshot ceiling (default 16,384).
-    #[arg(long, value_name = "ROWS", value_parser = clap::value_parser!(u32).range(1..=i64::from(TableSnapshotLimits::MAX_ROWS)))]
+    #[arg(long, value_name = "ROWS", value_parser = clap::value_parser!(u32).range(1..))]
     collection_rows: Option<u32>,
     /// Explicitly inspect stored multivalue collections instead of scalar rows.
     #[arg(long, value_name = "COLUMN", conflicts_with_all = ["index", "stored_calculation"])]

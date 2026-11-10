@@ -58,7 +58,7 @@ pub struct IndexReadRequest<'a> {
     pub columns: Option<&'a [&'a str]>,
     /// Native typed selection; unsupported keys fail without fallback.
     pub selection: IndexProjectionSelection<'a>,
-    /// Positive retained-row ceiling, at most TableSnapshotLimits::MAX_ROWS.
+    /// Positive caller-selected retained-row ceiling, represented by a native u32 count.
     pub maximum_rows: u32,
 }
 

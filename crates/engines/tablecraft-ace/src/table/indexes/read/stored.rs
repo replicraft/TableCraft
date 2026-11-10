@@ -23,7 +23,7 @@ fn read<R: NativeReadSource>(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<TableSnapshot, InspectError> {
     let request = options.request;
-    if request.maximum_rows == 0 || request.maximum_rows > crate::TableSnapshotLimits::MAX_ROWS {
+    if request.maximum_rows == 0 {
         return Err(InspectError::InvalidSnapshotLimits);
     }
     let features = inspect_table_features(source, scope, table, budget, cancelled)?;
