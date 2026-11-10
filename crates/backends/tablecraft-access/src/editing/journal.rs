@@ -42,14 +42,26 @@ pub(super) enum JournalRoute {
     Ordinary,
     #[cfg(feature = "ace16-create")]
     HistoricalRows,
+    #[cfg(feature = "ace16-create")]
+    CurrentRows,
 }
 
 impl JournalRoute {
+    fn current_rows(self) -> bool {
+        match self {
+            #[cfg(feature = "ace16-create")]
+            Self::CurrentRows => true,
+            _ => false,
+        }
+    }
+
     fn historical_rows(self) -> bool {
         match self {
             #[cfg(feature = "ace16-create")]
             Self::HistoricalRows => true,
             Self::Existing | Self::Ordinary => false,
+            #[cfg(feature = "ace16-create")]
+            Self::CurrentRows => false,
         }
     }
 }

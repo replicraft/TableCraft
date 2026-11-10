@@ -21,7 +21,10 @@ impl NativeJournalEditor {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<bool, NativeEditError> {
-        if self.route == JournalRoute::Ordinary || self.route.historical_rows() {
+        if self.route == JournalRoute::Ordinary
+            || self.route.historical_rows()
+            || self.route.current_rows()
+        {
             if self.profile != UpdateProfile::StoredScalar {
                 return Err(NativeEditError::Unsupported);
             }
@@ -105,8 +108,9 @@ impl NativeJournalEditor {
                 .ok_or(InspectError::StructureLimit)
                 .map_err(NativeEditError::from)?;
         }
-        if (self.route == JournalRoute::Ordinary || self.route.historical_rows())
-            && self.variable_columns_requested(columns, budget, cancelled)?
+        if self.route.current_rows()
+            || ((self.route == JournalRoute::Ordinary || self.route.historical_rows())
+                && self.variable_columns_requested(columns, budget, cancelled)?)
         {
             return self.plan_variable_columns_with_count(columns, count, budget, cancelled);
         }
@@ -231,6 +235,8 @@ impl NativeJournalEditor {
             JournalRoute::Ordinary => self
                 .editor
                 .plan_recoverable_ordinary_fixed(groups, budget, cancelled)?,
+            #[cfg(feature = "ace16-create")]
+            JournalRoute::CurrentRows => return Err(NativeEditError::Unsupported.into()),
             JournalRoute::Existing => self
                 .editor
                 .plan_recoverable_fixed(groups, budget, cancelled)?,
