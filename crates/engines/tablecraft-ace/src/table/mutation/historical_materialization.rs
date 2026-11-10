@@ -6,7 +6,7 @@ use super::{
     historical_fixed::source::Source,
     record_placement::{audit, forward::Plan, owned::Reservations, space::Space},
     record_roots,
-    record_serialization::{self, historical_fixed},
+    record_serialization::{self, historical_fixed, historical_mixed},
     rows::RowAssignment,
 };
 use crate::{
@@ -19,6 +19,12 @@ use tablecraft_core::{
     limits::{Resource, ResourceBudget},
     values::Value,
 };
+
+#[derive(Clone, Copy)]
+pub(super) enum Layout {
+    Fixed,
+    Mixed,
+}
 
 pub(super) struct Selected {
     ordinal: usize,
@@ -34,6 +40,7 @@ impl RowAssignment for Selected {
 pub(super) fn bind(
     source: &Source<'_>,
     groups: &[FixedColumnUpdates<'_>],
+    layout: Layout,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Selected, EditError> {
@@ -63,7 +70,14 @@ pub(super) fn bind(
         .records
         .get(update.row())
         .ok_or(EditError::Conflict)?;
-    historical_fixed::qualify(schema, column, &original.data, budget, cancelled)?;
+    match layout {
+        Layout::Fixed => {
+            historical_fixed::qualify(schema, column, &original.data, budget, cancelled)?;
+        }
+        Layout::Mixed => {
+            historical_mixed::qualify(schema, column, &original.data, budget, cancelled)?;
+        }
+    }
     Ok(Selected {
         ordinal: update.row(),
         column,
@@ -80,6 +94,31 @@ impl NativeImage {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<bool, EditError> {
+        Ok(self
+            .missing_historical_layout(table, groups, budget, cancelled)?
+            .is_some())
+    }
+
+    pub(crate) fn historical_mixed_number_materialization_selected(
+        &self,
+        table: &str,
+        groups: &[FixedColumnUpdates<'_>],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<bool, EditError> {
+        Ok(matches!(
+            self.missing_historical_layout(table, groups, budget, cancelled)?,
+            Some(Layout::Mixed)
+        ))
+    }
+
+    fn missing_historical_layout(
+        &self,
+        table: &str,
+        groups: &[FixedColumnUpdates<'_>],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Option<Layout>, EditError> {
         let source = Source::capture(self, table, budget, cancelled)?;
         for group in groups {
             for field in source.facts().table.schema().columns() {
@@ -96,12 +135,18 @@ impl NativeImage {
                         .ok_or(EditError::Conflict)?;
                     let count = usize::from(crate::format::bytes::u16_at(&record.data, 0)?);
                     if field.number() >= count {
-                        return Ok(true);
+                        return Ok(Some(
+                            if source.facts().table.schema().layout.variable_slots == 0 {
+                                Layout::Fixed
+                            } else {
+                                Layout::Mixed
+                            },
+                        ));
                     }
                 }
             }
         }
-        Ok(false)
+        Ok(None)
     }
 
     pub(crate) fn plan_historical_number_materialization(
@@ -111,9 +156,30 @@ impl NativeImage {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<NativeEditPlan, EditError> {
+        self.plan_historical_materialization(table, groups, Layout::Fixed, budget, cancelled)
+    }
+
+    pub(crate) fn plan_historical_mixed_number_materialization(
+        self,
+        table: &str,
+        groups: &[FixedColumnUpdates<'_>],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<NativeEditPlan, EditError> {
+        self.plan_historical_materialization(table, groups, Layout::Mixed, budget, cancelled)
+    }
+
+    fn plan_historical_materialization(
+        self,
+        table: &str,
+        groups: &[FixedColumnUpdates<'_>],
+        layout: Layout,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<NativeEditPlan, EditError> {
         let _span = tracing::debug_span!("native.historical_number_materialization.plan").entered();
         let source = Source::capture(&self, table, budget, cancelled)?;
-        let selected = bind(&source, groups, budget, cancelled)?;
+        let selected = bind(&source, groups, layout, budget, cancelled)?;
         let requests = [selected];
         let schema = source.facts().table.schema();
         let captured = record_roots::capture(&self, schema, &requests, budget, cancelled)?;
@@ -133,14 +199,24 @@ impl NativeImage {
             return Err(EditError::Preservation);
         }
         let update: &FixedScalarUpdate = &groups[0].updates()[0];
-        let record = historical_fixed::build(
-            schema,
-            root.update.column,
-            &original.data,
-            update.value(),
-            budget,
-            cancelled,
-        )?;
+        let record = match layout {
+            Layout::Fixed => historical_fixed::build(
+                schema,
+                root.update.column,
+                &original.data,
+                update.value(),
+                budget,
+                cancelled,
+            )?,
+            Layout::Mixed => historical_mixed::build(
+                schema,
+                root.update.column,
+                &original.data,
+                update.value(),
+                budget,
+                cancelled,
+            )?,
+        };
         let space = Space::capture_normal(&self, schema, &captured.owned, budget, cancelled)?;
         let mut reservations =
             Reservations::capture(&self, &space, &captured.owned, budget, cancelled)?;
@@ -176,7 +252,7 @@ impl NativeImage {
         }
         audit::final_pages(&placement, &after, budget, cancelled)?;
         space.audit(self.as_bytes(), &after, budget, cancelled)?;
-        proof::prove(&self, table, groups, &after, budget, cancelled)?;
+        proof::prove(&self, table, groups, layout, &after, budget, cancelled)?;
         drop(source);
         Ok(NativeEditPlan {
             before: self.bytes,

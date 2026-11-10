@@ -37,3 +37,6 @@ pub(in crate::table::mutation) fn copy(
 
 #[cfg(all(feature = "journal", feature = "ace16-create"))]
 pub(in crate::table::mutation) mod historical_fixed;
+
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub(in crate::table::mutation) mod historical_mixed;

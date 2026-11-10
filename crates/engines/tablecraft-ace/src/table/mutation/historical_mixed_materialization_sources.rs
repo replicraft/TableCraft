@@ -92,3 +92,194 @@ fn mixed_number_add_and_variable_footer_materialization_have_independent_complet
         assert_eq!(&before[9 * PAGE..], &expected[9 * PAGE..]);
     }
 }
+
+#[test]
+fn mixed_native_writer_matches_raw_payload_preserving_images_and_keeps_fixed_profile_closed() {
+    use crate::{FixedColumnUpdates, FixedScalarUpdate};
+
+    for case in [Case::Text, Case::Binary, Case::LaterAbsentText] {
+        let [_, before] = raw::pair(case);
+        for row in 0..3 {
+            let expected = raw::after(&before, row, 37);
+            let updates = [FixedScalarUpdate::new(row, Value::Null, Value::Int32(37))];
+            let groups = [FixedColumnUpdates::new("Table1", "Bonus", &updates)];
+            let image =
+                NativeImage::capture(&mut Cursor::new(&before), SCOPE, &mut budget(), &|| false)
+                    .unwrap();
+            assert!(
+                image
+                    .historical_mixed_number_materialization_selected(
+                        "Table1",
+                        &groups,
+                        &mut budget(),
+                        &|| false
+                    )
+                    .unwrap()
+            );
+            let plan = image
+                .plan_historical_mixed_number_materialization(
+                    "Table1",
+                    &groups,
+                    &mut budget(),
+                    &|| false,
+                )
+                .unwrap();
+            assert_eq!(plan.after_bytes(), expected);
+            assert_eq!(plan.changed_rows(), 1);
+            let image =
+                NativeImage::capture(&mut Cursor::new(&before), SCOPE, &mut budget(), &|| false)
+                    .unwrap();
+            assert!(
+                image
+                    .plan_historical_number_materialization(
+                        "Table1",
+                        &groups,
+                        &mut budget(),
+                        &|| false
+                    )
+                    .is_err()
+            );
+        }
+    }
+}
+
+#[test]
+fn consecutive_mixed_growth_keeps_forwarded_existing_number_updates_available() {
+    use crate::{FixedColumnUpdates, FixedScalarUpdate};
+
+    let [_, mut before] = raw::pair(Case::Text);
+    for row in 0..3 {
+        let expected = raw::after(&before, row, 37 + row as i32);
+        let updates = [FixedScalarUpdate::new(
+            row,
+            Value::Null,
+            Value::Int32(37 + row as i32),
+        )];
+        let groups = [FixedColumnUpdates::new("Table1", "Bonus", &updates)];
+        let image =
+            NativeImage::capture(&mut Cursor::new(&before), SCOPE, &mut budget(), &|| false)
+                .unwrap();
+        let plan = image
+            .plan_historical_mixed_number_materialization("Table1", &groups, &mut budget(), &|| {
+                false
+            })
+            .unwrap();
+        assert_eq!(plan.after_bytes(), expected);
+        before = expected;
+    }
+    let image =
+        NativeImage::capture(&mut Cursor::new(&before), SCOPE, &mut budget(), &|| false).unwrap();
+    assert!(
+        image
+            .select_native_historical_present_fixed_table("Table1", &mut budget(), &|| false)
+            .unwrap()
+    );
+    image
+        .check_native_historical_present_fixed_table("Table1", &mut budget(), &|| false)
+        .unwrap();
+    let updates = [FixedScalarUpdate::new(
+        0,
+        Value::Int32(42),
+        Value::Int32(99),
+    )];
+    let groups = [FixedColumnUpdates::new("Table1", "AfterLabel", &updates)];
+    assert!(
+        !image
+            .historical_mixed_number_materialization_selected(
+                "Table1",
+                &groups,
+                &mut budget(),
+                &|| false
+            )
+            .unwrap()
+    );
+    let plan = image
+        .plan_historical_present_fixed_updates("Table1", &groups, &mut budget(), &|| false)
+        .unwrap();
+    let table = read_table(
+        &mut Cursor::new(plan.after_bytes()),
+        SCOPE,
+        "Table1",
+        &mut budget(),
+        &|| false,
+    )
+    .unwrap();
+    assert_eq!(table.rows()[0][2], Value::Int32(99));
+    assert_eq!(table.rows()[0][1], Value::Text("alpha".into()));
+    assert_eq!(table.rows()[0][3], Value::Text("☃".into()));
+    for row in 0..3 {
+        assert_eq!(table.rows()[row][4], Value::Int32(37 + row as i32));
+    }
+}
+
+#[test]
+fn mixed_growth_refuses_bad_offset_tables_noops_wrong_expected_values_and_fixed_sources() {
+    use crate::{FixedColumnUpdates, FixedScalarUpdate};
+    use tablecraft_testkit::fixtures::access::canonical_created_number::mixed::after_off::populated;
+
+    let [_, before] = raw::pair(Case::Text);
+    for (expected, replacement) in [
+        (Value::Null, Value::Null),
+        (Value::Int32(0), Value::Int32(37)),
+        (Value::Null, Value::Boolean(true)),
+    ] {
+        let updates = [FixedScalarUpdate::new(0, expected, replacement)];
+        let groups = [FixedColumnUpdates::new("Table1", "Bonus", &updates)];
+        let image =
+            NativeImage::capture(&mut Cursor::new(&before), SCOPE, &mut budget(), &|| false)
+                .unwrap();
+        assert!(
+            image
+                .plan_historical_mixed_number_materialization(
+                    "Table1",
+                    &groups,
+                    &mut budget(),
+                    &|| false
+                )
+                .is_err()
+        );
+    }
+    let updates = [FixedScalarUpdate::new(0, Value::Null, Value::Int32(37))];
+    let groups = [FixedColumnUpdates::new("Table1", "Bonus", &updates)];
+    let first = usize::from(u16::from_le_bytes(
+        before[8 * PAGE + 14..8 * PAGE + 16].try_into().unwrap(),
+    ));
+    let mut corrupt = before.to_vec();
+    // First row ends at PAGE: offset0 immediately precedes count and mask.
+    corrupt[9 * PAGE - 5..9 * PAGE - 3].copy_from_slice(&1_u16.to_le_bytes());
+    assert!(first < PAGE - 5);
+    if let Ok(image) =
+        NativeImage::capture(&mut Cursor::new(&corrupt), SCOPE, &mut budget(), &|| false)
+    {
+        assert!(
+            image
+                .plan_historical_mixed_number_materialization(
+                    "Table1",
+                    &groups,
+                    &mut budget(),
+                    &|| false
+                )
+                .is_err()
+        );
+    }
+    let [_, fixed] = populated::pair("Bonus", &[Some(42), None, Some(-7)]);
+    let image =
+        NativeImage::capture(&mut Cursor::new(&fixed), SCOPE, &mut budget(), &|| false).unwrap();
+    assert!(
+        !image
+            .historical_mixed_number_materialization_selected(
+                "Table1",
+                &groups,
+                &mut budget(),
+                &|| false
+            )
+            .unwrap()
+    );
+    assert!(
+        image
+            .plan_historical_mixed_number_materialization("Table1", &groups, &mut budget(), &|| {
+                false
+            })
+            .is_err()
+    );
+}

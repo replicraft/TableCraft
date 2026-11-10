@@ -1,5 +1,5 @@
 //! Original bytes independently reconstruct the row and physical placement.
-use super::{Selected, bind};
+use super::{Layout, Selected, bind};
 use crate::{
     EditError, FixedColumnUpdates, InspectError, NativeImage, TableSchema, WriteBlocker,
     format::{
@@ -29,6 +29,7 @@ pub(super) fn prove(
     image: &NativeImage,
     table: &str,
     groups: &[FixedColumnUpdates<'_>],
+    layout: Layout,
     after: &[u8],
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
@@ -37,21 +38,34 @@ pub(super) fn prove(
     source
         .facts()
         .require_preserved_definition_tail(image, after, budget, cancelled)?;
-    let requests = [bind(&source, groups, budget, cancelled)?];
+    let requests = [bind(&source, groups, layout, budget, cancelled)?];
     let schema = source.facts().table.schema();
     let captured = record_roots::capture(image, schema, &requests, budget, cancelled)?;
     let root = captured.selected.first().ok_or(EditError::Conflict)?;
     if captured.selected.len() != 1 || root.word & !OFFSET_MASK != 0 {
         return Err(EditError::Unsupported(WriteBlocker::RowLayout));
     }
-    let record = reconstruct(
-        schema,
-        root.update,
-        &root.final_record.data,
-        groups[0].updates()[0].value(),
-        budget,
-        cancelled,
-    )?;
+    let value = groups[0].updates()[0].value();
+    let record = match layout {
+        Layout::Fixed => reconstruct(
+            schema,
+            root.update,
+            &root.final_record.data,
+            value,
+            budget,
+            cancelled,
+        )?,
+        Layout::Mixed => {
+            crate::table::mutation::record_serialization::proof::historical_mixed::reconstruct(
+                schema,
+                root.update.column,
+                &root.final_record.data,
+                value,
+                budget,
+                cancelled,
+            )?
+        }
+    };
     let space = Space::capture_normal(image, schema, &captured.owned, budget, cancelled)?;
     let mut physical =
         placement::Placement::capture(image, &space, &captured.owned, budget, cancelled)?;
