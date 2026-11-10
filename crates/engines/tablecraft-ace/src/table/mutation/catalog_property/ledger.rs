@@ -19,6 +19,13 @@ use crate::{
 use std::io::Cursor;
 use tablecraft_core::{ids::ObjectId, limits::ResourceBudget};
 
+#[derive(Clone, Copy)]
+enum Traversal {
+    Original,
+    #[cfg(all(feature = "journal", feature = "ace16-create"))]
+    RetainedRows,
+}
+
 struct Live<'a> {
     origin: &'a NativeObjectOrigin,
     descriptor: descriptor::Descriptor,
@@ -38,6 +45,26 @@ pub(crate) struct Ledger<'a> {
 pub(crate) fn capture<'a>(
     bytes: &'a [u8],
     catalog: &'a CatalogInspection,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Ledger<'a>, EditError> {
+    capture_with_traversal(bytes, catalog, Traversal::Original, budget, cancelled)
+}
+
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub(crate) fn capture_retained_rows<'a>(
+    bytes: &'a [u8],
+    catalog: &'a CatalogInspection,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Ledger<'a>, EditError> {
+    capture_with_traversal(bytes, catalog, Traversal::RetainedRows, budget, cancelled)
+}
+
+fn capture_with_traversal<'a>(
+    bytes: &'a [u8],
+    catalog: &'a CatalogInspection,
+    traversal: Traversal,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Ledger<'a>, EditError> {
@@ -90,7 +117,17 @@ pub(crate) fn capture<'a>(
         if !owned.ordinary.pages.contains(&origin.page()) {
             return Err(InspectError::Malformed.into());
         }
-        let descriptor = descriptor::capture(&mut reader, &schema, selected, origin)?;
+        let descriptor = match traversal {
+            Traversal::Original => descriptor::capture(&mut reader, &schema, selected, origin)?,
+            #[cfg(all(feature = "journal", feature = "ace16-create"))]
+            Traversal::RetainedRows => descriptor::capture_retained(
+                &mut reader,
+                &schema,
+                selected,
+                origin,
+                &owned.ordinary.pages,
+            )?,
+        };
         let physical_page = u32::try_from(descriptor.physical_offset() / PAGE_BYTES)
             .map_err(|_| InspectError::StructureLimit)?;
         reader.work(owned.ordinary.pages.len())?;

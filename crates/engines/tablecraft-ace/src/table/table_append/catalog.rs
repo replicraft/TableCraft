@@ -155,12 +155,12 @@ pub(super) fn capture(
         .ok_or_else(refused)?;
     // The existing catalog/LVAL ledgers bind live forwarded roots and every
     // externally stored property body; raw retained records remain untouched.
-    drop(ledger::capture(
-        image.as_bytes(),
-        image.catalog(),
-        budget,
-        cancelled,
-    )?);
+    let property_ledger = if dynamic_rows {
+        ledger::capture_retained_rows(image.as_bytes(), image.catalog(), budget, cancelled)?
+    } else {
+        ledger::capture(image.as_bytes(), image.catalog(), budget, cancelled)?
+    };
+    drop(property_ledger);
     let long_values = if dynamic_rows {
         lval_ownership::Inventory::capture_retained(image, budget, cancelled)?
     } else {

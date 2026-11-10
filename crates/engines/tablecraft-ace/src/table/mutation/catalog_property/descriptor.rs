@@ -1,4 +1,6 @@
 //! Actual catalog object-to-LvProp descriptor observation, without write authority.
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+use crate::format::row::reference_page;
 use crate::{
     InspectError, NativeObjectOrigin, NativeReadSource, TableSchema,
     format::{
@@ -9,6 +11,8 @@ use crate::{
     table::{long_value::trace, record_layout},
 };
 use std::ops::Range;
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+use tablecraft_core::limits::Resource;
 
 /// The actual native record owns the observed bytes; absence is not inline-empty.
 pub(crate) struct Descriptor {
@@ -29,6 +33,50 @@ pub(crate) fn capture<R: NativeReadSource>(
         catalog.definition_page(),
         &page,
     )?;
+    finish(record, catalog, column, reader)
+}
+
+/// A retained row-purpose ledger supplies the complete checked catalog DATA
+/// scope. Each followed native reference remains inside that same owner, with
+/// paid dynamic cycle detection; the ledger separately proves unique terminals.
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub(crate) fn capture_retained<R: NativeReadSource>(
+    reader: &mut Reader<'_, R>,
+    catalog: &TableSchema,
+    column: usize,
+    origin: &NativeObjectOrigin,
+    owned: &[u32],
+) -> Result<Descriptor, InspectError> {
+    for pair in owned.windows(2) {
+        reader.tick()?;
+        if pair[0] >= pair[1] {
+            return Err(InspectError::Malformed);
+        }
+    }
+    let page = reader.page(origin.page())?;
+    let record = reader.read_location_observed(
+        origin.page(),
+        origin.slot(),
+        catalog.definition_page(),
+        &page,
+        &mut |reference, budget| {
+            let levels = owned.len().checked_ilog2().unwrap_or(0) as u64 + 1;
+            budget.charge(Resource::Steps, levels)?;
+            if owned.binary_search(&reference_page(reference)).is_err() {
+                return Err(InspectError::Malformed);
+            }
+            Ok(())
+        },
+    )?;
+    finish(record, catalog, column, reader)
+}
+
+fn finish<R: NativeReadSource>(
+    record: PhysicalRow,
+    catalog: &TableSchema,
+    column: usize,
+    reader: &mut Reader<'_, R>,
+) -> Result<Descriptor, InspectError> {
     let framed = record_layout::parse(&record.data, catalog, reader.budget)?;
     let column = catalog
         .columns()

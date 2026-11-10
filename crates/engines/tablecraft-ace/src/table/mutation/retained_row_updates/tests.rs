@@ -295,11 +295,11 @@ fn retained_updates_follow_paid_long_user_and_catalog_chains_without_losing_lega
     let user = raw_forwarding_chain::extend(&base, definition + 1, 0, 20);
     let catalog = raw_forwarding_chain::extend(&base, 4, catalog_root, 20);
     let both = raw_forwarding_chain::extend(&user, 4, catalog_root, 20);
-    for before in [&user, &catalog, &both] {
+    for (scenario, before) in [("user", &user), ("catalog", &catalog), ("both", &both)] {
         let native = image(before);
         native
             .check_native_retained_rows_table("Added", &mut budget(), &|| false)
-            .unwrap();
+            .unwrap_or_else(|error| panic!("{scenario}: check: {error:?}"));
         let noop = [FixedScalarUpdate::new(
             0,
             Value::Int32(123),

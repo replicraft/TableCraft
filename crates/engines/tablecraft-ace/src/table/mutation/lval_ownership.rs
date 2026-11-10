@@ -381,6 +381,15 @@ impl Inventory {
     ) -> Result<(), EditError> {
         protect(&mut self.protected, schema.definition_page(), reader)?;
         let ordinary = allocation::pages(reader, schema.layout.usage)?;
+        #[cfg(all(feature = "journal", feature = "ace16-create"))]
+        if matches!(traversal, RowTraversal::Retained) {
+            for pair in ordinary.windows(2) {
+                reader.tick()?;
+                if pair[0] >= pair[1] {
+                    return Err(InspectError::Malformed.into());
+                }
+            }
+        }
         for &page in &ordinary {
             protect(&mut self.protected, page, reader)?;
         }
