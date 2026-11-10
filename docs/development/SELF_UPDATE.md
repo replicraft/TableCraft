@@ -72,3 +72,21 @@ trust. Keep a recoverable offline backup of the real key.
 
 No tag, push, workflow dispatch or release publication was performed by this
 implementation. The in-app updater is not implemented yet.
+
+## Local verification — 9 November 2026
+
+Five tests execute the real Minisign tool: complete-set verification, tampered
+payload refusal, valid signatures carrying the wrong version/filename, wrong key,
+missing sidecars, failed-sign cleanup and missing production trust/symlink refusal.
+All pass. The 33 existing CLI/desktop archive tests, workflow actionlint and local
+documentation-link check pass as well.
+
+A freshly generated notice bundle and retained generated ICNS were packaged with
+the existing macOS ARM64 **debug** desktop executable. Extraction, architecture,
+manifest/notice/icon checks and extracted `--help`/`--version` pass. That actual
+archive was then signed with a fresh disposable key; cryptographic verification
+and exact trusted-comment matching pass. Artifacts and the test public key remain
+under ignored `.cache/desktop-updater-packaging-dry-run-20261109/`; its private key
+was deleted with its temporary directory. This is one local platform's packaging
+and signature evidence, not a release build, production-key signature,
+six-platform CI run or updater installation test. No native window was launched.
