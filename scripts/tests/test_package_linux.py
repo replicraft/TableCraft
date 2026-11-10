@@ -250,6 +250,18 @@ class LinuxPackagingTests(unittest.TestCase):
             "update-mime-database /usr/share/mime",
         ])
 
+    def test_common_license_aliases_resolve_only_inside_the_owned_system_directory(self):
+        licenses = self.root / "common-licenses"
+        licenses.mkdir()
+        (licenses / "GPL-3").write_text("Independent test license text\n")
+        (licenses / "GPL").symlink_to("GPL-3")
+        self.assertEqual(linux.common_license_text(licenses, "GPL"), "Independent test license text\n")
+        outside = self.root / "outside-license"
+        outside.write_text("not owned by the common-license directory")
+        (licenses / "escape").symlink_to(outside)
+        with self.assertRaisesRegex(ValueError, "escapes"):
+            linux.common_license_text(licenses, "escape")
+
     def test_native_tools_do_not_inherit_release_signing_secrets(self):
         with patch.dict(os.environ, {
             "TABLECRAFT_UPDATE_SIGNING_KEY": "first-party-test-key",

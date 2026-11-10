@@ -413,6 +413,14 @@ def library_package(source):
     raise ValueError("Cannot identify the installed package owning a bundled library")
 
 
+def common_license_text(directory, name):
+    root = directory.resolve(strict=True)
+    path = (root / name).resolve(strict=True)
+    if not path.is_relative_to(root):
+        raise ValueError("A common-license alias escapes its system license directory")
+    return contract.regular(path, contract.MAX_LEGAL_BYTES).read_text("utf-8")
+
+
 def native_library_notices(appdir, libraries):
     deployed = {}
     for path in (appdir / "usr/lib").rglob("*"):
@@ -455,7 +463,7 @@ def native_library_notices(appdir, libraries):
         sections.append(f"Package {identity}\n{text}\n")
         common.update(COMMON_LICENSE.findall(text))
     for name in sorted(common):
-        text = contract.regular(Path("/usr/share/common-licenses") / name, contract.MAX_LEGAL_BYTES).read_text("utf-8")
+        text = common_license_text(Path("/usr/share/common-licenses"), name)
         sections.append(f"Common license {name}\n{text}\n")
     return "\n".join(sections), {"libraries": records, "packages": versions}
 
