@@ -23,6 +23,7 @@ use tablecraft_testkit::fixtures::access::{
     },
     canonical_table_drop::retained::{self as raw, Case},
 };
+use tablecraft_ui::ObjectKind;
 
 fn open_table(harness: &mut Harness<'_, Desktop>, name: &str) {
     harness.get_by_role_and_label(Role::Button, name).focus();
@@ -45,8 +46,25 @@ fn journey(case: Case, name: &str, target: Target, cancel: bool) {
     open_table(&mut harness, "Table1");
     let original = harness.state().state.active_object().unwrap();
     let scratch_tab = scratch(&mut harness, &original);
-    close_table(&mut harness, &original);
+    // The second-table source initially opens Other. Table DROP's existing
+    // binding requires all native object tabs closed, so close each real tab;
+    // keep the unsaved SQL scratch open throughout the operation.
+    let native_tabs = harness
+        .state()
+        .state
+        .object_tabs()
+        .into_iter()
+        .filter(|tab| matches!(tab.target.kind, ObjectKind::Table { .. }))
+        .collect::<Vec<_>>();
+    for tab in native_tabs {
+        close_table(&mut harness, &tab);
+    }
     delete_navigation(&mut harness);
+    assert!(
+        harness.state().state.table_drop_open(),
+        "Initial DROP: {:?}",
+        harness.state().state.error
+    );
     confirmation(&harness, source.roots.len());
     assert_eq!(std::fs::read(&path).unwrap(), before);
     assert!(!journal_path(&path).exists());
@@ -57,6 +75,11 @@ fn journey(case: Case, name: &str, target: Target, cancel: bool) {
         assert_eq!(std::fs::read(&path).unwrap(), before);
         assert!(!harness.state().editing.has_save());
         delete_navigation(&mut harness);
+        assert!(
+            harness.state().state.table_drop_open(),
+            "Repeated DROP: {:?}",
+            harness.state().state.error
+        );
         confirmation(&harness, source.roots.len());
     }
     choose(&mut harness, "Yes");
