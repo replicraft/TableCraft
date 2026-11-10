@@ -1,7 +1,7 @@
 //! Real clipboard events enter the same source-bound review and save workflow.
 use super::*;
 #[cfg(any(target_os = "macos", target_os = "linux", windows))]
-use crate::workspace::test_support::editing::{review_pasted_cell, save_reviewed_row};
+use crate::workspace::editing::test_support::{review_pasted_cell, save_reviewed_row};
 use crate::workspace::test_support::{finish_reads, focus_cell, opened};
 use egui::accesskit::Role;
 use egui_kittest::kittest::Queryable;

@@ -15,6 +15,8 @@ pub(super) mod recovery;
 pub(super) mod table_creation;
 mod table_drop;
 pub(super) mod table_rename;
+#[cfg(all(test, any(target_os = "macos", target_os = "linux", windows)))]
+pub(super) mod test_support;
 mod uncertain;
 use super::{Desktop, PendingOperation, objects::Sessions};
 use crate::view_models::cell;

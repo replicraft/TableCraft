@@ -1,6 +1,6 @@
 //! Ordinary clipboard/review/save widgets shared by real-file host journeys.
-use super::{finish_reads, finish_save, focus_cell};
 use crate::workspace::Desktop;
+use crate::workspace::test_support::{finish_reads, finish_save, focus_cell};
 use egui::accesskit::Role;
 use egui_kittest::{Harness, kittest::Queryable};
 use std::path::Path;
