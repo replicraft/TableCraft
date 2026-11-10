@@ -2,7 +2,7 @@
 use crate::{InspectError, header::check};
 use tablecraft_core::limits::ResourceBudget;
 
-const MAX_NAME_UNITS: usize = 64;
+pub(crate) const MAX_NAME_UNITS: usize = 64;
 
 /// Borrowed native spelling validation. Callers retain operation-specific errors
 /// and their original leading cancellation/guard order.

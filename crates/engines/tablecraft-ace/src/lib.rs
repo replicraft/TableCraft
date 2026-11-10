@@ -355,6 +355,10 @@ pub use transaction::{
 };
 
 #[cfg(all(feature = "ace16-create", feature = "journal"))]
+pub use table::{
+    CurrentFieldAdditionError, CurrentFieldAdditionSource, NativeCurrentFieldAdditionCandidate,
+};
+#[cfg(all(feature = "ace16-create", feature = "journal"))]
 pub use table::{FieldDropError, NativeFieldDropCandidate, NativeFieldDropIdentity};
 #[cfg(all(feature = "ace16-create", feature = "journal"))]
 pub use table::{

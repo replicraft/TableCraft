@@ -18,10 +18,11 @@ pub(crate) use repeated::{
 };
 
 use super::EditError;
+use super::owned_lval::property::{self, PropertyAppend};
 use super::record_serialization::long_value::{Encoded, StorageChoice};
 use crate::{
     InspectError, NativeImage, TableSchema,
-    format::{allocation::MapCell, page::PAGE_BYTES, row::reference},
+    format::{allocation::MapCell, page::PAGE_BYTES, reader::Reader, row::reference},
     inspect_table_schema,
 };
 use tablecraft_core::limits::ResourceBudget;
@@ -109,3 +110,26 @@ pub(crate) fn compose(
 }
 
 pub(crate) use repeated::fitted_property_capacity;
+
+/// Append only the property body into existing column-owned space. The caller
+/// owns current schema admission and patches its parser-bound Single descriptor
+/// directly, retaining inactive catalog record padding without reserialization.
+pub(in crate::table::mutation) fn append_fitted_body(
+    image: &NativeImage,
+    body: &[u8],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<PropertyAppend, EditError> {
+    let catalog = catalog(image, budget, cancelled)?;
+    let selected = column(&catalog)?;
+    let mut input = image.reader();
+    let mut reader = Reader {
+        source: &mut input,
+        header: image.catalog().header(),
+        budget,
+        cancelled,
+        reads: 0,
+    };
+    let references = maps::references(&mut reader, &catalog, selected)?;
+    property::append_fitted(image, &catalog, references, body, budget, cancelled)
+}

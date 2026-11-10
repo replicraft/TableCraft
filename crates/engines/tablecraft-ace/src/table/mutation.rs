@@ -1,5 +1,7 @@
 #[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
 mod ace_profile;
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+mod add_field;
 #[cfg(feature = "ace16-write-preview")]
 pub(in crate::table) mod append;
 mod apply;
@@ -34,9 +36,9 @@ pub(super) mod normal_eof;
 #[cfg(feature = "ace16-write-preview")]
 pub use index_create::{Ace16IndexCreatePreview, SecondaryIndexCreate};
 #[cfg(all(feature = "ace16-create", feature = "journal"))]
-mod drop_field;
-#[cfg(all(feature = "ace16-create", feature = "journal"))]
 pub(crate) mod current_schema;
+#[cfg(all(feature = "ace16-create", feature = "journal"))]
+mod drop_field;
 #[cfg(feature = "journal")]
 pub(crate) mod drop_table;
 #[cfg(feature = "ace16-write-preview")]
@@ -218,6 +220,10 @@ pub(crate) mod query_expression_edit;
 #[cfg(feature = "journal")]
 mod query_expression_source;
 
+#[cfg(all(feature = "ace16-create", feature = "journal"))]
+pub use add_field::{
+    CurrentFieldAdditionError, CurrentFieldAdditionSource, NativeCurrentFieldAdditionCandidate,
+};
 #[cfg(all(feature = "ace16-create", feature = "journal"))]
 pub use drop_field::{FieldDropError, NativeFieldDropCandidate, NativeFieldDropIdentity};
 #[cfg(all(feature = "ace16-create", feature = "journal"))]
