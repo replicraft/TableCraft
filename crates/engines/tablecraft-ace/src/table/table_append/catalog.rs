@@ -1,8 +1,8 @@
 //! Actual live application ancestry, explicit name tracking and payload ownership.
 use super::refused;
 use crate::{
-    EditError, FileFormat, NativeImage, NativeSortOrder, NativeTableStorage, PayloadPresence,
-    PropertyGroupKind, TableSchema,
+    EditError, FileFormat, InspectError, NativeImage, NativeSortOrder, NativeTableStorage,
+    PayloadPresence, PropertyGroupKind, TableSchema,
     format::data_type,
     header::check,
     inspect_database_properties, inspect_table_schema,
@@ -78,7 +78,9 @@ pub(super) fn capture(
         .zip(image.catalog().origins())
     {
         check(budget, cancelled)?;
-        budget.charge(Resource::Steps, object.name().as_str().len() as u64)?;
+        budget
+            .charge(Resource::Steps, object.name().as_str().len() as u64)
+            .map_err(InspectError::from)?;
         if origin.is_system() {
             if !ROLES.contains(&object.name().as_str()) {
                 return Err(refused());
@@ -120,10 +122,12 @@ pub(super) fn capture(
         let mut found = None;
         for property in group.properties() {
             check(budget, cancelled)?;
-            budget.charge(
-                Resource::Steps,
-                property.name().len().max(name.len()) as u64,
-            )?;
+            budget
+                .charge(
+                    Resource::Steps,
+                    property.name().len().max(name.len()) as u64,
+                )
+                .map_err(InspectError::from)?;
             if property.name().eq_ignore_ascii_case(name) && found.replace(property).is_some() {
                 return Err(refused());
             }

@@ -21,11 +21,11 @@ use tablecraft_core::limits::ResourceBudget;
 #[derive(Clone, Copy, PartialEq, Eq)]
 enum Role {
     Header,
-    Definition(u32),
+    Definition,
     Maps,
-    Data(u32),
-    LongValue(u32, usize),
-    Index(u32, usize),
+    Data,
+    LongValue,
+    Index,
 }
 
 struct Census {
@@ -95,7 +95,8 @@ fn physical(
     }
     reader
         .budget
-        .charge_allocation(count as u64, size_of::<Option<Role>>() as u64)?;
+        .charge_allocation(count as u64, size_of::<Option<Role>>() as u64)
+        .map_err(InspectError::from)?;
     let mut roles = Vec::new();
     roles
         .try_reserve_exact(count)
@@ -164,7 +165,7 @@ fn physical(
     let catalog_pages = allocation::pages(&mut reader, catalog.layout.usage)?;
     for &number in &catalog_pages {
         reader.tick()?;
-        if census.roles.get(number as usize) != Some(&Some(Role::Data(catalog.definition_page()))) {
+        if census.roles.get(number as usize) != Some(&Some(Role::Data)) {
             return Err(refused());
         }
         pages::framing(
@@ -211,7 +212,8 @@ impl Census {
         }
         reader
             .budget
-            .charge_allocation(1, size_of::<u32>() as u64)?;
+            .charge_allocation(1, size_of::<u32>() as u64)
+            .map_err(InspectError::from)?;
         self.references
             .try_reserve(1)
             .map_err(|_| InspectError::Allocation)?;
@@ -236,7 +238,7 @@ impl Census {
     ) -> Result<(), EditError> {
         definition::read_with_pages(reader, number, |page, reader| {
             reader.tick()?;
-            self.claim(page, Role::Definition(number))
+            self.claim(page, Role::Definition)
                 .map_err(|error| match error {
                     EditError::Inspect(error) => error,
                     _ => InspectError::Unsupported,
@@ -262,7 +264,7 @@ impl Census {
         }
         let mut rows = 0_u32;
         for &page in &owned {
-            self.claim(page, Role::Data(number))?;
+            self.claim(page, Role::Data)?;
             rows = rows
                 .checked_add(pages::ordinary(page, number, &owned, reader)?)
                 .ok_or_else(refused)?;
@@ -271,7 +273,7 @@ impl Census {
             return Err(refused());
         }
         let storage = indexes::definition::physical_storage(reader, number, &layout)?;
-        for (physical, (&map, &root)) in storage.maps.iter().zip(&storage.roots).enumerate() {
+        for (&map, &root) in storage.maps.iter().zip(&storage.roots) {
             let pages = self.map_storage(map, MapRole::Owned, global, reader)?;
             reader.work(pages.len())?;
             if !pages.contains(&root) {
@@ -281,7 +283,7 @@ impl Census {
                 return Err(refused());
             }
             for page in pages {
-                self.claim(page, Role::Index(number, physical))?;
+                self.claim(page, Role::Index)?;
                 pages::index(page, number, reader)?;
                 if !live {
                     pages::retired_index(page, reader)?;
@@ -308,7 +310,7 @@ impl Census {
                 }
             }
             for page in owned {
-                self.claim(page, Role::LongValue(number, column.number))?;
+                self.claim(page, Role::LongValue)?;
                 let raw = reader.page(page)?;
                 pages::framing(&raw, u32::from_le_bytes(*b"LVAL"), reader)?;
             }
@@ -324,7 +326,8 @@ fn push_page(
 ) -> Result<(), EditError> {
     reader
         .budget
-        .charge_allocation(1, size_of::<u32>() as u64)?;
+        .charge_allocation(1, size_of::<u32>() as u64)
+        .map_err(InspectError::from)?;
     pages.try_reserve(1).map_err(|_| InspectError::Allocation)?;
     pages.push(page);
     Ok(())
