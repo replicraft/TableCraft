@@ -1,15 +1,25 @@
+pub(crate) mod visited;
+
 use super::bytes::{u16_at, u32_at};
 use super::{
     page::{DATA_SIGNATURE, OWNER_OFFSET, PAGE_BYTES},
     row::*,
 };
-use crate::limits::{MAX_PAGE_READS, MAX_RELOCATION_HOPS};
+use crate::limits::MAX_RELOCATION_HOPS;
 use crate::{Header, InspectError};
 use tablecraft_core::limits::{Resource, ResourceBudget};
+use visited::Visited;
 
 pub(crate) struct PhysicalRow {
     pub data: Vec<u8>,
     pub offset: usize,
+}
+
+#[derive(Clone, Copy)]
+enum RowAccess {
+    ExplicitRead,
+    LiveRead,
+    PhysicalProof,
 }
 
 // Optional row traversal authority is caller-owned and allocation-free here.
@@ -23,6 +33,7 @@ pub(crate) struct Reader<'a, R> {
     pub header: Header,
     pub budget: &'a mut ResourceBudget,
     pub cancelled: &'a dyn Fn() -> bool,
+    /// Saturating diagnostic count, never a native format or admission limit.
     pub reads: u32,
 }
 impl<R: crate::NativeReadSource> Reader<'_, R> {
@@ -41,22 +52,7 @@ impl<R: crate::NativeReadSource> Reader<'_, R> {
         if number >= self.header.page_count() {
             return Err(InspectError::Malformed);
         }
-        if self.reads >= MAX_PAGE_READS {
-            return Err(InspectError::StructureLimit);
-        }
-        self.reads += 1;
-        self.page_payload(number)
-    }
-    /// Long-value chains prove finite traversal from nonempty payloads, source
-    /// geometry and a paid visited set, rather than an unrelated page-count cap.
-    pub(crate) fn long_value_page(
-        &mut self,
-        number: u32,
-    ) -> Result<[u8; PAGE_BYTES], InspectError> {
-        self.tick()?;
-        if number >= self.header.page_count() {
-            return Err(InspectError::Malformed);
-        }
+        self.reads = self.reads.saturating_add(1);
         self.page_payload(number)
     }
     fn page_payload(&mut self, number: u32) -> Result<[u8; PAGE_BYTES], InspectError> {
@@ -84,8 +80,15 @@ impl<R: crate::NativeReadSource> Reader<'_, R> {
         slot: u8,
         owner: Option<u32>,
     ) -> Result<Vec<u8>, InspectError> {
-        self.row_impl(page_number, slot, owner, false, None, None)
-            .map(|row| row.data)
+        self.row_impl(
+            page_number,
+            slot,
+            owner,
+            RowAccess::ExplicitRead,
+            None,
+            None,
+        )
+        .map(|row| row.data)
     }
     /// Reuse a caller's current data page only for its live root. Relocation targets
     /// still require bounded physical reads and the same owner/slot validation.
@@ -96,9 +99,36 @@ impl<R: crate::NativeReadSource> Reader<'_, R> {
         owner: u32,
         page: &[u8; PAGE_BYTES],
     ) -> Result<Vec<u8>, InspectError> {
-        self.row_impl(page_number, slot, Some(owner), true, Some(page), None)
-            .map(|row| row.data)
+        self.row_impl(
+            page_number,
+            slot,
+            Some(owner),
+            RowAccess::LiveRead,
+            Some(page),
+            None,
+        )
+        .map(|row| row.data)
     }
+    /// Resolve a live row's physical location for inert reading, with paid
+    /// cycle detection rather than the separate mutation-proof hop guard.
+    pub(crate) fn read_location(
+        &mut self,
+        page_number: u32,
+        slot: u8,
+        owner: u32,
+        page: &[u8; PAGE_BYTES],
+    ) -> Result<PhysicalRow, InspectError> {
+        self.row_impl(
+            page_number,
+            slot,
+            Some(owner),
+            RowAccess::LiveRead,
+            Some(page),
+            None,
+        )
+    }
+
+    /// Resolve a row within the existing qualified physical-mutation scope.
     pub fn row_location(
         &mut self,
         page_number: u32,
@@ -106,10 +136,18 @@ impl<R: crate::NativeReadSource> Reader<'_, R> {
         owner: u32,
         page: &[u8; PAGE_BYTES],
     ) -> Result<PhysicalRow, InspectError> {
-        self.row_impl(page_number, slot, Some(owner), true, Some(page), None)
+        self.row_impl(
+            page_number,
+            slot,
+            Some(owner),
+            RowAccess::PhysicalProof,
+            Some(page),
+            None,
+        )
     }
     /// Resolve one live row with caller-owned page scope and per-hop claims.
     /// The existing pointer, owner, cycle and hop grammar remains authoritative.
+    /// Its existing physical-proof hop guard remains separate from read traversal.
     /// No trace vector or additional page buffer is allocated by this context.
     #[cfg(feature = "journal")]
     pub(crate) fn row_location_scoped(
@@ -126,7 +164,7 @@ impl<R: crate::NativeReadSource> Reader<'_, R> {
             page_number,
             slot,
             Some(owner),
-            true,
+            RowAccess::PhysicalProof,
             Some(page),
             Some(&mut scope),
         )
@@ -137,13 +175,23 @@ impl<R: crate::NativeReadSource> Reader<'_, R> {
         mut page_number: u32,
         mut slot: u8,
         owner: Option<u32>,
-        live_root: bool,
+        access: RowAccess,
         initial_page: Option<&[u8; PAGE_BYTES]>,
         mut scope: Option<&mut RowScope<'_>>,
     ) -> Result<PhysicalRow, InspectError> {
-        let mut visited = [0_u32; MAX_RELOCATION_HOPS];
-        for depth in 0..MAX_RELOCATION_HOPS {
+        let physical_proof = matches!(access, RowAccess::PhysicalProof);
+        let live_root = !matches!(access, RowAccess::ExplicitRead);
+        let mut proof_visited = [0_u32; MAX_RELOCATION_HOPS];
+        let mut read_visited = Visited::new();
+        let mut depth = 0usize;
+        loop {
+            if physical_proof && depth == MAX_RELOCATION_HOPS {
+                return Err(InspectError::StructureLimit);
+            }
             self.tick()?;
+            if page_number >= self.header.page_count() {
+                return Err(InspectError::Malformed);
+            }
             let key = reference(page_number, slot);
             if let Some(scope) = scope.as_deref_mut() {
                 let levels = scope.owned.len().checked_ilog2().unwrap_or(0) as usize + 1;
@@ -152,10 +200,12 @@ impl<R: crate::NativeReadSource> Reader<'_, R> {
                     return Err(InspectError::Malformed);
                 }
             }
-            if visited[..depth].contains(&key) {
-                return Err(InspectError::Malformed);
+            if physical_proof {
+                if proof_visited[..depth].contains(&key) {
+                    return Err(InspectError::Malformed);
+                }
+                proof_visited[depth] = key;
             }
-            visited[depth] = key;
             let fetched;
             let page = match (depth, initial_page) {
                 (0, Some(page)) => page,
@@ -177,6 +227,12 @@ impl<R: crate::NativeReadSource> Reader<'_, R> {
                 (scope.visit)(key, self.budget)?;
             }
             if flags & RELOCATED_MASK != 0 {
+                // Ordinary unforwarded rows allocate no traversal set. Only
+                // followed references retain paid cycle-detection ownership.
+                if !physical_proof {
+                    read_visited.insert(key, self)?;
+                }
+                depth = depth.checked_add(1).ok_or(InspectError::StructureLimit)?;
                 let reference = u32_at(&page[start..end], 0)?;
                 page_number = reference_page(reference);
                 slot = reference_slot(reference);
@@ -192,7 +248,6 @@ impl<R: crate::NativeReadSource> Reader<'_, R> {
                 offset: page_number as usize * PAGE_BYTES + start,
             });
         }
-        Err(InspectError::StructureLimit)
     }
 }
 pub(crate) fn row_count(page: &[u8]) -> Result<usize, InspectError> {
@@ -246,3 +301,6 @@ pub(crate) fn live_row_range(
 
 #[cfg(test)]
 mod live_tests;
+
+#[cfg(test)]
+mod traversal_tests;

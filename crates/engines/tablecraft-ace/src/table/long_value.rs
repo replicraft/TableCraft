@@ -1,5 +1,5 @@
 //! Bounded native long-value storage shared by MEMO and opaque OLE bytes.
-mod check;
+pub(in crate::table) mod check;
 mod definition;
 pub(in crate::table) mod maps;
 mod model;
@@ -14,18 +14,16 @@ pub use model::{
 };
 #[cfg(test)]
 mod tests;
-mod visited;
 use crate::{
     InspectError, NativeReadSource,
     format::{
         bytes::u32_at,
         page::{DATA_SIGNATURE, OWNER_OFFSET, PAGE_BYTES},
-        reader::{Reader, row_range},
+        reader::{Reader, row_range, visited::Visited},
         row::{DELETED_MASK, MAX_SLOTS, RELOCATED_MASK, reference_page, reference_slot},
     },
 };
 use definition::Definition;
-use visited::Visited;
 
 const DEFINITION_BYTES: usize = size_of::<Definition>();
 const LENGTH_TYPE_MASK: u32 = 0xc000_0000;
@@ -105,7 +103,7 @@ fn read_external<R: NativeReadSource>(
         visited.insert(reference, reader)?;
 
         let current = reference;
-        let page = reader.long_value_page(reference_page(reference))?;
+        let page = reader.page(reference_page(reference))?;
         if page[..DATA_SIGNATURE.len()] != DATA_SIGNATURE
             || page.get(OWNER_OFFSET..OWNER_OFFSET + LVAL_SIGNATURE.len()) != Some(LVAL_SIGNATURE)
         {

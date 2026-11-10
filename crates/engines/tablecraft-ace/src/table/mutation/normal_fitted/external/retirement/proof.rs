@@ -1,8 +1,8 @@
 //! Rewalk original descriptors and derive parent, maps and residuals without patches.
 use super::{Page, Retiring, authorize};
+use crate::table::long_value::check::check_for_mutation;
 use crate::{
     EditError, FittedColumnUpdates, InspectError, NativeImage, WriteBlocker,
-    check_table_long_values,
     format::{
         allocation::{GLOBAL_FREE_REFERENCE, MapRole, RepresentedMap},
         bytes::u32_at,
@@ -117,7 +117,7 @@ pub(in crate::table::mutation::normal_fitted::external) fn maps_and_residuals(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), EditError> {
-    let storage = check_table_long_values(
+    let storage = check_for_mutation(
         &mut image.reader(),
         image.catalog().catalog().scope(),
         source.table.schema().name(),

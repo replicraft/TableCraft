@@ -3,9 +3,9 @@ pub(super) mod proof;
 pub(super) mod stage;
 
 use super::super::binding::{self, Bound};
+use crate::table::long_value::check::check_for_mutation;
 use crate::{
     EditError, FittedColumnUpdates, InspectError, LongValueCheckStatus, NativeImage, WriteBlocker,
-    check_table_long_values,
     format::{
         allocation::{GLOBAL_FREE_REFERENCE, MapRole, RepresentedMap},
         page::{DATA_SIGNATURE, OWNER_OFFSET},
@@ -108,7 +108,7 @@ pub(super) fn authorize(
         }
     }
     let inventory = Inventory::capture(image, budget, cancelled)?;
-    let storage = check_table_long_values(
+    let storage = check_for_mutation(
         &mut image.reader(),
         image.catalog().catalog().scope(),
         schema.name(),

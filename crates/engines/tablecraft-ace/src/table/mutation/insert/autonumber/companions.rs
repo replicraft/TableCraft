@@ -2,11 +2,12 @@
 mod literal;
 
 use super::{AutoNumberRowInsert, IncrementingAutoNumber};
+use crate::table::long_value::check::check_for_mutation;
 use crate::table::mutation::insert_defaults::values::copy_value;
 use crate::{
     EditError, IndexCheckStatus, InspectError, LongValueCheckStatus, PropertyGroupKind,
-    RuleCheckStatus, WriteBlocker, check_table, check_table_constraints, check_table_long_values,
-    inspect_table_properties, read_table,
+    RuleCheckStatus, WriteBlocker, check_table, check_table_constraints, inspect_table_properties,
+    read_table,
     table::mutation::insert::tests::{
         long_value_inserts::{Family, initialization::model as long_rows},
         model as original,
@@ -99,7 +100,7 @@ fn variable_companion_and_missing_lval_sources_and_full_images_qualify_before_pr
                 checked(&case.expected, &long_rows::rows(family, Some(&case.value)));
                 assert_eq!(case.new_length, case.old_length + 10);
                 long_rows::checked_maps(&case.expected);
-                let report = check_table_long_values(
+                let report = check_for_mutation(
                     &mut Cursor::new(&case.before),
                     CatalogScope::new(1),
                     "Items",

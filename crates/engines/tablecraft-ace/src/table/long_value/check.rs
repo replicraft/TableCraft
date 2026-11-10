@@ -21,6 +21,13 @@ use crate::{
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_model::CatalogScope;
 
+#[derive(Clone, Copy)]
+enum CheckPurpose {
+    Read,
+    #[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
+    Mutation,
+}
+
 fn entry(number: usize, status: LongValueCheckStatus) -> LongValueCheck {
     LongValueCheck {
         number,
@@ -49,7 +56,36 @@ pub fn check_table_long_values<R: NativeReadSource>(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<TableLongValueCheck, InspectError> {
-    check_with_initialization(source, scope, table, None, budget, cancelled)
+    check_with_purpose(
+        source,
+        scope,
+        table,
+        None,
+        CheckPurpose::Read,
+        budget,
+        cancelled,
+    )
+}
+
+/// Qualify physical rows for the existing mutation consumers, retaining their
+/// original forwarding scope independently of inert reader admission.
+#[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
+pub(in crate::table) fn check_for_mutation<R: NativeReadSource>(
+    source: &mut R,
+    scope: CatalogScope,
+    table: &str,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<TableLongValueCheck, InspectError> {
+    check_with_purpose(
+        source,
+        scope,
+        table,
+        None,
+        CheckPurpose::Mutation,
+        budget,
+        cancelled,
+    )
 }
 
 #[cfg(feature = "ace16-write-preview")]
@@ -61,14 +97,23 @@ pub(in crate::table) fn check_table_long_values_for_initialization<R: NativeRead
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<TableLongValueCheck, InspectError> {
-    check_with_initialization(source, scope, table, Some(columns), budget, cancelled)
+    check_with_purpose(
+        source,
+        scope,
+        table,
+        Some(columns),
+        CheckPurpose::Mutation,
+        budget,
+        cancelled,
+    )
 }
 
-fn check_with_initialization<R: NativeReadSource>(
+fn check_with_purpose<R: NativeReadSource>(
     source: &mut R,
     scope: CatalogScope,
     table: &str,
     initializing: Option<&[usize]>,
+    purpose: CheckPurpose,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<TableLongValueCheck, InspectError> {
@@ -234,12 +279,16 @@ fn check_with_initialization<R: NativeReadSource>(
                 return Err(InspectError::Malformed);
             }
             reader.budget.charge(Resource::Rows, 1)?;
-            let physical = reader.row_location(
-                number,
-                u8::try_from(slot).map_err(|_| InspectError::Malformed)?,
-                schema.definition,
-                &page,
-            )?;
+            let slot = u8::try_from(slot).map_err(|_| InspectError::Malformed)?;
+            let physical = match purpose {
+                CheckPurpose::Read => {
+                    reader.read_location(number, slot, schema.definition, &page)?
+                }
+                #[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
+                CheckPurpose::Mutation => {
+                    reader.row_location(number, slot, schema.definition, &page)?
+                }
+            };
             let layout = record_layout::parse_values(&physical.data, &schema, reader.budget)?;
             for (result, storage) in columns.iter_mut().zip(&mut storages) {
                 let Some(storage) = storage else {
@@ -360,3 +409,6 @@ fn check_with_initialization<R: NativeReadSource>(
         columns,
     })
 }
+
+#[cfg(test)]
+mod tests;

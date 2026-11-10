@@ -1,8 +1,8 @@
 //! Retire only complete selected LVAL pages and rebuild each fitted parent once.
 use super::{Page, Retiring, authorize, replacement};
+use crate::table::long_value::check::check_for_mutation;
 use crate::{
     EditError, FittedColumnUpdates, InspectError, NativeImage, WriteBlocker,
-    check_table_long_values,
     format::{
         allocation::{GLOBAL_FREE_REFERENCE, MapRole, RepresentedMap},
         page::PAGE_BYTES,
@@ -197,7 +197,7 @@ pub(in crate::table::mutation::normal_fitted::external) fn pages_and_maps(
     if pages.is_empty() {
         return Ok(Vec::new());
     }
-    let storage = check_table_long_values(
+    let storage = check_for_mutation(
         &mut image.reader(),
         image.catalog().catalog().scope(),
         source.table.schema().name(),

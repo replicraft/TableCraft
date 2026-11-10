@@ -1,10 +1,11 @@
 //! Mutation authority is narrower than the read-only long-value report.
 use super::super::{EditError, WriteBlocker, gates};
+use crate::table::long_value::check::check_for_mutation;
 use crate::table::mutation::ace_profile;
 use crate::table::mutation::record_serialization::long_value as encode;
 use crate::{
     InspectError, LongValueCheckStatus, NativeImage, PropertyGroupKind, TableCheck,
-    TableLongValueCheck, check_table_long_values, inspect_table_properties,
+    TableLongValueCheck, inspect_table_properties,
 };
 use tablecraft_core::limits::ResourceBudget;
 
@@ -60,7 +61,7 @@ pub(super) fn prepare(
         return Err(EditError::Unsupported(WriteBlocker::Properties));
     }
 
-    let storage = check_table_long_values(&mut image.reader(), scope, table, budget, cancelled)?;
+    let storage = check_for_mutation(&mut image.reader(), scope, table, budget, cancelled)?;
     let selected = storage
         .columns()
         .iter()

@@ -1,8 +1,8 @@
 //! Complete native ownership before selecting external reuse, including empty groups.
 use super::super::binding::{Bound, Target};
+use crate::table::long_value::check::check_for_mutation;
 use crate::{
     EditError, InspectError, LongValueCheckStatus, NativeImage, WriteBlocker,
-    check_table_long_values,
     format::{
         allocation::{GLOBAL_FREE_REFERENCE, MapRole, RepresentedMap},
         reader::Reader,
@@ -23,7 +23,7 @@ pub(super) fn selected(
         return Ok(false);
     }
     let schema = source.table.schema();
-    let storage = check_table_long_values(
+    let storage = check_for_mutation(
         &mut image.reader(),
         image.catalog().catalog().scope(),
         schema.name(),

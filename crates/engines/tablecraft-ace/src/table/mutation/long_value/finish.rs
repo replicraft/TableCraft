@@ -1,10 +1,11 @@
 //! Composed growth candidates stay outside equal-length apply/journal plans.
 use super::super::{Ace16WritePreview, EditError, WriteBlocker, gates, preservation};
 use super::{Operation, audit, authority, map_audit, stage::Staged};
+use crate::table::long_value::check::check_for_mutation;
 use crate::{
     IndexCheckStatus, InspectError, LongValueCheckStatus, NativeImage, check_table,
-    check_table_constraints, check_table_long_values, format::page::PAGE_BYTES, header::check,
-    limits::MAX_IMAGE_BYTES, preservation::COPY_CHUNK_BYTES,
+    check_table_constraints, format::page::PAGE_BYTES, header::check, limits::MAX_IMAGE_BYTES,
+    preservation::COPY_CHUNK_BYTES,
 };
 use std::{io::Cursor, ops::Range};
 use tablecraft_core::limits::{Resource, ResourceBudget};
@@ -130,7 +131,7 @@ pub(super) fn finish(
         cancelled,
     )?)?;
     let long_values =
-        check_table_long_values(&mut after.reader(), scope, schema.name(), budget, cancelled)?;
+        check_for_mutation(&mut after.reader(), scope, schema.name(), budget, cancelled)?;
     let selected = long_values
         .columns()
         .iter()

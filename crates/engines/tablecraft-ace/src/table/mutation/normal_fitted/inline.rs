@@ -1,8 +1,9 @@
 //! Fresh inline-only target checks, separate from readonly LVAL preservation.
 use super::binding::{Bound, Target};
+use crate::table::long_value::check::check_for_mutation;
 use crate::{
     EditError, FittedColumnUpdates, InspectError, LongValueCheckStatus, NativeColumn, NativeImage,
-    PropertyGroupKind, WriteBlocker, check_table_long_values,
+    PropertyGroupKind, WriteBlocker,
     format::data_type::{LONG_TEXT, OLE},
     header::check,
     inspect_table_properties,
@@ -47,8 +48,7 @@ pub(super) fn qualify(
     }
     let schema = source.table.schema();
     let scope = image.catalog().catalog().scope();
-    let storage =
-        check_table_long_values(&mut image.reader(), scope, schema.name(), budget, cancelled)?;
+    let storage = check_for_mutation(&mut image.reader(), scope, schema.name(), budget, cancelled)?;
     if storage.rows() != source.records.len() {
         return Err(EditError::Preservation);
     }

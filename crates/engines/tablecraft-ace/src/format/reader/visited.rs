@@ -5,18 +5,18 @@ use std::collections::HashSet;
 // hash-table metadata/spare capacity; not an allocator-resident byte guarantee.
 const REFERENCE_ALLOCATION_BYTES: u64 = 4 * size_of::<u32>() as u64;
 
-pub(super) struct Visited {
+pub(crate) struct Visited {
     references: HashSet<u32>,
 }
 
 impl Visited {
-    pub(super) fn new() -> Self {
+    pub(crate) fn new() -> Self {
         Self {
             references: HashSet::new(),
         }
     }
 
-    pub(super) fn insert<R: NativeReadSource>(
+    pub(crate) fn insert<R: NativeReadSource>(
         &mut self,
         reference: u32,
         reader: &mut Reader<'_, R>,
