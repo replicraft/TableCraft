@@ -34,3 +34,6 @@ pub(in crate::table::mutation) fn copy(
     result.extend_from_slice(bytes);
     Ok(result)
 }
+
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub(in crate::table::mutation) mod historical_fixed;

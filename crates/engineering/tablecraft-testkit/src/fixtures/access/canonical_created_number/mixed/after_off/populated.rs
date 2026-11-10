@@ -166,9 +166,23 @@ pub fn update_scores(before: &[u8], updates: &[(usize, Option<i32>)]) -> Vec<u8>
         assert!(slot < count);
         assert!(!updates[..position].iter().any(|(prior, _)| *prior == slot));
         let directory = data + DIRECTORY + slot * 2;
-        let start = usize::from(u16::from_le_bytes(
+        let root = usize::from(u16::from_le_bytes(
             before[directory..directory + 2].try_into().unwrap(),
         ));
+        let start = if root & 0x4000 == 0 {
+            assert_eq!(root & !0x1fff, 0);
+            root
+        } else {
+            let pointer = data + (root & 0x1fff);
+            let reference = u32::from_le_bytes(before[pointer..pointer + 4].try_into().unwrap());
+            assert_eq!(reference >> 8, DATA as u32);
+            let target = data + DIRECTORY + (reference as usize & 255) * 2;
+            let word = usize::from(u16::from_le_bytes(
+                before[target..target + 2].try_into().unwrap(),
+            ));
+            assert_eq!(word & !0x1fff, 0x8000);
+            word & 0x1fff
+        };
         let fields = usize::from(u16::from_le_bytes(
             before[data + start..data + start + 2].try_into().unwrap(),
         ));

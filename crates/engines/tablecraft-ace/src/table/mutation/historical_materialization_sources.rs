@@ -91,3 +91,141 @@ fn qualify_independent_forwarded_bonus_materialization_without_default_backfill_
         }
     }
 }
+
+#[test]
+fn native_materialization_matches_raw_after_with_other_missing_fields_and_opaque_null_payloads() {
+    use crate::{FixedColumnUpdates, FixedScalarUpdate};
+
+    let [_, ordinary] = populated::pair("Bonus", &[Some(42), None, Some(-7)]);
+    let later = materialization::append_number(&ordinary, "Later");
+    for mut before in [ordinary, later] {
+        let second = usize::from(u16::from_le_bytes(
+            before[8 * PAGE + 16..8 * PAGE + 18].try_into().unwrap(),
+        ));
+        // Ignored NULL Score payload survives in the new physical record.
+        before[8 * PAGE + second + 6..8 * PAGE + second + 10].fill(0x5a);
+        before[8 * PAGE + second + 10] |= 0x88;
+        let expected = materialization::after(&before, 1, 2, 37);
+        let updates = [FixedScalarUpdate::new(1, Value::Null, Value::Int32(37))];
+        let groups = [FixedColumnUpdates::new("Table1", "Bonus", &updates)];
+        let image =
+            NativeImage::capture(&mut Cursor::new(&before), SCOPE, &mut budget(), &|| false)
+                .unwrap();
+        assert!(
+            image
+                .historical_number_materialization_selected(
+                    "Table1",
+                    &groups,
+                    &mut budget(),
+                    &|| false
+                )
+                .unwrap()
+        );
+        let plan = image
+            .plan_historical_number_materialization("Table1", &groups, &mut budget(), &|| false)
+            .unwrap();
+        assert_eq!(plan.before_bytes(), before);
+        assert_eq!(plan.after_bytes(), expected);
+        assert_eq!(plan.changed_rows(), 1);
+        let after = NativeImage::capture(
+            &mut Cursor::new(plan.after_bytes()),
+            SCOPE,
+            &mut budget(),
+            &|| false,
+        )
+        .unwrap();
+        current_schema::observe(&after, "Table1", &mut budget(), &|| false).unwrap();
+    }
+}
+
+#[test]
+fn materialization_refuses_present_targets_null_noops_false_expected_values_and_slot_exhaustion() {
+    use crate::{FixedColumnUpdates, FixedScalarUpdate};
+
+    let [_, before] = populated::pair("Bonus", &[Some(42), None, Some(-7)]);
+    for (column, expected, replacement) in [
+        ("Score", Value::Int32(42), Value::Int32(37)),
+        ("Bonus", Value::Null, Value::Null),
+        ("Bonus", Value::Int32(0), Value::Int32(37)),
+        ("Bonus", Value::Null, Value::Boolean(true)),
+    ] {
+        let updates = [FixedScalarUpdate::new(0, expected, replacement)];
+        let groups = [FixedColumnUpdates::new("Table1", column, &updates)];
+        let image =
+            NativeImage::capture(&mut Cursor::new(&before), SCOPE, &mut budget(), &|| false)
+                .unwrap();
+        assert!(
+            image
+                .plan_historical_number_materialization("Table1", &groups, &mut budget(), &|| false)
+                .is_err()
+        );
+    }
+    let updates = [FixedScalarUpdate::new(0, Value::Null, Value::Int32(37))];
+    let groups = [FixedColumnUpdates::new("Table1", "Bonus", &updates)];
+    let values = vec![Some(1); 255];
+    let [_, full] = populated::pair("Bonus", &values);
+    let image =
+        NativeImage::capture(&mut Cursor::new(&full), SCOPE, &mut budget(), &|| false).unwrap();
+    current_schema::observe(&image, "Table1", &mut budget(), &|| false).unwrap();
+    assert!(
+        image
+            .plan_historical_number_materialization("Table1", &groups, &mut budget(), &|| false)
+            .is_err()
+    );
+}
+
+#[test]
+fn consecutive_materializations_keep_normal_existing_field_edits_available_after_every_root_is_forwarded()
+ {
+    use crate::{FixedColumnUpdates, FixedScalarUpdate};
+
+    let [_, mut before] = populated::pair("Bonus", &[Some(42), None, Some(-7)]);
+    for row in 0..3 {
+        let expected = materialization::after(&before, row, 2, 37 + row as i32);
+        let updates = [FixedScalarUpdate::new(
+            row,
+            Value::Null,
+            Value::Int32(37 + row as i32),
+        )];
+        let groups = [FixedColumnUpdates::new("Table1", "Bonus", &updates)];
+        let image =
+            NativeImage::capture(&mut Cursor::new(&before), SCOPE, &mut budget(), &|| false)
+                .unwrap();
+        assert!(
+            image
+                .select_native_historical_present_fixed_table("Table1", &mut budget(), &|| false)
+                .unwrap()
+        );
+        let plan = image
+            .plan_historical_number_materialization("Table1", &groups, &mut budget(), &|| false)
+            .unwrap();
+        assert_eq!(plan.after_bytes(), expected);
+        before = expected;
+    }
+    let expected = populated::update_scores(&before, &[(0, Some(99))]);
+    let updates = [FixedScalarUpdate::new(
+        0,
+        Value::Int32(42),
+        Value::Int32(99),
+    )];
+    let groups = [FixedColumnUpdates::new("Table1", "Score", &updates)];
+    let image =
+        NativeImage::capture(&mut Cursor::new(&before), SCOPE, &mut budget(), &|| false).unwrap();
+    assert!(
+        image
+            .select_native_historical_present_fixed_table("Table1", &mut budget(), &|| false)
+            .unwrap()
+    );
+    image
+        .check_native_historical_present_fixed_table("Table1", &mut budget(), &|| false)
+        .unwrap();
+    assert!(
+        !image
+            .historical_number_materialization_selected("Table1", &groups, &mut budget(), &|| false)
+            .unwrap()
+    );
+    let plan = image
+        .plan_historical_present_fixed_updates("Table1", &groups, &mut budget(), &|| false)
+        .unwrap();
+    assert_eq!(plan.after_bytes(), expected);
+}
