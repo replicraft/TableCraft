@@ -2,8 +2,8 @@
 //! No native creator, schema/property decoder or mutation planner builds bytes.
 use super::{
     canonical_blank_creation, canonical_created_default_zero, canonical_creation,
-    canonical_creation_properties, canonical_native17_creation, data_page,
-    packed_record::append_record, put16, put32,
+    canonical_creation_properties, canonical_native17_creation, packed_record::append_record,
+    put16, put32,
 };
 
 const PAGE: usize = 4096;
