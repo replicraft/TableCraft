@@ -1,5 +1,6 @@
-//! Single-page declaration ownership composed with the shared raw validator.
+//! Complete declaration ownership composed with the shared raw validator.
 mod raw;
+pub(super) mod storage;
 pub(in crate::table::mutation) mod tail;
 
 use super::{
@@ -95,8 +96,12 @@ pub(super) fn capture<'image>(
         candidate,
         mut position,
         retained_tail: _,
+        storage,
     } = declaration;
-    let page = ledger.page(number)?;
+    for continuation in storage.pages().skip(1) {
+        ledger.claim(continuation, PageRole::Definition, budget, cancelled)?;
+    }
+    let page: &[u8] = &storage;
     if layout.physical_indexes != 0 || layout.logical_indexes != 0 {
         position = indexes::capture(image, ledger, number, &layout, position, budget, cancelled)?;
     }
@@ -240,9 +245,12 @@ pub(in crate::table::mutation) fn validate_rows(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Option<tail::RetainedDefinitionTail>, EditError> {
-    let page = raw::page(image, schema.definition_page())?;
+    let page = storage::physical_page(image, schema.definition_page())?;
     let length = u32_at(page, LENGTH_OFFSET)? as usize;
-    let slack = page.get(length..).ok_or_else(refused)?;
+    // Joined declarations use the strict path: the raw storage owner checks
+    // every continuation's header and padding. Retired root suffixes retain
+    // their existing one-page admission and witness.
+    let slack = page.get(length.min(page.len())..).ok_or_else(refused)?;
     budget
         .charge(Resource::Steps, slack.len() as u64)
         .map_err(InspectError::from)?;
@@ -381,8 +389,7 @@ fn validate_selected(
     if terminal.checked_add(size_of::<u16>()) != Some(declaration.length) {
         return Err(refused());
     }
-    let page = raw::page(image, schema.definition_page())?;
-    if u16_at(page, terminal)? != TERMINATOR {
+    if u16_at(&declaration.storage, terminal)? != TERMINATOR {
         return Err(refused());
     }
     check(budget, cancelled)?;

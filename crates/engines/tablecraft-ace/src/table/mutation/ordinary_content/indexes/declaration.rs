@@ -1,5 +1,5 @@
 //! Shared strict raw retained-index declarations; no page-role authority.
-use super::super::refused;
+use super::super::{definition::storage, refused};
 use crate::table::indexes::validate_manual_guid_tuple;
 use crate::{
     EditError, InspectError, NativeImage, NativeIndex, TableSchema,
@@ -56,7 +56,8 @@ pub(super) fn names<'index>(
         .checked_mul(LOGICAL_BYTES)
         .and_then(|bytes| physical_end.checked_add(bytes))
         .ok_or(InspectError::StructureLimit)?;
-    let page = page(image, schema.definition_page())?;
+    let storage = storage::read(image, schema.definition_page(), budget, cancelled)?;
+    let page: &[u8] = &storage;
     let mut position = logical_end;
     for (ordinal, entry) in indexes.enumerate() {
         check(budget, cancelled)?;
@@ -98,7 +99,8 @@ pub(super) fn physical<'index>(
 ) -> Result<(), EditError> {
     let start = schema.layout.index_start;
     let definition = schema.definition_page();
-    let page = page(image, definition)?;
+    let storage = storage::read(image, definition, budget, cancelled)?;
+    let page: &[u8] = &storage;
     let begin = start + physical * PHYSICAL_BYTES;
     let raw = page
         .get(begin..begin + PHYSICAL_BYTES)
@@ -279,16 +281,6 @@ fn validate_for<'index>(
     Ok(end)
 }
 
-fn page(image: &NativeImage, definition: u32) -> Result<&[u8], EditError> {
-    let start = usize::try_from(definition)
-        .ok()
-        .and_then(|number| number.checked_mul(PAGE_BYTES))
-        .ok_or(InspectError::StructureLimit)?;
-    let end = start
-        .checked_add(PAGE_BYTES)
-        .ok_or(InspectError::StructureLimit)?;
-    image.as_bytes().get(start..end).ok_or_else(refused)
-}
 pub(super) fn qualify(
     schema: &TableSchema,
     index: &NativeIndex,

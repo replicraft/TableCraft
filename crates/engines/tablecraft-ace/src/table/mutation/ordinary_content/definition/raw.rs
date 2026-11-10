@@ -1,5 +1,8 @@
 //! Shared exhaustive raw TD header, column descriptor and name classification.
-use super::Role;
+use super::{
+    Role,
+    storage::{self, Storage},
+};
 use crate::{
     EditError, FileFormat, InspectError, NativeImage,
     format::{
@@ -17,6 +20,7 @@ use crate::{
         reader::Reader,
     },
     header::check,
+    limits::MAX_USER_COLUMNS,
     table::mutation::ordinary_content::refused,
 };
 use tablecraft_core::limits::{Resource, ResourceBudget};
@@ -64,6 +68,7 @@ pub(super) struct Declaration {
     pub candidate: u32,
     pub position: usize,
     pub retained_tail: bool,
+    pub storage: Storage,
 }
 
 pub(super) fn capture(
@@ -112,7 +117,9 @@ fn capture_with_tail(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Declaration, EditError> {
     check(budget, cancelled)?;
-    let page = page(image, number)?;
+    let storage = storage::read(image, number, budget, cancelled)?;
+    storage.validate_frames(image, budget, cancelled)?;
+    let page: &[u8] = &storage;
     let layout = {
         let mut source = image.reader();
         let mut reader = Reader {
@@ -126,6 +133,7 @@ fn capture_with_tail(
     };
     if (!role.user() && (layout.physical_indexes != 0 || layout.logical_indexes != 0))
         || layout.fields.is_empty()
+        || (role.user() && layout.fields.len() > MAX_USER_COLUMNS)
         || (!role.action_ordinals() && layout.fields.len() != layout.max_columns)
         || (!role.current_schema()
             && layout.variable_slots != layout.fields.iter().filter(|field| !field.fixed).count())
@@ -151,18 +159,18 @@ fn capture_with_tail(
         }
     }
     let length = u32_at(page, native_definition::LENGTH_OFFSET)? as usize;
-    if !(HEADER_BYTES..=PAGE_BYTES).contains(&length)
-        || u32_at(page, native_definition::NEXT_PAGE_OFFSET)? != 0
-    {
+    if length < HEADER_BYTES || length != page.len() {
         return Err(refused());
     }
-    let free = PAGE_BYTES
-        .checked_sub(length + native_definition::PAGE_HEADER_BYTES)
-        .ok_or_else(refused)?;
+    let free = storage.root_free_bytes();
     let mut expected = [0; HEADER_BYTES];
     expected[..TABLE_DEFINITION_SIGNATURE.len()].copy_from_slice(&TABLE_DEFINITION_SIGNATURE);
     expected[FREE_OFFSET..FREE_OFFSET + size_of::<u16>()]
         .copy_from_slice(&(free as u16).to_le_bytes());
+    expected[native_definition::NEXT_PAGE_OFFSET..native_definition::LENGTH_OFFSET]
+        .copy_from_slice(
+            &page[native_definition::NEXT_PAGE_OFFSET..native_definition::LENGTH_OFFSET],
+        );
     expected[native_definition::LENGTH_OFFSET..native_definition::LENGTH_OFFSET + size_of::<u32>()]
         .copy_from_slice(&(length as u32).to_le_bytes());
     expected[MAGIC_OFFSET..MAGIC_OFFSET + size_of::<u32>()].copy_from_slice(&MAGIC.to_le_bytes());
@@ -349,13 +357,11 @@ fn capture_with_tail(
         }
         position += bytes;
     }
-    budget
-        .charge(Resource::Steps, PAGE_BYTES as u64)
-        .map_err(InspectError::from)?;
     if role == Role::SelectedGenerated && !has_counter {
         return Err(refused());
     }
-    let nonzero_tail = page[length..].iter().any(|byte| *byte != 0);
+    let physical_root = storage::physical_page(image, number)?;
+    let nonzero_tail = !storage.joined() && physical_root[length..].iter().any(|byte| *byte != 0);
     let retained_tail = matches!(tail_admission, TailAdmission::PreserveRows)
         && image.catalog().header().format() == FileFormat::Ace2016
         && nonzero_tail;
@@ -363,7 +369,7 @@ fn capture_with_tail(
         || (nonzero_tail && !retained_tail)
         || (retained_tail
             && (length > PAGE_BYTES - super::tail::RESERVED_BYTES
-                || page[PAGE_BYTES - super::tail::RESERVED_BYTES..]
+                || physical_root[PAGE_BYTES - super::tail::RESERVED_BYTES..]
                     .iter()
                     .any(|byte| *byte != 0)))
     {
@@ -380,6 +386,7 @@ fn capture_with_tail(
         candidate,
         position,
         retained_tail,
+        storage,
     })
 }
 
@@ -471,15 +478,4 @@ fn system_schema(layout: &Layout, role: Role) -> Result<(), EditError> {
         }
     }
     Ok(())
-}
-
-pub(super) fn page(image: &NativeImage, number: u32) -> Result<&[u8], EditError> {
-    let start = usize::try_from(number)
-        .ok()
-        .and_then(|number| number.checked_mul(PAGE_BYTES))
-        .ok_or(InspectError::StructureLimit)?;
-    let end = start
-        .checked_add(PAGE_BYTES)
-        .ok_or(InspectError::StructureLimit)?;
-    image.as_bytes().get(start..end).ok_or_else(refused)
 }
