@@ -2,8 +2,10 @@
 
 This is a preparation checklist, not a release announcement. The existing
 [release workflow](../../.github/workflows/release.yml) and
-[release contract](../development/RELEASING.md) package the CLI only. No desktop
-artifact, installer or file association is qualified by those jobs.
+[release contract](../development/RELEASING.md) now build both CLI and desktop
+packages. Native installer and update qualification remains separate from archive
+smoke checks. The [expanded signed no-tag rehearsal](https://github.com/replicraft/TableCraft/actions/runs/42760189264)
+is running; it has not yet supplied passing installer or production-signing evidence.
 
 A desktop preview can ship a useful bounded Access browser/query workspace
 without claiming the full [ACE 16 compatibility target](../ROADMAP.md). Existing
@@ -19,10 +21,13 @@ implementation and remaining signing/install gates.
 
 ## Remaining gates
 
-- [ ] **Complete signed self-update before the first release.** Provision the
-  production key, implement the shared updater and desktop worker/install flow,
-  require signatures at publication, and record a successful no-tag packaging
-  dry run. Disposable-key CI artifacts are test evidence, not release signatures.
+- [ ] **Complete signed self-update before the first release.** The maintainer's
+  production key and protected signing environment are configured. The shared
+  updater, desktop worker and portable/macOS install flow are implemented, and
+  publication requires signatures. Complete the MSI/original-AppImage update
+  routes, qualify native replacement/relaunch, and record a successful signed
+  no-tag packaging dry run. Disposable-key CI artifacts are test evidence, not
+  release signatures.
 
 - [x] **Implement and headlessly verify Ribbon focus navigation.** Verify F10 entry, tab arrows,
   Down, Ctrl+Left/Right, Tab/Shift+Tab and layered Escape using the actual
@@ -78,20 +83,29 @@ implementation and remaining signing/install gates.
   See [runtime editing contracts](../application/RUNTIME.md) and
   [native write limits](../access/writes/NATIVE_WRITES.md).
 - [x] **Implement desktop archive and complete-set verification.** Portable
-  packaging, vector-derived native icons and exact six-archive assembly are
-  implemented with focused tests and a local test-only macOS archive smoke check.
-  This does not qualify release builds on six platforms. See the
+  packaging, vector-derived native icons and exact sixteen-package assembly
+  (six portable archives plus ten native installers) are implemented with focused
+  tests. The earlier portable rehearsal built and smoke-checked all six desktop
+  archives, but failed later assembly. An ARM64 custom DMG passed local native
+  read-only verification. These observations do not qualify the complete native
+  installer matrix. See the
   [preparation guide](../development/DESKTOP_PACKAGING.md).
-- [ ] **Integrate desktop release builds with CI.** Choose and document the
-  actual supported OS/architecture set and artifact names; do not inherit the
-  CLI's six-platform qualification. Build/package the real GUI with its runtime
-  dependencies, icon and platform metadata. Verify extraction, architecture,
-  version, hashes and launches of the packaged artifact. Decide and disclose
-  signing/notarization status; checksums alone are not publisher signatures.
-- [ ] **Verify desktop notices.** Review the actual desktop dependency closure,
-  bundled font OFLs/provenance and embedded artwork. Include the project license
-  and consolidated third-party notices in desktop artifacts; existing CLI
-  notices are not evidence of desktop coverage. Preserve notices in About.
+- [x] **Integrate desktop release builds with CI.** The documented Windows,
+  macOS and Linux x64/ARM64 matrix builds portable downloads and native installers,
+  verifies their payloads, and requires independent signature verification before
+  tag-only publication. Manual rehearsals publish no release. OS code signing
+  and macOS notarization remain unavailable; Minisign authenticates downloads,
+  not operating-system application identity.
+- [ ] **Qualify the complete native installer matrix.** Obtain passing MSI
+  installation/removal, DMG payload checks, DEB/RPM/AppImage checks, AppImage
+  runtime source/relink proof, complete-set assembly and production-key signature
+  evidence from the expanded rehearsal. Retain failures and distinguish packaged
+  headless argument checks from graphical launches and update/relaunch behavior.
+- [x] **Review desktop notices and generate them at packaging time.** The actual
+  desktop dependency closure, bundled font OFLs/provenance and first-party artwork
+  have reviewed inputs. Packaging generates consolidated notices and includes
+  the project license. Generated notices and inventories are not tracked.
+  About preserves the notices; native installer checks must verify their inclusion.
 - [ ] **Qualify native platform behavior when authorized.** Native window checks
   are currently suspended. Headless tests and macOS offscreen frames do not
   qualify Windows/Linux launch, window controls, DPI, input methods, accessibility
