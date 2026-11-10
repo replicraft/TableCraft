@@ -35,6 +35,9 @@ pub fn qualify_native_complete_insert_recovery<'a, J: DurableStorage>(
     let (before, after, growing) = match &checked {
         CheckedImage::Fixed(session) => (session.before_bytes(), session.after_bytes(), false),
         CheckedImage::Resizable(session) => (session.before_bytes(), session.after_bytes(), true),
+        CheckedImage::ResizableV3(_) => {
+            return Err(NativeRecoveryQualificationError::ImageMismatch);
+        }
     };
     if after.len() < before.len()
         || after.len() as u64 > MAX_IMAGE_BYTES
@@ -73,6 +76,7 @@ impl<J: DurableStorage> QualifiedNativeCompleteInsertRecovery<'_, J> {
         match self.checked {
             CheckedImage::Fixed(session) => session.recover(target, budget, cancelled),
             CheckedImage::Resizable(session) => session.recover(target, budget, cancelled),
+            CheckedImage::ResizableV3(_) => Err(JournalError::InvalidJournal),
         }
     }
 
@@ -88,6 +92,7 @@ impl<J: DurableStorage> QualifiedNativeCompleteInsertRecovery<'_, J> {
             CheckedImage::Resizable(session) => {
                 session.confirm_completed(target, budget, cancelled)
             }
+            CheckedImage::ResizableV3(_) => Err(JournalError::InvalidJournal),
         }
     }
 }

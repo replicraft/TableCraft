@@ -130,6 +130,7 @@ fn reject_equal_v2(view: &View, empty: bool) {
             assert_eq!(session.before_bytes().len(), session.after_bytes().len());
         }
         CheckedImage::Fixed(_) => panic!("valid V2 was silently changed into V1"),
+        CheckedImage::ResizableV3(_) => panic!("valid V2 was silently changed into V3"),
     }
     // Move this SAME checked session into native qualification. No second
     // inspection, alternate framing or fake journal-integrity failure is used.
@@ -198,6 +199,7 @@ fn native_complete_kind_refuses_valid_v1_when_original_requests_require_one_eof_
                     assert_eq!(session.before_bytes().len(), session.after_bytes().len());
                 }
                 CheckedImage::Resizable(_) => panic!("valid V1 was silently changed into V2"),
+                CheckedImage::ResizableV3(_) => panic!("valid V1 was silently changed into V3"),
             }
             assert!(matches!(
                 qualify_native_complete_insert_recovery(
