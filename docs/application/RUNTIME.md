@@ -1688,15 +1688,26 @@ headers now carry their actual optional native number; SQL aliases and synthetic
 headings do not acquire one from their displayed position or caption.
 
 `ReviewFieldRename` issues exact presentation facts and a separate consuming
-`ReviewedFieldRename` from the sealed native plan. Its profiles retain the
-empty ACE16, explicit-OFF ASCII Number/Short Text scope in
-[the native contract](../access/writes/FIELD_RENAME.md). Inspection returns an
-explicit shared name policy: fitted ASCII only after the actual packing proof,
-or independently qualified same-width support. Equal widths use the original
-profile1 plan; unequal widths use the separate fitted profile2 plan. Errors and
-resource exhaustion propagate; only a clean unsupported packing result permits
-the separate same-width source check. No displayed boolean or review DTO
-constructs save authority. `SaveWorker::start_field_rename` uses the
+`ReviewedFieldRename` from the sealed native plan. The original empty ACE16,
+explicit-OFF ASCII Number/Short Text profiles remain unchanged: equal widths use
+profile1; unequal widths use fitted profile2. A separate populated profile3
+qualifies the existing eleven-page Number history with two Int32 fields, dense
+generated IDs1..N, Int32/NULL companion values and the existing single DATA/root
+index geometry. It must reconstruct the original empty history/OFF source and
+replay real native insertion to recover every original byte. Arbitrary populated
+tables, gaps/deletions, other layouts and populated Short Text remain unqualified.
+See [the native contract](../access/writes/FIELD_RENAME.md).
+
+Both inspection and consuming review read fresh schema metadata from their own
+captured source. Nonzero declared rows select profile3 before any candidate
+attempt, including equal-width, case-only and unchanged requests; refusal never
+retries an empty-source profile. Empty-source inspection retains the independent
+fitted/same-width checks. Inspection returns the explicit shared name policy only
+after native source proof; fitted shape is not a physical capacity guarantee.
+Only clean unsupported-source failures become unavailable. Corruption,
+cancellation, resource, conflict and preservation failures retain their typed
+errors. No displayed boolean or review DTO constructs save authority.
+`SaveWorker::start_field_rename` uses the
 same retained offline worker and separate native/proof/persistence pools as the
 other schema operations. Failed saves retain their actual resource owners.
 
@@ -1706,7 +1717,10 @@ capability's complete expected-image witness before a fresh document can publish
 Acknowledged persistence alone does not prove that the reopened file still
 matches. An unchanged request still performs native review, then consumes to a
 read-only witness through `into_unchanged_reopen`; it receives no save ID or
-journal and must not be reported as a changed save.
+journal and must not be reported as a changed save. This also applies to
+qualified populated sources. The desktop retains that read-only owner and blocks
+conflicting edits until its exact witness reopens; the broader host editing guard
+does not imply a running native save actor.
 
 The [coordinated service record](../../tests/results/schema/field-schema-services-2026-11-09.json)
 includes actual runtime save/witness, unchanged, stale and retained-failure cases.

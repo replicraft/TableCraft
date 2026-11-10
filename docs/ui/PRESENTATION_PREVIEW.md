@@ -2759,3 +2759,22 @@ The initial shared UI batch rejected two new tests because their source reply
 preceded any bound inspection request; corrected setup retains the production
 identity checks, and all 25 field-rename UI cases pass. Native persistence and
 independent image/recovery checks are separate evidence.
+
+## Populated field-name proposals — 9 November 2026
+
+`TABLECRAFT_PREVIEW_FIELD_RENAME=populated-name` supplies three source-free rows
+with Number values 42, NULL and -7 to the existing fitted-name editor. The
+proposal leaves the synthetic schema unchanged; assertions retain all rows,
+explicit NULL identity, the active object and revision, and review availability.
+This is presentation evidence, not a native source proof or save capability.
+
+Four frames were rendered and opened on macOS ARM64 using the offscreen GPU
+renderer: English light and dark at 1280 × 820 logical pixels/1×, German dark at
+860 × 640/1×, and Japanese light at 860 × 640/2×. The header input, numeric rows,
+explicit NULL marker, policy message and cancellation control remain visible.
+Compact layouts preserve the complete Ribbon through horizontal scrolling.
+The retained Windows/VirtualBox Access Datasheet capture was opened again;
+its guest scale is unknown. No retained capture establishes the rename editor
+or policy message, which remain TableCraft adaptations. No native window was
+launched. Native persistence and independent reader observations are recorded
+separately in the [field-rename contract](../access/writes/FIELD_RENAME.md).

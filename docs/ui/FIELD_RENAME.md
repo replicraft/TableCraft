@@ -21,7 +21,7 @@ The runtime inspects the original source without a proposed name, AFTER image,
 write lease or save capability. Only positive source facts permit editing;
 unsupported or interrupted checks remain visible and may be retried explicitly.
 
-Current native support is the [empty ACE16 explicit-OFF profile](../access/writes/FIELD_RENAME.md):
+The original [empty ACE16 explicit-OFF profiles](../access/writes/FIELD_RENAME.md) support
 a non-key ordinary Number Long with stored Required(false)/zero default, or
 compressed Short Text255 with stored Required(false)/AllowZeroLength(true) and
 no default. Original and proposed names are ASCII. A positively inspected fitted
@@ -29,9 +29,17 @@ source allows growth/shrink within existing native capacity; an older same-width
 observation still requires its exact original width. The native identifier ceiling
 and duplicate rules still apply. A larger proposal can still refuse during the
 consuming review when either physical owner lacks space. A non-ASCII
-sibling, generated ID, populated table, unsupported declaration or unknown source
-refuses. These are TableCraft's current qualification limits, not general Access
-name restrictions. A bounded unsupported proposal remains visible without
+sibling, generated ID, unsupported declaration or unknown source refuses.
+
+A separate populated Number profile now supports the reconstructible eleven-page
+source with two Int32 fields, dense generated IDs1..N and Int32/NULL companion
+values in the existing DATA/root-index geometry. Native source proof must recover
+the complete original through empty-history/OFF reconstruction and real insertion
+replay. Growth, shrink, equal-width and unchanged spelling use this populated
+profile; the original empty profiles are not fallback decoders. Arbitrary
+populated tables, ID gaps/deletions, other layouts and populated Short Text remain
+unqualified. These are TableCraft's current qualification limits, not general
+Access name restrictions. A bounded unsupported proposal remains visible without
 acquiring save authority.
 
 The shared `tablecraft-builders::table::field_rename::FieldRenameNameProfile`
@@ -48,7 +56,17 @@ nonreplaceable SaveWorker. Cancellation/refusal preserves the proposed text and
 actual retained native resource owners. Exact no-op spelling still receives a
 real review, then consumes only its readonly complete-image witness: there is no
 native save ID, journal or changed-save receipt. Case-only changes remain actual
-changed saves when qualified.
+changed saves when qualified. For both empty and qualified populated sources,
+the retained unchanged-review owner blocks conflicting edits until its checked
+read-only reopen completes; it never becomes a native save actor.
+
+Normal-host populated cases preserve actual rows containing a positive Number,
+NULL and a negative Number through growth, shrink and equal-width changes. They
+compare complete independently authored replacement bytes, then open the saved
+file in a separate desktop host and check the actual fields and records again.
+The generated counter and index bytes remain part of that complete-image proof.
+This is headless workflow evidence, not Windows/Access rename-save qualification
+or admission for every populated database.
 
 An untouched editor closes without a dirty prompt; the host revokes only its
 recorded readonly inspection. Dirty proposals use exact-revision

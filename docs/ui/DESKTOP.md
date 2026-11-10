@@ -53,6 +53,18 @@ German/Japanese layouts retain the complete Ribbon through horizontal overflow. 
 captures supply no rename popup/status reference, and no Windows/Access rename
 execution or save parity is claimed.
 
+The same normal heading workflow now saves a separately qualified populated
+Number source: two Int32 fields, dense generated IDs1..N, Int32/NULL companion
+values and the reconstructible eleven-page history/OFF layout. Growth, shrink
+and equal-width changes preserve complete independent row/index/generator images
+and pass fresh separate-host reopening. Unchanged spelling consumes only its
+checked read witness, retaining the conflict guard until publication without
+starting a native save actor. Runtime dispatch selects the populated source
+profile from fresh schema before qualification; an unsupported source never
+falls back to an empty-table profile. Arbitrary populated tables, other layouts
+and populated Short Text remain unsupported. See
+[the precise shared workflow boundary](FIELD_RENAME.md#identity-and-supported-proposals).
+
 ## Explicit current-database Options — 8 November 2026
 
 The normal desktop opens a shared File → Options dialog. General retains the

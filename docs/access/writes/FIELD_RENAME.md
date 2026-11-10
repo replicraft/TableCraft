@@ -1,20 +1,24 @@
 # Bounded native saved-field rename
 
-Separate native candidates construct same-width and fitting unequal-width ASCII
-field renames on qualified empty ACE16 tables with explicit Name AutoCorrect OFF.
+Separate native candidates construct ASCII field renames on qualified ACE16
+sources with explicit Name AutoCorrect OFF. Empty-table profiles retain their
+same-width and fitting unequal-width operations. A separate populated profile
+admits fitting names at every width after complete row-source reconstruction.
 Consuming runtime saves and checked reopening are implemented. The [shared GUI proposal/close/publication
 flow](../../ui/FIELD_RENAME.md) passes its normal-host headless functional gate. Its source-free 22-case render matrix is separate evidence,
 with direct review of all 22 images complete. General persisted field CRUD,
 other native versions and native Access save comparison remain unfinished.
 
-## Complete settled source
+## Empty settled-source profiles
 
 The input must pass the shared complete field-history-plus-OFF source proof.
 It retains the exact nine-role image, actual user and database property owners,
 canonical generated-primary seed, original field-addition history and separate
 explicit-OFF insertion. Missing settings, absent properties and other values do
 not mean OFF. Query dependencies, NameMaps, macros, unsupported declarations,
-populated tables, unknown residual bytes and broader role graphs refuse.
+populated tables, unknown residual bytes and broader role graphs refuse in these
+existing empty-source profiles. The populated profile below has its own complete
+source proof; an empty-source refusal never activates it.
 
 The source proof constructs an inverse hypothesis only within the exact final
 ordinary database catalog slot and final canonical database property row. The
@@ -25,9 +29,46 @@ an enabled/disabled observation alone cannot establish source authority.
 The borrowed check and private owning `FieldHistoryOffSource` use one validation
 core; an owning candidate cannot be constructed from a caller-supplied boolean.
 
+## Populated source profile
+
+`inspect_populated_field_rename_source` and
+`prepare_populated_field_rename` use a separate nonempty source family. The
+latter returns a sealed `NativePopulatedFieldRenameCandidate`. The current family
+has the same fixed eleven-page ACE16 geometry, native table/definition 7,
+DATA8 and a single root-leaf primary index on page 9. It contains a dense
+generated-ID field at native number 0 and an ordinary non-key Number Long field
+at number 1. The selected field retains Required(false) and its literal zero
+default. Populated Short Text and broader populated schemas are not admitted.
+
+Actual ordinary-row source capture first checks native declarations, properties,
+program absence, dependencies, records, ownership and index membership. There
+must be at least one row, with generated IDs exactly `1..N` in physical source
+order and an Int32 or NULL companion. Declared/live counts, LastIssued and unique
+index history must all equal `N`. This is a bounded reconstructible-batch family,
+not a one-row special case or authority inferred from a nonzero declared count.
+
+The proof builds an empty-source hypothesis by resetting only the three count/
+history words and the initial DATA8/INDEX9 page roles. The existing complete
+field-history/OFF proof must accept that hypothesis. A real checked normal INSERT
+batch then generates the IDs and supplies the observed companion values; its
+complete AFTER must equal every byte of the original populated image. The
+hypothesis supplies no permission by itself. Maps, counters, inactive record
+bytes, index entries and every other byte must survive this full reconstruction.
+Gapped/deleted/reordered histories, broader storage geometry and noncanonical
+inactive NULL bytes refuse rather than being normalized or erased.
+
+The source observer returns the actual native identity and fitting capacity
+without a proposed replacement or AFTER allocation. Runtime inspection and
+consuming review select the populated family from the freshly captured native
+schema's nonzero declared count **before** qualification. Full replay still
+checks actual membership and counts; failed populated admission never retries
+an empty-source candidate. Cancellation, limits, malformed data and other native
+failures retain typed errors. A constructive-source mismatch is an unsupported
+source, not a successful partial proof.
+
 ## Exact field and name profile
 
-The selected field must be a non-primary, non-key Number Long with stored
+For the empty profiles, the selected field must be a non-primary, non-key Number Long with stored
 Required(false) and literal zero default, or Short Text255 with Unicode
 compression, stored Required(false)/AllowZeroLength(true) and no stored default.
 The generated ID and selected indexed fields refuse. This does not alter source
@@ -35,7 +76,9 @@ fields or infer a new declaration from their displayed values.
 
 Original and proposed field names must be ASCII. The retained same-width
 candidate requires equal UTF-16 widths; the separate fitted candidate admits
-unequal widths only within the existing physical capacity. Native identifier
+unequal widths only within the existing physical capacity. The populated
+candidate admits every fitting ASCII width, including same-width, case-only and
+exact no-op requests, through its own complete source proof. Native identifier
 syntax and the 64-unit ceiling still apply. Every field in the
 comparison namespace must be ASCII; a Unicode sibling refuses this narrow
 rename profile rather than relying on an unproved locale comparator. Duplicate
@@ -65,7 +108,7 @@ actual native column storage facts and every property key/type/flag/value/order.
 Retired property rows keep their original names. Indexes, allocation/maps,
 settings, ROW framing, descriptors, dates and unknown tails remain unchanged.
 
-The candidate does not grant further ADD or repeated-rename authority. A renamed
+No candidate grants further ADD or repeated-rename authority. A renamed
 first-snapshot source can happen to equal another valid constructive source;
 histories with retained old names require their actual event history. No guard
 normalizes retired names or infers the original ADD history from current names.
@@ -96,6 +139,15 @@ than treating them as permission to erase historical content. Complete expected
 images are authored independently of this repacker; successful opening in a
 second reader alone is insufficient structural proof.
 
+The populated candidate reuses this parser-bound packing and relocation-aware
+verifier; a zero size delta also covers its equal-width and no-op requests.
+Every DATA/INDEX byte and all row/generator/index-history counters remain exact.
+Only the qualified name/property frames and their necessary packing fields may
+change. This operation does not allocate pages, repair dependencies or rewrite
+records. An unchanged spelling still completes source/target qualification;
+the runtime retains a read-only reopen witness and starts no save worker or
+journal for that no-op.
+
 ## Original-request and recovery checkpoint
 
 <!-- FIELD_RENAME_INTENT_STATUS: native, adapter and consuming runtime verified -->
@@ -103,10 +155,13 @@ second reader alone is insufficient structural proof.
 The TCFR0001/profile1 implementation binds the exact original table/field,
 proposed spelling, stable native identity and full BEFORE length/digest. It
 contains no replacement bytes, physical spans or caller-scoped model identity.
-Its closed profile discriminator now also admits profile2 for unequal-width
-fitted ASCII requests. Profile1 remains strictly same-width; decode and fresh
-reconstruction dispatch only the recorded profile, and unknown profiles refuse
-before string allocation. A failed profile1 request is never retried as profile2.
+Its closed profile discriminator also admits profile2 for unequal-width empty
+fitted ASCII requests and profile3 for the separately reconstructed populated
+ASCII family at every width. Profile1 remains strictly same-width and profile2
+remains empty/unequal-width. Decode and fresh reconstruction dispatch only the
+recorded profile, and unknown profiles refuse before string allocation. No failed
+profile is retried through another decoder or native candidate. A valid profile3
+envelope over an empty source remains inert data and fails native reconstruction.
 Borrowed framing and name validation precede string allocation. Decoding is
 inert data and does not reconstruct a native source or grant save authority.
 
@@ -122,8 +177,9 @@ receipts. Its file-based checks and consuming runtime save/witness cases pass in
 the [service record](../../../tests/results/schema/field-schema-services-2026-11-09.json).
 The normal [saved-field GUI workflow](../../ui/FIELD_RENAME.md) now consumes
 that route for the same bounded source/name profile, including Design selection
-and checked replacement publication. Unequal-width names and broader source
-families remain unsupported; GUI availability does not widen native admission.
+and checked replacement publication. Its populated route uses the same explicit
+profile3, including same-width and no-op requests. Broader source families remain
+unsupported; GUI availability does not widen native admission.
 
 ## Evidence and verification status
 
@@ -160,6 +216,18 @@ stale-descriptor shrink images that Jackcess opened successfully. That reader
 blind spot does not relax the native descriptor/body-extent checks or qualify
 Access saves. Native/writer test results remain separate from those inert SDK
 observations.
+
+The independent [populated cursor observation record](../../../tests/reports/schema/POPULATED_FIELD_RENAME_OBSERVATIONS.md)
+checks one-, two- and three-row synthetic sources, including NULL and negative
+values, across growth, shrinkage, equal-width and no-op names. The raw models
+verify that row authoring and metadata rename commute. Jackcess traversed both
+sequential and primary-index cursors on fifteen read-only opens representing
+twelve distinct images; all typed rows, identities, field properties and explicit
+OFF settings matched, and file hashes remained unchanged. These are **reader-only
+observations, with zero SDK writes and no Microsoft Access execution**. They do
+not establish Access rename events, dependency repair, writer behavior or full
+profile compatibility. Native complete-image, original-intent/recovery and host
+acceptance checks remain separate evidence.
 
 ## Natural fitting-capacity boundary
 

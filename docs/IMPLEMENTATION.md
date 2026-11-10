@@ -1,5 +1,38 @@
 # Implementation status
 
+## Populated Number field rename — 9 November 2026
+
+The existing Datasheet/Design rename workflow now handles the qualified populated
+ACE2016 Number source, including longer, shorter, same-width, case-only and
+unchanged ASCII names. It supports a reconstructible nonempty dense batch with
+IDs 1…N and actual Int32/NULL values; it is not limited to one record. Admission
+reconstructs the complete original image through the checked INSERT writer before
+allowing metadata changes. Deleted/reordered histories, populated Short Text and
+arbitrary imported layouts remain outside this source profile. Existing empty
+profiles are unchanged. See the [native contract](access/writes/FIELD_RENAME.md).
+
+Fresh source inspection selects the populated request explicitly. Desktop and
+MCP retain all original rows across review, journaled save and verified reopen.
+An unchanged proposal retains its read-only reopen owner without starting a save
+worker or journal. Native tests compare complete independently authored images
+and rederive admission during cold pending/committed recovery.
+
+The selected gates pass 15 native rename cases, 13 native intent cases, 19 runtime
+cases and four testkit field-rename cases. The complete testkit batch passes 32
+cases. Desktop passes 222 distinct cases across its complete unit batch and a
+corrected focused field-rename rerun, with one pre-existing ignore; MCP's complete unit batch
+passes 66 cases. Initial desktop test-only carrier and no-op ownership assertions
+were corrected; production identity/ownership checks remain intact. Six-package
+strict Clippy and rustdoc and four separate minimal ACE feature configurations
+pass. These are scoped local checks, not a full workspace run.
+
+The independent read-only SDK record covers 15 opens, sequential and primary-index
+traversal and 60 actual row visits with exact IDs and typed Int32/NULL values.
+No SDK writes or Windows/Access execution are claimed; retained earlier damaged
+controls remain separate. See the [observations](../tests/reports/schema/POPULATED_FIELD_RENAME_OBSERVATIONS.md).
+Four localized light/dark [offscreen frames](ui/PRESENTATION_PREVIEW.md#populated-field-name-proposals--9-november-2026)
+were opened at 1×/2×, with no native app windows launched.
+
 ## Row CRUD after fitted field names — 9 November 2026
 
 Growing and shrinking a qualified field name now compose with normal row
