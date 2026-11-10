@@ -6,19 +6,35 @@ The desktop now connects a headless signed-update service through a separate
 worker and shared translated About controls. Fixed publisher trust, release
 identity, bounded download/extraction, stale-input guards, draft/native-worker
 restart gates and retained terminal resources are implemented. The updater's full
-batch passes 58 cases; the desktop's full batch passes 235 with one existing Jet 4
-fixture ignore, and strict lint passes. Portable/macOS replacement is implemented;
-signed MSI/AppImage replacement and actual native relaunch qualification remain.
+batch passes 74 cases; the desktop's full batch passes 237 with two explicit
+private-fixture ignores, and strict lint passes. The original UN/LOCODE desktop
+journey also passed separately with its hash-pinned source. Portable/macOS, native
+MSI and authenticated original-AppImage update routes are implemented; actual
+native upgrade, elevation and relaunch qualification remain.
 See [signed update scope](development/SELF_UPDATE.md).
 
 Native builders and no-tag CI cover MSI, custom dmgbuild DMG, DEB, RPM and
-AppImage packages on x64/ARM64, alongside portable downloads. A real ARM64 DMG
-passed native read-only verification locally; Windows/Linux native installers and
-the AppImage source/relink proof await CI. The portable baseline built and
+AppImage packages on x64/ARM64, alongside portable downloads. Both macOS DMGs
+passed native headless CI verification. The ARM64 Linux source/relink proof also
+passed, before a later license-alias refusal. Windows MSI construction, extraction,
+installation and payload/handler checks passed before its shortcut-test failure.
+Those downstream packaging checks have fixes awaiting a further native run;
+complete-set production signing has not passed. The portable baseline built and
 headlessly checked all twelve platform archives, then exposed a GitHub upload DNS
 failure and, after retry, an unavailable Ubuntu APT Minisign package. Reviewed
 binary provisioning now replaces that APT assumption. No tag or release has been
 published. See [release preparation](development/RELEASING.md).
+
+## Existing-field edits after populated Number ADD — 9 November 2026
+
+The actual headless desktop ADD → edit → review → Save → fresh-reopen workflow
+now accepts existing unindexed Int32 fields in the qualified historical-record
+source. Whole-image oracles cover value-to-value, NULL-to-value and value-to-NULL,
+retaining every absent later field as NULL and all unrelated bytes. The separate
+`TCNI0011`/profile11 language and fresh mutation-purpose source proof keep older
+ordinary admission closed. Missing-field materialization, other sources and
+native Access comparisons remain separate work. See the
+[column addition contract](access/writes/ADD_COLUMN.md).
 
 
 ## Repeated field renames and current metadata — 9 November 2026

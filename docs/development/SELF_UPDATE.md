@@ -91,6 +91,16 @@ explicitly; its raw report is retained for native diagnosis. Both corrections
 still require the next native rehearsal. Assembly and production signing did not
 pass this run.
 
+The [corrected rehearsal on `d392fd2b1`](https://github.com/replicraft/TableCraft/actions/runs/42761563169)
+passed the actual ARM64 Linux modified-FUSE source/relink proof. Packaging then
+refused Debian's `common-licenses/GPL` symlink; the follow-up reader accepts only
+bounded regular targets within the canonical common-license directory. Windows
+passed MSI construction, read-only inspection/extraction, actual installation
+and payload/handler checks. Its next failure was the test's attempt to read an
+advertised shortcut as an ordinary WScript shortcut. The corrected check uses
+Windows Installer's shortcut/component ownership APIs. These corrections await
+native follow-up; no passing complete-set production-signing result is claimed.
+
 Remaining gates before claiming the updater/release complete:
 
 - Qualify the connected signed MSI and original-AppImage routes on their native
@@ -138,8 +148,11 @@ The connected MSI/AppImage updater service batch passes 74 tests on macOS.
 The twelve signing-tool tests pass, including production refusal of both test
 keys after comment/key-ID changes. Native Windows registration/CAB integration
 tests remain explicit native-CI cases. The complete desktop batch passes
-235 tests with one existing hash-pinned Jet 4 fixture ignore. Strict all-target,
-all-feature Clippy passes for both. Focused UI checks and three reviewed source-free
+237 tests with two explicit private-fixture ignores. The original UN/LOCODE
+desktop journey passed separately with its hash-pinned source; the Jet 4 ignored
+case was not executed in this batch. Strict all-target Clippy passes for both;
+strict all-feature ACE/Access lint also passes for the connected editing changes.
+Focused UI checks and three reviewed source-free
 About frames cover translated update controls, late-input identity and draft-safe
 restart gates. No native application window or relaunch helper was executed.
 The generated desktop notices include the updater's actual dependency closure;
