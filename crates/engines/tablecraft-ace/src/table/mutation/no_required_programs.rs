@@ -49,6 +49,8 @@ enum Purpose {
     #[cfg(feature = "ace16-create")]
     RetainedOpaqueRows,
     #[cfg(feature = "ace16-create")]
+    RetainedOpaqueInsert,
+    #[cfg(feature = "ace16-create")]
     RetainedDelete,
     #[cfg(feature = "ace16-create")]
     CurrentDelete,
@@ -319,6 +321,23 @@ impl<'image> NoRequiredTablePrograms<'image> {
         )
     }
 
+    #[cfg(feature = "ace16-create")]
+    pub(in crate::table::mutation) fn capture_retained_opaque_insert(
+        image: &'image NativeImage,
+        schema: &TableSchema,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, EditError> {
+        Self::capture_with_purpose(
+            image,
+            schema,
+            Declaration::CurrentSchema,
+            Purpose::RetainedOpaqueInsert,
+            budget,
+            cancelled,
+        )
+    }
+
     /// Retained deletion proves its own target programs and complete
     /// storage inventory. Insertion, replacement and schema certificates are not transferable.
     #[cfg(feature = "ace16-create")]
@@ -405,6 +424,7 @@ impl<'image> NoRequiredTablePrograms<'image> {
             Purpose::RetainedInsert
             | Purpose::RetainedRows
             | Purpose::RetainedOpaqueRows
+            | Purpose::RetainedOpaqueInsert
             | Purpose::RetainedDelete
             | Purpose::RetainedSchema => image.require_retained_capture()?,
             _ => image.require_standard_capture()?,
@@ -420,6 +440,7 @@ impl<'image> NoRequiredTablePrograms<'image> {
             #[cfg(feature = "ace16-create")]
             Purpose::RetainedRows
             | Purpose::RetainedOpaqueRows
+            | Purpose::RetainedOpaqueInsert
             | Purpose::RetainedDelete
             | Purpose::RetainedInsert
             | Purpose::RetainedSchema => {
@@ -446,6 +467,7 @@ impl<'image> NoRequiredTablePrograms<'image> {
                     | Purpose::RetainedInsert
                     | Purpose::RetainedRows
                     | Purpose::RetainedOpaqueRows
+                    | Purpose::RetainedOpaqueInsert
                     | Purpose::RetainedDelete
                     | Purpose::CurrentDelete
             ) {
@@ -597,6 +619,22 @@ impl<'image> NoRequiredTablePrograms<'image> {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<(), EditError> {
         if self.purpose != Purpose::RetainedOpaqueRows
+            || self.declaration != Declaration::CurrentSchema
+        {
+            return Err(EditError::Preservation);
+        }
+        self.require_binding(image, schema, budget, cancelled)
+    }
+
+    #[cfg(feature = "ace16-create")]
+    pub(in crate::table::mutation) fn require_retained_opaque_insert_source(
+        &self,
+        image: &NativeImage,
+        schema: &TableSchema,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(), EditError> {
+        if self.purpose != Purpose::RetainedOpaqueInsert
             || self.declaration != Declaration::CurrentSchema
         {
             return Err(EditError::Preservation);

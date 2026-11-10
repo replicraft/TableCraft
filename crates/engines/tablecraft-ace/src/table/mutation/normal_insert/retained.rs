@@ -36,23 +36,7 @@ impl NativeImage {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<(), EditError> {
         let source = capture(self, table, budget, cancelled)?;
-        let counter = incrementing::mode::capture_current(self, &source, budget, cancelled)?;
-        record_insertion::current::variables(
-            source.table.schema(),
-            counter.column,
-            budget,
-            cancelled,
-        )?;
-        incrementing::binding::validate(self, &source, counter.column, &[], budget, cancelled)?;
-        indexed::qualify(
-            self,
-            &source,
-            table,
-            &[],
-            indexed::LvalScope::Retained,
-            budget,
-            cancelled,
-        )?;
+        qualify(self, &source, table, budget, cancelled)?;
         Ok(())
     }
 
@@ -74,4 +58,26 @@ impl NativeImage {
             cancelled,
         )
     }
+}
+
+pub(super) fn qualify(
+    image: &NativeImage,
+    source: &Source,
+    table: &str,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), EditError> {
+    let counter = incrementing::mode::capture_current(image, source, budget, cancelled)?;
+    record_insertion::current::variables(source.table.schema(), counter.column, budget, cancelled)?;
+    incrementing::binding::validate(image, source, counter.column, &[], budget, cancelled)?;
+    indexed::qualify(
+        image,
+        source,
+        table,
+        &[],
+        indexed::LvalScope::Retained,
+        budget,
+        cancelled,
+    )?;
+    Ok(())
 }

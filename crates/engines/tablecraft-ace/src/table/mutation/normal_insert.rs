@@ -9,6 +9,8 @@ mod incrementing;
 mod indexed;
 #[cfg(feature = "ace16-create")]
 mod retained;
+#[cfg(feature = "ace16-create")]
+mod retained_opaque;
 pub(crate) use eof::OrdinaryInsertPlanKind;
 mod omitted;
 mod placement;

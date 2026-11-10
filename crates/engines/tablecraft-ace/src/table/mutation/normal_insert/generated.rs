@@ -1,7 +1,7 @@
 //! Shared current generated-row construction; source families remain explicit.
 mod proof;
 
-use super::{current, incrementing, indexed, retained};
+use super::{current, incrementing, indexed, retained, retained_opaque};
 use crate::{
     EditError, InspectError, NativeEditPlan, NativeImage, OmittedRowInsert,
     header::check,
@@ -17,13 +17,14 @@ use tablecraft_core::limits::{Resource, ResourceBudget};
 pub(super) enum Family {
     Current,
     Retained,
+    RetainedOpaque,
 }
 
 impl Family {
     pub(super) fn lval_scope(self) -> indexed::LvalScope {
         match self {
             Self::Current => indexed::LvalScope::Original,
-            Self::Retained => indexed::LvalScope::Retained,
+            Self::Retained | Self::RetainedOpaque => indexed::LvalScope::Retained,
         }
     }
 
@@ -37,6 +38,7 @@ impl Family {
         match self {
             Self::Current => current::capture(image, table, budget, cancelled),
             Self::Retained => retained::capture(image, table, budget, cancelled),
+            Self::RetainedOpaque => retained_opaque::capture(image, table, budget, cancelled),
         }
     }
 }

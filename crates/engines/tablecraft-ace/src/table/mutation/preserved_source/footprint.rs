@@ -41,6 +41,7 @@ impl Footprint {
             | PayloadAdmission::RetainedInsertNoRequired(_)
             | PayloadAdmission::RetainedRowsNoRequired(_)
             | PayloadAdmission::RetainedOpaqueRowsNoRequired(_)
+            | PayloadAdmission::RetainedOpaqueInsertNoRequired(_)
             | PayloadAdmission::RetainedDeleteNoRequired(_)
             | PayloadAdmission::CurrentDeleteNoRequired(_)
             | PayloadAdmission::HistoricalFixedRows(_) => Ok(Self::Normal(Protection::capture(

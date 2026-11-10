@@ -27,6 +27,9 @@ pub(super) enum RecordAdmission {
     /// separate complete trailer without interpreting retired column types.
     #[cfg(all(feature = "journal", feature = "ace16-create"))]
     RetainedOpaqueRows,
+    /// INSERT observes known values while preserving the entire old record.
+    #[cfg(all(feature = "journal", feature = "ace16-create"))]
+    RetainedOpaqueInsert,
     /// Current DELETE preserves unselected and retired payloads byte-for-byte.
     #[cfg(all(feature = "journal", feature = "ace16-create"))]
     CurrentDelete,
@@ -57,6 +60,8 @@ impl RecordAdmission {
             Self::CurrentRows => true,
             #[cfg(all(feature = "journal", feature = "ace16-create"))]
             Self::RetainedOpaqueRows => true,
+            #[cfg(all(feature = "journal", feature = "ace16-create"))]
+            Self::RetainedOpaqueInsert => true,
             #[cfg(all(feature = "journal", feature = "ace16-create"))]
             Self::CurrentDelete => true,
         };

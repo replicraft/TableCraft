@@ -299,6 +299,26 @@ pub(in crate::table::mutation) fn capture_retained_insert(
     preserved_source::capture_retained_insert(image, table, &certificate, budget, cancelled)
 }
 
+/// Opaque INSERT requires its own complete surroundings and program certificate.
+#[cfg(feature = "ace16-create")]
+pub(in crate::table::mutation) fn capture_retained_opaque_insert(
+    image: &NativeImage,
+    table: &str,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Source, EditError> {
+    let target = crate::inspect_table_schema(
+        &mut image.reader(),
+        image.catalog().catalog().scope(),
+        table,
+        budget,
+        cancelled,
+    )?;
+    let certificate =
+        NoRequiredTablePrograms::capture_retained_opaque_insert(image, &target, budget, cancelled)?;
+    preserved_source::capture_retained_opaque_insert(image, table, &certificate, budget, cancelled)
+}
+
 #[derive(Clone, Copy)]
 enum CapturePurpose {
     Updates,

@@ -76,7 +76,9 @@ pub(super) fn prove(
     }
     let reconstruct = match family {
         Family::Current => super::super::proof::reconstruct_encoded,
-        Family::Retained => super::super::proof::reconstruct_retained_encoded,
+        Family::Retained | Family::RetainedOpaque => {
+            super::super::proof::reconstruct_retained_encoded
+        }
     };
     let (mut expected, references) = reconstruct(
         &image,
@@ -151,7 +153,7 @@ fn capture_image(
 ) -> Result<NativeImage, EditError> {
     match family {
         Family::Current => Ok(NativeImage::capture(input, scope, budget, cancelled)?),
-        Family::Retained => Ok(NativeImage::capture_retained(
+        Family::Retained | Family::RetainedOpaque => Ok(NativeImage::capture_retained(
             input, scope, budget, cancelled,
         )?),
     }
