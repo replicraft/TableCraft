@@ -217,7 +217,12 @@ fn validate_with<'a>(
     }
 
     let primary = super::primary::capture(columns, rows, budget, cancelled)?;
-    let properties = super::properties::capture(columns, rows, budget, cancelled)?;
+    let properties = match construction {
+        Construction::Original => super::properties::capture(columns, rows, budget, cancelled)?,
+        Construction::Native => {
+            super::properties::capture_linked(columns, rows, budget, cancelled)?
+        }
+    };
     let mut catalog_bytes = super::record::DATA_HEADER_BYTES;
     for object in super::build::systems() {
         check(budget, cancelled)?;
@@ -226,13 +231,23 @@ fn validate_with<'a>(
             .and_then(|bytes| bytes.checked_add(size_of::<u16>()))
             .ok_or(CreateDatabaseError::PageCapacity)?;
     }
-    let user_catalog_bytes =
-        super::record::catalog_length_with_properties(catalog_name, properties.as_ref())?;
+    let user_catalog_bytes = match construction {
+        Construction::Original => {
+            super::record::catalog_length_with_properties(catalog_name, properties.as_ref())?
+        }
+        Construction::Native => super::record::catalog_length(catalog_name)
+            .checked_add(if properties.is_some() {
+                3 * size_of::<u32>()
+            } else {
+                0
+            })
+            .ok_or(CreateDatabaseError::PageCapacity)?,
+    };
     catalog_bytes = catalog_bytes
         .checked_add(user_catalog_bytes)
         .and_then(|bytes| bytes.checked_add(size_of::<u16>()))
         .ok_or(CreateDatabaseError::PageCapacity)?;
-    if construction == Construction::Original && catalog_bytes > PAGE_BYTES {
+    if catalog_bytes > PAGE_BYTES {
         return Err(CreateDatabaseError::PageCapacity);
     }
 

@@ -72,6 +72,33 @@ pub(super) fn capture<'a>(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Option<Prepared<'a>>, CreateDatabaseError> {
+    capture_with_placement(columns, rows, Placement::Inline, budget, cancelled)
+}
+
+/// Native-count construction places this same checked MR2 body externally;
+/// the inline catalog-page limit remains exclusive to original construction.
+pub(super) fn capture_linked<'a>(
+    columns: Columns<'a>,
+    rows: Rows<'a>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Option<Prepared<'a>>, CreateDatabaseError> {
+    capture_with_placement(columns, rows, Placement::Linked, budget, cancelled)
+}
+
+#[derive(Clone, Copy)]
+enum Placement {
+    Inline,
+    Linked,
+}
+
+fn capture_with_placement<'a>(
+    columns: Columns<'a>,
+    rows: Rows<'a>,
+    placement: Placement,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Option<Prepared<'a>>, CreateDatabaseError> {
     let mut required = false;
     let mut allow_empty = false;
     let mut default_value = false;
@@ -140,9 +167,14 @@ pub(super) fn capture<'a>(
     if description {
         length = add(length, name_length(DESCRIPTION, budget, cancelled)?)?;
     }
-    // A whole catalog page is a stricter bound than the format's integer widths.
-    if add(length, INLINE_HEADER)? > crate::format::page::PAGE_BYTES {
-        return Err(CreateDatabaseError::PageCapacity);
+    match placement {
+        Placement::Inline if add(length, INLINE_HEADER)? > crate::format::page::PAGE_BYTES => {
+            return Err(CreateDatabaseError::PageCapacity);
+        }
+        Placement::Linked if length as u64 > u64::from(crate::LongValueReadLimits::MAX_BYTES) => {
+            return Err(CreateDatabaseError::PageCapacity);
+        }
+        _ => {}
     }
     check(budget, cancelled)?;
     Ok(Some(Prepared {
