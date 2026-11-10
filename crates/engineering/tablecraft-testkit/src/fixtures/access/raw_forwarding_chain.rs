@@ -135,3 +135,47 @@ pub(in crate::fixtures::access) fn terminal_range(
     let (_, start, end) = terminal(before, page, root);
     page as usize * PAGE + start..page as usize * PAGE + end
 }
+
+/// Retained-only placement for a reconstructed full-count row. The old raw
+/// single-hop owner remains closed; growth repoints only the logical root.
+pub(in crate::fixtures::access) fn place_terminal(
+    before: &[u8],
+    page_number: u32,
+    root: usize,
+    row: &[u8],
+) -> Vec<u8> {
+    let (_, start, end) = terminal(before, page_number, root);
+    if row.len() == end - start {
+        return replace_terminal(before, page_number, root, row);
+    }
+    assert!(row.len() > end - start);
+    let base = page_number as usize * PAGE;
+    let root_word = word(before, base + DIRECTORY + 2 * root);
+    let root_start = usize::from(root_word) & OFFSET_MASK;
+    let root_end = if root == 0 {
+        PAGE
+    } else {
+        usize::from(word(before, base + DIRECTORY + 2 * (root - 1))) & OFFSET_MASK
+    };
+    let slot = usize::from(word(before, base + 12));
+    assert!(u8::try_from(slot).is_ok());
+    let mut after = before.to_vec();
+    append_record(&mut after[base..base + PAGE], row);
+    let target_at = base + DIRECTORY + 2 * slot;
+    let target_word = word(&after, target_at);
+    put16(&mut after, target_at, target_word | HIDDEN);
+    if root_word & FORWARDED == 0 {
+        after[base + root_start..base + root_end].fill(0);
+    }
+    put32(
+        &mut after,
+        base + root_start,
+        (page_number << 8) | slot as u32,
+    );
+    put16(
+        &mut after,
+        base + DIRECTORY + 2 * root,
+        root_word | FORWARDED,
+    );
+    after
+}

@@ -116,3 +116,80 @@ fn retained_number_and_text_add_preserve_old_records_as_null_without_default_bac
         }
     }
 }
+
+#[test]
+fn retained_added_fields_materialize_old_rows_then_insert_literal_defaults_null_and_values() {
+    for case in raw::CASES {
+        let source = raw::source(case);
+        for target in [Target::Number, Target::ShortText] {
+            let added = raw::after(
+                &source.bytes,
+                source.definition,
+                source.catalog_root,
+                target,
+            );
+            let replacement = match target {
+                Target::Number => Value::Int32(123),
+                Target::ShortText => Value::Text("日本語🦀".into()),
+            };
+            let filled = raw::fill(
+                &added,
+                source.definition,
+                source.roots[0],
+                target,
+                Some(replacement.clone()),
+            );
+            let observed = read_table(
+                &mut Cursor::new(&filled),
+                CatalogScope::new(3703),
+                "Table1",
+                &mut budget(),
+                &|| false,
+            )
+            .unwrap();
+            assert_eq!(observed.rows()[0].last(), Some(&replacement));
+            assert!(
+                observed.rows()[1..]
+                    .iter()
+                    .all(|row| row.last() == Some(&Value::Null))
+            );
+            let mut before = filled;
+            for input in [
+                Input::Omitted,
+                Input::Null,
+                match target {
+                    Target::Number => Input::Number(-7),
+                    Target::ShortText => Input::Text(""),
+                },
+            ] {
+                let inserted = raw::append(&before, source.definition, target, input);
+                let observed = read_table(
+                    &mut Cursor::new(&inserted),
+                    CatalogScope::new(3704),
+                    "Table1",
+                    &mut budget(),
+                    &|| false,
+                )
+                .unwrap();
+                let expected = match (target, input) {
+                    (Target::Number, Input::Omitted) => Value::Int32(0),
+                    (_, Input::Omitted | Input::Null) => Value::Null,
+                    (Target::Number, Input::Number(value)) => Value::Int32(value),
+                    (Target::ShortText, Input::Text(value)) => Value::Text(value.into()),
+                    _ => unreachable!(),
+                };
+                assert_eq!(observed.rows().last().unwrap().last(), Some(&expected));
+                assert_eq!(observed.rows()[0].last(), Some(&replacement));
+                check_table(
+                    &mut Cursor::new(&inserted),
+                    CatalogScope::new(3705),
+                    "Table1",
+                    &mut budget(),
+                    &|| false,
+                )
+                .unwrap();
+                before = inserted;
+            }
+        }
+    }
+}

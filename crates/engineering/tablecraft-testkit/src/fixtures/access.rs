@@ -438,6 +438,7 @@ mod generated_record_insert;
 mod raw_record_placement;
 mod raw_record_update;
 mod raw_schema_add;
+mod raw_historical_row;
 
 pub mod raw_forwarding_chain;
 
