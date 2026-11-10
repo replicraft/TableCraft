@@ -37,6 +37,8 @@ enum Purpose {
     #[cfg(feature = "ace16-create")]
     CurrentSchema,
     #[cfg(feature = "ace16-create")]
+    RetainedSchema,
+    #[cfg(feature = "ace16-create")]
     CurrentRows,
     #[cfg(feature = "ace16-create")]
     CurrentInsert,
@@ -202,6 +204,25 @@ impl<'image> NoRequiredTablePrograms<'image> {
         )
     }
 
+    /// Retained schema observations retain a distinct image/target purpose;
+    /// row-operation certificates cannot grant metadata mutation authority.
+    #[cfg(feature = "ace16-create")]
+    pub(in crate::table::mutation) fn capture_retained_schema(
+        image: &'image NativeImage,
+        schema: &TableSchema,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, EditError> {
+        Self::capture_with_purpose(
+            image,
+            schema,
+            Declaration::CurrentSchema,
+            Purpose::RetainedSchema,
+            budget,
+            cancelled,
+        )
+    }
+
     /// Current DELETE proves program absence under a distinct source purpose.
     /// Readonly schema and other mutation certificates are not interchangeable.
     #[cfg(feature = "ace16-create")]
@@ -362,9 +383,10 @@ impl<'image> NoRequiredTablePrograms<'image> {
         check(budget, cancelled)?;
         match purpose {
             #[cfg(feature = "ace16-create")]
-            Purpose::RetainedInsert | Purpose::RetainedRows | Purpose::RetainedDelete => {
-                image.require_retained_capture()?
-            }
+            Purpose::RetainedInsert
+            | Purpose::RetainedRows
+            | Purpose::RetainedDelete
+            | Purpose::RetainedSchema => image.require_retained_capture()?,
             _ => image.require_standard_capture()?,
         }
         let header = image.catalog().header();
@@ -376,7 +398,10 @@ impl<'image> NoRequiredTablePrograms<'image> {
         }
         let selected = match purpose {
             #[cfg(feature = "ace16-create")]
-            Purpose::RetainedRows | Purpose::RetainedDelete | Purpose::RetainedInsert => {
+            Purpose::RetainedRows
+            | Purpose::RetainedDelete
+            | Purpose::RetainedInsert
+            | Purpose::RetainedSchema => {
                 let inventory =
                     crate::table::table_append::Inventory::capture(image, budget, cancelled)?;
                 catalog::validate_retained(image, schema, &inventory, budget, cancelled)?
@@ -394,6 +419,7 @@ impl<'image> NoRequiredTablePrograms<'image> {
             if matches!(
                 purpose,
                 Purpose::CurrentSchema
+                    | Purpose::RetainedSchema
                     | Purpose::CurrentRows
                     | Purpose::CurrentInsert
                     | Purpose::RetainedInsert
@@ -478,6 +504,21 @@ impl<'image> NoRequiredTablePrograms<'image> {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<(), EditError> {
         if self.purpose != Purpose::CurrentSchema {
+            return Err(EditError::Preservation);
+        }
+        self.require_binding(image, schema, budget, cancelled)
+    }
+
+    #[cfg(feature = "ace16-create")]
+    pub(in crate::table::mutation) fn require_retained_schema_source(
+        &self,
+        image: &NativeImage,
+        schema: &TableSchema,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(), EditError> {
+        if self.purpose != Purpose::RetainedSchema || self.declaration != Declaration::CurrentSchema
+        {
             return Err(EditError::Preservation);
         }
         self.require_binding(image, schema, budget, cancelled)

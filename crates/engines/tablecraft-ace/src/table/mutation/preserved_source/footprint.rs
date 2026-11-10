@@ -35,6 +35,7 @@ impl Footprint {
             )?)),
             #[cfg(all(feature = "journal", feature = "ace16-create"))]
             PayloadAdmission::CurrentSchemaNoRequired(_)
+            | PayloadAdmission::RetainedSchemaNoRequired(_)
             | PayloadAdmission::CurrentRowsNoRequired(_)
             | PayloadAdmission::CurrentInsertNoRequired(_)
             | PayloadAdmission::RetainedInsertNoRequired(_)

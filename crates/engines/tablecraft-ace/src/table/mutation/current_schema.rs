@@ -1,4 +1,7 @@
 //! Current table ownership and safe schema dependencies, without creator replay.
+mod family;
+mod retained;
+
 use crate::{
     DatabaseProperties, EditError, FileFormat, InspectError, NativeImage, TableProperties,
     TableSchema,
@@ -28,6 +31,12 @@ const USER_DEFINITION: u32 = 7;
 const FREE_OFFSET: usize = DATA_SIGNATURE.len();
 const LONG_VALUE_OWNER: &[u8; size_of::<u32>()] = b"LVAL";
 
+#[derive(Clone, Copy, PartialEq, Eq)]
+pub(crate) enum Family {
+    Current,
+    Retained,
+}
+
 #[derive(Debug, Error)]
 pub(crate) enum Error {
     #[error(transparent)]
@@ -46,6 +55,7 @@ impl From<LimitError> for Error {
 
 /// Current table facts are data; the owning Source alone retains the original.
 pub(crate) struct Table {
+    pub family: Family,
     pub schema: TableSchema,
     pub properties: TableProperties,
     pub catalog: TableSchema,
@@ -245,6 +255,7 @@ pub(crate) fn observe(
         .map_err(graph_error)?;
     }
     Ok(Table {
+        family: Family::Current,
         schema,
         properties,
         catalog,
