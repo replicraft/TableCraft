@@ -144,6 +144,10 @@ It accepts nullable NULL, exact declared carriers, and these integral conversion
 
 Currency integers denote whole currency units, not already-scaled storage units.
 Existing Currency carriers retain their full four-decimal range and exact bits.
+A fractional SQL literal produces a Double carrier, so assigning
+`Amount=1.2345` to Currency remains unsupported. An explicitly admitted UPDATE
+conversion such as `Amount=CCur(1.2345)` supplies the typed Currency carrier;
+this does not enable implicit fractional assignment or change display rounding.
 Converted results still pass the declared descriptor checks. Other fractional,
 Text, Boolean and date conversions remain outside this assignment slice; no
 locale, rounding or floating-point intermediate is introduced. `ExistingInt32`

@@ -47,11 +47,15 @@ fn reviewed_currency_sql_saves_exact_scale_then_null_and_refill() {
     for (step, statement, value) in [
         (
             0,
-            "UPDATE MoneyTable SET Amount=-2.0001 WHERE ID=2",
+            "UPDATE MoneyTable SET Amount=CCur(-2.0001) WHERE ID=2",
             Some(-20_001),
         ),
         (1, "UPDATE MoneyTable SET Amount=Null WHERE ID=2", None),
-        (2, "UPDATE MoneyTable SET Amount=0.0001 WHERE ID=2", Some(1)),
+        (
+            2,
+            "UPDATE MoneyTable SET Amount=CCur(0.0001) WHERE ID=2",
+            Some(1),
+        ),
     ] {
         let expected = raw::update(&before, definition, 1, value);
         let reviewed = review(&before, statement);
@@ -102,7 +106,7 @@ fn one_retained_table_keeps_currency_number_and_text_action_profiles_independent
     for step in 0..3 {
         let (statement, profile, expected) = match step {
             0 => (
-                "UPDATE MixedValues SET Amount=1.2345 WHERE ID=1",
+                "UPDATE MixedValues SET Amount=CCur(1.2345) WHERE ID=1",
                 NativeUpdateProfile::Ace16RetainedCurrencyRows,
                 mixed::update_currency(&before, definition, 0, Some(12_345)),
             ),
