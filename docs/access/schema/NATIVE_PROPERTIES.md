@@ -47,7 +47,10 @@ catalog/page/row/block/property units. No linked provider or active content runs
 
 Reviewed [Jackcess PropertyMaps](https://github.com/jahlborn/jackcess/blob/be0a2139b087a227d14cafd4ea231306a5a3a862/src/main/java/com/healthmarketscience/jackcess/impl/PropertyMaps.java)
 and [JetFormat](https://github.com/jahlborn/jackcess/blob/be0a2139b087a227d14cafd4ea231306a5a3a862/src/main/java/com/healthmarketscience/jackcess/impl/JetFormat.java)
-for MR2 block/name/value framing, scope tags and Boolean storage. These Apache-2.0
+for MR2 block/name/value framing, scope tags and Boolean storage. In particular,
+`PropertyMaps.BooleanPropColumn.read` observes `data[0] != 0`; the inert Boolean
+accessor follows that first-byte rule for its qualified one- and four-byte
+carriers, rather than interpreting a four-byte payload as an Int32. These Apache-2.0
 sources are technical references; no implementation was copied. Microsoft field
 rule semantics require separate qualification before enforcement.
 

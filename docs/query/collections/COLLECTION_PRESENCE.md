@@ -50,7 +50,19 @@ large file. Original bytes and source budgets remain unchanged.
 
 ## Current limits and evidence
 
-Bare collection projection, `IsNull(Files)` calls on the collection itself,
+Microsoft's [DAO Recordset2 attachment example](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/recordset2-object-dao)
+opens an attachment-bearing table with `SELECT *`, then obtains the attachment
+field's child recordset through its `Value` property. The parent result retains
+the attachment field; its value is a child recordset rather than a scalar filename,
+count or NULL. TableCraft does not yet expose this bare attachment result shape,
+so wildcard projection over an attachment column remains unsupported. Scalar
+projections, explicit child-member projections and the presence criteria above
+retain their separate supported contracts. Wildcard execution must not silently
+omit an attachment column or substitute a scalar value to report success. This
+reference describes the required result shape, not implemented DAO/VBA execution
+or a native Access comparison.
+
+Bare attachment projection, `IsNull(Files)` calls on the collection itself,
 non-WHERE uses and correlated outer-container tests remain unsupported. These
 forms fail during binding. Compound scalar calls mixing presence with hidden
 member criteria whose empty-list fold is unqualified also fail before scanning.
