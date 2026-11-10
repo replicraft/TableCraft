@@ -98,4 +98,4 @@ table-draft-no-key-failed = Не удалось добавить первичн�
 table-draft-design-new-name = Имя нового поля
 table-draft-design-new-type = Тип данных нового поля
 
-table-draft-field-limit = Таблицы Access поддерживают до 255 полей, включая первичный ключ.
+table-draft-field-limit = Таблицы поддерживают до 255 полей, включая первичный ключ.

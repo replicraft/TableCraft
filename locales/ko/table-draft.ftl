@@ -98,4 +98,4 @@ table-draft-no-key-failed = 기본 키를 추가하지 못했습니다. 현재 �
 table-draft-design-new-name = 새 필드 이름
 table-draft-design-new-type = 새 필드 데이터 형식
 
-table-draft-field-limit = Access 테이블은 기본 키를 포함하여 최대 255개의 필드를 지원합니다.
+table-draft-field-limit = 테이블은 기본 키를 포함하여 최대 255개의 필드를 지원합니다.

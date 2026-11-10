@@ -98,4 +98,4 @@ table-draft-no-key-failed = 主キーを追加できませんでした。現在�
 table-draft-design-new-name = 新しいフィールド名
 table-draft-design-new-type = 新しいフィールドのデータ型
 
-table-draft-field-limit = Access のテーブルは主キーを含めて最大255個のフィールドをサポートします。
+table-draft-field-limit = テーブルは主キーを含めて最大255個のフィールドをサポートします。
