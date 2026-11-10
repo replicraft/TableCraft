@@ -94,7 +94,7 @@ fn old_sparse_text_table_still_inserts_after_saving_a_new_sibling() {
             .map(|column| (column.name.as_str(), column.native_number))
             .collect::<Vec<_>>(),
         [
-            ("Id", Some(0)),
+            ("ID", Some(0)),
             ("Score", Some(1)),
             ("CurrentField", Some(3))
         ]
