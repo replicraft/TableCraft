@@ -6,6 +6,45 @@ manual proof; engineering candidates retain their separate admission policies.
 The retained-tree, original-omission and inline Memo/OLE sections below extend
 the initial complete scalar profile; their remaining limits stay explicit.
 
+## Insert after opaque retired tails
+
+TCNA0009 is a separate source/request family for insertion when an existing
+record retains an ambiguous retired tail after schema changes. The selected
+source has a distinct required-program certificate and positively observed
+original row ambiguity. It reads known surviving values and null masks while
+retaining every original record byte; it never guesses deleted field types or
+retries a failed TCNA8 proof. TCNA8 keeps complete-record admission unchanged.
+
+Only the fresh row is serialized. The existing generator, omission/NULL/value,
+default, primary-key, counter, index-membership and fitting-page placement checks
+still apply, including empty requests. Independent reconstruction compares the
+complete AFTER image and every original terminal record. Fresh source capture
+checks that the original ambiguous records survive unchanged. No page allocation
+or additional key family is supplied by this route.
+
+Exact TCNA9 original data uses the native file envelope and retained wire widths,
+with checked arithmetic, fallible allocation, cancellation and explicit caller
+budgets. Older decoders remain closed. The existing checked V3 owner reconstructs
+the explicitly selected operation before recovery or settled confirmation; V1
+preparation refuses it. Journal-only builds can decode TCNA9 data and report
+unsupported native reconstruction without enabling writers. The earlier TCNA8
+feature gate remains unchanged.
+
+Local macOS ARM64 verification passes 35 selected native insertion/request/recovery
+and opaque-row regression tests, including three native TCNA9 cases and five
+new request/recovery cases. Four shared-session/availability tests pass; the
+insertion case performs six actual save/reopen transitions across original
+omitted, NULL and supplied values on two histories. Three journal-only data/refusal
+tests pass. Eight retained headless GUI tests pass, including the complete
+DROP-to-ID-only/re-add/historical-fill/INSERT/remaining-fill/ordinary-edit journey,
+exact complete images, fresh rows, scratch SQL and a live sibling. The final
+journey selects TCNI18, TCNA9, TCNI18 and then TCNI17 through shared services.
+
+Strict Clippy across ACE, Access, runtime, UI, desktop and MCP, journal-only
+Access/runtime compilation, creation-only ACE compilation, ACE rustdoc and
+repository format/layout/dependency/link guards pass. These are local functional
+and independent-byte checks, not Windows or Microsoft Access save/reopen parity.
+
 ## Retained tables and original presence
 
 The separate TCNA0008 family composes generated-row insertion with the complete

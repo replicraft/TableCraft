@@ -42,8 +42,9 @@ The original-only request has exact TCNI18 framing and the native file envelope.
 Checked V3 preparation/recovery reconstructs this family explicitly; old direct
 TCNI17 decoders and V1/V2 preparation cannot reinterpret it. GUI, MCP and SQL
 consumers use shared services; desktop implements no native byte mutation.
-Insertion while other original records remain ambiguous is separate unfinished
-work, rather than permission to relax the existing INSERT source proof.
+Insertion while other original records remain ambiguous uses the distinct
+[TCNA9 source proof](NORMAL_ACE_INSERT.md#insert-after-opaque-retired-tails),
+leaving the older INSERT source languages unchanged.
 
 Local macOS ARM64 verification passes 139 selected retained/current-row native
 and recovery tests, with twelve existing ignored cases unqualified. This includes

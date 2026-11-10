@@ -1,5 +1,29 @@
 # Implementation status
 
+## Complete retained historical-row editing journey — 10 November 2026
+
+The headless GUI journey now completes successive field DROP to an ID-only
+schema, re-addition, an old-row fill, generated insertion, the remaining old-row
+fill, an ordinary edit and fresh reopening. Each save matches an independently
+constructed complete image. The original sibling and SQL scratch survive; final
+rows are `[1,124]`, `[2,77]`, `[3,0]` and no journal remains.
+
+A distinct TCNA9 insertion source certificate preserves every old opaque record
+while reusing the fresh-row/default/generator/index and independent placement
+proof. It positively selects original ambiguity, keeps TCNA8 closed and uses the
+same exact checked V3 recovery owner. The actual GUI sequence selects TCNI18,
+TCNA9, TCNI18 and then TCNI17 through shared services. Desktop adds no native
+mutation logic. Other declarations, indexed changes and general imported schema
+editing remain separate compatibility work.
+
+All 35 selected native insertion/recovery and opaque-row controls pass, as do
+four shared-session/availability tests, eight retained GUI tests and three
+journal-only data/refusal tests. The insertion session case checks six actual
+save/reopen transitions for omitted, NULL and supplied values. Strict Clippy for
+six packages, journal-only Access/runtime checks, creation-only ACE, ACE rustdoc
+and repository guards pass. No Windows/Access parity qualification is claimed.
+See [native INSERT](access/writes/NORMAL_ACE_INSERT.md#insert-after-opaque-retired-tails).
+
 ## Known Number edits over retired row tails — 10 November 2026
 
 Deleting to an ID-only schema and adding a Number field can leave old record
@@ -15,9 +39,9 @@ cases unqualified. Two actual offline save/recovery session tests, one typed
 unavailable-source test and three journal-only data/refusal tests pass. Strict
 Clippy across six consuming packages, ACE rustdoc and creation-only checks pass.
 The actual GUI journey now passes DROP, re-addition and the historical cell save
-against independent complete images. It then exposes a separate insertion gap
-while another old row retains an ambiguous tail; that full journey is not yet a
-passing result. See [retained cell updates](access/writes/RETAINED_CELL_UPDATES.md).
+against independent complete images. At that qualification stage, insertion
+while another old row retained an ambiguous tail still failed. The subsequent
+TCNA9 work recorded above resolves that case and passes the full journey. See [retained cell updates](access/writes/RETAINED_CELL_UPDATES.md).
 
 ## Large-cell clipboard and Zoom — 10 November 2026
 
