@@ -2,6 +2,7 @@
 mod close;
 mod failures;
 mod ownership;
+mod populated;
 mod widgets;
 
 use crate::workspace::{Desktop, test_support::finish_reads};
@@ -12,7 +13,7 @@ use egui_kittest::{
 };
 use std::time::{Duration, Instant};
 use tablecraft_runtime::{FieldDropReview, Response, ReviewedFieldDrop, SaveWorker};
-use tablecraft_ui::{ObjectKind, ObjectTab, ObjectTarget};
+use tablecraft_ui::{FluentArgs, ObjectKind, ObjectTab, ObjectTarget};
 
 const EXACT_SCRATCH: &str = " SELECT [Score], [Label] FROM [Table1]; -- keep raw scratch\n";
 
@@ -44,6 +45,18 @@ fn scratch(harness: &mut Harness<'_, Desktop>, table: &ObjectTab) -> ObjectTab {
 }
 
 fn inspect(harness: &mut Harness<'_, Desktop>, column: &str, entry: Entry) {
+    let native_number = harness
+        .state()
+        .state
+        .data
+        .as_ref()
+        .unwrap()
+        .columns
+        .iter()
+        .find(|field| field.name == column)
+        .unwrap()
+        .native_number
+        .unwrap();
     assert_eq!(
         harness.state().state.field_drop_available,
         SaveWorker::supports_field_drop()
@@ -81,7 +94,15 @@ fn inspect(harness: &mut Harness<'_, Desktop>, column: &str, entry: Entry) {
     assert!(harness.state().state.field_drop_confirmation_open());
     let target = harness.state().state.field_drop_target().unwrap();
     assert_eq!(target.column, column);
-    assert_eq!(target.native_number, 1);
+    assert_eq!(target.native_number, native_number);
+    let mut arguments = FluentArgs::new();
+    arguments.set("column", column);
+    let confirmation = harness
+        .state()
+        .state
+        .localizer
+        .format("field-drop-confirm", &arguments);
+    harness.get_by_label(&confirmation);
     assert!(!harness.state().state.field_drop_dirty());
     assert!(
         harness
