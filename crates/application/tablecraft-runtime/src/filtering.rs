@@ -10,7 +10,6 @@ mod sorting;
 
 pub use field::{
     FieldFilterDescription, FieldFilterOperator, FieldFilterPatternMode, FieldFilterTarget,
-    MAX_FIELD_FILTER_INPUT_BYTES,
 };
 
 use crate::{Cell, Column, Error};
@@ -237,7 +236,7 @@ pub enum FilterError {
     UnsupportedOperator,
     #[error("the filter operator requires a different number of operands")]
     InvalidOperands,
-    #[error("a filter operand exceeds the 64 KiB UTF-8 input ceiling")]
+    #[error("a filter operand cannot be represented")]
     InputLimit,
     #[error("the database wildcard mode is not qualified")]
     UnknownPatternMode,

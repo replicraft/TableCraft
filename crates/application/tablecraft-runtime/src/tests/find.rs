@@ -181,7 +181,7 @@ fn native_null_criteria_are_typed_and_formatted_currency_uses_captured_display_p
 }
 
 #[test]
-fn find_cancellation_and_pattern_ceiling_return_errors_instead_of_negative_publication() {
+fn find_large_patterns_are_not_truncated_and_cancellation_remains_an_error() {
     let bytes = mutation_fixture::with_rows_and_sort_order(&[(1, 10)], [9, 4, 0, 0]);
     let (_directory, path, worker, revision) = opened(&bytes);
     assert!(matches!(
@@ -190,10 +190,7 @@ fn find_cancellation_and_pattern_ceiling_return_errors_instead_of_negative_publi
     ));
     let mut options = search(revision, "1");
     options.pattern = "x".repeat(65_537);
-    assert!(matches!(
-        find(&worker, options),
-        Err(Error::Find(FindError::PatternLimit))
-    ));
+    assert!(find(&worker, options).unwrap().is_none());
 
     let (mut document, _) =
         crate::document::Document::open(&path, &mut String::new(), revision, &|| false).unwrap();

@@ -25,8 +25,6 @@ use tablecraft_expressions::{
 };
 use tablecraft_schema::ScalarType;
 
-pub(crate) const MAX_INPUT_BYTES: usize = 1024 * 1024;
-
 fn invalid() -> Error {
     Error::InvalidScalarInput
 }
@@ -37,9 +35,6 @@ pub(crate) fn parse(
     is_null: bool,
     output: &mut Presentation<'_>,
 ) -> Result<Value, Error> {
-    if text.len() > MAX_INPUT_BYTES {
-        return Err(Error::ScalarInputLimit);
-    }
     output.work(1 + text.len() as u64)?;
     if is_null {
         return Ok(Value::Null);
@@ -179,9 +174,6 @@ fn convert(
 
 /// Query bounds preserve entered decimal precision rather than storage rounding.
 pub(crate) fn exact_numeric(text: &str, output: &mut Presentation<'_>) -> Result<Value, Error> {
-    if text.len() > MAX_INPUT_BYTES {
-        return Err(Error::ScalarInputLimit);
-    }
     output.work(1 + text.len() as u64)?;
     let mut buffer = Buffer {
         output,

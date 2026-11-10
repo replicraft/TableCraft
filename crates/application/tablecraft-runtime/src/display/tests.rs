@@ -1,9 +1,33 @@
 use super::Presentation;
 use crate::{Cell, CellKind, Column, Error, HorizontalAlignment};
+use std::cell::Cell as Counter;
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
     values::{Currency, Decimal, Double, ExtendedDateTime, LegacyDateTime, Single, Value},
 };
+
+#[test]
+fn large_text_copy_is_paid_whole_and_cancellable_between_utf8_safe_chunks() {
+    let text = "雪🦀".repeat(40_000);
+    let mut exact =
+        Presentation::with_budget(ResourceBudget::new(text.len() as u64, 0, 100), &|| false);
+    assert_eq!(exact.text(&text).unwrap(), text);
+    assert_eq!(exact.work.remaining(Resource::Bytes), 0);
+    let mut short =
+        Presentation::with_budget(ResourceBudget::new(text.len() as u64 - 1, 0, 100), &|| {
+            false
+        });
+    assert!(matches!(short.text(&text), Err(Error::Limit(_))));
+    let calls = Counter::new(0);
+    let cancelled = || {
+        calls.set(calls.get() + 1);
+        calls.get() >= 3
+    };
+    let mut cancelled_copy =
+        Presentation::with_budget(ResourceBudget::new(u64::MAX, 0, u64::MAX), &cancelled);
+    assert!(matches!(cancelled_copy.text(&text), Err(Error::Cancelled)));
+    assert_eq!(calls.get(), 3);
+}
 
 #[test]
 fn column_envelopes_and_header_payloads_share_the_bounded_output_pool() {

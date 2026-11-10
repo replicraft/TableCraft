@@ -2,13 +2,12 @@ use crate::editing::replacing::ReplaceError;
 use crate::editing::{EditError, EditInput, EditTarget, platform::input};
 use crate::{
     Cell, Error, FilterHandle, FindDirection, FindError, FindPosition, FindRequest, FindScope,
-    FindSpan, MAX_FIND_PATTERN_BYTES, Response,
+    FindSpan, Response,
     controls::{SCOPE, budget, check, comparison_budget},
     display::Presentation,
     document::Document,
     find::matching::{self, Matcher},
     rows::presentation::Metadata,
-    scalar_input::MAX_INPUT_BYTES,
 };
 use std::{cell::RefCell, ops::Range};
 use tablecraft_access::{NativeCollationResolver, editing::journal::NativeJournalEditor};
@@ -21,8 +20,8 @@ use tablecraft_db::{EditableTable, UpdateProfile};
 use tablecraft_expressions::comparison::StringSearch;
 use tablecraft_schema::{ScalarType, TypeDescriptor};
 
-const MATCH_BYTES: u64 = 64 * 1024 * 1024;
-const MATCH_STEPS: u64 = 10_000_000;
+const MATCH_BYTES: u64 = u64::MAX;
+const MATCH_STEPS: u64 = u64::MAX;
 
 impl Document {
     pub(crate) fn replace_find_match(
@@ -39,12 +38,6 @@ impl Document {
         }
         if request.pattern.is_empty() {
             return Err(FindError::EmptyPattern.into());
-        }
-        if request.pattern.len() > MAX_FIND_PATTERN_BYTES {
-            return Err(FindError::PatternLimit.into());
-        }
-        if replacement.len() > MAX_INPUT_BYTES {
-            return Err(EditError::InputLimit.into());
         }
         if !self.source.editable_native() {
             return Err(EditError::ReadOnlySource.into());
@@ -261,9 +254,6 @@ fn splice(
         .checked_sub(range.len())
         .and_then(|length| length.checked_add(replacement.len()))
         .ok_or(EditError::InputLimit)?;
-    if length > MAX_INPUT_BYTES {
-        return Err(EditError::InputLimit.into());
-    }
     output.allocation(length, 1)?;
     output.work(length as u64)?;
     let mut value = String::new();

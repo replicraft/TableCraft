@@ -4,8 +4,6 @@ mod service;
 use crate::scalar_input::InputHint;
 use tablecraft_schema::ScalarType;
 
-pub const MAX_FIELD_FILTER_INPUT_BYTES: usize = 64 * 1024;
-
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct FieldFilterTarget {
     pub document_revision: u64,

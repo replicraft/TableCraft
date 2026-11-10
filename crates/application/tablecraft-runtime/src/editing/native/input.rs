@@ -1,6 +1,5 @@
 //! Exact field-directed input conversions, without SQL interpolation.
 use crate::editing::{EditError, EditInput};
-use crate::scalar_input::MAX_INPUT_BYTES;
 use crate::{Error, display::Presentation};
 use tablecraft_core::values::Value;
 use tablecraft_schema::{ScalarType, TypeDescriptor};
@@ -61,9 +60,6 @@ pub(super) fn parse_original(
             output,
         )
         .map_err(input_error);
-    }
-    if input.text.len() > MAX_INPUT_BYTES {
-        return Err(EditError::InputLimit.into());
     }
     if !input.is_null
         && matches!(
@@ -204,15 +200,16 @@ mod tests {
             text: oversized,
             is_null: false,
         };
-        assert!(matches!(
+        assert_eq!(
             parse_original(
                 TypeDescriptor::new(ScalarType::Text),
                 &input,
                 &original,
-                &mut output
-            ),
-            Err(Error::Edit(EditError::InputLimit)),
-        ));
+                &mut output,
+            )
+            .unwrap(),
+            original
+        );
 
         let civil = EditInput {
             text: "2026-11-04T12:34:56".into(),

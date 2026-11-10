@@ -5,8 +5,6 @@ mod native;
 use tablecraft_display::Options;
 use thiserror::Error;
 
-pub const MAX_FIND_PATTERN_BYTES: usize = 64 * 1024;
-
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct FindTarget {
     pub document_revision: u64,
@@ -63,8 +61,6 @@ pub struct FindRequest {
 pub enum FindError {
     #[error("enter a Find pattern; use two quotation marks to find an empty string")]
     EmptyPattern,
-    #[error("find pattern exceeds the 64 KiB input limit")]
-    PatternLimit,
     #[error("find target or continuation no longer identifies a native field and record")]
     InvalidTarget,
     #[error(

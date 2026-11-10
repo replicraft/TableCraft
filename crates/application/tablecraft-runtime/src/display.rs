@@ -11,6 +11,7 @@ use tablecraft_display::{DateRepresentation, NativeFormat, ScalarPresentation};
 
 const NANOS_PER_EXTENDED_TICK: u32 = 100;
 const OUTPUT_BYTES: u64 = u64::MAX;
+const TEXT_COPY_CHUNK: usize = 64 * 1024;
 
 pub(super) struct Presentation<'a> {
     work: ResourceBudget,
@@ -157,7 +158,16 @@ impl<'a> Presentation<'a> {
         self.work.charge(Resource::Steps, 1)?;
         self.work.charge(Resource::Bytes, fragment.len() as u64)?;
         owned.try_reserve(fragment.len())?;
-        owned.push_str(fragment);
+        let mut start = 0;
+        while start < fragment.len() {
+            self.work(1)?;
+            let mut end = start.saturating_add(TEXT_COPY_CHUNK).min(fragment.len());
+            while !fragment.is_char_boundary(end) {
+                end -= 1;
+            }
+            owned.push_str(&fragment[start..end]);
+            start = end;
+        }
         Ok(())
     }
 

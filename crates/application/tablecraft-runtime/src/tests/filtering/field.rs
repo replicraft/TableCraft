@@ -4,7 +4,7 @@ use crate::tests::stored::opened;
 use crate::{
     Command, Error, FieldFilterDescription, FieldFilterOperator as Operator,
     FieldFilterPatternMode, FieldFilterTarget, FilterError, FilterHandle, FilteredData, InputHint,
-    MAX_FIELD_FILTER_INPUT_BYTES, Response, SortSpec, Worker,
+    Response, SortSpec, Worker,
 };
 use tablecraft_expressions::EvalError;
 use tablecraft_testkit::fixtures::access::{
@@ -370,17 +370,17 @@ fn malformed_operands_and_stale_sources_leave_previous_native_view_usable() {
         ));
     }
 
-    let oversized = "1".repeat(MAX_FIELD_FILTER_INPUT_BYTES + 1);
-    assert!(matches!(
-        entered(
-            &worker,
-            field.clone(),
-            Operator::Equal,
-            &[&oversized],
-            Some(&first.handle)
-        ),
-        Err(Error::Filter(FilterError::InputLimit))
-    ));
+    let oversized = "1".repeat(65_537);
+    let rejected = entered(
+        &worker,
+        field.clone(),
+        Operator::Equal,
+        &[&oversized],
+        Some(&first.handle),
+    )
+    .err()
+    .expect("an out-of-range numeric operand must remain invalid");
+    assert!(!matches!(rejected, Error::Filter(FilterError::InputLimit)));
 
     let (_other_directory, _other_path, other, other_revision) = opened(&bytes);
     assert_eq!(other_revision, revision);
@@ -477,4 +477,20 @@ fn entered_patterns_rebind_database_ansi_mode_and_unknown_mode_refuses() {
         .source_ordinals,
         [1, 2]
     );
+}
+#[test]
+fn large_typed_text_operands_compare_without_a_shared_utf8_byte_ceiling() {
+    let source = variable::source(variable::Case::NullAndEmpty);
+    let (_directory, path, worker, revision) = opened(&source.bytes);
+    let text = "雪".repeat(30_000);
+    let filtered = entered(
+        &worker,
+        target(revision, "TextValue", None, false),
+        Operator::Equal,
+        &[&text],
+        None,
+    )
+    .unwrap();
+    assert!(filtered.source_ordinals.is_empty());
+    assert_eq!(std::fs::read(path).unwrap(), source.bytes);
 }

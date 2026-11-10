@@ -1,7 +1,7 @@
 //! Complete local-table traversal with optional immutable native filter membership.
 use super::{
     FindDirection, FindError, FindPosition, FindRequest, FindScope, FindSpan, FindTarget,
-    MAX_FIND_PATTERN_BYTES, matching::Matcher,
+    matching::Matcher,
 };
 use crate::{
     Error, FilterHandle, Response,
@@ -166,9 +166,6 @@ impl Document {
         }
         if request.pattern.is_empty() {
             return Err(FindError::EmptyPattern.into());
-        }
-        if request.pattern.len() > MAX_FIND_PATTERN_BYTES {
-            return Err(FindError::PatternLimit.into());
         }
         let mut output = Presentation::new(cancelled);
         let captured_request = copy_request(request, &mut output)?;

@@ -1,8 +1,5 @@
 //! A common-filter description grants no permission; Apply binds everything again.
-use super::{
-    FieldFilterDescription, FieldFilterOperator, FieldFilterTarget, MAX_FIELD_FILTER_INPUT_BYTES,
-    operators,
-};
+use super::{FieldFilterDescription, FieldFilterOperator, FieldFilterTarget, operators};
 use crate::filtering::{
     Criterion, FILTER_STEPS, FilterError, FilterHandle, Predicate, RETAINED_BYTES, criteria,
     patterns,
@@ -126,12 +123,6 @@ impl Document {
         }
         if inputs.len() != operator.input_count() {
             return Err(FilterError::InvalidOperands.into());
-        }
-        if inputs
-            .iter()
-            .any(|input| input.len() > MAX_FIELD_FILTER_INPUT_BYTES)
-        {
-            return Err(FilterError::InputLimit.into());
         }
 
         let mut native = budget();

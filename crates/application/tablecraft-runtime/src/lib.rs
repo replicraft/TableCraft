@@ -79,17 +79,14 @@ pub use editing::{
 pub use filtering::{
     FieldFilterDescription, FieldFilterOperator, FieldFilterPatternMode, FieldFilterTarget,
     FilterComparison, FilterDefinition, FilterError, FilterHandle, FilterSelectionTarget,
-    FilterTarget, FilteredData, MAX_FIELD_FILTER_INPUT_BYTES, SortSpec, SortTarget,
+    FilterTarget, FilteredData, SortSpec, SortTarget,
 };
 pub use find::{
-    FindDirection, FindError, FindMatch, FindPosition, FindRequest, FindScope, FindSpan,
-    FindTarget, MAX_FIND_PATTERN_BYTES,
+    FindDirection, FindError, FindMatch, FindPosition, FindRequest, FindScope, FindSpan, FindTarget,
 };
 pub use query::inspection::{InspectedQuery, QueryOperation};
 pub use query::options::{QueryPoolLimits, QueryRunOptions, QueryRunOptionsError, QueryRunPool};
-pub use query::parameters::{
-    MAX_QUERY_INPUT_BYTES, MAX_QUERY_PARAMETERS, ParameterInput, ParameterSpec,
-};
+pub use query::parameters::{MAX_QUERY_PARAMETERS, ParameterInput, ParameterSpec};
 pub use query_design::QueryDesignTarget;
 pub use saved::{SavedQuery, SavedQueryTarget};
 pub use scalar_input::InputHint;

@@ -24,9 +24,6 @@ use tablecraft_ace::{InspectError, NativeImage, TableFeatures, inspect_table_fea
 use tablecraft_db::{InsertValue, InsertableTable, OmittingInsertableTable};
 use tablecraft_schema::Column;
 
-const MAX_INSERT_FIELDS: usize = 256;
-const MAX_INSERT_INPUT_BYTES: usize = 8 * 1024 * 1024;
-
 pub(in crate::editing) struct State {
     pub(in crate::editing) path: PathBuf,
     pub(in crate::editing) target: InsertTarget,
@@ -101,7 +98,7 @@ impl Document {
         if !self.edits.valid.load(Ordering::Acquire) || !self.source.editable_native() {
             return Err(EditError::StaleDraft.into());
         }
-        check_input_limits(inputs, cancelled)?;
+        check_input_shape(inputs, cancelled)?;
         let mut output = Presentation::new(cancelled);
         let target = copy_target(target, &mut output)?;
         let mut work = budget();
@@ -181,24 +178,10 @@ fn copy_target(
     })
 }
 
-fn check_input_limits(inputs: &[InsertInput], cancelled: &dyn Fn() -> bool) -> Result<(), Error> {
-    if inputs.is_empty() || inputs.len() > MAX_INSERT_FIELDS {
+fn check_input_shape(inputs: &[InsertInput], cancelled: &dyn Fn() -> bool) -> Result<(), Error> {
+    check(cancelled)?;
+    if inputs.is_empty() {
         return Err(EditError::InputLimit.into());
-    }
-    let mut bytes = 0_usize;
-    for input in inputs {
-        check(cancelled)?;
-        if let InsertInput::Value(input) = input {
-            if input.text.len() > crate::scalar_input::MAX_INPUT_BYTES {
-                return Err(EditError::InputLimit.into());
-            }
-            bytes = bytes
-                .checked_add(input.text.len())
-                .ok_or(EditError::InputLimit)?;
-            if bytes > MAX_INSERT_INPUT_BYTES {
-                return Err(EditError::InputLimit.into());
-            }
-        }
     }
     Ok(())
 }

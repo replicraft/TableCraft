@@ -173,7 +173,7 @@ pub enum EditError {
     Unavailable,
     #[error("the exact replacement value is invalid for this field")]
     InvalidInput,
-    #[error("the replacement input exceeds the editing limit")]
+    #[error("editing input has an invalid size or shape")]
     InputLimit,
     #[error("this declared carrier has no supported input conversion")]
     UnsupportedInput,

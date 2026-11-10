@@ -7,8 +7,6 @@ use tablecraft_sql::query::Query;
 
 /// Host input envelope; SQL/native declaration limits can be narrower.
 pub const MAX_QUERY_PARAMETERS: usize = 256;
-/// Cumulative UTF-8 bytes of input names, kinds and text, including NULL inputs.
-pub const MAX_QUERY_INPUT_BYTES: usize = 1024 * 1024;
 
 /// Declared prompt metadata. Inspection does not establish execution readiness.
 pub struct ParameterSpec {
@@ -148,9 +146,6 @@ pub(crate) fn validate_input_limits(
             bytes = bytes
                 .checked_add(text.len())
                 .ok_or(Error::ScalarInputLimit)?;
-            if bytes > MAX_QUERY_INPUT_BYTES {
-                return Err(Error::ScalarInputLimit);
-            }
         }
     }
     Ok(())
@@ -188,12 +183,10 @@ mod tests {
         ));
         inputs[0].text = "ab".into();
         assert!(bindings(parsed.query(), &inputs, &mut Presentation::new(&|| false)).is_ok());
-        inputs[0].text = "x".repeat(MAX_QUERY_INPUT_BYTES);
+        inputs[0].text = "雪".repeat(400_000);
         inputs[0].is_null = true;
-        assert!(matches!(
-            validate_input_limits(&inputs, &mut Presentation::new(&|| false)),
-            Err(Error::ScalarInputLimit)
-        ));
+        assert!(validate_input_limits(&inputs, &mut Presentation::new(&|| false)).is_ok());
+        assert!(bindings(parsed.query(), &inputs, &mut Presentation::new(&|| false)).is_ok());
         assert!(matches!(
             validate_input_limits(&inputs[..1], &mut Presentation::new(&|| true)),
             Err(Error::Cancelled)
