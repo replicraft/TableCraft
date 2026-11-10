@@ -23,6 +23,8 @@ mod saved_sql;
 mod table_creation;
 #[path = "render_preview/table_rename.rs"]
 mod table_rename;
+#[path = "render_preview/updates.rs"]
+mod updates;
 
 use egui_kittest::{Harness, kittest::Queryable};
 use image::ImageFormat;
@@ -77,6 +79,19 @@ fn main() -> Result<(), Box<dyn Error>> {
         return Err(io::Error::other("query-limits rendering requires the query scene").into());
     }
     let query_limits_suffix = if query_limits { "-limits" } else { "" };
+    let update_mode = setting("TABLECRAFT_PREVIEW_UPDATES", "none")?;
+    if !updates::is_mode(&update_mode) {
+        return Err(io::Error::other("unknown update preview mode").into());
+    }
+    if update_mode != "none" && scenes != [Scene::About] {
+        return Err(io::Error::other("update rendering requires the About scene").into());
+    }
+    let update_suffix = if update_mode == "none" {
+        String::new()
+    } else {
+        format!("-updates-{update_mode}")
+    };
+
     if font_search.is_some() && scenes != [Scene::Datasheet] {
         return Err(io::Error::other("font-search rendering requires the datasheet scene").into());
     }
@@ -309,7 +324,8 @@ fn main() -> Result<(), Box<dyn Error>> {
         + usize::from(field_drop != "none")
         + usize::from(field_rename != "none")
         + usize::from(database_options != "none")
-        + usize::from(query_limits);
+        + usize::from(query_limits)
+        + usize::from(update_mode != "none");
     if interaction_count > 1 {
         return Err(io::Error::other("choose one preview interaction workflow").into());
     }
@@ -361,13 +377,18 @@ fn main() -> Result<(), Box<dyn Error>> {
         // Retain synthetic data and the resource-free host while exercising
         // normal presentation gates explicitly.
         harness.state_mut().state_mut().mock_preview = host == "synthetic";
+        if update_mode != "none" {
+            updates::apply(harness.state_mut(), &update_mode);
+        }
+        let animated = scene.is_animated() || updates::is_animated(&update_mode);
+
         if date_residue != "none" {
             date_residue::apply(harness.state_mut(), &date_residue);
         }
         // Layout captures should not acquire a tooltip from the harness cursor.
         // Interaction tests choose their pointer position explicitly.
         harness.remove_cursor();
-        if scene.is_animated() {
+        if animated {
             // Lifecycle spinners deliberately request repaints while pending.
             // Advance a fixed number of frames instead of waiting for idle.
             harness.run_steps(ANIMATED_SCENE_STEPS);
@@ -379,7 +400,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         }
         for _ in 0..focus_steps {
             harness.key_press(egui::Key::F6);
-            if scene.is_animated() {
+            if animated {
                 harness.run_steps(ANIMATED_SCENE_STEPS);
             } else {
                 harness.run();
@@ -464,7 +485,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         }
         let image = harness.render().map_err(io::Error::other)?;
         let path = directory.join(format!(
-            "{}-{}-{}{}{}{ribbon_suffix}{gallery_suffix}{initial_suffix}{table_suffix}{navigation_suffix}{date_suffix}{rename_suffix}{saved_sql_suffix}{field_addition_suffix}{field_drop_suffix}{field_rename_suffix}{database_options_suffix}{query_limits_suffix}{}.png",
+            "{}-{}-{}{}{}{ribbon_suffix}{gallery_suffix}{initial_suffix}{table_suffix}{navigation_suffix}{date_suffix}{rename_suffix}{saved_sql_suffix}{field_addition_suffix}{field_drop_suffix}{field_rename_suffix}{database_options_suffix}{query_limits_suffix}{update_suffix}{}.png",
             locale.as_str(),
             theme_name,
             scene.as_str(),

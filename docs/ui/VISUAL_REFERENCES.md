@@ -533,3 +533,22 @@ automation did not establish an opened database or a native save. The app was
 closed and generated input hashes remained unchanged. Native window scale was
 not independently measured; these observations do not qualify Windows rendering
 or Access database behavior.
+
+## Signed update presentation — 9 November 2026
+
+The retained Account capture `Bildschirmfoto_2026-10-28_12-09-31.png` was opened
+again at its actual 1920 × 1096 pixels. It shows Windows Access inside VirtualBox
+at an unknown display scale, with an Office Updates block in the Product
+Information column. The existing rail and full-page Backstage remain the visual
+reference. No retained capture shows TableCraft's About page, an expanded update
+command, download progress, signing failures or restart confirmation.
+
+The new compact Updates section above About credits is a TableCraft adaptation,
+not a claim of pixel parity with Access. Its renderer-neutral state and translated
+commands acquire no network, filesystem or installer authority. Synthetic and
+unconnected hosts retain visible disabled commands; normal hosts opt in only
+when their worker exists. Installation also requires the host's permission and
+shared draft/recovery readiness. Source-free headless interaction checks cover
+queued clicks, cancellation, download/install gating and all eight locales in
+both themes. No native application window was opened. New offscreen render
+observations must be recorded separately before claiming visual verification.
