@@ -609,3 +609,5 @@ fn reopened_edit_selection_uses_native_identity_in_mapped_rows_and_rejects_stale
     assert!(!state.select_reopened_edit_cell(&target));
     assert_eq!(state.table_selection.position(), Some((1, 1)));
 }
+
+mod boolean;

@@ -94,3 +94,5 @@ editing-save-retained-private-journal = 保存后，磁盘上仍保留私有恢�
 
 # An actor ended without a known current native outcome.
 editing-save-uncertain = 保存任务意外停止。文件可能已经更改。请重新启动 TableCraft 并重新打开数据库后再进行更改；检查保留的恢复日志。尚未确认回滚或重试。
+
+editing-toggle-stale = 复选框与已检查的单元格不再匹配。已放弃建议的更改。

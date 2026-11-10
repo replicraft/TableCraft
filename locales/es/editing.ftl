@@ -94,3 +94,5 @@ editing-save-retained-private-journal = Después de guardar, se conserva en disc
 
 # An actor ended without a known current native outcome.
 editing-save-uncertain = El proceso de guardado se detuvo inesperadamente. Es posible que el archivo haya cambiado. Reinicie TableCraft y vuelva a abrir la base de datos antes de modificarla; revise cualquier diario de recuperación conservado. No se confirma una reversión ni un reintento.
+
+editing-toggle-stale = La casilla ya no coincide con la celda comprobada. Se descartó el cambio propuesto.

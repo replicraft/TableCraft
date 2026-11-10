@@ -1,6 +1,8 @@
 //! Offline edit UI retains runtime-issued drafts/reviews, never native values or SQL.
 mod dialog;
 mod hints;
+mod seed;
+pub use seed::{BooleanToggle, EditSeed};
 pub(super) mod paste;
 pub use hints::InputHint;
 
@@ -55,7 +57,7 @@ pub(super) enum EditDialog {
         target: EditTarget,
         request_id: u64,
         error: Option<String>,
-        paste_seed: Option<String>,
+        seed: Option<EditSeed>,
     },
     Draft {
         draft: Box<EditDraft>,
@@ -205,29 +207,32 @@ impl State {
                 target,
                 request_id,
                 error: None,
-                paste_seed: None,
+                seed: None,
             });
         }
     }
 
     pub fn set_edit_draft(&mut self, request_id: u64, draft: EditDraft) {
-        let accepts = matches!(&self.edit, Some(EditDialog::Checking { target, request_id: expected, .. })
+        let accepts = matches!(&self.edit, Some(EditDialog::Checking { target, request_id: expected, error: None, .. })
             if *expected == request_id && target == &draft.target);
         if accepts && self.can_edit_cell(&draft.target) {
             let seed = match &mut self.edit {
-                Some(EditDialog::Checking { paste_seed, .. }) => paste_seed.take(),
+                Some(EditDialog::Checking { seed, .. }) => seed.take(),
                 _ => None,
             };
-            // NO_CLONE: Keep an independent initial/checkpoint/edit buffer before the widget or
-            // conversion mutates input; it is used for rejection, reset, comparison
-            // or preserving the original value.
-            let input = seed.map_or_else(
-                || draft.initial.clone(),
-                |text| EditInput {
-                    text,
-                    is_null: false,
-                },
-            );
+            let input = if let Some(seed) = seed {
+                let Some(input) = seed.input(&draft) else {
+                    if let Some(EditDialog::Checking { error, .. }) = &mut self.edit {
+                        *error = Some(self.localizer.text("editing-toggle-stale"));
+                    }
+                    return;
+                };
+                input
+            } else {
+                // NO_CLONE: The runtime draft retains its initial checkpoint while
+                // the independent widget buffer changes during reviewed editing.
+                draft.initial.clone()
+            };
             self.edit = Some(EditDialog::Draft {
                 draft: Box::new(draft),
                 input,

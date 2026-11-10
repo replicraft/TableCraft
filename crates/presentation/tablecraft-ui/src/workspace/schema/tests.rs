@@ -696,7 +696,7 @@ fn replaced_schema_and_property_text_do_not_retarget_old_field_focus() {
         },
         request_id: 17,
         error: None,
-        paste_seed: None,
+        seed: None,
     });
     let mut disabled_target = None;
     for pressed in [true, false] {

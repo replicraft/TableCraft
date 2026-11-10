@@ -94,3 +94,5 @@ editing-save-retained-private-journal = 저장 후에도 비공개 복구 저널
 
 # An actor ended without a known current native outcome.
 editing-save-uncertain = 저장 작업이 예기치 않게 중지되었습니다. 파일이 이미 변경되었을 수 있습니다. TableCraft를 다시 시작하고 데이터베이스를 다시 연 후 변경하십시오. 남아 있는 복구 저널을 확인하십시오. 롤백이나 재시도는 확인되지 않았습니다.
+
+editing-toggle-stale = 확인란이 확인된 셀과 더 이상 일치하지 않습니다. 제안된 변경을 취소했습니다.

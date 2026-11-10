@@ -49,7 +49,10 @@ pub use database_options::{
     NameAutoCorrectState, PreparedDatabaseOptionsSave,
 };
 pub use deletion::{DeleteReview, DeleteTarget};
-pub use editing::{EditDraft, EditInput, EditReview, EditSaveOutcome, EditTarget, InputHint};
+pub use editing::{
+    BooleanToggle, EditDraft, EditInput, EditReview, EditSaveOutcome, EditSeed, EditTarget,
+    InputHint,
+};
 pub use field_addition::{
     FieldAdditionChoices, FieldAdditionInspectionError, FieldAdditionRequest,
     FieldAdditionSaveCommand, FieldAdditionSaveIdentity, FieldAdditionSavedWarning,
@@ -352,6 +355,10 @@ pub enum Action {
     },
     BeginEdit {
         target: EditTarget,
+    },
+    BeginSeededEdit {
+        target: EditTarget,
+        seed: EditSeed,
     },
     PasteCell {
         target: EditTarget,

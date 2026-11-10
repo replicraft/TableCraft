@@ -84,12 +84,32 @@ impl Cell {
         Some(localizer.text(key))
     }
 
+    pub(crate) fn toggle_value(&self) -> Option<bool> {
+        if matches!(
+            self.kind,
+            CellKind::Scalar {
+                stored_calculation: false,
+                ..
+            }
+        ) {
+            self.checkbox_value()
+        } else {
+            None
+        }
+    }
+
     pub(crate) fn checkbox_value(&self) -> Option<bool> {
         match self.kind {
             CellKind::Scalar {
                 is_null: false,
                 boolean,
                 display_control: DisplayControl::Native(CHECKBOX_DISPLAY_CONTROL),
+                ..
+            } => boolean,
+            CellKind::Scalar {
+                is_null: false,
+                boolean,
+                display_control: DisplayControl::Absent,
                 ..
             } => boolean,
             _ => None,
@@ -293,7 +313,7 @@ mod boolean_tests {
     use super::*;
 
     #[test]
-    fn checkbox_requires_typed_non_null_boolean_and_explicit_native_checkbox_control() {
+    fn checkbox_uses_inspected_boolean_default_without_overriding_explicit_controls() {
         for display_control in [
             DisplayControl::Uninspected,
             DisplayControl::Absent,
@@ -316,7 +336,11 @@ mod boolean_tests {
             };
             assert_eq!(
                 value.checkbox_value(),
-                (display_control == DisplayControl::Native(106)).then_some(true)
+                matches!(
+                    display_control,
+                    DisplayControl::Absent | DisplayControl::Native(106)
+                )
+                .then_some(true)
             );
             if display_control != DisplayControl::Native(106) {
                 let context = value.context(&Localizer::default()).unwrap();

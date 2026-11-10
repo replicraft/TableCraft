@@ -1449,3 +1449,5 @@ fn add_column_header_is_disabled_and_never_becomes_a_stored_cell() {
         "query results do not advertise native field creation"
     );
 }
+
+mod boolean;

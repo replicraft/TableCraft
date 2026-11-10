@@ -1,5 +1,5 @@
 //! Literal clipboard text enters the existing reviewed single-cell edit workflow.
-use super::{EditDialog, EditTarget};
+use super::{EditSeed, EditTarget};
 use crate::workspace::{Action, DocumentView, State};
 use std::mem;
 
@@ -50,13 +50,7 @@ impl State {
             }
             return false;
         }
-        self.begin_edit(target, request_id);
-        if let Some(EditDialog::Checking { paste_seed, .. }) = &mut self.edit {
-            *paste_seed = Some(text);
-            true
-        } else {
-            false
-        }
+        self.begin_seeded_edit(target, EditSeed::Text(text), request_id)
     }
 
     pub(in crate::workspace) fn request_paste(&mut self, context: &egui::Context) {

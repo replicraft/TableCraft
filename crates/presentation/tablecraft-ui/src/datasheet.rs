@@ -53,6 +53,7 @@ pub(crate) struct Output {
 
 #[derive(Default)]
 pub(crate) struct Features<'a> {
+    pub boolean_toggles: bool,
     pub field_addition: Option<crate::workspace::field_addition::header::Presentation>,
     pub saved_field: Option<crate::workspace::saved_field_header::HeaderContext>,
     pub sort_header: Option<SortHeader>,
@@ -63,6 +64,7 @@ pub(crate) struct Features<'a> {
 }
 
 struct RowView<'a> {
+    boolean_toggles: bool,
     field_addition: Option<crate::workspace::field_addition::header::Presentation>,
     saved_field: Option<crate::workspace::saved_field_header::HeaderContext>,
     collection: bool,
@@ -92,6 +94,7 @@ pub(super) fn show(
         selection,
         RowView {
             collection: false,
+            boolean_toggles: features.boolean_toggles,
             field_addition: features.field_addition,
             saved_field: features.saved_field,
             pane,
@@ -119,6 +122,7 @@ pub(crate) fn show_collection(ui: &mut Ui, data: &Data, selection: &mut Selectio
         selection,
         RowView {
             collection: true,
+            boolean_toggles: false,
             field_addition: None,
             saved_field: None,
             pane: Pane::Document,
@@ -149,6 +153,7 @@ fn show_rows(
         selection,
         RowView {
             collection: false,
+            boolean_toggles: false,
             field_addition: None,
             saved_field: None,
             pane,
@@ -526,6 +531,8 @@ fn render_rows(
                                                     data,
                                                     (index, position),
                                                     !collection_layout,
+                                                    view.boolean_toggles
+                                                        && view.pane == Pane::Document,
                                                     actions,
                                                 );
                                             }
@@ -799,6 +806,7 @@ fn collect_contents_action(
     data: &Data,
     position: (usize, usize),
     allow_zoom: bool,
+    allow_boolean_toggle: bool,
     actions: &mut Vec<Action>,
 ) {
     if !ui.is_enabled() {
@@ -809,6 +817,37 @@ fn collect_contents_action(
     let edit = data.edit_target(row, column);
     let value = data.rows.get(row).and_then(|values| values.get(column));
     let zoom = allow_zoom && value.is_some_and(crate::workspace::zoom::can_view);
+    if allow_boolean_toggle
+        && let (Some(target), Some(expected)) = (edit.as_ref(), value.and_then(Cell::toggle_value))
+    {
+        ui.ctx().accesskit_node_builder(response.id, |node| {
+            node.clear_read_only();
+            node.add_action(egui::accesskit::Action::Click);
+        });
+        let pointer_toggle = response.clicked_by(egui::PointerButton::Primary)
+            && response.interact_pointer_pos().is_none_or(|position| {
+                egui::Rect::from_center_size(
+                    response.rect.center(),
+                    egui::vec2(BOOLEAN_BOX_SIZE, BOOLEAN_BOX_SIZE),
+                )
+                .contains(position)
+            });
+        let keyboard_toggle = response.has_focus()
+            && !egui::Popup::is_any_open(ui.ctx())
+            && ui.input_mut(|input| input.consume_key(egui::Modifiers::NONE, egui::Key::Space));
+        let assistive_toggle = ui.input(|input| {
+            input.has_accesskit_action_request(response.id, egui::accesskit::Action::Click)
+        });
+        if pointer_toggle || keyboard_toggle || assistive_toggle {
+            // NO_CLONE: The dispatched edit retains its exact target while the
+            // same cell response still owns context-menu and paste candidates.
+            actions.push(Action::BeginSeededEdit {
+                target: target.clone(),
+                seed: crate::EditSeed::Boolean(crate::BooleanToggle::opposite(expected)),
+            });
+        }
+    }
+
     if contents.is_none() && edit.is_none() && !zoom {
         return;
     }

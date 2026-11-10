@@ -460,6 +460,16 @@ impl Preview {
                 draft_id,
             } => self.mock_close_insert(request_id, draft_id),
             Action::BeginEdit { target } => self.edit(target),
+            Action::BeginSeededEdit { target, seed } => {
+                if self.state.can_begin_seeded_edit(&target, &seed) {
+                    self.edit(target);
+                    if let Some(EditDialog::Draft { draft, input, .. }) = &mut self.state.edit
+                        && let Some(proposed) = seed.input(draft)
+                    {
+                        *input = proposed;
+                    }
+                }
+            }
             Action::PasteCell { target, text } => {
                 if self.state.can_paste_text(&target, &text) {
                     self.edit(target);
@@ -655,6 +665,13 @@ impl Preview {
             },
             is_null: matches!(original.kind, CellKind::Scalar { is_null: true, .. }),
         };
+        let boolean = matches!(
+            original.kind,
+            CellKind::Scalar {
+                boolean: Some(_),
+                ..
+            }
+        );
         let request = self.request();
         // NO_CLONE: Checking dialog owns initial target and the simulated draft reply owns its
         // target independently for correlation; original is moved into final draft.
@@ -666,8 +683,12 @@ impl Preview {
                 target,
                 original,
                 initial,
-                input_hint: crate::InputHint::Text,
-                nullable: true,
+                input_hint: if boolean {
+                    crate::InputHint::Boolean
+                } else {
+                    crate::InputHint::Text
+                },
+                nullable: !boolean,
             },
         );
     }

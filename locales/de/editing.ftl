@@ -94,3 +94,5 @@ editing-save-retained-private-journal = Nach dem Speichern bleibt ein privates W
 
 # An actor ended without a known current native outcome.
 editing-save-uncertain = Der Speichervorgang wurde unerwartet beendet. Die Datei kann bereits geändert sein. Starten Sie TableCraft neu und öffnen Sie die Datenbank erneut, bevor Sie weitere Änderungen vornehmen. Prüfen Sie ein vorhandenes Wiederherstellungsjournal. Ein Zurücksetzen oder erneuter Versuch ist nicht bestätigt.
+
+editing-toggle-stale = Das Kontrollkästchen entspricht nicht mehr der geprüften Zelle. Die vorgeschlagene Änderung wurde verworfen.

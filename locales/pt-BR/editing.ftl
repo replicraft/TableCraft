@@ -94,3 +94,5 @@ editing-save-retained-private-journal = Um diário de recuperação privado perm
 
 # An actor ended without a known current native outcome.
 editing-save-uncertain = O processo de salvamento parou inesperadamente. O arquivo pode já ter sido alterado. Reinicie o TableCraft e reabra o banco de dados antes de fazer alterações; examine qualquer diário de recuperação mantido. Não há confirmação de reversão nem de nova tentativa.
+
+editing-toggle-stale = A caixa de seleção não corresponde mais à célula verificada. A alteração proposta foi descartada.

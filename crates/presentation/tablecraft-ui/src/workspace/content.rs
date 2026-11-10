@@ -120,6 +120,7 @@ impl State {
         };
         let insert_target = self.current_insert_target();
         let occurrence = self.current_find_occurrence();
+        let boolean_toggles = self.boolean_toggle_context();
         let data = match self.view {
             DocumentView::Table => self.data.as_ref(),
             DocumentView::Query if self.saved_query.active => self.saved_query.data.as_ref(),
@@ -157,6 +158,7 @@ impl State {
                 selection,
                 pane,
                 datasheet::Features {
+                    boolean_toggles,
                     field_addition: field_presentation,
                     saved_field: saved_field_context,
                     sort_header,

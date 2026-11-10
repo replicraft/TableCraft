@@ -32,7 +32,7 @@ use tablecraft_runtime::{
     SaveOutcome, SaveReceipt, SaveReport, SaveWorker, journal_path,
 };
 use tablecraft_ui::{
-    EditDraft, EditInput, EditReview, EditSaveOutcome, EditTarget, FluentArgs,
+    EditDraft, EditInput, EditReview, EditSaveOutcome, EditSeed, EditTarget, FluentArgs,
     InsertRetryPermission, Localizer, ObjectKind, SaveCleanupNotice,
 };
 
@@ -165,10 +165,17 @@ impl Desktop {
         if self.editing.has_save() || !self.state.can_paste_text(&target, &text) {
             return;
         }
-        self.request_edit(target, Some(text));
+        self.request_edit(target, Some(EditSeed::Text(text)));
     }
 
-    fn request_edit(&mut self, target: EditTarget, pasted_text: Option<String>) {
+    pub(super) fn begin_seeded_edit(&mut self, target: EditTarget, seed: EditSeed) {
+        if self.editing.has_save() || !self.state.can_begin_seeded_edit(&target, &seed) {
+            return;
+        }
+        self.request_edit(target, Some(seed));
+    }
+
+    fn request_edit(&mut self, target: EditTarget, seed: Option<EditSeed>) {
         self.editing.clear_review();
         let Some(id) = request_read(
             Command::BeginEdit {
@@ -189,8 +196,8 @@ impl Desktop {
             self.read_request_rejected();
             return;
         };
-        if let Some(text) = pasted_text {
-            if !self.state.begin_paste_edit(target, text, id) {
+        if let Some(seed) = seed {
+            if !self.state.begin_seeded_edit(target, seed, id) {
                 self.worker.cancel();
                 return;
             }
