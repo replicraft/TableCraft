@@ -9,3 +9,6 @@ pub use record::{CurrentFieldAdditionIntentError, NativeCurrentFieldAdditionInte
 pub use recovery::{
     QualifiedCurrentFieldAdditionRecovery, qualify_native_current_field_addition_recovery,
 };
+
+#[cfg(test)]
+mod tests;

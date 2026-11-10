@@ -1,4 +1,4 @@
-# Empty saved-table column addition
+# Saved-table column addition
 
 The normal desktop supports restricted Number and Short Text additions through
 reviewed native saves and complete-image reopen. The engine retains lower-level
@@ -6,13 +6,40 @@ Int32 candidates and frozen recovery languages alongside the typed TCAC0005
 request. General saved-column editing remains unfinished; current source,
 storage and declaration limits are explicit below.
 
-## Next populated-table slice: researched contract, not implemented
+## Current Number addition over populated records
 
-The current ADD candidates still require an empty table. The next proposed slice
-is an ordinary nullable Long Integer field with the existing explicit stored
-zero default, added to a positively qualified populated ACE16 source. This plan
-does not relax that guard, extend any existing request language or qualify a
-write. Other declarations, Required(true) and broader layouts remain separate work.
+`prepare_current_number_field_addition` and its consuming
+`plan_recoverable_current_number_field_addition` now implement a separate ordinary
+nullable Long Integer addition with stored Required(false) and DefaultValue zero.
+The source is positively qualified current metadata in the restricted unencoded,
+eleven-page ACE2016/subversion-zero layout with explicit Name AutoCorrect OFF.
+Actual rows, indexes, live property ownership and protected history are checked;
+remembered creator state does not grant permission. Existing table/field names
+and the requested field must be ASCII. Broader layouts, Unicode collision
+semantics, other declarations and Required(true) remain separate work.
+
+Existing records retain their exact bytes and expose the absent new field as
+NULL. A later omitted insertion uses zero, while explicit NULL remains NULL.
+Independent complete-image oracles and connected desktop insertion/reopen checks
+cover those distinctions. Updating the newly added absent field in an older
+record is still separate work; this addition does not qualify arbitrary record
+expansion.
+
+The closed `TCAC0008`/profile8 request binds the complete original and exact names,
+fixing this Number declaration. Recovery reconstructs both complete images under
+separate native/proof budgets before using the checked V2 journal. TCAC1–7 retain
+their source languages and are never retried after a failed decoder or proof.
+Four focused intent tests pass: independently authored wire bytes, fresh-scope
+requalification, malformed borrowed-name/header refusal before allocation,
+pending/committed cold recovery and forged AFTER rejection. A synthetic Unicode
+request also confirms that successful decoding grants no native write authority.
+These tests do not establish Windows or Microsoft Access Save/reopen behavior.
+
+## Populated-table behavior references
+
+Earlier constructive ADD families still require an empty table. The separate
+current-metadata operation above implements part of the following contract;
+the remaining historical-record UPDATE and broader source cases stay open.
 
 Microsoft documents adding Number fields through both Datasheet's Click to Add
 and Design's first blank Field Name/Data Type row, followed by Save. Its field
@@ -23,7 +50,7 @@ and [DefaultValue](https://support.microsoft.com/en-us/access/defaultvalue-prope
 The latter explicitly distinguishes future-record defaults from existing records;
 it does not establish a physical ADD encoding or an Access16 GUI save observation.
 
-The proposed historical-row behavior is **NULL, not a zero backfill**, even when
+The historical-row behavior is **NULL, not a zero backfill**, even when
 the new field stores DefaultValue zero. This is an inference from Microsoft's
 default contract and the independent Jackcess implementation:
 [`TableImpl.mutateAddColumn`](https://github.com/jahlborn/jackcess/blob/master/src/main/java/com/healthmarketscience/jackcess/impl/TableImpl.java)
@@ -34,12 +61,12 @@ retained local Jackcess source agrees for ordinary Number fields. This evidence
 does not yet verify that exact Click to Add/Design sequence in native Access16;
 Windows comparison remains deferred.
 
-Acceptance should therefore distinguish old records from later inserts: existing
+Acceptance distinguishes old records from later inserts: existing
 records expose the added field as NULL; a later omitted value resolves to the
 stored zero default; explicit NULL remains NULL; and an unrelated edit to an old
 record preserves its added-field NULL. Complete independent images, actual
 record decoding, journal recovery and runtime/GUI witness reopening must qualify
-the eventual implementation without inventing a data backfill.
+each operation without inventing a data backfill.
 
 Keep Required(false) explicit initially. Microsoft offers an independent check of
 existing records when enabling Required, while enforcing the property for new
