@@ -1,9 +1,9 @@
 //! Metadata selects insertion image ownership before any whole-image allocation.
-use super::{NativeEditError, NativeJournalInserter};
+use super::NativeJournalInserter;
 #[cfg(feature = "ace16-create")]
 use std::io::Cursor;
 use std::io::{Read, Seek};
-use tablecraft_ace::{NativeImage, NativeImageSource};
+use tablecraft_ace::{InspectError, NativeImage, NativeImageSource};
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_model::CatalogScope;
 
@@ -16,16 +16,15 @@ impl NativeJournalInserter {
         table: &str,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
-    ) -> Result<NativeImage, NativeEditError> {
+    ) -> Result<NativeImage, InspectError> {
         #[cfg(feature = "ace16-create")]
         if NativeImage::select_retained_insert_from_source(source, scope, table, budget, cancelled)?
         {
-            return NativeImage::capture_retained(source, scope, budget, cancelled)
-                .map_err(Into::into);
+            return NativeImage::capture_retained(source, scope, budget, cancelled);
         }
         #[cfg(not(feature = "ace16-create"))]
         let _ = table;
-        NativeImage::capture(source, scope, budget, cancelled).map_err(Into::into)
+        NativeImage::capture(source, scope, budget, cancelled)
     }
 
     /// Inspect shared immutable input under its metadata-selected capture policy.
@@ -36,7 +35,7 @@ impl NativeJournalInserter {
         table: &str,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
-    ) -> Result<NativeImage, NativeEditError> {
+    ) -> Result<NativeImage, InspectError> {
         #[cfg(feature = "ace16-create")]
         if NativeImage::select_retained_insert_from_source(
             &mut Cursor::new(source.as_bytes()),
@@ -45,11 +44,10 @@ impl NativeJournalInserter {
             budget,
             cancelled,
         )? {
-            return NativeImage::capture_shared_retained(source, scope, budget, cancelled)
-                .map_err(Into::into);
+            return NativeImage::capture_shared_retained(source, scope, budget, cancelled);
         }
         #[cfg(not(feature = "ace16-create"))]
         let _ = table;
-        NativeImage::capture_shared(source, scope, budget, cancelled).map_err(Into::into)
+        NativeImage::capture_shared(source, scope, budget, cancelled)
     }
 }

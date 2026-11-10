@@ -38,6 +38,7 @@ impl NativeImage {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<bool, EditError> {
         selection::from_catalog(&mut self.reader(), self.catalog(), table, budget, cancelled)
+            .map_err(EditError::from)
     }
 
     /// Fully qualify retained generated-row insertion without authorizing a save.

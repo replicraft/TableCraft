@@ -1,7 +1,6 @@
 //! Original retained INSERT metadata selection before whole-image capture.
 use crate::{
-    CatalogInspection, EditError, FileFormat, InspectError, NativeImage, NativeReadSource,
-    NativeTableStorage,
+    CatalogInspection, FileFormat, InspectError, NativeImage, NativeReadSource, NativeTableStorage,
     format::{
         allocation,
         bytes::u16_at,
@@ -29,7 +28,7 @@ impl NativeImage {
         table: &str,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
-    ) -> Result<bool, EditError> {
+    ) -> Result<bool, InspectError> {
         let header = inspect_header(source, budget, cancelled)?;
         if header.format() != FileFormat::Ace2016
             || header.subversion() != 0
@@ -49,7 +48,7 @@ pub(super) fn from_catalog<R: NativeReadSource>(
     table: &str,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
-) -> Result<bool, EditError> {
+) -> Result<bool, InspectError> {
     check(budget, cancelled)?;
     let header = catalog.header();
     if header.format() != FileFormat::Ace2016 || header.subversion() != 0 || header.encoded_pages()

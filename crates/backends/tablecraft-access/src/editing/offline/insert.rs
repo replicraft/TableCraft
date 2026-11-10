@@ -1,5 +1,11 @@
 //! Complete-row typed and SQL INSERT over the same retained target lease.
 mod batch;
+#[cfg(all(
+    test,
+    feature = "ace16-create",
+    any(target_os = "macos", target_os = "linux", windows)
+))]
+mod capture_tests;
 mod complete_batch;
 
 use super::plan::MutationPlan;
@@ -109,7 +115,7 @@ impl OfflineWriteSession {
                 budget,
                 cancelled,
             )
-            .map_err(Cause::Editor)?;
+            .map_err(Cause::Native)?;
             slot.state = SessionState::Ready;
             if let Some(expected) = expected {
                 require_original(image.as_bytes(), expected, budget, cancelled)?;
@@ -149,7 +155,7 @@ impl OfflineWriteSession {
                 budget,
                 cancelled,
             )
-            .map_err(Cause::Editor)?;
+            .map_err(Cause::Native)?;
             slot.state = SessionState::Ready;
             sql::plan_recoverable_insert(image, query, budget, cancelled)
                 .map_err(Cause::InsertPlanning)
@@ -189,7 +195,7 @@ impl OfflineWriteSession {
                 budget,
                 cancelled,
             )
-            .map_err(Cause::Editor)?;
+            .map_err(Cause::Native)?;
             slot.state = SessionState::Ready;
             sql::plan_recoverable_insert_with_clock(image, query, provider, budget, cancelled)
                 .map_err(Cause::InsertPlanning)

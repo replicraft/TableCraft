@@ -57,8 +57,7 @@ impl Document {
             &target.table,
             &mut work,
             cancelled,
-        )
-        .map_err(EditError::from)?;
+        )?;
         let inserter = NativeJournalInserter::new(image, &target.table, &mut work, cancelled)
             .map_err(EditError::from)?;
         let columns = inserter.columns();
@@ -114,8 +113,7 @@ impl Document {
             &target.table,
             &mut work,
             cancelled,
-        )
-        .map_err(EditError::from)?;
+        )?;
         let inserter = NativeJournalInserter::new(image, &target.table, &mut work, cancelled)
             .map_err(EditError::from)?;
         validate_feature_columns(&features, inserter.columns(), &mut output)?;

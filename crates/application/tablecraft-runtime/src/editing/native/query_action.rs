@@ -101,8 +101,7 @@ pub(in crate::editing) fn review(
                 table,
                 &mut native,
                 cancelled,
-            )
-            .map_err(EditError::from)?,
+            )?,
             Kind::Update | Kind::Delete => {
                 NativeImage::capture_shared(source, SCOPE, &mut native, cancelled)?
             }
