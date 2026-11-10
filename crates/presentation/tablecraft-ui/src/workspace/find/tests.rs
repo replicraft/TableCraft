@@ -50,11 +50,11 @@ pub(super) fn page(offset: u32) -> Data {
 #[test]
 fn find_replies_bind_exact_options_publication_and_native_occurrence() {
     let mut oversized = state();
-    oversized.find.as_mut().unwrap().pattern = "🦀".repeat(16_385);
+    oversized.find.as_mut().unwrap().pattern = "🦀".repeat(65_536);
     let request = oversized.current_find_request().unwrap();
     assert!(
         !oversized.can_find_next(&request),
-        "UTF-8 byte limit is independent of editor scalar count"
+        "textbox character policy rejects the complete oversized pattern"
     );
 
     let mut state = state();

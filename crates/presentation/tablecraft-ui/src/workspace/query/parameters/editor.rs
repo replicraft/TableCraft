@@ -225,7 +225,8 @@ pub(in crate::workspace) fn candidate(
         })
     })?;
     // Match TextEdit's undo/redo chords. The retained history is private to
-    // egui, so reserve the admitted logical ceiling before restoring it.
+    // egui, so reserve the textbox character envelope in UTF-8 bytes before
+    // restoring it, subject to the actual workspace retention allowance.
     let restores_history = ui.input(|state| {
         state.events.iter().any(|event| {
             let egui::Event::Key {
@@ -245,7 +246,10 @@ pub(in crate::workspace) fn candidate(
         })
     });
     let text_bytes = if restores_history {
-        text_limit.max(input.text.len())
+        MAX_EDITOR_SCALARS
+            .checked_mul(char::MAX.len_utf8())?
+            .min(text_limit)
+            .max(input.text.len())
     } else {
         input
             .text

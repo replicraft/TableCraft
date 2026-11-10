@@ -417,12 +417,12 @@ fn pointer_focus_and_oversized_paste_in_one_frame_cannot_bypass_parameter_guard(
 }
 
 #[test]
-fn saved_parameter_editor_keeps_its_one_mib_aggregate_boundary_above_small_editor_limits() {
+fn saved_parameter_editor_counts_unicode_characters_independently_of_utf8_bytes() {
     let mut harness = harness();
     harness.run();
     let original = harness.state().0.saved_query.inputs.clone();
     let name = original[0].name.clone();
-    let limit = 1_048_576 - original[0].name.len() - original[0].kind.len();
+    let limit = 65_535;
     harness
         .get_by_role_and_label(Role::Button, "Run saved query")
         .click_accesskit();
@@ -431,7 +431,7 @@ fn saved_parameter_editor_keeps_its_one_mib_aggregate_boundary_above_small_edito
         .get_by_role_and_label(Role::TextInput, &name)
         .focus();
     harness.run();
-    harness.event(egui::Event::Paste("a".repeat(limit)));
+    harness.event(egui::Event::Paste("雪".repeat(limit)));
     harness.run();
     let staged = &harness
         .state()
@@ -443,8 +443,7 @@ fn saved_parameter_editor_keeps_its_one_mib_aggregate_boundary_above_small_edito
         .body
         .draft[0]
         .text;
-    assert_eq!(staged.len(), limit);
-    assert!(staged.bytes().all(|byte| byte == b'a'));
+    assert_eq!(staged, &"雪".repeat(limit));
     assert!(
         !harness
             .get_by_role_and_label(Role::Button, "OK")
@@ -464,8 +463,7 @@ fn saved_parameter_editor_keeps_its_one_mib_aggregate_boundary_above_small_edito
         .body
         .draft[0]
         .text;
-    assert_eq!(staged.len(), limit);
-    assert!(staged.bytes().all(|byte| byte == b'a'));
+    assert_eq!(staged, &"雪".repeat(limit));
     assert!(
         harness
             .get_by_role_and_label(Role::Button, "OK")
