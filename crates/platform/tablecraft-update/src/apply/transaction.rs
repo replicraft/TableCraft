@@ -1,6 +1,6 @@
 use super::{
     helper::{self, HelperPlan},
-    outcome::{AppliedUpdate, ApplyError, RetainedRecovery},
+    outcome::{AppliedUpdate, ApplyError, ApplyStage, RetainedRecovery},
 };
 use crate::{archive::ExtractedUpdate, installation::Installed, platform::Platform};
 use std::{
@@ -109,6 +109,7 @@ pub(super) fn apply_with(
     match result {
         Ok(helper) => Ok(AppliedUpdate {
             helper,
+            stage: ApplyStage::Replaced,
             // NO_CLONE: recovery outlives the consumed Installed proof; retain
             // one independent local anchor without copying application payloads.
             recovery: RetainedRecovery {

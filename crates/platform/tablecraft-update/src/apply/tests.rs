@@ -209,11 +209,11 @@ fn flat_replacement_retains_complete_originals_and_preserves_user_files() {
         fixture.assert_replacement();
         for (name, bytes) in &fixture.original {
             assert_eq!(
-                &fs::read(applied.backup_directory().join(name)).unwrap(),
+                &fs::read(applied.retained_directory().join(name)).unwrap(),
                 bytes
             );
         }
-        let backup = applied.backup_directory().to_path_buf();
+        let backup = applied.retained_directory().to_path_buf();
         drop(applied);
         assert!(
             backup.exists(),
@@ -249,7 +249,7 @@ fn mac_bundle_replacement_retains_original_bundle_and_uses_its_actual_launch_anc
         assert_eq!(
             &fs::read(
                 applied
-                    .backup_directory()
+                    .retained_directory()
                     .join("original.app")
                     .join(relative)
             )

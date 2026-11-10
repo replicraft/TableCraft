@@ -28,24 +28,57 @@ impl RetainedRecovery {
     }
 }
 
-/// A completed replacement whose relaunch helper is waiting for this process.
+/// The native installation phase reached before the host begins normal shutdown.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum ApplyStage {
+    /// Package files have been replaced and the helper is waiting to relaunch.
+    Replaced,
+    /// A native installer helper is waiting to install after the host exits.
+    ///
+    /// This does not establish successful installation, elevation or upgrade.
+    InstallerScheduled,
+}
+
+/// A committed update handoff whose helper is waiting for normal host shutdown.
 ///
-/// The host must exit through its normal document-safe shutdown after receiving
-/// this result. Dropping it neither kills the helper nor deletes the backup.
+/// Inspect `stage` to distinguish completed file replacement from a scheduled
+/// native installer. Dropping this value never kills the helper or deletes its
+/// retained originals, authenticated payload or diagnostic resources.
 #[derive(Debug)]
 pub struct AppliedUpdate {
     pub(super) recovery: RetainedRecovery,
     pub(super) helper: Option<Child>,
+    pub(super) stage: ApplyStage,
 }
 
 impl AppliedUpdate {
+    pub(crate) fn installer_handoff(
+        staging: PathBuf,
+        installation: PathBuf,
+        helper: Child,
+    ) -> Self {
+        Self {
+            recovery: RetainedRecovery {
+                backup: staging,
+                installation,
+            },
+            helper: Some(helper),
+            stage: ApplyStage::InstallerScheduled,
+        }
+    }
+
+    /// Returns whether files were replaced or a native installation was scheduled.
+    pub const fn stage(&self) -> ApplyStage {
+        self.stage
+    }
+
     /// Returns the helper process identifier after successful native spawn.
     pub fn helper_process_id(&self) -> Option<u32> {
         self.helper.as_ref().map(Child::id)
     }
 
-    /// Returns the original-file backup retained until relaunch succeeds.
-    pub fn backup_directory(&self) -> &Path {
+    /// Returns retained originals or authenticated native-installer resources.
+    pub fn retained_directory(&self) -> &Path {
         self.recovery.backup_directory()
     }
 }

@@ -4,7 +4,7 @@ mod helper;
 mod outcome;
 pub(crate) mod transaction;
 
-pub use outcome::{AppliedUpdate, ApplyError, RetainedRecovery};
+pub use outcome::{AppliedUpdate, ApplyError, ApplyStage, RetainedRecovery};
 
 #[cfg(test)]
 mod tests;
