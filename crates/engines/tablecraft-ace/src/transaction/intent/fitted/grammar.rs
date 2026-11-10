@@ -1,14 +1,10 @@
 //! Data grammar bounds, independent of consuming native write eligibility.
 use super::{carrier, model::Family};
 use crate::{
-    InspectError, NativeImage,
-    header::check,
+    NativeImage,
     transaction::intent::{NativeIntentError, binding, model as names},
 };
-use tablecraft_core::{
-    limits::{Resource, ResourceBudget},
-    values::Value,
-};
+use tablecraft_core::{limits::ResourceBudget, values::Value};
 
 #[derive(Clone, Copy, PartialEq, Eq)]
 pub(super) enum Grammar {
@@ -47,26 +43,7 @@ impl Grammar {
         if self == Self::Legacy {
             return names::validate_name(name, budget, cancelled);
         }
-        check(budget, cancelled)?;
-        if name.is_empty() || u32::try_from(name.len()).is_err() {
-            return Err(NativeIntentError::InvalidRecord);
-        }
-        for chunk in name.as_bytes().chunks(carrier::COPY_BYTES) {
-            check(budget, cancelled)?;
-            budget
-                .charge(Resource::Steps, chunk.len() as u64)
-                .map_err(InspectError::from)?;
-        }
-        for (position, character) in name.chars().enumerate() {
-            if position % carrier::COPY_BYTES == 0 {
-                check(budget, cancelled)?;
-            }
-            if character.is_control() {
-                return Err(NativeIntentError::InvalidRecord);
-            }
-        }
-        check(budget, cancelled)?;
-        Ok(())
+        names::validate_retained_name(name, budget, cancelled)
     }
 
     pub(super) fn length(self, length: u64) -> Result<(), NativeIntentError> {

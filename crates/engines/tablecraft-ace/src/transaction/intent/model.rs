@@ -187,3 +187,32 @@ pub(super) fn copy_name(
         .map_err(InspectError::from)
         .map_err(Into::into)
 }
+
+/// Retained request names use the encoded u32 byte-length representation.
+/// Native identifier capacity remains a separate consuming-source check.
+pub(super) fn validate_retained_name(
+    name: &str,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), NativeIntentError> {
+    check(budget, cancelled)?;
+    if name.is_empty() || u32::try_from(name.len()).is_err() {
+        return Err(NativeIntentError::InvalidRecord);
+    }
+    for chunk in name.as_bytes().chunks(NAME_CHECK_SCALARS) {
+        check(budget, cancelled)?;
+        budget
+            .charge(Resource::Steps, chunk.len() as u64)
+            .map_err(InspectError::from)?;
+    }
+    for (position, character) in name.chars().enumerate() {
+        if position % NAME_CHECK_SCALARS == 0 {
+            check(budget, cancelled)?;
+        }
+        if character.is_control() {
+            return Err(NativeIntentError::InvalidRecord);
+        }
+    }
+    check(budget, cancelled)?;
+    Ok(())
+}
