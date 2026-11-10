@@ -295,6 +295,12 @@ impl MutationIntent {
         // Closed framing selection occurs before decode; a failed decoder is
         // never retried as another action or promoted from its record prefix.
         #[cfg(feature = "ace16-create")]
+        if raw.starts_with(b"TCFD0002") {
+            return NativeFieldDropIntent::decode_current_tail(raw, budget, cancelled)
+                .map(Self::FieldDrop)
+                .map_err(Cause::FieldDropIntent);
+        }
+        #[cfg(feature = "ace16-create")]
         if raw.starts_with(FIELD_DROP_FAMILY) {
             return NativeFieldDropIntent::decode(raw, budget, cancelled)
                 .map(Self::FieldDrop)

@@ -4,8 +4,8 @@ pub(in crate::editing) use review::{State, review};
 
 use crate::{Error, controls::SCOPE, document::Document};
 use tablecraft_ace::{
-    CreatedAddColumnError, FieldAdditionError, FieldDropError, FieldHistoryDatabaseOptionsError,
-    NativeImage,
+    CreatedAddColumnError, EditError as NativeEditError, FieldAdditionError, FieldDropError,
+    FieldHistoryDatabaseOptionsError, NativeImage,
 };
 use tablecraft_core::limits::ResourceBudget;
 
@@ -29,7 +29,7 @@ pub(in crate::editing) fn source_eligible(
         cancelled,
     )?;
     let identity =
-        source_result(image.inspect_saved_field_drop_source(table, column, budget, cancelled))?;
+        source_result(image.inspect_field_drop_source(table, column, budget, cancelled))?;
     let Some(identity) = identity else {
         return Ok(false);
     };
@@ -45,6 +45,7 @@ fn source_result(
     match result {
         Ok(identity) => Ok(Some(identity)),
         Err(FieldDropError::Source)
+        | Err(FieldDropError::Placement(NativeEditError::Unsupported(_)))
         | Err(FieldDropError::Metadata(CreatedAddColumnError::Source))
         | Err(FieldDropError::SourceProof(FieldHistoryDatabaseOptionsError::Source))
         | Err(FieldDropError::SourceProof(FieldHistoryDatabaseOptionsError::Field(
