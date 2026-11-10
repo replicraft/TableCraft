@@ -100,9 +100,25 @@ try {
     if (-not (Test-Path -LiteralPath $shortcut)) {
         throw 'Installed Start Menu shortcut is missing'
     }
-    $shell = New-Object -ComObject WScript.Shell
-    if ($shell.CreateShortcut($shortcut).TargetPath -ne $executable) {
-        throw 'Installed shortcut targets another executable'
+    # Advertised MSI shortcuts contain product/feature/component identities,
+    # rather than the plain executable TargetPath exposed by WScript.Shell.
+    $windowsInstaller = New-Object -ComObject WindowsInstaller.Installer
+    $receiver = $windowsInstaller.ShortcutTarget($shortcut)
+    $shortcutProduct = [string]$receiver.StringData(1)
+    $shortcutFeature = [string]$receiver.StringData(2)
+    $shortcutComponent = [string]$receiver.StringData(3)
+    $resolvedTarget = [string]$windowsInstaller.ComponentPath($shortcutProduct, $shortcutComponent)
+    @{
+        product = $shortcutProduct
+        feature = $shortcutFeature
+        component = $shortcutComponent
+        target = $resolvedTarget
+    } | ConvertTo-Json -Compress | Set-Content -LiteralPath (Join-Path $temporary 'shortcut.json') -Encoding UTF8
+    $relatedProducts = @($windowsInstaller.RelatedProducts('{F78632A2-14B8-5F28-B29D-760BDED29A9A}'))
+    if ($relatedProducts -notcontains $shortcutProduct -or $shortcutFeature -ne 'DesktopFeature' -or
+        $windowsInstaller.ProductState($shortcutProduct) -ne 5 -or
+        [IO.Path]::GetFullPath($resolvedTarget) -ne [IO.Path]::GetFullPath($executable)) {
+        throw 'Installed advertised shortcut targets another product or executable'
     }
     $privateDatabase = Join-Path $install 'UserData.accdb'
     [IO.File]::WriteAllText($privateDatabase, 'User-owned database sentinel; never remove with the application')

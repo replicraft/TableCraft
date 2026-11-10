@@ -42,7 +42,8 @@ powershell -NoProfile -NonInteractive -ExecutionPolicy Bypass `
 ```
 
 It quietly installs into a temporary owned directory, checks installed hashes,
-runs only `--version`, verifies registry/shortcut receivers and unchanged existing
+runs only `--version`, verifies registry receivers, resolves the advertised
+Start Menu shortcut through Windows Installer product/component ownership and checks unchanged existing
 association defaults, then uninstalls and checks user database preservation. No
 desktop window or database content is opened. Existing TableCraft installations
 or registrations cause a refusal instead of being modified by the test. Logs are
@@ -62,3 +63,6 @@ References inspected for this implementation:
 - [WiX MajorUpgrade](https://docs.firegiant.com/wix/schema/wxs/majorupgrade/).
 - [WiX registry value types](https://docs.firegiant.com/wix/schema/wxs/registryvaluetype/).
 - [Microsoft Open With registration](https://learn.microsoft.com/en-us/windows/win32/shell/how-to-include-an-application-on-the-open-with-dialog-box).
+
+Advertised shortcut verification uses Microsoft's [ShortcutTarget](https://learn.microsoft.com/en-us/windows/win32/msi/installer-shortcuttarget)
+and [ComponentPath](https://learn.microsoft.com/en-us/windows/win32/msi/installer-componentpath) contracts.
