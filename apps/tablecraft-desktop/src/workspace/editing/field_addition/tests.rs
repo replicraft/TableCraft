@@ -1,5 +1,6 @@
 //! Real headless saved-table widgets through Number review, actor and witness.
 mod declaration;
+mod populated;
 mod repeated;
 use super::*;
 use crate::workspace::test_support::{self, finish_reads};
