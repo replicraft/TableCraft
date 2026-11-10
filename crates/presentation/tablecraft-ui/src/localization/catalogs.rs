@@ -21,6 +21,7 @@ macro_rules! sections {
             section!($locale, "shell"),
             section!($locale, "ribbon"),
             section!($locale, "backstage"),
+            section!($locale, "updates"),
             section!($locale, "creation"),
             section!($locale, "table-draft"),
             section!($locale, "navigation"),

@@ -39,6 +39,7 @@ pub(crate) mod table_drop;
 #[cfg(test)]
 mod test_support;
 pub(crate) mod totals;
+mod updates;
 pub(crate) mod zoom;
 
 pub use contents::{CollectionKind, ContentsTarget};
@@ -104,6 +105,7 @@ pub use table_drop::{TableDropRequest, TableDropSaveCommand, TableDropSaveIdenti
 pub use totals::{
     TotalAggregate, TotalSpec, TotalsData, TotalsDescription, TotalsField, TotalsTarget,
 };
+pub use updates::{UpdateFailure, UpdateManualReason, UpdateStatus};
 
 use super::{Cell, Column, keyboard};
 use crate::datasheet::Selection;
@@ -146,6 +148,10 @@ pub struct Data {
 
 /// User intents dispatched to the host's shared backend services.
 pub enum Action {
+    CheckForUpdates,
+    CancelUpdate,
+    DownloadUpdate,
+    InstallUpdate,
     ConfigureQueryRunLimits {
         limits: QueryRunLimits,
     },
@@ -490,6 +496,7 @@ pub struct State {
     pub password: String,
     /// The host has an actual file-selection implementation.
     pub file_picker_available: bool,
+    updates: updates::Model,
     /// Host supports fresh native publication; synthetic/default hosts keep false.
     pub creation_available: bool,
     creation: creation::Creation,

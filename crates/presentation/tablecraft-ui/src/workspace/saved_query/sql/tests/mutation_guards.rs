@@ -31,6 +31,7 @@ fn parked_dirty_sql_blocks_cell_edits_until_the_exact_draft_is_discarded() {
     assert!(state.set_table_data(data()));
     let target = state.data.as_ref().unwrap().edit_target(0, 0).unwrap();
     assert!(state.can_edit_cell(&target));
+    assert!(state.can_restart_for_update());
 
     assert!(state.activate_object(&saved_tab));
     assert!(state.set_saved_query_sql_text("SELECT 43 AS Answer".into()));
@@ -38,10 +39,12 @@ fn parked_dirty_sql_blocks_cell_edits_until_the_exact_draft_is_discarded() {
     state.prepare_object_open(table).unwrap();
     assert!(state.set_table_data(data()));
     assert!(state.has_modified_saved_query_sql());
+    assert!(!state.can_restart_for_update());
     assert!(!state.can_edit_cell(&target));
 
     assert!(!state.discard_saved_query_sql(&saved_tab, revision + 1));
     assert!(!state.can_edit_cell(&target));
     assert!(state.discard_saved_query_sql(&saved_tab, revision));
     assert!(state.can_edit_cell(&target));
+    assert!(state.can_restart_for_update());
 }

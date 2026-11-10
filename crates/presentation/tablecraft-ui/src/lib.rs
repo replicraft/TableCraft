@@ -60,6 +60,7 @@ pub use workspace::{
     PreparedFieldRenameSave, PreparedUnchangedFieldRename,
 };
 pub use workspace::{QueryPoolLimits, QueryRunLimits};
+pub use workspace::{UpdateFailure, UpdateManualReason, UpdateStatus};
 
 #[cfg(test)]
 mod tests;

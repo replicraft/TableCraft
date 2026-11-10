@@ -9,6 +9,15 @@ pub(super) struct PendingSave {
     field_drop_tab: Option<u64>,
 }
 
+impl PendingSave {
+    pub(in crate::workspace) fn is_pending(&self) -> bool {
+        self.saved_query_tab.is_some()
+            || self.field_addition_tab.is_some()
+            || self.field_rename_tab.is_some()
+            || self.field_drop_tab.is_some()
+    }
+}
+
 impl State {
     /// Presentation availability; native authority is issued by the host review.
     pub fn can_save_active_object(&self) -> bool {

@@ -48,6 +48,10 @@ impl Preview {
             return;
         }
         match action {
+            Action::CheckForUpdates
+            | Action::CancelUpdate
+            | Action::DownloadUpdate
+            | Action::InstallUpdate => {}
             Action::ConfigureQueryRunLimits { limits } => {
                 // Presentation preferences alone; no runtime or query is invoked.
                 self.state.set_query_run_limits(limits);

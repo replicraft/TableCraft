@@ -85,7 +85,7 @@ impl State {
                                 Backstage::Home => self.start_pane(ui, actions),
                                 Backstage::New => self.new_pane(ui, actions),
                                 Backstage::Open => self.open_pane(ui, actions, path_id),
-                                Backstage::About => self.about_pane(ui),
+                                Backstage::About => self.about_pane(ui, actions),
                                 Backstage::Options => {}
                                 Backstage::Closed => {}
                             });
@@ -203,10 +203,13 @@ impl State {
         ui.small(tr(ui, "backstage-read-only-help"));
     }
 
-    fn about_pane(&self, ui: &mut Ui) {
+    fn about_pane(&mut self, ui: &mut Ui, actions: &mut Vec<Action>) {
         ui.heading(tr(ui, "backstage-about-title"));
         ui.add_space(14.0);
         ui.label(tr(ui, "backstage-about-description"));
+        ui.add_space(12.0);
+        self.update_section(ui, actions);
+        ui.add_space(12.0);
         ui.label(tr(ui, "backstage-font-credit"));
         ui.hyperlink_to(
             tr(ui, "backstage-font-source"),

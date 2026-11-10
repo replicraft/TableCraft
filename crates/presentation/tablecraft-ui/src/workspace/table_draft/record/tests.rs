@@ -518,3 +518,25 @@ fn exhausted_record_revision_refuses_typed_and_datasheet_additions_without_schem
     assert!(editor.rename.is_none());
     assert!(harness.state().1.is_empty());
 }
+
+#[test]
+fn update_restart_keeps_blank_and_typed_initial_record_drafts_intact() {
+    let mut state = crate::workspace::test_support::saved_table("Existing database", Vec::new());
+    assert!(state.can_restart_for_update());
+    assert!(state.open_initial_table_draft());
+    assert!(!state.has_modified_table_drafts());
+    assert!(!state.can_restart_for_update());
+
+    assert!(state.add_table_draft_field(DraftFieldType::ShortText));
+    let editor = state.table_draft.as_mut().unwrap();
+    assert!(editor.commit_rename());
+    let field = editor.draft.fields()[1].id();
+    assert!(editor.record.set_input(field, value("  retained 日本語  ")));
+    let snapshot = editor.draft.snapshot("Table1").unwrap();
+    let original = editor.record.inputs(&snapshot).unwrap();
+    let pointer = editor.record.entries[1].text.as_ptr();
+    assert!(!state.can_restart_for_update());
+    let editor = state.table_draft.as_ref().unwrap();
+    assert_eq!(editor.record.inputs(&snapshot).unwrap(), original);
+    assert_eq!(editor.record.entries[1].text.as_ptr(), pointer);
+}
