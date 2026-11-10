@@ -5186,6 +5186,7 @@ dependencies = [
  "rfd",
  "semver",
  "tablecraft-builders",
+ "tablecraft-core",
  "tablecraft-display",
  "tablecraft-runtime",
  "tablecraft-testkit",

@@ -5,10 +5,7 @@ use crate::workspace::test_support::inserting::{
 };
 use crate::workspace::test_support::{app_harness, finish_reads, opened};
 use egui::accesskit::Role;
-use egui_kittest::{
-    Harness,
-    kittest::{NodeT, Queryable},
-};
+use egui_kittest::{Harness, kittest::Queryable};
 use tablecraft_core::values::Value;
 use tablecraft_runtime::journal_path;
 use tablecraft_testkit::fixtures::access::canonical_created_number::mixed::after_off::{
