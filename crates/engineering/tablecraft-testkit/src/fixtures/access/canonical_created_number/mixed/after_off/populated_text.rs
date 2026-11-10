@@ -30,9 +30,9 @@ pub fn append_text_declaration(before: &[u8], name: &str, units: u16, compressed
         let at = 7 * 4096 + offset;
         after[at..at + 4].copy_from_slice(&before[at..at + 4]);
     }
-    let original_body = super::super::storage::selected_body(before);
+    let original_body = super::super::storage::current_body(before);
     let body = super::super::properties::append_text(&original_body, name);
-    super::super::storage::append(before, after, &body)
+    super::super::storage::append_current(before, after, &body)
 }
 
 /// First-party mixed records retain raw compressed/wide/NULL payload and padding.

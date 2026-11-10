@@ -99,6 +99,17 @@ pub(super) fn selected_body(before: &[u8]) -> Vec<u8> {
     })
 }
 
+/// Current nullable user properties may be genuinely absent before the first
+/// field declaration. Existing selected_body retains its Single-only contract.
+pub(super) fn current_body(before: &[u8]) -> Vec<u8> {
+    let record = record(before);
+    if record.begin == record.finish {
+        Vec::new()
+    } else {
+        selected_body(before)
+    }
+}
+
 fn read_body(before: &[u8], check_slot: impl FnOnce(&[u8], usize)) -> Vec<u8> {
     let record = record(before);
     if record.begin == record.finish {
@@ -130,6 +141,19 @@ fn read_body(before: &[u8], check_slot: impl FnOnce(&[u8], usize)) -> Vec<u8> {
 pub(super) fn append(before: &[u8], mut after: Vec<u8>, body: &[u8]) -> Vec<u8> {
     let reference = append_body(before, &mut after, body);
     let catalog = parent_page(before, body.len(), reference);
+    after[CATALOG_PAGE * PAGE..(CATALOG_PAGE + 1) * PAGE].copy_from_slice(&catalog);
+    after
+}
+
+/// The first user property descriptor can follow the separately stored database
+/// role. Its compact catalog growth retains that role and both physical slots.
+pub(super) fn append_current(before: &[u8], mut after: Vec<u8>, body: &[u8]) -> Vec<u8> {
+    let original = record(before);
+    if original.begin != original.finish {
+        return append(before, after, body);
+    }
+    let reference = append_body(before, &mut after, body);
+    let catalog = parent_page_with_frontier(before, body.len(), reference, true);
     after[CATALOG_PAGE * PAGE..(CATALOG_PAGE + 1) * PAGE].copy_from_slice(&catalog);
     after
 }
@@ -167,6 +191,15 @@ fn append_body(before: &[u8], after: &mut Vec<u8>, body: &[u8]) -> u32 {
 }
 
 fn parent_page(before: &[u8], body_length: usize, reference: u32) -> Vec<u8> {
+    parent_page_with_frontier(before, body_length, reference, false)
+}
+
+fn parent_page_with_frontier(
+    before: &[u8],
+    body_length: usize,
+    reference: u32,
+    current: bool,
+) -> Vec<u8> {
     let record = record(before);
     let mut descriptor = (SINGLE_FLAG | body_length as u32).to_le_bytes().to_vec();
     descriptor.extend(reference.to_le_bytes());
@@ -192,16 +225,46 @@ fn parent_page(before: &[u8], body_length: usize, reference: u32) -> Vec<u8> {
     let mut page = record.page.to_vec();
     if row.len() == record.row.len() {
         page[record.start..record.end].copy_from_slice(&row);
+    } else if current {
+        assert_eq!(record.slot, ROOT_SLOT);
+        let count = word(&page, ROW_COUNT_OFFSET);
+        assert_eq!(count, 9);
+        assert_eq!(record.begin, record.finish);
+        let growth = row.len() - record.row.len();
+        let frontier = word(&page, DIRECTORY + (count - 1) * SHORT_BYTES) & OFFSET_MASK;
+        let new_frontier = frontier.checked_sub(growth).unwrap();
+        assert!(new_frontier >= DIRECTORY + count * SHORT_BYTES);
+        assert!(page[new_frontier..frontier].iter().all(|byte| *byte == 0));
+        page.copy_within(frontier..record.start, new_frontier);
+        page[record.start - growth..record.end].copy_from_slice(&row);
+        for slot in record.slot..count {
+            let old = word(record.page, DIRECTORY + slot * SHORT_BYTES);
+            assert_eq!(old & !OFFSET_MASK, 0);
+            put16(
+                &mut page,
+                DIRECTORY + slot * SHORT_BYTES,
+                (old - growth) as u16,
+            );
+        }
+        put16(
+            &mut page,
+            FREE_OFFSET,
+            (new_frontier - DIRECTORY - count * SHORT_BYTES) as u16,
+        );
     } else {
         assert_eq!(record.slot, ROOT_SLOT);
-        assert_eq!(word(&page, ROW_COUNT_OFFSET), FORWARD_SLOT);
-        let target = record.start - row.len();
-        page[target..record.start].copy_from_slice(&row);
+        let target_slot = word(&page, ROW_COUNT_OFFSET);
+        assert_eq!(target_slot, FORWARD_SLOT);
+        let frontier = word(&page, DIRECTORY + (target_slot - 1) * SHORT_BYTES) & OFFSET_MASK;
+        let target = frontier.checked_sub(row.len()).unwrap();
+        assert!(target >= DIRECTORY + (target_slot + 1) * SHORT_BYTES);
+        assert!(page[target..frontier].iter().all(|byte| *byte == 0));
+        page[target..frontier].copy_from_slice(&row);
         page[record.start..record.end].fill(0);
         put32(
             &mut page,
             record.start,
-            (CATALOG_PAGE as u32) << REFERENCE_SHIFT | FORWARD_SLOT as u32,
+            (CATALOG_PAGE as u32) << REFERENCE_SHIFT | target_slot as u32,
         );
         put16(
             &mut page,
@@ -210,14 +273,14 @@ fn parent_page(before: &[u8], body_length: usize, reference: u32) -> Vec<u8> {
         );
         put16(
             &mut page,
-            DIRECTORY + FORWARD_SLOT * SHORT_BYTES,
+            DIRECTORY + target_slot * SHORT_BYTES,
             (target | TARGET_FLAG) as u16,
         );
-        put16(&mut page, ROW_COUNT_OFFSET, (FORWARD_SLOT + 1) as u16);
+        put16(&mut page, ROW_COUNT_OFFSET, (target_slot + 1) as u16);
         put16(
             &mut page,
             FREE_OFFSET,
-            (target - (DIRECTORY + (FORWARD_SLOT + 1) * SHORT_BYTES)) as u16,
+            (target - (DIRECTORY + (target_slot + 1) * SHORT_BYTES)) as u16,
         );
     }
     page
