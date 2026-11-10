@@ -61,7 +61,7 @@ impl NativeEditor {
                     Err(error) => Err(error.into()),
                 };
             }
-            return match self.image.check_native_retained_rows_table(
+            return match self.image.check_native_retained_cell_updates_table(
                 self.snapshot.name(),
                 budget,
                 cancelled,
@@ -410,6 +410,21 @@ impl NativeEditor {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<RecoverableNativeEditPlan, RecoverableEditError> {
         self.image.plan_recoverable_current_row_updates(
+            self.snapshot.name(),
+            groups,
+            budget,
+            cancelled,
+        )
+    }
+
+    #[cfg(feature = "ace16-create")]
+    pub(super) fn plan_recoverable_retained_currency_rows(
+        self,
+        groups: Vec<NativeFittedIntentGroup>,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<RecoverableNativeEditPlan, RecoverableEditError> {
+        self.image.plan_recoverable_retained_currency_row_updates(
             self.snapshot.name(),
             groups,
             budget,

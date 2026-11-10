@@ -62,6 +62,7 @@ impl OfflineWriteSession {
                 reviewed.intent().profile(),
                 NativeUpdateProfile::Ace16RetainedRows
                     | NativeUpdateProfile::Ace16RetainedOpaqueRows
+                    | NativeUpdateProfile::Ace16RetainedCurrencyRows
             ) {
                 #[cfg(feature = "ace16-create")]
                 {

@@ -78,10 +78,14 @@ impl NativeJournalEditor {
             {
                 return Err(NativeEditError::Unsupported.into());
             }
-            if self.route.row_updates()
-                && (columns.len() != 1 || !matches!(kind, ScalarType::Int32 | ScalarType::Text))
-            {
-                return Err(NativeEditError::Unsupported.into());
+            if self.route.row_updates() {
+                let supported = matches!(kind, ScalarType::Int32 | ScalarType::Text);
+                #[cfg(feature = "ace16-create")]
+                let supported = supported
+                    || self.route == JournalRoute::RetainedRows && kind == ScalarType::Currency;
+                if columns.len() != 1 || !supported {
+                    return Err(NativeEditError::Unsupported.into());
+                }
             }
             if !matches!(
                 kind,
@@ -191,9 +195,17 @@ impl NativeJournalEditor {
                 .editor
                 .plan_recoverable_retained_opaque_rows(groups, budget, cancelled)?,
             #[cfg(feature = "ace16-create")]
-            JournalRoute::RetainedRows => self
-                .editor
-                .plan_recoverable_retained_rows(groups, budget, cancelled)?,
+            JournalRoute::RetainedRows => {
+                if positions.first().is_some_and(|&position| {
+                    self.snapshot().columns()[position].data_type() == ScalarType::Currency
+                }) {
+                    self.editor
+                        .plan_recoverable_retained_currency_rows(groups, budget, cancelled)?
+                } else {
+                    self.editor
+                        .plan_recoverable_retained_rows(groups, budget, cancelled)?
+                }
+            }
             JournalRoute::Existing => return Err(NativeEditError::Unsupported.into()),
         };
         Ok((plan, matched))
