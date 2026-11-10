@@ -98,22 +98,24 @@ fn insert(
     expected
 }
 
+fn enabled_cell_label(label: &str, row: usize) -> bool {
+    // Fluent isolates dynamic field names and row numbers. Match their visible
+    // text without imposing a particular accessibility control implementation.
+    let visible = label
+        .chars()
+        .filter(|character| !matches!(character, '\u{2068}' | '\u{2069}'))
+        .collect::<String>();
+    visible.starts_with(&format!("Enabled, row {}:", row + 1))
+}
+
 fn context_edit(harness: &mut Harness<'_, Desktop>, row: usize, value: bool) {
-    let row_label = format!("row {}:", row + 1);
-    let cell = &harness.state().state.data.as_ref().unwrap().rows[row][1];
-    let role = match cell.kind {
-        CellKind::Scalar {
-            display_control: DisplayControl::Native(106),
-            ..
-        } => Role::CheckBox,
-        _ => Role::Label,
-    };
     harness
-        .get_all_by_role(role)
+        .get_all_by_role(Role::CheckBox)
+        .chain(harness.get_all_by_role(Role::Label))
         .find(|node| {
             node.accesskit_node()
                 .label()
-                .is_some_and(|label| label.starts_with("Enabled,") && label.contains(&row_label))
+                .is_some_and(|label| enabled_cell_label(label, row))
         })
         .expect("the actual displayed native Boolean cell")
         .click_secondary();
@@ -199,18 +201,18 @@ fn created_yes_no_checkbox_click_and_space_propose_reviewed_toggles() {
                 value.kind,
                 CellKind::Scalar {
                     stored_calculation: false,
-                    display_control: DisplayControl::Native(106),
+                    display_control: DisplayControl::Absent,
                     ..
                 }
             ),
-            "created Yes/No must expose a real checkbox declaration before toggle interaction"
+            "the valid absence of a stored DisplayControl must remain metadata absence"
         );
         let checkbox = harness
             .get_all_by_role(Role::CheckBox)
             .find(|node| {
                 node.accesskit_node()
                     .label()
-                    .is_some_and(|label| label.starts_with("Enabled,"))
+                    .is_some_and(|label| enabled_cell_label(label, 0))
             })
             .expect("actual displayed native checkbox");
         if keyboard {
