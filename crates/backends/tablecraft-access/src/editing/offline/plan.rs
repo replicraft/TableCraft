@@ -375,6 +375,11 @@ impl MutationIntent {
                 .map(Self::FieldRename)
                 .map_err(Cause::FieldRenameIntent);
         }
+        if raw.starts_with(b"TCTD0002") {
+            return NativeTableDropIntent::decode_current(raw, budget, cancelled)
+                .map(Self::TableDrop)
+                .map_err(Cause::TableDropIntent);
+        }
         if raw.starts_with(TABLE_DROP_FAMILY) {
             return NativeTableDropIntent::decode(raw, budget, cancelled)
                 .map(Self::TableDrop)
