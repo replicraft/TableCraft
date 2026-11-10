@@ -1,0 +1,165 @@
+name: Desktop packaging dry run
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - '.github/workflows/desktop-packaging.yml'
+      - 'scripts/packaging/**'
+      - 'scripts/tests/test_update_signatures.py'
+      - 'packaging/**'
+      - 'Cargo.toml'
+      - 'Cargo.lock'
+      - 'apps/tablecraft-desktop/**'
+  workflow_call:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: desktop-packaging-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  resources:
+    name: Generate locked notices and icons
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.13'
+      - run: cargo fetch --locked
+      - run: mkdir resources
+      - run: python scripts/packaging/desktop_notices.py fetch
+      - run: python scripts/packaging/desktop_notices.py generate --output resources/DesktopThirdPartyLicenses.txt
+      - name: Export icons without opening a window
+        env:
+          TABLECRAFT_ICON_DIR: resources/icons
+        run: cargo run --locked -p tablecraft-ui --example export_application_icons
+      - uses: actions/upload-artifact@v7
+        with:
+          name: desktop-packaging-resources
+          path: resources
+          if-no-files-found: error
+
+  build:
+    name: Package desktop ${{ matrix.target }}
+    needs: resources
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - {os: windows-2022, target: x86_64-pc-windows-msvc, binary: tablecraft-desktop.exe}
+          - {os: windows-11-arm, target: aarch64-pc-windows-msvc, binary: tablecraft-desktop.exe}
+          - {os: macos-15-intel, target: x86_64-apple-darwin, binary: tablecraft-desktop}
+          - {os: macos-15, target: aarch64-apple-darwin, binary: tablecraft-desktop}
+          - {os: ubuntu-22.04, target: x86_64-unknown-linux-gnu, binary: tablecraft-desktop}
+          - {os: ubuntu-22.04-arm, target: aarch64-unknown-linux-gnu, binary: tablecraft-desktop}
+    env:
+      MACOSX_DEPLOYMENT_TARGET: '13.0'
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.13'
+      - uses: actions/download-artifact@v8
+        with:
+          name: desktop-packaging-resources
+          path: resources
+      - name: Install Linux desktop libraries
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y libxcb-render0-dev libxcb-shape0-dev libxcb-xfixes0-dev libxkbcommon-dev libwayland-dev libssl-dev libfontconfig1
+      - name: Select native Rust host and target
+        shell: bash
+        env:
+          RELEASE_TARGET: ${{ matrix.target }}
+        run: |
+          rustup set default-host "$RELEASE_TARGET"
+          rustup target add "$RELEASE_TARGET"
+          rustc -vV | grep -Fx "host: $RELEASE_TARGET"
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: desktop-release-${{ matrix.target }}
+      - name: Static Windows CRT
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: '"RUSTFLAGS=-C target-feature=+crt-static" >> $env:GITHUB_ENV'
+      - run: cargo build --locked --release -p tablecraft-desktop --target ${{ matrix.target }}
+      - name: Package and smoke-test extracted help and version only
+        shell: bash
+        env:
+          RELEASE_TARGET: ${{ matrix.target }}
+          RELEASE_BINARY: target/${{ matrix.target }}/release/${{ matrix.binary }}
+        run: |
+          set -euo pipefail
+          python scripts/packaging/package_cli.py validate
+          version=$(python -c 'import tomllib; print(tomllib.load(open("Cargo.toml", "rb"))["workspace"]["package"]["version"])')
+          icon=()
+          if [[ "$RELEASE_TARGET" == *apple* ]]; then icon=(--icon resources/icons/application.icns); fi
+          python scripts/packaging/package_desktop.py package --version "$version" --target "$RELEASE_TARGET" --binary "$RELEASE_BINARY" --notices resources/DesktopThirdPartyLicenses.txt "${icon[@]}" --output dist
+          archive=$(find dist -maxdepth 1 -type f \( -name '*.zip' -o -name '*.tar.gz' \))
+          python scripts/packaging/package_desktop.py verify --version "$version" --target "$RELEASE_TARGET" --archive "$archive" --notices resources/DesktopThirdPartyLicenses.txt "${icon[@]}" --smoke
+      - uses: actions/upload-artifact@v7
+        with:
+          name: desktop-package-${{ matrix.target }}
+          path: dist/*
+          if-no-files-found: error
+          compression-level: 0
+
+  assemble:
+    name: Assemble and test disposable-key signatures (never publish)
+    needs: [resources, build]
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.13'
+      - uses: actions/download-artifact@v8
+        with:
+          name: desktop-packaging-resources
+          path: resources
+      - uses: actions/download-artifact@v8
+        with:
+          pattern: desktop-package-*
+          path: dist
+          merge-multiple: true
+      - run: sudo apt-get update && sudo apt-get install --no-install-recommends -y minisign
+      - run: python -m unittest discover -s scripts/tests -p 'test_update_signatures.py'
+      - name: Verify complete archives and sign with an ephemeral test key
+        shell: bash
+        run: |
+          set -euo pipefail
+          version=$(python -c 'import tomllib; print(tomllib.load(open("Cargo.toml", "rb"))["workspace"]["package"]["version"])')
+          python scripts/packaging/desktop_release.py finalize --version "$version" --output dist --notices resources/DesktopThirdPartyLicenses.txt --icon resources/icons/application.icns
+          python scripts/packaging/desktop_release.py verify --version "$version" --output dist --notices resources/DesktopThirdPartyLicenses.txt --icon resources/icons/application.icns
+          (cd dist && sha256sum --check SHA256SUMS-desktop.txt)
+          keydir=$(mktemp -d)
+          trap 'rm -rf "$keydir"' EXIT
+          minisign -G -W -p "$keydir/TEST-ONLY.pub" -s "$keydir/TEST-ONLY.key" > /dev/null
+          export TABLECRAFT_UPDATE_SIGNING_KEY
+          TABLECRAFT_UPDATE_SIGNING_KEY=$(cat "$keydir/TEST-ONLY.key")
+          python scripts/packaging/update_signatures.py sign --dry-run --version "$version" --product desktop --assets dist --output signatures --public-key "$keydir/TEST-ONLY.pub"
+          unset TABLECRAFT_UPDATE_SIGNING_KEY
+          python scripts/packaging/update_signatures.py verify --dry-run --version "$version" --product desktop --assets dist --output signatures --public-key "$keydir/TEST-ONLY.pub"
+          cp "$keydir/TEST-ONLY.pub" signatures/
+          printf 'DRY RUN ONLY: signed with a disposable test key, not a distributable release.\n' > signatures/DRY-RUN.txt
+      - uses: actions/upload-artifact@v7
+        with:
+          name: desktop-packaging-dry-run
+          path: |
+            dist/*
+            signatures/*
+          if-no-files-found: error
+          compression-level: 0
