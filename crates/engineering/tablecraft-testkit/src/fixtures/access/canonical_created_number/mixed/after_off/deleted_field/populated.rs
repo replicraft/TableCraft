@@ -142,3 +142,78 @@ pub const fn identity(case: Case) -> Identity {
         column_id: number,
     }
 }
+
+/// Add one logically nonempty, well-framed opaque LvExtra stream. All other
+/// catalog cells and slot identities are copied independently and remain exact.
+pub fn with_table_extra(case: Case) -> Vec<u8> {
+    use crate::fixtures::access::{data_page, put16};
+
+    const PAGE: usize = 4096;
+    const CATALOG: usize = 4 * PAGE;
+    const DIRECTORY: usize = 14;
+    const SLOT_OFFSET_MASK: u16 = 0x1fff;
+    const MASK_BYTES: usize = 3;
+    const VARIABLE_SLOTS: usize = 11;
+    const TABLE_ID: u32 = 7;
+    const INLINE: u32 = 0x8000_0000;
+
+    fn word(bytes: &[u8], at: usize) -> usize {
+        usize::from(u16::from_le_bytes(bytes[at..at + 2].try_into().unwrap()))
+    }
+
+    let mut bytes = source(case);
+    let page = &bytes[CATALOG..CATALOG + PAGE];
+    let count = word(page, 12);
+    let mut rows = Vec::new();
+    let mut end = PAGE;
+    let mut changed = 0;
+    for slot in 0..count {
+        let raw = u16::from_le_bytes(
+            page[DIRECTORY + 2 * slot..DIRECTORY + 2 * slot + 2]
+                .try_into()
+                .unwrap(),
+        );
+        let start = usize::from(raw & SLOT_OFFSET_MASK);
+        let old = &page[start..end];
+        let row = if old.len() >= 6
+            && word(old, 0) == 17
+            && u32::from_le_bytes(old[2..6].try_into().unwrap()) == TABLE_ID
+        {
+            changed += 1;
+            let mask = old.len() - MASK_BYTES;
+            let count_at = mask - 2;
+            assert_eq!(word(old, count_at), VARIABLE_SLOTS);
+            assert_eq!(old[mask + 2] & 1, 0);
+            let payload_end = word(old, count_at - 2 * (VARIABLE_SLOTS + 1));
+            let extra_start = word(old, count_at - 2 * VARIABLE_SLOTS);
+            assert_eq!(extra_start, payload_end);
+            let mut payload = (INLINE | 1).to_le_bytes().to_vec();
+            payload.extend([0; 8]);
+            payload.push(0x7f);
+            let mut current = old[..payload_end].to_vec();
+            current.extend(&payload);
+            current.extend_from_slice(&old[payload_end..]);
+            put16(
+                &mut current,
+                count_at + payload.len() - 2 * (VARIABLE_SLOTS + 1),
+                (payload_end + payload.len()) as u16,
+            );
+            current[mask + payload.len() + 2] |= 1;
+            current
+        } else {
+            old.to_vec()
+        };
+        rows.push((raw & !SLOT_OFFSET_MASK, row));
+        end = start;
+    }
+    assert_eq!(changed, 1);
+    let mut rebuilt = data_page(2, &rows);
+    let occupied: usize = rows.iter().map(|(_, row)| row.len()).sum();
+    put16(
+        &mut rebuilt,
+        2,
+        (PAGE - occupied - DIRECTORY - 2 * count) as u16,
+    );
+    bytes[CATALOG..CATALOG + PAGE].copy_from_slice(&rebuilt);
+    bytes
+}
