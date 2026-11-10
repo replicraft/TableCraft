@@ -5,7 +5,7 @@ fn large_budget() -> ResourceBudget {
 }
 
 #[test]
-fn explicit_file_allowances_admit_exact_boundaries_without_changing_defaults() {
+fn native_defaults_and_explicit_lower_file_allowances_admit_exact_payloads() {
     for (size, compressed) in [(1_500_000, false), (3_145_728, true), (16_777_216, true)] {
         let data = vec![0x5a; size];
         let bytes = encoded("bin", &data, compressed);
@@ -15,8 +15,10 @@ fn explicit_file_allowances_admit_exact_boundaries_without_changing_defaults() {
         assert_eq!(decoded.data(), data);
         assert_eq!(decoded.type_label(), "bin");
         assert_eq!(
-            decode_attachment(&bytes, &mut large_budget(), &|| false).err(),
-            Some(InspectError::StructureLimit)
+            decode_attachment(&bytes, &mut large_budget(), &|| false)
+                .unwrap()
+                .data(),
+            data
         );
         let smaller = AttachmentDecodeLimits::new(size as u32 - 1).unwrap();
         assert_eq!(
@@ -30,15 +32,18 @@ fn explicit_file_allowances_admit_exact_boundaries_without_changing_defaults() {
 fn limits_are_validated_and_encoded_header_ceilings_remain_separate() {
     assert_eq!(
         AttachmentDecodeLimits::default().maximum_file_bytes(),
-        1_048_576
+        268_435_456
     );
-    for size in [0, 16_777_217, u32::MAX] {
+    for size in [0, 268_435_457, u32::MAX] {
         assert_eq!(
             AttachmentDecodeLimits::new(size),
             Err(InspectError::InvalidAttachmentLimits)
         );
     }
-    let limits = AttachmentDecodeLimits::new(4_194_304).unwrap();
+    let limits = AttachmentDecodeLimits::new(4_194_304)
+        .unwrap()
+        .with_encoded_bytes(2_097_152)
+        .unwrap();
     let encoded_too_large = encoded("bin", &vec![42; 2_097_152], false);
     assert_eq!(
         decode_attachment_with_limits(&encoded_too_large, limits, &mut large_budget(), &|| false)
@@ -121,7 +126,7 @@ fn sampled_large_stream_checkpoints_propagate_cancellation() {
 
 #[test]
 fn a_large_allowance_does_not_preallocate_large_files_or_codec_state() {
-    let limits = AttachmentDecodeLimits::new(16_777_216).unwrap();
+    let limits = AttachmentDecodeLimits::new(268_435_456).unwrap();
     let mut pool = ResourceBudget::new(192 * 1024, 0, 1_000_000);
     let mut decoder = AttachmentDecoder::new_with_limits(&mut pool, &|| false, limits);
     assert_eq!(decoder.budget_mut().remaining(Resource::Bytes), 192 * 1024);
@@ -139,14 +144,16 @@ fn a_large_allowance_does_not_preallocate_large_files_or_codec_state() {
 }
 
 #[test]
-fn larger_encoded_envelopes_require_an_independent_explicit_allowance() {
+fn encoded_storage_envelopes_default_to_native_and_respect_explicit_lower_limits() {
     let data = vec![42; 3_145_728];
     let bytes = encoded("bin", &data, false);
     let file_limits = AttachmentDecodeLimits::new(3_145_728).unwrap();
-    assert_eq!(file_limits.maximum_encoded_bytes(), 2_097_152);
+    assert_eq!(file_limits.maximum_encoded_bytes(), 0x3fff_ffff);
     assert_eq!(
-        decode_attachment_with_limits(&bytes, file_limits, &mut large_budget(), &|| false).err(),
-        Some(InspectError::StructureLimit)
+        decode_attachment_with_limits(&bytes, file_limits, &mut large_budget(), &|| false)
+            .unwrap()
+            .data(),
+        data
     );
     let limits = file_limits.with_encoded_bytes(bytes.len() as u32).unwrap();
     assert_eq!(
@@ -160,17 +167,34 @@ fn larger_encoded_envelopes_require_an_independent_explicit_allowance() {
         decode_attachment_with_limits(&bytes, short, &mut large_budget(), &|| false).err(),
         Some(InspectError::StructureLimit)
     );
-    for size in [0, 33_554_433, u32::MAX] {
+    for size in [0, 0x4000_0000, u32::MAX] {
         assert_eq!(
             file_limits.with_encoded_bytes(size),
             Err(InspectError::InvalidAttachmentLimits)
         );
     }
-    let file_too_small = AttachmentDecodeLimits::default()
+    let file_too_small = AttachmentDecodeLimits::new(1_048_576)
+        .unwrap()
         .with_encoded_bytes(4_194_304)
         .unwrap();
     assert_eq!(
         decode_attachment_with_limits(&bytes, file_too_small, &mut large_budget(), &|| false).err(),
+        Some(InspectError::StructureLimit)
+    );
+}
+
+#[test]
+fn native_maximum_advertised_body_does_not_allocate_before_stream_validation() {
+    let mut bytes = encoded("bin", &[7], true);
+    bytes[4..8].copy_from_slice(&268_439_552_u32.to_le_bytes());
+    let mut pool = ResourceBudget::new(300_000_000, 0, 1_000_000);
+    assert_eq!(
+        decode_attachment(&bytes, &mut pool, &|| false).err(),
+        Some(InspectError::Malformed)
+    );
+    bytes[4..8].copy_from_slice(&268_439_553_u32.to_le_bytes());
+    assert_eq!(
+        decode_attachment(&bytes, &mut large_budget(), &|| false).err(),
         Some(InspectError::StructureLimit)
     );
 }

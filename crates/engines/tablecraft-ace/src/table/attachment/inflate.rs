@@ -26,15 +26,6 @@ pub(super) fn zlib(
     // allowing checksum/end-marker consumption after the expected bytes.
     budget.charge_allocation((length + 1) as u64, 1)?;
     let mut output = Vec::new();
-    output
-        .try_reserve_exact(length + 1)
-        .map_err(|_| InspectError::Allocation)?;
-    while output.len() < length + 1 {
-        check(budget, cancelled)?;
-        let end = (output.len() + BLOCK_BYTES).min(length + 1);
-        budget.charge(Resource::Steps, (end - output.len()) as u64)?;
-        output.resize(end, 0);
-    }
     loop {
         check(budget, cancelled)?;
         let before = (stream.total_in(), stream.total_out());
@@ -44,7 +35,20 @@ pub(super) fn zlib(
             return Err(InspectError::Malformed);
         }
         let source = &input[read..(read + BLOCK_BYTES).min(input.len())];
-        let end = (written + BLOCK_BYTES).min(output.len());
+        let end = (written + BLOCK_BYTES).min(length + 1);
+        if end > output.len() {
+            // The complete logical length is already paid; retain and initialize
+            // only the next checked codec block instead of trusting a large
+            // advertised length before the stream has produced any bytes.
+            if end > output.capacity() {
+                let capacity = output.capacity().saturating_mul(2).max(end).min(length + 1);
+                output
+                    .try_reserve_exact(capacity - output.len())
+                    .map_err(|_| InspectError::Allocation)?;
+            }
+            budget.charge(Resource::Steps, (end - output.len()) as u64)?;
+            output.resize(end, 0);
+        }
         budget.charge(Resource::Steps, (source.len() + end - written) as u64)?;
         let status = stream
             .decompress(source, &mut output[written..end], FlushDecompress::None)

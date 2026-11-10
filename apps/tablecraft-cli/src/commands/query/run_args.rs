@@ -125,7 +125,7 @@ pub(crate) struct RunArgs {
     /// Decode selected attachment FileData into original file bytes.
     #[arg(long, requires = "collections", conflicts_with = "multivalues")]
     pub(crate) decoded_attachments: bool,
-    /// Maximum decoded attachment file bytes; default 1 MiB, maximum 16 MiB. Encoded storage limits still apply.
+    /// Optional lower decoded attachment file-byte limit; default is Access's 256 MiB per-file maximum. Encoded storage limits still apply.
     #[arg(long, value_name = "BYTES", requires_all = ["database", "decoded_attachments"], value_parser = clap::value_parser!(u32).range(1..=i64::from(AttachmentDecodeLimits::MAX_FILE_BYTES)))]
     pub(crate) attachment_bytes: Option<u32>,
     /// Optional lower encoded Memo/OLE/attachment byte limit; default is the native 30-bit descriptor maximum.

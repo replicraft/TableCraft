@@ -33,7 +33,7 @@ fn explicit_attachment_allowances_require_the_decoded_native_view_and_valid_size
             "missing.accdb",
             "--decoded-attachments",
             "--attachment-bytes",
-            "16777217",
+            "268435457",
         ],
         vec![
             "query",

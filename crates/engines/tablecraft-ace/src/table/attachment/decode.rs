@@ -21,8 +21,10 @@ const UTF16_BYTES: usize = size_of::<u16>();
 const MAX_HEADER_BYTES: usize = 4096;
 
 /// Decode an explicitly supplied native FileData attachment wrapper without
-/// opening content or writing files. Encoded inputs are capped at 2 MiB,
-/// decoded bodies at 1 MiB plus 4 KiB, type headers at 4 KiB and files at 1 MiB.
+/// opening content or writing files. Ordinary decoding admits Access's 256 MiB
+/// individual-file envelope and the native 30-bit encoded storage envelope;
+/// explicit lower caller limits and cumulative budgets remain independent.
+/// The qualified type-header grammar remains bounded to 4 KiB.
 /// Unknown encodings/header variants are unsupported; malformed lengths, invalid
 /// zlib/checksums, trailing streams and excess output fail without partial data.
 /// Budgets/cancellation apply between bounded copy/codec blocks. The selected

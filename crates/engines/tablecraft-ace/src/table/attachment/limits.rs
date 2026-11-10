@@ -8,12 +8,13 @@ pub struct AttachmentDecodeLimits {
 }
 
 impl AttachmentDecodeLimits {
-    /// Default one-MiB file allowance retained by existing entry points.
-    pub const DEFAULT_FILE_BYTES: u32 = 1024 * 1024;
-    /// Maximum explicit consumer file allowance; not a native format maximum.
-    pub const MAX_FILE_BYTES: u32 = 16 * 1024 * 1024;
+    /// Microsoft Access limits each individual attachment to 256 MiB.
+    /// <https://support.microsoft.com/en-us/access/attach-files-and-graphics-to-the-records-in-your-database>
+    pub const MAX_FILE_BYTES: u32 = 256 * 1024 * 1024;
+    /// Ordinary decoding admits the documented native file-size envelope.
+    pub const DEFAULT_FILE_BYTES: u32 = Self::MAX_FILE_BYTES;
 
-    /// Select a positive file ceiling within the qualified consumer envelope.
+    /// Select an explicit lower file limit within the documented Access envelope.
     /// This does not raise native encoded-value, header or cumulative budgets.
     pub fn new(maximum_file_bytes: u32) -> Result<Self, InspectError> {
         if maximum_file_bytes == 0 || maximum_file_bytes > Self::MAX_FILE_BYTES {
@@ -26,7 +27,7 @@ impl AttachmentDecodeLimits {
         })
     }
 
-    /// Select an independent encoded envelope allowance, up to 32 MiB.
+    /// Select an explicit lower encoded limit within the native 30-bit envelope.
     /// The native source must separately permit reading that encoded value.
     pub fn with_encoded_bytes(mut self, maximum_bytes: u32) -> Result<Self, InspectError> {
         if maximum_bytes == 0 || maximum_bytes > LongValueReadLimits::MAX_BYTES {

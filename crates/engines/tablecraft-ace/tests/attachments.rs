@@ -65,7 +65,7 @@ fn independent_zlib_golden_retains_exact_binary_and_wrapper_type() {
 }
 
 #[test]
-fn empty_unicode_embedded_nul_and_maximum_payloads_remain_exact() {
+fn empty_unicode_embedded_nul_and_payloads_above_the_former_default_remain_exact() {
     for compressed in [false, true] {
         for label in ["", "é🦀", "a\0b"] {
             let result =
@@ -94,8 +94,10 @@ fn empty_unicode_embedded_nul_and_maximum_payloads_remain_exact() {
             &mut budget(),
             &|| false
         )
-        .err(),
-        Some(InspectError::StructureLimit)
+        .unwrap()
+        .data()
+        .len(),
+        1_048_577
     );
 }
 
@@ -149,13 +151,15 @@ fn resource_limits_and_cancellation_before_and_during_inflate_publish_no_payload
     let calls = Cell::new(0);
     let cancelled = || {
         calls.set(calls.get() + 1);
-        calls.get() > 25
+        // Stop during the sixteen-block payload, independently of the removed
+        // eager output-initialization pass's former checkpoint count.
+        calls.get() >= 8
     };
     assert_eq!(
         decode_attachment(&bytes, &mut budget(), &cancelled).err(),
         Some(InspectError::Cancelled)
     );
-    assert!(calls.get() > 25);
+    assert_eq!(calls.get(), 8);
 }
 
 proptest! {
