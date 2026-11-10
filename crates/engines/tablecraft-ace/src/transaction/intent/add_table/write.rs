@@ -96,6 +96,7 @@ impl AddTablePlan {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<PreparedAddTable<'a, D, J>, JournalError> {
+        let _span = tracing::debug_span!("native.add_table.prepare_native").entered();
         if !self.is_native() {
             return Err(JournalError::InvalidJournal);
         }

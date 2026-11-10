@@ -70,6 +70,7 @@ impl NativeFirstTableIntent {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<QualifiedFirstTableRecovery<'a, J>, NativeRecoveryQualificationError> {
+        let _span = tracing::debug_span!("native.first_table_recovery.qualify_native").entered();
         check(budget, cancelled)?;
         if !self.is_native() {
             return Err(FirstTableIntentError::UnsupportedProfile.into());

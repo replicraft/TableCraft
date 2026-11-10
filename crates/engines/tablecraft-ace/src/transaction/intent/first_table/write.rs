@@ -47,6 +47,7 @@ impl FirstTablePlan {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<PreparedFirstTable<'a, D, J>, JournalError> {
+        let _span = tracing::debug_span!("native.first_table.prepare_native").entered();
         if !self.definition().is_native() {
             return Err(JournalError::InvalidJournal);
         }

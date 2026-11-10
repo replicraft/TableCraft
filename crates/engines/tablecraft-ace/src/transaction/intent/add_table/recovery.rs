@@ -94,6 +94,7 @@ impl NativeAddTableIntent {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<QualifiedAddTableRecovery<'a, J>, NativeRecoveryQualificationError> {
+        let _span = tracing::debug_span!("native.add_table_recovery.qualify_native").entered();
         check(budget, cancelled)?;
         if !self.is_native() {
             return Err(AddTableIntentError::UnsupportedProfile.into());
