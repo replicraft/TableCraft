@@ -2,20 +2,22 @@
 //! by the current Data publication; display wrapping never changes Copy output.
 use std::ops::Range;
 
-pub(super) const MAX_SOURCE_BYTES: usize = 8 * 1024 * 1024;
 const MAX_ROW_SCALARS: usize = 1024;
 const CHECKPOINT_ROWS: usize = 32;
+const INDEX_BYTES_PER_FRAME: usize = 64 * 1024;
+const INDEX_ROWS_PER_FRAME: usize = 8192;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(super) enum IndexError {
-    Limit,
     Allocation,
     Changed,
 }
 
 pub(super) struct Index {
     bytes: usize,
-    checkpoints: Vec<u32>,
+    checkpoints: Vec<usize>,
+    cursor: usize,
+    finished: bool,
     rows: usize,
     pub continued_lines: bool,
 }
@@ -28,40 +30,46 @@ struct Row {
 }
 
 impl Index {
-    pub fn build(value: &str) -> Result<Self, IndexError> {
-        if value.len() > MAX_SOURCE_BYTES {
-            return Err(IndexError::Limit);
-        }
-
-        // A nonfinal row consumes at least one byte. This also covers a final
-        // empty row after a line break, without an offset for every blank line.
-        let capacity = value.len() / CHECKPOINT_ROWS + 2;
-        let mut checkpoints = Vec::new();
-        checkpoints
-            .try_reserve_exact(capacity)
-            .map_err(|_| IndexError::Allocation)?;
-        let mut cursor = 0;
-        let mut rows = 0;
-        let mut continued_lines = false;
-        loop {
-            if rows % CHECKPOINT_ROWS == 0 {
-                checkpoints.push(u32::try_from(cursor).map_err(|_| IndexError::Limit)?);
-            }
-            let row = next_row(value, cursor)?;
-            rows += 1;
-            continued_lines |= row.continued;
-            if row.finished {
-                break;
-            }
-            cursor = row.next;
-        }
-
-        Ok(Self {
+    pub fn new(value: &str) -> Self {
+        Self {
             bytes: value.len(),
-            checkpoints,
-            rows,
-            continued_lines,
-        })
+            checkpoints: Vec::new(),
+            cursor: 0,
+            finished: false,
+            rows: 0,
+            continued_lines: false,
+        }
+    }
+
+    /// Advance only one frame's row/byte work. A row can extend the byte budget
+    /// by at most its bounded UTF-8 visual segment; source bytes are never copied.
+    pub fn advance(&mut self, value: &str) -> Result<(), IndexError> {
+        if value.len() != self.bytes {
+            return Err(IndexError::Changed);
+        }
+        let initial_cursor = self.cursor;
+        let initial_rows = self.rows;
+        while !self.finished
+            && self.cursor - initial_cursor < INDEX_BYTES_PER_FRAME
+            && self.rows - initial_rows < INDEX_ROWS_PER_FRAME
+        {
+            if self.rows % CHECKPOINT_ROWS == 0 {
+                self.checkpoints
+                    .try_reserve(1)
+                    .map_err(|_| IndexError::Allocation)?;
+                self.checkpoints.push(self.cursor);
+            }
+            let row = next_row(value, self.cursor)?;
+            self.rows = self.rows.checked_add(1).ok_or(IndexError::Changed)?;
+            self.continued_lines |= row.continued;
+            self.cursor = row.next;
+            self.finished = row.finished;
+        }
+        Ok(())
+    }
+
+    pub fn complete(&self) -> bool {
+        self.finished
     }
 
     pub fn row_count(&self) -> usize {
@@ -89,7 +97,7 @@ impl Index {
         let mut cursor = *self
             .checkpoints
             .get(checkpoint)
-            .ok_or(IndexError::Changed)? as usize;
+            .ok_or(IndexError::Changed)?;
         for row_number in checkpoint * CHECKPOINT_ROWS..requested.end {
             let row = next_row(value, cursor)?;
             if row_number >= requested.start {

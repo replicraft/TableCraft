@@ -1,5 +1,5 @@
 //! Virtualized read-only text with real Copy, size and reviewed-edit controls.
-use super::{Session, index};
+use super::{Session, copying::PendingCopy, index};
 use crate::localization::tr;
 use crate::theme::palette;
 use crate::workspace::{Action, DocumentView, State};
@@ -39,6 +39,27 @@ impl State {
         let mut open = true;
         let mut close = !Popup::is_any_open(context)
             && context.input_mut(|input| input.consume_key(Modifiers::NONE, Key::Escape));
+        let mut copy_ready = false;
+        let frame = context.cumulative_frame_nr();
+        if session.advanced_frame != Some(frame) {
+            if session.index.advance(&cell.text).is_err() {
+                self.error = Some(self.localizer.text("zoom-unavailable"));
+                return;
+            }
+            if let Some(copy) = &mut session.pending_copy {
+                match copy.advance(&cell.text) {
+                    Ok(ready) => copy_ready = ready,
+                    Err(_) => {
+                        session.pending_copy = None;
+                        session.copy_error = true;
+                    }
+                }
+            }
+            session.advanced_frame = Some(frame);
+        }
+        if !session.index.complete() || session.pending_copy.is_some() && !copy_ready {
+            context.request_repaint();
+        }
         let mut begin_edit = false;
         let mut failed = false;
         let maximum =
@@ -100,13 +121,16 @@ impl State {
                                 }
                             });
                     });
-                    if ui.button(tr(ui, "zoom-copy")).clicked() {
-                        let mut copied = String::new();
-                        session.copy_error = copied.try_reserve_exact(cell.text.len()).is_err();
-                        if !session.copy_error {
-                            copied.push_str(&cell.text);
-                            context.copy_text(copied);
-                        }
+                    if ui
+                        .add_enabled(
+                            session.pending_copy.is_none(),
+                            egui::Button::new(tr(ui, "zoom-copy")),
+                        )
+                        .clicked()
+                    {
+                        session.copy_error = false;
+                        session.pending_copy = Some(PendingCopy::default());
+                        context.request_repaint();
                     }
                     if edit.is_some() && ui.button(tr(ui, "zoom-edit")).clicked() {
                         begin_edit = true;
@@ -143,6 +167,13 @@ impl State {
         } else if close || !open {
             self.restore_zoom_focus(context, &session.binding);
         } else {
+            if copy_ready && let Some(copy) = session.pending_copy.take() {
+                // The clipboard takes this independently requested complete
+                // String by move only after the live binding and dismissal
+                // controls have both been checked for this frame.
+                context.copy_text(copy.finish());
+                context.request_repaint();
+            }
             self.zoom.session = Some(session);
         }
     }
@@ -157,6 +188,12 @@ fn show_text(
 ) -> Result<(), index::IndexError> {
     let font = FontId::proportional(f32::from(size));
     let row_height = ui.fonts_mut(|fonts| fonts.row_height(&font)).ceil();
+    if ui.input(|input| input.raw_scroll_delta != egui::Vec2::ZERO || input.pointer.any_pressed()) {
+        session.follow_end = false;
+    }
+    if session.follow_end {
+        session.pending_scroll = Some(session.index.row_count() as f32 * row_height);
+    }
     let body_id = ui.id().with("zoom_text_body");
     let viewport_width = ui.available_width();
     let mut text_clicked = false;
@@ -249,6 +286,7 @@ fn show_text(
                 ] {
                     if input.consume_key(Modifiers::NONE, key) {
                         next += delta;
+                        session.follow_end = false;
                     }
                 }
                 if input.consume_key(Modifiers::NONE, Key::ArrowLeft) {
@@ -259,9 +297,11 @@ fn show_text(
                 }
                 if input.consume_key(Modifiers::NONE, Key::Home) {
                     next = 0.0;
+                    session.follow_end = false;
                 }
                 if input.consume_key(Modifiers::NONE, Key::End) {
                     next = total;
+                    session.follow_end = true;
                 }
             });
             if next != session.scroll_offset {

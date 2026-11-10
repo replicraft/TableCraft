@@ -1,10 +1,12 @@
 //! Source-bound, read-only enlargement; editing delegates to the existing review.
+mod copying;
 mod dialog;
 mod index;
 
 use super::{DocumentView, EditTarget, State};
 use crate::{Cell, CellKind};
-use index::{Index, IndexError, Visible};
+use copying::PendingCopy;
+use index::{Index, Visible};
 use tablecraft_display::Options;
 
 const DEFAULT_TEXT_SIZE: u8 = 14;
@@ -50,6 +52,9 @@ struct Session {
     horizontal_offset: f32,
     max_width: f32,
     copy_error: bool,
+    pending_copy: Option<PendingCopy>,
+    follow_end: bool,
+    advanced_frame: Option<u64>,
 }
 
 impl Binding {
@@ -85,7 +90,7 @@ impl Binding {
 }
 
 pub(crate) fn can_view(cell: &Cell) -> bool {
-    matches!(cell.kind, CellKind::Scalar { .. }) && cell.text.len() <= index::MAX_SOURCE_BYTES
+    matches!(cell.kind, CellKind::Scalar { .. })
 }
 
 impl State {
@@ -130,16 +135,7 @@ impl State {
         let (row, column) = self.zoom_position().expect("admitted scalar selection");
         let data = self.visible_data().expect("admitted data publication");
         let cell = &data.rows[row][column];
-        let index = match Index::build(&cell.text) {
-            Ok(index) => index,
-            Err(error) => {
-                self.error = Some(self.localizer.text(match error {
-                    IndexError::Limit => "zoom-limit",
-                    IndexError::Allocation | IndexError::Changed => "zoom-unavailable",
-                }));
-                return false;
-            }
-        };
+        let index = Index::new(&cell.text);
         let binding = Binding {
             publication: self.focus_publication,
             view: self.view,
@@ -176,6 +172,9 @@ impl State {
             horizontal_offset: 0.0,
             max_width: 0.0,
             copy_error: false,
+            pending_copy: None,
+            follow_end: false,
+            advanced_frame: None,
         });
         true
     }

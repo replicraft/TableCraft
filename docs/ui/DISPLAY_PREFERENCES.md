@@ -233,11 +233,28 @@ original display text, native provenance and a source/publication/selection bind
 Changing that binding or display policy closes the viewer. Theme and UI-language
 changes retain the same value. Query results stay read only.
 
-Opening scans at most 8 MiB of UTF-8 text and builds sparse byte checkpoints.
-Painting lays out visible text rows rather than cloning or laying out the full
-value each frame. Very long lines continue on bounded visual rows; original line
-breaks remain intact for explicit complete-value Copy. Values above the explicit ceiling remain outside viewer admission; the original
-cell value is retained. Text-size controls affect this viewer.
+Opening does not scan or copy the complete value, and Zoom imposes no total
+text-byte ceiling. Sparse `usize` byte checkpoints grow fallibly as indexing
+advances: each frame processes up to 64 KiB plus one bounded visual row, or 8,192
+rows, whichever work boundary comes first. These are scheduling controls, not
+value limits. Painting lays out only the visible rows. End retains its request
+through indexing to EOF; Home or manual navigation cancels that follow request.
+Very long lines continue on visual rows of at most 1,024 Unicode scalars, while
+the original text and line endings remain intact.
+
+Explicit complete-value Copy prepares UTF-8 chunks across frames and publishes
+one complete owned clipboard string only after checking the live source binding
+and dismissal controls. No prefix is published. Closing Zoom or replacing its
+source discards unfinished indexing/copy work. Allocation failures remain visible;
+no text is silently truncated. Text-size controls affect this viewer.
+
+The retained 427×300 Microsoft Zoom image was reopened for this change. Its native
+application build and scale are unknown. The rectangular body, window geometry
+and Font/OK/Cancel footer remain unchanged; incremental indexing and complete-copy
+behavior have no corresponding Access capture. Headless acceptance targets a
+900×580 logical-point egui host, including a value larger than 8 MiB, its actually
+visible final sentinel, complete clipboard output and cancellation. No native
+application window is used by these tests.
 
 OK, Cancel and Escape dismiss the read-only viewer without changing stored data.
 For an eligible native cell, Edit through review delegates to the existing typed

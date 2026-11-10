@@ -55,14 +55,32 @@ fn virtual_zoom_reaches_the_large_suffix_and_copies_complete_original_without_fu
     let suffix = "FINAL🙂";
     let text = format!(
         "{}{suffix}",
-        "line\n".repeat((8 * 1024 * 1024 - suffix.len()) / 5)
+        "line\n".repeat((9 * 1024 * 1024 - suffix.len()) / 5)
     );
     let mut state = state(text, true);
     let original = state.data.as_ref().unwrap().rows[0][0].text.as_ptr();
     assert!(state.open_zoom_cell());
+    assert_eq!(state.zoom.session.as_ref().unwrap().index.row_count(), 0);
     let mut harness = harness(state);
     harness.run_steps(3);
+    // End is requested before the incremental index reaches EOF. Keep that
+    // request live rather than treating the current prefix as the full value.
     harness.key_press(egui::Key::End);
+    let mut frames = 0;
+    while !harness
+        .state()
+        .0
+        .zoom
+        .session
+        .as_ref()
+        .unwrap()
+        .index
+        .complete()
+    {
+        assert!(frames < 4096, "bounded Zoom indexing did not finish");
+        harness.run_steps(1);
+        frames += 1;
+    }
     harness.run_steps(4);
     let suffix_bounds = harness
         .output()
@@ -111,17 +129,21 @@ fn virtual_zoom_reaches_the_large_suffix_and_copies_complete_original_without_fu
     harness
         .get_by_role_and_label(Role::Button, "Copy complete value")
         .click_accesskit();
-    harness.run_steps(1);
-    let expected = &harness.state().0.data.as_ref().unwrap().rows[0][0].text;
+    let mut published = false;
+    for _ in 0..4096 {
+        harness.run_steps(1);
+        let expected = &harness.state().0.data.as_ref().unwrap().rows[0][0].text;
+        assert!(expected.len() > 8 * 1024 * 1024);
+        if harness.output().platform_output.commands.iter().any(
+            |command| matches!(command, egui::OutputCommand::CopyText(text) if text == expected),
+        ) {
+            published = true;
+            break;
+        }
+    }
     assert!(
-        harness
-            .output()
-            .platform_output
-            .commands
-            .iter()
-            .any(|command| {
-                matches!(command, egui::OutputCommand::CopyText(text) if text == expected)
-            })
+        published,
+        "complete source-bound clipboard copy did not finish"
     );
     harness.key_press(egui::Key::Escape);
     harness.run_steps(2);
@@ -227,4 +249,53 @@ fn shift_f2_belongs_to_the_actual_cell_and_modal_zoom_suppresses_background_acti
     harness.run_steps(2);
     assert!(harness.state().1.is_empty());
     assert!(harness.state().0.zoom_dialog_open());
+}
+
+#[test]
+fn closing_or_replacing_a_large_source_discards_incomplete_clipboard_work() {
+    for replace in [false, true] {
+        let mut state = state("🦀\r\n".repeat(2 * 1024 * 1024), true);
+        assert!(state.open_zoom_cell());
+        let mut harness = harness(state);
+        harness.run_steps(2);
+        harness
+            .get_by_role_and_label(Role::Button, "Copy complete value")
+            .click_accesskit();
+        harness.run_steps(1);
+        assert!(
+            harness
+                .state()
+                .0
+                .zoom
+                .session
+                .as_ref()
+                .unwrap()
+                .pending_copy
+                .is_some()
+        );
+        if replace {
+            harness.state_mut().0.set_table_data(Data {
+                row_ordinals: None,
+                source_revision: Some(2),
+                table: "Items".into(),
+                offset: 0,
+                columns: vec!["Memo".into()],
+                rows: vec![vec![Cell::scalar("replacement")]],
+                has_more: false,
+            });
+        } else {
+            harness.key_press(egui::Key::Escape);
+        }
+        harness.run_steps(2);
+        assert!(!harness.state().0.zoom_dialog_open());
+        assert!(
+            !harness
+                .output()
+                .platform_output
+                .commands
+                .iter()
+                .any(|command| matches!(command, egui::OutputCommand::CopyText(_)))
+        );
+        assert!(harness.state().1.is_empty());
+    }
 }
