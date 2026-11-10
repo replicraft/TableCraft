@@ -12,6 +12,7 @@ mod capacity;
 mod manual;
 mod number_source;
 mod properties;
+mod retained_gap;
 mod wide;
 
 fn opened() -> (tempfile::TempDir, PathBuf, Worker, u64) {
