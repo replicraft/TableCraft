@@ -1,8 +1,8 @@
 //! Original request data is reconstructed against the same checked V3 journal.
 use super::{budget, literal};
 use crate::{
-    InsertFieldValue, NativeImage, NativeOmittedInsertIntent, OmittedRowInsert,
-    qualify_native_omitted_insert_recovery,
+    InsertFieldValue, NativeImage, NativeIntentError, NativeOmittedInsertIntent,
+    NativeRecoveryQualificationError, OmittedRowInsert, qualify_native_omitted_insert_recovery,
 };
 use std::io::Cursor;
 use tablecraft_core::values::Value;
@@ -206,11 +206,11 @@ fn retained_recovery_refuses_forged_after_and_old_journal_authority_without_targ
     let checked = journal::inspect_v3(&mut journal_file, &mut budget(), &|| false).unwrap();
     let intent =
         NativeOmittedInsertIntent::decode_retained(&wire, &mut budget(), &|| false).unwrap();
-    assert!(
+    assert!(matches!(
         intent
-            .qualify_retained_recovery(checked, CatalogScope::new(3683), &mut budget(), &|| false)
-            .is_err()
-    );
+            .qualify_retained_recovery(checked, CatalogScope::new(3683), &mut budget(), &|| false),
+        Err(NativeRecoveryQualificationError::ImageMismatch)
+    ));
     assert_eq!(target.writes, 0);
     assert_eq!(target.bytes.get_ref(), &before);
 
@@ -224,11 +224,12 @@ fn retained_recovery_refuses_forged_after_and_old_journal_authority_without_targ
         &|| false,
     )
     .unwrap();
-    assert!(
-        older
-            .qualify_retained_recovery(checked, CatalogScope::new(3683), &mut budget(), &|| false)
-            .is_err()
-    );
+    assert!(matches!(
+        older.qualify_retained_recovery(checked, CatalogScope::new(3683), &mut budget(), &|| false),
+        Err(NativeRecoveryQualificationError::Intent(
+            NativeIntentError::UnsupportedVersion
+        ))
+    ));
     assert_eq!(target.writes, 0);
 
     let mut old_journal = MemoryStorage::new(Vec::new());
@@ -246,16 +247,18 @@ fn retained_recovery_refuses_forged_after_and_old_journal_authority_without_targ
     let checked = journal::inspect_v1(&mut old_journal, &mut budget(), &|| false).unwrap();
     let intent =
         NativeOmittedInsertIntent::decode_retained(&wire, &mut budget(), &|| false).unwrap();
-    assert!(
+    assert!(matches!(
         qualify_native_omitted_insert_recovery(
             checked,
             intent,
             CatalogScope::new(3683),
             &mut budget(),
             &|| false
-        )
-        .is_err()
-    );
+        ),
+        Err(NativeRecoveryQualificationError::Intent(
+            NativeIntentError::UnsupportedVersion
+        ))
+    ));
     assert_eq!(target.writes, 0);
     assert_eq!(target.bytes.get_ref(), &before);
 }

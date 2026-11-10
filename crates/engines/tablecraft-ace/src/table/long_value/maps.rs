@@ -378,42 +378,6 @@ pub(super) fn allocated<R: NativeReadSource>(
     global.require_allocated(reader, page)
 }
 
-#[cfg(test)]
-mod tests {
-    use super::Pair;
-    use zerocopy::FromBytes;
-
-    #[test]
-    fn unaligned_ten_byte_column_pair_matches_both_original_ace16_goldens() {
-        for bytes in [
-            [99, 1, 0, 3, 242, 0, 0, 4, 242, 0, 0],
-            [99, 2, 0, 5, 3, 1, 0, 6, 3, 1, 0],
-        ] {
-            let (pair, tail) = Pair::ref_from_prefix(&bytes[1..]).unwrap();
-            assert!(tail.is_empty());
-            assert_eq!((size_of::<Pair>(), align_of::<Pair>()), (10, 1));
-            assert_eq!(pair.column.get(), if bytes[1] == 1 { 1 } else { 2 });
-            assert_eq!(
-                pair.owned.get(),
-                if bytes[1] == 1 {
-                    0x0000_f203
-                } else {
-                    0x0001_0305
-                }
-            );
-            assert_eq!(
-                pair.candidate.get(),
-                if bytes[1] == 1 {
-                    0x0000_f204
-                } else {
-                    0x0001_0306
-                }
-            );
-            assert!(Pair::ref_from_prefix(&bytes[1..10]).is_err());
-        }
-    }
-}
-
 fn known_long_value(schema: &TableSchema, number: usize) -> bool {
     schema.columns.iter().any(|column| {
         column.number() == number
@@ -450,4 +414,40 @@ pub(in crate::table) fn declarations_for_layout<R: NativeReadSource>(
         },
         &[],
     )
+}
+
+#[cfg(test)]
+mod tests {
+    use super::Pair;
+    use zerocopy::FromBytes;
+
+    #[test]
+    fn unaligned_ten_byte_column_pair_matches_both_original_ace16_goldens() {
+        for bytes in [
+            [99, 1, 0, 3, 242, 0, 0, 4, 242, 0, 0],
+            [99, 2, 0, 5, 3, 1, 0, 6, 3, 1, 0],
+        ] {
+            let (pair, tail) = Pair::ref_from_prefix(&bytes[1..]).unwrap();
+            assert!(tail.is_empty());
+            assert_eq!((size_of::<Pair>(), align_of::<Pair>()), (10, 1));
+            assert_eq!(pair.column.get(), if bytes[1] == 1 { 1 } else { 2 });
+            assert_eq!(
+                pair.owned.get(),
+                if bytes[1] == 1 {
+                    0x0000_f203
+                } else {
+                    0x0001_0305
+                }
+            );
+            assert_eq!(
+                pair.candidate.get(),
+                if bytes[1] == 1 {
+                    0x0000_f204
+                } else {
+                    0x0001_0306
+                }
+            );
+            assert!(Pair::ref_from_prefix(&bytes[1..10]).is_err());
+        }
+    }
 }
