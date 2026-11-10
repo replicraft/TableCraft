@@ -154,8 +154,11 @@ remains available and is never reconstructed as false or true. No system clock,
 display format or inferred Number subtype changes these declarations.
 
 Review uses the captured internal profile to qualify exactly the first-table or
-append-table operation against the current standard original image. It does not
-retry one operation as another after refusal. Document invalidation revokes the
+append-table operation against the captured original image. Small declarations
+select inline construction only after its complete geometry fits positively;
+joined definitions or external properties select native construction directly.
+A source that requires native storage retains that fact through review. No failed
+constructor, planner or decoder is retried as another operation. Document invalidation revokes the
 review; Save detects changed file content through complete original-image
 comparison. The advisory Open result cannot authorize Save. This admits neither
 arbitrary imported-file DDL nor record creation, field alteration or
@@ -167,8 +170,9 @@ Canonical blank and qualified populated-source Open publish the separate
 revision-bound `table_design_available` fact. It enables an empty manual Design
 draft whenever a supported target can fit; it does not depend on the generated
 Create > Table fact. Manual snapshots without a generated field lower through
-`FirstTableDefinition::capture_manual`, retaining actual optional key position
-and all explicit policies/defaults/Descriptions. The captured First or Added
+`FirstTableDefinition::capture_manual_authored`, retaining actual optional key
+position and all explicit policies/defaults/Descriptions. Native-only sources
+select `capture_manual_native` directly. The captured First or Added
 operation reviews the actual target declaration; no source retry or dummy primary
 root is used. At keyless-only capacity the existing keyed fact disables the
 no-key dialog's Yes choice before adding an ID; No remains available. A manually
@@ -176,10 +180,12 @@ selected key still receives a fresh typed capacity refusal at review. The draft,
 raw record and correction path remain intact. Actual constraints and complete
 BEFORE bytes are rechecked by the consuming SaveWorker and guarded reopen.
 
-Manual first-table requests use TCNT6 and yield a real keyless table or one
-supported manual numeric primary. A UI Yes decision that adds a protected
-Increment ID instead produces the existing generated declaration and its
-applicable TCNT1–5 intent. Authoring-view origin does not redefine native storage.
+Inline manual first-table requests use TCNT6 and yield a real keyless table or
+one supported manual numeric primary. Native-count manual declarations use
+TCNT7 with their explicit key position or keyless state. A UI Yes decision that
+adds a protected Increment ID produces the generated declaration and its
+applicable TCNT1–5 or TCNT7 intent. Authoring-view origin does not redefine
+native storage.
 Pending first-record inputs remain separate, keyed by draft identity; only an
 actual generated field requires Omitted. A manual primary does not become a
 generated value or suppress the original supplied first field. The actual fresh
@@ -298,8 +304,10 @@ and frame ceilings remain unchanged; an outer/profile/template
 mismatch refuses instead of retrying another decoder.
 The template's canonical header is not the append operation's source binding.
 Action dispatch chooses its decoder once, with no retry as another schema or row
-action. Each route uses checked V2 same-file resizing, complete native
-reconstruction, recovery, retirement and cleanup.
+action. TCNT7 and TCAT7 use checked V3 same-file resizing, including native
+reconstruction and exact original-source/cohort binding. Inline TCNT1–6 and
+TCAT1–5 retain their V2 routes; retained TCAT6 keeps its V3 route. Every route
+retains recovery, retirement and cleanup.
 Cancellation/invalidation participates in bounded native work; neither grants an
 implicit rollback, journal deletion or retry. Windows uses the separate
 local-NTFS flat-sidecar owner rather than the Unix directory-bundle cleanup

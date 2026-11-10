@@ -94,9 +94,10 @@ There are no native row handles, stored records or manufactured query results.
 Click to Add offers six explicit field declarations, followed by field naming.
 The shared renderer-neutral table builder retains field identities and a revision;
 rejected names and exhausted limits do not partially change the design. Its
-current authoring ceiling is sixteen fields, and the initial generated ID is
-protected. This is a bounded authoring profile, not the full Access field
-designer. Automatic type inference remains unimplemented.
+native authoring ceiling is 255 fields, including the protected initial
+generated ID. The add control reports the field limit without becoming a field
+or changing the selected declaration. This is a bounded authoring profile,
+not the full Access field designer. Automatic type inference remains unimplemented.
 
 Choosing a type selects its temporary field name in an inline header editor.
 Double-clicking an ordinary header reopens that editor. Enter, Tab or leaving
@@ -793,7 +794,7 @@ with its field when switching modes or types; another field cannot inherit it.
 The shared Save prompt accepts an exact table name and submits the current
 immutable draft snapshot. A Datasheet-origin schema retains its initial generated
 ID; a host-qualified manual Design can retain one supported manual key or an
-explicit no-key decision. The declarations/defaults above and sixteen-field
+explicit no-key decision. The declarations/defaults above and native 255-field
 ceiling remain in force. No records are authored by this operation.
 The UI keeps the draft distinct from the persisted database while review and
 saving run; neither accepting the name nor closing the prompt proves a save.
@@ -803,9 +804,11 @@ first-table or added-table profile, then issues a consuming review. Its existing
 nonreplaceable SaveWorker acquires the target, compares all original bytes and
 rederives the native operation under that same retained descriptor. First-table saves use a distinct TCNT schema
 intent. Added-table saves use the separate TCAT action with an original full-source
-binding and a closed declaration template. Each uses its checked V2 journal to
-resize the same original file; neither replaces the path with a freshly created
-image. Unix finalization acknowledges retirement/removal barriers.
+binding and an exact declaration template. Native-count TCNT7 and TCAT7 use
+checked V3 journals for joined definitions and external properties; inline
+request families retain their own journal profiles. They resize the same
+original file rather than replacing the path with a freshly created image.
+Unix finalization acknowledges retirement/removal barriers.
 Windows acknowledges its write-through retirement rename and retains the intact
 retired artifact; the completion report distinguishes those namespace facts from
 native commitment and does not claim durable Windows deletion. See

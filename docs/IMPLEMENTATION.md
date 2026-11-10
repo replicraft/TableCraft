@@ -19,9 +19,12 @@ and current native declaration constraints remain independently checked.
 Creation field and variable-offset storage is allocated by actual count after
 semantic validation. Independent reader checks cover all 255 field declarations
 and complete external property maps, plus malformed continuation/property chains.
-Constructive creation and host authoring still retain their current 16-field
-profile while multi-page definition/property writing and recovery are implemented.
-Reader coverage does not enable that unfinished writer.
+Native construction supports 255 fields with checked table-definition
+continuations, external MR2 properties and explicit TCNT7/TCAT7 V3 recovery.
+Shared runtime review/save and UI drafts use the native path when required by
+the declaration or captured source geometry. Inline-compatible requests retain
+their exact existing layouts and action families. The complete host integration
+batch is pending; the native writer, wide-reader and wide-row checks pass.
 
 Verification passes the affected 26 creation checks, 45 CLI unit checks, two
 named-mapping tests, two fixed-preview CLI controls and three wide-reader checks,
@@ -66,10 +69,10 @@ creation-only ACE, ACE/UI rustdoc and repository guards pass. English light/dark
 initial-record frames were directly inspected offscreen at 1280 × 820/1× on
 macOS ARM64. No Windows/Access parity follows from these checks.
 
-The next limit-removal work includes CLI preview intake, legacy image capture
-and the 16-field authoring profile. Full 255-field creation requires writing and
-proving native table-definition continuation pages; changing a constant alone
-would not establish that support. See [native write bounds](access/writes/NATIVE_WRITES.md#native-long-value-representation-bounds)
+CLI preview intake follows actual request sizes and explicit work allowances.
+Fixed-purpose image capture accepts ceilings up to 2 GiB. Native 255-field
+creation uses independently checked continuation pages and external properties;
+initial row storage still requires a physically fitting complete native record. See [native write bounds](access/writes/NATIVE_WRITES.md#native-long-value-representation-bounds)
 and [Boolean edits](access/writes/RETAINED_CELL_UPDATES.md#boolean-value-bit-edits).
 
 ## Currency editing across retained tables — 10 November 2026
