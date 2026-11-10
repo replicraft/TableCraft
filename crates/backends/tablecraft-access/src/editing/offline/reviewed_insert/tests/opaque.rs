@@ -1,6 +1,6 @@
 //! Real original-presence reviews select opaque INSERT9 before closed INSERT8.
 use super::{budget, test_support};
-use crate::editing::{NativeJournalInserter, offline::OfflineWriteSession};
+use crate::editing::{journal::NativeJournalInserter, offline::OfflineWriteSession};
 use std::{fs, io::Cursor};
 use tablecraft_ace::{NativeImage, read_table};
 use tablecraft_core::values::Value;
