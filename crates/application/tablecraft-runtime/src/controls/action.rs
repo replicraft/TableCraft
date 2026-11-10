@@ -4,14 +4,9 @@ use crate::{Error, document::SNAPSHOT_BYTES};
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_query::QueryLimits;
 
-const QUERY_BYTES: u64 = 16 * 1024 * 1024;
-const QUERY_ROWS: u64 = 10_000;
-const QUERY_STEPS: u64 = 1_000_000;
 const PROOF_IMAGE_VISITS: u64 = 4;
 const PROOF_FRAMING_STEPS: u64 = 4096;
 const SOURCE_COMPARE_STREAMS: u64 = 2;
-const PERSISTENCE_IMAGE_VISITS: u64 = 8;
-const INTENT_AND_NAMESPACE_STEPS: u64 = 16 * 1024 * 1024;
 
 fn image_length(bytes: usize) -> Result<u64, Error> {
     let bytes = u64::try_from(bytes).map_err(|_| Error::SnapshotLimit)?;
@@ -28,14 +23,11 @@ fn pair_length(before: usize, after: usize) -> Result<u64, Error> {
 }
 
 /// Initial intent binding hashes the real immutable BEFORE once. This is a
-/// combined native-planning allowance, independently bounded from SQL work.
-/// Native row/byte ceilings remain the existing host limits.
+/// combined native-planning pool, independent from SQL work. Validating the
+/// image envelope does not add to the host's representable work counter.
 pub(crate) fn action_review_budget(bytes: usize) -> Result<ResourceBudget, Error> {
-    let steps = NATIVE_STEPS
-        .checked_add(image_length(bytes)?)
-        .and_then(|steps| steps.checked_add(PROOF_FRAMING_STEPS))
-        .ok_or(Error::SnapshotLimit)?;
-    Ok(ResourceBudget::new(NATIVE_BYTES, NATIVE_ROWS, steps))
+    image_length(bytes)?;
+    Ok(ResourceBudget::new(NATIVE_BYTES, NATIVE_ROWS, NATIVE_STEPS))
 }
 
 pub(crate) fn action_query_budget() -> ResourceBudget {
@@ -44,11 +36,7 @@ pub(crate) fn action_query_budget() -> ResourceBudget {
 }
 
 pub(crate) fn action_query_limits() -> QueryLimits {
-    QueryLimits {
-        bytes: QUERY_BYTES,
-        rows: QUERY_ROWS,
-        steps: QUERY_STEPS,
-    }
+    QueryLimits::default()
 }
 
 /// Fresh source equality, original binding and rebuilt-image proof. This pool
@@ -66,27 +54,20 @@ pub(crate) fn action_proof_budget(before: usize, after: usize) -> Result<Resourc
 
 /// Journal preparation/commit and intent/namespace work, after exact native
 /// staging. This is a persistence allowance, not the ordinary planner quota.
-/// Byte/row ceilings stay finite; large admitted images can still exhaust them.
+/// Image-envelope admission remains separate from cumulative resource accounting.
 pub(crate) fn action_persistence_budget(
     before: usize,
     after: usize,
 ) -> Result<ResourceBudget, Error> {
-    let steps = pair_length(before, after)?
-        .checked_mul(PERSISTENCE_IMAGE_VISITS)
-        .and_then(|steps| steps.checked_add(INTENT_AND_NAMESPACE_STEPS))
-        .and_then(|steps| steps.checked_add(NATIVE_STEPS))
-        .ok_or(Error::SnapshotLimit)?;
-    Ok(ResourceBudget::new(NATIVE_BYTES, NATIVE_ROWS, steps))
+    pair_length(before, after)?;
+    Ok(ResourceBudget::new(NATIVE_BYTES, NATIVE_ROWS, NATIVE_STEPS))
 }
 
-/// Recovery starts from retained journal ownership, before trusted image sizes
-/// are decoded. Fund its complete bounded image envelope without trusting an
-/// on-disk length to mint allowance. Native framing and allocation limits remain.
-/// Reconstruction and persistence share this explicitly named recovery pool.
+/// Recovery starts from retained journal ownership. Untrusted stored lengths do
+/// not select its allowance; native framing, ownership and allocation checks
+/// remain. Reconstruction and persistence share this recovery pool.
 pub(crate) fn action_recovery_budget() -> ResourceBudget {
-    let steps =
-        2 * SNAPSHOT_BYTES * PERSISTENCE_IMAGE_VISITS + INTENT_AND_NAMESPACE_STEPS + NATIVE_STEPS;
-    ResourceBudget::new(NATIVE_BYTES, NATIVE_ROWS, steps)
+    ResourceBudget::new(NATIVE_BYTES, NATIVE_ROWS, NATIVE_STEPS)
 }
 
 #[cfg(test)]
@@ -121,7 +102,7 @@ mod tests {
     }
 
     #[test]
-    fn phase_pools_are_finite_and_preserve_distinct_row_and_byte_boundaries() {
+    fn phase_pools_preserve_exact_proof_boundaries_and_host_allowances() {
         let mut proof = action_proof_budget(8192, 12288).unwrap();
         assert_eq!(proof.remaining(Resource::Rows), 0);
         assert!(proof.charge(Resource::Rows, 1).is_err());
@@ -134,8 +115,9 @@ mod tests {
         let recovery = action_recovery_budget();
         assert_eq!(review.remaining(Resource::Rows), NATIVE_ROWS);
         assert_eq!(review.remaining(Resource::Bytes), NATIVE_BYTES);
-        assert_eq!(query.remaining(Resource::Rows), QUERY_ROWS);
-        assert!(persistence.remaining(Resource::Steps) < recovery.remaining(Resource::Steps));
+        assert_eq!(query.remaining(Resource::Rows), u64::MAX);
+        assert_eq!(persistence.remaining(Resource::Steps), u64::MAX);
+        assert_eq!(recovery.remaining(Resource::Steps), u64::MAX);
         assert_eq!(persistence.remaining(Resource::Bytes), NATIVE_BYTES);
         assert_eq!(recovery.remaining(Resource::Rows), NATIVE_ROWS);
     }
