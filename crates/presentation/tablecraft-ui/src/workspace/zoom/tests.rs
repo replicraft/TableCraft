@@ -200,6 +200,21 @@ fn publication_and_format_changes_close_zoom_while_theme_and_language_keep_its_b
     state.theme = crate::Theme::Dark;
     state.validate_zoom();
     assert!(state.zoom_dialog_open());
+    assert!(!state.set_table_data(Data {
+        row_ordinals: None,
+        source_revision: Some(2),
+        table: "Items".into(),
+        offset: 0,
+        columns: vec!["Memo".into()],
+        rows: vec![vec![Cell::scalar("stale publication")]],
+        has_more: false,
+    }));
+    state.validate_zoom();
+    assert!(
+        state.zoom_dialog_open(),
+        "Rejected data must retain the original binding"
+    );
+    assert_eq!(state.data.as_ref().unwrap().rows[0][0].text, "full value");
     let replacement = Data {
         row_ordinals: None,
         source_revision: Some(1),
@@ -274,20 +289,26 @@ fn closing_or_replacing_a_large_source_discards_incomplete_clipboard_work() {
                 .is_some()
         );
         if replace {
-            harness.state_mut().0.set_table_data(Data {
-                row_ordinals: None,
-                source_revision: Some(2),
-                table: "Items".into(),
-                offset: 0,
-                columns: vec!["Memo".into()],
-                rows: vec![vec![Cell::scalar("replacement")]],
-                has_more: false,
-            });
+            assert!(
+                harness.state_mut().0.set_table_data(Data {
+                    row_ordinals: None,
+                    source_revision: Some(1),
+                    table: "Items".into(),
+                    offset: 0,
+                    columns: vec!["Memo".into()],
+                    rows: vec![vec![Cell::scalar("replacement")]],
+                    has_more: false,
+                }),
+                "replacement publication must match the admitted source revision"
+            );
         } else {
             harness.key_press(egui::Key::Escape);
         }
         harness.run_steps(2);
-        assert!(!harness.state().0.zoom_dialog_open());
+        assert!(
+            !harness.state().0.zoom_dialog_open(),
+            "Zoom dismissal replace={replace}"
+        );
         assert!(
             !harness
                 .output()

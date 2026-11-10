@@ -196,7 +196,13 @@ fn show_text(
         session.follow_end = false;
     }
     if session.follow_end {
-        session.pending_scroll = Some(session.index.row_count() as f32 * row_height);
+        let content_height = (session.index.row_count() + BOTTOM_PADDING_ROWS) as f32 * row_height;
+        let viewport_height = if session.viewport_height > 0.0 {
+            session.viewport_height
+        } else {
+            height
+        };
+        session.pending_scroll = Some((content_height - viewport_height).max(0.0));
     }
     let body_id = ui.id().with("zoom_text_body");
     let viewport_width = ui.available_width();
@@ -261,6 +267,7 @@ fn show_text(
     }
     session.scroll_offset = body.state.offset.y;
     session.horizontal_offset = body.state.offset.x;
+    session.viewport_height = body.inner_rect.height();
     let focus = ui.interact(body.inner_rect, body_id, Sense::focusable_noninteractive());
     let body_name = tr(ui, "zoom-read-only");
     focus.widget_info(|| {
@@ -278,7 +285,7 @@ fn show_text(
             StrokeKind::Inside,
         );
         if !Popup::is_any_open(ui.ctx()) {
-            let total = session.index.row_count() as f32 * row_height;
+            let maximum = (body.content_size.y - body.inner_rect.height()).max(0.0);
             let mut next = session.scroll_offset;
             let mut horizontal = session.horizontal_offset;
             ui.input_mut(|input| {
@@ -304,12 +311,12 @@ fn show_text(
                     session.follow_end = false;
                 }
                 if input.consume_key(Modifiers::NONE, Key::End) {
-                    next = total;
+                    next = maximum;
                     session.follow_end = true;
                 }
             });
             if next != session.scroll_offset {
-                session.pending_scroll = Some(next.clamp(0.0, total));
+                session.pending_scroll = Some(next.clamp(0.0, maximum));
                 ui.ctx().request_repaint();
             }
             if horizontal != session.horizontal_offset {
