@@ -1,7 +1,5 @@
 //! Qualified Memo/OLE payloads and exact descriptor/chunk framing.
 use super::super::{EditError, WriteBlocker};
-#[cfg(feature = "ace16-write-preview")]
-use crate::table::mutation::value_limits::QUALIFIED_LONG_VALUE_CHUNKS;
 use crate::{
     InspectError, NativeColumn,
     format::{
@@ -10,7 +8,9 @@ use crate::{
     },
     header::check,
     table::long_value::profile,
-    table::mutation::value_limits::{QUALIFIED_LONG_TEXT_BYTES, QUALIFIED_LONG_VALUE_BYTES},
+    table::mutation::value_limits::{
+        NATIVE_LONG_TEXT_BYTES, NATIVE_LONG_VALUE_BYTES, require_encoded_length,
+    },
 };
 #[cfg(feature = "ace16-write-preview")]
 use std::ops::Range;
@@ -34,6 +34,8 @@ const COMPRESSED_MEMO_MAX_UNITS: usize = 1024;
 const COMPRESSED_UNICODE_FLAG: u8 = 1;
 const COMPRESSION_MARKER: [u8; 2] = [0xff, 0xfe];
 
+#[cfg(test)]
+mod encoding_tests;
 #[cfg(all(test, feature = "ace16-write-preview"))]
 mod tests;
 
@@ -77,7 +79,7 @@ pub(in crate::table::mutation) fn encode(
         Value::Null => return Ok(Encoded::Null),
         Value::Binary(bytes) if field.native_type() == OLE => bytes.len(),
         Value::Text(value) if field.native_type() == LONG_TEXT => {
-            if value.len() > QUALIFIED_LONG_TEXT_BYTES {
+            if value.len() > NATIVE_LONG_TEXT_BYTES {
                 return Err(InspectError::StructureLimit.into());
             }
             budget
@@ -89,7 +91,7 @@ pub(in crate::table::mutation) fn encode(
                 if units.is_multiple_of(ENCODING_CHECK_UNITS) {
                     check(budget, cancelled)?;
                 }
-                units += 1;
+                units = units.checked_add(1).ok_or(InspectError::StructureLimit)?;
                 narrow &= (1..=u16::from(u8::MAX)).contains(&unit);
             }
 
@@ -108,9 +110,7 @@ pub(in crate::table::mutation) fn encode(
         }
         _ => return Err(EditError::Unsupported(WriteBlocker::Column)),
     };
-    if length > QUALIFIED_LONG_VALUE_BYTES {
-        return Err(InspectError::StructureLimit.into());
-    }
+    require_encoded_length(length)?;
 
     budget
         .charge_allocation(length as u64, 1)
@@ -147,8 +147,8 @@ pub(in crate::table::mutation) fn encode(
             }
             let decoded = text::decode_long_with_limits(
                 &bytes,
-                QUALIFIED_LONG_VALUE_BYTES,
-                QUALIFIED_LONG_TEXT_BYTES,
+                NATIVE_LONG_VALUE_BYTES,
+                NATIVE_LONG_TEXT_BYTES,
                 budget,
                 cancelled,
             )?;
@@ -194,11 +194,14 @@ impl Encoded {
     fn validate_choice(&self, choice: StorageChoice) -> Result<(), EditError> {
         let valid = match self {
             Self::Null => choice == StorageChoice::Inline,
-            Self::Present(bytes) => match choice {
-                StorageChoice::Inline => bytes.len() <= INLINE_BYTES,
-                StorageChoice::Single => !bytes.is_empty() && bytes.len() <= EXTERNAL_ROW_BYTES,
-                StorageChoice::Chained => bytes.len() > EXTERNAL_ROW_BYTES,
-            },
+            Self::Present(bytes) => {
+                require_encoded_length(bytes.len())?;
+                match choice {
+                    StorageChoice::Inline => bytes.len() <= INLINE_BYTES,
+                    StorageChoice::Single => !bytes.is_empty() && bytes.len() <= EXTERNAL_ROW_BYTES,
+                    StorageChoice::Chained => bytes.len() > EXTERNAL_ROW_BYTES,
+                }
+            }
         };
         if !valid {
             return Err(EditError::Preservation);
@@ -230,9 +233,6 @@ impl Encoded {
             EXTERNAL_ROW_BYTES
         };
         let count = bytes.len().div_ceil(capacity);
-        if count > QUALIFIED_LONG_VALUE_CHUNKS {
-            return Err(InspectError::StructureLimit.into());
-        }
         budget
             .charge_allocation(count as u64, size_of::<Chunk>() as u64)
             .map_err(InspectError::from)?;
