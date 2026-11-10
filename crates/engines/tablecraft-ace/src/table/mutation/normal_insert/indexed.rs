@@ -66,7 +66,15 @@ pub(super) fn plan(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<NativeEditPlan, EditError> {
     let _span = tracing::debug_span!("native.ordinary.insert.indexed").entered();
-    let (facts, _) = qualify(&image, &source, table, requests, budget, cancelled)?;
+    let (facts, _) = qualify(
+        &image,
+        &source,
+        table,
+        requests,
+        LvalScope::Original,
+        budget,
+        cancelled,
+    )?;
     properties::require_text_declarations(
         &image,
         source.table.schema(),
