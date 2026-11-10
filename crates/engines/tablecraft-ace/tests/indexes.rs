@@ -337,9 +337,11 @@ fn interior_children_leaf_links_and_separator_bounds_are_checked() {
     }
 }
 #[test]
-fn tree_depth_is_structurally_bounded() {
+fn deep_index_reads_follow_native_geometry_and_reject_late_outside_children() {
     let mut bytes = two_level_tree();
-    bytes.resize(843 * 4096, 0);
+    let branching_root: [u8; 4096] = bytes[729 * 4096..730 * 4096].try_into().unwrap();
+    bytes.resize(844 * 4096, 0);
+    bytes[843 * 4096..844 * 4096].copy_from_slice(&branching_root);
     bytes[729 * 4096..730 * 4096].copy_from_slice(&index_page(false, &[], 0, 0, 827));
     for page in 827..843 {
         bytes[page * 4096..(page + 1) * 4096].copy_from_slice(&index_page(
@@ -352,7 +354,22 @@ fn tree_depth_is_structurally_bounded() {
         let bit = page - 728;
         bytes[727 * 4096 + 3756 + bit / 8] |= 1 << (bit % 8);
     }
-    assert_eq!(indexed_error(bytes), Some(InspectError::StructureLimit));
+    let bit = 843 - 728;
+    bytes[727 * 4096 + 3756 + bit / 8] |= 1 << (bit % 8);
+    let result = tablecraft_ace::read_table_index(
+        &mut Cursor::new(&bytes),
+        CatalogScope::new(1),
+        "ROULETTE_TB",
+        "ORDR_NBR",
+        &mut budget(),
+        &|| false,
+    )
+    .unwrap();
+    assert_eq!(result.rows().len(), 38);
+
+    // Preserve complete traversal of the deep prefix before a late bad child.
+    put32(&mut bytes, 843 * 4096 + 20, 844);
+    assert_eq!(indexed_error(bytes), Some(InspectError::Malformed));
 }
 
 #[test]

@@ -231,8 +231,9 @@ fn large_complete_and_projected_indexes_match_independent_rows_in_both_direction
                     &mut budget(),
                     &|| false
                 )
-                .err(),
-                Some(InspectError::StructureLimit)
+                .unwrap()
+                .rows(),
+                expected
             );
         }
     }

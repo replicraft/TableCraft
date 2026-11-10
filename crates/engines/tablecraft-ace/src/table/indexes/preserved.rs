@@ -63,13 +63,6 @@ pub(in crate::table) fn certify(
             return Err(InspectError::Malformed.into());
         }
     }
-    // Walker checks its growing visited list. Prepay the complete worst-case
-    // membership comparisons before traversal instead of hiding that byte work.
-    let membership = owned
-        .len()
-        .checked_mul(owned.len())
-        .ok_or(InspectError::StructureLimit)?;
-    reader.work(membership)?;
     let mut walker = Walker::<_, _, MAX_ENTRY_BYTES> {
         reader: &mut reader,
         owner: definition,
@@ -82,7 +75,7 @@ pub(in crate::table) fn certify(
         next_leaf: 0,
         gap: false,
     };
-    walker.visit(index.root_page(), 0, None, None)?;
+    walker.visit(index.root_page())?;
     if walker.next_leaf != 0 || walker.gap || walker.entries.len() != emitted {
         return Err(InspectError::Malformed.into());
     }

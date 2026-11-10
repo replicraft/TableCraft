@@ -109,14 +109,31 @@ fn traverse(
     bytes: Vec<u8>,
     selection: Int64IndexSelection,
 ) -> Result<(Vec<KeyRef<OwnedKey>>, Vec<u32>), InspectError> {
+    traverse_with(
+        bytes,
+        2,
+        &[2, 3, 4],
+        selection,
+        &mut ResourceBudget::new(1_000_000, 100, 100_000),
+        &|| false,
+    )
+}
+
+fn traverse_with(
+    bytes: Vec<u8>,
+    root: u32,
+    owned: &[u32],
+    selection: Int64IndexSelection,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(Vec<KeyRef<OwnedKey>>, Vec<u32>), InspectError> {
     let header = Header::parse(&bytes[..66], bytes.len() as u64)?;
     let mut source = Cursor::new(bytes);
-    let mut budget = ResourceBudget::new(1_000_000, 100, 100_000);
     let mut reader = Reader {
         source: &mut source,
         header,
-        budget: &mut budget,
-        cancelled: &|| false,
+        budget,
+        cancelled,
         reads: 0,
     };
     let profile = OwnedProfile(SingleKey {
@@ -128,7 +145,7 @@ fn traverse(
     let mut walker = Walker::<_, _, { page::MAX_ENTRY_BYTES }> {
         reader: &mut reader,
         owner: 1,
-        owned: &[2, 3, 4],
+        owned,
         profile: &profile,
         visited: Vec::new(),
         entries: Vec::new(),
@@ -137,7 +154,7 @@ fn traverse(
         next_leaf: 0,
         gap: false,
     };
-    walker.visit(2, 0, None, None)?;
+    walker.visit(root)?;
     Ok((walker.entries, walker.visited))
 }
 
@@ -171,6 +188,8 @@ fn borrowed_parent_bounds_still_prune_unselected_subtrees() {
         lower: Included(2),
         upper: Included(2),
     };
+    // NO_CLONE: Selected and complete traversals consume independent copies of
+    // the same corrupt raw image so pruning is checked against a full-read oracle.
     let (entries, visited) = traverse(bytes.clone(), selection).unwrap();
     assert_eq!(visited, [2, 4]);
     assert_eq!(entries.len(), 1);
@@ -195,4 +214,127 @@ fn owned_keys_preserve_parent_and_sibling_corruption_checks() {
         traverse(siblings, Int64IndexSelection::All),
         Err(InspectError::Malformed)
     ));
+}
+
+// Raw internal pages extend the existing branching tree with single-tail levels.
+// This is a parser geometry regression, not evidence Access produces this shape.
+fn deep_tree(levels: usize) -> (Vec<u8>, u32, Vec<u32>) {
+    assert!(levels >= 2);
+    let mut bytes = tree();
+    bytes.resize((levels + 3) * 4096, 0);
+    let mut root = 2_u32;
+    for number in 5..levels + 3 {
+        let page = &mut bytes[number * 4096..(number + 1) * 4096];
+        page[..2].copy_from_slice(&[3, 1]);
+        page[2..4].copy_from_slice(&3616_u16.to_le_bytes());
+        page[4..8].copy_from_slice(&1_u32.to_le_bytes());
+        page[20..24].copy_from_slice(&root.to_le_bytes());
+        root = number as u32;
+    }
+    (bytes, root, (2..levels as u32 + 3).collect())
+}
+
+#[test]
+fn paid_iterative_frames_read_seventeen_and_deeper_levels_without_cloning_keys() {
+    for levels in [17, 256] {
+        let (bytes, root, owned) = deep_tree(levels);
+        let (entries, visited) = traverse_with(
+            bytes,
+            root,
+            &owned,
+            Int64IndexSelection::All,
+            &mut ResourceBudget::new(16_000_000, 100, 1_000_000),
+            &|| false,
+        )
+        .unwrap();
+        assert_eq!(entries.len(), 2);
+        assert_eq!(entries[0].key.0, Some(1));
+        assert_eq!(entries[1].key.0, Some(2));
+        assert_eq!(visited.len(), levels + 1);
+        assert_eq!(visited[0], root);
+        assert_eq!(&visited[visited.len() - 3..], &[2, 3, 4]);
+    }
+}
+
+#[test]
+fn deep_frames_preserve_late_fences_siblings_cycles_and_pruning() {
+    for corruption in [0, 1, 2] {
+        let (mut bytes, root, owned) = deep_tree(17);
+        match corruption {
+            0 => bytes[4 * 4096 + 484] = 0,
+            1 => bytes[4 * 4096 + 12..4 * 4096 + 16].fill(0),
+            _ => bytes[2 * 4096 + 20..2 * 4096 + 24].copy_from_slice(&root.to_le_bytes()),
+        }
+        assert!(matches!(
+            traverse_with(
+                bytes,
+                root,
+                &owned,
+                Int64IndexSelection::All,
+                &mut ResourceBudget::new(2_000_000, 100, 100_000),
+                &|| false
+            ),
+            Err(InspectError::Malformed)
+        ));
+    }
+
+    let (mut bytes, root, owned) = deep_tree(17);
+    bytes[3 * 4096] = 0xff;
+    let (entries, visited) = traverse_with(
+        bytes,
+        root,
+        &owned,
+        Int64IndexSelection::Range {
+            lower: Included(2),
+            upper: Included(2),
+        },
+        &mut ResourceBudget::new(2_000_000, 100, 100_000),
+        &|| false,
+    )
+    .unwrap();
+    assert_eq!(entries.len(), 1);
+    assert_eq!(entries[0].key.0, Some(2));
+    assert!(!visited.contains(&3));
+    assert_eq!(visited.last(), Some(&4));
+}
+
+#[test]
+fn deep_frame_growth_obeys_explicit_byte_work_and_cancellation_budgets() {
+    for budget in [
+        ResourceBudget::new(20_000, 100, 100_000),
+        ResourceBudget::new(2_000_000, 100, 50),
+    ] {
+        let (bytes, root, owned) = deep_tree(17);
+        let mut budget = budget;
+        assert!(matches!(
+            traverse_with(
+                bytes,
+                root,
+                &owned,
+                Int64IndexSelection::All,
+                &mut budget,
+                &|| false
+            ),
+            Err(InspectError::Limit(_))
+        ));
+    }
+
+    let calls = std::cell::Cell::new(0_usize);
+    let cancelled = || {
+        calls.set(calls.get() + 1);
+        calls.get() > 300
+    };
+    let (bytes, root, owned) = deep_tree(17);
+    assert!(matches!(
+        traverse_with(
+            bytes,
+            root,
+            &owned,
+            Int64IndexSelection::All,
+            &mut ResourceBudget::new(2_000_000, 100, 100_000),
+            &cancelled
+        ),
+        Err(InspectError::Cancelled)
+    ));
+    assert!(calls.get() > 300);
 }

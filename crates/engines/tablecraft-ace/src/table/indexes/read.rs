@@ -168,10 +168,10 @@ pub fn read_table_index_projection<R: crate::NativeReadSource>(
 /// only traversed pages and returned rows are audited. Complete reads additionally
 /// require the declared count to fit and agree. Table data-page ownership uses
 /// fully preflighted bitmap membership for both complete and partial requests.
-/// Native key eligibility, index-owned map/depth quotas, legacy complete/check
-/// gates and write qualification remain unchanged. No fallback occurs. Explicit
-/// requests fetch referenced rows in bounded internal batches, retaining one
-/// cumulative budget; legacy entry points retain their operation-wide read quota.
+/// Native key eligibility and write qualification remain unchanged. Ownership
+/// maps and traversal frames follow checked source geometry and cumulative
+/// budgets. No fallback occurs. Explicit requests fetch referenced rows in
+/// bounded internal batches, retaining one cumulative budget.
 pub fn read_table_index_with_request<R: crate::NativeReadSource>(
     source: &mut R,
     scope: CatalogScope,
@@ -646,14 +646,6 @@ fn read_rows<R: crate::NativeReadSource, P: KeyProfile, const N: usize>(
                 return Err(InspectError::Malformed);
             }
         }
-        // Walker checks a growing visited list. Charge its complete worst-case
-        // membership work before traversal, just as the retained Int32 reader.
-        reader.work(
-            owned
-                .len()
-                .checked_mul(owned.len())
-                .ok_or(InspectError::StructureLimit)?,
-        )?;
     }
     let mut walker = Walker::<_, _, N> {
         reader: &mut reader,
@@ -667,7 +659,7 @@ fn read_rows<R: crate::NativeReadSource, P: KeyProfile, const N: usize>(
         next_leaf: 0,
         gap: false,
     };
-    walker.visit(selected.root, 0, None, None)?;
+    walker.visit(selected.root)?;
     if (walker.previous_leaf != 0 && ((walker.next_leaf != 0) != walker.gap))
         || walker.entries.len() > schema.declared_rows() as usize
         || (complete && walker.entries.len() != view.expected_rows)
