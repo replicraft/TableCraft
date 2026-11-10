@@ -64,9 +64,12 @@ doubled quotes inside quoted fields. Header spelling and case must match the
 column arguments. With `--column`, every data cell is a present decimal Int32 from -2147483648
 through 2147483647, with an optional minus sign. NULL, plus-prefixed numbers,
 expressions and surrounding whitespace are refused. A header-only file creates
-an empty table. The file must be at most 64 KiB.
+an empty table. TSV capture uses the actual file length under the cumulative
+`--work-bytes`, `--work-rows` and `--work-steps` allowances; it has no separate
+64 KiB input ceiling. A changing input length is refused before publication.
 
-The current profile supports one through sixteen columns and at most 64 rows,
+The current native creator uses fixed layout/key proof storage for one through
+sixteen columns and at most 64 rows,
 with an additional physical fit check. A wide schema can fit fewer rows; a
 request that does not fit is refused before publication. Names are validated by
 the native constructor and limited to 64 UTF-16 code units. Column order is the

@@ -8,8 +8,9 @@ use tablecraft_core::{
     values::Value,
 };
 
-const MAX_INPUT_BYTES: u64 = 64 * 1024;
-const MAX_ROWS: usize = 64;
+// The current native creator uses fixed 64-row layout/key proof storage.
+// This is its qualified construction scope, not a TSV or Access format maximum.
+const QUALIFIED_CREATION_ROWS: usize = 64;
 const CSV_BUFFER_BYTES: usize = 8192;
 const CSV_RETAINED_RECORDS: usize = 3;
 
@@ -23,11 +24,6 @@ pub(super) fn capture(
         tablecraft_io::open_regular_readonly(path).map_err(|error| Error::File(error.kind()))?;
     let length =
         tablecraft_io::seek_to_end(&mut file, budget, cancelled).map_err(InspectError::from)?;
-    if length > MAX_INPUT_BYTES {
-        return Err(Error::Input(
-            "Creation TSV exceeds the 64 KiB input ceiling",
-        ));
-    }
     budget
         .charge_allocation(length, 1)
         .map_err(InspectError::from)?;
@@ -91,10 +87,8 @@ fn rows_with<'a, T>(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Vec<Vec<T>>, Error> {
-    if bytes.is_empty() || bytes.len() as u64 > MAX_INPUT_BYTES {
-        return Err(Error::Input(
-            "Expected a nonempty bounded TSV with a column header",
-        ));
+    if bytes.is_empty() {
+        return Err(Error::Input("Expected a nonempty TSV with a column header"));
     }
     tsv::validate(bytes, budget, cancelled).map_err(|error| match error {
         tsv::Error::Native(error) => Error::Native(error),
@@ -152,7 +146,7 @@ fn rows_with<'a, T>(
         .map_err(|_| Error::Input("Malformed creation TSV record"))?
     {
         tick(budget, cancelled)?;
-        if rows.len() == MAX_ROWS {
+        if rows.len() == QUALIFIED_CREATION_ROWS {
             return Err(Error::Input("Creation accepts at most 64 TSV rows"));
         }
         if record.len() != count {

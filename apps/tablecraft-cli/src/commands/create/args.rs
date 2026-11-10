@@ -41,7 +41,7 @@ pub(crate) struct Arguments {
     /// Empty tables only; initial IDs are never generated or coerced by create.
     #[arg(long, value_name = "COLUMN", requires = "primary_key")]
     pub(super) incrementing: Option<String>,
-    /// Bounded quoted TSV with an exact column header and zero through 64 rows.
+    /// Quoted TSV with an exact column header; current native creation admits 64 rows.
     #[arg(long, value_name = "TSV")]
     pub(super) data: Option<PathBuf>,
     /// Cumulative input, construction and publication byte allowance.
