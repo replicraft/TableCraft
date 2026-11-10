@@ -8,7 +8,7 @@ use tablecraft_core::limits::ResourceBudget;
 
 #[test]
 fn physical_visits_cover_first_and_continuation_pages_without_header_bytes_in_payload() {
-    for length in [12, 4096, 4097, 8184, 8185, 261640] {
+    for length in [12, 4096, 4097, 8184, 8185, 261640, 261641, 520000] {
         let (file, expected) = image(length);
         let header = Header::parse(&file, file.len() as u64).unwrap();
         let mut source = Cursor::new(file);

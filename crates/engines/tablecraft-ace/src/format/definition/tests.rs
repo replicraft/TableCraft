@@ -62,7 +62,7 @@ fn budget() -> ResourceBudget {
 
 #[test]
 fn logical_bytes_cross_headers_and_end_exactly_at_declared_length() {
-    for length in [12, 4096, 4097, 8184, 8185, 28079, 261640] {
+    for length in [12, 4096, 4097, 8184, 8185, 28079, 261640, 261641, 520000] {
         let (file, expected) = image(length);
         let actual = decode(file, &mut budget(), &|| false).unwrap();
         assert_eq!(&*actual, expected);
@@ -110,6 +110,33 @@ fn chain_allocations_reads_work_and_cancellation_share_caller_allowances() {
         Err(InspectError::Cancelled)
     ));
 }
+#[test]
+fn advertised_extent_cannot_reserve_beyond_physical_source_geometry() {
+    let (mut file, _) = image(9000);
+    put32(&mut file, 4096 + 8, u32::MAX);
+    let mut allowance = ResourceBudget::new(8192, 0, 100);
+    assert!(matches!(
+        decode(file, &mut allowance, &|| false),
+        Err(InspectError::Truncated)
+    ));
+}
+
+#[test]
+fn errors_after_the_former_page_boundary_do_not_publish_partial_definitions() {
+    for corrupt_signature in [false, true] {
+        let (mut file, _) = image(520000);
+        if corrupt_signature {
+            file[65 * 4096] = 1;
+        } else {
+            put32(&mut file, 65 * 4096 + 4, 65);
+        }
+        assert!(matches!(
+            decode(file, &mut budget(), &|| false),
+            Err(InspectError::Malformed)
+        ));
+    }
+}
+
 proptest! {
     #![proptest_config(proptest::test_runner::Config {
         cases: 256,
@@ -125,9 +152,10 @@ proptest! {
             file[at] = value;
         }
 
+        let file_pages = file.len() / 4096;
         if let Ok(actual) = decode(file, &mut budget(), &|| false) {
             prop_assert_eq!(actual.len(), actual.length);
-            prop_assert!(actual.len() <= 261640);
+            prop_assert!(actual.len() <= 4096 + (file_pages - 2) * 4088);
         }
     }
 }

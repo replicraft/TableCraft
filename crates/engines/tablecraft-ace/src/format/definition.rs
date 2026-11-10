@@ -1,10 +1,10 @@
-//! Bounded logical table-definition bytes, excluding continuation page headers.
+//! Logical table-definition bytes bounded by native framing and source geometry.
 use super::{
     bytes::u32_at,
     page::{PAGE_BYTES, TABLE_DEFINITION_SIGNATURE},
-    reader::Reader,
+    reader::{Reader, visited::Visited},
 };
-use crate::{InspectError, NativeReadSource, limits::MAX_DEFINITION_PAGES};
+use crate::{InspectError, NativeReadSource};
 use std::ops::Deref;
 
 pub(crate) const PAGE_HEADER_BYTES: usize = 2 * size_of::<u16>() + size_of::<u32>();
@@ -12,7 +12,6 @@ pub(crate) const NEXT_PAGE_OFFSET: usize = PAGE_HEADER_BYTES - size_of::<u32>();
 pub(crate) const LENGTH_OFFSET: usize = PAGE_HEADER_BYTES;
 const MIN_DEFINITION_BYTES: usize = LENGTH_OFFSET + size_of::<u32>();
 const CONTINUATION_BYTES: usize = PAGE_BYTES - PAGE_HEADER_BYTES;
-const MAX_DEFINITION_BYTES: usize = PAGE_BYTES + (MAX_DEFINITION_PAGES - 1) * CONTINUATION_BYTES;
 
 /// Retain the ordinary one-page path on the stack without a heap allocation.
 pub(crate) struct Definition {
@@ -53,8 +52,11 @@ pub(crate) fn read_with_pages<R: NativeReadSource>(
     if length < MIN_DEFINITION_BYTES {
         return Err(InspectError::Malformed);
     }
-    if length > MAX_DEFINITION_BYTES {
-        return Err(InspectError::StructureLimit);
+    // Page zero is the file header, so it cannot hold a definition chunk.
+    let available = u64::from(reader.header.page_count()).saturating_sub(1);
+    let maximum = PAGE_BYTES as u64 + available.saturating_sub(1) * CONTINUATION_BYTES as u64;
+    if length as u64 > maximum {
+        return Err(InspectError::Truncated);
     }
     let mut next = u32_at(&first, NEXT_PAGE_OFFSET)?;
     let mut result = Definition {
@@ -67,45 +69,49 @@ pub(crate) fn read_with_pages<R: NativeReadSource>(
             return Err(InspectError::Malformed);
         }
         visit(root, reader)?;
+        reader.tick()?;
         return Ok(result);
     }
-    reader.budget.charge_allocation(length as u64, 1)?;
-    result
-        .joined
-        .try_reserve_exact(length)
-        .map_err(|_| InspectError::Allocation)?;
-    result.joined.extend_from_slice(&result.first);
     visit(root, reader)?;
-    let mut visited = [0_u32; MAX_DEFINITION_PAGES];
-    visited[0] = root;
-    let mut count = 1;
+    let mut visited = Visited::new();
+    visited.insert(root, reader)?;
+    append(&mut result.joined, &result.first, reader)?;
     while result.joined.len() < length {
         reader.tick()?;
         if next == 0 {
             return Err(InspectError::Truncated);
         }
-        if visited[..count].contains(&next) {
-            return Err(InspectError::Malformed);
-        }
-        if count == visited.len() {
-            return Err(InspectError::StructureLimit);
-        }
-        visited[count] = next;
-        count += 1;
+        visited.insert(next, reader)?;
         let page = reader.page(next)?;
         validate(&page)?;
         visit(next, reader)?;
         next = u32_at(&page, NEXT_PAGE_OFFSET)?;
         let take = (length - result.joined.len()).min(CONTINUATION_BYTES);
-        result
-            .joined
-            .extend_from_slice(&page[PAGE_HEADER_BYTES..PAGE_HEADER_BYTES + take]);
+        append(
+            &mut result.joined,
+            &page[PAGE_HEADER_BYTES..PAGE_HEADER_BYTES + take],
+            reader,
+        )?;
     }
     if next != 0 {
         return Err(InspectError::Malformed);
     }
     reader.tick()?;
     Ok(result)
+}
+
+fn append<R: NativeReadSource>(
+    joined: &mut Vec<u8>,
+    bytes: &[u8],
+    reader: &mut Reader<'_, R>,
+) -> Result<(), InspectError> {
+    reader.tick()?;
+    reader.budget.charge_allocation(bytes.len() as u64, 1)?;
+    joined
+        .try_reserve(bytes.len())
+        .map_err(|_| InspectError::Allocation)?;
+    joined.extend_from_slice(bytes);
+    Ok(())
 }
 
 fn validate(page: &[u8; PAGE_BYTES]) -> Result<(), InspectError> {
