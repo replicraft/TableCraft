@@ -172,3 +172,30 @@ pub fn source() -> Source {
         property_body: body,
     }
 }
+
+/// An independent existing-source variant with a represented indirect candidate
+/// bitmap. This is not the initial creator's inline-candidate placement oracle.
+pub fn indirect_candidates() -> Source {
+    let mut source = source();
+    assert_eq!(source.after.len(), 95 * PAGE);
+    let maps = &mut source.after[3 * PAGE..4 * PAGE];
+    let start = word(maps, 14 + 2 * 17);
+    let end = word(maps, 14 + 2 * 16);
+    assert_eq!(end - start, 13);
+    assert_eq!(maps[start], 0);
+    let mut indirect = [0; 13];
+    indirect[0] = 1;
+    put32(&mut indirect, 1, 95);
+    maps[start..end].copy_from_slice(&indirect);
+    let mut bitmap = vec![0; PAGE];
+    bitmap[..4].copy_from_slice(&[5, 1, 0, 0]);
+    bitmap[4 + 93 / 8] = 1 << (93 % 8);
+    source.after.extend(bitmap);
+    // The existing 17-byte global map covers all 96 page IDs with allocated
+    // polarity; extending by page95 needs neither a new cell nor relocation.
+    let global = &source.after[PAGE..2 * PAGE];
+    let start = word(global, 14);
+    assert_eq!(PAGE - start, 17);
+    assert_eq!(global[start + 5 + 95 / 8] & (1 << (95 % 8)), 0);
+    source
+}
