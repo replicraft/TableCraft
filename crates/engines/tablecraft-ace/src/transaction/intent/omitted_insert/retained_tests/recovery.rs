@@ -214,6 +214,23 @@ fn retained_recovery_refuses_forged_after_and_old_journal_authority_without_targ
     assert_eq!(target.writes, 0);
     assert_eq!(target.bytes.get_ref(), &before);
 
+    // A typed older request cannot gain V3 authority from a matching BEFORE.
+    let checked = journal::inspect_v3(&mut journal_file, &mut budget(), &|| false).unwrap();
+    let older = NativeOmittedInsertIntent::new_current(
+        "Replacement",
+        requests(false),
+        &before,
+        &mut budget(),
+        &|| false,
+    )
+    .unwrap();
+    assert!(
+        older
+            .qualify_retained_recovery(checked, CatalogScope::new(3683), &mut budget(), &|| false)
+            .is_err()
+    );
+    assert_eq!(target.writes, 0);
+
     let mut old_journal = MemoryStorage::new(Vec::new());
     drop(
         journal::prepare_expected(
