@@ -113,6 +113,12 @@ fn apply_plan(
                 &mut proof,
                 &cancel,
             ),
+        Plan::Current(plan) => session.stage_reviewed_current_field_addition_with_budgets(
+            plan,
+            &mut native,
+            &mut proof,
+            &cancel,
+        ),
     };
     let staged = match staged {
         Ok(staged) => staged,

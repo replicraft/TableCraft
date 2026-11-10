@@ -1,10 +1,10 @@
 //! Typed application task failures without credentials or row payloads.
 #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
 use tablecraft_ace::{
-    AddColumnIntentError, AddTableError, DefaultZeroAddColumnIntentError,
-    FieldAdditionAfterOffHistoryIntentError, FieldAdditionAfterOffIntentError,
-    FieldAdditionIntentError, FieldAdditionSourceError, FirstTableError,
-    RepeatedDefaultZeroAddColumnIntentError,
+    AddColumnIntentError, AddTableError, CurrentFieldAdditionIntentError,
+    DefaultZeroAddColumnIntentError, FieldAdditionAfterOffHistoryIntentError,
+    FieldAdditionAfterOffIntentError, FieldAdditionIntentError, FieldAdditionSourceError,
+    FirstTableError, RepeatedDefaultZeroAddColumnIntentError,
 };
 
 #[cfg(feature = "offline-edit")]
@@ -89,6 +89,10 @@ pub enum Error {
     #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
     #[error(transparent)]
     FieldAdditionAfterOffHistory(#[from] FieldAdditionAfterOffHistoryIntentError),
+    /// Current metadata Number declaration or fresh reconstruction refused.
+    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+    #[error(transparent)]
+    CurrentFieldAddition(#[from] CurrentFieldAdditionIntentError),
     /// Selected native field source or readonly capacity qualification failed.
     #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
     #[error(transparent)]

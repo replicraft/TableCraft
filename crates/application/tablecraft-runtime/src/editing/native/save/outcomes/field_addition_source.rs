@@ -1,6 +1,7 @@
 //! Source-only refusal is not cancellation, allocation or malformed inspection.
 use super::{
-    field_addition, field_addition_after_off, field_addition_after_off_history, inspection_failure,
+    current_field_addition, field_addition, field_addition_after_off,
+    field_addition_after_off_history, inspection_failure,
 };
 use crate::editing::SaveFailureKind;
 use tablecraft_ace::FieldAdditionSourceError;
@@ -13,6 +14,7 @@ pub(super) fn failure(error: &FieldAdditionSourceError) -> Option<SaveFailureKin
         FieldAdditionSourceError::History(error) => {
             field_addition_after_off_history::candidate(error)
         }
+        FieldAdditionSourceError::Current(error) => current_field_addition::candidate(error),
         FieldAdditionSourceError::Source => None,
     }
 }

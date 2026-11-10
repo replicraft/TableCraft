@@ -63,6 +63,11 @@ pub(in crate::editing) fn review(
     let target = native_target(declaration);
     let purpose = image.field_addition_source_purpose(table, target, &mut work, cancelled)?;
     let plan = match purpose {
+        FieldAdditionSourcePurpose::CurrentNumber => {
+            Plan::Current(image.plan_recoverable_current_number_field_addition(
+                table, column, &mut work, cancelled,
+            )?)
+        }
         FieldAdditionSourcePurpose::Created(CreatedFieldAdditionSourcePurpose::FirstNumber) => {
             Plan::First(
                 image.plan_recoverable_created_add_default_zero_int32_column(

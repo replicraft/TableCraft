@@ -6,7 +6,10 @@ use crate::{
     document::Document,
     editing::FieldAdditionAvailability,
 };
-use tablecraft_ace::{FieldAdditionSourceAvailability, FieldAdditionSourceError, NativeImage};
+use tablecraft_ace::{
+    CurrentFieldAdditionError, EditError as NativeEditError, FieldAdditionSourceAvailability,
+    FieldAdditionSourceError, NativeImage,
+};
 
 pub(in crate::editing) fn inspect(
     document: &mut Document,
@@ -53,7 +56,11 @@ fn source_result(
 ) -> Result<Option<FieldAdditionSourceAvailability>, Error> {
     match result {
         Ok(facts) => Ok(Some(facts)),
-        Err(Error::FieldAdditionSource(FieldAdditionSourceError::Source)) => Ok(None),
+        Err(Error::FieldAdditionSource(FieldAdditionSourceError::Source))
+        | Err(Error::FieldAdditionSource(FieldAdditionSourceError::Current(
+            CurrentFieldAdditionError::Source
+            | CurrentFieldAdditionError::Native(NativeEditError::Unsupported(_)),
+        ))) => Ok(None),
         Err(error) => Err(error),
     }
 }
