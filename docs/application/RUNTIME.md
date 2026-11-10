@@ -260,8 +260,8 @@ GUID cells, NULL and qualified no-default omission are admitted ordinary values;
 non-NULL GUID stored defaults remain unsupported. A Number/ReplicationId choice
 sets no generation flag and supplies neither random GUIDs nor replication.
 
-Original supplied Byte, Int16, Single, Double, Guid or Decimal values use the closed
-TCNA0006/profile 6 omission-preserving intent. Legacy supplied carriers and requests
+For the original source family, supplied Byte, Int16, Single, Double, Guid or
+Decimal values use the closed TCNA0006/profile 6 omission-preserving intent. Legacy supplied carriers and requests
 with only omitted or NULL wider fields retain TCNA0002/profile 2. The selected
 intent follows the original carrier payload, not a host permission flag or the
 field's display label. Independent reconstruction rereads original source metadata
@@ -985,13 +985,23 @@ This resolution happens in the engine, independently in producer binding and
 proof over original metadata. Runtime and UI retain the original Omitted intent
 and hidden raw text; they do not manufacture a supplied NULL or amend a default
 property. The selected TCNA2/TCNA6 intent retains original presence and the complete
-BEFORE binding.
+BEFORE binding for its existing source family.
 Source admission, supported carrier families, ownership/index profiles, Required,
 validation/data-macro eligibility, resource limits and fresh save reconstruction
 remain unchanged. The existing present-Int32 restriction on indexed companions in the multiple-owner
 route remains in force. The non-generated resolver's existing NULL-absence behavior is separate
 and unchanged. See [normal Increment insertion](../access/writes/NORMAL_INCREMENTING_AUTONUMBER.md)
 and Microsoft's [omitted-column contract](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/insert-into-statement-microsoft-access-sql).
+
+Qualified current sparse histories select TCNA7 from original metadata before
+consuming source/default admission. This separate source preserves unused property
+dictionary names and retired native/variable slots while validating new records
+through its own current-INSERT purpose. Existing all-LONG sparse generation stays
+on TCNA2/6; a refused source is never retried under a different family. Original
+presence, generated counter, physical slot/index references and exact BEFORE/AFTER
+reconstruction remain mandatory. `NativeJournalInserter::new` stays metadata-only;
+new source qualification occurs during review, with no implicit clock sampling.
+See [current sparse INSERT](../access/writes/NORMAL_ACE_INSERT.md#current-sparse-metadata-and-original-presence).
 
 Review rechecks the actual native AutoNumber markers, requires their omission,
 then parses ordinary supplied text against actual declared types and runs the

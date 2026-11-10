@@ -6,6 +6,72 @@ manual proof; engineering candidates retain their separate admission policies.
 The retained-tree, original-omission and inline Memo/OLE sections below extend
 the initial complete scalar profile; their remaining limits stay explicit.
 
+## Current sparse metadata and original presence
+
+`plan_recoverable_current_omitted_row_inserts` adds a separate TCNA0007 family
+for qualified generated INSERT after field deletion/re-addition and rename.
+The source remains the unencoded ACE16/subversion-zero eleven-page graph with
+native definition7, explicit Name AutoCorrect OFF, complete ownership/index
+membership and independently checked absence of required programs/dependencies.
+Original metadata selects this family before planning: retained native column
+numbers exceed the live descriptor count and variable storage or a non-LONG
+live field requires current geometry. The working all-LONG sparse fixed-field
+route keeps its original TCNA2/6 language. Failed admission is never retried.
+
+A distinct current-INSERT absence certificate cannot be substituted by schema
+inspection, current-row UPDATE or old generated-INSERT evidence. Old records
+remain byte-exact, including hidden/forwarded payloads and retired slots. New
+records use actual native-number mask positions, live fixed offsets and the full
+retained variable-slot trailer; deleted variable slots are empty spans. An
+unused retired slot is distinct from an omitted caller field, supplied NULL or
+supplied empty Text/Binary. Defaults resolve from current native declarations;
+the request retains original presence rather than expanded values.
+
+Generated IDs derive from the actual LastIssued counter. Physical DATA slots,
+live rows, index membership and unique-key history are checked separately.
+The existing owned-space allocator and independent index/placement proof remain
+in use; metadata/property history, maps and EOF are unchanged. Source and final
+constraints are checked before any durable prepare. This source family does not
+allocate more pages. Its current one-DATA-page/u8-root-slot geometry reaches real
+capacity before older shared indexed-proof row ceilings could bind; expanding
+that geometry will require revisiting those older proof dependencies.
+
+TCNA7 uses the wider scalar carrier grammar and tag14 for omission, preserving
+tag0 for supplied NULL. The complete record, row/column counts and variable
+payloads use their actual u32 wire bounds plus caller-selected budgets; the new
+codec does not inherit the older 16,384-row, 64 MiB or 8 KiB carrier quotas.
+Native field constraints and physical source capacity remain independent of
+inert request encoding. Existing TCNA2/6 decoders stay closed; `decode_current`
+accepts only TCNA7. Clock envelopes retain their original TCNA2 nesting and are
+not selected for this current literal-default family.
+
+Requalification and checked V1 cold recovery dispatch from the retained original
+family, verify the complete BEFORE binding, reconstruct source/default/record/
+index admission afresh and compare the complete AFTER. Decoded rows and a valid
+journal digest grant no mutation permission. The Access consumer selects the
+new family during consuming review; insertion-schema construction remains
+metadata-only and neither scans target records nor samples a clock implicitly.
+Desktop and MCP continue to use the shared runtime services.
+
+Independent raw/read/query checks cover 224 sequential inserted rows across 56
+filled/unfilled, renamed/original source histories. The native current family
+passes three tests and its source-purpose checks pass two; the original
+incrementing regression batch passes thirteen, with seven existing explicit
+ignores. Seven current codec/recovery checks cover exact original bytes, fresh
+scopes, pending/committed recovery, forged AFTERs, family refusal, explicit
+budgets and the absence of inherited wire quotas. The complete omitted-insert
+intent family passes thirteen tests.
+
+Sixteen headless GUI journeys save and acknowledge 58 rows, including the old
+Number route, omitted defaults, supplied NULL, empty/compressed/Unicode Text and
+empty/nonempty Binary. Whole-image oracles and fresh reopen preserve all old
+rows, generated IDs and property history. The affected insertion/field-addition
+families pass 64 tests. These are implementation and independent-byte checks;
+native Windows/Access Save/reopen comparison, broader source geometry, page
+allocation and general required-program execution remain unfinished.
+
+## Original complete scalar profile
+
 ```sh
 tablecraft query journal-insert "INSERT INTO Sentinel (ID, Marker, Bytes) VALUES (24, 'new', NULL)" \
   --database offline.accdb --journal fresh-insert-journal

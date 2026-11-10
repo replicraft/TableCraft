@@ -1,5 +1,28 @@
 # Implementation status
 
+## INSERT after retained schema histories — 10 November 2026
+
+Qualified current ACE16 tables now add rows after DROP → ADD → rename through
+shared runtime review/save/reopen services. A separate TCNA0007 request keeps
+omitted, supplied NULL and empty values distinct; generated IDs use LastIssued,
+while native field numbers, physical slots and retained variable slots remain
+separate. Old all-LONG sparse generation and TCNA2/6 recovery retain their own
+source languages. Current INSERT has a distinct absence certificate and fresh
+source/counter/record/index reconstruction on recovery. No desktop production
+editing logic was added.
+
+Independent byte/read/query checks verify 224 sequential inserts across 56
+sources. The native current batch passes three tests; source-purpose checks pass
+two. Seven current wire/recovery tests and the full thirteen-test omitted-intent
+family pass. Sixteen new headless GUI workflows save and acknowledge 58 rows,
+including default/NULL/empty/Unicode and empty/nonempty Binary distinctions.
+The complete affected insertion/field-addition families pass 64 tests. Strict
+ACE/Access/runtime/desktop/MCP checks and minimal engine feature checks pass.
+The dependency guard permits core value imports in desktop tests only, with
+normal/build edges still rejected. Native Windows/Access qualification,
+broader storage geometry and further persisted CRUD remain unfinished. See
+[normal INSERT](access/writes/NORMAL_ACE_INSERT.md).
+
 ## Rename after retained field histories — 10 November 2026
 
 Normal runtime now selects a separate TCFR0001/profile5 rename source for
