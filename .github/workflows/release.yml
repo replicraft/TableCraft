@@ -168,6 +168,7 @@ jobs:
 
   desktop:
     name: Build and verify desktop packages without publishing
+    if: github.event_name != 'pull_request'
     needs: version
     uses: ./.github/workflows/desktop-packaging.yml
     permissions:
