@@ -36,7 +36,13 @@ ordinary admission closed. A separate `TCNI0012`/profile12 operation now fills o
 absent Number field within existing owned DATA capacity, preserving logical IDs
 through checked forwarding. The actual headless journey fills all three old rows,
 then edits a forwarded field and freshly reopens against independent whole images.
-Other sources, bulk materialization and native Access comparisons remain separate work. See the
+The separate `TCNI0013`/profile13 operation now fills one absent Number beside
+qualified Short Text or Short Binary fields, preserving raw variable payloads,
+padding and other absent fields. The connected headless field-addition batch
+passes fifteen cases; forty-four focused native historical tests cover the
+combined profiles and cold recovery. Older profile12 remains all-LONG only.
+Materializing another absent field through an already-forwarded root, broader
+sources, bulk materialization and native Access comparisons remain separate work. See the
 [column addition contract](access/writes/ADD_COLUMN.md).
 
 The combined all-feature library regression batch passes 1,676 ACE tests with

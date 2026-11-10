@@ -22,7 +22,7 @@ Existing records retain their exact bytes and expose the absent new field as
 NULL. A later omitted insertion uses zero, while explicit NULL remains NULL.
 Independent complete-image oracles and connected desktop insertion/reopen checks
 cover those distinctions. The separate operation below can fill one absent
-Number field in a qualified dense fixed-record source; the ADD itself still
+Number field in qualified fixed or mixed records; the ADD itself still
 does not rewrite old records or qualify arbitrary record expansion.
 
 ### Editing an existing field
@@ -88,6 +88,33 @@ Native tests separately cover another absent field staying NULL, opaque payload
 and mask bits, slot exhaustion, original-intent bytes, crossed profiles,
 pending/committed cold recovery and forged-journal metadata refusal. These are
 implementation checks, not Microsoft Access or native Windows save qualification.
+
+### Filling an absent Number beside Text or Binary
+
+The separate `TCNI0013`/profile13 operation extends that workflow to the same
+qualified current source with known fixed fields and Short Text or Short Binary
+variable slots. It still accepts exactly one absent nullable, unindexed LONG
+field changing from NULL to Int32 through a direct logical root. Profile12's
+all-LONG source language remains unchanged; selection uses original metadata,
+without retrying a rejected planner as another profile.
+
+Record reconstruction preserves the entire original variable body, including
+compressed text, opaque NULL payloads and stationary padding. It adjusts the
+offset directory for the larger fixed prefix and represents other absent fields
+as NULL rather than applying defaults. Independent record and placement proofs
+check the resulting complete image before the existing owned-space forwarding
+operation is admitted. Recovery stores the original request and full BEFORE
+binding, then reconstructs the AFTER under fresh source and resource checks.
+
+Headless desktop journeys add the Number field beside Text or Binary, fill each
+of three original rows, edit an existing field through the resulting forwarded
+root and reopen a fresh host. Every stage matches an independently authored
+whole image. Forty-four focused native historical tests cover the combined
+profiles, including independent wire bytes, crossed-profile rejection, cold
+pending/committed recovery and forged offset-directory rejection. The connected
+field-addition batch passes fifteen cases. These observations do not qualify
+arbitrary imported layouts, bulk changes or materializing another absent field
+through an already-forwarded root; that repeated-growth workflow remains work.
 
 The closed `TCAC0008`/profile8 request binds the complete original and exact names,
 fixing this Number declaration. Recovery reconstructs both complete images under
