@@ -7,7 +7,7 @@ use crate::{
 };
 use tablecraft_core::limits::ResourceBudget;
 
-pub(super) fn capture(
+pub(in crate::table::mutation) fn capture(
     image: &NativeImage,
     table: &str,
     budget: &mut ResourceBudget,
@@ -31,6 +31,46 @@ pub(super) fn capture(
     indexed::qualify(image, &source, Family::Retained, budget, cancelled)?;
     check(budget, cancelled)?;
     Ok(source)
+}
+
+/// Build and independently prove every row/index removal while the table's
+/// original catalog identity remains live. The caller owns catalog deletion.
+pub(in crate::table::mutation) fn compose_table_drop(
+    image: &NativeImage,
+    table: &str,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Vec<u8>, EditError> {
+    let source = capture(image, table, budget, cancelled)?;
+    let requests = selection::prepare(
+        image,
+        &source,
+        0..source.records.len(),
+        Family::Retained,
+        budget,
+        cancelled,
+    )?;
+    let after = super::compose(
+        image,
+        &source,
+        &requests,
+        Family::Retained,
+        budget,
+        cancelled,
+    )?;
+    super::proof::prove_images(
+        super::proof::Images {
+            before: image.as_bytes(),
+            after: &after,
+        },
+        image.catalog().catalog().scope(),
+        table,
+        &requests,
+        Family::Retained,
+        budget,
+        cancelled,
+    )?;
+    Ok(after)
 }
 
 impl NativeImage {

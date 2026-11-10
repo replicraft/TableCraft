@@ -1,5 +1,6 @@
 //! Independent current table DROP images and positive system-role refusal controls.
 use super::*;
+use crate::table::mutation::drop_table::row_effects as proof;
 use crate::{PayloadPresence, inspect_catalog};
 use std::io::Cursor;
 use tablecraft_model::CatalogScope;

@@ -11,6 +11,7 @@ pub(crate) enum SourceProfile {
     Inline,
     CreatorExternal,
     Current,
+    Retained,
 }
 
 pub(super) struct Qualified {
@@ -28,6 +29,34 @@ pub(super) fn select_profile(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<SourceProfile, TableDropError> {
+    let mut exists = false;
+    for (object, origin) in image
+        .catalog()
+        .catalog()
+        .objects()
+        .iter()
+        .zip(image.catalog().origins())
+    {
+        check(budget, cancelled)?;
+        budget.charge(
+            Resource::Steps,
+            object.name().as_str().len().max(requested.len()) as u64,
+        )?;
+        if object.kind() == ObjectKind::Table
+            && !origin.is_system()
+            && origin.table_storage() == Some(NativeTableStorage::Local)
+            && object.name().as_str().eq_ignore_ascii_case(requested)
+        {
+            exists = true;
+        }
+    }
+    if !exists {
+        return Err(TableDropError::MissingTable);
+    }
+    #[cfg(feature = "ace16-create")]
+    if image.has_retained_table_source(requested, budget, cancelled)? {
+        return Ok(SourceProfile::Retained);
+    }
     #[cfg(feature = "ace16-create")]
     if super::current::selected(image, requested, budget, cancelled)? {
         return Ok(SourceProfile::Current);
@@ -49,6 +78,12 @@ pub(super) fn qualify(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Qualified, TableDropError> {
     check(budget, cancelled)?;
+    if profile == SourceProfile::Retained {
+        #[cfg(feature = "ace16-create")]
+        return super::retained::qualify(image, requested, budget, cancelled);
+        #[cfg(not(feature = "ace16-create"))]
+        return Err(TableDropError::Source);
+    }
     if profile == SourceProfile::Current {
         #[cfg(feature = "ace16-create")]
         return super::current::qualify(image, requested, budget, cancelled);
@@ -91,7 +126,7 @@ pub(super) fn qualify(
         match profile {
             SourceProfile::Inline => table_source::SourceProfile::RetainedInt32,
             SourceProfile::CreatorExternal => table_source::SourceProfile::CreatorExternal,
-            SourceProfile::Current => return Err(TableDropError::Source),
+            SourceProfile::Current | SourceProfile::Retained => return Err(TableDropError::Source),
         },
         budget,
         cancelled,

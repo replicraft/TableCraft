@@ -1,4 +1,4 @@
-use crate::{InspectError, TableRenameError};
+use crate::{EditError, InspectError, TableRenameError};
 use tablecraft_core::limits::LimitError;
 use thiserror::Error;
 
@@ -39,5 +39,16 @@ impl From<TableRenameError> for TableDropError {
 impl From<LimitError> for TableDropError {
     fn from(error: LimitError) -> Self {
         Self::Inspect(error.into())
+    }
+}
+
+impl From<EditError> for TableDropError {
+    fn from(error: EditError) -> Self {
+        match error {
+            EditError::Inspect(error) => Self::Inspect(error),
+            EditError::Preservation => Self::Preservation,
+            EditError::Unsupported(_) => Self::Dependency,
+            _ => Self::Source,
+        }
     }
 }

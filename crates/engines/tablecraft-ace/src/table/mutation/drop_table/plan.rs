@@ -133,11 +133,11 @@ impl NativeImage {
         let original = source::qualify(&self, table, profile, budget, cancelled)?;
         let after = match profile {
             #[cfg(feature = "ace16-create")]
-            SourceProfile::Current => {
-                super::current::proof::compose(&self, &original, budget, cancelled)?
+            SourceProfile::Current | SourceProfile::Retained => {
+                super::row_effects::compose(&self, &original, budget, cancelled)?
             }
             #[cfg(not(feature = "ace16-create"))]
-            SourceProfile::Current => return Err(TableDropError::Source),
+            SourceProfile::Current | SourceProfile::Retained => return Err(TableDropError::Source),
             SourceProfile::Inline | SourceProfile::CreatorExternal => {
                 let mut after =
                     super::super::record_serialization::copy(self.as_bytes(), budget, cancelled)

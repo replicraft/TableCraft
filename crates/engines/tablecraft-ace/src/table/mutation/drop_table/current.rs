@@ -1,6 +1,4 @@
 //! Populated current table DROP composes genuine row deletion and catalog removal.
-pub(super) mod proof;
-
 #[cfg(test)]
 mod tests;
 
@@ -9,7 +7,7 @@ use super::{
     source::{Qualified, SourceProfile},
 };
 use crate::{
-    EditError, FileFormat, InspectError, NativeImage, NativeTableStorage,
+    FileFormat, InspectError, NativeImage, NativeTableStorage,
     format::{bytes::u32_at, definition::LENGTH_OFFSET, page::PAGE_BYTES},
     header::check,
     inspect_table_schema,
@@ -108,7 +106,7 @@ pub(super) fn qualify(
     let observed = current_schema::observe(image, requested, budget, cancelled).map_err(
         |error| match error {
             current_schema::Error::Inspect(error) => TableDropError::Inspect(error),
-            current_schema::Error::Native(error) => edit_error(error),
+            current_schema::Error::Native(error) => error.into(),
             current_schema::Error::Source => TableDropError::Source,
         },
     )?;
@@ -120,10 +118,10 @@ pub(super) fn qualify(
                 schema_source::Error::Dependency => TableDropError::Dependency,
             },
         )?;
-    schema_dependencies::require_empty(image, budget, cancelled).map_err(edit_error)?;
+    schema_dependencies::require_empty(image, budget, cancelled).map_err(TableDropError::from)?;
     drop(
         normal_delete::current::capture_table_drop(image, requested, budget, cancelled)
-            .map_err(edit_error)?,
+            .map_err(TableDropError::from)?,
     );
     let name = observed.schema.name();
     if !crate::identifier::valid_name(name, budget, cancelled)? {
@@ -148,22 +146,4 @@ pub(super) fn qualify(
         catalog_definition: observed.catalog.definition_page(),
         catalog_rows: observed.catalog.declared_rows(),
     })
-}
-
-pub(super) fn row_effects(
-    image: &NativeImage,
-    table: &str,
-    budget: &mut ResourceBudget,
-    cancelled: &dyn Fn() -> bool,
-) -> Result<Vec<u8>, TableDropError> {
-    normal_delete::current::compose_table_drop(image, table, budget, cancelled).map_err(edit_error)
-}
-
-fn edit_error(error: EditError) -> TableDropError {
-    match error {
-        EditError::Inspect(error) => TableDropError::Inspect(error),
-        EditError::Preservation => TableDropError::Preservation,
-        EditError::Unsupported(_) => TableDropError::Dependency,
-        _ => TableDropError::Source,
-    }
 }

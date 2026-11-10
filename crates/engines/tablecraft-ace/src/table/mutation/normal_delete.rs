@@ -2,7 +2,7 @@
 #[cfg(feature = "ace16-create")]
 pub(super) mod current;
 #[cfg(feature = "ace16-create")]
-mod retained;
+pub(super) mod retained;
 
 mod indexed;
 mod proof;
