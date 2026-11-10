@@ -79,6 +79,9 @@ impl NativeImage {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<AddTablePlan, AddTableError> {
+        if definition.is_native() {
+            return Err(CreateDatabaseError::Declaration.into());
+        }
         if retained::selected(&self, budget, cancelled)? {
             return self.plan_add_table_retained(definition, budget, cancelled);
         }
@@ -92,6 +95,9 @@ impl NativeImage {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<AddTablePlan, AddTableError> {
+        if definition.is_native() {
+            return Err(CreateDatabaseError::Declaration.into());
+        }
         let _span = tracing::debug_span!("native.add_table.plan").entered();
         check(budget, cancelled)?;
         let keyed = definition.primary_position().is_some();
@@ -120,6 +126,9 @@ impl NativeImage {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<AddTablePlan, AddTableError> {
+        if definition.is_native() {
+            return Err(CreateDatabaseError::Declaration.into());
+        }
         retained::plan(self, definition, budget, cancelled)
     }
 
@@ -131,6 +140,9 @@ impl NativeImage {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<AddTablePlan, AddTableError> {
+        if definition.is_native() {
+            return Err(CreateDatabaseError::Declaration.into());
+        }
         check(budget, cancelled)?;
         if definition.is_manual() {
             return Err(CreateDatabaseError::Declaration.into());
@@ -153,6 +165,11 @@ impl AddTablePlan {
     /// Fresh structural source/target classification selects the closed wire language.
     pub const fn source_profile(&self) -> AddTableSourceProfile {
         self.profile
+    }
+
+    /// Whether the original request uses the separate native-count construction.
+    pub fn is_native(&self) -> bool {
+        self.definition.is_native()
     }
 
     /// Complete retained original bytes; no existing object was reconstructed.

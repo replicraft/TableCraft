@@ -41,6 +41,9 @@ impl NativeImage {
     ) -> Result<FirstTablePlan, FirstTableError> {
         let _span = tracing::debug_span!("native.first_table.plan").entered();
         check(budget, cancelled)?;
+        if definition.is_native() {
+            return Err(CreateDatabaseError::Declaration.into());
+        }
         self.require_standard_capture()?;
         require_canonical_blank(self.as_bytes(), budget, cancelled)?;
         let columns = definition.borrowed_columns(budget, cancelled)?;

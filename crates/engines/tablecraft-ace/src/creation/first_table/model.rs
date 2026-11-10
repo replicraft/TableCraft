@@ -2,7 +2,7 @@ use super::super::{
     CreateColumn, CreateDatabaseError,
     column::Declaration,
     input::{Columns, Rows},
-    request,
+    request::{self, Construction},
 };
 use crate::{InspectError, header::check};
 use tablecraft_core::{
@@ -20,6 +20,12 @@ struct Column {
     unicode_compression: bool,
 }
 
+struct Retention {
+    manual: bool,
+    allow_compression: bool,
+    construction: Construction,
+}
+
 struct Primary {
     name: String,
     position: usize,
@@ -31,6 +37,7 @@ pub struct FirstTableDefinition {
     table: String,
     primary: Option<Primary>,
     manual: bool,
+    construction: Construction,
     columns: Vec<Column>,
 }
 
@@ -70,8 +77,11 @@ impl FirstTableDefinition {
             table,
             columns,
             Some((0, primary)),
-            false,
-            false,
+            Retention {
+                manual: false,
+                allow_compression: false,
+                construction: Construction::Original,
+            },
             budget,
             cancelled,
         )
@@ -106,7 +116,103 @@ impl FirstTableDefinition {
                 return Err(CreateDatabaseError::Declaration);
             }
         }
-        Self::retain(table, columns, primary, true, false, budget, cancelled)
+        Self::retain(
+            table,
+            columns,
+            primary,
+            Retention {
+                manual: true,
+                allow_compression: false,
+                construction: Construction::Original,
+            },
+            budget,
+            cancelled,
+        )
+    }
+
+    /// Retain up to 255 native declarations for the separate joined-definition
+    /// creation language. Existing capture methods retain their original limits.
+    pub fn capture_native(
+        table: &str,
+        columns: &[CreateColumn<'_>],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, CreateDatabaseError> {
+        if !columns
+            .first()
+            .is_some_and(|column| column.incrementing_autonumber())
+        {
+            return Err(CreateDatabaseError::Declaration);
+        }
+        request::validate_native(
+            table,
+            Columns::Values(columns),
+            Rows::Values(&[]),
+            budget,
+            cancelled,
+        )?;
+        let primary = columns[0]
+            .primary_key_name()
+            .ok_or(CreateDatabaseError::Declaration)?;
+        Self::retain(
+            table,
+            columns,
+            Some((0, primary)),
+            Retention {
+                manual: false,
+                allow_compression: false,
+                construction: Construction::Native,
+            },
+            budget,
+            cancelled,
+        )
+    }
+
+    /// Retain up to 255 manual native declarations, with their actual optional
+    /// primary position and no invented AutoNumber or key.
+    pub fn capture_manual_native(
+        table: &str,
+        columns: &[CreateColumn<'_>],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, CreateDatabaseError> {
+        request::validate_native(
+            table,
+            Columns::Values(columns),
+            Rows::Values(&[]),
+            budget,
+            cancelled,
+        )?;
+        let mut primary = None;
+        for (position, column) in columns.iter().enumerate() {
+            check(budget, cancelled)?;
+            if column.incrementing_autonumber() {
+                return Err(CreateDatabaseError::Declaration);
+            }
+            if let Some(name) = column.primary_key_name()
+                && primary.replace((position, name)).is_some()
+            {
+                return Err(CreateDatabaseError::Declaration);
+            }
+        }
+        Self::retain(
+            table,
+            columns,
+            primary,
+            Retention {
+                manual: true,
+                allow_compression: false,
+                construction: Construction::Native,
+            },
+            budget,
+            cancelled,
+        )
+    }
+
+    /// Whether this original request selected the native-count construction
+    /// language, independently of manual fields and the captured source cohort.
+    pub fn is_native(&self) -> bool {
+        self.construction == Construction::Native
     }
 
     /// Capture only this new field-addition owner's compression-aware declarations.
@@ -126,8 +232,11 @@ impl FirstTableDefinition {
             table,
             columns,
             Some((0, primary)),
-            false,
-            true,
+            Retention {
+                manual: false,
+                allow_compression: true,
+                construction: Construction::Original,
+            },
             budget,
             cancelled,
         )
@@ -137,8 +246,7 @@ impl FirstTableDefinition {
         table: &str,
         columns: &[CreateColumn<'_>],
         primary: Option<(usize, &str)>,
-        manual: bool,
-        allow_compression: bool,
+        retention: Retention,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, CreateDatabaseError> {
@@ -160,7 +268,7 @@ impl FirstTableDefinition {
             .map_err(|_| InspectError::Allocation)?;
         for column in columns {
             check(budget, cancelled)?;
-            if column.unicode_compression() && !allow_compression {
+            if column.unicode_compression() && !retention.allow_compression {
                 return Err(CreateDatabaseError::Declaration);
             }
             retained.push(Column {
@@ -183,7 +291,8 @@ impl FirstTableDefinition {
         Ok(Self {
             table,
             primary,
-            manual,
+            manual: retention.manual,
+            construction: retention.construction,
             columns: retained,
         })
     }

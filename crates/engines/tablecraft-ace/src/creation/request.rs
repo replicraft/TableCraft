@@ -30,8 +30,8 @@ pub enum CreateDatabaseError {
     /// The user table name conflicts with an authored system table.
     #[error("creation table name conflicts with a required system table")]
     SystemTableName,
-    /// This bounded profile requires between one and sixteen user columns.
-    #[error("creation requires between one and sixteen scalar columns")]
+    /// The selected constructive request exceeds its admitted column count.
+    #[error("creation column count is outside the selected constructive profile")]
     ColumnLimit,
     /// This bounded profile admits at most sixty-four user rows.
     #[error("creation admits at most sixty-four rows")]
@@ -103,6 +103,47 @@ pub(super) fn validate<'a>(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Request<'a>, CreateDatabaseError> {
+    validate_with(
+        table,
+        columns,
+        rows,
+        Construction::Original,
+        budget,
+        cancelled,
+    )
+}
+
+#[derive(Clone, Copy, PartialEq, Eq)]
+pub(super) enum Construction {
+    Original,
+    Native,
+}
+
+pub(super) fn validate_native<'a>(
+    table: &'a str,
+    columns: Columns<'a>,
+    rows: Rows<'a>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Request<'a>, CreateDatabaseError> {
+    validate_with(
+        table,
+        columns,
+        rows,
+        Construction::Native,
+        budget,
+        cancelled,
+    )
+}
+
+fn validate_with<'a>(
+    table: &'a str,
+    columns: Columns<'a>,
+    rows: Rows<'a>,
+    construction: Construction,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Request<'a>, CreateDatabaseError> {
     check(budget, cancelled)?;
     name(table, budget, cancelled)?;
     for system in profile::SYSTEM_NAMES {
@@ -112,7 +153,11 @@ pub(super) fn validate<'a>(
         }
     }
     let catalog_name = stored_text::Plan::capture(table, budget, cancelled)?;
-    if columns.count() == 0 || columns.count() > profile::MAX_COLUMNS {
+    let maximum_columns = match construction {
+        Construction::Original => profile::MAX_COLUMNS,
+        Construction::Native => usize::from(u8::MAX),
+    };
+    if columns.count() == 0 || columns.count() > maximum_columns {
         return Err(CreateDatabaseError::ColumnLimit);
     }
 
@@ -187,7 +232,7 @@ pub(super) fn validate<'a>(
         .checked_add(user_catalog_bytes)
         .and_then(|bytes| bytes.checked_add(size_of::<u16>()))
         .ok_or(CreateDatabaseError::PageCapacity)?;
-    if catalog_bytes > PAGE_BYTES {
+    if construction == Construction::Original && catalog_bytes > PAGE_BYTES {
         return Err(CreateDatabaseError::PageCapacity);
     }
 
@@ -250,8 +295,9 @@ pub(super) fn validate<'a>(
         }
         fields.push(field);
     }
-    if super::definition::length_with_primary(Fields::new(&fields), false, primary.as_ref())?
-        > PAGE_BYTES
+    if construction == Construction::Original
+        && super::definition::length_with_primary(Fields::new(&fields), false, primary.as_ref())?
+            > PAGE_BYTES
     {
         return Err(CreateDatabaseError::PageCapacity);
     }
