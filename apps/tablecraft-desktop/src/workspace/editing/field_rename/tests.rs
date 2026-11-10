@@ -174,3 +174,5 @@ fn actual_ack_then_failed_witness_can_return_with_saved_facts_and_block_stale_wr
 mod fitting;
 
 mod populated;
+
+mod repeated;

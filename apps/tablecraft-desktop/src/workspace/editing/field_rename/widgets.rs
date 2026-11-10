@@ -113,7 +113,10 @@ pub(super) fn propose_name(
     harness.run_steps(1);
     finish_reads(harness);
     let input = harness.get_by_role_and_label(Role::TextInput, "Field name");
-    assert!(!input.accesskit_node().is_read_only());
+    assert!(
+        !input.accesskit_node().is_read_only(),
+        "actual native source inspection must permit the {original_name:?} proposal"
+    );
     input.focus();
     harness.run_steps(1);
     harness.key_press_modifiers(Modifiers::COMMAND, Key::A);
