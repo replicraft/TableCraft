@@ -157,13 +157,25 @@ fn normal_populated_field_rename_then_row_crud_preserves_other_records_and_gener
         let deleted = deletes::long_row(&inserted, 1);
         assert_eq!(std::fs::read(&path).unwrap(), deleted);
         assert!(!journal_path(&path).exists());
+
+        propose_name(&mut harness, replacement, "Revenue");
+        assert!(harness.state().state.can_review_field_rename());
+        assert_eq!(std::fs::read(&path).unwrap(), deleted);
+        assert!(!journal_path(&path).exists());
+        harness.key_press_modifiers(Modifiers::COMMAND, Key::S);
+        harness.run_steps(1);
+        finish_schema_save(&mut harness);
+        let renamed_after_delete = fitting::rename_current(&deleted, replacement, "Revenue");
+        assert_eq!(std::fs::read(&path).unwrap(), renamed_after_delete);
+        assert!(!harness.state().editing.has_save());
+        assert!(!journal_path(&path).exists());
         drop(harness);
 
         let mut reopened = app_harness(Desktop::new(egui::Context::default(), Some(path.clone())));
         finish_reads(&mut reopened);
         let page = reopened.state().state.data.as_ref().unwrap();
         assert_eq!(page.table, "Table1");
-        assert_eq!(page.columns[1].name, replacement);
+        assert_eq!(page.columns[1].name, "Revenue");
         assert_eq!(page.columns[1].native_number, Some(1));
         assert_eq!(page.rows.len(), 3);
         for (row, id, value) in [(0, "1", "99"), (1, "3", "-7"), (2, "4", "0")] {
@@ -175,7 +187,7 @@ fn normal_populated_field_rename_then_row_crud_preserves_other_records_and_gener
             ));
         }
         assert!(!reopened.state().editing.has_save());
-        assert_eq!(std::fs::read(&path).unwrap(), deleted);
+        assert_eq!(std::fs::read(&path).unwrap(), renamed_after_delete);
         assert!(!journal_path(&path).exists());
     }
 }

@@ -114,7 +114,9 @@ pub(super) fn propose_name(
     finish_reads(harness);
     let input = harness.get_by_role_and_label(Role::TextInput, "Field name");
     assert!(
-        !input.accesskit_node().is_read_only(),
+        !input.accesskit_node().is_read_only()
+            && !input.accesskit_node().is_disabled()
+            && harness.state().state.can_edit_field_rename(),
         "actual native source inspection must permit the {original_name:?} proposal"
     );
     input.focus();
