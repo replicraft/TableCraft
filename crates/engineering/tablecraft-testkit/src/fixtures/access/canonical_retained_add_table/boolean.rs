@@ -1,4 +1,5 @@
 //! Desktop Yes/No has a value bit, no payload bytes and no NULL storage state.
+pub mod mixed;
 use super::desktop;
 use crate::fixtures::access::{
     canonical_initial_table_creation::Column,
