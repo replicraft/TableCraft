@@ -19,6 +19,7 @@ pub(in crate::table::mutation) enum LayoutPolicy {
     HistoricalPresent,
 }
 
+#[cfg(feature = "ace16-write-preview")]
 pub(in crate::table::mutation) fn visit<'u, U: RowAssignment>(
     image: &NativeImage,
     schema: &TableSchema,
