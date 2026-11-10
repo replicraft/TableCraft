@@ -170,7 +170,9 @@ fn validate(
             .charge(Resource::Steps, (actual.len() + expected.len()) as u64)
             .map_err(InspectError::from)?;
         if actual != expected {
-            return Err(Error::Preservation);
+            // This is a source-language equality check, not failed mutation
+            // preservation. Current metadata can legitimately have other history.
+            return Err(Error::Source);
         }
     }
     check(reader.budget, cancelled)?;

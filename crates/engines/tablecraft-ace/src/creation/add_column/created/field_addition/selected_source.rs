@@ -4,7 +4,8 @@ use super::{
     FieldAdditionAfterOffHistoryError, FieldAdditionError, FieldAdditionTarget, after_off,
 };
 use crate::{
-    FieldHistoryDatabaseOptionsError, FileFormat, InspectError, NativeImage,
+    CurrentFieldAdditionError, FieldHistoryDatabaseOptionsError, FileFormat, InspectError,
+    NativeImage,
     format::{
         page::PAGE_BYTES,
         row::{reference_page, reference_slot},
@@ -22,6 +23,8 @@ const POST_OFF_OBJECTS: usize = crate::creation::profile::CATALOG_OBJECT_COUNT +
 /// Metadata-selected source purpose, never proof or mutation permission.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum FieldAdditionSourcePurpose {
+    /// Current metadata with explicit OFF, preserving existing rows and histories.
+    CurrentNumber,
     /// Existing explicit first/repeated/typed language and its unchanged proof.
     Created(CreatedFieldAdditionSourcePurpose),
     /// Actual native database role; only full settled OFF proof can admit it.
@@ -34,6 +37,9 @@ pub enum FieldAdditionSourcePurpose {
 /// Selected source refusal while preserving inspection/resource identity.
 #[derive(Debug, Error)]
 pub enum FieldAdditionSourceError {
+    /// Current metadata ownership, dependencies or measured fitting failed.
+    #[error(transparent)]
+    Current(#[from] CurrentFieldAdditionError),
     /// Native inspection, allocation, cumulative limit or cancellation failure.
     #[error(transparent)]
     Inspect(#[from] InspectError),
@@ -145,6 +151,9 @@ impl NativeImage {
             return Err(FieldAdditionSourceError::Source);
         }
         if let Some(database) = database::role(self.catalog(), budget, cancelled)? {
+            if matches!(target, FieldAdditionTarget::NumberLongZero) {
+                return Ok(FieldAdditionSourcePurpose::CurrentNumber);
+            }
             if table.len() > after_off::MAX_ASCII_NAME_BYTES {
                 return Err(FieldAdditionSourceError::Source);
             }
@@ -200,6 +209,38 @@ impl NativeImage {
             cancelled,
         )?;
         let after_off_limits = match purpose {
+            FieldAdditionSourcePurpose::CurrentNumber => {
+                let number =
+                    self.inspect_current_field_addition_source(table, budget, cancelled)?;
+                let number = u8::try_from(number.maximum_name_utf16_units())
+                    .map_err(|_| FieldAdditionSourceError::Source)?;
+                let text_purpose = self.field_addition_source_purpose(
+                    table,
+                    FieldAdditionTarget::ShortText {
+                        max_utf16_units: 255,
+                        unicode_compression: true,
+                    },
+                    budget,
+                    cancelled,
+                )?;
+                let text = match text_purpose {
+                    FieldAdditionSourcePurpose::AfterExplicitOff => {
+                        after_off::availability::inspect(self, table, budget, cancelled)
+                            .map_err(FieldAdditionSourceError::from)
+                    }
+                    FieldAdditionSourcePurpose::AfterExplicitOffHistory => {
+                        after_off::availability::inspect_history(self, table, budget, cancelled)
+                            .map_err(FieldAdditionSourceError::from)
+                    }
+                    _ => return Err(FieldAdditionSourceError::Source),
+                };
+                let text = match text {
+                    Ok(limits) => limits.1,
+                    Err(FieldAdditionSourceError::Source) => None,
+                    Err(error) => return Err(error),
+                };
+                Some(((number != 0).then_some(number), text))
+            }
             FieldAdditionSourcePurpose::Created(_) => {
                 self.check_created_field_addition_source(table, budget, cancelled)?;
                 None

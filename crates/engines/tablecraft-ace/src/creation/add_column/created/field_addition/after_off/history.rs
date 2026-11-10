@@ -267,7 +267,9 @@ pub(super) fn qualified_replay(
         reader.budget,
         cancelled,
     )? {
-        return Err(Error::Preservation);
+        // A valid current file can retain bytes outside this chronological
+        // producer language. Source replay is admission, not an AFTER proof.
+        return Err(Error::Source);
     }
     check(reader.budget, cancelled)?;
     Ok(replay)

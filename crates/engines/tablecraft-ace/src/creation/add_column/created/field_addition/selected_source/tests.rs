@@ -26,7 +26,7 @@ fn image(bytes: &[u8]) -> NativeImage {
 }
 
 #[test]
-fn actual_database_role_selects_only_new_proof_and_four_fitting_declarations() {
+fn actual_database_role_selects_current_number_and_preserves_explicit_text_proof() {
     for case in [raw::SourceCase::Number, raw::SourceCase::Mixed] {
         let before = raw::source(case);
         let purpose = image(&before)
@@ -37,7 +37,21 @@ fn actual_database_role_selects_only_new_proof_and_four_fitting_declarations() {
                 &|| false,
             )
             .unwrap();
-        assert_eq!(purpose, FieldAdditionSourcePurpose::AfterExplicitOff);
+        assert_eq!(purpose, FieldAdditionSourcePurpose::CurrentNumber);
+        assert_eq!(
+            image(&before)
+                .field_addition_source_purpose(
+                    "Table1",
+                    FieldAdditionTarget::ShortText {
+                        max_utf16_units: 255,
+                        unicode_compression: true,
+                    },
+                    &mut budget(),
+                    &|| false,
+                )
+                .unwrap(),
+            FieldAdditionSourcePurpose::AfterExplicitOff,
+        );
         let facts = image(&before)
             .inspect_field_addition_source("Table1", &mut budget(), &|| false)
             .unwrap();
@@ -159,7 +173,7 @@ fn measured_capacity_keeps_shorter_valid_names_available() {
 }
 
 #[test]
-fn later_user_event_selects_history_without_widening_the_settled_source() {
+fn later_user_event_selects_current_number_without_widening_the_settled_source() {
     let before = raw::source(raw::SourceCase::Number);
     let after = raw::append_number(&before, "AfterOff");
     assert_eq!(
@@ -171,7 +185,7 @@ fn later_user_event_selects_history_without_widening_the_settled_source() {
                 &|| false
             )
             .unwrap(),
-        FieldAdditionSourcePurpose::AfterExplicitOffHistory,
+        FieldAdditionSourcePurpose::CurrentNumber,
     );
     let facts = image(&after)
         .inspect_field_addition_source("Table1", &mut budget(), &|| false)
@@ -235,10 +249,7 @@ fn actual_refs_resolve_both_forwarded_and_ordinary_user_catalog_roots() {
         let facts = image(&current)
             .inspect_field_addition_source("Table1", &mut budget(), &|| false)
             .unwrap();
-        assert_eq!(
-            facts.purpose(),
-            FieldAdditionSourcePurpose::AfterExplicitOffHistory
-        );
+        assert_eq!(facts.purpose(), FieldAdditionSourcePurpose::CurrentNumber);
         assert!(facts.number_available() && facts.short_text_available());
     }
 }
@@ -254,24 +265,20 @@ fn qualified_history_with_no_room_returns_false_without_a_proposed_after() {
     let facts = image(&current)
         .inspect_field_addition_source("Table1", &mut budget(), &|| false)
         .unwrap();
-    assert_eq!(
-        facts.purpose(),
-        FieldAdditionSourcePurpose::AfterExplicitOffHistory
-    );
+    assert_eq!(facts.purpose(), FieldAdditionSourcePurpose::CurrentNumber);
     assert_eq!(facts.after_off_name_limits(), Some((None, None)));
     assert!(!facts.number_available() && !facts.short_text_available());
 }
 
 #[test]
-fn historical_tail_failure_and_nested_inspection_are_not_hidden_as_source_facts() {
+fn opaque_history_is_not_text_authority_and_nested_inspection_failures_are_preserved() {
     let mut current = raw::history::source(raw::history::SourceCase::NumberThenNumber);
     current[7 * 4096 + 3000] ^= 1;
-    assert!(matches!(
-        image(&current).inspect_field_addition_source("Table1", &mut budget(), &|| false),
-        Err(FieldAdditionSourceError::History(
-            FieldAdditionAfterOffHistoryError::Preservation
-        ))
-    ));
+    let available = image(&current)
+        .inspect_field_addition_source("Table1", &mut budget(), &|| false)
+        .unwrap();
+    assert!(available.number_available());
+    assert!(!available.short_text_available());
     for error in [
         InspectError::Cancelled,
         InspectError::Allocation,
@@ -307,10 +314,12 @@ fn readable_small_role_catalog_refuses_before_specialized_map_observation() {
                 &|| false
             )
             .unwrap(),
-        FieldAdditionSourcePurpose::AfterExplicitOff
+        FieldAdditionSourcePurpose::CurrentNumber
     );
     assert!(matches!(
         image(&current).inspect_field_addition_source("Missing", &mut budget(), &|| false),
-        Err(FieldAdditionSourceError::Source)
+        Err(FieldAdditionSourceError::Current(
+            CurrentFieldAdditionError::Source
+        ))
     ));
 }

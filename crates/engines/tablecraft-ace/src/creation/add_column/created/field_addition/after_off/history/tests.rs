@@ -140,7 +140,7 @@ fn noncanonical_dictionary_refuses_and_erased_definition_tail_requires_full_repl
     tail[USER_DEFINITION_PAGE * PAGE_BYTES + UNINTERPRETED_DEFINITION_TAIL] ^= 1;
     assert!(matches!(
         check_source(&tail),
-        Err(FieldAdditionAfterOffHistoryError::Preservation)
+        Err(FieldAdditionAfterOffHistoryError::Source)
     ));
 }
 
