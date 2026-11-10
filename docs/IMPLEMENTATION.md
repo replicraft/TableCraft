@@ -1,5 +1,31 @@
 # Implementation status
 
+## Shared retained traversal — 10 November 2026
+
+Retained table creation and INSERT now share paid, owned catalog/property
+traversal with retained UPDATE and DELETE. INSERT also carries its retained
+LVAL observation through placement and independent reconstruction. Long user
+and catalog forwarding histories no longer encounter a fixed traversal-depth
+quota in these paths. Ownership, cycle/alias checks, source binding and complete
+image preservation remain required. Wire formats, schema/default admission,
+index mutation and allocation capabilities are unchanged.
+
+The native retained family passes 93 tests, with twelve existing ignored cases;
+three current-format INSERT and thirteen ordinary incrementing regressions pass.
+Fresh read/index/query observations pass across independently constructed mixed
+creation, insertion, update, deletion, reinsertion and subsequent-creation images.
+The full headless desktop table-creation family passes 38 tests, including that
+mixed operation sequence through actual review/save/acknowledge controls and
+fresh reopening of all three tables.
+Nine CLI native read-budget regressions pass, including default reads without an
+implicit byte quota and explicit caller-budget refusal. Strict all-target/
+all-feature ACE, Access, runtime, desktop and MCP lint checks and journal-only
+minimal ACE/Access checks pass. Formatting, module/dependency boundaries and local
+documentation links also pass.
+These results do not establish Microsoft Access save/reopen compatibility.
+See [table creation](access/writes/ADD_TABLE_PERSISTENCE.md) and
+[INSERT](access/writes/NORMAL_ACE_INSERT.md).
+
 ## Retained row deletion and reinsertion — 10 November 2026
 
 The shared runtime/Access DELETE service now removes qualified rows after retained
@@ -26,9 +52,9 @@ the leaf helper; it now reads the same engine-owned layout directly. No producti
 desktop editing logic was added and no Windows/Access execution qualification is
 claimed. See [normal DELETE](access/writes/NORMAL_ACE_DELETE.md).
 
-The next shared proof change removes remaining incidental traversal-storage bounds
-from retained INSERT/table-creation observations while preserving their wire and
-schema languages. Retained table/field mutations remain later GUI-driven work.
+The shared traversal change above completes that follow-up for retained INSERT
+and table-creation observations. Retained table/field mutations remain later
+GUI-driven work.
 
 ## Retained table cell editing — 10 November 2026
 
