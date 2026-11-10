@@ -114,9 +114,9 @@ pub(super) fn candidate(
         || usize::from(u16_at(new_definition, FREE_OFFSET)?)
             != PAGE_BYTES - new_length - PAGE_HEADER_BYTES
         || usize::from(u16_at(new_definition, MAX_COLUMN_COUNT_OFFSET)?) != plan.number + 1
-        || usize::from(u16_at(new_definition, COLUMN_COUNT_OFFSET)?) != plan.number + 1
+        || usize::from(u16_at(new_definition, COLUMN_COUNT_OFFSET)?) != plan.active_count + 1
         || usize::from(u16_at(new_definition, VARIABLE_SLOT_COUNT_OFFSET)?)
-            != plan.variable + usize::from(matches!(target, Target::ShortText { .. }))
+            != plan.variable_high_water + usize::from(matches!(target, Target::ShortText { .. }))
         || old_definition[plan.descriptor_start..plan.descriptor_end]
             != new_definition[plan.descriptor_start..plan.descriptor_end]
         || old_definition[plan.descriptor_end..plan.index_start]
@@ -246,7 +246,7 @@ fn metadata(
     }
 
     let properties = &checked.properties;
-    framing::validate(properties, budget, cancelled)?;
+    framing::current_schema_names(properties, budget, cancelled)?;
     if properties.raw_bytes() != body
         || properties.groups().len() != original.properties.groups().len() + 1
     {
@@ -256,9 +256,9 @@ fn metadata(
     let old_names = if original.properties.raw_bytes().is_empty() {
         Vec::new()
     } else {
-        framing::ordered_names(&original.properties, budget, cancelled)?
+        framing::current_schema_names(&original.properties, budget, cancelled)?
     };
-    let new_names = framing::ordered_names(properties, budget, cancelled)?;
+    let new_names = framing::current_schema_names(properties, budget, cancelled)?;
     if new_names.len() < old_names.len()
         || !old_names
             .iter()
@@ -379,7 +379,7 @@ fn blocks(
     output
         .try_reserve_exact(properties.groups().len())
         .map_err(|_| InspectError::Allocation)?;
-    framing::ordered_group_blocks(properties, budget, cancelled, |_, block| {
+    framing::current_schema_group_blocks(properties, budget, cancelled, |_, block| {
         output.push(block);
 
         Ok(())

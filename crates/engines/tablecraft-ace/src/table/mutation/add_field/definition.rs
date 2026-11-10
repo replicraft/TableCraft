@@ -39,9 +39,11 @@ pub(super) struct Plan {
     pub descriptor_end: usize,
     pub index_start: usize,
     pub number: usize,
+    pub active_count: usize,
     pub column_id: u16,
     pub fixed_offset: usize,
     pub variable: usize,
+    pub variable_high_water: usize,
     pub maximum_name_units: usize,
 }
 
@@ -55,7 +57,7 @@ impl Plan {
         check(budget, cancelled)?;
         let layout = schema.physical_layout();
         let count = schema.columns().len();
-        if count == 0 || layout.max_columns != count {
+        if count == 0 || layout.max_columns < count {
             return Err(Error::Source);
         }
 
@@ -88,18 +90,19 @@ impl Plan {
             reads: 0,
         };
         let mut observed = 0;
+        let mut next_id = 0;
         let parsed = layout::read_with_field_names(
             &mut reader,
             schema.definition_page(),
             |number, id, entry, _| {
-                if number != observed
-                    || usize::from(id) != number
+                if schema.columns().get(observed).map(|field| field.number()) != Some(number)
                     || entry
-                        != (descriptor_start + number * COLUMN_ENTRY_BYTES
-                            ..descriptor_start + (number + 1) * COLUMN_ENTRY_BYTES)
+                        != (descriptor_start + observed * COLUMN_ENTRY_BYTES
+                            ..descriptor_start + (observed + 1) * COLUMN_ENTRY_BYTES)
                 {
                     return Err(InspectError::Unsupported);
                 }
+                next_id = next_id.max(usize::from(id) + 1);
                 observed += 1;
                 Ok(())
             },
@@ -114,10 +117,17 @@ impl Plan {
         }
 
         let mut fixed_offset = 0;
-        for (number, field) in schema.columns().iter().enumerate() {
+        let mut variable = 0;
+        for field in schema.columns() {
             check(budget, cancelled)?;
-            if field.number() != number {
-                return Err(Error::Source);
+            if !field.fixed() {
+                variable = variable.max(
+                    field
+                        .physical_field()
+                        .variable
+                        .checked_add(1)
+                        .ok_or(Error::Capacity)?,
+                );
             }
             // A Boolean lives in the record mask; its unused offset grants no
             // payload space and must not move the appended fixed field.
@@ -149,10 +159,12 @@ impl Plan {
             descriptor_start,
             descriptor_end,
             index_start: layout.index_start,
-            number: count,
-            column_id: u16::try_from(count).map_err(|_| Error::Capacity)?,
+            number: layout.max_columns,
+            active_count: count,
+            column_id: u16::try_from(next_id).map_err(|_| Error::Capacity)?,
             fixed_offset,
-            variable: layout.variable_slots,
+            variable,
+            variable_high_water: layout.variable_slots,
             maximum_name_units,
         })
     }
@@ -226,7 +238,11 @@ impl Plan {
                 // existing creation owner; current source only admits General.
                 descriptor[SORT_ORDER_OFFSET..FLAGS_OFFSET].copy_from_slice(&GENERAL_SORT_ORDER);
                 put16(descriptor, WIDTH_OFFSET, max_utf16_units * size_of::<u16>())?;
-                put16(root, layout::VARIABLE_SLOT_COUNT_OFFSET, self.variable + 1)?;
+                put16(
+                    root,
+                    layout::VARIABLE_SLOT_COUNT_OFFSET,
+                    self.variable_high_water + 1,
+                )?;
             }
         }
 
@@ -241,7 +257,7 @@ impl Plan {
         root[LENGTH_OFFSET..LENGTH_OFFSET + size_of::<u32>()]
             .copy_from_slice(&(end as u32).to_le_bytes());
         put16(root, MAX_COLUMN_COUNT_OFFSET, self.number + 1)?;
-        put16(root, COLUMN_COUNT_OFFSET, self.number + 1)?;
+        put16(root, COLUMN_COUNT_OFFSET, self.active_count + 1)?;
         Ok(after)
     }
 }

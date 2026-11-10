@@ -1,4 +1,5 @@
 //! Full raw-image and non-backfill checks independent of native encoders.
+mod readdition;
 use super::*;
 use std::io::Cursor;
 use tablecraft_core::values::Value;

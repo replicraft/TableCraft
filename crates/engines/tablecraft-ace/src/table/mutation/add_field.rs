@@ -84,6 +84,7 @@ pub struct CurrentFieldAdditionSource {
     object: ObjectId,
     number: usize,
     column_id: u16,
+    active_count: usize,
     maximum_name_units: usize,
 }
 
@@ -150,7 +151,7 @@ impl NativeCurrentFieldAdditionCandidate {
 
     /// Number of declared live fields in the replacement.
     pub const fn column_count(&self) -> usize {
-        self.facts.number + 1
+        self.facts.active_count + 1
     }
 }
 
@@ -208,7 +209,7 @@ impl NativeCurrentShortTextFieldAdditionCandidate {
 
     /// Number of declared live fields in the replacement.
     pub const fn column_count(&self) -> usize {
-        self.facts.number + 1
+        self.facts.active_count + 1
     }
 }
 
@@ -429,6 +430,7 @@ fn facts(
         object: current.schema.object_id(),
         number: plan.number,
         column_id: plan.column_id,
+        active_count: plan.active_count,
         maximum_name_units,
     })
 }

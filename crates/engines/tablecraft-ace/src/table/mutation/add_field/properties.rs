@@ -62,7 +62,7 @@ fn plan(
             SIGNATURE_BYTES + BLOCK_HEADER_BYTES,
         )
     } else {
-        let names = framing::ordered_names(properties, budget, cancelled)?;
+        let names = framing::current_schema_names(properties, budget, cancelled)?;
         let length = u32::from_le_bytes(
             raw.get(SIGNATURE_BYTES..SIGNATURE_BYTES + size_of::<u32>())
                 .ok_or(Error::Source)?
