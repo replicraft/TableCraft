@@ -242,6 +242,40 @@ jobs:
             -Installer $installer -Version $env:RELEASE_VERSION -Target $env:RELEASE_TARGET `
             -EvidenceDirectory $evidence
           if ($LASTEXITCODE -ne 0) { throw 'The native MSI lifecycle check failed; inspect its evidence artifact' }
+      - name: Verify native MSI helper upgrade and rollback with disposable fixtures
+        if: runner.os == 'Windows'
+        shell: pwsh
+        env:
+          RELEASE_VERSION: ${{ steps.version.outputs.version }}
+          RELEASE_TARGET: ${{ matrix.target }}
+          RELEASE_BINARY: target/${{ matrix.target }}/release/${{ matrix.binary }}
+        run: |
+          $version = [Version]::Parse($env:RELEASE_VERSION)
+          if ($version.Build -ge 65535) { throw 'The native upgrade fixture needs a representable next MSI patch version' }
+          $fixtureVersion = "$($version.Major).$($version.Minor).$($version.Build + 1)"
+          $fixtureRoot = Join-Path $env:RUNNER_TEMP "tablecraft-msi-fixtures-$env:RELEASE_TARGET-$env:GITHUB_RUN_ID-$env:GITHUB_RUN_ATTEMPT"
+          & python scripts/packaging/package_windows.py --version $fixtureVersion --target $env:RELEASE_TARGET `
+            --binary $env:RELEASE_BINARY --notices resources/DesktopThirdPartyLicenses.txt `
+            --icon resources/icons/application.ico --wix $env:TABLECRAFT_WIX --output $fixtureRoot
+          if ($LASTEXITCODE -ne 0) { throw 'Could not construct the separate native upgrade fixture' }
+          $originalName = python -c 'import sys; sys.path.insert(0, "scripts/packaging"); import installer_contract; print(installer_contract.name(*sys.argv[1:]))' $env:RELEASE_VERSION $env:RELEASE_TARGET msi
+          if ($LASTEXITCODE -ne 0) { throw 'Could not identify the original MSI' }
+          $upgradeName = python -c 'import sys; sys.path.insert(0, "scripts/packaging"); import installer_contract; print(installer_contract.name(*sys.argv[1:]))' $fixtureVersion $env:RELEASE_TARGET msi
+          if ($LASTEXITCODE -ne 0) { throw 'Could not identify the fixture MSI' }
+          $evidence = Join-Path $env:RUNNER_TEMP "tablecraft-msi-upgrade-$env:RELEASE_TARGET-$env:GITHUB_RUN_ID-$env:GITHUB_RUN_ATTEMPT"
+          & powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass `
+            -File packaging/windows/test_upgrade.ps1 `
+            -Installer (Join-Path 'dist' $originalName) -UpgradeInstaller (Join-Path $fixtureRoot $upgradeName) `
+            -Version $env:RELEASE_VERSION -UpgradeVersion $fixtureVersion -EvidenceDirectory $evidence
+          if ($LASTEXITCODE -ne 0) { throw 'Native MSI helper qualification failed; inspect its separate evidence artifact' }
+      - name: Retain native MSI upgrade fixture evidence
+        if: always() && runner.os == 'Windows'
+        uses: actions/upload-artifact@v7
+        with:
+          name: desktop-msi-upgrade-${{ matrix.target }}
+          path: ${{ runner.temp }}/tablecraft-msi-upgrade-${{ matrix.target }}-${{ github.run_id }}-${{ github.run_attempt }}/**
+          if-no-files-found: warn
+          retention-days: 14
       - name: Retain MSI lifecycle evidence even when checks fail
         if: always() && runner.os == 'Windows'
         uses: actions/upload-artifact@v7

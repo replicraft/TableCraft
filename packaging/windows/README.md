@@ -66,3 +66,16 @@ References inspected for this implementation:
 
 Advertised shortcut verification uses Microsoft's [ShortcutTarget](https://learn.microsoft.com/en-us/windows/win32/msi/installer-shortcuttarget)
 and [ComponentPath](https://learn.microsoft.com/en-us/windows/win32/msi/installer-componentpath) contracts.
+
+
+`test_upgrade.ps1` is a separate disposable-runner fixture for the fixed native
+installer helper. CI builds a temporary next-patch MSI from the same executable,
+outside `dist/`. Its declared MSI/manifest version differs, while the actual
+executable remains the current version. The fixture checks parent-instance and
+READY/COMMIT gates, corrupts only a copied fixture CAB to exercise native
+rollback, checks native product registration and installed payload hashes,
+retains helper outcomes/logs, and verifies user-database preservation through
+upgrade and uninstall. These artifacts cannot enter the release asset assembly.
+The helper never launches the desktop during this test; UAC bootstrap and GUI
+relaunch are explicitly separate qualification gaps. This demonstrates native
+installer workflow, not compatibility of two different application binaries.

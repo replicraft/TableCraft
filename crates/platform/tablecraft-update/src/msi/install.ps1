@@ -64,7 +64,9 @@ try {
         (Read-Value $database 'UpgradeCode') -ne $upgradeCode -or
         (Read-Value $database 'ProductVersion') -ne $request.version -or
         (Read-Value $database 'ALLUSERS') -ne '1') { throw 'MSI identity changed' }
-    [IO.File]::WriteAllText((Join-Path $stage 'READY'), [string]$request.msi_hash)
+    $pendingReady = Join-Path $stage 'READY.pending'
+    [IO.File]::WriteAllText($pendingReady, [string]$request.msi_hash)
+    [IO.File]::Move($pendingReady, (Join-Path $stage 'READY'))
     if (-not $parent.WaitForExit($parentExitTimeoutMilliseconds)) { throw 'The document-safe shutdown did not finish' }
 
     $commit = Join-Path $stage 'COMMIT'
