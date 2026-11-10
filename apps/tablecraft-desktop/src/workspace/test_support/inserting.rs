@@ -18,13 +18,8 @@ pub(in crate::workspace) fn review_insert(harness: &mut Harness<'_, Desktop>) {
     finish_reads(harness);
 }
 
-pub(in crate::workspace) fn apply_omitted_fields(
-    harness: &mut Harness<'_, Desktop>,
-    path: &Path,
-    after_column: &[u8],
-    schema_revision: u64,
-    columns: &[&str],
-) {
+/// Open the actual generated-ID row editor without supplying an ID value.
+pub(in crate::workspace) fn begin_generated_insert(harness: &mut Harness<'_, Desktop>) {
     // The ordinary Ribbon starts a real source-bound insertion. Neither ID nor
     // any Number field is supplied; no display string becomes an edit value.
     let new = harness.get_by_role_and_label(Role::Button, "New");
@@ -55,6 +50,16 @@ pub(in crate::workspace) fn apply_omitted_fields(
             .query_by_role_and_label(Role::MultilineTextInput, "ID")
             .is_none()
     );
+}
+
+pub(in crate::workspace) fn apply_omitted_fields(
+    harness: &mut Harness<'_, Desktop>,
+    path: &Path,
+    after_column: &[u8],
+    schema_revision: u64,
+    columns: &[&str],
+) {
+    begin_generated_insert(harness);
     for column in columns {
         assert_eq!(
             harness
