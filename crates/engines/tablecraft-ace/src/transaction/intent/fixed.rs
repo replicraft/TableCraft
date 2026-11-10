@@ -28,3 +28,6 @@ mod historical_present_tests;
 
 #[cfg(all(test, feature = "ace16-create"))]
 mod historical_materialization_tests;
+
+#[cfg(all(test, feature = "ace16-create"))]
+mod historical_mixed_materialization_tests;
