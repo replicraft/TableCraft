@@ -138,6 +138,8 @@ enum PayloadAdmission<'admission, 'image> {
     NoRequired(&'admission NoRequiredTablePrograms<'image>),
     #[cfg(all(feature = "journal", feature = "ace16-create"))]
     SchemaNoRequired(&'admission NoRequiredTablePrograms<'image>),
+    #[cfg(all(feature = "journal", feature = "ace16-create"))]
+    HistoricalPresentFixed(&'admission NoRequiredTablePrograms<'image>),
 }
 
 #[derive(Clone, Copy)]
@@ -358,6 +360,10 @@ fn capture_framed_with_records(
         PayloadAdmission::SchemaNoRequired(certificate) => {
             certificate.require_schema_source(image, schema, budget, cancelled)?
         }
+        #[cfg(all(feature = "journal", feature = "ace16-create"))]
+        PayloadAdmission::HistoricalPresentFixed(certificate) => {
+            certificate.require_historical_present_fixed_source(image, schema, budget, cancelled)?
+        }
         #[cfg(feature = "journal")]
         PayloadAdmission::Closed(certificate) => {
             certificate.require_source(image, schema, budget, cancelled)?
@@ -367,7 +373,10 @@ fn capture_framed_with_records(
     let definition_tail = match &payload {
         PayloadAdmission::NoRequired(certificate) => certificate.share_definition_tail(),
         #[cfg(feature = "ace16-create")]
-        PayloadAdmission::SchemaNoRequired(certificate) => certificate.share_definition_tail(),
+        PayloadAdmission::SchemaNoRequired(certificate)
+        | PayloadAdmission::HistoricalPresentFixed(certificate) => {
+            certificate.share_definition_tail()
+        }
         _ => None,
     };
     let properties = inspect_table_properties(
@@ -511,7 +520,7 @@ fn capture_framed_with_records(
     let retain_native_keys = match &payload {
         PayloadAdmission::Closed(_) | PayloadAdmission::NoRequired(_) => true,
         #[cfg(feature = "ace16-create")]
-        PayloadAdmission::SchemaNoRequired(_) => true,
+        PayloadAdmission::SchemaNoRequired(_) | PayloadAdmission::HistoricalPresentFixed(_) => true,
         _ => false,
     };
 
@@ -755,7 +764,7 @@ impl PayloadAdmission<'_, '_> {
             | Self::Closed(_)
             | Self::NoRequired(_) => true,
             #[cfg(all(feature = "journal", feature = "ace16-create"))]
-            Self::SchemaNoRequired(_) => true,
+            Self::SchemaNoRequired(_) | Self::HistoricalPresentFixed(_) => true,
             #[cfg(feature = "ace16-write-preview")]
             Self::Inert | Self::Selected(_) => false,
         }
@@ -879,6 +888,26 @@ pub(in crate::table::mutation) fn capture_schema(
         PayloadAdmission::SchemaNoRequired(certificate),
         ReadProfile::retained(ColumnFraming::Actions),
         RecordAdmission::HistoricalSchemaReadonly,
+        budget,
+        cancelled,
+    )
+}
+
+/// Dedicated historical existing-field observation, never ordinary UPDATE admission.
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub(in crate::table::mutation) fn capture_historical_present_fixed(
+    image: &NativeImage,
+    table: &str,
+    certificate: &NoRequiredTablePrograms<'_>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Source, EditError> {
+    capture_framed_with_records(
+        image,
+        table,
+        PayloadAdmission::HistoricalPresentFixed(certificate),
+        ReadProfile::retained(ColumnFraming::Actions),
+        RecordAdmission::HistoricalPresentFixed,
         budget,
         cancelled,
     )

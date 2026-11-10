@@ -34,9 +34,11 @@ impl Footprint {
                 image, schema, budget, cancelled,
             )?)),
             #[cfg(all(feature = "journal", feature = "ace16-create"))]
-            PayloadAdmission::SchemaNoRequired(_) => Ok(Self::Normal(Protection::capture(
-                image, schema, budget, cancelled,
-            )?)),
+            PayloadAdmission::SchemaNoRequired(_) | PayloadAdmission::HistoricalPresentFixed(_) => {
+                Ok(Self::Normal(Protection::capture(
+                    image, schema, budget, cancelled,
+                )?))
+            }
             #[cfg(feature = "ace16-write-preview")]
             PayloadAdmission::Inert | PayloadAdmission::Selected(_) => {
                 let metadata = Metadata::capture_for_preserved_boolean(

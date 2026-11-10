@@ -32,6 +32,8 @@ enum Purpose {
     Rows,
     #[cfg(feature = "ace16-create")]
     Schema,
+    #[cfg(feature = "ace16-create")]
+    HistoricalPresentFixed,
 }
 
 /// No public constructor or serialized permission. This certificate binds the
@@ -184,6 +186,39 @@ impl<'image> NoRequiredTablePrograms<'image> {
         )
     }
 
+    /// Dedicated existing-field UPDATE proof after closed current-source census.
+    /// Schema readonly certificates cannot enter this purpose or its consumer.
+    #[cfg(feature = "ace16-create")]
+    pub(in crate::table::mutation) fn capture_historical_present_fixed(
+        image: &'image NativeImage,
+        current: &crate::table::mutation::current_schema::Table,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, EditError> {
+        Self::capture_with_purpose(
+            image,
+            &current.schema,
+            Declaration::Actions,
+            Purpose::HistoricalPresentFixed,
+            budget,
+            cancelled,
+        )
+    }
+
+    #[cfg(feature = "ace16-create")]
+    pub(in crate::table::mutation) fn require_historical_present_fixed_source(
+        &self,
+        image: &NativeImage,
+        schema: &TableSchema,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(), EditError> {
+        if self.purpose != Purpose::HistoricalPresentFixed {
+            return Err(EditError::Preservation);
+        }
+        self.require_binding(image, schema, budget, cancelled)
+    }
+
     fn capture_with_purpose(
         image: &'image NativeImage,
         schema: &TableSchema,
@@ -205,7 +240,9 @@ impl<'image> NoRequiredTablePrograms<'image> {
         let selected = match purpose {
             Purpose::Rows => catalog::validate(image, schema, budget, cancelled)?,
             #[cfg(feature = "ace16-create")]
-            Purpose::Schema => catalog::validate_schema(image, schema, budget, cancelled)?,
+            Purpose::Schema | Purpose::HistoricalPresentFixed => {
+                catalog::validate_schema(image, schema, budget, cancelled)?
+            }
         };
         if selected.properties_present {
             properties::capture(image, schema, budget, cancelled)?;

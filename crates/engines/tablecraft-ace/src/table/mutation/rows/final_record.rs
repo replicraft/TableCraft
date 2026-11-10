@@ -13,10 +13,36 @@ use crate::{
 };
 use tablecraft_core::limits::ResourceBudget;
 
+pub(in crate::table::mutation) enum LayoutPolicy {
+    Complete,
+    #[cfg(all(feature = "journal", feature = "ace16-create"))]
+    HistoricalPresent,
+}
+
 pub(in crate::table::mutation) fn visit<'u, U: RowAssignment>(
     image: &NativeImage,
     schema: &TableSchema,
     updates: &'u [U],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+    visitor: impl FnMut(Row<'_>, &'u U) -> Result<(), EditError>,
+) -> Result<(), EditError> {
+    visit_with_policy(
+        image,
+        schema,
+        updates,
+        LayoutPolicy::Complete,
+        budget,
+        cancelled,
+        visitor,
+    )
+}
+
+pub(in crate::table::mutation) fn visit_with_policy<'u, U: RowAssignment>(
+    image: &NativeImage,
+    schema: &TableSchema,
+    updates: &'u [U],
+    policy: LayoutPolicy,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
     mut visitor: impl FnMut(Row<'_>, &'u U) -> Result<(), EditError>,
@@ -27,13 +53,20 @@ pub(in crate::table::mutation) fn visit<'u, U: RowAssignment>(
     for root in captured.selected {
         check(budget, cancelled)?;
         let data = &root.final_record.data;
-        if usize::from(u16_at(data, 0)?) != schema.layout.max_columns {
+        let count = usize::from(u16_at(data, 0)?);
+        if matches!(policy, LayoutPolicy::Complete) && count != schema.layout.max_columns {
             return Err(EditError::Unsupported(WriteBlocker::RowLayout));
         }
-        let mask = data
-            .len()
-            .checked_sub(schema.layout.max_columns.div_ceil(MASK_BITS))
-            .ok_or(InspectError::Malformed)?;
+        let mask = match &policy {
+            LayoutPolicy::Complete => data
+                .len()
+                .checked_sub(schema.layout.max_columns.div_ceil(MASK_BITS))
+                .ok_or(InspectError::Malformed)?,
+            #[cfg(all(feature = "journal", feature = "ace16-create"))]
+            LayoutPolicy::HistoricalPresent => {
+                crate::table::record_layout::parse(data, schema, budget)?.mask_start
+            }
+        };
         visitor(
             Row {
                 data,

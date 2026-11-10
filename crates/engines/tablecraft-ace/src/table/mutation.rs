@@ -235,3 +235,6 @@ pub use rename_field::{
 
 #[cfg(all(test, feature = "journal", feature = "ace16-create"))]
 mod historical_fixed_sources;
+
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+mod historical_fixed;

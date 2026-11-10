@@ -148,7 +148,15 @@ pub(in crate::table::mutation) fn prepare(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(Vec<spans::Patch>, usize), EditError> {
     let (bound, capacity) = binding::all(source, groups, budget, cancelled)?;
-    compose::<MAX_PAYLOAD_BYTES>(image, source, groups, bound, capacity, budget, cancelled)
+    compose::<MAX_PAYLOAD_BYTES>(
+        image,
+        source,
+        groups,
+        (bound, capacity),
+        rows::final_record::LayoutPolicy::Complete,
+        budget,
+        cancelled,
+    )
 }
 
 #[cfg(feature = "journal")]
@@ -160,7 +168,15 @@ pub(in crate::table::mutation) fn prepare_normal(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(Vec<spans::Patch>, usize), EditError> {
     let (bound, capacity) = binding::all_normal(source, groups, budget, cancelled)?;
-    compose::<MAX_PAYLOAD_BYTES>(image, source, groups, bound, capacity, budget, cancelled)
+    compose::<MAX_PAYLOAD_BYTES>(
+        image,
+        source,
+        groups,
+        (bound, capacity),
+        rows::final_record::LayoutPolicy::Complete,
+        budget,
+        cancelled,
+    )
 }
 
 #[cfg(feature = "journal")]
@@ -172,7 +188,15 @@ pub(in crate::table::mutation) fn prepare_ieee(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(Vec<spans::Patch>, usize), EditError> {
     let (bound, capacity) = binding::all_ieee(source, groups, budget, cancelled)?;
-    compose::<MAX_PAYLOAD_BYTES>(image, source, groups, bound, capacity, budget, cancelled)
+    compose::<MAX_PAYLOAD_BYTES>(
+        image,
+        source,
+        groups,
+        (bound, capacity),
+        rows::final_record::LayoutPolicy::Complete,
+        budget,
+        cancelled,
+    )
 }
 
 #[cfg(feature = "journal")]
@@ -184,7 +208,15 @@ pub(in crate::table::mutation) fn prepare_scalar(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(Vec<spans::Patch>, usize), EditError> {
     let (bound, capacity) = binding::all_scalar(source, groups, budget, cancelled)?;
-    compose::<MAX_PAYLOAD_BYTES>(image, source, groups, bound, capacity, budget, cancelled)
+    compose::<MAX_PAYLOAD_BYTES>(
+        image,
+        source,
+        groups,
+        (bound, capacity),
+        rows::final_record::LayoutPolicy::Complete,
+        budget,
+        cancelled,
+    )
 }
 
 #[cfg(feature = "journal")]
@@ -196,7 +228,15 @@ pub(in crate::table::mutation) fn prepare_guid(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(Vec<spans::Patch>, usize), EditError> {
     let (bound, capacity) = binding::all_guid(source, groups, budget, cancelled)?;
-    compose::<GUID_BYTES>(image, source, groups, bound, capacity, budget, cancelled)
+    compose::<GUID_BYTES>(
+        image,
+        source,
+        groups,
+        (bound, capacity),
+        rows::final_record::LayoutPolicy::Complete,
+        budget,
+        cancelled,
+    )
 }
 
 #[cfg(feature = "journal")]
@@ -210,7 +250,15 @@ pub(in crate::table::mutation) fn prepare_indexed(
 ) -> Result<(Vec<spans::Patch>, usize), EditError> {
     let (bound, capacity) =
         binding::all_indexed(image, source, groups, indexed, budget, cancelled)?;
-    compose::<MAX_PAYLOAD_BYTES>(image, source, groups, bound, capacity, budget, cancelled)
+    compose::<MAX_PAYLOAD_BYTES>(
+        image,
+        source,
+        groups,
+        (bound, capacity),
+        rows::final_record::LayoutPolicy::Complete,
+        budget,
+        cancelled,
+    )
 }
 
 #[cfg(feature = "journal")]
@@ -224,7 +272,15 @@ pub(in crate::table::mutation) fn prepare_integral(
 ) -> Result<(Vec<spans::Patch>, usize), EditError> {
     let (bound, capacity) =
         binding::all_integral(image, source, groups, indexed, budget, cancelled)?;
-    compose::<MAX_PAYLOAD_BYTES>(image, source, groups, bound, capacity, budget, cancelled)
+    compose::<MAX_PAYLOAD_BYTES>(
+        image,
+        source,
+        groups,
+        (bound, capacity),
+        rows::final_record::LayoutPolicy::Complete,
+        budget,
+        cancelled,
+    )
 }
 
 #[cfg(feature = "journal")]
@@ -241,7 +297,15 @@ pub(in crate::table::mutation) fn prepare_i32_updates(
     }
     let (bound, capacity) =
         binding::all_i32_updates(image, source, groups, indexed, budget, cancelled)?;
-    compose::<MAX_PAYLOAD_BYTES>(image, source, groups, bound, capacity, budget, cancelled)
+    compose::<MAX_PAYLOAD_BYTES>(
+        image,
+        source,
+        groups,
+        (bound, capacity),
+        rows::final_record::LayoutPolicy::Complete,
+        budget,
+        cancelled,
+    )
 }
 
 #[cfg(feature = "journal")]
@@ -255,18 +319,48 @@ pub(in crate::table::mutation) fn prepare_guid_updates(
 ) -> Result<(Vec<spans::Patch>, usize), EditError> {
     let (bound, capacity) =
         binding::all_guid_updates(image, source, groups, indexed, budget, cancelled)?;
-    compose::<GUID_BYTES>(image, source, groups, bound, capacity, budget, cancelled)
+    compose::<GUID_BYTES>(
+        image,
+        source,
+        groups,
+        (bound, capacity),
+        rows::final_record::LayoutPolicy::Complete,
+        budget,
+        cancelled,
+    )
+}
+
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub(in crate::table::mutation) fn prepare_historical_present(
+    image: &NativeImage,
+    source: &crate::table::mutation::historical_fixed::Source<'_>,
+    groups: &[FixedColumnUpdates<'_>],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(Vec<spans::Patch>, usize), EditError> {
+    source.require_image(image)?;
+    let (bound, capacity) = binding::all_normal(source.facts(), groups, budget, cancelled)?;
+    compose::<MAX_PAYLOAD_BYTES>(
+        image,
+        source.facts(),
+        groups,
+        (bound, capacity),
+        rows::final_record::LayoutPolicy::HistoricalPresent,
+        budget,
+        cancelled,
+    )
 }
 
 fn compose<const N: usize>(
     image: &NativeImage,
     source: &Source,
     groups: &[FixedColumnUpdates<'_>],
-    bound: Vec<binding::Bound>,
-    capacity: usize,
+    selection: (Vec<binding::Bound>, usize),
+    layout_policy: rows::final_record::LayoutPolicy,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(Vec<spans::Patch>, usize), EditError> {
+    let (bound, capacity) = selection;
     budget
         .charge_allocation(capacity as u64, size_of::<Cell<'_>>() as u64)
         .map_err(InspectError::from)?;
@@ -351,10 +445,11 @@ fn compose<const N: usize>(
 
     let schema = source.table.schema();
     if !selected.is_empty() {
-        rows::final_record::visit(
+        rows::final_record::visit_with_policy(
             image,
             schema,
             &selected,
+            layout_policy,
             budget,
             cancelled,
             |row, selection| {
