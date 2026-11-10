@@ -43,6 +43,18 @@ const REPLACEMENTS: [(&str, Scalar); 6] = [
     ),
 ];
 
+fn assert_image(actual: &[u8], expected: &[u8]) {
+    assert_eq!(actual.len(), expected.len(), "complete image length");
+    assert_eq!(
+        actual
+            .iter()
+            .zip(expected)
+            .position(|(actual, expected)| actual != expected),
+        None,
+        "first differing image byte",
+    );
+}
+
 fn draft() -> TableDraft {
     let mut draft = TableDraft::initial();
     draft
@@ -96,7 +108,7 @@ fn save_row(saves: &SaveWorker, operation: u64, path: &Path, expected: &[u8]) {
         "{report:?}"
     );
     assert!(saves.acknowledge(operation));
-    assert_eq!(std::fs::read(path).unwrap(), expected);
+    assert_image(&std::fs::read(path).unwrap(), expected);
     assert!(!journal_path(path).exists());
 }
 
@@ -148,8 +160,8 @@ fn retained_measurements_create_insert_and_exact_fixed_scalar_edits() {
         panic!("expected actual Measurements schema review");
     };
     let witness = capability.reopen_witness();
-    assert_eq!(witness.expected_bytes(), created);
-    assert_eq!(std::fs::read(&path).unwrap(), seed);
+    assert_image(witness.expected_bytes(), &created);
+    assert_image(&std::fs::read(&path).unwrap(), &seed);
     let saves = SaveWorker::new(|| {});
     let operation = saves
         .start_table_creation(capability, journal_path(&path))
@@ -160,7 +172,7 @@ fn retained_measurements_create_insert_and_exact_fixed_scalar_edits() {
         "{report:?}"
     );
     assert!(saves.acknowledge(operation));
-    assert_eq!(std::fs::read(&path).unwrap(), created);
+    assert_image(&std::fs::read(&path).unwrap(), &created);
     let Response::Opened {
         document_revision, ..
     } = request(&worker, Command::OpenTableCreated { witness }).unwrap()
@@ -222,7 +234,7 @@ fn retained_measurements_create_insert_and_exact_fixed_scalar_edits() {
             let before = expected;
             let capability = review(&worker, revision, name, text);
             expected = raw::update(&before, definition, 0, column, value);
-            assert_eq!(std::fs::read(&path).unwrap(), before);
+            assert_image(&std::fs::read(&path).unwrap(), &before);
             let operation = saves.start(capability, journal_path(&path)).unwrap();
             save_row(&saves, operation, &path, &expected);
             revision = reopen(&worker, &path);
