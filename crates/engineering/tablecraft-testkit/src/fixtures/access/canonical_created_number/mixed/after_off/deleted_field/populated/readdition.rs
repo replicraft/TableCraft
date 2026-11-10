@@ -294,5 +294,5 @@ fn update(
     if value.is_some() {
         row[next_mask + number / 8] |= 1 << (number % 8);
     }
-    present::place(before, root, &row)
+    crate::fixtures::access::raw_record_placement::place(before, 8, root, &row)
 }

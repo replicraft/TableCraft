@@ -434,3 +434,6 @@ pub mod canonical_retained_add_table;
 mod packed_record;
 
 mod generated_record_insert;
+
+mod raw_record_placement;
+mod raw_record_update;
