@@ -223,7 +223,17 @@ fn program_bounds_and_budget_failures_return_no_partial_ast() {
         "<DataMacro xmlns=\"{NAMESPACE}\" Event=\"BeforeChange\"><Statements>{}</Statements></DataMacro>",
         "<Action Name=\"RaiseError\"><Argument Name=\"Number\"/></Action>".repeat(4096)
     );
-    for text in [over_input, deep, arguments, nodes] {
+    assert_eq!(
+        property(&over_input)
+            .inspect_macro_program(
+                MacroProgramProfile::DocumentedDesktop,
+                &mut budget(),
+                &|| false
+            )
+            .err(),
+        Some(InspectError::Malformed)
+    );
+    for text in [deep, arguments, nodes] {
         assert_eq!(
             property(&text)
                 .inspect_macro_program(

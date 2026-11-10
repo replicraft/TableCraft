@@ -1,5 +1,5 @@
 use super::{TableExtraCoverage, TableExtraGroup, TableExtraProperty};
-use crate::{InspectError, header::check, limits::MAX_LONG_VALUE_BYTES};
+use crate::{InspectError, header::check};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
 const SIGNATURE: &[u8] = b"MR2\0";
@@ -71,9 +71,6 @@ pub(super) fn decode(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Decoded, InspectError> {
     check(budget, cancelled)?;
-    if raw.len() > MAX_LONG_VALUE_BYTES {
-        return Err(InspectError::StructureLimit);
-    }
     if raw.is_empty() || !raw.starts_with(SIGNATURE) {
         return Ok(Decoded {
             coverage: if raw.is_empty() {
@@ -263,9 +260,6 @@ fn utf16(
         length = length
             .checked_add(scalar.len_utf8())
             .ok_or(InspectError::StructureLimit)?;
-        if length > MAX_LONG_VALUE_BYTES {
-            return Err(InspectError::StructureLimit);
-        }
     }
     budget.charge_allocation(length as u64, size_of::<u8>() as u64)?;
     let mut text = String::new();

@@ -288,3 +288,35 @@ proptest! {
         let _ = decode(&bytes, &mut budget(), &||false);
     }
 }
+
+#[test]
+fn aggregate_property_bags_follow_wire_lengths_and_explicit_allocation_budgets() {
+    let mut names = Vec::new();
+    let mut values = Vec::new();
+    for index in 0_u16..36 {
+        names.extend(name(&format!("Opaque{index}")));
+        values.extend(value(index, 0x7f, 0, &vec![index as u8; 60_000]));
+    }
+    let bytes = [
+        b"MR2\0".as_slice(),
+        &block(0x80, &names),
+        &group(0, "", &values),
+    ]
+    .concat();
+    assert!(bytes.len() > 2_097_152);
+    let mut pool = ResourceBudget::new(16 * 1024 * 1024, 0, 1_000_000);
+    let decoded = decode(&bytes, &mut pool, &|| false).unwrap();
+    for index in 0..36 {
+        let property = decoded[0].get(&format!("Opaque{index}")).unwrap();
+        assert_eq!(property.raw_value().len(), 60_000);
+        assert!(property.raw_value().iter().all(|byte| *byte == index as u8));
+    }
+    assert!(matches!(
+        decode(
+            &bytes,
+            &mut ResourceBudget::new(1_000_000, 0, 1_000_000),
+            &|| false
+        ),
+        Err(InspectError::Limit(_))
+    ));
+}

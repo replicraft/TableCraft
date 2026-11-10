@@ -3,7 +3,7 @@ use crate::{
     InspectError,
     format::{data_type, text},
     header::check,
-    limits::{MAX_COLUMNS, MAX_INDEXES, MAX_LONG_VALUE_BYTES},
+    limits::{MAX_COLUMNS, MAX_INDEXES},
 };
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_schema::SchemaName;
@@ -68,9 +68,6 @@ pub(super) fn decode(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Vec<PropertyGroup>, InspectError> {
     check(budget, cancelled)?;
-    if bytes.len() > MAX_LONG_VALUE_BYTES {
-        return Err(InspectError::StructureLimit);
-    }
     if bytes.is_empty() {
         return Ok(Vec::new());
     }
@@ -183,7 +180,7 @@ pub(super) fn decode(
             // qualified one-byte representation for semantic consumers.
             let decoded_text = match native_type {
                 data_type::SHORT_TEXT | data_type::LONG_TEXT => {
-                    Some(text::decode_long(&raw, budget)?)
+                    Some(text::decode_long(&raw, budget, cancelled)?)
                 }
                 _ => None,
             };

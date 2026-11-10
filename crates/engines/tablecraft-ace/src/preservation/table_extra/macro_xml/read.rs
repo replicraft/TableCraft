@@ -1,5 +1,5 @@
 use super::{DataMacroEnvelope, DataMacroXml, DataMacroXmlNamespace, names};
-use crate::{InspectError, header::check, limits::MAX_LONG_VALUE_BYTES};
+use crate::{InspectError, header::check};
 use quick_xml::{
     NsReader, XmlVersion,
     events::{BytesRef, BytesStart, Event},
@@ -46,9 +46,6 @@ fn inspect(
 ) -> Result<DataMacroXml, InspectError> {
     let _span = tracing::debug_span!("native.table.extra.macro_xml.inspect").entered();
     check(budget, cancelled)?;
-    if text.len() > MAX_LONG_VALUE_BYTES {
-        return Err(InspectError::StructureLimit);
-    }
     // quick-xml owns bounded namespace, attribute and unescape buffers. Charge
     // conservatively before invoking the parser; retained outputs are separate.
     budget.charge_allocation(text.len() as u64, PARSER_ALLOCATION_FACTOR)?;

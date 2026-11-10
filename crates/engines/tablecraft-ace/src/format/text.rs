@@ -1,7 +1,7 @@
 mod ascii;
 use crate::InspectError;
-use crate::limits::{MAX_ENCODED_TEXT_BYTES, MAX_LONG_VALUE_BYTES};
-use tablecraft_core::limits::ResourceBudget;
+use crate::limits::MAX_ENCODED_TEXT_BYTES;
+use tablecraft_core::limits::{Resource, ResourceBudget};
 
 pub(crate) const UTF16_UNIT_BYTES: usize = size_of::<u16>();
 const COMPRESSION_MARKER: [u8; 2] = [0xff, 0xfe];
@@ -77,8 +77,14 @@ pub(crate) fn decode(
 pub(crate) fn decode_long(
     bytes: &[u8],
     budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
 ) -> Result<String, InspectError> {
-    decode_bounded(bytes, true, MAX_LONG_VALUE_BYTES, None, budget, None)
+    if cancelled() {
+        return Err(InspectError::Cancelled);
+    }
+    let work = bytes.len().checked_mul(4).ok_or(InspectError::Malformed)?;
+    budget.charge(Resource::Steps, work as u64)?;
+    decode_bounded(bytes, true, bytes.len(), None, budget, Some(cancelled))
 }
 pub(crate) fn decode_long_with_limits(
     bytes: &[u8],

@@ -207,3 +207,27 @@ fn decoding_pays_each_pool_and_observes_late_cancellation() {
         Some(InspectError::Cancelled)
     );
 }
+
+#[test]
+fn wide_metadata_preserves_large_raw_and_decoded_text_under_paid_input_bounds() {
+    let payload = [0x2d, 0x4e].repeat(1_048_577);
+    let bytes = fixture::bag(&[
+        fixture::names(&["AfterUpdate"]),
+        fixture::group(3, &[fixture::property(0, 1, 12, &payload)]),
+    ]);
+    let mut pool = ResourceBudget::new(64 * 1024 * 1024, 0, 20_000_000);
+    let decoded = decode(&bytes, &mut pool, &|| false).unwrap();
+    let property = &decoded.groups[0].properties().unwrap()[0];
+    assert_eq!(property.raw(), payload);
+    let text = property.text().unwrap();
+    assert_eq!(text.len(), 3_145_731);
+    assert!(text.chars().all(|character| character == '中'));
+    assert!(matches!(
+        decode(
+            &bytes,
+            &mut ResourceBudget::new(1_000_000, 0, 20_000_000),
+            &|| false
+        ),
+        Err(InspectError::Limit(_))
+    ));
+}

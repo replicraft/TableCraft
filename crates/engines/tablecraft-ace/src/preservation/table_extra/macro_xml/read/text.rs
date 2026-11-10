@@ -1,4 +1,4 @@
-use super::{MAX_LONG_VALUE_BYTES, PARSER_ALLOCATION_FACTOR, reference_character};
+use super::{PARSER_ALLOCATION_FACTOR, reference_character};
 use crate::{InspectError, header::check};
 use quick_xml::{Reader, events::Event};
 use tablecraft_core::limits::{Resource, ResourceBudget};
@@ -11,9 +11,6 @@ pub(in super::super) fn content(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<String, InspectError> {
     check(budget, cancelled)?;
-    if raw.len() > MAX_LONG_VALUE_BYTES {
-        return Err(InspectError::StructureLimit);
-    }
     budget.charge(Resource::Steps, raw.len() as u64)?;
     budget.charge_allocation(raw.len() as u64, PARSER_ALLOCATION_FACTOR)?;
     budget.charge_allocation(raw.len() as u64, 1)?;

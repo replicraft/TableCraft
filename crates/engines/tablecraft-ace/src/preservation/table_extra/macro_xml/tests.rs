@@ -176,7 +176,15 @@ fn parser_depth_attributes_definitions_and_native_byte_ceilings_are_separate() {
     let large = " ".repeat(2 * 1024 * 1024 + 1);
     assert_eq!(
         document(&large, &mut budget(), &|| false).err(),
-        Some(InspectError::StructureLimit)
+        Some(InspectError::Malformed)
+    );
+    let complete = xml(&large);
+    assert_eq!(
+        document(&complete, &mut budget(), &|| false)
+            .unwrap()
+            .definitions()
+            .len(),
+        1
     );
 }
 
