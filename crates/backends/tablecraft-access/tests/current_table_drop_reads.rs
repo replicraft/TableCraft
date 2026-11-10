@@ -110,16 +110,14 @@ fn fresh_query_hosts_cannot_bind_dropped_table_but_keep_database_property_catalo
                     .unwrap();
                     let dropped = parse_query("SELECT * FROM Table1", Default::default()).unwrap();
                     assert!(prepare(dropped.query(), &source).is_err());
-                    let query = parse_query(
-                        "SELECT Name FROM MSysObjects WHERE Name = 'MSysDb'",
-                        Default::default(),
-                    )
-                    .unwrap();
+                    let query =
+                        parse_query("SELECT Name FROM MSysObjects", Default::default()).unwrap();
                     let result = prepare(query.query(), &source)
                         .unwrap()
                         .execute(&source, &[], ExecutionOptions::default())
                         .unwrap();
-                    assert_eq!(result.rows(), &[vec![Value::Text("MSysDb".into())]]);
+                    assert!(result.rows().contains(&vec![Value::Text("MSysDb".into())]));
+                    assert!(!result.rows().contains(&vec![Value::Text("Table1".into())]));
                 }
                 assert_eq!(fs::read(path).unwrap(), after);
             }

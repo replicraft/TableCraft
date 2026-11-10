@@ -103,7 +103,9 @@ pub fn after(source: &Source) -> Vec<u8> {
             .try_into()
             .unwrap(),
     );
-    assert_eq!(old & 0xc000, 0);
+    // Catalog metadata growth may already forward this live logical root.
+    // Deletion marks that root, retaining its target and all prior payload.
+    assert_eq!(old & 0x8000, 0);
     bytes[USER_DIRECTORY..USER_DIRECTORY + 2].copy_from_slice(&(old | 0xc000).to_le_bytes());
     bytes[count..count + 4].copy_from_slice(&8u32.to_le_bytes());
     bytes
