@@ -60,7 +60,10 @@ impl NativeImage {
     ) -> Result<RecoverableNativeOmittedInsertPlan, RecoverableEditError> {
         let _span =
             tracing::debug_span!("native.retained_omitted_insert.plan_recoverable").entered();
-        if !self.select_native_retained_insert_source(table, budget, cancelled)? {
+        if !self
+            .has_retained_table_source(table, budget, cancelled)
+            .map_err(EditError::from)?
+        {
             return Err(EditError::Unsupported(crate::WriteBlocker::RowLayout).into());
         }
         let intent = NativeOmittedInsertIntent::new_retained(

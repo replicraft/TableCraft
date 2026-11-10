@@ -51,7 +51,8 @@ impl NativeJournalInserter {
         #[cfg(feature = "ace16-create")]
         let maximum_bytes = if self
             .image
-            .select_native_retained_insert_source(&self.name, budget, cancelled)
+            .has_retained_table_source(&self.name, budget, cancelled)
+            .map_err(NativeEditError::from)
             .map_err(RecoverableEditError::from)?
         {
             NativeOmittedInsertIntent::MAX_RETAINED_ENCODED_BYTES
@@ -95,7 +96,8 @@ impl NativeJournalInserter {
         #[cfg(feature = "ace16-create")]
         if self
             .image
-            .select_native_retained_insert_source(&self.name, budget, cancelled)
+            .has_retained_table_source(&self.name, budget, cancelled)
+            .map_err(NativeEditError::from)
             .map_err(RecoverableEditError::from)?
         {
             return self

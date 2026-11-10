@@ -18,8 +18,7 @@ impl NativeJournalInserter {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<NativeImage, InspectError> {
         #[cfg(feature = "ace16-create")]
-        if NativeImage::select_retained_insert_from_source(source, scope, table, budget, cancelled)?
-        {
+        if NativeImage::select_retained_table_source(source, scope, table, budget, cancelled)? {
             return NativeImage::capture_retained(source, scope, budget, cancelled);
         }
         #[cfg(not(feature = "ace16-create"))]
@@ -37,7 +36,7 @@ impl NativeJournalInserter {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<NativeImage, InspectError> {
         #[cfg(feature = "ace16-create")]
-        if NativeImage::select_retained_insert_from_source(
+        if NativeImage::select_retained_table_source(
             &mut Cursor::new(source.as_bytes()),
             scope,
             table,

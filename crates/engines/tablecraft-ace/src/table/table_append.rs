@@ -1,6 +1,7 @@
 //! Source-bound append facts retain old storage instead of inferring creator geometry.
 pub(crate) mod allocation;
 mod catalog;
+mod selection;
 mod storage;
 
 use crate::{EditError, NativeImage, NativeSortOrder, header::check};

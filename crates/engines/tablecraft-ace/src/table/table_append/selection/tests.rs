@@ -37,7 +37,7 @@ fn reader_and_image_metadata_select_the_same_family_without_source_fallback() {
     ] {
         let scope = CatalogScope::new(3111);
         assert_eq!(
-            NativeImage::select_retained_insert_from_source(
+            NativeImage::select_retained_table_source(
                 &mut Cursor::new(&bytes),
                 scope,
                 name,
@@ -54,7 +54,7 @@ fn reader_and_image_metadata_select_the_same_family_without_source_fallback() {
             .unwrap();
         assert_eq!(
             image
-                .select_native_retained_insert_source(name, &mut budget(), &|| false)
+                .has_retained_table_source(name, &mut budget(), &|| false)
                 .unwrap(),
             expected
         );
@@ -76,7 +76,7 @@ fn large_original_metadata_selection_spends_no_whole_image_retention_budget() {
     // The caller owns deliberately unqualified trailing pages. This small
     // metadata budget can select capture policy, but proves no write source.
     assert!(
-        NativeImage::select_retained_insert_from_source(
+        NativeImage::select_retained_table_source(
             &mut Cursor::new(&bytes),
             scope,
             "Fresh",
@@ -86,7 +86,7 @@ fn large_original_metadata_selection_spends_no_whole_image_retention_budget() {
         .unwrap()
     );
     assert!(
-        NativeImage::select_retained_insert_from_source(
+        NativeImage::select_retained_table_source(
             &mut Cursor::new(&bytes),
             scope,
             "Fresh",
@@ -97,7 +97,7 @@ fn large_original_metadata_selection_spends_no_whole_image_retention_budget() {
     );
     let mut empty = ResourceBudget::new(0, 0, 0);
     assert!(
-        NativeImage::select_retained_insert_from_source(
+        NativeImage::select_retained_table_source(
             &mut Cursor::new(&bytes),
             scope,
             "Fresh",

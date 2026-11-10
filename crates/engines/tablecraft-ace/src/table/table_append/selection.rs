@@ -1,4 +1,4 @@
-//! Original retained INSERT metadata selection before whole-image capture.
+//! Shared retained-table metadata selection before whole-image capture.
 use crate::{
     CatalogInspection, FileFormat, InspectError, NativeImage, NativeReadSource, NativeTableStorage,
     format::{
@@ -19,10 +19,21 @@ const CATALOG_NAME: &str = "MSysObjects";
 const DATABASE_ROLE: &str = "MSysDb";
 
 impl NativeImage {
+    /// Observe the original retained-table storage cohort without granting row
+    /// or schema mutation permission. Each consuming source proves its own purpose.
+    pub fn has_retained_table_source(
+        &self,
+        table: &str,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<bool, InspectError> {
+        from_catalog(&mut self.reader(), self.catalog(), table, budget, cancelled)
+    }
+
     /// Inspect the same original metadata selector before choosing Standard or
     /// Retained image ownership. This reads no target user records and grants no
     /// source, program, index or mutation authority. Consuming plans recheck it.
-    pub fn select_retained_insert_from_source<R: Read + Seek>(
+    pub fn select_retained_table_source<R: Read + Seek>(
         source: &mut R,
         scope: CatalogScope,
         table: &str,
@@ -42,7 +53,7 @@ impl NativeImage {
     }
 }
 
-pub(super) fn from_catalog<R: NativeReadSource>(
+fn from_catalog<R: NativeReadSource>(
     source: &mut R,
     catalog: &CatalogInspection,
     table: &str,

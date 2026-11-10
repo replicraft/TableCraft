@@ -39,7 +39,7 @@ fn retained_generated_source_qualifies_tombstones_without_widening_legacy_insert
     Inventory::capture(&native, &mut budget(), &|| false).unwrap();
     assert!(
         native
-            .select_native_retained_insert_source("Table1", &mut budget(), &|| false)
+            .has_retained_table_source("Table1", &mut budget(), &|| false)
             .unwrap()
     );
     assert!(

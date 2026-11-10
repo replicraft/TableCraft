@@ -1,5 +1,4 @@
 //! Generated rows over positively inventoried live and retired native storage.
-mod selection;
 #[cfg(test)]
 mod tests;
 use super::{generated, incrementing, indexed};
@@ -15,7 +14,7 @@ pub(super) fn capture(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Source, EditError> {
-    if !image.select_native_retained_insert_source(table, budget, cancelled)? {
+    if !image.has_retained_table_source(table, budget, cancelled)? {
         return Err(EditError::Unsupported(WriteBlocker::RowLayout));
     }
     image.require_retained_capture()?;
@@ -29,18 +28,6 @@ pub(super) fn capture(
 }
 
 impl NativeImage {
-    /// Select retained-storage INSERT from original catalog metadata, before any
-    /// source admission. A failed legacy or current proof is never retried here.
-    pub fn select_native_retained_insert_source(
-        &self,
-        table: &str,
-        budget: &mut ResourceBudget,
-        cancelled: &dyn Fn() -> bool,
-    ) -> Result<bool, EditError> {
-        selection::from_catalog(&mut self.reader(), self.catalog(), table, budget, cancelled)
-            .map_err(EditError::from)
-    }
-
     /// Fully qualify retained generated-row insertion without authorizing a save.
     pub fn check_native_retained_insert_table(
         &self,
