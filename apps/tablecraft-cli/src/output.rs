@@ -2,15 +2,15 @@
 use std::fmt::{self, Write};
 use tablecraft_core::values::{ExpressionValue, Value};
 
-pub(super) const MAX_OUTPUT_BYTES: usize = 1_048_576;
-pub(super) const MAX_LARGE_OUTPUT_BYTES: usize = 16 * 1024 * 1024;
+// String/Vec allocations cannot exceed the platform addressable object size.
+// There is no additional implicit CLI publication quota.
+pub(super) const MAX_OUTPUT_BYTES: usize = isize::MAX as usize;
 #[derive(Debug)]
 pub(crate) enum OutputError {
     Limit,
     Allocation,
     UnsupportedValue,
     Formatting,
-    TableLayout,
 }
 impl fmt::Display for OutputError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -19,7 +19,6 @@ impl fmt::Display for OutputError {
             Self::Allocation => "evaluation output allocation failed",
             Self::UnsupportedValue => "evaluation output value is not supported",
             Self::Formatting => "evaluation output formatting failed",
-            Self::TableLayout => "table layout limit exceeded; use --format tsv",
         })
     }
 }
@@ -36,7 +35,7 @@ impl TableOutput {
     pub(super) fn with_limit(max_bytes: usize) -> Self {
         Self {
             text: String::new(),
-            max_bytes: max_bytes.min(MAX_LARGE_OUTPUT_BYTES),
+            max_bytes,
             error: None,
             table_sections: Vec::new(),
         }

@@ -38,8 +38,12 @@ fn output_limit_applies_to_intermediate_display_and_final_csv_expansion() {
         "tsv",
     ];
     let default = CLI.run(&options);
-    assert_eq!(default.status.code(), Some(2));
-    assert!(default.stdout.is_empty());
+    assert!(
+        default.status.success(),
+        "{}",
+        String::from_utf8_lossy(&default.stderr)
+    );
+    assert!(default.stdout.len() > 1_048_576);
     let mut args = options.to_vec();
     args.extend(["--output-bytes", "1300000"]);
     let allowed = CLI.run(&args);
@@ -48,6 +52,7 @@ fn output_limit_applies_to_intermediate_display_and_final_csv_expansion() {
         "{}",
         String::from_utf8_lossy(&allowed.stderr)
     );
+    assert_eq!(allowed.stdout, default.stdout);
     assert!(allowed.stdout.len() > 1_048_576 && allowed.stdout.len() < 1_300_000);
     let mut reader = csv::ReaderBuilder::new()
         .delimiter(b'\t')
@@ -71,13 +76,13 @@ fn large_text_and_output_ranges_are_checked_before_execution() {
         ("--text-bytes", "0"),
         ("--text-bytes", "16777217"),
         ("--output-bytes", "0"),
-        ("--output-bytes", "16777217"),
+        ("--output-bytes", "18446744073709551615"),
     ] {
         let rejected = CLI.run(&["query", "run", "SELECT 1", flag, value]);
         assert_eq!(rejected.status.code(), Some(2));
         assert!(rejected.stdout.is_empty());
     }
-    for (flag, value) in [("--text-bytes", "16777216"), ("--output-bytes", "16777216")] {
+    for (flag, value) in [("--text-bytes", "16777216"), ("--output-bytes", "16777217")] {
         let allowed = CLI.run(&["query", "run", "SELECT 1 AS N", flag, value]);
         assert!(allowed.status.success());
         assert_eq!(allowed.stdout, b"N\n1\n");

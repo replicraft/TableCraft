@@ -61,7 +61,7 @@ fn batch_ranges_and_incompatible_modes_fail_before_missing_source_is_opened() {
         vec!["--stream", "--collections"],
         vec!["--stream", "--multivalues"],
         vec!["--stream", "--output-bytes", "0"],
-        vec!["--stream", "--output-bytes", "16777217"],
+        vec!["--stream", "--output-bytes", "18446744073709551615"],
     ] {
         let output = Command::new(env!("CARGO_BIN_EXE_tablecraft"))
             .args([

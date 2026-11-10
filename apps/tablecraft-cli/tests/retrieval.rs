@@ -184,7 +184,7 @@ fn output_limit_failure_cannot_publish_earlier_rows() {
         "SELECT a.S FROM (SELECT '{}' AS S) AS a, ({numbers}) AS b, ({numbers}) AS c",
         "x".repeat(8192)
     );
-    let result = CLI.run(&["query", "run", &sql]);
+    let result = CLI.run(&["query", "run", &sql, "--output-bytes", "1048576"]);
     assert_eq!(result.status.code(), Some(2));
     assert!(result.stdout.is_empty());
     assert!(String::from_utf8_lossy(&result.stderr).contains("output limit exceeded"));

@@ -5,8 +5,6 @@ use std::io::Write;
 use tablecraft_access::{BrowserCursor, NativeBrowser};
 use tablecraft_core::limits::ResourceBudget;
 
-const MAX_STREAM_OUTPUT_BYTES: u64 = 256 * 1024 * 1024;
-
 fn operation(error: impl std::fmt::Display) -> ExecutionError {
     ExecutionError::Operation(error.to_string())
 }
@@ -49,7 +47,7 @@ impl Args {
             browser.projected_cursor(&table, &names)
         }
         .map_err(operation)?;
-        publish(&mut cursor, self.limit, MAX_STREAM_OUTPUT_BYTES, writer)
+        publish(&mut cursor, self.limit, u64::MAX, writer)
     }
 }
 

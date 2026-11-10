@@ -1,5 +1,5 @@
 //! TSV transport for the CLI's escaped display cells, not raw stored values.
-use crate::output::{MAX_LARGE_OUTPUT_BYTES, MAX_OUTPUT_BYTES, OutputError};
+use crate::output::{MAX_OUTPUT_BYTES, OutputError};
 use std::io::{self, Write};
 
 struct Buffer {
@@ -40,7 +40,7 @@ pub(super) fn encode(text: &str) -> Result<String, OutputError> {
 pub(super) fn encode_with_limit(text: &str, max_bytes: usize) -> Result<String, OutputError> {
     let mut buffer = Buffer {
         bytes: Vec::new(),
-        max_bytes: max_bytes.min(MAX_LARGE_OUTPUT_BYTES),
+        max_bytes,
         error: None,
     };
     let result = (|| -> Result<(), csv::Error> {
@@ -96,7 +96,7 @@ mod tests {
     #[test]
     fn csv_quote_expansion_obeys_final_output_limit() {
         assert!(matches!(
-            encode(&"\"".repeat(MAX_OUTPUT_BYTES / 2)),
+            encode_with_limit(&"\"".repeat(512), 1024),
             Err(OutputError::Limit)
         ));
     }
