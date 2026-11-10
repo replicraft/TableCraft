@@ -2805,3 +2805,25 @@ its guest scale is unknown. No retained capture establishes the rename editor
 or policy message, which remain TableCraft adaptations. No native window was
 launched. Native persistence and independent reader observations are recorded
 separately in the [field-rename contract](../access/writes/FIELD_RENAME.md).
+
+
+## Native field-count viewport — 10 November 2026
+
+The 255-field draft keeps its absolute visible viewport across horizontal
+scrolling. Empty row rules cover the grid at both ends; manual wheel input over
+an ordinary header releases the trailing add control's focus. At the native
+field-count boundary, the disabled add control never becomes a field or receives
+a forced focus/scroll request. Hidden initial-record cells retain their exact
+input without copying it for offscreen editor layout.
+
+The affected 154 shared draft/insertion tests pass, alongside all 42 builder
+tests. Four English light/dark first/last frames were rendered and opened
+offscreen at 1280 × 820/1× on macOS ARM64, with Windows keyboard conventions
+and normal presentation gates. The retained Windows/VirtualBox Datasheet capture
+was reviewed for row rules; its guest scale is unknown. No Access capture
+establishes the maximum-count status message. The complete Ribbon remains
+present. No native window was launched.
+
+The [presentation receipt](../../tests/results/schema/native-field-count-presentation-2026-11-10.json)
+pins the synthetic frames and their scope. Database creation, row saves and
+Microsoft Access compatibility require their separate evidence.
