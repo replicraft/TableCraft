@@ -58,11 +58,11 @@ fn group(field: &str, default: Option<&str>) -> Vec<u8> {
             .flat_map(u16::to_le_bytes)
             .collect::<Vec<_>>();
         bytes.extend(((8 + encoded.len()) as u16).to_le_bytes());
-        bytes.extend([1, 12, 1, 0]); // DefaultValue, dictionary1, Memo carrier.
+        bytes.extend([1, 12, 2, 0]); // DefaultValue, dictionary2, Memo carrier.
         bytes.extend((encoded.len() as u16).to_le_bytes());
         bytes.extend(encoded);
     } else {
-        bytes.extend([9, 0, 1, 1, 2, 0, 1, 0, 255]); // AllowZeroLength(true), dictionary2.
+        bytes.extend([9, 0, 1, 1, 1, 0, 1, 0, 255]); // AllowZeroLength(true), dictionary1.
     }
     block(1, &bytes)
 }
@@ -73,8 +73,9 @@ pub fn append_table(before: &[u8], table: &str) -> Vec<u8> {
     let mut template = initial::encode_columns(&COLUMNS).bytes;
     desktop::definition(&mut template[7 * PAGE..8 * PAGE]);
     let mut dictionary = name("Required");
-    dictionary.extend(name("DefaultValue"));
+    // Constructive declarations list Boolean policy names before defaults.
     dictionary.extend(name("AllowZeroLength"));
+    dictionary.extend(name("DefaultValue"));
     let mut body = b"MR2\0".to_vec();
     body.extend(block(128, &dictionary));
     body.extend(group("Score", Some("0")));
