@@ -3,7 +3,7 @@ use std::{
     cell::Cell,
     io::{self, Read, Seek, SeekFrom},
 };
-use tablecraft_core::limits::Resource;
+use tablecraft_core::{limits::Resource, values::Value};
 
 const PAGE_BYTES: u64 = 4096;
 const BITMAP_PAGE: u64 = 17;
@@ -157,7 +157,7 @@ impl Seek for LargeIndexMap {
 }
 
 #[test]
-fn explicit_complete_opt_in_does_not_expand_the_separate_index_owned_map_ceiling() {
+fn complete_requests_accept_large_checked_index_owned_maps() {
     // Independently encode an inline index ownership row: root 14 plus 4,999
     // additional owned addresses. The table-data ownership remains unchanged.
     let mut map = vec![0_u8; 5 + 5100_usize.div_ceil(8)];
@@ -171,13 +171,18 @@ fn explicit_complete_opt_in_does_not_expand_the_separate_index_owned_map_ceiling
         replacement,
         replacements: 0,
     };
+    let snapshot = complete(&mut source).unwrap();
     assert_eq!(
-        complete(&mut source).err(),
-        Some(InspectError::StructureLimit)
+        snapshot.rows(),
+        [
+            vec![Value::Int32(1), Value::Int32(10)],
+            vec![Value::Int32(2), Value::Int32(20)],
+            vec![Value::Int32(3), Value::Int32(30)],
+        ]
     );
     assert!(
         source.replacements > 0,
         "the index map must actually be replaced"
     );
-    assert_eq!(source.source.data_reads, 0);
+    assert_eq!(source.source.data_reads, 1);
 }

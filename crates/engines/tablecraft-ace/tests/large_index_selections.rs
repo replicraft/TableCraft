@@ -123,21 +123,26 @@ fn missing_ownership_wrong_owner_and_row_key_mismatch_never_fall_back() {
 }
 
 #[test]
-fn complete_materialized_reads_keep_the_existing_map_ceiling() {
+fn complete_materialized_reads_follow_source_maps_and_preserve_index_order() {
     let mut source = fixture::Sparse::new(6, true);
+    let snapshot = read_table_index(
+        &mut source,
+        CatalogScope::new(1),
+        "Items",
+        "Compound",
+        &mut budget(),
+        &|| false,
+    )
+    .unwrap();
     assert_eq!(
-        read_table_index(
-            &mut source,
-            CatalogScope::new(1),
-            "Items",
-            "Compound",
-            &mut budget(),
-            &|| false
-        )
-        .err(),
-        Some(InspectError::StructureLimit),
+        snapshot.rows(),
+        [
+            vec![Value::Int32(1), Value::Int32(10)],
+            vec![Value::Int32(2), Value::Int32(20)],
+            vec![Value::Int32(3), Value::Int32(30)],
+        ]
     );
-    assert_eq!(source.data_reads, 0);
+    assert_eq!(source.data_reads, 1);
 }
 
 #[test]
@@ -217,7 +222,7 @@ fn explicit_complete_snapshots_preserve_counts_keys_and_native_index_order() {
 }
 
 #[test]
-fn explicit_complete_projection_uses_table_order_without_widening_legacy_projection() {
+fn complete_projections_keep_native_index_and_table_orders_distinct() {
     for code in [5, 6] {
         let mut source = fixture::Sparse::new(code, true);
         let result = read_table_index_in_table_order(
@@ -245,22 +250,30 @@ fn explicit_complete_projection_uses_table_order_without_widening_legacy_project
         assert_eq!(source.data_reads, 1);
 
         let mut source = fixture::Sparse::new(code, true);
+        let snapshot = read_table_index_projection(
+            &mut source,
+            CatalogScope::new(1),
+            "Items",
+            "Compound",
+            IndexProjection {
+                columns: &["Score"],
+                selection: IndexProjectionSelection::All,
+            },
+            &mut budget(),
+            &|| false,
+        )
+        .unwrap();
         assert_eq!(
-            read_table_index_projection(
-                &mut source,
-                CatalogScope::new(1),
-                "Items",
-                "Compound",
-                IndexProjection {
-                    columns: &["Score"],
-                    selection: IndexProjectionSelection::All,
-                },
-                &mut budget(),
-                &|| false,
-            )
-            .err(),
-            Some(InspectError::StructureLimit)
+            snapshot.rows(),
+            [
+                vec![Value::Int32(10)],
+                vec![Value::Int32(20)],
+                vec![Value::Int32(30)]
+            ]
         );
-        assert_eq!(source.data_reads, 0);
+        assert_eq!(source.data_reads, 1);
     }
 }
+
+#[path = "large_index_selections/owned_maps.rs"]
+mod owned_maps;

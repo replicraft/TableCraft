@@ -4,7 +4,6 @@ use super::{
     row::{MASK_BITS, reference_page, reference_slot},
 };
 use crate::InspectError;
-use crate::limits::MAX_MAPPED_PAGES;
 
 mod cursor;
 #[cfg(feature = "ace16-write-preview")]
@@ -81,9 +80,8 @@ fn bitmap<R: crate::NativeReadSource>(
 ) -> Result<(), InspectError> {
     let mut last = pages.last().copied();
     walk_bitmap(reader, bytes, base, &mut last, |reader, page| {
-        if pages.len() >= MAX_MAPPED_PAGES {
-            return Err(InspectError::StructureLimit);
-        }
+        // Strictly increasing IDs below the actual source page count bound
+        // the retained vector without a separate format-independent ceiling.
         reader.budget.charge(
             tablecraft_core::limits::Resource::Bytes,
             PAGE_POINTER_BYTES as u64,

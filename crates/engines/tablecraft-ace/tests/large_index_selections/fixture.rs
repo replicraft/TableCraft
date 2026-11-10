@@ -7,7 +7,7 @@ const USAGE_PAGE: usize = 11;
 const DATA_PAGE: usize = 12;
 const BITMAP_PAGE: usize = 17;
 const SECOND_BITMAP: usize = 18;
-const PREFIX_PAGES: usize = 19;
+const PREFIX_PAGES: usize = 21;
 const FIRST_EMPTY: usize = 100;
 const EMPTY_PAGES: usize = 4999;
 const SOURCE_PAGES: usize = 70_000;
@@ -16,7 +16,7 @@ const DEFINITION_PAGE: usize = 10;
 const DECLARED_ROWS_OFFSET: usize = 16;
 
 pub struct Sparse {
-    prefix: Vec<u8>,
+    pub(super) prefix: Vec<u8>,
     position: u64,
     pub data_reads: usize,
     pub bytes_read: usize,
@@ -50,6 +50,9 @@ impl Sparse {
             0,
         );
         prefix.resize(PREFIX_PAGES * PAGE_BYTES, 0);
+        if code == 1 {
+            prefix[4..20].copy_from_slice(b"Standard Jet DB\0");
+        }
         let mut bits = vec![0; (FIRST_EMPTY + EMPTY_PAGES).div_ceil(8)];
         bits[DATA_PAGE / 8] |= 1 << (DATA_PAGE % 8);
         for number in FIRST_EMPTY..FIRST_EMPTY + EMPTY_PAGES {

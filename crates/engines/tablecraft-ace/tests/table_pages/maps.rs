@@ -1,6 +1,7 @@
 use super::*;
+use tablecraft_core::limits::Resource;
 #[test]
-fn bounded_pages_work_above_materialized_map_limits_in_all_read_profiles() {
+fn paged_and_complete_reads_follow_large_native_maps_in_all_read_profiles() {
     for code in [1, 2, 5, 6] {
         for indirect in [false, true] {
             let mut bytes = map_fixture::database(6000, indirect, false);
@@ -23,22 +24,23 @@ fn bounded_pages_work_above_materialized_map_limits_in_all_read_profiles() {
             assert_eq!(input.count(map_fixture::FIRST_DATA_PAGE as u64), 1);
             assert_eq!(input.count((map_fixture::FIRST_DATA_PAGE + 2) as u64), 1);
             assert_eq!(input.count((map_fixture::FIRST_DATA_PAGE + 3) as u64), 0);
-            assert_eq!(
-                read_table(
-                    &mut Cursor::new(bytes),
-                    SCOPE,
-                    "Items",
-                    &mut budget(),
-                    &|| false
-                )
-                .err(),
-                Some(InspectError::StructureLimit)
-            );
+            assert!(matches!(read_table(
+                &mut Cursor::new(bytes.as_slice()), SCOPE, "Items", &mut budget(), &|| false
+            ), Err(InspectError::Limit(error)) if error.resource == Resource::Bytes));
+            let complete = read_table(
+                &mut Cursor::new(bytes.as_slice()),
+                SCOPE,
+                "Items",
+                &mut ResourceBudget::new(64 * 1024 * 1024, 16_384, 1_000_000),
+                &|| false,
+            )
+            .unwrap();
+            assert_eq!(complete.rows(), expected(0, 6000));
         }
     }
 }
 #[test]
-fn later_map_corruption_still_prevents_first_page_and_physical_read_limits_remain() {
+fn late_map_corruption_refuses_before_data_and_large_offsets_keep_explicit_budgets() {
     for indirect in [false, true] {
         let bytes = map_fixture::database(6000, indirect, true);
         let mut input = PageReads::new(bytes);
@@ -57,16 +59,15 @@ fn later_map_corruption_still_prevents_first_page_and_physical_read_limits_remai
         assert_eq!(input.count(map_fixture::FIRST_DATA_PAGE as u64), 0);
     }
     let bytes = map_fixture::database(6000, true, false);
-    assert_eq!(
-        read_table_page(
-            &mut Cursor::new(bytes),
-            SCOPE,
-            "Items",
-            TablePageRequest::new(5000, 1).unwrap(),
-            &mut ResourceBudget::new(64 * 1024 * 1024, 16_384, 1_000_000),
-            &|| false
-        )
-        .err(),
-        Some(InspectError::StructureLimit)
-    );
+    let page = read_table_page(
+        &mut Cursor::new(bytes),
+        SCOPE,
+        "Items",
+        TablePageRequest::new(5000, 1).unwrap(),
+        &mut ResourceBudget::new(64 * 1024 * 1024, 16_384, 1_000_000),
+        &|| false,
+    )
+    .unwrap();
+    assert_eq!(page.rows(), expected(5000, 1));
+    assert!(!page.reached_end());
 }

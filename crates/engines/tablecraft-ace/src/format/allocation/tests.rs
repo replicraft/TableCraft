@@ -66,9 +66,24 @@ fn byte_word_and_partial_block_boundaries_produce_strictly_ordered_unique_pages(
 
 #[test]
 fn page_count_and_caller_limits_remain_bounded_and_cancellable() {
+    let mut bitmap = vec![0xff; 512];
+    bitmap.push(1);
+    let pages = decode_bitmap(&bitmap, 0, 8192, &mut budget(), &|| false).unwrap();
+    assert_eq!(pages, (0..4097).collect::<Vec<_>>());
     assert!(matches!(
-        decode_bitmap(&[0xff; 513], 0, 8192, &mut budget(), &|| false),
-        Err(InspectError::StructureLimit)
+        decode_bitmap(
+            &bitmap,
+            0,
+            8192,
+            &mut ResourceBudget::new(16_384, 0, 1_000_000),
+            &|| false
+        ),
+        Err(InspectError::Limit(_))
+    ));
+    bitmap[512] = 3;
+    assert!(matches!(
+        decode_bitmap(&bitmap, 0, 4097, &mut budget(), &|| false),
+        Err(InspectError::Malformed)
     ));
     for mut allowance in [
         ResourceBudget::new(0, 0, 100),
