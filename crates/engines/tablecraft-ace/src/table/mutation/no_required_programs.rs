@@ -40,6 +40,8 @@ enum Purpose {
     CurrentRows,
     #[cfg(feature = "ace16-create")]
     CurrentInsert,
+    #[cfg(feature = "ace16-create")]
+    CurrentDelete,
 }
 
 /// No public constructor or serialized permission. This certificate binds the
@@ -194,6 +196,25 @@ impl<'image> NoRequiredTablePrograms<'image> {
         )
     }
 
+    /// Current DELETE proves program absence under a distinct source purpose.
+    /// Readonly schema and other mutation certificates are not interchangeable.
+    #[cfg(feature = "ace16-create")]
+    pub(in crate::table::mutation) fn capture_current_delete(
+        image: &'image NativeImage,
+        schema: &TableSchema,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, EditError> {
+        Self::capture_with_purpose(
+            image,
+            schema,
+            Declaration::CurrentSchema,
+            Purpose::CurrentDelete,
+            budget,
+            cancelled,
+        )
+    }
+
     /// Current INSERT retains its own source-bound absence purpose. Neither
     /// schema observation nor current-row replacement grants this authority.
     #[cfg(feature = "ace16-create")]
@@ -289,13 +310,17 @@ impl<'image> NoRequiredTablePrograms<'image> {
             Purpose::HistoricalFixedRows
             | Purpose::CurrentSchema
             | Purpose::CurrentRows
-            | Purpose::CurrentInsert => catalog::validate_schema(image, schema, budget, cancelled)?,
+            | Purpose::CurrentInsert
+            | Purpose::CurrentDelete => catalog::validate_schema(image, schema, budget, cancelled)?,
         };
         if selected.properties_present {
             #[cfg(feature = "ace16-create")]
             if matches!(
                 purpose,
-                Purpose::CurrentSchema | Purpose::CurrentRows | Purpose::CurrentInsert
+                Purpose::CurrentSchema
+                    | Purpose::CurrentRows
+                    | Purpose::CurrentInsert
+                    | Purpose::CurrentDelete
             ) {
                 properties::capture_current_schema(image, schema, budget, cancelled)?;
             } else {
@@ -407,6 +432,20 @@ impl<'image> NoRequiredTablePrograms<'image> {
         self.require_binding(image, schema, budget, cancelled)
     }
 
+    #[cfg(feature = "ace16-create")]
+    pub(in crate::table::mutation) fn require_current_delete_source(
+        &self,
+        image: &NativeImage,
+        schema: &TableSchema,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(), EditError> {
+        if self.purpose != Purpose::CurrentDelete {
+            return Err(EditError::Preservation);
+        }
+        self.require_binding(image, schema, budget, cancelled)
+    }
+
     fn require_binding(
         &self,
         image: &NativeImage,
@@ -460,3 +499,6 @@ mod schema_tests;
 
 #[cfg(all(test, feature = "ace16-create"))]
 mod current_insert_tests;
+
+#[cfg(all(test, feature = "ace16-create"))]
+mod current_delete_tests;

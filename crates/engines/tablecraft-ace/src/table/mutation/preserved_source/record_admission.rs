@@ -23,6 +23,9 @@ pub(super) enum RecordAdmission {
     /// Full row reconstruction belongs to the consuming current-row operation.
     #[cfg(all(feature = "journal", feature = "ace16-create"))]
     CurrentRows,
+    /// Current DELETE preserves unselected and retired payloads byte-for-byte.
+    #[cfg(all(feature = "journal", feature = "ace16-create"))]
+    CurrentDelete,
 }
 
 impl RecordAdmission {
@@ -48,6 +51,8 @@ impl RecordAdmission {
             Self::HistoricalFixedRows => true,
             #[cfg(all(feature = "journal", feature = "ace16-create"))]
             Self::CurrentRows => true,
+            #[cfg(all(feature = "journal", feature = "ace16-create"))]
+            Self::CurrentDelete => true,
         };
         if historical
             && layout.count > 0
