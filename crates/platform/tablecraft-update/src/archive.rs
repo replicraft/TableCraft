@@ -9,10 +9,11 @@ use serde::{
 };
 use sha2::{Digest, Sha256, digest::Output};
 use std::{
+    cell::Cell,
     collections::BTreeMap,
     fmt,
     fs::{self, File, OpenOptions},
-    io::{BufReader, Read, Seek, SeekFrom, Write},
+    io::{self, BufReader, Read, Seek, SeekFrom, Write},
     ops::Range,
     path::{Path, PathBuf},
 };
@@ -300,7 +301,14 @@ fn extract_zip(mut reader: File, output: &mut Contents<'_>) -> Result<(), Update
         return Err(UpdateError::Archive);
     }
     reader.seek(SeekFrom::Start(0)).map_err(UpdateError::Io)?;
-    let mut archive = ZipArchive::new(reader).map_err(|_| UpdateError::Archive)?;
+    let payload_visible = Cell::new(false);
+    let input = ZipInput {
+        reader,
+        directory_start: u64::from(directory_start),
+        payload_visible: &payload_visible,
+    };
+    let mut archive = ZipArchive::new(input).map_err(|_| UpdateError::Archive)?;
+    payload_visible.set(true);
     if archive.len() != output.expected.len() {
         return Err(UpdateError::Archive);
     }
@@ -322,6 +330,36 @@ fn extract_zip(mut reader: File, output: &mut Contents<'_>) -> Result<(), Update
         output.file(name, size, mode & PERMISSION_MASK, &mut entry)?;
     }
     Ok(())
+}
+
+/// Upstream ZIP metadata recovery searches for alternate end records. During
+/// construction, only the preflighted directory and final EOCD contain real
+/// bytes; earlier payload is zero-filled, so it cannot supply fallback metadata.
+/// This bounds the region supplying metadata, not a precise allocator ceiling.
+struct ZipInput<'a> {
+    reader: File,
+    directory_start: u64,
+    payload_visible: &'a Cell<bool>,
+}
+
+impl Read for ZipInput<'_> {
+    fn read(&mut self, buffer: &mut [u8]) -> io::Result<usize> {
+        let position = self.reader.stream_position()?;
+        if self.payload_visible.get() || position >= self.directory_start {
+            return self.reader.read(buffer);
+        }
+        let count = usize::try_from((self.directory_start - position).min(buffer.len() as u64))
+            .map_err(|_| io::Error::from(io::ErrorKind::InvalidInput))?;
+        buffer[..count].fill(0);
+        self.reader.seek(SeekFrom::Start(position + count as u64))?;
+        Ok(count)
+    }
+}
+
+impl Seek for ZipInput<'_> {
+    fn seek(&mut self, position: SeekFrom) -> io::Result<u64> {
+        self.reader.seek(position)
+    }
 }
 
 fn u16_at(bytes: &[u8], offset: usize) -> u16 {
@@ -463,4 +501,4 @@ fn canonical_plist(version: &Version) -> String {
 }
 
 #[cfg(test)]
-mod tests;
+pub(crate) mod tests;
