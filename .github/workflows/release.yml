@@ -24,6 +24,12 @@ on:
       - 'docs/development/RELEASING.md'
       - 'docs/releases/**'
   workflow_dispatch:
+    inputs:
+      sign-packages:
+        description: Rehearse production signing on main without publishing a release
+        type: boolean
+        required: false
+        default: false
 
 permissions:
   contents: read
@@ -170,7 +176,9 @@ jobs:
   sign:
     name: Authenticate the complete CLI and desktop release
     needs: [version, assemble, desktop]
-    if: github.event_name == 'push' && github.ref_type == 'tag'
+    if: >-
+      (github.event_name == 'push' && github.ref_type == 'tag') ||
+      (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && inputs.sign-packages)
     runs-on: ubuntu-22.04
     environment: update-signing
     permissions:
@@ -200,12 +208,16 @@ jobs:
           sudo apt-get install --no-install-recommends -y minisign
       - name: Require both exact archive sets before opening signing secrets
         env:
-          RELEASE_TAG: ${{ github.ref_name }}
+          RELEASE_TAG: ${{ github.ref_type == 'tag' && github.ref_name || '' }}
           RELEASE_VERSION: ${{ needs.version.outputs.version }}
         shell: bash
         run: |
           set -euo pipefail
-          python scripts/packaging/package_cli.py validate --tag "$RELEASE_TAG"
+          if [ -n "$RELEASE_TAG" ]; then
+            python scripts/packaging/package_cli.py validate --tag "$RELEASE_TAG"
+          else
+            python scripts/packaging/package_cli.py validate
+          fi
           python scripts/packaging/package_cli.py verify --version "$RELEASE_VERSION" --output release-input/cli
           python scripts/packaging/desktop_release.py verify --version "$RELEASE_VERSION" --output desktop-dry-run/dist --notices resources/DesktopThirdPartyLicenses.txt --icon resources/icons/application.icns
           (cd release-input/cli && sha256sum --check SHA256SUMS.txt)
