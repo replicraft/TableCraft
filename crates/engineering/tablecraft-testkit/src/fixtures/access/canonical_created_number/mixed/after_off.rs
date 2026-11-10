@@ -2,6 +2,7 @@
 //! Source and AFTER pins come from the maintained first-party SDK experiment;
 //! no production parser, encoder or native mutation participates in this oracle.
 pub mod deleted_field;
+pub mod populated;
 #[cfg(test)]
 mod tests;
 
