@@ -1,9 +1,9 @@
 //! Normal header rename on actual records, followed by a separate file Open.
 use crate::workspace::Desktop;
+use crate::workspace::editing::test_support::field_rename::propose_name;
 use crate::workspace::editing::test_support::{
     review_pasted_cell, review_row_delete, save_reviewed_row,
 };
-use crate::workspace::editing::test_support::field_rename::propose_name;
 use crate::workspace::test_support::inserting::apply_omitted_fields;
 use crate::workspace::test_support::{app_harness, finish_reads, finish_schema_save, opened};
 use egui::{Key, Modifiers};

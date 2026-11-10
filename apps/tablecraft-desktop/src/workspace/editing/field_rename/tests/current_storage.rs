@@ -1,7 +1,7 @@
 //! Actual rename saves preserve sparse declaration identities and retained histories.
 use crate::workspace::Desktop;
-use crate::workspace::test_support::cell_edit::{begin_replacement, review_and_save};
 use crate::workspace::editing::test_support::field_rename::propose_name;
+use crate::workspace::test_support::cell_edit::{begin_replacement, review_and_save};
 use crate::workspace::test_support::objects::{EXACT_SCRATCH, scratch};
 use crate::workspace::test_support::{app_harness, finish_reads, finish_schema_save, opened};
 use egui::{Key, Modifiers};

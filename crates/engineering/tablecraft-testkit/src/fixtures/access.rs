@@ -435,13 +435,13 @@ mod packed_record;
 
 mod generated_record_insert;
 
+mod raw_catalog_properties;
 mod raw_historical_row;
+mod raw_property_groups;
 mod raw_record_placement;
 mod raw_record_update;
 mod raw_schema_add;
-mod raw_property_groups;
 mod raw_schema_drop;
-mod raw_catalog_properties;
 
 pub mod raw_forwarding_chain;
 

@@ -24,8 +24,9 @@ and indexes. Named review freshly repeats native proof and fitted-property
 preparation.
 
 Current support uses the [native DROP profiles](../access/writes/FIELD_DROP.md):
-the original empty canonical ACE16 field-history source and a separate populated
-current-metadata source. Both require explicit stored Name AutoCorrect OFF and
+the original empty canonical ACE16 field-history source, a separate populated
+current-metadata source and the retained-schema source for appended/sibling
+histories. Each requires explicit stored Name AutoCorrect OFF and
 qualified nonprimary, unindexed nullable Number Long or Short Text declarations.
 The populated route removes only the native tail field while retaining old
 record bytes, IDs and counts. Missing, absent or unknown settings refuse; this
@@ -33,6 +34,14 @@ command never disables settings automatically. Dependencies, required programs,
 unknown metadata, indexed/middle populated targets and older formats remain
 outside these profiles. These are current implementation limits, not general
 Access field-deletion restrictions.
+
+The retained route removes the last active native descriptor while keeping
+native-number/variable-slot high water and stored survivor IDs. Repeated deletion
+can cross retired logical-number holes, including an ID-only result. It preserves
+preexisting inactive TDEF slack, row/index bytes, counters, old property snapshots
+and siblings. The connected pending-Save/confirmation flow uses shared services;
+desktop implements no native deletion logic. Broader targets and dependencies
+remain engine admission boundaries.
 
 The confirmation and pending state own the exact target and local draft
 revision. Confirmation supplies no native authority. Other dirty stored-object

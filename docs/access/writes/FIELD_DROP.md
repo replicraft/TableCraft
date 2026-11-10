@@ -7,6 +7,54 @@ family. The shared model has source-free ownership checks; it does not turn an
 eligibility fact or a Yes confirmation into write authority. General ALTER TABLE
 and Access 97–2019 write completion remain unfinished.
 
+## Retained tables and last-active fields
+
+The retained-schema route removes a qualified nullable, nonprimary, unindexed
+LONG or Short Text field after table creation, insertion, cell editing and field
+addition/rename. It supports appended tables, original sparse tables beside live
+siblings, empty targets and long catalog/user forwarding histories. Metadata
+selects retained capture before allocation; source or operation failures never
+fall back to older languages.
+
+Only the last active descriptor is removed. Native-number high water, stored
+surviving IDs and variable-slot history remain unchanged, so successive deletion
+does not require that the selected number be the old high-water maximum.
+Definition packing clears only the newly vacated active frame; preexisting
+inactive bytes beyond the original definition length are preserved. Data/index
+records, row order, maps, generated counters, siblings and retired payloads remain
+unchanged. Indexed targets, middle-field deletion and unsupported dependencies
+still require separate implementation and proof.
+
+The operation uses the independent retained schema-purpose certificate, complete
+storage inventory and target declaration/property checks. A new complete property
+snapshot omits exactly the selected group, retains dictionary/history bytes and
+uses actual fitting owned/hinted LVAL storage. The selected catalog terminal is
+updated through the same parser-bound descriptor publisher as ADD and rename.
+The independent complete-byte complement, fresh schema/program admission and
+ordered survivor/index checks must all pass before a candidate can be saved.
+Schema-only observation can read known fixed extents and the null mask while
+preserving an ambiguous retired tail as opaque original bytes, including an
+ID-only result. That allowance does not infer deleted field types or grant row
+serialization authority; consuming row operations keep their own framing proof.
+
+`TCFD0003` binds the exact original native identity, names and complete BEFORE
+under the native file envelope. Exact retained decoding, checked V3 preparation
+and a separate retained recovery owner reconstruct both complete images before
+effects. Older TCFD1/2 retain their source/decoder and V1 contracts. Journal-only
+builds can recognize the new request but return a typed unsupported-source
+refusal without creation support. Runtime/Access retain consuming reviews,
+exclusive fresh-source validation and schema-only receipts; desktop adds no
+native mutation logic.
+
+Local macOS ARM64 checks pass the combined 198-test native/recovery batch, with
+twelve existing ignored cases unqualified. This includes 48 retained DROP source
+combinations, successive last-active removal through an ID-only result and
+metadata re-addition, plus legacy and forbidden-effect controls. Six journal-only
+data/refusal tests pass across the two schema actions. Two independent Access
+read/query tests and four file session/recovery tests pass. All 64 headless field
+DROP/rename tests and 80 ADD/table-creation regressions pass. These checks do not
+qualify Windows/Access execution or general imported/indexed/middle-field DROP.
+
 ## Original empty-source family
 
 The original must pass the complete settled field-history-plus-explicit-OFF
@@ -169,6 +217,6 @@ and does not treat a previous DROP receipt as authority. The independent SDK
 observation still supplies reader evidence only, with no SDK INSERT or Access
 save. The populated-tail family above now qualifies its own sources independently.
 Broader deleted-slot editing/insertion, populated middle-field deletion,
-dependencies, indexed deletion targets, broader properties, repeated deletion,
+dependencies, indexed deletion targets, broader properties, general imported deletion,
 older formats and native Access parity remain unqualified. These are current
 writer limitations, not Access format limits.

@@ -13,6 +13,26 @@ checks. The [coordinated record](../../tests/results/schema/field-workbench-work
 retains earlier failures and corrections without adding repeated coverage.
 Source-free rendering has separate evidence below.
 
+## Retained table workflows
+
+Metadata now selects the retained-schema profile6 for qualified appended tables
+and original sparse tables beside live siblings. The same proposal, Save, review,
+acknowledgement and complete-reopen controls compose the shared runtime/Access
+service. Initial inline property metadata can be renamed directly. Grow, shrink,
+case-only and repeated names preserve native field numbers, stored IDs and record
+values; older profile4/5 routes retain their existing contracts.
+
+An exact no-op may retain its actual read-only review/reopen witness while the
+complete source is checked. It starts no native save actor and creates no journal;
+the witness is released only after checked publication. That legitimate read
+owner remains distinct from a persisted schema-change actor.
+
+The connected retained lifecycle exercises ADD, historical-cell fill, successive
+renames, no-op, row editing, DROP, same-name re-addition and insertion against
+independent complete images, with live sibling and SQL scratch preserved. Direct
+initial-property rename is tested separately. These are headless functional
+observations; no new native graphical or Windows/Access parity claim is made.
+
 ## Identity and supported proposals
 
 A target binds the exact open tab/document revision, true stored field name and
@@ -21,8 +41,8 @@ The runtime inspects the original source without a proposed name, AFTER image,
 write lease or save capability. Only positive source facts permit editing;
 unsupported or interrupted checks remain visible and may be retried explicitly.
 
-Normal desktop inspection and review now use the separate
-[current-metadata profile4](../access/writes/FIELD_RENAME.md). The target remains
+The original current-source desktop inspection and review use the separate
+[current-metadata profile4](../access/writes/FIELD_RENAME.md). Its target remains
 a qualified non-key Number Long or compressed Short Text255 declaration; original
 and proposed names are ASCII. The unencoded ACE16/subversion-zero eleven-page
 source must prove its actual single-user-table roles, explicit Name AutoCorrect

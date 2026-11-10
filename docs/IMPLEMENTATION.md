@@ -1,5 +1,45 @@
 # Implementation status
 
+## Retained field DROP and rename — 10 November 2026
+
+The shared field workbench now renames qualified Number/Short Text declarations
+and removes the last active field across retained tables, live siblings and long
+catalog/user chains. Rename handles inline or external original properties,
+width changes, case-only names, repeats and exact no-ops. DROP preserves native
+high-water history and preexisting inactive definition bytes, allowing successive
+removal through retired logical-number holes to an ID-only schema. Neither
+operation rewrites DATA/index records or discards sibling/property history.
+
+Both use parser-bound shared snapshot placement on actual fitting owned/hinted
+LVAL storage, with independent layout/property/complete-byte and survivor checks.
+TCFD3 and TCFR6 bind original names, native identities and complete BEFORE through
+distinct checked V3 reconstruction/recovery. Older families remain closed.
+Journal-only builds decode new data and return typed unsupported-source errors
+without enabling native writers. Runtime/Access retain metadata-first capture,
+consuming review, exclusive fresh validation, durable owners and schema receipts.
+The exact no-op GUI path retains its legitimate read-only witness and starts no
+native save actor. Desktop contains no new native mutation logic.
+
+The combined native/recovery batch passes 198 tests, with twelve existing ignored
+cases unqualified. Two independent Access read/query cases and four actual file
+session/recovery cases pass. All 64 headless field DROP/rename tests pass, including
+six retained ADD/fill/rename/no-op/edit/DROP/re-add/INSERT lifecycles and three
+direct initial-property rename cases, with independent complete images and fresh
+reopening. All 80 ADD/table-creation regressions and six journal-only data/refusal
+tests pass. Strict Clippy across ACE, Access, runtime, desktop and MCP, minimal
+and creation-only engine checks, and ACE rustdoc also pass. Repository module,
+dependency and documentation-link guards pass. No native graphical or
+Windows/Access parity qualification is claimed.
+See [field deletion](access/writes/FIELD_DROP.md) and
+[field rename](access/writes/FIELD_RENAME.md).
+
+Schema-only observation can preserve an ambiguous retired record tail while
+reading known surviving fixed fields and masks. That change is confined to the
+retained schema certificate and readonly record admission; row writers still
+require their own complete framing proof. Broader historical-row materialization,
+middle/indexed field deletion, other declarations and imported application
+schemas remain follow-up work driven by actual UI workflows.
+
 ## Retained nullable column addition — 10 November 2026
 
 The existing shared field-addition workflow now adds nullable LONG/default-zero
@@ -36,9 +76,8 @@ No Windows or Microsoft Access save/reopen qualification is claimed. See
 [column addition](access/writes/ADD_COLUMN.md) and
 [the saved-table workflow](ui/DATABASE_CREATION.md#adding-a-column-to-an-existing-saved-table).
 
-Next is retained tail-column DROP and field rename using the same schema
-foundation. Those mutation and recovery languages still need their own retained
-source, exact effect proofs and connected UI acceptance.
+Retained tail-column DROP and field rename are now connected above through their
+own source, exact effect proofs and UI acceptance.
 
 ## Retained table deletion — 10 November 2026
 

@@ -10,6 +10,51 @@ flow](../../ui/FIELD_RENAME.md) passes its normal-host headless functional gate.
 with direct review of all 22 images complete. General persisted field CRUD,
 other native versions and native Access save comparison remain unfinished.
 
+## Retained tables and schema histories
+
+The retained-schema route renames qualified unindexed nullable LONG and Short
+Text fields on appended tables and original sparse tables beside live siblings,
+including long catalog/user forwarding histories. Original inline property bodies
+are supported directly; a preparatory field ADD is not required. The separate
+retained schema-purpose proof checks programs, dependencies, declarations,
+historical records and complete owned storage. Its source family is distinct
+from the older current-storage snapshot language below.
+
+Growing, shrinking, case-only, repeated and exact no-op ASCII spellings use the
+actual native field number and stored ID. Exact no-op preparation still performs
+source/request validation and preserves the complete image without appending a
+snapshot. A real rename packs the TDEF name frame and appends a complete property
+snapshot that changes only the selected group name. Other group blocks and
+dictionary entries, existing inactive TDEF slack, DATA/INDEX bytes, counters,
+maps, old property bodies and live siblings remain protected.
+
+Snapshot placement uses actual fitting owned/hinted LVAL candidates and the
+selected catalog terminal, with paid dynamic ownership/cycle checks. Independent
+layout, property-frame, complete-complement, fresh schema and ordered-row checks
+retain the exact field identity/storage and surviving records. Exhausted physical
+capacity refuses before saving; no arbitrary page/count/depth quota is introduced.
+General imported schemas, indexed target renames, broader declarations and
+non-ASCII identifier comparison remain unqualified implementation areas.
+
+`TCFR0006`/profile6 binds this exact source language, original/replacement names,
+native field identity and complete BEFORE under the native envelope. Its explicit
+decoder and checked V3 preparation/recovery remain separate from
+`TCFR0001`/profiles1–5, including profile5's older retained current-storage source.
+Fresh native reconstruction must reproduce both complete images before replay or
+settled confirmation. Journal-only builds decode new request data but refuse
+native reconstruction without creation support. Runtime/Access own the same
+review, exclusive stage, save worker and recovery lease used by other schema
+actions; UI and desktop do not implement native name mutation.
+
+Local macOS ARM64 verification passes the combined 198-test native/recovery batch
+(twelve existing ignored cases remain unqualified), including 192 retained rename
+request/image comparisons and six initial-inline transitions. Two independent
+Access read/query cases and four file session/recovery cases pass. All 64 headless
+field DROP/rename tests pass, including direct initial rename and complete
+rename/DROP/re-add/edit/INSERT lifecycles; the 80 ADD/table-creation regressions
+also pass. Six journal-only data/refusal tests execute the new exact decoders and
+disabled-writer behavior. No new graphical or Windows/Access parity claim follows.
+
 ## Legacy empty settled-source profiles
 
 The input must pass the shared complete field-history-plus-OFF source proof.
