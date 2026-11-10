@@ -8,7 +8,7 @@ mod collation;
 pub mod creation;
 pub use collation::{FrenchLegacyCollation, GeneralCollation, NativeCollationResolver};
 mod input;
-pub use input::{AccessInput, AccessInputError};
+pub use input::{AccessInput, AccessInputError, inspect_input_envelope};
 mod browsing;
 pub use browsing::{
     BrowsePage, BrowserCursor, NativeBrowser, ObjectEntry, ObjectInventory, TableDescription,

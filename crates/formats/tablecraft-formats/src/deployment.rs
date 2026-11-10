@@ -1,8 +1,10 @@
 //! CAB geometry gates ahead of the library's parser/decompressor allocations.
 mod bounded;
 mod hybrid;
+mod inspection;
 mod layout;
 pub use hybrid::{Selected, read as read_with_spool, read_validated as read_with_spool_validated};
+pub use inspection::inspect_envelope;
 mod spool;
 use crate::ReadError;
 pub use spool::read as read_spooled;

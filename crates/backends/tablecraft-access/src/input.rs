@@ -1,5 +1,7 @@
 //! Read-only native input and bounded deployment-container selection.
 mod deployment;
+mod envelope;
+pub use envelope::inspect_input_envelope;
 use std::io::{self, Cursor, Read, Seek, SeekFrom, Write};
 use tablecraft_ace::{InspectError, NativeReadSource};
 use tablecraft_core::limits::{Resource, ResourceBudget};
