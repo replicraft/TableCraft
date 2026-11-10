@@ -45,7 +45,30 @@ fn allowed(family: Family, tag: u8) -> bool {
     }
 }
 
+#[derive(Clone, Copy)]
+enum VariableBound {
+    Fitted,
+    WireLength,
+}
+
+impl VariableBound {
+    fn accepts(self, length: usize) -> bool {
+        match self {
+            Self::Fitted => length <= MAX_VARIABLE_BYTES,
+            Self::WireLength => u32::try_from(length).is_ok(),
+        }
+    }
+}
+
 pub(super) fn view(value: &Value, family: Family) -> Result<Encoded<'_>, NativeIntentError> {
+    view_bounded(value, family, VariableBound::Fitted)
+}
+
+fn view_bounded(
+    value: &Value,
+    family: Family,
+    bound: VariableBound,
+) -> Result<Encoded<'_>, NativeIntentError> {
     let (tag, payload) = match value {
         Value::Null => (NULL, Payload::Borrowed(&[])),
         Value::Boolean(value) => (
@@ -88,7 +111,7 @@ pub(super) fn view(value: &Value, family: Family) -> Result<Encoded<'_>, NativeI
         _ => return Err(NativeIntentError::InvalidRecord),
     };
     let result = Encoded { tag, payload };
-    if !allowed(family, tag) || result.bytes().len() > MAX_VARIABLE_BYTES {
+    if !allowed(family, tag) || !bound.accepts(result.bytes().len()) {
         return Err(NativeIntentError::InvalidRecord);
     }
     Ok(result)
@@ -132,7 +155,18 @@ pub(super) fn parse<'a>(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Borrowed<'a>, NativeIntentError> {
-    if !allowed(family, tag) || bytes.len() > MAX_VARIABLE_BYTES {
+    parse_bounded(tag, bytes, family, VariableBound::Fitted, budget, cancelled)
+}
+
+fn parse_bounded<'a>(
+    tag: u8,
+    bytes: &'a [u8],
+    family: Family,
+    bound: VariableBound,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Borrowed<'a>, NativeIntentError> {
+    if !allowed(family, tag) || !bound.accepts(bytes.len()) {
         return Err(NativeIntentError::InvalidRecord);
     }
     pay_scan(bytes, budget, cancelled)?;
@@ -237,4 +271,38 @@ pub(in crate::transaction::intent) fn row_parse<'a>(
         Family::Fixed
     };
     parse(tag, bytes, family, budget, cancelled)
+}
+
+/// Length-prefixed row data uses its actual u32 payload-length representation.
+/// Native field eligibility is checked separately by the consuming operation.
+pub(in crate::transaction::intent) fn length_prefixed_row_view(
+    value: &Value,
+) -> Result<Encoded<'_>, NativeIntentError> {
+    let family = if matches!(value, Value::Text(_) | Value::Binary(_)) {
+        Family::Variable
+    } else {
+        Family::Fixed
+    };
+    view_bounded(value, family, VariableBound::WireLength)
+}
+
+pub(in crate::transaction::intent) fn length_prefixed_row_parse<'a>(
+    tag: u8,
+    bytes: &'a [u8],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Borrowed<'a>, NativeIntentError> {
+    let family = if matches!(tag, TEXT | BINARY) {
+        Family::Variable
+    } else {
+        Family::Fixed
+    };
+    parse_bounded(
+        tag,
+        bytes,
+        family,
+        VariableBound::WireLength,
+        budget,
+        cancelled,
+    )
 }

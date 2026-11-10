@@ -1,12 +1,15 @@
 //! Closed typed-row framing, completely scanned before decoded allocations.
-use super::super::row_carrier::{self as carrier, Profile};
+use super::super::row_carrier::{self as carrier, Borrowed, Encoded, Profile};
 use super::{NativeIntentError, NativeOmittedInsertIntent, SourceFamily, binding, names};
 use crate::{
     InsertFieldValue, InspectError, OmittedRowInsert,
     header::check,
     limits::{MAX_COLUMNS, MAX_LIVE_ROWS},
 };
-use tablecraft_core::limits::{Resource, ResourceBudget};
+use tablecraft_core::{
+    limits::{Resource, ResourceBudget},
+    values::Value,
+};
 
 const MAGIC: &[u8; 8] = b"TCNA0002";
 const PREFIX: &[u8; 4] = b"TCNA";
@@ -39,6 +42,29 @@ const ROW_HEADER_BYTES: usize = 2 * size_of::<u32>();
 pub(super) const MAX_RECORD_BYTES: usize = 64 * 1024 * 1024;
 
 impl SourceFamily {
+    fn view(self, value: &Value, profile: Profile) -> Result<Encoded<'_>, NativeIntentError> {
+        match self {
+            Self::Ordinary => carrier::row_view(value, profile),
+            Self::Current => carrier::length_prefixed_row_view(value, profile),
+        }
+    }
+
+    fn parse<'a>(
+        self,
+        tag: u8,
+        bytes: &'a [u8],
+        profile: Profile,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Borrowed<'a>, NativeIntentError> {
+        match self {
+            Self::Ordinary => carrier::row_parse(tag, bytes, profile, budget, cancelled),
+            Self::Current => {
+                carrier::length_prefixed_row_parse(tag, bytes, profile, budget, cancelled)
+            }
+        }
+    }
+
     const fn maximum_bytes(self) -> usize {
         match self {
             Self::Ordinary => MAX_RECORD_BYTES,
@@ -83,7 +109,7 @@ fn row_length(
         check(budget, cancelled)?;
         length = add(length, carrier::HEADER_BYTES, family)?;
         if let InsertFieldValue::Supplied(value) = field {
-            let encoded = carrier::row_view(value, profile)?;
+            let encoded = family.view(value, profile)?;
             carrier::pay_scan(encoded.bytes(), budget, cancelled)?;
             length = add(length, encoded.bytes().len(), family)?;
         }
@@ -160,9 +186,10 @@ impl<'a> Cursor<'a> {
     fn cell(
         &mut self,
         profile: Profile,
+        family: SourceFamily,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
-    ) -> Result<Option<carrier::Borrowed<'a>>, NativeIntentError> {
+    ) -> Result<Option<Borrowed<'a>>, NativeIntentError> {
         check(budget, cancelled)?;
         budget
             .charge(Resource::Steps, carrier::HEADER_BYTES as u64)
@@ -180,7 +207,9 @@ impl<'a> Cursor<'a> {
                 Err(NativeIntentError::InvalidRecord)
             };
         }
-        carrier::row_parse(header[0], bytes, profile, budget, cancelled).map(Some)
+        family
+            .parse(header[0], bytes, profile, budget, cancelled)
+            .map(Some)
     }
 
     fn finished(&self) -> bool {
@@ -266,7 +295,7 @@ fn preflight<'a>(
         }
         width = Some(values);
         for _ in 0..values {
-            row.cell(profile, budget, cancelled)?;
+            row.cell(profile, family, budget, cancelled)?;
         }
         if !row.finished() {
             return Err(NativeIntentError::InvalidRecord);
@@ -364,7 +393,7 @@ impl NativeOmittedInsertIntent {
                         output.extend_from_slice(&0_u32.to_le_bytes());
                     }
                     InsertFieldValue::Supplied(value) => {
-                        let encoded = carrier::row_view(value, profile)?;
+                        let encoded = self.family.view(value, profile)?;
                         output.extend_from_slice(&[encoded.tag(), 0, 0, 0]);
                         output.extend_from_slice(&(encoded.bytes().len() as u32).to_le_bytes());
                         copy(&mut output, encoded.bytes(), budget, cancelled)?;
@@ -427,7 +456,7 @@ impl NativeOmittedInsertIntent {
                 .try_reserve_exact(count)
                 .map_err(|_| InspectError::Allocation)?;
             for _ in 0..count {
-                let field = match row.cell(profile, budget, cancelled)? {
+                let field = match row.cell(profile, family, budget, cancelled)? {
                     None => InsertFieldValue::Omitted,
                     Some(value) => {
                         InsertFieldValue::Supplied(carrier::owned(value, budget, cancelled)?)

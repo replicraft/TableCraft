@@ -71,9 +71,53 @@ fn fixed(tag: u8, value: &[u8]) -> Encoded<'static> {
     }
 }
 
+#[derive(Clone, Copy)]
+enum VariablePolicy {
+    Fitted,
+    WireLength,
+}
+
+impl VariablePolicy {
+    fn view(self, value: &Value) -> Result<Encoded<'_>, NativeIntentError> {
+        match self {
+            Self::Fitted => legacy::row_view(value),
+            Self::WireLength => legacy::length_prefixed_row_view(value),
+        }
+        .map(Encoded::Legacy)
+    }
+
+    fn parse<'a>(
+        self,
+        tag: u8,
+        bytes: &'a [u8],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Borrowed<'a>, NativeIntentError> {
+        match self {
+            Self::Fitted => legacy::row_parse(tag, bytes, budget, cancelled),
+            Self::WireLength => legacy::length_prefixed_row_parse(tag, bytes, budget, cancelled),
+        }
+    }
+}
+
 pub(super) fn row_view(value: &Value, profile: Profile) -> Result<Encoded<'_>, NativeIntentError> {
+    view_with_policy(value, profile, VariablePolicy::Fitted)
+}
+
+pub(super) fn length_prefixed_row_view(
+    value: &Value,
+    profile: Profile,
+) -> Result<Encoded<'_>, NativeIntentError> {
+    view_with_policy(value, profile, VariablePolicy::WireLength)
+}
+
+fn view_with_policy(
+    value: &Value,
+    profile: Profile,
+    variables: VariablePolicy,
+) -> Result<Encoded<'_>, NativeIntentError> {
     if !matches!(profile, Profile::Wider) {
-        return legacy::row_view(value).map(Encoded::Legacy);
+        return variables.view(value);
     }
     let result = match value {
         Value::Byte(value) => fixed(BYTE, &[*value]),
@@ -91,7 +135,7 @@ pub(super) fn row_view(value: &Value, profile: Profile) -> Result<Encoded<'_>, N
                 length: DECIMAL_BYTES,
             }
         }
-        _ => return legacy::row_view(value).map(Encoded::Legacy),
+        _ => return variables.view(value),
     };
     Ok(result)
 }
@@ -103,8 +147,43 @@ pub(super) fn row_parse<'a>(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Borrowed<'a>, NativeIntentError> {
+    parse_with_policy(
+        tag,
+        bytes,
+        profile,
+        VariablePolicy::Fitted,
+        budget,
+        cancelled,
+    )
+}
+
+pub(super) fn length_prefixed_row_parse<'a>(
+    tag: u8,
+    bytes: &'a [u8],
+    profile: Profile,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Borrowed<'a>, NativeIntentError> {
+    parse_with_policy(
+        tag,
+        bytes,
+        profile,
+        VariablePolicy::WireLength,
+        budget,
+        cancelled,
+    )
+}
+
+fn parse_with_policy<'a>(
+    tag: u8,
+    bytes: &'a [u8],
+    profile: Profile,
+    variables: VariablePolicy,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Borrowed<'a>, NativeIntentError> {
     if tag < BYTE || !matches!(profile, Profile::Wider) {
-        return legacy::row_parse(tag, bytes, budget, cancelled);
+        return variables.parse(tag, bytes, budget, cancelled);
     }
     pay_scan(bytes, budget, cancelled)?;
     let scalar = match tag {

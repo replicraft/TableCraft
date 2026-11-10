@@ -140,3 +140,42 @@ fn current_presence_data_has_no_inherited_sixteen_thousand_row_quota() {
     assert_eq!(decoded.rows().len(), 16_385);
     assert_eq!(decoded.encode(&mut budget(), &|| false).unwrap(), wire);
 }
+
+#[test]
+fn current_presence_variable_carriers_use_wire_lengths_without_widening_legacy_families() {
+    for binary in [false, true] {
+        let value = if binary {
+            Value::Binary(vec![0xa5; 8193])
+        } else {
+            Value::Text("x".repeat(8193))
+        };
+        let intent = NativeOmittedInsertIntent::new_current(
+            "Defaults",
+            vec![OmittedRowInsert::new(vec![InsertFieldValue::Supplied(
+                value,
+            )])],
+            b"original",
+            &mut budget(),
+            &|| false,
+        )
+        .unwrap();
+        let wire = intent.encode(&mut budget(), &|| false).unwrap();
+        let decoded =
+            NativeOmittedInsertIntent::decode_current(&wire, &mut budget(), &|| false).unwrap();
+        assert_eq!(decoded.encode(&mut budget(), &|| false).unwrap(), wire);
+        let InsertFieldValue::Supplied(value) = &decoded.rows()[0].values()[0] else {
+            panic!("wire must retain supplied variable data");
+        };
+        assert!(
+            matches!(value, Value::Text(text) if !binary && text.len() == 8193)
+                || matches!(value, Value::Binary(bytes) if binary && bytes.len() == 8193 && bytes.iter().all(|byte| *byte == 0xa5))
+        );
+        let mut older = wire.to_vec();
+        older[7] = b'6';
+        older[12] = 6;
+        assert!(matches!(
+            NativeOmittedInsertIntent::decode(&older, &mut budget(), &|| false),
+            Err(NativeIntentError::InvalidRecord)
+        ));
+    }
+}
