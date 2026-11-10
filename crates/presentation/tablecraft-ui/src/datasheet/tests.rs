@@ -428,7 +428,7 @@ fn focused_native_collection_enter_emits_exact_target_but_copy_and_modified_ente
             |ui| {
                 let response = cell(ui, &data.rows[0][0], "Items", 101, true);
                 let mut actions = Vec::new();
-                collect_contents_action(ui, &response, &data, (0, 0), false, &mut actions);
+                collect_contents_action(ui, &response, &data, (0, 0), false, false, &mut actions);
                 if expected {
                     assert!(
                         matches!(actions.as_slice(), [Action::ViewContents { target }]
@@ -445,7 +445,7 @@ fn focused_native_collection_enter_emits_exact_target_but_copy_and_modified_ente
     let mut output = context.run_ui(input(vec![Event::Copy]), |ui| {
         let response = cell(ui, &data.rows[0][0], "Items", 101, true);
         let mut actions = Vec::new();
-        collect_contents_action(ui, &response, &data, (0, 0), false, &mut actions);
+        collect_contents_action(ui, &response, &data, (0, 0), false, false, &mut actions);
         assert!(actions.is_empty());
     });
     assert!(
@@ -468,7 +468,7 @@ fn focused_native_collection_enter_emits_exact_target_but_copy_and_modified_ente
         |ui| {
             let response = cell(ui, &data.rows[0][0], "Items", 101, true);
             let mut actions = Vec::new();
-            collect_contents_action(ui, &response, &data, (0, 0), false, &mut actions);
+            collect_contents_action(ui, &response, &data, (0, 0), false, false, &mut actions);
             assert!(actions.is_empty());
         },
     );

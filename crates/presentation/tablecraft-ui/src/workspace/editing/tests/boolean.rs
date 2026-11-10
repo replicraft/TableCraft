@@ -1,7 +1,8 @@
 //! A checkbox proposal remains inert until fresh matching runtime admission.
 use super::{draft, state};
+use crate::workspace::DocumentView;
 use crate::workspace::editing::{BooleanToggle, EditDialog, EditInput, InputHint};
-use crate::{Cell, CellKind, DisplayControl, DocumentView, EditSeed};
+use crate::{Cell, CellKind, DisplayControl, EditSeed};
 
 fn boolean(value: bool) -> Cell {
     let mut cell = Cell::scalar(if value { "-1" } else { "0" });

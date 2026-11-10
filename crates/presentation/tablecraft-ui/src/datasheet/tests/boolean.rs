@@ -1,5 +1,6 @@
 //! Default checkbox artwork proposes edits without mutating stored cell facts.
 use super::*;
+use crate::workspace::row_identity::RowOrdinals;
 use egui_kittest::{
     Harness,
     kittest::{NodeT, Queryable},
@@ -20,7 +21,7 @@ fn pointer_space_and_assistive_click_emit_the_same_source_bound_boolean_proposal
                 display_control: control,
             };
             let data = Data {
-                row_ordinals: Some(vec![42]),
+                row_ordinals: Some(RowOrdinals::new(vec![42]).unwrap()),
                 source_revision: Some(7),
                 table: "Flags".into(),
                 offset: 0,
@@ -64,6 +65,7 @@ fn pointer_space_and_assistive_click_emit_the_same_source_bound_boolean_proposal
             assert!(
                 checkbox
                     .accesskit_node()
+                    .data()
                     .supports_action(AccessibleAction::Click)
             );
             match gesture {
@@ -150,6 +152,7 @@ fn query_and_calculated_checkboxes_remain_readonly_without_toggle_actions() {
         assert!(
             !checkbox
                 .accesskit_node()
+                .data()
                 .supports_action(AccessibleAction::Click)
         );
         checkbox.click();
