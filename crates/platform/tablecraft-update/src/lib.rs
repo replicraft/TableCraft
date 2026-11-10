@@ -3,11 +3,14 @@
 //! Operations block and belong on a host-owned worker. Production trust is
 //! compiled from the maintained public key; network metadata never selects it.
 
+mod archive;
 mod client;
 mod download;
 mod error;
 mod http;
+pub mod installation;
 pub mod platform;
+mod preparation;
 pub mod release;
 mod trust;
 mod verification;
@@ -15,3 +18,4 @@ mod verification;
 pub use client::Updater;
 pub use download::{DownloadProgress, VerifiedDownload};
 pub use error::UpdateError;
+pub use preparation::PreparedUpdate;

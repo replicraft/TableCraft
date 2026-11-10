@@ -159,7 +159,7 @@ struct Manifest {
     files: BTreeMap<String, String>,
 }
 
-fn classify(
+pub(crate) fn classify(
     executable: &Path,
     platform: Platform,
     current: &Version,

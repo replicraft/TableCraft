@@ -40,6 +40,10 @@ pub struct VerifiedDownload {
 }
 
 impl VerifiedDownload {
+    pub(crate) fn into_version(self) -> Version {
+        self.version
+    }
+
     /// The authenticated version associated with this archive.
     pub fn version(&self) -> &Version {
         &self.version

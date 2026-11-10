@@ -196,3 +196,29 @@ fn false_content_length_refuses_and_duplicate_signature_lines_refuse() {
         Err(UpdateError::Signature)
     ));
 }
+
+#[test]
+fn unrelated_publisher_key_refuses_before_fetching_the_archive() {
+    use base64::{Engine, engine::general_purpose::STANDARD};
+    use minisign_verify::PublicKey;
+
+    let encoded = PUBLIC.lines().nth(1).unwrap();
+    let mut raw = STANDARD.decode(encoded).unwrap();
+    raw[2] ^= 1;
+    let unrelated_key = PublicKey::from_base64(&STANDARD.encode(raw)).unwrap();
+    let release = available();
+    let source = responses(&release, PAYLOAD.to_vec(), SIGNATURE.to_vec());
+    let parent = tempfile::tempdir().unwrap();
+    assert!(matches!(
+        download(
+            &source,
+            &unrelated_key,
+            &release,
+            parent.path(),
+            &mut |_| true
+        ),
+        Err(UpdateError::Signature)
+    ));
+    assert_eq!(source.0.borrow().len(), 1);
+    no_staging(parent.path());
+}
