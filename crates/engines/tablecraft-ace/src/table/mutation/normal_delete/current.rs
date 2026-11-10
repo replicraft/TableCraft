@@ -55,7 +55,7 @@ pub(in crate::table::mutation) fn capture_table_drop(
         return Err(EditError::Preservation);
     }
     if !source.indexes.indexes().is_empty() {
-        indexed::qualify(image, &source, budget, cancelled)?;
+        indexed::qualify(image, &source, Family::Current, budget, cancelled)?;
     }
     check(budget, cancelled)?;
     Ok(source)
@@ -145,7 +145,14 @@ pub(in crate::table::mutation) fn compose_table_drop(
         budget,
         cancelled,
     )?;
-    let after = super::compose(image, &source, &requests, budget, cancelled)?;
+    let after = super::compose(
+        image,
+        &source,
+        &requests,
+        Family::TableDrop,
+        budget,
+        cancelled,
+    )?;
     super::proof::prove_images(
         super::proof::Images {
             before: image.as_bytes(),

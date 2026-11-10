@@ -22,10 +22,7 @@ use crate::{
             },
             page::{LEAF, NODE},
         },
-        mutation::{
-            fixed_records::indexed::CheckedIndexes, lval_ownership::Inventory,
-            preserved_source::Source,
-        },
+        mutation::{fixed_records::indexed::CheckedIndexes, preserved_source::Source},
     },
 };
 use tablecraft_core::limits::{Resource, ResourceBudget};
@@ -39,6 +36,7 @@ impl<'image> Admission<'image> {
     fn capture(
         image: &'image NativeImage,
         source: &Source,
+        family: super::Family,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, EditError> {
@@ -51,6 +49,9 @@ impl<'image> Admission<'image> {
         facts.require_source(image, source.table.schema(), budget, cancelled)?;
         let checked = facts.checked();
         let schema = checked.schema();
+        if family.is_retained() {
+            require_retained_primary_leaf(image, checked, budget, cancelled)?;
+        }
         for column in source.table.columns() {
             check(budget, cancelled)?;
             budget
@@ -140,11 +141,68 @@ impl<'image> Admission<'image> {
             // Keep the old leaf-only pool/poll path unchanged.
             pages = tree_pages(image, checked, &ownership, budget, cancelled)?;
         }
-        let inventory = Inventory::capture(image, budget, cancelled)?;
+        let inventory = family.long_values(image, budget, cancelled)?;
         inventory.require_no_long_value_data_overlap(&pages, budget, cancelled)?;
         check(budget, cancelled)?;
         Ok(Self { facts, ownership })
     }
+}
+
+fn require_retained_primary_leaf(
+    image: &NativeImage,
+    checked: &TableCheck,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), EditError> {
+    let schema = checked.schema();
+    if schema.physical_layout().physical_indexes != 1 {
+        return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
+    }
+    let first = checked
+        .indexes()
+        .first()
+        .ok_or(EditError::Unsupported(WriteBlocker::IndexedColumn))?
+        .index();
+    let mut primary = 0_usize;
+    for entry in checked.indexes() {
+        check(budget, cancelled)?;
+        let index = entry.index();
+        let [key] = index.columns() else {
+            return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
+        };
+        let field = schema
+            .columns()
+            .iter()
+            .find(|field| field.number() == key.number())
+            .ok_or(EditError::Preservation)?;
+        let constraints = index
+            .constraints()
+            .ok_or(EditError::Unsupported(WriteBlocker::ConstraintCoverage))?;
+        if field.native_type() != INT32
+            || key.descending()
+            || !constraints.unique()
+            || !constraints.required()
+            || constraints.ignore_nulls()
+            || index.data_number() != first.data_number()
+            || index.root_page() != first.root_page()
+            || index.usage_map() != first.usage_map()
+            || index.columns() != first.columns()
+        {
+            return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
+        }
+        primary += usize::from(constraints.primary_key());
+        let page = image
+            .as_bytes()
+            .get(index.root_page() as usize * PAGE_BYTES)
+            .ok_or(EditError::Preservation)?;
+        if *page != LEAF {
+            return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
+        }
+    }
+    if primary != 1 {
+        return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
+    }
+    Ok(())
 }
 
 fn vector<T>(
@@ -166,10 +224,11 @@ fn vector<T>(
 pub(super) fn qualify(
     image: &NativeImage,
     source: &Source,
+    family: super::Family,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), EditError> {
-    Admission::capture(image, source, budget, cancelled)?;
+    Admission::capture(image, source, family, budget, cancelled)?;
     Ok(())
 }
 
@@ -201,10 +260,11 @@ pub(super) fn patches(
     image: &NativeImage,
     source: &Source,
     deletes: &[RowDelete],
+    family: super::Family,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Vec<IndexDataPatch>, EditError> {
-    let admission = Admission::capture(image, source, budget, cancelled)?;
+    let admission = Admission::capture(image, source, family, budget, cancelled)?;
     let references = references(source, deletes, budget, cancelled)?;
     let mut result = normal_deletion::patches(
         image,
@@ -214,6 +274,9 @@ pub(super) fn patches(
         cancelled,
     )?;
     if !result.retired.is_empty() {
+        if family.is_retained() {
+            return Err(EditError::Preservation);
+        }
         maps::require_rewrites(
             image,
             admission.facts.checked(),

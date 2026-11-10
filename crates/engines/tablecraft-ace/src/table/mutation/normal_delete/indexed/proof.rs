@@ -291,11 +291,12 @@ pub(in crate::table::mutation::normal_delete) fn reconstruct(
     source: &Source,
     deletes: &[RowDelete],
     expected: &mut [u8],
+    family: super::super::Family,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), EditError> {
     let _span = tracing::debug_span!("native.ordinary.delete.index_proof").entered();
-    let admission = Admission::capture(image, source, budget, cancelled)?;
+    let admission = Admission::capture(image, source, family, budget, cancelled)?;
     let removed = references(source, deletes, budget, cancelled)?;
     let checked = admission.facts.checked();
     let mut retired: Vec<RetiredPage> = Vec::new();
@@ -436,6 +437,9 @@ pub(in crate::table::mutation::normal_delete) fn reconstruct(
         write_leaf(before, page, &retained, budget, cancelled)?;
     }
     if !retired.is_empty() {
+        if family.is_retained() {
+            return Err(EditError::Preservation);
+        }
         super::maps::reconstruct(image, checked, &retired, expected, budget, cancelled)?;
         let table = RetirementTable {
             schema: checked.schema(),

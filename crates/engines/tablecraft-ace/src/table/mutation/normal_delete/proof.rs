@@ -1,6 +1,6 @@
 //! Rebuild root-slot and row-count changes from the original image and requests.
 use crate::{
-    EditError, InspectError, NativeEditPlan, NativeImage, RowDelete,
+    EditError, InspectError, NativeEditPlan, RowDelete,
     format::{
         bytes::{u16_at, u32_at},
         layout::RECORD_COUNT_OFFSET,
@@ -10,9 +10,8 @@ use crate::{
         },
     },
     header::check,
-    table::mutation::{fixed_records, record_roots},
+    table::mutation::fixed_records,
 };
-use std::io::Cursor;
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_model::CatalogScope;
 
@@ -76,7 +75,7 @@ pub(super) fn prove_images(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), EditError> {
-    let image = NativeImage::capture(&mut Cursor::new(images.before), scope, budget, cancelled)?;
+    let image = family.image(images.before, scope, budget, cancelled)?;
     let source = family.capture(&image, table, budget, cancelled)?;
     source.require_preserved_definition_tail(&image, images.after, budget, cancelled)?;
     family.unique(deletes, source.records.len(), budget, cancelled)?;
@@ -87,8 +86,7 @@ pub(super) fn prove_images(
     }
 
     // Resolve the original graph again, independently of staged root choices.
-    let captured =
-        record_roots::capture(&image, source.table.schema(), deletes, budget, cancelled)?;
+    let captured = family.roots(&image, source.table.schema(), deletes, budget, cancelled)?;
     let mut expected = fixed_records::copy(image.as_bytes(), budget, cancelled)?;
     for root in captured.selected {
         check(budget, cancelled)?;
@@ -148,12 +146,20 @@ pub(super) fn prove_images(
         .copy_from_slice(&remaining.to_le_bytes());
 
     if !source.indexes.indexes().is_empty() {
-        super::indexed::reconstruct(&image, &source, deletes, &mut expected, budget, cancelled)?;
+        super::indexed::reconstruct(
+            &image,
+            &source,
+            deletes,
+            &mut expected,
+            family,
+            budget,
+            cancelled,
+        )?;
     }
 
     // This is a new Source and complete final scalar constraint check, not the
     // UPDATE validator, whose invariant intentionally requires equal row counts.
-    let after = NativeImage::capture(&mut Cursor::new(&expected), scope, budget, cancelled)?;
+    let after = family.image(&expected, scope, budget, cancelled)?;
     let final_source = family.capture(&after, table, budget, cancelled)?;
     if final_source.table.schema().object_id() != schema.object_id()
         || final_source.table.schema().definition_page() != schema.definition_page()

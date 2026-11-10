@@ -2,7 +2,7 @@
 use crate::{
     EditError, InspectError, NativeImage, RowDelete,
     header::check,
-    table::mutation::{preserved_source::Source, record_roots, rows::RowAssignment},
+    table::mutation::{preserved_source::Source, rows::RowAssignment},
 };
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
@@ -75,8 +75,7 @@ pub(super) fn prepare(
     requests
         .try_reserve_exact(selected.len())
         .map_err(|_| InspectError::Allocation)?;
-    let captured =
-        record_roots::capture(image, source.table.schema(), &selected, budget, cancelled)?;
+    let captured = family.roots(image, source.table.schema(), &selected, budget, cancelled)?;
     for root in captured.selected {
         check(budget, cancelled)?;
         let record = source

@@ -39,6 +39,7 @@ impl Footprint {
             | PayloadAdmission::CurrentInsertNoRequired(_)
             | PayloadAdmission::RetainedInsertNoRequired(_)
             | PayloadAdmission::RetainedRowsNoRequired(_)
+            | PayloadAdmission::RetainedDeleteNoRequired(_)
             | PayloadAdmission::CurrentDeleteNoRequired(_)
             | PayloadAdmission::HistoricalFixedRows(_) => Ok(Self::Normal(Protection::capture(
                 image, schema, budget, cancelled,

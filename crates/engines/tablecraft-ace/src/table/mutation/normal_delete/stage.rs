@@ -10,7 +10,7 @@ use crate::{
         },
     },
     header::check,
-    table::mutation::{preserved_source::Source, record_roots},
+    table::mutation::preserved_source::Source,
 };
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
@@ -30,12 +30,13 @@ pub(super) fn prepare(
     image: &NativeImage,
     source: &Source,
     deletes: &[RowDelete],
+    family: super::Family,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Staged, EditError> {
     // The root service resolves all live roots and establishes exclusive final
     // ownership before any chosen logical slot can become a staging operation.
-    let captured = record_roots::capture(image, source.table.schema(), deletes, budget, cancelled)?;
+    let captured = family.roots(image, source.table.schema(), deletes, budget, cancelled)?;
     budget
         .charge_allocation(captured.selected.len() as u64, size_of::<Slot>() as u64)
         .map_err(InspectError::from)?;

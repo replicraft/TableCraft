@@ -147,6 +147,8 @@ enum PayloadAdmission<'admission, 'image> {
     #[cfg(all(feature = "journal", feature = "ace16-create"))]
     RetainedRowsNoRequired(&'admission NoRequiredTablePrograms<'image>),
     #[cfg(all(feature = "journal", feature = "ace16-create"))]
+    RetainedDeleteNoRequired(&'admission NoRequiredTablePrograms<'image>),
+    #[cfg(all(feature = "journal", feature = "ace16-create"))]
     CurrentDeleteNoRequired(&'admission NoRequiredTablePrograms<'image>),
     #[cfg(all(feature = "journal", feature = "ace16-create"))]
     HistoricalFixedRows(&'admission NoRequiredTablePrograms<'image>),
@@ -375,6 +377,10 @@ fn capture_framed_with_records(
             certificate.require_current_insert_source(image, schema, budget, cancelled)?;
         }
         #[cfg(all(feature = "journal", feature = "ace16-create"))]
+        PayloadAdmission::RetainedDeleteNoRequired(certificate) => {
+            certificate.require_retained_delete_source(image, schema, budget, cancelled)?;
+        }
+        #[cfg(all(feature = "journal", feature = "ace16-create"))]
         PayloadAdmission::RetainedRowsNoRequired(certificate) => {
             certificate.require_retained_rows_source(image, schema, budget, cancelled)?;
         }
@@ -408,6 +414,7 @@ fn capture_framed_with_records(
         | PayloadAdmission::CurrentInsertNoRequired(certificate)
         | PayloadAdmission::RetainedInsertNoRequired(certificate)
         | PayloadAdmission::RetainedRowsNoRequired(certificate)
+        | PayloadAdmission::RetainedDeleteNoRequired(certificate)
         | PayloadAdmission::CurrentDeleteNoRequired(certificate)
         | PayloadAdmission::HistoricalFixedRows(certificate) => certificate.share_definition_tail(),
         _ => None,
@@ -456,7 +463,8 @@ fn capture_framed_with_records(
     }
     #[cfg(all(feature = "journal", feature = "ace16-create"))]
     let roots = match &payload {
-        PayloadAdmission::RetainedRowsNoRequired(_) => {
+        PayloadAdmission::RetainedRowsNoRequired(_)
+        | PayloadAdmission::RetainedDeleteNoRequired(_) => {
             roots::capture_retained(image, schema, &ordinals, budget, cancelled)?
         }
         _ => roots::capture(image, schema, &ordinals, budget, cancelled)?,
@@ -489,7 +497,8 @@ fn capture_framed_with_records(
     )?;
     #[cfg(all(feature = "journal", feature = "ace16-create"))]
     let long_values = match &payload {
-        PayloadAdmission::RetainedRowsNoRequired(_) => {
+        PayloadAdmission::RetainedRowsNoRequired(_)
+        | PayloadAdmission::RetainedDeleteNoRequired(_) => {
             crate::table::mutation::lval_ownership::Inventory::capture_retained(
                 image, budget, cancelled,
             )?
@@ -577,6 +586,7 @@ fn capture_framed_with_records(
         | PayloadAdmission::CurrentInsertNoRequired(_)
         | PayloadAdmission::RetainedInsertNoRequired(_)
         | PayloadAdmission::RetainedRowsNoRequired(_)
+        | PayloadAdmission::RetainedDeleteNoRequired(_)
         | PayloadAdmission::CurrentDeleteNoRequired(_)
         | PayloadAdmission::HistoricalFixedRows(_) => true,
         _ => false,
@@ -827,6 +837,7 @@ impl PayloadAdmission<'_, '_> {
             | Self::CurrentInsertNoRequired(_)
             | Self::RetainedInsertNoRequired(_)
             | Self::RetainedRowsNoRequired(_)
+            | Self::RetainedDeleteNoRequired(_)
             | Self::CurrentDeleteNoRequired(_)
             | Self::HistoricalFixedRows(_) => true,
             #[cfg(feature = "ace16-write-preview")]
@@ -1018,6 +1029,30 @@ pub(in crate::table::mutation) fn capture_retained_rows(
             keys: RetainedKeys::Integral,
         },
         RecordAdmission::CurrentRows,
+        budget,
+        cancelled,
+    )
+}
+
+/// Retained deletion retains its own action-purpose witness. Shared historical
+/// record reading does not select an insertion or replacement capability.
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub(in crate::table::mutation) fn capture_retained_delete(
+    image: &NativeImage,
+    table: &str,
+    certificate: &NoRequiredTablePrograms<'_>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Source, EditError> {
+    capture_framed_with_records(
+        image,
+        table,
+        PayloadAdmission::RetainedDeleteNoRequired(certificate),
+        ReadProfile {
+            columns: ColumnFraming::Actions,
+            keys: RetainedKeys::Integral,
+        },
+        RecordAdmission::CurrentDelete,
         budget,
         cancelled,
     )

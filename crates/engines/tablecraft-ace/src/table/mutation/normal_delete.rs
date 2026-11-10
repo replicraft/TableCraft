@@ -1,6 +1,8 @@
 //! Fixed-length ordinary DELETE with fresh program absence and raw-row proof.
 #[cfg(feature = "ace16-create")]
 pub(super) mod current;
+#[cfg(feature = "ace16-create")]
+mod retained;
 
 mod indexed;
 mod proof;
@@ -41,6 +43,8 @@ enum Family {
     Current,
     #[cfg(feature = "ace16-create")]
     TableDrop,
+    #[cfg(feature = "ace16-create")]
+    Retained,
 }
 
 impl Family {
@@ -57,6 +61,72 @@ impl Family {
             Self::Current => current::capture(image, table, budget, cancelled),
             #[cfg(feature = "ace16-create")]
             Self::TableDrop => current::capture_table_drop(image, table, budget, cancelled),
+            #[cfg(feature = "ace16-create")]
+            Self::Retained => retained::capture(image, table, budget, cancelled),
+        }
+    }
+
+    fn is_retained(self) -> bool {
+        match self {
+            #[cfg(feature = "ace16-create")]
+            Self::Retained => true,
+            _ => false,
+        }
+    }
+
+    fn roots<'u, U: rows::RowAssignment>(
+        self,
+        image: &NativeImage,
+        schema: &crate::TableSchema,
+        requests: &'u [U],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<super::record_roots::Roots<'u, U>, EditError> {
+        match self {
+            #[cfg(feature = "ace16-create")]
+            Self::Retained => {
+                super::record_roots::capture_retained(image, schema, requests, budget, cancelled)
+            }
+            _ => super::record_roots::capture(image, schema, requests, budget, cancelled),
+        }
+    }
+
+    fn image(
+        self,
+        bytes: &[u8],
+        scope: tablecraft_model::CatalogScope,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<NativeImage, EditError> {
+        match self {
+            #[cfg(feature = "ace16-create")]
+            Self::Retained => Ok(NativeImage::capture_retained(
+                &mut std::io::Cursor::new(bytes),
+                scope,
+                budget,
+                cancelled,
+            )?),
+            _ => Ok(NativeImage::capture(
+                &mut std::io::Cursor::new(bytes),
+                scope,
+                budget,
+                cancelled,
+            )?),
+        }
+    }
+
+    fn long_values(
+        self,
+        image: &NativeImage,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<super::lval_ownership::Inventory, EditError> {
+        match self {
+            #[cfg(feature = "ace16-create")]
+            Self::Retained => {
+                super::lval_ownership::Inventory::capture_retained(image, budget, cancelled)
+            }
+            _ => super::lval_ownership::Inventory::capture(image, budget, cancelled),
         }
     }
 
@@ -70,7 +140,7 @@ impl Family {
         match (self, requests.len() > source_rows) {
             (Self::Ordinary, _) => rows::unique(requests, budget, cancelled),
             #[cfg(feature = "ace16-create")]
-            (Self::Current | Self::TableDrop, exceeds_source) => {
+            (Self::Current | Self::TableDrop | Self::Retained, exceeds_source) => {
                 check(budget, cancelled)?;
                 if exceeds_source {
                     return Err(EditError::Conflict);
@@ -99,7 +169,7 @@ fn plan(
         }
     }
 
-    let after = compose(&image, &source, deletes, budget, cancelled)?;
+    let after = compose(&image, &source, deletes, family, budget, cancelled)?;
     let scope = image.catalog().catalog().scope();
     let plan = NativeEditPlan {
         before: image.bytes,
@@ -115,14 +185,15 @@ fn compose(
     image: &NativeImage,
     source: &Source,
     deletes: &[RowDelete],
+    family: Family,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Vec<u8>, EditError> {
-    let staged = stage::prepare(image, source, deletes, budget, cancelled)?;
+    let staged = stage::prepare(image, source, deletes, family, budget, cancelled)?;
     let indexes = if source.indexes.indexes().is_empty() {
         Vec::new()
     } else {
-        indexed::patches(image, source, deletes, budget, cancelled)?
+        indexed::patches(image, source, deletes, family, budget, cancelled)?
     };
     let mut after = fixed_records::copy(image.as_bytes(), budget, cancelled)?;
     staged.apply(&mut after, budget, cancelled)?;
@@ -168,7 +239,7 @@ fn capture(
     }
     let source = normal_actions::capture(image, table, budget, cancelled)?;
     if !source.indexes.indexes().is_empty() {
-        indexed::qualify(image, &source, budget, cancelled)?;
+        indexed::qualify(image, &source, Family::Ordinary, budget, cancelled)?;
     }
     // Source capture already rejects every relationship involving this table.
     // Unrelated declarations remain protected and do not authorize cascades.
