@@ -1,8 +1,8 @@
 //! Independent original TCNI0016 bytes and cold current-row reconstruction.
 use crate::{
-    NativeFittedEditIntent, NativeFittedIntentGroup, NativeFittedUpdates, NativeImage,
-    NativeRecoveryQualificationError, NativeUpdateIntent, NativeUpdateProfile, SlotScalarUpdate,
-    qualify_native_update_recovery,
+    FixedScalarUpdate, NativeFittedEditIntent, NativeFittedIntentGroup, NativeFittedUpdates,
+    NativeImage, NativeRecoveryQualificationError, NativeUpdateIntent, NativeUpdateProfile,
+    SlotScalarUpdate, qualify_native_update_recovery,
 };
 use sha2::{Digest, Sha256};
 use std::io::Cursor;
@@ -46,10 +46,9 @@ fn groups(expected: Option<&str>, value: Option<&str>) -> Vec<NativeFittedIntent
     ]
 }
 
-fn literal(before: &[u8], expected: Option<&str>, value: Option<&str>) -> Vec<u8> {
-    let payload = expected.map_or(0, str::len) + value.map_or(0, str::len);
+fn prefix(before: &[u8], length: u32) -> Vec<u8> {
     let mut wire = b"TCNI0016".to_vec();
-    wire.extend((134_u32 + payload as u32).to_le_bytes());
+    wire.extend(length.to_le_bytes());
     wire.extend([16, 0, 0, 0]);
     wire.extend((before.len() as u64).to_le_bytes());
     let mut digest = Sha256::new();
@@ -61,6 +60,12 @@ fn literal(before: &[u8], expected: Option<&str>, value: Option<&str>) -> Vec<u8
         wire.extend(number.to_le_bytes());
     }
     wire.extend(b"Table1");
+    wire
+}
+
+fn literal(before: &[u8], expected: Option<&str>, value: Option<&str>) -> Vec<u8> {
+    let payload = expected.map_or(0, str::len) + value.map_or(0, str::len);
+    let mut wire = prefix(before, 134 + payload as u32);
     wire.extend((56_u32 + payload as u32).to_le_bytes());
     wire.extend(8_u32.to_le_bytes());
     wire.extend(1_u32.to_le_bytes());
@@ -243,6 +248,119 @@ fn current_row_cold_recovery_reconstructs_first_and_present_values_and_refuses_f
                         &|| false
                     )
                     .is_err()
+            );
+        }
+    }
+}
+
+fn number_groups(expected: Option<i32>, value: Option<i32>) -> Vec<NativeFittedIntentGroup> {
+    vec![
+        NativeFittedIntentGroup::new(
+            "NextNumber",
+            NativeFittedUpdates::Fixed(vec![FixedScalarUpdate::new(
+                0,
+                expected.map_or(Value::Null, Value::Int32),
+                value.map_or(Value::Null, Value::Int32),
+            )]),
+            &mut budget(),
+            &|| false,
+        )
+        .unwrap(),
+    ]
+}
+
+fn number_literal(before: &[u8], expected: Option<i32>, value: Option<i32>) -> Vec<u8> {
+    assert_eq!(
+        usize::from(expected.is_some()) + usize::from(value.is_some()),
+        1
+    );
+    let mut wire = prefix(before, 140);
+    wire.extend(62_u32.to_le_bytes());
+    wire.extend(10_u32.to_le_bytes());
+    wire.extend(1_u32.to_le_bytes());
+    wire.extend([0; 8]);
+    wire.extend(b"NextNumber");
+    wire.extend(32_u32.to_le_bytes());
+    wire.extend([0; 8]);
+    for cell in [expected, value] {
+        wire.extend([if cell.is_some() { 2 } else { 0 }, 0, 0, 0]);
+        wire.extend((if cell.is_some() { 4_u32 } else { 0 }).to_le_bytes());
+        if let Some(number) = cell {
+            wire.extend(number.to_le_bytes());
+        }
+    }
+    assert_eq!(wire.len(), 140);
+    wire
+}
+
+// Independent DATA directory/pointer arithmetic locates the selected terminal;
+// clearing a fixed NULL bit retains its ignored Number payload byte-for-byte.
+fn cleared_number(before: &[u8]) -> Vec<u8> {
+    let data = 8 * 4096;
+    let word = |at: usize| usize::from(u16::from_le_bytes(before[at..at + 2].try_into().unwrap()));
+    let root = word(data + 14);
+    let physical = if root & 0x4000 != 0 {
+        let pointer = data + (root & 0x1fff);
+        let reference = u32::from_le_bytes(before[pointer..pointer + 4].try_into().unwrap());
+        assert_eq!(reference >> 8, 8);
+        reference as usize & 255
+    } else {
+        0
+    };
+    let start = word(data + 14 + physical * 2) & 0x1fff;
+    let end = if physical == 0 {
+        4096
+    } else {
+        word(data + 12 + physical * 2) & 0x1fff
+    };
+    let count = word(data + start);
+    let number = word(7 * 4096 + 41) - 1;
+    assert!(number < count);
+    let mut after = before.to_vec();
+    after[data + end - count.div_ceil(8) + number / 8] &= !(1 << (number % 8));
+    after
+}
+
+#[test]
+fn current_row_fixed_number_literal_keeps_null_and_int32_distinct() {
+    for case in raw::CASES {
+        let absent = readdition::after(&readdition::source(case), readdition::Target::Number);
+        let supplied = readdition::fill_number(case, &absent, 0, 123);
+        for (before, after, expected, value) in [
+            (&absent, supplied.to_vec(), None, Some(123)),
+            (&supplied, cleared_number(&supplied), Some(123), None),
+        ] {
+            let plan = image(before, 211)
+                .plan_recoverable_current_row_updates(
+                    "Table1",
+                    number_groups(expected, value),
+                    &mut budget(),
+                    &|| false,
+                )
+                .unwrap_or_else(|error| panic!("{case:?}/{expected:?}->{value:?}: {error:?}"));
+            assert_eq!(
+                plan.intent().profile(),
+                NativeUpdateProfile::Ace16CurrentRows
+            );
+            assert_eq!(
+                plan.after_bytes(),
+                after,
+                "{case:?}/{expected:?}->{value:?}"
+            );
+            let wire = plan.intent().encode(&mut budget(), &|| false).unwrap();
+            assert_eq!(wire, number_literal(before, expected, value));
+            let decoded = NativeUpdateIntent::decode(&wire, &mut budget(), &|| false).unwrap();
+            assert_eq!(decoded.encode(&mut budget(), &|| false).unwrap(), wire);
+            assert_eq!(
+                plan.requalify_with_budgets(
+                    image(before, 212),
+                    &mut budget(),
+                    &mut budget(),
+                    &|| false
+                )
+                .unwrap()
+                .after_bytes(),
+                after
             );
         }
     }
