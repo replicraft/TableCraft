@@ -225,6 +225,15 @@ fn first_record_after_retained_creation_uses_the_real_review_and_save_route() {
     assert_eq!(data.rows[0][0].text, "1");
     assert_eq!(data.rows[0][1].text, "new 日本語🦀");
     let saved = std::fs::read(&path).unwrap();
+    assert_eq!(
+        saved,
+        raw::rows::append(
+            &schema,
+            (deleted.len() / 4096) as u32,
+            raw::rows::Profile::DesktopText,
+            raw::rows::Input::Text("new 日本語🦀"),
+        ),
+    );
     assert_eq!(&saved[7 * 4096..deleted.len()], &deleted[7 * 4096..]);
     assert!(!journal_path(&path).exists());
     drop(harness);
