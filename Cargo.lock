@@ -5430,6 +5430,7 @@ version = "0.1.0"
 dependencies = [
  "base64 0.23.1",
  "cab",
+ "dunce",
  "flate2",
  "minisign-verify",
  "reqwest",

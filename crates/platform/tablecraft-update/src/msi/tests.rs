@@ -234,10 +234,9 @@ fn native_generated_msi_is_inertly_inspected_and_decoded() {
 #[test]
 #[ignore = "requires an installed MSI on a disposable Windows runner"]
 fn native_registered_installation_binds_the_actual_component_and_payload() {
-    let executable = std::path::PathBuf::from(
+    let executable = super::paths::canonicalize(&std::path::PathBuf::from(
         std::env::var_os("TABLECRAFT_TEST_INSTALLED_EXE").expect("explicit installed fixture path"),
-    )
-    .canonicalize()
+    ))
     .unwrap();
     let report = native::inspect(&json!({"operation":"detect"}), &|| false).unwrap();
     let products = serde_json::from_value(report).unwrap();
@@ -251,4 +250,41 @@ fn native_registered_installation_binds_the_actual_component_and_payload() {
     )
     .unwrap();
     assert_eq!(installed.version(), &version);
+    assert!(
+        !installed
+            .executable()
+            .as_os_str()
+            .to_string_lossy()
+            .starts_with(r"\\?\")
+    );
+    assert!(
+        super::paths::ensure_compatible(std::path::Path::new(r"\\server\share\TableCraft.exe"))
+            .is_err()
+    );
+    let long_path = format!(r"C:\{}", "x".repeat(260));
+    assert!(super::paths::ensure_compatible(std::path::Path::new(&long_path)).is_err());
+}
+
+#[cfg(windows)]
+#[test]
+fn native_msi_paths_keep_local_file_identity_without_legacy_incompatible_prefixes() {
+    let directory = tempfile::tempdir().unwrap();
+    let file = directory.path().join("literal file with spaces.bin");
+    fs::write(&file, b"first-party path identity sentinel").unwrap();
+    let extended = fs::canonicalize(&file).unwrap();
+    let compatible = super::paths::canonicalize(&extended).unwrap();
+    assert!(
+        matches!(compatible.components().next(), Some(std::path::Component::Prefix(prefix)) if matches!(prefix.kind(), std::path::Prefix::Disk(_)))
+    );
+    assert_eq!(
+        fs::read(&compatible).unwrap(),
+        b"first-party path identity sentinel"
+    );
+    assert_eq!(fs::canonicalize(compatible).unwrap(), extended);
+    assert!(
+        super::paths::canonicalize(std::path::Path::new(
+            r"\\tablecraft-nonexistent.invalid\share\app.exe"
+        ))
+        .is_err()
+    );
 }

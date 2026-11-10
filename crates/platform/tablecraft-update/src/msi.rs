@@ -4,6 +4,7 @@ mod cabinet;
 mod handoff;
 mod installed;
 mod native;
+mod paths;
 mod preparation;
 mod report;
 

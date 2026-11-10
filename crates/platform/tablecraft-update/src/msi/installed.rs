@@ -1,4 +1,4 @@
-use super::{native, report::Report};
+use super::{native, paths, report::Report};
 use crate::{UpdateError, package, platform::Platform};
 use semver::Version;
 use serde::Deserialize;
@@ -15,6 +15,7 @@ const MAX_MANIFEST_BYTES: u64 = 64 * 1024;
 /// A Windows Installer registration bound to the running installed executable.
 #[derive(Debug)]
 pub struct MsiInstallation {
+    canonical_executable: PathBuf,
     executable: PathBuf,
     version: Version,
     platform: Platform,
@@ -54,6 +55,8 @@ impl MsiInstallation {
         &self.staging
     }
     pub(super) fn executable(&self) -> &Path {
+        // Preserve the native registered spelling for COM/helper comparisons and
+        // relaunch. The separately held canonical anchor proves physical identity.
         &self.executable
     }
     pub(super) fn product(&self) -> &str {
@@ -68,6 +71,7 @@ impl MsiInstallation {
     pub(super) fn revalidate(&self, cancelled: &dyn Fn() -> bool) -> Result<(), UpdateError> {
         let current = detect(&self.version, self.platform, cancelled)?;
         if current.product != self.product
+            || current.canonical_executable != self.canonical_executable
             || current.executable != self.executable
             || current.executable_digest != self.executable_digest
             || current.manifest_digest != self.manifest_digest
@@ -83,7 +87,7 @@ pub(crate) fn hint(platform: Platform) -> Result<bool, UpdateError> {
     if !matches!(platform, Platform::WindowsX64 | Platform::WindowsArm64) {
         return Ok(false);
     }
-    let executable = std::env::current_exe().map_err(UpdateError::Io)?;
+    let executable = paths::canonicalize(&std::env::current_exe().map_err(UpdateError::Io)?)?;
     let Some(parent) = executable.parent() else {
         return Ok(false);
     };
@@ -122,10 +126,7 @@ pub(crate) fn detect(
     if !cfg!(windows) || !matches!(platform, Platform::WindowsX64 | Platform::WindowsArm64) {
         return Err(UpdateError::Archive);
     }
-    let executable = std::env::current_exe()
-        .map_err(UpdateError::Io)?
-        .canonicalize()
-        .map_err(UpdateError::Io)?;
+    let executable = paths::canonicalize(&std::env::current_exe().map_err(UpdateError::Io)?)?;
     let report = native::inspect(&json!({"operation": "detect"}), cancelled)?;
     let products: Products = serde_json::from_value(report).map_err(|_| UpdateError::Archive)?;
     seal_registered(executable, version, platform, products, cancelled)
@@ -143,7 +144,7 @@ pub(super) fn seal_registered(
     }
     let mut selected = None;
     for product in products.products {
-        if product.executable.canonicalize().map_err(UpdateError::Io)? != executable {
+        if paths::canonicalize(&product.executable)? != executable {
             continue;
         }
         if selected.is_some()
@@ -159,6 +160,7 @@ pub(super) fn seal_registered(
         selected = Some(product);
     }
     let product = selected.ok_or(UpdateError::Archive)?;
+    paths::ensure_compatible(&product.executable)?;
     let parent = executable.parent().ok_or(UpdateError::Archive)?;
     for file in &product.package.files {
         let name = file
@@ -199,11 +201,10 @@ pub(super) fn seal_registered(
     let executable_digest = executable_digest.ok_or(UpdateError::Archive)?;
     let manifest_digest = package::hash_file(&manifest, MAX_MANIFEST_BYTES, cancelled)?
         .ok_or(UpdateError::Archive)?;
-    let staging = std::env::temp_dir()
-        .canonicalize()
-        .map_err(UpdateError::Io)?;
+    let staging = paths::canonicalize(&std::env::temp_dir())?;
     Ok(MsiInstallation {
-        executable,
+        canonical_executable: executable,
+        executable: product.executable,
         // NO_CLONE: the sealed installation outlives its caller's borrowed
         // running version and must own the immutable native identity.
         version: version.clone(),

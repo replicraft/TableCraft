@@ -82,6 +82,28 @@ remain in the generated desktop notice inventory; no generated legal files are
 checked into source. Native cabinet/table calls and upgrade behavior require
 Windows CI evidence independently of host-side policy tests.
 
+### Windows MSI path interoperability
+
+The updater directly uses already locked `dunce` 1.0.5 on Windows only. Rust's
+standard canonicalization emits extended-length paths that may not interoperate
+with Windows Installer COM, PowerShell or the registered component's normal DOS
+path. `dunce` supplies compatible canonicalization without handwritten prefix
+stripping. Canonical physical identity and the native registered launch spelling
+are retained separately; native component, manifest and executable identity checks
+remain.
+MSI operations explicitly refuse network, reserved-device and extended-length
+locations, and validate generated staging paths against the legacy UTF-16 bound.
+This does not qualify arbitrary long/network installation directories.
+
+The published package offers `CC0-1.0 OR MIT-0 OR Apache-2.0` and supplies its
+complete CC0 grant in `LICENSE`. The version-specific maintained notice policy
+selects CC0 and retains that exact published document. Fresh product-scoped
+notice generation includes this Windows desktop runtime consumer, while the
+ordinary CLI and non-Windows builds gain no direct dependency. No generated
+license bundle or source inventory is checked into the repository.
+Sources: [Rust canonicalize](https://doc.rust-lang.org/std/fs/fn.canonicalize.html)
+and [dunce canonicalize](https://docs.rs/dunce/1.0.5/dunce/fn.canonicalize.html).
+
 ### Native host outcome mailbox
 
 The desktop uses `parking_lot` 0.12 (already resolved as 0.12.5 in the GUI

@@ -27,4 +27,7 @@ tar.workspace = true
 cab.workspace = true
 base64 = { workspace = true, features = ["alloc"] }
 
+[target.'cfg(windows)'.dependencies]
+dunce.workspace = true
+
 [dev-dependencies]

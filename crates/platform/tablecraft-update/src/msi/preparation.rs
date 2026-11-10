@@ -1,4 +1,6 @@
-use super::{MsiInstallation, handoff, installed::MAX_PAYLOAD_BYTES, native, report::Report};
+use super::{
+    MsiInstallation, handoff, installed::MAX_PAYLOAD_BYTES, native, paths, report::Report,
+};
 use crate::{
     UpdateError, VerifiedDownload,
     apply::{AppliedUpdate, ApplyError, ApplyStage, RetainedRecovery},
@@ -50,6 +52,14 @@ impl PreparedMsi {
             .prefix(".tablecraft-msi-update-")
             .tempdir_in(installed.staging_parent())
             .map_err(UpdateError::Io)?;
+        // All generated native paths fit beneath this longest fixed payload path.
+        // Refuse before invoking legacy COM or elevated native helpers.
+        paths::ensure_compatible(
+            &directory
+                .path()
+                .join("payload")
+                .join("ThirdPartyLicenses.txt"),
+        )?;
         let msi = directory.path().join("update.msi");
         let mut file = File::create_new(&msi).map_err(UpdateError::Io)?;
         let mut buffer = [0; COPY_BUFFER_BYTES];

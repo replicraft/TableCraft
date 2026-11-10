@@ -1672,6 +1672,19 @@
         }
       ],
       "rationale": "Select Apache-2.0 from the exact declared trio-license and root LICENSE.md grant by reference. Preserve the full root Apple-SDK licensing/provenance caveat and the official Apache terms it references, without inferring SDK redistribution permissions or inventing authors."
+    },
+    {
+      "name": "dunce",
+      "version": "1.0.5",
+      "declared_license": "CC0-1.0 OR MIT-0 OR Apache-2.0",
+      "selected_license": "CC0-1.0",
+      "sources": [
+        {
+          "path": "LICENSE",
+          "role": "license"
+        }
+      ],
+      "rationale": "Select the complete published CC0 grant in LICENSE for the Windows runtime consumer; alternate MIT-0/Apache terms are not substituted for the actual supplied grant."
     }
   ],
   "assets": [
