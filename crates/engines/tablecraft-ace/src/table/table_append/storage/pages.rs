@@ -55,6 +55,7 @@ pub(super) fn framing(
 pub(super) fn ordinary(
     number: u32,
     owner: u32,
+    max_columns: usize,
     owned: &[u32],
     reader: &mut Reader<'_, Cursor<&[u8]>>,
 ) -> Result<u32, EditError> {
@@ -65,10 +66,15 @@ pub(super) fn ordinary(
         reader.tick()?;
         let (word, start, end) = row_range(&page, slot)?;
         if word & DELETED_MASK != 0 {
-            // DROP tombstones a logical root without erasing its original body.
-            // A retained four-byte forwarding body still names actual old storage;
-            // direct retired records remain opaque and are never decoded as pointers.
-            if word & RELOCATED_MASK != 0 && end - start == size_of::<u32>() {
+            // DROP tombstones both former direct and forwarded roots without
+            // erasing their body. A capsule may retain its old larger span. Its
+            // pointer prefix cannot be a direct record's stored column count;
+            // genuine historical direct rows remain opaque under retained highwater.
+            let columns = usize::from(u16_at(&page[start..end], 0)?);
+            if word & RELOCATED_MASK != 0 && (columns == 0 || columns > max_columns) {
+                if end - start < size_of::<u32>() {
+                    return Err(refused());
+                }
                 let target = u32_at(&page[start..end], 0)?;
                 reader.work(owned.len())?;
                 if !owned.contains(&reference_page(target)) {

@@ -273,7 +273,13 @@ impl Census {
         for &page in &owned {
             self.claim(page, Role::Data)?;
             rows = rows
-                .checked_add(pages::ordinary(page, number, &owned, reader)?)
+                .checked_add(pages::ordinary(
+                    page,
+                    number,
+                    layout.max_columns,
+                    &owned,
+                    reader,
+                )?)
                 .ok_or_else(refused)?;
         }
         if rows != layout.records {

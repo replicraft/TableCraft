@@ -81,9 +81,17 @@ fn retired_forwarding_and_index_references_must_remain_inside_real_owned_storage
     let offset =
         usize::from(u16::from_le_bytes(bad_forward[at..at + 2].try_into().unwrap()) & 0x1fff);
     let end = 4096;
-    assert_eq!(end - offset, 4);
-    bad_forward[8 * 4096 + offset..8 * 4096 + end]
+    assert_eq!(
+        u16::from_le_bytes(source.bytes[at..at + 2].try_into().unwrap()) & 0xc000,
+        0x4000
+    );
+    assert_eq!(end - offset, 11);
+    bad_forward[8 * 4096 + offset..8 * 4096 + offset + 4]
         .copy_from_slice(&((11_u32 << 8) | 1).to_le_bytes());
+    assert_eq!(
+        &bad_forward[8 * 4096 + offset + 4..8 * 4096 + end],
+        &after[8 * 4096 + offset + 4..8 * 4096 + end]
+    );
     let mut bad_index = after;
     bad_index[9 * 4096 + 16..9 * 4096 + 20].copy_from_slice(&11_u32.to_le_bytes());
     for bytes in [bad_forward, bad_index] {
