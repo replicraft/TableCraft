@@ -1,5 +1,24 @@
 # Implementation status
 
+## Populated Short Text field workflow — 10 November 2026
+
+The shared runtime now connects current-metadata Short Text ADD on qualified
+populated ACE16 tables. It preserves existing records as NULL without a backfill,
+retains the exact width/compression/AllowZeroLength declaration, and uses a
+separate checked TCAC0009 recovery request. A separate TCNI0015 operation stores
+the first Text value in an absent historical field, including empty text, through
+direct or forwarded records while preserving other payloads and ID membership.
+The desktop uses existing shared review/Save/reopen services; no native editing
+logic was added to the GUI host.
+
+The headless desktop field-addition batch passes 34 workflows, including real
+ADD → fill old rows with empty/compressed/wide text → fresh reopen against
+independent complete images. Strict Access/runtime/desktop/MCP checks pass.
+Broader source layouts, already-present historical Text updates, table/column
+DROP over populated data and older-format writer qualification remain unfinished.
+These are implementation gaps, not Access file limits or native Windows evidence.
+See the [column-addition contract](access/writes/ADD_COLUMN.md).
+
 ## Signed updater and native packaging — 9 November 2026
 
 The desktop now connects a headless signed-update service through a separate

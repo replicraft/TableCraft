@@ -148,6 +148,42 @@ pending/committed cold recovery and forged AFTER rejection. A synthetic Unicode
 request also confirms that successful decoding grants no native write authority.
 These tests do not establish Windows or Microsoft Access Save/reopen behavior.
 
+## Current Short Text addition and first stored values
+
+`prepare_current_short_text_field_addition` and consuming
+`plan_recoverable_current_short_text_field_addition` add nullable Short Text to
+populated tables in the current-metadata ACE16 source above. The declaration
+stores Required(false), AllowZeroLength(true), explicit capacity of 1–255 UTF-16
+units and explicit Unicode compression permission, with no DefaultValue. Existing
+records are preserved byte for byte and expose the new field as NULL. The normal
+saved-table gallery chooses capacity 255 and compression enabled. This follows
+Microsoft's [Short Text field workflow and property table](https://support.microsoft.com/en-us/access/create-or-delete-a-short-text-field);
+the field's configured capacity remains distinct from display formatting.
+
+The separate `TCAC0009`/profile9 binds the original complete image, names, width
+and compression. Number's TCAC0008 decoder remains Number-only; the explicitly
+selected Short Text decoder accepts only TCAC0009. Both use the same current
+candidate, source-binding, exact-image comparison and checked V2 journal owners.
+Neither a decoded request nor a generic journal AFTER authorizes native recovery.
+
+The `TCNI0015`/profile15 operation fills one absent Short Text field through a
+direct or already-forwarded historical root in existing owned DATA capacity.
+Original NULL-to-Text requests retain empty text, compressed text and wide text
+as distinct native values; NULL-to-NULL preserves the complete original image.
+The serializer independently verifies historical field counts, variable offsets,
+NULL masks, unchanged other payloads and complete physical placement. Recovery
+reconstructs that same operation from the original source and request. Earlier
+ordinary and fixed historical request languages retain their existing proofs.
+
+The shared Access editor connects this operation to the existing runtime review,
+consuming Save and guarded reopen; desktop adds no native editing logic. Headless
+widget journeys add the field, fill three historical rows and freshly reopen,
+checking independent complete database images throughout. These are constructed
+source checks, not Windows or native Access Save/reopen qualification. Updating
+an already-present historical Text field, broader source layouts, bulk requests
+and EOF allocation remain separate implementation work. These restrictions are
+current writer limitations, not Access format limits.
+
 ## Populated-table behavior references
 
 Earlier constructive ADD families still require an empty table. The separate

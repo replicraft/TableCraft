@@ -1772,6 +1772,16 @@ host checks both against the exact submitted declaration, including width and
 compression, before starting the nonreplaceable `SaveWorker::start_field_addition`.
 A matching display DTO cannot substitute for the capability's declaration.
 
+Populated current-metadata ACE16 tables now use separate TCAC0008 Number and
+TCAC0009 Short Text requests. Both retain the existing review, nonreplaceable Save
+worker and guarded reopen. The captured native plan reports its actual declaration;
+it never labels a Short Text request as Number. Short Text keeps old records
+unchanged/NULL, with explicit width and compression and no default. Its separate
+TCNI0015 operation can save the first non-NULL value into an absent historical
+Text field, including empty text. It uses the same typed cell-edit service as
+other supported edits; desktop and MCP gain no independent native write path.
+Already-present historical Text edits and broader sources remain unqualified.
+
 Actual inert metadata selects one source purpose before native qualification.
 Number retains TCAC0003/0004 for their supported creator prefixes and property
 carriers; mixed fields or policies requiring the typed profile select TCAC0005.
