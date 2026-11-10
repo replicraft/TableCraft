@@ -1,5 +1,6 @@
-//! Closed TCND0001 framing, fully validated before decoded allocation.
-use super::{NativeDeleteIntent, NativeIntentError, binding, names};
+//! Separate TCND0001 and TCND0002 framing, checked before copying decoded witnesses.
+use super::super::row_ordinals::RowOrdinals;
+use super::{NativeDeleteIntent, NativeIntentError, SourceFamily, binding, names};
 use crate::{
     EditError, InspectError, RowDelete, format::page::PAGE_BYTES, header::check,
     limits::MAX_LIVE_ROWS,
@@ -9,6 +10,8 @@ use tablecraft_core::limits::{Resource, ResourceBudget};
 const MAGIC: &[u8; 8] = b"TCND0001";
 const PREFIX: &[u8; 4] = b"TCND";
 const PROFILE: u16 = 1;
+const CURRENT_MAGIC: &[u8; 8] = b"TCND0002";
+const CURRENT_PROFILE: u16 = 2;
 const TOTAL_AT: usize = MAGIC.len();
 const PROFILE_AT: usize = TOTAL_AT + size_of::<u32>();
 const FLAGS_AT: usize = PROFILE_AT + size_of::<u16>();
@@ -25,6 +28,55 @@ const WORD_BITS: usize = u64::BITS as usize;
 const ROW_WORDS: usize = MAX_LIVE_ROWS.div_ceil(WORD_BITS);
 const COPY_BYTES: usize = 4096;
 pub(super) const MAX_RECORD_BYTES: usize = 64 * 1024 * 1024;
+
+impl SourceFamily {
+    const fn maximum_bytes(self) -> usize {
+        match self {
+            Self::Ordinary => MAX_RECORD_BYTES,
+            Self::Current => NativeDeleteIntent::MAX_CURRENT_ENCODED_BYTES,
+        }
+    }
+
+    const fn maximum_rows(self) -> usize {
+        match self {
+            Self::Ordinary => MAX_LIVE_ROWS,
+            Self::Current => u32::MAX as usize,
+        }
+    }
+
+    const fn magic(self) -> &'static [u8; 8] {
+        match self {
+            Self::Ordinary => MAGIC,
+            Self::Current => CURRENT_MAGIC,
+        }
+    }
+
+    const fn profile(self) -> u16 {
+        match self {
+            Self::Ordinary => PROFILE,
+            Self::Current => CURRENT_PROFILE,
+        }
+    }
+}
+
+enum Seen<'a> {
+    Ordinary(&'a mut [u64; ROW_WORDS]),
+    Current(RowOrdinals),
+}
+
+impl Seen<'_> {
+    fn insert(
+        &mut self,
+        row: usize,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(), NativeIntentError> {
+        match self {
+            Self::Ordinary(bitmap) => mark(bitmap, row),
+            Self::Current(rows) => rows.insert(row, budget, cancelled),
+        }
+    }
+}
 
 fn scan(
     bytes: &[u8],
@@ -56,30 +108,38 @@ fn mark(seen: &mut [u64; ROW_WORDS], row: usize) -> Result<(), NativeIntentError
 pub(super) fn validate_requests(
     name_bytes: usize,
     deletes: &[RowDelete],
+    family: SourceFamily,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<usize, NativeIntentError> {
     check(budget, cancelled)?;
-    if deletes.len() > MAX_LIVE_ROWS || name_bytes > names::MAX_NAME_BYTES {
+    if deletes.len() > family.maximum_rows() || name_bytes > names::MAX_NAME_BYTES {
         return Err(InspectError::StructureLimit.into());
     }
-    budget
-        .charge(Resource::Steps, ROW_WORDS as u64)
-        .map_err(InspectError::from)?;
-    let mut seen = [0_u64; ROW_WORDS];
+    let mut bitmap;
+    let mut seen = match family {
+        SourceFamily::Ordinary => {
+            budget
+                .charge(Resource::Steps, ROW_WORDS as u64)
+                .map_err(InspectError::from)?;
+            bitmap = [0_u64; ROW_WORDS];
+            Seen::Ordinary(&mut bitmap)
+        }
+        SourceFamily::Current => Seen::Current(RowOrdinals::default()),
+    };
     let mut length = HEADER_BYTES
         .checked_add(name_bytes)
         .ok_or(InspectError::StructureLimit)?;
     for request in deletes {
         check(budget, cancelled)?;
-        mark(&mut seen, request.row())?;
+        seen.insert(request.row(), budget, cancelled)?;
         if !(MIN_ROW_BYTES..=PAGE_BYTES).contains(&request.expected_bytes().len()) {
             return Err(NativeIntentError::InvalidRecord);
         }
         length = length
             .checked_add(ROW_HEADER_BYTES)
             .and_then(|value| value.checked_add(request.expected_bytes().len()))
-            .filter(|value| *value <= MAX_RECORD_BYTES)
+            .filter(|value| *value <= family.maximum_bytes())
             .ok_or(InspectError::StructureLimit)?;
         scan(request.expected_bytes(), budget, cancelled)?;
     }
@@ -143,15 +203,16 @@ struct Framing<'a> {
 
 fn preflight<'a>(
     raw: &'a [u8],
+    family: SourceFamily,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Framing<'a>, NativeIntentError> {
     check(budget, cancelled)?;
-    if raw.len() < HEADER_BYTES || raw.len() > MAX_RECORD_BYTES {
+    if raw.len() < HEADER_BYTES || raw.len() > family.maximum_bytes() {
         return Err(NativeIntentError::InvalidRecord);
     }
     let u32_at = |at| u32::from_le_bytes(raw[at..at + size_of::<u32>()].try_into().unwrap());
-    if &raw[..MAGIC.len()] != MAGIC {
+    if &raw[..MAGIC.len()] != family.magic() {
         return Err(if raw.starts_with(PREFIX) {
             NativeIntentError::UnsupportedVersion
         } else {
@@ -164,7 +225,7 @@ fn preflight<'a>(
     {
         return Err(NativeIntentError::InvalidRecord);
     }
-    if u16::from_le_bytes(raw[PROFILE_AT..FLAGS_AT].try_into().unwrap()) != PROFILE {
+    if u16::from_le_bytes(raw[PROFILE_AT..FLAGS_AT].try_into().unwrap()) != family.profile() {
         return Err(NativeIntentError::UnsupportedProfile);
     }
     let before_length = u64::from_le_bytes(raw[BEFORE_LENGTH_AT..BINDING_AT].try_into().unwrap());
@@ -172,7 +233,7 @@ fn preflight<'a>(
     let before_binding = raw[BINDING_AT..NAME_LENGTH_AT].try_into().unwrap();
     let count = u32_at(COUNT_AT) as usize;
     let name_bytes = u32_at(NAME_LENGTH_AT) as usize;
-    if count > MAX_LIVE_ROWS || name_bytes == 0 || name_bytes > names::MAX_NAME_BYTES {
+    if count > family.maximum_rows() || name_bytes == 0 || name_bytes > names::MAX_NAME_BYTES {
         return Err(NativeIntentError::InvalidRecord);
     }
     let mut cursor = Cursor {
@@ -184,17 +245,24 @@ fn preflight<'a>(
     let table = std::str::from_utf8(name).map_err(|_| NativeIntentError::InvalidRecord)?;
     names::validate_name(table, budget, cancelled)?;
     let rows = &raw[cursor.at..];
-    budget
-        .charge(Resource::Steps, ROW_WORDS as u64)
-        .map_err(InspectError::from)?;
-    let mut seen = [0_u64; ROW_WORDS];
+    let mut bitmap;
+    let mut seen = match family {
+        SourceFamily::Ordinary => {
+            budget
+                .charge(Resource::Steps, ROW_WORDS as u64)
+                .map_err(InspectError::from)?;
+            bitmap = [0_u64; ROW_WORDS];
+            Seen::Ordinary(&mut bitmap)
+        }
+        SourceFamily::Current => Seen::Current(RowOrdinals::default()),
+    };
     for _ in 0..count {
         check(budget, cancelled)?;
         budget
             .charge(Resource::Steps, ROW_HEADER_BYTES as u64)
             .map_err(InspectError::from)?;
         let (row, expected) = cursor.row()?;
-        mark(&mut seen, row)?;
+        seen.insert(row, budget, cancelled)?;
         scan(expected, budget, cancelled)?;
     }
     if cursor.at != raw.len() {
@@ -211,14 +279,20 @@ fn preflight<'a>(
 }
 
 impl NativeDeleteIntent {
-    /// Encode closed TCND0001 data under a paid bounded allocation.
+    /// Encode the retained request family under a paid, fallible allocation.
     pub fn encode(
         &self,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Vec<u8>, NativeIntentError> {
         let _span = tracing::debug_span!("native.delete_intent.encode").entered();
-        let length = validate_requests(self.table().len(), self.deletes(), budget, cancelled)?;
+        let length = validate_requests(
+            self.table().len(),
+            self.deletes(),
+            self.family,
+            budget,
+            cancelled,
+        )?;
         budget
             .charge_allocation(length as u64, 1)
             .map_err(InspectError::from)?;
@@ -229,9 +303,9 @@ impl NativeDeleteIntent {
         output
             .try_reserve_exact(length)
             .map_err(|_| InspectError::Allocation)?;
-        output.extend_from_slice(MAGIC);
+        output.extend_from_slice(self.family.magic());
         output.extend_from_slice(&(length as u32).to_le_bytes());
-        output.extend_from_slice(&PROFILE.to_le_bytes());
+        output.extend_from_slice(&self.family.profile().to_le_bytes());
         output.extend_from_slice(&0_u16.to_le_bytes());
         output.extend_from_slice(&self.before_length.to_le_bytes());
         output.extend_from_slice(&self.before_binding);
@@ -252,15 +326,33 @@ impl NativeDeleteIntent {
         Ok(output)
     }
 
-    /// Validate complete framing and duplicate ordinals before any heap copy.
+    /// Validate TCND0001 framing and duplicates before copying decoded witnesses.
     /// Source/record semantics remain mandatory fresh normal-planner checks.
     pub fn decode(
         raw: &[u8],
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, NativeIntentError> {
+        Self::decode_family(raw, SourceFamily::Ordinary, budget, cancelled)
+    }
+
+    /// Decode only TCND0002; older or unknown families are not retried.
+    pub fn decode_current(
+        raw: &[u8],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, NativeIntentError> {
+        Self::decode_family(raw, SourceFamily::Current, budget, cancelled)
+    }
+
+    fn decode_family(
+        raw: &[u8],
+        family: SourceFamily,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, NativeIntentError> {
         let _span = tracing::debug_span!("native.delete_intent.decode").entered();
-        let frame = preflight(raw, budget, cancelled)?;
+        let frame = preflight(raw, family, budget, cancelled)?;
         let table = names::copy_name(frame.table, budget)?;
         budget
             .charge_allocation(frame.count as u64, size_of::<RowDelete>() as u64)
@@ -292,6 +384,7 @@ impl NativeDeleteIntent {
             deletes,
             before_length: frame.before_length,
             before_binding: frame.before_binding,
+            family,
         })
     }
 }

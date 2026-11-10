@@ -31,8 +31,7 @@ pub fn qualify_native_delete_recovery<'a, J: DurableStorage>(
         budget,
         cancelled,
     )?;
-    let plan =
-        image.plan_ordinary_row_deletes(intent.table(), intent.deletes(), budget, cancelled)?;
+    let plan = intent.plan(image, budget, cancelled)?;
     equal_image(
         plan.before_bytes(),
         checked.before_bytes(),

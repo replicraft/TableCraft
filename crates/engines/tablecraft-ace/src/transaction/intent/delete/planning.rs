@@ -14,6 +14,22 @@ pub struct RecoverableNativeDeletePlan {
 }
 
 impl NativeImage {
+    /// Bind original current-source deletion witnesses to the TCND0002 family.
+    #[cfg(feature = "ace16-create")]
+    pub fn plan_recoverable_current_row_deletes(
+        self,
+        table: &str,
+        deletes: Vec<RowDelete>,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<RecoverableNativeDeletePlan, RecoverableEditError> {
+        let _span = tracing::debug_span!("native.current_delete.plan_recoverable").entered();
+        let intent =
+            NativeDeleteIntent::new_current(table, deletes, self.as_bytes(), budget, cancelled)?;
+        let plan = intent.plan(self, budget, cancelled)?;
+        Ok(RecoverableNativeDeletePlan { plan, intent })
+    }
+
     /// Qualify native target-local absence and reconstruct original row deletion.
     /// The retained intent contains requests, not final patches or permissions.
     pub fn plan_recoverable_ordinary_row_deletes(

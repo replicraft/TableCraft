@@ -21,12 +21,7 @@ impl RecoverableNativeDeletePlan {
         equal_image(fresh.as_bytes(), self.plan.before_bytes(), proof, cancelled)?;
         self.intent
             .verify_before(fresh.as_bytes(), proof, cancelled)?;
-        let plan = fresh.plan_ordinary_row_deletes(
-            self.intent.table(),
-            self.intent.deletes(),
-            native,
-            cancelled,
-        )?;
+        let plan = self.intent.plan(fresh, native, cancelled)?;
         equal_image(
             plan.before_bytes(),
             self.plan.before_bytes(),
