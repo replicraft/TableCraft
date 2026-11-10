@@ -40,6 +40,44 @@ REBUILD = r'''#!/bin/sh
 set -eu
 mkdir -p /work/runtime /work/fuse /work/squashfuse /out
 cd /kit
+# Rebuild static libraries from the supplied, digest-verified sources. Alpine
+# mirrors can retire old binary package revisions; none of those are required.
+for library in musl zlib zstd mimalloc; do
+    mkdir -p "/work/$library"
+    tar -xzf "sources/$library.tar.gz" -C "/work/$library" --strip-components=1
+done
+for name in handle-aux-at_base isatty-glibc-align \
+    ldso-fix-non-functional-fix-to-early-dynamic-PAGE_SI \
+    loongarch64-Add-lsx-and-lasx-vector-structure-defini \
+    loongarch64-add-TLSDESC-support loongarch64-add-fpu-and-simd-context-to-signal.h \
+    loongarch64-add-bits-hwcap.h CVE-2025-26519 CVE-2026-6042 CVE-2026-40200; do
+    patch -d /work/musl -p1 < "/kit/patches/musl/$name.patch"
+done
+patch -d /work/zlib -p1 < /kit/patches/zlib/CVE-2026-85091.patch
+patch -d /work/mimalloc -p1 < /kit/patches/mimalloc/cmake-add-insecure-suffix.patch
+export CC=clang
+export CFLAGS='-Os -fPIC -ffunction-sections -fdata-sections'
+cd /work/musl
+# Install headers/static archives only. Keep the host's dynamic loader intact so
+# container build tools continue using their own compatible system library.
+./configure --prefix=/usr --disable-shared
+make -j "${JOBS:-2}"
+make install
+cd /work/zlib
+./configure --prefix=/usr --static
+make -j "${JOBS:-2}"
+make install
+cd /work/zstd
+make -C lib -j "${JOBS:-2}" libzstd.a
+make -C lib PREFIX=/usr install-static install-includes install-pc
+cd /work/mimalloc
+cmake -S . -B build -G Ninja -DCMAKE_INSTALL_PREFIX=/usr \
+    -DCMAKE_BUILD_TYPE=Release -DMI_INSTALL_TOPLEVEL=ON -DMI_SECURE=ON \
+    -DMI_BUILD_SHARED=OFF -DMI_BUILD_OBJECT=OFF -DMI_BUILD_TESTS=OFF
+cmake --build build --parallel "${JOBS:-2}"
+cmake --install build
+ln -s libmimalloc-secure.a /usr/lib/libmimalloc.a
+cd /kit
 tar -xzf sources/runtime.tar.gz -C /work/runtime --strip-components=1
 if [ -n "${FUSE_SOURCE:-}" ]; then
     cp -R "/kit/$FUSE_SOURCE/." /work/fuse/
@@ -61,7 +99,7 @@ path.write_text(source)
 PROOF
 fi
 meson setup /work/fuse/build /work/fuse --prefix=/usr --default-library=static \
-    -Dexamples=false -Dtests=false -Duseroot=false
+    -Dexamples=false -Dtests=false -Duseroot=false -Dutils=false
 ninja -C /work/fuse/build -j "${JOBS:-2}" install
 tar -xzf sources/squashfuse.tar.gz -C /work/squashfuse --strip-components=1
 cd /work/squashfuse
@@ -79,6 +117,7 @@ printf 'AI\002' | dd of=runtime bs=1 count=3 seek=8 conv=notrunc
 cp runtime /out/runtime
 chmod 755 /out/runtime
 apk info -v > /out/packages.txt
+sha256sum /usr/lib/libc.a /usr/lib/libz.a /usr/lib/libzstd.a /usr/lib/libmimalloc-secure.a > /out/static-libraries.txt
 clang --version > /out/compiler.txt
 '''
 
@@ -118,12 +157,12 @@ changes. libfuse is compiled from that source and statically relinked into the
 complete runtime source; there is no private object file, signing key, network
 service or TableCraft database required to do so.
 
-The container uses the pinned Alpine base and matching versioned static library
-packages. Their complete corresponding sources/patches are also included under
-sources/ and patches/. If an Alpine package mirror eventually removes one of
-these versions, build those provided source versions on a compatible musl
-system and point the ordinary compiler/linker paths at your builds. Original
-Alpine recipe commit/path/hash identities are retained in provenance.json. A
+The container uses the pinned Alpine base for ordinary build tools. It builds
+musl, zlib, zstd and secure mimalloc directly from the complete source archives
+and exact Alpine patches supplied under sources/ and patches/. Static dependency
+builds do not depend on old binary package revisions remaining on Alpine mirrors.
+The dynamic loader used by container tools remains intact. Original Alpine
+recipe commit/path/hash identities are retained in provenance.json. A
 source build needs normal system/compiler tools, not a reproduction of every
 host build-tool package; no byte-reproducibility claim is made.
 
@@ -270,11 +309,11 @@ def runtime_notices(metadata, sources):
 
 
 def containerfile(metadata):
-    versions = metadata["runtime_build"]["packages"]
-    packages = ["bash", "alpine-sdk", "autoconf", "automake", "libtool", "meson", "ninja", "xz", "eudev-dev", "gettext-dev", "linux-headers", "clang", "python3"]
-    for name in ("musl-dev", "zstd-dev", "zstd-static", "zlib-dev", "zlib-static", "mimalloc2-dev"):
-        key = name.split("-", 1)[0]
-        packages.append(name + "=" + versions[key])
+    packages = [
+        "bash", "alpine-sdk", "autoconf", "automake", "libtool", "meson",
+        "ninja", "xz", "eudev-dev", "gettext-dev", "linux-headers", "clang",
+        "python3", "cmake",
+    ]
     return ("FROM " + metadata["runtime_build"]["base_image"] + "\n"
             + "RUN apk add --no-cache " + " \\\n    ".join(packages) + "\n"
             + "COPY . /kit\nARG FUSE_SOURCE=\nARG RELINK_PROOF=0\n"
@@ -463,10 +502,24 @@ def relink(target, output, inventory=INVENTORY):
                 )
             packages_text = contract.regular(build_packages, MAX_NOTICE_BYTES).read_text("utf-8")
             compiler_text = contract.regular(compiler, MAX_NOTICE_BYTES).read_text("utf-8")
-            for name, version in metadata["runtime_build"]["packages"].items():
-                package_name = {"musl": "musl-dev", "zstd": "zstd-static", "zlib": "zlib-static", "mimalloc2": "mimalloc2-dev"}[name]
-                if package_name + "-" + version not in packages_text.splitlines():
-                    raise ValueError("The runtime rebuild used unexpected static library packages")
+            static_libraries = root / "static-libraries.txt"
+            subprocess.run(
+                ["docker", "cp", container + ":/out/static-libraries.txt", str(static_libraries)],
+                check=True, env=environment, timeout=60,
+            )
+            static_text = contract.regular(static_libraries, MAX_NOTICE_BYTES).read_text("utf-8")
+            expected_libraries = {
+                "/usr/lib/libc.a", "/usr/lib/libz.a", "/usr/lib/libzstd.a",
+                "/usr/lib/libmimalloc-secure.a",
+            }
+            static_hashes = {}
+            for line in static_text.splitlines():
+                digest, name = line.split()
+                if not DIGEST.fullmatch(digest) or name not in expected_libraries or name in static_hashes:
+                    raise ValueError("Invalid rebuilt static library receipt")
+                static_hashes[name] = digest
+            if set(static_hashes) != expected_libraries:
+                raise ValueError("The runtime rebuild omitted a source-built static library")
             data = rebuilt.read_bytes()
             if data[8:11] != b"AI\x02" or b"TableCraft relink proof:" not in data:
                 raise ValueError("The runtime did not incorporate the changed FUSE library")
@@ -479,7 +532,8 @@ def relink(target, output, inventory=INVENTORY):
                 "source_kit_sha256": receipt["files"]["RuntimeSource.tar.gz"],
                 "rebuilt_runtime_sha256": contract.digest(rebuilt),
                 "modified_fuse_diagnostic": True, "native_version_command": True,
-                "installed_packages": packages_text.splitlines(),
+                "installed_build_tool_packages": packages_text.splitlines(),
+                "source_built_static_libraries": static_hashes,
                 "compiler": compiler_text,
 
             }
