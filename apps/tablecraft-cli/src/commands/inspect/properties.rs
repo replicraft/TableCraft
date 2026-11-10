@@ -32,7 +32,7 @@ pub(super) fn run<R: tablecraft_ace::NativeReadSource>(
             PropertyGroupKind::Unknown(_) => "Unknown",
         };
         for property in group.properties() {
-            let value = if let Ok(value) = property.boolean() {
+            let value = if let Ok(value) = property.observed_boolean() {
                 if value { "TRUE" } else { "FALSE" }
             } else {
                 property.text().unwrap_or("OPAQUE")

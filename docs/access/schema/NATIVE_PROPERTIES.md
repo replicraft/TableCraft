@@ -17,10 +17,14 @@ metadata retention, not qualification of native save preservation.
 
 Framing, name indexes, lengths and UTF-16 names are checked. Column/index scopes
 may share a name. Duplicate keys/groups/names fail. Missing streams/keys remain
-absent. Semantic Boolean access requires one payload byte, independently of row
-null masks. Inert framing also retains unusual Boolean payloads as opaque bytes:
-four-byte `TotalsRow` and `HideNewField` UI properties have been observed in an
-ACE 16 database. They do not acquire Boolean semantics through coercion.
+absent. The strict `NativeProperty::boolean` declaration accessor requires one
+payload byte, independently of row null masks. Read-only
+`NativeProperty::observed_boolean` also accepts four-byte Boolean metadata and
+uses its first byte, following Jackcess's property Boolean reader. All raw bytes
+and flags stay unchanged. Inert feature observation (`AppendOnly`) and CLI
+property display use this observation accessor; Required/default write admission
+and constructor validation keep their existing strict contracts. Empty or
+unsupported-width payloads are not converted into false, NULL or absence.
 Text/Memo values remain inert expression text. Typed access rejects wrong carriers;
 Required is never guessed false because its payload has an unexpected type.
 Ordinary schema/row APIs keep their conservative nullability policy.

@@ -50,6 +50,21 @@ impl NativeProperty {
             _ => Err(InspectError::Malformed),
         }
     }
+    /// Observe a stored Boolean property without qualifying a write declaration.
+    /// Native UI metadata also uses four-byte payloads. As in Jackcess's
+    /// BooleanPropColumn reader, the first byte carries the Boolean; remaining
+    /// bytes stay preserved in raw_value(). This is not a row NULL mask, and an
+    /// empty payload does not mean false or an absent property.
+    pub fn observed_boolean(&self) -> Result<bool, InspectError> {
+        if self.kind != data_type::BOOLEAN {
+            return Err(InspectError::Unsupported);
+        }
+        match self.raw.as_slice() {
+            [value] | [value, _, _, _] => Ok(*value != 0),
+            _ => Err(InspectError::Malformed),
+        }
+    }
+
     /// Decode a qualified one-byte numeric property, preserving unknown values.
     pub fn byte(&self) -> Result<u8, InspectError> {
         if self.kind != data_type::BYTE {

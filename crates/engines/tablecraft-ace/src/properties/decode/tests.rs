@@ -397,3 +397,82 @@ fn framed_property_names_above_2048_bytes_retain_exact_spelling_and_fail_closed(
     malformed[10..12].copy_from_slice(&3001_u16.to_le_bytes());
     assert!(decode(&malformed, &mut budget(), &|| false).is_err());
 }
+
+#[test]
+fn inert_boolean_observation_preserves_one_and_four_byte_carriers_without_write_admission() {
+    for (payload, expected) in [
+        (vec![0], false),
+        (vec![255], true),
+        (vec![0, 0, 0, 0], false),
+        (vec![1, 0, 0, 0], true),
+        (vec![255, 255, 255, 255], true),
+        (vec![0, 1, 0, 0], false),
+    ] {
+        let properties = [
+            b"MR2\0".as_slice(),
+            &block(128, &name("AppendOnly")),
+            &group(1, "Score", &value(0, 1, 1, &payload)),
+        ]
+        .concat();
+        let decoded = decode(&properties, &mut budget(), &|| false).unwrap();
+        let property = decoded[0].get("AppendOnly").unwrap();
+        assert_eq!(property.observed_boolean(), Ok(expected));
+        assert_eq!(property.raw_value(), payload);
+        assert_eq!(property.flags(), 1);
+        if payload.len() == 4 {
+            assert_eq!(property.boolean(), Err(InspectError::Malformed));
+        } else {
+            assert_eq!(property.boolean(), Ok(expected));
+        }
+        let mut bytes = database_with_properties(&properties);
+        bytes[4..20].copy_from_slice(b"Standard ACE DB\0");
+        bytes[20] = 2;
+        let original = bytes.clone();
+        let mut source = Cursor::new(bytes);
+        let features = crate::inspect_table_features(
+            &mut source,
+            CatalogScope::new(4251),
+            "Items",
+            &mut budget(),
+            &|| false,
+        )
+        .unwrap();
+        let field = features
+            .columns()
+            .find(|field| field.column().name() == "Score")
+            .unwrap();
+        assert_eq!(field.append_only(), Ok(Some(expected)));
+        let retained = features
+            .properties()
+            .group(PropertyGroupKind::Column, "Score")
+            .unwrap()
+            .get("AppendOnly")
+            .unwrap();
+        assert_eq!(retained.raw_value(), payload);
+        assert_eq!(source.get_ref(), &original);
+    }
+}
+
+#[test]
+fn inert_boolean_observation_does_not_turn_unknown_width_or_type_into_false() {
+    for (kind, payload, expected) in [
+        (1, vec![], InspectError::Malformed),
+        (1, vec![0, 0], InspectError::Malformed),
+        (1, vec![0; 3], InspectError::Malformed),
+        (1, vec![0; 5], InspectError::Malformed),
+        (2, vec![0], InspectError::Unsupported),
+    ] {
+        let properties = [
+            b"MR2\0".as_slice(),
+            &block(128, &name("AppendOnly")),
+            &group(1, "Score", &value(0, kind, 1, &payload)),
+        ]
+        .concat();
+        let decoded = decode(&properties, &mut budget(), &|| false).unwrap();
+        assert_eq!(
+            decoded[0].get("AppendOnly").unwrap().observed_boolean(),
+            Err(expected)
+        );
+        assert_eq!(decoded[0].get("AppendOnly").unwrap().raw_value(), payload);
+    }
+}

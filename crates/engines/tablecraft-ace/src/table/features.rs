@@ -102,7 +102,7 @@ impl<'a> ColumnFeatures<'a> {
     pub fn append_only(&self) -> Result<Option<bool>, InspectError> {
         self.properties
             .and_then(|p| p.get(APPEND_ONLY))
-            .map(|p| p.boolean())
+            .map(|p| p.observed_boolean())
             .transpose()
     }
     /// Explicit TextFormat declaration (0 plain / 1 rich); other values stay raw.
