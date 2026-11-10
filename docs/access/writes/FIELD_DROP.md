@@ -51,7 +51,8 @@ group are removed. Native column IDs, maximum column/variable counts and retaine
 record masks/offsets stay intact, including retired payload bytes. This is logical
 field deletion, without compaction or record migration.
 
-The new metadata proof validates the original property dictionary/groups strictly,
+The current metadata proof validates complete original property framing and live
+group coverage, retaining dictionary names left unused by earlier deletion. It
 then proves that AFTER equals exactly one known aligned group omission. Unused
 dictionary names and a dictionary with no remaining groups are retained. A small
 remaining body keeps the original owned Single carrier through an explicit
@@ -66,6 +67,14 @@ Text, forwarded records, opaque NULL/Text/Binary siblings and ID-only survivors.
 Fresh-file SELECT/COUNT and removed-name binding checks run against all seven
 constructed images. These establish independent read/query and constructed
 mutation evidence, not native Windows/Access Save/reopen qualification.
+
+Repeated current-tail deletion also accepts a qualified Number or Short Text
+re-addition, both before and after materializing a value in an old row. The
+original empty-source grammar remains strict. Independent complete-image checks
+cover fourteen source/target combinations in both unfilled and filled states;
+remaining live fields retain their original values and native identities. This
+is tail deletion under the existing source and ownership proof, not arbitrary
+middle-field deletion or storage reclamation.
 
 ## Construction and preservation
 

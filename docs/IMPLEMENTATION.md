@@ -1,5 +1,27 @@
 # Implementation status
 
+## Populated field deletion and re-addition — 10 November 2026
+
+Current-schema Number/Short Text ADD now separates active counts from retained
+native identities and storage slots. Re-added fields remain NULL in old rows;
+retired payload bytes never become their values. A separate TCNI0016 request
+supports original-value checked current-row editing, with fresh source and
+complete-image reconstruction on cold recovery. Earlier row request languages
+remain closed to their original sources. Repeated current-tail DROP also
+preserves unused property dictionary names and prior record storage.
+
+The focused native row/recovery batch passes five tests. Metadata ADD passes
+eleven tests, while the field-drop family passes fourteen, including twenty-eight
+unfilled/filled repeat-deletion images. Shared framing/source-purpose checks and
+strict Access/runtime/desktop/MCP checks pass separately. Independent file reads
+verify first-fill and repeated Text replacement images. Fourteen headless GUI
+DROP → ADD → fill journeys pass, including forty-four consuming cell saves,
+complete-image oracles and fresh reopen. Schema saves retain tab identities;
+ordinary cell saves preserve the source-free layout while issuing fresh identities
+and invalidating old handles. Native Access/Windows comparison remains pending.
+See [column addition](access/writes/ADD_COLUMN.md) and
+[field deletion](access/writes/FIELD_DROP.md).
+
 ## Populated tail-field deletion — 10 November 2026
 
 The shared runtime/Access/engine path now removes qualified nullable, unindexed

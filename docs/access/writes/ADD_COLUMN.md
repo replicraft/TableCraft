@@ -6,6 +6,55 @@ Int32 candidates and frozen recovery languages alongside the typed TCAC0005
 request. General saved-column editing remains unfinished; current source,
 storage and declaration limits are explicit below.
 
+## Addition after a populated field deletion
+
+The current-schema route distinguishes the active descriptor count from retained
+native column numbers, stored IDs and variable-slot counts. A qualified Number
+or Short Text addition after tail-field deletion appends a new logical identity;
+old rows therefore read the new field as NULL, without exposing retired payloads.
+Metadata ADD preserves DATA/index bytes and the original property dictionary.
+The original creation-history request languages retain their existing scope.
+
+The allocation rules follow the separately observed current metadata: native
+number uses the retained maximum; stored ID follows the greatest live ID; fixed
+offset follows surviving fixed fields; variable ordinal follows surviving
+variable fields. Physical tail slots may therefore be reused, while native
+logical identities remain distinct. These independently implemented rules are
+informed by [Jackcess TableUpdater](https://github.com/jahlborn/jackcess/blob/master/src/main/java/com/healthmarketscience/jackcess/impl/TableUpdater.java)
+and [TableImpl](https://github.com/jahlborn/jackcess/blob/master/src/main/java/com/healthmarketscience/jackcess/impl/TableImpl.java);
+they are not evidence of a native Access producer comparison.
+
+`plan_recoverable_current_row_updates` binds a separate `TCNI0016` original
+request to the whole BEFORE image. Its current implementation accepts one
+unindexed ordinary LONG or Short Text cell on a qualified current-schema source,
+including direct and forwarded records. Original expected carriers are checked
+before serialization. The row encoder and separate reconstruction proof retain
+retired fixed bytes, unrelated variable payloads, original padding and mask bits;
+newly materialized records write the retained variable-footer count and use the
+selected field's actual native number. Empty Text, NULL and supplied values stay
+distinct. This implementation scope is not an Access row or batch limit.
+
+The Access adapter selects this route from original metadata before planning.
+It never retries a failed historical operation under another language. Runtime
+and desktop use their existing consuming review/save/reopen services. Decoding
+`TCNI0016` grants no write authority: cold recovery reconstructs fresh source,
+program, constraint, ownership, placement and complete-image evidence. Original
+`TCNI0011`–`TCNI0015` request meanings remain unchanged.
+
+The focused native row batch passes five tests, including fourteen source/target
+combinations, original wire bytes, fresh-scope reconstruction, pending/committed
+cold recovery and forged AFTER refusal. Eleven metadata tests and the retained
+framing/source-purpose tests pass separately. Independent file reads verify
+first fills and repeated Text replacement. These observations do not establish
+native Windows/Access Save/reopen compatibility.
+
+Fourteen headless desktop journeys perform real DROP → ADD → fill → reopen
+through the shared runtime, with forty-four reviewed cell saves and independent
+complete-image checks. Surviving fields, NULL/empty/Unicode distinctions, scratch
+SQL and object order remain intact. DROP/ADD schema publication preserves tab
+identities under its source witness; ordinary cell publication issues fresh IDs
+and rejects stale targets under the existing source-free layout contract.
+
 ## Current Number addition over populated records
 
 `prepare_current_number_field_addition` and its consuming
