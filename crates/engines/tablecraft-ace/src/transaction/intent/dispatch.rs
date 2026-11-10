@@ -13,6 +13,8 @@ const ACE_PROFILE: u16 = 2;
 /// A versioned validation route, never a serialized native permission.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum NativeUpdateProfile {
+    /// One absent Short Text field materialized in a qualified historical row.
+    Ace16HistoricalShortTextMaterialization,
     /// One absent Number materialized through a qualified relocated historical root.
     Ace16HistoricalForwardedNumberMaterialization,
     /// One absent Number in a qualified historical row with retained variable fields.
@@ -57,7 +59,7 @@ pub enum NativeUpdateBody {
     Int32(NativeInt32EditIntent),
     /// Original ordered fixed groups for closed TCNI0003/4/8/9/10/11/12/13/14 records.
     Fixed(NativeFixedEditIntent),
-    /// Ordered original fixed/variable requests for TCNI0005.
+    /// Ordered original variable/fixed requests for TCNI0005 or TCNI0015.
     Fitted(NativeFittedEditIntent),
     /// Original fixed/variable groups for explicit TCNI0006 owned-page growth.
     OwnedGrowth(NativeFittedEditIntent),
@@ -66,6 +68,15 @@ pub enum NativeUpdateBody {
 }
 
 impl NativeUpdateIntent {
+    pub(super) fn from_historical_short_text_materialization(
+        original: NativeFittedEditIntent,
+    ) -> Self {
+        Self {
+            profile: NativeUpdateProfile::Ace16HistoricalShortTextMaterialization,
+            body: NativeUpdateBody::Fitted(original),
+        }
+    }
+
     pub(super) fn from_historical_forwarded_number_materialization(
         original: NativeFixedEditIntent,
     ) -> Self {
@@ -327,6 +338,14 @@ impl NativeUpdateIntent {
             (NativeUpdateBody::Fixed(original), NativeUpdateProfile::Ace16OrdinaryGuidFixed) => {
                 original.encode_guid(budget, cancelled)
             }
+            (
+                NativeUpdateBody::Fitted(original),
+                NativeUpdateProfile::Ace16HistoricalShortTextMaterialization,
+            ) => original.encode_profile(
+                super::fitted::WireProfile::HistoricalShortText,
+                budget,
+                cancelled,
+            ),
             (NativeUpdateBody::Fitted(original), NativeUpdateProfile::Ace16OrdinaryFitted) => {
                 original.encode(budget, cancelled)
             }
@@ -350,6 +369,18 @@ impl NativeUpdateIntent {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, NativeIntentError> {
+        if bytes.get(..super::fitted::HISTORICAL_TEXT_MAGIC.len())
+            == Some(super::fitted::HISTORICAL_TEXT_MAGIC.as_slice())
+        {
+            return Ok(Self::from_historical_short_text_materialization(
+                NativeFittedEditIntent::decode_profile(
+                    bytes,
+                    super::fitted::WireProfile::HistoricalShortText,
+                    budget,
+                    cancelled,
+                )?,
+            ));
+        }
         if bytes.get(..NativeFixedEditIntent::FORWARDED_MATERIALIZATION_MAGIC.len())
             == Some(NativeFixedEditIntent::FORWARDED_MATERIALIZATION_MAGIC.as_slice())
         {

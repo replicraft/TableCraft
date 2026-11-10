@@ -7,10 +7,13 @@ mod read;
 
 pub(super) use codec::MAGIC;
 pub use model::{NativeFittedEditIntent, NativeFittedIntentGroup, NativeFittedUpdates};
-pub(super) use profile::{EOF_ALLOCATION_MAGIC, OWNED_GROWTH_MAGIC, WireProfile};
+pub(super) use profile::{EOF_ALLOCATION_MAGIC, HISTORICAL_TEXT_MAGIC, OWNED_GROWTH_MAGIC, WireProfile};
 
 #[cfg(test)]
 mod tests;
 
 #[cfg(test)]
 mod allocation_tests;
+
+#[cfg(all(test, feature = "ace16-create"))]
+mod historical_text_tests;

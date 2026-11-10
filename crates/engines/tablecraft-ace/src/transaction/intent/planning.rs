@@ -8,6 +8,8 @@ mod historical_materialization;
 mod historical_mixed_materialization;
 #[cfg(feature = "ace16-create")]
 mod historical_present;
+#[cfg(feature = "ace16-create")]
+mod historical_text;
 mod requalify;
 
 use super::{
