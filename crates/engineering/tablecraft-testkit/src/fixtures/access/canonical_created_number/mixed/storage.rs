@@ -147,7 +147,11 @@ pub(super) fn append(before: &[u8], mut after: Vec<u8>, body: &[u8]) -> Vec<u8> 
 
 /// The first user property descriptor can follow the separately stored database
 /// role. Its compact catalog growth retains that role and both physical slots.
-pub(super) fn append_current(before: &[u8], mut after: Vec<u8>, body: &[u8]) -> Vec<u8> {
+pub(in crate::fixtures::access) fn append_current(
+    before: &[u8],
+    mut after: Vec<u8>,
+    body: &[u8],
+) -> Vec<u8> {
     let original = record(before);
     if original.begin != original.finish {
         return append(before, after, body);

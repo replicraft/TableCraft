@@ -2,7 +2,7 @@
 //! No engine/SDK serializer, parser or inspection API participates in these bytes.
 pub mod after_off;
 mod properties;
-mod storage;
+pub(in crate::fixtures::access) mod storage;
 #[cfg(test)]
 mod tests;
 

@@ -1,4 +1,5 @@
 //! Independent fitted TDEF/MR2/LVAL images with fixed source pages and row slots.
+pub mod current_history;
 use crate::fixtures::access::{
     canonical_created_number::{Source, mixed, repeated},
     canonical_database_options,
