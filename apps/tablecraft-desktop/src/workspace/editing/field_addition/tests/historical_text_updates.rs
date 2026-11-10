@@ -1,6 +1,6 @@
 //! Actual Text edits after ADD retain siblings across repeated native saves.
-use super::historical_updates::{begin_replacement, review_and_save};
 use crate::workspace::Desktop;
+use crate::workspace::test_support::cell_edit::{begin_replacement, review_and_save};
 use crate::workspace::test_support::field_addition::add_field;
 use crate::workspace::test_support::{app_harness, finish_reads, opened};
 use egui_kittest::Harness;

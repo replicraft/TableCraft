@@ -1,5 +1,5 @@
 //! Consecutive reviewed saves retain logical IDs after native record growth.
-use super::historical_updates::{begin_replacement, review_and_save};
+use crate::workspace::test_support::cell_edit::{begin_replacement, review_and_save};
 use crate::workspace::{
     Desktop,
     test_support::{app_harness, field_addition::add_field, finish_reads, opened},

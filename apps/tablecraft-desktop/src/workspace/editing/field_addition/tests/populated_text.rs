@@ -1,6 +1,6 @@
 //! Actual saved-table Short Text ADD preserves historical values and opens fresh.
-use super::historical_updates::{begin_replacement, review_and_save};
 use crate::workspace::Desktop;
+use crate::workspace::test_support::cell_edit::{begin_replacement, review_and_save};
 use crate::workspace::test_support::field_addition::add_field;
 use crate::workspace::test_support::{app_harness, finish_reads, opened};
 use tablecraft_builders::table::FieldAdditionKind;
