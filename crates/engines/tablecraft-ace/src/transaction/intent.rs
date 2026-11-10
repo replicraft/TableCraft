@@ -197,3 +197,6 @@ pub use field_drop::{
 pub use field_drop::{
     QualifiedFieldDropRecovery, RecoverableFieldDropPlan, qualify_native_field_drop_recovery,
 };
+
+#[cfg(test)]
+mod schema_field_test_wire;

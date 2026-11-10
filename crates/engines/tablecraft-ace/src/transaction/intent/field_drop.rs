@@ -288,3 +288,6 @@ fn copy_text(text: &str, budget: &mut ResourceBudget) -> Result<String, FieldDro
     output.push_str(text);
     Ok(output)
 }
+
+#[cfg(test)]
+mod retained_tests;
