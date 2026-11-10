@@ -1,9 +1,13 @@
 //! Literal current sparse INSERT outcomes, independent of native serializers.
-mod placement;
-mod record;
 
 use super::deleted_field::populated::{self as dropped, Case, readdition::Target};
-use crate::fixtures::access::saved_field_rename::fitting::current_history;
+use crate::fixtures::access::{
+    generated_record_insert::{
+        placement::{self, Pages},
+        record,
+    },
+    saved_field_rename::fitting::current_history,
+};
 use tablecraft_core::values::Value;
 
 #[derive(Clone, Copy, Debug)]
@@ -92,9 +96,15 @@ pub fn append_with_binary(
 /// Values are keyed by live native number; the generated ID is authored from
 /// the original LAST counter, never supplied by a caller or inferred from slots.
 pub fn append_row(before: &[u8], values: &[(usize, Value)]) -> Vec<u8> {
-    let id = placement::next_id(before);
-    let row = record::build(before, id, values);
-    placement::append(before, id, &row)
+    assert_eq!(before.len(), 11 * 4096);
+    let pages = Pages {
+        definition: 7,
+        data: 8,
+        index: 9,
+    };
+    let id = placement::next_id(before, pages);
+    let row = record::build(before, pages.definition, id, values);
+    placement::append(before, pages, id, &row)
 }
 
 pub fn row(case: Case, target: Target, input: Input, id: i32) -> Vec<Value> {

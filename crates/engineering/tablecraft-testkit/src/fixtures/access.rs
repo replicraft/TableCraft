@@ -432,3 +432,5 @@ pub mod large_tables;
 
 pub mod canonical_retained_add_table;
 mod packed_record;
+
+mod generated_record_insert;

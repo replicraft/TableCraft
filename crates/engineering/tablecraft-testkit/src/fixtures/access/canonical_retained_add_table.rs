@@ -1,5 +1,6 @@
 //! Independent append-only tables beside retained current schemas and tombstones.
 pub mod desktop;
+pub mod rows;
 use super::{
     canonical_creation, canonical_creation_primary, canonical_initial_table_creation as initial,
     canonical_native17_creation, packed_record::append_record, put16, put32,

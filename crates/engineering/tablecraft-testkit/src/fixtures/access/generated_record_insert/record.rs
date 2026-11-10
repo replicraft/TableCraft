@@ -4,7 +4,6 @@ use std::borrow::Cow;
 use tablecraft_core::values::Value;
 
 const PAGE: usize = 4096;
-const DEFINITION: usize = 7 * PAGE;
 const FIELD_START: usize = 75;
 const FIELD_BYTES: usize = 25;
 const HEADER_BYTES: usize = 2;
@@ -25,14 +24,20 @@ fn text(value: &str, compressed: bool) -> Vec<u8> {
     }
 }
 
-pub(super) fn build(before: &[u8], id: i32, values: &[(usize, Value)]) -> Vec<u8> {
-    let fields = word(before, DEFINITION + 41);
-    let variables = word(before, DEFINITION + 43);
-    let active = word(before, DEFINITION + 45);
+pub(in crate::fixtures::access) fn build(
+    before: &[u8],
+    definition_page: usize,
+    id: i32,
+    values: &[(usize, Value)],
+) -> Vec<u8> {
+    let definition = definition_page * PAGE;
+    let fields = word(before, definition + 41);
+    let variables = word(before, definition + 43);
+    let active = word(before, definition + 45);
     assert_eq!(values.len() + 1, active);
     let mut fixed_end = HEADER_BYTES;
     for index in 0..active {
-        let at = DEFINITION + FIELD_START + index * FIELD_BYTES;
+        let at = definition + FIELD_START + index * FIELD_BYTES;
         if before[at + 15] & 1 != 0 {
             assert_eq!(before[at], 4);
             fixed_end = fixed_end.max(HEADER_BYTES + word(before, at + 21) + 4);
@@ -44,7 +49,7 @@ pub(super) fn build(before: &[u8], id: i32, values: &[(usize, Value)]) -> Vec<u8
     let mut payloads: Vec<Option<Cow<'_, [u8]>>> = (0..variables).map(|_| None).collect();
     let generated = Value::Int32(id);
     for index in 0..active {
-        let at = DEFINITION + FIELD_START + index * FIELD_BYTES;
+        let at = definition + FIELD_START + index * FIELD_BYTES;
         let number = word(before, at + 5);
         let value = if number == 0 {
             assert_eq!(before[at + 15], 7);
