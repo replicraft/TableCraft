@@ -2,14 +2,17 @@
 
 The [release workflow](../../.github/workflows/release.yml) builds the CLI and
 portable desktop on six native targets. Each package is extracted and checked
-with `--version` and `--help`; these checks open no desktop window. There are no
-MSI/DMG/DEB/RPM/AppImage installers or packaged MCP/web builds yet.
+with `--version` and `--help`; these checks open no desktop window. Native
+desktop builders additionally prepare MSI installers, custom-layout DMGs and
+DEB/RPM/AppImage packages. Native installation and tool verification remain
+separate from portable smoke checks. MCP and web builds are not packaged yet.
 
 The version is **0.1.0**. Each product has six archives, six SHA-256 sidecars, a
-consolidated notice file and a checksum manifest. Production publication adds a
-Minisign `.minisig` signature for each of the twelve archives: forty release
-assets in total. The twelve platform archives follow the naming contracts below
-and in [desktop packaging](DESKTOP_PACKAGING.md).
+consolidated notice file and a checksum manifest. Desktop also has ten native installers: two MSIs, two DMGs, two DEBs, two RPMs
+and two AppImages. Production publication adds a Minisign `.minisig` signature
+for each of the 22 packages: seventy release assets including their SHA-256
+sidecars and both products' notice/checksum files. Package names follow the
+contracts below and in [desktop packaging](DESKTOP_PACKAGING.md).
 
 Production signing uses the `release-signing` environment with
 `UPDATE_SIGNING_KEY` and `UPDATE_SIGNING_PASSWORD`, checked against

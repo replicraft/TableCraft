@@ -150,3 +150,34 @@ expression package's CC-BY-4.0 reference-data notices. This validates determinis
 generation against the retained sources; it does not establish native platform
 builds, installation or a legal completeness guarantee. No generated bundle,
 expanded manifest or downloaded source cache is checked in.
+
+## Native installers — 10 November 2026
+
+The desktop release target now requires these native packages alongside the six
+portable archives, for x64 and ARM64 in each case:
+
+| Platform | Native package | Build and verification contract |
+| --- | --- | --- |
+| Windows | `.msi` | [WiX builder, payload checks and headless installation lifecycle](../../packaging/windows/README.md) |
+| macOS | `.dmg` | [Custom dmgbuild layout and read-only mounted verification](../../packaging/macos/README.md) |
+| Linux | `.deb`, `.rpm`, `.AppImage` | [Native package metadata, dependency and payload verification](../../packaging/linux/README.md) |
+
+The standalone CLI remains portable. Each desktop package has a SHA-256 sidecar
+and a version/filename-bound Minisign signature. Assembly requires sixteen
+packages, sixteen sidecars, desktop notices and its checksum manifest; a missing
+installer fails before assembly outputs are created. Container-framing checks on
+the assembly host do not replace native builder/install verification. The
+[signed rehearsal](RELEASING.md) remains non-publishing without a tag.
+
+The custom ARM64 DMG has been built and verified locally using the retained
+development binary, with all mounts owned and detached and no Finder/application
+window. Windows and Linux native installer qualification belongs to the expanded
+CI run. The initial portable-only rehearsal is separate evidence. Generated
+artifacts, backgrounds, notices and source bundles stay in ignored build output.
+
+AppImage runtime notices and corresponding-source/relink material are generated
+from reviewed, hashed upstream inputs and included with the AppImage. Build tools
+are separate from shipped runtime components. Portable/macOS update replacement
+is implemented; signed MSI and original-AppImage update routes still need their
+own installation authority and native qualification. DEB/RPM installations remain
+owned by their package manager.
