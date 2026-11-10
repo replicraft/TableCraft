@@ -144,24 +144,24 @@ impl Default for QueryRunOptions {
         Self {
             snapshot: TableSnapshotLimits::default(),
             native: QueryPoolLimits {
-                bytes: 512 * 1024 * 1024,
-                rows: 100_000,
-                steps: 5_000_000,
+                bytes: u64::MAX,
+                rows: u32::MAX as u64,
+                steps: u64::MAX,
             },
             query: QueryPoolLimits {
-                bytes: 16 * 1024 * 1024,
-                rows: 10_000,
-                steps: 1_000_000,
+                bytes: QueryLimits::DEFAULT_BYTES,
+                rows: QueryLimits::DEFAULT_ROWS,
+                steps: QueryLimits::DEFAULT_STEPS,
             },
             comparison: QueryPoolLimits {
-                bytes: 16 * 1024 * 1024,
+                bytes: u64::MAX,
                 rows: 0,
-                steps: 1_000_000,
+                steps: u64::MAX,
             },
             presentation: QueryPoolLimits {
-                bytes: 8 * 1024 * 1024,
+                bytes: u64::MAX,
                 rows: 0,
-                steps: 100_000,
+                steps: u64::MAX,
             },
         }
     }

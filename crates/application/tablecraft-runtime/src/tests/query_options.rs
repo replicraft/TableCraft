@@ -35,22 +35,22 @@ fn execute(worker: &Worker, options: QueryRunOptions, sql: &str) -> Result<Respo
 }
 
 #[test]
-fn default_limits_preserve_previous_pools_and_invalid_configuration_is_rejected() {
+fn defaults_preserve_representable_pools_and_invalid_configuration_is_rejected() {
     let defaults = QueryRunOptions::default();
-    assert_eq!(defaults.snapshot().maximum_rows(), 16_384);
+    assert_eq!(defaults.snapshot().maximum_rows(), u32::MAX);
     assert_eq!(defaults.snapshot().batch_rows(), 256);
-    assert_eq!(defaults.native().bytes(), 512 * 1024 * 1024);
-    assert_eq!(defaults.native().rows(), 100_000);
-    assert_eq!(defaults.native().steps(), 5_000_000);
-    assert_eq!(defaults.query().bytes(), 16 * 1024 * 1024);
-    assert_eq!(defaults.query().rows(), 10_000);
-    assert_eq!(defaults.query().steps(), 1_000_000);
-    assert_eq!(defaults.comparison().bytes(), 16 * 1024 * 1024);
+    assert_eq!(defaults.native().bytes(), u64::MAX);
+    assert_eq!(defaults.native().rows(), u32::MAX as u64);
+    assert_eq!(defaults.native().steps(), u64::MAX);
+    assert_eq!(defaults.query().bytes(), u64::MAX);
+    assert_eq!(defaults.query().rows(), u64::MAX);
+    assert_eq!(defaults.query().steps(), u64::MAX);
+    assert_eq!(defaults.comparison().bytes(), u64::MAX);
     assert_eq!(defaults.comparison().rows(), 0);
-    assert_eq!(defaults.comparison().steps(), 1_000_000);
-    assert_eq!(defaults.presentation().bytes(), 8 * 1024 * 1024);
+    assert_eq!(defaults.comparison().steps(), u64::MAX);
+    assert_eq!(defaults.presentation().bytes(), u64::MAX);
     assert_eq!(defaults.presentation().rows(), 0);
-    assert_eq!(defaults.presentation().steps(), 100_000);
+    assert_eq!(defaults.presentation().steps(), u64::MAX);
 
     for limits in [(0, 0, 1), (1, 0, 0)] {
         assert_eq!(
