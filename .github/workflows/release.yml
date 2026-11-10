@@ -180,7 +180,7 @@ jobs:
       (github.event_name == 'push' && github.ref_type == 'tag') ||
       (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && inputs.sign-packages)
     runs-on: ubuntu-22.04
-    environment: update-signing
+    environment: release-signing
     permissions:
       contents: read
     steps:
@@ -227,15 +227,15 @@ jobs:
           cp -R desktop-dry-run/dist release-input/desktop
       - name: Sign archives with the maintained TableCraft release key
         env:
-          TABLECRAFT_UPDATE_SIGNING_KEY: ${{ secrets.TABLECRAFT_UPDATE_SIGNING_KEY }}
-          TABLECRAFT_UPDATE_SIGNING_PASSWORD: ${{ secrets.TABLECRAFT_UPDATE_SIGNING_PASSWORD }}
+          UPDATE_SIGNING_KEY: ${{ secrets.UPDATE_SIGNING_KEY }}
+          UPDATE_SIGNING_PASSWORD: ${{ secrets.UPDATE_SIGNING_PASSWORD }}
           RELEASE_VERSION: ${{ needs.version.outputs.version }}
         shell: bash
         run: |
           set -euo pipefail
           python scripts/packaging/update_signatures.py sign --version "$RELEASE_VERSION" --product cli --assets release-input/cli --output release-input/signatures-cli
           python scripts/packaging/update_signatures.py sign --version "$RELEASE_VERSION" --product desktop --assets release-input/desktop --output release-input/signatures-desktop
-          unset TABLECRAFT_UPDATE_SIGNING_KEY TABLECRAFT_UPDATE_SIGNING_PASSWORD
+          unset UPDATE_SIGNING_KEY UPDATE_SIGNING_PASSWORD
       - name: Verify every signature independently without signing secrets
         env:
           RELEASE_VERSION: ${{ needs.version.outputs.version }}

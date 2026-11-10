@@ -148,10 +148,10 @@ jobs:
           keydir=$(mktemp -d)
           trap 'rm -rf "$keydir"' EXIT
           minisign -G -W -p "$keydir/TEST-ONLY.pub" -s "$keydir/TEST-ONLY.key" > /dev/null
-          export TABLECRAFT_UPDATE_SIGNING_KEY
-          TABLECRAFT_UPDATE_SIGNING_KEY=$(cat "$keydir/TEST-ONLY.key")
+          export UPDATE_SIGNING_KEY
+          UPDATE_SIGNING_KEY=$(cat "$keydir/TEST-ONLY.key")
           python scripts/packaging/update_signatures.py sign --dry-run --version "$version" --product desktop --assets dist --output signatures --public-key "$keydir/TEST-ONLY.pub"
-          unset TABLECRAFT_UPDATE_SIGNING_KEY
+          unset UPDATE_SIGNING_KEY
           python scripts/packaging/update_signatures.py verify --dry-run --version "$version" --product desktop --assets dist --output signatures --public-key "$keydir/TEST-ONLY.pub"
           cp "$keydir/TEST-ONLY.pub" signatures/
           printf 'DRY RUN ONLY: signed with a disposable test key, not a distributable release.\n' > signatures/DRY-RUN.txt

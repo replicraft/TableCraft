@@ -65,8 +65,8 @@ def check_key(path, *, production):
 def execute(command, *, password=None):
     # Captured diagnostics may contain key details; report only the operation failure.
     environment = os.environ.copy()
-    environment.pop("TABLECRAFT_UPDATE_SIGNING_KEY", None)
-    environment.pop("TABLECRAFT_UPDATE_SIGNING_PASSWORD", None)
+    environment.pop("UPDATE_SIGNING_KEY", None)
+    environment.pop("UPDATE_SIGNING_PASSWORD", None)
     if password is None:
         input_options = {"stdin": subprocess.DEVNULL}
     else:
@@ -97,12 +97,12 @@ def run(version, product, assets, output, public_key, tool, *, signing, dry_run)
         output.mkdir(parents=True, exist_ok=False)
         created = []
         try:
-            secret = os.environ.get("TABLECRAFT_UPDATE_SIGNING_KEY", "")
+            secret = os.environ.get("UPDATE_SIGNING_KEY", "")
             if not secret.strip():
-                raise ValueError("TABLECRAFT_UPDATE_SIGNING_KEY is required")
+                raise ValueError("UPDATE_SIGNING_KEY is required")
             if len(secret.encode("utf-8")) > MAX_KEY_BYTES:
                 raise ValueError("Signing key exceeds the key-size limit")
-            password = os.environ.get("TABLECRAFT_UPDATE_SIGNING_PASSWORD") or None
+            password = os.environ.get("UPDATE_SIGNING_PASSWORD") or None
             if password is not None:
                 if len(password.encode("utf-8")) > MAX_PASSWORD_BYTES:
                     raise ValueError("Signing password exceeds the password-size limit")
