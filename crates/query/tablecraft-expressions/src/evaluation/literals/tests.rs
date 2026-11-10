@@ -33,16 +33,12 @@ fn radix_literals_select_signed_integer_widths_from_their_magnitudes() {
 }
 
 #[test]
-fn malformed_or_oversized_host_spelling_is_rejected_and_node_checks_precede_work() {
+fn malformed_host_spelling_is_rejected_and_node_checks_precede_work() {
     for text in [
         "&H", "&O", "&h+1", "&H-1", "&O8", "&H1%", "&HＦＦ", "&H 1", "&B10", "&77",
     ] {
         assert_eq!(number(text), Err(EvalError::UnsupportedLiteral), "{text}");
     }
-    assert_eq!(
-        number(&format!("&H{}", "0".repeat(127))),
-        Err(EvalError::UnsupportedLiteral)
-    );
     let expression = Expression::Number("&HFF".into());
     let mut budget = ResourceBudget::new(0, 0, 0);
     assert!(
@@ -54,6 +50,28 @@ fn malformed_or_oversized_host_spelling_is_rejected_and_node_checks_precede_work
             .with_cancellation(&|| true)
             .evaluate(&expression),
         Err(EvalError::Cancelled)
+    );
+}
+
+#[test]
+fn long_numeric_spellings_use_actual_carrier_bounds() {
+    let zeros = "0".repeat(4096);
+    for (text, expected) in [
+        (format!("&H{zeros}FF"), Value::Int16(255)),
+        (format!("&O{zeros}377"), Value::Int16(255)),
+        (format!("{zeros}.5"), Value::Double(Double::from_float(0.5))),
+        (format!("1.{zeros}"), Value::Double(Double::from_float(1.0))),
+    ] {
+        assert_eq!(number(&text), Ok(expected));
+    }
+    assert_eq!(number(&format!("{zeros}1.0e999")), Err(EvalError::Overflow));
+    assert_eq!(
+        number(&format!("{zeros}1.0e-999")),
+        Err(EvalError::PrecisionLoss)
+    );
+    assert_eq!(
+        number(&format!("&H{zeros}100000000")),
+        Err(EvalError::Overflow)
     );
 }
 

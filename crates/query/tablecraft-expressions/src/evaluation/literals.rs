@@ -1,14 +1,9 @@
-//! Bounded numeric spelling evaluation; owned parser syntax remains independent.
+//! Numeric spelling evaluation; carrier ranges govern representability.
 mod radix;
 use crate::EvalError;
 use tablecraft_core::values::{Double, Value};
 
-const MAX_NUMBER_LITERAL_BYTES: usize = 128;
-
 pub(super) fn number(text: &str) -> Result<Value, EvalError> {
-    if text.len() > MAX_NUMBER_LITERAL_BYTES {
-        return Err(EvalError::UnsupportedLiteral);
-    }
     if text.starts_with('&') {
         return radix::parse(text);
     }

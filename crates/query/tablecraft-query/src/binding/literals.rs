@@ -10,13 +10,9 @@ use tablecraft_expressions::evaluation::{EvalLimits, Evaluator, NoBindings};
 use tablecraft_sql::select::Expression;
 
 const LITERAL_EVALUATION_STEPS: u64 = 1;
-const MAX_INTEGER_LITERAL_DIGITS: usize = 128;
 
 impl Binder<'_> {
     pub(super) fn wide_integer_literal(&mut self, text: &str) -> Result<Expr, QueryError> {
-        if text.len() > MAX_INTEGER_LITERAL_DIGITS {
-            return Err(EvalError::UnsupportedLiteral.into());
-        }
         if let Ok(value) = text.parse::<i64>() {
             return self.integer_literal(value);
         }

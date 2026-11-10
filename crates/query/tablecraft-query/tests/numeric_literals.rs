@@ -213,7 +213,7 @@ fn crosstab_metadata_and_execution_share_selected_width_overflow() {
 }
 
 #[test]
-fn typed_parameters_are_not_reinferred_and_literal_limits_remain_bounded() {
+fn typed_parameters_are_not_reinferred_and_literal_overflow_remains_checked() {
     let source = MemorySource::default();
     let parsed = parse_query(
         "PARAMETERS P LONGLONG; SELECT VarType(P),P",
@@ -244,10 +244,12 @@ fn typed_parameters_are_not_reinferred_and_literal_limits_remain_bounded() {
         [vec![Value::Int16(20), Value::Int64(i64::MAX)]]
     );
 
-    assert!(run(&format!("SELECT {}", "9".repeat(128))).is_ok());
+    for digits in [128, 129, 308] {
+        assert!(run(&format!("SELECT {}", "9".repeat(digits))).is_ok());
+    }
     assert_eq!(
-        run(&format!("SELECT {}", "9".repeat(129))),
-        Err(QueryError::Evaluation(EvalError::UnsupportedLiteral))
+        run(&format!("SELECT {}", "9".repeat(309))),
+        Err(QueryError::Evaluation(EvalError::Overflow))
     );
 
     let parsed = parse_query("SELECT 32768", Default::default()).unwrap();
@@ -271,4 +273,24 @@ fn captured_literals_do_not_increase_structural_depth_of_existing_queries() {
     let sql =
         "SELECT CInt(-32768)\\(CInt(1) IN (SELECT Q.N FROM (SELECT CVar(CInt(1)) AS N) AS Q))";
     assert_eq!(run(sql).unwrap(), [vec![Value::Int32(32768)]]);
+}
+
+#[test]
+fn long_literal_spellings_preserve_carriers_and_actual_overflow_checks() {
+    let integer = format!("1{}", "0".repeat(128));
+    for (text, expected) in [(integer.as_str(), 1e128), (&format!("-{integer}"), -1e128)] {
+        assert_eq!(
+            run(&format!("SELECT {text}")).unwrap(),
+            [vec![Value::Double(Double::from_float(expected))]],
+        );
+    }
+    let zeros = "0".repeat(4096);
+    assert_eq!(
+        run(&format!("SELECT {zeros}1, &H{zeros}FF")).unwrap(),
+        [vec![Value::Int16(1), Value::Int16(255)]],
+    );
+    assert_eq!(
+        run(&format!("SELECT 1{}", "0".repeat(309))),
+        Err(QueryError::Evaluation(EvalError::Overflow)),
+    );
 }
