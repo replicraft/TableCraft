@@ -84,6 +84,7 @@ fn source_result(
     match result {
         Ok(identity) => Ok(Some(identity)),
         Err(FieldRenameError::Source)
+        | Err(FieldRenameError::RowSource(tablecraft_ace::EditError::Unsupported(_)))
         | Err(FieldRenameError::SourceProof(FieldHistoryDatabaseOptionsError::Source))
         | Err(FieldRenameError::SourceProof(FieldHistoryDatabaseOptionsError::Field(
             FieldAdditionError::Source,
@@ -96,7 +97,9 @@ fn source_result(
 mod tests {
     use super::source_result;
     use crate::Error;
-    use tablecraft_ace::{FieldHistoryDatabaseOptionsError, FieldRenameError, InspectError};
+    use tablecraft_ace::{
+        EditError, FieldHistoryDatabaseOptionsError, FieldRenameError, InspectError, WriteBlocker,
+    };
 
     #[test]
     fn malformed_cancelled_and_resource_failures_never_become_unavailable() {
@@ -132,5 +135,30 @@ mod tests {
                 .unwrap()
                 .is_none()
         );
+    }
+
+    #[test]
+    fn only_unsupported_populated_row_profiles_become_unavailable() {
+        assert!(
+            source_result(Err(FieldRenameError::RowSource(EditError::Unsupported(
+                WriteBlocker::ConstraintCoverage,
+            ))))
+            .unwrap()
+            .is_none()
+        );
+        for error in [
+            EditError::Conflict,
+            EditError::Preservation,
+            EditError::Inspect(InspectError::Cancelled),
+            EditError::Inspect(InspectError::Malformed),
+        ] {
+            let expected_kind = std::mem::discriminant(&error);
+            let Err(Error::FieldRenameSource(FieldRenameError::RowSource(actual))) =
+                source_result(Err(FieldRenameError::RowSource(error)))
+            else {
+                panic!("populated row failures must preserve their typed source error");
+            };
+            assert_eq!(std::mem::discriminant(&actual), expected_kind);
+        }
     }
 }

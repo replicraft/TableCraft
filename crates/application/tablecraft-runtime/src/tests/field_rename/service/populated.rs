@@ -8,10 +8,9 @@ use tablecraft_testkit::fixtures::access::{
 
 #[test]
 fn populated_field_rename_inspection_review_save_and_reopen_preserve_the_actual_row() {
-    for replacement in ["TaxAmount", "X"] {
-        let [empty, renamed] = fitting::pair(SourceCase::NumberFirst, replacement);
-        let before = inserting::first_number_row(&empty, &[(0, Some(1)), (1, Some(42))]);
-        let after = inserting::first_number_row(&renamed, &[(0, Some(1)), (1, Some(42))]);
+    for replacement in ["TaxAmount", "X", "Total"] {
+        let [before, after] =
+            fitting::populated_number_pair(replacement, &[Some(42), None, Some(-7)]);
         let (directory, path, worker, revision) = opened(&before);
         let Response::Data { rows, .. } = request(
             &worker,
@@ -23,9 +22,17 @@ fn populated_field_rename_inspection_review_save_and_reopen_preserve_the_actual_
         .unwrap() else {
             panic!("the original populated source must already be readable");
         };
-        assert_eq!(rows.len(), 1);
+        assert_eq!(rows.len(), 3);
         assert_eq!(rows[0][0].text, "1");
         assert_eq!(rows[0][1].text, "42");
+        assert_eq!(rows[1][0].text, "2");
+        assert_eq!(rows[1][1].text, "NULL");
+        assert!(matches!(
+            rows[1][1].kind,
+            crate::CellKind::Scalar { is_null: true, .. }
+        ));
+        assert_eq!(rows[2][0].text, "3");
+        assert_eq!(rows[2][1].text, "-7");
         let Response::FieldRenameSourceInspected { inspection } = request(
             &worker,
             Command::InspectFieldRenameSource {
@@ -84,9 +91,17 @@ fn populated_field_rename_inspection_review_save_and_reopen_preserve_the_actual_
         };
         assert_eq!(columns[1].name, replacement);
         assert_eq!(columns[1].native_number, Some(1));
-        assert_eq!(rows.len(), 1);
+        assert_eq!(rows.len(), 3);
         assert_eq!(rows[0][0].text, "1");
         assert_eq!(rows[0][1].text, "42");
+        assert_eq!(rows[1][0].text, "2");
+        assert_eq!(rows[1][1].text, "NULL");
+        assert!(matches!(
+            rows[1][1].kind,
+            crate::CellKind::Scalar { is_null: true, .. }
+        ));
+        assert_eq!(rows[2][0].text, "3");
+        assert_eq!(rows[2][1].text, "-7");
         assert!(!has_more);
     }
 }

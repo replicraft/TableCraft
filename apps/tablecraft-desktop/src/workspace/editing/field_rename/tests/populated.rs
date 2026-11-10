@@ -12,10 +12,9 @@ use tablecraft_ui::FieldRenameSaveIdentity;
 
 #[test]
 fn normal_populated_field_rename_preserves_the_row_index_and_generator_through_fresh_open() {
-    for replacement in ["TaxAmount", "X"] {
-        let [empty, renamed] = fitting::pair(SourceCase::NumberFirst, replacement);
-        let before = inserting::first_number_row(&empty, &[(0, Some(1)), (1, Some(42))]);
-        let after = inserting::first_number_row(&renamed, &[(0, Some(1)), (1, Some(42))]);
+    for replacement in ["TaxAmount", "X", "Total"] {
+        let [before, after] =
+            fitting::populated_number_pair(replacement, &[Some(42), None, Some(-7)]);
         let (_directory, path, _, mut harness) = opened(before.clone());
         assert_eq!(
             harness.state().state.data.as_ref().unwrap().rows[0][1].text,
@@ -41,9 +40,17 @@ fn normal_populated_field_rename_preserves_the_row_index_and_generator_through_f
         let page = harness.state().state.data.as_ref().unwrap();
         assert_eq!(page.columns[1].name, replacement);
         assert_eq!(page.columns[1].native_number, Some(1));
-        assert_eq!(page.rows.len(), 1);
+        assert_eq!(page.rows.len(), 3);
         assert_eq!(page.rows[0][0].text, "1");
         assert_eq!(page.rows[0][1].text, "42");
+        assert_eq!(page.rows[1][0].text, "2");
+        assert_eq!(page.rows[1][1].text, "NULL");
+        assert!(matches!(
+            page.rows[1][1].kind,
+            tablecraft_runtime::CellKind::Scalar { is_null: true, .. }
+        ));
+        assert_eq!(page.rows[2][0].text, "3");
+        assert_eq!(page.rows[2][1].text, "-7");
         drop(harness);
 
         let mut reopened = app_harness(Desktop::new(egui::Context::default(), Some(path.clone())));
@@ -52,9 +59,17 @@ fn normal_populated_field_rename_preserves_the_row_index_and_generator_through_f
         assert_eq!(page.table, "Table1");
         assert_eq!(page.columns[1].name, replacement);
         assert_eq!(page.columns[1].native_number, Some(1));
-        assert_eq!(page.rows.len(), 1);
+        assert_eq!(page.rows.len(), 3);
         assert_eq!(page.rows[0][0].text, "1");
         assert_eq!(page.rows[0][1].text, "42");
+        assert_eq!(page.rows[1][0].text, "2");
+        assert_eq!(page.rows[1][1].text, "NULL");
+        assert!(matches!(
+            page.rows[1][1].kind,
+            tablecraft_runtime::CellKind::Scalar { is_null: true, .. }
+        ));
+        assert_eq!(page.rows[2][0].text, "3");
+        assert_eq!(page.rows[2][1].text, "-7");
         assert_eq!(std::fs::read(&path).unwrap(), after);
         assert!(!journal_path(&path).exists());
     }
