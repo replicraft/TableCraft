@@ -254,3 +254,46 @@ fn mailbox_retains_real_backup_owners_across_ui_cancellation_and_contention() {
     assert!(applied_dropped.load(Ordering::Acquire));
     assert!(failed_dropped.load(Ordering::Acquire));
 }
+
+#[test]
+fn a_retained_failure_cannot_be_overwritten_by_its_queued_installing_observation() {
+    use tablecraft_update::apply::ApplyError;
+
+    let mut worker = UpdateWorker::new(|| {});
+    worker.generation = 9;
+    worker.busy = true;
+    worker.installing = true;
+    let sender = worker.event_sender.as_ref().unwrap();
+    sender
+        .send(Reply::Event {
+            generation: 9,
+            event: UpdateEvent::Installing,
+        })
+        .unwrap();
+    assert!(post(
+        Reply::Failed {
+            generation: 9,
+            error: UpdateTaskError::Apply(ApplyError::Layout)
+        },
+        sender,
+        &worker.retained,
+        &|| {},
+    ));
+
+    assert!(matches!(
+        worker.poll(),
+        Some(Reply::Retained { generation: 9, .. })
+    ));
+    assert_eq!(worker.generation(), 9);
+    assert!(!worker.busy);
+    assert!(!worker.installing);
+    assert!(
+        worker.poll().is_none(),
+        "queued Installing must not revive a completed native phase"
+    );
+    drop(worker.event_sender.take());
+    assert!(
+        worker.poll().is_none(),
+        "completed native ownership must not invent a missing terminal on disconnect"
+    );
+}

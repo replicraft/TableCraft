@@ -159,6 +159,10 @@ impl UpdateWorker {
         self.installing
     }
 
+    pub(crate) fn generation(&self) -> u64 {
+        self.generation
+    }
+
     pub(crate) fn poll(&mut self) -> Option<Reply> {
         loop {
             match self.retained.poll() {
@@ -201,7 +205,10 @@ impl UpdateWorker {
                 }
                 Reply::Retained { generation, .. } => (*generation, true),
             };
-            if generation != self.generation {
+            if generation != self.generation || self.native_terminal_received {
+                // A native terminal may overtake its queued Installing/progress
+                // observations. It closes this generation's presentation phase;
+                // resource-bearing replies were retained before reaching here.
                 continue;
             }
             if terminal {
