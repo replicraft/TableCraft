@@ -1,5 +1,8 @@
 use super::schema::TableSchema;
-use crate::{InspectError, format::row::COLUMN_COUNT_BYTES};
+use crate::{
+    InspectError,
+    format::{data_type::BOOLEAN, row::COLUMN_COUNT_BYTES},
+};
 
 pub(super) struct Geometry {
     pub fixed_end: usize,
@@ -40,9 +43,12 @@ pub(super) fn geometry(schema: &TableSchema, count: usize) -> Result<Geometry, I
         if field.number < count {
             present += 1;
             if field.fixed {
-                result.fixed_end = result
-                    .fixed_end
-                    .max(COLUMN_COUNT_BYTES + field.offset + field.length);
+                // The native Boolean offset is unused in historical rows too.
+                if field.kind != BOOLEAN {
+                    result.fixed_end = result
+                        .fixed_end
+                        .max(COLUMN_COUNT_BYTES + field.offset + field.length);
+                }
             } else {
                 present_variables += 1;
                 result.minimum_variable_slots =

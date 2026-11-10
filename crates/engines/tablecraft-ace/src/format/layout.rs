@@ -226,7 +226,10 @@ fn read_impl<R: crate::NativeReadSource>(
             return Err(InspectError::Malformed);
         }
         if field.fixed {
-            fixed_end = fixed_end.max(COLUMN_COUNT_BYTES + field.offset + field.length);
+            // Yes/No lives in its value mask bit; its stored offset owns no bytes.
+            if field.kind != data_type::BOOLEAN {
+                fixed_end = fixed_end.max(COLUMN_COUNT_BYTES + field.offset + field.length);
+            }
         } else {
             if field.variable >= variable_slots
                 || fields
