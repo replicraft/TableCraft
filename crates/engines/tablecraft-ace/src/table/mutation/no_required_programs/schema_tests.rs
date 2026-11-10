@@ -27,9 +27,17 @@ fn word(bytes: &[u8], at: usize) -> usize {
 
 fn catalog_gap(before: &[u8]) -> (usize, usize, usize, usize) {
     let page = &before[CATALOG * PAGE..(CATALOG + 1) * PAGE];
-    let start = word(page, DIRECTORY + USER_SLOT * 2);
-    assert!(start < PAGE);
-    let end = word(page, DIRECTORY + (USER_SLOT - 1) * 2);
+    let root = word(page, DIRECTORY + USER_SLOT * 2);
+    let slot = if root & 0x4000 != 0 {
+        let at = root & 0x1fff;
+        let reference = u32::from_le_bytes(page[at..at + 4].try_into().unwrap());
+        assert_eq!(reference >> 8, CATALOG as u32);
+        reference as usize & 255
+    } else {
+        USER_SLOT
+    };
+    let start = word(page, DIRECTORY + slot * 2) & 0x1fff;
+    let end = word(page, DIRECTORY + (slot - 1) * 2) & 0x1fff;
     let row = &page[start..end];
     let count_at = row.len() - MASK_BYTES - 2;
     let variables = word(row, count_at);
