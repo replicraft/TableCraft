@@ -6,6 +6,7 @@ use serde_json::json;
 use sha2::{Digest, Sha256};
 use std::{
     cell::Cell,
+    fmt::Write as FmtWrite,
     fs::{self, File},
     io::{Cursor, Write},
     path::Path,
@@ -38,6 +39,14 @@ const PLIST: &[u8] = b"<?xml version=\"1.0\" encoding=\"UTF-8\"?>
 </dict>
 </plist>
 ";
+
+fn hash_text(bytes: &[u8]) -> String {
+    let mut text = String::new();
+    for byte in Sha256::digest(bytes) {
+        write!(&mut text, "{byte:02x}").unwrap();
+    }
+    text
+}
 
 fn files(platform: Platform) -> Vec<(String, Vec<u8>)> {
     let mac = matches!(platform, Platform::MacosX64 | Platform::MacosArm64);
@@ -77,12 +86,7 @@ fn files(platform: Platform) -> Vec<(String, Vec<u8>)> {
     }
     let hashes: serde_json::Map<String, serde_json::Value> = files
         .iter()
-        .map(|(name, content)| {
-            (
-                name.clone(),
-                json!(format!("{:x}", Sha256::digest(content))),
-            )
-        })
+        .map(|(name, content)| (name.clone(), json!(hash_text(content))))
         .collect();
     files.push((
         format!("{resource}RELEASE.json"),
@@ -324,7 +328,7 @@ fn macos_identity_cannot_be_changed_even_with_matching_manifest_hashes() {
         .unwrap()
         .replace("org.replicraft.tablecraft", "org.other.application")
         .into_bytes();
-    let changed_hash = format!("{:x}", Sha256::digest(&files[3].1));
+    let changed_hash = hash_text(&files[3].1);
     let mut manifest: serde_json::Value = serde_json::from_slice(&files[5].1).unwrap();
     manifest["files"]["TableCraft.app/Contents/Info.plist"] = json!(changed_hash);
     files[5].1 = serde_json::to_vec(&manifest).unwrap();

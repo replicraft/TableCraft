@@ -7,7 +7,7 @@ use serde::{
     Deserialize, Deserializer,
     de::{self, MapAccess, Visitor},
 };
-use sha2::{Digest, Sha256};
+use sha2::{Digest, Sha256, digest::Output};
 use std::{
     collections::BTreeMap,
     fmt,
@@ -42,6 +42,9 @@ const REGULAR_FILE_TYPE: u32 = 0o100000;
 const PERMISSION_MASK: u32 = 0o7777;
 const EXECUTABLE_MODE: u32 = 0o755;
 const DATA_MODE: u32 = 0o644;
+const HEX_DIGITS: &[u8; 16] = b"0123456789abcdef";
+const NIBBLE_BITS: u32 = 4;
+const NIBBLE_MASK: u8 = 0x0f;
 const MAC_EXECUTABLE: &str = "TableCraft.app/Contents/MacOS/tablecraft-desktop";
 const MAC_MANIFEST: &str = "TableCraft.app/Contents/Resources/RELEASE.json";
 const MAC_PLIST: &str = "TableCraft.app/Contents/Info.plist";
@@ -222,7 +225,7 @@ impl Contents<'_> {
         #[cfg(unix)]
         fs::set_permissions(&destination, fs::Permissions::from_mode(expected_mode))
             .map_err(UpdateError::Io)?;
-        self.hashes.insert(name, format!("{:x}", hash.finalize()));
+        self.hashes.insert(name, hash_text(hash.finalize()));
         Ok(())
     }
 
@@ -258,6 +261,15 @@ impl Contents<'_> {
         }
         Ok(())
     }
+}
+
+fn hash_text(hash: Output<Sha256>) -> String {
+    let mut text = String::with_capacity(hash.len() * 2);
+    for byte in hash {
+        text.push(char::from(HEX_DIGITS[usize::from(byte >> NIBBLE_BITS)]));
+        text.push(char::from(HEX_DIGITS[usize::from(byte & NIBBLE_MASK)]));
+    }
+    text
 }
 
 fn extract_zip(mut reader: File, output: &mut Contents<'_>) -> Result<(), UpdateError> {
@@ -299,11 +311,12 @@ fn extract_zip(mut reader: File, output: &mut Contents<'_>) -> Result<(), Update
         if entry.is_dir() || entry.encrypted() || mode & FILE_TYPE_MASK != REGULAR_FILE_TYPE {
             return Err(UpdateError::Archive);
         }
+        let entry_name = entry.name().map_err(|_| UpdateError::Archive)?;
         let name = output
             .expected
             .iter()
             .copied()
-            .find(|name| *name == entry.name())
+            .find(|name| *name == entry_name.as_ref())
             .ok_or(UpdateError::Archive)?;
         let size = entry.size();
         output.file(name, size, mode & PERMISSION_MASK, &mut entry)?;
