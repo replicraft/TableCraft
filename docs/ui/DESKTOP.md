@@ -231,9 +231,11 @@ Run with `cargo run -p tablecraft-desktop -- path/to/example.accdb`, or omit the
 path and use File → Open. Password input is masked and is consumed/erased
 when opening. Original database files are opened for bounded snapshot reads;
 close other writers before opening. The preview does not provide a live shared
-file editing session. It opens files up to 64 MiB, buffers pages of 100 rows and
-uses separate native/query/display work limits. Limits are operation ceilings,
-not a guarantee of an exact process memory cap. Unsupported tables/queries show
+file editing session. Native snapshot capture follows the engine's actual
+header/page/2-GiB envelope, with fallible allocation and cancellation; the former
+64 MiB host ceiling is removed. Datasheet pagination controls work granularity,
+not total table cardinality. Native/query/display resource policies are separate
+from Access compatibility limits and do not promise an exact process memory cap. Unsupported tables/queries show
 errors rather than omitting fields or running providers.
 
 ## First working scope

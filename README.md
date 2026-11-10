@@ -92,8 +92,8 @@ cargo run -p tablecraft-desktop -- path/to/example.accdb
 ```
 
 The first desktop slice provides table navigation, bounded datasheets, field
-inspection and a SQL editor over existing Access services. It opens a snapshot of a stable file up to
-64 MiB; close other writers first. Restricted reviewed offline cell edits are
+inspection and a SQL editor over existing Access services. It opens a snapshot of
+a stable file within its native format bounds; close other writers first. Restricted reviewed offline cell edits are
 implemented on macOS/Linux and local-NTFS Windows; actual Windows execution
 remains unqualified. General editing, designers and desktop release
 packaging remain in development. Interrupted TableCraft saves have an explicit
