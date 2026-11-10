@@ -66,7 +66,10 @@ through 2147483647, with an optional minus sign. NULL, plus-prefixed numbers,
 expressions and surrounding whitespace are refused. A header-only file creates
 an empty table. TSV capture uses the actual file length under the cumulative
 `--work-bytes`, `--work-rows` and `--work-steps` allowances; it has no separate
-64 KiB input ceiling. A changing input length is refused before publication.
+64 KiB input ceiling. These allowances default to the unsigned 64-bit counters’
+capacity; explicit lower values remain cumulative caller quotas. They do not
+change the native creator’s qualified schema, row or page-fit scope. A changing
+input length is refused before publication.
 
 The current native creator uses fixed layout/key proof storage for one through
 sixteen columns and at most 64 rows,

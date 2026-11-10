@@ -2,10 +2,6 @@ use clap::Args;
 use std::path::PathBuf;
 use tablecraft_core::limits::ResourceBudget;
 
-const WORK_BYTES: u64 = 256 * 1024 * 1024;
-const WORK_ROWS: u64 = 100_000;
-const WORK_STEPS: u64 = 100_000_000;
-
 #[derive(Args)]
 #[command(group(
     clap::ArgGroup::new("creation_schema")
@@ -45,13 +41,16 @@ pub(crate) struct Arguments {
     #[arg(long, value_name = "TSV")]
     pub(super) data: Option<PathBuf>,
     /// Cumulative input, construction and publication byte allowance.
-    #[arg(long, default_value_t = WORK_BYTES)]
+    /// Defaults to counter capacity; supply a lower allowance explicitly.
+    #[arg(long, default_value_t = u64::MAX)]
     work_bytes: u64,
     /// Cumulative input and construction row allowance.
-    #[arg(long, default_value_t = WORK_ROWS)]
+    /// Defaults to counter capacity; supply a lower allowance explicitly.
+    #[arg(long, default_value_t = u64::MAX)]
     work_rows: u64,
     /// Cumulative parsing, native construction and publication work allowance.
-    #[arg(long, default_value_t = WORK_STEPS)]
+    /// Defaults to counter capacity; supply a lower allowance explicitly.
+    #[arg(long, default_value_t = u64::MAX)]
     work_steps: u64,
 }
 
@@ -65,6 +64,7 @@ impl Arguments {
 mod tests {
     use crate::{Cli, commands::Command};
     use clap::Parser;
+    use tablecraft_core::limits::Resource;
 
     fn parse(options: &[&str]) -> Result<Cli, clap::Error> {
         Cli::try_parse_from(
@@ -110,5 +110,46 @@ mod tests {
         }
         assert!(parse(&["--table", "Items", "--column", "Id"]).is_ok());
         assert!(parse(&["--table", "Items", "--field", "Id", "int32"]).is_ok());
+    }
+    #[test]
+    fn defaults_preserve_resource_counter_capacity_without_a_compatibility_ceiling() {
+        let cli = parse(&["--table", "Items", "--column", "Id"]).unwrap();
+        let Some(Command::Create(arguments)) = cli.command else {
+            panic!("expected create");
+        };
+        let budget = arguments.budget();
+        for resource in [Resource::Bytes, Resource::Rows, Resource::Steps] {
+            assert_eq!(budget.remaining(resource), u64::MAX);
+        }
+    }
+
+    #[test]
+    fn explicit_allowances_are_not_clamped_to_former_defaults() {
+        for (spelling, expected) in [
+            ("17", 17),
+            ("268435457", 268_435_457),
+            ("18446744073709551615", u64::MAX),
+        ] {
+            let cli = parse(&[
+                "--table",
+                "Items",
+                "--column",
+                "Id",
+                "--work-bytes",
+                spelling,
+                "--work-rows",
+                spelling,
+                "--work-steps",
+                spelling,
+            ])
+            .unwrap();
+            let Some(Command::Create(arguments)) = cli.command else {
+                panic!("expected create");
+            };
+            let budget = arguments.budget();
+            for resource in [Resource::Bytes, Resource::Rows, Resource::Steps] {
+                assert_eq!(budget.remaining(resource), expected);
+            }
+        }
     }
 }
