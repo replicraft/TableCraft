@@ -179,3 +179,6 @@ fn current_presence_variable_carriers_use_wire_lengths_without_widening_legacy_f
         ));
     }
 }
+
+#[cfg(feature = "ace16-create")]
+mod native_recovery;
