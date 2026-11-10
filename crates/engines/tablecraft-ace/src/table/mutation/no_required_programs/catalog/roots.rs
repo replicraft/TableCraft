@@ -46,10 +46,43 @@ fn reserve<T>(values: &mut Vec<T>, budget: &mut ResourceBudget) -> Result<(), In
         .map_err(|_| InspectError::Allocation)
 }
 
+#[derive(Clone, Copy)]
+enum Census {
+    Original,
+    #[cfg(feature = "ace16-create")]
+    Retained,
+}
+
 pub(super) fn capture<R: crate::NativeReadSource>(
     reader: &mut Reader<'_, R>,
     owned: &[u32],
     definition: u32,
+) -> Result<Vec<LogicalRow>, EditError> {
+    capture_with_policy(reader, owned, definition, Census::Original)
+}
+
+/// Only a complete bound retained inventory permits orphan retired catalog bytes.
+#[cfg(feature = "ace16-create")]
+pub(super) fn capture_retained<R: crate::NativeReadSource>(
+    reader: &mut Reader<'_, R>,
+    owned: &[u32],
+    definition: u32,
+    inventory: &crate::table::table_append::Inventory<'_>,
+) -> Result<Vec<LogicalRow>, EditError> {
+    if inventory.catalog_definition() != definition
+        || inventory.catalog_pages() != owned
+        || inventory.before_pages() != reader.header.page_count()
+    {
+        return Err(refused());
+    }
+    capture_with_policy(reader, owned, definition, Census::Retained)
+}
+
+fn capture_with_policy<R: crate::NativeReadSource>(
+    reader: &mut Reader<'_, R>,
+    owned: &[u32],
+    definition: u32,
+    census: Census,
 ) -> Result<Vec<LogicalRow>, EditError> {
     let mut slots = Vec::new();
     let mut logical = Vec::new();
@@ -153,9 +186,17 @@ pub(super) fn capture<R: crate::NativeReadSource>(
     for slot in slots {
         check(reader.budget, reader.cancelled)?;
         if slot.kind != Kind::EmptyDeleted && slot.owner.is_none() {
-            // A nonempty deleted slot is only a hidden intermediate/terminal
-            // when exactly one live original root reached it. Orphans refuse.
-            return Err(refused());
+            match census {
+                Census::Original => return Err(refused()),
+                #[cfg(feature = "ace16-create")]
+                Census::Retained if slot.kind == Kind::Hidden => {
+                    // The bound whole-file inventory protects these original
+                    // tombstones and old hidden targets. No new logical row,
+                    // writable location or permission is invented from them.
+                }
+                #[cfg(feature = "ace16-create")]
+                Census::Retained => return Err(refused()),
+            }
         }
     }
     reader.tick()?;

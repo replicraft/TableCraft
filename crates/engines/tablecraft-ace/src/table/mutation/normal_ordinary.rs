@@ -257,6 +257,27 @@ pub(in crate::table::mutation) fn capture_current_insert(
     preserved_source::capture_current_insert(image, table, &certificate, budget, cancelled)
 }
 
+/// Retained INSERT has a complete table-owned surroundings inventory and an
+/// exact target absence certificate; legacy source entry points stay unchanged.
+#[cfg(feature = "ace16-create")]
+pub(in crate::table::mutation) fn capture_retained_insert(
+    image: &NativeImage,
+    table: &str,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Source, EditError> {
+    let target = crate::inspect_table_schema(
+        &mut image.reader(),
+        image.catalog().catalog().scope(),
+        table,
+        budget,
+        cancelled,
+    )?;
+    let certificate =
+        NoRequiredTablePrograms::capture_retained_insert(image, &target, budget, cancelled)?;
+    preserved_source::capture_retained_insert(image, table, &certificate, budget, cancelled)
+}
+
 #[derive(Clone, Copy)]
 enum CapturePurpose {
     Updates,

@@ -143,6 +143,8 @@ enum PayloadAdmission<'admission, 'image> {
     #[cfg(all(feature = "journal", feature = "ace16-create"))]
     CurrentInsertNoRequired(&'admission NoRequiredTablePrograms<'image>),
     #[cfg(all(feature = "journal", feature = "ace16-create"))]
+    RetainedInsertNoRequired(&'admission NoRequiredTablePrograms<'image>),
+    #[cfg(all(feature = "journal", feature = "ace16-create"))]
     CurrentDeleteNoRequired(&'admission NoRequiredTablePrograms<'image>),
     #[cfg(all(feature = "journal", feature = "ace16-create"))]
     HistoricalFixedRows(&'admission NoRequiredTablePrograms<'image>),
@@ -371,6 +373,10 @@ fn capture_framed_with_records(
             certificate.require_current_insert_source(image, schema, budget, cancelled)?;
         }
         #[cfg(all(feature = "journal", feature = "ace16-create"))]
+        PayloadAdmission::RetainedInsertNoRequired(certificate) => {
+            certificate.require_retained_insert_source(image, schema, budget, cancelled)?;
+        }
+        #[cfg(all(feature = "journal", feature = "ace16-create"))]
         PayloadAdmission::CurrentDeleteNoRequired(certificate) => {
             certificate.require_current_delete_source(image, schema, budget, cancelled)?;
         }
@@ -394,6 +400,7 @@ fn capture_framed_with_records(
         PayloadAdmission::CurrentSchemaNoRequired(certificate)
         | PayloadAdmission::CurrentRowsNoRequired(certificate)
         | PayloadAdmission::CurrentInsertNoRequired(certificate)
+        | PayloadAdmission::RetainedInsertNoRequired(certificate)
         | PayloadAdmission::CurrentDeleteNoRequired(certificate)
         | PayloadAdmission::HistoricalFixedRows(certificate) => certificate.share_definition_tail(),
         _ => None,
@@ -542,6 +549,7 @@ fn capture_framed_with_records(
         PayloadAdmission::CurrentSchemaNoRequired(_)
         | PayloadAdmission::CurrentRowsNoRequired(_)
         | PayloadAdmission::CurrentInsertNoRequired(_)
+        | PayloadAdmission::RetainedInsertNoRequired(_)
         | PayloadAdmission::CurrentDeleteNoRequired(_)
         | PayloadAdmission::HistoricalFixedRows(_) => true,
         _ => false,
@@ -790,6 +798,7 @@ impl PayloadAdmission<'_, '_> {
             Self::CurrentSchemaNoRequired(_)
             | Self::CurrentRowsNoRequired(_)
             | Self::CurrentInsertNoRequired(_)
+            | Self::RetainedInsertNoRequired(_)
             | Self::CurrentDeleteNoRequired(_)
             | Self::HistoricalFixedRows(_) => true,
             #[cfg(feature = "ace16-write-preview")]
@@ -956,6 +965,30 @@ pub(in crate::table::mutation) fn capture_current_insert(
         table,
         PayloadAdmission::CurrentInsertNoRequired(certificate),
         ReadProfile::retained(ColumnFraming::Actions),
+        RecordAdmission::HistoricalInsert,
+        budget,
+        cancelled,
+    )
+}
+
+/// Original generated records retain their own insertion grammar while the
+/// bound certificate protects retired catalog/table storage outside the target.
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub(in crate::table::mutation) fn capture_retained_insert(
+    image: &NativeImage,
+    table: &str,
+    certificate: &NoRequiredTablePrograms<'_>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Source, EditError> {
+    capture_framed_with_records(
+        image,
+        table,
+        PayloadAdmission::RetainedInsertNoRequired(certificate),
+        ReadProfile {
+            columns: ColumnFraming::SparseGenerated,
+            keys: RetainedKeys::Integral,
+        },
         RecordAdmission::HistoricalInsert,
         budget,
         cancelled,

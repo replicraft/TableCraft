@@ -77,6 +77,8 @@ enum Padding {
     Strict,
     #[cfg(feature = "ace16-create")]
     RetainedMetadata,
+    #[cfg(feature = "ace16-create")]
+    RetainedRows,
 }
 
 pub(super) fn validate(
@@ -98,10 +100,49 @@ pub(super) fn validate_schema(
     validate_with_padding(image, target, Padding::RetainedMetadata, budget, cancelled)
 }
 
+/// Retired roots are admitted only after the exact whole-file ownership proof.
+#[cfg(feature = "ace16-create")]
+pub(super) fn validate_retained(
+    image: &NativeImage,
+    target: &TableSchema,
+    inventory: &crate::table::table_append::Inventory<'_>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Selected, EditError> {
+    inventory.require_source(image)?;
+    validate_with_inventory(
+        image,
+        target,
+        Padding::RetainedRows,
+        Some(inventory),
+        budget,
+        cancelled,
+    )
+}
+
 fn validate_with_padding(
     image: &NativeImage,
     target: &TableSchema,
     padding: Padding,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Selected, EditError> {
+    validate_with_inventory(
+        image,
+        target,
+        padding,
+        #[cfg(feature = "ace16-create")]
+        None,
+        budget,
+        cancelled,
+    )
+}
+
+fn validate_with_inventory(
+    image: &NativeImage,
+    target: &TableSchema,
+    padding: Padding,
+    #[cfg(feature = "ace16-create")] inventory: Option<&crate::table::table_append::Inventory<'_>>,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Selected, EditError> {
@@ -128,7 +169,16 @@ fn validate_with_padding(
     let mut selected_parent = None;
     let mut properties_present = false;
     let owned = allocation::pages(&mut reader, raw_layout.usage)?;
-    let logical = roots::capture(&mut reader, &owned, CATALOG_DEFINITION)?;
+    let logical = match padding {
+        #[cfg(feature = "ace16-create")]
+        Padding::RetainedRows => roots::capture_retained(
+            &mut reader,
+            &owned,
+            CATALOG_DEFINITION,
+            inventory.ok_or_else(refused)?,
+        )?,
+        _ => roots::capture(&mut reader, &owned, CATALOG_DEFINITION)?,
+    };
     for row in logical {
         let number = row.page;
         let native_slot = row.slot;
@@ -138,7 +188,7 @@ fn validate_with_padding(
         let invalid_padding = match padding {
             Padding::Strict => variable_end != layout.data_end,
             #[cfg(feature = "ace16-create")]
-            Padding::RetainedMetadata => variable_end > layout.data_end,
+            Padding::RetainedMetadata | Padding::RetainedRows => variable_end > layout.data_end,
         };
         // Complete declared columns and monotone offsets still bind every live
         // variable cell. Only the unreferenced interval before the checked footer

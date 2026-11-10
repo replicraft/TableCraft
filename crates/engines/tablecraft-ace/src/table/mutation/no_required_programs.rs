@@ -41,6 +41,8 @@ enum Purpose {
     #[cfg(feature = "ace16-create")]
     CurrentInsert,
     #[cfg(feature = "ace16-create")]
+    RetainedInsert,
+    #[cfg(feature = "ace16-create")]
     CurrentDelete,
 }
 
@@ -234,6 +236,25 @@ impl<'image> NoRequiredTablePrograms<'image> {
         )
     }
 
+    /// Retained surroundings need their own complete source proof; the target
+    /// keeps the original generated declaration and program-absence grammar.
+    #[cfg(feature = "ace16-create")]
+    pub(in crate::table::mutation) fn capture_retained_insert(
+        image: &'image NativeImage,
+        schema: &TableSchema,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, EditError> {
+        Self::capture_with_purpose(
+            image,
+            schema,
+            Declaration::SparseGenerated,
+            Purpose::RetainedInsert,
+            budget,
+            cancelled,
+        )
+    }
+
     /// Distinct current-row evidence shares checked sparse metadata framing,
     /// but cannot be substituted by a readonly schema certificate.
     #[cfg(feature = "ace16-create")]
@@ -296,7 +317,11 @@ impl<'image> NoRequiredTablePrograms<'image> {
     ) -> Result<Self, EditError> {
         let _span = tracing::debug_span!("native.table.no_required_programs.capture").entered();
         check(budget, cancelled)?;
-        image.require_standard_capture()?;
+        match purpose {
+            #[cfg(feature = "ace16-create")]
+            Purpose::RetainedInsert => image.require_retained_capture()?,
+            _ => image.require_standard_capture()?,
+        }
         let header = image.catalog().header();
         if !matches!(header.format(), FileFormat::Ace2016 | FileFormat::Ace2019)
             || header.subversion() != 0
@@ -305,6 +330,12 @@ impl<'image> NoRequiredTablePrograms<'image> {
             return Err(refused());
         }
         let selected = match purpose {
+            #[cfg(feature = "ace16-create")]
+            Purpose::RetainedInsert => {
+                let inventory =
+                    crate::table::table_append::Inventory::capture(image, budget, cancelled)?;
+                catalog::validate_retained(image, schema, &inventory, budget, cancelled)?
+            }
             Purpose::Rows => catalog::validate(image, schema, budget, cancelled)?,
             #[cfg(feature = "ace16-create")]
             Purpose::HistoricalFixedRows
@@ -433,6 +464,22 @@ impl<'image> NoRequiredTablePrograms<'image> {
     }
 
     #[cfg(feature = "ace16-create")]
+    pub(in crate::table::mutation) fn require_retained_insert_source(
+        &self,
+        image: &NativeImage,
+        schema: &TableSchema,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(), EditError> {
+        if self.purpose != Purpose::RetainedInsert
+            || self.declaration != Declaration::SparseGenerated
+        {
+            return Err(EditError::Preservation);
+        }
+        self.require_binding(image, schema, budget, cancelled)
+    }
+
+    #[cfg(feature = "ace16-create")]
     pub(in crate::table::mutation) fn require_current_delete_source(
         &self,
         image: &NativeImage,
@@ -502,3 +549,6 @@ mod current_insert_tests;
 
 #[cfg(all(test, feature = "ace16-create"))]
 mod current_delete_tests;
+
+#[cfg(all(test, feature = "ace16-create"))]
+mod retained_insert_tests;
