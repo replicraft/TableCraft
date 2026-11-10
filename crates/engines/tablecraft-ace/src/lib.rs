@@ -358,8 +358,8 @@ pub use transaction::{
 pub use table::{FieldDropError, NativeFieldDropCandidate, NativeFieldDropIdentity};
 #[cfg(all(feature = "ace16-create", feature = "journal"))]
 pub use table::{
-    FieldRenameError, FittedFieldRenameSource, NativeFieldRenameCandidate,
-    NativeFieldRenameIdentity, NativeFittedFieldRenameCandidate,
+    FieldRenameError, FittedFieldRenameSource, NativeCurrentFieldRenameCandidate,
+    NativeFieldRenameCandidate, NativeFieldRenameIdentity, NativeFittedFieldRenameCandidate,
     NativePopulatedFieldRenameCandidate,
 };
 

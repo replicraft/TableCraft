@@ -43,6 +43,25 @@ impl Layout {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, Error> {
+        Self::capture_with_free_space(image, observed, false, budget, cancelled)
+    }
+
+    pub(super) fn capture_current(
+        image: &NativeImage,
+        observed: &Observed,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, Error> {
+        Self::capture_with_free_space(image, observed, true, budget, cancelled)
+    }
+
+    fn capture_with_free_space(
+        image: &NativeImage,
+        observed: &Observed,
+        retain_opaque_free_space: bool,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, Error> {
         check(budget, cancelled)?;
         let bytes = image.as_bytes();
         let definition_base = observed.schema.definition_page() as usize * PAGE_BYTES;
@@ -85,9 +104,10 @@ impl Layout {
             return Err(Error::Source);
         }
         budget.charge(Resource::Steps, PAGE_BYTES as u64)?;
-        if page[slot_offset(count)..database_start]
-            .iter()
-            .any(|byte| *byte != 0)
+        if !retain_opaque_free_space
+            && page[slot_offset(count)..database_start]
+                .iter()
+                .any(|byte| *byte != 0)
         {
             return Err(Error::Source);
         }
@@ -134,6 +154,10 @@ impl Layout {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, Error> {
-        Self::capture(source.image(), &source.observed, budget, cancelled)
+        if source.current_metadata() {
+            Self::capture_current(source.image(), &source.observed, budget, cancelled)
+        } else {
+            Self::capture(source.image(), &source.observed, budget, cancelled)
+        }
     }
 }

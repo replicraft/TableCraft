@@ -1,10 +1,11 @@
 //! Closed native application role graph and explicit name-tracking settings.
 use crate::{
     DatabaseProperties, InspectError, NativeImage, NativeObjectOrigin, NativeTableStorage,
-    PropertyGroupKind,
-    format::{data_type, page::PAGE_NUMBER_MASK},
+    PropertyGroupKind, TableSchema,
+    format::{data_type, page::PAGE_NUMBER_MASK, reader::Reader},
     header::check,
     inspect_database_properties,
+    table::{long_value::trace, record_layout},
 };
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_model::ObjectKind;
@@ -209,4 +210,69 @@ pub(in crate::table::mutation) fn find_role<'a>(
         }
     }
     matched.ok_or(Error::Source)
+}
+
+/// Require every live variable payload to be the name or the exact supplied
+/// external property descriptor. This excludes code/provider/dependency cells;
+/// callers separately establish the referenced body's framing and ownership.
+pub(in crate::table::mutation) fn require_external_payload(
+    image: &NativeImage,
+    schema: &TableSchema,
+    origin: &NativeObjectOrigin,
+    expected: Option<(u32, usize)>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), Error> {
+    check(budget, cancelled)?;
+    let mut input = image.reader();
+    let mut reader = Reader {
+        source: &mut input,
+        header: image.catalog().header(),
+        budget,
+        cancelled,
+        reads: 0,
+    };
+    let page = reader.page(origin.page())?;
+    // The catalog origin is a logical root; ordinary field-history records can
+    // be forwarded. Resolve its checked physical owner before inspecting cells.
+    let record = reader.row_location(
+        origin.page(),
+        origin.slot(),
+        schema.definition_page(),
+        &page,
+    )?;
+    let row = record.data.as_slice();
+    let framed = record_layout::parse(row, schema, reader.budget)?;
+    if framed.count != schema.layout.max_columns
+        || framed.offsets.len() != schema.layout.variable_slots + 1
+    {
+        return Err(Error::Source);
+    }
+    let mut seen = expected.is_none();
+    for column in schema.columns() {
+        reader.tick()?;
+        let field = column.physical_field();
+        if field.fixed
+            || row[framed.mask_start + field.number / u8::BITS as usize]
+                & (1 << (field.number % u8::BITS as usize))
+                == 0
+            || column.name().eq_ignore_ascii_case("Name")
+        {
+            continue;
+        }
+        if !column.name().eq_ignore_ascii_case("LvProp") {
+            return Err(Error::Dependency);
+        }
+        let (reference, length) = expected.ok_or(Error::Dependency)?;
+        let value = &row[framed.offsets[field.variable]..framed.offsets[field.variable + 1]];
+        reader.work(value.len())?;
+        if seen || !trace::canonical_single(value, reference, length)? {
+            return Err(Error::Dependency);
+        }
+        seen = true;
+    }
+    if !seen {
+        return Err(Error::Dependency);
+    }
+    Ok(())
 }

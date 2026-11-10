@@ -75,14 +75,14 @@ mod record_serialization;
 #[cfg(all(feature = "ace16-create", feature = "journal"))]
 mod rename_field;
 #[cfg(feature = "journal")]
-mod schema_source;
-#[cfg(feature = "journal")]
 mod rename_table;
 #[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
 mod requests;
 mod rows;
 #[cfg(all(feature = "ace16-create", feature = "journal"))]
 mod saved_field;
+#[cfg(feature = "journal")]
+mod schema_source;
 #[cfg(feature = "journal")]
 pub use drop_table::{
     NativeTableDropIdentity, NativeTableDropInspection, NativeTableDropPlan, TableDropError,
@@ -220,7 +220,7 @@ mod query_expression_source;
 pub use drop_field::{FieldDropError, NativeFieldDropCandidate, NativeFieldDropIdentity};
 #[cfg(all(feature = "ace16-create", feature = "journal"))]
 pub use rename_field::{
-    FieldRenameError, FittedFieldRenameSource, NativeFieldRenameCandidate,
-    NativeFieldRenameIdentity, NativeFittedFieldRenameCandidate,
+    FieldRenameError, FittedFieldRenameSource, NativeCurrentFieldRenameCandidate,
+    NativeFieldRenameCandidate, NativeFieldRenameIdentity, NativeFittedFieldRenameCandidate,
     NativePopulatedFieldRenameCandidate,
 };

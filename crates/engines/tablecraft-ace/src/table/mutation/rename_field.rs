@@ -1,5 +1,6 @@
 //! Same-width saved-field rename construction over a sealed complete OFF source.
 mod candidate;
+mod current_source;
 mod error;
 mod fitted;
 mod identity;
@@ -12,6 +13,7 @@ mod verify;
 pub use candidate::NativeFieldRenameCandidate;
 pub use error::FieldRenameError;
 pub use fitted::{
-    FittedFieldRenameSource, NativeFittedFieldRenameCandidate, NativePopulatedFieldRenameCandidate,
+    FittedFieldRenameSource, NativeCurrentFieldRenameCandidate, NativeFittedFieldRenameCandidate,
+    NativePopulatedFieldRenameCandidate,
 };
 pub use identity::NativeFieldRenameIdentity;

@@ -6,6 +6,7 @@ use tablecraft_core::limits::ResourceBudget;
 enum Proof {
     Empty(FieldHistoryOffSource),
     Populated(NativeImage),
+    Current(NativeImage),
 }
 
 /// Its private source must pass complete selected-family reconstruction.
@@ -38,10 +39,21 @@ impl Qualified {
         }
     }
 
+    pub(super) fn from_current(image: NativeImage, observed: Observed) -> Self {
+        Self {
+            proof: Proof::Current(image),
+            observed,
+        }
+    }
+
+    pub(super) fn current_metadata(&self) -> bool {
+        matches!(self.proof, Proof::Current(_))
+    }
+
     pub fn image(&self) -> &NativeImage {
         match &self.proof {
             Proof::Empty(proof) => proof.image(),
-            Proof::Populated(image) => image,
+            Proof::Populated(image) | Proof::Current(image) => image,
         }
     }
 }

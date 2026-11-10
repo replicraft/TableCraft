@@ -72,8 +72,8 @@ pub use mutation::{EditError, Int32Update, NativeEditPlan, WriteBlocker};
 pub use mutation::{FieldDropError, NativeFieldDropCandidate, NativeFieldDropIdentity};
 #[cfg(all(feature = "ace16-create", feature = "journal"))]
 pub use mutation::{
-    FieldRenameError, FittedFieldRenameSource, NativeFieldRenameCandidate,
-    NativeFieldRenameIdentity, NativeFittedFieldRenameCandidate,
+    FieldRenameError, FittedFieldRenameSource, NativeCurrentFieldRenameCandidate,
+    NativeFieldRenameCandidate, NativeFieldRenameIdentity, NativeFittedFieldRenameCandidate,
     NativePopulatedFieldRenameCandidate,
 };
 #[cfg(any(feature = "ace16-write-preview", feature = "journal"))]

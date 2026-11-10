@@ -2,7 +2,7 @@ use crate::{EditError, FieldHistoryDatabaseOptionsError, InspectError};
 use tablecraft_core::limits::LimitError;
 use thiserror::Error;
 
-/// Payload-free refusal of this separate same-width field-rename candidate.
+/// Payload-free refusal of the separately qualified field-rename families.
 #[derive(Debug, Error)]
 pub enum FieldRenameError {
     /// Native parsing, allocation, cumulative resource or cancellation failure.
@@ -11,7 +11,7 @@ pub enum FieldRenameError {
     /// Complete original field-history/OFF reconstruction or replay failed.
     #[error(transparent)]
     SourceProof(#[from] FieldHistoryDatabaseOptionsError),
-    /// Actual populated records, constraints, ownership or INSERT replay failed.
+    /// Actual native records, constraints, ownership or row replay failed.
     #[error(transparent)]
     RowSource(#[from] EditError),
     /// The proposed name violates native identifier syntax or its size ceiling.
@@ -23,6 +23,9 @@ pub enum FieldRenameError {
     /// Populated field names must use the qualified ASCII identifier namespace.
     #[error("populated field rename requires ASCII names")]
     PopulatedNameShape,
+    /// Current metadata names must use the qualified ASCII namespace.
+    #[error("current field rename requires ASCII names")]
+    CurrentNameShape,
     /// The fitted profile is separate from the existing same-width/no-op route.
     #[error("fitted field rename requires unequal-width ASCII names")]
     FittedNameShape,

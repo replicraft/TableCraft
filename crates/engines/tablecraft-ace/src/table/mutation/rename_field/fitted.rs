@@ -1,5 +1,7 @@
 //! Unequal-width ASCII names fit existing owned pages and retain every row slot.
 mod build;
+mod current;
+pub use current::NativeCurrentFieldRenameCandidate;
 mod layout;
 mod populated;
 pub use populated::NativePopulatedFieldRenameCandidate;
