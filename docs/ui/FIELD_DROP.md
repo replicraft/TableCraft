@@ -19,17 +19,20 @@ and [Delete a field](https://support.microsoft.com/en-gb/access/delete-a-field).
 The target binds the exact open tab, document revision, true stored field name
 and actual native column number. Caption, visible position and the surviving
 field vector are not identities. Inspection creates no AFTER image or write
-lease. Its source eligibility is metadata only; named review freshly repeats the
-native proof and fitted-property preparation.
+lease. Its result is eligibility only; populated inspection validates actual rows
+and indexes. Named review freshly repeats native proof and fitted-property
+preparation.
 
-Current support is the [bounded native DROP profile](../access/writes/FIELD_DROP.md):
-an empty canonical eleven-page ACE16 field-history source with explicit stored
-Name AutoCorrect OFF, and a supported nonprimary, nonindexed Number Long or
-compressed Short Text255 field. Missing, absent or unknown settings refuse;
-this command never disables settings automatically. Queries, relationships,
-required programs, unknown metadata, populated tables and older formats remain
-outside this profile. These are current TableCraft limits, not general Access
-field-deletion restrictions.
+Current support uses the [native DROP profiles](../access/writes/FIELD_DROP.md):
+the original empty canonical ACE16 field-history source and a separate populated
+current-metadata source. Both require explicit stored Name AutoCorrect OFF and
+qualified nonprimary, unindexed nullable Number Long or Short Text declarations.
+The populated route removes only the native tail field while retaining old
+record bytes, IDs and counts. Missing, absent or unknown settings refuse; this
+command never disables settings automatically. Dependencies, required programs,
+unknown metadata, indexed/middle populated targets and older formats remain
+outside these profiles. These are current implementation limits, not general
+Access field-deletion restrictions.
 
 The confirmation and pending state own the exact target and local draft
 revision. Confirmation supplies no native authority. Other dirty stored-object
@@ -65,6 +68,22 @@ Number deletion can leave native numbers 0/2 with high-water 3. The separate
 qualified sparse generated INSERT path uses those actual numbers and omitted
 field defaults; a DROP receipt itself grants no insertion authority. Surviving
 Text variable-slot gaps remain outside ordinary INSERT support.
+
+## Populated-field workflow
+
+The separate populated-tail route uses the same confirmation, pending Save,
+consuming review and full-image reopen. Seven headless journeys cover present or
+absent Number/Text, forwarded storage, retained Text/Binary/opaque NULL siblings
+and ID-only survivors. They check **No** leaves the file unchanged, **Yes** remains
+inert until Save, every saved byte matches an independent complete image, native
+DATA pages remain unchanged and a fresh document retains the surviving values,
+row IDs and table-tab identity. A populated generated/indexed ID target remains
+disabled. The combined desktop field-deletion family passes 15 tests.
+
+These are headless interaction and constructed-source outcomes. No deletion
+surface has been newly qualified against native Windows/Access. Middle/indexed
+populated targets, repeated deletion, broader sources and older-format writers
+remain separate work.
 
 ## Verification boundary
 

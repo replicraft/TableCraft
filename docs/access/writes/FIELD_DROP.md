@@ -1,12 +1,13 @@
-# Bounded saved-field DROP
+# Saved-field deletion
 
 The native engine, original-intent recovery, Access adapter and consuming runtime
 implement a separate saved-field deletion operation. The normal desktop route
-is connected and passes its real Number/Text interaction acceptance tests. The shared model has source-free ownership checks; it does not turn
-an eligibility fact or a Yes confirmation into write authority. This is not
-general ALTER TABLE, populated-table deletion or Access 97–2019 write completion.
+is connected for the original empty-table family and a separate populated-tail
+family. The shared model has source-free ownership checks; it does not turn an
+eligibility fact or a Yes confirmation into write authority. General ALTER TABLE
+and Access 97–2019 write completion remain unfinished.
 
-## Source and target
+## Original empty-source family
 
 The original must pass the complete settled field-history-plus-explicit-OFF
 source proof shared with [field rename](FIELD_RENAME.md). This is an unencoded,
@@ -29,6 +30,43 @@ without creating a deletion AFTER or acquiring a save lease. Its metadata-only
 result does not promise that the new property snapshot fits. Named preparation
 must freshly prove physical capacity and every preserved role.
 
+## Populated tail-field family
+
+`inspect_current_tail_field_drop_source` and consuming
+`prepare_current_tail_field_drop` qualify a separate current-metadata, unencoded
+ACE16 source with populated records, explicit Name AutoCorrect OFF and the same
+restricted eleven-page ownership graph. Programs and dependencies are positively
+checked through the current schema source; catalog/header recognition alone is
+insufficient. The target is the native tail field, not merely the rightmost
+visible column: its native number equals the preserved high-water count minus
+one. It must be unindexed and nonprimary, with explicit Required(false), and
+either ordinary LONG/DefaultValue zero or Short Text of 1–255 UTF-16 units,
+AllowZeroLength(true), no default and explicit compression permission. Unsupported
+property tuples, orphan live groups, generated targets and dependencies refuse.
+
+The sealed `NativeCurrentTailFieldDropCandidate` preserves every DATA and INDEX
+byte, logical row identity, old forwarding target and record count. Only the
+active declaration/name, TDEF active count/length/free facts and one live property
+group are removed. Native column IDs, maximum column/variable counts and retained
+record masks/offsets stay intact, including retired payload bytes. This is logical
+field deletion, without compaction or record migration.
+
+The new metadata proof validates the original property dictionary/groups strictly,
+then proves that AFTER equals exactly one known aligned group omission. Unused
+dictionary names and a dictionary with no remaining groups are retained. A small
+remaining body keeps the original owned Single carrier through an explicit
+retained-Single placement route; it is not converted to inline data merely because
+it falls below an encoder preference threshold. All original owner, descriptor,
+allocator and complete-image complement checks remain required. The original
+empty-source grammar and preferred-storage paths are unchanged.
+
+Complete ordered survivor reads, unchanged storage and native index checks
+verify the replacement. Independent full images cover present/absent Number and
+Text, forwarded records, opaque NULL/Text/Binary siblings and ID-only survivors.
+Fresh-file SELECT/COUNT and removed-name binding checks run against all seven
+constructed images. These establish independent read/query and constructed
+mutation evidence, not native Windows/Access Save/reopen qualification.
+
 ## Construction and preservation
 
 `prepare_saved_field_drop` consumes the actual source into
@@ -37,8 +75,8 @@ selected descriptor/name while preserving native/stored identities, high-water
 counts, retained offsets/variable ordinals and indexed suffix. It does not compact
 surviving fields or migrate populated rows.
 
-The strict framing owner identifies exactly the selected live MR2 group. The
-real property encoder constructs remaining fields under the retained dictionary
+In the original empty-source family, the strict framing owner identifies exactly
+the selected live MR2 group. The real property encoder constructs remaining fields under the retained dictionary
 order; its body must equal the original body with precisely that one group
 omitted. Unused dictionary keys, orphan/unknown groups and unknown payloads
 refuse. The fitted property append uses the actual user descriptor, not the last
@@ -54,7 +92,8 @@ readable controls are deliberately not accepted as complete cleanup.
 
 ## Original request, staging and recovery
 
-TCFD0001/profile1 is a distinct closed data-only request. It binds original
+TCFD0001/profile1 retains its original empty-source language. The separate
+TCFD0002/profile2 binds the populated-tail operation. Both contain original
 names, native table/root/column number/stored ID and full BEFORE length/digest;
 it contains no replacement image, physical spans or caller-issued scope.
 Bounded borrowed framing precedes owned names. Decode alone grants no authority.
@@ -65,8 +104,9 @@ images. The adapter stages through `stage_reviewed_field_drop_with_budgets` and
 returns a separate retained `StagedFieldDrop`; apply uses the existing offline
 journal owner and emits only ColumnDropped schema effects, never row counts.
 
-Cold and settled recovery dispatch exactly TCFD0001 to the new decoder before
-request reconstruction. A failure never retries TCFR, TCAC or another action.
+Cold and settled recovery select the exact TCFD0001 or TCFD0002 decoder before
+request reconstruction. The original decoder remains profile1-only; profile2 has
+an explicit decoder. A failure never retries another profile or action.
 The same checked fixed-image V1 owner is retained through recovery/confirmation,
 with one cumulative recovery allowance. Existing pending/committed/torn-marker
 and settled semantics remain unchanged. Scope is issued by the current caller
@@ -76,7 +116,9 @@ and rebound during reconstruction, never serialized as authority.
 
 [Runtime inspection, review, save and witnessed reopening](../../application/RUNTIME.md#reviewed-saved-field-deletion)
 use distinct DROP DTOs, consuming capability and full-image witness. Source
-eligibility is metadata only; named review repeats native proof. No lock is held
+inspection returns only eligibility, without a candidate or lease; populated
+inspection also validates actual rows and indexes. Named review repeats native
+proof. No lock is held
 while a user considers a confirmation. Unsupported platforms refuse saves.
 The original read session remains unchanged after terminal persistence and ACK;
 only the accepted full witness can publish a fresh document.
@@ -116,7 +158,8 @@ coordinated Rust-review batch. The ordinary generated fixed-Int32 route derives
 admission from current metadata, retains native numbers/offsets/high-water marks,
 and does not treat a previous DROP receipt as authority. The independent SDK
 observation still supplies reader evidence only, with no SDK INSERT or Access
-save. Deleted Text variable-slot gaps, populated deletion sources, dependencies,
-indexed deletion targets, broader
-properties, repeated deletion, older formats and native Access parity remain
-unqualified.
+save. The populated-tail family above now qualifies its own sources independently.
+Broader deleted-slot editing/insertion, populated middle-field deletion,
+dependencies, indexed deletion targets, broader properties, repeated deletion,
+older formats and native Access parity remain unqualified. These are current
+writer limitations, not Access format limits.

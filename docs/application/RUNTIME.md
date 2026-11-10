@@ -1984,15 +1984,20 @@ Access 97–2019 write parity or native Microsoft Access save behavior.
 
 `InspectFieldDropSource` binds the exact document revision, true table/field
 names and actual native number. `FieldDropSourceInspection.source_eligible` is
-metadata only, with no candidate AFTER, lease, save support or physical-fit
-promise. Only explicit unsupported source/target leaves become false; malformed,
+an eligibility-only observation, with no candidate AFTER, lease, save support or
+physical-fit promise. Populated source inspection validates actual rows/indexes
+under the same explicit cumulative native budget. Only explicit unsupported source/target leaves become false; malformed,
 cancelled and resource-limited reads retain typed errors. Unsupported builds
 retain ordinary metadata and refuse unsupported editing explicitly.
 
 `ReviewFieldDrop` creates `FieldDropReview` presentation facts and a separate
-consuming `ReviewedFieldDrop` from the actual sealed native plan. The profile is
-[empty canonical ACE16 with settled field history and explicit OFF](../access/writes/FIELD_DROP.md).
-There is no unchanged/no-op branch. No write lease is held during confirmation.
+consuming `ReviewedFieldDrop` from the actual sealed native plan. Metadata selects
+[the original empty-source or separate populated-tail ACE16 language](../access/writes/FIELD_DROP.md)
+before complete source/target qualification. There is no error-driven fallback or
+unchanged/no-op branch. Populated deletion retains all DATA bytes and row counts,
+removes only the qualified native tail field and its live property group, and
+uses a distinct TCFD0002 original request. Older TCFD0001 remains empty-source-only.
+No write lease is held during confirmation.
 `SaveWorker::start_field_drop` consumes the capability through the real adapter
 and the existing nonreplaceable retained worker, with separate native/proof/
 persistence allowances. Failures retain actual resources and typed causes.

@@ -1,5 +1,26 @@
 # Implementation status
 
+## Populated tail-field deletion — 10 November 2026
+
+The shared runtime/Access/engine path now removes qualified nullable, unindexed
+tail Number or Short Text fields from populated current-metadata ACE16 tables.
+The separate TCFD0002 request retains original native identities and full BEFORE
+binding; the original empty-source TCFD0001 language is unchanged. DATA/index
+bytes, record masks/offsets, native high-water counts, old property snapshots and
+surviving row IDs/values remain intact. The property proof retains unused
+dictionary names, including an empty group set, without bypassing original-source,
+owner, descriptor or complete-image checks.
+
+The complete desktop field-deletion family passes 15 headless cases, including
+seven populated source shapes, inert cancellation/confirmation, reviewed Save,
+independent complete byte oracles and fresh reopen. Independent native-file
+read/query checks verify every constructed AFTER and deleted-name refusal.
+Native tests cover original request bytes, fresh-scope requalification, pending
+and committed cold recovery, forged AFTERs and dependency/corruption refusals.
+Middle/indexed populated targets, repeated deletion, broader sources, full table
+DROP/storage retirement and older-format qualification remain unfinished. These
+checks do not establish Windows/Access parity. See [field deletion](access/writes/FIELD_DROP.md).
+
 ## Populated Short Text field workflow — 10 November 2026
 
 The shared runtime now connects current-metadata Short Text ADD on qualified
