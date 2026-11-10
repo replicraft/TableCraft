@@ -75,6 +75,12 @@ jobs:
         run: python -m unittest discover -s scripts/tests -p "test_file_associations.py"
       - name: Test desktop notice generation
         run: python -m unittest discover -s scripts/tests -p "test_desktop_notices.py"
+      - name: Test native installer contracts and verified tool provisioning
+        shell: bash
+        run: |
+          python -m unittest discover -s scripts/tests -p 'test_installer_contract.py'
+          python -m unittest discover -s scripts/tests -p 'test_linux_tools.py'
+          python -m unittest discover -s scripts/tests -p 'test_minisign_tool.py'
       - name: Check standalone core
         run: cargo check -p tablecraft-core --no-default-features --locked
       - name: Check standalone SQL parser
