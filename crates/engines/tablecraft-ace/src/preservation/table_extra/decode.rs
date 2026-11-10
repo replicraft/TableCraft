@@ -10,9 +10,6 @@ const OBSERVED_TEXT_TYPE: u8 = 12;
 const BLOCK_HEADER_BYTES: usize = size_of::<u32>() + size_of::<u16>();
 const VALUE_HEADER_BYTES: usize = size_of::<u32>() * 2 + size_of::<u16>() + size_of::<u8>() * 2;
 const NAME_METADATA_BYTES: usize = size_of::<u32>() * 2 + size_of::<u16>();
-const MAX_NAMES: usize = 256;
-const MAX_GROUPS: usize = 1024;
-const MAX_ENTRIES: usize = 4096;
 
 pub(super) struct Decoded {
     pub(super) coverage: TableExtraCoverage,
@@ -86,7 +83,6 @@ pub(super) fn decode(
     let mut cursor = Cursor::new(&raw[SIGNATURE.len()..]);
     let mut names = None;
     let mut groups: Vec<TableExtraGroup> = Vec::new();
-    let mut entries = 0;
     let mut coverage = TableExtraCoverage::WideMr2;
     while cursor.remaining() != 0 {
         check(budget, cancelled)?;
@@ -105,11 +101,8 @@ pub(super) fn decode(
         }
 
         let names = names.as_ref().ok_or(InspectError::Malformed)?;
-        if groups.len() == MAX_GROUPS {
-            return Err(InspectError::StructureLimit);
-        }
         let properties = if OBSERVED_GROUPS.contains(&kind) {
-            read_properties(body, names, &mut entries, &mut coverage, budget, cancelled)?
+            read_properties(body, names, &mut coverage, budget, cancelled)?
         } else {
             coverage = TableExtraCoverage::Opaque;
             None
@@ -148,9 +141,6 @@ fn read_names(
     let mut names: Vec<String> = Vec::new();
     while cursor.remaining() != 0 {
         check(budget, cancelled)?;
-        if names.len() == MAX_NAMES {
-            return Err(InspectError::StructureLimit);
-        }
         let length = usize::from(cursor.short()?);
         let name = utf16(cursor.take(length)?, budget, cancelled)?;
         if name.is_empty() {
@@ -172,7 +162,6 @@ fn read_names(
 fn read_properties(
     raw: &[u8],
     names: &[String],
-    entries: &mut usize,
     coverage: &mut TableExtraCoverage,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
@@ -193,10 +182,6 @@ fn read_properties(
     let mut properties: Vec<TableExtraProperty> = Vec::new();
     while cursor.remaining() != 0 {
         check(budget, cancelled)?;
-        if *entries == MAX_ENTRIES {
-            return Err(InspectError::StructureLimit);
-        }
-        *entries += 1;
         let length = cursor.long()?;
         if length < VALUE_HEADER_BYTES {
             return Err(InspectError::Malformed);

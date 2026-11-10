@@ -231,3 +231,37 @@ fn wide_metadata_preserves_large_raw_and_decoded_text_under_paid_input_bounds() 
         Err(InspectError::Limit(_))
     ));
 }
+
+#[test]
+fn wide_names_groups_and_entries_follow_wire_lengths_and_paid_comparisons() {
+    let labels = (0..2050)
+        .map(|index| format!("P{index}"))
+        .collect::<Vec<_>>();
+    let names = labels.iter().map(String::as_str).collect::<Vec<_>>();
+    let values = (0..2050)
+        .map(|index| fixture::property(index, 0xa5, 0x7f, &[7]))
+        .collect::<Vec<_>>();
+    let mut blocks = vec![
+        fixture::names(&names),
+        fixture::group(3, &values),
+        fixture::group(4, &values),
+    ];
+    for _ in 0..1025 {
+        blocks.push(fixture::block(0x1234, &[]));
+    }
+    let bytes = fixture::bag(&blocks);
+    let mut pool = ResourceBudget::new(32 * 1024 * 1024, 0, 200_000_000);
+    let decoded = decode(&bytes, &mut pool, &|| false).unwrap();
+    assert_eq!(decoded.names.len(), 2050);
+    assert_eq!(decoded.groups.len(), 1027);
+    assert_eq!(decoded.groups[0].properties().unwrap().len(), 2050);
+    assert_eq!(decoded.groups[1].properties().unwrap().len(), 2050);
+    assert!(matches!(
+        decode(
+            &bytes,
+            &mut ResourceBudget::new(32 * 1024 * 1024, 0, 100),
+            &|| false
+        ),
+        Err(InspectError::Limit(_))
+    ));
+}

@@ -320,3 +320,40 @@ fn aggregate_property_bags_follow_wire_lengths_and_explicit_allocation_budgets()
         Err(InspectError::Limit(_))
     ));
 }
+
+#[test]
+fn property_name_group_and_entry_counts_are_paid_from_framed_input() {
+    let names = (0..257)
+        .flat_map(|index| name(&format!("P{index}")))
+        .collect::<Vec<_>>();
+    let values = (0..257)
+        .flat_map(|index| value(index, 0x7f, 0, &[7]))
+        .collect::<Vec<_>>();
+    let mut bytes = [b"MR2\0".as_slice(), &block(0x80, &names)].concat();
+    for index in 0..530 {
+        bytes.extend(group(
+            0x1234,
+            &format!("Group{index}"),
+            if index < 16 { &values } else { &[] },
+        ));
+    }
+    let mut pool = ResourceBudget::new(32 * 1024 * 1024, 0, 20_000_000);
+    let groups = decode(&bytes, &mut pool, &|| false).unwrap();
+    assert_eq!(groups.len(), 530);
+    assert_eq!(
+        groups
+            .iter()
+            .map(|group| group.properties().len())
+            .sum::<usize>(),
+        4112
+    );
+    assert_eq!(groups[15].get("P256").unwrap().raw_value(), [7]);
+    assert!(matches!(
+        decode(
+            &bytes,
+            &mut ResourceBudget::new(32 * 1024 * 1024, 0, 100),
+            &|| false
+        ),
+        Err(InspectError::Limit(_))
+    ));
+}

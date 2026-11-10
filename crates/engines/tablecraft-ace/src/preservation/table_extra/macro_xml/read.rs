@@ -9,10 +9,6 @@ use tablecraft_core::limits::{Resource, ResourceBudget};
 
 pub(super) mod text;
 
-const MAX_DEPTH: usize = 128;
-const MAX_NAMESPACE_BINDINGS: usize = 128;
-const MAX_DEFINITIONS: usize = 1024;
-const MAX_ATTRIBUTES: usize = 64;
 const PARSER_ALLOCATION_FACTOR: u64 = 8;
 
 #[derive(Clone, Copy)]
@@ -58,11 +54,9 @@ fn inspect(
 
     let mut reader = NsReader::from_str(text.strip_prefix('\u{feff}').unwrap_or(text));
     reader.config_mut().check_comments = true;
-    reader
-        .resolver_mut()
-        .set_max_namespace_bindings(MAX_NAMESPACE_BINDINGS);
-    let mut stack = [Node::Body; MAX_DEPTH];
-    let mut depth = 0;
+    reader.resolver_mut().set_max_namespace_bindings(text.len());
+    let mut stack: Vec<Node> = Vec::new();
+    let mut depth = 0_usize;
     let mut namespace = None;
     let mut root_seen = false;
     let mut declaration_seen = false;
@@ -80,9 +74,6 @@ fn inspect(
         budget.charge(Resource::Steps, reader.buffer_position() - start)?;
         match event {
             Event::Start(ref element) | Event::Empty(ref element) => {
-                if depth == MAX_DEPTH {
-                    return Err(InspectError::StructureLimit);
-                }
                 names::qualified(element.name().as_ref(), budget, cancelled)?;
                 resolution_work(&reader, element.name().as_ref(), budget)?;
                 let (resolved, local) = reader.resolver().resolve_element(element.name());
@@ -125,9 +116,6 @@ fn inspect(
                 }
                 let envelope = attributes(element, &reader, node, budget, cancelled)?;
                 if let Some(envelope) = envelope {
-                    if definitions.len() == MAX_DEFINITIONS {
-                        return Err(InspectError::StructureLimit);
-                    }
                     budget.charge_allocation(1, size_of::<DataMacroEnvelope>() as u64)?;
                     definitions
                         .try_reserve(1)
@@ -135,12 +123,15 @@ fn inspect(
                     definitions.push(envelope);
                 }
                 if matches!(event, Event::Start(_)) {
-                    stack[depth] = node;
+                    budget.charge_allocation(1, size_of::<Node>() as u64)?;
+                    stack.try_reserve(1).map_err(|_| InspectError::Allocation)?;
+                    stack.push(node);
                     depth += 1;
                 }
             }
             Event::End(_) => {
                 depth = depth.checked_sub(1).ok_or(InspectError::Malformed)?;
+                stack.pop().ok_or(InspectError::Malformed)?;
             }
             Event::Text(content) => {
                 if content.as_ref().contains("]]>") {
@@ -217,9 +208,6 @@ fn attributes(
     };
     for (index, attribute) in element.attributes().enumerate() {
         check(budget, cancelled)?;
-        if index == MAX_ATTRIBUTES {
-            return Err(InspectError::StructureLimit);
-        }
         let attribute = attribute.map_err(|_| InspectError::Malformed)?;
         names::qualified(attribute.key.as_ref(), budget, cancelled)?;
         if attribute.value.contains('<') {

@@ -149,43 +149,71 @@ fn external_entities_namespace_changes_and_extensions_refuse_without_resolution(
 }
 
 #[test]
-fn parser_depth_attributes_definitions_and_native_byte_ceilings_are_separate() {
-    let deep = xml(&format!("{}{}", "<N>".repeat(128), "</N>".repeat(128)));
+fn iterative_xml_counts_follow_input_while_quotas_and_cancellation_remain_explicit() {
+    let deep = xml(&format!("{}{}", "<N>".repeat(1024), "</N>".repeat(1024)));
     assert_eq!(
-        document(&deep, &mut budget(), &|| false).err(),
-        Some(InspectError::StructureLimit)
+        document(&deep, &mut budget(), &|| false)
+            .unwrap()
+            .definitions()
+            .len(),
+        1
     );
-    let attributes = (0..65).map(|i| format!(" A{i}=\"x\"")).collect::<String>();
+    let attributes = (0..192).map(|i| format!(" A{i}=\"x\"")).collect::<String>();
+    let namespaces = (0..140)
+        .map(|i| format!(" xmlns:p{i}=\"urn:{i}\""))
+        .collect::<String>();
     assert_eq!(
         document(
-            &xml(&format!("<Statements{attributes}/>")),
-            &mut budget(),
+            &xml(&format!("<Statements{namespaces}{attributes}/>")),
+            &mut ResourceBudget::new(64 * 1024 * 1024, 0, 50_000_000),
             &|| false
         )
-        .err(),
-        Some(InspectError::StructureLimit)
+        .unwrap()
+        .definitions()
+        .len(),
+        1
     );
     let definitions = format!(
         "<DataMacros xmlns=\"{NOVEMBER}\">{}</DataMacros>",
         "<DataMacro Event=\"AfterInsert\"/>".repeat(1025)
     );
     assert_eq!(
-        document(&definitions, &mut budget(), &|| false).err(),
-        Some(InspectError::StructureLimit)
+        document(&definitions, &mut budget(), &|| false)
+            .unwrap()
+            .definitions()
+            .len(),
+        1025
     );
     let large = " ".repeat(2 * 1024 * 1024 + 1);
     assert_eq!(
         document(&large, &mut budget(), &|| false).err(),
         Some(InspectError::Malformed)
     );
-    let complete = xml(&large);
     assert_eq!(
-        document(&complete, &mut budget(), &|| false)
+        document(&xml(&large), &mut budget(), &|| false)
             .unwrap()
             .definitions()
             .len(),
         1
     );
+    let checks = Cell::new(0);
+    let stop_during_parser = deep.chars().count() + 64;
+    let cancelled = || {
+        checks.set(checks.get() + 1);
+        checks.get() >= stop_during_parser
+    };
+    assert_eq!(
+        document(&deep, &mut budget(), &cancelled).err(),
+        Some(InspectError::Cancelled)
+    );
+    assert!(matches!(
+        document(
+            &deep,
+            &mut ResourceBudget::new(64 * 1024 * 1024, 0, 100),
+            &|| false
+        ),
+        Err(InspectError::Limit(_))
+    ));
 }
 
 #[test]
@@ -223,7 +251,7 @@ fn shared_budgets_and_final_cancellation_publish_no_document() {
 }
 
 #[test]
-fn namespace_inventory_and_uri_comparison_work_are_bounded() {
+fn namespace_inventory_and_uri_comparison_work_remain_paid_without_a_binding_quota() {
     let declarations = |prefix: &str| {
         (0..64)
             .map(|index| format!(" xmlns:{prefix}{index}=\"urn:opaque\""))
@@ -231,8 +259,11 @@ fn namespace_inventory_and_uri_comparison_work_are_bounded() {
     };
     let body = format!("<N{}><N{}/></N>", declarations("a"), declarations("b"));
     assert_eq!(
-        document(&xml(&body), &mut budget(), &|| false).err(),
-        Some(InspectError::StructureLimit)
+        document(&xml(&body), &mut budget(), &|| false)
+            .unwrap()
+            .definitions()
+            .len(),
+        1
     );
 
     let uri = format!("urn:{}", "x".repeat(5000));

@@ -3,9 +3,8 @@ use crate::{
     InspectError,
     format::{data_type, text},
     header::check,
-    limits::{MAX_COLUMNS, MAX_INDEXES},
 };
-use tablecraft_core::limits::ResourceBudget;
+use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_schema::SchemaName;
 
 const SIGNATURE: &[u8] = b"MR2\0";
@@ -15,9 +14,6 @@ const COLUMN_VALUES: u16 = 1;
 const INDEX_VALUES: u16 = 2;
 const BLOCK_HEADER_BYTES: usize = size_of::<u32>() + size_of::<u16>();
 const VALUE_HEADER_BYTES: usize = size_of::<u16>() * 3 + size_of::<u8>() * 2;
-const MAX_PROPERTY_NAMES: usize = 256;
-const MAX_PROPERTY_GROUPS: usize = MAX_COLUMNS + MAX_INDEXES + 1;
-const MAX_PROPERTY_ENTRIES: usize = 4096;
 
 struct Cursor<'a> {
     bytes: &'a [u8],
@@ -76,8 +72,7 @@ pub(super) fn decode(
         return Err(InspectError::Unsupported);
     }
     let mut names = None;
-    let mut groups = Vec::new();
-    let mut entries = 0;
+    let mut groups: Vec<PropertyGroup> = Vec::new();
 
     while cursor.remaining() != 0 {
         check(budget, cancelled)?;
@@ -91,18 +86,19 @@ pub(super) fn decode(
             if names.is_some() || !groups.is_empty() {
                 return Err(InspectError::Malformed);
             }
-            let mut parsed = Vec::new();
+            let mut parsed: Vec<SchemaName> = Vec::new();
             while block.remaining() != 0 {
                 check(budget, cancelled)?;
-                if parsed.len() == MAX_PROPERTY_NAMES {
-                    return Err(InspectError::StructureLimit);
-                }
                 let name = SchemaName::new(block.name(budget)?)?;
-                if parsed
-                    .iter()
-                    .any(|other: &SchemaName| other.as_str().eq_ignore_ascii_case(name.as_str()))
-                {
-                    return Err(InspectError::Malformed);
+                for other in &parsed {
+                    check(budget, cancelled)?;
+                    budget.charge(
+                        Resource::Steps,
+                        other.as_str().len().max(name.as_str().len()) as u64,
+                    )?;
+                    if other.as_str().eq_ignore_ascii_case(name.as_str()) {
+                        return Err(InspectError::Malformed);
+                    }
                 }
                 reserve(&mut parsed, budget)?;
                 parsed.push(name);
@@ -112,9 +108,6 @@ pub(super) fn decode(
         }
 
         let names = names.as_ref().ok_or(InspectError::Malformed)?;
-        if groups.len() == MAX_PROPERTY_GROUPS {
-            return Err(InspectError::StructureLimit);
-        }
         let name_block_length = block.long()?;
         let name_block_bytes = name_block_length
             .checked_sub(size_of::<u32>())
@@ -139,18 +132,16 @@ pub(super) fn decode(
                 String::from_utf8(bytes).map_err(|_| InspectError::Malformed)
             })?)?;
         }
-        if groups.iter().any(|group: &PropertyGroup| {
-            group.kind == kind && group.name.eq_ignore_ascii_case(&name)
-        }) {
-            return Err(InspectError::Malformed);
+        for group in &groups {
+            check(budget, cancelled)?;
+            budget.charge(Resource::Steps, group.name.len().max(name.len()) as u64)?;
+            if group.kind == kind && group.name.eq_ignore_ascii_case(&name) {
+                return Err(InspectError::Malformed);
+            }
         }
-        let mut properties = Vec::new();
+        let mut properties: Vec<NativeProperty> = Vec::new();
         while block.remaining() != 0 {
             check(budget, cancelled)?;
-            if entries == MAX_PROPERTY_ENTRIES {
-                return Err(InspectError::StructureLimit);
-            }
-            entries += 1;
             let length = block.short()?;
             let body = length
                 .checked_sub(size_of::<u16>())
@@ -167,11 +158,12 @@ pub(super) fn decode(
                 .get(name_index)
                 .ok_or(InspectError::Malformed)?
                 .as_str();
-            if properties
-                .iter()
-                .any(|property: &NativeProperty| property.name.eq_ignore_ascii_case(key))
-            {
-                return Err(InspectError::Malformed);
+            for property in &properties {
+                check(budget, cancelled)?;
+                budget.charge(Resource::Steps, property.name.len().max(key.len()) as u64)?;
+                if property.name.eq_ignore_ascii_case(key) {
+                    return Err(InspectError::Malformed);
+                }
             }
             let raw = copy(value.take(data_size)?, budget)?;
             // Property framing retains opaque native payloads. In particular,
