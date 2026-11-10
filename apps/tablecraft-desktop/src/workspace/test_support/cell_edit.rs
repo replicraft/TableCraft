@@ -21,9 +21,10 @@ pub(in crate::workspace) fn begin_replacement(
         .as_ref()
         .unwrap()
         .document_revision;
+    let table = harness.state().state.data.as_ref().unwrap().table.clone();
     harness.state_mut().begin_edit(EditTarget {
         document_revision: revision,
-        table: "Table1".into(),
+        table,
         column: column.into(),
         parent_ordinal: row,
     });
