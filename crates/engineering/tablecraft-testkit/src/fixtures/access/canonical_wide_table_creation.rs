@@ -1,6 +1,7 @@
 //! Independent 255-column initial table, chained definition and external MR2.
 //! No native creator, schema/property decoder or mutation planner builds bytes.
 pub mod appended;
+pub mod property_windows;
 pub mod rows;
 use super::{
     canonical_blank_creation, canonical_created_default_zero, canonical_creation,
@@ -133,7 +134,6 @@ fn definition_pages(logical: &[u8], root: usize) -> Vec<Vec<u8>> {
         put16(&mut page, 2, PAGE.saturating_sub(header + take + 8) as u16);
         pages.push(page);
     }
-    assert_eq!(pages.len(), 3);
     pages
 }
 
@@ -178,6 +178,7 @@ pub fn source() -> Source {
         INDEX as u32,
     );
     let definitions = definition_pages(&logical, DEFINITION);
+    assert_eq!(definitions.len(), 3);
     let body = properties();
     let chunks = body.chunks(PROPERTY_CHUNK).collect::<Vec<_>>();
     assert_eq!(chunks.len(), 3);
