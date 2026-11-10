@@ -538,6 +538,15 @@ fn capture_framed_with_records(
             budget,
             cancelled,
         )?;
+        #[cfg(all(feature = "journal", feature = "ace16-create"))]
+        let layout = match (&payload, records_admission) {
+            (
+                PayloadAdmission::RetainedSchemaNoRequired(_),
+                RecordAdmission::HistoricalSchemaReadonly,
+            ) => record_layout::parse_values(&root.final_record.data, schema, budget)?,
+            _ => record_layout::parse(&root.final_record.data, schema, budget)?,
+        };
+        #[cfg(not(all(feature = "journal", feature = "ace16-create")))]
         let layout = record_layout::parse(&root.final_record.data, schema, budget)?;
         records_admission.validate(
             &layout,

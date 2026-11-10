@@ -65,8 +65,10 @@ impl RecordAdmission {
                     .charge(Resource::Steps, 1)
                     .map_err(InspectError::from)?;
                 // Native field numbers select mask positions, not presentation
-                // ordinals. The shared complete parser already proved the old
-                // fixed/variable extents using this record's own field count.
+                // ordinals. The selected parser proves the visible fields and
+                // this record's null mask. Schema-only observation preserves
+                // an ambiguous retired tail as opaque original bytes; consuming
+                // row writers separately require complete physical geometry.
                 if column.number() >= layout.count && *value != Value::Null {
                     return Err(EditError::Unsupported(WriteBlocker::RowLayout));
                 }

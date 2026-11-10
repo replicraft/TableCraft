@@ -1,5 +1,8 @@
 //! Independent retained schemas prove tail removal across actual storage histories.
-use crate::{NativeImage, inspect_table_schema, read_table, read_table_projection};
+use crate::{
+    EditError, InspectError, NativeImage, inspect_table_schema, read_table, read_table_projection,
+    table::mutation::historical_fixed::source::Source as RowSource,
+};
 use std::io::Cursor;
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_model::CatalogScope;
@@ -139,6 +142,21 @@ fn retained_tail_drop_repeats_across_retired_logical_numbers_and_old_rename_slac
         equal_image(candidate.after_bytes(), &expected);
         before = expected;
     }
+    let retained = image(&before);
+    assert!(matches!(
+        RowSource::capture_retained_rows(&retained, "Table1", &mut budget(), &|| false),
+        Err(EditError::Inspect(InspectError::Unsupported))
+    ));
+    let expected_add = fields::after(
+        &before,
+        source.definition,
+        source.catalog_root,
+        Target::Number,
+    );
+    let added = retained
+        .prepare_retained_number_field_addition("Table1", "NextNumber", &mut budget(), &|| false)
+        .unwrap();
+    equal_image(added.after_bytes(), &expected_add);
     let table = read_table(
         &mut Cursor::new(before),
         SCOPE,
