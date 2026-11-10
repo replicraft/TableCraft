@@ -12,6 +12,10 @@ mod maps;
 mod parent;
 mod record;
 mod repeated;
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub(in crate::table::mutation) mod retained_snapshot;
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub(in crate::table::mutation) mod single_descriptor;
 pub(crate) mod storage;
 pub(crate) use repeated::{
     RepeatedChange, compose_fitted_at_origin, compose_repeated, compose_retained_single_at_origin,

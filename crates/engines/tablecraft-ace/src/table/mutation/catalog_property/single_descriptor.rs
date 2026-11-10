@@ -1,5 +1,4 @@
 //! Parser-bound catalog descriptor publication, preserving record identities.
-use super::CurrentFieldAdditionError as Error;
 use crate::{
     InspectError, NativeImage,
     format::{
@@ -21,15 +20,47 @@ use crate::{
     },
 };
 use std::ops::Range;
-use tablecraft_core::limits::{Resource, ResourceBudget};
+use tablecraft_core::limits::{LimitError, Resource, ResourceBudget};
+use thiserror::Error;
 
 const SINGLE_PROPERTY_TAG: u32 = 0x4000_0000;
 const FREE_OFFSET: usize = DATA_SIGNATURE.len();
 const DESCRIPTOR_BYTES: usize = 3 * size_of::<u32>();
 
+#[derive(Debug, Error)]
+pub(in crate::table::mutation) enum Error {
+    #[error(transparent)]
+    Inspect(#[from] InspectError),
+    #[error(transparent)]
+    Native(#[from] crate::EditError),
+    #[error("native property descriptor source is unsupported")]
+    Source,
+    #[error("native property descriptor exceeds existing owned capacity")]
+    Capacity,
+    #[error("native property descriptor preservation check failed")]
+    Preservation,
+}
+
+impl From<LimitError> for Error {
+    fn from(error: LimitError) -> Self {
+        Self::Inspect(error.into())
+    }
+}
+
+impl From<Error> for crate::EditError {
+    fn from(error: Error) -> Self {
+        match error {
+            Error::Inspect(error) => Self::Inspect(error),
+            Error::Native(error) => error,
+            Error::Source | Error::Capacity => Self::Unsupported(crate::WriteBlocker::RowLayout),
+            Error::Preservation => Self::Preservation,
+        }
+    }
+}
+
 /// Exact expected page, derived from the original physical record and framing.
 /// Admission of this page never permits arbitrary catalog replacement bytes.
-pub(super) struct DescriptorPatch {
+pub(in crate::table::mutation) struct DescriptorPatch {
     page: Range<usize>,
     expected: Vec<u8>,
 }
@@ -51,7 +82,7 @@ struct Geometry {
 
 impl DescriptorPatch {
     /// Observe fixed descriptor capacity without a proposed name or ROW target.
-    pub(super) fn check_capacity(
+    pub(in crate::table::mutation) fn check_capacity(
         image: &NativeImage,
         table: &Table,
         budget: &mut ResourceBudget,
@@ -61,7 +92,7 @@ impl DescriptorPatch {
         Ok(geometry.growth <= geometry.free)
     }
 
-    pub(super) fn capture(
+    pub(in crate::table::mutation) fn capture(
         image: &NativeImage,
         table: &Table,
         reference: u32,
@@ -150,7 +181,7 @@ impl DescriptorPatch {
         })
     }
 
-    pub(super) fn apply(&self, after: &mut [u8]) -> Result<(), Error> {
+    pub(in crate::table::mutation) fn apply(&self, after: &mut [u8]) -> Result<(), Error> {
         let page = after
             .get_mut(self.page.start..self.page.end)
             .ok_or(Error::Preservation)?;
@@ -158,14 +189,14 @@ impl DescriptorPatch {
         Ok(())
     }
 
-    pub(super) fn verify(&self, after: &[u8]) -> Result<(), Error> {
+    pub(in crate::table::mutation) fn verify(&self, after: &[u8]) -> Result<(), Error> {
         if after.get(self.page.start..self.page.end) != Some(self.expected.as_slice()) {
             return Err(Error::Preservation);
         }
         Ok(())
     }
 
-    pub(super) fn page_range(&self) -> Range<usize> {
+    pub(in crate::table::mutation) fn page_range(&self) -> Range<usize> {
         self.page.start..self.page.end
     }
 }

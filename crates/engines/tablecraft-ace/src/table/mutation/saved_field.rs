@@ -56,6 +56,8 @@ const DDL_FLAG: u8 = 1;
 const USER_DEFINITION: u32 = 7;
 const USER_TYPE: i16 = 1;
 const OBSERVED_TEXT_BYTES: usize = 255 * size_of::<u16>();
+// Tagged byte length, reference and reserved word precede an inline body.
+const INLINE_DESCRIPTOR_BYTES: usize = 3 * size_of::<u32>();
 
 pub(super) struct Observed {
     pub schema: TableSchema,
@@ -65,7 +67,7 @@ pub(super) struct Observed {
     pub property_name: Range<usize>,
     pub property_body: Range<usize>,
     pub property_descriptor: Range<usize>,
-    pub property_reference: u32,
+    pub property_reference: Option<u32>,
     pub definition_entry: Range<usize>,
     pub group: usize,
     index: usize,
@@ -76,6 +78,14 @@ enum Purpose {
     SavedField,
     CurrentTail,
     CurrentRename,
+    RetainedTail,
+    RetainedRename,
+}
+
+impl Purpose {
+    fn retained(self) -> bool {
+        matches!(self, Self::RetainedTail | Self::RetainedRename)
+    }
 }
 
 impl Observed {
@@ -120,6 +130,40 @@ impl Observed {
         )
     }
 
+    pub(in crate::table::mutation) fn capture_retained_schema_drop(
+        image: &NativeImage,
+        table: &str,
+        field: &str,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, Error> {
+        Self::capture_for(
+            image,
+            table,
+            field,
+            Purpose::RetainedTail,
+            budget,
+            cancelled,
+        )
+    }
+
+    pub(in crate::table::mutation) fn capture_retained_schema_rename(
+        image: &NativeImage,
+        table: &str,
+        field: &str,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, Error> {
+        Self::capture_for(
+            image,
+            table,
+            field,
+            Purpose::RetainedRename,
+            budget,
+            cancelled,
+        )
+    }
+
     fn capture_for(
         image: &NativeImage,
         table: &str,
@@ -137,10 +181,11 @@ impl Observed {
             .iter()
             .find(|origin| origin.object_id() == schema.object_id())
             .ok_or(Error::Source)?;
-        if origin.native_id() != USER_DEFINITION as i32
-            || origin.type_code() != USER_TYPE
+        if origin.type_code() != USER_TYPE
             || origin.flags() != 0
-            || schema.definition_page() != USER_DEFINITION
+            || !purpose.retained()
+                && (origin.native_id() != USER_DEFINITION as i32
+                    || schema.definition_page() != USER_DEFINITION)
         {
             return Err(Error::Source);
         }
@@ -166,9 +211,13 @@ impl Observed {
         if target.number() == 0 || !target.name().is_ascii() {
             return Err(Error::Source);
         }
+        if matches!(purpose, Purpose::CurrentTail | Purpose::RetainedTail)
+            && index + 1 != schema.columns().len()
+        {
+            return Err(Error::Source);
+        }
         if matches!(purpose, Purpose::CurrentTail)
-            && (index + 1 != schema.columns().len()
-                || target.number().checked_add(1) != Some(schema.physical_layout().max_columns))
+            && target.number().checked_add(1) != Some(schema.physical_layout().max_columns)
         {
             return Err(Error::Source);
         }
@@ -241,24 +290,67 @@ impl Observed {
             cancelled,
         )?;
         let selected = column(&catalog)?;
-        let descriptor = descriptor::capture(&mut reader, &catalog, selected, origin)?;
-        let traced = descriptor.traced(&mut reader)?;
-        let [chunk] = traced.chunks.as_slice() else {
-            return Err(Error::Source);
+        let descriptor = if purpose.retained() {
+            image.require_retained_capture()?;
+            let inventory =
+                crate::table::table_append::Inventory::capture(image, reader.budget, cancelled)
+                    .map_err(|error| match error {
+                        crate::EditError::Inspect(error) => Error::Inspect(error),
+                        _ => Error::Source,
+                    })?;
+            inventory.require_source(image).map_err(|_| Error::Source)?;
+            if inventory.catalog_definition() != catalog.definition_page()
+                || inventory.catalog_live_rows() != catalog.declared_rows()
+            {
+                return Err(Error::Source);
+            }
+            descriptor::capture_retained(
+                &mut reader,
+                &catalog,
+                selected,
+                origin,
+                inventory.catalog_pages(),
+            )?
+        } else {
+            descriptor::capture(&mut reader, &catalog, selected, origin)?
         };
-        if !matches!(traced.kind, Kind::Single)
-            || !descriptor.canonical_single(chunk.reference, properties.raw_bytes().len())?
-            || traced.value.as_deref() != Some(properties.raw_bytes())
-            || chunk.bytes != properties.raw_bytes().len()
-        {
+        let traced = descriptor.traced(&mut reader)?;
+        if traced.value.as_deref() != Some(properties.raw_bytes()) {
             return Err(Error::Source);
         }
-        reader.work(2 * properties.raw_bytes().len())?;
-        let end = chunk.offset.checked_add(chunk.bytes).ok_or(Error::Source)?;
-        let property_body = chunk.offset..end;
         let property_descriptor = descriptor.absolute_range()?.ok_or(Error::Source)?;
-        let property_reference = chunk.reference;
-        if image.as_bytes().get(chunk.offset..end) != Some(properties.raw_bytes()) {
+        let (property_body, property_reference) = match traced.kind {
+            Kind::Single => {
+                let [chunk] = traced.chunks.as_slice() else {
+                    return Err(Error::Source);
+                };
+                if !descriptor.canonical_single(chunk.reference, properties.raw_bytes().len())?
+                    || chunk.bytes != properties.raw_bytes().len()
+                {
+                    return Err(Error::Source);
+                }
+                let end = chunk.offset.checked_add(chunk.bytes).ok_or(Error::Source)?;
+                (chunk.offset..end, Some(chunk.reference))
+            }
+            Kind::Inline if purpose.retained() && traced.chunks.is_empty() => {
+                let start = property_descriptor
+                    .start
+                    .checked_add(INLINE_DESCRIPTOR_BYTES)
+                    .ok_or(Error::Source)?;
+                let end = start
+                    .checked_add(properties.raw_bytes().len())
+                    .ok_or(Error::Source)?;
+                if end > property_descriptor.end {
+                    return Err(Error::Source);
+                }
+                (start..end, None)
+            }
+            _ => return Err(Error::Source),
+        };
+        reader.work(2 * properties.raw_bytes().len())?;
+        if image.as_bytes().get(property_body.start..property_body.end)
+            != Some(properties.raw_bytes())
+        {
             return Err(Error::Source);
         }
         let mut group_span = None;
@@ -272,20 +364,21 @@ impl Observed {
             Purpose::SavedField => {
                 framing::ordered_names_with_groups(&properties, reader.budget, cancelled, visit)?
             }
-            Purpose::CurrentTail | Purpose::CurrentRename => {
-                framing::current_schema_names_with_groups(
-                    &properties,
-                    reader.budget,
-                    cancelled,
-                    visit,
-                )?
-            }
+            Purpose::CurrentTail
+            | Purpose::CurrentRename
+            | Purpose::RetainedTail
+            | Purpose::RetainedRename => framing::current_schema_names_with_groups(
+                &properties,
+                reader.budget,
+                cancelled,
+                visit,
+            )?,
         };
         let name = group_span.ok_or(Error::Source)?;
-        if name.len() != target.name().len() * size_of::<u16>() || name.end > chunk.bytes {
+        if name.len() != target.name().len() * size_of::<u16>() || name.end > property_body.len() {
             return Err(Error::Source);
         }
-        let property_name = chunk.offset + name.start..chunk.offset + name.end;
+        let property_name = property_body.start + name.start..property_body.start + name.end;
         // NO_CLONE: Verify encoded stored name bytes and retain both definition/property
         // spans in the resulting SavedField observation. Only range bounds are
         // copied, not the payload.
@@ -370,7 +463,10 @@ fn qualify_declaration(
                 column.storage_length() == OBSERVED_TEXT_BYTES
                     && column.extended_flags() == UNICODE_COMPRESSION_FLAG
             }
-            Purpose::CurrentTail | Purpose::CurrentRename => {
+            Purpose::CurrentTail
+            | Purpose::CurrentRename
+            | Purpose::RetainedTail
+            | Purpose::RetainedRename => {
                 (size_of::<u16>()..=OBSERVED_TEXT_BYTES).contains(&column.storage_length())
                     && column.storage_length().is_multiple_of(size_of::<u16>())
                     && column.extended_flags() & !UNICODE_COMPRESSION_FLAG == 0
@@ -422,3 +518,6 @@ fn qualify_declaration(
     }
     Ok(())
 }
+
+#[cfg(test)]
+mod tests;

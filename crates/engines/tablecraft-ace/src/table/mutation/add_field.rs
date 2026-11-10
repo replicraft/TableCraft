@@ -1,10 +1,10 @@
 //! Current-schema nullable declarations without rewriting existing records.
-mod catalog;
 mod definition;
 mod properties;
 mod retained;
 mod verify;
 
+use crate::table::mutation::catalog_property::single_descriptor::DescriptorPatch;
 use crate::{
     CurrentFieldAdditionError, InspectError, NativeImage,
     format::page::PAGE_BYTES,
@@ -14,7 +14,6 @@ use crate::{
         current_schema::{self, Family},
     },
 };
-use catalog::DescriptorPatch;
 use definition::Plan;
 use tablecraft_core::{
     ids::ObjectId,

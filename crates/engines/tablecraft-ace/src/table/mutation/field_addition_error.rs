@@ -1,5 +1,7 @@
 //! Field-addition failures are data even when native creation is disabled.
 #[cfg(feature = "ace16-create")]
+use super::catalog_property::single_descriptor::Error as DescriptorError;
+#[cfg(feature = "ace16-create")]
 use super::current_schema;
 use crate::{EditError, InspectError};
 use tablecraft_core::limits::LimitError;
@@ -44,6 +46,19 @@ impl From<current_schema::Error> for CurrentFieldAdditionError {
             current_schema::Error::Inspect(error) => Self::Inspect(error),
             current_schema::Error::Native(error) => Self::Native(error),
             current_schema::Error::Source => Self::Source,
+        }
+    }
+}
+
+#[cfg(feature = "ace16-create")]
+impl From<DescriptorError> for CurrentFieldAdditionError {
+    fn from(error: DescriptorError) -> Self {
+        match error {
+            DescriptorError::Inspect(error) => Self::Inspect(error),
+            DescriptorError::Native(error) => Self::Native(error),
+            DescriptorError::Source => Self::Source,
+            DescriptorError::Capacity => Self::Capacity,
+            DescriptorError::Preservation => Self::Preservation,
         }
     }
 }

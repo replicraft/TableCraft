@@ -91,6 +91,10 @@ impl Source {
         self.image
     }
 
+    pub(crate) fn into_parts(self) -> (NativeImage, Table) {
+        (self.image, self.table)
+    }
+
     pub(crate) fn image(&self) -> &NativeImage {
         &self.image
     }

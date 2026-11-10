@@ -1,7 +1,5 @@
 //! Independent physical complement and decoded-state checks for metadata ADD.
-use super::{
-    CurrentFieldAdditionError as Error, Target, catalog::DescriptorPatch, definition::Plan,
-};
+use super::{CurrentFieldAdditionError as Error, Target, definition::Plan};
 use crate::{
     InspectError, PropertyGroupKind, TableProperties,
     format::{
@@ -19,7 +17,7 @@ use crate::{
     header::check,
     properties::framing,
     read_table,
-    table::mutation::current_schema,
+    table::mutation::{catalog_property::single_descriptor::DescriptorPatch, current_schema},
 };
 use std::{io::Cursor, ops::Range};
 use tablecraft_core::{
