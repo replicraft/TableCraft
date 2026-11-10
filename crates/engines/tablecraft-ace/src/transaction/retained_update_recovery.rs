@@ -1,4 +1,4 @@
-//! Original TCNI17 replay over the same immutable checked V3 session.
+//! Original TCNI17/18 replay over the same immutable checked V3 session.
 use super::{
     NativeIntentError, NativeRecoveryQualificationError, NativeUpdateIntent, NativeUpdateProfile,
 };
@@ -23,7 +23,7 @@ pub struct QualifiedRetainedNativeUpdateRecovery<'a, J: DurableStorage> {
 }
 
 impl NativeUpdateIntent {
-    /// Qualify only TCNI17 without replacing its checked journal owner.
+    /// Qualify only TCNI17/18 without replacing its checked journal owner.
     pub fn qualify_retained_recovery<'a, J: DurableStorage>(
         self,
         checked: CheckedV3<'a, J>,
@@ -34,7 +34,10 @@ impl NativeUpdateIntent {
     {
         let _span = tracing::debug_span!("native.retained_update_recovery.qualify").entered();
         check(budget, cancelled)?;
-        if self.profile() != NativeUpdateProfile::Ace16RetainedRows {
+        if !matches!(
+            self.profile(),
+            NativeUpdateProfile::Ace16RetainedRows | NativeUpdateProfile::Ace16RetainedOpaqueRows
+        ) {
             return Err(NativeIntentError::UnsupportedProfile.into());
         }
         #[cfg(feature = "ace16-create")]

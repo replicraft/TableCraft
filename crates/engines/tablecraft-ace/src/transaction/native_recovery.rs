@@ -89,7 +89,9 @@ pub fn qualify_native_update_recovery<'a, J: DurableStorage>(
     }
     if matches!(
         profile,
-        NativeUpdateProfile::Ace16OrdinaryEofAllocation | NativeUpdateProfile::Ace16RetainedRows
+        NativeUpdateProfile::Ace16OrdinaryEofAllocation
+            | NativeUpdateProfile::Ace16RetainedRows
+            | NativeUpdateProfile::Ace16RetainedOpaqueRows
     ) {
         return Err(super::NativeIntentError::UnsupportedProfile.into());
     }
@@ -132,7 +134,8 @@ pub fn qualify_native_update_recovery<'a, J: DurableStorage>(
         }
         NativeUpdateProfile::Jet4Int32
         | NativeUpdateProfile::Ace16OrdinaryEofAllocation
-        | NativeUpdateProfile::Ace16RetainedRows => {
+        | NativeUpdateProfile::Ace16RetainedRows
+        | NativeUpdateProfile::Ace16RetainedOpaqueRows => {
             return Err(super::NativeIntentError::UnsupportedProfile.into());
         }
     };

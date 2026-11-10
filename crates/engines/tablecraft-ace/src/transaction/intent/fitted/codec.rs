@@ -266,6 +266,24 @@ impl NativeFittedEditIntent {
         read::decode(bytes, WireProfile::RetainedRows, budget, cancelled)
     }
 
+    /// Encode only TCNI18 retained opaque-row request data, never source authority.
+    pub fn encode_retained_opaque(
+        &self,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Vec<u8>, NativeIntentError> {
+        self.encode_profile(WireProfile::RetainedOpaqueRows, budget, cancelled)
+    }
+
+    /// Decode only TCNI0018/profile18; the original TCNI17 decoder stays closed.
+    pub fn decode_retained_opaque(
+        bytes: &[u8],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, NativeIntentError> {
+        read::decode(bytes, WireProfile::RetainedOpaqueRows, budget, cancelled)
+    }
+
     /// Decode profile5 only, with complete nonallocating preflight first.
     pub fn decode(
         bytes: &[u8],

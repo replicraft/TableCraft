@@ -14,6 +14,8 @@ mod historical_present;
 mod historical_text;
 mod requalify;
 #[cfg(feature = "ace16-create")]
+mod retained_opaque_rows;
+#[cfg(feature = "ace16-create")]
 mod retained_rows;
 
 use super::{
@@ -295,7 +297,7 @@ impl RecoverableNativeEditPlan {
     /// Delegate existing expected-image journal preparation. Hosts still own
     /// correct distinct pairing, durable namespace setup and retained resources.
     /// Dropping/interruption retains the journal; every commit error needs recovery.
-    /// EOF allocation requires prepare_update; retained TCNI17 requires prepare_retained.
+    /// EOF allocation requires prepare_update; retained TCNI17/18 requires prepare_retained.
     /// Both are rejected here before effects.
     pub fn prepare<'a, D: DurableStorage, J: DurableStorage>(
         self,
@@ -308,13 +310,14 @@ impl RecoverableNativeEditPlan {
             self.intent.profile(),
             NativeUpdateProfile::Ace16OrdinaryEofAllocation
                 | NativeUpdateProfile::Ace16RetainedRows
+                | NativeUpdateProfile::Ace16RetainedOpaqueRows
         ) {
             return Err(JournalError::ImageSize);
         }
         self.plan.prepare(target, journal, budget, cancelled)
     }
 
-    /// Prepare only TCNI17 through the original retained V3 journal family.
+    /// Prepare only TCNI17/18 through the original retained V3 journal family.
     pub fn prepare_retained<'a, D: ResizableDurableStorage, J: DurableStorage>(
         self,
         target: &'a mut D,
@@ -322,7 +325,10 @@ impl RecoverableNativeEditPlan {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<crate::PreparedResizableNativeEdit<'a, D, J>, JournalError> {
-        if self.intent.profile() != NativeUpdateProfile::Ace16RetainedRows {
+        if !matches!(
+            self.intent.profile(),
+            NativeUpdateProfile::Ace16RetainedRows | NativeUpdateProfile::Ace16RetainedOpaqueRows
+        ) {
             return Err(JournalError::ImageSize);
         }
         self.plan
@@ -332,7 +338,7 @@ impl RecoverableNativeEditPlan {
     /// Prepare the record-selected journal with an explicit resizable target.
     /// EOF allocation uses V2; existing profiles use the unchanged V1 path.
     /// Both branches retain the same target/journal resources and host duties.
-    /// Retained TCNI17 requires prepare_retained and refuses here before effects.
+    /// Retained TCNI17/18 requires prepare_retained and refuses here before effects.
     pub fn prepare_update<'a, D: ResizableDurableStorage, J: DurableStorage>(
         self,
         target: &'a mut D,
@@ -340,7 +346,10 @@ impl RecoverableNativeEditPlan {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<PreparedNativeUpdate<'a, D, J>, JournalError> {
-        if self.intent.profile() == NativeUpdateProfile::Ace16RetainedRows {
+        if matches!(
+            self.intent.profile(),
+            NativeUpdateProfile::Ace16RetainedRows | NativeUpdateProfile::Ace16RetainedOpaqueRows
+        ) {
             return Err(JournalError::ImageSize);
         }
         if self.intent.profile() == NativeUpdateProfile::Ace16OrdinaryEofAllocation {
