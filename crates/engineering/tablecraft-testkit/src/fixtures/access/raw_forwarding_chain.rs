@@ -11,16 +11,7 @@ fn word(bytes: &[u8], at: usize) -> u16 {
     u16::from_le_bytes(bytes[at..at + 2].try_into().unwrap())
 }
 
-/// Extend the actual terminal with additional hidden forwarding slots and an
-/// exact terminal copy. Existing logical roots, indexes and table counts remain.
-/// Slots/pointers stay inside the chosen owned DATA page; no native writer or
-/// production row decoder contributes bytes to this raw construction.
-pub fn extend(
-    before: &[u8],
-    data_page: u32,
-    logical_root: usize,
-    additional_hops: usize,
-) -> Vec<u8> {
+fn terminal(before: &[u8], data_page: u32, logical_root: usize) -> (usize, usize, usize) {
     let start = data_page as usize * PAGE;
     let page = &before[start..start + PAGE];
     assert_eq!(&page[..2], &[1, 1]);
@@ -46,12 +37,6 @@ pub fn extend(
         assert_eq!(reference >> 8, data_page);
         terminal = (reference & 255) as usize;
     }
-    if additional_hops == 0 {
-        return before.to_vec();
-    }
-    let count = original_count.checked_add(additional_hops).unwrap();
-    assert!(u8::try_from(count - 1).is_ok());
-    assert!(data_page <= u32::MAX >> 8);
     let terminal_word = word(page, DIRECTORY + 2 * terminal);
     let terminal_start = usize::from(terminal_word) & OFFSET_MASK;
     let terminal_end = if terminal == 0 {
@@ -59,6 +44,37 @@ pub fn extend(
     } else {
         usize::from(word(page, DIRECTORY + 2 * (terminal - 1))) & OFFSET_MASK
     };
+    (terminal, terminal_start, terminal_end)
+}
+
+/// Original terminal witness, including through long same-owner chains.
+pub(in crate::fixtures::access) fn record(before: &[u8], data_page: u32, root: usize) -> &[u8] {
+    let (_, start, end) = terminal(before, data_page, root);
+    let page = data_page as usize * PAGE;
+    &before[page + start..page + end]
+}
+
+/// Extend the actual terminal with additional hidden forwarding slots and an
+/// exact terminal copy. Existing logical roots, indexes and table counts remain.
+/// Slots/pointers stay inside the chosen owned DATA page; no native writer or
+/// production row decoder contributes bytes to this raw construction.
+pub fn extend(
+    before: &[u8],
+    data_page: u32,
+    logical_root: usize,
+    additional_hops: usize,
+) -> Vec<u8> {
+    let start = data_page as usize * PAGE;
+    let page = &before[start..start + PAGE];
+    let original_count = usize::from(word(page, 12));
+    let (terminal, terminal_start, terminal_end) = terminal(before, data_page, logical_root);
+    if additional_hops == 0 {
+        return before.to_vec();
+    }
+    let count = original_count.checked_add(additional_hops).unwrap();
+    assert!(u8::try_from(count - 1).is_ok());
+    assert!(data_page <= u32::MAX >> 8);
+    let terminal_word = word(page, DIRECTORY + 2 * terminal);
     let original = page[terminal_start..terminal_end].to_vec();
     assert!(original.len() >= 4);
     let owner = page[4..8].to_vec();

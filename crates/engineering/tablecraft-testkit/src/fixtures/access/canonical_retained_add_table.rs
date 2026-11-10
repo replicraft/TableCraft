@@ -1,4 +1,5 @@
 //! Independent append-only tables beside retained current schemas and tombstones.
+pub mod deletes;
 pub mod desktop;
 pub mod rows;
 pub mod updates;
