@@ -4,15 +4,14 @@ use super::super::{
     original_values,
 };
 use crate::{
-    EditError, FittedColumnUpdates, NativeImage, WriteBlocker,
+    EditError, FittedColumnUpdates, InspectError, NativeImage, WriteBlocker,
     format::{
         bytes::{u16_at, u32_at},
         page::{DATA_SIGNATURE, OWNER_OFFSET, PAGE_BYTES},
-        reader::{Reader, row_count, row_range},
+        reader::{Reader, row_count, row_range, visited::Visited},
         row::{DELETED_MASK, RELOCATED_MASK, reference_page, reference_slot, slot_offset},
     },
     header::check,
-    table::mutation::value_limits::QUALIFIED_LONG_VALUE_CHUNKS,
     table::{
         mutation::{
             normal_ordinary,
@@ -140,8 +139,7 @@ pub(super) fn retained(
             let mut reference = u32_at(descriptor, WORD_BYTES)?;
             let mut consumed = 0_usize;
             let mut replaced = 0_usize;
-            let mut visited = binding::vector(QUALIFIED_LONG_VALUE_CHUNKS, budget)?;
-            let mut completed = false;
+            let mut visited = Visited::new();
             let mut bytes = image.reader();
             let mut reader = Reader {
                 source: &mut bytes,
@@ -150,13 +148,13 @@ pub(super) fn retained(
                 cancelled,
                 reads: 0,
             };
-            for _ in 0..QUALIFIED_LONG_VALUE_CHUNKS {
-                reader.tick()?;
-                reader.work(visited.len())?;
-                if reference == 0 || visited.contains(&reference) {
-                    return Err(EditError::Preservation);
-                }
-                visited.push(reference);
+            loop {
+                visited
+                    .insert(reference, &mut reader)
+                    .map_err(|error| match error {
+                        InspectError::Malformed => EditError::Preservation,
+                        error => error.into(),
+                    })?;
                 let number = reference_page(reference);
                 let slot = usize::from(reference_slot(reference));
                 let page = reader.page(number)?;
@@ -266,11 +264,10 @@ pub(super) fn retained(
                 replaced += needed;
                 reference = next;
                 if last {
-                    completed = true;
                     break;
                 }
             }
-            if !completed || replaced != requested.len() {
+            if replaced != requested.len() {
                 return Err(EditError::Preservation);
             }
             let length = u32::try_from(requested.len()).map_err(|_| EditError::Preservation)?;

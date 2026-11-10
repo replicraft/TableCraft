@@ -16,14 +16,11 @@ use crate::{
         row::{SLOT_BYTES, VARIABLE_COUNT_BYTES, VARIABLE_OFFSET_BYTES, slot_offset},
     },
     table::mutation::insert::RowInsert,
-    table::mutation::value_limits::QUALIFIED_LONG_VALUE_CHUNKS,
 };
 use std::io::Cursor;
 
 const INLINE_BYTES: usize = 64;
 const SINGLE_BYTES: usize = 4076;
-const REFERENCE_BYTES: usize = size_of::<u32>();
-const CHAIN_BYTES: usize = SINGLE_BYTES - REFERENCE_BYTES;
 const DESCRIPTOR_BYTES: usize = 3 * size_of::<u32>();
 
 #[derive(Clone, Copy, Eq, PartialEq)]
@@ -114,12 +111,7 @@ fn derive_with_generated(
                 Payload::Present(bytes) if bytes.len() <= SINGLE_BYTES => {
                     (Storage::Single, DESCRIPTOR_BYTES)
                 }
-                Payload::Present(bytes) => {
-                    if bytes.len().div_ceil(CHAIN_BYTES) > QUALIFIED_LONG_VALUE_CHUNKS {
-                        return Err(InspectError::StructureLimit.into());
-                    }
-                    (Storage::Chained, DESCRIPTOR_BYTES)
-                }
+                Payload::Present(_) => (Storage::Chained, DESCRIPTOR_BYTES),
             };
             length = length
                 .checked_add(bytes)

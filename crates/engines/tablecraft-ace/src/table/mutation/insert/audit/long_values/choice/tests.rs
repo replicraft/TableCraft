@@ -229,3 +229,36 @@ fn irreducible_record_size_refuses_after_every_nonempty_inline_choice_is_exhaust
         Err(EditError::Unsupported(WriteBlocker::RowLayout)),
     ));
 }
+
+#[test]
+fn chained_storage_choice_has_no_1024_segment_payload_cutoff() {
+    let bytes = source(4);
+    let schema = schema(&bytes);
+    let mut cursor = Cursor::new(bytes.as_slice());
+    let mut allowance = ResourceBudget::new(32 * 1024 * 1024, 100_000, 100_000_000);
+    let mut reader = Reader {
+        source: &mut cursor,
+        header: schema.header,
+        budget: &mut allowance,
+        cancelled: &|| false,
+        reads: 0,
+    };
+    // A literal four-byte link leaves 4,072 payload bytes in each full segment.
+    let payload_bytes = 4072 * 1024 + 1;
+    let request = RowInsert::new(vec![
+        Value::Int32(1),
+        Value::Int32(7),
+        Value::Binary(vec![0x73; payload_bytes]),
+        Value::Binary(Vec::new()),
+    ]);
+    let choices = derive(&schema, &[request], &mut reader).unwrap();
+    let field = choices[0]
+        .fields
+        .iter()
+        .find(|field| field.column == 2)
+        .unwrap();
+    assert!(field.storage == Storage::Chained);
+    assert!(
+        matches!(&field.payload, Payload::Present(bytes) if bytes.len() == payload_bytes && bytes.iter().all(|byte| *byte == 0x73))
+    );
+}

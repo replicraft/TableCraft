@@ -7,11 +7,10 @@ use crate::{
         allocation::{GLOBAL_FREE_REFERENCE, MapRole, RepresentedMap},
         bytes::u32_at,
         page::{DATA_SIGNATURE, OWNER_OFFSET, PAGE_BYTES},
-        reader::{Reader, row_range},
+        reader::{Reader, row_range, visited::Visited},
         row::{DELETED_MASK, RELOCATED_MASK, reference_page, reference_slot},
     },
     header::check,
-    table::mutation::value_limits::QUALIFIED_LONG_VALUE_CHUNKS,
     table::{
         mutation::{
             normal_fitted::{
@@ -56,9 +55,13 @@ pub(in crate::table::mutation::normal_fitted::external) fn references(
         return Err(EditError::Unsupported(WriteBlocker::RowLayout));
     }
     let length = (word & !TYPE_MASK) as usize;
+    if length == 0 {
+        return Err(EditError::Preservation);
+    }
     let mut reference = u32_at(descriptor, WORD_BYTES)?;
     let mut consumed = 0_usize;
-    let mut visited = binding::vector(QUALIFIED_LONG_VALUE_CHUNKS, budget)?;
+    let mut visited = Vec::new();
+    let mut seen = Visited::new();
     let mut bytes = image.reader();
     let mut reader = Reader {
         source: &mut bytes,
@@ -67,11 +70,24 @@ pub(in crate::table::mutation::normal_fitted::external) fn references(
         cancelled,
         reads: 0,
     };
-    for _ in 0..QUALIFIED_LONG_VALUE_CHUNKS {
-        reader.tick()?;
-        reader.work(visited.len())?;
-        if reference == 0 || visited.contains(&reference) {
-            return Err(EditError::Preservation);
+    loop {
+        seen.insert(reference, &mut reader)
+            .map_err(|error| match error {
+                InspectError::Malformed => EditError::Preservation,
+                error => error.into(),
+            })?;
+        if visited.len() == visited.capacity() {
+            // Every original segment contributes at least one payload byte.
+            // Pay the entire next geometric capacity request before allocation,
+            // bounded by descriptor length rather than an invented chunk quota.
+            let growth = visited.capacity().max(1).min(length - visited.len());
+            reader
+                .budget
+                .charge_allocation(growth as u64, size_of::<u32>() as u64)
+                .map_err(InspectError::from)?;
+            visited
+                .try_reserve_exact(growth)
+                .map_err(|_| InspectError::Allocation)?;
         }
         visited.push(reference);
         let page = reader.page(reference_page(reference))?;
@@ -106,7 +122,6 @@ pub(in crate::table::mutation::normal_fitted::external) fn references(
         }
         reference = next;
     }
-    Err(EditError::Preservation)
 }
 
 pub(in crate::table::mutation::normal_fitted::external) fn maps_and_residuals(
@@ -295,3 +310,6 @@ pub(in crate::table::mutation::normal_fitted::external) fn reconstruct(
     check(budget, cancelled)?;
     Ok((expected, changed_rows))
 }
+
+#[cfg(test)]
+mod tests;
