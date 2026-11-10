@@ -13,5 +13,3 @@ __pycache__/
 /packaging/desktop/license-sources.json
 /packaging/desktop/license-policy.json
 /packaging/desktop/*ThirdPartyLicenses.txt
-
-/secrets
