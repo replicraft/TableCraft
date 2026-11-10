@@ -21,7 +21,7 @@ use crate::{
     read_table,
     table::mutation::current_schema,
 };
-use std::ops::Range;
+use std::{io::Cursor, ops::Range};
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
     values::Value,
