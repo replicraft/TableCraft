@@ -277,10 +277,11 @@ impl Geometry {
             if start >= end || end != lowest || start < slot_offset(rows) {
                 return Err(Error::Source);
             }
-            if page_base + start == record.offset && end - start == record.data.len() {
-                if selected.replace(slot).is_some() {
-                    return Err(Error::Source);
-                }
+            if page_base + start == record.offset
+                && end - start == record.data.len()
+                && selected.replace(slot).is_some()
+            {
+                return Err(Error::Source);
             }
             lowest = start;
         }

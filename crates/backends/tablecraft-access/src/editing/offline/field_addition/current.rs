@@ -15,6 +15,6 @@ impl OfflineWriteSession {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<StagedFieldAddition, Failure> {
         let _span = tracing::debug_span!("access.offline.stage_current_field_addition").entered();
-        self.stage_field_addition(Plan::Current(reviewed), native, proof, cancelled)
+        self.stage_field_addition(Plan::Current(Box::new(reviewed)), native, proof, cancelled)
     }
 }

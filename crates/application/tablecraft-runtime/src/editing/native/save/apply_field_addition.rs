@@ -114,7 +114,7 @@ fn apply_plan(
                 &cancel,
             ),
         Plan::Current(plan) => session.stage_reviewed_current_field_addition_with_budgets(
-            plan,
+            *plan,
             &mut native,
             &mut proof,
             &cancel,

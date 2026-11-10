@@ -14,7 +14,7 @@ pub(in crate::editing::offline) enum Plan {
     Typed(RecoverableFieldAdditionPlan),
     AfterOff(RecoverableFieldAdditionAfterOffPlan),
     AfterOffHistory(RecoverableFieldAdditionAfterOffHistoryPlan),
-    Current(RecoverableCurrentFieldAdditionPlan),
+    Current(Box<RecoverableCurrentFieldAdditionPlan>),
 }
 
 impl Plan {
@@ -81,6 +81,7 @@ impl Plan {
                 .map_err(Cause::FieldAdditionAfterOffHistoryIntent),
             Self::Current(plan) => plan
                 .requalify_with_budgets(fresh, native, proof, cancelled)
+                .map(Box::new)
                 .map(Self::Current)
                 .map_err(Cause::CurrentFieldAdditionIntent),
         }

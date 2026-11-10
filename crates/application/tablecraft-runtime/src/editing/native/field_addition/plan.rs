@@ -13,7 +13,7 @@ pub(in crate::editing) enum Plan {
     Typed(RecoverableFieldAdditionPlan),
     AfterOff(RecoverableFieldAdditionAfterOffPlan),
     AfterOffHistory(RecoverableFieldAdditionAfterOffHistoryPlan),
-    Current(RecoverableCurrentFieldAdditionPlan),
+    Current(Box<RecoverableCurrentFieldAdditionPlan>),
 }
 
 impl Plan {
