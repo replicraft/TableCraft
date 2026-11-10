@@ -1,21 +1,15 @@
 //! One represented-byte ledger for column LVAL and ordinary descriptor placement.
-use super::super::{EditError, WriteBlocker, storage_scope::Scope};
+use super::super::{EditError, storage_scope::Scope};
 use crate::{
     InspectError, LongValueMapReferences, NativeImage, TableSchema,
     format::{
-        allocation::{GLOBAL_FREE_REFERENCE, MapCell, MapRole, RepresentedMap},
-        bytes::u32_at,
-        definition,
-        layout::TABLE_FREE_MAP_OFFSET,
+        allocation::{MapCell, RepresentedMap},
         reader::Reader,
     },
     header::check,
 };
 use std::io::Cursor;
 use tablecraft_core::limits::{Resource, ResourceBudget};
-
-const INLINE_MAP: u8 = 0;
-const INDIRECT_MAP: u8 = 1;
 
 #[derive(Clone, Copy, PartialEq, Eq)]
 pub(in crate::table::mutation) enum Family {
@@ -91,42 +85,11 @@ impl Maps {
         references: LongValueMapReferences,
         eof_allocation: EofAllocation,
     ) -> Result<Self, EditError> {
-        let global = RepresentedMap::read(reader, GLOBAL_FREE_REFERENCE, MapRole::GlobalFree)?;
-        global.require_allocated_storage(reader, &global)?;
-        global.require_allocated(reader, schema.definition_page())?;
-        let metadata = definition::read(reader, schema.definition_page())?;
-        let ordinary_hint = u32_at(&metadata, TABLE_FREE_MAP_OFFSET)?;
-        let ordinary = Scope::capture(
-            reader,
-            schema.layout.usage,
-            ordinary_hint,
-            MapRole::TableFreeSpace,
-            &global,
-        )?;
-        let long_value = Scope::capture(
-            reader,
-            references.owned(),
-            references.candidate(),
-            MapRole::LongValueCandidate,
-            &global,
-        )?;
-        if !matches!(long_value.owned.kind(), INLINE_MAP | INDIRECT_MAP)
-            || long_value.hint.kind() != INLINE_MAP
-        {
-            return Err(EditError::Unsupported(WriteBlocker::RowLayout));
-        }
-        for &number in &long_value.pages {
-            reader.tick()?;
-            reader.work(ordinary.pages.len())?;
-            if ordinary.pages.contains(&number) {
-                return Err(EditError::Unsupported(WriteBlocker::RowLayout));
-            }
-        }
-
+        let observed = super::observation::ObservedScopes::capture(reader, schema, references)?;
         Ok(Self {
-            ordinary,
-            long_value,
-            global,
+            ordinary: observed.ordinary,
+            long_value: observed.long_value,
+            global: observed.global,
             original_eof: reader.header.page_count(),
             edits: Vec::new(),
             eof_allocation,

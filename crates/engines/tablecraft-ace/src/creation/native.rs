@@ -4,6 +4,9 @@ pub(in crate::creation) mod topology;
 #[cfg(test)]
 mod tests;
 
+#[cfg(all(test, feature = "journal"))]
+mod indirect_tests;
+
 use super::{
     CreateDatabaseError, build, definition,
     profile::{self, Fields},

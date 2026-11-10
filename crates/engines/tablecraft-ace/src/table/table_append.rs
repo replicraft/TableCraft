@@ -67,6 +67,29 @@ impl<'image> Inventory<'image> {
         })
     }
 
+    /// Native-count creation separately proves represented indirect catalog
+    /// candidates. Older retained action sources continue through `capture`.
+    pub(crate) fn capture_native(
+        image: &'image NativeImage,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, EditError> {
+        check(budget, cancelled)?;
+        image.require_retained_capture()?;
+        let facts = catalog::capture_native(image, budget, cancelled)?;
+        let storage = storage::capture(image, &facts.schema, budget, cancelled)?;
+        Ok(Self {
+            image,
+            before_pages: image.catalog().header().page_count(),
+            catalog_definition: facts.schema.definition_page(),
+            catalog_pages: storage.catalog,
+            map_pages: storage.maps,
+            catalog_live_rows: facts.schema.declared_rows(),
+            tables_parent: facts.tables_parent,
+            catalog_name_order: facts.name_order,
+        })
+    }
+
     pub(crate) fn require_source(&self, image: &NativeImage) -> Result<(), EditError> {
         if !std::ptr::eq(self.image, image) {
             return Err(EditError::Preservation);

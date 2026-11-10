@@ -13,17 +13,19 @@ use crate::{
     inspect_header, inspect_table_schema,
     table::{
         long_value::trace::{Chunk, Kind},
-        mutation::owned_lval::maps::{EofAllocation, Maps},
+        mutation::owned_lval::observation::ObservedScopes,
     },
 };
 use std::io::Cursor;
 use tablecraft_core::{ids::ObjectId, limits::ResourceBudget};
 
 #[derive(Clone, Copy)]
-enum Traversal {
+enum Purpose {
     Original,
     #[cfg(all(feature = "journal", feature = "ace16-create"))]
     Retained,
+    #[cfg(all(feature = "journal", feature = "ace16-create"))]
+    NativeCreation,
 }
 
 struct Live<'a> {
@@ -48,7 +50,7 @@ pub(crate) fn capture<'a>(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Ledger<'a>, EditError> {
-    capture_with_traversal(bytes, catalog, Traversal::Original, budget, cancelled)
+    capture_with_purpose(bytes, catalog, Purpose::Original, budget, cancelled)
 }
 
 #[cfg(all(feature = "journal", feature = "ace16-create"))]
@@ -58,13 +60,25 @@ pub(crate) fn capture_retained<'a>(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Ledger<'a>, EditError> {
-    capture_with_traversal(bytes, catalog, Traversal::Retained, budget, cancelled)
+    capture_with_purpose(bytes, catalog, Purpose::Retained, budget, cancelled)
 }
 
-fn capture_with_traversal<'a>(
+/// Observe native7 catalog property maps, including fully represented indirect
+/// candidates. This is not an older property/row mutation source certificate.
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub(crate) fn capture_native_creation<'a>(
     bytes: &'a [u8],
     catalog: &'a CatalogInspection,
-    traversal: Traversal,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Ledger<'a>, EditError> {
+    capture_with_purpose(bytes, catalog, Purpose::NativeCreation, budget, cancelled)
+}
+
+fn capture_with_purpose<'a>(
+    bytes: &'a [u8],
+    catalog: &'a CatalogInspection,
+    purpose: Purpose,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Ledger<'a>, EditError> {
@@ -96,14 +110,15 @@ fn capture_with_traversal<'a>(
     let catalog_layout = layout::read(&mut reader, schema.definition_page())?;
     layout::validate_catalog(&catalog_layout)?;
     let references = maps::references(&mut reader, &schema, selected)?;
-    // This observes all allocated column pages, including a keyless options
-    // page9. The existing property writer separately restricts pages10/11.
-    let owned = Maps::capture_from_reader(
-        &mut reader,
-        &schema,
-        references,
-        EofAllocation::RequireAllocated,
-    )?;
+    // Observe all allocated column pages, including a keyless options page.
+    // Writing property bodies remains separately source/placement-qualified.
+    let owned = match purpose {
+        #[cfg(all(feature = "journal", feature = "ace16-create"))]
+        Purpose::NativeCreation => {
+            ObservedScopes::capture_native_creation(&mut reader, &schema, references)?
+        }
+        _ => ObservedScopes::capture(&mut reader, &schema, references)?,
+    };
     reader
         .budget
         .charge_allocation(catalog.origins().len() as u64, size_of::<Live<'_>>() as u64)
@@ -117,10 +132,10 @@ fn capture_with_traversal<'a>(
         if !owned.ordinary.pages.contains(&origin.page()) {
             return Err(InspectError::Malformed.into());
         }
-        let descriptor = match traversal {
-            Traversal::Original => descriptor::capture(&mut reader, &schema, selected, origin)?,
+        let descriptor = match purpose {
+            Purpose::Original => descriptor::capture(&mut reader, &schema, selected, origin)?,
             #[cfg(all(feature = "journal", feature = "ace16-create"))]
-            Traversal::Retained => descriptor::capture_retained(
+            Purpose::Retained | Purpose::NativeCreation => descriptor::capture_retained(
                 &mut reader,
                 &schema,
                 selected,

@@ -27,6 +27,12 @@ const ROLES: [&str; 8] = [
 ];
 const NAME_OPTIONS: [&str; 2] = ["Track Name AutoCorrect Info", "Perform Name AutoCorrect"];
 
+#[derive(Clone, Copy)]
+enum PropertyObservation {
+    Existing,
+    NativeCreation,
+}
+
 pub(super) struct Facts {
     pub schema: TableSchema,
     pub tables_parent: i32,
@@ -38,7 +44,13 @@ pub(super) fn capture(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Facts, EditError> {
-    capture_with(image, true, budget, cancelled)
+    capture_with(
+        image,
+        true,
+        PropertyObservation::Existing,
+        budget,
+        cancelled,
+    )
 }
 
 pub(super) fn capture_packed(
@@ -46,12 +58,33 @@ pub(super) fn capture_packed(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Facts, EditError> {
-    capture_with(image, false, budget, cancelled)
+    capture_with(
+        image,
+        false,
+        PropertyObservation::NativeCreation,
+        budget,
+        cancelled,
+    )
+}
+
+pub(super) fn capture_native(
+    image: &NativeImage,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Facts, EditError> {
+    capture_with(
+        image,
+        true,
+        PropertyObservation::NativeCreation,
+        budget,
+        cancelled,
+    )
 }
 
 fn capture_with(
     image: &NativeImage,
     retained: bool,
+    observation: PropertyObservation,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Facts, EditError> {
@@ -186,12 +219,15 @@ fn capture_with(
         .ok_or_else(refused)?;
     // The existing catalog/LVAL ledgers bind live forwarded roots and every
     // externally stored property body; raw retained records remain untouched.
-    drop(ledger::capture_retained(
-        image.as_bytes(),
-        image.catalog(),
-        budget,
-        cancelled,
-    )?);
+    let properties = match observation {
+        PropertyObservation::Existing => {
+            ledger::capture_retained(image.as_bytes(), image.catalog(), budget, cancelled)?
+        }
+        PropertyObservation::NativeCreation => {
+            ledger::capture_native_creation(image.as_bytes(), image.catalog(), budget, cancelled)?
+        }
+    };
+    drop(properties);
     drop(lval_ownership::Inventory::capture_retained(
         image, budget, cancelled,
     )?);

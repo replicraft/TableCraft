@@ -105,7 +105,7 @@ fn capture_inventory<'image>(
 ) -> Result<(Inventory<'image>, bool), AddTableError> {
     let is_retained = retained::selected(image, budget, cancelled)?;
     let inventory = if is_retained {
-        Inventory::capture(image, budget, cancelled)
+        Inventory::capture_native(image, budget, cancelled)
     } else {
         Inventory::capture_packed(image, budget, cancelled)
     }
@@ -530,7 +530,7 @@ pub(super) fn plan(
         cancelled,
     )?;
     if is_retained {
-        Inventory::capture(&captured, budget, cancelled)
+        Inventory::capture_native(&captured, budget, cancelled)
     } else {
         Inventory::capture_packed(&captured, budget, cancelled)
     }
