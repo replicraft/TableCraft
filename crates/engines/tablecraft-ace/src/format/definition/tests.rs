@@ -57,7 +57,8 @@ fn decode(
     )
 }
 fn budget() -> ResourceBudget {
-    ResourceBudget::new(4 * 1024 * 1024, 0, 1_000_000)
+    // Large fixtures pay for copied payload and geometric-buffer relocation.
+    ResourceBudget::new(4 * 1024 * 1024, 0, 2_000_000)
 }
 
 #[test]
@@ -122,7 +123,7 @@ fn advertised_extent_cannot_reserve_beyond_physical_source_geometry() {
 }
 
 #[test]
-fn errors_after_the_former_page_boundary_do_not_publish_partial_definitions() {
+fn late_chain_errors_do_not_publish_partial_definitions() {
     for corrupt_signature in [false, true] {
         let (mut file, _) = image(520000);
         if corrupt_signature {
