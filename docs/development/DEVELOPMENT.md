@@ -157,9 +157,11 @@ instead of treating the image's tool inventory or a cached default as proof.
 | macOS | `macos-15-intel` | `macos-15` |
 | Linux | `ubuntu-22.04` | `ubuntu-22.04-arm` |
 
-The existing minimal workspace lint/test gate remains. Separate runtime library
-checks cover no optional features, creation alone, editing alone and both;
-workspace consumer feature unification cannot replace those checks. Explicit
+The existing minimal workspace lint/test gate remains. Newer revisions cancel
+superseded CI runs on the same ref. Release rehearsals keep their separate
+concurrency and explicit evidence. Separate runtime library checks cover no
+optional features, creation alone, editing alone and both; workspace consumer
+feature unification cannot replace those checks. Explicit
 all-feature Access/runtime lint/tests exercise shared write integration alongside
 the existing IO/native engine gates. Tracked portable archive and association
 tests run explicitly because top-level Python discovery does not recurse into
