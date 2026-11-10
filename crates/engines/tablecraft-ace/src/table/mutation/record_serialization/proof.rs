@@ -255,3 +255,6 @@ pub(in crate::table::mutation) mod current_rows;
 
 #[cfg(all(feature = "journal", feature = "ace16-create"))]
 pub(in crate::table::mutation) mod opaque_rows;
+
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub(in crate::table::mutation) mod boolean_rows;

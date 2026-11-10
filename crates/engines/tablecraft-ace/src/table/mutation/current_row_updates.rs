@@ -13,7 +13,7 @@ use crate::{
     EditError, FittedColumnUpdates, FixedColumnUpdates, InspectError, NativeEditPlan, NativeImage,
     WriteBlocker,
     format::{
-        data_type::{CURRENCY, INT32, SHORT_TEXT},
+        data_type::{BOOLEAN, CURRENCY, INT32, SHORT_TEXT},
         layout::{FIXED_FLAG, UPDATABLE_FLAG},
         page::PAGE_BYTES,
         row::{OFFSET_MASK, RELOCATED_MASK},
@@ -35,6 +35,7 @@ pub(super) enum Family {
     Retained,
     RetainedOpaque,
     RetainedCurrency,
+    RetainedBoolean,
 }
 
 impl Family {
@@ -59,7 +60,7 @@ impl Family {
                 }
                 Ok(source)
             }
-            Self::Retained | Self::RetainedCurrency => {
+            Self::Retained | Self::RetainedCurrency | Self::RetainedBoolean => {
                 if !image.has_retained_table_source(table, budget, cancelled)? {
                     return Err(EditError::Unsupported(WriteBlocker::RowLayout));
                 }
@@ -76,9 +77,10 @@ impl Family {
     ) -> Result<Vec<u8>, EditError> {
         match self {
             Self::Current => record_serialization::copy(image.as_bytes(), budget, cancelled),
-            Self::Retained | Self::RetainedOpaque | Self::RetainedCurrency => {
-                fixed_records::copy(image.as_bytes(), budget, cancelled)
-            }
+            Self::Retained
+            | Self::RetainedOpaque
+            | Self::RetainedCurrency
+            | Self::RetainedBoolean => fixed_records::copy(image.as_bytes(), budget, cancelled),
         }
     }
 
@@ -92,7 +94,10 @@ impl Family {
     ) -> Result<record_roots::Roots<'u, U>, EditError> {
         match self {
             Self::Current => record_roots::capture(image, schema, requests, budget, cancelled),
-            Self::Retained | Self::RetainedOpaque | Self::RetainedCurrency => {
+            Self::Retained
+            | Self::RetainedOpaque
+            | Self::RetainedCurrency
+            | Self::RetainedBoolean => {
                 record_roots::capture_retained(image, schema, requests, budget, cancelled)
             }
         }
@@ -108,18 +113,22 @@ impl Family {
     ) -> Result<Space, EditError> {
         match self {
             Self::Current => Space::capture_normal(image, schema, owned, budget, cancelled),
-            Self::Retained | Self::RetainedOpaque | Self::RetainedCurrency => {
+            Self::Retained
+            | Self::RetainedOpaque
+            | Self::RetainedCurrency
+            | Self::RetainedBoolean => {
                 Space::capture_retained(image, schema, owned, budget, cancelled)
             }
         }
     }
 
-    fn language(self) -> record_serialization::current_rows::Language {
+    fn language(self) -> Result<record_serialization::current_rows::Language, EditError> {
         match self {
-            Self::RetainedCurrency => record_serialization::current_rows::Language::Currency,
+            Self::RetainedCurrency => Ok(record_serialization::current_rows::Language::Currency),
             Self::Current | Self::Retained | Self::RetainedOpaque => {
-                record_serialization::current_rows::Language::LongText
+                Ok(record_serialization::current_rows::Language::LongText)
             }
+            Self::RetainedBoolean => Err(EditError::Preservation),
         }
     }
 
@@ -131,6 +140,10 @@ impl Family {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<(), EditError> {
+        if matches!(self, Self::RetainedBoolean) {
+            record_serialization::boolean_rows::qualify(schema, column, before, budget, cancelled)?;
+            return Ok(());
+        }
         if matches!(self, Self::RetainedOpaque) {
             if schema
                 .columns()
@@ -149,7 +162,7 @@ impl Family {
             schema,
             column,
             before,
-            self.language(),
+            self.language()?,
             budget,
             cancelled,
         )?;
@@ -165,6 +178,11 @@ impl Family {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Vec<u8>, EditError> {
+        if matches!(self, Self::RetainedBoolean) {
+            return record_serialization::boolean_rows::build(
+                schema, column, before, value, budget, cancelled,
+            );
+        }
         if matches!(self, Self::RetainedOpaque)
             && record_serialization::opaque_rows::is_ambiguous(schema, before, budget, cancelled)?
         {
@@ -177,7 +195,7 @@ impl Family {
                 column,
                 before,
                 value,
-                self.language(),
+                self.language()?,
                 budget,
                 cancelled,
             )
@@ -193,6 +211,11 @@ impl Family {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Vec<u8>, EditError> {
+        if matches!(self, Self::RetainedBoolean) {
+            return record_serialization::proof::boolean_rows::reconstruct(
+                schema, column, before, value, budget, cancelled,
+            );
+        }
         if matches!(self, Self::RetainedOpaque)
             && record_serialization::opaque_rows::is_ambiguous(schema, before, budget, cancelled)?
         {
@@ -205,7 +228,7 @@ impl Family {
                 column,
                 before,
                 value,
-                self.language(),
+                self.language()?,
                 budget,
                 cancelled,
             )
@@ -239,7 +262,10 @@ pub(super) fn bind_for(
     let schema = source.facts().table.schema();
     let column = if matches!(
         family,
-        Family::Retained | Family::RetainedOpaque | Family::RetainedCurrency
+        Family::Retained
+            | Family::RetainedOpaque
+            | Family::RetainedCurrency
+            | Family::RetainedBoolean
     ) {
         retained_column(source, &groups[0], family, budget, cancelled)?
     } else {
@@ -274,6 +300,9 @@ pub(super) fn bind_for(
             if matches!(groups[0], FittedColumnUpdates::Fixed { .. }) => {}
         (SHORT_TEXT, Value::Text(_) | Value::Null)
             if matches!(groups[0], FittedColumnUpdates::Variable { .. }) => {}
+        (BOOLEAN, Value::Boolean(_))
+            if matches!(family, Family::RetainedBoolean)
+                && matches!(groups[0], FittedColumnUpdates::Fixed { .. }) => {}
         (CURRENCY, Value::Currency(_) | Value::Null)
             if matches!(family, Family::RetainedCurrency)
                 && matches!(groups[0], FittedColumnUpdates::Fixed { .. }) => {}
@@ -519,16 +548,16 @@ fn retained_column(
     let field = &schema.columns()[column];
     match group {
         FittedColumnUpdates::Fixed { updates, .. } => {
-            let (kind, width) = if matches!(family, Family::RetainedCurrency) {
-                (ScalarType::Currency, size_of::<i64>())
-            } else {
-                (ScalarType::Int32, size_of::<i32>())
+            let (kind, width) = match family {
+                Family::RetainedCurrency => (ScalarType::Currency, size_of::<i64>()),
+                Family::RetainedBoolean => (ScalarType::Boolean, 0),
+                _ => (ScalarType::Int32, size_of::<i32>()),
             };
             field::fixed_column_at(schema, column, kind, width)?;
             rows::unique_identities(updates, budget, cancelled)?;
         }
         FittedColumnUpdates::Variable { updates, .. } => {
-            if matches!(family, Family::RetainedCurrency) {
+            if matches!(family, Family::RetainedCurrency | Family::RetainedBoolean) {
                 return Err(EditError::Unsupported(WriteBlocker::Column));
             }
             record_serialization::storage::qualify(field)?;
@@ -543,6 +572,9 @@ fn retained_column(
         INT32 => {
             matches!(cell.expected, Value::Int32(_) | Value::Null)
                 && matches!(cell.value, Value::Int32(_) | Value::Null)
+        }
+        BOOLEAN if matches!(family, Family::RetainedBoolean) => {
+            matches!(cell.expected, Value::Boolean(_)) && matches!(cell.value, Value::Boolean(_))
         }
         CURRENCY if matches!(family, Family::RetainedCurrency) => {
             matches!(cell.expected, Value::Currency(_) | Value::Null)
