@@ -53,7 +53,7 @@ fn fitted_original_requests_match_independent_raw_pairs_and_never_reinterpret_pr
             assert_eq!(fresh.identity().column_number(), 1);
             assert_eq!(fresh.identity().column_id(), 1);
 
-            for profile in [1_u16, 3] {
+            for profile in [1_u16, 4] {
                 let mut invalid = encoded.clone();
                 invalid[12..14].copy_from_slice(&profile.to_le_bytes());
                 let mut work = budget();
