@@ -281,3 +281,6 @@ mod current_tests;
 
 #[cfg(test)]
 mod retained_tests;
+
+#[cfg(test)]
+mod opaque_tests;
