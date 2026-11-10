@@ -255,7 +255,8 @@ pub use transaction::{
 #[cfg(feature = "journal")]
 pub use transaction::{
     NativeOmittedInsertIntent, QualifiedNativeOmittedInsertRecovery,
-    RecoverableNativeOmittedInsertPlan, qualify_native_omitted_insert_recovery,
+    QualifiedRetainedNativeOmittedInsertRecovery, RecoverableNativeOmittedInsertPlan,
+    qualify_native_omitted_insert_recovery,
 };
 
 #[cfg(feature = "journal")]

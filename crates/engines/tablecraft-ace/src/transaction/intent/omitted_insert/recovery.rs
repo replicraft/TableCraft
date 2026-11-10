@@ -1,4 +1,7 @@
 //! Fresh original-presence/default INSERT replay before consuming the same checked V1 session.
+mod retained;
+pub use retained::QualifiedRetainedNativeOmittedInsertRecovery;
+
 use super::NativeOmittedInsertIntent;
 use crate::transaction::{NativeRecoveryQualificationError, qualified_recovery::equal_image};
 use crate::{NativeImage, header::check};
@@ -24,6 +27,9 @@ pub fn qualify_native_omitted_insert_recovery<'a, J: DurableStorage>(
 ) -> Result<QualifiedNativeOmittedInsertRecovery<'a, J>, NativeRecoveryQualificationError> {
     let _span = tracing::debug_span!("native.omitted_insert_recovery.qualify").entered();
     check(budget, cancelled)?;
+    if intent.is_retained() {
+        return Err(crate::NativeIntentError::UnsupportedVersion.into());
+    }
     intent.verify_before(checked.before_bytes(), budget, cancelled)?;
     let image = NativeImage::capture(
         &mut Cursor::new(checked.before_bytes()),

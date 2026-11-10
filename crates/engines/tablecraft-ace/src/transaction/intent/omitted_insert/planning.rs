@@ -3,10 +3,11 @@ mod requalify;
 use super::NativeOmittedInsertIntent;
 use crate::transaction::intent::RecoverableEditError;
 use crate::{
-    EditError, NativeEditPlan, NativeImage, OmittedRowInsert, PreparedNativeEdit, header::check,
+    EditError, NativeEditPlan, NativeImage, OmittedRowInsert, PreparedNativeEdit,
+    PreparedResizableNativeEdit, header::check,
 };
 use tablecraft_core::limits::ResourceBudget;
-use tablecraft_io::journal::{DurableStorage, JournalError};
+use tablecraft_io::journal::{DurableStorage, JournalError, ResizableDurableStorage};
 
 /// A qualified normal INSERT plan retaining the exact original presence rows.
 /// There is no public constructor from journal bytes or engineering candidates.
@@ -32,6 +33,37 @@ impl NativeImage {
             return Err(EditError::Unsupported(crate::WriteBlocker::RowLayout).into());
         }
         let intent = NativeOmittedInsertIntent::new_current(
+            table,
+            rows,
+            self.as_bytes(),
+            budget,
+            cancelled,
+        )?;
+        let plan = intent.plan(self, budget, cancelled)?;
+        if plan.before_bytes().len() != plan.after_bytes().len()
+            || plan.changed_rows() != intent.rows().len()
+        {
+            return Err(EditError::Preservation.into());
+        }
+        check(budget, cancelled).map_err(EditError::from)?;
+        Ok(RecoverableNativeOmittedInsertPlan { plan, intent })
+    }
+
+    /// Retained surroundings use their own source purpose and TCNA0008 request.
+    #[cfg(feature = "ace16-create")]
+    pub fn plan_recoverable_retained_omitted_row_inserts(
+        self,
+        table: &str,
+        rows: Vec<OmittedRowInsert>,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<RecoverableNativeOmittedInsertPlan, RecoverableEditError> {
+        let _span =
+            tracing::debug_span!("native.retained_omitted_insert.plan_recoverable").entered();
+        if !self.select_native_retained_insert_source(table, budget, cancelled)? {
+            return Err(EditError::Unsupported(crate::WriteBlocker::RowLayout).into());
+        }
+        let intent = NativeOmittedInsertIntent::new_retained(
             table,
             rows,
             self.as_bytes(),
@@ -103,6 +135,24 @@ impl RecoverableNativeOmittedInsertPlan {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<PreparedNativeEdit<'a, D, J>, JournalError> {
+        if self.intent.is_retained() {
+            return Err(JournalError::ImageSize);
+        }
         self.plan.prepare(target, journal, budget, cancelled)
+    }
+
+    /// Prepare only TCNA8 through the V3 journal; original V1 families refuse.
+    pub fn prepare_retained<'a, D: ResizableDurableStorage, J: DurableStorage>(
+        self,
+        target: &'a mut D,
+        journal: &'a mut J,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<PreparedResizableNativeEdit<'a, D, J>, JournalError> {
+        if !self.intent.is_retained() {
+            return Err(JournalError::ImageSize);
+        }
+        self.plan
+            .prepare_retained(target, journal, budget, cancelled)
     }
 }

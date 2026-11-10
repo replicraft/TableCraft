@@ -7,7 +7,10 @@ mod recovery;
 mod tests;
 
 pub use planning::RecoverableNativeOmittedInsertPlan;
-pub use recovery::{QualifiedNativeOmittedInsertRecovery, qualify_native_omitted_insert_recovery};
+pub use recovery::{
+    QualifiedNativeOmittedInsertRecovery, QualifiedRetainedNativeOmittedInsertRecovery,
+    qualify_native_omitted_insert_recovery,
+};
 
 use super::{NativeIntentError, binding, model as names, row_carrier::Profile};
 use crate::{
@@ -20,6 +23,7 @@ use tablecraft_schema::SchemaName;
 enum SourceFamily {
     Ordinary,
     Current,
+    Retained,
 }
 
 /// Original ordered supplied/omitted rows and an exact complete BEFORE binding.
@@ -39,6 +43,10 @@ impl NativeOmittedInsertIntent {
 
     /// Current-presence framing stores the total byte length in a u32.
     pub const MAX_CURRENT_ENCODED_BYTES: usize = u32::MAX as usize;
+
+    /// Retained original presence uses the same total-u32 carrier envelope;
+    /// native row/schema capacity is checked independently by its planner.
+    pub const MAX_RETAINED_ENCODED_BYTES: usize = u32::MAX as usize;
 
     /// Validate and retain original requests in their written order.
     /// Actual target eligibility, row width and final constraints are
@@ -79,6 +87,29 @@ impl NativeOmittedInsertIntent {
         )
     }
 
+    /// Bind retained surrounding storage to TCNA0008 without granting mutation.
+    pub fn new_retained(
+        table: &str,
+        rows: Vec<OmittedRowInsert>,
+        before: &[u8],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, NativeIntentError> {
+        Self::capture(
+            table,
+            rows,
+            before,
+            SourceFamily::Retained,
+            budget,
+            cancelled,
+        )
+    }
+
+    /// Exact decoded protocol identity, never source or apply authority.
+    pub fn is_retained(&self) -> bool {
+        self.family == SourceFamily::Retained
+    }
+
     fn capture(
         table: &str,
         rows: Vec<OmittedRowInsert>,
@@ -90,7 +121,7 @@ impl NativeOmittedInsertIntent {
         let _span = tracing::debug_span!("native.omitted_insert_intent.capture").entered();
         check(budget, cancelled)?;
         names::validate_name(table, budget, cancelled)?;
-        let mut profile = if family == SourceFamily::Current {
+        let mut profile = if family != SourceFamily::Ordinary {
             Profile::Wider
         } else {
             Profile::Legacy
@@ -106,7 +137,10 @@ impl NativeOmittedInsertIntent {
             }
         }
         codec::validate_requests(table.len(), &rows, profile, family, budget, cancelled)?;
-        let before_binding = binding::digest(before, budget, cancelled)?;
+        let before_binding = match family {
+            SourceFamily::Retained => binding::digest_retained(before, budget, cancelled)?,
+            _ => binding::digest(before, budget, cancelled)?,
+        };
         let table = names::copy_name(table, budget)?;
         check(budget, cancelled)?;
         Ok(Self {
@@ -157,8 +191,17 @@ impl NativeOmittedInsertIntent {
             SourceFamily::Current => {
                 image.plan_current_omitted_row_inserts(self.table(), self.rows(), budget, cancelled)
             }
+            #[cfg(feature = "ace16-create")]
+            SourceFamily::Retained => image.plan_retained_omitted_row_inserts(
+                self.table(),
+                self.rows(),
+                budget,
+                cancelled,
+            ),
             #[cfg(not(feature = "ace16-create"))]
-            SourceFamily::Current => Err(EditError::Unsupported(crate::WriteBlocker::RowLayout)),
+            SourceFamily::Current | SourceFamily::Retained => {
+                Err(EditError::Unsupported(crate::WriteBlocker::RowLayout))
+            }
         }
     }
 
@@ -183,7 +226,10 @@ impl NativeOmittedInsertIntent {
         if before.len() as u64 != self.before_length {
             return Err(NativeIntentError::BeforeMismatch);
         }
-        let actual = binding::digest(before, budget, cancelled)?;
+        let actual = match self.family {
+            SourceFamily::Retained => binding::digest_retained(before, budget, cancelled)?,
+            _ => binding::digest(before, budget, cancelled)?,
+        };
         budget
             .charge(Resource::Steps, actual.len() as u64)
             .map_err(InspectError::from)?;
@@ -197,3 +243,6 @@ impl NativeOmittedInsertIntent {
 
 #[cfg(test)]
 mod current_tests;
+
+#[cfg(test)]
+mod retained_tests;

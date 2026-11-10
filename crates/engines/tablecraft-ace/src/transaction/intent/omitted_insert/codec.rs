@@ -18,6 +18,8 @@ const WIDER_MAGIC: &[u8; 8] = b"TCNA0006";
 const WIDER_PROFILE: u16 = 6;
 const CURRENT_MAGIC: &[u8; 8] = b"TCNA0007";
 const CURRENT_PROFILE: u16 = 7;
+const RETAINED_MAGIC: &[u8; 8] = b"TCNA0008";
+const RETAINED_PROFILE: u16 = 8;
 
 impl Profile {
     const fn omitted_tag(self) -> u8 {
@@ -45,7 +47,7 @@ impl SourceFamily {
     fn view(self, value: &Value, profile: Profile) -> Result<Encoded<'_>, NativeIntentError> {
         match self {
             Self::Ordinary => carrier::row_view(value, profile),
-            Self::Current => carrier::length_prefixed_row_view(value, profile),
+            Self::Current | Self::Retained => carrier::length_prefixed_row_view(value, profile),
         }
     }
 
@@ -59,7 +61,7 @@ impl SourceFamily {
     ) -> Result<Borrowed<'a>, NativeIntentError> {
         match self {
             Self::Ordinary => carrier::row_parse(tag, bytes, profile, budget, cancelled),
-            Self::Current => {
+            Self::Current | Self::Retained => {
                 carrier::length_prefixed_row_parse(tag, bytes, profile, budget, cancelled)
             }
         }
@@ -69,20 +71,21 @@ impl SourceFamily {
         match self {
             Self::Ordinary => MAX_RECORD_BYTES,
             Self::Current => NativeOmittedInsertIntent::MAX_CURRENT_ENCODED_BYTES,
+            Self::Retained => NativeOmittedInsertIntent::MAX_RETAINED_ENCODED_BYTES,
         }
     }
 
     const fn maximum_rows(self) -> usize {
         match self {
             Self::Ordinary => MAX_LIVE_ROWS,
-            Self::Current => u32::MAX as usize,
+            Self::Current | Self::Retained => u32::MAX as usize,
         }
     }
 
     const fn maximum_columns(self) -> usize {
         match self {
             Self::Ordinary => MAX_COLUMNS,
-            Self::Current => u32::MAX as usize,
+            Self::Current | Self::Retained => u32::MAX as usize,
         }
     }
 }
@@ -174,7 +177,7 @@ impl<'a> Cursor<'a> {
         let count = self.u32()?;
         if length < ROW_HEADER_BYTES
             || !(1..=family.maximum_columns()).contains(&count)
-            || (family == SourceFamily::Current
+            || (family != SourceFamily::Ordinary
                 && count > (length - ROW_HEADER_BYTES) / carrier::HEADER_BYTES)
         {
             return Err(NativeIntentError::InvalidRecord);
@@ -246,6 +249,9 @@ fn preflight<'a>(
         version if family == SourceFamily::Current && version == CURRENT_MAGIC => {
             (Profile::Wider, CURRENT_PROFILE)
         }
+        version if family == SourceFamily::Retained && version == RETAINED_MAGIC => {
+            (Profile::Wider, RETAINED_PROFILE)
+        }
         _ => {
             return Err(if raw.starts_with(PREFIX) {
                 NativeIntentError::UnsupportedVersion
@@ -268,7 +274,10 @@ fn preflight<'a>(
         return Err(NativeIntentError::UnsupportedProfile);
     }
     let before_length = u64::from_le_bytes(raw[BEFORE_LENGTH_AT..BINDING_AT].try_into().unwrap());
-    binding::length(before_length)?;
+    match family {
+        SourceFamily::Retained => binding::retained_length(before_length)?,
+        _ => binding::length(before_length)?,
+    }
     let count = word(COUNT_AT);
     let name_bytes = word(NAME_LENGTH_AT);
     if count > family.maximum_rows() || !(1..=names::MAX_NAME_BYTES).contains(&name_bytes) {
@@ -357,7 +366,9 @@ impl NativeOmittedInsertIntent {
         output
             .try_reserve_exact(length)
             .map_err(|_| InspectError::Allocation)?;
-        let (magic, number) = if self.family == SourceFamily::Current {
+        let (magic, number) = if self.family == SourceFamily::Retained {
+            (RETAINED_MAGIC, RETAINED_PROFILE)
+        } else if self.family == SourceFamily::Current {
             (CURRENT_MAGIC, CURRENT_PROFILE)
         } else if profile == Profile::Wider {
             (WIDER_MAGIC, WIDER_PROFILE)
@@ -421,6 +432,15 @@ impl NativeOmittedInsertIntent {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, NativeIntentError> {
         Self::decode_family(raw, SourceFamily::Current, budget, cancelled)
+    }
+
+    /// Decode only TCNA0008 retained original presence; never retry old families.
+    pub fn decode_retained(
+        raw: &[u8],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, NativeIntentError> {
+        Self::decode_family(raw, SourceFamily::Retained, budget, cancelled)
     }
 
     fn decode_family(

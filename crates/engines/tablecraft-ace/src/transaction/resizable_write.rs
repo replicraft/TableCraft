@@ -20,7 +20,7 @@ pub struct PreparedResizableNativeEdit<'a, D, J> {
 pub enum PreparedNativeUpdate<'a, D, J> {
     /// Existing equal-length operations retain their original V1 journal.
     Fixed(PreparedNativeEdit<'a, D, J>),
-    /// Qualified allocation uses V2 and an explicitly resizable target.
+    /// Qualified allocation or retained images use their selected V2/V3 journal.
     Resizable(PreparedResizableNativeEdit<'a, D, J>),
 }
 
@@ -38,6 +38,32 @@ impl NativeEditPlan {
     ) -> Result<PreparedResizableNativeEdit<'a, D, J>, JournalError> {
         let _span = tracing::debug_span!("native.edit.prepare_resizable").entered();
         let prepared = journal::prepare_resizable_expected(
+            target,
+            journal,
+            self.before_bytes(),
+            self.after_bytes(),
+            budget,
+            cancelled,
+        )?;
+        Ok(PreparedResizableNativeEdit {
+            prepared,
+            changed_rows: self.changed_rows(),
+        })
+    }
+
+    pub(in crate::transaction) fn prepare_retained<
+        'a,
+        D: ResizableDurableStorage,
+        J: DurableStorage,
+    >(
+        self,
+        target: &'a mut D,
+        journal: &'a mut J,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<PreparedResizableNativeEdit<'a, D, J>, JournalError> {
+        let _span = tracing::debug_span!("native.edit.prepare_retained").entered();
+        let prepared = journal::prepare_resizable_v3_expected(
             target,
             journal,
             self.before_bytes(),

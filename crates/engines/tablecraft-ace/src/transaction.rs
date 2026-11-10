@@ -148,7 +148,8 @@ pub use intent::{
 #[cfg(feature = "journal")]
 pub use intent::{
     NativeOmittedInsertIntent, QualifiedNativeOmittedInsertRecovery,
-    RecoverableNativeOmittedInsertPlan, qualify_native_omitted_insert_recovery,
+    QualifiedRetainedNativeOmittedInsertRecovery, RecoverableNativeOmittedInsertPlan,
+    qualify_native_omitted_insert_recovery,
 };
 
 #[cfg(feature = "journal")]
