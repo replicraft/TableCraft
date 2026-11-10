@@ -1,4 +1,6 @@
 //! Independent metadata-only Short Text ADD over unchanged historical records.
+pub mod insertion;
+
 use super::{SourceCase, source};
 use crate::fixtures::access::{canonical_initial_table_creation::inserts::long_rows, put32};
 
