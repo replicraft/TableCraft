@@ -2,6 +2,7 @@
 use crate::{
     CurrentFieldAdditionError, FieldAdditionSourcePurpose, FieldAdditionTarget, NativeImage,
     inspect_table_schema, read_table,
+    table::mutation::current_schema::{Family, UserStorage},
 };
 use std::io::Cursor;
 use tablecraft_core::{limits::ResourceBudget, values::Value};
@@ -259,4 +260,73 @@ fn retained_field_addition_preserves_current_source_closure_and_control_errors()
         ),
         Err(CurrentFieldAdditionError::DuplicateName)
     ));
+}
+
+#[test]
+fn retained_field_addition_uses_actual_fitting_owned_property_candidates() {
+    for case in raw::property_pages::CASES {
+        let source = raw::property_pages::source(case);
+        for target in [Target::Number, Target::ShortText] {
+            let expected = raw::property_pages::after(&source, target);
+            let native = image(&source.bytes);
+            let observed = match target {
+                Target::Number => {
+                    let facts = native
+                        .inspect_retained_field_addition_source("Table1", &mut budget(), &|| false)
+                        .unwrap();
+                    assert_eq!(facts.maximum_name_utf16_units(), 64);
+                    let candidate = native
+                        .prepare_retained_number_field_addition(
+                            "Table1",
+                            target.name(),
+                            &mut budget(),
+                            &|| false,
+                        )
+                        .unwrap_or_else(|error| panic!("{case:?}/{target:?}: {error:?}"));
+                    equal_image(candidate.before_bytes(), &source.bytes);
+                    candidate.after_bytes().to_vec()
+                }
+                Target::ShortText => {
+                    let facts = native
+                        .inspect_retained_short_text_field_addition_source(
+                            "Table1",
+                            &mut budget(),
+                            &|| false,
+                        )
+                        .unwrap();
+                    assert_eq!(facts.maximum_name_utf16_units(), 64);
+                    let candidate = native
+                        .prepare_retained_short_text_field_addition(
+                            "Table1",
+                            target.name(),
+                            255,
+                            true,
+                            &mut budget(),
+                            &|| false,
+                        )
+                        .unwrap_or_else(|error| panic!("{case:?}/{target:?}: {error:?}"));
+                    equal_image(candidate.before_bytes(), &source.bytes);
+                    candidate.after_bytes().to_vec()
+                }
+            };
+            equal_image(&observed, &expected);
+            let native = image(&observed);
+            let table = Family::Retained
+                .observe(&native, "Table1", &mut budget(), &|| false)
+                .unwrap();
+            assert!(
+                matches!(table.user_storage, UserStorage::Single { reference } if reference >> 8 == source.chosen_page)
+            );
+        }
+        // A hinted page without the corresponding owned bit is corruption,
+        // including when another allocated carrier could fit the new body.
+        let mut corrupt = source.bytes;
+        corrupt[source.owned_cell] &= !source.mask;
+        corrupt[source.hint_cell] |= source.mask;
+        assert!(
+            image(&corrupt)
+                .inspect_retained_field_addition_source("Table1", &mut budget(), &|| false)
+                .is_err()
+        );
+    }
 }
