@@ -77,7 +77,7 @@ fn validated_fixed_capture_limits_leave_default_and_budgets_independent() {
     ));
     assert_eq!(
         FixedUpdateImageLimits::default().max_bytes(),
-        64 * 1024 * 1024
+        2 * 1024 * 1024 * 1024
     );
     let bytes = base::database();
     assert_eq!(

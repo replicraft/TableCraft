@@ -135,7 +135,7 @@ fn incompatible_modes_and_invalid_limits_refuse_before_opening_a_source() {
         assert!(result.stdout.is_empty());
         assert!(!output.exists());
     }
-    for invalid in ["0", "83886081", "not-a-number", "18446744073709551616"] {
+    for invalid in ["0", "2147483649", "not-a-number", "18446744073709551616"] {
         let result = command(
             "UPDATE Items SET [Score]=11 WHERE [Id]=1",
             &input,
@@ -192,4 +192,38 @@ fn fixed_purpose_does_not_retry_a_memo_target_even_with_zero_matches() {
     assert!(fixed.stdout.is_empty());
     assert!(!refused.exists());
     same_image(&fs::read(&input).unwrap(), &before);
+}
+
+#[test]
+fn native_image_ceiling_is_accepted_without_widening_other_preview_modes() {
+    let directory = tempfile::tempdir().unwrap();
+    let input = directory.path().join("before.accdb");
+    let output = directory.path().join("after.accdb");
+    let case = corrected::case(6, model::Shape::ScalarDefault);
+    let mut before = case.before;
+    let mut expected = case.expected;
+    // Retain the exact qualified low DATA/INDEX/GLOBAL bodies while omitting
+    // only the original allocated opaque tail; this is also used by native tests.
+    before.truncate(33 * model::PAGE);
+    expected.truncate(33 * model::PAGE);
+    fs::write(&input, &before).unwrap();
+
+    for ceiling in ["83886081", "2147483648"] {
+        let result = command(
+            "UPDATE Items SET [Score]=11 WHERE [Id]=1",
+            &input,
+            &output,
+            &["--image-bytes", ceiling],
+        );
+        assert!(
+            result.status.success(),
+            "{}",
+            String::from_utf8_lossy(&result.stderr)
+        );
+        assert!(result.stderr.is_empty());
+        let actual = fs::read(&output).unwrap();
+        same_image(&actual, &expected);
+        same_image(&fs::read(&input).unwrap(), &before);
+        fs::remove_file(&output).unwrap();
+    }
 }

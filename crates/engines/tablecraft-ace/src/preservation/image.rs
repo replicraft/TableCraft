@@ -25,8 +25,8 @@ pub struct FixedUpdateImageLimits {
 }
 
 impl FixedUpdateImageLimits {
-    /// Largest explicitly admitted complete source in the current profile.
-    pub const MAX_BYTES: u64 = 80 * 1024 * 1024;
+    /// Native file-size bound; caller budgets independently govern retention.
+    pub const MAX_BYTES: u64 = crate::limits::MAX_READ_FILE_BYTES;
 
     /// Validate a positive caller ceiling without changing default capture.
     pub const fn new(max_bytes: u64) -> Result<Self, InspectError> {
@@ -45,7 +45,7 @@ impl FixedUpdateImageLimits {
 impl Default for FixedUpdateImageLimits {
     fn default() -> Self {
         Self {
-            max_bytes: crate::limits::MAX_IMAGE_BYTES,
+            max_bytes: Self::MAX_BYTES,
         }
     }
 }

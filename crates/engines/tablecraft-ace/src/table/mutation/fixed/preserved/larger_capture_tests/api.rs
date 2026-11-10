@@ -187,6 +187,62 @@ fn extended_fixed_single_and_batch_match_twenty_prefrozen_images_and_noops() {
 }
 
 #[test]
+fn fixed_purpose_preview_above_old_eighty_mebibytes_preserves_the_complete_image() {
+    let (mut before, mut expected) = small_pair();
+    let length = 84 * 1024 * 1024;
+    before.resize(length, 0xa7);
+    expected.resize(length, 0xa7);
+
+    assert!(matches!(
+        capture(&before, 80 * 1024 * 1024),
+        Err(InspectError::StructureLimit)
+    ));
+    assert!(matches!(
+        NativeImage::capture_for_fixed_updates(
+            &mut Cursor::new(&before),
+            super::SCOPE,
+            FixedUpdateImageLimits::default(),
+            &mut ResourceBudget::new(length as u64 - 1, 100_000, 1_000_000_000),
+            &|| false,
+        ),
+        Err(InspectError::Limit(_))
+    ));
+    assert!(matches!(
+        NativeImage::capture_for_fixed_updates(
+            &mut Cursor::new(&before),
+            super::SCOPE,
+            FixedUpdateImageLimits::default(),
+            &mut budget(),
+            &|| true,
+        ),
+        Err(InspectError::Cancelled)
+    ));
+
+    let image = capture(&before, length as u64).unwrap();
+    assert!(matches!(
+        image.require_standard_capture(),
+        Err(InspectError::StructureLimit)
+    ));
+    let (_, updates) = requests(false, false);
+    let candidate = image
+        .preview_ace16_fixed_updates("Items", "Score", &updates, &mut budget(), &|| false)
+        .unwrap();
+    assert_eq!(candidate.changed_rows(), 1);
+    same_bytes(candidate.before_bytes(), &before);
+    same_bytes(candidate.candidate_bytes(), &expected);
+
+    let rows = crate::read_table(
+        &mut Cursor::new(candidate.candidate_bytes()),
+        super::SCOPE,
+        "Items",
+        &mut budget(),
+        &|| false,
+    )
+    .unwrap();
+    assert_eq!(rows.rows()[0][1], Value::Int32(11));
+}
+
+#[test]
 fn header5_rich_sources_keep_typed_refusals_and_jet4_remains_ineligible() {
     for shape in [model::Shape::PreservedDefault, model::Shape::PreservedHigh] {
         let case = model::case(5, shape);
