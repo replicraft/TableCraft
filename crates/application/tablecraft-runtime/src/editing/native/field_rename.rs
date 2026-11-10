@@ -4,7 +4,8 @@ pub(in crate::editing) use review::{State, review};
 
 use crate::{Error, controls::SCOPE, document::Document};
 use tablecraft_ace::{
-    FieldAdditionError, FieldHistoryDatabaseOptionsError, FieldRenameError, NativeImage,
+    FieldAdditionError, FieldHistoryDatabaseOptionsError, FieldRenameError,
+    FittedFieldRenameSource, NativeImage,
 };
 use tablecraft_builders::table::field_rename::FieldRenameNameProfile;
 use tablecraft_core::limits::ResourceBudget;
@@ -28,13 +29,10 @@ pub(in crate::editing) fn source_profile(
         budget,
         cancelled,
     )?;
-    // Current metadata is a separate source family, independent of row count
-    // and earlier rename history. Native proof still checks the complete source;
-    // no refusal is retried through a legacy empty/populated candidate.
+    // Original metadata selects the source language before inspection. A failed
+    // source proof is never retried through another family.
     let identity = source_result(
-        image
-            .inspect_current_field_rename_source(table, column, budget, cancelled)
-            .map(|source| source.identity()),
+        inspect_source(&image, table, column, budget, cancelled).map(|source| source.identity()),
     )?;
     let Some(identity) = identity else {
         return Ok(None);
@@ -45,6 +43,20 @@ pub(in crate::editing) fn source_profile(
     Ok(Some(FieldRenameNameProfile::FittedAscii {
         original_units: identity.name_utf16_units(),
     }))
+}
+
+fn inspect_source(
+    image: &NativeImage,
+    table: &str,
+    column: &str,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<FittedFieldRenameSource, FieldRenameError> {
+    if image.select_native_retained_field_rename_source(table, column, budget, cancelled)? {
+        image.inspect_retained_field_rename_source(table, column, budget, cancelled)
+    } else {
+        image.inspect_current_field_rename_source(table, column, budget, cancelled)
+    }
 }
 
 fn source_result(

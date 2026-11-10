@@ -40,10 +40,18 @@ pub(in crate::editing) fn review(
         &mut work,
         cancelled,
     )?;
-    // Select the current-metadata request family before any native candidate.
-    // Old serialized profiles retain their own closed reconstruction languages.
-    let plan = image
-        .plan_recoverable_current_field_rename(table, column, new_name, &mut work, cancelled)?;
+    // Select from original metadata before constructing a native candidate.
+    // Old serialized profiles retain their closed reconstruction languages.
+    let retained = image
+        .select_native_retained_field_rename_source(table, column, &mut work, cancelled)
+        .map_err(Error::FieldRenameSource)?;
+    let plan = if retained {
+        image
+            .plan_recoverable_retained_field_rename(table, column, new_name, &mut work, cancelled)?
+    } else {
+        image
+            .plan_recoverable_current_field_rename(table, column, new_name, &mut work, cancelled)?
+    };
     if plan.table() != table
         || plan.column() != column
         || plan.identity().column_number() != native_number
