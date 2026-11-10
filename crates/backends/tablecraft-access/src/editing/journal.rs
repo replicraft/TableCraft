@@ -40,6 +40,7 @@ pub struct NativeJournalEditor {
 pub(super) enum JournalRoute {
     Existing,
     Ordinary,
+    HistoricalPresentFixed,
 }
 
 impl NativeJournalEditor {

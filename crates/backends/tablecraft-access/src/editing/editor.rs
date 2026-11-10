@@ -29,6 +29,27 @@ impl NativeEditor {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<(UpdateProfile, JournalRoute), NativeEditError> {
+        if self.image.select_native_historical_present_fixed_table(
+            self.snapshot.name(),
+            budget,
+            cancelled,
+        )? {
+            return match self.image.check_native_historical_present_fixed_table(
+                self.snapshot.name(),
+                budget,
+                cancelled,
+            ) {
+                Ok(()) => Ok((
+                    UpdateProfile::StoredScalar,
+                    JournalRoute::HistoricalPresentFixed,
+                )),
+                Err(EditError::Unsupported(_)) => Ok((
+                    UpdateProfile::Unavailable,
+                    JournalRoute::HistoricalPresentFixed,
+                )),
+                Err(error) => Err(error.into()),
+            };
+        }
         let ordinary = match self.image.select_native_ordinary_fixed_table(
             self.snapshot.name(),
             budget,
@@ -277,6 +298,21 @@ impl NativeEditor {
 
 #[cfg(feature = "journal")]
 impl NativeEditor {
+    pub(super) fn plan_recoverable_historical_present_fixed(
+        self,
+        groups: Vec<NativeFixedIntentGroup>,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<RecoverableNativeEditPlan, RecoverableEditError> {
+        self.image
+            .plan_recoverable_historical_present_fixed_updates(
+                self.snapshot.name(),
+                groups,
+                budget,
+                cancelled,
+            )
+    }
+
     pub(super) fn plan_recoverable_ordinary_fixed(
         self,
         groups: Vec<NativeFixedIntentGroup>,

@@ -21,7 +21,10 @@ impl NativeJournalEditor {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<bool, NativeEditError> {
-        if self.route == JournalRoute::Ordinary {
+        if matches!(
+            self.route,
+            JournalRoute::Ordinary | JournalRoute::HistoricalPresentFixed
+        ) {
             if self.profile != UpdateProfile::StoredScalar {
                 return Err(NativeEditError::Unsupported);
             }
@@ -126,6 +129,9 @@ impl NativeJournalEditor {
             positions.push(position);
             let target = &self.snapshot().columns()[position];
             let kind = target.data_type();
+            if self.route == JournalRoute::HistoricalPresentFixed && kind != ScalarType::Int32 {
+                return Err(NativeEditError::Unsupported.into());
+            }
             let ieee = self.route == JournalRoute::Ordinary
                 && matches!(kind, ScalarType::Single | ScalarType::Double);
             let small_integer = self.route == JournalRoute::Ordinary
@@ -186,7 +192,14 @@ impl NativeJournalEditor {
                 requests.push(FixedScalarUpdate::new(ordinal, expected, replacement));
                 rows.push(ordinal);
             }
-            let group = if guid {
+            let group = if self.route == JournalRoute::HistoricalPresentFixed {
+                NativeFixedIntentGroup::new_historical_present_int32(
+                    target.name(),
+                    requests,
+                    budget,
+                    cancelled,
+                )
+            } else if guid {
                 NativeFixedIntentGroup::new_ordinary_guid(
                     target.name(),
                     requests,
@@ -214,6 +227,9 @@ impl NativeJournalEditor {
         }
         let matched = matched_rows(rows, budget, cancelled)?;
         let plan = match self.route {
+            JournalRoute::HistoricalPresentFixed => self
+                .editor
+                .plan_recoverable_historical_present_fixed(groups, budget, cancelled)?,
             JournalRoute::Ordinary => self
                 .editor
                 .plan_recoverable_ordinary_fixed(groups, budget, cancelled)?,
