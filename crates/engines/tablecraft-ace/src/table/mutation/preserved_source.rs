@@ -986,7 +986,7 @@ pub(in crate::table::mutation) fn capture_retained_insert(
         table,
         PayloadAdmission::RetainedInsertNoRequired(certificate),
         ReadProfile {
-            columns: ColumnFraming::SparseGenerated,
+            columns: ColumnFraming::Actions,
             keys: RetainedKeys::Integral,
         },
         RecordAdmission::HistoricalInsert,

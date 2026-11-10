@@ -1,6 +1,6 @@
 //! Independent current INSERT rows distinguish native IDs from physical slots.
 use super::*;
-use crate::{InsertFieldValue, read_table};
+use crate::{InsertFieldValue, InspectError, read_table};
 use std::io::Cursor;
 use tablecraft_core::values::Value;
 use tablecraft_model::CatalogScope;

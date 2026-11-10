@@ -1,13 +1,14 @@
 //! Retired catalog storage is admitted only by its separately bound row family.
 use super::*;
 use crate::table::{mutation::normal_ordinary, table_append::Inventory};
-use crate::{InsertFieldValue, read_table};
+use crate::{InsertFieldValue, InspectError, read_table};
 use std::io::Cursor;
 use tablecraft_core::values::Value;
 use tablecraft_model::CatalogScope;
 use tablecraft_testkit::fixtures::access::{
-    canonical_created_number::mixed::after_off::deleted_field::populated::{
-        CASES, Case, readdition::Target as Field,
+    canonical_created_number::mixed::after_off::{
+        current_insert,
+        deleted_field::populated::{CASES, Case, readdition::Target as Field},
     },
     canonical_retained_add_table::{
         self as raw, Target, desktop,
@@ -189,6 +190,62 @@ fn retained_generated_inserts_match_independent_rows_across_live_and_retired_tab
                     equal_image(plan.after_bytes(), &expected);
                 }
             }
+        }
+    }
+}
+
+#[test]
+fn retained_generated_insert_returns_to_the_original_sparse_table_after_appending_a_sibling() {
+    for case in CASES {
+        let mut original = current_insert::source(case, Field::ShortText, true, true);
+        let mut before = raw::append(&original, "More", Target::GeneratedNumber);
+        for input in [current_insert::Input::Unicode, current_insert::Input::Null] {
+            let original_after = current_insert::append(&original, case, Field::ShortText, input);
+            let expected = raw::append(&original_after, "More", Target::GeneratedNumber);
+            let native = image(&before);
+            let schema = inspect_table_schema(
+                &mut native.reader(),
+                SCOPE,
+                "Table1",
+                &mut budget(),
+                &|| false,
+            )
+            .unwrap();
+            let fields = schema
+                .columns()
+                .iter()
+                .map(|field| {
+                    if field.name() != current_insert::name(Field::ShortText, true) {
+                        return InsertFieldValue::Omitted;
+                    }
+                    let value = match input {
+                        current_insert::Input::Unicode => Value::Text("日本語🦀".into()),
+                        current_insert::Input::Null => Value::Null,
+                        _ => unreachable!("literal test inputs"),
+                    };
+                    InsertFieldValue::Supplied(value)
+                })
+                .collect();
+            let plan = native
+                .plan_retained_omitted_row_inserts(
+                    "Table1",
+                    &[OmittedRowInsert::new(fields)],
+                    &mut budget(),
+                    &|| false,
+                )
+                .unwrap_or_else(|error| panic!("{case:?}/{input:?}: {error:?}"));
+            equal_image(plan.after_bytes(), &expected);
+            let sibling = read_table(
+                &mut Cursor::new(plan.after_bytes()),
+                SCOPE,
+                "More",
+                &mut budget(),
+                &|| false,
+            )
+            .unwrap();
+            assert!(sibling.rows().is_empty());
+            before = expected;
+            original = original_after;
         }
     }
 }

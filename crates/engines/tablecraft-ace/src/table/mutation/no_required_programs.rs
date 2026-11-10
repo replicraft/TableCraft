@@ -248,7 +248,7 @@ impl<'image> NoRequiredTablePrograms<'image> {
         Self::capture_with_purpose(
             image,
             schema,
-            Declaration::SparseGenerated,
+            Declaration::CurrentSchema,
             Purpose::RetainedInsert,
             budget,
             cancelled,
@@ -351,6 +351,7 @@ impl<'image> NoRequiredTablePrograms<'image> {
                 Purpose::CurrentSchema
                     | Purpose::CurrentRows
                     | Purpose::CurrentInsert
+                    | Purpose::RetainedInsert
                     | Purpose::CurrentDelete
             ) {
                 properties::capture_current_schema(image, schema, budget, cancelled)?;
@@ -471,8 +472,7 @@ impl<'image> NoRequiredTablePrograms<'image> {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<(), EditError> {
-        if self.purpose != Purpose::RetainedInsert
-            || self.declaration != Declaration::SparseGenerated
+        if self.purpose != Purpose::RetainedInsert || self.declaration != Declaration::CurrentSchema
         {
             return Err(EditError::Preservation);
         }
