@@ -8,7 +8,7 @@ use tablecraft_testkit::fixtures::access::{
     canonical_created_number::mixed::after_off::deleted_field::inserting,
     saved_field_rename::fitting::{self, SourceCase},
 };
-use tablecraft_ui::FieldRenameSaveIdentity;
+use tablecraft_ui::{CellKind, FieldRenameSaveIdentity};
 
 #[test]
 fn normal_populated_field_rename_preserves_the_row_index_and_generator_through_fresh_open() {
@@ -47,7 +47,7 @@ fn normal_populated_field_rename_preserves_the_row_index_and_generator_through_f
         assert_eq!(page.rows[1][1].text, "NULL");
         assert!(matches!(
             page.rows[1][1].kind,
-            tablecraft_runtime::CellKind::Scalar { is_null: true, .. }
+            CellKind::Scalar { is_null: true, .. }
         ));
         assert_eq!(page.rows[2][0].text, "3");
         assert_eq!(page.rows[2][1].text, "-7");
@@ -66,7 +66,7 @@ fn normal_populated_field_rename_preserves_the_row_index_and_generator_through_f
         assert_eq!(page.rows[1][1].text, "NULL");
         assert!(matches!(
             page.rows[1][1].kind,
-            tablecraft_runtime::CellKind::Scalar { is_null: true, .. }
+            CellKind::Scalar { is_null: true, .. }
         ));
         assert_eq!(page.rows[2][0].text, "3");
         assert_eq!(page.rows[2][1].text, "-7");
