@@ -18,7 +18,7 @@ pub(in crate::workspace) fn review_insert(harness: &mut Harness<'_, Desktop>) {
     finish_reads(harness);
 }
 
-pub(in crate::workspace) fn insert_omitted_fields(
+pub(in crate::workspace) fn apply_omitted_fields(
     harness: &mut Harness<'_, Desktop>,
     path: &Path,
     after_column: &[u8],
@@ -97,6 +97,17 @@ pub(in crate::workspace) fn insert_omitted_fields(
     let reopened = harness.state().state.data.as_ref().unwrap();
     assert_eq!(reopened.table, "Table1");
     assert_ne!(reopened.source_revision, Some(schema_revision));
+}
+
+pub(in crate::workspace) fn insert_omitted_fields(
+    harness: &mut Harness<'_, Desktop>,
+    path: &Path,
+    after_column: &[u8],
+    schema_revision: u64,
+    columns: &[&str],
+) {
+    apply_omitted_fields(harness, path, after_column, schema_revision, columns);
+    let reopened = harness.state().state.data.as_ref().unwrap();
     assert_eq!(reopened.rows.len(), 1);
     assert_eq!(
         reopened.rows[0][0].text, "1",
