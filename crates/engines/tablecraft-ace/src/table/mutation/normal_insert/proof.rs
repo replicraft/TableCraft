@@ -155,7 +155,7 @@ pub(super) fn reconstruct_incrementing(
     reconstruct_encoded(image, source, requests, encoded, true, budget, cancelled)
 }
 
-fn reconstruct_encoded(
+pub(in crate::table::mutation::normal_insert) fn reconstruct_encoded(
     image: &NativeImage,
     source: &Source,
     requests: &[RowInsert],

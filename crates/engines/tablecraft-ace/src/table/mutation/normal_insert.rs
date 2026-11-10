@@ -1,5 +1,7 @@
 //! Normal complete-row INSERT into protected, already-owned DATA capacity.
 mod clock;
+#[cfg(feature = "ace16-create")]
+mod current;
 mod eof;
 mod incrementing;
 mod indexed;

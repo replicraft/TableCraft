@@ -162,3 +162,6 @@ fn reserve<T>(
         .map_err(|_| InspectError::Allocation)?;
     Ok(())
 }
+
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub(in crate::table::mutation) mod current;

@@ -1,7 +1,8 @@
 //! Normal Increment insertion retains original presence in the existing TCNA2.
-mod binding;
+pub(super) mod binding;
 pub(super) mod mode;
 pub(super) mod proof;
+pub(super) mod proof_rows;
 
 use crate::{
     EditError, InspectError, NativeEditPlan, NativeImage, OmittedRowInsert,

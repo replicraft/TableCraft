@@ -19,7 +19,7 @@ use tablecraft_core::{
     values::Value,
 };
 
-pub(super) fn validate(
+pub(in crate::table::mutation::normal_insert) fn validate(
     image: &NativeImage,
     source: &Source,
     column: usize,
@@ -97,7 +97,7 @@ pub(super) fn validate(
     Ok(())
 }
 
-pub(super) fn expand(
+pub(in crate::table::mutation::normal_insert) fn expand(
     image: &NativeImage,
     source: &Source,
     generated: &autonumber_counter::Plan,
@@ -141,7 +141,7 @@ pub(super) fn expand(
     Ok(rows)
 }
 
-pub(super) fn capture_properties(
+pub(in crate::table::mutation::normal_insert) fn capture_properties(
     image: &NativeImage,
     schema: &TableSchema,
     budget: &mut ResourceBudget,

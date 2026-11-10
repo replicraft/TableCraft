@@ -198,7 +198,7 @@ fn capture_with_generated(
     })
 }
 
-fn variable(field: &NativeColumn) -> Result<(), EditError> {
+pub(super) fn variable(field: &NativeColumn) -> Result<(), EditError> {
     if matches!(field.native_type(), LONG_TEXT | OLE) {
         let valid = field.flags() == UPDATABLE_FLAG
             && field.storage_length() == 0

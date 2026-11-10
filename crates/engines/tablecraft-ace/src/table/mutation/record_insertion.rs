@@ -5,3 +5,6 @@ pub(super) mod layout;
 pub(super) mod payload;
 pub(super) mod proof;
 pub(super) mod properties;
+
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub(super) mod current;

@@ -58,6 +58,16 @@ pub(super) fn inspect(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Mode, EditError> {
+    inspect_with_geometry(image, schema, Geometry::Existing, budget, cancelled)
+}
+
+fn inspect_with_geometry(
+    image: &NativeImage,
+    schema: &TableSchema,
+    geometry: Geometry,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Mode, EditError> {
     let mut generated = None;
 
     for (position, field) in schema.columns().iter().enumerate() {
@@ -95,7 +105,13 @@ pub(super) fn inspect(
         // AutoIncrement declaration, not an empty inventory fallback.
         return Ok(Mode::Increment);
     }
-    crate::properties::framing::validate(&properties, budget, cancelled)?;
+    match geometry {
+        Geometry::Existing => crate::properties::framing::validate(&properties, budget, cancelled)?,
+        #[cfg(feature = "ace16-create")]
+        Geometry::Current => {
+            crate::properties::framing::current_schema_names(&properties, budget, cancelled)?;
+        }
+    }
     if companion_declarations(schema, generated, &properties, budget, cancelled)? {
         return Ok(Mode::Increment);
     }
@@ -134,9 +150,36 @@ pub(super) fn inspect(
     Ok(Mode::Unknown)
 }
 
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum Geometry {
+    Existing,
+    #[cfg(feature = "ace16-create")]
+    Current,
+}
+
 pub(super) fn capture(
     image: &NativeImage,
     source: &Source,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<autonumber_counter::Source, EditError> {
+    capture_with_geometry(image, source, Geometry::Existing, budget, cancelled)
+}
+
+#[cfg(feature = "ace16-create")]
+pub(in crate::table::mutation::normal_insert) fn capture_current(
+    image: &NativeImage,
+    source: &Source,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<autonumber_counter::Source, EditError> {
+    capture_with_geometry(image, source, Geometry::Current, budget, cancelled)
+}
+
+fn capture_with_geometry(
+    image: &NativeImage,
+    source: &Source,
+    geometry: Geometry,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<autonumber_counter::Source, EditError> {
@@ -144,7 +187,7 @@ pub(super) fn capture(
 
     let sparse = schema.layout.max_columns != schema.columns().len();
     if schema.columns().is_empty()
-        || sparse && schema.layout.variable_slots != 0
+        || geometry == Geometry::Existing && sparse && schema.layout.variable_slots != 0
         || schema.layout.physical_indexes == 0
         || schema.layout.logical_indexes != source.indexes.indexes().len()
     {
@@ -155,7 +198,9 @@ pub(super) fn capture(
 
     for (position, field) in schema.columns().iter().enumerate() {
         check(budget, cancelled)?;
-        if sparse && (!field.fixed() || field.native_type() != INT32)
+        if geometry == Geometry::Existing
+            && sparse
+            && (!field.fixed() || field.native_type() != INT32)
             || (!sparse && field.number() != position)
             || (sparse
                 && (field.number() >= schema.layout.max_columns
@@ -188,10 +233,14 @@ pub(super) fn capture(
 
     let column = generated.ok_or(EditError::Unsupported(WriteBlocker::Column))?;
     let counter = autonumber_counter::capture(image, schema, column, budget, cancelled)?;
-    if sparse {
-        record_insertion::layout::sparse_incrementing_variables(schema, column, budget, cancelled)?;
-    } else {
-        record_insertion::layout::incrementing_variables(schema, column, budget, cancelled)?;
+    if geometry == Geometry::Existing {
+        if sparse {
+            record_insertion::layout::sparse_incrementing_variables(
+                schema, column, budget, cancelled,
+            )?;
+        } else {
+            record_insertion::layout::incrementing_variables(schema, column, budget, cancelled)?;
+        }
     }
 
     if schema.layout.physical_indexes == 1 {
@@ -237,7 +286,12 @@ pub(super) fn capture(
         indexes::capture(image, source, column, budget, cancelled)?;
     }
 
-    if inspect(image, schema, budget, cancelled)? != Mode::Increment {
+    let mode = match geometry {
+        Geometry::Existing => inspect(image, schema, budget, cancelled)?,
+        #[cfg(feature = "ace16-create")]
+        Geometry::Current => inspect_with_geometry(image, schema, geometry, budget, cancelled)?,
+    };
+    if mode != Mode::Increment {
         return Err(EditError::Unsupported(WriteBlocker::Properties));
     }
 
