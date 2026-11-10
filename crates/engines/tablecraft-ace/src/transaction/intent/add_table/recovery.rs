@@ -49,7 +49,7 @@ pub fn qualify_native_add_table_recovery<'a, J: DurableStorage>(
 ) -> Result<QualifiedAddTableRecovery<'a, J>, NativeRecoveryQualificationError> {
     let _span = tracing::debug_span!("native.add_table_recovery.qualify").entered();
     check(budget, cancelled)?;
-    if intent.profile == Profile::Retained {
+    if intent.profile == Profile::Retained || intent.is_native() {
         return Err(AddTableIntentError::UnsupportedProfile.into());
     }
     qualify_checked(
@@ -84,6 +84,28 @@ impl NativeAddTableIntent {
             cancelled,
         )
     }
+
+    /// Reconstruct only TCAT7 through this exact checked V3 journal.
+    /// A retained TCAT6 request cannot enter this native declaration route.
+    pub fn qualify_native_recovery<'a, J: DurableStorage>(
+        self,
+        checked: CheckedV3<'a, J>,
+        scope: CatalogScope,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<QualifiedAddTableRecovery<'a, J>, NativeRecoveryQualificationError> {
+        check(budget, cancelled)?;
+        if !self.is_native() {
+            return Err(AddTableIntentError::UnsupportedProfile.into());
+        }
+        qualify_checked(
+            CheckedJournal::Retained(checked),
+            self,
+            scope,
+            budget,
+            cancelled,
+        )
+    }
 }
 
 fn qualify_checked<'a, J: DurableStorage>(
@@ -102,6 +124,14 @@ fn qualify_checked<'a, J: DurableStorage>(
         }
     };
     let plan = match intent.profile {
+        Profile::NativeMixed | Profile::NativeRetained => {
+            let expected = intent.source_profile();
+            let plan = image.plan_add_table_native(intent.definition, budget, cancelled)?;
+            if plan.source_profile() != expected {
+                return Err(AddTableIntentError::UnsupportedProfile.into());
+            }
+            plan
+        }
         Profile::Retained => image.plan_add_table_retained(intent.definition, budget, cancelled)?,
         Profile::Mixed => {
             let plan = image.plan_add_table_mixed(intent.definition, budget, cancelled)?;

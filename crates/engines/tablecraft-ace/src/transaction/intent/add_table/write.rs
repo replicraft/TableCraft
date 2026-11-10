@@ -21,13 +21,23 @@ impl AddTablePlan {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Vec<u8>, AddTableIntentError> {
-        let profile = match self.source_profile() {
-            AddTableSourceProfile::LegacyGenerated => {
-                codec::legacy_profile(self.before_bytes().len() as u64)
-                    .ok_or(AddTableIntentError::BeforeMismatch)?
+        let profile = if self.is_native() {
+            match self.source_profile() {
+                AddTableSourceProfile::Mixed => codec::Profile::NativeMixed,
+                AddTableSourceProfile::Retained => codec::Profile::NativeRetained,
+                AddTableSourceProfile::LegacyGenerated => {
+                    return Err(AddTableIntentError::UnsupportedProfile);
+                }
             }
-            AddTableSourceProfile::Mixed => codec::Profile::Mixed,
-            AddTableSourceProfile::Retained => codec::Profile::Retained,
+        } else {
+            match self.source_profile() {
+                AddTableSourceProfile::LegacyGenerated => {
+                    codec::legacy_profile(self.before_bytes().len() as u64)
+                        .ok_or(AddTableIntentError::BeforeMismatch)?
+                }
+                AddTableSourceProfile::Mixed => codec::Profile::Mixed,
+                AddTableSourceProfile::Retained => codec::Profile::Retained,
+            }
         };
         let before_binding = profile.digest(self.before_bytes(), budget, cancelled)?;
         codec::encode(
@@ -52,6 +62,9 @@ impl AddTablePlan {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<PreparedAddTable<'a, D, J>, JournalError> {
         let _span = tracing::debug_span!("native.add_table.prepare").entered();
+        if self.is_native() {
+            return Err(JournalError::InvalidJournal);
+        }
         let prepared = match self.source_profile() {
             AddTableSourceProfile::Retained => journal::prepare_resizable_v3_expected(
                 target,
@@ -72,6 +85,28 @@ impl AddTablePlan {
                 )?
             }
         };
+        Ok(PreparedAddTable { prepared })
+    }
+
+    /// Prepare only native TCAT7 construction through its selected V3 journal.
+    pub fn prepare_native<'a, D: ResizableDurableStorage, J: DurableStorage>(
+        self,
+        target: &'a mut D,
+        journal: &'a mut J,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<PreparedAddTable<'a, D, J>, JournalError> {
+        if !self.is_native() {
+            return Err(JournalError::InvalidJournal);
+        }
+        let prepared = journal::prepare_resizable_v3_expected(
+            target,
+            journal,
+            self.before_bytes(),
+            self.after_bytes(),
+            budget,
+            cancelled,
+        )?;
         Ok(PreparedAddTable { prepared })
     }
 }

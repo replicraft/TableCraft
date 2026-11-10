@@ -46,6 +46,8 @@ pub enum AddTableIntentError {
 /// and closed TCNT1–6 declaration grammar. These wire bounds grant no native role authority.
 /// Its nested TCNT record is only a closed declaration template. The template's
 /// canonical-blank header never identifies or authorizes this operation's source.
+/// TCAT7 independently retains native declarations and the actual Mixed/Retained
+/// source cohort. Its nested TCNT7 never promotes physical source authority.
 /// Neither capture nor decode qualifies native mutation, journaling or recovery.
 pub struct NativeAddTableIntent {
     definition: FirstTableDefinition,
@@ -58,6 +60,9 @@ impl NativeAddTableIntent {
     /// Maximum complete record checked before decoded declaration allocations.
     pub const MAX_ENCODED_BYTES: usize = codec::MAX_RECORD_BYTES;
 
+    /// Maximum native declaration record, derived from the native field count.
+    pub const MAX_NATIVE_ENCODED_BYTES: usize = codec::NATIVE_MAX_RECORD_BYTES;
+
     /// Bind an already checked declaration to the actual source's complete bytes.
     /// Native source roles, capacity and name conflicts still require a fresh plan.
     pub fn new(
@@ -67,6 +72,9 @@ impl NativeAddTableIntent {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, AddTableIntentError> {
         check(budget, cancelled)?;
+        if definition.is_native() {
+            return Err(AddTableIntentError::UnsupportedProfile);
+        }
         let profile = codec::legacy_profile(before.len() as u64)
             .ok_or(AddTableIntentError::BeforeMismatch)?;
         let before_binding = binding::digest(before, budget, cancelled)?;
@@ -88,6 +96,9 @@ impl NativeAddTableIntent {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, AddTableIntentError> {
         check(budget, cancelled)?;
+        if definition.is_native() {
+            return Err(AddTableIntentError::UnsupportedProfile);
+        }
         if !codec::mixed_before_length(before.len() as u64, definition.primary_position().is_none())
         {
             return Err(AddTableIntentError::BeforeMismatch);
@@ -110,6 +121,9 @@ impl NativeAddTableIntent {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, AddTableIntentError> {
         check(budget, cancelled)?;
+        if definition.is_native() {
+            return Err(AddTableIntentError::UnsupportedProfile);
+        }
         if !codec::retained_before_length(before.len() as u64) {
             return Err(AddTableIntentError::BeforeMismatch);
         }
@@ -123,11 +137,50 @@ impl NativeAddTableIntent {
         })
     }
 
+    /// Bind a native declaration to actual retained source bytes as TCAT7 data.
+    /// Source roles and complete reconstruction remain independently required.
+    pub fn new_native(
+        definition: FirstTableDefinition,
+        source_profile: AddTableSourceProfile,
+        before: &[u8],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, AddTableIntentError> {
+        check(budget, cancelled)?;
+        if !definition.is_native() {
+            return Err(AddTableIntentError::UnsupportedProfile);
+        }
+        let profile = match source_profile {
+            AddTableSourceProfile::Mixed => codec::Profile::NativeMixed,
+            AddTableSourceProfile::Retained => codec::Profile::NativeRetained,
+            AddTableSourceProfile::LegacyGenerated => {
+                return Err(AddTableIntentError::UnsupportedProfile);
+            }
+        };
+        if !codec::retained_before_length(before.len() as u64) {
+            return Err(AddTableIntentError::BeforeMismatch);
+        }
+        let before_binding = profile.digest(before, budget, cancelled)?;
+        Ok(Self {
+            definition,
+            profile,
+            before_length: before.len() as u64,
+            before_binding,
+        })
+    }
+
+    /// Whether the original request belongs to the native TCAT7 declaration family.
+    pub fn is_native(&self) -> bool {
+        self.profile.is_native()
+    }
+
     /// Closed construction family retained by the original request.
     pub fn source_profile(&self) -> AddTableSourceProfile {
         match self.profile {
-            codec::Profile::Retained => AddTableSourceProfile::Retained,
-            codec::Profile::Mixed => AddTableSourceProfile::Mixed,
+            codec::Profile::Retained | codec::Profile::NativeRetained => {
+                AddTableSourceProfile::Retained
+            }
+            codec::Profile::Mixed | codec::Profile::NativeMixed => AddTableSourceProfile::Mixed,
             codec::Profile::Legacy
             | codec::Profile::Repeated
             | codec::Profile::Described
@@ -177,6 +230,15 @@ impl NativeAddTableIntent {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, AddTableIntentError> {
         codec::decode_retained(raw, budget, cancelled)
+    }
+
+    /// Decode only TCAT7 with its exact native TCNT7 declaration template.
+    pub fn decode_native(
+        raw: &[u8],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, AddTableIntentError> {
+        codec::decode_native(raw, budget, cancelled)
     }
 
     /// Check the actual full original image, including opaque data and free gaps.
