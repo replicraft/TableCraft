@@ -142,3 +142,6 @@ mod after_off;
 
 mod after_off_history;
 mod current;
+
+#[cfg(test)]
+mod tests;
