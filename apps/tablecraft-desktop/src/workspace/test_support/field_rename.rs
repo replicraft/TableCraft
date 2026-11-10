@@ -56,9 +56,9 @@ pub(in crate::workspace) fn rename_and_save(
     harness.run_steps(1);
     if old == new {
         // A fast review can finish during the first paint, before this loop.
-        // Neither that race nor a slower response may create a save owner.
+        // has_save includes the worker and every retained operation owner;
+        // neither a fast nor a slower response may create either.
         assert!(!harness.state().editing.has_save());
-        assert!(!harness.state().editing.worker.is_busy());
         let deadline = Instant::now() + Duration::from_secs(10);
         while harness.state().state.busy {
             assert!(Instant::now() < deadline, "Unchanged rename review stalled");
@@ -68,7 +68,6 @@ pub(in crate::workspace) fn rename_and_save(
         }
         finish_reads(harness);
         assert!(!harness.state().editing.has_save());
-        assert!(!harness.state().editing.worker.is_busy());
     } else {
         finish_schema_save(harness);
     }

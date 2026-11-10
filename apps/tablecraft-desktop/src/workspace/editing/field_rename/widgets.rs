@@ -1,5 +1,4 @@
 //! Header/Save widgets compose checked replacement with existing record editing.
-use crate::workspace::Desktop;
 use crate::workspace::test_support::field_rename::propose_name;
 use crate::workspace::test_support::{
     self, finish_reads, finish_schema_save, inserting::insert_omitted_fields,
