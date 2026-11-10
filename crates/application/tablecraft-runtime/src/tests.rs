@@ -49,6 +49,7 @@ mod formatting;
     any(target_os = "macos", target_os = "linux", windows)
 ))]
 mod inserting;
+mod larger_open;
 #[cfg(all(
     feature = "offline-edit",
     feature = "ace16-create",

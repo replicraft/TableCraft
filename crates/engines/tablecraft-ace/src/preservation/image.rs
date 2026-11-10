@@ -80,6 +80,9 @@ pub struct NativeImage {
     capture: CapturePolicy,
 }
 impl NativeImage {
+    /// Complete-image envelope for the existing standard mutation admission.
+    /// Read-only native sources have their separate header/file geometry.
+    pub const STANDARD_MAX_BYTES: u64 = crate::limits::MAX_IMAGE_BYTES;
     /// Retain every input byte before inspecting metadata from that frozen image.
     /// Work/read/allocation budgets and cancellation bound capture. A changed
     /// length/header fails, but cannot detect all noncooperating concurrent writes;

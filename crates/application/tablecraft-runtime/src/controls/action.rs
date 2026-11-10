@@ -1,6 +1,7 @@
 //! Explicit SQL action phase allowances; no counter is reset during a phase.
 use super::{NATIVE_BYTES, NATIVE_ROWS, NATIVE_STEPS};
-use crate::{Error, document::SNAPSHOT_BYTES};
+use crate::Error;
+use tablecraft_ace::NativeImage;
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_query::QueryLimits;
 
@@ -10,7 +11,7 @@ const SOURCE_COMPARE_STREAMS: u64 = 2;
 
 fn image_length(bytes: usize) -> Result<u64, Error> {
     let bytes = u64::try_from(bytes).map_err(|_| Error::SnapshotLimit)?;
-    if bytes == 0 || bytes > SNAPSHOT_BYTES {
+    if bytes == 0 || bytes > NativeImage::STANDARD_MAX_BYTES {
         return Err(Error::SnapshotLimit);
     }
     Ok(bytes)
@@ -77,7 +78,7 @@ mod tests {
 
     #[test]
     fn invalid_lengths_cannot_grant_proof_or_persistence_work() {
-        for length in [0, SNAPSHOT_BYTES as usize + 1, usize::MAX] {
+        for length in [0, 64 * 1024 * 1024 + 1, usize::MAX] {
             assert!(matches!(
                 action_review_budget(length),
                 Err(Error::SnapshotLimit)

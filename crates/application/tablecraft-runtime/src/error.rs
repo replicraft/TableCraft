@@ -200,7 +200,7 @@ pub enum Error {
     CollectionParentMissing,
     #[error("the selected field is not a stored collection")]
     NotCollection,
-    #[error("file exceeds the 64 MiB read-session limit")]
+    #[error("native image exceeds this operation's admission or address space")]
     SnapshotLimit,
     #[error("the file changed while it was being opened")]
     SourceChanged,

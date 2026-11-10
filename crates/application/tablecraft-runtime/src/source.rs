@@ -9,14 +9,21 @@ use tablecraft_core::limits::ResourceBudget;
 type Input = AccessInput<Cursor<Bytes>>;
 
 pub(super) enum Source {
-    Plain(Input),
+    Plain {
+        input: Input,
+        #[cfg(all(
+            feature = "offline-edit",
+            any(target_os = "macos", target_os = "linux", windows)
+        ))]
+        fits_standard_image: bool,
+    },
     Encrypted(EncryptedSource<Input>),
 }
 
 impl Read for Source {
     fn read(&mut self, buffer: &mut [u8]) -> std::io::Result<usize> {
         match self {
-            Self::Plain(source) => source.read(buffer),
+            Self::Plain { input, .. } => input.read(buffer),
             Self::Encrypted(source) => source.read(buffer),
         }
     }
@@ -25,7 +32,7 @@ impl Read for Source {
 impl Seek for Source {
     fn seek(&mut self, position: SeekFrom) -> std::io::Result<u64> {
         match self {
-            Self::Plain(source) => source.seek(position),
+            Self::Plain { input, .. } => input.seek(position),
             Self::Encrypted(source) => source.seek(position),
         }
     }
@@ -34,7 +41,7 @@ impl Seek for Source {
 impl NativeReadSource for Source {
     fn qualify_header(&self, header: Header) -> Result<Header, InspectError> {
         match self {
-            Self::Plain(source) => source.qualify_header(header),
+            Self::Plain { input, .. } => input.qualify_header(header),
             Self::Encrypted(source) => source.qualify_header(header),
         }
     }
@@ -47,7 +54,7 @@ impl NativeReadSource for Source {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<(), InspectError> {
         match self {
-            Self::Plain(source) => source.decode_native_page(number, page, budget, cancelled),
+            Self::Plain { input, .. } => input.decode_native_page(number, page, budget, cancelled),
             Self::Encrypted(source) => source.decode_native_page(number, page, budget, cancelled),
         }
     }
@@ -59,7 +66,7 @@ impl Source {
         any(target_os = "macos", target_os = "linux", windows)
     ))]
     pub(super) fn editable_native(&self) -> bool {
-        matches!(self, Self::Plain(input) if !input.is_deployment())
+        matches!(self, Self::Plain { input, fits_standard_image: true } if !input.is_deployment())
     }
 
     pub(super) fn open(
@@ -68,6 +75,12 @@ impl Source {
         work: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<(Self, String), Error> {
+        #[cfg(all(
+            feature = "offline-edit",
+            any(target_os = "macos", target_os = "linux", windows)
+        ))]
+        let fits_standard_image =
+            bytes.len() as u64 <= tablecraft_ace::NativeImage::STANDARD_MAX_BYTES;
         let mut input = AccessInput::open(Cursor::new(bytes), work, cancelled)?;
         let deployment = input.is_deployment();
         let header = inspect_header(&mut input, work, cancelled)?;
@@ -84,7 +97,14 @@ impl Source {
             let password = (!password.is_empty()).then_some(password);
             Source::Encrypted(EncryptedSource::open(input, password, work, cancelled)?)
         } else {
-            Source::Plain(input)
+            Source::Plain {
+                input,
+                #[cfg(all(
+                    feature = "offline-edit",
+                    any(target_os = "macos", target_os = "linux", windows)
+                ))]
+                fits_standard_image,
+            }
         };
         Ok((source, format))
     }

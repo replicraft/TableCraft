@@ -1,4 +1,5 @@
 //! Stable, bounded file capture and read-session ownership.
+mod capture;
 use super::{
     Error, Response, SavedQuery, Table,
     controls::{SCOPE, budget, check},
@@ -50,7 +51,6 @@ use tablecraft_io::SharedFile;
 use tablecraft_model::ObjectKind;
 use zeroize::Zeroizing;
 
-pub(crate) const SNAPSHOT_BYTES: u64 = 64 * 1024 * 1024;
 const COPY_CHUNK: usize = 64 * 1024;
 
 pub(super) struct Document {
@@ -300,21 +300,7 @@ impl Document {
             Err(error) => return Err(InspectError::from(error).into()),
         }
         let mut file = SharedFile::open(path)?;
-        let length = file.length()?;
-        if length > SNAPSHOT_BYTES {
-            return Err(Error::SnapshotLimit);
-        }
-        work.charge(Resource::Bytes, length)?;
-        let size = usize::try_from(length).map_err(|_| Error::SnapshotLimit)?;
-        let mut bytes = Vec::new();
-        bytes.try_reserve_exact(size)?;
-        bytes.resize(size, 0);
-        for chunk in bytes.chunks_mut(COPY_CHUNK) {
-            tablecraft_io::read_exact(&mut file, chunk, &mut work, cancelled)?;
-        }
-        if file.length()? != length {
-            return Err(Error::SourceChanged);
-        }
+        let bytes = capture::read(&mut file, &mut work, cancelled)?;
         file.close()?;
         check(cancelled)?;
         if let Some(expected) = expected {
