@@ -8,6 +8,7 @@ use crate::{
 use semver::Version;
 use sha2::{Digest, Sha256};
 use std::{
+    ffi::OsStr,
     fs::{self, File},
     io::{self, Read},
     path::{Path, PathBuf},
@@ -128,7 +129,37 @@ impl Installed {
 /// This blocking operation includes hashing the executable and belongs on a worker.
 pub fn detect(current: &Version, platform: Platform) -> Result<InstallPlan, UpdateError> {
     let executable = std::env::current_exe().map_err(UpdateError::Io)?;
-    classify(&executable, platform, current, cfg!(debug_assertions))
+    let appimage = std::env::var_os("APPIMAGE");
+    let appdir = std::env::var_os("APPDIR");
+    classify_runtime(
+        &executable,
+        platform,
+        current,
+        cfg!(debug_assertions),
+        appimage.as_deref(),
+        appdir.as_deref(),
+    )
+}
+
+fn classify_runtime(
+    executable: &Path,
+    platform: Platform,
+    current: &Version,
+    debug_build: bool,
+    appimage: Option<&OsStr>,
+    appdir: Option<&OsStr>,
+) -> Result<InstallPlan, UpdateError> {
+    let linux = matches!(platform, Platform::LinuxX64 | Platform::LinuxArm64);
+    let image_runtime = appimage.is_some_and(|value| !value.is_empty())
+        || appdir.is_some_and(|value| !value.is_empty());
+    if linux && image_runtime && !debug_build {
+        // A mounted or extract-and-run AppDir can contain the same manifest as
+        // a portable directory. Replacing it would not update the original
+        // image, and runtime cleanup could erase every retained backup.
+        // Environment paths deny this route; they never authorize file writes.
+        return Ok(InstallPlan::Manual(ManualReason::UnsupportedLocation));
+    }
+    classify(executable, platform, current, debug_build)
 }
 
 pub(crate) fn classify(

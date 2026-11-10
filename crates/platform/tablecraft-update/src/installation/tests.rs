@@ -364,3 +364,42 @@ fn missing_declared_resources_and_empty_executables_are_manual() {
     fs::write(&fixture.executable, b"").unwrap();
     manual(fixture.plan(), ManualReason::InvalidManifest);
 }
+
+#[test]
+fn appimage_runtime_cannot_be_mistaken_for_a_writable_portable_installation() {
+    use std::ffi::OsStr;
+
+    let fixture = Fixture::portable(Platform::LinuxX64);
+    assert!(matches!(fixture.plan(), InstallPlan::Portable(_)));
+    let version = Version::parse(RUNNING).unwrap();
+    for (image, appdir) in [
+        (
+            Some(OsStr::new("/home/user/TableCraft.AppImage")),
+            Some(fixture._directory.path().as_os_str()),
+        ),
+        (Some(OsStr::new("/home/user/TableCraft.AppImage")), None),
+        (None, Some(fixture._directory.path().as_os_str())),
+    ] {
+        let plan = super::classify_runtime(
+            &fixture.executable,
+            fixture.platform,
+            &version,
+            false,
+            image,
+            appdir,
+        )
+        .unwrap();
+        manual(plan, ManualReason::UnsupportedLocation);
+        assert_eq!(fs::read(&fixture.executable).unwrap(), EXECUTABLE);
+    }
+    let standalone = super::classify_runtime(
+        &fixture.executable,
+        fixture.platform,
+        &version,
+        false,
+        None,
+        None,
+    )
+    .unwrap();
+    assert!(matches!(standalone, InstallPlan::Portable(_)));
+}
