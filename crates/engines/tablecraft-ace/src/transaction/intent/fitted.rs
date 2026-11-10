@@ -30,3 +30,6 @@ mod retained_tests;
 
 #[cfg(test)]
 mod opaque_tests;
+
+#[cfg(test)]
+mod currency_tests;
