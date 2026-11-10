@@ -16,7 +16,7 @@ mod materialize;
 use proptest::prelude::*;
 use std::{cell::Cell, io::Cursor};
 use support::{data_page, put16, put32};
-use tablecraft_ace::{InspectError, TablePageRequest, read_table, read_table_page};
+use tablecraft_ace::{InspectError, TableCursor, TablePageRequest, read_table, read_table_page};
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
     values::Value,
@@ -115,16 +115,15 @@ fn pages_do_not_read_later_data_pages_or_decode_skipped_rows() {
 #[test]
 fn large_total_tables_and_offsets_are_not_limited_to_snapshot_row_count() {
     let bytes = database(18_000);
-    assert!(matches!(
-        read_table(
-            &mut Cursor::new(&bytes),
-            SCOPE,
-            "Items",
-            &mut budget(),
-            &|| false
-        ),
-        Err(InspectError::StructureLimit)
-    ));
+    let full = read_table(
+        &mut Cursor::new(&bytes),
+        SCOPE,
+        "Items",
+        &mut ResourceBudget::new(64 * 1024 * 1024, 20_000, 1_000_000),
+        &|| false,
+    )
+    .unwrap();
+    assert_eq!(full.rows().len(), 18_000);
     let mut small_row_budget = ResourceBudget::new(16 * 1024 * 1024, 8, 1_000_000);
     let page = read_table_page(
         &mut Cursor::new(&bytes),
@@ -141,12 +140,22 @@ fn large_total_tables_and_offsets_are_not_limited_to_snapshot_row_count() {
 }
 #[test]
 fn empty_out_of_range_and_invalid_requests_are_explicit() {
-    for limit in [0, TablePageRequest::MAX_ROWS + 1, u32::MAX] {
-        assert_eq!(
-            TablePageRequest::new(0, limit),
-            Err(InspectError::InvalidPageRange)
-        );
-    }
+    assert_eq!(
+        TablePageRequest::new(0, 0),
+        Err(InspectError::InvalidPageRange)
+    );
+    let mut work = ResourceBudget::new(64 * 1024 * 1024, 20_000, 1_000_000);
+    let large_page = read_table_page(
+        &mut Cursor::new(database(16_385)),
+        SCOPE,
+        "Items",
+        TablePageRequest::new(0, u32::MAX).unwrap(),
+        &mut work,
+        &|| false,
+    )
+    .unwrap();
+    assert_eq!(large_page.rows().len(), 16_385);
+    assert!(large_page.reached_end());
     for (count, offset) in [(0, 0), (3, 3), (3, u32::MAX)] {
         let page = read_table_page(
             &mut Cursor::new(database(count)),
@@ -348,3 +357,30 @@ proptest! {
 
 #[path = "table_pages/snapshot_limits.rs"]
 mod snapshot_limits;
+
+#[test]
+fn maximal_page_and_batch_requests_allocate_only_for_actual_tiny_source_rows() {
+    let bytes = database(3);
+    let mut allowance = ResourceBudget::new(512 * 1024, 100, 1_000_000);
+    let page = read_table_page(
+        &mut Cursor::new(&bytes),
+        SCOPE,
+        "Items",
+        TablePageRequest::new(0, u32::MAX).unwrap(),
+        &mut allowance,
+        &|| false,
+    )
+    .unwrap();
+    assert_eq!(page.rows(), expected(0, 3));
+    assert!(page.reached_end());
+
+    let mut source = Cursor::new(&bytes);
+    let mut allowance = ResourceBudget::new(512 * 1024, 100, 1_000_000);
+    let mut cursor =
+        TableCursor::open(&mut source, SCOPE, "Items", &mut allowance, &|| false).unwrap();
+    let batch = cursor
+        .next_page(u32::MAX, &mut allowance, &|| false)
+        .unwrap();
+    assert_eq!(batch.rows(), expected(0, 3));
+    assert!(batch.reached_end());
+}

@@ -136,15 +136,12 @@ pub fn database_with_query_flags(fragments: &[Fragment<'_>], query_flags: u32) -
         page.push(row);
     }
     pages.push(page);
-    assert!(pages.len() <= 8);
     bytes.resize(bytes.len().max((DATA_PAGE + pages.len()) * PAGE_BYTES), 0);
-    bytes[15 * PAGE_BYTES..16 * PAGE_BYTES].copy_from_slice(&data_page(
-        1,
-        &[(
-            0,
-            vec![0, 0, 0, 0, 0, 0, 0, ((1_u16 << pages.len()) - 1) as u8],
-        )],
-    ));
+    let mut bitmap = vec![0; 5 + (DATA_PAGE + pages.len()).div_ceil(8)];
+    for page in DATA_PAGE..DATA_PAGE + pages.len() {
+        bitmap[5 + page / 8] |= 1 << (page % 8);
+    }
+    bytes[15 * PAGE_BYTES..16 * PAGE_BYTES].copy_from_slice(&data_page(1, &[(0, bitmap)]));
     for (ordinal, rows) in pages.into_iter().enumerate() {
         let page = DATA_PAGE + ordinal;
         bytes[page * PAGE_BYTES..(page + 1) * PAGE_BYTES]

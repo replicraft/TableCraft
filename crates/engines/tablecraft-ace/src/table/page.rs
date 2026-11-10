@@ -9,7 +9,6 @@ use crate::{
         reader::{Reader, row_count, row_range},
         row::{DELETED_MASK, slot_offset},
     },
-    limits::MAX_LIVE_ROWS,
 };
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
@@ -36,11 +35,11 @@ pub struct TablePageRequest {
     limit: u32,
 }
 impl TablePageRequest {
-    /// Maximum decoded/returned rows per page; work budgets may be stricter.
-    pub const MAX_ROWS: u32 = MAX_LIVE_ROWS as u32;
+    /// Native row-count carrier maximum; actual rows and caller budgets govern allocation.
+    pub const MAX_ROWS: u32 = u32::MAX;
     /// Select a live-row offset and nonzero page size, without offset arithmetic.
     pub fn new(offset: u32, limit: u32) -> Result<Self, InspectError> {
-        if limit == 0 || limit > Self::MAX_ROWS {
+        if limit == 0 {
             return Err(InspectError::InvalidPageRange);
         }
         Ok(Self { offset, limit })

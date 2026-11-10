@@ -2,6 +2,10 @@ use super::{
     record,
     schema::{TableSchema, inspect_table_schema},
 };
+use crate::format::{
+    page::{DATA_SIGNATURE, OWNER_OFFSET},
+    row::{DELETED_MASK, slot_offset},
+};
 use crate::{
     InspectError,
     format::{
@@ -9,13 +13,6 @@ use crate::{
         bytes::{u16_at, u32_at},
         reader::{Reader, row_count},
     },
-};
-use crate::{
-    format::{
-        page::{DATA_SIGNATURE, OWNER_OFFSET},
-        row::{DELETED_MASK, slot_offset},
-    },
-    limits::MAX_LIVE_ROWS,
 };
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
@@ -111,9 +108,6 @@ pub(crate) fn read_selected<R: crate::NativeReadSource>(
 ) -> Result<TableSnapshot, InspectError> {
     let _span = tracing::debug_span!("native.table.read").entered();
     let schema = inspect_table_schema(source, scope, name, budget, cancelled)?;
-    if schema.declared_rows() as usize > MAX_LIVE_ROWS {
-        return Err(InspectError::StructureLimit);
-    }
     let (positions, columns) = if let Some(names) = selected {
         if names.is_empty() || names.len() > schema.columns.len() {
             return Err(InspectError::Malformed);
@@ -147,9 +141,6 @@ pub(super) fn read_records<R: crate::NativeReadSource>(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Vec<Vec<Value>>, InspectError> {
-    if schema.declared_rows() as usize > MAX_LIVE_ROWS {
-        return Err(InspectError::StructureLimit);
-    }
     let mut reader = Reader {
         source,
         header: schema.header,
@@ -171,8 +162,8 @@ pub(super) fn read_records<R: crate::NativeReadSource>(
             if u16_at(&page, slot_offset(slot))? & DELETED_MASK != 0 {
                 continue;
             }
-            if rows.len() >= MAX_LIVE_ROWS {
-                return Err(InspectError::StructureLimit);
+            if rows.len() >= schema.declared_rows() as usize {
+                return Err(InspectError::Malformed);
             }
             reader.budget.charge(Resource::Rows, 1)?;
             let row = reader.row_from_page(page_number, slot as u8, schema.definition, &page)?;

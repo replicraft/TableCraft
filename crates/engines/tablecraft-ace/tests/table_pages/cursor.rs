@@ -136,13 +136,11 @@ fn invalid_ranges_leave_cursor_ready_but_failed_fetches_are_terminal() {
     let mut input = Cursor::new(database(3));
     let mut cursor =
         TableCursor::open(&mut input, SCOPE, "Items", &mut budget(), &|| false).unwrap();
-    for limit in [0, TablePageRequest::MAX_ROWS + 1] {
-        assert_eq!(
-            cursor.next_page(limit, &mut budget(), &|| false).err(),
-            Some(InspectError::InvalidPageRange)
-        );
-        assert!(!cursor.is_failed());
-    }
+    assert_eq!(
+        cursor.next_page(0, &mut budget(), &|| false).err(),
+        Some(InspectError::InvalidPageRange)
+    );
+    assert!(!cursor.is_failed());
     assert_eq!(
         cursor
             .next_page(1, &mut budget(), &|| false)

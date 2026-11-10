@@ -1,5 +1,4 @@
 //! Consumer snapshot ceilings are separate from native geometry and read budgets.
-use super::TablePageRequest;
 use crate::InspectError;
 
 /// Checked complete-table retention limits and internal traversal batch size.
@@ -11,7 +10,7 @@ pub struct TableSnapshotLimits {
 impl TableSnapshotLimits {
     /// Construct positive bounded row and batch ceilings without starting I/O.
     pub fn new(maximum_rows: u32, batch_rows: u32) -> Result<Self, InspectError> {
-        if maximum_rows == 0 || batch_rows == 0 || batch_rows > TablePageRequest::MAX_ROWS {
+        if maximum_rows == 0 || batch_rows == 0 {
             return Err(InspectError::InvalidSnapshotLimits);
         }
         Ok(Self {

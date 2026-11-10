@@ -26,7 +26,6 @@ use crate::{
         reader::Reader,
         row::{reference_page, reference_slot},
     },
-    limits::MAX_LIVE_ROWS,
 };
 use membership::{DataPages, OwnershipStrategy};
 pub use references::{IndexedTableSnapshot, read_table_index_with_references};
@@ -340,7 +339,7 @@ impl Default for ReadOptions<'_> {
         Self {
             selection: None,
             columns: None,
-            maximum_rows: MAX_LIVE_ROWS as u32,
+            maximum_rows: u32::MAX,
             legacy_table_limit: true,
             table_order: false,
             eligible_rows: None,

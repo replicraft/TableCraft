@@ -45,7 +45,7 @@ fn default_and_explicit_snapshot_limits_materialize_only_actual_rows() {
 
 #[test]
 fn snapshot_limits_are_checked_and_advanced_or_failed_cursors_cannot_publish_partial_tables() {
-    for (rows, batch) in [(0, 1), (1, 0), (1, 16_385)] {
+    for (rows, batch) in [(0, 1), (1, 0)] {
         assert_eq!(
             TableSnapshotLimits::new(rows, batch),
             Err(InspectError::InvalidSnapshotLimits)
@@ -57,7 +57,7 @@ fn snapshot_limits_are_checked_and_advanced_or_failed_cursors_cannot_publish_par
         let snapshot = TableCursor::open(&mut source, SCOPE, "Items", &mut work, &|| false)
             .unwrap()
             .into_snapshot(
-                TableSnapshotLimits::new(maximum_rows, 1).unwrap(),
+                TableSnapshotLimits::new(maximum_rows, u32::MAX).unwrap(),
                 &mut work,
                 &|| false,
             )

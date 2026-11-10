@@ -1,13 +1,10 @@
 use super::{origin::NativeObjectOrigin, record};
 use crate::format::{allocation, bytes, layout, reader};
-use crate::{Header, InspectError, inspect_header};
-use crate::{
-    format::{
-        page::{DATA_SIGNATURE, OWNER_OFFSET},
-        row::{DELETED_MASK, slot_offset},
-    },
-    limits::MAX_LIVE_ROWS,
+use crate::format::{
+    page::{DATA_SIGNATURE, OWNER_OFFSET},
+    row::{DELETED_MASK, slot_offset},
 };
+use crate::{Header, InspectError, inspect_header};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_model::{CatalogScope, ObjectCatalog, ObjectDescriptor};
 use tablecraft_schema::{NameComparison, SchemaName};
@@ -61,9 +58,6 @@ pub fn inspect_catalog<R: crate::NativeReadSource>(
     };
     let layout = layout::read(&mut reader, CATALOG_DEFINITION_PAGE)?;
     layout::validate_catalog(&layout)?;
-    if layout.records as usize > MAX_LIVE_ROWS {
-        return Err(InspectError::StructureLimit);
-    }
     let pages = allocation::pages(&mut reader, layout.usage)?;
     let mut objects = Vec::new();
     let mut origins = Vec::new();
@@ -80,8 +74,8 @@ pub fn inspect_catalog<R: crate::NativeReadSource>(
             if flags & DELETED_MASK != 0 {
                 continue;
             }
-            if objects.len() >= MAX_LIVE_ROWS {
-                return Err(InspectError::StructureLimit);
+            if objects.len() >= layout.records as usize {
+                return Err(InspectError::Malformed);
             }
             reader.budget.charge(Resource::Rows, 1)?;
             let row =
@@ -123,11 +117,12 @@ pub fn inspect_catalog<R: crate::NativeReadSource>(
         return Err(InspectError::Malformed);
     }
     reader.tick()?;
+    let object_count = objects.len();
     let catalog = ObjectCatalog::new(
         scope,
         objects,
         NameComparison::AsciiInsensitive,
-        MAX_LIVE_ROWS,
+        object_count,
     )?;
     Ok(CatalogInspection {
         header,
