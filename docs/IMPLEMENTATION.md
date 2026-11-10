@@ -1,5 +1,40 @@
 # Implementation status
 
+## Retained table deletion — 10 November 2026
+
+The shared reviewed table-delete service now works after retained table creation
+and row editing, including appended tables, the original sparse table beside a
+live sibling, empty targets and long user/catalog forwarding histories. Native
+planning independently proves complete row/index removal before tombstoning the
+exact catalog root and decrementing its live count. Allocated history, siblings,
+maps, properties and generated counters remain intact. The existing primary-leaf,
+program-absence and system-role scope stays explicit; broader imported application
+and index writes remain unfinished.
+
+TCTD3 binds the original native table identity and complete BEFORE under the
+native file envelope. It uses distinct checked V3 preparation/recovery and fresh
+complete-image reconstruction; TCTD1/2 and their V1 paths remain unchanged.
+Runtime/Access own metadata-first capture, consuming reviews and durable sessions;
+desktop adds no native mutation logic. Three new actual headless journeys verify
+confirmation/cancellation, save/acknowledge, same-name recreation, fresh generated
+IDs, Unicode insertion and sibling reopening against independent complete images.
+
+The twenty-test native/request/recovery family, two independent Access read/
+recreation tests, eight Access table-deletion session tests and twenty-one shared
+Access recovery regressions pass. The full headless table-deletion family passes
+nineteen tests; all thirty-eight table-creation regressions pass. Strict all-target/
+all-feature ACE/Access/runtime/desktop/MCP and journal-only minimal ACE/Access checks
+pass, alongside formatting, module/dependency guards and local documentation links.
+No Windows or Microsoft Access save/reopen qualification is claimed. See
+[native table deletion](access/writes/NATIVE_TABLE_DROP.md) and
+[its connected workflow](ui/TABLE_DROP.md).
+
+Next is retained column ADD, followed by tail DROP and rename. Those schema
+operations still enter the original eleven-page/definition-seven source and
+cannot yet compose across appended tables and live siblings. The existing
+serializers/property placement should share a separate retained schema proof;
+inventory alone must not become schema-edit permission.
+
 ## Shared retained traversal — 10 November 2026
 
 Retained table creation and INSERT now share paid, owned catalog/property

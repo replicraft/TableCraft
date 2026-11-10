@@ -49,3 +49,18 @@ oracles and fresh application reopening verify the saved results; source-free
 presentation tests remain separate checks. No native Windows/Access comparison
 is established by these results. See [native table deletion](../access/writes/NATIVE_TABLE_DROP.md)
 for the source, preservation and recovery boundaries.
+
+The same connected workflow now selects retained native table deletion after
+table creation and row edits. It preserves live siblings and retained physical
+history, permits same-name recreation at a fresh EOF identity, and retains the
+next new table's own generated counter. The supported source/index/program
+scope remains the engine's explicit admission boundary; confirmation does not
+authorize unsupported dependency cleanup.
+
+Three additional headless journeys exercise populated retained Number deletion
+and same-name recreation, long forwarded Text histories with cancellation and
+Unicode reinsertion, and original sparse-table deletion beside a live sibling.
+Each uses actual confirmation/save/acknowledge controls, independent complete
+AFTER bytes and fresh reopening. All nineteen table-deletion tests pass. The
+source that initially opens the sibling explicitly closes that native tab
+through its Close control before requesting deletion; SQL scratch remains open.
