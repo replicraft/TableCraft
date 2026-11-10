@@ -9,7 +9,6 @@ mod retained;
 use super::{DocumentView, EditInput, EditSaveOutcome, InputHint, State};
 
 const MAX_INSERT_FIELDS: usize = 256;
-const MAX_INSERT_TEXT_BYTES: usize = 8 * 1024 * 1024;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct InsertTarget {
@@ -119,7 +118,7 @@ fn inputs(entries: &[FieldInput]) -> Vec<InsertInput> {
 
 fn within_input_limits(proposed: &[InsertInput]) -> bool {
     proposed.len() <= MAX_INSERT_FIELDS
-        && text_bytes_fit(proposed.iter().filter_map(|input| match input {
+        && editor_texts_fit(proposed.iter().filter_map(|input| match input {
             InsertInput::Omitted => None,
             InsertInput::Value(value) => Some(value.text.as_str()),
         }))
@@ -128,7 +127,7 @@ fn within_input_limits(proposed: &[InsertInput]) -> bool {
 fn entries_within_limits(entries: &[FieldInput]) -> bool {
     entries.len() <= MAX_INSERT_FIELDS
         && entries.iter().all(|entry| !entry.input_rejected)
-        && text_bytes_fit(entries.iter().map(|entry| entry.text.as_str()))
+        && editor_texts_fit(entries.iter().map(|entry| entry.text.as_str()))
 }
 
 fn remaining_input_bytes(entries: &[FieldInput], position: usize) -> usize {
@@ -136,18 +135,23 @@ fn remaining_input_bytes(entries: &[FieldInput], position: usize) -> usize {
         .iter()
         .enumerate()
         .filter(|(index, _)| *index != position)
-        .try_fold(MAX_INSERT_TEXT_BYTES, |remaining, (_, entry)| {
+        .try_fold(usize::MAX, |remaining, (_, entry)| {
             remaining.checked_sub(entry.text.len())
         })
         .unwrap_or(0)
 }
 
-fn text_bytes_fit<'a>(mut texts: impl Iterator<Item = &'a str>) -> bool {
+fn editor_texts_fit<'a>(mut texts: impl Iterator<Item = &'a str>) -> bool {
     texts
         .try_fold(0_usize, |total, text| {
-            total
-                .checked_add(text.len())
-                .filter(|total| *total <= MAX_INSERT_TEXT_BYTES)
+            if text
+                .chars()
+                .nth(crate::text_input::MAX_EDITOR_SCALARS)
+                .is_some()
+            {
+                return None;
+            }
+            total.checked_add(text.len())
         })
         .is_some()
 }

@@ -1,6 +1,6 @@
 //! Transfer retained original inputs into an actual runtime-issued insertion draft.
 use super::{
-    Choice, Dialog, FieldInput, InsertInput, inputs_match, text_bytes_fit, within_input_limits,
+    Choice, Dialog, FieldInput, InsertInput, editor_texts_fit, inputs_match, within_input_limits,
 };
 use crate::{InitialRecord, InputHint, workspace::State};
 use tablecraft_builders::table::{DraftFieldType, DraftNumberSize, SnapshotField};
@@ -31,7 +31,7 @@ impl State {
             || draft.fields.len() != snapshot.fields().len()
             || inputs.len() != draft.fields.len()
             || record.raw_text.len() != inputs.len()
-            || !text_bytes_fit(record.raw_text.iter().map(String::as_str))
+            || !editor_texts_fit(record.raw_text.iter().map(String::as_str))
             || !within_input_limits(inputs)
             || !inline.can_seed_initial()
         {

@@ -383,19 +383,9 @@ fn inline_review_failure_retains_text_and_refocuses_the_field_without_stored_row
 }
 
 #[test]
-fn retained_omitted_text_consumes_the_row_budget_and_stale_input_survives_navigation_refusal() {
+fn retained_omitted_text_survives_navigation_refusal_and_stale_source() {
     let (mut state, _) = state();
     if let Some(Dialog::Draft { entries, .. }) = &mut state.insertion {
-        entries[0].text = "x".repeat(MAX_INSERT_TEXT_BYTES);
-        assert!(entries_within_limits(entries));
-        entries.push(FieldInput {
-            choice: Choice::Omitted,
-            text: "y".into(),
-            ..FieldInput::default()
-        });
-        assert!(!entries_within_limits(entries));
-        assert_eq!(remaining_input_bytes(entries, 1), 0);
-        entries.pop();
         entries[0].text = "retained".into();
     }
     state.select_view(super::super::DocumentView::Query);
@@ -462,10 +452,10 @@ fn inline_tab_moves_between_fields_without_publishing_or_reinterpreting_input() 
 }
 
 #[test]
-fn inline_paste_counts_hidden_retained_text_and_requires_a_real_correction() {
+fn inline_editor_scalar_limit_requires_a_real_correction_without_losing_hidden_text() {
     let (mut state, _) = two_field_state();
     if let Some(Dialog::Draft { entries, .. }) = &mut state.insertion {
-        entries[0].text = "x".repeat(MAX_INSERT_TEXT_BYTES);
+        entries[0].text = "retained".into();
     }
     let mut harness = Harness::builder()
         .with_size(egui::vec2(900.0, 580.0))
@@ -479,12 +469,14 @@ fn inline_paste_counts_hidden_retained_text_and_requires_a_real_correction() {
         .get_by_role_and_label(Role::TextInput, "Second")
         .focus();
     harness.run_steps(2);
-    harness.event(egui::Event::Paste("excess".into()));
+    harness.event(egui::Event::Paste(
+        "x".repeat(crate::text_input::MAX_EDITOR_SCALARS + 1),
+    ));
     harness.run_steps(2);
     assert!(matches!(
         &harness.state().0.insertion,
         Some(Dialog::Draft { entries, .. })
-            if entries[0].text.len() == MAX_INSERT_TEXT_BYTES
+            if entries[0].text == "retained"
                 && entries[1].text.is_empty()
                 && entries[1].input_rejected
     ));
@@ -496,7 +488,8 @@ fn inline_paste_counts_hidden_retained_text_and_requires_a_real_correction() {
     );
     assert!(harness.state().1.is_empty());
 
-    // Typing into an omitted field replaces its hidden cache, freeing space.
+    // Typing into an omitted field replaces its hidden cache; correcting the
+    // rejected field is still necessary before review.
     harness
         .get_by_role_and_label(Role::TextInput, "First")
         .focus();
@@ -541,7 +534,7 @@ fn same_frame_paste_and_review_uses_exact_accepted_text_and_rejects_oversized_in
             .focus();
         harness.run_steps(1);
         let pasted = if oversized {
-            "x".repeat(MAX_INSERT_TEXT_BYTES + 1)
+            "x".repeat(crate::text_input::MAX_EDITOR_SCALARS + 1)
         } else {
             "  exact pasted value  ".into()
         };
@@ -651,4 +644,38 @@ fn incompatible_same_revision_columns_preserve_visible_input_and_refuse_review_a
         ));
         assert!(harness.state().0.data.as_ref().unwrap().rows.is_empty());
     }
+}
+
+#[test]
+fn many_individually_valid_editors_can_review_more_than_eight_mib_without_rendering_it() {
+    let fields = (0..129)
+        .map(|index| InsertField {
+            name: format!("Memo{index}"),
+            input_hint: InputHint::Text,
+            nullable: true,
+            auto_number: false,
+        })
+        .collect();
+    let (mut state, _) = state_with_fields(fields);
+    let Some(Dialog::Draft { entries, .. }) = &mut state.insertion else {
+        panic!("expected a source-bound insertion draft");
+    };
+    for entry in entries.iter_mut() {
+        entry.choice = Choice::Value;
+        entry.text = "x".repeat(65_535);
+    }
+    assert!(entries.iter().map(|entry| entry.text.len()).sum::<usize>() > 8 * 1024 * 1024);
+    let proposed = inputs(entries);
+    assert!(state.can_review_insert(20, &proposed));
+    assert!(state.data.as_ref().unwrap().rows.is_empty());
+    state.begin_insert_review(20, proposed, 2);
+    let Some(Dialog::Draft {
+        pending: Some(pending),
+        ..
+    }) = &state.insertion
+    else {
+        panic!("valid editor values must reach reviewed native admission");
+    };
+    assert_eq!(pending.len(), 129);
+    assert!(pending.iter().all(|input| matches!(input, InsertInput::Value(value) if value.text.len() == 65_535 && !value.is_null)));
 }

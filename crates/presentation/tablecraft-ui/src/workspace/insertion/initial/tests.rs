@@ -1,6 +1,6 @@
 use super::*;
 use crate::workspace::insertion::{
-    MAX_INSERT_TEXT_BYTES, inputs as current_inputs,
+    inputs as current_inputs,
     tests::{choose_mode, state_with_fields},
 };
 use crate::{Action, EditInput, InsertField};
@@ -124,13 +124,18 @@ fn stale_mismatched_generated_oversized_and_pending_seeds_leave_all_entries_unch
                 6 => {
                     record.inputs.pop();
                 }
-                7 => record.inputs[1] = value(&"x".repeat(MAX_INSERT_TEXT_BYTES + 1), false),
+                7 => {
+                    record.inputs[1] = value(
+                        &"x".repeat(crate::text_input::MAX_EDITOR_SCALARS + 1),
+                        false,
+                    )
+                }
                 8 => draft.target.document_revision += 1,
                 9 => *pending = Some(record.inputs.clone()),
                 10 => {
                     record.raw_text.pop();
                 }
-                11 => record.raw_text[2] = "x".repeat(MAX_INSERT_TEXT_BYTES + 1),
+                11 => record.raw_text[2] = "x".repeat(crate::text_input::MAX_EDITOR_SCALARS + 1),
                 12 => record.raw_text[1] = "different supplied text".into(),
                 13 => record.raw_text[0] = "hidden generated text".into(),
                 _ => unreachable!(),

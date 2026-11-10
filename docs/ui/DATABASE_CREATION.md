@@ -110,9 +110,14 @@ The new-record row accepts raw input before schema Save. It keeps Omitted,
 explicit NULL and supplied text distinct, keyed by draft field identity across
 renaming and added fields. Choosing Omitted retains previously typed text as a
 presentation cache; it does not supply that text to the backend. The generated
-ID stays omitted and displays `(New)`. Input is bounded to eight MiB total raw
-text and the existing per-field editor limits. Oversized insertion is rejected
-whole, visibly blocks Save and requires an accepted edit or mode correction.
+ID stays omitted and displays `(New)`. Retained input has no aggregate eight MiB
+quota. Each editor keeps the documented 65,535-character UI rule, independently
+of UTF-8 byte counts and the actual native field declaration. See
+[Microsoft Access specifications](https://support.microsoft.com/en-us/access/access-specifications).
+Per-editor oversized insertion is rejected whole, visibly blocks Save and
+requires an accepted edit or mode correction. Checked aggregate arithmetic,
+field identity, generated-field omission and revision checks remain in place.
+The runtime still validates native field widths and values during review.
 No row is stored while editing this buffer.
 
 | Gallery choice | Initial native declaration | Initial type default |

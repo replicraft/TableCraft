@@ -83,7 +83,6 @@ fn oversized_input_revision_exhaustion_and_stale_schema_refuse_without_partial_c
         field,
         value(&"x".repeat(crate::text_input::MAX_EDITOR_SCALARS + 1))
     ));
-    assert!(!row.set_input(field, value(&"x".repeat(MAX_RECORD_TEXT_BYTES + 1))));
     assert_eq!(row.revision(), revision + 1);
     assert!(row.has_rejected_input());
     assert!(row.inputs(&table.snapshot("Items").unwrap()).is_none());
@@ -539,4 +538,29 @@ fn update_restart_keeps_blank_and_typed_initial_record_drafts_intact() {
     let editor = state.table_draft.as_ref().unwrap();
     assert_eq!(editor.record.inputs(&snapshot).unwrap(), original);
     assert_eq!(editor.record.entries[1].text.as_ptr(), pointer);
+}
+
+#[test]
+fn initial_record_keeps_complete_multibyte_input_for_each_supported_editor() {
+    let mut table = TableDraft::initial();
+    let fields = (0..15)
+        .map(|_| table.add_field(DraftFieldType::ShortText).unwrap())
+        .collect::<Vec<_>>();
+    let mut row = RowDraft::new();
+    assert!(row.synchronize(&table));
+    let text = "🦀".repeat(65_535);
+    for field in fields {
+        // UI retention is independent of native declaration validation, which
+        // will still reject values exceeding an actual Short Text field width.
+        assert!(row.set_input(field, value(&text)));
+    }
+    let snapshot = table.snapshot("Pending").unwrap();
+    let texts = row.raw_texts(&snapshot).unwrap();
+    assert!(texts[1..].iter().all(|retained| retained == &text));
+    let inputs = row.inputs(&snapshot).unwrap();
+    assert_eq!(inputs.len(), 16);
+    assert_eq!(inputs[0], InsertInput::Omitted);
+    assert!(inputs[1..].iter().all(|input| matches!(input,
+        InsertInput::Value(value) if value.text == text && !value.is_null
+    )));
 }

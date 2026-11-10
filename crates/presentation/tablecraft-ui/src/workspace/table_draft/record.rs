@@ -6,7 +6,6 @@ use tablecraft_builders::table::{
     DraftField, DraftFieldId, DraftFieldType, TableDraft, TableDraftSnapshot,
 };
 
-const MAX_RECORD_TEXT_BYTES: usize = 8 * 1024 * 1024;
 const INPUT_MODE_WIDTH: f32 = 20.0;
 const MIN_INPUT_WIDTH: f32 = 24.0;
 const MODE_CHEVRON_HALF_WIDTH: f32 = 3.0;
@@ -239,9 +238,12 @@ impl RowDraft {
             .iter()
             .enumerate()
             .filter(|(index, _)| *index != position)
-            .map(|(_, entry)| entry.text.len())
-            .sum::<usize>();
-        if text.len() > MAX_RECORD_TEXT_BYTES.saturating_sub(other_bytes)
+            .try_fold(0usize, |bytes, (_, entry)| {
+                bytes.checked_add(entry.text.len())
+            });
+        if other_bytes
+            .and_then(|bytes| bytes.checked_add(text.len()))
+            .is_none()
             || text.chars().count() > crate::text_input::MAX_EDITOR_SCALARS
         {
             self.reject(position);
@@ -391,8 +393,7 @@ impl RowDraft {
             .entries
             .iter()
             .filter(|entry| entry.id != field.id())
-            .map(|entry| entry.text.len())
-            .sum::<usize>();
+            .try_fold(0usize, |bytes, entry| bytes.checked_add(entry.text.len()));
         ui.push_id(("initial_record", field.id()), |ui| {
             ui.horizontal(|ui| {
                 let width = (ui.available_width() - INPUT_MODE_WIDTH).max(MIN_INPUT_WIDTH);
@@ -403,7 +404,9 @@ impl RowDraft {
                     self.show_boolean(ui, field, position, width)
                 } else {
                     let id = ui.make_persistent_id("value");
-                    let remaining = MAX_RECORD_TEXT_BYTES.saturating_sub(other_bytes);
+                    let remaining = other_bytes
+                        .and_then(|bytes| usize::MAX.checked_sub(bytes))
+                        .unwrap_or(0);
                     let rejected =
                         crate::text_input::reject_oversized_events(ui, id, &text, remaining);
                     if rejected {
