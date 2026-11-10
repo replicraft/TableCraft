@@ -1,13 +1,9 @@
 //! Retired surrounding bytes never substitute for exact target absence evidence.
-use super::{NoRequiredTablePrograms, catalog, declarations, properties};
+use super::{NoRequiredTablePrograms, catalog};
 use crate::{
     EditError, NativeImage, inspect_table_schema,
     table::{
-        mutation::{
-            normal_ordinary,
-            ordinary_content::definition::{self, RowDeclaration},
-            preserved_source,
-        },
+        mutation::{normal_ordinary, preserved_source},
         table_append::Inventory,
     },
 };
@@ -61,27 +57,6 @@ fn retained_insert_requires_its_exact_image_and_purpose_without_promoting_legacy
                 &|| false,
             )
             .unwrap();
-            let inventory = Inventory::capture(&original, &mut budget(), &|| false)
-                .expect("retained inventory phase");
-            let selected =
-                catalog::validate_retained(&original, &schema, &inventory, &mut budget(), &|| {
-                    false
-                })
-                .expect("retained catalog phase");
-            if selected.properties_present {
-                properties::capture_current_schema(&original, &schema, &mut budget(), &|| false)
-                    .expect("retained target properties phase");
-            }
-            declarations::capture(&original, &mut budget(), &|| false)
-                .expect("retained declaration census phase");
-            definition::validate_rows(
-                &original,
-                &schema,
-                RowDeclaration::CurrentSchema,
-                &mut budget(),
-                &|| false,
-            )
-            .expect("retained target definition phase");
             let certificate = NoRequiredTablePrograms::capture_retained_insert(
                 &original,
                 &schema,

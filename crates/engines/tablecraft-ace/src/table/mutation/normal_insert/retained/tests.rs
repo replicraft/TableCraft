@@ -1,7 +1,7 @@
 //! Retired catalog storage is admitted only by its separately bound row family.
 use super::*;
 use crate::table::{mutation::normal_ordinary, table_append::Inventory};
-use crate::{InsertFieldValue, InspectError, read_table};
+use crate::{InsertFieldValue, InspectError, inspect_table_schema, read_table};
 use std::io::Cursor;
 use tablecraft_core::values::Value;
 use tablecraft_model::CatalogScope;

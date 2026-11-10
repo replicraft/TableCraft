@@ -236,8 +236,9 @@ impl<'image> NoRequiredTablePrograms<'image> {
         )
     }
 
-    /// Retained surroundings need their own complete source proof; the target
-    /// keeps the original generated declaration and program-absence grammar.
+    /// Retained surroundings need their own complete ownership proof. Current
+    /// target declarations remain separately bound to this insertion purpose;
+    /// schema observations alone never grant row-mutation permission.
     #[cfg(feature = "ace16-create")]
     pub(in crate::table::mutation) fn capture_retained_insert(
         image: &'image NativeImage,
