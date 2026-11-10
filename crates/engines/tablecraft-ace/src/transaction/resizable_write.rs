@@ -9,7 +9,7 @@ use tablecraft_io::journal::{
 
 /// A prepared native replacement with an explicitly resizable target capability.
 /// The host retains exclusive offline access and the same durable journal pair.
-#[must_use = "commit or explicitly recover the retained native allocation journal"]
+#[must_use = "commit or explicitly recover the selected resizable native edit journal"]
 pub struct PreparedResizableNativeEdit<'a, D, J> {
     prepared: PreparedResizableImage<'a, D, J>,
     changed_rows: usize,
