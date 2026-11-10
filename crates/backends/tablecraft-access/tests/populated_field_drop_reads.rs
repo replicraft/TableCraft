@@ -6,7 +6,9 @@ use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
 use tablecraft_query::{ExecutionOptions, prepare};
 use tablecraft_sql::parse_query;
-use tablecraft_testkit::fixtures::access::canonical_created_number::mixed::after_off::deleted_field::populated as raw;
+use tablecraft_testkit::fixtures::access::canonical_created_number::mixed::after_off::{
+    deleted_field::populated as raw, populated_text::present as raw_present,
+};
 
 const PAGE: usize = 4096;
 const SCOPE: CatalogScope = CatalogScope::new(1421);
@@ -210,6 +212,17 @@ fn explicit_readded_field_values_replace_only_the_selected_logical_carrier() {
                     }
                 };
                 *expected[root].last_mut().unwrap() = value;
+                let retained =
+                    u16::from_le_bytes(bytes[7 * PAGE + 43..7 * PAGE + 45].try_into().unwrap());
+                if retained != 0 {
+                    let record = raw_present::record(&bytes, root);
+                    let count = usize::from(u16::from_le_bytes(record[..2].try_into().unwrap()));
+                    let at = record.len() - count.div_ceil(8) - 2;
+                    assert_eq!(
+                        u16::from_le_bytes(record[at..at + 2].try_into().unwrap()),
+                        retained
+                    );
+                }
                 let table = read_table(
                     &mut Cursor::new(&bytes),
                     SCOPE,

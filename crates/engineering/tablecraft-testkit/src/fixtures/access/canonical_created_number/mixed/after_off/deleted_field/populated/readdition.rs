@@ -147,13 +147,9 @@ fn fill(case: Case, before: &[u8], root: usize, target: Target, payload: &[u8]) 
     let count = word(old, 0);
     let active = word(before, DEFINITION + 45);
     let field = DEFINITION + FIELD_START + (active - 1) * FIELD_BYTES;
-    let live_variables = (0..active)
-        .map(|index| DEFINITION + FIELD_START + index * FIELD_BYTES)
-        .filter(|at| before[at + 15] & 1 == 0)
-        .map(|at| word(before, at + 7) + 1)
-        .max()
-        .unwrap_or(0)
-        .max(usize::from(word(before, DEFINITION + 43) != 0));
+    // Full records carry the retained variable-count high-water, including
+    // deleted slots. Missing slots are empty, without inventing deleted types.
+    let retained_variables = word(before, DEFINITION + 43);
     let number = word(before, field + 5);
     assert!(number >= count);
     let fields = number + 1;
@@ -202,13 +198,13 @@ fn fill(case: Case, before: &[u8], root: usize, target: Target, payload: &[u8]) 
                 .iter()
                 .map(|offset| offset + expanded - fixed_end)
                 .collect::<Vec<_>>();
-            variables = old_variables.max(live_variables);
+            variables = retained_variables;
             new_offsets.resize(variables + 1, end + expanded - fixed_end);
         }
         Target::ShortText => {
             assert_eq!(before[field], 10);
             let variable = word(before, field + 7);
-            variables = old_variables.max(live_variables);
+            variables = retained_variables;
             let start = offsets.get(variable).copied().unwrap_or(end);
             let stop = offsets.get(variable + 1).copied().unwrap_or(end);
             row = old[..start].to_vec();
