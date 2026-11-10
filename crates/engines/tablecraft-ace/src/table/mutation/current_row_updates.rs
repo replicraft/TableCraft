@@ -364,7 +364,7 @@ pub(super) fn plan(
             target.copy_from_slice(&page.after);
         }
         audit::final_pages(&placement, &after, budget, cancelled)?;
-        space.audit(self.as_bytes(), &after, budget, cancelled)?;
+        space.audit(image.as_bytes(), &after, budget, cancelled)?;
     }
     proof::prove(&image, table, groups, &after, family, budget, cancelled)?;
     drop(source);

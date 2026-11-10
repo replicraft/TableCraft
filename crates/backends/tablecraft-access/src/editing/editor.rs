@@ -32,7 +32,7 @@ impl NativeEditor {
         #[cfg(feature = "ace16-create")]
         if self
             .image
-            .select_native_retained_rows_table(self.snapshot.name(), budget, cancelled)?
+            .has_retained_table_source(self.snapshot.name(), budget, cancelled)?
         {
             return match self.image.check_native_retained_rows_table(
                 self.snapshot.name(),

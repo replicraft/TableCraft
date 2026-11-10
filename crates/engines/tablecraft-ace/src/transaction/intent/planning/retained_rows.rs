@@ -17,7 +17,10 @@ impl NativeImage {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<RecoverableNativeEditPlan, RecoverableEditError> {
         let _span = tracing::debug_span!("native.retained_rows.plan_recoverable").entered();
-        if !self.has_retained_table_source(table, budget, cancelled)? {
+        if !self
+            .has_retained_table_source(table, budget, cancelled)
+            .map_err(EditError::from)?
+        {
             return Err(EditError::Unsupported(WriteBlocker::RowLayout).into());
         }
         let original = NativeFittedEditIntent::new_retained(

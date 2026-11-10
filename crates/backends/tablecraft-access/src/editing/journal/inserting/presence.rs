@@ -52,7 +52,7 @@ impl NativeJournalInserter {
         let maximum_bytes = if self
             .image
             .has_retained_table_source(&self.name, budget, cancelled)
-            .map_err(NativeEditError::from)
+            .map_err(EditError::from)
             .map_err(RecoverableEditError::from)?
         {
             NativeOmittedInsertIntent::MAX_RETAINED_ENCODED_BYTES
@@ -97,7 +97,7 @@ impl NativeJournalInserter {
         if self
             .image
             .has_retained_table_source(&self.name, budget, cancelled)
-            .map_err(NativeEditError::from)
+            .map_err(EditError::from)
             .map_err(RecoverableEditError::from)?
         {
             return self
