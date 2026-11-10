@@ -20,7 +20,7 @@ use tablecraft_testkit::fixtures::access::{
 };
 use tablecraft_ui::{FluentArgs, ObjectTab, TableDropRequest};
 
-fn delete_navigation(harness: &mut Harness<'_, Desktop>) {
+pub(in crate::workspace::editing) fn delete_navigation(harness: &mut Harness<'_, Desktop>) {
     harness
         .get_by_role_and_label(Role::Button, "Table1")
         .focus();
@@ -30,7 +30,10 @@ fn delete_navigation(harness: &mut Harness<'_, Desktop>) {
     finish_reads(harness);
 }
 
-fn close_table(harness: &mut Harness<'_, Desktop>, table: &ObjectTab) {
+pub(in crate::workspace::editing) fn close_table(
+    harness: &mut Harness<'_, Desktop>,
+    table: &ObjectTab,
+) {
     let tabs = harness.state().state.object_tabs();
     let position = tabs.iter().position(|tab| tab.id == table.id).unwrap();
     harness
@@ -50,7 +53,7 @@ fn close_table(harness: &mut Harness<'_, Desktop>, table: &ObjectTab) {
     );
 }
 
-fn confirmation(harness: &Harness<'_, Desktop>, count: usize) {
+pub(in crate::workspace::editing) fn confirmation(harness: &Harness<'_, Desktop>, count: usize) {
     assert!(harness.state().state.table_drop_open());
     let mut arguments = FluentArgs::new();
     arguments.set("table", "Table1");

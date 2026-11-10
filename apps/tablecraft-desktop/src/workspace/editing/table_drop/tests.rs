@@ -1,5 +1,5 @@
 //! Headless desktop acceptance uses real native reads, saves and full-image witnesses.
-mod current;
+pub(in crate::workspace::editing) mod current;
 
 use crate::workspace::{
     Desktop,
@@ -33,7 +33,7 @@ fn inspected(harness: &mut Harness<'_, Desktop>, target: ObjectTarget) {
     assert!(harness.state().state.table_drop_open());
 }
 
-fn choose(harness: &mut Harness<'_, Desktop>, label: &str) {
+pub(in crate::workspace::editing) fn choose(harness: &mut Harness<'_, Desktop>, label: &str) {
     let dialog = harness
         .ctx
         .memory(|memory| memory.area_rect(Id::new("table_drop")))

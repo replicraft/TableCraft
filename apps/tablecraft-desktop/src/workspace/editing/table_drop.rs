@@ -2,7 +2,7 @@
 mod completion;
 mod inspection;
 #[cfg(all(test, any(target_os = "macos", target_os = "linux", windows)))]
-mod tests;
+pub(super) mod tests;
 
 use super::{ActiveSave, SaveOwner, field_save::FieldSaveHost};
 use crate::workspace::{Desktop, PendingOperation, request_read};

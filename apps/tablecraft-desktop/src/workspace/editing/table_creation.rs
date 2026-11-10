@@ -488,3 +488,6 @@ mod addition_tests;
 
 #[cfg(all(test, any(target_os = "macos", target_os = "linux", windows)))]
 mod manual_tests;
+
+#[cfg(all(test, any(target_os = "macos", target_os = "linux", windows)))]
+mod retained_tests;
