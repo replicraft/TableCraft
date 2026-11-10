@@ -159,8 +159,7 @@ fn independent_after_verification_rejects_unrelated_and_live_metadata_changes() 
     .unwrap();
     let descriptor = DescriptorPatch::capture(
         candidate.proof.image(),
-        &current.catalog,
-        current.schema.object_id(),
+        current,
         append.reference,
         body.len(),
         &mut budget(),
