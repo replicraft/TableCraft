@@ -1,4 +1,5 @@
 //! Original literal native fixture owner, shared by actual tests.
+pub mod historical_slots;
 pub mod inline_values;
 pub mod wide;
 

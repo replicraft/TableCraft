@@ -2,6 +2,8 @@
 mod cursor;
 #[path = "table_pages/faults.rs"]
 mod faults;
+#[path = "table_pages/historical_slots.rs"]
+mod historical_slots;
 use tablecraft_testkit::fixtures::access::mutation_fixture as fixture;
 #[path = "table_pages/large_long_values.rs"]
 mod large_long_values;

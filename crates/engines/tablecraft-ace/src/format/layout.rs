@@ -152,14 +152,11 @@ fn read_impl<R: crate::NativeReadSource>(
 ) -> Result<Layout, InspectError> {
     let page = definition::read(reader, definition)?;
     let count = usize::from(u16_at(&page, COLUMN_COUNT_OFFSET)?);
+    // Historical ordinal capacity includes deleted fields; it is distinct from
+    // the active field count and retains its native unsigned-word geometry.
     let max_columns = usize::from(u16_at(&page, MAX_COLUMN_COUNT_OFFSET)?);
     let variable_slots = usize::from(u16_at(&page, VARIABLE_SLOT_COUNT_OFFSET)?);
-    if count == 0
-        || count > MAX_COLUMNS
-        || max_columns < count
-        || max_columns > MAX_COLUMNS
-        || variable_slots > max_columns
-    {
+    if count == 0 || count > MAX_COLUMNS || max_columns < count || variable_slots > max_columns {
         return Err(InspectError::Unsupported);
     }
     let indexes = u32_at(&page, INDEX_COUNT_OFFSET)? as usize;
