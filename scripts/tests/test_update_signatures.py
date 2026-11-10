@@ -1,5 +1,6 @@
 """Exercise the real signature tool against tampering and release identity changes."""
 import base64
+import hashlib
 import os
 from pathlib import Path
 import shutil
@@ -30,6 +31,7 @@ class UpdateSignatureTests(unittest.TestCase):
         self.output = self.root / "signatures"
         self.environment = patch.dict(os.environ, {
             "TABLECRAFT_UPDATE_SIGNING_KEY": self.secret.read_text(),
+            "TABLECRAFT_UPDATE_SIGNING_PASSWORD": "",
         })
         self.environment.start()
         self.addCleanup(self.environment.stop)
@@ -82,9 +84,74 @@ import os
 import sys
 
 assert "TABLECRAFT_UPDATE_SIGNING_KEY" not in os.environ
+assert "TABLECRAFT_UPDATE_SIGNING_PASSWORD" not in os.environ
 assert sys.stdin.read() == ""
 """])
         self.assertEqual(os.environ["TABLECRAFT_UPDATE_SIGNING_KEY"], self.secret.read_text())
+
+    def test_password_uses_stdin_without_exposing_either_secret_in_child_environment(self):
+        password = "first-party-test-password"
+        expected = hashlib.sha256((password + "\n").encode("utf-8")).hexdigest()
+        program = """
+import hashlib
+import os
+import sys
+
+assert "TABLECRAFT_UPDATE_SIGNING_KEY" not in os.environ
+assert "TABLECRAFT_UPDATE_SIGNING_PASSWORD" not in os.environ
+assert hashlib.sha256(sys.stdin.buffer.read()).hexdigest() == sys.argv[1]
+"""
+        with patch.dict(os.environ, {"TABLECRAFT_UPDATE_SIGNING_PASSWORD": password}):
+            signatures.execute([sys.executable, "-c", program, expected], password=password)
+            self.assertEqual(os.environ["TABLECRAFT_UPDATE_SIGNING_PASSWORD"], password)
+
+    def test_encrypted_key_signs_and_wrong_or_missing_password_cleans_outputs(self):
+        password = "independent-test-key-password"
+        encrypted_public = self.root / "encrypted.pub"
+        encrypted_secret = self.root / "encrypted.key"
+        subprocess.run(
+            ["minisign", "-G", "-p", str(encrypted_public), "-s", str(encrypted_secret)],
+            input=(password + "\n" + password + "\n").encode("utf-8"),
+            capture_output=True, check=True, timeout=120,
+        )
+        self.public = encrypted_public
+        environment = {
+            "TABLECRAFT_UPDATE_SIGNING_KEY": encrypted_secret.read_text(),
+            "TABLECRAFT_UPDATE_SIGNING_PASSWORD": password,
+        }
+        with patch.dict(os.environ, environment):
+            self.run_signatures(signing=True)
+            # Verification has no private key or password input at all.
+            with patch.dict(os.environ, {
+                "TABLECRAFT_UPDATE_SIGNING_KEY": "",
+                "TABLECRAFT_UPDATE_SIGNING_PASSWORD": "",
+            }):
+                self.run_signatures()
+        shutil.rmtree(self.output)
+        original_archives = {path.name: path.read_bytes() for path in self.assets.iterdir()}
+        for supplied in ("wrong-test-password", ""):
+            environment["TABLECRAFT_UPDATE_SIGNING_PASSWORD"] = supplied
+            with self.subTest(password_present=bool(supplied)):
+                with patch.dict(os.environ, environment):
+                    with self.assertRaisesRegex(ValueError, "Minisign operation failed") as failed:
+                        self.run_signatures(signing=True)
+                self.assertNotIn(password, str(failed.exception))
+                self.assertNotIn(environment["TABLECRAFT_UPDATE_SIGNING_KEY"], str(failed.exception))
+                self.assertFalse(self.output.exists())
+                self.assertEqual(
+                    original_archives,
+                    {path.name: path.read_bytes() for path in self.assets.iterdir()},
+                )
+
+    def test_invalid_password_input_refuses_before_starting_minisign(self):
+        for password in ("two\nlines", "trailing\r", "x" * 4097):
+            with self.subTest(length=len(password)):
+                with patch.dict(os.environ, {"TABLECRAFT_UPDATE_SIGNING_PASSWORD": password}):
+                    with patch.object(signatures, "execute") as execute:
+                        with self.assertRaisesRegex(ValueError, "Signing password"):
+                            self.run_signatures(signing=True)
+                        execute.assert_not_called()
+                self.assertFalse(self.output.exists())
 
     def test_production_refuses_alternative_and_test_labeled_pinned_keys(self):
         real_text = self.public.read_text()

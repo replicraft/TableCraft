@@ -16,6 +16,7 @@ TEST_PUBLIC_KEY = (
     contract.ROOT / "crates/platform/tablecraft-update/src/download/tests/TEST-ONLY.pub"
 )
 MAX_KEY_BYTES = 4096
+MAX_PASSWORD_BYTES = 4096
 MAX_SIGNATURE_BYTES = 4096
 MINISIGN_KEY_ID_BYTES = 8
 PUBLIC_KEY_MATERIAL_OFFSET = len(b"Ed") + MINISIGN_KEY_ID_BYTES
@@ -61,12 +62,17 @@ def check_key(path, *, production):
     return raw
 
 
-def execute(command):
+def execute(command, *, password=None):
     # Captured diagnostics may contain key details; report only the operation failure.
     environment = os.environ.copy()
     environment.pop("TABLECRAFT_UPDATE_SIGNING_KEY", None)
+    environment.pop("TABLECRAFT_UPDATE_SIGNING_PASSWORD", None)
+    if password is None:
+        input_options = {"stdin": subprocess.DEVNULL}
+    else:
+        input_options = {"input": password.encode("utf-8") + b"\n"}
     result = subprocess.run(
-        command, stdin=subprocess.DEVNULL, env=environment,
+        command, env=environment, **input_options,
         capture_output=True, check=False, timeout=120,
     )
     if result.returncode:
@@ -96,8 +102,15 @@ def run(version, product, assets, output, public_key, tool, *, signing, dry_run)
                 raise ValueError("TABLECRAFT_UPDATE_SIGNING_KEY is required")
             if len(secret.encode("utf-8")) > MAX_KEY_BYTES:
                 raise ValueError("Signing key exceeds the key-size limit")
-            # An isolated signing environment provides an unencrypted Minisign key.
-            # File permissions protect it; never put the secret in argv or logs.
+            password = os.environ.get("TABLECRAFT_UPDATE_SIGNING_PASSWORD") or None
+            if password is not None:
+                if len(password.encode("utf-8")) > MAX_PASSWORD_BYTES:
+                    raise ValueError("Signing password exceeds the password-size limit")
+                if any(character in password for character in "\r\n\0"):
+                    raise ValueError("Signing password must be a single line without NUL")
+            # The encrypted key and its password enter only the signing step.
+            # Minisign reads the password from a pipe; never argv, child env or logs.
+            # Missing passwords keep stdin closed and cannot prompt interactively.
             with tempfile.TemporaryDirectory(prefix="tablecraft-sign-") as temporary:
                 key_file = Path(temporary) / "key"
                 with open(
@@ -109,7 +122,8 @@ def run(version, product, assets, output, public_key, tool, *, signing, dry_run)
                     signature = output / (archive.name + ".minisig")
                     created.append(signature)
                     execute([tool, "-S", "-s", str(key_file), "-m", str(archive),
-                             "-x", str(signature), "-t", comment(version, archive.name)])
+                             "-x", str(signature), "-t", comment(version, archive.name)],
+                            password=password)
                     verify_one(tool, public_key, archive, signature, version)
         except BaseException:
             for path in created:
