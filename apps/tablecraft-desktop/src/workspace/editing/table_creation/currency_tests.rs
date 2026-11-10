@@ -1,4 +1,5 @@
 //! Exact Currency input survives real schema and separately reviewed row saves.
+mod mixed;
 use super::{
     retained_tests,
     test_support::{add_named_field, initial_table, start_save},
