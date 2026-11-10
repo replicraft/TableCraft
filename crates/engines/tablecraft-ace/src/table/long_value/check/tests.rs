@@ -129,3 +129,123 @@ fn public_consistency_read_counts_all_rows_and_honors_an_explicit_row_allowance(
         Err(crate::InspectError::Malformed)
     ));
 }
+
+fn forwarded_map() -> Vec<u8> {
+    let mut bytes = mutation_fixture::with_rows(&[]);
+    bytes.resize(41 * 4096, 0);
+    bytes[4..20].copy_from_slice(b"Standard ACE DB\0");
+    bytes[20] = 5;
+    let mut definition =
+        mutation_fixture::definition(&[("Id", 4, 0, 4), ("Memo", 12, 0, 0)], 0, 11 << 8);
+    definition[43..45].copy_from_slice(&1_u16.to_le_bytes());
+    definition[103] = 2;
+    definition[129..141].copy_from_slice(&[1, 0, 1, 11, 0, 0, 2, 11, 0, 0, 255, 255]);
+    bytes[10 * 4096..11 * 4096].copy_from_slice(&definition);
+    let maps = data_page(
+        0,
+        &[
+            (0, vec![0; 11]),
+            (0x4000, 0x0e00_u32.to_le_bytes().to_vec()),
+            (0, vec![0; 11]),
+        ],
+    );
+    bytes[11 * 4096..12 * 4096].copy_from_slice(&maps);
+    for page in 14..40 {
+        let pointer = (((page + 1) as u32) << 8).to_le_bytes().to_vec();
+        bytes[page * 4096..(page + 1) * 4096].copy_from_slice(&data_page(0, &[(0x4000, pointer)]));
+    }
+    bytes[40 * 4096..41 * 4096].copy_from_slice(&data_page(0, &[(0x8000, vec![0; 11])]));
+    // All actual metadata pages are allocated; no future page is interpreted.
+    bytes[4096..8192].copy_from_slice(&data_page(1, &[(0, vec![0; 69])]));
+    bytes
+}
+
+#[test]
+fn public_consistency_read_checks_deep_forwarded_map_metadata_without_write_authority() {
+    let bytes = forwarded_map();
+    let report = check_table_long_values(
+        &mut Cursor::new(&bytes),
+        CatalogScope::new(1),
+        "Items",
+        &mut budget(),
+        &|| false,
+    )
+    .unwrap();
+    assert_eq!(report.rows(), 0);
+    assert_eq!(
+        report.columns()[0].status(),
+        crate::LongValueCheckStatus::Checked
+    );
+
+    #[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
+    {
+        let report = super::check_for_mutation(
+            &mut Cursor::new(&bytes),
+            CatalogScope::new(1),
+            "Items",
+            &mut budget(),
+            &|| false,
+        )
+        .unwrap();
+        assert_eq!(
+            report.columns()[0].status(),
+            crate::LongValueCheckStatus::UnknownMap
+        );
+    }
+
+    #[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
+    {
+        let mut cursor = Cursor::new(bytes.as_slice());
+        let mut allowance = budget();
+        let mut reader = crate::format::reader::Reader {
+            source: &mut cursor,
+            header: crate::Header::parse(&bytes, bytes.len() as u64).unwrap(),
+            budget: &mut allowance,
+            cancelled: &|| false,
+            reads: 0,
+        };
+        let map = crate::format::allocation::RepresentedMap::read_only(
+            &mut reader,
+            0x0b01,
+            crate::format::allocation::MapRole::Owned,
+        )
+        .unwrap();
+        assert!(matches!(
+            map.cell(&mut reader, 0),
+            Err(crate::InspectError::Unsupported)
+        ));
+        assert!(matches!(
+            map.future_cell(&mut reader, 41),
+            Err(crate::InspectError::Unsupported)
+        ));
+        let mut protected = Vec::new();
+        assert!(matches!(
+            map.protect_storage(&mut reader, &mut protected),
+            Err(crate::InspectError::Unsupported)
+        ));
+        assert!(protected.is_empty());
+    }
+}
+
+#[test]
+fn forwarded_map_checks_every_intermediate_owner_and_allocated_storage_page() {
+    for foreign_owner in [false, true] {
+        let mut bytes = forwarded_map();
+        if foreign_owner {
+            bytes[25 * 4096 + 4..25 * 4096 + 8].copy_from_slice(&10_u32.to_le_bytes());
+        } else {
+            // The global inline map's final69-byte row marks intermediate25 free.
+            bytes[8192 - 69 + 5 + 25 / 8] |= 1 << (25 % 8);
+        }
+        assert!(matches!(
+            check_table_long_values(
+                &mut Cursor::new(&bytes),
+                CatalogScope::new(1),
+                "Items",
+                &mut budget(),
+                &|| false,
+            ),
+            Err(crate::InspectError::Malformed)
+        ));
+    }
+}

@@ -23,10 +23,25 @@ use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_model::CatalogScope;
 
 #[derive(Clone, Copy)]
-enum CheckPurpose {
+pub(super) enum CheckPurpose {
     Read,
     #[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
     Mutation,
+}
+
+impl CheckPurpose {
+    pub(super) fn map<R: NativeReadSource>(
+        self,
+        reader: &mut Reader<'_, R>,
+        reference: u32,
+        role: MapRole,
+    ) -> Result<RepresentedMap, InspectError> {
+        match self {
+            Self::Read => RepresentedMap::read_only(reader, reference, role),
+            #[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
+            Self::Mutation => RepresentedMap::read(reader, reference, role),
+        }
+    }
 }
 
 fn entry(number: usize, status: LongValueCheckStatus) -> LongValueCheck {
@@ -203,12 +218,12 @@ fn check_with_purpose<R: NativeReadSource>(
             if references.owned == 0 || references.candidate == 0 {
                 result.status = LongValueCheckStatus::Absent;
             } else {
-                match maps::inspect(&mut reader, references)? {
+                match maps::inspect(&mut reader, references, purpose)? {
                     MapInspection::Unknown => result.status = LongValueCheckStatus::UnknownMap,
                     MapInspection::Indirect => result.status = LongValueCheckStatus::IndirectMaps,
                     MapInspection::Qualified(owned, candidate) => {
                         if global.is_none() {
-                            let value = RepresentedMap::read(
+                            let value = purpose.map(
                                 &mut reader,
                                 GLOBAL_FREE_REFERENCE,
                                 MapRole::GlobalFree,

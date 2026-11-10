@@ -1,10 +1,10 @@
 //! Qualified trailing column pairs and role-aware LVAL storage inventories.
-use super::LVAL_SIGNATURE;
 use super::model::LongValueMapReferences;
+use super::{LVAL_SIGNATURE, check::CheckPurpose};
 use crate::{
     InspectError, NativeReadSource, TableSchema,
     format::{
-        allocation::{self, MapCell, MapRole, RepresentedMap},
+        allocation::{self, MapRole, RepresentedMap},
         bytes::u16_at,
         definition,
         page::{DATA_SIGNATURE, OWNER_OFFSET, PAGE_BYTES},
@@ -284,22 +284,22 @@ pub(super) enum MapInspection {
 pub(super) fn inspect<R: NativeReadSource>(
     reader: &mut Reader<'_, R>,
     references: LongValueMapReferences,
+    purpose: CheckPurpose,
 ) -> Result<MapInspection, InspectError> {
     if references.owned == references.candidate {
         return Ok(MapInspection::Unknown);
     }
 
-    let owned = match RepresentedMap::read(reader, references.owned, MapRole::Owned) {
+    let owned = match purpose.map(reader, references.owned, MapRole::Owned) {
         Ok(value) => value,
         Err(InspectError::Unsupported) => return Ok(MapInspection::Unknown),
         Err(error) => return Err(error),
     };
-    let candidate =
-        match RepresentedMap::read(reader, references.candidate, MapRole::LongValueCandidate) {
-            Ok(value) => value,
-            Err(InspectError::Unsupported) => return Ok(MapInspection::Unknown),
-            Err(error) => return Err(error),
-        };
+    let candidate = match purpose.map(reader, references.candidate, MapRole::LongValueCandidate) {
+        Ok(value) => value,
+        Err(InspectError::Unsupported) => return Ok(MapInspection::Unknown),
+        Err(error) => return Err(error),
+    };
     match (owned.kind(), candidate.kind()) {
         (INLINE_MAP | INDIRECT_MAP, INLINE_MAP) => Ok(MapInspection::Qualified(owned, candidate)),
         (INLINE_MAP | INDIRECT_MAP, INDIRECT_MAP) => Ok(MapInspection::Indirect),
@@ -373,13 +373,7 @@ pub(super) fn allocated<R: NativeReadSource>(
     global: &RepresentedMap,
     page: u32,
 ) -> Result<(), InspectError> {
-    let cell: MapCell = global.cell(reader, page)?;
-    if cell.offset >= reader.header.page_count() as usize * PAGE_BYTES
-        || cell.before & cell.mask != 0
-    {
-        return Err(InspectError::Malformed);
-    }
-    Ok(())
+    global.require_allocated(reader, page)
 }
 
 #[cfg(test)]

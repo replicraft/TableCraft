@@ -24,7 +24,7 @@ enum RowAccess {
 
 // Optional row traversal authority is caller-owned and allocation-free here.
 struct RowScope<'a> {
-    owned: &'a [u32],
+    owned: Option<&'a [u32]>,
     visit: &'a mut dyn FnMut(u32, &mut ResourceBudget) -> Result<(), InspectError>,
 }
 
@@ -128,6 +128,27 @@ impl<R: crate::NativeReadSource> Reader<'_, R> {
         )
     }
 
+    /// Resolve inert metadata while retaining each checked physical reference
+    /// through a paid caller observer; no writable-page scope is issued.
+    pub(crate) fn read_location_observed(
+        &mut self,
+        page_number: u32,
+        slot: u8,
+        owner: u32,
+        page: &[u8; PAGE_BYTES],
+        visit: &mut dyn FnMut(u32, &mut ResourceBudget) -> Result<(), InspectError>,
+    ) -> Result<PhysicalRow, InspectError> {
+        let mut scope = RowScope { owned: None, visit };
+        self.row_impl(
+            page_number,
+            slot,
+            Some(owner),
+            RowAccess::LiveRead,
+            Some(page),
+            Some(&mut scope),
+        )
+    }
+
     /// Resolve a row within the existing qualified physical-mutation scope.
     pub fn row_location(
         &mut self,
@@ -159,7 +180,10 @@ impl<R: crate::NativeReadSource> Reader<'_, R> {
         owned: &[u32],
         visit: &mut dyn FnMut(u32, &mut ResourceBudget) -> Result<(), InspectError>,
     ) -> Result<PhysicalRow, InspectError> {
-        let mut scope = RowScope { owned, visit };
+        let mut scope = RowScope {
+            owned: Some(owned),
+            visit,
+        };
         self.row_impl(
             page_number,
             slot,
@@ -193,10 +217,10 @@ impl<R: crate::NativeReadSource> Reader<'_, R> {
                 return Err(InspectError::Malformed);
             }
             let key = reference(page_number, slot);
-            if let Some(scope) = scope.as_deref_mut() {
-                let levels = scope.owned.len().checked_ilog2().unwrap_or(0) as usize + 1;
+            if let Some(owned) = scope.as_ref().and_then(|scope| scope.owned) {
+                let levels = owned.len().checked_ilog2().unwrap_or(0) as usize + 1;
                 self.work(levels)?;
-                if scope.owned.binary_search(&page_number).is_err() {
+                if owned.binary_search(&page_number).is_err() {
                     return Err(InspectError::Malformed);
                 }
             }

@@ -9,7 +9,7 @@ use crate::{
         bytes::u32_at,
         page::{OWNER_OFFSET, PAGE_BYTES, USAGE_SIGNATURE},
         reader::{Reader, row_range},
-        row::{OFFSET_MASK, reference, reference_page, reference_slot},
+        row::{OFFSET_MASK, RELOCATED_MASK, reference, reference_page, reference_slot},
     },
 };
 #[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
@@ -46,7 +46,9 @@ pub(crate) struct MapStorage {
 
 #[derive(Clone, Copy)]
 enum Provenance {
+    #[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
     QualifiedRole,
+    InertRead,
     #[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
     ReadOnlyStorage,
 }
@@ -56,6 +58,7 @@ pub(crate) struct RepresentedMap {
     offset: usize,
     container: u32,
     role: MapRole,
+    read_pages: Option<Vec<u32>>,
 }
 
 impl RepresentedMap {
@@ -70,6 +73,9 @@ impl RepresentedMap {
         reader: &mut Reader<'_, R>,
         protected: &mut Vec<u32>,
     ) -> Result<(), InspectError> {
+        if self.read_pages.is_some() {
+            return Err(InspectError::Unsupported);
+        }
         let mut append = |number: u32, reader: &mut Reader<'_, R>| {
             reader.work(protected.len())?;
             if !protected.contains(&number) {
@@ -96,12 +102,23 @@ impl RepresentedMap {
         Ok(())
     }
 
+    #[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
     pub(crate) fn read<R: NativeReadSource>(
         reader: &mut Reader<'_, R>,
         reference: u32,
         role: MapRole,
     ) -> Result<Self, InspectError> {
         Self::read_with_provenance(reader, reference, role, Provenance::QualifiedRole)
+    }
+
+    /// Read map membership with complete forwarding checks, without issuing
+    /// represented writable cells or mutation-storage authority.
+    pub(crate) fn read_only<R: NativeReadSource>(
+        reader: &mut Reader<'_, R>,
+        reference: u32,
+        role: MapRole,
+    ) -> Result<Self, InspectError> {
+        Self::read_with_provenance(reader, reference, role, Provenance::InertRead)
     }
 
     /// Capture only map-record and bitmap identities using the existing read
@@ -142,14 +159,26 @@ impl RepresentedMap {
         let slot = reference_slot(reference);
         let page = reader.page(number)?;
         let (flags, _, _) = row_range(&page, usize::from(slot))?;
-        if flags & !OFFSET_MASK != 0 {
+        let allowed = if matches!(provenance, Provenance::InertRead) {
+            OFFSET_MASK | RELOCATED_MASK
+        } else {
+            OFFSET_MASK
+        };
+        if flags & !allowed != 0 {
             return Err(InspectError::Unsupported);
         }
         // These containers are reserved metadata, not arbitrary table records.
         // Public producer/getter bytes establish owner0 for owned usage rows
         // and self-owner1 for the fixed global page1,row0 container.
-        let owner = match provenance {
-            Provenance::QualifiedRole => match role {
+        let qualified_role = match provenance {
+            Provenance::InertRead => true,
+            #[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
+            Provenance::QualifiedRole => true,
+            #[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
+            Provenance::ReadOnlyStorage => false,
+        };
+        let owner = if qualified_role {
+            match role {
                 MapRole::Owned | MapRole::LongValueCandidate => OWNED_CONTAINER_OWNER,
                 #[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
                 MapRole::TableFreeSpace => OWNED_CONTAINER_OWNER,
@@ -159,19 +188,39 @@ impl RepresentedMap {
                     }
                     GLOBAL_MAP_PAGE
                 }
-            },
-            #[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
-            Provenance::ReadOnlyStorage => u32_at(&page, OWNER_OFFSET)?,
+            }
+        } else {
+            u32_at(&page, OWNER_OFFSET)?
         };
         if u32_at(&page, OWNER_OFFSET)? != owner {
             return Err(InspectError::Malformed);
         }
-        let row = reader.row_location(number, slot, owner, &page)?;
+        let mut read_pages = None;
+        let row = if matches!(provenance, Provenance::InertRead) {
+            let mut pages = Vec::new();
+            let row = reader.read_location_observed(
+                number,
+                slot,
+                owner,
+                &page,
+                &mut |reference, budget| {
+                    budget.charge_allocation(1, size_of::<u32>() as u64)?;
+                    pages.try_reserve(1).map_err(|_| InspectError::Allocation)?;
+                    pages.push(reference_page(reference));
+                    Ok(())
+                },
+            )?;
+            read_pages = Some(pages);
+            row
+        } else {
+            reader.row_location(number, slot, owner, &page)?
+        };
         let result = Self {
             payload: row.data,
             offset: row.offset,
             container: number,
             role,
+            read_pages,
         };
         // Storage-only claims retain the existing read-owned malformed-prefix
         // classes. Qualified role admission below keeps its previous behavior.
@@ -222,7 +271,7 @@ impl RepresentedMap {
             }
             _ => return Err(InspectError::Unsupported),
         }
-        if matches!(provenance, Provenance::QualifiedRole) && !matches!(role, MapRole::GlobalFree) {
+        if qualified_role && !matches!(role, MapRole::GlobalFree) {
             // Owned addresses and qualified table candidate addresses are in
             // file. This shares only bitmap grammar/address validation; their
             // membership meanings remain distinct. Global FREE bits may name
@@ -241,8 +290,14 @@ impl RepresentedMap {
         if !matches!(self.role, MapRole::GlobalFree) {
             return Err(InspectError::Unsupported);
         }
-        let cell = self.cell(reader, target)?;
-        if cell.before & cell.mask != 0 {
+        reader.tick()?;
+        if target >= reader.header.page_count() {
+            return Err(InspectError::Malformed);
+        }
+        let cell = self.represented_cell(reader, target)?;
+        if cell.offset >= reader.header.page_count() as usize * PAGE_BYTES
+            || cell.before & cell.mask != 0
+        {
             return Err(InspectError::Malformed);
         }
         Ok(())
@@ -258,6 +313,12 @@ impl RepresentedMap {
             global.require_allocated(reader, 0)?;
         }
         global.require_allocated(reader, self.container)?;
+        if let Some(pages) = &self.read_pages {
+            for page in pages {
+                reader.tick()?;
+                global.require_allocated(reader, *page)?;
+            }
+        }
         if self.payload[0] == INDIRECT_MAP {
             for bytes in self.payload[1..].as_chunks::<PAGE_POINTER_BYTES>().0 {
                 reader.tick()?;
@@ -270,11 +331,15 @@ impl RepresentedMap {
         Ok(())
     }
 
+    #[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
     pub(crate) fn cell<R: NativeReadSource>(
         &self,
         reader: &mut Reader<'_, R>,
         target: u32,
     ) -> Result<MapCell, InspectError> {
+        if self.read_pages.is_some() {
+            return Err(InspectError::Unsupported);
+        }
         reader.tick()?;
         if target >= reader.header.page_count() {
             return Err(InspectError::Malformed);
@@ -290,6 +355,9 @@ impl RepresentedMap {
         reader: &mut Reader<'_, R>,
         target: u32,
     ) -> Result<MapCell, InspectError> {
+        if self.read_pages.is_some() {
+            return Err(InspectError::Unsupported);
+        }
         reader.tick()?;
         if target < reader.header.page_count() {
             return Err(InspectError::Malformed);
