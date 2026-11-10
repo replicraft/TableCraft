@@ -148,7 +148,7 @@ fn failures_return_exit_two_no_partial_output_and_no_sql_or_value_payloads() {
     }
 }
 #[test]
-fn help_and_parameter_limits_describe_and_enforce_the_boundary() {
+fn help_and_large_parameters_preserve_explicit_text_budget_controls() {
     let result = CLI.run(&["query", "run", "--help"]);
     assert!(result.status.success());
     let help = String::from_utf8(result.stdout).unwrap();
@@ -160,12 +160,24 @@ fn help_and_parameter_limits_describe_and_enforce_the_boundary() {
     let result = CLI.run(&[
         "query",
         "run",
-        "PARAMETERS P TEXT; SELECT P",
+        "PARAMETERS P TEXT; SELECT Len(P) AS N",
         "--param",
         &big,
     ]);
-    assert_eq!(result.status.code(), Some(2));
-    assert!(result.stdout.is_empty());
+    assert!(result.status.success());
+    assert_eq!(result.stdout, b"N\n65536\n");
+
+    let limited = CLI.run(&[
+        "query",
+        "run",
+        "PARAMETERS P TEXT; SELECT Len(P) AS N",
+        "--param",
+        &big,
+        "--text-bytes",
+        "65535",
+    ]);
+    assert_eq!(limited.status.code(), Some(2));
+    assert!(limited.stdout.is_empty());
 }
 
 #[test]

@@ -90,7 +90,11 @@ fn explicit_parameters_text_policies_and_declared_arithmetic_reach_each_row() {
     );
 
     let generated = "SELECT Len(String(70000,'a')) AS N FROM Items";
-    assert!(failure(file.query(generated, &["--stream"])).is_empty());
+    assert_eq!(
+        success(file.query(generated, &["--stream"])),
+        b"N\n70000\n70000\n70000\n"
+    );
+    assert!(failure(file.query(generated, &["--stream", "--text-bytes", "65536"])).is_empty());
     assert_eq!(
         success(file.query(
             generated,
