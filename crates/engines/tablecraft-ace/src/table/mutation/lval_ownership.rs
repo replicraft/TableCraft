@@ -27,6 +27,13 @@ use std::io::Cursor;
 use std::ops::Range;
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
+#[derive(Clone, Copy)]
+enum RowTraversal {
+    Original,
+    #[cfg(all(feature = "journal", feature = "ace16-create"))]
+    Retained,
+}
+
 struct Claim {
     page: u32,
     definition: u32,
@@ -116,6 +123,30 @@ impl Inventory {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, EditError> {
+        Self::capture_native(image, RowTraversal::Original, budget, cancelled)
+    }
+
+    /// Retained row purposes trace all ordinary references with paid dynamic
+    /// cycle ownership; the original mutation census keeps its fixed language.
+    #[cfg(all(feature = "journal", feature = "ace16-create"))]
+    pub(in crate::table) fn capture_retained(
+        image: &NativeImage,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, EditError> {
+        Self::capture_native(image, RowTraversal::Retained, budget, cancelled)
+    }
+
+    #[cfg(all(
+        feature = "journal",
+        any(not(feature = "ace16-write-preview"), feature = "ace16-create")
+    ))]
+    fn capture_native(
+        image: &NativeImage,
+        traversal: RowTraversal,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, EditError> {
         let mut result = Self {
             claims: Vec::new(),
             live: Vec::new(),
@@ -137,7 +168,7 @@ impl Inventory {
                         return Err(EditError::Unsupported(WriteBlocker::RowLayout));
                     }
                 }
-                result.table(schema, indexes, declarations, &[], reader)
+                result.table(schema, indexes, declarations, &[], traversal, reader)
             },
         )?;
         let mut source = image.reader();
@@ -309,7 +340,14 @@ impl Inventory {
                         empty_columns.push(field.number());
                     }
                 }
-                result.table(schema, indexes, declarations, &empty_columns, reader)
+                result.table(
+                    schema,
+                    indexes,
+                    declarations,
+                    &empty_columns,
+                    RowTraversal::Original,
+                    reader,
+                )
             },
         )?;
         let mut source = image.reader();
@@ -338,6 +376,7 @@ impl Inventory {
         indexes: &[NativeIndex],
         declarations: &storage_maps::Declarations,
         empty_columns: &[usize],
+        traversal: RowTraversal,
         reader: &mut Reader<'_, Cursor<&[u8]>>,
     ) -> Result<(), EditError> {
         protect(&mut self.protected, schema.definition_page(), reader)?;
@@ -371,7 +410,7 @@ impl Inventory {
         }
 
         let mut rows = 0_u32;
-        for number in ordinary {
+        for &number in &ordinary {
             let page = reader.page(number)?;
             if page[..DATA_SIGNATURE.len()] != DATA_SIGNATURE
                 || u32_at(&page, OWNER_OFFSET)? != schema.definition_page()
@@ -388,7 +427,26 @@ impl Inventory {
                     .charge(Resource::Rows, 1)
                     .map_err(InspectError::from)?;
                 let slot = u8::try_from(slot).map_err(|_| InspectError::Malformed)?;
-                let row = reader.row_location(number, slot, schema.definition_page(), &page)?;
+                let row = match traversal {
+                    RowTraversal::Original => {
+                        reader.row_location(number, slot, schema.definition_page(), &page)?
+                    }
+                    #[cfg(all(feature = "journal", feature = "ace16-create"))]
+                    RowTraversal::Retained => reader.read_location_observed(
+                        number,
+                        slot,
+                        schema.definition_page(),
+                        &page,
+                        &mut |reference, budget| {
+                            let levels = ordinary.len().checked_ilog2().unwrap_or(0) as u64 + 1;
+                            budget.charge(Resource::Steps, levels)?;
+                            if ordinary.binary_search(&reference_page(reference)).is_err() {
+                                return Err(InspectError::Malformed);
+                            }
+                            Ok(())
+                        },
+                    )?,
+                };
                 let layout = record_layout::parse_values(&row.data, schema, reader.budget)?;
                 for field in schema
                     .columns()

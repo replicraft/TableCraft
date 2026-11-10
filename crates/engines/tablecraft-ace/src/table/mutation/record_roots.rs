@@ -3,6 +3,8 @@ use super::{
     EditError, WriteBlocker,
     rows::{Directory, RowAssignment},
 };
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+use crate::format::row::reference_page;
 use crate::{
     InspectError, NativeImage, TableSchema,
     format::{
@@ -57,10 +59,53 @@ pub(in crate::table::mutation) struct Roots<'u, U> {
     pub owned: Vec<u32>,
 }
 
+#[derive(Clone, Copy)]
+enum Traversal {
+    Original,
+    #[cfg(all(feature = "journal", feature = "ace16-create"))]
+    Retained,
+}
+
 pub(in crate::table::mutation) fn capture<'u, U: RowAssignment>(
     image: &NativeImage,
     schema: &TableSchema,
     updates: &'u [U],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Roots<'u, U>, EditError> {
+    capture_with_traversal(
+        image,
+        schema,
+        updates,
+        Traversal::Original,
+        budget,
+        cancelled,
+    )
+}
+
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub(in crate::table::mutation) fn capture_retained<'u, U: RowAssignment>(
+    image: &NativeImage,
+    schema: &TableSchema,
+    updates: &'u [U],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Roots<'u, U>, EditError> {
+    capture_with_traversal(
+        image,
+        schema,
+        updates,
+        Traversal::Retained,
+        budget,
+        cancelled,
+    )
+}
+
+fn capture_with_traversal<'u, U: RowAssignment>(
+    image: &NativeImage,
+    schema: &TableSchema,
+    updates: &'u [U],
+    traversal: Traversal,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Roots<'u, U>, EditError> {
@@ -118,7 +163,25 @@ pub(in crate::table::mutation) fn capture<'u, U: RowAssignment>(
             let root = reference(number, slot);
             // The existing reader owns pointer decoding, owner validation,
             // cycle detection and hop limits. Do not duplicate that grammar.
-            let final_record = reader.row_location(number, slot, schema.definition, &page)?;
+            let final_record = match traversal {
+                Traversal::Original => {
+                    reader.row_location(number, slot, schema.definition, &page)?
+                }
+                #[cfg(all(feature = "journal", feature = "ace16-create"))]
+                Traversal::Retained => reader.read_location_observed(
+                    number,
+                    slot,
+                    schema.definition,
+                    &page,
+                    &mut |reference, budget| {
+                        budget.charge(Resource::Steps, owned_levels as u64)?;
+                        if owned.binary_search(&reference_page(reference)).is_err() {
+                            return Err(InspectError::Malformed);
+                        }
+                        Ok(())
+                    },
+                )?,
+            };
             let final_page = u32::try_from(final_record.offset / PAGE_BYTES)
                 .map_err(|_| InspectError::Malformed)?;
             reader.work(owned_levels)?;

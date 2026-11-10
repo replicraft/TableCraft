@@ -35,6 +35,7 @@ pub(super) struct Facts {
 
 pub(super) fn capture(
     image: &NativeImage,
+    dynamic_rows: bool,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Facts, EditError> {
@@ -160,9 +161,12 @@ pub(super) fn capture(
         budget,
         cancelled,
     )?);
-    drop(lval_ownership::Inventory::capture(
-        image, budget, cancelled,
-    )?);
+    let long_values = if dynamic_rows {
+        lval_ownership::Inventory::capture_retained(image, budget, cancelled)?
+    } else {
+        lval_ownership::Inventory::capture(image, budget, cancelled)?
+    };
+    drop(long_values);
     Ok(Facts {
         schema,
         tables_parent: tables.native_id(),

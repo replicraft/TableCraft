@@ -18,6 +18,14 @@ use crate::{
 };
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
+#[cfg(feature = "journal")]
+#[derive(Clone, Copy)]
+enum NormalTraversal {
+    Original,
+    #[cfg(feature = "ace16-create")]
+    Retained,
+}
+
 pub(in crate::table::mutation) struct Space {
     definition: u32,
     hint: RepresentedMap,
@@ -105,9 +113,50 @@ impl Space {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, EditError> {
+        Self::capture_normal_with(
+            image,
+            schema,
+            owned,
+            NormalTraversal::Original,
+            budget,
+            cancelled,
+        )
+    }
+
+    #[cfg(all(feature = "journal", feature = "ace16-create"))]
+    pub(in crate::table::mutation) fn capture_retained(
+        image: &NativeImage,
+        schema: &TableSchema,
+        owned: &[u32],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, EditError> {
+        Self::capture_normal_with(
+            image,
+            schema,
+            owned,
+            NormalTraversal::Retained,
+            budget,
+            cancelled,
+        )
+    }
+
+    #[cfg(feature = "journal")]
+    fn capture_normal_with(
+        image: &NativeImage,
+        schema: &TableSchema,
+        owned: &[u32],
+        traversal: NormalTraversal,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, EditError> {
         let mut space = Self::capture(image, schema, owned, budget, cancelled)?;
         let pages = Protection::capture(image, schema, budget, cancelled)?;
-        let long_values = Inventory::capture(image, budget, cancelled)?;
+        let long_values = match traversal {
+            NormalTraversal::Original => Inventory::capture(image, budget, cancelled)?,
+            #[cfg(feature = "ace16-create")]
+            NormalTraversal::Retained => Inventory::capture_retained(image, budget, cancelled)?,
+        };
         for &number in owned {
             pages.require_page(image, schema.definition_page(), number, budget, cancelled)?;
         }

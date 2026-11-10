@@ -43,6 +43,8 @@ enum Purpose {
     #[cfg(feature = "ace16-create")]
     RetainedInsert,
     #[cfg(feature = "ace16-create")]
+    RetainedRows,
+    #[cfg(feature = "ace16-create")]
     CurrentDelete,
 }
 
@@ -256,6 +258,25 @@ impl<'image> NoRequiredTablePrograms<'image> {
         )
     }
 
+    /// Retained row replacement proves its own target programs and complete
+    /// storage inventory. Insertion and schema certificates are not transferable.
+    #[cfg(feature = "ace16-create")]
+    pub(in crate::table::mutation) fn capture_retained_rows(
+        image: &'image NativeImage,
+        schema: &TableSchema,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, EditError> {
+        Self::capture_with_purpose(
+            image,
+            schema,
+            Declaration::CurrentSchema,
+            Purpose::RetainedRows,
+            budget,
+            cancelled,
+        )
+    }
+
     /// Distinct current-row evidence shares checked sparse metadata framing,
     /// but cannot be substituted by a readonly schema certificate.
     #[cfg(feature = "ace16-create")]
@@ -320,7 +341,7 @@ impl<'image> NoRequiredTablePrograms<'image> {
         check(budget, cancelled)?;
         match purpose {
             #[cfg(feature = "ace16-create")]
-            Purpose::RetainedInsert => image.require_retained_capture()?,
+            Purpose::RetainedInsert | Purpose::RetainedRows => image.require_retained_capture()?,
             _ => image.require_standard_capture()?,
         }
         let header = image.catalog().header();
@@ -331,6 +352,13 @@ impl<'image> NoRequiredTablePrograms<'image> {
             return Err(refused());
         }
         let selected = match purpose {
+            #[cfg(feature = "ace16-create")]
+            Purpose::RetainedRows => {
+                let inventory = crate::table::table_append::Inventory::capture_retained_rows(
+                    image, budget, cancelled,
+                )?;
+                catalog::validate_retained_rows(image, schema, &inventory, budget, cancelled)?
+            }
             #[cfg(feature = "ace16-create")]
             Purpose::RetainedInsert => {
                 let inventory =
@@ -353,6 +381,7 @@ impl<'image> NoRequiredTablePrograms<'image> {
                     | Purpose::CurrentRows
                     | Purpose::CurrentInsert
                     | Purpose::RetainedInsert
+                    | Purpose::RetainedRows
                     | Purpose::CurrentDelete
             ) {
                 properties::capture_current_schema(image, schema, budget, cancelled)?;
@@ -460,6 +489,20 @@ impl<'image> NoRequiredTablePrograms<'image> {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<(), EditError> {
         if self.purpose != Purpose::CurrentInsert {
+            return Err(EditError::Preservation);
+        }
+        self.require_binding(image, schema, budget, cancelled)
+    }
+
+    #[cfg(feature = "ace16-create")]
+    pub(in crate::table::mutation) fn require_retained_rows_source(
+        &self,
+        image: &NativeImage,
+        schema: &TableSchema,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(), EditError> {
+        if self.purpose != Purpose::RetainedRows || self.declaration != Declaration::CurrentSchema {
             return Err(EditError::Preservation);
         }
         self.require_binding(image, schema, budget, cancelled)

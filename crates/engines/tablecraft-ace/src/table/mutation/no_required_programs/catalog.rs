@@ -79,6 +79,8 @@ enum Padding {
     RetainedMetadata,
     #[cfg(feature = "ace16-create")]
     RetainedRows,
+    #[cfg(feature = "ace16-create")]
+    RetainedRowUpdates,
 }
 
 pub(super) fn validate(
@@ -114,6 +116,25 @@ pub(super) fn validate_retained(
         image,
         target,
         Padding::RetainedRows,
+        Some(inventory),
+        budget,
+        cancelled,
+    )
+}
+
+#[cfg(feature = "ace16-create")]
+pub(super) fn validate_retained_rows(
+    image: &NativeImage,
+    target: &TableSchema,
+    inventory: &crate::table::table_append::Inventory<'_>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Selected, EditError> {
+    inventory.require_source(image)?;
+    validate_with_inventory(
+        image,
+        target,
+        Padding::RetainedRowUpdates,
         Some(inventory),
         budget,
         cancelled,
@@ -171,6 +192,13 @@ fn validate_with_inventory(
     let owned = allocation::pages(&mut reader, raw_layout.usage)?;
     let logical = match padding {
         #[cfg(feature = "ace16-create")]
+        Padding::RetainedRowUpdates => roots::capture_retained_rows(
+            &mut reader,
+            &owned,
+            CATALOG_DEFINITION,
+            inventory.ok_or_else(refused)?,
+        )?,
+        #[cfg(feature = "ace16-create")]
         Padding::RetainedRows => roots::capture_retained(
             &mut reader,
             &owned,
@@ -188,7 +216,9 @@ fn validate_with_inventory(
         let invalid_padding = match padding {
             Padding::Strict => variable_end != layout.data_end,
             #[cfg(feature = "ace16-create")]
-            Padding::RetainedMetadata | Padding::RetainedRows => variable_end > layout.data_end,
+            Padding::RetainedMetadata | Padding::RetainedRows | Padding::RetainedRowUpdates => {
+                variable_end > layout.data_end
+            }
         };
         // Complete declared columns and monotone offsets still bind every live
         // variable cell. Only the unreferenced interval before the checked footer

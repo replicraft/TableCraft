@@ -2,7 +2,7 @@
 use super::super::{
     current_schema, no_required_programs::NoRequiredTablePrograms, preserved_source,
 };
-use crate::{EditError, NativeImage, WriteBlocker};
+use crate::{EditError, NativeImage, WriteBlocker, inspect_table_schema};
 use tablecraft_core::limits::ResourceBudget;
 
 enum Purpose {
@@ -36,6 +36,32 @@ impl<'image> Source<'image> {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, EditError> {
         Self::capture_with_purpose(image, table, Purpose::CurrentRows, budget, cancelled)
+    }
+
+    /// Retained replacement proves actual target metadata and surrounding roles
+    /// independently of the fixed current-schema creator geometry.
+    pub(in crate::table::mutation) fn capture_retained_rows(
+        image: &'image NativeImage,
+        table: &str,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, EditError> {
+        image.require_retained_capture()?;
+        let schema = inspect_table_schema(
+            &mut image.reader(),
+            image.catalog().catalog().scope(),
+            table,
+            budget,
+            cancelled,
+        )?;
+        let certificate =
+            NoRequiredTablePrograms::capture_retained_rows(image, &schema, budget, cancelled)?;
+        let facts =
+            preserved_source::capture_retained_rows(image, table, &certificate, budget, cancelled)?;
+        if !facts.dependencies.is_empty() {
+            return Err(EditError::Unsupported(WriteBlocker::Column));
+        }
+        Ok(Self { image, facts })
     }
 
     fn capture_with_purpose(
