@@ -72,10 +72,10 @@ fn observe(bytes: &[u8], expected: &[Vec<Value>]) {
 fn direct_initial_inline_property_rename_does_not_require_a_prior_add() {
     for case in fields::CASES {
         let source = fields::source(case);
-        let old = if matches!(case, Case::SecondText) {
-            "Name"
-        } else {
-            "Score"
+        let old = match case {
+            Case::FirstNumber => "Score",
+            Case::SecondText => "Name",
+            Case::OriginalSparse => "AfterLabel",
         };
         let after = changes::rename(
             &source.bytes,

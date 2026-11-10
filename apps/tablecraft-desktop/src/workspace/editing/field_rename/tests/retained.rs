@@ -15,10 +15,10 @@ use tablecraft_testkit::fixtures::access::canonical_retained_add_table::{
 fn retained_inline_companion_rename_saves_without_first_adding_a_field() {
     for case in fields::CASES {
         let source = fields::source(case);
-        let old = if matches!(case, Case::SecondText) {
-            "Name"
-        } else {
-            "Score"
+        let old = match case {
+            Case::FirstNumber => "Score",
+            Case::SecondText => "Name",
+            Case::OriginalSparse => "AfterLabel",
         };
         let expected = changes::rename(
             &source.bytes,
