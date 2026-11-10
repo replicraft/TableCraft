@@ -119,12 +119,41 @@ pub fn expected(case: Case) -> Vec<Vec<Value>> {
 /// Store an explicit Number in a newly added logical field; retired physical
 /// bytes are not interpreted as its old value and sibling values remain exact.
 pub fn fill_number(case: Case, before: &[u8], root: usize, value: i32) -> Vec<u8> {
-    fill(case, before, root, Target::Number, &value.to_le_bytes())
+    update(
+        Stored::Historical(case),
+        before,
+        root,
+        Target::Number,
+        Some(&value.to_le_bytes()),
+    )
 }
 
 /// Store explicit empty/compressed/wide Text through the selected reused or new
 /// physical variable slot, retaining every unrelated raw slot and NULL payload.
 pub fn fill_text(case: Case, before: &[u8], root: usize, value: &str) -> Vec<u8> {
+    update(
+        Stored::Historical(case),
+        before,
+        root,
+        Target::ShortText,
+        Some(&text_bytes(value)),
+    )
+}
+
+/// Replace a physically present readded Text, retaining full-count geometry and
+/// distinguishing an explicit empty value from a cleared NULL carrier.
+pub fn replace_text(before: &[u8], root: usize, value: Option<&str>) -> Vec<u8> {
+    let bytes = value.map(text_bytes);
+    update(
+        Stored::Present,
+        before,
+        root,
+        Target::ShortText,
+        bytes.as_deref(),
+    )
+}
+
+fn text_bytes(value: &str) -> Vec<u8> {
     let units: Vec<_> = value.encode_utf16().collect();
     assert!(units.len() <= 255);
     let mut bytes = Vec::new();
@@ -137,10 +166,22 @@ pub fn fill_text(case: Case, before: &[u8], root: usize, value: &str) -> Vec<u8>
             bytes.extend(unit.to_le_bytes());
         }
     }
-    fill(case, before, root, Target::ShortText, &bytes)
+    bytes
 }
 
-fn fill(case: Case, before: &[u8], root: usize, target: Target, payload: &[u8]) -> Vec<u8> {
+#[derive(Clone, Copy)]
+enum Stored {
+    Historical(Case),
+    Present,
+}
+
+fn update(
+    stored: Stored,
+    before: &[u8],
+    root: usize,
+    target: Target,
+    value: Option<&[u8]>,
+) -> Vec<u8> {
     use super::super::super::populated_text::present;
 
     let old = present::record(before, root);
@@ -151,18 +192,30 @@ fn fill(case: Case, before: &[u8], root: usize, target: Target, payload: &[u8]) 
     // deleted slots. Missing slots are empty, without inventing deleted types.
     let retained_variables = word(before, DEFINITION + 43);
     let number = word(before, field + 5);
-    assert!(number >= count);
-    let fields = number + 1;
+    let fields = word(before, DEFINITION + 41);
+    match stored {
+        Stored::Historical(_) => assert!(number >= count),
+        Stored::Present => {
+            assert_eq!(count, fields);
+            assert!(number < count);
+        }
+    }
+    let payload = value.unwrap_or(&[]);
     let mask = old.len() - count.div_ceil(8);
 
     // Historical declarations are independently known in this raw source family,
     // including the now-retired field; no current production decoder is involved.
-    let original = super::source(case);
-    let old_active = word(&original, DEFINITION + 45);
-    let has_variables = (0..old_active).any(|index| {
-        let at = DEFINITION + FIELD_START + index * FIELD_BYTES;
-        original[at + 15] & 1 == 0 && word(&original, at + 5) < count
-    });
+    let has_variables = match stored {
+        Stored::Historical(case) => {
+            let original = super::source(case);
+            let old_active = word(&original, DEFINITION + 45);
+            (0..old_active).any(|index| {
+                let at = DEFINITION + FIELD_START + index * FIELD_BYTES;
+                original[at + 15] & 1 == 0 && word(&original, at + 5) < count
+            })
+        }
+        Stored::Present => retained_variables != 0,
+    };
     let old_variables = if has_variables {
         word(old, mask - 2)
     } else {
@@ -237,6 +290,9 @@ fn fill(case: Case, before: &[u8], root: usize, target: Target, payload: &[u8]) 
     for logical in count..fields {
         row[next_mask + logical / 8] &= !(1 << (logical % 8));
     }
-    row[next_mask + number / 8] |= 1 << (number % 8);
+    row[next_mask + number / 8] &= !(1 << (number % 8));
+    if value.is_some() {
+        row[next_mask + number / 8] |= 1 << (number % 8);
+    }
     present::place(before, root, &row)
 }

@@ -236,3 +236,35 @@ fn explicit_readded_field_values_replace_only_the_selected_logical_carrier() {
         }
     }
 }
+
+#[test]
+fn readded_text_replacement_preserves_survivors_across_growth_empty_and_null() {
+    use raw::readdition::{self, Target};
+
+    for case in raw::CASES {
+        let declared = readdition::after(&readdition::source(case), Target::ShortText);
+        let mut bytes = readdition::fill_text(case, &declared, 0, "first");
+        let mut expected = readdition::expected(case);
+        for text in [
+            Some("a substantially longer replacement"),
+            Some("x"),
+            Some(""),
+            None,
+            None,
+            Some("日本語🦀"),
+        ] {
+            bytes = readdition::replace_text(&bytes, 0, text);
+            *expected[0].last_mut().unwrap() =
+                text.map_or(Value::Null, |value| Value::Text(value.into()));
+            let table = read_table(
+                &mut Cursor::new(&bytes),
+                SCOPE,
+                "Table1",
+                &mut budget(),
+                &|| false,
+            )
+            .unwrap_or_else(|error| panic!("{case:?}/{text:?}: {error:?}"));
+            assert_eq!(table.rows(), expected, "{case:?}/{text:?}");
+        }
+    }
+}
