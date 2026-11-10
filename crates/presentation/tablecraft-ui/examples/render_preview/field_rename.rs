@@ -11,8 +11,8 @@ use egui_kittest::{
 };
 use tablecraft_builders::table::field_rename::FieldRenameNameProfile;
 use tablecraft_ui::{
-    Column, Data, EditSaveOutcome, FieldRenameSaveIdentity, FieldRenameTarget, ObjectKind,
-    preview::Preview,
+    Cell, CellKind, Column, Data, DisplayControl, EditSaveOutcome, FieldRenameSaveIdentity,
+    FieldRenameTarget, HorizontalAlignment, ObjectKind, preview::Preview,
 };
 
 const INSPECTION_ID: u64 = 840;
@@ -36,6 +36,7 @@ pub(super) fn is_mode(mode: &str) -> bool {
             | "name"
             | "unsupported"
             | "grow-name"
+            | "populated-name"
             | "shrink-name"
             | "source-refused"
             | "unchanged"
@@ -81,7 +82,11 @@ pub(super) fn prepare(harness: &mut Harness<'_, Preview>, mode: &str) {
                     native_number: Some(NATIVE_NUMBER),
                 },
             ],
-            rows: Vec::new(),
+            rows: if mode == "populated-name" {
+                populated_rows()
+            } else {
+                Vec::new()
+            },
             has_more: false,
         }));
         state.field_rename_available = true;
@@ -109,22 +114,24 @@ pub(super) fn prepare(harness: &mut Harness<'_, Preview>, mode: &str) {
             ORIGINAL_NAME,
             NATIVE_NUMBER,
             source_eligible,
-            source_eligible.then_some(if matches!(mode, "grow-name" | "shrink-name") {
-                FieldRenameNameProfile::FittedAscii {
-                    original_units: ORIGINAL_NAME.len(),
+            source_eligible.then_some(
+                if matches!(mode, "grow-name" | "shrink-name" | "populated-name") {
+                    FieldRenameNameProfile::FittedAscii {
+                        original_units: ORIGINAL_NAME.len(),
+                    }
+                } else {
+                    FieldRenameNameProfile::SameWidthAscii {
+                        units: ORIGINAL_NAME.len(),
+                    }
                 }
-            } else {
-                FieldRenameNameProfile::SameWidthAscii {
-                    units: ORIGINAL_NAME.len(),
-                }
-            }),
+            ),
         ));
         target
     };
 
     let proposed = match mode {
         "unsupported" => UNSUPPORTED_NAME,
-        "grow-name" => "LongerScore",
+        "grow-name" | "populated-name" => "LongerScore",
         "shrink-name" => "Pts",
         "unchanged" | "unchanged-returned" | "source-refused" => ORIGINAL_NAME,
         _ => CHANGED_NAME,
@@ -214,7 +221,10 @@ pub(super) fn prepare(harness: &mut Harness<'_, Preview>, mode: &str) {
     assert_eq!(state.active_object().unwrap().id, tab_id);
     assert_eq!(
         state.can_review_field_rename(),
-        matches!(mode, "name" | "unchanged" | "grow-name" | "shrink-name"),
+        matches!(
+            mode,
+            "name" | "unchanged" | "grow-name" | "shrink-name" | "populated-name"
+        ),
         "only the supported idle proposal permits a review request"
     );
     assert!(
@@ -224,7 +234,17 @@ pub(super) fn prepare(harness: &mut Harness<'_, Preview>, mode: &str) {
     let data = state.data.as_ref().expect("original synthetic table");
     assert_eq!(data.source_revision, Some(revision));
     assert_eq!(data.columns[1].name, ORIGINAL_NAME);
-    assert!(data.rows.is_empty());
+    if mode == "populated-name" {
+        assert_eq!(data.rows.len(), 3);
+        assert_eq!(data.rows[0][1].text, "42");
+        assert_eq!(data.rows[2][1].text, "-7");
+        assert!(matches!(
+            data.rows[1][1].kind,
+            CellKind::Scalar { is_null: true, .. }
+        ));
+    } else {
+        assert!(data.rows.is_empty());
+    }
 
     if !matches!(mode, "review" | "close") {
         let label = state.localizer.text("field-rename-name");
@@ -308,4 +328,25 @@ fn painted(harness: &Harness<'_, Preview>, key: &str) {
         }),
         "complete {key} is painted inside the viewport"
     );
+}
+
+fn populated_rows() -> Vec<Vec<Cell>> {
+    let mut null = Cell::scalar("");
+    null.kind = CellKind::Scalar {
+        is_null: true,
+        stored_calculation: false,
+        boolean: None,
+        display_control: DisplayControl::Uninspected,
+    };
+    let mut rows = vec![
+        vec![Cell::scalar("1"), Cell::scalar("42")],
+        vec![Cell::scalar("2"), null],
+        vec![Cell::scalar("3"), Cell::scalar("-7")],
+    ];
+    for row in &mut rows {
+        for cell in row {
+            cell.alignment = HorizontalAlignment::Right;
+        }
+    }
+    rows
 }
