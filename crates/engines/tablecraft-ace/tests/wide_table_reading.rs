@@ -1,7 +1,7 @@
 //! Independently authored wide metadata is readable before creator admission.
 use std::io::Cursor;
 use tablecraft_ace::{
-    NativeImage, PayloadPresence, TableExtraCoverage, inspect_table_schema, read_table,
+    PropertyGroupKind, inspect_table_properties, inspect_table_schema, read_table,
 };
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_model::CatalogScope;
@@ -24,8 +24,8 @@ fn all_255_columns_and_external_field_properties_are_read_from_independent_bytes
         &|| false,
     )
     .unwrap();
-    assert_eq!(schema.columns.len(), 255);
-    for (index, column) in schema.columns.iter().enumerate() {
+    assert_eq!(schema.columns().len(), 255);
+    for (index, column) in schema.columns().iter().enumerate() {
         assert_eq!(column.name(), raw::field_name(index));
         assert_eq!(column.number(), index);
         assert_eq!(column.native_type(), 4);
@@ -42,30 +42,26 @@ fn all_255_columns_and_external_field_properties_are_read_from_independent_bytes
     .unwrap();
     assert!(rows.rows().is_empty());
 
-    let image = NativeImage::capture(
+    let properties = inspect_table_properties(
         &mut Cursor::new(&source.after),
         SCOPE,
+        "Table1",
         &mut budget(),
         &|| false,
     )
     .unwrap();
-    let properties = image
-        .inspect_table_extra(SCOPE.object_id(7), &mut budget(), &|| false)
-        .unwrap();
-    assert_eq!(properties.presence(), PayloadPresence::Present);
-    assert_eq!(properties.raw(), Some(source.property_body.as_slice()));
-    assert_eq!(properties.coverage(), TableExtraCoverage::WideMr2);
-    assert_eq!(properties.names(), ["Required", "DefaultValue"]);
+    assert_eq!(properties.object_id(), SCOPE.object_id(7));
+    assert_eq!(properties.raw_bytes(), source.property_body);
     assert_eq!(properties.groups().len(), 254);
-    for group in properties.groups() {
-        let fields = group
-            .properties()
-            .expect("complete authored field properties");
+    for (index, group) in properties.groups().iter().enumerate() {
+        assert_eq!(group.kind(), PropertyGroupKind::Column);
+        assert_eq!(group.name(), raw::field_name(index + 1));
+        let fields = group.properties();
         assert_eq!(fields.len(), 2);
         assert_eq!(fields[0].name(), "Required");
-        assert_eq!(fields[0].raw(), [0]);
+        assert!(!fields[0].boolean().unwrap());
         assert_eq!(fields[1].name(), "DefaultValue");
-        assert_eq!(fields[1].text(), Some("0"));
+        assert_eq!(fields[1].text().unwrap(), "0");
     }
 }
 
@@ -85,4 +81,22 @@ fn cyclic_or_non_definition_continuations_do_not_yield_a_partial_schema() {
             .is_err()
         );
     }
+}
+
+#[test]
+fn cyclic_external_property_storage_returns_no_partial_property_map() {
+    let mut source = raw::source();
+    // The first literal LVAL record starts at byte20 of page12. Repeating that
+    // reference must not publish its valid prefix as a complete property stream.
+    source.after[12 * 4096 + 20..12 * 4096 + 24].copy_from_slice(&(12_u32 << 8).to_le_bytes());
+    assert!(
+        inspect_table_properties(
+            &mut Cursor::new(&source.after),
+            SCOPE,
+            "Table1",
+            &mut budget(),
+            &|| false,
+        )
+        .is_err()
+    );
 }
