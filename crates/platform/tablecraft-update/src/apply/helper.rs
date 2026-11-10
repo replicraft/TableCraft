@@ -60,7 +60,7 @@ fn command(plan: &HelperPlan<'_>) -> io::Result<Command> {
             .ok_or_else(|| io::Error::other("Windows system directory is unavailable"))?;
         let executable =
             PathBuf::from(system).join("System32/WindowsPowerShell/v1.0/powershell.exe");
-        Ok(windows_command(plan, executable))
+        windows_command(plan, executable)
     }
     #[cfg(not(any(unix, windows)))]
     {
@@ -92,7 +92,13 @@ pub(super) fn unix_command(plan: &HelperPlan<'_>) -> Command {
 }
 
 #[cfg(any(windows, test))]
-pub(super) fn windows_command(plan: &HelperPlan<'_>, executable: PathBuf) -> Command {
+pub(super) fn windows_command(plan: &HelperPlan<'_>, executable: PathBuf) -> io::Result<Command> {
+    if !matches!(plan.kind, LaunchKind::Portable) {
+        return Err(io::Error::other(
+            "This Windows helper requires a portable installation",
+        ));
+    }
+
     // PowerShell requires one Base64 argument containing the complete UTF-16LE
     // script. Only fixed source is encoded; application paths remain child env.
     let script: Vec<u8> = WINDOWS_SCRIPT
@@ -115,5 +121,5 @@ pub(super) fn windows_command(plan: &HelperPlan<'_>, executable: PathBuf) -> Com
             plan.working_directory,
         )
         .env("TABLECRAFT_UPDATE_BACKUP", plan.backup);
-    command
+    Ok(command)
 }

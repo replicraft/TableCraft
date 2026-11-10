@@ -384,6 +384,22 @@ fn stale_installation_or_unknown_bundle_contents_refuse_before_mutation() {
 }
 
 #[test]
+fn windows_portable_helper_refuses_other_native_launch_kinds() {
+    for kind in [LaunchKind::Bundle, LaunchKind::AppImage] {
+        let plan = HelperPlan {
+            process: 12345,
+            launch: Path::new("unused"),
+            working_directory: Path::new("unused"),
+            backup: Path::new("unused"),
+            kind,
+        };
+        let error = windows_command(&plan, PathBuf::from("unused/powershell.exe"))
+            .expect_err("unsupported launch kinds must not produce a Windows command");
+        assert_eq!(error.kind(), io::ErrorKind::Other);
+    }
+}
+
+#[test]
 fn native_helper_commands_keep_paths_out_of_fixed_script_source() {
     let launch = Path::new("/tmp/a 'quoted' $(bad); name/tablecraft-desktop");
     let working = Path::new("/tmp/working with spaces");
@@ -405,7 +421,7 @@ fn native_helper_commands_keep_paths_out_of_fixed_script_source() {
     assert_eq!(arguments[6], backup);
     assert_eq!(arguments[7], "portable");
 
-    let windows = windows_command(&plan, PathBuf::from("/system/powershell.exe"));
+    let windows = windows_command(&plan, PathBuf::from("/system/powershell.exe")).unwrap();
     let arguments: Vec<_> = windows.get_args().collect();
     assert_eq!(arguments[3], "-EncodedCommand");
     let encoded = STANDARD.decode(arguments[4].to_str().unwrap()).unwrap();
