@@ -45,9 +45,15 @@ pub(super) fn begin_replacement(
             .focus();
         harness.run_steps(1);
         harness.key_press_modifiers(egui::Modifiers::COMMAND, Key::A);
-        harness
-            .get_by_role_and_label(Role::MultilineTextInput, "Replacement")
-            .type_text(value);
+        if value.is_empty() {
+            // An empty text event is ignored by egui; delete the selection just
+            // as the user does when explicitly supplying a zero-length value.
+            harness.key_press(Key::Backspace);
+        } else {
+            harness
+                .get_by_role_and_label(Role::MultilineTextInput, "Replacement")
+                .type_text(value);
+        }
         harness.run_steps(2);
     }
 }
