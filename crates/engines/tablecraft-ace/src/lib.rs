@@ -299,8 +299,8 @@ pub use transaction::{
 
 #[cfg(feature = "journal")]
 pub use transaction::{
-    NativeTableDropIntent, QualifiedTableDropRecovery, RecoverableTableDropPlan,
-    TableDropIntentError, qualify_native_table_drop_recovery,
+    NativeTableDropIntent, QualifiedRetainedTableDropRecovery, QualifiedTableDropRecovery,
+    RecoverableTableDropPlan, TableDropIntentError, qualify_native_table_drop_recovery,
 };
 
 #[cfg(feature = "journal")]

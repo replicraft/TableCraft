@@ -1,4 +1,7 @@
 //! Reconstruct the original table DROP before granting the retained V1 recovery path.
+mod retained;
+pub use retained::QualifiedRetainedTableDropRecovery;
+
 use super::{NativeTableDropIntent as Intent, TableDropIntentError as Error};
 use crate::{NativeImage, header::check, transaction::qualified_recovery::equal_image};
 use std::io::Cursor;
@@ -27,6 +30,9 @@ pub fn qualify_native_table_drop_recovery<'a, J: DurableStorage>(
 ) -> Result<QualifiedTableDropRecovery<'a, J>, Error> {
     let _span = tracing::debug_span!("native.table_drop_recovery.qualify").entered();
     check(budget, cancelled)?;
+    if intent.is_retained() {
+        return Err(Error::InvalidRecord);
+    }
     intent.verify_before(checked.before_bytes(), budget, cancelled)?;
     let image = NativeImage::capture(
         &mut Cursor::new(checked.before_bytes()),

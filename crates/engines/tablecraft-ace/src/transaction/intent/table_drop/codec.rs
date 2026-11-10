@@ -8,7 +8,9 @@ use tablecraft_core::limits::{Resource, ResourceBudget};
 
 const MAGIC: &[u8; 8] = b"TCTD0001";
 const CURRENT_MAGIC: &[u8; 8] = b"TCTD0002";
+const RETAINED_MAGIC: &[u8; 8] = b"TCTD0003";
 const CURRENT_PROFILE: u16 = 1;
+const RETAINED_PROFILE: u16 = 1;
 const INLINE_PROFILE: u16 = 1;
 const CREATOR_EXTERNAL_PROFILE: u16 = 2;
 const TOTAL_AT: usize = MAGIC.len();
@@ -35,8 +37,16 @@ fn bytes<const N: usize>(input: &[u8], offset: usize) -> Result<[u8; N], Error> 
         .ok_or(Error::InvalidRecord)
 }
 
-pub(super) fn validate_identity(identity: Identity, length: u64) -> Result<(), Error> {
-    binding::length(length)?;
+pub(super) fn validate_identity(
+    identity: Identity,
+    length: u64,
+    profile: SourceProfile,
+) -> Result<(), Error> {
+    if profile == SourceProfile::Retained {
+        binding::retained_length(length)?;
+    } else {
+        binding::length(length)?;
+    }
     let pages = length / PAGE_BYTES as u64;
     if !length.is_multiple_of(PAGE_BYTES as u64)
         || identity.native_id <= 0
@@ -57,7 +67,7 @@ pub(super) fn encode(
 ) -> Result<Vec<u8>, Error> {
     check(budget, cancelled)?;
     validate_name(intent.table(), budget, cancelled)?;
-    validate_identity(intent.identity, intent.before_length)?;
+    validate_identity(intent.identity, intent.before_length, intent.profile)?;
     let length = HEADER_BYTES + intent.table.len();
     budget.charge_allocation(length as u64, size_of::<u8>() as u64)?;
     budget.charge(Resource::Steps, length as u64)?;
@@ -69,6 +79,7 @@ pub(super) fn encode(
         SourceProfile::Inline => (MAGIC, INLINE_PROFILE),
         SourceProfile::CreatorExternal => (MAGIC, CREATOR_EXTERNAL_PROFILE),
         SourceProfile::Current => (CURRENT_MAGIC, CURRENT_PROFILE),
+        SourceProfile::Retained => (RETAINED_MAGIC, RETAINED_PROFILE),
     };
     output.extend_from_slice(magic);
     output.extend_from_slice(&(length as u32).to_le_bytes());
@@ -105,10 +116,19 @@ pub(super) fn decode_current(
     decode_family(input, WireFamily::Current, budget, cancelled)
 }
 
+pub(super) fn decode_retained(
+    input: &[u8],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Intent, Error> {
+    decode_family(input, WireFamily::Retained, budget, cancelled)
+}
+
 #[derive(Clone, Copy)]
 enum WireFamily {
     Original,
     Current,
+    Retained,
 }
 
 fn decode_family(
@@ -121,6 +141,7 @@ fn decode_family(
     let magic = match family {
         WireFamily::Original => MAGIC,
         WireFamily::Current => CURRENT_MAGIC,
+        WireFamily::Retained => RETAINED_MAGIC,
     };
     if !(HEADER_BYTES..=MAX_RECORD_BYTES).contains(&input.len())
         || input.get(..magic.len()) != Some(magic)
@@ -139,6 +160,7 @@ fn decode_family(
         (WireFamily::Original, INLINE_PROFILE) => SourceProfile::Inline,
         (WireFamily::Original, CREATOR_EXTERNAL_PROFILE) => SourceProfile::CreatorExternal,
         (WireFamily::Current, CURRENT_PROFILE) => SourceProfile::Current,
+        (WireFamily::Retained, RETAINED_PROFILE) => SourceProfile::Retained,
         _ => return Err(Error::InvalidRecord),
     };
     let identity = Identity {
@@ -149,7 +171,7 @@ fn decode_family(
         catalog_slot: input[SLOT_AT],
     };
     let before_length = u64::from_le_bytes(bytes(input, BEFORE_LENGTH_AT)?);
-    validate_identity(identity, before_length)?;
+    validate_identity(identity, before_length, profile)?;
     let name_length = usize::from(u16::from_le_bytes(bytes(input, NAME_LENGTH_AT)?));
     if name_length > MAX_NAME_BYTES || HEADER_BYTES + name_length != input.len() {
         return Err(Error::InvalidRecord);

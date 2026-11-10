@@ -82,8 +82,8 @@ pub use rename_table::{
 
 mod table_drop;
 pub use table_drop::{
-    NativeTableDropIntent, QualifiedTableDropRecovery, RecoverableTableDropPlan,
-    TableDropIntentError, qualify_native_table_drop_recovery,
+    NativeTableDropIntent, QualifiedRetainedTableDropRecovery, QualifiedTableDropRecovery,
+    RecoverableTableDropPlan, TableDropIntentError, qualify_native_table_drop_recovery,
 };
 
 #[cfg(feature = "ace16-create")]

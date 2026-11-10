@@ -5,7 +5,10 @@ use crate::{
     transaction::qualified_recovery::equal_image,
 };
 use tablecraft_core::limits::ResourceBudget;
-use tablecraft_io::journal::{self, DurableStorage, JournalError, PreparedImage};
+use tablecraft_io::journal::{
+    self, DurableStorage, JournalError, PreparedImage, PreparedResizableImage,
+    ResizableDurableStorage,
+};
 
 /// Owning native DROP candidate plus its distinct original-action record.
 #[must_use = "prepare explicitly or retain the reviewed table DROP plan"]
@@ -126,7 +129,36 @@ impl RecoverableTableDropPlan {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<PreparedImage<'a, D, J>, JournalError> {
         let _span = tracing::debug_span!("native.table_drop.prepare_v1").entered();
+        if self.intent.is_retained() {
+            return Err(JournalError::ImageSize);
+        }
         journal::prepare_expected(
+            target,
+            journal,
+            self.before_bytes(),
+            self.after_bytes(),
+            budget,
+            cancelled,
+        )
+    }
+
+    /// Prepare retained TCTD0003 through the separate checked V3 protocol.
+    ///
+    /// # Errors
+    /// Returns an error before effects for another family, changed source,
+    /// nonempty journal, storage failure, cancellation or exhausted resources.
+    pub fn prepare_retained<'a, D: ResizableDurableStorage, J: DurableStorage>(
+        self,
+        target: &'a mut D,
+        journal: &'a mut J,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<PreparedResizableImage<'a, D, J>, JournalError> {
+        let _span = tracing::debug_span!("native.table_drop.prepare_v3").entered();
+        if !self.intent.is_retained() {
+            return Err(JournalError::ImageSize);
+        }
+        journal::prepare_resizable_v3_expected(
             target,
             journal,
             self.before_bytes(),

@@ -195,8 +195,8 @@ pub use intent::{
 
 #[cfg(feature = "journal")]
 pub use intent::{
-    NativeTableDropIntent, QualifiedTableDropRecovery, RecoverableTableDropPlan,
-    TableDropIntentError, qualify_native_table_drop_recovery,
+    NativeTableDropIntent, QualifiedRetainedTableDropRecovery, QualifiedTableDropRecovery,
+    RecoverableTableDropPlan, TableDropIntentError, qualify_native_table_drop_recovery,
 };
 
 #[cfg(all(feature = "journal", feature = "ace16-create"))]

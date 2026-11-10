@@ -16,7 +16,10 @@ use tablecraft_core::limits::{LimitError, Resource, ResourceBudget};
 use thiserror::Error;
 
 pub use planning::RecoverableTableDropPlan;
-pub use recovery::{QualifiedTableDropRecovery, qualify_native_table_drop_recovery};
+pub use recovery::{
+    QualifiedRetainedTableDropRecovery, QualifiedTableDropRecovery,
+    qualify_native_table_drop_recovery,
+};
 
 const MAX_NAME_UNITS: usize = 64;
 const MAX_NAME_BYTES: usize = MAX_NAME_UNITS * char::MAX.len_utf8();
@@ -96,12 +99,13 @@ impl NativeTableDropIntent {
         validate_name(plan.table(), budget, cancelled)?;
         let identity = Identity::from_native(plan.identity());
         let before_length = plan.before_bytes().len() as u64;
-        codec::validate_identity(identity, before_length)?;
-        let before_binding = binding::digest(plan.before_bytes(), budget, cancelled)?;
+        let profile = plan.source_profile();
+        codec::validate_identity(identity, before_length, profile)?;
+        let before_binding = digest_before(profile, plan.before_bytes(), budget, cancelled)?;
         let table = copy_name(plan.table(), budget, cancelled)?;
 
         Ok(Self {
-            profile: plan.source_profile(),
+            profile,
             identity,
             table,
             before_length,
@@ -150,6 +154,23 @@ impl NativeTableDropIntent {
         codec::decode_current(bytes, budget, cancelled)
     }
 
+    /// Decode only TCTD0003 retained requests; older source families stay closed.
+    ///
+    /// # Errors
+    /// Returns an error for another family, malformed data or exhausted resources.
+    pub fn decode_retained(
+        bytes: &[u8],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, TableDropIntentError> {
+        codec::decode_retained(bytes, budget, cancelled)
+    }
+
+    /// Whether this data-only request belongs to the retained V3 source family.
+    pub fn is_retained(&self) -> bool {
+        self.profile == SourceProfile::Retained
+    }
+
     /// Verify every original byte before reconstructing native authority.
     ///
     /// # Errors
@@ -162,7 +183,7 @@ impl NativeTableDropIntent {
     ) -> Result<(), TableDropIntentError> {
         check(budget, cancelled)?;
         if before.len() as u64 != self.before_length
-            || binding::digest(before, budget, cancelled)? != self.before_binding
+            || digest_before(self.profile, before, budget, cancelled)? != self.before_binding
         {
             return Err(TableDropIntentError::BeforeMismatch);
         }
@@ -183,6 +204,20 @@ impl NativeTableDropIntent {
         }
         Ok(plan)
     }
+}
+
+fn digest_before(
+    profile: SourceProfile,
+    before: &[u8],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<[u8; binding::DIGEST_BYTES], TableDropIntentError> {
+    let digest = if profile == SourceProfile::Retained {
+        binding::digest_retained(before, budget, cancelled)?
+    } else {
+        binding::digest(before, budget, cancelled)?
+    };
+    Ok(digest)
 }
 
 fn validate_name(
