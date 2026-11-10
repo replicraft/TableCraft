@@ -6,7 +6,10 @@ use crate::workspace::test_support::inserting::{
 };
 use crate::workspace::test_support::{app_harness, finish_reads, opened};
 use egui::accesskit::Role;
-use egui_kittest::{Harness, kittest::Queryable};
+use egui_kittest::{
+    Harness,
+    kittest::{NodeT, Queryable},
+};
 use tablecraft_core::values::Value;
 use tablecraft_runtime::journal_path;
 use tablecraft_testkit::fixtures::access::canonical_created_number::mixed::after_off::{
@@ -16,12 +19,18 @@ use tablecraft_testkit::fixtures::access::canonical_created_number::mixed::after
 };
 use tablecraft_ui::CellKind;
 
-fn assert_data(
+fn assert_page(
     harness: &Harness<'_, Desktop>,
     columns: &[(String, Option<usize>)],
     rows: &[Vec<(String, CellKind)>],
+    offset: usize,
 ) {
     let page = harness.state().state.data.as_ref().unwrap();
+    assert_eq!(page.offset as usize, offset);
+    assert!(
+        !page.has_more,
+        "Each independent source fits the displayed suffix"
+    );
     assert_eq!(page.columns.len(), columns.len());
     for (field, (name, number)) in page.columns.iter().zip(columns) {
         assert_eq!(&field.name, name);
@@ -103,7 +112,18 @@ fn journey(case: Case, target: Target) {
         );
         roots.remove(selected);
         rows.remove(selected);
-        assert_data(&harness, &columns, &rows);
+        let refresh = selected.min(rows.len().saturating_sub(1));
+        assert_page(&harness, &columns, &rows[refresh..], refresh);
+        if refresh != 0 {
+            // DELETE retains the adjacent current record, so its acknowledged
+            // page can be a suffix. Navigate normally before checking all rows.
+            let first = harness.get_by_role_and_label(Role::Button, "First");
+            assert!(!first.accesskit_node().is_disabled());
+            first.click_accesskit();
+            harness.run_steps(1);
+            finish_reads(&mut harness);
+        }
+        assert_page(&harness, &columns, &rows, 0);
         let fresh = harness.state().state.active_object().unwrap();
         assert_eq!(fresh.target.kind, old_tab.target.kind);
         assert!(fresh.target.document_revision > old_tab.target.document_revision);
@@ -138,7 +158,7 @@ fn journey(case: Case, target: Target) {
         })
         .collect::<Vec<_>>();
     rows.push(row);
-    assert_data(&harness, &columns, &rows);
+    assert_page(&harness, &columns, &rows, 0);
     assert_eq!(
         harness.state().state.data.as_ref().unwrap().rows[0][0].text,
         next_id.to_string(),
@@ -148,7 +168,7 @@ fn journey(case: Case, target: Target) {
     drop(harness);
     let mut reopened = app_harness(Desktop::new(egui::Context::default(), Some(path.clone())));
     finish_reads(&mut reopened);
-    assert_data(&reopened, &columns, &rows);
+    assert_page(&reopened, &columns, &rows, 0);
     assert_eq!(std::fs::read(&path).unwrap(), expected);
     assert!(!journal_path(&path).exists());
 }
