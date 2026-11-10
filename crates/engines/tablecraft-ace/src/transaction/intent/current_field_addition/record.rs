@@ -1,11 +1,11 @@
-//! Original fixed Number request; serialized data grants no native authority.
+//! Original declaration and source binding; serialized data grants no native authority.
 use super::{
     super::{NativeIntentError, binding},
+    candidate::Candidate,
     codec,
 };
 use crate::{
-    CurrentFieldAdditionError, FieldAdditionTarget, InspectError,
-    NativeCurrentFieldAdditionCandidate, NativeImage, header::check,
+    CurrentFieldAdditionError, FieldAdditionTarget, InspectError, NativeImage, header::check,
 };
 use tablecraft_core::limits::{LimitError, Resource, ResourceBudget};
 use tablecraft_schema::SchemaName;
@@ -50,11 +50,13 @@ impl From<LimitError> for CurrentFieldAdditionIntentError {
     }
 }
 
-/// Closed TCAC0008/profile8 original request, never a serialized write permission.
-/// Number means nullable LONG, stored Required(false), typed Int32 zero.
+/// Explicit TCAC0008 Number or TCAC0009 Short Text original request.
+/// Number is nullable LONG with default zero; Short Text is nullable with
+/// AllowZeroLength(true), explicit width/compression and no default.
 /// The original complete image binds every native origin and field identity.
 /// Actual current ownership and complete candidate images are requalified.
 pub struct NativeCurrentFieldAdditionIntent {
+    pub(super) target: FieldAdditionTarget,
     pub(super) table: SchemaName,
     pub(super) column: SchemaName,
     pub(super) before_length: u64,
@@ -66,12 +68,13 @@ impl NativeCurrentFieldAdditionIntent {
     pub const MAX_ENCODED_BYTES: usize = codec::HEADER_BYTES + 2 * MAX_NAME_BYTES;
 
     pub(super) fn capture(
-        candidate: &NativeCurrentFieldAdditionCandidate,
+        candidate: &Candidate,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, CurrentFieldAdditionIntentError> {
         validate_column(candidate.column(), budget, cancelled)?;
         Ok(Self {
+            target: candidate.target(),
             table: copy_name(candidate.table(), budget, cancelled)?,
             column: copy_name(candidate.column(), budget, cancelled)?,
             before_length: candidate.before_bytes().len() as u64,
@@ -84,13 +87,28 @@ impl NativeCurrentFieldAdditionIntent {
         image: NativeImage,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
-    ) -> Result<NativeCurrentFieldAdditionCandidate, CurrentFieldAdditionIntentError> {
-        let candidate = image.prepare_current_number_field_addition(
-            self.table(),
-            self.column(),
-            budget,
-            cancelled,
-        )?;
+    ) -> Result<Candidate, CurrentFieldAdditionIntentError> {
+        let candidate = match self.target {
+            FieldAdditionTarget::NumberLongZero => {
+                Candidate::Number(image.prepare_current_number_field_addition(
+                    self.table(),
+                    self.column(),
+                    budget,
+                    cancelled,
+                )?)
+            }
+            FieldAdditionTarget::ShortText {
+                max_utf16_units,
+                unicode_compression,
+            } => Candidate::ShortText(image.prepare_current_short_text_field_addition(
+                self.table(),
+                self.column(),
+                max_utf16_units,
+                unicode_compression,
+                budget,
+                cancelled,
+            )?),
+        };
         if candidate.table() != self.table() || candidate.column() != self.column() {
             return Err(CurrentFieldAdditionIntentError::IdentityMismatch);
         }
@@ -107,9 +125,9 @@ impl NativeCurrentFieldAdditionIntent {
         self.column.as_str()
     }
 
-    /// Fixed nullable LONG declaration with stored Required(false)/DefaultValue0.
+    /// Exact semantic declaration captured from the native candidate.
     pub const fn target(&self) -> FieldAdditionTarget {
-        FieldAdditionTarget::NumberLongZero
+        self.target
     }
 
     /// Encode the original request and complete BEFORE binding, never an AFTER.
@@ -127,7 +145,17 @@ impl NativeCurrentFieldAdditionIntent {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, CurrentFieldAdditionIntentError> {
-        codec::decode(bytes, budget, cancelled)
+        codec::decode(bytes, codec::Language::Number, budget, cancelled)
+    }
+
+    /// Decode only TCAC0009/profile9 and its nullable Short Text declaration.
+    /// The Number decoder remains closed to this language.
+    pub fn decode_short_text(
+        bytes: &[u8],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, CurrentFieldAdditionIntentError> {
+        codec::decode(bytes, codec::Language::ShortText, budget, cancelled)
     }
 
     /// Verify exact complete original bytes before any native reconstruction.

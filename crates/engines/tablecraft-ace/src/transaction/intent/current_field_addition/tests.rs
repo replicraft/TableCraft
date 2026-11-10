@@ -214,3 +214,5 @@ fn cold_current_number_recovery_checks_full_images_and_retains_actual_records() 
         assert_eq!(target.bytes.get_ref(), &before);
     }
 }
+
+mod short_text;

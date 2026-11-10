@@ -1,10 +1,10 @@
 //! Current fixed Number declaration reconstruction over the checked V2 owner.
+use super::candidate::Candidate;
 use super::record::{
     CurrentFieldAdditionIntentError as Error, NativeCurrentFieldAdditionIntent as Intent,
 };
 use crate::{
-    FieldAdditionTarget, NativeCurrentFieldAdditionCandidate, NativeImage, header::check,
-    transaction::qualified_recovery::equal_image,
+    FieldAdditionTarget, NativeImage, header::check, transaction::qualified_recovery::equal_image,
 };
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_io::journal::{
@@ -13,7 +13,7 @@ use tablecraft_io::journal::{
 
 /// Owning typed candidate plus original declaration; no arbitrary AFTER constructor.
 pub struct RecoverableCurrentFieldAdditionPlan {
-    candidate: NativeCurrentFieldAdditionCandidate,
+    candidate: Candidate,
     intent: Intent,
 }
 
@@ -30,8 +30,35 @@ impl NativeImage {
     ) -> Result<RecoverableCurrentFieldAdditionPlan, Error> {
         let _span =
             tracing::debug_span!("native.current_field_addition.plan_recoverable").entered();
-        let candidate =
-            self.prepare_current_number_field_addition(table, column, budget, cancelled)?;
+        let candidate = Candidate::Number(
+            self.prepare_current_number_field_addition(table, column, budget, cancelled)?,
+        );
+        let intent = Intent::capture(&candidate, budget, cancelled)?;
+        check(budget, cancelled)?;
+        Ok(RecoverableCurrentFieldAdditionPlan { candidate, intent })
+    }
+    /// Seal an explicit current nullable Short Text ADD as TCAC0009/profile9.
+    /// Old records retain their original bytes and read as NULL for the new field.
+    pub fn plan_recoverable_current_short_text_field_addition(
+        self,
+        table: &str,
+        column: &str,
+        max_utf16_units: usize,
+        unicode_compression: bool,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<RecoverableCurrentFieldAdditionPlan, Error> {
+        let _span =
+            tracing::debug_span!("native.current_short_text_field_addition.plan_recoverable")
+                .entered();
+        let candidate = Candidate::ShortText(self.prepare_current_short_text_field_addition(
+            table,
+            column,
+            max_utf16_units,
+            unicode_compression,
+            budget,
+            cancelled,
+        )?);
         let intent = Intent::capture(&candidate, budget, cancelled)?;
         check(budget, cancelled)?;
         Ok(RecoverableCurrentFieldAdditionPlan { candidate, intent })
@@ -65,8 +92,8 @@ impl RecoverableCurrentFieldAdditionPlan {
     }
 
     /// Exact semantic target bound to the actual sealed candidate.
-    pub const fn target(&self) -> FieldAdditionTarget {
-        FieldAdditionTarget::NumberLongZero
+    pub fn target(&self) -> FieldAdditionTarget {
+        self.candidate.target()
     }
 
     /// Requalify actual source ownership and the entire candidate from fresh BEFORE.
