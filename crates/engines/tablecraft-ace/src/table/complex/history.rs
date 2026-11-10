@@ -5,7 +5,7 @@ mod read;
 mod reader;
 mod record;
 pub use reader::{ParentVersionHistory, VersionHistoryReader};
-mod schema;
+pub(in crate::table::complex) mod schema;
 pub use declaration::VersionHistoryMemberDeclaration;
 pub use discovery::inspect_version_history_declarations;
 pub use metadata::{StoredVersion, VersionHistoryColumn};

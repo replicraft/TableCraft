@@ -77,28 +77,10 @@ impl<'a, R: NativeReadSource> VersionHistoryReader<'a, R> {
         let flat = declaration.flat_table();
         schema::qualify(declaration, flat, budget, cancelled)?;
         let references = reference_positions(declaration, flat, budget, cancelled)?;
-        // Generic projection retains its actual scalar qualification. Pay the
-        // byte bound of its key-name comparisons before matching native fields.
-        for candidate in flat.columns() {
-            for reference in references {
-                check(budget, cancelled)?;
-                let name = flat
-                    .columns()
-                    .get(reference)
-                    .ok_or(InspectError::Malformed)?
-                    .name();
-                let work = candidate
-                    .name()
-                    .len()
-                    .checked_add(name.len())
-                    .ok_or(InspectError::StructureLimit)?;
-                budget.charge(Resource::Steps, work as u64)?;
-            }
-        }
-        let keys = Projection::capture(flat, &references, budget, cancelled)?;
+        let keys = Projection::capture(declaration, &references, budget, cancelled)?;
         // Preserve full-reader declaration coverage, including additional flat
         // columns. They must not become eligible merely because a view omits them.
-        let columns = flat.scalar_columns_with_budget(budget)?;
+        let columns = super::super::references::columns(declaration, flat, budget, cancelled)?;
         budget.charge_allocation(columns.len() as u64, size_of::<usize>() as u64)?;
         let mut positions = Vec::new();
         positions

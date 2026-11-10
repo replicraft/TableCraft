@@ -86,7 +86,7 @@ fn inspect_declarations<R: crate::NativeReadSource, T>(
     check(budget, cancelled)?;
     Ok(columns)
 }
-pub(super) fn qualified(
+pub(in crate::table::complex) fn qualified(
     column: &ComplexColumnSchema,
     flat_table: &crate::TableSchema,
 ) -> Result<(usize, ScalarType), InspectError> {

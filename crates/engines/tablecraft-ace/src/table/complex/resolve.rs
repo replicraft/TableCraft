@@ -157,12 +157,36 @@ pub fn inspect_complex_schema<R: crate::NativeReadSource>(
         if resolved.flat_table.columns().iter().any(|field| {
             (field.number() == foreign_key || field.number() == identity) && !field.fixed()
         }) {
-            super::attachments::schema::qualify(
+            super::references::qualify_variable(
                 &resolved,
                 &resolved.flat_table,
                 budget,
                 cancelled,
             )?;
+            // Field count selects a strict existing member-family qualifier;
+            // it never qualifies an unknown template by itself.
+            match resolved.type_table.columns().len() {
+                1 if resolved.type_table.declared_rows() == 0 => {
+                    super::multivalue::schema::qualified(&resolved, &resolved.flat_table)?;
+                }
+                2 => {
+                    super::history::schema::qualify(
+                        &resolved,
+                        &resolved.flat_table,
+                        budget,
+                        cancelled,
+                    )?;
+                }
+                6 => {
+                    super::attachments::schema::qualify(
+                        &resolved,
+                        &resolved.flat_table,
+                        budget,
+                        cancelled,
+                    )?;
+                }
+                _ => return Err(InspectError::Unsupported),
+            }
         }
         columns.push(resolved);
     }

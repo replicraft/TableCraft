@@ -4,6 +4,7 @@ mod history;
 mod links;
 mod multivalue;
 mod page;
+mod references;
 mod resolve;
 mod value_schema;
 pub use attachments::{

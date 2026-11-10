@@ -110,7 +110,7 @@ impl<'a, R: NativeReadSource> MultivalueReader<'a, R> {
         let (value_position, _) = qualified(declaration, flat)?;
         // Preserve all actual complete-reader metadata/carrier checks; only the
         // unselected record Value payload is outside this explicit lazy view.
-        let mut columns = flat.scalar_columns_with_budget(budget)?;
+        let mut columns = super::super::references::columns(declaration, flat, budget, cancelled)?;
         if value_position >= columns.len() {
             return Err(InspectError::Malformed);
         }
@@ -118,12 +118,12 @@ impl<'a, R: NativeReadSource> MultivalueReader<'a, R> {
         let value_column = columns.swap_remove(value_position);
         let references = reference_positions(declaration, flat, budget, cancelled)?;
         let values = Projection::capture(
-            flat,
+            declaration,
             &[references[0], references[1], value_position],
             budget,
             cancelled,
         )?;
-        let keys = Projection::capture(flat, &references, budget, cancelled)?;
+        let keys = Projection::capture(declaration, &references, budget, cancelled)?;
         let directory = Directory::capture(
             source,
             schema,

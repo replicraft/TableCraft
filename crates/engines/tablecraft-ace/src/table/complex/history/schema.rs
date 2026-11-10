@@ -12,7 +12,7 @@ use tablecraft_core::limits::{Resource, ResourceBudget};
 
 const HISTORY_FIELDS: usize = 2;
 
-pub(super) struct Columns {
+pub(in crate::table::complex) struct Columns {
     pub value: usize,
     pub modified: usize,
     pub identity: usize,
@@ -95,7 +95,7 @@ pub(super) fn read(
     )
 }
 
-pub(super) fn qualify(
+pub(in crate::table::complex) fn qualify(
     column: &ComplexColumnSchema,
     flat: &TableSchema,
     budget: &mut ResourceBudget,

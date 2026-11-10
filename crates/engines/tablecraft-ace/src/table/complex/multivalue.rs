@@ -9,7 +9,7 @@ pub use page::{
 mod read;
 mod reader;
 pub use reader::{MultivalueReader, ParentMultivalue};
-mod schema;
+pub(in crate::table::complex) mod schema;
 pub use metadata::MultivalueColumn;
 pub use read::{read_multivalue_column, read_multivalue_column_with_limits};
 pub use schema::{inspect_multivalue_columns, inspect_multivalue_declarations};

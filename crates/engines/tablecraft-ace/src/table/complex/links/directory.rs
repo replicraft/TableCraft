@@ -4,9 +4,7 @@ pub(in crate::table::complex) mod payload;
 use super::{membership::Membership, read::read_parents};
 use crate::{
     ComplexColumnSchema, ComplexParentLink, ComplexTableSchema, InspectError, NativeReadSource,
-    NativeRowReference, TableSchema, TableSnapshotLimits,
-    header::check,
-    table::{page, snapshot},
+    NativeRowReference, TableSchema, TableSnapshotLimits, header::check, table::page,
 };
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
@@ -38,37 +36,31 @@ pub(in crate::table::complex) struct Projection {
 
 impl Projection {
     pub fn capture(
-        schema: &TableSchema,
+        declaration: &ComplexColumnSchema,
         roles: &[usize],
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, InspectError> {
-        budget.charge_allocation(roles.len() as u64, size_of::<&str>() as u64)?;
-        let mut names: Vec<&str> = Vec::new();
-        names
-            .try_reserve_exact(roles.len())
+        let schema = declaration.flat_table();
+        let all = super::super::references::columns(declaration, schema, budget, cancelled)?;
+        budget.charge_allocation(all.len() as u64, size_of::<usize>() as u64)?;
+        budget.charge_allocation(all.len() as u64, size_of::<Column>() as u64)?;
+        let mut positions = Vec::new();
+        let mut columns = Vec::new();
+        positions
+            .try_reserve_exact(all.len())
             .map_err(|_| InspectError::Allocation)?;
-        for position in roles {
+        columns
+            .try_reserve_exact(all.len())
+            .map_err(|_| InspectError::Allocation)?;
+        for (position, column) in all.into_iter().enumerate() {
             check(budget, cancelled)?;
-            let field = schema
-                .columns()
-                .get(*position)
-                .ok_or(InspectError::Malformed)?;
-            let mut present = false;
-            for name in &names {
-                check(budget, cancelled)?;
-                let work = name
-                    .len()
-                    .checked_add(field.name().len())
-                    .ok_or(InspectError::StructureLimit)?;
-                budget.charge(Resource::Steps, work as u64)?;
-                present |= *name == field.name();
-            }
-            if !present {
-                names.push(field.name());
+            budget.charge(Resource::Steps, roles.len() as u64)?;
+            if roles.contains(&position) {
+                positions.push(position);
+                columns.push(column);
             }
         }
-        let (positions, columns) = snapshot::projected_columns(schema, &names, budget, cancelled)?;
         Self::from_columns(positions, columns, roles, budget, cancelled)
     }
 

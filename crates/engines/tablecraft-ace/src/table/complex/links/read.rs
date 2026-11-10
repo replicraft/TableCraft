@@ -100,7 +100,9 @@ pub(in crate::table::complex) fn read_resolved<R: crate::NativeReadSource>(
         )?;
         TableCursor::from_qualified(source, observed, None, columns, budget, cancelled)?
     } else {
-        TableCursor::open(source, scope, flat.name(), budget, cancelled)?
+        let observed = crate::inspect_table_schema(source, scope, flat.name(), budget, cancelled)?;
+        let columns = super::super::references::columns(declaration, &observed, budget, cancelled)?;
+        TableCursor::from_qualified(source, observed, None, columns, budget, cancelled)?
     };
     let children = cursor.into_snapshot(limits, budget, cancelled)?;
     let expected = if attachment {
@@ -113,7 +115,7 @@ pub(in crate::table::complex) fn read_resolved<R: crate::NativeReadSource>(
         )?
         .1
     } else {
-        flat.scalar_columns_with_budget(budget)?
+        super::super::references::columns(declaration, children.schema(), budget, cancelled)?
     };
     if children.schema().object_id() != flat.object_id()
         || children.schema().definition_page() != flat.definition_page()
