@@ -16,7 +16,7 @@ use icu_collator::{
 use std::{cell::RefCell, cmp::Ordering, ops::Range};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
-/// Validated ceilings for atomic ICU calls and exhaustive substring enumeration.
+/// Optional caller quotas for atomic ICU calls and exhaustive substring enumeration.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct IcuTextLimits {
     maximum_input_bytes: usize,
@@ -24,18 +24,14 @@ pub struct IcuTextLimits {
 }
 
 impl IcuTextLimits {
-    /// Maximum bytes in each operand of an indivisible ICU comparison.
-    pub const MAX_INPUT_BYTES: usize = 65_536;
-    /// Maximum UTF-16 units in either substring-search operand.
-    pub const MAX_SEARCH_UNITS: usize = 4096;
+    /// Largest addressable UTF-8 operand, rather than an ICU or Access size quota.
+    pub const MAX_INPUT_BYTES: usize = isize::MAX as usize;
+    /// UTF-16 units cannot exceed the addressable UTF-8 operand byte count.
+    pub const MAX_SEARCH_UNITS: usize = isize::MAX as usize;
 
-    /// Choose positive ceilings without enlarging the bounded host profile.
+    /// Choose positive caller quotas; no product-specific upper clamp is applied.
     pub fn new(maximum_input_bytes: usize, maximum_search_units: usize) -> Result<Self, EvalError> {
-        if maximum_input_bytes == 0
-            || maximum_input_bytes > Self::MAX_INPUT_BYTES
-            || maximum_search_units == 0
-            || maximum_search_units > Self::MAX_SEARCH_UNITS
-        {
+        if maximum_input_bytes == 0 || maximum_search_units == 0 {
             return Err(EvalError::Domain);
         }
         Ok(Self {
@@ -58,8 +54,8 @@ impl Default for IcuTextLimits {
 /// Secondary strength ignores case but retains accents; punctuation is nonignorable.
 /// An LCID dispatch is enabled only by explicit host registration. Neither its
 /// registration nor ICU locale data establishes Windows NLS/Access equivalence.
-/// Provider quotas accumulate across calls; ICU's internal scratch allocator is
-/// bounded by input ceilings but is not a fallible caller-owned allocator.
+/// Provider quotas accumulate across calls. ICU's internal scratch allocator is
+/// not a fallible caller-owned allocator, and one ICU call cannot be preempted.
 #[must_use = "use the configured comparison provider to apply its policies"]
 pub struct IcuTextCollation<'a> {
     collator: CollatorBorrowed<'static>,
@@ -113,7 +109,7 @@ impl<'a> IcuTextCollation<'a> {
         self
     }
 
-    /// Lower operation ceilings without resetting consumed provider work.
+    /// Select operation quotas without resetting consumed provider work.
     pub fn with_limits(mut self, limits: IcuTextLimits) -> Self {
         self.limits = limits;
         self
@@ -143,9 +139,10 @@ impl<'a> IcuTextCollation<'a> {
         {
             return Err(EvalError::TextLimit);
         }
-        // Prepay byte traversal before each indivisible bounded ICU call. This
+        // Prepay each operand traversal before an indivisible ICU call. This
         // is an admission model, not an exact count of ICU collation elements.
-        self.check(budget, left.len() + right.len())?;
+        self.check(budget, left.len())?;
+        self.check(budget, right.len())?;
         let result = self.collator.compare(left, right);
         self.check(budget, 1)?;
         Ok(result)

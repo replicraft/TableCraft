@@ -12,20 +12,23 @@ impl IcuTextCollation<'_> {
         if input.len() > self.limits.maximum_input_bytes {
             return Err(EvalError::TextLimit);
         }
-        let mut units = 0;
-        let mut count = 1;
+        let mut units = 0usize;
+        let mut count = 1usize;
         for character in input.chars() {
             self.check(budget, 1)?;
-            units += character.len_utf16();
+            units = units
+                .checked_add(character.len_utf16())
+                .ok_or(EvalError::Overflow)?;
             if units > self.limits.maximum_search_units {
                 return Err(EvalError::TextLimit);
             }
-            count += 1;
+            count = count.checked_add(1).ok_or(EvalError::Allocation)?;
         }
-        budget.charge_allocation(count, size_of::<(usize, usize)>() as u64)?;
+        let charged_count = u64::try_from(count).map_err(|_| EvalError::Allocation)?;
+        budget.charge_allocation(charged_count, size_of::<(usize, usize)>() as u64)?;
         let mut result = Vec::new();
         result
-            .try_reserve_exact(count as usize)
+            .try_reserve_exact(count)
             .map_err(|_| EvalError::Allocation)?;
         let mut units = 0;
         for (byte, character) in input.char_indices() {

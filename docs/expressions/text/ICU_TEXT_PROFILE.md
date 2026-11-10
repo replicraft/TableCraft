@@ -122,19 +122,20 @@ uses ICU4X Collator compiled data, not platform NLS/COM/VBA or locale discovery.
 Hosts may compose a borrowed base Collation and explicitly register one LocaleId.
 No provider, registration or mutable quota is stored in a prepared query or file.
 
-Each atomic ICU comparison admits at most 65,536 UTF-8 bytes per operand. Search
-additionally admits at most 4096 UTF-16 units in each operand. Hosts may lower
-these validated ceilings; large query/native/output allowances cannot enlarge
-them. Input traversal work is prepaid before each indivisible ICU comparison,
-with cancellation checked before and after. That bounded call cannot be interrupted
-internally. Search checks cancellation throughout enumeration and charges every
-comparison to one cumulative provider pool. It can exhaust work before finishing
-a larger search; it never publishes a partial match or retries another policy.
+Atomic ICU comparisons and substring searches have no additional product-specific
+input quota by default. Hosts may select explicit positive byte/UTF-16 quotas;
+these remain separate from query/native/output allowances. ICU4X compares Rust
+string slices directly without narrowing their lengths to a signed 32-bit API.
+Input traversal work is prepaid separately for each operand before each indivisible
+ICU comparison, with cancellation checked before and after. A call cannot be
+interrupted internally. Search checks cancellation throughout iterative substring
+enumeration and charges every comparison to one cumulative provider pool. It can
+exhaust explicit work before finishing; it never publishes a partial match or
+retries another policy.
 
 Owned search-boundary vectors reserve/charge storage fallibly before filling.
 ICU itself uses internal scratch buffers; this wrapper does not replace ICU's
-allocator with the caller's fallible budget. The hard operand ceiling bounds
-upstream scratch input, while provider step units are a documented admission
+allocator with the caller's fallible budget. Provider step units are an admission
 model, not an exact ICU element/allocation count. This limitation remains explicit.
 
 CLI --comparison-bytes and --comparison-steps may accompany --text-locale without

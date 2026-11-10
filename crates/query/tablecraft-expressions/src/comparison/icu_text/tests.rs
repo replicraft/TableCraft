@@ -202,7 +202,7 @@ fn database_and_raw_profiles_are_not_replaced_by_the_text_provider() {
 
 #[test]
 fn bounds_quotas_and_constructor_validation_remain_explicit() {
-    for (bytes, units) in [(0, 1), (65_537, 1), (1, 0), (1, 4097)] {
+    for (bytes, units) in [(0, 1), (1, 0)] {
         assert_eq!(IcuTextLimits::new(bytes, units), Err(EvalError::Domain));
     }
     let policy = provider(IcuTextLocale::EnUs).with_limits(IcuTextLimits::new(8, 3).unwrap());
@@ -305,4 +305,52 @@ proptest! {
             Ok(expected)
         );
     }
+}
+
+#[test]
+fn default_icu_policy_accepts_long_operands_and_searches_above_old_quotas() {
+    let policy = provider(IcuTextLocale::EnUs);
+    let lower = "a".repeat(70_000);
+    let upper = "A".repeat(70_000);
+    assert_eq!(policy.compare_text(&lower, &upper), Ok(Ordering::Equal));
+
+    let haystack = format!("A{}", "x".repeat(5000));
+    assert_eq!(
+        policy.find(
+            &haystack,
+            "a",
+            StringSearch::ForwardFrom(0),
+            StringCompareMode::Text
+        ),
+        Ok(Some(0..1))
+    );
+    let haystack = format!("{}A", "x".repeat(5000));
+    assert_eq!(
+        policy.find(
+            &haystack,
+            "a",
+            StringSearch::ReverseThrough(5001),
+            StringCompareMode::Text
+        ),
+        Ok(Some(5000..5001))
+    );
+}
+
+#[test]
+fn long_search_exhausts_explicit_work_instead_of_an_implicit_text_quota() {
+    let policy = IcuTextCollation::new(
+        IcuTextLocale::EnUs,
+        ResourceBudget::new(1_000_000, 0, 10_100),
+        &|| false,
+    )
+    .unwrap();
+    assert!(matches!(
+        policy.find(
+            &"x".repeat(5000),
+            "z",
+            StringSearch::ForwardFrom(0),
+            StringCompareMode::Text
+        ),
+        Err(EvalError::Limit(_))
+    ));
 }
