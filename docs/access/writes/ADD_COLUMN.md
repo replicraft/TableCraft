@@ -25,6 +25,31 @@ cover those distinctions. Updating the newly added absent field in an older
 record is still separate work; this addition does not qualify arbitrary record
 expansion.
 
+Existing unindexed Int32 fields in those historical records now have a separate
+normal UPDATE route. `plan_historical_present_fixed_updates` requires its own
+current-source proof and mutation-purpose no-required-program certificate, then
+checks the target against each original record's stored field count. It retains
+the original count, mask geometry, ignored payload, absent later fields, all
+indexes and metadata. Full scalar constraints, relationships, property/code
+closure and the complete independent fixed-record proof still apply. Generated
+or indexed fields and absent targets refuse, including absent NULL-to-NULL
+requests; no record is expanded by this route.
+
+The consuming `plan_recoverable_historical_present_fixed_updates` binds only
+original NULL/Int32 cells in the distinct `TCNI0011`/profile11 language. Recovery
+repeats that specific source proof and reconstructs both complete images before
+the existing checked V1 journal can recover. Old ordinary intent languages do
+not inherit historical admission. The Access adapter selects this source from
+original layout/record metadata before attempting a proof; a refused selected
+proof never retries ordinary editing.
+
+Two headless desktop journeys pass through actual ADD widgets, replacement/NULL
+inputs, review, consuming Save and guarded fresh reopen. Independent complete
+images confirm `Score` value-to-value, NULL-to-value and value-to-NULL edits while
+every absent `Bonus` remains NULL, with no remaining journal. A separate review
+of `Bonus` itself refuses without changing the original. These are constructed
+ACE16 source outcomes, not imported-database or native Access qualification.
+
 The closed `TCAC0008`/profile8 request binds the complete original and exact names,
 fixing this Number declaration. Recovery reconstructs both complete images under
 separate native/proof budgets before using the checked V2 journal. TCAC1–7 retain

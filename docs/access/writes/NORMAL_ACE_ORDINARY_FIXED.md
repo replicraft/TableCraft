@@ -1,5 +1,10 @@
 # Ordinary ACE fixed-field writes
 
+The separate [historical present-field route](ADD_COLUMN.md#current-number-addition-over-populated-records)
+permits qualified existing Int32 fields after a populated-table Number ADD. It
+uses its own source proof and original-request language; it does not relax this
+ordinary family's full-record admission or permit writing absent fields.
+
 `NativeImage::plan_recoverable_ordinary_fixed_updates` accepts original fixed-field
 groups only after fresh native content and physical preservation validation. It is a separate normal
 engine route from positive BeforeChange updates and engineering previews.
