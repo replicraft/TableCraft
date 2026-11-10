@@ -24,10 +24,51 @@ UTF-16 units, following Microsoft's documented [255-character Description limit]
 that counting choice is not native supplementary-character parity evidence.
 The MR2 property uses declaration flag 1, Text type 10 and exact UTF-16 bytes.
 Description does not execute expressions, grant a default or constrain rows.
-Complete inline-property and catalog-page capacity checks remain independent of
-the per-field limit. Native constructive admission remains authoritative. The
+The selected construction family checks complete property and catalog storage
+independently of the per-field limit. Native constructive admission remains authoritative. The
 current operation creates an empty table; entered records, broader generated
 value handling and other schema operations require their own qualified routes.
+
+## Native declarations and TCNT7
+
+`FirstTableDefinition::capture_native` and `capture_manual_native` retain up to
+255 explicit fields in the native construction family. Generated declarations
+retain the first Increment Int32 primary; manual declarations retain the actual
+optional numeric primary position or no key. `is_native()` identifies this
+request language independently of `is_manual()`. Names, exact scalar carriers,
+constant defaults, Required/AllowZeroLength and Description retain their checked
+semantics. Native declaration validation does not authorize a source or a save.
+
+`NativeImage::plan_first_table_native` still requires the exact canonical blank
+BEFORE. It writes the logical definition across linked TDEF pages when needed,
+and stores complete MR2 properties in owned external LVAL pages. Every continuation header, logical byte, padding region, map and
+property-chain member is independently checked. Existing source bytes outside
+the qualified construction scope remain protected. Physical carrier capacity,
+checked native file geometry, fallible allocation, cancellation and caller budgets
+remain effective; they are not replaced by a per-declaration byte quota.
+
+The original request is `TCNT0007`/profile 7. Its 64-byte header retains the exact
+canonical length and complete BEFORE binding. Header flag bit 0 identifies a
+manual declaration; all other bits are zero. Manual records use the final u16
+word for the actual primary position or `0xffff` for no primary. Generated records
+keep both that word and the flags zero. The u16 field count admits 1–255 fields;
+field tags and optional property carriers preserve their explicit meanings.
+`decode_native` accepts only this exact family. The original `decode` remains
+closed to TCNT1–6, and their declaration grammars and output bytes are unchanged.
+
+`FirstTablePlan::prepare_native` uses the V3 resizable journal. Its ordinary
+`prepare` refuses a native request before journal or target writes. Native cold
+recovery requires `NativeFirstTableIntent::qualify_native_recovery` with the same
+`CheckedV3` owner. It verifies the original binding, reconstructs the native plan
+in a fresh scope, and compares complete BEFORE and AFTER bytes before permitting
+recovery or settled-image confirmation. The V2 qualifier refuses TCNT7; the native
+qualifier refuses original request families. No decoder or planner is retried.
+
+The Access adapter selects the constructive family from the retained definition,
+encodes its exact intent before journal setup, and uses the corresponding protocol
+for apply, recovery and confirmation. Schema receipts omit row counts. Independent
+255-field whole-image fixtures and V3 cold-recovery checks are local engineering
+evidence; they do not establish Microsoft Access save/reopen compatibility.
 
 ## Planning and same-file persistence
 
@@ -45,7 +86,8 @@ same target available for explicit release or another qualified request.
 
 `StagedFirstTable` reports the native table name and field count before durable
 effects. It can return its session without applying. Its consuming `apply` uses
-the existing retained filesystem journal pair and native V2 resizable journal:
+the retained filesystem journal pair and the selected resizable journal: V2 for
+TCNT1–6, V3 for TCNT7.
 
 1. Encode the original schema intent before creating the fresh bundle: `TCNT0001`
    when defaults and policies are absent, `TCNT0002` for checked constant defaults
@@ -53,7 +95,8 @@ the existing retained filesystem journal pair and native V2 resizable journal:
    `TCNT0004` for any default on a newly supported Number/GUID target. An explicit
    Description, including an empty one, selects `TCNT0005` for a generated
    declaration. An explicitly manual/keyless declaration selects `TCNT0006`,
-   whether or not it also has Description, policies or defaults.
+   whether or not it also has Description, policies or defaults. An explicitly
+   native definition selects TCNT7, independently of those property choices.
 2. Prepare the complete checked BEFORE/AFTER transaction against the same target.
 3. Commit the native resize/write operation once.
 4. Retire the acknowledged journal and follow the actual platform cleanup policy,
@@ -125,9 +168,9 @@ presence bit or a larger record merely because version 5 exists.
 ## Manual and keyless original intent
 
 `TCNT0006` uses construction profile 6 and the same exact seven-page canonical
-BEFORE length and binding. The header remains 64 bytes. Only this version
-repurposes the final u16 header word, formerly reserved, as a zero-based primary
-field position. `0xffff` explicitly means no primary key and requires a zero
+BEFORE length and binding. The header remains 64 bytes. Within TCNT1–6, only
+this version uses the final u16 header word as a zero-based primary field
+position. `0xffff` explicitly means no primary key and requires a zero
 primary-name byte length. A keyed record requires a nonempty primary name and a
 position within the declared field count. Position zero is a valid manual key;
 it is not absence.
@@ -206,9 +249,9 @@ Stored defaults do not bypass either rule. The later
 policies and original input presence before returning a qualified row plan.
 
 The intent retains original declarations rather than physical page positions or
-replacement-image authority. Recovery inspects V2 and reconstructs the original
-schema plan from its recorded definition, under the same native qualification as
-application.
+replacement-image authority. Recovery inspects the protocol selected by the exact
+request family and reconstructs its original schema plan under the same native
+qualification as application.
 The schema change is reported only for an acknowledged committed replacement.
 A rollback reports the original blank and no schema change.
 

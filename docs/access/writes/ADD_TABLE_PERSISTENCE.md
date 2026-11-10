@@ -1,7 +1,8 @@
 # Append-only table creation and recovery
 
-With both `ace16-create` and `journal`, `NativeImage::plan_add_table` builds a
-checked empty table plan against an actual captured source with existing tables.
+With both `ace16-create` and `journal`, `NativeImage::plan_add_table` and
+`plan_add_table_native` build checked empty-table plans against actual captured
+sources with existing tables.
 This is a separate operation from fresh database creation and canonical-blank
 first-table initialization. It never rebuilds existing tables through the fresh
 multiple-table serializer. The Access adapter exposes explicit offline staging,
@@ -10,6 +11,59 @@ through reviewed table creation; their changes and host acceptance are separate
 from the engine qualification described here. See the [runtime contract](../../application/RUNTIME.md)
 and [database-creation workflow](../../ui/DATABASE_CREATION.md). The native CLI
 has no new add-table command from this change.
+
+## Native declarations and TCAT7
+
+The native construction request retains up to 255 explicit fields through
+`FirstTableDefinition::capture_native` or `capture_manual_native`. Generated and
+manual/keyless decisions remain separate from the native marker. Exact scalar
+carriers, defaults, policies and Descriptions retain their checked semantics.
+`NativeImage::plan_add_table_native` requires this explicit request family; the
+original planners do not consume it. Existing small original requests keep their
+own wire and reconstruction languages.
+
+The native producer appends joined definition pages, a DATA page, an optional
+primary root and any required external MR2 property chain at actual EOF. It
+validates complete logical definitions and physical continuation headers/padding,
+map membership, original catalog and property ownership, and existing payload
+protection. New properties use actual bitmap windows, including storage above
+page 63. Existing records and schema/property histories are not reserialized.
+Allocation, catalog-record and map-carrier capacity remain separately checked.
+The native family can promote the positively owned catalog property map to
+indirect bitmap storage while preserving original membership. New catalog/map
+container allocation and other unqualified map transformations still refuse.
+
+The actual source cohort is independent of this declaration language. Qualified
+packed sources retain `AddTableSourceProfile::Mixed`; the qualified retained
+system/database-property dialect retains `Retained`. Multi-page definitions or
+long property/forwarding chains do not promote a source from one cohort to the
+other. Source qualification checks the complete original roles, constraints and
+required programs before returning a plan; imported programs are never executed
+or bypassed. A failed proof does not retry another source family.
+
+`TCAT0007`/profile 7 contains only a TCNT7 declaration template, plus the complete
+actual BEFORE length and binding. Its outer header flag bit 0 records Retained;
+zero records Mixed. Other flags and reserved bytes remain zero. The nested manual
+flag and primary position belong only to the declaration, not the source cohort.
+Both cohorts use page-aligned native file geometry up to 2 GiB and cumulative
+caller budgets. The nested canonical-blank header never identifies the append
+source. `new_native` binds data only; `decode_native` accepts only this exact
+outer/nested family. TCAT1–6 reject nested TCNT7 and retain their own framing.
+
+`AddTablePlan::prepare_native` requires a native plan and uses V3. The original
+`prepare` refuses it before target or journal writes. Cold recovery requires
+`qualify_native_recovery` and the same `CheckedV3` owner, verifies the complete
+source binding, rebuilds through the native planner in a fresh scope, requires
+the exact recorded Mixed/Retained cohort, and compares both complete images.
+The V2 qualifier and TCAT6 retained qualifier refuse TCAT7; the native qualifier
+refuses older request families. Recovery and confirmation retain their exact
+checked owner and existing receipt/resource rules.
+
+The Access adapter selects TCAT7 before older TCAT prefix dispatch and chooses
+V3 from the native marker before examining the source cohort. Thus Mixed TCAT7
+also uses V3. Independent 255-field raw images cover both cohorts and cold
+reconstruction. These local checks do not qualify Microsoft Access save/reopen
+behavior or arbitrary imported-application DDL.
 
 ## Retained allocation and deleted-table histories
 
@@ -31,8 +85,8 @@ properties, dependency roles and required validation remain independent refusals
 Retained ADD, INSERT, UPDATE and DELETE share paid, owned catalog and property
 traversal. Forwarding depth is bounded by the actual source and caller resources,
 with per-hop ownership, cycle and alias checks; it has no fixed hop quota.
-The newly authored declaration still uses the existing checked first-table
-constructor profile; this does not imply a complete Access table designer.
+The declaration independently selects an original or native construction family;
+source admission does not imply a complete Access table designer.
 
 Owned/candidate/primary usage maps use the actual page's bitmap window rather
 than assuming every page lies below page 64. The global inline allocation bitmap
@@ -114,8 +168,9 @@ It is inert text, with no trimming, normalization or expression evaluation. The
 constructive profile conservatively counts up to 255 UTF-16 units against
 Microsoft's [255-character Description contract](https://learn.microsoft.com/en-us/office/vba/access/concepts/miscellaneous/description-property-access).
 MR2 stores exact UTF-16 text with flags 1 and native Text type 10. Aggregate
-inline-property and catalog-page capacity still refuse independently; several
-individually valid descriptions need not fit one candidate catalog page.
+inline-property and catalog-page capacity still refuse independently in the
+original construction families. Native construction uses its separately checked
+external property storage.
 No hidden ID or primary root is invented for a keyless request. A primary key's
 non-NULL/unique restriction remains separate from an ordinary field's explicit
 Required policy. Names use the catalog's owning comparison policy; this profile
@@ -173,8 +228,9 @@ qualifies the source and checks the real requested declaration independently.
 
 ## Original intent and V2 journal
 
-`AddTablePlan::encode_intent` retains the complete actual BEFORE binding and
-original schema using five disjoint closed action versions:
+The TCAT1–5 families retain the following closed framing and V2 rules.
+`AddTablePlan::encode_intent` retains their complete actual BEFORE binding and
+original schema:
 
 | Action | Profile | Original image length | Declaration template |
 | --- | ---: | --- | --- |
