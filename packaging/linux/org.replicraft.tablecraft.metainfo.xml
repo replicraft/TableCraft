@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>org.replicraft.tablecraft</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>Apache-2.0</project_license>
+  <name>TableCraft</name>
+  <summary>Browse and edit Microsoft Access databases</summary>
+  <description>
+    <p>TableCraft is an independent desktop application for Microsoft Access MDB and ACCDB databases. Native editing and query compatibility are still in development.</p>
+  </description>
+  <launchable type="desktop-id">org.replicraft.tablecraft.desktop</launchable>
+  <url type="homepage">https://github.com/replicraft/TableCraft</url>
+  <url type="bugtracker">https://github.com/replicraft/TableCraft/issues</url>
+  <provides>
+    <binary>tablecraft-desktop</binary>
+  </provides>
+  <content_rating type="oars-1.1"/>
+</component>

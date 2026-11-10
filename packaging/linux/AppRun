@@ -1,0 +1,11 @@
+#!/bin/sh
+set -eu
+
+# The AppImage runtime supplies APPDIR. An extracted AppDir can also be used for
+# explicit headless version/help checks without launching a desktop window.
+if [ -z "${APPDIR:-}" ]; then
+    APPDIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+    export APPDIR
+fi
+
+exec "$APPDIR/usr/bin/tablecraft-desktop" "$@"
