@@ -79,3 +79,6 @@ impl NativeImage {
         super::plan(self, table, deletes, Family::Retained, budget, cancelled)
     }
 }
+
+#[cfg(test)]
+mod tests;
