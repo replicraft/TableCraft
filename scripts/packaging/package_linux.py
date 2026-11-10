@@ -532,14 +532,16 @@ def package(inputs, output, formats, tools=None):
                 else:
                     build_appimage(inputs, root, built, temporary, tools)
                 installers.verify_container(built, inputs.version, inputs.target, kind)
-                with destination.open("xb") as target, built.open("rb") as source:
-                    created.append(destination)
-                    shutil.copyfileobj(source, target, desktop.COPY_BYTES)
+                with built.open("rb") as source:
+                    with destination.open("xb") as target:
+                        created.append(destination)
+                        shutil.copyfileobj(source, target, desktop.COPY_BYTES)
                 if kind == "appimage":
                     destination.chmod(0o755)
                 sidecar = destination.with_name(destination.name + ".sha256")
-                created.append(sidecar)
-                installers.write_checksum(destination)
+                with sidecar.open("xb") as stream:
+                    created.append(sidecar)
+                    stream.write(installers.checksum(destination))
                 print(destination)
         except BaseException:
             for path in reversed(created):

@@ -133,14 +133,29 @@ class LinuxPackagingTests(unittest.TestCase):
             output.write_bytes(b"!<arch>\nfirst-party framing")
 
         def fail_checksum(path):
-            path.with_name(path.name + ".sha256").write_bytes(b"partial")
             raise OSError("independent checksum failure")
 
-        with patch.object(linux, "build_deb", side_effect=framed_package), patch.object(installers, "write_checksum", side_effect=fail_checksum):
+        with patch.object(linux, "build_deb", side_effect=framed_package), patch.object(installers, "checksum", side_effect=fail_checksum):
             with self.assertRaises(OSError):
                 linux.package(self.inputs, self.output, ("deb",))
         self.assertEqual(list(self.output.iterdir()), [])
         self.assertEqual(self.binary.read_bytes(), native_binary(TARGET))
+
+    def test_late_foreign_sidecar_is_not_deleted_when_publication_refuses(self):
+        self.native_host()
+        self.output.mkdir()
+        destination = self.output / installers.name("0.1.0", TARGET, "deb")
+        sidecar = destination.with_name(destination.name + ".sha256")
+
+        def competing_publication(inputs, root, output, temporary):
+            output.write_bytes(b"!<arch>\nfirst-party framing")
+            sidecar.write_bytes(b"independent publisher owns this file")
+
+        with patch.object(linux, "build_deb", side_effect=competing_publication):
+            with self.assertRaises(FileExistsError):
+                linux.package(self.inputs, self.output, ("deb",))
+        self.assertFalse(destination.exists())
+        self.assertEqual(sidecar.read_bytes(), b"independent publisher owns this file")
 
     def test_inventory_rejects_links_outside_its_owned_root(self):
         root = self.root / "root"
