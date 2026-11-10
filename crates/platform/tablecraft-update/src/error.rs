@@ -26,6 +26,9 @@ pub enum UpdateError {
     /// Network failure; details intentionally exclude URLs and redirect tokens.
     #[error("The update server could not be reached")]
     Network,
+    /// The fixed endpoint or selected asset does not exist.
+    #[error("No matching release asset exists")]
+    NotFound,
     /// The server returned an unsuccessful response.
     #[error("The update server returned an unexpected status")]
     HttpStatus,
@@ -41,6 +44,9 @@ pub enum UpdateError {
     /// Staging or reading an owned local file failed.
     #[error("The update file could not be accessed")]
     Io(#[source] io::Error),
+    /// A signed archive failed path, membership or content validation.
+    #[error("The update archive is invalid")]
+    Archive,
     /// Staged bytes changed after verification.
     #[error("The staged update changed after signature verification")]
     PayloadChanged,

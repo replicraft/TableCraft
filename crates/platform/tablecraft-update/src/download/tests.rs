@@ -19,12 +19,21 @@ const PAYLOAD: &[u8] = include_bytes!("tests/payload.txt");
 const SIGNATURE: &[u8] = include_bytes!("tests/payload.minisig");
 const PUBLIC: &str = include_str!("tests/TEST-ONLY.pub");
 
-struct Responses(RefCell<VecDeque<(String, Vec<u8>, Option<u64>)>>);
+struct StoredResponse {
+    url: String,
+    bytes: Vec<u8>,
+    length: Option<u64>,
+}
+
+struct Responses(RefCell<VecDeque<StoredResponse>>);
 
 impl Transport for Responses {
     fn get(&self, url: &str) -> Result<Body, UpdateError> {
-        let (expected, bytes, length) =
-            self.0.borrow_mut().pop_front().expect("unexpected request");
+        let StoredResponse {
+            url: expected,
+            bytes,
+            length,
+        } = self.0.borrow_mut().pop_front().expect("unexpected request");
         assert_eq!(url, expected, "signature must be retrieved before archive");
         Ok(Body {
             reader: Box::new(Cursor::new(bytes)),
@@ -59,8 +68,16 @@ fn responses(
     signature: Vec<u8>,
 ) -> Responses {
     Responses(RefCell::new(VecDeque::from([
-        (release.signature_url().to_owned(), signature, None),
-        (release.archive_url().to_owned(), payload, None),
+        StoredResponse {
+            url: release.signature_url().to_owned(),
+            bytes: signature,
+            length: None,
+        },
+        StoredResponse {
+            url: release.archive_url().to_owned(),
+            bytes: payload,
+            length: None,
+        },
     ])))
 }
 
@@ -167,7 +184,7 @@ fn false_content_length_refuses_and_duplicate_signature_lines_refuse() {
     let release = available();
     let key = trust::parse_key(PUBLIC).unwrap();
     let source = responses(&release, PAYLOAD.to_vec(), SIGNATURE.to_vec());
-    source.0.borrow_mut().back_mut().unwrap().2 = Some(PAYLOAD.len() as u64 + 1);
+    source.0.borrow_mut().back_mut().unwrap().length = Some(PAYLOAD.len() as u64 + 1);
     assert!(matches!(
         download(&source, &key, &release, parent.path(), &mut |_| true),
         Err(UpdateError::LengthMismatch)

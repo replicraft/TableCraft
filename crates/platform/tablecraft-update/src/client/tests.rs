@@ -74,3 +74,23 @@ fn bounded_reader_checks_cancellation_between_chunks_and_surfaces_read_failure()
         Err(UpdateError::Io(_))
     ));
 }
+
+#[test]
+fn missing_latest_release_is_no_update_without_hiding_other_failures() {
+    struct Missing;
+    impl Transport for Missing {
+        fn get(&self, _: &str) -> Result<Body, UpdateError> {
+            Err(UpdateError::NotFound)
+        }
+    }
+    assert!(
+        check(
+            &Missing,
+            &Version::new(0, 1, 0),
+            Platform::MacosArm64,
+            &|| false
+        )
+        .unwrap()
+        .is_none()
+    );
+}

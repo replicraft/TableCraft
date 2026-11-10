@@ -81,7 +81,11 @@ fn check(
     if cancelled() {
         return Err(UpdateError::Cancelled);
     }
-    let mut response = transport.get(LATEST_RELEASE)?;
+    let mut response = match transport.get(LATEST_RELEASE) {
+        Ok(response) => response,
+        Err(UpdateError::NotFound) => return Ok(None),
+        Err(error) => return Err(error),
+    };
     if response
         .length
         .is_some_and(|size| size > release::MAX_METADATA_BYTES as u64)

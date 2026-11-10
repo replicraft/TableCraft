@@ -1,6 +1,9 @@
 use crate::UpdateError;
 use reqwest::{Url, blocking::Client, redirect::Policy};
-use std::{io::Read, time::Duration};
+use std::{
+    io::{self, Read},
+    time::Duration,
+};
 
 // GitHub release assets redirect from github.com to these authenticated hosts.
 const DOWNLOAD_HOSTS: [&str; 4] = [
@@ -60,14 +63,29 @@ impl Transport for Http {
             .header(reqwest::header::ACCEPT_ENCODING, "identity")
             .send()
             .map_err(|_| UpdateError::Network)?;
+        if response.status() == reqwest::StatusCode::NOT_FOUND {
+            return Err(UpdateError::NotFound);
+        }
         if response.status() != reqwest::StatusCode::OK {
             return Err(UpdateError::HttpStatus);
         }
         let length = response.content_length();
         Ok(Body {
-            reader: Box::new(response),
+            reader: Box::new(NetworkReader(response)),
             length,
         })
+    }
+}
+
+struct NetworkReader(reqwest::blocking::Response);
+
+impl Read for NetworkReader {
+    fn read(&mut self, buffer: &mut [u8]) -> io::Result<usize> {
+        // Redirect URLs can contain temporary credentials. Keep network stack
+        // errors out of source chains that a host may render diagnostically.
+        self.0
+            .read(buffer)
+            .map_err(|_| io::Error::other("Update network read failed"))
     }
 }
 
