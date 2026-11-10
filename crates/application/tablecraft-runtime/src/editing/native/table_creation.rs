@@ -61,12 +61,15 @@ impl Document {
         let definition = declaration::capture(snapshot, &mut work, cancelled)?;
         // NO_CLONE: NativeImage owns the checked source while Document keeps using it; this
         // shares immutable bytes instead of copying the database image.
-        let image = NativeImage::capture_shared(
-            self.edits.image_source.clone(),
-            SCOPE,
-            &mut work,
-            cancelled,
-        )?;
+        let source = self.edits.image_source.clone();
+        let image = match profile {
+            TableCreationProfile::First => {
+                NativeImage::capture_shared(source, SCOPE, &mut work, cancelled)
+            }
+            TableCreationProfile::Added => {
+                NativeImage::capture_shared_for_table_append(source, SCOPE, &mut work, cancelled)
+            }
+        }?;
         let (expected, columns, definition) = match profile {
             TableCreationProfile::First => {
                 let plan = image.plan_first_table(definition, &mut work, cancelled)?;
