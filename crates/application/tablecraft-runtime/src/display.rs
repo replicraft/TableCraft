@@ -192,7 +192,8 @@ impl<'a> Presentation<'a> {
                     .and_then(|value| value.checked_add(2))
                     .ok_or(Error::BinaryLimit)?;
                 self.work.charge(Resource::Bytes, length as u64)?;
-                let mut text = String::with_capacity(length);
+                let mut text = String::new();
+                text.try_reserve_exact(length)?;
                 text.push_str("0x");
                 for byte in bytes {
                     check(self.cancelled)?;

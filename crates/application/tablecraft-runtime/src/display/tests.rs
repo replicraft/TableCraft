@@ -7,6 +7,28 @@ use tablecraft_core::{
 };
 
 #[test]
+fn binary_hex_display_keeps_exact_budget_and_cancellation_semantics() {
+    let value = Value::Binary(vec![0, 15, 128, 255]);
+    let mut exact = Presentation::with_budget(ResourceBudget::new(10, 0, 100), &|| false);
+    assert_eq!(exact.value(&value).unwrap(), "0x000f80ff");
+    assert_eq!(exact.work.remaining(Resource::Bytes), 0);
+
+    let mut short = Presentation::with_budget(ResourceBudget::new(9, 0, 100), &|| false);
+    assert!(matches!(short.value(&value), Err(Error::Limit(limit))
+        if limit.resource == Resource::Bytes && limit.remaining == 9));
+    assert_eq!(short.work.remaining(Resource::Bytes), 9);
+
+    let calls = Counter::new(0);
+    let cancelled = || {
+        calls.set(calls.get() + 1);
+        calls.get() == 4
+    };
+    let mut output = Presentation::with_budget(ResourceBudget::new(10, 0, 100), &cancelled);
+    assert!(matches!(output.value(&value), Err(Error::Cancelled)));
+    assert_eq!(calls.get(), 4);
+}
+
+#[test]
 fn large_text_copy_is_paid_whole_and_cancellable_between_utf8_safe_chunks() {
     let text = "雪🦀".repeat(40_000);
     let mut exact =
