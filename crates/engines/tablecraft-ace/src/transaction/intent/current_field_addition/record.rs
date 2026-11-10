@@ -70,6 +70,7 @@ impl NativeCurrentFieldAdditionIntent {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, CurrentFieldAdditionIntentError> {
+        validate_column(candidate.column(), budget, cancelled)?;
         Ok(Self {
             table: copy_name(candidate.table(), budget, cancelled)?,
             column: copy_name(candidate.column(), budget, cancelled)?,
@@ -153,11 +154,23 @@ pub(super) fn validate_name(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), CurrentFieldAdditionIntentError> {
     check(budget, cancelled)?;
-    if text.is_empty() || text.len() > MAX_NAME_BYTES || !text.is_ascii() {
+    if text.is_empty() || text.len() > MAX_NAME_BYTES {
         return Err(CurrentFieldAdditionIntentError::InvalidRecord);
     }
     budget.charge(Resource::Steps, text.len() as u64)?;
     if text.encode_utf16().count() > MAX_NAME_UNITS || text.chars().any(char::is_control) {
+        return Err(CurrentFieldAdditionIntentError::InvalidRecord);
+    }
+    Ok(())
+}
+
+pub(super) fn validate_column(
+    text: &str,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), CurrentFieldAdditionIntentError> {
+    validate_name(text, budget, cancelled)?;
+    if !text.is_ascii() {
         return Err(CurrentFieldAdditionIntentError::InvalidRecord);
     }
     Ok(())

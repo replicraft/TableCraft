@@ -3,7 +3,7 @@ use super::{
     super::binding,
     record::{
         BINDING_BYTES, CurrentFieldAdditionIntentError as Error,
-        NativeCurrentFieldAdditionIntent as Intent, copy_name, validate_name,
+        NativeCurrentFieldAdditionIntent as Intent, copy_name, validate_column, validate_name,
     },
 };
 use crate::{InspectError, header::check};
@@ -61,7 +61,7 @@ pub(super) fn decode(
         std::str::from_utf8(&bytes[HEADER_BYTES..split]).map_err(|_| Error::InvalidRecord)?;
     let column = std::str::from_utf8(&bytes[split..]).map_err(|_| Error::InvalidRecord)?;
     validate_name(table, budget, cancelled)?;
-    validate_name(column, budget, cancelled)?;
+    validate_column(column, budget, cancelled)?;
 
     Ok(Intent {
         table: copy_name(table, budget, cancelled)?,
@@ -78,7 +78,7 @@ pub(super) fn encode(
 ) -> Result<Vec<u8>, Error> {
     check(budget, cancelled)?;
     validate_name(intent.table(), budget, cancelled)?;
-    validate_name(intent.column(), budget, cancelled)?;
+    validate_column(intent.column(), budget, cancelled)?;
     let length = HEADER_BYTES + intent.table().len() + intent.column().len();
     budget.charge_allocation(length as u64, 1)?;
     let mut bytes = Vec::new();

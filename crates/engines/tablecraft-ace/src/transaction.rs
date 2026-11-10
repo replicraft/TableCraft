@@ -248,8 +248,11 @@ pub use intent::{
 
 #[cfg(all(feature = "journal", feature = "ace16-create"))]
 pub use intent::{
-    FieldAdditionAfterOffHistoryIntentError, NativeFieldAdditionAfterOffHistoryIntent,
-    QualifiedFieldAdditionAfterOffHistoryRecovery, RecoverableFieldAdditionAfterOffHistoryPlan,
+    CurrentFieldAdditionIntentError, FieldAdditionAfterOffHistoryIntentError,
+    NativeCurrentFieldAdditionIntent, NativeFieldAdditionAfterOffHistoryIntent,
+    QualifiedCurrentFieldAdditionRecovery, QualifiedFieldAdditionAfterOffHistoryRecovery,
+    RecoverableCurrentFieldAdditionPlan, RecoverableFieldAdditionAfterOffHistoryPlan,
+    qualify_native_current_field_addition_recovery,
     qualify_native_field_addition_after_off_history_recovery,
 };
 
