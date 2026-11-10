@@ -1,5 +1,31 @@
 # Implementation status
 
+## DELETE after retained schema histories — 10 November 2026
+
+Qualified current ACE16 tables now delete rows after DROP → ADD → rename and
+current INSERT through the same runtime review/save services. A separate TCND0002
+request retains original logical row witnesses and the selected source family
+through fresh review reconstruction and cold recovery. Ordinary TCND0001
+admission remains separate. Whole-image proof preserves hidden forwarded
+payloads, retained property snapshots, native field identities and generated
+LastIssued history. Deleting every live row retains an empty allocated index;
+a later New row continues generation instead of resetting IDs. No desktop
+production editing logic was added.
+
+The independent read/query batch passes two tests, with 672 deletion selections
+and 56 empty-then-insert cycles. Native checks cover 336 complete images. The
+DELETE request/recovery family passes fourteen tests, current action-purpose
+checks pass two, and affected fitted-request regressions pass seventeen. Sixteen
+new headless GUI workflows pass with 72 successful row save/acknowledgement
+operations and cancellation/stale-review checks. The complete affected desktop
+deletion/insertion filters pass 44 tests. Current DELETE validates request
+cardinality against the captured source instead of inheriting the old native
+request quota. Strict ACE/Access/runtime/desktop/MCP checks and minimal engine
+feature checks pass separately.
+Current storage geometry remains narrowly qualified; broader sources, populated
+table deletion and native Windows/Access comparisons remain unfinished. See
+[normal DELETE](access/writes/NORMAL_ACE_DELETE.md).
+
 ## INSERT after retained schema histories — 10 November 2026
 
 Qualified current ACE16 tables now add rows after DROP → ADD → rename through

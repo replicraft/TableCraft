@@ -9,7 +9,41 @@ tablecraft query journal-delete 'DELETE FROM Items WHERE [Id]=1' \
   --database offline.accdb --journal fresh-delete-journal
 ```
 
-## Admission
+## DELETE after retained field histories
+
+A separate current-source route handles qualified ACE16 tables after field
+DROP → ADD → rename and subsequent current INSERT. Selection examines native
+metadata before witness capture; failed current admission never retries the
+ordinary language. Current DELETE has its own target-local program-absence
+certificate and requires complete current-schema, property-history, record and
+index ownership checks, including for empty selections.
+
+The current source still requires the qualified eleven-page creation geometry,
+user definition page seven, and retained native field numbers beyond the active
+field count. This is an implementation qualification boundary, not an Access
+file-size or table-size restriction. Broader native geometry remains unfinished.
+
+`prepare_current_row_deletes` captures resolved original payloads by logical row
+ordinal. The shared editor restores caller request order and consumes those
+witnesses through `plan_recoverable_current_row_deletes`. `TCND0002` retains this
+source family through fresh review reconstruction and cold recovery; `TCND0001`
+keeps its original source language. Neither decoded family grants write authority.
+Current wire counts and lengths follow their integer representation bounds;
+sparse duplicate tracking is allocated and charged per actual ordinal. Native
+current request admission uses the captured source's actual record count and
+paid identity checks rather than the legacy request-count guard. There is
+no new 16,384-row or 64 MiB current-request quota. Those historical TCND0001
+implementation bounds are not Access limits.
+
+Deletion marks the selected logical root, preserves hidden forwarded payloads
+and every old property snapshot, and removes original root identities from the
+qualified Int32 index. It leaves generated LastIssued history intact. Deleting
+all live rows retains an empty allocated index; a later INSERT uses the next
+generated identity rather than restarting the counter. The same independent
+whole-image proof checks surviving values, masks, native field identities,
+inactive bytes, maps and EOF. There is no payload erasure or page reclamation.
+
+## Original-source admission
 
 The route requires the qualified native seventeen-field catalog family in
 unencoded ACE2016/2019 subversion-zero images. Every operation freshly derives
@@ -75,7 +109,8 @@ UPDATE's equal-cardinality validator is not substituted.
 ## Journal and shared consumers
 
 `NativeDeleteIntent` retains ordered original ordinals, complete raw witnesses,
-table name and BEFORE binding in unchanged `TCND0001` framing. It stores no SQL,
+table name and BEFORE binding in its retained request framing. Ordinary sources
+keep unchanged `TCND0001`; selected current sources use `TCND0002`. It stores no SQL,
 final patches or absence permission. Existing UPDATE and INSERT action formats
 retain their separate dispatch and eligibility.
 

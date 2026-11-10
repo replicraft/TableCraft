@@ -1111,6 +1111,14 @@ row count or a browser page prefix, and it is not a native mutation handle.
 Query output, system tables and absent records cannot issue the UI intent.
 Native filtered/sorted views retain checked original ordinals instead of treating
 a displayed position as a source ordinal.
+The shared adapter also selects qualified retained-schema ACE16 sources after
+DROP → ADD → rename and current INSERT. It binds resolved original row witnesses
+to TCND0002 and preserves that family during review reconstruction and cold
+recovery; ordinary TCND0001 sources keep their own admission. Deleting the final
+live row preserves generated-counter history for a subsequent New row operation.
+Current source geometry remains an implementation qualification boundary, not an
+Access row or file-size limit.
+
 The existing plain-source and offline save limits apply. This route
 adds neither bulk deletion nor record-history Undo; a later undo would be a fresh
 validated native operation. See [normal DELETE](../access/writes/NORMAL_ACE_DELETE.md).
