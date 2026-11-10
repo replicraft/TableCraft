@@ -1,6 +1,6 @@
 //! Actual saved Design field names compose native proof and read-only properties.
 use crate::workspace::{
-    editing::field_rename::widgets::propose_name,
+    test_support::field_rename::propose_name,
     test_support::{self, finish_reads, finish_schema_save},
 };
 use egui::accesskit::{Action, Role};

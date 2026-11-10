@@ -1,6 +1,6 @@
 //! Repeated ordinary header saves retain prior names' exact inactive backing bytes.
 use crate::workspace::Desktop;
-use crate::workspace::editing::field_rename::widgets::propose_name;
+use crate::workspace::test_support::field_rename::propose_name;
 use crate::workspace::test_support::{app_harness, finish_reads, finish_schema_save, opened};
 use egui::{Key, Modifiers, accesskit::Role};
 use egui_kittest::kittest::{NodeT, Queryable};

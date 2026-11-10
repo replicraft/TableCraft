@@ -1,8 +1,8 @@
 //! Actual named widgets retain complete source qualification for grow and shrink.
-use crate::workspace::editing::field_rename::widgets::propose_name;
 use crate::workspace::editing::test_support::{
     review_pasted_cell, review_row_delete, save_reviewed_row,
 };
+use crate::workspace::test_support::field_rename::propose_name;
 use crate::workspace::test_support::{self, finish_reads, finish_schema_save};
 use egui::{Key, Modifiers, accesskit::Role};
 use egui_kittest::kittest::{NodeT, Queryable};

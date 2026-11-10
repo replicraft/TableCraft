@@ -1,13 +1,10 @@
 //! Header/Save widgets compose checked replacement with existing record editing.
 use crate::workspace::Desktop;
+use crate::workspace::test_support::field_rename::propose_name;
 use crate::workspace::test_support::{
     self, finish_reads, finish_schema_save, inserting::insert_omitted_fields,
 };
-use egui::{Key, Modifiers, accesskit::Role};
-use egui_kittest::{
-    Harness,
-    kittest::{NodeT, Queryable},
-};
+use egui::{Key, Modifiers};
 use std::time::{Duration, Instant};
 use tablecraft_runtime::{SaveWorker, journal_path};
 use tablecraft_testkit::fixtures::access::{
@@ -96,36 +93,6 @@ fn actual_header_rename_and_save_preserve_tabs_and_scratch_then_omitted_default_
             );
         }
     }
-}
-
-pub(super) fn propose_name(
-    harness: &mut Harness<'_, Desktop>,
-    original_name: &str,
-    replacement: &str,
-) {
-    harness.get_by_label(original_name).click();
-    harness.run_steps(1);
-    harness.key_press_modifiers(Modifiers::SHIFT, Key::F10);
-    harness.run_steps(2);
-    let command = harness.get_by_role_and_label(Role::Button, "Rename Field");
-    assert!(!command.accesskit_node().is_disabled());
-    command.click_accesskit();
-    harness.run_steps(1);
-    finish_reads(harness);
-    let input = harness.get_by_role_and_label(Role::TextInput, "Field name");
-    assert!(
-        !input.accesskit_node().is_read_only()
-            && !input.accesskit_node().is_disabled()
-            && harness.state().state.can_edit_field_rename(),
-        "actual native source inspection must permit the {original_name:?} proposal"
-    );
-    input.focus();
-    harness.run_steps(1);
-    harness.key_press_modifiers(Modifiers::COMMAND, Key::A);
-    harness
-        .get_by_role_and_label(Role::TextInput, "Field name")
-        .type_text(replacement);
-    harness.run_steps(1);
 }
 
 #[test]

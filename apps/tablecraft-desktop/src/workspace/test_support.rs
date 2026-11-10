@@ -4,6 +4,8 @@ pub(super) mod cell_edit;
 #[cfg(any(target_os = "macos", target_os = "linux", windows))]
 pub(super) mod field_addition;
 #[cfg(any(target_os = "macos", target_os = "linux", windows))]
+pub(super) mod field_rename;
+#[cfg(any(target_os = "macos", target_os = "linux", windows))]
 pub(super) mod inserting;
 #[cfg(any(target_os = "macos", target_os = "linux", windows))]
 pub(super) mod objects;
