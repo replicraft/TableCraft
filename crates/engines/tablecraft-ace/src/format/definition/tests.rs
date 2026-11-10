@@ -161,3 +161,37 @@ proptest! {
 }
 
 mod visits;
+
+#[test]
+fn joined_capacity_growth_is_fully_paid_within_the_declared_length() {
+    let (file, _) = image(12);
+    let header = Header::parse(&file, file.len() as u64).unwrap();
+    let mut source = Cursor::new(file);
+    let mut allowance = ResourceBudget::new(10_916, 0, 100_000);
+    let mut reader = Reader {
+        source: &mut source,
+        header,
+        budget: &mut allowance,
+        cancelled: &|| false,
+        reads: 0,
+    };
+    let mut joined = Vec::new();
+    for size in [4096, 4088, 2732] {
+        append(&mut joined, &vec![0x5a; size], 10_916, &mut reader).unwrap();
+        assert!(joined.capacity() <= 10_916);
+        assert_eq!(
+            10_916
+                - reader
+                    .budget
+                    .remaining(tablecraft_core::limits::Resource::Bytes),
+            joined.capacity() as u64
+        );
+    }
+    assert_eq!(joined.len(), 10_916);
+    assert_eq!(
+        reader
+            .budget
+            .remaining(tablecraft_core::limits::Resource::Bytes),
+        0
+    );
+}

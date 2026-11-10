@@ -75,7 +75,7 @@ pub(crate) fn read_with_pages<R: NativeReadSource>(
     visit(root, reader)?;
     let mut visited = Visited::new();
     visited.insert(root, reader)?;
-    append(&mut result.joined, &result.first, reader)?;
+    append(&mut result.joined, &result.first, length, reader)?;
     while result.joined.len() < length {
         reader.tick()?;
         if next == 0 {
@@ -90,6 +90,7 @@ pub(crate) fn read_with_pages<R: NativeReadSource>(
         append(
             &mut result.joined,
             &page[PAGE_HEADER_BYTES..PAGE_HEADER_BYTES + take],
+            length,
             reader,
         )?;
     }
@@ -103,13 +104,30 @@ pub(crate) fn read_with_pages<R: NativeReadSource>(
 fn append<R: NativeReadSource>(
     joined: &mut Vec<u8>,
     bytes: &[u8],
+    maximum_length: usize,
     reader: &mut Reader<'_, R>,
 ) -> Result<(), InspectError> {
     reader.tick()?;
-    reader.budget.charge_allocation(bytes.len() as u64, 1)?;
-    joined
-        .try_reserve(bytes.len())
-        .map_err(|_| InspectError::Allocation)?;
+    let required = joined
+        .len()
+        .checked_add(bytes.len())
+        .filter(|length| *length <= maximum_length)
+        .ok_or(InspectError::StructureLimit)?;
+    // The complete logical length is checked against source geometry before
+    // traversal. Capacity growth cannot exceed that declared storage envelope.
+    if required > joined.capacity() {
+        let capacity = required
+            .max(joined.capacity().saturating_mul(2))
+            .min(maximum_length);
+        reader.work(joined.len())?;
+        reader
+            .budget
+            .charge_allocation((capacity - joined.capacity()) as u64, 1)?;
+        joined
+            .try_reserve_exact(capacity - joined.len())
+            .map_err(|_| InspectError::Allocation)?;
+    }
+    reader.work(bytes.len())?;
     joined.extend_from_slice(bytes);
     Ok(())
 }
