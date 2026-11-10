@@ -7,12 +7,12 @@ use std::path::Path;
 #[cfg(feature = "ace16-create")]
 use tablecraft_ace::{
     AddTableSourceProfile, NativeAddColumnIntent, NativeAddTableIntent,
-    NativeCurrentFieldAdditionIntent, NativeDatabaseOptionsIntent,
-    NativeDefaultZeroAddColumnIntent, NativeFieldAdditionAfterOffHistoryIntent,
-    NativeFieldAdditionAfterOffIntent, NativeFieldAdditionIntent, NativeFieldDropIntent,
-    NativeFieldHistoryDatabaseOptionsIntent, NativeFieldRenameIntent, NativeFirstTableIntent,
-    NativeRepeatedDefaultZeroAddColumnIntent, qualify_native_add_column_recovery,
-    qualify_native_add_table_recovery, qualify_native_current_field_addition_recovery,
+    NativeDatabaseOptionsIntent, NativeDefaultZeroAddColumnIntent,
+    NativeFieldAdditionAfterOffHistoryIntent, NativeFieldAdditionAfterOffIntent,
+    NativeFieldAdditionIntent, NativeFieldDropIntent, NativeFieldHistoryDatabaseOptionsIntent,
+    NativeFieldRenameIntent, NativeFirstTableIntent, NativeRepeatedDefaultZeroAddColumnIntent,
+    qualify_native_add_column_recovery, qualify_native_add_table_recovery,
+    qualify_native_current_field_addition_recovery,
     qualify_native_default_zero_add_column_recovery,
     qualify_native_field_addition_after_off_history_recovery,
     qualify_native_field_addition_after_off_recovery, qualify_native_field_addition_recovery,
@@ -20,10 +20,10 @@ use tablecraft_ace::{
     qualify_native_first_table_recovery, qualify_native_repeated_default_zero_add_column_recovery,
 };
 use tablecraft_ace::{
-    NativeClockInsertIntent, NativeCompleteInsertIntent, NativeDeleteIntent, NativeEofInsertIntent,
-    NativeFittedEditIntent, NativeInsertIntent, NativeOmittedInsertIntent,
-    NativeQueryExpressionEditsIntent, NativeQueryExpressionIntent, NativeTableDropIntent,
-    NativeTableRenameIntent, NativeUpdateIntent, NativeUpdateProfile,
+    NativeClockInsertIntent, NativeCompleteInsertIntent, NativeCurrentFieldAdditionIntent,
+    NativeDeleteIntent, NativeEofInsertIntent, NativeFittedEditIntent, NativeInsertIntent,
+    NativeOmittedInsertIntent, NativeQueryExpressionEditsIntent, NativeQueryExpressionIntent,
+    NativeTableDropIntent, NativeTableRenameIntent, NativeUpdateIntent, NativeUpdateProfile,
     qualify_native_allocation_recovery, qualify_native_clock_insert_recovery,
     qualify_native_complete_insert_recovery, qualify_native_delete_recovery,
     qualify_native_eof_insert_recovery, qualify_native_insert_recovery,
@@ -189,6 +189,18 @@ impl OfflineWriteSession {
                     .map_err(Cause::FieldAdditionAfterOffHistoryIntent)?;
                     qualified
                         .recover(&mut target, budget, cancelled)
+                        .map_err(Cause::Recovery)
+                }
+                MutationIntent::RetainedFieldAddition(intent) => {
+                    let (mut target, mut journal) =
+                        pair.resizable_storage().map_err(Cause::Pair)?;
+                    let checked =
+                        inspect_v3(&mut journal, budget, cancelled).map_err(Cause::Recovery)?;
+                    let qualified = intent
+                        .qualify_retained_recovery(checked, slot.scope, budget, cancelled)
+                        .map_err(Cause::CurrentFieldAdditionIntent)?;
+                    qualified
+                        .recover_retained(&mut target, budget, cancelled)
                         .map_err(Cause::Recovery)
                 }
                 #[cfg(feature = "ace16-create")]
@@ -597,6 +609,16 @@ impl OfflineWriteSession {
                         checked, intent, slot.scope, budget, cancelled,
                     )
                     .map_err(Cause::FieldAdditionAfterOffHistoryIntent)?;
+                    qualified
+                        .confirm_completed(&mut target, budget, cancelled)
+                        .map_err(Cause::Recovery)
+                }
+                MutationIntent::RetainedFieldAddition(intent) => {
+                    let checked =
+                        inspect_v3(&mut journal, budget, cancelled).map_err(Cause::Recovery)?;
+                    let qualified = intent
+                        .qualify_retained_recovery(checked, slot.scope, budget, cancelled)
+                        .map_err(Cause::CurrentFieldAdditionIntent)?;
                     qualified
                         .confirm_completed(&mut target, budget, cancelled)
                         .map_err(Cause::Recovery)

@@ -10,18 +10,18 @@ use crate::editing::journal::NativeJournalInsertPlan;
 #[cfg(feature = "ace16-create")]
 use tablecraft_ace::{
     AddTablePlan, FirstTablePlan, NativeAddColumnIntent, NativeAddTableIntent,
-    NativeCurrentFieldAdditionIntent, NativeDefaultZeroAddColumnIntent,
-    NativeFieldAdditionAfterOffHistoryIntent, NativeFieldAdditionAfterOffIntent,
-    NativeFieldAdditionIntent, NativeFieldDropIntent, NativeFieldRenameIntent,
-    NativeFirstTableIntent, NativeRepeatedDefaultZeroAddColumnIntent, RecoverableAddColumnPlan,
-    RecoverableFieldDropPlan, RecoverableFieldRenamePlan,
+    NativeDefaultZeroAddColumnIntent, NativeFieldAdditionAfterOffHistoryIntent,
+    NativeFieldAdditionAfterOffIntent, NativeFieldAdditionIntent, NativeFieldDropIntent,
+    NativeFieldRenameIntent, NativeFirstTableIntent, NativeRepeatedDefaultZeroAddColumnIntent,
+    RecoverableAddColumnPlan, RecoverableFieldDropPlan, RecoverableFieldRenamePlan,
 };
 use tablecraft_ace::{
-    NativeClockInsertIntent, NativeCompleteInsertIntent, NativeDeleteIntent, NativeEofInsertIntent,
-    NativeInsertIntent, NativeOmittedInsertIntent, NativeQueryExpressionEditsIntent,
-    NativeQueryExpressionIntent, NativeTableDropIntent, NativeTableRenameIntent,
-    NativeUpdateIntent, NativeUpdateProfile, PreparedNativeUpdate, RecoverableNativeDeletePlan,
-    RecoverableNativeEditPlan, RecoverableNativeTableRenamePlan, RecoverableTableDropPlan,
+    NativeClockInsertIntent, NativeCompleteInsertIntent, NativeCurrentFieldAdditionIntent,
+    NativeDeleteIntent, NativeEofInsertIntent, NativeInsertIntent, NativeOmittedInsertIntent,
+    NativeQueryExpressionEditsIntent, NativeQueryExpressionIntent, NativeTableDropIntent,
+    NativeTableRenameIntent, NativeUpdateIntent, NativeUpdateProfile, PreparedNativeUpdate,
+    RecoverableNativeDeletePlan, RecoverableNativeEditPlan, RecoverableNativeTableRenamePlan,
+    RecoverableTableDropPlan,
 };
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_io::journal::{DurableStorage, ResizableDurableStorage};
@@ -229,6 +229,7 @@ pub(super) enum MutationIntent {
     FieldAdditionAfterOffHistory(NativeFieldAdditionAfterOffHistoryIntent),
     #[cfg(feature = "ace16-create")]
     CurrentFieldAddition(NativeCurrentFieldAdditionIntent),
+    RetainedFieldAddition(NativeCurrentFieldAdditionIntent),
     #[cfg(feature = "ace16-create")]
     FieldRename(NativeFieldRenameIntent),
     #[cfg(feature = "ace16-create")]
@@ -272,6 +273,7 @@ impl MutationIntent {
             | Self::FieldAdditionAfterOff(_)
             | Self::FieldAdditionAfterOffHistory(_)
             | Self::CurrentFieldAddition(_) => Some(SchemaChange::ColumnAdded),
+            Self::RetainedFieldAddition(_) => Some(SchemaChange::ColumnAdded),
             #[cfg(feature = "ace16-create")]
             Self::FieldDrop(_) => Some(SchemaChange::ColumnDropped),
             #[cfg(feature = "ace16-create")]
@@ -361,6 +363,12 @@ impl MutationIntent {
                 .map(Self::QueryExpression)
                 .map_err(Cause::QueryExpressionIntent);
         }
+        if raw.starts_with(b"TCAC0010") || raw.starts_with(b"TCAC0011") {
+            return NativeCurrentFieldAdditionIntent::decode_retained(raw, budget, cancelled)
+                .map(Self::RetainedFieldAddition)
+                .map_err(Cause::CurrentFieldAdditionIntent);
+        }
+
         #[cfg(feature = "ace16-create")]
         if raw.starts_with(b"TCAC0009") {
             return NativeCurrentFieldAdditionIntent::decode_short_text(raw, budget, cancelled)

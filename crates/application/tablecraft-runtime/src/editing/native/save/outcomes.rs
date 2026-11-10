@@ -1,5 +1,4 @@
 //! Allocation-free outcome facts derived from the retained actual resource owner.
-#[cfg(feature = "ace16-create")]
 mod current_field_addition;
 #[cfg(feature = "ace16-create")]
 mod database_options_field_history;
@@ -28,17 +27,18 @@ use tablecraft_access::editing::offline::{
 #[cfg(feature = "ace16-create")]
 use tablecraft_ace::{
     AddColumnError, AddColumnIntentError, AddTableError, AddTableIntentError, CreateDatabaseError,
-    CreatedAddColumnError, CurrentFieldAdditionError, CurrentFieldAdditionIntentError,
-    DatabaseOptionsError, DatabaseOptionsIntentError, DefaultZeroAddColumnIntentError,
-    FieldAdditionAfterOffHistoryIntentError, FieldAdditionAfterOffIntentError, FieldAdditionError,
-    FieldAdditionIntentError, FieldAdditionSourceError, FirstTableError, FirstTableIntentError,
+    CreatedAddColumnError, DatabaseOptionsError, DatabaseOptionsIntentError,
+    DefaultZeroAddColumnIntentError, FieldAdditionAfterOffHistoryIntentError,
+    FieldAdditionAfterOffIntentError, FieldAdditionError, FieldAdditionIntentError,
+    FieldAdditionSourceError, FirstTableError, FirstTableIntentError,
     RepeatedDefaultZeroAddColumnIntentError,
 };
 use tablecraft_ace::{
-    EditError, InspectError, NativeIntentError, NativeRecoveryQualificationError,
-    QueryExpressionEditsError, QueryExpressionEditsIntentError, QueryExpressionError,
-    QueryExpressionIntentError, QueryExpressionRecoveryError, RecoverableQueryExpressionError,
-    TableRenameError, TableRenameIntentError,
+    CurrentFieldAdditionError, CurrentFieldAdditionIntentError, EditError, InspectError,
+    NativeIntentError, NativeRecoveryQualificationError, QueryExpressionEditsError,
+    QueryExpressionEditsIntentError, QueryExpressionError, QueryExpressionIntentError,
+    QueryExpressionRecoveryError, RecoverableQueryExpressionError, TableRenameError,
+    TableRenameIntentError,
 };
 use tablecraft_core::limits::LimitError;
 use tablecraft_io::{
@@ -269,7 +269,6 @@ fn typed_resource_failure(error: &(dyn StdError + 'static)) -> Option<SaveFailur
             Cause::DefaultZeroAddColumnIntent(error) => number_column::intent(error),
             #[cfg(feature = "ace16-create")]
             Cause::FieldAdditionIntent(error) => field_addition::intent(error),
-            #[cfg(feature = "ace16-create")]
             Cause::CurrentFieldAdditionIntent(error) => current_field_addition::intent(error),
             #[cfg(feature = "ace16-create")]
             Cause::FieldRenameIntent(error) => field_rename::intent(error),
@@ -376,11 +375,9 @@ fn typed_resource_failure(error: &(dyn StdError + 'static)) -> Option<SaveFailur
     if let Some(error) = error.downcast_ref::<FieldAdditionAfterOffHistoryIntentError>() {
         return field_addition_after_off_history::intent(error);
     }
-    #[cfg(feature = "ace16-create")]
     if let Some(error) = error.downcast_ref::<CurrentFieldAdditionIntentError>() {
         return current_field_addition::intent(error);
     }
-    #[cfg(feature = "ace16-create")]
     if let Some(error) = error.downcast_ref::<CurrentFieldAdditionError>() {
         return current_field_addition::candidate(error);
     }

@@ -18,6 +18,10 @@ pub(in crate::editing::offline) enum Plan {
 }
 
 impl Plan {
+    pub(super) fn is_retained(&self) -> bool {
+        matches!(self, Self::Current(plan) if plan.intent().is_retained())
+    }
+
     pub(super) fn before_bytes(&self) -> &[u8] {
         match self {
             Self::First(plan) => plan.before_bytes(),
@@ -127,14 +131,20 @@ impl Plan {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<(), Cause> {
-        // All profiles remain checked V2 operations even when their current
-        // source and replacement happen to have equal lengths.
+        // Only retained10/11 select V3; all original profiles keep checked V2.
         let prepared = match self {
             Self::First(plan) => plan.prepare(target, journal, budget, cancelled),
             Self::Repeated(plan) => plan.prepare(target, journal, budget, cancelled),
             Self::Typed(plan) => plan.prepare(target, journal, budget, cancelled),
             Self::AfterOff(plan) => plan.prepare(target, journal, budget, cancelled),
             Self::AfterOffHistory(plan) => plan.prepare(target, journal, budget, cancelled),
+            Self::Current(plan) if plan.intent().is_retained() => {
+                return plan
+                    .prepare_retained(target, journal, budget, cancelled)
+                    .map_err(Cause::Prepare)?
+                    .commit(budget, cancelled)
+                    .map_err(Cause::Commit);
+            }
             Self::Current(plan) => plan.prepare(target, journal, budget, cancelled),
         }
         .map_err(Cause::Prepare)?;

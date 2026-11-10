@@ -3,17 +3,16 @@ use crate::editing::{NativeEditError, journal, sql};
 use std::{error::Error, fmt};
 #[cfg(feature = "ace16-create")]
 use tablecraft_ace::{
-    AddColumnIntentError, AddTableError, AddTableIntentError, CurrentFieldAdditionIntentError,
-    DatabaseOptionsIntentError, DefaultZeroAddColumnIntentError,
-    FieldAdditionAfterOffHistoryIntentError, FieldAdditionAfterOffIntentError,
-    FieldAdditionIntentError, FieldDropIntentError, FieldHistoryOptionsIntentError,
-    FieldRenameIntentError, FirstTableError, FirstTableIntentError,
+    AddColumnIntentError, AddTableError, AddTableIntentError, DatabaseOptionsIntentError,
+    DefaultZeroAddColumnIntentError, FieldAdditionAfterOffHistoryIntentError,
+    FieldAdditionAfterOffIntentError, FieldAdditionIntentError, FieldDropIntentError,
+    FieldHistoryOptionsIntentError, FieldRenameIntentError, FirstTableError, FirstTableIntentError,
     RepeatedDefaultZeroAddColumnIntentError,
 };
 use tablecraft_ace::{
-    InspectError, NativeIntentError, NativeRecoveryQualificationError,
-    QueryExpressionEditsIntentError, QueryExpressionIntentError, QueryExpressionRecoveryError,
-    TableDropIntentError, TableRenameIntentError,
+    CurrentFieldAdditionIntentError, InspectError, NativeIntentError,
+    NativeRecoveryQualificationError, QueryExpressionEditsIntentError, QueryExpressionIntentError,
+    QueryExpressionRecoveryError, TableDropIntentError, TableRenameIntentError,
 };
 use tablecraft_io::{
     IoError,
@@ -99,7 +98,6 @@ pub enum Cause {
     #[error(transparent)]
     FieldAdditionAfterOffHistoryIntent(FieldAdditionAfterOffHistoryIntentError),
     /// Current metadata ADD request or fresh native reconstruction refused.
-    #[cfg(feature = "ace16-create")]
     #[error(transparent)]
     CurrentFieldAdditionIntent(CurrentFieldAdditionIntentError),
     /// Original field-rename request or complete native reconstruction refused.

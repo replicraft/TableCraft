@@ -13,9 +13,10 @@ use crate::{
 };
 use plan::Plan;
 use std::sync::{Arc, atomic::AtomicBool};
+use tablecraft_access::editing::journal::NativeJournalEditor;
 use tablecraft_ace::{
     CreatedDefaultZeroColumnRequired, CreatedFieldAdditionSourcePurpose,
-    FieldAdditionSourcePurpose, FieldAdditionTarget, NativeImage,
+    FieldAdditionSourcePurpose, FieldAdditionTarget,
 };
 use tablecraft_builders::table::FieldAdditionDeclaration;
 
@@ -54,15 +55,40 @@ pub(in crate::editing) fn review(
     check(cancelled)?;
     // NO_CLONE: NativeImage owns the checked source while Document keeps using it; this shares
     // immutable bytes instead of copying the database image.
-    let image = NativeImage::capture_shared(
+    let image = NativeJournalEditor::capture_shared_image(
         document.edits.image_source.clone(),
         SCOPE,
+        table,
         &mut work,
         cancelled,
     )?;
     let target = native_target(declaration);
     let purpose = image.field_addition_source_purpose(table, target, &mut work, cancelled)?;
     let plan = match purpose {
+        FieldAdditionSourcePurpose::RetainedNumber => Plan::Current(Box::new(
+            image.plan_recoverable_retained_number_field_addition(
+                table, column, &mut work, cancelled,
+            )?,
+        )),
+        FieldAdditionSourcePurpose::RetainedShortText => {
+            let FieldAdditionTarget::ShortText {
+                max_utf16_units,
+                unicode_compression,
+            } = target
+            else {
+                return Err(EditError::InvalidInput.into());
+            };
+            Plan::Current(Box::new(
+                image.plan_recoverable_retained_short_text_field_addition(
+                    table,
+                    column,
+                    max_utf16_units,
+                    unicode_compression,
+                    &mut work,
+                    cancelled,
+                )?,
+            ))
+        }
         FieldAdditionSourcePurpose::CurrentNumber => Plan::Current(Box::new(
             image.plan_recoverable_current_number_field_addition(
                 table, column, &mut work, cancelled,
