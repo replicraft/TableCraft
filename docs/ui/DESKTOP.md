@@ -1004,8 +1004,10 @@ Text editors and modal controls keep their own keyboard input.
 
 Home, the row context menu and keyboard Copy use one selection owner. A selected
 record copies all displayed fields, without headers, through the existing csv
-crate's tab-delimited writer. Necessary quoting and its final LF count toward
-the 1 MiB limit; failure publishes no partial clipboard prefix. NULL and stored
+crate's tab-delimited writer, including necessary quoting and its final LF.
+Copy retains the complete displayed record without a separate byte quota;
+address-space overflow, allocation or encoding failure publishes no partial
+clipboard prefix. NULL and stored
 collection cells copy their displayed text/summaries, without child payloads.
 Single-cell Copy retains its full-value text contract. This is an explicit
 displayed-text interchange profile, not native Access clipboard or paste

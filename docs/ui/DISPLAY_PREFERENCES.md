@@ -192,8 +192,9 @@ separate. Ordinary literal text ending in an ellipsis is not marked shortened.
 
 The original Cell text is retained unchanged, including decomposed Unicode and
 line separators. Explicit single-cell Copy still publishes the complete display
-text. This does not apply the separate record-TSV clipboard limit to a cell or
-represent a preview prefix as a complete stored value.
+text. Record TSV Copy also retains complete displayed values, subject to actual
+address space and allocation. Neither path represents a preview prefix as a
+complete stored value.
 
 
 ## Modeless Find presentation

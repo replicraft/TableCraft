@@ -2,7 +2,6 @@
 use crate::{Cell, Data, Localizer};
 use std::io::{self, Write};
 
-const MAX_CLIPBOARD_BYTES: usize = 1_048_576;
 const WRITER_BUFFER_BYTES: usize = 8_192;
 
 #[derive(Clone, Copy)]
@@ -33,15 +32,11 @@ struct Output {
 
 impl Write for Output {
     fn write(&mut self, bytes: &[u8]) -> io::Result<usize> {
-        let Some(length) = self.bytes.len().checked_add(bytes.len()) else {
+        if self.bytes.len().checked_add(bytes.len()).is_none() {
             self.failure = Some(CopyError::Limit);
-            return Err(io::Error::other("clipboard limit"));
-        };
-        if length > MAX_CLIPBOARD_BYTES {
-            self.failure = Some(CopyError::Limit);
-            return Err(io::Error::other("clipboard limit"));
+            return Err(io::Error::other("clipboard size overflow"));
         }
-        if self.bytes.try_reserve_exact(bytes.len()).is_err() {
+        if self.bytes.try_reserve(bytes.len()).is_err() {
             self.failure = Some(CopyError::Allocation);
             return Err(io::Error::other("clipboard allocation"));
         }
@@ -121,20 +116,20 @@ mod tests {
     }
 
     #[test]
-    fn quote_expansion_and_record_terminator_count_toward_the_clipboard_bound() {
+    fn large_quoted_unicode_record_copies_every_value_without_a_byte_quota() {
+        let text = "日本語🦀\t\"value\"\r\n".repeat(90_000);
+        assert!(text.len() > 1024 * 1024);
+        let values = [
+            Cell::scalar(text.clone()),
+            Cell::scalar(""),
+            Cell::scalar("NULL"),
+        ];
+        let encoded = encode(&values)
+            .unwrap_or_else(|error| panic!("{}", error.message(&Localizer::default())));
         assert_eq!(
-            encode(&[Cell::scalar("x".repeat(MAX_CLIPBOARD_BYTES - 1))])
-                .unwrap_or_else(|error| panic!("{}", error.message(&Localizer::default())))
-                .len(),
-            MAX_CLIPBOARD_BYTES
+            encoded,
+            format!("\"{}\"\t\tNULL\n", text.replace('"', "\"\""))
         );
-        assert!(matches!(
-            encode(&[Cell::scalar("x".repeat(MAX_CLIPBOARD_BYTES))]),
-            Err(CopyError::Limit)
-        ));
-        assert!(matches!(
-            encode(&[Cell::scalar("\"".repeat(MAX_CLIPBOARD_BYTES / 2))]),
-            Err(CopyError::Limit)
-        ));
+        assert_eq!(values[0].text, text);
     }
 }
