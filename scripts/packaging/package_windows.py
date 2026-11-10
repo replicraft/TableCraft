@@ -141,10 +141,44 @@ def inspect_tables(installer, powershell="powershell.exe"):
                              "-Path", str(installer)], check=True, capture_output=True)
     if len(result.stdout) > MAX_INSPECTION_BYTES:
         raise ValueError("MSI table report exceeds inspection limit")
+    evidence = os.environ.get("TABLECRAFT_MSI_EVIDENCE_DIRECTORY")
+    if evidence:
+        directory = Path(evidence)
+        directory.mkdir(parents=True, exist_ok=False)
+        with (directory / "inspection.json").open("xb") as stream:
+            stream.write(result.stdout)
     return json.loads(result.stdout.decode("utf-8-sig"))
 
 
+def validate_report_shape(report):
+    columns = {
+        "properties": {"name", "value"},
+        "files": {"id", "component", "name", "size"},
+        "directories": {"id", "parent", "name"},
+        "components": {"id", "directory", "attributes", "keypath"},
+        "shortcuts": {"id", "directory", "name", "component", "target", "icon"},
+        "registry": {"id", "root", "key", "name", "value", "component"},
+        "upgrades": {"code", "minimum", "maximum", "attributes", "action"},
+        "icons": {"name"},
+        "customActions": {"action", "type", "source", "target"},
+    }
+    if not isinstance(report, dict) or set(report) != {"template", *columns}:
+        raise ValueError("MSI inspection report has unexpected tables")
+    if not isinstance(report["template"], str):
+        raise ValueError("MSI inspection summary is not a string")
+    for table, expected in columns.items():
+        rows = report[table]
+        if not isinstance(rows, list) or len(rows) > 256:
+            raise ValueError(f"MSI inspection {table} is not a bounded row array")
+        for index, row in enumerate(rows):
+            if not isinstance(row, dict) or set(row) != expected:
+                raise ValueError(f"MSI inspection {table} row {index} has unexpected columns")
+            if any(not isinstance(value, str) for value in row.values()):
+                raise ValueError(f"MSI inspection {table} row {index} has a non-string field")
+
+
 def check_tables(report, version, target, payload):
+    validate_report_shape(report)
     if report["customActions"]:
         raise ValueError("MSI must not contain application-launch or other custom actions")
     properties = {row["name"]: row["value"] for row in report["properties"]}

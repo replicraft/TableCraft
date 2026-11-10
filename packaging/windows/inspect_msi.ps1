@@ -7,7 +7,7 @@ $database = $installer.OpenDatabase($resolved, 0)
 function Read-Table([string]$Query, [string[]]$Columns) {
     $view = $database.OpenView($Query)
     try {
-        $view.Execute()
+        $view.Execute() | Out-Null
         $rows = @()
         while ($record = $view.Fetch()) {
             if ($rows.Count -ge 256) {
@@ -15,13 +15,13 @@ function Read-Table([string]$Query, [string[]]$Columns) {
             }
             $row = [ordered]@{}
             for ($column = 0; $column -lt $Columns.Count; $column++) {
-                $row[$Columns[$column]] = $record.StringData($column + 1)
+                $row[$Columns[$column]] = [string]$record.StringData($column + 1)
             }
             $rows += [pscustomobject]$row
         }
         return $rows
     } finally {
-        $view.Close()
+        $view.Close() | Out-Null
     }
 }
 

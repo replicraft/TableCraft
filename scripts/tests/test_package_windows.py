@@ -79,7 +79,7 @@ class WindowsInstallerTests(unittest.TestCase):
             "shortcuts": [{"id": "TableCraftStartMenu", "directory": "ProgramMenuFolder", "name": "TableCraft",
                            "component": "DesktopApplication", "target": "DesktopFeature", "icon": "TableCraftIcon"}],
             "registry": windows.registry_values(),
-            "upgrades": [{"code": windows.UPGRADE_CODE, "action": action} for action in ("WIX_UPGRADE_DETECTED", "WIX_DOWNGRADE_DETECTED")],
+            "upgrades": [{"code": windows.UPGRADE_CODE, "action": action, "minimum": "", "maximum": "", "attributes": "0"} for action in ("WIX_UPGRADE_DETECTED", "WIX_DOWNGRADE_DETECTED")],
             "icons": [{"name": "TableCraftIcon"}],
         }
 
@@ -182,6 +182,23 @@ class WindowsInstallerTests(unittest.TestCase):
             change(modified)
             with self.assertRaises(ValueError):
                 windows.check_tables(modified, VERSION, TARGET, payload)
+
+    def test_com_method_return_values_cannot_be_interpreted_as_installer_rows(self):
+        payload = self.stage()
+        for table in ("files", "components", "properties", "directories", "registry"):
+            report = self.report(payload)
+            report[table].insert(0, None)
+            with self.assertRaisesRegex(ValueError, f"{table} row 0"):
+                windows.check_tables(report, VERSION, TARGET, payload)
+
+    def test_raw_native_inspection_is_retained_before_table_validation(self):
+        evidence = self.root / "inspection-evidence"
+        raw = b'{"files":[null]}'
+        result = subprocess.CompletedProcess([], 0, raw)
+        with patch.dict(windows.os.environ, {"TABLECRAFT_MSI_EVIDENCE_DIRECTORY": str(evidence)}), patch.object(windows.subprocess, "run", return_value=result):
+            report = windows.inspect_tables(self.root / "unexecuted.msi")
+        self.assertEqual(report, {"files": [None]})
+        self.assertEqual((evidence / "inspection.json").read_bytes(), raw)
 
     def test_windows_installer_short_and_long_name_encoding_preserves_receiver_identity(self):
         payload = self.stage()

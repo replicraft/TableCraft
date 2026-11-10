@@ -214,6 +214,7 @@ jobs:
           RELEASE_VERSION: ${{ steps.version.outputs.version }}
           RELEASE_TARGET: ${{ matrix.target }}
           RELEASE_BINARY: target/${{ matrix.target }}/release/${{ matrix.binary }}
+          TABLECRAFT_MSI_EVIDENCE_DIRECTORY: ${{ runner.temp }}/tablecraft-msi-inspection-${{ matrix.target }}-${{ github.run_id }}-${{ github.run_attempt }}
         run: |
           $arguments = @(
             'scripts/packaging/package_windows.py',
@@ -246,7 +247,9 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: desktop-msi-lifecycle-${{ matrix.target }}
-          path: ${{ runner.temp }}/tablecraft-msi-lifecycle-${{ matrix.target }}-${{ github.run_id }}-${{ github.run_attempt }}/**
+          path: |
+            ${{ runner.temp }}/tablecraft-msi-lifecycle-${{ matrix.target }}-${{ github.run_id }}-${{ github.run_attempt }}/**
+            ${{ runner.temp }}/tablecraft-msi-inspection-${{ matrix.target }}-${{ github.run_id }}-${{ github.run_attempt }}/**
           if-no-files-found: warn
           retention-days: 14
       - name: Install macOS disk-image packaging tools
