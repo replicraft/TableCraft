@@ -5,6 +5,8 @@ mod current_tests;
 mod planning;
 mod recovery;
 #[cfg(test)]
+mod retained_tests;
+#[cfg(test)]
 mod tests;
 
 use super::{NativeIntentError, binding};
