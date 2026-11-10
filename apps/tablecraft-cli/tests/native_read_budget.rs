@@ -344,7 +344,7 @@ fn native_value_allowance_requires_database_and_validates_its_own_range() {
 #[test]
 fn row_value_and_text_allowances_apply_to_buffered_and_streamed_reads() {
     let db = Database::new(fixture::inline_values::database_with_inline_values());
-    let expected = "Id\tMemo\tBlob\n1\t€\t0x0001feff\n".as_bytes();
+    let expected = "Id\tMemo\tBlob\n1\t\"\"\"€\"\"\"\t0x0001feff\n".as_bytes();
     for mode in [None, Some("--stream"), Some("--all")] {
         let mut args = vec!["rows", db.path(), "--format", "tsv"];
         if let Some(mode) = mode {
