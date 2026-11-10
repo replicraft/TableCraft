@@ -211,3 +211,35 @@ fn number_availability_is_not_derived_from_the_old_empty_text_source_language() 
     assert!(source.number_available());
     assert!(!source.short_text_available());
 }
+
+#[test]
+fn non_ascii_existing_namespace_refuses_ascii_addition_before_duplicate_matching() {
+    let mut before = raw::source(raw::SourceCase::Number);
+    let old = [b'S', 0, b'c', 0, b'o', 0, b'r', 0, b'e', 0];
+    let locations = before
+        .windows(old.len())
+        .enumerate()
+        .filter_map(|(offset, bytes)| (bytes == old).then_some(offset))
+        .collect::<Vec<_>>();
+    // Independently change the TDEF name and corresponding live MR2 group.
+    // Equal UTF-16 width preserves both native frames without any encoder.
+    assert_eq!(locations.len(), 2);
+    for offset in locations {
+        before[offset..offset + 2].copy_from_slice(&0x212a_u16.to_le_bytes());
+    }
+    let captured = image(&before);
+    current_schema::observe(&captured, "Table1", &mut budget(), &|| false).unwrap();
+    assert!(matches!(
+        captured.inspect_current_field_addition_source("Table1", &mut budget(), &|| false),
+        Err(CurrentFieldAdditionError::Source)
+    ));
+    assert!(matches!(
+        image(&before).prepare_current_number_field_addition(
+            "Table1",
+            "Kcore",
+            &mut budget(),
+            &|| false,
+        ),
+        Err(CurrentFieldAdditionError::Source)
+    ));
+}
