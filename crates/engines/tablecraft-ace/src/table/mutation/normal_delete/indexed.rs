@@ -155,7 +155,7 @@ fn require_retained_primary_leaf(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), EditError> {
     let schema = checked.schema();
-    if schema.physical_layout().physical_indexes != 1 {
+    if schema.layout.physical_indexes != 1 {
         return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
     }
     let first = checked
