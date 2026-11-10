@@ -45,7 +45,10 @@ fn catalog_gap(before: &[u8]) -> (usize, usize, usize, usize) {
     let footer = count_at - 2 * (variables + 1);
     let variable_end = word(row, footer);
     assert_eq!(footer - variable_end, 95);
-    assert_eq!(&row[variable_end..variable_end + 4], b"MR2\0");
+    // The independent inline-to-external fixture retains the old record
+    // capacity but initializes its unreferenced gap to zero. The positive test
+    // below changes an opaque byte deliberately and requires preservation.
+    assert_eq!(&row[variable_end..footer], &[0; 95]);
     (CATALOG * PAGE + start, end - start, variable_end, footer)
 }
 
