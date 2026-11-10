@@ -22,6 +22,7 @@ all = "warn"
 tablecraft-builders.workspace = true
 tablecraft-update.workspace = true
 semver.workspace = true
+parking_lot.workspace = true
 tablecraft-display.workspace = true
 rfd = { workspace = true, features = ["xdg-portal", "wayland"] }
 eframe = { workspace = true, features = ["glow", "default_fonts", "accesskit", "wayland", "x11"] }

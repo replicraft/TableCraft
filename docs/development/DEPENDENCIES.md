@@ -25,6 +25,19 @@ Ed25519 key bytes. No Relay source, fixtures or signing keys were copied.
 See [updater gates](SELF_UPDATE.md).
 
 
+### Native host outcome mailbox
+
+The desktop uses `parking_lot` 0.12 (already resolved as 0.12.5 in the GUI
+closure) for a short, poison-free queue of resource-bearing updater outcomes.
+The producer performs no callbacks or I/O while holding the lock; event-thread
+polling uses `try_lock` and never waits. This keeps native installation/recovery
+owners outside the replaceable progress channel, including cancellation, stale
+presentation generations and closed receivers. Retained `Arc` handles transfer
+ownership without copying payloads, and each queued outcome is delivered once.
+This direct consumer adds no synchronization dependency to the ordinary CLI,
+engine or browser host. See the [published mutex contract](https://docs.rs/parking_lot/0.12.5/parking_lot/type.Mutex.html).
+
+
 ### AWS-LC TLS notice coverage
 
 The newly resolved `hyper-rustls` 0.27.10, `rustls` 0.23.46 and
