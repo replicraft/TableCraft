@@ -58,7 +58,7 @@ fn every_mixed_pair_matches_independent_after_and_preserves_original_rows_and_op
                 .unwrap();
             assert_eq!(plan.after_bytes(), expected.bytes, "{first:?} -> {added:?}");
             assert_eq!(
-                plan.requires_mixed_intent(),
+                plan.source_profile() == crate::AddTableSourceProfile::Mixed,
                 !matches!((first, added), (Family::Generated, Family::Generated))
             );
             let after = image(plan.after_bytes());
@@ -99,7 +99,7 @@ fn every_mixed_pair_matches_independent_after_and_preserves_original_rows_and_op
         )
         .unwrap();
     assert_eq!(plan.after_bytes(), expected.bytes);
-    assert!(plan.requires_mixed_intent());
+    assert!(plan.source_profile() == crate::AddTableSourceProfile::Mixed);
 }
 
 #[test]

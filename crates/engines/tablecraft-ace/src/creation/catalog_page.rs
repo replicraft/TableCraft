@@ -24,6 +24,8 @@ pub(super) enum PageError {
 const HEADER_BYTES: usize = slot_offset(0);
 const SLOT_BYTES: usize = size_of::<u16>();
 const MAX_SLOTS: usize = u8::MAX as usize + 1;
+const UNKNOWN_SLOT_FLAG: usize = 0x2000;
+const RECORD_OFFSET_MASK: usize = 0x1fff;
 
 pub(super) struct Page {
     pub count: usize,
@@ -41,6 +43,27 @@ impl Page {
     pub fn capture(
         raw: &[u8],
         owner: u32,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, PageError> {
+        Self::capture_for(raw, owner, false, budget, cancelled)
+    }
+
+    /// Retain physical deleted/forwarded slots while validating their masked spans.
+    /// The source inventory separately proves logical roots and terminal ownership.
+    pub fn capture_retained(
+        raw: &[u8],
+        owner: u32,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, PageError> {
+        Self::capture_for(raw, owner, true, budget, cancelled)
+    }
+
+    fn capture_for(
+        raw: &[u8],
+        owner: u32,
+        retained: bool,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, PageError> {
@@ -67,7 +90,15 @@ impl Page {
         let mut end = PAGE_BYTES;
         for slot in 0..count {
             check(budget, cancelled)?;
-            let start = word(raw, HEADER_BYTES + slot * SLOT_BYTES);
+            let original = word(raw, HEADER_BYTES + slot * SLOT_BYTES);
+            let start = if retained {
+                if original & UNKNOWN_SLOT_FLAG != 0 {
+                    return Err(PageError::Source);
+                }
+                original & RECORD_OFFSET_MASK
+            } else {
+                original
+            };
             if start < directory || start >= end {
                 return Err(PageError::Source);
             }

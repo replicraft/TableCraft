@@ -68,7 +68,7 @@ fn retained_single_table_lval_source_qualifies_consistently_for_generated_and_ma
         let generated = image(&before)
             .plan_add_table_legacy(generated(), &mut budget(), &|| false)
             .unwrap();
-        assert!(!generated.requires_mixed_intent());
+        assert!(generated.source_profile() == crate::AddTableSourceProfile::LegacyGenerated);
         assert_eq!(
             &generated.after_bytes()[7 * PAGE..before.len()],
             &before[7 * PAGE..]
@@ -77,7 +77,7 @@ fn retained_single_table_lval_source_qualifies_consistently_for_generated_and_ma
             let plan = image(&before)
                 .plan_add_table(manual(keyed), &mut budget(), &|| false)
                 .unwrap();
-            assert!(plan.requires_mixed_intent());
+            assert!(plan.source_profile() == crate::AddTableSourceProfile::Mixed);
             assert_eq!(
                 plan.after_bytes().len(),
                 (if keyed { 13 } else { 12 }) * PAGE

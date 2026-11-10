@@ -12,11 +12,25 @@ const INLINE_HEADER_BYTES: usize = 12;
 const INLINE: u32 = 0x8000_0000;
 const TABLES_ID: u32 = 0x0f00_0001;
 
-pub(super) fn verify(
+pub(in crate::creation::add_table) fn verify(
     raw: &[u8],
     name: &str,
     native_id: u32,
     properties: &TableProperties,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), AddTableError> {
+    verify_at(
+        raw, name, native_id, properties, TABLES_ID, budget, cancelled,
+    )
+}
+
+pub(in crate::creation::add_table) fn verify_at(
+    raw: &[u8],
+    name: &str,
+    native_id: u32,
+    properties: &TableProperties,
+    tables_parent: u32,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), AddTableError> {
@@ -29,7 +43,7 @@ pub(super) fn verify(
     let mut expected = [0; PAGE_BYTES];
     expected[..2].copy_from_slice(&17_u16.to_le_bytes());
     expected[2..6].copy_from_slice(&native_id.to_le_bytes());
-    expected[6..10].copy_from_slice(&TABLES_ID.to_le_bytes());
+    expected[6..10].copy_from_slice(&tables_parent.to_le_bytes());
     expected[10..12].copy_from_slice(&1_u16.to_le_bytes());
     let mut at = FIXED_BYTES;
     for unit in name.encode_utf16() {

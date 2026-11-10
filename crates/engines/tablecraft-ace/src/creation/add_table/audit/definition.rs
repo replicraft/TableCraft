@@ -68,11 +68,25 @@ fn kind(scalar: ScalarType) -> Result<u8, AddTableError> {
     })
 }
 
-pub(super) fn verify(
+pub(in crate::creation::add_table) fn verify(
     after: &[u8],
     role: Role,
     definition: &FirstTableDefinition,
     columns: &[CreateColumn<'_>],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), AddTableError> {
+    verify_at(
+        after, role, definition, columns, MAP_PAGE, budget, cancelled,
+    )
+}
+
+pub(in crate::creation::add_table) fn verify_at(
+    after: &[u8],
+    role: Role,
+    definition: &FirstTableDefinition,
+    columns: &[CreateColumn<'_>],
+    map_page: u32,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), AddTableError> {
@@ -155,7 +169,7 @@ pub(super) fn verify(
         long(
             &mut expected,
             physical + 34,
-            (MAP_PAGE << 8) | primary.map as u32,
+            (map_page << 8) | primary.map as u32,
         )?;
         long(&mut expected, physical + 38, primary.root as u32)?;
         expected[physical + 46] = 0x89;
@@ -194,8 +208,8 @@ pub(super) fn verify(
     short(&mut expected, 45, columns.len())?;
     long(&mut expected, 47, u32::from(role.primary.is_some()))?;
     long(&mut expected, 51, u32::from(role.primary.is_some()))?;
-    long(&mut expected, 55, (MAP_PAGE << 8) | role.owned as u32)?;
-    long(&mut expected, 59, (MAP_PAGE << 8) | role.candidate as u32)?;
+    long(&mut expected, 55, (map_page << 8) | role.owned as u32)?;
+    long(&mut expected, 59, (map_page << 8) | role.candidate as u32)?;
     if source::page(after, role.definition) != expected {
         return Err(AddTableError::Preservation);
     }

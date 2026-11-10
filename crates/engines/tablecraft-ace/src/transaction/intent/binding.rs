@@ -1,5 +1,9 @@
 use super::model::NativeIntentError;
-use crate::{InspectError, header::check, limits::MAX_IMAGE_BYTES};
+use crate::{
+    InspectError,
+    header::check,
+    limits::{MAX_IMAGE_BYTES, MAX_READ_FILE_BYTES},
+};
 use sha2::{Digest, Sha256};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
@@ -22,6 +26,34 @@ pub(super) fn digest(
 ) -> Result<[u8; DIGEST_BYTES], NativeIntentError> {
     check(budget, cancelled)?;
     length(before.len() as u64)?;
+    digest_checked(before, budget, cancelled)
+}
+
+pub(super) fn table_append_length(length: u64) -> Result<(), NativeIntentError> {
+    if length == 0
+        || length > MAX_READ_FILE_BYTES
+        || !length.is_multiple_of(crate::format::page::PAGE_BYTES as u64)
+    {
+        return Err(NativeIntentError::InvalidRecord);
+    }
+    Ok(())
+}
+
+pub(super) fn digest_for_table_append(
+    before: &[u8],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<[u8; DIGEST_BYTES], NativeIntentError> {
+    check(budget, cancelled)?;
+    table_append_length(before.len() as u64)?;
+    digest_checked(before, budget, cancelled)
+}
+
+fn digest_checked(
+    before: &[u8],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<[u8; DIGEST_BYTES], NativeIntentError> {
     budget
         .charge(Resource::Steps, (DOMAIN.len() + size_of::<u64>()) as u64)
         .map_err(InspectError::from)?;

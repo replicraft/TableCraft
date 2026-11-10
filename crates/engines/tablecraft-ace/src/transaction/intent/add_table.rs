@@ -4,7 +4,7 @@ mod recovery;
 mod write;
 
 use super::{FirstTableIntentError, NativeIntentError, binding};
-use crate::{FirstTableDefinition, InspectError, header::check};
+use crate::{AddTableSourceProfile, FirstTableDefinition, InspectError, header::check};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use thiserror::Error;
 
@@ -102,6 +102,39 @@ impl NativeAddTableIntent {
         })
     }
 
+    /// Bind a declaration to the retained-source TCAT6 family without granting a plan.
+    pub fn new_retained(
+        definition: FirstTableDefinition,
+        before: &[u8],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, AddTableIntentError> {
+        check(budget, cancelled)?;
+        if !codec::retained_before_length(before.len() as u64) {
+            return Err(AddTableIntentError::BeforeMismatch);
+        }
+        let profile = codec::Profile::Retained;
+        let before_binding = profile.digest(before, budget, cancelled)?;
+        Ok(Self {
+            definition,
+            profile,
+            before_length: before.len() as u64,
+            before_binding,
+        })
+    }
+
+    /// Closed construction family retained by the original request.
+    pub fn source_profile(&self) -> AddTableSourceProfile {
+        match self.profile {
+            codec::Profile::Retained => AddTableSourceProfile::Retained,
+            codec::Profile::Mixed => AddTableSourceProfile::Mixed,
+            codec::Profile::Legacy
+            | codec::Profile::Repeated
+            | codec::Profile::Described
+            | codec::Profile::RepeatedDescribed => AddTableSourceProfile::LegacyGenerated,
+        }
+    }
+
     /// Exact original table name; never SQL or a target path.
     pub fn table(&self) -> &str {
         self.definition.table()
@@ -137,6 +170,15 @@ impl NativeAddTableIntent {
         codec::decode(raw, budget, cancelled)
     }
 
+    /// Decode only TCAT6 retained-source data, without retrying older families.
+    pub fn decode_retained(
+        raw: &[u8],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, AddTableIntentError> {
+        codec::decode_retained(raw, budget, cancelled)
+    }
+
     /// Check the actual full original image, including opaque data and free gaps.
     /// A matching digest still grants no native source-role or write permission.
     pub fn verify_before(
@@ -149,7 +191,7 @@ impl NativeAddTableIntent {
         if before.len() as u64 != self.before_length {
             return Err(AddTableIntentError::BeforeMismatch);
         }
-        let actual = binding::digest(before, budget, cancelled)?;
+        let actual = self.profile.digest(before, budget, cancelled)?;
         budget
             .charge(Resource::Steps, actual.len() as u64)
             .map_err(InspectError::from)?;

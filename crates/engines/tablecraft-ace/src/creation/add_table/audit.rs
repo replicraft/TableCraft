@@ -1,9 +1,9 @@
 //! Independent original-byte envelope and decoded appended native role checks.
 use crate::creation::catalog_page::Page;
-mod catalog;
-mod definition;
-mod empty_pages;
-mod properties;
+pub(in crate::creation::add_table) mod catalog;
+pub(in crate::creation::add_table) mod definition;
+pub(in crate::creation::add_table) mod empty_pages;
+pub(in crate::creation::add_table) mod properties;
 use super::super::FirstTableDefinition;
 use super::{
     AddTableError,

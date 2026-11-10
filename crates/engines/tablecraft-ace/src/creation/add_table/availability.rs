@@ -1,5 +1,5 @@
 //! Advisory source facts use the actual operation's complete native qualification.
-use super::{AddTableError, geometry::MAPPED_PAGES, source};
+use super::{AddTableError, geometry::MAPPED_PAGES, retained, source};
 use crate::format::page::PAGE_BYTES;
 use crate::{InspectError, NativeImage, header::check};
 use std::io::Cursor;
@@ -18,8 +18,8 @@ const MAX_SOURCE_PAGES: usize = MAPPED_PAGES - KEYLESS_PAGES;
 /// These advisory facts do not authorize a particular name or declaration.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub struct AddTableSourceCapabilities {
-    keyless: bool,
-    keyed: bool,
+    pub(super) keyless: bool,
+    pub(super) keyed: bool,
 }
 
 impl AddTableSourceCapabilities {
@@ -55,13 +55,22 @@ pub fn add_table_source_capabilities(
 ) -> Result<AddTableSourceCapabilities, AddTableError> {
     let _span = tracing::debug_span!("native.add_table.source_available").entered();
     check(budget, cancelled)?;
-    if !captured.len().is_multiple_of(PAGE_BYTES)
-        || !(MIN_SOURCE_PAGES..=MAX_SOURCE_PAGES).contains(&(captured.len() / PAGE_BYTES))
-    {
+    if !captured.len().is_multiple_of(PAGE_BYTES) {
         return Ok(AddTableSourceCapabilities::default());
     }
     let result = (|| {
-        let image = NativeImage::capture(&mut Cursor::new(captured), scope, budget, cancelled)?;
+        let image = NativeImage::capture_for_table_append(
+            &mut Cursor::new(captured),
+            scope,
+            budget,
+            cancelled,
+        )?;
+        if retained::selected(&image, budget, cancelled)? {
+            return retained::capabilities(&image, budget, cancelled);
+        }
+        if !(MIN_SOURCE_PAGES..=MAX_SOURCE_PAGES).contains(&(captured.len() / PAGE_BYTES)) {
+            return Ok(AddTableSourceCapabilities::default());
+        }
         let (geometry, legacy) = source::derive_geometry(&image, false, budget, cancelled)?;
         let qualified = if legacy {
             source::qualify(&image, budget, cancelled)?

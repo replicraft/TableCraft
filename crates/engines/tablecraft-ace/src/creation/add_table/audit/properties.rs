@@ -15,7 +15,7 @@ const BOOLEAN: u8 = 1;
 const MEMO: u8 = 12;
 const TEXT: u8 = 10;
 
-pub(super) fn verify(
+pub(in crate::creation::add_table) fn verify(
     image: &NativeImage,
     schema: &TableSchema,
     columns: &[CreateColumn<'_>],

@@ -7,7 +7,7 @@ const PAGE_BYTES: usize = 4096;
 const DATA_HEADER_BYTES: u16 = 14;
 const INDEX_PAYLOAD_BYTES: u16 = 3616;
 
-pub(super) fn verify(
+pub(in crate::creation::add_table) fn verify(
     after: &[u8],
     role: Role,
     budget: &mut ResourceBudget,

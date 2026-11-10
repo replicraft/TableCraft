@@ -1,12 +1,12 @@
-use super::{AddTableIntentError, binding, codec};
-use crate::AddTablePlan;
+use super::{AddTableIntentError, codec};
+use crate::{AddTablePlan, AddTableSourceProfile};
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_io::journal::{
     self, CommitError, DurableStorage, JournalError, PreparedResizableImage, RecoveryOutcome,
     ResizableDurableStorage,
 };
 
-/// The source-bound add-table transition prepared through one V2 image journal.
+/// A source-bound add-table transition retaining its selected image journal.
 /// Dropping retains the journal; callers must explicitly recover before access.
 #[must_use = "commit or explicitly recover the retained add-table journal"]
 pub struct PreparedAddTable<'a, D, J> {
@@ -21,15 +21,18 @@ impl AddTablePlan {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Vec<u8>, AddTableIntentError> {
-        let before_binding = binding::digest(self.before_bytes(), budget, cancelled)?;
-        codec::encode(
-            self.definition(),
-            if self.requires_mixed_intent() {
-                codec::Profile::Mixed
-            } else {
+        let profile = match self.source_profile() {
+            AddTableSourceProfile::LegacyGenerated => {
                 codec::legacy_profile(self.before_bytes().len() as u64)
                     .ok_or(AddTableIntentError::BeforeMismatch)?
-            },
+            }
+            AddTableSourceProfile::Mixed => codec::Profile::Mixed,
+            AddTableSourceProfile::Retained => codec::Profile::Retained,
+        };
+        let before_binding = profile.digest(self.before_bytes(), budget, cancelled)?;
+        codec::encode(
+            self.definition(),
+            profile,
             self.before_bytes().len() as u64,
             before_binding,
             budget,
@@ -37,7 +40,8 @@ impl AddTablePlan {
         )
     }
 
-    /// Prepare only against the retained target's exact populated BEFORE bytes.
+    /// Prepare against the retained target's exact complete BEFORE bytes.
+    /// Retained sources use V3; older construction families keep their V2 grammar.
     /// The host owns exclusive target/journal association and durable namespace
     /// setup. This method creates no file or journal directory.
     pub fn prepare<'a, D: ResizableDurableStorage, J: DurableStorage>(
@@ -48,14 +52,26 @@ impl AddTablePlan {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<PreparedAddTable<'a, D, J>, JournalError> {
         let _span = tracing::debug_span!("native.add_table.prepare").entered();
-        let prepared = journal::prepare_resizable_expected(
-            target,
-            journal,
-            self.before_bytes(),
-            self.after_bytes(),
-            budget,
-            cancelled,
-        )?;
+        let prepared = match self.source_profile() {
+            AddTableSourceProfile::Retained => journal::prepare_resizable_v3_expected(
+                target,
+                journal,
+                self.before_bytes(),
+                self.after_bytes(),
+                budget,
+                cancelled,
+            )?,
+            AddTableSourceProfile::LegacyGenerated | AddTableSourceProfile::Mixed => {
+                journal::prepare_resizable_expected(
+                    target,
+                    journal,
+                    self.before_bytes(),
+                    self.after_bytes(),
+                    budget,
+                    cancelled,
+                )?
+            }
+        };
         Ok(PreparedAddTable { prepared })
     }
 }

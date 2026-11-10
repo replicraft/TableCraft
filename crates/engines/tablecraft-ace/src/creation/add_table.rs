@@ -3,6 +3,7 @@ mod audit;
 mod availability;
 mod build;
 mod geometry;
+mod retained;
 pub(in crate::creation) mod source;
 
 use super::{CreateDatabaseError, FirstTableDefinition};
@@ -54,13 +55,18 @@ pub struct AddTablePlan {
     before: NativeImage,
     after: NativeImageSource,
     definition: FirstTableDefinition,
-    profile: ConstructionProfile,
+    profile: AddTableSourceProfile,
 }
 
-#[derive(Clone, Copy, PartialEq, Eq)]
-enum ConstructionProfile {
+/// Exact native source family retained by an append-table plan and its intent.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum AddTableSourceProfile {
+    /// Original packed generated source/target construction.
     LegacyGenerated,
+    /// Original mixed two/three-page packed ledgers.
     Mixed,
+    /// Live and retired physical roles with fresh EOF allocation.
+    Retained,
 }
 
 impl NativeImage {
@@ -68,6 +74,19 @@ impl NativeImage {
     /// Each existing table retains one DATA page and its optional primary root.
     /// Imported catalogs, allocation expansion and broader schema changes refuse.
     pub fn plan_add_table(
+        self,
+        definition: FirstTableDefinition,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<AddTablePlan, AddTableError> {
+        if retained::selected(&self, budget, cancelled)? {
+            return self.plan_add_table_retained(definition, budget, cancelled);
+        }
+        self.plan_add_table_mixed(definition, budget, cancelled)
+    }
+
+    /// Reconstruct the frozen TCAT5 mixed-source language without retained selection.
+    pub(crate) fn plan_add_table_mixed(
         self,
         definition: FirstTableDefinition,
         budget: &mut ResourceBudget,
@@ -90,8 +109,18 @@ impl NativeImage {
             before: self,
             after,
             definition,
-            profile: ConstructionProfile::Mixed,
+            profile: AddTableSourceProfile::Mixed,
         })
+    }
+
+    /// Reconstruct only the TCAT6 retained append-source language.
+    pub(crate) fn plan_add_table_retained(
+        self,
+        definition: FirstTableDefinition,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<AddTablePlan, AddTableError> {
+        retained::plan(self, definition, budget, cancelled)
     }
 
     /// Reconstruct only the original generated-source/generated-target language.
@@ -115,15 +144,15 @@ impl NativeImage {
             before: self,
             after,
             definition,
-            profile: ConstructionProfile::LegacyGenerated,
+            profile: AddTableSourceProfile::LegacyGenerated,
         })
     }
 }
 
 impl AddTablePlan {
     /// Fresh structural source/target classification selects the closed wire language.
-    pub fn requires_mixed_intent(&self) -> bool {
-        self.profile == ConstructionProfile::Mixed
+    pub const fn source_profile(&self) -> AddTableSourceProfile {
+        self.profile
     }
 
     /// Complete retained original bytes; no existing object was reconstructed.
