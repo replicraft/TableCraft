@@ -1,9 +1,9 @@
 //! Owning candidate plus original request; no constructor from decoded authority.
 use super::{FieldRenameIntentError as Error, NativeFieldRenameIntent as Intent, Profile};
 use crate::{
-    NativeFieldRenameCandidate, NativeFieldRenameIdentity, NativeFittedFieldRenameCandidate,
-    NativeImage, NativePopulatedFieldRenameCandidate, header::check,
-    transaction::qualified_recovery::equal_image,
+    NativeCurrentFieldRenameCandidate, NativeFieldRenameCandidate, NativeFieldRenameIdentity,
+    NativeFittedFieldRenameCandidate, NativeImage, NativePopulatedFieldRenameCandidate,
+    header::check, transaction::qualified_recovery::equal_image,
 };
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_io::journal::{self, DurableStorage, JournalError, PreparedImage};
@@ -13,6 +13,7 @@ pub(super) enum Candidate {
     SameWidth(NativeFieldRenameCandidate),
     FittedAscii(NativeFittedFieldRenameCandidate),
     PopulatedAscii(NativePopulatedFieldRenameCandidate),
+    CurrentAscii(NativeCurrentFieldRenameCandidate),
 }
 
 impl Candidate {
@@ -21,6 +22,7 @@ impl Candidate {
             Self::SameWidth(candidate) => candidate.before_bytes(),
             Self::FittedAscii(candidate) => candidate.before_bytes(),
             Self::PopulatedAscii(candidate) => candidate.before_bytes(),
+            Self::CurrentAscii(candidate) => candidate.before_bytes(),
         }
     }
 
@@ -29,6 +31,7 @@ impl Candidate {
             Self::SameWidth(candidate) => candidate.after_bytes(),
             Self::FittedAscii(candidate) => candidate.after_bytes(),
             Self::PopulatedAscii(candidate) => candidate.after_bytes(),
+            Self::CurrentAscii(candidate) => candidate.after_bytes(),
         }
     }
 
@@ -37,6 +40,7 @@ impl Candidate {
             Self::SameWidth(candidate) => candidate.table(),
             Self::FittedAscii(candidate) => candidate.table(),
             Self::PopulatedAscii(candidate) => candidate.table(),
+            Self::CurrentAscii(candidate) => candidate.table(),
         }
     }
 
@@ -45,6 +49,7 @@ impl Candidate {
             Self::SameWidth(candidate) => candidate.column(),
             Self::FittedAscii(candidate) => candidate.column(),
             Self::PopulatedAscii(candidate) => candidate.column(),
+            Self::CurrentAscii(candidate) => candidate.column(),
         }
     }
 
@@ -53,6 +58,7 @@ impl Candidate {
             Self::SameWidth(candidate) => candidate.new_name(),
             Self::FittedAscii(candidate) => candidate.new_name(),
             Self::PopulatedAscii(candidate) => candidate.new_name(),
+            Self::CurrentAscii(candidate) => candidate.new_name(),
         }
     }
 
@@ -61,6 +67,7 @@ impl Candidate {
             Self::SameWidth(candidate) => candidate.identity(),
             Self::FittedAscii(candidate) => candidate.identity(),
             Self::PopulatedAscii(candidate) => candidate.identity(),
+            Self::CurrentAscii(candidate) => candidate.identity(),
         }
     }
 
@@ -69,6 +76,7 @@ impl Candidate {
             Self::SameWidth(candidate) => candidate.changed(),
             Self::FittedAscii(candidate) => candidate.changed(),
             Self::PopulatedAscii(candidate) => candidate.changed(),
+            Self::CurrentAscii(candidate) => candidate.changed(),
         }
     }
 }
@@ -80,6 +88,26 @@ pub struct RecoverableFieldRenamePlan {
 }
 
 impl NativeImage {
+    /// Bind a current-metadata rename to the complete original source and request.
+    /// This family requalifies actual rows, metadata and dependencies regardless
+    /// of earlier renames; it never reinterprets an older serialized profile.
+    pub fn plan_recoverable_current_field_rename(
+        self,
+        table: &str,
+        column: &str,
+        new_name: &str,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<RecoverableFieldRenamePlan, Error> {
+        let _span = tracing::debug_span!("native.field_rename.plan_current").entered();
+        let candidate = Candidate::CurrentAscii(
+            self.prepare_current_field_rename(table, column, new_name, budget, cancelled)?,
+        );
+        let intent = Intent::capture(Profile::CurrentAscii, &candidate, budget, cancelled)?;
+        check(budget, cancelled)?;
+        RecoverableFieldRenamePlan::new(candidate, intent, budget, cancelled)
+    }
+
     /// Bind the populated semantic family to its exact original nonempty source.
     /// The closed profile retains all ASCII widths, including validated no-ops.
     pub fn plan_recoverable_populated_field_rename(

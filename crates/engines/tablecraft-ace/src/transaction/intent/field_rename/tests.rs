@@ -1,4 +1,5 @@
 //! Independent request framing and real retained-journal reconstruction boundaries.
+mod current;
 mod populated;
 use super::*;
 use sha2::{Digest, Sha256};
