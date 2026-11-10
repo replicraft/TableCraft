@@ -1,6 +1,6 @@
 //! Default checkbox artwork proposes edits without mutating stored cell facts.
 use super::*;
-use crate::workspace::row_identity::RowOrdinals;
+use crate::RowOrdinals;
 use egui_kittest::{
     Harness,
     kittest::{NodeT, Queryable},

@@ -376,14 +376,14 @@ mod tests {
     use crate::Cell;
 
     #[test]
-    fn failed_record_copy_publishes_no_clipboard_prefix() {
+    fn incomplete_record_copy_publishes_no_clipboard_prefix() {
         let data = Data {
             row_ordinals: None,
             source_revision: None,
             table: "Result".into(),
             offset: 0,
-            columns: vec!["Value".into()],
-            rows: vec![vec![Cell::scalar("x".repeat(1_048_576))]],
+            columns: vec!["Value".into(), "Missing".into()],
+            rows: vec![vec![Cell::scalar("must not copy this prefix")]],
             has_more: false,
         };
         let mut selection = Selection {

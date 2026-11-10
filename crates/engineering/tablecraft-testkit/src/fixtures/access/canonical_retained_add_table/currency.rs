@@ -37,10 +37,6 @@ pub enum Input {
     Value(i64),
 }
 
-fn word(bytes: &[u8], at: usize) -> usize {
-    usize::from(u16::from_le_bytes(bytes[at..at + 2].try_into().unwrap()))
-}
-
 fn name(value: &str) -> Vec<u8> {
     let payload = value
         .encode_utf16()
