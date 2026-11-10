@@ -177,7 +177,7 @@ fn native_creation_crosses_property_map_windows_with_full_names_and_properties()
     let source = raw::property_windows::source();
     let mut names = vec![String::from("ID")];
     names.extend((1..255).map(raw::property_windows::field_name));
-    let default = Value::Text("d".repeat(253).into());
+    let default = Value::Text("d".repeat(253));
     let description = raw::property_windows::description();
     let columns = names
         .iter()
