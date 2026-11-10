@@ -1,4 +1,6 @@
 //! Literal TCAT framing is independent of its production encoder and template codec.
+mod retained;
+
 use super::{AddTableIntentError, NativeAddTableIntent};
 use crate::{CreateColumn, FirstTableDefinition, InspectError};
 use sha2::{Digest, Sha256};
