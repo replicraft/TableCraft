@@ -3,11 +3,7 @@ mod arithmetic;
 mod text;
 
 use super::super::Binder;
-use crate::{
-    QueryError,
-    plan::Expr,
-    profile::{MAX_BIND_BYTES, MAX_BIND_NODES, MAX_TEXT_BYTES},
-};
+use crate::{QueryError, plan::Expr};
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
     values::Value,
@@ -129,18 +125,9 @@ impl Binder<'_> {
         let steps = self
             .budget
             .as_ref()
-            .map_or(MAX_BIND_NODES as u64, |budget| {
-                budget.remaining(Resource::Steps).min(MAX_BIND_NODES as u64)
-            });
+            .map_or(u64::MAX, |budget| budget.remaining(Resource::Steps));
         let mut allowance = ResourceBudget::new(bytes as u64, 0, steps);
-        let mut evaluator = Evaluator::new(
-            &NoBindings,
-            &mut allowance,
-            EvalLimits {
-                max_text_bytes: MAX_BIND_BYTES.min(MAX_TEXT_BYTES),
-                ..Default::default()
-            },
-        );
+        let mut evaluator = Evaluator::new(&NoBindings, &mut allowance, EvalLimits::default());
         if let Some(cancelled) = self.cancelled {
             evaluator = evaluator.with_cancellation(cancelled);
         }

@@ -112,17 +112,17 @@ fn text_kernel_work_consumes_shared_remaining_steps_including_failures() {
 }
 
 #[test]
-fn text_folds_keep_shared_allocation_text_and_structural_ceilings() {
+fn text_folds_keep_explicit_allocation_budgets_and_structural_checks() {
     let input = call(TextFunction::StrReverse, vec![text("abcd")]);
     let mut small = ResourceBudget::new(1, 0, 1000);
     assert!(matches!(
         binder(Some(&mut small), None).constant_heading(&input, 1),
         Err(QueryError::Limit(error)) if error.resource == Resource::Bytes
     ));
-    let oversized = call(TextFunction::Len, vec![text(&"x".repeat(65_537))]);
+    let large = call(TextFunction::Len, vec![text(&"x".repeat(65_537))]);
     assert_eq!(
-        binder(None, None).constant_heading(&oversized, 1),
-        Err(QueryError::Evaluation(EvalError::TextLimit))
+        binder(None, None).constant_heading(&large, 1),
+        Ok(Value::Int32(65_537))
     );
 
     let mut deep = text("x");
