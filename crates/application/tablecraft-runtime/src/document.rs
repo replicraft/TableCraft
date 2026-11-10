@@ -45,7 +45,7 @@ use tablecraft_ace::create_blank_ace16_database;
     feature = "ace16-create",
     any(target_os = "macos", target_os = "linux", windows)
 ))]
-use tablecraft_ace::{add_table_source_capabilities, first_table_source_available};
+use tablecraft_ace::{authored_add_table_source_capabilities, first_table_source_available};
 use tablecraft_io::SharedFile;
 use tablecraft_model::ObjectKind;
 use zeroize::Zeroizing;
@@ -341,10 +341,15 @@ impl Document {
                 (Some(TableCreationProfile::First), true, true)
             } else {
                 let capabilities =
-                    add_table_source_capabilities(&captured, SCOPE, &mut work, cancelled)?;
+                    authored_add_table_source_capabilities(&captured, SCOPE, &mut work, cancelled)?;
                 let keyed = capabilities.can_add_keyed();
                 let design = keyed || capabilities.can_add_keyless();
-                (design.then_some(TableCreationProfile::Added), keyed, design)
+                let profile = if capabilities.requires_native() {
+                    TableCreationProfile::AddedNative
+                } else {
+                    TableCreationProfile::Added
+                };
+                (design.then_some(profile), keyed, design)
             };
         #[cfg(not(all(
             feature = "offline-edit",

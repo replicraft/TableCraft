@@ -1,6 +1,7 @@
 //! Lower exact initial-field properties through shared typed input and native admission.
 mod number;
 
+use super::TableCreationProfile;
 use crate::{Error, display::Presentation, editing::EditError, scalar_input};
 use tablecraft_ace::{CreateColumn, FirstTableDefinition};
 use tablecraft_builders::table::{
@@ -42,6 +43,7 @@ fn type_default(field: &SnapshotField) -> Result<Option<Value>, Error> {
 
 pub(super) fn capture(
     snapshot: &TableDraftSnapshot,
+    profile: TableCreationProfile,
     work: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<FirstTableDefinition, Error> {
@@ -124,9 +126,17 @@ pub(super) fn capture(
         }
         columns.push(column);
     }
-    Ok(if generated {
-        FirstTableDefinition::capture(snapshot.table_name(), &columns, work, cancelled)?
-    } else {
-        FirstTableDefinition::capture_manual(snapshot.table_name(), &columns, work, cancelled)?
+    let table = snapshot.table_name();
+    Ok(match (profile, generated) {
+        (TableCreationProfile::AddedNative, true) => {
+            FirstTableDefinition::capture_native(table, &columns, work, cancelled)?
+        }
+        (TableCreationProfile::AddedNative, false) => {
+            FirstTableDefinition::capture_manual_native(table, &columns, work, cancelled)?
+        }
+        (_, true) => FirstTableDefinition::capture_authored(table, &columns, work, cancelled)?,
+        (_, false) => {
+            FirstTableDefinition::capture_manual_authored(table, &columns, work, cancelled)?
+        }
     })
 }

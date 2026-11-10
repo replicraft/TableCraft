@@ -30,13 +30,14 @@ pub(in crate::editing) struct State {
 pub(crate) enum TableCreationProfile {
     First,
     Added,
+    AddedNative,
 }
 
 impl TableCreationProfile {
     pub(in crate::editing) fn schema_change(self, column_count: usize) -> SaveSchemaChange {
         match self {
             Self::First => SaveSchemaChange::FirstTableCreated { column_count },
-            Self::Added => SaveSchemaChange::TableAdded { column_count },
+            Self::Added | Self::AddedNative => SaveSchemaChange::TableAdded { column_count },
         }
     }
 }
@@ -58,26 +59,32 @@ impl Document {
         let profile = self.table_creation.ok_or(EditError::Unavailable)?;
         let mut work = budget();
         check(cancelled)?;
-        let definition = declaration::capture(snapshot, &mut work, cancelled)?;
+        let definition = declaration::capture(snapshot, profile, &mut work, cancelled)?;
         // NO_CLONE: NativeImage owns the checked source while Document keeps using it; this
         // shares immutable bytes instead of copying the database image.
         let source = self.edits.image_source.clone();
-        let image = match profile {
-            TableCreationProfile::First => {
+        let image = match (profile, definition.is_native()) {
+            (TableCreationProfile::First, false) => {
                 NativeImage::capture_shared(source, SCOPE, &mut work, cancelled)
             }
-            TableCreationProfile::Added => {
-                NativeImage::capture_shared_retained(source, SCOPE, &mut work, cancelled)
-            }
+            _ => NativeImage::capture_shared_retained(source, SCOPE, &mut work, cancelled),
         }?;
         let (expected, columns, definition) = match profile {
             TableCreationProfile::First => {
-                let plan = image.plan_first_table(definition, &mut work, cancelled)?;
+                let plan = if definition.is_native() {
+                    image.plan_first_table_native(definition, &mut work, cancelled)?
+                } else {
+                    image.plan_first_table(definition, &mut work, cancelled)?
+                };
                 let expected = copy_expected(plan.after_bytes(), &mut work, cancelled)?;
                 (expected, plan.column_count(), plan.into_definition())
             }
-            TableCreationProfile::Added => {
-                let plan = image.plan_add_table(definition, &mut work, cancelled)?;
+            TableCreationProfile::Added | TableCreationProfile::AddedNative => {
+                let plan = if definition.is_native() {
+                    image.plan_add_table_native(definition, &mut work, cancelled)?
+                } else {
+                    image.plan_add_table(definition, &mut work, cancelled)?
+                };
                 let expected = copy_expected(plan.after_bytes(), &mut work, cancelled)?;
                 (expected, plan.column_count(), plan.into_definition())
             }

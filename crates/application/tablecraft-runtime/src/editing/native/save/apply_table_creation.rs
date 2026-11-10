@@ -57,7 +57,7 @@ pub(super) fn apply_table_creation(
                 &cancel,
             )
             .map(StagedCreation::First),
-        TableCreationProfile::Added => session
+        TableCreationProfile::Added | TableCreationProfile::AddedNative => session
             .plan_add_table_if_original(reviewed.definition, &reviewed.original, &mut work, &cancel)
             .map(StagedCreation::Added),
     };

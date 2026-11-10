@@ -12,6 +12,7 @@ mod capacity;
 mod manual;
 mod number_source;
 mod properties;
+mod wide;
 
 fn opened() -> (tempfile::TempDir, PathBuf, Worker, u64) {
     opened_source(&canonical_blank_creation::source())
