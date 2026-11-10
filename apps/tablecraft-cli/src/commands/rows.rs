@@ -43,10 +43,10 @@ pub(crate) struct Args {
     /// Cumulative native work for buffered browsing or streaming.
     #[arg(long, value_parser = clap::value_parser!(u64).range(1..=native::MAX_NATIVE_READ_STEPS))]
     pub(super) native_steps: Option<u64>,
-    /// Maximum encoded Memo/OLE/attachment value bytes; default 2 MiB, maximum 32 MiB.
+    /// Optional lower encoded Memo/OLE/attachment byte limit; default is the native 30-bit descriptor maximum.
     #[arg(long, value_name = "BYTES", value_parser = clap::value_parser!(u32).range(1..=i64::from(LongValueReadLimits::MAX_BYTES)))]
     pub(super) native_value_bytes: Option<u32>,
-    /// Maximum decoded Memo UTF-8 bytes; default 1 MiB, maximum 16 MiB.
+    /// Optional lower decoded Memo UTF-8 byte limit; default covers the native encoding's maximum expansion.
     #[arg(long, value_name = "BYTES", value_parser = clap::value_parser!(u32).range(1..=i64::from(LongTextReadLimits::MAX_BYTES)))]
     pub(super) native_text_bytes: Option<u32>,
     /// Maximum displayed rows, or rows per batch with --stream; read/resource ceilings still apply.

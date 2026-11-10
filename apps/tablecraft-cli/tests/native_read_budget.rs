@@ -38,7 +38,7 @@ impl Drop for Database {
 }
 
 #[test]
-fn explicit_native_bytes_enable_large_queries_in_all_priority_profiles() {
+fn native_queries_have_no_implicit_byte_quota_but_honor_explicit_budgets() {
     for code in [1, 2, 5, 6] {
         let mut bytes = map_fixture::database(6000, true, false);
         bytes[20] = code;
@@ -48,9 +48,24 @@ fn explicit_native_bytes_enable_large_queries_in_all_priority_profiles() {
         let db = Database::new(bytes);
         let sql = "SELECT TOP 3 Id FROM Items ORDER BY Id DESC";
         let default = CLI.run(&["query", "run", sql, "--database", db.path()]);
-        assert_eq!(default.status.code(), Some(2));
-        assert!(default.stdout.is_empty());
-        assert!(String::from_utf8_lossy(&default.stderr).contains("Bytes resource limit exceeded"));
+        assert!(
+            default.status.success(),
+            "{}",
+            String::from_utf8_lossy(&default.stderr)
+        );
+        assert_eq!(default.stdout, b"Id\n6000\n5999\n5998\n");
+        let limited = CLI.run(&[
+            "query",
+            "run",
+            sql,
+            "--database",
+            db.path(),
+            "--native-bytes",
+            "16777216",
+        ]);
+        assert_eq!(limited.status.code(), Some(2));
+        assert!(limited.stdout.is_empty());
+        assert!(String::from_utf8_lossy(&limited.stderr).contains("Bytes resource limit exceeded"));
         let result = CLI.run(&[
             "query",
             "run",
@@ -72,14 +87,7 @@ fn explicit_native_bytes_enable_large_queries_in_all_priority_profiles() {
 
 #[test]
 fn native_byte_range_and_command_scope_are_validated_before_io() {
-    for bytes in [
-        "0",
-        "268435457",
-        "18446744073709551616",
-        "-1",
-        "64MiB",
-        "1.5",
-    ] {
+    for bytes in ["0", "18446744073709551616", "-1", "64MiB", "1.5"] {
         let output = CLI.run(&[
             "query",
             "run",
@@ -171,8 +179,11 @@ fn minimum_allowance_is_applied_and_maximum_is_accepted_without_changing_rows() 
 #[test]
 fn native_row_and_work_controls_are_scoped_and_checked_before_io() {
     for (name, values) in [
-        ("--native-rows", vec!["0", "1000001", "-1", "many"]),
-        ("--native-steps", vec!["0", "100000001", "-1", "many"]),
+        ("--native-rows", vec!["0", "4294967296", "-1", "many"]),
+        (
+            "--native-steps",
+            vec!["0", "18446744073709551616", "-1", "many"],
+        ),
     ] {
         for value in values {
             let result = CLI.run(&[
@@ -253,7 +264,7 @@ fn explicit_query_native_controls_keep_buffering_and_do_not_change_default_profi
 
 #[test]
 fn execution_work_is_explicitly_bounded_and_separate_from_native_work() {
-    for value in ["0", "100000001", "-1", "many"] {
+    for value in ["0", "18446744073709551616", "-1", "many"] {
         let result = CLI.run(&["query", "run", "SELECT 1", "--execution-steps", value]);
         assert_eq!(result.status.code(), Some(2));
         assert!(result.stdout.is_empty());
@@ -304,8 +315,8 @@ fn query_allocation_and_row_pools_have_explicit_ranges_and_unchanged_output() {
         assert!(String::from_utf8_lossy(&result.stderr).contains("resource limit exceeded"));
     }
     for (flag, value) in [
-        ("--execution-bytes", "268435457"),
-        ("--execution-rows", "1000001"),
+        ("--execution-bytes", "18446744073709551616"),
+        ("--execution-rows", "18446744073709551616"),
     ] {
         let result = CLI.run(&["query", "run", "SELECT 1", flag, value]);
         assert_eq!(result.status.code(), Some(2));
@@ -315,7 +326,7 @@ fn query_allocation_and_row_pools_have_explicit_ranges_and_unchanged_output() {
 
 #[test]
 fn native_value_allowance_requires_database_and_validates_its_own_range() {
-    for value in ["0", "33554433", "-1", "many"] {
+    for value in ["0", "1073741824", "-1", "many"] {
         let result = CLI.run(&[
             "query",
             "run",

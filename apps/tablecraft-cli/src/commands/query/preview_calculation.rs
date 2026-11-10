@@ -40,19 +40,19 @@ pub(crate) struct PreviewCalculationArgs {
     /// Explicit Gregorian date output syntax for date concatenation.
     #[arg(long, value_name = "PROFILE", value_parser = date_text::parse_format)]
     date_format: Option<DateTextFormat>,
-    /// Cumulative native read/allocation bytes; default 16 MiB, maximum 256 MiB.
+    /// Optional cumulative native read/allocation byte budget.
     #[arg(long, value_name = "BYTES", value_parser = clap::value_parser!(u64).range(1..=native::MAX_QUERY_READ_BYTES))]
     native_bytes: Option<u64>,
     /// Cumulative native rows and dependency snapshot ceiling; default 16,384.
     #[arg(long, value_name = "ROWS", value_parser = clap::value_parser!(u64).range(1..=native::MAX_NATIVE_READ_ROWS))]
     native_rows: Option<u64>,
-    /// Cumulative native work; default 1,000,000, maximum 100,000,000.
+    /// Optional cumulative native work budget.
     #[arg(long, value_name = "STEPS", value_parser = clap::value_parser!(u64).range(1..=native::MAX_NATIVE_READ_STEPS))]
     native_steps: Option<u64>,
-    /// Encoded Memo/OLE value bytes; default 2 MiB, maximum 32 MiB.
+    /// Optional lower encoded Memo/OLE byte limit; default is the native 30-bit descriptor maximum.
     #[arg(long, value_name = "BYTES", value_parser = clap::value_parser!(u32).range(1..=i64::from(LongValueReadLimits::MAX_BYTES)))]
     native_value_bytes: Option<u32>,
-    /// Decoded Memo UTF-8 bytes; default 1 MiB, maximum 16 MiB.
+    /// Optional lower decoded Memo UTF-8 byte limit; default covers the native encoding's maximum expansion.
     #[arg(long, value_name = "BYTES", value_parser = clap::value_parser!(u32).range(1..=i64::from(LongTextReadLimits::MAX_BYTES)))]
     native_text_bytes: Option<u32>,
     #[command(flatten)]

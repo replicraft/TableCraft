@@ -4,14 +4,14 @@ use tablecraft_query::QueryLimits;
 #[derive(clap::Args)]
 #[group(id = "execution_limits")]
 pub(crate) struct Args {
-    /// Query allocation allowance; default 16 MiB, maximum 256 MiB.
-    #[arg(long, value_name = "BYTES", value_parser = clap::value_parser!(u64).range(1..=QueryLimits::MAX_BYTES))]
+    /// Optional cumulative query allocation budget.
+    #[arg(long, value_name = "BYTES", value_parser = clap::value_parser!(u64).range(1..))]
     execution_bytes: Option<u64>,
-    /// Cumulative query scanned/intermediate/output rows; default 100,000, maximum 1,000,000.
-    #[arg(long, value_name = "ROWS", value_parser = clap::value_parser!(u64).range(1..=QueryLimits::MAX_ROWS))]
+    /// Optional cumulative query scanned/intermediate/output row budget.
+    #[arg(long, value_name = "ROWS", value_parser = clap::value_parser!(u64).range(1..))]
     execution_rows: Option<u64>,
-    /// Query comparison/evaluation work; default 1,000,000, maximum 100,000,000.
-    #[arg(long, value_name = "STEPS", value_parser = clap::value_parser!(u64).range(1..=QueryLimits::MAX_STEPS))]
+    /// Optional cumulative query comparison/evaluation work budget.
+    #[arg(long, value_name = "STEPS", value_parser = clap::value_parser!(u64).range(1..))]
     execution_steps: Option<u64>,
 }
 

@@ -42,8 +42,8 @@ fn comparison_allowances_have_explicit_ranges_and_require_a_policy() {
         assert_eq!(result.stdout, b"E\nTRUE\n");
     }
     for (flag, value) in [
-        ("--comparison-bytes", "268435457"),
-        ("--comparison-steps", "100000001"),
+        ("--comparison-bytes", "18446744073709551616"),
+        ("--comparison-steps", "18446744073709551616"),
     ] {
         let result = CLI.run(&[
             "query",

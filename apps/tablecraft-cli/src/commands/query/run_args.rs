@@ -128,19 +128,19 @@ pub(crate) struct RunArgs {
     /// Maximum decoded attachment file bytes; default 1 MiB, maximum 16 MiB. Encoded storage limits still apply.
     #[arg(long, value_name = "BYTES", requires_all = ["database", "decoded_attachments"], value_parser = clap::value_parser!(u32).range(1..=i64::from(AttachmentDecodeLimits::MAX_FILE_BYTES)))]
     pub(crate) attachment_bytes: Option<u32>,
-    /// Maximum encoded Memo/OLE/attachment value bytes; default 2 MiB, maximum 32 MiB.
+    /// Optional lower encoded Memo/OLE/attachment byte limit; default is the native 30-bit descriptor maximum.
     #[arg(long, value_name = "BYTES", requires = "database", conflicts_with = "sqlite", value_parser = clap::value_parser!(u32).range(1..=i64::from(LongValueReadLimits::MAX_BYTES)))]
     pub(crate) native_value_bytes: Option<u32>,
-    /// Maximum decoded Memo UTF-8 bytes; default 1 MiB, maximum 16 MiB. Query Text limits remain separate.
+    /// Optional lower decoded Memo UTF-8 byte limit; default covers the native encoding's maximum expansion. Query Text limits remain separate.
     #[arg(long, value_name = "BYTES", requires = "database", conflicts_with = "sqlite", value_parser = clap::value_parser!(u32).range(1..=i64::from(LongTextReadLimits::MAX_BYTES)))]
     pub(crate) native_text_bytes: Option<u32>,
-    /// Cumulative native read/allocation bytes; default 16 MiB, maximum 256 MiB.
+    /// Optional cumulative native read/allocation byte budget.
     #[arg(long, value_name = "BYTES", requires = "database", conflicts_with = "sqlite", value_parser = clap::value_parser!(u64).range(1..=crate::native::MAX_QUERY_READ_BYTES))]
     pub(crate) native_bytes: Option<u64>,
-    /// Cumulative native rows and scalar/collection-table snapshot ceiling; default 16,384.
+    /// Optional cumulative native row and scalar/collection snapshot budget.
     #[arg(long, value_name = "ROWS", requires = "database", conflicts_with = "sqlite", value_parser = clap::value_parser!(u64).range(1..=crate::native::MAX_NATIVE_READ_ROWS))]
     pub(crate) native_rows: Option<u64>,
-    /// Cumulative native work allowance; default 1,000,000, maximum 100,000,000.
+    /// Optional cumulative native work budget.
     #[arg(long, value_name = "STEPS", requires = "database", conflicts_with = "sqlite", value_parser = clap::value_parser!(u64).range(1..=crate::native::MAX_NATIVE_READ_STEPS))]
     pub(crate) native_steps: Option<u64>,
     #[command(flatten)]

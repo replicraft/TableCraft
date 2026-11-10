@@ -4,7 +4,7 @@ const CLI: Runner = Runner::new(env!("CARGO_BIN_EXE_tablecraft"));
 
 #[test]
 fn native_text_limits_are_bounded_and_database_scoped_before_io() {
-    for value in ["0", "16777217", "4294967295"] {
+    for value in ["0", "2147483647", "4294967295"] {
         let output = CLI.run(&[
             "query",
             "run",
