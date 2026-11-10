@@ -49,7 +49,24 @@ fn preserve_old_metadata(before: &[u8], after: &[u8]) {
         assert_eq!(&updated[old_frontier..], &page[old_frontier..]);
     }
     assert_eq!(&after[7 * PAGE..before.len()], &before[7 * PAGE..]);
-    assert_eq!(&after[..2 * PAGE], &before[..2 * PAGE]);
+    assert_eq!(&after[..PAGE], &before[..PAGE]);
+    let old_global = word(before, PAGE + 14);
+    let new_global = word(after, PAGE + 14);
+    assert_eq!(word(after, PAGE + 12), 1);
+    assert_eq!(word(after, PAGE + 2), new_global - 16);
+    assert_eq!(
+        &after[PAGE + new_global..PAGE + new_global + PAGE - old_global],
+        &before[PAGE + old_global..2 * PAGE],
+    );
+    assert_eq!(
+        &after[PAGE + 16..PAGE + new_global],
+        &before[PAGE + 16..PAGE + new_global],
+    );
+    assert!(
+        after[PAGE + new_global + PAGE - old_global..2 * PAGE]
+            .iter()
+            .all(|byte| *byte == 0)
+    );
     assert_eq!(&after[5 * PAGE..7 * PAGE], &before[5 * PAGE..7 * PAGE]);
 }
 

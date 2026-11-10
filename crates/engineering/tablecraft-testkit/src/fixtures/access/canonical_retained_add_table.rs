@@ -1,7 +1,7 @@
 //! Independent append-only tables beside retained current schemas and tombstones.
 use super::{
     canonical_creation, canonical_creation_primary, canonical_initial_table_creation as initial,
-    canonical_native17_creation, packed_record::append_record, put32,
+    canonical_native17_creation, packed_record::append_record, put16, put32,
 };
 
 const PAGE: usize = 4096;
@@ -124,8 +124,30 @@ fn append_named_id(before: &[u8], name: &str, target: Target, uppercase: bool) -
         bytes.extend(root);
     }
     assert_eq!(bytes.len(), before.len() + target.pages() * PAGE);
+    extend_global_map(&mut bytes, before.len() / PAGE);
     assert_eq!(&bytes[7 * PAGE..before.len()], &before[7 * PAGE..]);
     // Explicit empty pages keep their source-template free-space accounting.
     assert_eq!(word(&bytes, (definition + 1) * PAGE + 12), 0);
     bytes
+}
+
+fn extend_global_map(bytes: &mut [u8], old_pages: usize) {
+    let pages = bytes.len() / PAGE;
+    let page = &mut bytes[PAGE..2 * PAGE];
+    assert_eq!(&page[..2], &[1, 1]);
+    assert_eq!(word(page, 12), 1);
+    let old_start = word(page, 14);
+    let old = page[old_start..].to_vec();
+    assert_eq!(&old[..5], &[0; 5]);
+    let length = old.len().max(5 + pages.div_ceil(8));
+    let start = PAGE - length;
+    assert!(page[start..old_start].iter().all(|byte| *byte == 0));
+    let mut map = old;
+    map.resize(length, 0);
+    for allocated in old_pages..pages {
+        map[5 + allocated / 8] &= !(1 << (allocated % 8));
+    }
+    page[start..].copy_from_slice(&map);
+    put16(page, 14, start as u16);
+    put16(page, 2, (start - 16) as u16);
 }
