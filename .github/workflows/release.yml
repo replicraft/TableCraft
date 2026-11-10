@@ -15,7 +15,7 @@ on:
       - 'scripts/tests/test_update_signatures.py'
       - 'crates/platform/tablecraft-update/**'
       - 'packaging/desktop/notice-policy.json'
-      - 'packaging/update-key.pub'
+      - 'packaging/tablecraft-update-key.pub'
       - 'packaging/ThirdPartyLicenses.txt'
       - 'LICENSE'
       - 'Cargo.toml'

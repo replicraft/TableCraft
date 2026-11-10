@@ -39,14 +39,14 @@ unverified until a real workflow run is recorded.
 
 [`update_signatures.py`](../../scripts/packaging/update_signatures.py) signs or
 verifies the exact six CLI or desktop archive names. Production mode requires
-`packaging/update-key.pub` and refuses a different supplied public key; the user is replacing the initial generated public key with their own. Dry-run mode accepts an explicit test
+`packaging/tablecraft-update-key.pub` and refuses a different supplied public key; the user is replacing the initial generated public key with their own. Dry-run mode accepts an explicit test
 key. Signing uses `TABLECRAFT_UPDATE_SIGNING_KEY` in the protected
 `update-signing` environment. Encrypted keys use the separate
 `TABLECRAFT_UPDATE_SIGNING_PASSWORD` secret, supplied to Minisign through stdin.
 Both secrets are removed from child environments; neither appears in arguments
 or logs. Verification receives neither secret. The key is written only to a
 private temporary file. Generate a passphrase-protected key with `minisign -G`
-(omit `-W`), upload its public half to `packaging/update-key.pub`, and set both
+(omit `-W`), upload its public half to `packaging/tablecraft-update-key.pub`, and set both
 CI secrets. An unencrypted key remains supported but is not required. Partial signature outputs are removed on
 failure. Never commit a private signing key or promote a dry-run key to release
 trust. Keep a recoverable offline backup of the real key.

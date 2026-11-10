@@ -2,7 +2,7 @@ use std::{env, fs, path::PathBuf};
 
 fn main() {
     let manifest = PathBuf::from(env::var_os("CARGO_MANIFEST_DIR").expect("Cargo manifest path"));
-    let key = manifest.join("../../../packaging/update-key.pub");
+    let key = manifest.join("../../../packaging/tablecraft-update-key.pub");
     println!("cargo:rerun-if-changed={}", key.display());
     println!("cargo:rerun-if-changed=build.rs");
 

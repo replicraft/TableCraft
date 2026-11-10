@@ -11,7 +11,7 @@ import tempfile
 import package_desktop
 import release_contract as contract
 
-PUBLIC_KEY = contract.ROOT / "packaging/update-key.pub"
+PUBLIC_KEY = contract.ROOT / "packaging/tablecraft-update-key.pub"
 TEST_PUBLIC_KEY = (
     contract.ROOT / "crates/platform/tablecraft-update/src/download/tests/TEST-ONLY.pub"
 )

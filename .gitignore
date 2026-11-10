@@ -8,7 +8,10 @@ __pycache__/
 
 /dist/
 
+
 # Desktop dependency inventories and consolidated notices are release outputs.
 /packaging/desktop/license-sources.json
 /packaging/desktop/license-policy.json
 /packaging/desktop/*ThirdPartyLicenses.txt
+
+/secrets
