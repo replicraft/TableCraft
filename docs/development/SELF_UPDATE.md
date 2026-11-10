@@ -101,6 +101,18 @@ advertised shortcut as an ordinary WScript shortcut. The corrected check uses
 Windows Installer's shortcut/component ownership APIs. These corrections await
 native follow-up; no passing complete-set production-signing result is claimed.
 
+On [rehearsal `45a0b553f`](https://github.com/replicraft/TableCraft/actions/runs/42767612425),
+both native Linux jobs passed runtime relinking, real DEB/RPM/AppImage construction,
+payload checks, DEB installation/removal and the actual AppImage headless helper
+journeys. Success retired the original backup; a failing receiver retained it.
+This establishes the recorded extract-and-run/headless receiver flow, not a GUI
+relaunch or FUSE-mounted desktop process. Windows stopped at its Rust policy-test
+hook because PowerShell 5 treated Cargo's ordinary compiler stderr as an error.
+The corrected hook captures both streams separately and checks Cargo's real exit
+code. A separate MSI path-boundary audit also replaced incompatible extended paths
+with checked native DOS spelling through Windows-only `dunce`. Those Windows
+corrections still need a fresh native rehearsal; production-key signing is unproven.
+
 Remaining gates before claiming the updater/release complete:
 
 - Qualify the connected signed MSI and original-AppImage routes on their native

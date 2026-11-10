@@ -179,7 +179,9 @@ artifacts, backgrounds, notices and source bundles stay in ignored build output.
 
 AppImage runtime notices and corresponding-source/relink material are generated
 from reviewed, hashed upstream inputs and included with the AppImage. Build tools
-are separate from shipped runtime components. Portable/macOS update replacement
-is implemented; signed MSI and original-AppImage update routes still need their
-own installation authority and native qualification. DEB/RPM installations remain
+are separate from shipped runtime components. Portable/macOS replacement and
+separate sealed MSI/original-AppImage update routes are implemented. Both native
+Linux jobs have passed the actual AppImage headless handoff and retained-failure
+checks; Windows native helper qualification remains in progress. Full GUI
+relaunch and publisher-key signing remain separate gates. DEB/RPM installations remain
 owned by their package manager.
