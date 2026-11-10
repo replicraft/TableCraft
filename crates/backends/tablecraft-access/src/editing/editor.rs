@@ -29,6 +29,7 @@ impl NativeEditor {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<(UpdateProfile, JournalRoute), NativeEditError> {
+        #[cfg(feature = "ace16-create")]
         if self.image.select_native_historical_present_fixed_table(
             self.snapshot.name(),
             budget,
@@ -298,6 +299,7 @@ impl NativeEditor {
 
 #[cfg(feature = "journal")]
 impl NativeEditor {
+    #[cfg(feature = "ace16-create")]
     pub(super) fn plan_recoverable_historical_present_fixed(
         self,
         groups: Vec<NativeFixedIntentGroup>,

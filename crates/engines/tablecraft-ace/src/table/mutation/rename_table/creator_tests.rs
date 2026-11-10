@@ -23,10 +23,13 @@ fn capture(bytes: &[u8]) -> NativeImage {
 #[test]
 fn creator_off_candidates_match_complete_independent_images_and_preserve_field_facts() {
     for original in originals() {
-        let explicit_off = capture(&original)
-            .plan_disable_name_auto_correct(&mut budget(), &|| false)
-            .unwrap();
-        assert_eq!(explicit_off.after_bytes(), pair(&original, "Items").before);
+        #[cfg(feature = "ace16-create")]
+        {
+            let explicit_off = capture(&original)
+                .plan_disable_name_auto_correct(&mut budget(), &|| false)
+                .unwrap();
+            assert_eq!(explicit_off.after_bytes(), pair(&original, "Items").before);
+        }
         for name in [
             "Inventory",
             "I",

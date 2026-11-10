@@ -1,18 +1,19 @@
 //! Independent request bytes and cold recovery for unchanged historical framing.
 use super::NativeFixedIntentGroup;
+#[cfg(feature = "ace16-create")]
+use crate::qualify_native_update_recovery;
 use crate::{
     FixedScalarUpdate, NativeImage, NativeIntentError, NativeUpdateIntent, NativeUpdateProfile,
-    qualify_native_update_recovery,
 };
 use sha2::{Digest, Sha256};
 use std::io::Cursor;
 use tablecraft_core::{limits::ResourceBudget, values::Value};
+#[cfg(feature = "ace16-create")]
 use tablecraft_io::journal;
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::{
-    fixtures::access::canonical_created_number::mixed::after_off::populated,
-    support::io::journal::MemoryStorage,
-};
+use tablecraft_testkit::fixtures::access::canonical_created_number::mixed::after_off::populated;
+#[cfg(feature = "ace16-create")]
+use tablecraft_testkit::support::io::journal::MemoryStorage;
 
 fn budget() -> ResourceBudget {
     ResourceBudget::new(512 * 1024 * 1024, 100_000, 100_000_000)
@@ -28,6 +29,7 @@ fn image(bytes: &[u8], scope: u64) -> NativeImage {
     .unwrap()
 }
 
+#[cfg(feature = "ace16-create")]
 fn requests() -> Vec<NativeFixedIntentGroup> {
     let updates = vec![
         FixedScalarUpdate::new(0, Value::Int32(42), Value::Int32(8)),
@@ -84,6 +86,7 @@ fn literal(before: &[u8]) -> Vec<u8> {
     wire
 }
 
+#[cfg(feature = "ace16-create")]
 #[test]
 fn closed_wire_rebuilds_the_independent_whole_image_under_fresh_scope() {
     let before = source();
@@ -181,6 +184,7 @@ fn wire_rejects_crossed_profiles_and_non_int32_cells_before_owned_allocation() {
     );
 }
 
+#[cfg(feature = "ace16-create")]
 #[test]
 fn pending_and_committed_cold_recovery_reconstruct_every_original_byte() {
     let before = source();
@@ -226,6 +230,7 @@ fn pending_and_committed_cold_recovery_reconstruct_every_original_byte() {
     }
 }
 
+#[cfg(feature = "ace16-create")]
 #[test]
 fn forged_journal_complements_never_gain_historical_update_authority() {
     let before = source();
@@ -264,4 +269,28 @@ fn forged_journal_complements_never_gain_historical_update_authority() {
         assert_eq!(target.writes, 0);
         assert_eq!(target.bytes.get_ref(), &before);
     }
+}
+
+#[cfg(not(feature = "ace16-create"))]
+#[test]
+fn data_only_historical_wire_cannot_reconstruct_without_the_native_writer_capability() {
+    let before = source();
+    let wire = literal(&before);
+    let decoded = NativeUpdateIntent::decode(&wire, &mut budget(), &|| false).unwrap();
+    assert_eq!(
+        decoded.profile(),
+        NativeUpdateProfile::Ace16HistoricalPresentFixed
+    );
+    assert_eq!(decoded.encode(&mut budget(), &|| false).unwrap(), wire);
+    assert!(matches!(
+        crate::transaction::update_rebuild::rebuild(
+            image(&before, 18),
+            &decoded,
+            &mut budget(),
+            &|| false
+        ),
+        Err(crate::NativeRecoveryQualificationError::Intent(
+            NativeIntentError::UnsupportedProfile
+        ))
+    ));
 }

@@ -21,10 +21,7 @@ impl NativeJournalEditor {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<bool, NativeEditError> {
-        if matches!(
-            self.route,
-            JournalRoute::Ordinary | JournalRoute::HistoricalPresentFixed
-        ) {
+        if self.route == JournalRoute::Ordinary || self.route.historical_present_fixed() {
             if self.profile != UpdateProfile::StoredScalar {
                 return Err(NativeEditError::Unsupported);
             }
@@ -129,7 +126,7 @@ impl NativeJournalEditor {
             positions.push(position);
             let target = &self.snapshot().columns()[position];
             let kind = target.data_type();
-            if self.route == JournalRoute::HistoricalPresentFixed && kind != ScalarType::Int32 {
+            if self.route.historical_present_fixed() && kind != ScalarType::Int32 {
                 return Err(NativeEditError::Unsupported.into());
             }
             let ieee = self.route == JournalRoute::Ordinary
@@ -192,7 +189,7 @@ impl NativeJournalEditor {
                 requests.push(FixedScalarUpdate::new(ordinal, expected, replacement));
                 rows.push(ordinal);
             }
-            let group = if self.route == JournalRoute::HistoricalPresentFixed {
+            let group = if self.route.historical_present_fixed() {
                 NativeFixedIntentGroup::new_historical_present_int32(
                     target.name(),
                     requests,
@@ -227,6 +224,7 @@ impl NativeJournalEditor {
         }
         let matched = matched_rows(rows, budget, cancelled)?;
         let plan = match self.route {
+            #[cfg(feature = "ace16-create")]
             JournalRoute::HistoricalPresentFixed => self
                 .editor
                 .plan_recoverable_historical_present_fixed(groups, budget, cancelled)?,

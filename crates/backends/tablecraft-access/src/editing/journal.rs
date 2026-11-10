@@ -40,7 +40,18 @@ pub struct NativeJournalEditor {
 pub(super) enum JournalRoute {
     Existing,
     Ordinary,
+    #[cfg(feature = "ace16-create")]
     HistoricalPresentFixed,
+}
+
+impl JournalRoute {
+    fn historical_present_fixed(self) -> bool {
+        match self {
+            #[cfg(feature = "ace16-create")]
+            Self::HistoricalPresentFixed => true,
+            Self::Existing | Self::Ordinary => false,
+        }
+    }
 }
 
 impl NativeJournalEditor {
