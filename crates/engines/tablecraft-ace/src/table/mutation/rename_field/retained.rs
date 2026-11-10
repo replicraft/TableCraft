@@ -4,6 +4,8 @@ mod source;
 mod verify;
 
 #[cfg(test)]
+mod schema_tests;
+#[cfg(test)]
 mod tests;
 
 use super::{FieldRenameError as Error, FittedFieldRenameSource, NativeFieldRenameIdentity};

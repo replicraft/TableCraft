@@ -46,3 +46,6 @@ impl NativeImage {
         Ok(NativeCurrentTailFieldDropCandidate { source, after })
     }
 }
+
+#[cfg(test)]
+mod tests;
