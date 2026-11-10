@@ -72,20 +72,17 @@ fn another_equal_image_and_explicit_work_controls_cannot_reuse_inventory_authori
 
 #[test]
 fn retired_forwarding_and_index_references_must_remain_inside_real_owned_storage() {
-    let source = raw::source(
-        Case::MixedBinary,
-        Target::ShortText,
-        true,
-        History::Inserted,
-    );
+    let source = raw::source(Case::TextPresent, Target::ShortText, true, History::Initial);
     let after = raw::after(&source);
+    let image = capture(&after);
+    Inventory::capture(&image, &mut budget(), &|| false).unwrap();
     let mut bad_forward = after.clone();
-    let at = 4 * 4096 + 14 + 7 * 2;
+    let at = 8 * 4096 + 14;
     let offset =
         usize::from(u16::from_le_bytes(bad_forward[at..at + 2].try_into().unwrap()) & 0x1fff);
-    let end = usize::from(u16::from_le_bytes(bad_forward[at - 2..at].try_into().unwrap()) & 0x1fff);
+    let end = 4096;
     assert_eq!(end - offset, 4);
-    bad_forward[4 * 4096 + offset..4 * 4096 + end]
+    bad_forward[8 * 4096 + offset..8 * 4096 + end]
         .copy_from_slice(&((11_u32 << 8) | 1).to_le_bytes());
     let mut bad_index = after;
     bad_index[9 * 4096 + 16..9 * 4096 + 20].copy_from_slice(&11_u32.to_le_bytes());
