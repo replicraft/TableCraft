@@ -15,23 +15,30 @@ import release_contract as contract
 VERSION = "0.12"
 URL = "https://github.com/jedisct1/minisign/releases/download/0.12/minisign-0.12-linux.tar.gz"
 SHA256 = "9a599b48ba6eb7b1e80f12f36b94ceca7c00b7a5173c95c3efc88d9822957e73"
-MEMBER = "minisign-linux/x86_64/minisign"
+TARGETS = {
+    "x86_64": "x86_64-unknown-linux-gnu",
+    "aarch64": "aarch64-unknown-linux-gnu",
+}
 MAX_ARCHIVE_BYTES = 512 * 1024
 MAX_EXECUTABLE_BYTES = 1024 * 1024
 
 
-def install(data, output):
+def install(data, output, architecture="x86_64"):
+    target = TARGETS.get(architecture)
+    if target is None:
+        raise ValueError("This signing-tool bootstrap requires Linux x64 or ARM64")
+    member_name = f"minisign-linux/{architecture}/minisign"
     if len(data) > MAX_ARCHIVE_BYTES or hashlib.sha256(data).hexdigest() != SHA256:
         raise ValueError("Minisign archive digest differs from the reviewed release")
     with tarfile.open(fileobj=io.BytesIO(data), mode="r:gz") as archive:
-        members = [member for member in archive.getmembers() if member.name == MEMBER]
+        members = [member for member in archive.getmembers() if member.name == member_name]
         if len(members) != 1 or not members[0].isfile() or not 0 < members[0].size <= MAX_EXECUTABLE_BYTES:
             raise ValueError("Minisign archive has an invalid executable member")
         with archive.extractfile(members[0]) as source:
             binary = source.read(MAX_EXECUTABLE_BYTES + 1)
         if len(binary) != members[0].size:
             raise ValueError("Minisign executable length differs")
-        contract.architecture(io.BytesIO(binary), len(binary), "x86_64-unknown-linux-gnu")
+        contract.architecture(io.BytesIO(binary), len(binary), target)
     output.mkdir(parents=True, exist_ok=False)
     try:
         destination = output / "minisign"
@@ -49,12 +56,13 @@ def main():
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
     try:
-        if platform.system() != "Linux" or platform.machine() != "x86_64":
-            raise ValueError("This signing-tool bootstrap requires Linux x64")
+        architecture = platform.machine().lower()
+        if platform.system() != "Linux" or architecture not in TARGETS:
+            raise ValueError("This signing-tool bootstrap requires native Linux x64 or ARM64")
         request = urllib.request.Request(URL, headers={"User-Agent": "TableCraft-packaging"})
         with urllib.request.urlopen(request, timeout=60) as response:
             data = response.read(MAX_ARCHIVE_BYTES + 1)
-        binary = install(data, args.output)
+        binary = install(data, args.output, architecture)
         if path_file := os.environ.get("GITHUB_PATH"):
             with open(path_file, "a", encoding="utf-8") as stream:
                 stream.write(str(binary.parent.resolve()) + "\n")

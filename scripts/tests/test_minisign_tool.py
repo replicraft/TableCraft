@@ -13,10 +13,10 @@ import minisign_tool as tool
 from test_package_cli import native_binary
 
 
-def archive(binary, *, symlink=False):
+def archive(binary, *, symlink=False, architecture="x86_64"):
     output = io.BytesIO()
     with tarfile.open(fileobj=output, mode="w:gz") as stream:
-        entry = tarfile.TarInfo("minisign-linux/x86_64/minisign")
+        entry = tarfile.TarInfo(f"minisign-linux/{architecture}/minisign")
         entry.mode = 0o755
         if symlink:
             entry.type = tarfile.SYMTYPE
@@ -46,6 +46,19 @@ class MinisignBootstrapTests(unittest.TestCase):
             with self.assertRaises(FileExistsError):
                 tool.install(data, output)
             self.assertEqual(binary.read_bytes(), native_binary("x86_64-unknown-linux-gnu"))
+
+    def test_arm64_member_uses_native_elf_admission_and_unknown_hosts_create_nothing(self):
+        payload = native_binary("aarch64-unknown-linux-gnu")
+        data = archive(payload, architecture="aarch64")
+        with tempfile.TemporaryDirectory() as temporary, patch.object(tool, "SHA256", hashlib.sha256(data).hexdigest()):
+            output = Path(temporary) / "arm64-tool"
+            binary = tool.install(data, output, "aarch64")
+            self.assertEqual(binary.read_bytes(), payload)
+            for architecture in ("x86_64", "riscv64"):
+                refused = Path(temporary) / architecture
+                with self.assertRaises(ValueError):
+                    tool.install(data, refused, architecture)
+                self.assertFalse(refused.exists())
 
     def test_links_and_wrong_architecture_refuse_before_output(self):
         for data in (archive(b"", symlink=True), archive(native_binary("aarch64-unknown-linux-gnu"))):
