@@ -2,7 +2,7 @@
 use super::*;
 use crate::fixtures::access::{
     canonical_created_number::mixed::after_off::deleted_field::inserting::first_number_row,
-    saved_field_rename::fitting::{SourceCase, pair},
+    saved_field_rename::fitting::{SourceCase, pair, populated_number_pair},
 };
 use sha2::{Digest, Sha256};
 
@@ -61,6 +61,51 @@ fn generated_long_row_delete_retains_renames_history_record_and_inactive_key_byt
         assert_eq!(
             &deleted[9 * 4096 - 11..9 * 4096],
             &[2, 0, 1, 0, 0, 0, 42, 0, 0, 0, 3]
+        );
+    }
+}
+
+#[test]
+fn dense_nullable_batch_delete_preserves_original_slots_counters_and_inactive_tail() {
+    for (name, before_pin, after_pin) in [
+        (
+            "TaxAmount",
+            "c53b03fea441466556958d5312feca6cbf16a9e05fe9617bafb38b8b9064da59",
+            "c820cafbecc915a517dc3469abfb3df301b7733151d11854c47a53d525921aa0",
+        ),
+        (
+            "X",
+            "44dd0fac9272c7da05e6ab20606a8b09db15a7ecc6fa891108da877e90570ce2",
+            "bd0736dc4aec82208570170eb8fd109fa909ab44d88bf99b0900aa0544b71f62",
+        ),
+    ] {
+        let [_, before] = populated_number_pair(name, &[Some(99), None, Some(-7), Some(0)]);
+        let after = long_row(&before, 1);
+        assert_eq!(digest(&before), before_pin);
+        assert_eq!(digest(&after), after_pin);
+        assert_eq!(long(&after, 7 * 4096 + 16), 3);
+        assert_eq!(long(&after, 7 * 4096 + 20), 4);
+        assert_eq!(long(&after, 7 * 4096 + 67), 4);
+        assert_eq!(word(&after, 8 * 4096 + 16), 0xc000 | (4096 - 22));
+
+        let allowed = [
+            7 * 4096 + 16..7 * 4096 + 20,
+            8 * 4096 + 16..8 * 4096 + 18,
+            9 * 4096 + 2..9 * 4096 + 4,
+            9 * 4096 + 27..9 * 4096 + 507,
+        ];
+        for (at, (old, new)) in before.iter().zip(&after).enumerate() {
+            if !allowed.iter().any(|range| range.contains(&at)) {
+                assert_eq!(old, new, "outside original-slot deletion scope at {at}");
+            }
+        }
+        assert_eq!(
+            &after[9 * 4096 - 44..9 * 4096],
+            &before[9 * 4096 - 44..9 * 4096]
+        );
+        assert_eq!(
+            &after[9 * 4096 + 507..10 * 4096],
+            &before[9 * 4096 + 507..10 * 4096]
         );
     }
 }
