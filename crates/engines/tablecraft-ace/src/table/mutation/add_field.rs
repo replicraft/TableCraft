@@ -272,3 +272,6 @@ fn facts(
         maximum_name_units,
     })
 }
+
+#[cfg(test)]
+mod tests;

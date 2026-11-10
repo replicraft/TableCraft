@@ -253,3 +253,6 @@ pub(super) fn append_number(
     check(budget, cancelled)?;
     Ok(output)
 }
+
+#[cfg(test)]
+mod tests;
