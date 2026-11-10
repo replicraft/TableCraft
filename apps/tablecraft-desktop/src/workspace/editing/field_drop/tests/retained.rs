@@ -1,12 +1,12 @@
 //! Actual retained ADD/edit/RENAME/DROP/re-ADD cycles keep native history usable.
 use super::{Entry, choose, inspect};
+use crate::workspace::editing::test_support::field_rename::rename_and_save;
 use crate::workspace::{
     Desktop,
     test_support::{
         app_harness,
         cell_edit::{begin_replacement, review_and_save},
         field_addition::add_field,
-        field_rename::rename_and_save,
         finish_reads, finish_schema_save,
         inserting::{begin_generated_insert, choose_field_mode, review_and_save_insert},
         objects::{EXACT_SCRATCH, scratch},

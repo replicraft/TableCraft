@@ -1,7 +1,8 @@
 //! Initial inline properties are a real rename source without a preparatory ADD.
+use crate::workspace::editing::test_support::field_rename::rename_and_save;
 use crate::workspace::{
     Desktop,
-    test_support::{app_harness, field_rename::rename_and_save, finish_reads, opened},
+    test_support::{app_harness, finish_reads, opened},
 };
 use egui::{Key, accesskit::Role};
 use egui_kittest::kittest::Queryable;

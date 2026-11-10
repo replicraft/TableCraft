@@ -1,4 +1,5 @@
 //! Ordinary clipboard/review/save widgets shared by real-file host journeys.
+pub(in crate::workspace::editing) mod field_rename;
 use crate::workspace::Desktop;
 use crate::workspace::test_support::{finish_reads, finish_save, focus_cell};
 use egui::accesskit::Role;

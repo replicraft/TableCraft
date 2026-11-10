@@ -1,6 +1,6 @@
 //! Actual field-name proposals and consuming saves shared across CRUD journeys.
-use super::{finish_reads, finish_schema_save};
 use crate::workspace::Desktop;
+use crate::workspace::test_support::{finish_reads, finish_schema_save};
 use egui::{Key, Modifiers, accesskit::Role};
 use egui_kittest::{
     Harness,
@@ -11,8 +11,9 @@ use std::{
     time::{Duration, Instant},
 };
 use tablecraft_runtime::journal_path;
+use tablecraft_ui::FieldRenameSaveIdentity;
 
-pub(in crate::workspace) fn propose_name(
+pub(in crate::workspace::editing) fn propose_name(
     harness: &mut Harness<'_, Desktop>,
     original_name: &str,
     replacement: &str,
@@ -42,7 +43,7 @@ pub(in crate::workspace) fn propose_name(
     harness.run_steps(1);
 }
 
-pub(in crate::workspace) fn rename_and_save(
+pub(in crate::workspace::editing) fn rename_and_save(
     harness: &mut Harness<'_, Desktop>,
     path: &Path,
     before: &[u8],
@@ -55,18 +56,18 @@ pub(in crate::workspace) fn rename_and_save(
     harness.key_press_modifiers(Modifiers::COMMAND, Key::S);
     harness.run_steps(1);
     if old == new {
-        // A fast review can finish during the first paint, before this loop.
-        // has_save includes the worker and every retained operation owner;
-        // neither a fast nor a slower response may create either.
-        assert!(!harness.state().editing.has_save());
+        // A real unchanged review may retain its read-witness owner. Only the
+        // native save actor must remain absent, even if review finished quickly.
+        no_native_actor(harness);
         let deadline = Instant::now() + Duration::from_secs(10);
-        while harness.state().state.busy {
+        while harness.state().state.busy || harness.state().editing.field_rename.is_some() {
             assert!(Instant::now() < deadline, "Unchanged rename review stalled");
-            assert!(!harness.state().editing.has_save());
+            no_native_actor(harness);
             harness.run_steps(1);
             std::thread::yield_now();
         }
         finish_reads(harness);
+        no_native_actor(harness);
         assert!(!harness.state().editing.has_save());
     } else {
         finish_schema_save(harness);
@@ -74,4 +75,15 @@ pub(in crate::workspace) fn rename_and_save(
     assert_eq!(std::fs::read(path).unwrap(), after);
     assert!(!journal_path(path).exists());
     assert!(!harness.state().state.field_rename_open());
+}
+
+fn no_native_actor(harness: &Harness<'_, Desktop>) {
+    assert!(harness.state().editing.save.is_none());
+    assert!(!harness.state().editing.worker.is_busy());
+    if let Some(host) = &harness.state().editing.field_rename {
+        assert!(matches!(
+            host.identity,
+            None | Some(FieldRenameSaveIdentity::UnchangedReview { .. })
+        ));
+    }
 }
