@@ -1,4 +1,4 @@
-//! Independent ordinary native17 Memo records and an exact first-row patch oracle.
+//! Independent ordinary native17 Memo records and an exact selected-row patch oracle.
 use super::{canonical_creation, canonical_native17_creation, data_page, put16, put32};
 
 pub struct Source {
@@ -22,8 +22,8 @@ fn map(count: usize, members: impl IntoIterator<Item = usize>) -> Vec<u8> {
     bytes
 }
 
-pub fn source(count: usize) -> Source {
-    assert!(count > 0);
+pub fn source(count: usize, target: usize) -> Source {
+    assert!(count > 0 && target < count);
     let mut before = canonical_native17_creation::source(
         canonical_creation::source(canonical_creation::Case::One).bytes,
     );
@@ -72,12 +72,13 @@ pub fn source(count: usize) -> Source {
         before[page * 4096..(page + 1) * 4096].copy_from_slice(&packed(7, &rows));
     }
     let last_page = end_page - 1;
-    let directory = 8 * 4096 + 14;
+    let target_page = 8 + target / 120;
+    let directory = target_page * 4096 + 14 + 2 * (target % 120);
     let start = u16::from_le_bytes(before[directory..directory + 2].try_into().unwrap()) as usize;
     // NO_CLONE: Keep the immutable BEFORE oracle while independently patching
     // AFTER; copy-on-write storage would still need this complete payload copy.
     let mut after = before.clone();
-    let text = 8 * 4096 + start + 18;
+    let text = target_page * 4096 + start + 18;
     after[text..text + 6].copy_from_slice(&[b'n', 0, b'e', 0, b'w', 0]);
     Source {
         before,

@@ -234,12 +234,13 @@ fn literal_fitted_wire_keeps_kind_order_payloads_and_borrowed_request_identity()
     );
 }
 
-fn no_allocation_decode_error(bytes: &[u8]) -> NativeIntentError {
-    let mut allowance = ResourceBudget::new(0, 0, 1_000_000_000);
+fn preflight_decode_error(bytes: &[u8]) -> NativeIntentError {
+    // Nine literal identities may consume sparse preflight workspace. This
+    // allowance cannot fund the eight decoded group objects and payloads.
+    let mut allowance = ResourceBudget::new(9 * 4 * size_of::<usize>() as u64, 0, 1_000_000_000);
     let error = NativeFittedEditIntent::decode(bytes, &mut allowance, &|| false)
         .err()
-        .expect("malformed data must refuse before decoded allocation");
-    assert_eq!(allowance.remaining(Resource::Bytes), 0);
+        .expect("malformed data must refuse during preflight");
     assert!(!matches!(
         error,
         NativeIntentError::Inspect(InspectError::Limit(_))
@@ -248,20 +249,20 @@ fn no_allocation_decode_error(bytes: &[u8]) -> NativeIntentError {
 }
 
 #[test]
-fn framing_padding_unknown_tags_utf8_and_excess_refuse_before_allocation() {
+fn framing_padding_unknown_tags_utf8_and_excess_refuse_before_decoded_payloads() {
     let original = literal();
     for end in 0..original.len() {
-        no_allocation_decode_error(&original[..end]);
+        preflight_decode_error(&original[..end]);
     }
     let mut trailing = original.clone();
     trailing.push(0);
     trailing[8..12].copy_from_slice(&588_u32.to_le_bytes());
-    no_allocation_decode_error(&trailing);
+    preflight_decode_error(&trailing);
     for at in [14, 68, 90, 93, 114] {
         let mut raw = original.clone();
         raw[at] = 1;
         assert_eq!(
-            no_allocation_decode_error(&raw),
+            preflight_decode_error(&raw),
             NativeIntentError::InvalidRecord
         );
     }
@@ -269,7 +270,7 @@ fn framing_padding_unknown_tags_utf8_and_excess_refuse_before_allocation() {
         let mut raw = original.clone();
         raw[at] = value;
         assert_eq!(
-            no_allocation_decode_error(&raw),
+            preflight_decode_error(&raw),
             NativeIntentError::InvalidRecord
         );
     }
@@ -277,32 +278,26 @@ fn framing_padding_unknown_tags_utf8_and_excess_refuse_before_allocation() {
         let mut raw = original.clone();
         raw[at..at + 4].copy_from_slice(&(value as u32).to_le_bytes());
         assert_eq!(
-            no_allocation_decode_error(&raw),
+            preflight_decode_error(&raw),
             NativeIntentError::Inspect(InspectError::StructureLimit)
         );
     }
-    let mut row = original.clone();
-    row[133..141].copy_from_slice(&16384_u64.to_le_bytes());
-    assert_eq!(
-        no_allocation_decode_error(&row),
-        NativeIntentError::Inspect(InspectError::StructureLimit)
-    );
     let mut date = original.clone();
     date[291..299].copy_from_slice(&0x7ff0_0000_0000_0000_u64.to_le_bytes());
     assert_eq!(
-        no_allocation_decode_error(&date),
+        preflight_decode_error(&date),
         NativeIntentError::InvalidRecord
     );
     let mut version = original.clone();
     version[7] = b'4';
     assert_eq!(
-        no_allocation_decode_error(&version),
+        preflight_decode_error(&version),
         NativeIntentError::UnsupportedVersion
     );
     let mut profile = original.clone();
     profile[12] = 4;
     assert_eq!(
-        no_allocation_decode_error(&profile),
+        preflight_decode_error(&profile),
         NativeIntentError::UnsupportedProfile
     );
 }
@@ -312,19 +307,19 @@ fn duplicate_columns_rows_and_wrong_family_carriers_are_not_serialized_permissio
     let mut rows = literal();
     rows[133..141].copy_from_slice(&2_u64.to_le_bytes());
     assert_eq!(
-        no_allocation_decode_error(&rows),
+        preflight_decode_error(&rows),
         NativeIntentError::Request(EditError::Conflict)
     );
     let mut columns = literal();
     columns[267..271].copy_from_slice(b"tExT");
     assert_eq!(
-        no_allocation_decode_error(&columns),
+        preflight_decode_error(&columns),
         NativeIntentError::Request(EditError::Conflict)
     );
     let mut family = literal();
     family[89] = 0;
     assert_eq!(
-        no_allocation_decode_error(&family),
+        preflight_decode_error(&family),
         NativeIntentError::InvalidRecord
     );
     let error = NativeFittedIntentGroup::new(
@@ -463,3 +458,28 @@ fn fitted_model_codec_borrowing_and_binding_pay_exact_work_and_cancel() {
 }
 
 mod owned_growth;
+
+#[test]
+fn sparse_row_preflight_accepts_large_ordinals_without_dense_allocation() {
+    let mut large = literal();
+    large[105..113].copy_from_slice(&(usize::MAX as u64).to_le_bytes());
+    large[133..141].copy_from_slice(&16_384_u64.to_le_bytes());
+    let decoded = NativeFittedEditIntent::decode(&large, &mut budget(), &|| false).unwrap();
+    assert_eq!(decoded.encode(&mut budget(), &|| false).unwrap(), large);
+    let NativeFittedUpdates::Variable(updates) = decoded.groups()[0].updates() else {
+        panic!()
+    };
+    assert_eq!(updates[0].row(), usize::MAX);
+    assert_eq!(updates[1].row(), 16_384);
+
+    let mut no_workspace = ResourceBudget::new(0, 0, 1_000_000_000);
+    assert!(matches!(
+        NativeFittedEditIntent::decode(&large, &mut no_workspace, &|| false),
+        Err(NativeIntentError::Inspect(InspectError::Limit(_)))
+    ));
+    large[133..141].copy_from_slice(&(usize::MAX as u64).to_le_bytes());
+    assert_eq!(
+        preflight_decode_error(&large),
+        NativeIntentError::Request(EditError::Conflict)
+    );
+}

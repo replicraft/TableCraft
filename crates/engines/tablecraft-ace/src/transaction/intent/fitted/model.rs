@@ -3,7 +3,6 @@ use super::{carrier, codec};
 use crate::{
     EditError, FittedColumnUpdates, FixedScalarUpdate, InspectError, NativeImage, SlotScalarUpdate,
     header::check,
-    limits::MAX_LIVE_ROWS,
     transaction::intent::{NativeIntentError, binding, model as names},
 };
 use tablecraft_core::{
@@ -67,9 +66,6 @@ impl NativeFittedIntentGroup {
                 FixedScalarUpdate::validate_intent_requests(updates, budget, cancelled)?;
                 for update in updates {
                     check(budget, cancelled)?;
-                    if update.row() >= MAX_LIVE_ROWS {
-                        return Err(InspectError::StructureLimit.into());
-                    }
                     carrier::validate(update.expected(), Family::Fixed, budget, cancelled)?;
                     carrier::validate(update.value(), Family::Fixed, budget, cancelled)?;
                 }
@@ -78,9 +74,6 @@ impl NativeFittedIntentGroup {
                 SlotScalarUpdate::validate_intent_requests(updates, budget, cancelled)?;
                 for update in updates {
                     check(budget, cancelled)?;
-                    if update.row() >= MAX_LIVE_ROWS {
-                        return Err(InspectError::StructureLimit.into());
-                    }
                     carrier::validate(update.expected(), Family::Variable, budget, cancelled)?;
                     carrier::validate(update.value(), Family::Variable, budget, cancelled)?;
                 }

@@ -8,13 +8,14 @@ use super::{
 use crate::{
     EditError, FixedScalarUpdate, InspectError, NativeImage, SlotScalarUpdate,
     header::check,
-    limits::MAX_LIVE_ROWS,
     transaction::intent::{NativeIntentError, binding, model as names},
 };
+use std::collections::HashSet;
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
-const ROW_WORD_BITS: usize = u64::BITS as usize;
-const ROW_WORDS: usize = MAX_LIVE_ROWS.div_ceil(ROW_WORD_BITS);
+// Logical per-identity allowance includes hash metadata/spare capacity; this
+// is not an exact resident-allocation measurement. It depends on real entries.
+const ROW_IDENTITY_ALLOCATION_BYTES: u64 = 4 * size_of::<usize>() as u64;
 const UPDATE_TOTAL_AT: usize = 0;
 const UPDATE_ROW_AT: usize = UPDATE_TOTAL_AT + size_of::<u32>();
 
@@ -171,9 +172,6 @@ impl<'a> Cursor<'a> {
         }
         let row = u64::from_le_bytes(header[UPDATE_ROW_AT..].try_into().unwrap());
         let row = usize::try_from(row).map_err(|_| InspectError::StructureLimit)?;
-        if row >= MAX_LIVE_ROWS {
-            return Err(InspectError::StructureLimit.into());
-        }
         let rest = total
             .checked_sub(codec::UPDATE_HEADER_BYTES)
             .ok_or(NativeIntentError::InvalidRecord)?;
@@ -285,24 +283,25 @@ fn scan<'a>(
                 return Err(EditError::Conflict.into());
             }
         }
-        // Fixed-size workspace, bounded by the existing native row ceiling.
-        // It never grows from untrusted counts and every cleared word is paid.
-        budget
-            .charge(Resource::Steps, ROW_WORDS as u64)
-            .map_err(InspectError::from)?;
-        let mut seen = [0_u64; ROW_WORDS];
+        let mut seen = HashSet::new();
         let mut cells = Cursor {
             bytes: group.cells,
             at: 0,
         };
         for _ in 0..group.count {
             let update = cells.update(group.family, budget, cancelled)?;
-            let word = update.row / ROW_WORD_BITS;
-            let bit = 1_u64 << (update.row % ROW_WORD_BITS);
-            if seen[word] & bit != 0 {
+            check(budget, cancelled)?;
+            budget
+                .charge(Resource::Steps, 1)
+                .map_err(InspectError::from)?;
+            if seen.contains(&update.row) {
                 return Err(EditError::Conflict.into());
             }
-            seen[word] |= bit;
+            budget
+                .charge_allocation(1, ROW_IDENTITY_ALLOCATION_BYTES)
+                .map_err(InspectError::from)?;
+            seen.try_reserve(1).map_err(|_| InspectError::Allocation)?;
+            seen.insert(update.row);
         }
         if cells.at != group.cells.len() {
             return Err(NativeIntentError::InvalidRecord);
