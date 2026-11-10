@@ -63,7 +63,7 @@ pub enum NativeUpdateBody {
     Int32(NativeInt32EditIntent),
     /// Original ordered fixed groups for closed TCNI0003/4/8/9/10/11/12/13/14 records.
     Fixed(NativeFixedEditIntent),
-    /// Ordered original variable/fixed requests for TCNI0005 or TCNI0015.
+    /// Ordered original variable/fixed requests for TCNI0005/15/16/17.
     Fitted(NativeFittedEditIntent),
     /// Original fixed/variable groups for explicit TCNI0006 owned-page growth.
     OwnedGrowth(NativeFittedEditIntent),
@@ -129,7 +129,7 @@ impl NativeUpdateIntent {
         }
     }
 
-    /// Maximum of the implemented closed data records, for bounded host capture.
+    /// Maximum legacy record size; retained TCNI17 uses MAX_RETAINED_ENCODED_BYTES.
     pub const MAX_ENCODED_BYTES: usize = if NativeFittedEditIntent::MAX_ENCODED_BYTES
         > NativeFixedEditIntent::MAX_GUID_ENCODED_BYTES
         && NativeFittedEditIntent::MAX_ENCODED_BYTES > NativeInt32EditIntent::MAX_ENCODED_BYTES
