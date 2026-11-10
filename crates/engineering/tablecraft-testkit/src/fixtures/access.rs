@@ -446,3 +446,5 @@ mod raw_schema_drop;
 pub mod raw_forwarding_chain;
 
 mod raw_record_delete;
+
+pub mod raw_lval_chain;
