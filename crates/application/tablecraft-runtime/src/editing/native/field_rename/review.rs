@@ -10,7 +10,8 @@ use crate::{
     },
 };
 use std::sync::{Arc, atomic::AtomicBool};
-use tablecraft_ace::{NativeImage, RecoverableFieldRenamePlan};
+use tablecraft_access::editing::journal::NativeJournalEditor;
+use tablecraft_ace::RecoverableFieldRenamePlan;
 
 pub(in crate::editing) struct State {
     pub(in crate::editing) reopen: Arc<FieldRenamedReopen>,
@@ -34,18 +35,25 @@ pub(in crate::editing) fn review(
     check(cancelled)?;
     // NO_CLONE: NativeImage owns the checked source while Document keeps using it; this shares
     // immutable bytes instead of copying the database image.
-    let image = NativeImage::capture_shared(
+    let image = NativeJournalEditor::capture_shared_image(
         document.edits.image_source.clone(),
         SCOPE,
+        table,
         &mut work,
         cancelled,
     )?;
     // Select from original metadata before constructing a native candidate.
     // Old serialized profiles retain their closed reconstruction languages.
-    let retained = image
-        .select_native_retained_field_rename_source(table, column, &mut work, cancelled)
-        .map_err(Error::FieldRenameSource)?;
-    let plan = if retained {
+    let retained_schema = image.has_retained_table_source(table, &mut work, cancelled)?;
+    let retained = !retained_schema
+        && image
+            .select_native_retained_field_rename_source(table, column, &mut work, cancelled)
+            .map_err(Error::FieldRenameSource)?;
+    let plan = if retained_schema {
+        image.plan_recoverable_retained_schema_field_rename(
+            table, column, new_name, &mut work, cancelled,
+        )?
+    } else if retained {
         image
             .plan_recoverable_retained_field_rename(table, column, new_name, &mut work, cancelled)?
     } else {

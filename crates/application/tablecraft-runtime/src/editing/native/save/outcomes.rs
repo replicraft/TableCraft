@@ -4,9 +4,7 @@ mod current_field_addition;
 mod database_options_field_history;
 #[cfg(feature = "ace16-create")]
 mod field_addition;
-#[cfg(feature = "ace16-create")]
 mod field_drop;
-#[cfg(feature = "ace16-create")]
 mod field_rename;
 #[cfg(feature = "ace16-create")]
 mod number_column;
@@ -270,9 +268,7 @@ fn typed_resource_failure(error: &(dyn StdError + 'static)) -> Option<SaveFailur
             #[cfg(feature = "ace16-create")]
             Cause::FieldAdditionIntent(error) => field_addition::intent(error),
             Cause::CurrentFieldAdditionIntent(error) => current_field_addition::intent(error),
-            #[cfg(feature = "ace16-create")]
             Cause::FieldRenameIntent(error) => field_rename::intent(error),
-            #[cfg(feature = "ace16-create")]
             Cause::FieldDropIntent(error) => field_drop::intent(error),
             #[cfg(feature = "ace16-create")]
             Cause::FieldAdditionAfterOffIntent(error) => field_addition_after_off::intent(error),
@@ -347,7 +343,6 @@ fn typed_resource_failure(error: &(dyn StdError + 'static)) -> Option<SaveFailur
     if let Some(error) = error.downcast_ref::<AddTableIntentError>() {
         return add_table_intent_failure(error);
     }
-    #[cfg(feature = "ace16-create")]
     if let Some(error) = error.downcast_ref::<tablecraft_ace::FieldDropIntentError>() {
         return field_drop::intent(error);
     }
@@ -355,7 +350,6 @@ fn typed_resource_failure(error: &(dyn StdError + 'static)) -> Option<SaveFailur
     if let Some(error) = error.downcast_ref::<tablecraft_ace::FieldDropError>() {
         return field_drop::candidate(error);
     }
-    #[cfg(feature = "ace16-create")]
     if let Some(error) = error.downcast_ref::<tablecraft_ace::FieldRenameIntentError>() {
         return field_rename::intent(error);
     }

@@ -5,14 +5,14 @@ use std::{error::Error, fmt};
 use tablecraft_ace::{
     AddColumnIntentError, AddTableError, AddTableIntentError, DatabaseOptionsIntentError,
     DefaultZeroAddColumnIntentError, FieldAdditionAfterOffHistoryIntentError,
-    FieldAdditionAfterOffIntentError, FieldAdditionIntentError, FieldDropIntentError,
-    FieldHistoryOptionsIntentError, FieldRenameIntentError, FirstTableError, FirstTableIntentError,
-    RepeatedDefaultZeroAddColumnIntentError,
+    FieldAdditionAfterOffIntentError, FieldAdditionIntentError, FieldHistoryOptionsIntentError,
+    FirstTableError, FirstTableIntentError, RepeatedDefaultZeroAddColumnIntentError,
 };
 use tablecraft_ace::{
-    CurrentFieldAdditionIntentError, InspectError, NativeIntentError,
-    NativeRecoveryQualificationError, QueryExpressionEditsIntentError, QueryExpressionIntentError,
-    QueryExpressionRecoveryError, TableDropIntentError, TableRenameIntentError,
+    CurrentFieldAdditionIntentError, FieldDropIntentError, FieldRenameIntentError, InspectError,
+    NativeIntentError, NativeRecoveryQualificationError, QueryExpressionEditsIntentError,
+    QueryExpressionIntentError, QueryExpressionRecoveryError, TableDropIntentError,
+    TableRenameIntentError,
 };
 use tablecraft_io::{
     IoError,
@@ -101,11 +101,9 @@ pub enum Cause {
     #[error(transparent)]
     CurrentFieldAdditionIntent(CurrentFieldAdditionIntentError),
     /// Original field-rename request or complete native reconstruction refused.
-    #[cfg(feature = "ace16-create")]
     #[error(transparent)]
     FieldRenameIntent(FieldRenameIntentError),
     /// Original saved-field DROP request or complete native reconstruction refused.
-    #[cfg(feature = "ace16-create")]
     #[error(transparent)]
     FieldDropIntent(FieldDropIntentError),
     /// This retained capability does not permit the requested transition.

@@ -1,10 +1,13 @@
 //! Rename control failures retain their real typed nesting and outcome identity.
-use super::{
-    database_options_field_history, inspection_failure, intent_failure, qualification_failure,
-};
+#[cfg(feature = "ace16-create")]
+use super::database_options_field_history;
+use super::{inspection_failure, intent_failure, qualification_failure};
 use crate::editing::SaveFailureKind;
-use tablecraft_ace::{FieldRenameError, FieldRenameIntentError};
+#[cfg(feature = "ace16-create")]
+use tablecraft_ace::FieldRenameError;
+use tablecraft_ace::FieldRenameIntentError;
 
+#[cfg(feature = "ace16-create")]
 pub(super) fn candidate(error: &FieldRenameError) -> Option<SaveFailureKind> {
     match error {
         FieldRenameError::Inspect(error) => inspection_failure(error),
@@ -17,13 +20,14 @@ pub(super) fn intent(error: &FieldRenameIntentError) -> Option<SaveFailureKind> 
     match error {
         FieldRenameIntentError::Inspect(error) => inspection_failure(error),
         FieldRenameIntentError::Binding(error) => intent_failure(error),
+        #[cfg(feature = "ace16-create")]
         FieldRenameIntentError::Rename(error) => candidate(error),
         FieldRenameIntentError::Proof(error) => qualification_failure(error),
         _ => None,
     }
 }
 
-#[cfg(test)]
+#[cfg(all(test, feature = "ace16-create"))]
 mod tests {
     use super::*;
     use crate::editing::platform::save::outcomes::resource_failure;

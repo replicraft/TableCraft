@@ -1,12 +1,13 @@
 //! DROP controls keep their original typed layer through retained recovery reports.
-use super::{
-    database_options_field_history, inspection_failure, intent_failure, qualification_failure,
-};
+#[cfg(feature = "ace16-create")]
+use super::database_options_field_history;
+use super::{inspection_failure, intent_failure, qualification_failure};
 use crate::editing::SaveFailureKind;
-use tablecraft_ace::{
-    CreateDatabaseError, CreatedAddColumnError, EditError, FieldDropError, FieldDropIntentError,
-};
+use tablecraft_ace::FieldDropIntentError;
+#[cfg(feature = "ace16-create")]
+use tablecraft_ace::{CreateDatabaseError, CreatedAddColumnError, EditError, FieldDropError};
 
+#[cfg(feature = "ace16-create")]
 pub(super) fn candidate(error: &FieldDropError) -> Option<SaveFailureKind> {
     match error {
         FieldDropError::Inspect(error)
@@ -25,13 +26,14 @@ pub(super) fn intent(error: &FieldDropIntentError) -> Option<SaveFailureKind> {
     match error {
         FieldDropIntentError::Inspect(error) => inspection_failure(error),
         FieldDropIntentError::Binding(error) => intent_failure(error),
+        #[cfg(feature = "ace16-create")]
         FieldDropIntentError::Drop(error) => candidate(error),
         FieldDropIntentError::Proof(error) => qualification_failure(error),
         _ => None,
     }
 }
 
-#[cfg(test)]
+#[cfg(all(test, feature = "ace16-create"))]
 mod tests {
     use super::super::resource_failure;
     use super::*;

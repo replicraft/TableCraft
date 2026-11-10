@@ -9,7 +9,8 @@ use crate::{
     },
 };
 use std::sync::{Arc, atomic::AtomicBool};
-use tablecraft_ace::{NativeImage, RecoverableFieldDropPlan};
+use tablecraft_access::editing::journal::NativeJournalEditor;
+use tablecraft_ace::RecoverableFieldDropPlan;
 
 pub(in crate::editing) struct State {
     pub(in crate::editing) reopen: Arc<FieldDroppedReopen>,
@@ -32,9 +33,10 @@ pub(in crate::editing) fn review(
     check(cancelled)?;
     // NO_CLONE: NativeImage owns the checked source while Document keeps using it; this shares
     // immutable bytes instead of copying the database image.
-    let image = NativeImage::capture_shared(
+    let image = NativeJournalEditor::capture_shared_image(
         document.edits.image_source.clone(),
         SCOPE,
+        table,
         &mut work,
         cancelled,
     )?;

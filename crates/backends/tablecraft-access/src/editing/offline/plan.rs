@@ -11,17 +11,17 @@ use crate::editing::journal::NativeJournalInsertPlan;
 use tablecraft_ace::{
     AddTablePlan, FirstTablePlan, NativeAddColumnIntent, NativeAddTableIntent,
     NativeDefaultZeroAddColumnIntent, NativeFieldAdditionAfterOffHistoryIntent,
-    NativeFieldAdditionAfterOffIntent, NativeFieldAdditionIntent, NativeFieldDropIntent,
-    NativeFieldRenameIntent, NativeFirstTableIntent, NativeRepeatedDefaultZeroAddColumnIntent,
-    RecoverableAddColumnPlan, RecoverableFieldDropPlan, RecoverableFieldRenamePlan,
+    NativeFieldAdditionAfterOffIntent, NativeFieldAdditionIntent, NativeFirstTableIntent,
+    NativeRepeatedDefaultZeroAddColumnIntent, RecoverableAddColumnPlan, RecoverableFieldDropPlan,
+    RecoverableFieldRenamePlan,
 };
 use tablecraft_ace::{
     NativeClockInsertIntent, NativeCompleteInsertIntent, NativeCurrentFieldAdditionIntent,
-    NativeDeleteIntent, NativeEofInsertIntent, NativeInsertIntent, NativeOmittedInsertIntent,
-    NativeQueryExpressionEditsIntent, NativeQueryExpressionIntent, NativeTableDropIntent,
-    NativeTableRenameIntent, NativeUpdateIntent, NativeUpdateProfile, PreparedNativeUpdate,
-    RecoverableNativeDeletePlan, RecoverableNativeEditPlan, RecoverableNativeTableRenamePlan,
-    RecoverableTableDropPlan,
+    NativeDeleteIntent, NativeEofInsertIntent, NativeFieldDropIntent, NativeFieldRenameIntent,
+    NativeInsertIntent, NativeOmittedInsertIntent, NativeQueryExpressionEditsIntent,
+    NativeQueryExpressionIntent, NativeTableDropIntent, NativeTableRenameIntent,
+    NativeUpdateIntent, NativeUpdateProfile, PreparedNativeUpdate, RecoverableNativeDeletePlan,
+    RecoverableNativeEditPlan, RecoverableNativeTableRenamePlan, RecoverableTableDropPlan,
 };
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_io::journal::{DurableStorage, ResizableDurableStorage};
@@ -138,6 +138,13 @@ impl MutationPlan {
             }
             #[cfg(feature = "ace16-create")]
             Self::FieldDrop(plan) => {
+                if plan.intent().is_retained() {
+                    return plan
+                        .prepare_retained(target, journal, budget, cancelled)
+                        .map_err(Cause::Prepare)?
+                        .commit(budget, cancelled)
+                        .map_err(Cause::Commit);
+                }
                 let prepared = plan
                     .prepare(target, journal, budget, cancelled)
                     .map_err(Cause::Prepare)?;
@@ -145,6 +152,13 @@ impl MutationPlan {
             }
             #[cfg(feature = "ace16-create")]
             Self::FieldRename(plan) => {
+                if plan.intent().is_retained_schema() {
+                    return plan
+                        .prepare_retained(target, journal, budget, cancelled)
+                        .map_err(Cause::Prepare)?
+                        .commit(budget, cancelled)
+                        .map_err(Cause::Commit);
+                }
                 let prepared = plan
                     .prepare(target, journal, budget, cancelled)
                     .map_err(Cause::Prepare)?;
@@ -232,8 +246,10 @@ pub(super) enum MutationIntent {
     RetainedFieldAddition(NativeCurrentFieldAdditionIntent),
     #[cfg(feature = "ace16-create")]
     FieldRename(NativeFieldRenameIntent),
+    RetainedFieldRename(NativeFieldRenameIntent),
     #[cfg(feature = "ace16-create")]
     FieldDrop(NativeFieldDropIntent),
+    RetainedFieldDrop(NativeFieldDropIntent),
     TableRename(NativeTableRenameIntent),
     TableDrop(NativeTableDropIntent),
     RetainedTableDrop(NativeTableDropIntent),
@@ -276,8 +292,12 @@ impl MutationIntent {
             Self::RetainedFieldAddition(_) => Some(SchemaChange::ColumnAdded),
             #[cfg(feature = "ace16-create")]
             Self::FieldDrop(_) => Some(SchemaChange::ColumnDropped),
+            Self::RetainedFieldDrop(_) => Some(SchemaChange::ColumnDropped),
             #[cfg(feature = "ace16-create")]
             Self::FieldRename(intent) => {
+                (intent.column() != intent.new_name()).then_some(SchemaChange::ColumnRenamed)
+            }
+            Self::RetainedFieldRename(intent) => {
                 (intent.column() != intent.new_name()).then_some(SchemaChange::ColumnRenamed)
             }
             Self::TableDrop(_) | Self::RetainedTableDrop(_) => Some(SchemaChange::TableDropped),
@@ -333,6 +353,16 @@ impl MutationIntent {
             return NativeOmittedInsertIntent::decode_retained(raw, budget, cancelled)
                 .map(Self::RetainedInsert)
                 .map_err(Cause::Intent);
+        }
+        if raw.starts_with(b"TCFD0003") {
+            return NativeFieldDropIntent::decode_retained(raw, budget, cancelled)
+                .map(Self::RetainedFieldDrop)
+                .map_err(Cause::FieldDropIntent);
+        }
+        if raw.starts_with(b"TCFR0006") {
+            return NativeFieldRenameIntent::decode_retained_schema(raw, budget, cancelled)
+                .map(Self::RetainedFieldRename)
+                .map_err(Cause::FieldRenameIntent);
         }
         // Closed framing selection occurs before decode; a failed decoder is
         // never retried as another action or promoted from its record prefix.

@@ -3,6 +3,7 @@ mod review;
 pub(in crate::editing) use review::{State, review};
 
 use crate::{Error, controls::SCOPE, document::Document};
+use tablecraft_access::editing::journal::NativeJournalEditor;
 use tablecraft_ace::{
     FieldAdditionError, FieldHistoryDatabaseOptionsError, FieldRenameError,
     FittedFieldRenameSource, NativeImage,
@@ -23,9 +24,10 @@ pub(in crate::editing) fn source_profile(
     }
     // NO_CLONE: NativeImage owns the checked source while Document keeps using it; this shares
     // immutable bytes instead of copying the database image.
-    let image = NativeImage::capture_shared(
+    let image = NativeJournalEditor::capture_shared_image(
         document.edits.image_source.clone(),
         SCOPE,
+        table,
         budget,
         cancelled,
     )?;
@@ -52,7 +54,9 @@ fn inspect_source(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<FittedFieldRenameSource, FieldRenameError> {
-    if image.select_native_retained_field_rename_source(table, column, budget, cancelled)? {
+    if image.has_retained_table_source(table, budget, cancelled)? {
+        image.inspect_retained_schema_field_rename_source(table, column, budget, cancelled)
+    } else if image.select_native_retained_field_rename_source(table, column, budget, cancelled)? {
         image.inspect_retained_field_rename_source(table, column, budget, cancelled)
     } else {
         image.inspect_current_field_rename_source(table, column, budget, cancelled)
