@@ -3,6 +3,7 @@ use tablecraft_core::{
     limits::{Resource, ResourceBudget},
     values::Value,
 };
+use tablecraft_io::IoError;
 use tablecraft_model::CatalogScope;
 
 fn padded_tsv() -> String {
@@ -98,9 +99,16 @@ fn explicit_creation_allowances_refuse_large_input_without_publishing_a_database
             &mut report,
         )
         .unwrap_err();
-        assert!(
-            matches!(error, Error::Native(InspectError::Limit(limit)) if limit.resource == resource)
-        );
+        let actual = match error {
+            Error::Native(InspectError::Limit(limit)) => limit.resource,
+            Error::Creation(CreationError::Publication(PublicationError::NotPublished {
+                cause: IoError::Limit(limit),
+                cleanup: None,
+                temporary_may_remain: false,
+            })) => limit.resource,
+            other => panic!("{option}: expected a clean typed resource refusal, got {other:?}"),
+        };
+        assert_eq!(actual, resource, "{option}");
         assert!(report.is_empty());
         assert!(!output.exists());
         assert_eq!(fs::read_dir(root.path()).unwrap().count(), 1);
