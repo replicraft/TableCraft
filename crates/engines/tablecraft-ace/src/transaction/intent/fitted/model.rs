@@ -312,7 +312,12 @@ pub(super) fn validate_groups(
     let mut count = 0_usize;
     for (position, group) in groups.iter().enumerate() {
         check(budget, cancelled)?;
-        grammar.name(group.column(), budget, cancelled)?;
+        if grammar == Grammar::Retained {
+            grammar.name(group.column(), budget, cancelled)?;
+        } else if group.column().len() > names::MAX_NAME_BYTES {
+            // A group constructed for TCNI17 cannot bypass a legacy name bound.
+            return Err(NativeIntentError::InvalidRecord);
+        }
         count = count
             .checked_add(group.updates.len())
             .filter(|count| *count <= grammar.assignments())
