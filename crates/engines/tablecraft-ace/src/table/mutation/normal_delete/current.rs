@@ -24,6 +24,15 @@ pub(super) fn capture(
     if !image.select_native_current_delete_source(table, budget, cancelled)? {
         return Err(EditError::Unsupported(WriteBlocker::RowLayout));
     }
+    capture_table_drop(image, table, budget, cancelled)
+}
+
+pub(in crate::table::mutation) fn capture_table_drop(
+    image: &NativeImage,
+    table: &str,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Source, EditError> {
     current_schema::observe(image, table, budget, cancelled).map_err(|error| match error {
         current_schema::Error::Inspect(error) => EditError::Inspect(error),
         current_schema::Error::Native(error) => error,
@@ -98,7 +107,14 @@ impl NativeImage {
         if ordinals.len() > source.records.len() {
             return Err(EditError::Conflict);
         }
-        selection::prepare(self, &source, ordinals, Family::Current, budget, cancelled)
+        selection::prepare(
+            self,
+            &source,
+            ordinals.iter().copied(),
+            Family::Current,
+            budget,
+            cancelled,
+        )
     }
 
     pub(crate) fn plan_current_row_deletes(
@@ -110,4 +126,37 @@ impl NativeImage {
     ) -> Result<NativeEditPlan, EditError> {
         super::plan(self, table, deletes, Family::Current, budget, cancelled)
     }
+}
+
+/// Compose the row/index effects of a separately qualified current table DROP.
+/// Its private family retains historical rows without changing TCND1/2 selectors.
+pub(in crate::table::mutation) fn compose_table_drop(
+    image: &NativeImage,
+    table: &str,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Vec<u8>, EditError> {
+    let source = capture_table_drop(image, table, budget, cancelled)?;
+    let requests = selection::prepare(
+        image,
+        &source,
+        0..source.records.len(),
+        Family::TableDrop,
+        budget,
+        cancelled,
+    )?;
+    let after = super::compose(image, &source, &requests, budget, cancelled)?;
+    super::proof::prove_images(
+        super::proof::Images {
+            before: image.as_bytes(),
+            after: &after,
+        },
+        image.catalog().catalog().scope(),
+        table,
+        &requests,
+        Family::TableDrop,
+        budget,
+        cancelled,
+    )?;
+    Ok(after)
 }

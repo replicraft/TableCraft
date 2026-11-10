@@ -136,6 +136,18 @@ impl NativeTableDropIntent {
         codec::decode(bytes, budget, cancelled)
     }
 
+    /// Decode only TCTD0002 current-source requests, without retrying older families.
+    ///
+    /// # Errors
+    /// Returns an error for other families, malformed framing or resource failure.
+    pub fn decode_current(
+        bytes: &[u8],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, TableDropIntentError> {
+        codec::decode_current(bytes, budget, cancelled)
+    }
+
     /// Verify every original byte before reconstructing native authority.
     ///
     /// # Errors

@@ -39,9 +39,10 @@ impl NativeTableDropInspection {
 
 /// An unpublished logical table deletion with complete preserved native images.
 ///
-/// The empty table's catalog root becomes a tombstone and MSysObjects' live count
-/// decreases. Table definitions, records, indexes, maps and historical bytes stay
-/// allocated and byte-exact; this plan does not reclaim or shred storage. The
+/// The table's catalog root becomes a tombstone and MSysObjects' live count
+/// decreases. The current source first removes every live row/index membership;
+/// original empty profiles retain their narrower catalog-only action. Definitions,
+/// payloads, maps and historical bytes remain allocated; no storage is reclaimed. The
 /// closed source forbids permissions, relationships and application dependencies
 /// requiring additional catalog edits. Persistence requires separately retained
 /// original-request reconstruction and journal ownership.
@@ -95,17 +96,18 @@ impl NativeImage {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<NativeTableDropInspection, TableDropError> {
         let _span = tracing::debug_span!("native.table.drop.inspect").entered();
-        let profile = source::select_profile(self, budget, cancelled)?;
+        let profile = source::select_profile(self, table, budget, cancelled)?;
         let original = source::qualify(self, table, profile, budget, cancelled)?;
         check(budget, cancelled)?;
         Ok(NativeTableDropInspection::from_source(original))
     }
 
-    /// Logically delete one qualified empty table while retaining historical storage.
+    /// Logically delete one qualified table while retaining historical storage.
     ///
     /// Actual property framing selects the source profile exactly once; a failed
-    /// source is not retried as another profile. Only the selected catalog slot
-    /// flags and its table's live count change. No object body is executed.
+    /// source is not retried as another profile. Original empty profiles change
+    /// only the catalog root/count; the current profile also performs every live
+    /// row/index deletion. No object body is executed.
     ///
     /// # Errors
     /// Refuses missing targets, unsupported source/dependencies, invalid catalog
@@ -116,7 +118,7 @@ impl NativeImage {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<NativeTableDropPlan, TableDropError> {
-        let profile = source::select_profile(&self, budget, cancelled)?;
+        let profile = source::select_profile(&self, table, budget, cancelled)?;
         self.plan_table_drop_for_profile(table, profile, budget, cancelled)
     }
 
@@ -129,11 +131,22 @@ impl NativeImage {
     ) -> Result<NativeTableDropPlan, TableDropError> {
         let _span = tracing::debug_span!("native.table.drop.plan").entered();
         let original = source::qualify(&self, table, profile, budget, cancelled)?;
-        let mut after =
-            super::super::record_serialization::copy(self.as_bytes(), budget, cancelled)
-                .map_err(serialization_error)?;
-        verify::write(&self, &mut after, &original, budget, cancelled)?;
-        verify::candidate(&self, &after, &original, budget, cancelled)?;
+        let after = match profile {
+            #[cfg(feature = "ace16-create")]
+            SourceProfile::Current => {
+                super::current::proof::compose(&self, &original, budget, cancelled)?
+            }
+            #[cfg(not(feature = "ace16-create"))]
+            SourceProfile::Current => return Err(TableDropError::Source),
+            SourceProfile::Inline | SourceProfile::CreatorExternal => {
+                let mut after =
+                    super::super::record_serialization::copy(self.as_bytes(), budget, cancelled)
+                        .map_err(serialization_error)?;
+                verify::write(&self, &mut after, &original, budget, cancelled)?;
+                verify::candidate(&self, &after, &original, budget, cancelled)?;
+                after
+            }
+        };
         check(budget, cancelled)?;
 
         Ok(NativeTableDropPlan {

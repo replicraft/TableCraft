@@ -1,3 +1,5 @@
+#[cfg(feature = "ace16-create")]
+use crate::NativeObjectOrigin;
 use crate::NativeTableRenameIdentity;
 use tablecraft_core::ids::ObjectId;
 
@@ -21,6 +23,18 @@ impl NativeTableDropIdentity {
             definition: source.definition_page(),
             catalog_page: source.catalog_page(),
             catalog_slot: source.catalog_slot(),
+        }
+    }
+
+    #[cfg(feature = "ace16-create")]
+    pub(super) fn from_origin(origin: &NativeObjectOrigin, definition: u32) -> Self {
+        Self {
+            object: origin.object_id(),
+            native: origin.native_id(),
+            parent: origin.parent_id(),
+            definition,
+            catalog_page: origin.page(),
+            catalog_slot: origin.slot(),
         }
     }
 

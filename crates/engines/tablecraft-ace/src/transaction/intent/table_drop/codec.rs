@@ -7,6 +7,8 @@ use crate::{format::page::PAGE_BYTES, header::check};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
 const MAGIC: &[u8; 8] = b"TCTD0001";
+const CURRENT_MAGIC: &[u8; 8] = b"TCTD0002";
+const CURRENT_PROFILE: u16 = 1;
 const INLINE_PROFILE: u16 = 1;
 const CREATOR_EXTERNAL_PROFILE: u16 = 2;
 const TOTAL_AT: usize = MAGIC.len();
@@ -63,11 +65,12 @@ pub(super) fn encode(
     output
         .try_reserve_exact(length)
         .map_err(|_| crate::InspectError::Allocation)?;
-    let profile = match intent.profile {
-        SourceProfile::Inline => INLINE_PROFILE,
-        SourceProfile::CreatorExternal => CREATOR_EXTERNAL_PROFILE,
+    let (magic, profile) = match intent.profile {
+        SourceProfile::Inline => (MAGIC, INLINE_PROFILE),
+        SourceProfile::CreatorExternal => (MAGIC, CREATOR_EXTERNAL_PROFILE),
+        SourceProfile::Current => (CURRENT_MAGIC, CURRENT_PROFILE),
     };
-    output.extend_from_slice(MAGIC);
+    output.extend_from_slice(magic);
     output.extend_from_slice(&(length as u32).to_le_bytes());
     output.extend_from_slice(&profile.to_le_bytes());
     output.extend_from_slice(&0_u16.to_le_bytes());
@@ -91,9 +94,36 @@ pub(super) fn decode(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Intent, Error> {
+    decode_family(input, WireFamily::Original, budget, cancelled)
+}
+
+pub(super) fn decode_current(
+    input: &[u8],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Intent, Error> {
+    decode_family(input, WireFamily::Current, budget, cancelled)
+}
+
+#[derive(Clone, Copy)]
+enum WireFamily {
+    Original,
+    Current,
+}
+
+fn decode_family(
+    input: &[u8],
+    family: WireFamily,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Intent, Error> {
     check(budget, cancelled)?;
+    let magic = match family {
+        WireFamily::Original => MAGIC,
+        WireFamily::Current => CURRENT_MAGIC,
+    };
     if !(HEADER_BYTES..=MAX_RECORD_BYTES).contains(&input.len())
-        || input.get(..MAGIC.len()) != Some(MAGIC)
+        || input.get(..magic.len()) != Some(magic)
     {
         return Err(Error::InvalidRecord);
     }
@@ -105,9 +135,10 @@ pub(super) fn decode(
     {
         return Err(Error::InvalidRecord);
     }
-    let profile = match u16::from_le_bytes(bytes(input, PROFILE_AT)?) {
-        INLINE_PROFILE => SourceProfile::Inline,
-        CREATOR_EXTERNAL_PROFILE => SourceProfile::CreatorExternal,
+    let profile = match (family, u16::from_le_bytes(bytes(input, PROFILE_AT)?)) {
+        (WireFamily::Original, INLINE_PROFILE) => SourceProfile::Inline,
+        (WireFamily::Original, CREATOR_EXTERNAL_PROFILE) => SourceProfile::CreatorExternal,
+        (WireFamily::Current, CURRENT_PROFILE) => SourceProfile::Current,
         _ => return Err(Error::InvalidRecord),
     };
     let identity = Identity {

@@ -112,6 +112,16 @@ pub(super) fn candidate(
         }
     }
 
+    catalog(before, after, source, budget, cancelled)
+}
+
+pub(super) fn catalog(
+    before: &NativeImage,
+    after: &[u8],
+    source: &Qualified,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), TableDropError> {
     let fresh = inspect_catalog(
         &mut Cursor::new(after),
         before.catalog().catalog().scope(),

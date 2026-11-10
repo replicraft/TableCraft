@@ -39,7 +39,7 @@ impl NativeImage {
         prepare(
             self,
             &source,
-            ordinals,
+            ordinals.iter().copied(),
             super::Family::Ordinary,
             budget,
             cancelled,
@@ -50,7 +50,7 @@ impl NativeImage {
 pub(super) fn prepare(
     image: &NativeImage,
     source: &Source,
-    ordinals: &[usize],
+    ordinals: impl ExactSizeIterator<Item = usize>,
     family: super::Family,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
@@ -62,7 +62,7 @@ pub(super) fn prepare(
     selected
         .try_reserve_exact(ordinals.len())
         .map_err(|_| InspectError::Allocation)?;
-    for &ordinal in ordinals {
+    for ordinal in ordinals {
         check(budget, cancelled)?;
         selected.push(Ordinal(ordinal));
     }

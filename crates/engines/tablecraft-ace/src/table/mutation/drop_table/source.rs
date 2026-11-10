@@ -10,6 +10,7 @@ use tablecraft_model::ObjectKind;
 pub(crate) enum SourceProfile {
     Inline,
     CreatorExternal,
+    Current,
 }
 
 pub(super) struct Qualified {
@@ -23,9 +24,16 @@ pub(super) struct Qualified {
 
 pub(super) fn select_profile(
     image: &NativeImage,
+    requested: &str,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<SourceProfile, TableDropError> {
+    #[cfg(feature = "ace16-create")]
+    if super::current::selected(image, requested, budget, cancelled)? {
+        return Ok(SourceProfile::Current);
+    }
+    #[cfg(not(feature = "ace16-create"))]
+    let _ = requested;
     if table_source::database_properties_external(image, budget, cancelled)? {
         Ok(SourceProfile::CreatorExternal)
     } else {
@@ -41,6 +49,12 @@ pub(super) fn qualify(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Qualified, TableDropError> {
     check(budget, cancelled)?;
+    if profile == SourceProfile::Current {
+        #[cfg(feature = "ace16-create")]
+        return super::current::qualify(image, requested, budget, cancelled);
+        #[cfg(not(feature = "ace16-create"))]
+        return Err(TableDropError::Source);
+    }
     image.require_standard_capture()?;
     let inventory = image.catalog();
     let mut exists = false;
@@ -77,6 +91,7 @@ pub(super) fn qualify(
         match profile {
             SourceProfile::Inline => table_source::SourceProfile::RetainedInt32,
             SourceProfile::CreatorExternal => table_source::SourceProfile::CreatorExternal,
+            SourceProfile::Current => return Err(TableDropError::Source),
         },
         budget,
         cancelled,

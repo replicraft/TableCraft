@@ -1,6 +1,6 @@
 //! Fixed-length ordinary DELETE with fresh program absence and raw-row proof.
 #[cfg(feature = "ace16-create")]
-mod current;
+pub(super) mod current;
 
 mod indexed;
 mod proof;
@@ -39,6 +39,8 @@ enum Family {
     Ordinary,
     #[cfg(feature = "ace16-create")]
     Current,
+    #[cfg(feature = "ace16-create")]
+    TableDrop,
 }
 
 impl Family {
@@ -53,6 +55,8 @@ impl Family {
             Self::Ordinary => capture(image, table, budget, cancelled),
             #[cfg(feature = "ace16-create")]
             Self::Current => current::capture(image, table, budget, cancelled),
+            #[cfg(feature = "ace16-create")]
+            Self::TableDrop => current::capture_table_drop(image, table, budget, cancelled),
         }
     }
 
@@ -66,7 +70,7 @@ impl Family {
         match (self, requests.len() > source_rows) {
             (Self::Ordinary, _) => rows::unique(requests, budget, cancelled),
             #[cfg(feature = "ace16-create")]
-            (Self::Current, exceeds_source) => {
+            (Self::Current | Self::TableDrop, exceeds_source) => {
                 check(budget, cancelled)?;
                 if exceeds_source {
                     return Err(EditError::Conflict);
@@ -95,11 +99,30 @@ fn plan(
         }
     }
 
-    let staged = stage::prepare(&image, &source, deletes, budget, cancelled)?;
+    let after = compose(&image, &source, deletes, budget, cancelled)?;
+    let scope = image.catalog().catalog().scope();
+    let plan = NativeEditPlan {
+        before: image.bytes,
+        after,
+        changed_rows: deletes.len(),
+    };
+    proof::prove_with_source(&plan, scope, table, deletes, family, budget, cancelled)?;
+    check(budget, cancelled)?;
+    Ok(plan)
+}
+
+fn compose(
+    image: &NativeImage,
+    source: &Source,
+    deletes: &[RowDelete],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Vec<u8>, EditError> {
+    let staged = stage::prepare(image, source, deletes, budget, cancelled)?;
     let indexes = if source.indexes.indexes().is_empty() {
         Vec::new()
     } else {
-        indexed::patches(&image, &source, deletes, budget, cancelled)?
+        indexed::patches(image, source, deletes, budget, cancelled)?
     };
     let mut after = fixed_records::copy(image.as_bytes(), budget, cancelled)?;
     staged.apply(&mut after, budget, cancelled)?;
@@ -121,15 +144,7 @@ fn plan(
         output.copy_from_slice(&patch.after);
     }
 
-    let scope = image.catalog().catalog().scope();
-    let plan = NativeEditPlan {
-        before: image.bytes,
-        after,
-        changed_rows: deletes.len(),
-    };
-    proof::prove_with_source(&plan, scope, table, deletes, family, budget, cancelled)?;
-    check(budget, cancelled)?;
-    Ok(plan)
+    Ok(after)
 }
 
 fn capture(

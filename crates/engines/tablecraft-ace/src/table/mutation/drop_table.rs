@@ -1,4 +1,7 @@
 //! Source-bound logical table deletion with exact retained storage preservation.
+#[cfg(feature = "ace16-create")]
+mod current;
+
 mod error;
 mod identity;
 mod plan;

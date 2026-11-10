@@ -45,17 +45,42 @@ pub(super) fn prove_with_source(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), EditError> {
-    let image = NativeImage::capture(
-        &mut Cursor::new(plan.before_bytes()),
+    if plan.changed_rows() != deletes.len() {
+        return Err(EditError::Preservation);
+    }
+    prove_images(
+        Images {
+            before: plan.before_bytes(),
+            after: plan.after_bytes(),
+        },
         scope,
+        table,
+        deletes,
+        family,
         budget,
         cancelled,
-    )?;
+    )
+}
+
+pub(super) struct Images<'a> {
+    pub before: &'a [u8],
+    pub after: &'a [u8],
+}
+
+pub(super) fn prove_images(
+    images: Images<'_>,
+    scope: CatalogScope,
+    table: &str,
+    deletes: &[RowDelete],
+    family: super::Family,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), EditError> {
+    let image = NativeImage::capture(&mut Cursor::new(images.before), scope, budget, cancelled)?;
     let source = family.capture(&image, table, budget, cancelled)?;
-    source.require_preserved_definition_tail(&image, plan.after_bytes(), budget, cancelled)?;
+    source.require_preserved_definition_tail(&image, images.after, budget, cancelled)?;
     family.unique(deletes, source.records.len(), budget, cancelled)?;
-    if plan.before_bytes().len() != plan.after_bytes().len()
-        || plan.changed_rows() != deletes.len()
+    if images.before.len() != images.after.len()
         || source.records.len() != source.table.rows().len()
     {
         return Err(EditError::Preservation);
@@ -139,7 +164,7 @@ pub(super) fn prove_with_source(
     }
     for (wanted, observed) in expected
         .chunks(PAGE_BYTES)
-        .zip(plan.after_bytes().chunks(PAGE_BYTES))
+        .zip(images.after.chunks(PAGE_BYTES))
     {
         check(budget, cancelled)?;
         budget

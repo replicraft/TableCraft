@@ -1,4 +1,5 @@
 use crate::{InspectError, TableRenameError};
+use tablecraft_core::limits::LimitError;
 use thiserror::Error;
 
 /// Payload-free refusal of an unqualified logical native table deletion.
@@ -32,5 +33,11 @@ impl From<TableRenameError> for TableDropError {
             | TableRenameError::Source
             | TableRenameError::Capacity => Self::Source,
         }
+    }
+}
+
+impl From<LimitError> for TableDropError {
+    fn from(error: LimitError) -> Self {
+        Self::Inspect(error.into())
     }
 }
