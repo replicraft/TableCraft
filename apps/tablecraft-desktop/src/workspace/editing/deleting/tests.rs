@@ -1,5 +1,6 @@
 //! Actual row selection, confirmation and shared save-owner routing without windows.
 mod current_history;
+mod retained;
 
 use super::*;
 use crate::workspace::test_support::{self, finish_reads, finish_save};
