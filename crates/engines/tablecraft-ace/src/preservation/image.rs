@@ -54,6 +54,8 @@ impl Default for FixedUpdateImageLimits {
 enum CapturePolicy {
     Standard,
     FixedUpdate(FixedUpdateImageLimits),
+    #[cfg(all(feature = "journal", feature = "ace16-create"))]
+    TableAppend,
 }
 
 impl CapturePolicy {
@@ -61,6 +63,8 @@ impl CapturePolicy {
         match self {
             Self::Standard => crate::limits::MAX_IMAGE_BYTES,
             Self::FixedUpdate(limits) => limits.max_bytes(),
+            #[cfg(all(feature = "journal", feature = "ace16-create"))]
+            Self::TableAppend => crate::limits::MAX_READ_FILE_BYTES,
         }
     }
 }
@@ -68,7 +72,8 @@ impl CapturePolicy {
 /// An immutable complete native image, retaining opaque objects and unused bytes.
 /// Default capture is capped at 64 MiB. Explicit fixed-update-purpose capture
 /// retains its own validated ceiling and permits only qualified fitting fixed previews.
-/// Both remain independent of the larger read-source envelope and caller budgets.
+/// Explicit table-append capture uses native file bounds and caller budgets,
+/// without authorizing existing-table mutations or fixed-update previews.
 ///
 /// Capture requires a stable/offline source. It does not acquire native Access
 /// locks, qualify database integrity or execute application content. There is no
@@ -118,6 +123,21 @@ impl NativeImage {
             budget,
             cancelled,
         )
+    }
+
+    /// Retain a complete source for separately qualified append-only table creation.
+    ///
+    /// Native file bounds, fallible allocation and caller budgets govern capture;
+    /// no smaller image quota is imposed. This purpose does not authorize other
+    /// mutations, and native source/placement proofs remain mandatory.
+    #[cfg(all(feature = "journal", feature = "ace16-create"))]
+    pub fn capture_for_table_append<R: Read + Seek>(
+        source: &mut R,
+        scope: CatalogScope,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, InspectError> {
+        Self::capture_with_policy(source, scope, CapturePolicy::TableAppend, budget, cancelled)
     }
 
     fn capture_with_policy<R: Read + Seek>(
@@ -197,6 +217,26 @@ impl NativeImage {
         )
     }
 
+    /// Inspect a whole immutable owner under the table-append-only purpose.
+    ///
+    /// The complete retained capacity is charged without copying its payload.
+    /// Other mutation purposes remain unavailable even for small sources.
+    #[cfg(all(feature = "journal", feature = "ace16-create"))]
+    pub fn capture_shared_for_table_append(
+        source: NativeImageSource,
+        scope: CatalogScope,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, InspectError> {
+        Self::capture_shared_with_policy(
+            source,
+            scope,
+            CapturePolicy::TableAppend,
+            budget,
+            cancelled,
+        )
+    }
+
     fn capture_shared_with_policy(
         source: NativeImageSource,
         scope: CatalogScope,
@@ -231,6 +271,8 @@ impl NativeImage {
         match self.capture {
             CapturePolicy::Standard => None,
             CapturePolicy::FixedUpdate(limits) => Some(limits),
+            #[cfg(all(feature = "journal", feature = "ace16-create"))]
+            CapturePolicy::TableAppend => None,
         }
     }
 
@@ -239,6 +281,8 @@ impl NativeImage {
         let maximum = match self.capture {
             CapturePolicy::Standard => crate::limits::MAX_IMAGE_BYTES,
             CapturePolicy::FixedUpdate(limits) => limits.max_bytes(),
+            #[cfg(all(feature = "journal", feature = "ace16-create"))]
+            CapturePolicy::TableAppend => return Err(InspectError::StructureLimit),
         };
         if self.bytes.len() as u64 > maximum {
             return Err(InspectError::StructureLimit);
@@ -269,6 +313,16 @@ impl NativeImage {
     pub(crate) fn require_standard_capture(&self) -> Result<(), InspectError> {
         match self.capture {
             CapturePolicy::Standard => Ok(()),
+            CapturePolicy::FixedUpdate(_) => Err(InspectError::StructureLimit),
+            #[cfg(all(feature = "journal", feature = "ace16-create"))]
+            CapturePolicy::TableAppend => Err(InspectError::StructureLimit),
+        }
+    }
+
+    #[cfg(all(feature = "journal", feature = "ace16-create"))]
+    pub(crate) fn require_table_append_capture(&self) -> Result<(), InspectError> {
+        match self.capture {
+            CapturePolicy::Standard | CapturePolicy::TableAppend => Ok(()),
             CapturePolicy::FixedUpdate(_) => Err(InspectError::StructureLimit),
         }
     }

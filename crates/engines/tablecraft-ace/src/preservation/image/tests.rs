@@ -110,3 +110,94 @@ fn ownership_and_shared_capture_check_cancellation_and_keep_fixed_purpose() {
         Err(InspectError::StructureLimit)
     ));
 }
+
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+#[test]
+fn append_capture_preserves_whole_ownership_without_promoting_other_purposes() {
+    let bytes = original();
+    let pointer = bytes.as_ptr();
+    let source = NativeImageSource::from_vec(bytes, &mut budget(), &|| false).unwrap();
+    let shared =
+        NativeImage::capture_shared_for_table_append(source, SCOPE, &mut budget(), &|| false)
+            .unwrap();
+    assert_eq!(shared.as_bytes().as_ptr(), pointer);
+    shared.require_table_append_capture().unwrap();
+    assert!(matches!(
+        shared.require_standard_capture(),
+        Err(InspectError::StructureLimit)
+    ));
+    #[cfg(feature = "ace16-write-preview")]
+    assert!(matches!(
+        shared.require_fixed_update_capture(),
+        Err(InspectError::StructureLimit)
+    ));
+
+    let streamed = NativeImage::capture_for_table_append(
+        &mut Cursor::new(original()),
+        SCOPE,
+        &mut budget(),
+        &|| false,
+    )
+    .unwrap();
+    assert_eq!(streamed.as_bytes(), shared.as_bytes());
+    streamed.require_table_append_capture().unwrap();
+
+    let standard =
+        NativeImage::capture(&mut Cursor::new(original()), SCOPE, &mut budget(), &|| {
+            false
+        })
+        .unwrap();
+    standard.require_table_append_capture().unwrap();
+    let fixed = NativeImage::capture_for_fixed_updates(
+        &mut Cursor::new(original()),
+        SCOPE,
+        FixedUpdateImageLimits::default(),
+        &mut budget(),
+        &|| false,
+    )
+    .unwrap();
+    assert!(matches!(
+        fixed.require_table_append_capture(),
+        Err(InspectError::StructureLimit)
+    ));
+}
+
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+#[test]
+fn append_capture_retains_large_images_and_explicit_resource_checks() {
+    let mut bytes = original();
+    // Inert trailing bytes establish capture width only, not native append eligibility.
+    bytes.resize(64 * 1024 * 1024 + 4096, 0);
+    let source = NativeImageSource::from_vec(bytes, &mut budget(), &|| false).unwrap();
+    let required_capacity = source.retained_capacity();
+    assert!(matches!(
+        NativeImage::capture_shared_for_table_append(
+            source.clone(),
+            SCOPE,
+            &mut ResourceBudget::new(required_capacity as u64 - 1, ROWS, STEPS),
+            &|| false,
+        ),
+        Err(InspectError::Limit(_))
+    ));
+    let appended = NativeImage::capture_shared_for_table_append(
+        source.clone(),
+        SCOPE,
+        &mut ResourceBudget::new(256 * 1024 * 1024, ROWS, STEPS),
+        &|| false,
+    )
+    .unwrap();
+    assert_eq!(appended.as_bytes().len(), 64 * 1024 * 1024 + 4096);
+    assert!(matches!(
+        NativeImage::capture_shared(
+            source.clone(),
+            SCOPE,
+            &mut ResourceBudget::new(256 * 1024 * 1024, ROWS, STEPS),
+            &|| false
+        ),
+        Err(InspectError::StructureLimit)
+    ));
+    assert!(matches!(
+        NativeImage::capture_shared_for_table_append(source, SCOPE, &mut budget(), &|| true),
+        Err(InspectError::Cancelled)
+    ));
+}
