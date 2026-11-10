@@ -178,7 +178,7 @@ pub(super) fn candidate(
     )?;
     match evidence.purpose {
         Purpose::SettledEmpty => framing::validate(&properties, budget, cancelled)?,
-        Purpose::CurrentTail => {
+        Purpose::CurrentTail | Purpose::RetainedTail => {
             // The complete original dictionary and every original group have
             // complete frame/entry coverage. The exact group-omission proof below
             // carries that coverage to AFTER, including dictionary names whose
@@ -205,7 +205,7 @@ pub(super) fn candidate(
         Purpose::SettledEmpty => {
             framing::ordered_group_blocks(&observed.properties, budget, cancelled, visit)?
         }
-        Purpose::CurrentTail => {
+        Purpose::CurrentTail | Purpose::RetainedTail => {
             framing::current_schema_group_blocks(&observed.properties, budget, cancelled, visit)?
         }
     };
@@ -253,7 +253,7 @@ pub(super) fn candidate(
 /// Verify the native transform directly from original parser-owned ranges, not
 /// from a producer-generated replacement page. Every retained source byte is
 /// located independently; only the three stored header facts may change.
-fn definition_bytes(
+pub(super) fn definition_bytes(
     before: &crate::NativeImage,
     evidence: &Evidence,
     after: &[u8],
@@ -299,7 +299,15 @@ fn definition_bytes(
     let middle_end = entry_start + name_start - entry_end;
     if new[entry_start..middle_end] != old[entry_end..name_start]
         || new[middle_end..new_length] != old[name_end..old_length]
-        || new[new_length..].iter().any(|byte| *byte != 0)
+        || match evidence.purpose {
+            Purpose::RetainedTail => {
+                new[new_length..old_length].iter().any(|byte| *byte != 0)
+                    || new[old_length..] != old[old_length..]
+            }
+            Purpose::SettledEmpty | Purpose::CurrentTail => {
+                new[new_length..].iter().any(|byte| *byte != 0)
+            }
+        }
     {
         return Err(Error::Preservation);
     }

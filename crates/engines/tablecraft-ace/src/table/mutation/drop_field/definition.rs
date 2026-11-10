@@ -1,5 +1,8 @@
 //! Remove parser-bound declaration/name records without rebuilding native IDs.
-use super::{FieldDropError as Error, source::Evidence};
+use super::{
+    FieldDropError as Error,
+    source::{Evidence, Purpose},
+};
 use crate::{
     InspectError, NativeImage,
     format::{
@@ -80,7 +83,9 @@ pub(super) fn page(
         return Err(Error::Source);
     }
     budget.charge(Resource::Steps, PAGE_BYTES as u64)?;
-    if original[length..].iter().any(|byte| *byte != 0) {
+    if !matches!(evidence.purpose, Purpose::RetainedTail)
+        && original[length..].iter().any(|byte| *byte != 0)
+    {
         return Err(Error::Source);
     }
     let count = u16_at(original, COLUMN_COUNT_OFFSET)?;
@@ -106,6 +111,9 @@ pub(super) fn page(
         return Err(Error::Preservation);
     }
     rebuilt.resize(PAGE_BYTES, 0);
+    if matches!(evidence.purpose, Purpose::RetainedTail) {
+        rebuilt[length..].copy_from_slice(&original[length..]);
+    }
     rebuilt[COLUMN_COUNT_OFFSET..COLUMN_COUNT_OFFSET + size_of::<u16>()]
         .copy_from_slice(&count.to_le_bytes());
     rebuilt[LENGTH_OFFSET..LENGTH_OFFSET + size_of::<u32>()].copy_from_slice(

@@ -1,4 +1,5 @@
 //! Populated native tail removal with retained row and historical storage.
+mod retained;
 mod source;
 mod verify;
 
@@ -17,6 +18,11 @@ pub struct NativeCurrentTailFieldDropCandidate {
 }
 
 impl NativeCurrentTailFieldDropCandidate {
+    /// Whether this sealed candidate belongs to the retained-schema source family.
+    pub fn is_retained(&self) -> bool {
+        self.source.proof.table().family == crate::table::mutation::current_schema::Family::Retained
+    }
+
     /// Complete original native bytes under the positive current-table proof.
     pub fn before_bytes(&self) -> &[u8] {
         self.source.proof.image().as_bytes()

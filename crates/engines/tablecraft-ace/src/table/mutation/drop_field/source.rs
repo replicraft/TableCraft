@@ -18,6 +18,7 @@ const COPY_BYTES: usize = 4096;
 pub(super) enum Purpose {
     SettledEmpty,
     CurrentTail,
+    RetainedTail,
 }
 
 pub(super) struct Source {
@@ -97,6 +98,23 @@ impl Evidence {
         Self::capture_for(image, table, field, Purpose::CurrentTail, budget, cancelled)
     }
 
+    pub(super) fn capture_retained_tail(
+        image: &NativeImage,
+        table: &str,
+        field: &str,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, Error> {
+        Self::capture_for(
+            image,
+            table,
+            field,
+            Purpose::RetainedTail,
+            budget,
+            cancelled,
+        )
+    }
+
     fn capture_for(
         image: &NativeImage,
         table: &str,
@@ -105,7 +123,9 @@ impl Evidence {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, Error> {
-        let observed = if matches!(purpose, Purpose::CurrentTail) {
+        let observed = if matches!(purpose, Purpose::RetainedTail) {
+            Observed::capture_retained_schema_drop(image, table, field, budget, cancelled)?
+        } else if matches!(purpose, Purpose::CurrentTail) {
             Observed::capture_current_tail(image, table, field, budget, cancelled)?
         } else {
             Observed::capture(image, table, field, budget, cancelled)?
@@ -116,12 +136,13 @@ impl Evidence {
             Purpose::CurrentTail => {
                 checked.rows() == 0 || checked.rows() != observed.schema.declared_rows() as usize
             }
+            Purpose::RetainedTail => checked.rows() != observed.schema.declared_rows() as usize,
             Purpose::SettledEmpty => checked.rows() != 0 || observed.schema.declared_rows() != 0,
         };
         if invalid_rows {
             return Err(Error::Source);
         }
-        let body = if matches!(purpose, Purpose::CurrentTail) {
+        let body = if matches!(purpose, Purpose::CurrentTail | Purpose::RetainedTail) {
             current_body(&observed, budget, cancelled)?
         } else {
             let definition =
@@ -151,7 +172,7 @@ impl Evidence {
             Purpose::SettledEmpty => {
                 framing::ordered_group_blocks(&observed.properties, budget, cancelled, visit)?
             }
-            Purpose::CurrentTail => framing::current_schema_group_blocks(
+            Purpose::CurrentTail | Purpose::RetainedTail => framing::current_schema_group_blocks(
                 &observed.properties,
                 budget,
                 cancelled,
@@ -167,26 +188,31 @@ impl Evidence {
         {
             return Err(Error::Preservation);
         }
-        let catalog =
-            inspect_table_schema(&mut image.reader(), scope, "MSysObjects", budget, cancelled)?;
-        let selected = column(&catalog)?;
-        let origin = image
-            .catalog()
-            .origins()
-            .iter()
-            .find(|origin| origin.object_id() == observed.schema.object_id())
-            .ok_or(Error::Source)?;
-        let mut input = image.reader();
-        let mut reader = Reader {
-            source: &mut input,
-            header: image.catalog().header(),
-            budget,
-            cancelled,
-            reads: 0,
+        let descriptor = if matches!(purpose, Purpose::RetainedTail) {
+            observed.property_descriptor.start..observed.property_descriptor.end
+        } else {
+            let catalog =
+                inspect_table_schema(&mut image.reader(), scope, "MSysObjects", budget, cancelled)?;
+            let selected = column(&catalog)?;
+            let origin = image
+                .catalog()
+                .origins()
+                .iter()
+                .find(|origin| origin.object_id() == observed.schema.object_id())
+                .ok_or(Error::Source)?;
+            let mut input = image.reader();
+            let mut reader = Reader {
+                source: &mut input,
+                header: image.catalog().header(),
+                budget,
+                cancelled,
+                reads: 0,
+            };
+            let descriptor = descriptor::capture(&mut reader, &catalog, selected, origin)?
+                .absolute_range()?
+                .ok_or(Error::Source)?;
+            descriptor
         };
-        let descriptor = descriptor::capture(&mut reader, &catalog, selected, origin)?
-            .absolute_range()?
-            .ok_or(Error::Source)?;
         Ok(Self {
             purpose,
             observed,

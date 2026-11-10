@@ -22,6 +22,9 @@ impl NativeImage {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<NativeFieldDropIdentity, FieldDropError> {
+        if self.has_retained_table_source(table, budget, cancelled)? {
+            return self.inspect_retained_tail_field_drop_source(table, column, budget, cancelled);
+        }
         match self.field_drop_source_purpose(table, budget, cancelled)? {
             SavedFieldDropSourcePurpose::Empty => {
                 self.inspect_saved_field_drop_source(table, column, budget, cancelled)
