@@ -52,18 +52,19 @@ pub struct AppliedUpdate {
 }
 
 impl AppliedUpdate {
-    pub(crate) fn installer_handoff(
+    pub(crate) fn handoff(
         staging: PathBuf,
         installation: PathBuf,
-        helper: Child,
+        helper: Option<Child>,
+        stage: ApplyStage,
     ) -> Self {
         Self {
             recovery: RetainedRecovery {
                 backup: staging,
                 installation,
             },
-            helper: Some(helper),
-            stage: ApplyStage::InstallerScheduled,
+            helper,
+            stage,
         }
     }
 

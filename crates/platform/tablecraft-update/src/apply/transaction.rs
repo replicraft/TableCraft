@@ -107,16 +107,14 @@ pub(super) fn apply_with(
         });
 
     match result {
-        Ok(helper) => Ok(AppliedUpdate {
+        // The returned handoff owns one independent local recovery anchor
+        // after the consumed installation proof and extracted staging are dropped.
+        Ok(helper) => Ok(AppliedUpdate::handoff(
+            backup,
+            installed.directory().to_path_buf(),
             helper,
-            stage: ApplyStage::Replaced,
-            // NO_CLONE: recovery outlives the consumed Installed proof; retain
-            // one independent local anchor without copying application payloads.
-            recovery: RetainedRecovery {
-                backup,
-                installation: installed.directory().to_path_buf(),
-            },
-        }),
+            ApplyStage::Replaced,
+        )),
         Err(source) => {
             let restored = rollback(&mut replacements, files);
             let recovery = if restored && cleanup_empty_backup(&backup).is_ok() {
