@@ -3,6 +3,7 @@ mod dependencies;
 mod footprint;
 mod namemap;
 pub(in crate::table::mutation) mod properties;
+mod record_admission;
 #[cfg(feature = "journal")]
 mod retained_integral;
 pub(in crate::table::mutation) mod validation;
@@ -25,6 +26,7 @@ use crate::{
     },
 };
 use footprint::Footprint;
+use record_admission::RecordAdmission;
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
     values::Value,
@@ -201,6 +203,26 @@ fn capture_framed(
     table: &str,
     payload: PayloadAdmission<'_, '_>,
     profile: ReadProfile,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Source, EditError> {
+    capture_framed_with_records(
+        image,
+        table,
+        payload,
+        profile,
+        RecordAdmission::Complete,
+        budget,
+        cancelled,
+    )
+}
+
+fn capture_framed_with_records(
+    image: &NativeImage,
+    table: &str,
+    payload: PayloadAdmission<'_, '_>,
+    profile: ReadProfile,
+    records_admission: RecordAdmission,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Source, EditError> {
@@ -436,9 +458,16 @@ fn capture_framed(
             cancelled,
         )?;
         let layout = record_layout::parse(&root.final_record.data, schema, budget)?;
-        if layout.count != schema.layout.max_columns {
-            return Err(EditError::Unsupported(WriteBlocker::RowLayout));
-        }
+        records_admission.validate(
+            &layout,
+            schema,
+            projected
+                .rows()
+                .get(records.len())
+                .ok_or(EditError::Preservation)?,
+            budget,
+            cancelled,
+        )?;
         records.push(Record {
             reference: root.reference,
             offset: root.final_record.offset,
@@ -864,7 +893,7 @@ pub(in crate::table::mutation) fn capture_no_required_generated_insert(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Source, EditError> {
     certificate.require_generated_insert()?;
-    capture_framed(
+    capture_framed_with_records(
         image,
         table,
         PayloadAdmission::NoRequired(certificate),
@@ -872,6 +901,33 @@ pub(in crate::table::mutation) fn capture_no_required_generated_insert(
             columns: ColumnFraming::SparseGenerated,
             keys: RetainedKeys::Integral,
         },
+        RecordAdmission::HistoricalInsert,
+        budget,
+        cancelled,
+    )
+}
+
+/// INSERT-only original records may predate later native field declarations.
+/// Existing values remain immutable; ordinary UPDATE keeps complete coverage.
+#[cfg(feature = "journal")]
+pub(in crate::table::mutation) fn capture_no_required_insert(
+    image: &NativeImage,
+    table: &str,
+    certificate: &NoRequiredTablePrograms<'_>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Source, EditError> {
+    let profile = if certificate.retained_update_keys()? {
+        ReadProfile::retained(ColumnFraming::Dense)
+    } else {
+        ReadProfile::dense()
+    };
+    capture_framed_with_records(
+        image,
+        table,
+        PayloadAdmission::NoRequired(certificate),
+        profile,
+        RecordAdmission::HistoricalInsert,
         budget,
         cancelled,
     )

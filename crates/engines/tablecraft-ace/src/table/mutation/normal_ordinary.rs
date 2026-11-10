@@ -283,6 +283,15 @@ fn capture_for(
         }
         let certificate =
             NoRequiredTablePrograms::capture_updates(image, &target, budget, cancelled)?;
+        if matches!(purpose, CapturePurpose::Insert) {
+            return preserved_source::capture_no_required_insert(
+                image,
+                table,
+                &certificate,
+                budget,
+                cancelled,
+            );
+        }
         return preserved_source::capture_no_required_updates(
             image,
             table,
