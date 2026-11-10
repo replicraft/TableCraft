@@ -62,8 +62,10 @@ fn omitted_default_and_explicit_null_inserts_match_independent_mixed_width_image
         {
             let native = image(plan.after_bytes());
             let observed =
-                normal_ordinary::capture_schema(&native, "Table1", &mut budget(), &|| false)
-                    .unwrap();
+                normal_ordinary::capture_current_schema(&native, "Table1", &mut budget(), &|| {
+                    false
+                })
+                .unwrap();
             for record in &observed.records[..3] {
                 assert_eq!(&record.data[..2], &[2, 0]);
             }
@@ -102,7 +104,8 @@ fn historical_admission_uses_native_counts_instead_of_a_two_to_three_special_cas
     #[cfg(feature = "ace16-create")]
     {
         let schema_source =
-            normal_ordinary::capture_schema(&native, "Table1", &mut budget(), &|| false).unwrap();
+            normal_ordinary::capture_current_schema(&native, "Table1", &mut budget(), &|| false)
+                .unwrap();
         assert_eq!(schema_source.table.rows(), source.table.rows());
         for (original, observed) in source.records.iter().zip(&schema_source.records) {
             assert_eq!(original.data, observed.data);
@@ -137,7 +140,8 @@ fn historical_insert_admission_does_not_grant_update_expansion_or_accept_invalid
         );
         #[cfg(feature = "ace16-create")]
         assert!(
-            normal_ordinary::capture_schema(&native, "Table1", &mut budget(), &|| false).is_err()
+            normal_ordinary::capture_current_schema(&native, "Table1", &mut budget(), &|| false)
+                .is_err()
         );
         assert_eq!(native.as_bytes(), damaged);
     }
@@ -157,12 +161,12 @@ fn historical_schema_observation_retains_distinct_authority_and_rejects_invented
     )
     .unwrap();
     let schema_certificate =
-        NoRequiredTablePrograms::capture_schema(&native, &schema, &mut budget(), &|| false)
+        NoRequiredTablePrograms::capture_current_schema(&native, &schema, &mut budget(), &|| false)
             .unwrap();
     let row_certificate =
         NoRequiredTablePrograms::capture_updates(&native, &schema, &mut budget(), &|| false)
             .unwrap();
-    let observed = preserved_source::capture_schema(
+    let observed = preserved_source::capture_current_schema(
         &native,
         "Table1",
         &schema_certificate,
@@ -171,7 +175,7 @@ fn historical_schema_observation_retains_distinct_authority_and_rejects_invented
     )
     .unwrap();
     assert!(matches!(
-        preserved_source::capture_schema(
+        preserved_source::capture_current_schema(
             &native,
             "Table1",
             &row_certificate,

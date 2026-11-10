@@ -112,6 +112,7 @@ pub(crate) fn ordered_names<'a>(
         cancelled,
         None::<GroupVisitor>,
         None::<GroupVisitor>,
+        DictionaryUse::Complete,
     )
 }
 
@@ -133,6 +134,7 @@ pub(crate) fn ordered_names_with_groups<'a>(
         cancelled,
         Some(visit),
         None::<GroupVisitor>,
+        DictionaryUse::Complete,
     )
 }
 
@@ -151,7 +153,71 @@ pub(crate) fn ordered_group_blocks<'a>(
         cancelled,
         None::<GroupVisitor>,
         Some(visit),
+        DictionaryUse::Complete,
     )
+}
+
+/// Retain live group-name spans while accepting unused current-schema names.
+/// Visited ranges become evidence only after complete framing succeeds.
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub(crate) fn current_schema_names_with_groups<'a>(
+    properties: &'a TableProperties,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+    visit: impl FnMut(usize, Range<usize>) -> Result<(), InspectError>,
+) -> Result<Vec<&'a [u8]>, InspectError> {
+    ordered_names_impl(
+        properties,
+        budget,
+        cancelled,
+        Some(visit),
+        None::<GroupVisitor>,
+        DictionaryUse::Retained,
+    )
+}
+
+/// Complete current-schema framing also retains dictionary names whose live
+/// group was deleted. Every remaining group/entry still requires exact coverage.
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub(crate) fn current_schema_names<'a>(
+    properties: &'a TableProperties,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Vec<&'a [u8]>, InspectError> {
+    ordered_names_impl(
+        properties,
+        budget,
+        cancelled,
+        None::<GroupVisitor>,
+        None::<GroupVisitor>,
+        DictionaryUse::Retained,
+    )
+}
+
+/// Visit aligned current-schema group blocks, publishing spans only after the
+/// complete retained dictionary and all decoded groups have been verified.
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub(crate) fn current_schema_group_blocks<'a>(
+    properties: &'a TableProperties,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+    visit: impl FnMut(usize, Range<usize>) -> Result<(), InspectError>,
+) -> Result<Vec<&'a [u8]>, InspectError> {
+    ordered_names_impl(
+        properties,
+        budget,
+        cancelled,
+        None::<GroupVisitor>,
+        Some(visit),
+        DictionaryUse::Retained,
+    )
+}
+
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum DictionaryUse {
+    Complete,
+    #[cfg(all(feature = "journal", feature = "ace16-create"))]
+    Retained,
 }
 
 fn ordered_names_impl<'a>(
@@ -160,11 +226,14 @@ fn ordered_names_impl<'a>(
     cancelled: &dyn Fn() -> bool,
     mut visit: Option<impl FnMut(usize, Range<usize>) -> Result<(), InspectError>>,
     mut block_visit: Option<impl FnMut(usize, Range<usize>) -> Result<(), InspectError>>,
+    dictionary_use: DictionaryUse,
 ) -> Result<Vec<&'a [u8]>, InspectError> {
     let _span = tracing::debug_span!("native.properties.complete_framing").entered();
     check(budget, cancelled)?;
     let mut cursor = Cursor::new(properties.raw_bytes());
-    if cursor.take(SIGNATURE.len())? != SIGNATURE || properties.groups().is_empty() {
+    if cursor.take(SIGNATURE.len())? != SIGNATURE
+        || (dictionary_use == DictionaryUse::Complete && properties.groups().is_empty())
+    {
         return Err(InspectError::Unsupported);
     }
     let length = cursor.long()?;
@@ -284,7 +353,7 @@ fn ordered_names_impl<'a>(
     }
     for assigned in used {
         check(budget, cancelled)?;
-        if !assigned {
+        if !assigned && dictionary_use == DictionaryUse::Complete {
             return Err(InspectError::Unsupported);
         }
     }
@@ -297,3 +366,6 @@ pub(crate) mod tests;
 
 #[cfg(all(test, feature = "ace16-create", feature = "journal"))]
 mod name_spans;
+
+#[cfg(all(test, feature = "ace16-create", feature = "journal"))]
+mod current_schema_tests;

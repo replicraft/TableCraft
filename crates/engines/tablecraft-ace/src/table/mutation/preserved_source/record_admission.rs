@@ -20,6 +20,9 @@ pub(super) enum RecordAdmission {
     /// Each dedicated fixed writer must qualify its exact historical targets.
     #[cfg(all(feature = "journal", feature = "ace16-create"))]
     HistoricalFixedRows,
+    /// Full row reconstruction belongs to the consuming current-row operation.
+    #[cfg(all(feature = "journal", feature = "ace16-create"))]
+    CurrentRows,
 }
 
 impl RecordAdmission {
@@ -43,6 +46,8 @@ impl RecordAdmission {
             Self::HistoricalSchemaReadonly => true,
             #[cfg(all(feature = "journal", feature = "ace16-create"))]
             Self::HistoricalFixedRows => true,
+            #[cfg(all(feature = "journal", feature = "ace16-create"))]
+            Self::CurrentRows => true,
         };
         if historical
             && layout.count > 0

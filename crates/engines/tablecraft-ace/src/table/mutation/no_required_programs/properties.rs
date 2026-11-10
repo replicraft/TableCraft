@@ -11,6 +11,32 @@ pub(super) fn capture(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), EditError> {
+    capture_for(image, schema, budget, cancelled, Framing::Strict)
+}
+
+#[cfg(feature = "ace16-create")]
+pub(super) fn capture_current_schema(
+    image: &NativeImage,
+    schema: &TableSchema,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), EditError> {
+    capture_for(image, schema, budget, cancelled, Framing::CurrentSchema)
+}
+
+enum Framing {
+    Strict,
+    #[cfg(feature = "ace16-create")]
+    CurrentSchema,
+}
+
+fn capture_for(
+    image: &NativeImage,
+    schema: &TableSchema,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+    policy: Framing,
+) -> Result<(), EditError> {
     let _span = tracing::debug_span!("native.table.no_required_programs.properties").entered();
     check(budget, cancelled)?;
     let properties = inspect_table_properties(
@@ -27,7 +53,14 @@ pub(super) fn capture(
     if properties.raw_bytes().is_empty() {
         return Err(EditError::Unsupported(WriteBlocker::Properties));
     }
-    framing::validate(&properties, budget, cancelled).map_err(property_error)?;
+    match policy {
+        Framing::Strict => framing::validate(&properties, budget, cancelled),
+        #[cfg(feature = "ace16-create")]
+        Framing::CurrentSchema => {
+            framing::current_schema_names(&properties, budget, cancelled).map(drop)
+        }
+    }
+    .map_err(property_error)?;
     // Real shared qualification rejects unknown groups/keys/types/flags and
     // NameMap dependencies. PublishToWeb is specifically BYTE/flags0/value0.
     // Source subsequently validates original and final row constraints; UPDATE

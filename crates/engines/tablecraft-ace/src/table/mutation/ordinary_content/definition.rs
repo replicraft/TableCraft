@@ -43,6 +43,34 @@ pub(super) enum Role {
     SelectedActions,
     // INSERT-only fixed LONG generation with ordered sparse native identities.
     SelectedGenerated,
+    // Current metadata retains retired native ordinals and variable-slot counters.
+    #[cfg(feature = "ace16-create")]
+    SelectedSchema,
+}
+
+impl Role {
+    pub(super) fn action_ordinals(self) -> bool {
+        matches!(self, Self::SelectedActions | Self::SelectedGenerated) || self.current_schema()
+    }
+
+    pub(super) fn current_schema(self) -> bool {
+        match self {
+            #[cfg(feature = "ace16-create")]
+            Self::SelectedSchema => true,
+            _ => false,
+        }
+    }
+
+    pub(super) fn selected_user(self) -> bool {
+        matches!(
+            self,
+            Self::SelectedUser | Self::SelectedActions | Self::SelectedGenerated
+        ) || self.current_schema()
+    }
+
+    pub(super) fn user(self) -> bool {
+        self == Self::User || self.selected_user()
+    }
 }
 
 pub(super) struct Table<'image> {
@@ -201,6 +229,8 @@ pub(in crate::table::mutation) enum RowDeclaration {
     DenseRetained,
     Actions,
     SparseGenerated,
+    #[cfg(feature = "ace16-create")]
+    CurrentSchema,
 }
 
 pub(in crate::table::mutation) fn validate_rows(
@@ -226,6 +256,17 @@ pub(in crate::table::mutation) fn validate_rows(
                 validate_retained_updates(image, schema, budget, cancelled)?
             }
             RowDeclaration::Actions => validate_actions(image, schema, budget, cancelled)?,
+            #[cfg(feature = "ace16-create")]
+            RowDeclaration::CurrentSchema => validate_selected(
+                image,
+                schema,
+                Role::SelectedSchema,
+                false,
+                TailMode::Strict,
+                budget,
+                cancelled,
+            )
+            .map(drop)?,
             RowDeclaration::SparseGenerated => {
                 validate_generated(image, schema, budget, cancelled)?
             }
@@ -238,6 +279,8 @@ pub(in crate::table::mutation) fn validate_rows(
         RowDeclaration::DenseRetained => (Role::SelectedUser, true),
         RowDeclaration::Actions => (Role::SelectedActions, false),
         RowDeclaration::SparseGenerated => (Role::SelectedGenerated, false),
+        #[cfg(feature = "ace16-create")]
+        RowDeclaration::CurrentSchema => (Role::SelectedSchema, false),
     };
     validate_selected(
         image,
@@ -279,7 +322,7 @@ fn validate_selected(
     {
         return Err(refused());
     }
-    let position = if matches!(role, Role::SelectedActions) {
+    let position = if role == Role::SelectedActions || role.current_schema() {
         indexes::declaration::validate_actions(
             image,
             inspection.schema(),

@@ -72,10 +72,12 @@ fn exact_existing_inline_backing_gap_is_schema_only_and_stays_byte_identical() {
     ));
 
     let certificate =
-        NoRequiredTablePrograms::capture_schema(&original, &schema, &mut budget(), &|| false)
-            .unwrap();
+        NoRequiredTablePrograms::capture_current_schema(&original, &schema, &mut budget(), &|| {
+            false
+        })
+        .unwrap();
     certificate
-        .require_schema_source(&original, &schema, &mut budget(), &|| false)
+        .require_current_schema_source(&original, &schema, &mut budget(), &|| false)
         .unwrap();
     assert!(matches!(
         certificate.require_source(&original, &schema, &mut budget(), &|| false),
@@ -100,7 +102,8 @@ fn exact_existing_inline_backing_gap_is_schema_only_and_stays_byte_identical() {
         Err(EditError::Preservation)
     ));
     assert!(matches!(
-        certificate.require_schema_source(&image(&before), &schema, &mut budget(), &|| false),
+        certificate
+            .require_current_schema_source(&image(&before), &schema, &mut budget(), &|| false),
         Err(EditError::Preservation)
     ));
 
@@ -136,8 +139,13 @@ fn retained_gap_cannot_overlap_footer_or_activate_a_code_carrier() {
                 &mut budget(),
                 &|| false,
             )?;
-            NoRequiredTablePrograms::capture_schema(&original, &schema, &mut budget(), &|| false)
-                .map(drop)
+            NoRequiredTablePrograms::capture_current_schema(
+                &original,
+                &schema,
+                &mut budget(),
+                &|| false,
+            )
+            .map(drop)
         };
         assert!(admit().is_err());
     }

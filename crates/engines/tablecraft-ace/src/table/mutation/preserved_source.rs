@@ -137,7 +137,9 @@ enum PayloadAdmission<'admission, 'image> {
     #[cfg(feature = "journal")]
     NoRequired(&'admission NoRequiredTablePrograms<'image>),
     #[cfg(all(feature = "journal", feature = "ace16-create"))]
-    SchemaNoRequired(&'admission NoRequiredTablePrograms<'image>),
+    CurrentSchemaNoRequired(&'admission NoRequiredTablePrograms<'image>),
+    #[cfg(all(feature = "journal", feature = "ace16-create"))]
+    CurrentRowsNoRequired(&'admission NoRequiredTablePrograms<'image>),
     #[cfg(all(feature = "journal", feature = "ace16-create"))]
     HistoricalFixedRows(&'admission NoRequiredTablePrograms<'image>),
 }
@@ -357,8 +359,12 @@ fn capture_framed_with_records(
             certificate.require_source(image, schema, budget, cancelled)?
         }
         #[cfg(all(feature = "journal", feature = "ace16-create"))]
-        PayloadAdmission::SchemaNoRequired(certificate) => {
-            certificate.require_schema_source(image, schema, budget, cancelled)?
+        PayloadAdmission::CurrentRowsNoRequired(certificate) => {
+            certificate.require_current_rows_source(image, schema, budget, cancelled)?;
+        }
+        #[cfg(all(feature = "journal", feature = "ace16-create"))]
+        PayloadAdmission::CurrentSchemaNoRequired(certificate) => {
+            certificate.require_current_schema_source(image, schema, budget, cancelled)?;
         }
         #[cfg(all(feature = "journal", feature = "ace16-create"))]
         PayloadAdmission::HistoricalFixedRows(certificate) => {
@@ -373,7 +379,8 @@ fn capture_framed_with_records(
     let definition_tail = match &payload {
         PayloadAdmission::NoRequired(certificate) => certificate.share_definition_tail(),
         #[cfg(feature = "ace16-create")]
-        PayloadAdmission::SchemaNoRequired(certificate)
+        PayloadAdmission::CurrentSchemaNoRequired(certificate)
+        | PayloadAdmission::CurrentRowsNoRequired(certificate)
         | PayloadAdmission::HistoricalFixedRows(certificate) => certificate.share_definition_tail(),
         _ => None,
     };
@@ -518,7 +525,9 @@ fn capture_framed_with_records(
     let retain_native_keys = match &payload {
         PayloadAdmission::Closed(_) | PayloadAdmission::NoRequired(_) => true,
         #[cfg(feature = "ace16-create")]
-        PayloadAdmission::SchemaNoRequired(_) | PayloadAdmission::HistoricalFixedRows(_) => true,
+        PayloadAdmission::CurrentSchemaNoRequired(_)
+        | PayloadAdmission::CurrentRowsNoRequired(_)
+        | PayloadAdmission::HistoricalFixedRows(_) => true,
         _ => false,
     };
 
@@ -762,7 +771,9 @@ impl PayloadAdmission<'_, '_> {
             | Self::Closed(_)
             | Self::NoRequired(_) => true,
             #[cfg(all(feature = "journal", feature = "ace16-create"))]
-            Self::SchemaNoRequired(_) | Self::HistoricalFixedRows(_) => true,
+            Self::CurrentSchemaNoRequired(_)
+            | Self::CurrentRowsNoRequired(_)
+            | Self::HistoricalFixedRows(_) => true,
             #[cfg(feature = "ace16-write-preview")]
             Self::Inert | Self::Selected(_) => false,
         }
@@ -869,11 +880,10 @@ pub(in crate::table::mutation) fn capture_no_required_actions(
     )
 }
 
-/// Metadata-only source admission retains complete rows, constraints, indexes
-/// and physical ownership while requiring its distinct schema-purpose proof.
-/// A schema certificate cannot enter the ordinary row-mutation capture routes.
+/// Current-schema observation accepts retained native ordinals only with its
+/// own source-bound absence certificate, never a serialized permission.
 #[cfg(all(feature = "journal", feature = "ace16-create"))]
-pub(in crate::table::mutation) fn capture_schema(
+pub(in crate::table::mutation) fn capture_current_schema(
     image: &NativeImage,
     table: &str,
     certificate: &NoRequiredTablePrograms<'_>,
@@ -883,9 +893,30 @@ pub(in crate::table::mutation) fn capture_schema(
     capture_framed_with_records(
         image,
         table,
-        PayloadAdmission::SchemaNoRequired(certificate),
+        PayloadAdmission::CurrentSchemaNoRequired(certificate),
         ReadProfile::retained(ColumnFraming::Actions),
         RecordAdmission::HistoricalSchemaReadonly,
+        budget,
+        cancelled,
+    )
+}
+
+/// Current row operations retain their own positive program/source purpose.
+/// Schema-only observations cannot be passed here as row-mutation authority.
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub(in crate::table::mutation) fn capture_current_rows(
+    image: &NativeImage,
+    table: &str,
+    certificate: &NoRequiredTablePrograms<'_>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Source, EditError> {
+    capture_framed_with_records(
+        image,
+        table,
+        PayloadAdmission::CurrentRowsNoRequired(certificate),
+        ReadProfile::retained(ColumnFraming::Actions),
+        RecordAdmission::CurrentRows,
         budget,
         cancelled,
     )

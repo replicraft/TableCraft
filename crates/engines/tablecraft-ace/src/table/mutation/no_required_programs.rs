@@ -25,15 +25,19 @@ enum Declaration {
     DenseRetained,
     Actions,
     SparseGenerated,
+    #[cfg(feature = "ace16-create")]
+    CurrentSchema,
 }
 
 #[derive(Clone, Copy, PartialEq, Eq)]
 enum Purpose {
     Rows,
     #[cfg(feature = "ace16-create")]
-    Schema,
-    #[cfg(feature = "ace16-create")]
     HistoricalFixedRows,
+    #[cfg(feature = "ace16-create")]
+    CurrentSchema,
+    #[cfg(feature = "ace16-create")]
+    CurrentRows,
 }
 
 /// No public constructor or serialized permission. This certificate binds the
@@ -154,6 +158,8 @@ impl<'image> NoRequiredTablePrograms<'image> {
             Declaration::DenseIntegral => Ok(false),
             Declaration::DenseRetained => Ok(true),
             Declaration::Actions | Declaration::SparseGenerated => Err(EditError::Preservation),
+            #[cfg(feature = "ace16-create")]
+            Declaration::CurrentSchema => Err(EditError::Preservation),
         }
     }
 
@@ -167,10 +173,10 @@ impl<'image> NoRequiredTablePrograms<'image> {
         Self::capture_with_purpose(image, schema, declaration, Purpose::Rows, budget, cancelled)
     }
 
-    /// Metadata-only source evidence. The bounded native gap lies outside every
-    /// declared live catalog cell; ordinary row certificates retain strict framing.
+    /// Explicit current-schema evidence permits retired ordinals and inert
+    /// dictionary names while preserving all program and ownership checks.
     #[cfg(feature = "ace16-create")]
-    pub(in crate::table::mutation) fn capture_schema(
+    pub(in crate::table::mutation) fn capture_current_schema(
         image: &'image NativeImage,
         schema: &TableSchema,
         budget: &mut ResourceBudget,
@@ -179,8 +185,27 @@ impl<'image> NoRequiredTablePrograms<'image> {
         Self::capture_with_purpose(
             image,
             schema,
-            Declaration::Actions,
-            Purpose::Schema,
+            Declaration::CurrentSchema,
+            Purpose::CurrentSchema,
+            budget,
+            cancelled,
+        )
+    }
+
+    /// Distinct current-row evidence shares checked sparse metadata framing,
+    /// but cannot be substituted by a readonly schema certificate.
+    #[cfg(feature = "ace16-create")]
+    pub(in crate::table::mutation) fn capture_current_rows(
+        image: &'image NativeImage,
+        schema: &TableSchema,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, EditError> {
+        Self::capture_with_purpose(
+            image,
+            schema,
+            Declaration::CurrentSchema,
+            Purpose::CurrentRows,
             budget,
             cancelled,
         )
@@ -240,11 +265,18 @@ impl<'image> NoRequiredTablePrograms<'image> {
         let selected = match purpose {
             Purpose::Rows => catalog::validate(image, schema, budget, cancelled)?,
             #[cfg(feature = "ace16-create")]
-            Purpose::Schema | Purpose::HistoricalFixedRows => {
+            Purpose::HistoricalFixedRows | Purpose::CurrentSchema | Purpose::CurrentRows => {
                 catalog::validate_schema(image, schema, budget, cancelled)?
             }
         };
         if selected.properties_present {
+            #[cfg(feature = "ace16-create")]
+            if matches!(purpose, Purpose::CurrentSchema | Purpose::CurrentRows) {
+                properties::capture_current_schema(image, schema, budget, cancelled)?;
+            } else {
+                properties::capture(image, schema, budget, cancelled)?;
+            }
+            #[cfg(not(feature = "ace16-create"))]
             properties::capture(image, schema, budget, cancelled)?;
         }
         let catalog_reference = selected.reference;
@@ -254,6 +286,8 @@ impl<'image> NoRequiredTablePrograms<'image> {
             Declaration::DenseRetained => RowDeclaration::DenseRetained,
             Declaration::Actions => RowDeclaration::Actions,
             Declaration::SparseGenerated => RowDeclaration::SparseGenerated,
+            #[cfg(feature = "ace16-create")]
+            Declaration::CurrentSchema => RowDeclaration::CurrentSchema,
         };
         let definition_tail =
             definition::validate_rows(image, schema, row_declaration, budget, cancelled)?;
@@ -307,14 +341,28 @@ impl<'image> NoRequiredTablePrograms<'image> {
     }
 
     #[cfg(feature = "ace16-create")]
-    pub(in crate::table::mutation) fn require_schema_source(
+    pub(in crate::table::mutation) fn require_current_schema_source(
         &self,
         image: &NativeImage,
         schema: &TableSchema,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<(), EditError> {
-        if self.purpose != Purpose::Schema {
+        if self.purpose != Purpose::CurrentSchema {
+            return Err(EditError::Preservation);
+        }
+        self.require_binding(image, schema, budget, cancelled)
+    }
+
+    #[cfg(feature = "ace16-create")]
+    pub(in crate::table::mutation) fn require_current_rows_source(
+        &self,
+        image: &NativeImage,
+        schema: &TableSchema,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(), EditError> {
+        if self.purpose != Purpose::CurrentRows {
             return Err(EditError::Preservation);
         }
         self.require_binding(image, schema, budget, cancelled)

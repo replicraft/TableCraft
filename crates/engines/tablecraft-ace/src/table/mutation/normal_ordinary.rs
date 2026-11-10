@@ -216,11 +216,9 @@ pub(in crate::table::mutation) fn capture_insert(
     capture_for(image, table, CapturePurpose::Insert, budget, cancelled)
 }
 
-/// Current schema operations inspect actual rows without granting row-write
-/// authority for retained inactive catalog padding. No failed ordinary admission
-/// is retried here; callers explicitly select the schema-purpose certificate.
+/// Source-bound current metadata can retain retired field and dictionary slots.
 #[cfg(feature = "ace16-create")]
-pub(in crate::table::mutation) fn capture_schema(
+pub(in crate::table::mutation) fn capture_current_schema(
     image: &NativeImage,
     table: &str,
     budget: &mut ResourceBudget,
@@ -233,8 +231,9 @@ pub(in crate::table::mutation) fn capture_schema(
         budget,
         cancelled,
     )?;
-    let certificate = NoRequiredTablePrograms::capture_schema(image, &target, budget, cancelled)?;
-    preserved_source::capture_schema(image, table, &certificate, budget, cancelled)
+    let certificate =
+        NoRequiredTablePrograms::capture_current_schema(image, &target, budget, cancelled)?;
+    preserved_source::capture_current_schema(image, table, &certificate, budget, cancelled)
 }
 
 #[derive(Clone, Copy)]

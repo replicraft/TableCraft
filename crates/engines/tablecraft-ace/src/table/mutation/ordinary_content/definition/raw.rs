@@ -90,10 +90,7 @@ pub(super) fn capture_rows(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Declaration, EditError> {
-    if !matches!(
-        role,
-        Role::SelectedUser | Role::SelectedActions | Role::SelectedGenerated
-    ) {
+    if !role.selected_user() {
         return Err(refused());
     }
     capture_with_tail(
@@ -127,18 +124,16 @@ fn capture_with_tail(
         };
         layout::read(&mut reader, number)?
     };
-    if (!matches!(
-        role,
-        Role::User | Role::SelectedUser | Role::SelectedActions | Role::SelectedGenerated
-    ) && (layout.physical_indexes != 0 || layout.logical_indexes != 0))
+    if (!role.user() && (layout.physical_indexes != 0 || layout.logical_indexes != 0))
         || layout.fields.is_empty()
-        || (!matches!(role, Role::SelectedActions | Role::SelectedGenerated)
-            && layout.fields.len() != layout.max_columns)
-        || layout.variable_slots != layout.fields.iter().filter(|field| !field.fixed).count()
+        || (!role.action_ordinals() && layout.fields.len() != layout.max_columns)
+        || (!role.current_schema()
+            && layout.variable_slots != layout.fields.iter().filter(|field| !field.fixed).count())
     {
         return Err(refused());
     }
-    if matches!(role, Role::SelectedActions | Role::SelectedGenerated)
+    if role.action_ordinals()
+        && !role.current_schema()
         && layout.fields.len() != layout.max_columns
         && (layout.variable_slots != 0 || layout.fields.iter().any(|field| !field.fixed))
     {
@@ -174,10 +169,7 @@ fn capture_with_tail(
     expected[layout::RECORD_COUNT_OFFSET..layout::RECORD_COUNT_OFFSET + size_of::<u32>()]
         .copy_from_slice(&layout.records.to_le_bytes());
     expected[AUTO_SUPPORT_OFFSET] = AUTO_SUPPORT;
-    expected[TABLE_ROLE_OFFSET] = if matches!(
-        role,
-        Role::User | Role::SelectedUser | Role::SelectedActions | Role::SelectedGenerated
-    ) {
+    expected[TABLE_ROLE_OFFSET] = if role.user() {
         USER_TABLE_ROLE
     } else {
         SYSTEM_TABLE_ROLE
@@ -217,9 +209,8 @@ fn capture_with_tail(
         .count();
     for (index, field) in layout.fields.iter().enumerate() {
         check(budget, cancelled)?;
-        if (!matches!(role, Role::SelectedActions | Role::SelectedGenerated)
-            && field.number != index)
-            || (matches!(role, Role::SelectedActions | Role::SelectedGenerated)
+        if (!role.action_ordinals() && field.number != index)
+            || (role.action_ordinals()
                 && (field.number >= layout.max_columns
                     || index != 0 && layout.fields[index - 1].number >= field.number))
             || field.name.is_empty()
@@ -248,7 +239,12 @@ fn capture_with_tail(
             .copy_from_slice(&MAGIC.to_le_bytes());
         descriptor[COLUMN_NUMBER_OFFSET..COLUMN_NUMBER_OFFSET + size_of::<u16>()]
             .copy_from_slice(&(field.number as u16).to_le_bytes());
-        let variable = if !field.fixed && matches!(field.kind, OLE | LONG_TEXT) {
+        let variable = if role.current_schema() {
+            // Native ordinals survive deletion independently of live descriptor
+            // positions. The layout reader already checked unique variable slots
+            // against the retained table counter.
+            field.variable
+        } else if !field.fixed && matches!(field.kind, OLE | LONG_TEXT) {
             let variable = long_variable;
             long_variable += 1;
             variable
@@ -259,7 +255,7 @@ fn capture_with_tail(
         };
         descriptor[COLUMN_VARIABLE_OFFSET..COLUMN_VARIABLE_OFFSET + size_of::<u16>()]
             .copy_from_slice(&(variable as u16).to_le_bytes());
-        let stored_id = if matches!(role, Role::SelectedActions | Role::SelectedGenerated) {
+        let stored_id = if role.action_ordinals() {
             let id = u16_at(raw, COLUMN_ID_OFFSET)?;
             if id == u16::MAX {
                 return Err(refused());
@@ -281,11 +277,7 @@ fn capture_with_tail(
             .copy_from_slice(&stored_id.to_le_bytes());
         if matches!(field.kind, SHORT_TEXT | LONG_TEXT) {
             let sort = &raw[COLUMN_SORT_OFFSET..COLUMN_SORT_OFFSET + GENERAL_SORT.len()];
-            let expected_sort = if matches!(
-                role,
-                Role::SelectedUser | Role::SelectedActions | Role::SelectedGenerated
-            ) && sort == GENERAL_LEGACY_SORT
-            {
+            let expected_sort = if role.selected_user() && sort == GENERAL_LEGACY_SORT {
                 GENERAL_LEGACY_SORT
             } else {
                 GENERAL_SORT
@@ -298,10 +290,8 @@ fn capture_with_tail(
         }
         let generator_flags = field.flags & (AUTO_NUMBER_FLAG | AUTO_NUMBER_GUID_FLAG);
         descriptor[COLUMN_FLAGS_OFFSET] = if generator_flags != 0 {
-            if !matches!(
-                role,
-                Role::User | Role::SelectedUser | Role::SelectedActions | Role::SelectedGenerated
-            ) || has_counter
+            if !role.user()
+                || has_counter
                 || field.kind != INT32
                 || !field.fixed
                 || field.length != size_of::<i32>()
@@ -407,14 +397,13 @@ fn field_profile(field: &Field, role: Role) -> Result<(), EditError> {
         (NUMERIC, 17, false) => {
             (1..=28).contains(&field.precision) && field.scale <= field.precision
         }
-        (OLE, 0, false) => matches!(
-            role,
-            Role::Catalog | Role::SelectedUser | Role::SelectedActions
-        ),
-        (LONG_TEXT, 0, false) => matches!(
-            role,
-            Role::SelectedUser | Role::SelectedActions | Role::SelectedGenerated
-        ),
+        (OLE, 0, false) => {
+            matches!(
+                role,
+                Role::Catalog | Role::SelectedUser | Role::SelectedActions
+            ) || role.current_schema()
+        }
+        (LONG_TEXT, 0, false) => role.selected_user(),
         _ => false,
     };
     if !valid
@@ -462,6 +451,8 @@ fn system_schema(layout: &Layout, role: Role) -> Result<(), EditError> {
             ("ObjectId", INT32, Some(4), 4),
             ("SID", SHORT_BINARY, None, 255),
         ],
+        #[cfg(feature = "ace16-create")]
+        Role::SelectedSchema => return Ok(()),
         Role::User | Role::SelectedUser | Role::SelectedActions | Role::SelectedGenerated => {
             return Ok(());
         }
