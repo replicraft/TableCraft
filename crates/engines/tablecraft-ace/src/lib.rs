@@ -207,7 +207,8 @@ pub use transaction::{
 #[cfg(feature = "journal")]
 pub use transaction::{
     NativeRecoveryQualificationError, QualifiedJet4Recovery, QualifiedNativeRecovery,
-    qualify_jet4_int32_recovery, qualify_native_update_recovery,
+    QualifiedRetainedNativeUpdateRecovery, qualify_jet4_int32_recovery,
+    qualify_native_update_recovery,
 };
 
 pub use properties::{

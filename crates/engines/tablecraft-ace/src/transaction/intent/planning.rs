@@ -13,6 +13,8 @@ mod historical_present;
 #[cfg(feature = "ace16-create")]
 mod historical_text;
 mod requalify;
+#[cfg(feature = "ace16-create")]
+mod retained_rows;
 
 use super::{
     NativeFittedEditIntent, NativeFittedIntentGroup, NativeFixedEditIntent, NativeFixedIntentGroup,
@@ -301,10 +303,29 @@ impl RecoverableNativeEditPlan {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<PreparedNativeEdit<'a, D, J>, JournalError> {
-        if self.intent.profile() == NativeUpdateProfile::Ace16OrdinaryEofAllocation {
+        if matches!(
+            self.intent.profile(),
+            NativeUpdateProfile::Ace16OrdinaryEofAllocation
+                | NativeUpdateProfile::Ace16RetainedRows
+        ) {
             return Err(JournalError::ImageSize);
         }
         self.plan.prepare(target, journal, budget, cancelled)
+    }
+
+    /// Prepare only TCNI17 through the original retained V3 journal family.
+    pub fn prepare_retained<'a, D: ResizableDurableStorage, J: DurableStorage>(
+        self,
+        target: &'a mut D,
+        journal: &'a mut J,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<crate::PreparedResizableNativeEdit<'a, D, J>, JournalError> {
+        if self.intent.profile() != NativeUpdateProfile::Ace16RetainedRows {
+            return Err(JournalError::ImageSize);
+        }
+        self.plan
+            .prepare_retained(target, journal, budget, cancelled)
     }
 
     /// Prepare the record-selected journal with an explicit resizable target.
@@ -317,6 +338,9 @@ impl RecoverableNativeEditPlan {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<PreparedNativeUpdate<'a, D, J>, JournalError> {
+        if self.intent.profile() == NativeUpdateProfile::Ace16RetainedRows {
+            return Err(JournalError::ImageSize);
+        }
         if self.intent.profile() == NativeUpdateProfile::Ace16OrdinaryEofAllocation {
             self.plan
                 .prepare_resizable(target, journal, budget, cancelled)

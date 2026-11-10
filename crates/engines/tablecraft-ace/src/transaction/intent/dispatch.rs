@@ -13,6 +13,8 @@ const ACE_PROFILE: u16 = 2;
 /// A versioned validation route, never a serialized native permission.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum NativeUpdateProfile {
+    /// Retained surroundings with exact current Number/Text request witnesses.
+    Ace16RetainedRows,
     /// Current sparse native metadata and checked original Number/Text carriers.
     Ace16CurrentRows,
     /// One Short Text field updated in a positively qualified historical row.
@@ -70,6 +72,17 @@ pub enum NativeUpdateBody {
 }
 
 impl NativeUpdateIntent {
+    pub(super) fn from_retained_rows(original: NativeFittedEditIntent) -> Self {
+        Self {
+            profile: NativeUpdateProfile::Ace16RetainedRows,
+            body: NativeUpdateBody::Fitted(original),
+        }
+    }
+
+    /// Actual TCNI17 u32 complete-record length representation.
+    pub const MAX_RETAINED_ENCODED_BYTES: usize =
+        NativeFittedEditIntent::MAX_RETAINED_ENCODED_BYTES;
+
     pub(super) fn from_current_rows(original: NativeFittedEditIntent) -> Self {
         Self {
             profile: NativeUpdateProfile::Ace16CurrentRows,
@@ -308,6 +321,9 @@ impl NativeUpdateIntent {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Vec<u8>, NativeIntentError> {
         match (&self.body, self.profile) {
+            (NativeUpdateBody::Fitted(original), NativeUpdateProfile::Ace16RetainedRows) => {
+                original.encode_retained(budget, cancelled)
+            }
             (NativeUpdateBody::Fitted(original), NativeUpdateProfile::Ace16CurrentRows) => {
                 original.encode_profile(super::fitted::WireProfile::CurrentRows, budget, cancelled)
             }
@@ -379,6 +395,13 @@ impl NativeUpdateIntent {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, NativeIntentError> {
+        if bytes.get(..super::fitted::RETAINED_ROWS_MAGIC.len())
+            == Some(super::fitted::RETAINED_ROWS_MAGIC.as_slice())
+        {
+            return Ok(Self::from_retained_rows(
+                NativeFittedEditIntent::decode_retained(bytes, budget, cancelled)?,
+            ));
+        }
         if bytes.get(..super::fitted::CURRENT_ROWS_MAGIC.len())
             == Some(super::fitted::CURRENT_ROWS_MAGIC.as_slice())
         {

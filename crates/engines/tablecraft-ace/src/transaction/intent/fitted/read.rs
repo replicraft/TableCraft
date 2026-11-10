@@ -8,8 +8,9 @@ use super::{
     profile::WireProfile,
 };
 use crate::{
-    EditError, FixedScalarUpdate, InspectError, SlotScalarUpdate, header::check,
-    transaction::intent::NativeIntentError,
+    EditError, FixedScalarUpdate, InspectError, SlotScalarUpdate,
+    header::check,
+    transaction::intent::{NativeIntentError, model as names},
 };
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
@@ -59,6 +60,9 @@ impl<'a> Cursor<'a> {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<&'a str, NativeIntentError> {
+        if count == 0 || (self.grammar == Grammar::Legacy && count > names::MAX_NAME_BYTES) {
+            return Err(NativeIntentError::InvalidRecord);
+        }
         let bytes = self.take(count)?;
         carrier::pay_scan(bytes, budget, cancelled)?;
         let value = std::str::from_utf8(bytes).map_err(|_| NativeIntentError::InvalidRecord)?;
@@ -139,6 +143,9 @@ impl<'a> Cursor<'a> {
             return Err(NativeIntentError::InvalidRecord);
         }
         let length = u32_at(header, codec::CARRIER_LENGTH_AT) as usize;
+        if self.grammar == Grammar::Legacy && length > carrier::MAX_VARIABLE_BYTES {
+            return Err(InspectError::StructureLimit.into());
+        }
         self.grammar.parse(
             header[codec::CARRIER_TAG_AT],
             self.take(length)?,

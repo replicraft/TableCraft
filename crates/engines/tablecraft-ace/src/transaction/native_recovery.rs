@@ -87,7 +87,10 @@ pub fn qualify_native_update_recovery<'a, J: DurableStorage>(
             qualified: Qualified::Jet4(qualified),
         });
     }
-    if profile == NativeUpdateProfile::Ace16OrdinaryEofAllocation {
+    if matches!(
+        profile,
+        NativeUpdateProfile::Ace16OrdinaryEofAllocation | NativeUpdateProfile::Ace16RetainedRows
+    ) {
         return Err(super::NativeIntentError::UnsupportedProfile.into());
     }
 
@@ -127,7 +130,9 @@ pub fn qualify_native_update_recovery<'a, J: DurableStorage>(
         NativeUpdateProfile::Ace16HistoricalMixedNumberMaterialization => {
             Qualified::Ordinary(checked)
         }
-        NativeUpdateProfile::Jet4Int32 | NativeUpdateProfile::Ace16OrdinaryEofAllocation => {
+        NativeUpdateProfile::Jet4Int32
+        | NativeUpdateProfile::Ace16OrdinaryEofAllocation
+        | NativeUpdateProfile::Ace16RetainedRows => {
             return Err(super::NativeIntentError::UnsupportedProfile.into());
         }
     };

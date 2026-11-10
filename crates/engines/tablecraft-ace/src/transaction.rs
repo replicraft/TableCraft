@@ -20,6 +20,10 @@ pub use intent::{
     RecoverableQueryExpressionError, qualify_native_query_expression_recovery,
 };
 #[cfg(feature = "journal")]
+mod retained_update_recovery;
+#[cfg(feature = "journal")]
+pub use retained_update_recovery::QualifiedRetainedNativeUpdateRecovery;
+#[cfg(feature = "journal")]
 mod native_recovery;
 #[cfg(feature = "journal")]
 mod update_rebuild;
