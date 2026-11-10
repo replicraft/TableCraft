@@ -52,6 +52,13 @@ pub(super) fn show(ui: &mut Ui, editor: &mut Editor, can_save: bool) -> Option<E
                     egui::vec2(ui.available_width(), grid_height),
                 )
                 .intersect(ui.clip_rect());
+                let manual_scroll = ui.rect_contains_pointer(viewport)
+                    && ui.input(|input| {
+                        input
+                            .events
+                            .iter()
+                            .any(|event| matches!(event, egui::Event::MouseWheel { .. }))
+                    });
                 let mut columns = Vec::with_capacity(editor.draft.fields().len() + 2);
                 let mut content_bottom = viewport.top();
                 let mut table = TableBuilder::new(ui)
@@ -193,12 +200,6 @@ pub(super) fn show(ui: &mut Ui, editor: &mut Editor, can_save: bool) -> Option<E
                                     ],
                                     ui.visuals().widgets.inactive.fg_stroke,
                                 ));
-                                let manual_scroll = ui.rect_contains_pointer(viewport)
-                                    && ui.input(|input| {
-                                        input.events.iter().any(|event| {
-                                            matches!(event, egui::Event::MouseWheel { .. })
-                                        })
-                                    });
                                 if editor.focus_add {
                                     if enabled {
                                         response.request_focus();

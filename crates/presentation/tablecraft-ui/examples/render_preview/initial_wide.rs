@@ -1,10 +1,7 @@
 //! Source-free maximum-count layout driven by the shared draft commands.
 use super::LAYOUT_SETTLE_STEPS;
 use egui::{Event, Key, Modifiers, MouseWheelUnit, TouchPhase, accesskit::Role};
-use egui_kittest::{
-    Harness,
-    kittest::{NodeT, Queryable},
-};
+use egui_kittest::{Harness, kittest::Queryable};
 use tablecraft_builders::table::DraftFieldType;
 use tablecraft_ui::preview::Preview;
 

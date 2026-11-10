@@ -7,10 +7,7 @@ use crate::workspace::{
     test_support::{app_harness, finish_reads},
 };
 use egui::accesskit::Role;
-use egui_kittest::{
-    Harness,
-    kittest::{NodeT, Queryable},
-};
+use egui_kittest::{Harness, kittest::Queryable};
 use std::path::Path;
 use tablecraft_builders::table::DraftFieldType;
 use tablecraft_runtime::journal_path;

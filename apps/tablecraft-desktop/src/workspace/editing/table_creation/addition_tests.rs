@@ -354,10 +354,10 @@ fn populated_design_keyed_then_keyless_then_generated_tables_keep_each_separate_
 }
 
 #[test]
-fn keyless_only_capacity_retains_inputs_after_keyed_refusal_and_disables_automatic_id() {
+fn keyed_creation_crosses_the_old_catalog_window_and_retains_both_initial_inputs() {
     let source = canonical_mixed_add_table::capacity_source();
     let (_directory, path, original, mut harness) = opened(source.bytes);
-    assert!(!harness.state().state.can_create_table());
+    assert!(harness.state().state.can_create_table());
     assert!(harness.state().state.can_create_table_design());
     harness
         .get_by_role_and_label(Role::Tab, "Create")
@@ -382,56 +382,57 @@ fn keyless_only_capacity_retains_inputs_after_keyed_refusal_and_disables_automat
         let input = field_label(&harness, "table-draft-record-field", field);
         replace(&mut harness, Role::TextInput, &input, text);
     }
-    start_save(&mut harness, "Last");
-    finish_reads(&mut harness);
-    harness.get_by_label("catalog or usage-map append capacity is exhausted");
     assert_eq!(std::fs::read(&path).unwrap(), original);
+    save_schema_and_bind_record(&mut harness, "Last");
+    let schema = std::fs::read(&path).unwrap();
+    assert!(schema.len() > 64 * 4096);
+    assert_eq!(&schema[7 * 4096..original.len()], &original[7 * 4096..]);
     assert!(!journal_path(&path).exists());
-    assert!(harness.state().state.has_unsaved_table_drafts());
-    harness
-        .get_by_role_and_label(Role::Button, "Cancel")
-        .click_accesskit();
-    harness.run_steps(2);
-    super::design_tests::view(&mut harness, "ribbon-table-design");
-    harness
-        .get_by_role_and_label(Role::Button, "ActualKey")
-        .click_accesskit();
-    harness.run_steps(2);
-    harness
-        .get_by_role_and_label(Role::Button, "Primary Key")
-        .click_accesskit();
-    harness.run_steps(2);
-    super::design_tests::view(&mut harness, "ribbon-datasheet");
     for (field, text) in [("Name", "  retained 日本語  "), ("ActualKey", "7")] {
-        let input = field_label(&harness, "table-draft-record-field", field);
         assert_eq!(
             harness
-                .get_by_role_and_label(Role::TextInput, &input)
+                .get_by_role_and_label(Role::TextInput, field)
                 .value()
                 .as_deref(),
             Some(text)
         );
     }
-    start_save(&mut harness, "Last");
-    harness.run_steps(2);
-    let yes = harness.get_by_role_and_label(Role::Button, "Yes");
-    assert!(yes.accesskit_node().is_disabled());
-    yes.click_accesskit();
-    harness.run_steps(2);
-    assert_eq!(std::fs::read(&path).unwrap(), original);
-    assert!(harness.state().table_creation.is_none());
-    harness
-        .get_by_role_and_label(Role::Button, "No")
-        .click_accesskit();
-    harness.run_steps(2);
-    wait_for_bound_record(&mut harness, "Last");
-    assert_eq!(
-        harness.state().state.data.as_ref().unwrap().columns.len(),
-        2
-    );
     review(&mut harness);
+    assert!(harness.state().editing.insert_review.is_some());
+    assert_eq!(std::fs::read(&path).unwrap(), schema);
     apply_and_acknowledge(&mut harness);
-    let data = harness.state().state.data.as_ref().unwrap();
+    assert_eq!(
+        harness.state().state.data.as_ref().unwrap().rows[0]
+            .iter()
+            .map(|cell| cell.text.as_str())
+            .collect::<Vec<_>>(),
+        ["  retained 日本語  ", "7"]
+    );
+    assert!(harness.state().state.can_create_table());
+    assert!(harness.state().state.can_create_table_design());
+    assert!(!journal_path(&path).exists());
+    let complete = std::fs::read(&path).unwrap();
+    drop(harness);
+    let mut fresh = app_harness(Desktop::new(egui::Context::default(), Some(path.clone())));
+    finish_reads(&mut fresh);
+    fresh
+        .get_by_role_and_label(Role::Button, "New SQL query")
+        .click_accesskit();
+    fresh.run_steps(2);
+    replace(
+        &mut fresh,
+        Role::MultilineTextInput,
+        "SQL query",
+        "SELECT [Name],[ActualKey] FROM [Last]",
+    );
+    let run = fresh.state().state.localizer.text("query-run");
+    fresh
+        .get_by_role_and_label(Role::Button, &run)
+        .click_accesskit();
+    fresh.run_steps(1);
+    finish_reads(&mut fresh);
+    let data = fresh.state().state.query_data.as_ref().unwrap();
+    assert_eq!(data.rows.len(), 1);
     assert_eq!(
         data.rows[0]
             .iter()
@@ -439,7 +440,5 @@ fn keyless_only_capacity_retains_inputs_after_keyed_refusal_and_disables_automat
             .collect::<Vec<_>>(),
         ["  retained 日本語  ", "7"]
     );
-    assert!(!harness.state().state.can_create_table());
-    assert!(!harness.state().state.can_create_table_design());
-    assert!(!journal_path(&path).exists());
+    assert_eq!(std::fs::read(&path).unwrap(), complete);
 }

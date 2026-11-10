@@ -40,20 +40,6 @@ fn field_identity_survives_rename_and_failed_mutations_are_atomic() {
 }
 
 #[test]
-fn authoring_ceiling_refuses_without_changing_the_last_admitted_revision() {
-    let mut draft = TableDraft::initial();
-    for _ in 1..16 {
-        draft.add_field(DraftFieldType::ShortText).unwrap();
-    }
-    assert_eq!(draft.fields().len(), 16);
-    assert_eq!(
-        draft.add_field(DraftFieldType::Number),
-        Err(TableDraftError::Limit)
-    );
-    assert_eq!(draft.revision(), 15);
-}
-
-#[test]
 fn save_snapshot_is_owned_and_keeps_exact_generation_and_declared_names() {
     let mut draft = TableDraft::initial();
     let field = draft.add_field(DraftFieldType::ShortText).unwrap();

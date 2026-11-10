@@ -1,6 +1,6 @@
 //! Full-width names/properties cross the first catalog property-map window.
 //! The empty table does not assert that its combined defaults fit one record.
-use super::{block, definition_pages, name, word, Source, PAGE, PROPERTY_CHUNK};
+use super::{PAGE, PROPERTY_CHUNK, Source, block, definition_pages, name, word};
 use crate::fixtures::access::{
     canonical_blank_creation, canonical_created_default_zero, canonical_creation,
     canonical_creation_properties, canonical_native17_creation, packed_record::append_record,
