@@ -2,13 +2,17 @@
 mod catalog;
 mod definition;
 mod properties;
+mod retained;
 mod verify;
 
 use crate::{
     EditError, InspectError, NativeImage,
     format::page::PAGE_BYTES,
     header::check,
-    table::mutation::{catalog_property, current_schema},
+    table::mutation::{
+        catalog_property,
+        current_schema::{self, Family},
+    },
 };
 use catalog::DescriptorPatch;
 use definition::Plan;
@@ -119,6 +123,11 @@ pub struct NativeCurrentFieldAdditionCandidate {
 }
 
 impl NativeCurrentFieldAdditionCandidate {
+    /// Whether the sealed source belongs to the distinct retained-storage family.
+    pub fn is_retained(&self) -> bool {
+        self.proof.table().family == Family::Retained
+    }
+
     /// Complete immutable original, including historical record and free bytes.
     pub fn before_bytes(&self) -> &[u8] {
         self.proof.image().as_bytes()
@@ -175,6 +184,11 @@ impl NativeCurrentShortTextFieldAdditionCandidate {
     /// Explicit Unicode-compression permission.
     pub const fn unicode_compression(&self) -> bool {
         self.unicode_compression
+    }
+
+    /// Whether the sealed source belongs to the distinct retained-storage family.
+    pub fn is_retained(&self) -> bool {
+        self.proof.table().family == Family::Retained
     }
 
     /// Complete immutable original, including historical record and free bytes.
@@ -238,7 +252,15 @@ impl NativeImage {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<NativeCurrentFieldAdditionCandidate, CurrentFieldAdditionError> {
         let _span = tracing::debug_span!("native.field_addition.prepare_current_number").entered();
-        let parts = prepare(self, table, column, Target::Number, budget, cancelled)?;
+        let parts = prepare(
+            self,
+            table,
+            column,
+            Target::Number,
+            Family::Current,
+            budget,
+            cancelled,
+        )?;
         Ok(NativeCurrentFieldAdditionCandidate {
             proof: parts.proof,
             after: parts.after,
@@ -288,7 +310,15 @@ impl NativeImage {
             max_utf16_units,
             unicode_compression,
         };
-        let parts = prepare(self, table, column, target, budget, cancelled)?;
+        let parts = prepare(
+            self,
+            table,
+            column,
+            target,
+            Family::Current,
+            budget,
+            cancelled,
+        )?;
         Ok(NativeCurrentShortTextFieldAdditionCandidate {
             proof: parts.proof,
             after: parts.after,
@@ -312,6 +342,7 @@ fn prepare(
     table: &str,
     column: &str,
     target: Target,
+    family: Family,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<CandidateParts, CurrentFieldAdditionError> {
@@ -319,7 +350,7 @@ fn prepare(
     if !crate::identifier::valid_name(column, budget, cancelled)? || !column.is_ascii() {
         return Err(CurrentFieldAdditionError::InvalidName);
     }
-    let proof = current_schema::Source::capture(image, table, budget, cancelled)?;
+    let proof = family.capture(image, table, budget, cancelled)?;
     let current = proof.table();
     let plan = Plan::capture(proof.image(), &current.schema, budget, cancelled)?;
     let facts = facts(proof.image(), current, &plan, target, budget, cancelled)?;
@@ -335,14 +366,20 @@ fn prepare(
     }
     let body = properties::append(&current.properties, column, target, budget, cancelled)?;
 
-    let append = catalog_property::append_fitted_body(proof.image(), &body, budget, cancelled)?;
+    let append = match current.family {
+        Family::Current => {
+            catalog_property::append_fitted_body(proof.image(), &body, budget, cancelled)?
+        }
+        Family::Retained => {
+            catalog_property::append_retained_fitted_body(proof.image(), &body, budget, cancelled)?
+        }
+    };
     if append.length != proof.image().as_bytes().len() || !append.maps.is_empty() {
         return Err(CurrentFieldAdditionError::Preservation);
     }
     let descriptor = DescriptorPatch::capture(
         proof.image(),
-        &current.catalog,
-        current.schema.object_id(),
+        current,
         append.reference,
         body.len(),
         budget,
@@ -410,20 +447,19 @@ fn facts(
             return Err(CurrentFieldAdditionError::Source);
         }
     }
-    let capacity =
-        catalog_property::fitted_property_capacity(image, budget, cancelled)?.unwrap_or(0);
+    let capacity = match current.family {
+        Family::Current => catalog_property::fitted_property_capacity(image, budget, cancelled)?,
+        Family::Retained => {
+            catalog_property::retained_fitted_property_capacity(image, budget, cancelled)?
+        }
+    }
+    .unwrap_or(0);
     let base = properties::body_bytes(&current.properties, 0, target, budget, cancelled)?;
     let mut maximum_name_units = capacity
         .checked_sub(base)
         .map_or(0, |bytes| bytes / size_of::<u16>())
         .min(plan.maximum_name_units);
-    if !DescriptorPatch::check_capacity(
-        image,
-        &current.catalog,
-        current.schema.object_id(),
-        budget,
-        cancelled,
-    )? {
+    if !DescriptorPatch::check_capacity(image, current, budget, cancelled)? {
         maximum_name_units = 0;
     }
     Ok(CurrentFieldAdditionSource {

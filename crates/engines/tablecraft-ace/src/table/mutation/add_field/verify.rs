@@ -3,7 +3,7 @@ use super::{
     CurrentFieldAdditionError as Error, Target, catalog::DescriptorPatch, definition::Plan,
 };
 use crate::{
-    InspectError, NativeImage, PropertyGroupKind, TableProperties,
+    InspectError, PropertyGroupKind, TableProperties,
     format::{
         bytes::{u16_at, u32_at},
         data_type::{BOOLEAN, INT32, LONG_TEXT, SHORT_TEXT},
@@ -21,7 +21,7 @@ use crate::{
     read_table,
     table::mutation::current_schema,
 };
-use std::{io::Cursor, ops::Range};
+use std::ops::Range;
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
     values::Value,
@@ -56,7 +56,9 @@ pub(super) fn candidate(
     }
 
     let property_page = reference_page(new_reference) as usize;
-    if property_page != reference_page(table.database_reference) as usize {
+    if table.family == current_schema::Family::Current
+        && property_page != reference_page(table.database_reference) as usize
+    {
         return Err(Error::Preservation);
     }
     let property_base = property_page * PAGE_BYTES;
@@ -67,7 +69,11 @@ pub(super) fn candidate(
     if new_count != old_count + 1 || usize::from(reference_slot(new_reference)) != old_count {
         return Err(Error::Preservation);
     }
-    let old_end = row_range(original_page, old_count - 1)?.1;
+    let old_end = if old_count == 0 {
+        PAGE_BYTES
+    } else {
+        row_range(original_page, old_count - 1)?.1
+    };
     let (word, new_start, new_end) = row_range(new_page, old_count)?;
     if usize::from(word) != new_start
         || new_end != old_end
@@ -97,7 +103,10 @@ pub(super) fn candidate(
         property_base + new_start..property_base + new_end,
         descriptor.page_range(),
     ];
-    budget.charge(Resource::Steps, (after.len() * permitted.len()) as u64)?;
+    let comparisons = (after.len() as u64)
+        .checked_mul(permitted.len() as u64)
+        .ok_or(InspectError::StructureLimit)?;
+    budget.charge(Resource::Steps, comparisons)?;
     for (at, (old, new)) in before.as_bytes().iter().zip(after).enumerate() {
         if at.is_multiple_of(PAGE_BYTES) {
             check(budget, cancelled)?;
@@ -148,7 +157,7 @@ fn metadata(
     let original = proof.table();
     let before = proof.image();
     let scope = before.catalog().catalog().scope();
-    let current = NativeImage::capture(&mut Cursor::new(after), scope, budget, cancelled)?;
+    let current = original.family.image(after, scope, budget, cancelled)?;
     let catalog = current.catalog();
     if catalog.header() != before.catalog().header()
         || catalog.origins().len() != before.catalog().origins().len()
@@ -171,7 +180,9 @@ fn metadata(
 
     // Requalify actual replacement metadata/program/ownership facts rather
     // than trusting descriptor bytes emitted by the append implementation.
-    let checked = current_schema::observe(&current, original.schema.name(), budget, cancelled)?;
+    let checked = original
+        .family
+        .observe(&current, original.schema.name(), budget, cancelled)?;
     let schema = &checked.schema;
     if schema.object_id() != original.schema.object_id()
         || schema.definition_page() != original.schema.definition_page()

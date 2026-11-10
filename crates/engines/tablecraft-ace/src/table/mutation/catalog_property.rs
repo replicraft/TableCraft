@@ -134,3 +134,45 @@ pub(in crate::table::mutation) fn append_fitted_body(
     let references = maps::references(&mut reader, &catalog, selected)?;
     property::append_fitted(image, &catalog, references, body, budget, cancelled)
 }
+
+/// Fit a complete retained MR2 body without changing ownership maps or EOF.
+/// The caller retains its distinct target/program/dependency source proof.
+pub(in crate::table::mutation) fn append_retained_fitted_body(
+    image: &NativeImage,
+    body: &[u8],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<PropertyAppend, EditError> {
+    let catalog = catalog(image, budget, cancelled)?;
+    let selected = column(&catalog)?;
+    let mut input = image.reader();
+    let mut reader = Reader {
+        source: &mut input,
+        header: image.catalog().header(),
+        budget,
+        cancelled,
+        reads: 0,
+    };
+    let references = maps::references(&mut reader, &catalog, selected)?;
+    property::retained::append_fitted(image, &catalog, references, body, budget, cancelled)
+}
+
+/// Inspect the selected allocated retained MR2 carrier without inventing a name.
+pub(in crate::table::mutation) fn retained_fitted_property_capacity(
+    image: &NativeImage,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Option<usize>, EditError> {
+    let catalog = catalog(image, budget, cancelled)?;
+    let selected = column(&catalog)?;
+    let mut input = image.reader();
+    let mut reader = Reader {
+        source: &mut input,
+        header: image.catalog().header(),
+        budget,
+        cancelled,
+        reads: 0,
+    };
+    let references = maps::references(&mut reader, &catalog, selected)?;
+    property::retained::fitted_capacity(image, &catalog, references, budget, cancelled)
+}

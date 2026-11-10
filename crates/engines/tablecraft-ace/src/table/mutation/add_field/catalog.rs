@@ -1,21 +1,27 @@
 //! Parser-bound catalog descriptor publication, preserving record identities.
 use super::CurrentFieldAdditionError as Error;
 use crate::{
-    InspectError, NativeImage, TableSchema,
+    InspectError, NativeImage,
     format::{
         bytes::u16_at,
         page::{DATA_SIGNATURE, OWNER_OFFSET, PAGE_BYTES},
         reader::{PhysicalRow, Reader, row_count, row_range},
-        row::{OFFSET_MASK, VARIABLE_COUNT_BYTES, VARIABLE_OFFSET_BYTES, slot_offset},
+        row::{
+            OFFSET_MASK, VARIABLE_COUNT_BYTES, VARIABLE_OFFSET_BYTES, reference_page, slot_offset,
+        },
     },
     header::check,
-    table::{mutation::catalog_property, record_layout},
+    table::{
+        mutation::{
+            catalog_property,
+            current_schema::{Family, Table},
+        },
+        record_layout,
+        table_append::Inventory,
+    },
 };
 use std::ops::Range;
-use tablecraft_core::{
-    ids::ObjectId,
-    limits::{Resource, ResourceBudget},
-};
+use tablecraft_core::limits::{Resource, ResourceBudget};
 
 const SINGLE_PROPERTY_TAG: u32 = 0x4000_0000;
 const FREE_OFFSET: usize = DATA_SIGNATURE.len();
@@ -47,25 +53,23 @@ impl DescriptorPatch {
     /// Observe fixed descriptor capacity without a proposed name or ROW target.
     pub(super) fn check_capacity(
         image: &NativeImage,
-        catalog: &TableSchema,
-        object: ObjectId,
+        table: &Table,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<bool, Error> {
-        let geometry = Geometry::capture(image, catalog, object, budget, cancelled)?;
+        let geometry = Geometry::capture(image, table, budget, cancelled)?;
         Ok(geometry.growth <= geometry.free)
     }
 
     pub(super) fn capture(
         image: &NativeImage,
-        catalog: &TableSchema,
-        object: ObjectId,
+        table: &Table,
         reference: u32,
         body_bytes: usize,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, Error> {
-        let geometry = Geometry::capture(image, catalog, object, budget, cancelled)?;
+        let geometry = Geometry::capture(image, table, budget, cancelled)?;
         if geometry.growth > geometry.free {
             return Err(Error::Capacity);
         }
@@ -169,12 +173,13 @@ impl DescriptorPatch {
 impl Geometry {
     fn capture(
         image: &NativeImage,
-        catalog: &TableSchema,
-        object: ObjectId,
+        table: &Table,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, Error> {
         check(budget, cancelled)?;
+        let catalog = &table.catalog;
+        let object = table.schema.object_id();
         let mut selected_origin = None;
         for origin in image.catalog().origins() {
             check(budget, cancelled)?;
@@ -193,12 +198,38 @@ impl Geometry {
             reads: 0,
         };
         let root = reader.page(origin.page())?;
-        let record = reader.row_location(
-            origin.page(),
-            origin.slot(),
-            catalog.definition_page(),
-            &root,
-        )?;
+        let record = match table.family {
+            Family::Current => reader.row_location(
+                origin.page(),
+                origin.slot(),
+                catalog.definition_page(),
+                &root,
+            )?,
+            Family::Retained => {
+                let inventory = Inventory::capture(image, reader.budget, cancelled)?;
+                inventory.require_source(image)?;
+                if inventory.catalog_definition() != catalog.definition_page()
+                    || inventory.catalog_live_rows() != catalog.declared_rows()
+                {
+                    return Err(Error::Preservation);
+                }
+                let owned = inventory.catalog_pages();
+                reader.read_location_observed(
+                    origin.page(),
+                    origin.slot(),
+                    catalog.definition_page(),
+                    &root,
+                    &mut |reference, budget| {
+                        let levels = owned.len().checked_ilog2().unwrap_or(0) as u64 + 1;
+                        budget.charge(Resource::Steps, levels)?;
+                        if owned.binary_search(&reference_page(reference)).is_err() {
+                            return Err(InspectError::Malformed);
+                        }
+                        Ok(())
+                    },
+                )?
+            }
+        };
         let framed = record_layout::parse(&record.data, catalog, reader.budget)?;
         let index = catalog_property::column(catalog)?;
         let field = catalog.columns()[index].physical_field();

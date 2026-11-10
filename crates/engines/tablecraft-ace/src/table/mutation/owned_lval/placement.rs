@@ -283,6 +283,17 @@ impl Plan {
     ) -> Result<usize, EditError> {
         check(budget, cancelled)?;
         let position = self.destination(image, family, body.len(), budget, cancelled)?;
+        self.append_to_page(family, body, ordinary, position, budget)
+    }
+
+    fn append_to_page(
+        &mut self,
+        family: Family,
+        body: &[u8],
+        ordinary: OrdinaryVisibility,
+        position: usize,
+        budget: &mut ResourceBudget,
+    ) -> Result<usize, EditError> {
         let page = &mut self.pages[position];
         let (count, end) = geometry(&page.after)?;
         let slot = u8::try_from(count).map_err(|_| InspectError::Malformed)?;
@@ -318,6 +329,72 @@ impl Plan {
         });
 
         Ok(self.appended.len() - 1)
+    }
+
+    /// Append into one already allocated hinted LVAL page without selecting EOF
+    /// or changing hint/ownership cells. The caller binds its source authority.
+    #[cfg(all(feature = "journal", feature = "ace16-create"))]
+    pub fn append_existing_long_value(
+        &mut self,
+        image: &NativeImage,
+        number: u32,
+        body: &[u8],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<usize, EditError> {
+        check(budget, cancelled)?;
+        let pages = self.maps.pages(Family::LongValue);
+        budget
+            .charge(
+                Resource::Steps,
+                pages.len().checked_ilog2().unwrap_or(0) as u64 + 1,
+            )
+            .map_err(InspectError::from)?;
+        if pages.binary_search(&number).is_err() {
+            return Err(EditError::Preservation);
+        }
+        let mut input = image.reader();
+        let mut reader = crate::format::reader::Reader {
+            source: &mut input,
+            header: image.catalog().header(),
+            budget,
+            cancelled,
+            reads: 0,
+        };
+        let hint = self.maps.long_value.hint.cell(&mut reader, number)?;
+        if hint.before & hint.mask == 0 {
+            return Err(EditError::Preservation);
+        }
+        let position = self.page(image, Family::LongValue, number, reader.budget, cancelled)?;
+        let (count, end) = geometry(&self.pages[position].after)?;
+        if count >= MAX_SLOTS
+            || body
+                .len()
+                .checked_add(SLOT_BYTES)
+                .is_none_or(|needed| needed > end - slot_offset(count))
+        {
+            return Err(EditError::Unsupported(WriteBlocker::RowLayout));
+        }
+        reader
+            .budget
+            .charge_allocation(1, size_of::<Attempt>() as u64)
+            .map_err(InspectError::from)?;
+        self.attempts
+            .try_reserve(1)
+            .map_err(|_| InspectError::Allocation)?;
+        self.attempts.push(Attempt {
+            family: Family::LongValue,
+            page: number,
+            bytes: body.len(),
+            fitted: true,
+        });
+        self.append_to_page(
+            Family::LongValue,
+            body,
+            OrdinaryVisibility::Hidden,
+            position,
+            reader.budget,
+        )
     }
 
     #[cfg(feature = "ace16-write-preview")]

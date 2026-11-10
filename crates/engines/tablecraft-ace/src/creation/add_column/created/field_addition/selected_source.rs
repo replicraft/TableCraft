@@ -27,6 +27,10 @@ pub enum FieldAdditionSourcePurpose {
     CurrentNumber,
     /// Populated current metadata with nullable Short Text and unchanged old records.
     CurrentShortText,
+    /// Retained table ownership with nullable LONG and unchanged historical rows.
+    RetainedNumber,
+    /// Retained table ownership with nullable Short Text and unchanged historical rows.
+    RetainedShortText,
     /// Existing explicit first/repeated/typed language and its unchanged proof.
     Created(CreatedFieldAdditionSourcePurpose),
     /// Actual native database role; only full settled OFF proof can admit it.
@@ -146,6 +150,14 @@ impl NativeImage {
     ) -> Result<FieldAdditionSourcePurpose, FieldAdditionSourceError> {
         let _span = tracing::debug_span!("native.field_addition.normal_source_purpose").entered();
         check(budget, cancelled)?;
+        if self.has_retained_table_source(table, budget, cancelled)? {
+            return Ok(match target {
+                FieldAdditionTarget::NumberLongZero => FieldAdditionSourcePurpose::RetainedNumber,
+                FieldAdditionTarget::ShortText { .. } => {
+                    FieldAdditionSourcePurpose::RetainedShortText
+                }
+            });
+        }
         self.require_standard_capture()?;
         if self.catalog().header().format() != FileFormat::Ace2016
             || self.catalog().header().page_size() != PAGE_BYTES as u32
@@ -214,6 +226,25 @@ impl NativeImage {
             cancelled,
         )?;
         let after_off_limits = match purpose {
+            FieldAdditionSourcePurpose::RetainedNumber => {
+                let number =
+                    self.inspect_retained_field_addition_source(table, budget, cancelled)?;
+                let number = u8::try_from(number.maximum_name_utf16_units())
+                    .map_err(|_| FieldAdditionSourceError::Source)?;
+                let text = match self
+                    .inspect_retained_short_text_field_addition_source(table, budget, cancelled)
+                {
+                    Ok(source) => u8::try_from(source.maximum_name_utf16_units())
+                        .ok()
+                        .filter(|width| *width != 0),
+                    Err(CurrentFieldAdditionError::Source) => None,
+                    Err(error) => return Err(error.into()),
+                };
+                Some(((number != 0).then_some(number), text))
+            }
+            FieldAdditionSourcePurpose::RetainedShortText => {
+                return Err(FieldAdditionSourceError::Source);
+            }
             FieldAdditionSourcePurpose::CurrentNumber => {
                 let number =
                     self.inspect_current_field_addition_source(table, budget, cancelled)?;

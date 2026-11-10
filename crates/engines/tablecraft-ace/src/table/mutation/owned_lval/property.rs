@@ -1,4 +1,6 @@
 //! One source-qualified property-page rollover, using the real append owner.
+pub(in crate::table::mutation) mod retained;
+
 use super::{
     maps::{EofAllocation, Family, Maps},
     placement::{Plan, geometry},
