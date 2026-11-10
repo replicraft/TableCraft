@@ -1,11 +1,10 @@
 # Explicit larger decoded attachment files
 
-`AttachmentDecodeLimits` supplies a validated per-file allowance from one byte to
-16 MiB. Existing `decode_attachment`, `AttachmentDecoder::new` and
-`NativeSource::with_decoded_attachments` retain their 1 MiB default. New consumers
-use `decode_attachment_with_limits`, `AttachmentDecoder::new_with_limits`, or
-`NativeSource::with_decoded_attachment_limits`. Limits are consumer policy, not
-native format maxima or permission to execute/open file content.
+`AttachmentDecodeLimits` defaults to Access's documented 256 MiB individual
+attachment bound. Callers can explicitly select a lower positive file allowance
+with `decode_attachment_with_limits`, `AttachmentDecoder::new_with_limits`, or
+`NativeSource::with_decoded_attachment_limits`. The former 1 MiB default and
+16 MiB product ceiling are removed. Reading bytes does not execute/open content.
 
 The CLI exposes `query run --attachment-bytes BYTES` with the existing explicit
 `--database`, `--collections` and `--decoded-attachments` options. It does not
@@ -24,22 +23,19 @@ tablecraft query run \
 
 ## Separate storage, decoder and output bounds
 
-Encoded FileData retains a 2 MiB default. An independent explicit
-[encoded-value policy](../storage/LARGER_ENCODED_VALUES.md) can admit up to 32 MiB under
-bounded chain/batch and cumulative limits. Type headers remain bounded to 4 KiB. The decoder
-rejects declared bodies above the selected file allowance plus that header cap,
-then validates the actual file length after complete header/codec validation.
-Zlib checksums, exact consumed/produced lengths, output sentinels, encoding/type tags,
-UTF-16 headers, trailing-input rejection and bounded cancellation checks remain
-mandatory. Unknown encodings do not fall back to another codec.
+Encoded FileData defaults to the native descriptor's 30-bit envelope. The
+[encoded-value policy](../storage/LARGER_ENCODED_VALUES.md) can explicitly select a
+lower budget independently of decoded file bytes. Header lengths are validated
+against their actual enclosing body and checked native field widths; there is
+no additional 4 KiB header quota. The decoder validates the declared and actual
+file lengths, exact consumed/produced lengths, zlib checksums, output sentinels,
+encoding/type tags, UTF-16 headers and trailing input. Unknown encodings never
+fall back to another codec. Bounded cancellation checks remain mandatory.
 
-The explicit allowance can admit compressible files above 2 MiB when their
-encoded storage fits. It does not admit incompressible/stored wrappers above
-the encoded ceiling. A 16 MiB file allowance also does not imply its hexadecimal
-CLI display fits the separate 16 MiB output ceiling. Full native FileData SQL
-representation remains unqualified: this is the existing explicit TableCraft
-decoded-file view. Raising the encoded-value policy separately now admits
-larger stored/incompressible wrappers.
+CLI hexadecimal expansion and query allocations remain separate from decoded
+file size. CLI output has no implicit product quota; an explicitly selected
+`--output-bytes` allowance still applies. Full native FileData SQL representation
+remains unqualified: this is the existing explicit TableCraft decoded-file view.
 
 Sessions retain one lazy reusable codec workspace. A large ceiling allocates
 neither that workspace nor a file-sized buffer at construction; each file uses
@@ -59,7 +55,10 @@ Callers should prepare queries after selecting the desired source configuration.
 This fixes a stale member-inventory path without introducing stored values,
 implicit payload reads, writers, providers or active database content.
 
-## Evidence
+## Historical evidence
+
+These records describe their captured builds and deliberately selected budgets;
+former defaults and product ceilings are superseded by the current policy above.
 
 Six new decoder controls cover stored and compressed files, exact 1.5 MB/3 MiB/
 16 MiB boundaries, default/lower refusals, invalid policies, unchanged encoded/

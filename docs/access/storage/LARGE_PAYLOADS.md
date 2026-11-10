@@ -1,26 +1,25 @@
 # Larger native stored payloads
 
-The qualified Jet 4 / ACE 2007 / ACE 2016 / ACE 2019 long-value reader now admits
-a default of 2 MiB encoded MEMO or opaque OLE bytes through at most 1,024 LVAL rows.
-An explicit [encoded-value policy](LARGER_ENCODED_VALUES.md) raises storage to
-32 MiB and 16,384 references without changing cumulative pools.
-Decoded Long Text defaults to a separate 1 MiB UTF-8 ceiling, with an explicit
-[decoded Memo allowance](LARGER_MEMOS.md) up to 16 MiB. The encoded bound accounts
-for UTF-16 storage independently of decoded UTF-8 size. Native attachment decoding
-retains defaults of 2 MiB encoded storage, a 1 MiB file and a 4 KiB header, through
-both stored and zlib modes. An explicit [decoded-file allowance](../collections/LARGER_DECODED_ATTACHMENTS.md)
-can raise file bytes to 16 MiB independently of the encoded-value policy.
-Header bounds remain unchanged.
-These are engineering ceilings, not format maxima.
+Qualified native Memo/OLE reads default to the descriptor's 30-bit encoded
+length bound, with no additional 2 MiB default or 32 MiB product ceiling. The
+[encoded-value policy](LARGER_ENCODED_VALUES.md) allows callers to request a lower
+budget explicitly. Chain traversal uses the advertised payload and actual source
+geometry, with paid visited-reference cycle checks rather than a separate
+reference-count quota.
 
-Exact lengths, LVAL owners, row flags, reference cycles, termination, Unicode and
-attachment checksums remain mandatory. Default reference scans charge work as chains grow; explicit larger chains use
-a charged visited set and bounded physical batches. Text decoding reserves four logical passes over its encoded
-input. Memo conversion now also checks cancellation in bounded classification,
-unit/sizing/emission chunks; see [decoded Memo checkpoints](LARGER_MEMOS.md).
-Metadata text decoding retains its existing separate contract. Attachment copying/inflation retains its block checkpoints.
-Caller allocations, page reads and cumulative work remain separately limited.
-No source bytes change and no attachment/OLE/VBA content executes.
+Decoded Long Text uses the UTF-8 representation bound derived from supported
+native storage, with no additional 1 MiB default or 16 MiB product ceiling. See
+[decoded Memo reads](LARGER_MEMOS.md). Encoded bytes, UTF-8 bytes and UTF-16 units
+remain distinct. Attachment decoding defaults to the documented Access individual
+file bound of 256 MiB; its encoded wrapper uses the native long-value envelope.
+See [decoded attachments](../collections/LARGER_DECODED_ATTACHMENTS.md).
+
+Exact lengths, LVAL ownership, row flags, references, termination, Unicode and
+attachment checksums remain mandatory. Fallible allocations, cancellation and
+explicit cumulative caller budgets remain active. Memo decoding checks work in
+classification, sizing and emission chunks; attachment copying/inflation retains
+its block checkpoints. No source bytes change and no attachment/OLE/VBA content
+executes. These read policies do not expand qualified mutation operations.
 
 ## Separate query and output limits
 
@@ -56,7 +55,10 @@ semantic restrictions. Large projections/compositions can still exhaust an
 explicit pool. Removing an invented product quota does not establish native
 compatibility or a performance gain. Source/image envelopes and write gates remain unchanged.
 
-## Independent verification
+## Historical independent verification
+
+The following records describe their captured builds and selected budgets.
+Former product ceilings are superseded by the current policies above.
 
 [LargePayloadFixture.java](../../../tests/access/reading/tables/LargePayloadFixture.java) creates fresh inert
 files using the reviewed Jackcess 5.0.4 artifact. Its read-only getters return byte

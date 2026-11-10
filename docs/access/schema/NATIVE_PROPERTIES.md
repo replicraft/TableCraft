@@ -33,9 +33,9 @@ accessor for inspected DisplayControl metadata. This does not change CLI propert
 formatting or qualify arbitrary UI controls and native writes.
 
 Unknown block tags are retained only when they fit the understood value framing;
-other layouts fail. KKD/Jet 3 and newer ACE streams remain unqualified. Existing
-limits include 2 MiB long values; this parser adds 256 property names, 4,096 total
-entries and at most one table group plus 256 column and 256 index groups.
+other layouts fail. KKD/Jet 3 and newer ACE streams remain unqualified. Long-value reads use the native descriptor envelope. Property blocks, names,
+entries and groups are checked against their native framing and actual remaining
+bytes, without separate product count quotas.
 Allocations, row visits and work accumulate; cancellation is checked between
 catalog/page/row/block/property units. No linked provider or active content runs.
 
