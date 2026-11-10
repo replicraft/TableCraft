@@ -31,6 +31,7 @@ impl Args {
             self.native_steps.unwrap_or(native::DEFAULT_NATIVE_STEPS),
         );
         let source = native::open(&self.path, password, &mut budget).map_err(operation)?;
+        let source = self.with_read_limits(source).map_err(operation)?;
         let names = self
             .projection_names(&mut budget)
             .map_err(|error| match error {

@@ -1,4 +1,6 @@
 //! Original literal native fixture owner, shared by actual tests.
+pub mod inline_values;
+
 use super::{data_page, image, put16, put32, record};
 
 const SORT_ORDER_OFFSET: usize = 110;

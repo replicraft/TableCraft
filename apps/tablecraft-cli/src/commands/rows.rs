@@ -2,7 +2,10 @@
 use super::error::Error;
 use crate::{native, output::TableOutput};
 use tablecraft_access::{BrowsePage, NativeBrowser};
-use tablecraft_ace::{CollectionPageRequest, InspectError, TablePageRequest, TableSnapshotLimits};
+use tablecraft_ace::{
+    CollectionPageRequest, InspectError, LongTextReadLimits, LongValueReadLimits,
+    LongValueReadSource, TablePageRequest, TableSnapshotLimits,
+};
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_core::values::Value;
 
@@ -40,6 +43,12 @@ pub(crate) struct Args {
     /// Cumulative native work for buffered browsing or streaming.
     #[arg(long, value_parser = clap::value_parser!(u64).range(1..=native::MAX_NATIVE_READ_STEPS))]
     pub(super) native_steps: Option<u64>,
+    /// Maximum encoded Memo/OLE/attachment value bytes; default 2 MiB, maximum 32 MiB.
+    #[arg(long, value_name = "BYTES", value_parser = clap::value_parser!(u32).range(1..=i64::from(LongValueReadLimits::MAX_BYTES)))]
+    pub(super) native_value_bytes: Option<u32>,
+    /// Maximum decoded Memo UTF-8 bytes; default 1 MiB, maximum 16 MiB.
+    #[arg(long, value_name = "BYTES", value_parser = clap::value_parser!(u32).range(1..=i64::from(LongTextReadLimits::MAX_BYTES)))]
+    pub(super) native_text_bytes: Option<u32>,
     /// Maximum displayed rows, or rows per batch with --stream; read/resource ceilings still apply.
     #[arg(long, default_value_t = DEFAULT_PAGE_ROWS, value_parser = clap::value_parser!(u32).range(1..=MAX_PAGE_ROWS as i64))]
     pub(super) limit: u32,
@@ -86,6 +95,7 @@ impl Args {
             return super::template::rows(&package, &self, &mut budget, format);
         }
         let source = native::open(&self.path, password, &mut budget).map_err(Error::Input)?;
+        let source = self.with_read_limits(source).map_err(Error::Read)?;
         let names = self.projection_names(&mut budget).map_err(Error::Read)?;
         let mut browser = NativeBrowser::new(source, native::CATALOG_SCOPE, budget, &|| false);
         if self.all {
@@ -95,6 +105,21 @@ impl Args {
             let text = read_page(&mut browser, &table, request, &self, &names)?;
             format.render(text).map_err(Error::Output)
         }
+    }
+
+    fn with_read_limits<R>(&self, source: R) -> Result<LongValueReadSource<R>, InspectError> {
+        let values = self
+            .native_value_bytes
+            .map(LongValueReadLimits::new)
+            .transpose()?
+            .unwrap_or_default();
+        let text = self
+            .native_text_bytes
+            .map(LongTextReadLimits::new)
+            .transpose()?
+            .unwrap_or_default();
+
+        Ok(LongValueReadSource::new(source, values).with_text_limits(text))
     }
 }
 

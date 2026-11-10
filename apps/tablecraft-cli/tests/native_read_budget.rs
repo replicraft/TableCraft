@@ -340,3 +340,42 @@ fn native_value_allowance_requires_database_and_validates_its_own_range() {
     assert!(result.stdout.is_empty());
     assert!(String::from_utf8_lossy(&result.stderr).contains("--database"));
 }
+
+#[test]
+fn row_value_and_text_allowances_apply_to_buffered_and_streamed_reads() {
+    let db = Database::new(fixture::inline_values::database_with_inline_values());
+    let expected = "Id\tMemo\tBlob\n1\t€\t0x0001feff\n".as_bytes();
+    for mode in [None, Some("--stream"), Some("--all")] {
+        let mut args = vec!["rows", db.path(), "--format", "tsv"];
+        if let Some(mode) = mode {
+            args.push(mode);
+        }
+        let ordinary = CLI.run(&args);
+        assert!(
+            ordinary.status.success(),
+            "{}",
+            String::from_utf8_lossy(&ordinary.stderr)
+        );
+        if mode != Some("--all") {
+            assert_eq!(ordinary.stdout, expected);
+        }
+
+        for (flag, value) in [("--native-value-bytes", "3"), ("--native-text-bytes", "2")] {
+            args.extend([flag, value]);
+            let refused = CLI.run(&args);
+            args.truncate(args.len() - 2);
+            assert_eq!(refused.status.code(), Some(2));
+            assert!(refused.stdout.is_empty());
+            assert!(String::from_utf8_lossy(&refused.stderr).contains("structural limit"));
+        }
+
+        args.extend(["--native-value-bytes", "4", "--native-text-bytes", "3"]);
+        let explicit = CLI.run(&args);
+        assert!(
+            explicit.status.success(),
+            "{}",
+            String::from_utf8_lossy(&explicit.stderr)
+        );
+        assert_eq!(explicit.stdout, ordinary.stdout);
+    }
+}
