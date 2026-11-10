@@ -43,6 +43,41 @@ fn same_name_review_reopens_exact_source_without_any_native_save_or_journal() {
 }
 
 #[test]
+fn populated_unchanged_field_rename_rechecks_complete_rows_without_save_authority() {
+    let values = [Some(42), None, Some(-17)];
+    let [original, expected] = saved_field_rename::fitting::populated_number_pair("Score", &values);
+    assert_eq!(original, expected);
+    let (_directory, path, mut session) = opened(&original);
+    let review = review(&mut session, "Score");
+    assert_eq!(review["changed"], false);
+    let result = session.execute("apply_field_rename", review).unwrap();
+    assert_eq!(result["changed"], false);
+    assert_eq!(result["native_write"], false);
+    assert_eq!(result["verified_reopen"], true);
+    assert!(result.get("save_id").is_none());
+    assert!(session.active_save.is_none());
+    assert!(!session.saves.is_busy());
+    assert!(session.unchanged_field_rename.is_none());
+    assert_eq!(std::fs::read(&path).unwrap(), original);
+    assert!(!tablecraft_runtime::journal_path(&path).exists());
+    let page = session
+        .execute(
+            "read_rows",
+            json!({
+                "document_revision": session.revision.unwrap(),
+                "table": "Table1",
+                "offset": 0
+            }),
+        )
+        .unwrap();
+    let rows = page["rows"].as_array().unwrap();
+    assert_eq!(rows.len(), 3);
+    assert_eq!(rows[0][1]["text"], "42");
+    assert_eq!(rows[1][1]["semantics"]["is_null"], true);
+    assert_eq!(rows[2][1]["text"], "-17");
+}
+
+#[test]
 fn failed_exact_reopen_retains_opaque_owner_until_verified_retry_or_explicit_discard() {
     for discard in [false, true] {
         let [original, different] = saved_field_rename::pair(SourceCase::Number);

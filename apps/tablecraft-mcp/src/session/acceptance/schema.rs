@@ -102,7 +102,7 @@ fn native_field_rename_preserves_true_identity_and_uses_the_complete_expected_im
         (SourceCase::Mixed, "Label", "Title"),
     ] {
         let [before, expected] = saved_field_rename::pair(case);
-        checked_field_rename(&before, &expected, original, replacement);
+        checked_field_rename(&before, &expected, original, replacement, &[]);
     }
 }
 
@@ -118,12 +118,36 @@ fn fitted_field_rename_grows_and_shrinks_original_number_text_and_history_source
     ] {
         for replacement in ["TaxAmount", "X"] {
             let [before, expected] = fitting::pair(case, replacement);
-            checked_field_rename(&before, &expected, fitting::old_name(case), replacement);
+            checked_field_rename(
+                &before,
+                &expected,
+                fitting::old_name(case),
+                replacement,
+                &[],
+            );
         }
     }
 }
 
-fn checked_field_rename(before: &[u8], expected: &[u8], original: &str, replacement: &str) {
+#[test]
+fn populated_field_rename_preserves_number_null_rows_and_indexes_through_fresh_reopen() {
+    use tablecraft_testkit::fixtures::access::saved_field_rename::fitting;
+
+    for values in [&[Some(42)][..], &[Some(42), None, Some(-17)][..]] {
+        for replacement in ["TaxAmount", "X", "Total", "score"] {
+            let [before, expected] = fitting::populated_number_pair(replacement, values);
+            checked_field_rename(&before, &expected, "Score", replacement, values);
+        }
+    }
+}
+
+fn checked_field_rename(
+    before: &[u8],
+    expected: &[u8],
+    original: &str,
+    replacement: &str,
+    values: &[Option<i32>],
+) {
     let (_directory, path, mut session) = opened(before);
     let revision = session.revision.unwrap();
     let inspection = session
@@ -179,6 +203,25 @@ fn checked_field_rename(before: &[u8], expected: &[u8], original: &str, replacem
         .find(|field| field["name"] == replacement)
         .unwrap();
     assert_eq!(renamed["native_number"], 1);
+    let rows = session
+        .execute(
+            "read_rows",
+            json!({
+                "document_revision": session.revision.unwrap(),
+                "table": "Table1",
+                "offset": 0
+            }),
+        )
+        .unwrap();
+    let actual = rows["rows"].as_array().unwrap();
+    assert_eq!(actual.len(), values.len());
+    for (position, (row, expected)) in actual.iter().zip(values).enumerate() {
+        assert_eq!(row[0]["text"], (position + 1).to_string());
+        assert_eq!(row[1]["semantics"]["is_null"], expected.is_none());
+        if let Some(value) = expected {
+            assert_eq!(row[1]["text"], value.to_string());
+        }
+    }
 }
 
 #[test]
