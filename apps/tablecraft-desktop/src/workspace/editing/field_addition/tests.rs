@@ -1,6 +1,7 @@
 //! Real headless saved-table widgets through Number review, actor and witness.
 mod declaration;
 mod historical_updates;
+mod materialization;
 mod populated;
 mod repeated;
 use super::*;

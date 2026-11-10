@@ -11,7 +11,7 @@ use tablecraft_runtime::{SaveOutcome, journal_path};
 use tablecraft_testkit::fixtures::access::canonical_created_number::mixed::after_off::populated;
 use tablecraft_ui::{CellKind, EditTarget};
 
-fn begin_replacement(
+pub(super) fn begin_replacement(
     harness: &mut Harness<'_, Desktop>,
     row: u32,
     column: &str,
@@ -52,7 +52,7 @@ fn begin_replacement(
     }
 }
 
-fn review_and_save(
+pub(super) fn review_and_save(
     harness: &mut Harness<'_, Desktop>,
     path: &Path,
     before: &[u8],
@@ -84,6 +84,9 @@ fn review_and_save(
     finish_reads(harness);
     assert!(!harness.state().editing.has_save());
     assert!(!harness.state().state.edit_dialog_open());
+}
+
+fn assert_bonus_nulls(harness: &Harness<'_, Desktop>) {
     for row in &harness.state().state.data.as_ref().unwrap().rows {
         assert_eq!(row[2].text, "NULL");
         assert!(matches!(
@@ -103,6 +106,7 @@ fn added_number_keeps_historical_nulls_while_existing_score_is_edited_saved_and_
     let supplied = populated::update_scores(&after_add, &[(0, Some(8))]);
     begin_replacement(&mut harness, 0, "Score", false, Some("8"));
     review_and_save(&mut harness, &path, &after_add, &supplied);
+    assert_bonus_nulls(&harness);
     assert_eq!(
         harness.state().state.data.as_ref().unwrap().rows[0][1].text,
         "8"
@@ -111,6 +115,7 @@ fn added_number_keeps_historical_nulls_while_existing_score_is_edited_saved_and_
     let from_null = populated::update_scores(&supplied, &[(1, Some(12))]);
     begin_replacement(&mut harness, 1, "Score", true, Some("12"));
     review_and_save(&mut harness, &path, &supplied, &from_null);
+    assert_bonus_nulls(&harness);
     assert_eq!(
         harness.state().state.data.as_ref().unwrap().rows[1][1].text,
         "12"
@@ -119,6 +124,7 @@ fn added_number_keeps_historical_nulls_while_existing_score_is_edited_saved_and_
     let to_null = populated::update_scores(&from_null, &[(2, None)]);
     begin_replacement(&mut harness, 2, "Score", false, None);
     review_and_save(&mut harness, &path, &from_null, &to_null);
+    assert_bonus_nulls(&harness);
     assert_eq!(
         harness.state().state.data.as_ref().unwrap().rows[2][1].text,
         "NULL"
@@ -142,15 +148,17 @@ fn added_number_keeps_historical_nulls_while_existing_score_is_edited_saved_and_
 }
 
 #[test]
-fn absent_added_number_is_not_materialized_by_the_normal_review_path() {
+fn absent_added_number_null_noop_is_not_materialized_by_the_normal_review_path() {
     let [before, after_add] = populated::pair("Bonus", &[Some(42), None, Some(-7)]);
     let (_directory, path, _, mut harness) = opened(before);
     add_field(&mut harness, "Bonus", FieldAdditionKind::Number);
-    begin_replacement(&mut harness, 0, "Bonus", true, Some("5"));
+    begin_replacement(&mut harness, 0, "Bonus", true, None);
+    let generation = harness.state().generation;
     harness
         .get_by_role_and_label(Role::Button, "Review change")
         .click_accesskit();
     harness.run_steps(1);
+    assert_ne!(harness.state().generation, generation);
     // Refusal is an expected runtime response; finish_reads intentionally asserts
     // successful operations, so consume this response without that helper.
     let deadline = std::time::Instant::now() + std::time::Duration::from_secs(10);
