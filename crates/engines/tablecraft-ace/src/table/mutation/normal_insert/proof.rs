@@ -172,6 +172,7 @@ pub(in crate::table::mutation::normal_insert) fn reconstruct_encoded(
         Reconstruction {
             retain_references,
             maximum_rows: Some(crate::limits::MAX_LIVE_ROWS),
+            scope: super::indexed::LvalScope::Original,
         },
         budget,
         cancelled,
@@ -196,6 +197,7 @@ pub(in crate::table::mutation::normal_insert) fn reconstruct_retained_encoded(
         Reconstruction {
             retain_references,
             maximum_rows: None,
+            scope: super::indexed::LvalScope::Retained,
         },
         budget,
         cancelled,
@@ -205,6 +207,7 @@ pub(in crate::table::mutation::normal_insert) fn reconstruct_retained_encoded(
 struct Reconstruction {
     retain_references: bool,
     maximum_rows: Option<usize>,
+    scope: super::indexed::LvalScope,
 }
 
 fn reconstruct_encoded_with_limit(
@@ -217,7 +220,8 @@ fn reconstruct_encoded_with_limit(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(Vec<u8>, Vec<u32>), EditError> {
     let retain_references = options.retain_references;
-    let (mut capacities, space) = capacities(image, source, budget, cancelled)?;
+    let (mut capacities, space) =
+        capacities_scoped(image, source, options.scope, budget, cancelled)?;
     let mut expected = fixed_records::copy(image.as_bytes(), budget, cancelled)?;
 
     let mut references = Vec::new();
@@ -410,6 +414,22 @@ pub(super) fn capacities(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(Vec<Capacity>, Space), EditError> {
+    capacities_scoped(
+        image,
+        source,
+        super::indexed::LvalScope::Original,
+        budget,
+        cancelled,
+    )
+}
+
+fn capacities_scoped(
+    image: &NativeImage,
+    source: &Source,
+    scope: super::indexed::LvalScope,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(Vec<Capacity>, Space), EditError> {
     let schema = source.table.schema();
     let mut input = image.reader();
     let mut reader = Reader {
@@ -423,7 +443,15 @@ pub(super) fn capacities(
     let definition = definition::read(&mut reader, schema.definition_page())?;
     let reference = u32_at(&definition, TABLE_FREE_MAP_OFFSET)?;
     let hint = RepresentedMap::read(&mut reader, reference, MapRole::TableFreeSpace)?;
-    let space = Space::capture_normal(image, schema, &owned, reader.budget, cancelled)?;
+    let space = match scope {
+        super::indexed::LvalScope::Original => {
+            Space::capture_normal(image, schema, &owned, reader.budget, cancelled)?
+        }
+        #[cfg(feature = "ace16-create")]
+        super::indexed::LvalScope::Retained => {
+            Space::capture_retained(image, schema, &owned, reader.budget, cancelled)?
+        }
+    };
     reader
         .budget
         .charge_allocation(owned.len() as u64, size_of::<Capacity>() as u64)

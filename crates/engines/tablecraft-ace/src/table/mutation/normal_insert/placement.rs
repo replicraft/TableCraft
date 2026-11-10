@@ -52,7 +52,25 @@ pub(super) fn reserve(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Staged, EditError> {
-    reserve_with(image, source, records, false, budget, cancelled)
+    reserve_scoped(
+        image,
+        source,
+        records,
+        super::indexed::LvalScope::Original,
+        budget,
+        cancelled,
+    )
+}
+
+pub(super) fn reserve_scoped(
+    image: &NativeImage,
+    source: &Source,
+    records: &[Vec<u8>],
+    scope: super::indexed::LvalScope,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Staged, EditError> {
+    reserve_with(image, source, records, false, scope, budget, cancelled)
 }
 
 pub(super) fn reserve_growing(
@@ -62,7 +80,15 @@ pub(super) fn reserve_growing(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Staged, EditError> {
-    reserve_with(image, source, records, true, budget, cancelled)
+    reserve_with(
+        image,
+        source,
+        records,
+        true,
+        super::indexed::LvalScope::Original,
+        budget,
+        cancelled,
+    )
 }
 
 fn reserve_with(
@@ -70,6 +96,7 @@ fn reserve_with(
     source: &Source,
     records: &[Vec<u8>],
     allow_eof: bool,
+    scope: super::indexed::LvalScope,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Staged, EditError> {
@@ -91,7 +118,15 @@ fn reserve_with(
         }
     }
 
-    let space = Space::capture_normal(image, schema, &owned, budget, cancelled)?;
+    let space = match scope {
+        super::indexed::LvalScope::Original => {
+            Space::capture_normal(image, schema, &owned, budget, cancelled)?
+        }
+        #[cfg(feature = "ace16-create")]
+        super::indexed::LvalScope::Retained => {
+            Space::capture_retained(image, schema, &owned, budget, cancelled)?
+        }
+    };
 
     budget
         .charge_allocation(owned.len() as u64, size_of::<Capacity>() as u64)

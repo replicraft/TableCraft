@@ -51,6 +51,11 @@ pub(super) enum LvalScope {
     Retained,
 }
 
+pub(super) struct StageIndexes<'a, 'image> {
+    pub(super) facts: &'a CheckedIndexes<'image>,
+    pub(super) scope: LvalScope,
+}
+
 struct History {
     offset: usize,
     before: u32,
@@ -92,7 +97,16 @@ pub(super) fn plan(
         .ok_or(InspectError::StructureLimit)?;
     let records = super::records::encode(source.table.schema(), requests, budget, cancelled)?;
     let after = stage(
-        &image, &source, requests, &records, &facts, budget, cancelled,
+        &image,
+        &source,
+        requests,
+        &records,
+        StageIndexes {
+            facts: &facts,
+            scope: LvalScope::Original,
+        },
+        budget,
+        cancelled,
     )?;
 
     drop(facts);
@@ -112,12 +126,14 @@ pub(super) fn stage(
     source: &Source,
     requests: &[RowInsert],
     records: &[Vec<u8>],
-    facts: &CheckedIndexes<'_>,
+    indexes: StageIndexes<'_, '_>,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Vec<u8>, EditError> {
     let table = source.table.schema().name();
-    let placement = super::placement::reserve(image, source, records, budget, cancelled)?;
+    let facts = indexes.facts;
+    let placement =
+        super::placement::reserve_scoped(image, source, records, indexes.scope, budget, cancelled)?;
 
     let mut rows = vector(requests.len(), budget, cancelled)?;
     for (reference, request) in placement.references().zip(requests) {

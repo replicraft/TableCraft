@@ -91,7 +91,18 @@ pub(super) fn plan(
             cancelled,
         )?);
     }
-    let mut after = indexed::stage(&image, &source, &rows, &records, &facts, budget, cancelled)?;
+    let mut after = indexed::stage(
+        &image,
+        &source,
+        &rows,
+        &records,
+        indexed::StageIndexes {
+            facts: &facts,
+            scope: family.lval_scope(),
+        },
+        budget,
+        cancelled,
+    )?;
     check(budget, cancelled)?;
     budget
         .charge(Resource::Steps, (2 * size_of::<i32>()) as u64)

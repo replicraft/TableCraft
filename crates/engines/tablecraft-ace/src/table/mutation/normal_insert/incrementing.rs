@@ -56,8 +56,18 @@ pub(super) fn plan(
         budget,
         cancelled,
     )?;
-    let mut after =
-        super::indexed::stage(&image, &source, &rows, &encoded, &facts, budget, cancelled)?;
+    let mut after = super::indexed::stage(
+        &image,
+        &source,
+        &rows,
+        &encoded,
+        super::indexed::StageIndexes {
+            facts: &facts,
+            scope: super::indexed::LvalScope::Original,
+        },
+        budget,
+        cancelled,
+    )?;
     check(budget, cancelled)?;
     budget
         .charge(Resource::Steps, (2 * size_of::<i32>()) as u64)
