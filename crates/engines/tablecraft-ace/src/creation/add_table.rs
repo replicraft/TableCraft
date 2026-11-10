@@ -6,7 +6,7 @@ mod geometry;
 pub(in crate::creation) mod source;
 
 use super::{CreateDatabaseError, FirstTableDefinition};
-use crate::{InspectError, NativeImage, header::check};
+use crate::{InspectError, NativeImage, NativeImageSource, header::check};
 use tablecraft_core::limits::ResourceBudget;
 use thiserror::Error;
 
@@ -52,7 +52,7 @@ pub enum AddTableError {
 /// This initial operation is deliberately separate from canonical-blank TCNT.
 pub struct AddTablePlan {
     before: NativeImage,
-    after: Vec<u8>,
+    after: NativeImageSource,
     definition: FirstTableDefinition,
     profile: ConstructionProfile,
 }
@@ -85,6 +85,7 @@ impl NativeImage {
         let after = build::build(&self, &definition, &original, budget, cancelled)?;
         audit::verify(&self, &after, &definition, &original, budget, cancelled)?;
         check(budget, cancelled)?;
+        let after = NativeImageSource::from_vec(after, budget, cancelled)?;
         Ok(AddTablePlan {
             before: self,
             after,
@@ -109,6 +110,7 @@ impl NativeImage {
         let after = build::build(&self, &definition, &original, budget, cancelled)?;
         audit::verify(&self, &after, &definition, &original, budget, cancelled)?;
         check(budget, cancelled)?;
+        let after = NativeImageSource::from_vec(after, budget, cancelled)?;
         Ok(AddTablePlan {
             before: self,
             after,
@@ -131,7 +133,7 @@ impl AddTablePlan {
 
     /// Complete independently checked append candidate, without a save capability.
     pub fn after_bytes(&self) -> &[u8] {
-        &self.after
+        self.after.as_bytes()
     }
 
     /// Exact proposed native table name.
