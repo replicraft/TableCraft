@@ -1,6 +1,7 @@
 //! Original synthetic stored-history records shared by engine and adapter tests.
 /// Independent two-history schema and storage fixture.
 pub mod mixed;
+pub mod variable;
 
 use super::{complex_schema as complex_fixture, data_page, mutation_fixture as base, put16, put32};
 

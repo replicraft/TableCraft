@@ -1,5 +1,7 @@
 use super::{self as support, complex_schema as complex_fixture};
 
+pub mod variable;
+
 pub fn populated() -> Vec<u8> {
     let mut bytes = complex_fixture::with_mappings(vec![complex_fixture::mapping(7, 10, 20, 17)]);
     bytes[10 * 4096 + 63 + 25 + 15] = 7;
