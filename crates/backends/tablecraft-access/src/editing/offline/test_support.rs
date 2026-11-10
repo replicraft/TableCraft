@@ -1,5 +1,7 @@
 //! Adapter-private receipt and held-lease assertions shared by native save tests.
 #[cfg(feature = "ace16-create")]
+pub(super) mod native_creation;
+#[cfg(feature = "ace16-create")]
 pub(super) mod saved_field;
 
 use super::Receipt;

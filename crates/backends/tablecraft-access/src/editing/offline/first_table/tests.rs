@@ -1,3 +1,4 @@
+mod native;
 use super::*;
 use crate::editing::offline::{
     CompletionKind, SessionState, VerifiedImage,
@@ -158,9 +159,12 @@ fn retained_pair_with_definition(
         &|| false,
     )
     .unwrap();
-    let plan = image
-        .plan_first_table(definition, &mut budget(), &|| false)
-        .unwrap();
+    let plan = if definition.is_native() {
+        image.plan_first_table_native(definition, &mut budget(), &|| false)
+    } else {
+        image.plan_first_table(definition, &mut budget(), &|| false)
+    }
+    .unwrap();
     let intent = plan.encode_intent(&mut budget(), &|| false).unwrap();
     let mut pair = OfflineJournalPair::create(
         slot.target.take().unwrap(),
@@ -172,9 +176,12 @@ fn retained_pair_with_definition(
     .unwrap();
     {
         let (mut target, mut journal) = pair.resizable_storage().unwrap();
-        let prepared = plan
-            .prepare(&mut target, &mut journal, &mut budget(), &|| false)
-            .unwrap();
+        let prepared = if plan.is_native() {
+            plan.prepare_native(&mut target, &mut journal, &mut budget(), &|| false)
+        } else {
+            plan.prepare(&mut target, &mut journal, &mut budget(), &|| false)
+        }
+        .unwrap();
         if committed {
             prepared.commit(&mut budget(), &|| false).unwrap();
         } else if retire {

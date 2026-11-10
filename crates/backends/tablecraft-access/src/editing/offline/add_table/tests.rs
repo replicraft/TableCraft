@@ -1,4 +1,5 @@
 //! Real-file AddTable composition retains original objects and the existing save owner.
+mod native;
 mod repeated;
 
 use super::*;
