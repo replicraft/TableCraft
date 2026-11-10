@@ -74,6 +74,7 @@ pub use mutation::{FieldDropError, NativeFieldDropCandidate, NativeFieldDropIden
 pub use mutation::{
     FieldRenameError, FittedFieldRenameSource, NativeFieldRenameCandidate,
     NativeFieldRenameIdentity, NativeFittedFieldRenameCandidate,
+    NativePopulatedFieldRenameCandidate,
 };
 #[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
 pub use mutation::{FittedColumnUpdates, FixedColumnUpdates, SlotScalarUpdate};

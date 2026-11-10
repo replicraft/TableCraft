@@ -360,6 +360,7 @@ pub use table::{FieldDropError, NativeFieldDropCandidate, NativeFieldDropIdentit
 pub use table::{
     FieldRenameError, FittedFieldRenameSource, NativeFieldRenameCandidate,
     NativeFieldRenameIdentity, NativeFittedFieldRenameCandidate,
+    NativePopulatedFieldRenameCandidate,
 };
 
 #[cfg(all(feature = "journal", feature = "ace16-create"))]

@@ -220,4 +220,5 @@ pub use drop_field::{FieldDropError, NativeFieldDropCandidate, NativeFieldDropId
 pub use rename_field::{
     FieldRenameError, FittedFieldRenameSource, NativeFieldRenameCandidate,
     NativeFieldRenameIdentity, NativeFittedFieldRenameCandidate,
+    NativePopulatedFieldRenameCandidate,
 };

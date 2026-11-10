@@ -1,4 +1,4 @@
-use crate::{FieldHistoryDatabaseOptionsError, InspectError};
+use crate::{EditError, FieldHistoryDatabaseOptionsError, InspectError};
 use tablecraft_core::limits::LimitError;
 use thiserror::Error;
 
@@ -11,12 +11,18 @@ pub enum FieldRenameError {
     /// Complete original field-history/OFF reconstruction or replay failed.
     #[error(transparent)]
     SourceProof(#[from] FieldHistoryDatabaseOptionsError),
+    /// Actual populated records, constraints, ownership or INSERT replay failed.
+    #[error(transparent)]
+    RowSource(#[from] EditError),
     /// The proposed name violates native identifier syntax or its size ceiling.
     #[error("field rename requires a valid native identifier")]
     InvalidName,
     /// Only equal UTF-16 width ASCII name changes are currently qualified.
     #[error("field rename currently requires equal-width ASCII names")]
     NameShape,
+    /// Populated field names must use the qualified ASCII identifier namespace.
+    #[error("populated field rename requires ASCII names")]
+    PopulatedNameShape,
     /// The fitted profile is separate from the existing same-width/no-op route.
     #[error("fitted field rename requires unequal-width ASCII names")]
     FittedNameShape,

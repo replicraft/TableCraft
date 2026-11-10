@@ -63,6 +63,10 @@ impl FieldHistoryOffSource {
         Ok(Self { image })
     }
 
+    pub(crate) fn into_image(self) -> NativeImage {
+        self.image
+    }
+
     pub(crate) fn image(&self) -> &NativeImage {
         &self.image
     }

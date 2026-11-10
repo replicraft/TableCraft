@@ -88,6 +88,7 @@ impl Identity {
 enum Profile {
     SameWidth,
     FittedAscii,
+    PopulatedAscii,
 }
 
 impl Profile {
@@ -95,6 +96,7 @@ impl Profile {
         match self {
             Self::SameWidth => 1,
             Self::FittedAscii => 2,
+            Self::PopulatedAscii => 3,
         }
     }
 
@@ -102,6 +104,7 @@ impl Profile {
         match tag {
             1 => Ok(Self::SameWidth),
             2 => Ok(Self::FittedAscii),
+            3 => Ok(Self::PopulatedAscii),
             _ => Err(FieldRenameIntentError::InvalidRecord),
         }
     }
@@ -233,6 +236,15 @@ impl NativeFieldRenameIntent {
                 budget,
                 cancelled,
             )?),
+            Profile::PopulatedAscii => {
+                Candidate::PopulatedAscii(image.prepare_populated_field_rename(
+                    self.table(),
+                    self.column(),
+                    self.new_name(),
+                    budget,
+                    cancelled,
+                )?)
+            }
         };
         self.verify_candidate(&candidate)?;
         Ok(candidate)

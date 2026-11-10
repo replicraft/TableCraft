@@ -3,9 +3,14 @@ use crate::table::mutation::saved_field::Observed;
 use crate::{NativeImage, creation::FieldHistoryOffSource};
 use tablecraft_core::limits::ResourceBudget;
 
-/// Its private source can only come from the complete shared settled proof.
+enum Proof {
+    Empty(FieldHistoryOffSource),
+    Populated(NativeImage),
+}
+
+/// Its private source must pass complete selected-family reconstruction.
 pub(super) struct Qualified {
-    proof: FieldHistoryOffSource,
+    proof: Proof,
     pub observed: Observed,
 }
 
@@ -20,10 +25,23 @@ impl Qualified {
         let proof = FieldHistoryOffSource::capture(image, budget, cancelled)?;
         let observed = Observed::capture(proof.image(), table, field, budget, cancelled)
             .map_err(Error::from)?;
-        Ok(Self { proof, observed })
+        Ok(Self {
+            proof: Proof::Empty(proof),
+            observed,
+        })
+    }
+
+    pub(super) fn from_populated(image: NativeImage, observed: Observed) -> Self {
+        Self {
+            proof: Proof::Populated(image),
+            observed,
+        }
     }
 
     pub fn image(&self) -> &NativeImage {
-        self.proof.image()
+        match &self.proof {
+            Proof::Empty(proof) => proof.image(),
+            Proof::Populated(image) => image,
+        }
     }
 }

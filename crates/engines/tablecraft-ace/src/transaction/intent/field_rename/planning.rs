@@ -2,7 +2,8 @@
 use super::{FieldRenameIntentError as Error, NativeFieldRenameIntent as Intent, Profile};
 use crate::{
     NativeFieldRenameCandidate, NativeFieldRenameIdentity, NativeFittedFieldRenameCandidate,
-    NativeImage, header::check, transaction::qualified_recovery::equal_image,
+    NativeImage, NativePopulatedFieldRenameCandidate, header::check,
+    transaction::qualified_recovery::equal_image,
 };
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_io::journal::{self, DurableStorage, JournalError, PreparedImage};
@@ -11,6 +12,7 @@ use tablecraft_io::journal::{self, DurableStorage, JournalError, PreparedImage};
 pub(super) enum Candidate {
     SameWidth(NativeFieldRenameCandidate),
     FittedAscii(NativeFittedFieldRenameCandidate),
+    PopulatedAscii(NativePopulatedFieldRenameCandidate),
 }
 
 impl Candidate {
@@ -18,6 +20,7 @@ impl Candidate {
         match self {
             Self::SameWidth(candidate) => candidate.before_bytes(),
             Self::FittedAscii(candidate) => candidate.before_bytes(),
+            Self::PopulatedAscii(candidate) => candidate.before_bytes(),
         }
     }
 
@@ -25,6 +28,7 @@ impl Candidate {
         match self {
             Self::SameWidth(candidate) => candidate.after_bytes(),
             Self::FittedAscii(candidate) => candidate.after_bytes(),
+            Self::PopulatedAscii(candidate) => candidate.after_bytes(),
         }
     }
 
@@ -32,6 +36,7 @@ impl Candidate {
         match self {
             Self::SameWidth(candidate) => candidate.table(),
             Self::FittedAscii(candidate) => candidate.table(),
+            Self::PopulatedAscii(candidate) => candidate.table(),
         }
     }
 
@@ -39,6 +44,7 @@ impl Candidate {
         match self {
             Self::SameWidth(candidate) => candidate.column(),
             Self::FittedAscii(candidate) => candidate.column(),
+            Self::PopulatedAscii(candidate) => candidate.column(),
         }
     }
 
@@ -46,6 +52,7 @@ impl Candidate {
         match self {
             Self::SameWidth(candidate) => candidate.new_name(),
             Self::FittedAscii(candidate) => candidate.new_name(),
+            Self::PopulatedAscii(candidate) => candidate.new_name(),
         }
     }
 
@@ -53,6 +60,7 @@ impl Candidate {
         match self {
             Self::SameWidth(candidate) => candidate.identity(),
             Self::FittedAscii(candidate) => candidate.identity(),
+            Self::PopulatedAscii(candidate) => candidate.identity(),
         }
     }
 
@@ -60,6 +68,7 @@ impl Candidate {
         match self {
             Self::SameWidth(candidate) => candidate.changed(),
             Self::FittedAscii(candidate) => candidate.changed(),
+            Self::PopulatedAscii(candidate) => candidate.changed(),
         }
     }
 }
@@ -71,6 +80,25 @@ pub struct RecoverableFieldRenamePlan {
 }
 
 impl NativeImage {
+    /// Bind the populated semantic family to its exact original nonempty source.
+    /// The closed profile retains all ASCII widths, including validated no-ops.
+    pub fn plan_recoverable_populated_field_rename(
+        self,
+        table: &str,
+        column: &str,
+        new_name: &str,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<RecoverableFieldRenamePlan, Error> {
+        let _span = tracing::debug_span!("native.field_rename.plan_populated").entered();
+        let candidate = Candidate::PopulatedAscii(
+            self.prepare_populated_field_rename(table, column, new_name, budget, cancelled)?,
+        );
+        let intent = Intent::capture(Profile::PopulatedAscii, &candidate, budget, cancelled)?;
+        check(budget, cancelled)?;
+        RecoverableFieldRenamePlan::new(candidate, intent, budget, cancelled)
+    }
+
     /// Bind the same-width request and original native identity to the whole BEFORE.
     /// This does not open a journal or acquire a native save owner.
     pub fn plan_recoverable_same_width_field_rename(
