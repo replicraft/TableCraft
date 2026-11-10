@@ -109,3 +109,19 @@ pub fn extend(
     assert_eq!(&after[start + PAGE..], &before[start + PAGE..]);
     after
 }
+
+/// Replace only the actual terminal's same-sized bytes; forwarding pointers,
+/// root/index identity and every historical intermediate remain unchanged.
+pub(in crate::fixtures::access) fn replace_terminal(
+    before: &[u8],
+    data_page: u32,
+    root: usize,
+    record: &[u8],
+) -> Vec<u8> {
+    let (_, start, end) = terminal(before, data_page, root);
+    assert_eq!(record.len(), end - start);
+    let mut after = before.to_vec();
+    let page = data_page as usize * PAGE;
+    after[page + start..page + end].copy_from_slice(record);
+    after
+}
