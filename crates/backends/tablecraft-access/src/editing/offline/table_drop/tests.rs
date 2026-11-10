@@ -271,3 +271,6 @@ fn malformed_table_drop_family_never_retries_row_or_field_decoders() {
         Err(Cause::TableRenameIntent(_))
     ));
 }
+
+#[cfg(feature = "ace16-create")]
+mod retained;
