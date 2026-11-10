@@ -25,6 +25,32 @@ fn a_sparse_database_above_the_former_capture_quota_opens_and_reads_without_writ
     };
     assert!(!table_creation_available);
     assert!(!table_design_available);
+    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+    {
+        let Response::FieldAdditionAvailability { availability } = request(
+            &worker,
+            Command::InspectFieldAdditionAvailability {
+                document_revision,
+                table: "Items".into(),
+            },
+        )
+        .unwrap() else {
+            panic!("expected inert addition availability");
+        };
+        assert!(!availability.number_available);
+        assert!(!availability.short_text_available);
+        let Response::NumberColumnAvailability { availability } = request(
+            &worker,
+            Command::InspectNumberColumnAvailability {
+                document_revision,
+                table: "Items".into(),
+            },
+        )
+        .unwrap() else {
+            panic!("expected inert Number availability");
+        };
+        assert!(!availability.available);
+    }
     let Response::Data { rows, has_more, .. } = request(
         &worker,
         Command::Page {
@@ -71,6 +97,17 @@ fn a_sparse_database_above_the_former_capture_quota_opens_and_reads_without_writ
         any(target_os = "macos", target_os = "linux", windows)
     )))]
     let _ = document_revision;
+    let Response::Data { rows, .. } = request(
+        &worker,
+        Command::Page {
+            table: "Items".into(),
+            offset: 0,
+        },
+    )
+    .unwrap() else {
+        panic!("write refusal must preserve the readable source");
+    };
+    assert_eq!(rows.len(), 3);
     let after = std::fs::read(&path).unwrap();
     assert_eq!(after.len(), 65 * 1024 * 1024);
     assert_eq!(&after[..original.len()], original);
