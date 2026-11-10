@@ -71,6 +71,12 @@ pub(super) struct Observed {
     index: usize,
 }
 
+#[derive(Clone, Copy)]
+enum Purpose {
+    SavedField,
+    CurrentTail,
+}
+
 impl Observed {
     pub fn column(&self) -> &NativeColumn {
         &self.schema.columns()[self.index]
@@ -80,6 +86,27 @@ impl Observed {
         image: &NativeImage,
         table: &str,
         field: &str,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, Error> {
+        Self::capture_for(image, table, field, Purpose::SavedField, budget, cancelled)
+    }
+
+    pub(in crate::table::mutation) fn capture_current_tail(
+        image: &NativeImage,
+        table: &str,
+        field: &str,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, Error> {
+        Self::capture_for(image, table, field, Purpose::CurrentTail, budget, cancelled)
+    }
+
+    fn capture_for(
+        image: &NativeImage,
+        table: &str,
+        field: &str,
+        purpose: Purpose,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, Error> {
@@ -121,6 +148,12 @@ impl Observed {
         if target.number() == 0 || !target.name().is_ascii() {
             return Err(Error::Source);
         }
+        if matches!(purpose, Purpose::CurrentTail)
+            && (index + 1 != schema.columns().len()
+                || target.number().checked_add(1) != Some(schema.physical_layout().max_columns))
+        {
+            return Err(Error::Source);
+        }
         let indexes =
             inspect_table_indexes(&mut image.reader(), scope, schema.name(), budget, cancelled)?;
         for key in indexes.indexes() {
@@ -149,7 +182,7 @@ impl Observed {
             }
         }
         let group = group.ok_or(Error::Source)?;
-        qualify_declaration(target, &properties, group, budget, cancelled)?;
+        qualify_declaration(target, &properties, group, purpose, budget, cancelled)?;
         let mut input = image.reader();
         let mut reader = Reader {
             source: &mut input,
@@ -294,6 +327,7 @@ fn qualify_declaration(
     column: &NativeColumn,
     properties: &TableProperties,
     group: usize,
+    purpose: Purpose,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), Error> {
@@ -304,9 +338,18 @@ fn qualify_declaration(
         && column.extended_flags() == 0;
     let text = column.native_type() == data_type::SHORT_TEXT
         && !column.fixed()
-        && column.storage_length() == OBSERVED_TEXT_BYTES
         && column.flags() == UPDATABLE_FLAG
-        && column.extended_flags() == UNICODE_COMPRESSION_FLAG;
+        && match purpose {
+            Purpose::SavedField => {
+                column.storage_length() == OBSERVED_TEXT_BYTES
+                    && column.extended_flags() == UNICODE_COMPRESSION_FLAG
+            }
+            Purpose::CurrentTail => {
+                (size_of::<u16>()..=OBSERVED_TEXT_BYTES).contains(&column.storage_length())
+                    && column.storage_length().is_multiple_of(size_of::<u16>())
+                    && column.extended_flags() & !UNICODE_COMPRESSION_FLAG == 0
+            }
+        };
     if !number && !text {
         return Err(Error::Source);
     }

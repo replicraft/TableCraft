@@ -1,5 +1,5 @@
 //! Independent decoded survivors and exact byte complement after fitted append.
-use super::{FieldDropError as Error, source::Source};
+use super::{FieldDropError as Error, source::Evidence};
 use crate::{
     format::{
         bytes::{u16_at, u32_at},
@@ -24,15 +24,15 @@ const FREE_BYTES_OFFSET: usize = 2;
 const DEFINITION_FOOTER_BYTES: usize = 8;
 
 pub(super) fn candidate(
-    source: &Source,
+    before: &crate::NativeImage,
+    evidence: &Evidence,
     after: &[u8],
     change: &RepeatedChange,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), Error> {
     check(budget, cancelled)?;
-    let before = source.proof.image();
-    let observed = &source.evidence.observed;
+    let observed = &evidence.observed;
     if before.as_bytes().len() != after.len()
         || change.length() != after.len()
         || change.catalog_page != CATALOG_PAGE as u32
@@ -41,7 +41,7 @@ pub(super) fn candidate(
         return Err(Error::Preservation);
     }
     let definition_start = observed.schema.definition_page() as usize * PAGE_BYTES;
-    definition_bytes(source, after, budget, cancelled)?;
+    definition_bytes(before, evidence, after, budget, cancelled)?;
     let property_start = PROPERTY_PAGE * PAGE_BYTES;
     let old = &before.as_bytes()[property_start..property_start + PAGE_BYTES];
     let new = &after[property_start..property_start + PAGE_BYTES];
@@ -83,7 +83,7 @@ pub(super) fn candidate(
         if left != right
             && ![
                 &definition_span,
-                &source.evidence.descriptor,
+                &evidence.descriptor,
                 &body_span,
                 &directory_span,
                 &count_span,
@@ -233,15 +233,16 @@ pub(super) fn candidate(
 /// from a producer-generated replacement page. Every retained source byte is
 /// located independently; only the three stored header facts may change.
 fn definition_bytes(
-    source: &Source,
+    before: &crate::NativeImage,
+    evidence: &Evidence,
     after: &[u8],
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), Error> {
     check(budget, cancelled)?;
-    let observed = &source.evidence.observed;
+    let observed = &evidence.observed;
     let base = observed.schema.definition_page() as usize * PAGE_BYTES;
-    let old = &source.proof.image().as_bytes()[base..base + PAGE_BYTES];
+    let old = &before.as_bytes()[base..base + PAGE_BYTES];
     let new = after
         .get(base..base + PAGE_BYTES)
         .ok_or(Error::Preservation)?;

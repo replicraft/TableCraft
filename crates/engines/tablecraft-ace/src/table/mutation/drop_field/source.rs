@@ -12,6 +12,14 @@ use crate::{
 use std::ops::Range;
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
+const COPY_BYTES: usize = 4096;
+
+#[derive(Clone, Copy)]
+enum Purpose {
+    SettledEmpty,
+    CurrentTail,
+}
+
 pub(super) struct Source {
     pub proof: FieldHistoryOffSource,
     pub evidence: Evidence,
@@ -68,30 +76,69 @@ impl Evidence {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, Error> {
-        let observed = Observed::capture(image, table, field, budget, cancelled)?;
+        Self::capture_for(
+            image,
+            table,
+            field,
+            Purpose::SettledEmpty,
+            budget,
+            cancelled,
+        )
+    }
+
+    pub(super) fn capture_current_tail(
+        image: &NativeImage,
+        table: &str,
+        field: &str,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, Error> {
+        Self::capture_for(image, table, field, Purpose::CurrentTail, budget, cancelled)
+    }
+
+    fn capture_for(
+        image: &NativeImage,
+        table: &str,
+        field: &str,
+        purpose: Purpose,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, Error> {
+        let observed = if matches!(purpose, Purpose::CurrentTail) {
+            Observed::capture_current_tail(image, table, field, budget, cancelled)?
+        } else {
+            Observed::capture(image, table, field, budget, cancelled)?
+        };
         let scope = image.catalog().catalog().scope();
         let checked = check_table(&mut image.reader(), scope, table, budget, cancelled)?;
-        if checked.rows() != 0 || observed.schema.declared_rows() != 0 {
+        let invalid_rows = match purpose {
+            Purpose::CurrentTail => {
+                checked.rows() == 0 || checked.rows() != observed.schema.declared_rows() as usize
+            }
+            Purpose::SettledEmpty => checked.rows() != 0 || observed.schema.declared_rows() != 0,
+        };
+        if invalid_rows {
             return Err(Error::Source);
         }
-        let definition =
-            existing_fields::capture_field_addition(image, &checked, budget, cancelled)?;
-        let mut columns = definition.borrowed_columns(budget, cancelled)?;
-        let position = observed
-            .schema
-            .columns()
-            .iter()
-            .position(|column| column.number() == observed.identity.column_number())
-            .ok_or(Error::Source)?;
-        budget.charge(Resource::Steps, columns.len() as u64)?;
-        // Discard the removed declaration; encode only surviving field policies.
-        let _ = columns.remove(position);
-        let order = properties::Order::capture(&observed.properties, budget, cancelled)?;
-        // The genuine encoder's exact-order check refuses orphan dictionary keys
-        // and a missing remaining group; neither case is in the executed evidence.
-        let body = properties::encode_body(&columns, order, budget, cancelled)
-            .map_err(Error::from)?
-            .ok_or(Error::Source)?;
+        let body = if matches!(purpose, Purpose::CurrentTail) {
+            current_body(&observed, budget, cancelled)?
+        } else {
+            let definition =
+                existing_fields::capture_field_addition(image, &checked, budget, cancelled)?;
+            let mut columns = definition.borrowed_columns(budget, cancelled)?;
+            let position = observed
+                .schema
+                .columns()
+                .iter()
+                .position(|column| column.number() == observed.identity.column_number())
+                .ok_or(Error::Source)?;
+            budget.charge(Resource::Steps, columns.len() as u64)?;
+            let _ = columns.remove(position);
+            let order = properties::Order::capture(&observed.properties, budget, cancelled)?;
+            properties::encode_body(&columns, order, budget, cancelled)
+                .map_err(Error::from)?
+                .ok_or(Error::Source)?
+        };
         let mut removed = None;
         framing::ordered_group_blocks(&observed.properties, budget, cancelled, |group, span| {
             if group == observed.group && removed.replace(span).is_some() {
@@ -134,4 +181,50 @@ impl Evidence {
             body,
         })
     }
+}
+
+fn current_body(
+    observed: &Observed,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Vec<u8>, Error> {
+    for group in observed.properties.groups() {
+        check(budget, cancelled)?;
+        if group.kind() == crate::PropertyGroupKind::Column {
+            let mut owners = 0;
+            for field in observed.schema.columns() {
+                check(budget, cancelled)?;
+                budget.charge(
+                    Resource::Steps,
+                    group.name().len().max(field.name().len()) as u64,
+                )?;
+                owners += usize::from(group.name() == field.name());
+            }
+            if owners != 1 {
+                return Err(Error::Source);
+            }
+        }
+    }
+    let mut removed = None;
+    framing::ordered_group_blocks(&observed.properties, budget, cancelled, |group, span| {
+        if group == observed.group && removed.replace(span).is_some() {
+            return Err(crate::InspectError::Malformed);
+        }
+        Ok(())
+    })?;
+    let removed = removed.ok_or(Error::Source)?;
+    let raw = observed.properties.raw_bytes();
+    let length = raw.len().checked_sub(removed.len()).ok_or(Error::Source)?;
+    budget.charge_allocation(length as u64, 1)?;
+    let mut body = Vec::new();
+    body.try_reserve_exact(length)
+        .map_err(|_| crate::InspectError::Allocation)?;
+    for part in [&raw[..removed.start], &raw[removed.end..]] {
+        for block in part.chunks(COPY_BYTES) {
+            check(budget, cancelled)?;
+            budget.charge(Resource::Steps, block.len() as u64)?;
+            body.extend_from_slice(block);
+        }
+    }
+    Ok(body)
 }

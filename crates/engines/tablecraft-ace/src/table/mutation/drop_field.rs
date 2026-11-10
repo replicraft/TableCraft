@@ -1,5 +1,6 @@
 //! Saved nonprimary field removal over a complete settled explicit-OFF source.
 mod candidate;
+mod current_tail;
 mod definition;
 mod error;
 mod identity;
@@ -10,6 +11,7 @@ mod tests;
 mod verify;
 
 pub use candidate::NativeFieldDropCandidate;
+pub use current_tail::NativeCurrentTailFieldDropCandidate;
 pub use error::FieldDropError;
 pub use identity::NativeFieldDropIdentity;
 pub use selection::SavedFieldDropSourcePurpose;

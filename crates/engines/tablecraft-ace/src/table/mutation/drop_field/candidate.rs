@@ -82,7 +82,14 @@ impl NativeImage {
             cancelled,
         )?;
         change.apply(&mut after, budget, cancelled)?;
-        verify::candidate(&source, &after, &change, budget, cancelled)?;
+        verify::candidate(
+            source.proof.image(),
+            &source.evidence,
+            &after,
+            &change,
+            budget,
+            cancelled,
+        )?;
         check(budget, cancelled)?;
         Ok(NativeFieldDropCandidate { source, after })
     }
