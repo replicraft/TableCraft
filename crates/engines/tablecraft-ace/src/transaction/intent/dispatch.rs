@@ -13,8 +13,8 @@ const ACE_PROFILE: u16 = 2;
 /// A versioned validation route, never a serialized native permission.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum NativeUpdateProfile {
-    /// One absent Short Text field materialized in a qualified historical row.
-    Ace16HistoricalShortTextMaterialization,
+    /// One Short Text field updated in a positively qualified historical row.
+    Ace16HistoricalShortTextUpdates,
     /// One absent Number materialized through a qualified relocated historical root.
     Ace16HistoricalForwardedNumberMaterialization,
     /// One absent Number in a qualified historical row with retained variable fields.
@@ -68,11 +68,9 @@ pub enum NativeUpdateBody {
 }
 
 impl NativeUpdateIntent {
-    pub(super) fn from_historical_short_text_materialization(
-        original: NativeFittedEditIntent,
-    ) -> Self {
+    pub(super) fn from_historical_short_text_updates(original: NativeFittedEditIntent) -> Self {
         Self {
-            profile: NativeUpdateProfile::Ace16HistoricalShortTextMaterialization,
+            profile: NativeUpdateProfile::Ace16HistoricalShortTextUpdates,
             body: NativeUpdateBody::Fitted(original),
         }
     }
@@ -340,7 +338,7 @@ impl NativeUpdateIntent {
             }
             (
                 NativeUpdateBody::Fitted(original),
-                NativeUpdateProfile::Ace16HistoricalShortTextMaterialization,
+                NativeUpdateProfile::Ace16HistoricalShortTextUpdates,
             ) => original.encode_profile(
                 super::fitted::WireProfile::HistoricalShortText,
                 budget,
@@ -372,7 +370,7 @@ impl NativeUpdateIntent {
         if bytes.get(..super::fitted::HISTORICAL_TEXT_MAGIC.len())
             == Some(super::fitted::HISTORICAL_TEXT_MAGIC.as_slice())
         {
-            return Ok(Self::from_historical_short_text_materialization(
+            return Ok(Self::from_historical_short_text_updates(
                 NativeFittedEditIntent::decode_profile(
                     bytes,
                     super::fitted::WireProfile::HistoricalShortText,

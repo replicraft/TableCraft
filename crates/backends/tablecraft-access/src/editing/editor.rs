@@ -30,24 +30,19 @@ impl NativeEditor {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<(UpdateProfile, JournalRoute), NativeEditError> {
         #[cfg(feature = "ace16-create")]
-        if self.image.select_native_historical_present_fixed_table(
-            self.snapshot.name(),
-            budget,
-            cancelled,
-        )? {
-            return match self.image.check_native_historical_present_fixed_table(
+        if self
+            .image
+            .select_native_historical_row_table(self.snapshot.name(), budget, cancelled)?
+        {
+            return match self.image.check_native_historical_row_table(
                 self.snapshot.name(),
                 budget,
                 cancelled,
             ) {
-                Ok(()) => Ok((
-                    UpdateProfile::StoredScalar,
-                    JournalRoute::HistoricalPresentFixed,
-                )),
-                Err(EditError::Unsupported(_)) => Ok((
-                    UpdateProfile::Unavailable,
-                    JournalRoute::HistoricalPresentFixed,
-                )),
+                Ok(()) => Ok((UpdateProfile::StoredScalar, JournalRoute::HistoricalRows)),
+                Err(EditError::Unsupported(_)) => {
+                    Ok((UpdateProfile::Unavailable, JournalRoute::HistoricalRows))
+                }
                 Err(error) => Err(error.into()),
             };
         }
@@ -338,13 +333,12 @@ impl NativeEditor {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<RecoverableNativeEditPlan, RecoverableEditError> {
-        self.image
-            .plan_recoverable_historical_short_text_materialization(
-                self.snapshot.name(),
-                groups,
-                budget,
-                cancelled,
-            )
+        self.image.plan_recoverable_historical_short_text_updates(
+            self.snapshot.name(),
+            groups,
+            budget,
+            cancelled,
+        )
     }
 
     pub(super) fn plan_recoverable_ordinary_variable(

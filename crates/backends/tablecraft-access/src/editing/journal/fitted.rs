@@ -47,7 +47,7 @@ impl NativeJournalEditor {
     ) -> Result<(RecoverableNativeEditPlan, usize), Error> {
         let _span = tracing::debug_span!("access.journal.plan_variable_columns").entered();
         check(budget, cancelled)?;
-        if (self.route != JournalRoute::Ordinary && !self.route.historical_present_fixed())
+        if (self.route != JournalRoute::Ordinary && !self.route.historical_rows())
             || self.profile != UpdateProfile::StoredScalar
         {
             return Err(NativeEditError::Unsupported.into());
@@ -67,9 +67,7 @@ impl NativeJournalEditor {
                 return Err(NativeEditError::Unsupported.into());
             }
             let kind = self.snapshot().columns()[position].data_type();
-            if self.route.historical_present_fixed()
-                && (columns.len() != 1 || kind != ScalarType::Text)
-            {
+            if self.route.historical_rows() && (columns.len() != 1 || kind != ScalarType::Text) {
                 return Err(NativeEditError::Unsupported.into());
             }
             if !matches!(
@@ -155,7 +153,7 @@ impl NativeJournalEditor {
                 .editor
                 .plan_recoverable_ordinary_variable(groups, budget, cancelled)?,
             #[cfg(feature = "ace16-create")]
-            JournalRoute::HistoricalPresentFixed => self
+            JournalRoute::HistoricalRows => self
                 .editor
                 .plan_recoverable_historical_short_text(groups, budget, cancelled)?,
             JournalRoute::Existing => return Err(NativeEditError::Unsupported.into()),

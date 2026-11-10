@@ -29,11 +29,11 @@ pub(super) fn rebuild_verified_binding(
     let plan = match (intent.profile(), intent.body()) {
         #[cfg(feature = "ace16-create")]
         (
-            NativeUpdateProfile::Ace16HistoricalShortTextMaterialization,
+            NativeUpdateProfile::Ace16HistoricalShortTextUpdates,
             NativeUpdateBody::Fitted(original),
         ) => {
             let groups = original.borrowed_groups(budget, cancelled)?;
-            image.plan_historical_short_text_materialization(
+            image.plan_historical_short_text_updates(
                 original.table(),
                 &groups,
                 budget,
