@@ -22,7 +22,10 @@ pub struct Source {
 }
 
 pub fn source(case: Case) -> Source {
-    let original = super::source(SourceCase::FirstNumber);
+    extend_source(super::source(SourceCase::FirstNumber), case)
+}
+
+pub fn extend_source(original: super::Source, case: Case) -> Source {
     let mut bytes = original.bytes;
     let new_page = bytes.len() / PAGE;
     assert!(new_page < 64);

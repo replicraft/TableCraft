@@ -1,8 +1,9 @@
 //! Independent mixed historical rows and variable-footer materialization.
 use super::super::storage;
-use super::{SourceCase, deleted_field, populated::materialization, source};
+use super::{SourceCase, populated::materialization, source};
 use crate::fixtures::access::{
     canonical_initial_table_creation::inserts::initial_rows_image, put16, put32,
+    raw_property_groups::without_group,
 };
 
 const PAGE: usize = 4096;
@@ -32,7 +33,7 @@ fn empty(case: Case) -> Vec<u8> {
     after[column + 11..column + 15].fill(0);
     after[column + 16] = 0;
     put16(&mut after, column + 23, 32);
-    let body = deleted_field::without_group(&storage::selected_body(&before), "OtherLabel");
+    let body = without_group(&storage::selected_body(&before), "OtherLabel");
     storage::append(&before, after, &body)
 }
 

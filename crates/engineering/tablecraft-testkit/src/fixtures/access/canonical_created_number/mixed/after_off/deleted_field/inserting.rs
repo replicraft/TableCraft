@@ -1,13 +1,14 @@
 //! Independent empty sparse LONG sources and literal first-row outcomes.
 use super::{
     ACTIVE_COLUMNS, COLUMN_BLOCK, COLUMN_BYTES, DEFINITION_PAGE, INDEX_ENTRY_BYTES, MAX_COLUMNS,
-    NATIVE_NUMBER, PAGE, PHYSICAL_INDEXES, definition, storage, without_group, word,
+    NATIVE_NUMBER, PAGE, PHYSICAL_INDEXES, definition, storage, word,
 };
 use crate::fixtures::access::{
     canonical_created_number::{Source, repeated},
     canonical_database_options,
     canonical_initial_table_creation::inserts::first_row_image,
     put16, put32,
+    raw_property_groups::without_group,
 };
 
 const FIXED_OFFSET: usize = 21;
