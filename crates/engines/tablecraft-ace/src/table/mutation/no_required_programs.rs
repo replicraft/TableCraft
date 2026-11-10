@@ -376,14 +376,7 @@ impl<'image> NoRequiredTablePrograms<'image> {
         }
         let selected = match purpose {
             #[cfg(feature = "ace16-create")]
-            Purpose::RetainedRows | Purpose::RetainedDelete => {
-                let inventory = crate::table::table_append::Inventory::capture_retained_rows(
-                    image, budget, cancelled,
-                )?;
-                catalog::validate_retained_rows(image, schema, &inventory, budget, cancelled)?
-            }
-            #[cfg(feature = "ace16-create")]
-            Purpose::RetainedInsert => {
+            Purpose::RetainedRows | Purpose::RetainedDelete | Purpose::RetainedInsert => {
                 let inventory =
                     crate::table::table_append::Inventory::capture(image, budget, cancelled)?;
                 catalog::validate_retained(image, schema, &inventory, budget, cancelled)?

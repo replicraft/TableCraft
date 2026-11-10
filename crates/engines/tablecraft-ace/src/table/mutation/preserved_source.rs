@@ -464,7 +464,8 @@ fn capture_framed_with_records(
     #[cfg(all(feature = "journal", feature = "ace16-create"))]
     let roots = match &payload {
         PayloadAdmission::RetainedRowsNoRequired(_)
-        | PayloadAdmission::RetainedDeleteNoRequired(_) => {
+        | PayloadAdmission::RetainedDeleteNoRequired(_)
+        | PayloadAdmission::RetainedInsertNoRequired(_) => {
             roots::capture_retained(image, schema, &ordinals, budget, cancelled)?
         }
         _ => roots::capture(image, schema, &ordinals, budget, cancelled)?,
@@ -498,7 +499,8 @@ fn capture_framed_with_records(
     #[cfg(all(feature = "journal", feature = "ace16-create"))]
     let long_values = match &payload {
         PayloadAdmission::RetainedRowsNoRequired(_)
-        | PayloadAdmission::RetainedDeleteNoRequired(_) => {
+        | PayloadAdmission::RetainedDeleteNoRequired(_)
+        | PayloadAdmission::RetainedInsertNoRequired(_) => {
             crate::table::mutation::lval_ownership::Inventory::capture_retained(
                 image, budget, cancelled,
             )?

@@ -51,8 +51,6 @@ enum Census {
     Original,
     #[cfg(feature = "ace16-create")]
     Retained,
-    #[cfg(feature = "ace16-create")]
-    RetainedRows,
 }
 
 pub(super) fn capture<R: crate::NativeReadSource>(
@@ -78,24 +76,6 @@ pub(super) fn capture_retained<R: crate::NativeReadSource>(
         return Err(refused());
     }
     capture_with_policy(reader, owned, definition, Census::Retained)
-}
-
-/// Retained row updates retain the same complete slot census while following
-/// every owned catalog hop with paid dynamic cycle and alias witnesses.
-#[cfg(feature = "ace16-create")]
-pub(super) fn capture_retained_rows<R: crate::NativeReadSource>(
-    reader: &mut Reader<'_, R>,
-    owned: &[u32],
-    definition: u32,
-    inventory: &crate::table::table_append::Inventory<'_>,
-) -> Result<Vec<LogicalRow>, EditError> {
-    if inventory.catalog_definition() != definition
-        || inventory.catalog_pages() != owned
-        || inventory.before_pages() != reader.header.page_count()
-    {
-        return Err(refused());
-    }
-    capture_with_policy(reader, owned, definition, Census::RetainedRows)
 }
 
 fn capture_with_policy<R: crate::NativeReadSource>(
@@ -196,7 +176,7 @@ fn capture_with_policy<R: crate::NativeReadSource>(
         };
         let physical = match census {
             #[cfg(feature = "ace16-create")]
-            Census::RetainedRows => reader.read_location_observed(
+            Census::Retained => reader.read_location_observed(
                 page_number,
                 slot,
                 definition,
@@ -232,13 +212,13 @@ fn capture_with_policy<R: crate::NativeReadSource>(
             match census {
                 Census::Original => return Err(refused()),
                 #[cfg(feature = "ace16-create")]
-                Census::Retained | Census::RetainedRows if slot.kind == Kind::Hidden => {
+                Census::Retained if slot.kind == Kind::Hidden => {
                     // The bound whole-file inventory protects these original
                     // tombstones and old hidden targets. No new logical row,
                     // writable location or permission is invented from them.
                 }
                 #[cfg(feature = "ace16-create")]
-                Census::Retained | Census::RetainedRows => return Err(refused()),
+                Census::Retained => return Err(refused()),
             }
         }
     }

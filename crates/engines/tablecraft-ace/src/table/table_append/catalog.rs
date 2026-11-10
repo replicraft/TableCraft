@@ -35,7 +35,6 @@ pub(super) struct Facts {
 
 pub(super) fn capture(
     image: &NativeImage,
-    dynamic_rows: bool,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Facts, EditError> {
@@ -155,18 +154,15 @@ pub(super) fn capture(
         .ok_or_else(refused)?;
     // The existing catalog/LVAL ledgers bind live forwarded roots and every
     // externally stored property body; raw retained records remain untouched.
-    let property_ledger = if dynamic_rows {
-        ledger::capture_retained_rows(image.as_bytes(), image.catalog(), budget, cancelled)?
-    } else {
-        ledger::capture(image.as_bytes(), image.catalog(), budget, cancelled)?
-    };
-    drop(property_ledger);
-    let long_values = if dynamic_rows {
-        lval_ownership::Inventory::capture_retained(image, budget, cancelled)?
-    } else {
-        lval_ownership::Inventory::capture(image, budget, cancelled)?
-    };
-    drop(long_values);
+    drop(ledger::capture_retained(
+        image.as_bytes(),
+        image.catalog(),
+        budget,
+        cancelled,
+    )?);
+    drop(lval_ownership::Inventory::capture_retained(
+        image, budget, cancelled,
+    )?);
     Ok(Facts {
         schema,
         tables_parent: tables.native_id(),

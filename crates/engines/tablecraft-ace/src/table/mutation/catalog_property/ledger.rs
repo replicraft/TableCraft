@@ -23,7 +23,7 @@ use tablecraft_core::{ids::ObjectId, limits::ResourceBudget};
 enum Traversal {
     Original,
     #[cfg(all(feature = "journal", feature = "ace16-create"))]
-    RetainedRows,
+    Retained,
 }
 
 struct Live<'a> {
@@ -52,13 +52,13 @@ pub(crate) fn capture<'a>(
 }
 
 #[cfg(all(feature = "journal", feature = "ace16-create"))]
-pub(crate) fn capture_retained_rows<'a>(
+pub(crate) fn capture_retained<'a>(
     bytes: &'a [u8],
     catalog: &'a CatalogInspection,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Ledger<'a>, EditError> {
-    capture_with_traversal(bytes, catalog, Traversal::RetainedRows, budget, cancelled)
+    capture_with_traversal(bytes, catalog, Traversal::Retained, budget, cancelled)
 }
 
 fn capture_with_traversal<'a>(
@@ -120,7 +120,7 @@ fn capture_with_traversal<'a>(
         let descriptor = match traversal {
             Traversal::Original => descriptor::capture(&mut reader, &schema, selected, origin)?,
             #[cfg(all(feature = "journal", feature = "ace16-create"))]
-            Traversal::RetainedRows => descriptor::capture_retained(
+            Traversal::Retained => descriptor::capture_retained(
                 &mut reader,
                 &schema,
                 selected,

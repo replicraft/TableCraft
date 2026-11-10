@@ -20,33 +20,16 @@ pub(crate) struct Inventory<'image> {
 }
 
 impl<'image> Inventory<'image> {
+    /// Observe the complete retained cohort using paid, owned row traversal.
+    /// Each operation still requires its own source/program and mutation proof.
     pub(crate) fn capture(
         image: &'image NativeImage,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, EditError> {
-        Self::capture_with_rows(image, false, budget, cancelled)
-    }
-
-    /// Complete inventory for the separately qualified retained row-update
-    /// purpose. Original append/insert captures keep their traversal language.
-    pub(crate) fn capture_retained_rows(
-        image: &'image NativeImage,
-        budget: &mut ResourceBudget,
-        cancelled: &dyn Fn() -> bool,
-    ) -> Result<Self, EditError> {
-        Self::capture_with_rows(image, true, budget, cancelled)
-    }
-
-    fn capture_with_rows(
-        image: &'image NativeImage,
-        dynamic_rows: bool,
-        budget: &mut ResourceBudget,
-        cancelled: &dyn Fn() -> bool,
-    ) -> Result<Self, EditError> {
         check(budget, cancelled)?;
         image.require_retained_capture()?;
-        let facts = catalog::capture(image, dynamic_rows, budget, cancelled)?;
+        let facts = catalog::capture(image, budget, cancelled)?;
         let storage = storage::capture(image, &facts.schema, budget, cancelled)?;
         Ok(Self {
             image,
