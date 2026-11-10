@@ -1,7 +1,13 @@
 //! Host routing preserves required publication's captured owner and outcome states.
+use crate::native::publication::Error;
+use std::io::ErrorKind;
+
+#[cfg(not(windows))]
 use super::budget;
-use crate::native::publication::{Error, Output};
-use std::{fs, io::ErrorKind};
+#[cfg(not(windows))]
+use crate::native::publication::Output;
+#[cfg(not(windows))]
+use std::fs;
 #[cfg(unix)]
 use tablecraft_core::limits::Resource;
 use tablecraft_io::{IoError, publication::PublicationError};
