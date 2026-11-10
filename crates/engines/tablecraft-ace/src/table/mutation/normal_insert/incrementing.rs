@@ -36,8 +36,15 @@ pub(super) fn plan(
     let rows = binding::expand(&image, &source, &generated, requests, budget, cancelled)?;
 
     properties::require_text_declarations(&image, source.table.schema(), &rows, budget, cancelled)?;
-    let (facts, optional) =
-        super::indexed::qualify(&image, &source, table, &rows, budget, cancelled)?;
+    let (facts, optional) = super::indexed::qualify(
+        &image,
+        &source,
+        table,
+        &rows,
+        super::indexed::LvalScope::Original,
+        budget,
+        cancelled,
+    )?;
     if optional {
         return Err(EditError::Preservation);
     }

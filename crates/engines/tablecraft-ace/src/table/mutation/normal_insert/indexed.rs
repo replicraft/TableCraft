@@ -42,6 +42,15 @@ const STAMP_START: usize = 8;
 const STAMP_END: usize = 12;
 const LEVEL_AT: usize = 26;
 
+/// Select the original or retained catalog/LVAL traversal without changing
+/// declaration, key, counter or physical INDEX admission.
+#[derive(Clone, Copy)]
+pub(super) enum LvalScope {
+    Original,
+    #[cfg(feature = "ace16-create")]
+    Retained,
+}
+
 struct History {
     offset: usize,
     before: u32,
@@ -202,6 +211,7 @@ pub(super) fn qualify<'image>(
     source: &Source,
     table: &str,
     requests: &[RowInsert],
+    scope: LvalScope,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(CheckedIndexes<'image>, bool), EditError> {
@@ -214,7 +224,11 @@ pub(super) fn qualify<'image>(
         return Err(EditError::Preservation);
     }
     let ownership = Ownership::capture_actions(image, facts.checked(), budget, cancelled)?;
-    let live = Inventory::capture(image, budget, cancelled)?;
+    let live = match scope {
+        LvalScope::Original => Inventory::capture(image, budget, cancelled)?,
+        #[cfg(feature = "ace16-create")]
+        LvalScope::Retained => Inventory::capture_retained(image, budget, cancelled)?,
+    };
     // A proof-wire choice derived from already-paid native checks, never caller
     // authority. Keep the existing ASC/present reconstruction and its resource
     // and cancellation trace unchanged for that established family.

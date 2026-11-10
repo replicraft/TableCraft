@@ -46,8 +46,15 @@ pub(super) fn prove(
         budget,
         cancelled,
     )?;
-    let (facts, optional) =
-        indexed::qualify(&image, &source, table, &derived.rows, budget, cancelled)?;
+    let (facts, optional) = indexed::qualify(
+        &image,
+        &source,
+        table,
+        &derived.rows,
+        family.lval_scope(),
+        budget,
+        cancelled,
+    )?;
     if optional {
         return Err(EditError::Preservation);
     }
@@ -115,7 +122,15 @@ pub(super) fn prove(
     let final_source = family.capture(&after, table, budget, cancelled)?;
     let final_counter =
         incrementing::mode::capture_current(&after, &final_source, budget, cancelled)?;
-    let (final_facts, _) = indexed::qualify(&after, &final_source, table, &[], budget, cancelled)?;
+    let (final_facts, _) = indexed::qualify(
+        &after,
+        &final_source,
+        table,
+        &[],
+        family.lval_scope(),
+        budget,
+        cancelled,
+    )?;
     if final_source.table.schema().object_id() != source.table.schema().object_id()
         || final_source.table.schema().definition_page() != source.table.schema().definition_page()
         || final_source.records.len() != source.records.len() + original.len()

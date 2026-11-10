@@ -35,8 +35,15 @@ pub(in crate::table::mutation::normal_insert) fn prove(
     let final_last = derived.last;
     let rows = derived.rows;
     properties::require_text_declarations(&image, source.table.schema(), &rows, budget, cancelled)?;
-    let (facts, optional) =
-        super::super::indexed::qualify(&image, &source, table, &rows, budget, cancelled)?;
+    let (facts, optional) = super::super::indexed::qualify(
+        &image,
+        &source,
+        table,
+        &rows,
+        super::super::indexed::LvalScope::Original,
+        budget,
+        cancelled,
+    )?;
     if optional {
         return Err(EditError::Preservation);
     }
@@ -102,8 +109,15 @@ pub(in crate::table::mutation::normal_insert) fn prove(
     let after = NativeImage::capture(&mut Cursor::new(&expected), scope, budget, cancelled)?;
     let final_source = super::super::capture_source(&after, table, budget, cancelled)?;
     let final_counter = super::mode::capture(&after, &final_source, budget, cancelled)?;
-    let (final_facts, _) =
-        super::super::indexed::qualify(&after, &final_source, table, &[], budget, cancelled)?;
+    let (final_facts, _) = super::super::indexed::qualify(
+        &after,
+        &final_source,
+        table,
+        &[],
+        super::super::indexed::LvalScope::Original,
+        budget,
+        cancelled,
+    )?;
     if final_source.table.schema().object_id() != source.table.schema().object_id()
         || final_source.table.schema().definition_page() != source.table.schema().definition_page()
         || final_source.records.len() != source.records.len() + original.len()

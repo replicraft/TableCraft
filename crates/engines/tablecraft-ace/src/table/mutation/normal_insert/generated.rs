@@ -20,6 +20,13 @@ pub(super) enum Family {
 }
 
 impl Family {
+    pub(super) fn lval_scope(self) -> indexed::LvalScope {
+        match self {
+            Self::Current => indexed::LvalScope::Original,
+            Self::Retained => indexed::LvalScope::Retained,
+        }
+    }
+
     pub(super) fn capture(
         self,
         image: &NativeImage,
@@ -57,7 +64,15 @@ pub(super) fn plan(
     let rows =
         incrementing::binding::expand(&image, &source, &generated, requests, budget, cancelled)?;
     properties::require_text_declarations(&image, source.table.schema(), &rows, budget, cancelled)?;
-    let (facts, optional) = indexed::qualify(&image, &source, table, &rows, budget, cancelled)?;
+    let (facts, optional) = indexed::qualify(
+        &image,
+        &source,
+        table,
+        &rows,
+        family.lval_scope(),
+        budget,
+        cancelled,
+    )?;
     if optional {
         return Err(EditError::Preservation);
     }

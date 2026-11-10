@@ -44,7 +44,15 @@ impl NativeImage {
             cancelled,
         )?;
         incrementing::binding::validate(self, &source, counter.column, &[], budget, cancelled)?;
-        indexed::qualify(self, &source, table, &[], budget, cancelled)?;
+        indexed::qualify(
+            self,
+            &source,
+            table,
+            &[],
+            indexed::LvalScope::Retained,
+            budget,
+            cancelled,
+        )?;
         Ok(())
     }
 
