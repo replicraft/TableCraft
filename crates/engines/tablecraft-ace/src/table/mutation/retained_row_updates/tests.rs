@@ -1,6 +1,6 @@
 //! Raw record images qualify replacement without changing retired or sibling roles.
 use crate::{
-    EditError, FittedColumnUpdates, FixedScalarUpdate, NativeImage, SlotScalarUpdate,
+    EditError, FittedColumnUpdates, FixedScalarUpdate, InspectError, NativeImage, SlotScalarUpdate,
     inspect_table_schema, read_table,
 };
 use std::io::Cursor;
@@ -17,6 +17,7 @@ use tablecraft_testkit::fixtures::access::{
         updates,
     },
     canonical_table_drop::current::{self as dropped, History},
+    raw_forwarding_chain,
 };
 
 const SCOPE: CatalogScope = CatalogScope::new(3717);
@@ -269,4 +270,122 @@ fn retained_cells_keep_original_value_conflicts_and_original_sparse_table_identi
         Err(EditError::Conflict)
     ));
     assert_eq!(image(&before).as_bytes(), before);
+}
+
+fn word(bytes: &[u8], at: usize) -> usize {
+    usize::from(u16::from_le_bytes(bytes[at..at + 2].try_into().unwrap()))
+}
+
+#[test]
+fn retained_updates_follow_paid_long_user_and_catalog_chains_without_losing_legacy_guards() {
+    let (base, definition) = source(Case::MixedBinary, true, Profile::DesktopNumber);
+    let native = image(&base);
+    let schema = inspect_table_schema(&mut native.reader(), SCOPE, "Added", &mut budget(), &|| {
+        false
+    })
+    .unwrap();
+    let origin = native
+        .catalog()
+        .origins()
+        .iter()
+        .find(|origin| origin.object_id() == schema.object_id())
+        .unwrap();
+    assert_eq!(origin.page(), 4);
+    let catalog_root = usize::from(origin.slot());
+    let user = raw_forwarding_chain::extend(&base, definition + 1, 0, 20);
+    let catalog = raw_forwarding_chain::extend(&base, 4, catalog_root, 20);
+    let both = raw_forwarding_chain::extend(&user, 4, catalog_root, 20);
+    for before in [&user, &catalog, &both] {
+        let native = image(before);
+        native
+            .check_native_retained_rows_table("Added", &mut budget(), &|| false)
+            .unwrap();
+        let noop = [FixedScalarUpdate::new(
+            0,
+            Value::Int32(123),
+            Value::Int32(123),
+        )];
+        let groups = [FittedColumnUpdates::Fixed {
+            column: "Score",
+            updates: &noop,
+        }];
+        let plan = image(before)
+            .plan_retained_row_updates("Added", &groups, &mut budget(), &|| false)
+            .unwrap();
+        assert_eq!(plan.changed_rows(), 0);
+        equal_image(plan.after_bytes(), before);
+
+        let mut expected = before.to_vec();
+        let data = (definition as usize + 1) * 4096;
+        let root = word(before, data + 14);
+        let terminal = if root & 0x4000 == 0 {
+            0
+        } else {
+            word(before, data + 12) - 1
+        };
+        let at = data + (word(before, data + 14 + terminal * 2) & 0x1fff);
+        assert_eq!(word(before, at), 2);
+        assert_eq!(&before[at + 6..at + 10], 123_i32.to_le_bytes());
+        expected[at + 6..at + 10].copy_from_slice(&456_i32.to_le_bytes());
+        let updates = [FixedScalarUpdate::new(
+            0,
+            Value::Int32(123),
+            Value::Int32(456),
+        )];
+        let groups = [FittedColumnUpdates::Fixed {
+            column: "Score",
+            updates: &updates,
+        }];
+        let plan = image(before)
+            .plan_retained_row_updates("Added", &groups, &mut budget(), &|| false)
+            .unwrap();
+        equal_image(plan.after_bytes(), &expected);
+        assert_eq!(plan.changed_rows(), 1);
+    }
+
+    // The old physical-proof API retains its explicit 16-hop language.
+    let native = image(&user);
+    let mut source = native.reader();
+    let mut work = budget();
+    let mut reader = crate::format::reader::Reader {
+        source: &mut source,
+        header: native.catalog().header(),
+        budget: &mut work,
+        cancelled: &|| false,
+        reads: 0,
+    };
+    let page = reader.page(definition + 1).unwrap();
+    assert!(matches!(
+        reader.row_location(definition + 1, 0, definition, &page),
+        Err(InspectError::StructureLimit)
+    ));
+
+    let data = (definition as usize + 1) * 4096;
+    let count = word(&user, data + 12);
+    let entry = data + 14 + (count - 1) * 2;
+    let terminal = word(&user, entry);
+    let at = data + (terminal & 0x1fff);
+    let mut cycle = user;
+    cycle[entry..entry + 2].copy_from_slice(&((terminal as u16) | 0x4000).to_le_bytes());
+    cycle[at..at + 4].copy_from_slice(&((definition + 1) << 8).to_le_bytes());
+    let request = [FixedScalarUpdate::new(
+        0,
+        Value::Int32(123),
+        Value::Int32(456),
+    )];
+    let groups = [FittedColumnUpdates::Fixed {
+        column: "Score",
+        updates: &request,
+    }];
+    assert!(matches!(
+        image(&cycle).plan_retained_row_updates("Added", &groups, &mut budget(), &|| false),
+        Err(EditError::Inspect(InspectError::Malformed))
+    ));
+    let mut wrong_owner = both;
+    wrong_owner[data + 4..data + 8].copy_from_slice(&7_u32.to_le_bytes());
+    assert!(
+        image(&wrong_owner)
+            .plan_retained_row_updates("Added", &groups, &mut budget(), &|| false)
+            .is_err()
+    );
 }
