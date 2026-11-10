@@ -327,8 +327,8 @@ fn run(
                 )
             },
         );
-        if let Err(error) = result {
-            if !post(
+        if let Err(error) = result
+            && !post(
                 Reply::Failed {
                     generation: task.generation,
                     error,
@@ -336,9 +336,9 @@ fn run(
                 &events,
                 &retained,
                 &*repaint,
-            ) {
-                break;
-            }
+            )
+        {
+            break;
         }
     }
 }

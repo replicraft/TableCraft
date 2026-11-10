@@ -1,5 +1,6 @@
 use super::Desktop;
-use crate::updating::Reply;
+use crate::updating::{Reply, RetainedOutcome};
+use std::sync::Arc;
 use tablecraft_ui::{UpdateFailure, UpdateManualReason, UpdateStatus};
 use tablecraft_update::{
     UpdateError,
@@ -8,7 +9,7 @@ use tablecraft_update::{
 };
 
 impl Desktop {
-    fn can_install_update(&self) -> bool {
+    fn update_documents_safe(&self) -> bool {
         self.state.can_restart_for_update()
             && !self.file_dialog.is_open()
             && !self.editing.has_save()
@@ -18,8 +19,10 @@ impl Desktop {
             && self.table_creation.is_none()
             && self.table_rename.is_none()
             && self.deferred_draft_action.is_none()
-            && self.update_restart.is_none()
-            && !self.updates.installing()
+    }
+
+    fn can_install_update(&self) -> bool {
+        self.update_documents_safe() && !self.update_restart_pending && !self.updates.installing()
     }
 
     pub(super) fn start_update(&mut self, command: UpdateCommand) {
@@ -38,6 +41,24 @@ impl Desktop {
         while let Some(reply) = self.updates.poll() {
             match reply {
                 Reply::Event { event, .. } => self.publish_update(event, context),
+                Reply::Retained {
+                    generation,
+                    outcome,
+                } => {
+                    self.retain_update_outcome(outcome, generation == self.updates.generation());
+                }
+                Reply::Stopped {
+                    installation_uncertain,
+                    ..
+                } => {
+                    self.state.set_updates_available(false);
+                    self.state
+                        .set_update_status(UpdateStatus::Failed(if installation_uncertain {
+                            UpdateFailure::Installation
+                        } else {
+                            UpdateFailure::Storage
+                        }));
+                }
                 Reply::Failed { error, .. } => {
                     let status = match error {
                         UpdateTaskError::Operation(UpdateError::Cancelled) => UpdateStatus::Idle,
@@ -45,7 +66,8 @@ impl Desktop {
                         UpdateTaskError::Apply(error) => {
                             // Keep explicit recovery ownership for diagnostic access;
                             // dropping the host must never delete retained originals.
-                            self.update_failure = Some(error);
+                            self.update_outcomes
+                                .push(Arc::new(RetainedOutcome::ApplyFailed(error)));
                             UpdateStatus::Failed(UpdateFailure::Installation)
                         }
                         UpdateTaskError::InvalidState => {
@@ -58,12 +80,39 @@ impl Desktop {
             }
         }
         self.state.set_update_can_install(self.can_install_update());
+        if self.update_restart_pending && self.update_documents_safe() {
+            self.update_exit_requested = true;
+            context.send_viewport_cmd(egui::ViewportCommand::Close);
+        }
         if self.updates.installing() && context.input(|input| input.viewport().close_requested()) {
             context.send_viewport_cmd(egui::ViewportCommand::CancelClose);
         }
     }
 
-    fn publish_update(&mut self, event: UpdateEvent, context: &egui::Context) {
+    fn retain_update_outcome(&mut self, outcome: Arc<RetainedOutcome>, current: bool) {
+        let restart = match outcome.as_ref() {
+            RetainedOutcome::RestartScheduled(applied) => applied.helper_process_id().is_some(),
+            RetainedOutcome::ApplyFailed(error) => {
+                tracing::warn!(
+                    retained_backup = error.retained_recovery().is_some(),
+                    "Update installation failed"
+                );
+                false
+            }
+        };
+        if restart {
+            self.update_restart_pending = true;
+            self.state.set_update_status(UpdateStatus::Installing);
+        } else if current {
+            self.state
+                .set_update_status(UpdateStatus::Failed(UpdateFailure::Installation));
+        }
+        // Every outcome keeps its original helper/recovery ownership. Late
+        // results never replace or silently retire an earlier unreviewed backup.
+        self.update_outcomes.push(outcome);
+    }
+
+    fn publish_update(&mut self, event: UpdateEvent, _context: &egui::Context) {
         let status = match event {
             UpdateEvent::Checking => UpdateStatus::Checking,
             UpdateEvent::Current => UpdateStatus::Current,
@@ -85,8 +134,10 @@ impl Desktop {
             UpdateEvent::Ready { version } => UpdateStatus::Ready { version },
             UpdateEvent::Installing => UpdateStatus::Installing,
             UpdateEvent::RestartScheduled(applied) => {
-                self.update_restart = Some(applied);
-                context.send_viewport_cmd(egui::ViewportCommand::Close);
+                self.retain_update_outcome(
+                    Arc::new(RetainedOutcome::RestartScheduled(applied)),
+                    true,
+                );
                 UpdateStatus::Installing
             }
         };

@@ -2,4 +2,4 @@
 
 mod worker;
 
-pub(crate) use worker::{Reply, UpdateWorker};
+pub(crate) use worker::{Reply, RetainedOutcome, UpdateWorker};

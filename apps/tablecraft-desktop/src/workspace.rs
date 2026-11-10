@@ -22,13 +22,13 @@ mod updating;
 
 use crate::file_dialog::{FileDialog, SelectedFile};
 use crate::font_inventory::FontInventory;
-use crate::updating::UpdateWorker;
+use crate::updating::{RetainedOutcome, UpdateWorker};
 use creating::Creating;
 use editing::Editing;
 use editing::table_creation::TableCreationHost;
 use editing::table_rename::TableRenameHost;
 use read_requests::request_read;
-use std::path::PathBuf;
+use std::{path::PathBuf, sync::Arc};
 use table_drafts::DeferredDraftAction;
 use tablecraft_runtime::{
     Command, ContentsTarget as RuntimeContentsTarget, CreationWorker, FilterHandle,
@@ -39,10 +39,7 @@ use tablecraft_ui::{
     ObjectKind, ObjectTarget, QueryDesignRequest, RecordTarget, SavedQuery, SavedQuerySqlRequest,
     SavedQueryTarget, Schema, State, Table, TotalSpec, TotalsTarget,
 };
-use tablecraft_update::{
-    apply::{AppliedUpdate, ApplyError},
-    session::UpdateCommand,
-};
+use tablecraft_update::session::UpdateCommand;
 use zeroize::Zeroize;
 
 enum PendingOperation {
@@ -250,8 +247,9 @@ pub(super) struct Desktop {
     startup_visibility_pending: bool,
     font_inventory: FontInventory,
     updates: UpdateWorker,
-    update_restart: Option<AppliedUpdate>,
-    update_failure: Option<ApplyError>,
+    update_outcomes: Vec<Arc<RetainedOutcome>>,
+    update_restart_pending: bool,
+    update_exit_requested: bool,
 }
 
 #[derive(Default)]
@@ -302,8 +300,9 @@ impl Desktop {
             startup_visibility_pending: true,
             font_inventory: FontInventory::default(),
             updates,
-            update_restart: None,
-            update_failure: None,
+            update_outcomes: Vec::new(),
+            update_restart_pending: false,
+            update_exit_requested: false,
         };
         app.state
             .set_query_run_limits(query_limits::ui_limits(app.query_run_options));
@@ -968,7 +967,7 @@ impl eframe::App for Desktop {
     }
 
     fn ui(&mut self, ui: &mut egui::Ui, frame: &mut eframe::Frame) {
-        let locked = self.updates.installing() || self.update_restart.is_some();
+        let locked = self.updates.installing() || self.update_exit_requested;
         let actions = ui.add_enabled_ui(!locked, |ui| self.state.show(ui)).inner;
         self.release_stale_query_parameters();
         // A manual edit ends the native selection binding, even if the user
@@ -982,7 +981,7 @@ impl eframe::App for Desktop {
         }
         self.invalidate_creation_selection();
         for action in actions {
-            if self.updates.installing() || self.update_restart.is_some() {
+            if self.updates.installing() || self.update_exit_requested {
                 continue;
             }
             if self.recovery.is_some() && !editing::recovery::is_recovery_action(&action) {

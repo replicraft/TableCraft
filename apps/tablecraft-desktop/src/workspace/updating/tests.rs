@@ -4,7 +4,6 @@ use egui::Context;
 #[test]
 fn clean_host_allows_restart_but_unsaved_sql_and_pending_reads_block_install_dispatch() {
     let mut app = Desktop::new(Context::default(), None);
-    app.state.sql.clear();
     assert!(app.can_install_update());
 
     app.state.sql = "SELECT 42".into();
