@@ -115,3 +115,132 @@ pub fn expected(case: Case) -> Vec<Vec<Value>> {
     }
     rows
 }
+
+/// Store an explicit Number in a newly added logical field; retired physical
+/// bytes are not interpreted as its old value and sibling values remain exact.
+pub fn fill_number(case: Case, before: &[u8], root: usize, value: i32) -> Vec<u8> {
+    fill(case, before, root, Target::Number, &value.to_le_bytes())
+}
+
+/// Store explicit empty/compressed/wide Text through the selected reused or new
+/// physical variable slot, retaining every unrelated raw slot and NULL payload.
+pub fn fill_text(case: Case, before: &[u8], root: usize, value: &str) -> Vec<u8> {
+    let units: Vec<_> = value.encode_utf16().collect();
+    assert!(units.len() <= 255);
+    let mut bytes = Vec::new();
+    if units.len() > 2 && units.iter().all(|unit| (1..=255).contains(unit)) {
+        bytes.extend([255, 254]);
+        bytes.extend(units.iter().map(|unit| *unit as u8));
+    } else {
+        assert!(!value.starts_with('\u{feff}'));
+        for unit in units {
+            bytes.extend(unit.to_le_bytes());
+        }
+    }
+    fill(case, before, root, Target::ShortText, &bytes)
+}
+
+fn fill(case: Case, before: &[u8], root: usize, target: Target, payload: &[u8]) -> Vec<u8> {
+    use super::super::super::populated_text::present;
+
+    let old = present::record(before, root);
+    let count = word(old, 0);
+    let active = word(before, DEFINITION + 45);
+    let field = DEFINITION + FIELD_START + (active - 1) * FIELD_BYTES;
+    let live_variables = (0..active)
+        .map(|index| DEFINITION + FIELD_START + index * FIELD_BYTES)
+        .filter(|at| before[at + 15] & 1 == 0)
+        .map(|at| word(before, at + 7) + 1)
+        .max()
+        .unwrap_or(0)
+        .max(usize::from(word(before, DEFINITION + 43) != 0));
+    let number = word(before, field + 5);
+    assert!(number >= count);
+    let fields = number + 1;
+    let mask = old.len() - count.div_ceil(8);
+
+    // Historical declarations are independently known in this raw source family,
+    // including the now-retired field; no current production decoder is involved.
+    let original = super::source(case);
+    let old_active = word(&original, DEFINITION + 45);
+    let has_variables = (0..old_active).any(|index| {
+        let at = DEFINITION + FIELD_START + index * FIELD_BYTES;
+        original[at + 15] & 1 == 0 && word(&original, at + 5) < count
+    });
+    let old_variables = if has_variables {
+        word(old, mask - 2)
+    } else {
+        0
+    };
+    let data_end = if has_variables {
+        mask - 2 - 2 * (old_variables + 1)
+    } else {
+        mask
+    };
+    let offsets: Vec<_> = if has_variables {
+        (0..=old_variables)
+            .map(|index| word(old, mask - 4 - 2 * index))
+            .collect()
+    } else {
+        vec![data_end]
+    };
+    let fixed_end = offsets[0];
+    let end = offsets[old_variables];
+    let mut row;
+    let mut new_offsets;
+    let variables;
+    match target {
+        Target::Number => {
+            assert_eq!(before[field], 4);
+            let start = 2 + word(before, field + 21);
+            let expanded = fixed_end.max(start + 4);
+            row = old[..fixed_end].to_vec();
+            row.resize(expanded, 0);
+            row[start..start + 4].copy_from_slice(payload);
+            row.extend_from_slice(&old[fixed_end..data_end]);
+            new_offsets = offsets
+                .iter()
+                .map(|offset| offset + expanded - fixed_end)
+                .collect::<Vec<_>>();
+            variables = old_variables.max(live_variables);
+            new_offsets.resize(variables + 1, end + expanded - fixed_end);
+        }
+        Target::ShortText => {
+            assert_eq!(before[field], 10);
+            let variable = word(before, field + 7);
+            variables = old_variables.max(live_variables);
+            let start = offsets.get(variable).copied().unwrap_or(end);
+            let stop = offsets.get(variable + 1).copied().unwrap_or(end);
+            row = old[..start].to_vec();
+            row.extend_from_slice(payload);
+            row.extend_from_slice(&old[stop..data_end]);
+            new_offsets = Vec::new();
+            for index in 0..=variables {
+                let offset = if index <= variable {
+                    offsets.get(index).copied().unwrap_or(end)
+                } else {
+                    offsets.get(index).copied().unwrap_or(end) - (stop - start) + payload.len()
+                };
+                new_offsets.push(offset);
+            }
+        }
+    }
+    row[..2].copy_from_slice(&(fields as u16).to_le_bytes());
+    // Keep original physical footprint when replacement shrinks, so no sibling
+    // slot moves and newly unused slack is explicit rather than resurrected data.
+    row.resize(row.len().max(data_end), 0);
+    if variables > 0 {
+        for offset in new_offsets.into_iter().rev() {
+            row.extend((offset as u16).to_le_bytes());
+        }
+        row.extend((variables as u16).to_le_bytes());
+    }
+    let next_mask = row.len();
+    row.extend_from_slice(&old[mask..]);
+    row.resize(next_mask + fields.div_ceil(8), 0);
+    for logical in count..fields {
+        row[next_mask + logical / 8] &= !(1 << (logical % 8));
+    }
+    row[next_mask + number / 8] |= 1 << (number % 8);
+    present::place(before, root, &row)
+}

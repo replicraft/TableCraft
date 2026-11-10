@@ -187,3 +187,39 @@ fn readded_fields_keep_every_historical_value_and_start_as_null() {
         }
     }
 }
+
+#[test]
+fn explicit_readded_field_values_replace_only_the_selected_logical_carrier() {
+    use raw::readdition::{self, Target};
+
+    for case in raw::CASES {
+        for target in [Target::Number, Target::ShortText] {
+            let mut bytes = readdition::after(&readdition::source(case), target);
+            let mut expected = readdition::expected(case);
+            for root in 0..expected.len() {
+                let value = match target {
+                    Target::Number => {
+                        let number = [91, 0, -12, 123][root];
+                        bytes = readdition::fill_number(case, &bytes, root, number);
+                        Value::Int32(number)
+                    }
+                    Target::ShortText => {
+                        let text = ["", "replacement", "日本語🦀", "tail"][root];
+                        bytes = readdition::fill_text(case, &bytes, root, text);
+                        Value::Text(text.into())
+                    }
+                };
+                *expected[root].last_mut().unwrap() = value;
+                let table = read_table(
+                    &mut Cursor::new(&bytes),
+                    SCOPE,
+                    "Table1",
+                    &mut budget(),
+                    &|| false,
+                )
+                .unwrap_or_else(|error| panic!("{case:?}/{target:?}/root{root}: {error:?}"));
+                assert_eq!(table.rows(), expected, "{case:?}/{target:?}/root{root}");
+            }
+        }
+    }
+}

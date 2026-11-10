@@ -105,7 +105,11 @@ pub fn after(before: &[u8], root: usize, column: usize, value: Option<&str>) -> 
 
 /// Same-sized records remain in their original terminal; growth appends one
 /// hidden target and retains every previously hidden payload unchanged.
-fn place(before: &[u8], root: usize, row: &[u8]) -> Vec<u8> {
+pub(in crate::fixtures::access::canonical_created_number::mixed::after_off) fn place(
+    before: &[u8],
+    root: usize,
+    row: &[u8],
+) -> Vec<u8> {
     let original = record(before, root);
     let mut after = before.to_vec();
     let root_word = word(before, DATA + DIRECTORY + root * 2);
