@@ -394,6 +394,7 @@ fn capture_framed_with_records(
         PayloadAdmission::RetainedOpaqueRowsNoRequired(certificate) => {
             certificate.require_retained_opaque_rows_source(image, schema, budget, cancelled)?;
         }
+        #[cfg(all(feature = "journal", feature = "ace16-create"))]
         PayloadAdmission::RetainedOpaqueInsertNoRequired(certificate) => {
             certificate.require_retained_opaque_insert_source(image, schema, budget, cancelled)?;
         }
