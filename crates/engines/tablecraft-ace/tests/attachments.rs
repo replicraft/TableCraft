@@ -131,10 +131,10 @@ fn metadata_variants_lengths_checksum_bombs_and_bad_unicode_are_rejected() {
         Some(InspectError::Malformed)
     );
     changed[4..8].copy_from_slice(&u32::MAX.to_le_bytes());
-    assert_eq!(
-        decode_attachment(&changed, &mut budget(), &|| false).err(),
-        Some(InspectError::StructureLimit)
-    );
+    assert!(matches!(
+        decode_attachment(&changed, &mut budget(), &|| false),
+        Err(InspectError::Limit(error)) if error.resource == Resource::Bytes
+    ));
 }
 
 #[test]

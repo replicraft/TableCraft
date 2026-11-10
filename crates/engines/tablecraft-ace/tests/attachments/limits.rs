@@ -187,7 +187,7 @@ fn encoded_storage_envelopes_default_to_native_and_respect_explicit_lower_limits
 }
 
 #[test]
-fn native_maximum_advertised_body_does_not_allocate_before_stream_validation() {
+fn large_advertised_body_does_not_allocate_before_stream_validation() {
     let mut bytes = encoded("bin", &[7], true);
     bytes[4..8].copy_from_slice(&268_439_552_u32.to_le_bytes());
     let mut pool = ResourceBudget::new(300_000_000, 0, 1_000_000);
@@ -195,11 +195,11 @@ fn native_maximum_advertised_body_does_not_allocate_before_stream_validation() {
         decode_attachment(&bytes, &mut pool, &|| false).err(),
         Some(InspectError::Malformed)
     );
-    bytes[4..8].copy_from_slice(&268_439_553_u32.to_le_bytes());
-    assert_eq!(
-        decode_attachment(&bytes, &mut large_budget(), &|| false).err(),
-        Some(InspectError::StructureLimit)
-    );
+    bytes[4..8].copy_from_slice(&u32::MAX.to_le_bytes());
+    assert!(matches!(
+        decode_attachment(&bytes, &mut large_budget(), &|| false),
+        Err(InspectError::Limit(error)) if error.resource == Resource::Bytes
+    ));
 }
 
 #[test]
