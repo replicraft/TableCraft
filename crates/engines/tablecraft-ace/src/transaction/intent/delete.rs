@@ -4,6 +4,8 @@ mod planning;
 mod recovery;
 
 #[cfg(test)]
+mod current_tests;
+#[cfg(test)]
 mod tests;
 
 pub use planning::RecoverableNativeDeletePlan;
