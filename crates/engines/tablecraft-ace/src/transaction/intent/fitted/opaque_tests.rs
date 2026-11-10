@@ -101,18 +101,30 @@ fn opaque_original_wire_is_literal_closed_and_preserves_native_row_ordinals() {
         decoded
             .verify_before(&before, &mut budget(), &|| false)
             .unwrap();
-        for at in [0, 8, 12, 14, 16, 68] {
+        for at in [0, 8, 14, 16, 68] {
             let mut invalid = wire.clone();
             invalid[at] ^= 1;
-            assert!(matches!(
-                NativeFittedEditIntent::decode_retained_opaque(
-                    &invalid,
-                    &mut ResourceBudget::new(0, 100, 100_000),
-                    &|| false
-                ),
-                Err(NativeIntentError::InvalidRecord)
-            ));
+            let mut work = ResourceBudget::new(0, 100, 100_000);
+            let error =
+                NativeFittedEditIntent::decode_retained_opaque(&invalid, &mut work, &|| false)
+                    .err()
+                    .expect("invalid header must refuse before allocation");
+            assert!(
+                matches!(error, NativeIntentError::InvalidRecord),
+                "offset {at}: {error}"
+            );
+            assert_eq!(work.remaining(tablecraft_core::limits::Resource::Bytes), 0);
         }
+        let mut wrong_profile = wire.clone();
+        wrong_profile[12..14].copy_from_slice(&17_u16.to_le_bytes());
+        assert!(matches!(
+            NativeFittedEditIntent::decode_retained_opaque(
+                &wrong_profile,
+                &mut ResourceBudget::new(0, 100, 100_000),
+                &|| false,
+            ),
+            Err(NativeIntentError::UnsupportedProfile)
+        ));
         assert!(matches!(
             NativeUpdateIntent::decode(&wire, &mut budget(), &|| true),
             Err(NativeIntentError::Inspect(crate::InspectError::Cancelled))
