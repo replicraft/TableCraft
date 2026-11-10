@@ -222,6 +222,8 @@ pub(super) enum MutationIntent {
     EofInsert(NativeEofInsertIntent),
     CompleteInsert(NativeCompleteInsertIntent),
     OmittedInsert(NativeOmittedInsertIntent),
+    #[cfg(feature = "ace16-create")]
+    RetainedInsert(NativeOmittedInsertIntent),
     ClockInsert(NativeClockInsertIntent),
     #[cfg(feature = "ace16-create")]
     FirstTable(NativeFirstTableIntent),
@@ -292,6 +294,12 @@ impl MutationIntent {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, Cause> {
+        #[cfg(feature = "ace16-create")]
+        if raw.starts_with(b"TCNA0008") {
+            return NativeOmittedInsertIntent::decode_retained(raw, budget, cancelled)
+                .map(Self::RetainedInsert)
+                .map_err(Cause::Intent);
+        }
         // Closed framing selection occurs before decode; a failed decoder is
         // never retried as another action or promoted from its record prefix.
         #[cfg(feature = "ace16-create")]

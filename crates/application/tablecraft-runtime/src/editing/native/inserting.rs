@@ -20,7 +20,7 @@ use std::{
     },
 };
 use tablecraft_access::editing::journal::{NativeJournalInsertPlan, NativeJournalInserter};
-use tablecraft_ace::{InspectError, NativeImage, TableFeatures, inspect_table_features};
+use tablecraft_ace::{InspectError, TableFeatures, inspect_table_features};
 use tablecraft_db::{InsertValue, InsertableTable, OmittingInsertableTable};
 use tablecraft_schema::Column;
 
@@ -51,12 +51,14 @@ impl Document {
             inspect_table_features(&mut self.source, SCOPE, &target.table, &mut work, cancelled)?;
         // NO_CLONE: NativeImage owns the checked source while Document keeps using it; this
         // shares immutable bytes instead of copying the database image.
-        let image = NativeImage::capture_shared(
+        let image = NativeJournalInserter::capture_shared_image(
             self.edits.image_source.clone(),
             SCOPE,
+            &target.table,
             &mut work,
             cancelled,
-        )?;
+        )
+        .map_err(EditError::from)?;
         let inserter = NativeJournalInserter::new(image, &target.table, &mut work, cancelled)
             .map_err(EditError::from)?;
         let columns = inserter.columns();
@@ -106,12 +108,14 @@ impl Document {
             inspect_table_features(&mut self.source, SCOPE, &target.table, &mut work, cancelled)?;
         // NO_CLONE: NativeImage owns the checked source while Document keeps using it; this
         // shares immutable bytes instead of copying the database image.
-        let image = NativeImage::capture_shared(
+        let image = NativeJournalInserter::capture_shared_image(
             self.edits.image_source.clone(),
             SCOPE,
+            &target.table,
             &mut work,
             cancelled,
-        )?;
+        )
+        .map_err(EditError::from)?;
         let inserter = NativeJournalInserter::new(image, &target.table, &mut work, cancelled)
             .map_err(EditError::from)?;
         validate_feature_columns(&features, inserter.columns(), &mut output)?;

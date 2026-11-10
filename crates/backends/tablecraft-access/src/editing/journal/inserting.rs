@@ -1,5 +1,6 @@
 //! Metadata-only insertion; complete native admission occurs at finish.
 mod batch;
+mod capture;
 pub(in crate::editing) mod clock;
 mod complete_batch;
 mod plan;

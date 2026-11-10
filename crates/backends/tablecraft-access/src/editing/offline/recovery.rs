@@ -316,6 +316,19 @@ impl OfflineWriteSession {
                         .recover(&mut target, budget, cancelled)
                         .map_err(Cause::Recovery)
                 }
+                #[cfg(feature = "ace16-create")]
+                MutationIntent::RetainedInsert(intent) => {
+                    let (mut target, mut journal) =
+                        pair.resizable_storage().map_err(Cause::Pair)?;
+                    let checked =
+                        inspect_v3(&mut journal, budget, cancelled).map_err(Cause::Recovery)?;
+                    let qualified = intent
+                        .qualify_retained_recovery(checked, slot.scope, budget, cancelled)
+                        .map_err(Cause::Qualification)?;
+                    qualified
+                        .recover_retained(&mut target, budget, cancelled)
+                        .map_err(Cause::Recovery)
+                }
                 MutationIntent::OmittedInsert(intent) => {
                     let (mut target, mut journal) = pair.storage().map_err(Cause::Pair)?;
                     let checked =
@@ -663,6 +676,17 @@ impl OfflineWriteSession {
                         .confirm_completed(&mut target, budget, cancelled)
                         .map_err(Cause::Recovery)
                 }
+                #[cfg(feature = "ace16-create")]
+                MutationIntent::RetainedInsert(intent) => {
+                    let checked =
+                        inspect_v3(&mut journal, budget, cancelled).map_err(Cause::Recovery)?;
+                    let qualified = intent
+                        .qualify_retained_recovery(checked, slot.scope, budget, cancelled)
+                        .map_err(Cause::Qualification)?;
+                    qualified
+                        .confirm_completed(&mut target, budget, cancelled)
+                        .map_err(Cause::Recovery)
+                }
                 MutationIntent::OmittedInsert(intent) => {
                     let checked =
                         inspect_v1(&mut journal, budget, cancelled).map_err(Cause::Recovery)?;
@@ -797,6 +821,7 @@ impl OfflineWriteSession {
             .max(NativeCompleteInsertIntent::MAX_ENCODED_BYTES) as u64;
         #[cfg(feature = "ace16-create")]
         let limit = limit
+            .max(NativeOmittedInsertIntent::MAX_RETAINED_ENCODED_BYTES as u64)
             .max(NativeFirstTableIntent::MAX_ENCODED_BYTES as u64)
             .max(NativeAddTableIntent::MAX_ENCODED_BYTES as u64)
             .max(NativeAddColumnIntent::MAX_ENCODED_BYTES as u64)

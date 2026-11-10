@@ -1,7 +1,6 @@
 //! Fresh sealed INSERT qualification retains original presence and captured inputs.
 use super::{Cause, Failure, OfflineWriteSession, Phase, SessionState, StagedInsert};
 use crate::editing::journal::NativeJournalInsertPlan;
-use tablecraft_ace::NativeImage;
 use tablecraft_core::limits::ResourceBudget;
 
 impl OfflineWriteSession {
@@ -24,13 +23,14 @@ impl OfflineWriteSession {
             let slot = self.slot_mut()?;
             slot.current = None;
             slot.state = SessionState::RefreshRequired;
-            let image = NativeImage::capture(
-                slot.target.as_mut().ok_or(Cause::InvalidState)?,
-                slot.scope,
-                native,
-                cancelled,
-            )
-            .map_err(Cause::Native)?;
+            let image = reviewed
+                .capture_original(
+                    slot.target.as_mut().ok_or(Cause::InvalidState)?,
+                    slot.scope,
+                    native,
+                    cancelled,
+                )
+                .map_err(Cause::Native)?;
             slot.state = SessionState::Ready;
             super::table::require_original(
                 image.as_bytes(),

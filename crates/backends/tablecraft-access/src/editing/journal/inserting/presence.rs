@@ -51,6 +51,12 @@ impl NativeJournalInserter {
         #[cfg(feature = "ace16-create")]
         let maximum_bytes = if self
             .image
+            .select_native_retained_insert_source(&self.name, budget, cancelled)
+            .map_err(RecoverableEditError::from)?
+        {
+            NativeOmittedInsertIntent::MAX_RETAINED_ENCODED_BYTES
+        } else if self
+            .image
             .select_native_current_insert_source(&self.name, budget, cancelled)
             .map_err(RecoverableEditError::from)?
         {
@@ -86,6 +92,18 @@ impl NativeJournalInserter {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<NativeJournalInsertPlan, Error> {
+        #[cfg(feature = "ace16-create")]
+        if self
+            .image
+            .select_native_retained_insert_source(&self.name, budget, cancelled)
+            .map_err(RecoverableEditError::from)?
+        {
+            return self
+                .image
+                .plan_recoverable_retained_omitted_row_inserts(&self.name, rows, budget, cancelled)
+                .map(NativeJournalInsertPlan::Retained)
+                .map_err(Error::from);
+        }
         #[cfg(feature = "ace16-create")]
         if self
             .image

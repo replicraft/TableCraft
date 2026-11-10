@@ -93,12 +93,20 @@ pub(in crate::editing) fn review(
         let mut native = native_pool.borrow_mut();
         // NO_CLONE: NativeImage owns the checked source while Document keeps using it; this
         // shares immutable bytes instead of copying the database image.
-        NativeImage::capture_shared(
-            document.edits.image_source.clone(),
-            SCOPE,
-            &mut native,
-            cancelled,
-        )?
+        let source = document.edits.image_source.clone();
+        match kind {
+            Kind::Insert(_) => NativeJournalInserter::capture_shared_image(
+                source,
+                SCOPE,
+                table,
+                &mut native,
+                cancelled,
+            )
+            .map_err(EditError::from)?,
+            Kind::Update | Kind::Delete => {
+                NativeImage::capture_shared(source, SCOPE, &mut native, cancelled)?
+            }
+        }
     };
 
     let source =

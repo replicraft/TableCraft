@@ -10,7 +10,6 @@ use crate::editing::{
     sql,
 };
 use std::path::Path;
-use tablecraft_ace::NativeImage;
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_db::{InsertValue, InsertableTable, OmittingInsertableTable};
 use tablecraft_expressions::functions::dates::clock::Clock;
@@ -103,13 +102,14 @@ impl OfflineWriteSession {
             let slot = self.slot_mut()?;
             slot.current = None;
             slot.state = SessionState::RefreshRequired;
-            let image = NativeImage::capture(
+            let image = NativeJournalInserter::capture_image(
                 slot.target.as_mut().ok_or(Cause::InvalidState)?,
                 slot.scope,
+                table,
                 budget,
                 cancelled,
             )
-            .map_err(Cause::Native)?;
+            .map_err(Cause::Editor)?;
             slot.state = SessionState::Ready;
             if let Some(expected) = expected {
                 require_original(image.as_bytes(), expected, budget, cancelled)?;
@@ -135,19 +135,21 @@ impl OfflineWriteSession {
         let _span = tracing::debug_span!("access.offline.plan_insert").entered();
         let result = (|| {
             self.require_ready()?;
-            sql::local_insert_table(query, false, budget, cancelled).map_err(|error| {
-                Cause::InsertPlanning(sql::RecoverableInsertError::Shape(error))
-            })?;
+            let table =
+                sql::local_insert_table(query, false, budget, cancelled).map_err(|error| {
+                    Cause::InsertPlanning(sql::RecoverableInsertError::Shape(error))
+                })?;
             let slot = self.slot_mut()?;
             slot.current = None;
             slot.state = SessionState::RefreshRequired;
-            let image = NativeImage::capture(
+            let image = NativeJournalInserter::capture_image(
                 slot.target.as_mut().ok_or(Cause::InvalidState)?,
                 slot.scope,
+                table,
                 budget,
                 cancelled,
             )
-            .map_err(Cause::Native)?;
+            .map_err(Cause::Editor)?;
             slot.state = SessionState::Ready;
             sql::plan_recoverable_insert(image, query, budget, cancelled)
                 .map_err(Cause::InsertPlanning)
@@ -173,19 +175,21 @@ impl OfflineWriteSession {
         let _span = tracing::debug_span!("access.offline.plan_insert").entered();
         let result = (|| {
             self.require_ready()?;
-            sql::local_insert_table(query, false, budget, cancelled).map_err(|error| {
-                Cause::InsertPlanning(sql::RecoverableInsertError::Shape(error))
-            })?;
+            let table =
+                sql::local_insert_table(query, false, budget, cancelled).map_err(|error| {
+                    Cause::InsertPlanning(sql::RecoverableInsertError::Shape(error))
+                })?;
             let slot = self.slot_mut()?;
             slot.current = None;
             slot.state = SessionState::RefreshRequired;
-            let image = NativeImage::capture(
+            let image = NativeJournalInserter::capture_image(
                 slot.target.as_mut().ok_or(Cause::InvalidState)?,
                 slot.scope,
+                table,
                 budget,
                 cancelled,
             )
-            .map_err(Cause::Native)?;
+            .map_err(Cause::Editor)?;
             slot.state = SessionState::Ready;
             sql::plan_recoverable_insert_with_clock(image, query, provider, budget, cancelled)
                 .map_err(Cause::InsertPlanning)
