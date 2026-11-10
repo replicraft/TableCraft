@@ -1,4 +1,6 @@
 //! Rename current metadata without inferring creator or row-edit history.
+#[cfg(test)]
+mod tests;
 use super::{FittedFieldRenameSource, Prepared, layout::Layout, prepare};
 use crate::{
     NativeFieldRenameIdentity, NativeImage,
