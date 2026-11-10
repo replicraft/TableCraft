@@ -16,6 +16,38 @@ pub struct RecoverableNativeOmittedInsertPlan {
 }
 
 impl NativeImage {
+    /// Bind original current-history presence before qualified INSERT planning.
+    /// Older omission families keep their original source and default semantics.
+    #[cfg(feature = "ace16-create")]
+    pub fn plan_recoverable_current_omitted_row_inserts(
+        self,
+        table: &str,
+        rows: Vec<OmittedRowInsert>,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<RecoverableNativeOmittedInsertPlan, RecoverableEditError> {
+        let _span =
+            tracing::debug_span!("native.current_omitted_insert.plan_recoverable").entered();
+        if !self.select_native_current_insert_source(table, budget, cancelled)? {
+            return Err(EditError::Unsupported(crate::WriteBlocker::RowLayout).into());
+        }
+        let intent = NativeOmittedInsertIntent::new_current(
+            table,
+            rows,
+            self.as_bytes(),
+            budget,
+            cancelled,
+        )?;
+        let plan = intent.plan(self, budget, cancelled)?;
+        if plan.before_bytes().len() != plan.after_bytes().len()
+            || plan.changed_rows() != intent.rows().len()
+        {
+            return Err(EditError::Preservation.into());
+        }
+        check(budget, cancelled).map_err(EditError::from)?;
+        Ok(RecoverableNativeOmittedInsertPlan { plan, intent })
+    }
+
     /// Qualify native target-local absence and reconstruct original presence/default insertion.
     /// The retained intent contains requests, not final patches or permissions.
     pub fn plan_recoverable_ordinary_omitted_row_inserts(

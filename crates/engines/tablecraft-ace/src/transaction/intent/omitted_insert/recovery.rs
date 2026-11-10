@@ -14,7 +14,7 @@ pub struct QualifiedNativeOmittedInsertRecovery<'a, J: DurableStorage> {
 }
 
 /// Reconstruct complete native admission, original witnesses and both images.
-/// Neither a decoded TCNA0002 record nor persisted AFTER bytes grants authority.
+/// Neither a decoded presence record nor persisted AFTER bytes grants authority.
 pub fn qualify_native_omitted_insert_recovery<'a, J: DurableStorage>(
     checked: CheckedV1<'a, J>,
     intent: NativeOmittedInsertIntent,
@@ -31,12 +31,7 @@ pub fn qualify_native_omitted_insert_recovery<'a, J: DurableStorage>(
         budget,
         cancelled,
     )?;
-    let plan = image.plan_ordinary_omitted_row_inserts(
-        intent.table(),
-        intent.rows(),
-        budget,
-        cancelled,
-    )?;
+    let plan = intent.plan(image, budget, cancelled)?;
     equal_image(
         plan.before_bytes(),
         checked.before_bytes(),

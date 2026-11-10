@@ -10,9 +10,17 @@ pub use planning::RecoverableNativeOmittedInsertPlan;
 pub use recovery::{QualifiedNativeOmittedInsertRecovery, qualify_native_omitted_insert_recovery};
 
 use super::{NativeIntentError, binding, model as names, row_carrier::Profile};
-use crate::{InspectError, OmittedRowInsert, header::check};
+use crate::{
+    EditError, InspectError, NativeEditPlan, NativeImage, OmittedRowInsert, header::check,
+};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_schema::SchemaName;
+
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum SourceFamily {
+    Ordinary,
+    Current,
+}
 
 /// Original ordered supplied/omitted rows and an exact complete BEFORE binding.
 /// This data has no public conversion into a native plan or absence permission.
@@ -22,11 +30,15 @@ pub struct NativeOmittedInsertIntent {
     before_length: u64,
     before_binding: [u8; 32],
     profile: Profile,
+    family: SourceFamily,
 }
 
 impl NativeOmittedInsertIntent {
     /// Maximum complete TCNA0002 record accepted before host allocation.
     pub const MAX_ENCODED_BYTES: usize = codec::MAX_RECORD_BYTES;
+
+    /// Current-presence framing stores the total byte length in a u32.
+    pub const MAX_CURRENT_ENCODED_BYTES: usize = u32::MAX as usize;
 
     /// Validate and retain original requests in their written order.
     /// Actual target eligibility, row width and final constraints are
@@ -38,10 +50,51 @@ impl NativeOmittedInsertIntent {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, NativeIntentError> {
+        Self::capture(
+            table,
+            rows,
+            before,
+            SourceFamily::Ordinary,
+            budget,
+            cancelled,
+        )
+    }
+
+    /// Retain current-history original presence in the distinct TCNA0007 family.
+    /// This binds data only; it grants no source, default or insertion authority.
+    pub fn new_current(
+        table: &str,
+        rows: Vec<OmittedRowInsert>,
+        before: &[u8],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, NativeIntentError> {
+        Self::capture(
+            table,
+            rows,
+            before,
+            SourceFamily::Current,
+            budget,
+            cancelled,
+        )
+    }
+
+    fn capture(
+        table: &str,
+        rows: Vec<OmittedRowInsert>,
+        before: &[u8],
+        family: SourceFamily,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, NativeIntentError> {
         let _span = tracing::debug_span!("native.omitted_insert_intent.capture").entered();
         check(budget, cancelled)?;
         names::validate_name(table, budget, cancelled)?;
-        let mut profile = Profile::Legacy;
+        let mut profile = if family == SourceFamily::Current {
+            Profile::Wider
+        } else {
+            Profile::Legacy
+        };
         for row in &rows {
             for field in row.values() {
                 check(budget, cancelled)?;
@@ -52,7 +105,7 @@ impl NativeOmittedInsertIntent {
                 }
             }
         }
-        codec::validate_requests(table.len(), &rows, profile, budget, cancelled)?;
+        codec::validate_requests(table.len(), &rows, profile, family, budget, cancelled)?;
         let before_binding = binding::digest(before, budget, cancelled)?;
         let table = names::copy_name(table, budget)?;
         check(budget, cancelled)?;
@@ -62,12 +115,13 @@ impl NativeOmittedInsertIntent {
             before_length: before.len() as u64,
             before_binding,
             profile,
+            family,
         })
     }
 
     /// Legacy envelopes must not acquire the wider supplied-carrier grammar.
     pub(super) fn is_legacy_profile(&self) -> bool {
-        self.profile == Profile::Legacy
+        self.family == SourceFamily::Ordinary && self.profile == Profile::Legacy
     }
 
     /// Exact original-presence wire size for a bounded execution-input envelope.
@@ -80,9 +134,32 @@ impl NativeOmittedInsertIntent {
             self.table().len(),
             self.rows(),
             self.profile,
+            self.family,
             budget,
             cancelled,
         )
+    }
+
+    fn plan(
+        &self,
+        image: NativeImage,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<NativeEditPlan, EditError> {
+        match self.family {
+            SourceFamily::Ordinary => image.plan_ordinary_omitted_row_inserts(
+                self.table(),
+                self.rows(),
+                budget,
+                cancelled,
+            ),
+            #[cfg(feature = "ace16-create")]
+            SourceFamily::Current => {
+                image.plan_current_omitted_row_inserts(self.table(), self.rows(), budget, cancelled)
+            }
+            #[cfg(not(feature = "ace16-create"))]
+            SourceFamily::Current => Err(EditError::Unsupported(crate::WriteBlocker::RowLayout)),
+        }
     }
 
     /// Canonical caller-supplied table name without implicit normalization.
@@ -117,3 +194,6 @@ impl NativeOmittedInsertIntent {
         Ok(())
     }
 }
+
+#[cfg(test)]
+mod current_tests;

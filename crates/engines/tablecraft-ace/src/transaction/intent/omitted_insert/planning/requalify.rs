@@ -21,12 +21,7 @@ impl RecoverableNativeOmittedInsertPlan {
         self.intent
             .verify_before(fresh.as_bytes(), proof, cancelled)?;
 
-        let rebuilt = fresh.plan_ordinary_omitted_row_inserts(
-            self.intent.table(),
-            self.intent.rows(),
-            native,
-            cancelled,
-        )?;
+        let rebuilt = self.intent.plan(fresh, native, cancelled)?;
         let plan = insert_requalification::finish(&self.plan, rebuilt, proof, cancelled)?;
         Ok(Self {
             plan,

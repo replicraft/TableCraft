@@ -1,6 +1,6 @@
 //! Closed typed-row framing, completely scanned before decoded allocations.
 use super::super::row_carrier::{self as carrier, Profile};
-use super::{NativeIntentError, NativeOmittedInsertIntent, binding, names};
+use super::{NativeIntentError, NativeOmittedInsertIntent, SourceFamily, binding, names};
 use crate::{
     InsertFieldValue, InspectError, OmittedRowInsert,
     header::check,
@@ -13,6 +13,8 @@ const PREFIX: &[u8; 4] = b"TCNA";
 const PROFILE: u16 = 2;
 const WIDER_MAGIC: &[u8; 8] = b"TCNA0006";
 const WIDER_PROFILE: u16 = 6;
+const CURRENT_MAGIC: &[u8; 8] = b"TCNA0007";
+const CURRENT_PROFILE: u16 = 7;
 
 impl Profile {
     const fn omitted_tag(self) -> u8 {
@@ -36,30 +38,54 @@ const HEADER_BYTES: usize = RESERVED_AT + size_of::<u32>();
 const ROW_HEADER_BYTES: usize = 2 * size_of::<u32>();
 pub(super) const MAX_RECORD_BYTES: usize = 64 * 1024 * 1024;
 
-fn add(length: usize, extra: usize) -> Result<usize, NativeIntentError> {
+impl SourceFamily {
+    const fn maximum_bytes(self) -> usize {
+        match self {
+            Self::Ordinary => MAX_RECORD_BYTES,
+            Self::Current => NativeOmittedInsertIntent::MAX_CURRENT_ENCODED_BYTES,
+        }
+    }
+
+    const fn maximum_rows(self) -> usize {
+        match self {
+            Self::Ordinary => MAX_LIVE_ROWS,
+            Self::Current => u32::MAX as usize,
+        }
+    }
+
+    const fn maximum_columns(self) -> usize {
+        match self {
+            Self::Ordinary => MAX_COLUMNS,
+            Self::Current => u32::MAX as usize,
+        }
+    }
+}
+
+fn add(length: usize, extra: usize, family: SourceFamily) -> Result<usize, NativeIntentError> {
     length
         .checked_add(extra)
-        .filter(|length| *length <= MAX_RECORD_BYTES)
+        .filter(|length| *length <= family.maximum_bytes())
         .ok_or_else(|| InspectError::StructureLimit.into())
 }
 
 fn row_length(
     row: &OmittedRowInsert,
     profile: Profile,
+    family: SourceFamily,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<usize, NativeIntentError> {
-    if row.values().is_empty() || row.values().len() > MAX_COLUMNS {
+    if row.values().is_empty() || row.values().len() > family.maximum_columns() {
         return Err(NativeIntentError::InvalidRecord);
     }
     let mut length = ROW_HEADER_BYTES;
     for field in row.values() {
         check(budget, cancelled)?;
-        length = add(length, carrier::HEADER_BYTES)?;
+        length = add(length, carrier::HEADER_BYTES, family)?;
         if let InsertFieldValue::Supplied(value) = field {
             let encoded = carrier::row_view(value, profile)?;
             carrier::pay_scan(encoded.bytes(), budget, cancelled)?;
-            length = add(length, encoded.bytes().len())?;
+            length = add(length, encoded.bytes().len(), family)?;
         }
     }
     Ok(length)
@@ -69,21 +95,26 @@ pub(super) fn validate_requests(
     name_bytes: usize,
     rows: &[OmittedRowInsert],
     profile: Profile,
+    family: SourceFamily,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<usize, NativeIntentError> {
     check(budget, cancelled)?;
-    if rows.len() > MAX_LIVE_ROWS || name_bytes > names::MAX_NAME_BYTES {
+    if rows.len() > family.maximum_rows() || name_bytes > names::MAX_NAME_BYTES {
         return Err(InspectError::StructureLimit.into());
     }
-    let mut total = add(HEADER_BYTES, name_bytes)?;
+    let mut total = add(HEADER_BYTES, name_bytes, family)?;
     let width = rows.first().map(|row| row.values().len());
     for row in rows {
         check(budget, cancelled)?;
         if Some(row.values().len()) != width {
             return Err(NativeIntentError::InvalidRecord);
         }
-        total = add(total, row_length(row, profile, budget, cancelled)?)?;
+        total = add(
+            total,
+            row_length(row, profile, family, budget, cancelled)?,
+            family,
+        )?;
     }
     check(budget, cancelled)?;
     Ok(total)
@@ -112,10 +143,14 @@ impl<'a> Cursor<'a> {
         Ok(u32::from_le_bytes(self.take(size_of::<u32>())?.try_into().unwrap()) as usize)
     }
 
-    fn row(&mut self) -> Result<(Cursor<'a>, usize), NativeIntentError> {
+    fn row(&mut self, family: SourceFamily) -> Result<(Cursor<'a>, usize), NativeIntentError> {
         let length = self.u32()?;
         let count = self.u32()?;
-        if length < ROW_HEADER_BYTES || !(1..=MAX_COLUMNS).contains(&count) {
+        if length < ROW_HEADER_BYTES
+            || !(1..=family.maximum_columns()).contains(&count)
+            || (family == SourceFamily::Current
+                && count > (length - ROW_HEADER_BYTES) / carrier::HEADER_BYTES)
+        {
             return Err(NativeIntentError::InvalidRecord);
         }
         let bytes = self.take(length - ROW_HEADER_BYTES)?;
@@ -164,16 +199,24 @@ struct Framing<'a> {
 
 fn preflight<'a>(
     raw: &'a [u8],
+    family: SourceFamily,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Framing<'a>, NativeIntentError> {
     check(budget, cancelled)?;
-    if !(HEADER_BYTES..=MAX_RECORD_BYTES).contains(&raw.len()) {
+    if !(HEADER_BYTES..=family.maximum_bytes()).contains(&raw.len()) {
         return Err(NativeIntentError::InvalidRecord);
     }
     let (profile, expected_number) = match &raw[..MAGIC.len()] {
-        version if version == MAGIC => (Profile::Legacy, PROFILE),
-        version if version == WIDER_MAGIC => (Profile::Wider, WIDER_PROFILE),
+        version if family == SourceFamily::Ordinary && version == MAGIC => {
+            (Profile::Legacy, PROFILE)
+        }
+        version if family == SourceFamily::Ordinary && version == WIDER_MAGIC => {
+            (Profile::Wider, WIDER_PROFILE)
+        }
+        version if family == SourceFamily::Current && version == CURRENT_MAGIC => {
+            (Profile::Wider, CURRENT_PROFILE)
+        }
         _ => {
             return Err(if raw.starts_with(PREFIX) {
                 NativeIntentError::UnsupportedVersion
@@ -199,7 +242,7 @@ fn preflight<'a>(
     binding::length(before_length)?;
     let count = word(COUNT_AT);
     let name_bytes = word(NAME_LENGTH_AT);
-    if count > MAX_LIVE_ROWS || !(1..=names::MAX_NAME_BYTES).contains(&name_bytes) {
+    if count > family.maximum_rows() || !(1..=names::MAX_NAME_BYTES).contains(&name_bytes) {
         return Err(NativeIntentError::InvalidRecord);
     }
     let mut cursor = Cursor {
@@ -217,7 +260,7 @@ fn preflight<'a>(
         budget
             .charge(Resource::Steps, ROW_HEADER_BYTES as u64)
             .map_err(InspectError::from)?;
-        let (mut row, values) = cursor.row()?;
+        let (mut row, values) = cursor.row(family)?;
         if width.is_some_and(|width| width != values) {
             return Err(NativeIntentError::InvalidRecord);
         }
@@ -267,8 +310,14 @@ impl NativeOmittedInsertIntent {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Vec<u8>, NativeIntentError> {
         let profile = self.profile;
-        let length =
-            validate_requests(self.table().len(), self.rows(), profile, budget, cancelled)?;
+        let length = validate_requests(
+            self.table().len(),
+            self.rows(),
+            profile,
+            self.family,
+            budget,
+            cancelled,
+        )?;
         budget
             .charge_allocation(length as u64, 1)
             .map_err(InspectError::from)?;
@@ -279,20 +328,16 @@ impl NativeOmittedInsertIntent {
         output
             .try_reserve_exact(length)
             .map_err(|_| InspectError::Allocation)?;
-        output.extend_from_slice(if profile == Profile::Wider {
-            WIDER_MAGIC
+        let (magic, number) = if self.family == SourceFamily::Current {
+            (CURRENT_MAGIC, CURRENT_PROFILE)
+        } else if profile == Profile::Wider {
+            (WIDER_MAGIC, WIDER_PROFILE)
         } else {
-            MAGIC
-        });
+            (MAGIC, PROFILE)
+        };
+        output.extend_from_slice(magic);
         output.extend_from_slice(&(length as u32).to_le_bytes());
-        output.extend_from_slice(
-            &(if profile == Profile::Wider {
-                WIDER_PROFILE
-            } else {
-                PROFILE
-            })
-            .to_le_bytes(),
-        );
+        output.extend_from_slice(&number.to_le_bytes());
         output.extend_from_slice(&0_u16.to_le_bytes());
         output.extend_from_slice(&self.before_length.to_le_bytes());
         output.extend_from_slice(&self.before_binding);
@@ -302,7 +347,7 @@ impl NativeOmittedInsertIntent {
         copy(&mut output, self.table().as_bytes(), budget, cancelled)?;
         for row in self.rows() {
             check(budget, cancelled)?;
-            let length = row_length(row, profile, budget, cancelled)?;
+            let length = row_length(row, profile, self.family, budget, cancelled)?;
             budget
                 .charge(Resource::Steps, ROW_HEADER_BYTES as u64)
                 .map_err(InspectError::from)?;
@@ -337,7 +382,25 @@ impl NativeOmittedInsertIntent {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, NativeIntentError> {
-        let frame = preflight(raw, budget, cancelled)?;
+        Self::decode_family(raw, SourceFamily::Ordinary, budget, cancelled)
+    }
+
+    /// Decode only TCNA0007 original presence; older families are never retried.
+    pub fn decode_current(
+        raw: &[u8],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, NativeIntentError> {
+        Self::decode_family(raw, SourceFamily::Current, budget, cancelled)
+    }
+
+    fn decode_family(
+        raw: &[u8],
+        family: SourceFamily,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, NativeIntentError> {
+        let frame = preflight(raw, family, budget, cancelled)?;
         let profile = frame.profile;
         let table = names::copy_name(frame.table, budget)?;
         budget
@@ -352,7 +415,7 @@ impl NativeOmittedInsertIntent {
         };
         for _ in 0..frame.count {
             check(budget, cancelled)?;
-            let (mut row, count) = cursor.row()?;
+            let (mut row, count) = cursor.row(family)?;
             budget
                 .charge(Resource::Steps, ROW_HEADER_BYTES as u64)
                 .map_err(InspectError::from)?;
@@ -381,6 +444,7 @@ impl NativeOmittedInsertIntent {
             before_length: frame.before_length,
             before_binding: frame.before_binding,
             profile,
+            family,
         })
     }
 }
