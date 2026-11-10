@@ -16,6 +16,33 @@ def digest(data):
     return hashlib.sha256(data).hexdigest()
 
 
+def append_row(before, score, bonus):
+    """Append a literal three-field record without touching older row bodies."""
+    count = struct.unpack_from('<H', before, 8 * PAGE + 12)[0]
+    end = struct.unpack_from('<H', before, 8 * PAGE + 14 + 2 * (count - 1))[0]
+    record = struct.pack('<HiiiB', 3, count + 1,
+                         0 if score is None else score,
+                         0 if bonus is None else bonus,
+                         1 | (2 if score is not None else 0) | (4 if bonus is not None else 0))
+    assert len(record) == 15
+    result = bytearray(before)
+    start = end - len(record)
+    result[8 * PAGE + start:8 * PAGE + end] = record
+    struct.pack_into('<H', result, 8 * PAGE + 14 + 2 * count, start)
+    struct.pack_into('<H', result, 8 * PAGE + 12, count + 1)
+    struct.pack_into('<H', result, 8 * PAGE + 2, start - 14 - 2 * (count + 1))
+    for at in COUNTERS:
+        struct.pack_into('<I', result, 7 * PAGE + at, count + 1)
+    key = bytes([127]) + (0x80000000 + count + 1).to_bytes(4, 'big')
+    key += ((8 << 8) | count).to_bytes(4, 'big')
+    result[9 * PAGE + 480 + 9 * count:9 * PAGE + 489 + 9 * count] = key
+    entry_end = 9 * (count + 1)
+    result[9 * PAGE + 27 + entry_end // 8] |= 1 << (entry_end % 8)
+    struct.pack_into('<H', result, 9 * PAGE + 2, 3616 - entry_end)
+    assert result[8 * PAGE + end:9 * PAGE] == before[8 * PAGE + end:9 * PAGE]
+    return bytes(result)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--empty-before', type=Path, required=True)
@@ -41,7 +68,12 @@ def main():
     args.output_dir.mkdir(exist_ok=False)
     (args.output_dir / 'before.accdb').write_bytes(before)
     (args.output_dir / 'after.accdb').write_bytes(after)
-    report = {'scope': 'Independent raw metadata ADD, no native writer/reader execution',
+    default_row = append_row(after, 0, 0)
+    null_row = append_row(default_row, 0, None)
+    (args.output_dir / 'default-row.accdb').write_bytes(default_row)
+    (args.output_dir / 'null-row.accdb').write_bytes(null_row)
+    report = {'default_row_sha256': digest(default_row), 'null_row_sha256': digest(null_row),
+              'scope': 'Independent raw metadata ADD, no native writer/reader execution',
               'before_sha256': digest(before), 'after_sha256': digest(after),
               'historical_record_fields': 2, 'new_declared_fields': 3,
               'data_index_unchanged': True, 'rows_last_unique': [3, 3, 3],
