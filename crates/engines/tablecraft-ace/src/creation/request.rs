@@ -81,7 +81,7 @@ pub(super) struct Request<'a> {
     pub variable: Option<variable::Prepared<'a>>,
     pub properties: Option<super::properties::Prepared<'a>>,
     pub primary: Option<super::primary::Prepared<'a>>,
-    fields: [Field<'a>; profile::MAX_COLUMNS],
+    fields: Vec<Field<'a>>,
 }
 
 impl Request<'_> {
@@ -92,7 +92,7 @@ impl Request<'_> {
     }
 
     pub fn fields(&self) -> Fields<'_> {
-        Fields::new(&self.fields[..self.columns.count()])
+        Fields::new(&self.fields)
     }
 }
 
@@ -116,21 +116,18 @@ pub(super) fn validate<'a>(
         return Err(CreateDatabaseError::ColumnLimit);
     }
 
-    // Only the filled prefix is ever exposed to the serializer. This bounded
-    // stack storage owns no copied names, Values or fabricated NativeColumns.
-    let mut fields = [Field {
-        name: "",
-        kind: 0,
-        offset: None,
-        width: 0,
-        decimal: None,
-        native_flags: None,
-        native_variable: None,
-        unicode_compression: false,
-    }; profile::MAX_COLUMNS];
+    // Field metadata borrows the caller's declarations; only the actual number
+    // of validated fields owns storage, charged before its fallible allocation.
+    budget
+        .charge_allocation(columns.count() as u64, size_of::<Field<'_>>() as u64)
+        .map_err(InspectError::from)?;
+    let mut fields = Vec::new();
+    fields
+        .try_reserve_exact(columns.count())
+        .map_err(|_| InspectError::Allocation)?;
     let mut fixed_bytes = 0_usize;
     let mut incrementing = None;
-    for (position, field) in fields[..columns.count()].iter_mut().enumerate() {
+    for position in 0..columns.count() {
         let column = columns.name(position);
         name(column, budget, cancelled)?;
         for prior in 0..position {
@@ -140,7 +137,7 @@ pub(super) fn validate<'a>(
                 return Err(CreateDatabaseError::DuplicateColumn);
             }
         }
-        *field = profile::bind(column, columns.declaration(position), fixed_bytes)?;
+        let mut field = profile::bind(column, columns.declaration(position), fixed_bytes)?;
         field.unicode_compression = columns.unicode_compression(position);
         if columns.incrementing(position) {
             if incrementing.replace(position).is_some() {
@@ -153,6 +150,7 @@ pub(super) fn validate<'a>(
                 .checked_add(field.width)
                 .ok_or(CreateDatabaseError::Layout)?;
         }
+        fields.push(field);
     }
     super::autonumber::qualify(columns, rows, incrementing, budget, cancelled)?;
     if rows.count() > profile::MAX_ROWS {
@@ -208,7 +206,7 @@ pub(super) fn validate<'a>(
         .checked_add(fixed_bytes)
         .and_then(|length| length.checked_add(columns.count().div_ceil(u8::BITS as usize)))
         .ok_or(CreateDatabaseError::Layout)?;
-    let variables = Fields::new(&fields[..columns.count()]).variable_count();
+    let variables = Fields::new(&fields).variable_count();
     let variable = if variables == 0 {
         None
     } else {
@@ -234,11 +232,8 @@ pub(super) fn validate<'a>(
             .ok_or(CreateDatabaseError::PageCapacity)?;
         (free_bytes, row_bytes)
     };
-    if super::definition::length_with_primary(
-        Fields::new(&fields[..columns.count()]),
-        false,
-        primary.as_ref(),
-    )? > PAGE_BYTES
+    if super::definition::length_with_primary(Fields::new(&fields), false, primary.as_ref())?
+        > PAGE_BYTES
     {
         return Err(CreateDatabaseError::PageCapacity);
     }

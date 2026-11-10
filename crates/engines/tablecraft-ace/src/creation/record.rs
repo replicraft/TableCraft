@@ -169,7 +169,14 @@ pub(super) fn user(
         }
     }
     if let Some(prepared) = &request.variable {
-        let mut starts = [0; profile::MAX_COLUMNS];
+        let variables = fields.variable_count();
+        budget
+            .charge_allocation(variables as u64, size_of::<usize>() as u64)
+            .map_err(InspectError::from)?;
+        let mut starts = Vec::new();
+        starts
+            .try_reserve_exact(variables)
+            .map_err(|_| InspectError::Allocation)?;
         let mut position = fields.fixed_end();
         let mut slot = 0;
         for column in 0..fields.count() {
@@ -177,7 +184,7 @@ pub(super) fn user(
                 continue;
             }
             check(budget, cancelled)?;
-            starts[slot] = position;
+            starts.push(position);
             let payload = prepared.payload(row, slot)?;
             let end = position
                 .checked_add(payload.byte_len())
@@ -203,7 +210,7 @@ pub(super) fn user(
         let eod = position;
         put16(record, position, eod)?;
         position += size_of::<u16>();
-        for start in starts[..slot].iter().rev() {
+        for start in starts.iter().rev() {
             check(budget, cancelled)?;
             put16(record, position, *start)?;
             position += size_of::<u16>();
