@@ -4,6 +4,7 @@ pub mod deletes;
 pub mod desktop;
 pub mod field_changes;
 pub mod fields;
+pub mod opaque_rows;
 pub mod rows;
 pub mod updates;
 use super::{
