@@ -45,7 +45,7 @@ pub(super) fn decode<R: crate::NativeReadSource>(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::Header;
+    use crate::{Header, LongTextReadLimits, LongValueReadLimits, LongValueReadSource};
     use proptest::prelude::*;
     use std::io::Cursor;
     use tablecraft_core::limits::ResourceBudget;
@@ -73,6 +73,14 @@ mod tests {
         pages: &[(usize, Vec<u8>)],
         budget: &mut ResourceBudget,
     ) -> Result<Option<String>, InspectError> {
+        decode_with_text_limit(def, pages, budget, LongTextReadLimits::default())
+    }
+    fn decode_with_text_limit(
+        def: &[u8],
+        pages: &[(usize, Vec<u8>)],
+        budget: &mut ResourceBudget,
+        limits: LongTextReadLimits,
+    ) -> Result<Option<String>, InspectError> {
         let mut bytes = vec![0; 6 * PAGE_BYTES];
         bytes[..4].copy_from_slice(&[0, 1, 0, 0]);
         bytes[4..20].copy_from_slice(b"Standard ACE DB\0");
@@ -82,7 +90,9 @@ mod tests {
             bytes[number * PAGE_BYTES..(number + 1) * PAGE_BYTES].copy_from_slice(page);
         }
         let header = Header::parse(&bytes[..66], bytes.len() as u64).unwrap();
-        let mut source = Cursor::new(bytes);
+        let mut source =
+            LongValueReadSource::new(Cursor::new(bytes), LongValueReadLimits::default())
+                .with_text_limits(limits);
         read(
             &mut Reader {
                 source: &mut source,
@@ -172,7 +182,7 @@ mod tests {
         );
         assert_eq!(
             decode(&definition(0x8000_0000, 2_097_153, 0), &[], &mut budget()).err(),
-            Some(InspectError::StructureLimit)
+            Some(InspectError::Malformed)
         );
         let mut invalid = definition(0x8000_0000, 2, 0);
         invalid.extend_from_slice(&[0, 0xd8]);
@@ -188,12 +198,21 @@ mod tests {
         );
     }
     #[test]
-    fn expanded_utf8_obeys_the_decoded_text_ceiling() {
+    fn expanded_utf8_passes_the_former_default_cap_and_obeys_explicit_lower_limits() {
         let payload = [b"\xff\xfe".as_slice(), &vec![0xff; 524_289]].concat();
         let mut def = definition(0x8000_0000, payload.len(), 0);
         def.extend(payload);
+        let text = decode(&def, &[], &mut budget()).unwrap().unwrap();
+        assert_eq!(text.len(), 1_048_578);
+        assert!(text.chars().all(|character| character == '\u{ff}'));
         assert_eq!(
-            decode(&def, &[], &mut budget()).err(),
+            decode_with_text_limit(
+                &def,
+                &[],
+                &mut budget(),
+                LongTextReadLimits::new(1_048_576).unwrap()
+            )
+            .err(),
             Some(InspectError::StructureLimit)
         );
     }

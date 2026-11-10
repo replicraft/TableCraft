@@ -16,12 +16,12 @@ pub use model::{
 mod tests;
 mod visited;
 use crate::{
-    InspectError, LongValueReadLimits, NativeReadSource,
+    InspectError, NativeReadSource,
     format::{
         bytes::u32_at,
         page::{DATA_SIGNATURE, OWNER_OFFSET, PAGE_BYTES},
         reader::{Reader, row_range},
-        row::{DELETED_MASK, RELOCATED_MASK, reference_page, reference_slot},
+        row::{DELETED_MASK, MAX_SLOTS, RELOCATED_MASK, reference_page, reference_slot},
     },
 };
 use definition::Definition;
@@ -34,8 +34,6 @@ const SINGLE_ROW: u32 = 0x4000_0000;
 const CHAINED: u32 = 0;
 const CHAIN_REFERENCE_BYTES: usize = size_of::<u32>();
 const LVAL_SIGNATURE: &[u8] = b"LVAL";
-// Explicit larger reads use finite batches under the same cumulative budget.
-const EXTENDED_BATCH_CHUNKS: usize = 256;
 
 /// An empty definition denotes NULL; an inline zero-length payload is empty data.
 pub(super) fn read<R: NativeReadSource>(
@@ -61,48 +59,29 @@ fn read_with_trace<R: NativeReadSource>(
     if length > limits.maximum_bytes() as usize {
         return Err(InspectError::StructureLimit);
     }
-    reader.budget.charge_allocation(length as u64, 1)?;
     let mut bytes = Vec::new();
-    bytes
-        .try_reserve_exact(length)
-        .map_err(|_| InspectError::Allocation)?;
     match tagged & LENGTH_TYPE_MASK {
         INLINE => {
             if definition.len() != DEFINITION_BYTES + length {
                 return Err(InspectError::Malformed);
             }
+            reader.budget.charge_allocation(length as u64, 1)?;
+            reserve_payload(&mut bytes, length, length)?;
             bytes.extend_from_slice(&definition[DEFINITION_BYTES..]);
         }
         kind @ (SINGLE_ROW | CHAINED) => {
             if definition.len() != DEFINITION_BYTES || length == 0 {
                 return Err(InspectError::Malformed);
             }
-            if limits.maximum_bytes() > LongValueReadLimits::DEFAULT_BYTES {
-                let mut value_reader = Reader {
-                    source: &mut *reader.source,
-                    header: reader.header,
-                    budget: &mut *reader.budget,
-                    cancelled: reader.cancelled,
-                    reads: 0,
-                };
-                read_external(
-                    &mut value_reader,
-                    descriptor.reference.get(),
-                    kind,
-                    length,
-                    &mut bytes,
-                    trace,
-                )?;
-            } else {
-                read_external(
-                    reader,
-                    descriptor.reference.get(),
-                    kind,
-                    length,
-                    &mut bytes,
-                    trace,
-                )?;
-            }
+            reader.budget.charge_allocation(length as u64, 1)?;
+            read_external(
+                reader,
+                descriptor.reference.get(),
+                kind,
+                length,
+                &mut bytes,
+                trace,
+            )?;
         }
         _ => return Err(InspectError::Unsupported),
     }
@@ -118,18 +97,15 @@ fn read_external<R: NativeReadSource>(
     bytes: &mut Vec<u8>,
     mut trace: Option<&mut Vec<trace::Chunk>>,
 ) -> Result<(), InspectError> {
-    let limits = reader.source.long_value_limits();
-    let extended = limits.maximum_bytes() > LongValueReadLimits::DEFAULT_BYTES;
-    let mut visited = Visited::new(extended);
+    let geometry = u64::from(reader.header.page_count()) * MAX_SLOTS as u64;
+    let maximum_chunks = (length as u64).min(geometry);
+    let mut visited = Visited::new();
 
-    for hop in 0..limits.maximum_chunks() {
-        visited.insert(reference, hop, reader)?;
-        if extended && hop % EXTENDED_BATCH_CHUNKS == 0 {
-            reader.reads = 0;
-        }
+    for _ in 0..maximum_chunks {
+        visited.insert(reference, reader)?;
 
         let current = reference;
-        let page = reader.page(reference_page(reference))?;
+        let page = reader.long_value_page(reference_page(reference))?;
         if page[..DATA_SIGNATURE.len()] != DATA_SIGNATURE
             || page.get(OWNER_OFFSET..OWNER_OFFSET + LVAL_SIGNATURE.len()) != Some(LVAL_SIGNATURE)
         {
@@ -166,6 +142,7 @@ fn read_external<R: NativeReadSource>(
                 bytes: row.len(),
             });
         }
+        reserve_payload(bytes, payload.len(), length)?;
         bytes.extend_from_slice(payload);
         if bytes.len() == length {
             if reference != 0 {
@@ -178,5 +155,29 @@ fn read_external<R: NativeReadSource>(
         }
     }
 
-    Err(InspectError::StructureLimit)
+    Err(InspectError::Malformed)
+}
+
+// The complete logical allocation was charged before traversal. Retain only
+// checked payload bytes, growing geometrically without reserving an advertised
+// gigabyte for a malformed descriptor whose chain fails on its first page.
+fn reserve_payload(
+    bytes: &mut Vec<u8>,
+    additional: usize,
+    length: usize,
+) -> Result<(), InspectError> {
+    let required = bytes
+        .len()
+        .checked_add(additional)
+        .ok_or(InspectError::Malformed)?;
+    if required > length {
+        return Err(InspectError::Malformed);
+    }
+    if required > bytes.capacity() {
+        let target = bytes.capacity().saturating_mul(2).max(required).min(length);
+        bytes
+            .try_reserve_exact(target - bytes.len())
+            .map_err(|_| InspectError::Allocation)?;
+    }
+    Ok(())
 }

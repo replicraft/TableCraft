@@ -1,4 +1,4 @@
-use crate::{InspectError, limits::MAX_LONG_TEXT_BYTES};
+use crate::{InspectError, LongValueReadLimits};
 
 /// Decoded Memo UTF-8 allowance, independent of encoded storage and query limits.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -7,12 +7,13 @@ pub struct LongTextReadLimits {
 }
 
 impl LongTextReadLimits {
-    /// Existing one-MiB decoded Memo ceiling.
-    pub const DEFAULT_BYTES: u32 = MAX_LONG_TEXT_BYTES as u32;
-    /// Explicit engineering ceiling, not a native format maximum.
-    pub const MAX_BYTES: u32 = 16 * 1024 * 1024;
+    /// A compressed single-byte UTF-16 unit needs at most two UTF-8 bytes;
+    /// uncompressed UTF-16 requires no greater expansion per encoded byte.
+    pub const MAX_BYTES: u32 = 2 * LongValueReadLimits::MAX_BYTES;
+    /// Ordinary reads retain the complete native encoded-to-UTF-8 envelope.
+    pub const DEFAULT_BYTES: u32 = Self::MAX_BYTES;
 
-    /// Choose a positive decoded UTF-8 ceiling within the consumer envelope.
+    /// Choose a positive decoded UTF-8 ceiling within the native decoding envelope.
     pub fn new(maximum_bytes: u32) -> Result<Self, InspectError> {
         if maximum_bytes == 0 || maximum_bytes > Self::MAX_BYTES {
             return Err(InspectError::InvalidLongTextLimits);

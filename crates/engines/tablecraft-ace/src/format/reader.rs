@@ -45,6 +45,21 @@ impl<R: crate::NativeReadSource> Reader<'_, R> {
             return Err(InspectError::StructureLimit);
         }
         self.reads += 1;
+        self.page_payload(number)
+    }
+    /// Long-value chains prove finite traversal from nonempty payloads, source
+    /// geometry and a paid visited set, rather than an unrelated page-count cap.
+    pub(crate) fn long_value_page(
+        &mut self,
+        number: u32,
+    ) -> Result<[u8; PAGE_BYTES], InspectError> {
+        self.tick()?;
+        if number >= self.header.page_count() {
+            return Err(InspectError::Malformed);
+        }
+        self.page_payload(number)
+    }
+    fn page_payload(&mut self, number: u32) -> Result<[u8; PAGE_BYTES], InspectError> {
         self.budget.charge(Resource::Bytes, PAGE_BYTES as u64)?;
         let mut page = [0; PAGE_BYTES];
         tablecraft_io::read_exact_at(

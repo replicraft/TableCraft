@@ -78,7 +78,7 @@ fn budget() -> ResourceBudget {
 }
 
 #[test]
-fn full_raw_ceiling_survives_long_chains_for_each_qualified_family() {
+fn ordinary_reads_survive_long_chains_for_each_qualified_family() {
     for version in [1, 2, 5, 6] {
         let bytes = chain(1024, 2048, version);
         let original = bytes.clone();
@@ -94,15 +94,29 @@ fn full_raw_ceiling_survives_long_chains_for_each_qualified_family() {
 }
 
 #[test]
-fn late_cycles_foreign_pages_truncation_and_chain_ceiling_publish_nothing() {
+fn late_cycles_foreign_pages_truncation_and_explicit_limits_publish_nothing() {
     let original = chain(1025, 1, 5);
     assert_eq!(
-        decode(&original, 1025, &mut budget(), &|| false).err(),
+        decode(&original, 1025, &mut budget(), &|| false)
+            .unwrap()
+            .unwrap()
+            .len(),
+        1025
+    );
+    assert_eq!(
+        decode_with_limits(
+            &original,
+            1025,
+            &mut budget(),
+            &|| false,
+            LongValueReadLimits::new(1024).unwrap()
+        )
+        .err(),
         Some(InspectError::StructureLimit)
     );
     assert_eq!(
         decode(&original, 2_097_153, &mut budget(), &|| false).err(),
-        Some(InspectError::StructureLimit)
+        Some(InspectError::Malformed)
     );
     let mut cycle = original.clone();
     let start = 202 * PAGE_BYTES - 5;
@@ -156,28 +170,46 @@ fn extended_budget() -> ResourceBudget {
 }
 
 #[test]
-fn explicit_storage_ceiling_reads_32_mib_and_more_than_4096_pages() {
-    let limits = LongValueReadLimits::new(33_554_432).unwrap();
+fn defaults_accept_payloads_beyond_the_former_two_mib_cap() {
     for version in [1, 2, 5, 6] {
-        let bytes = chain(16_384, 2048, version);
-        assert_eq!(
-            decode(&bytes, 33_554_432, &mut extended_budget(), &|| false).err(),
-            Some(InspectError::StructureLimit)
-        );
-        let actual = decode_with_limits(
-            &bytes,
-            33_554_432,
-            &mut extended_budget(),
-            &|| false,
-            limits,
-        )
-        .unwrap()
-        .unwrap();
-        assert_eq!(actual.len(), 33_554_432);
+        let bytes = chain(1025, 2048, version);
+        let actual = decode(&bytes, 2_099_200, &mut extended_budget(), &|| false)
+            .unwrap()
+            .unwrap();
+        assert_eq!(actual.len(), 2_099_200);
         for (position, chunk) in actual.as_chunks::<2048>().0.iter().enumerate() {
             assert!(chunk.iter().all(|byte| *byte == position as u8));
         }
     }
+}
+
+#[test]
+fn advertised_native_lengths_do_not_reserve_the_entire_malformed_payload() {
+    // The actual source and first payload are tiny. A full-length reservation
+    // would request up to a gigabyte before discovering this truncated chain.
+    let bytes = chain(1, 1, 5);
+    for length in [33_554_433, 0x3fff_ffff] {
+        let mut pool = ResourceBudget::new(2_000_000_000, 100, 1000);
+        assert_eq!(
+            decode(&bytes, length, &mut pool, &|| false).err(),
+            Some(InspectError::Malformed)
+        );
+    }
+}
+
+#[test]
+fn default_chains_exceed_the_former_page_read_and_chunk_counters() {
+    let bytes = chain(5121, 1, 5);
+    let actual = decode(&bytes, 5121, &mut extended_budget(), &|| false)
+        .unwrap()
+        .unwrap();
+    assert_eq!(actual.len(), 5121);
+    assert!(
+        actual
+            .iter()
+            .enumerate()
+            .all(|(position, byte)| *byte == position as u8)
+    );
 }
 
 #[test]
@@ -205,8 +237,11 @@ fn explicit_chains_reject_late_corruption_and_reference_exhaustion() {
     );
     let too_many = chain(5121, 1, 5);
     assert_eq!(
-        decode_with_limits(&too_many, 5121, &mut extended_budget(), &|| false, limits).err(),
-        Some(InspectError::StructureLimit)
+        decode_with_limits(&too_many, 5121, &mut extended_budget(), &|| false, limits)
+            .unwrap()
+            .unwrap()
+            .len(),
+        5121
     );
 }
 

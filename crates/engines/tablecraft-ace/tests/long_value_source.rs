@@ -41,16 +41,14 @@ impl NativeReadSource for HookSource {
 }
 
 #[test]
-fn validated_policies_preserve_defaults_and_bound_reference_counts() {
+fn validated_storage_policies_cover_the_descriptor_and_keep_explicit_lower_limits() {
     let defaults = LongValueReadLimits::default();
-    assert_eq!(defaults.maximum_bytes(), 2_097_152);
-    assert_eq!(defaults.maximum_chunks(), 1024);
-    for (bytes, chunks) in [(1, 1024), (2_097_153, 2048), (33_554_432, 16_384)] {
+    assert_eq!(defaults.maximum_bytes(), 0x3fff_ffff);
+    for bytes in [1, 2_097_153, 0x3fff_ffff] {
         let limits = LongValueReadLimits::new(bytes).unwrap();
         assert_eq!(limits.maximum_bytes(), bytes);
-        assert_eq!(limits.maximum_chunks(), chunks);
     }
-    for bytes in [0, 33_554_433, u32::MAX] {
+    for bytes in [0, 0x4000_0000, u32::MAX] {
         assert_eq!(
             LongValueReadLimits::new(bytes),
             Err(InspectError::InvalidLongValueLimits)
@@ -100,14 +98,14 @@ fn outer_policy_and_mutable_reborrows_preserve_native_hooks_and_raw_bytes() {
 
 #[test]
 fn decoded_policies_validate_separately_and_survive_nested_storage_wrappers() {
-    assert_eq!(LongTextReadLimits::default().maximum_bytes(), 1_048_576);
-    for bytes in [1, 1_048_577, 16_777_216] {
+    assert_eq!(LongTextReadLimits::default().maximum_bytes(), 0x7fff_fffe);
+    for bytes in [1, 1_048_577, 0x7fff_fffe] {
         assert_eq!(
             LongTextReadLimits::new(bytes).unwrap().maximum_bytes(),
             bytes
         );
     }
-    for bytes in [0, 16_777_217, u32::MAX] {
+    for bytes in [0, 0x7fff_ffff, u32::MAX] {
         assert_eq!(
             LongTextReadLimits::new(bytes),
             Err(InspectError::InvalidLongTextLimits)
