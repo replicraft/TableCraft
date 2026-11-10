@@ -307,11 +307,17 @@ impl OfflineWriteSession {
                 MutationIntent::FirstTable(intent) => {
                     let (mut target, mut journal) =
                         pair.resizable_storage().map_err(Cause::Pair)?;
-                    let checked =
-                        inspect_v2(&mut journal, budget, cancelled).map_err(Cause::Recovery)?;
-                    let qualified = qualify_native_first_table_recovery(
-                        checked, intent, slot.scope, budget, cancelled,
-                    )
+                    let qualified = if intent.is_native() {
+                        let checked =
+                            inspect_v3(&mut journal, budget, cancelled).map_err(Cause::Recovery)?;
+                        intent.qualify_native_recovery(checked, slot.scope, budget, cancelled)
+                    } else {
+                        let checked =
+                            inspect_v2(&mut journal, budget, cancelled).map_err(Cause::Recovery)?;
+                        qualify_native_first_table_recovery(
+                            checked, intent, slot.scope, budget, cancelled,
+                        )
+                    }
                     .map_err(Cause::Qualification)?;
                     qualified
                         .recover(&mut target, budget, cancelled)
@@ -321,7 +327,11 @@ impl OfflineWriteSession {
                 MutationIntent::AddTable(intent) => {
                     let (mut target, mut journal) =
                         pair.resizable_storage().map_err(Cause::Pair)?;
-                    let qualified = if intent.source_profile() == AddTableSourceProfile::Retained {
+                    let qualified = if intent.is_native() {
+                        let checked =
+                            inspect_v3(&mut journal, budget, cancelled).map_err(Cause::Recovery)?;
+                        intent.qualify_native_recovery(checked, slot.scope, budget, cancelled)
+                    } else if intent.source_profile() == AddTableSourceProfile::Retained {
                         let checked =
                             inspect_v3(&mut journal, budget, cancelled).map_err(Cause::Recovery)?;
                         intent.qualify_retained_recovery(checked, slot.scope, budget, cancelled)
@@ -736,11 +746,17 @@ impl OfflineWriteSession {
                 }
                 #[cfg(feature = "ace16-create")]
                 MutationIntent::FirstTable(intent) => {
-                    let checked =
-                        inspect_v2(&mut journal, budget, cancelled).map_err(Cause::Recovery)?;
-                    let qualified = qualify_native_first_table_recovery(
-                        checked, intent, slot.scope, budget, cancelled,
-                    )
+                    let qualified = if intent.is_native() {
+                        let checked =
+                            inspect_v3(&mut journal, budget, cancelled).map_err(Cause::Recovery)?;
+                        intent.qualify_native_recovery(checked, slot.scope, budget, cancelled)
+                    } else {
+                        let checked =
+                            inspect_v2(&mut journal, budget, cancelled).map_err(Cause::Recovery)?;
+                        qualify_native_first_table_recovery(
+                            checked, intent, slot.scope, budget, cancelled,
+                        )
+                    }
                     .map_err(Cause::Qualification)?;
                     qualified
                         .confirm_completed(&mut target, budget, cancelled)
@@ -748,7 +764,11 @@ impl OfflineWriteSession {
                 }
                 #[cfg(feature = "ace16-create")]
                 MutationIntent::AddTable(intent) => {
-                    let qualified = if intent.source_profile() == AddTableSourceProfile::Retained {
+                    let qualified = if intent.is_native() {
+                        let checked =
+                            inspect_v3(&mut journal, budget, cancelled).map_err(Cause::Recovery)?;
+                        intent.qualify_native_recovery(checked, slot.scope, budget, cancelled)
+                    } else if intent.source_profile() == AddTableSourceProfile::Retained {
                         let checked =
                             inspect_v3(&mut journal, budget, cancelled).map_err(Cause::Recovery)?;
                         intent.qualify_retained_recovery(checked, slot.scope, budget, cancelled)
@@ -954,7 +974,9 @@ impl OfflineWriteSession {
         let limit = limit
             .max(NativeOmittedInsertIntent::MAX_RETAINED_ENCODED_BYTES as u64)
             .max(NativeFirstTableIntent::MAX_ENCODED_BYTES as u64)
+            .max(NativeFirstTableIntent::MAX_NATIVE_ENCODED_BYTES as u64)
             .max(NativeAddTableIntent::MAX_ENCODED_BYTES as u64)
+            .max(NativeAddTableIntent::MAX_NATIVE_ENCODED_BYTES as u64)
             .max(NativeAddColumnIntent::MAX_ENCODED_BYTES as u64)
             .max(NativeDefaultZeroAddColumnIntent::MAX_ENCODED_BYTES as u64)
             .max(NativeRepeatedDefaultZeroAddColumnIntent::MAX_ENCODED_BYTES as u64)

@@ -91,6 +91,12 @@ impl NativeImage {
 }
 
 impl FirstTablePlan {
+    /// Whether the original request selected the native construction language.
+    /// Source qualification remains independent of this declaration marker.
+    pub fn is_native(&self) -> bool {
+        self.definition.is_native()
+    }
+
     /// Complete unchanged original canonical blank bytes.
     pub fn before_bytes(&self) -> &[u8] {
         self.before.as_bytes()

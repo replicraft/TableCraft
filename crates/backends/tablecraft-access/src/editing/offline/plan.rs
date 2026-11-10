@@ -208,16 +208,22 @@ impl MutationPlan {
             Self::Insert(plan) => plan.prepare_insert(target, journal, budget, cancelled),
             #[cfg(feature = "ace16-create")]
             Self::FirstTable(plan) => {
-                let prepared = plan
-                    .prepare(target, journal, budget, cancelled)
-                    .map_err(Cause::Prepare)?;
+                let prepared = if plan.is_native() {
+                    plan.prepare_native(target, journal, budget, cancelled)
+                } else {
+                    plan.prepare(target, journal, budget, cancelled)
+                }
+                .map_err(Cause::Prepare)?;
                 return prepared.commit(budget, cancelled).map_err(Cause::Commit);
             }
             #[cfg(feature = "ace16-create")]
             Self::AddTable(plan) => {
-                let prepared = plan
-                    .prepare(target, journal, budget, cancelled)
-                    .map_err(Cause::Prepare)?;
+                let prepared = if plan.is_native() {
+                    plan.prepare_native(target, journal, budget, cancelled)
+                } else {
+                    plan.prepare(target, journal, budget, cancelled)
+                }
+                .map_err(Cause::Prepare)?;
                 return prepared.commit(budget, cancelled).map_err(Cause::Commit);
             }
         }
@@ -489,6 +495,12 @@ impl MutationIntent {
         }
 
         #[cfg(feature = "ace16-create")]
+        if raw.starts_with(b"TCAT0007") {
+            return NativeAddTableIntent::decode_native(raw, budget, cancelled)
+                .map(Self::AddTable)
+                .map_err(Cause::AddTableIntent);
+        }
+        #[cfg(feature = "ace16-create")]
         if raw.starts_with(b"TCAT0006") {
             return NativeAddTableIntent::decode_retained(raw, budget, cancelled)
                 .map(Self::AddTable)
@@ -501,6 +513,12 @@ impl MutationIntent {
                 .map_err(Cause::AddTableIntent);
         }
 
+        #[cfg(feature = "ace16-create")]
+        if raw.starts_with(b"TCNT0007") {
+            return NativeFirstTableIntent::decode_native(raw, budget, cancelled)
+                .map(Self::FirstTable)
+                .map_err(Cause::FirstTableIntent);
+        }
         #[cfg(feature = "ace16-create")]
         if raw.starts_with(b"TCNT") {
             return NativeFirstTableIntent::decode(raw, budget, cancelled)

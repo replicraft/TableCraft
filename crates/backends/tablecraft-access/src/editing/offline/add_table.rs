@@ -1,4 +1,4 @@
-//! Append a second table through the same retained native target and V2 journal.
+//! Append a second table through the same retained native target and selected image journal.
 use super::plan::MutationPlan;
 use super::{Cause, Failure, OfflineWriteSession, Phase, Receipt, SchemaChange};
 use std::path::Path;
@@ -52,9 +52,12 @@ impl OfflineWriteSession {
                 cancelled,
             )
             .and_then(|image| {
-                image
-                    .plan_add_table(definition, budget, cancelled)
-                    .map_err(Cause::AddTablePlanning)
+                let plan = if definition.is_native() {
+                    image.plan_add_table_native(definition, budget, cancelled)
+                } else {
+                    image.plan_add_table(definition, budget, cancelled)
+                };
+                plan.map_err(Cause::AddTablePlanning)
             });
 
         match result {
@@ -83,7 +86,7 @@ impl StagedAddTable {
         self.session
     }
 
-    /// Resize and mutate the same file through its checked native V2 journal.
+    /// Resize and mutate the same file through its checked selected native image journal.
     /// Failures retain all recovery/finalization resources. No replacement
     /// pathname or fresh-output publisher is involved.
     pub fn apply(
