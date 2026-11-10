@@ -1,4 +1,5 @@
 use super::{DownloadProgress, download};
+use crate::artifact::ArtifactKind;
 use crate::{
     UpdateError,
     http::{Body, Transport},
@@ -57,6 +58,7 @@ fn available() -> release::AvailableUpdate {
         &serde_json::to_vec(&metadata).unwrap(),
         &Version::new(0, 1, 0),
         Platform::MacosArm64,
+        ArtifactKind::PortableArchive,
     )
     .unwrap()
     .unwrap()
@@ -74,7 +76,7 @@ fn responses(
             length: None,
         },
         StoredResponse {
-            url: release.archive_url().to_owned(),
+            url: release.asset_url().to_owned(),
             bytes: payload,
             length: None,
         },
@@ -102,7 +104,7 @@ fn authenticated_download_has_exact_bytes_rechecks_mutation_and_cleans_owned_dir
     })
     .unwrap();
     assert_eq!(verified.version(), &Version::new(0, 1, 1));
-    assert_eq!(verified.archive_name(), release.archive_name());
+    assert_eq!(verified.asset_name(), release.asset_name());
     assert_eq!(
         seen.last(),
         Some(&DownloadProgress {

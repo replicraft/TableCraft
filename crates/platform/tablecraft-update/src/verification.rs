@@ -20,7 +20,7 @@ pub(crate) fn signature(text: &[u8], release: &AvailableUpdate) -> Result<Signat
     let expected = format!(
         "tablecraft-update {} {}",
         release.version(),
-        release.archive_name()
+        release.asset_name()
     );
     if signature.trusted_comment() != expected {
         return Err(UpdateError::Signature);

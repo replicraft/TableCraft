@@ -1,5 +1,6 @@
 use crate::{
     UpdateError,
+    artifact::ArtifactKind,
     download::{self, DownloadProgress, VerifiedDownload},
     http::{Http, Transport},
     platform::Platform,
@@ -52,10 +53,11 @@ impl Updater {
     /// Refuses cancellation, network failures and invalid or oversized metadata.
     pub fn check(
         &self,
+        kind: ArtifactKind,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Option<AvailableUpdate>, UpdateError> {
         let _span = tracing::debug_span!("update.check").entered();
-        check(&self.http, &self.version, self.platform, cancelled)
+        check(&self.http, &self.version, self.platform, kind, cancelled)
     }
 
     /// Download and authenticate an update into an owned directory beside the installation.
@@ -86,6 +88,7 @@ fn check(
     transport: &dyn Transport,
     current: &Version,
     platform: Platform,
+    kind: ArtifactKind,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Option<AvailableUpdate>, UpdateError> {
     if cancelled() {
@@ -108,7 +111,7 @@ fn check(
             UpdateError::AssetTooLarge => UpdateError::ReleaseTooLarge,
             other => other,
         })?;
-    release::select(&bytes, current, platform)
+    release::select(&bytes, current, platform, kind)
 }
 
 #[cfg(test)]

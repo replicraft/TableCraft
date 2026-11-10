@@ -5,6 +5,7 @@
 
 pub mod apply;
 mod archive;
+pub mod artifact;
 mod client;
 mod download;
 mod error;

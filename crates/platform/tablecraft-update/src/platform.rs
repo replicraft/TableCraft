@@ -1,7 +1,5 @@
 //! Native platform identities and the desktop archive names they select.
 
-use semver::Version;
-
 /// A native desktop platform with a matching portable release archive.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum Platform {
@@ -69,20 +67,6 @@ impl Platform {
             Self::LinuxX64 => "x86_64-unknown-linux-gnu",
             Self::LinuxArm64 => "aarch64-unknown-linux-gnu",
         }
-    }
-
-    /// Returns the exact portable desktop archive name for the release version.
-    pub fn asset_name(self, version: &Version) -> String {
-        let (platform, extension) = match self {
-            Self::WindowsX64 => ("windows-x64", "zip"),
-            Self::WindowsArm64 => ("windows-arm64", "zip"),
-            Self::MacosX64 => ("macos-x64", "zip"),
-            Self::MacosArm64 => ("macos-arm64", "zip"),
-            Self::LinuxX64 => ("linux-x64", "tar.gz"),
-            Self::LinuxArm64 => ("linux-arm64", "tar.gz"),
-        };
-
-        format!("tablecraft-desktop-{version}-{platform}.{extension}")
     }
 }
 

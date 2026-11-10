@@ -1,4 +1,5 @@
 use super::{Session, State, UpdateCommand, UpdateEvent, UpdateTaskError, classify_checked};
+use crate::artifact::ArtifactKind;
 use crate::{
     UpdateError,
     installation::{InstallPlan, ManualReason},
@@ -31,6 +32,7 @@ fn available() -> AvailableUpdate {
         &serde_json::to_vec(&metadata).unwrap(),
         &Version::new(0, 1, 0),
         Platform::MacosArm64,
+        ArtifactKind::PortableArchive,
     )
     .unwrap()
     .unwrap()

@@ -1,4 +1,5 @@
 use super::{AvailableUpdate, select};
+use crate::artifact::ArtifactKind;
 use crate::{UpdateError, platform::Platform};
 use semver::Version;
 use serde_json::{Value, json};
@@ -39,6 +40,7 @@ fn selected(value: &Value, current: &str) -> Result<Option<AvailableUpdate>, Upd
         &serde_json::to_vec(value).unwrap(),
         &Version::parse(current).unwrap(),
         Platform::MacosArm64,
+        ArtifactKind::PortableArchive,
     )
 }
 
@@ -48,13 +50,13 @@ fn selects_exact_newer_release_and_both_download_identities() {
     assert_eq!(update.version(), &Version::parse("0.2.0").unwrap());
     assert_eq!(update.platform(), Platform::MacosArm64);
     assert_eq!(
-        update.archive_name(),
+        update.asset_name(),
         "tablecraft-desktop-0.2.0-macos-arm64.zip"
     );
-    assert_eq!(update.archive_bytes(), 24);
+    assert_eq!(update.asset_bytes(), 24);
     assert_eq!(update.signature_bytes(), 301);
     assert_eq!(
-        update.archive_url(),
+        update.asset_url(),
         "https://github.com/replicraft/TableCraft/releases/download/v0.2.0/tablecraft-desktop-0.2.0-macos-arm64.zip"
     );
     assert_eq!(
@@ -188,7 +190,8 @@ fn missing_duplicate_and_cross_platform_assets_refuse() {
         select(
             &value,
             &Version::parse("0.1.0").unwrap(),
-            Platform::WindowsX64
+            Platform::WindowsX64,
+            ArtifactKind::PortableArchive,
         ),
         Err(UpdateError::ReleaseMetadata)
     ));
@@ -224,7 +227,8 @@ fn metadata_limits_and_duplicate_known_json_fields_refuse() {
         select(
             &oversized,
             &Version::parse("0.1.0").unwrap(),
-            Platform::MacosArm64
+            Platform::MacosArm64,
+            ArtifactKind::PortableArchive,
         ),
         Err(UpdateError::ReleaseTooLarge)
     ));
@@ -234,7 +238,48 @@ fn metadata_limits_and_duplicate_known_json_fields_refuse() {
         br#"{"tag_name":"v0.2.0","tag_name":"v0.3.0","draft":false,"prerelease":false,"html_url":"ignored","assets":[]}"#.as_slice(),
     ] {
         assert!(matches!(
-            select(bytes, &Version::parse("0.1.0").unwrap(), Platform::MacosArm64),
+            select(bytes, &Version::parse("0.1.0").unwrap(), Platform::MacosArm64, ArtifactKind::PortableArchive),
+            Err(UpdateError::ReleaseMetadata)
+        ));
+    }
+}
+
+#[test]
+fn installer_selection_requires_its_exact_payload_and_signature_pair() {
+    for (kind, platform, name) in [
+        (
+            ArtifactKind::AppImage,
+            Platform::LinuxX64,
+            "tablecraft-desktop-0.2.0-linux-x64.AppImage",
+        ),
+        (
+            ArtifactKind::WindowsMsi,
+            Platform::WindowsArm64,
+            "tablecraft-desktop-0.2.0-windows-arm64.msi",
+        ),
+    ] {
+        let mut metadata = release("0.2.0");
+        metadata["assets"][0]["name"] = json!(name);
+        metadata["assets"][0]["browser_download_url"] = json!(format!(
+            "https://github.com/replicraft/TableCraft/releases/download/v0.2.0/{name}"
+        ));
+        metadata["assets"][1]["name"] = json!(format!("{name}.minisig"));
+        metadata["assets"][1]["browser_download_url"] = json!(format!(
+            "https://github.com/replicraft/TableCraft/releases/download/v0.2.0/{name}.minisig"
+        ));
+        let bytes = serde_json::to_vec(&metadata).unwrap();
+        let available = select(&bytes, &Version::new(0, 1, 0), platform, kind)
+            .unwrap()
+            .unwrap();
+        assert_eq!(available.kind(), kind);
+        assert_eq!(available.asset_name(), name);
+        assert!(matches!(
+            select(
+                &bytes,
+                &Version::new(0, 1, 0),
+                platform,
+                ArtifactKind::PortableArchive
+            ),
             Err(UpdateError::ReleaseMetadata)
         ));
     }

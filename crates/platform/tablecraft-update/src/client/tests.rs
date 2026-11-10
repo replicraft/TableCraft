@@ -1,4 +1,5 @@
 use super::{LATEST_RELEASE, check};
+use crate::artifact::ArtifactKind;
 use crate::{
     UpdateError,
     http::{Body, Transport},
@@ -37,20 +38,38 @@ fn cancellation_prevents_network_and_declared_or_streamed_oversize_refuse() {
     let current = Version::new(0, 1, 0);
     let platform = Platform::MacosArm64;
     assert!(matches!(
-        check(&source, &current, platform, &|| true),
+        check(
+            &source,
+            &current,
+            platform,
+            ArtifactKind::PortableArchive,
+            &|| true
+        ),
         Err(UpdateError::Cancelled)
     ));
     assert!(!source.requested.get());
 
     source.length = Some(super::release::MAX_METADATA_BYTES as u64 + 1);
     assert!(matches!(
-        check(&source, &current, platform, &|| false),
+        check(
+            &source,
+            &current,
+            platform,
+            ArtifactKind::PortableArchive,
+            &|| false
+        ),
         Err(UpdateError::ReleaseTooLarge)
     ));
     source.length = None;
     source.bytes = vec![b' '; super::release::MAX_METADATA_BYTES + 1];
     assert!(matches!(
-        check(&source, &current, platform, &|| false),
+        check(
+            &source,
+            &current,
+            platform,
+            ArtifactKind::PortableArchive,
+            &|| false
+        ),
         Err(UpdateError::ReleaseTooLarge)
     ));
 }
@@ -88,6 +107,7 @@ fn missing_latest_release_is_no_update_without_hiding_other_failures() {
             &Missing,
             &Version::new(0, 1, 0),
             Platform::MacosArm64,
+            ArtifactKind::PortableArchive,
             &|| false
         )
         .unwrap()

@@ -1,5 +1,6 @@
 use crate::{
     UpdateError,
+    artifact::ArtifactKind,
     http::Transport,
     platform::Platform,
     release::{AvailableUpdate, MAX_SIGNATURE_BYTES},
@@ -34,9 +35,10 @@ pub struct VerifiedDownload {
     _directory: TempDir,
     digest: [u8; 32],
     version: Version,
-    archive_name: String,
+    asset_name: String,
     size: u64,
     platform: Platform,
+    kind: ArtifactKind,
 }
 
 impl VerifiedDownload {
@@ -50,13 +52,18 @@ impl VerifiedDownload {
     }
 
     /// The exact authenticated platform archive filename.
-    pub fn archive_name(&self) -> &str {
-        &self.archive_name
+    pub fn asset_name(&self) -> &str {
+        &self.asset_name
     }
 
     /// The native target authenticated by this archive identity.
     pub fn platform(&self) -> Platform {
         self.platform
+    }
+
+    /// The authenticated payload format selected for this installation route.
+    pub const fn kind(&self) -> ArtifactKind {
+        self.kind
     }
 
     /// Open a stable file handle and recheck its content before installation.
@@ -104,7 +111,7 @@ pub(crate) fn download(
     parent: &Path,
     progress: &mut dyn FnMut(DownloadProgress) -> bool,
 ) -> Result<VerifiedDownload, UpdateError> {
-    let total = release.archive_bytes();
+    let total = release.asset_bytes();
     if !progress(DownloadProgress { received: 0, total }) {
         return Err(UpdateError::Cancelled);
     }
@@ -136,7 +143,7 @@ pub(crate) fn download(
         .tempdir_in(parent)
         .map_err(UpdateError::Io)?;
     let mut file = NamedTempFile::new_in(directory.path()).map_err(UpdateError::Io)?;
-    let mut response = transport.get(release.archive_url())?;
+    let mut response = transport.get(release.asset_url())?;
     if response.length.is_some_and(|size| size != total) {
         return Err(UpdateError::LengthMismatch);
     }
@@ -165,9 +172,10 @@ pub(crate) fn download(
         // NO_CLONE: the staged capability owns an immutable version independent
         // of the borrowed release used by the host's progress/status display.
         version: release.version().clone(),
-        archive_name: release.archive_name().to_owned(),
+        asset_name: release.asset_name().to_owned(),
         size: total,
         platform: release.platform(),
+        kind: release.kind(),
     })
 }
 

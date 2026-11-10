@@ -3,6 +3,7 @@
 use crate::{
     DownloadProgress, PreparedUpdate, UpdateError, Updater,
     apply::{AppliedUpdate, ApplyError},
+    artifact::ArtifactKind,
     installation::{self, InstallPlan, Installed, ManualReason},
     platform::Platform,
     release::AvailableUpdate,
@@ -147,7 +148,9 @@ impl Session {
     ) -> Result<(), UpdateTaskError> {
         self.state = State::Idle;
         publish(UpdateEvent::Checking, cancelled, emit)?;
-        let available = self.updater.check(cancelled)?;
+        let available = self
+            .updater
+            .check(ArtifactKind::PortableArchive, cancelled)?;
         let outcome = classify_checked(available, || {
             installation::detect(self.updater.version(), self.updater.platform())
         })?;

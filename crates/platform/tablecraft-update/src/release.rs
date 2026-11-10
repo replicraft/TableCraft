@@ -1,6 +1,10 @@
 //! Bounded GitHub release selection with exact product and platform identities.
 
-use crate::{UpdateError, platform::Platform};
+use crate::{
+    UpdateError,
+    artifact::{self, ArtifactKind},
+    platform::Platform,
+};
 use semver::Version;
 use serde::Deserialize;
 use std::cmp::Ordering;
@@ -8,7 +12,7 @@ use std::cmp::Ordering;
 /// The maximum accepted GitHub release metadata body, independent of asset sizes.
 pub const MAX_METADATA_BYTES: usize = 1024 * 1024;
 /// The largest archive accepted by the desktop updater.
-pub const MAX_ARCHIVE_BYTES: u64 = 512 * 1024 * 1024;
+pub const MAX_ASSET_BYTES: u64 = 512 * 1024 * 1024;
 /// The maximum Minisign sidecar size accepted before decoding.
 pub const MAX_SIGNATURE_BYTES: u64 = 4096;
 
@@ -22,6 +26,7 @@ const REPOSITORY_URL: &str = "https://github.com/replicraft/TableCraft";
 pub struct AvailableUpdate {
     version: Version,
     platform: Platform,
+    kind: ArtifactKind,
     archive: Asset,
     signature: Asset,
     release_url: String,
@@ -38,18 +43,23 @@ impl AvailableUpdate {
         self.platform
     }
 
-    /// Returns the exact platform archive filename.
-    pub fn archive_name(&self) -> &str {
+    /// Returns the authenticated payload format selected for this installation.
+    pub const fn kind(&self) -> ArtifactKind {
+        self.kind
+    }
+
+    /// Returns the exact platform asset filename.
+    pub fn asset_name(&self) -> &str {
         &self.archive.name
     }
 
     /// Returns the exact GitHub release download URL for this archive.
-    pub fn archive_url(&self) -> &str {
+    pub fn asset_url(&self) -> &str {
         &self.archive.browser_download_url
     }
 
     /// Returns the release's declared archive length, checked against the ceiling.
-    pub const fn archive_bytes(&self) -> u64 {
+    pub const fn asset_bytes(&self) -> u64 {
         self.archive.size
     }
 
@@ -100,6 +110,7 @@ pub fn select(
     bytes: &[u8],
     current: &Version,
     platform: Platform,
+    kind: ArtifactKind,
 ) -> Result<Option<AvailableUpdate>, UpdateError> {
     if bytes.len() > MAX_METADATA_BYTES {
         return Err(UpdateError::ReleaseTooLarge);
@@ -127,15 +138,14 @@ pub fn select(
         return Ok(None);
     }
 
-    let archive_name = platform.asset_name(&version);
-    let signature_name = format!("{archive_name}.minisig");
-    let download_prefix = format!("{REPOSITORY_URL}/releases/download/v{version}/");
+    let asset_name = kind.file_name(&version, platform)?;
+    let signature_name = format!("{asset_name}.minisig");
     let mut archive = None;
     let mut signature = None;
 
     for asset in release.assets {
-        let (selected, maximum) = if asset.name == archive_name {
-            (&mut archive, MAX_ARCHIVE_BYTES)
+        let (selected, maximum) = if asset.name == asset_name {
+            (&mut archive, MAX_ASSET_BYTES)
         } else if asset.name == signature_name {
             (&mut signature, MAX_SIGNATURE_BYTES)
         } else {
@@ -143,7 +153,7 @@ pub fn select(
         };
 
         if selected.is_some()
-            || asset.browser_download_url != format!("{download_prefix}{}", asset.name)
+            || asset.browser_download_url != artifact::download_url(&version, &asset.name)
         {
             return Err(UpdateError::ReleaseMetadata);
         }
@@ -156,6 +166,7 @@ pub fn select(
     Ok(Some(AvailableUpdate {
         version,
         platform,
+        kind,
         archive: archive.ok_or(UpdateError::ReleaseMetadata)?,
         signature: signature.ok_or(UpdateError::ReleaseMetadata)?,
         release_url: release.html_url,
