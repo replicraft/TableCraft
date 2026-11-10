@@ -12,11 +12,8 @@ use crate::{
     },
     header::check,
     table::mutation::{
-        normal_fitted::{
-            binding,
-            owned_growth::proof::{placement, reconstruct},
-        },
-        record_placement::{future::Future, space::Space},
+        normal_fitted::{binding, owned_growth::proof::reconstruct},
+        record_placement::{future::Future, proof as placement, space::Space},
         record_roots,
     },
 };

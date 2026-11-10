@@ -333,7 +333,7 @@ pub(in crate::table::mutation) fn prepare_guid_updates(
 #[cfg(all(feature = "journal", feature = "ace16-create"))]
 pub(in crate::table::mutation) fn prepare_historical_present(
     image: &NativeImage,
-    source: &crate::table::mutation::historical_fixed::Source<'_>,
+    source: &crate::table::mutation::historical_fixed::source::Source<'_>,
     groups: &[FixedColumnUpdates<'_>],
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,

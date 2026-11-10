@@ -11,9 +11,7 @@ use crate::{
         },
     },
     header::check,
-    table::mutation::{
-        normal_fitted::binding::Selected, record_placement::space::Space, record_roots::Root,
-    },
+    table::mutation::{record_placement::space::Space, record_roots::Root, rows::RowAssignment},
 };
 use std::ops::Range;
 use tablecraft_core::limits::{Resource, ResourceBudget};
@@ -138,9 +136,9 @@ impl Placement {
         Ok(())
     }
 
-    pub(in crate::table::mutation) fn reserve(
+    pub(in crate::table::mutation) fn reserve<U: RowAssignment>(
         &mut self,
-        root: &Root<'_, Selected>,
+        root: &Root<'_, U>,
         row: &[u8],
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
@@ -149,9 +147,9 @@ impl Placement {
             .ok_or(EditError::Unsupported(WriteBlocker::RowLayout))
     }
 
-    pub(in crate::table::mutation) fn try_reserve(
+    pub(in crate::table::mutation) fn try_reserve<U: RowAssignment>(
         &mut self,
-        root: &Root<'_, Selected>,
+        root: &Root<'_, U>,
         row: &[u8],
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
@@ -233,10 +231,10 @@ fn available(page: &PageState, bytes: usize) -> Result<bool, EditError> {
     clippy::too_many_arguments,
     reason = "Keep the independent choice separate from original root and row bytes."
 )]
-pub(in crate::table::mutation) fn apply(
+pub(in crate::table::mutation) fn apply<U: RowAssignment>(
     image: &NativeImage,
     space: &Space,
-    root: &Root<'_, Selected>,
+    root: &Root<'_, U>,
     row: &[u8],
     choice: &Choice,
     expected: &mut [u8],
@@ -252,10 +250,10 @@ pub(in crate::table::mutation) fn apply(
     clippy::too_many_arguments,
     reason = "Keep original proof state and allocation qualification distinct."
 )]
-pub(in crate::table::mutation) fn apply_eof(
+pub(in crate::table::mutation) fn apply_eof<U: RowAssignment>(
     image: &NativeImage,
     space: &Space,
-    root: &Root<'_, Selected>,
+    root: &Root<'_, U>,
     row: &[u8],
     choice: &Choice,
     future: &crate::table::mutation::record_placement::future::Future,
@@ -280,10 +278,10 @@ pub(in crate::table::mutation) fn apply_eof(
     clippy::too_many_arguments,
     reason = "Independent physical proof combines source, choice and optional fresh EOF qualification."
 )]
-fn apply_with(
+fn apply_with<U: RowAssignment>(
     image: &NativeImage,
     space: &Space,
-    root: &Root<'_, Selected>,
+    root: &Root<'_, U>,
     row: &[u8],
     choice: &Choice,
     future: Option<&crate::table::mutation::record_placement::future::Future>,

@@ -17,9 +17,9 @@ pub(super) enum RecordAdmission {
     /// Schema-only observation retains every original record byte, never targets it.
     #[cfg(all(feature = "journal", feature = "ace16-create"))]
     HistoricalSchemaReadonly,
-    /// Only the dedicated proof can target an already present fixed field.
+    /// Each dedicated fixed writer must qualify its exact historical targets.
     #[cfg(all(feature = "journal", feature = "ace16-create"))]
-    HistoricalPresentFixed,
+    HistoricalFixedRows,
 }
 
 impl RecordAdmission {
@@ -42,7 +42,7 @@ impl RecordAdmission {
             #[cfg(all(feature = "journal", feature = "ace16-create"))]
             Self::HistoricalSchemaReadonly => true,
             #[cfg(all(feature = "journal", feature = "ace16-create"))]
-            Self::HistoricalPresentFixed => true,
+            Self::HistoricalFixedRows => true,
         };
         if historical
             && layout.count > 0

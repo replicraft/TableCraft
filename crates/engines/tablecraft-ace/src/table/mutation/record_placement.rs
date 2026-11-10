@@ -15,3 +15,6 @@ pub(super) mod future;
 
 #[cfg(feature = "journal")]
 pub(super) mod future_pages;
+
+#[cfg(feature = "journal")]
+pub(in crate::table::mutation) mod proof;

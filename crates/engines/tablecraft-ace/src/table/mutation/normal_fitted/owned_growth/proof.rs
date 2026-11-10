@@ -1,5 +1,4 @@
 //! Fresh original requests independently reconstruct records and complete pages.
-pub(in crate::table::mutation) mod placement;
 use super::super::{
     binding::{self, Target},
     original_values,
@@ -11,7 +10,7 @@ use crate::{
     table::{
         mutation::{
             preserved_source::{Source, validation},
-            record_placement::space::Space,
+            record_placement::{proof as placement, space::Space},
             record_roots,
             record_serialization::{self, proof as variable_proof},
         },

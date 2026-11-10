@@ -33,7 +33,7 @@ enum Purpose {
     #[cfg(feature = "ace16-create")]
     Schema,
     #[cfg(feature = "ace16-create")]
-    HistoricalPresentFixed,
+    HistoricalFixedRows,
 }
 
 /// No public constructor or serialized permission. This certificate binds the
@@ -186,10 +186,10 @@ impl<'image> NoRequiredTablePrograms<'image> {
         )
     }
 
-    /// Dedicated existing-field UPDATE proof after closed current-source census.
+    /// Dedicated fixed-row UPDATE proof after closed current-source census.
     /// Schema readonly certificates cannot enter this purpose or its consumer.
     #[cfg(feature = "ace16-create")]
-    pub(in crate::table::mutation) fn capture_historical_present_fixed(
+    pub(in crate::table::mutation) fn capture_historical_fixed_rows(
         image: &'image NativeImage,
         current: &crate::table::mutation::current_schema::Table,
         budget: &mut ResourceBudget,
@@ -199,21 +199,21 @@ impl<'image> NoRequiredTablePrograms<'image> {
             image,
             &current.schema,
             Declaration::Actions,
-            Purpose::HistoricalPresentFixed,
+            Purpose::HistoricalFixedRows,
             budget,
             cancelled,
         )
     }
 
     #[cfg(feature = "ace16-create")]
-    pub(in crate::table::mutation) fn require_historical_present_fixed_source(
+    pub(in crate::table::mutation) fn require_historical_fixed_rows_source(
         &self,
         image: &NativeImage,
         schema: &TableSchema,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<(), EditError> {
-        if self.purpose != Purpose::HistoricalPresentFixed {
+        if self.purpose != Purpose::HistoricalFixedRows {
             return Err(EditError::Preservation);
         }
         self.require_binding(image, schema, budget, cancelled)
@@ -240,7 +240,7 @@ impl<'image> NoRequiredTablePrograms<'image> {
         let selected = match purpose {
             Purpose::Rows => catalog::validate(image, schema, budget, cancelled)?,
             #[cfg(feature = "ace16-create")]
-            Purpose::Schema | Purpose::HistoricalPresentFixed => {
+            Purpose::Schema | Purpose::HistoricalFixedRows => {
                 catalog::validate_schema(image, schema, budget, cancelled)?
             }
         };

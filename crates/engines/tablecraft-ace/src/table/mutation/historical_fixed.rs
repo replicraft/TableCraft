@@ -1,10 +1,8 @@
 //! Existing unindexed LONG changes in the closed current-schema source family.
+pub(in crate::table::mutation) mod source;
 use super::{
-    current_schema,
     fixed_records::{self, proof, stage},
-    no_required_programs::NoRequiredTablePrograms,
     patch::BytePatch,
-    preserved_source,
 };
 use crate::{
     EditError, FixedColumnUpdates, InspectError, NativeEditPlan, NativeImage, WriteBlocker,
@@ -14,65 +12,19 @@ use crate::{
         layout::{FIXED_FLAG, UPDATABLE_FLAG},
         page::{DATA_SIGNATURE, OWNER_OFFSET, PAGE_BYTES},
         reader::{live_row_range, row_count},
-        row::OFFSET_MASK,
+        row::{OFFSET_MASK, RELOCATED_MASK},
     },
     header::check,
     table::record_layout,
 };
+use source::Source;
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
 const SOURCE_PAGES: usize = 11;
 const USER_DEFINITION: u32 = 7;
 const USER_DATA: usize = 8;
 
-/// This proof has a separate purpose from ordinary and readonly schema sources.
-/// Its only write consumer requires already present unindexed LONG targets.
-pub(in crate::table::mutation) struct Source<'image> {
-    image: &'image NativeImage,
-    facts: preserved_source::Source,
-}
-
-impl<'image> Source<'image> {
-    fn capture(
-        image: &'image NativeImage,
-        table: &str,
-        budget: &mut ResourceBudget,
-        cancelled: &dyn Fn() -> bool,
-    ) -> Result<Self, EditError> {
-        let current = current_schema::observe(image, table, budget, cancelled).map_err(
-            |error| match error {
-                current_schema::Error::Inspect(error) => EditError::Inspect(error),
-                current_schema::Error::Native(error) => error,
-                current_schema::Error::Source => EditError::Unsupported(WriteBlocker::RowLayout),
-            },
-        )?;
-        let certificate = NoRequiredTablePrograms::capture_historical_present_fixed(
-            image, &current, budget, cancelled,
-        )?;
-        let facts = preserved_source::capture_historical_present_fixed(
-            image,
-            table,
-            &certificate,
-            budget,
-            cancelled,
-        )?;
-        if !facts.dependencies.is_empty() {
-            return Err(EditError::Unsupported(WriteBlocker::Column));
-        }
-        Ok(Self { image, facts })
-    }
-
-    pub(super) fn facts(&self) -> &preserved_source::Source {
-        &self.facts
-    }
-
-    pub(super) fn require_image(&self, image: &NativeImage) -> Result<(), EditError> {
-        if !std::ptr::eq(self.image, image) {
-            return Err(EditError::Preservation);
-        }
-        Ok(())
-    }
-
+impl Source<'_> {
     fn qualify(
         &self,
         groups: &[FixedColumnUpdates<'_>],
@@ -226,6 +178,12 @@ impl NativeImage {
             let Some((flags, start, end)) = live_row_range(page, slot)? else {
                 continue;
             };
+            if flags & !OFFSET_MASK == RELOCATED_MASK {
+                // Materialized fixed rows keep their logical roots. Even when
+                // no short direct record remains, retain this separate attempt;
+                // the checker must reprove every pointer and inactive byte.
+                return Ok(true);
+            }
             if flags & !OFFSET_MASK != 0 {
                 continue;
             }
