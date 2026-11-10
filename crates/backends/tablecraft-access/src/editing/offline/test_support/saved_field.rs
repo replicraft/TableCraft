@@ -79,3 +79,65 @@ pub(in crate::editing::offline) fn retired_namespace(directory: &Path) -> PathBu
     assert!(entries.next().is_none());
     path
 }
+
+/// Seed only the retained schema protocol; never relabel a legacy V1 plan.
+pub(in crate::editing::offline) fn retain_retained_pair(
+    mut owner: OfflineWriteSession,
+    bundle: &Path,
+    plan: FieldPlan,
+    committed: bool,
+    retired: bool,
+    budget: &mut ResourceBudget,
+) -> OfflineWriteSession {
+    let intent = match &plan {
+        FieldPlan::Rename(plan) => {
+            assert!(plan.intent().is_retained_schema());
+            let encoded = plan.intent().encode(budget, &|| false).unwrap();
+            assert!(encoded.starts_with(b"TCFR0006"));
+            encoded
+        }
+        FieldPlan::Drop(plan) => {
+            assert!(plan.intent().is_retained());
+            let encoded = plan.intent().encode(budget, &|| false).unwrap();
+            assert!(encoded.starts_with(b"TCFD0003"));
+            encoded
+        }
+    };
+    let slot = owner.slot_mut().unwrap();
+    let mut pair =
+        OfflineJournalPair::create(slot.target.take().unwrap(), bundle, intent, budget, &|| {
+            false
+        })
+        .unwrap();
+    {
+        let (mut target, mut journal) = pair.resizable_storage().unwrap();
+        let prepared = match plan {
+            FieldPlan::Rename(plan) => {
+                plan.prepare_retained(&mut target, &mut journal, budget, &|| false)
+            }
+            FieldPlan::Drop(plan) => {
+                plan.prepare_retained(&mut target, &mut journal, budget, &|| false)
+            }
+        }
+        .unwrap();
+        if committed {
+            prepared.commit(budget, &|| false).unwrap();
+        } else if retired {
+            assert_eq!(
+                prepared.rollback(budget, &|| false).unwrap(),
+                RecoveryOutcome::RolledBack
+            );
+        }
+    }
+    if retired {
+        pair.retire(if committed {
+            RecoveryOutcome::Committed
+        } else {
+            RecoveryOutcome::RolledBack
+        })
+        .unwrap();
+    }
+    slot.pair = Some(pair);
+    slot.state = SessionState::RetainedJournal;
+    owner
+}

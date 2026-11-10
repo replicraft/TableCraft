@@ -185,3 +185,5 @@ fn closed_drop_family_never_retries_another_action_decoder() {
         Err(Cause::FieldRenameIntent(_))
     ));
 }
+
+mod retained;
