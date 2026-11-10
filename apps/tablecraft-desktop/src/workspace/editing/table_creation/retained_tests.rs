@@ -57,7 +57,7 @@ fn save_schema(
 ) -> Vec<u8> {
     assert_eq!(std::fs::read(path).unwrap(), before);
     assert!(!journal_path(path).exists());
-    let expected = raw::append_with_uppercase_id(before, name, target);
+    let expected = raw::desktop::append(before, name, target);
     start_save(harness, name);
     finish_reads(harness);
     assert_eq!(std::fs::read(path).unwrap(), expected);

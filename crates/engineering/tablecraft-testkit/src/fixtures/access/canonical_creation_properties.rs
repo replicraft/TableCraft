@@ -155,7 +155,7 @@ fn records(page: &[u8]) -> Vec<Vec<u8>> {
     records
 }
 
-fn attach(original: &[u8], properties: &[u8]) -> Vec<u8> {
+pub(in crate::fixtures::access) fn attach(original: &[u8], properties: &[u8]) -> Vec<u8> {
     assert_eq!(word(original, 0), 17);
     assert_eq!(&original[original.len() - 3..], &[0xbf, 0, 0]);
     assert_eq!(word(original, original.len() - 5), 11);

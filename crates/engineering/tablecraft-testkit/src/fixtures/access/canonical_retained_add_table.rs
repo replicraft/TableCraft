@@ -1,4 +1,5 @@
 //! Independent append-only tables beside retained current schemas and tombstones.
+pub mod desktop;
 use super::{
     canonical_creation, canonical_creation_primary, canonical_initial_table_creation as initial,
     canonical_native17_creation, packed_record::append_record, put16, put32,
@@ -55,20 +56,10 @@ fn word(bytes: &[u8], at: usize) -> usize {
 /// Append fresh pages and physical metadata slots. Deleted native identities,
 /// slots, payloads and property snapshots are never recycled or reconstructed.
 pub fn append(before: &[u8], name: &str, target: Target) -> Vec<u8> {
-    append_named_id(before, name, target, false)
+    append_profile(before, name, target, false)
 }
 
-/// Desktop generated drafts retain the protected field's literal uppercase ID.
-/// Other metadata and placement remain the independently authored target schema.
-pub fn append_with_uppercase_id(before: &[u8], name: &str, target: Target) -> Vec<u8> {
-    assert!(matches!(
-        target,
-        Target::GeneratedNumber | Target::GeneratedText
-    ));
-    append_named_id(before, name, target, true)
-}
-
-fn append_named_id(before: &[u8], name: &str, target: Target, uppercase: bool) -> Vec<u8> {
+fn append_profile(before: &[u8], name: &str, target: Target, desktop: bool) -> Vec<u8> {
     assert_eq!(before.len() % PAGE, 0);
     assert!(!name.is_empty());
     let definition = before.len() / PAGE;
@@ -87,15 +78,18 @@ fn append_named_id(before: &[u8], name: &str, target: Target, uppercase: bool) -
         append_record(&mut bytes[MAPS..MAPS + PAGE], &map);
     }
     let raw = canonical_creation::catalog_record(definition as u32, 0x0f00_0001, name, 1, 0);
-    append_record(
-        &mut bytes[CATALOG..CATALOG + PAGE],
-        &canonical_native17_creation::catalog_row(&raw),
-    );
+    let row = canonical_native17_creation::catalog_row(&raw);
+    let row = if desktop {
+        super::canonical_creation_properties::attach(&row, &self::desktop::properties(target))
+    } else {
+        row
+    };
+    append_record(&mut bytes[CATALOG..CATALOG + PAGE], &row);
     put32(&mut bytes, CATALOG_LIVE, old_live + 1);
 
     let original = template(target);
     let mut declaration = original[DEFINITION..DEFINITION + PAGE].to_vec();
-    if uppercase {
+    if desktop {
         let first_name = 75 + 25 * word(&declaration, 45);
         assert_eq!(
             &declaration[first_name..first_name + 6],
@@ -113,6 +107,9 @@ fn append_named_id(before: &[u8], name: &str, target: Target, uppercase: bool) -
         }
         put32(&mut declaration, index + 34, (3 << 8) | (owned + 2) as u32);
         put32(&mut declaration, index + 38, (definition + 2) as u32);
+    }
+    if desktop {
+        self::desktop::definition(&mut declaration);
     }
     bytes.extend(declaration);
     let mut data = original[8 * PAGE..9 * PAGE].to_vec();
