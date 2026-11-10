@@ -13,6 +13,8 @@ const ACE_PROFILE: u16 = 2;
 /// A versioned validation route, never a serialized native permission.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum NativeUpdateProfile {
+    /// Current sparse native metadata and checked original Number/Text carriers.
+    Ace16CurrentRows,
     /// One Short Text field updated in a positively qualified historical row.
     Ace16HistoricalShortTextUpdates,
     /// One absent Number materialized through a qualified relocated historical root.
@@ -68,6 +70,13 @@ pub enum NativeUpdateBody {
 }
 
 impl NativeUpdateIntent {
+    pub(super) fn from_current_rows(original: NativeFittedEditIntent) -> Self {
+        Self {
+            profile: NativeUpdateProfile::Ace16CurrentRows,
+            body: NativeUpdateBody::Fitted(original),
+        }
+    }
+
     pub(super) fn from_historical_short_text_updates(original: NativeFittedEditIntent) -> Self {
         Self {
             profile: NativeUpdateProfile::Ace16HistoricalShortTextUpdates,
@@ -299,6 +308,9 @@ impl NativeUpdateIntent {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Vec<u8>, NativeIntentError> {
         match (&self.body, self.profile) {
+            (NativeUpdateBody::Fitted(original), NativeUpdateProfile::Ace16CurrentRows) => {
+                original.encode_profile(super::fitted::WireProfile::CurrentRows, budget, cancelled)
+            }
             (
                 NativeUpdateBody::Fixed(original),
                 NativeUpdateProfile::Ace16HistoricalForwardedNumberMaterialization,
@@ -367,6 +379,18 @@ impl NativeUpdateIntent {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, NativeIntentError> {
+        if bytes.get(..super::fitted::CURRENT_ROWS_MAGIC.len())
+            == Some(super::fitted::CURRENT_ROWS_MAGIC.as_slice())
+        {
+            return Ok(Self::from_current_rows(
+                NativeFittedEditIntent::decode_profile(
+                    bytes,
+                    super::fitted::WireProfile::CurrentRows,
+                    budget,
+                    cancelled,
+                )?,
+            ));
+        }
         if bytes.get(..super::fitted::HISTORICAL_TEXT_MAGIC.len())
             == Some(super::fitted::HISTORICAL_TEXT_MAGIC.as_slice())
         {

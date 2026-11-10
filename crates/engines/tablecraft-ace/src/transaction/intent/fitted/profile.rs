@@ -7,6 +7,8 @@ pub(in crate::transaction::intent) const EOF_ALLOCATION_MAGIC: &[u8; 8] = b"TCNI
 const EOF_ALLOCATION_PROFILE: u16 = 7;
 pub(in crate::transaction::intent) const HISTORICAL_TEXT_MAGIC: &[u8; 8] = b"TCNI0015";
 const HISTORICAL_TEXT_PROFILE: u16 = 15;
+pub(in crate::transaction::intent) const CURRENT_ROWS_MAGIC: &[u8; 8] = b"TCNI0016";
+const CURRENT_ROWS_PROFILE: u16 = 16;
 
 #[derive(Clone, Copy)]
 pub(in crate::transaction::intent) enum WireProfile {
@@ -14,6 +16,7 @@ pub(in crate::transaction::intent) enum WireProfile {
     OwnedOnly,
     AllocateEof,
     HistoricalShortText,
+    CurrentRows,
 }
 
 impl WireProfile {
@@ -23,6 +26,7 @@ impl WireProfile {
             Self::OwnedOnly => OWNED_GROWTH_MAGIC,
             Self::AllocateEof => EOF_ALLOCATION_MAGIC,
             Self::HistoricalShortText => HISTORICAL_TEXT_MAGIC,
+            Self::CurrentRows => CURRENT_ROWS_MAGIC,
         }
     }
 
@@ -32,6 +36,7 @@ impl WireProfile {
             Self::OwnedOnly => OWNED_GROWTH_PROFILE,
             Self::AllocateEof => EOF_ALLOCATION_PROFILE,
             Self::HistoricalShortText => HISTORICAL_TEXT_PROFILE,
+            Self::CurrentRows => CURRENT_ROWS_PROFILE,
         }
     }
 }
