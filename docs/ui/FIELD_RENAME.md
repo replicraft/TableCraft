@@ -110,6 +110,7 @@ and starts no save worker or journal. Editing that same proposal to 28 character
 creates a newer revision and saves only through a fresh review and complete-image
 witness. The final field retains its native number and tab identity.
 
-Subsequent row edits are not qualified by this schema save. In particular, shrink
-retains newly free historical TDEF bytes that existing ordinary-write source
-checks can refuse. No repeated-rename, ADD or row-CRUD authority is inferred.
+Subsequent row edits require independent qualification after this schema save.
+The [retained-tail row proof](../access/writes/RETAINED_DEFINITION_TAILS.md) now
+supports the demonstrated insertion/update/deletion journey while preserving
+newly free historical TDEF bytes. No repeated-rename or ADD authority is inferred.

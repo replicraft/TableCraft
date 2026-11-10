@@ -171,6 +171,8 @@ the complete 28-unit image and returns `FittedCapacity` at 29. The actual GUI
 retains the refused proposal without a save actor, journal or byte changes, then
 saves the explicitly corrected 28-unit name through a new review/witness.
 
-Shrink preserves newly free historical bytes. Existing ordinary-write source
-qualification can reject that retained TDEF tail; later row/schema editing needs
-its own composition proof and is not inferred from a successful rename.
+Shrink preserves newly free historical bytes. The separate
+[row-only retained-tail proof](RETAINED_DEFINITION_TAILS.md) now admits the
+independently qualified insertion/update/deletion composition without erasing
+those bytes. Later operations still require their own source checks; broader
+schema authority is not inferred from a successful rename.

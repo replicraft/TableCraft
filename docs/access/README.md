@@ -95,6 +95,7 @@ Jet/ACE reading, native queries, storage, indexes, preservation and bounded writ
 - [Append-only table creation, repeated additions and recovery](writes/ADD_TABLE_PERSISTENCE.md)
 - [Source-bound persisted table rename](writes/TABLE_RENAME.md)
 - [Bounded native saved-field rename candidate](writes/FIELD_RENAME.md)
+- [Row writes beside retained definition bytes](writes/RETAINED_DEFINITION_TAILS.md)
 - [Saved-field DROP: native, recovery and consuming runtime boundary](writes/FIELD_DROP.md)
 - [Explicit database Name AutoCorrect reviews, journal and File Options](writes/DATABASE_OPTIONS.md)
 - [Unpublished explicit OFF candidate after field ADD history](writes/DATABASE_OPTIONS.md#unpublished-off-after-add-candidate)
