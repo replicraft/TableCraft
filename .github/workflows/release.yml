@@ -12,7 +12,9 @@ on:
       - 'scripts/tests/test_package_*.py'
       - 'scripts/tests/test_file_associations.py'
       - 'scripts/tests/test_desktop_notices.py'
+      - 'scripts/tests/test_minisign_tool.py'
       - 'scripts/tests/test_update_signatures.py'
+      - 'scripts/tests/test_minisign_tool.py'
       - 'crates/platform/tablecraft-update/**'
       - 'packaging/desktop/notice-policy.json'
       - 'packaging/tablecraft-update-key.pub'
@@ -64,6 +66,7 @@ jobs:
       - run: python -m unittest discover -s scripts/tests -p 'test_package_*.py'
       - run: python -m unittest discover -s scripts/tests -p 'test_file_associations.py'
       - run: python -m unittest discover -s scripts/tests -p 'test_desktop_notices.py'
+      - run: python -m unittest discover -s scripts/tests -p 'test_minisign_tool.py'
 
   build:
     name: Build and smoke-test ${{ matrix.target }}
@@ -204,9 +207,8 @@ jobs:
           name: desktop-packaging-resources
           path: resources
       - name: Install the signature verifier
-        run: |
-          sudo apt-get update
-          sudo apt-get install --no-install-recommends -y minisign
+        run: python scripts/packaging/minisign_tool.py --output "$RUNNER_TEMP/tablecraft-minisign"
+      - run: minisign -v
       - name: Require both exact archive sets before opening signing secrets
         env:
           RELEASE_TAG: ${{ github.ref_type == 'tag' && github.ref_name || '' }}
@@ -276,9 +278,8 @@ jobs:
           name: desktop-packaging-resources
           path: resources
       - name: Install the independent signature verifier
-        run: |
-          sudo apt-get update
-          sudo apt-get install --no-install-recommends -y minisign
+        run: python scripts/packaging/minisign_tool.py --output "$RUNNER_TEMP/tablecraft-minisign"
+      - run: minisign -v
       - name: Reverify both products and signatures before any publication
         env:
           RELEASE_TAG: ${{ github.ref_name }}

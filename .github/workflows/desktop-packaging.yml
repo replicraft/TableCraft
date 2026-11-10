@@ -8,6 +8,7 @@ on:
       - '.github/workflows/release.yml'
       - 'scripts/packaging/**'
       - 'scripts/tests/test_update_signatures.py'
+      - 'scripts/tests/test_minisign_tool.py'
       - 'scripts/tests/test_package_*.py'
       - 'scripts/tests/test_installer_contract.py'
       - 'scripts/tests/test_linux_tools.py'
@@ -288,7 +289,9 @@ jobs:
           pattern: desktop-package-*
           path: dist
           merge-multiple: true
-      - run: sudo apt-get update && sudo apt-get install --no-install-recommends -y minisign
+      - name: Provision reviewed Minisign without signing secrets
+        run: python scripts/packaging/minisign_tool.py --output "$RUNNER_TEMP/tablecraft-minisign"
+      - run: minisign -v
       - run: python -m unittest discover -s scripts/tests -p 'test_update_signatures.py'
       - name: Verify complete archives and sign with an ephemeral test key
         shell: bash
