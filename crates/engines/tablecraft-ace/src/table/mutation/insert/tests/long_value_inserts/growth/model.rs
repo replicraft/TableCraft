@@ -90,10 +90,20 @@ pub(in crate::table::mutation::insert) fn source_and_expected(
     let promoted = !empty && eof == 528;
     assert!(matches!(
         (eof, length, empty),
-        (527, 65, false) | (528, 65, false) | (528, 8145, false) | (600, 65, true)
+        (527, 65, false)
+            | (528, 65, false)
+            | (528, 8145, false)
+            | (600, 65, true)
+            | (528, 4_169_729, false)
     ));
     let bodies = if chained {
-        vec![528, 530, 531]
+        // The first external body triggers a native owned-map promotion. Its
+        // bitmap occupies the next page; all later payload pages follow it.
+        let count = u32::try_from(length.div_ceil(4072)).unwrap();
+        assert!(promoted);
+        std::iter::once(eof)
+            .chain(eof + 2..eof + count + 1)
+            .collect()
     } else {
         vec![eof]
     };
