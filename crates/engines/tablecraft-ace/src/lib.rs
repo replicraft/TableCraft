@@ -360,7 +360,9 @@ pub use table::{
     NativeCurrentShortTextFieldAdditionCandidate,
 };
 #[cfg(all(feature = "ace16-create", feature = "journal"))]
-pub use table::{FieldDropError, NativeFieldDropCandidate, NativeFieldDropIdentity};
+pub use table::{
+    FieldDropError, NativeFieldDropCandidate, NativeFieldDropIdentity, SavedFieldDropSourcePurpose,
+};
 #[cfg(all(feature = "ace16-create", feature = "journal"))]
 pub use table::{
     FieldRenameError, FittedFieldRenameSource, NativeCurrentFieldRenameCandidate,

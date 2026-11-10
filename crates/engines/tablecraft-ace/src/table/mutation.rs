@@ -226,7 +226,9 @@ pub use add_field::{
     NativeCurrentShortTextFieldAdditionCandidate,
 };
 #[cfg(all(feature = "ace16-create", feature = "journal"))]
-pub use drop_field::{FieldDropError, NativeFieldDropCandidate, NativeFieldDropIdentity};
+pub use drop_field::{
+    FieldDropError, NativeFieldDropCandidate, NativeFieldDropIdentity, SavedFieldDropSourcePurpose,
+};
 #[cfg(all(feature = "ace16-create", feature = "journal"))]
 pub use rename_field::{
     FieldRenameError, FittedFieldRenameSource, NativeCurrentFieldRenameCandidate,
