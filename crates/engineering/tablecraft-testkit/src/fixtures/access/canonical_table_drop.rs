@@ -2,6 +2,8 @@
 //!
 //! The catalog row becomes a retained physical tombstone and its table's live
 //! count decreases. This model does not retire or recycle native table storage.
+pub mod current;
+
 use super::{
     canonical_catalog_names, canonical_creator_rename, canonical_indexed_rename,
     canonical_ordinary_indexed::Case,
