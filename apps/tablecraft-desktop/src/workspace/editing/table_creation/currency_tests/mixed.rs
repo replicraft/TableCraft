@@ -1,5 +1,5 @@
 //! Different column types retain their own update language within one table.
-use super::open_table;
+use super::{assert_image, open_table};
 use crate::workspace::{
     Desktop,
     editing::table_creation::{
@@ -40,7 +40,7 @@ fn appended_mixed_table_dispatches_currency_number_and_text_edits_independently(
     start_save(&mut harness, "MixedValues");
     finish_reads(&mut harness);
     let mut expected = raw::append_table(&source, "MixedValues");
-    assert_eq!(std::fs::read(&path).unwrap(), expected);
+    assert_image(&path, &expected);
 
     begin_generated_insert(&mut harness);
     for field in ["Score", "Amount", "Label"] {
@@ -48,7 +48,7 @@ fn appended_mixed_table_dispatches_currency_number_and_text_edits_independently(
     }
     review_and_save_insert(&mut harness, &path, &expected);
     expected = raw::append(&expected, definition);
-    assert_eq!(std::fs::read(&path).unwrap(), expected);
+    assert_image(&path, &expected);
     let row = &harness.state().state.data.as_ref().unwrap().rows[0];
     assert_eq!(row[0].text, "1");
     assert_eq!(row[1].text, "0");
@@ -104,6 +104,6 @@ fn appended_mixed_table_dispatches_currency_number_and_text_edits_independently(
             .rows
             .is_empty()
     );
-    assert_eq!(std::fs::read(&path).unwrap(), expected);
+    assert_image(&path, &expected);
     assert!(!journal_path(&path).exists());
 }

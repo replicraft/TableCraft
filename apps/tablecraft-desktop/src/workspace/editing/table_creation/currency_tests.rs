@@ -24,10 +24,25 @@ use tablecraft_testkit::fixtures::access::canonical_retained_add_table::{
     currency::{self as raw, Input},
 };
 
+fn assert_image(path: &Path, expected: &[u8]) {
+    let actual = std::fs::read(path).unwrap();
+    assert_eq!(actual.len(), expected.len(), "complete image length");
+    let difference = actual
+        .iter()
+        .zip(expected)
+        .enumerate()
+        .find(|(_, (actual, expected))| actual != expected);
+    assert!(
+        difference.is_none(),
+        "first image byte mismatch: {difference:?}"
+    );
+}
+
 fn open_table(harness: &mut Harness<'_, Desktop>, table: &str) {
     harness.get_by_role_and_label(Role::Button, table).focus();
     harness.run_steps(1);
     harness.key_press(Key::Enter);
+    harness.run_steps(1);
     finish_reads(harness);
     assert_eq!(harness.state().state.data.as_ref().unwrap().table, table);
 }
@@ -56,7 +71,7 @@ fn insert(
     }
     review_and_save_insert(harness, path, before);
     let expected = raw::append(before, definition, input);
-    assert_eq!(std::fs::read(path).unwrap(), expected);
+    assert_image(path, &expected);
     expected
 }
 
@@ -67,7 +82,7 @@ fn currency_precision_and_null_survive_created_table_then_appended_sibling_saves
     start_save(&mut harness, "Table1");
     finish_reads(&mut harness);
     let mut expected = raw::source();
-    assert_eq!(std::fs::read(&path).unwrap(), expected);
+    assert_image(&path, &expected);
     let table = harness.state().state.active_object().unwrap();
     scratch(&mut harness, &table);
 
@@ -133,7 +148,7 @@ fn currency_precision_and_null_survive_created_table_then_appended_sibling_saves
             .rows
             .is_empty()
     );
-    assert_eq!(std::fs::read(&path).unwrap(), expected);
+    assert_image(&path, &expected);
     assert!(!journal_path(&path).exists());
 }
 
@@ -165,7 +180,7 @@ fn appended_currency_table_preserves_precise_values_null_and_original_siblings()
     start_save(&mut harness, "MoneyTable");
     finish_reads(&mut harness);
     let mut expected = raw::append_table(&source, "MoneyTable");
-    assert_eq!(std::fs::read(&path).unwrap(), expected);
+    assert_image(&path, &expected);
     assert_eq!(
         harness.state().state.data.as_ref().unwrap().table,
         "MoneyTable"
@@ -232,6 +247,6 @@ fn appended_currency_table_preserves_precise_values_null_and_original_siblings()
             .rows
             .is_empty()
     );
-    assert_eq!(std::fs::read(&path).unwrap(), expected);
+    assert_image(&path, &expected);
     assert!(!journal_path(&path).exists());
 }
