@@ -87,6 +87,7 @@ Jet/ACE reading, native queries, storage, indexes, preservation and bounded writ
 ## Writes
 
 - [Native table deletion and recovery](writes/NATIVE_TABLE_DROP.md)
+- [Cell updates across retained table storage](writes/RETAINED_CELL_UPDATES.md)
 - [Fresh qualification of reviewed UPDATE plans](writes/REVIEWED_UPDATES.md)
 - [Fresh qualification of reviewed DELETE plans](writes/REVIEWED_DELETES.md)
 - [Fresh qualification of reviewed INSERT plans](writes/REVIEWED_INSERTS.md)

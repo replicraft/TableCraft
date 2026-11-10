@@ -15,17 +15,16 @@ Review should occur before acquiring an exclusive lease. Native required-program
 constraint, ownership and physical qualification remain in the unchanged normal
 planner; a reviewed image or count alone cannot bypass those gates.
 
-All ten current `NativeUpdateProfile` variants use one reconstruction owner:
-Jet 4 Int32; ACE BeforeChange Int32/fixed; ordinary fixed, fitted, owned growth,
-EOF allocation, IEEE, scalar and GUID. This profile selects mutation reconstruction;
-file-format eligibility remains unchanged. Current Jet 4/ACE writer restrictions,
-encryption limitations and unsupported programs still apply. No older-format
-writer is enabled by this API.
+Qualified update profiles use the same reconstruction owner, including retained
+cell updates. The profile selects mutation reconstruction; file-format eligibility
+and required-program restrictions remain separate. No older-format writer is
+enabled merely by using this API.
 
-The same private reconstruction service is used by generic native UPDATE recovery
-and EOF recovery. Existing V1/V2 selection, EOF length rules and original intent
-bytes remain unchanged. The specialized Jet 4 checked-journal API retains its
-existing path. A failed profile decoder is never retried as another action.
+Generic V1 and EOF/V2 recovery retain their existing families and original intent
+bytes. [Retained cell updates](RETAINED_CELL_UPDATES.md) use TCNI17 and a separate
+checked V3 recovery capability; older preparation/qualification APIs refuse it.
+The specialized Jet 4 checked-journal API retains its existing path. A failed
+profile decoder is never retried as another action.
 
 ## Work and failure handling
 

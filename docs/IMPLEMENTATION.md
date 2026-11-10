@@ -1,5 +1,35 @@
 # Implementation status
 
+## Retained table cell editing — 10 November 2026
+
+The shared reviewed cell editor now saves qualified unindexed LONG/Short Text
+changes after retained table creation and insertion, including original sparse
+tables after adding a sibling. Source inventory, target program/property/constraint
+checks and original-value conflicts precede effects. TCNI17 retains original typed
+requests, exact-family requalification and separate V3 recovery; older request and
+journal families remain closed. Paid dynamic physical traversal covers user and
+catalog forwarding, LVAL protection and property-ledger observation without a new
+fixed hop quota. Full-image proof preserves sibling/retired storage, indexes,
+properties and generated counters. The current source and single-cell scope remain
+explicit; general imported-application writes remain unqualified.
+
+Four native tests and twenty-four fitted-intent/recovery tests pass, including
+seven TCNI17 controls and twenty-hop user/catalog/both scenarios. Five declaration/
+LVAL ownership regressions, three original current-row tests and nine append/
+inventory/selector regressions pass separately. Eleven Access read/query controls,
+three new actual GUI journeys, thirty-nine existing GUI tests and twenty-nine
+Access update/recovery tests pass. GUI acceptance compares complete independent
+AFTER files, acknowledges actual saves and reopens with fresh hosts. Strict
+all-feature/all-target checks, journal-only minimal ACE/Access checks, formatting,
+module/dependency guards and documentation links pass. No Windows/Access execution
+or save parity is claimed.
+
+The long-chain case initially exposed the remaining property-ledger physical
+accessor; its retained-only scoped path now passes, while older capture contracts
+remain unchanged. Earlier compile/oracle failures retain their captured logs.
+Next is retained row DELETE, followed by the other retained table/field mutations.
+See [retained cell updates](access/writes/RETAINED_CELL_UPDATES.md).
+
 ## Retained table creation and row insertion — 10 November 2026
 
 The normal GUI now creates replacement and subsequent tables after native table
@@ -24,9 +54,8 @@ Initial test-oracle carrier/name mistakes were corrected; no
 native Windows or Microsoft Access comparison is claimed. Earlier retained append
 and V3 IO evidence remains in the owning contracts.
 
-Retained-source cell UPDATE and row DELETE are the next UI-driven gaps; table and
-field mutations likewise retain their own narrower source boundaries. INSERT
-success does not authorize those operations. See [database creation](ui/DATABASE_CREATION.md),
+That INSERT route grants no authority for cell UPDATE, row DELETE, table or field
+mutations; each retains its own source qualification. See [database creation](ui/DATABASE_CREATION.md),
 [table append](access/writes/ADD_TABLE_PERSISTENCE.md) and
 [normal INSERT](access/writes/NORMAL_ACE_INSERT.md).
 

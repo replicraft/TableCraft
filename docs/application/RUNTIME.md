@@ -671,7 +671,10 @@ The optional `offline-edit` feature supplies BeginEdit/ReviewEdit on the read
 worker and a separate `SaveWorker`. Desktop enables it. Drafts use exact document
 revision/table/column/ordinal targets; they retain no offline lease while the
 user types. Runtime converts replacement text to typed values and invokes normal
-native planning. SQL is never generated from the input. The shared UI's review
+native planning. [Retained-table cell edits](../access/writes/RETAINED_CELL_UPDATES.md)
+now use metadata-selected capture and a separate original-request/V3 source family,
+including edits after table replacement and insertion. Native operation limits
+remain explicit. SQL is never generated from the input. The shared UI's review
 is a display DTO; only the runtime can issue its opaque consuming `ReviewedEdit`.
 
 Literal clipboard text can seed the same replacement input with `is_null=false`;
