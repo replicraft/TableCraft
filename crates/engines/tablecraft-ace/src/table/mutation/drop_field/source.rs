@@ -208,10 +208,9 @@ impl Evidence {
                 cancelled,
                 reads: 0,
             };
-            let descriptor = descriptor::capture(&mut reader, &catalog, selected, origin)?
+            descriptor::capture(&mut reader, &catalog, selected, origin)?
                 .absolute_range()?
-                .ok_or(Error::Source)?;
-            descriptor
+                .ok_or(Error::Source)?
         };
         Ok(Self {
             purpose,
