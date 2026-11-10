@@ -265,7 +265,6 @@ pub(super) enum MutationIntent {
     EofInsert(NativeEofInsertIntent),
     CompleteInsert(NativeCompleteInsertIntent),
     OmittedInsert(NativeOmittedInsertIntent),
-    #[cfg(feature = "ace16-create")]
     RetainedInsert(NativeOmittedInsertIntent),
     ClockInsert(NativeClockInsertIntent),
     #[cfg(feature = "ace16-create")]
@@ -350,6 +349,11 @@ impl MutationIntent {
         if raw.starts_with(b"TCNI0017") || raw.starts_with(b"TCNI0018") {
             return NativeUpdateIntent::decode(raw, budget, cancelled)
                 .map(Self::RetainedUpdate)
+                .map_err(Cause::Intent);
+        }
+        if raw.starts_with(b"TCNA0009") {
+            return NativeOmittedInsertIntent::decode_retained_opaque(raw, budget, cancelled)
+                .map(Self::RetainedInsert)
                 .map_err(Cause::Intent);
         }
         #[cfg(feature = "ace16-create")]

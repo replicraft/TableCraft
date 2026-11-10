@@ -363,7 +363,6 @@ impl OfflineWriteSession {
                         .recover(&mut target, budget, cancelled)
                         .map_err(Cause::Recovery)
                 }
-                #[cfg(feature = "ace16-create")]
                 MutationIntent::RetainedInsert(intent) => {
                     let (mut target, mut journal) =
                         pair.resizable_storage().map_err(Cause::Pair)?;
@@ -787,7 +786,6 @@ impl OfflineWriteSession {
                         .confirm_completed(&mut target, budget, cancelled)
                         .map_err(Cause::Recovery)
                 }
-                #[cfg(feature = "ace16-create")]
                 MutationIntent::RetainedInsert(intent) => {
                     let checked =
                         inspect_v3(&mut journal, budget, cancelled).map_err(Cause::Recovery)?;

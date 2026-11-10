@@ -100,6 +100,19 @@ impl NativeJournalInserter {
             .map_err(EditError::from)
             .map_err(RecoverableEditError::from)?
         {
+            if self
+                .image
+                .select_native_retained_opaque_insert_table(&self.name, budget, cancelled)
+                .map_err(RecoverableEditError::from)?
+            {
+                return self
+                    .image
+                    .plan_recoverable_retained_opaque_omitted_row_inserts(
+                        &self.name, rows, budget, cancelled,
+                    )
+                    .map(NativeJournalInsertPlan::Retained)
+                    .map_err(Error::from);
+            }
             return self
                 .image
                 .plan_recoverable_retained_omitted_row_inserts(&self.name, rows, budget, cancelled)
