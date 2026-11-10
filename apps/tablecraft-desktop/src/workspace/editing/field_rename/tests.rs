@@ -1,5 +1,6 @@
 //! Real read/save actors at the rename-specific publication boundaries.
 mod close;
+mod current_storage;
 mod design;
 mod preferences;
 use super::*;
