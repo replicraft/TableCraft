@@ -57,8 +57,15 @@ pub(in crate::table::mutation::normal_insert) fn prove(
     )?;
     let source = super::super::capture_action_source(&image, table, budget, cancelled)?;
     source.require_preserved_definition_tail(&image, plan.after_bytes(), budget, cancelled)?;
-    let (facts, optional_wire) =
-        super::qualify(&image, &source, table, requests, budget, cancelled)?;
+    let (facts, optional_wire) = super::qualify(
+        &image,
+        &source,
+        table,
+        requests,
+        super::LvalScope::Original,
+        budget,
+        cancelled,
+    )?;
     crate::table::mutation::record_insertion::properties::require_text_declarations(
         &image,
         source.table.schema(),
@@ -168,7 +175,15 @@ pub(in crate::table::mutation::normal_insert) fn prove(
     // alias from the independently reconstructed full image, without effects.
     let after = NativeImage::capture(&mut Cursor::new(&expected), scope, budget, cancelled)?;
     let final_source = super::super::capture_action_source(&after, table, budget, cancelled)?;
-    let (final_facts, _) = super::qualify(&after, &final_source, table, &[], budget, cancelled)?;
+    let (final_facts, _) = super::qualify(
+        &after,
+        &final_source,
+        table,
+        &[],
+        super::LvalScope::Original,
+        budget,
+        cancelled,
+    )?;
     if final_source.records.len() != source.records.len() + requests.len()
         || final_source.table.schema().object_id() != schema.object_id()
         || final_source.table.schema().definition_page() != schema.definition_page()
