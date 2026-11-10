@@ -77,6 +77,7 @@ fn full_replay_rejects_bytes_erased_by_hypothesis_even_when_live_policy_is_off()
             b't',
         ),
     ] {
+        // NO_CLONE: Each corruption must start from the unchanged independently authored source.
         let mut changed = after.clone();
         assert_ne!(changed[offset], replacement);
         changed[offset] = replacement;
@@ -95,10 +96,14 @@ fn full_replay_rejects_bytes_erased_by_hypothesis_even_when_live_policy_is_off()
                 .unwrap(),
             DatabaseNameAutoCorrect::ExplicitOff
         );
-        assert!(matches!(
-            actual.check_field_history_name_auto_correct_off_source(&mut budget(), &|| false),
-            Err(Error::Preservation)
-        ));
+        let error = actual
+            .check_field_history_name_auto_correct_off_source(&mut budget(), &|| false)
+            .err();
+        // The full replay rejects this producer-language source before mutation.
+        assert!(
+            matches!(error, Some(Error::Source)),
+            "unexpected refusal at {offset}: {error:?}"
+        );
         assert_eq!(actual.as_bytes(), changed);
     }
 }

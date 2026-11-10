@@ -188,18 +188,23 @@ fn initial_off_source_unknown_target_and_unqualified_namespace_do_not_migrate() 
 #[test]
 fn source_tail_and_independent_controls_are_preserved() {
     let before = history::source(history::SourceCase::NumberThenNumber);
+    // NO_CLONE: Corrupt the original tail while retaining the independent valid source for the other controls.
     let mut changed = before.clone();
     changed[7 * PAGE + 3000] ^= 1;
-    assert!(matches!(
-        image(&changed).prepare_created_add_field_after_off_history_candidate(
+    let error = image(&changed)
+        .prepare_created_add_field_after_off_history_candidate(
             "Table1",
             "Next",
             FieldAdditionTarget::NumberLongZero,
             &mut budget(),
-            &|| false
-        ),
-        Err(Error::Preservation)
-    ));
+            &|| false,
+        )
+        .err();
+    // Replay equality is source admission, before a new candidate exists.
+    assert!(
+        matches!(error, Some(Error::Source)),
+        "unexpected refusal: {error:?}"
+    );
     assert!(matches!(
         image(&before).prepare_created_add_field_after_off_history_candidate(
             "Table1",
