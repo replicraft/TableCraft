@@ -1,4 +1,6 @@
 //! Headless desktop acceptance uses real native reads, saves and full-image witnesses.
+mod current;
+
 use crate::workspace::{
     Desktop,
     test_support::{self, finish_reads, finish_schema_save},
