@@ -7,6 +7,55 @@ ownership rather than the original eleven-page, definition-7 geometry. Desktop
 and MCP consume the shared runtime and Access adapter; no native editing logic
 was added to the desktop host.
 
+## Opaque retired tails
+
+After deleting the last non-key fields and adding a new Number field, an old
+record can retain a tail whose former field types are no longer known. Reading
+its surviving fixed values does not qualify the complete-record serializer.
+TCNI0018/profile18 supplies a distinct LONG materialization route for this case;
+TCNI17 remains closed to ambiguous tails. Indexed targets and other target
+carriers remain unsupported by this route.
+
+Selection positively examines paid original row geometry before choosing the
+route. A separate required-program/source certificate checks the complete
+inventory, native declarations, constraints, indexes and original records. The
+new route requires an actual ambiguous record; it never retries a failed TCNI17
+qualification. Explicit unsupported-source results keep the editor unavailable;
+malformed data, cancellation and exhausted caller budgets still propagate.
+
+For an ambiguous selected record, the producer retains the entire original
+prefix before its null mask. It changes only the native logical count and the
+selected declared four-byte LONG range, and appends a complete retained-slot
+trailer and native-number mask. Other original prefix bytes, including retired
+footer bytes, remain opaque and preserved. No deleted type or old footer is
+inferred. Checked native offsets cannot overlap a surviving field, and the new
+record must fit actual DATA-page geometry. NULL does not invent a default;
+exact no-ops retain the complete original image.
+
+Independent append-based reconstruction, whole-image comparison, fresh visible
+values and the existing placement/index/sibling protections qualify the result.
+Complete selected records retain their existing serializer when other records
+remain ambiguous. After materializing the final ambiguous record, subsequent
+operations can select TCNI17 through its own positive admission.
+
+The original-only request has exact TCNI18 framing and the native file envelope.
+Checked V3 preparation/recovery reconstructs this family explicitly; old direct
+TCNI17 decoders and V1/V2 preparation cannot reinterpret it. GUI, MCP and SQL
+consumers use shared services; desktop implements no native byte mutation.
+Insertion while other original records remain ambiguous is separate unfinished
+work, rather than permission to relax the existing INSERT source proof.
+
+Local macOS ARM64 verification passes 139 selected retained/current-row native
+and recovery tests, with twelve existing ignored cases unqualified. This includes
+three opaque-row native cases and five exact request/recovery cases, covering
+fixed and variable retired histories, long forwarding chains, NULL/no-op/stale
+witnesses, protected prefix/footer bytes and the transition back to complete rows.
+Two real offline SQL/save/recovery session tests and one typed unavailable-source
+control pass. Three journal-only request/refusal tests pass without native
+creation support. Strict Clippy across ACE, Access, runtime, UI, desktop and MCP,
+ACE rustdoc and creation-only compilation also pass. These checks establish local
+implementation behavior, not Microsoft Access save/reopen parity.
+
 ## Source and preservation
 
 Original metadata selects retained image capture before whole-image allocation.

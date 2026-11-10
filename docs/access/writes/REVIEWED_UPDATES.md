@@ -21,7 +21,7 @@ and required-program restrictions remain separate. No older-format writer is
 enabled merely by using this API.
 
 Generic V1 and EOF/V2 recovery retain their existing families and original intent
-bytes. [Retained cell updates](RETAINED_CELL_UPDATES.md) use TCNI17 and a separate
+bytes. [Retained cell updates](RETAINED_CELL_UPDATES.md) use TCNI17 or the distinct opaque-tail TCNI18 family and a separate
 checked V3 recovery capability; older preparation/qualification APIs refuse it.
 The specialized Jet 4 checked-journal API retains its existing path. A failed
 profile decoder is never retried as another action.

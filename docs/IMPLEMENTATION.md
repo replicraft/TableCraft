@@ -1,5 +1,24 @@
 # Implementation status
 
+## Known Number edits over retired row tails — 10 November 2026
+
+Deleting to an ID-only schema and adding a Number field can leave old record
+tails whose former types are unknown. A separate TCNI18 route now materializes
+that known LONG slot while preserving the remaining opaque prefix bytes and
+constructing a checked complete footer/mask. It selects actual original geometry
+before planning, retains distinct source/program proof and reconstructs the
+complete image independently. Older TCNI17 admission is unchanged. Shared
+services own the operation and V3 recovery; desktop gains no native mutation code.
+
+The selected native/recovery batch passes 139 tests, with twelve existing ignored
+cases unqualified. Two actual offline save/recovery session tests, one typed
+unavailable-source test and three journal-only data/refusal tests pass. Strict
+Clippy across six consuming packages, ACE rustdoc and creation-only checks pass.
+The actual GUI journey now passes DROP, re-addition and the historical cell save
+against independent complete images. It then exposes a separate insertion gap
+while another old row retains an ambiguous tail; that full journey is not yet a
+passing result. See [retained cell updates](access/writes/RETAINED_CELL_UPDATES.md).
+
 ## Large-cell clipboard and Zoom — 10 November 2026
 
 Displayed-record Copy no longer imposes a 1 MiB TSV cap. It keeps CSV quoting,
