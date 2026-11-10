@@ -141,6 +141,31 @@ fn populated_field_rename_preserves_number_null_rows_and_indexes_through_fresh_r
     }
 }
 
+#[test]
+fn repeated_field_rename_requalifies_current_metadata_and_preserves_cumulative_history() {
+    use tablecraft_testkit::fixtures::access::saved_field_rename::fitting::{self, SourceCase};
+
+    for (case, values) in [
+        (SourceCase::NumberFirst, &[][..]),
+        (SourceCase::NumberHistory, &[][..]),
+        (SourceCase::NumberFirst, &[Some(42), None, Some(-7)][..]),
+    ] {
+        let mut before = if values.is_empty() {
+            fitting::source(case)
+        } else {
+            let [before, _] = fitting::populated_number_pair("Score", values);
+            before
+        };
+        let mut original = "Score";
+        for replacement in ["TaxAmount", "X", "Revenue", "Score"] {
+            let expected = fitting::rename_current(&before, original, replacement);
+            checked_field_rename(&before, &expected, original, replacement, values);
+            before = expected;
+            original = replacement;
+        }
+    }
+}
+
 fn checked_field_rename(
     before: &[u8],
     expected: &[u8],
