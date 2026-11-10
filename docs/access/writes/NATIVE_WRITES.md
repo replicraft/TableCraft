@@ -3,14 +3,14 @@
 ## Native long-value representation bounds
 
 Memo/OLE producers and independent request proofs use the actual 30-bit encoded
-length field. Decoded UTF-8 checks use the corresponding encoding-expansion
-envelope. There is no separate 1 MiB text, 2 MiB payload or 1,024-chunk writer cap.
+length field (up to 1,073,741,823 encoded bytes). Decoded UTF-8 checks use the
+corresponding encoding-expansion envelope.
 Chunk allocation and original-chain traversal follow actual payload/page geometry,
 with paid fallible growth, cycle detection, cancellation and complete termination
 checks. Inline and Unicode-compression thresholds select storage representation;
 they do not limit a value's total size.
 
-This removes incidental value quotas; it does not qualify every native write.
+Value bounds alone do not qualify every native write.
 Existing source/action restrictions and legacy 64 MiB image limits in some
 engineering preview routes remain implementation gaps, not Access format limits.
 Explicit caller budgets remain independent of those compatibility boundaries.

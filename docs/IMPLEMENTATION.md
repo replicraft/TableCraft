@@ -1,5 +1,33 @@
 # Implementation status
 
+## Current fixed-preview and request bounds — 10 November 2026
+
+Fixed-purpose image capture accepts caller-selected ceilings up to the native
+2 GiB file-size bound; its default uses that bound. Standard capture retains a
+separate 64 MiB envelope, and frozen request profiles retain their documented
+admission rules. Explicit allocation, row and work budgets apply independently.
+An 84 MiB fixed preview matches its independent complete expected image; lower
+caller ceilings, insufficient work allowance and cancellation remain effective.
+
+CLI engineering request capture and TSV parsing use actual input/record sizes
+with paid fallible growth. Optional `--value-bytes` applies only when supplied;
+explicit work budgets govern retention and parsing. Quoted multiline input,
+5,000-row updates and named mappings, complete parsing before database access,
+large request capture and cancellation have focused coverage. Physical raw-record
+and current native declaration constraints remain independently checked.
+
+Creation field and variable-offset storage is allocated by actual count after
+semantic validation. Independent reader checks cover all 255 field declarations
+and complete external property maps, plus malformed continuation/property chains.
+Constructive creation and host authoring still retain their current 16-field
+profile while multi-page definition/property writing and recovery are implemented.
+Reader coverage does not enable that unfinished writer.
+
+Verification passes the affected 26 creation checks, 45 CLI unit checks, two
+named-mapping tests, two fixed-preview CLI controls and three wide-reader checks,
+with strict Clippy across seven packages and minimal/creation-only feature checks.
+These are local implementation checks, not Microsoft Access differential evidence.
+
 ## Reviewed Yes/No edits and native payload bounds — 10 November 2026
 
 Native retained Boolean cells now use TCNI20 through the existing shared review,
@@ -16,15 +44,15 @@ source and type; the widget neither changes the displayed value nor saves before
 Review and Apply. Actual initial/appended table journeys and pointer/Space saves
 match independent complete images, preserving siblings and leaving no journal.
 
-Writers no longer impose separate 1 MiB text, 2 MiB encoded payload or
-1,024-chunk limits. Descriptor representation, physical geometry, explicit paid
-allocation/work, cancellation and cycle checks govern these paths. A complete
+Writer payload admission follows the native 30-bit encoded-length field.
+Descriptor representation, physical geometry, explicit paid allocation/work,
+cancellation and cycle checks govern these paths. A complete
 4,169,729-byte OLE INSERT preview across 1,025 chunks matches an independent full
 image and fresh readback. This is preview evidence, not a normal journal-save or
 maximum-size-file qualification. Legacy 64 MiB preview-image limits remain gaps.
 
-The UI clipboard cap and 8 MiB aggregate insertion-input cap are also removed.
-Documented per-control text rules remain distinct from native field capacity.
+Clipboard and insertion input retain complete text under their field/input
+contracts. Documented per-control text rules remain distinct from native field capacity.
 Insertion checks avoid rescanning all retained characters every frame; actual
 edits, handoffs and submission validate complete content. Large single-value
 editor layout still needs further responsiveness work.

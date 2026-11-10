@@ -64,8 +64,8 @@ is rejected instead of being silently converted into NULL or empty data.
 Present fields require qualified native OLE/long-value storage. The reader follows
 inline, external-row or chained storage using the strict long-value codec.
 Encoded lengths follow the native 30-bit descriptor; traversal follows actual
-references with cycle detection and cumulative resource accounting, without a
-2 MiB payload or 1,024-chunk compatibility cap. Unknown carriers, flags,
+references with cycle detection and cumulative resource accounting. Unknown
+carriers, flags,
 malformed lengths/references/chains, ambiguous metadata, cancellation or exhausted
 budgets return no partial set. Native column order is explicitly mapped into
 body/module/extra order. Record geometry, fallible allocation and shared budgets

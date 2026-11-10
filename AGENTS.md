@@ -256,6 +256,9 @@ records or values a database may contain. Preserve corruption, cycle, overflow,
 allocation and source-revision checks. Where an implementation still cannot
 handle a native case, report that limitation accurately rather than presenting
 an arbitrary cap as an Access restriction.
+Describe current limits in current documentation. Do not narrate removed
+implementation quotas or contrast current behavior with former caps; keep
+historical verification evidence in its existing records.
 
 When extracting code, update consumers to import its owning crate directly.
 Avoid compatibility re-exports or wrappers whose only purpose is to retain an

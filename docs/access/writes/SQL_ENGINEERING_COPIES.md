@@ -166,7 +166,8 @@ the CLI does not install a signal handler for this operation.
 ## Explicit larger fixed-update copies
 
 `--image-bytes N` selects only the existing fixed fitting UPDATE profile under a
-validated, retained complete-image ceiling, currently at most 80 MiB. Without
+validated, retained complete-image ceiling up to the native 2 GiB file bound.
+The fixed-purpose default uses that bound; callers can select a smaller ceiling. Without
 this flag, capture retains its 64 MiB ceiling and current Default metadata routing.
 The flag does not resize a file or authorize variable/LVAL edits, INDEX growth,
 cascades, normal saves or data macros. Those mode flags conflict before opening
@@ -175,7 +176,7 @@ refuse even when WHERE selects no rows. No failed preview retries another mode.
 
 Image retention and cumulative operation work are separate. Defaults remain
 256 MiB Bytes, 100,000 Rows and 100,000,000 Steps; selecting a larger image does
-not raise them. For the qualified 80 MiB fixed-copy profile, this explicit example
+not raise them. For an 80 MiB fixed-copy input, this explicit example
 provides independent byte and step allowances:
 
 ```sh
@@ -183,6 +184,11 @@ tablecraft query preview-update 'UPDATE Items SET [Score]=11 WHERE [Id]=1' \
   --database offline.accdb --output fixed.accdb --image-bytes 83886080 \
   --work-bytes 2147483648 --work-rows 100000 --work-steps 1000000000
 ```
+
+The native file bound follows [Microsoft's Access specifications](https://support.microsoft.com/en-us/access/access-specifications).
+It does not promise that a maximum-sized operation fits the caller's memory/work
+budget or that every write profile supports that file. Frozen legacy requests
+and the separate standard-capture policy retain their existing admission rules.
 
 The host captures the original once through `capture_for_fixed_updates`, passes
 it to the existing SQL batch editor in `Fixed(Fitted)` mode, and uses the common

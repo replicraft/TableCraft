@@ -286,7 +286,10 @@ profiles also remain open.
 
 A single explicit larger-image host now supports
 [fixed fitting SQL copies](access/writes/SQL_ENGINEERING_COPIES.md) through
-`--image-bytes`, up to the native 80 MiB ceiling with independent work budgets.
+`--image-bytes`, up to the native file-size bound with independent work budgets.
+Fixed-purpose capture accepts an explicit ceiling up to 2 GiB. Standard capture
+uses a separate 64 MiB ceiling; frozen request profiles retain their documented
+admission rules.
 Ten frozen complete copies pass; other write profiles, default capture and
 normal-save/macro gates remain unchanged. Affected CLI regressions and strict
 checks pass.
