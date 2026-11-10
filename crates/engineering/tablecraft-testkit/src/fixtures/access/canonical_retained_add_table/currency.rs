@@ -1,4 +1,5 @@
 //! Literal desktop Currency declarations and exact scaled fixed-cell changes.
+pub mod mixed;
 use super::desktop;
 use crate::fixtures::access::{
     canonical_created_default_zero, canonical_creation_properties,
