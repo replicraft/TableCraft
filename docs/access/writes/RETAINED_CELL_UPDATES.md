@@ -7,6 +7,33 @@ ownership rather than the original eleven-page, definition-7 geometry. Desktop
 and MCP consume the shared runtime and Access adapter; no native editing logic
 was added to the desktop host.
 
+## Boolean value-bit edits
+
+TCNI20 adds an exact Boolean action over the existing complete retained-row
+source certificate. The selected Boolean must already have a stored bit in the
+record's declared native column count. A reader's default for an absent later
+field is not permission to materialize it through this action. NULL and other
+scalar carriers are refused.
+
+Boolean occupies no fixed payload bytes. The native field number identifies its
+value bit in the record mask; false clears that bit and true sets it. Its unused
+fixed-offset metadata does not extend payload geometry. Planning and independent
+proof preserve the original column count, footer, payload, slack, every other
+mask bit and the complete protected image complement. Non-Boolean fixed offsets
+retain their ordinary overlap and extent checks.
+
+The current retained-cell capability combines Boolean, Currency, LONG and Text
+from one qualified source. The actual target selects TCNI20, TCNI19 or TCNI17;
+TCNI18 keeps its separate opaque Int32 materialization scope. No failed action
+is retried as another family. The original Boolean wire carrier remains canonical
+0/1 with an explicit TCNI20 discriminator; V3 recovery performs fresh native
+reconstruction. Older preparation APIs refuse it, and journal-only decoding
+provides no native write authority.
+
+The shared UI proposes checkbox changes through existing runtime review/save
+services. Clicking, Space and accessibility Click do not mutate the displayed
+source or apply a save. See [the desktop contract](../../ui/DESKTOP.md#native-yesno-display-controls).
+
 ## Exact Currency edits and mixed tables
 
 TCNI0019/profile19 supplies a separate single-Currency-cell action for complete

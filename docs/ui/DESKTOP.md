@@ -893,8 +893,8 @@ unchecked cells, not a captured click/keyboard or review-dialog interaction.
 The explicit reviewed-save interaction remains a TableCraft safety workflow;
 no Windows/Access interaction parity is claimed.
 
-The rebuilt macOS preview displayed both actual sample Yes/No declarations as
-checked boxes. Repeated arrow navigation reached the field; mouse click, Space
+Before reviewed checkbox toggles were implemented, the rebuilt macOS preview
+displayed both actual sample Yes/No declarations as checked boxes. Repeated arrow navigation reached the field; mouse click, Space
 and Enter retained its original value. Home Copy published the original `true`
 text through the real system clipboard, verified by pasting into a local field
 without submitting another Open. The private source/copy comparison remains

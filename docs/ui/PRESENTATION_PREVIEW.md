@@ -1,5 +1,23 @@
 # Presentation preview
 
+## Boolean initial-record presentation — 10 November 2026
+
+The existing `initial-table-draft` scene with
+`TABLECRAFT_PREVIEW_INITIAL_EDIT=boolean` was rendered and directly inspected
+headlessly in English light/dark at 1280 × 820 logical points, scale 1×.
+Rendering used macOS 14.7.2 ARM64, WGPU and Windows input emulation; GPU adapter
+identity was not captured. The checked field remains centered, with separate
+input-mode and Click to Add affordances, complete Ribbon and visible footer.
+The local frames are
+`.cache/ui-previews/boolean-native-limits/en-US-light-initial-table-draft-initial-boolean.png`
+and the corresponding `en-US-dark` frame.
+
+These are source-free initial-record previews. Saved native checkbox gestures
+and reviewed saves have separate headless interaction tests; these images do
+not establish those behaviors or Windows/Access parity. No native application
+window was opened. The retained Access datasheet reference and its limitations
+are recorded in [the desktop contract](DESKTOP.md#native-yesno-display-controls).
+
 ## Read-query limits — 9 November 2026
 
 `TABLECRAFT_PREVIEW_QUERY_LIMITS=true` with the `query` scene opens the actual

@@ -40,11 +40,11 @@ mod index_ownership;
 #[cfg(feature = "journal")]
 pub(super) mod normal_eof;
 #[cfg(all(feature = "journal", feature = "ace16-create"))]
-mod retained_currency_row_updates;
+mod retained_boolean_row_updates;
 #[cfg(all(feature = "journal", feature = "ace16-create"))]
 mod retained_cell_updates;
 #[cfg(all(feature = "journal", feature = "ace16-create"))]
-mod retained_boolean_row_updates;
+mod retained_currency_row_updates;
 #[cfg(all(feature = "journal", feature = "ace16-create"))]
 mod retained_opaque_row_updates;
 #[cfg(all(feature = "journal", feature = "ace16-create"))]

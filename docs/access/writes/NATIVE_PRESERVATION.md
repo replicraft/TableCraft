@@ -62,8 +62,10 @@ different presence states. A physically present field with an empty definition
 is rejected instead of being silently converted into NULL or empty data.
 
 Present fields require qualified native OLE/long-value storage. The reader follows
-inline, external-row or bounded chains using the existing strict long-value codec,
-with a 2 MiB limit per payload and 1,024 chunks. Unknown carriers, flags,
+inline, external-row or chained storage using the strict long-value codec.
+Encoded lengths follow the native 30-bit descriptor; traversal follows actual
+references with cycle detection and cumulative resource accounting, without a
+2 MiB payload or 1,024-chunk compatibility cap. Unknown carriers, flags,
 malformed lengths/references/chains, ambiguous metadata, cancellation or exhausted
 budgets return no partial set. Native column order is explicitly mapped into
 body/module/extra order. Record geometry, fallible allocation and shared budgets
@@ -73,7 +75,8 @@ descriptors, pages, padding and every opaque object representation.
 
 No OLE/application container, VBA source/p-code, macro or dependency semantics are
 interpreted. No module or application content executes. These objects supply no
-mutation handle or permission to save. All ACE writes remain blocked.
+mutation handle or permission to save. Qualified ACE writes use their separate
+source, required-program and complete-image preservation checks.
 
 The original [payload recipe](../../../tests/access/reading/tables/ObjectPayloadFixture.java) places inert
 binary patterns in catalog fields of fresh V2016/V2019 table objects; these are

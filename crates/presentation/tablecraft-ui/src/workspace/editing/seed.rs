@@ -2,6 +2,7 @@
 use super::{EditDraft, EditInput, EditTarget, InputHint};
 use crate::{CellKind, DisplayControl, workspace::State};
 
+/// Opaque expected-value witness produced by a shared native checkbox gesture.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct BooleanToggle {
     expected: bool,
@@ -17,9 +18,12 @@ impl BooleanToggle {
     }
 }
 
+/// A proposed input that still requires a fresh source-bound runtime draft.
 #[derive(Debug, PartialEq, Eq)]
 pub enum EditSeed {
+    /// Complete literal clipboard text, without implicit NULL or display conversion.
     Text(String),
+    /// The opposite of the captured typed Boolean, subject to fresh draft checks.
     Boolean(BooleanToggle),
 }
 

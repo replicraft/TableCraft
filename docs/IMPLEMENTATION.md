@@ -1,5 +1,49 @@
 # Implementation status
 
+## Reviewed Yes/No edits and native payload bounds — 10 November 2026
+
+Native retained Boolean cells now use TCNI20 through the existing shared review,
+apply and V3 recovery services. The selected stored value bit changes without
+inventing payload bytes or rewriting its unused fixed offset. Existing Currency,
+Number and Text targets retain their exact separate action families. Historically
+absent Boolean bits, NULL, indexed targets and unknown required programs remain
+outside this action's qualified scope.
+
+The UI renders an inspected absent DisplayControl as the native Boolean checkbox
+default while retaining that metadata absence. Click, Space and accessibility
+Click propose an expected-value-bound edit. Fresh runtime drafts recheck the
+source and type; the widget neither changes the displayed value nor saves before
+Review and Apply. Actual initial/appended table journeys and pointer/Space saves
+match independent complete images, preserving siblings and leaving no journal.
+
+Writers no longer impose separate 1 MiB text, 2 MiB encoded payload or
+1,024-chunk limits. Descriptor representation, physical geometry, explicit paid
+allocation/work, cancellation and cycle checks govern these paths. A complete
+4,169,729-byte OLE INSERT preview across 1,025 chunks matches an independent full
+image and fresh readback. This is preview evidence, not a normal journal-save or
+maximum-size-file qualification. Legacy 64 MiB preview-image limits remain gaps.
+
+The UI clipboard cap and 8 MiB aggregate insertion-input cap are also removed.
+Documented per-control text rules remain distinct from native field capacity.
+Insertion checks avoid rescanning all retained characters every frame; actual
+edits, handoffs and submission validate complete content. Large single-value
+editor layout still needs further responsiveness work.
+
+Verification includes the native payload/Boolean/wire batch, all 25 affected
+geometry checks, 14 shared editing tests, 12 desktop workflows, nine CLI read-budget
+tests and five journal-only tests. The full shared-UI run and 66 affected checks
+cover the new interactions, localization, large-input admission and repaired Copy
+expectation. Strict Clippy across six packages, minimal Access/runtime,
+creation-only ACE, ACE/UI rustdoc and repository guards pass. English light/dark
+initial-record frames were directly inspected offscreen at 1280 × 820/1× on
+macOS ARM64. No Windows/Access parity follows from these checks.
+
+The next limit-removal work includes CLI preview intake, legacy image capture
+and the 16-field authoring profile. Full 255-field creation requires writing and
+proving native table-definition continuation pages; changing a constant alone
+would not establish that support. See [native write bounds](access/writes/NATIVE_WRITES.md#native-long-value-representation-bounds)
+and [Boolean edits](access/writes/RETAINED_CELL_UPDATES.md#boolean-value-bit-edits).
+
 ## Currency editing across retained tables — 10 November 2026
 
 Qualified ACE16 Currency cells now use an exact TCNI19 action over complete
