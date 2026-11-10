@@ -364,6 +364,18 @@ impl OfflineWriteSession {
                         .recover(&mut target, budget, cancelled)
                         .map_err(Cause::Recovery)
                 }
+                MutationIntent::RetainedDelete(intent) => {
+                    let (mut target, mut journal) =
+                        pair.resizable_storage().map_err(Cause::Pair)?;
+                    let checked =
+                        inspect_v3(&mut journal, budget, cancelled).map_err(Cause::Recovery)?;
+                    let qualified = intent
+                        .qualify_retained_recovery(checked, slot.scope, budget, cancelled)
+                        .map_err(Cause::Qualification)?;
+                    qualified
+                        .recover_retained(&mut target, budget, cancelled)
+                        .map_err(Cause::Recovery)
+                }
                 MutationIntent::Delete(intent) => {
                     let (mut target, mut journal) = pair.storage().map_err(Cause::Pair)?;
                     let checked =
@@ -731,6 +743,16 @@ impl OfflineWriteSession {
                         .confirm_completed(&mut target, budget, cancelled)
                         .map_err(Cause::Recovery)
                 }
+                MutationIntent::RetainedDelete(intent) => {
+                    let checked =
+                        inspect_v3(&mut journal, budget, cancelled).map_err(Cause::Recovery)?;
+                    let qualified = intent
+                        .qualify_retained_recovery(checked, slot.scope, budget, cancelled)
+                        .map_err(Cause::Qualification)?;
+                    qualified
+                        .confirm_completed(&mut target, budget, cancelled)
+                        .map_err(Cause::Recovery)
+                }
                 MutationIntent::Delete(intent) => {
                     let checked =
                         inspect_v1(&mut journal, budget, cancelled).map_err(Cause::Recovery)?;
@@ -835,6 +857,7 @@ impl OfflineWriteSession {
             .max(NativeFittedEditIntent::MAX_RETAINED_ENCODED_BYTES)
             .max(NativeDeleteIntent::MAX_ENCODED_BYTES)
             .max(NativeDeleteIntent::MAX_CURRENT_ENCODED_BYTES)
+            .max(NativeDeleteIntent::MAX_RETAINED_ENCODED_BYTES)
             .max(NativeInsertIntent::MAX_ENCODED_BYTES)
             .max(NativeOmittedInsertIntent::MAX_ENCODED_BYTES)
             .max(NativeOmittedInsertIntent::MAX_CURRENT_ENCODED_BYTES)

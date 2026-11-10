@@ -23,8 +23,7 @@ use tablecraft_access::{
     },
 };
 use tablecraft_ace::{
-    DatabaseQueryMode, InspectError, NativeImage, RecoverableNativeDeletePlan,
-    RecoverableNativeEditPlan,
+    DatabaseQueryMode, InspectError, RecoverableNativeDeletePlan, RecoverableNativeEditPlan,
 };
 use tablecraft_core::limits::Resource;
 use tablecraft_expressions::{functions::dates::clock::Clock, predicates::LikeMode};
@@ -102,14 +101,13 @@ pub(in crate::editing) fn review(
                 &mut native,
                 cancelled,
             )?,
-            Kind::Update => NativeJournalEditor::capture_shared_image(
+            Kind::Update | Kind::Delete => NativeJournalEditor::capture_shared_image(
                 source,
                 SCOPE,
                 table,
                 &mut native,
                 cancelled,
             )?,
-            Kind::Delete => NativeImage::capture_shared(source, SCOPE, &mut native, cancelled)?,
         }
     };
 

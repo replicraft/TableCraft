@@ -170,9 +170,15 @@ impl MutationPlan {
                     plan.prepare_update(target, journal, budget, cancelled)
                 }
             }
-            Self::Delete(plan) => plan
-                .prepare(target, journal, budget, cancelled)
-                .map(PreparedNativeUpdate::Fixed),
+            Self::Delete(plan) => {
+                if plan.intent().is_retained() {
+                    plan.prepare_retained(target, journal, budget, cancelled)
+                        .map(PreparedNativeUpdate::Resizable)
+                } else {
+                    plan.prepare(target, journal, budget, cancelled)
+                        .map(PreparedNativeUpdate::Fixed)
+                }
+            }
             Self::Insert(plan) => plan.prepare_insert(target, journal, budget, cancelled),
             #[cfg(feature = "ace16-create")]
             Self::FirstTable(plan) => {
@@ -226,6 +232,7 @@ pub(super) enum MutationIntent {
     Update(NativeUpdateIntent),
     RetainedUpdate(NativeUpdateIntent),
     Delete(NativeDeleteIntent),
+    RetainedDelete(NativeDeleteIntent),
     Insert(NativeInsertIntent),
     EofInsert(NativeEofInsertIntent),
     CompleteInsert(NativeCompleteInsertIntent),
@@ -302,6 +309,11 @@ impl MutationIntent {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, Cause> {
+        if raw.starts_with(b"TCND0003") {
+            return NativeDeleteIntent::decode_retained(raw, budget, cancelled)
+                .map(Self::RetainedDelete)
+                .map_err(Cause::Intent);
+        }
         if raw.starts_with(b"TCNI0017") {
             return NativeUpdateIntent::decode(raw, budget, cancelled)
                 .map(Self::RetainedUpdate)

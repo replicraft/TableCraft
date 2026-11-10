@@ -3,9 +3,8 @@ use super::{
     Cause, Failure, OfflineTableEditor, OfflineWriteSession, Phase, Receipt, SessionState,
     StagedUpdate,
 };
-use crate::editing::sql;
+use crate::editing::{journal::NativeJournalEditor, sql};
 use std::path::Path;
-use tablecraft_ace::NativeImage;
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_db::{DeletableTable, RowHandle, Snapshot};
 use tablecraft_expressions::comparison::Collation;
@@ -82,15 +81,16 @@ impl OfflineWriteSession {
         let _span = tracing::debug_span!("access.offline.plan_delete").entered();
         let result = (|| {
             self.require_ready()?;
-            sql::local_delete_table(query, false).map_err(|error| {
+            let table = sql::local_delete_table(query, false).map_err(|error| {
                 Cause::DeletePlanning(sql::RecoverableDeleteError::Shape(error))
             })?;
             let slot = self.slot_mut()?;
             slot.current = None;
             slot.state = SessionState::RefreshRequired;
-            let image = NativeImage::capture(
+            let image = NativeJournalEditor::capture_image(
                 slot.target.as_mut().ok_or(Cause::InvalidState)?,
                 slot.scope,
+                table,
                 budget,
                 cancelled,
             )

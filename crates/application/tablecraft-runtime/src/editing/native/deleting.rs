@@ -16,7 +16,7 @@ use std::{
     },
 };
 use tablecraft_access::editing::journal::NativeJournalEditor;
-use tablecraft_ace::{NativeImage, RecoverableNativeDeletePlan};
+use tablecraft_ace::RecoverableNativeDeletePlan;
 use tablecraft_db::DeletableTable;
 
 pub(in crate::editing) struct State {
@@ -55,9 +55,10 @@ impl Document {
         let mut work = budget();
         // NO_CLONE: NativeImage owns the checked source while Document keeps using it; this
         // shares immutable bytes instead of copying the database image.
-        let image = NativeImage::capture_shared(
+        let image = NativeJournalEditor::capture_shared_image(
             self.edits.image_source.clone(),
             SCOPE,
+            &target.table,
             &mut work,
             cancelled,
         )?;

@@ -9,6 +9,8 @@ enum Family {
     Ordinary,
     #[cfg(feature = "ace16-create")]
     Current,
+    #[cfg(feature = "ace16-create")]
+    Retained,
 }
 
 impl NativeEditor {
@@ -37,6 +39,12 @@ impl NativeEditor {
         #[cfg(feature = "ace16-create")]
         let family = if self
             .image
+            .has_retained_table_source(self.snapshot.name(), budget, cancelled)
+            .map_err(NativeEditError::from)?
+        {
+            Family::Retained
+        } else if self
+            .image
             .select_native_current_delete_source(self.snapshot.name(), budget, cancelled)
             .map_err(NativeEditError::from)?
         {
@@ -45,7 +53,7 @@ impl NativeEditor {
             family
         };
 
-        // The original metadata selects one source language. A failed current
+        // The original metadata selects one source language. A failed selected
         // witness proof must not be retried through ordinary DELETE admission.
         let mut original = match family {
             Family::Ordinary => self.image.prepare_ordinary_row_deletes(
@@ -56,6 +64,13 @@ impl NativeEditor {
             ),
             #[cfg(feature = "ace16-create")]
             Family::Current => self.image.prepare_current_row_deletes(
+                self.snapshot.name(),
+                &ordinals,
+                budget,
+                cancelled,
+            ),
+            #[cfg(feature = "ace16-create")]
+            Family::Retained => self.image.prepare_retained_row_deletes(
                 self.snapshot.name(),
                 &ordinals,
                 budget,
@@ -88,6 +103,13 @@ impl NativeEditor {
             )?,
             #[cfg(feature = "ace16-create")]
             Family::Current => self.image.plan_recoverable_current_row_deletes(
+                self.snapshot.name(),
+                original,
+                budget,
+                cancelled,
+            )?,
+            #[cfg(feature = "ace16-create")]
+            Family::Retained => self.image.plan_recoverable_retained_row_deletes(
                 self.snapshot.name(),
                 original,
                 budget,
