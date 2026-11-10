@@ -13,7 +13,10 @@ use crate::workspace::{
     },
 };
 use egui::{Key, accesskit::Role};
-use egui_kittest::{Harness, kittest::Queryable};
+use egui_kittest::{
+    Harness,
+    kittest::{NodeT, Queryable},
+};
 use tablecraft_runtime::journal_path;
 use tablecraft_testkit::fixtures::access::canonical_retained_add_table::{Target, cross_operation};
 
@@ -92,7 +95,15 @@ fn long_roots_keep_ddl_and_dml_available_across_the_same_reviewed_session() {
         ["3", "0"]
     );
     for sibling in ["Other", "More"] {
-        fresh.get_by_role_and_label(Role::Button, sibling).focus();
+        // The disabled Records/More Ribbon command shares the table's name.
+        // Match the single enabled object button, as in the sibling regression.
+        let navigation = fresh
+            .get_all_by_role_and_label(Role::Button, sibling)
+            .filter(|node| !node.accesskit_node().is_disabled())
+            .collect::<Vec<_>>();
+        assert_eq!(navigation.len(), 1);
+        navigation[0].focus();
+        drop(navigation);
         fresh.run_steps(1);
         fresh.key_press(Key::Enter);
         fresh.run_steps(1);
