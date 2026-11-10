@@ -1,10 +1,15 @@
 //! Closed native application role graph and explicit name-tracking settings.
 use crate::{
     DatabaseProperties, InspectError, NativeImage, NativeObjectOrigin, NativeTableStorage,
-    PropertyGroupKind, TableSchema,
-    format::{data_type, page::PAGE_NUMBER_MASK, reader::Reader},
+    PropertyGroupKind,
+    format::{data_type, page::PAGE_NUMBER_MASK},
     header::check,
     inspect_database_properties,
+};
+#[cfg(feature = "ace16-create")]
+use crate::{
+    TableSchema,
+    format::reader::Reader,
     table::{long_value::trace, record_layout},
 };
 use tablecraft_core::limits::{Resource, ResourceBudget};
@@ -215,6 +220,7 @@ pub(in crate::table::mutation) fn find_role<'a>(
 /// Require every live variable payload to be the name or the exact supplied
 /// external property descriptor. This excludes code/provider/dependency cells;
 /// callers separately establish the referenced body's framing and ownership.
+#[cfg(feature = "ace16-create")]
 pub(in crate::table::mutation) fn require_external_payload(
     image: &NativeImage,
     schema: &TableSchema,
