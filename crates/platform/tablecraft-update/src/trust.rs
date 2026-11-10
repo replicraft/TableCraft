@@ -14,9 +14,14 @@ pub(crate) fn release_key() -> Result<PublicKey, UpdateError> {
     }
     let key = parse_key(text)?;
     let raw = key_bytes(text)?;
-    let test = key_bytes(include_str!("download/tests/TEST-ONLY.pub"))?;
-    if raw[10..] == test[10..] {
-        return Err(UpdateError::InvalidKey);
+    for fixture in [
+        include_str!("download/tests/TEST-ONLY.pub"),
+        include_str!("appimage/tests/TEST-ONLY.pub"),
+    ] {
+        let test = key_bytes(fixture)?;
+        if raw[10..] == test[10..] {
+            return Err(UpdateError::InvalidKey);
+        }
     }
     Ok(key)
 }

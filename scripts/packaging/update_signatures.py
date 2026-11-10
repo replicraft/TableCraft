@@ -16,6 +16,10 @@ PUBLIC_KEY = contract.ROOT / "packaging/tablecraft-update-key.pub"
 TEST_PUBLIC_KEY = (
     contract.ROOT / "crates/platform/tablecraft-update/src/download/tests/TEST-ONLY.pub"
 )
+TEST_PUBLIC_KEYS = (
+    TEST_PUBLIC_KEY,
+    contract.ROOT / "crates/platform/tablecraft-update/src/appimage/tests/TEST-ONLY.pub",
+)
 MAX_KEY_BYTES = 4096
 MAX_PASSWORD_BYTES = 4096
 MAX_SIGNATURE_BYTES = 4096
@@ -52,11 +56,11 @@ def check_key(path, *, production):
     text = contract.regular(path, MAX_KEY_BYTES).read_text("utf-8")
     raw = key_bytes(text)
     if production:
-        fixture = contract.regular(TEST_PUBLIC_KEY, MAX_KEY_BYTES).read_text("utf-8")
-        # Compare the Ed25519 key itself: comments and the eight-byte Minisign
-        # key ID can change without changing which private key is trusted.
-        if raw[PUBLIC_KEY_MATERIAL_OFFSET:] == key_bytes(fixture)[PUBLIC_KEY_MATERIAL_OFFSET:]:
-            raise ValueError("Production signing refuses the known test-only public key")
+        # Compare Ed25519 key material independently of comments and key IDs.
+        for fixture_path in TEST_PUBLIC_KEYS:
+            fixture = contract.regular(fixture_path, MAX_KEY_BYTES).read_text("utf-8")
+            if raw[PUBLIC_KEY_MATERIAL_OFFSET:] == key_bytes(fixture)[PUBLIC_KEY_MATERIAL_OFFSET:]:
+                raise ValueError("Production signing refuses the known test-only public key")
         lines = text.splitlines()
         label = re.sub(r"[^A-Z0-9]", "", lines[0].upper())
         if "TESTONLY" in label:
