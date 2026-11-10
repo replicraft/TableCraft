@@ -99,7 +99,7 @@ Jet/ACE reading, native queries, storage, indexes, preservation and bounded writ
 - [Saved-field DROP: native, recovery and consuming runtime boundary](writes/FIELD_DROP.md)
 - [Explicit database Name AutoCorrect reviews, journal and File Options](writes/DATABASE_OPTIONS.md)
 - [Unpublished explicit OFF candidate after field ADD history](writes/DATABASE_OPTIONS.md#unpublished-off-after-add-candidate)
-- [Empty saved-table column addition and default-zero candidate checkpoint](writes/ADD_COLUMN.md)
+- [Saved-table column addition, historical records and default-zero limits](writes/ADD_COLUMN.md)
 - [Fixed updates beside retained Binary indexes](writes/NORMAL_RETAINED_BINARY_MARKER_UPDATE.md)
 - [Int32 key updates beside retained Binary indexes](writes/NORMAL_RETAINED_BINARY_ID_UPDATE.md)
 - [Wider numeric key updates with ordinary fields](writes/NORMAL_WIDE_ORDINARY_SIBLING_UPDATE.md)
