@@ -1,9 +1,9 @@
 //! Retained Currency requests reconstruct complete native proof before V3 effects.
 use super::{budget, literal_column};
 use crate::{
-    FixedScalarUpdate, NativeFittedIntentGroup, NativeFittedUpdates, NativeImage,
+    EditError, FixedScalarUpdate, NativeFittedIntentGroup, NativeFittedUpdates, NativeImage,
     NativeIntentError, NativeRecoveryQualificationError, NativeUpdateIntent, NativeUpdateProfile,
-    qualify_native_update_recovery,
+    WriteBlocker, qualify_native_update_recovery,
 };
 use std::io::Cursor;
 use tablecraft_core::values::{Currency, Value};
@@ -215,6 +215,20 @@ fn currency_forged_after_and_old_protocol_authority_refuse_before_target_effects
         Err(NativeRecoveryQualificationError::ImageMismatch)
     ));
     assert_eq!(target.writes, 0);
+    let mut old_family = wire.clone();
+    old_family[..8].copy_from_slice(b"TCNI0017");
+    old_family[12..14].copy_from_slice(&17_u16.to_le_bytes());
+    let checked = journal::inspect_v3(&mut journal, &mut budget(), &|| false).unwrap();
+    assert!(matches!(
+        NativeUpdateIntent::decode(&old_family, &mut budget(), &|| false)
+            .unwrap()
+            .qualify_retained_recovery(checked, CatalogScope::new(1718), &mut budget(), &|| false),
+        Err(NativeRecoveryQualificationError::Edit(
+            EditError::Unsupported(WriteBlocker::Column)
+        ))
+    ));
+    assert_eq!(target.writes, 0);
+
     let mut old_journal = MemoryStorage::new(Vec::new());
     drop(
         journal::prepare_expected(
