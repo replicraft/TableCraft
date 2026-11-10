@@ -307,3 +307,6 @@ fn proof_and_native_work_are_both_consumed_for_empty_original_requests() {
     assert!(native.remaining(Resource::Steps) < budget().remaining(Resource::Steps));
     assert!(proof.remaining(Resource::Steps) < budget().remaining(Resource::Steps));
 }
+
+#[cfg(feature = "ace16-create")]
+mod opaque;
