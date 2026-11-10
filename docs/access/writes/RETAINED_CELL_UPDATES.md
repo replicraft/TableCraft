@@ -84,5 +84,7 @@ save/reopen comparisons remain unqualified. Strict all-target/all-feature checks
 pass for ACE, Access, runtime, desktop and MCP, along with journal-only minimal
 ACE/Access feature checks and repository formatting/layout/dependency/link guards.
 
-Retained row DELETE, table/field changes, indexed-cell changes, other target
-carriers, new-page allocation and required-program execution remain separate work.
+A separate [retained DELETE route](NORMAL_ACE_DELETE.md#delete-across-retained-tables)
+now handles qualified row removal and subsequent insertion without resetting IDs.
+Table/field changes, indexed-cell changes, other target carriers, new-page
+allocation and required-program execution remain separate work.

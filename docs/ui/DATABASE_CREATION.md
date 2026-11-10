@@ -76,9 +76,11 @@ Retained workflows compare complete saved files against independent raw images,
 acknowledge actual saves and reopen with fresh hosts. The original-table case
 also preserves scratch SQL and verifies that the new sibling stays empty.
 A separate [retained cell UPDATE route](../access/writes/RETAINED_CELL_UPDATES.md)
-now passes real Number/Text editing after these saves. Row DELETE, field mutation
-and Microsoft Access/Windows save parity still require their separate
-qualifications. See [table append](../access/writes/ADD_TABLE_PERSISTENCE.md)
+now passes real Number/Text editing after these saves. The separate
+[retained DELETE route](../access/writes/NORMAL_ACE_DELETE.md#delete-across-retained-tables)
+also passes removal through an empty table and a later INSERT with the next stored
+generated ID. Field mutation and Microsoft Access/Windows save parity still
+require their separate qualifications. See [table append](../access/writes/ADD_TABLE_PERSISTENCE.md)
 and [retained INSERT](../access/writes/NORMAL_ACE_INSERT.md#retained-tables-and-original-presence).
 
 ## Initial unsaved table

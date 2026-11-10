@@ -9,6 +9,67 @@ tablecraft query journal-delete 'DELETE FROM Items WHERE [Id]=1' \
   --database offline.accdb --journal fresh-delete-journal
 ```
 
+## DELETE across retained tables
+
+TCND0003 adds a distinct source-bound route after table replacement, subsequent
+table creation, retained INSERT and retained cell UPDATE. Original catalog facts
+select retained capture before whole-image allocation; a failed source proof is
+never retried as an older DELETE family. The current profile requires unencoded
+ACE2016/subversion zero, the qualified system/local-table roles, explicit Name
+AutoCorrect OFF, checked target program absence, supported properties/constraints
+and a complete retained allocation inventory. Broader imported applications and
+nonempty dependency/permission roles remain unqualified.
+
+The target currently requires one physical ascending required/unique Int32
+primary leaf, with consistent logical aliases and no ignored NULLs. Keyless
+and interior-node mutation are not qualified by this route. Source and survivor
+membership, ownership and native constraints are checked independently. This
+positive leaf language does not introduce an arbitrary index-depth quota.
+
+Resolved witnesses retain logical row ordinals and exact original terminal bytes,
+including ignored payloads behind NULL. The adapter preserves caller order by
+moving witnesses; duplicate selections and stale raw data refuse. Empty selections
+still perform complete source admission. Paid scoped traversal handles user and
+catalog forwarding, LVAL protection and property-ledger observation, with cycle,
+owner, alias and overlap checks and no fixed hop ceiling in this new route.
+
+Only selected logical-root flags, live row count and proven primary-key membership
+change. The independent survivor proof reconstructs these changes and compares the
+whole image, preserving retired and hidden records, inactive index tails, allocation
+maps, properties, sibling tables, LastIssued and unique history. Allocated pages are
+not retired. Deleting every row leaves an empty allocated leaf; qualified later
+INSERT continues from the stored generation counter and physical row frontier.
+Sequential deletion and one-shot deletion need not produce identical inactive
+history, even when both result in zero live rows.
+
+The request has actual u32 length/count/name framing, u64 row ordinals and a
+whole-source binding within the native database envelope. The 3–4096-byte witness
+bound describes a physical native row, independent of externally stored values.
+There is no inherited 16K request, 8 KiB name or 64 MiB source/request ceiling.
+Native eligibility and explicit caller budgets remain separate from inert data
+encoding. TCND1/2 grammars and original source admission remain unchanged.
+
+Fresh reviewed requalification retains TCND3 and its original witnesses. Explicit
+`prepare_retained` uses V3; old V1 preparation/qualification refuses this family
+before target effects. Retained recovery owns the same checked V3 session,
+reconstructs native admission and compares complete BEFORE/AFTER images before
+recovery or settled-image confirmation. The host retains exclusivity, durable
+namespace, retirement and acknowledgement obligations. No locks are held while
+the user reviews a lease-free capability.
+
+On macOS ARM64, four native tests pass across 448 complete subset/no-op images,
+56 order/reinsertion cycles and fourteen original-table/sibling commutations,
+plus twenty-hop user/catalog cases and corruption/control refusals. The complete
+DELETE intent/recovery family passes 21 tests, including seven TCND3 controls.
+Three older current DELETE tests and four retained UPDATE regressions also pass.
+Ten Access read/index/query tests, the complete 21-test GUI DELETE and 24-test GUI
+INSERT families, and thirty Access DELETE/recovery tests pass. The three new real
+GUI journeys verify cancellation, save/acknowledgement, complete independent file
+bytes, fresh reopen and delete-all followed by the next generated ID. These are
+implementation/independent-byte checks, not native Windows or Microsoft Access
+save/reopen qualification. Strict affected-package all-target/all-feature and
+minimal journal-only ACE/Access checks, formatting and repository guards pass.
+
 ## DELETE after retained field histories
 
 A separate current-source route handles qualified ACE16 tables after field
@@ -21,7 +82,8 @@ index ownership checks, including for empty selections.
 The current source still requires the qualified eleven-page creation geometry,
 user definition page seven, and retained native field numbers beyond the active
 field count. This is an implementation qualification boundary, not an Access
-file-size or table-size restriction. Broader native geometry remains unfinished.
+file-size or table-size restriction. The distinct retained-table route above
+handles its separately qualified broader geometry.
 
 `prepare_current_row_deletes` captures resolved original payloads by logical row
 ordinal. The shared editor restores caller request order and consumes those

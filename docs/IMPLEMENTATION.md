@@ -1,5 +1,35 @@
 # Implementation status
 
+## Retained row deletion and reinsertion — 10 November 2026
+
+The shared runtime/Access DELETE service now removes qualified rows after retained
+table creation, insertion and cell editing, including the original sparse table
+beside a newly added sibling. Distinct TCND3 original raw witnesses retain caller
+order and exact-family fresh reconstruction through V3. Dynamic source/physical
+proofs check catalog, LVAL and row ownership without a new hop quota. Only logical
+root flags, live count and proven primary-leaf membership change; hidden payloads,
+inactive index history, maps, properties and generation counters remain intact.
+The current primary-leaf/system-role/program-absence scope is explicit; general
+imported-application and broader index writes remain unfinished.
+
+Four native tests pass across 448 full-image requests, 56 order/reinsertion cycles
+and fourteen original-table/sibling commutations, plus deep-chain/control cases.
+The DELETE intent/recovery family passes 21 tests. Ten independent Access read/
+index/query cases pass. The complete GUI DELETE family passes 21 tests, including
+three new actual review/save/acknowledge/reopen journeys; the 24-test GUI INSERT
+family also passes. Thirty Access DELETE/recovery regressions pass. Delete-all
+followed by INSERT preserves the next generated ID and physical row frontier.
+Strict all-target/all-feature ACE/Access/runtime/desktop/MCP checks, journal-only
+minimal ACE/Access checks, formatting, module/dependency guards and documentation
+links pass. The minimal build exposed a feature-gated public layout accessor in
+the leaf helper; it now reads the same engine-owned layout directly. No production
+desktop editing logic was added and no Windows/Access execution qualification is
+claimed. See [normal DELETE](access/writes/NORMAL_ACE_DELETE.md).
+
+The next shared proof change removes remaining incidental traversal-storage bounds
+from retained INSERT/table-creation observations while preserving their wire and
+schema languages. Retained table/field mutations remain later GUI-driven work.
+
 ## Retained table cell editing — 10 November 2026
 
 The shared reviewed cell editor now saves qualified unindexed LONG/Short Text
@@ -27,7 +57,8 @@ or save parity is claimed.
 The long-chain case initially exposed the remaining property-ledger physical
 accessor; its retained-only scoped path now passes, while older capture contracts
 remain unchanged. Earlier compile/oracle failures retain their captured logs.
-Next is retained row DELETE, followed by the other retained table/field mutations.
+Retained row DELETE and the other retained table/field mutations use their own
+source-bound services rather than acquiring authority from cell UPDATE.
 See [retained cell updates](access/writes/RETAINED_CELL_UPDATES.md).
 
 ## Retained table creation and row insertion — 10 November 2026
