@@ -306,3 +306,28 @@ pub(in crate::transaction::intent) fn length_prefixed_row_parse<'a>(
         cancelled,
     )
 }
+
+/// Preserve the fixed/variable family while using the encoded u32 payload width.
+pub(super) fn length_prefixed_view(
+    value: &Value,
+    family: Family,
+) -> Result<Encoded<'_>, NativeIntentError> {
+    view_bounded(value, family, VariableBound::WireLength)
+}
+
+pub(super) fn length_prefixed_parse<'a>(
+    tag: u8,
+    bytes: &'a [u8],
+    family: Family,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Borrowed<'a>, NativeIntentError> {
+    parse_bounded(
+        tag,
+        bytes,
+        family,
+        VariableBound::WireLength,
+        budget,
+        cancelled,
+    )
+}

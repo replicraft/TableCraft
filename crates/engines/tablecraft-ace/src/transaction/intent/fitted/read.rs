@@ -3,13 +3,13 @@ use super::super::row_ordinals::RowOrdinals;
 use super::{
     carrier::{self, Borrowed},
     codec,
+    grammar::Grammar,
     model::{Family, NativeFittedEditIntent, NativeFittedIntentGroup, NativeFittedUpdates},
     profile::WireProfile,
 };
 use crate::{
-    EditError, FixedScalarUpdate, InspectError, NativeImage, SlotScalarUpdate,
-    header::check,
-    transaction::intent::{NativeIntentError, binding, model as names},
+    EditError, FixedScalarUpdate, InspectError, SlotScalarUpdate, header::check,
+    transaction::intent::NativeIntentError,
 };
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
@@ -23,6 +23,7 @@ fn u32_at(bytes: &[u8], at: usize) -> u32 {
 struct Cursor<'a> {
     bytes: &'a [u8],
     at: usize,
+    grammar: Grammar,
 }
 
 struct Group<'a> {
@@ -58,13 +59,10 @@ impl<'a> Cursor<'a> {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<&'a str, NativeIntentError> {
-        if count == 0 || count > names::MAX_NAME_BYTES {
-            return Err(NativeIntentError::InvalidRecord);
-        }
         let bytes = self.take(count)?;
         carrier::pay_scan(bytes, budget, cancelled)?;
         let value = std::str::from_utf8(bytes).map_err(|_| NativeIntentError::InvalidRecord)?;
-        names::validate_name(value, budget, cancelled)?;
+        self.grammar.name(value, budget, cancelled)?;
         Ok(value)
     }
 
@@ -92,7 +90,7 @@ impl<'a> Cursor<'a> {
             1 => Family::Variable,
             _ => return Err(NativeIntentError::InvalidRecord),
         };
-        if count > NativeImage::MAX_FIXED_BATCH_ASSIGNMENTS {
+        if count > self.grammar.assignments() {
             return Err(InspectError::StructureLimit.into());
         }
         let rest = total
@@ -101,6 +99,7 @@ impl<'a> Cursor<'a> {
         let mut body = Cursor {
             bytes: self.take(rest)?,
             at: 0,
+            grammar: self.grammar,
         };
         let name = body.name(
             u32_at(header, codec::GROUP_NAME_AT) as usize,
@@ -140,10 +139,7 @@ impl<'a> Cursor<'a> {
             return Err(NativeIntentError::InvalidRecord);
         }
         let length = u32_at(header, codec::CARRIER_LENGTH_AT) as usize;
-        if length > carrier::MAX_VARIABLE_BYTES {
-            return Err(InspectError::StructureLimit.into());
-        }
-        carrier::parse(
+        self.grammar.parse(
             header[codec::CARRIER_TAG_AT],
             self.take(length)?,
             family,
@@ -175,6 +171,7 @@ impl<'a> Cursor<'a> {
         let mut body = Cursor {
             bytes: self.take(rest)?,
             at: 0,
+            grammar: self.grammar,
         };
         let expected = body.carrier(family, budget, cancelled)?;
         let value = body.carrier(family, budget, cancelled)?;
@@ -204,7 +201,8 @@ fn scan<'a>(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Header<'a>, NativeIntentError> {
     check(budget, cancelled)?;
-    if bytes.len() < codec::HEADER_BYTES || bytes.len() > codec::MAX_RECORD_BYTES {
+    let grammar = profile.grammar();
+    if bytes.len() < codec::HEADER_BYTES || bytes.len() > grammar.record_bytes() {
         return Err(NativeIntentError::InvalidRecord);
     }
     budget
@@ -236,18 +234,16 @@ fn scan<'a>(
             .try_into()
             .unwrap(),
     );
-    binding::length(before_length)?;
+    grammar.length(before_length)?;
     let groups = u32_at(bytes, codec::GROUP_COUNT_AT) as usize;
     let assignments = u32_at(bytes, codec::ASSIGNMENT_COUNT_AT) as usize;
-    if groups == 0
-        || groups > NativeImage::MAX_FIXED_BATCH_GROUPS
-        || assignments > NativeImage::MAX_FIXED_BATCH_ASSIGNMENTS
-    {
+    if groups == 0 || groups > grammar.groups() || assignments > grammar.assignments() {
         return Err(InspectError::StructureLimit.into());
     }
     let mut cursor = Cursor {
         bytes,
         at: codec::HEADER_BYTES,
+        grammar,
     };
     let table = cursor.name(
         u32_at(bytes, codec::TABLE_LENGTH_AT) as usize,
@@ -260,13 +256,14 @@ fn scan<'a>(
         let group = cursor.group(budget, cancelled)?;
         total = total
             .checked_add(group.count)
-            .filter(|count| *count <= NativeImage::MAX_FIXED_BATCH_ASSIGNMENTS)
+            .filter(|count| *count <= grammar.assignments())
             .ok_or(InspectError::StructureLimit)?;
         // Revisit only bounded preceding headers/names; no decoded allocation
         // is necessary to reject duplicate column identities before reserve.
         let mut previous = Cursor {
             bytes,
             at: groups_start,
+            grammar,
         };
         for _ in 0..position {
             let prior = previous.group(budget, cancelled)?;
@@ -284,6 +281,7 @@ fn scan<'a>(
         let mut cells = Cursor {
             bytes: group.cells,
             at: 0,
+            grammar,
         };
         for _ in 0..group.count {
             let update = cells.update(group.family, budget, cancelled)?;
@@ -316,6 +314,7 @@ pub(super) fn decode(
 ) -> Result<NativeFittedEditIntent, NativeIntentError> {
     let _span = tracing::debug_span!("native.fitted_intent.decode").entered();
     let header = scan(bytes, profile, budget, cancelled)?;
+    let grammar = profile.grammar();
     budget
         .charge_allocation(
             header.groups as u64,
@@ -329,12 +328,14 @@ pub(super) fn decode(
     let mut cursor = Cursor {
         bytes,
         at: header.groups_start,
+        grammar,
     };
     for _ in 0..header.groups {
         let group = cursor.group(budget, cancelled)?;
         let mut cells = Cursor {
             bytes: group.cells,
             at: 0,
+            grammar,
         };
         let updates = match group.family {
             Family::Fixed => {
@@ -374,15 +375,16 @@ pub(super) fn decode(
                 NativeFittedUpdates::Variable(result)
             }
         };
-        groups.push(NativeFittedIntentGroup::new(
-            group.name, updates, budget, cancelled,
+        groups.push(NativeFittedIntentGroup::new_with_grammar(
+            group.name, updates, grammar, budget, cancelled,
         )?);
     }
-    NativeFittedEditIntent::from_decoded(
+    NativeFittedEditIntent::from_decoded_with_grammar(
         header.table,
         groups,
         header.before_length,
         header.before_binding,
+        grammar,
         budget,
         cancelled,
     )

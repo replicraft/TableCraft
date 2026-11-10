@@ -1,9 +1,9 @@
 //! Owned immutable original fitted requests, without native admission authority.
-use super::{carrier, codec};
+use super::{carrier, codec, grammar::Grammar};
 use crate::{
-    EditError, FittedColumnUpdates, FixedScalarUpdate, InspectError, NativeImage, SlotScalarUpdate,
+    EditError, FittedColumnUpdates, FixedScalarUpdate, InspectError, SlotScalarUpdate,
     header::check,
-    transaction::intent::{NativeIntentError, binding, model as names},
+    transaction::intent::{NativeIntentError, model as names},
 };
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
@@ -56,30 +56,69 @@ impl NativeFittedIntentGroup {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, NativeIntentError> {
+        Self::new_with_grammar(column, updates, Grammar::Legacy, budget, cancelled)
+    }
+
+    /// Retain original requests under TCNI17's actual data representation widths.
+    /// Native field fit and operation eligibility remain consuming checks.
+    pub fn new_retained(
+        column: &str,
+        updates: NativeFittedUpdates,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, NativeIntentError> {
+        Self::new_with_grammar(column, updates, Grammar::Retained, budget, cancelled)
+    }
+
+    pub(super) fn new_with_grammar(
+        column: &str,
+        updates: NativeFittedUpdates,
+        grammar: Grammar,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, NativeIntentError> {
         check(budget, cancelled)?;
-        names::validate_name(column, budget, cancelled)?;
-        if updates.len() > NativeImage::MAX_FIXED_BATCH_ASSIGNMENTS {
+        grammar.name(column, budget, cancelled)?;
+        if updates.len() > grammar.assignments() {
             return Err(InspectError::StructureLimit.into());
         }
         match &updates {
             NativeFittedUpdates::Fixed(updates) => {
-                FixedScalarUpdate::validate_intent_requests(updates, budget, cancelled)?;
+                if grammar == Grammar::Legacy {
+                    FixedScalarUpdate::validate_intent_requests(updates, budget, cancelled)?;
+                } else {
+                    validate_rows(
+                        updates.iter().map(FixedScalarUpdate::row),
+                        budget,
+                        cancelled,
+                    )?;
+                }
                 for update in updates {
                     check(budget, cancelled)?;
-                    carrier::validate(update.expected(), Family::Fixed, budget, cancelled)?;
-                    carrier::validate(update.value(), Family::Fixed, budget, cancelled)?;
+                    validate_value(update.expected(), Family::Fixed, grammar, budget, cancelled)?;
+                    validate_value(update.value(), Family::Fixed, grammar, budget, cancelled)?;
                 }
             }
             NativeFittedUpdates::Variable(updates) => {
-                SlotScalarUpdate::validate_intent_requests(updates, budget, cancelled)?;
+                if grammar == Grammar::Legacy {
+                    SlotScalarUpdate::validate_intent_requests(updates, budget, cancelled)?;
+                } else {
+                    validate_rows(updates.iter().map(SlotScalarUpdate::row), budget, cancelled)?;
+                }
                 for update in updates {
                     check(budget, cancelled)?;
-                    carrier::validate(update.expected(), Family::Variable, budget, cancelled)?;
-                    carrier::validate(update.value(), Family::Variable, budget, cancelled)?;
+                    validate_value(
+                        update.expected(),
+                        Family::Variable,
+                        grammar,
+                        budget,
+                        cancelled,
+                    )?;
+                    validate_value(update.value(), Family::Variable, grammar, budget, cancelled)?;
                 }
             }
         }
-        codec::group_parts_length(column, &updates, budget, cancelled)?;
+        codec::group_parts_length(column, &updates, grammar, budget, cancelled)?;
         let column = names::copy_name(column, budget)?;
         check(budget, cancelled)?;
         Ok(Self { column, updates })
@@ -101,6 +140,7 @@ impl NativeFittedIntentGroup {
 pub struct NativeFittedEditIntent {
     table: SchemaName,
     groups: Vec<NativeFittedIntentGroup>,
+    pub(super) grammar: Grammar,
     pub(super) before_length: u64,
     pub(super) before_binding: [u8; 32],
 }
@@ -108,6 +148,12 @@ pub struct NativeFittedEditIntent {
 impl NativeFittedEditIntent {
     /// Current complete-record ceiling, independent of native file eligibility.
     pub const MAX_ENCODED_BYTES: usize = codec::MAX_RECORD_BYTES;
+
+    /// Actual TCNI17 complete-record u32 length representation.
+    pub const MAX_RETAINED_ENCODED_BYTES: usize = u32::MAX as usize;
+
+    /// Actual TCNI17 variable-carrier u32 length representation.
+    pub const MAX_RETAINED_VARIABLE_BYTES: usize = u32::MAX as usize;
 
     /// Serialized variable-carrier ceiling; native field capacity is separate.
     pub const MAX_VARIABLE_BYTES: usize = carrier::MAX_VARIABLE_BYTES;
@@ -120,43 +166,65 @@ impl NativeFittedEditIntent {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, NativeIntentError> {
-        let mut result = Self::from_decoded(
+        Self::new_with_grammar(table, groups, before, Grammar::Legacy, budget, cancelled)
+    }
+
+    /// Bind TCNI17 original requests to the complete retained source image.
+    pub fn new_retained(
+        table: &str,
+        groups: Vec<NativeFittedIntentGroup>,
+        before: &[u8],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, NativeIntentError> {
+        Self::new_with_grammar(table, groups, before, Grammar::Retained, budget, cancelled)
+    }
+
+    fn new_with_grammar(
+        table: &str,
+        groups: Vec<NativeFittedIntentGroup>,
+        before: &[u8],
+        grammar: Grammar,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, NativeIntentError> {
+        let mut result = Self::from_decoded_with_grammar(
             table,
             groups,
             before.len() as u64,
             [0; 32],
+            grammar,
             budget,
             cancelled,
         )?;
-        result.before_binding = binding::digest(before, budget, cancelled)?;
+        result.before_binding = grammar.digest(before, budget, cancelled)?;
         check(budget, cancelled)?;
         Ok(result)
     }
 
-    pub(super) fn from_decoded(
+    pub(super) fn from_decoded_with_grammar(
         table: &str,
         groups: Vec<NativeFittedIntentGroup>,
         before_length: u64,
         before_binding: [u8; 32],
+        grammar: Grammar,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, NativeIntentError> {
         check(budget, cancelled)?;
-        binding::length(before_length)?;
-        names::validate_name(table, budget, cancelled)?;
-        validate_groups(&groups, budget, cancelled)?;
-        // Check the complete eventual wire before the constructor's name copy.
-        // Existing moved request allocations remain caller-owned inputs.
-        codec::parts_length(table, &groups, budget, cancelled)?;
+        grammar.length(before_length)?;
+        grammar.name(table, budget, cancelled)?;
+        validate_groups(&groups, grammar, budget, cancelled)?;
+        codec::parts_length(table, &groups, grammar, budget, cancelled)?;
         let table = names::copy_name(table, budget)?;
-        let result = Self {
+        check(budget, cancelled)?;
+        Ok(Self {
             table,
             groups,
+            grammar,
             before_length,
             before_binding,
-        };
-        check(budget, cancelled)?;
-        Ok(result)
+        })
     }
 
     /// Exact original source table spelling; no file or namespace selector.
@@ -180,7 +248,7 @@ impl NativeFittedEditIntent {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Vec<FittedColumnUpdates<'_>>, NativeIntentError> {
-        validate_groups(&self.groups, budget, cancelled)?;
+        validate_groups(&self.groups, self.grammar, budget, cancelled)?;
         budget
             .charge_allocation(
                 self.groups.len() as u64,
@@ -219,7 +287,7 @@ impl NativeFittedEditIntent {
         if before.len() as u64 != self.before_length {
             return Err(NativeIntentError::BeforeMismatch);
         }
-        let actual = binding::digest(before, budget, cancelled)?;
+        let actual = self.grammar.digest(before, budget, cancelled)?;
         budget
             .charge(Resource::Steps, actual.len() as u64)
             .map_err(InspectError::from)?;
@@ -233,19 +301,21 @@ impl NativeFittedEditIntent {
 
 pub(super) fn validate_groups(
     groups: &[NativeFittedIntentGroup],
+    grammar: Grammar,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<usize, NativeIntentError> {
     check(budget, cancelled)?;
-    if groups.is_empty() || groups.len() > NativeImage::MAX_FIXED_BATCH_GROUPS {
+    if groups.is_empty() || groups.len() > grammar.groups() {
         return Err(InspectError::StructureLimit.into());
     }
     let mut count = 0_usize;
     for (position, group) in groups.iter().enumerate() {
         check(budget, cancelled)?;
+        grammar.name(group.column(), budget, cancelled)?;
         count = count
             .checked_add(group.updates.len())
-            .filter(|count| *count <= NativeImage::MAX_FIXED_BATCH_ASSIGNMENTS)
+            .filter(|count| *count <= grammar.assignments())
             .ok_or(InspectError::StructureLimit)?;
         for prior in &groups[..position] {
             check(budget, cancelled)?;
@@ -301,4 +371,30 @@ impl NativeFittedUpdates {
             Self::Variable(updates) => Cells::Variable(updates.iter()),
         }
     }
+}
+
+fn validate_rows(
+    rows: impl Iterator<Item = usize>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), NativeIntentError> {
+    let mut seen = crate::transaction::intent::row_ordinals::RowOrdinals::default();
+    for row in rows {
+        seen.insert(row, budget, cancelled)?;
+    }
+    Ok(())
+}
+
+fn validate_value(
+    value: &Value,
+    family: Family,
+    grammar: Grammar,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), NativeIntentError> {
+    if grammar == Grammar::Legacy {
+        return carrier::validate(value, family, budget, cancelled);
+    }
+    let encoded = grammar.view(value, family)?;
+    carrier::pay_scan(encoded.bytes(), budget, cancelled)
 }

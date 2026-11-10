@@ -1,6 +1,7 @@
 //! Shared original-group framing; public fitted encoding retains TCNI0005.
 use super::{
     carrier,
+    grammar::Grammar,
     model::{self, Family, NativeFittedEditIntent, NativeFittedIntentGroup, NativeFittedUpdates},
     profile::WireProfile,
     read,
@@ -39,10 +40,10 @@ pub(super) const CARRIER_LENGTH_AT: usize = 4;
 // A consumer ceiling, independent of native field fit or file eligibility.
 pub(super) const MAX_RECORD_BYTES: usize = crate::limits::MAX_IMAGE_BYTES as usize;
 
-fn add(total: usize, bytes: usize) -> Result<usize, NativeIntentError> {
+fn add(total: usize, bytes: usize, grammar: Grammar) -> Result<usize, NativeIntentError> {
     total
         .checked_add(bytes)
-        .filter(|total| *total <= MAX_RECORD_BYTES)
+        .filter(|total| *total <= grammar.record_bytes())
         .ok_or_else(|| InspectError::StructureLimit.into())
 }
 
@@ -50,35 +51,40 @@ fn update_length(
     expected: &Value,
     value: &Value,
     family: Family,
+    grammar: Grammar,
 ) -> Result<usize, NativeIntentError> {
-    let expected = carrier::view(expected, family)?;
-    let value = carrier::view(value, family)?;
+    let expected = grammar.view(expected, family)?;
+    let value = grammar.view(value, family)?;
     add(
-        add(MIN_UPDATE_BYTES, expected.bytes().len())?,
+        add(MIN_UPDATE_BYTES, expected.bytes().len(), grammar)?,
         value.bytes().len(),
+        grammar,
     )
 }
 
 fn group_length(
     group: &NativeFittedIntentGroup,
+    grammar: Grammar,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<usize, NativeIntentError> {
-    group_parts_length(group.column(), group.updates(), budget, cancelled)
+    group_parts_length(group.column(), group.updates(), grammar, budget, cancelled)
 }
 
 pub(super) fn group_parts_length(
     column: &str,
     updates: &NativeFittedUpdates,
+    grammar: Grammar,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<usize, NativeIntentError> {
-    let mut length = add(GROUP_HEADER_BYTES, column.len())?;
+    let mut length = add(GROUP_HEADER_BYTES, column.len(), grammar)?;
     for cell in updates.cells() {
         check(budget, cancelled)?;
         length = add(
             length,
-            update_length(cell.expected, cell.value, updates.family())?,
+            update_length(cell.expected, cell.value, updates.family(), grammar)?,
+            grammar,
         )?;
     }
     Ok(length)
@@ -89,20 +95,31 @@ pub(super) fn encoded_length(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<usize, NativeIntentError> {
-    parts_length(intent.table(), intent.groups(), budget, cancelled)
+    parts_length(
+        intent.table(),
+        intent.groups(),
+        intent.grammar,
+        budget,
+        cancelled,
+    )
 }
 
 pub(super) fn parts_length(
     table: &str,
     groups: &[NativeFittedIntentGroup],
+    grammar: Grammar,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<usize, NativeIntentError> {
-    model::validate_groups(groups, budget, cancelled)?;
-    let mut total = add(HEADER_BYTES, table.len())?;
+    model::validate_groups(groups, grammar, budget, cancelled)?;
+    let mut total = add(HEADER_BYTES, table.len(), grammar)?;
     for group in groups {
         check(budget, cancelled)?;
-        total = add(total, group_length(group, budget, cancelled)?)?;
+        total = add(
+            total,
+            group_length(group, grammar, budget, cancelled)?,
+            grammar,
+        )?;
     }
     check(budget, cancelled)?;
     Ok(total)
@@ -129,11 +146,12 @@ fn value(
     output: &mut Vec<u8>,
     value: &Value,
     family: Family,
+    grammar: Grammar,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), NativeIntentError> {
     check(budget, cancelled)?;
-    let encoded = carrier::view(value, family)?;
+    let encoded = grammar.view(value, family)?;
     budget
         .charge(Resource::Steps, carrier::HEADER_BYTES as u64)
         .map_err(InspectError::from)?;
@@ -160,8 +178,12 @@ impl NativeFittedEditIntent {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Vec<u8>, NativeIntentError> {
         let _span = tracing::debug_span!("native.fitted_intent.encode").entered();
+        let grammar = profile.grammar();
+        if self.grammar != grammar {
+            return Err(NativeIntentError::UnsupportedProfile);
+        }
         let total = encoded_length(self, budget, cancelled)?;
-        let count = model::validate_groups(self.groups(), budget, cancelled)?;
+        let count = model::validate_groups(self.groups(), grammar, budget, cancelled)?;
         budget
             .charge_allocation(total as u64, 1)
             .map_err(InspectError::from)?;
@@ -185,7 +207,7 @@ impl NativeFittedEditIntent {
         copy(&mut output, self.table().as_bytes(), budget, cancelled)?;
         for group in self.groups() {
             check(budget, cancelled)?;
-            let total = group_length(group, budget, cancelled)?;
+            let total = group_length(group, grammar, budget, cancelled)?;
             budget
                 .charge(Resource::Steps, GROUP_HEADER_BYTES as u64)
                 .map_err(InspectError::from)?;
@@ -202,14 +224,21 @@ impl NativeFittedEditIntent {
             for cell in group.updates().cells() {
                 check(budget, cancelled)?;
                 let family = group.updates().family();
-                let length = update_length(cell.expected, cell.value, family)?;
+                let length = update_length(cell.expected, cell.value, family, grammar)?;
                 budget
                     .charge(Resource::Steps, UPDATE_HEADER_BYTES as u64)
                     .map_err(InspectError::from)?;
                 output.extend_from_slice(&(length as u32).to_le_bytes());
                 output.extend_from_slice(&(cell.row as u64).to_le_bytes());
-                value(&mut output, cell.expected, family, budget, cancelled)?;
-                value(&mut output, cell.value, family, budget, cancelled)?;
+                value(
+                    &mut output,
+                    cell.expected,
+                    family,
+                    grammar,
+                    budget,
+                    cancelled,
+                )?;
+                value(&mut output, cell.value, family, grammar, budget, cancelled)?;
             }
         }
         if output.len() != total {
@@ -217,6 +246,24 @@ impl NativeFittedEditIntent {
         }
         check(budget, cancelled)?;
         Ok(output)
+    }
+
+    /// Encode only retained TCNI17 data; older fitted grammars refuse.
+    pub fn encode_retained(
+        &self,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Vec<u8>, NativeIntentError> {
+        self.encode_profile(WireProfile::RetainedRows, budget, cancelled)
+    }
+
+    /// Decode only TCNI17, retaining its actual wire-width grammar.
+    pub fn decode_retained(
+        bytes: &[u8],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, NativeIntentError> {
+        read::decode(bytes, WireProfile::RetainedRows, budget, cancelled)
     }
 
     /// Decode profile5 only, with complete nonallocating preflight first.

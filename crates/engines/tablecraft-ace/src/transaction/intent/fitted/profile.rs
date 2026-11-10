@@ -1,5 +1,8 @@
 //! Closed data-record choices; no tag is a native allocation permission.
-use super::codec::{MAGIC, PROFILE};
+use super::{
+    codec::{MAGIC, PROFILE},
+    grammar::Grammar,
+};
 
 pub(in crate::transaction::intent) const OWNED_GROWTH_MAGIC: &[u8; 8] = b"TCNI0006";
 const OWNED_GROWTH_PROFILE: u16 = 6;
@@ -10,6 +13,9 @@ const HISTORICAL_TEXT_PROFILE: u16 = 15;
 pub(in crate::transaction::intent) const CURRENT_ROWS_MAGIC: &[u8; 8] = b"TCNI0016";
 const CURRENT_ROWS_PROFILE: u16 = 16;
 
+pub(in crate::transaction::intent) const RETAINED_ROWS_MAGIC: &[u8; 8] = b"TCNI0017";
+const RETAINED_ROWS_PROFILE: u16 = 17;
+
 #[derive(Clone, Copy)]
 pub(in crate::transaction::intent) enum WireProfile {
     Fitted,
@@ -17,9 +23,17 @@ pub(in crate::transaction::intent) enum WireProfile {
     AllocateEof,
     HistoricalShortText,
     CurrentRows,
+    RetainedRows,
 }
 
 impl WireProfile {
+    pub(super) const fn grammar(self) -> Grammar {
+        match self {
+            Self::RetainedRows => Grammar::Retained,
+            _ => Grammar::Legacy,
+        }
+    }
+
     pub(super) const fn magic(self) -> &'static [u8; 8] {
         match self {
             Self::Fitted => MAGIC,
@@ -27,6 +41,7 @@ impl WireProfile {
             Self::AllocateEof => EOF_ALLOCATION_MAGIC,
             Self::HistoricalShortText => HISTORICAL_TEXT_MAGIC,
             Self::CurrentRows => CURRENT_ROWS_MAGIC,
+            Self::RetainedRows => RETAINED_ROWS_MAGIC,
         }
     }
 
@@ -37,6 +52,7 @@ impl WireProfile {
             Self::AllocateEof => EOF_ALLOCATION_PROFILE,
             Self::HistoricalShortText => HISTORICAL_TEXT_PROFILE,
             Self::CurrentRows => CURRENT_ROWS_PROFILE,
+            Self::RetainedRows => RETAINED_ROWS_PROFILE,
         }
     }
 }
