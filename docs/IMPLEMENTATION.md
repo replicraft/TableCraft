@@ -1,5 +1,35 @@
 # Implementation status
 
+## Retained table creation and row insertion — 10 November 2026
+
+The normal GUI now creates replacement and subsequent tables after native table
+deletion, then saves a pending first row through shared runtime/Access services.
+It can also return to an original sparse table after adding a sibling and insert
+there without losing field or generation history. Desktop production code remains
+unchanged: the work lives in the native engine, adapter and runtime. TCAT6 and
+TCNA8 retain distinct original requests and V3 recovery; old source/decoder/journal
+families remain closed. Retained capture follows actual native format bounds and
+explicit caller budgets, without the old 64 MiB image ceiling.
+
+Independent native checks cover 224 complete INSERT outcomes. Six native/selector,
+three source-authority and nineteen omitted-intent/recovery tests pass, alongside
+seven Access read/query tests. The full headless table-creation family passes all
+37 tests, including actual review/apply/acknowledge, full independent saved bytes,
+fresh reopening, sibling independence and scratch preservation. Twenty Access
+INSERT regressions pass, including typed cancellation/resource failure and retained
+session ownership. Strict all-target/all-feature checks pass for ACE, Access,
+runtime, desktop, MCP and IO; the journal-only minimal engine check also passes.
+Formatting, documentation links, module layout and dependency guards pass.
+Initial test-oracle carrier/name mistakes were corrected; no
+native Windows or Microsoft Access comparison is claimed. Earlier retained append
+and V3 IO evidence remains in the owning contracts.
+
+Retained-source cell UPDATE and row DELETE are the next UI-driven gaps; table and
+field mutations likewise retain their own narrower source boundaries. INSERT
+success does not authorize those operations. See [database creation](ui/DATABASE_CREATION.md),
+[table append](access/writes/ADD_TABLE_PERSISTENCE.md) and
+[normal INSERT](access/writes/NORMAL_ACE_INSERT.md).
+
 ## Populated table deletion through the GUI — 10 November 2026
 
 Qualified current ACE16 tables now support closed-table deletion after field and

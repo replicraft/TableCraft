@@ -54,6 +54,32 @@ Access autosave, Windows execution or native Microsoft Access save/reopen parity
 The focused case passes on macOS ARM64; the existing source-preservation and
 recovery suites remain separate evidence.
 
+## Replacement and subsequent tables
+
+After deleting the last qualified ACE16 table, Create > Table uses the shared
+retained-source append service rather than treating the database as a canonical
+blank. Retired definitions, row/index payloads and catalog tombstones remain
+protected. Fresh table identities and pages start at the actual EOF; reusing a
+deleted table's visible name does not reuse its native identity or generation
+state. A later table can be created through the same workflow.
+
+The pending first record now continues through a distinct reviewed retained
+INSERT service after schema Save. It preserves omission, supplied NULL and text
+exactly, uses the new table's own generated-ID counter and checks all source,
+property and constraint rules before Apply. Existing tabs are rebound to fresh
+snapshot identities; old handles cannot acquire authority over the new schema.
+Returning to an original sparse/renamed table after creating a sibling can also
+insert through this service, preserving its own stored counter and field history.
+
+The complete headless table-creation family passes 37 tests on macOS ARM64.
+Retained workflows compare complete saved files against independent raw images,
+acknowledge actual saves and reopen with fresh hosts. The original-table case
+also preserves scratch SQL and verifies that the new sibling stays empty.
+These results do not establish retained-source cell UPDATE, row DELETE, field
+mutation or Microsoft Access/Windows save parity. Those operations still require
+their separate native qualifications. See [table append](../access/writes/ADD_TABLE_PERSISTENCE.md)
+and [retained INSERT](../access/writes/NORMAL_ACE_INSERT.md#retained-tables-and-original-presence).
+
 ## Initial unsaved table
 
 After successful guarded reopening, the desktop opens an unsaved `Table1` draft.

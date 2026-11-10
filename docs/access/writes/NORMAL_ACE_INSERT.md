@@ -6,6 +6,60 @@ manual proof; engineering candidates retain their separate admission policies.
 The retained-tree, original-omission and inline Memo/OLE sections below extend
 the initial complete scalar profile; their remaining limits stay explicit.
 
+## Retained tables and original presence
+
+The separate TCNA0008 family composes generated-row insertion with the complete
+retained-storage inventory used by [append-only table creation](ADD_TABLE_PERSISTENCE.md).
+It can target a newly appended table while protecting live siblings, retired
+table pages, catalog tombstones and old property/storage history. The checked
+current declaration and row codec also retain native field-number and variable-slot
+holes; adding a sibling must not erase the original target's qualified INSERT
+semantics. Generated IDs still come from the target's actual declaration and
+LastIssued counter, independently of physical row slots and existing keys.
+
+Metadata selects retained capture before whole-image allocation. The shared
+source selector and consuming native selector use the same original catalog
+facts; neither grants source admission. The selected image is captured once,
+under the actual native database envelope and caller budgets. The retained-source
+absence certificate is tied to that exact image and target; old ordinary/current
+certificates cannot replace it. Complete storage inventory precedes admission of
+retired catalog roots. Actual target program absence, property meaning, defaults,
+constraints, indexes and record layout are checked separately.
+
+TCNA8 retains original omission, supplied NULL and supplied values through its
+closed length-prefixed scalar framing. It uses checked V3 image journals, a
+separate `prepare_retained` entry point and typed retained recovery. V1 preparation
+and qualification refuse it before target effects. Recovery verifies the original
+BEFORE binding, rebuilds the same native operation and compares the complete
+AFTER before allowing recovery or settled-image confirmation. TCNA2/6/7 and clock
+nesting keep their original grammars and journal families; a failed decoder or
+source proof is never retried under another family.
+
+The Access adapter owns capture/routing and durable-session composition; runtime
+owns reviewed row and SQL actions. Desktop/MCP use these shared services. The
+source profile still requires qualified generated Int32 primaries and fitting
+existing-page storage. New page allocation, broader index families and required
+program execution remain separate work. These restrictions describe current
+implementation coverage, not new Access database or value limits.
+
+Local macOS ARM64 verification passes six native/metadata-selector tests across
+224 independently constructed complete INSERT images, three source-authority
+tests and the nineteen-test omitted-intent/recovery family. The latter includes
+six TCNA8 controls, including forged-AFTER refusal and inert binding above the
+older capture bound. Seven Access read/query tests check independent creation and
+row images plus the unchanged current-row fixture extraction. Twenty Access
+INSERT regressions pass, including retained session ownership after cancellation
+or an explicit resource refusal.
+
+The full headless desktop table-creation family passes 37 tests. Retained journeys
+include deleting the last table, creating replacement and subsequent tables,
+saving a pending Unicode first record, returning to an original sparse table after
+adding a sibling, exact independent AFTER bytes, fresh reopening and preserved
+scratch SQL. Initial oracle carrier/name expectation failures were corrected;
+these are local implementation checks, not Microsoft Access or Windows execution
+qualification. Retained-source cell UPDATE, row DELETE and broader schema edits
+still have separate source boundaries and are not supplied by this INSERT route.
+
 ## Current sparse metadata and original presence
 
 `plan_recoverable_current_omitted_row_inserts` adds a separate TCNA0007 family

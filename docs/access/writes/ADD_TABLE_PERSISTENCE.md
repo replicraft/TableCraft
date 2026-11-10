@@ -49,9 +49,11 @@ request or journal does not acquire retained-source authority.
 Local macOS ARM64 checks pass 29 creation tests, 16 add-table request/recovery
 tests and six capture tests. Three headless GUI journeys pass replacement-table
 and subsequent-table saves, including independent whole-image comparisons and
-fresh reopening. The pending first-record continuation exposed a separate INSERT
-source refusal; table creation alone does not establish that row-save workflow.
-Native Windows execution and Microsoft Access save/reopen comparison remain
+fresh reopening. That initial first-record continuation exposed a separate INSERT
+source refusal. The subsequent [TCNA8 route](NORMAL_ACE_INSERT.md#retained-tables-and-original-presence)
+now passes real first-row review/save/reopen, alongside the complete 37-test
+headless table-creation family. Table creation itself grants no row mutation
+authority. Native Windows execution and Microsoft Access save/reopen comparison remain
 unqualified. The following sections retain the earlier source-family contracts
 and their historical evidence; their geometry ceilings do not constrain TCAT6.
 
