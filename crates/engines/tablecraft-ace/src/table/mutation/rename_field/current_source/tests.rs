@@ -153,18 +153,21 @@ fn current_source_refuses_live_name_dependencies_even_with_explicit_tracking_off
         assert_eq!(properties.raw_bytes(), bag(control));
         let observed =
             Observed::capture(&native, "Table1", "Score", &mut budget(), &|| false).unwrap();
-        let refusal = dependencies(&properties, &observed, &mut budget(), &|| false);
+        let refusal =
+            current_schema::dependencies(&properties, &observed.schema, &mut budget(), &|| false);
         if control == "referencing default" {
             assert!(
                 matches!(
                     refusal,
-                    Err(Error::RowSource(crate::EditError::Unsupported(_)))
+                    Err(current_schema::Error::Native(
+                        crate::EditError::Unsupported(_)
+                    ))
                 ),
                 "dependency {control}"
             );
         } else {
             assert!(
-                matches!(refusal, Err(Error::Source)),
+                matches!(refusal, Err(current_schema::Error::Source)),
                 "dependency {control}"
             );
         }

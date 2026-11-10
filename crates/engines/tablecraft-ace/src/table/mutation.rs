@@ -35,6 +35,8 @@ pub(super) mod normal_eof;
 pub use index_create::{Ace16IndexCreatePreview, SecondaryIndexCreate};
 #[cfg(all(feature = "ace16-create", feature = "journal"))]
 mod drop_field;
+#[cfg(all(feature = "ace16-create", feature = "journal"))]
+pub(crate) mod current_schema;
 #[cfg(feature = "journal")]
 pub(crate) mod drop_table;
 #[cfg(feature = "ace16-write-preview")]
