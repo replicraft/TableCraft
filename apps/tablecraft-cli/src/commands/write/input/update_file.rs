@@ -1,5 +1,5 @@
 //! Bounded transport only; existing UPDATE converters own all value semantics.
-use super::{MAX_REQUESTS, reader, reserve};
+use super::{reader, reserve};
 use crate::commands::write::{
     error::{Error, input},
     tick, updates,
@@ -14,14 +14,14 @@ pub(in crate::commands::write) fn cells(
 ) -> Result<Vec<String>, Error> {
     let (mut reader, mut record) = reader(bytes, budget, cancelled)?;
     let mut cells = Vec::new();
-    let mut rows = 0;
+    let mut rows = 0_usize;
     while reader
         .read_byte_record(&mut record)
         .map_err(|_| input("Malformed quoted UPDATE TSV"))?
     {
         tick(budget, cancelled)?;
-        if rows == MAX_REQUESTS || record.len() != updates::SET_FIELDS {
-            return Err(input("Expected 1..4096 six-column UPDATE requests"));
+        if record.len() != updates::SET_FIELDS {
+            return Err(input("Expected complete six-column UPDATE requests"));
         }
         reserve(&mut cells, updates::SET_FIELDS, budget)?;
         for field in &record {
@@ -41,7 +41,7 @@ pub(in crate::commands::write) fn cells(
             owned.push_str(text);
             cells.push(owned);
         }
-        rows += 1;
+        rows = rows.checked_add(1).ok_or(InspectError::StructureLimit)?;
     }
     if rows == 0 {
         return Err(input("UPDATE request file contains no rows"));

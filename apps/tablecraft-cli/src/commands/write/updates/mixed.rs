@@ -1,7 +1,7 @@
 //! Typed protocol grouping, preserving caller ordinals and expected carriers.
 use super::super::{
     error::{Error, input},
-    input::{MAX_REQUESTS, reserve},
+    input::reserve,
     tick, values,
 };
 use super::{Group, SET_FIELDS, parse_with_kind, same_name};
@@ -43,8 +43,8 @@ pub(in crate::commands::write) fn required(
 ) -> Result<bool, Error> {
     tick(budget, cancelled)?;
     let (assignments, remainder) = cells.as_chunks::<SET_FIELDS>();
-    if assignments.is_empty() || !remainder.is_empty() || assignments.len() > MAX_REQUESTS {
-        return Err(input("Expected 1..4096 complete --set assignments"));
+    if assignments.is_empty() || !remainder.is_empty() {
+        return Err(input("Expected one or more complete --set assignments"));
     }
     for fields in assignments {
         tick(budget, cancelled)?;
@@ -69,8 +69,8 @@ pub(in crate::commands::write) fn preflight(
 ) -> Result<(), Error> {
     tick(budget, cancelled)?;
     let (assignments, remainder) = cells.as_chunks::<SET_FIELDS>();
-    if assignments.is_empty() || !remainder.is_empty() || assignments.len() > MAX_REQUESTS {
-        return Err(input("Expected 1..4096 complete --set assignments"));
+    if assignments.is_empty() || !remainder.is_empty() {
+        return Err(input("Expected one or more complete --set assignments"));
     }
     let mut scopes: Vec<Scope<'_>> = Vec::new();
     for fields in assignments {

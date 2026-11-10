@@ -54,9 +54,9 @@ tablecraft write preview-update offline.accdb edited.accdb --long-value \
 
 File fields use the same UPDATE KIND, expected-value and `value:` escape rules
 as `--set`; they do not use INSERT's separate `null` KIND convention. The
-16 MiB request-file and 4096-assignment bounds, per-value byte limit and shared
-operation budget still apply. File transport does not expand native field,
-record, ownership, index, constraint or long-value limits, and never selects a
+shared operation budget and any explicitly selected `--value-bytes` limit
+still apply; request transport has no separate file-byte or assignment quota.
+File transport does not expand native field, record, ownership, index, constraint or long-value limits, and never selects a
 mode by retrying a failed candidate.
 
 Each `--set` contains `TABLE COLUMN ROW KIND EXPECTED VALUE`. ROW is the zero-based
@@ -236,12 +236,18 @@ All request parsing, source capture, engine preparation, result formatting and
 output I/O share one operation allowance. Defaults are 256 MiB cumulative bytes,
 100,000 rows and 100,000,000 steps, adjustable through `--work-bytes`, `--work-rows`
 and `--work-steps`. Structural engine caps, including the 64 MiB complete-image
-ceiling, remain independent. Request files are limited to 16 MiB and 4096 rows,
-with at most 256 fields per INSERT row;
-UPDATE allows at most 4096 assignments. DELETE raw records are limited to 4096
-bytes. `--value-bytes` defaults to 1024 input bytes and can be raised up to the
-request-file ceiling. Binary counts encoded hex digits; UPDATE counts escape
-prefixes too.
+ceiling, remain independent. Request transport has no separate file-byte or
+request-count ceiling; complete capture and parsing use fallible host buffers,
+checked growth, cancellation and the selected work allowance. The strict quoting
+prepass measures actual maximum record bytes and field counts for the CSV caches
+rather than reserving whole-file storage for every record. INSERT retains the
+current 256-field native admission boundary. DELETE raw record witnesses retain
+the 4096-byte page-geometry upper bound, independently of external value payloads.
+`--value-bytes` is optional: absent means no additional transport value limit;
+an explicitly supplied positive value imposes that chosen limit. Binary counts
+encoded hex digits; UPDATE counts escape prefixes too. Named INSERT no longer
+adds a separate 4096-row adapter quota; all actual native source, batch, field and
+storage qualifications still apply.
 
 The mixed protocol preserves the written KIND even for NULL inputs. It validates
 one-table scope, fixed/variable KIND categories and flags before serializing native groups, prepays

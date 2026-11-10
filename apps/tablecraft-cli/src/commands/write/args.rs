@@ -77,9 +77,9 @@ pub(crate) struct Update {
     /// Expand qualified update cascades from original relationship associations.
     #[arg(long)]
     pub(super) cascade_updates: bool,
-    /// Maximum bytes per expected/replacement argument, including escape prefixes.
-    #[arg(long, default_value_t = input::DEFAULT_VALUE_BYTES, value_parser = input::value_limit)]
-    pub(super) value_bytes: usize,
+    /// Optional maximum bytes per expected/replacement argument, including escape prefixes.
+    #[arg(long, value_parser = input::value_limit)]
+    pub(super) value_bytes: Option<usize>,
 }
 
 #[derive(Args)]
@@ -108,9 +108,9 @@ pub(crate) struct Insert {
     /// reading pins time; complete/supplied fields never read the provider.
     #[arg(long, num_args = 0..=1, require_equals = true, value_name = "LOCAL-DATETIME", value_parser = parse_reading)]
     pub(super) default_clock: Option<Option<ClockReading>>,
-    /// Maximum TSV DATA bytes per value; binary counts encoded hexadecimal digits.
-    #[arg(long, default_value_t = input::DEFAULT_VALUE_BYTES, value_parser = input::value_limit)]
-    pub(super) value_bytes: usize,
+    /// Optional maximum TSV DATA bytes per value; binary counts encoded hexadecimal digits.
+    #[arg(long, value_parser = input::value_limit)]
+    pub(super) value_bytes: Option<usize>,
 }
 
 #[derive(Args)]
@@ -137,7 +137,7 @@ pub(super) struct Deletes {
     /// including column-count header/null mask but excluding page/slot words.
     #[arg(long = "delete", value_name = "ROW:HEX")]
     pub inline: Vec<String>,
-    /// Headerless quoted two-column ROW/HEX TSV (16 MiB, at most 4096 requests).
+    /// Headerless quoted two-column ROW/HEX TSV; explicit work budgets apply.
     #[arg(long, value_name = "TSV")]
     pub delete_file: Option<PathBuf>,
 }

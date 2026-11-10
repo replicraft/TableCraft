@@ -11,9 +11,6 @@ use std::path::Path;
 use tablecraft_ace::{InspectError, RowDelete};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
-pub(super) const MAX_REQUESTS: usize = 4096;
-pub(super) const MAX_INPUT_BYTES: u64 = 16 * 1024 * 1024;
-pub(super) const DEFAULT_VALUE_BYTES: usize = 1024;
 const CSV_BUFFER_BYTES: usize = 8192;
 const CSV_RETAINED_RECORDS: usize = 3;
 const VALUE_FIELDS: usize = 2;
@@ -26,8 +23,8 @@ pub(super) fn value_limit(text: &str) -> Result<usize, String> {
     let value = text
         .parse::<usize>()
         .map_err(|_| "Expected a positive value-byte limit".to_owned())?;
-    if value == 0 || value > MAX_INPUT_BYTES as usize {
-        return Err("Value-byte limit must be between 1 and 16777216".to_owned());
+    if value == 0 {
+        return Err("Expected a positive value-byte limit".to_owned());
     }
     Ok(value)
 }
@@ -42,9 +39,6 @@ pub(super) fn capture(
         tablecraft_io::open_regular_readonly(path).map_err(|error| Error::File(error.kind()))?;
     let length =
         tablecraft_io::seek_to_end(&mut file, budget, cancelled).map_err(InspectError::from)?;
-    if length > MAX_INPUT_BYTES {
-        return Err(input("Request file exceeds the 16 MiB input ceiling"));
-    }
     budget
         .charge_allocation(length, 1)
         .map_err(InspectError::from)?;
@@ -69,27 +63,22 @@ fn reader<'a>(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(csv::Reader<&'a [u8]>, ByteRecord), Error> {
-    if bytes.is_empty() || bytes.len() as u64 > MAX_INPUT_BYTES {
-        return Err(input(
-            "Expected a nonempty request file within the input ceiling",
-        ));
+    if bytes.is_empty() {
+        return Err(input("Expected a nonempty request file"));
     }
-    quotes::validate(bytes, budget, cancelled)?;
-    let fields = bytes
-        .len()
-        .checked_add(1)
-        .ok_or(InspectError::StructureLimit)?;
+    let layout = quotes::validate(bytes, budget, cancelled)?;
+    let fields = layout.max_fields;
     budget
         .charge_allocation(CSV_BUFFER_BYTES as u64, 1)
         .map_err(InspectError::from)?;
     budget
         .charge(Resource::Steps, bytes.len() as u64)
         .map_err(InspectError::from)?;
-    // csv retains first-record byte/string caches even without headers. Account
-    // for these and the reused record, including delimiter-only hostile input.
+    // csv retains first-record byte/string caches even without headers. Pay
+    // their measured record/field maxima and the reused decoder record.
     for _ in 0..CSV_RETAINED_RECORDS {
         budget
-            .charge_allocation(bytes.len() as u64, 1)
+            .charge_allocation(layout.max_record_bytes as u64, 1)
             .map_err(InspectError::from)?;
         budget
             .charge_allocation(fields as u64, size_of::<usize>() as u64)
@@ -101,7 +90,10 @@ fn reader<'a>(
         .flexible(true)
         .buffer_capacity(CSV_BUFFER_BYTES)
         .from_reader(bytes);
-    Ok((reader, ByteRecord::with_capacity(bytes.len(), fields)))
+    Ok((
+        reader,
+        ByteRecord::with_capacity(layout.max_record_bytes, fields),
+    ))
 }
 
 fn insert_fields<F, T>(
@@ -112,7 +104,7 @@ fn insert_fields<F, T>(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Vec<T>, Error> {
-    if max_value_bytes == 0 || max_value_bytes > MAX_INPUT_BYTES as usize {
+    if max_value_bytes == 0 {
         return Err(input("Invalid value-byte limit"));
     }
     let (mut reader, mut record) = reader(bytes, budget, cancelled)?;
@@ -123,14 +115,11 @@ fn insert_fields<F, T>(
         .map_err(|_| input("Malformed quoted TSV request"))?
     {
         tick(budget, cancelled)?;
-        if rows.len() == MAX_REQUESTS
-            || record.is_empty()
+        if record.is_empty()
             || !record.len().is_multiple_of(VALUE_FIELDS)
             || record.len() / VALUE_FIELDS > MAX_INPUT_COLUMNS
         {
-            return Err(input(
-                "Expected at most 4096 complete KIND/DATA row requests",
-            ));
+            return Err(input("Expected complete KIND/DATA row requests"));
         }
         if arity.is_some_and(|prior| prior != record.len()) {
             return Err(input("Insert rows have inconsistent field counts"));
@@ -196,8 +185,8 @@ pub(super) fn deletes(
         .map_err(|_| input("Malformed quoted DELETE TSV"))?
     {
         tick(budget, cancelled)?;
-        if rows.len() == MAX_REQUESTS || record.len() != DELETE_FIELDS {
-            return Err(input("Expected at most 4096 ROW/HEX delete requests"));
+        if record.len() != DELETE_FIELDS {
+            return Err(input("Expected complete ROW/HEX delete requests"));
         }
         let ordinal = std::str::from_utf8(&record[0]).map_err(|_| input("Invalid ROW text"))?;
         let hex = std::str::from_utf8(&record[1]).map_err(|_| input("Invalid HEX text"))?;
@@ -219,12 +208,16 @@ pub(super) fn reserve<T>(
     let required = items
         .len()
         .checked_add(count)
-        .filter(|count| *count <= MAX_REQUESTS)
         .ok_or(InspectError::StructureLimit)?;
     if required <= items.capacity() {
         return Ok(());
     }
-    let capacity = required.max(items.capacity().saturating_mul(2).min(MAX_REQUESTS));
+    let doubled = items.capacity().checked_mul(2).filter(|capacity| {
+        capacity
+            .checked_mul(size_of::<T>())
+            .is_some_and(|bytes| bytes <= isize::MAX as usize)
+    });
+    let capacity = required.max(doubled.unwrap_or(required));
     let growth = capacity - items.capacity();
     budget
         .charge_allocation(growth as u64, size_of::<T>() as u64)

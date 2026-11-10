@@ -90,14 +90,11 @@ fn rows_with<'a, T>(
     if bytes.is_empty() {
         return Err(Error::Input("Expected a nonempty TSV with a column header"));
     }
-    tsv::validate(bytes, budget, cancelled).map_err(|error| match error {
+    let layout = tsv::validate(bytes, budget, cancelled).map_err(|error| match error {
         tsv::Error::Native(error) => Error::Native(error),
         tsv::Error::Malformed(message) => Error::Input(message),
     })?;
-    let fields = bytes
-        .len()
-        .checked_add(1)
-        .ok_or(InspectError::StructureLimit)?;
+    let fields = layout.max_fields;
     budget
         .charge_allocation(CSV_BUFFER_BYTES as u64, 1)
         .map_err(InspectError::from)?;
@@ -106,7 +103,7 @@ fn rows_with<'a, T>(
         .map_err(InspectError::from)?;
     for _ in 0..CSV_RETAINED_RECORDS {
         budget
-            .charge_allocation(bytes.len() as u64, 1)
+            .charge_allocation(layout.max_record_bytes as u64, 1)
             .map_err(InspectError::from)?;
         budget
             .charge_allocation(fields as u64, size_of::<usize>() as u64)
@@ -118,7 +115,7 @@ fn rows_with<'a, T>(
         .flexible(true)
         .buffer_capacity(CSV_BUFFER_BYTES)
         .from_reader(bytes);
-    let mut record = ByteRecord::with_capacity(bytes.len(), fields);
+    let mut record = ByteRecord::with_capacity(layout.max_record_bytes, fields);
     if !reader
         .read_byte_record(&mut record)
         .map_err(|_| Error::Input("Malformed creation TSV header"))?

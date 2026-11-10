@@ -40,11 +40,25 @@ enum State {
     Closed,
 }
 
+/// Encoded record maxima are conservative decoder capacity bounds. Quoted
+/// delimiters and newlines remain data, never extra fields or records.
+pub(crate) struct RecordLayout {
+    pub max_record_bytes: usize,
+    pub max_fields: usize,
+}
+
+impl RecordLayout {
+    fn include(&mut self, bytes: usize, fields: usize) {
+        self.max_record_bytes = self.max_record_bytes.max(bytes);
+        self.max_fields = self.max_fields.max(fields);
+    }
+}
+
 pub(crate) fn validate(
     bytes: &[u8],
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
-) -> Result<(), Error> {
+) -> Result<RecordLayout, Error> {
     tick(budget, cancelled)?;
     budget
         .charge(Resource::Steps, bytes.len() as u64)
@@ -52,10 +66,16 @@ pub(crate) fn validate(
     let mut state = State::Start;
     let mut position = 0;
     let mut next_poll = 0;
+    let mut record_start = 0;
+    let mut fields = 1_usize;
+    let mut layout = RecordLayout {
+        max_record_bytes: 0,
+        max_fields: 0,
+    };
     while position < bytes.len() {
         if position >= next_poll {
             tick(budget, cancelled)?;
-            next_poll = position + CANCEL_INTERVAL;
+            next_poll = position.saturating_add(CANCEL_INTERVAL);
         }
         let byte = bytes[position];
         match state {
@@ -74,8 +94,17 @@ pub(crate) fn validate(
                         return Err(input("Bare CR outside a quoted TSV field"));
                     }
                     position += 1;
+                    layout.include(position + 1 - record_start, fields);
+                    record_start = position + 1;
+                    fields = 1;
                     state = State::Start;
-                } else if matches!(byte, DELIMITER | b'\n') {
+                } else if byte == b'\n' {
+                    layout.include(position + 1 - record_start, fields);
+                    record_start = position + 1;
+                    fields = 1;
+                    state = State::Start;
+                } else if byte == DELIMITER {
+                    fields = fields.checked_add(1).ok_or(InspectError::StructureLimit)?;
                     state = State::Start;
                 } else if matches!(state, State::Closed) {
                     return Err(input("Unexpected bytes after a closing TSV quote"));
@@ -94,6 +123,9 @@ pub(crate) fn validate(
     if matches!(state, State::Quoted) {
         return Err(input("Unterminated quoted TSV field"));
     }
+    if record_start < bytes.len() {
+        layout.include(bytes.len() - record_start, fields);
+    }
     tick(budget, cancelled)?;
-    Ok(())
+    Ok(layout)
 }

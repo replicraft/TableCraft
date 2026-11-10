@@ -49,7 +49,12 @@ fn update(args: Update, password: Option<&str>) -> Result<String, Error> {
             updates::mixed::preflight(cells, &mut budget, &|| false)?;
             return Err(invalid("Mixed Memo/OLE updates are not qualified"));
         }
-        let owned = updates::mixed::prepare(cells, args.value_bytes, &mut budget, &|| false)?;
+        let owned = updates::mixed::prepare(
+            cells,
+            args.value_bytes.unwrap_or(usize::MAX),
+            &mut budget,
+            &|| false,
+        )?;
         let groups = owned.groups(&mut budget, &|| false)?;
         let request = if args.index_growth {
             EngineeringRequest::MixedSplitUpdate {
@@ -68,7 +73,7 @@ fn update(args: Update, password: Option<&str>) -> Result<String, Error> {
     if args.variable || args.long_value {
         let groups = updates::parse(
             cells,
-            args.value_bytes,
+            args.value_bytes.unwrap_or(usize::MAX),
             SlotScalarUpdate::new,
             &mut budget,
             &|| false,
@@ -120,7 +125,12 @@ fn update(args: Update, password: Option<&str>) -> Result<String, Error> {
             all_text &= fields[3] == "text";
         }
         if has_text && !all_text {
-            let owned = updates::mixed::prepare(cells, args.value_bytes, &mut budget, &|| false)?;
+            let owned = updates::mixed::prepare(
+                cells,
+                args.value_bytes.unwrap_or(usize::MAX),
+                &mut budget,
+                &|| false,
+            )?;
             let groups = owned.groups(&mut budget, &|| false)?;
             return publish(
                 &args.paths,
@@ -135,7 +145,7 @@ fn update(args: Update, password: Option<&str>) -> Result<String, Error> {
         if has_text {
             let owned = updates::parse(
                 cells,
-                args.value_bytes,
+                args.value_bytes.unwrap_or(usize::MAX),
                 SlotScalarUpdate::new,
                 &mut budget,
                 &|| false,
@@ -169,7 +179,7 @@ fn update(args: Update, password: Option<&str>) -> Result<String, Error> {
 
     let owned = updates::parse(
         cells,
-        args.value_bytes,
+        args.value_bytes.unwrap_or(usize::MAX),
         FixedScalarUpdate::new,
         &mut budget,
         &|| false,
@@ -213,7 +223,12 @@ fn insert(args: Insert, password: Option<&str>) -> Result<String, Error> {
     let clock = args.default_clock.map(HostClock::new);
 
     if !args.fields.is_empty() {
-        let rows = input::presence::rows(&bytes, args.value_bytes, &mut budget, &|| false)?;
+        let rows = input::presence::rows(
+            &bytes,
+            args.value_bytes.unwrap_or(usize::MAX),
+            &mut budget,
+            &|| false,
+        )?;
         let mode = match args.incrementing_last {
             Some(last) => NamedInsertMode::IncrementingLast(IncrementingAutoNumber::new(last)),
             None if args.incrementing => NamedInsertMode::Incrementing,
@@ -236,7 +251,7 @@ fn insert(args: Insert, password: Option<&str>) -> Result<String, Error> {
     if args.incrementing || args.incrementing_last.is_some() {
         let parsed = input::presence::inserts(
             &bytes,
-            args.value_bytes,
+            args.value_bytes.unwrap_or(usize::MAX),
             AutoNumberRowInsert::new,
             &mut budget,
             &|| false,
@@ -287,7 +302,7 @@ fn insert(args: Insert, password: Option<&str>) -> Result<String, Error> {
     } else {
         let parsed = input::presence::inserts(
             &bytes,
-            args.value_bytes,
+            args.value_bytes.unwrap_or(usize::MAX),
             RowInsert::new,
             &mut budget,
             &|| false,
@@ -328,9 +343,6 @@ fn delete(args: Delete, password: Option<&str>) -> Result<String, Error> {
         DeleteMode::Restrict
     };
     if !args.requests.ordinals.is_empty() {
-        if args.requests.ordinals.len() > input::MAX_REQUESTS {
-            return Err(invalid("Too many delete ordinals"));
-        }
         budget
             .charge_allocation(
                 args.requests.ordinals.len() as u64,
@@ -355,9 +367,6 @@ fn delete(args: Delete, password: Option<&str>) -> Result<String, Error> {
         let bytes = input::capture(&path, &mut budget, &|| false)?;
         input::deletes(&bytes, &mut budget, &|| false)?
     } else {
-        if args.requests.inline.len() > input::MAX_REQUESTS {
-            return Err(invalid("Too many inline delete requests"));
-        }
         let mut rows = Vec::new();
         input::reserve(&mut rows, args.requests.inline.len(), &mut budget)?;
         for text in &args.requests.inline {

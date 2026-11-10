@@ -2,7 +2,7 @@
 pub(super) mod mixed;
 use super::{
     error::{Error, input},
-    input::{MAX_REQUESTS, reserve},
+    input::reserve,
     tick, values,
 };
 use tablecraft_ace::InspectError;
@@ -43,8 +43,8 @@ pub(super) fn parse_with_kind<'a, T>(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Vec<Group<'a, T>>, Error> {
     let (assignments, remainder) = cells.as_chunks::<SET_FIELDS>();
-    if assignments.is_empty() || !remainder.is_empty() || assignments.len() > MAX_REQUESTS {
-        return Err(input("Expected 1..4096 complete --set assignments"));
+    if assignments.is_empty() || !remainder.is_empty() {
+        return Err(input("Expected one or more complete --set assignments"));
     }
     let mut groups: Vec<Group<'_, T>> = Vec::new();
     for fields in assignments {

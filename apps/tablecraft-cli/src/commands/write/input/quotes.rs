@@ -7,7 +7,7 @@ pub(super) fn validate(
     bytes: &[u8],
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
-) -> Result<(), Error> {
+) -> Result<tsv::RecordLayout, Error> {
     tsv::validate(bytes, budget, cancelled).map_err(|error| match error {
         tsv::Error::Native(error) => Error::Native(error),
         tsv::Error::Malformed(message) => input(message),
