@@ -18,9 +18,11 @@ mod table_drafts;
 #[cfg(test)]
 mod test_support;
 mod totals;
+mod updating;
 
 use crate::file_dialog::{FileDialog, SelectedFile};
 use crate::font_inventory::FontInventory;
+use crate::updating::UpdateWorker;
 use creating::Creating;
 use editing::Editing;
 use editing::table_creation::TableCreationHost;
@@ -36,6 +38,10 @@ use tablecraft_ui::{
     Action, ContentsTarget, Data, Database, FieldFilterTarget, FindPosition, FindRequest,
     ObjectKind, ObjectTarget, QueryDesignRequest, RecordTarget, SavedQuery, SavedQuerySqlRequest,
     SavedQueryTarget, Schema, State, Table, TotalSpec, TotalsTarget,
+};
+use tablecraft_update::{
+    apply::{AppliedUpdate, ApplyError},
+    session::UpdateCommand,
 };
 use zeroize::Zeroize;
 
@@ -243,6 +249,9 @@ pub(super) struct Desktop {
     query_run_options: QueryRunOptions,
     startup_visibility_pending: bool,
     font_inventory: FontInventory,
+    updates: UpdateWorker,
+    update_restart: Option<AppliedUpdate>,
+    update_failure: Option<ApplyError>,
 }
 
 #[derive(Default)]
@@ -262,6 +271,10 @@ impl Desktop {
         // independently of Editing and the read worker. Context shares egui state rather
         // than copying the UI.
         let creating = Creating::new(ctx.clone());
+        // NO_CLONE: the independent update worker owns a shared repaint handle;
+        // egui Context shares event-loop state rather than duplicating the UI.
+        let update_context = ctx.clone();
+        let updates = UpdateWorker::new(move || update_context.request_repaint());
         let worker = Worker::new(move || ctx.request_repaint());
         let mut app = Self {
             state: State::default(),
@@ -288,10 +301,15 @@ impl Desktop {
             query_run_options: QueryRunOptions::default(),
             startup_visibility_pending: true,
             font_inventory: FontInventory::default(),
+            updates,
+            update_restart: None,
+            update_failure: None,
         };
         app.state
             .set_query_run_limits(query_limits::ui_limits(app.query_run_options));
         app.state.file_picker_available = true;
+        app.state
+            .set_updates_available(tablecraft_update::platform::Platform::detect().is_some());
         app.state.creation_available = CreationWorker::is_supported();
         app.state.table_save_available = SaveWorker::supports_table_creation();
         app.state.table_rename_available = SaveWorker::supports_table_rename();
@@ -911,6 +929,7 @@ impl eframe::App for Desktop {
 
         // eframe also calls logic for repaint requests while the viewport is
         // hidden. Task completion must not depend on drawing a visible frame.
+        self.poll_updates(ctx);
         self.poll_file_dialog();
         self.poll_creation();
         self.poll();
@@ -949,7 +968,8 @@ impl eframe::App for Desktop {
     }
 
     fn ui(&mut self, ui: &mut egui::Ui, frame: &mut eframe::Frame) {
-        let actions = self.state.show(ui);
+        let locked = self.updates.installing() || self.update_restart.is_some();
+        let actions = ui.add_enabled_ui(!locked, |ui| self.state.show(ui)).inner;
         self.release_stale_query_parameters();
         // A manual edit ends the native selection binding, even if the user
         // later types the same lossy display string again.
@@ -962,10 +982,17 @@ impl eframe::App for Desktop {
         }
         self.invalidate_creation_selection();
         for action in actions {
+            if self.updates.installing() || self.update_restart.is_some() {
+                continue;
+            }
             if self.recovery.is_some() && !editing::recovery::is_recovery_action(&action) {
                 continue;
             }
             match action {
+                Action::CheckForUpdates => self.start_update(UpdateCommand::Check),
+                Action::DownloadUpdate => self.start_update(UpdateCommand::Download),
+                Action::InstallUpdate => self.start_update(UpdateCommand::Install),
+                Action::CancelUpdate => self.updates.cancel(),
                 Action::BeginRecovery { attempt_id } => self.begin_reserved_recovery(attempt_id),
                 Action::CloseRecovery { attempt_id } => self.close_reserved_recovery(attempt_id),
                 Action::CancelRecovery { operation_id } => {

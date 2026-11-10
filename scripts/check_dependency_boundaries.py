@@ -42,7 +42,7 @@ ALLOWED = {
                            "tablecraft-schema", "tablecraft-expressions", "tablecraft-display",
                            "tablecraft-builders"},
     "tablecraft-desktop": {"tablecraft-ui", "tablecraft-runtime", "tablecraft-testkit",
-                           "tablecraft-display", "tablecraft-builders"},
+                           "tablecraft-display", "tablecraft-builders", "tablecraft-update"},
     "tablecraft-mcp": {"tablecraft-runtime", "tablecraft-builders", "tablecraft-core",
                        "tablecraft-schema", "tablecraft-display", "tablecraft-testkit"},
     "tablecraft-cli": {"tablecraft-core", "tablecraft-schema", "tablecraft-model",
