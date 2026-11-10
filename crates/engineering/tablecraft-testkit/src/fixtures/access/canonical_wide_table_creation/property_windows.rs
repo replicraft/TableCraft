@@ -21,13 +21,13 @@ pub fn description() -> String {
     "e".repeat(255)
 }
 
-fn text_property(group: &mut Vec<u8>, key: u16, value: &str) {
+fn text_property(group: &mut Vec<u8>, key: u16, native_type: u8, value: &str) {
     let payload = value
         .encode_utf16()
         .flat_map(u16::to_le_bytes)
         .collect::<Vec<_>>();
     group.extend(((8 + payload.len()) as u16).to_le_bytes());
-    group.extend([1, 12]);
+    group.extend([1, native_type]);
     group.extend(key.to_le_bytes());
     group.extend((payload.len() as u16).to_le_bytes());
     group.extend(payload);
@@ -46,8 +46,8 @@ fn properties() -> Vec<u8> {
         group.extend(label);
         group.extend([9, 0, 1, 1, 0, 0, 1, 0, 0]);
         group.extend([9, 0, 1, 1, 1, 0, 1, 0, 255]);
-        text_property(&mut group, 2, &default_expression());
-        text_property(&mut group, 3, &description());
+        text_property(&mut group, 2, 12, &default_expression());
+        text_property(&mut group, 3, 10, &description());
         body.extend(block(1, &group));
     }
     assert_eq!(body.len(), 303_386);

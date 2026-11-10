@@ -145,6 +145,7 @@ fn full_length_text_metadata_crosses_64_property_pages_without_losing_fields() {
             raw::property_windows::default_expression()
         );
         assert_eq!(fields[3].name(), "Description");
+        assert_eq!(fields[3].native_type(), 10);
         assert_eq!(
             fields[3].text().unwrap(),
             raw::property_windows::description()
