@@ -164,7 +164,7 @@ impl NativeImage {
                 return Err(EditError::Preservation);
             }
             budget
-                .charge(Resource::Steps, PAGE_BYTES)
+                .charge(Resource::Steps, PAGE_BYTES as u64)
                 .map_err(InspectError::from)?;
             bytes.extend_from_slice(&page.bytes);
         }
