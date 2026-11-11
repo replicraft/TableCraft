@@ -1,5 +1,7 @@
 //! Revision/table-bound source facts, never a named target or write capability.
 use crate::{Error, Response, document::Document, editing::platform};
+use std::sync::Arc;
+use tablecraft_builders::table::TypedFieldAdditionAvailability;
 
 #[derive(Debug, PartialEq, Eq)]
 pub struct FieldAdditionAvailability {
@@ -7,6 +9,7 @@ pub struct FieldAdditionAvailability {
     pub table: String,
     pub number_available: bool,
     pub short_text_available: bool,
+    pub typed_declarations: Arc<[TypedFieldAdditionAvailability]>,
 }
 
 impl Document {

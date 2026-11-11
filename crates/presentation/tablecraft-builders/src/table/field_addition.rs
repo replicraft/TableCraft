@@ -1,6 +1,8 @@
 //! Explicit source-free declarations for the saved-field gallery's working choices.
 mod typed;
-pub use typed::{FieldAdditionDeclarationError, TypedFieldAdditionDeclaration};
+pub use typed::{
+    FieldAdditionDeclarationError, TypedFieldAdditionAvailability, TypedFieldAdditionDeclaration,
+};
 
 use std::num::NonZeroU8;
 use tablecraft_schema::ScalarType;

@@ -71,8 +71,7 @@ impl FieldProperties {
         Self {
             text_units: SHORT_TEXT_UNITS,
             number_size: DraftNumberSize::LongInteger,
-            decimal: DecimalConstraints::new(INITIAL_DECIMAL_PRECISION, INITIAL_DECIMAL_SCALE)
-                .expect("valid initial decimal declaration"),
+            decimal: DraftNumberSize::initial_decimal_constraints(),
             // Authoring follows Access UI defaults. The native API separately
             // preserves absent declarations and its programmatic defaults.
             required: ordinary.then_some(false),

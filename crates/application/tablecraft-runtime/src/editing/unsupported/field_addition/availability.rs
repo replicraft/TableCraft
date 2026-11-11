@@ -17,6 +17,7 @@ pub(in crate::editing) fn inspect(
             table: output.text(table)?,
             number_available: false,
             short_text_available: false,
+            typed_declarations: std::sync::Arc::from([]),
         },
     })
 }

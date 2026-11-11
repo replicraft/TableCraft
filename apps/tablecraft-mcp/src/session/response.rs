@@ -114,7 +114,12 @@ impl Session {
                 self.drop_source = None;
                 return self.retain_review(Reviewed::TableDrop(capability), json!({"native_review_id": review.id, "document_revision": review.document_revision, "table": review.table, "native_id": review.native_id, "declared_rows": review.declared_rows}));
             }
-            Response::FieldAdditionAvailability { availability } => json!({"document_revision": availability.document_revision, "table": availability.table, "number_available": availability.number_available, "short_text_available": availability.short_text_available}),
+            Response::FieldAdditionAvailability { availability } => json!({"document_revision": availability.document_revision, "table": availability.table, "number_available": availability.number_available, "short_text_available": availability.short_text_available, "typed_declarations": availability.typed_declarations.iter().map(|facts| {
+                let declaration = facts.declaration;
+                let descriptor = declaration.descriptor();
+                let decimal = descriptor.decimal_constraints();
+                json!({"scalar_type": format!("{:?}", descriptor.scalar_type()), "precision": decimal.map(|value| value.precision()), "scale": decimal.map(|value| value.scale()), "max_utf16_units": declaration.short_text_units().map(|value| value.get()), "unicode_compression": declaration.unicode_compression(), "maximum_name_utf16_units": facts.maximum_name_utf16_units})
+            }).collect::<Vec<_>>()}),
             Response::FieldAdditionReviewed { review, capability } => return self.retain_review(Reviewed::FieldAddition(capability), json!({"native_review_id": review.id, "document_revision": review.document_revision, "table": review.table, "column": review.column, "declaration": format!("{:?}", review.declaration)})),
             Response::FieldRenameSourceInspected { inspection } => {
                 let (name_profile, same_width) = match inspection.name_profile {

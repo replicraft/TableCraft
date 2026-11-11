@@ -15,6 +15,15 @@ pub enum DraftNumberSize {
 }
 
 impl DraftNumberSize {
+    /// Existing initial Number/Decimal field-size policy, shared by saved-field advice.
+    pub fn initial_decimal_constraints() -> DecimalConstraints {
+        DecimalConstraints::new(
+            super::INITIAL_DECIMAL_PRECISION,
+            super::INITIAL_DECIMAL_SCALE,
+        )
+        .expect("valid initial decimal declaration")
+    }
+
     /// Exact scalar selected by the Number field-size control.
     pub const fn scalar_type(self) -> ScalarType {
         match self {

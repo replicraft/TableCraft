@@ -9,7 +9,7 @@ pub mod field_rename;
 mod model;
 pub use field_addition::{
     FieldAdditionDeclaration, FieldAdditionDeclarationError, FieldAdditionKind,
-    TypedFieldAdditionDeclaration,
+    TypedFieldAdditionAvailability, TypedFieldAdditionDeclaration,
 };
 mod names;
 pub use names::next_field_name;

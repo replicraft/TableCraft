@@ -24,6 +24,13 @@ pub struct TypedFieldAdditionDeclaration {
     compression: bool,
 }
 
+/// Positive source advice for one default configuration; this is not write authority.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct TypedFieldAdditionAvailability {
+    pub declaration: TypedFieldAdditionDeclaration,
+    pub maximum_name_utf16_units: usize,
+}
+
 impl TypedFieldAdditionDeclaration {
     /// Validate one of the ten fixed scalar gallery types.
     pub fn fixed(scalar: ScalarType) -> Result<Self, FieldAdditionDeclarationError> {
