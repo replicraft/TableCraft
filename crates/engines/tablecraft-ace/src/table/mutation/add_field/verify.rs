@@ -123,7 +123,7 @@ pub(super) fn candidate(
         || usize::from(u16_at(new_definition, MAX_COLUMN_COUNT_OFFSET)?) != plan.number + 1
         || usize::from(u16_at(new_definition, COLUMN_COUNT_OFFSET)?) != plan.active_count + 1
         || usize::from(u16_at(new_definition, VARIABLE_SLOT_COUNT_OFFSET)?)
-            != plan.variable_high_water + usize::from(matches!(target, Target::ShortText { .. }))
+            != plan.variable_high_water + usize::from(variable_target(target)?)
         || old_definition[plan.descriptor_start..plan.descriptor_end]
             != new_definition[plan.descriptor_start..plan.descriptor_end]
         || old_definition[plan.descriptor_end..plan.index_start]
@@ -203,6 +203,36 @@ fn metadata(
         return Err(Error::Preservation);
     }
     let declaration_matches = match target {
+        Target::Typed(target) => {
+            let expected = target
+                .field(plan.fixed_offset)
+                .map_err(super::creation_error)?;
+            field.native_type() == expected.kind
+                && field.fixed() == expected.offset.is_some()
+                && field.storage_length() == expected.width
+                && field.flags()
+                    == (UPDATABLE_FLAG
+                        | if expected.offset.is_some() {
+                            FIXED_FLAG
+                        } else {
+                            0
+                        })
+                && field.extended_flags()
+                    == if expected.unicode_compression {
+                        UNICODE_COMPRESSION_FLAG
+                    } else {
+                        0
+                    }
+                && field.physical_field().offset == expected.offset.unwrap_or(0)
+                && field.decimal_parameters()
+                    == expected
+                        .decimal
+                        .map(|constraints| (constraints.precision(), constraints.scale()))
+                && (expected.kind != SHORT_TEXT
+                    || field.text_sort_order().is_some_and(|order| {
+                        order.general_family() == Some(crate::GeneralSortFamily::General2010)
+                    }))
+        }
         Target::Number => {
             field.native_type() == INT32
                 && field.fixed()
@@ -292,43 +322,79 @@ fn metadata(
     let group = properties.groups().last().ok_or(Error::Preservation)?;
     if group.kind() != PropertyGroupKind::Column
         || group.name() != name
-        || group.properties().len() != 2
+        || group.properties().len() != target.property_keys().len()
     {
         return Err(Error::Preservation);
     }
-    let mut required = false;
-    let mut second = false;
-    for property in group.properties() {
-        if property.flags() != DDL_FLAG {
-            return Err(Error::Preservation);
-        }
-        if property.name().eq_ignore_ascii_case("Required")
-            && !required
-            && property.native_type() == BOOLEAN
-            && property.raw_value() == [0]
-        {
-            required = true;
-        } else if !second
-            && match target {
-                Target::Number => {
-                    property.name().eq_ignore_ascii_case("DefaultValue")
-                        && property.native_type() == LONG_TEXT
-                        && property.raw_value() == [b'0', 0]
-                }
-                Target::ShortText { .. } => {
-                    property.name().eq_ignore_ascii_case("AllowZeroLength")
-                        && property.native_type() == BOOLEAN
-                        && property.raw_value() == [255]
-                }
+    if let Target::Typed(target) = target {
+        let literal = target
+            .literal(budget, cancelled)
+            .map_err(super::creation_error)?;
+        for property in group.properties() {
+            if property.flags() != DDL_FLAG {
+                return Err(Error::Preservation);
             }
-        {
-            second = true;
-        } else {
+            let matches = match property.name() {
+                "Required" => property.native_type() == BOOLEAN && property.raw_value() == [0],
+                "AllowZeroLength"
+                    if target.scalar_type() == tablecraft_schema::ScalarType::Text =>
+                {
+                    property.native_type() == BOOLEAN && property.raw_value() == [255]
+                }
+                "DefaultValue" => literal.as_ref().is_some_and(|literal| {
+                    property.native_type() == LONG_TEXT
+                        && property.raw_value().len() == literal.payload_bytes()
+                        && property
+                            .raw_value()
+                            .as_chunks::<2>()
+                            .0
+                            .iter()
+                            .copied()
+                            .map(u16::from_le_bytes)
+                            .eq(literal.units())
+                }),
+                _ => false,
+            };
+            if !matches {
+                return Err(Error::Preservation);
+            }
+        }
+    } else {
+        let mut required = false;
+        let mut second = false;
+        for property in group.properties() {
+            if property.flags() != DDL_FLAG {
+                return Err(Error::Preservation);
+            }
+            if property.name().eq_ignore_ascii_case("Required")
+                && !required
+                && property.native_type() == BOOLEAN
+                && property.raw_value() == [0]
+            {
+                required = true;
+            } else if !second
+                && match target {
+                    Target::Typed(_) => false,
+                    Target::Number => {
+                        property.name().eq_ignore_ascii_case("DefaultValue")
+                            && property.native_type() == LONG_TEXT
+                            && property.raw_value() == [b'0', 0]
+                    }
+                    Target::ShortText { .. } => {
+                        property.name().eq_ignore_ascii_case("AllowZeroLength")
+                            && property.native_type() == BOOLEAN
+                            && property.raw_value() == [255]
+                    }
+                }
+            {
+                second = true;
+            } else {
+                return Err(Error::Preservation);
+            }
+        }
+        if !required || !second {
             return Err(Error::Preservation);
         }
-    }
-    if !required || !second {
-        return Err(Error::Preservation);
     }
 
     let database = &checked.database;
@@ -359,7 +425,15 @@ fn metadata(
         check(budget, cancelled)?;
         if new.len() != old.len() + 1
             || &new[..old.len()] != old
-            || new.last() != Some(&Value::Null)
+            || new.last()
+                != Some(
+                    &if matches!(target, Target::Typed(target) if target.scalar_type() == tablecraft_schema::ScalarType::Boolean)
+                    {
+                        Value::Boolean(false)
+                    } else {
+                        Value::Null
+                    },
+                )
         {
             return Err(Error::Preservation);
         }
@@ -395,4 +469,16 @@ fn blocks(
     })?;
 
     Ok(())
+}
+
+fn variable_target(target: Target) -> Result<bool, Error> {
+    match target {
+        Target::Number => Ok(false),
+        Target::ShortText { .. } => Ok(true),
+        Target::Typed(target) => Ok(target
+            .field(0)
+            .map_err(super::creation_error)?
+            .offset
+            .is_none()),
+    }
 }

@@ -2,6 +2,7 @@
 mod definition;
 mod properties;
 mod retained;
+mod typed;
 mod verify;
 
 use crate::table::mutation::catalog_property::single_descriptor::DescriptorPatch;
@@ -19,10 +20,12 @@ use tablecraft_core::{
     ids::ObjectId,
     limits::{Resource, ResourceBudget},
 };
+pub use typed::NativeRetainedTypedFieldAdditionCandidate;
 
 #[derive(Clone, Copy)]
 enum Target {
     Number,
+    Typed(crate::RetainedFieldAdditionType),
     ShortText {
         max_utf16_units: usize,
         unicode_compression: bool,
@@ -30,10 +33,17 @@ enum Target {
 }
 
 impl Target {
-    fn property_keys(self) -> [&'static str; 2] {
+    fn property_keys(self) -> &'static [&'static str] {
         match self {
-            Self::Number => ["DefaultValue", "Required"],
-            Self::ShortText { .. } => ["Required", "AllowZeroLength"],
+            Self::Number => &["DefaultValue", "Required"],
+            Self::ShortText { .. } => &["Required", "AllowZeroLength"],
+            Self::Typed(target) => match target.scalar_type() {
+                tablecraft_schema::ScalarType::Text => &["Required", "AllowZeroLength"],
+                tablecraft_schema::ScalarType::DateTime | tablecraft_schema::ScalarType::Guid => {
+                    &["Required"]
+                }
+                _ => &["Required", "DefaultValue"],
+            },
         }
     }
 }
@@ -308,7 +318,7 @@ fn prepare(
     }
     let proof = family.capture(image, table, budget, cancelled)?;
     let current = proof.table();
-    let plan = Plan::capture(proof.image(), &current.schema, budget, cancelled)?;
+    let plan = Plan::for_target(proof.image(), &current.schema, target, budget, cancelled)?;
     let facts = facts(proof.image(), current, &plan, target, budget, cancelled)?;
     if column.len() > facts.maximum_name_units {
         return Err(CurrentFieldAdditionError::Capacity);
@@ -385,7 +395,20 @@ fn facts(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<CurrentFieldAdditionSource, CurrentFieldAdditionError> {
     check(budget, cancelled)?;
-    if matches!(target, Target::ShortText { .. }) {
+    if let Target::Typed(target) = target {
+        let field = target.field(plan.fixed_offset).map_err(creation_error)?;
+        if plan.active_count >= crate::limits::MAX_USER_COLUMNS
+            || field
+                .offset
+                .and_then(|offset| offset.checked_add(field.width))
+                .is_some_and(|end| end > usize::from(u16::MAX))
+        {
+            return Err(CurrentFieldAdditionError::Capacity);
+        }
+    }
+    if matches!(target, Target::ShortText { .. })
+        || matches!(target, Target::Typed(target) if target.scalar_type() == tablecraft_schema::ScalarType::Text)
+    {
         let order = crate::inspect_database_sort_order(&mut image.reader(), budget, cancelled)?;
         if order.general_family() != Some(crate::GeneralSortFamily::General2010) {
             return Err(CurrentFieldAdditionError::Source);
@@ -429,3 +452,10 @@ fn facts(
 
 #[cfg(test)]
 mod tests;
+
+fn creation_error(error: crate::CreateDatabaseError) -> CurrentFieldAdditionError {
+    match error {
+        crate::CreateDatabaseError::Inspect(error) => CurrentFieldAdditionError::Inspect(error),
+        _ => CurrentFieldAdditionError::Source,
+    }
+}

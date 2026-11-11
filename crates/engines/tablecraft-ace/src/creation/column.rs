@@ -47,7 +47,7 @@ pub struct CreateColumn<'a> {
 }
 
 #[derive(Clone, Copy)]
-pub(super) enum Declaration {
+pub(crate) enum Declaration {
     Fixed(ScalarType),
     ShortText { units: usize },
     ShortBinary { bytes: usize },
@@ -78,6 +78,26 @@ impl Declaration {
 }
 
 impl<'a> CreateColumn<'a> {
+    #[cfg(feature = "journal")]
+    pub(super) fn retained_addition(
+        name: &'a str,
+        declaration: Declaration,
+        unicode_compression: bool,
+        default_literal: Option<&'a Value>,
+    ) -> Self {
+        Self {
+            name,
+            description: None,
+            declaration,
+            required: Some(false),
+            allow_zero_length: matches!(declaration, Declaration::ShortText { .. }).then_some(true),
+            default_literal,
+            primary_key_name: None,
+            incrementing: false,
+            unicode_compression,
+        }
+    }
+
     /// Describe an ordinary fixed carrier; variable families require explicit
     /// native parameters through the separate declaration factories below.
     pub const fn new(name: &'a str, scalar: ScalarType) -> Self {

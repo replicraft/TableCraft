@@ -13,7 +13,7 @@ const CURRENCY_SCALE: u64 = 10_000;
 const CURRENCY_FRACTION_DIGITS: usize = 4;
 const QUOTE: u16 = b'"' as u16;
 
-pub(super) struct Literal {
+pub(crate) struct Literal {
     units: [u16; MAX_EXPRESSION_UNITS],
     length: usize,
 }

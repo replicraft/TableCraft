@@ -109,14 +109,26 @@ fn plan(
     let name_bytes = name_units
         .checked_mul(size_of::<u16>())
         .ok_or(Error::Capacity)?;
+    let payload_bytes = match target {
+        Target::Number => REQUIRED_BYTES + DEFAULT_BYTES,
+        Target::ShortText { .. } => 2 * REQUIRED_BYTES,
+        Target::Typed(target) => {
+            let literal = target
+                .literal(budget, cancelled)
+                .map_err(super::creation_error)?;
+            REQUIRED_BYTES
+                + if let Some(literal) = literal {
+                    PROPERTY_HEADER_BYTES + literal.payload_bytes()
+                } else if target.scalar_type() == tablecraft_schema::ScalarType::Text {
+                    REQUIRED_BYTES
+                } else {
+                    0
+                }
+        }
+    };
     let group_bytes = GROUP_PREFIX_BYTES
         .checked_add(name_bytes)
-        .and_then(|length| {
-            length.checked_add(match target {
-                Target::Number => REQUIRED_BYTES + DEFAULT_BYTES,
-                Target::ShortText { .. } => 2 * REQUIRED_BYTES,
-            })
-        })
+        .and_then(|length| length.checked_add(payload_bytes))
         .ok_or(Error::Capacity)?;
     let total_bytes = original_bytes
         .checked_add(growth)
@@ -225,15 +237,48 @@ pub(super) fn append(
     let name_frame = u32::from(plan.name_bytes) + size_of::<u32>() as u32 + size_of::<u16>() as u32;
     copy(&mut output, &name_frame.to_le_bytes(), budget, cancelled)?;
     append_name(&mut output, name, budget, cancelled)?;
-    let order = if plan.indices[0] < plan.indices[1] {
+    let order = if keys.len() == 1 || plan.indices[0] < plan.indices[1] {
         [0, 1]
     } else {
         [1, 0]
     };
-    for key in order {
+    for key in order.into_iter().filter(|key| *key < keys.len()) {
+        if let Target::Typed(target) = target
+            && keys[key] == "DefaultValue"
+        {
+            let literal = target
+                .literal(budget, cancelled)
+                .map_err(super::creation_error)?
+                .ok_or(Error::Preservation)?;
+            let length = literal.payload_bytes();
+            copy(
+                &mut output,
+                &((PROPERTY_HEADER_BYTES + length) as u16).to_le_bytes(),
+                budget,
+                cancelled,
+            )?;
+            copy(&mut output, &[DDL_FLAG, LONG_TEXT], budget, cancelled)?;
+            copy(
+                &mut output,
+                &plan.indices[key].to_le_bytes(),
+                budget,
+                cancelled,
+            )?;
+            copy(
+                &mut output,
+                &(length as u16).to_le_bytes(),
+                budget,
+                cancelled,
+            )?;
+            for unit in literal.units() {
+                copy(&mut output, &unit.to_le_bytes(), budget, cancelled)?;
+            }
+            continue;
+        }
         let (kind, value) = match (target, key) {
             (Target::Number, 0) => (LONG_TEXT, &[b'0', 0][..]),
             (Target::ShortText { .. }, 1) => (BOOLEAN, &[255][..]),
+            (Target::Typed(_), _) if keys[key] == "AllowZeroLength" => (BOOLEAN, &[255][..]),
             _ => (BOOLEAN, &[0][..]),
         };
         copy(

@@ -364,7 +364,7 @@ pub use table::CurrentFieldAdditionError;
 #[cfg(all(feature = "ace16-create", feature = "journal"))]
 pub use table::{
     CurrentFieldAdditionSource, NativeCurrentFieldAdditionCandidate,
-    NativeCurrentShortTextFieldAdditionCandidate,
+    NativeCurrentShortTextFieldAdditionCandidate, NativeRetainedTypedFieldAdditionCandidate,
 };
 #[cfg(all(feature = "ace16-create", feature = "journal"))]
 pub use table::{
@@ -416,4 +416,15 @@ pub use transaction::{
 #[cfg(all(feature = "journal", feature = "ace16-create"))]
 pub use transaction::{
     QualifiedFieldDropRecovery, RecoverableFieldDropPlan, qualify_native_field_drop_recovery,
+};
+
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub use creation::{RetainedFieldAdditionDefinition, RetainedFieldAdditionType};
+
+#[cfg(feature = "journal")]
+pub use transaction::RetainedTypedFieldAdditionIntentError;
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub use transaction::{
+    NativeRetainedTypedFieldAdditionIntent, QualifiedRetainedTypedFieldAdditionRecovery,
+    RecoverableRetainedTypedFieldAdditionPlan,
 };

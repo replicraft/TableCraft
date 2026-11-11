@@ -16,6 +16,8 @@ mod defaults;
 mod definition;
 #[cfg(feature = "journal")]
 pub(crate) mod existing_fields;
+#[cfg(feature = "journal")]
+mod field_addition;
 mod first_table;
 mod input;
 mod multiple;
@@ -92,3 +94,6 @@ mod blank_tests;
 
 #[cfg(test)]
 mod description_tests;
+
+#[cfg(feature = "journal")]
+pub use field_addition::{RetainedFieldAdditionDefinition, RetainedFieldAdditionType};

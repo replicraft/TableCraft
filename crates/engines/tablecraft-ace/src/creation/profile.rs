@@ -51,7 +51,7 @@ pub(super) const GENERAL_SORT: [u8; 4] = [9, 4, 0, 1];
 pub(super) const SYSTEM_NAMES: [&str; 3] = ["MSysObjects", "MSysRelationships", "MSysACEs"];
 
 #[derive(Clone, Copy)]
-pub(super) struct Field<'a> {
+pub(crate) struct Field<'a> {
     pub name: &'a str,
     pub kind: u8,
     pub offset: Option<usize>,

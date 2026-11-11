@@ -29,6 +29,8 @@ const FIXED_OFFSET: usize = 21;
 const WIDTH_OFFSET: usize = 23;
 const GENERAL_SORT_ORDER: [u8; 4] = [9, 4, 0, 1];
 const SORT_ORDER_OFFSET: usize = 11;
+const PRECISION_OFFSET: usize = 11;
+const SCALE_OFFSET: usize = 12;
 const NAME_LENGTH_BYTES: usize = size_of::<u16>();
 const COPY_BYTES: usize = 16 * 1024;
 
@@ -51,6 +53,36 @@ impl Plan {
     pub(super) fn capture(
         image: &NativeImage,
         schema: &TableSchema,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, Error> {
+        Self::capture_with_width(image, schema, size_of::<i32>(), budget, cancelled)
+    }
+
+    pub(super) fn for_target(
+        image: &NativeImage,
+        schema: &TableSchema,
+        target: Target,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, Error> {
+        let width = if let Target::Typed(target) = target {
+            let field = target.field(0).map_err(super::creation_error)?;
+            if field.offset.is_some() {
+                field.width
+            } else {
+                0
+            }
+        } else {
+            size_of::<i32>()
+        };
+        Self::capture_with_width(image, schema, width, budget, cancelled)
+    }
+
+    fn capture_with_width(
+        image: &NativeImage,
+        schema: &TableSchema,
+        fixed_width: usize,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, Error> {
@@ -142,7 +174,7 @@ impl Plan {
             }
         }
         if fixed_offset
-            .checked_add(size_of::<i32>())
+            .checked_add(fixed_width)
             .is_none_or(|end| end > u16::MAX as usize)
         {
             return Err(Error::Capacity);
@@ -211,6 +243,12 @@ impl Plan {
         descriptor.fill(0);
         descriptor[0] = match target {
             Target::Number => INT32,
+            Target::Typed(target) => {
+                target
+                    .field(self.fixed_offset)
+                    .map_err(super::creation_error)?
+                    .kind
+            }
             Target::ShortText { .. } => SHORT_TEXT,
         };
         descriptor[MAGIC_OFFSET..MAGIC_OFFSET + size_of::<u32>()]
@@ -219,6 +257,39 @@ impl Plan {
         put16(descriptor, VARIABLE_OFFSET, self.variable)?;
         put16(descriptor, STORED_ID_OFFSET, usize::from(self.column_id))?;
         match target {
+            Target::Typed(target) => {
+                let field = target
+                    .field(self.fixed_offset)
+                    .map_err(super::creation_error)?;
+                descriptor[FLAGS_OFFSET] = UPDATABLE_FLAG
+                    | if field.offset.is_some() {
+                        FIXED_FLAG
+                    } else {
+                        0
+                    };
+                put16(descriptor, FIXED_OFFSET, field.offset.unwrap_or(0))?;
+                put16(descriptor, WIDTH_OFFSET, field.width)?;
+                if field.kind == SHORT_TEXT {
+                    descriptor[SORT_ORDER_OFFSET..FLAGS_OFFSET]
+                        .copy_from_slice(&GENERAL_SORT_ORDER);
+                    descriptor[FLAGS_OFFSET + 1] = if field.unicode_compression {
+                        layout::UNICODE_COMPRESSION_FLAG
+                    } else {
+                        0
+                    };
+                }
+                if let Some(constraints) = field.decimal {
+                    descriptor[PRECISION_OFFSET] = constraints.precision();
+                    descriptor[SCALE_OFFSET] = constraints.scale();
+                }
+                if field.offset.is_none() {
+                    put16(
+                        root,
+                        layout::VARIABLE_SLOT_COUNT_OFFSET,
+                        self.variable_high_water + 1,
+                    )?;
+                }
+            }
             Target::Number => {
                 descriptor[FLAGS_OFFSET] = FIXED_FLAG | UPDATABLE_FLAG;
                 put16(descriptor, FIXED_OFFSET, self.fixed_offset)?;

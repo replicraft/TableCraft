@@ -243,7 +243,7 @@ mod query_expression_source;
 #[cfg(all(feature = "ace16-create", feature = "journal"))]
 pub use add_field::{
     CurrentFieldAdditionSource, NativeCurrentFieldAdditionCandidate,
-    NativeCurrentShortTextFieldAdditionCandidate,
+    NativeCurrentShortTextFieldAdditionCandidate, NativeRetainedTypedFieldAdditionCandidate,
 };
 #[cfg(all(feature = "ace16-create", feature = "journal"))]
 pub use drop_field::{
