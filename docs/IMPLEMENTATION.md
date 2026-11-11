@@ -1,5 +1,34 @@
 # Implementation status
 
+## Stored collection member queries in SQL View — 11 November 2026
+
+Normal SQL Run now exposes explicitly named attachment metadata and existing
+stored collection members through the shared runtime source. Direct and inspected
+commands use the same adapter capability. Scalar result cells preserve child
+alignment, NULL/empty Text and empty-child extension. Query results retain no
+native parent-row identity; their menus and forged targets cannot enable table
+edits or native collection inspection. Refused bare projections preserve the last
+successful result. Explicit FileData remains encoded Binary with no decoder.
+
+Collection metadata selects attachment and history capabilities independently.
+An unsupported ACE 2010 attachment declaration no longer disables unrelated
+scalar reads or qualified multivalue metadata. Declaration discovery retains
+shared catalog/mapping/shape/reference checks; selected member families still
+qualify their own declarations. Public complex reads and unsupported attachment
+payload readers remain closed.
+
+The [workflow record](../tests/results/queries/gui-attachment-member-workflows-2026-11-11.json)
+retains causal desktop/runtime failures, the profile regression and intermediate
+test repairs. Final gates pass 88 native complex-reader functions, 39 adapter
+checks, six focused runtime collection tests, 20 desktop query workflows and
+75 MCP unit/stdio checks. Across the full runtime and focused repair runs, 360
+distinct functions pass and one remains ignored. Strict affected-package lint,
+minimal runtime, rustdoc and repository guards pass. No native windows were opened.
+
+The four bare-attachment wildcard gaps remain open. Structured child-recordset
+results and query-owned read-only contents handles are separate work; current
+scalar member projections do not establish native Access recordset parity.
+
 ## Retained typed saved-field addition — 10 November 2026
 
 The normal saved-field gallery and Design properties now stage all twelve

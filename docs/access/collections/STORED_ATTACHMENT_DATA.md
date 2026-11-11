@@ -7,6 +7,10 @@ Explicit native `query run --collections` exposes the actual attachment
 tablecraft query run 'SELECT ID, Files.FileName AS Name, Files.FileData AS Data FROM Collections' --database copy.accdb --collections
 ```
 
+Application SQL View uses the same stored-member contract on explicit Run,
+through the [runtime source](../../application/RUNTIME.md#stored-collection-members-in-read-queries).
+Its results remain read-only and do not acquire native parent-row identities.
+
 The default result is the exact stored encoded envelope. It may contain a
 compressed wrapper and is generally different from the original file. CLI TSV
 prints those bytes as `0x` hexadecimal. No decoder, file extraction, URL access,

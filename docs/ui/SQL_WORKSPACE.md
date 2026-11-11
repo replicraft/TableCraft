@@ -307,3 +307,17 @@ unchanged. These checks do not establish native Access equivalence.
 No retained Access screenshot shows SQL View or its result-status messages.
 Their placement is a TableCraft adaptation. See the [presentation record](PRESENTATION_PREVIEW.md)
 for offscreen review; native window checks remain suspended at the user's request.
+
+## Stored collection member results
+
+Normal SQL Run can read explicitly named attachment metadata members through the
+shared [runtime collection source](../application/RUNTIME.md#stored-collection-members-in-read-queries),
+for example `SELECT ID, Files.FileName, Files.FileFlags FROM Documents`.
+The result remains a read-only scalar datasheet. It retains NULL/empty Text
+distinctions and child-row alignment, without inventing native row handles.
+Query-cell menus do not expose table cell editing or collection contents actions.
+
+Bare attachment projections remain unavailable; failures show a diagnostic and
+retain the prior successful result. Explicit FileData returns stored encoded
+Binary, not decoded file contents. These are current TableCraft source contracts,
+not native Access query-result recordset parity.

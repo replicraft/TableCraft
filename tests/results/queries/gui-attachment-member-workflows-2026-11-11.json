@@ -1,0 +1,244 @@
+{
+  "date": "2026-11-11",
+  "source_commit": "30eddb3ec4306cfb440f8787a0dee205232556bf",
+  "source_tree": "0446220eb9e92e411aee8ce99ce5a76c13e4bfca",
+  "platform": "macOS 14.7.2 ARM64",
+  "native_windows_opened": false,
+  "baseline": [
+    {
+      "log": {
+        "path": ".cache/gui-attachment-members-desktop-baseline.log",
+        "sha256": "d48fb0202735886ba5068dc74fdfeb154b5e52cd267f87992f268dc31fae9a6d"
+      },
+      "outcome": "Expected SQL Run failure: query name has no binding after successful scalar control"
+    },
+    {
+      "log": {
+        "path": ".cache/gui-attachment-members-runtime-baseline.log",
+        "sha256": "9cff2822db3c51bed66fafc315fa32a94b0c6c9ccdb148f3bd9aa40630f2103f"
+      },
+      "outcome": "Expected direct and inspected Query(UnknownName), source bytes unchanged"
+    },
+    {
+      "log": {
+        "path": ".cache/gui-attachment-members-profile-baseline.log",
+        "sha256": "830a40414e681d94c42523b5d670e09d2eb9259f286ef56d2deb730ffde4faab"
+      },
+      "outcome": "Two expected Unsupported regressions after positive ACE2010 header and native multivalue controls; corrupt mapping control passes"
+    }
+  ],
+  "batches": [
+    {
+      "receipt": ".cache/gui-attachment-members-results.json",
+      "results": [
+        {
+          "job": "profile-baseline",
+          "returncode": 101,
+          "seconds": 3.34,
+          "log": ".cache/gui-attachment-members-profile-baseline.log",
+          "log_sha256": "830a40414e681d94c42523b5d670e09d2eb9259f286ef56d2deb730ffde4faab"
+        },
+        {
+          "job": "runtime",
+          "returncode": 101,
+          "seconds": 14.47,
+          "log": ".cache/gui-attachment-members-runtime.log",
+          "log_sha256": "bdd6485b81667168775d43d2da9873503307769ea80bf5f52352ad898e55f3dd"
+        },
+        {
+          "job": "desktop",
+          "returncode": 101,
+          "seconds": 9.99,
+          "log": ".cache/gui-attachment-members-desktop.log",
+          "log_sha256": "d6bbb3c1ea493e7a3b27421fbdabd3b3e12599f71adb16010cad7186723d0b0d"
+        }
+      ]
+    },
+    {
+      "receipt": ".cache/gui-attachment-members-final-results.json",
+      "results": [
+        {
+          "job": "access",
+          "returncode": 101,
+          "seconds": 7.32,
+          "log": ".cache/gui-attachment-members-final-access.log",
+          "log_sha256": "80dd7be0e589609cce68cf5948269fcb6526bd8816ed3101e036d2bcfbf6e530"
+        },
+        {
+          "job": "runtime",
+          "returncode": 0,
+          "seconds": 6.84,
+          "log": ".cache/gui-attachment-members-final-runtime.log",
+          "log_sha256": "a20a0c020a3c69058bdfebed817c3715df47e0206a4becd5699062ced57b30b0"
+        },
+        {
+          "job": "desktop",
+          "returncode": 0,
+          "seconds": 13.66,
+          "log": ".cache/gui-attachment-members-final-desktop.log",
+          "log_sha256": "c5bdee178202cf22ef8738c95100342b639f491b55784dacea7493a351b82183"
+        },
+        {
+          "job": "mcp",
+          "returncode": 0,
+          "seconds": 17.42,
+          "log": ".cache/gui-attachment-members-final-mcp.log",
+          "log_sha256": "f5d2297a68ff7f6ee3baa00ad090e53810e59b990721580ec1270aa8972bed2d"
+        },
+        {
+          "job": "lint",
+          "returncode": 0,
+          "seconds": 27.09,
+          "log": ".cache/gui-attachment-members-final-lint.log",
+          "log_sha256": "5b51844bc8b0bb3c04870a3f07047da24202a86f92423500124a33239478c9ad"
+        },
+        {
+          "job": "minimal",
+          "returncode": 0,
+          "seconds": 4.03,
+          "log": ".cache/gui-attachment-members-final-minimal.log",
+          "log_sha256": "07136d05516aac9fc79b56e9ed750fbc50437f1a51cbaaa20b111b1b121a79b6"
+        }
+      ]
+    },
+    {
+      "receipt": ".cache/gui-attachment-members-closing-results.json",
+      "results": [
+        {
+          "job": "native",
+          "returncode": 0,
+          "seconds": 24.04,
+          "log": ".cache/gui-attachment-members-closing-native.log",
+          "log_sha256": "aa84b990c328e8eb909952b35766a4c39599208d30b91a98e1dff2f37c46363c"
+        },
+        {
+          "job": "access",
+          "returncode": 101,
+          "seconds": 23.76,
+          "log": ".cache/gui-attachment-members-closing-access.log",
+          "log_sha256": "dd4dcfcb4aafe99658ebdf8923bd0b737a7142c54b0bc6623f1e6018072bada8"
+        },
+        {
+          "job": "runtime",
+          "returncode": 0,
+          "seconds": 22.25,
+          "log": ".cache/gui-attachment-members-closing-runtime.log",
+          "log_sha256": "2d3ce27f07ba2215952fa104b96e3c791b2beada0f018c572e80dbd5694da397"
+        },
+        {
+          "job": "desktop",
+          "returncode": 0,
+          "seconds": 25.67,
+          "log": ".cache/gui-attachment-members-closing-desktop.log",
+          "log_sha256": "930b301dae5a2191db5027dd122b64afe1eb0ba77a299ed71e59c33582c52d57"
+        },
+        {
+          "job": "mcp",
+          "returncode": 0,
+          "seconds": 23.6,
+          "log": ".cache/gui-attachment-members-closing-mcp.log",
+          "log_sha256": "7c1a7c4428e38da5f2d67eb3b83e4a798eddac4dc187854a5d92f65f645d1cac"
+        },
+        {
+          "job": "lint",
+          "returncode": 0,
+          "seconds": 66.06,
+          "log": ".cache/gui-attachment-members-closing-lint.log",
+          "log_sha256": "cbfb0fad2801df6e81e3017dbe6737330a9f675cb7aadb8de9c6033b8b5277b9"
+        },
+        {
+          "job": "minimal",
+          "returncode": 0,
+          "seconds": 3.42,
+          "log": ".cache/gui-attachment-members-closing-minimal.log",
+          "log_sha256": "4ad086d7db4ee4fef794d069c827abf6a74bd33101597a27b891203931731cc1"
+        }
+      ]
+    },
+    {
+      "receipt": ".cache/gui-attachment-members-repair-results.json",
+      "results": [
+        {
+          "job": "access",
+          "returncode": 101,
+          "seconds": 2.78,
+          "log": ".cache/gui-attachment-members-repair-access.log",
+          "log_sha256": "9d3585f92da5a795d5bbffc5afdf6194e54ad9f2b22b454e9773c22814117512"
+        },
+        {
+          "job": "docs",
+          "returncode": 0,
+          "seconds": 16.98,
+          "log": ".cache/gui-attachment-members-repair-docs.log",
+          "log_sha256": "d52c45d4dcb1c6e9b57fa7009442e75e69dd0e1162ddd7d9fe83f512c96ce3f5"
+        }
+      ]
+    }
+  ],
+  "final_adapter": {
+    "log": {
+      "path": ".cache/gui-attachment-members-adapter-final.log",
+      "sha256": "44ac4b3f8f27b6bd53ef87a6b3b029877ebdfc295aa22995cc63fef81094a17d"
+    },
+    "passed": 39,
+    "targets": [
+      "attachment_data_source",
+      "collection_collation",
+      "collection_profiles",
+      "multivalue_source",
+      "version_history_source"
+    ]
+  },
+  "final_adapter_lint": {
+    "path": ".cache/gui-attachment-members-adapter-final-lint.log",
+    "sha256": "3bbacc4f6be7192bac04e55065c3f2bf460891dbd15a29a730ea9ebff2ccb361"
+  },
+  "verified_counts": {
+    "native_complex_reader_functions": 88,
+    "runtime_distinct_functions_across_full_and_focused_batches": 360,
+    "runtime_ignored": [
+      "tests::editing::genuine_jet4::genuine_jet4_reviewed_cell_save_matches_independent_whole_image"
+    ],
+    "runtime_focused_collection_functions": 6,
+    "desktop_query_workflows": 20,
+    "mcp_unit_and_stdio": 75
+  },
+  "scope": [
+    "Direct and inspected runtime reads expose existing named attachment metadata and stored collection members.",
+    "Actual SQL Run preserves parent/child alignment, NULL versus empty Text and empty-child NULL extension.",
+    "Query results remain source_revision None; cell menus and forged targets cannot grant native edit/contents authority.",
+    "Bare attachment/list scalar results refuse; prior successful results survive a failed Run.",
+    "Explicit FileData stays stored encoded Binary, including opaque empty wrappers; no decoder or active content execution.",
+    "Native/query exhaustion, parameter conversion, stale inspected identity and successful retry remain explicit.",
+    "Attachment and history declaration discovery select distinct native profile capabilities.",
+    "Private declaration resolution preserves shared mapping/shape/reference checks without admitting unsupported member-family values.",
+    "Public complex reads and ACE2010 attachment readers remain strict; qualified scalar/multivalue reads survive unavailable attachment metadata."
+  ],
+  "repairs": [
+    "Typed unsupported errors replace stale UnknownName expectations after member binding becomes available.",
+    "Expected UI refusals use a terminal wait that does not assume success.",
+    "Pending-parameter tests use a distinct valid row quota and separately check the positive-row invariant.",
+    "Attachment cache tests explicitly select lower quotas; default admission stays at the current 256 MiB bound.",
+    "Cumulative native-byte exhaustion remains visible across decoder policy changes."
+  ],
+  "remaining": [
+    "Four corpus bare-attachment wildcard query gaps remain open.",
+    "Structured parent-associated child-recordset output and query-owned read-only contents handles are not implemented.",
+    "These controls are not native Microsoft Access SQL or Windows UI comparisons."
+  ],
+  "guards": [
+    {
+      "path": ".cache/gui-attachment-members-format.log",
+      "sha256": "d9c292d026a4762f73b79e6d753dfea56004ad68836d5f682286affc889a9140"
+    },
+    {
+      "path": ".cache/gui-attachment-members-layout.log",
+      "sha256": "e4495a784bb5b2430d358e84c0b08910bbade659dc50ff7df49d8a3236451954"
+    },
+    {
+      "path": ".cache/gui-attachment-members-boundaries.log",
+      "sha256": "0550e0f35860c6b24c4aa1e52b57bcd7b8a01555414ce715a2168995381230b0"
+    }
+  ],
+  "pushed": false
+}

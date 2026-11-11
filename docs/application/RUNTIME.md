@@ -24,8 +24,8 @@ pool. Buffered failures publish no partial result.
 
 Hosts can select explicit positive quotas through `QueryPoolLimits::new` and
 `QueryRunOptions::with_limits`. Native/query pools carry row allowances;
-comparison/presentation pools do not. Requests are not silently clamped to former
-4 GiB/10-million-row or smaller query maxima. Budgets remain cumulative accounting,
+comparison/presentation pools do not. Valid requests retain their exact selected
+allowances. Budgets remain cumulative accounting,
 not a resident-memory guarantee. Cancellation, source/format validation, checked
 arithmetic and fallible allocation remain required. Batch limits do not become
 database row-count limits, and there is no automatic retry after exhaustion.
@@ -40,6 +40,31 @@ retry or replace a source. Unclassified providers can still return the legacy
 opaque source failure. Comparison/evaluator limits without pool provenance keep
 their original diagnosis rather than a guessed pool. Rejected configurations
 perform no I/O.
+
+## Stored collection members in read queries
+
+Direct and inspected read-query commands enable the existing collection-aware
+native source. Explicit attachment metadata members such as `Files.FileName` and
+`Files.FileFlags`, qualified multivalue `.Value` members and stored-history
+members use the same checked adapter contracts as CLI collection queries.
+Binding remains metadata-only; execution retains complete child snapshots and
+separate native/query/comparison/presentation budgets.
+
+Named members produce ordinary scalar result cells. NULL, present empty Text and
+an empty parent's NULL extension retain their existing distinctions and parent/child
+alignment. Results retain `source_revision: None`: a query row ordinal is never a
+native parent identity or permission to edit/open a collection. Bare attachment
+and bare multivalue results remain refused by scalar publication; a failed Run
+does not replace an earlier successful result.
+
+Explicit `FileData` references return exact stored Binary envelopes, including
+opaque unknown/empty wrappers. No attachment decoder, file extraction or content
+execution is enabled. See [stored FileData](../access/collections/STORED_ATTACHMENT_DATA.md).
+Collection metadata selects attachment and history inspectors from their distinct
+qualified native profiles. Qualified ACE 2010 multivalue sources retain their
+readers; an unsupported attachment declaration does not prevent selecting
+unrelated scalar fields. Attachment members remain unavailable on that profile.
+Errors from selected inspectors, including corrupt mappings, still propagate.
 
 ## Fresh blank database creation
 
