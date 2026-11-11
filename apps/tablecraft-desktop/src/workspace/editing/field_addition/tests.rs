@@ -10,6 +10,7 @@ mod populated_text_inserting;
 mod repeated;
 mod repeated_materialization;
 mod retained;
+mod typed;
 use super::*;
 use crate::workspace::test_support::{self, finish_reads};
 use egui::{Key, accesskit::Role};
