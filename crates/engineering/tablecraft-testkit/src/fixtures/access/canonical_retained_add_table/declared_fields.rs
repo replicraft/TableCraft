@@ -1,5 +1,7 @@
 //! Literal unadorned Currency descriptor insertion; no property snapshot is authored.
-use crate::fixtures::access::{put16, put32, raw_catalog_properties};
+use crate::fixtures::access::{
+    packed_record::append_record, put16, put32, raw_catalog_properties, raw_record_update,
+};
 
 const PAGE: usize = 4096;
 
@@ -139,4 +141,49 @@ fn with_body(before: &[u8], catalog_root: usize, body: &[u8]) -> Vec<u8> {
     // NO_CLONE: The independent mutated SOURCE must coexist with the original
     // input; this raw fixture owns its complete replacement separately.
     raw_catalog_properties::append(before, before.to_vec(), catalog_root, body, candidate)
+}
+
+/// Append a fresh fully omitted row to the exact sparse Score/Currency schema.
+/// Both live fields lack defaults; the retired Id payload remains zero, while
+/// LAST, all original records, catalog properties and every index byte stay intact.
+pub fn append_omitted(before: &[u8], definition: u32) -> Vec<u8> {
+    let base = definition as usize * PAGE;
+    assert_eq!(&before[base + 41..base + 47], &[3, 0, 0, 0, 2, 0]);
+    assert_eq!(&before[base + 47..base + 55], &[0; 8]);
+    for (at, kind, number, offset, width) in
+        [(63, 4, 1_u16, 4_u16, 4_u16), (88, 5, 2_u16, 8_u16, 8_u16)]
+    {
+        assert_eq!(before[base + at], kind);
+        assert_eq!(&before[base + at + 5..base + at + 7], &number.to_le_bytes());
+        assert_eq!(&before[base + at + 15..base + at + 17], &[3, 0]);
+        assert_eq!(
+            &before[base + at + 21..base + at + 23],
+            &offset.to_le_bytes()
+        );
+        assert_eq!(
+            &before[base + at + 23..base + at + 25],
+            &width.to_le_bytes()
+        );
+    }
+    let data = (definition as usize + 1) * PAGE;
+    assert_eq!(&before[data + 4..data + 8], &definition.to_le_bytes());
+    // Literal count3 + retired4/Score4/Currency8 payload + one NULL mask.
+    let row = [3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    let mut after = before.to_vec();
+    append_record(&mut after[data..data + PAGE], &row);
+    let live = u32::from_le_bytes(before[base + 16..base + 20].try_into().unwrap());
+    put32(&mut after, base + 16, live.checked_add(1).unwrap());
+    after
+}
+
+/// Edit the actual sparse declared Currency, retaining unrelated historical bytes.
+pub fn update_currency(before: &[u8], definition: u32, root: usize, value: Option<i64>) -> Vec<u8> {
+    let base = definition as usize * PAGE;
+    assert_eq!(&before[base + 41..base + 47], &[3, 0, 0, 0, 2, 0]);
+    assert_eq!(&before[base + 47..base + 55], &[0; 8]);
+    assert_eq!(before[base + 63], 4);
+    assert_eq!(word(before, base + 63 + 5), 1);
+    assert_eq!(word(before, base + 63 + 21), 4);
+    assert_eq!(word(before, base + 63 + 23), 4);
+    raw_record_update::historical_currency(before, definition + 1, root, base + 88, value)
 }

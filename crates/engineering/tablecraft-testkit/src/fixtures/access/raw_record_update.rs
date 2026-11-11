@@ -1,5 +1,5 @@
 //! Independent stored-field replacement, preserving sibling raw spans and padding.
-use super::raw_record_placement as placement;
+use super::{put16, raw_forwarding_chain, raw_record_placement as placement};
 
 fn word(bytes: &[u8], at: usize) -> usize {
     usize::from(u16::from_le_bytes(bytes[at..at + 2].try_into().unwrap()))
@@ -98,4 +98,43 @@ pub(in crate::fixtures::access) fn number(
         row[mask + column / 8] &= !(1 << (column % 8));
     }
     placement::place(before, data_page, root, &row)
+}
+
+/// Materialize the known third Currency after a complete two-field fixed prefix.
+/// Callers separately validate their active declarations; this literal row owner
+/// preserves old payload/mask bits and ignores no variable or opaque row spans.
+pub(in crate::fixtures::access) fn historical_currency(
+    before: &[u8],
+    data_page: u32,
+    root: usize,
+    field: usize,
+    value: Option<i64>,
+) -> Vec<u8> {
+    assert_eq!(before[field], 5);
+    assert_eq!(word(before, field + 5), 2);
+    assert_eq!(&before[field + 15..field + 17], &[3, 0]);
+    assert_eq!(word(before, field + 21), 8);
+    assert_eq!(word(before, field + 23), 8);
+    let old = raw_forwarding_chain::record(before, data_page, root);
+    let count = word(old, 0);
+    assert!(matches!(count, 2 | 3));
+    assert_eq!(old.len(), if count == 2 { 11 } else { 19 });
+    let mask = old[old.len() - 1];
+    let present = count == 3 && mask & 4 != 0;
+    if !present && value.is_none() {
+        return before.to_vec();
+    }
+    if present && value.is_some_and(|value| old[10..18] == value.to_le_bytes()) {
+        return before.to_vec();
+    }
+    let mut row = old[..old.len() - 1].to_vec();
+    if count == 2 {
+        row.resize(18, 0);
+        put16(&mut row, 0, 3);
+    }
+    if let Some(value) = value {
+        row[10..18].copy_from_slice(&value.to_le_bytes());
+    }
+    row.push((mask & !4) | if value.is_some() { 4 } else { 0 });
+    raw_forwarding_chain::place_terminal(before, data_page, root, &row)
 }

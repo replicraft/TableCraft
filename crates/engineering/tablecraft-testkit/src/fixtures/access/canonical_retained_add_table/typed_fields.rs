@@ -1,7 +1,7 @@
 //! Literal typed saved-field ADD; no engine declaration or serialization imports.
 use crate::fixtures::access::{
     generated_record_insert::placement::{self, Pages},
-    put16, put32, raw_catalog_properties, raw_forwarding_chain,
+    put16, put32, raw_catalog_properties, raw_forwarding_chain, raw_record_update,
 };
 
 const PAGE: usize = 4096;
@@ -370,28 +370,7 @@ pub fn update_currency(before: &[u8], definition: u32, root: usize, value: Optio
     assert_eq!(word(before, field + 5), 2);
     assert_eq!(word(before, field + 21), 8);
     assert_eq!(word(before, field + 23), 8);
-    let old = raw_forwarding_chain::record(before, definition + 1, root);
-    let count = word(old, 0);
-    assert!(matches!(count, 2 | 3));
-    assert_eq!(old.len(), if count == 2 { 11 } else { 19 });
-    let mask = old[old.len() - 1];
-    let present = count == 3 && mask & 4 != 0;
-    if !present && value.is_none() {
-        return before.to_vec();
-    }
-    if present && value.is_some_and(|value| old[10..18] == value.to_le_bytes()) {
-        return before.to_vec();
-    }
-    let mut row = old[..old.len() - 1].to_vec();
-    if count == 2 {
-        row.resize(18, 0);
-        put16(&mut row, 0, 3);
-    }
-    if let Some(value) = value {
-        row[10..18].copy_from_slice(&value.to_le_bytes());
-    }
-    row.push((mask & !4) | if value.is_some() { 4 } else { 0 });
-    raw_forwarding_chain::place_terminal(before, definition + 1, root, &row)
+    raw_record_update::historical_currency(before, definition + 1, root, field, value)
 }
 
 /// Independent Boolean edit after ADD: absence is false, true materializes the bit.
