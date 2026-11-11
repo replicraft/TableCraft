@@ -66,11 +66,22 @@ pub(in crate::workspace) fn review_and_save(
         .click_accesskit();
     harness.run_steps(1);
     finish_reads(harness);
-    assert_eq!(std::fs::read(path).unwrap(), before);
+    assert_image(path, before);
     assert!(!journal_path(path).exists());
-    harness
-        .get_by_role_and_label(Role::Button, "Apply to original file")
-        .click_accesskit();
+    let apply = harness.query_by_role_and_label(Role::Button, "Apply to original file");
+    let Some(apply) = apply else {
+        let messages = harness
+            .query_all_by_role(Role::Label)
+            .filter_map(|node| node.value())
+            .collect::<Vec<_>>()
+            .into_iter()
+            .rev()
+            .take(8)
+            .map(|message| message.chars().take(200).collect::<String>())
+            .collect::<Vec<_>>();
+        panic!("cell review did not authorize Apply; final visible messages: {messages:?}");
+    };
+    apply.click_accesskit();
     harness.run_steps(1);
     let report = finish_save(harness);
     let SaveOutcome::Saved { receipt } = report.outcome else {
@@ -78,7 +89,7 @@ pub(in crate::workspace) fn review_and_save(
     };
     assert_eq!(receipt.changed_rows, Some(1));
     assert_eq!(receipt.matched_rows, Some(1));
-    assert_eq!(std::fs::read(path).unwrap(), expected);
+    assert_image(path, expected);
     assert!(!journal_path(path).exists());
     harness
         .get_by_role_and_label(Role::Button, "Close")
@@ -87,4 +98,19 @@ pub(in crate::workspace) fn review_and_save(
     finish_reads(harness);
     assert!(!harness.state().editing.has_save());
     assert!(!harness.state().state.edit_dialog_open());
+}
+
+fn assert_image(path: &Path, expected: &[u8]) {
+    let actual = std::fs::read(path).unwrap();
+    let difference = actual
+        .iter()
+        .zip(expected)
+        .position(|(left, right)| left != right);
+    assert!(
+        actual.len() == expected.len() && difference.is_none(),
+        "complete cell-save image lengths {} / {}, first mismatch {:?}",
+        actual.len(),
+        expected.len(),
+        difference
+    );
 }
