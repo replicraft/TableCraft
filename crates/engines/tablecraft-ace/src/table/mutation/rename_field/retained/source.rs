@@ -28,9 +28,16 @@ const FREE_OFFSET: usize = 2;
 const DEFINITION_HEADER_BYTES: usize = 8;
 const REFERENCE_OFFSET: usize = size_of::<u32>();
 
+#[derive(Clone, Copy, PartialEq, Eq)]
+pub(super) enum Language {
+    LongText,
+    Typed,
+}
+
 pub(super) struct Source {
     pub image: NativeImage,
     pub family: current_schema::Family,
+    pub language: Language,
     pub observed: Observed,
     pub maximum_name_units: usize,
 }
@@ -45,11 +52,18 @@ impl Source {
     ) -> Result<Self, Error> {
         let proof = current_schema::Source::capture(image, table, budget, cancelled)
             .map_err(source_error)?;
-        let (observed, maximum_name_units) =
-            facts(proof.image(), proof.table(), field, budget, cancelled)?;
+        let (observed, maximum_name_units) = facts(
+            proof.image(),
+            proof.table(),
+            field,
+            Language::LongText,
+            budget,
+            cancelled,
+        )?;
         Ok(Self {
             image: proof.into_image(),
             family: current_schema::Family::Current,
+            language: Language::LongText,
             observed,
             maximum_name_units,
         })
@@ -59,19 +73,27 @@ impl Source {
         image: NativeImage,
         table: &str,
         field: &str,
+        language: Language,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<(Self, current_schema::Table), Error> {
         let proof = current_schema::Family::Retained
             .capture(image, table, budget, cancelled)
             .map_err(source_error)?;
-        let (observed, maximum_name_units) =
-            facts(proof.image(), proof.table(), field, budget, cancelled)?;
+        let (observed, maximum_name_units) = facts(
+            proof.image(),
+            proof.table(),
+            field,
+            language,
+            budget,
+            cancelled,
+        )?;
         let (image, table) = proof.into_parts();
         Ok((
             Self {
                 image,
                 family: current_schema::Family::Retained,
+                language,
                 observed,
                 maximum_name_units,
             },
@@ -88,26 +110,35 @@ pub(super) fn observe(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(Observed, usize), Error> {
     let current = current_schema::observe(image, table, budget, cancelled).map_err(source_error)?;
-    facts(image, &current, field, budget, cancelled)
+    facts(
+        image,
+        &current,
+        field,
+        Language::LongText,
+        budget,
+        cancelled,
+    )
 }
 
 pub(super) fn observe_retained_schema(
     image: &NativeImage,
     table: &str,
     field: &str,
+    language: Language,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(Observed, usize), Error> {
     let current = current_schema::Family::Retained
         .observe(image, table, budget, cancelled)
         .map_err(source_error)?;
-    facts(image, &current, field, budget, cancelled)
+    facts(image, &current, field, language, budget, cancelled)
 }
 
 fn facts(
     image: &NativeImage,
     current: &current_schema::Table,
     field: &str,
+    language: Language,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(Observed, usize), Error> {
@@ -119,13 +150,22 @@ fn facts(
             budget,
             cancelled,
         )?,
-        current_schema::Family::Retained => Observed::capture_retained_schema_rename(
-            image,
-            current.schema.name(),
-            field,
-            budget,
-            cancelled,
-        )?,
+        current_schema::Family::Retained => match language {
+            Language::LongText => Observed::capture_retained_schema_rename(
+                image,
+                current.schema.name(),
+                field,
+                budget,
+                cancelled,
+            )?,
+            Language::Typed => Observed::capture_retained_typed_rename(
+                image,
+                current.schema.name(),
+                field,
+                budget,
+                cancelled,
+            )?,
+        },
     };
     let storage_matches = match (&current.user_storage, observed.property_reference) {
         (current_schema::UserStorage::Single { reference }, Some(actual)) => *reference == actual,

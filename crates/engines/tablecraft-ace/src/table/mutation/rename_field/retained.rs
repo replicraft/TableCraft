@@ -14,6 +14,7 @@ use crate::{
     header::check,
     table::mutation::{catalog_property, current_schema::Family, normal_fitted::binding},
 };
+use source::Language;
 use tablecraft_core::limits::ResourceBudget;
 
 /// Sealed fitting rename over checked current storage and retained snapshots.
@@ -27,7 +28,12 @@ pub struct NativeRetainedFieldRenameCandidate {
 impl NativeRetainedFieldRenameCandidate {
     /// Whether this source belongs to retained-schema rename, distinct from TCFR5.
     pub fn is_retained_schema(&self) -> bool {
-        self.source.family == Family::Retained
+        self.source.family == Family::Retained && self.source.language == Language::LongText
+    }
+
+    /// Whether this candidate belongs to the distinct typed retained action.
+    pub fn is_retained_typed(&self) -> bool {
+        self.source.family == Family::Retained && self.source.language == Language::Typed
     }
 
     /// Complete source-qualified original, including old property snapshots.
@@ -109,6 +115,7 @@ impl NativeImage {
             column,
             new_name,
             Family::Current,
+            Language::LongText,
             budget,
             cancelled,
         )
@@ -122,8 +129,14 @@ impl NativeImage {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<FittedFieldRenameSource, Error> {
-        let (observed, maximum_name_units) =
-            source::observe_retained_schema(self, table, column, budget, cancelled)?;
+        let (observed, maximum_name_units) = source::observe_retained_schema(
+            self,
+            table,
+            column,
+            Language::LongText,
+            budget,
+            cancelled,
+        )?;
         Ok(FittedFieldRenameSource {
             identity: NativeFieldRenameIdentity::from_observed(observed.identity),
             maximum_name_units,
@@ -146,6 +159,70 @@ impl NativeImage {
             column,
             new_name,
             Family::Retained,
+            Language::LongText,
+            budget,
+            cancelled,
+        )
+    }
+
+    /// Select the typed language from native declarations and exact old-language
+    /// property shape before full source admission. This grants no write authority.
+    pub fn select_native_retained_typed_field_rename_source(
+        &self,
+        table: &str,
+        column: &str,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<bool, Error> {
+        if !self.has_retained_table_source(table, budget, cancelled)? {
+            return Ok(false);
+        }
+        Ok(
+            crate::table::mutation::saved_field::retained_rename_uses_typed(
+                self, table, column, budget, cancelled,
+            )?,
+        )
+    }
+
+    /// Inspect the complete retained schema and actual typed target/group binding.
+    pub fn inspect_retained_typed_field_rename_source(
+        &self,
+        table: &str,
+        column: &str,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<FittedFieldRenameSource, Error> {
+        let (observed, maximum_name_units) = source::observe_retained_schema(
+            self,
+            table,
+            column,
+            Language::Typed,
+            budget,
+            cancelled,
+        )?;
+        Ok(FittedFieldRenameSource {
+            identity: NativeFieldRenameIdentity::from_observed(observed.identity),
+            maximum_name_units,
+        })
+    }
+
+    /// Rename one qualified scalar without changing native storage or evaluating
+    /// defaults. Existing programs, dependencies and indexes remain source guards.
+    pub fn prepare_retained_typed_field_rename(
+        self,
+        table: &str,
+        column: &str,
+        new_name: &str,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<NativeRetainedFieldRenameCandidate, Error> {
+        prepare(
+            self,
+            table,
+            column,
+            new_name,
+            Family::Retained,
+            Language::Typed,
             budget,
             cancelled,
         )
@@ -158,6 +235,7 @@ fn prepare(
     column: &str,
     new_name: &str,
     family: Family,
+    language: Language,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<NativeRetainedFieldRenameCandidate, Error> {
@@ -174,8 +252,9 @@ fn prepare(
             None,
         ),
         Family::Retained => {
-            let (source, table) =
-                source::Source::capture_retained_schema(image, table, column, budget, cancelled)?;
+            let (source, table) = source::Source::capture_retained_schema(
+                image, table, column, language, budget, cancelled,
+            )?;
             (source, Some(table))
         }
     };

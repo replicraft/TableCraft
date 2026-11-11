@@ -1,5 +1,8 @@
 //! Independent name frames, exact metadata append and immutable record proof.
-use super::{Error, source::Source};
+use super::{
+    Error,
+    source::{Language, Source},
+};
 use crate::{
     PropertyGroupKind,
     format::{
@@ -15,6 +18,7 @@ use crate::{
     table::mutation::{
         catalog_property::{RepeatedChange, retained_snapshot::Snapshot},
         current_schema,
+        saved_field::Observed,
     },
 };
 use std::io::Cursor;
@@ -220,24 +224,29 @@ fn metadata(
         }
     }
     let selected = match source.family {
-        current_schema::Family::Current => {
-            crate::table::mutation::saved_field::Observed::capture_current_rename(
+        current_schema::Family::Current => Observed::capture_current_rename(
+            &replacement,
+            original.schema.name(),
+            name,
+            budget,
+            cancelled,
+        )?,
+        current_schema::Family::Retained => match source.language {
+            Language::LongText => Observed::capture_retained_schema_rename(
                 &replacement,
                 original.schema.name(),
                 name,
                 budget,
                 cancelled,
-            )?
-        }
-        current_schema::Family::Retained => {
-            crate::table::mutation::saved_field::Observed::capture_retained_schema_rename(
+            )?,
+            Language::Typed => Observed::capture_retained_typed_rename(
                 &replacement,
                 original.schema.name(),
                 name,
                 budget,
                 cancelled,
-            )?
-        }
+            )?,
+        },
     };
     if selected.identity.native_table != original.identity.native_table
         || selected.identity.definition != original.identity.definition

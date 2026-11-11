@@ -12,7 +12,12 @@ use crate::{
     properties::framing,
     table::{
         long_value::trace::Kind,
-        mutation::catalog_property::{column, descriptor},
+        mutation::{
+            catalog_property::{column, descriptor},
+            field,
+            record_insertion::payload as insertion_payload,
+            record_serialization::storage,
+        },
     },
 };
 use std::ops::Range;
@@ -20,6 +25,7 @@ use tablecraft_core::{
     ids::ObjectId,
     limits::{LimitError, Resource, ResourceBudget},
 };
+use tablecraft_schema::ScalarType;
 use thiserror::Error;
 
 #[derive(Debug, Error)]
@@ -80,11 +86,15 @@ enum Purpose {
     CurrentRename,
     RetainedTail,
     RetainedRename,
+    RetainedTypedRename,
 }
 
 impl Purpose {
     fn retained(self) -> bool {
-        matches!(self, Self::RetainedTail | Self::RetainedRename)
+        matches!(
+            self,
+            Self::RetainedTail | Self::RetainedRename | Self::RetainedTypedRename
+        )
     }
 }
 
@@ -164,6 +174,23 @@ impl Observed {
         )
     }
 
+    pub(in crate::table::mutation) fn capture_retained_typed_rename(
+        image: &NativeImage,
+        table: &str,
+        field: &str,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, Error> {
+        Self::capture_for(
+            image,
+            table,
+            field,
+            Purpose::RetainedTypedRename,
+            budget,
+            cancelled,
+        )
+    }
+
     fn capture_for(
         image: &NativeImage,
         table: &str,
@@ -208,7 +235,9 @@ impl Observed {
         }
         let index = selected.ok_or(Error::Source)?;
         let target = &schema.columns()[index];
-        if target.number() == 0 || !target.name().is_ascii() {
+        if target.number() == 0 && !matches!(purpose, Purpose::RetainedTypedRename)
+            || !target.name().is_ascii()
+        {
             return Err(Error::Source);
         }
         if matches!(purpose, Purpose::CurrentTail | Purpose::RetainedTail)
@@ -249,7 +278,15 @@ impl Observed {
             }
         }
         let group = group.ok_or(Error::Source)?;
-        qualify_declaration(target, &properties, group, purpose, budget, cancelled)?;
+        if matches!(purpose, Purpose::RetainedTypedRename) {
+            // The consuming retained-schema source separately qualifies every
+            // actual property, literal default, dependency and program. This
+            // observation preserves that group rather than inventing a type-
+            // specific default spelling or rewriting its property values.
+            qualify_typed_declaration(&schema, index)?;
+        } else {
+            qualify_declaration(target, &properties, group, purpose, budget, cancelled)?;
+        }
         let mut input = image.reader();
         let mut reader = Reader {
             source: &mut input,
@@ -367,7 +404,8 @@ impl Observed {
             Purpose::CurrentTail
             | Purpose::CurrentRename
             | Purpose::RetainedTail
-            | Purpose::RetainedRename => framing::current_schema_names_with_groups(
+            | Purpose::RetainedRename
+            | Purpose::RetainedTypedRename => framing::current_schema_names_with_groups(
                 &properties,
                 reader.budget,
                 cancelled,
@@ -450,6 +488,21 @@ fn qualify_declaration(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), Error> {
+    if original_declaration_matches(column, properties, group, purpose, budget, cancelled)? {
+        Ok(())
+    } else {
+        Err(Error::Source)
+    }
+}
+
+fn original_declaration_matches(
+    column: &NativeColumn,
+    properties: &TableProperties,
+    group: usize,
+    purpose: Purpose,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<bool, Error> {
     let number = column.native_type() == data_type::INT32
         && column.fixed()
         && column.storage_length() == size_of::<i32>()
@@ -466,18 +519,19 @@ fn qualify_declaration(
             Purpose::CurrentTail
             | Purpose::CurrentRename
             | Purpose::RetainedTail
-            | Purpose::RetainedRename => {
+            | Purpose::RetainedRename
+            | Purpose::RetainedTypedRename => {
                 (size_of::<u16>()..=OBSERVED_TEXT_BYTES).contains(&column.storage_length())
                     && column.storage_length().is_multiple_of(size_of::<u16>())
                     && column.extended_flags() & !UNICODE_COMPRESSION_FLAG == 0
             }
         };
     if !number && !text {
-        return Err(Error::Source);
+        return Ok(false);
     }
     let entries = properties.groups()[group].properties();
     if entries.len() != 2 {
-        return Err(Error::Source);
+        return Ok(false);
     }
     let mut required = false;
     let mut second = false;
@@ -488,7 +542,7 @@ fn qualify_declaration(
             (property.name().len() + property.raw_value().len()) as u64,
         )?;
         if property.flags() != DDL_FLAG {
-            return Err(Error::Source);
+            return Ok(false);
         }
         match property.name() {
             "Required"
@@ -510,13 +564,91 @@ fn qualify_declaration(
             {
                 second = true
             }
-            _ => return Err(Error::Source),
+            _ => return Ok(false),
         }
     }
-    if !required || !second {
-        return Err(Error::Source);
-    }
+    Ok(required && second)
+}
+
+fn qualify_typed_declaration(schema: &TableSchema, position: usize) -> Result<(), Error> {
+    let column = schema.columns().get(position).ok_or(Error::Source)?;
+    let (kind, width) = match column.scalar_type() {
+        Some(ScalarType::Boolean) => (ScalarType::Boolean, 0),
+        Some(ScalarType::Byte) => (ScalarType::Byte, size_of::<u8>()),
+        Some(ScalarType::Int16) => (ScalarType::Int16, size_of::<i16>()),
+        Some(ScalarType::Int32) => (ScalarType::Int32, size_of::<i32>()),
+        Some(ScalarType::Int64) => (ScalarType::Int64, size_of::<i64>()),
+        Some(ScalarType::Single) => (ScalarType::Single, size_of::<f32>()),
+        Some(ScalarType::Double) => (ScalarType::Double, size_of::<f64>()),
+        Some(ScalarType::Currency) => (ScalarType::Currency, size_of::<i64>()),
+        Some(ScalarType::DateTime) => (ScalarType::DateTime, size_of::<f64>()),
+        Some(ScalarType::Guid) => (ScalarType::Guid, size_of::<u128>()),
+        Some(ScalarType::Decimal) => return insertion_payload::qualify(column).map_err(edit_error),
+        Some(ScalarType::Text) => return storage::qualify(column).map_err(edit_error),
+        _ => return Err(Error::Source),
+    };
+    field::fixed_column_at(schema, position, kind, width).map_err(edit_error)?;
     Ok(())
+}
+
+fn edit_error(error: crate::EditError) -> Error {
+    match error {
+        crate::EditError::Inspect(error) => Error::Inspect(error),
+        _ => Error::Source,
+    }
+}
+
+/// Choose the typed language from actual metadata, before consuming a source.
+pub(in crate::table::mutation) fn retained_rename_uses_typed(
+    image: &NativeImage,
+    table: &str,
+    requested: &str,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<bool, Error> {
+    check(budget, cancelled)?;
+    let scope = image.catalog().catalog().scope();
+    let schema = inspect_table_schema(&mut image.reader(), scope, table, budget, cancelled)?;
+    let mut selected = None;
+    for (position, column) in schema.columns().iter().enumerate() {
+        check(budget, cancelled)?;
+        budget.charge(
+            Resource::Steps,
+            column.name().len().max(requested.len()) as u64,
+        )?;
+        if column.name().eq_ignore_ascii_case(requested) && selected.replace(position).is_some() {
+            return Err(Error::Source);
+        }
+    }
+    let position = selected.ok_or(Error::Source)?;
+    qualify_typed_declaration(&schema, position)?;
+    let column = &schema.columns()[position];
+    let properties =
+        inspect_table_properties(&mut image.reader(), scope, table, budget, cancelled)?;
+    let mut selected_group = None;
+    for (number, group) in properties.groups().iter().enumerate() {
+        check(budget, cancelled)?;
+        budget.charge(
+            Resource::Steps,
+            group.name().len().max(column.name().len()) as u64,
+        )?;
+        if group.kind() == PropertyGroupKind::Column
+            && group.name() == column.name()
+            && selected_group.replace(number).is_some()
+        {
+            return Err(Error::Source);
+        }
+    }
+    let group = selected_group.ok_or(Error::Source)?;
+    Ok(column.number() == 0
+        || !original_declaration_matches(
+            column,
+            &properties,
+            group,
+            Purpose::RetainedRename,
+            budget,
+            cancelled,
+        )?)
 }
 
 #[cfg(test)]
