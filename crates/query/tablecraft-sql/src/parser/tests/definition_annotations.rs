@@ -245,3 +245,32 @@ fn constructed_bare_default_words_cannot_inject_or_change_expression_class() {
     let sql = format!("CREATE TABLE Samples (Label TEXT DEFAULT {expression})");
     query_round_trip(&sql);
 }
+
+#[test]
+fn default_and_check_owned_expression_depth_has_exact_default_and_lower_boundaries() {
+    for limit in [4, 32] {
+        let at_boundary = format!("{}True", "NOT ".repeat(limit - 1));
+        let above_boundary = format!("{}True", "NOT ".repeat(limit));
+        for (prefix, suffix) in [
+            ("CREATE TABLE Samples (Active BIT DEFAULT ", ")"),
+            ("ALTER TABLE Samples ALTER COLUMN Active BIT DEFAULT ", ""),
+            ("ALTER TABLE Samples ADD CONSTRAINT ActiveRule CHECK (", ")"),
+        ] {
+            let limits = ParseLimits {
+                max_depth: limit,
+                ..Default::default()
+            };
+            let accepted = format!("{prefix}{at_boundary}{suffix}");
+            assert!(
+                parse_query(&accepted, limits).is_ok(),
+                "depth {limit}: {accepted}"
+            );
+            let refused = format!("{prefix}{above_boundary}{suffix}");
+            assert_eq!(
+                parse_query(&refused, limits).unwrap_err().kind,
+                ParseErrorKind::Limit,
+                "depth {limit}: {refused}"
+            );
+        }
+    }
+}
