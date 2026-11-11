@@ -271,7 +271,7 @@ fn every_assignment_uses_old_values_even_when_child_predicate_has_duplicate_matc
 #[test]
 fn late_and_eager_errors_and_ambiguous_names_never_publish_partial_backend_requests() {
     for (case, sql) in [
-        "UPDATE Items AS i SET Score=10/(3-i.Id) WHERE EXISTS (SELECT Id FROM Changes WHERE Changes.Id=i.Id)",
+        "UPDATE Items AS i SET Score=10 \\ (3-i.Id) WHERE EXISTS (SELECT Id FROM Changes WHERE Changes.Id=i.Id)",
         "UPDATE Items AS i SET Score=1 WHERE False AND EXISTS (SELECT Id FROM Changes WHERE 1/0=0)",
         "UPDATE Items AS i SET Score=1 WHERE EXISTS (SELECT c.Id FROM Changes AS c WHERE c.Id=missing.Id)",
         "UPDATE Items AS i SET Score=(SELECT Id FROM Changes) WHERE i.Id=1",
@@ -297,12 +297,13 @@ fn late_and_eager_errors_and_ambiguous_names_never_publish_partial_backend_reque
         if case < 2 {
             assert!(
                 matches!(
-                    result,
+                    &result,
                     Err(UpdateError::Query(QueryError::Evaluation(
                         EvalError::DivisionByZero
                     )))
                 ),
-                "{sql}"
+                "{sql}: {:?}",
+                result.err()
             );
         } else {
             assert!(result.is_err(), "{sql}");
