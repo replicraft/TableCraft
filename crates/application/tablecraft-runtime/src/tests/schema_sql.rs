@@ -108,7 +108,7 @@ fn unsupported_schema_contexts_and_parameters_never_issue_a_save_capability() {
     for sql in [
         "CREATE TABLE Added (Id LONG DEFAULT 0)",
         "CREATE TEMPORARY TABLE Added (Id LONG)",
-        "ALTER TABLE Items ADD COLUMN Note TEXT(20)",
+        "ALTER TABLE Items ADD COLUMN Note BINARY(20)",
         "ALTER TABLE Items ALTER COLUMN Note TEXT(20) DEFAULT Unknown",
         "ALTER TABLE Items ADD CONSTRAINT Rule CHECK (Id > 0)",
         "CREATE UNIQUE INDEX OtherIndex ON Items (Id)",
