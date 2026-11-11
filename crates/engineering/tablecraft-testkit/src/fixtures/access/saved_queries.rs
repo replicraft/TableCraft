@@ -1,3 +1,6 @@
+/// Saved SELECT fragments composed onto an independent attachment table.
+pub mod attachments;
+
 /// Independent fitting SELECT expression BEFORE/AFTER byte oracles.
 pub mod fitting_select;
 
@@ -63,6 +66,17 @@ pub fn database_with_query_flags(fragments: &[Fragment<'_>], query_flags: u32) -
         })
         .collect::<Vec<_>>();
     bytes[4 * PAGE_BYTES..5 * PAGE_BYTES].copy_from_slice(&data_page(2, &rows));
+    install_query_table(&mut bytes, fragments, DEFINITION_PAGE, 15, DATA_PAGE);
+    bytes
+}
+fn install_query_table(
+    bytes: &mut Vec<u8>,
+    fragments: &[Fragment<'_>],
+    definition_page: usize,
+    map_page: usize,
+    data_page: usize,
+) {
+    bytes.resize(bytes.len().max((data_page + 1) * PAGE_BYTES), 0);
     let mut definition = base::definition(
         &[
             ("ObjectId", 4, 0, 4),
@@ -75,7 +89,7 @@ pub fn database_with_query_flags(fragments: &[Fragment<'_>], query_flags: u32) -
             ("LvExtra", 4, 7, 4),
         ],
         fragments.len() as u32,
-        15 << 8,
+        (map_page as u32) << 8,
     );
     for (position, variable) in [(2, 0), (3, 1), (4, 2), (5, 3)] {
         let at = 63 + position * 25;
@@ -83,7 +97,7 @@ pub fn database_with_query_flags(fragments: &[Fragment<'_>], query_flags: u32) -
         put16(&mut definition, at + 7, variable);
     }
     put16(&mut definition, 43, 4);
-    bytes[DEFINITION_PAGE * PAGE_BYTES..(DEFINITION_PAGE + 1) * PAGE_BYTES]
+    bytes[definition_page * PAGE_BYTES..(definition_page + 1) * PAGE_BYTES]
         .copy_from_slice(&definition);
     let rows: Vec<_> = fragments
         .iter()
@@ -136,19 +150,20 @@ pub fn database_with_query_flags(fragments: &[Fragment<'_>], query_flags: u32) -
         page.push(row);
     }
     pages.push(page);
-    bytes.resize(bytes.len().max((DATA_PAGE + pages.len()) * PAGE_BYTES), 0);
-    let mut bitmap = vec![0; 5 + (DATA_PAGE + pages.len()).div_ceil(8)];
-    for page in DATA_PAGE..DATA_PAGE + pages.len() {
+    bytes.resize(bytes.len().max((data_page + pages.len()) * PAGE_BYTES), 0);
+    let mut bitmap = vec![0; 5 + (data_page + pages.len()).div_ceil(8)];
+    for page in data_page..data_page + pages.len() {
         bitmap[5 + page / 8] |= 1 << (page % 8);
     }
-    bytes[15 * PAGE_BYTES..16 * PAGE_BYTES].copy_from_slice(&data_page(1, &[(0, bitmap)]));
+    bytes[map_page * PAGE_BYTES..(map_page + 1) * PAGE_BYTES]
+        .copy_from_slice(&super::data_page(1, &[(0, bitmap)]));
     for (ordinal, rows) in pages.into_iter().enumerate() {
-        let page = DATA_PAGE + ordinal;
+        let page = data_page + ordinal;
         bytes[page * PAGE_BYTES..(page + 1) * PAGE_BYTES]
-            .copy_from_slice(&data_page(DEFINITION_PAGE as u32, &rows));
+            .copy_from_slice(&super::data_page(definition_page as u32, &rows));
     }
-    bytes
 }
+
 pub fn database() -> Vec<u8> {
     database_with(&[
         Fragment {
