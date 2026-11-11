@@ -120,8 +120,7 @@ fn assert_storage(before: &[u8], expected: &[u8], definition: usize) {
     for page in 0..before.len() / PAGE {
         if ![4, 10, definition].contains(&page) {
             assert!(
-                &expected[page * PAGE..(page + 1) * PAGE]
-                    == &before[page * PAGE..(page + 1) * PAGE],
+                expected[page * PAGE..(page + 1) * PAGE] == before[page * PAGE..(page + 1) * PAGE],
                 "protected page {page}"
             );
         }
