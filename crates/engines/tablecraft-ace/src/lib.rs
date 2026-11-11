@@ -107,8 +107,6 @@ pub use preservation::{
 };
 #[cfg(feature = "ace16-write-preview")]
 pub use table::Ace16IndexCreatePreview;
-#[cfg(all(feature = "journal", feature = "ace16-create"))]
-pub use table::NativeLongIndexCandidate;
 #[cfg(any(
     feature = "ace16-write-preview",
     all(feature = "journal", feature = "ace16-create")
@@ -185,6 +183,8 @@ pub use table::{
     MultivaluePageCell, MultivaluePageValue, MultivalueTablePage, read_multivalue_table_page,
     read_multivalue_table_page_with_request,
 };
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub use table::{NativeIndexDropCandidate, NativeLongIndexCandidate};
 pub use table::{
     ParentVersionHistory, StoredVersion, VersionHistoryColumn, VersionHistoryMemberDeclaration,
     VersionHistoryReader, inspect_version_history_declarations, read_version_history_column,

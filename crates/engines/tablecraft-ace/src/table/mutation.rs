@@ -68,6 +68,10 @@ pub(in crate::table) mod index_creation;
 ))]
 pub use index_creation::SecondaryIndexCreate;
 #[cfg(all(feature = "journal", feature = "ace16-create"))]
+mod normal_index_drop;
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub use normal_index_drop::NativeIndexDropCandidate;
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
 mod normal_index_creation;
 #[cfg(all(feature = "journal", feature = "ace16-create"))]
 pub use normal_index_creation::NativeLongIndexCandidate;

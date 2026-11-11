@@ -58,8 +58,6 @@ pub use mutation::Ace16IndexCreatePreview;
 pub use mutation::CurrentFieldAdditionError;
 #[cfg(all(feature = "journal", feature = "ace16-create"))]
 pub(crate) use mutation::DeclaredFieldAdditionEffect;
-#[cfg(all(feature = "journal", feature = "ace16-create"))]
-pub use mutation::NativeLongIndexCandidate;
 #[cfg(any(
     feature = "ace16-write-preview",
     all(feature = "journal", feature = "ace16-create")
@@ -102,6 +100,8 @@ pub use mutation::{
 };
 #[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
 pub use mutation::{FittedColumnUpdates, FixedColumnUpdates, SlotScalarUpdate};
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub use mutation::{NativeIndexDropCandidate, NativeLongIndexCandidate};
 #[cfg(feature = "journal")]
 pub use mutation::{
     NativeTableDropIdentity, NativeTableDropInspection, NativeTableDropPlan, TableDropError,
