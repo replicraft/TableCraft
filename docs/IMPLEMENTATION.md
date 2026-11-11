@@ -19,22 +19,33 @@ with correlated EXISTS/IN predicates now use this staged source ownership; joine
 DELETE and broader subquery shapes remain unsupported. Native SELECT INTO
 preparation resolves qualified direct source-field sizes, and an independently
 checked populated-table candidate packs complete rows across fresh DATA/maps.
-That candidate is not journal/save authority; atomic make-table persistence and
-normal SQL Run activation remain unfinished. Retained keyless VALUES/SELECT
+The adapter now requalifies complete populated plans against the exclusive source
+and saves them through one original-intent V3 journal, including empty results.
+Cold recovery reconstructs declarations and original cells without rerunning SQL.
+Runtime review and normal SQL Run activation remain unfinished. Retained keyless VALUES/SELECT
 appends now use their checked original-presence intent after field deletion, including full
 supplied rows; no deleted field default or generator is invented.
 
 The [conformance matrix](query/ACE_SQL_CONFORMANCE.md) distinguishes syntax,
 query planning, reviewed persistence and GUI availability. The
 [verification record](../tests/results/queries/ace-sql-conformance-services-2026-11-11.json)
-retains causal failures and repairs. Qualification passes 1,885 query tests across
-272 targets, 380 distinct runtime functions with one ignored, 254 adapter checks,
+retains causal failures and repairs. The initial statement checkpoint passed
+1,885 query tests across 272 targets, 380 distinct runtime functions with one ignored, 254 adapter checks,
 56 headless desktop workflows and 93 parser tests plus one doctest. Strict lint
 across eleven affected packages, minimal builds and warnings-denied rustdoc pass.
 These are local implementation checks, not complete ACE SQL or native Windows
 Access conformance.
 
-The later [schema SQL GUI receipt](../tests/results/schema/reviewed-schema-sql-gui-2026-11-11.json)
+The subsequent [parameter and atomic make-table checkpoint](../tests/results/queries/ace-sql-parameters-and-atomic-make-table-2026-11-11.json)
+qualifies local unresolved-name VALUE prompts through actual desktop Run,
+with strict query paths retained. Its query accounting covers 1,899 cases across
+the broad run and the corrected depth control without counting repeated passes.
+The offline adapter passes atomic populated-table creation and cold recovery,
+including zero rows; normal runtime make-table publication is still unfinished.
+The record distinguishes actual creation-only library compilation from test
+feature unification, and Windows cross-compilation from native execution.
+
+The separate [schema SQL GUI receipt](../tests/results/schema/reviewed-schema-sql-gui-2026-11-11.json)
 records 739 shared-UI cases, five current schema desktop journeys and an earlier
 26-case desktop action/parameter baseline, selected native/adapter regressions and sixteen directly inspected English/German
 light/dark frames. Causal compiler/render failures and the corrected known-AFTER

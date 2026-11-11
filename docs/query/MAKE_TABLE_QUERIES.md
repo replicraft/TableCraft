@@ -61,7 +61,7 @@ follows complete retrieval/discovery, so these refusals can follow source reads.
 Eager expression or source errors remain errors even when TOP/filtering would
 otherwise omit a row. No partial make-table plan is returned.
 
-## Restricted native preparation and populated candidate
+## Restricted native preparation and atomic adapter save
 
 The Access adapter now has a direct local scalar-projection preparation over one
 immutable original image. It resolves native UTF-16 Text widths, Binary widths
@@ -81,6 +81,18 @@ mixed GUID/date/IEEE fixed values across DATA pages and map windows. There is no
 additional aggregate 64-row quota. Per-record capacity, native count/file geometry
 and explicit caller budgets still apply.
 
-Neither preparation nor that candidate grants journal/save/recovery permission.
-Normal SQL Run and an atomic reviewed make-table publication remain separate
-acceptance boundaries; an empty CREATE followed by another save is not a substitute.
+Preparation remains inert. With journaling enabled, its consuming `finish` invokes
+the native populated planner on the same original image and materialized rows.
+The offline adapter then requalifies that reviewed plan against its exclusively
+held actual source, comparing complete BEFORE and AFTER images before setup.
+One V3 journal saves the schema and all rows atomically, including an empty result.
+Its distinct `TCPT0001` intent retains the original declarations, cells and source
+binding; recovery reconstructs those bytes without rerunning SQL or defaults.
+Unknown versions and builds without creation authority do not retry an old action.
+
+Applied receipts report the table addition and inserted rows, with no matched-row
+count. Recovery retains its actual outcome without inventing affected-row counts.
+The [qualification record](../../tests/results/queries/ace-sql-parameters-and-atomic-make-table-2026-11-11.json)
+covers same-file saves, zero rows, stale/cancelled admission and cold reconstruction.
+Runtime review and normal SQL Run publication remain separate acceptance
+boundaries. An empty CREATE followed by another save is not a substitute.

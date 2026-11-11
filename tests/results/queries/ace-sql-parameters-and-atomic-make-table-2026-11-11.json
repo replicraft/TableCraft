@@ -1,0 +1,285 @@
+{
+  "date": "2026-11-11",
+  "source_checkpoint": "f8dc643320aba93a431885e154f0facee75a6969",
+  "source_scope": "Checkpoint before subsequent runtime make-table and native index implementation. Functional runs and repairs below have distinct scopes; earlier passing cases are not rerun or counted twice solely for a test-only correction.",
+  "platform": "macOS 14.7.2 ARM64",
+  "native_application_windows_opened": false,
+  "scope": [
+    "Explicit metadata-only local unresolved-name discovery, actual VALUE carrier selection, issued runtime plans and normal desktop SQL prompts; strict and saved/domain/external paths remain separate.",
+    "Native TCPT0001 materialized-row intent, consuming V3 preparation, split/shared cumulative recovery qualification and full original-image reconstruction.",
+    "Atomic offline adapter table-plus-row saves, zero-row schema creation, exact exclusive-source requalification and distinct no-create dispatch.",
+    "Host-selected opaque intent allowance with unchanged old create policies; actual macOS filesystem checks and Windows cross-compilation only."
+  ],
+  "functional_accounting": {
+    "query_passed_including_doctests": 1899,
+    "query_rule": "1898 passed in the broad 272-summary run; its only failed case passes in the repaired nine-case discovery module. Eight repeated passing discovery cases are not counted again.",
+    "runtime_broad_passed": 388,
+    "runtime_ignored": 1,
+    "runtime_rule": "The nine parameter cases also pass after boxing the discovered owner. They are a focused regression of the broad run, not nine additional distinct functions.",
+    "desktop_passed": 27,
+    "ui_passed": 739,
+    "native_populated_journal_passed": 8,
+    "access_atomic_and_existing_creation_passed": 20,
+    "without_creation_authority_passed": 1,
+    "io_tests_and_doctests_passed": 166
+  },
+  "checks": {
+    "query_broad": {
+      "passed": 1898,
+      "failed": 1,
+      "ignored": 0,
+      "target_summaries": 272,
+      "log": {
+        "path": ".cache/ace-sql-current-conformance-query-20261111.log",
+        "sha256": "a23ef21ed1d1081b30847564cff9c7242ea2770b4c74bae0c97e1011a631e09d"
+      }
+    },
+    "query_discovery_after_fixture_repair": {
+      "passed": 9,
+      "failed": 0,
+      "ignored": 0,
+      "target_summaries": 1,
+      "log": {
+        "path": ".cache/ace-sql-current-repairs-query-parameters-20261111.log",
+        "sha256": "5270407288a6cb50b2501ba88c8093eef098a7fe2fa34361bc18f4bc8fc58f93"
+      }
+    },
+    "runtime_broad": {
+      "passed": 388,
+      "failed": 0,
+      "ignored": 1,
+      "target_summaries": 1,
+      "log": {
+        "path": ".cache/ace-sql-current-conformance-runtime-20261111.log",
+        "sha256": "b0edb866cc9e399c6ef0562f805be826a5c281d2583f5bb236b1361092e624c2"
+      }
+    },
+    "runtime_parameters_after_owner_repair": {
+      "passed": 9,
+      "failed": 0,
+      "ignored": 0,
+      "target_summaries": 1,
+      "log": {
+        "path": ".cache/ace-sql-current-repairs-runtime-parameters-20261111.log",
+        "sha256": "6aaf119148ba8b9281970e9a06798ad0a6f2d8f5d151717cdcdc34d38069400f"
+      }
+    },
+    "ui": {
+      "passed": 739,
+      "failed": 0,
+      "ignored": 0,
+      "target_summaries": 1,
+      "log": {
+        "path": ".cache/ace-sql-current-conformance-ui-20261111.log",
+        "sha256": "5539b183e0c0ef976bb9a24fe311bd0fa8e3b3c33258ce63d7b6ce1d7394094d"
+      }
+    },
+    "desktop": {
+      "passed": 27,
+      "failed": 0,
+      "ignored": 0,
+      "target_summaries": 1,
+      "log": {
+        "path": ".cache/ace-sql-checkpoint-final-desktop-20261111.log",
+        "sha256": "8d5622858632689b5d0e9b2be0023e8da63f73d6883e29986e4d7f9f32ccb1da"
+      }
+    },
+    "native_populated_journal": {
+      "passed": 8,
+      "failed": 0,
+      "ignored": 0,
+      "target_summaries": 1,
+      "log": {
+        "path": ".cache/ace-sql-atomic-make-native-20261111.log",
+        "sha256": "98dcbe9b8f4c8498cd70258ccc49eaf517e27b08c130902bbfc118690a41cb2f"
+      }
+    },
+    "access_atomic_and_existing_creation": {
+      "passed": 20,
+      "failed": 0,
+      "ignored": 0,
+      "target_summaries": 1,
+      "log": {
+        "path": ".cache/ace-sql-atomic-make-access-20261111.log",
+        "sha256": "4f3c532a689cc47555f113dc81c9ef6762478f57d486859b33a1ec0f5e69da3c"
+      }
+    },
+    "without_creation_authority": {
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0,
+      "target_summaries": 1,
+      "log": {
+        "path": ".cache/ace-sql-atomic-make-no-create-20261111.log",
+        "sha256": "924191999d2bafabba21064bd379bf1faad92b256b57715c72193c442abc5d29"
+      }
+    },
+    "preparation_tests_with_unified_dev_features": {
+      "passed": 9,
+      "failed": 0,
+      "ignored": 0,
+      "target_summaries": 1,
+      "log": {
+        "path": ".cache/ace-sql-atomic-make-no-journal-20261111.log",
+        "sha256": "ac6ffdc72f6084e08798de4b1b5f168eec07442ca2b89d41f02bc05d8a91e13e"
+      }
+    },
+    "io": {
+      "passed": 166,
+      "failed": 0,
+      "ignored": 0,
+      "target_summaries": 7,
+      "log": {
+        "path": ".cache/ace-sql-parameters-intent-io-20261111.log",
+        "sha256": "70de0fdb4eb0b8cbb3e5674dfb259427372c4450acb28312b9840bf5331e9841"
+      }
+    }
+  },
+  "static_checks": {
+    "strict_eleven_packages": {
+      "path": ".cache/ace-sql-atomic-make-strict-20261111.log",
+      "sha256": "8687fe820871e6393012281c788516e1c726526f6fdfcd1c2385afec70a831ea"
+    },
+    "minimal_runtime_query_db": {
+      "path": ".cache/ace-sql-atomic-checkpoint-minimal-20261111.log",
+      "sha256": "e00f7d94fbfb4ef28eb58964ece33291a7885045a59b9fe470fd271a556bf689"
+    },
+    "journal_only_engine": {
+      "path": ".cache/ace-sql-current-repairs-journal-only-20261111.log",
+      "sha256": "0053f33ba761258f2e9af292cc965267d54de785bdd67d6a21775bb334092a47"
+    },
+    "creation_only_engine": {
+      "path": ".cache/ace-sql-checkpoint-final-creation-only-20261111.log",
+      "sha256": "0ef466f34d8fa5d38260149e30db9d24bf4c8e550e8e787b940404d4d3189f53"
+    },
+    "warnings_denied_rustdoc_six_packages": {
+      "path": ".cache/ace-sql-atomic-checkpoint-rustdoc-20261111.log",
+      "sha256": "431f86557ff57d9200cd04b537e8403164fbcbfb92691342a6e021b8d2c647fb"
+    },
+    "windows_x64_all_io_targets": {
+      "path": ".cache/ace-sql-parameters-intent-io-windows-x64-20261111.log",
+      "sha256": "5d4b646b9715f696c2af9a5d46789d37cea9c21200f6de555cf2eaca35b2c6b6"
+    },
+    "windows_arm64_all_io_targets": {
+      "path": ".cache/ace-sql-parameters-intent-io-windows-arm64-20261111.log",
+      "sha256": "d48cb8e7dbd7612b3a4ffc0dd100d8cce4797944322dfe14c109dab347eb1aef"
+    },
+    "repository_guards": {
+      "path": ".cache/ace-sql-atomic-make-guards-20261111.log",
+      "sha256": "16b177f93528c8d44b0b6b1b35d28d31a82f70cbb811938cc612e0224b0ebfb6"
+    }
+  },
+  "feature_qualification": {
+    "test_feature_unification": "The Access test command selecting only ace16-create still enables journal/offline-write-session through testkit access-support dev-dependencies. Its nine preparation tests are not no-journal execution evidence; the earlier eight-case preparation run has the same qualification limitation.",
+    "actual_creation_only_library": {
+      "features": [
+        "ace16-create"
+      ],
+      "artifact": {
+        "path": ".cache/ace-sql-access-creation-only-artifacts-20261111.jsonl",
+        "sha256": "90d99f67bd2e2036fd4ae7c012cd003ab8e68b56e0606555c069e2caf72a3551"
+      },
+      "log": {
+        "path": ".cache/ace-sql-access-creation-only-build-20261111.log",
+        "sha256": "b41e4cf5c8132ffa50523ea5108cc70e83a68415dace36bdae24b1a604f22bc9"
+      },
+      "claim": "Library compilation with journal and offline-write-session absent; not runtime execution of that feature combination."
+    }
+  },
+  "causal_failures_and_repairs": [
+    {
+      "log": {
+        "path": ".cache/ace-sql-intent-allowance-io-20261111.log",
+        "sha256": "472cd27c7c0272cacc7cd5c71deee5c93828fc9c8e637b2b9746a7311696d59a"
+      },
+      "explanation": "Existing timestamp-based temporary-directory allocation collided. Replaced disposable directories with tempfile; the first fixture edit required a separate borrowed-path compilation repair."
+    },
+    {
+      "log": {
+        "path": ".cache/ace-sql-intent-allowance-io-windows-x64-20261111.log",
+        "sha256": "da5b3bb7ce5dc64164711179d8f4ea5a0fd88ef961a975f68741551985044904"
+      },
+      "explanation": "Existing nested Windows target tests resolved the sibling journal test file. Selected the actual target/tests.rs explicitly; both Windows architectures subsequently cross-compiled all targets."
+    },
+    {
+      "log": {
+        "path": ".cache/ace-sql-intent-allowance-repaired-io-20261111.log",
+        "sha256": "571d68c221a47a1931df12b77e33f8b32ff4f72bd14b4762c024ab284b923f3d"
+      },
+      "explanation": "Temporary-directory migration omitted four path borrows; corrected without changing storage assertions."
+    },
+    {
+      "log": {
+        "path": ".cache/ace-sql-parameters-intent-query-implicit-20261111.log",
+        "sha256": "1669829dd8f301cf67719b40d2104861807a905226c1731d1dbdfc662bd44e40"
+      },
+      "explanation": "New arithmetic fixture exceeded existing binding admission before discovery. The explicit-depth retry also exceeded the independent node profile; replaced it with an already-supported deep CVar control without changing production ceilings."
+    },
+    {
+      "log": {
+        "path": ".cache/ace-sql-current-conformance-query-20261111.log",
+        "sha256": "a23ef21ed1d1081b30847564cff9c7242ea2770b4c74bae0c97e1011a631e09d"
+      },
+      "explanation": "Broad run passed 1898 cases and failed only the new existing-path arithmetic fixture. The repaired discovery module passes all nine cases; repeated passing cases are not added twice."
+    },
+    {
+      "log": {
+        "path": ".cache/ace-sql-live-services-desktop-parameters-20261111.log",
+        "sha256": "b8596c250670387909f29f0fdef14bf7d0ce03f33fedb7d3d6419810028f28fd"
+      },
+      "explanation": "Headless schema disabled-button assertion required the NodeT trait import."
+    },
+    {
+      "log": {
+        "path": ".cache/ace-sql-current-conformance-desktop-20261111.log",
+        "sha256": "fa10ff40c97b1754a5bad7fad37c6b854015cc4ff3b385c8a641c6a50f49790e"
+      },
+      "explanation": "New implicit VALUE journey clicked disabled OK before selecting a carrier. Test now selects Text through the real dropdown and checks actual publication; runtime/UI carrier semantics are unchanged."
+    },
+    {
+      "log": {
+        "path": ".cache/ace-sql-current-conformance-strict-20261111.log",
+        "sha256": "4ad27e620112c0d0da85d0be708856a6f702e1090d0d84e977040f6a02ac7c21"
+      },
+      "explanation": "Runtime discovery owner had a large enum variant. Boxed the prepared owner with explicit allocation charging."
+    },
+    {
+      "log": {
+        "path": ".cache/ace-sql-current-repairs-desktop-20261111.log",
+        "sha256": "28fcf0f2d829dfc125ee703b77c755e087e752cb92ee839e955496fc15257acf"
+      },
+      "explanation": "The added VALUE disabled-button assertion also required NodeT; imported the trait without weakening assertions."
+    },
+    {
+      "log": {
+        "path": ".cache/ace-sql-checkpoint-final-strict-20261111.log",
+        "sha256": "494164986e3538900520b06c5ff2667795fcbb70bf3ced895d6a6dc6d354730d"
+      },
+      "explanation": "ReviewedSchema visibility was narrower than the consuming editing action. Matched the actual editing-owner visibility."
+    },
+    {
+      "log": {
+        "path": ".cache/ace-sql-strict-checkpoint-final-20261111.log",
+        "sha256": "d00e5bb8135452f2b45b5bf385f1e624a86da9060474da2214616d114eab39ec"
+      },
+      "explanation": "An intermediate static check overlapped the next adapter test-module registration before its file existed. Final frozen adapter/engine batch and strict checks pass; this intermediate result is not a qualified checkpoint."
+    }
+  ],
+  "presentation_record": "../schema/reviewed-schema-sql-gui-2026-11-11.json",
+  "remaining_boundaries": [
+    "Normal runtime/SQL View make-table publication remains unfinished at this checkpoint.",
+    "Implicit parameter inference, prompt order and application/dependent query scopes are not fully native-qualified.",
+    "The new independent native index fixtures are committed but not qualified by these make-table tests.",
+    "No native Windows filesystem execution or Microsoft Access behavioral comparison is claimed; this does not establish full ACE SQL conformance."
+  ],
+  "next_track_index_source_gate": {
+    "passed": 1,
+    "failed": 2,
+    "log": {
+      "path": ".cache/ace-sql-normal-index-source-first-20261111.log",
+      "sha256": "1b479287c6ec4fe74a2c8796a693270ae56933c46d544c8e51ccc2523148a198"
+    },
+    "scope": "Initial independent raw-source/expected-index checks. Protected companions pass; two cases fail represented inventory validation. This is a separate work-in-progress track, not passing index-creation qualification or an established production-reader defect.",
+    "source_commit": "4b52fa53b0c987bef43d6956d9f9225e7f568176"
+  }
+}

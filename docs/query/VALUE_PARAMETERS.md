@@ -113,8 +113,10 @@ Implicit prompts use the existing explicit VALUE carrier picker. This is not a
 claim about native inferred parameter types, prompt enumeration order, implicit
 coercions or application-reference resolution. Saved-query and mutation parameter
 discovery are outside this first profile; their declared input services remain
-unchanged. The authored query/runtime/headless acceptance cases require execution
-in the coordinated qualification batch before reporting passing evidence.
+unchanged. Nine discovery cases, four focused runtime cases and a normal-host
+headless journey pass, including literal Unicode input through the explicit Text
+carrier, cancellation and stale-reply rejection. The [qualification record](../../tests/results/queries/ace-sql-parameters-and-atomic-make-table-2026-11-11.json)
+keeps those results separate from native inference and broader application scopes.
 
 Microsoft documents that [identifiers Access cannot interpret can request a
 parameter value](https://support.microsoft.com/en-us/access/why-does-access-want-me-to-enter-a-parameter-value),
