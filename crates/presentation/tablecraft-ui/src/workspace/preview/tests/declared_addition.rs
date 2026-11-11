@@ -54,7 +54,7 @@ fn unadorned_text_and_decimal_review_scenes_keep_exact_captured_parameters() {
                 (
                     Scene::QuerySchemaAddTextReview,
                     "Label",
-                    "table-draft-short-text",
+                    "design-type-short-text",
                 ),
                 (
                     Scene::QuerySchemaAddDecimalReview,
