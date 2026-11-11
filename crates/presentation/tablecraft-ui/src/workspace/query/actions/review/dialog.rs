@@ -103,6 +103,9 @@ impl State {
                             QueryActionEffect::Schema(QuerySchemaEffect::CreateTable {
                                 ..
                             }) => "query-action-schema-create-confirmation",
+                            QueryActionEffect::Schema(QuerySchemaEffect::MakeTable { .. }) => {
+                                "query-action-schema-make-table-confirmation"
+                            }
                             QueryActionEffect::Schema(QuerySchemaEffect::DropTable { .. }) => {
                                 "query-action-schema-drop-table-confirmation"
                             }
@@ -282,6 +285,21 @@ fn schema_summary(ui: &mut Ui, effect: &QuerySchemaEffect) {
                 ui,
                 "query-action-schema-create-fields",
                 &[("count", column_count.to_string())],
+            ));
+        }
+        QuerySchemaEffect::MakeTable {
+            column_count,
+            inserted_rows,
+        } => {
+            ui.label(message(
+                ui,
+                "query-action-schema-create-fields",
+                &[("count", column_count.to_string())],
+            ));
+            ui.label(message(
+                ui,
+                "query-action-schema-make-table-records",
+                &[("count", inserted_rows.to_string())],
             ));
         }
         QuerySchemaEffect::DropTable { declared_rows } => {

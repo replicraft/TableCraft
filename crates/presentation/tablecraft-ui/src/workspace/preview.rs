@@ -115,6 +115,7 @@ pub enum Scene {
     QueryInsertSaving,
     QueryInsertResult,
     QuerySchemaCreateReview,
+    QueryMakeTableReview,
     QuerySchemaDropTableReview,
     QuerySchemaDropColumnReview,
     QuerySchemaReopenFailed,
@@ -145,7 +146,7 @@ pub enum Scene {
 }
 
 impl Scene {
-    pub const ALL: [Self; 111] = [
+    pub const ALL: [Self; 112] = [
         Self::Datasheet,
         Self::RibbonCollapsed,
         Self::RibbonTemporary,
@@ -230,6 +231,7 @@ impl Scene {
         Self::QueryInsertSaving,
         Self::QueryInsertResult,
         Self::QuerySchemaCreateReview,
+        Self::QueryMakeTableReview,
         Self::QuerySchemaDropTableReview,
         Self::QuerySchemaDropColumnReview,
         Self::QuerySchemaReopenFailed,
@@ -374,6 +376,7 @@ impl Scene {
             Self::QueryInsertSaving => "query-insert-saving",
             Self::QueryInsertResult => "query-insert-result",
             Self::QuerySchemaCreateReview => "query-schema-create-review",
+            Self::QueryMakeTableReview => "query-make-table-review",
             Self::QuerySchemaDropTableReview => "query-schema-drop-table-review",
             Self::QuerySchemaDropColumnReview => "query-schema-drop-column-review",
             Self::QuerySchemaReopenFailed => "query-schema-reopen-failed",
@@ -616,6 +619,7 @@ impl Preview {
             | Scene::QueryInsertReview
             | Scene::QueryInsertSaving
             | Scene::QueryInsertResult
+            | Scene::QueryMakeTableReview
             | Scene::QuerySchemaCreateReview
             | Scene::QuerySchemaDropTableReview
             | Scene::QuerySchemaDropColumnReview

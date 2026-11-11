@@ -32,3 +32,6 @@ query-action-schema-close-target = Close the target table before running this sc
 query-action-schema-reopen-failed = The schema change was saved, but the database could not be reopened. Do not repeat the query.
 query-action-schema-retry-reopen = Retry reopening
 query-action-schema-retained-results = Previous results are retained. Reopen the saved database to refresh its structure; do not repeat the query.
+
+query-action-schema-make-table-confirmation = Create this table and insert all selected records as one operation?
+query-action-schema-make-table-records = Selected records to insert: { $count }

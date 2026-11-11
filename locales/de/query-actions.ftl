@@ -32,3 +32,6 @@ query-action-schema-close-target = Schließen Sie die Zieltabelle, bevor Sie die
 query-action-schema-reopen-failed = Die Schemaänderung wurde gespeichert, aber die Datenbank konnte nicht erneut geöffnet werden. Wiederholen Sie die Abfrage nicht.
 query-action-schema-retry-reopen = Erneut öffnen
 query-action-schema-retained-results = Vorherige Ergebnisse bleiben erhalten. Öffnen Sie die gespeicherte Datenbank erneut, um ihre Struktur zu aktualisieren; wiederholen Sie die Abfrage nicht.
+
+query-action-schema-make-table-confirmation = Diese Tabelle erstellen und alle ausgewählten Datensätze in einem Vorgang einfügen?
+query-action-schema-make-table-records = Ausgewählte Datensätze zum Einfügen: { $count }

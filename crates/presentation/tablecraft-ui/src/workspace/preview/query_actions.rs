@@ -9,6 +9,8 @@ use crate::{
 const UPDATE_SQL: &str =
     "UPDATE [Customers] SET [Balance] = [Balance] + 25 WHERE [City] = 'Madrid'";
 
+const MAKE_TABLE_SQL: &str = "SELECT [CustomerName],[City],[Balance] INTO [CustomerArchive] FROM [Customers] ORDER BY [CustomerName]";
+
 const CREATE_SQL: &str = "CREATE TABLE [Contacts] ([Id] LONG, [Name] VARCHAR(80))";
 const DROP_TABLE_SQL: &str = "DROP TABLE [Customers]";
 const DROP_COLUMN_SQL: &str = "ALTER TABLE [Customers] DROP COLUMN [Balance]";
@@ -48,6 +50,7 @@ impl Preview {
             Scene::QueryInsertReview | Scene::QueryInsertSaving | Scene::QueryInsertResult => {
                 INSERT_SQL
             }
+            Scene::QueryMakeTableReview => MAKE_TABLE_SQL,
             Scene::QuerySchemaCreateReview => CREATE_SQL,
             Scene::QuerySchemaDropTableReview => DROP_TABLE_SQL,
             Scene::QuerySchemaDropColumnReview | Scene::QuerySchemaReopenFailed => DROP_COLUMN_SQL,
@@ -62,6 +65,7 @@ impl Preview {
             Scene::QueryUpdateReview
                 | Scene::QueryDeleteReview
                 | Scene::QueryInsertReview
+                | Scene::QueryMakeTableReview
                 | Scene::QuerySchemaCreateReview
                 | Scene::QuerySchemaDropTableReview
                 | Scene::QuerySchemaDropColumnReview
@@ -103,7 +107,9 @@ impl Preview {
             UPDATE_SQL => QueryActionKind::Update,
             DELETE_SQL => QueryActionKind::Delete,
             INSERT_SQL => QueryActionKind::Insert,
-            CREATE_SQL | DROP_TABLE_SQL | DROP_COLUMN_SQL => QueryActionKind::Schema,
+            MAKE_TABLE_SQL | CREATE_SQL | DROP_TABLE_SQL | DROP_COLUMN_SQL => {
+                QueryActionKind::Schema
+            }
             _ => return None,
         };
         let inspection = self.request();
@@ -132,7 +138,9 @@ impl Preview {
         let review = QueryActionReview {
             id: request,
             document_revision: fixtures::REVISION,
-            table: if sql == CREATE_SQL {
+            table: if sql == MAKE_TABLE_SQL {
+                "CustomerArchive"
+            } else if sql == CREATE_SQL {
                 "Contacts"
             } else {
                 "Customers"
@@ -149,6 +157,10 @@ impl Preview {
                 },
                 QueryActionKind::Insert => QueryActionEffect::Insert { inserted_rows: 2 },
                 QueryActionKind::Schema => QueryActionEffect::Schema(match sql.as_str() {
+                    MAKE_TABLE_SQL => QuerySchemaEffect::MakeTable {
+                        column_count: 3,
+                        inserted_rows: 900,
+                    },
                     CREATE_SQL => QuerySchemaEffect::CreateTable { column_count: 2 },
                     DROP_TABLE_SQL => QuerySchemaEffect::DropTable {
                         declared_rows: fixtures::TOTAL_ROWS,
@@ -315,5 +327,85 @@ mod tests {
             failed.state.query_schema_reopen_retry_revision(),
             Some(fixtures::REVISION)
         );
+    }
+}
+
+#[cfg(test)]
+mod make_table_scene_tests {
+    use super::*;
+    use crate::{FluentArgs, Locale, Localizer, Theme};
+    use egui::accesskit::Role;
+
+    #[test]
+    fn make_table_review_scene_shows_destination_counts_and_localized_decisions_offscreen() {
+        for locale in [Locale::EnUs, Locale::De] {
+            for theme in [Theme::Light, Theme::Dark] {
+                let context = egui::Context::default();
+                context.enable_accesskit();
+                crate::configure(&context);
+                let mut preview = Preview::new(Scene::QueryMakeTableReview);
+                preview.state.localizer = Localizer::new(locale).unwrap();
+                preview.state.theme = theme;
+                assert_eq!(preview.state.sql, MAKE_TABLE_SQL);
+                for frame in 0..2 {
+                    let mut output = context.run_ui(
+                        egui::RawInput {
+                            screen_rect: Some(egui::Rect::from_min_size(
+                                egui::Pos2::ZERO,
+                                egui::vec2(1280.0, 820.0),
+                            )),
+                            ..Default::default()
+                        },
+                        |ui| {
+                            preview.show(ui);
+                        },
+                    );
+                    output.textures_delta.clear();
+                    if frame == 0 {
+                        continue;
+                    }
+                    let painted = output
+                        .shapes
+                        .iter()
+                        .filter_map(|shape| {
+                            if let egui::epaint::Shape::Text(text) = &shape.shape {
+                                Some(text.galley.job.text.as_str())
+                            } else {
+                                None
+                            }
+                        })
+                        .collect::<Vec<_>>();
+                    let mut args = FluentArgs::new();
+                    args.set("count", 3);
+                    let fields = preview
+                        .state
+                        .localizer
+                        .format("query-action-schema-create-fields", &args);
+                    args.set("count", 900);
+                    let records = preview
+                        .state
+                        .localizer
+                        .format("query-action-schema-make-table-records", &args);
+                    assert!(painted.contains(&fields.as_str()));
+                    assert!(painted.contains(&records.as_str()));
+                    assert!(painted.iter().any(|text| text.contains("CustomerArchive")));
+                    let tree = output.platform_output.accesskit_update.as_ref().unwrap();
+                    for key in ["query-action-no", "query-action-yes"] {
+                        let label = preview.state.localizer.text(key);
+                        assert!(
+                            tree.nodes
+                                .iter()
+                                .any(|(_, node)| node.role() == Role::Button
+                                    && node.label() == Some(label.as_str()))
+                        );
+                    }
+                    let matched = preview
+                        .state
+                        .localizer
+                        .format("query-action-matched", &args);
+                    assert!(!painted.contains(&matched.as_str()));
+                }
+            }
+        }
     }
 }

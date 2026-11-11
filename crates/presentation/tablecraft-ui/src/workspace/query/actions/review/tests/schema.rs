@@ -127,3 +127,35 @@ fn known_after_retry_is_revision_bound_and_disabled_during_a_guarded_read() {
     assert_eq!(state.query_schema_reopen_retry_revision(), None);
     assert!(!state.begin_query_schema_reopen(7));
 }
+
+#[test]
+fn make_table_review_keeps_zero_rows_valid_and_publishes_only_after_acknowledged_save() {
+    for inserted_rows in [0, 900] {
+        let mut state = reviewing_sql(
+            QueryActionKind::Schema,
+            "SELECT Score INTO Items FROM SourceRows",
+        );
+        let effect = QueryActionEffect::Schema(QuerySchemaEffect::MakeTable {
+            column_count: 1,
+            inserted_rows,
+        });
+        assert_eq!(effect.matched_rows(), None);
+        assert!(state.set_query_action_review(
+            REQUEST,
+            QueryActionReview {
+                id: REVIEW,
+                document_revision: 7,
+                table: "Items".into(),
+                effect,
+            }
+        ));
+        assert!(state.begin_query_action_save(REVIEW, 71));
+        assert!(!state.can_take_query_schema_publication(71));
+        assert!(
+            state.set_query_action_save_outcome(71, EditSaveOutcome::Saved("known AFTER".into()))
+        );
+        let publication = state.take_query_schema_publication(71).unwrap();
+        assert!(state.resolve_query_schema_after_reopen(&publication, fresh()));
+        assert!(!state.resolve_query_schema_after_reopen(&publication, fresh()));
+    }
+}

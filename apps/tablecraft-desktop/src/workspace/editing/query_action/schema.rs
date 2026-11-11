@@ -399,7 +399,17 @@ impl ReviewedSchema {
             (
                 Self::Create { witness, .. },
                 QueryActionEffect::Schema(QuerySchemaEffect::CreateTable { column_count }),
-            ) => witness.column_count() == *column_count,
+            ) => witness.column_count() == *column_count && witness.inserted_rows().is_none(),
+            (
+                Self::Create { witness, .. },
+                QueryActionEffect::Schema(QuerySchemaEffect::MakeTable {
+                    column_count,
+                    inserted_rows,
+                }),
+            ) => {
+                witness.column_count() == *column_count
+                    && witness.inserted_rows() == Some(*inserted_rows)
+            }
             (
                 Self::DropField { witness, .. },
                 QueryActionEffect::Schema(QuerySchemaEffect::DropColumn {
@@ -447,8 +457,14 @@ impl Desktop {
             id,
             document_revision: witness.document_revision(),
             table,
-            effect: QueryActionEffect::Schema(QuerySchemaEffect::CreateTable {
-                column_count: witness.column_count(),
+            effect: QueryActionEffect::Schema(match witness.inserted_rows() {
+                Some(inserted_rows) => QuerySchemaEffect::MakeTable {
+                    column_count: witness.column_count(),
+                    inserted_rows,
+                },
+                None => QuerySchemaEffect::CreateTable {
+                    column_count: witness.column_count(),
+                },
             }),
         };
         self.publish_query_action_review(request_id, review, ReviewedAction::Schema(capability));

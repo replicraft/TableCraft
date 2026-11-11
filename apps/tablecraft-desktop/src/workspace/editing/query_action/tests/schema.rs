@@ -39,6 +39,17 @@ fn assert_image(actual: &[u8], expected: &[u8]) {
 }
 
 fn journey(before: Vec<u8>, expected: Vec<u8>, sql: &str, table: &str, change: SaveSchemaChange) {
+    creation_journey(before, expected, sql, table, change, None);
+}
+
+fn creation_journey(
+    before: Vec<u8>,
+    expected: Vec<u8>,
+    sql: &str,
+    table: &str,
+    change: SaveSchemaChange,
+    inserted: Option<usize>,
+) {
     let (_directory, path, original, mut harness) = opened(before);
     close_target(&mut harness, table);
     let sql_tab = harness.state().state.active_object().unwrap();
@@ -80,7 +91,7 @@ fn journey(before: Vec<u8>, expected: Vec<u8>, sql: &str, table: &str, change: S
     harness.run_steps(1);
     let report = finish_save(&mut harness);
     assert!(matches!(report.outcome, SaveOutcome::Saved { receipt }
-        if receipt.schema_change == Some(change) && receipt.changed_rows.is_none() && receipt.query_change.is_none()));
+        if receipt.schema_change == Some(change) && receipt.changed_rows == inserted && receipt.matched_rows.is_none() && receipt.query_change.is_none()));
     assert!(harness.state().editing.has_save());
     assert_image(&std::fs::read(&path).unwrap(), &expected);
     harness
@@ -280,4 +291,23 @@ fn guarded_reopen_failure_retains_known_after_and_original_sql_without_row_fallb
     assert!(harness.state().editing.query_schema.is_none());
     assert_eq!(harness.state().state.sql, sql);
     assert_image(&std::fs::read(path).unwrap(), &after);
+}
+
+#[test]
+fn select_into_run_reviews_all_selected_rows_and_creates_one_atomic_populated_table() {
+    use tablecraft_testkit::fixtures::access::canonical_retained_add_table::populated;
+    let seed = fields::source(fields::Case::FirstNumber).bytes;
+    let literals = std::iter::once(None)
+        .chain((1..900).map(Some))
+        .collect::<Vec<_>>();
+    let before = populated::numbers(&seed, "Items", &literals);
+    let expected = populated::numbers(&before, "Archive", &literals);
+    creation_journey(
+        before,
+        expected,
+        "SELECT CopiedScore INTO Archive FROM Items ORDER BY CopiedScore",
+        "Archive",
+        SaveSchemaChange::TableAdded { column_count: 1 },
+        Some(900),
+    );
 }

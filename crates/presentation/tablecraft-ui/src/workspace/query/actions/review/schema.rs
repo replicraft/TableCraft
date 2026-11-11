@@ -15,6 +15,11 @@ pub(in crate::workspace) struct QuerySchemaRead {
 pub enum QuerySchemaEffect {
     /// Create the named table with its exact declared number of fields.
     CreateTable { column_count: usize },
+    /// Create one table and its complete selected scalar rows atomically.
+    MakeTable {
+        column_count: usize,
+        inserted_rows: usize,
+    },
     /// Remove the named table; the count is a native table fact, not a row action.
     DropTable { declared_rows: u32 },
     /// Remove one real field without renumbering its surviving native neighbors.
@@ -27,7 +32,9 @@ pub enum QuerySchemaEffect {
 impl QuerySchemaEffect {
     pub(super) fn valid(&self) -> bool {
         match self {
-            Self::CreateTable { column_count } => *column_count > 0,
+            Self::CreateTable { column_count } | Self::MakeTable { column_count, .. } => {
+                *column_count > 0
+            }
             Self::DropTable { .. } => true,
             Self::DropColumn { column, .. } => !column.is_empty(),
         }
@@ -36,7 +43,7 @@ impl QuerySchemaEffect {
     pub(super) fn retained_bytes(&self) -> usize {
         match self {
             Self::DropColumn { column, .. } => column.capacity(),
-            Self::CreateTable { .. } | Self::DropTable { .. } => 0,
+            Self::CreateTable { .. } | Self::MakeTable { .. } | Self::DropTable { .. } => 0,
         }
     }
 }

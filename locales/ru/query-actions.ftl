@@ -32,3 +32,6 @@ query-action-schema-close-target = Закройте целевую таблиц�
 query-action-schema-reopen-failed = Изменение структуры сохранено, но базу данных не удалось открыть заново. Не повторяйте запрос.
 query-action-schema-retry-reopen = Повторить открытие
 query-action-schema-retained-results = Предыдущие результаты сохранены. Повторно откройте сохранённую базу данных, чтобы обновить её структуру; не повторяйте запрос.
+
+query-action-schema-make-table-confirmation = Создать эту таблицу и вставить все выбранные записи одной операцией?
+query-action-schema-make-table-records = Выбранные записи для вставки: { $count }

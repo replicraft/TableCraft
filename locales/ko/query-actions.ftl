@@ -32,3 +32,6 @@ query-action-schema-close-target = 이 스키마 쿼리를 실행하기 전에 �
 query-action-schema-reopen-failed = 스키마 변경은 저장되었지만 데이터베이스를 다시 열 수 없습니다. 쿼리를 반복하지 마세요.
 query-action-schema-retry-reopen = 다시 열기
 query-action-schema-retained-results = 이전 결과가 유지됩니다. 저장된 데이터베이스를 다시 열어 구조를 새로 고치세요. 쿼리를 다시 실행하지 마세요.
+
+query-action-schema-make-table-confirmation = 이 테이블을 만들고 선택한 모든 레코드를 하나의 작업으로 삽입하시겠습니까?
+query-action-schema-make-table-records = 삽입할 선택된 레코드: { $count }

@@ -26,7 +26,7 @@ impl State {
             return false;
         };
         let change = match effect {
-            QuerySchemaEffect::CreateTable { .. } => {
+            QuerySchemaEffect::CreateTable { .. } | QuerySchemaEffect::MakeTable { .. } => {
                 catalog::Change::TableCreated(&witness.review().table)
             }
             QuerySchemaEffect::DropTable { .. } => {

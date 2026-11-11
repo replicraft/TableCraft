@@ -32,3 +32,6 @@ query-action-schema-close-target = 运行此架构查询前，请关闭目标表
 query-action-schema-reopen-failed = 架构更改已保存，但无法重新打开数据库。请勿重复执行查询。
 query-action-schema-retry-reopen = 重试打开
 query-action-schema-retained-results = 保留先前的结果。请重新打开已保存的数据库以刷新其结构；不要重复执行查询。
+
+query-action-schema-make-table-confirmation = 是否创建此表并在一次操作中插入所有选定记录？
+query-action-schema-make-table-records = 要插入的选定记录数：{ $count }

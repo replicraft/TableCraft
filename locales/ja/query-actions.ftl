@@ -32,3 +32,6 @@ query-action-schema-close-target = このスキーマクエリを実行する前
 query-action-schema-reopen-failed = スキーマの変更は保存されましたが、データベースを再度開けませんでした。クエリを繰り返さないでください。
 query-action-schema-retry-reopen = 再度開く
 query-action-schema-retained-results = 前の結果を保持しています。保存済みデータベースを開き直して構造を更新してください。クエリを再実行しないでください。
+
+query-action-schema-make-table-confirmation = このテーブルを作成し、選択したすべてのレコードを1回の操作で挿入しますか？
+query-action-schema-make-table-records = 挿入する選択済みレコード数: { $count }
