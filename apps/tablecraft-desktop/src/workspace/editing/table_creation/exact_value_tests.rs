@@ -162,3 +162,81 @@ fn retained_guid_and_decimal_cells_preserve_precise_input_nulls_and_refills() {
     assert_image(&path, &expected);
     assert!(!journal_path(&path).exists());
 }
+
+#[test]
+fn invalid_guid_and_decimal_input_keep_source_and_require_corrected_review() {
+    let before = fields::source(fields::Case::FirstNumber).bytes;
+    let definition = (before.len() / 4096) as u32;
+    let schema = raw::append_table(&before, "ExactValues");
+    let mut expected = raw::append(
+        &schema,
+        definition,
+        Some(INITIAL_TOKEN),
+        Some(INITIAL_AMOUNT),
+    );
+    let (_directory, path, _, mut harness) = opened(expected.clone());
+    harness
+        .get_by_role_and_label(Role::Button, "ExactValues")
+        .focus();
+    harness.run_steps(1);
+    harness.key_press(egui::Key::Enter);
+    harness.run_steps(1);
+    finish_reads(&mut harness);
+    for (field, invalid, corrected) in [
+        ("Token", "not-a-guid", REPLACEMENT_GUID),
+        ("Amount", "9007199254740993.12345", "-9007199254740993.4321"),
+        (
+            "Amount",
+            "12345678901234567890123456789.0000",
+            "9007199254740993.1234",
+        ),
+    ] {
+        reveal_field(&mut harness, field, false);
+        begin_replacement(&mut harness, 0, field, false, Some(invalid));
+        harness
+            .get_by_role_and_label(Role::Button, "Review change")
+            .click_accesskit();
+        harness.run_steps(1);
+        finish_reads(&mut harness);
+        assert!(harness.state().state.edit_dialog_open());
+        assert!(
+            harness
+                .query_by_role_and_label(Role::Button, "Apply to original file")
+                .is_none()
+        );
+        assert!(!harness.state().editing.has_save());
+        assert!(!journal_path(&path).exists());
+        assert_image(&path, &expected);
+        assert_eq!(
+            harness
+                .get_by_role_and_label(Role::MultilineTextInput, "Replacement")
+                .value()
+                .as_deref(),
+            Some(invalid)
+        );
+        replace(
+            &mut harness,
+            Role::MultilineTextInput,
+            "Replacement",
+            corrected,
+        );
+        let after = if field == "Token" {
+            raw::update_guid(&expected, definition, 0, Some(REPLACEMENT_TOKEN))
+        } else {
+            raw::update_decimal(
+                &expected,
+                definition,
+                0,
+                Some(if corrected.starts_with('-') {
+                    REPLACEMENT_AMOUNT
+                } else {
+                    INITIAL_AMOUNT
+                }),
+            )
+        };
+        review_and_save(&mut harness, &path, &expected, &after);
+        expected = after;
+    }
+    assert_image(&path, &expected);
+    assert!(!journal_path(&path).exists());
+}
