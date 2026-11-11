@@ -7,7 +7,8 @@ use super::{
     CurrentFieldAdditionError as Error, creation_error, definition::Plan, unadorned_source,
 };
 use crate::{
-    InspectError, NativeImage, NativeSortOrder, UnadornedFieldAdditionDefinition, header::check,
+    InspectError, NativeImage, NativeImageSource, NativeSortOrder,
+    UnadornedFieldAdditionDefinition, header::check,
 };
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_schema::ScalarType;
@@ -22,7 +23,90 @@ pub struct NativeUnadornedFieldAdditionCandidate {
     column_id: u16,
 }
 
+/// Actual original/effect ownership split consumed by the checked original owner.
+pub(crate) struct UnadornedFieldAdditionParts {
+    pub(crate) effect: UnadornedFieldAdditionEffect,
+    pub(crate) definition: UnadornedFieldAdditionDefinition,
+}
+
+/// Only a successfully proved candidate can construct this immutable source effect.
+pub(crate) struct UnadornedFieldAdditionEffect {
+    source: unadorned_source::Source,
+    after: NativeImageSource,
+    native_table: i32,
+    native_number: usize,
+    column_id: u16,
+}
+
+impl UnadornedFieldAdditionEffect {
+    pub(crate) fn before_bytes(&self) -> &[u8] {
+        self.source.proof().image().as_bytes()
+    }
+
+    pub(crate) fn after_bytes(&self) -> &[u8] {
+        self.after.as_bytes()
+    }
+
+    pub(crate) fn after_shared_bytes(&self) -> bytes::Bytes {
+        self.after.shared_bytes()
+    }
+
+    pub(crate) fn table(&self) -> &str {
+        self.source.proof().table().schema.name()
+    }
+
+    pub(crate) fn source_profile(&self) -> unadorned_source::UnadornedFieldAdditionSourceProfile {
+        self.source.profile()
+    }
+
+    pub(crate) const fn native_table_id(&self) -> i32 {
+        self.native_table
+    }
+
+    pub(crate) fn definition_page(&self) -> u32 {
+        self.source.proof().table().schema.definition_page()
+    }
+
+    pub(crate) const fn native_number(&self) -> usize {
+        self.native_number
+    }
+
+    pub(crate) const fn column_id(&self) -> u16 {
+        self.column_id
+    }
+
+    pub(crate) fn column_count(&self) -> usize {
+        self.source.proof().table().schema.columns().len() + 1
+    }
+}
+
 impl NativeUnadornedFieldAdditionCandidate {
+    pub(crate) fn into_parts(
+        self,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<UnadornedFieldAdditionParts, InspectError> {
+        let Self {
+            source,
+            after,
+            definition,
+            native_table,
+            native_number,
+            column_id,
+        } = self;
+        let after = NativeImageSource::from_vec(after, budget, cancelled)?;
+        Ok(UnadornedFieldAdditionParts {
+            effect: UnadornedFieldAdditionEffect {
+                source,
+                after,
+                native_table,
+                native_number,
+                column_id,
+            },
+            definition,
+        })
+    }
+
     /// Complete immutable original; no physical scope is inferred from this slice.
     pub fn before_bytes(&self) -> &[u8] {
         self.source.proof().image().as_bytes()

@@ -23,7 +23,7 @@ const GENERATED_HEADER_END: usize = 40;
 
 /// A source language selected from actual captured declarations, never a caller flag.
 #[derive(Clone, Copy, PartialEq, Eq)]
-pub(super) enum SourceProfile {
+pub(crate) enum UnadornedFieldAdditionSourceProfile {
     Keyless,
     Indexed,
 }
@@ -31,7 +31,7 @@ pub(super) enum SourceProfile {
 /// The full source proof and its positive source class remain one immutable owner.
 pub(super) struct Source {
     proof: current_schema::Source,
-    profile: SourceProfile,
+    profile: UnadornedFieldAdditionSourceProfile,
 }
 
 impl Source {
@@ -39,7 +39,7 @@ impl Source {
         &self.proof
     }
 
-    pub(super) const fn profile(&self) -> SourceProfile {
+    pub(super) const fn profile(&self) -> UnadornedFieldAdditionSourceProfile {
         self.profile
     }
 }
@@ -95,11 +95,13 @@ pub(super) fn qualify(
     Ok(())
 }
 
-fn classify(schema: &TableSchema) -> Result<SourceProfile, Error> {
+fn classify(schema: &TableSchema) -> Result<UnadornedFieldAdditionSourceProfile, Error> {
     let layout = schema.physical_layout();
     match (layout.physical_indexes, layout.logical_indexes) {
-        (0, 0) => Ok(SourceProfile::Keyless),
-        (physical, logical) if physical > 0 && logical > 0 => Ok(SourceProfile::Indexed),
+        (0, 0) => Ok(UnadornedFieldAdditionSourceProfile::Keyless),
+        (physical, logical) if physical > 0 && logical > 0 => {
+            Ok(UnadornedFieldAdditionSourceProfile::Indexed)
+        }
         _ => Err(Error::Source),
     }
 }
@@ -107,7 +109,7 @@ fn classify(schema: &TableSchema) -> Result<SourceProfile, Error> {
 fn qualify_shape(
     image: &NativeImage,
     schema: &TableSchema,
-    profile: SourceProfile,
+    profile: UnadornedFieldAdditionSourceProfile,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<IndexInspection, Error> {
@@ -125,7 +127,7 @@ fn qualify_shape(
         if field.flags() == ordinary {
             continue;
         }
-        if profile != SourceProfile::Indexed
+        if profile != UnadornedFieldAdditionSourceProfile::Indexed
             || field.flags() != GENERATED_I32_FLAGS
             || field.native_type() != INT32
             || field.scalar_type() != Some(ScalarType::Int32)

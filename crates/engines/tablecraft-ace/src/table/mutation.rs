@@ -264,6 +264,8 @@ pub use add_field::{
     NativeCurrentShortTextFieldAdditionCandidate, NativeDeclaredFieldAdditionCandidate,
     NativeRetainedTypedFieldAdditionCandidate, NativeUnadornedFieldAdditionCandidate,
 };
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub(crate) use add_field::{UnadornedFieldAdditionEffect, UnadornedFieldAdditionSourceProfile};
 #[cfg(all(feature = "ace16-create", feature = "journal"))]
 pub use drop_field::{
     FieldDropError, NativeCurrentTailFieldDropCandidate, NativeFieldDropCandidate,

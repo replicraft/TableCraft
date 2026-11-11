@@ -110,6 +110,8 @@ pub use mutation::{
 pub use mutation::{NativeTableRenameIdentity, NativeTableRenamePlan, TableRenameError};
 #[cfg(any(feature = "journal", feature = "ace16-write-preview"))]
 pub use mutation::{RowDelete, TableRowDeletes};
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub(crate) use mutation::{UnadornedFieldAdditionEffect, UnadornedFieldAdditionSourceProfile};
 pub use schema::{NativeColumn, TableSchema, inspect_table_schema};
 mod page;
 mod record;

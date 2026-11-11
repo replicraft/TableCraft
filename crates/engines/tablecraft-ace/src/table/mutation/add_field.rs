@@ -27,6 +27,8 @@ use tablecraft_core::{
 };
 pub use typed::NativeRetainedTypedFieldAdditionCandidate;
 pub use unadorned::NativeUnadornedFieldAdditionCandidate;
+pub(crate) use unadorned::UnadornedFieldAdditionEffect;
+pub(crate) use unadorned_source::UnadornedFieldAdditionSourceProfile;
 
 #[derive(Clone, Copy)]
 enum Target {

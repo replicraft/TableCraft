@@ -231,3 +231,11 @@ pub use index_create::RecoverableNativeIndexCreatePlan;
 pub use index_create::{
     IndexCreateIntentError, NativeIndexCreateIntent, QualifiedNativeIndexCreateRecovery,
 };
+
+mod unadorned_field_addition;
+pub use unadorned_field_addition::UnadornedFieldAdditionIntentError;
+#[cfg(feature = "ace16-create")]
+pub use unadorned_field_addition::{
+    NativeUnadornedFieldAdditionIntent, QualifiedUnadornedFieldAdditionRecovery,
+    RecoverableUnadornedFieldAdditionPlan,
+};
