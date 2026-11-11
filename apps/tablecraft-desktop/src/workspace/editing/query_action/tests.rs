@@ -78,6 +78,46 @@ fn finish_refused_action(harness: &mut Harness<'_, Desktop>) {
     assert!(!harness.state().editing.has_save());
 }
 
+fn cancel_refused_action(harness: &mut Harness<'_, Desktop>) {
+    let original = harness.state().state.active_object();
+    let sql = harness.state().state.sql.to_string();
+    let rows = harness
+        .state()
+        .state
+        .query_data
+        .as_ref()
+        .unwrap()
+        .rows
+        .as_ptr();
+    let cancel = harness.state().state.localizer.text("shell-cancel");
+    harness
+        .get_by_role_and_label(Role::Button, &cancel)
+        .click_accesskit();
+    harness.run_steps(2);
+    let diagnostic = harness.state().state.localizer.text("diagnostics-copy");
+    assert!(
+        harness
+            .query_by_role_and_label(Role::Button, &diagnostic)
+            .is_none()
+    );
+    assert_eq!(harness.state().state.active_object(), original);
+    assert_eq!(harness.state().state.sql, sql);
+    assert_eq!(
+        harness
+            .state()
+            .state
+            .query_data
+            .as_ref()
+            .unwrap()
+            .rows
+            .as_ptr(),
+        rows
+    );
+    assert!(harness.state().editing.query_action_pending.is_none());
+    assert!(harness.state().editing.query_action_review.is_none());
+    assert!(!harness.state().editing.has_save());
+}
+
 fn reviewed(harness: &mut Harness<'_, Desktop>, sql: &str) -> u64 {
     run(harness, sql);
     let (id, _) = harness

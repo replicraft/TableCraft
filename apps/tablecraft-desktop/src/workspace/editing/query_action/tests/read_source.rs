@@ -143,6 +143,9 @@ fn late_correlated_error_preserves_sql_tab_previous_result_and_original_file() {
     );
     assert_image(&std::fs::read(&path).unwrap(), &before);
     assert!(!journal_path(&path).exists());
+    super::cancel_refused_action(&mut harness);
+    assert_image(&std::fs::read(&path).unwrap(), &before);
+    assert!(!journal_path(&path).exists());
     run(&mut harness, "SELECT Id,Score FROM Changes ORDER BY Id");
     assert!(harness.state().state.error.is_none());
     assert_eq!(

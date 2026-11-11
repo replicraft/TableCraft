@@ -173,5 +173,8 @@ fn normal_run_joined_late_error_and_repeated_targets_keep_prior_results_without_
         );
         assert_image(&std::fs::read(&path).unwrap(), &before);
         assert!(!journal_path(&path).exists());
+        super::cancel_refused_action(&mut harness);
+        assert_image(&std::fs::read(&path).unwrap(), &before);
+        assert!(!journal_path(&path).exists());
     }
 }
