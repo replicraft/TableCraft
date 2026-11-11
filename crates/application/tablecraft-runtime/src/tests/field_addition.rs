@@ -246,3 +246,5 @@ fn broader_prefix_policies_select_typed_number_before_qualification() {
 mod after_off;
 
 mod after_off_history;
+
+mod typed;

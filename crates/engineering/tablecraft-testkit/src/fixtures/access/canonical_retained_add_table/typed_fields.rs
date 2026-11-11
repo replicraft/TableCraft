@@ -393,3 +393,22 @@ pub fn update_currency(before: &[u8], definition: u32, root: usize, value: Optio
     row.push((mask & !4) | if value.is_some() { 4 } else { 0 });
     raw_forwarding_chain::place_terminal(before, definition + 1, root, &row)
 }
+
+/// Independent Boolean edit after ADD: absence is false, true materializes the bit.
+pub fn update_boolean(before: &[u8], definition: u32, root: usize, value: bool) -> Vec<u8> {
+    let base = definition as usize * PAGE;
+    assert_eq!(word(before, base + 41), 3);
+    assert_eq!(before[base + 75 + 50], 1);
+    let range = raw_forwarding_chain::terminal_range(before, definition + 1, root);
+    match word(before, range.start) {
+        2 if value => boolean_materialized_true(before, definition, root),
+        2 => before.to_vec(),
+        3 => {
+            assert_eq!(range.len(), 11);
+            let mut result = before.to_vec();
+            result[range.end - 1] = (before[range.end - 1] & !4) | if value { 4 } else { 0 };
+            result
+        }
+        _ => panic!("expected the known short or materialized gallery row"),
+    }
+}
