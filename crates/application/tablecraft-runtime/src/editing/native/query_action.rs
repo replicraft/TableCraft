@@ -79,6 +79,9 @@ pub(in crate::editing) fn review(
     } else {
         None
     };
+    let read_source_delete = matches!(kind, Kind::Delete)
+        && sql::delete_uses_read_source(parsed.query(), &mut query_work, cancelled)
+            .map_err(sql::RecoverableDeleteError::Shape)?;
     let table = match kind {
         Kind::Update => match joined_update {
             Some(target) => target.table,
@@ -160,6 +163,36 @@ pub(in crate::editing) fn review(
             staged
                 .finish(&mut native, cancelled)
                 .map_err(sql::RecoverableError::Plan)?,
+        )
+    } else if read_source_delete {
+        let editor = {
+            let mut native = native_pool
+                .try_borrow_mut()
+                .map_err(|_| Error::Native(InspectError::Unsupported))?;
+            NativeJournalEditor::new(image, table, &mut native, cancelled)
+                .map_err(sql::RecoverableDeleteError::Editor)?
+        };
+        // Predicate reads borrow this pool through NativeSource. Retain no native
+        // budget borrow until complete original-handle selection has returned.
+        let staged = sql::prepare_native_read_source_delete(
+            editor,
+            parsed.query(),
+            &source,
+            &mut query_work,
+            sql::NativeMutationOptions {
+                parameters: &bindings,
+                collation: resolver.default_collation(),
+                resolver: &resolver,
+            },
+            cancelled,
+        )?;
+        let mut native = native_pool
+            .try_borrow_mut()
+            .map_err(|_| Error::Native(InspectError::Unsupported))?;
+        Plan::Delete(
+            staged
+                .finish(&mut native, cancelled)
+                .map_err(sql::RecoverableDeleteError::Plan)?,
         )
     } else if let Kind::Insert(clock) = kind
         && select_insert
