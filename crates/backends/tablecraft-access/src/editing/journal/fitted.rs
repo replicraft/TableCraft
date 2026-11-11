@@ -18,6 +18,21 @@ use tablecraft_schema::ScalarType;
 const COPY_BYTES: usize = 4096;
 
 #[cfg(feature = "ace16-create")]
+fn retained_wide_value(kind: ScalarType) -> bool {
+    matches!(kind, ScalarType::Guid | ScalarType::Decimal)
+}
+
+#[cfg(feature = "ace16-create")]
+fn wide_value(value: &Value, kind: ScalarType) -> Result<Value, NativeEditError> {
+    Ok(match (kind, value) {
+        (ScalarType::Guid, Value::Guid(value)) => Value::Guid(*value),
+        (ScalarType::Decimal, Value::Decimal(value)) => Value::Decimal(*value),
+        (kind, Value::Null) if retained_wide_value(kind) => Value::Null,
+        _ => return Err(NativeEditError::Unsupported),
+    })
+}
+
+#[cfg(feature = "ace16-create")]
 fn retained_fixed_scalar(kind: ScalarType) -> bool {
     matches!(
         kind,
@@ -48,11 +63,15 @@ fn retained_scalar(value: &Value, kind: ScalarType) -> Result<Value, NativeEditE
     })
 }
 
-fn scalar_request(
+fn exact_request(
     value: &Value,
     kind: ScalarType,
     route: JournalRoute,
 ) -> Result<Value, NativeEditError> {
+    #[cfg(feature = "ace16-create")]
+    if route == JournalRoute::RetainedRows && retained_wide_value(kind) {
+        return wide_value(value, kind);
+    }
     #[cfg(feature = "ace16-create")]
     if route == JournalRoute::RetainedRows && retained_fixed_scalar(kind) {
         return retained_scalar(value, kind);
@@ -129,17 +148,18 @@ impl NativeJournalEditor {
                 let supported = supported
                     || self.route == JournalRoute::RetainedRows
                         && (matches!(kind, ScalarType::Currency | ScalarType::Boolean)
-                            || retained_fixed_scalar(kind));
+                            || retained_fixed_scalar(kind)
+                            || retained_wide_value(kind));
                 if columns.len() != 1 || !supported {
                     return Err(NativeEditError::Unsupported.into());
                 }
             }
             #[cfg(feature = "ace16-create")]
-            let retained_fixed =
-                self.route == JournalRoute::RetainedRows && retained_fixed_scalar(kind);
+            let retained_exact = self.route == JournalRoute::RetainedRows
+                && (retained_fixed_scalar(kind) || retained_wide_value(kind));
             #[cfg(not(feature = "ace16-create"))]
-            let retained_fixed = false;
-            if !retained_fixed
+            let retained_exact = false;
+            if !retained_exact
                 && !matches!(
                     kind,
                     ScalarType::Boolean
@@ -164,7 +184,14 @@ impl NativeJournalEditor {
             check(budget, cancelled)?;
             let target = &self.snapshot().columns()[position];
             let kind = target.data_type();
-            let mut requests = if matches!(kind, ScalarType::Text | ScalarType::Binary) {
+            #[cfg(feature = "ace16-create")]
+            let retained_wide =
+                self.route == JournalRoute::RetainedRows && retained_wide_value(kind);
+            #[cfg(not(feature = "ace16-create"))]
+            let retained_wide = false;
+            let mut requests = if matches!(kind, ScalarType::Text | ScalarType::Binary)
+                || retained_wide && kind == ScalarType::Decimal
+            {
                 NativeFittedUpdates::Variable(vector(column.updates.len(), budget)?)
             } else {
                 NativeFittedUpdates::Fixed(vector(column.updates.len(), budget)?)
@@ -204,17 +231,25 @@ impl NativeJournalEditor {
                     NativeFittedUpdates::Fixed(updates) => {
                         updates.push(FixedScalarUpdate::new(
                             ordinal,
-                            scalar_request(original, kind, self.route)?,
-                            scalar_request(update.value(), kind, self.route)?,
+                            exact_request(original, kind, self.route)?,
+                            exact_request(update.value(), kind, self.route)?,
                         ));
                     }
                     NativeFittedUpdates::Variable(updates) => {
                         updates.push(SlotScalarUpdate::new(
                             ordinal,
-                            variable(original, kind, maximum_variable_bytes, budget, cancelled)?,
-                            variable(
+                            variable_request(
+                                original,
+                                kind,
+                                self.route,
+                                maximum_variable_bytes,
+                                budget,
+                                cancelled,
+                            )?,
+                            variable_request(
                                 update.value(),
                                 kind,
+                                self.route,
                                 maximum_variable_bytes,
                                 budget,
                                 cancelled,
@@ -228,7 +263,14 @@ impl NativeJournalEditor {
             let retained_fixed =
                 self.route == JournalRoute::RetainedRows && retained_fixed_scalar(kind);
             #[cfg(feature = "ace16-create")]
-            let group = if retained_fixed {
+            let group = if retained_wide {
+                NativeFittedIntentGroup::new_retained_wide_values(
+                    target.name(),
+                    requests,
+                    budget,
+                    cancelled,
+                )
+            } else if retained_fixed {
                 NativeFittedIntentGroup::new_retained_fixed_scalars(
                     target.name(),
                     requests,
@@ -268,6 +310,11 @@ impl NativeJournalEditor {
             #[cfg(feature = "ace16-create")]
             JournalRoute::RetainedRows => {
                 if positions.first().is_some_and(|&position| {
+                    retained_wide_value(self.snapshot().columns()[position].data_type())
+                }) {
+                    self.editor
+                        .plan_recoverable_retained_wide_value_rows(groups, budget, cancelled)?
+                } else if positions.first().is_some_and(|&position| {
                     retained_fixed_scalar(self.snapshot().columns()[position].data_type())
                 }) {
                     self.editor
@@ -291,6 +338,23 @@ impl NativeJournalEditor {
         };
         Ok((plan, matched))
     }
+}
+
+fn variable_request(
+    value: &Value,
+    kind: ScalarType,
+    route: JournalRoute,
+    maximum_bytes: usize,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Value, NativeEditError> {
+    #[cfg(feature = "ace16-create")]
+    if route == JournalRoute::RetainedRows && kind == ScalarType::Decimal {
+        return wide_value(value, kind);
+    }
+    #[cfg(not(feature = "ace16-create"))]
+    let _ = route;
+    variable(value, kind, maximum_bytes, budget, cancelled)
 }
 
 fn variable(
