@@ -1,11 +1,11 @@
 //! Saved typed columns use real rename proposals and keep native cell identities.
-use crate::workspace::editing::test_support::field_rename::rename_and_save;
+use crate::workspace::editing::test_support::field_rename::{propose_name, rename_and_save};
 use crate::workspace::{
     Desktop,
     test_support::{
         app_harness,
         cell_edit::{begin_replacement, review_and_save},
-        finish_reads,
+        finish_reads, finish_schema_save,
         objects::{EXACT_SCRATCH, scratch},
         opened,
     },
@@ -198,4 +198,60 @@ fn assert_image(path: &std::path::Path, expected: &[u8]) {
         expected.len(),
         difference
     );
+}
+
+#[test]
+fn typed_casefold_collision_keeps_proposal_and_source_until_corrected_review() {
+    let before = fields::source(fields::Case::FirstNumber).bytes;
+    let definition = (before.len() / 4096) as u32;
+    let catalog_root = usize::from(u16::from_le_bytes(
+        before[4 * 4096 + 12..4 * 4096 + 14].try_into().unwrap(),
+    ));
+    let created = exact_values::append_table(&before, "ExactValues");
+    let source = exact_values::append_omitted(&created, definition);
+    let expected = field_changes::rename(&source, definition, catalog_root, "Token", "Identifier");
+    let (_directory, path, original, mut harness) = opened(source);
+    open_table(&mut harness, "ExactValues");
+    propose_name(&mut harness, "Token", "score");
+    harness.key_press_modifiers(egui::Modifiers::COMMAND, Key::S);
+    harness.run_steps(1);
+    let deadline = std::time::Instant::now() + std::time::Duration::from_secs(10);
+    while harness.state().state.busy || harness.state().editing.field_rename.is_some() {
+        assert!(
+            std::time::Instant::now() < deadline,
+            "typed collision review stalled"
+        );
+        assert!(harness.state().editing.save.is_none());
+        assert!(!harness.state().editing.worker.is_busy());
+        harness.run_steps(1);
+        std::thread::yield_now();
+    }
+    assert!(harness.state().state.error.is_some());
+    let (target, proposed, rejected_revision) =
+        harness.state().state.field_rename_proposal().unwrap();
+    assert_eq!(target.column, "Token");
+    assert_eq!(proposed, "score");
+    assert_image(&path, &original);
+    assert!(!journal_path(&path).exists());
+    assert!(harness.state().editing.save.is_none());
+    assert!(!harness.state().editing.worker.is_busy());
+    let input = harness.get_by_role_and_label(Role::TextInput, "Field name");
+    assert_eq!(input.value().as_deref(), Some("score"));
+    input.focus();
+    harness.run_steps(1);
+    harness.key_press_modifiers(egui::Modifiers::COMMAND, Key::A);
+    harness
+        .get_by_role_and_label(Role::TextInput, "Field name")
+        .type_text("Identifier");
+    harness.run_steps(2);
+    let (_, corrected, revision) = harness.state().state.field_rename_proposal().unwrap();
+    assert_eq!(corrected, "Identifier");
+    assert!(revision > rejected_revision);
+    assert!(harness.state().state.can_review_field_rename());
+    harness.key_press_modifiers(egui::Modifiers::COMMAND, Key::S);
+    harness.run_steps(1);
+    finish_schema_save(&mut harness);
+    assert_image(&path, &expected);
+    assert!(!journal_path(&path).exists());
+    assert!(!harness.state().state.field_rename_open());
 }
