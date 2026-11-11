@@ -106,6 +106,71 @@ pub fn prepare_native_make_table(
     options: ExecutionOptions<'_>,
     snapshot_limits: TableSnapshotLimits,
 ) -> Result<PreparedNativeMakeTable, NativeMakeTableError> {
+    prepare_with_policy(
+        image,
+        query,
+        native,
+        query_budget,
+        Preparation {
+            parameters,
+            options,
+            snapshot_limits,
+            native_comparison: None,
+        },
+    )
+}
+
+/// Prepare using the captured image's actual database default and per-field
+/// native comparison descriptors, with a separate cumulative comparison pool.
+/// This entry point selects native policies; caller-supplied comparers are not
+/// accepted or silently replaced. All other shape and source checks are shared
+/// with the explicit-policy preparation entry point.
+pub fn prepare_native_make_table_with_native_comparison(
+    image: NativeImage,
+    query: Query,
+    native: &RefCell<ResourceBudget>,
+    comparison: &RefCell<ResourceBudget>,
+    query_budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+    snapshot_limits: TableSnapshotLimits,
+) -> Result<PreparedNativeMakeTable, NativeMakeTableError> {
+    prepare_with_policy(
+        image,
+        query,
+        native,
+        query_budget,
+        Preparation {
+            parameters: &[],
+            options: ExecutionOptions {
+                cancelled: Some(cancelled),
+                ..Default::default()
+            },
+            snapshot_limits,
+            native_comparison: Some(comparison),
+        },
+    )
+}
+
+struct Preparation<'a> {
+    parameters: &'a [(&'a str, Value)],
+    options: ExecutionOptions<'a>,
+    snapshot_limits: TableSnapshotLimits,
+    native_comparison: Option<&'a RefCell<ResourceBudget>>,
+}
+
+fn prepare_with_policy(
+    image: NativeImage,
+    query: Query,
+    native: &RefCell<ResourceBudget>,
+    query_budget: &mut ResourceBudget,
+    preparation: Preparation<'_>,
+) -> Result<PreparedNativeMakeTable, NativeMakeTableError> {
+    let Preparation {
+        parameters,
+        options,
+        snapshot_limits,
+        native_comparison: comparison,
+    } = preparation;
     let _span = tracing::debug_span!("access.prepare_native_make_table").entered();
     let never_cancelled = || false;
     let cancelled = options.cancelled.unwrap_or(&never_cancelled);
@@ -166,7 +231,24 @@ pub fn prepare_native_make_table(
             cancelled,
             snapshot_limits,
         )?;
-        plan_make_table(query, &source, query_budget, parameters, options)?
+        match comparison {
+            Some(comparison) => {
+                let (source, resolver) =
+                    source.with_deferred_database_collation_resolver(comparison)?;
+                plan_make_table(
+                    query,
+                    &source,
+                    query_budget,
+                    parameters,
+                    ExecutionOptions {
+                        collation: Some(resolver.default_collation()),
+                        collation_resolver: Some(&resolver),
+                        ..options
+                    },
+                )?
+            }
+            None => plan_make_table(query, &source, query_budget, parameters, options)?,
+        }
     };
     let rows = staged.into_rows();
     Ok(PreparedNativeMakeTable {

@@ -8,7 +8,10 @@ pub use joined::{JoinedUpdateTarget, local_joined_update_target, prepare_native_
 #[cfg(feature = "ace16-create")]
 mod make_table;
 #[cfg(feature = "ace16-create")]
-pub use make_table::{NativeMakeTableError, PreparedNativeMakeTable, prepare_native_make_table};
+pub use make_table::{
+    NativeMakeTableError, PreparedNativeMakeTable, prepare_native_make_table,
+    prepare_native_make_table_with_native_comparison,
+};
 #[cfg(feature = "journal")]
 mod deleting;
 #[cfg(feature = "journal")]

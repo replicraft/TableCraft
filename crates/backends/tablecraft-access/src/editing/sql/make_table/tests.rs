@@ -399,3 +399,64 @@ fn complete_preparation_finishes_one_source_bound_populated_candidate() {
         "first differing complete populated image byte"
     );
 }
+
+#[test]
+fn native_comparison_preparation_uses_actual_field_order_and_never_binary_fallback() {
+    let (mut bytes, definition) = text_source();
+    for text in ["B", "a"] {
+        bytes = rows::append(
+            &bytes,
+            definition,
+            rows::Profile::DesktopText,
+            rows::Input::Text(text),
+        );
+    }
+    // Independent stored sort descriptors: General legacy on database and field.
+    for (index, mask) in [1, 27, 152, 253].into_iter().enumerate() {
+        bytes[110 + index] = [9, 4, 0, 0][index] ^ mask;
+    }
+    let field_order = definition as usize * 4096 + 100 + 11;
+    bytes[field_order..field_order + 4].copy_from_slice(&[9, 4, 0, 0]);
+    let sql = "SELECT Name AS Label INTO Archive FROM Items ORDER BY Name";
+    let prepared = prepare_native_make_table_with_native_comparison(
+        image(&bytes),
+        syntax(sql),
+        &RefCell::new(budget()),
+        &RefCell::new(budget()),
+        &mut budget(),
+        &|| false,
+        TableSnapshotLimits::default(),
+    )
+    .unwrap();
+    assert_eq!(
+        prepared.rows(),
+        &[vec![Value::Text("a".into())], vec![Value::Text("B".into())],]
+    );
+    assert!(matches!(
+        prepare_native_make_table_with_native_comparison(
+            image(&bytes),
+            syntax(sql),
+            &RefCell::new(budget()),
+            &RefCell::new(ResourceBudget::new(0, 0, 0)),
+            &mut budget(),
+            &|| false,
+            TableSnapshotLimits::default(),
+        ),
+        Err(NativeMakeTableError::Inspect(InspectError::Limit(_)))
+    ));
+    bytes[field_order..field_order + 4].copy_from_slice(&[31, 4, 0, 1]);
+    assert!(matches!(
+        prepare_native_make_table_with_native_comparison(
+            image(&bytes),
+            syntax(sql),
+            &RefCell::new(budget()),
+            &RefCell::new(budget()),
+            &mut budget(),
+            &|| false,
+            TableSnapshotLimits::default(),
+        ),
+        Err(NativeMakeTableError::Query(MakeTableError::Query(
+            QueryError::Evaluation(tablecraft_expressions::EvalError::CollationRequired)
+        )))
+    ));
+}

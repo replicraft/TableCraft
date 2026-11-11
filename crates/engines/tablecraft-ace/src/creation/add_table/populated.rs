@@ -157,6 +157,12 @@ impl PopulatedAddTablePlan {
     pub fn before_bytes(&self) -> &[u8] {
         self.before.as_bytes()
     }
+    /// Borrow the complete already-paid immutable AFTER owner for read-only witnesses.
+    /// Sharing its bytes grants neither save nor source-requalification authority.
+    pub fn after_source(&self) -> &NativeImageSource {
+        &self.after
+    }
+
     /// Complete independently checked table and row image, without save permission.
     pub fn after_bytes(&self) -> &[u8] {
         self.after.as_bytes()
