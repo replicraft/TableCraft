@@ -1,6 +1,7 @@
 //! Independent retained field RENAME/DROP images preserve row and property history.
 use crate::fixtures::access::{
-    put16, put32, raw_catalog_properties as properties, raw_property_groups, raw_schema_drop,
+    packed_record::append_record, put16, put32, raw_catalog_properties as properties,
+    raw_property_groups, raw_schema_drop,
 };
 
 const PAGE: usize = 4096;
@@ -139,4 +140,38 @@ pub fn source(
         source.roots.push(root);
     }
     source
+}
+
+/// Append a real keyless table whose first field is an ordinary updatable LONG.
+/// Native field0 is not generated or indexed; its literal row is Id17/Score23.
+pub fn keyless_first_field(before: &[u8], table: &str) -> Vec<u8> {
+    let definition = before.len() / PAGE;
+    let template = super::template(super::Target::KeylessNumber);
+    let mut dictionary = Vec::new();
+    for text in ["Required", "DefaultValue"] {
+        let encoded = text
+            .encode_utf16()
+            .flat_map(u16::to_le_bytes)
+            .collect::<Vec<_>>();
+        dictionary.extend((encoded.len() as u16).to_le_bytes());
+        dictionary.extend(encoded);
+    }
+    let mut body = b"MR2\0".to_vec();
+    body.extend(((6 + dictionary.len()) as u32).to_le_bytes());
+    body.extend(128_u16.to_le_bytes());
+    body.extend(dictionary);
+    let mut group = vec![10, 0, 0, 0, 4, 0, b'I', 0, b'd', 0];
+    group.extend([9, 0, 1, 1, 0, 0, 1, 0, 0]);
+    group.extend([10, 0, 1, 12, 1, 0, 2, 0, b'0', 0]);
+    body.extend(((6 + group.len()) as u32).to_le_bytes());
+    body.extend(1_u16.to_le_bytes());
+    body.extend(group);
+    let mut after = super::append_template(before, table, &template, Some(&body));
+    let data = (definition + 1) * PAGE;
+    append_record(
+        &mut after[data..data + PAGE],
+        &[2, 0, 17, 0, 0, 0, 23, 0, 0, 0, 3],
+    );
+    put32(&mut after, definition * PAGE + 16, 1);
+    after
 }
