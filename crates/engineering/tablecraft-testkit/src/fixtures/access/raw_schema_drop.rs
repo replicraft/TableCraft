@@ -11,7 +11,8 @@ const COLUMN_BLOCK: usize = 63;
 const PHYSICAL_INDEXES: usize = 51;
 const INDEX_ENTRY_BYTES: usize = 12;
 const COLUMN_BYTES: usize = 25;
-const NATIVE_NUMBER: usize = 5;
+const COLUMN_FLAGS: usize = 15;
+const GENERATED_FLAGS: u8 = 0x44;
 const SHORT_BYTES: usize = 2;
 
 fn word(bytes: &[u8], at: usize) -> usize {
@@ -58,7 +59,9 @@ pub(in crate::fixtures::access) fn definition(
         let end = position + SHORT_BYTES + size;
         let label = name(&page[position + SHORT_BYTES..end]);
         if label == selected {
-            assert_ne!(word(entry, NATIVE_NUMBER), 0);
+            // Ordinary stored number zero is valid in a keyless table. Generated
+            // LONG/GUID declarations are identified by their actual native flags.
+            assert_eq!(entry[COLUMN_FLAGS] & GENERATED_FLAGS, 0);
             removed += 1;
         } else {
             kept_entries.extend_from_slice(entry);
