@@ -4,7 +4,10 @@ use crate::{
     plan_batch_update,
     source::{MemorySource, MemoryTable},
 };
-use std::{cell::Cell, rc::Rc};
+use std::{
+    cell::{Cell, RefCell},
+    rc::Rc,
+};
 use tablecraft_db::{ColumnUpdates, EditableTable, Snapshot, SnapshotError};
 use tablecraft_schema::{Column, SchemaPolicy};
 use tablecraft_sql::{ParseLimits, parse_query};
@@ -30,6 +33,7 @@ fn target_rows() -> Vec<Vec<Value>> {
 struct Editor {
     snapshot: Snapshot,
     calls: Rc<Cell<usize>>,
+    fail: bool,
 }
 impl EditableTable for Editor {
     type Error = SnapshotError;
@@ -59,6 +63,9 @@ impl EditableBatch for Editor {
     ) -> Result<Self::Plan, Self::Error> {
         budget.charge(Resource::Steps, 1)?;
         self.calls.set(self.calls.get() + 1);
+        if self.fail {
+            return Err(SnapshotError::StaleRow);
+        }
         columns
             .iter()
             .map(|column| {
@@ -95,6 +102,7 @@ fn make_editor(empty: bool) -> (Editor, Rc<Cell<usize>>) {
         Editor {
             snapshot,
             calls: Rc::clone(&calls),
+            fail: false,
         },
         calls,
     )
@@ -438,4 +446,108 @@ fn assignments_cannot_escape_the_selected_occurrence_or_repeat_one_target() {
         assert_eq!(source.scans.get(), 0);
         assert_eq!(calls.get(), 0);
     }
+}
+
+struct BudgetReads<'a> {
+    reads: &'a Reads,
+    native: &'a RefCell<ResourceBudget>,
+}
+impl Source for BudgetReads<'_> {
+    fn columns(&self, table: &str) -> Result<&[Column], QueryError> {
+        self.reads.columns(table)
+    }
+    fn scan(
+        &self,
+        table: &str,
+        visitor: &mut dyn FnMut(&[Value]) -> Result<(), QueryError>,
+    ) -> Result<(), QueryError> {
+        self.native
+            .try_borrow_mut()
+            .map_err(|_| QueryError::Source)?
+            .charge(Resource::Steps, 5)?;
+        self.reads.scan(table, visitor)
+    }
+}
+
+#[test]
+fn two_phase_preparation_releases_the_shared_native_pool_before_one_finish() {
+    let (editor, calls) = make_editor(false);
+    let id = editor.snapshot.id();
+    let reads = changes();
+    let native = RefCell::new(budget());
+    let before = native.borrow().remaining(Resource::Steps);
+    let source = BudgetReads {
+        reads: &reads,
+        native: &native,
+    };
+    let parsed = parse_query(
+        "UPDATE Items AS t INNER JOIN Changes AS c ON t.Id=c.Id SET t.Score=c.NewScore",
+        ParseLimits::default(),
+    )
+    .unwrap();
+    let staged = prepare_joined_batch_update_with_options(
+        editor,
+        &source,
+        parsed.query(),
+        &mut budget(),
+        JoinedMutationOptions {
+            target_snapshot: id,
+            target_qualifier: "t",
+            mutation: MutationOptions::default(),
+        },
+        &|| false,
+    )
+    .unwrap();
+    assert_eq!(staged.matched_rows(), 2);
+    assert_eq!(calls.get(), 0, "preparation must not consume the editor");
+    assert_eq!(
+        native.borrow().remaining(Resource::Steps),
+        before - 5,
+        "only actual source scan work touched the native pool"
+    );
+    let mut finish_pool = native.try_borrow_mut().unwrap();
+    let plan = staged.finish(&mut finish_pool, &|| false).unwrap();
+    assert!(finish_pool.remaining(Resource::Steps) < before - 5);
+    assert_eq!(calls.get(), 1);
+    assert_eq!(
+        plan.into_backend(),
+        vec![(
+            "Score".into(),
+            vec![(0, Value::Int32(5)), (1, Value::Int32(7))]
+        )]
+    );
+}
+
+#[test]
+fn staged_finish_retains_typed_backend_failure_without_repeating_reads() {
+    let (mut editor, calls) = make_editor(false);
+    editor.fail = true;
+    let id = editor.snapshot.id();
+    let source = changes();
+    let parsed = parse_query(
+        "UPDATE Items AS t INNER JOIN Changes AS c ON t.Id=c.Id SET t.Score=c.NewScore",
+        ParseLimits::default(),
+    )
+    .unwrap();
+    let staged = prepare_joined_batch_update_with_options(
+        editor,
+        &source,
+        parsed.query(),
+        &mut budget(),
+        JoinedMutationOptions {
+            target_snapshot: id,
+            target_qualifier: "t",
+            mutation: MutationOptions::default(),
+        },
+        &|| false,
+    )
+    .unwrap();
+    assert_eq!(calls.get(), 0);
+    let scans = source.scans.get();
+    assert!(matches!(
+        staged.finish(&mut budget(), &|| false),
+        Err(UpdateError::Backend(SnapshotError::StaleRow))
+    ));
+    assert_eq!(calls.get(), 1);
+    assert_eq!(source.scans.get(), scans);
 }

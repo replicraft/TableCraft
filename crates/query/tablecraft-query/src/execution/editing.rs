@@ -9,4 +9,7 @@ pub use plan::{
 };
 
 mod joined;
-pub use joined::{JoinedMutationOptions, plan_joined_batch_update_with_options};
+pub use joined::{
+    JoinedMutationOptions, PreparedJoinedUpdate, plan_joined_batch_update_with_options,
+    prepare_joined_batch_update_with_options,
+};

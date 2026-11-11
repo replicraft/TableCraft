@@ -33,6 +33,48 @@ pub struct JoinedMutationOptions<'a> {
     pub mutation: MutationOptions<'a>,
 }
 
+/// Complete joined evaluation plus its original editor, ready for one consuming
+/// backend finish. Preparation retains none of its read-source, comparison-
+/// provider or budget borrows.
+#[must_use = "finish explicitly or discard the staged joined update"]
+pub struct PreparedJoinedUpdate<E: EditableBatch> {
+    editor: E,
+    prepared: PreparedUpdate,
+}
+
+impl<E: EditableBatch> PreparedJoinedUpdate<E> {
+    /// Number of distinct selected original target rows, including no-op values.
+    pub const fn matched_rows(&self) -> usize {
+        self.prepared.matched_rows
+    }
+
+    /// Finish once after read-source callbacks and their resource borrows ended.
+    /// Borrowed column-view allocation and backend qualification spend this pool;
+    /// no SQL expression or read-source callback is evaluated again.
+    ///
+    /// # Errors
+    /// Cancellation, view-allocation or work exhaustion retains QueryError;
+    /// backend admission failures retain their original typed backend cause.
+    pub fn finish(
+        self,
+        backend_budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<UpdatePlan<E::Plan>, UpdateError<E::Error>> {
+        let _span = tracing::debug_span!("query.update.joined_finish").entered();
+        if cancelled() {
+            return Err(QueryError::Cancelled.into());
+        }
+        let columns = self.prepared.borrowed_columns(backend_budget, cancelled)?;
+        finish_batch(
+            self.editor,
+            &self.prepared,
+            &columns,
+            backend_budget,
+            cancelled,
+        )
+    }
+}
+
 struct JoinedColumn {
     name: String,
     values: Vec<Option<Value>>,
@@ -44,7 +86,8 @@ struct Frame {
 }
 
 /// Evaluate scalar local joins and all selected SET expressions before one
-/// consuming batch finish. Selected target rows always come from the editor's
+/// staged action. No backend budget is borrowed during read-source scans.
+/// Selected target rows always come from the editor's
 /// original snapshot, never from equality matching or read-source row ordering.
 /// INNER/LEFT/RIGHT and comma products are supported. Derived/collection sources,
 /// assignments spanning target occurrences and repeated selected target matches
@@ -54,16 +97,15 @@ struct Frame {
 /// Refuses mismatched snapshot/schema preconditions, ambiguous or unsupported
 /// targets, expression errors, cancellation, allocation or budget failures before
 /// backend finish. Backend qualification failures retain their own typed cause.
-pub fn plan_joined_batch_update_with_options<E: EditableBatch>(
+pub fn prepare_joined_batch_update_with_options<E: EditableBatch>(
     editor: E,
     reads: &dyn Source,
     query: &Query,
     query_budget: &mut ResourceBudget,
-    backend_budget: &mut ResourceBudget,
     options: JoinedMutationOptions<'_>,
     cancelled: &dyn Fn() -> bool,
-) -> Result<UpdatePlan<E::Plan>, UpdateError<E::Error>> {
-    let _span = tracing::debug_span!("query.update.joined_plan").entered();
+) -> Result<PreparedJoinedUpdate<E>, UpdateError<E::Error>> {
+    let _span = tracing::debug_span!("query.update.joined_prepare").entered();
     if cancelled() {
         return Err(QueryError::Cancelled.into());
     }
@@ -254,8 +296,34 @@ pub fn plan_joined_batch_update_with_options<E: EditableBatch>(
         columns: prepared_columns,
         matched_rows,
     };
-    let columns = prepared.borrowed_columns(runtime.budget, cancelled)?;
-    finish_batch(editor, &prepared, &columns, backend_budget, cancelled)
+    Ok(PreparedJoinedUpdate { editor, prepared })
+}
+
+/// Prepare and finish a joined UPDATE when the read Source does not need to
+/// borrow the supplied backend pool during scans. For a shared native pool,
+/// prepare first, then borrow it only for PreparedJoinedUpdate::finish.
+///
+/// # Errors
+/// Returns the same typed preparation and finish failures as the two-phase API.
+/// No retry, duplicated evaluation or backend finish occurs after a failure.
+pub fn plan_joined_batch_update_with_options<E: EditableBatch>(
+    editor: E,
+    reads: &dyn Source,
+    query: &Query,
+    query_budget: &mut ResourceBudget,
+    backend_budget: &mut ResourceBudget,
+    options: JoinedMutationOptions<'_>,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<UpdatePlan<E::Plan>, UpdateError<E::Error>> {
+    prepare_joined_batch_update_with_options(
+        editor,
+        reads,
+        query,
+        query_budget,
+        options,
+        cancelled,
+    )?
+    .finish(backend_budget, cancelled)
 }
 
 fn push<T>(runtime: &mut Runtime<'_, '_>, values: &mut Vec<T>, value: T) -> Result<(), QueryError> {
