@@ -155,4 +155,5 @@ impl Seek for OfflineTarget {
 }
 
 #[cfg(test)]
+#[path = "target/tests.rs"]
 mod tests;

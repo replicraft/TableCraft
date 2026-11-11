@@ -6,8 +6,6 @@ mod resizable;
 use std::{
     fs::{self, OpenOptions},
     io::Write,
-    path::PathBuf,
-    time::{SystemTime, UNIX_EPOCH},
 };
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_io::{
@@ -15,33 +13,17 @@ use tablecraft_io::{
     journal::{RecoveryOutcome, prepare, recover},
 };
 
-struct Directory(PathBuf);
-
-impl Drop for Directory {
-    fn drop(&mut self) {
-        fs::remove_dir_all(&self.0).unwrap();
-    }
-}
-
 fn budget() -> ResourceBudget {
     ResourceBudget::new(1_000_000, 0, 1_000_000)
 }
 
 #[test]
 fn retained_journals_reopen_and_recover_over_locked_real_files() {
-    let directory = Directory(std::env::temp_dir().join(format!(
-            "tablecraft-journal-{}-{}",
-            std::process::id(),
-            SystemTime::now()
-                .duration_since(UNIX_EPOCH)
-                .unwrap()
-                .as_nanos()
-        )));
-    fs::create_dir(&directory.0).unwrap();
+    let directory = tempfile::tempdir().unwrap();
 
     for committed in [false, true] {
-        let target_path = directory.0.join(format!("target-{committed}"));
-        let journal_path = directory.0.join(format!("journal-{committed}"));
+        let target_path = directory.path().join(format!("target-{committed}"));
+        let journal_path = directory.path().join(format!("journal-{committed}"));
         let mut target = OpenOptions::new()
             .write(true)
             .create_new(true)
@@ -60,7 +42,10 @@ fn retained_journals_reopen_and_recover_over_locked_real_files() {
 
         // This exercises Unix directory synchronization, not power-loss claims.
         #[cfg(unix)]
-        fs::File::open(&directory.0).unwrap().sync_all().unwrap();
+        fs::File::open(directory.path())
+            .unwrap()
+            .sync_all()
+            .unwrap();
 
         let mut target = ExclusiveFile::open(&target_path).unwrap();
         let mut journal = ExclusiveFile::open(&journal_path).unwrap();

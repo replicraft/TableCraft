@@ -1,10 +1,9 @@
 //! Disposable real files consume the same public V2 API and fault contract.
-use super::{Directory, budget};
+use super::budget;
 use std::{
     fs::{self, OpenOptions},
     io::{self, Read, Seek, SeekFrom, Write},
     path::Path,
-    time::{SystemTime, UNIX_EPOCH},
 };
 use tablecraft_io::{
     ExclusiveFile, IoError,
@@ -13,19 +12,6 @@ use tablecraft_io::{
         recover_resizable,
     },
 };
-
-fn directory() -> Directory {
-    let path = std::env::temp_dir().join(format!(
-        "tablecraft-resizable-journal-{}-{}",
-        std::process::id(),
-        SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .unwrap()
-            .as_nanos(),
-    ));
-    fs::create_dir(&path).unwrap();
-    Directory(path)
-}
 
 fn create_pair(directory: &Path, before: &[u8]) -> (ExclusiveFile, ExclusiveFile) {
     for (name, bytes) in [("target", before), ("journal", b"".as_slice())] {
@@ -55,8 +41,8 @@ fn real_files_grow_shrink_and_reopen_retained_journals() {
         (b"removed".as_slice(), b"".as_slice()),
     ] {
         for committed in [false, true] {
-            let directory = directory();
-            let (mut target, mut journal) = create_pair(&directory.0, before);
+            let directory = tempfile::tempdir().unwrap();
+            let (mut target, mut journal) = create_pair(directory.path(), before);
             let prepared = prepare_resizable_expected(
                 &mut target,
                 &mut journal,
@@ -74,8 +60,8 @@ fn real_files_grow_shrink_and_reopen_retained_journals() {
             target.close().unwrap();
             journal.close().unwrap();
 
-            let mut target = ExclusiveFile::open(&directory.0.join("target")).unwrap();
-            let mut journal = ExclusiveFile::open(&directory.0.join("journal")).unwrap();
+            let mut target = ExclusiveFile::open(directory.path().join("target")).unwrap();
+            let mut journal = ExclusiveFile::open(directory.path().join("journal")).unwrap();
             let expected = if committed {
                 RecoveryOutcome::Committed
             } else {
@@ -90,10 +76,15 @@ fn real_files_grow_shrink_and_reopen_retained_journals() {
             target.close().unwrap();
             journal.close().unwrap();
             assert_eq!(
-                fs::read(directory.0.join("target")).unwrap(),
+                fs::read(directory.path().join("target")).unwrap(),
                 if committed { after } else { before }
             );
-            assert!(fs::metadata(directory.0.join("journal")).unwrap().len() > 0);
+            assert!(
+                fs::metadata(directory.path().join("journal"))
+                    .unwrap()
+                    .len()
+                    > 0
+            );
         }
     }
 }
@@ -168,8 +159,8 @@ fn real_resize_failure_before_partial_or_after_effect_requires_recovery() {
             ResizeFailure::Partial,
             ResizeFailure::After,
         ] {
-            let directory = directory();
-            let (file, mut journal) = create_pair(&directory.0, before);
+            let directory = tempfile::tempdir().unwrap();
+            let (file, mut journal) = create_pair(directory.path(), before);
             let mut target = FaultFile { file, failure };
             let prepared = prepare_resizable_expected(
                 &mut target,
@@ -184,8 +175,8 @@ fn real_resize_failure_before_partial_or_after_effect_requires_recovery() {
             target.file.close().unwrap();
             journal.close().unwrap();
 
-            let mut target = ExclusiveFile::open(&directory.0.join("target")).unwrap();
-            let mut journal = ExclusiveFile::open(&directory.0.join("journal")).unwrap();
+            let mut target = ExclusiveFile::open(directory.path().join("target")).unwrap();
+            let mut journal = ExclusiveFile::open(directory.path().join("journal")).unwrap();
             for _ in 0..2 {
                 assert_eq!(
                     recover_resizable(&mut target, &mut journal, &mut budget(), &|| false).unwrap(),
@@ -194,7 +185,7 @@ fn real_resize_failure_before_partial_or_after_effect_requires_recovery() {
             }
             target.close().unwrap();
             journal.close().unwrap();
-            assert_eq!(fs::read(directory.0.join("target")).unwrap(), before);
+            assert_eq!(fs::read(directory.path().join("target")).unwrap(), before);
         }
     }
 }
