@@ -25,6 +25,7 @@ pub(crate) use domain::{DomainContext, bind_domain};
 mod deleting;
 pub(crate) use deleting::{BoundDelete, bind_delete};
 mod editing;
+pub(crate) use editing::joined::{JoinedTargetSource, bind_joined_update};
 mod expression;
 mod expression_identity;
 mod external;

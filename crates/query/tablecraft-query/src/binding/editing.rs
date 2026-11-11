@@ -1,3 +1,5 @@
+pub(super) mod joined;
+
 use super::{Binder, Parameter, resolve};
 use crate::{QueryError, Source, plan::Expr};
 use tablecraft_core::limits::{Resource, ResourceBudget};

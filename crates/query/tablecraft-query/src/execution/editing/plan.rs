@@ -37,14 +37,14 @@ impl<P> UpdatePlan<P> {
     }
 }
 
-struct PreparedColumn {
-    name: String,
-    updates: Vec<CellUpdate>,
+pub(super) struct PreparedColumn {
+    pub(super) name: String,
+    pub(super) updates: Vec<CellUpdate>,
 }
 
-struct PreparedUpdate {
-    columns: Vec<PreparedColumn>,
-    matched_rows: usize,
+pub(super) struct PreparedUpdate {
+    pub(super) columns: Vec<PreparedColumn>,
+    pub(super) matched_rows: usize,
 }
 
 /// Plan one local table/one assignment against its frozen original snapshot.
@@ -154,7 +154,7 @@ pub fn plan_batch_update_with_options<E: EditableBatch>(
 }
 
 impl PreparedUpdate {
-    fn borrowed_columns(
+    pub(super) fn borrowed_columns(
         &self,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
@@ -179,7 +179,7 @@ impl PreparedUpdate {
     }
 }
 
-fn finish_batch<E: EditableBatch>(
+pub(super) fn finish_batch<E: EditableBatch>(
     editor: E,
     prepared: &PreparedUpdate,
     columns: &[ColumnUpdates<'_>],
