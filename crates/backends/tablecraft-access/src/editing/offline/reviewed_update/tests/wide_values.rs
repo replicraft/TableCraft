@@ -1,11 +1,15 @@
-//! SQL literals retain exact GUID/Decimal values through reviewed native saves.
+//! SQL GUID literals and typed Decimal parameters retain exact native values.
 use super::{budget, open};
-use crate::editing::{
-    offline::test_support::{assert_completion, assert_staged_read_state},
-    sql,
+use crate::{
+    NativeCollationResolver,
+    editing::{
+        offline::test_support::{assert_completion, assert_staged_read_state},
+        sql::{self, NativeMutationOptions},
+    },
 };
-use std::{fs, io::Cursor};
-use tablecraft_ace::{NativeImage, NativeUpdateProfile};
+use std::{cell::RefCell, fs, io::Cursor};
+use tablecraft_ace::{NativeImage, NativeSortOrder, NativeUpdateProfile};
+use tablecraft_core::values::{Decimal, Value};
 use tablecraft_model::CatalogScope;
 use tablecraft_sql::{ParseLimits, parse_query};
 use tablecraft_testkit::fixtures::access::canonical_retained_add_table::{
@@ -47,9 +51,9 @@ fn reviewed_guid_decimal_sql_and_long_control_preserve_exact_values_and_families
         "UPDATE ExactValues SET Token={GUID {fedcba98-7654-3210-0123-456789abcdef}} WHERE ID=1",
         "UPDATE ExactValues SET Token=Null WHERE ID=1",
         "UPDATE ExactValues SET Token={GUID {00112233-4455-6677-8899-aabbccddeeff}} WHERE ID=1",
-        "UPDATE ExactValues SET Amount=CDec('-9007199254740993.4321') WHERE ID=1",
+        "PARAMETERS replacement DECIMAL(28,4); UPDATE ExactValues SET Amount=replacement WHERE ID=1",
         "UPDATE ExactValues SET Amount=Null WHERE ID=1",
-        "UPDATE ExactValues SET Amount=CDec('9007199254740993.1234') WHERE ID=1",
+        "PARAMETERS replacement DECIMAL(28,4); UPDATE ExactValues SET Amount=replacement WHERE ID=1",
         "UPDATE ExactValues SET Score=124 WHERE ID=1",
     ]
     .into_iter()
@@ -73,11 +77,33 @@ fn reviewed_guid_decimal_sql_and_long_control_preserve_exact_values_and_families
         )
         .unwrap();
         let parsed = parse_query(statement, ParseLimits::default()).unwrap();
-        let reviewed =
-            sql::plan_recoverable_batch_update(image, parsed.query(), &mut budget(), None, &|| {
-                false
-            })
-            .unwrap_or_else(|error| panic!("SQL step {step}: {error:?}"));
+        let comparison_pool = RefCell::new(budget());
+        let resolver = NativeCollationResolver::new_deferred_default(
+            NativeSortOrder::from_native_bytes([9, 4, 0, 1]),
+            &comparison_pool,
+            &|| false,
+        )
+        .unwrap();
+        // Typed parameters carry exact coefficients without requiring a host
+        // regional number format to parse a localized numeric string.
+        let parameters = match step {
+            3 => vec![("replacement", Value::Decimal(Decimal::new(REPLACEMENT_AMOUNT, 4).unwrap()))],
+            5 => vec![("replacement", Value::Decimal(Decimal::new(AMOUNT, 4).unwrap()))],
+            _ => Vec::new(),
+        };
+        let reviewed = sql::plan_recoverable_batch_update_with_options(
+            image,
+            parsed.query(),
+            &mut budget(),
+            &mut budget(),
+            NativeMutationOptions {
+                parameters: &parameters,
+                collation: resolver.default_collation(),
+                resolver: &resolver,
+            },
+            &|| false,
+        )
+        .unwrap_or_else(|error| panic!("SQL step {step}: {error:?}"));
         let profile = if step == 6 {
             NativeUpdateProfile::Ace16RetainedRows
         } else {
