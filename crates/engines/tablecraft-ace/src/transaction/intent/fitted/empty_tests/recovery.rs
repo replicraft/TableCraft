@@ -1,14 +1,15 @@
 //! Empty native actions still reconstruct complete source and protocol authority.
 use super::{budget, groups, literal};
 use crate::{
-    NativeImage, NativeIntentError, NativeRecoveryQualificationError, NativeUpdateIntent,
-    NativeUpdateProfile, qualify_native_update_recovery,
+    EditError, NativeFittedIntentGroup, NativeFittedUpdates, NativeImage, NativeIntentError,
+    NativeRecoveryQualificationError, NativeUpdateIntent, NativeUpdateProfile,
+    RecoverableEditError, WriteBlocker, qualify_native_update_recovery,
 };
 use std::io::Cursor;
 use tablecraft_io::journal::{self, RecoveryOutcome, ResizableState};
 use tablecraft_model::CatalogScope;
 use tablecraft_testkit::{
-    fixtures::access::canonical_retained_add_table::joined_update,
+    fixtures::access::canonical_retained_add_table::{field_changes, fields, joined_update},
     support::io::journal::MemoryStorage,
 };
 
@@ -29,7 +30,12 @@ fn plan(before: &[u8]) -> crate::RecoverableNativeEditPlan {
 }
 
 fn decode(before: &[u8]) -> NativeUpdateIntent {
-    NativeUpdateIntent::decode(&literal(before, &["Score"]), &mut budget(), &|| false).unwrap()
+    NativeUpdateIntent::decode(
+        &literal(before, "Table1", &["Score"]),
+        &mut budget(),
+        &|| false,
+    )
+    .unwrap()
 }
 
 #[test]
@@ -43,7 +49,7 @@ fn empty_original_reconstructs_identity_and_v3_state_outcomes_remain_distinct() 
         );
         assert_eq!(
             plan.intent().encode(&mut budget(), &|| false).unwrap(),
-            literal(&source.bytes, &["Score"])
+            literal(&source.bytes, "Table1", &["Score"])
         );
         assert_eq!(plan.before_bytes(), source.bytes);
         assert_eq!(plan.after_bytes(), source.bytes);
@@ -161,7 +167,7 @@ fn old_protocols_and_retagged_nonempty_actions_cannot_replay_zero_match_original
         (b"TCNI0022", 22),
         (b"TCNI0023", 23),
     ] {
-        let mut wire = literal(&source.bytes, &["Score"]);
+        let mut wire = literal(&source.bytes, "Table1", &["Score"]);
         wire[..8].copy_from_slice(magic);
         wire[12..14].copy_from_slice(&profile.to_le_bytes());
         let original = NativeUpdateIntent::decode(&wire, &mut budget(), &|| false).unwrap();
@@ -235,6 +241,7 @@ fn forged_after_stale_binding_and_missing_targets_refuse_before_recovery_effects
     for stale_binding in [false, true] {
         let mut original = literal(
             &source.bytes,
+            "Table1",
             &[if stale_binding { "Score" } else { "Missing" }],
         );
         if stale_binding {
@@ -268,4 +275,68 @@ fn forged_after_stale_binding_and_missing_targets_refuse_before_recovery_effects
         assert_eq!(target.writes, 0);
         assert_eq!(target.bytes.get_ref(), &source.bytes);
     }
+}
+
+#[test]
+fn multiple_ordinary_empty_targets_bind_each_native_field_and_reject_a_missing_member() {
+    let seed = fields::source(fields::Case::FirstNumber).bytes;
+    let before = field_changes::keyless_first_field(&seed, "Keyless");
+    let make_groups = |names: &[&str]| {
+        names
+            .iter()
+            .map(|name| {
+                NativeFittedIntentGroup::new_retained(
+                    name,
+                    NativeFittedUpdates::Fixed(Vec::new()),
+                    &mut budget(),
+                    &|| false,
+                )
+                .unwrap()
+            })
+            .collect()
+    };
+    let plan = image(&before, 30641)
+        .plan_recoverable_retained_empty_row_updates(
+            "Keyless",
+            make_groups(&["Id", "Score"]),
+            &mut budget(),
+            &|| false,
+        )
+        .unwrap();
+    assert_eq!(plan.before_bytes(), before);
+    assert_eq!(plan.after_bytes(), before);
+    let wire = literal(&before, "Keyless", &["Id", "Score"]);
+    assert_eq!(
+        plan.intent().encode(&mut budget(), &|| false).unwrap(),
+        wire
+    );
+    let original = NativeUpdateIntent::decode(&wire, &mut budget(), &|| false).unwrap();
+    original
+        .verify_before(&before, &mut budget(), &|| false)
+        .unwrap();
+    let mut target = MemoryStorage::new(before.to_vec());
+    let mut journal_file = MemoryStorage::new(Vec::new());
+    drop(
+        plan.prepare_retained(&mut target, &mut journal_file, &mut budget(), &|| false)
+            .unwrap(),
+    );
+    let checked = journal::inspect_v3(&mut journal_file, &mut budget(), &|| false).unwrap();
+    let qualified = original
+        .qualify_retained_recovery(checked, CatalogScope::new(30642), &mut budget(), &|| false)
+        .unwrap();
+    assert_eq!(qualified.state(), ResizableState::Pending);
+    drop(qualified);
+    assert_eq!(target.writes, 0);
+    assert_eq!(target.bytes.get_ref(), &before);
+    assert!(matches!(
+        image(&before, 30643).plan_recoverable_retained_empty_row_updates(
+            "Keyless",
+            make_groups(&["Id", "Missing"]),
+            &mut budget(),
+            &|| false,
+        ),
+        Err(RecoverableEditError::Edit(EditError::Unsupported(
+            WriteBlocker::Column
+        )))
+    ));
 }

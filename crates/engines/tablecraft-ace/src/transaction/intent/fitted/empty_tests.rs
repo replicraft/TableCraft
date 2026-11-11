@@ -25,8 +25,7 @@ fn groups() -> Vec<NativeFittedIntentGroup> {
     ]
 }
 
-fn literal(before: &[u8], names: &[&str]) -> Vec<u8> {
-    let table = "Table1";
+fn literal(before: &[u8], table: &str, names: &[&str]) -> Vec<u8> {
     let total = 72 + table.len() + names.iter().map(|name| 20 + name.len()).sum::<usize>();
     let mut wire = b"TCNI0024".to_vec();
     wire.extend((total as u32).to_le_bytes());
@@ -53,7 +52,7 @@ fn literal(before: &[u8], names: &[&str]) -> Vec<u8> {
 #[test]
 fn empty_original_is_literal_bound_and_old_action_decoders_stay_closed() {
     let before = [0x24; 4096];
-    let wire = literal(&before, &["Score"]);
+    let wire = literal(&before, "Table1", &["Score"]);
     let original = NativeFittedEditIntent::new_retained_empty(
         "Table1",
         groups(),
@@ -135,14 +134,14 @@ fn empty_grammar_requires_named_unique_fixed_groups_and_no_cells() {
     for names in [vec![], vec![""], vec!["Score", "sCoRe"]] {
         assert!(
             NativeFittedEditIntent::decode_retained_empty(
-                &literal(&before, &names),
+                &literal(&before, "Table1", &names),
                 &mut budget(),
                 &|| false
             )
             .is_err()
         );
     }
-    let wire = literal(&before, &["Score"]);
+    let wire = literal(&before, "Table1", &["Score"]);
     for end in 0..wire.len() {
         assert!(
             NativeFittedEditIntent::decode_retained_empty(&wire[..end], &mut budget(), &|| false)
@@ -174,7 +173,7 @@ fn empty_grammar_requires_named_unique_fixed_groups_and_no_cells() {
 #[test]
 fn empty_data_decode_retains_cancellation_and_paid_allocation_failures() {
     let before = [0x24; 4096];
-    let wire = literal(&before, &["Score"]);
+    let wire = literal(&before, "Table1", &["Score"]);
     assert!(NativeFittedEditIntent::decode_retained_empty(&wire, &mut budget(), &|| true).is_err());
     assert!(
         NativeFittedEditIntent::decode_retained_empty(
@@ -203,7 +202,7 @@ fn journal_only_empty_original_decodes_but_native_recovery_refuses_before_effect
     use tablecraft_testkit::support::io::journal::MemoryStorage;
 
     let before = vec![0x24; 4096];
-    let wire = literal(&before, &["Score"]);
+    let wire = literal(&before, "Table1", &["Score"]);
     let original = NativeUpdateIntent::decode(&wire, &mut budget(), &|| false).unwrap();
     assert_eq!(
         original.profile(),
