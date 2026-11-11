@@ -17,20 +17,23 @@ describe the implemented ownership boundary. Generic row recordsets remain
 unavailable in GUI contents. Whole-recordset scalar conversion, ordering and
 aggregation do not gain implicit semantics. No payload is decoded or opened.
 
-Functional qualification currently records 1,867 passing query executions across
-271 targets, 24 focused adapter checks including four qualified history profiles,
-364 full runtime checks with one ignored, 33 focused UI checks and 22 desktop query
-workflows. CLI collection integration passes 13 checks; MCP passes 73 unit and two
-stdio checks. These runs are separate evidence, not one deduplicated total.
-Native guard repairs and final strict verification remain pending; this is not a
-final all-gates-passing receipt.
+The [workflow record](../tests/results/queries/gui-query-recordset-workflows-2026-11-11.json)
+retains causal failures and their repairs. Qualification passes 1,867 query test
+executions across 271 targets, 40 native complex-read checks and 24 focused adapter
+checks including four qualified history profiles. Runtime has 365 distinct passing
+functions with one ignored; UI has 734 distinct passing functions across the full
+run and focused repairs. All 22 desktop query workflows, 13 CLI collection checks
+and 75 MCP unit/stdio checks pass. These package scopes are not one deduplicated
+cross-package total. Strict all-target/all-feature lint across nine affected
+packages, minimal runtime/query and warnings-denied rustdoc pass.
 
 The [localized presentation record](../tests/results/queries/query-history-localized-presentation-2026-11-11.json)
 retains 24 offscreen frames with 12 directly inspected across English/German,
 light/dark and parent/contents/empty states. It records the source-free adaptation
 and reference gaps separately from actual desktop execution. No native window or
-Windows/Access parity is claimed. Query result paging and a dedicated saved-query
-attachment integration regression remain unfinished.
+Windows/Access parity is claimed. Actual saved-query retrieval also issues and
+inspects attachment metadata, including empty children and stale-source refusal.
+Query result paging and broader native/application parity remain unfinished.
 
 ## Stored collection member queries in SQL View — 11 November 2026
 

@@ -1,0 +1,262 @@
+{
+  "date": "2026-11-11",
+  "source_commit": "8a4a8e9956581837df7727cc69e3d7134445be09",
+  "source_tree": "e6e20a5fc14092f7c52998d270b0f88f83b3d3ff",
+  "source_identity_scope": "Captured committed HEAD/tree before subsequent next-work edits; this receipt qualifies only its listed read/query workflows, not host field-deletion changes.",
+  "platform": "macOS 14.7.2 ARM64",
+  "native_windows_opened": false,
+  "scope": "Structured attachment/history retrieval results and issued read-only query contents",
+  "workflow": [
+    "Normal SQL Run preserves three parent rows and assigned child counts rather than flattening bare recordsets.",
+    "Explicit named metadata projections retain their scalar child-alignment behavior.",
+    "Declared schema kind selects attachment or stored-history summaries and inspector help; current Memo remains separate.",
+    "Actual saved-query inspection and RunSavedQuery issue the same metadata owner; reopening rejects its previous source binding.",
+    "Child metadata distinguishes NULL, empty values, assigned empty collections, missing parents and uninspected FileData.",
+    "Published object/result ownership grants no native parent ordinal, edit target or payload-opening authority.",
+    "Failed runs preserve prior results; stale, closed, parked and mismatched result owners retain their explicit checks."
+  ],
+  "functional_accounting": {
+    "query": {
+      "passed_including_doctests": 1867,
+      "target_summaries": 271,
+      "log": {
+        "path": ".cache/query-recordsets-qualification-query.log",
+        "sha256": "a0286a265f6ddb99e52b016ced588dc3783d17ae4747c6c4f4f5390c9e9ae65d"
+      }
+    },
+    "native_complex_read_checks": {
+      "passed": 40,
+      "log": {
+        "path": ".cache/query-recordsets-completion-native.log",
+        "sha256": "4b76e041c66a1ce5dbf671beb121d3ab3f7afda8303bbfb429560f23b07c7c39"
+      }
+    },
+    "adapter_focused_checks": {
+      "passed": 24,
+      "history_profiles": 4,
+      "log": {
+        "path": ".cache/query-recordsets-qualification-access.log",
+        "sha256": "f82d24de043ce4a9e311d01eeecd788adb66791a543467a18e5649cd0efbaf39"
+      }
+    },
+    "runtime": {
+      "distinct_passing_functions": 365,
+      "ignored": 1,
+      "full_log": {
+        "path": ".cache/query-recordsets-final-runtime.log",
+        "sha256": "72abc4fffb45904c00674083e2b3b64e3d7c5f0307fdedc76216cb7b13334867"
+      },
+      "saved_retrieval_log": {
+        "path": ".cache/query-recordsets-completion-saved.log",
+        "sha256": "57bdd6763a0127cf7fdb656908b81a68d790c964d1dc302a287cebe136c27140"
+      },
+      "rule": "364 full-run passing functions plus one new saved-attachment function; four saved scalar reruns are not added again."
+    },
+    "ui": {
+      "distinct_passing_functions": 734,
+      "logs": [
+        {
+          "path": ".cache/query-recordsets-final-ui.log",
+          "sha256": "c236c2129487b3cf8cfb3644de478f1675760ddd6ccf20df7258f2f6055219a2"
+        },
+        {
+          "path": ".cache/query-recordsets-followup-ui.log",
+          "sha256": "e6e5fc14b7f93e4723ee1635059fe2f5f55f3c4e60fddbd5efd8e21c9005242c"
+        },
+        {
+          "path": ".cache/query-recordsets-qualification-ui.log",
+          "sha256": "f0e64affb68cd0493c96080ae1814be01f7bf8b120ea66cfda8a73f53ad870f9"
+        }
+      ],
+      "rule": "Union of exact function names across the full run and focused repairs; all names have a passing observation."
+    },
+    "desktop_query_workflows": {
+      "passed": 22,
+      "log": {
+        "path": ".cache/query-recordsets-followup-desktop.log",
+        "sha256": "cf7e719a74c766855fcbe2f61abde15fd98f73f2936985a670a9ac8e5bc9179c"
+      }
+    },
+    "cli_collection_checks": {
+      "passed": 13,
+      "log": {
+        "path": ".cache/query-recordsets-final-cli.log",
+        "sha256": "87eb30fd9e52e2cce3733b5749d791a48756dfeccceb5970890afd9814d97e3e"
+      }
+    },
+    "mcp": {
+      "unit_passed": 73,
+      "stdio_passed": 2,
+      "log": {
+        "path": ".cache/query-recordsets-final-mcp.log",
+        "sha256": "b23b2ced0184ab44aaa9ed135c9a5a4ce1321d06928dba5fb379db071c90175d"
+      }
+    },
+    "independent_saved_source_controls": {
+      "passed": 2,
+      "log": {
+        "path": ".cache/query-recordsets-completion-fixture.log",
+        "sha256": "af2ea2d7b0d09aea138b12fda7e4e7dfb05486a94b8cdfffe22c20b598951212"
+      }
+    },
+    "sum_policy": "Counts describe separate package scopes and are not one deduplicated cross-package total."
+  },
+  "related_prior_checkpoint": {
+    "path": "tests/results/queries/gui-attachment-member-workflows-2026-11-11.json",
+    "sha256": "8834131c8c94bd2fa635f3de18a905e205b12e5b65b588c99de7d8f71c019bc8"
+  },
+  "failed_iterations": [
+    {
+      "log": {
+        "path": ".cache/gui-attachment-members-desktop.log",
+        "sha256": "d6bbb3c1ea493e7a3b27421fbdabd3b3e12599f71adb16010cad7186723d0b0d"
+      },
+      "outcome": "The prerequisite parameter-capture test incremented an unbounded default and overflowed; it now changes a valid captured option and retains its pending-request invariant."
+    },
+    {
+      "log": {
+        "path": ".cache/gui-attachment-recordsets-baseline-desktop-compile.log",
+        "sha256": "cde297500c9aae929808f71a4c8058b7c414709db1060ab99f6121c94e8640c9"
+      },
+      "outcome": "Test compile repair preceded actual bare-projection execution; no blanket Debug was added to cell kinds."
+    },
+    {
+      "log": {
+        "path": ".cache/gui-attachment-recordsets-baseline-runtime.log",
+        "sha256": "64c0f1af9cf0f8a7968b3b65a8d99a77e4022a2a3a1c4e880c8400fb6911ab2e"
+      },
+      "outcome": "Causal bare projection returned Unsupported through the previous scalar-only runtime path."
+    },
+    {
+      "log": {
+        "path": ".cache/query-recordsets-early-ui.log",
+        "sha256": "586b32772209604aef862ab00effdf98e4d332d0c5347a4f4e0e814a54922f05"
+      },
+      "outcome": "Native collection width revisit and an ambiguous title lookup failed; native field-width assertions were preserved through repair."
+    },
+    {
+      "log": {
+        "path": ".cache/query-recordsets-early-desktop.log",
+        "sha256": "fe7b0afcea6dee7868625d01bf7c0097e65e123867d8a7afb2e3aa16850fd9b1"
+      },
+      "outcome": "An obsolete bare-projection negative became a meaningful unsupported whole-recordset scalar-conversion control."
+    },
+    {
+      "log": {
+        "path": ".cache/query-recordsets-complete-query.log",
+        "sha256": "2355d0ffdd9f32248f34c886215291dbf5ad71c29a9ddf7167ca270a8554d3f1"
+      },
+      "outcome": "An old implicit text-budget expectation required an explicit caller budget; no artificial default was restored."
+    },
+    {
+      "log": {
+        "path": ".cache/query-recordsets-final-ui.log",
+        "sha256": "c236c2129487b3cf8cfb3644de478f1675760ddd6ccf20df7258f2f6055219a2"
+      },
+      "outcome": "Typed summary localization exposed a real copy regression; original host copy text was restored without weakening the existing assertion."
+    },
+    {
+      "log": {
+        "path": ".cache/query-recordsets-final-desktop.log",
+        "sha256": "550a6426d9ded236ab9f74daeec671e15dfe55929dca4e313113e2acd086e5ce"
+      },
+      "outcome": "Attachment/history Run and typed results succeeded before literal summary lookup failed; selectors now use localized typed Fluent arguments."
+    },
+    {
+      "log": {
+        "path": ".cache/query-recordsets-followup-ui.log",
+        "sha256": "e6e5fc14b7f93e4723ee1635059fe2f5f55f3c4e60fddbd5efd8e21c9005242c"
+      },
+      "outcome": "The new German paint/copy harness dropped unapplied texture deltas; both frame outputs now clear them with paint/copy assertions unchanged."
+    },
+    {
+      "log": {
+        "path": ".cache/query-recordsets-final-access.log",
+        "sha256": "3e9d80a1995fcde9b7f8d14f1c2f198497cd83f86623d6ad232a6ead7a35683c"
+      },
+      "outcome": "History preparation passed before selected ACE 2010 execution refused; resolved fixed-reference qualification was corrected independently."
+    },
+    {
+      "log": {
+        "path": ".cache/query-recordsets-qualification-native.log",
+        "sha256": "41e0b25b7f4eab6b7d0c5e64d249d2a5a1dc3c5e30480f80b275ba40dfbd3d2d"
+      },
+      "outcome": "Two stale unsupported-profile controls were updated to retain malformed flags/key refusals after positive ACE 2010 qualification."
+    },
+    {
+      "log": {
+        "path": ".cache/query-recordsets-final-lint.log",
+        "sha256": "688a311d7c69899170e2f962132863e757fee0ac153a95d65226d4730fded292"
+      },
+      "outcome": "Initial strict lint failures were retained and repaired before the final strict run."
+    }
+  ],
+  "final_gates": {
+    "receipt": {
+      "path": ".cache/query-recordsets-completion-results.json",
+      "sha256": "3d4f8573f84ca31bfaded8ea53419417037236f863a4d2e9b7bbe27ad7a39b9b"
+    },
+    "results": [
+      {
+        "job": "native",
+        "returncode": 0,
+        "seconds": 22.39,
+        "log": ".cache/query-recordsets-completion-native.log",
+        "log_sha256": "4b76e041c66a1ce5dbf671beb121d3ab3f7afda8303bbfb429560f23b07c7c39"
+      },
+      {
+        "job": "fixture",
+        "returncode": 0,
+        "seconds": 19.93,
+        "log": ".cache/query-recordsets-completion-fixture.log",
+        "log_sha256": "af2ea2d7b0d09aea138b12fda7e4e7dfb05486a94b8cdfffe22c20b598951212"
+      },
+      {
+        "job": "saved",
+        "returncode": 0,
+        "seconds": 22.57,
+        "log": ".cache/query-recordsets-completion-saved.log",
+        "log_sha256": "57bdd6763a0127cf7fdb656908b81a68d790c964d1dc302a287cebe136c27140"
+      },
+      {
+        "job": "lint",
+        "returncode": 0,
+        "seconds": 40.45,
+        "log": ".cache/query-recordsets-completion-lint.log",
+        "log_sha256": "c8cd3fc135c3ffcc1eaa4040f8db0215f6bb3da5b67d6245ff514019b027fadc"
+      },
+      {
+        "job": "minimal",
+        "returncode": 0,
+        "seconds": 1.94,
+        "log": ".cache/query-recordsets-completion-minimal.log",
+        "log_sha256": "289bd0e4bef29447e374d6aff046b2bd5182541c72c6d589879a0cd72d3fbc1e"
+      },
+      {
+        "job": "rustdoc",
+        "returncode": 0,
+        "seconds": 15.3,
+        "log": ".cache/query-recordsets-completion-rustdoc.log",
+        "log_sha256": "5c63022851ba36efa4ca2f19d50a2355cef72de264f6bbbb631044152490499f"
+      }
+    ]
+  },
+  "gate_scope": "Strict all-target/all-feature lint covers nine affected packages; minimal runtime/query and warnings-denied rustdoc pass. A separate next-work field-deletion test is excluded from this feature receipt.",
+  "visual_receipts": [
+    {
+      "path": "tests/results/queries/query-recordset-presentation-2026-11-11.json",
+      "sha256": "0193905978263e07e316cb36e66380a73a90afff21ec827ca6099f9579a376bb"
+    },
+    {
+      "path": "tests/results/queries/query-history-localized-presentation-2026-11-11.json",
+      "sha256": "abeed4f61494bdac2599e34fb9db189306235e8d776f3ca4f910e255a1b72e8e"
+    }
+  ],
+  "qualification_boundaries": [
+    "Offscreen previews are source-free presentation adaptations, separate from actual desktop runtime interaction.",
+    "No Windows/Access SQL, pixel or native save parity is claimed.",
+    "Generic Rows recordsets remain unavailable in GUI contents; scalar multivalue publication remains separately qualified.",
+    "Whole-recordset scalar conversions, keys and aggregates remain refused without explicit semantics.",
+    "No attachment payload decode, open, export, URL access or native editing is introduced."
+  ]
+}
