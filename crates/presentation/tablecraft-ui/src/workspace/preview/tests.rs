@@ -2,6 +2,8 @@ use super::*;
 use crate::{Action, EditSaveOutcome};
 use tablecraft_display::{CurrencyChoice, DateFormat, Options, TimeFormat};
 
+mod index_creation;
+
 #[test]
 fn every_existing_preview_scene_renders_without_a_runtime_or_file_host() {
     let context = egui::Context::default();

@@ -11,6 +11,8 @@ const UPDATE_SQL: &str =
 
 const MAKE_TABLE_SQL: &str = "SELECT [CustomerName],[City],[Balance] INTO [CustomerArchive] FROM [Customers] ORDER BY [CustomerName]";
 
+const INDEX_SQL: &str = "CREATE INDEX [BalanceIndex] ON [Customers] ([Balance] DESC)";
+
 const CREATE_SQL: &str = "CREATE TABLE [Contacts] ([Id] LONG, [Name] VARCHAR(80))";
 const DROP_TABLE_SQL: &str = "DROP TABLE [Customers]";
 const DROP_COLUMN_SQL: &str = "ALTER TABLE [Customers] DROP COLUMN [Balance]";
@@ -51,6 +53,7 @@ impl Preview {
                 INSERT_SQL
             }
             Scene::QueryMakeTableReview => MAKE_TABLE_SQL,
+            Scene::QuerySchemaIndexReview => INDEX_SQL,
             Scene::QuerySchemaCreateReview => CREATE_SQL,
             Scene::QuerySchemaDropTableReview => DROP_TABLE_SQL,
             Scene::QuerySchemaDropColumnReview | Scene::QuerySchemaReopenFailed => DROP_COLUMN_SQL,
@@ -65,6 +68,7 @@ impl Preview {
             Scene::QueryUpdateReview
                 | Scene::QueryDeleteReview
                 | Scene::QueryInsertReview
+                | Scene::QuerySchemaIndexReview
                 | Scene::QueryMakeTableReview
                 | Scene::QuerySchemaCreateReview
                 | Scene::QuerySchemaDropTableReview
@@ -107,7 +111,7 @@ impl Preview {
             UPDATE_SQL => QueryActionKind::Update,
             DELETE_SQL => QueryActionKind::Delete,
             INSERT_SQL => QueryActionKind::Insert,
-            MAKE_TABLE_SQL | CREATE_SQL | DROP_TABLE_SQL | DROP_COLUMN_SQL => {
+            INDEX_SQL | MAKE_TABLE_SQL | CREATE_SQL | DROP_TABLE_SQL | DROP_COLUMN_SQL => {
                 QueryActionKind::Schema
             }
             _ => return None,
@@ -157,6 +161,13 @@ impl Preview {
                 },
                 QueryActionKind::Insert => QueryActionEffect::Insert { inserted_rows: 2 },
                 QueryActionKind::Schema => QueryActionEffect::Schema(match sql.as_str() {
+                    INDEX_SQL => QuerySchemaEffect::CreateIndex {
+                        index: "BalanceIndex".into(),
+                        column: "Balance".into(),
+                        native_number: 3,
+                        descending: true,
+                        indexed_rows: fixtures::TOTAL_ROWS as usize,
+                    },
                     MAKE_TABLE_SQL => QuerySchemaEffect::MakeTable {
                         column_count: 3,
                         inserted_rows: 900,
