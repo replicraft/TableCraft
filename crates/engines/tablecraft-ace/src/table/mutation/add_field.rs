@@ -1,4 +1,5 @@
 //! Current-schema nullable declarations without rewriting existing records.
+mod declared;
 mod definition;
 mod properties;
 mod retained;
@@ -15,6 +16,7 @@ use crate::{
         current_schema::{self, Family},
     },
 };
+pub use declared::NativeDeclaredFieldAdditionCandidate;
 use definition::Plan;
 use tablecraft_core::{
     ids::ObjectId,

@@ -12,6 +12,8 @@ mod database;
 mod database_options;
 #[cfg(feature = "journal")]
 pub(crate) use database_options::FieldHistoryOffSource;
+#[cfg(feature = "journal")]
+mod declared_field_addition;
 mod defaults;
 mod definition;
 #[cfg(feature = "journal")]
@@ -98,3 +100,6 @@ mod description_tests;
 
 #[cfg(feature = "journal")]
 pub use field_addition::{RetainedFieldAdditionDefinition, RetainedFieldAdditionType};
+
+#[cfg(feature = "journal")]
+pub use declared_field_addition::DeclaredFieldAdditionDefinition;

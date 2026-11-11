@@ -3,6 +3,7 @@ mod descriptor;
 use super::{CurrentFieldAdditionError as Error, Target};
 use crate::{
     InspectError, NativeImage, TableSchema,
+    creation::profile::Field,
     format::{
         bytes::{u16_at, u32_at},
         definition::{LENGTH_OFFSET, PAGE_HEADER_BYTES},
@@ -195,6 +196,34 @@ impl Plan {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Vec<u8>, Error> {
         let frame = descriptor::target(self, target)?;
+        self.build_frame(image, name, frame, budget, cancelled)
+    }
+
+    pub(super) fn for_field(
+        image: &NativeImage,
+        schema: &TableSchema,
+        field: Field<'_>,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, Error> {
+        Self::capture_with_width(
+            image,
+            schema,
+            field.offset.map_or(0, |_| field.width),
+            budget,
+            cancelled,
+        )
+    }
+
+    pub(super) fn build_field(
+        &self,
+        image: &NativeImage,
+        name: &str,
+        field: Field<'_>,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Vec<u8>, Error> {
+        let frame = descriptor::field(self, field)?;
         self.build_frame(image, name, frame, budget, cancelled)
     }
 

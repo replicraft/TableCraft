@@ -378,7 +378,8 @@ pub use table::CurrentFieldAdditionError;
 #[cfg(all(feature = "ace16-create", feature = "journal"))]
 pub use table::{
     CurrentFieldAdditionSource, NativeCurrentFieldAdditionCandidate,
-    NativeCurrentShortTextFieldAdditionCandidate, NativeRetainedTypedFieldAdditionCandidate,
+    NativeCurrentShortTextFieldAdditionCandidate, NativeDeclaredFieldAdditionCandidate,
+    NativeRetainedTypedFieldAdditionCandidate,
 };
 #[cfg(all(feature = "ace16-create", feature = "journal"))]
 pub use table::{
@@ -433,7 +434,9 @@ pub use transaction::{
 };
 
 #[cfg(all(feature = "journal", feature = "ace16-create"))]
-pub use creation::{RetainedFieldAdditionDefinition, RetainedFieldAdditionType};
+pub use creation::{
+    DeclaredFieldAdditionDefinition, RetainedFieldAdditionDefinition, RetainedFieldAdditionType,
+};
 
 #[cfg(feature = "journal")]
 pub use transaction::RetainedTypedFieldAdditionIntentError;
