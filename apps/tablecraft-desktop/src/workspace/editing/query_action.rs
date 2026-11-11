@@ -1,4 +1,5 @@
 //! Route typed SQL action reviews without parsing or executing SQL in the host.
+pub(super) mod schema;
 use super::{ActiveSave, Desktop, PendingOperation, SaveOwner};
 use crate::workspace::query_parameters::runtime_inputs;
 use crate::workspace::request_read;
@@ -18,6 +19,7 @@ pub(super) enum ReviewedAction {
     Update(ReviewedQueryUpdate),
     Delete(ReviewedQueryDelete),
     Insert(ReviewedQueryInsert),
+    Schema(schema::ReviewedSchema),
 }
 
 impl ReviewedAction {
@@ -26,6 +28,7 @@ impl ReviewedAction {
             Self::Update(_) => QueryActionKind::Update,
             Self::Delete(_) => QueryActionKind::Delete,
             Self::Insert(_) => QueryActionKind::Insert,
+            Self::Schema(_) => QueryActionKind::Schema,
         }
     }
 
@@ -34,6 +37,7 @@ impl ReviewedAction {
             Self::Update(capability) => capability.document_revision(),
             Self::Delete(capability) => capability.document_revision(),
             Self::Insert(capability) => capability.document_revision(),
+            Self::Schema(capability) => capability.document_revision(),
         }
     }
 
@@ -42,6 +46,7 @@ impl ReviewedAction {
             Self::Update(capability) => capability.source_path(),
             Self::Delete(capability) => capability.source_path(),
             Self::Insert(capability) => capability.source_path(),
+            Self::Schema(capability) => capability.source_path(),
         }
     }
 
@@ -50,35 +55,41 @@ impl ReviewedAction {
             Self::Update(capability) => capability.table(),
             Self::Delete(capability) => capability.table(),
             Self::Insert(capability) => capability.table(),
+            Self::Schema(capability) => capability.table(),
         }
     }
 
-    fn start(self, worker: &SaveWorker, bundle: PathBuf) -> Result<u64, (String, Option<Self>)> {
+    fn start(
+        self,
+        worker: &SaveWorker,
+        bundle: PathBuf,
+    ) -> Result<(u64, schema::Publication), (String, Option<Self>)> {
         match self {
-            Self::Update(capability) => {
-                worker
-                    .start_query_update(capability, bundle)
-                    .map_err(|error| {
-                        let message = error.to_string();
-                        (message, error.into_reviewed().map(Self::Update))
-                    })
-            }
-            Self::Delete(capability) => {
-                worker
-                    .start_query_delete(capability, bundle)
-                    .map_err(|error| {
-                        let message = error.to_string();
-                        (message, error.into_reviewed().map(Self::Delete))
-                    })
-            }
-            Self::Insert(capability) => {
-                worker
-                    .start_query_insert(capability, bundle)
-                    .map_err(|error| {
-                        let message = error.to_string();
-                        (message, error.into_reviewed().map(Self::Insert))
-                    })
-            }
+            Self::Schema(capability) => capability
+                .start(worker, bundle)
+                .map(|(id, reopen)| (id, schema::Publication::Schema(reopen)))
+                .map_err(|(message, capability)| (message, capability.map(Self::Schema))),
+            Self::Update(capability) => worker
+                .start_query_update(capability, bundle)
+                .map(|id| (id, schema::Publication::Rows))
+                .map_err(|error| {
+                    let message = error.to_string();
+                    (message, error.into_reviewed().map(Self::Update))
+                }),
+            Self::Delete(capability) => worker
+                .start_query_delete(capability, bundle)
+                .map(|id| (id, schema::Publication::Rows))
+                .map_err(|error| {
+                    let message = error.to_string();
+                    (message, error.into_reviewed().map(Self::Delete))
+                }),
+            Self::Insert(capability) => worker
+                .start_query_insert(capability, bundle)
+                .map(|id| (id, schema::Publication::Rows))
+                .map_err(|error| {
+                    let message = error.to_string();
+                    (message, error.into_reviewed().map(Self::Insert))
+                }),
         }
     }
 }
@@ -88,7 +99,8 @@ fn action_kind(target: &InspectedQuery) -> Option<QueryActionKind> {
         QueryOperation::Update => Some(QueryActionKind::Update),
         QueryOperation::Delete => Some(QueryActionKind::Delete),
         QueryOperation::Insert => Some(QueryActionKind::Insert),
-        QueryOperation::Read | QueryOperation::Schema | QueryOperation::Unsupported => None,
+        QueryOperation::Schema => Some(QueryActionKind::Schema),
+        QueryOperation::Read | QueryOperation::Unsupported => None,
     }
 }
 
@@ -115,6 +127,16 @@ impl Desktop {
         self.editing.clear_review();
         let inputs = runtime_inputs(&parameters);
         let command = match kind {
+            QueryActionKind::Schema => {
+                if !inputs.is_empty() {
+                    return;
+                }
+                // NO_CLONE: The command and pending review retain the same issued
+                // immutable SQL/source identity across the asynchronous callback.
+                Command::ReviewSchemaSql {
+                    target: Arc::clone(&target),
+                }
+            }
             QueryActionKind::Update => Command::ReviewQueryUpdate {
                 // NO_CLONE: UPDATE review command and retained query_action_pending each own a
                 // reference to the same immutable inspected SQL/binding; no AST deep
@@ -255,7 +277,8 @@ impl Desktop {
         review: QueryActionReview,
         capability: ReviewedAction,
     ) {
-        if review.effect.kind() != capability.kind()
+        if matches!(&capability, ReviewedAction::Schema(schema) if !schema.matches_effect(&review.effect))
+            || review.effect.kind() != capability.kind()
             || review.document_revision != capability.document_revision()
             || review.table != capability.table()
         {
@@ -351,7 +374,11 @@ impl Desktop {
         let path = capability.source_path().to_path_buf();
         let table = capability.table().to_owned();
         match capability.start(&self.editing.worker, journal_path(&path)) {
-            Ok(save_id) => {
+            Ok((save_id, publication)) => {
+                self.editing.query_schema = match publication {
+                    schema::Publication::Rows => None,
+                    schema::Publication::Schema(reopen) => Some(schema::Host::saving(reopen)),
+                };
                 self.editing.query_action_pending = None;
                 self.editing.save = Some(ActiveSave {
                     owner: SaveOwner::QueryAction,

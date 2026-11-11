@@ -76,6 +76,9 @@ impl Desktop {
                 self.fail_table_rename_reopen(error);
             }
 
+            PendingOperation::QuerySchemaReopen { request_id } => {
+                self.fail_query_schema_reopen(*request_id, error.to_string());
+            }
             PendingOperation::QueryActionReview { request_id } => {
                 let request_id = *request_id;
                 self.fail_query_action_review(request_id, error.to_string());

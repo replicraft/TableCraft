@@ -1,4 +1,6 @@
 //! Connected SQL action review, decision, save and fresh reopen without windows.
+mod schema;
+
 use super::*;
 use crate::workspace::test_support::{self, finish_reads, finish_save};
 use egui::{Key, accesskit::Role};

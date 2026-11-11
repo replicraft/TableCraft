@@ -106,6 +106,9 @@ enum PendingOperation {
     QueryActionReview {
         request_id: u64,
     },
+    QuerySchemaReopen {
+        request_id: u64,
+    },
     Read,
     Open {
         request_id: u64,
@@ -576,13 +579,21 @@ impl Desktop {
                     self.publish_table_drop_inspection(generation, inspection);
                 }
                 Ok(Response::TableDropReviewed { review, capability }) => {
-                    self.start_reviewed_table_drop(generation, review, capability);
+                    if matches!(self.pending, PendingOperation::QueryActionReview { .. }) {
+                        self.publish_query_schema_table_drop(generation, review, capability);
+                    } else {
+                        self.start_reviewed_table_drop(generation, review, capability);
+                    }
                 }
                 Ok(Response::FieldDropSourceInspected { inspection }) => {
                     self.publish_field_drop_inspection(generation, inspection);
                 }
                 Ok(Response::FieldDropReviewed { review, capability }) => {
-                    self.start_reviewed_field_drop(generation, review, capability);
+                    if matches!(self.pending, PendingOperation::QueryActionReview { .. }) {
+                        self.publish_query_schema_field_drop(generation, review, capability);
+                    } else {
+                        self.start_reviewed_field_drop(generation, review, capability);
+                    }
                 }
                 Ok(Response::FieldRenameSourceInspected { inspection }) => {
                     self.publish_field_rename_inspection(generation, inspection);
@@ -600,7 +611,11 @@ impl Desktop {
                     self.start_reviewed_table_rename(generation, review, capability);
                 }
                 Ok(Response::TableCreationReviewed { capability }) => {
-                    self.start_reviewed_table_creation(generation, capability);
+                    if matches!(self.pending, PendingOperation::QueryActionReview { .. }) {
+                        self.publish_query_schema_creation(generation, capability);
+                    } else {
+                        self.start_reviewed_table_creation(generation, capability);
+                    }
                 }
                 Ok(Response::QueryDesignTable { target, metadata }) => {
                     self.publish_query_design_table(generation, target, metadata);
@@ -705,6 +720,15 @@ impl Desktop {
                             })
                             .collect(),
                     };
+                    if let PendingOperation::QuerySchemaReopen { request_id } = self.pending {
+                        self.finish_query_schema_reopen(
+                            request_id,
+                            database,
+                            table_creation_available,
+                            table_design_available,
+                        );
+                        continue;
+                    }
                     if let PendingOperation::DatabaseOptionsReopen { request_id } = self.pending {
                         self.finish_database_options_reopen(
                             request_id,

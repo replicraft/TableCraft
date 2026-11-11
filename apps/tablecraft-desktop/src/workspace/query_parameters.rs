@@ -125,7 +125,7 @@ impl Desktop {
         }
 
         match target.operation() {
-            QueryOperation::Schema | QueryOperation::Unsupported => {
+            QueryOperation::Unsupported => {
                 self.state.fail_query_parameter_inspection(request_id);
                 self.state.error = Some(self.state.localizer.text("ribbon-unavailable"));
                 self.query_parameters = None;
@@ -135,7 +135,8 @@ impl Desktop {
             QueryOperation::Read
             | QueryOperation::Update
             | QueryOperation::Delete
-            | QueryOperation::Insert => {}
+            | QueryOperation::Insert
+            | QueryOperation::Schema => {}
         }
 
         let specs = parameters
@@ -205,7 +206,10 @@ impl Desktop {
         let target = Arc::clone(&inspected.target);
         if matches!(
             target.operation(),
-            QueryOperation::Update | QueryOperation::Delete | QueryOperation::Insert
+            QueryOperation::Update
+                | QueryOperation::Delete
+                | QueryOperation::Insert
+                | QueryOperation::Schema
         ) {
             self.begin_query_action_from_parameters(inspection_id, target, parameters);
             return;

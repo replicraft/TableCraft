@@ -51,6 +51,7 @@ pub(super) struct Editing {
     delete_review: Option<(u64, ReviewedDelete)>,
     query_action_review: Option<(u64, query_action::ReviewedAction)>,
     query_action_pending: Option<(u64, Arc<InspectedQuery>)>,
+    query_schema: Option<query_action::schema::Host>,
     save: Option<ActiveSave>,
     insert_retry: Option<RetainedInsertRetry>,
     refresh: Option<(u64, String, u32)>,
@@ -113,6 +114,7 @@ impl Editing {
             delete_review: None,
             query_action_review: None,
             query_action_pending: None,
+            query_schema: None,
             save: None,
             insert_retry: None,
             refresh: None,
@@ -134,6 +136,7 @@ impl Editing {
     }
 
     pub(super) fn clear_refresh(&mut self) {
+        self.query_schema = None;
         self.refresh = None;
         self.refresh_cleanup = None;
         self.refresh_query_action = false;
@@ -432,6 +435,20 @@ impl Desktop {
             {
                 EditSaveOutcome::Failed(known_result(&self.state.localizer, Some(receipt.known)))
             }
+            (SaveOwner::QueryAction, outcome)
+                if self
+                    .editing
+                    .query_schema
+                    .as_ref()
+                    .is_some_and(|host| host.replacement_known(outcome)) =>
+            {
+                // Exact native schema facts can establish AFTER on resource release
+                // without inventing a completed receipt. Preserve that actual message.
+                match save_outcome(&self.state.localizer, outcome) {
+                    EditSaveOutcome::Failed(message) => EditSaveOutcome::Saved(message),
+                    displayed => displayed,
+                }
+            }
             _ => save_outcome(&self.state.localizer, report.outcome),
         };
         match save.owner {
@@ -591,6 +608,9 @@ impl Desktop {
     }
 
     pub(super) fn acknowledge_save(&mut self, id: u64) {
+        if self.acknowledge_query_schema(id) {
+            return;
+        }
         if self.acknowledge_uncertain_save(id) {
             return;
         }
