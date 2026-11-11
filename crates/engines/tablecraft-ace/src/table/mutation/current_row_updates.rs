@@ -569,7 +569,7 @@ pub(super) fn plan(
     })
 }
 
-fn retained_column(
+pub(super) fn retained_column_shape(
     source: &Source<'_>,
     group: &FittedColumnUpdates<'_>,
     family: Family,
@@ -629,6 +629,18 @@ fn retained_column(
             rows::unique_identities(updates, budget, cancelled)?;
         }
     }
+    Ok(column)
+}
+
+fn retained_column(
+    source: &Source<'_>,
+    group: &FittedColumnUpdates<'_>,
+    family: Family,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<usize, EditError> {
+    let column = retained_column_shape(source, group, family, budget, cancelled)?;
+    let field = &source.facts().table.schema().columns()[column];
     let cell = group.cell(0).ok_or(EditError::Preservation)?;
     let valid = match field.native_type() {
         INT32 => {
