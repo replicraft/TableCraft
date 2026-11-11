@@ -239,3 +239,6 @@ impl Identity {
         })
     }
 }
+
+#[cfg(all(test, feature = "ace16-create"))]
+mod tests;
