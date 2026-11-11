@@ -20,7 +20,7 @@ fn assert_drop(
     catalog_root: usize,
     column: &str,
     removed_value: Value,
-    names: &[(&str, u16)],
+    names: &[(&str, usize)],
     rows: &[Vec<Value>],
 ) {
     let original_schema = inspect_table_schema(
