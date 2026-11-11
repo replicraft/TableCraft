@@ -42,11 +42,14 @@ impl Binder<'_> {
         });
         Ok(if let Some(index) = parameter {
             Expr::Parameter(index)
-        } else if aggregates {
-            self.projection_alias(field.name.as_str(), depth + 1)?
-                .ok_or(QueryError::UnknownName)?
         } else {
-            return Err(QueryError::UnknownName);
+            if aggregates
+                && let Some(alias) = self.projection_alias(field.name.as_str(), depth + 1)?
+            {
+                return Ok(alias);
+            }
+            self.implicit_parameter(field.name.as_str())?
+                .ok_or(QueryError::UnknownName)?
         })
     }
 

@@ -20,6 +20,9 @@ impl<'a> Binder<'a> {
     ) -> Result<SourceNamespace, QueryError> {
         match database {
             Some(database) => {
+                if self.implicit_parameter_start.is_some() {
+                    return Err(QueryError::Unsupported);
+                }
                 self.tick(depth)?;
                 if let Some(budget) = &mut self.budget {
                     budget.charge(Resource::Steps, database.len() as u64)?;
@@ -46,6 +49,9 @@ impl<'a> Binder<'a> {
         let Some(external) = external else {
             return Ok(self.owner);
         };
+        if self.implicit_parameter_start.is_some() {
+            return Err(QueryError::Unsupported);
+        }
         let request = ExternalSourceRequest::new(
             &external.database,
             external.connection.as_deref(),

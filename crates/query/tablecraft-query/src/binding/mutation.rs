@@ -29,6 +29,7 @@ impl<'a> Binder<'a> {
             parameter_scope: Vec::new(),
             retrieval: false,
             mutation_scalar: true,
+            implicit_parameter_start: None,
             collection_criteria: false,
             active_queries: Vec::new(),
             owner: crate::external_sources::SourceNamespace::Root,

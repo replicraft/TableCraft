@@ -27,6 +27,9 @@ impl Binder<'_> {
         outer: &[&[Slot]],
         depth: usize,
     ) -> Result<ReadPlan, QueryError> {
+        if self.implicit_parameter_start.is_some() {
+            return Err(QueryError::Unsupported);
+        }
         if reference
             && (!self.retrieval
                 || self

@@ -40,7 +40,12 @@ mod mutation_parameters;
 pub(crate) use inserting::{BoundInsertValues, ValuesSource, bind_insert_values};
 mod mutation_scalar;
 mod named;
+mod parameter_discovery;
 mod parameters;
+pub use parameter_discovery::{
+    DiscoveredParameter, ParameterDiscoveryMode, ParameterOrigin, PreparedParameterQuery,
+    parameter_discovery_mode, prepare_with_parameter_discovery,
+};
 pub(crate) use parameters::{Parameter, bind_declared_parameters};
 pub use parameters::{ParameterType, resolve_parameter_type};
 mod projection;
@@ -99,6 +104,7 @@ pub(super) struct Binder<'a> {
     // Named sources and scalar calls remain unavailable to UPDATE binding.
     retrieval: bool,
     mutation_scalar: bool,
+    implicit_parameter_start: Option<usize>,
     collection_criteria: bool,
     active_queries: Vec<crate::named_identity::NamedIdentity>,
     owner: crate::external_sources::SourceNamespace,
@@ -192,6 +198,7 @@ pub(crate) struct StageOptions<'a> {
     pub preparation: PreparationOptions,
     pub discover: bool,
     pub parameterless: bool,
+    pub implicit_parameters: bool,
 }
 
 pub(crate) fn prepare_stage<'a>(
@@ -284,6 +291,7 @@ fn prepare_body<'a>(
         parameter_scope: Vec::new(),
         retrieval: true,
         mutation_scalar: false,
+        implicit_parameter_start: None,
         collection_criteria: false,
         active_queries: Vec::new(),
         owner: options.owner,
@@ -295,6 +303,9 @@ fn prepare_body<'a>(
         binder.seed_external_sources(options.external_sources)?;
         binder.parameters = binder.bind_parameters(parameters)?;
         binder.parameter_scope = binder.scope_indices(binder.parameters.len())?;
+        if options.implicit_parameters {
+            binder.implicit_parameter_start = Some(binder.parameters.len());
+        }
         let body = match body {
             BorrowedBody::Read(read) => {
                 let mut read = binder.read(read, &[], 1)?;

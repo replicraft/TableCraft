@@ -350,6 +350,9 @@ impl Binder<'_> {
             && qualifier.is_empty()
             && let Some(kind) = DomainFunction::resolve(name.as_str())
         {
+            if self.implicit_parameter_start.is_some() {
+                return Err(QueryError::Unsupported);
+            }
             if !(2..=3).contains(&arguments.len()) {
                 return Err(QueryError::Unsupported);
             }

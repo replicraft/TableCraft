@@ -71,6 +71,7 @@ pub(super) fn prepare_input<'a>(
         parameter_scope: Vec::new(),
         retrieval: true,
         mutation_scalar: false,
+        implicit_parameter_start: None,
         collection_criteria: false,
         active_queries: Vec::new(),
         owner,

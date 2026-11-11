@@ -38,6 +38,9 @@ impl Binder<'_> {
         if self.retrieval
             && let Some(query) = provider.query(table.name.as_str())?
         {
+            if self.implicit_parameter_start.is_some() {
+                return Err(QueryError::Unsupported);
+            }
             return self.named_table_relation(table, query, depth, namespace);
         }
         let relation = self.stored_table_relation(table, namespace, provider)?;

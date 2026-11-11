@@ -34,8 +34,9 @@ pub use output_types::OutputType;
 mod profile;
 pub mod source;
 pub use binding::{
-    BindingDepth, ParameterType, PreparationOptions, PreparedQuery, prepare, prepare_with_options,
-    resolve_parameter_type,
+    BindingDepth, DiscoveredParameter, ParameterDiscoveryMode, ParameterOrigin, ParameterType,
+    PreparationOptions, PreparedParameterQuery, PreparedQuery, parameter_discovery_mode, prepare,
+    prepare_with_options, prepare_with_parameter_discovery, resolve_parameter_type,
 };
 pub use error::QueryError;
 pub use error::source::SourceFailure;
