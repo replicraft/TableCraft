@@ -1,11 +1,119 @@
 # Cell updates across retained table storage
 
-The normal reviewed cell editor can update a qualified unindexed LONG, Short
-Text or Currency field after table replacement, subsequent table creation and retained row
+The normal reviewed cell editor can update qualified unindexed Boolean, Byte,
+Integer, LONG, Large Number, Single, Double, Currency, legacy DateTime and Short
+Text fields after table replacement, subsequent table creation and retained row
 insertion. This separate ACE16 source family uses actual catalog/allocation
 ownership rather than the original eleven-page, definition-7 geometry. Desktop
 and MCP consume the shared runtime and Access adapter; no native editing logic
 was added to the desktop host.
+
+## Exact fixed scalars
+
+`TCNI0021`/profile 21 owns one explicit fixed-scalar language: Byte, Int16, Int64,
+Single, Double and legacy DateTime, each with its exact native declaration and
+carrier. The selected field must be fixed and updatable, with the exact native
+kind and width and no extended flags. Generated, calculated and indexed targets
+remain refused. The complete retained-row source must qualify every selected
+record; unknown retired-tail geometry stays outside this action. Single and Double expected and
+replacement values must be finite; their IEEE bit patterns are retained without
+converting through another numeric type, including finite subnormals and signed
+zero. Int64 values do not pass through f64.
+Legacy DateTime retains its checked OLE date bits and range, without time-zone
+conversion. NULL is distinct from every scalar value and preserves ignored
+payload bytes. Defaults are not reevaluated by UPDATE.
+
+The action reuses the complete retained-row program-absence certificate, dynamic
+ownership census, record placement and full-image proof. It introduces no new
+source-purpose certificate, INSERT encoder or UI parser. Each expected carrier
+must match the original cell. Source/program/constraint checks still run for
+no-ops, NULL-to-NULL requests and an empty request group. A stored control,
+formatted value or a readable declaration alone grants no update permission.
+The native producer and independent proof rebuild exact selected payload/mask
+changes while preserving sibling cells, counters, indexes, history and all bytes
+outside the admitted record-placement scope.
+
+A complete historical record may omit later native fields. Its stored field
+count and presence mask make such a selected field NULL, independently of ignored
+payload bytes. A non-NULL replacement reconstructs the retained schema count,
+fixed span and any completely parsed footer; other absent fields remain NULL
+rather than receiving defaults. The original prefix remains preserved outside
+the selected declared fixed range. A NULL-to-NULL no-op keeps the entire shorter
+record unchanged. This complete-frame reconstruction does not infer deleted
+field types or admit the ambiguous tails handled separately by TCNI18.
+
+The original request retains fixed groups only, with explicit column spellings
+and logical row ordinals. `NativeFittedIntentGroup::new_retained_fixed_scalars`
+and `NativeFittedEditIntent::new_retained_fixed_scalars` validate this distinct
+data grammar. Variable groups, including empty ones, and other scalar carriers
+are refused. Counts and lengths retain their actual u32 representation; the
+whole BEFORE binding uses native page geometry up to 2 GiB, with fallible
+allocation, cancellation and cumulative caller budgets.
+
+| Carrier | Tag | Width | Exact payload |
+| --- | ---: | ---: | --- |
+| NULL | 0 | 0 | Empty |
+| Int64 (Large Number) | 3 | 8 bytes | Signed little-endian i64 |
+| Legacy DateTime | 5 | 8 bytes | Checked OLE f64 bits, little-endian u64 |
+| Byte | 8 | 1 byte | One u8 |
+| Int16 (Integer) | 9 | 2 bytes | Signed little-endian i16 |
+| Single | 10 | 4 bytes | Finite IEEE f32 bits, little-endian u32 |
+| Double | 11 | 8 bytes | Finite IEEE f64 bits, little-endian u64 |
+
+`decode_retained_fixed_scalars` accepts only TCNI21. Generic intent dispatch
+selects that exact marker before native replay. TCNI17–20 retain their original
+wire grammars, native target languages and reconstruction paths; a failed older
+action is never retried as 21. `prepare_retained` and
+`qualify_retained_recovery` use the same checked V3 owner. Recovery verifies the
+complete original binding, requalifies the selected native action in a fresh
+scope, and compares complete BEFORE and AFTER images. Old V1/V2 preparation and
+qualification APIs refuse 21 before effects. Journal-only builds decode its
+original data but return typed unsupported-source refusal for native recovery.
+
+The Access capability is a union of eligible actions over one qualified source.
+Actual target metadata selects 21 for these six types, 20 for Boolean, 19 for
+Currency and 17 for LONG/Text, before original-group construction or planning.
+An ineligible target is not redirected to another family. A reviewed SQL Byte
+assignment followed by a LONG assignment on the same retained table keeps the
+21 and 17 profiles respectively, with independent complete AFTER images and
+same-file offline saves. Exact carrier, finite/range, stale-witness and protected
+image checks remain shared with typed runtime edits. SQL assignment conversion
+rules are unchanged.
+
+Local native/wire/recovery and reviewed SQL checks cover all six scalar carriers,
+NULL/no-op behavior, Int64 above 2^53, exact Single/Double/date bits, forged AFTER,
+wrong protocols and journal-only refusal. These checks are implementation
+evidence; they do not establish Windows or Microsoft Access save/reopen parity.
+The application workflow record belongs to the
+[runtime contract](../../application/RUNTIME.md).
+
+[Microsoft's Access field-type reference](https://support.microsoft.com/en-au/access/data-types-for-access-desktop-databases)
+distinguishes Number sizes, eight-byte Large Number and eight-byte Date/Time from
+Date/Time Extended. The [provider data-type contract](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/datatypeenum)
+identifies the integer and floating carriers and describes Automation DATE as a
+double containing days from 30 December 1899 plus a fractional day. Provider enum
+values are not ACE storage tags. These references support representation facts;
+they do not establish Microsoft Access save/reopen parity.
+
+Local macOS ARM64 headless verification passes the selected 135 native tests and
+348 runtime tests, plus three journal-only request/refusal cases. The focused
+native controls compare independent full images for all six kinds, exact scalar
+extremes, NULL/no-op/refill, stale values, long user/catalog forwarding chains,
+wrong carriers, nonfinite floats, original-family refusal and same-table LONG
+compatibility. Seven-consumer API and feature/documentation checks pass. These
+are implementation observations, separate from Windows or Microsoft Access
+execution evidence.
+
+## Source scopes and mutation certificates
+
+Retained DATA actions observe represented catalog property maps, including
+indirect candidate maps, through read-only scopes. The observation proves actual
+allocated storage, membership, per-hop ownership, cycle/alias exclusion and
+protected roles. It has no map-edit, allocation or schema-write methods. A scope
+observation cannot stand in for a source-bound INSERT, UPDATE or DELETE
+certificate; each consuming action separately rechecks its programs, constraints,
+record grammar and complete original witness. Writable LVAL map factories and
+schema/property mutation admission retain their separate restrictions.
 
 ## Boolean value-bit edits
 
@@ -22,8 +130,8 @@ proof preserve the original column count, footer, payload, slack, every other
 mask bit and the complete protected image complement. Non-Boolean fixed offsets
 retain their ordinary overlap and extent checks.
 
-The current retained-cell capability combines Boolean, Currency, LONG and Text
-from one qualified source. The actual target selects TCNI20, TCNI19 or TCNI17;
+The current retained-cell capability combines the eligible scalar actions
+from one qualified source. The actual target selects TCNI21, TCNI20, TCNI19 or TCNI17;
 TCNI18 keeps its separate opaque Int32 materialization scope. No failed action
 is retried as another family. The original Boolean wire carrier remains canonical
 0/1 with an explicit TCNI20 discriminator; V3 recovery performs fresh native
@@ -42,9 +150,9 @@ actual catalog/allocation ownership and complete-record admission. No additional
 program-absence purpose, INSERT encoder or crate is introduced. Unknown required
 programs, indexed targets and opaque record geometry remain refused.
 
-A source capability check admits a genuinely qualified LONG, Text or Currency
-editor from one captured source. Planning selects the action from the actual
-edited column: Currency uses TCNI19, while LONG/Text keep TCNI17. It never retries
+The shared source capability check includes a genuinely qualified Currency
+editor without replacing the other scalar actions. Planning selects the action
+from the actual edited column: Currency uses TCNI19, while LONG/Text keep TCNI17. It never retries
 a failed proof under another family. TCNI18 retains its separate Int32-only opaque
 tail scope. Mixed tables therefore keep existing Number/Text edits when Currency
 becomes available.
@@ -103,7 +211,7 @@ creation-only ACE checks pass. Strict all-target/all-feature Clippy for ACE,
 Access, runtime, UI, desktop and MCP, ACE rustdoc and repository guards pass.
 These are local macOS ARM64 headless and independent-byte results; they do not
 qualify Windows or Microsoft Access save/reopen parity. Saved-field Currency ADD,
-indexed Currency edits, other scalar actions and generic imported schema editing
+indexed Currency edits and generic imported schema editing
 remain separate work.
 
 ## Opaque retired tails
@@ -170,9 +278,9 @@ indexes, row ownership and expected original values. Missing/unknown required
 programs are not treated as absent. Existing scalar/read compatibility does not
 authorize a mutation.
 
-The operation currently changes one unindexed LONG, Short Text or Currency cell. Native
-field numbers, fixed offsets, variable-slot history and null masks remain distinct
-from visible column positions. Supplied NULL and empty text are separate; defaults
+Each operation changes one qualified unindexed cell from its selected action
+language. Native field numbers, fixed offsets, variable-slot history and null
+masks remain distinct from visible column positions. Supplied NULL and empty text are separate; defaults
 are not applied to UPDATE. No-ops preserve original representations, including
 opaque bytes behind NULL. An expected-value mismatch refuses rather than editing
 a different record or accepting the latest value silently.
@@ -196,12 +304,11 @@ TCNI0017/profile17 records original column spellings, fixed/variable families,
 logical row ordinals and exact expected/replacement carriers, bound to the whole
 BEFORE image. It records no final patch, generated SQL or execution permission.
 Its counts and lengths use actual wire widths, with fallible allocation,
-cancellation and cumulative caller budgets. It does not inherit the older 16K
-assignment, 8 KiB carrier/name or 64 MiB image/request ceilings. Native field and
-physical storage restrictions are checked independently of inert request data.
+cancellation and cumulative caller budgets. Native file geometry, field kinds
+and physical storage restrictions are checked independently of inert request data.
 
 Retained and legacy request grammars remain explicit. The generic update decoder
-selects TCNI17/18/19 from exact framing; older direct decoders and encode methods cannot reinterpret
+selects TCNI17–21 from exact framing; older direct decoders and encode methods cannot reinterpret
 its retained body as their own grammar. Fresh reviewed requalification preserves
 the selected family and reconstructs the complete BEFORE/AFTER under separate
 native/proof allowances.
@@ -235,5 +342,6 @@ ACE/Access feature checks and repository formatting/layout/dependency/link guard
 
 A separate [retained DELETE route](NORMAL_ACE_DELETE.md#delete-across-retained-tables)
 now handles qualified row removal and subsequent insertion without resetting IDs.
-Table/field changes, indexed-cell changes, other target carriers, new-page
-allocation and required-program execution remain separate work.
+Indexed-cell changes, other target carriers, new-page allocation and
+required-program execution remain separate work. Table and field changes retain
+their own source and action proofs.
