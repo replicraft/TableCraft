@@ -4,6 +4,8 @@ mod current_tail;
 mod definition;
 mod error;
 mod identity;
+#[cfg(test)]
+mod retained_middle_tests;
 mod selection;
 mod source;
 #[cfg(test)]
