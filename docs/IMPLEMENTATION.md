@@ -1,5 +1,39 @@
 # Implementation status
 
+## Retained typed saved-field addition — 10 November 2026
+
+The normal saved-field gallery and Design properties now stage all twelve
+qualified scalar kinds: Boolean, Byte, Integer, LONG, Large Number, Single,
+Double, Currency, legacy DateTime, GUID, Decimal and Short Text. Decimal
+precision/scale and native Text UTF-16 width/compression use shared validated
+controls. Unsupported Required/default editing stays disabled. Desktop and MCP
+forward declarations to consuming runtime reviews; native storage policy remains
+in ACE and its Access adapter.
+
+ADD preserves every original record. Historical absent fields read NULL, except
+Boolean absence reads False; fresh omitted inserts separately use declared type
+defaults. Missing Boolean edits have their own TCNI23 language: False no-ops
+preserve short records and True materializes proved retained geometry. Existing
+stored bits retain TCNI20. Native proofs cover sparse field numbers, retired
+variable slots, live Unicode payloads and forwarding. TCAC12 original requests
+retain exact declarations/defaults and reconstruct through checked V3 recovery.
+Adapter cold and settled recovery now also routes TCNI22/23 through V3.
+
+The [workflow record](../tests/results/schema/retained-typed-field-addition-workflows-2026-11-10.json)
+retains baseline/compiler/runtime failures and their focused repairs. Across the
+recorded batches, 354 distinct runtime functions, 370 native functions, 60 adapter
+checks, 166 desktop workflows and 75 MCP unit/stdio checks pass. One runtime and
+eleven native cases remain explicitly ignored. The complete 729-test UI library
+and three focused Design checks after a selection-style repair pass. Twenty-one
+journal-only tests, strict lint across seven consumers, affected-package final
+lint, feature builds, rustdoc and repository guards pass.
+
+Twelve [offscreen presentation frames](../tests/results/schema/typed-field-addition-presentation-2026-11-10.json)
+were directly inspected in English/German and light/dark themes. These checks
+qualify current bounded workflows, not Windows or Microsoft Access parity.
+General type/property alteration, non-tail deletion, joined-definition DDL and
+broader source/index/constraint/program-bearing mutations remain open.
+
 ## Retained typed tail-field deletion — 10 November 2026
 
 Qualified last-active fields of all twelve supported scalar kinds now use the

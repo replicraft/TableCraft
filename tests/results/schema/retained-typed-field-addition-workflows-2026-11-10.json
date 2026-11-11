@@ -1,0 +1,280 @@
+{
+  "date": "2026-11-10",
+  "source_commit": "103aa58ffdd16ac9636eb70897fbd78e6cdd5cd6",
+  "source_tree": "1c79dbbd7dc9ae87d73584abdd6d83e354e3c3c0",
+  "platform": "macOS 14.7.2 ARM64",
+  "verification": "Headless actual application journeys, independent full native images, original wire goldens and filesystem recovery",
+  "baseline": {
+    "log": ".cache/retained-typed-add-desktop-baseline.log",
+    "sha256": "39f8b8e2a6357ed51b7f4f32c16407dde9c7fdc2be09d66b7c5c76045f5dc1e4",
+    "outcome": "Expected failure: Currency unavailable on a populated qualified saved table"
+  },
+  "batches": [
+    {
+      "receipt": ".cache/retained-typed-add-early-results.json",
+      "results": [
+        {
+          "job": "api",
+          "returncode": 101,
+          "seconds": 12.47,
+          "log": ".cache/retained-typed-add-early-api.log",
+          "log_sha256": "b58adce5854a1aa34f9ca7cf503b705063245a7c2f3f00fc39a9d4a21217c399"
+        },
+        {
+          "job": "runtime",
+          "returncode": 101,
+          "seconds": 14.47,
+          "log": ".cache/retained-typed-add-early-runtime.log",
+          "log_sha256": "9cab0063d879af4f9fc399d0c3172a8df8b93ce8987a126222d46d640e0d4977"
+        },
+        {
+          "job": "desktop",
+          "returncode": 101,
+          "seconds": 21.04,
+          "log": ".cache/retained-typed-add-early-desktop.log",
+          "log_sha256": "b57f9288e8374e4387b9c79eda879db705a1a74b602b75365319699b2bc5cbe2"
+        },
+        {
+          "job": "access",
+          "returncode": 0,
+          "seconds": 31.95,
+          "log": ".cache/retained-typed-add-early-access.log",
+          "log_sha256": "4078130e3b4515887ad342e5e74175ea89e61953eb3347a954a00d6472b844fd"
+        }
+      ]
+    },
+    {
+      "receipt": ".cache/retained-typed-add-repair-results.json",
+      "results": [
+        {
+          "job": "native",
+          "returncode": 101,
+          "seconds": 65.54,
+          "log": ".cache/retained-typed-add-repair-native.log",
+          "log_sha256": "bda969a87071ae074b98d34bc7223fbc21a3e8f430dcda27a425823808aa61f9"
+        },
+        {
+          "job": "render-build",
+          "returncode": 0,
+          "seconds": 8.74,
+          "log": ".cache/retained-typed-add-repair-render-build.log",
+          "log_sha256": "d7ea1ec72f75e00bacb5dbe4ac428a00a3afbc2a83713537f4fae1f7c838a871"
+        },
+        {
+          "job": "api",
+          "returncode": 0,
+          "seconds": 9.34,
+          "log": ".cache/retained-typed-add-repair-api.log",
+          "log_sha256": "d0b011d234c3874ffd4fff56d9dd3a446b7425d2a782c99a687d1374dd5e7726"
+        },
+        {
+          "job": "runtime",
+          "returncode": 101,
+          "seconds": 27.88,
+          "log": ".cache/retained-typed-add-repair-runtime.log",
+          "log_sha256": "6fa281df98175b03bac1e43a22b0680235038e3f4f265494681d493afaa71da2"
+        },
+        {
+          "job": "desktop",
+          "returncode": 0,
+          "seconds": 76.89,
+          "log": ".cache/retained-typed-add-repair-desktop.log",
+          "log_sha256": "c362d0becf468b122357c17df8a3e297bd841f53edc017ef662fbf7dc91d2ce4"
+        }
+      ]
+    },
+    {
+      "receipt": ".cache/retained-typed-add-host-results.json",
+      "results": [
+        {
+          "job": "ui",
+          "returncode": 0,
+          "seconds": 9.24,
+          "log": ".cache/retained-typed-add-host-ui.log",
+          "log_sha256": "44cbb541f3a166b69f2b8309b9993e36f6824e1f4c804c9af6f4812392068dcf"
+        },
+        {
+          "job": "render-build",
+          "returncode": 0,
+          "seconds": 4.47,
+          "log": ".cache/retained-typed-add-host-render-build.log",
+          "log_sha256": "bc4eef155e7990f4758f0141ef4bb3936b46ff3cb62c6c7bd9ddc6fee7cd3220"
+        },
+        {
+          "job": "mcp",
+          "returncode": 0,
+          "seconds": 27.33,
+          "log": ".cache/retained-typed-add-host-mcp.log",
+          "log_sha256": "367ada8a1bbaf94b1cfd3c3cb47de08c2a191685947939b6dcc59a3a2c7d9a8a"
+        }
+      ]
+    },
+    {
+      "receipt": ".cache/retained-typed-add-late-results.json",
+      "results": [
+        {
+          "job": "runtime",
+          "returncode": 101,
+          "seconds": 22.13,
+          "log": ".cache/retained-typed-add-late-runtime.log",
+          "log_sha256": "4927ccc8b66d23387f9d9f5bf35ef87da116b67a30a0c044371778742ebc9afd"
+        },
+        {
+          "job": "mcp",
+          "returncode": 0,
+          "seconds": 14.7,
+          "log": ".cache/retained-typed-add-late-mcp.log",
+          "log_sha256": "6b8483f0f222040b5d5b83526b7f2a1d3f2a4aa86503959e50907b8ad5541cc8"
+        },
+        {
+          "job": "native",
+          "returncode": 101,
+          "seconds": 71.28,
+          "log": ".cache/retained-typed-add-late-native.log",
+          "log_sha256": "b4e378f6a376315f94b3d439c4ba3a7edbf75a3ca3e114a9be0a5283acfb23a7"
+        },
+        {
+          "job": "lint",
+          "returncode": 0,
+          "seconds": 66.78,
+          "log": ".cache/retained-typed-add-late-lint.log",
+          "log_sha256": "530778bddfb40391b02c17b4abe0c9a600d4b458e93648dbc81441d44d09080a"
+        },
+        {
+          "job": "minimal",
+          "returncode": 0,
+          "seconds": 7.55,
+          "log": ".cache/retained-typed-add-late-minimal.log",
+          "log_sha256": "dadc07d48ad7e91773dde9f5c5ff2fd3db9d40da8dcd503888241edeb6c1ca4d"
+        },
+        {
+          "job": "creation",
+          "returncode": 0,
+          "seconds": 1.38,
+          "log": ".cache/retained-typed-add-late-creation.log",
+          "log_sha256": "ee6f016c1b4cb30acef3c397c0eecec91ca3851aaf368e002e913f91d42f56f1"
+        },
+        {
+          "job": "journal",
+          "returncode": 0,
+          "seconds": 4.48,
+          "log": ".cache/retained-typed-add-late-journal.log",
+          "log_sha256": "d60a098016a120b66b2dba6ecb6754a54ec4dc99e563b71bd90cc09e9a6b3ec5"
+        },
+        {
+          "job": "journal-tests",
+          "returncode": 0,
+          "seconds": 35.43,
+          "log": ".cache/retained-typed-add-late-journal-tests.log",
+          "log_sha256": "c78dab0efa056004dc4c24bfb80e5a06c0e6efbe543d11a36b281d02682d30e1"
+        },
+        {
+          "job": "docs",
+          "returncode": 0,
+          "seconds": 16.14,
+          "log": ".cache/retained-typed-add-late-docs.log",
+          "log_sha256": "2090920d9f93db94123c990820351f1c7c216f2f3076aa22be06bcd9b1f4a51e"
+        }
+      ]
+    },
+    {
+      "receipt": ".cache/retained-typed-add-final-results.json",
+      "results": [
+        {
+          "job": "runtime",
+          "returncode": 0,
+          "seconds": 16.9,
+          "log": ".cache/retained-typed-add-final-runtime.log",
+          "log_sha256": "49f3562abab2e4c1155243b6a7b3cd8d31d50cc5237bfa89c5ad6cb882032bf9"
+        },
+        {
+          "job": "native",
+          "returncode": 0,
+          "seconds": 32.83,
+          "log": ".cache/retained-typed-add-final-native.log",
+          "log_sha256": "b32c4aeb6a18a3265e4fd1048ff91b3f9a205a8b8b8cd339b831f5984acad6b1"
+        },
+        {
+          "job": "access",
+          "returncode": 0,
+          "seconds": 14.65,
+          "log": ".cache/retained-typed-add-final-access.log",
+          "log_sha256": "3b1853378805ecb1ea943028341f73bd94404571efa9b44b6b2794b00e8099de"
+        },
+        {
+          "job": "lint",
+          "returncode": 0,
+          "seconds": 66.93,
+          "log": ".cache/retained-typed-add-final-lint.log",
+          "log_sha256": "0682d3eca03b3f3887ac971792afb21de457a28c12823ea5ccf3f3cb195501b0"
+        }
+      ]
+    }
+  ],
+  "combined_counts": {
+    "runtime": {
+      "distinct_passing_test_functions": 354,
+      "ignored": [
+        "tests::editing::genuine_jet4::genuine_jet4_reviewed_cell_save_matches_independent_whole_image"
+      ],
+      "deduplication": "Exact test names across original and focused repair batches; not a single repeated full-suite run."
+    },
+    "native": {
+      "distinct_passing_test_functions": 370,
+      "ignored": [
+        "table::mutation::no_required_programs::action_tests::action_certificate_and_empty_or_nonempty_insert_refuse_a_null_mask_hiding_unknown_extra_bytes",
+        "table::mutation::no_required_programs::action_tests::action_certificate_binds_the_same_image_even_when_another_image_has_identical_bytes",
+        "table::mutation::no_required_programs::catalog::roots::tests::genuine_forwarding_counts_logical_roots_once_and_retains_hidden_body_identity",
+        "table::mutation::no_required_programs::catalog::roots::tests::scoped_reader_rejects_unowned_intermediate_even_when_root_and_terminal_are_owned",
+        "table::mutation::no_required_programs::catalog::roots::tests::unknown_flags_orphan_hidden_shared_terminal_and_cycle_refuse_before_catalog_semantics",
+        "table::mutation::no_required_programs::guid_prior_stages::observe_actual_no_required_prior_stages_for_existing_guid_originals",
+        "table::mutation::no_required_programs::ignore_null_prior_stages::observe_actual_no_required_prior_stages_for_existing_ignore_null_originals",
+        "table::mutation::no_required_programs::properties::tests::original_sentinel_publish_zero_qualifies_but_unknown_code_keys_types_flags_and_values_refuse",
+        "table::mutation::no_required_programs::resource_tests::genuine_certificate_and_full_capability_cancel_at_entry_middle_and_terminal_poll",
+        "table::mutation::no_required_programs::resource_tests::genuine_certificate_and_full_capability_require_each_exact_resource_pool",
+        "table::mutation::no_required_programs::tests::genuine_originals_bind_and_all_nine_present_empty_carriers_refuse"
+      ],
+      "deduplication": "Exact test names across original and focused repair batches; not a single repeated full-suite run."
+    },
+    "access": {
+      "distinct_passing_test_functions": 60,
+      "ignored": [],
+      "deduplication": "Exact test names across original and focused repair batches; not a single repeated full-suite run."
+    }
+  },
+  "additional_passing_counts": {
+    "desktop": 166,
+    "ui_full_before_selection_fix": 729,
+    "ui_focused_after_selection_fix": 3,
+    "mcp_unit": 73,
+    "mcp_stdio": 2,
+    "journal_only": 21
+  },
+  "repairs": [
+    "Public API documentation and allocation-error conversion compiler failures repaired without lint suppression.",
+    "Borrowed typed source facts are obtained before consuming the same checked image.",
+    "Native historical admission accepts exactly absent native Boolean False alongside missing NULL values; Complete admission remains unchanged.",
+    "New runtime tests use the existing canonical lowercase Boolean input contract.",
+    "TCNI23 wire negatives retain distinct unsupported-profile/version errors.",
+    "TCNI22 and TCNI23 adapter recovery route through retained V3 rather than generic V1."
+  ],
+  "scope": [
+    "Twelve scalar ADD kinds use actual validated declarations, native gallery defaults and source-bound consuming reviews.",
+    "Full original records remain unchanged by ADD; historical Boolean absence reads False and other absent scalar values read NULL.",
+    "All twelve actual runtime ADD/save/ACK/reopen/defaulted INSERT journeys match independent whole-image oracles.",
+    "Missing Boolean False no-op preserves short records; True materializes exact retained geometry through TCNI23, stored bits use TCNI20.",
+    "Native cases retain sparse field numbers, retired variable slots, live Unicode values and forwarded records.",
+    "TCAC12 originals independently cover all twelve declarations and V3 pending/committed/settled reconstruction.",
+    "Actual Access filesystem sessions recover/confirm TCNI22 and TCNI23 in pending/committed and active/retired combinations.",
+    "MCP maps validated declarations to the shared service and exercises a real Currency save/reopen."
+  ],
+  "presentation_record": "typed-field-addition-presentation-2026-11-10.json",
+  "remaining": [
+    "General saved type/property alteration and record migration",
+    "Non-tail deletion, joined-definition DDL and broader imported source qualification",
+    "Broader index/constraint/program-bearing mutations and other native profiles",
+    "Microsoft Access and Windows save/reopen parity remain unrun"
+  ],
+  "native_access_comparison": false,
+  "pushed": false
+}
