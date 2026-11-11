@@ -1,6 +1,7 @@
 mod between;
 mod corpus;
 mod definition;
+mod definition_annotations;
 mod external_joins;
 mod external_tables;
 mod generated;

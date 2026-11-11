@@ -62,8 +62,6 @@ fn malformed_schema_and_foreign_dialects_fail_closed() {
         "CREATE TABLE Samples (CONSTRAINT SampleKey PRIMARY KEY (Code))",
         "CREATE TABLE Samples (Code LONG,)",
         "CREATE TABLE Samples (Code UnknownType)",
-        "CREATE TABLE Samples (Code LONG DEFAULT 1)",
-        "CREATE TABLE Samples (Code LONG CHECK (Code > 0))",
         "CREATE TABLE Samples AS SELECT Code FROM Others",
         "CREATE TABLE IF NOT EXISTS Samples (Code LONG)",
         "CREATE TEMPORARY INDEX Codes ON Samples (Code)",
