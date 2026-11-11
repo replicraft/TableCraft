@@ -15,6 +15,8 @@ const CURRENT_TAIL_MAGIC: &[u8; 8] = b"TCFD0002";
 const CURRENT_TAIL_PROFILE: u16 = 2;
 const RETAINED_MAGIC: &[u8; 8] = b"TCFD0003";
 const RETAINED_PROFILE: u16 = 3;
+const RETAINED_TYPED_MAGIC: &[u8; 8] = b"TCFD0004";
+const RETAINED_TYPED_PROFILE: u16 = 4;
 const TOTAL_AT: usize = MAGIC.len();
 const PROFILE_AT: usize = TOTAL_AT + size_of::<u32>();
 const FLAGS_AT: usize = PROFILE_AT + size_of::<u16>();
@@ -37,6 +39,7 @@ pub(super) enum Profile {
     #[cfg(feature = "ace16-create")]
     PopulatedTail,
     RetainedTail,
+    RetainedTypedTail,
 }
 
 impl Profile {
@@ -47,6 +50,7 @@ impl Profile {
             #[cfg(feature = "ace16-create")]
             Self::PopulatedTail => CURRENT_TAIL_MAGIC,
             Self::RetainedTail => RETAINED_MAGIC,
+            Self::RetainedTypedTail => RETAINED_TYPED_MAGIC,
         }
     }
 
@@ -57,6 +61,7 @@ impl Profile {
             #[cfg(feature = "ace16-create")]
             Self::PopulatedTail => CURRENT_TAIL_PROFILE,
             Self::RetainedTail => RETAINED_PROFILE,
+            Self::RetainedTypedTail => RETAINED_TYPED_PROFILE,
         }
     }
 }
@@ -73,7 +78,7 @@ pub(super) fn validate_identity(
     before_length: u64,
     profile: Profile,
 ) -> Result<(), Error> {
-    if matches!(profile, Profile::RetainedTail) {
+    if matches!(profile, Profile::RetainedTail | Profile::RetainedTypedTail) {
         binding::retained_length(before_length)?;
     } else {
         binding::length(before_length)?;

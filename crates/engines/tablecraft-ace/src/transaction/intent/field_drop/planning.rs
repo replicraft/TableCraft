@@ -66,6 +66,13 @@ impl NativeImage {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<RecoverableFieldDropPlan, Error> {
         if self.has_retained_table_source(table, budget, cancelled)? {
+            if self.select_native_retained_typed_tail_field_drop_source(
+                table, column, budget, cancelled,
+            )? {
+                return self.plan_recoverable_retained_typed_tail_field_drop(
+                    table, column, budget, cancelled,
+                );
+            }
             return self
                 .plan_recoverable_retained_tail_field_drop(table, column, budget, cancelled);
         }
@@ -162,7 +169,7 @@ impl RecoverableFieldDropPlan {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<PreparedImage<'a, D, J>, JournalError> {
         let _span = tracing::debug_span!("native.field_drop.prepare_v1").entered();
-        if self.intent.is_retained() {
+        if self.intent.is_retained() || self.intent.is_retained_typed() {
             return Err(JournalError::ImageSize);
         }
         journal::prepare_expected(

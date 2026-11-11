@@ -114,7 +114,10 @@ impl NativeFieldDropIntent {
         let identity = Identity::from_native(candidate.identity())?;
         let before_length = candidate.before_bytes().len() as u64;
         codec::validate_identity(identity, before_length, candidate.profile())?;
-        let before_binding = if matches!(candidate.profile(), Profile::RetainedTail) {
+        let before_binding = if matches!(
+            candidate.profile(),
+            Profile::RetainedTail | Profile::RetainedTypedTail
+        ) {
             binding::digest_retained(candidate.before_bytes(), budget, cancelled)?
         } else {
             binding::digest(candidate.before_bytes(), budget, cancelled)?
@@ -132,6 +135,20 @@ impl NativeFieldDropIntent {
     /// Whether this request belongs exclusively to the retained schema language.
     pub const fn is_retained(&self) -> bool {
         matches!(self.profile, Profile::RetainedTail)
+    }
+
+    /// Whether this original belongs exclusively to typed retained TCFD4.
+    pub const fn is_retained_typed(&self) -> bool {
+        matches!(self.profile, Profile::RetainedTypedTail)
+    }
+
+    /// Decode only TCFD0004/profile4; no older action is retried.
+    pub fn decode_retained_typed(
+        bytes: &[u8],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, FieldDropIntentError> {
+        codec::decode(bytes, Profile::RetainedTypedTail, budget, cancelled)
     }
 
     /// Decode only retained TCFD0003/profile3; no legacy decoder is attempted.
@@ -204,7 +221,7 @@ impl NativeFieldDropIntent {
         if before.len() as u64 != self.before_length {
             return Err(FieldDropIntentError::BeforeMismatch);
         }
-        let actual = if self.is_retained() {
+        let actual = if self.is_retained() || self.is_retained_typed() {
             binding::digest_retained(before, budget, cancelled)?
         } else {
             binding::digest(before, budget, cancelled)?
@@ -226,6 +243,16 @@ impl NativeFieldDropIntent {
         let candidate = match self.profile {
             Profile::Empty => Candidate::empty(
                 image.prepare_saved_field_drop(self.table(), self.column(), budget, cancelled)?,
+                budget,
+                cancelled,
+            )?,
+            Profile::RetainedTypedTail => Candidate::populated_tail(
+                image.prepare_retained_typed_tail_field_drop(
+                    self.table(),
+                    self.column(),
+                    budget,
+                    cancelled,
+                )?,
                 budget,
                 cancelled,
             )?,
