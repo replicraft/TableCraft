@@ -2,13 +2,14 @@
 use crate::{
     InspectError,
     creation::{CreateDatabaseError, record::DATA_HEADER_BYTES},
-    format::{page::PAGE_BYTES, row::SLOT_BYTES},
+    format::{
+        page::PAGE_BYTES,
+        row::{MAX_SLOTS, SLOT_BYTES},
+    },
     header::check,
 };
 use std::ops::Range;
 use tablecraft_core::limits::ResourceBudget;
-
-const MAX_SLOTS: usize = u8::MAX as usize + 1;
 
 pub(in crate::creation::add_table) struct Page {
     pub rows: Range<usize>,

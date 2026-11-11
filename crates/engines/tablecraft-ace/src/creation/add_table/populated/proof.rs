@@ -9,7 +9,7 @@ use crate::{
         layout,
         page::{DATA_SIGNATURE, OWNER_OFFSET, PAGE_BYTES},
         reader::{Reader, row_count},
-        row::{OFFSET_MASK, slot_offset},
+        row::{MAX_SLOTS, OFFSET_MASK, slot_offset},
     },
     header::check,
 };
@@ -20,7 +20,6 @@ use tablecraft_core::{
 
 const LAST_ISSUED_OFFSET: usize = 20;
 const FREE_OFFSET: usize = 2;
-const MAX_SLOTS: usize = u8::MAX as usize + 1;
 
 pub(in crate::creation::add_table) fn verify(
     image: &NativeImage,

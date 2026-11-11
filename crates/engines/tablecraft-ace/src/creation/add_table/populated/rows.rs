@@ -13,10 +13,7 @@ use crate::{
     format::{page::PAGE_BYTES, row::SLOT_BYTES},
     header::check,
 };
-use tablecraft_core::{
-    limits::{Resource, ResourceBudget},
-    values::Value,
-};
+use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_schema::ScalarType;
 
 pub(in crate::creation::add_table) struct Prepared<'a> {

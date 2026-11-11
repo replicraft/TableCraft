@@ -140,7 +140,7 @@ fn definition(columns: &[Column], count: usize, owned: u32, candidate: u32) -> V
         put16(
             &mut bytes,
             end + 21,
-            if column.variable.is_some() {
+            if column.variable.is_some() || column.native == 1 {
                 0
             } else {
                 fixed_offset
@@ -216,7 +216,7 @@ fn append(
     let mut used = 14;
     for record in records {
         assert!(record.len() + 16 <= PAGE);
-        if groups.last().unwrap().len() == 256 || used + record.len() + 2 > PAGE {
+        if groups.last().unwrap().len() == 255 || used + record.len() + 2 > PAGE {
             groups.push(Vec::new());
             used = 14;
         }
@@ -241,7 +241,7 @@ fn append(
         .iter()
         .zip(&members)
         .filter_map(|(page, &number)| {
-            (word(page, 12) < 256 && word(page, 2) >= minimum_row + 2).then_some(number)
+            (word(page, 12) < 255 && word(page, 2) >= minimum_row + 2).then_some(number)
         })
         .collect::<Vec<_>>();
     let mut next = root + 1 + data.len();
@@ -252,7 +252,7 @@ fn append(
     // raw fixture mutation never consumes the caller's original source.
     let mut after = before.to_vec();
     let map_slot = word(before, 3 * PAGE + 12);
-    assert!(map_slot + 2 <= 256);
+    assert!(map_slot + 2 <= 255);
     append_record(&mut after[3 * PAGE..4 * PAGE], &owned);
     append_record(&mut after[3 * PAGE..4 * PAGE], &candidate);
     let catalog = canonical_creation::catalog_record(root as u32, 0x0f00_0001, name, 1, 0);
