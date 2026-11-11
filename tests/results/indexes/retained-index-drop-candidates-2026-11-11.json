@@ -1,0 +1,119 @@
+{
+  "date": "2026-11-11",
+  "platform": "macOS 14.7.2 ARM64",
+  "source_commits": [
+    "9af303c9c",
+    "c5c716de6"
+  ],
+  "scope": "Native-only qualified retained nonunique single-LONG DROP INDEX candidates; no save or application capability.",
+  "qualification": "Independent raw complete-image oracles and local engine checks. No Microsoft Access execution or native application window.",
+  "observations": [
+    "Six DROP cases exercise complete exclusive root/tree/map retirement, surviving logical aliases without retirement, physical0 removal with surviving primary compaction, protected generated/Currency/Unicode data, malformed ownership, cancellation/budgets and forged protected bytes.",
+    "The matrix covers ascending/descending empty, nullable-duplicate, multi-leaf and 200000-row three-level trees. Existing four CREATE candidate cases remain included as regressions.",
+    "Final physical removal zeroes only the independently certified exclusive footprint and updates exact global-free bits. Shared map containers without a complete liveness proof refuse. Original file length and unrelated bytes remain exact.",
+    "Source admission, fresh AFTER inventory, parsed surviving index identities, original-byte splice and whole-image role relations remain separate checks.",
+    "Preserved logical IDs are not display positions or descriptor counts. A surviving alias can expose a genuine later count-based CREATE identity collision; this candidate does not grant a broader CREATE language."
+  ],
+  "review_repairs": [
+    "Root review found the claimed extra explicit Owned-map read missing from the cached source. The source and activation patch were corrected before activation; all recorded checks use the corrected source. The full owner census remains independently mandatory."
+  ],
+  "checks": [
+    {
+      "job": "native",
+      "command": "cargo test -p tablecraft-ace --lib --all-features --offline --locked -- normal_index_drop normal_index_creation",
+      "returncode": 0,
+      "seconds": 88.97,
+      "log": {
+        "path": ".cache/ace-sql-drop-index-native-native-20261111.log",
+        "sha256": "75648068512f7fff277bcc8ffa5337759dea8f9d151e091781bbdf4adeb1ecf9"
+      },
+      "test_summaries": [
+        {
+          "passed": 10,
+          "failed": 0,
+          "ignored": 0
+        }
+      ]
+    },
+    {
+      "job": "raw",
+      "command": "cargo test -p tablecraft-testkit --lib --all-features --offline --locked -- secondary_index::normal::dropping",
+      "returncode": 0,
+      "seconds": 29.27,
+      "log": {
+        "path": ".cache/ace-sql-drop-index-native-raw-20261111.log",
+        "sha256": "cf99ed7327490f71b3623daf38ab15314615cde43097ffa1c654033bac60f746"
+      },
+      "test_summaries": [
+        {
+          "passed": 3,
+          "failed": 0,
+          "ignored": 0
+        }
+      ]
+    },
+    {
+      "job": "strict",
+      "command": "cargo clippy -p tablecraft-ace -p tablecraft-testkit --all-targets --all-features --offline --locked -- -D warnings",
+      "returncode": 0,
+      "seconds": 47.93,
+      "log": {
+        "path": ".cache/ace-sql-drop-index-native-strict-20261111.log",
+        "sha256": "56de761a8446e0920c6846bef0d1f938b8dcee65bb55616e28f2218cc3835eab"
+      },
+      "test_summaries": []
+    },
+    {
+      "job": "journal-only",
+      "command": "cargo clippy -p tablecraft-ace --lib --no-default-features --features journal --offline --locked -- -D warnings",
+      "returncode": 0,
+      "seconds": 3.89,
+      "log": {
+        "path": ".cache/ace-sql-drop-index-native-journal-only-20261111.log",
+        "sha256": "0b903d87e08d731ed3fc88130e92fcf7eca8828b2440fe522d9da41e7f4cf42a"
+      },
+      "test_summaries": []
+    },
+    {
+      "job": "creation-only",
+      "command": "cargo check -p tablecraft-ace --lib --no-default-features --features ace16-create --offline --locked",
+      "returncode": 0,
+      "seconds": 1.93,
+      "log": {
+        "path": ".cache/ace-sql-drop-index-native-creation-only-20261111.log",
+        "sha256": "25dbf66cee5bec44581a8ceef7bf2e4c2f0804cfd54d2fe1a2b63c79ba1db8b8"
+      },
+      "test_summaries": []
+    },
+    {
+      "job": "minimal",
+      "command": "cargo check -p tablecraft-ace --lib --no-default-features --offline --locked",
+      "returncode": 0,
+      "seconds": 1.5,
+      "log": {
+        "path": ".cache/ace-sql-drop-index-native-minimal-20261111.log",
+        "sha256": "9d7a21cc0e1266ca6031ee10d5979476be49370b9fdbd7c47b77bb09fb82c367"
+      },
+      "test_summaries": []
+    },
+    {
+      "job": "rustdoc",
+      "command": "cargo doc -p tablecraft-ace --no-deps --all-features --offline --locked",
+      "returncode": 0,
+      "seconds": 10.19,
+      "log": {
+        "path": ".cache/ace-sql-drop-index-native-rustdoc-20261111.log",
+        "sha256": "52b2cff6b5ca51f4072909f976cd41908cf6567e1f91b8b5c4bc1e120b783189"
+      },
+      "test_summaries": []
+    }
+  ],
+  "counting": "The ten native tests are six new DROP tests plus four existing CREATE regressions. Three raw controls are a separate fixture boundary, not three additional native compatibility claims.",
+  "limitations": [
+    "No original request, journal/recovery, Runtime or GUI DROP capability at this checkpoint.",
+    "No primary/unique/foreign/compound or broader key-family removal qualification.",
+    "Catalog DateUpdate chronology is preserved rather than qualified against native Access; zero/free policy is not byte-parity evidence.",
+    "No Windows/Access comparison or older-profile claim."
+  ],
+  "presentation": "No UI surface changed; no application windows or new renders were needed."
+}
