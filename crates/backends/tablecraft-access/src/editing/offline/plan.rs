@@ -12,8 +12,8 @@ use tablecraft_ace::{
     AddTablePlan, FirstTablePlan, NativeAddColumnIntent, NativeAddTableIntent,
     NativeDefaultZeroAddColumnIntent, NativeFieldAdditionAfterOffHistoryIntent,
     NativeFieldAdditionAfterOffIntent, NativeFieldAdditionIntent, NativeFirstTableIntent,
-    NativeRepeatedDefaultZeroAddColumnIntent, RecoverableAddColumnPlan, RecoverableFieldDropPlan,
-    RecoverableFieldRenamePlan,
+    NativeRepeatedDefaultZeroAddColumnIntent, NativeRetainedTypedFieldAdditionIntent,
+    RecoverableAddColumnPlan, RecoverableFieldDropPlan, RecoverableFieldRenamePlan,
 };
 use tablecraft_ace::{
     NativeClockInsertIntent, NativeCompleteInsertIntent, NativeCurrentFieldAdditionIntent,
@@ -259,6 +259,8 @@ pub(super) enum MutationIntent {
     CurrentFieldAddition(NativeCurrentFieldAdditionIntent),
     RetainedFieldAddition(NativeCurrentFieldAdditionIntent),
     #[cfg(feature = "ace16-create")]
+    RetainedTypedFieldAddition(NativeRetainedTypedFieldAdditionIntent),
+    #[cfg(feature = "ace16-create")]
     FieldRename(NativeFieldRenameIntent),
     RetainedFieldRename(NativeFieldRenameIntent),
     #[cfg(feature = "ace16-create")]
@@ -303,6 +305,8 @@ impl MutationIntent {
             | Self::FieldAdditionAfterOffHistory(_)
             | Self::CurrentFieldAddition(_) => Some(SchemaChange::ColumnAdded),
             Self::RetainedFieldAddition(_) => Some(SchemaChange::ColumnAdded),
+            #[cfg(feature = "ace16-create")]
+            Self::RetainedTypedFieldAddition(_) => Some(SchemaChange::ColumnAdded),
             #[cfg(feature = "ace16-create")]
             Self::FieldDrop(_) => Some(SchemaChange::ColumnDropped),
             Self::RetainedFieldDrop(_) => Some(SchemaChange::ColumnDropped),
@@ -376,6 +380,20 @@ impl MutationIntent {
             return NativeOmittedInsertIntent::decode_retained(raw, budget, cancelled)
                 .map(Self::RetainedInsert)
                 .map_err(Cause::Intent);
+        }
+        if raw.starts_with(b"TCAC0012") {
+            #[cfg(feature = "ace16-create")]
+            {
+                return NativeRetainedTypedFieldAdditionIntent::decode(raw, budget, cancelled)
+                    .map(Self::RetainedTypedFieldAddition)
+                    .map_err(Cause::RetainedTypedFieldAdditionIntent);
+            }
+            #[cfg(not(feature = "ace16-create"))]
+            {
+                return Err(Cause::RetainedTypedFieldAdditionIntent(
+                    tablecraft_ace::RetainedTypedFieldAdditionIntentError::UnsupportedSource,
+                ));
+            }
         }
         if raw.starts_with(b"TCFD0004") {
             return NativeFieldDropIntent::decode_retained_typed(raw, budget, cancelled)

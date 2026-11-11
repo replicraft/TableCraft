@@ -4,11 +4,13 @@ use tablecraft_ace::{
     NativeImage, RecoverableCurrentFieldAdditionPlan, RecoverableDefaultZeroAddColumnPlan,
     RecoverableFieldAdditionAfterOffHistoryPlan, RecoverableFieldAdditionAfterOffPlan,
     RecoverableFieldAdditionPlan, RecoverableRepeatedDefaultZeroAddColumnPlan,
+    RecoverableRetainedTypedFieldAdditionPlan,
 };
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_io::journal::{DurableStorage, ResizableDurableStorage};
 
 pub(in crate::editing::offline) enum Plan {
+    RetainedTyped(Box<RecoverableRetainedTypedFieldAdditionPlan>),
     First(RecoverableDefaultZeroAddColumnPlan),
     Repeated(RecoverableRepeatedDefaultZeroAddColumnPlan),
     Typed(RecoverableFieldAdditionPlan),
@@ -19,11 +21,13 @@ pub(in crate::editing::offline) enum Plan {
 
 impl Plan {
     pub(super) fn is_retained(&self) -> bool {
-        matches!(self, Self::Current(plan) if plan.intent().is_retained())
+        matches!(self, Self::RetainedTyped(_))
+            || matches!(self, Self::Current(plan) if plan.intent().is_retained())
     }
 
     pub(super) fn before_bytes(&self) -> &[u8] {
         match self {
+            Self::RetainedTyped(plan) => plan.before_bytes(),
             Self::First(plan) => plan.before_bytes(),
             Self::Repeated(plan) => plan.before_bytes(),
             Self::Typed(plan) => plan.before_bytes(),
@@ -35,6 +39,7 @@ impl Plan {
 
     pub(super) fn table(&self) -> &str {
         match self {
+            Self::RetainedTyped(plan) => plan.table(),
             Self::First(plan) => plan.table(),
             Self::Repeated(plan) => plan.table(),
             Self::Typed(plan) => plan.table(),
@@ -46,6 +51,7 @@ impl Plan {
 
     pub(super) fn column(&self) -> &str {
         match self {
+            Self::RetainedTyped(plan) => plan.column(),
             Self::First(plan) => plan.column(),
             Self::Repeated(plan) => plan.column(),
             Self::Typed(plan) => plan.column(),
@@ -63,6 +69,11 @@ impl Plan {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, Cause> {
         match self {
+            Self::RetainedTyped(plan) => plan
+                .requalify_with_budgets(fresh, native, proof, cancelled)
+                .map(Box::new)
+                .map(Self::RetainedTyped)
+                .map_err(Cause::RetainedTypedFieldAdditionIntent),
             Self::First(plan) => plan
                 .requalify_with_budgets(fresh, native, proof, cancelled)
                 .map(Self::First)
@@ -97,6 +108,10 @@ impl Plan {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Vec<u8>, Cause> {
         match self {
+            Self::RetainedTyped(plan) => plan
+                .intent()
+                .encode(budget, cancelled)
+                .map_err(Cause::RetainedTypedFieldAdditionIntent),
             Self::First(plan) => plan
                 .intent()
                 .encode(budget, cancelled)
@@ -131,8 +146,15 @@ impl Plan {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<(), Cause> {
-        // Only retained10/11 select V3; all original profiles keep checked V2.
+        // Retained10/11/12 select V3; all original profiles keep checked V2.
         let prepared = match self {
+            Self::RetainedTyped(plan) => {
+                return plan
+                    .prepare_retained(target, journal, budget, cancelled)
+                    .map_err(Cause::Prepare)?
+                    .commit(budget, cancelled)
+                    .map_err(Cause::Commit);
+            }
             Self::First(plan) => plan.prepare(target, journal, budget, cancelled),
             Self::Repeated(plan) => plan.prepare(target, journal, budget, cancelled),
             Self::Typed(plan) => plan.prepare(target, journal, budget, cancelled),
