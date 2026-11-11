@@ -909,14 +909,21 @@ controls now include 20,000/400 parents and 48,000/40,000 children, with NULLs,
 duplicates, empty-parent placeholders and default/101-value refusals. This does
 not establish broader native query semantics. See [limits, cache and evidence](../../access/collections/LARGER_NATIVE_COLLECTIONS.md).
 
-## Attachment recordset results
+## Attachment and history recordset results
 
-Qualified bare attachment projections, including matching wildcard outputs, use
+Qualified bare attachment and stored-history projections, including matching wildcard outputs, use
 `QueryValue::Recordset(Arc<OwnedRecordset>)`. The backend-neutral DB model owns the
 static member schema, member availability, assignment and complete ordered rows.
 These cells remain separate from scalar `Value` and evaluator operands.
 `AbsentRecordset` represents an outer-joined missing parent; it is distinct from
 an unassigned collection, assigned empty recordset and scalar NULL.
+
+The schema carries explicit `RecordsetKind::Attachments` or `VersionHistory`
+semantics. Shape comparison includes this kind as well as member declarations
+and availability; member names alone never establish attachment/history identity.
+Generic `Rows` schemas remain a separate neutral model. History retains actual
+resolved member order, nullable stored Text/DateTime and source order. Its visible
+current Memo is an independent scalar, never a synthesized latest version.
 
 Bare outputs preserve one result row per parent. Named metadata member projections
 continue to use the existing expanded-row rules. FileData in the metadata

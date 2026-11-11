@@ -556,7 +556,7 @@ It retains the encoded envelope without implicit decoding. Bare attachment
 fields and matching wildcards also have a structured metadata result through the
 collection-aware executor: one child recordset per parent, with FileData explicitly
 uninspected. This is separate from selecting stored Binary FileData. See the
-[structured result contract](../../query/collections/MULTIVALUE_QUERIES.md#attachment-recordset-results). Ordinary scalar queries and
+[structured result contract](../../query/collections/MULTIVALUE_QUERIES.md#attachment-and-history-recordset-results). Ordinary scalar queries and
 counts do not load attachment records. Explicit required parent indexes now use
 [logical row references](INDEXED_COLLECTION_QUERIES.md) to retain correct member
 alignment without sequential fallback. All native/query/output budgets

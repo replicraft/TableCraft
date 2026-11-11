@@ -53,7 +53,7 @@ separate native/query/comparison/presentation budgets.
 Named members produce ordinary scalar result cells. NULL, present empty Text and
 an empty parent's NULL extension retain their existing distinctions and parent/child
 alignment. Results retain `source_revision: None`: a query row ordinal is never a
-native parent identity or permission to edit a collection. Qualified bare attachment
+native parent identity or permission to edit a collection. Qualified bare attachment/history
 projections and matching wildcards retain one structured child recordset per
 parent; bare multivalue scalar publication remains refused. A failed Run does not
 replace an earlier successful result.
@@ -709,14 +709,18 @@ replacing the source or changing the underlying view prevents late reopening.
 Closing an old dialog cannot cancel a newer request. Native decoding and revision
 checks stay in runtime; desktop moves DTOs and routes results.
 
-## Query-owned attachment contents
+## Query-owned collection contents
 
 Direct, inspected and saved retrieval execution can publish qualified attachment
-recordsets alongside scalar cells. A summary retains assignment and complete child
+and stored-history recordsets alongside scalar cells. A summary retains assignment and complete child
 count independently: an assigned empty recordset, an unassigned collection and an
 outer-joined missing parent remain distinct. A bare projection preserves parent
 rows; explicit named members retain their existing child-expansion semantics.
 Whole-recordset scalar conversions, ordering and aggregation are not inferred.
+The schema declares `Attachments` or `VersionHistory`; summaries and inspector
+help follow that kind, never field-name guesses. Generic `Rows` recordsets remain
+unavailable in this GUI path. Stored-history members retain source order and
+nullable Text/DateTime independently of the visible current Memo scalar.
 
 `Response::Data.query_contents` optionally carries a runtime-issued immutable
 result handle. Its sparse output coordinates address query cells, never native

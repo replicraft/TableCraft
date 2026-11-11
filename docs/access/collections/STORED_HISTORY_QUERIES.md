@@ -1,7 +1,7 @@
 # Explicit stored Memo history queries
 
 `query run --database COPY.accdb --collections` exposes qualified stored Memo
-histories as aligned named collection members. This is a TableCraft engineering
+histories as aligned named collection members or structured child recordsets. This is a TableCraft engineering
 view over stored records, not a claim that Microsoft Access accepts the same SQL
 member expressions. Native query comparisons remain unrun.
 
@@ -26,7 +26,7 @@ visible/member `Details` in a separate table.
 
 ## Stored-record contract
 
-The checked ACE 2007 and ACE 16-family profiles expose exactly the actual stored
+The qualified ACE profiles expose exactly the actual stored
 Text and legacy DateTime members of each qualified hidden history field. The
 visible Memo continues to read its current stored scalar value. History queries
 do not replace that value, reconcile it against historical entries, choose a
@@ -54,8 +54,15 @@ TableCraft behavior, not native qualification.
 Displayed member criteria filter aligned children. Unprojected member criteria
 use the existing parent-membership rules. Bare hidden-field `IS NULL` / `IS NOT
 NULL` tests complete collection presence, independently of nullable child cells.
-An all-NULL child still establishes presence. Bare hidden-field projection and
-FileData on a history are unsupported. Default and `--multivalues` modes do not
+An all-NULL child still establishes presence. Bare hidden-field projections and
+matching wildcards retain one `VersionHistory` child recordset per parent through
+the collection-aware executor. Static declarations and member order come from
+resolved history metadata; every member is inspected, and no FileData member is
+invented. Assigned empty history and an outer-joined missing parent remain
+distinct. SQL View can open these query-owned rows in its read-only history
+inspector without treating the output row as a native parent.
+See the [structured result contract](../../query/collections/MULTIVALUE_QUERIES.md#attachment-and-history-recordset-results).
+FileData on a history remains unsupported. Default and `--multivalues` modes do not
 publish history members. Enabling decoded attachment views does not add FileData
 to histories or decode their Text.
 

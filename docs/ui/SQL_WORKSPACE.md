@@ -19,15 +19,19 @@ qualified INSERT VALUES/SELECT use the reviewed action service described below.
 Broader action contexts, DDL and native saved-definition editing
 remain unfinished.
 
-## Attachment query results
+## Attachment and stored-history query results
 
-Qualified bare attachment outputs show read-only collection summaries without
+Qualified bare attachment and history outputs show read-only collection summaries without
 flattening parent rows. View contents opens the query-owned metadata dialog;
 its target is the actual published result and output cell, not a native parent
 row. Scalar NULL, present empty metadata and uninspected FileData remain distinct.
+History uses its declared stored-version kind and ordered Text/DateTime members;
+the visible current Memo remains a separate scalar. Collection summaries are
+localized from typed facts while copied host values and scalar edit input stay
+unchanged. Generic row recordsets have no GUI contents action.
 No edit, payload-open or export action is granted by a query summary. Returning
 from contents preserves the SQL and parent results. See the
-[runtime ownership contract](../application/RUNTIME.md#query-owned-attachment-contents).
+[runtime ownership contract](../application/RUNTIME.md#query-owned-collection-contents).
 
 The normal Ribbon remains visible. The query-owned inspector is an adaptation of
 the retained datasheet/Home references; no matching Access query/attachment
