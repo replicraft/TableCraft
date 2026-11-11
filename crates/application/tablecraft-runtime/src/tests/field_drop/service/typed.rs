@@ -1,6 +1,6 @@
 //! Typed tail metadata removal preserves every original record and survivor identity.
 use super::{opened, request, terminal};
-use crate::{Command, Response, SaveOutcome, SaveSchemaChange, SaveWorker};
+use crate::{Command, EditInput, EditTarget, Response, SaveOutcome, SaveSchemaChange, SaveWorker};
 use tablecraft_testkit::fixtures::access::canonical_retained_add_table::{
     exact_values, field_changes, fields,
     fixed_scalars::{self, Scalar},
@@ -110,6 +110,58 @@ fn drop_sequence(
         }
         assert!(!has_more);
     }
+    let Response::Opened {
+        document_revision, ..
+    } = request(
+        &worker,
+        Command::Open {
+            path: path.clone(),
+            password: String::new(),
+        },
+    )
+    .unwrap()
+    else {
+        panic!("expected fresh post-DROP source");
+    };
+    let Response::EditDraft(edit) = request(
+        &worker,
+        Command::BeginEdit {
+            target: EditTarget {
+                document_revision,
+                table: table.into(),
+                column: "Score".into(),
+                parent_ordinal: 0,
+            },
+        },
+    )
+    .unwrap() else {
+        panic!("expected freshly qualified survivor edit");
+    };
+    let Response::EditReviewed { capability, .. } = request(
+        &worker,
+        Command::ReviewEdit {
+            draft_id: edit.id,
+            input: EditInput {
+                text: "124".into(),
+                is_null: false,
+            },
+        },
+    )
+    .unwrap() else {
+        panic!("expected actual survivor edit review");
+    };
+    let before = expected;
+    expected = field_changes::update_score(&before, definition, 0, Some(124));
+    assert_image(&std::fs::read(&path).unwrap(), &before);
+    let id = saves.start(capability, crate::journal_path(&path)).unwrap();
+    let report = terminal(&saves);
+    assert!(
+        matches!(report.outcome, SaveOutcome::Saved { receipt }
+        if receipt.changed_rows == Some(1) && receipt.schema_change.is_none()),
+        "{report:?}"
+    );
+    assert!(saves.acknowledge(id));
+    assert_image(&std::fs::read(&path).unwrap(), &expected);
     assert!(matches!(
         request(
             &worker,
@@ -134,7 +186,7 @@ fn drop_sequence(
     assert_eq!(columns[0].name, "ID");
     assert_eq!(columns[1].name, "Score");
     assert_eq!(rows[0][0].text, "1");
-    assert_eq!(rows[0][1].text, "0");
+    assert_eq!(rows[0][1].text, "124");
     assert_image(&std::fs::read(&path).unwrap(), &expected);
 }
 
