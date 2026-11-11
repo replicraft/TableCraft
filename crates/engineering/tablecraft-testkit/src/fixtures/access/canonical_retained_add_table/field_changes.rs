@@ -1,7 +1,7 @@
 //! Independent retained field RENAME/DROP images preserve row and property history.
 use crate::fixtures::access::{
     packed_record::append_record, put16, put32, raw_catalog_properties as properties,
-    raw_property_groups, raw_schema_drop,
+    raw_forwarding_chain, raw_property_groups, raw_schema_drop,
 };
 
 const PAGE: usize = 4096;
@@ -196,4 +196,45 @@ pub fn keyless_first_field(before: &[u8], table: &str) -> Vec<u8> {
     );
     put32(&mut after, definition * PAGE + 16, 1);
     after
+}
+
+/// Update the surviving native LONG1 in a full-count post-DROP record without
+/// reconstructing retired fields, changing its count/footer or applying defaults.
+pub fn update_score(before: &[u8], definition: u32, root: usize, value: Option<i32>) -> Vec<u8> {
+    let base = definition as usize * PAGE;
+    let physical_indexes =
+        u32::from_le_bytes(before[base + 51..base + 55].try_into().unwrap()) as usize;
+    let fields = base + 63 + 12 * physical_indexes;
+    let active = word(before, base + 45);
+    let mut selected = None;
+    for position in 0..active {
+        let field = fields + 25 * position;
+        if word(before, field + 5) == 1 {
+            assert!(selected.replace(field).is_none());
+        }
+    }
+    let field = selected.unwrap();
+    assert_eq!(before[field], 4);
+    assert_eq!(&before[field + 15..field + 17], &[3, 0]);
+    assert_eq!(word(before, field + 23), 4);
+    let old = raw_forwarding_chain::record(before, definition + 1, root);
+    let count = word(old, 0);
+    assert!(count > 1);
+    assert_eq!(count, word(before, base + 41));
+    let mask = old.len() - count.div_ceil(8);
+    let offset = 2 + word(before, field + 21);
+    assert!(offset + 4 <= mask);
+    let original = (old[mask] & 2 != 0)
+        .then(|| i32::from_le_bytes(old[offset..offset + 4].try_into().unwrap()));
+    if original == value {
+        return before.to_vec();
+    }
+    let mut row = old.to_vec();
+    if let Some(value) = value {
+        row[offset..offset + 4].copy_from_slice(&value.to_le_bytes());
+        row[mask] |= 2;
+    } else {
+        row[mask] &= !2;
+    }
+    raw_forwarding_chain::replace_terminal(before, definition + 1, root, &row)
 }
