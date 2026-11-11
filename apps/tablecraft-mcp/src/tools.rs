@@ -162,7 +162,7 @@ const OPERATIONS: &[(&str, &str)] = &[
     ),
     (
         "review_field_addition",
-        "Review a Number or bounded Short Text field addition.",
+        "Review one validated saved-field gallery declaration with exact type parameters.",
     ),
     (
         "inspect_field_rename",

@@ -3,8 +3,7 @@ mod table;
 
 use super::{Session, arguments as arg};
 use serde_json::Value;
-use std::{num::NonZeroU8, path::PathBuf, sync::Arc};
-use tablecraft_builders::table::FieldAdditionDeclaration;
+use std::{path::PathBuf, sync::Arc};
 use tablecraft_runtime::{
     Command, ContentsTarget, DeleteTarget, EditTarget, InsertInput, InsertTarget,
 };
@@ -147,33 +146,7 @@ impl Session {
                 table: arg::owned(args, "table")?,
             },
             "review_field_addition" => {
-                let declaration = match arg::text(args, "kind")? {
-                    "number" => {
-                        if arg::optional(args, "max_utf16_units").is_some()
-                            || arg::optional(args, "unicode_compression").is_some()
-                        {
-                            return Err(
-                                "Text width and compression do not apply to Number addition".into(),
-                            );
-                        }
-                        FieldAdditionDeclaration::NumberLongZero
-                    }
-                    "short_text" => {
-                        let max_utf16_units = match arg::optional(args, "max_utf16_units") {
-                            None => NonZeroU8::MAX,
-                            Some(_) => NonZeroU8::new(
-                                u8::try_from(arg::u64_value(args, "max_utf16_units")?)
-                                    .map_err(|error| error.to_string())?,
-                            )
-                            .ok_or("max_utf16_units must be nonzero")?,
-                        };
-                        FieldAdditionDeclaration::ShortText {
-                            max_utf16_units,
-                            unicode_compression: arg::boolean(args, "unicode_compression", true)?,
-                        }
-                    }
-                    _ => return Err("kind must be number or short_text".into()),
-                };
+                let declaration = crate::requests::field_addition::declaration(args)?;
                 Command::ReviewAddField {
                     document_revision: revision,
                     table: arg::owned(args, "table")?,

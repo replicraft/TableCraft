@@ -134,6 +134,17 @@ Existing destinations are never overwritten. `review_table_creation` consumes a
 checked headless table draft and retains the native capability only after the
 runtime qualifies it.
 
+`review_field_addition` accepts the existing `number` and `short_text` requests,
+plus `currency`, `yes_no`, `large_integer` and `date_time`. Number requests can
+select `number_size` (`byte`, `integer`, `long_integer`, `single`, `double`,
+`decimal` or `replication_id`); Decimal accepts validated `precision` and `scale`.
+Short Text retains native `max_utf16_units` and `unicode_compression`. These
+requests use the gallery's type-default policy; they cannot supply executable
+default expressions or edit Required. `inspect_field_addition` publishes
+`typed_declarations` for individually eligible default configurations, bound to
+the current document revision. Advice cannot construct a write capability;
+review checks the actual chosen declaration, name and source again.
+
 Save and creation reports remain owned until acknowledged. Losing a client or a
 response does not prove rollback. Unknown source outcomes block further edits.
 Review/query/find handles are session-local, revocable and superseded by current

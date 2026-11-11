@@ -4,6 +4,7 @@
     reason = "Request fields are deserialized to validate wire input; runtime owns semantic interpretation"
 )]
 
+pub(crate) mod field_addition;
 mod filtering;
 mod query_design;
 pub(crate) mod read_query;
@@ -155,7 +156,10 @@ struct FieldAddition<'a> {
     document_revision: u64,
     table: &'a str,
     column: &'a str,
-    kind: AdditionKind,
+    kind: FieldKind,
+    number_size: Option<NumberSize>,
+    precision: Option<u8>,
+    scale: Option<u8>,
     max_utf16_units: Option<u8>,
     unicode_compression: Option<bool>,
 }
@@ -255,13 +259,6 @@ struct Field<'a> {
     precision: Option<u8>,
     scale: Option<u8>,
     primary: Option<bool>,
-}
-
-#[derive(Deserialize, JsonSchema)]
-#[serde(rename_all = "snake_case")]
-enum AdditionKind {
-    Number,
-    ShortText,
 }
 
 #[derive(Deserialize, JsonSchema)]
@@ -521,7 +518,7 @@ pub(super) fn validate(operation: &str, arguments: &Value) -> Result<(), String>
         "review_insert" => check::<Insert<'_>>(arguments),
         "review_table_rename" => check::<TableRename<'_>>(arguments),
         "review_table_creation" => check::<TableCreation<'_>>(arguments),
-        "review_field_addition" => check::<FieldAddition<'_>>(arguments),
+        "review_field_addition" => field_addition::declaration(arguments).map(|_| ()),
         "inspect_field_rename" | "inspect_field_drop" | "review_field_drop" => {
             check::<FieldTarget<'_>>(arguments)
         }
