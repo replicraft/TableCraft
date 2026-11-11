@@ -10,6 +10,7 @@ pub mod fields;
 pub mod fixed_scalars;
 pub mod opaque_rows;
 pub mod rows;
+pub mod typed_fields;
 pub mod updates;
 use super::{
     canonical_creation, canonical_creation_primary, canonical_initial_table_creation as initial,
