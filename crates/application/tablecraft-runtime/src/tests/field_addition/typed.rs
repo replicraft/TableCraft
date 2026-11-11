@@ -247,10 +247,10 @@ fn added_boolean_materializes_only_true_and_currency_preserves_null_then_fresh_d
         let (mut revision, mut expected) = add(&worker, &saves, &path, revision, &source, kind);
         let edits: &[(&str, bool)] = if matches!(kind, raw::Kind::Boolean) {
             &[
-                ("False", false),
-                ("True", false),
-                ("False", false),
-                ("True", false),
+                ("false", false),
+                ("true", false),
+                ("false", false),
+                ("true", false),
             ]
         } else {
             &[("1.2345", false), ("ignored", true), ("-2.0001", false)]
@@ -289,7 +289,7 @@ fn added_boolean_materializes_only_true_and_currency_preserves_null_then_fresh_d
                 panic!("expected exact typed historical row review");
             };
             let after = if matches!(kind, raw::Kind::Boolean) {
-                raw::update_boolean(&expected, source.definition, 0, text == "True")
+                raw::update_boolean(&expected, source.definition, 0, text == "true")
             } else {
                 raw::update_currency(
                     &expected,
