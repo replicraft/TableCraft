@@ -1,5 +1,7 @@
 //! Independent literal SOURCE and complete new-index expectations; no mutation API.
 mod index;
+/// Normal retained secondary-index populations with independent multilevel frames.
+pub mod normal;
 
 use super::{multiple_indexes as frames, mutation_fixture as base};
 use crate::fixtures::access as raw;
