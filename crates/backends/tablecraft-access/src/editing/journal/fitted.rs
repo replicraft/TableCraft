@@ -135,11 +135,11 @@ impl NativeJournalEditor {
                 }
             }
             #[cfg(feature = "ace16-create")]
-            let new_scalar =
+            let retained_fixed =
                 self.route == JournalRoute::RetainedRows && retained_fixed_scalar(kind);
             #[cfg(not(feature = "ace16-create"))]
-            let new_scalar = false;
-            if !new_scalar
+            let retained_fixed = false;
+            if !retained_fixed
                 && !matches!(
                     kind,
                     ScalarType::Boolean
@@ -225,10 +225,10 @@ impl NativeJournalEditor {
                 rows.push(ordinal);
             }
             #[cfg(feature = "ace16-create")]
-            let new_scalar =
+            let retained_fixed =
                 self.route == JournalRoute::RetainedRows && retained_fixed_scalar(kind);
             #[cfg(feature = "ace16-create")]
-            let group = if new_scalar {
+            let group = if retained_fixed {
                 NativeFittedIntentGroup::new_retained_fixed_scalars(
                     target.name(),
                     requests,

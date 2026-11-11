@@ -334,3 +334,5 @@ mod currency;
 
 #[cfg(feature = "ace16-create")]
 mod boolean;
+
+mod fixed_scalars;
