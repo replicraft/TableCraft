@@ -7,7 +7,10 @@ use crate::{
     },
     header::check,
     table::{
-        mutation::record_serialization::current_rows::{self, Language},
+        mutation::{
+            record_insertion::proof::payload as insertion_payload,
+            record_serialization::current_rows::{self, Language},
+        },
         record_layout,
     },
 };
@@ -54,9 +57,7 @@ pub(in crate::table::mutation) fn reconstruct(
         (Language::WideValues, NUMERIC, value)
             if !field.fixed() && current_rows::wide_value(field, value) =>
         {
-            crate::table::mutation::record_insertion::proof::payload::encode(
-                field, value, budget, cancelled,
-            )?
+            insertion_payload::encode(field, value, budget, cancelled)?
         }
         (Language::LongText, SHORT_TEXT, Value::Text(_) | Value::Null) if !field.fixed() => {
             super::payload::encode(field, value, budget, cancelled)?

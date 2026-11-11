@@ -1,6 +1,7 @@
 //! Table-wide cell capability uses one source; selected actions remain closed.
 use super::{
-    current_row_updates::Family, field, historical_fixed::source::Source, record_serialization,
+    current_row_updates::Family, field, historical_fixed::source::Source,
+    record_insertion::payload as insertion_payload, record_serialization,
 };
 use crate::{
     EditError, InspectError, NativeImage, WriteBlocker,
@@ -138,7 +139,7 @@ pub(super) fn qualify(
             GUID => {
                 field::fixed_column_at(schema, position, ScalarType::Guid, GUID_BYTES)?;
             }
-            NUMERIC => super::record_insertion::payload::qualify(column)?,
+            NUMERIC => insertion_payload::qualify(column)?,
             SHORT_TEXT => record_serialization::storage::qualify(column)?,
             native => {
                 let (kind, width) = record_serialization::current_rows::fixed_scalar_kind(native)

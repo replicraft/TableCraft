@@ -11,7 +11,10 @@ use crate::{
         row::{COLUMN_COUNT_BYTES, MASK_BITS, VARIABLE_COUNT_BYTES, VARIABLE_OFFSET_BYTES},
     },
     header::check,
-    table::record_layout::{self, RecordLayout},
+    table::{
+        mutation::record_insertion::payload as insertion_payload,
+        record_layout::{self, RecordLayout},
+    },
 };
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
@@ -110,7 +113,7 @@ pub(in crate::table::mutation) fn qualify(
                 && field.flags() == (FIXED_FLAG | UPDATABLE_FLAG)
                 && field.extended_flags() == 0 => {}
         (Language::WideValues, NUMERIC, false) => {
-            super::super::record_insertion::payload::qualify(field)?;
+            insertion_payload::qualify(field)?;
         }
         (Language::LongText, SHORT_TEXT, false) => storage::qualify(field)?,
         _ => return Err(EditError::Unsupported(WriteBlocker::Column)),
@@ -162,7 +165,7 @@ pub(in crate::table::mutation) fn build(
         (Language::FixedScalars, native, value) if fixed_scalar_value(native, value) => Vec::new(),
         (Language::WideValues, GUID, Value::Guid(_) | Value::Null) => Vec::new(),
         (Language::WideValues, NUMERIC, value) if wide_value(field, value) => {
-            super::super::record_insertion::payload::encode(field, value, budget, cancelled)?
+            insertion_payload::encode(field, value, budget, cancelled)?
         }
         (Language::LongText, SHORT_TEXT, Value::Text(_) | Value::Null) => {
             storage::encode_preferred(field, value, budget, cancelled)?

@@ -5,6 +5,7 @@ use super::{
     field, fixed_records,
     historical_fixed::source::Source,
     normal_fitted::binding,
+    record_insertion::payload as insertion_payload,
     record_placement::{audit, forward::Plan, owned::Reservations, space::Space},
     record_roots, record_serialization,
     rows::{self, RowAssignment},
@@ -602,7 +603,7 @@ fn retained_column(
                 if field.native_type() != NUMERIC {
                     return Err(EditError::Unsupported(WriteBlocker::Column));
                 }
-                super::record_insertion::payload::qualify(field)?;
+                insertion_payload::qualify(field)?;
             } else {
                 record_serialization::storage::qualify(field)?;
                 if field.native_type() != SHORT_TEXT {
