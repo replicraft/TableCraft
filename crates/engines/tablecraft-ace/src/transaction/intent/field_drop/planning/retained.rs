@@ -43,10 +43,34 @@ impl NativeImage {
         check(budget, cancelled)?;
         RecoverableFieldDropPlan::new(candidate, intent, budget, cancelled)
     }
+
+    /// Bind one qualified retained non-tail removal and its original native
+    /// identity to the complete BEFORE. No older tail planner is attempted.
+    ///
+    /// # Errors
+    /// Refuses unqualified source/target evidence, failed preservation proof,
+    /// cancellation, allocation failure and explicit resource exhaustion.
+    pub fn plan_recoverable_retained_non_tail_field_drop(
+        self,
+        table: &str,
+        column: &str,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<RecoverableFieldDropPlan, Error> {
+        let _span = tracing::debug_span!("native.retained_non_tail_field_drop.plan").entered();
+        let candidate = Candidate::retained_non_tail(
+            self.prepare_retained_non_tail_field_drop(table, column, budget, cancelled)?,
+            budget,
+            cancelled,
+        )?;
+        let intent = Intent::capture(&candidate, budget, cancelled)?;
+        check(budget, cancelled)?;
+        RecoverableFieldDropPlan::new(candidate, intent, budget, cancelled)
+    }
 }
 
 impl RecoverableFieldDropPlan {
-    /// Prepare only retained TCFD3/4 with the same checked V3 journal owner.
+    /// Prepare only retained TCFD3/4/5 with the same checked V3 journal owner.
     pub fn prepare_retained<'a, D: ResizableDurableStorage, J: DurableStorage>(
         self,
         target: &'a mut D,
@@ -55,7 +79,10 @@ impl RecoverableFieldDropPlan {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<PreparedResizableImage<'a, D, J>, JournalError> {
         let _span = tracing::debug_span!("native.retained_tail_field_drop.prepare").entered();
-        if !self.intent.is_retained() && !self.intent.is_retained_typed() {
+        if !self.intent.is_retained()
+            && !self.intent.is_retained_typed()
+            && !self.intent.is_retained_non_tail()
+        {
             return Err(JournalError::ImageSize);
         }
         journal::prepare_resizable_v3_expected(

@@ -24,7 +24,7 @@ pub fn qualify_native_field_drop_recovery<'a, J: DurableStorage>(
 ) -> Result<QualifiedFieldDropRecovery<'a, J>, Error> {
     let _span = tracing::debug_span!("native.field_drop_recovery.qualify").entered();
     check(budget, cancelled)?;
-    if intent.is_retained() || intent.is_retained_typed() {
+    if intent.is_retained() || intent.is_retained_typed() || intent.is_retained_non_tail() {
         return Err(Error::InvalidRecord);
     }
     intent.verify_before(checked.before_bytes(), budget, cancelled)?;

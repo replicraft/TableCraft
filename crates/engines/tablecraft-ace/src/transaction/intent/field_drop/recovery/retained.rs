@@ -1,4 +1,4 @@
-//! TCFD0003/4 replays only after requalifying the same checked V3 journal.
+//! TCFD0003/4/5 replays only after requalifying the same checked V3 journal.
 use super::super::{FieldDropIntentError, NativeFieldDropIntent};
 use crate::header::check;
 #[cfg(feature = "ace16-create")]
@@ -12,14 +12,14 @@ use tablecraft_io::journal::{
 };
 use tablecraft_model::CatalogScope;
 
-/// The same immutable V3 session, qualified by the original TCFD0003/4 source proof.
+/// The same immutable V3 session, qualified by the original TCFD0003/4/5 source proof.
 #[must_use = "recover explicitly or retain the qualified V3 journal"]
 pub struct QualifiedRetainedFieldDropRecovery<'a, J: DurableStorage> {
     checked: CheckedV3<'a, J>,
 }
 
 impl NativeFieldDropIntent {
-    /// Qualify only retained TCFD0003/4 against original BEFORE and complete AFTER.
+    /// Qualify only retained TCFD0003/4/5 against original BEFORE and complete AFTER.
     pub fn qualify_retained_recovery<'a, J: DurableStorage>(
         self,
         checked: CheckedV3<'a, J>,
@@ -29,7 +29,7 @@ impl NativeFieldDropIntent {
     ) -> Result<QualifiedRetainedFieldDropRecovery<'a, J>, FieldDropIntentError> {
         let _span = tracing::debug_span!("native.retained_field_drop_recovery.qualify").entered();
         check(budget, cancelled)?;
-        if !self.is_retained() && !self.is_retained_typed() {
+        if !self.is_retained() && !self.is_retained_typed() && !self.is_retained_non_tail() {
             return Err(FieldDropIntentError::InvalidRecord);
         }
         #[cfg(feature = "ace16-create")]

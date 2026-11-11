@@ -169,7 +169,10 @@ impl RecoverableFieldDropPlan {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<PreparedImage<'a, D, J>, JournalError> {
         let _span = tracing::debug_span!("native.field_drop.prepare_v1").entered();
-        if self.intent.is_retained() || self.intent.is_retained_typed() {
+        if self.intent.is_retained()
+            || self.intent.is_retained_typed()
+            || self.intent.is_retained_non_tail()
+        {
             return Err(JournalError::ImageSize);
         }
         journal::prepare_expected(

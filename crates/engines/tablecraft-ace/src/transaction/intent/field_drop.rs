@@ -28,6 +28,9 @@ pub use recovery::QualifiedRetainedFieldDropRecovery;
 
 const MAX_NAME_UNITS: usize = 64;
 const MAX_NAME_BYTES: usize = MAX_NAME_UNITS;
+// A BMP scalar occupies at most three UTF-8 bytes per native UTF-16 unit;
+// supplementary scalars occupy four bytes for two units.
+const MAX_NON_TAIL_NAME_BYTES: usize = 3 * crate::identifier::MAX_NAME_UNITS;
 
 /// Payload-free original DROP, source reconstruction or complete-image failure.
 #[derive(Debug, Error)]
@@ -101,8 +104,12 @@ pub struct NativeFieldDropIntent {
 }
 
 impl NativeFieldDropIntent {
-    /// Closed upper bound checked before allocating persisted request strings.
+    /// Closed upper bound of the original TCFD1–4 request languages.
     pub const MAX_ENCODED_BYTES: usize = codec::MAX_RECORD_BYTES;
+
+    /// Largest TCFD0005 request with two native 64-unit UTF-16 names.
+    /// This byte envelope does not replace native identifier validation.
+    pub const MAX_NON_TAIL_ENCODED_BYTES: usize = codec::MAX_NON_TAIL_RECORD_BYTES;
 
     #[cfg(feature = "ace16-create")]
     fn capture(
@@ -110,13 +117,19 @@ impl NativeFieldDropIntent {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, FieldDropIntentError> {
-        validate_request(candidate.table(), candidate.column(), budget, cancelled)?;
+        validate_request(
+            candidate.table(),
+            candidate.column(),
+            candidate.profile(),
+            budget,
+            cancelled,
+        )?;
         let identity = Identity::from_native(candidate.identity())?;
         let before_length = candidate.before_bytes().len() as u64;
         codec::validate_identity(identity, before_length, candidate.profile())?;
         let before_binding = if matches!(
             candidate.profile(),
-            Profile::RetainedTail | Profile::RetainedTypedTail
+            Profile::RetainedTail | Profile::RetainedTypedTail | Profile::RetainedNonTail
         ) {
             binding::digest_retained(candidate.before_bytes(), budget, cancelled)?
         } else {
@@ -140,6 +153,25 @@ impl NativeFieldDropIntent {
     /// Whether this original belongs exclusively to typed retained TCFD4.
     pub const fn is_retained_typed(&self) -> bool {
         matches!(self.profile, Profile::RetainedTypedTail)
+    }
+
+    /// Whether this original belongs exclusively to non-tail TCFD0005.
+    pub const fn is_retained_non_tail(&self) -> bool {
+        matches!(self.profile, Profile::RetainedNonTail)
+    }
+
+    /// Decode only TCFD0005/profile5. Data alone grants no native authority;
+    /// older tail request languages are rejected without retry.
+    ///
+    /// # Errors
+    /// Refuses malformed framing, identities, names or native image lengths,
+    /// cancellation, allocation failure and explicit resource exhaustion.
+    pub fn decode_retained_non_tail(
+        bytes: &[u8],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, FieldDropIntentError> {
+        codec::decode(bytes, Profile::RetainedNonTail, budget, cancelled)
     }
 
     /// Decode only TCFD0004/profile4; no older action is retried.
@@ -221,11 +253,12 @@ impl NativeFieldDropIntent {
         if before.len() as u64 != self.before_length {
             return Err(FieldDropIntentError::BeforeMismatch);
         }
-        let actual = if self.is_retained() || self.is_retained_typed() {
-            binding::digest_retained(before, budget, cancelled)?
-        } else {
-            binding::digest(before, budget, cancelled)?
-        };
+        let actual =
+            if self.is_retained() || self.is_retained_typed() || self.is_retained_non_tail() {
+                binding::digest_retained(before, budget, cancelled)?
+            } else {
+                binding::digest(before, budget, cancelled)?
+            };
         if actual != self.before_binding {
             return Err(FieldDropIntentError::BeforeMismatch);
         }
@@ -243,6 +276,16 @@ impl NativeFieldDropIntent {
         let candidate = match self.profile {
             Profile::Empty => Candidate::empty(
                 image.prepare_saved_field_drop(self.table(), self.column(), budget, cancelled)?,
+                budget,
+                cancelled,
+            )?,
+            Profile::RetainedNonTail => Candidate::retained_non_tail(
+                image.prepare_retained_non_tail_field_drop(
+                    self.table(),
+                    self.column(),
+                    budget,
+                    cancelled,
+                )?,
                 budget,
                 cancelled,
             )?,
@@ -290,13 +333,15 @@ impl NativeFieldDropIntent {
 fn validate_request(
     table: &str,
     column: &str,
+    profile: Profile,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), FieldDropIntentError> {
-    // Profile 1 is explicitly ASCII; byte ceilings precede traversal/allocation.
+    // Older languages remain ASCII. Profile 5 validates actual native UTF-16
+    // units; its byte envelope only bounds persisted request allocation.
     for name in [table, column] {
-        if name.len() > MAX_NAME_BYTES
-            || !name.is_ascii()
+        if name.len() > profile.name_bytes()
+            || !matches!(profile, Profile::RetainedNonTail) && !name.is_ascii()
             || !crate::identifier::valid_name(name, budget, cancelled)?
         {
             return Err(FieldDropIntentError::InvalidRecord);
