@@ -1,4 +1,5 @@
 //! Connected scratch prompts route real runtime witnesses without host SQL policy.
+mod collections;
 use super::*;
 use crate::workspace::test_support::{app_harness, finish_reads};
 use egui::accesskit::Role;
