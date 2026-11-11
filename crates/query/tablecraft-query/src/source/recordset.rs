@@ -14,6 +14,11 @@ pub struct RecordsetColumn {
 impl RecordsetColumn {
     /// Consume an actual field name and validated immutable child schema.
     /// Producers pay acquisition/ownership costs before publishing metadata.
+    ///
+    /// # Errors
+    /// Returns the shared name validation error when the field name is empty
+    /// or contains a control character. Source-specific name policies and duplicate
+    /// declarations are checked separately during query binding.
     pub fn new(name: String, schema: Arc<RecordsetSchema>) -> Result<Self, SchemaError> {
         Ok(Self {
             name: SchemaName::new(name)?,
@@ -25,6 +30,7 @@ impl RecordsetColumn {
         &self.name
     }
 
+    /// Borrow the exact source field name used to bind this recordset projection.
     pub fn name(&self) -> &str {
         self.name.as_str()
     }
@@ -51,10 +57,13 @@ pub struct RecordsetOutput {
 }
 
 impl RecordsetOutput {
+    /// Zero-based output position, independent of scalar and list sidecar indices.
     pub const fn index(&self) -> usize {
         self.index
     }
 
+    /// Borrow the captured child declarations and inspection availability,
+    /// including when execution returns no parent rows for this output.
     pub fn schema(&self) -> &RecordsetSchema {
         &self.schema
     }
