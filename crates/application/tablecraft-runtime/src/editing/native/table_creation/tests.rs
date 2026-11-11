@@ -9,6 +9,7 @@ use tablecraft_testkit::fixtures::access::canonical_blank_creation;
 
 mod addition;
 mod capacity;
+mod exact_values;
 mod fixed_scalars;
 mod manual;
 mod number_source;
