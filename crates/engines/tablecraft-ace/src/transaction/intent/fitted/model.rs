@@ -354,6 +354,11 @@ pub(super) fn validate_groups(
     let mut count = 0_usize;
     for (position, group) in groups.iter().enumerate() {
         check(budget, cancelled)?;
+        if grammar == Grammar::RetainedFixedScalars
+            && !matches!(group.updates(), NativeFittedUpdates::Fixed(_))
+        {
+            return Err(NativeIntentError::InvalidRecord);
+        }
         if grammar != Grammar::Legacy {
             grammar.name(group.column(), budget, cancelled)?;
         } else if group.column().len() > names::MAX_NAME_BYTES {
