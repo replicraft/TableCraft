@@ -1,6 +1,6 @@
-use super::{CountingClock, input, inspect, opened, request, rows};
+use super::{counting_clock, input, inspect, opened, request, rows};
 use crate::{Command, Error, QueryRunOptions, Response, Worker};
-use std::sync::{Arc, atomic::Ordering};
+use std::sync::Arc;
 use tablecraft_testkit::fixtures::access::mutation_fixture;
 
 fn assert_image(actual: &[u8], expected: &[u8]) {
@@ -18,7 +18,7 @@ fn explicit_discovery_reads_metadata_without_touching_broken_user_records_or_clo
     let directory = tempfile::tempdir().unwrap();
     let path = directory.path().join("metadata.mdb");
     std::fs::write(&path, &original).unwrap();
-    let clock = Arc::new(CountingClock::default());
+    let clock = Arc::new(counting_clock());
     let worker = Worker::with_query_clock(|| {}, clock.clone());
     let revision = opened(&worker, &path);
     let (target, declared) = inspect(
@@ -42,7 +42,7 @@ fn explicit_discovery_reads_metadata_without_touching_broken_user_records_or_clo
     assert_eq!(parameters[0].name, "Enter minimum:");
     assert_eq!(parameters[0].kind, "value");
     assert_eq!(parameters[0].label, "VALUE");
-    assert_eq!(clock.0.load(Ordering::Acquire), 0);
+    assert_eq!(clock.calls(), 0);
     assert_image(&std::fs::read(&path).unwrap(), &original);
 }
 

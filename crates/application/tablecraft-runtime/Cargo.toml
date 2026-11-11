@@ -39,4 +39,4 @@ uuid.workspace = true
 [dev-dependencies]
 tempfile.workspace = true
 tracing-subscriber.workspace = true
-tablecraft-testkit = { workspace = true, features = ["access-support", "ace16-create-support"] }
+tablecraft-testkit = { workspace = true, features = ["access-support", "ace16-create-support", "expression-support"] }

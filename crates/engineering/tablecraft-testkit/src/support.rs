@@ -9,6 +9,8 @@ pub mod ace;
 pub mod bytes;
 #[cfg(feature = "cli-support")]
 pub mod cli;
+#[cfg(feature = "expression-support")]
+pub mod expressions;
 #[cfg(feature = "query-support")]
 pub mod query;
 

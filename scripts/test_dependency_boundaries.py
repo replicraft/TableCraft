@@ -15,7 +15,7 @@ from check_dependency_boundaries import violations
 TESTKIT_SUPPORT_TARGETS = (
     "tablecraft-ace", "tablecraft-access", "tablecraft-query",
     "tablecraft-db", "tablecraft-model", "tablecraft-schema",
-    "tablecraft-sql", "tablecraft-io",
+    "tablecraft-sql", "tablecraft-io", "tablecraft-expressions",
 )
 
 
@@ -358,6 +358,7 @@ class BoundaryTests(unittest.TestCase):
             ("tablecraft-model", "crates/foundation/model"),
             ("tablecraft-io", "crates/platform/io"),
             ("tablecraft-sql", "crates/query/sql"),
+            ("tablecraft-expressions", "crates/query/expressions"),
             ("tablecraft-crypto", "crates/platform/crypto"),
         ]:
             support = package(name, directory)

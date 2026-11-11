@@ -5,26 +5,18 @@ use crate::{
     Cell, CellKind, Command, Error, InspectedQuery, ParameterInput, ParameterSpec, QueryOperation,
     Response, Worker,
 };
-use std::sync::{
-    Arc,
-    atomic::{AtomicUsize, Ordering},
-};
+use std::sync::Arc;
 use tablecraft_core::values::ExtendedDateTime;
 use tablecraft_display::{DateRepresentation, ScalarPresentation};
-use tablecraft_expressions::{
-    EvalError,
-    functions::dates::clock::{Clock, ClockReading},
+use tablecraft_expressions::functions::dates::clock::ClockReading;
+use tablecraft_testkit::{
+    fixtures::access::mutation_fixture, support::expressions::clock::CountingClock,
 };
-use tablecraft_testkit::fixtures::access::mutation_fixture;
 
-#[derive(Default)]
-struct CountingClock(AtomicUsize);
-
-impl Clock for CountingClock {
-    fn read(&self) -> Result<ClockReading, EvalError> {
-        self.0.fetch_add(1, Ordering::AcqRel);
-        ClockReading::new(ExtendedDateTime::new(2026, 11, 7, 13, 14, 15, 0).unwrap())
-    }
+fn counting_clock() -> CountingClock {
+    CountingClock::new(
+        ClockReading::new(ExtendedDateTime::new(2026, 11, 7, 13, 14, 15, 0).unwrap()).unwrap(),
+    )
 }
 
 pub(super) fn inspect(
@@ -90,7 +82,7 @@ fn inspection_retains_exact_sql_without_scanning_records_or_consulting_clock() {
     let directory = tempfile::tempdir().unwrap();
     let path = directory.path().join("unreadable.mdb");
     std::fs::write(&path, &original).unwrap();
-    let clock = Arc::new(CountingClock::default());
+    let clock = Arc::new(counting_clock());
     let worker = Worker::with_query_clock(|| {}, clock.clone());
     let revision = opened(&worker, &path);
     let mut sql =
@@ -104,7 +96,7 @@ fn inspection_retains_exact_sql_without_scanning_records_or_consulting_clock() {
     assert_eq!(parameters[0].kind, "int32");
     assert_eq!(parameters[0].label, "LONG");
     assert!(parameters[0].nullable);
-    assert_eq!(clock.0.load(Ordering::Acquire), 0);
+    assert_eq!(clock.calls(), 0);
     assert!(
         request(
             &worker,
@@ -116,7 +108,7 @@ fn inspection_retains_exact_sql_without_scanning_records_or_consulting_clock() {
         )
         .is_err()
     );
-    assert_eq!(clock.0.load(Ordering::Acquire), 0);
+    assert_eq!(clock.calls(), 0);
     assert_eq!(std::fs::read(path).unwrap(), original);
 }
 
@@ -126,7 +118,7 @@ fn exact_declared_constraints_reject_inputs_before_context_and_allow_typed_corre
     let path = directory.path().join("typed.mdb");
     let original = mutation_fixture::database();
     std::fs::write(&path, &original).unwrap();
-    let clock = Arc::new(CountingClock::default());
+    let clock = Arc::new(counting_clock());
     let worker = Worker::with_query_clock(|| {}, clock.clone());
     let revision = opened(&worker, &path);
     let (target, specs) = inspect(
@@ -178,7 +170,7 @@ fn exact_declared_constraints_reject_inputs_before_context_and_allow_typed_corre
             matches!(&actual, Some(Error::ParameterInput)),
             "{case} must refuse the declared input: {actual:?}"
         );
-        assert_eq!(clock.0.load(Ordering::Acquire), 0, "{case}");
+        assert_eq!(clock.calls(), 0, "{case}");
         assert!(worker.poll().is_none());
     }
     let mut malformed = valid.clone();
@@ -194,7 +186,7 @@ fn exact_declared_constraints_reject_inputs_before_context_and_allow_typed_corre
         ),
         Err(Error::InvalidScalarInput)
     ));
-    assert_eq!(clock.0.load(Ordering::Acquire), 0);
+    assert_eq!(clock.calls(), 0);
     let result = rows(
         request(
             &worker,
@@ -222,7 +214,7 @@ fn exact_declared_constraints_reject_inputs_before_context_and_allow_typed_corre
             ..
         })
     ));
-    assert_eq!(clock.0.load(Ordering::Acquire), 1);
+    assert_eq!(clock.calls(), 1);
     assert_eq!(std::fs::read(path).unwrap(), original);
 }
 
@@ -295,7 +287,7 @@ fn query_witness_refuses_reopen_and_other_worker_even_with_matching_revision() {
     let directory = tempfile::tempdir().unwrap();
     let path = directory.path().join("identity.mdb");
     std::fs::write(&path, mutation_fixture::database()).unwrap();
-    let clock = Arc::new(CountingClock::default());
+    let clock = Arc::new(counting_clock());
     let first = Worker::with_query_clock(|| {}, clock.clone());
     let second = Worker::with_query_clock(|| {}, clock.clone());
     let revision = opened(&first, &path);
@@ -339,7 +331,7 @@ fn query_witness_refuses_reopen_and_other_worker_even_with_matching_revision() {
         ),
         Err(Error::StaleQuery)
     ));
-    assert_eq!(clock.0.load(Ordering::Acquire), 0);
+    assert_eq!(clock.calls(), 0);
 }
 
 #[test]
@@ -349,7 +341,7 @@ fn operation_classification_uses_actual_syntax_without_scans_clock_or_mutation()
     let directory = tempfile::tempdir().unwrap();
     let path = directory.path().join("classification.mdb");
     std::fs::write(&path, &original).unwrap();
-    let clock = Arc::new(CountingClock::default());
+    let clock = Arc::new(counting_clock());
     let worker = Worker::with_query_clock(|| {}, clock.clone());
     let revision = opened(&worker, &path);
 
@@ -382,7 +374,7 @@ fn operation_classification_uses_actual_syntax_without_scans_clock_or_mutation()
         assert_eq!(target.sql(), sql);
         assert_eq!(target.document_revision(), revision);
         assert!(parameters.is_empty());
-        assert_eq!(clock.0.load(Ordering::Acquire), 0);
+        assert_eq!(clock.calls(), 0);
     }
     assert_eq!(std::fs::read(path).unwrap(), original);
 }

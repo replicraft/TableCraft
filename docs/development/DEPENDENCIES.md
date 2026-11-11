@@ -518,6 +518,16 @@ features and library ownership are unchanged; no registry package, version,
 feature default or third-party license is added. The root-owned offline lockfile
 refresh and dependency guard validate the additional local development edge.
 
+## Shared expression-provider observations (11 November 2026)
+
+The testkit's opt-in `expression-support` feature uses the existing workspace
+`tablecraft-expressions` dependency for a caller-selected counting clock. Runtime
+enables it only through its development dependency. The helper owns a validated
+`ClockReading` and counts actual provider callbacks; it supplies no fixed-date
+Default or system-time discovery. Existing query-parameter and make-table tests
+share that observation owner. Default raw fixtures and production dependency
+boundaries are unchanged; no registry package or license is added.
+
 ## Shared journal test observations (8 November 2026)
 
 The testkit's opt-in `journal-support` feature consumes its existing optional

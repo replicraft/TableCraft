@@ -11,6 +11,7 @@ description = "Independent fixtures and feature-gated shared test support"
 [features]
 default = []
 journal-support = ["dep:tablecraft-io", "tablecraft-io/journal"]
+expression-support = ["dep:tablecraft-expressions"]
 formats-fixtures = ["dep:flate2"]
 ace-support = ["dep:tablecraft-ace", "dep:tablecraft-model"]
 query-support = [
@@ -40,6 +41,7 @@ uuid.workspace = true
 # Real query, engine and adapter observations used only by test consumers.
 tablecraft-ace = { workspace = true, optional = true }
 tablecraft-query = { workspace = true, optional = true }
+tablecraft-expressions = { workspace = true, optional = true }
 tablecraft-access = { workspace = true, optional = true, features = ["offline-write-session"] }
 tablecraft-db = { workspace = true, optional = true }
 tablecraft-io = { workspace = true, optional = true, features = ["filesystem-journal"] }
