@@ -18,7 +18,10 @@ use crate::workspace::{
     },
 };
 use egui::accesskit::Role;
-use egui_kittest::{Harness, kittest::Queryable};
+use egui_kittest::{
+    Harness,
+    kittest::{NodeT, Queryable},
+};
 use std::path::Path;
 use tablecraft_runtime::journal_path;
 use tablecraft_testkit::fixtures::access::canonical_retained_add_table::{
