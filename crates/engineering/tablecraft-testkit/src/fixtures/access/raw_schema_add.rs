@@ -46,7 +46,17 @@ pub(in crate::fixtures::access) fn append(
     for at in (FIELD_START..names).step_by(FIELD_BYTES) {
         next_id = next_id.max(word(old, at + 9) + 1);
         if old[at + 15] & 1 != 0 {
-            assert_eq!(old[at], 4);
+            match old[at] {
+                4 => assert_eq!(word(old, at + 23), 4),
+                15 if matches!(slack, Slack::Preserve) => {
+                    // The retained ExactValues predecessor is a real ordinary
+                    // sixteen-byte GUID, not a LONG-sized placeholder. Only its
+                    // declared fixed span contributes to the next offset.
+                    assert_eq!(&old[at + 15..at + 17], &[3, 0]);
+                    assert_eq!(word(old, at + 23), 16);
+                }
+                _ => panic!("source predecessor is outside this independent ADD recipe"),
+            }
             fixed = fixed.max(word(old, at + 21) + word(old, at + 23));
         } else {
             variable = variable.max(word(old, at + 7) + 1);
