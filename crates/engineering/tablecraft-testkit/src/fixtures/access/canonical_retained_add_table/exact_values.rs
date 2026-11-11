@@ -161,8 +161,8 @@ fn decimal_value(bytes: &[u8]) -> i128 {
     assert_eq!(bytes.len(), 17);
     assert!(matches!(bytes[0], 0 | 128));
     let mut magnitude = 0_u128;
-    for limb in bytes[1..].chunks_exact(4) {
-        magnitude = (magnitude << 32) | u128::from(u32::from_le_bytes(limb.try_into().unwrap()));
+    for limb in bytes[1..].as_chunks::<4>().0 {
+        magnitude = (magnitude << 32) | u128::from(u32::from_le_bytes(*limb));
     }
     assert!(magnitude < PRECISION_BOUND);
     if bytes[0] == 128 {
