@@ -7,6 +7,8 @@ use tablecraft_sql::{
     select::TableSource,
 };
 
+pub(crate) mod read_source;
+
 pub(crate) struct BoundDelete {
     pub parameters: Vec<Parameter>,
     pub filter: Option<Expr>,
@@ -18,6 +20,17 @@ pub(crate) fn bind_delete(
     allow_parameters: bool,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
+) -> Result<BoundDelete, QueryError> {
+    bind_with(query, source, allow_parameters, budget, cancelled, None)
+}
+
+fn bind_with(
+    query: &Query,
+    source: &dyn Source,
+    allow_parameters: bool,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+    target_columns: Option<(&str, &[tablecraft_schema::Column])>,
 ) -> Result<BoundDelete, QueryError> {
     if !allow_parameters && !query.parameters.is_empty() {
         return Err(QueryError::Unsupported);
@@ -31,6 +44,11 @@ pub(crate) fn bind_delete(
     };
     if selected.database.is_some() {
         return Err(QueryError::Unsupported);
+    }
+    if let Some((expected, _)) = target_columns
+        && !selected.name.as_str().eq_ignore_ascii_case(expected)
+    {
+        return Err(QueryError::Source);
     }
     let qualifier = selected.alias.as_ref().unwrap_or(&selected.name).as_str();
     if !delete.targets.is_empty()
@@ -56,17 +74,36 @@ pub(crate) fn bind_delete(
         crate::external_sources::SourceNamespace::Root,
     )?;
 
+    if let Some((_, expected)) = target_columns {
+        let crate::plan::RelationNode::Table {
+            columns,
+            multivalues,
+            members,
+            recordsets,
+            ..
+        } = &relation.node
+        else {
+            return Err(QueryError::Unsupported);
+        };
+        if !multivalues.is_empty() || !members.is_empty() || !recordsets.is_empty() {
+            return Err(QueryError::Unsupported);
+        }
+        if columns != expected {
+            return Err(QueryError::SchemaChanged);
+        }
+    }
     let scopes = [relation.slots.as_slice()];
     let filter = delete
         .selection
         .as_ref()
         .map(|filter| binder.expression(filter, &scopes, false, 1))
         .transpose()?;
-    if filter
-        .as_ref()
-        .is_some_and(|filter| !super::mutation_scalar::admitted(filter))
-    {
-        return Err(QueryError::Unsupported);
+    if let Some(filter) = &filter {
+        if target_columns.is_some() {
+            read_source::admit(filter, &mut binder)?;
+        } else if !super::mutation_scalar::admitted(filter) {
+            return Err(QueryError::Unsupported);
+        }
     }
 
     Ok(BoundDelete {

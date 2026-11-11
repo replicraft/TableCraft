@@ -23,6 +23,7 @@ mod distinctrow;
 mod domain;
 pub(crate) use domain::{DomainContext, bind_domain};
 mod deleting;
+pub(crate) use deleting::read_source::bind as bind_read_source_delete;
 pub(crate) use deleting::{BoundDelete, bind_delete};
 mod editing;
 pub(crate) use editing::joined::{JoinedTargetSource, bind_joined_update};

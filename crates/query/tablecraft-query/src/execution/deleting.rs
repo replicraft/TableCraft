@@ -1,4 +1,5 @@
 //! All original predicate results precede a single consuming deletion finish.
+mod read_source;
 use crate::{
     ExecutionOptions, QueryError,
     binding::{BoundDelete, bind_delete},
@@ -8,6 +9,9 @@ use crate::{
         mutation::{MutationOptions, source::MutationSource},
     },
     source::validate_text_collations,
+};
+pub use read_source::{
+    PreparedReadSourceDelete, ReadSourceDeleteOptions, prepare_read_source_delete_with_options,
 };
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_db::{DeletableTable, RowHandle};
@@ -114,6 +118,17 @@ fn select_rows<E: DeletableTable>(
     options: MutationOptions<'_>,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Vec<RowHandle>, QueryError> {
+    select_rows_with_source(editor, query, budget, options, None, cancelled)
+}
+
+fn select_rows_with_source<E: DeletableTable>(
+    editor: &E,
+    query: &Query,
+    budget: &mut ResourceBudget,
+    options: MutationOptions<'_>,
+    reads: Option<&dyn crate::Source>,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Vec<RowHandle>, QueryError> {
     if cancelled() {
         return Err(QueryError::Cancelled);
     }
@@ -132,22 +147,39 @@ fn select_rows<E: DeletableTable>(
     }
     let source = MutationSource {
         snapshot,
-        text_collations: options.text_collations,
+        text_collations: match reads {
+            Some(reads) => reads.text_collations(snapshot.name())?,
+            None => options.text_collations,
+        },
     };
-    let BoundDelete { parameters, filter } = bind_delete(
-        query,
-        &source,
-        options.parameters.is_some(),
-        budget,
-        cancelled,
-    )?;
+    validate_text_collations(snapshot.columns(), source.text_collations)?;
+    let selected_source = reads.unwrap_or(&source);
+    let BoundDelete { parameters, filter } = if reads.is_some() {
+        crate::binding::bind_read_source_delete(
+            query,
+            selected_source,
+            snapshot.name(),
+            snapshot.columns(),
+            options.parameters.is_some(),
+            budget,
+            cancelled,
+        )?
+    } else {
+        bind_delete(
+            query,
+            selected_source,
+            options.parameters.is_some(),
+            budget,
+            cancelled,
+        )?
+    };
 
     let discovery = DiscoveryState::new(false);
     let mut runtime = Runtime {
         owner: crate::external_sources::SourceNamespace::Root,
         numeric_scratch: Vec::new(),
         repeatable_dynamic: false,
-        source: &source,
+        source: selected_source,
         external_sources: Vec::new(),
         discovery: &discovery,
         parameters: Vec::new(),
