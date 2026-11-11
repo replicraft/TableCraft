@@ -7,9 +7,13 @@ use tablecraft_schema::{Column, NameComparison, ScalarType};
 use tablecraft_testkit::fixtures::access::attachment_modern;
 
 fn metadata() -> Arc<OwnedRecordset> {
+    metadata_kind(RecordsetKind::Attachments)
+}
+
+fn metadata_kind(kind: RecordsetKind) -> Arc<OwnedRecordset> {
     let mut work = ResourceBudget::new(u64::MAX, u64::MAX, u64::MAX);
     let schema = Arc::new(
-        RecordsetSchema::new(
+        RecordsetSchema::with_kind(
             vec![
                 Column::new("FileName".into(), ScalarType::Text, true).unwrap(),
                 Column::new("FileData".into(), ScalarType::Binary, true).unwrap(),
@@ -19,6 +23,7 @@ fn metadata() -> Arc<OwnedRecordset> {
                 MemberAvailability::Uninspected,
             ],
             NameComparison::Exact,
+            kind,
             &mut work,
             &|| false,
         )
@@ -138,4 +143,40 @@ fn query_contents_share_snapshot_storage_and_reject_duplicate_output_bindings() 
         + state.bindings[0].value.schema().retained_bytes()
         + ARC_COUNTERS;
     assert_eq!(result.retained_bytes(), expected);
+}
+
+#[test]
+fn recordset_semantics_select_history_without_guessing_from_member_names() {
+    let (_directory, _path, _before, document) = opened();
+    let mut output = Presentation::new(&|| false);
+    let mut builder = document.query_result_issuer().builder();
+    // Deliberately attachment-shaped names: only the declared kind selects history.
+    let cell = builder
+        .recordset_cell(
+            0,
+            0,
+            metadata_kind(RecordsetKind::VersionHistory),
+            &mut output,
+        )
+        .unwrap();
+    assert!(matches!(
+        cell.kind,
+        CellKind::VersionHistory {
+            assigned: true,
+            members: 2
+        }
+    ));
+    assert_eq!(cell.text, "2 stored versions");
+    let result = builder.finish(&mut output).unwrap().unwrap();
+    assert!(matches!(
+        document.inspect_query_collection(&result, 0, &|| false),
+        Ok(Response::QueryContents { .. })
+    ));
+
+    let mut builder = document.query_result_issuer().builder();
+    assert!(matches!(
+        builder.recordset_cell(0, 0, metadata_kind(RecordsetKind::Rows), &mut output),
+        Err(Error::QueryContentsUnavailable)
+    ));
+    assert!(builder.finish(&mut output).unwrap().is_none());
 }

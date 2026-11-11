@@ -310,19 +310,24 @@ impl State {
         if !self.admit_object_data(&data) {
             return;
         }
-        let assigned = self.query_contents_data().and_then(|parent| {
+        let membership = self.query_contents_data().and_then(|parent| {
             let entry = parent.query_contents.as_ref()?.entry(target)?;
             match parent.rows.get(entry.row)?.get(entry.column)?.kind {
-                CellKind::Attachments { assigned, .. } => Some(assigned),
+                CellKind::Attachments { assigned, .. } => {
+                    Some((CollectionKind::Attachments, assigned))
+                }
+                CellKind::VersionHistory { assigned, .. } => {
+                    Some((CollectionKind::VersionHistory, assigned))
+                }
                 _ => None,
             }
         });
-        if let Some(assigned) = assigned
+        if let Some((kind, assigned)) = membership
             && let Some(dialog) = &mut self.contents
         {
             dialog.selection.reset(&data);
             dialog.result = ContentsResult::Ready {
-                kind: CollectionKind::Attachments,
+                kind,
                 assigned,
                 data,
             };

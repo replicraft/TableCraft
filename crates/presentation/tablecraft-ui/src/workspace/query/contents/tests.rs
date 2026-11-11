@@ -131,3 +131,31 @@ fn query_child_dialog_preserves_uninspected_members_and_rejects_late_result_call
     harness.state_mut().0.set_query_contents(20, &target, late);
     assert!(harness.state().0.contents_request_id().is_none());
 }
+
+#[test]
+fn query_history_contents_preserve_the_declared_kind_and_field_width_scope() {
+    let mut state = query::state();
+    let mut data = result(30);
+    data.rows[0][0].kind = CellKind::VersionHistory {
+        assigned: true,
+        members: 2,
+    };
+    assert!(state.set_query_data(None, data));
+    let target = QueryContentsTarget {
+        result_id: 30,
+        binding: 0,
+    };
+    assert!(state.can_view_query_contents(&target));
+    state.begin_query_contents(target, 40);
+    state.set_query_contents(40, &target, query::result("older text"));
+    let mut harness = harness(state);
+    crate::configure(&harness.ctx);
+    harness.run_steps(2);
+    harness.get_by_role_and_label(
+        Role::Label,
+        "Stored order and original timestamp bits; current Memo text is separate.",
+    );
+    assert!(harness.query_by_role_and_label(Role::Label,
+        "Stored metadata only. Attachment bytes remain encoded; nothing is opened or exported."
+    ).is_none());
+}

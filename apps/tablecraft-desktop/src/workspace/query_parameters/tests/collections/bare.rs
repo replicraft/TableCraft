@@ -8,6 +8,61 @@ use tablecraft_testkit::fixtures::access::attachment_modern;
 use tablecraft_ui::CellKind;
 
 #[test]
+fn sql_view_stored_history_uses_history_contents_without_attachment_labels() {
+    let (_directory, path, before, mut harness) =
+        opened_with_source(tablecraft_testkit::fixtures::access::version_history::database());
+    run(&mut harness, "SELECT Id, Score FROM Items ORDER BY Id");
+    let result = harness.state().state.query_data.as_ref().unwrap();
+    assert_eq!(result.source_revision, None);
+    assert_eq!(result.rows.len(), 3);
+    for (row, members) in result.rows.iter().zip([2, 2, 0]) {
+        assert!(
+            row[1].kind
+                == CellKind::VersionHistory {
+                    assigned: true,
+                    members
+                }
+        );
+    }
+    let cell = harness
+        .query_all_by_role(Role::Label)
+        .find(|node| {
+            let node = node.accesskit_node();
+            node.label()
+                .is_some_and(|value| value.contains("2 stored versions"))
+                || node
+                    .value()
+                    .is_some_and(|value| value.contains("2 stored versions"))
+        })
+        .expect("actual history summary");
+    cell.click_secondary();
+    harness.run_steps(2);
+    let contents = harness
+        .state()
+        .state
+        .localizer
+        .text("datasheet-view-contents");
+    harness
+        .get_by_role_and_label(Role::Button, &contents)
+        .click_accesskit();
+    harness.run_steps(1);
+    finish_reads(&mut harness);
+    assert!(harness.state().state.contents_request_id().is_some());
+    harness.get_by_role_and_label(
+        Role::Label,
+        "Stored order and original timestamp bits; current Memo text is separate.",
+    );
+    assert!(!harness.state().state.edit_dialog_open());
+    assert_source(&path, &before);
+    harness
+        .get_by_role_and_label(Role::Button, "Close")
+        .click_accesskit();
+    harness.run_steps(2);
+    assert!(harness.state().state.contents_request_id().is_none());
+    assert_source(&path, &before);
+}
+
+#[test]
 fn sql_view_attachment_wildcard_keeps_parent_rows_and_readonly_collection_summaries() {
     let (_directory, path, before, mut harness) =
         opened_with_source(attachment_modern::database(6));

@@ -71,7 +71,12 @@ impl QueryContentsBindings {
                         .rows
                         .get(entry.row)
                         .and_then(|row| row.get(entry.column))
-                        .is_some_and(|cell| matches!(cell.kind, CellKind::Attachments { .. }))
+                        .is_some_and(|cell| {
+                            matches!(
+                                cell.kind,
+                                CellKind::Attachments { .. } | CellKind::VersionHistory { .. }
+                            )
+                        })
             })
     }
 
@@ -135,7 +140,12 @@ impl crate::State {
                     data.rows
                         .get(entry.row)
                         .and_then(|row| row.get(entry.column))
-                        .is_some_and(|cell| matches!(cell.kind, CellKind::Attachments { .. }))
+                        .is_some_and(|cell| {
+                            matches!(
+                                cell.kind,
+                                CellKind::Attachments { .. } | CellKind::VersionHistory { .. }
+                            )
+                        })
                 })
             })
     }

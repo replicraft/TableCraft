@@ -6,7 +6,7 @@ use crate::{
     Cell, CellKind, Error, HorizontalAlignment, display::Presentation, document::Document,
 };
 use std::sync::Arc;
-use tablecraft_db::{OwnedRecordset, RecordsetPresence};
+use tablecraft_db::{OwnedRecordset, RecordsetKind, RecordsetPresence};
 
 const ARC_COUNTERS: usize = 2 * size_of::<usize>();
 
@@ -130,14 +130,23 @@ impl QueryContentsBuilder {
         }
         let assigned = value.presence() == RecordsetPresence::Assigned;
         let members = value.len();
+        let (kind, singular, plural) = match value.schema().kind() {
+            RecordsetKind::Attachments => (
+                CellKind::Attachments { assigned, members },
+                "attachment",
+                "attachments",
+            ),
+            RecordsetKind::VersionHistory => (
+                CellKind::VersionHistory { assigned, members },
+                "stored version",
+                "stored versions",
+            ),
+            RecordsetKind::Rows => return Err(Error::QueryContentsUnavailable),
+        };
         let text = if assigned {
             output.text(&format!(
                 "{members} {}",
-                if members == 1 {
-                    "attachment"
-                } else {
-                    "attachments"
-                }
+                if members == 1 { singular } else { plural }
             ))?
         } else {
             output.text("NULL")?
@@ -156,7 +165,7 @@ impl QueryContentsBuilder {
             presentation: None,
             alignment: HorizontalAlignment::Left,
             text,
-            kind: CellKind::Attachments { assigned, members },
+            kind,
         })
     }
 
