@@ -79,10 +79,28 @@ pub fn source(population: Population, descending: bool) -> Source {
         .enumerate()
         .map(|(ordinal, score)| Row {
             score,
-            // Seven-byte literal LONG rows fit256physical slots per DATA page.
-            reference: ((definition + 1 + (ordinal / 256) as u32) << 8) | (ordinal % 256) as u32,
+            // The independent populated fixture starts a new DATA page after
+            // 255 records; this is its packing policy, not a native slot limit.
+            reference: ((definition + 1 + (ordinal / 255) as u32) << 8) | (ordinal % 255) as u32,
         })
-        .collect();
+        .collect::<Vec<_>>();
+    // Check page-boundary ROW identities against literal physical row counts,
+    // independently of the tree encoder and the native reader.
+    for (ordinal, page_offset, slot) in [
+        (254, 0, 254),
+        (255, 1, 0),
+        (256, 1, 1),
+        (510, 2, 0),
+        (2_040, 8, 0),
+    ] {
+        if let Some(row) = rows.get(ordinal) {
+            let page = definition + 1 + page_offset;
+            assert_eq!(row.reference, (page << 8) | slot);
+            let start = page as usize * PAGE;
+            let count = u16::from_le_bytes(before[start + 12..start + 14].try_into().unwrap());
+            assert!(u32::from(count) > slot);
+        }
+    }
     let result = finish(
         before,
         definition,
