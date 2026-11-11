@@ -1,5 +1,8 @@
 #[cfg(feature = "ace16-create")]
-use crate::{AddTableError, AddTableIntentError, FirstTableError, FirstTableIntentError};
+use crate::{
+    AddTableError, AddTableIntentError, FirstTableError, FirstTableIntentError,
+    PopulatedAddTableError, PopulatedTableIntentError,
+};
 use crate::{
     EditError, InspectError, NativeImage, NativeInt32EditIntent, NativeIntentError,
     TableRenameError, TableRenameIntentError, header::check,
@@ -42,6 +45,14 @@ pub enum NativeRecoveryQualificationError {
     #[cfg(feature = "ace16-create")]
     #[error(transparent)]
     AddTable(#[from] AddTableError),
+    /// The original populated-table request failed framing or complete binding.
+    #[cfg(feature = "ace16-create")]
+    #[error(transparent)]
+    PopulatedTableIntent(#[from] PopulatedTableIntentError),
+    /// Actual source roles or the complete materialized relation failed proof.
+    #[cfg(feature = "ace16-create")]
+    #[error(transparent)]
+    PopulatedAddTable(#[from] PopulatedAddTableError),
     /// The original table-rename request failed closed framing or source binding.
     #[error(transparent)]
     TableRenameIntent(#[from] TableRenameIntentError),

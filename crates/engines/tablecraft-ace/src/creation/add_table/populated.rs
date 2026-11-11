@@ -134,6 +134,14 @@ impl NativeImage {
 }
 
 impl PopulatedAddTablePlan {
+    pub(crate) fn definition(&self) -> &FirstTableDefinition {
+        &self.definition
+    }
+
+    pub(crate) fn rows(&self) -> &[Vec<Value>] {
+        &self.rows
+    }
+
     /// Complete immutable original to which the candidate is bound.
     pub fn before_bytes(&self) -> &[u8] {
         self.before.as_bytes()

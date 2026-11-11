@@ -73,6 +73,14 @@ pub use add_table::{
     qualify_native_add_table_recovery,
 };
 
+#[cfg(feature = "ace16-create")]
+mod populated_table;
+#[cfg(feature = "ace16-create")]
+pub use populated_table::{
+    NativePopulatedAddTableIntent, PopulatedTableIntentError, PreparedPopulatedAddTable,
+    QualifiedPopulatedAddTableRecovery,
+};
+
 mod rename_table;
 pub use rename_table::{
     NativeTableRenameIntent, PreparedTableRename, QualifiedTableRenameRecovery,

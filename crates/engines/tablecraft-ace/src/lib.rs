@@ -294,6 +294,12 @@ pub use transaction::{
     qualify_native_add_table_recovery,
 };
 
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub use transaction::{
+    NativePopulatedAddTableIntent, PopulatedTableIntentError, PreparedPopulatedAddTable,
+    QualifiedPopulatedAddTableRecovery,
+};
+
 #[cfg(feature = "journal")]
 pub use transaction::{
     NativeTableRenameIntent, PreparedTableRename, QualifiedTableRenameRecovery,
