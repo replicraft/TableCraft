@@ -315,3 +315,5 @@ fn declared_add_checks_cancel_and_issued_source_before_parsing_or_native_plannin
     assert!(!crate::journal_path(&path).exists());
     assert!(!crate::journal_path(&other_path).exists());
 }
+
+mod unadorned;
