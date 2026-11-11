@@ -10,7 +10,10 @@ mod constraint;
 mod equality;
 pub use equality::TextEqualityKey;
 mod multivalue;
+mod recordset;
 pub use multivalue::MultivalueVisitor;
+pub use recordset::{RecordsetColumn, RecordsetOutput, StructuredVisitor};
+pub(crate) use recordset::{recordsets_match, schemas_match};
 mod progressive;
 pub use constraint::ScanConstraint;
 
@@ -115,6 +118,35 @@ pub trait Source {
     ) -> Result<&[Option<TextCollationId>], QueryError> {
         Ok(&[])
     }
+    /// Stable stored-attachment child schemas, without reading parent/child rows.
+    /// Each name also occurs in unavailable_columns(), is disjoint from scalar
+    /// and multivalue columns, and may share the named-member namespace. Child
+    /// availability never substitutes an uninspected value with SQL NULL.
+    fn recordset_columns(&self, _table: &str) -> Result<&[RecordsetColumn], QueryError> {
+        Ok(&[])
+    }
+
+    /// Visit separate scalar, list and complete owned recordset projections.
+    /// All request vectors are sorted unique source metadata positions. The
+    /// default refuses requested recordsets before any scan; existing sources
+    /// retain their unchanged scalar/list path when none are requested.
+    fn scan_structured(
+        &self,
+        table: &str,
+        indices: &[usize],
+        values: &[usize],
+        members: &[usize],
+        recordsets: &[usize],
+        visitor: &mut StructuredVisitor<'_>,
+    ) -> Result<(), QueryError> {
+        if !recordsets.is_empty() {
+            return Err(QueryError::Unsupported);
+        }
+        self.scan_collection_members(table, indices, values, members, &mut |row, lists| {
+            visitor(row, lists, &[])
+        })
+    }
+
     /// Visit parent projections, scalar multivalue lists, then named member lists
     /// in requested order. Members of one collection must have equal length and
     /// identical child order. The query layer aligns them before taking products
