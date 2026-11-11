@@ -82,6 +82,45 @@ fn index_original_matches_literal_and_requalifies_in_fresh_scopes() {
 }
 
 #[test]
+fn fresh_plan_requalification_retains_shared_after_and_refuses_stale_or_unpaid_proof() {
+    let case = raw::source(Population::NullableDuplicate, false);
+    let original = plan(&case);
+    let shared = original.after_shared_bytes();
+    assert_eq!(shared.as_ptr(), original.after_bytes().as_ptr());
+    let rebuilt = original
+        .requalify_with_budgets(
+            image(&case.before, 30203),
+            &mut budget(),
+            &mut budget(),
+            &|| false,
+        )
+        .unwrap();
+    same_bytes(rebuilt.after_bytes(), &case.expected);
+    drop(rebuilt);
+    same_bytes(&shared, &case.expected);
+
+    let mut stale = case.before.to_vec();
+    stale[3 * 4096 + 3000] ^= 1;
+    assert!(
+        plan(&case)
+            .requalify_with_budgets(image(&stale, 30204), &mut budget(), &mut budget(), &|| {
+                false
+            },)
+            .is_err()
+    );
+    assert!(
+        plan(&case)
+            .requalify_with_budgets(
+                image(&case.before, 30205),
+                &mut budget(),
+                &mut tablecraft_core::limits::ResourceBudget::new(0, 0, 0),
+                &|| false,
+            )
+            .is_err()
+    );
+}
+
+#[test]
 fn pending_mixed_committed_and_settled_index_sessions_keep_exact_original_owner() {
     for case in [
         raw::source(Population::NullableDuplicate, true),
