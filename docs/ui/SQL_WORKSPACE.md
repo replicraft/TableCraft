@@ -106,6 +106,15 @@ See the runtime contracts for
 
 ## Reviewed schema SQL
 
+Qualified one-field `CREATE INDEX` on an ordinary unindexed LONG uses the same
+issued schema-review lifecycle. Its warning shows the table, index, field,
+ASC/DESC and existing population, followed by Yes/No. This population does not
+represent changed records: successful receipts are schema-only `IndexCreated`.
+No preserves source and SQL text; Yes consumes one native original-intent V3
+save, followed by exact guarded reopen without rerunning SQL. UNIQUE, PRIMARY,
+compound keys, explicit NULL policies and other key types remain unsupported.
+
+
 Normal Run routes qualified `CREATE TABLE`, `ALTER TABLE … DROP COLUMN` and
 `DROP TABLE` through the shared runtime's [schema statement service](../application/RUNTIME.md#reviewed-sql-schema-statements).
 The confirmation shows the actual reviewed table, declared field count, deleted

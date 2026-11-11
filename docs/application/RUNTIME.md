@@ -965,6 +965,28 @@ failures, publishes a terminal receipt and requires acknowledgment and guarded
 reopening. Normal desktop SQL Run consumes these issued capabilities through the
 same confirmation and guarded publication flow.
 
+### Reviewed CREATE INDEX
+
+With creation and offline editing, an issued schema inspection can review one
+ordinary nullable, nonunique LONG secondary index in ascending or descending
+order. The native source qualifies the actual field identity, declaration,
+existing indexes, programs, dependencies and ownership. UNIQUE, PRIMARY,
+compound keys and explicit NULL-policy clauses remain unsupported. Ordinary
+native field0 is distinct from a generated identity field.
+
+`ReviewedIndexCreation` owns the original recoverable plan and an
+`IndexCreatedReopen` witness. The same save worker freshly requalifies complete
+BEFORE and AFTER images under the exclusive offline owner, then prepares the
+original TCIC intent with V3. It never reruns SQL or promotes a candidate into
+save authority. Cold and settled recovery preserve that original intent.
+
+`SaveSchemaChange::IndexCreated` carries no matched or changed data-row counts;
+`indexed_rows` describes the preserved source population only. Guarded reopen
+requires the full expected AFTER image and original target identities before
+publication. No releases the review without acquiring a save lease or changing
+bytes. MCP currently lacks the shared schema-review endpoint and explicitly
+refuses this capability; Desktop SQL Run is the implemented host consumer.
+
 ### Reviewed SELECT INTO
 
 With creation and offline editing, the same issued `ReviewSchemaSql` service

@@ -7,7 +7,8 @@ or descending order, including NULL keys and duplicate values. Duplicate ROW
 ties remain ascending in either direction.
 
 This is candidate construction and independent checking, not a durable edit
-plan. It grants no journal, CLI SQL, runtime or GUI CREATE INDEX capability.
+plan. It does not itself grant journal, CLI SQL, runtime or GUI CREATE INDEX capability.
+The distinct original-intent route below consumes its own checked recoverable plan.
 The existing engineering-preview request paths and admission remain separate.
 ACE 16 evidence does not qualify writing other Jet/ACE profiles or native
 Windows/Access save behavior.
@@ -60,6 +61,32 @@ and the initial raw-fixture and work-budget failures. Empty, nullable/duplicate,
 more than two leaves and at least three tree levels. A separate generated-primary
 source protects Currency, Unicode Text, NULL/empty values and sibling storage.
 Corruption and request-refusal controls are distinct from positive construction.
+
+## Reviewed native index creation
+
+The distinct `NativeIndexCreateIntent` uses exact TCIC0001 framing and original
+source binding. Its recoverable plan reconstructs one qualified index and checks
+the complete BEFORE and AFTER images before preparation. Preparation and cold
+recovery use the resizable V3 journal; no V1/V2 route or legacy decoder retry is
+provided. Pending, committed and settled recovery retain the same native proof.
+
+With creation and offline editing enabled, shared runtime schema review accepts
+`CREATE INDEX name ON table (field ASC|DESC)` for this qualified LONG profile.
+UNIQUE, PRIMARY, compound keys and explicit NULL-policy clauses remain refused.
+An ordinary unindexed native field0 is eligible; generation remains refused.
+Source programs, dependencies, ownership, names and native capacity still apply.
+
+Desktop SQL Run shows the actual table, index, field, direction and existing
+population before Yes/No. Existing population is descriptive metadata, not an
+affected-row count. No releases the review without a write. Yes consumes the
+review through one exclusive offline save and exact guarded AFTER reopen,
+without reevaluating SQL. The receipt is `IndexCreated` with no matched/changed
+row counts. Existing source rows, NULL values and duplicate values remain exact.
+
+The MCP service currently does not expose the shared `ReviewSchemaSql` endpoint;
+its explicit unsupported response is not SQL DDL parity. This workflow does not
+establish a CLI schema command, other native key families, older Jet/ACE writes
+or Windows/Access parity. The timestamp boundary below remains unchanged.
 
 ## Design-timestamp parity gap
 
