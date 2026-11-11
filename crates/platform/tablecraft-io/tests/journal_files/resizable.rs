@@ -60,8 +60,8 @@ fn real_files_grow_shrink_and_reopen_retained_journals() {
             target.close().unwrap();
             journal.close().unwrap();
 
-            let mut target = ExclusiveFile::open(directory.path().join("target")).unwrap();
-            let mut journal = ExclusiveFile::open(directory.path().join("journal")).unwrap();
+            let mut target = ExclusiveFile::open(&directory.path().join("target")).unwrap();
+            let mut journal = ExclusiveFile::open(&directory.path().join("journal")).unwrap();
             let expected = if committed {
                 RecoveryOutcome::Committed
             } else {
@@ -175,8 +175,8 @@ fn real_resize_failure_before_partial_or_after_effect_requires_recovery() {
             target.file.close().unwrap();
             journal.close().unwrap();
 
-            let mut target = ExclusiveFile::open(directory.path().join("target")).unwrap();
-            let mut journal = ExclusiveFile::open(directory.path().join("journal")).unwrap();
+            let mut target = ExclusiveFile::open(&directory.path().join("target")).unwrap();
+            let mut journal = ExclusiveFile::open(&directory.path().join("journal")).unwrap();
             for _ in 0..2 {
                 assert_eq!(
                     recover_resizable(&mut target, &mut journal, &mut budget(), &|| false).unwrap(),
