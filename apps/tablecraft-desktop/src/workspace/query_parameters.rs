@@ -125,7 +125,7 @@ impl Desktop {
         }
 
         match target.operation() {
-            QueryOperation::Unsupported => {
+            QueryOperation::Schema | QueryOperation::Unsupported => {
                 self.state.fail_query_parameter_inspection(request_id);
                 self.state.error = Some(self.state.localizer.text("ribbon-unavailable"));
                 self.query_parameters = None;

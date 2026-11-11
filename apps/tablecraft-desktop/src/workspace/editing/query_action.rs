@@ -88,7 +88,7 @@ fn action_kind(target: &InspectedQuery) -> Option<QueryActionKind> {
         QueryOperation::Update => Some(QueryActionKind::Update),
         QueryOperation::Delete => Some(QueryActionKind::Delete),
         QueryOperation::Insert => Some(QueryActionKind::Insert),
-        QueryOperation::Read | QueryOperation::Unsupported => None,
+        QueryOperation::Read | QueryOperation::Schema | QueryOperation::Unsupported => None,
     }
 }
 
