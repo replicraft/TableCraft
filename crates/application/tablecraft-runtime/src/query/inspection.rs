@@ -139,7 +139,8 @@ impl Document {
             cancelled,
             options.snapshot(),
         )
-        .map_err(super::options::native_error)?;
+        .map_err(super::options::native_error)?
+        .with_collections();
         let comparison_pool = RefCell::new(options.comparison().budget());
         let (mut source, resolver) =
             source.with_deferred_database_collation_resolver(&comparison_pool)?;
