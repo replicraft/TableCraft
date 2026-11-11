@@ -14,6 +14,9 @@ mod declarations;
 mod deleting;
 mod domain;
 pub use deleting::{DeleteError, DeletePlan, plan_delete, plan_delete_with_options};
+pub use deleting::{
+    PreparedReadSourceDelete, ReadSourceDeleteOptions, prepare_read_source_delete_with_options,
+};
 mod editing;
 mod inserting;
 mod make_table;
