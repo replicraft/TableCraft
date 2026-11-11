@@ -1,5 +1,33 @@
 # Cell updates across retained table storage
 
+## Empty LONG actions
+
+`TCNI0024`/profile 24 is a distinct original-request language for a nonempty list
+of named ordinary unindexed LONG fixed groups, each containing zero row
+assignments. It uses the complete retained-row source certificate and validates
+actual target declarations, every original record, ownership, INDEX/LVAL roles,
+constraints and required programs even when no row matched. It does not admit
+variable groups, generated/indexed targets, nonempty replacements or opaque-row
+sources. TCNI17–23 retain their existing languages.
+
+The original binds the complete native-sized BEFORE image and retains column
+names and fixed-group categories. Fresh native reconstruction repeats source and
+target admission and requires whole-image identity with changed rows zero. The
+adapter chooses this route from actual empty LONG requests before consuming any
+cell planner; it never retries a failed TCNI17 request or invents a matched row.
+SQL still evaluates predicates and eager failures before backend finish.
+
+Only checked V3 preparation and retained recovery accept this exact family. Equal
+BEFORE/AFTER does not erase journal state: pending recovery rolls back, committed
+recovery completes, and settled confirmation uses the same qualified session.
+Old V1/V2 APIs refuse the new family before effects. The data codec is available
+with `journal`; constructive planning and fresh native reconstruction require
+`journal` plus `ace16-create`, matching the actual retained source closure.
+Journal-only decode and a typed unsupported-source refusal do not qualify native
+construction. This narrow ordinary LONG operation does not qualify general
+zero-match writes across other field types or native profiles.
+
+
 The normal reviewed cell editor can update qualified unindexed Boolean, Byte,
 Integer, LONG, Large Number, Single, Double, Currency, legacy DateTime, GUID,
 Decimal and Short Text fields after table replacement, subsequent table creation and retained row

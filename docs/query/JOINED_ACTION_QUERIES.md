@@ -57,7 +57,7 @@ both outer directions, source drift before scanning, original target ordering,
 ambiguous matches and eager errors, parameters, cumulative work and shared-budget
 phase separation. Local tests do not establish Windows or Microsoft Access parity.
 
-## Native source integration and correlated DELETE
+## Native source integration and correlated predicates
 
 The native adapter pairs the editor and predicate reader with one immutable
 original image. Read callbacks share the bounded native pool only while complete
@@ -65,6 +65,27 @@ selection/assignment staging runs; no mutable native-budget borrow survives into
 those callbacks. The consuming native finish reacquires that pool afterward and
 retains the original program, constraint, ownership and byte-preservation checks.
 Late errors and repeated UPDATE targets produce no reviewed save capability.
+
+Local UPDATE also admits this explicit predicate-read profile through
+`prepare_read_source_batch_update_with_options` and
+`PreparedReadSourceUpdate::finish`. Its `ReadSourceUpdateOptions` binds the
+original `SnapshotId` and existing mutation policies. Captured target scalar
+columns and text-comparison policy identities must match the bound source before
+predicate evaluation. Outer target values and every SET expression use the
+original snapshot frame; read-side duplicates inside EXISTS/IN do not duplicate
+that target. NULL NOT IN can select no rows; the query layer still invokes backend finish.
+For actual ordinary unindexed LONG targets in the complete retained source,
+the adapter selects the separate TCNI24 zero-assignment service before native
+planning. It retains named target groups and full source/target proof with
+changed rows zero and every AFTER byte equal to BEFORE. TCNI17 retains its
+single-cell language; no arbitrary row is synthesized as a matched no-op.
+Broader zero-assignment scalar/opaque source profiles remain separately qualified. Scalar or quantified subqueries in SET remain
+refused, without retrying a different planner.
+
+Microsoft explicitly permits UPDATE predicates with subqueries in its
+[SQL subquery contract](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/sql-subqueries-microsoft-access-sql).
+This implementation retains the closed local scalar read context below; that
+reference does not qualify arbitrary Access updateability or native writer types.
 
 A separate local DELETE profile admits direct scalar EXISTS/IN SELECT predicates
 with existing correlation and NULL semantics. Selected handles always come from
@@ -78,3 +99,17 @@ The GUI keeps the actual runtime-issued capability through No/Yes, save and ACK;
 SQL is not reevaluated while saving. Headless cases preserve independent complete
 AFTER images and sibling data, stale-source refusals and prior results on errors.
 See the [SQL workspace](../ui/SQL_WORKSPACE.md#reviewed-local-action-queries).
+
+## Local verification
+
+The correlated-predicate Query gate passed 1,904 tests across 272 harness summaries
+(including 167 library tests and one rustdoc test) before the empty native action
+was added; that unchanged query graph was not rerun for the TCNI24 phase. The
+preceding Desktop action/parameter gate passed 32 tests.
+
+The TCNI24 phase passed 62 selected native tests, four journal-only tests (three
+data cases and one typed constructive refusal), 52 Access tests, 397 Runtime tests
+with one ignored, and 33 Desktop action/parameter tests. Strict lint checks for
+eight packages and no-create/minimal feature checks passed. These are local and
+headless results with independent raw images, not Microsoft Access or Windows
+execution/save parity evidence.

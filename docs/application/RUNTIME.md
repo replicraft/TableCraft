@@ -862,9 +862,25 @@ the immutable SQL. The current local batch UPDATE shape uses the existing native
 planner: every SET expression is evaluated before one consuming native finish.
 Declared parameters use the shared strict input service before native image
 capture or source construction. Envelope checks, typed conversion and review
-presentation share one cumulative presentation allowance. Joined/external targets
-and unsupported expression contexts remain refused rather than being substituted
-or ignored. Evaluated LIKE still requires a supplied wildcard mode and is refused
+presentation share one cumulative presentation allowance. Qualified joined UPDATE
+uses its explicit target-occurrence planner. Local UPDATE with EXISTS/IN predicates
+uses source-backed two-phase preparation, then the same native batch finish. Both
+pair the reader and editor with one immutable original document image and release
+native-budget borrows before read callbacks. Syntax selects the route before
+binding; a refused planner is never retried through another route. External
+targets and unsupported expression contexts remain refused rather than being
+substituted or ignored.
+
+A zero-match local UPDATE still consumes backend finish. For actual retained
+ordinary unindexed LONG targets, the adapter positively selects TCNI24 from
+nonempty named groups with zero row assignments. Full native source/target
+qualification and whole-image identity remain required; matched/changed receipts
+are both zero. It never substitutes a real row assignment or retries a failed
+TCNI17 plan. Other scalar and opaque empty-action profiles remain separately
+qualified. Constructive TCNI24 planning currently requires `journal` and
+`ace16-create`, matching TCNI17's actual retained source closure. Journal-only
+original decoding and typed refusal before effects do not qualify construction.
+ Evaluated LIKE still requires a supplied wildcard mode and is refused
 in this action route; it does not silently assume ANSI-89 for an ANSI-92 database.
 
 Review returns `QueryUpdateReview` display facts (table, document revision,
