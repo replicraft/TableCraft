@@ -39,8 +39,8 @@ fn correlated_predicates_save_exact_original_handle_updates_and_checked_empty_re
                 parameters: Vec::new(),
             },
         )
-        .unwrap() else {
-            panic!("expected explicit predicate-read UPDATE review");
+        .unwrap_or_else(|error| panic!("predicate UPDATE review failed for {sql}: {error:?}")) else {
+            panic!("expected explicit predicate-read UPDATE review for {sql}");
         };
         assert_eq!(
             (review.matched_rows, review.changed_rows),
