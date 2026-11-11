@@ -63,7 +63,7 @@ fn scalar_type(output: OutputType) -> Option<ScalarType> {
     match output {
         OutputType::Scalar { data_type, .. } => Some(data_type.scalar_type()),
         OutputType::Null | OutputType::Dynamic => None,
-        OutputType::Multivalue { .. } => {
+        OutputType::Multivalue { .. } | OutputType::Recordset { .. } => {
             panic!("A scalar calculation must not acquire collection output metadata")
         }
     }
