@@ -168,8 +168,8 @@ pub(in crate::editing::offline) fn assert_retained_schema_recovery(
     budget: &mut ResourceBudget,
 ) {
     let change = match &plan {
-        FieldPlan::Rename(_) => SchemaChange::ColumnRenamed,
-        FieldPlan::Drop(_) => SchemaChange::ColumnDropped,
+        FieldPlan::Rename(plan) => plan.changed().then_some(SchemaChange::ColumnRenamed),
+        FieldPlan::Drop(_) => Some(SchemaChange::ColumnDropped),
     };
     let directory = tempfile::tempdir().unwrap();
     let path = directory.path().join("schema-recovery.accdb");
@@ -191,7 +191,10 @@ pub(in crate::editing::offline) fn assert_retained_schema_recovery(
         (receipt.matched_rows(), receipt.changed_rows()),
         (None, None)
     );
-    assert_eq!(receipt.schema_change(), committed.then_some(change));
+    assert_eq!(
+        receipt.schema_change(),
+        if committed { change } else { None }
+    );
     assert_eq!(receipt.query_change(), None);
     assert_eq!(receipt.database_options_change(), None);
     assert_completion(&receipt);
