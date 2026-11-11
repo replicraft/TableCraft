@@ -62,7 +62,7 @@ fn missing_boolean_originals_keep_exact_data_and_old_families_closed() {
             ),
             Err(NativeIntentError::InvalidRecord)
         ));
-        for offset in [0, 8, 12, 14, 68] {
+        for offset in [0, 8, 14, 68] {
             let mut invalid = wire.clone();
             invalid[offset] ^= 1;
             assert!(
@@ -78,6 +78,16 @@ fn missing_boolean_originals_keep_exact_data_and_old_families_closed() {
             );
         }
     }
+    let mut wrong_profile = literal(&before, 0, false, true);
+    wrong_profile[12..14].copy_from_slice(&22_u16.to_le_bytes());
+    assert!(matches!(
+        NativeFittedEditIntent::decode_retained_boolean_materialization(
+            &wrong_profile,
+            &mut budget(),
+            &|| false
+        ),
+        Err(NativeIntentError::UnsupportedProfile)
+    ));
     let old = super::boolean_tests::literal(&before, "Table1", "Enabled", 0, false, true);
     assert!(matches!(
         NativeFittedEditIntent::decode_retained_boolean_materialization(
@@ -85,7 +95,7 @@ fn missing_boolean_originals_keep_exact_data_and_old_families_closed() {
             &mut budget(),
             &|| false
         ),
-        Err(NativeIntentError::InvalidRecord)
+        Err(NativeIntentError::UnsupportedVersion)
     ));
     let good = literal(&before, 0, false, true);
     assert!(matches!(
