@@ -138,7 +138,7 @@ impl MutationPlan {
             }
             #[cfg(feature = "ace16-create")]
             Self::FieldDrop(plan) => {
-                if plan.intent().is_retained() {
+                if plan.intent().is_retained() || plan.intent().is_retained_typed() {
                     return plan
                         .prepare_retained(target, journal, budget, cancelled)
                         .map_err(Cause::Prepare)?
@@ -376,6 +376,11 @@ impl MutationIntent {
             return NativeOmittedInsertIntent::decode_retained(raw, budget, cancelled)
                 .map(Self::RetainedInsert)
                 .map_err(Cause::Intent);
+        }
+        if raw.starts_with(b"TCFD0004") {
+            return NativeFieldDropIntent::decode_retained_typed(raw, budget, cancelled)
+                .map(Self::RetainedFieldDrop)
+                .map_err(Cause::FieldDropIntent);
         }
         if raw.starts_with(b"TCFD0003") {
             return NativeFieldDropIntent::decode_retained(raw, budget, cancelled)
