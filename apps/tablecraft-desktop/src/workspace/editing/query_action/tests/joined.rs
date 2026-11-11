@@ -1,5 +1,5 @@
 //! Normal SQL Run reviews joined values before one existing native save actor.
-use super::{Desktop, finish_reads, finish_save, journal_path, opened, reviewed};
+use super::{Desktop, assert_image, finish_reads, finish_save, journal_path, opened, reviewed};
 use crate::workspace::test_support::app_harness;
 use egui::accesskit::Role;
 use egui_kittest::kittest::Queryable;
@@ -12,15 +12,6 @@ use tablecraft_ui::{ObjectKind, ObjectTarget};
 
 const UPDATE: &str =
     "UPDATE Table1 AS t INNER JOIN Changes AS c ON t.ID=c.Id SET t.Score=c.Score+20 WHERE t.ID=1";
-
-fn assert_image(actual: &[u8], expected: &[u8]) {
-    assert_eq!(actual.len(), expected.len(), "complete image length");
-    assert_eq!(
-        actual.iter().zip(expected).position(|(a, b)| a != b),
-        None,
-        "first differing image byte"
-    );
-}
 
 #[test]
 fn normal_run_joined_review_no_then_yes_saves_exact_image_and_restores_sql_draft() {

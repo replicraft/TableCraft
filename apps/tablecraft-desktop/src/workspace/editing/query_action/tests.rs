@@ -503,3 +503,14 @@ fn typed_values_and_select_appends_preserve_presence_and_save_the_original_batch
 }
 
 mod joined;
+
+fn assert_image(actual: &[u8], expected: &[u8]) {
+    assert_eq!(actual.len(), expected.len(), "complete image length");
+    assert_eq!(
+        actual.iter().zip(expected).position(|(a, b)| a != b),
+        None,
+        "first differing image byte"
+    );
+}
+
+mod read_source;
