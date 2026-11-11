@@ -236,169 +236,191 @@ fn cases() -> [ScalarCase; 12] {
     ]
 }
 
-#[test]
-fn every_unadorned_scalar_add_connects_historical_values_exact_update_and_fresh_insert() {
-    for case in cases() {
-        let mut source = declared_fields::source();
-        source.bytes = inserting::keyless_score(&source.bytes, source.definition, None);
-        let (_directory, path, worker, revision) = opened(&source.bytes);
-        let mut run = Run {
-            worker: &worker,
-            path: &path,
-            saves: SaveWorker::new(|| {}),
-            revision,
-            expected: source.bytes,
-        };
-        let added = raw::after(
-            &run.expected,
-            source.definition,
-            "AddedValue",
-            case.kind,
-            [9, 4, 0, 1],
+fn run_scalar_case(case: ScalarCase) {
+    let mut source = declared_fields::source();
+    source.bytes = inserting::keyless_score(&source.bytes, source.definition, None);
+    let (_directory, path, worker, revision) = opened(&source.bytes);
+    let mut run = Run {
+        worker: &worker,
+        path: &path,
+        saves: SaveWorker::new(|| {}),
+        revision,
+        expected: source.bytes,
+    };
+    let added = raw::after(
+        &run.expected,
+        source.definition,
+        "AddedValue",
+        case.kind,
+        [9, 4, 0, 1],
+    );
+    run.add(
+        &format!("ALTER TABLE Items ADD COLUMN AddedValue {}", case.ddl),
+        added,
+    );
+    let Response::Data {
+        rows: historical, ..
+    } = request(
+        &worker,
+        Command::Page {
+            table: "Items".into(),
+            offset: 0,
+        },
+    )
+    .unwrap()
+    else {
+        panic!("historical rows");
+    };
+    assert_eq!(historical.len(), 2);
+    if matches!(case.kind, Kind::Boolean) {
+        assert!(historical.iter().all(|row| matches!(
+            row[1].kind,
+            crate::CellKind::Scalar {
+                boolean: Some(false),
+                ..
+            }
+        )));
+    } else {
+        assert!(
+            historical
+                .iter()
+                .all(|row| matches!(row[1].kind, crate::CellKind::Scalar { is_null: true, .. }))
         );
-        run.add(
-            &format!("ALTER TABLE Items ADD COLUMN AddedValue {}", case.ddl),
-            added,
-        );
-        let Response::Data {
-            rows: historical, ..
-        } = request(
+    }
+    let updated = rows::update(&run.expected, source.definition, 0, case.kind, &case.value);
+    run.update(case.ddl, case.token, case.text, false, updated);
+    let cleared_value = if matches!(case.kind, Kind::Boolean) {
+        Value::Boolean(false)
+    } else {
+        Value::Null
+    };
+    let cleared = rows::update(
+        &run.expected,
+        source.definition,
+        0,
+        case.kind,
+        &cleared_value,
+    );
+    run.update(
+        case.ddl,
+        case.token,
+        if matches!(case.kind, Kind::Boolean) {
+            "false"
+        } else {
+            ""
+        },
+        !matches!(case.kind, Kind::Boolean),
+        cleared,
+    );
+    if matches!(case.kind, Kind::Boolean) {
+        let Response::InsertDraft(draft) = request(
             &worker,
-            Command::Page {
-                table: "Items".into(),
-                offset: 0,
-            },
-        )
-        .unwrap()
-        else {
-            panic!("historical rows");
-        };
-        assert_eq!(historical.len(), 2);
-        if matches!(case.kind, Kind::Boolean) {
-            assert!(historical.iter().all(|row| matches!(
-                row[1].kind,
-                crate::CellKind::Scalar {
-                    boolean: Some(false),
-                    ..
-                }
-            )));
-        } else {
-            assert!(
-                historical.iter().all(|row| matches!(
-                    row[1].kind,
-                    crate::CellKind::Scalar { is_null: true, .. }
-                ))
-            );
-        }
-        let updated = rows::update(&run.expected, source.definition, 0, case.kind, &case.value);
-        run.update(case.ddl, case.token, case.text, false, updated);
-        let cleared_value = if matches!(case.kind, Kind::Boolean) {
-            Value::Boolean(false)
-        } else {
-            Value::Null
-        };
-        let cleared = rows::update(
-            &run.expected,
-            source.definition,
-            0,
-            case.kind,
-            &cleared_value,
-        );
-        run.update(
-            case.ddl,
-            case.token,
-            if matches!(case.kind, Kind::Boolean) {
-                "false"
-            } else {
-                ""
-            },
-            !matches!(case.kind, Kind::Boolean),
-            cleared,
-        );
-        if matches!(case.kind, Kind::Boolean) {
-            let Response::InsertDraft(draft) = request(
-                &worker,
-                Command::BeginInsert {
-                    target: InsertTarget {
-                        document_revision: run.revision,
-                        table: "Items".into(),
-                    },
+            Command::BeginInsert {
+                target: InsertTarget {
+                    document_revision: run.revision,
+                    table: "Items".into(),
                 },
-            )
-            .unwrap() else {
-                panic!("actual BOOLEAN omission draft");
-            };
-            assert!(
-                request(
-                    &worker,
-                    Command::ReviewInsert {
-                        draft_id: draft.id,
-                        inputs: vec![InsertInput::Omitted, InsertInput::Omitted]
-                    }
-                )
-                .is_err(),
-                "no implicit Boolean default invented"
-            );
-            same(&fs::read(&path).unwrap(), &run.expected);
-        }
-        if matches!(case.kind, Kind::ShortText { .. }) {
-            let target = inspect(
-                &worker,
-                run.revision,
-                "PARAMETERS replacement TEXT(80); UPDATE Items SET AddedValue=replacement WHERE Score=23",
-            );
-            assert!(
-                request(
-                    &worker,
-                    Command::ReviewQueryUpdate {
-                        target,
-                        parameters: vec![ParameterInput {
-                            name: "replacement".into(),
-                            kind: "text".into(),
-                            text: String::new(),
-                            is_null: false
-                        }]
-                    }
-                )
-                .is_err(),
-                "absent AZL must not invent permission for empty text"
-            );
-            same(&fs::read(&path).unwrap(), &run.expected);
-        }
-        let fresh = if matches!(case.kind, Kind::Boolean) {
-            Value::Boolean(false)
-        } else {
-            Value::Null
-        };
-        let after =
-            rows::append_resolved(&run.expected, source.definition, case.kind, None, &fresh);
-        let input = if matches!(case.kind, Kind::Boolean) {
-            InsertInput::Value(EditInput {
-                text: "false".into(),
-                is_null: false,
-            })
-        } else {
-            InsertInput::Omitted
-        };
-        run.insert("Items", vec![InsertInput::Omitted, input], after);
-        let Response::Data { rows: actual, .. } = request(
-            &worker,
-            Command::Page {
-                table: "Items".into(),
-                offset: 0,
             },
         )
         .unwrap() else {
-            panic!("fresh actual values");
+            panic!("actual BOOLEAN omission draft");
         };
-        assert_eq!(actual.len(), 3);
-        if !matches!(case.kind, Kind::Boolean) {
-            assert!(matches!(
-                actual[2][1].kind,
-                crate::CellKind::Scalar { is_null: true, .. }
-            ));
-        }
+        assert!(
+            request(
+                &worker,
+                Command::ReviewInsert {
+                    draft_id: draft.id,
+                    inputs: vec![InsertInput::Omitted, InsertInput::Omitted]
+                }
+            )
+            .is_err(),
+            "no implicit Boolean default invented"
+        );
+        same(&fs::read(&path).unwrap(), &run.expected);
     }
+    if matches!(case.kind, Kind::ShortText { .. }) {
+        let target = inspect(
+            &worker,
+            run.revision,
+            "PARAMETERS replacement TEXT(80); UPDATE Items SET AddedValue=replacement WHERE Score=23",
+        );
+        assert!(
+            request(
+                &worker,
+                Command::ReviewQueryUpdate {
+                    target,
+                    parameters: vec![ParameterInput {
+                        name: "replacement".into(),
+                        kind: "text".into(),
+                        text: String::new(),
+                        is_null: false
+                    }]
+                }
+            )
+            .is_err(),
+            "absent AZL must not invent permission for empty text"
+        );
+        same(&fs::read(&path).unwrap(), &run.expected);
+    }
+    let fresh = if matches!(case.kind, Kind::Boolean) {
+        Value::Boolean(false)
+    } else {
+        Value::Null
+    };
+    let after = rows::append_resolved(&run.expected, source.definition, case.kind, None, &fresh);
+    let input = if matches!(case.kind, Kind::Boolean) {
+        InsertInput::Value(EditInput {
+            text: "false".into(),
+            is_null: false,
+        })
+    } else {
+        InsertInput::Omitted
+    };
+    run.insert("Items", vec![InsertInput::Omitted, input], after);
+    let Response::Data { rows: actual, .. } = request(
+        &worker,
+        Command::Page {
+            table: "Items".into(),
+            offset: 0,
+        },
+    )
+    .unwrap() else {
+        panic!("fresh actual values");
+    };
+    assert_eq!(actual.len(), 3);
+    if !matches!(case.kind, Kind::Boolean) {
+        assert!(matches!(
+            actual[2][1].kind,
+            crate::CellKind::Scalar { is_null: true, .. }
+        ));
+    }
+}
+
+macro_rules! scalar_case_tests {
+    ($($name:ident => $index:expr),+ $(,)?) => {
+        $(
+            #[test]
+            fn $name() {
+                let case = cases().into_iter().nth($index).unwrap();
+                run_scalar_case(case);
+            }
+        )+
+    };
+}
+
+scalar_case_tests! {
+    boolean_add_update_and_explicit_insert_keep_false_and_omission_distinct => 0,
+    byte_add_update_null_and_omitted_insert => 1,
+    int16_add_update_null_and_omitted_insert => 2,
+    int32_add_update_null_and_omitted_insert => 3,
+    int64_add_update_null_and_omitted_insert => 4,
+    single_add_update_null_and_omitted_insert => 5,
+    double_add_update_null_and_omitted_insert => 6,
+    currency_add_update_null_and_omitted_insert => 7,
+    datetime_add_update_null_and_omitted_insert => 8,
+    guid_add_update_null_and_omitted_insert => 9,
+    decimal_add_update_null_and_omitted_insert => 10,
+    text_add_update_null_and_omitted_insert_preserves_azl_absence => 11,
 }
 
 #[test]
