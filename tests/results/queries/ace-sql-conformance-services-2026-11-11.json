@@ -1,0 +1,191 @@
+{
+  "date": "2026-11-11",
+  "source_commit": "8d83068183b0efa29b1f564283f6845dfecdc4e6",
+  "source_tree": "dd8dbf4028b3edc722e3ebd6654eb6c6a536e651",
+  "source_identity_scope": "Committed checkpoint before documentation and subsequent SQL integration work; final production changes after the broad query run only simplify the same filter condition. Later repairs correct test setup and independent fixture observations.",
+  "platform": "macOS 14.7.2 ARM64",
+  "native_windows_opened": false,
+  "scope": [
+    "Issued runtime CREATE TABLE, DROP TABLE and ALTER TABLE DROP COLUMN reviews through existing native save and guarded reopen services.",
+    "Query-layer joined UPDATE identity, eager evaluation and owned preparation/consuming finish; native host integration remains closed at this checkpoint.",
+    "Complete typed SELECT INTO query staging; native physical shape resolution and atomic publication remain unfinished.",
+    "Documented single-word ACE type aliases in syntax normalization and typed parameter execution.",
+    "Checked retained keyless original-presence INSERT, including complete VALUES/SELECT rows after ordinary field retirement."
+  ],
+  "functional_accounting": {
+    "parser": {
+      "passed": 93,
+      "doctests": 1,
+      "log": {
+        "path": ".cache/ace-sql-parser-complete-20261111.log",
+        "sha256": "a94fa9dce272bb98a2f4ffbc88381b24539d0e122ce6c97007a7080560e699ea"
+      }
+    },
+    "query": {
+      "passed_including_doctests": 1885,
+      "target_summaries": 272,
+      "log": {
+        "path": ".cache/ace-sql-conformance-batch-query-20261111.log",
+        "sha256": "6818b0d6ce905549d248d256a012047534171f0d37708401d2db361ea7968a52"
+      }
+    },
+    "runtime": {
+      "distinct_passing_functions": 380,
+      "ignored": 1,
+      "full_log": {
+        "path": ".cache/ace-sql-conformance-batch-runtime-20261111.log",
+        "sha256": "42471b50f3d06e05b88edce2a8339eb475536517bd3c2ff3cc2d6fe25e612c63"
+      },
+      "repaired_schema_log": {
+        "path": ".cache/ace-sql-final-check-schema-repaired-20261111.log",
+        "sha256": "fe50f005f6b0885cfb7df799daa338a7e6baac8ef406c808aa158933c7027f74"
+      },
+      "rule": "378 passing functions in the broad run plus two previously failed test-input cases passing after correction; repeated schema functions are not counted twice. No runtime production admission was loosened to repair those cases."
+    },
+    "access": {
+      "passed": 254,
+      "log": {
+        "path": ".cache/ace-sql-conformance-batch-access-20261111.log",
+        "sha256": "ee2d93a5aae7e5c36485c3f31259de13a75ecf954d60f3bb17e6aac1c2d26acf"
+      }
+    },
+    "access_journal_only": {
+      "passed": 2,
+      "log": {
+        "path": ".cache/ace-sql-conformance-batch-journal-20261111.log",
+        "sha256": "6bc98971700b5053ca9e983fda666726d4a92bd417d944c9fdb3b66a8fc73882"
+      }
+    },
+    "runtime_without_creation": {
+      "passed": 6,
+      "log": {
+        "path": ".cache/ace-sql-final-check-schema-no-create-repaired-20261111.log",
+        "sha256": "2147086ce3c5e5798be73eb025735547315615bc925cfd903712929145b75a3f"
+      }
+    },
+    "headless_desktop": {
+      "passed": 56,
+      "scope": "Existing table-creation, field-deletion and query-parameter workflows, not a new GUI SQL DDL workflow.",
+      "log": {
+        "path": ".cache/ace-sql-conformance-batch-desktop-20261111.log",
+        "sha256": "89fe1d40b3d21f224ed5a518fb344ecd9ee2bb782e19c4a8aa3b1679c0e07643"
+      }
+    },
+    "db": {
+      "passed": 11,
+      "log": {
+        "path": ".cache/ace-sql-conformance-batch-db-20261111.log",
+        "sha256": "d680154c1d1e375817ec8879881482845a5fbb9d18376b38ac7cd4c668cf14ee"
+      }
+    },
+    "native_insert": {
+      "passed": 58,
+      "ignored": 46,
+      "scope": "Selected normal INSERT and omitted-intent families; ignored cases remain explicit, not passing native qualification.",
+      "log": {
+        "path": ".cache/ace-sql-existing-insert-regression-20261111.log",
+        "sha256": "8693b8fcc265916ea468d1eb28da558f2ef7b9fd8cd22b02f84e66248b3c9a14"
+      }
+    },
+    "final_style_and_fixture_controls": {
+      "joined_update": 9,
+      "raw_insert_oracles": 2,
+      "log": {
+        "path": ".cache/ace-sql-final-style-regressions-repaired-20261111.log",
+        "sha256": "deaf048975760063a8fcd7f94d57dfec42a94cbbcd36ade7d3544434e16d512b"
+      }
+    }
+  },
+  "causal_failures_and_repairs": [
+    {
+      "log": {
+        "path": ".cache/ace-sql-type-alias-baseline-20261111.log",
+        "sha256": "08992859f0580b12798fb79437d502bb4879c0d99039d47c11fba3e71553bcee"
+      },
+      "finding": "Documented LOGICAL type was rejected by syntax although the parameter resolver already modeled it. Parser/parameter aliases now retain spelling and exact carriers."
+    },
+    {
+      "log": {
+        "path": ".cache/ace-sql-retained-insert-runtime-20261111.log",
+        "sha256": "b95d78810a3946476643d57c09a4b8ad68e1ac0b56907083026cc1b77289b781"
+      },
+      "finding": "The first SQL append fixture addressed the earlier table catalog row. The independent fixture now selects its actual appended catalog row."
+    },
+    {
+      "log": {
+        "path": ".cache/ace-sql-retained-insert-runtime-repaired-20261111.log",
+        "sha256": "e6de5231f6f7a144ff88a069ae09fd6ad1cdd89983936ea6f67a639f4ea9994d"
+      },
+      "finding": "Complete supplied SQL INSERT chose legacy complete-row admission after keyless retirement. A positive source selector now retains all supplied fields in TCNA10; no failed-proof fallback or generated-source guard change."
+    },
+    {
+      "log": {
+        "path": ".cache/ace-sql-first-batch-runtime-20261111.log",
+        "sha256": "2e9cb15e44dae5804fa4117e6d8e0795bb5eaaff39b103278158b447a71b96fe"
+      },
+      "finding": "Joined planner compilation required explicit LimitError/EvalError conversion through QueryError; no blanket backend error conversions were added."
+    },
+    {
+      "log": {
+        "path": ".cache/ace-sql-conformance-batch-runtime-20261111.log",
+        "sha256": "42471b50f3d06e05b88edce2a8339eb475536517bd3c2ff3cc2d6fe25e612c63"
+      },
+      "finding": "Two new DDL tests used an unbracketed reserved field name and attempted to issue a target for parameterized DDL already rejected by the parser. Repairs assert the actual inspection boundary and preserve native admission."
+    },
+    {
+      "log": {
+        "path": ".cache/ace-sql-final-check-lint-20261111.log",
+        "sha256": "a0d2f316e74ba620feeef47bd37b75a04f938aef82f96ab43c5fada736977acb"
+      },
+      "finding": "Collapsed one nested joined filter condition without changing evaluation order."
+    },
+    {
+      "log": {
+        "path": ".cache/ace-sql-lint-repaired-20261111.log",
+        "sha256": "c98deb7579dbce921f0d668fa81fe0d9df8ececb9c9f0b9ace0f8bd486879afa"
+      },
+      "finding": "Removed redundant references in three independent raw INSERT test comparisons."
+    },
+    {
+      "log": {
+        "path": ".cache/ace-sql-final-style-regressions-20261111.log",
+        "sha256": "0a3541dae9a3f312eff7159c2e3e062cd75ba57f74b3f0f42ade4d060557e90e"
+      },
+      "finding": "An oracle test confused live row count with the actual directory index after a hidden Currency forwarding terminal. It now observes the actual independent directory count; builder and production bytes are unchanged."
+    }
+  ],
+  "other_checks": {
+    "strict_clippy": {
+      "packages": 11,
+      "all_targets": true,
+      "all_features": true,
+      "log": {
+        "path": ".cache/ace-sql-lint-final-20261111.log",
+        "sha256": "94f2c011614365c3b7f12d49b2d9d4b76e136df94db1f22fa921c43359313f59"
+      }
+    },
+    "minimal_builds": {
+      "path": ".cache/ace-sql-final-check-minimal-20261111.log",
+      "sha256": "dcda60f3d01a446db3cf08da5001539c7d1207b3312f52771b43a799b5784f05"
+    },
+    "warnings_denied_rustdoc": {
+      "path": ".cache/ace-sql-final-check-rustdoc-20261111.log",
+      "sha256": "8649497905da1f6c793ce11ed5261be22f00476911a66fbd6fdcb832ffd28b48"
+    },
+    "format": "916 target roots in four bounded batches; the final fixture repair was also formatted directly.",
+    "layout": "19 composition-only crate roots and modern module names.",
+    "dependency_boundaries": "22 packages.",
+    "documentation_links": "9325 local targets passed after adding this receipt.",
+    "final_fixture_lint": {
+      "path": ".cache/ace-sql-fixture-lint-final-20261111.log",
+      "sha256": "6a73dbb7e0851eb30893f9768a8b8b4d46910c04610f42da87b1d7dd1a191a06"
+    }
+  },
+  "remaining": [
+    "Native joined UPDATE adapter/runtime consumption and GUI schema SQL routing.",
+    "Native SELECT INTO field-size resolution, populated creation and one atomic reviewed journal operation.",
+    "Joined DELETE semantics, broader DDL/index/constraint/type changes and saved-definition management.",
+    "Remaining expression, comparison, implicit parameter, source/updateability and security semantics in the conformance matrix.",
+    "Actual Microsoft Access and Windows native save/reopen comparisons."
+  ]
+}

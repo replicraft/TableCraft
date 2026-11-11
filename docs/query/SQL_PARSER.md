@@ -73,6 +73,7 @@ is the first working consumer.
 | Set operations | UNION/UNION ALL, independently retained per arm; SELECT, TABLE and stored-query-reference operands; final ordering |
 | Declarations | PARAMETERS names, including bracketed literal prompts with punctuation; recognized Access type spellings and integer type arguments; ordered declarations retained |
 | IEEE floating types | IEEESINGLE and IEEEDOUBLE preserve their type spelling in parameters/DDL; binding retains distinct Single/Double carriers |
+| Type synonyms | Documented single-word aliases include LOGICAL/LOGICAL1, INTEGER1/2/4, FLOAT4/8, NUMBER, DEC, ALPHANUMERIC, STRING, NCHAR, VARBINARY, GENERAL, OLEOBJECT, NOTE and NTEXT. Owned spelling survives normalization; parameter binding selects the corresponding carrier. |
 | Crosstabs | TRANSFORM expression with optional AS alias, SELECT/grouping, PIVOT expression and optional ordered fixed headings, trailing owner-access option; headings are distinct from membership IN; subqueries allowed in predicates, rejected in output expressions |
 | Append/update/delete | INSERT VALUES (one record) or retrieval source, ordered target fields; UPDATE relations and SET assignments; DELETE target wildcards, relations and filters |
 | Make-table | SELECT INTO is a separate root statement kind; destination IN is distinct from source IN; make-table statements are rejected inside retrieval operands |
@@ -84,6 +85,10 @@ is the first working consumer.
 TOP accepts unsigned u32 syntax (including zero); PERCENT is restricted to
 0..=100. This carrier boundary is not an Access execution-range qualification.
 Type names/arguments are syntax annotations, not validated native field layouts.
+The [Microsoft synonym table](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/equivalent-ansi-sql-data-types)
+establishes those spellings; it explicitly retires TIMESTAMP as a DATETIME synonym.
+Multiword synonym coverage remains incomplete. A parsed type does not establish
+native DDL support or inherit UI field defaults.
 Numeric strings are never converted through floating point. Date literals retain
 trimmed contents without claiming valid calendar values or choosing a locale.
 LIKE preserves the pattern expression without guessing ANSI-89 versus ANSI-92

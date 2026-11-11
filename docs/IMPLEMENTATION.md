@@ -1,5 +1,31 @@
 # Implementation status
 
+## ACE SQL conformance statement services — 11 November 2026
+
+Issued schema SQL reviews now support qualified CREATE TABLE, DROP TABLE and
+ALTER TABLE DROP COLUMN through the existing consuming native save/reopen owners.
+SQL declarations preserve absent properties and actual type widths without
+fabricating a table-design draft. General constraints, indexes, type alteration
+and broader native source coverage remain unfinished; normal GUI SQL Run still
+refuses schema statements. Provider-only DEFAULT is not enabled in SQL View.
+
+The query layer now stages complete typed SELECT INTO results and prepares joined
+UPDATE with exact original target identities, original-value assignments and a
+separate consuming backend finish. Native make-table publication and joined-action
+host integration remain separate work. Retained keyless VALUES/SELECT appends now
+use their checked original-presence intent after field deletion, including full
+supplied rows; no deleted field default or generator is invented.
+
+The [conformance matrix](query/ACE_SQL_CONFORMANCE.md) distinguishes syntax,
+query planning, reviewed persistence and GUI availability. The
+[verification record](../tests/results/queries/ace-sql-conformance-services-2026-11-11.json)
+retains causal failures and repairs. Qualification passes 1,885 query tests across
+272 targets, 380 distinct runtime functions with one ignored, 254 adapter checks,
+56 headless desktop workflows and 93 parser tests plus one doctest. Strict lint
+across eleven affected packages, minimal builds and warnings-denied rustdoc pass.
+These are local implementation checks, not complete ACE SQL or native Windows
+Access conformance.
+
 ## Structured attachment and history query results — 11 November 2026
 
 Normal SQL Run now preserves qualified bare attachment and stored-history fields

@@ -76,8 +76,10 @@ SQL binding/execution lives in
 Unless noted, implemented scalar functions work in `query eval` and `query run`;
 aggregates require `query run`. Qualified saved SELECTs use the same runtime,
 subject to [saved-query limits](../access/queries/NATIVE_SAVED_QUERIES.md). Native inspection never
-executes functions. General UPDATE function calls remain outside the current
-[editing profile](../access/writes/QUERY_EDITING.md).
+executes functions. UPDATE and DELETE admit the documented
+[deterministic mutation function profile](../query/MUTATION_SCALAR_FUNCTIONS.md);
+retrieval availability does not automatically admit a function in a mutation or
+calculated-field formula.
 
 ## NULL, selection and inspection
 
