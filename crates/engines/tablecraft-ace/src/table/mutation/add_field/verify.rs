@@ -335,24 +335,28 @@ fn metadata(
                 return Err(Error::Preservation);
             }
             let matches = match property.name() {
-                "Required" => property.native_type() == BOOLEAN && property.raw_value() == [0],
-                "AllowZeroLength"
-                    if target.scalar_type() == tablecraft_schema::ScalarType::Text =>
+                key if key.eq_ignore_ascii_case("Required") => {
+                    property.native_type() == BOOLEAN && property.raw_value() == [0]
+                }
+                key if key.eq_ignore_ascii_case("AllowZeroLength")
+                    && target.scalar_type() == tablecraft_schema::ScalarType::Text =>
                 {
                     property.native_type() == BOOLEAN && property.raw_value() == [255]
                 }
-                "DefaultValue" => literal.as_ref().is_some_and(|literal| {
-                    property.native_type() == LONG_TEXT
-                        && property.raw_value().len() == literal.payload_bytes()
-                        && property
-                            .raw_value()
-                            .as_chunks::<2>()
-                            .0
-                            .iter()
-                            .copied()
-                            .map(u16::from_le_bytes)
-                            .eq(literal.units())
-                }),
+                key if key.eq_ignore_ascii_case("DefaultValue") => {
+                    literal.as_ref().is_some_and(|literal| {
+                        property.native_type() == LONG_TEXT
+                            && property.raw_value().len() == literal.payload_bytes()
+                            && property
+                                .raw_value()
+                                .as_chunks::<2>()
+                                .0
+                                .iter()
+                                .copied()
+                                .map(u16::from_le_bytes)
+                                .eq(literal.units())
+                    })
+                }
                 _ => false,
             };
             if !matches {

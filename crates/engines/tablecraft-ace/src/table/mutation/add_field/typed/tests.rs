@@ -253,3 +253,21 @@ fn retained_typed_field_addition_unnamed_advice_and_gallery_request_guards_are_d
         ))
     ));
 }
+
+#[test]
+fn retained_typed_field_addition_preserves_ascii_case_variant_dictionary_identity() {
+    let source = fields::source(fields::Case::FirstNumber);
+    let before = raw::lowercase_required(&source.bytes, source.catalog_root);
+    let expected = raw::after(
+        &before,
+        source.definition,
+        source.catalog_root,
+        "Amount",
+        raw::Kind::Currency,
+    );
+    let definition = definition(raw::Kind::Currency, "Amount");
+    let candidate = image(&before)
+        .prepare_retained_typed_field_addition("Table1", &definition, &mut budget(), &|| false)
+        .unwrap();
+    equal_image(candidate.after_bytes(), &expected);
+}

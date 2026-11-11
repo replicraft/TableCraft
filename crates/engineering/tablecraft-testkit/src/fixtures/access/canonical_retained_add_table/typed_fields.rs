@@ -320,3 +320,40 @@ pub fn append_omitted(before: &[u8], definition: u32, kind: Kind) -> Vec<u8> {
     row.push(mask);
     placement::append(before, pages, id, &row)
 }
+
+/// Change only a dictionary key's ASCII case in the actual current property carrier.
+pub fn lowercase_required(before: &[u8], catalog_root: usize) -> Vec<u8> {
+    let range = raw_forwarding_chain::terminal_range(before, 4, catalog_root);
+    let row = &before[range.clone()];
+    let footer = row.len() - 5;
+    let descriptor = word(row, footer - 18);
+    let tag = u32::from_le_bytes(row[descriptor..descriptor + 4].try_into().unwrap());
+    let body_start = match tag & 0xc000_0000 {
+        0x8000_0000 => range.start + descriptor + 12,
+        0x4000_0000 => {
+            let reference =
+                u32::from_le_bytes(row[descriptor + 4..descriptor + 8].try_into().unwrap());
+            let page = (reference >> 8) as usize * PAGE;
+            page + word(before, page + 14 + 2 * (reference as usize & 255))
+        }
+        _ => panic!("expected authored Inline or Single property body"),
+    };
+    let dictionary_end = body_start
+        + 4
+        + u32::from_le_bytes(before[body_start + 4..body_start + 8].try_into().unwrap()) as usize;
+    let required = wide("Required");
+    let mut position = body_start + 10;
+    let mut result = before.to_vec();
+    let mut found = false;
+    while position < dictionary_end {
+        let length = word(before, position);
+        if before[position + 2..position + 2 + length] == required {
+            assert!(!found);
+            found = true;
+            result[position + 2] = b'r';
+        }
+        position += 2 + length;
+    }
+    assert!(found);
+    result
+}
