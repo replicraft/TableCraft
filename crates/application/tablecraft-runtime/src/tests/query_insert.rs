@@ -1,4 +1,6 @@
 //! Original presence and captured clock input survive consuming SQL INSERT saves.
+mod retained_keyless;
+
 use super::{open, query_parameters::inspect, request, stored::opened, terminal};
 use crate::{
     Command, Error, ParameterInput, Response, ReviewedQueryInsert, SaveFailureKind, SaveOutcome,
