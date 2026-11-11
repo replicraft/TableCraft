@@ -20,29 +20,17 @@ impl Runtime<'_, '_> {
             namespace,
             name,
             columns,
-            unavailable,
-            text_collations,
-            multivalue_text_collations,
-            member_text_collations,
             projection,
             multivalues,
             members,
             expansion,
+            ..
         } = &relation.node
         else {
             return Err(QueryError::Source);
         };
         let source = self.namespace_source(*namespace)?;
-        if source.columns(name)? != columns
-            || source.unavailable_columns(name)? != unavailable
-            || source.text_collations(name)? != text_collations
-            || source.multivalue_text_collations(name)? != multivalue_text_collations
-            || source.collection_member_text_collations(name)? != member_text_collations
-            || source.multivalue_columns(name)? != multivalues
-            || source.collection_members(name)? != members
-        {
-            return Err(QueryError::SchemaChanged);
-        }
+        self.check_table_schema(&relation.node)?;
         let locations = parent.locations.as_ref().ok_or(QueryError::Source)?;
         self.budget.charge_allocation(
             (selected.len() + expansion.len()) as u64,

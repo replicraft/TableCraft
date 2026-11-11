@@ -249,6 +249,7 @@ impl Runtime<'_, '_> {
         Ok(CellQueryResult {
             columns,
             output_types,
+            recordset_schemas: Vec::new(),
             rows,
         })
     }
@@ -279,6 +280,7 @@ impl Runtime<'_, '_> {
         Ok(CellQueryResult {
             columns,
             output_types,
+            recordset_schemas: Vec::new(),
             rows,
         })
     }

@@ -80,14 +80,11 @@ impl Runtime<'_, '_> {
             namespace,
             name,
             columns,
-            unavailable,
-            text_collations,
-            multivalue_text_collations,
-            member_text_collations,
             projection,
             multivalues,
             members,
             expansion,
+            ..
         } = &relation.node
         else {
             return Err(QueryError::Unsupported);
@@ -96,16 +93,7 @@ impl Runtime<'_, '_> {
             return Err(QueryError::Unsupported);
         }
         let source = self.namespace_source(*namespace)?;
-        if source.columns(name)? != columns
-            || source.unavailable_columns(name)? != unavailable
-            || source.text_collations(name)? != text_collations
-            || source.multivalue_text_collations(name)? != multivalue_text_collations
-            || source.collection_member_text_collations(name)? != member_text_collations
-            || source.multivalue_columns(name)? != multivalues
-            || source.collection_members(name)? != members
-        {
-            return Err(QueryError::SchemaChanged);
-        }
+        self.check_table_schema(&relation.node)?;
         let (values, named) = self.collection_requests(&parent.collections, multivalues.len())?;
         let mut rows = Vec::new();
         let mut failure: Option<QueryError> = None;

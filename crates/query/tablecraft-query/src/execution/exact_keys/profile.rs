@@ -39,7 +39,9 @@ impl Kind {
                 ScalarType::Decimal => Some(Self::Decimal),
                 _ => None,
             },
-            OutputType::Multivalue { .. } | OutputType::Dynamic => None,
+            OutputType::Multivalue { .. } | OutputType::Recordset { .. } | OutputType::Dynamic => {
+                None
+            }
         }
     }
 }
