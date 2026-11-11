@@ -230,6 +230,8 @@ pub use requests::{RowDelete, TableRowDeletes};
 
 #[cfg(any(feature = "journal", feature = "ace16-write-preview"))]
 mod record_insertion;
+#[cfg(any(feature = "journal", feature = "ace16-write-preview"))]
+mod text_declarations;
 
 #[cfg(feature = "journal")]
 pub(super) mod normal_insert;

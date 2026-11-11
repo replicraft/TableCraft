@@ -1,13 +1,11 @@
 //! INSERT-only declaration coverage for explicitly requested empty Text.
 use crate::RowInsert;
 use crate::{
-    EditError, NativeImage, PropertyGroupKind, TableProperties, TableSchema, WriteBlocker,
-    header::check, inspect_table_properties,
+    EditError, NativeImage, TableProperties, TableSchema, header::check, inspect_table_properties,
+    table::mutation::text_declarations,
 };
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_schema::ScalarType;
-
-const ALLOW_ZERO_LENGTH: &str = "AllowZeroLength";
 
 /// The before-INSERT gate must already have qualified stored property types.
 /// Presence is required here, not a true value: an explicit false remains the
@@ -54,28 +52,7 @@ pub(in crate::table::mutation) fn require_text_declarations(
             properties = Some(inspected);
         }
         let inspected = properties.as_ref().ok_or(EditError::Preservation)?;
-        let mut declared = false;
-        for group in inspected.groups() {
-            check(budget, cancelled)?;
-            if group.kind() != PropertyGroupKind::Column
-                || !group.name().eq_ignore_ascii_case(column.name())
-            {
-                continue;
-            }
-            for property in group.properties() {
-                check(budget, cancelled)?;
-                if property.name().eq_ignore_ascii_case(ALLOW_ZERO_LENGTH) {
-                    declared = true;
-                    break;
-                }
-            }
-            // Match the constraint reader's first-group lookup exactly; a
-            // later similarly named group cannot supply missing authority.
-            break;
-        }
-        if !declared {
-            return Err(EditError::Unsupported(WriteBlocker::ConstraintCoverage));
-        }
+        text_declarations::require(inspected, schema, column, budget, cancelled)?;
     }
 
     check(budget, cancelled)?;

@@ -185,3 +185,5 @@ fn current_requests_keep_legacy_sources_closed_and_preserve_expected_value_guard
         Err(EditError::Unsupported(WriteBlocker::Column))
     ));
 }
+
+mod empty_text;

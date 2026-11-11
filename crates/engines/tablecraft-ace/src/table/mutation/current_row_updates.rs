@@ -9,6 +9,7 @@ use super::{
     record_placement::{audit, forward::Plan, owned::Reservations, space::Space},
     record_roots, record_serialization,
     rows::{self, RowAssignment},
+    text_declarations,
 };
 use crate::{
     EditError, FittedColumnUpdates, FixedColumnUpdates, InspectError, NativeEditPlan, NativeImage,
@@ -20,6 +21,7 @@ use crate::{
         row::{OFFSET_MASK, RELOCATED_MASK},
     },
     header::check,
+    inspect_table_properties,
 };
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
@@ -349,6 +351,24 @@ pub(super) fn bind_for(
                 && matches!(groups[0], FittedColumnUpdates::Fixed { .. })
                 && record_serialization::current_rows::fixed_scalar_value(native, value) => {}
         _ => return Err(EditError::Unsupported(WriteBlocker::Column)),
+    }
+    if schema.columns()[column].native_type() == SHORT_TEXT
+        && matches!(update.value, Value::Text(value) if value.is_empty())
+    {
+        let properties = inspect_table_properties(
+            &mut image.reader(),
+            image.catalog().catalog().scope(),
+            schema.name(),
+            budget,
+            cancelled,
+        )?;
+        text_declarations::require(
+            &properties,
+            schema,
+            &schema.columns()[column],
+            budget,
+            cancelled,
+        )?;
     }
     let values = super::normal_fitted::original_values(
         image,
