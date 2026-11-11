@@ -10,10 +10,7 @@ use tablecraft_core::values::Value;
 use tablecraft_io::journal::{self, JournalError};
 use tablecraft_model::CatalogScope;
 use tablecraft_testkit::{
-    fixtures::access::{
-        canonical_retained_add_table::{fields, typed_fields},
-        raw_forwarding_chain,
-    },
+    fixtures::access::canonical_retained_add_table::{fields, typed_fields},
     support::io::journal::MemoryStorage,
 };
 
@@ -200,11 +197,11 @@ fn original_presence_selects_materialization_then_stored_twenty_without_retry() 
         stored.intent().profile(),
         NativeUpdateProfile::Ace16RetainedBooleanRows
     );
-    let mut record = raw_forwarding_chain::record(&after, definition + 1, 0).to_vec();
+    let mut record = typed_fields::boolean_record(&after, definition, 0).to_vec();
     assert_eq!(&record[..2], &[3, 0]);
     assert_eq!(record.len(), 11);
     record[10] &= !4;
-    let expected = raw_forwarding_chain::replace_terminal(&after, definition + 1, 0, &record);
+    let expected = typed_fields::replace_boolean_record(&after, definition, 0, &record);
     assert_image(stored.after_bytes(), &expected);
 }
 

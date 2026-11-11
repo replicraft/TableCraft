@@ -412,3 +412,32 @@ pub fn update_boolean(before: &[u8], definition: u32, root: usize, value: bool) 
         _ => panic!("expected the known short or materialized gallery row"),
     }
 }
+
+fn boolean_definition(before: &[u8], definition: u32) {
+    let page = definition as usize * PAGE;
+    let active = word(before, page + 45);
+    assert!(active > 0);
+    let indexes = u32::from_le_bytes(before[page + 51..page + 55].try_into().unwrap()) as usize;
+    let tail = page + 63 + 12 * indexes + (active - 1) * 25;
+    assert_eq!(before[tail], 1);
+    assert_eq!(&before[tail + 15..tail + 17], &[3, 0]);
+    assert_eq!(word(before, tail + 23), 0);
+}
+
+/// Observe the stored logical row under the actual newly added Boolean declaration.
+pub fn boolean_record(before: &[u8], definition: u32, root: usize) -> &[u8] {
+    boolean_definition(before, definition);
+    raw_forwarding_chain::record(before, definition + 1, root)
+}
+
+/// Replace the existing terminal at the same footprint without changing its chain.
+pub fn replace_boolean_record(before: &[u8], definition: u32, root: usize, row: &[u8]) -> Vec<u8> {
+    boolean_definition(before, definition);
+    raw_forwarding_chain::replace_terminal(before, definition + 1, root, row)
+}
+
+/// Place a reconstructed Boolean row with the independent retained forwarding law.
+pub fn place_boolean_record(before: &[u8], definition: u32, root: usize, row: &[u8]) -> Vec<u8> {
+    boolean_definition(before, definition);
+    raw_forwarding_chain::place_terminal(before, definition + 1, root, row)
+}

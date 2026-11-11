@@ -6,9 +6,8 @@ use crate::{
 use std::io::Cursor;
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
-use tablecraft_testkit::fixtures::access::{
-    canonical_retained_add_table::{fields, fixed_scalars, typed_fields},
-    raw_forwarding_chain,
+use tablecraft_testkit::fixtures::access::canonical_retained_add_table::{
+    field_changes, fields, fixed_scalars, typed_fields,
 };
 
 const PAGE_BYTES: usize = 4096;
@@ -86,12 +85,12 @@ fn source(shape: Shape, garbage: bool) -> Source {
     if garbage {
         for row in 0..2 {
             let mut record =
-                raw_forwarding_chain::record(&source.bytes, source.definition + 1, row).to_vec();
+                typed_fields::boolean_record(&source.bytes, source.definition, row).to_vec();
             assert_eq!(record.len(), ORIGINAL_MASK + 1);
             record[ORIGINAL_MASK] |= 0xfc;
-            source.bytes = raw_forwarding_chain::replace_terminal(
+            source.bytes = typed_fields::replace_boolean_record(
                 &source.bytes,
-                source.definition + 1,
+                source.definition,
                 row,
                 &record,
             );
@@ -102,7 +101,7 @@ fn source(shape: Shape, garbage: bool) -> Source {
 
 fn expected(source: &Source) -> Vec<u8> {
     let original =
-        raw_forwarding_chain::record(&source.bytes, source.definition + 1, source.selected_row);
+        typed_fields::boolean_record(&source.bytes, source.definition, source.selected_row);
     assert_eq!(original.len(), ORIGINAL_MASK + 1);
     assert_eq!(&original[..2], &[2, 0]);
 
@@ -117,9 +116,9 @@ fn expected(source: &Source) -> Vec<u8> {
         record[source.fixed_stop] |= original[ORIGINAL_MASK] & !represented;
     }
     record[source.fixed_stop + source.number / MASK_BITS] |= 1 << (source.number % MASK_BITS);
-    raw_forwarding_chain::place_terminal(
+    typed_fields::place_boolean_record(
         &source.bytes,
-        source.definition + 1,
+        source.definition,
         source.selected_row,
         &record,
     )
@@ -248,13 +247,13 @@ fn retained_boolean_materialization_preserves_short_noops_and_exact_expanded_mas
                 .plan_retained_boolean_row_updates(source.table, &groups, &mut budget(), &|| false)
                 .unwrap();
             let mut record =
-                raw_forwarding_chain::record(&after, source.definition + 1, source.selected_row)
+                typed_fields::boolean_record(&after, source.definition, source.selected_row)
                     .to_vec();
             record[source.fixed_stop + source.number / MASK_BITS] &=
                 !(1 << (source.number % MASK_BITS));
-            let expected = raw_forwarding_chain::replace_terminal(
+            let expected = typed_fields::replace_boolean_record(
                 &after,
-                source.definition + 1,
+                source.definition,
                 source.selected_row,
                 &record,
             );
@@ -328,4 +327,116 @@ fn retained_boolean_materialization_rechecks_expected_value_carriers_and_resourc
             Err(EditError::Inspect(InspectError::Limit(_))),
         ));
     }
+}
+
+#[test]
+fn retained_boolean_materialization_uses_native_ordinal_and_retired_variable_footer() {
+    let source = fields::source(fields::Case::FirstNumber);
+    let temporary = typed_fields::after(
+        &source.bytes,
+        source.definition,
+        source.catalog_root,
+        "Temporary",
+        typed_fields::Kind::ShortText {
+            units: 255,
+            compression: true,
+        },
+    );
+    let retired = field_changes::drop_tail(
+        &temporary,
+        source.definition,
+        source.catalog_root,
+        "Temporary",
+    );
+    let before = typed_fields::after(
+        &retired,
+        source.definition,
+        source.catalog_root,
+        "Enabled",
+        typed_fields::Kind::Boolean,
+    );
+    let base = source.definition as usize * PAGE_BYTES;
+    assert_eq!(&before[base + 41..base + 47], &[4, 0, 1, 0, 3, 0]);
+    assert_eq!(&before[base + 75 + 50 + 5..base + 75 + 50 + 7], &[3, 0]);
+    assert!(
+        image(&before)
+            .select_native_retained_boolean_materialization(
+                "Table1",
+                "Enabled",
+                0,
+                &mut budget(),
+                &|| false
+            )
+            .unwrap()
+    );
+    let original = typed_fields::boolean_record(&before, source.definition, 0);
+    assert_eq!(original.len(), 11);
+    assert_eq!(&original[..2], &[2, 0]);
+    let mut record = vec![4, 0];
+    record.extend_from_slice(&original[2..10]);
+    // The retired variable slot is still represented by two empty endpoints.
+    record.extend([10, 0, 10, 0, 1, 0]);
+    record.push((original[10] & !12) | 8);
+    let expected = typed_fields::place_boolean_record(&before, source.definition, 0, &record);
+    let changed = plan(&before, "Table1", 0, false, true).unwrap();
+    assert_image(changed.after_bytes(), &expected);
+    let rows = read_table(
+        &mut Cursor::new(&expected),
+        SCOPE,
+        "Table1",
+        &mut budget(),
+        &|| false,
+    )
+    .unwrap();
+    assert_eq!(
+        rows.rows()[0],
+        vec![Value::Int32(1), Value::Int32(17), Value::Boolean(true)]
+    );
+    assert_eq!(
+        rows.rows()[1],
+        vec![Value::Int32(2), Value::Null, Value::Boolean(false)]
+    );
+}
+
+#[test]
+fn retained_boolean_materialization_preserves_live_unicode_payload_footer_and_long_chain() {
+    let source = fields::source(fields::Case::SecondText);
+    let before = typed_fields::after(
+        &source.bytes,
+        source.definition,
+        source.catalog_root,
+        "Enabled",
+        typed_fields::Kind::Boolean,
+    );
+    let original = typed_fields::boolean_record(&before, source.definition, 0);
+    assert_eq!(&original[..2], &[2, 0]);
+    let mut record = original.to_vec();
+    record[..2].copy_from_slice(&3_u16.to_le_bytes());
+    let mask = record.len() - 1;
+    record[mask] |= 4;
+    let expected = typed_fields::replace_boolean_record(&before, source.definition, 0, &record);
+    let noop = plan(&before, "Table1", 0, false, false).unwrap();
+    assert_image(noop.after_bytes(), &before);
+    let changed = plan(&before, "Table1", 0, false, true).unwrap();
+    assert_image(changed.after_bytes(), &expected);
+    let rows = read_table(
+        &mut Cursor::new(&expected),
+        SCOPE,
+        "Table1",
+        &mut budget(),
+        &|| false,
+    )
+    .unwrap();
+    assert_eq!(
+        rows.rows()[0],
+        vec![
+            Value::Int32(1),
+            Value::Text("日本語🦀".into()),
+            Value::Boolean(true)
+        ]
+    );
+    assert_eq!(
+        rows.rows()[1],
+        vec![Value::Int32(2), Value::Null, Value::Boolean(false)]
+    );
 }
