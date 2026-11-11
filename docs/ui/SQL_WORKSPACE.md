@@ -3,7 +3,8 @@
 The scratch SQL object separates the editable draft from the text that produced
 its displayed results. Explicit Run uses runtime-owned statement classification:
 retrieval uses the read query service, while qualified local UPDATE, DELETE and
-INSERT VALUES or SELECT append enter a separate review and confirmation workflow.
+INSERT VALUES or SELECT append and qualified schema statements enter a separate
+review and confirmation workflow.
 Editing the draft, selecting a cached result view or switching object tabs does
 not execute SQL.
 
@@ -16,8 +17,8 @@ display formatting into SQL conversion policy. Declared scratch parameters use
 the [shared runtime parameter service](../application/RUNTIME.md#scratch-query-parameter-service)
 and the same staged dialog controls as saved queries. Local UPDATE, DELETE and
 qualified INSERT VALUES/SELECT use the reviewed action service described below.
-Broader action contexts, DDL and native saved-definition editing
-remain unfinished.
+Broader action and schema contexts remain subject to their explicit source and
+syntax qualifications. Parser acceptance does not grant native write authority.
 
 ## Attachment and stored-history query results
 
@@ -102,6 +103,35 @@ See the runtime contracts for
 [UPDATE](../application/RUNTIME.md#reviewed-sql-update-actions),
 [DELETE](../application/RUNTIME.md#reviewed-sql-delete-actions) and
 [INSERT](../application/RUNTIME.md#reviewed-sql-insert-actions).
+
+## Reviewed schema SQL
+
+Normal Run routes qualified `CREATE TABLE`, `ALTER TABLE … DROP COLUMN` and
+`DROP TABLE` through the shared runtime's [schema statement service](../application/RUNTIME.md#reviewed-sql-schema-statements).
+The confirmation shows the actual reviewed table, declared field count, deleted
+field or table record count. No/Cancel leaves the original image untouched; Yes
+consumes the original runtime capability through the existing native save worker.
+SQL creation has its own source origin and does not fabricate a Design draft.
+
+The current desktop workflow requires the target table's tabs closed before
+reviewing DROP TABLE or DROP COLUMN. It does not silently close tabs or discard
+edits. This is a current UI restriction, separate from the SQL grammar. Existing
+native constraints, dependencies and source qualifications still apply. SQL View
+DEFAULT annotations and unqualified declarations remain refused; the SQL parser's
+provider syntax is not an execution capability.
+
+Acknowledgment reopens only the accepted operation's actual native AFTER witness.
+The SQL draft and its tab identity survive; old result/native identities are not
+reused. The host never pages a deleted table or reruns the schema statement to
+refresh results. If that guarded read fails, the saved result remains known,
+mutation and new query runs stay blocked for the stale snapshot, and the warning
+explicitly says not to repeat the query. **Retry reopening** retries only that retained guarded
+read. It is disabled while reading and cannot publish into another document or
+changed SQL-origin session. Failed or cancelled ORIGINAL saves cannot issue this
+known-AFTER publication or retry control.
+
+The [presentation record](PRESENTATION_PREVIEW.md#reviewed-schema-sql--11-november-2026)
+separates headless interaction and offscreen appearance from native Access parity.
 
 ## INSERT presence, retrieval and defaults
 
@@ -336,7 +366,8 @@ The result remains a read-only scalar datasheet. It retains NULL/empty Text
 distinctions and child-row alignment, without inventing native row handles.
 Query-cell menus do not expose table cell editing or collection contents actions.
 
-Bare attachment projections remain unavailable; failures show a diagnostic and
-retain the prior successful result. Explicit FileData returns stored encoded
+Bare attachment projections use the query-owned recordsets described above.
+Unsupported source/profile contexts show a diagnostic and retain the prior
+successful result. Explicit FileData returns stored encoded
 Binary, not decoded file contents. These are current TableCraft source contracts,
 not native Access query-result recordset parity.

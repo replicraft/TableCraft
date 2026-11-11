@@ -6,14 +6,22 @@ Issued schema SQL reviews now support qualified CREATE TABLE, DROP TABLE and
 ALTER TABLE DROP COLUMN through the existing consuming native save/reopen owners.
 SQL declarations preserve absent properties and actual type widths without
 fabricating a table-design draft. General constraints, indexes, type alteration
-and broader native source coverage remain unfinished; normal GUI SQL Run still
-refuses schema statements. Provider-only DEFAULT is not enabled in SQL View.
+and broader native source coverage remain unfinished. Normal GUI SQL Run now
+confirms these qualified schema operations through the actual consuming native
+capability. Destructive targets require closed tabs; saved results publish only
+through the corresponding guarded AFTER reopen. Provider-only DEFAULT is not
+enabled in SQL View.
 
 The query layer now stages complete typed SELECT INTO results and prepares joined
 UPDATE with exact original target identities, original-value assignments and a
-separate consuming backend finish. Native make-table publication and joined-action
-host integration remain separate work. Retained keyless VALUES/SELECT appends now
-use their checked original-presence intent after field deletion, including full
+separate consuming backend finish. Native/GUI joined UPDATE and local DELETE
+with correlated EXISTS/IN predicates now use this staged source ownership; joined
+DELETE and broader subquery shapes remain unsupported. Native SELECT INTO
+preparation resolves qualified direct source-field sizes, and an independently
+checked populated-table candidate packs complete rows across fresh DATA/maps.
+That candidate is not journal/save authority; atomic make-table persistence and
+normal SQL Run activation remain unfinished. Retained keyless VALUES/SELECT
+appends now use their checked original-presence intent after field deletion, including full
 supplied rows; no deleted field default or generator is invented.
 
 The [conformance matrix](query/ACE_SQL_CONFORMANCE.md) distinguishes syntax,
@@ -25,6 +33,13 @@ retains causal failures and repairs. Qualification passes 1,885 query tests acro
 across eleven affected packages, minimal builds and warnings-denied rustdoc pass.
 These are local implementation checks, not complete ACE SQL or native Windows
 Access conformance.
+
+The later [schema SQL GUI receipt](../tests/results/schema/reviewed-schema-sql-gui-2026-11-11.json)
+records 739 shared-UI cases, five current schema desktop journeys and an earlier
+26-case desktop action/parameter baseline, selected native/adapter regressions and sixteen directly inspected English/German
+light/dark frames. Causal compiler/render failures and the corrected known-AFTER
+rerun advice remain preserved. This receipt does not qualify pending implicit
+parameter discovery or populated-table save/recovery work.
 
 ## Structured attachment and history query results — 11 November 2026
 

@@ -2827,3 +2827,36 @@ present. No native window was launched.
 The [presentation receipt](../../tests/results/schema/native-field-count-presentation-2026-11-10.json)
 pins the synthetic frames and their scope. Database creation, row saves and
 Microsoft Access compatibility require their separate evidence.
+
+## Reviewed schema SQL — 11 November 2026
+
+Sixteen normal-host frames were rendered and directly opened at 1280 × 820
+logical pixels, 1×, on macOS 14.7.2 ARM64. English and German light/dark scenes
+cover CREATE TABLE, DROP TABLE, DROP COLUMN and the saved-but-not-reopened state.
+The three review dialogs show actual typed effect facts, the complete
+confirmation, No/Nein focus and explicit Yes/No. German confirmations wrap within
+the dialog. The complete Ribbon remains expanded; its existing horizontal
+scrollbar handles the wider German labels without removing commands.
+
+A known-AFTER read warning preserves the SQL and previous results, explicitly
+says not to repeat the query, and exposes **Retry reopening** while normal Run is
+disabled until the guarded read succeeds. Its neutral result explanation does not advise rerunning SQL. The initial render exposed that
+contradiction; the initial images and their hashes remain separate from the
+corrected final set. The sandbox's first GPU attempt failed with `No adapter
+found`; the headless GPU rerun succeeded without launching a native window.
+
+The [immutable receipt](../../tests/results/schema/reviewed-schema-sql-gui-2026-11-11.json)
+pins all sixteen final frames, original attempts, test logs and their scope.
+The current 739 shared-UI tests and all five schema desktop cases pass, including
+disabled Run/no worker dispatch while awaiting the guarded read. An earlier
+26-case desktop action/parameter baseline also passed. The later desktop aggregate
+retains one separate implicit-parameter failure; it is not reported as green.
+The final renderer and images include the copy and dispatch corrections. The
+desktop cases use actual runtime save capabilities and independent whole-image
+oracles, separately from synthetic appearance fixtures.
+
+The retained 1920 × 1141 Home/Ribbon image provides surrounding context only
+(Windows/VirtualBox, unknown guest scale). No local Access SQL editor, schema
+warning or save-result capture establishes exact parity for these surfaces. The
+dialogs remain explicit adaptations; offscreen checks are not Windows/Access
+execution or full SQL compatibility evidence.

@@ -60,3 +60,27 @@ unverified native locale-name policy is inferred. Output declaration validation
 follows complete retrieval/discovery, so these refusals can follow source reads.
 Eager expression or source errors remain errors even when TOP/filtering would
 otherwise omit a row. No partial make-table plan is returned.
+
+## Restricted native preparation and populated candidate
+
+The Access adapter now has a direct local scalar-projection preparation over one
+immutable original image. It resolves native UTF-16 Text widths, Binary widths
+and Decimal precision/scale from the actual source fields, then runs the moved
+retrieval against a reader constructed over that same image. It retains the
+complete typed rows and an explicit unadorned manual declaration; no Required,
+default, primary/index or generated property is inherited. Current preparation
+refuses filters, groups, computed projections and broader source contexts rather
+than guessing their physical declarations.
+
+The separate native populated append candidate consumes rows without cloning
+text/binary payloads, packs them by actual record/page/slot geometry, allocates
+owned/candidate DATA maps (including represented bitmap storage), and checks
+complete readback plus the protected original byte complement. Independent
+whole-image fixtures cover nullable numbers, Boolean value bits, Text/Decimal and
+mixed GUID/date/IEEE fixed values across DATA pages and map windows. There is no
+additional aggregate 64-row quota. Per-record capacity, native count/file geometry
+and explicit caller budgets still apply.
+
+Neither preparation nor that candidate grants journal/save/recovery permission.
+Normal SQL Run and an atomic reviewed make-table publication remain separate
+acceptance boundaries; an empty CREATE followed by another save is not a substitute.

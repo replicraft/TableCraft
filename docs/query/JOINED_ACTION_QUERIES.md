@@ -2,9 +2,10 @@
 
 `tablecraft-query` supplies explicit joined UPDATE preparation over a frozen
 editable snapshot and a separately supplied read source. This is a working query
-planner, not automatic native write admission or GUI execution. The normal native
-SQL action route still requires integration with this preparation API. Joined
-DELETE remains unsupported.
+planner whose qualified native adapter/runtime route now feeds the existing
+consuming native save owner. Normal GUI Run uses that issued review and explicit
+confirmation. This is not automatic write admission for arbitrary joined reads.
+Joined DELETE remains unsupported.
 
 Microsoft documents joined sources in its [update-query workflow](https://support.microsoft.com/en-us/access/create-and-run-an-update-query).
 Updateability and native constraints remain separate from a join's read results.
@@ -55,3 +56,25 @@ Focused tests cover actual target identity in self-joins and empty snapshots,
 both outer directions, source drift before scanning, original target ordering,
 ambiguous matches and eager errors, parameters, cumulative work and shared-budget
 phase separation. Local tests do not establish Windows or Microsoft Access parity.
+
+## Native source integration and correlated DELETE
+
+The native adapter pairs the editor and predicate reader with one immutable
+original image. Read callbacks share the bounded native pool only while complete
+selection/assignment staging runs; no mutable native-budget borrow survives into
+those callbacks. The consuming native finish reacquires that pool afterward and
+retains the original program, constraint, ownership and byte-preservation checks.
+Late errors and repeated UPDATE targets produce no reviewed save capability.
+
+A separate local DELETE profile admits direct scalar EXISTS/IN SELECT predicates
+with existing correlation and NULL semantics. Selected handles always come from
+the original editor snapshot, not equal read-side cell values. Syntax chooses this
+mode before preparation; a failed legacy planner is never retried through it.
+Scalar/quantified subqueries, aggregate/grouped/ordered or external/named/collection
+read contexts remain refused in this profile. This does not establish joined
+DELETE or ambiguous-match/UniqueRecords behavior.
+
+The GUI keeps the actual runtime-issued capability through No/Yes, save and ACK;
+SQL is not reevaluated while saving. Headless cases preserve independent complete
+AFTER images and sibling data, stale-source refusals and prior results on errors.
+See the [SQL workspace](../ui/SQL_WORKSPACE.md#reviewed-local-action-queries).

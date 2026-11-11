@@ -1,0 +1,260 @@
+{
+  "date": "2026-11-11",
+  "scope": "Qualified reviewed schema SQL desktop workflow and headless appearance; separate correlated action/native candidate regression evidence.",
+  "workflow_commits": [
+    "6826b7824",
+    "2d8510bd7",
+    "e9477f9c4",
+    "4489cc4e5",
+    "f8d0f2a5d",
+    "7cfd3ff0b",
+    "e6186e308",
+    "e382b92ce"
+  ],
+  "presentation_copy_commit": "19b44f6e4",
+  "platform": "macOS 14.7.2 ARM64",
+  "rendering": "Headless WGPU; normal host presentation; synthetic preview data; no native application windows.",
+  "logical_size": [
+    1280,
+    820
+  ],
+  "scale": 1,
+  "renderer": {
+    "artifact": ".cache/cargo-backend-20261102/debug/examples/render_preview",
+    "sha256": "5d8e9701cea9a6fbc155d23ead2790555ab2169be5574895421ea517884ecd67",
+    "build_log": ".cache/ace-sql-current-conformance-render-build-20261111.log"
+  },
+  "checks": [
+    {
+      "name": "ui_library",
+      "log": ".cache/ace-sql-current-conformance-ui-20261111.log",
+      "sha256": "5539b183e0c0ef976bb9a24fe311bd0fa8e3b3c33258ce63d7b6ce1d7394094d",
+      "passed": 739,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "name": "desktop_query_actions_and_parameters",
+      "log": ".cache/ace-sql-desktop-final-desktop-20261111.log",
+      "sha256": "b5a212a8923a899c030b8d59ac931584b6e5d3b015b645c94dcd0cf6ac5725c6",
+      "passed": 26,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "name": "native_selected_regressions",
+      "log": ".cache/ace-sql-full-workflows-repaired-native-20261111.log",
+      "sha256": "8f9edbd70a7ee9b3aaaa0781e1dedd7a0dcdd13bae670ed5f120c552a2f9f929",
+      "passed": 254,
+      "failed": 0,
+      "ignored": 47
+    },
+    {
+      "name": "runtime_correlated_delete",
+      "log": ".cache/ace-sql-full-workflows-runtime-delete-20261111.log",
+      "sha256": "38c97ab9cc0a66d5d7b378cc798d1fccd5f4628794297c7404ac6309e64b842a",
+      "passed": 5,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "name": "access_correlated_delete",
+      "log": ".cache/ace-sql-full-workflows-access-delete-20261111.log",
+      "sha256": "5fad2c3f4d575626398c1c2ffdeb2a6c973025b90033beb4d54e46929715c83c",
+      "passed": 2,
+      "failed": 0,
+      "ignored": 0
+    }
+  ],
+  "qualification_order": "The earlier clean Desktop26 baseline is retained. Current UI739 and all5 schema desktop cases pass after the disabled-Run guard; the current desktop aggregate has26passes and1unrelated implicit-parameter failure preserved separately. Final16renders include both localized19b44f6e4 copy and e6186e308 dispatch guard. Broader lint/feature checks belong to the coordinator record.",
+  "workflows": [
+    "CREATE TABLE, non-tail ALTER TABLE DROP COLUMN and DROP TABLE: actual Run/review/No/Yes/native save/ACK/guarded reopen against independent complete images.",
+    "Stale SQL and open destructive target tabs refuse save; no target tabs or edits silently discarded.",
+    "Known AFTER guarded-read failure retains actual native witness; explicit visible retry reopens it, never reruns SQL. Wrong-source revision cannot dispatch retry.",
+    "Failed and cancelled ORIGINAL UI outcomes can acknowledge resources but cannot issue known-AFTER publication/retry."
+  ],
+  "frames": [
+    {
+      "locale": "de",
+      "theme": "dark",
+      "scene": "create-review",
+      "artifact": ".cache/ace-sql-ddl-gui/renders/de/dark/de-dark-query-schema-create-review.png",
+      "sha256": "3a93bd42ccdc21c56f78f13fac2aa46b65cf6ec90ef106d509eceea96bf75f18",
+      "directly_viewed": true
+    },
+    {
+      "locale": "de",
+      "theme": "dark",
+      "scene": "drop-column-review",
+      "artifact": ".cache/ace-sql-ddl-gui/renders/de/dark/de-dark-query-schema-drop-column-review.png",
+      "sha256": "bc77cfd2ce076c5640fc94d3d203c32e98ba3c6e8493f030e3b65a21c89f8ee4",
+      "directly_viewed": true
+    },
+    {
+      "locale": "de",
+      "theme": "dark",
+      "scene": "drop-table-review",
+      "artifact": ".cache/ace-sql-ddl-gui/renders/de/dark/de-dark-query-schema-drop-table-review.png",
+      "sha256": "9c70e0e69de1d08f98113177b082c5aaebc5b601483012a0d294d889812e2e2e",
+      "directly_viewed": true
+    },
+    {
+      "locale": "de",
+      "theme": "dark",
+      "scene": "reopen-failed",
+      "artifact": ".cache/ace-sql-ddl-gui/renders/de/dark/de-dark-query-schema-reopen-failed.png",
+      "sha256": "b804c4f6bde5fea50a06a29d6e34873cd62366252ed882a423bd215199647132",
+      "directly_viewed": true
+    },
+    {
+      "locale": "de",
+      "theme": "light",
+      "scene": "create-review",
+      "artifact": ".cache/ace-sql-ddl-gui/renders/de/light/de-light-query-schema-create-review.png",
+      "sha256": "50c8e8838c9fa065d918db705b991a3cbeb16361a129e6449043467f2be3c829",
+      "directly_viewed": true
+    },
+    {
+      "locale": "de",
+      "theme": "light",
+      "scene": "drop-column-review",
+      "artifact": ".cache/ace-sql-ddl-gui/renders/de/light/de-light-query-schema-drop-column-review.png",
+      "sha256": "37747ab41beb41164706bff4ab16616f6f9a518b9abd29d1994a484db143bcd1",
+      "directly_viewed": true
+    },
+    {
+      "locale": "de",
+      "theme": "light",
+      "scene": "drop-table-review",
+      "artifact": ".cache/ace-sql-ddl-gui/renders/de/light/de-light-query-schema-drop-table-review.png",
+      "sha256": "89ea12aecee6724ae8d39b7a5552c921c9407710f02eb0ae3786cadb55b7e339",
+      "directly_viewed": true
+    },
+    {
+      "locale": "de",
+      "theme": "light",
+      "scene": "reopen-failed",
+      "artifact": ".cache/ace-sql-ddl-gui/renders/de/light/de-light-query-schema-reopen-failed.png",
+      "sha256": "06d2110522ec1bb748452e4f39d27c4b3e6f60ffc51b83aeea6d24c9aad568d6",
+      "directly_viewed": true
+    },
+    {
+      "locale": "en-US",
+      "theme": "dark",
+      "scene": "create-review",
+      "artifact": ".cache/ace-sql-ddl-gui/renders/en-US/dark/en-US-dark-query-schema-create-review.png",
+      "sha256": "84ea538d490da1565ed5a6ec7b433be8a55d63af5a3e1292e086117055896358",
+      "directly_viewed": true
+    },
+    {
+      "locale": "en-US",
+      "theme": "dark",
+      "scene": "drop-column-review",
+      "artifact": ".cache/ace-sql-ddl-gui/renders/en-US/dark/en-US-dark-query-schema-drop-column-review.png",
+      "sha256": "1c2eff63548ae7cefe3a1a91e7e4f89d708bf26617e5021958768e460ccd80e8",
+      "directly_viewed": true
+    },
+    {
+      "locale": "en-US",
+      "theme": "dark",
+      "scene": "drop-table-review",
+      "artifact": ".cache/ace-sql-ddl-gui/renders/en-US/dark/en-US-dark-query-schema-drop-table-review.png",
+      "sha256": "fa35b733ed4c2209f3d147ed61d3ae039f97c01f212fbe5559ef050f91bebfc8",
+      "directly_viewed": true
+    },
+    {
+      "locale": "en-US",
+      "theme": "dark",
+      "scene": "reopen-failed",
+      "artifact": ".cache/ace-sql-ddl-gui/renders/en-US/dark/en-US-dark-query-schema-reopen-failed.png",
+      "sha256": "5b3c61c816ef90a80faa9dd1f603009dcc6f3f28a7aeea8f3cb0fbf0e4c3c23c",
+      "directly_viewed": true
+    },
+    {
+      "locale": "en-US",
+      "theme": "light",
+      "scene": "create-review",
+      "artifact": ".cache/ace-sql-ddl-gui/renders/en-US/light/en-US-light-query-schema-create-review.png",
+      "sha256": "dde9bf637eb18cf0b0815d9aa65230e8a86822ffabcc833d40fbd8b4bb031958",
+      "directly_viewed": true
+    },
+    {
+      "locale": "en-US",
+      "theme": "light",
+      "scene": "drop-column-review",
+      "artifact": ".cache/ace-sql-ddl-gui/renders/en-US/light/en-US-light-query-schema-drop-column-review.png",
+      "sha256": "bff1030ac7ce7acfe005871d7b3a6d91ae7abce10c02c046e76e9a1437595495",
+      "directly_viewed": true
+    },
+    {
+      "locale": "en-US",
+      "theme": "light",
+      "scene": "drop-table-review",
+      "artifact": ".cache/ace-sql-ddl-gui/renders/en-US/light/en-US-light-query-schema-drop-table-review.png",
+      "sha256": "0c383f1ebc932371ac09e778c8e18a1072685ef14a86af228e4906b2c9fde9cb",
+      "directly_viewed": true
+    },
+    {
+      "locale": "en-US",
+      "theme": "light",
+      "scene": "reopen-failed",
+      "artifact": ".cache/ace-sql-ddl-gui/renders/en-US/light/en-US-light-query-schema-reopen-failed.png",
+      "sha256": "d9b243ef322d2a70d8c9e0666dd2cc56686711c3a4d3814f01959c4cd3b4d494",
+      "directly_viewed": true
+    }
+  ],
+  "visual_observations": [
+    "All16final images were opened directly. Dialog counts, names, No/Nein focus, full confirmations and explicit retry warning remain visible in EN/DE light/dark.",
+    "German confirmations wrap inside the dialog without clipping.",
+    "The complete Ribbon control surface stays expanded; the wider German Ribbon retains its existing horizontal overflow scrollbar rather than hiding controls.",
+    "Known-AFTER retained results no longer advise rerunning SQL; ordinary stale query drafts retain their normal Run advice.",
+    "Final4known-AFTER failureframes show normalRun disabled and explicitRetry enabled. They were directly viewed again;12unchanged reviewframes are byte-identical to the previously directly viewed set."
+  ],
+  "preserved_failures": [
+    {
+      "log": ".cache/ace-sql-full-workflows-ui-20261111.log",
+      "cause": "Private object-registry access and consequent name comparison compile errors; corrected f8d0f2a5d."
+    },
+    {
+      "log": ".cache/ace-sql-full-workflows-repaired-desktop-20261111.log",
+      "cause": "Host visibility exceeded schema child scope; corrected 7cfd3ff0b."
+    },
+    {
+      "log": ".cache/ace-sql-ddl-gui/render-sandbox-no-adapter.log",
+      "cause": "Sandbox WGPU No adapter found; no image produced. Authorized headless GPU rerun completed 16 frames."
+    },
+    {
+      "log": ".cache/ace-sql-ddl-gui/render-before-copy-fix.log",
+      "artifacts": ".cache/ace-sql-ddl-gui/renders-before-copy-fix",
+      "hashes": ".cache/ace-sql-ddl-gui/initial-render-hashes.json",
+      "cause": "Initial 16 images exposed contradictory known-AFTER rerun advice; corrected 19b44f6e4 and all 16 rerendered/viewed."
+    },
+    {
+      "log": ".cache/ace-sql-ddl-gui/render-before-run-guard.log",
+      "artifacts": ".cache/ace-sql-ddl-gui/renders-before-run-guard",
+      "cause": "Normal Run remained enabled against known schema AFTER before guarded reopen. Corrected narrow schema read gate e6186e308; real UI and Desktop no-dispatch assertions now pass."
+    },
+    {
+      "log": ".cache/ace-sql-live-services-desktop-parameters-20261111.log",
+      "cause": "Missing NodeT test trait for actual disabled-Run assertion, corrected e382b92ce without weakening the test."
+    }
+  ],
+  "limits": [
+    "No retained Access SQL-editor/schema-warning/save-result capture establishes exact visual parity; these are explicit adaptations.",
+    "Existing retained Home/Ribbon reference1920x1141 is Windows/VirtualBox with unknown guest scale; final frames are local macOS1x, not a Windows comparison.",
+    "No complete ACE SQL compatibility claim. Schema operations retain their actual native source/declaration/program/constraint qualifications.",
+    "Implicit parameters, populated-table journal recovery and pendingIO changes are not qualified by this record."
+  ],
+  "schema_guard_check": {
+    "log": ".cache/ace-sql-current-conformance-desktop-20261111.log",
+    "sha256": "fa10ff40c97b1754a5bad7fad37c6b854015cc4ff3b385c8a641c6a50f49790e",
+    "schema_cases_passed": 5,
+    "aggregate": {
+      "passed": 26,
+      "failed": 1,
+      "ignored": 0
+    },
+    "unrelated_failure": "workspace::query_parameters::tests::discovery::normal_sql_run_prompts_for_unknown_literal_name_cancels_then_runs_exact_value",
+    "interpretation": "Schema cases including disabled Run/no worker dispatch and actual Retry passed. The complete aggregate was not green; implicit parameter discovery is outside this receipt."
+  }
+}
