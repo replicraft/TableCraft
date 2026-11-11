@@ -68,7 +68,9 @@ pub fn rename(
 pub fn drop_tail(before: &[u8], definition: u32, catalog_root: usize, name: &str) -> Vec<u8> {
     let page = definition as usize * PAGE;
     let active = word(before, page + 45);
-    let mut last = page + 75 + 25 * active;
+    let physical_indexes =
+        u32::from_le_bytes(before[page + 51..page + 55].try_into().unwrap()) as usize;
+    let mut last = page + 63 + 12 * physical_indexes + 25 * active;
     for _ in 1..active {
         last += 2 + word(before, last);
     }
