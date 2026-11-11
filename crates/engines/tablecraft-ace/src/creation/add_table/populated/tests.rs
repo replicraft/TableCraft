@@ -1,4 +1,5 @@
 //! Complete populated candidate acceptance, distinct from empty-table protocols.
+mod mixed_fixed;
 use super::*;
 use std::io::Cursor;
 use tablecraft_core::values::Decimal;
