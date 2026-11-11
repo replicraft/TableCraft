@@ -1,4 +1,6 @@
 //! A real populated middle declaration remains independently addressable by native ID.
+mod carriers;
+
 use crate::{
     EditError, FieldDropError, InspectError, NativeImage, inspect_table_properties,
     inspect_table_schema, read_table,
