@@ -14,7 +14,6 @@ workspace = true
 ace16-create = ["tablecraft-access/ace16-create"]
 offline-edit = [
     "tablecraft-access/offline-write-session",
-    "dep:tablecraft-db",
 ]
 
 [dependencies]
@@ -31,7 +30,7 @@ tablecraft-query.workspace = true
 tablecraft-sql.workspace = true
 thiserror.workspace = true
 tracing.workspace = true
-tablecraft-db = { workspace = true, optional = true }
+tablecraft-db.workspace = true
 tablecraft-schema.workspace = true
 tablecraft-expressions = { workspace = true, features = ["fluent-catalog"] }
 jiff = { workspace = true, features = ["tz-system", "tzdb-zoneinfo", "tzdb-bundle-platform"] }

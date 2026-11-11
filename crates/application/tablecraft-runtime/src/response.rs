@@ -167,6 +167,12 @@ pub enum Response {
     },
     /// A complete explicit read of one parent's stored collection. There are no
     /// executable attachment actions or borrowed native values in this response.
+    /// Read-only owned metadata for an issued query result slot; no native row identity.
+    QueryContents {
+        binding: usize,
+        columns: Vec<Column>,
+        rows: Vec<Vec<Cell>>,
+    },
     Contents {
         target: ContentsTarget,
         kind: CollectionKind,
@@ -197,6 +203,8 @@ pub enum Response {
         queries: Vec<SavedQuery>,
     },
     Data {
+        /// Issued read-only child metadata, present only for structured query outputs.
+        query_contents: Option<crate::QueryResultHandle>,
         source_revision: Option<u64>,
         table: String,
         offset: u32,

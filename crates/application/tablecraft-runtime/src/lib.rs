@@ -84,6 +84,7 @@ pub use filtering::{
 pub use find::{
     FindDirection, FindError, FindMatch, FindPosition, FindRequest, FindScope, FindSpan, FindTarget,
 };
+pub use query::contents::{QueryCollectionBinding, QueryResultHandle};
 pub use query::inspection::{InspectedQuery, QueryOperation};
 pub use query::options::{QueryPoolLimits, QueryRunOptions, QueryRunOptionsError, QueryRunPool};
 pub use query::parameters::{MAX_QUERY_PARAMETERS, ParameterInput, ParameterSpec};

@@ -273,6 +273,11 @@ pub enum Command {
     Describe {
         table: String,
     },
+    /// Read owned metadata from an actually issued immutable query result.
+    InspectQueryCollection {
+        result: crate::QueryResultHandle,
+        binding: usize,
+    },
     InspectCollection {
         target: ContentsTarget,
     },

@@ -461,6 +461,15 @@ impl Worker {
                 .as_mut()
                 .ok_or(Error::NoDatabase)?
                 .describe(table, cancelled),
+            Command::InspectQueryCollection { result, binding } => {
+                if result.document_revision() != document_revision {
+                    return Err(Error::StaleDocument);
+                }
+                document
+                    .as_ref()
+                    .ok_or(Error::NoDatabase)?
+                    .inspect_query_collection(result, *binding, cancelled)
+            }
             Command::InspectCollection { target } => {
                 // Failed opens also advance the attempt revision. Reject that
                 // old target before catalog/page I/O, even with no live Document.
@@ -765,6 +774,7 @@ impl Worker {
                         Command::Page { .. } => "page",
                         Command::Describe { .. } => "describe",
                         Command::InspectCollection { .. } => "inspect_collection",
+                        Command::InspectQueryCollection { .. } => "inspect_query_collection",
                         Command::Query { .. } => "query",
                         Command::InspectQuery { .. } => "inspect_query",
                         #[cfg(feature = "offline-edit")]

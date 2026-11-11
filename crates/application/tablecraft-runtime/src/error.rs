@@ -203,6 +203,10 @@ pub enum Error {
     CollectionParentMissing,
     #[error("the selected field is not a stored collection")]
     NotCollection,
+    #[error("the query result has no matching child metadata binding")]
+    QueryContentsUnavailable,
+    #[error("query child metadata exceeds addressable storage")]
+    QueryContentsSize,
     #[error("native image exceeds this operation's admission or address space")]
     SnapshotLimit,
     #[error("the file changed while it was being opened")]

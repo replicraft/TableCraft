@@ -417,6 +417,7 @@ fn latest_request_cancels_running_work_and_replaces_pending_work() {
         }
         assert!(!cancelled());
         Ok(Response::Data {
+            query_contents: None,
             source_revision: None,
             table: sql.clone(),
             offset: 0,
@@ -485,6 +486,7 @@ fn concurrent_mailbox_requests_publish_the_highest_returned_generation() {
             panic!("expected query");
         };
         Ok(Response::Data {
+            query_contents: None,
             source_revision: None,
             table: sql.clone(),
             offset: 0,

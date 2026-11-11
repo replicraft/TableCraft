@@ -36,6 +36,10 @@ pub enum DisplayControl {
 /// is an ordinary value; it cannot acquire NULL semantics from its spelling.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum CellKind {
+    /// This selected child member was deliberately not inspected; never SQL NULL.
+    Uninspected,
+    /// An outer-joined result has no parent on this side; never an empty collection.
+    AbsentCollection,
     /// Stored calculations are cached results with unestablished freshness.
     Scalar {
         is_null: bool,

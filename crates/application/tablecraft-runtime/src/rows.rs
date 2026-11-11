@@ -54,6 +54,7 @@ impl Document {
             reached_end,
         } = page::present(&page, properties.as_ref(), Some(selected), &mut output)?;
         Ok(Response::Data {
+            query_contents: None,
             source_revision: Some(self.revision),
             table: output.text(table)?,
             offset,
