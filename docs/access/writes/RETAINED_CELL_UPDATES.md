@@ -8,6 +8,29 @@ ownership rather than the original eleven-page, definition-7 geometry. Desktop
 and MCP consume the shared runtime and Access adapter; no native editing logic
 was added to the desktop host.
 
+## Historically absent Boolean bits
+
+`TCNI0023`/profile 23 is a separate original-request language for an eligible
+Boolean field whose native number is beyond the selected record's stored column
+count. Its observed value is False, not NULL and not an ignored byte from a
+retired field. Source qualification checks both complete present-bit records and
+unambiguously framed historical records before exposing the Boolean capability.
+The selected operation still rechecks its original typed Boolean expected value,
+actual field declaration, programs, constraints, ownership and record framing.
+
+False-to-True reconstructs the complete current record: native high-water count,
+full retained variable footer, expanded mask and the selected field's actual
+Boolean bit. Other raw fixed/variable payloads, mask bits and opaque padding are
+preserved under the separate reconstruction/placement proof. False-to-False
+retains the complete original image as a fully admitted no-op. NULL is not a
+Boolean carrier. Unknown or ambiguous old framing refuses this action.
+
+Metadata and actual original record presence select 23 before planning; there is
+no failed TCNI20 retry. A record with a stored selected bit retains TCNI20's
+present-Boolean language. TCNI23 retains exact Boolean expected/replacement data
+and whole BEFORE binding, uses checked V3 preparation/recovery, and does not widen
+TCNI17–22 or grant general historical materialization to other scalar kinds.
+
 ## Exact GUID and Decimal edits
 
 `TCNI0022`/profile 22 adds separate GUID and Decimal actions over the complete

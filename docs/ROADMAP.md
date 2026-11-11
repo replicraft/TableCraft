@@ -33,9 +33,12 @@ twelve supported scalar kinds, plus typed last-active field deletion through
 normal GUI/runtime/MCP services. The
 [typed deletion record](../tests/results/schema/retained-typed-field-drop-workflows-2026-11-10.json)
 checks survivor edits and fresh insertion separately from metadata deletion,
-including genuine ambiguous row histories. Typed saved-field ADD, general
-non-tail deletion, joined-definition DDL and broader profile qualification remain
-active work; these bounded positive workflows do not complete native CRUD.
+including genuine ambiguous row histories. Qualified retained
+[typed saved-field ADD](access/writes/ADD_COLUMN.md) now stages the same twelve
+scalar kinds with exact type defaults and preserved historical records; Boolean
+missing-bit edits use a separate source-qualified action. General property/type
+alteration, non-tail deletion, joined-definition DDL and broader profile
+qualification remain active work. These workflows do not complete native CRUD.
 
 [Explicit database Options](access/writes/DATABASE_OPTIONS.md) now save OFF after
 qualified empty creator Number/Short Text histories through the same normal GUI

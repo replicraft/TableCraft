@@ -1,14 +1,70 @@
 # Saved-table column addition
 
-The normal desktop supports restricted Number and Short Text additions through
-reviewed native saves and complete-image reopen. The engine retains lower-level
-Int32 candidates and frozen recovery languages alongside the typed TCAC0005
-request. General saved-column editing remains unfinished; current source,
-storage and declaration limits are explicit below.
+The normal desktop stages qualified saved-field additions through shared builders,
+runtime reviews and native saves. The retained typed route supports Boolean,
+Byte, Integer, LONG, Large Number, Single, Double, Currency, legacy DateTime,
+GUID, Decimal and Short Text. Existing Number/Short Text request languages remain
+separate. General saved type/property alteration and imported ALTER support
+remain unfinished; current source, storage and declaration limits follow below.
+
+## Typed retained declarations
+
+`TCAC0012` binds one validated typed declaration and its original name to the
+complete BEFORE image. The native candidate captures the actual creation
+column, including scalar kind, storage width, Decimal precision/scale, native
+Short Text UTF-16 capacity and Unicode compression. The consuming runtime
+review reports that captured declaration; a matching request DTO alone grants
+no write authority. Checked V3 preparation and fresh recovery reconstruction
+remain separate from all older TCAC request languages.
+
+The saved gallery offers Short Text, Number, Large Number, Currency, Date/Time
+and Yes/No. Number has Byte, Integer, Long Integer, Single, Double, Decimal and
+Replication ID field sizes. Replication ID is ordinary stored GUID data, not
+GUID generation or replication. Decimal uses declared precision 1–28 and scale
+0–precision, initialized to 18/0. Short Text uses 1–255 native UTF-16 units and an
+explicit compression setting. These controls reuse the initial Design declaration
+owners; they do not create a phantom table or generated primary field.
+
+All new fields use Required(false). Short Text also uses AllowZeroLength(true).
+The current gallery supports the type-default policy, not arbitrary default
+expressions, required-field changes or validation authoring:
+
+| Declaration | Stored default for a later omitted INSERT |
+| --- | --- |
+| Byte, Integer, LONG, Large Number | Exact integer zero |
+| Single, Double | Finite zero in the selected IEEE carrier |
+| Currency | Exact scaled zero, `0.0000` |
+| Decimal | Exact zero at its declared scale |
+| Boolean | False |
+| GUID, legacy DateTime, Short Text | No default; omitted value is NULL |
+
+Metadata ADD never rewrites existing records or backfills defaults. Historically
+absent Boolean values read False; historically absent fields of the other kinds
+read NULL. A fresh INSERT separately resolves the stored declarations and defaults.
+Explicit NULL remains distinct from omitted input for nullable types; Boolean
+accepts only True/False. An absent Boolean bit uses the independently qualified
+[TCNI23 materialization service](RETAINED_CELL_UPDATES.md#historically-absent-boolean-bits),
+not the present-bit TCNI20 writer. Other subsequent edits likewise require their
+own row-source qualification; metadata success grants no row-write capability.
+
+Availability publishes an immutable collection of independently inspected typed
+default declarations, each with its measured maximum name width. Missing entries
+remain unavailable; Number availability does not imply another scalar kind can
+fit. Changing Decimal or Text settings requires a fresh consuming review of that
+actual declaration. Source corruption, cancellation and resource exhaustion remain
+typed failures rather than unavailable facts or fallback attempts.
+
+TCAC12 uses the retained schema admission and placement below: an actual one-page
+TDEF/name frame, eligible native identities and scalar declarations, permitted
+literal properties, proven program/dependency absence and an existing fitting
+hinted catalog-property LVAL page. Joined-definition DDL, additional page
+allocation, arbitrary imported metadata, lookup/unknown properties and required
+program execution are not qualified by this route. Older TCAC8–11 declarations,
+source languages and preparation remain closed.
 
 ## Retained tables and live siblings
 
-The retained route adds nullable LONG with Required(false) and literal default
+The TCAC10/11 retained routes add nullable LONG with Required(false) and literal default
 zero, or nullable Short Text with Required(false), AllowZeroLength(true), explicit
 width/compression and no default. It uses the current descriptor/property encoders
 under a separate retained-schema source family. Existing records are not rewritten
@@ -50,7 +106,7 @@ recognize retained request data but refuse native reconstruction without the
 creation feature. Runtime/Access own capture, review and durable sessions;
 desktop composes those services through the existing field-addition workflow.
 
-Local macOS ARM64 verification passes 112 retained native tests (twelve existing
+The earlier LONG/Short Text macOS ARM64 verification passes 112 retained native tests (twelve existing
 ignored cases remain unqualified), fourteen native ADD tests and twelve
 field-addition intent/recovery tests. The latter retain exact forged-image and
 wrong-journal refusals. Three journal-only tests execute data decoding and the

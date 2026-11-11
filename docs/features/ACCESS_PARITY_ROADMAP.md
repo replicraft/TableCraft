@@ -39,7 +39,7 @@ All cells describe current implementation, not the requested final state.
 | Add a table | Missing | Missing | Missing | Missing | Qualified bounded creation ledgers |
 | Rename a saved table | Missing | Missing | Missing | Missing | Restricted single-table, Name AutoCorrect OFF profile; retained Int32 index saves/recovery and headless workflow checked |
 | Drop a saved table | Missing | Missing | Missing | Missing | Qualified empty-table DROP with original-intent recovery and normal GUI/MCP save/reopen; no storage reclamation |
-| Add a saved column | Missing | Missing | Missing | Missing | Qualified LONG/Short Text ADD, original-intent recovery and normal Datasheet/Design save/reopen; other types pending |
+| Add a saved column | Missing | Missing | Missing | Missing | Qualified retained ADD across twelve scalar kinds through typed defaults, consuming review and V3 recovery; broader properties and imported sources remain unqualified |
 | Rename a saved column | Missing | Missing | Missing | Missing | Qualified retained ASCII rename across twelve scalar kinds, with exact properties/values, original-intent recovery and normal GUI/MCP workflows; joined definitions and broader sources remain unqualified |
 | Alter a saved column | Missing | Missing | Missing | Missing | General saved type/property alteration and row migration remain unimplemented |
 | Drop a saved column | Missing | Missing | Missing | Missing | Qualified retained last-active deletion across twelve scalar kinds, original-intent recovery and GUI/MCP workflows; non-tail deletion and joined definitions remain unqualified |
@@ -79,7 +79,7 @@ writer qualifications remain in [native writes](../access/writes/NATIVE_WRITES.m
 | Profile coverage | Original Jet 3/4 and ACE 12/14/15/16 fixture inventories; actual version/features/encryption provenance; positive and negative write/recovery evidence for each family. |
 | Database lifecycle | Creators for the other targets, full supported declarations, database options, encrypted writes and explicit safe file lifecycle. Removing a database file is a host operation with document/resource ownership, not SQL DROP DATABASE. |
 | Saved table lifecycle | Broaden restricted rename to ordinary creator/indexed/multiple-table layouts and Name AutoCorrect behavior; implement DROP with dependency handling, identity preservation and allocation retirement. |
-| Saved column lifecycle | Extend saved-field ADD beyond LONG/Short Text using actual typed declarations, defaults and historical-row semantics. Broaden qualified typed rename and tail DROP to non-tail deletion, joined definitions and imported sources; implement saved type/property alteration, row migration and dependency updates. Preserve field numbers/null masks/variable offsets, native history and unknown metadata. |
+| Saved column lifecycle | Broaden typed saved-field ADD beyond its qualified retained sources and type-default policy. Broaden qualified typed rename to joined definitions and imported sources, extend tail DROP to non-tail deletion, and implement saved type/property alteration, row migration and dependency updates. Preserve field numbers/null masks/variable offsets, native history and unknown metadata. |
 | Rows and storage | General scalar and supported advanced-field CRUD, all admitted key families/combinations, DATA/INDEX/LVAL growth and contraction, allocation-map growth, page reuse and reclamation. Remove fitting-only/short-ledger restrictions through real storage work. |
 | Defaults and identity | Omitted versus NULL versus supplied values, complete supported defaults, Increment/Random generation, reseeding/history and composition with constraints/indexes/allocation. |
 | Constraints and relationships | Required/AZL, field/record validation, primary/unique indexes, foreign keys, relationships, cascades and supported NULL/text comparison behavior. Author and preserve their native declarations. |
@@ -122,19 +122,21 @@ table/column rename and other lifecycle operations remain work. Neither
 parser nodes nor a “created by TableCraft” flag confer mutation authority.
 
 The normal saved-table gallery and [Design blank Name/Type row](../ui/DATABASE_CREATION.md#saved-design-blank-row-addition)
-now add [Number and Short Text](../access/writes/ADD_COLUMN.md) through engine,
-adapter, runtime, original-intent recovery and actual GUI saves. Pending proposals
-have no native field identity; explicit Save and the complete-image witness must
-publish the actual new schema before Design selects its new field.
-Admission remains bounded to empty canonical ACE16 sources with qualified
-properties/history, a sixteen-field source ceiling and the proved property-page
-allocation limits. A separate bounded [saved-field rename flow](../ui/FIELD_RENAME.md)
-passes bounded headless functional acceptance. A separate bounded
-[saved-field DROP](../access/writes/FIELD_DROP.md) now has native candidate,
-original-intent recovery, Access adapter and consuming runtime checks. Its
-[normal GUI workflow](../ui/FIELD_DROP.md) now passes headless Datasheet/Design,
-confirmation/Save, full-witness reopening, failure/close and Number sparse-INSERT
-acceptance. Type alteration and broader deletion remain work.
+now stage [twelve ordinary scalar kinds](../access/writes/ADD_COLUMN.md) through
+shared validated declarations and source-bound native reviews. Number Field Size,
+Decimal precision/scale and Text UTF-16 width/compression reuse initial Design
+owners. Historical records remain byte-exact: newly absent Boolean reads False,
+other kinds NULL; fresh omitted insertion separately uses stored type defaults.
+Pending proposals have no native field identity. Explicit Save and the complete
+image witness publish the actual schema before Design selects its new field.
+Retained admission proves declarations, properties, program/dependency absence
+and actual fitting storage. One-page TDEF and existing-property-page placement
+remain explicit schema boundaries, not general native field-count restrictions.
+
+Qualified [saved-field rename](../ui/FIELD_RENAME.md) and last-active
+[field deletion](../ui/FIELD_DROP.md) retain their own source, confirmation,
+recovery and survivor-write checks. Type/property alteration, joined-definition
+DDL, non-tail deletion and general imported schema workflows remain work.
 Unsaved Design authoring remains separate.
 
 ## Queries: current capability and missing work

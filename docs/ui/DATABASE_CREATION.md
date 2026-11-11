@@ -374,40 +374,37 @@ historical test counts below; native Access comparison remains pending.
 
 ## Adding a column to an existing saved table
 
-Saved native table views use one name-independent native inspection to obtain
-separate Number and Short Text availability facts for the exact table/revision.
-One captured image supplies the typed availability facts; each gallery choice
-still requires its own positive native qualification. Existing canonical Number
-and repeated-history proof owners are reused,
-with generated-field, dictionary and history restrictions retained. Mixed sources
-keep their complete replay. The unchanged native allowance is not reset to
-reconstruct the same history for each choice.
+Saved native tables use source-bound observation before enabling their gallery.
+Number/Short Text retain their original facts, while independently eligible typed
+default declarations arrive as an immutable collection with measured name widths.
+The gallery offers Short Text, Number, Large Number, Currency, Date/Time and Yes/No
+only when that source supplies the corresponding fact. Number Field Size offers
+Byte, Integer, Long Integer, Single, Double, Decimal and Replication ID separately.
+An eligible Number field is not authority for another subtype. Unsupported types
+remain visible, disabled and marked Not available yet.
 
-The header remains outside stored fields: it cannot select, sort, copy or create
-a cell. All other gallery choices remain visible, disabled and explain that they
-are not available yet.
+The header stays outside stored fields: it cannot select, sort, copy or create a
+cell. Its exact pending name, declaration and revision bind the consuming review.
+Required is false and Short Text permits zero length. Type default is the only
+saved-field default policy: numeric zero, Boolean False, or no default for GUID,
+legacy DateTime and Text. Text starts at 255 UTF-16 units with compression enabled;
+Number/Decimal starts at precision 18 and scale 0. Replication ID authors ordinary
+GUID storage, not generated values. Initial-table compression policy is unchanged.
 
-Number requests nullable Long Integer with stored Required(false) and typed
-zero. Short Text requests 255 UTF-16 units, stored Required(false),
-AllowZeroLength(true), absent DefaultValue and Unicode compression enabled.
-These saved-field declarations are explicit; the Short Text choice does not
-silently change initial-table creation's compression default. Naming a field
-never inserts a record. New row remains a separate operation with Omitted,
-explicit NULL and supplied input preserved through normal native insertion.
+Metadata saving leaves old records byte-exact. An historically absent Boolean
+reads False; other newly absent fields read NULL. A later omitted INSERT uses its
+separately qualified stored default. Explicit NULL and supplied values remain
+distinct; Yes/No has only True/False. Subsequent historical-cell writes require
+their own source-bound service, including the separate missing-Boolean-bit action.
+Saving a declaration never grants general row-write authority.
 
-Both choices use the same bounded inline name editor, QAT/shortcut Save,
-review/save actor, status and close controller. The saved request binds its full
-declaration as well as the owner, raw name and draft revision. Before starting
-persistence, the host requires both the review DTO and opaque native capability
-to match the entire declaration, including exact width and compression.
+The same inline name editor, QAT/shortcut Save, review/save actor and close
+controller own all supported types. The host compares both the review DTO and
+opaque native capability with the exact submitted declaration before saving.
+Dynamic retained-schema capture, fitting property storage and V3 recovery remain
+in engine, Access and runtime; Desktop only forwards typed requests and outcomes.
 
-The connected retained route also supports newly appended tables and original
-sparse tables beside live siblings after row edits. Number and Short Text ADD
-preserve historical records as NULL without backfill. Subsequent cell edits and
-new-row insertion use their separate row services: omitted Number uses its stored
-zero default, while omitted Short Text and explicit NULL remain NULL. Retained
-schema capture, property-page placement and V3 recovery stay in the engine,
-Access adapter and runtime.
+The earlier Number/Short Text acceptance remains separately scoped:
 
 Three headless journeys cover both types across appended Number, long-forwarded
 Text and original sparse sources. Actual ADD, first historical-cell fill, omitted
@@ -420,12 +417,15 @@ compatibility. See [saved-table column addition](../access/writes/ADD_COLUMN.md)
 ### Saved Design blank-row addition
 
 The first blank row in a saved table's Design grid now has a Field Name editor
-and Data Type picker. Only positively qualified Number and Short Text choices are
-available; unsupported sources disable the controls. Other types remain disabled.
+and Data Type picker. Each supported family requires its own positive source
+fact; unsupported types and sources remain disabled.
 The name stays literal in the existing bounded proposal, and changing its type
-invalidates any earlier review. Pending name/type properties are not stored
-fields and have no invented native field number. Description and broader property
-authoring remain unavailable.
+invalidates any earlier review. The lower General pane shares the initial Design
+Field Size selector, Decimal precision/scale inputs and native Text width and
+compression controls. Invalid raw settings remain visible and block review.
+Required, default-value editing, Text zero-length policy and Lookup remain
+explicitly disabled. Description and broader property authoring are unavailable.
+Pending properties are not stored fields and have no invented native field number.
 
 Explicit Save uses the existing consuming review, journal, acknowledgment and
 complete-image reopen witness. Only the accepted fresh schema supplies the actual
@@ -433,7 +433,7 @@ new field number and selection. Design remains active after saving; switching to
 Datasheet shows the same witnessed declaration. Admission, defaults, source/history
 and allocation limits are unchanged.
 
-Two shared staging checks and two normal desktop checks pass headlessly. The
+The earlier blank-row verification passes two shared staging checks and two normal desktop checks headlessly. The
 latter cover four real files: exact independent Number and Short Text AFTER
 images, fresh selected-field publication, Datasheet consistency, and disabled
 nonempty/unqualified sources without a journal or file changes. The retained
@@ -441,7 +441,7 @@ Access Design capture guides the blank-row placement; these checks establish no
 native Windows/Access interaction or full-suite qualification. See the
 [presentation record](PRESENTATION_PREVIEW.md).
 
-Native metadata selects one source purpose before full qualification. Existing
+The original creator routes select one source purpose before full qualification. Existing
 Number creator prefixes keep their TCAC0003/0004 routes. Short Text and mixed
 histories or policies requiring the typed source use TCAC0005; refusal never
 falls back to another constructor. The source proof retains each inert prefix
@@ -1008,8 +1008,9 @@ for replacement, NULL and refill, then fresh reopen. Malformed GUID input,
 nonexact Decimal scale and precision overflow retain the original file and do
 not expose Apply; corrected input requires a new successful review. These are
 acceptance scenarios for the implemented route, not a claim of Windows/Access
-save/reopen equivalence. Saved-field ADD of these kinds, indexed targets, GUID
-generation and Date/Time Extended remain separate work.
+save/reopen equivalence. Qualified typed saved-field ADD now includes GUID and
+Decimal through its separate schema service; indexed cell targets, GUID generation
+and Date/Time Extended remain separate work.
 
 The [verified workflow receipt](../../tests/results/schema/retained-wide-value-workflows-2026-11-10.json)
 records the passing headless desktop, runtime, SQL and native recovery checks,

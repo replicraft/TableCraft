@@ -1807,34 +1807,38 @@ not inferred from earlier profile3 or single-rename results. See the current
 
 ## Reviewed existing-table field additions
 
-`InspectFieldAdditionAvailability` returns separate Number and Short Text source
-facts bound to the exact document revision and table. One immutable image capture
-and one candidate-owned native source proof publish both current kind facts. The
-UI still requires the selected kind's exact positive fact before opening its
-naming editor; named review freshly qualifies the complete declaration. Inspection
-constructs neither a speculative named candidate nor a write capability. Known
-typed Source refusals produce unavailable facts; malformed, cancelled and
-resource-limited inspections remain errors. Older Jet/ACE formats gain no
-admission from an ACE16 proof.
-
-The typed candidate uses that same ACE source owner. For an original Number
-source, it reuses the complete canonical proof and original source-policy check.
-For repeated Number history, it retains the actual checked source, declarations
-and proven dictionary policy from the existing history owner. Generated-field
-restrictions, derived dictionary order, row-history bounds, allocation roles and
-complete source comparison remain required. Mixed sources keep their separate
-complete replay. This shares proof-bearing native state rather than inferring
-eligibility from an old availability Boolean, and avoids reconstructing a large
-Number history twice under the unchanged cumulative native allowance.
+`InspectFieldAdditionAvailability` returns the original Number/Short Text facts
+and `typed_declarations`, an immutable shared collection of validated
+`TypedFieldAdditionAvailability` entries from the builder owner. Each entry binds
+a typed default declaration to its measured maximum native name width for the
+exact document revision and table. Each of the twelve default configurations is
+inspected independently under the same cumulative allowance, without inventing
+a name or constructing a speculative named write candidate. Missing entries are
+unavailable; Number is not a proxy for Currency, Boolean or another subtype.
+Malformed, cancelled and resource-limited inspection stays an error. Older
+Jet/ACE sources acquire no admission from the retained ACE16 source proof.
 
 `ReviewAddField` captures the complete source-free
-`tablecraft_builders::table::FieldAdditionDeclaration`: `NumberLongZero`, or
-`ShortText` with an explicit nonzero 1–255 UTF-16-unit width and Unicode
-compression permission. Number fixes nullable LONG, stored Required(false) and
-typed Int32 zero. Short Text fixes nullable TEXT, stored Required(false),
-AllowZeroLength(true) and absent DefaultValue. The current saved-table gallery
-requests Short Text with capacity 255 and compression enabled; this does not change the initial
-creator's existing compression default or enable arbitrary field properties.
+`tablecraft_builders::table::FieldAdditionDeclaration`. Its old `NumberLongZero`
+and explicit `ShortText` variants retain their original routes. The new `Typed`
+variant carries a validated scalar declaration, Decimal precision/scale or native
+Short Text UTF-16 width and compression. Number sizes use the shared builder enum;
+no desktop type mapping or phantom TableDraft supplies native semantics.
+
+TCAC12 captures one actual creation column using the shared type-default owner.
+Required is false; Text also permits zero length. Numeric defaults are exact zero
+in their selected carrier, Boolean defaults False, and GUID/legacy DateTime/Text
+have no default. ADD preserves every existing record: an historically absent
+Boolean reads False and other absent fields read NULL. Fresh omitted insertion
+resolves the actual stored default separately. Required/default expression,
+validation and broader property authoring remain unavailable in this gallery.
+
+The shared pending-field editor reuses initial Design Field Size, Decimal
+precision/scale and property controls. Raw invalid property text stays editable
+and blocks review while preserving the last valid declaration. Every accepted
+name/type/property edit changes the proposal revision, invalidating earlier
+reviews. Actual source facts enable each family and Number subtype; altered
+Decimal/Text parameters still require fresh complete native qualification.
 
 The consuming `ReviewedFieldAddition` derives its `captured_declaration()` from
 the sealed native plan. `FieldAdditionReview.declaration` is separate data. The
@@ -1882,9 +1886,10 @@ additions; a further raw-only case stays separate. Complete-image reconstruction
 per-kind measured capacity, one actor and the checked reopen witness remain
 mandatory. See the [current coordinated record](../../tests/results/schema/field-workbench-workflows-2026-11-09.json).
 
-One private plan composition and renamed `StagedFieldAddition` owner reuse fresh
-original-image requalification, the exclusive offline session and checked V2
-journal. Cold recovery and settled confirmation reconstruct the exact declaration
+The original creation-history composition and `StagedFieldAddition` owner reuse
+fresh original-image requalification, the exclusive offline session and checked V2
+journal. Retained TCAC10–12 plans use their separate checked V3 preparation and
+recovery owners through the same runtime review/save interface. Cold recovery and settled confirmation reconstruct the exact declaration
 under one cumulative allowance. Schema-only ColumnAdded receipts carry no row,
 query or database-options counts. `field_addition_reopen_facts()` classifies only
 that receipt scope; it grants no native authority. The same accepted capability's
