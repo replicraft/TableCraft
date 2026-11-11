@@ -100,6 +100,7 @@ pub enum Cause {
     /// Current metadata ADD request or fresh native reconstruction refused.
     #[error(transparent)]
     CurrentFieldAdditionIntent(CurrentFieldAdditionIntentError),
+    /// Typed retained-field ADD request or complete native reconstruction refused.
     #[error(transparent)]
     RetainedTypedFieldAdditionIntent(tablecraft_ace::RetainedTypedFieldAdditionIntentError),
     /// Original field-rename request or complete native reconstruction refused.
