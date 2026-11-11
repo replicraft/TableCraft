@@ -253,3 +253,45 @@ fn attachment_file_data_remains_encoded_binary_including_invalid_empty_wrappers(
     );
     assert_source(&path, &before);
 }
+
+#[test]
+fn wildcard_attachment_projection_preserves_parent_rows_and_readonly_summaries() {
+    let before = attachment_modern::database(6);
+    let (_directory, path, worker, _revision) = opened(&before);
+    let Response::Data {
+        source_revision,
+        columns,
+        rows,
+        has_more,
+        ..
+    } = request(&worker, query("SELECT * FROM Items ORDER BY Id")).unwrap()
+    else {
+        panic!("expected buffered parent-associated attachment query results");
+    };
+    assert_eq!(
+        source_revision, None,
+        "query results have no native row handles"
+    );
+    assert!(!has_more);
+    assert_eq!(columns.len(), 2);
+    assert_eq!(
+        rows.len(),
+        3,
+        "children must not expand wildcard parent rows"
+    );
+    for (index, (row, members)) in rows.iter().zip([2, 1, 0]).enumerate() {
+        assert_eq!(row.len(), 2);
+        assert_eq!(row[0].text, (index + 1).to_string());
+        assert_eq!(
+            row[1].kind,
+            CellKind::Attachments {
+                assigned: true,
+                members,
+            },
+        );
+    }
+    assert_eq!(rows[0][1].text, "2 attachments");
+    assert_eq!(rows[1][1].text, "1 attachment");
+    assert_eq!(rows[2][1].text, "0 attachments");
+    assert_source(&path, &before);
+}
