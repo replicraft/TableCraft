@@ -185,6 +185,10 @@ pub enum Error {
     StaleSavedQuery,
     #[error("query inspection belongs to another document snapshot")]
     StaleQuery,
+    /// SQL syntax does not grant an unsupported schema action or provider context.
+    #[cfg(feature = "offline-edit")]
+    #[error("this SQL schema operation is not qualified for the current invocation")]
+    SchemaSqlUnsupported,
     #[error("query parameter inputs do not match their declarations")]
     ParameterInput,
     #[error(transparent)]

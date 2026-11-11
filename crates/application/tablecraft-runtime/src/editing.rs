@@ -22,6 +22,7 @@ mod query_sql;
 mod query_update;
 mod replacing;
 mod save;
+mod schema_sql;
 #[cfg(feature = "ace16-create")]
 mod table_creation;
 mod table_drop;

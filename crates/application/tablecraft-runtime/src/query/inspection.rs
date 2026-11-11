@@ -26,6 +26,8 @@ pub enum QueryOperation {
     Update,
     Delete,
     Insert,
+    /// Schema syntax; individual native operations still require consuming review.
+    Schema,
     Unsupported,
 }
 
@@ -36,7 +38,8 @@ impl QueryOperation {
             Statement::Update(_) => Self::Update,
             Statement::Delete(_) => Self::Delete,
             Statement::Insert(_) => Self::Insert,
-            Statement::Definition(_) | Statement::MakeTable(_) => Self::Unsupported,
+            Statement::Definition(_) => Self::Schema,
+            Statement::MakeTable(_) => Self::Unsupported,
         }
     }
 }

@@ -595,6 +595,11 @@ impl Worker {
                 cancelled,
             ),
             #[cfg(feature = "offline-edit")]
+            Command::ReviewSchemaSql { target } => document
+                .as_mut()
+                .ok_or(Error::NoDatabase)?
+                .review_schema_sql(target, cancelled),
+            #[cfg(feature = "offline-edit")]
             Command::ReviewQueryInsert { target, parameters } => document
                 .as_mut()
                 .ok_or(Error::NoDatabase)?
@@ -781,6 +786,8 @@ impl Worker {
                         Command::ReviewQueryUpdate { .. } => "review_query_update",
                         #[cfg(feature = "offline-edit")]
                         Command::ReviewQueryDelete { .. } => "review_query_delete",
+                        #[cfg(feature = "offline-edit")]
+                        Command::ReviewSchemaSql { .. } => "review_schema_sql",
                         #[cfg(feature = "offline-edit")]
                         Command::ReviewQueryInsert { .. } => "review_query_insert",
                         Command::RunQuery { .. } => "run_query",

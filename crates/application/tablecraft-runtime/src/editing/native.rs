@@ -27,6 +27,7 @@ pub(in crate::editing) mod query_update;
 mod reopen_image;
 pub(in crate::editing) mod replacing;
 pub(in crate::editing) mod save;
+pub(in crate::editing) mod schema_sql;
 pub(crate) mod state;
 #[cfg(feature = "ace16-create")]
 pub(crate) mod table_creation;

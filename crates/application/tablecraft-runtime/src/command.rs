@@ -296,6 +296,12 @@ pub enum Command {
         target: Arc<InspectedQuery>,
         parameters: Vec<ParameterInput>,
     },
+    /// Review an issued SQL schema statement through its existing native service.
+    /// This does not execute or acknowledge the resulting consuming capability.
+    #[cfg(feature = "offline-edit")]
+    ReviewSchemaSql {
+        target: Arc<InspectedQuery>,
+    },
     #[cfg(feature = "offline-edit")]
     ReviewQueryInsert {
         target: Arc<InspectedQuery>,

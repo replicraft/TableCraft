@@ -372,11 +372,8 @@ fn operation_classification_uses_actual_syntax_without_scans_clock_or_mutation()
             QueryOperation::Insert,
         ),
         ("DELETE FROM Items WHERE Id=1", QueryOperation::Delete),
-        (
-            "CREATE TABLE NewTable (Id LONG)",
-            QueryOperation::Unsupported,
-        ),
-        ("DROP TABLE Items", QueryOperation::Unsupported),
+        ("CREATE TABLE NewTable (Id LONG)", QueryOperation::Schema),
+        ("DROP TABLE Items", QueryOperation::Schema),
         (
             "SELECT Id INTO Copied FROM Items",
             QueryOperation::Unsupported,
