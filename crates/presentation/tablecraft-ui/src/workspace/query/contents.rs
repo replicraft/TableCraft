@@ -113,7 +113,7 @@ impl Data {
 impl crate::State {
     /// Inspect only a cell bound to the actual current query-result publication.
     pub fn can_view_query_contents(&self, target: &QueryContentsTarget) -> bool {
-        if self.view != crate::DocumentView::Query
+        if self.view != crate::workspace::DocumentView::Query
             || self.backstage_visible()
             || self.zoom_dialog_open()
             || self.edit_dialog_open()

@@ -90,7 +90,10 @@ impl QueryResultHandle {
         Arc::ptr_eq(&self.state, &other.state)
     }
 
-    /// Checked retained storage, computed once with shared snapshots counted once.
+    /// Cached retained metadata, counting each snapshot and schema allocation once.
+    /// Includes binding capacity and Arc counters, but not the shared issuing-source
+    /// identity or allocator-specific bookkeeping. Inspection never walks child data
+    /// merely to report this footprint.
     pub fn retained_bytes(&self) -> usize {
         self.state.retained_bytes
     }

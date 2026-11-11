@@ -275,7 +275,9 @@ pub enum Command {
     },
     /// Read owned metadata from an actually issued immutable query result.
     InspectQueryCollection {
+        /// Actual issued immutable owner; an integer or displayed field cannot replace it.
         result: crate::QueryResultHandle,
+        /// Checked child slot obtained from this owner's output bindings.
         binding: usize,
     },
     InspectCollection {

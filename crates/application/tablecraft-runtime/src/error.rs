@@ -203,8 +203,10 @@ pub enum Error {
     CollectionParentMissing,
     #[error("the selected field is not a stored collection")]
     NotCollection,
+    /// The submitted slot is not part of this issued query metadata owner.
     #[error("the query result has no matching child metadata binding")]
     QueryContentsUnavailable,
+    /// Checked combined metadata storage cannot be represented by the host address size.
     #[error("query child metadata exceeds addressable storage")]
     QueryContentsSize,
     #[error("native image exceeds this operation's admission or address space")]

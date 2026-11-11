@@ -34,7 +34,7 @@ impl Preview {
             CellKind::Multivalue { assigned, members }
             | CellKind::Attachments { assigned, members }
             | CellKind::VersionHistory { assigned, members } => (assigned, members),
-            CellKind::Scalar { .. } => return,
+            CellKind::Scalar { .. } | CellKind::Uninspected | CellKind::AbsentCollection => return,
         };
         let scene = collection_scene(self.scene).filter(|scene| {
             let (expected_kind, expected_column) = scene.source();

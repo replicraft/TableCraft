@@ -165,14 +165,17 @@ pub enum Response {
         request: FindRequest,
         position: Option<FindPosition>,
     },
-    /// A complete explicit read of one parent's stored collection. There are no
-    /// executable attachment actions or borrowed native values in this response.
     /// Read-only owned metadata for an issued query result slot; no native row identity.
     QueryContents {
+        /// The inspected slot within the submitted issued result owner.
         binding: usize,
+        /// Exact child member declarations, including deliberately uninspected members.
         columns: Vec<Column>,
+        /// Complete metadata rows; uninspected cells remain distinct from SQL NULL.
         rows: Vec<Vec<Cell>>,
     },
+    /// A complete explicit read of one native parent's stored collection. There are no
+    /// executable attachment actions or borrowed native values in this response.
     Contents {
         target: ContentsTarget,
         kind: CollectionKind,
