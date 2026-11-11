@@ -2,6 +2,14 @@
 #[cfg(feature = "journal")]
 mod comparison;
 #[cfg(feature = "journal")]
+mod joined;
+#[cfg(feature = "journal")]
+pub use joined::{JoinedUpdateTarget, local_joined_update_target, prepare_native_joined_update};
+#[cfg(feature = "ace16-create")]
+mod make_table;
+#[cfg(feature = "ace16-create")]
+pub use make_table::{NativeMakeTableError, PreparedNativeMakeTable, prepare_native_make_table};
+#[cfg(feature = "journal")]
 mod deleting;
 #[cfg(feature = "journal")]
 mod inserting;
