@@ -93,6 +93,7 @@ impl PreparedQuery {
         }
         let types = plan.active_types(options.declared_integral);
         let output_types = runtime.copy_output_types(types)?;
+        let recordset_schemas = runtime.copy_recordset_schemas(&plan.recordset_schemas)?;
         let mut rows = Vec::new();
         for frame in frames {
             let row = runtime.publish_collection_frame(frame, types)?;
@@ -101,6 +102,7 @@ impl PreparedQuery {
         Ok(QueryResult {
             columns,
             output_types,
+            recordset_schemas,
             rows,
         })
     }
@@ -121,6 +123,7 @@ impl Runtime<'_, '_> {
             .map_err(|_| QueryError::Allocation)?;
         let mut scalars = frame.scalars.into_iter();
         let mut lists = frame.lists.into_iter();
+        let mut recordsets = frame.recordsets.into_iter();
         for output in types {
             self.tick()?;
             let value = if output.is_multivalue() {
@@ -129,13 +132,19 @@ impl Runtime<'_, '_> {
                     Some(value) => QueryValue::Multivalue(value),
                     None => QueryValue::AbsentMultivalue,
                 }
+            } else if output.is_recordset() {
+                let (_, value) = recordsets.next().ok_or(QueryError::Width)?;
+                match value {
+                    Some(value) => QueryValue::Recordset(value),
+                    None => QueryValue::AbsentRecordset,
+                }
             } else {
                 let cell = scalars.next().ok_or(QueryError::Width)?;
                 QueryValue::Scalar(self.evaluator().publish_expression_value(cell.value)?)
             };
             row.push(value);
         }
-        if scalars.next().is_some() || lists.next().is_some() {
+        if scalars.next().is_some() || lists.next().is_some() || recordsets.next().is_some() {
             return Err(QueryError::Width);
         }
         Ok(row)
@@ -172,6 +181,7 @@ fn wrap_scalar_result(
     Ok(QueryResult {
         columns: result.columns,
         output_types: result.output_types,
+        recordset_schemas: result.recordset_schemas,
         rows,
     })
 }

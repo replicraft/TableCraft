@@ -33,6 +33,7 @@ impl PreparedQuery {
             Ok(QueryResult {
                 columns: result.columns,
                 output_types: result.output_types,
+                recordset_schemas: result.recordset_schemas,
                 rows,
             })
         })
@@ -157,6 +158,7 @@ impl PreparedQuery {
             QueryResult {
                 columns,
                 output_types,
+                recordset_schemas: Vec::new(),
                 rows,
             },
         )?;

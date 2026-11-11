@@ -3,20 +3,26 @@ mod admission;
 mod execute;
 mod joined;
 mod projection;
+mod recordsets;
 mod scalar;
 mod source;
 
 use super::{Runtime, cell::CellValue};
 use crate::{
     MultivalueValue, QueryError,
-    plan::{ReadNode, ReadPlan},
+    plan::{CollectionOrigin, ReadNode, ReadPlan},
     profile::MAX_RUNTIME_READ_DEPTH,
 };
+use std::sync::Arc;
+use tablecraft_db::OwnedRecordset;
+
+type RecordsetEntry = (CollectionOrigin, Option<Arc<OwnedRecordset>>);
 
 pub(super) struct CollectionFrame {
     scalars: Vec<CellValue>,
     // Indices are local collection slots, never evaluator values or native IDs.
     lists: Vec<(usize, Option<MultivalueValue>)>,
+    recordsets: Vec<RecordsetEntry>,
     keys: Vec<CellValue>,
 }
 

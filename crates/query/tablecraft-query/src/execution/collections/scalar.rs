@@ -20,7 +20,7 @@ impl Runtime<'_, '_> {
         }
         for output in &plan.output_types {
             self.tick()?;
-            if output.is_multivalue() {
+            if output.is_multivalue() || output.is_recordset() {
                 return Err(QueryError::Unsupported);
             }
         }
@@ -99,6 +99,7 @@ impl Runtime<'_, '_> {
                 CollectionFrame {
                     scalars,
                     lists: Vec::new(),
+                    recordsets: Vec::new(),
                     keys: Vec::new(),
                 },
             )?;

@@ -1,5 +1,6 @@
 use super::{ExecutionOptions, Runtime, cell::CellQueryResult};
-use crate::{OutputType, QueryError};
+use crate::{OutputType, QueryError, source::RecordsetOutput};
+use std::sync::Arc;
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
     values::{ExpressionValue, Value},
@@ -10,6 +11,7 @@ use tablecraft_expressions::evaluation::{EvalLimits, Evaluator, NoBindings};
 pub struct QueryResult<T = Value> {
     pub(super) columns: Vec<String>,
     pub(super) output_types: Vec<OutputType>,
+    pub(super) recordset_schemas: Vec<RecordsetOutput>,
     pub(super) rows: Vec<Vec<T>>,
 }
 /// Query data that may include non-storable expression states.
@@ -31,9 +33,43 @@ impl<T> QueryResult<T> {
     pub fn rows(&self) -> &[Vec<T>] {
         &self.rows
     }
+
+    /// Static child declarations for this output, including when no parent rows remain.
+    /// Scalar outputs have no child schema; no type is inferred from returned values.
+    pub fn recordset_schema(&self, index: usize) -> Option<&tablecraft_db::RecordsetSchema> {
+        self.recordset_schemas
+            .binary_search_by_key(&index, RecordsetOutput::index)
+            .ok()
+            .map(|position| self.recordset_schemas[position].schema())
+    }
 }
 
 impl Runtime<'_, '_> {
+    pub(super) fn copy_recordset_schemas(
+        &mut self,
+        schemas: &[RecordsetOutput],
+    ) -> Result<Vec<RecordsetOutput>, QueryError> {
+        if schemas.is_empty() {
+            return Ok(Vec::new());
+        }
+        self.budget
+            .charge_allocation(schemas.len() as u64, size_of::<RecordsetOutput>() as u64)?;
+        let mut copied = Vec::new();
+        copied
+            .try_reserve_exact(schemas.len())
+            .map_err(|_| QueryError::Allocation)?;
+        for schema in schemas {
+            self.tick()?;
+            // NO_CLONE: Published output metadata must outlive the prepared plan;
+            // sharing its immutable schema preserves empty-result declarations.
+            copied.push(RecordsetOutput {
+                index: schema.index,
+                schema: Arc::clone(&schema.schema),
+            });
+        }
+        Ok(copied)
+    }
+
     pub(super) fn copy_output_types(
         &mut self,
         types: &[OutputType],
@@ -104,6 +140,7 @@ pub(crate) fn publish_cells(
     Ok(QueryResult {
         columns: result.columns,
         output_types: result.output_types,
+        recordset_schemas: result.recordset_schemas,
         rows,
     })
 }

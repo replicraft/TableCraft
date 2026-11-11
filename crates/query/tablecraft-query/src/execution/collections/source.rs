@@ -5,8 +5,9 @@ use crate::{
     execution::multivalue::ParentCollections,
     plan::{Expr, RelationNode, SelectPlan},
 };
+use std::sync::Arc;
 use tablecraft_core::{limits::Resource, values::Value};
-use tablecraft_db::{MultivalueList, ProjectedRow};
+use tablecraft_db::{MultivalueList, OwnedRecordset, ProjectedRow};
 use tablecraft_schema::validate_row;
 
 impl Runtime<'_, '_> {
@@ -48,6 +49,8 @@ impl Runtime<'_, '_> {
             projection,
             multivalues,
             members,
+            recordsets,
+            recordset_projection,
             ..
         } = &select.source.node
         else {
@@ -93,14 +96,36 @@ impl Runtime<'_, '_> {
         let source = self.namespace_source(*namespace)?;
         let mut rows = Vec::new();
         let mut failure: Option<QueryError> = None;
-        let mut visitor = |scalars: ProjectedRow<'_>, lists: &[&dyn MultivalueList]| {
+        let mut visitor = |scalars: ProjectedRow<'_>,
+                           lists: &[&dyn MultivalueList],
+                           children: &[Arc<OwnedRecordset>]| {
             if let Some(error) = &failure {
                 return Err(*error);
             }
             let result = (|| {
                 self.tick()?;
-                if lists.len() != requested.len() {
+                if lists.len() != requested.len() || children.len() != recordset_projection.len() {
                     return Err(QueryError::Source);
+                }
+                let mut owned_recordsets = Vec::new();
+                for (index, value) in recordset_projection.iter().zip(children) {
+                    self.tick()?;
+                    let expected = recordsets.get(*index).ok_or(QueryError::Source)?;
+                    let mut origin = None;
+                    for slot in &select.source.slots {
+                        self.tick()?;
+                        if let Some(recordset) = &slot.recordset
+                            && recordset.index == *index
+                        {
+                            origin = Some(recordset.origin);
+                            break;
+                        }
+                    }
+                    let owned = self.retain_recordset(value, expected.schema())?;
+                    self.push(
+                        &mut owned_recordsets,
+                        (origin.ok_or(QueryError::Source)?, Some(owned)),
+                    )?;
                 }
                 // Validate every requested stored child, including a malformed
                 // suffix after a matching criterion, before admitting its parent.
@@ -162,6 +187,7 @@ impl Runtime<'_, '_> {
                     CollectionFrame {
                         scalars,
                         lists: owned_lists,
+                        recordsets: owned_recordsets,
                         keys: Vec::new(),
                     },
                 )
@@ -171,7 +197,14 @@ impl Runtime<'_, '_> {
             }
             result
         };
-        let result = source.scan_collection_members(name, projection, values, &named, &mut visitor);
+        let result = source.scan_structured(
+            name,
+            projection,
+            values,
+            &named,
+            recordset_projection,
+            &mut visitor,
+        );
         failure.map_or(result.map(|()| rows), Err)
     }
 

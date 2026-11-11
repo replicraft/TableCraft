@@ -205,6 +205,7 @@ impl Runtime<'_, '_> {
                 self.progressive_arguments(arguments, count, depth + 1, aggregates)
             }
             Expr::Multivalue { .. }
+            | Expr::Recordset { .. }
             | Expr::DomainCall(..)
             | Expr::Field { .. }
             | Expr::CollectionItem { .. }

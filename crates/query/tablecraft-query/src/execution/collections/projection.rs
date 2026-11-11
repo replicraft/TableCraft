@@ -5,6 +5,7 @@ use crate::{
     execution::Environment,
     plan::{Expr, ReadPlan, SelectPlan},
 };
+use std::sync::Arc;
 use tablecraft_core::{limits::Resource, values::Value};
 
 impl Runtime<'_, '_> {
@@ -32,10 +33,11 @@ impl Runtime<'_, '_> {
             select
                 .projection
                 .iter()
-                .filter(|value| !matches!(value, Expr::Multivalue { .. }))
+                .filter(|value| !matches!(value, Expr::Multivalue { .. } | Expr::Recordset { .. }))
                 .count(),
         )?;
         let mut lists = Vec::new();
+        let mut recordsets = Vec::new();
         for value in &select.projection {
             self.tick()?;
             match value {
@@ -52,6 +54,21 @@ impl Runtime<'_, '_> {
                     let copied = self.copy_collection_presence(list.as_ref())?;
                     let output_slot = lists.len();
                     self.push(&mut lists, (output_slot, copied))?;
+                }
+                Expr::Recordset { origin, .. } => {
+                    let mut found = None;
+                    for (actual, value) in &frame.recordsets {
+                        self.tick()?;
+                        if actual == origin {
+                            found = Some(value);
+                            break;
+                        }
+                    }
+                    let value = found.ok_or(QueryError::Source)?;
+                    // NO_CLONE: Aliases retain one immutable parent-associated
+                    // snapshot; projection does not copy its child rows.
+                    let value = value.as_ref().map(Arc::clone);
+                    self.push(&mut recordsets, (*origin, value))?;
                 }
                 value => scalars.push(self.retained_expression_operand(
                     value,
@@ -75,6 +92,7 @@ impl Runtime<'_, '_> {
         Ok(Some(CollectionFrame {
             scalars,
             lists,
+            recordsets,
             keys,
         }))
     }

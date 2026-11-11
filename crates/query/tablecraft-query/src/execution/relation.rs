@@ -9,7 +9,7 @@ use crate::{
     plan::{Relation, RelationNode},
     source::ScanConstraint,
 };
-use tablecraft_core::values::Value;
+use tablecraft_core::{limits::Resource, values::Value};
 use tablecraft_db::ProjectedRow;
 use tablecraft_sql::select::JoinKind;
 
@@ -114,6 +114,7 @@ impl Runtime<'_, '_> {
             member_text_collations,
             multivalues,
             members,
+            recordsets,
             ..
         } = node
         else {
@@ -129,6 +130,13 @@ impl Runtime<'_, '_> {
             || source.multivalue_columns(name)? != multivalues
             || source.collection_members(name)? != members
         {
+            return Err(QueryError::SchemaChanged);
+        }
+
+        if !crate::source::recordsets_match(recordsets, source.recordset_columns(name)?, |work| {
+            self.budget.charge(Resource::Steps, work as u64)?;
+            self.tick()
+        })? {
             return Err(QueryError::SchemaChanged);
         }
 
