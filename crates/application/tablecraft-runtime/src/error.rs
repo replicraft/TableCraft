@@ -9,6 +9,8 @@ use tablecraft_ace::{
 
 #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
 use tablecraft_access::editing::sql::NativeMakeTableError;
+#[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+use tablecraft_ace::IndexCreateIntentError;
 
 #[cfg(feature = "offline-edit")]
 use crate::{EditError, QuerySqlEditError, ReplaceError};
@@ -144,6 +146,14 @@ pub enum Error {
     #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
     #[error(transparent)]
     NativeMakeTable(#[from] NativeMakeTableError),
+    /// Original native index creation or source admission refused.
+    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+    #[error(transparent)]
+    IndexCreation(#[from] IndexCreateIntentError),
+    /// Complete saved index image differs before guarded publication.
+    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+    #[error("saved index source changed before reopening")]
+    IndexedSourceChanged,
     #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
     #[error("saved table contents changed before reopening")]
     SavedTableSourceChanged,

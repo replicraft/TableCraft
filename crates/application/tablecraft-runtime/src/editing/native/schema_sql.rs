@@ -2,6 +2,8 @@
 #[cfg(feature = "ace16-create")]
 mod create;
 #[cfg(feature = "ace16-create")]
+mod index_creation;
+#[cfg(feature = "ace16-create")]
 mod make_table;
 #[cfg(feature = "ace16-create")]
 pub(in crate::editing) use make_table::review as review_make_table;
@@ -29,6 +31,8 @@ pub(in crate::editing) fn review(
     let mut work = budget();
     check(cancelled)?;
     match definition {
+        #[cfg(feature = "ace16-create")]
+        Definition::CreateIndex(index) => index_creation::review(document, index, cancelled),
         #[cfg(feature = "ace16-create")]
         Definition::CreateTable(table) => {
             let profile = document.table_creation.ok_or(EditError::Unavailable)?;

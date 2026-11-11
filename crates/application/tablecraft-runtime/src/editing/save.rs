@@ -69,6 +69,8 @@ pub enum SaveCompletion {
 /// Acknowledged schema facts are separate from affected-record counts.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum SaveSchemaChange {
+    /// One ordinary secondary index was added; table rows are unchanged.
+    IndexCreated,
     TableRenamed,
     /// One qualified closed empty table was removed from the native catalog.
     TableDropped,

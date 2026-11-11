@@ -3,7 +3,7 @@ use crate::editing::save::{SaveReport, SaveStartError, SaveStartFailure};
 #[cfg(feature = "ace16-create")]
 use crate::editing::{
     ReviewedAddColumn, ReviewedDatabaseOptions, ReviewedFieldAddition, ReviewedFieldDrop,
-    ReviewedFieldRename, ReviewedNumberColumn, ReviewedTableCreation,
+    ReviewedFieldRename, ReviewedIndexCreation, ReviewedNumberColumn, ReviewedTableCreation,
 };
 use crate::editing::{
     ReviewedDelete, ReviewedEdit, ReviewedInsert, ReviewedQueryDelete, ReviewedQueryExpression,
@@ -176,6 +176,18 @@ impl SaveWorker {
         reviewed: ReviewedQueryInsert,
         _bundle: PathBuf,
     ) -> Result<u64, SaveStartError<ReviewedQueryInsert>> {
+        Err(SaveStartError {
+            kind: SaveStartFailure::UnsupportedPlatform,
+            reviewed: Some(reviewed),
+        })
+    }
+
+    #[cfg(feature = "ace16-create")]
+    pub fn start_index_creation(
+        &self,
+        reviewed: ReviewedIndexCreation,
+        _bundle: PathBuf,
+    ) -> Result<u64, SaveStartError<ReviewedIndexCreation>> {
         Err(SaveStartError {
             kind: SaveStartFailure::UnsupportedPlatform,
             reviewed: Some(reviewed),

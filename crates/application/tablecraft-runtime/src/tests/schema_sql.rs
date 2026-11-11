@@ -12,6 +12,8 @@ mod create;
 #[cfg(feature = "ace16-create")]
 mod field_drop;
 #[cfg(feature = "ace16-create")]
+mod index_creation;
+#[cfg(feature = "ace16-create")]
 mod make_table;
 
 fn inspect(worker: &Worker, revision: u64, sql: &str) -> Arc<InspectedQuery> {
@@ -109,7 +111,7 @@ fn unsupported_schema_contexts_and_parameters_never_issue_a_save_capability() {
         "ALTER TABLE Items ADD COLUMN Note TEXT(20)",
         "ALTER TABLE Items ALTER COLUMN Note TEXT(20) DEFAULT Unknown",
         "ALTER TABLE Items ADD CONSTRAINT Rule CHECK (Id > 0)",
-        "CREATE INDEX OtherIndex ON Items (Id)",
+        "CREATE UNIQUE INDEX OtherIndex ON Items (Id)",
         "DROP VIEW Items",
         "SELECT 1",
     ] {
@@ -180,7 +182,7 @@ fn cancellation_is_checked_before_review_parsing_or_native_source_capture() {
         panic!("expected issued inspection");
     };
     assert!(matches!(
-        document.review_schema_sql(&target, &|| true),
+        document.review_schema_sql(&target, &crate::query::context::LocalClock, &|| true),
         Err(Error::Cancelled)
     ));
     assert_eq!(fs::read(&path).unwrap(), pair.before);

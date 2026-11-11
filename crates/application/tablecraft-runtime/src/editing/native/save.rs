@@ -11,6 +11,8 @@ mod apply_field_addition;
 mod apply_field_drop;
 #[cfg(feature = "ace16-create")]
 mod apply_field_rename;
+#[cfg(feature = "ace16-create")]
+mod apply_index_creation;
 mod apply_insert;
 mod apply_query_action;
 mod apply_query_expression;
@@ -26,6 +28,8 @@ mod restart;
 use self::apply_add_column::apply_add_column;
 #[cfg(feature = "ace16-create")]
 use self::apply_database_options::apply_database_options;
+#[cfg(feature = "ace16-create")]
+use self::apply_index_creation::apply_index_creation;
 #[cfg(feature = "ace16-create")]
 use self::apply_table_creation::apply_table_creation;
 use self::{
@@ -45,7 +49,7 @@ use crate::editing::save::{
 #[cfg(feature = "ace16-create")]
 use crate::editing::{
     ReviewedAddColumn, ReviewedDatabaseOptions, ReviewedFieldAddition, ReviewedFieldDrop,
-    ReviewedFieldRename, ReviewedNumberColumn, ReviewedTableCreation,
+    ReviewedFieldRename, ReviewedIndexCreation, ReviewedNumberColumn, ReviewedTableCreation,
 };
 use crate::{
     controls::action_recovery_budget,
@@ -90,6 +94,8 @@ enum Task {
     ApplyFieldDrop(ReviewedFieldDrop, PathBuf),
     #[cfg(feature = "ace16-create")]
     ApplyTableCreation(ReviewedTableCreation, PathBuf),
+    #[cfg(feature = "ace16-create")]
+    ApplyIndexCreation(ReviewedIndexCreation, PathBuf),
     Apply(ReviewedEdit, PathBuf),
     ApplyTableRename(ReviewedTableRename, PathBuf),
     ApplyTableDrop(ReviewedTableDrop, PathBuf),
@@ -408,7 +414,9 @@ impl SaveWorker {
                         #[cfg(feature = "ace16-create")]
                         Task::ApplyDatabaseOptions(..) => SaveOperation::Apply,
                         #[cfg(feature = "ace16-create")]
-                        Task::ApplyTableCreation(..) => SaveOperation::Apply,
+                        Task::ApplyTableCreation(..) | Task::ApplyIndexCreation(..) => {
+                            SaveOperation::Apply
+                        }
                         #[cfg(feature = "ace16-create")]
                         Task::ApplyAddColumn(..)
                         | Task::ApplyNumberColumn(..)
@@ -496,6 +504,10 @@ impl SaveWorker {
                         #[cfg(feature = "ace16-create")]
                         Task::ApplyAddColumn(reviewed, bundle) => {
                             apply_add_column(reviewed, bundle, &mut retained, &cancelled)
+                        }
+                        #[cfg(feature = "ace16-create")]
+                        Task::ApplyIndexCreation(reviewed, bundle) => {
+                            apply_index_creation(reviewed, bundle, &mut retained, &cancelled)
                         }
                         #[cfg(feature = "ace16-create")]
                         Task::ApplyTableCreation(reviewed, bundle) => {
@@ -889,6 +901,18 @@ impl SaveWorker {
     ) -> Result<u64, SaveStartError<ReviewedTableCreation>> {
         let valid = Some(Arc::clone(&reviewed.state.valid));
         self.start_reviewed(reviewed, bundle, valid, Task::ApplyTableCreation)
+    }
+
+    /// Consume one source-issued original index request on the retained save actor.
+    /// Refusal returns the capability; no file lease exists while awaiting review.
+    #[cfg(feature = "ace16-create")]
+    pub fn start_index_creation(
+        &self,
+        reviewed: ReviewedIndexCreation,
+        bundle: PathBuf,
+    ) -> Result<u64, SaveStartError<ReviewedIndexCreation>> {
+        let valid = Some(Arc::clone(&reviewed.state.valid));
+        self.start_reviewed(reviewed, bundle, valid, Task::ApplyIndexCreation)
     }
 
     /// Consume the exact lease-free rename reviewed by the current document.

@@ -6,8 +6,6 @@ use super::{
     display::Presentation,
     source::Source,
 };
-#[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
-use crate::CreatedTableReopen;
 #[cfg(all(
     feature = "offline-edit",
     any(target_os = "macos", target_os = "linux", windows)
@@ -19,6 +17,8 @@ use crate::editing::platform::state::DocumentEdits;
     any(target_os = "macos", target_os = "linux", windows)
 ))]
 use crate::editing::platform::table_creation::TableCreationProfile;
+#[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+use crate::{CreatedTableReopen, IndexCreatedReopen};
 #[cfg(feature = "ace16-create")]
 use crate::{CreationOutcome, CreationReport};
 #[cfg(feature = "offline-edit")]
@@ -226,6 +226,25 @@ impl Document {
         )
         .map_err(|error| match error {
             Error::CreatedSourceChanged | Error::SourceChanged => Error::AddedColumnSourceChanged,
+            error => error,
+        })
+    }
+
+    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+    pub(super) fn open_index_created(
+        witness: &IndexCreatedReopen,
+        revision: u64,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<(Self, Response), Error> {
+        Self::open_with_expected(
+            witness.source_path(),
+            &mut String::new(),
+            revision,
+            cancelled,
+            Some(witness.expected_bytes()),
+        )
+        .map_err(|error| match error {
+            Error::CreatedSourceChanged | Error::SourceChanged => Error::IndexedSourceChanged,
             error => error,
         })
     }

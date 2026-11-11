@@ -28,7 +28,7 @@ use tablecraft_ace::{
     CreatedAddColumnError, DatabaseOptionsError, DatabaseOptionsIntentError,
     DefaultZeroAddColumnIntentError, FieldAdditionAfterOffHistoryIntentError,
     FieldAdditionAfterOffIntentError, FieldAdditionError, FieldAdditionIntentError,
-    FieldAdditionSourceError, FirstTableError, FirstTableIntentError,
+    FieldAdditionSourceError, FirstTableError, FirstTableIntentError, IndexCreateIntentError,
     RepeatedDefaultZeroAddColumnIntentError,
 };
 use tablecraft_ace::{
@@ -128,6 +128,7 @@ pub(super) fn receipt(value: Receipt) -> SaveReceipt {
         matched_rows: value.matched_rows(),
         changed_rows: value.changed_rows(),
         schema_change: value.schema_change().map(|change| match change {
+            SchemaChange::IndexCreated => SaveSchemaChange::IndexCreated,
             SchemaChange::TableRenamed => SaveSchemaChange::TableRenamed,
             SchemaChange::TableDropped => SaveSchemaChange::TableDropped,
             SchemaChange::ColumnAdded => SaveSchemaChange::ColumnAdded,
@@ -263,6 +264,8 @@ fn typed_resource_failure(error: &(dyn StdError + 'static)) -> Option<SaveFailur
             Cause::AddTablePlanning(error) => add_table_failure(error),
             #[cfg(feature = "ace16-create")]
             Cause::AddTableIntent(error) => add_table_intent_failure(error),
+            #[cfg(feature = "ace16-create")]
+            Cause::IndexCreationIntent(error) => index_creation_intent_failure(error),
             #[cfg(feature = "ace16-create")]
             Cause::DefaultZeroAddColumnIntent(error) => number_column::intent(error),
             #[cfg(feature = "ace16-create")]
@@ -443,6 +446,17 @@ fn typed_resource_failure(error: &(dyn StdError + 'static)) -> Option<SaveFailur
     error
         .downcast_ref::<LimitError>()
         .map(|_| SaveFailureKind::Resource)
+}
+
+#[cfg(feature = "ace16-create")]
+fn index_creation_intent_failure(error: &IndexCreateIntentError) -> Option<SaveFailureKind> {
+    match error {
+        IndexCreateIntentError::Inspect(error) => inspection_failure(error),
+        IndexCreateIntentError::Edit(EditError::Inspect(error)) => inspection_failure(error),
+        IndexCreateIntentError::Proof(error) => qualification_failure(error),
+        IndexCreateIntentError::Binding(error) => intent_failure(error),
+        _ => None,
+    }
 }
 
 fn intent_failure(error: &NativeIntentError) -> Option<SaveFailureKind> {

@@ -10,6 +10,8 @@ mod field_addition;
 mod field_drop;
 #[cfg(feature = "ace16-create")]
 mod field_rename;
+#[cfg(feature = "ace16-create")]
+mod index_creation;
 mod inserting;
 #[cfg(feature = "ace16-create")]
 mod number_column;
@@ -60,6 +62,10 @@ pub use field_drop::{
 pub use field_rename::{
     FieldRenameOutcomeError, FieldRenameReopenFacts, FieldRenameReview,
     FieldRenameSourceInspection, FieldRenamedReopen, ReviewedFieldRename,
+};
+#[cfg(feature = "ace16-create")]
+pub use index_creation::{
+    IndexCreatedReopen, IndexCreationOutcomeError, IndexCreationReopenFacts, ReviewedIndexCreation,
 };
 pub use inserting::{
     InsertDraft, InsertField, InsertInput, InsertRetryEvidence, InsertRetryWitness, InsertReview,

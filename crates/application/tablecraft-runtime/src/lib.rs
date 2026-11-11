@@ -43,10 +43,11 @@ pub use editing::{
     DatabaseOptionsOutcomeError, DatabaseOptionsReopen, DatabaseOptionsReopenFacts,
     DatabaseOptionsReview, FieldAdditionAvailability, FieldAdditionOutcomeError,
     FieldAdditionReopenFacts, FieldAdditionReview, FieldRenameOutcomeError, FieldRenameReopenFacts,
-    FieldRenameReview, FieldRenameSourceInspection, FieldRenamedReopen, NameAutoCorrectState,
+    FieldRenameReview, FieldRenameSourceInspection, FieldRenamedReopen, IndexCreatedReopen,
+    IndexCreationOutcomeError, IndexCreationReopenFacts, NameAutoCorrectState,
     NumberColumnAvailability, ReviewedAddColumn, ReviewedDatabaseOptions, ReviewedFieldAddition,
-    ReviewedFieldRename, ReviewedNumberColumn, ReviewedTableCreation, TableCreationOutcomeError,
-    TableCreationReopenFacts,
+    ReviewedFieldRename, ReviewedIndexCreation, ReviewedNumberColumn, ReviewedTableCreation,
+    TableCreationOutcomeError, TableCreationReopenFacts,
 };
 #[cfg(feature = "offline-edit")]
 pub use editing::{
