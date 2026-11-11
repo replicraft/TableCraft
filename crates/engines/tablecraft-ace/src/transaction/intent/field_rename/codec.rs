@@ -51,7 +51,7 @@ pub(super) fn validate_identity(
         || identity.native_table <= 0
         || identity.definition == 0
         || u64::from(identity.definition) >= before_length / PAGE_BYTES as u64
-        || identity.number == 0
+        || identity.number == 0 && profile != Profile::RetainedTypedAscii
         || usize::from(identity.name_units) != original_length
     {
         return Err(Error::InvalidRecord);
