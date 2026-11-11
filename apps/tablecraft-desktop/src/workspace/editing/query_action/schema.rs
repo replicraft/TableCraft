@@ -321,6 +321,7 @@ impl Desktop {
             return;
         }
         let captured_revision = match &host.reopen {
+            Reopen::IndexCreated(witness) => witness.document_revision(),
             Reopen::Created(witness) => witness.document_revision(),
             Reopen::FieldDropped(witness) => witness.document_revision(),
             Reopen::TableDropped(witness) => witness.document_revision(),

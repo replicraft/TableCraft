@@ -21,6 +21,29 @@ fn create_index_run_preserves_source_on_no_then_saves_one_schema_only_operation(
         let (_directory, path, original, mut harness) = opened(source.before);
         let sql_tab = harness.state().state.active_object().unwrap();
         let first = reviewed(&mut harness, &sql);
+        for (key, name) in [
+            ("query-action-schema-index-name", source.index_name),
+            ("query-action-schema-index-field", source.column),
+        ] {
+            let mut arguments = FluentArgs::new();
+            arguments.set("name", name);
+            let label = harness.state().state.localizer.format(key, &arguments);
+            assert!(
+                harness
+                    .query_by_role_and_label(Role::Label, &label)
+                    .is_some()
+            );
+        }
+        let direction = harness.state().state.localizer.text(if descending {
+            "query-action-schema-index-descending"
+        } else {
+            "query-action-schema-index-ascending"
+        });
+        assert!(
+            harness
+                .query_by_role_and_label(Role::Label, &direction)
+                .is_some()
+        );
         let mut arguments = FluentArgs::new();
         arguments.set("count", "6");
         let population = harness
