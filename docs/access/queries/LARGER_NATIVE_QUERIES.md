@@ -53,7 +53,7 @@ independent of read resource controls.
 ## Historical verification
 
 The following records describe their captured implementations and selected
-budgets. Their former product ceilings are superseded by the policy above.
+budgets.
 
 ### Recorded evidence
 

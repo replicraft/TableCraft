@@ -1,8 +1,7 @@
 # Native encoded long values
 
 Encoded Memo/OLE length uses the native descriptor's 30-bit payload field, up to
-`0x3fffffff` bytes. `LongValueReadLimits` defaults to that wire bound; the former
-2 MiB default and 32 MiB product ceiling are removed. A caller may deliberately
+`0x3fffffff` bytes. `LongValueReadLimits` defaults to that wire bound. A caller may deliberately
 select a lower positive budget. Microsoft documents OLE fields as up to about
 1 GB in the [Access specifications](https://support.microsoft.com/en-us/access/access-specifications).
 
@@ -14,20 +13,19 @@ when a lower encoded-value budget is wanted. Decoded Memo UTF-8 has its own
 
 Chain traversal is bounded by the actual advertised payload and source geometry,
 with visited-reference cycle checks, cumulative caller budgets and cancellation.
-There is no separate 1,024-reference or scaled-size quota. Actual payload storage
+Actual payload storage
 grows fallibly as validated chunks arrive; an advertised large length does not
 cause an immediate giant Vec reservation. Owner, slot, reference, terminal and
 length checks precede publication. Partial values do not publish.
 
-CLI publication has no implicit 1/16 MiB quota. Explicit output and resource
+CLI publication has no implicit output quota. Explicit output and resource
 budgets remain independent. Reading inert OLE bytes does not execute their
 contents or qualify native writes. Streaming individual payloads and broader
 native behavior remain separate implementation work.
 
 ## Historical verification
 
-The following records retain the behavior and budgets of their captured builds;
-former default/product ceilings are superseded by the current policy above.
+The following records retain the behavior and budgets of their captured builds.
 
 ### Recorded evidence and remaining work
 

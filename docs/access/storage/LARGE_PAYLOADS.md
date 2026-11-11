@@ -1,14 +1,14 @@
 # Larger native stored payloads
 
 Qualified native Memo/OLE reads default to the descriptor's 30-bit encoded
-length bound, with no additional 2 MiB default or 32 MiB product ceiling. The
+length bound. The
 [encoded-value policy](LARGER_ENCODED_VALUES.md) allows callers to request a lower
 budget explicitly. Chain traversal uses the advertised payload and actual source
 geometry, with paid visited-reference cycle checks rather than a separate
 reference-count quota.
 
 Decoded Long Text uses the UTF-8 representation bound derived from supported
-native storage, with no additional 1 MiB default or 16 MiB product ceiling. See
+native storage. See
 [decoded Memo reads](LARGER_MEMOS.md). Encoded bytes, UTF-8 bytes and UTF-16 units
 remain distinct. Attachment decoding defaults to the documented Access individual
 file bound of 256 MiB; its encoded wrapper uses the native long-value envelope.
@@ -58,7 +58,6 @@ compatibility or a performance gain. Source/image envelopes and write gates rema
 ## Historical independent verification
 
 The following records describe their captured builds and selected budgets.
-Former product ceilings are superseded by the current policies above.
 
 [LargePayloadFixture.java](../../../tests/access/reading/tables/LargePayloadFixture.java) creates fresh inert
 files using the reviewed Jackcess 5.0.4 artifact. Its read-only getters return byte

@@ -3,8 +3,7 @@
 `AttachmentDecodeLimits` defaults to the 256 MiB individual attachment bound
 recorded in [Microsoft's attachment guidance](https://support.microsoft.com/en-us/access/attach-files-and-graphics-to-the-records-in-your-database). Callers can explicitly select a lower positive file allowance
 with `decode_attachment_with_limits`, `AttachmentDecoder::new_with_limits`, or
-`NativeSource::with_decoded_attachment_limits`. The former 1 MiB default and
-16 MiB product ceiling are removed. Reading bytes does not execute/open content.
+`NativeSource::with_decoded_attachment_limits`. Reading bytes does not execute/open content.
 
 The CLI exposes `query run --attachment-bytes BYTES` with the existing explicit
 `--database`, `--collections` and `--decoded-attachments` options. It does not
@@ -57,8 +56,7 @@ implicit payload reads, writers, providers or active database content.
 
 ## Historical evidence
 
-These records describe their captured builds and deliberately selected budgets;
-former defaults and product ceilings are superseded by the current policy above.
+These records describe their captured builds and deliberately selected budgets.
 
 Six new decoder controls cover stored and compressed files, exact 1.5 MB/3 MiB/
 16 MiB boundaries, default/lower refusals, invalid policies, unchanged encoded/
