@@ -111,6 +111,9 @@ pub(in crate::table) struct PatchSet {
     pub siblings: Vec<tree::SiblingAudit>,
 }
 
+#[cfg(all(test, feature = "journal"))]
+mod normal_sources;
+
 #[cfg(test)]
 mod numeric_tests;
 
