@@ -9,6 +9,7 @@ Access SQL parsing, binding, execution, relational keys and collection results.
 - [Bounded crosstab retrieval](CROSSTABS.md)
 - [Explicit Decimal parameter constraints](DECIMAL_PARAMETERS.md)
 - [Atomic INSERT SELECT staging](INSERT_SELECT.md)
+- [SELECT INTO query staging](MAKE_TABLE_QUERIES.md)
 - [Read-only domain functions](DOMAIN_FUNCTIONS.md)
 - [Named queries in explicitly selected external databases](EXTERNAL_NAMED_QUERIES.md)
 - [Explicit external query sources](EXTERNAL_QUERY_SOURCES.md)

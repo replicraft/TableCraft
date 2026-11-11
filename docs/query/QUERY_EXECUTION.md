@@ -9,6 +9,11 @@ explicit host sources. `crates/foundation/tablecraft-schema` supplies validated
 opens databases, implements storage transactions or imports application hosts.
 This is a usable bounded retrieval profile, not complete Access SQL compatibility.
 
+A separate [SELECT INTO staging API](MAKE_TABLE_QUERIES.md) now retains complete
+scalar rows and query declarations for an explicitly reviewed future publisher.
+It does not admit make-table statements through ordinary retrieval execution or
+enable native creation/SQL View DDL.
+
 Sources can return `QueryError::SourceFailure(SourceFailure)` to preserve a
 backend-neutral diagnostic category through metadata preparation, schema
 discovery, buffered execution and explicit progressive execution. Categories
