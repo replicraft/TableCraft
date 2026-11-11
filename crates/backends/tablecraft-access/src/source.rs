@@ -382,6 +382,23 @@ impl<R: tablecraft_ace::NativeReadSource> Source for NativeSource<'_, R> {
     ) -> Result<&[Option<tablecraft_query::source::TextCollationId>], QueryError> {
         self.member_text_collations(table)
     }
+    fn recordset_columns(
+        &self,
+        table: &str,
+    ) -> Result<&[tablecraft_query::source::RecordsetColumn], QueryError> {
+        self.structured_columns(table)
+    }
+    fn scan_structured(
+        &self,
+        table: &str,
+        indices: &[usize],
+        values: &[usize],
+        members: &[usize],
+        recordsets: &[usize],
+        visitor: &mut tablecraft_query::source::StructuredVisitor<'_>,
+    ) -> Result<(), QueryError> {
+        self.structured_scan(table, indices, values, members, recordsets, visitor)
+    }
     fn scan_collection_members(
         &self,
         table: &str,

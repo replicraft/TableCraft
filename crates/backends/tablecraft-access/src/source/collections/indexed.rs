@@ -1,21 +1,21 @@
 //! Required-index parents joined to complete collection snapshots by logical ROW.
-use super::{NativeList, NativeSource, query_error};
+use super::{NativeList, NativeSource, ParentVisitor, query_error};
 use tablecraft_ace::{
     IndexProjectionSelection, IndexReadRequest, read_stored_table_index_with_references,
     read_table_index_with_references,
 };
 use tablecraft_core::limits::Resource;
 use tablecraft_db::{MultivalueList, ProjectedRow, validate_projection};
-use tablecraft_query::{QueryError, SourceFailure, source::MultivalueVisitor};
+use tablecraft_query::{QueryError, SourceFailure};
 
 impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
-    pub(super) fn indexed_member_scan(
+    pub(super) fn indexed_member_scan_with_parent(
         &self,
         table: &str,
         indices: &[usize],
         values: &[usize],
         members: &[usize],
-        visitor: &mut MultivalueVisitor<'_>,
+        visitor: &mut ParentVisitor<'_>,
     ) -> Result<(), QueryError> {
         // Opt-in and projection validation stay metadata-only. A missing or
         // unsupported required index must fail before parent/child snapshots.
@@ -205,7 +205,7 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
                 .map_err(|_| QueryError::SourceFailure(SourceFailure::Allocation))?;
             views.extend(lists.iter().map(|list| list as &dyn MultivalueList));
             drop(budget);
-            visitor(ProjectedRow::dense(row), &views)?;
+            visitor(ProjectedRow::dense(row), &views, parent)?;
         }
         Ok(())
     }

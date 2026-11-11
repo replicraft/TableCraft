@@ -112,6 +112,33 @@ macro_rules! forward_table_capabilities {
             source.scan_multivalues(table, indices, collections, visitor)
         }
 
+        fn recordset_columns(
+            &self,
+            table: &str,
+        ) -> Result<&[tablecraft_query::source::RecordsetColumn], tablecraft_query::QueryError> {
+            let $this = self;
+            let $table = table;
+            let (source, table) = $route;
+
+            source.recordset_columns(table)
+        }
+
+        fn scan_structured(
+            &self,
+            table: &str,
+            indices: &[usize],
+            values: &[usize],
+            members: &[usize],
+            recordsets: &[usize],
+            visitor: &mut tablecraft_query::source::StructuredVisitor<'_>,
+        ) -> Result<(), tablecraft_query::QueryError> {
+            let $this = self;
+            let $table = table;
+            let (source, table) = $route;
+
+            source.scan_structured(table, indices, values, members, recordsets, visitor)
+        }
+
         fn scan_collection_members(
             &self,
             table: &str,

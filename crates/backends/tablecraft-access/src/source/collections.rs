@@ -2,6 +2,7 @@
 mod indexed;
 mod load;
 mod payload;
+mod recordsets;
 use super::{NativeSource, query_error};
 use payload::DecodedFiles;
 use std::cell::OnceCell;
@@ -11,7 +12,7 @@ use tablecraft_ace::{
     inspect_version_history_declarations,
 };
 use tablecraft_core::{limits::Resource, values::Value};
-use tablecraft_db::{MultivalueList, validate_projection};
+use tablecraft_db::{MultivalueList, ProjectedRow, validate_projection};
 use tablecraft_query::{
     QueryError, SourceFailure,
     source::{MultivalueVisitor, TextCollationId},
@@ -20,6 +21,8 @@ use tablecraft_schema::{CollectionMember, SchemaName};
 
 pub(super) struct CollectionCache {
     members: Vec<CollectionMember>,
+    attachment_member_count: usize,
+    recordsets: OnceCell<recordsets::Recordsets>,
     text_collations: Vec<Option<TextCollationId>>,
     history_memos: Vec<Option<SchemaName>>,
     // Only the first member of each collection owns a complete snapshot.
@@ -81,6 +84,9 @@ impl NativeField<'_> {
         }
     }
 }
+type ParentVisitor<'a> =
+    dyn FnMut(ProjectedRow<'_>, &[&dyn MultivalueList], usize) -> Result<(), QueryError> + 'a;
+
 struct NativeList<'a> {
     field: &'a NativeField<'a>,
     parent: usize,
@@ -176,6 +182,7 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
                 );
                 members.push(declaration.into_member());
             }
+            let attachment_member_count = members.len();
             // FileData declarations above apply only to attachment collections.
             // Histories use their actual hidden field and native member names.
             budget
@@ -261,6 +268,8 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
                 .collections
                 .set(CollectionCache {
                     members,
+                    attachment_member_count,
+                    recordsets: OnceCell::new(),
                     text_collations,
                     history_memos,
                     snapshots,
@@ -292,13 +301,30 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
         members: &[usize],
         visitor: &mut MultivalueVisitor<'_>,
     ) -> Result<(), QueryError> {
+        self.member_scan_with_parent(
+            table,
+            indices,
+            values,
+            members,
+            &mut |row, lists, _parent| visitor(row, lists),
+        )
+    }
+
+    fn member_scan_with_parent(
+        &self,
+        table: &str,
+        indices: &[usize],
+        values: &[usize],
+        members: &[usize],
+        visitor: &mut ParentVisitor<'_>,
+    ) -> Result<(), QueryError> {
         let _span = tracing::debug_span!("native.collection.scan").entered();
         if values.is_empty() && members.is_empty() {
             return Err(QueryError::Unsupported);
         }
         validate_projection(indices, self.schema_columns(table)?.len())?;
         if self.entry(table)?.index.is_some() {
-            return self.indexed_member_scan(table, indices, values, members, visitor);
+            return self.indexed_member_scan_with_parent(table, indices, values, members, visitor);
         }
         let fields = self.load_fields(table, values, members)?;
         let parents = fields.first().ok_or(QueryError::Source)?.parents().len();
@@ -347,7 +373,7 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
                 .map_err(|_| QueryError::SourceFailure(SourceFailure::Allocation))?;
             views.extend(lists.iter().map(|list| list as &dyn MultivalueList));
             drop(budget);
-            visitor(row, &views)?;
+            visitor(row, &views, ordinal)?;
             ordinal += 1;
             Ok(())
         })?;
