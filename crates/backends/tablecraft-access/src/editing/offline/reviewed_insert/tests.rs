@@ -310,3 +310,6 @@ fn proof_and_native_work_are_both_consumed_for_empty_original_requests() {
 
 #[cfg(feature = "ace16-create")]
 mod opaque;
+
+#[cfg(feature = "ace16-create")]
+mod keyless;

@@ -39,6 +39,9 @@ const TABLE_DROP_FAMILY: &[u8; 4] = b"TCTD";
 ))]
 mod non_tail_tests;
 
+#[cfg(all(test, any(target_os = "macos", target_os = "linux", windows)))]
+mod keyless_tests;
+
 pub(super) enum MutationPlan {
     #[cfg(feature = "ace16-create")]
     DatabaseOptions(DatabaseOptionsPlan),
