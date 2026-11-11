@@ -246,12 +246,17 @@ fn source_class_identity_shape_and_whole_after_forgery_refuse_before_effects() {
                 shape,
                 case.source,
             );
-            if offset == 76 {
-                wrong[offset] = if case.source == 1 { 2 } else { 1 };
-            } else {
-                wrong[offset] ^= 1;
+            match offset {
+                60 => {
+                    let other_definition = if case.definition == 1 { 2_u32 } else { 1_u32 };
+                    wrong[60..64].copy_from_slice(&other_definition.to_le_bytes());
+                }
+                76 => wrong[offset] = if case.source == 1 { 2 } else { 1 },
+                80 => wrong[offset] = 27,
+                _ => wrong[offset] ^= 1,
             }
-            let intent = Intent::decode(&wrong, &mut budget(), &|| false).unwrap();
+            let intent = Intent::decode(&wrong, &mut budget(), &|| false)
+                .unwrap_or_else(|error| panic!("canonical substituted offset {offset}: {error:?}"));
             let mut target = MemoryStorage::new(case.before.to_vec());
             let mut journal_file = MemoryStorage::new(Vec::new());
             drop(
