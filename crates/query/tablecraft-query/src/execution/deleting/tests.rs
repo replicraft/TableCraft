@@ -10,14 +10,14 @@ use tablecraft_db::{DeletableTable, RowHandle, Snapshot, SnapshotError};
 use tablecraft_schema::{Column, NameComparison, ScalarType, SchemaPolicy};
 use tablecraft_sql::{ParseLimits, parse_query};
 
-fn budget() -> ResourceBudget {
+pub(super) fn budget() -> ResourceBudget {
     ResourceBudget::new(32 * 1024 * 1024, 100_000, 1_000_000)
 }
 
-struct Deleter {
+pub(super) struct Deleter {
     snapshot: Snapshot,
     calls: Rc<Cell<usize>>,
-    backend_steps: u64,
+    pub(super) backend_steps: u64,
 }
 
 impl DeletableTable for Deleter {
@@ -40,7 +40,7 @@ impl DeletableTable for Deleter {
     }
 }
 
-fn source(empty: bool) -> (Deleter, Rc<Cell<usize>>) {
+pub(super) fn source(empty: bool) -> (Deleter, Rc<Cell<usize>>) {
     let columns = vec![
         Column::new("Id".into(), ScalarType::Int32, false).unwrap(),
         Column::new("Score".into(), ScalarType::Int32, true).unwrap(),
