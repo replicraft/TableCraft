@@ -225,3 +225,5 @@ impl NativeIndexCreateIntent {
     }
 }
 
+#[cfg(test)]
+mod tests;
