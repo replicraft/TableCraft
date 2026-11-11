@@ -357,3 +357,39 @@ pub fn lowercase_required(before: &[u8], catalog_root: usize) -> Vec<u8> {
     assert!(found);
     result
 }
+
+/// Independently materialize or replace the actual added Currency tail.
+/// NULL preserves ignored present payload; absent NULL is an exact no-op.
+pub fn update_currency(before: &[u8], definition: u32, root: usize, value: Option<i64>) -> Vec<u8> {
+    let base = definition as usize * PAGE;
+    assert_eq!(word(before, base + 41), 3);
+    assert_eq!(word(before, base + 45), 3);
+    assert_eq!(word(before, base + 43), 0);
+    let field = base + 75 + 50;
+    assert_eq!(before[field], 5);
+    assert_eq!(word(before, field + 5), 2);
+    assert_eq!(word(before, field + 21), 8);
+    assert_eq!(word(before, field + 23), 8);
+    let old = raw_forwarding_chain::record(before, definition + 1, root);
+    let count = word(old, 0);
+    assert!(matches!(count, 2 | 3));
+    assert_eq!(old.len(), if count == 2 { 11 } else { 19 });
+    let mask = old[old.len() - 1];
+    let present = count == 3 && mask & 4 != 0;
+    if !present && value.is_none() {
+        return before.to_vec();
+    }
+    if present && value.is_some_and(|value| old[10..18] == value.to_le_bytes()) {
+        return before.to_vec();
+    }
+    let mut row = old[..old.len() - 1].to_vec();
+    if count == 2 {
+        row.resize(18, 0);
+        put16(&mut row, 0, 3);
+    }
+    if let Some(value) = value {
+        row[10..18].copy_from_slice(&value.to_le_bytes());
+    }
+    row.push((mask & !4) | if value.is_some() { 4 } else { 0 });
+    raw_forwarding_chain::place_terminal(before, definition + 1, root, &row)
+}
