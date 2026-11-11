@@ -28,7 +28,9 @@ impl OfflineWriteSession {
             let slot = self.slot_mut()?;
             slot.current = None;
             slot.state = SessionState::RefreshRequired;
-            let capture = if reviewed.intent().is_retained_schema() {
+            let capture = if reviewed.intent().is_retained_schema()
+                || reviewed.intent().is_retained_typed()
+            {
                 NativeImage::capture_retained
             } else {
                 NativeImage::capture

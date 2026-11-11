@@ -55,7 +55,13 @@ fn inspect_source(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<FittedFieldRenameSource, FieldRenameError> {
     if image.has_retained_table_source(table, budget, cancelled)? {
-        image.inspect_retained_schema_field_rename_source(table, column, budget, cancelled)
+        if image
+            .select_native_retained_typed_field_rename_source(table, column, budget, cancelled)?
+        {
+            image.inspect_retained_typed_field_rename_source(table, column, budget, cancelled)
+        } else {
+            image.inspect_retained_schema_field_rename_source(table, column, budget, cancelled)
+        }
     } else if image.select_native_retained_field_rename_source(table, column, budget, cancelled)? {
         image.inspect_retained_field_rename_source(table, column, budget, cancelled)
     } else {

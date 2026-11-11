@@ -152,7 +152,7 @@ impl MutationPlan {
             }
             #[cfg(feature = "ace16-create")]
             Self::FieldRename(plan) => {
-                if plan.intent().is_retained_schema() {
+                if plan.intent().is_retained_schema() || plan.intent().is_retained_typed() {
                     return plan
                         .prepare_retained(target, journal, budget, cancelled)
                         .map_err(Cause::Prepare)?
@@ -381,6 +381,11 @@ impl MutationIntent {
             return NativeFieldDropIntent::decode_retained(raw, budget, cancelled)
                 .map(Self::RetainedFieldDrop)
                 .map_err(Cause::FieldDropIntent);
+        }
+        if raw.starts_with(b"TCFR0007") {
+            return NativeFieldRenameIntent::decode_retained_typed(raw, budget, cancelled)
+                .map(Self::RetainedFieldRename)
+                .map_err(Cause::FieldRenameIntent);
         }
         if raw.starts_with(b"TCFR0006") {
             return NativeFieldRenameIntent::decode_retained_schema(raw, budget, cancelled)

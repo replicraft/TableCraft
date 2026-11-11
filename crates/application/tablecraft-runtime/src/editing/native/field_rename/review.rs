@@ -49,7 +49,15 @@ pub(in crate::editing) fn review(
         && image
             .select_native_retained_field_rename_source(table, column, &mut work, cancelled)
             .map_err(Error::FieldRenameSource)?;
-    let plan = if retained_schema {
+    let retained_typed = retained_schema
+        && image
+            .select_native_retained_typed_field_rename_source(table, column, &mut work, cancelled)
+            .map_err(Error::FieldRenameSource)?;
+    let plan = if retained_typed {
+        image.plan_recoverable_retained_typed_field_rename(
+            table, column, new_name, &mut work, cancelled,
+        )?
+    } else if retained_schema {
         image.plan_recoverable_retained_schema_field_rename(
             table, column, new_name, &mut work, cancelled,
         )?
