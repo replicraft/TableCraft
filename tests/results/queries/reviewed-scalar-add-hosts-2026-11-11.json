@@ -1,0 +1,547 @@
+{
+  "date": "2026-11-11",
+  "platform": "macOS 14.7.2 ARM64",
+  "qualification": "Local connected services, real headless GUI interactions, independent raw native images and offscreen presentation. No Microsoft Access execution or native app windows.",
+  "scope": "Qualified ACE16 SQL ADD for twelve unadorned scalar types through exact14 adapter routing, captured typed Runtime reviews and the existing field-addition save/acknowledgement/guarded-reopen owner.",
+  "source_commits": [
+    "b9d7a1bcf",
+    "20cc5e9ce",
+    "89ac172ce",
+    "aced72c51",
+    "7ad4c6504",
+    "d721c9932",
+    "597102b82",
+    "4f706b118",
+    "4e100c21b",
+    "ab78cb09a",
+    "693b9ad2c",
+    "95d964bc0",
+    "cee170d56",
+    "7d63775b1",
+    "a70e5757d"
+  ],
+  "behavior": [
+    "All unadorned SQL ADD declarations use original14 directly, including Currency. Native/Access13 APIs and their exact decode/recovery language remain separate; no failed-proof retry or fake gallery policy is used.",
+    "SqlUnadorned captured facts preserve native Text UTF-16 width and Decimal precision/scale. UI type/size summaries come from the private native plan; matching inert facts cannot replace the capability.",
+    "Twelve distinct connected type journeys exercise actual SQL ADD, historical values, typed parameter UPDATE, NULL or Boolean-false clearing, then actual insertion/save/acknowledgement/reopen with complete independent images.",
+    "Boolean omission remains explicitly refused without inventing a stored default; explicit Boolean input works. Text keeps nonempty Unicode/NULL distinct from empty strings and reaches fresh omitted NULL after the empty-string refusal.",
+    "A generated/indexed journey deletes the largest live ID before ADD, preserves historical LAST and all index bytes, updates exact Currency 5.25, then inserts with next ID=LAST+1 and new Currency NULL.",
+    "Exact14 routing covers stage, complete fresh requalification and both active/settled V3 recovery. Recovered committed operations report ColumnAdded without fabricated affected-row counts.",
+    "The shared empty-Text declaration guard now applies to retained UPDATE17 producer and fresh proof before noop elimination, as well as INSERT. Absent AZL refuses; explicit true supports empty Text; explicit false retains normal field-constraint validation.",
+    "Desktop stays a thin consuming host. MCP gallery editing rejects SQL origins and does not acquire an invented schema-SQL endpoint. The now-unused direct Desktop schema dependency is removed."
+  ],
+  "initial_host_batch": [
+    {
+      "job": "access",
+      "command": "cargo test -p tablecraft-access --lib --all-features --offline --locked -- editing::offline::field_addition",
+      "returncode": 101,
+      "seconds": 39.49,
+      "log": {
+        "path": ".cache/ace-sql-unadorned-add-host-access-20261111.log",
+        "sha256": "39daddfb224515e53f32b553a6479c9685b4a4960f0a2e0c052f09abed81af66"
+      },
+      "observed_test_summaries": [
+        {
+          "passed": 8,
+          "failed": 1,
+          "ignored": 0
+        }
+      ]
+    },
+    {
+      "job": "runtime",
+      "command": "cargo test -p tablecraft-runtime --lib --all-features --offline --locked",
+      "returncode": 101,
+      "seconds": 44.85,
+      "log": {
+        "path": ".cache/ace-sql-unadorned-add-host-runtime-20261111.log",
+        "sha256": "b8e55cfd74af322f16ff26feb14d9c5477fc2442b49231e3da5f747888c1f69a"
+      },
+      "observed_test_summaries": [
+        {
+          "passed": 409,
+          "failed": 2,
+          "ignored": 1
+        }
+      ]
+    },
+    {
+      "job": "ui",
+      "command": "cargo test -p tablecraft-ui --lib --all-features --offline --locked -- query_actions query::actions field_properties field_addition",
+      "returncode": 0,
+      "seconds": 16.68,
+      "log": {
+        "path": ".cache/ace-sql-unadorned-add-host-ui-20261111.log",
+        "sha256": "38f1bea8539cbc4b38892177371520e93e0bd83ae3ca2d8d7d952ca26f07f914"
+      },
+      "observed_test_summaries": [
+        {
+          "passed": 65,
+          "failed": 0,
+          "ignored": 0
+        }
+      ]
+    },
+    {
+      "job": "desktop",
+      "command": "cargo test -p tablecraft-desktop --bin tablecraft-desktop --all-features --offline --locked -- workspace::editing::field_addition workspace::editing::query_action workspace::query_parameters",
+      "returncode": 0,
+      "seconds": 60.99,
+      "log": {
+        "path": ".cache/ace-sql-unadorned-add-host-desktop-20261111.log",
+        "sha256": "3d06ef696f5f30b79265c907d9a027c05c919a65bbf29ced73f4b82cad0cddb1"
+      },
+      "observed_test_summaries": [
+        {
+          "passed": 69,
+          "failed": 0,
+          "ignored": 0
+        }
+      ]
+    },
+    {
+      "job": "mcp",
+      "command": "cargo test -p tablecraft-mcp --all-features --offline --locked",
+      "returncode": 0,
+      "seconds": 34.74,
+      "log": {
+        "path": ".cache/ace-sql-unadorned-add-host-mcp-20261111.log",
+        "sha256": "83a8da261b4b0ff2c7dbd8fbcd3ac0ec225680ee8f15b6d4a63605e475a5ea4a"
+      },
+      "observed_test_summaries": [
+        {
+          "passed": 75,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "passed": 2,
+          "failed": 0,
+          "ignored": 0
+        }
+      ]
+    },
+    {
+      "job": "strict",
+      "command": "cargo clippy -p tablecraft-ace -p tablecraft-access -p tablecraft-runtime -p tablecraft-ui -p tablecraft-desktop -p tablecraft-mcp -p tablecraft-testkit -p tablecraft-builders --all-targets --all-features --offline --locked -- -D warnings",
+      "returncode": 0,
+      "seconds": 84.25,
+      "log": {
+        "path": ".cache/ace-sql-unadorned-add-host-strict-20261111.log",
+        "sha256": "103e1b0720768f5da7719cb48e1e2d7728db3e27ee2733d87d07524ce23b571e"
+      },
+      "observed_test_summaries": []
+    },
+    {
+      "job": "no-creation",
+      "command": "cargo test -p tablecraft-access --lib --no-default-features --features offline-write-session --offline --locked -- plan::declared_addition_tests plan::unadorned_addition_tests",
+      "returncode": 101,
+      "seconds": 8.41,
+      "log": {
+        "path": ".cache/ace-sql-unadorned-add-host-no-creation-20261111.log",
+        "sha256": "0f1ea8fe65060c60d5fc53294c987fc40e6213ad05e65916c5a5ade44ef8b40f"
+      },
+      "observed_test_summaries": []
+    },
+    {
+      "job": "runtime-minimal",
+      "command": "cargo check -p tablecraft-runtime --lib --no-default-features --offline --locked",
+      "returncode": 0,
+      "seconds": 2.17,
+      "log": {
+        "path": ".cache/ace-sql-unadorned-add-host-runtime-minimal-20261111.log",
+        "sha256": "cca0d7984d5b30f5e26dc91b79e187ffcac7c7060e350d5dd29a7eb74b2094a8"
+      },
+      "observed_test_summaries": []
+    },
+    {
+      "job": "runtime-offline",
+      "command": "cargo check -p tablecraft-runtime --lib --no-default-features --features offline-edit --offline --locked",
+      "returncode": 101,
+      "seconds": 6.33,
+      "log": {
+        "path": ".cache/ace-sql-unadorned-add-host-runtime-offline-20261111.log",
+        "sha256": "ccc181ec28d51a744abee8b803a1b83c82dc32484a143b8bdf0baeb00ad07549"
+      },
+      "observed_test_summaries": []
+    },
+    {
+      "job": "render-build",
+      "command": "cargo build -p tablecraft-ui --example render_preview --offline --locked",
+      "returncode": 0,
+      "seconds": 6.43,
+      "log": {
+        "path": ".cache/ace-sql-unadorned-add-host-render-build-20261111.log",
+        "sha256": "04050a96006f7feb48d9d1dcba6aee6e63a0628bcc2dffd7dd17e43279f72453"
+      },
+      "observed_test_summaries": []
+    },
+    {
+      "job": "rustdoc",
+      "command": "cargo doc -p tablecraft-ace -p tablecraft-access -p tablecraft-runtime -p tablecraft-ui --all-features --no-deps --offline --locked",
+      "returncode": 0,
+      "seconds": 21.64,
+      "log": {
+        "path": ".cache/ace-sql-unadorned-add-host-rustdoc-20261111.log",
+        "sha256": "042dcee18c73858f3f4de4fbd35e9c86d5d6f9ca1a4d6f3de6789069e23c3689"
+      },
+      "observed_test_summaries": []
+    },
+    {
+      "job": "journal-only",
+      "command": "cargo clippy -p tablecraft-ace --lib --no-default-features --features journal --offline --locked -- -D warnings",
+      "returncode": 0,
+      "seconds": 1.51,
+      "log": {
+        "path": ".cache/ace-sql-unadorned-add-host-journal-only-20261111.log",
+        "sha256": "83dec99de7a1cfaf201ede050f9341d7ab86194779612e54275754664983a8b1"
+      },
+      "observed_test_summaries": []
+    }
+  ],
+  "intermediate_repair_batch": [
+    {
+      "job": "access",
+      "command": "cargo test -p tablecraft-access --lib --all-features --offline --locked -- editing::offline::field_addition",
+      "returncode": 0,
+      "seconds": 10.85,
+      "log": {
+        "path": ".cache/ace-sql-unadorned-add-host-repair-access-20261111.log",
+        "sha256": "f33b4c7323bfcd9f479bbd3b511d6280dfaeb550a13340320d1272a2e446d6b9"
+      },
+      "observed_test_summaries": [
+        {
+          "passed": 9,
+          "failed": 0,
+          "ignored": 0
+        }
+      ]
+    },
+    {
+      "job": "runtime",
+      "command": "cargo test -p tablecraft-runtime --lib --all-features --offline --locked",
+      "returncode": 101,
+      "seconds": 24.3,
+      "log": {
+        "path": ".cache/ace-sql-unadorned-add-host-repair-runtime-20261111.log",
+        "sha256": "9c7b19eaa7183be0517b7c3aef80d82a95ca0c7e81f7ef44034f827645035791"
+      },
+      "observed_test_summaries": [
+        {
+          "passed": 421,
+          "failed": 1,
+          "ignored": 1
+        }
+      ]
+    },
+    {
+      "job": "ui-preview",
+      "command": "cargo test -p tablecraft-ui --lib --all-features --offline --locked -- workspace::preview::tests::declared_addition",
+      "returncode": 0,
+      "seconds": 3.94,
+      "log": {
+        "path": ".cache/ace-sql-unadorned-add-host-repair-ui-preview-20261111.log",
+        "sha256": "fbcf47af34ec1da92eacf2dcdb6000e5299aa827fb71af426bc51ac3fe61634c"
+      },
+      "observed_test_summaries": [
+        {
+          "passed": 2,
+          "failed": 0,
+          "ignored": 0
+        }
+      ]
+    },
+    {
+      "job": "no-creation",
+      "command": "cargo test -p tablecraft-access --lib --no-default-features --features offline-write-session --offline --locked -- plan::declared_addition_tests plan::unadorned_addition_tests",
+      "returncode": 0,
+      "seconds": 10.42,
+      "log": {
+        "path": ".cache/ace-sql-unadorned-add-host-repair-no-creation-20261111.log",
+        "sha256": "9b61cdb44df58f882bfce3a6a248c661c12d9352898c7f8315bf6c1700fbf7d5"
+      },
+      "observed_test_summaries": [
+        {
+          "passed": 2,
+          "failed": 0,
+          "ignored": 0
+        }
+      ]
+    },
+    {
+      "job": "runtime-offline",
+      "command": "cargo check -p tablecraft-runtime --lib --no-default-features --features offline-edit --offline --locked",
+      "returncode": 0,
+      "seconds": 2.77,
+      "log": {
+        "path": ".cache/ace-sql-unadorned-add-host-repair-runtime-offline-20261111.log",
+        "sha256": "6d85ae44db289c7d0bba7acec6c62c5fdc1218c843d57ac25bd52dd1b7d4b6c0"
+      },
+      "observed_test_summaries": []
+    },
+    {
+      "job": "no-create-strict",
+      "command": "cargo clippy -p tablecraft-access --lib --no-default-features --features offline-write-session --offline --locked -- -D warnings",
+      "returncode": 0,
+      "seconds": 11.58,
+      "log": {
+        "path": ".cache/ace-sql-unadorned-add-host-repair-no-create-strict-20261111.log",
+        "sha256": "4e1059a2132c179e11837161dbfc2c3f56559014f7731576206a0910bd8527b0"
+      },
+      "observed_test_summaries": []
+    }
+  ],
+  "final_batch": [
+    {
+      "job": "native-text",
+      "command": "cargo test -p tablecraft-ace --lib --all-features --offline --locked -- current_row_updates retained_row_updates record_insertion omitted_insert",
+      "returncode": 0,
+      "seconds": 55.22,
+      "log": {
+        "path": ".cache/ace-sql-unadorned-add-final-native-text-20261111.log",
+        "sha256": "b8fe4c562f00359326ea72466f7d49418dda725010de0ee88cbc1eef6922e618"
+      },
+      "observed_test_summaries": [
+        {
+          "passed": 40,
+          "failed": 0,
+          "ignored": 0
+        }
+      ]
+    },
+    {
+      "job": "runtime",
+      "command": "cargo test -p tablecraft-runtime --lib --all-features --offline --locked",
+      "returncode": 0,
+      "seconds": 26.16,
+      "log": {
+        "path": ".cache/ace-sql-unadorned-add-final-runtime-20261111.log",
+        "sha256": "87dd31c0f08d950c8ae276afc14b76bd1110d24dead927a3178976df98369107"
+      },
+      "observed_test_summaries": [
+        {
+          "passed": 422,
+          "failed": 0,
+          "ignored": 1
+        }
+      ]
+    },
+    {
+      "job": "ui",
+      "command": "cargo test -p tablecraft-ui --lib --all-features --offline --locked -- workspace::preview::tests::declared_addition unadorned_summary_keeps_native_text_units_and_decimal_parameters_in_both_locales",
+      "returncode": 0,
+      "seconds": 13.05,
+      "log": {
+        "path": ".cache/ace-sql-unadorned-add-final-ui-20261111.log",
+        "sha256": "9b052f3fe0026794308160ccbf61004b70af12b3197e60027417748f6d8f4a78"
+      },
+      "observed_test_summaries": [
+        {
+          "passed": 3,
+          "failed": 0,
+          "ignored": 0
+        }
+      ]
+    },
+    {
+      "job": "strict",
+      "command": "cargo clippy -p tablecraft-ace -p tablecraft-access -p tablecraft-runtime -p tablecraft-ui -p tablecraft-desktop -p tablecraft-mcp -p tablecraft-testkit -p tablecraft-builders --all-targets --all-features --offline --locked -- -D warnings",
+      "returncode": 0,
+      "seconds": 38.18,
+      "log": {
+        "path": ".cache/ace-sql-unadorned-add-final-strict-20261111.log",
+        "sha256": "e254273bd18973f0639ca3a40e19588aff04725a3ebc5d7378b8845153d84d24"
+      },
+      "observed_test_summaries": []
+    },
+    {
+      "job": "render-build",
+      "command": "cargo build -p tablecraft-ui --example render_preview --offline --locked",
+      "returncode": 0,
+      "seconds": 8.16,
+      "log": {
+        "path": ".cache/ace-sql-unadorned-add-final-render-build-20261111.log",
+        "sha256": "804a1f2ef7e6984045f23ee8da200ab1dbd69d7ec00e312ed6fd357c763b49be"
+      },
+      "observed_test_summaries": []
+    },
+    {
+      "job": "rustdoc",
+      "command": "cargo doc -p tablecraft-ace -p tablecraft-access -p tablecraft-runtime -p tablecraft-ui --all-features --no-deps --offline --locked",
+      "returncode": 0,
+      "seconds": 18.94,
+      "log": {
+        "path": ".cache/ace-sql-unadorned-add-final-rustdoc-20261111.log",
+        "sha256": "4a4403e4111b28af5238a87809788c755df9471215cb8483fb694382434e3369"
+      },
+      "observed_test_summaries": []
+    }
+  ],
+  "final_feature_checks": [
+    {
+      "job": "journal-only",
+      "command": "cargo clippy -p tablecraft-ace --lib --no-default-features --features journal --offline --locked -- -D warnings",
+      "returncode": 0,
+      "seconds": 4.92,
+      "log": {
+        "path": ".cache/ace-sql-unadorned-add-feature-final-journal-only-20261111.log",
+        "sha256": "f80e6158c4a6deb2c03464745b3381cd747f94c0d2791e4db9559a8ccaa1e66e"
+      },
+      "observed_test_summaries": []
+    },
+    {
+      "job": "runtime-offline",
+      "command": "cargo check -p tablecraft-runtime --lib --no-default-features --features offline-edit --offline --locked",
+      "returncode": 0,
+      "seconds": 3.42,
+      "log": {
+        "path": ".cache/ace-sql-unadorned-add-feature-final-runtime-offline-20261111.log",
+        "sha256": "2b5112afe2d94c52b583f538ed471a23619cf7fcf0e0158cb8a4defb5ae7ee87"
+      },
+      "observed_test_summaries": []
+    }
+  ],
+  "retained_failures_and_repairs": [
+    {
+      "commit": "4f706b118",
+      "finding": "Cold14 recovery returned schema_change=None. MutationIntent schema-effect classification omitted the new variant; both active and settled recovery share the corrected classification. Actual adapter9 repair checks pass."
+    },
+    {
+      "commits": [
+        "4e100c21b",
+        "ab78cb09a",
+        "693b9ad2c"
+      ],
+      "finding": "Use canonical typed Boolean true/false input, replace newly supported TEXT20 in the unsupported-context list with BINARY20, and run all twelve cases independently so one failure cannot hide the remaining types."
+    },
+    {
+      "commit": "95d964bc0",
+      "finding": "No-create adapter and Runtime offline builds exposed a missing cfg-local UnadornedFieldAdditionIntentError import. Adapter2 terminal-prefix tests, no-create strict and final offline/journal checks pass."
+    },
+    {
+      "commits": [
+        "cee170d56",
+        "7d63775b1"
+      ],
+      "finding": "Actual Text80 review displayed the gallery default label Short Text(255). Reuse the generic localized design type, retain exact field-size80, and check the gallery-default label is absent."
+    },
+    {
+      "commit": "a70e5757d",
+      "finding": "The connected Text negative exposed actual UPDATE17 empty-string admission with AZL absent. It was not NULL conversion or zero-match behavior. Extract the existing INSERT presence primitive for both consumers, keep producer/fresh-proof and equal-noop checks, then rerun the complete Runtime suite successfully."
+    }
+  ],
+  "ignored_check": "One Runtime opt-in genuine Jet4 save test requires an explicit hash-pinned TABLECRAFT_JET4_SCALAR_SOURCE; it remains ignored and is not counted as passing.",
+  "presentation": {
+    "before_label_fix_frames": [
+      {
+        "locale": "en-US",
+        "theme": "light",
+        "returncode": 0,
+        "log": ".cache/ui-previews/sql-unadorned-add-before-text-label-fix/en-US-light.log",
+        "image": ".cache/ui-previews/sql-unadorned-add-before-text-label-fix/en-US-light-query-schema-add-text-review.png",
+        "width": 1280,
+        "height": 820,
+        "scale": 1,
+        "sha256": "329a7149453d033e961da789a75f3d443e71e3d2df283f67e7c4175868fff442"
+      },
+      {
+        "locale": "de",
+        "theme": "dark",
+        "returncode": 0,
+        "log": ".cache/ui-previews/sql-unadorned-add-before-text-label-fix/de-dark.log",
+        "image": ".cache/ui-previews/sql-unadorned-add-before-text-label-fix/de-dark-query-schema-add-text-review.png",
+        "width": 1280,
+        "height": 820,
+        "scale": 1,
+        "sha256": "9f0f67921038ab6fca6d4a7b9b3527d770e06d796de94c327ba1e6e51e7b3f52"
+      },
+      {
+        "locale": "en-US",
+        "theme": "dark",
+        "returncode": 0,
+        "log": ".cache/ui-previews/sql-unadorned-add-before-text-label-fix/en-US-dark.log",
+        "image": ".cache/ui-previews/sql-unadorned-add-before-text-label-fix/en-US-dark-query-schema-add-decimal-review.png",
+        "width": 1280,
+        "height": 820,
+        "scale": 1,
+        "sha256": "6a5f230dee8bc07a28a8a133aa70c63ec50dbcb76b707078b1ced3661a8abf9d"
+      },
+      {
+        "locale": "de",
+        "theme": "light",
+        "returncode": 0,
+        "log": ".cache/ui-previews/sql-unadorned-add-before-text-label-fix/de-light.log",
+        "image": ".cache/ui-previews/sql-unadorned-add-before-text-label-fix/de-light-query-schema-add-decimal-review.png",
+        "width": 1280,
+        "height": 820,
+        "scale": 1,
+        "sha256": "281bfce0ee1807a3c8879190fc5c592266e77204a06464a5ff8a9ba366c7df5e"
+      }
+    ],
+    "final_frames": [
+      {
+        "locale": "en-US",
+        "theme": "light",
+        "returncode": 0,
+        "log": ".cache/ui-previews/sql-unadorned-add-current/en-US-light.log",
+        "image": ".cache/ui-previews/sql-unadorned-add-current/en-US-light-query-schema-add-text-review.png",
+        "width": 1280,
+        "height": 820,
+        "scale": 1,
+        "sha256": "a2e0d23b5fc8553d2d8346e6c30fff4e76dd3ee999f05e0bae46788b07694d05"
+      },
+      {
+        "locale": "de",
+        "theme": "dark",
+        "returncode": 0,
+        "log": ".cache/ui-previews/sql-unadorned-add-current/de-dark.log",
+        "image": ".cache/ui-previews/sql-unadorned-add-current/de-dark-query-schema-add-text-review.png",
+        "width": 1280,
+        "height": 820,
+        "scale": 1,
+        "sha256": "d3529d2a9e0a7500128bc1dcedc41e69578fc3fe08659acec1e38854685b09c3"
+      },
+      {
+        "locale": "en-US",
+        "theme": "dark",
+        "returncode": 0,
+        "log": ".cache/ui-previews/sql-unadorned-add-current/en-US-dark.log",
+        "image": ".cache/ui-previews/sql-unadorned-add-current/en-US-dark-query-schema-add-decimal-review.png",
+        "width": 1280,
+        "height": 820,
+        "scale": 1,
+        "sha256": "6a5f230dee8bc07a28a8a133aa70c63ec50dbcb76b707078b1ced3661a8abf9d"
+      },
+      {
+        "locale": "de",
+        "theme": "light",
+        "returncode": 0,
+        "log": ".cache/ui-previews/sql-unadorned-add-current/de-light.log",
+        "image": ".cache/ui-previews/sql-unadorned-add-current/de-light-query-schema-add-decimal-review.png",
+        "width": 1280,
+        "height": 820,
+        "scale": 1,
+        "sha256": "281bfce0ee1807a3c8879190fc5c592266e77204a06464a5ff8a9ba366c7df5e"
+      }
+    ],
+    "binary": {
+      "path": ".cache/cargo-backend-20261102/debug/examples/render_preview",
+      "sha256": "50ad9fe8c60016d6232e8dc78c4726c98f3d1769ac2ccc08e48cf7b223997615"
+    },
+    "review": "All four final actual PNGs inspected: English light/German dark Text80 and English dark/German light Decimal28,4. Labels, dimensions, warnings and decision buttons are visible without modal clipping; the misleading255 label is absent.",
+    "reference_boundary": "Retained Windows/Access Home-datasheet capture inspected at1920x1141, original scale unknown. No exact SQL ADD confirmation or dark reference exists; this compact modal is an adaptation rather than native visual-parity evidence.",
+    "rendered_host": "Normal offscreen1280x820 scale1 on macOS; no native app windows."
+  },
+  "guards": {
+    "rust_format": "917 target roots in four bounded batches",
+    "rust_layout": "19 composition-only roots",
+    "dependency_boundaries": "22 packages;31 focused policy tests after removing the unused Desktop edge",
+    "documentation_links": "9359 local targets, zero missing before this receipt"
+  },
+  "counting": "Scopes overlap and intermediate failures are retained. Final Runtime422 includes the thirteen independent scalar/generated journeys. Initial UI65/Desktop69/MCP75+2 predate the final empty-Text guard and label repair; final native40, Runtime422+one ignored, targetedUI3, strict8 and feature checks provide the later evidence. Do not sum repeated scopes or convert them into a conformance percentage.",
+  "limitations": [
+    "Other ADD types, annotations, required programs, relationships, broader imported metadata/key families and Unicode field-name equivalence remain outside current qualification.",
+    "This does not qualify full ACE SQL, older-format CRUD or native Windows/Access behavioral parity.",
+    "MCP has no schema-SQL review endpoint."
+  ]
+}

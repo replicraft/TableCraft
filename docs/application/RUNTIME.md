@@ -950,16 +950,18 @@ non-tail field-deletion proof. Captions and display positions never select the
 target. Dependencies, required programs, indexes and preservation checks retain
 their native refusals.
 
-With both features, `ALTER TABLE ... ADD COLUMN ... CURRENCY` (including MONEY)
-uses the same field-addition review/save/reopen service with a distinct
-`FieldAdditionOrigin::SqlDeclared`. Its TCAC13 native request retains absent
+With both features, qualified unadorned `ALTER TABLE ... ADD COLUMN` declarations
+use the same field-addition review/save/reopen service with a distinct
+`FieldAdditionOrigin::SqlUnadorned`. The captured typed declaration retains actual
+native Text UTF-16 capacity and Decimal precision/scale. TCAC14 retains absent
 Required/AZL/default metadata; no gallery request or policy snapshot is fabricated.
-The first source profile is ordinary keyless retained ACE16 with no indexes or
-generation, an eligible one-page definition and ASCII new/existing field names.
-The native table/payload namespace is not globally ASCII-only. Other kinds,
-annotations and unqualified sources refuse before save. Historical NULL, an
-actual `CCUR(5.25)` update and fresh omitted NULL are separately exercised through
-the consuming services. See [SQL column addition](../access/writes/ADD_COLUMN.md#unadorned-sql-currency-addition).
+Its source proof protects eligible keyless ordinary tables and existing qualified
+LONG indexes/generated primary keys under the retained ownership checks. New and
+existing field names remain ASCII-qualified, without a global ASCII restriction
+on table names or payloads. Annotations, unsupported kinds and unqualified sources
+refuse before save. Historical missing Boolean reads False; other historical
+values read NULL. Fresh insert and later edit admission remain separate from
+metadata ADD. See [SQL column addition](../access/writes/ADD_COLUMN.md#unadorned-sql-scalar-addition).
 
 With both features, qualified non-temporary `CREATE TABLE` lowers the actual SQL
 declarations into `FirstTableDefinition`, using the same native planning and
@@ -2032,7 +2034,7 @@ The consuming `ReviewedFieldAddition` derives its `captured_origin()` from the
 sealed native plan. `FieldAdditionReview.origin` is separate inert data. Gallery
 consumers check both as `FieldAdditionOrigin::Gallery` against the exact submitted
 declaration, including width and compression; SQL consumers retain the distinct
-`SqlDeclared` origin. Both use the nonreplaceable
+`SqlUnadorned` origin, including actual Text capacity and Decimal parameters. Both use the nonreplaceable
 `SaveWorker::start_field_addition`. Matching display facts cannot substitute for
 the capability's captured request. MCP's gallery service explicitly refuses SQL
 origins; it does not expose a schema-SQL review endpoint.

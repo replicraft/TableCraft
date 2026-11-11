@@ -4,14 +4,14 @@ The normal desktop stages qualified saved-field additions through shared builder
 runtime reviews and native saves. The retained typed route supports Boolean,
 Byte, Integer, LONG, Large Number, Single, Double, Currency, legacy DateTime,
 GUID, Decimal and Short Text. Existing Number/Short Text request languages remain
-separate. SQL View also supports the narrow unadorned Currency ADD profile below.
+separate. SQL View also supports the qualified unadorned scalar ADD profile below.
 General saved type/property alteration and broader ALTER support remain unfinished;
 current source, storage and declaration limits follow below.
 
-## Unadorned SQL Currency addition
+## Currency13 original requests
 
-Normal SQL View Run can review `ALTER TABLE Items ADD COLUMN Amount CURRENCY`
-(or the MONEY alias) through the same consuming field-addition save worker.
+The separate Currency-only native API can prepare `ALTER TABLE Items ADD COLUMN Amount CURRENCY`
+(or the MONEY alias) under its own exact source language.
 The separate original `TCAC0013` request binds the complete source, exact table
 and field spelling, and native identities. Checked V3 preparation and fresh
 pending, committed and settled recovery reconstruct that same request; neither
@@ -43,7 +43,7 @@ No/Cancel preserves the source; Yes uses the existing exclusive save and guarded
 reopen. The gallery declarations and their stored policy/default semantics remain
 unchanged.
 
-## Native preparation of broader unadorned declarations
+## Unadorned SQL scalar addition
 
 `UnadornedFieldAdditionDefinition` and
 `NativeImage::prepare_retained_unadorned_field_addition` prepare a separate,
@@ -65,12 +65,24 @@ The [native candidate checkpoint](../../../tests/results/queries/unadorned-scala
 records the complete-image type matrix, existing-index preservation, historical
 counter/next-INSERT journey and the selected 66-test regression batch.
 
-This candidate cannot become a Currency13 original. Its distinct native
-persistence owner is described below; normal SQL View execution still uses the
-Currency13 profile above. Historical missing Boolean reads False; other
+Normal SQL View Run routes these unadorned declarations directly through the
+distinct TCAC14 owner described below. It does not retry Currency13 after a failed
+source proof or manufacture a gallery declaration. Captured review facts preserve
+the actual native Text capacity and Decimal parameters. The same nonreplaceable
+field-addition worker saves the reviewed request, then acknowledgment permits only
+its exact guarded `ColumnAdded` reopen. Historical missing Boolean reads False; other
 historical cells read NULL. This observation does not invent an omitted Boolean
 default or qualify subsequent row edits. Those operations need their own native
 admission and connected acceptance.
+
+The [connected host checkpoint](../../../tests/results/queries/reviewed-scalar-add-hosts-2026-11-11.json)
+records twelve separate typed ADD/edit/insert journeys and generated-counter
+history through real SQL reviews, saves and guarded reopens. Boolean omission
+without a declared default remains refused; other qualified omitted values are
+NULL. Empty Text requires an actual AllowZeroLength declaration: explicit true
+permits it, explicit false follows normal constraint validation, and absent
+metadata refuses without converting the request to NULL. The same admission
+check protects retained UPDATE producer/fresh-proof and INSERT paths.
 
 ### Original request and recovery
 
@@ -96,8 +108,8 @@ The constructive API requires `journal` and `ace16-create`; journal-only builds
 expose the typed error without claiming source reconstruction.
 The [original-request checkpoint](../../../tests/results/queries/unadorned-scalar-add-originals-2026-11-11.json)
 records the literal framing and complete cold-recovery matrix, including the
-canonical-substitution test repair. These engine tests do not qualify a new
-application SQL review route.
+canonical-substitution test repair. That checkpoint establishes native original/recovery behavior; application
+review/save and subsequent row operations require their own connected checks.
 
 ## Typed retained declarations
 

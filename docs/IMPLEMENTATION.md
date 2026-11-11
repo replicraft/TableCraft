@@ -12,16 +12,19 @@ capability. Destructive targets require closed tabs; saved results publish only
 through the corresponding guarded AFTER reopen. Provider-only DEFAULT is not
 enabled in SQL View.
 
-Qualified SQL `ALTER TABLE ... ADD COLUMN ... CURRENCY` now uses an original
-TCAC0013 request and the same consuming review, V3 save/recovery and guarded
-AFTER reopen. Existing rows retain NULL, declarations retain absent properties,
-and connected tests perform a later Currency UPDATE and omitted-field INSERT.
-Current native admission covers retained keyless ordinary sources with qualified
-ASCII field namespaces; Unicode table names remain supported. Broader field types,
-indexed/generated sources and native Access comparison remain unfinished. The
-[Currency ADD checkpoint](../tests/results/queries/declared-currency-add-column-2026-11-11.json)
-records independent native proofs, repaired integration failures, the complete
-Runtime library batch and four inspected headless confirmation frames.
+Qualified SQL `ALTER TABLE ... ADD COLUMN` now uses a distinct TCAC0014 request
+for twelve unadorned scalar declarations through the same consuming review,
+V3 save/recovery and guarded AFTER reopen. Native Text UTF-16 capacity and Decimal
+precision/scale remain exact; optional properties remain absent. The native source
+proof protects qualified existing LONG indexes and generated primary-key history.
+The [native original checkpoint](../tests/results/queries/unadorned-scalar-add-originals-2026-11-11.json)
+separates those proofs from application acceptance and retains repaired failures.
+The [connected host checkpoint](../tests/results/queries/reviewed-scalar-add-hosts-2026-11-11.json)
+records all twelve typed edit/insert journeys, historical AutoNumber preservation,
+422 passing Runtime tests and the inspected parameterized review frames. It also
+retains the recovery-receipt, feature-import and empty-Text admission repairs.
+Broader types, constraints, relationships, imported metadata and native Access
+comparison remain unfinished.
 
 The query layer now stages complete typed SELECT INTO results and prepares joined
 UPDATE with exact original target identities, original-value assignments and a
