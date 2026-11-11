@@ -1,7 +1,7 @@
 //! The normal saved Design widgets with explicitly source-free availability.
 use egui::accesskit::Role;
 use egui_kittest::{Harness, kittest::Queryable};
-use std::sync::Arc;
+use std::{num::NonZeroU8, sync::Arc};
 use tablecraft_builders::table::{
     FieldAdditionKind, TypedFieldAdditionAvailability, TypedFieldAdditionDeclaration,
 };
@@ -54,15 +54,40 @@ pub(super) fn prepare(harness: &mut Harness<'_, Preview>, mode: &str) {
                 mode,
                 "design-currency" | "design-decimal" | "design-typed-menu"
             ) {
-                let declarations = [
-                    TypedFieldAdditionDeclaration::fixed(ScalarType::Currency).unwrap(),
-                    TypedFieldAdditionDeclaration::decimal(18, 0).unwrap(),
-                ];
+                // These explicit source-free observations exercise each gallery family;
+                // they are presentation inputs, not a native eligibility claim.
+                let mut declarations = [
+                    ScalarType::Boolean,
+                    ScalarType::Byte,
+                    ScalarType::Int16,
+                    ScalarType::Int32,
+                    ScalarType::Int64,
+                    ScalarType::Single,
+                    ScalarType::Double,
+                    ScalarType::Currency,
+                    ScalarType::DateTime,
+                    ScalarType::Guid,
+                ]
+                .map(|kind| TypedFieldAdditionDeclaration::fixed(kind).unwrap())
+                .to_vec();
+                let decimal =
+                    tablecraft_builders::table::DraftNumberSize::initial_decimal_constraints();
+                declarations.push(
+                    TypedFieldAdditionDeclaration::decimal(decimal.precision(), decimal.scale())
+                        .unwrap(),
+                );
+                declarations.push(TypedFieldAdditionDeclaration::short_text(
+                    NonZeroU8::MAX,
+                    true,
+                ));
                 Arc::from(
-                    declarations.map(|declaration| TypedFieldAdditionAvailability {
-                        declaration,
-                        maximum_name_utf16_units: 64,
-                    }),
+                    declarations
+                        .into_iter()
+                        .map(|declaration| TypedFieldAdditionAvailability {
+                            declaration,
+                            maximum_name_utf16_units: 64,
+                        })
+                        .collect::<Vec<_>>(),
                 )
             } else {
                 Default::default()
