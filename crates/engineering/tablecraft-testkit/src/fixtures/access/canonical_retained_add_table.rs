@@ -8,6 +8,7 @@ pub mod exact_values;
 pub mod field_changes;
 pub mod fields;
 pub mod fixed_scalars;
+pub mod joined_update;
 pub mod opaque_rows;
 pub mod rows;
 pub mod typed_fields;

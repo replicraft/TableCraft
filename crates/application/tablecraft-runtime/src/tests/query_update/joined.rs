@@ -4,28 +4,9 @@ use crate::{Command, Error, Response};
 use tablecraft_access::editing::sql::RecoverableError;
 use tablecraft_query::{QueryError, UpdateError};
 use tablecraft_testkit::fixtures::access::canonical_retained_add_table::{
-    self as raw, field_changes, fields,
-    rows::{self, Input, Profile},
+    field_changes, joined_update,
 };
 
-fn source() -> (Vec<u8>, u32) {
-    let source = fields::source(fields::Case::FirstNumber);
-    let changes_definition = (source.bytes.len() / 4096) as u32;
-    let empty = raw::append(&source.bytes, "Changes", raw::Target::GeneratedNumber);
-    let first = rows::append(
-        &empty,
-        changes_definition,
-        Profile::NativeNumber,
-        Input::Number(5),
-    );
-    let before = rows::append(
-        &first,
-        changes_definition,
-        Profile::NativeNumber,
-        Input::Number(7),
-    );
-    (before, source.definition)
-}
 fn assert_image(actual: &[u8], expected: &[u8]) {
     assert_eq!(actual.len(), expected.len(), "complete image length");
     assert_eq!(
@@ -37,7 +18,9 @@ fn assert_image(actual: &[u8], expected: &[u8]) {
 
 #[test]
 fn joined_update_review_save_ack_and_reopen_preserve_the_independent_native_image() {
-    let (before, definition) = source();
+    let source = joined_update::source();
+    let before = source.bytes;
+    let definition = source.target_definition;
     let expected = field_changes::update_score(&before, definition, 0, Some(25));
     let (_directory, path, worker, revision) = opened(&before);
     let sql = "UPDATE Table1 AS t INNER JOIN Changes AS c ON t.ID=c.Id SET t.Score=c.Score+20 WHERE t.ID=1";
@@ -109,7 +92,7 @@ fn joined_update_review_save_ack_and_reopen_preserve_the_independent_native_imag
 
 #[test]
 fn joined_late_rhs_failure_and_repeated_target_matches_create_no_save_or_journal() {
-    let (before, _) = source();
+    let before = joined_update::source().bytes;
     let (_directory, path, worker, revision) = opened(&before);
     for (sql, expected) in [
         (
