@@ -6,6 +6,29 @@ manual proof; engineering candidates retain their separate admission policies.
 The retained-tree, original-omission and inline Memo/OLE sections below extend
 the initial complete scalar profile; their remaining limits stay explicit.
 
+## Retained keyless tables
+
+The distinct `TCNA0010` family inserts into qualified retained tables without
+generated fields or physical/logical indexes. Actual source metadata selects it;
+a failed generated or indexed proof is never retried as a keyless operation.
+The checked source, row count, ownership and LVAL traversal remain shared with
+the existing mutation proofs. Zero indexes are positively checked rather than
+asserted by a caller, including for an empty request.
+
+Original omitted, supplied NULL and supplied values remain distinct. Complete
+VALUES and SELECT append rows retain every field as supplied through this same
+family. Omission resolves only the surviving field's actual default. A nullable
+Score without a default becomes NULL; a deleted Id field's default cannot transfer
+to it. No AutoNumber or LastIssued value is invented or advanced. Native field
+holes, retired presence bits and original records retain their qualified meaning.
+
+The consuming adapter uses the existing retained V3 save/recovery owner. Fresh
+reconstruction verifies the same original request and complete AFTER; old TCNA
+decoders and V1 preparation do not accept this language. Journal-only decoding
+does not grant native reconstruction or write authority. Existing generated
+TCNA8/9 source contracts remain unchanged. Fitting existing DATA storage is still
+required; this route does not supply allocation growth or required-program execution.
+
 ## Insert after opaque retired tails
 
 TCNA0009 is a separate source/request family for insertion when an existing

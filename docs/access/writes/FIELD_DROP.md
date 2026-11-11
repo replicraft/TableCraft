@@ -2,27 +2,38 @@
 
 The native engine, original-intent recovery, Access adapter and consuming runtime
 implement a separate saved-field deletion operation. The normal desktop route
-is connected for the original empty-table family and a separate populated-tail
-family. The shared model has source-free ownership checks; it does not turn an
+is connected for the original empty-table family and separate populated tail and
+retained non-tail families. The shared model has source-free ownership checks; it does not turn an
 eligibility fact or a Yes confirmation into write authority. General ALTER TABLE
 and Access 97–2019 write completion remain unfinished.
 
-## Explicit native non-tail candidate
+## Retained non-tail fields
 
 `NativeImage::prepare_retained_non_tail_field_drop` supplies a separate sealed
 candidate after complete retained-source qualification. It removes an ordinary,
 unindexed, nongenerated field while retaining survivor native numbers and physical
-storage. The normal host inspector and existing persisted tail languages do not
-admit this operation. Its journal intent, recovery dispatch and reviewed runtime
-save route are not implemented.
+storage. The distinct `TCFD0005` request/profile preserves the selected original
+field and source binding through checked V3 preparation, cold recovery and settled
+confirmation. Older tail request languages and V1 preparation remain closed to it.
+The Access adapter and shared runtime select this profile from source metadata;
+desktop and MCP use the same consuming review/save services. SQL schema reviews
+also delegate qualified `ALTER TABLE ... DROP COLUMN` to this owner.
 
-The [native checkpoint](../../../tests/results/schema/retained-middle-field-native-2026-11-11.json)
+Survivors keep their native field numbers, retired physical slots and original
+record bytes. An ordinary keyless native field zero is not presumed to be a
+primary key or generator. Subsequent reads and edits resolve the actual surviving
+native identity, independently of displayed column positions. Required programs,
+dependencies, unsupported properties, generated/indexed targets and unfitting
+declarations continue to refuse the operation.
+
+The earlier [native checkpoint](../../../tests/results/schema/retained-middle-field-native-2026-11-11.json)
 compares a populated middle LONG removal against an independent complete image,
 including its Currency survivor, both records, property groups, native high-water
 metadata and protected pages. Refusal controls cover tail/generated targets,
 unknown properties, cancellation and separate caller budgets. The combined native
-deletion/recovery batch passes 42 tests. Additional non-tail carrier histories and
-native Access comparisons remain unqualified; this is not general UI deletion.
+deletion/recovery batch passed 42 tests at that candidate-only checkpoint. That
+record predates the consuming route above and remains historical evidence.
+General schema deletion and native Access comparisons remain unqualified.
 
 ## Typed retained tail fields
 
@@ -31,7 +42,8 @@ Large Number, Single, Double, Currency, legacy DateTime, GUID, Decimal or Short
 Text declaration. The target must be ordinary, nongenerated, noncalculated and
 unindexed, with its exact native storage shape. At least one active field must
 survive. The selected descriptor must be last in the actual native declaration,
-not merely the rightmost displayed column; non-tail deletion remains unsupported.
+not merely the rightmost displayed column. Non-tail targets use profile 5 rather
+than weakening this tail language.
 
 The complete retained-schema proof qualifies original rows, constraints, literal
 defaults, known properties, dependencies, programs and owned storage. This action
