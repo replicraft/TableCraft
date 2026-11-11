@@ -89,7 +89,7 @@ impl PreparedNativeMakeTable {
 /// result can be substituted. This does not qualify the source for publication.
 ///
 /// The initial slice admits a single local table and explicit field projections,
-/// aliases and direct-field ORDER BY. Filters, groups, computed projections,
+/// aliases, WHERE, selection predicates and direct-field ORDER BY. Groups, computed projections,
 /// wildcards, named/linked sources, external selectors and owner access refuse.
 /// Complete row retention obeys the caller's native/query/snapshot allowances;
 /// this preparation imposes no additional row-count ceiling.

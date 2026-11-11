@@ -5,7 +5,7 @@ use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_schema::{DecimalConstraints, NameComparison, ScalarType};
 use tablecraft_sql::{
     query::{Query, Statement},
-    select::{Expression, FieldReference, Projection, Select, SelectPredicate, Table, TableSource},
+    select::{Expression, FieldReference, Projection, Select, Table, TableSource},
 };
 
 pub(super) fn check(
@@ -38,10 +38,8 @@ pub(super) fn select(query: &Query) -> Result<&Select, NativeMakeTableError> {
         || select.into_external.is_some()
         || select.external.is_some()
         || select.owner_access
-        || select.selection.is_some()
         || !select.group_by.is_empty()
         || select.having.is_some()
-        || select.predicate != SelectPredicate::All
         || select.projection.is_empty()
     {
         return Err(NativeMakeTableError::Shape);

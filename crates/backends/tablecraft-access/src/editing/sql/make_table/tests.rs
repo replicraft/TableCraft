@@ -1,4 +1,6 @@
 //! Independent raw source images; preparation cannot accept foreign result data.
+mod selection;
+
 use super::*;
 use std::io::Cursor;
 use tablecraft_core::{limits::Resource, values::Decimal};
@@ -261,7 +263,6 @@ fn closed_shapes_and_actual_qualifiers_cannot_route_to_external_or_computed_sour
         "SELECT x.Name INTO Archive FROM Items AS i",
         "SELECT Name INTO Archive IN 'unopened.accdb' FROM Items",
         "SELECT Name INTO Archive FROM Items IN 'unopened.accdb'",
-        "SELECT Name INTO Archive FROM Items WHERE ID > 0",
         "SELECT Name INTO Archive FROM Items ORDER BY Len(Name)",
         "SELECT i.Name INTO Archive FROM Items AS i, Table1",
     ] {
