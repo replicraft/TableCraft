@@ -1,4 +1,5 @@
 //! Independent complete fixed-row measurements beside retained Access tables.
+pub mod historical;
 use super::desktop;
 use crate::fixtures::access::{
     canonical_initial_table_creation::Column as NativeColumn,
@@ -174,6 +175,25 @@ pub fn row(id: i32) -> Vec<Value> {
     ]
 }
 
+fn payload(column: Column, value: Option<Scalar>) -> Vec<u8> {
+    let mut payload = Vec::new();
+    match (column, value) {
+        (_, None) => {}
+        (Column::ByteValue, Some(Scalar::Byte(value))) => payload.push(value),
+        (Column::ShortValue, Some(Scalar::Int16(value))) => payload.extend(value.to_le_bytes()),
+        (Column::LargeValue, Some(Scalar::Int64(value))) => payload.extend(value.to_le_bytes()),
+        (Column::SingleValue, Some(Scalar::SingleBits(value))) => {
+            payload.extend(value.to_le_bytes())
+        }
+        (Column::DoubleValue, Some(Scalar::DoubleBits(value)))
+        | (Column::DateValue, Some(Scalar::DateTimeBits(value))) => {
+            payload.extend(value.to_le_bytes());
+        }
+        _ => panic!("literal scalar must match the selected native declaration"),
+    }
+    payload
+}
+
 /// Change exactly the selected fixed payload and presence bit. NULL retains
 /// ignored bytes, and matching values leave the complete source untouched.
 pub fn update(
@@ -190,21 +210,7 @@ pub fn update(
     let record = &before[range.clone()];
     assert_eq!(record.len(), RECORD_BYTES);
     assert_eq!(&record[..2], &[8, 0]);
-    let mut payload = Vec::new();
-    match (column, value) {
-        (_, None) => {}
-        (Column::ByteValue, Some(Scalar::Byte(value))) => payload.push(value),
-        (Column::ShortValue, Some(Scalar::Int16(value))) => payload.extend(value.to_le_bytes()),
-        (Column::LargeValue, Some(Scalar::Int64(value))) => payload.extend(value.to_le_bytes()),
-        (Column::SingleValue, Some(Scalar::SingleBits(value))) => {
-            payload.extend(value.to_le_bytes())
-        }
-        (Column::DoubleValue, Some(Scalar::DoubleBits(value)))
-        | (Column::DateValue, Some(Scalar::DateTimeBits(value))) => {
-            payload.extend(value.to_le_bytes());
-        }
-        _ => panic!("literal scalar must match the selected native declaration"),
-    }
+    let payload = payload(column, value);
     let offset = 2 + usize::from(selected.fixed_offset.unwrap());
     let bit = 1 << number;
     let mut after = before.to_vec();
