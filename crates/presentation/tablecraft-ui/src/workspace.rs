@@ -88,7 +88,10 @@ pub use insertion::{
 };
 pub use navigation::rename::TableRenameRequest;
 pub use objects::{ObjectKind, ObjectOpen, ObjectTab, ObjectTarget, WorkspaceLayout};
-pub use query::actions::review::{QueryActionEffect, QueryActionKind, QueryActionReview};
+pub use query::actions::review::{
+    QueryActionEffect, QueryActionKind, QueryActionReview, QuerySchemaEffect,
+    QuerySchemaPublication,
+};
 pub use query::contents::{QueryCollectionBinding, QueryContentsBindings, QueryContentsTarget};
 pub use query::options::{QueryPoolLimits, QueryRunLimits};
 pub use query::parameters::{ParameterInput, ParameterSpec};
@@ -516,6 +519,7 @@ pub struct State {
     pub database: Option<Database>,
     /// A dead save actor invalidated this snapshot; only a fresh revision retires it.
     uncertain_native_revision: Option<u64>,
+    schema_reopen_revision: Option<u64>,
     /// Last table page; query results have a separate slot.
     pub data: Option<Data>,
     pub query_data: Option<Data>,

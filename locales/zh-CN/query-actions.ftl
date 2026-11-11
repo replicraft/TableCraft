@@ -17,3 +17,17 @@ query-action-insert-title = 追加查询
 query-action-insert-reviewing = 正在检查追加查询…
 query-action-insert-inserted = 将追加的记录数：{ $count }
 query-action-insert-confirmation = 要将已检查的记录追加到原始数据库吗？
+
+## Reviewed SQL schema changes
+query-action-schema-title = 数据定义查询
+query-action-schema-reviewing = 正在审核架构查询…
+query-action-schema-confirmation = 是否应用此已审核的数据库结构更改？
+query-action-schema-create-fields = 要创建的字段数：{ $count }
+query-action-schema-drop-records = 要删除的表中的记录数：{ $count }
+query-action-schema-drop-field = 要删除的字段：{ $column }
+query-action-schema-create-confirmation = 是否在原始数据库中创建此已审核的表？
+query-action-schema-drop-table-confirmation = 是否从原始数据库中永久删除此已审核的表及其记录？
+query-action-schema-drop-column-confirmation = 是否从原始数据库中永久删除此已审核的字段及其值？
+query-action-schema-close-target = 运行此架构查询前，请关闭目标表。
+query-action-schema-reopen-failed = 架构更改已保存，但无法重新打开数据库。请勿重复执行查询。
+query-action-schema-retry-reopen = 重试打开

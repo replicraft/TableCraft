@@ -17,3 +17,17 @@ query-action-insert-title = 追加クエリ
 query-action-insert-reviewing = 追加クエリを確認しています…
 query-action-insert-inserted = 追加するレコード数: { $count }
 query-action-insert-confirmation = 確認したレコードを元のデータベースに追加しますか？
+
+## Reviewed SQL schema changes
+query-action-schema-title = データ定義クエリ
+query-action-schema-reviewing = スキーマクエリを確認しています…
+query-action-schema-confirmation = 確認済みのデータベース構造の変更を適用しますか？
+query-action-schema-create-fields = 作成するフィールド数: { $count }
+query-action-schema-drop-records = 削除するテーブル内のレコード数: { $count }
+query-action-schema-drop-field = 削除するフィールド: { $column }
+query-action-schema-create-confirmation = 確認済みのテーブルを元のデータベースに作成しますか？
+query-action-schema-drop-table-confirmation = 確認済みのテーブルとそのレコードを元のデータベースから完全に削除しますか？
+query-action-schema-drop-column-confirmation = 確認済みのフィールドとその値を元のデータベースから完全に削除しますか？
+query-action-schema-close-target = このスキーマクエリを実行する前に、対象のテーブルを閉じてください。
+query-action-schema-reopen-failed = スキーマの変更は保存されましたが、データベースを再度開けませんでした。クエリを繰り返さないでください。
+query-action-schema-retry-reopen = 再度開く

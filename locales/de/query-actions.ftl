@@ -17,3 +17,17 @@ query-action-insert-title = Anfügeabfrage
 query-action-insert-reviewing = Anfügeabfrage wird geprüft…
 query-action-insert-inserted = Anzufügende Datensätze: { $count }
 query-action-insert-confirmation = Die geprüften Datensätze an die ursprüngliche Datenbank anfügen?
+
+## Reviewed SQL schema changes
+query-action-schema-title = Datendefinitionsabfrage
+query-action-schema-reviewing = Schemaabfrage wird geprüft…
+query-action-schema-confirmation = Diese geprüfte Änderung der Datenbankstruktur anwenden?
+query-action-schema-create-fields = Zu erstellende Felder: { $count }
+query-action-schema-drop-records = Datensätze in der zu löschenden Tabelle: { $count }
+query-action-schema-drop-field = Zu löschendes Feld: { $column }
+query-action-schema-create-confirmation = Diese geprüfte Tabelle in der ursprünglichen Datenbank erstellen?
+query-action-schema-drop-table-confirmation = Diese geprüfte Tabelle und ihre Datensätze dauerhaft aus der ursprünglichen Datenbank löschen?
+query-action-schema-drop-column-confirmation = Dieses geprüfte Feld und seine Werte dauerhaft aus der ursprünglichen Datenbank löschen?
+query-action-schema-close-target = Schließen Sie die Zieltabelle, bevor Sie diese Schemaabfrage ausführen.
+query-action-schema-reopen-failed = Die Schemaänderung wurde gespeichert, aber die Datenbank konnte nicht erneut geöffnet werden. Wiederholen Sie die Abfrage nicht.
+query-action-schema-retry-reopen = Erneut öffnen

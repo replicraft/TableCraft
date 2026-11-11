@@ -17,3 +17,17 @@ query-action-insert-title = Append query
 query-action-insert-reviewing = Reviewing the append query…
 query-action-insert-inserted = Records to append: { $count }
 query-action-insert-confirmation = Append the reviewed records to the original database?
+
+## Reviewed SQL schema changes
+query-action-schema-title = Data-definition query
+query-action-schema-reviewing = Reviewing the schema query…
+query-action-schema-confirmation = Apply this reviewed database structure change?
+query-action-schema-create-fields = Fields to create: { $count }
+query-action-schema-drop-records = Records in the table to delete: { $count }
+query-action-schema-drop-field = Field to delete: { $column }
+query-action-schema-create-confirmation = Create this reviewed table in the original database?
+query-action-schema-drop-table-confirmation = Permanently delete this reviewed table and its records from the original database?
+query-action-schema-drop-column-confirmation = Permanently delete this reviewed field and its values from the original database?
+query-action-schema-close-target = Close the target table before running this schema query.
+query-action-schema-reopen-failed = The schema change was saved, but the database could not be reopened. Do not repeat the query.
+query-action-schema-retry-reopen = Retry reopening

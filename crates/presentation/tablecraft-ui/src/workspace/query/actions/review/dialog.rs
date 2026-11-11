@@ -1,5 +1,5 @@
 //! Compact action warning adaptation; no native warning capture is retained.
-use super::{Phase, QueryActionEffect, QueryActionKind, Report};
+use super::{Phase, QueryActionEffect, QueryActionKind, QuerySchemaEffect, Report};
 use crate::localization::{message, tr};
 use crate::workspace::{Action, EditSaveOutcome, State, diagnostics, save_display};
 use egui::{Id, Ui};
@@ -75,19 +75,43 @@ impl State {
                                 &[("count", matched.to_string())],
                             ));
                         }
-                        let (effect_key, affected) = match review.effect {
+                        match &review.effect {
                             QueryActionEffect::Update { changed_rows, .. } => {
-                                ("query-action-update-changed", changed_rows)
+                                ui.label(message(
+                                    ui,
+                                    "query-action-update-changed",
+                                    &[("count", changed_rows.to_string())],
+                                ));
                             }
                             QueryActionEffect::Delete { deleted_rows, .. } => {
-                                ("query-action-delete-deleted", deleted_rows)
+                                ui.label(message(
+                                    ui,
+                                    "query-action-delete-deleted",
+                                    &[("count", deleted_rows.to_string())],
+                                ));
                             }
                             QueryActionEffect::Insert { inserted_rows } => {
-                                ("query-action-insert-inserted", inserted_rows)
+                                ui.label(message(
+                                    ui,
+                                    "query-action-insert-inserted",
+                                    &[("count", inserted_rows.to_string())],
+                                ));
                             }
+                            QueryActionEffect::Schema(effect) => schema_summary(ui, effect),
+                        }
+                        let confirmation = match &review.effect {
+                            QueryActionEffect::Schema(QuerySchemaEffect::CreateTable {
+                                ..
+                            }) => "query-action-schema-create-confirmation",
+                            QueryActionEffect::Schema(QuerySchemaEffect::DropTable { .. }) => {
+                                "query-action-schema-drop-table-confirmation"
+                            }
+                            QueryActionEffect::Schema(QuerySchemaEffect::DropColumn { .. }) => {
+                                "query-action-schema-drop-column-confirmation"
+                            }
+                            _ => session.kind.confirmation_key(),
                         };
-                        ui.label(message(ui, effect_key, &[("count", affected.to_string())]));
-                        ui.label(tr(ui, session.kind.confirmation_key()));
+                        ui.label(tr(ui, confirmation));
                         ui.small(tr(ui, "query-action-no-undo"));
                         if let Some(error) = error {
                             report(ui, "query_action_apply_error", error);
@@ -118,6 +142,7 @@ impl State {
                         save_id,
                         cancel_requested,
                         resolving,
+                        ..
                     } => {
                         save_display::pending(ui, *cancel_requested, *resolving);
                         ui.separator();
@@ -226,6 +251,7 @@ impl QueryActionKind {
             Self::Update => "query-action-update-title",
             Self::Delete => "query-action-delete-title",
             Self::Insert => "query-action-insert-title",
+            Self::Schema => "query-action-schema-title",
         }
     }
 
@@ -234,6 +260,7 @@ impl QueryActionKind {
             Self::Update => "query-action-update-reviewing",
             Self::Delete => "query-action-delete-reviewing",
             Self::Insert => "query-action-insert-reviewing",
+            Self::Schema => "query-action-schema-reviewing",
         }
     }
 
@@ -242,6 +269,33 @@ impl QueryActionKind {
             Self::Update => "query-action-update-confirmation",
             Self::Delete => "query-action-delete-confirmation",
             Self::Insert => "query-action-insert-confirmation",
+            Self::Schema => "query-action-schema-confirmation",
+        }
+    }
+}
+
+fn schema_summary(ui: &mut Ui, effect: &QuerySchemaEffect) {
+    match effect {
+        QuerySchemaEffect::CreateTable { column_count } => {
+            ui.label(message(
+                ui,
+                "query-action-schema-create-fields",
+                &[("count", column_count.to_string())],
+            ));
+        }
+        QuerySchemaEffect::DropTable { declared_rows } => {
+            ui.label(message(
+                ui,
+                "query-action-schema-drop-records",
+                &[("count", declared_rows.to_string())],
+            ));
+        }
+        QuerySchemaEffect::DropColumn { column, .. } => {
+            ui.label(message(
+                ui,
+                "query-action-schema-drop-field",
+                &[("column", column.as_str())],
+            ));
         }
     }
 }

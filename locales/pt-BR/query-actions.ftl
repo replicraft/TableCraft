@@ -17,3 +17,17 @@ query-action-insert-title = Consulta de acréscimo
 query-action-insert-reviewing = Revisando a consulta de acréscimo…
 query-action-insert-inserted = Registros a acrescentar: { $count }
 query-action-insert-confirmation = Acrescentar os registros revisados ao banco de dados original?
+
+## Reviewed SQL schema changes
+query-action-schema-title = Consulta de definição de dados
+query-action-schema-reviewing = Revisando a consulta de esquema…
+query-action-schema-confirmation = Aplicar esta alteração revisada à estrutura do banco de dados?
+query-action-schema-create-fields = Campos a criar: { $count }
+query-action-schema-drop-records = Registros na tabela a excluir: { $count }
+query-action-schema-drop-field = Campo a excluir: { $column }
+query-action-schema-create-confirmation = Criar esta tabela revisada no banco de dados original?
+query-action-schema-drop-table-confirmation = Excluir permanentemente esta tabela revisada e seus registros do banco de dados original?
+query-action-schema-drop-column-confirmation = Excluir permanentemente este campo revisado e seus valores do banco de dados original?
+query-action-schema-close-target = Feche a tabela de destino antes de executar esta consulta de esquema.
+query-action-schema-reopen-failed = A alteração de esquema foi salva, mas não foi possível reabrir o banco de dados. Não repita a consulta.
+query-action-schema-retry-reopen = Tentar reabrir

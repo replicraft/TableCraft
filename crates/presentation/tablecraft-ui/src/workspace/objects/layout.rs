@@ -6,6 +6,7 @@ mod field_addition_reopen;
 mod field_drop_reopen;
 mod field_rename_reopen;
 mod replacement;
+mod query_schema_reopen;
 mod restoration;
 mod saved_sql_reopen;
 mod table_drop_reopen;

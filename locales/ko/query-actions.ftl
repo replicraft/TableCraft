@@ -17,3 +17,17 @@ query-action-insert-title = 추가 쿼리
 query-action-insert-reviewing = 추가 쿼리를 검토하는 중…
 query-action-insert-inserted = 추가할 레코드: { $count }
 query-action-insert-confirmation = 검토한 레코드를 원본 데이터베이스에 추가하시겠습니까?
+
+## Reviewed SQL schema changes
+query-action-schema-title = 데이터 정의 쿼리
+query-action-schema-reviewing = 스키마 쿼리를 검토하는 중…
+query-action-schema-confirmation = 검토한 데이터베이스 구조 변경을 적용하시겠습니까?
+query-action-schema-create-fields = 만들 필드 수: { $count }
+query-action-schema-drop-records = 삭제할 테이블의 레코드 수: { $count }
+query-action-schema-drop-field = 삭제할 필드: { $column }
+query-action-schema-create-confirmation = 검토한 테이블을 원본 데이터베이스에 만드시겠습니까?
+query-action-schema-drop-table-confirmation = 검토한 테이블과 해당 레코드를 원본 데이터베이스에서 영구적으로 삭제하시겠습니까?
+query-action-schema-drop-column-confirmation = 검토한 필드와 해당 값을 원본 데이터베이스에서 영구적으로 삭제하시겠습니까?
+query-action-schema-close-target = 이 스키마 쿼리를 실행하기 전에 대상 테이블을 닫으세요.
+query-action-schema-reopen-failed = 스키마 변경은 저장되었지만 데이터베이스를 다시 열 수 없습니다. 쿼리를 반복하지 마세요.
+query-action-schema-retry-reopen = 다시 열기

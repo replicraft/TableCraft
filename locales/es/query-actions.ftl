@@ -17,3 +17,17 @@ query-action-insert-title = Consulta de datos anexados
 query-action-insert-reviewing = Revisando la consulta de datos anexados…
 query-action-insert-inserted = Registros que se anexarán: { $count }
 query-action-insert-confirmation = ¿Anexar los registros revisados a la base de datos original?
+
+## Reviewed SQL schema changes
+query-action-schema-title = Consulta de definición de datos
+query-action-schema-reviewing = Revisando la consulta de esquema…
+query-action-schema-confirmation = ¿Aplicar este cambio revisado a la estructura de la base de datos?
+query-action-schema-create-fields = Campos que se crearán: { $count }
+query-action-schema-drop-records = Registros en la tabla que se eliminará: { $count }
+query-action-schema-drop-field = Campo que se eliminará: { $column }
+query-action-schema-create-confirmation = ¿Crear esta tabla revisada en la base de datos original?
+query-action-schema-drop-table-confirmation = ¿Eliminar permanentemente esta tabla revisada y sus registros de la base de datos original?
+query-action-schema-drop-column-confirmation = ¿Eliminar permanentemente este campo revisado y sus valores de la base de datos original?
+query-action-schema-close-target = Cierre la tabla de destino antes de ejecutar esta consulta de esquema.
+query-action-schema-reopen-failed = El cambio de esquema se guardó, pero no se pudo volver a abrir la base de datos. No repita la consulta.
+query-action-schema-retry-reopen = Volver a abrir

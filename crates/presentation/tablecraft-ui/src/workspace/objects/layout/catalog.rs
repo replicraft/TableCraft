@@ -6,6 +6,7 @@ use crate::workspace::objects::memory::Counter;
 pub(super) enum Change<'a> {
     Unchanged,
     TableDropped(&'a str),
+    TableCreated(&'a str),
 }
 
 pub(super) fn matches(old: &Database, fresh: &Database) -> bool {
@@ -18,6 +19,22 @@ pub(super) fn matches_change(old: &Database, fresh: &Database, change: Change<'_
         && fresh.title_path == old.title_path
         && match change {
             Change::Unchanged => fresh.tables.len() == old.tables.len(),
+            Change::TableCreated(name) => {
+                old.tables.iter().all(|table| table.name != name)
+                    && old.tables.len().checked_add(1) == Some(fresh.tables.len())
+                    && fresh
+                        .tables
+                        .iter()
+                        .filter(|table| table.name == name && table.local && !table.system)
+                        .count()
+                        == 1
+                    && fresh
+                        .tables
+                        .iter()
+                        .filter(|table| table.name == name)
+                        .count()
+                        == 1
+            }
             Change::TableDropped(name) => {
                 old.tables
                     .iter()
@@ -34,10 +51,13 @@ pub(super) fn matches_change(old: &Database, fresh: &Database, change: Change<'_
             .tables
             .iter()
             .filter(|table| match change {
-                Change::Unchanged => true,
+                Change::Unchanged | Change::TableCreated(_) => true,
                 Change::TableDropped(name) => table.name != name,
             })
-            .zip(&fresh.tables)
+            .zip(fresh.tables.iter().filter(|table| match change {
+                Change::TableCreated(name) => table.name != name,
+                Change::Unchanged | Change::TableDropped(_) => true,
+            }))
             .all(|(old, fresh)| {
                 old.name == fresh.name
                     && old.local == fresh.local

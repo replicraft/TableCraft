@@ -1,6 +1,8 @@
 //! Reviewed SQL action decisions bound to the original scratch acquisition.
 //! No retained Access warning capture exists; dialog layout is an adaptation.
 mod dialog;
+mod schema;
+pub use schema::{QuerySchemaEffect, QuerySchemaPublication};
 
 use crate::workspace::objects::MAX_RETAINED_BYTES;
 use crate::workspace::objects::memory::Counter;
@@ -14,10 +16,13 @@ pub enum QueryActionKind {
     Update,
     Delete,
     Insert,
+    Schema,
 }
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[derive(Debug, PartialEq, Eq)]
 pub enum QueryActionEffect {
+    /// Qualified schema change, without row-action count semantics.
+    Schema(QuerySchemaEffect),
     /// Qualified append count, without a matched-old-row count or UI-imposed limit.
     Insert { inserted_rows: usize },
     Update {
@@ -31,16 +36,18 @@ pub enum QueryActionEffect {
 }
 
 impl QueryActionEffect {
-    pub fn kind(self) -> QueryActionKind {
+    pub fn kind(&self) -> QueryActionKind {
         match self {
+            Self::Schema(_) => QueryActionKind::Schema,
             Self::Update { .. } => QueryActionKind::Update,
             Self::Delete { .. } => QueryActionKind::Delete,
             Self::Insert { .. } => QueryActionKind::Insert,
         }
     }
 
-    fn valid(self) -> bool {
+    fn valid(&self) -> bool {
         match self {
+            Self::Schema(effect) => effect.valid(),
             Self::Insert { .. } => true,
             Self::Update {
                 matched_rows,
@@ -53,12 +60,12 @@ impl QueryActionEffect {
         }
     }
 
-    fn matched_rows(self) -> Option<usize> {
+    fn matched_rows(&self) -> Option<usize> {
         match self {
             Self::Update { matched_rows, .. } | Self::Delete { matched_rows, .. } => {
-                Some(matched_rows)
+                Some(*matched_rows)
             }
-            Self::Insert { .. } => None,
+            Self::Insert { .. } | Self::Schema(_) => None,
         }
     }
 }
@@ -109,11 +116,13 @@ enum Phase {
         focus_no: bool,
     },
     Saving {
+        review: QueryActionReview,
         save_id: u64,
         cancel_requested: bool,
         resolving: bool,
     },
     Finished {
+        review: QueryActionReview,
         save_id: u64,
         outcome: EditSaveOutcome,
         report_refused: bool,
@@ -155,12 +164,28 @@ impl Session {
             }
             Phase::Review { review, error, .. } => {
                 count.string(&review.table);
+                if let QueryActionEffect::Schema(effect) = &review.effect {
+                    count.add(effect.retained_bytes());
+                }
                 if let Some(error) = error {
                     count.add(error.retained_bytes());
                 }
             }
-            Phase::Saving { .. } => {}
-            Phase::Finished { outcome, .. } => count.string(outcome_message(outcome)),
+            Phase::Saving { review, .. } => {
+                count.string(&review.table);
+                if let QueryActionEffect::Schema(effect) = &review.effect {
+                    count.add(effect.retained_bytes());
+                }
+            }
+            Phase::Finished {
+                review, outcome, ..
+            } => {
+                count.string(&review.table);
+                if let QueryActionEffect::Schema(effect) = &review.effect {
+                    count.add(effect.retained_bytes());
+                }
+                count.string(outcome_message(outcome));
+            }
         }
         count.finish()
     }
@@ -226,7 +251,18 @@ impl State {
             );
             return false;
         }
-        if !self.admit_object_bytes(Some(review.table.capacity())) {
+        if !self.query_schema_target_closed(&review) {
+            self.fail_query_action_review(
+                request_id,
+                self.localizer.text("query-action-schema-close-target"),
+            );
+            return false;
+        }
+        let review_bytes = review.table.capacity().checked_add(match &review.effect {
+            QueryActionEffect::Schema(effect) => effect.retained_bytes(),
+            _ => 0,
+        });
+        if !self.admit_object_bytes(review_bytes) {
             self.fail_query_action_review(request_id, self.localizer.text("objects-memory-limit"));
             return false;
         }
@@ -272,7 +308,7 @@ impl State {
 
         !self.busy && self.query_action.as_ref().is_some_and(|session| {
             session.origin.current(self)
-                && matches!(&session.phase, Phase::Review { review, .. } if review.id == review_id)
+                && matches!(&session.phase, Phase::Review { review, .. } if review.id == review_id && self.query_schema_target_closed(review))
         })
     }
 
@@ -298,14 +334,23 @@ impl State {
         if save_id == 0 || !self.can_apply_query_action(review_id) {
             return false;
         }
-        self.query_action
-            .as_mut()
-            .expect("checked action review owner")
-            .phase = Phase::Saving {
-            save_id,
-            cancel_requested: false,
-            resolving: false,
+        let Some(mut session) = self.query_action.take() else {
+            return false;
         };
+        session.phase = match session.phase {
+            Phase::Review { review, .. } => Phase::Saving {
+                review,
+                save_id,
+                cancel_requested: false,
+                resolving: false,
+            },
+            phase => {
+                session.phase = phase;
+                self.query_action = Some(session);
+                return false;
+            }
+        };
+        self.query_action = Some(session);
         true
     }
 
@@ -354,14 +399,23 @@ impl State {
             EditSaveOutcome::Cancelled(message) => EditSaveOutcome::Cancelled(normalize(message)),
             EditSaveOutcome::Failed(message) => EditSaveOutcome::Failed(normalize(message)),
         };
-        self.query_action
-            .as_mut()
-            .expect("checked action save owner")
-            .phase = Phase::Finished {
-            save_id,
-            outcome,
-            report_refused,
+        let Some(mut session) = self.query_action.take() else {
+            return false;
         };
+        session.phase = match session.phase {
+            Phase::Saving { review, .. } | Phase::Finished { review, .. } => Phase::Finished {
+                review,
+                save_id,
+                outcome,
+                report_refused,
+            },
+            phase => {
+                session.phase = phase;
+                self.query_action = Some(session);
+                return false;
+            }
+        };
+        self.query_action = Some(session);
         true
     }
 
@@ -380,19 +434,36 @@ impl State {
     }
 
     pub fn begin_query_action_resolution(&mut self, save_id: u64, operation_id: u64) -> bool {
-        let Some(session) = &mut self.query_action else {
-            return false;
-        };
         if operation_id == 0
-            || !matches!(session.phase, Phase::Finished { save_id: expected, outcome: EditSaveOutcome::Retained { .. }, .. } if expected == save_id)
+            || !self.query_action.as_ref().is_some_and(|session| {
+                matches!(&session.phase, Phase::Finished { save_id: expected,
+                outcome: EditSaveOutcome::Retained { .. }, .. } if *expected == save_id)
+            })
         {
             return false;
         }
-        session.phase = Phase::Saving {
-            save_id: operation_id,
-            cancel_requested: false,
-            resolving: true,
+        let Some(mut session) = self.query_action.take() else {
+            return false;
         };
+        session.phase = match session.phase {
+            Phase::Finished {
+                review,
+                save_id: expected,
+                outcome: EditSaveOutcome::Retained { .. },
+                ..
+            } if expected == save_id => Phase::Saving {
+                review,
+                save_id: operation_id,
+                cancel_requested: false,
+                resolving: true,
+            },
+            phase => {
+                session.phase = phase;
+                self.query_action = Some(session);
+                return false;
+            }
+        };
+        self.query_action = Some(session);
         true
     }
 

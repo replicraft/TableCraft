@@ -23,6 +23,7 @@ fn reviewing_kind(kind: QueryActionKind) -> State {
         QueryActionKind::Update => SQL,
         QueryActionKind::Delete => DELETE_SQL,
         QueryActionKind::Insert => INSERT_SQL,
+        QueryActionKind::Schema => "CREATE TABLE Items (Id LONG)",
     };
     reviewing_sql(kind, sql)
 }

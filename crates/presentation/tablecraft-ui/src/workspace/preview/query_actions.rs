@@ -103,6 +103,7 @@ impl Preview {
                     deleted_rows: 2,
                 },
                 QueryActionKind::Insert => QueryActionEffect::Insert { inserted_rows: 2 },
+                QueryActionKind::Schema => return None,
             },
         };
         self.state

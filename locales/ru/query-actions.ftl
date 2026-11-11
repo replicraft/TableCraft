@@ -17,3 +17,17 @@ query-action-insert-title = Запрос на добавление
 query-action-insert-reviewing = Проверка запроса на добавление…
 query-action-insert-inserted = Записей для добавления: { $count }
 query-action-insert-confirmation = Добавить проверенные записи в исходную базу данных?
+
+## Reviewed SQL schema changes
+query-action-schema-title = Запрос определения данных
+query-action-schema-reviewing = Проверка запроса изменения структуры…
+query-action-schema-confirmation = Применить это проверенное изменение структуры базы данных?
+query-action-schema-create-fields = Создаваемые поля: { $count }
+query-action-schema-drop-records = Записей в удаляемой таблице: { $count }
+query-action-schema-drop-field = Удаляемое поле: { $column }
+query-action-schema-create-confirmation = Создать эту проверенную таблицу в исходной базе данных?
+query-action-schema-drop-table-confirmation = Безвозвратно удалить эту проверенную таблицу и её записи из исходной базы данных?
+query-action-schema-drop-column-confirmation = Безвозвратно удалить это проверенное поле и его значения из исходной базы данных?
+query-action-schema-close-target = Закройте целевую таблицу перед выполнением этого запроса изменения структуры.
+query-action-schema-reopen-failed = Изменение структуры сохранено, но базу данных не удалось открыть заново. Не повторяйте запрос.
+query-action-schema-retry-reopen = Повторить открытие
