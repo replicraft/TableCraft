@@ -2,6 +2,7 @@
 use super::super::{CurrentFieldAdditionError as Error, Target};
 use super::{Plan, put16};
 use crate::{
+    NativeSortOrder,
     creation::profile::Field,
     format::{
         data_type::{INT32, SHORT_TEXT},
@@ -38,6 +39,16 @@ fn header(plan: &Plan) -> Result<[u8; COLUMN_ENTRY_BYTES], Error> {
 }
 
 pub(super) fn field(plan: &Plan, field: Field<'_>) -> Result<Frame, Error> {
+    let order = (field.kind == SHORT_TEXT)
+        .then_some(NativeSortOrder::from_native_bytes(GENERAL_SORT_ORDER));
+    field_with_order(plan, field, order)
+}
+
+pub(super) fn field_with_order(
+    plan: &Plan,
+    field: Field<'_>,
+    order: Option<NativeSortOrder>,
+) -> Result<Frame, Error> {
     let mut bytes = header(plan)?;
     bytes[0] = field.kind;
     bytes[FLAGS_OFFSET] = UPDATABLE_FLAG
@@ -49,7 +60,8 @@ pub(super) fn field(plan: &Plan, field: Field<'_>) -> Result<Frame, Error> {
     put16(&mut bytes, FIXED_OFFSET, field.offset.unwrap_or(0))?;
     put16(&mut bytes, WIDTH_OFFSET, field.width)?;
     if field.kind == SHORT_TEXT {
-        bytes[SORT_ORDER_OFFSET..FLAGS_OFFSET].copy_from_slice(&GENERAL_SORT_ORDER);
+        bytes[SORT_ORDER_OFFSET..FLAGS_OFFSET]
+            .copy_from_slice(&order.ok_or(Error::Preservation)?.native_bytes());
         bytes[FLAGS_OFFSET + 1] = if field.unicode_compression {
             layout::UNICODE_COMPRESSION_FLAG
         } else {

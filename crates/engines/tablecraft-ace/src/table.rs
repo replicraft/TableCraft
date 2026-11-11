@@ -86,7 +86,7 @@ pub use mutation::{
 pub use mutation::{
     CurrentFieldAdditionSource, NativeCurrentFieldAdditionCandidate,
     NativeCurrentShortTextFieldAdditionCandidate, NativeDeclaredFieldAdditionCandidate,
-    NativeRetainedTypedFieldAdditionCandidate,
+    NativeRetainedTypedFieldAdditionCandidate, NativeUnadornedFieldAdditionCandidate,
 };
 pub use mutation::{EditError, Int32Update, NativeEditPlan, WriteBlocker};
 #[cfg(all(feature = "ace16-create", feature = "journal"))]

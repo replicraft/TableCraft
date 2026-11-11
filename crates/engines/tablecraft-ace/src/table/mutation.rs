@@ -262,7 +262,7 @@ pub(crate) use add_field::DeclaredFieldAdditionEffect;
 pub use add_field::{
     CurrentFieldAdditionSource, NativeCurrentFieldAdditionCandidate,
     NativeCurrentShortTextFieldAdditionCandidate, NativeDeclaredFieldAdditionCandidate,
-    NativeRetainedTypedFieldAdditionCandidate,
+    NativeRetainedTypedFieldAdditionCandidate, NativeUnadornedFieldAdditionCandidate,
 };
 #[cfg(all(feature = "ace16-create", feature = "journal"))]
 pub use drop_field::{

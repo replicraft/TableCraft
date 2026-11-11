@@ -98,6 +98,23 @@ impl<'a> CreateColumn<'a> {
         }
     }
 
+    // Reconstitute already validated ordinary declaration data without gallery
+    // policies. The owning request retains its exact native type parameters.
+    #[cfg(feature = "journal")]
+    pub(super) const fn unadorned(name: &'a str, declaration: Declaration) -> Self {
+        Self {
+            name,
+            description: None,
+            declaration,
+            required: None,
+            allow_zero_length: None,
+            default_literal: None,
+            primary_key_name: None,
+            incrementing: false,
+            unicode_compression: false,
+        }
+    }
+
     /// Describe an ordinary fixed carrier; variable families require explicit
     /// native parameters through the separate declaration factories below.
     pub const fn new(name: &'a str, scalar: ScalarType) -> Self {

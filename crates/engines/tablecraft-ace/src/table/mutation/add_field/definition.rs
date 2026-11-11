@@ -2,7 +2,7 @@
 mod descriptor;
 use super::{CurrentFieldAdditionError as Error, Target};
 use crate::{
-    InspectError, NativeImage, TableSchema,
+    InspectError, NativeImage, NativeSortOrder, TableSchema,
     creation::profile::Field,
     format::{
         bytes::{u16_at, u32_at},
@@ -224,6 +224,19 @@ impl Plan {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Vec<u8>, Error> {
         let frame = descriptor::field(self, field)?;
+        self.build_frame(image, name, frame, budget, cancelled)
+    }
+
+    pub(super) fn build_field_with_order(
+        &self,
+        image: &NativeImage,
+        name: &str,
+        field: Field<'_>,
+        order: Option<NativeSortOrder>,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Vec<u8>, Error> {
+        let frame = descriptor::field_with_order(self, field, order)?;
         self.build_frame(image, name, frame, budget, cancelled)
     }
 

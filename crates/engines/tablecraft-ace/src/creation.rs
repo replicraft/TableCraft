@@ -30,6 +30,8 @@ pub(crate) mod properties;
 mod record;
 mod request;
 mod stored_text;
+#[cfg(feature = "journal")]
+mod unadorned_field_addition;
 mod variable;
 
 pub use add_column::{AddColumnCandidate, AddColumnError};
@@ -103,3 +105,6 @@ pub use field_addition::{RetainedFieldAdditionDefinition, RetainedFieldAdditionT
 
 #[cfg(feature = "journal")]
 pub use declared_field_addition::DeclaredFieldAdditionDefinition;
+
+#[cfg(feature = "journal")]
+pub use unadorned_field_addition::UnadornedFieldAdditionDefinition;

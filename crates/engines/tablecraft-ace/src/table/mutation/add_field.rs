@@ -4,6 +4,8 @@ mod definition;
 mod properties;
 mod retained;
 mod typed;
+mod unadorned;
+mod unadorned_source;
 mod verify;
 
 use crate::table::mutation::catalog_property::single_descriptor::DescriptorPatch;
@@ -24,6 +26,7 @@ use tablecraft_core::{
     limits::{Resource, ResourceBudget},
 };
 pub use typed::NativeRetainedTypedFieldAdditionCandidate;
+pub use unadorned::NativeUnadornedFieldAdditionCandidate;
 
 #[derive(Clone, Copy)]
 enum Target {

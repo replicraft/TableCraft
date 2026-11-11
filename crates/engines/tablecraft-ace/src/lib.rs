@@ -379,7 +379,7 @@ pub use table::CurrentFieldAdditionError;
 pub use table::{
     CurrentFieldAdditionSource, NativeCurrentFieldAdditionCandidate,
     NativeCurrentShortTextFieldAdditionCandidate, NativeDeclaredFieldAdditionCandidate,
-    NativeRetainedTypedFieldAdditionCandidate,
+    NativeRetainedTypedFieldAdditionCandidate, NativeUnadornedFieldAdditionCandidate,
 };
 #[cfg(all(feature = "ace16-create", feature = "journal"))]
 pub use table::{
@@ -436,6 +436,7 @@ pub use transaction::{
 #[cfg(all(feature = "journal", feature = "ace16-create"))]
 pub use creation::{
     DeclaredFieldAdditionDefinition, RetainedFieldAdditionDefinition, RetainedFieldAdditionType,
+    UnadornedFieldAdditionDefinition,
 };
 
 #[cfg(feature = "journal")]
