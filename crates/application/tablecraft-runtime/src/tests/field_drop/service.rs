@@ -212,3 +212,5 @@ fn changed_source_after_review_retains_the_real_release_owner_without_a_journal(
 }
 
 mod inserting;
+
+mod typed;
