@@ -1,6 +1,6 @@
 use super::{confirm, enter, finish_reads, opened, run};
 use egui::accesskit::Role;
-use egui_kittest::kittest::Queryable;
+use egui_kittest::kittest::{NodeT, Queryable};
 use std::sync::Arc;
 
 fn assert_image(actual: &[u8], expected: &[u8]) {
