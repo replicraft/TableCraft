@@ -293,3 +293,120 @@ fn retained_fixed_scalar_sources_keep_geometry_and_resource_refusals() {
         ));
     }
 }
+
+#[test]
+fn retained_fixed_scalar_materialization_preserves_short_complete_records_and_nulls() {
+    let seed = fields::source(fields::Case::FirstNumber).bytes;
+    let definition = u32::try_from(seed.len() / 4096).unwrap();
+    let empty = raw::append_table(&seed, "Measurements");
+    let first = raw::historical::append(&empty, definition, 124);
+    let before = raw::historical::append(&first, definition, -73);
+    let mut original_values = vec![Value::Int32(1), Value::Int32(124)];
+    original_values.extend((0..6).map(|_| Value::Null));
+    let mut sibling_values = vec![Value::Int32(2), Value::Int32(-73)];
+    sibling_values.extend((0..6).map(|_| Value::Null));
+    assert_eq!(
+        rows(&before, "Measurements"),
+        vec![original_values.clone(), sibling_values.clone()]
+    );
+    image(&before)
+        .check_native_retained_fixed_scalar_rows_table("Measurements", &mut budget(), &|| false)
+        .unwrap();
+    let index = (definition as usize + 2) * 4096;
+    let refills = [
+        raw::Scalar::Byte(200),
+        raw::Scalar::Int16(-2345),
+        raw::Scalar::Int64(9_007_199_254_740_995),
+        raw::Scalar::SingleBits(0xc020_0000),
+        raw::Scalar::DoubleBits(0xc023_c0ca_4591_7211),
+        raw::Scalar::DateTimeBits(0x400c_0000_0000_0000),
+    ];
+    for (position, column) in raw::COLUMNS_TO_EDIT.into_iter().enumerate() {
+        let unchanged = plan(&before, column.name(), 0, Value::Null, Value::Null).unwrap();
+        assert_eq!(unchanged.changed_rows(), 0);
+        equal_image(unchanged.after_bytes(), &before);
+        equal_image(
+            unchanged.after_bytes(),
+            &raw::historical::after(&before, definition, 0, column, None),
+        );
+        assert!(matches!(
+            plan(
+                &before,
+                column.name(),
+                0,
+                values(inputs()[position]),
+                Value::Null
+            ),
+            Err(EditError::Conflict)
+        ));
+
+        let supplied = values(inputs()[position]);
+        let materialized = plan(&before, column.name(), 0, Value::Null, supplied.clone()).unwrap();
+        let expected =
+            raw::historical::after(&before, definition, 0, column, Some(inputs()[position]));
+        assert_eq!(materialized.changed_rows(), 1);
+        equal_image(materialized.after_bytes(), &expected);
+        assert_eq!(
+            &materialized.after_bytes()[index..index + 4096],
+            &before[index..index + 4096],
+            "original primary membership is unchanged"
+        );
+        let mut expected_values = original_values.clone();
+        expected_values[column.number()] = supplied.clone();
+        assert_eq!(
+            rows(materialized.after_bytes(), "Measurements"),
+            vec![expected_values, sibling_values.clone()]
+        );
+        let again = plan(
+            &expected,
+            column.name(),
+            0,
+            supplied.clone(),
+            supplied.clone(),
+        )
+        .unwrap();
+        assert_eq!(again.changed_rows(), 0);
+        equal_image(again.after_bytes(), &expected);
+
+        let cleared = plan(&expected, column.name(), 0, supplied, Value::Null).unwrap();
+        let null_image = raw::update(&expected, definition, 0, column, None);
+        equal_image(cleared.after_bytes(), &null_image);
+        assert_eq!(
+            expected
+                .iter()
+                .zip(&null_image)
+                .filter(|(a, b)| a != b)
+                .count(),
+            1,
+            "NULL changes only the selected presence bit, retaining ignored payload"
+        );
+        assert_eq!(
+            rows(cleared.after_bytes(), "Measurements"),
+            vec![original_values.clone(), sibling_values.clone()]
+        );
+        let refilled = plan(
+            &null_image,
+            column.name(),
+            0,
+            Value::Null,
+            values(refills[position]),
+        )
+        .unwrap();
+        let refill_image = raw::update(&null_image, definition, 0, column, Some(refills[position]));
+        equal_image(refilled.after_bytes(), &refill_image);
+        let mut expected_values = original_values.clone();
+        expected_values[column.number()] = values(refills[position]);
+        assert_eq!(
+            rows(refilled.after_bytes(), "Measurements"),
+            vec![expected_values, sibling_values.clone()]
+        );
+        check_table(
+            &mut Cursor::new(refilled.after_bytes()),
+            SCOPE,
+            "Measurements",
+            &mut budget(),
+            &|| false,
+        )
+        .unwrap();
+    }
+}
