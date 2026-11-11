@@ -101,14 +101,14 @@ mod tests {
         assert_eq!(&supplied[base..base + 16], &before[base..base + 16]);
         assert_eq!(&supplied[base + 16..base + 20], &[3, 0, 0, 0]);
         assert!(
-            &supplied[base + 20..base + 4096] == &before[base + 20..base + 4096],
+            supplied[base + 20..base + 4096] == before[base + 20..base + 4096],
             "keyless append preserves every declaration and counter beyond live count"
         );
         for page in 0..before.len() / 4096 {
             if page != definition as usize && page != definition as usize + 1 {
                 assert!(
-                    &supplied[page * 4096..(page + 1) * 4096]
-                        == &before[page * 4096..(page + 1) * 4096],
+                    supplied[page * 4096..(page + 1) * 4096]
+                        == before[page * 4096..(page + 1) * 4096],
                     "protected page {page}"
                 );
             }
@@ -149,8 +149,7 @@ mod tests {
         for page in 0..before.len() / 4096 {
             if !(source.definition as usize..source.definition as usize + 3).contains(&page) {
                 assert!(
-                    &null[page * 4096..(page + 1) * 4096]
-                        == &before[page * 4096..(page + 1) * 4096],
+                    null[page * 4096..(page + 1) * 4096] == before[page * 4096..(page + 1) * 4096],
                     "protected page {page}"
                 );
             }
