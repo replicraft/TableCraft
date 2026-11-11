@@ -197,3 +197,5 @@ fn original_empty_table_decoders_and_new_populated_decoder_remain_closed() {
         Err(PopulatedTableIntentError::UnsupportedVersion)
     ));
 }
+
+mod recovery;
