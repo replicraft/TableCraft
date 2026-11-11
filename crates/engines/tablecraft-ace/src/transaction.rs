@@ -275,3 +275,11 @@ pub use intent::{FieldDropIntentError, NativeFieldDropIntent, QualifiedRetainedF
 pub use intent::{
     QualifiedFieldDropRecovery, RecoverableFieldDropPlan, qualify_native_field_drop_recovery,
 };
+
+#[cfg(feature = "journal")]
+pub use intent::RetainedTypedFieldAdditionIntentError;
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub use intent::{
+    NativeRetainedTypedFieldAdditionIntent, QualifiedRetainedTypedFieldAdditionRecovery,
+    RecoverableRetainedTypedFieldAdditionPlan,
+};
