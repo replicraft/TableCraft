@@ -37,7 +37,7 @@ fn row_start(bytes: &[u8], page: usize, slot: usize) -> usize {
 
 #[test]
 fn parents_keep_scoped_keys_and_exact_child_rows_including_empty_membership() {
-    for code in [2, 5, 6] {
+    for code in [2, 3, 5, 6] {
         let mut bytes = populated();
         bytes[20] = code;
         let links = read(&bytes).unwrap();
@@ -125,7 +125,6 @@ fn absent_parent_keys_stay_null_and_unqualified_profiles_flags_and_keys_stay_uns
     assert_eq!(links.parents()[2].key(), None);
     assert_eq!(links.parents()[2].child_count(), 0);
     for (offset, value) in [
-        (20, 3),
         (10 * 4096 + 63 + 25 + 15, 3),
         (10 * 4096 + 63 + 25 + 16, 0x40),
     ] {
@@ -133,6 +132,10 @@ fn absent_parent_keys_stay_null_and_unqualified_profiles_flags_and_keys_stay_uns
         bytes[offset] = value;
         assert_eq!(read(&bytes).err(), Some(InspectError::Unsupported));
     }
+    let mut jet = original.clone();
+    jet[4..20].copy_from_slice(b"Standard Jet DB\0");
+    jet[20] = 1;
+    assert_eq!(read(&jet).err(), Some(InspectError::Unsupported));
     let mut bytes = original;
     let first = row_start(&bytes, 12, 0);
     support::put32(&mut bytes, first + 6, 0);

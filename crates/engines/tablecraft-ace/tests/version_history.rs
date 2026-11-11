@@ -41,7 +41,7 @@ fn read(bytes: &[u8], memo: &str) -> Result<VersionHistoryColumn, InspectError> 
 
 #[test]
 fn visible_memo_resolves_hidden_history_without_sorting_replacing_or_synthesizing_values() {
-    for code in [2, 5, 6] {
+    for code in [2, 3, 5, 6] {
         let mut bytes = database();
         bytes[20] = code;
         let history = read(&bytes, "nOtEs").unwrap();
@@ -125,14 +125,10 @@ fn history_mapping_requires_a_qualified_visible_memo_template_and_hidden_key() {
             .len(),
         2
     );
-    for code in [1, 3] {
-        let mut bytes = original.clone();
-        bytes[20] = code;
-        if code == 1 {
-            bytes[4..20].copy_from_slice(b"Standard Jet DB\0");
-        }
-        assert_eq!(read(&bytes, "Notes").err(), Some(InspectError::Unsupported));
-    }
+    let mut jet = original;
+    jet[4..20].copy_from_slice(b"Standard Jet DB\0");
+    jet[20] = 1;
+    assert_eq!(read(&jet, "Notes").err(), Some(InspectError::Unsupported));
 }
 
 #[test]
