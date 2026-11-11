@@ -1,4 +1,6 @@
 //! Independent ACE declaration syntax; these tests do not execute provider DDL.
+mod normalization;
+
 use super::{queries::query_round_trip, *};
 use crate::{
     query::{Statement, definition::*},
