@@ -99,6 +99,11 @@ mod replacing;
 mod restart;
 mod saved;
 mod schema;
+#[cfg(all(
+    feature = "offline-edit",
+    any(target_os = "macos", target_os = "linux", windows)
+))]
+mod schema_sql;
 mod stored;
 mod table_creation_availability;
 #[cfg(all(
