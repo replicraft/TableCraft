@@ -23,7 +23,7 @@ pub struct DiscoveredQuery {
 
 enum Mode {
     Strict,
-    Implicit(PreparedParameterQuery),
+    Implicit(Box<PreparedParameterQuery>),
 }
 
 impl DiscoveredQuery {
@@ -85,7 +85,10 @@ impl Document {
                 .map_err(super::options::query_error)?;
                 let specs = parameters::discovered_specs(&prepared, parsed.query(), &mut output)
                     .map_err(super::options::presentation_error)?;
-                (Mode::Implicit(prepared), specs)
+                output
+                    .allocation(1, size_of::<PreparedParameterQuery>())
+                    .map_err(super::options::presentation_error)?;
+                (Mode::Implicit(Box::new(prepared)), specs)
             }
         };
         output
