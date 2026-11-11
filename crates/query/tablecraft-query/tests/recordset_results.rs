@@ -1,3 +1,5 @@
+#[path = "recordset_results/mixed.rs"]
+mod mixed;
 #[path = "recordset_results/source.rs"]
 mod source;
 
@@ -16,7 +18,7 @@ use tablecraft_query::{
 };
 use tablecraft_sql::parse_query;
 
-fn run(sql: &str, data: &Data) -> Result<CollectionQueryResult, QueryError> {
+fn run(sql: &str, data: &dyn Source) -> Result<CollectionQueryResult, QueryError> {
     let parsed = parse_query(sql, Default::default()).unwrap();
     prepare(parsed.query(), data)?.execute_collections(data, &[], ExecutionOptions::default())
 }
