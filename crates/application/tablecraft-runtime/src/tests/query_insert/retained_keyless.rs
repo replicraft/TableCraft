@@ -7,8 +7,13 @@ use tablecraft_testkit::fixtures::access::canonical_retained_add_table::{field_c
 fn values_and_select_append_to_native_field_one_without_recreating_retired_field_zero() {
     let source = fields::source(fields::Case::FirstNumber);
     let definition = (source.bytes.len() / 4096) as u32;
+    let catalog_root = usize::from(u16::from_le_bytes(
+        source.bytes[4 * 4096 + 12..4 * 4096 + 14]
+            .try_into()
+            .unwrap(),
+    ));
     let original = field_changes::keyless_first_field(&source.bytes, "Keyless");
-    let before = field_changes::drop_field(&original, definition, source.catalog_root, "Id");
+    let before = field_changes::drop_field(&original, definition, catalog_root, "Id");
 
     for (sql, expected_value) in [
         ("INSERT INTO Keyless (Score) VALUES (77)", 77),
