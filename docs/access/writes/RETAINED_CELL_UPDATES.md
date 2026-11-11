@@ -1,12 +1,49 @@
 # Cell updates across retained table storage
 
 The normal reviewed cell editor can update qualified unindexed Boolean, Byte,
-Integer, LONG, Large Number, Single, Double, Currency, legacy DateTime and Short
-Text fields after table replacement, subsequent table creation and retained row
+Integer, LONG, Large Number, Single, Double, Currency, legacy DateTime, GUID,
+Decimal and Short Text fields after table replacement, subsequent table creation and retained row
 insertion. This separate ACE16 source family uses actual catalog/allocation
 ownership rather than the original eleven-page, definition-7 geometry. Desktop
 and MCP consume the shared runtime and Access adapter; no native editing logic
 was added to the desktop host.
+
+## Exact GUID and Decimal edits
+
+`TCNI0022`/profile 22 adds separate GUID and Decimal actions over the complete
+retained-row source. A GUID target must be a fixed, updatable native GUID with
+exactly 16 payload bytes. A Decimal target must be an updatable, non-complex
+variable NUMERIC field with exactly 17 payload bytes and valid declared precision
+1–28 and scale 0–precision. Both require exact native flags and no extended flags;
+indexed, generated and calculated targets remain refused. An unsupported target
+never grants a different action permission on the same table.
+
+GUID values retain their canonical identity and native mixed-endian field bytes.
+This supplies no GUID generation, replication or GUID-default authoring. Decimal
+input is parsed exactly, rescaled only without changing its value, and checked
+against the actual field's precision and scale. The signed coefficient never
+passes through floating point, Currency or display formatting. Microsoft's
+[Access SQL type contract](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/sql-data-types)
+defines the precision/scale range; [Number field sizes](https://support.microsoft.com/en-us/access/set-the-field-size)
+separately identifies Replication ID as GUID storage. The native NUMERIC record
+carrier is distinct from the API-level storage-size descriptions in those references.
+
+GUID NULL clears the selected presence bit while retaining ignored payload bytes.
+Decimal NULL removes only the selected variable payload and rebuilds the footer,
+retaining the old physical footprint, unrelated segments and padding. Refilling
+can grow or forward the record while retaining that padding. Source qualification,
+expected-value equality, complete ownership and preservation checks still run for
+NULL-to-NULL and exact no-ops; a no-op preserves the complete image. Ambiguous
+retired tails do not acquire admission, and this section does not qualify all
+historical short-record materialization cases.
+
+The original request uses explicit `encode_retained_wide_values` and
+`decode_retained_wide_values` framing. It retains the actual GUID or Decimal
+expected/replacement carriers and whole BEFORE binding, not a patch or permission.
+The consuming plan and fresh recovery reconstruction use checked V3 storage;
+older wire languages and V1/V2 preparation remain separate. Action dispatch
+selects 22 from the actual target metadata before planning, alongside 21 for the
+six fixed scalars, 20 for Boolean, 19 for Currency and 17 for LONG/Text.
 
 ## Exact fixed scalars
 
@@ -71,7 +108,8 @@ qualification APIs refuse 21 before effects. Journal-only builds decode its
 original data but return typed unsupported-source refusal for native recovery.
 
 The Access capability is a union of eligible actions over one qualified source.
-Actual target metadata selects 21 for these six types, 20 for Boolean, 19 for
+Actual target metadata selects 22 for GUID/Decimal, 21 for these six types,
+20 for Boolean, 19 for
 Currency and 17 for LONG/Text, before original-group construction or planning.
 An ineligible target is not redirected to another family. A reviewed SQL Byte
 assignment followed by a LONG assignment on the same retained table keeps the
@@ -131,7 +169,7 @@ mask bit and the complete protected image complement. Non-Boolean fixed offsets
 retain their ordinary overlap and extent checks.
 
 The current retained-cell capability combines the eligible scalar actions
-from one qualified source. The actual target selects TCNI21, TCNI20, TCNI19 or TCNI17;
+from one qualified source. The actual target selects TCNI22, TCNI21, TCNI20, TCNI19 or TCNI17;
 TCNI18 keeps its separate opaque Int32 materialization scope. No failed action
 is retried as another family. The original Boolean wire carrier remains canonical
 0/1 with an explicit TCNI20 discriminator; V3 recovery performs fresh native
@@ -308,7 +346,7 @@ cancellation and cumulative caller budgets. Native file geometry, field kinds
 and physical storage restrictions are checked independently of inert request data.
 
 Retained and legacy request grammars remain explicit. The generic update decoder
-selects TCNI17–21 from exact framing; older direct decoders and encode methods cannot reinterpret
+selects TCNI17–22 from exact framing; older direct decoders and encode methods cannot reinterpret
 its retained body as their own grammar. Fresh reviewed requalification preserves
 the selected family and reconstructs the complete BEFORE/AFTER under separate
 native/proof allowances.

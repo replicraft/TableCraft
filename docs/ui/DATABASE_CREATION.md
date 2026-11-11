@@ -984,9 +984,29 @@ save; this does not infer precision from regional display text.
 
 [TCNI21 eligibility](../access/writes/RETAINED_CELL_UPDATES.md) remains distinct
 from creation and insertion support. Indexed, generated, calculated and otherwise
-unqualified targets remain unavailable. Decimal and Replication ID/GUID can be
-authored and inserted through their current profiles but still need retained-cell
-edit qualification. Date/Time Extended has a separate native representation and
+unqualified targets remain unavailable. Decimal and Replication ID/GUID authoring,
+insertion and retained-cell editing keep separate native qualifications. The
+[exact-value action](../access/writes/RETAINED_CELL_UPDATES.md#exact-guid-and-decimal-edits)
+uses TCNI22 for qualified existing GUID and Decimal targets. Date/Time Extended has a separate native representation and
 is outside this legacy Date/Time action. The
 [workflow receipt](../../tests/results/schema/retained-fixed-scalar-workflows-2026-11-10.json)
 records the local headless checks and qualification limits.
+
+
+## Retained exact-value editing
+
+The shared existing-cell editor now routes qualified Replication ID/GUID and
+Decimal fields through TCNI22. The `ExactValues` headless journey authors a
+Number/Replication ID field and a Decimal field with precision 28 and scale 4
+through the actual Design controls. Its independently authored schema and row
+images cover supplied GUID identity and a Decimal coefficient beyond binary64's
+exact integer range, alongside a LONG control field on the same table.
+
+Replacement input uses the existing typed GUID and Decimal hints, never the
+formatted cell label. The journey specifies separate review/apply/save boundaries
+for replacement, NULL and refill, then fresh reopen. Malformed GUID input,
+nonexact Decimal scale and precision overflow retain the original file and do
+not expose Apply; corrected input requires a new successful review. These are
+acceptance scenarios for the implemented route, not a claim of Windows/Access
+save/reopen equivalence. Saved-field ADD of these kinds, indexed targets, GUID
+generation and Date/Time Extended remain separate work.

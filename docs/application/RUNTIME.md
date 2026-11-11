@@ -702,8 +702,13 @@ finite floating values, expected state, NULL rules, unindexed/nongenerated flags
 source programs and full-image binding remain enforced. Existing action families
 keep their own target restrictions. A completely framed shorter stored row can
 materialize a later fixed field while other absent fields stay NULL; a NULL
-no-op preserves its complete original frame. Decimal, Guid and DateTimeExtended
-remain separate edit-qualification work. The
+no-op preserves its complete original frame. Retained GUID and Decimal targets
+use the distinct TCNI22 action through the same commands. GUID input keeps exact
+identity; Decimal input retains the actual declared precision/scale and refuses
+inexact rescaling or overflow before a review can authorize saving. The source's
+eligible actions remain a target-selected union: an unsupported GUID or Decimal
+does not disable unrelated qualified fields or trigger another action fallback.
+DateTimeExtended remains separate edit-qualification work. The
 [workflow receipt](../../tests/results/schema/retained-fixed-scalar-workflows-2026-11-10.json)
 records actual creation, insertion, LONG control, six-type value/NULL/refill and
 independent recovery checks.
