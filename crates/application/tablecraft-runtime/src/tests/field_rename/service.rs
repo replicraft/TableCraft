@@ -256,3 +256,5 @@ fn cancellation_before_review_does_not_issue_a_capability_or_change_bytes() {
 mod fitting;
 
 mod populated;
+
+mod typed;
