@@ -11,8 +11,9 @@ use tablecraft_ace::{
     NativeDefaultZeroAddColumnIntent, NativeFieldAdditionAfterOffHistoryIntent,
     NativeFieldAdditionAfterOffIntent, NativeFieldAdditionIntent, NativeFieldDropIntent,
     NativeFieldHistoryDatabaseOptionsIntent, NativeFieldRenameIntent, NativeFirstTableIntent,
-    NativeRepeatedDefaultZeroAddColumnIntent, qualify_native_add_column_recovery,
-    qualify_native_add_table_recovery, qualify_native_current_field_addition_recovery,
+    NativePopulatedAddTableIntent, NativeRepeatedDefaultZeroAddColumnIntent,
+    qualify_native_add_column_recovery, qualify_native_add_table_recovery,
+    qualify_native_current_field_addition_recovery,
     qualify_native_default_zero_add_column_recovery,
     qualify_native_field_addition_after_off_history_recovery,
     qualify_native_field_addition_after_off_recovery, qualify_native_field_addition_recovery,
@@ -332,6 +333,19 @@ impl OfflineWriteSession {
                         )
                     }
                     .map_err(Cause::Qualification)?;
+                    qualified
+                        .recover(&mut target, budget, cancelled)
+                        .map_err(Cause::Recovery)
+                }
+                #[cfg(feature = "ace16-create")]
+                MutationIntent::PopulatedTable(intent) => {
+                    let (mut target, mut journal) =
+                        pair.resizable_storage().map_err(Cause::Pair)?;
+                    let checked =
+                        inspect_v3(&mut journal, budget, cancelled).map_err(Cause::Recovery)?;
+                    let qualified = intent
+                        .qualify_recovery_shared(checked, slot.scope, budget, cancelled)
+                        .map_err(Cause::Qualification)?;
                     qualified
                         .recover(&mut target, budget, cancelled)
                         .map_err(Cause::Recovery)
@@ -787,6 +801,17 @@ impl OfflineWriteSession {
                         .map_err(Cause::Recovery)
                 }
                 #[cfg(feature = "ace16-create")]
+                MutationIntent::PopulatedTable(intent) => {
+                    let checked =
+                        inspect_v3(&mut journal, budget, cancelled).map_err(Cause::Recovery)?;
+                    let qualified = intent
+                        .qualify_recovery_shared(checked, slot.scope, budget, cancelled)
+                        .map_err(Cause::Qualification)?;
+                    qualified
+                        .confirm_completed(&mut target, budget, cancelled)
+                        .map_err(Cause::Recovery)
+                }
+                #[cfg(feature = "ace16-create")]
                 MutationIntent::AddTable(intent) => {
                     let qualified = if intent.is_native() {
                         let checked =
@@ -1000,6 +1025,7 @@ impl OfflineWriteSession {
             .max(NativeOmittedInsertIntent::MAX_RETAINED_ENCODED_BYTES as u64)
             .max(NativeFirstTableIntent::MAX_ENCODED_BYTES as u64)
             .max(NativeFirstTableIntent::MAX_NATIVE_ENCODED_BYTES as u64)
+            .max(NativePopulatedAddTableIntent::MAX_ENCODED_BYTES as u64)
             .max(NativeAddTableIntent::MAX_ENCODED_BYTES as u64)
             .max(NativeAddTableIntent::MAX_NATIVE_ENCODED_BYTES as u64)
             .max(NativeAddColumnIntent::MAX_ENCODED_BYTES as u64)

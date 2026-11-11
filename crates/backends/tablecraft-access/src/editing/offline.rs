@@ -20,6 +20,8 @@ mod field_rename;
 mod first_table;
 mod insert;
 mod plan;
+#[cfg(feature = "ace16-create")]
+mod populated_table;
 mod query_expression;
 mod recovery;
 mod rename;
@@ -50,6 +52,8 @@ pub use field_rename::StagedFieldRename;
 #[cfg(feature = "ace16-create")]
 pub use first_table::StagedFirstTable;
 pub use insert::{OfflineTableInserter, StagedInsert};
+#[cfg(feature = "ace16-create")]
+pub use populated_table::StagedPopulatedAddTable;
 pub use query_expression::StagedQueryExpression;
 pub use rename::StagedTableRename;
 pub use table::OfflineTableEditor;
@@ -108,7 +112,7 @@ pub enum SchemaChange {
     TableRenamed,
     /// One qualified empty table was removed from the catalog; its storage remains retained.
     TableDropped,
-    /// A new empty table was appended while retaining existing database objects.
+    /// A new table was appended while retaining existing database objects.
     TableAdded {
         /// Number of explicitly declared fields in the added table.
         column_count: usize,

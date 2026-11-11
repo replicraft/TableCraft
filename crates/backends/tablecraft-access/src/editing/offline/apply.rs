@@ -14,6 +14,11 @@ pub(super) enum CompletionFacts {
         changed: Option<usize>,
     },
     Schema(Option<SchemaChange>),
+    #[cfg(feature = "ace16-create")]
+    PopulatedTable {
+        column_count: usize,
+        inserted_rows: usize,
+    },
     Query(Option<QueryChange>),
     #[cfg(feature = "ace16-create")]
     DatabaseOptions(super::DatabaseOptionsChange),
@@ -30,11 +35,23 @@ pub(super) fn apply(
     let _span = tracing::debug_span!("access.offline.apply").entered();
     let (matched, changed, schema, query, database_options) = match facts {
         CompletionFacts::Rows { matched, changed } => (matched, changed, None, None, None),
+        #[cfg(feature = "ace16-create")]
+        CompletionFacts::PopulatedTable {
+            column_count,
+            inserted_rows,
+        } => (
+            None,
+            Some(inserted_rows),
+            Some(SchemaChange::TableAdded { column_count }),
+            None,
+            None,
+        ),
         CompletionFacts::Schema(schema) => (None, None, schema, None, None),
         CompletionFacts::Query(query) => (None, None, None, query, None),
         #[cfg(feature = "ace16-create")]
         CompletionFacts::DatabaseOptions(options) => (None, None, None, None, Some(options)),
     };
+    let explicit_intent_limit = plan.explicit_intent_limit();
     let intent = match plan.encode_intent(budget, cancelled) {
         Ok(intent) => intent,
         Err(cause) => return Err(session.fail(Phase::Intent, cause)),
@@ -43,7 +60,13 @@ pub(super) fn apply(
         session.require_ready()?;
         let slot = session.slot_mut()?;
         let target = slot.target.take().ok_or(Cause::InvalidState)?;
-        match OfflineJournalPair::create(target, bundle, intent, budget, cancelled) {
+        let created = match explicit_intent_limit {
+            Some(limit) => OfflineJournalPair::create_with_intent_limit(
+                target, bundle, intent, limit, budget, cancelled,
+            ),
+            None => OfflineJournalPair::create(target, bundle, intent, budget, cancelled),
+        };
+        match created {
             Ok(pair) => {
                 slot.pair = Some(pair);
                 slot.state = SessionState::RetainedJournal;

@@ -62,6 +62,13 @@ pub enum Phase {
 /// Sanitized typed cause. Resources remain in Failure rather than being discarded.
 #[derive(Debug, Error)]
 pub enum Cause {
+    /// This build cannot acquire the source authority required by the action.
+    #[error("native action source is unsupported by this build")]
+    UnsupportedSource,
+    /// Original populated-table request encoding refused.
+    #[cfg(feature = "ace16-create")]
+    #[error(transparent)]
+    PopulatedTableIntent(tablecraft_ace::PopulatedTableIntentError),
     /// Original table DROP request or complete native reconstruction refused.
     #[error(transparent)]
     TableDropIntent(TableDropIntentError),

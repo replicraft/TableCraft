@@ -360,3 +360,42 @@ fn cancellation_and_native_query_snapshot_allowances_return_no_partial_preparati
         )))
     ));
 }
+
+#[cfg(feature = "journal")]
+#[test]
+fn complete_preparation_finishes_one_source_bound_populated_candidate() {
+    let before = fields::source(fields::Case::FirstNumber).bytes;
+    let definition = (before.len() / 4096) as u32;
+    let mut bytes = desktop::append(&before, "Items", raw::Target::GeneratedNumber);
+    let literals = (0..70)
+        .map(|row| (row % 17 != 0).then_some(row))
+        .collect::<Vec<_>>();
+    for value in &literals {
+        bytes = rows::append(
+            &bytes,
+            definition,
+            rows::Profile::DesktopNumber,
+            value.map_or(rows::Input::Null, rows::Input::Number),
+        );
+    }
+    let expected = raw::populated::numbers(&bytes, "Archive", &literals);
+    let candidate = prepare(
+        &bytes,
+        "SELECT Score AS CopiedScore INTO Archive FROM Items ORDER BY ID",
+    )
+    .unwrap()
+    .finish(&mut budget(), &|| false)
+    .unwrap();
+    assert_eq!(candidate.before_bytes(), bytes.as_slice());
+    assert_eq!(candidate.row_count(), 70);
+    assert_eq!(candidate.after_bytes().len(), expected.len());
+    assert_eq!(
+        candidate
+            .after_bytes()
+            .iter()
+            .zip(&expected)
+            .position(|(a, b)| a != b),
+        None,
+        "first differing complete populated image byte"
+    );
+}

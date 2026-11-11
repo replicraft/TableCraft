@@ -7,6 +7,8 @@ use tablecraft_ace::{
     CreateDatabaseError, FileFormat, FirstTableDefinition, InspectError, NativeImage,
     TableSnapshotLimits, inspect_table_schema,
 };
+#[cfg(feature = "journal")]
+use tablecraft_ace::{PopulatedAddTableError, PopulatedAddTablePlan};
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::ObjectKind;
 use tablecraft_query::{ExecutionOptions, MakeTableError, plan_make_table};
@@ -29,6 +31,10 @@ pub enum NativeMakeTableError {
     /// The exact physical declaration cannot be represented by the creation owner.
     #[error(transparent)]
     Declaration(#[from] CreateDatabaseError),
+    /// Atomic populated native construction refused the captured request.
+    #[cfg(feature = "journal")]
+    #[error(transparent)]
+    Populated(#[from] PopulatedAddTableError),
     /// Complete query evaluation failed; no partial rows are returned.
     #[error(transparent)]
     Query(#[from] MakeTableError),
@@ -44,6 +50,19 @@ pub struct PreparedNativeMakeTable {
 }
 
 impl PreparedNativeMakeTable {
+    /// Consume the same original declaration and complete rows into one atomic
+    /// native candidate. No SQL is reexecuted and no empty table is saved first.
+    #[cfg(feature = "journal")]
+    pub fn finish(
+        self,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<PopulatedAddTablePlan, NativeMakeTableError> {
+        Ok(self
+            .original
+            .plan_populated_add_table(self.definition, self.rows, budget, cancelled)?)
+    }
+
     /// Exact original from which both physical declarations and values were read.
     pub fn original(&self) -> &NativeImage {
         &self.original

@@ -12,8 +12,9 @@ use tablecraft_ace::{
     AddTablePlan, FirstTablePlan, NativeAddColumnIntent, NativeAddTableIntent,
     NativeDefaultZeroAddColumnIntent, NativeFieldAdditionAfterOffHistoryIntent,
     NativeFieldAdditionAfterOffIntent, NativeFieldAdditionIntent, NativeFirstTableIntent,
-    NativeRepeatedDefaultZeroAddColumnIntent, NativeRetainedTypedFieldAdditionIntent,
-    RecoverableAddColumnPlan, RecoverableFieldDropPlan, RecoverableFieldRenamePlan,
+    NativePopulatedAddTableIntent, NativeRepeatedDefaultZeroAddColumnIntent,
+    NativeRetainedTypedFieldAdditionIntent, PopulatedAddTablePlan, RecoverableAddColumnPlan,
+    RecoverableFieldDropPlan, RecoverableFieldRenamePlan,
 };
 use tablecraft_ace::{
     NativeClockInsertIntent, NativeCompleteInsertIntent, NativeCurrentFieldAdditionIntent,
@@ -31,6 +32,7 @@ const FIELD_RENAME_FAMILY: &[u8; 4] = b"TCFR";
 #[cfg(feature = "ace16-create")]
 const FIELD_DROP_FAMILY: &[u8; 4] = b"TCFD";
 const TABLE_DROP_FAMILY: &[u8; 4] = b"TCTD";
+const POPULATED_TABLE_FAMILY: &[u8; 4] = b"TCPT";
 
 #[cfg(all(
     test,
@@ -41,6 +43,9 @@ mod non_tail_tests;
 
 #[cfg(all(test, any(target_os = "macos", target_os = "linux", windows)))]
 mod keyless_tests;
+
+#[cfg(all(test, not(feature = "ace16-create")))]
+mod populated_tests;
 
 pub(super) enum MutationPlan {
     #[cfg(feature = "ace16-create")]
@@ -63,15 +68,31 @@ pub(super) enum MutationPlan {
     FirstTable(FirstTablePlan),
     #[cfg(feature = "ace16-create")]
     AddTable(AddTablePlan),
+    #[cfg(feature = "ace16-create")]
+    PopulatedTable(PopulatedAddTablePlan),
 }
 
 impl MutationPlan {
+    pub(super) fn explicit_intent_limit(&self) -> Option<u64> {
+        match self {
+            #[cfg(feature = "ace16-create")]
+            Self::PopulatedTable(_) => {
+                Some(NativePopulatedAddTableIntent::MAX_ENCODED_BYTES as u64)
+            }
+            _ => None,
+        }
+    }
+
     pub(super) fn encode_intent(
         &self,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Vec<u8>, Cause> {
         match self {
+            #[cfg(feature = "ace16-create")]
+            Self::PopulatedTable(plan) => plan
+                .encode_intent(budget, cancelled)
+                .map_err(Cause::PopulatedTableIntent),
             #[cfg(feature = "ace16-create")]
             Self::DatabaseOptions(plan) => plan.encode_intent(budget, cancelled),
             Self::QueryExpression(plan) => plan.encode_intent(budget, cancelled),
@@ -128,6 +149,14 @@ impl MutationPlan {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<(), Cause> {
         let prepared = match self {
+            #[cfg(feature = "ace16-create")]
+            Self::PopulatedTable(plan) => {
+                return plan
+                    .prepare_populated(target, journal, budget, cancelled)
+                    .map_err(Cause::Prepare)?
+                    .commit(budget, cancelled)
+                    .map_err(Cause::Commit);
+            }
             #[cfg(feature = "ace16-create")]
             Self::DatabaseOptions(plan) => {
                 return plan.commit(target, journal, budget, cancelled);
@@ -297,6 +326,8 @@ pub(super) enum MutationIntent {
     FirstTable(NativeFirstTableIntent),
     #[cfg(feature = "ace16-create")]
     AddTable(NativeAddTableIntent),
+    #[cfg(feature = "ace16-create")]
+    PopulatedTable(NativePopulatedAddTableIntent),
 }
 
 impl MutationIntent {
@@ -340,6 +371,10 @@ impl MutationIntent {
                 column_count: intent.column_count(),
             }),
             #[cfg(feature = "ace16-create")]
+            Self::PopulatedTable(intent) => Some(SchemaChange::TableAdded {
+                column_count: intent.column_count(),
+            }),
+            #[cfg(feature = "ace16-create")]
             Self::AddTable(intent) => Some(SchemaChange::TableAdded {
                 column_count: intent.column_count(),
             }),
@@ -369,6 +404,14 @@ impl MutationIntent {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, Cause> {
+        if raw.starts_with(POPULATED_TABLE_FAMILY) {
+            #[cfg(feature = "ace16-create")]
+            return NativePopulatedAddTableIntent::decode(raw, budget, cancelled)
+                .map(Self::PopulatedTable)
+                .map_err(Cause::PopulatedTableIntent);
+            #[cfg(not(feature = "ace16-create"))]
+            return Err(Cause::UnsupportedSource);
+        }
         if raw.starts_with(b"TCND0003") {
             return NativeDeleteIntent::decode_retained(raw, budget, cancelled)
                 .map(Self::RetainedDelete)
