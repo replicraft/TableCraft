@@ -45,7 +45,8 @@ pub use add_column::{
 #[cfg(feature = "journal")]
 pub use add_table::{
     AddTableError, AddTablePlan, AddTableSourceCapabilities, AddTableSourceProfile,
-    AuthoredAddTableSourceCapabilities, add_table_source_available, add_table_source_capabilities,
+    AuthoredAddTableSourceCapabilities, PopulatedAddTableError, PopulatedAddTablePlan,
+    add_table_source_available, add_table_source_capabilities,
     authored_add_table_source_capabilities,
 };
 pub use column::CreateColumn;

@@ -15,8 +15,8 @@ mod deleting;
 mod inserting;
 #[cfg(feature = "journal")]
 pub use deleting::{
-    RecoverableDeleteError, local_delete_table, plan_recoverable_delete,
-    plan_recoverable_delete_with_options,
+    RecoverableDeleteError, delete_uses_read_source, local_delete_table, plan_recoverable_delete,
+    plan_recoverable_delete_with_options, prepare_native_read_source_delete,
 };
 #[cfg(feature = "journal")]
 pub use inserting::{

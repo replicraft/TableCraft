@@ -45,7 +45,8 @@ pub use creation::{
     AuthoredAddTableSourceCapabilities, CreatedAddColumnCandidate, CreatedAddColumnError,
     DatabaseOptionsError, DatabaseOptionsSourceError, DatabaseOptionsSourcePurpose,
     FieldHistoryDatabaseOptionsCandidate, FieldHistoryDatabaseOptionsError,
-    NativeDatabaseOptionsPlan, add_table_source_available, add_table_source_capabilities,
+    NativeDatabaseOptionsPlan, PopulatedAddTableError, PopulatedAddTablePlan,
+    add_table_source_available, add_table_source_capabilities,
     authored_add_table_source_capabilities,
 };
 #[cfg(all(feature = "ace16-create", feature = "journal"))]
