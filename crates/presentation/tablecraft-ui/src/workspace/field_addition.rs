@@ -9,6 +9,7 @@ pub(crate) mod design;
 mod dialog;
 pub(crate) mod header;
 mod inspection_completion;
+mod properties;
 mod selection;
 mod state;
 mod status;
@@ -20,7 +21,10 @@ pub use status::{FieldAdditionSaveCommand, FieldAdditionSaveIdentity, PreparedFi
 
 use super::{ObjectKind, ObjectTab};
 use crate::workspace::field_name::bounded_name;
-use tablecraft_builders::table::{FieldAdditionDeclaration, FieldAdditionKind};
+use std::sync::Arc;
+use tablecraft_builders::table::{
+    FieldAdditionDeclaration, FieldAdditionKind, TypedFieldAdditionAvailability,
+};
 
 /// Exact naming snapshot submitted after the current frame's header widgets.
 #[derive(Debug, PartialEq, Eq)]
@@ -31,24 +35,47 @@ pub struct FieldAdditionRequest {
     pub column: String,
 }
 
-/// Source inspection admission failure; an existing pending owner is retained.
 /// Source-observed gallery facts. These never substitute for a consuming review.
-#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+#[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct FieldAdditionChoices {
     pub number: bool,
     pub short_text: bool,
+    /// Independently qualified default declarations; altered properties are
+    /// checked again by the consuming review.
+    pub typed_declarations: Arc<[TypedFieldAdditionAvailability]>,
 }
 
 impl FieldAdditionChoices {
-    pub const fn supports(self, kind: FieldAdditionKind) -> bool {
+    pub fn supports(&self, kind: FieldAdditionKind) -> bool {
+        self.default_declaration(kind).is_some()
+    }
+
+    pub fn any(&self) -> bool {
+        self.number || self.short_text || !self.typed_declarations.is_empty()
+    }
+
+    fn default_declaration(&self, kind: FieldAdditionKind) -> Option<FieldAdditionDeclaration> {
         match kind {
-            FieldAdditionKind::Number => self.number,
-            FieldAdditionKind::ShortText => self.short_text,
+            FieldAdditionKind::Number if self.number => {
+                Some(FieldAdditionDeclaration::NumberLongZero)
+            }
+            FieldAdditionKind::ShortText if self.short_text => {
+                Some(FieldAdditionDeclaration::ui_default(kind))
+            }
+            _ => self
+                .typed_declarations
+                .iter()
+                .find(|fact| fact.declaration.kind() == kind)
+                .map(|fact| FieldAdditionDeclaration::Typed(fact.declaration)),
         }
     }
 
-    pub const fn any(self) -> bool {
-        self.number || self.short_text
+    fn supports_scalar(&self, scalar: tablecraft_schema::ScalarType) -> bool {
+        (scalar == tablecraft_schema::ScalarType::Int32 && self.number)
+            || self
+                .typed_declarations
+                .iter()
+                .any(|fact| fact.declaration.descriptor().scalar_type() == scalar)
     }
 }
 
@@ -79,6 +106,7 @@ pub(super) enum Phase {
 
 pub(super) struct Draft {
     declaration: FieldAdditionDeclaration,
+    properties: properties::Properties,
     tab: ObjectTab,
     column: String,
     revision: u64,
@@ -232,6 +260,7 @@ impl Model {
         request_id: u64,
         number: bool,
         short_text: bool,
+        typed_declarations: Arc<[TypedFieldAdditionAvailability]>,
     ) -> bool {
         let Some(inspection) = self.inspections.iter_mut().find(|inspection| {
             inspection.tab == *tab
@@ -240,7 +269,11 @@ impl Model {
         }) else {
             return false;
         };
-        inspection.available = Some(FieldAdditionChoices { number, short_text });
+        inspection.available = Some(FieldAdditionChoices {
+            number,
+            short_text,
+            typed_declarations,
+        });
         true
     }
 
@@ -267,6 +300,7 @@ impl Model {
                 inspection.tab == *tab
                     && inspection
                         .available
+                        .as_ref()
                         .is_some_and(|choices| choices.supports(kind))
             })
     }
@@ -287,6 +321,7 @@ impl Model {
         };
         self.draft = Some(Draft {
             declaration,
+            properties: properties::Properties::new(declaration),
             tab,
             column,
             revision: 0,
@@ -342,6 +377,7 @@ impl Model {
                 return false;
             };
             draft.declaration = declaration;
+            draft.properties = properties::Properties::new(declaration);
             draft.revision = revision;
         }
         true
@@ -349,7 +385,11 @@ impl Model {
 
     pub(super) fn request(&self, tab: &ObjectTab) -> Option<FieldAdditionRequest> {
         let draft = self.draft.as_ref()?;
-        if draft.tab != *tab || draft.phase != Phase::Naming || draft.column.is_empty() {
+        if draft.tab != *tab
+            || draft.phase != Phase::Naming
+            || draft.column.is_empty()
+            || draft.properties.invalid()
+        {
             return None;
         }
         Some(FieldAdditionRequest {
@@ -460,12 +500,16 @@ impl Model {
         for inspection in &self.inspections {
             bytes = bytes
                 .checked_add(table_name(&inspection.tab)?.capacity())?
-                .checked_add(inspection.error.as_ref().map_or(0, String::capacity))?;
+                .checked_add(inspection.error.as_ref().map_or(0, String::capacity))?
+                .checked_add(inspection.available.as_ref().map_or(0, |choices| {
+                    std::mem::size_of_val(choices.typed_declarations.as_ref())
+                }))?;
         }
         if let Some(draft) = &self.draft {
             bytes = bytes
                 .checked_add(table_name(&draft.tab)?.capacity())?
-                .checked_add(draft.column.capacity())?;
+                .checked_add(draft.column.capacity())?
+                .checked_add(draft.properties.retained_bytes())?;
         }
         if let Some(selection) = &self.selection {
             bytes = bytes.checked_add(selection.heap_bytes()?)?;
@@ -521,5 +565,9 @@ fn field_label_key(kind: FieldAdditionKind) -> &'static str {
     match kind {
         FieldAdditionKind::Number => "table-draft-number",
         FieldAdditionKind::ShortText => "table-draft-short-text",
+        FieldAdditionKind::Currency => "table-draft-currency",
+        FieldAdditionKind::YesNo => "table-draft-yes-no",
+        FieldAdditionKind::LargeInteger => "table-draft-large-integer",
+        FieldAdditionKind::DateTime => "table-draft-date-time",
     }
 }

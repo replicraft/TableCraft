@@ -1,5 +1,7 @@
 //! Terminal readonly observations resolve their recorded owner across view changes.
 use crate::workspace::{State, objects::MAX_RETAINED_BYTES};
+use std::sync::Arc;
+use tablecraft_builders::table::TypedFieldAdditionAvailability;
 
 impl State {
     /// Native Worker IDs are unique within this host. Only issued, still-pending
@@ -20,7 +22,16 @@ impl State {
         table: &str,
         number: bool,
         short_text: bool,
+        typed_declarations: Arc<[TypedFieldAdditionAvailability]>,
     ) -> bool {
+        let additional = std::mem::size_of_val(typed_declarations.as_ref());
+        if !self
+            .object_bytes()
+            .and_then(|bytes| bytes.checked_add(additional))
+            .is_some_and(|bytes| bytes <= MAX_RETAINED_BYTES)
+        {
+            return false;
+        }
         let Some(item) = self.field_addition.inspections.iter_mut().find(|item| {
             item.request_id == Some(request_id)
                 && item.pending()
@@ -29,7 +40,11 @@ impl State {
         }) else {
             return false;
         };
-        item.available = Some(super::FieldAdditionChoices { number, short_text });
+        item.available = Some(super::FieldAdditionChoices {
+            number,
+            short_text,
+            typed_declarations,
+        });
         true
     }
 

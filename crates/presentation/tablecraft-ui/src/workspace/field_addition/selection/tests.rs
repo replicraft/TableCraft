@@ -50,7 +50,7 @@ fn saving() -> (State, FieldAdditionRequest, FieldAdditionSaveIdentity) {
     state.field_addition_available = true;
     let tab = state.active_object().unwrap();
     assert!(state.begin_field_addition_inspection(&tab, 10).is_ok());
-    assert!(state.set_field_addition_availability(&tab, 10, true, false));
+    assert!(state.set_field_addition_availability(&tab, 10, true, false, Default::default()));
     state.prepare_schema_view();
     state.set_schema(Schema {
         table: "Table1".into(),

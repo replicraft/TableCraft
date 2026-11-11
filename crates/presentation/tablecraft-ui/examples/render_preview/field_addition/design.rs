@@ -38,7 +38,13 @@ pub(super) fn prepare(harness: &mut Harness<'_, Preview>, mode: &str) {
                 .begin_field_addition_inspection(&tab, INSPECTION_ID)
                 .is_ok()
         );
-        assert!(state.set_field_addition_availability(&tab, INSPECTION_ID, true, true));
+        assert!(state.set_field_addition_availability(
+            &tab,
+            INSPECTION_ID,
+            true,
+            true,
+            Default::default()
+        ));
     }
     super::settle(harness);
     let t = &harness.state().state().localizer;

@@ -80,7 +80,13 @@ fn design_caption_distinguishes_observed_add_support_and_local_proposal_from_rea
             fields: vec![field("ID", 0, Some("Int32"))],
         });
         assert!(state.begin_field_addition_inspection(&tab, 80).is_ok());
-        assert!(state.set_field_addition_availability(&tab, 80, available, available));
+        assert!(state.set_field_addition_availability(
+            &tab,
+            80,
+            available,
+            available,
+            Default::default()
+        ));
 
         let context = egui::Context::default();
         crate::configure(&context);

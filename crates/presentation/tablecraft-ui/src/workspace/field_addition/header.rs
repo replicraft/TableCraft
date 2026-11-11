@@ -69,11 +69,7 @@ pub(crate) fn show(ui: &mut Ui, presentation: &Presentation) -> Option<Event> {
                 )
                 .show(ui, |ui| {
                     for key in CHOICES {
-                        let kind = match key {
-                            "table-draft-number" => Some(FieldAdditionKind::Number),
-                            "table-draft-short-text" => Some(FieldAdditionKind::ShortText),
-                            _ => None,
-                        };
+                        let kind = kind_for_key(key);
                         let enabled = kind.is_some_and(|kind| presentation.choices.supports(kind));
                         let response = ui.add_enabled(enabled, Button::new(tr(ui, key)));
                         if enabled && response.clicked() {
@@ -152,4 +148,16 @@ fn name_editor(
         return Some(Event::Name(text.into_string()));
     }
     None
+}
+
+pub(super) fn kind_for_key(key: &str) -> Option<FieldAdditionKind> {
+    Some(match key {
+        "table-draft-number" => FieldAdditionKind::Number,
+        "table-draft-short-text" => FieldAdditionKind::ShortText,
+        "table-draft-currency" => FieldAdditionKind::Currency,
+        "table-draft-yes-no" => FieldAdditionKind::YesNo,
+        "table-draft-large-integer" => FieldAdditionKind::LargeInteger,
+        "table-draft-date-time" => FieldAdditionKind::DateTime,
+        _ => return None,
+    })
 }

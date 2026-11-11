@@ -79,7 +79,13 @@ pub(super) fn prepare(harness: &mut Harness<'_, Preview>, mode: &str) {
                 .begin_field_addition_inspection(&tab, INSPECTION_ID)
                 .is_ok()
         );
-        assert!(state.set_field_addition_availability(&tab, INSPECTION_ID, true, text));
+        assert!(state.set_field_addition_availability(
+            &tab,
+            INSPECTION_ID,
+            true,
+            text,
+            Default::default()
+        ));
     }
     settle(harness);
     let label = harness
@@ -94,6 +100,10 @@ pub(super) fn prepare(harness: &mut Harness<'_, Preview>, mode: &str) {
     let choice_key = match kind {
         FieldAdditionKind::Number => "table-draft-number",
         FieldAdditionKind::ShortText => "table-draft-short-text",
+        FieldAdditionKind::Currency => "table-draft-currency",
+        FieldAdditionKind::YesNo => "table-draft-yes-no",
+        FieldAdditionKind::LargeInteger => "table-draft-large-integer",
+        FieldAdditionKind::DateTime => "table-draft-date-time",
     };
     let choice_label = harness.state().state().localizer.text(choice_key);
     let choice = harness.get_by_role_and_label(Role::Button, &choice_label);

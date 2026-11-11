@@ -16,10 +16,31 @@ fn exact_parked_owner_receives_terminal_fact_without_touching_current_operation(
         .tab;
     state.busy = true;
     state.error = Some("current operation".into());
-    assert!(!state.complete_field_addition_inspection(80, 8, "Table1", true, false));
-    assert!(!state.complete_field_addition_inspection(80, 7, "Other", true, false));
+    assert!(!state.complete_field_addition_inspection(
+        80,
+        8,
+        "Table1",
+        true,
+        false,
+        Default::default()
+    ));
+    assert!(!state.complete_field_addition_inspection(
+        80,
+        7,
+        "Other",
+        true,
+        false,
+        Default::default()
+    ));
     assert!(state.has_pending_field_addition_inspection(80));
-    assert!(state.complete_field_addition_inspection(80, 7, "Table1", true, false));
+    assert!(state.complete_field_addition_inspection(
+        80,
+        7,
+        "Table1",
+        true,
+        false,
+        Default::default()
+    ));
     assert!(!state.has_pending_field_addition_inspection(80));
     assert_eq!(state.active_object(), Some(scratch));
     assert!(state.busy);

@@ -411,7 +411,13 @@ impl State {
             .as_ref()
             .is_some_and(|(_, presentation)| presentation.name.is_some())
         {
-            ui.weak(crate::localization::tr(ui, "design-pending-properties"));
+            if let Some((_, presentation)) = &addition {
+                self.show_field_addition_properties(
+                    ui,
+                    presentation.enabled,
+                    &presentation.choices,
+                );
+            }
         } else if let Some(field) = schema.fields.get(self.selected_field) {
             ui.push_id(
                 (

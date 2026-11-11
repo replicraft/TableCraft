@@ -4,9 +4,7 @@ use crate::localization::tr;
 use crate::workspace::field_name::{NameBuffer, bounded_name};
 use crate::workspace::{ObjectTab, State};
 use egui::{TextBuffer, TextEdit, Ui, WidgetInfo, WidgetType};
-use tablecraft_builders::table::{
-    FieldAdditionDeclaration, FieldAdditionKind, MAX_DRAFT_NAME_BYTES, MAX_DRAFT_NAME_UNITS,
-};
+use tablecraft_builders::table::{FieldAdditionKind, MAX_DRAFT_NAME_BYTES, MAX_DRAFT_NAME_UNITS};
 
 const NAME_PADDING: f32 = 2.0;
 
@@ -19,8 +17,9 @@ pub(crate) fn name(ui: &mut Ui, presentation: &Presentation) -> Option<Event> {
         .name
         .as_ref()
         .map_or(0, |(_, revision)| *revision);
-    let enabled =
-        presentation.enabled && (presentation.name.is_some() || presentation.choices.short_text);
+    let enabled = presentation.enabled
+        && (presentation.name.is_some()
+            || presentation.choices.supports(FieldAdditionKind::ShortText));
     let Some(mut text) = NameBuffer::new(original) else {
         return Some(Event::MemoryLimit);
     };
@@ -65,10 +64,7 @@ pub(crate) fn data_type(
     presentation: &Presentation,
     kind: Option<FieldAdditionKind>,
 ) -> Option<Event> {
-    let selected = kind.map_or("", |kind| match kind {
-        FieldAdditionKind::Number => "table-draft-number",
-        FieldAdditionKind::ShortText => "table-draft-short-text",
-    });
+    let selected = kind.map_or("", super::field_label_key);
     let mut event = None;
     let response = ui.add_enabled_ui(presentation.enabled, |ui| {
         egui::ComboBox::from_id_salt("saved_design_new_type")
@@ -80,11 +76,7 @@ pub(crate) fn data_type(
             })
             .show_ui(ui, |ui| {
                 for key in super::header::CHOICES {
-                    let kind = match key {
-                        "table-draft-number" => Some(FieldAdditionKind::Number),
-                        "table-draft-short-text" => Some(FieldAdditionKind::ShortText),
-                        _ => None,
-                    };
+                    let kind = super::header::kind_for_key(key);
                     let enabled = kind.is_some_and(|kind| presentation.choices.supports(kind));
                     let response = ui.add_enabled(enabled, egui::Button::new(tr(ui, key)));
                     if enabled && response.clicked() {
@@ -117,18 +109,20 @@ impl State {
         }
         match event {
             Some(Event::Name(name)) if !self.field_addition_open() => {
-                self.begin_field_addition_name(
-                    tab,
-                    name,
-                    FieldAdditionDeclaration::ui_default(FieldAdditionKind::ShortText),
-                );
+                if let Some(declaration) = self
+                    .field_addition_choices(tab)
+                    .and_then(|choices| choices.default_declaration(FieldAdditionKind::ShortText))
+                {
+                    self.begin_field_addition_name(tab, name, declaration);
+                }
             }
             Some(Event::Choose(kind)) if !self.field_addition_open() => {
-                self.begin_field_addition_name(
-                    tab,
-                    String::new(),
-                    FieldAdditionDeclaration::ui_default(kind),
-                );
+                if let Some(declaration) = self
+                    .field_addition_choices(tab)
+                    .and_then(|choices| choices.default_declaration(kind))
+                {
+                    self.begin_field_addition_name(tab, String::new(), declaration);
+                }
             }
             Some(Event::Choose(kind)) => {
                 self.set_field_addition_kind(tab, kind);

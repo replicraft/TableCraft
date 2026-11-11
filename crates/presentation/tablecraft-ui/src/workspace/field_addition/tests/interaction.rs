@@ -45,12 +45,13 @@ fn host_support_and_positive_source_fact_are_independent_header_gates() {
                     .begin_field_addition_inspection(&tab, 80)
                     .is_ok()
             );
-            assert!(
-                harness
-                    .state_mut()
-                    .0
-                    .set_field_addition_availability(&tab, 80, false, false)
-            );
+            assert!(harness.state_mut().0.set_field_addition_availability(
+                &tab,
+                80,
+                false,
+                false,
+                Default::default()
+            ));
             harness.run_steps(2);
             assert!(
                 harness
@@ -88,11 +89,13 @@ fn header_review(kind: FieldAdditionKind, name: &str) {
         &tab,
         80,
         kind == FieldAdditionKind::Number,
-        kind == FieldAdditionKind::ShortText
+        kind == FieldAdditionKind::ShortText,
+        Default::default()
     ));
     let (selected_key, unavailable_key) = match kind {
         FieldAdditionKind::Number => ("table-draft-number", "table-draft-short-text"),
         FieldAdditionKind::ShortText => ("table-draft-short-text", "table-draft-number"),
+        _ => unreachable!("this control checks the two original declaration languages"),
     };
     let label = state.localizer.text(selected_key);
     let unavailable = state.localizer.text(unavailable_key);
@@ -157,7 +160,7 @@ fn terminal_source_observation_survives_busy_or_changed_view_context() {
     let tab = state.active_object().unwrap();
     assert!(state.begin_field_addition_inspection(&tab, 80).is_ok());
     state.busy = true;
-    assert!(state.set_field_addition_availability(&tab, 80, true, false));
+    assert!(state.set_field_addition_availability(&tab, 80, true, false, Default::default()));
     assert!(!state.can_name_field_addition(&tab, FieldAdditionKind::Number));
     state.busy = false;
     assert!(state.can_name_field_addition(&tab, FieldAdditionKind::Number));
@@ -176,7 +179,7 @@ fn actual_name_widget_refuses_astral_paste_and_ime_before_draft_or_undo_can_own_
         let mut state = state(true);
         let tab = state.active_object().unwrap();
         assert!(state.begin_field_addition_inspection(&tab, 80).is_ok());
-        assert!(state.set_field_addition_availability(&tab, 80, true, false));
+        assert!(state.set_field_addition_availability(&tab, 80, true, false, Default::default()));
         assert!(state.begin_default_field_addition(&tab, FieldAdditionKind::Number));
         let mut harness = harness(state);
         harness

@@ -1,7 +1,10 @@
 //! State admission and exact snapshot boundaries; native checks remain runtime-owned.
 use super::{FieldAdditionInspectionError, FieldAdditionRequest, Phase, copy_tab, table_name};
 use crate::workspace::{DocumentView, ObjectKind, ObjectTab, State, objects::MAX_RETAINED_BYTES};
-use tablecraft_builders::table::{FieldAdditionDeclaration, FieldAdditionKind};
+use std::sync::Arc;
+use tablecraft_builders::table::{
+    FieldAdditionDeclaration, FieldAdditionKind, TypedFieldAdditionAvailability,
+};
 
 impl State {
     /// Default-false host support must be paired with actual source observation.
@@ -94,7 +97,10 @@ impl State {
             .find(|item| item.tab == *tab)?;
         Some((
             observation.pending(),
-            observation.available.map(super::FieldAdditionChoices::any),
+            observation
+                .available
+                .as_ref()
+                .map(super::FieldAdditionChoices::any),
             observation.error.as_deref(),
         ))
     }
@@ -124,11 +130,13 @@ impl State {
         request_id: u64,
         number: bool,
         short_text: bool,
+        typed_declarations: Arc<[TypedFieldAdditionAvailability]>,
     ) -> bool {
         self.field_addition_inspection_binding(tab)
+            && self.admit_object_bytes(Some(std::mem::size_of_val(typed_declarations.as_ref())))
             && self
                 .field_addition
-                .observed(tab, request_id, number, short_text)
+                .observed(tab, request_id, number, short_text, typed_declarations)
     }
 
     pub fn can_name_field_addition(&self, tab: &ObjectTab, kind: FieldAdditionKind) -> bool {
@@ -170,7 +178,13 @@ impl State {
             self.error = Some(self.localizer.text("objects-open-refused"));
             return false;
         };
-        self.begin_field_addition_name(tab, name, FieldAdditionDeclaration::ui_default(kind))
+        let Some(declaration) = self
+            .field_addition_choices(tab)
+            .and_then(|choices| choices.default_declaration(kind))
+        else {
+            return false;
+        };
+        self.begin_field_addition_name(tab, name, declaration)
     }
 
     pub(in crate::workspace) fn field_addition_render_context(
@@ -206,7 +220,12 @@ impl State {
         if !self.admit_object_bytes(Some(additional)) {
             return None;
         }
-        let choices = self.field_addition_choices(&tab).unwrap_or_default();
+        // NO_CLONE: The frame owns a shared observation handle while widgets mutate
+        // State; the worker-produced declaration slice is never copied per frame.
+        let choices = self
+            .field_addition_choices(&tab)
+            .cloned()
+            .unwrap_or_default();
         Some((
             tab,
             super::header::Presentation {
@@ -260,12 +279,13 @@ impl State {
         Some(self.field_addition.presented_draft()?.declaration)
     }
 
-    pub fn field_addition_choices(&self, tab: &ObjectTab) -> Option<super::FieldAdditionChoices> {
+    pub fn field_addition_choices(&self, tab: &ObjectTab) -> Option<&super::FieldAdditionChoices> {
         self.field_addition
             .inspections
             .iter()
             .find(|item| item.tab == *tab)?
             .available
+            .as_ref()
     }
 
     pub fn field_addition_name(&self) -> Option<(&ObjectTab, &str, u64)> {
@@ -284,13 +304,35 @@ impl State {
     /// Change only the staged declaration through independently observed choices.
     /// The next consuming review still qualifies the complete native source.
     pub fn set_field_addition_kind(&mut self, tab: &ObjectTab, kind: FieldAdditionKind) -> bool {
-        self.can_edit_field_addition_name(tab)
-            && self
-                .field_addition_choices(tab)
-                .is_some_and(|choices| choices.supports(kind))
-            && self
-                .field_addition
-                .replace_declaration(tab, FieldAdditionDeclaration::ui_default(kind))
+        if !self.can_edit_field_addition_name(tab) {
+            return false;
+        }
+        let Some(choices) = self
+            .field_addition_choices(tab)
+            .filter(|choices| choices.supports(kind))
+        else {
+            return false;
+        };
+        let declaration = self
+            .field_addition
+            .draft
+            .as_ref()
+            .and_then(|draft| draft.properties.declaration(kind, choices));
+        let Some(declaration) = declaration else {
+            return false;
+        };
+        let Some(draft) = self.field_addition.draft.as_mut() else {
+            return false;
+        };
+        if draft.declaration != declaration {
+            let Some(revision) = draft.revision.checked_add(1) else {
+                return false;
+            };
+            draft.declaration = declaration;
+            draft.properties = super::properties::Properties::new(declaration);
+            draft.revision = revision;
+        }
+        true
     }
 
     pub fn set_field_addition_name(&mut self, tab: &ObjectTab, name: String) -> bool {
@@ -305,6 +347,11 @@ impl State {
     pub fn can_review_field_addition(&self) -> bool {
         self.active_object().is_some_and(|tab| {
             self.can_edit_field_addition_name(&tab)
+                && self
+                    .field_addition
+                    .draft
+                    .as_ref()
+                    .is_some_and(|draft| !draft.properties.invalid())
                 && self
                     .field_addition
                     .draft()

@@ -58,7 +58,7 @@ fn open_saved(state: &mut State, proposed: Option<String>) -> ObjectTab {
 
 fn saving(state: &mut State, tab: &ObjectTab) -> FieldAdditionRequest {
     assert!(state.begin_field_addition_inspection(tab, 10).is_ok());
-    assert!(state.set_field_addition_availability(tab, 10, true, false));
+    assert!(state.set_field_addition_availability(tab, 10, true, false, Default::default()));
     assert!(state.begin_field_addition_name(
         tab,
         "Field1".into(),

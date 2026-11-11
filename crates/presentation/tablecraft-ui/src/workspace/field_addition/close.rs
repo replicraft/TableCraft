@@ -123,6 +123,11 @@ impl State {
 
     pub fn can_save_field_addition_close(&self) -> bool {
         self.field_addition_close_current()
+            && self
+                .field_addition
+                .draft
+                .as_ref()
+                .is_some_and(|draft| !draft.properties.invalid())
             && !self.native_mutation_blocked()
             && self.field_addition_available
             && self.object_switch_ready_without_saved_field_name()
@@ -141,7 +146,7 @@ impl State {
                             .is_some_and(|(_, name, _, _)| !name.is_empty())
                         && self.field_addition.inspections.iter().any(|inspection| {
                             inspection.tab == confirmation.tab
-                                && inspection.available.is_some_and(|choices| {
+                                && inspection.available.as_ref().is_some_and(|choices| {
                                     choices.supports(confirmation.declaration.kind())
                                 })
                         })

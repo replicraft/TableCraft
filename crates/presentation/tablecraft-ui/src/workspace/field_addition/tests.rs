@@ -17,7 +17,7 @@ fn ready() -> (Model, ObjectTab) {
     let tab = tab(4, 19, "Table1");
     let mut model = Model::default();
     assert!(model.inspect(tab.clone(), 80).is_ok());
-    assert!(model.observed(&tab, 80, true, false));
+    assert!(model.observed(&tab, 80, true, false, Default::default()));
     assert!(model.begin(
         &tab,
         "Field1".into(),
@@ -33,20 +33,20 @@ fn only_positive_current_source_observation_permits_naming() {
     assert!(!model.available(&owner, FieldAdditionKind::Number));
     assert!(model.inspect(owner.clone(), 80).is_ok());
     assert!(!model.available(&owner, FieldAdditionKind::Number));
-    assert!(!model.observed(&owner, 79, true, false));
-    assert!(!model.observed(&tab(5, 19, "Table1"), 80, true, false));
-    assert!(!model.observed(&tab(4, 20, "Table1"), 80, true, false));
-    assert!(!model.observed(&tab(4, 19, "table1"), 80, true, false));
-    assert!(model.observed(&owner, 80, false, false));
+    assert!(!model.observed(&owner, 79, true, false, Default::default()));
+    assert!(!model.observed(&tab(5, 19, "Table1"), 80, true, false, Default::default()));
+    assert!(!model.observed(&tab(4, 20, "Table1"), 80, true, false, Default::default()));
+    assert!(!model.observed(&tab(4, 19, "table1"), 80, true, false, Default::default()));
+    assert!(model.observed(&owner, 80, false, false, Default::default()));
     assert!(!model.begin(
         &owner,
         "Score".into(),
         FieldAdditionDeclaration::NumberLongZero
     ));
-    assert!(!model.observed(&owner, 80, true, false));
+    assert!(!model.observed(&owner, 80, true, false, Default::default()));
     assert!(model.retry_inspection(&owner));
     assert!(model.inspect(owner.clone(), 81).is_ok());
-    assert!(model.observed(&owner, 81, true, false));
+    assert!(model.observed(&owner, 81, true, false, Default::default()));
     assert!(model.begin(
         &owner,
         "Score".into(),
@@ -242,7 +242,7 @@ fn source_observation_is_cached_across_tab_activation_and_errors_require_explici
     assert!(model.inspect(first.clone(), 80).is_ok());
     assert!(model.inspect(first.clone(), 81).is_err());
     assert!(!model.retry_inspection(&first));
-    assert!(model.observed(&first, 80, true, false));
+    assert!(model.observed(&first, 80, true, false, Default::default()));
     assert!(model.inspect(second.clone(), 81).is_ok());
     assert!(model.inspection_failed(&second, 81, "source check refused".into()));
     assert!(model.inspect(second.clone(), 82).is_err());
@@ -252,8 +252,8 @@ fn source_observation_is_cached_across_tab_activation_and_errors_require_explici
     assert!(!model.available(&second, FieldAdditionKind::Number));
     assert!(model.retry_inspection(&second));
     assert!(model.inspect(second.clone(), 82).is_ok());
-    assert!(!model.observed(&second, 81, true, false));
-    assert!(model.observed(&second, 82, true, false));
+    assert!(!model.observed(&second, 81, true, false, Default::default()));
+    assert!(model.observed(&second, 82, true, false, Default::default()));
 }
 
 #[test]
@@ -267,7 +267,7 @@ fn inspection_capacity_keeps_existing_terminal_and_pending_owners() {
         );
     }
     let first = tab(0, 19, "Table0");
-    assert!(model.observed(&first, 0, true, false));
+    assert!(model.observed(&first, 0, true, false, Default::default()));
     assert_eq!(
         model.inspect(tab(99, 19, "More"), 99),
         Err(super::FieldAdditionInspectionError::Capacity)
@@ -278,7 +278,8 @@ fn inspection_capacity_keeps_existing_terminal_and_pending_owners() {
         &tab(last_id, 19, &format!("Table{last_id}")),
         last_id,
         true,
-        false
+        false,
+        Default::default()
     ));
 }
 
@@ -298,7 +299,7 @@ fn closed_pending_owner_resolves_before_retirement_and_sequential_tab_cycles_do_
     for id in 0..(crate::workspace::objects::MAX_OBJECTS as u64 * 3) {
         let owner = tab(id + 100, 19, "Table1");
         assert!(model.inspect(owner.clone(), id + 100).is_ok());
-        assert!(model.observed(&owner, id + 100, true, false));
+        assert!(model.observed(&owner, id + 100, true, false, Default::default()));
         model.prune_inspections(|_| false);
         assert!(model.needs_inspection(&owner));
     }
@@ -309,7 +310,7 @@ fn one_observation_preserves_independent_gallery_facts_and_full_declaration_iden
     let owner = tab(4, 19, "Table1");
     let mut model = Model::default();
     assert!(model.inspect(owner.clone(), 80).is_ok());
-    assert!(model.observed(&owner, 80, false, true));
+    assert!(model.observed(&owner, 80, false, true, Default::default()));
     assert!(!model.available(&owner, FieldAdditionKind::Number));
     assert!(model.available(&owner, FieldAdditionKind::ShortText));
     assert!(!model.begin(

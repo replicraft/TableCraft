@@ -77,6 +77,7 @@ impl Desktop {
             *request_id,
             availability.number_available,
             availability.short_text_available,
+            availability.typed_declarations,
         );
     }
 

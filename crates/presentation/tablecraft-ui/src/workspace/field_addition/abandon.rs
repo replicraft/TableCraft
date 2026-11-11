@@ -26,7 +26,8 @@ impl SavedWarning {
         self.status
             .heap_bytes()?
             .checked_add(super::table_name(&self.owner.tab)?.capacity())?
-            .checked_add(self.owner.column.capacity())
+            .checked_add(self.owner.column.capacity())?
+            .checked_add(self.owner.properties.retained_bytes())
     }
 
     pub(super) fn presented(&self) -> Option<&super::Draft> {

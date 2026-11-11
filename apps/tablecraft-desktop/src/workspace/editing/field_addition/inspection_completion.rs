@@ -31,6 +31,7 @@ impl Desktop {
                     &availability.table,
                     availability.number_available,
                     availability.short_text_available,
+                    availability.typed_declarations,
                 ) {
                     self.state.fail_recorded_field_addition_inspection(
                         generation,

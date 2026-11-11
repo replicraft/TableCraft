@@ -29,6 +29,10 @@ pub(in crate::workspace) fn add_field(
     let key = match kind {
         FieldAdditionKind::Number => "table-draft-number",
         FieldAdditionKind::ShortText => "table-draft-short-text",
+        FieldAdditionKind::Currency => "table-draft-currency",
+        FieldAdditionKind::YesNo => "table-draft-yes-no",
+        FieldAdditionKind::LargeInteger => "table-draft-large-integer",
+        FieldAdditionKind::DateTime => "table-draft-date-time",
     };
     let label = harness.state().state.localizer.text(key);
     harness

@@ -40,7 +40,7 @@ fn reviewed() -> (State, FieldAdditionRequest) {
         has_more: false,
     }));
     assert!(state.begin_field_addition_inspection(&tab, 80).is_ok());
-    assert!(state.set_field_addition_availability(&tab, 80, true, false));
+    assert!(state.set_field_addition_availability(&tab, 80, true, false, Default::default()));
     assert!(state.begin_field_addition_name(
         &tab,
         "Score".into(),

@@ -15,7 +15,7 @@ fn failed() -> (State, FieldAdditionRequest, FieldAdditionSaveIdentity) {
     // guard. The actual native ADD fixture remains empty in host tests.
     state.data.as_mut().unwrap().rows = vec![vec!["1".into()]];
     assert!(state.begin_field_addition_inspection(&tab, 80).is_ok());
-    assert!(state.set_field_addition_availability(&tab, 80, true, false));
+    assert!(state.set_field_addition_availability(&tab, 80, true, false, Default::default()));
     assert!(state.begin_field_addition_name(
         &tab,
         "Score".into(),
