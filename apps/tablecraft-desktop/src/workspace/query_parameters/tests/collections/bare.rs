@@ -62,12 +62,13 @@ fn sql_view_attachment_wildcard_keeps_parent_rows_and_readonly_collection_summar
             CellKind::Scalar { is_null: false, .. }
         ));
         assert_eq!(row[1].text, summary);
-        assert_eq!(
-            row[1].kind,
-            CellKind::Attachments {
-                assigned: true,
-                members
-            }
+        assert!(
+            row[1].kind
+                == CellKind::Attachments {
+                    assigned: true,
+                    members
+                },
+            "parent {id} must retain its assigned attachment membership count {members}"
         );
     }
     let revision = harness
