@@ -42,3 +42,6 @@ mod boolean_tests;
 
 #[cfg(test)]
 mod fixed_scalar_tests;
+
+#[cfg(test)]
+mod wide_value_tests;
