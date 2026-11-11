@@ -1,6 +1,6 @@
 //! Preserve original fields, native primary, properties and every unrelated byte.
 use super::{FieldAdditionError as Error, FieldAdditionTarget};
-use crate::creation::add_column::common;
+use crate::creation::{add_column::common, profile};
 use crate::{
     InspectError, NativeImage, TableCheck, check_table,
     format::{bytes::u32_at, definition, layout, page::PAGE_BYTES, row::COLUMN_COUNT_BYTES},
@@ -107,10 +107,7 @@ pub(super) fn definition(
         return Err(Error::Preservation);
     }
     if matches!(declaration, FieldAdditionTarget::ShortText { .. })
-        && appended.text_sort_order()
-            != Some(crate::NativeSortOrder::from_native_bytes(
-                crate::creation::profile::GENERAL_SORT,
-            ))
+        && appended.text_sort_order() != Some(profile::GENERAL_SORT)
     {
         return Err(Error::Preservation);
     }

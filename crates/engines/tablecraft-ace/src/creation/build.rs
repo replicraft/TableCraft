@@ -218,8 +218,8 @@ pub(super) fn initialize(
     root[ROOT_PREFIX.len()..header::FORMAT_CODE_OFFSET].copy_from_slice(ACE_ENGINE_NAME);
     root[header::FORMAT_CODE_OFFSET] = ACE16_FORMAT_CODE;
     definition::put16(root, CODE_PAGE_OFFSET, CODE_PAGE)?;
-    root[SORT_ORDER_OFFSET..SORT_ORDER_OFFSET + profile::GENERAL_SORT.len()]
-        .copy_from_slice(&profile::GENERAL_SORT);
+    let sort_order = profile::GENERAL_SORT.native_bytes();
+    root[SORT_ORDER_OFFSET..SORT_ORDER_OFFSET + sort_order.len()].copy_from_slice(&sort_order);
     // Clear subversion/key/password/date and unmodeled header fields are
     // explicit authored zero choices. They are not declared reserved bytes,
     // imported identity seeds or evidence of native Access creation behavior.
