@@ -950,6 +950,17 @@ non-tail field-deletion proof. Captions and display positions never select the
 target. Dependencies, required programs, indexes and preservation checks retain
 their native refusals.
 
+With both features, `ALTER TABLE ... ADD COLUMN ... CURRENCY` (including MONEY)
+uses the same field-addition review/save/reopen service with a distinct
+`FieldAdditionOrigin::SqlDeclared`. Its TCAC13 native request retains absent
+Required/AZL/default metadata; no gallery request or policy snapshot is fabricated.
+The first source profile is ordinary keyless retained ACE16 with no indexes or
+generation, an eligible one-page definition and ASCII new/existing field names.
+The native table/payload namespace is not globally ASCII-only. Other kinds,
+annotations and unqualified sources refuse before save. Historical NULL, an
+actual `CCUR(5.25)` update and fresh omitted NULL are separately exercised through
+the consuming services. See [SQL column addition](../access/writes/ADD_COLUMN.md#unadorned-sql-currency-addition).
+
 With both features, qualified non-temporary `CREATE TABLE` lowers the actual SQL
 declarations into `FirstTableDefinition`, using the same native planning and
 consuming save service as table design. It does not fabricate a design draft or
@@ -2017,11 +2028,14 @@ name/type/property edit changes the proposal revision, invalidating earlier
 reviews. Actual source facts enable each family and Number subtype; altered
 Decimal/Text parameters still require fresh complete native qualification.
 
-The consuming `ReviewedFieldAddition` derives its `captured_declaration()` from
-the sealed native plan. `FieldAdditionReview.declaration` is separate data. The
-host checks both against the exact submitted declaration, including width and
-compression, before starting the nonreplaceable `SaveWorker::start_field_addition`.
-A matching display DTO cannot substitute for the capability's declaration.
+The consuming `ReviewedFieldAddition` derives its `captured_origin()` from the
+sealed native plan. `FieldAdditionReview.origin` is separate inert data. Gallery
+consumers check both as `FieldAdditionOrigin::Gallery` against the exact submitted
+declaration, including width and compression; SQL consumers retain the distinct
+`SqlDeclared` origin. Both use the nonreplaceable
+`SaveWorker::start_field_addition`. Matching display facts cannot substitute for
+the capability's captured request. MCP's gallery service explicitly refuses SQL
+origins; it does not expose a schema-SQL review endpoint.
 
 Populated current-metadata ACE16 tables now use separate TCAC0008 Number and
 TCAC0009 Short Text requests. Both retain the existing review, nonreplaceable Save

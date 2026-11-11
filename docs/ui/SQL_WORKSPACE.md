@@ -106,6 +106,17 @@ See the runtime contracts for
 
 ## Reviewed schema SQL
 
+Normal Run also supports the qualified unadorned Currency ADD statement
+`ALTER TABLE Items ADD COLUMN Amount CURRENCY` (or MONEY). The warning names the
+actual table, field and Currency type, with Yes/No and no affected-record count.
+No leaves source, SQL and prior results intact. Yes consumes the issued
+`SqlDeclared` capability through the existing field-addition worker; acknowledgment
+publishes only its exact guarded `ColumnAdded` reopen and preserves the SQL tab.
+It does not invent a gallery draft or add Required/default metadata. Historical
+and fresh omitted values are NULL; the connected workflow also updates an old
+value to exact Currency 5.25. Other types/annotations and unsupported sources remain
+unavailable. See [native/source qualifications](../access/writes/ADD_COLUMN.md#unadorned-sql-currency-addition).
+
 Qualified one-field `CREATE INDEX` on an ordinary unindexed LONG uses the same
 issued schema-review lifecycle. Its warning shows the table, index, field,
 ASC/DESC and existing population, followed by Yes/No. This population does not

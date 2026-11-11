@@ -4,8 +4,44 @@ The normal desktop stages qualified saved-field additions through shared builder
 runtime reviews and native saves. The retained typed route supports Boolean,
 Byte, Integer, LONG, Large Number, Single, Double, Currency, legacy DateTime,
 GUID, Decimal and Short Text. Existing Number/Short Text request languages remain
-separate. General saved type/property alteration and imported ALTER support
-remain unfinished; current source, storage and declaration limits follow below.
+separate. SQL View also supports the narrow unadorned Currency ADD profile below.
+General saved type/property alteration and broader ALTER support remain unfinished;
+current source, storage and declaration limits follow below.
+
+## Unadorned SQL Currency addition
+
+Normal SQL View Run can review `ALTER TABLE Items ADD COLUMN Amount CURRENCY`
+(or the MONEY alias) through the same consuming field-addition save worker.
+The separate original `TCAC0013` request binds the complete source, exact table
+and field spelling, and native identities. Checked V3 preparation and fresh
+pending, committed and settled recovery reconstruct that same request; neither
+TCAC12 nor older decoders are fallback routes.
+
+This first SQL profile admits an ordinary keyless retained ACE16 table with no
+generation or indexes, an actual one-page definition/name frame and the full
+retained schema ownership, program and dependency checks. The new field name
+and the selected table's existing field-name namespace must be ASCII for this
+implementation's collision policy. Unicode table names and payloads are not
+globally excluded. These are current implementation qualifications, not Access
+naming or type limits.
+
+The native declaration is nullable Currency with Required, AllowZeroLength,
+DefaultValue, description, compression and generation annotations all **absent**.
+It does not add an MR2 property group or allocate property storage. Existing
+records and every catalog/property/LVAL/map byte remain unchanged. Historical
+values read NULL; a later omitted INSERT also produces NULL, rather than the
+gallery's stored zero default. NOT NULL, DEFAULT, constraints and other ADD types
+remain refused in this route. SQL View does not provide the OLE DB/ADO DEFAULT
+execution contract.
+
+Actual runtime and normal desktop acceptance saves this declaration on a populated
+source, reopens it, updates one old row with `CCUR(5.25)`, then inserts with the new
+field omitted. Independent complete-image oracles preserve the other old NULL
+row, exact scaled Currency value, absent properties and fresh omitted NULL.
+Schema ADD receipts contain only `ColumnAdded`, with no invented record effects.
+No/Cancel preserves the source; Yes uses the existing exclusive save and guarded
+reopen. The gallery declarations and their stored policy/default semantics remain
+unchanged.
 
 ## Typed retained declarations
 

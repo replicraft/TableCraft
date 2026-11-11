@@ -157,7 +157,7 @@ impl StagedFieldAddition {
         self.session
     }
 
-    /// Commit the checked original request through its resizable V2 journal and lifecycle.
+    /// Commit the checked original request through its qualified V2 or V3 journal lifecycle.
     /// Schema receipts carry no invented matched or changed record counts.
     pub fn apply(
         self,
