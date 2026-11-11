@@ -22,11 +22,14 @@ enabled merely by using this API.
 
 Generic V1 and EOF/V2 recovery retain their existing families and original intent
 bytes. [Retained cell updates](RETAINED_CELL_UPDATES.md) select exact TCNI17
-LONG/Text, TCNI18 opaque-tail, TCNI19 Currency, TCNI20 Boolean or TCNI21
-Byte/Int16/Int64/Single/Double/legacy DateTime families. They use a checked V3
+LONG/Text, TCNI18 opaque-tail, TCNI19 Currency, TCNI20 Boolean, TCNI21
+Byte/Int16/Int64/Single/Double/legacy DateTime or TCNI22 GUID/Decimal families. They use a checked V3
 recovery capability; older preparation/qualification APIs refuse those families.
 TCNI21 has its own fixed-carrier constructors and finite IEEE grammar, while
-TCNI17–20 remain closed. Actual native target metadata selects the action before
+TCNI22 retains canonical GUID bytes and exact Decimal coefficient/scale in its
+separate original-request grammar; fresh native reconstruction checks the actual
+field declaration and storage representation. TCNI17–21 remain closed.
+Actual native target metadata selects the action before
 request lowering; SQL and typed callers share that decision without proof retry.
 The specialized Jet 4 checked-journal API retains its existing path. A failed
 profile decoder is never retried as another action.
