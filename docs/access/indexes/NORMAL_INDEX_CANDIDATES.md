@@ -60,3 +60,20 @@ and the initial raw-fixture and work-budget failures. Empty, nullable/duplicate,
 more than two leaves and at least three tree levels. A separate generated-primary
 source protects Currency, Unicode Text, NULL/empty values and sibling storage.
 Corruption and request-refusal controls are distinct from positive construction.
+
+## Design-timestamp parity gap
+
+Current index construction preserves the original `MSysObjects.DateUpdate` and
+other catalog bytes. This byte preservation does not qualify native Access
+`TableDef.LastUpdated` or Navigation Pane Modified behavior. Jackcess explicitly
+[does not automatically update table modification dates](https://jackcess.sourceforge.io/apidocs/com/healthmarketscience/jackcess/Table.html#getUpdatedDate());
+its readable output and unchanged timestamps cannot establish Microsoft parity.
+
+Microsoft documents [LastUpdated as a table design-change stamp](https://learn.microsoft.com/en-us/office/vba/access/concepts/data-access-objects/track-design-changes-to-a-table-type-dao-recordset),
+separate from record changes, and [Modified as the same property for tables](https://learn.microsoft.com/en-us/office/vba/access/concepts/miscellaneous/object-properties).
+A stamp change on persisted index creation is an inference from that general
+contract. Exact SQL/DAO `CREATE INDEX` chronology, physical catalog updates and
+precision have not been qualified here. This remains part of the Access parity
+goal, alongside the functional index work. A future stamp implementation must
+bind its captured time to the versioned original request and exact catalog edit
+proof; cold reconstruction must not consult a clock.
