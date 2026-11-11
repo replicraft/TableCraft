@@ -121,3 +121,6 @@ impl NativeRetainedTypedFieldAdditionIntent {
         Ok(())
     }
 }
+
+#[cfg(test)]
+mod tests;
