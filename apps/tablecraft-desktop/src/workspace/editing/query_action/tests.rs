@@ -499,3 +499,5 @@ fn typed_values_and_select_appends_preserve_presence_and_save_the_original_batch
         );
     }
 }
+
+mod joined;
