@@ -22,7 +22,7 @@ const HEX: &[u8; 16] = b"0123456789abcdef";
 const STAGE_PREFIX: &str = ".tablecraft-journal-stage-";
 const RETIRED_PREFIX: &str = ".tablecraft-retired-";
 const MAX_CREATE_ATTEMPTS: usize = 16;
-const MAX_INTENT_BYTES: u64 = 16 * 1024 * 1024;
+pub(super) const DEFAULT_MAX_INTENT_BYTES: u64 = 16 * 1024 * 1024;
 const SETUP_RENAME_STEPS: u64 = 1024;
 pub(super) const RETIRED_UNITS: usize = RETIRED_PREFIX.len() + NONCE_BYTES * HEX_PER_BYTE;
 const STAGE_UNITS: usize = STAGE_PREFIX.len() + NONCE_BYTES * HEX_PER_BYTE;
@@ -163,13 +163,14 @@ pub(super) fn create(
     target: &mut OfflineTarget,
     path: &Path,
     intent: Vec<u8>,
+    maximum_intent_bytes: u64,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Sidecar, FailedSetup> {
     let mut retained = None;
     let result = (|| -> Result<(), PairError> {
         check(budget, cancelled)?;
-        if intent.len() as u64 > MAX_INTENT_BYTES {
+        if intent.len() as u64 > maximum_intent_bytes {
             return Err(PairError::IntentLimit);
         }
         let location = Location::capture(path, budget, cancelled)?;
@@ -232,11 +233,11 @@ pub(super) fn create(
             nonce,
             objects,
             &sidecar.intent,
-            MAX_INTENT_BYTES,
+            maximum_intent_bytes,
             budget,
             cancelled,
         )?;
-        let header = binding.encode(MAX_INTENT_BYTES, budget, cancelled)?;
+        let header = binding.encode(maximum_intent_bytes, budget, cancelled)?;
         sidecar.binding = Some(binding);
         paid_write(sidecar.storage.file_mut()?, 0, &header, budget, cancelled)?;
         let Sidecar {

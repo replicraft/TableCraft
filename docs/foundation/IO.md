@@ -62,6 +62,14 @@ byte ceilings; optional image journaling has explicit allocation/size policies.
 
 ## Explicit V3 resizable image journals
 
+Filesystem journal setup offers `OfflineJournalPair::create_with_intent_limit`
+for an explicit host-selected opaque intent allowance on macOS, Linux and
+Windows. Oversized intents fail before namespace creation while retaining the
+same target owner. The selected allowance also governs Windows prefix binding;
+I/O does not inspect native action tags or grant mutation permission. Ordinary
+`create` keeps its existing platform setup policy. Reopen likewise requires the
+host's explicit allowance, independently of native format and resource checks.
+
 The resizable journal now has a separate V3 protocol, selected explicitly through
 `prepare_resizable_v3_expected`, `inspect_v3` and `recover_resizable_v3`.
 `CheckedV3` is a distinct capability from `CheckedV2`; an old recovery consumer

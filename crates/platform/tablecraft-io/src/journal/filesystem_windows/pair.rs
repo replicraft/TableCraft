@@ -100,9 +100,30 @@ fn reserve(budget: &mut ResourceBudget, cancelled: &dyn Fn() -> bool) -> Result<
 impl OfflineJournalPair {
     #[allow(clippy::result_large_err)] // Retain all owners inline without allocating on failure.
     pub fn create(
+        target: OfflineTarget,
+        path: &Path,
+        intent: Vec<u8>,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, PairSetupFailure> {
+        Self::create_with_intent_limit(
+            target,
+            path,
+            intent,
+            setup::DEFAULT_MAX_INTENT_BYTES,
+            budget,
+            cancelled,
+        )
+    }
+
+    /// Publish with a host-selected opaque intent allowance, checked before any
+    /// namespace setup. No native action is interpreted by this filesystem owner.
+    #[allow(clippy::result_large_err)] // Retain all owners inline without allocating on failure.
+    pub fn create_with_intent_limit(
         mut target: OfflineTarget,
         path: &Path,
         intent: Vec<u8>,
+        maximum_intent_bytes: u64,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, PairSetupFailure> {
@@ -114,7 +135,14 @@ impl OfflineJournalPair {
                 release_attempted: false,
             });
         }
-        match setup::create(&mut target, path, intent, budget, cancelled) {
+        match setup::create(
+            &mut target,
+            path,
+            intent,
+            maximum_intent_bytes,
+            budget,
+            cancelled,
+        ) {
             Ok(sidecar) => Ok(Self {
                 target,
                 sidecar,

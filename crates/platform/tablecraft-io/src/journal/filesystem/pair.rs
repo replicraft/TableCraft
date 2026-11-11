@@ -245,9 +245,23 @@ impl OfflineJournalPair {
     /// Create one new private bundle with retained objects and acknowledged
     /// setup barriers. It never mutates target bytes or reuses an existing bundle.
     pub fn create(
+        target: OfflineTarget,
+        bundle: &Path,
+        intent: Vec<u8>,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, PairSetupFailure> {
+        Self::create_with_intent_limit(target, bundle, intent, u64::MAX, budget, cancelled)
+    }
+
+    /// Create with an explicit host-selected opaque intent allowance. The limit
+    /// is checked before namespace setup; failure retains the original target.
+    /// This does not validate an action or authorize its database effects.
+    pub fn create_with_intent_limit(
         mut target: OfflineTarget,
         bundle: &Path,
         intent: Vec<u8>,
+        maximum_intent_bytes: u64,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, PairSetupFailure> {
@@ -261,6 +275,13 @@ impl OfflineJournalPair {
                 });
             }
         };
+        if intent.len() as u64 > maximum_intent_bytes {
+            return Err(PairSetupFailure {
+                cause: PairError::IntentLimit,
+                target,
+                incomplete: Vec::new(),
+            });
+        }
         let opened = match create::create(&mut target, bundle, intent, budget, cancelled) {
             Ok(opened) => opened,
             Err(failed) => {
