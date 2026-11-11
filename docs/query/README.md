@@ -4,6 +4,7 @@ Access SQL parsing, binding, execution, relational keys and collection results.
 
 [Documentation index](../README.md)
 
+- [ACE SQL conformance and remaining acceptance](ACE_SQL_CONFORMANCE.md)
 - [Explicit General comparison allowances](COMPARISON_BUDGETS.md)
 - [Bounded crosstab retrieval](CROSSTABS.md)
 - [Explicit Decimal parameter constraints](DECIMAL_PARAMETERS.md)
