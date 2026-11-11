@@ -27,6 +27,16 @@ and bounded feature evidence below retain their original scope.
 
 ## Existing implementation evidence
 
+The [current column lifecycle matrix](features/ACCESS_PARITY_ROADMAP.md#current-native-crud-matrix)
+now includes qualified retained scalar edits and saved-field renames across all
+twelve supported scalar kinds, plus typed last-active field deletion through
+normal GUI/runtime/MCP services. The
+[typed deletion record](../tests/results/schema/retained-typed-field-drop-workflows-2026-11-10.json)
+checks survivor edits and fresh insertion separately from metadata deletion,
+including genuine ambiguous row histories. Typed saved-field ADD, general
+non-tail deletion, joined-definition DDL and broader profile qualification remain
+active work; these bounded positive workflows do not complete native CRUD.
+
 [Explicit database Options](access/writes/DATABASE_OPTIONS.md) now save OFF after
 qualified empty creator Number/Short Text histories through the same normal GUI
 and a distinct `TCDO0002` original request. Native source purpose comes from actual
@@ -41,7 +51,7 @@ ADD and repeated ADD after this OFF history. The bounded same-width saved-field
 rename now passes normal Datasheet/Design save, close and fresh-schema selection
 checks. The [current workbench record](../tests/results/schema/field-workbench-workflows-2026-11-09.json)
 retains failed batches and the accepted 1,533 distinct checks plus 22 reviewed
-offscreen frames. Saved-field alteration/deletion, populated/broader layouts
+offscreen frames. General saved-field alteration/deletion and broader layouts
 and native Windows/Access save comparison remain open.
 
 [Coordinated wider root promotion](access/writes/NORMAL_WIDE_ROOT_PROMOTION.md)

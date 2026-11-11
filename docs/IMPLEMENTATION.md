@@ -1,5 +1,40 @@
 # Implementation status
 
+## Retained typed tail-field deletion — 10 November 2026
+
+Qualified last-active fields of all twelve supported scalar kinds now use the
+shared native deletion, runtime and Access services. Metadata selects TCFD3 for
+its canonical LONG/Text language or the closed TCFD4 typed language before
+planning. Target declarations, properties, programs, dependencies, constraints
+and indexes remain fully checked. At least one active field must survive.
+Deletion preserves native high-water counts, every DATA/INDEX byte, old property
+history and all surviving native identities.
+
+Actual runtime and headless desktop journeys remove populated fixed tails and
+successive Decimal/GUID tails through the existing confirmation/review/save flow.
+They preserve cancellation, read surviving values, perform a separately reviewed
+survivor edit, insert another row using the declared default and reopen. Old
+values remain unchanged by insertion; fresh records use the current retained
+count/footer without reviving retired fields. MCP exercises the same service
+through inspect, review, apply, schema-only completion and guarded reopen.
+
+Metadata deletion grants no general row-write authority. Native cases separately
+qualify complete survivor updates and insertion. A genuine ADD/DROP history with
+ambiguous old record framing still refuses incompatible complete-row writers;
+its independently qualified opaque-history insertion preserves the old records
+and constructs a fresh current record. Checked V3 recovery reconstructs bound
+TCFD4 originals in fresh scopes, including actual cold and settled file sessions.
+
+The [workflow receipt](../tests/results/schema/retained-typed-field-drop-workflows-2026-11-10.json)
+records 352 runtime tests, 122 desktop workflows, 39 adapter checks, 242 combined
+native checks, 72 MCP unit/stdio checks and 15 journal-only cases passing. Strict
+Clippy across seven consumers, feature builds, rustdoc and repository guards
+pass. Intermediate oracle/MCP test failures and ignored cases remain explicit;
+these checks do not establish Windows or Microsoft Access save/reopen parity.
+
+Typed saved-field ADD, general non-tail deletion, joined-definition DDL and
+broader native profiles remain separate CRUD work.
+
 ## Retained typed saved-field renaming — 10 November 2026
 
 Qualified existing Boolean, Byte, Integer, LONG, Large Number, Single, Double,
@@ -34,7 +69,7 @@ not establish Windows or Microsoft Access save/reopen parity.
 
 Rename retains its qualified ASCII collision policy, single-page TDEF and
 checked fitting property-storage boundaries. Joined definitions, broader native
-profiles, typed saved-field ADD/DROP and general non-tail DROP remain CRUD work.
+profiles, typed saved-field ADD and general non-tail DROP remain CRUD work.
 
 ## Retained GUID and Decimal cell workflows — 10 November 2026
 
@@ -62,7 +97,7 @@ pass. Intermediate failures and ignored cases remain recorded. These local
 checks do not establish Windows or Microsoft Access save/reopen parity.
 Indexed/generated targets, unknown required programs, ambiguous source layouts,
 GUID generation and DateTimeExtended remain outside this action. Additional
-rename profiles and typed saved-field ADD/DROP remain separate CRUD work.
+rename/deletion profiles and typed saved-field ADD remain separate CRUD work.
 
 ## Retained fixed-scalar cell workflows — 10 November 2026
 

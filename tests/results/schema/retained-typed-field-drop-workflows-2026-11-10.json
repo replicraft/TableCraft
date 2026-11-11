@@ -1,0 +1,231 @@
+{
+  "date": "2026-11-10",
+  "source_commit": "4f4b760d401effe94de86ecf25d0febf92c930cb",
+  "source_tree": "4ef5fd86f13bba37f92f263eb0c230f89278fef7",
+  "platform": "macOS ARM64",
+  "verification": "Headless actual application workflows, independent native images and filesystem recovery",
+  "baselines": [
+    {
+      "host": "runtime",
+      "log": ".cache/retained-typed-drop-runtime-baseline.log",
+      "log_sha256": "867b32823c123575f4cbd4a20e35e84877fef2b89c7af946fd0c4ffbc76047a6",
+      "outcome": "failed_as_expected",
+      "cases": 2,
+      "failure": "DateValue and Amount DROP review returns Drop(Source)"
+    },
+    {
+      "host": "desktop",
+      "log": ".cache/retained-typed-drop-desktop-baseline.log",
+      "log_sha256": "52d5975b555eb7384992f721091e308e263ec7ba4bb6a7da0bd1844c0de20d9a",
+      "outcome": "failed_as_expected",
+      "cases": 2,
+      "failure": "Native source inspection refuses DateValue and Amount after actual confirmation UI"
+    }
+  ],
+  "batches": [
+    {
+      "receipt": ".cache/retained-typed-drop-early-results.json",
+      "results": [
+        {
+          "job": "api",
+          "returncode": 0,
+          "seconds": 15.77,
+          "log": ".cache/retained-typed-drop-early-api.log",
+          "log_sha256": "d01cca6166c3e0e2ac143659588781156783bf7bb0dcc90820665749aa40fd1b"
+        },
+        {
+          "job": "runtime",
+          "returncode": 0,
+          "seconds": 35.44,
+          "log": ".cache/retained-typed-drop-early-runtime.log",
+          "log_sha256": "11dc842110f808d60fddb66535df40bfc45995480d02329209e554a4e43822fa"
+        },
+        {
+          "job": "desktop",
+          "returncode": 0,
+          "seconds": 63.83,
+          "log": ".cache/retained-typed-drop-early-desktop.log",
+          "log_sha256": "1c8776e55be57b390e4090cb5e92804373ce2d40bf83e39bd4a528242f947ef5"
+        },
+        {
+          "job": "access",
+          "returncode": 0,
+          "seconds": 33.94,
+          "log": ".cache/retained-typed-drop-early-access.log",
+          "log_sha256": "265755d56215ece1996e8cccdaebcbafe2afb41e459f3369b4706384314ce57c"
+        }
+      ]
+    },
+    {
+      "receipt": ".cache/retained-typed-drop-late-results.json",
+      "results": [
+        {
+          "job": "native",
+          "returncode": 101,
+          "seconds": 80.08,
+          "log": ".cache/retained-typed-drop-late-native.log",
+          "log_sha256": "fced95ebc4cc63b1b8821399ce06b66cfd0d1d1f8320e608f005209b750b47db"
+        },
+        {
+          "job": "lint",
+          "returncode": 0,
+          "seconds": 66.12,
+          "log": ".cache/retained-typed-drop-late-lint.log",
+          "log_sha256": "b4237e17e677621e4b4943ca1ab88be2657e5ae80d733dbe87ab7ed22475e717"
+        },
+        {
+          "job": "minimal",
+          "returncode": 0,
+          "seconds": 3.32,
+          "log": ".cache/retained-typed-drop-late-minimal.log",
+          "log_sha256": "937ed3d84aebb6a06be078b8d6ad6b19b7a2ea3580605a2ed4b4897b89d034d3"
+        },
+        {
+          "job": "creation",
+          "returncode": 0,
+          "seconds": 0.2,
+          "log": ".cache/retained-typed-drop-late-creation.log",
+          "log_sha256": "9672dcb64b812d18002bb171ca091e3e2d459da76796049f11f7cf993ae900d1"
+        },
+        {
+          "job": "journal",
+          "returncode": 0,
+          "seconds": 2.03,
+          "log": ".cache/retained-typed-drop-late-journal.log",
+          "log_sha256": "acf10a4d1e554c7894b419fe0a21a334b1c7c50602173866fa94485bb3f00e6d"
+        },
+        {
+          "job": "journal-tests",
+          "returncode": 0,
+          "seconds": 15.84,
+          "log": ".cache/retained-typed-drop-late-journal-tests.log",
+          "log_sha256": "0b61970365065a9982b212af7adfb56c8125fecd5d4e897927d725034a909e6d"
+        },
+        {
+          "job": "docs",
+          "returncode": 0,
+          "seconds": 15.42,
+          "log": ".cache/retained-typed-drop-late-docs.log",
+          "log_sha256": "d385f631bd364639f5e998bbca9f0c9b63a0744c860b9d58514bed068db00f11"
+        }
+      ]
+    },
+    {
+      "receipt": ".cache/retained-typed-drop-repair-results.json",
+      "results": [
+        {
+          "job": "mcp",
+          "returncode": 0,
+          "seconds": 11.15,
+          "log": ".cache/retained-typed-drop-repair-mcp.log",
+          "log_sha256": "d6dc8b07a946525ba2688c42c0cce84952cdfe66eaaa498091395624d9d740d9"
+        },
+        {
+          "job": "native",
+          "returncode": 0,
+          "seconds": 19.92,
+          "log": ".cache/retained-typed-drop-repair-native.log",
+          "log_sha256": "f0d65ed7e81a36ca0a803932cad92f19eb2dfd9d1eacb4d9ccb005eb74f1ce71"
+        },
+        {
+          "job": "lint",
+          "returncode": 0,
+          "seconds": 39.13,
+          "log": ".cache/retained-typed-drop-repair-lint.log",
+          "log_sha256": "9887c7871fbeff516e73e7c511bbf8d9e5f086d606ca5f609167d0dda2ae7f33"
+        }
+      ]
+    }
+  ],
+  "initial_mcp": {
+    "job": "mcp",
+    "returncode": 101,
+    "log": ".cache/retained-typed-drop-mcp.log",
+    "log_sha256": "82dfc5c090c561e0e4f47fadf1e6e9cb369be79cbdcff307ca456a3bfa8a92f7"
+  },
+  "counts": {
+    "runtime": {
+      "passed": 352,
+      "ignored": 1,
+      "targets": 1
+    },
+    "desktop": {
+      "passed": 122,
+      "ignored": 0,
+      "targets": 1
+    },
+    "adapter": {
+      "passed": 39,
+      "ignored": 0,
+      "targets": 1
+    },
+    "native_original_batch_passed": 241,
+    "native_combined_passed": 242,
+    "native_ignored": 11,
+    "native_repaired_type_and_history_cases": {
+      "passed": 3,
+      "ignored": 0,
+      "targets": 1
+    },
+    "mcp": {
+      "passed": 72,
+      "ignored": 0,
+      "targets": 2
+    },
+    "journal_only": {
+      "passed": 15,
+      "ignored": 0,
+      "targets": 1
+    }
+  },
+  "observations": [
+    "Qualified ordinary tails of all twelve supported scalar kinds use one closed typed DROP family; canonical LONG/Text sources retain their original family.",
+    "Independent complete images verify exact active descriptor/name/property removal, retained high-water counts and unchanged DATA/INDEX bytes, old properties and forwarding histories.",
+    "Actual runtime and desktop workflows remove populated fixed tails and Decimal then GUID tails, preserve survivor identities/values, edit a survivor and insert a fresh generated row with the declared default.",
+    "New rows use the actual retained native count and variable footer without resurrecting retired data or assigning defaults to historical records.",
+    "MCP performs actual inspect/review/apply/guarded reopen with schema-only receipts and unchanged survivors.",
+    "TCFD4 request binding and fresh checked V3 reconstruction qualify pending, committed and settled filesystem recovery; old action families remain closed.",
+    "Complete survivor rows retain independently qualified existing row actions. Genuine ADD/DROP count/footer ambiguity permits metadata operations but refuses incompatible complete-row UPDATE/INSERT actions.",
+    "A separate existing opaque-history INSERT action is positively qualified on that ambiguous source and preserves its old records while authoring a fresh current record.",
+    "Shared private schema-journal test machinery checks rename and deletion receipts and recovery without duplicating the ownership driver."
+  ],
+  "intermediate_failures": [
+    "The independent ADD setup for the ambiguity case required the actual 16-byte GUID predecessor span. Its retained-slack oracle was extended without changing production code or removing the ambiguity control.",
+    "The full MCP run exposed request-validation assertions that rejected valid caller budgets. Tests and request documentation now match current runtime counter validation; production behavior is unchanged."
+  ],
+  "limitations": [
+    "No native application window was opened; these checks do not establish Windows execution or Microsoft Access save/reopen parity.",
+    "This action removes only the last active qualified ordinary field and preserves at least one active field. General non-tail DROP remains unqualified.",
+    "ASCII identity policy, single-page TDEF, known property/dependency/program proofs and actual fitting snapshot capacity remain explicit source boundaries.",
+    "Indexed/generated/calculated targets, unsupported properties/programs and joined definitions remain unqualified.",
+    "Metadata DROP provides no blanket UPDATE/INSERT/DELETE authority. Every later row action must freshly qualify its actual history.",
+    "Eleven native and one runtime ignored cases are not passing evidence.",
+    "Typed saved-field ADD and broader native profile qualification remain separate CRUD work."
+  ],
+  "guards": [
+    {
+      "check": "check_rust_format.py",
+      "returncode": 0,
+      "log": ".cache/typed-drop-final-check_rust_format.py.log",
+      "log_sha256": "81ef6bec6015e66a3290fad77133f1b3ca005d22054e9b29174246fe42e97a27"
+    },
+    {
+      "check": "check_rust_layout.py",
+      "returncode": 0,
+      "log": ".cache/typed-drop-final-check_rust_layout.py.log",
+      "log_sha256": "e4495a784bb5b2430d358e84c0b08910bbade659dc50ff7df49d8a3236451954"
+    },
+    {
+      "check": "check_dependency_boundaries.py",
+      "returncode": 0,
+      "log": ".cache/typed-drop-final-check_dependency_boundaries.py.log",
+      "log_sha256": "0550e0f35860c6b24c4aa1e52b57bcd7b8a01555414ce715a2168995381230b0"
+    },
+    {
+      "check": "check_documentation_links.py",
+      "returncode": 0,
+      "log": ".cache/typed-drop-current-matrix-links.log",
+      "log_sha256": "37fa45d4749b21de40833447ff0e93851bf6bb13f9ed7f0f8ddafa702ce9a908"
+    }
+  ]
+}

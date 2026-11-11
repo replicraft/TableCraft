@@ -51,6 +51,13 @@ omitted-default INSERT after both drops: it retains the old edited value and
 generates the next ID without resurrecting retired payloads. These scenarios and independent byte oracles are not a claim of
 Windows/Access execution equivalence or general imported-schema editing.
 
+The [verified typed workflow receipt](../../../tests/results/schema/retained-typed-field-drop-workflows-2026-11-10.json)
+records native all-type preservation, actual runtime/desktop/MCP use and file
+recovery checks. Its ambiguity case distinguishes metadata admission from each
+row writer's own qualification, including a separately qualified fresh insertion
+that preserves ambiguous old records. Intermediate test-oracle and validation
+expectation failures are retained alongside the final passing results.
+
 ## Retained Number/Short Text and last-active fields
 
 The retained-schema route removes a qualified nullable, nonprimary, unindexed

@@ -56,6 +56,10 @@ proposal under the existing shared owner checks. A post-DROP cell edit or new ro
 has its own reviewed native qualification and cannot inherit authority from the
 schema receipt. No native-window or new Access visual-parity evidence is implied.
 
+The [verified workflow receipt](../../tests/results/schema/retained-typed-field-drop-workflows-2026-11-10.json)
+records actual fixed and Decimal/GUID deletion journeys, preserved cancellation,
+survivor edits and a separately reviewed defaulted insertion through fresh reopen.
+
 The confirmation and pending state own the exact target and local draft
 revision. Confirmation supplies no native authority. Other dirty stored-object
 owners block the operation rather than being discarded. Save/Discard/Cancel

@@ -1,6 +1,6 @@
 # Native CRUD, queries and Access parity
 
-Scope accounting, updated 9 November 2026. This records the user's expanded target,
+Scope accounting, updated 10 November 2026. This records the user's expanded target,
 the inspected implementation and the remaining work; it is not a compatibility
 announcement or a record of newly passing native tests.
 
@@ -39,8 +39,10 @@ All cells describe current implementation, not the requested final state.
 | Add a table | Missing | Missing | Missing | Missing | Qualified bounded creation ledgers |
 | Rename a saved table | Missing | Missing | Missing | Missing | Restricted single-table, Name AutoCorrect OFF profile; retained Int32 index saves/recovery and headless workflow checked |
 | Drop a saved table | Missing | Missing | Missing | Missing | Qualified empty-table DROP with original-intent recovery and normal GUI/MCP save/reopen; no storage reclamation |
-| Add a saved column | Missing | Missing | Missing | Missing | Bounded empty-table Number/Short Text ADD, original-intent recovery and normal Datasheet/Design save/reopen |
-| Rename/alter/drop a saved column | Missing | Missing | Missing | Missing | Bounded current-metadata ASCII Number/Short Text rename, including demonstrated populated/deleted-row histories, and empty-table Number/Short Text deletion have connected normal GUI workflows; broader alteration/deletion remain unfinished |
+| Add a saved column | Missing | Missing | Missing | Missing | Qualified LONG/Short Text ADD, original-intent recovery and normal Datasheet/Design save/reopen; other types pending |
+| Rename a saved column | Missing | Missing | Missing | Missing | Qualified retained ASCII rename across twelve scalar kinds, with exact properties/values, original-intent recovery and normal GUI/MCP workflows; joined definitions and broader sources remain unqualified |
+| Alter a saved column | Missing | Missing | Missing | Missing | General saved type/property alteration and row migration remain unimplemented |
+| Drop a saved column | Missing | Missing | Missing | Missing | Qualified retained last-active deletion across twelve scalar kinds, original-intent recovery and GUI/MCP workflows; non-tail deletion and joined definitions remain unqualified |
 | Update rows | Restricted fixed non-NULL Int32 copy route | No normal writer admission | No normal writer admission | No independently qualified normal writer | Many qualified carrier/index/allocation profiles |
 | Insert/delete rows | No equivalent normal routes established | Missing normal routes | Missing normal routes | Missing normal routes | Qualified normal routes; restrictions remain |
 | Recoverable writes | Existing Jet 4 update integration | No CRUD-specific qualification | No CRUD-specific qualification | No CRUD-specific qualification | Original-intent journal/recovery for admitted actions |
@@ -77,7 +79,7 @@ writer qualifications remain in [native writes](../access/writes/NATIVE_WRITES.m
 | Profile coverage | Original Jet 3/4 and ACE 12/14/15/16 fixture inventories; actual version/features/encryption provenance; positive and negative write/recovery evidence for each family. |
 | Database lifecycle | Creators for the other targets, full supported declarations, database options, encrypted writes and explicit safe file lifecycle. Removing a database file is a host operation with document/resource ownership, not SQL DROP DATABASE. |
 | Saved table lifecycle | Broaden restricted rename to ordinary creator/indexed/multiple-table layouts and Name AutoCorrect behavior; implement DROP with dependency handling, identity preservation and allocation retirement. |
-| Saved column lifecycle | Broaden the implemented empty-table Number/Short Text ADD beyond its canonical ACE16 source, declaration/history and page limits. Broaden bounded persisted rename beyond its checked GUI profile; broaden the connected bounded DROP GUI workflow to additional deletion profiles, type changes, existing-row migration, defaults/indexes/properties and dependency updates. Preserve field numbers/null masks/variable offsets, native history and unknown metadata. |
+| Saved column lifecycle | Extend saved-field ADD beyond LONG/Short Text using actual typed declarations, defaults and historical-row semantics. Broaden qualified typed rename and tail DROP to non-tail deletion, joined definitions and imported sources; implement saved type/property alteration, row migration and dependency updates. Preserve field numbers/null masks/variable offsets, native history and unknown metadata. |
 | Rows and storage | General scalar and supported advanced-field CRUD, all admitted key families/combinations, DATA/INDEX/LVAL growth and contraction, allocation-map growth, page reuse and reclamation. Remove fitting-only/short-ledger restrictions through real storage work. |
 | Defaults and identity | Omitted versus NULL versus supplied values, complete supported defaults, Increment/Random generation, reseeding/history and composition with constraints/indexes/allocation. |
 | Constraints and relationships | Required/AZL, field/record validation, primary/unique indexes, foreign keys, relationships, cascades and supported NULL/text comparison behavior. Author and preserve their native declarations. |
@@ -110,8 +112,11 @@ OFF settings and dependencies rather than requiring initial-history replay.
 Repeated growth/shrink/regrowth and another rename after row deletion pass
 normal GUI/MCP review/save/reopen with complete independent images. The earlier
 dense populated INSERT-replay profile remains a separate legacy language.
-The current eleven-page ACE2016 boundary does not qualify arbitrary imported
-layouts or other field types; see [field rename](../access/writes/FIELD_RENAME.md).
+The original eleven-page current-storage source remains a separate language.
+Qualified retained typed rename and tail deletion now cover twelve scalar kinds
+through their own source proofs; arbitrary imported layouts and joined
+definitions remain unqualified. See [field rename](../access/writes/FIELD_RENAME.md)
+and [field deletion](../access/writes/FIELD_DROP.md).
 The original creator-OFF→table-rename route retains its separate boundary. Broader
 table/column rename and other lifecycle operations remain work. Neither
 parser nodes nor a “created by TableCraft” flag confer mutation authority.
