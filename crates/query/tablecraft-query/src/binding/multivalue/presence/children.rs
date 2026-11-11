@@ -65,7 +65,8 @@ pub(super) fn children(expr: &Expr) -> impl Iterator<Item = &Expr> {
         | Expr::ConstructorCall(_, values)
         | Expr::ConditionalCall(_, values)
         | Expr::Array(values) => ([None, None, None, None, None], values.as_slice()),
-        Expr::Multivalue { .. }
+        Expr::Recordset { .. }
+        | Expr::Multivalue { .. }
         | Expr::Literal(_)
         | Expr::NumericLiteral(_)
         | Expr::DateLiteral(..)
@@ -147,7 +148,8 @@ pub(super) fn children_mut(expr: &mut Expr) -> impl Iterator<Item = &mut Expr> {
         | Expr::ConstructorCall(_, values)
         | Expr::ConditionalCall(_, values)
         | Expr::Array(values) => ([None, None, None, None, None], values.as_mut_slice()),
-        Expr::Multivalue { .. }
+        Expr::Recordset { .. }
+        | Expr::Multivalue { .. }
         | Expr::Literal(_)
         | Expr::NumericLiteral(_)
         | Expr::DateLiteral(..)

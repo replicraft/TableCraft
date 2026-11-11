@@ -91,7 +91,8 @@ impl Pruner<'_, '_> {
                 self.collect_expr(expr, target, offset, needed)?;
                 self.outer_read(read, target + 1, offset, needed)?;
             }
-            Expr::Multivalue { .. }
+            Expr::Recordset { .. }
+            | Expr::Multivalue { .. }
             | Expr::Field { .. }
             | Expr::Clock(_)
             | Expr::CurrentUser
@@ -188,7 +189,7 @@ impl Pruner<'_, '_> {
                 let base = read
                     .output_types
                     .iter()
-                    .filter(|kind| !kind.is_multivalue())
+                    .filter(|kind| !kind.is_structured())
                     .count();
                 needed
                     .get_mut(offset..offset + base)

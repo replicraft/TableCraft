@@ -117,7 +117,7 @@ impl Binder<'_> {
                 let base = read
                     .output_types
                     .iter()
-                    .filter(|kind| !kind.is_multivalue())
+                    .filter(|kind| !kind.is_structured())
                     .count();
                 let mut member = 0;
                 for (output, kind) in read.output_types.iter().enumerate() {

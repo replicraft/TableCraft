@@ -30,7 +30,7 @@ impl Pruner<'_, '_> {
                 let base = read
                     .output_types
                     .iter()
-                    .filter(|kind| !kind.is_multivalue())
+                    .filter(|kind| !kind.is_structured())
                     .count();
                 if needed[..base].iter().any(|needed| !needed) {
                     return Err(QueryError::Source);

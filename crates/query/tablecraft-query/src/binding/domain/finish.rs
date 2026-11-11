@@ -84,6 +84,7 @@ pub(super) fn finish(
     let declared_types = binder.unknown_types(1)?;
     let declarations = binder.unknown_declarations(1)?;
     let mut plan = ReadPlan {
+        recordset_schemas: Vec::new(),
         owner,
         declarations,
         output_types,

@@ -5,10 +5,15 @@ pub(crate) use profiled_type::{ProfiledType, ResultProfile};
 mod domain;
 pub(crate) use domain::DomainFunction;
 mod statistics;
+use crate::source::{RecordsetColumn, RecordsetOutput};
 use crate::{OutputType, source::TextPolicy};
 pub(crate) use statistics::Statistic;
-use std::ops::{Deref, Range};
+use std::{
+    ops::{Deref, Range},
+    sync::Arc,
+};
 use tablecraft_core::values::{LegacyDateTime, Value};
+use tablecraft_db::RecordsetSchema;
 use tablecraft_expressions::arrays::BoundFunction;
 use tablecraft_expressions::functions::{
     conditional::ConditionalFunction,
@@ -46,7 +51,15 @@ pub(crate) struct CrosstabPlan {
     pub headings: Option<Vec<Expr>>,
     pub text_policies: Option<Vec<TextPolicy>>,
 }
+pub(crate) struct RecordsetSlot {
+    pub index: usize,
+    pub origin: CollectionOrigin,
+    pub schema: Arc<RecordsetSchema>,
+}
+
 pub(crate) struct Slot {
+    // One coherent structured reference, independent of scalar/list positions.
+    pub recordset: Option<RecordsetSlot>,
     pub output_type: ProfiledType,
     pub declaration: Option<OperandDeclaration>,
     pub text_policy: TextPolicy,
@@ -98,6 +111,8 @@ pub(crate) enum RelationNode {
         unavailable: Vec<tablecraft_schema::SchemaName>,
         text_collations: Vec<Option<crate::source::TextCollationId>>,
         projection: Vec<usize>,
+        recordsets: Vec<RecordsetColumn>,
+        recordset_projection: Vec<usize>,
         multivalues: Vec<Column>,
         multivalue_text_collations: Vec<Option<crate::source::TextCollationId>>,
         member_text_collations: Vec<Option<crate::source::TextCollationId>>,
@@ -120,6 +135,7 @@ pub(crate) enum RelationNode {
 pub(crate) struct ReadPlan {
     pub owner: crate::external_sources::SourceNamespace,
     pub output_types: Vec<OutputType>,
+    pub recordset_schemas: Vec<RecordsetOutput>,
     pub materialized_types: Vec<OutputType>,
     pub declared_types: Vec<OutputType>,
     pub declarations: Vec<Option<OperandDeclaration>>,
@@ -161,6 +177,12 @@ pub(crate) struct ProjectionReference {
 }
 
 pub(crate) enum Expr {
+    // Projection-only stored attachment, never a scalar/list evaluator value.
+    Recordset {
+        index: usize,
+        parent_nullable: bool,
+        origin: CollectionOrigin,
+    },
     // Projection-only list slot. It never enters the scalar evaluator.
     Multivalue {
         index: usize,

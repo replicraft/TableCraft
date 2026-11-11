@@ -43,7 +43,9 @@ impl Binder<'_> {
                 if found.is_some() {
                     return Err(QueryError::AmbiguousName);
                 }
-                found = Some(if output_type.is_multivalue() {
+                found = Some(if slot.recordset.is_some() {
+                    Some(super::super::recordsets::projection(slot)?)
+                } else if output_type.is_multivalue() {
                     Some(Expr::Multivalue {
                         index: slot.collection_index.ok_or(QueryError::Source)?,
                         output_type,

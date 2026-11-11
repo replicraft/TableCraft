@@ -9,6 +9,7 @@ use tablecraft_core::limits::{Resource, ResourceBudget};
 
 fn slot(name: &str, qualifier: &str, member: &str, collection: usize) -> Slot {
     Slot {
+        recordset: None,
         output_type: ProfiledType::uniform(OutputType::Dynamic),
         declaration: None,
         text_policy: TextPolicy::Default,

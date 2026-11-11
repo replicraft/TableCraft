@@ -43,7 +43,7 @@ impl Binder<'_> {
     ) -> Result<Option<OperandDeclaration>, QueryError> {
         self.tick(depth)?;
         Ok(match expression {
-            Expr::Multivalue { .. } => None,
+            Expr::Recordset { .. } | Expr::Multivalue { .. } => None,
             Expr::Field { depth, index, .. } => {
                 scopes
                     .get(*depth)

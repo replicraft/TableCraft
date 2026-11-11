@@ -86,7 +86,8 @@ impl Binder<'_> {
                 std::iter::once(value.as_ref()).chain(list.iter()),
                 depth + 1,
             )?,
-            Expr::Multivalue { .. }
+            Expr::Recordset { .. }
+            | Expr::Multivalue { .. }
             | Expr::Aggregate(..)
             | Expr::Subquery(_)
             | Expr::Exists(_)

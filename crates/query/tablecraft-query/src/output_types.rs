@@ -26,6 +26,13 @@ pub enum OutputType {
         /// not alter whether children in a present list may be NULL.
         parent_nullable: bool,
     },
+    /// One complete stored attachment recordset. Child schema is retained in
+    /// sparse output metadata; it is never inferred from the first result row.
+    Recordset {
+        /// The associated parent may be absent after an outer join. Unassigned
+        /// and assigned-empty recordsets still belong to a present parent.
+        parent_nullable: bool,
+    },
     /// No single checked scalar descriptor is established. This can include
     /// varying carriers, expression-only states or unimplemented inference.
     Dynamic,
@@ -38,6 +45,14 @@ impl OutputType {
             element_nullable: column.nullable(),
             parent_nullable: false,
         }
+    }
+
+    pub(crate) fn is_recordset(self) -> bool {
+        matches!(self, Self::Recordset { .. })
+    }
+
+    pub(crate) fn is_structured(self) -> bool {
+        self.is_multivalue() || self.is_recordset()
     }
 
     pub(crate) fn is_multivalue(self) -> bool {
@@ -63,6 +78,9 @@ impl OutputType {
                 nullable: true,
             },
             Self::Null => Self::Null,
+            Self::Recordset { .. } => Self::Recordset {
+                parent_nullable: true,
+            },
             Self::Multivalue {
                 element_type,
                 element_nullable,

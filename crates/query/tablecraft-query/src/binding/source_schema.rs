@@ -100,3 +100,36 @@ pub(super) fn validate_members(
     }
     Ok(())
 }
+
+pub(super) fn validate_recordsets(
+    columns: &[Column],
+    unavailable: &[SchemaName],
+    values: &[Column],
+    recordsets: &[crate::source::RecordsetColumn],
+) -> Result<(), QueryError> {
+    if recordsets.len() > unavailable.len() {
+        return Err(QueryError::Source);
+    }
+    for (index, column) in recordsets.iter().enumerate() {
+        SOURCE_SCHEMA_POLICY.validate_name(column.schema_name())?;
+        if !unavailable.iter().any(|name| {
+            SOURCE_SCHEMA_POLICY
+                .names
+                .equals(name.as_str(), column.name())
+        }) || columns.iter().chain(values).any(|other| {
+            SOURCE_SCHEMA_POLICY
+                .names
+                .equals(other.name(), column.name())
+        }) {
+            return Err(QueryError::Source);
+        }
+        if recordsets[..index].iter().any(|other| {
+            SOURCE_SCHEMA_POLICY
+                .names
+                .equals(other.name(), column.name())
+        }) {
+            return Err(SchemaError::Duplicate.into());
+        }
+    }
+    Ok(())
+}

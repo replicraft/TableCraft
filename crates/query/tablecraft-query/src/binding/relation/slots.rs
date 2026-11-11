@@ -33,6 +33,7 @@ impl Binder<'_> {
             .filter(|slot| slot.collection_index.is_some())
             .count();
 
+        let recordset_offset = left.iter().filter(|slot| slot.recordset.is_some()).count();
         self.work()?;
         let width = left
             .len()
@@ -70,7 +71,22 @@ impl Binder<'_> {
                 .map(|qualifier| self.copy_name(qualifier))
                 .transpose()?;
 
+            let recordset = slot
+                .recordset
+                .as_ref()
+                .map(|recordset| {
+                    self.retain_recordset_slot(
+                        recordset,
+                        if position >= left.len() {
+                            recordset_offset
+                        } else {
+                            0
+                        },
+                    )
+                })
+                .transpose()?;
             slots.push(Slot {
+                recordset,
                 output_type: slot.output_type,
                 declaration: slot.declaration,
                 text_policy: slot.text_policy,

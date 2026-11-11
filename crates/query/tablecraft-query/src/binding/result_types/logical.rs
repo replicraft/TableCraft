@@ -19,7 +19,9 @@ pub(super) fn complement(input: OutputType) -> OutputType {
             };
             OutputType::scalar(result, nullable)
         }
-        OutputType::Multivalue { .. } | OutputType::Dynamic => OutputType::Dynamic,
+        OutputType::Recordset { .. } | OutputType::Multivalue { .. } | OutputType::Dynamic => {
+            OutputType::Dynamic
+        }
     }
 }
 
@@ -99,7 +101,9 @@ impl Operand {
                     },
                 )
             }
-            OutputType::Multivalue { .. } | OutputType::Dynamic => None,
+            OutputType::Recordset { .. } | OutputType::Multivalue { .. } | OutputType::Dynamic => {
+                None
+            }
         }
     }
 

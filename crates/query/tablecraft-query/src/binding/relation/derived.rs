@@ -2,9 +2,10 @@
 use super::Binder;
 use crate::{
     OutputType, QueryError,
-    plan::{MemberSlot, ProfiledType, ReadPlan, Relation, RelationNode, Slot},
+    plan::{MemberSlot, ProfiledType, ReadPlan, RecordsetSlot, Relation, RelationNode, Slot},
     profile::SOURCE_SCHEMA_POLICY,
 };
+use std::sync::Arc;
 use tablecraft_expressions::numeric::OperandDeclaration;
 
 impl Binder<'_> {
@@ -38,6 +39,7 @@ impl Binder<'_> {
             .try_reserve_exact(list_count)
             .map_err(|_| QueryError::Allocation)?;
         let mut list = 0;
+        let mut recordset_index = 0;
         for (index, name) in read.names.iter().enumerate() {
             self.work()?;
             let is_list = read.output_types[index].is_multivalue();
@@ -60,14 +62,35 @@ impl Binder<'_> {
                     }
                 }
             }
+            let recordset = if read.output_types[index].is_recordset() {
+                let output = read
+                    .recordset_schemas
+                    .iter()
+                    .find(|output| output.index == index)
+                    .ok_or(QueryError::Source)?;
+                let origin = read.recordset_origin(index).ok_or(QueryError::Source)?;
+                // NO_CLONE: The derived relation and its retained inner read both
+                // own this immutable child declaration; child data is not copied.
+                let schema = Arc::clone(&output.schema);
+                let slot = RecordsetSlot {
+                    index: recordset_index,
+                    origin,
+                    schema,
+                };
+                recordset_index += 1;
+                Some(slot)
+            } else {
+                None
+            };
             slots.push(Slot {
+                recordset,
                 output_type: ProfiledType {
                     materialized: read.materialized_types[index],
                     declared: read.declared_types[index],
                 },
                 declaration: read.declarations[index],
                 text_policy: read.text_policies[index],
-                available: !is_list,
+                available: !read.output_types[index].is_structured(),
                 collection_index: is_list.then_some(list),
                 collection_origin: origin,
                 retained_member: false,
@@ -82,6 +105,7 @@ impl Binder<'_> {
             self.work()?;
             if let OutputType::Multivalue { element_type, .. } = kind {
                 slots.push(Slot {
+                    recordset: None,
                     output_type: ProfiledType::uniform(OutputType::Scalar {
                         data_type: *element_type,
                         nullable: true,

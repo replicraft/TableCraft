@@ -8,6 +8,7 @@ use crate::{
 
 mod collect;
 mod parent;
+mod recordsets;
 mod relation;
 mod rewrite;
 
@@ -117,6 +118,7 @@ impl Pruner<'_, '_> {
                         }
                     }
                 }
+                self.recordsets(&mut select.source, &select.projection)?;
                 let map = self.relation(&mut select.source, &needed, outer)?;
                 let mut scopes = self.vector(outer.len() + 1)?;
                 scopes.push(map.as_slice());

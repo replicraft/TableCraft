@@ -65,6 +65,11 @@ impl Binder<'_> {
         self.tick(depth)?;
         Ok(match expression {
             Expr::Multivalue { output_type, .. } => *output_type,
+            Expr::Recordset {
+                parent_nullable, ..
+            } => OutputType::Recordset {
+                parent_nullable: *parent_nullable,
+            },
             Expr::Field { depth, index, .. } => scopes
                 .get(*depth)
                 .and_then(|scope| scope.iter().filter(|slot| slot.available).nth(*index))

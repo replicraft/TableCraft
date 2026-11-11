@@ -70,6 +70,7 @@ impl Binder<'_> {
             declared_types.extend_from_slice(cached.result.output_types());
             let declarations = self.crosstab_declarations(&cross, names.len())?;
             return Ok(ReadPlan {
+                recordset_schemas: Vec::new(),
                 owner: self.owner,
                 declarations,
                 output_types,
@@ -136,6 +137,7 @@ impl Binder<'_> {
         declared_types.extend_from_slice(cross.declared_types.as_ref().ok_or(QueryError::Source)?);
         let declarations = self.crosstab_declarations(&cross, names.len())?;
         Ok(ReadPlan {
+            recordset_schemas: Vec::new(),
             owner: self.owner,
             declarations,
             output_types,

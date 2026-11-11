@@ -12,13 +12,23 @@ impl ReadPlan {
         }
     }
 
+    pub(crate) fn recordset_origin(&self, output: usize) -> Option<super::CollectionOrigin> {
+        let ReadNode::Select(select) = &self.node else {
+            return None;
+        };
+        match select.projection.get(output)? {
+            Expr::Recordset { origin, .. } => Some(*origin),
+            _ => None,
+        }
+    }
+
     pub(crate) fn has_collections(&self) -> bool {
         match &self.node {
             ReadNode::Select(select) => {
                 select
                     .projection
                     .iter()
-                    .any(|value| matches!(value, Expr::Multivalue { .. }))
+                    .any(|value| matches!(value, Expr::Multivalue { .. } | Expr::Recordset { .. }))
                     || relation_has_collections(&select.source)
             }
             ReadNode::Union { first, rest } => {

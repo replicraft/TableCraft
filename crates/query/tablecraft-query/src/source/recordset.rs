@@ -21,6 +21,10 @@ impl RecordsetColumn {
         })
     }
 
+    pub(crate) fn schema_name(&self) -> &SchemaName {
+        &self.name
+    }
+
     pub fn name(&self) -> &str {
         self.name.as_str()
     }

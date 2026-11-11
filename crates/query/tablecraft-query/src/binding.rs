@@ -5,6 +5,7 @@ use crate::{
     OutputType, QueryError, Source,
     plan::{PreparedBody, Slot},
 };
+use tablecraft_db::RecordsetSchema;
 use tablecraft_expressions::functions::dates::parsing::ReferenceYear;
 use tablecraft_sql::query::{
     Crosstab, InsertSource, Parameter as SqlParameter, Query, ReadQuery, Statement,
@@ -41,6 +42,7 @@ mod parameters;
 pub(crate) use parameters::{Parameter, bind_declared_parameters};
 pub use parameters::{ParameterType, resolve_parameter_type};
 mod projection;
+mod recordsets;
 mod relation;
 mod result_types;
 mod retrieval;
@@ -381,6 +383,19 @@ impl PreparedQuery {
         match &self.body {
             PreparedBody::Read(read) => Some(&read.output_types),
             PreparedBody::Crosstab(cross) => cross.output_types.as_deref(),
+        }
+    }
+
+    /// Captured child schema for a structured stored attachment output. Scalar,
+    /// list and dynamic crosstab outputs return None without scanning rows.
+    pub fn recordset_schema(&self, index: usize) -> Option<&RecordsetSchema> {
+        match &self.body {
+            PreparedBody::Read(read) => read
+                .recordset_schemas
+                .binary_search_by_key(&index, |output| output.index)
+                .ok()
+                .map(|position| read.recordset_schemas[position].schema()),
+            PreparedBody::Crosstab(_) => None,
         }
     }
 

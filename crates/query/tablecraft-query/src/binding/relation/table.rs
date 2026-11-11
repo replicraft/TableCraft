@@ -4,10 +4,13 @@ use crate::{
     OutputType, QueryError, Source,
     binding::source_schema,
     external_sources::SourceNamespace,
-    plan::{CollectionOrigin, MemberSlot, ProfiledType, Relation, RelationNode, Slot},
+    plan::{
+        CollectionOrigin, MemberSlot, ProfiledType, RecordsetSlot, Relation, RelationNode, Slot,
+    },
     profile::SOURCE_SCHEMA_POLICY,
     source::TextPolicy,
 };
+use std::sync::Arc;
 use tablecraft_expressions::numeric::OperandDeclaration;
 use tablecraft_schema::{CollectionMember, Column, SchemaName};
 use tablecraft_sql::{query::Query, select::Table};
@@ -70,6 +73,8 @@ impl Binder<'_> {
         let text_collations = self.copy_text_collations(policies)?;
         let multivalues = provider.multivalue_columns(table.name.as_str())?;
         let members = provider.collection_members(table.name.as_str())?;
+        let recordsets = provider.recordset_columns(table.name.as_str())?;
+        source_schema::validate_recordsets(columns, unavailable, multivalues, recordsets)?;
         source_schema::validate_multivalues(columns, unavailable, multivalues)?;
         source_schema::validate_members(columns, unavailable, multivalues, members)?;
         let policies = provider.multivalue_text_collations(table.name.as_str())?;
@@ -129,6 +134,33 @@ impl Binder<'_> {
                 })
                 .sum(),
         )?;
+        let recordset_occurrence = if recordsets.is_empty() {
+            None
+        } else {
+            Some(self.collection_occurrence()?)
+        };
+        self.charge(
+            recordsets
+                .iter()
+                .map(|column| {
+                    size_of::<crate::source::RecordsetColumn>()
+                        + size_of::<usize>()
+                        + column.name().len()
+                })
+                .sum(),
+        )?;
+        let mut retained_recordsets = Vec::new();
+        retained_recordsets
+            .try_reserve_exact(recordsets.len())
+            .map_err(|_| QueryError::Allocation)?;
+        for column in recordsets {
+            self.work()?;
+            let name = self.copy_name(column.name())?;
+            // NO_CLONE: The owned plan retains source metadata independently of
+            // the borrowed provider. Arc shares the immutable schema, not rows.
+            let schema = Arc::clone(column.schema());
+            retained_recordsets.push(crate::source::RecordsetColumn::new(name, schema)?);
+        }
         let occurrence = if multivalues.is_empty() {
             None
         } else {
@@ -139,6 +171,7 @@ impl Binder<'_> {
                 .iter()
                 .enumerate()
                 .map(|(index, c)| Slot {
+                    recordset: None,
                     output_type: ProfiledType::uniform(OutputType::column(c)),
                     declaration: Some(OperandDeclaration::Scalar),
                     text_policy: text_collations
@@ -160,12 +193,41 @@ impl Binder<'_> {
                             .names
                             .equals(column.name(), name.as_str())
                     });
+                    let recordset_index = recordsets.iter().position(|column| {
+                        SOURCE_SCHEMA_POLICY
+                            .names
+                            .equals(column.name(), name.as_str())
+                    });
+                    let recordset =
+                        recordset_index
+                            .zip(recordset_occurrence)
+                            .map(|(index, occurrence)| {
+                                // NO_CLONE: Slots and the captured source descriptor own
+                                // independent immutable schema handles during binding.
+                                let schema = Arc::clone(recordsets[index].schema());
+                                RecordsetSlot {
+                                    index,
+                                    origin: CollectionOrigin {
+                                        namespace,
+                                        occurrence,
+                                        member: index,
+                                    },
+                                    schema,
+                                }
+                            });
+                    let output_type = if recordset.is_some() {
+                        OutputType::Recordset {
+                            parent_nullable: false,
+                        }
+                    } else {
+                        index.map_or(OutputType::Dynamic, |index| {
+                            OutputType::multivalue(&multivalues[index])
+                        })
+                    };
                     Slot {
-                        output_type: ProfiledType::uniform(
-                            index.map_or(OutputType::Dynamic, |index| {
-                                OutputType::multivalue(&multivalues[index])
-                            }),
-                        ),
+                        recordset,
+                        output_type: ProfiledType::uniform(output_type),
+
                         declaration: None,
                         text_policy: index
                             .and_then(|index| {
@@ -191,6 +253,7 @@ impl Binder<'_> {
                 }))
                 .chain(multivalues.iter().enumerate().map(|(index, column)| {
                     Slot {
+                        recordset: None,
                         output_type: ProfiledType::uniform(OutputType::column(column).with_null()),
                         declaration: Some(OperandDeclaration::Scalar),
                         text_policy: multivalue_text_collations
@@ -215,6 +278,7 @@ impl Binder<'_> {
                 }))
                 .chain(members.iter().enumerate().map(|(index, member)| {
                     Slot {
+                        recordset: None,
                         output_type: ProfiledType::uniform(
                             OutputType::column(member.column()).with_null(),
                         ),
@@ -243,6 +307,8 @@ impl Binder<'_> {
                 unavailable: unavailable.to_vec(),
                 text_collations,
                 projection: (0..columns.len()).collect(),
+                recordset_projection: (0..retained_recordsets.len()).collect(),
+                recordsets: retained_recordsets,
                 multivalues: multivalues.to_vec(),
                 multivalue_text_collations,
                 member_text_collations,

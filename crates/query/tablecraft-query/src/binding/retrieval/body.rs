@@ -117,6 +117,9 @@ impl Binder<'_> {
 
     #[inline(never)]
     fn union_input(&mut self, first: &ReadPlan) -> Result<UnionInput, QueryError> {
+        if first.output_types.iter().any(|kind| kind.is_recordset()) {
+            return Err(QueryError::Unsupported);
+        }
         // Preserve the existing reservations before later-arm source callbacks.
         let output_types = self.type_vector(first.output_types.len())?;
         let mut materialized_types = self.type_vector(first.output_types.len())?;
@@ -139,6 +142,9 @@ impl Binder<'_> {
         all: bool,
         plan: ReadPlan,
     ) -> Result<(), QueryError> {
+        if plan.output_types.iter().any(|kind| kind.is_recordset()) {
+            return Err(QueryError::Unsupported);
+        }
         if plan.names.len() != width {
             return Err(QueryError::Width);
         }
@@ -200,6 +206,7 @@ impl Binder<'_> {
             .map_err(|_| QueryError::Allocation)?;
         for (index, (name, policy)) in first.names.iter().zip(&text_policies).enumerate() {
             slots.push(Slot {
+                recordset: None,
                 output_type: ProfiledType {
                     materialized: materialized_types[index],
                     declared: declared_types[index],
@@ -231,6 +238,7 @@ impl Binder<'_> {
         names.extend(slots.into_iter().map(|slot| slot.name));
 
         Ok(ReadPlan {
+            recordset_schemas: Vec::new(),
             owner: self.owner,
             declarations,
             output_types,

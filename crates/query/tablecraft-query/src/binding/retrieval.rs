@@ -119,7 +119,9 @@ impl Binder<'_> {
                             })
                         {
                             matched = true;
-                            if !slot.available {
+                            if slot.recordset.is_some() {
+                                projection.push(super::recordsets::projection(slot)?);
+                            } else if !slot.available {
                                 let output_type = slot.output_type.conservative();
                                 if !output_type.is_multivalue() {
                                     return Err(QueryError::Unsupported);
@@ -183,7 +185,9 @@ impl Binder<'_> {
                 let index = projection.len() - 1;
                 let scalar_index = projection[..index]
                     .iter()
-                    .filter(|expression| !matches!(expression, Expr::Multivalue { .. }))
+                    .filter(|expression| {
+                        !matches!(expression, Expr::Multivalue { .. } | Expr::Recordset { .. })
+                    })
                     .count();
                 self.register_projection_alias(
                     alias.as_str(),
@@ -248,6 +252,7 @@ impl Binder<'_> {
         for expression in &projection {
             declarations.push(self.result_declaration(expression, &scopes, depth + 1)?);
         }
+        let recordset_schemas = self.recordset_outputs(&projection, &source.slots)?;
         let output = names
             .iter()
             .zip(&text_policies)
@@ -255,13 +260,37 @@ impl Binder<'_> {
             .zip(&declarations)
             .enumerate()
             .map(|(index, (((n, policy), _), declaration))| Slot {
+                recordset: if let Expr::Recordset {
+                    index: source_index,
+                    origin,
+                    ..
+                } = &projection[index]
+                {
+                    source
+                        .slots
+                        .iter()
+                        .filter_map(|slot| slot.recordset.as_ref())
+                        .find(|recordset| recordset.origin == *origin)
+                        .map(|recordset| {
+                            // NO_CLONE: Temporary ORDER BY slots share output child metadata
+                            // with the final plan; no child rows or schema payloads copy.
+                            let schema = std::sync::Arc::clone(&recordset.schema);
+                            RecordsetSlot {
+                                index: *source_index,
+                                origin: *origin,
+                                schema,
+                            }
+                        })
+                } else {
+                    None
+                },
                 output_type: ProfiledType {
                     materialized: materialized_types[index],
                     declared: declared_types[index],
                 },
                 declaration: *declaration,
                 text_policy: *policy,
-                available: !output_types[index].is_multivalue(),
+                available: !output_types[index].is_structured(),
                 collection_index: output_types[index].is_multivalue().then(|| {
                     output_types[..index]
                         .iter()
@@ -301,6 +330,17 @@ impl Binder<'_> {
                 self.validate_group(expr, &group, depth + 1)?;
             }
         }
+        if !recordset_schemas.is_empty()
+            && (distinct
+                || aggregate
+                || transform.is_some()
+                || matches!(
+                    select.predicate,
+                    SelectPredicate::DistinctRow | SelectPredicate::DistinctRowTop { .. }
+                ))
+        {
+            return Err(QueryError::Unsupported);
+        }
         let record_keys = if matches!(
             select.predicate,
             SelectPredicate::DistinctRow | SelectPredicate::DistinctRowTop { .. }
@@ -333,6 +373,7 @@ impl Binder<'_> {
             return Err(QueryError::Unsupported);
         }
         Ok(ReadPlan {
+            recordset_schemas,
             owner: self.owner,
             declarations,
             output_types,

@@ -14,7 +14,8 @@ impl Binder<'_> {
     ) -> Result<bool, QueryError> {
         self.tick(depth)?;
         Ok(match expr {
-            Expr::Multivalue { .. }
+            Expr::Recordset { .. }
+            | Expr::Multivalue { .. }
             | Expr::MathCall(MathFunction::Rnd, _)
             | Expr::Clock(_)
             | Expr::Eval(_)
