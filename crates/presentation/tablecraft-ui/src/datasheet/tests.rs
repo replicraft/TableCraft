@@ -110,12 +110,14 @@ fn german_typed_summary_paints_localized_text_but_copies_the_original_host_value
         },
     };
     let label = value.state_label(&localizer).unwrap();
-    let _ = context.run_ui(input(vec![]), |ui| {
+    let mut initial = context.run_ui(input(vec![]), |ui| {
         cell(ui, &value, "Files", 1, true).request_focus();
     });
-    let output = context.run_ui(input(vec![Event::Copy]), |ui| {
+    initial.textures_delta.clear();
+    let mut output = context.run_ui(input(vec![Event::Copy]), |ui| {
         cell(ui, &value, "Files", 1, true);
     });
+    output.textures_delta.clear();
     assert!(output.shapes.iter().any(|shape| {
         matches!(&shape.shape, egui::Shape::Text(text)
             if text.galley.job.text.contains(&label))
