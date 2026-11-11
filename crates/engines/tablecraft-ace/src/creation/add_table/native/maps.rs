@@ -30,6 +30,80 @@ pub(super) struct Map {
     pub bitmaps: Vec<Bitmap>,
 }
 
+pub(super) struct FreshMap {
+    pub bytes: Vec<u8>,
+    pub bitmaps: Vec<Bitmap>,
+}
+
+impl FreshMap {
+    pub fn capture(
+        members: &[u32],
+        next_page: &mut usize,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, AddTableError> {
+        for pair in members.windows(2) {
+            check(budget, cancelled)?;
+            if pair[0] >= pair[1] {
+                return Err(AddTableError::Preservation);
+            }
+        }
+        let base = members.first().copied().unwrap_or(0) / (INLINE_BYTES * 8) as u32
+            * (INLINE_BYTES * 8) as u32;
+        if members
+            .last()
+            .is_none_or(|last| *last - base < (INLINE_BYTES * 8) as u32)
+        {
+            let mut bytes = zeros(INLINE_HEADER + INLINE_BYTES, budget)?;
+            bytes[1..INLINE_HEADER].copy_from_slice(&base.to_le_bytes());
+            for member in members {
+                check(budget, cancelled)?;
+                let bit = (*member - base) as usize;
+                bytes[INLINE_HEADER + bit / 8] |= 1 << (bit % 8);
+            }
+            return Ok(Self {
+                bytes,
+                bitmaps: Vec::new(),
+            });
+        }
+        let slots = members
+            .last()
+            .map_or(0, |number| *number as usize / BITMAP_CAPACITY + 1)
+            .max(INLINE_BYTES / POINTER_BYTES + 1);
+        let mut bytes = zeros(1 + slots * POINTER_BYTES, budget)?;
+        bytes[0] = 1;
+        let mut bitmaps = Vec::new();
+        let mut cursor = 0;
+        while cursor < members.len() {
+            check(budget, cancelled)?;
+            let block = members[cursor] as usize / BITMAP_CAPACITY;
+            let number = u32::try_from(*next_page).map_err(|_| AddTableError::Capacity)?;
+            *next_page = next_page.checked_add(1).ok_or(AddTableError::Capacity)?;
+            let mut bitmap = zeros(PAGE_BYTES, budget)?;
+            bitmap[..USAGE_SIGNATURE.len()].copy_from_slice(&USAGE_SIGNATURE);
+            while cursor < members.len() && members[cursor] as usize / BITMAP_CAPACITY == block {
+                check(budget, cancelled)?;
+                let bit = members[cursor] as usize % BITMAP_CAPACITY;
+                bitmap[BITMAP_HEADER + bit / 8] |= 1 << (bit % 8);
+                cursor += 1;
+            }
+            bytes[1 + block * POINTER_BYTES..1 + (block + 1) * POINTER_BYTES]
+                .copy_from_slice(&number.to_le_bytes());
+            budget
+                .charge_allocation(1, size_of::<Bitmap>() as u64)
+                .map_err(InspectError::from)?;
+            bitmaps
+                .try_reserve_exact(1)
+                .map_err(|_| InspectError::Allocation)?;
+            bitmaps.push(Bitmap {
+                number,
+                bytes: bitmap,
+            });
+        }
+        Ok(Self { bytes, bitmaps })
+    }
+}
+
 fn zeros(length: usize, budget: &mut ResourceBudget) -> Result<Vec<u8>, AddTableError> {
     budget
         .charge_allocation(length as u64, 1)

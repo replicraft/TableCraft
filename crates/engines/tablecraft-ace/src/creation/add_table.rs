@@ -4,6 +4,7 @@ mod availability;
 mod build;
 mod geometry;
 mod native;
+mod populated;
 mod retained;
 pub(in crate::creation) mod source;
 
@@ -11,6 +12,8 @@ use super::{CreateDatabaseError, FirstTableDefinition};
 use crate::{InspectError, NativeImage, NativeImageSource, header::check};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use thiserror::Error;
+
+pub use populated::{PopulatedAddTableError, PopulatedAddTablePlan};
 
 impl From<super::catalog_page::PageError> for AddTableError {
     fn from(error: super::catalog_page::PageError) -> Self {

@@ -1,11 +1,13 @@
 //! Native-count append reuses actual packed or retained physical ownership.
 mod maps;
 
+use super::populated::rows::Membership;
 use super::{
     AddTableError, AddTablePlan, AddTableSourceCapabilities, AddTableSourceProfile, retained,
 };
 use crate::{
-    FirstTableDefinition, InspectError, NativeImage, NativeImageSource, compare_general_text,
+    CreateDatabaseError, FirstTableDefinition, InspectError, NativeImage, NativeImageSource,
+    compare_general_text,
     creation::{
         catalog_page::Page,
         definition,
@@ -24,7 +26,7 @@ use crate::{
     header::check,
     table::table_append::Inventory,
 };
-use maps::Map;
+use maps::{FreshMap, Map};
 use std::{cmp::Ordering, ops::Range};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
@@ -68,15 +70,26 @@ fn map_capacity(
     maps: &[Map],
     append: usize,
 ) -> Result<bool, AddTableError> {
-    let count = captured
-        .count
-        .checked_add(append)
-        .ok_or(AddTableError::Capacity)?;
+    map_capacity_lengths(host, captured, maps, std::iter::repeat_n(MAP_BYTES, append))
+}
+
+fn map_capacity_lengths(
+    host: u32,
+    captured: &Page,
+    maps: &[Map],
+    lengths: impl IntoIterator<Item = usize>,
+) -> Result<bool, AddTableError> {
+    let mut count = captured.count;
+    let mut used = 0_usize;
+    for length in lengths {
+        count = count.checked_add(1).ok_or(AddTableError::Capacity)?;
+        used = used.checked_add(length).ok_or(AddTableError::Capacity)?;
+    }
     if count > MAX_SLOTS {
         return Ok(false);
     }
-    let mut used = slot_offset(count)
-        .checked_add(append * MAP_BYTES)
+    used = used
+        .checked_add(slot_offset(count))
         .ok_or(AddTableError::Capacity)?;
     for (slot, range) in captured.records.iter().enumerate() {
         used = used
@@ -222,11 +235,27 @@ pub(super) fn plan(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<AddTablePlan, AddTableError> {
+    let (after, profile) = build(&image, &declaration, None, budget, cancelled)?;
+    Ok(AddTablePlan {
+        before: image,
+        after,
+        definition: declaration,
+        profile,
+    })
+}
+
+pub(super) fn build(
+    image: &NativeImage,
+    declaration: &FirstTableDefinition,
+    population: Option<&super::populated::rows::Prepared<'_>>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(NativeImageSource, AddTableSourceProfile), AddTableError> {
     check(budget, cancelled)?;
     if !declaration.is_native() {
         return Err(crate::CreateDatabaseError::Declaration.into());
     }
-    let (inventory, is_retained) = capture_inventory(&image, budget, cancelled)?;
+    let (inventory, is_retained) = capture_inventory(image, budget, cancelled)?;
     for (object, origin) in image
         .catalog()
         .catalog()
@@ -267,6 +296,26 @@ pub(super) fn plan(
         body_length,
         request.primary.is_some(),
     )?;
+    if let Some(rows) = population {
+        if topology.index.is_some() || body_length != 0 {
+            return Err(CreateDatabaseError::Declaration.into());
+        }
+        let extra = rows
+            .pages
+            .len()
+            .checked_sub(1)
+            .ok_or(AddTableError::Preservation)?;
+        topology.properties.start = topology
+            .properties
+            .start
+            .checked_add(extra)
+            .ok_or(AddTableError::Capacity)?;
+        topology.properties.end = topology
+            .properties
+            .end
+            .checked_add(extra)
+            .ok_or(AddTableError::Capacity)?;
+    }
     // Column-map storage is planned from its actual old representation. Existing
     // indirect bitmap identities remain live; only genuinely missing blocks are
     // allocated after the new property chain.
@@ -290,7 +339,7 @@ pub(super) fn plan(
     }
     let mut next_page = topology.end;
     let owned = Map::capture(
-        &image,
+        image,
         references.owned(),
         (topology.properties.start..topology.properties.end).map(|number| number as u32),
         &mut next_page,
@@ -298,7 +347,7 @@ pub(super) fn plan(
         cancelled,
     )?;
     let candidate = Map::capture(
-        &image,
+        image,
         references.candidate(),
         topology.candidate.into_iter().map(|number| number as u32),
         &mut next_page,
@@ -314,6 +363,16 @@ pub(super) fn plan(
             }
         }
     }
+    let user_maps = if let Some(rows) = population {
+        let owned = rows.members(topology.data, Membership::Owned, budget, cancelled)?;
+        let candidates = rows.members(topology.data, Membership::Candidates, budget, cancelled)?;
+        Some([
+            FreshMap::capture(&owned, &mut next_page, budget, cancelled)?,
+            FreshMap::capture(&candidates, &mut next_page, budget, cancelled)?,
+        ])
+    } else {
+        None
+    };
     topology.end = next_page;
     if (topology.end as u64) * PAGE_BYTES as u64 > crate::limits::MAX_READ_FILE_BYTES {
         return Err(AddTableError::Capacity);
@@ -348,10 +407,18 @@ pub(super) fn plan(
     }
     let (catalog_host, catalog_before) = catalog_host.ok_or(AddTableError::Capacity)?;
     let additional_maps = 2 + usize::from(topology.index.is_some());
+    let append_lengths = user_maps.as_ref().map_or([MAP_BYTES; 3], |maps| {
+        [maps[0].bytes.len(), maps[1].bytes.len(), MAP_BYTES]
+    });
     let mut map_host = None;
     for &host in inventory.map_pages() {
         let captured = Page::capture_retained(page(image.as_bytes(), host)?, 0, budget, cancelled)?;
-        if map_capacity(host, &captured, &maps, additional_maps)? {
+        if map_capacity_lengths(
+            host,
+            &captured,
+            &maps,
+            append_lengths[..additional_maps].iter().copied(),
+        )? {
             map_host = Some((host, captured.count));
             break;
         }
@@ -407,6 +474,21 @@ pub(super) fn plan(
         budget,
         cancelled,
     )?;
+    if let Some(rows) = population {
+        rows.write(
+            &mut after,
+            topology.data,
+            topology.definition.start,
+            &request,
+            budget,
+            cancelled,
+        )?;
+        definition::put32(
+            page_mut(&mut after, topology.definition.start as u32)?,
+            RECORD_COUNT_OFFSET,
+            u32::try_from(rows.rows.count()).map_err(|_| AddTableError::Capacity)?,
+        )?;
+    }
     for &host in inventory.map_pages() {
         let append = if host == map_host { additional_maps } else { 0 };
         if append == 0 && !maps.iter().any(|map| reference_page(map.reference) == host) {
@@ -414,7 +496,12 @@ pub(super) fn plan(
         }
         let original = page(image.as_bytes(), host)?;
         let captured = Page::capture_retained(original, 0, budget, cancelled)?;
-        if !map_capacity(host, &captured, &maps, append)? {
+        if !map_capacity_lengths(
+            host,
+            &captured,
+            &maps,
+            append_lengths[..append].iter().copied(),
+        )? {
             return Err(AddTableError::Capacity);
         }
         let target = page_mut(&mut after, host)?;
@@ -427,15 +514,23 @@ pub(super) fn plan(
                 .copy_from_slice(record);
         }
         if append != 0 {
-            for member in [
-                Some(topology.data),
-                request.minimum_row_fits().then_some(topology.data),
-                topology.index,
-            ]
-            .into_iter()
-            .take(additional_maps)
-            {
-                map_record(writer.append(MAP_BYTES, budget, cancelled)?, member)?;
+            if let Some(maps) = &user_maps {
+                for map in maps {
+                    writer
+                        .append(map.bytes.len(), budget, cancelled)?
+                        .copy_from_slice(&map.bytes);
+                }
+            } else {
+                for member in [
+                    Some(topology.data),
+                    request.minimum_row_fits().then_some(topology.data),
+                    topology.index,
+                ]
+                .into_iter()
+                .take(additional_maps)
+                {
+                    map_record(writer.append(MAP_BYTES, budget, cancelled)?, member)?;
+                }
             }
         }
         writer.finish()?;
@@ -457,6 +552,17 @@ pub(super) fn plan(
                 .charge(Resource::Steps, PAGE_BYTES as u64)
                 .map_err(InspectError::from)?;
             page_mut(&mut after, bitmap.number)?.copy_from_slice(&bitmap.bytes);
+        }
+    }
+    if let Some(maps) = &user_maps {
+        for map in maps {
+            for bitmap in &map.bitmaps {
+                check(budget, cancelled)?;
+                budget
+                    .charge(Resource::Steps, PAGE_BYTES as u64)
+                    .map_err(InspectError::from)?;
+                page_mut(&mut after, bitmap.number)?.copy_from_slice(&bitmap.bytes);
+            }
         }
     }
     let mut catalog = Page::capture_retained(
@@ -503,7 +609,7 @@ pub(super) fn plan(
         .verify_after(&after, budget, cancelled)
         .map_err(super::retained::source::allocation_preservation_error)?;
     verify_original(
-        &image,
+        image,
         &after,
         Preservation {
             inventory: &inventory,
@@ -543,7 +649,8 @@ pub(super) fn plan(
         cancelled,
     )?;
     let schema = checked.schema();
-    if schema.definition_page() as usize != topology.definition.start || schema.declared_rows() != 0
+    if schema.definition_page() as usize != topology.definition.start
+        || schema.declared_rows() as usize != population.map_or(0, |rows| rows.rows.count())
     {
         return Err(AddTableError::Preservation);
     }
@@ -555,18 +662,26 @@ pub(super) fn plan(
         cancelled,
     )?;
     super::audit::properties::verify(&captured, schema, &columns, budget, cancelled)?;
+    if let Some(rows) = population {
+        super::populated::proof::verify(
+            &captured,
+            &checked,
+            rows,
+            topology.data,
+            budget,
+            cancelled,
+        )?;
+    }
     drop(request);
     drop(columns);
-    Ok(AddTablePlan {
-        before: image,
+    Ok((
         after,
-        definition: declaration,
-        profile: if is_retained {
+        if is_retained {
             AddTableSourceProfile::Retained
         } else {
             AddTableSourceProfile::Mixed
         },
-    })
+    ))
 }
 
 struct Preservation<'facts, 'image> {
