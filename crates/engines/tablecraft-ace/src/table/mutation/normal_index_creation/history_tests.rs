@@ -1,10 +1,14 @@
 //! New identity policy preserves the original producer and every existing identity.
-use crate::{EditError, NativeImage, SecondaryIndexCreate, WriteBlocker};
+use crate::{
+    CreateColumn, EditError, NativeImage, SecondaryIndexCreate, UnadornedFieldAdditionDefinition,
+    WriteBlocker,
+};
 use std::io::Cursor;
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_model::CatalogScope;
+use tablecraft_schema::ScalarType;
 use tablecraft_testkit::fixtures::access::secondary_index::normal::{
-    self as raw, Population, history,
+    self as raw, Population, dropping, history,
 };
 
 const SCOPE: CatalogScope = CatalogScope::new(28612);
@@ -52,6 +56,77 @@ fn fresh_creation_after_alias_drop_keeps_original_ids_and_matches_independent_ne
         assert_eq!(candidate.native_number(), 4);
     }
 }
+
+#[test]
+fn actual_alias_drop_then_unadorned_add_then_fresh_creation_preserves_the_complete_history() {
+    for descending in [false, true] {
+        let original = raw::protected_companion(false);
+        let alias = dropping::surviving_alias(&original, "ScoreAlias");
+        let expected = history::source_with_direction(descending);
+        let mut work = budget(original.rows.len());
+
+        let dropped = image(&alias.before, &mut work)
+            .prepare_retained_index_drop(original.table, original.index_name, &mut work, &|| false)
+            .unwrap();
+        same(dropped.before_bytes(), &alias.before);
+        same(dropped.candidate_bytes(), &alias.expected);
+        assert_eq!(dropped.logical_index_number(), 1);
+        assert_eq!(dropped.physical_index_number(), 1);
+        assert_eq!(dropped.retired_pages(), 0);
+
+        let definition = UnadornedFieldAdditionDefinition::capture(
+            CreateColumn::new("OtherScore", ScalarType::Int32),
+            &mut work,
+            &|| false,
+        )
+        .unwrap();
+        let added = image(dropped.candidate_bytes(), &mut work)
+            .prepare_retained_unadorned_field_addition(
+                original.table,
+                definition,
+                &mut work,
+                &|| false,
+            )
+            .unwrap();
+        same(added.before_bytes(), &alias.expected);
+        same(added.after_bytes(), &expected.before);
+        assert_eq!(added.native_number(), 4);
+        assert_eq!(added.column_id(), 4);
+        assert_eq!(added.column_count(), 5);
+
+        let created = image(added.after_bytes(), &mut work)
+            .prepare_retained_fresh_long_index_creation(
+                original.table,
+                &SecondaryIndexCreate::new("OtherLookup", "OtherScore", descending),
+                &mut work,
+                &|| false,
+            )
+            .unwrap();
+        same(created.before_bytes(), &expected.before);
+        same(created.candidate_bytes(), &expected.expected);
+        assert_eq!(created.logical_index_number(), 3);
+        assert_eq!(created.physical_index_number(), 2);
+        assert_eq!(created.native_number(), 4);
+        assert_eq!(created.indexed_rows(), original.rows.len());
+
+        let checked = crate::check_table(
+            &mut Cursor::new(created.candidate_bytes()),
+            SCOPE,
+            original.table,
+            &mut work,
+            &|| false,
+        )
+        .unwrap();
+        assert_eq!(checked.rows(), original.rows.len());
+        assert!(
+            checked
+                .indexes()
+                .iter()
+                .all(|index| index.status() == crate::IndexCheckStatus::Checked)
+        );
+    }
+}
+
 #[test]
 fn fresh_policy_retains_count_based_bytes_when_the_original_identity_is_available() {
     for population in [
