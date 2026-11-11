@@ -7,22 +7,39 @@ use egui_kittest::{
 use tablecraft_ui::preview::Preview;
 
 pub(super) fn is_mode(mode: &str) -> bool {
-    matches!(mode, "none" | "parent" | "contents" | "empty")
+    matches!(
+        mode,
+        "none"
+            | "parent"
+            | "contents"
+            | "empty"
+            | "history-parent"
+            | "history-contents"
+            | "history-empty"
+    )
 }
 
 pub(super) fn prepare(harness: &mut Harness<'_, Preview>, mode: &str) {
-    assert!(harness.state_mut().prepare_query_recordsets());
+    let history = mode.starts_with("history-");
+    assert!(if history {
+        harness.state_mut().prepare_query_history_recordsets()
+    } else {
+        harness.state_mut().prepare_query_recordsets()
+    });
     harness.run_steps(3);
-    if mode == "parent" {
+    if mode.ends_with("parent") {
         return;
     }
     let mut arguments = tablecraft_ui::FluentArgs::new();
-    arguments.set("count", if mode == "empty" { 0 } else { 2 });
-    let needle = harness
-        .state()
-        .state()
-        .localizer
-        .format("collections-attachment-summary", &arguments);
+    arguments.set("count", if mode.ends_with("empty") { 0 } else { 2 });
+    let needle = harness.state().state().localizer.format(
+        if history {
+            "collections-history-summary"
+        } else {
+            "collections-attachment-summary"
+        },
+        &arguments,
+    );
     let cell = harness
         .query_all_by_role(Role::Label)
         .find(|node| {
