@@ -121,6 +121,10 @@ impl NativeJournalEditor {
                 .ok_or(InspectError::StructureLimit)
                 .map_err(NativeEditError::from)?;
         }
+        #[cfg(feature = "ace16-create")]
+        if self.retained_empty_long_columns(columns, budget, cancelled)? {
+            return self.plan_empty_long_columns(columns, budget, cancelled);
+        }
         if self.route.row_updates()
             || ((self.route == JournalRoute::Ordinary || self.route.historical_rows())
                 && self.variable_columns_requested(columns, budget, cancelled)?)

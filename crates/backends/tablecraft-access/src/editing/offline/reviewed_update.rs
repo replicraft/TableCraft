@@ -60,7 +60,8 @@ impl OfflineWriteSession {
             let source = slot.target.as_mut().ok_or(Cause::InvalidState)?;
             let image = if matches!(
                 reviewed.intent().profile(),
-                NativeUpdateProfile::Ace16RetainedRows
+                NativeUpdateProfile::Ace16RetainedEmptyRows
+                    | NativeUpdateProfile::Ace16RetainedRows
                     | NativeUpdateProfile::Ace16RetainedOpaqueRows
                     | NativeUpdateProfile::Ace16RetainedCurrencyRows
                     | NativeUpdateProfile::Ace16RetainedBooleanRows

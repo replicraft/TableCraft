@@ -1,6 +1,8 @@
 //! Snapshot-local request conversion for explicitly recoverable native edits.
 mod capture;
 mod deleting;
+#[cfg(feature = "ace16-create")]
+mod empty;
 mod fitted;
 pub(in crate::editing) mod inserting;
 
