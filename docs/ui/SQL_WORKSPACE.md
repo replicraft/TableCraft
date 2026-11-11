@@ -19,6 +19,21 @@ qualified INSERT VALUES/SELECT use the reviewed action service described below.
 Broader action contexts, DDL and native saved-definition editing
 remain unfinished.
 
+## Attachment query results
+
+Qualified bare attachment outputs show read-only collection summaries without
+flattening parent rows. View contents opens the query-owned metadata dialog;
+its target is the actual published result and output cell, not a native parent
+row. Scalar NULL, present empty metadata and uninspected FileData remain distinct.
+No edit, payload-open or export action is granted by a query summary. Returning
+from contents preserves the SQL and parent results. See the
+[runtime ownership contract](../application/RUNTIME.md#query-owned-attachment-contents).
+
+The normal Ribbon remains visible. The query-owned inspector is an adaptation of
+the retained datasheet/Home references; no matching Access query/attachment
+inspector capture is retained. Offscreen rendering does not establish Windows
+interaction or pixel parity.
+
 ## Reviewed local action queries
 
 Run inspects the actual statement, acquires any declared typed parameters, then

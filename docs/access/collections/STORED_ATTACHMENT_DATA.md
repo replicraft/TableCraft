@@ -30,7 +30,9 @@ Binding reads actual hidden-field declarations without scanning records. Native
 `inspect_attachment_members` and `inspect_attachment_declarations` expose all six
 members; `AttachmentColumn::stored_value` borrows exact stored values. The narrower
 `metadata_value` accessor still excludes FileData. FileData has no text comparison
-policy. Bare attachment fields and matching wildcards remain refused.
+policy. Bare attachment fields and matching wildcards use a separate structured
+metadata result in collection-aware execution; their FileData members remain
+explicitly uninspected. They do not implicitly select or decode stored Binary.
 
 Execution retains the existing complete-snapshot boundary: native storage, parent
 keys, child identities, declared carriers and selected payload references are

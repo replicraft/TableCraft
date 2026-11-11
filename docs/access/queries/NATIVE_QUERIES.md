@@ -553,7 +553,10 @@ queries over valid files beyond the existing encoded/decoded payload limits.
 `FileData` is available as exact stored Binary under the same explicit
 `--collections` option; see [stored attachment data](../collections/STORED_ATTACHMENT_DATA.md).
 It retains the encoded envelope without implicit decoding. Bare attachment
-fields and matching wildcards remain unsupported. Ordinary scalar queries and
+fields and matching wildcards also have a structured metadata result through the
+collection-aware executor: one child recordset per parent, with FileData explicitly
+uninspected. This is separate from selecting stored Binary FileData. See the
+[structured result contract](../../query/collections/MULTIVALUE_QUERIES.md#attachment-recordset-results). Ordinary scalar queries and
 counts do not load attachment records. Explicit required parent indexes now use
 [logical row references](INDEXED_COLLECTION_QUERIES.md) to retain correct member
 alignment without sequential fallback. All native/query/output budgets

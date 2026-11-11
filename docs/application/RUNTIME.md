@@ -53,9 +53,10 @@ separate native/query/comparison/presentation budgets.
 Named members produce ordinary scalar result cells. NULL, present empty Text and
 an empty parent's NULL extension retain their existing distinctions and parent/child
 alignment. Results retain `source_revision: None`: a query row ordinal is never a
-native parent identity or permission to edit/open a collection. Bare attachment
-and bare multivalue results remain refused by scalar publication; a failed Run
-does not replace an earlier successful result.
+native parent identity or permission to edit a collection. Qualified bare attachment
+projections and matching wildcards retain one structured child recordset per
+parent; bare multivalue scalar publication remains refused. A failed Run does not
+replace an earlier successful result.
 
 Explicit `FileData` references return exact stored Binary envelopes, including
 opaque unknown/empty wrappers. No attachment decoder, file extraction or content
@@ -707,6 +708,35 @@ Replies must match its still-open task ID and full source/parent target; closing
 replacing the source or changing the underlying view prevents late reopening.
 Closing an old dialog cannot cancel a newer request. Native decoding and revision
 checks stay in runtime; desktop moves DTOs and routes results.
+
+## Query-owned attachment contents
+
+Direct, inspected and saved retrieval execution can publish qualified attachment
+recordsets alongside scalar cells. A summary retains assignment and complete child
+count independently: an assigned empty recordset, an unassigned collection and an
+outer-joined missing parent remain distinct. A bare projection preserves parent
+rows; explicit named members retain their existing child-expansion semantics.
+Whole-recordset scalar conversions, ordering and aggregation are not inferred.
+
+`Response::Data.query_contents` optionally carries a runtime-issued immutable
+result handle. Its sparse output coordinates address query cells, never native
+bookmarks. The owner retains checked child snapshots and a small source identity;
+it does not retain the database image merely to identify the issuer. Shared
+snapshot/schema allocations are counted once using checked cached footprints.
+Scalar-only responses have no handle.
+
+`InspectQueryCollection` validates the issuing document revision and result-local
+binding, then presents already-owned metadata without native I/O. Desktop retains
+the real capability under the actual published object tab and result generation;
+UI tokens alone grant no authority. Closed, superseded or mismatched results
+cannot open contents. Parked live query tabs retain their own result owners.
+Failed runs preserve the prior successful result and its bindings.
+
+The read-only child dialog distinguishes scalar NULL, present empty values and
+`Uninspected` members. Attachment FileData remains uninspected in this metadata
+view; no payload is decoded, opened or exported. Child results have no native row
+identity, edit target or nested inspection capability. This path is separate from
+native `InspectCollection` and never uses a query row ordinal as a native parent.
 
 ## Reviewed offline cell edits
 

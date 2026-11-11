@@ -908,3 +908,26 @@ ordinary defaults and per-parent value limits remain. ACE 16/ACE 2007 independen
 controls now include 20,000/400 parents and 48,000/40,000 children, with NULLs,
 duplicates, empty-parent placeholders and default/101-value refusals. This does
 not establish broader native query semantics. See [limits, cache and evidence](../../access/collections/LARGER_NATIVE_COLLECTIONS.md).
+
+## Attachment recordset results
+
+Qualified bare attachment projections, including matching wildcard outputs, use
+`QueryValue::Recordset(Arc<OwnedRecordset>)`. The backend-neutral DB model owns the
+static member schema, member availability, assignment and complete ordered rows.
+These cells remain separate from scalar `Value` and evaluator operands.
+`AbsentRecordset` represents an outer-joined missing parent; it is distinct from
+an unassigned collection, assigned empty recordset and scalar NULL.
+
+Bare outputs preserve one result row per parent. Named metadata member projections
+continue to use the existing expanded-row rules. FileData in the metadata
+recordset is `StoredCell::Uninspected`, not fabricated NULL or empty Binary; explicit
+FileData member queries retain their separate stored/decoded payload contracts.
+Whole-recordset scalar functions, keys and aggregates remain unsupported unless
+an operation explicitly supplies such semantics. Ordinary scalar execution does
+not silently discard structured columns.
+
+Microsoft documents an attachment field's DAO Value as a child Recordset2 and
+shows a parent `SELECT *` in the [Recordset2 contract](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/recordset2-object-dao).
+The [DAO attachment guide](https://learn.microsoft.com/en-us/office/vba/access/concepts/data-access-objects/work-with-attachments-in-dao)
+also traverses that child recordset. These references establish the structural
+contract, not Windows execution or exact native empty-set semantics qualification.
