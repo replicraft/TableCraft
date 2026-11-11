@@ -302,6 +302,33 @@ impl NativeFittedEditIntent {
         read::decode(bytes, WireProfile::RetainedCurrencyRows, budget, cancelled)
     }
 
+    /// Encode the separate TCNI23 missing-Boolean original request language.
+    pub fn encode_retained_boolean_materialization(
+        &self,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Vec<u8>, NativeIntentError> {
+        self.encode_profile(
+            WireProfile::RetainedBooleanMaterialization,
+            budget,
+            cancelled,
+        )
+    }
+
+    /// Decode exactly TCNI0023/profile23; native missing-bit proof remains required.
+    pub fn decode_retained_boolean_materialization(
+        bytes: &[u8],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, NativeIntentError> {
+        read::decode(
+            bytes,
+            WireProfile::RetainedBooleanMaterialization,
+            budget,
+            cancelled,
+        )
+    }
+
     /// Encode closed TCNI22 GUID and Decimal originals without native authority.
     pub fn encode_retained_wide_values(
         &self,

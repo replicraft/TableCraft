@@ -13,6 +13,8 @@ const ACE_PROFILE: u16 = 2;
 /// A versioned validation route, never a serialized native permission.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum NativeUpdateProfile {
+    /// A Boolean absent from the complete original record, requalified before materialization.
+    Ace16RetainedBooleanMaterialization,
     /// Exact canonical GUID and Decimal originals in complete retained records.
     Ace16RetainedWideValueRows,
     /// Exact nullable Byte/Int16/Int64/Single/Double/legacy DateTime retained cells.
@@ -82,6 +84,13 @@ pub enum NativeUpdateBody {
 }
 
 impl NativeUpdateIntent {
+    pub(super) fn from_retained_boolean_materialization(original: NativeFittedEditIntent) -> Self {
+        Self {
+            profile: NativeUpdateProfile::Ace16RetainedBooleanMaterialization,
+            body: NativeUpdateBody::Fitted(original),
+        }
+    }
+
     pub(super) fn from_retained_wide_value_rows(original: NativeFittedEditIntent) -> Self {
         Self {
             profile: NativeUpdateProfile::Ace16RetainedWideValueRows,
@@ -368,6 +377,10 @@ impl NativeUpdateIntent {
         match (&self.body, self.profile) {
             (
                 NativeUpdateBody::Fitted(original),
+                NativeUpdateProfile::Ace16RetainedBooleanMaterialization,
+            ) => original.encode_retained_boolean_materialization(budget, cancelled),
+            (
+                NativeUpdateBody::Fitted(original),
                 NativeUpdateProfile::Ace16RetainedWideValueRows,
             ) => original.encode_retained_wide_values(budget, cancelled),
             (
@@ -458,6 +471,14 @@ impl NativeUpdateIntent {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, NativeIntentError> {
+        if bytes.get(..super::fitted::RETAINED_BOOLEAN_MATERIALIZATION_MAGIC.len())
+            == Some(super::fitted::RETAINED_BOOLEAN_MATERIALIZATION_MAGIC.as_slice())
+        {
+            return NativeFittedEditIntent::decode_retained_boolean_materialization(
+                bytes, budget, cancelled,
+            )
+            .map(Self::from_retained_boolean_materialization);
+        }
         if bytes.get(..super::fitted::RETAINED_WIDE_VALUE_ROWS_MAGIC.len())
             == Some(super::fitted::RETAINED_WIDE_VALUE_ROWS_MAGIC.as_slice())
         {

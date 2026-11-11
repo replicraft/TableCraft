@@ -14,6 +14,8 @@ mod historical_present;
 mod historical_text;
 mod requalify;
 #[cfg(feature = "ace16-create")]
+mod retained_boolean_materialization;
+#[cfg(feature = "ace16-create")]
 mod retained_boolean_rows;
 #[cfg(feature = "ace16-create")]
 mod retained_currency_rows;
@@ -323,6 +325,7 @@ impl RecoverableNativeEditPlan {
                 | NativeUpdateProfile::Ace16RetainedBooleanRows
                 | NativeUpdateProfile::Ace16RetainedFixedScalarRows
                 | NativeUpdateProfile::Ace16RetainedWideValueRows
+                | NativeUpdateProfile::Ace16RetainedBooleanMaterialization
         ) {
             return Err(JournalError::ImageSize);
         }
@@ -345,6 +348,7 @@ impl RecoverableNativeEditPlan {
                 | NativeUpdateProfile::Ace16RetainedBooleanRows
                 | NativeUpdateProfile::Ace16RetainedFixedScalarRows
                 | NativeUpdateProfile::Ace16RetainedWideValueRows
+                | NativeUpdateProfile::Ace16RetainedBooleanMaterialization
         ) {
             return Err(JournalError::ImageSize);
         }
@@ -371,6 +375,7 @@ impl RecoverableNativeEditPlan {
                 | NativeUpdateProfile::Ace16RetainedBooleanRows
                 | NativeUpdateProfile::Ace16RetainedFixedScalarRows
                 | NativeUpdateProfile::Ace16RetainedWideValueRows
+                | NativeUpdateProfile::Ace16RetainedBooleanMaterialization
         ) {
             return Err(JournalError::ImageSize);
         }
