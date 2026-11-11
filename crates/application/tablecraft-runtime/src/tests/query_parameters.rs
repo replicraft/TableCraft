@@ -375,10 +375,7 @@ fn operation_classification_uses_actual_syntax_without_scans_clock_or_mutation()
         ("DELETE FROM Items WHERE Id=1", QueryOperation::Delete),
         ("CREATE TABLE NewTable (Id LONG)", QueryOperation::Schema),
         ("DROP TABLE Items", QueryOperation::Schema),
-        (
-            "SELECT Id INTO Copied FROM Items",
-            QueryOperation::Unsupported,
-        ),
+        ("SELECT Id INTO Copied FROM Items", QueryOperation::Schema),
     ] {
         let (target, parameters) = inspect(&worker, revision, sql);
         assert_eq!(target.operation(), operation, "{sql}");

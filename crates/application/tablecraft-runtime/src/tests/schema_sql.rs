@@ -11,6 +11,8 @@ use tablecraft_testkit::fixtures::access::canonical_table_drop as raw;
 mod create;
 #[cfg(feature = "ace16-create")]
 mod field_drop;
+#[cfg(feature = "ace16-create")]
+mod make_table;
 
 fn inspect(worker: &Worker, revision: u64, sql: &str) -> Arc<InspectedQuery> {
     let Response::QueryParameters { target, .. } = request(

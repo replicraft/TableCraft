@@ -10,7 +10,7 @@ use crate::{
 };
 use bytes::Bytes;
 use std::sync::{Arc, atomic::AtomicBool};
-use tablecraft_ace::{FirstTableDefinition, NativeImage, NativeImageSource};
+use tablecraft_ace::{FirstTableDefinition, NativeImage, NativeImageSource, PopulatedAddTablePlan};
 use tablecraft_builders::table::TableDraftSnapshot;
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
@@ -19,10 +19,49 @@ const REOPEN_COPY_CHUNK_BYTES: usize = 16 * 1024;
 pub(in crate::editing) struct State {
     pub(in crate::editing) id: u64,
     pub(in crate::editing) reopen: Arc<CreatedTableReopen>,
-    pub(in crate::editing) original: Bytes,
-    pub(in crate::editing) definition: FirstTableDefinition,
+    pub(in crate::editing) request: Request,
     pub(in crate::editing) valid: Arc<AtomicBool>,
-    pub(in crate::editing) profile: TableCreationProfile,
+}
+
+pub(in crate::editing) enum Request {
+    Empty {
+        original: Bytes,
+        definition: FirstTableDefinition,
+        profile: TableCreationProfile,
+    },
+    Populated(PopulatedAddTablePlan),
+}
+
+impl Request {
+    fn table(&self) -> &str {
+        match self {
+            Self::Empty { definition, .. } => definition.table(),
+            Self::Populated(plan) => plan.table(),
+        }
+    }
+
+    fn column_count(&self) -> usize {
+        match self {
+            Self::Empty { definition, .. } => definition.column_count(),
+            Self::Populated(plan) => plan.column_count(),
+        }
+    }
+
+    fn inserted_rows(&self) -> Option<usize> {
+        match self {
+            Self::Empty { .. } => None,
+            Self::Populated(plan) => Some(plan.row_count()),
+        }
+    }
+
+    fn schema_change(&self) -> SaveSchemaChange {
+        match self {
+            Self::Empty { profile, .. } => profile.schema_change(self.column_count()),
+            Self::Populated(_) => SaveSchemaChange::TableAdded {
+                column_count: self.column_count(),
+            },
+        }
+    }
 }
 
 /// Captured from the current document's source qualification, never caller input.
@@ -98,7 +137,7 @@ impl Document {
             }
             _ => NativeImage::capture_shared_retained(source, SCOPE, work, cancelled),
         }?;
-        let (expected, columns, definition) = match profile {
+        let (expected, definition) = match profile {
             TableCreationProfile::First => {
                 let plan = if definition.is_native() {
                     image.plan_first_table_native(definition, work, cancelled)?
@@ -106,47 +145,71 @@ impl Document {
                     image.plan_first_table(definition, work, cancelled)?
                 };
                 let expected = copy_expected(plan.after_bytes(), work, cancelled)?;
-                (expected, plan.column_count(), plan.into_definition())
+                (expected, plan.into_definition())
             }
             TableCreationProfile::Added | TableCreationProfile::AddedNative => {
                 let plan = image.plan_authored_add_table(definition, work, cancelled)?;
                 let expected = copy_expected(plan.after_bytes(), work, cancelled)?;
-                (expected, plan.column_count(), plan.into_definition())
+                (expected, plan.into_definition())
             }
         };
+        let expected = NativeImageSource::from_vec(expected, work, cancelled)?.shared_bytes();
+        // NO_CLONE: The consuming save retains its BEFORE independently from the
+        // live Document; Bytes shares the complete immutable allocation.
+        let original = self.edits.original.clone();
+        self.issue_table_creation(
+            document_revision,
+            origin,
+            Request::Empty {
+                original,
+                definition,
+                profile,
+            },
+            expected,
+            work,
+            cancelled,
+        )
+    }
+
+    pub(in crate::editing) fn issue_table_creation(
+        &self,
+        document_revision: u64,
+        origin: CreationOrigin,
+        request: Request,
+        expected: Bytes,
+        work: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Response, Error> {
         work.charge_allocation(self.edits.path.as_os_str().len() as u64, 1)?;
-        work.charge_allocation(definition.table().len() as u64, 1)?;
+        work.charge_allocation(request.table().len() as u64, 1)?;
         let mut table = String::new();
-        table.try_reserve_exact(definition.table().len())?;
-        table.push_str(definition.table());
+        table.try_reserve_exact(request.table().len())?;
+        table.push_str(request.table());
         work.charge_allocation(1, size_of::<CreatedTableReopen>() as u64)?;
         work.charge_allocation(1, size_of::<State>() as u64)?;
         check(cancelled)?;
-        let expected = NativeImageSource::from_vec(expected, work, cancelled)?.shared_bytes();
         let reopen = Arc::new(CreatedTableReopen {
-            // NO_CLONE: The capability or reopen witness outlives this borrowed Document call
-            // and owns its source path; the live Document keeps its own path.
+            // NO_CLONE: The read-only reopen witness outlives this Document call
+            // and owns its path independently from the live reader.
             path: self.edits.path.clone(),
             expected,
             table,
-            columns,
+            columns: request.column_count(),
+            inserted_rows: request.inserted_rows(),
             document_revision,
             origin,
-            schema_change: profile.schema_change(columns),
+            schema_change: request.schema_change(),
         });
-        let capability = ReviewedTableCreation {
-            state: Box::new(State {
-                id: issue_id()?,
-                reopen,
-                // NO_CLONE: The reader and retained native witness need independent lifetimes;
-                // Bytes shares the immutable original image rather than copying it.
-                original: self.edits.original.clone(),
-                definition,
-                profile,
-                valid: Arc::clone(&self.edits.valid),
-            }),
-        };
-        Ok(Response::TableCreationReviewed { capability })
+        Ok(Response::TableCreationReviewed {
+            capability: ReviewedTableCreation {
+                state: Box::new(State {
+                    id: issue_id()?,
+                    reopen,
+                    request,
+                    valid: Arc::clone(&self.edits.valid),
+                }),
+            },
+        })
     }
 }
 

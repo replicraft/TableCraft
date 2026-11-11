@@ -39,7 +39,7 @@ impl QueryOperation {
             Statement::Delete(_) => Self::Delete,
             Statement::Insert(_) => Self::Insert,
             Statement::Definition(_) => Self::Schema,
-            Statement::MakeTable(_) => Self::Unsupported,
+            Statement::MakeTable(_) => Self::Schema,
         }
     }
 }

@@ -34,6 +34,12 @@ impl Document {
         if !parsed.query().parameters.is_empty() {
             return Err(Error::SchemaSqlUnsupported);
         }
+        if matches!(&parsed.query().statement, Statement::MakeTable(_)) {
+            #[cfg(feature = "ace16-create")]
+            return platform::schema_sql::review_make_table(self, parsed.into_query(), cancelled);
+            #[cfg(not(feature = "ace16-create"))]
+            return Err(Error::SchemaSqlUnsupported);
+        }
         let Statement::Definition(definition) = &parsed.query().statement else {
             return Err(Error::SchemaSqlUnsupported);
         };

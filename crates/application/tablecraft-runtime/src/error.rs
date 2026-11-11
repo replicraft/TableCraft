@@ -7,6 +7,9 @@ use tablecraft_ace::{
     FirstTableError, RepeatedDefaultZeroAddColumnIntentError,
 };
 
+#[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+use tablecraft_access::editing::sql::NativeMakeTableError;
+
 #[cfg(feature = "offline-edit")]
 use crate::{EditError, QuerySqlEditError, ReplaceError};
 use crate::{FilterError, FindError, TotalsError};
@@ -137,6 +140,10 @@ pub enum Error {
     #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
     #[error(transparent)]
     AddTable(#[from] AddTableError),
+    /// Native declaration and complete SELECT INTO preparation refused.
+    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+    #[error(transparent)]
+    NativeMakeTable(#[from] NativeMakeTableError),
     #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
     #[error("saved table contents changed before reopening")]
     SavedTableSourceChanged,

@@ -1,6 +1,10 @@
 //! Metadata resolves original identities before the existing schema proof runs.
 #[cfg(feature = "ace16-create")]
 mod create;
+#[cfg(feature = "ace16-create")]
+mod make_table;
+#[cfg(feature = "ace16-create")]
+pub(in crate::editing) use make_table::review as review_make_table;
 
 #[cfg(feature = "ace16-create")]
 use crate::editing::{EditError, table_creation::CreationOrigin};

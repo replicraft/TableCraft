@@ -25,7 +25,7 @@ fn creation_kind_and_exact_field_count_are_part_of_the_receipt_scope() {
     ] {
         let original = receipt(expected);
         assert_eq!(
-            facts(SaveOutcome::Saved { receipt: original }, expected)
+            facts(SaveOutcome::Saved { receipt: original }, expected, None)
                 .unwrap()
                 .completed,
             Some(original)
@@ -43,7 +43,7 @@ fn creation_kind_and_exact_field_count_are_part_of_the_receipt_scope() {
                         Some(SaveDatabaseOptionsChange::NameAutoCorrectDisabled)
                 }
             }
-            assert!(facts(SaveOutcome::Saved { receipt: wrong }, expected).is_err());
+            assert!(facts(SaveOutcome::Saved { receipt: wrong }, expected, None).is_err());
         }
     }
 }
@@ -62,6 +62,7 @@ fn creation_release_preserves_current_image_and_historical_receipt_distinction()
                 last_completed: Some(original),
             },
             expected,
+            None,
         )
         .unwrap();
         assert!(!classified.replacement);
@@ -73,6 +74,7 @@ fn creation_release_preserves_current_image_and_historical_receipt_distinction()
             last_completed: None,
         },
         expected,
+        None,
     )
     .unwrap();
     assert!(after.replacement);
@@ -83,6 +85,7 @@ fn creation_release_preserves_current_image_and_historical_receipt_distinction()
             last_completed: None,
         },
         expected,
+        None,
     )
     .unwrap();
     assert!(!unknown.replacement);
@@ -93,7 +96,8 @@ fn creation_release_preserves_current_image_and_historical_receipt_distinction()
                 last_known_outcome: None,
                 last_completed: Some(original)
             },
-            expected
+            expected,
+            None
         )
         .is_err()
     );
@@ -112,7 +116,41 @@ fn failed_creation_owner_cannot_publish_after_before_resource_resolution() {
         can_recover: true,
         can_release: true,
     });
-    let classified = facts(outcome, expected).unwrap();
+    let classified = facts(outcome, expected, None).unwrap();
     assert!(!classified.replacement);
     assert!(classified.completed.is_none());
+}
+
+#[test]
+fn populated_creation_requires_applied_count_but_recovery_keeps_counts_absent() {
+    let expected = SaveSchemaChange::TableAdded { column_count: 1 };
+    let mut applied = receipt(expected);
+    applied.changed_rows = Some(900);
+    assert!(facts(SaveOutcome::Saved { receipt: applied }, expected, Some(900)).is_ok());
+    assert!(facts(SaveOutcome::Saved { receipt: applied }, expected, None).is_err());
+    assert!(facts(SaveOutcome::Saved { receipt: applied }, expected, Some(899)).is_err());
+    for completion in [
+        crate::editing::SaveCompletion::Recovered,
+        crate::editing::SaveCompletion::Confirmed,
+    ] {
+        let mut recovered = receipt(expected);
+        recovered.completion = completion;
+        assert!(
+            facts(
+                SaveOutcome::Saved { receipt: recovered },
+                expected,
+                Some(900)
+            )
+            .is_ok()
+        );
+        recovered.changed_rows = Some(900);
+        assert!(
+            facts(
+                SaveOutcome::Saved { receipt: recovered },
+                expected,
+                Some(900)
+            )
+            .is_err()
+        );
+    }
 }

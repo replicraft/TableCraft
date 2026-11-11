@@ -1,6 +1,6 @@
 //! Creation facts are bound to the actual reviewed witness's schema and width.
 use super::CreatedTableReopen;
-use crate::editing::{SaveOutcome, SaveReceipt, SaveSchemaChange, outcome_facts};
+use crate::editing::{SaveCompletion, SaveOutcome, SaveReceipt, SaveSchemaChange, outcome_facts};
 
 /// Acknowledged image facts, separate from complete expected-image verification.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -18,6 +18,7 @@ pub enum TableCreationOutcomeError {
 fn facts(
     outcome: SaveOutcome,
     expected: SaveSchemaChange,
+    inserted_rows: Option<usize>,
 ) -> Result<TableCreationReopenFacts, TableCreationOutcomeError> {
     let qualified = |receipt: SaveReceipt| {
         outcome_facts::known_replacement(receipt.known)
@@ -25,7 +26,11 @@ fn facts(
             && receipt.query_change.is_none()
             && receipt.database_options_change.is_none()
             && receipt.matched_rows.is_none()
-            && receipt.changed_rows.is_none()
+            && receipt.changed_rows
+                == match receipt.completion {
+                    SaveCompletion::Applied => inserted_rows,
+                    SaveCompletion::Recovered | SaveCompletion::Confirmed => None,
+                }
     };
     let facts = outcome_facts::reopen_facts(outcome, qualified)
         .map_err(|()| TableCreationOutcomeError::UnqualifiedReplacementReceipt)?;
@@ -46,7 +51,11 @@ impl SaveOutcome {
         self,
         witness: &CreatedTableReopen,
     ) -> Result<TableCreationReopenFacts, TableCreationOutcomeError> {
-        facts(self, witness.expected_schema_change())
+        facts(
+            self,
+            witness.expected_schema_change(),
+            witness.inserted_rows(),
+        )
     }
 }
 

@@ -22,6 +22,7 @@ pub struct CreatedTableReopen {
     pub(super) expected: Bytes,
     pub(super) table: String,
     pub(super) columns: usize,
+    pub(super) inserted_rows: Option<usize>,
     pub(super) document_revision: u64,
     pub(super) origin: CreationOrigin,
     pub(super) schema_change: SaveSchemaChange,
@@ -38,6 +39,11 @@ impl CreatedTableReopen {
 
     pub fn column_count(&self) -> usize {
         self.columns
+    }
+
+    /// Exact inserted count for a populated creation; absent for empty CREATE.
+    pub fn inserted_rows(&self) -> Option<usize> {
+        self.inserted_rows
     }
 
     pub fn document_revision(&self) -> u64 {
