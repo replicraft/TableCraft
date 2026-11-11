@@ -231,23 +231,35 @@ fn balanced_sum(level: usize, leaf: &str) -> String {
 
 #[test]
 fn paid_classifier_does_not_add_expression_depth_beyond_existing_preparation() {
+    use crate::{BindingDepth, prepare_with_options};
+
     let data = Data::new();
+    // Use the same caller-selected structural depth for the existing control,
+    // classifier, discovery binder and execution; defaults remain unchanged.
+    let preparation = PreparationOptions {
+        binding_depth: BindingDepth::new(32).unwrap(),
+        ..Default::default()
+    };
+    let execution = ExecutionOptions {
+        binding_depth: preparation.binding_depth,
+        ..Default::default()
+    };
     let body = balanced_sum(7, "Score");
     let parsed = parse_query(
         &format!("SELECT {body} AS Total FROM Items WHERE Id=1"),
         ParseLimits::default(),
     )
     .unwrap();
-    let existing = prepare(parsed.query(), &data)
+    let existing = prepare_with_options(parsed.query(), &data, preparation)
         .unwrap()
-        .execute_collections(&data, &[], ExecutionOptions::default())
+        .execute_collections(&data, &[], execution)
         .unwrap();
     assert_eq!(existing.rows(), [vec![scalar(Value::Int32(640))]]);
     assert_eq!(
         parameter_discovery_mode(
             parsed.query(),
             &data,
-            Default::default(),
+            preparation.binding_depth,
             &mut budget(),
             &|| false
         )
@@ -257,12 +269,12 @@ fn paid_classifier_does_not_add_expression_depth_beyond_existing_preparation() {
     let captured = prepare_with_parameter_discovery(
         parsed.query(),
         &data,
-        PreparationOptions::default(),
+        preparation,
         &mut budget(),
         &|| false,
     )
     .unwrap()
-    .execute_collections(&data, &[], ExecutionOptions::default())
+    .execute_collections(&data, &[], execution)
     .unwrap();
     assert_eq!(captured.rows(), existing.rows());
 
@@ -274,15 +286,15 @@ fn paid_classifier_does_not_add_expression_depth_beyond_existing_preparation() {
     .unwrap();
     let implicit = parse_query(&format!("SELECT {body} AS Total"), ParseLimits::default()).unwrap();
     let inputs = [("P", Value::Int32(5))];
-    let existing = prepare(declared.query(), &data)
+    let existing = prepare_with_options(declared.query(), &data, preparation)
         .unwrap()
-        .execute_collections(&data, &inputs, ExecutionOptions::default())
+        .execute_collections(&data, &inputs, execution)
         .unwrap();
     assert_eq!(existing.rows(), [vec![scalar(Value::Int32(640))]]);
     let prepared = prepare_with_parameter_discovery(
         implicit.query(),
         &data,
-        PreparationOptions::default(),
+        preparation,
         &mut budget(),
         &|| false,
     )
@@ -290,7 +302,7 @@ fn paid_classifier_does_not_add_expression_depth_beyond_existing_preparation() {
     assert_eq!(prepared.parameters().len(), 1);
     assert_eq!(
         prepared
-            .execute_collections(&data, &inputs, ExecutionOptions::default())
+            .execute_collections(&data, &inputs, execution)
             .unwrap()
             .rows(),
         existing.rows()
@@ -302,16 +314,16 @@ fn paid_classifier_does_not_add_expression_depth_beyond_existing_preparation() {
         ParseLimits::default(),
     )
     .unwrap();
-    let existing = prepare(parsed.query(), &data)
+    let existing = prepare_with_options(parsed.query(), &data, preparation)
         .unwrap()
-        .execute_collections(&data, &[], ExecutionOptions::default())
+        .execute_collections(&data, &[], execution)
         .unwrap();
     assert_eq!(existing.rows(), [vec![scalar(Value::Int64(642))]]);
     assert_eq!(
         parameter_discovery_mode(
             parsed.query(),
             &data,
-            Default::default(),
+            preparation.binding_depth,
             &mut budget(),
             &|| false
         )
