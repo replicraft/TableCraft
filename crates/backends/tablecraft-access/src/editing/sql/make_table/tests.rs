@@ -292,8 +292,10 @@ fn cancellation_and_native_query_snapshot_allowances_return_no_partial_preparati
     }
     let sql = "SELECT Name INTO Archive FROM Items";
     let cancelled = || true;
-    let mut options = ExecutionOptions::default();
-    options.cancelled = Some(&cancelled);
+    let options = ExecutionOptions {
+        cancelled: Some(&cancelled),
+        ..ExecutionOptions::default()
+    };
     assert!(matches!(
         prepare_native_make_table(
             image(&bytes),
