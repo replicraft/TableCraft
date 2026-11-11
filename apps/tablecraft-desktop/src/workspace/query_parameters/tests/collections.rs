@@ -1,5 +1,5 @@
 //! Normal SQL Run must expose already-qualified attachment metadata members.
-use super::{opened_with_source, run};
+use super::{opened_with_source, run, run_until_terminal};
 use egui::{Key, accesskit::Role};
 use egui_kittest::kittest::{NodeT, Queryable};
 use std::path::Path;
@@ -146,7 +146,7 @@ fn sql_view_attachment_metadata_members_preserve_null_empty_and_child_alignment(
     // A bare attachment is a child recordset, not a scalar metadata member.
     // Refusal must retain the last fully published result, never publish a
     // partial scalar-only projection or fabricate query-row source identity.
-    run(&mut harness, "SELECT Id, Score FROM Items ORDER BY Id");
+    run_until_terminal(&mut harness, "SELECT Id, Score FROM Items ORDER BY Id");
     let report = harness
         .state()
         .state

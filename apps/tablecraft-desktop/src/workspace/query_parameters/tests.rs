@@ -50,13 +50,28 @@ fn opened_with_source(
 }
 
 fn run(harness: &mut Harness<'_, Desktop>, sql: &str) {
+    run_until_terminal(harness, sql);
+    assert!(
+        harness.state().state.error.is_none(),
+        "normal query failed: {:?}",
+        harness.state().state.error
+    );
+}
+
+fn run_until_terminal(harness: &mut Harness<'_, Desktop>, sql: &str) {
     assert!(harness.state_mut().state.replace_query_sql(sql.to_owned()));
     harness.run_steps(2);
     harness
         .get_by_role_and_label(Role::Button, "Run query")
         .click_accesskit();
     harness.run_steps(1);
-    finish_reads(harness);
+    let deadline = Instant::now() + Duration::from_secs(10);
+    while harness.state().state.busy {
+        assert!(Instant::now() < deadline, "normal query did not terminate");
+        harness.run_steps(1);
+        std::thread::yield_now();
+    }
+    harness.run_steps(2);
 }
 
 fn enter(harness: &mut Harness<'_, Desktop>, prompt: &str, text: &str) {
@@ -494,12 +509,25 @@ fn active_parameter_prompt_rejects_injected_query_limit_configuration() {
     );
     let captured = harness.state().query_run_options;
     let mut changed = harness.state().state.query_run_limits().unwrap();
-    changed.query.rows += 1;
+    // A different valid allowance proves the prompt guard, independently of
+    // checked option validation and without arithmetic at a default maximum.
+    changed.query.rows = 1;
+    assert_ne!(changed.query.rows, captured.query().rows());
     harness.state_mut().configure_query_run_limits(changed);
     assert_eq!(harness.state().query_run_options, captured);
     enter(&mut harness, "Requested", "42");
     confirm(&mut harness);
     finish_reads(&mut harness);
+    assert_eq!(
+        harness.state().state.query_data.as_ref().unwrap().rows[0][0].text,
+        "42"
+    );
+    // Once the prompt has finished, reject a genuinely invalid row pool too.
+    // Positive rows are an API invariant, not an invented upper limit.
+    let mut invalid = harness.state().state.query_run_limits().unwrap();
+    invalid.query.rows = 0;
+    harness.state_mut().configure_query_run_limits(invalid);
+    assert_eq!(harness.state().query_run_options, captured);
     assert_eq!(
         harness.state().state.query_data.as_ref().unwrap().rows[0][0].text,
         "42"
