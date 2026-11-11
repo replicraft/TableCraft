@@ -138,7 +138,7 @@ fn complete_staging_keeps_more_than_sixty_four_rows_without_generation_or_defaul
 }
 
 #[test]
-fn a_malformed_last_record_after_seventy_valid_rows_returns_no_preparation() {
+fn a_truncated_last_record_after_seventy_valid_rows_returns_no_preparation() {
     let before = fields::source(fields::Case::FirstNumber).bytes;
     let definition = (before.len() / 4096) as u32;
     let mut bytes = desktop::append(&before, "Items", raw::Target::GeneratedNumber);
@@ -167,13 +167,22 @@ fn a_malformed_last_record_after_seventy_valid_rows_returns_no_preparation() {
     let offset = usize::from(
         u16::from_le_bytes(bytes[last_slot..last_slot + 2].try_into().unwrap()) & 0x1fff,
     );
-    // The final full record's claimed null mask cannot fit its actual footprint.
-    // Every earlier literal record, page owner, TDEF count and index stays intact.
-    bytes[data + offset..data + offset + 2].copy_from_slice(&u16::MAX.to_le_bytes());
+    let previous_slot = last_slot - 2;
+    let previous = usize::from(
+        u16::from_le_bytes(bytes[previous_slot..previous_slot + 2].try_into().unwrap()) & 0x1fff,
+    );
+    let truncated = previous - 1;
+    assert_eq!(truncated - offset, 10);
+    bytes[last_slot..last_slot + 2].copy_from_slice(&(truncated as u16).to_le_bytes());
+    let free = u16::from_le_bytes(bytes[data + 2..data + 4].try_into().unwrap());
+    bytes[data + 2..data + 4].copy_from_slice(&(free + 10).to_le_bytes());
+    // The final directory-framed record contains only one byte, so decoding its
+    // two-byte column-count header reaches EOF. Earlier records remain intact;
+    // vacated final-row bytes remain inert and the physical free count is honest.
     assert!(matches!(
         prepare(&bytes, sql),
         Err(NativeMakeTableError::Query(MakeTableError::Query(
-            QueryError::SourceFailure(SourceFailure::InvalidData)
+            QueryError::SourceFailure(SourceFailure::Truncated)
         )))
     ));
 }
