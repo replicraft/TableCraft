@@ -1,6 +1,8 @@
 //! Row selection changes the materialized relation, never its native declaration.
-use super::{budget, fields, prepare, raw};
-use crate::editing::sql::NativeMakeTableError;
+use super::{budget, fields, image, prepare, raw, rows, syntax, text_source};
+use crate::editing::sql::{NativeMakeTableError, prepare_native_make_table_with_native_comparison};
+use std::cell::RefCell;
+use tablecraft_ace::TableSnapshotLimits;
 use tablecraft_core::values::Value;
 use tablecraft_expressions::EvalError;
 use tablecraft_query::{MakeTableError, QueryError};
@@ -52,6 +54,32 @@ fn native_selection_retains_where_distinctrow_and_top_boundary_semantics() {
         assert_eq!(prepared.definition().column_count(), 1);
         assert_eq!(prepared.definition().primary_position(), None);
     }
+}
+
+#[test]
+fn filtered_text_uses_the_actual_field_comparer_and_keeps_its_physical_width() {
+    let (mut bytes, definition) = text_source();
+    for input in [rows::Input::Text("B"), rows::Input::Text("a")] {
+        bytes = rows::append(&bytes, definition, rows::Profile::DesktopText, input);
+    }
+    let prepared = prepare_native_make_table_with_native_comparison(
+        image(&bytes),
+        syntax("SELECT Name AS Label INTO Archive FROM Items WHERE Name < 'B' ORDER BY ID"),
+        &RefCell::new(budget()),
+        &RefCell::new(budget()),
+        &mut budget(),
+        &|| false,
+        TableSnapshotLimits::default(),
+    )
+    .unwrap();
+    assert_eq!(prepared.rows(), &[vec![Value::Text("a".into())]]);
+    let columns = prepared
+        .definition()
+        .borrowed_columns(&mut budget(), &|| false)
+        .unwrap();
+    assert_eq!(columns[0].name(), "Label");
+    assert_eq!(columns[0].max_text_utf16_units(), Some(7));
+    assert_eq!(columns[0].default_literal(), None);
 }
 
 #[cfg(feature = "journal")]
