@@ -1,0 +1,106 @@
+{
+  "date": "2026-11-11",
+  "platform": "macOS 14.7.2 ARM64",
+  "source_commits": [
+    "fe222fe0b",
+    "aaea3c237",
+    "799a9eb2c"
+  ],
+  "scope": "Native-only non-journalable unadorned scalar ADD candidates; this does not expand reviewed SQL View saves beyond Currency13.",
+  "qualification": "Independent literal raw AFTER oracles and existing native reader/proof observations. No Microsoft Access execution or native application window.",
+  "observations": [
+    "All twelve admitted scalar declarations match complete independent AFTER images on keyless and generated primary-key sources. Every optional field policy remains absent.",
+    "Short Text uses actual qualified ROOT GeneralLegacy/General2010 defaults and retains native UTF-16 width; unknown ROOT refuses Text but does not prohibit independent Currency construction. Decimal retains exact precision/scale.",
+    "Historical absent Boolean reads false; other newly represented historical cells read NULL. This does not qualify fresh omitted Boolean defaults.",
+    "Existing LONG secondary indexes retain complete images across ascending/descending empty, nullable-duplicate, three-leaf and 200000-row multilevel trees, plus generated primary/secondary companions.",
+    "A real deletion retains LAST above the maximum live key. ADD preserves LAST and all index bytes; a later existing native INSERT uses historical LAST+1 and leaves the new unadorned Currency field NULL.",
+    "Malformed index ownership/membership and generator flags, forged definition/protected bytes, cancellation and exhausted budgets refuse. Preservation payload comparisons retain exact representations and independently paid cancellable work.",
+    "Current Currency13 originals and gallery ADD are included as regressions; their source/declaration/recovery languages remain unchanged."
+  ],
+  "checks": [
+    {
+      "job": "native",
+      "command": "cargo test -p tablecraft-ace --lib --all-features --offline --locked -- table::mutation::add_field transaction::intent::declared_field_addition transaction::intent::field_addition",
+      "returncode": 0,
+      "seconds": 55.26,
+      "test_summaries": [
+        {
+          "passed": 66,
+          "failed": 0,
+          "ignored": 0
+        }
+      ],
+      "log": {
+        "path": ".cache/ace-sql-unadorned-native-native-20261111.log",
+        "sha256": "6d6855eb6eb575e10c4cfcfc24ba46c0d3c7cb2e5187796722655701d3d1ea3e"
+      }
+    },
+    {
+      "job": "strict",
+      "command": "cargo clippy -p tablecraft-ace -p tablecraft-testkit --all-targets --all-features --offline --locked -- -D warnings",
+      "returncode": 0,
+      "seconds": 61.43,
+      "test_summaries": [],
+      "log": {
+        "path": ".cache/ace-sql-unadorned-native-strict-20261111.log",
+        "sha256": "94eb11a3707e610fa7ffbda36b77e3fd74c4f6ee1ba1716ba9d62a996f8ba0df"
+      }
+    },
+    {
+      "job": "creation-only",
+      "command": "cargo check -p tablecraft-ace --lib --no-default-features --features ace16-create --offline --locked",
+      "returncode": 0,
+      "seconds": 1.71,
+      "test_summaries": [],
+      "log": {
+        "path": ".cache/ace-sql-unadorned-native-creation-only-20261111.log",
+        "sha256": "16caf37dd73999aaacf99fbd1f428f47e90d66aed96b685e968dc9d2e3fc55fb"
+      }
+    },
+    {
+      "job": "journal-only",
+      "command": "cargo clippy -p tablecraft-ace --lib --no-default-features --features journal --offline --locked -- -D warnings",
+      "returncode": 0,
+      "seconds": 2.91,
+      "test_summaries": [],
+      "log": {
+        "path": ".cache/ace-sql-unadorned-native-journal-only-20261111.log",
+        "sha256": "0477d0ec5b55d551d4b64178d850827c01ed180e1d63a6949df62f1b9754d9d6"
+      }
+    },
+    {
+      "job": "minimal",
+      "command": "cargo check -p tablecraft-ace --lib --no-default-features --offline --locked",
+      "returncode": 0,
+      "seconds": 0.98,
+      "test_summaries": [],
+      "log": {
+        "path": ".cache/ace-sql-unadorned-native-minimal-20261111.log",
+        "sha256": "b23e06354369c66347979f2610b221175ecb1f60c703b76d20b23915a4cf46bd"
+      }
+    },
+    {
+      "job": "rustdoc",
+      "command": "cargo doc -p tablecraft-ace --no-deps --all-features --offline --locked",
+      "returncode": 0,
+      "seconds": 8.87,
+      "test_summaries": [],
+      "log": {
+        "path": ".cache/ace-sql-unadorned-native-rustdoc-20261111.log",
+        "sha256": "b90c17c2678a3f123c511fdb66cc509e533350265706c20e908fe42866cb3fa1"
+      }
+    }
+  ],
+  "guards": {
+    "rust_format": "917 target roots in 4 bounded rustfmt batches",
+    "rust_layout": "19 composition-only crate roots",
+    "dependency_boundaries": "22 packages",
+    "documentation_links": "9357 local targets, zero missing before this receipt"
+  },
+  "limitations": [
+    "No persistence original or application capability for this broader candidate at this checkpoint.",
+    "Target relationships, required programs, unsupported metadata/key families and Unicode field-namespace equivalence remain outside current source qualification.",
+    "No new UI render was required: this batch adds no presentation surface."
+  ],
+  "counting": "The 66 selected tests include existing gallery/original regressions and eight new tests with matrix loops. Do not add overlapping previous runs or convert checks to a conformance percentage."
+}

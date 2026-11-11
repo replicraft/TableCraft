@@ -43,6 +43,35 @@ No/Cancel preserves the source; Yes uses the existing exclusive save and guarded
 reopen. The gallery declarations and their stored policy/default semantics remain
 unchanged.
 
+## Native preparation of broader unadorned declarations
+
+`UnadornedFieldAdditionDefinition` and
+`NativeImage::prepare_retained_unadorned_field_addition` prepare a separate,
+non-journalable candidate for ordinary Boolean, Byte, Integer, LONG, Large Number,
+Single, Double, Currency, legacy DateTime, GUID, Decimal and Short Text fields.
+The request retains actual Text UTF-16 capacity and Decimal precision/scale;
+all optional field policies remain absent. Text takes the qualified General
+Legacy or General2010 sort declaration from the destination ROOT, rather than
+borrowing another field's policy. Unknown ROOT sort declarations refuse Text.
+
+The source proof can protect qualified existing single-LONG indexes and one
+ordinary generated LONG primary key. ADD changes no record, index, counter,
+property or allocation page. It preserves existing native field identities and
+the historical AutoNumber LAST value; it does not generate a new record identity.
+Target relationships, required programs, unsupported index families and broader
+metadata remain subject to the retained source checks.
+
+The [native candidate checkpoint](../../../tests/results/queries/unadorned-scalar-add-candidates-2026-11-11.json)
+records the complete-image type matrix, existing-index preservation, historical
+counter/next-INSERT journey and the selected 66-test regression batch.
+
+This candidate has no conversion into the Currency13 original, native save plan
+or application review. It therefore does not expand SQL View execution beyond
+the Currency13 profile above. Historical missing Boolean reads False; other
+historical cells read NULL. This observation does not invent an omitted Boolean
+default or qualify subsequent row edits. Those operations need their own native
+admission and connected acceptance.
+
 ## Typed retained declarations
 
 `TCAC0012` binds one validated typed declaration and its original name to the
