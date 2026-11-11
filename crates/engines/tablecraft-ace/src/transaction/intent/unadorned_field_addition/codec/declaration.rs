@@ -49,7 +49,7 @@ impl Shape {
             scale: constraints.map_or(0, |value| value.scale()),
         };
         // Validate the exact emitted carrier rather than treating ScalarType as a wire tag.
-        shape.column(column.name())?;
+        let _validated_column = shape.column(column.name())?;
         Ok(shape)
     }
 
