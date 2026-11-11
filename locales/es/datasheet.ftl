@@ -102,3 +102,4 @@ datasheet-field-abandon-discard = Cerrar borrador
 
 # Leave failed checked reopening without undoing an acknowledged field save.
 datasheet-field-return-draft = Volver al borrador del campo
+datasheet-field-type-default-help = Los campos nuevos usan el valor predeterminado del tipo. Aún no se pueden editar las propiedades Requerido y Valor predeterminado.

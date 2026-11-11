@@ -102,3 +102,4 @@ datasheet-field-abandon-discard = Закрыть черновик
 
 # Leave failed checked reopening without undoing an acknowledged field save.
 datasheet-field-return-draft = Вернуться к черновику поля
+datasheet-field-type-default-help = Новые поля используют значение по умолчанию для типа. Изменение свойств обязательности и значения по умолчанию пока недоступно.

@@ -102,3 +102,4 @@ datasheet-field-abandon-discard = 关闭草稿
 
 # Leave failed checked reopening without undoing an acknowledged field save.
 datasheet-field-return-draft = 返回字段草稿
+datasheet-field-type-default-help = 新字段使用类型的默认值。必填和默认值属性暂不支持编辑。

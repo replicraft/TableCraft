@@ -102,3 +102,4 @@ datasheet-field-abandon-discard = Fechar rascunho
 
 # Leave failed checked reopening without undoing an acknowledged field save.
 datasheet-field-return-draft = Voltar ao rascunho do campo
+datasheet-field-type-default-help = Os novos campos usam o valor padrão do tipo. A edição das propriedades Obrigatório e Valor padrão ainda não está disponível.

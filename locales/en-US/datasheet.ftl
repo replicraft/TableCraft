@@ -102,3 +102,4 @@ datasheet-field-abandon-discard = Close draft
 
 # Leave failed checked reopening without undoing an acknowledged field save.
 datasheet-field-return-draft = Return to draft
+datasheet-field-type-default-help = New fields use the type default. Required and default-value editing are not available yet.

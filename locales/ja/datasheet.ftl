@@ -102,3 +102,4 @@ datasheet-field-abandon-discard = 下書きを閉じる
 
 # Leave failed checked reopening without undoing an acknowledged field save.
 datasheet-field-return-draft = フィールドの下書きに戻る
+datasheet-field-type-default-help = 新しいフィールドには型の既定値が使われます。値要求と既定値の編集はまだ利用できません。

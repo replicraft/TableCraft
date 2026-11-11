@@ -102,3 +102,4 @@ datasheet-field-abandon-discard = Entwurf schließen
 
 # Leave failed checked reopening without undoing an acknowledged field save.
 datasheet-field-return-draft = Zum Feldentwurf zurückkehren
+datasheet-field-type-default-help = Neue Felder verwenden den Standardwert des Datentyps. Eingabe erforderlich und Standardwert können noch nicht bearbeitet werden.

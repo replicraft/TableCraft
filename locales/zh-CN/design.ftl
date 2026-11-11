@@ -97,3 +97,4 @@ design-type-lookup-wizard = 查阅向导
 
 design-new-field = 新字段
 design-pending-properties = 保存新字段后可查看其存储的属性。
+design-unicode-compression = Unicode 压缩

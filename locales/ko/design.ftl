@@ -97,3 +97,4 @@ design-type-lookup-wizard = 조회 마법사
 
 design-new-field = 새 필드
 design-pending-properties = 새 필드를 저장하면 저장된 속성을 확인할 수 있습니다.
+design-unicode-compression = 유니코드 압축

@@ -102,3 +102,4 @@ datasheet-field-abandon-discard = 초안 닫기
 
 # Leave failed checked reopening without undoing an acknowledged field save.
 datasheet-field-return-draft = 필드 초안으로 돌아가기
+datasheet-field-type-default-help = 새 필드는 형식의 기본값을 사용합니다. 필수 및 기본값 속성 편집은 아직 사용할 수 없습니다.

@@ -97,3 +97,4 @@ design-type-lookup-wizard = ルックアップ ウィザード
 
 design-new-field = 新しいフィールド
 design-pending-properties = 新しいフィールドを保存すると、保存されたプロパティを確認できます。
+design-unicode-compression = Unicode 圧縮

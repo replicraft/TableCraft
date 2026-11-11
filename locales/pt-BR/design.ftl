@@ -97,3 +97,4 @@ design-type-lookup-wizard = Assistente de Pesquisa
 
 design-new-field = Novo campo
 design-pending-properties = Salve o novo campo para consultar suas propriedades armazenadas.
+design-unicode-compression = Compactação Unicode
