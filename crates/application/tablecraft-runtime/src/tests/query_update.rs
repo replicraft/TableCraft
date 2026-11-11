@@ -567,3 +567,5 @@ fn invalid_action_inputs_refuse_before_unreadable_native_data() {
     assert_eq!(std::fs::read(&path).unwrap(), original);
     assert!(!crate::journal_path(&path).exists());
 }
+
+mod joined;

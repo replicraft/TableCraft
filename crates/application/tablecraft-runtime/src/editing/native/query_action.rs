@@ -68,9 +68,23 @@ pub(in crate::editing) fn review(
         &parsed.query().statement,
         Statement::Insert(insert) if matches!(insert.source, InsertSource::Query(_))
     );
+    let joined_update = if matches!(kind, Kind::Update)
+        && matches!(&parsed.query().statement, Statement::Update(update)
+            if !matches!(update.sources.as_slice(), [tablecraft_sql::select::TableSource::Table(_)]))
+    {
+        Some(
+            sql::local_joined_update_target(parsed.query(), true, &mut query_work, cancelled)
+                .map_err(sql::RecoverableError::Shape)?,
+        )
+    } else {
+        None
+    };
     let table = match kind {
-        Kind::Update => sql::local_batch_update_table(parsed.query(), true)
-            .map_err(sql::RecoverableError::Shape)?,
+        Kind::Update => match joined_update {
+            Some(target) => target.table,
+            None => sql::local_batch_update_table(parsed.query(), true)
+                .map_err(sql::RecoverableError::Shape)?,
+        },
         Kind::Delete => sql::local_delete_table(parsed.query(), true)
             .map_err(sql::RecoverableDeleteError::Shape)?,
         Kind::Insert(_) if select_insert => {
@@ -117,7 +131,37 @@ pub(in crate::editing) fn review(
     let (mut source, resolver) =
         source.with_deferred_database_collation_resolver(&comparison_pool)?;
 
-    let plan = if let Kind::Insert(clock) = kind
+    let plan = if joined_update.is_some() {
+        let editor = {
+            let mut native = native_pool
+                .try_borrow_mut()
+                .map_err(|_| Error::Native(InspectError::Unsupported))?;
+            NativeJournalEditor::new(image, table, &mut native, cancelled)
+                .map_err(sql::RecoverableError::Editor)?
+        };
+        // Read-source callbacks borrow this same native pool. Finish only after
+        // complete joined staging has returned and released those borrows.
+        let staged = sql::prepare_native_joined_update(
+            editor,
+            parsed.query(),
+            &source,
+            &mut query_work,
+            sql::NativeMutationOptions {
+                parameters: &bindings,
+                collation: resolver.default_collation(),
+                resolver: &resolver,
+            },
+            cancelled,
+        )?;
+        let mut native = native_pool
+            .try_borrow_mut()
+            .map_err(|_| Error::Native(InspectError::Unsupported))?;
+        Plan::Update(
+            staged
+                .finish(&mut native, cancelled)
+                .map_err(sql::RecoverableError::Plan)?,
+        )
+    } else if let Kind::Insert(clock) = kind
         && select_insert
     {
         let inserter = {
