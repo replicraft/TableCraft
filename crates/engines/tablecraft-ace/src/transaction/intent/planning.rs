@@ -23,6 +23,7 @@ mod retained_fixed_scalar_rows;
 mod retained_opaque_rows;
 #[cfg(feature = "ace16-create")]
 mod retained_rows;
+#[cfg(feature = "ace16-create")]
 mod retained_wide_value_rows;
 
 use super::{
