@@ -10,9 +10,11 @@ reference denotes an input field or a declared parameter.
 [Microsoft's PARAMETERS reference](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/parameters-declaration-microsoft-access-sql)
 documents bracketed names containing spaces or punctuation. Its
 [parameter-query guide](https://support.microsoft.com/en-US/Access/use-parameters-to-ask-for-input-when-running-a-query)
-describes prompt text in criteria. TableCraft retains explicit typed declarations
+describes prompt text in criteria. The CLI retains explicit typed declarations
 and supplied values; it does not display an input dialog or infer a declaration
-from an unresolved name.
+from an unresolved name. Desktop Run uses the separate opt-in
+[metadata discovery service](../query/VALUE_PARAMETERS.md#explicit-unresolved-name-discovery);
+that does not change CLI declaration requirements or strict library preparation.
 
 ## Parser and binding
 
