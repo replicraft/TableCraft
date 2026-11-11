@@ -20,7 +20,7 @@ use thiserror::Error;
 /// Failure before native make-table publication has been qualified.
 #[derive(Debug, Error)]
 pub enum NativeMakeTableError {
-    /// The statement/source declaration is outside the direct local projection slice.
+    /// The statement/source declaration is outside the qualified local projection slice.
     #[error("native make-table shape is not supported")]
     Shape,
     /// A table or saved query already uses the requested destination name.
@@ -85,13 +85,18 @@ impl PreparedNativeMakeTable {
     }
 }
 
-/// Resolve direct native field shapes and evaluate through a source constructed
+/// Resolve native fields and qualified fixed computed outputs through a source constructed
 /// internally over the same owned immutable image. No external Source or staged
 /// result can be substituted. This does not qualify the source for publication.
 ///
-/// The initial slice admits a single local table and explicit field projections,
-/// aliases, WHERE, selection predicates and direct-field ORDER BY. Groups, computed projections,
-/// wildcards, named/linked sources, external selectors and owner access refuse.
+/// The slice admits one local table, direct native fields and explicitly named
+/// row-local fixed scalar expressions, WHERE, selection predicates and direct-field
+/// ORDER BY. Computed aliases are a current native name qualification, not an
+/// Access language restriction. Computed Text/Decimal declarations, source-expanding
+/// expressions, groups, wildcards, parameters, named/linked sources, external
+/// selectors and owner access refuse. Direct fields keep actual native sizes.
+/// Fixed expression declarations come from complete typed query staging; no native
+/// width, Required policy, primary key or default is inferred from selected rows.
 /// Complete row retention obeys the caller's native/query/snapshot allowances;
 /// this preparation imposes no additional row-count ceiling.
 ///
@@ -188,7 +193,7 @@ fn prepare_with_policy(
     let select = shape::select(&query)?;
     let destination = select.into.as_ref().ok_or(NativeMakeTableError::Shape)?;
     let scope = image.catalog().catalog().scope();
-    let definition = {
+    let (schema, direct_definition) = {
         let mut work = native
             .try_borrow_mut()
             .map_err(|_| InspectError::Unsupported)?;
@@ -215,13 +220,18 @@ fn prepare_with_policy(
             &mut work,
             cancelled,
         )?;
-        let columns = shape::columns(select, &schema, &mut work, cancelled)?;
-        FirstTableDefinition::capture_manual_native(
-            destination.as_str(),
-            &columns,
-            &mut work,
-            cancelled,
-        )?
+        let direct_definition = if shape::preflight(select, &schema, &mut work, cancelled)? {
+            let columns = shape::columns(select, &schema, &mut work, cancelled)?;
+            Some(FirstTableDefinition::capture_manual_native(
+                destination.as_str(),
+                &columns,
+                &mut work,
+                cancelled,
+            )?)
+        } else {
+            None
+        };
+        (schema, direct_definition)
     };
     let staged = {
         let mut source = NativeSource::new_with_shared_budget_and_snapshot_limits(
@@ -254,6 +264,21 @@ fn prepare_with_policy(
                 )?
             }
             None => plan_make_table(query, &source, query_budget, parameters, options)?,
+        }
+    };
+    let definition = match direct_definition {
+        Some(definition) => definition,
+        None => {
+            let mut work = native
+                .try_borrow_mut()
+                .map_err(|_| InspectError::Unsupported)?;
+            let columns = shape::staged_columns(&staged, &schema, &mut work, cancelled)?;
+            FirstTableDefinition::capture_manual_native(
+                staged.destination(),
+                &columns,
+                &mut work,
+                cancelled,
+            )?
         }
     };
     let rows = staged.into_rows();

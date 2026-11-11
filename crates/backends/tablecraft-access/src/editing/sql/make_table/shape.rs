@@ -1,5 +1,7 @@
 //! Closed syntax and native field-size capture; no row inference or property copying.
+mod computed;
 use super::NativeMakeTableError;
+pub(super) use computed::{preflight, staged_columns};
 use tablecraft_ace::{CreateColumn, InspectError, NativeColumn, TableSchema};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_schema::{DecimalConstraints, NameComparison, ScalarType};
@@ -104,31 +106,7 @@ pub(super) fn columns<'a>(
         };
         let source = resolve(field, table, schema, work, cancelled)?;
         let name = alias.as_ref().unwrap_or(&field.name).as_str();
-        let scalar = source.scalar_type().ok_or(NativeMakeTableError::Shape)?;
-        let column = match scalar {
-            ScalarType::Text if source.is_ordinary_short_text() => {
-                CreateColumn::short_text(name, source.storage_length() / size_of::<u16>())?
-            }
-            ScalarType::Decimal => {
-                let (precision, scale) = source
-                    .decimal_parameters()
-                    .ok_or(NativeMakeTableError::Shape)?;
-                let constraints = DecimalConstraints::new(precision, scale)
-                    .map_err(|_| NativeMakeTableError::Shape)?;
-                CreateColumn::decimal(name, constraints)
-            }
-            ScalarType::Boolean
-            | ScalarType::Byte
-            | ScalarType::Int16
-            | ScalarType::Int32
-            | ScalarType::Int64
-            | ScalarType::Currency
-            | ScalarType::Single
-            | ScalarType::Double
-            | ScalarType::DateTime
-            | ScalarType::Guid => CreateColumn::new(name, scalar),
-            _ => return Err(NativeMakeTableError::Shape),
-        };
+        let column = native_column(name, source)?;
         columns.push(column);
     }
     for key in &select.order_by {
@@ -138,4 +116,36 @@ pub(super) fn columns<'a>(
         resolve(reference, table, schema, work, cancelled)?;
     }
     Ok(columns)
+}
+
+fn native_column<'a>(
+    name: &'a str,
+    source: &NativeColumn,
+) -> Result<CreateColumn<'a>, NativeMakeTableError> {
+    let scalar = source.scalar_type().ok_or(NativeMakeTableError::Shape)?;
+    let column = match scalar {
+        ScalarType::Text if source.is_ordinary_short_text() => {
+            CreateColumn::short_text(name, source.storage_length() / size_of::<u16>())?
+        }
+        ScalarType::Decimal => {
+            let (precision, scale) = source
+                .decimal_parameters()
+                .ok_or(NativeMakeTableError::Shape)?;
+            let constraints = DecimalConstraints::new(precision, scale)
+                .map_err(|_| NativeMakeTableError::Shape)?;
+            CreateColumn::decimal(name, constraints)
+        }
+        ScalarType::Boolean
+        | ScalarType::Byte
+        | ScalarType::Int16
+        | ScalarType::Int32
+        | ScalarType::Int64
+        | ScalarType::Currency
+        | ScalarType::Single
+        | ScalarType::Double
+        | ScalarType::DateTime
+        | ScalarType::Guid => CreateColumn::new(name, scalar),
+        _ => return Err(NativeMakeTableError::Shape),
+    };
+    Ok(column)
 }

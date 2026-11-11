@@ -28,7 +28,7 @@ thiserror.workspace = true
 tablecraft-model.workspace = true
 tablecraft-schema.workspace = true
 tablecraft-query.workspace = true
-tablecraft-expressions.workspace = true
+tablecraft-expressions = { workspace = true, features = ["sql"] }
 tablecraft-sql.workspace = true
 
 [dev-dependencies]

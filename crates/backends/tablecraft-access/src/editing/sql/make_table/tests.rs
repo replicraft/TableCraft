@@ -1,4 +1,5 @@
 //! Independent raw source images; preparation cannot accept foreign result data.
+mod computed;
 mod selection;
 
 use super::*;

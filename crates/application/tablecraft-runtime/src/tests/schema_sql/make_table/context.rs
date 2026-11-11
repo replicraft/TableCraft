@@ -12,7 +12,7 @@ use tablecraft_testkit::support::expressions::clock::CountingClock;
 fn make_table_date_context_is_lazy_source_bound_and_not_reexecuted_after_review() {
     let seed = fields::source(fields::Case::FirstNumber).bytes;
     let before = populated::numbers(&seed, "Items", &[None, Some(2), Some(5), Some(9)]);
-    let expected = populated::numbers(&before, "Archive", &[Some(5), Some(9)]);
+    let expected = populated::numbers(&before, "Archive", &[Some(2031), Some(2035)]);
     let directory = tempfile::tempdir().unwrap();
     let path = directory.path().join("clock.accdb");
     fs::write(&path, &before).unwrap();
@@ -26,7 +26,7 @@ fn make_table_date_context_is_lazy_source_bound_and_not_reexecuted_after_review(
     else {
         panic!("expected original document");
     };
-    let sql = "SELECT CopiedScore INTO Archive FROM Items WHERE Date()=#11/7/2026# AND CopiedScore>=5 ORDER BY CopiedScore";
+    let sql = "SELECT CLng(Year(Date())+i.CopiedScore) AS CopiedScore INTO Archive FROM Items AS i WHERE Date()=#11/7/2026# AND i.CopiedScore>=5 ORDER BY i.CopiedScore";
     let stale = inspect(&worker, document_revision, sql);
     assert_eq!(clock.calls(), 0);
     let Response::Opened {
