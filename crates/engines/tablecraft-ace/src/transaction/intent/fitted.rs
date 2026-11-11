@@ -46,3 +46,6 @@ mod fixed_scalar_tests;
 
 #[cfg(test)]
 mod wide_value_tests;
+
+#[cfg(test)]
+mod boolean_materialization_tests;

@@ -9,11 +9,16 @@ use tablecraft_core::{limits::ResourceBudget, values::Value};
 #[cfg(feature = "ace16-create")]
 mod recovery;
 
-fn budget() -> ResourceBudget {
+pub(super) fn budget() -> ResourceBudget {
     ResourceBudget::new(512 * 1024 * 1024, 100_000, 500_000_000)
 }
 
-fn groups(column: &str, row: usize, expected: bool, value: Value) -> Vec<NativeFittedIntentGroup> {
+pub(super) fn groups(
+    column: &str,
+    row: usize,
+    expected: bool,
+    value: Value,
+) -> Vec<NativeFittedIntentGroup> {
     vec![
         NativeFittedIntentGroup::new_retained(
             column,
@@ -29,7 +34,7 @@ fn groups(column: &str, row: usize, expected: bool, value: Value) -> Vec<NativeF
     ]
 }
 
-fn literal(
+pub(super) fn literal(
     before: &[u8],
     table: &str,
     column: &str,
