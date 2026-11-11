@@ -7,6 +7,6 @@ pub use collection::MultivalueList;
 pub use projection::{ProjectedRow, ProjectionError, validate_projection};
 
 pub use recordset::{
-    MemberAvailability, OwnedRecordset, RecordsetError, RecordsetPresence, RecordsetSchema,
-    StoredCell,
+    MemberAvailability, OwnedRecordset, RecordsetError, RecordsetKind, RecordsetPresence,
+    RecordsetSchema, StoredCell,
 };

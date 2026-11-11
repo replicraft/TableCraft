@@ -331,3 +331,34 @@ fn retained_footprints_include_spare_buffers_without_charging_shared_schema_twic
     assert!(spare_value.retained_bytes() > shared_schema_value.retained_bytes() + 8000);
     assert_eq!(spare_value.rows(), shared_schema_value.rows());
 }
+
+#[test]
+fn source_declared_semantics_are_retained_without_changing_member_validation() {
+    assert_eq!(schema().kind(), RecordsetKind::Rows);
+    for kind in [
+        RecordsetKind::Rows,
+        RecordsetKind::Attachments,
+        RecordsetKind::VersionHistory,
+    ] {
+        let declaration = RecordsetSchema::with_kind(
+            vec![Column::new("Value".into(), ScalarType::Text, true).unwrap()],
+            vec![MemberAvailability::Available],
+            NameComparison::Exact,
+            kind,
+            &mut budget(),
+            &|| false,
+        )
+        .unwrap();
+        let records = OwnedRecordset::new(
+            Arc::new(declaration),
+            Vec::new(),
+            RecordsetPresence::Assigned,
+            &mut budget(),
+            &|| false,
+        )
+        .unwrap();
+        assert_eq!(records.schema().kind(), kind);
+        assert!(records.is_empty());
+        assert_eq!(records.presence(), RecordsetPresence::Assigned);
+    }
+}

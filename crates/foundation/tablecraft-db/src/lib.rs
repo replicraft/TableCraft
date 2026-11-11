@@ -16,5 +16,6 @@ pub use error::SnapshotError;
 pub use snapshot::{RowHandle, Snapshot};
 pub use views::{
     MemberAvailability, MultivalueList, OwnedRecordset, ProjectedRow, ProjectionError,
-    RecordsetError, RecordsetPresence, RecordsetSchema, StoredCell, validate_projection,
+    RecordsetError, RecordsetKind, RecordsetPresence, RecordsetSchema, StoredCell,
+    validate_projection,
 };

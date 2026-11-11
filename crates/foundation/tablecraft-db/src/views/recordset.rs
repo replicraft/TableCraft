@@ -1,7 +1,7 @@
 //! Owned read-only child records retain unavailable members without inventing NULL.
 mod schema;
 
-pub use schema::{MemberAvailability, RecordsetSchema};
+pub use schema::{MemberAvailability, RecordsetKind, RecordsetSchema};
 
 use std::sync::Arc;
 use tablecraft_core::{
