@@ -1,0 +1,120 @@
+{
+  "date": "2026-11-11",
+  "platform": "macOS 14.7.2 ARM64",
+  "source_commits": [
+    "01b632afe",
+    "920bd529b",
+    "7178d2b44"
+  ],
+  "scope": "Native TCAC0014 original requests, distinct recoverable scalar ADD plans and checked V3 cold recovery. No application14 capability is qualified by this native checkpoint.",
+  "qualification": "Independent literal wire framing and raw complete-image expectations; local native implementation checks, without Microsoft Access execution or a native application window.",
+  "contract": [
+    "Original data retains all twelve scalar shapes, exact Text native UTF-16 width and Decimal precision/scale, absent optional policies, full BEFORE binding and source-resolved native identities.",
+    "A sealed candidate moves the actual declaration and immutable proved effect into the plan without copying its AFTER payload. Source class is derived from positive native metadata and compared again after fresh construction.",
+    "Only checked V3 preparation and reconstruction exist. No final descriptor bytes, SQL reevaluation, default execution, older decoder fallback or caller-issued source authority is accepted.",
+    "Constructive APIs require journal plus ace16-create; journal-only builds expose typed failures without a reconstruction claim.",
+    "All twelve declarations across both source classes exercise pending, partially applied and committed journals, then confirm settled targets without additional writes.",
+    "Canonical source-class, identity and declaration substitutions, whole AFTER changes, stale images, legacy protocols, allocation/work exhaustion and cancellation refuse."
+  ],
+  "initial_batch": [
+    {
+      "job": "native",
+      "command": "cargo test -p tablecraft-ace --lib --all-features --offline --locked -- table::mutation::add_field transaction::intent::unadorned_field_addition transaction::intent::declared_field_addition transaction::intent::field_addition",
+      "returncode": 101,
+      "seconds": 156.59,
+      "log": {
+        "path": ".cache/ace-sql-unadorned-original-native-20261111.log",
+        "sha256": "bbc784d0ce354f272448275d1cdd5e0ec4eda163d9a7508c6003b7992b068799"
+      }
+    },
+    {
+      "job": "strict",
+      "command": "cargo clippy -p tablecraft-ace -p tablecraft-testkit --all-targets --all-features --offline --locked -- -D warnings",
+      "returncode": 0,
+      "seconds": 81.98,
+      "log": {
+        "path": ".cache/ace-sql-unadorned-original-strict-20261111.log",
+        "sha256": "2b517d54dc050011dd3b345f09770313070cd378e1dea3898a88e869cba944af"
+      }
+    },
+    {
+      "job": "creation-only",
+      "command": "cargo check -p tablecraft-ace --lib --no-default-features --features ace16-create --offline --locked",
+      "returncode": 0,
+      "seconds": 2.56,
+      "log": {
+        "path": ".cache/ace-sql-unadorned-original-creation-only-20261111.log",
+        "sha256": "37385fb6f3fe92c66ea216c2c80857d0526e23aa2e1a9d8e797b6d50ca53b299"
+      }
+    },
+    {
+      "job": "journal-only",
+      "command": "cargo clippy -p tablecraft-ace --lib --no-default-features --features journal --offline --locked -- -D warnings",
+      "returncode": 0,
+      "seconds": 9.44,
+      "log": {
+        "path": ".cache/ace-sql-unadorned-original-journal-only-20261111.log",
+        "sha256": "4641e1576fc48112ce97c398a1570470c978bad5cf4c5c58527945acff14a962"
+      }
+    },
+    {
+      "job": "minimal",
+      "command": "cargo check -p tablecraft-ace --lib --no-default-features --offline --locked",
+      "returncode": 0,
+      "seconds": 1.97,
+      "log": {
+        "path": ".cache/ace-sql-unadorned-original-minimal-20261111.log",
+        "sha256": "237d282d33d330a9be5f01901a6b2c8c652b39020cfe56b67c495b2dabd592d6"
+      }
+    },
+    {
+      "job": "rustdoc",
+      "command": "cargo doc -p tablecraft-ace --no-deps --all-features --offline --locked",
+      "returncode": 0,
+      "seconds": 13.95,
+      "log": {
+        "path": ".cache/ace-sql-unadorned-original-rustdoc-20261111.log",
+        "sha256": "ad2a24156ff8a24b410130d6b4783c4de27dc4483fb44e6577eca164f9c46e51"
+      }
+    }
+  ],
+  "initial_native_result": {
+    "passed": 72,
+    "failed": 1,
+    "ignored": 0
+  },
+  "repairs": [
+    {
+      "commit": "920bd529b",
+      "reason": "Retain the validation-only must-use declaration result; subsequent strict feature and rustdoc checks pass."
+    },
+    {
+      "commit": "7178d2b44",
+      "reason": "The intended canonical substitution test used precision28 xor1, producing invalid29 before reconstruction. Use valid27 and another nonzero definition page, retain malformed-frame tests and add offset context. Production validation was not relaxed."
+    }
+  ],
+  "focused_repair_check": {
+    "command": "cargo test -p tablecraft-ace --lib --all-features --offline --locked -- transaction::intent::unadorned_field_addition",
+    "passed": 7,
+    "failed": 0,
+    "ignored": 0,
+    "returncode": 0,
+    "log": {
+      "path": ".cache/ace-sql-unadorned-original-repair-native-20261111.log",
+      "sha256": "ad13e828f61623f8f9c7990b2c00074aad1c729b1912416f20e6c69112495e48"
+    }
+  },
+  "other_evidence": "../queries/unadorned-scalar-add-candidates-2026-11-11.json",
+  "guards": {
+    "rust_format": "917 target roots in 4 bounded batches",
+    "rust_layout": "19 composition-only crate roots",
+    "dependency_boundaries": "22 packages",
+    "documentation_links": "9358 local targets, zero missing before this receipt"
+  },
+  "limits": [
+    "No native Windows/Access comparison.",
+    "No Runtime14 SQL review or GUI14 save acceptance is supplied by these engine tests.",
+    "Source admission remains the explicitly qualified retained scalar/index/program/dependency language."
+  ],
+  "counting": "The 73-test initial scope includes the earlier66 regression scope and seven new original tests. The focused7 repair rerun is overlapping evidence; do not sum runs as unique cases or conformance percentages."
+}

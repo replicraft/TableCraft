@@ -65,12 +65,39 @@ The [native candidate checkpoint](../../../tests/results/queries/unadorned-scala
 records the complete-image type matrix, existing-index preservation, historical
 counter/next-INSERT journey and the selected 66-test regression batch.
 
-This candidate has no conversion into the Currency13 original, native save plan
-or application review. It therefore does not expand SQL View execution beyond
-the Currency13 profile above. Historical missing Boolean reads False; other
+This candidate cannot become a Currency13 original. Its distinct native
+persistence owner is described below; normal SQL View execution still uses the
+Currency13 profile above. Historical missing Boolean reads False; other
 historical cells read NULL. This observation does not invent an omitted Boolean
 default or qualify subsequent row edits. Those operations need their own native
 admission and connected acceptance.
+
+### Original request and recovery
+
+`TCAC0014` binds the exact unadorned declaration, complete original image digest,
+resolved table spelling and native identities. It retains native Text UTF-16 width
+and Decimal precision/scale rather than reconstructing them from display labels.
+Its source-class witness is selected by the sealed native source proof and checked
+again during fresh reconstruction; changing the encoded witness grants no source
+authority. Optional policies and compression remain absent. Currency13 and gallery
+request languages retain their separate declarations and admission.
+
+`plan_recoverable_retained_unadorned_field_addition` consumes the declaration and
+proved candidate into a distinct plan. The immutable AFTER allocation can be
+shared with the save witness without copying the image. Requalification retains
+separate cumulative native and comparison pools, repeats full original-source
+admission and compares the complete reconstructed replacement.
+
+Preparation and cold recovery use only the existing checked V3 owner. Recovery
+reconstructs the captured declaration and compares both whole images before
+recovering or confirming the same journal session. It never reruns SQL or defaults,
+retries an older action decoder, or treats equal image bytes as a journal state.
+The constructive API requires `journal` and `ace16-create`; journal-only builds
+expose the typed error without claiming source reconstruction.
+The [original-request checkpoint](../../../tests/results/queries/unadorned-scalar-add-originals-2026-11-11.json)
+records the literal framing and complete cold-recovery matrix, including the
+canonical-substitution test repair. These engine tests do not qualify a new
+application SQL review route.
 
 ## Typed retained declarations
 
