@@ -1,6 +1,7 @@
 //! DEFAULT annotations retain syntax without selecting a provider or evaluating it.
 use crate::{
-    ParseError, ParseErrorKind, ParseLimits, SourceLocation, parse_expression_strict,
+    ParseError, ParseLimits,
+    parser::parse_default_word,
     select::{Expression, Name},
 };
 use std::fmt::{self, Display, Formatter};
@@ -31,29 +32,18 @@ impl Display for ColumnDefault {
 pub struct BareDefaultWord(Name);
 
 impl BareDefaultWord {
-    /// Own exactly one unquoted word using the parser's actual lexical/name rules.
+    /// Own exactly one unquoted word using the parser's actual lexical rules.
     /// Reserved literal words such as NULL/TRUE/FALSE belong to expression syntax.
     ///
     /// # Errors
     /// Refuses any other expression or token sequence, and preserves the caller's
-    /// byte/token/depth limits and strict parser diagnostics.
+    /// byte/token/depth limits and lexical diagnostics.
     pub fn new(value: &str, limits: ParseLimits) -> Result<Self, ParseError> {
-        match parse_expression_strict(value, limits)? {
-            Expression::Field(field)
-                if field.qualifier.is_none() && field.name.as_str() == value =>
-            {
-                Ok(Self(field.name))
-            }
-            _ => Err(ParseError {
-                kind: ParseErrorKind::Syntax,
-                message: "default word requires one unquoted identifier token",
-                location: SourceLocation { line: 1, column: 1 },
-            }),
-        }
+        parse_default_word(value, limits).map(Self)
     }
 
-    // The declaration parser has already proved one unquoted token and an
-    // unqualified field expression. Moving that owner avoids parsing/copying it twice.
+    // The declaration parser has already proved one unquoted token with its
+    // column-annotation boundary. Moving that owner avoids parsing/copying it twice.
     pub(crate) fn from_token(name: Name) -> Self {
         Self(name)
     }

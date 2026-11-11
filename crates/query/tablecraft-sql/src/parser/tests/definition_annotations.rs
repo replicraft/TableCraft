@@ -157,10 +157,24 @@ fn declaration_expressions_share_original_input_token_depth_and_recursion_guards
             ParseErrorKind::Limit
         );
     }
+    let folded = table(&format!(
+        "CREATE TABLE Samples (Amount LONG DEFAULT {}1)",
+        "- ".repeat(40)
+    ));
+    let TableElement::Column(column) = &folded.elements[0] else {
+        panic!("column")
+    };
+    assert!(
+        matches!(&column.default_value, Some(ColumnDefault::Expression(value)) if value.as_ref() == &Expression::Integer(1))
+    );
     for sql in [
         format!(
             "CREATE TABLE Samples (Amount LONG DEFAULT {}1)",
-            "- ".repeat(40)
+            "- ".repeat(150)
+        ),
+        format!(
+            "CREATE TABLE Samples (Active BIT DEFAULT {}True)",
+            "NOT ".repeat(40)
         ),
         format!(
             "ALTER TABLE Samples ADD CONSTRAINT AmountRule CHECK ({}Amount>0)",
@@ -199,6 +213,7 @@ fn constructed_bare_default_words_cannot_inject_or_change_expression_class() {
             "{value}"
         );
     }
+    assert!(parse_query("SELECT Unknown FROM Samples", ParseLimits::default()).is_err());
     let word = BareDefaultWord::new("UnKnOwN", ParseLimits::default()).unwrap();
     assert_eq!(ColumnDefault::BareWord(word).to_string(), "UnKnOwN");
     for limits in [

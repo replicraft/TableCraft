@@ -127,8 +127,10 @@ converted to a stored default by parsing. The original source preserves exact
 quoting/comments; normalized expression output retains its existing canonical
 quoting rules. Provider-specific interpretation of those spellings is separate.
 
-`BareDefaultWord::new` validates an actual single unquoted word through the strict
-expression parser under caller limits. It rejects delimiters, comments,
+`BareDefaultWord::new` validates an actual single unquoted word through the
+bounded tokenizer under caller limits, requiring exact input/token spelling.
+Bare default words can include reserved names such as `Unknown` without changing
+ordinary identifier policy; NULL/TRUE/FALSE still belong to expression syntax. It rejects delimiters, comments,
 qualifiers, operators, additional SQL, whitespace surrounding the token and
 literal/function expressions. Its field is private: a general `Name`, which can
 contain quoted-identifier punctuation, cannot be supplied to raw default output.
