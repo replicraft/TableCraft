@@ -34,6 +34,7 @@ const FIELD_RENAME_FAMILY: &[u8; 4] = b"TCFR";
 const FIELD_DROP_FAMILY: &[u8; 4] = b"TCFD";
 const TABLE_DROP_FAMILY: &[u8; 4] = b"TCTD";
 const POPULATED_TABLE_FAMILY: &[u8; 4] = b"TCPT";
+const INDEX_CREATION_FAMILY: &[u8; 4] = b"TCIC";
 
 #[cfg(all(
     test,
@@ -44,6 +45,9 @@ mod non_tail_tests;
 
 #[cfg(all(test, any(target_os = "macos", target_os = "linux", windows)))]
 mod keyless_tests;
+
+#[cfg(all(test, not(feature = "ace16-create")))]
+mod index_creation_tests;
 
 #[cfg(all(test, not(feature = "ace16-create")))]
 mod populated_tests;
@@ -424,6 +428,14 @@ impl MutationIntent {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, Cause> {
+        if raw.starts_with(INDEX_CREATION_FAMILY) {
+            #[cfg(feature = "ace16-create")]
+            return NativeIndexCreateIntent::decode(raw, budget, cancelled)
+                .map(Self::IndexCreation)
+                .map_err(Cause::IndexCreationIntent);
+            #[cfg(not(feature = "ace16-create"))]
+            return Err(Cause::UnsupportedSource);
+        }
         if raw.starts_with(POPULATED_TABLE_FAMILY) {
             #[cfg(feature = "ace16-create")]
             return NativePopulatedAddTableIntent::decode(raw, budget, cancelled)

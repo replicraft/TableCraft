@@ -215,3 +215,26 @@ fn normal_index_cold_pending_committed_and_settled_keep_exact_v3_schema_only_rec
         }
     }
 }
+
+#[test]
+fn index_creation_dispatch_keeps_its_family_and_unknown_versions_terminal() {
+    use crate::editing::offline::plan::MutationIntent;
+
+    let source = raw::source(Population::Empty, false);
+    let plan = reviewed(&source);
+    let encoded = plan.intent().encode(&mut budget(), &|| false).unwrap();
+    assert!(matches!(
+        MutationIntent::decode(&encoded, &mut budget(), &|| false),
+        Ok(MutationIntent::IndexCreation(_))
+    ));
+    for raw in [
+        b"TCIC0001".as_slice(),
+        b"TCIC0002".as_slice(),
+        b"TCIC".as_slice(),
+    ] {
+        assert!(matches!(
+            MutationIntent::decode(raw, &mut budget(), &|| false),
+            Err(Cause::IndexCreationIntent(_))
+        ));
+    }
+}
