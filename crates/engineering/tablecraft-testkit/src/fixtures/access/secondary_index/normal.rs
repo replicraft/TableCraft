@@ -1,6 +1,7 @@
 //! Normal secondary-index images over genuine retained sources; no engine codecs.
 mod definition;
 pub mod dropping;
+pub mod history;
 mod tree;
 
 use crate::fixtures::access::{
@@ -170,6 +171,57 @@ fn finish(
     rows: Vec<Row>,
     descending: bool,
 ) -> Source {
+    let logical = u32::from_le_bytes(
+        before[owner as usize * PAGE + 47..owner as usize * PAGE + 51]
+            .try_into()
+            .unwrap(),
+    );
+    finish_named(
+        before,
+        owner,
+        Target {
+            table,
+            column,
+            native_number,
+            descending,
+        },
+        rows,
+        Identity {
+            index_name: "ScoreLookup",
+            logical,
+        },
+    )
+}
+
+struct Target {
+    table: &'static str,
+    column: &'static str,
+    native_number: u16,
+    descending: bool,
+}
+
+struct Identity {
+    index_name: &'static str,
+    logical: u32,
+}
+
+fn finish_named(
+    before: Vec<u8>,
+    owner: u32,
+    target: Target,
+    rows: Vec<Row>,
+    identity: Identity,
+) -> Source {
+    let Target {
+        table,
+        column,
+        native_number,
+        descending,
+    } = target;
+    let Identity {
+        index_name,
+        logical,
+    } = identity;
     let first = (before.len() / PAGE) as u32;
     let tree = tree::build(&rows, first, owner, descending);
     let map_host = first + tree.pages.len() as u32;
@@ -192,18 +244,21 @@ fn finish(
         .map(|row| row.score)
         .collect::<BTreeSet<_>>()
         .len();
-    let index_name = "ScoreLookup";
-    let declaration = definition::append(
-        &before[owner as usize * PAGE..(owner as usize + 1) * PAGE],
-        definition::NewIndex {
-            name: index_name,
-            column: native_number,
-            descending,
-            usage: map_host << 8,
-            root: tree.root,
-            distinct: distinct as u32,
-        },
-    );
+    let declaration_request = definition::NewIndex {
+        name: index_name,
+        column: native_number,
+        descending,
+        usage: map_host << 8,
+        root: tree.root,
+        distinct: distinct as u32,
+    };
+    let raw = &before[owner as usize * PAGE..(owner as usize + 1) * PAGE];
+    let count = u32::from_le_bytes(raw[47..51].try_into().unwrap());
+    let declaration = if logical == count {
+        definition::append(raw, declaration_request)
+    } else {
+        definition::append_with_logical(raw, declaration_request, logical)
+    };
     // NO_CLONE: The independent AFTER image coexists with its immutable SOURCE;
     // neither is a production plan or shares writable payload with the caller.
     let mut expected = before.to_vec();

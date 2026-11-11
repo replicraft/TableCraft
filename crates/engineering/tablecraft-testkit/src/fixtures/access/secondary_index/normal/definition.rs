@@ -19,6 +19,14 @@ pub(super) struct NewIndex<'a> {
 }
 
 pub(super) fn append(original: &[u8], request: NewIndex<'_>) -> Vec<u8> {
+    append_with_logical(original, request, long(original, 47) as u32)
+}
+
+pub(super) fn append_with_logical(
+    original: &[u8],
+    request: NewIndex<'_>,
+    logical_number: u32,
+) -> Vec<u8> {
     let length = long(original, 8);
     let logical = long(original, 47);
     let physical = long(original, 51);
@@ -58,7 +66,7 @@ pub(super) fn append(original: &[u8], request: NewIndex<'_>) -> Vec<u8> {
     frame.extend(&original[logical_start..names_start]);
     let mut alias = [0; 28];
     put32(&mut alias, 0, 1625);
-    put32(&mut alias, 4, logical as u32);
+    put32(&mut alias, 4, logical_number);
     put32(&mut alias, 8, physical as u32);
     put32(&mut alias, 13, u32::MAX);
     frame.extend(alias);
