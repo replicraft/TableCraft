@@ -1,4 +1,5 @@
 //! Normal SQL Run must expose already-qualified attachment metadata members.
+mod bare;
 use super::{opened_with_source, run, run_until_terminal};
 use egui::{Key, accesskit::Role};
 use egui_kittest::kittest::{NodeT, Queryable};
