@@ -268,6 +268,9 @@ fn typed_resource_failure(error: &(dyn StdError + 'static)) -> Option<SaveFailur
             #[cfg(feature = "ace16-create")]
             Cause::FieldAdditionIntent(error) => field_addition::intent(error),
             Cause::CurrentFieldAdditionIntent(error) => current_field_addition::intent(error),
+            Cause::RetainedTypedFieldAdditionIntent(error) => {
+                current_field_addition::retained_typed(error)
+            }
             Cause::FieldRenameIntent(error) => field_rename::intent(error),
             Cause::FieldDropIntent(error) => field_drop::intent(error),
             #[cfg(feature = "ace16-create")]
@@ -368,6 +371,11 @@ fn typed_resource_failure(error: &(dyn StdError + 'static)) -> Option<SaveFailur
     #[cfg(feature = "ace16-create")]
     if let Some(error) = error.downcast_ref::<FieldAdditionAfterOffHistoryIntentError>() {
         return field_addition_after_off_history::intent(error);
+    }
+    if let Some(error) =
+        error.downcast_ref::<tablecraft_ace::RetainedTypedFieldAdditionIntentError>()
+    {
+        return current_field_addition::retained_typed(error);
     }
     if let Some(error) = error.downcast_ref::<CurrentFieldAdditionIntentError>() {
         return current_field_addition::intent(error);

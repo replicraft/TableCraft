@@ -93,6 +93,9 @@ pub enum Error {
     #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
     #[error(transparent)]
     CurrentFieldAddition(#[from] CurrentFieldAdditionIntentError),
+    #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+    #[error(transparent)]
+    RetainedTypedFieldAddition(#[from] tablecraft_ace::RetainedTypedFieldAdditionIntentError),
     /// Selected native field source or readonly capacity qualification failed.
     #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
     #[error(transparent)]

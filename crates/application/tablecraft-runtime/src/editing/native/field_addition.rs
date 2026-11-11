@@ -1,5 +1,6 @@
 //! Exact field declaration review; select source purpose before any qualification.
 pub(in crate::editing) mod availability;
+mod declaration;
 pub(in crate::editing) mod plan;
 use crate::{
     Error, Response,
@@ -27,8 +28,9 @@ pub(in crate::editing) struct State {
     pub(in crate::editing) valid: Arc<AtomicBool>,
 }
 
-fn native_target(declaration: FieldAdditionDeclaration) -> FieldAdditionTarget {
-    match declaration {
+fn native_target(declaration: FieldAdditionDeclaration) -> Result<FieldAdditionTarget, Error> {
+    Ok(match declaration {
+        FieldAdditionDeclaration::Typed(_) => return Err(EditError::InvalidInput.into()),
         FieldAdditionDeclaration::NumberLongZero => FieldAdditionTarget::NumberLongZero,
         FieldAdditionDeclaration::ShortText {
             max_utf16_units,
@@ -37,7 +39,7 @@ fn native_target(declaration: FieldAdditionDeclaration) -> FieldAdditionTarget {
             max_utf16_units: usize::from(max_utf16_units.get()),
             unicode_compression,
         },
-    }
+    })
 }
 
 pub(in crate::editing) fn review(
@@ -62,88 +64,97 @@ pub(in crate::editing) fn review(
         &mut work,
         cancelled,
     )?;
-    let target = native_target(declaration);
-    let purpose = image.field_addition_source_purpose(table, target, &mut work, cancelled)?;
-    let plan = match purpose {
-        FieldAdditionSourcePurpose::RetainedNumber => Plan::Current(Box::new(
-            image.plan_recoverable_retained_number_field_addition(
-                table, column, &mut work, cancelled,
+    let plan = if let FieldAdditionDeclaration::Typed(typed) = declaration {
+        let definition = declaration::capture(column, typed, &mut work, cancelled)?;
+        Plan::RetainedTyped(Box::new(
+            image.plan_recoverable_retained_typed_field_addition(
+                table, definition, &mut work, cancelled,
             )?,
-        )),
-        FieldAdditionSourcePurpose::RetainedShortText => {
-            let FieldAdditionTarget::ShortText {
-                max_utf16_units,
-                unicode_compression,
-            } = target
-            else {
-                return Err(EditError::InvalidInput.into());
-            };
-            Plan::Current(Box::new(
-                image.plan_recoverable_retained_short_text_field_addition(
-                    table,
-                    column,
+        ))
+    } else {
+        let target = native_target(declaration)?;
+        let purpose = image.field_addition_source_purpose(table, target, &mut work, cancelled)?;
+        match purpose {
+            FieldAdditionSourcePurpose::RetainedNumber => Plan::Current(Box::new(
+                image.plan_recoverable_retained_number_field_addition(
+                    table, column, &mut work, cancelled,
+                )?,
+            )),
+            FieldAdditionSourcePurpose::RetainedShortText => {
+                let FieldAdditionTarget::ShortText {
                     max_utf16_units,
                     unicode_compression,
-                    &mut work,
-                    cancelled,
+                } = target
+                else {
+                    return Err(EditError::InvalidInput.into());
+                };
+                Plan::Current(Box::new(
+                    image.plan_recoverable_retained_short_text_field_addition(
+                        table,
+                        column,
+                        max_utf16_units,
+                        unicode_compression,
+                        &mut work,
+                        cancelled,
+                    )?,
+                ))
+            }
+            FieldAdditionSourcePurpose::CurrentNumber => Plan::Current(Box::new(
+                image.plan_recoverable_current_number_field_addition(
+                    table, column, &mut work, cancelled,
                 )?,
-            ))
-        }
-        FieldAdditionSourcePurpose::CurrentNumber => Plan::Current(Box::new(
-            image.plan_recoverable_current_number_field_addition(
-                table, column, &mut work, cancelled,
-            )?,
-        )),
-        FieldAdditionSourcePurpose::CurrentShortText => {
-            let FieldAdditionTarget::ShortText {
-                max_utf16_units,
-                unicode_compression,
-            } = target
-            else {
-                return Err(EditError::InvalidInput.into());
-            };
-            Plan::Current(Box::new(
-                image.plan_recoverable_current_short_text_field_addition(
-                    table,
-                    column,
+            )),
+            FieldAdditionSourcePurpose::CurrentShortText => {
+                let FieldAdditionTarget::ShortText {
                     max_utf16_units,
                     unicode_compression,
-                    &mut work,
-                    cancelled,
-                )?,
-            ))
-        }
-        FieldAdditionSourcePurpose::Created(CreatedFieldAdditionSourcePurpose::FirstNumber) => {
-            Plan::First(
-                image.plan_recoverable_created_add_default_zero_int32_column(
-                    table,
-                    column,
-                    CreatedDefaultZeroColumnRequired::StoredFalse,
-                    &mut work,
-                    cancelled,
-                )?,
-            )
-        }
-        FieldAdditionSourcePurpose::Created(CreatedFieldAdditionSourcePurpose::RepeatedNumber) => {
-            Plan::Repeated(image.plan_recoverable_repeated_default_zero_int32_column(
+                } = target
+                else {
+                    return Err(EditError::InvalidInput.into());
+                };
+                Plan::Current(Box::new(
+                    image.plan_recoverable_current_short_text_field_addition(
+                        table,
+                        column,
+                        max_utf16_units,
+                        unicode_compression,
+                        &mut work,
+                        cancelled,
+                    )?,
+                ))
+            }
+            FieldAdditionSourcePurpose::Created(CreatedFieldAdditionSourcePurpose::FirstNumber) => {
+                Plan::First(
+                    image.plan_recoverable_created_add_default_zero_int32_column(
+                        table,
+                        column,
+                        CreatedDefaultZeroColumnRequired::StoredFalse,
+                        &mut work,
+                        cancelled,
+                    )?,
+                )
+            }
+            FieldAdditionSourcePurpose::Created(
+                CreatedFieldAdditionSourcePurpose::RepeatedNumber,
+            ) => Plan::Repeated(image.plan_recoverable_repeated_default_zero_int32_column(
                 table, column, &mut work, cancelled,
-            )?)
+            )?),
+            FieldAdditionSourcePurpose::Created(CreatedFieldAdditionSourcePurpose::TypedField) => {
+                Plan::Typed(image.plan_recoverable_created_field_addition(
+                    table, column, target, &mut work, cancelled,
+                )?)
+            }
+            FieldAdditionSourcePurpose::AfterExplicitOff => {
+                Plan::AfterOff(image.plan_recoverable_created_field_addition_after_off(
+                    table, column, target, &mut work, cancelled,
+                )?)
+            }
+            FieldAdditionSourcePurpose::AfterExplicitOffHistory => Plan::AfterOffHistory(
+                image.plan_recoverable_created_field_addition_after_off_history(
+                    table, column, target, &mut work, cancelled,
+                )?,
+            ),
         }
-        FieldAdditionSourcePurpose::Created(CreatedFieldAdditionSourcePurpose::TypedField) => {
-            Plan::Typed(image.plan_recoverable_created_field_addition(
-                table, column, target, &mut work, cancelled,
-            )?)
-        }
-        FieldAdditionSourcePurpose::AfterExplicitOff => {
-            Plan::AfterOff(image.plan_recoverable_created_field_addition_after_off(
-                table, column, target, &mut work, cancelled,
-            )?)
-        }
-        FieldAdditionSourcePurpose::AfterExplicitOffHistory => Plan::AfterOffHistory(
-            image.plan_recoverable_created_field_addition_after_off_history(
-                table, column, target, &mut work, cancelled,
-            )?,
-        ),
     };
     let captured = plan.captured_declaration()?;
     if captured != declaration {

@@ -81,6 +81,13 @@ fn apply_plan(
         Err(error) => return failed_open(&error),
     };
     let staged = match plan {
+        Plan::RetainedTyped(plan) => session
+            .stage_reviewed_retained_typed_field_addition_with_budgets(
+                *plan,
+                &mut native,
+                &mut proof,
+                &cancel,
+            ),
         Plan::First(plan) => session.stage_reviewed_default_zero_add_column_with_budgets(
             plan,
             &mut native,

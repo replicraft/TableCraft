@@ -4,10 +4,12 @@ use tablecraft_ace::{
     FieldAdditionTarget, RecoverableCurrentFieldAdditionPlan, RecoverableDefaultZeroAddColumnPlan,
     RecoverableFieldAdditionAfterOffHistoryPlan, RecoverableFieldAdditionAfterOffPlan,
     RecoverableFieldAdditionPlan, RecoverableRepeatedDefaultZeroAddColumnPlan,
+    RecoverableRetainedTypedFieldAdditionPlan,
 };
 use tablecraft_builders::table::FieldAdditionDeclaration;
 
 pub(in crate::editing) enum Plan {
+    RetainedTyped(Box<RecoverableRetainedTypedFieldAdditionPlan>),
     First(RecoverableDefaultZeroAddColumnPlan),
     Repeated(RecoverableRepeatedDefaultZeroAddColumnPlan),
     Typed(RecoverableFieldAdditionPlan),
@@ -21,6 +23,9 @@ impl Plan {
         &self,
     ) -> Result<FieldAdditionDeclaration, crate::Error> {
         Ok(match self {
+            Self::RetainedTyped(plan) => {
+                FieldAdditionDeclaration::Typed(super::declaration::captured(plan.definition())?)
+            }
             Self::First(plan) => {
                 if plan.required_property()
                     != tablecraft_ace::CreatedDefaultZeroColumnRequired::StoredFalse
@@ -39,6 +44,7 @@ impl Plan {
 
     pub(in crate::editing) fn table(&self) -> &str {
         match self {
+            Self::RetainedTyped(plan) => plan.table(),
             Self::First(plan) => plan.table(),
             Self::Repeated(plan) => plan.table(),
             Self::Typed(plan) => plan.table(),
@@ -50,6 +56,7 @@ impl Plan {
 
     pub(in crate::editing) fn column(&self) -> &str {
         match self {
+            Self::RetainedTyped(plan) => plan.column(),
             Self::First(plan) => plan.column(),
             Self::Repeated(plan) => plan.column(),
             Self::Typed(plan) => plan.column(),
@@ -61,6 +68,7 @@ impl Plan {
 
     pub(in crate::editing) fn before_bytes(&self) -> &[u8] {
         match self {
+            Self::RetainedTyped(plan) => plan.before_bytes(),
             Self::First(plan) => plan.before_bytes(),
             Self::Repeated(plan) => plan.before_bytes(),
             Self::Typed(plan) => plan.before_bytes(),
@@ -72,6 +80,7 @@ impl Plan {
 
     pub(in crate::editing) fn after_bytes(&self) -> &[u8] {
         match self {
+            Self::RetainedTyped(plan) => plan.after_bytes(),
             Self::First(plan) => plan.after_bytes(),
             Self::Repeated(plan) => plan.after_bytes(),
             Self::Typed(plan) => plan.after_bytes(),

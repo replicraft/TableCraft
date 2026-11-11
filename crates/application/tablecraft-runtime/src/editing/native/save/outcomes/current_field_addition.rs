@@ -13,6 +13,24 @@ pub(super) fn intent(error: &CurrentFieldAdditionIntentError) -> Option<SaveFail
     }
 }
 
+pub(super) fn retained_typed(
+    error: &tablecraft_ace::RetainedTypedFieldAdditionIntentError,
+) -> Option<SaveFailureKind> {
+    use tablecraft_ace::RetainedTypedFieldAdditionIntentError as Error;
+    match error {
+        Error::Inspect(error) => inspection_failure(error),
+        #[cfg(feature = "ace16-create")]
+        Error::Binding(error) => intent_failure(error),
+        Error::Proof(error) => qualification_failure(error),
+        Error::Field(error) => candidate(error),
+        #[cfg(feature = "ace16-create")]
+        Error::Declaration(tablecraft_ace::CreateDatabaseError::Inspect(error)) => {
+            inspection_failure(error)
+        }
+        _ => None,
+    }
+}
+
 pub(super) fn candidate(error: &CurrentFieldAdditionError) -> Option<SaveFailureKind> {
     match error {
         CurrentFieldAdditionError::Inspect(error)
