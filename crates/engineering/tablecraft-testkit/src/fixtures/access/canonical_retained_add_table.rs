@@ -10,6 +10,7 @@ pub mod fields;
 pub mod fixed_scalars;
 pub mod joined_update;
 pub mod opaque_rows;
+pub mod populated;
 pub mod rows;
 pub mod typed_fields;
 pub mod updates;
