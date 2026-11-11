@@ -255,3 +255,51 @@ fn typed_casefold_collision_keeps_proposal_and_source_until_corrected_review() {
     assert!(!journal_path(&path).exists());
     assert!(!harness.state().state.field_rename_open());
 }
+
+#[test]
+fn keyless_first_data_column_renames_without_becoming_the_record_selector() {
+    let seed = fields::source(fields::Case::FirstNumber).bytes;
+    let definition = (seed.len() / 4096) as u32;
+    let catalog_root = usize::from(u16::from_le_bytes(
+        seed[4 * 4096 + 12..4 * 4096 + 14].try_into().unwrap(),
+    ));
+    let before = field_changes::keyless_first_field(&seed, "Keyless");
+    let after = field_changes::rename(&before, definition, catalog_root, "Id", "Identifier");
+    let (_directory, path, _, mut harness) = opened(before.clone());
+    open_table(&mut harness, "Keyless");
+    let data = harness.state().state.data.as_ref().unwrap();
+    assert_eq!(data.columns[0].name, "Id");
+    assert_eq!(data.columns[0].native_number, Some(0));
+    assert_eq!(data.rows[0][0].text, "17");
+    assert_eq!(data.rows[0][1].text, "23");
+    let selectors = harness.query_all_by_role(Role::RowHeader).count();
+    assert!(
+        selectors > 0,
+        "native field zero is separate from the actual record selector"
+    );
+    rename_and_save(&mut harness, &path, &before, &after, "Id", "Identifier");
+    let data = harness.state().state.data.as_ref().unwrap();
+    assert_eq!(data.columns[0].name, "Identifier");
+    assert_eq!(data.columns[0].native_number, Some(0));
+    assert_eq!(data.columns[1].name, "Score");
+    assert_eq!(data.columns[1].native_number, Some(1));
+    assert_eq!(data.rows.len(), 1);
+    assert_eq!(data.rows[0][0].text, "17");
+    assert_eq!(data.rows[0][1].text, "23");
+    assert_eq!(
+        harness.query_all_by_role(Role::RowHeader).count(),
+        selectors
+    );
+    assert_image(&path, &after);
+    drop(harness);
+    let mut fresh = app_harness(Desktop::new(egui::Context::default(), Some(path.clone())));
+    finish_reads(&mut fresh);
+    open_table(&mut fresh, "Keyless");
+    let data = fresh.state().state.data.as_ref().unwrap();
+    assert_eq!(data.columns[0].name, "Identifier");
+    assert_eq!(data.columns[0].native_number, Some(0));
+    assert_eq!(data.rows[0][0].text, "17");
+    assert_eq!(data.rows[0][1].text, "23");
+    assert_image(&path, &after);
+    assert!(!journal_path(&path).exists());
+}
