@@ -52,7 +52,7 @@ pub(in crate::workspace::editing) fn rename_and_save(
     new: &str,
 ) {
     propose_name(harness, old, new);
-    assert_eq!(std::fs::read(path).unwrap(), before);
+    assert_image(path, before);
     harness.key_press_modifiers(Modifiers::COMMAND, Key::S);
     harness.run_steps(1);
     if old == new {
@@ -72,7 +72,7 @@ pub(in crate::workspace::editing) fn rename_and_save(
     } else {
         finish_schema_save(harness);
     }
-    assert_eq!(std::fs::read(path).unwrap(), after);
+    assert_image(path, after);
     assert!(!journal_path(path).exists());
     assert!(!harness.state().state.field_rename_open());
 }
@@ -86,4 +86,19 @@ fn no_native_actor(harness: &Harness<'_, Desktop>) {
             None | Some(FieldRenameSaveIdentity::UnchangedReview { .. })
         ));
     }
+}
+
+fn assert_image(path: &Path, expected: &[u8]) {
+    let actual = std::fs::read(path).unwrap();
+    let difference = actual
+        .iter()
+        .zip(expected)
+        .position(|(left, right)| left != right);
+    assert!(
+        actual.len() == expected.len() && difference.is_none(),
+        "complete field-rename image lengths {} / {}, first mismatch {:?}",
+        actual.len(),
+        expected.len(),
+        difference
+    );
 }

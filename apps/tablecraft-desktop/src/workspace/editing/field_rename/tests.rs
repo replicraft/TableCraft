@@ -4,6 +4,7 @@ mod current_storage;
 mod design;
 mod preferences;
 mod retained;
+mod typed;
 use super::*;
 use crate::workspace::test_support::{self, finish_reads, finish_schema_save};
 use egui_kittest::Harness;
