@@ -1,4 +1,6 @@
 //! Explicit native saved-query requests through the actual retained worker.
+mod attachments;
+
 use super::{open, request};
 use crate::{Command, Error, ParameterInput, Response, SavedQueryTarget, Worker};
 use std::path::PathBuf;
