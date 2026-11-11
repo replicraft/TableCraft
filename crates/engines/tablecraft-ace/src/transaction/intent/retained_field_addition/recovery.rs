@@ -12,12 +12,18 @@ use tablecraft_io::journal::{
 };
 use tablecraft_model::CatalogScope;
 
+/// The same immutable V3 session after native reconstruction of its TCAC12 original.
 #[must_use = "recover explicitly or retain the qualified V3 journal"]
 pub struct QualifiedRetainedTypedFieldAdditionRecovery<'a, J: DurableStorage> {
     checked: CheckedV3<'a, J>,
 }
 
 impl Intent {
+    /// Reconstruct the original ADD and compare both complete V3 image witnesses.
+    ///
+    /// # Errors
+    /// Refuses changed originals or forged replacements, unsupported native
+    /// declarations/source effects, allocation failure, budget exhaustion or cancellation.
     pub fn qualify_retained_recovery<'a, J: DurableStorage>(
         self,
         checked: CheckedV3<'a, J>,
@@ -58,10 +64,16 @@ impl Intent {
 }
 
 impl<J: DurableStorage> QualifiedRetainedTypedFieldAdditionRecovery<'_, J> {
+    /// Checked V3 framing state; this does not replace native source qualification.
     pub fn state(&self) -> ResizableState {
         self.checked.state()
     }
 
+    /// Recover through this exact checked session and caller-owned target.
+    ///
+    /// # Errors
+    /// Returns storage, original/replacement mismatch, resource or cancellation
+    /// failures under the journal's documented recovery semantics.
     pub fn recover_retained<D: ResizableDurableStorage>(
         self,
         target: &mut D,
@@ -71,6 +83,10 @@ impl<J: DurableStorage> QualifiedRetainedTypedFieldAdditionRecovery<'_, J> {
         self.checked.recover(target, budget, cancelled)
     }
 
+    /// Confirm settled original/replacement bytes and barriers without target writes.
+    ///
+    /// # Errors
+    /// Returns unsettled state, byte mismatch, storage, resource or cancellation errors.
     pub fn confirm_completed<D: DurableStorage>(
         self,
         target: &mut D,
