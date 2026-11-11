@@ -14,7 +14,8 @@ use crate::{
     header::check,
     limits::MAX_IMAGE_BYTES,
     table::mutation::{
-        index_create::{SecondaryIndexCreate, source},
+        index_create::source,
+        index_creation::SecondaryIndexCreate,
         map_authority::{Census, Owner, RecordIdentity},
     },
 };

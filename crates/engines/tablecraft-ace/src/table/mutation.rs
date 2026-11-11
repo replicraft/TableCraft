@@ -54,7 +54,21 @@ mod retained_row_updates;
 #[cfg(all(feature = "journal", feature = "ace16-create"))]
 mod retained_wide_value_row_updates;
 #[cfg(feature = "ace16-write-preview")]
-pub use index_create::{Ace16IndexCreatePreview, SecondaryIndexCreate};
+pub use index_create::Ace16IndexCreatePreview;
+#[cfg(any(
+    feature = "ace16-write-preview",
+    all(feature = "journal", feature = "ace16-create")
+))]
+pub(in crate::table) mod index_creation;
+#[cfg(any(
+    feature = "ace16-write-preview",
+    all(feature = "journal", feature = "ace16-create")
+))]
+pub use index_creation::SecondaryIndexCreate;
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+mod normal_index_creation;
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub use normal_index_creation::NativeLongIndexCandidate;
 #[cfg(all(feature = "ace16-create", feature = "journal"))]
 pub(crate) mod current_schema;
 #[cfg(all(feature = "ace16-create", feature = "journal"))]

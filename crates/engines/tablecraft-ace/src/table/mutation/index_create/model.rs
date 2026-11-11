@@ -1,25 +1,6 @@
 use crate::NativeImage;
 use tablecraft_schema::SchemaName;
 
-/// One ordinary nonunique Int32 secondary index. No PRIMARY, foreign, UNIQUE,
-/// Required or IgnoreNULL policy is implied or available through this request.
-pub struct SecondaryIndexCreate<'a> {
-    pub(super) name: &'a str,
-    pub(super) column: &'a str,
-    pub(super) descending: bool,
-}
-
-impl<'a> SecondaryIndexCreate<'a> {
-    /// Keep original caller intent borrowed; qualification occurs on the image.
-    pub const fn new(name: &'a str, column: &'a str, descending: bool) -> Self {
-        Self {
-            name,
-            column,
-            descending,
-        }
-    }
-}
-
 /// Complete independently checked engineering bytes, without journal/save
 /// conversion. Creating schema does not report changed data rows.
 pub struct Ace16IndexCreatePreview {

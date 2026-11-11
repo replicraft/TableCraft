@@ -1,6 +1,6 @@
-use super::{buffer, source::Original};
+use super::buffer;
 use crate::{
-    EditError, InspectError, NativeImage, TableCheck, WriteBlocker,
+    EditError, InspectError, NativeImage, TableSchema, WriteBlocker,
     format::{
         bytes::{u16_at, u32_at},
         definition::{LENGTH_OFFSET, NEXT_PAGE_OFFSET, PAGE_HEADER_BYTES},
@@ -42,7 +42,10 @@ pub(in crate::table) struct DefinitionLayout {
     pub logical_count: u32,
 }
 
-pub(super) struct CreatedDescriptor {
+pub(in crate::table::mutation) struct CreatedDescriptor {
+    pub column: usize,
+    pub descending: bool,
+    pub counter: u32,
     pub physical: u32,
     pub logical: u32,
     pub usage: u32,
@@ -50,14 +53,13 @@ pub(super) struct CreatedDescriptor {
 }
 
 impl DefinitionLayout {
-    pub(super) fn read(
+    pub(in crate::table::mutation) fn read(
         image: &NativeImage,
-        checked: &TableCheck,
+        schema: &TableSchema,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, EditError> {
         check(budget, cancelled)?;
-        let schema = checked.schema();
         let mut input = image.reader();
         let mut reader = Reader {
             source: &mut input,
@@ -141,7 +143,10 @@ impl DefinitionLayout {
         })
     }
 
-    pub(super) fn new_length(&self, name_bytes: usize) -> Result<usize, EditError> {
+    pub(in crate::table::mutation) fn new_length(
+        &self,
+        name_bytes: usize,
+    ) -> Result<usize, EditError> {
         let length = self
             .length
             .checked_add(INDEX_ENTRY_BYTES)
@@ -157,16 +162,15 @@ impl DefinitionLayout {
     }
 }
 
-pub(super) fn compose(
+pub(in crate::table::mutation) fn compose(
     image: &NativeImage,
-    original: &Original,
+    layout: &DefinitionLayout,
+    name: &tablecraft_schema::SchemaName,
     descriptor: CreatedDescriptor,
-    counter: u32,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Vec<u8>, EditError> {
-    let layout = &original.layout;
-    let name_units = original.name.as_str().encode_utf16().count();
+    let name_units = name.as_str().encode_utf16().count();
     let name_bytes = name_units
         .checked_mul(size_of::<u16>())
         .ok_or(InspectError::StructureLimit)?;
@@ -183,7 +187,7 @@ pub(super) fn compose(
     active.extend_from_slice(&raw[..layout.columns.start]);
     let mut count = [0; INDEX_ENTRY_BYTES];
     count[NEW_COUNTER_OFFSET..NEW_COUNTER_OFFSET + size_of::<u32>()]
-        .copy_from_slice(&counter.to_le_bytes());
+        .copy_from_slice(&descriptor.counter.to_le_bytes());
     active.extend_from_slice(&count);
     // NO_CLONE: Read original column/physical/logical/name spans while the retained layout
     // is needed for index creation. Only range bounds are copied, not the
@@ -200,9 +204,9 @@ pub(super) fn compose(
         let at = KEY_START + key * KEY_BYTES;
         physical[at..at + size_of::<u16>()].copy_from_slice(&UNUSED_COLUMN.to_le_bytes());
     }
-    let column = u16::try_from(original.column).map_err(|_| InspectError::StructureLimit)?;
+    let column = u16::try_from(descriptor.column).map_err(|_| InspectError::StructureLimit)?;
     physical[KEY_START..KEY_START + size_of::<u16>()].copy_from_slice(&column.to_le_bytes());
-    physical[KEY_START + size_of::<u16>()] = if original.descending { 0 } else { ASCENDING };
+    physical[KEY_START + size_of::<u16>()] = if descriptor.descending { 0 } else { ASCENDING };
     physical[USAGE_OFFSET..USAGE_OFFSET + size_of::<u32>()]
         .copy_from_slice(&descriptor.usage.to_le_bytes());
     physical[ROOT_OFFSET..ROOT_OFFSET + size_of::<u32>()]
@@ -232,7 +236,7 @@ pub(super) fn compose(
             .map_err(|_| InspectError::StructureLimit)?
             .to_le_bytes(),
     );
-    for unit in original.name.as_str().encode_utf16() {
+    for unit in name.as_str().encode_utf16() {
         check(budget, cancelled)?;
         active.extend_from_slice(&unit.to_le_bytes());
     }

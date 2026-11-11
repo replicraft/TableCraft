@@ -28,3 +28,24 @@ pub(in crate::table) fn copy(
     }
     Ok(output)
 }
+
+/// Pay exact requested geometric growth before retaining an additional item.
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub(in crate::table) fn push<T>(
+    output: &mut Vec<T>,
+    value: T,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), InspectError> {
+    check(budget, cancelled)?;
+    if output.len() == output.capacity() {
+        let added = output.capacity().max(1);
+        budget.charge(Resource::Steps, output.len() as u64)?;
+        budget.charge_allocation(added as u64, size_of::<T>() as u64)?;
+        output
+            .try_reserve_exact(added)
+            .map_err(|_| InspectError::Allocation)?;
+    }
+    output.push(value);
+    Ok(())
+}

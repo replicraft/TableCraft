@@ -1,8 +1,6 @@
 //! Finite ignored consumer of prefrozen genuine-original expectations.
-use super::{
-    REQUESTS, SCOPE, SOURCES, SecondaryIndexCreate, bounded_read, budget, existing_index_pages,
-    source,
-};
+use super::{REQUESTS, SCOPE, SOURCES, bounded_read, budget, existing_index_pages, source};
+use crate::table::mutation::index_creation::SecondaryIndexCreate;
 use crate::{
     IndexCheckStatus, IndexProjectionSelection, IndexReadRequest, NativeImage, check_table,
     inspect_table_index_counter, read_table_index_with_references,

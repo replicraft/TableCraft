@@ -1,7 +1,7 @@
-use super::{
+use super::source::Original;
+use crate::table::mutation::index_creation::{
     SecondaryIndexCreate, buffer,
-    layout::{self, CreatedDescriptor},
-    source::Original,
+    definition::{self, CreatedDescriptor},
 };
 use crate::{
     EditError, InspectError, NativeImage,
@@ -70,16 +70,19 @@ pub(super) fn prepare(
         cancelled,
     )?;
     let descriptor = CreatedDescriptor {
+        column: original.column,
+        descending: original.descending,
+        counter: population.distinct(),
         physical: owner.physical(),
         logical: owner.logical(),
         usage: owner.usage(),
         root: owner.root(),
     };
-    let definition = layout::compose(
+    let definition = definition::compose(
         image,
-        original,
+        &original.layout,
+        &original.name,
         descriptor,
-        population.distinct(),
         budget,
         cancelled,
     )?;

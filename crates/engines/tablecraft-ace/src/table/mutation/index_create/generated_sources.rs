@@ -1,6 +1,7 @@
 //! Finite private source and candidate qualification of immutable originals.
 mod candidates;
-use super::{SecondaryIndexCreate, source};
+use super::source;
+use crate::table::mutation::index_creation::SecondaryIndexCreate;
 use crate::{
     EditError, NativeImage, TableCheck, check_table,
     format::{allocation, reader::Reader},

@@ -3,7 +3,8 @@ mod frame;
 #[cfg(test)]
 mod tests;
 
-use super::{SecondaryIndexCreate, buffer, source, stage::Plan};
+use super::{source, stage::Plan};
+use crate::table::mutation::index_creation::{SecondaryIndexCreate, buffer};
 use crate::{
     EditError, InspectError, NativeImage, TableCheck, WriteBlocker,
     format::{

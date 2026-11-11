@@ -1,5 +1,5 @@
 //! Independent byte framing for the final certificate, not producer page helpers.
-use super::super::buffer;
+use crate::table::mutation::index_creation::buffer;
 use crate::{EditError, InspectError, NativeImage, WriteBlocker, header::check};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 

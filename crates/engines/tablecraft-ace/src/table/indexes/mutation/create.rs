@@ -13,7 +13,7 @@ use crate::{
             key::KeyProfile,
             page::{Entry, KeyRef},
         },
-        mutation::index_create::buffer,
+        mutation::index_creation::buffer,
         page::{self, TableSnapshotLimits},
         snapshot,
     },

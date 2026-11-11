@@ -1,10 +1,8 @@
 //! Source-bound creation of one real ordinary Int32 secondary index.
 use crate::table::mutation::ace_profile;
 mod audit;
-pub(in crate::table) mod buffer;
 #[cfg(test)]
 mod generated_sources;
-mod layout;
 mod model;
 pub(in crate::table) mod source;
 mod stage;
@@ -12,7 +10,8 @@ mod stage;
 use crate::{EditError, NativeImage, header::check};
 use tablecraft_core::limits::ResourceBudget;
 
-pub use model::{Ace16IndexCreatePreview, SecondaryIndexCreate};
+use super::index_creation::SecondaryIndexCreate;
+pub use model::Ace16IndexCreatePreview;
 
 impl NativeImage {
     /// Build a separate engineering candidate containing a new physical index.

@@ -106,6 +106,15 @@ pub use preservation::{
     TableMacroCoverage, TableMacroInventory, XmlByteSpan,
 };
 #[cfg(feature = "ace16-write-preview")]
+pub use table::Ace16IndexCreatePreview;
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub use table::NativeLongIndexCandidate;
+#[cfg(any(
+    feature = "ace16-write-preview",
+    all(feature = "journal", feature = "ace16-create")
+))]
+pub use table::SecondaryIndexCreate;
+#[cfg(feature = "ace16-write-preview")]
 pub use table::{
     Ace16AutoNumberInsertPreview, Ace16IncrementingInsertBinding, AutoNumberRowInsert,
     IncrementingAutoNumber,
@@ -114,8 +123,6 @@ pub use table::{
 pub use table::{Ace16BeforeChangePreview, BeforeChangePreviewError};
 #[cfg(feature = "ace16-write-preview")]
 pub use table::{Ace16DeletePreview, Ace16WritePreview};
-#[cfg(feature = "ace16-write-preview")]
-pub use table::{Ace16IndexCreatePreview, SecondaryIndexCreate};
 pub use table::{
     AttachmentColumn, AttachmentMetadataColumn, AttachmentReader, ParentAttachments,
     StoredAttachment, read_attachment_column, read_attachment_column_with_limits,

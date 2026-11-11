@@ -1,5 +1,7 @@
-use super::{SecondaryIndexCreate, buffer, layout::DefinitionLayout};
 use crate::table::mutation::ace_profile;
+use crate::table::mutation::index_creation::{
+    SecondaryIndexCreate, buffer, definition::DefinitionLayout,
+};
 use crate::{
     EditError, InspectError, NativeImage, TableCheck, WriteBlocker,
     format::{
@@ -110,7 +112,7 @@ pub(in crate::table) fn qualify(
             return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
         }
     }
-    let layout = DefinitionLayout::read(image, &checked, budget, cancelled)?;
+    let layout = DefinitionLayout::read(image, checked.schema(), budget, cancelled)?;
     Ok(Original {
         checked,
         layout,

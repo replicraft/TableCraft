@@ -52,8 +52,17 @@ mod short_text;
 pub use features::{ColumnFeatures, TableFeatures, inspect_table_features};
 pub use indexes::{IndexCheck, IndexCheckStatus, TableCheck, check_table};
 pub use indexes::{IndexedTableSnapshot, read_table_index_with_references};
+#[cfg(feature = "ace16-write-preview")]
+pub use mutation::Ace16IndexCreatePreview;
 #[cfg(feature = "journal")]
 pub use mutation::CurrentFieldAdditionError;
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub use mutation::NativeLongIndexCandidate;
+#[cfg(any(
+    feature = "ace16-write-preview",
+    all(feature = "journal", feature = "ace16-create")
+))]
+pub use mutation::SecondaryIndexCreate;
 #[cfg(feature = "ace16-write-preview")]
 pub use mutation::{
     Ace16AutoNumberInsertPreview, Ace16IncrementingInsertBinding, AutoNumberRowInsert,
@@ -63,8 +72,6 @@ pub use mutation::{
 pub use mutation::{Ace16BeforeChangePreview, BeforeChangePreviewError};
 #[cfg(feature = "ace16-write-preview")]
 pub use mutation::{Ace16DeletePreview, Ace16WritePreview};
-#[cfg(feature = "ace16-write-preview")]
-pub use mutation::{Ace16IndexCreatePreview, SecondaryIndexCreate};
 #[cfg(any(feature = "ace16-write-preview", feature = "journal"))]
 pub use mutation::{
     BeforeChangeAssignment, BeforeChangeFieldPreparation, BeforeChangeFinalRow, BeforeEvent,
