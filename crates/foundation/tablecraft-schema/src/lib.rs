@@ -22,7 +22,7 @@ mod policy;
 mod relationship;
 mod scalar;
 mod type_descriptor;
-pub use column::{Column, validate_columns, validate_row};
+pub use column::{Column, validate_columns, validate_columns_with, validate_row};
 pub use constraints::{FieldConstraintViolation, FieldConstraints};
 pub use decimal::DecimalConstraints;
 pub use error::SchemaError;

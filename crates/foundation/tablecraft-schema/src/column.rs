@@ -51,15 +51,31 @@ impl Column {
 /// Width/name size limits are separate SchemaPolicy responsibilities.
 /// Callers must bound input size before this quadratic duplicate check.
 pub fn validate_columns(columns: &[Column], names: NameComparison) -> Result<(), SchemaError> {
+    validate_columns_with(columns, names, || Ok::<(), SchemaError>(()))
+}
+
+/// Validate the same schema rules with caller control inside duplicate-name traversal.
+/// The callback runs before validation, each column and every name comparison;
+/// it can charge cumulative work and stop promptly on cancellation.
+///
+/// # Errors
+/// Returns an empty/duplicate schema error or the exact caller control error.
+pub fn validate_columns_with<E: From<SchemaError>>(
+    columns: &[Column],
+    names: NameComparison,
+    mut check: impl FnMut() -> Result<(), E>,
+) -> Result<(), E> {
+    check()?;
     if columns.is_empty() {
-        return Err(SchemaError::Width);
+        return Err(SchemaError::Width.into());
     }
-    for (i, column) in columns.iter().enumerate() {
-        if columns[..i]
-            .iter()
-            .any(|other| names.equals(other.name(), column.name()))
-        {
-            return Err(SchemaError::Duplicate);
+    for (index, column) in columns.iter().enumerate() {
+        check()?;
+        for previous in &columns[..index] {
+            check()?;
+            if names.equals(previous.name(), column.name()) {
+                return Err(SchemaError::Duplicate.into());
+            }
         }
     }
     Ok(())
@@ -118,5 +134,23 @@ mod tests {
         );
         let c = Column::with_type("Label".into(), TypeDescriptor::text(2).unwrap(), true).unwrap();
         assert!(validate_row(&[c], &[Value::Null]).is_ok());
+    }
+
+    #[test]
+    fn controlled_schema_validation_stops_inside_duplicate_traversal() {
+        let columns =
+            ["A", "B", "C"].map(|name| Column::new(name.into(), ScalarType::Int32, false).unwrap());
+        let mut calls = 0;
+        let result = validate_columns_with(&columns, NameComparison::Exact, || {
+            calls += 1;
+            if calls == 5 {
+                Err(SchemaError::Value)
+            } else {
+                Ok(())
+            }
+        });
+        assert_eq!(result, Err(SchemaError::Value));
+        assert_eq!(calls, 5);
+        assert!(validate_columns(&columns, NameComparison::Exact).is_ok());
     }
 }
