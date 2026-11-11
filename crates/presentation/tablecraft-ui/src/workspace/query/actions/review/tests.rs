@@ -1,3 +1,5 @@
+mod schema;
+
 use super::*;
 use crate::workspace::{
     Action,

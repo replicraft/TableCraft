@@ -157,6 +157,7 @@ impl State {
                         save_id,
                         outcome,
                         report_refused,
+                        ..
                     } => {
                         if *report_refused {
                             ui.label(tr(ui, "objects-memory-limit"));
