@@ -35,6 +35,7 @@ pub struct OwnedRecordset {
     schema: Arc<RecordsetSchema>,
     rows: Vec<Vec<StoredCell>>,
     presence: RecordsetPresence,
+    retained_bytes: usize,
 }
 
 impl OwnedRecordset {
@@ -56,11 +57,25 @@ impl OwnedRecordset {
         if presence == RecordsetPresence::Unassigned && !rows.is_empty() {
             return Err(RecordsetError::Presence);
         }
+        let rows_bytes = rows
+            .capacity()
+            .checked_mul(size_of::<Vec<StoredCell>>())
+            .ok_or(RecordsetError::Size)?;
+        let mut retained_bytes = size_of::<Self>()
+            .checked_add(rows_bytes)
+            .ok_or(RecordsetError::Size)?;
         for row in &rows {
             check(budget, cancelled)?;
             if row.len() != schema.columns().len() {
                 return Err(RecordsetError::Width);
             }
+            let row_bytes = row
+                .capacity()
+                .checked_mul(size_of::<StoredCell>())
+                .ok_or(RecordsetError::Size)?;
+            retained_bytes = retained_bytes
+                .checked_add(row_bytes)
+                .ok_or(RecordsetError::Size)?;
             for ((column, availability), cell) in
                 schema.columns().iter().zip(schema.availability()).zip(row)
             {
@@ -72,6 +87,14 @@ impl OwnedRecordset {
                     (MemberAvailability::Uninspected, StoredCell::Uninspected) => {}
                     _ => return Err(RecordsetError::Availability),
                 }
+                let allocated = match cell {
+                    StoredCell::Value(Value::Text(value)) => value.capacity(),
+                    StoredCell::Value(Value::Binary(value)) => value.capacity(),
+                    _ => 0,
+                };
+                retained_bytes = retained_bytes
+                    .checked_add(allocated)
+                    .ok_or(RecordsetError::Size)?;
             }
         }
         check(budget, cancelled)?;
@@ -79,6 +102,7 @@ impl OwnedRecordset {
             schema,
             rows,
             presence,
+            retained_bytes,
         })
     }
 
@@ -106,11 +130,20 @@ impl OwnedRecordset {
     pub fn is_empty(&self) -> bool {
         self.rows.is_empty()
     }
+
+    /// Cached size of this owner, row buffers and owned scalar allocations.
+    /// The separately shared schema, control blocks and allocator overhead are excluded.
+    pub const fn retained_bytes(&self) -> usize {
+        self.retained_bytes
+    }
 }
 
 /// Read-only child-record metadata or content validation failed, without payload details.
 #[derive(Debug, Error, PartialEq, Eq)]
 pub enum RecordsetError {
+    /// The owned representation's byte count cannot fit the addressable size.
+    #[error("child recordset representation size overflow")]
+    Size,
     /// Member declarations or exact scalar carriers violate shared schema rules.
     #[error(transparent)]
     Schema(#[from] SchemaError),

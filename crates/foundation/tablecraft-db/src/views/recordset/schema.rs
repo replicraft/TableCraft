@@ -18,6 +18,7 @@ pub struct RecordsetSchema {
     columns: Vec<Column>,
     availability: Vec<MemberAvailability>,
     names: NameComparison,
+    retained_bytes: usize,
 }
 
 impl RecordsetSchema {
@@ -39,11 +40,30 @@ impl RecordsetSchema {
             return Err(RecordsetError::Width);
         }
         validate_columns_with(&columns, names, || check(budget, cancelled))?;
+        let column_bytes = columns
+            .capacity()
+            .checked_mul(size_of::<Column>())
+            .ok_or(RecordsetError::Size)?;
+        let availability_bytes = availability
+            .capacity()
+            .checked_mul(size_of::<MemberAvailability>())
+            .ok_or(RecordsetError::Size)?;
+        let mut retained_bytes = size_of::<Self>()
+            .checked_add(column_bytes)
+            .and_then(|bytes| bytes.checked_add(availability_bytes))
+            .ok_or(RecordsetError::Size)?;
+        for column in &columns {
+            check(budget, cancelled)?;
+            retained_bytes = retained_bytes
+                .checked_add(column.schema_name().allocated_bytes())
+                .ok_or(RecordsetError::Size)?;
+        }
         check(budget, cancelled)?;
         Ok(Self {
             columns,
             availability,
             names,
+            retained_bytes,
         })
     }
 
@@ -60,5 +80,11 @@ impl RecordsetSchema {
     /// Exact caller-selected schema-name comparison, without inferred SQL collation.
     pub const fn names(&self) -> NameComparison {
         self.names
+    }
+
+    /// Cached size of this owner and its buffers, including unused capacity.
+    /// Shared-owner control blocks and allocator overhead are excluded.
+    pub const fn retained_bytes(&self) -> usize {
+        self.retained_bytes
     }
 }

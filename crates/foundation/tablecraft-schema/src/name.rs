@@ -18,6 +18,11 @@ impl SchemaName {
     pub fn as_str(&self) -> &str {
         &self.0
     }
+
+    /// Owned name-buffer capacity, excluding this value and allocator overhead.
+    pub fn allocated_bytes(&self) -> usize {
+        self.0.capacity()
+    }
 }
 
 /// Explicit identifier comparison; neither option claims Access locale fidelity.

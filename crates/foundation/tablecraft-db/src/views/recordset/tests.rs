@@ -285,3 +285,49 @@ fn schema_duplicate_traversal_is_cancellable_before_a_late_duplicate() {
     );
     assert_eq!(calls.get(), 6);
 }
+
+#[test]
+fn retained_footprints_include_spare_buffers_without_charging_shared_schema_twice() {
+    fn declaration(name_capacity: usize) -> Arc<RecordsetSchema> {
+        let mut name = String::with_capacity(name_capacity);
+        name.push_str("Text");
+        Arc::new(
+            RecordsetSchema::new(
+                vec![Column::new(name, ScalarType::Text, true).unwrap()],
+                vec![MemberAvailability::Available],
+                NameComparison::Exact,
+                &mut budget(),
+                &|| false,
+            )
+            .unwrap(),
+        )
+    }
+
+    fn value(schema: Arc<RecordsetSchema>, text_capacity: usize) -> OwnedRecordset {
+        let mut text = String::with_capacity(text_capacity);
+        text.push_str("same");
+        OwnedRecordset::new(
+            schema,
+            vec![vec![StoredCell::Value(Value::Text(text))]],
+            RecordsetPresence::Assigned,
+            &mut budget(),
+            &|| false,
+        )
+        .unwrap()
+    }
+
+    let compact = declaration(4);
+    let spare = declaration(4096);
+    assert!(spare.retained_bytes() > compact.retained_bytes() + 4000);
+
+    let compact_value = value(compact, 4);
+    let shared_schema_value = value(Arc::clone(&spare), 4);
+    assert_eq!(
+        compact_value.retained_bytes(),
+        shared_schema_value.retained_bytes()
+    );
+
+    let spare_value = value(spare, 8192);
+    assert!(spare_value.retained_bytes() > shared_schema_value.retained_bytes() + 8000);
+    assert_eq!(spare_value.rows(), shared_schema_value.rows());
+}
