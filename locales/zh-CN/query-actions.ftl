@@ -42,3 +42,5 @@ query-action-schema-index-ascending = 顺序：升序
 query-action-schema-index-descending = 顺序：降序
 query-action-schema-index-source-rows = 要编入索引的现有记录数：{ $count }
 query-action-schema-index-confirmation = 是否在原始数据库中创建此非唯一索引？
+
+query-action-schema-add-confirmation = 将此字段添加到原始表中？

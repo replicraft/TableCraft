@@ -42,3 +42,5 @@ query-action-schema-index-ascending = Reihenfolge: Aufsteigend
 query-action-schema-index-descending = Reihenfolge: Absteigend
 query-action-schema-index-source-rows = Zu indizierende vorhandene Datensätze: { $count }
 query-action-schema-index-confirmation = Diesen nicht eindeutigen Index in der ursprünglichen Datenbank erstellen?
+
+query-action-schema-add-confirmation = Dieses Feld der ursprünglichen Tabelle hinzufügen?

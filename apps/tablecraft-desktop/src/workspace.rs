@@ -610,7 +610,11 @@ impl Desktop {
                     self.start_reviewed_field_rename(generation, review, capability);
                 }
                 Ok(Response::FieldAdditionReviewed { review, capability }) => {
-                    self.start_reviewed_field_addition(generation, review, capability);
+                    if matches!(self.pending, PendingOperation::QueryActionReview { .. }) {
+                        self.publish_query_schema_addition(generation, review, capability);
+                    } else {
+                        self.start_reviewed_field_addition(generation, review, capability);
+                    }
                 }
                 Ok(Response::FieldAdditionAvailability { availability }) => {
                     self.publish_field_addition_availability(generation, availability);

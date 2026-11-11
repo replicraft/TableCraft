@@ -42,3 +42,5 @@ query-action-schema-index-ascending = Orden: Ascendente
 query-action-schema-index-descending = Orden: Descendente
 query-action-schema-index-source-rows = Registros existentes para indizar: { $count }
 query-action-schema-index-confirmation = ¿Crear este índice no único en la base de datos original?
+
+query-action-schema-add-confirmation = ¿Agregar este campo a la tabla original?

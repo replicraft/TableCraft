@@ -6,6 +6,7 @@ use std::{
     time::{Duration, Instant},
 };
 use tablecraft_builders::table::{FieldAdditionDeclaration as Declaration, FieldAdditionKind};
+use tablecraft_runtime::FieldAdditionOrigin;
 use tablecraft_runtime::{Command, Response};
 
 #[test]
@@ -61,10 +62,13 @@ fn native_text_width_or_compression_mismatch_refuses_before_worker_start_even_wi
         else {
             panic!("actual native unlocked review expected");
         };
-        assert_eq!(capability.captured_declaration(), captured);
+        assert_eq!(
+            capability.captured_origin(),
+            FieldAdditionOrigin::Gallery(captured)
+        );
         // Deliberately make the untrusted data DTO match the UI's request. The
         // genuine capability still carries the other width/compression choice.
-        review.declaration = requested;
+        review.origin = FieldAdditionOrigin::Gallery(requested);
         let desktop: &mut Desktop = harness.state_mut();
         assert!(
             desktop

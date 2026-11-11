@@ -3,6 +3,7 @@ use super::{Origin, Phase, QueryActionEffect, QueryActionKind, QueryActionReview
 use crate::localization::tr;
 use crate::workspace::{Action, EditSaveOutcome, State};
 use egui::{Frame, Ui};
+use tablecraft_schema::ScalarType;
 
 /// Read publication state only; this supplies no native reopen authority.
 pub(in crate::workspace) struct QuerySchemaRead {
@@ -13,6 +14,11 @@ pub(in crate::workspace) struct QuerySchemaRead {
 /// Exact reviewed schema effect, separate from matched or changed record counts.
 #[derive(Debug, PartialEq, Eq)]
 pub enum QuerySchemaEffect {
+    /// Append one unadorned native field without a gallery policy snapshot.
+    AddColumn {
+        column: String,
+        scalar_type: ScalarType,
+    },
     /// Create an ordinary nonunique index; source population is not a data delta.
     CreateIndex {
         index: String,
@@ -40,6 +46,10 @@ pub enum QuerySchemaEffect {
 impl QuerySchemaEffect {
     pub(super) fn valid(&self) -> bool {
         match self {
+            Self::AddColumn {
+                column,
+                scalar_type,
+            } => !column.is_empty() && *scalar_type == ScalarType::Currency,
             Self::CreateIndex { index, column, .. } => !index.is_empty() && !column.is_empty(),
             Self::CreateTable { column_count } | Self::MakeTable { column_count, .. } => {
                 *column_count > 0
@@ -54,7 +64,9 @@ impl QuerySchemaEffect {
             Self::CreateIndex { index, column, .. } => {
                 index.capacity().checked_add(column.capacity())
             }
-            Self::DropColumn { column, .. } => Some(column.capacity()),
+            Self::AddColumn { column, .. } | Self::DropColumn { column, .. } => {
+                Some(column.capacity())
+            }
             Self::CreateTable { .. } | Self::MakeTable { .. } | Self::DropTable { .. } => Some(0),
         }
     }

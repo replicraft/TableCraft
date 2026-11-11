@@ -100,6 +100,9 @@ impl State {
                             QueryActionEffect::Schema(effect) => schema_summary(ui, effect),
                         }
                         let confirmation = match &review.effect {
+                            QueryActionEffect::Schema(QuerySchemaEffect::AddColumn { .. }) => {
+                                "query-action-schema-add-confirmation"
+                            }
                             QueryActionEffect::Schema(QuerySchemaEffect::CreateIndex {
                                 ..
                             }) => "query-action-schema-index-confirmation",
@@ -283,6 +286,16 @@ impl QueryActionKind {
 
 fn schema_summary(ui: &mut Ui, effect: &QuerySchemaEffect) {
     match effect {
+        QuerySchemaEffect::AddColumn { column, .. } => {
+            ui.horizontal(|ui| {
+                ui.label(tr(ui, "design-field-name"));
+                ui.label(column);
+            });
+            ui.horizontal(|ui| {
+                ui.label(tr(ui, "design-data-type"));
+                ui.label(tr(ui, "design-type-currency"));
+            });
+        }
         QuerySchemaEffect::CreateIndex {
             index,
             column,

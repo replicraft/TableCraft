@@ -42,3 +42,5 @@ query-action-schema-index-ascending = Order: Ascending
 query-action-schema-index-descending = Order: Descending
 query-action-schema-index-source-rows = Existing records to index: { $count }
 query-action-schema-index-confirmation = Create this nonunique index in the original database?
+
+query-action-schema-add-confirmation = Add this field to the original table?

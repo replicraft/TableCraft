@@ -8,8 +8,8 @@ use crate::workspace::request_read;
 use crate::workspace::{Desktop, PendingOperation};
 use std::sync::Arc;
 use tablecraft_runtime::{
-    AddedColumnReopen, Command, FieldAdditionAvailability, FieldAdditionReview,
-    ReviewedFieldAddition, SaveOutcome, journal_path,
+    AddedColumnReopen, Command, FieldAdditionAvailability, FieldAdditionOrigin,
+    FieldAdditionReview, ReviewedFieldAddition, SaveOutcome, journal_path,
 };
 use tablecraft_ui::{FieldAdditionRequest, FieldAdditionSaveIdentity, ObjectKind, ObjectTab};
 
@@ -192,8 +192,9 @@ impl Desktop {
             return;
         }
         let witness = capability.reopen_witness();
-        let matches = review.declaration == host.request.declaration
-            && capability.captured_declaration() == host.request.declaration
+        let matches = review.origin == FieldAdditionOrigin::Gallery(host.request.declaration)
+            && capability.captured_origin()
+                == FieldAdditionOrigin::Gallery(host.request.declaration)
             && review.document_revision == host.request.tab.target.document_revision
             && matches!(&host.request.tab.target.kind, ObjectKind::Table { name } if *name == review.table)
             && review.column == host.request.column

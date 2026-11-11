@@ -42,3 +42,5 @@ query-action-schema-index-ascending = Порядок: По возрастани�
 query-action-schema-index-descending = Порядок: По убыванию
 query-action-schema-index-source-rows = Существующие записи для индексации: { $count }
 query-action-schema-index-confirmation = Создать этот неуникальный индекс в исходной базе данных?
+
+query-action-schema-add-confirmation = Добавить это поле в исходную таблицу?

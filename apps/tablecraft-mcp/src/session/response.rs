@@ -2,7 +2,9 @@
 use super::{Session, reviewed::Reviewed};
 use serde_json::{Value, json};
 use tablecraft_builders::table::field_rename::FieldRenameNameProfile;
-use tablecraft_runtime::{Cell, CellKind, Column, FieldPropertyValue, ParameterSpec, Response};
+use tablecraft_runtime::{
+    Cell, CellKind, Column, FieldAdditionOrigin, FieldPropertyValue, ParameterSpec, Response,
+};
 
 pub(super) fn columns(values: &[Column]) -> Value {
     values.iter().map(|column| json!({"name": column.name, "caption": column.caption, "native_number": column.native_number})).collect()
@@ -126,7 +128,15 @@ impl Session {
                 let decimal = descriptor.decimal_constraints();
                 json!({"scalar_type": format!("{:?}", descriptor.scalar_type()), "precision": decimal.map(|value| value.precision()), "scale": decimal.map(|value| value.scale()), "max_utf16_units": declaration.short_text_units().map(|value| value.get()), "unicode_compression": declaration.unicode_compression(), "maximum_name_utf16_units": facts.maximum_name_utf16_units})
             }).collect::<Vec<_>>()}),
-            Response::FieldAdditionReviewed { review, capability } => return self.retain_review(Reviewed::FieldAddition(capability), json!({"native_review_id": review.id, "document_revision": review.document_revision, "table": review.table, "column": review.column, "declaration": format!("{:?}", review.declaration)})),
+            Response::FieldAdditionReviewed { review, capability } => {
+                let FieldAdditionOrigin::Gallery(declaration) = review.origin else {
+                    return Err("This MCP service does not expose SQL schema review yet".into());
+                };
+                if capability.id() != review.id || capability.captured_origin() != review.origin {
+                    return Err("Field ADD review differs from the captured native request".into());
+                }
+                return self.retain_review(Reviewed::FieldAddition(capability), json!({"native_review_id": review.id, "document_revision": review.document_revision, "table": review.table, "column": review.column, "declaration": format!("{:?}", declaration)}));
+            }
             Response::FieldRenameSourceInspected { inspection } => {
                 let (name_profile, same_width) = match inspection.name_profile {
                     Some(FieldRenameNameProfile::SameWidthAscii { units }) => (

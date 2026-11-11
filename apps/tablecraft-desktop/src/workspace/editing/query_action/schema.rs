@@ -10,16 +10,23 @@ use std::{
     sync::Arc,
 };
 use tablecraft_runtime::{
-    Command, CreatedTableReopen, FieldDropReview, FieldDroppedReopen, IndexCreatedReopen,
+    AddedColumnReopen, Command, CreatedTableReopen, FieldAdditionOrigin, FieldAdditionReview,
+    FieldDropReview, FieldDroppedReopen, IndexCreatedReopen, ReviewedFieldAddition,
     ReviewedFieldDrop, ReviewedIndexCreation, ReviewedTableCreation, ReviewedTableDrop,
     SaveOutcome, SaveWorker, TableDropReview, TableDroppedReopen,
 };
+use tablecraft_schema::ScalarType;
 use tablecraft_ui::{
     Database, QueryActionEffect, QueryActionReview, QuerySchemaEffect, QuerySchemaPublication,
     SaveCleanupNotice,
 };
 
 pub(in crate::workspace::editing) enum ReviewedSchema {
+    AddField {
+        capability: ReviewedFieldAddition,
+        witness: Arc<AddedColumnReopen>,
+        scalar_type: ScalarType,
+    },
     CreateIndex {
         capability: ReviewedIndexCreation,
         witness: Arc<IndexCreatedReopen>,
@@ -40,6 +47,7 @@ pub(in crate::workspace::editing) enum ReviewedSchema {
 
 pub(super) enum Reopen {
     IndexCreated(Arc<IndexCreatedReopen>),
+    FieldAdded(Arc<AddedColumnReopen>),
     Created(Arc<CreatedTableReopen>),
     FieldDropped(Arc<FieldDroppedReopen>),
     TableDropped(Arc<TableDroppedReopen>),
@@ -76,6 +84,7 @@ impl ReviewedSchema {
 
     pub(super) fn document_revision(&self) -> u64 {
         match self {
+            Self::AddField { witness, .. } => witness.document_revision(),
             Self::CreateIndex { witness, .. } => witness.document_revision(),
             Self::Create { witness, .. } => witness.document_revision(),
             Self::DropField { witness, .. } => witness.document_revision(),
@@ -85,6 +94,7 @@ impl ReviewedSchema {
 
     pub(super) fn source_path(&self) -> &Path {
         match self {
+            Self::AddField { witness, .. } => witness.source_path(),
             Self::CreateIndex { witness, .. } => witness.source_path(),
             Self::Create { witness, .. } => witness.source_path(),
             Self::DropField { witness, .. } => witness.source_path(),
@@ -94,6 +104,7 @@ impl ReviewedSchema {
 
     pub(super) fn table(&self) -> &str {
         match self {
+            Self::AddField { witness, .. } => witness.table_name(),
             Self::CreateIndex { witness, .. } => witness.table_name(),
             Self::Create { witness, .. } => witness.table_name(),
             Self::DropField { witness, .. } => witness.table_name(),
@@ -107,6 +118,22 @@ impl ReviewedSchema {
         bundle: PathBuf,
     ) -> Result<(u64, Reopen), (String, Option<Self>)> {
         match self {
+            Self::AddField {
+                capability,
+                witness,
+                scalar_type,
+            } => match worker.start_field_addition(capability, bundle) {
+                Ok(id) => Ok((id, Reopen::FieldAdded(witness))),
+                Err(error) => {
+                    let message = error.to_string();
+                    let original = error.into_reviewed().map(|capability| Self::AddField {
+                        capability,
+                        witness,
+                        scalar_type,
+                    });
+                    Err((message, original))
+                }
+            },
             Self::CreateIndex {
                 capability,
                 witness,
@@ -170,6 +197,9 @@ impl ReviewedSchema {
 impl Reopen {
     pub(super) fn replacement_known(&self, outcome: SaveOutcome) -> bool {
         match self {
+            Self::FieldAdded(_) => outcome
+                .field_addition_reopen_facts()
+                .is_ok_and(|facts| facts.replacement),
             Self::IndexCreated(_) => outcome
                 .index_creation_reopen_facts()
                 .is_ok_and(|facts| facts.replacement),
@@ -189,6 +219,9 @@ impl Reopen {
         // NO_CLONE: The retained read-only witness survives a failed guarded open;
         // the independent worker command shares its exact immutable native proof.
         match self {
+            Self::FieldAdded(witness) => Command::OpenColumnAdded {
+                witness: Arc::clone(witness),
+            },
             Self::IndexCreated(witness) => Command::OpenIndexCreated {
                 witness: Arc::clone(witness),
             },
@@ -321,6 +354,7 @@ impl Desktop {
             return;
         }
         let captured_revision = match &host.reopen {
+            Reopen::FieldAdded(witness) => witness.document_revision(),
             Reopen::IndexCreated(witness) => witness.document_revision(),
             Reopen::Created(witness) => witness.document_revision(),
             Reopen::FieldDropped(witness) => witness.document_revision(),
@@ -426,6 +460,18 @@ impl ReviewedSchema {
     pub(super) fn matches_effect(&self, effect: &QueryActionEffect) -> bool {
         match (self, effect) {
             (
+                Self::AddField {
+                    witness,
+                    scalar_type,
+                    ..
+                },
+                QueryActionEffect::Schema(QuerySchemaEffect::AddColumn {
+                    column,
+                    scalar_type: observed,
+                }),
+            ) => witness.column_name() == column && scalar_type == observed,
+
+            (
                 Self::CreateIndex { witness, .. },
                 QueryActionEffect::Schema(QuerySchemaEffect::CreateIndex {
                     index,
@@ -475,6 +521,52 @@ impl ReviewedSchema {
 }
 
 impl Desktop {
+    pub(in crate::workspace) fn publish_query_schema_addition(
+        &mut self,
+        request_id: u64,
+        review: FieldAdditionReview,
+        capability: ReviewedFieldAddition,
+    ) {
+        let witness = capability.reopen_witness();
+        let FieldAdditionOrigin::SqlDeclared { scalar_type } = review.origin else {
+            self.fail_query_action_review(
+                request_id,
+                self.state.localizer.text("objects-open-refused"),
+            );
+            return;
+        };
+        if review.id != capability.id()
+            || review.origin != capability.captured_origin()
+            || witness.document_revision() != review.document_revision
+            || witness.table_name() != review.table
+            || witness.column_name() != review.column
+        {
+            self.fail_query_action_review(
+                request_id,
+                self.state.localizer.text("objects-open-refused"),
+            );
+            return;
+        }
+        let facts = QueryActionReview {
+            id: review.id,
+            document_revision: review.document_revision,
+            table: review.table,
+            effect: QueryActionEffect::Schema(QuerySchemaEffect::AddColumn {
+                column: review.column,
+                scalar_type,
+            }),
+        };
+        self.publish_query_action_review(
+            request_id,
+            facts,
+            ReviewedAction::Schema(ReviewedSchema::AddField {
+                capability,
+                witness,
+                scalar_type,
+            }),
+        );
+    }
+
     pub(in crate::workspace) fn publish_query_schema_index_creation(
         &mut self,
         request_id: u64,

@@ -42,3 +42,5 @@ query-action-schema-index-ascending = 順序: 昇順
 query-action-schema-index-descending = 順序: 降順
 query-action-schema-index-source-rows = インデックスを作成する既存レコード数: { $count }
 query-action-schema-index-confirmation = 元のデータベースにこの重複を許可するインデックスを作成しますか？
+
+query-action-schema-add-confirmation = 元のテーブルにこのフィールドを追加しますか？
