@@ -23,6 +23,12 @@ impl NativeImage {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<NativeFieldDropIdentity, FieldDropError> {
         if self.has_retained_table_source(table, budget, cancelled)? {
+            if self.select_native_retained_non_tail_field_drop_source(
+                table, column, budget, cancelled,
+            )? {
+                return self
+                    .inspect_retained_non_tail_field_drop_source(table, column, budget, cancelled);
+            }
             return if self.select_native_retained_typed_tail_field_drop_source(
                 table, column, budget, cancelled,
             )? {

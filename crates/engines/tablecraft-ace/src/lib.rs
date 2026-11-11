@@ -369,7 +369,7 @@ pub use table::{
 #[cfg(all(feature = "ace16-create", feature = "journal"))]
 pub use table::{
     FieldDropError, NativeCurrentTailFieldDropCandidate, NativeFieldDropCandidate,
-    NativeFieldDropIdentity, SavedFieldDropSourcePurpose,
+    NativeFieldDropIdentity, NativeRetainedNonTailFieldDropCandidate, SavedFieldDropSourcePurpose,
 };
 #[cfg(all(feature = "ace16-create", feature = "journal"))]
 pub use table::{

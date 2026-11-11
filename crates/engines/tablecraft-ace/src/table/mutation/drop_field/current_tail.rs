@@ -1,12 +1,13 @@
 //! Populated native tail removal with retained row and historical storage.
 mod retained;
-mod source;
-mod verify;
 
 #[cfg(test)]
 mod tests;
 
-use super::{FieldDropError as Error, NativeFieldDropIdentity, definition};
+use super::{
+    FieldDropError as Error, NativeFieldDropIdentity, definition, schema_source as source,
+    schema_verify as verify,
+};
 use crate::{NativeImage, header::check, table::mutation::catalog_property};
 use tablecraft_core::limits::ResourceBudget;
 

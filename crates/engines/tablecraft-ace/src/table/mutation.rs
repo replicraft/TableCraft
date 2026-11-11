@@ -248,7 +248,7 @@ pub use add_field::{
 #[cfg(all(feature = "ace16-create", feature = "journal"))]
 pub use drop_field::{
     FieldDropError, NativeCurrentTailFieldDropCandidate, NativeFieldDropCandidate,
-    NativeFieldDropIdentity, SavedFieldDropSourcePurpose,
+    NativeFieldDropIdentity, NativeRetainedNonTailFieldDropCandidate, SavedFieldDropSourcePurpose,
 };
 #[cfg(all(feature = "ace16-create", feature = "journal"))]
 pub use rename_field::{

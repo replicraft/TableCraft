@@ -1,10 +1,8 @@
 //! Retained tail DROP keeps exact source languages and shared snapshot placement.
-use super::{Error, NativeCurrentTailFieldDropCandidate, definition, source, verify};
+use super::super::schema_candidate;
+use super::{Error, NativeCurrentTailFieldDropCandidate, source};
 use crate::{
-    NativeFieldDropIdentity, NativeImage,
-    header::check,
-    inspect_table_schema,
-    table::mutation::{catalog_property::retained_snapshot, saved_field},
+    NativeFieldDropIdentity, NativeImage, inspect_table_schema, table::mutation::saved_field,
 };
 use source::Selection;
 use tablecraft_core::limits::ResourceBudget;
@@ -114,22 +112,11 @@ fn prepare(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<NativeCurrentTailFieldDropCandidate, Error> {
-    let _span = tracing::debug_span!("native.retained_tail_field_drop.prepare").entered();
-    let mut source = source::capture(image, table, column, selection, budget, cancelled)?;
-    let before = source.proof.image();
-    let page = definition::page(before, &source.evidence, budget, cancelled)?;
-    let mut after = definition::copy_image(before, budget, cancelled)?;
-    let base = source.evidence.observed.schema.definition_page() as usize
-        * crate::format::page::PAGE_BYTES;
-    after[base..base + page.len()].copy_from_slice(&page);
-    let body = std::mem::take(&mut source.evidence.body);
-    let change = retained_snapshot::compose(before, source.proof.table(), body, budget, cancelled)?;
-    change.apply(&mut after, budget, cancelled)?;
-    verify::retained_candidate(&source, &after, &change, budget, cancelled)?;
-    verify::survivors(&source, &after, budget, cancelled)?;
-    drop(change);
-    check(budget, cancelled)?;
-    Ok(NativeCurrentTailFieldDropCandidate { source, after })
+    let candidate = schema_candidate::prepare(image, table, column, selection, budget, cancelled)?;
+    Ok(NativeCurrentTailFieldDropCandidate {
+        source: candidate.source,
+        after: candidate.after,
+    })
 }
 
 #[cfg(test)]

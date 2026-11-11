@@ -178,7 +178,10 @@ pub(super) fn candidate(
     )?;
     match evidence.purpose {
         Purpose::SettledEmpty => framing::validate(&properties, budget, cancelled)?,
-        Purpose::CurrentTail | Purpose::RetainedTail | Purpose::RetainedTypedTail => {
+        Purpose::CurrentTail
+        | Purpose::RetainedTail
+        | Purpose::RetainedTypedTail
+        | Purpose::RetainedNonTail => {
             // The complete original dictionary and every original group have
             // complete frame/entry coverage. The exact group-omission proof below
             // carries that coverage to AFTER, including dictionary names whose
@@ -205,7 +208,10 @@ pub(super) fn candidate(
         Purpose::SettledEmpty => {
             framing::ordered_group_blocks(&observed.properties, budget, cancelled, visit)?
         }
-        Purpose::CurrentTail | Purpose::RetainedTail | Purpose::RetainedTypedTail => {
+        Purpose::CurrentTail
+        | Purpose::RetainedTail
+        | Purpose::RetainedTypedTail
+        | Purpose::RetainedNonTail => {
             framing::current_schema_group_blocks(&observed.properties, budget, cancelled, visit)?
         }
     };
@@ -300,7 +306,7 @@ pub(super) fn definition_bytes(
     if new[entry_start..middle_end] != old[entry_end..name_start]
         || new[middle_end..new_length] != old[name_end..old_length]
         || match evidence.purpose {
-            Purpose::RetainedTail | Purpose::RetainedTypedTail => {
+            Purpose::RetainedTail | Purpose::RetainedTypedTail | Purpose::RetainedNonTail => {
                 new[new_length..old_length].iter().any(|byte| *byte != 0)
                     || new[old_length..] != old[old_length..]
             }

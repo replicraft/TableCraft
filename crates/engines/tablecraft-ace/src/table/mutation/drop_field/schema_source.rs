@@ -1,5 +1,5 @@
 //! A DROP-purpose observation layered on actual current native source evidence.
-use super::super::{
+use super::{
     FieldDropError as Error,
     source::{self, Evidence},
 };
@@ -11,13 +11,16 @@ pub(super) enum Selection {
     Current,
     Retained,
     RetainedTyped,
+    RetainedNonTail,
 }
 
 impl Selection {
     fn family(self) -> current_schema::Family {
         match self {
             Self::Current => current_schema::Family::Current,
-            Self::Retained | Self::RetainedTyped => current_schema::Family::Retained,
+            Self::Retained | Self::RetainedTyped | Self::RetainedNonTail => {
+                current_schema::Family::Retained
+            }
         }
     }
 
@@ -38,6 +41,9 @@ impl Selection {
             }
             Self::RetainedTyped => {
                 Evidence::capture_retained_typed_tail(image, table, column, budget, cancelled)
+            }
+            Self::RetainedNonTail => {
+                Evidence::capture_retained_non_tail(image, table, column, budget, cancelled)
             }
         }
     }

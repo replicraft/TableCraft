@@ -88,6 +88,7 @@ enum Purpose {
     RetainedRename,
     RetainedTypedRename,
     RetainedTypedTail,
+    RetainedTypedNonTail,
 }
 
 impl Purpose {
@@ -98,6 +99,7 @@ impl Purpose {
                 | Self::RetainedRename
                 | Self::RetainedTypedRename
                 | Self::RetainedTypedTail
+                | Self::RetainedTypedNonTail
         )
     }
 }
@@ -212,6 +214,23 @@ impl Observed {
         )
     }
 
+    pub(in crate::table::mutation) fn capture_retained_non_tail(
+        image: &NativeImage,
+        table: &str,
+        field: &str,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, Error> {
+        Self::capture_for(
+            image,
+            table,
+            field,
+            Purpose::RetainedTypedNonTail,
+            budget,
+            cancelled,
+        )
+    }
+
     fn capture_for(
         image: &NativeImage,
         table: &str,
@@ -259,7 +278,9 @@ impl Observed {
         if target.number() == 0
             && !matches!(
                 purpose,
-                Purpose::RetainedTypedRename | Purpose::RetainedTypedTail
+                Purpose::RetainedTypedRename
+                    | Purpose::RetainedTypedTail
+                    | Purpose::RetainedTypedNonTail
             )
             || !target.name().is_ascii()
         {
@@ -277,7 +298,14 @@ impl Observed {
         {
             return Err(Error::Source);
         }
-        if matches!(purpose, Purpose::RetainedTypedTail) && schema.columns().len() < 2 {
+        if matches!(purpose, Purpose::RetainedTypedNonTail) && index + 1 == schema.columns().len() {
+            return Err(Error::Source);
+        }
+        if matches!(
+            purpose,
+            Purpose::RetainedTypedTail | Purpose::RetainedTypedNonTail
+        ) && schema.columns().len() < 2
+        {
             // The qualified table source requires a surviving declaration.
             return Err(Error::Source);
         }
@@ -311,7 +339,9 @@ impl Observed {
         let group = group.ok_or(Error::Source)?;
         if matches!(
             purpose,
-            Purpose::RetainedTypedRename | Purpose::RetainedTypedTail
+            Purpose::RetainedTypedRename
+                | Purpose::RetainedTypedTail
+                | Purpose::RetainedTypedNonTail
         ) {
             // The consuming retained-schema source separately qualifies every
             // actual property, literal default, dependency and program. This
@@ -440,7 +470,8 @@ impl Observed {
             | Purpose::RetainedTail
             | Purpose::RetainedRename
             | Purpose::RetainedTypedRename
-            | Purpose::RetainedTypedTail => framing::current_schema_names_with_groups(
+            | Purpose::RetainedTypedTail
+            | Purpose::RetainedTypedNonTail => framing::current_schema_names_with_groups(
                 &properties,
                 reader.budget,
                 cancelled,
@@ -556,7 +587,8 @@ fn original_declaration_matches(
             | Purpose::RetainedTail
             | Purpose::RetainedRename
             | Purpose::RetainedTypedRename
-            | Purpose::RetainedTypedTail => {
+            | Purpose::RetainedTypedTail
+            | Purpose::RetainedTypedNonTail => {
                 (size_of::<u16>()..=OBSERVED_TEXT_BYTES).contains(&column.storage_length())
                     && column.storage_length().is_multiple_of(size_of::<u16>())
                     && column.extended_flags() & !UNICODE_COMPRESSION_FLAG == 0

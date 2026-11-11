@@ -1,5 +1,5 @@
 //! Complete ordered survivor reads complement the exact unchanged storage proof.
-use super::{Error, source::Source};
+use super::{FieldDropError as Error, schema_source::Source};
 use crate::{
     InspectError, check_table,
     format::page::PAGE_BYTES,
@@ -36,7 +36,7 @@ pub(super) fn survivors(
             .schema
             .columns()
             .iter()
-            .take(count)
+            .filter(|field| field.number() != observed.identity.column_number())
             .map(|field| field.name()),
     );
     let before = read_table_projection(
@@ -98,7 +98,7 @@ pub(super) fn retained_candidate(
     if before.as_bytes().len() != after.len() {
         return Err(Error::Preservation);
     }
-    super::super::verify::definition_bytes(before, &source.evidence, after, budget, cancelled)?;
+    super::verify::definition_bytes(before, &source.evidence, after, budget, cancelled)?;
     snapshot.verify_placement(after, budget, cancelled)?;
     let base = observed.schema.definition_page() as usize * PAGE_BYTES;
     let allowed = [
@@ -141,7 +141,7 @@ pub(super) fn retained_candidate(
         .schema
         .columns()
         .iter()
-        .take(current.schema.columns().len())
+        .filter(|field| field.number() != observed.identity.column_number())
         .zip(current.schema.columns())
     {
         check(budget, cancelled)?;
