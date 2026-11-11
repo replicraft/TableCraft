@@ -15,9 +15,24 @@ const UPDATE: &str = "UPDATE Table1 AS t SET t.Score=25 WHERE EXISTS (SELECT c.I
 
 #[test]
 fn normal_run_correlated_update_reviews_then_saves_and_reopens_exact_native_values() {
+    reviewed_update_journey(UPDATE, 1);
+}
+
+#[test]
+fn normal_run_zero_correlated_update_saves_original_identity_with_zero_counts() {
+    reviewed_update_journey(
+        "UPDATE Table1 SET Score=25 WHERE ID NOT IN (SELECT NULL FROM Changes)",
+        0,
+    );
+}
+
+fn reviewed_update_journey(sql: &str, matched: usize) {
     let source = joined_update::source();
-    let expected =
-        field_changes::update_score(&source.bytes, source.target_definition, 0, Some(25));
+    let expected = if matched == 0 {
+        source.bytes.to_vec()
+    } else {
+        field_changes::update_score(&source.bytes, source.target_definition, 0, Some(25))
+    };
     let (_directory, path, before, mut harness) = opened(source.bytes);
     let original = harness.state().state.active_object().unwrap();
     let prior = harness
@@ -28,7 +43,7 @@ fn normal_run_correlated_update_reviews_then_saves_and_reopens_exact_native_valu
         .unwrap()
         .rows
         .as_ptr();
-    reviewed(&mut harness, UPDATE);
+    reviewed(&mut harness, sql);
     let warning = harness.state().state.localizer.text("query-action-no-undo");
     harness.get_by_role_and_label(Role::Label, &warning);
     assert_image(&std::fs::read(&path).unwrap(), &before);
@@ -51,7 +66,7 @@ fn normal_run_correlated_update_reviews_then_saves_and_reopens_exact_native_valu
     assert!(!harness.state().editing.has_save());
     assert!(harness.state().editing.query_action_review.is_none());
     assert_eq!(harness.state().state.active_object().unwrap(), original);
-    assert_eq!(harness.state().state.sql, UPDATE);
+    assert_eq!(harness.state().state.sql, sql);
     assert_eq!(
         harness
             .state()
@@ -65,7 +80,7 @@ fn normal_run_correlated_update_reviews_then_saves_and_reopens_exact_native_valu
     );
     assert_image(&std::fs::read(&path).unwrap(), &before);
     assert!(!journal_path(&path).exists());
-    reviewed(&mut harness, UPDATE);
+    reviewed(&mut harness, sql);
     assert!(!journal_path(&path).exists());
     harness
         .get_by_role_and_label(Role::Button, "Yes")
@@ -74,7 +89,7 @@ fn normal_run_correlated_update_reviews_then_saves_and_reopens_exact_native_valu
     let report = finish_save(&mut harness);
     assert!(
         matches!(report.outcome, SaveOutcome::Saved { receipt }
-        if receipt.matched_rows == Some(1) && receipt.changed_rows == Some(1) && receipt.schema_change.is_none()),
+        if receipt.matched_rows == Some(matched) && receipt.changed_rows == Some(matched) && receipt.schema_change.is_none()),
         "{report:?}"
     );
     assert!(harness.state().editing.has_save());
@@ -86,7 +101,7 @@ fn normal_run_correlated_update_reviews_then_saves_and_reopens_exact_native_valu
     finish_reads(&mut harness);
     assert!(!harness.state().editing.has_save());
     assert!(!journal_path(&path).exists());
-    assert_eq!(harness.state().state.sql, UPDATE);
+    assert_eq!(harness.state().state.sql, sql);
     let fresh = harness.state().state.active_object().unwrap();
     assert_eq!(fresh.target.kind, ObjectKind::Sql);
     assert_ne!(fresh, original);
@@ -97,7 +112,7 @@ fn normal_run_correlated_update_reviews_then_saves_and_reopens_exact_native_valu
     run(&mut harness, "SELECT ID,Score FROM Table1 ORDER BY ID");
     let rows = &harness.state().state.query_data.as_ref().unwrap().rows;
     assert_eq!(rows.len(), 2);
-    assert_eq!(rows[0][1].text, "25");
+    assert_eq!(rows[0][1].text, if matched == 0 { "17" } else { "25" });
     assert_eq!(rows[1][1].text, "NULL");
     run(&mut harness, "SELECT Id,Score FROM Changes ORDER BY Id");
     let rows = &harness.state().state.query_data.as_ref().unwrap().rows;
