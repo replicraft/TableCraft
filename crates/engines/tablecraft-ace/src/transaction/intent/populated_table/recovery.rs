@@ -36,9 +36,39 @@ impl NativePopulatedAddTableIntent {
         proof: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<QualifiedPopulatedAddTableRecovery<'a, J>, NativeRecoveryQualificationError> {
+        self.qualify_with_pools(checked, scope, native, Some(proof), cancelled)
+    }
+
+    /// Qualify with one cumulative caller pool for sequential native and proof work.
+    /// The pool is never reset or replaced; V3 reconstruction remains identical
+    /// to the explicit two-pool entry point.
+    pub fn qualify_recovery_shared<'a, J: DurableStorage>(
+        self,
+        checked: CheckedV3<'a, J>,
+        scope: CatalogScope,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<QualifiedPopulatedAddTableRecovery<'a, J>, NativeRecoveryQualificationError> {
+        self.qualify_with_pools(checked, scope, budget, None, cancelled)
+    }
+
+    fn qualify_with_pools<'a, J: DurableStorage>(
+        self,
+        checked: CheckedV3<'a, J>,
+        scope: CatalogScope,
+        native: &mut ResourceBudget,
+        mut proof: Option<&mut ResourceBudget>,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<QualifiedPopulatedAddTableRecovery<'a, J>, NativeRecoveryQualificationError> {
         let _span = tracing::debug_span!("native.populated_table_recovery.qualify").entered();
-        check(proof, cancelled)?;
-        self.verify_before(checked.before_bytes(), proof, cancelled)?;
+        {
+            let work = match proof.as_deref_mut() {
+                Some(proof) => proof,
+                None => &mut *native,
+            };
+            check(work, cancelled)?;
+            self.verify_before(checked.before_bytes(), work, cancelled)?;
+        }
         let image = NativeImage::capture_retained(
             &mut Cursor::new(checked.before_bytes()),
             scope,
@@ -46,14 +76,13 @@ impl NativePopulatedAddTableIntent {
             cancelled,
         )?;
         let plan = image.plan_populated_add_table(self.definition, self.rows, native, cancelled)?;
-        equal_image(
-            plan.before_bytes(),
-            checked.before_bytes(),
-            proof,
-            cancelled,
-        )?;
-        equal_image(plan.after_bytes(), checked.after_bytes(), proof, cancelled)?;
-        check(proof, cancelled)?;
+        let work = match proof {
+            Some(proof) => proof,
+            None => native,
+        };
+        equal_image(plan.before_bytes(), checked.before_bytes(), work, cancelled)?;
+        equal_image(plan.after_bytes(), checked.after_bytes(), work, cancelled)?;
+        check(work, cancelled)?;
         Ok(QualifiedPopulatedAddTableRecovery { checked })
     }
 }

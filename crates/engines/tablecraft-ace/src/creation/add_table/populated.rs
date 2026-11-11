@@ -134,6 +134,17 @@ impl NativeImage {
 }
 
 impl PopulatedAddTablePlan {
+    pub(crate) fn into_parts(
+        self,
+    ) -> (
+        NativeImage,
+        NativeImageSource,
+        FirstTableDefinition,
+        Vec<Vec<Value>>,
+    ) {
+        (self.before, self.after, self.definition, self.rows)
+    }
+
     pub(crate) fn definition(&self) -> &FirstTableDefinition {
         &self.definition
     }

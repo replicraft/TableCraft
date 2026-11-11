@@ -1,6 +1,9 @@
 //! Only the sealed populated candidate can prepare a V3 native image journal.
 use super::{PopulatedTableIntentError, binding, codec};
-use crate::PopulatedAddTablePlan;
+use crate::{
+    NativeImage, NativeRecoveryQualificationError, PopulatedAddTablePlan,
+    transaction::qualified_recovery::equal_image,
+};
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_io::journal::{
     self, CommitError, DurableStorage, JournalError, PreparedResizableImage, RecoveryOutcome,
@@ -15,6 +18,24 @@ pub struct PreparedPopulatedAddTable<'a, D, J> {
 }
 
 impl PopulatedAddTablePlan {
+    /// Reconstruct this reviewed request against the actual exclusive source.
+    /// Complete BEFORE and AFTER equality use the separate cumulative proof pool;
+    /// declarations and materialized rows move without reevaluating SQL.
+    pub fn requalify_with_budgets(
+        self,
+        image: NativeImage,
+        native: &mut ResourceBudget,
+        proof: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, NativeRecoveryQualificationError> {
+        let (before, after, definition, rows) = self.into_parts();
+        equal_image(image.as_bytes(), before.as_bytes(), proof, cancelled)?;
+        drop(before);
+        let rebuilt = image.plan_populated_add_table(definition, rows, native, cancelled)?;
+        equal_image(rebuilt.after_bytes(), after.as_bytes(), proof, cancelled)?;
+        Ok(rebuilt)
+    }
+
     /// Serialize the original declaration and materialized values against their
     /// complete actual BEFORE. No query or native field encoding is persisted.
     pub fn encode_intent(
