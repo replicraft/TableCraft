@@ -108,9 +108,28 @@ fn normal_sql_run_prompts_for_unknown_literal_name_cancels_then_runs_exact_value
             .state
             .query_parameter_inspection_current(current_id, sql)
     );
+    assert!(
+        harness
+            .get_by_role_and_label(Role::Button, "OK")
+            .accesskit_node()
+            .is_disabled(),
+        "VALUE input requires an explicitly selected carrier"
+    );
+    harness
+        .get_by_role_and_label(Role::ComboBox, "Enter label:")
+        .click_accesskit();
+    harness.run_steps(1);
+    harness.get_by_label("Text").click_accesskit();
+    harness.run_steps(1);
     enter(&mut harness, "Enter label:", "日本語 🦀");
     confirm(&mut harness);
     finish_reads(&mut harness);
+    assert!(!harness.state().state.parameter_prompt_open());
+    assert!(
+        harness.state().state.error.is_none(),
+        "query failed: {:?}",
+        harness.state().state.error
+    );
     let result = harness.state().state.query_data.as_ref().unwrap();
     assert_eq!(result.rows.len(), 1);
     assert_eq!(result.rows[0][0].text, "日本語 🦀");
