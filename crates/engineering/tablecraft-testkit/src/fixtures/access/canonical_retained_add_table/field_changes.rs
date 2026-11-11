@@ -20,7 +20,11 @@ pub fn rename(
     assert!(old.is_ascii() && new.is_ascii() && !new.is_empty() && new.len() <= 64);
     let page = definition as usize * PAGE;
     let active = word(before, page + 45);
-    let mut position = page + 75 + 25 * active;
+    // Physical index records precede column declarations. The existing indexed
+    // sources start at75; a genuinely keyless definition starts at63.
+    let physical_indexes =
+        u32::from_le_bytes(before[page + 51..page + 55].try_into().unwrap()) as usize;
+    let mut position = page + 63 + 12 * physical_indexes + 25 * active;
     let encoded = old
         .encode_utf16()
         .flat_map(u16::to_le_bytes)
@@ -147,6 +151,22 @@ pub fn source(
 pub fn keyless_first_field(before: &[u8], table: &str) -> Vec<u8> {
     let definition = before.len() / PAGE;
     let template = super::template(super::Target::KeylessNumber);
+    let declaration = &template[7 * PAGE..8 * PAGE];
+    assert_eq!(&declaration[41..47], &[2, 0, 0, 0, 2, 0]);
+    assert_eq!(&declaration[47..55], &[0; 8]);
+    for (number, entry) in [(0, 63), (1, 88)] {
+        assert_eq!(declaration[entry], 4);
+        assert_eq!(word(declaration, entry + 5), number);
+        assert_eq!(declaration[entry + 15], 3);
+        assert_eq!(word(declaration, entry + 21), number * 4);
+        assert_eq!(word(declaration, entry + 23), 4);
+    }
+    assert_eq!(&declaration[113..119], &[4, 0, b'I', 0, b'd', 0]);
+    assert_eq!(
+        &declaration[119..131],
+        &[10, 0, b'S', 0, b'c', 0, b'o', 0, b'r', 0, b'e', 0]
+    );
+    assert_eq!(&declaration[131..133], &[255, 255]);
     let mut dictionary = Vec::new();
     for text in ["Required", "DefaultValue"] {
         let encoded = text
