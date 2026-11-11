@@ -1,4 +1,4 @@
-# SELECT INTO query staging
+# SELECT INTO staging and reviewed native publication
 
 `tablecraft-query::plan_make_table` stages a local make-table query as complete
 stored scalar rows and query declarations. It does not create a native table,
@@ -64,13 +64,25 @@ otherwise omit a row. No partial make-table plan is returned.
 ## Restricted native preparation and atomic adapter save
 
 The Access adapter now has a direct local scalar-projection preparation over one
-immutable original image. It resolves native UTF-16 Text widths, Binary widths
+immutable original image. It resolves native UTF-16 Short Text widths
 and Decimal precision/scale from the actual source fields, then runs the moved
 retrieval against a reader constructed over that same image. It retains the
 complete typed rows and an explicit unadorned manual declaration; no Required,
 default, primary/index or generated property is inherited. Current preparation
-refuses filters, groups, computed projections and broader source contexts rather
-than guessing their physical declarations.
+admits explicit field projections and aliases from one local table, with direct
+source-field ordering. It refuses filters, groups, computed/wildcard projections,
+parameters, named/joined/external sources, Binary, Long Text and extended date/time
+declarations rather than guessing their physical shape. The native-comparison
+entry point constructs the database-default and exact field-policy resolver from
+that same captured image, using a separate cumulative comparison budget. Unknown
+policies never silently become binary comparison.
+
+Publication requires the positively qualified retained ACE 16 source with actual
+MSysDb metadata, unencoded pages, complete catalog/page ownership and the existing
+constraint, dependency and required-program checks. Header recognition or a
+successful query preparation alone grants no native save authority. The
+[append-table contract](../access/writes/ADD_TABLE_PERSISTENCE.md) retains the
+source and allocation boundaries.
 
 The separate native populated append candidate consumes rows without cloning
 text/binary payloads, packs them by actual record/page/slot geometry, allocates
@@ -78,8 +90,8 @@ owned/candidate DATA maps (including represented bitmap storage), and checks
 complete readback plus the protected original byte complement. Independent
 whole-image fixtures cover nullable numbers, Boolean value bits, Text/Decimal and
 mixed GUID/date/IEEE fixed values across DATA pages and map windows. There is no
-additional aggregate 64-row quota. Per-record capacity, native count/file geometry
-and explicit caller budgets still apply.
+separate aggregate row-count quota. Per-record capacity, native page/count/file
+geometry and explicit caller budgets still apply.
 
 Preparation remains inert. With journaling enabled, its consuming `finish` invokes
 the native populated planner on the same original image and materialized rows.
@@ -94,5 +106,49 @@ Applied receipts report the table addition and inserted rows, with no matched-ro
 count. Recovery retains its actual outcome without inventing affected-row counts.
 The [qualification record](../../tests/results/queries/ace-sql-parameters-and-atomic-make-table-2026-11-11.json)
 covers same-file saves, zero rows, stale/cancelled admission and cold reconstruction.
-Runtime review and normal SQL Run publication remain separate acceptance
-boundaries. An empty CREATE followed by another save is not a substitute.
+
+## Runtime review and SQL View
+
+Normal SQL View Run now classifies SELECT INTO as a schema action and sends the
+runtime-issued inspection through `ReviewSchemaSql`. Private source identity and
+document revision are checked before parsing or native reads. The consuming
+`ReviewedTableCreation` owns the selected populated plan, not an empty-table
+profile or synthetic Design draft. Review holds no file lease; save requalifies
+that complete plan under the exclusive source owner without rerunning SQL.
+
+The review shows the destination, declared field count and selected record count.
+No preserves the source and previous results; Yes uses the same retained save
+worker, terminal acknowledgment and guarded whole-image reopen as other schema
+operations. The SQL tab/draft survives. The host publishes fresh catalog state
+without rerunning the action or treating inserted counts as query result rows.
+Zero selected records still create the declared empty table atomically.
+
+`CreatedTableReopen::inserted_rows()` distinguishes populated creation, including
+zero, from an empty CREATE request. An applied receipt must match that exact
+inserted count and table-added schema, with no old-row matched count. Recovery
+and confirmation keep their actual count-free receipts. Complete AFTER comparison
+remains mandatory before fresh publication.
+
+New Text declarations use the destination's masked ROOT database default, not a
+projected field's custom sort policy. Native construction currently admits exact
+General Legacy and General 2010 defaults; zero, unknown and other defaults,
+including French Legacy, refuse new Text construction. Non-Text construction
+does not acquire that restriction. Fresh canonical databases retain their authored
+General 2010 default. Two native whole-image checks pass for empty and populated
+construction, including a source field whose custom sort differs from the ROOT
+default, and for unsupported-default refusal without blocking non-Text creation.
+This follows [Jackcess's unspecified textual-column default selection](https://github.com/jahlborn/jackcess/blob/master/src/main/java/com/healthmarketscience/jackcess/impl/TableMutator.java#L98-L102);
+it does not claim native Windows/Access qualification for other sort families.
+
+The [four-frame presentation record](../../tests/results/queries/make-table-review-presentation-2026-11-11.json)
+records English/German light/dark offscreen review frames and their reference gaps.
+The connected workflow checks passed 10 adapter preparation cases, 391 runtime
+cases with one ignored, six focused UI cases and 32 selected desktop cases,
+plus strict lint across seven affected packages and minimal-feature checks.
+After the ROOT-default correction, 21 adapter creation/recovery cases, 34 selected
+runtime creation cases and a creation-only engine library check also pass. The
+final selected native followup passes 384 cases with five ignored, including
+both destination-default checks and old creation/TCPT regressions; the full
+runtime rerun passes 391 with one ignored, and the strict followup passes.
+These are local checks of the stated source/profile, not complete ACE SQL or
+Windows/Access parity. The earlier checkpoint remains immutable historical evidence.

@@ -962,7 +962,36 @@ Reviews return the existing table-creation, field-drop or table-drop consuming
 capability. They hold no save lease and change no database bytes. The normal
 single save worker freshly reconstructs the selected original request, retains
 failures, publishes a terminal receipt and requires acknowledgment and guarded
-reopening. This runtime service does not by itself activate desktop SQL Run.
+reopening. Normal desktop SQL Run consumes these issued capabilities through the
+same confirmation and guarded publication flow.
+
+### Reviewed SELECT INTO
+
+With creation and offline editing, the same issued `ReviewSchemaSql` service
+accepts the qualified direct-local SELECT INTO profile. Source/revision checks
+precede parsing; preparation derives physical fields and complete scalar rows
+from one immutable native image. Its native comparison resolver uses that image's
+actual default and field policies under a separate cumulative pool. Filters,
+computed/wildcard outputs, parameters and broader source/declaration contexts
+remain refused by this native preparation slice; the query-only planner has its
+own wider contract.
+
+The table-creation review owns a distinct populated request. It does not infer an
+empty first/appended-table profile or fabricate a Design snapshot. Materialized
+values and declarations move into one source-bound native candidate. The reopen
+witness shares its already-paid immutable AFTER allocation, while the save worker
+freshly reconstructs the same complete request against the actual exclusive
+source. Native, complete-image proof and persistence work retain their separate
+cumulative budgets. There is one TCPT0001/V3 schema-plus-row save, without query
+reevaluation or an intermediate empty-table save.
+
+The review exposes the exact destination, field count and inserted count. Applied
+receipts require `matched_rows == None`, the reviewed inserted count in
+`changed_rows`, and the exact table-added schema. Zero rows still create schema.
+Recovery/confirmation retain count-free facts; guarded reopen still compares the
+complete expected image. `CreatedTableReopen::inserted_rows()` returns `Some(n)`
+for populated requests and `None` for empty CREATE. SQL origin retains no Design
+draft revision. See [make-table contracts](../query/MAKE_TABLE_QUERIES.md).
 
 ## Reviewed SQL DELETE actions
 

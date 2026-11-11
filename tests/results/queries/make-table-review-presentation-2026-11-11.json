@@ -1,0 +1,268 @@
+{
+  "date": "2026-11-11",
+  "ui_source_commit": "0de92a4f04545bab947709c445d88ea3960b6584",
+  "runtime_source_commit": "e98d29c6a2e6c10900db0259dc5afcb1b7bf4fd4",
+  "comparison_source_commit": "c4df57486a53a3a9fe51a6f82124c82d6f75bb9f",
+  "platform": "macOS 14.7.2 ARM64",
+  "host": "Shared source-free preview, offscreen WGPU; no runtime capability in the preview.",
+  "native_application_windows_opened": false,
+  "renderer": {
+    "path": ".cache/cargo-backend-20261102/debug/examples/render_preview",
+    "sha256": "bb2be3c3ee33f3464170e2815a29910ccb529e11afaef7612f71933ddca19652"
+  },
+  "driver": {
+    "path": ".cache/ace-sql-runtime-make-table/render.py",
+    "sha256": "eeed1473ce22c4d0e3583cfdec6cd6f8d009114ce28496e40c84449187ccada5"
+  },
+  "reference": {
+    "surface": "Actual retained Windows Access Home/datasheet capture opened",
+    "matching_sql_editor_capture": false,
+    "matching_make_table_warning_capture": false,
+    "matching_dark_capture": false,
+    "captured_reference_scale": "unknown"
+  },
+  "qualification": "Presentation and connected local implementation checks only. The shared compact action-warning surface is an adaptation; this is not native Windows/Access layout or execution parity.",
+  "workflow_checks": {
+    "access-comparison": {
+      "passed": 10,
+      "failed": 0,
+      "ignored": 0,
+      "log": {
+        "path": ".cache/ace-sql-make-table-workflows-access-comparison-20261111.log",
+        "sha256": "e6f8f8b09756d7f49626c2862f3c731cd0f18ed6f57aa57caf157aae4a6788fa"
+      }
+    },
+    "runtime": {
+      "passed": 391,
+      "failed": 0,
+      "ignored": 1,
+      "log": {
+        "path": ".cache/ace-sql-make-table-workflows-runtime-20261111.log",
+        "sha256": "b3baa33efc9f673d0904b1bbcd5e2337868eca516e8913cea51eae3f444ac79f"
+      }
+    },
+    "ui": {
+      "passed": 6,
+      "failed": 0,
+      "ignored": 0,
+      "log": {
+        "path": ".cache/ace-sql-make-table-workflows-ui-20261111.log",
+        "sha256": "0554c7289ee6083f070e8ce7a326532f63efa7510712049b0dbc7c26261ccf8b"
+      }
+    },
+    "desktop": {
+      "passed": 32,
+      "failed": 0,
+      "ignored": 0,
+      "log": {
+        "path": ".cache/ace-sql-make-table-workflows-desktop-20261111.log",
+        "sha256": "e2a39ba7ebc035330825ede8668e3e128a561bb2b21a4ef52fc102017818b405"
+      }
+    },
+    "strict": {
+      "log": {
+        "path": ".cache/ace-sql-make-table-workflows-strict-20261111.log",
+        "sha256": "e206a7c9cb1881d0818c431a1763b55f71279b0ff756a87b0f74d14bebaa353e"
+      },
+      "affected_package_count": 7
+    },
+    "minimal": {
+      "log": {
+        "path": ".cache/ace-sql-make-table-workflows-minimal-20261111.log",
+        "sha256": "56acd72840f8f233b3e41451349a3870cfa8da2eb9e5f39894bf134e727462f2"
+      }
+    },
+    "render-build": {
+      "log": {
+        "path": ".cache/ace-sql-make-table-workflows-render-build-20261111.log",
+        "sha256": "b40edb046fc572d8109556d753c757845df7ca5c40b7e01f8efff5ed9862fc16"
+      }
+    }
+  },
+  "accounting": "Counts describe the named runs, not a sum of distinct cases across historical records. The six UI cases are a focused suite, not a new full-UI count. Test dev-dependency feature unification does not establish a journal-free test run.",
+  "rendered_frames": 4,
+  "directly_inspected_frames": 4,
+  "observations": [
+    "All four frames show destination CustomerArchive, three fields and 900 selected records, with one-operation create-and-insert confirmation.",
+    "English and German decision labels are visible in both themes, with No initially focused. Modal text is not clipped at1280\u00d7820/1\u00d7.",
+    "The full Ribbon remains present behind the modal; the German Ribbon retains its existing horizontal scrolling.",
+    "No old-destination matched count or empty-CREATE-only confirmation is displayed. The SQL draft and previous result grid remain visible behind review."
+  ],
+  "causal_failures": [
+    {
+      "cause": "Sandbox WGPU adapter discovery failed with No adapter found before producing an image. The same renderer succeeded for all four frames with authorized offscreen graphics access; no native window was opened.",
+      "log": {
+        "path": ".cache/ui-previews/sql-make-table/en-US-light-render-sandbox-failure.log",
+        "sha256": "cfa45181069f6df478f72f52605b7f274516205c3f17651a1cb1a93adf0572c2"
+      },
+      "report": {
+        "path": ".cache/ui-previews/sql-make-table/render-results-sandbox-failure.json",
+        "sha256": "fdafb13e1ad45407a86956258b166dc9c3e9fe195abd259b10ba46853ee27afa"
+      }
+    }
+  ],
+  "frames": [
+    {
+      "locale": "en-US",
+      "theme": "light",
+      "logical_size": [
+        1280,
+        820
+      ],
+      "scale": 1,
+      "directly_inspected": true,
+      "image": {
+        "path": ".cache/ui-previews/sql-make-table/en-US-light-query-make-table-review.png",
+        "sha256": "661824b3caab9fb19d981f970ec9fc20540f323ccb62fc3dbbf0606939a404cd"
+      },
+      "render_log": {
+        "path": ".cache/ui-previews/sql-make-table/en-US-light-render.log",
+        "sha256": "70640bb40af09ec4d0125110ca25777b2b679979ac9b89dfbe76db14da64da05"
+      }
+    },
+    {
+      "locale": "en-US",
+      "theme": "dark",
+      "logical_size": [
+        1280,
+        820
+      ],
+      "scale": 1,
+      "directly_inspected": true,
+      "image": {
+        "path": ".cache/ui-previews/sql-make-table/en-US-dark-query-make-table-review.png",
+        "sha256": "77949c958f36664f1629330dfb70191c5652f388fecda6912ac63998fcd3c87e"
+      },
+      "render_log": {
+        "path": ".cache/ui-previews/sql-make-table/en-US-dark-render.log",
+        "sha256": "55dc3691bec46e80c432748250d3833d2c310e022a66dfabf5cb3e71db33cf57"
+      }
+    },
+    {
+      "locale": "de",
+      "theme": "light",
+      "logical_size": [
+        1280,
+        820
+      ],
+      "scale": 1,
+      "directly_inspected": true,
+      "image": {
+        "path": ".cache/ui-previews/sql-make-table/de-light-query-make-table-review.png",
+        "sha256": "91c70eb137e8121c2eda42a46faec06d600a7b1844aeadb7e1257641d65a008b"
+      },
+      "render_log": {
+        "path": ".cache/ui-previews/sql-make-table/de-light-render.log",
+        "sha256": "3a5e551312d151a8f3c2816986a9f5aa3ea4b97be3858055ea51ff9003f696ed"
+      }
+    },
+    {
+      "locale": "de",
+      "theme": "dark",
+      "logical_size": [
+        1280,
+        820
+      ],
+      "scale": 1,
+      "directly_inspected": true,
+      "image": {
+        "path": ".cache/ui-previews/sql-make-table/de-dark-query-make-table-review.png",
+        "sha256": "71e5cc61489e4c1800adea765e4f9340ac1037a894a51c5d4f8b15034cfce66b"
+      },
+      "render_log": {
+        "path": ".cache/ui-previews/sql-make-table/de-dark-render.log",
+        "sha256": "958e598c6f50cd87a64c1c3291426c672a346b9e39e489d56149ae7d5e273568"
+      }
+    }
+  ],
+  "earlier_immutable_checkpoint": "ace-sql-parameters-and-atomic-make-table-2026-11-11.json",
+  "destination_default_followup": {
+    "source_commit": "edabf47fadf6ae042bbe57839c75e6935d7781b8",
+    "compiler_consumer_repair_commit": "e9209eb42737e2bc8704d31963713f539a3c94dd",
+    "profile": "Read exact masked ROOT default; General Legacy and General2010 create Text. Unknown, zero, unsupported variants and FrenchLegacy defaults refuse new Text. Non-Text is not restricted by that policy. Projected source-field custom order is not inherited.",
+    "passed_test_names": [
+      "creation::add_table::tests::text_default::native_empty_and_populated_text_use_legacy_or_2010_root_default_without_inheriting_source_custom_order",
+      "creation::add_table::tests::text_default::unsupported_root_defaults_refuse_only_new_text_not_nontext_native_construction"
+    ],
+    "native_log": {
+      "path": ".cache/ace-sql-index-and-defaults-repaired-native-20261111.log",
+      "sha256": "200e5d58e9f9ce668e31486b3ce49d2ad8bc441059d90c81322d58f3ea68374a"
+    },
+    "broader_native_run": {
+      "passed": 243,
+      "failed": 1,
+      "ignored": 3,
+      "separate_failure": "table::mutation::normal_index_creation::tests::nullable_directional_population_matches_independent_multilevel_images",
+      "failure_cause": "200000-row index candidate exhausted its explicit Steps pool; not a make-table/default test. The failing run is retained and not reported as all passing.",
+      "resolved_by": "final_native_followup; the same previously failing index candidate function now passes without converting the earlier captured failure into a pass."
+    },
+    "access_followup": {
+      "passed": 21,
+      "failed": 0,
+      "ignored": 0,
+      "log": {
+        "path": ".cache/ace-sql-index-and-defaults-repaired-access-20261111.log",
+        "sha256": "24cb0ae3e31970600726095388cd33d462c1b3c00c17061779cdd4603afdab2c"
+      }
+    },
+    "causal_compiler_failure": {
+      "log": {
+        "path": ".cache/ace-sql-index-and-defaults-native-20261111.log",
+        "sha256": "ce1eadf0216dec8540d481c8841960ef5cd43e13b3c4bc26efbc23b00970743a"
+      },
+      "scope": "Three typed canonical-sort consumer errors in creation/build.rs and add_column/created/field_addition/verify.rs repaired by e9209eb42 without changing bytes. A fourth index-owner compiler error belonged to the separate index work."
+    },
+    "runtime_creation_followup": {
+      "passed": 34,
+      "failed": 0,
+      "ignored": 0,
+      "log": {
+        "path": ".cache/ace-sql-index-and-defaults-repaired-runtime-creation-20261111.log",
+        "sha256": "665cdebd80851775d692cbe197fac1fca0a8dccb5696fcb741b6531e8ce59e3e"
+      }
+    },
+    "creation_only_library_check": {
+      "status": "passed",
+      "feature_scope": "Creation-only library check; not a claim that the feature-unified test runs excluded journal.",
+      "log": {
+        "path": ".cache/ace-sql-index-and-defaults-repaired-creation-only-20261111.log",
+        "sha256": "c748b5c8c460144c3056850d14712d64149839a50eceaab4c78541cdc5f38145"
+      }
+    },
+    "strict_followup_before_index_style_repair": {
+      "status": "failed",
+      "cause": "Three separate index-owner lints: unused Maps.host, manual is_multiple_of, collapsible if. No make-table/default lint was reported; this run is not counted as passing.",
+      "log": {
+        "path": ".cache/ace-sql-index-and-defaults-repaired-strict-20261111.log",
+        "sha256": "0cb8052cc5347228abe4e4fe5a054799603bb1c2140bc40444907de348197624"
+      }
+    },
+    "final_native_followup": {
+      "passed": 384,
+      "failed": 0,
+      "ignored": 5,
+      "log": {
+        "path": ".cache/ace-sql-index-membership-native-20261111.log",
+        "sha256": "4a3c7159024c4078355dd67ffdedb1a2da50f33d36321f0fbc840137f803b0f9"
+      },
+      "scope": "Selected native creation/default, TCPT, index-source and candidate checks; includes both named destination-default functions. This does not assert complete native SQL or saved index publication."
+    },
+    "final_runtime_followup": {
+      "passed": 391,
+      "failed": 0,
+      "ignored": 1,
+      "log": {
+        "path": ".cache/ace-sql-index-membership-runtime-20261111.log",
+        "sha256": "e8073c33de5249792c5aaf6246c7a038b7186d2c4e1c45095b25e618fc5e5a7b"
+      }
+    },
+    "final_strict_followup": {
+      "status": "passed",
+      "log": {
+        "path": ".cache/ace-sql-index-membership-strict-20261111.log",
+        "sha256": "99851b05de52d32f60a23de6a41fe94b0d7f85a424f6d5a28d4f247d799ec354"
+      }
+    },
+    "final_followup_repository_head": "84e47a3ee4216fd67b093bdbe022e276e4ca02b1"
+  }
+}

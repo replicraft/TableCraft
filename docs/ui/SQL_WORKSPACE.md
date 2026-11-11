@@ -113,6 +113,23 @@ field or table record count. No/Cancel leaves the original image untouched; Yes
 consumes the original runtime capability through the existing native save worker.
 SQL creation has its own source origin and does not fabricate a Design draft.
 
+Qualified `SELECT … INTO` Run now uses that same issued review/save/acknowledge
+flow for one atomic populated-table operation. Its confirmation shows destination,
+field count and selected record count. It does not show an invented old-row
+matched count or issue an empty CREATE followed by INSERT. No keeps the source and
+previous results; Yes saves the complete reviewed relation once. A zero-row result
+still creates the declared table. Fresh catalog publication preserves the SQL tab
+and draft without rerunning the statement. The supported native shape is direct
+field projections/aliases and field ordering from one local table; see the
+[make-table contract](../query/MAKE_TABLE_QUERIES.md) for refused contexts and native
+source/default qualifications. The separate Read query command remains read-only.
+
+Four English/German light/dark frames at 1280×820 and 1× were rendered offscreen
+and directly inspected in the [presentation record](../../tests/results/queries/make-table-review-presentation-2026-11-11.json).
+The actual retained Home/datasheet reference was opened. No retained SQL-editor or
+make-table warning capture exists; this remains the shared compact action-warning
+adaptation, not verified native Windows/Access layout or behavior parity.
+
 The current desktop workflow requires the target table's tabs closed before
 reviewing DROP TABLE or DROP COLUMN. It does not silently close tabs or discard
 edits. This is a current UI restriction, separate from the SQL grammar. Existing

@@ -22,7 +22,10 @@ checked populated-table candidate packs complete rows across fresh DATA/maps.
 The adapter now requalifies complete populated plans against the exclusive source
 and saves them through one original-intent V3 journal, including empty results.
 Cold recovery reconstructs declarations and original cells without rerunning SQL.
-Runtime review and normal SQL Run activation remain unfinished. Retained keyless VALUES/SELECT
+Runtime review and normal SQL Run now consume the populated request through the
+existing creation save/acknowledge/guarded-reopen owner. The review exposes exact
+field and inserted counts; SQL is never reexecuted during save/publication.
+Retained keyless VALUES/SELECT
 appends now use their checked original-presence intent after field deletion, including full
 supplied rows; no deleted field default or generator is invented.
 
@@ -41,9 +44,26 @@ qualifies local unresolved-name VALUE prompts through actual desktop Run,
 with strict query paths retained. Its query accounting covers 1,899 cases across
 the broad run and the corrected depth control without counting repeated passes.
 The offline adapter passes atomic populated-table creation and cold recovery,
-including zero rows; normal runtime make-table publication is still unfinished.
+including zero rows. That checkpoint preceded the current runtime publication.
 The record distinguishes actual creation-only library compilation from test
 feature unification, and Windows cross-compilation from native execution.
+
+The subsequent make-table workflow checks pass 10 adapter preparation cases,
+391 runtime cases with one ignored, six focused UI cases and 32 selected desktop
+cases, with strict lint across seven affected packages and minimal builds. The
+[four-frame presentation record](../tests/results/queries/make-table-review-presentation-2026-11-11.json)
+retains English/German light/dark offscreen images, direct inspection and the
+sandbox adapter failure before graphics-authorized headless success. Two added
+native whole-image checks pass for destination ROOT General Legacy/2010 defaults,
+source custom-field policy separation, and unsupported-Text-default refusal while
+non-Text construction remains available. Twenty-one adapter creation/recovery
+checks, 34 selected runtime creation cases and a creation-only engine library
+check also pass after that correction. The final selected native followup passes
+384 cases with five ignored, including the destination-default cases and old
+creation/TCPT regressions; the full runtime rerun passes 391 with one ignored.
+Compiler, sandbox-render and earlier index-candidate budget failures remain in
+the captured evidence alongside their repairs. These are scoped implementation
+results, not broader ACE SQL or native Windows/Access parity.
 
 The separate [schema SQL GUI receipt](../tests/results/schema/reviewed-schema-sql-gui-2026-11-11.json)
 records 739 shared-UI cases, five current schema desktop journeys and an earlier
