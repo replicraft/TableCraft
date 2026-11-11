@@ -56,6 +56,7 @@ mod larger_open;
     any(target_os = "macos", target_os = "linux", windows)
 ))]
 mod number_column;
+mod query_collections;
 mod query_context;
 #[cfg(all(
     feature = "offline-edit",
