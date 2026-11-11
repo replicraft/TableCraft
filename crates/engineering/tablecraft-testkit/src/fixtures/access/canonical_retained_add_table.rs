@@ -4,6 +4,7 @@ pub mod cross_operation;
 pub mod currency;
 pub mod deletes;
 pub mod desktop;
+pub mod exact_values;
 pub mod field_changes;
 pub mod fields;
 pub mod fixed_scalars;
