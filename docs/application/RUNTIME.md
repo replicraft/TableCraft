@@ -915,8 +915,54 @@ reports survive view changes until acknowledgment. Successful fresh-open restore
 the SQL tab/draft and clears obsolete result snapshots without rerunning UPDATE.
 The same shared presentation owner also handles the distinct DELETE and INSERT
 services below. Broader action contexts, native QueryDef persistence
-and DDL remain roadmap work; disabled or unsupported routes never gain authority
+and unqualified schema operations remain roadmap work; disabled or unsupported routes never gain authority
 by classification.
+
+## Reviewed SQL schema statements
+
+With `offline-edit`, `ReviewSchemaSql` accepts only an issued `InspectedQuery`.
+It checks the actual document/source identity before parsing once for review.
+`QueryOperation::Schema` describes syntax, not execution permission. Parameter
+declarations and unsupported statement shapes cannot issue a save capability;
+ordinary `RunQuery` still refuses schema statements. Hosts must explicitly use
+the review route and its existing confirmation/save lifecycle.
+
+Qualified `DROP TABLE` delegates to the existing native table-deletion service.
+With `ace16-create`, `ALTER TABLE ... DROP COLUMN` resolves the field through the
+engine's name policy and native ordinal, then delegates to the existing tail or
+non-tail field-deletion proof. Captions and display positions never select the
+target. Dependencies, required programs, indexes and preservation checks retain
+their native refusals.
+
+With both features, qualified non-temporary `CREATE TABLE` lowers the actual SQL
+declarations into `FirstTableDefinition`, using the same native planning and
+consuming save service as table design. It does not fabricate a design draft or
+apply gallery defaults. Absent Required and DefaultValue metadata remain absent;
+direct `NOT NULL` supplies the explicit Required policy. SQL-created reopen
+witnesses return `None` from `draft_revision()`, while design witnesses retain
+their actual draft revision.
+
+The constructive declaration profile includes the supported fixed scalar kinds,
+explicitly sized Short Text/Binary, and Decimal with explicit precision/scale.
+Documented aliases retain their real widths: INTEGER/LONG are 32-bit, SHORT is
+16-bit, REAL/SINGLE are Single and FLOAT/DOUBLE are Double. Unsized TEXT denotes
+Long Text and is refused rather than converted to Short Text255. Named,
+single-column Int32/Int64/Currency primary keys and the existing explicit first
+COUNTER-primary construction are supported where native planning qualifies.
+Unnamed/composite keys, other constraints, type alteration and compression
+remain refused. These are current writer boundaries, not Access language limits.
+See Microsoft's [type aliases](https://learn.microsoft.com/en-us/office/client-developer/access/desktop-database-reference/equivalent-ansi-sql-data-types).
+
+`DEFAULT` remains unavailable in this SQL View invocation, including literal and
+NULL defaults; Microsoft's [provider contract](https://learn.microsoft.com/en-us/office/vba/access/concepts/structured-query-language/modify-a-table-s-design-using-access-sql)
+restricts it to OLE DB/ADO. Parsing such syntax grants no provider capability.
+Session-lifetime TEMPORARY tables are not mapped to durable native creation.
+
+Reviews return the existing table-creation, field-drop or table-drop consuming
+capability. They hold no save lease and change no database bytes. The normal
+single save worker freshly reconstructs the selected original request, retains
+failures, publishes a terminal receipt and requires acknowledgment and guarded
+reopening. This runtime service does not by itself activate desktop SQL Run.
 
 ## Reviewed SQL DELETE actions
 

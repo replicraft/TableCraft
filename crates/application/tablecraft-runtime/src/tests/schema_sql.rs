@@ -8,6 +8,8 @@ use std::{fs, sync::Arc};
 use tablecraft_testkit::fixtures::access::canonical_table_drop as raw;
 
 #[cfg(feature = "ace16-create")]
+mod create;
+#[cfg(feature = "ace16-create")]
 mod field_drop;
 
 fn inspect(worker: &Worker, revision: u64, sql: &str) -> Arc<InspectedQuery> {
