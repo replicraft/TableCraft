@@ -1,8 +1,8 @@
 //! Independent predicate membership never supplies mutable target row identities.
 use super::{ReadSourceUpdateOptions, prepare_read_source_batch_update_with_options};
 use crate::{
-    ExternalSourceRequest, MutationOptions, QueryError, ResolvedExternalSource, Source,
-    TextCollationId, UpdateError,
+    MutationOptions, QueryError, Source, UpdateError,
+    source::{ExternalSourceRequest, ResolvedExternalSource, TextCollationId},
 };
 use std::{cell::Cell, rc::Rc};
 use tablecraft_core::{limits::ResourceBudget, values::Value};
