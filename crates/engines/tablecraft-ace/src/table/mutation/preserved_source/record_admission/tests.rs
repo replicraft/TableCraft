@@ -213,3 +213,73 @@ fn historical_schema_observation_retains_distinct_authority_and_rejects_invented
     assert_eq!(observed.table.rows()[0][2], Value::Null);
     assert_eq!(native.as_bytes(), before);
 }
+
+#[cfg(feature = "ace16-create")]
+#[test]
+fn historical_boolean_absence_is_false_without_granting_complete_or_invented_value_authority() {
+    use tablecraft_testkit::fixtures::access::canonical_retained_add_table::{
+        fields, typed_fields,
+    };
+
+    let source = fields::source(fields::Case::FirstNumber);
+    let added = typed_fields::after(
+        &source.bytes,
+        source.definition,
+        source.catalog_root,
+        "Enabled",
+        typed_fields::Kind::Boolean,
+    );
+    let before = typed_fields::boolean_historical(&added, source.definition, 0, true);
+    let native =
+        NativeImage::capture_retained(&mut Cursor::new(&before), SCOPE, &mut budget(), &|| false)
+            .unwrap();
+    let observed =
+        normal_ordinary::capture_retained_schema(&native, "Table1", &mut budget(), &|| false)
+            .unwrap();
+    let schema = observed.table.schema();
+    let layout = record_layout::parse(&observed.records[0].data, schema, &mut budget()).unwrap();
+    let values = &observed.table.rows()[0];
+    assert_eq!(values[2], Value::Boolean(false));
+    assert_eq!(&observed.records[0].data[..2], &[2, 0]);
+    for admission in [
+        RecordAdmission::HistoricalSchemaReadonly,
+        RecordAdmission::HistoricalInsert,
+        RecordAdmission::CurrentRows,
+    ] {
+        admission
+            .validate(&layout, schema, values, &mut budget(), &|| false)
+            .unwrap();
+        let mut invented = values.clone();
+        invented[2] = Value::Boolean(true);
+        assert!(matches!(
+            admission.validate(&layout, schema, &invented, &mut budget(), &|| false),
+            Err(EditError::Unsupported(WriteBlocker::RowLayout))
+        ));
+    }
+    assert!(matches!(
+        RecordAdmission::Complete.validate(&layout, schema, values, &mut budget(), &|| false),
+        Err(EditError::Unsupported(WriteBlocker::RowLayout))
+    ));
+    assert_eq!(native.as_bytes(), before);
+
+    // A missing LONG cannot acquire a Boolean value through this read rule.
+    let [_, long_before] = populated::pair("Bonus", &[Some(42), None, Some(-7)]);
+    let long_native = image(&long_before);
+    let long =
+        normal_ordinary::capture_current_schema(&long_native, "Table1", &mut budget(), &|| false)
+            .unwrap();
+    let schema = long.table.schema();
+    let layout = record_layout::parse(&long.records[0].data, schema, &mut budget()).unwrap();
+    let mut invented = long.table.rows()[0].clone();
+    invented[2] = Value::Boolean(false);
+    assert!(matches!(
+        RecordAdmission::HistoricalSchemaReadonly.validate(
+            &layout,
+            schema,
+            &invented,
+            &mut budget(),
+            &|| false
+        ),
+        Err(EditError::Unsupported(WriteBlocker::RowLayout))
+    ));
+}

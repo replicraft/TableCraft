@@ -1,12 +1,13 @@
 //! Operation-specific original-record coverage, separate from write targeting.
 use crate::{
-    EditError, InspectError, TableSchema, WriteBlocker, header::check,
+    EditError, InspectError, TableSchema, WriteBlocker, format::data_type::BOOLEAN, header::check,
     table::record_layout::RecordLayout,
 };
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
     values::Value,
 };
+use tablecraft_schema::ScalarType;
 
 #[derive(Clone, Copy)]
 pub(super) enum RecordAdmission {
@@ -80,8 +81,15 @@ impl RecordAdmission {
                 // this record's null mask. Schema-only observation preserves
                 // an ambiguous retired tail as opaque original bytes; consuming
                 // row writers separately require complete physical geometry.
-                if column.number() >= layout.count && *value != Value::Null {
-                    return Err(EditError::Unsupported(WriteBlocker::RowLayout));
+                if column.number() >= layout.count {
+                    // Native Boolean absence is False, not NULL. An ignored
+                    // mask bit outside the stored count cannot supply True.
+                    let absent_boolean = column.native_type() == BOOLEAN
+                        && column.scalar_type() == Some(ScalarType::Boolean)
+                        && *value == Value::Boolean(false);
+                    if *value != Value::Null && !absent_boolean {
+                        return Err(EditError::Unsupported(WriteBlocker::RowLayout));
+                    }
                 }
             }
             return Ok(());
