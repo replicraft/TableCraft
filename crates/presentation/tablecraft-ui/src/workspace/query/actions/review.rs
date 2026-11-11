@@ -1,5 +1,6 @@
 //! Reviewed SQL action decisions bound to the original scratch acquisition.
 //! No retained Access warning capture exists; dialog layout is an adaptation.
+mod add_column;
 mod dialog;
 mod schema;
 pub(in crate::workspace) use schema::QuerySchemaRead;

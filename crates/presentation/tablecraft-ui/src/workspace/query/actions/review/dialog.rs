@@ -286,15 +286,11 @@ impl QueryActionKind {
 
 fn schema_summary(ui: &mut Ui, effect: &QuerySchemaEffect) {
     match effect {
-        QuerySchemaEffect::AddColumn { column, .. } => {
-            ui.horizontal(|ui| {
-                ui.label(tr(ui, "design-field-name"));
-                ui.label(column);
-            });
-            ui.horizontal(|ui| {
-                ui.label(tr(ui, "design-data-type"));
-                ui.label(tr(ui, "design-type-currency"));
-            });
+        QuerySchemaEffect::AddColumn {
+            column,
+            declaration,
+        } => {
+            super::add_column::show(ui, column, *declaration);
         }
         QuerySchemaEffect::CreateIndex {
             index,

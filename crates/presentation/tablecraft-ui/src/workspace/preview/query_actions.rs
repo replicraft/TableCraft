@@ -170,7 +170,11 @@ impl Preview {
                 QueryActionKind::Schema => QueryActionEffect::Schema(match sql.as_str() {
                     ADD_COLUMN_SQL => QuerySchemaEffect::AddColumn {
                         column: "Amount".into(),
-                        scalar_type: tablecraft_schema::ScalarType::Currency,
+                        declaration:
+                            tablecraft_builders::table::TypedFieldAdditionDeclaration::fixed(
+                                tablecraft_schema::ScalarType::Currency,
+                            )
+                            .expect("synthetic Currency declaration"),
                     },
                     INDEX_SQL => QuerySchemaEffect::CreateIndex {
                         index: "ScoreIndex".into(),

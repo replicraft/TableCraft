@@ -3,7 +3,7 @@ use super::{Origin, Phase, QueryActionEffect, QueryActionKind, QueryActionReview
 use crate::localization::tr;
 use crate::workspace::{Action, EditSaveOutcome, State};
 use egui::{Frame, Ui};
-use tablecraft_schema::ScalarType;
+use tablecraft_builders::table::TypedFieldAdditionDeclaration;
 
 /// Read publication state only; this supplies no native reopen authority.
 pub(in crate::workspace) struct QuerySchemaRead {
@@ -17,7 +17,7 @@ pub enum QuerySchemaEffect {
     /// Append one unadorned native field without a gallery policy snapshot.
     AddColumn {
         column: String,
-        scalar_type: ScalarType,
+        declaration: TypedFieldAdditionDeclaration,
     },
     /// Create an ordinary nonunique index; source population is not a data delta.
     CreateIndex {
@@ -48,8 +48,8 @@ impl QuerySchemaEffect {
         match self {
             Self::AddColumn {
                 column,
-                scalar_type,
-            } => !column.is_empty() && *scalar_type == ScalarType::Currency,
+                declaration,
+            } => !column.is_empty() && !declaration.unicode_compression(),
             Self::CreateIndex { index, column, .. } => !index.is_empty() && !column.is_empty(),
             Self::CreateTable { column_count } | Self::MakeTable { column_count, .. } => {
                 *column_count > 0

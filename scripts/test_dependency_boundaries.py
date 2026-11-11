@@ -115,16 +115,6 @@ class BoundaryTests(unittest.TestCase):
                     violations(changed),
                 )
 
-    def test_desktop_can_consume_schema_facts_without_native_services(self):
-        data, _, desktop = self.desktop_workspace()
-        desktop["dependencies"].append({"name": "tablecraft-schema"})
-        self.assertEqual(violations(data), [])
-        desktop["dependencies"].append({"name": "tablecraft-ace"})
-        self.assertIn(
-            "tablecraft-desktop -> tablecraft-ace: violates reviewed package boundary",
-            violations(data),
-        )
-
     def test_ui_can_consume_validated_schema_constraints_without_backend_services(self):
         data, ui, _ = self.desktop_workspace()
         ui["dependencies"].append({"name": "tablecraft-schema"})
@@ -260,7 +250,8 @@ class BoundaryTests(unittest.TestCase):
     def test_desktop_backend_access_is_owned_by_runtime(self):
         for target in ["tablecraft-core", "tablecraft-access", "tablecraft-ace",
                        "tablecraft-model", "tablecraft-io", "tablecraft-query",
-                       "tablecraft-sql", "tablecraft-db", "tablecraft-expressions"]:
+                       "tablecraft-sql", "tablecraft-db", "tablecraft-schema",
+                       "tablecraft-expressions"]:
             with self.subTest(target=target):
                 data, _, desktop = self.desktop_workspace()
                 desktop["dependencies"].append({"name": target})

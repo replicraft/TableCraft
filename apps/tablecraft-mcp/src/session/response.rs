@@ -129,6 +129,8 @@ impl Session {
                 json!({"scalar_type": format!("{:?}", descriptor.scalar_type()), "precision": decimal.map(|value| value.precision()), "scale": decimal.map(|value| value.scale()), "max_utf16_units": declaration.short_text_units().map(|value| value.get()), "unicode_compression": declaration.unicode_compression(), "maximum_name_utf16_units": facts.maximum_name_utf16_units})
             }).collect::<Vec<_>>()}),
             Response::FieldAdditionReviewed { review, capability } => {
+                // SQL unadorned declarations retain their own policy origin;
+                // this gallery endpoint does not expose schema-SQL authority.
                 let FieldAdditionOrigin::Gallery(declaration) = review.origin else {
                     return Err("This MCP service does not expose SQL schema review yet".into());
                 };

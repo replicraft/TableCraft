@@ -539,7 +539,7 @@ fn copy_text(text: &str) -> Option<String> {
 #[cfg(test)]
 mod tests;
 
-fn field_label_key(kind: FieldAdditionKind) -> &'static str {
+pub(in crate::workspace) fn field_label_key(kind: FieldAdditionKind) -> &'static str {
     match kind {
         FieldAdditionKind::Number => "table-draft-number",
         FieldAdditionKind::ShortText => "table-draft-short-text",

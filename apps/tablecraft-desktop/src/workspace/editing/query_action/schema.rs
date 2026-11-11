@@ -9,13 +9,13 @@ use std::{
     path::{Path, PathBuf},
     sync::Arc,
 };
+use tablecraft_builders::table::TypedFieldAdditionDeclaration;
 use tablecraft_runtime::{
     AddedColumnReopen, Command, CreatedTableReopen, FieldAdditionOrigin, FieldAdditionReview,
     FieldDropReview, FieldDroppedReopen, IndexCreatedReopen, ReviewedFieldAddition,
     ReviewedFieldDrop, ReviewedIndexCreation, ReviewedTableCreation, ReviewedTableDrop,
     SaveOutcome, SaveWorker, TableDropReview, TableDroppedReopen,
 };
-use tablecraft_schema::ScalarType;
 use tablecraft_ui::{
     Database, QueryActionEffect, QueryActionReview, QuerySchemaEffect, QuerySchemaPublication,
     SaveCleanupNotice,
@@ -25,7 +25,7 @@ pub(in crate::workspace::editing) enum ReviewedSchema {
     AddField {
         capability: ReviewedFieldAddition,
         witness: Arc<AddedColumnReopen>,
-        scalar_type: ScalarType,
+        declaration: TypedFieldAdditionDeclaration,
     },
     CreateIndex {
         capability: ReviewedIndexCreation,
@@ -121,7 +121,7 @@ impl ReviewedSchema {
             Self::AddField {
                 capability,
                 witness,
-                scalar_type,
+                declaration,
             } => match worker.start_field_addition(capability, bundle) {
                 Ok(id) => Ok((id, Reopen::FieldAdded(witness))),
                 Err(error) => {
@@ -129,7 +129,7 @@ impl ReviewedSchema {
                     let original = error.into_reviewed().map(|capability| Self::AddField {
                         capability,
                         witness,
-                        scalar_type,
+                        declaration,
                     });
                     Err((message, original))
                 }
@@ -462,14 +462,14 @@ impl ReviewedSchema {
             (
                 Self::AddField {
                     witness,
-                    scalar_type,
+                    declaration,
                     ..
                 },
                 QueryActionEffect::Schema(QuerySchemaEffect::AddColumn {
                     column,
-                    scalar_type: observed,
+                    declaration: observed,
                 }),
-            ) => witness.column_name() == column && scalar_type == observed,
+            ) => witness.column_name() == column && declaration == observed,
 
             (
                 Self::CreateIndex { witness, .. },
@@ -528,7 +528,7 @@ impl Desktop {
         capability: ReviewedFieldAddition,
     ) {
         let witness = capability.reopen_witness();
-        let FieldAdditionOrigin::SqlDeclared { scalar_type } = review.origin else {
+        let FieldAdditionOrigin::SqlUnadorned(declaration) = review.origin else {
             self.fail_query_action_review(
                 request_id,
                 self.state.localizer.text("objects-open-refused"),
@@ -553,7 +553,7 @@ impl Desktop {
             table: review.table,
             effect: QueryActionEffect::Schema(QuerySchemaEffect::AddColumn {
                 column: review.column,
-                scalar_type,
+                declaration,
             }),
         };
         self.publish_query_action_review(
@@ -562,7 +562,7 @@ impl Desktop {
             ReviewedAction::Schema(ReviewedSchema::AddField {
                 capability,
                 witness,
-                scalar_type,
+                declaration,
             }),
         );
     }

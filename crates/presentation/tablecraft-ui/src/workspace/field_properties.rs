@@ -22,6 +22,13 @@ const SIZES: [(DraftNumberSize, &str); 7] = [
     ),
 ];
 
+pub(in crate::workspace) fn number_size_label_key(kind: ScalarType) -> Option<&'static str> {
+    SIZES
+        .iter()
+        .find(|(size, _)| size.scalar_type() == kind)
+        .map(|(_, key)| *key)
+}
+
 pub(in crate::workspace) fn number_size_for_type(kind: ScalarType) -> Option<DraftNumberSize> {
     SIZES
         .iter()
