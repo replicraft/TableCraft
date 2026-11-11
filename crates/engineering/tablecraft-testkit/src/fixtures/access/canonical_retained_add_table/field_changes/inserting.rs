@@ -130,14 +130,19 @@ mod tests {
             field_changes::drop_field(&populated, source.definition, source.catalog_root, "Score");
         let base = source.definition as usize * 4096;
         assert_eq!(&before[base + 20..base + 24], &[2, 0, 0, 0]);
+        // Updating Currency can append a hidden forwarding terminal. The next
+        // logical insertion uses the actual directory count, not the live count.
+        let data = (source.definition as usize + 1) * 4096;
+        let default_root = word(&before, data + 12);
         let defaulted = currency(&before, source.definition, Some(0));
         assert_eq!(
-            raw_forwarding_chain::record(&defaulted, source.definition + 1, 2),
+            raw_forwarding_chain::record(&defaulted, source.definition + 1, default_root),
             &[3, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5]
         );
+        let null_root = word(&defaulted, data + 12);
         let null = currency(&defaulted, source.definition, None);
         assert_eq!(
-            raw_forwarding_chain::record(&null, source.definition + 1, 3),
+            raw_forwarding_chain::record(&null, source.definition + 1, null_root),
             &[3, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1]
         );
         assert_eq!(
