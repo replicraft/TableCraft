@@ -5,7 +5,7 @@
 Issued schema SQL reviews now support qualified CREATE TABLE, DROP TABLE and
 ALTER TABLE DROP COLUMN through the existing consuming native save/reopen owners.
 SQL declarations preserve absent properties and actual type widths without
-fabricating a table-design draft. General constraints, indexes, type alteration
+fabricating a table-design draft. General constraints, broader index operations, type alteration
 and broader native source coverage remain unfinished. Normal GUI SQL Run now
 confirms these qualified schema operations through the actual consuming native
 capability. Destructive targets require closed tabs; saved results publish only
@@ -25,6 +25,20 @@ Cold recovery reconstructs declarations and original cells without rerunning SQL
 Runtime review and normal SQL Run now consume the populated request through the
 existing creation save/acknowledge/guarded-reopen owner. The review exposes exact
 field and inserted counts; SQL is never reexecuted during save/publication.
+WHERE, DISTINCT/DISTINCTROW and TOP/PERCENT now retain original selection,
+ordered ties, eager errors and captured native LIKE/comparison policies through
+that populated save. The supplied statement clock is evaluated during review;
+save/recovery use retained cells. See the
+[selection/context checkpoint](../tests/results/queries/native-make-table-selection-context-2026-11-11.json).
+
+Qualified retained ordinary single-LONG nonunique CREATE INDEX now uses a distinct
+TCIC original request, V3 adapter recovery and the same issued Runtime/desktop
+review/save/acknowledge/whole-image reopen. Receipts are schema-only, without data
+row effects. The [host checkpoint](../tests/results/indexes/reviewed-create-index-hosts-2026-11-11.json)
+retains initial integration failures, repairs and headless presentation evidence.
+UNIQUE/compound/other key families, DROP INDEX, older profiles and native design
+timestamp chronology remain unfinished.
+
 Retained keyless VALUES/SELECT
 appends now use their checked original-presence intent after field deletion, including full
 supplied rows; no deleted field default or generator is invented.

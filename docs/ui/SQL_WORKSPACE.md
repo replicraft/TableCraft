@@ -115,6 +115,12 @@ save, followed by exact guarded reopen without rerunning SQL. UNIQUE, PRIMARY,
 compound keys, explicit NULL policies and other key types remain unsupported.
 
 
+The [index host checkpoint](../../tests/results/indexes/reviewed-create-index-hosts-2026-11-11.json)
+records the connected No/Yes/save/reopen workflow and four directly inspected
+English/German light/dark index confirmations at 1280×820 and 1×. No matching
+retained Access CREATE INDEX warning capture exists; the compact modal is an
+adaptation. Its source population is not a changed-row count.
+
 Normal Run routes qualified `CREATE TABLE`, `ALTER TABLE … DROP COLUMN` and
 `DROP TABLE` through the shared runtime's [schema statement service](../application/RUNTIME.md#reviewed-sql-schema-statements).
 The confirmation shows the actual reviewed table, declared field count, deleted

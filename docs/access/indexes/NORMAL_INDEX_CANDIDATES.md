@@ -88,6 +88,13 @@ its explicit unsupported response is not SQL DDL parity. This workflow does not
 establish a CLI schema command, other native key families, older Jet/ACE writes
 or Windows/Access parity. The timestamp boundary below remains unchanged.
 
+The separate [reviewed-host checkpoint](../../../tests/results/indexes/reviewed-create-index-hosts-2026-11-11.json)
+records native original-intent feature gates, actual adapter cold recovery,
+Runtime and desktop workflows, strict checks and four directly inspected
+English/German light/dark offscreen frames. It retains initial failures and
+repairs separately. The final preview depicts an ordinary LONG field; no matching
+native Access SQL warning capture exists.
+
 ## Design-timestamp parity gap
 
 Current index construction preserves the original `MSysObjects.DateUpdate` and

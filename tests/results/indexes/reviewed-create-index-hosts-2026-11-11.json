@@ -1,0 +1,238 @@
+{
+  "date": "2026-11-11",
+  "platform": "macOS 14.7.2 ARM64",
+  "source_graph_commit": "251502c0fe849c5e3237771db27991261d350104",
+  "qualification": "Local implementation, independent raw-image and headless host acceptance only. No native Windows/Access execution or save comparison was run.",
+  "checks": {
+    "access_make_table_and_index": {
+      "passed": 19,
+      "failed": 0,
+      "ignored": 0,
+      "log": {
+        "path": ".cache/ace-sql-context-index-repair-access-20261111.log",
+        "sha256": "9d6e934afda542d4d5d2caa2bfdcbc2eafa5b5039c417fbbd55b0eb0c2c3470a"
+      }
+    },
+    "runtime_all_features": {
+      "passed": 395,
+      "failed": 0,
+      "ignored": 1,
+      "log": {
+        "path": ".cache/ace-sql-context-index-host-runtime-20261111.log",
+        "sha256": "3a2194ed1579e46ed084b67b52dd7433e133a66f75ae25ee22b8ddff663f6ed5"
+      }
+    },
+    "shared_ui_all_features": {
+      "passed": 742,
+      "failed": 0,
+      "ignored": 0,
+      "log": {
+        "path": ".cache/ace-sql-context-index-repair-ui-20261111.log",
+        "sha256": "e2d58c2e18e55eede1a8f4ffec9f1508ccf454443104c3db11ce18ef6fe84987"
+      }
+    },
+    "desktop_selected_sql_workflows": {
+      "passed": 30,
+      "failed": 0,
+      "ignored": 0,
+      "log": {
+        "path": ".cache/ace-sql-context-index-repair-desktop-20261111.log",
+        "sha256": "c8a59ef499ae775ca4618da80b50a8a9b17293ce80785aa4d3431c3e6f23a7ca"
+      }
+    },
+    "native_journal_without_creation": {
+      "passed": 4,
+      "failed": 0,
+      "ignored": 0,
+      "log": {
+        "path": ".cache/ace-sql-context-index-host-journal-only-20261111.log",
+        "sha256": "8456fd79a70ca846f6405a67c09833a43dd16d57ab26276c77488b4e2465dc5e"
+      }
+    },
+    "adapter_without_creation": {
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0,
+      "log": {
+        "path": ".cache/ace-sql-context-index-repair-no-creation-20261111.log",
+        "sha256": "8b374057462b04524f716c34ffaabf585840436db025a65a8108b1ac7b4cde84"
+      }
+    },
+    "final_supported_index_scene": {
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0,
+      "log": {
+        "path": ".cache/ace-sql-index-final-scene-20261111.log",
+        "sha256": "26e23cfd06e18b9a87537b3ae132d0fed1c331c028d7842ce138a6043109508e"
+      }
+    },
+    "strict": {
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace-sql-context-index-repair-strict-20261111.log",
+        "sha256": "31bb1c3ef641a12e7df382d1974b772ae000b35a772ceff6ac6f722946c3f359"
+      }
+    },
+    "render-build": {
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace-sql-context-index-repair-render-build-20261111.log",
+        "sha256": "af3496040fc3bd00c1377fa954fb1be6e654f1789e7697bc0696e0d898b8eb18"
+      }
+    },
+    "runtime_no-creation_library": {
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace-sql-context-index-host-no-creation-20261111.log",
+        "sha256": "0144320b949bf7ef0b00605e7b7afd05c1ef2357b3a06f8ef7db2fd14cf462f1"
+      }
+    },
+    "runtime_minimal_library": {
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace-sql-context-index-host-minimal-20261111.log",
+        "sha256": "bdee14c83a135096abad5f0d8fef25be2005582674b0f4d4c836c77cbd62c200"
+      }
+    },
+    "final_render_build": {
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace-sql-index-final-render-build-20261111.log",
+        "sha256": "5aab092459c3b8a183b7c9f7d61906d42bc93ebe1392f1b9001dccdcc08c04b9"
+      }
+    }
+  },
+  "counting": "Scopes overlap historical checkpoints and each other. Do not sum these counts into unique conformance cases. Access19 consists of15 make-table tests and4 index adapter tests; runtime395 includes existing tests and one ignored test, not395 new cases.",
+  "initial_batch": {
+    "path": ".cache/ace-sql-context-index-host-results-20261111.json",
+    "sha256": "30154e92fb3c459dde5e3a3b6521c00993ff9c909cec3b7d31c672a30d5e1a78"
+  },
+  "repaired_batch": {
+    "path": ".cache/ace-sql-context-index-repair-results-20261111.json",
+    "sha256": "31b2bc1631a2e4d87869b32e81b9c66843f7a2740f69f300e267941261b3f257"
+  },
+  "initial_failures": [
+    {
+      "cause": "Journal-only native source test registered without its creation API.",
+      "repair": "16227bd39d330a0b512468ff591238e9f950b9eb",
+      "evidence": {
+        "path": ".cache/ace-sql-index-original-and-selection-journal-only-20261111.log",
+        "sha256": "1a241295fba80b4243243430bda045e1a3416929d6833ccafdf819e8454e895b"
+      }
+    },
+    {
+      "cause": "New raw native17 property fixture helper interpreted retired slot flags as offsets.",
+      "repair": "f5f75ad9af7dd3f1f6beada87a83f2a241e5ab80",
+      "evidence": {
+        "path": ".cache/ace-sql-context-index-host-access-20261111.log",
+        "sha256": "b7699ffa3412309cf1e5f3d5b8bd60404ebf50fc9e5a3a33a2f02cf7fa98ce18"
+      }
+    },
+    {
+      "cause": "Adapter original-intent decoder omitted TCIC routing, so independent cold recovery failed and strict lint detected the unused variant.",
+      "repair": "89ba5745cd680968e6d8618e38dfd2bd649b8ac8",
+      "evidence": {
+        "path": ".cache/ace-sql-context-index-host-strict-20261111.log",
+        "sha256": "a2aafe047a6b1421fc52e86f63d6889b246e51f8c9a385e1f00cbb1f5c3eed5e"
+      }
+    },
+    {
+      "cause": "Desktop post-save revision match omitted the new IndexCreated witness.",
+      "repair": "9847ace99d1611ffd00e1312dde1e30b44c20985",
+      "evidence": {
+        "path": ".cache/ace-sql-context-index-host-desktop-20261111.log",
+        "sha256": "74dc8c4367dff97ad22bdaad3aa6df30bf0989be0f2c62fd505e2daeb59c73cb"
+      }
+    }
+  ],
+  "scope": "Qualified retained ACE16 ordinary nullable nonunique single-LONG ASC/DESC CREATE INDEX through reviewed SQL Run and original-intent V3 save/recovery.",
+  "native_original_commit": "7e1b6b610a0700c8e666721cdd36007e6c481283",
+  "adapter_commit": "abb8ce964a8bee2c6fb127909fa9251649b5c1aa",
+  "runtime_commit": "8652d3912463f45437822abeed43070f406f1092",
+  "desktop_ui_commit": "e049975666f1fade8dac19055441b5629de6a1c4",
+  "final_preview_commit": "49d264d4058b982f296a74f9741c97997b1c8742",
+  "behavior": [
+    "Same-source original plan requalification binds table/native field/column identity, direction and complete BEFORE/AFTER before durable setup.",
+    "TCIC version/family dispatch is terminal, V3-only and unsupported without creation authority; no retry through legacy intent decoders.",
+    "Actual adapter tests cover pending/committed and active/retired cold pairs, both directions, exact independent raw AFTER and count-free recovery receipts.",
+    "Actual Desktop Run exercises No, Yes, native SaveWorker, acknowledgment and exact guarded reopen while preserving SQL tab/draft.",
+    "Index population is metadata. IndexCreated receipts have neither matched nor changed data-row counts; catalog objects remain unchanged."
+  ],
+  "native_original_all_features": {
+    "passed": 7,
+    "failed": 0,
+    "ignored": 0,
+    "log": {
+      "path": ".cache/ace-sql-index-original-and-selection-index-intent-20261111.log",
+      "sha256": "ffbfa619195d7267d3586860872541c65742ad6b23bb3c0d826dee1cdf83a6e2"
+    }
+  },
+  "headless_presentation": {
+    "platform": "macOS-14.7.2-arm64-arm-64bit-Mach-O",
+    "logical_size": [
+      1280,
+      820
+    ],
+    "scale": 1,
+    "native_windows": false,
+    "reference_scope": "No retained Access SQL/CREATE INDEX warning capture; compact action-warning adaptation.",
+    "renders": [
+      {
+        "locale": "en-US",
+        "theme": "light",
+        "exit_code": 0,
+        "artifact": ".cache/ui-previews/sql-index-creation/en-US-light-query-schema-index-review.png",
+        "artifact_exists": true,
+        "log": ".cache/ui-previews/sql-index-creation/en-US-light-render.log",
+        "visually_inspected": true,
+        "sha256": "b9070398a23afd462542b1780a1bd0e4473a24d5eb588fe746e78e155ef13dd6"
+      },
+      {
+        "locale": "en-US",
+        "theme": "dark",
+        "exit_code": 0,
+        "artifact": ".cache/ui-previews/sql-index-creation/en-US-dark-query-schema-index-review.png",
+        "artifact_exists": true,
+        "log": ".cache/ui-previews/sql-index-creation/en-US-dark-render.log",
+        "visually_inspected": true,
+        "sha256": "575c197299332d248e4050c06648927b7bf6071e2bb95c1251abc5790cc800f1"
+      },
+      {
+        "locale": "de",
+        "theme": "light",
+        "exit_code": 0,
+        "artifact": ".cache/ui-previews/sql-index-creation/de-light-query-schema-index-review.png",
+        "artifact_exists": true,
+        "log": ".cache/ui-previews/sql-index-creation/de-light-render.log",
+        "visually_inspected": true,
+        "sha256": "4238db91c9fc84a518c4685e5ea274d7086270948462cbd2d68ff2c16f4775d6"
+      },
+      {
+        "locale": "de",
+        "theme": "dark",
+        "exit_code": 0,
+        "artifact": ".cache/ui-previews/sql-index-creation/de-dark-query-schema-index-review.png",
+        "artifact_exists": true,
+        "log": ".cache/ui-previews/sql-index-creation/de-dark-render.log",
+        "visually_inspected": true,
+        "sha256": "cf44d64a377915ef92975847f0c3bae7d9d645083f61357fe9f9299aa3ff7bab"
+      }
+    ],
+    "inspection": "Root viewed all four actual PNGs: Archive, ScoreIndex, CopiedScore, DESC, source population205, no affected-row count, No default, visible No/Yes and no-Undo warning; modal labels fit both locales/themes."
+  },
+  "renderer": {
+    "path": ".cache/cargo-backend-20261102/debug/examples/render_preview",
+    "sha256": "f13350f8cc102aac470035cc2c66d2e84866ba723284644a3764c31aa23559a3"
+  },
+  "driver": {
+    "path": ".cache/ace-sql-index-host/render.py",
+    "sha256": "41afd823885cdd4359afc3c7dd99c306c753a15eabc0930e00044f2757d979fb"
+  },
+  "stale_initial_render": {
+    "preserved_directory": ".cache/ui-previews/sql-index-creation-initial-stale",
+    "cause": "Initial renderer binary predated the supported LONG scene correction; inspected English frames still displayed the old synthetic Balance/Customers labels. Rebuilt, rerendered and viewed all four final PNGs before qualifying presentation.",
+    "qualified_as_final": false
+  },
+  "remaining": "UNIQUE/PRIMARY, compound and other key families, DROP INDEX, broader source/profiles, CLI SQL/MCP schema invocation, native design-timestamp chronology and actual Windows/Access parity remain unqualified. No matching retained Access CREATE INDEX warning capture exists; modal is a documented adaptation."
+}

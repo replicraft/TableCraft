@@ -162,3 +162,14 @@ both destination-default checks and old creation/TCPT regressions; the full
 runtime rerun passes 391 with one ignored, and the strict followup passes.
 These are local checks of the stated source/profile, not complete ACE SQL or
 Windows/Access parity. The earlier checkpoint remains immutable historical evidence.
+
+## Selection and context checkpoint — 11 November 2026
+
+The [selection/context record](../../tests/results/queries/native-make-table-selection-context-2026-11-11.json)
+retains 15 native preparation/publication tests within the 19-test combined
+adapter check, the full 395-pass Runtime run and actual desktop SQL workflows.
+It includes filtered TOP ties and empty selections, exact raw AFTER images,
+ANSI-89/92 overrides and unknown-mode refusal, eager errors, stale inspection and
+a supplied clock that is not reread at save/reopen. These overlapping scopes are
+not additive conformance totals. Native Microsoft Access comparisons remain
+separate from these local implementation results.

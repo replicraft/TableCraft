@@ -1,0 +1,162 @@
+{
+  "date": "2026-11-11",
+  "platform": "macOS 14.7.2 ARM64",
+  "source_graph_commit": "251502c0fe849c5e3237771db27991261d350104",
+  "qualification": "Local implementation, independent raw-image and headless host acceptance only. No native Windows/Access execution or save comparison was run.",
+  "checks": {
+    "access_make_table_and_index": {
+      "passed": 19,
+      "failed": 0,
+      "ignored": 0,
+      "log": {
+        "path": ".cache/ace-sql-context-index-repair-access-20261111.log",
+        "sha256": "9d6e934afda542d4d5d2caa2bfdcbc2eafa5b5039c417fbbd55b0eb0c2c3470a"
+      }
+    },
+    "runtime_all_features": {
+      "passed": 395,
+      "failed": 0,
+      "ignored": 1,
+      "log": {
+        "path": ".cache/ace-sql-context-index-host-runtime-20261111.log",
+        "sha256": "3a2194ed1579e46ed084b67b52dd7433e133a66f75ae25ee22b8ddff663f6ed5"
+      }
+    },
+    "shared_ui_all_features": {
+      "passed": 742,
+      "failed": 0,
+      "ignored": 0,
+      "log": {
+        "path": ".cache/ace-sql-context-index-repair-ui-20261111.log",
+        "sha256": "e2d58c2e18e55eede1a8f4ffec9f1508ccf454443104c3db11ce18ef6fe84987"
+      }
+    },
+    "desktop_selected_sql_workflows": {
+      "passed": 30,
+      "failed": 0,
+      "ignored": 0,
+      "log": {
+        "path": ".cache/ace-sql-context-index-repair-desktop-20261111.log",
+        "sha256": "c8a59ef499ae775ca4618da80b50a8a9b17293ce80785aa4d3431c3e6f23a7ca"
+      }
+    },
+    "native_journal_without_creation": {
+      "passed": 4,
+      "failed": 0,
+      "ignored": 0,
+      "log": {
+        "path": ".cache/ace-sql-context-index-host-journal-only-20261111.log",
+        "sha256": "8456fd79a70ca846f6405a67c09833a43dd16d57ab26276c77488b4e2465dc5e"
+      }
+    },
+    "adapter_without_creation": {
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0,
+      "log": {
+        "path": ".cache/ace-sql-context-index-repair-no-creation-20261111.log",
+        "sha256": "8b374057462b04524f716c34ffaabf585840436db025a65a8108b1ac7b4cde84"
+      }
+    },
+    "final_supported_index_scene": {
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0,
+      "log": {
+        "path": ".cache/ace-sql-index-final-scene-20261111.log",
+        "sha256": "26e23cfd06e18b9a87537b3ae132d0fed1c331c028d7842ce138a6043109508e"
+      }
+    },
+    "strict": {
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace-sql-context-index-repair-strict-20261111.log",
+        "sha256": "31bb1c3ef641a12e7df382d1974b772ae000b35a772ceff6ac6f722946c3f359"
+      }
+    },
+    "render-build": {
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace-sql-context-index-repair-render-build-20261111.log",
+        "sha256": "af3496040fc3bd00c1377fa954fb1be6e654f1789e7697bc0696e0d898b8eb18"
+      }
+    },
+    "runtime_no-creation_library": {
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace-sql-context-index-host-no-creation-20261111.log",
+        "sha256": "0144320b949bf7ef0b00605e7b7afd05c1ef2357b3a06f8ef7db2fd14cf462f1"
+      }
+    },
+    "runtime_minimal_library": {
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace-sql-context-index-host-minimal-20261111.log",
+        "sha256": "bdee14c83a135096abad5f0d8fef25be2005582674b0f4d4c836c77cbd62c200"
+      }
+    },
+    "final_render_build": {
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace-sql-index-final-render-build-20261111.log",
+        "sha256": "5aab092459c3b8a183b7c9f7d61906d42bc93ebe1392f1b9001dccdcc08c04b9"
+      }
+    }
+  },
+  "counting": "Scopes overlap historical checkpoints and each other. Do not sum these counts into unique conformance cases. Access19 consists of15 make-table tests and4 index adapter tests; runtime395 includes existing tests and one ignored test, not395 new cases.",
+  "initial_batch": {
+    "path": ".cache/ace-sql-context-index-host-results-20261111.json",
+    "sha256": "30154e92fb3c459dde5e3a3b6521c00993ff9c909cec3b7d31c672a30d5e1a78"
+  },
+  "repaired_batch": {
+    "path": ".cache/ace-sql-context-index-repair-results-20261111.json",
+    "sha256": "31b2bc1631a2e4d87869b32e81b9c66843f7a2740f69f300e267941261b3f257"
+  },
+  "initial_failures": [
+    {
+      "cause": "Journal-only native source test registered without its creation API.",
+      "repair": "16227bd39d330a0b512468ff591238e9f950b9eb",
+      "evidence": {
+        "path": ".cache/ace-sql-index-original-and-selection-journal-only-20261111.log",
+        "sha256": "1a241295fba80b4243243430bda045e1a3416929d6833ccafdf819e8454e895b"
+      }
+    },
+    {
+      "cause": "New raw native17 property fixture helper interpreted retired slot flags as offsets.",
+      "repair": "f5f75ad9af7dd3f1f6beada87a83f2a241e5ab80",
+      "evidence": {
+        "path": ".cache/ace-sql-context-index-host-access-20261111.log",
+        "sha256": "b7699ffa3412309cf1e5f3d5b8bd60404ebf50fc9e5a3a33a2f02cf7fa98ce18"
+      }
+    },
+    {
+      "cause": "Adapter original-intent decoder omitted TCIC routing, so independent cold recovery failed and strict lint detected the unused variant.",
+      "repair": "89ba5745cd680968e6d8618e38dfd2bd649b8ac8",
+      "evidence": {
+        "path": ".cache/ace-sql-context-index-host-strict-20261111.log",
+        "sha256": "a2aafe047a6b1421fc52e86f63d6889b246e51f8c9a385e1f00cbb1f5c3eed5e"
+      }
+    },
+    {
+      "cause": "Desktop post-save revision match omitted the new IndexCreated witness.",
+      "repair": "9847ace99d1611ffd00e1312dde1e30b44c20985",
+      "evidence": {
+        "path": ".cache/ace-sql-context-index-host-desktop-20261111.log",
+        "sha256": "74dc8c4367dff97ad22bdaad3aa6df30bf0989be0f2c62fd505e2daeb59c73cb"
+      }
+    }
+  ],
+  "scope": "Direct-field local native SELECT INTO selection and statement context.",
+  "selection_source_commit": "45922659caa4962f56d6c7e6aca4d3145b5ed6f1",
+  "native_context_commit": "01324719d92a31975041be9d9c75c8c207caa8e5",
+  "runtime_context_commit": "d57e43ff188a16897a1dd4e1a5acd7600ed951cd",
+  "clock_lifecycle_test_commit": "60da3ba884478b5220b135e23c4b0b63c80838eb",
+  "behavior": [
+    "WHERE, DISTINCT, single-table DISTINCTROW and TOP/PERCENT retain the original evaluator, including ordered boundary ties and upward percentage rounding.",
+    "Actual native field comparison, stored ANSI89/ANSI92 mode, declared Text width and Decimal constraints come from the same immutable original.",
+    "Absent/unknown native LIKE mode overrides any caller fallback with unset mode; native policies never become binary by default.",
+    "Runtime clock/random/messages/session providers survive preparation. Inspection and stale requests do not consult the clock; save and guarded reopen do not reevaluate SQL/providers.",
+    "Zero selected rows still create schema; eager errors on filtered/TOP-omitted work return no partial candidate."
+  ],
+  "remaining": "Computed/wildcard outputs, declared parameters, grouped/joined/named/external source publication, broader native declarations and required-program/native save parity remain outside this qualified native publication slice."
+}
