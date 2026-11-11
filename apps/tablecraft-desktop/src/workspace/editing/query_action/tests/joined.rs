@@ -3,7 +3,6 @@ use super::{Desktop, assert_image, finish_reads, finish_save, journal_path, open
 use crate::workspace::test_support::app_harness;
 use egui::accesskit::Role;
 use egui_kittest::kittest::Queryable;
-use std::time::{Duration, Instant};
 use tablecraft_runtime::SaveOutcome;
 use tablecraft_testkit::fixtures::access::canonical_retained_add_table::{
     field_changes, joined_update,
@@ -156,16 +155,7 @@ fn normal_run_joined_late_error_and_repeated_targets_keep_prior_results_without_
             .get_by_role_and_label(Role::Button, "Run query")
             .click_accesskit();
         harness.run_steps(1);
-        let deadline = Instant::now() + Duration::from_secs(10);
-        while harness.state().state.busy {
-            assert!(
-                Instant::now() < deadline,
-                "joined action refusal did not finish"
-            );
-            harness.run_steps(1);
-            std::thread::yield_now();
-        }
-        harness.run_steps(2);
+        super::finish_refused_action(&mut harness);
         assert!(harness.state().editing.query_action_review.is_none());
         assert!(!harness.state().editing.has_save());
         assert_eq!(harness.state().state.active_object().unwrap(), original);

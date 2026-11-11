@@ -51,6 +51,27 @@ fn run(harness: &mut Harness<'_, Desktop>, sql: &str) {
     finish_reads(harness);
 }
 
+fn finish_refused_action(harness: &mut Harness<'_, Desktop>) {
+    let deadline = Instant::now() + Duration::from_secs(10);
+    while harness.state().state.error.is_none()
+        && harness.state().editing.query_action_review.is_none()
+        && !harness.state().editing.has_save()
+    {
+        assert!(
+            Instant::now() < deadline,
+            "action did not publish a terminal refusal"
+        );
+        harness.run_steps(1);
+        std::thread::yield_now();
+    }
+    assert!(
+        harness.state().state.error.is_some(),
+        "action unexpectedly produced a review or save"
+    );
+    assert!(harness.state().editing.query_action_review.is_none());
+    assert!(!harness.state().editing.has_save());
+}
+
 fn reviewed(harness: &mut Harness<'_, Desktop>, sql: &str) -> u64 {
     run(harness, sql);
     let (id, _) = harness

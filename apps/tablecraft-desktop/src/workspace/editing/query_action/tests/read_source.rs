@@ -1,8 +1,10 @@
 //! Normal SQL Run uses the existing issued review and save/acknowledgment actor.
-use super::{assert_image, finish_reads, finish_save, journal_path, opened, reviewed, run};
+use super::{
+    assert_image, finish_reads, finish_refused_action, finish_save, journal_path, opened, reviewed,
+    run,
+};
 use egui::accesskit::Role;
 use egui_kittest::kittest::Queryable;
-use std::time::{Duration, Instant};
 use tablecraft_runtime::SaveOutcome;
 use tablecraft_testkit::fixtures::access::canonical_retained_add_table::{
     field_changes, joined_update,
@@ -123,18 +125,7 @@ fn late_correlated_error_preserves_sql_tab_previous_result_and_original_file() {
         .get_by_role_and_label(Role::Button, "Run query")
         .click_accesskit();
     harness.run_steps(1);
-    // This intentionally failed request cannot use finish_reads' success check.
-    let deadline = Instant::now() + Duration::from_secs(10);
-    while harness.state().state.busy {
-        assert!(
-            Instant::now() < deadline,
-            "correlated refusal did not finish"
-        );
-        harness.run_steps(1);
-        std::thread::yield_now();
-    }
-    harness.run_steps(2);
-    assert!(harness.state().state.error.is_some());
+    finish_refused_action(&mut harness);
     assert!(harness.state().editing.query_action_review.is_none());
     assert!(!harness.state().editing.has_save());
     assert_eq!(harness.state().state.active_object().unwrap(), original);
