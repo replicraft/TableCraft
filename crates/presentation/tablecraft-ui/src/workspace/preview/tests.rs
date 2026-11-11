@@ -2,6 +2,7 @@ use super::*;
 use crate::{Action, EditSaveOutcome};
 use tablecraft_display::{CurrencyChoice, DateFormat, Options, TimeFormat};
 
+mod declared_addition;
 mod index_creation;
 
 #[test]

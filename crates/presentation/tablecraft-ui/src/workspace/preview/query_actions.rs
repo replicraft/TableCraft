@@ -13,6 +13,8 @@ const MAKE_TABLE_SQL: &str = "SELECT [CustomerName],[City],[Balance] INTO [Custo
 
 const INDEX_SQL: &str = "CREATE INDEX [ScoreIndex] ON [Archive] ([CopiedScore] DESC)";
 
+const ADD_COLUMN_SQL: &str = "ALTER TABLE [Items] ADD COLUMN [Amount] CURRENCY";
+
 const CREATE_SQL: &str = "CREATE TABLE [Contacts] ([Id] LONG, [Name] VARCHAR(80))";
 const DROP_TABLE_SQL: &str = "DROP TABLE [Customers]";
 const DROP_COLUMN_SQL: &str = "ALTER TABLE [Customers] DROP COLUMN [Balance]";
@@ -54,6 +56,7 @@ impl Preview {
             }
             Scene::QueryMakeTableReview => MAKE_TABLE_SQL,
             Scene::QuerySchemaIndexReview => INDEX_SQL,
+            Scene::QuerySchemaAddColumnReview => ADD_COLUMN_SQL,
             Scene::QuerySchemaCreateReview => CREATE_SQL,
             Scene::QuerySchemaDropTableReview => DROP_TABLE_SQL,
             Scene::QuerySchemaDropColumnReview | Scene::QuerySchemaReopenFailed => DROP_COLUMN_SQL,
@@ -69,6 +72,7 @@ impl Preview {
                 | Scene::QueryDeleteReview
                 | Scene::QueryInsertReview
                 | Scene::QuerySchemaIndexReview
+                | Scene::QuerySchemaAddColumnReview
                 | Scene::QueryMakeTableReview
                 | Scene::QuerySchemaCreateReview
                 | Scene::QuerySchemaDropTableReview
@@ -111,9 +115,8 @@ impl Preview {
             UPDATE_SQL => QueryActionKind::Update,
             DELETE_SQL => QueryActionKind::Delete,
             INSERT_SQL => QueryActionKind::Insert,
-            INDEX_SQL | MAKE_TABLE_SQL | CREATE_SQL | DROP_TABLE_SQL | DROP_COLUMN_SQL => {
-                QueryActionKind::Schema
-            }
+            INDEX_SQL | ADD_COLUMN_SQL | MAKE_TABLE_SQL | CREATE_SQL | DROP_TABLE_SQL
+            | DROP_COLUMN_SQL => QueryActionKind::Schema,
             _ => return None,
         };
         let inspection = self.request();
@@ -142,7 +145,9 @@ impl Preview {
         let review = QueryActionReview {
             id: request,
             document_revision: fixtures::REVISION,
-            table: if sql == INDEX_SQL {
+            table: if sql == ADD_COLUMN_SQL {
+                "Items"
+            } else if sql == INDEX_SQL {
                 "Archive"
             } else if sql == MAKE_TABLE_SQL {
                 "CustomerArchive"
@@ -163,6 +168,10 @@ impl Preview {
                 },
                 QueryActionKind::Insert => QueryActionEffect::Insert { inserted_rows: 2 },
                 QueryActionKind::Schema => QueryActionEffect::Schema(match sql.as_str() {
+                    ADD_COLUMN_SQL => QuerySchemaEffect::AddColumn {
+                        column: "Amount".into(),
+                        scalar_type: tablecraft_schema::ScalarType::Currency,
+                    },
                     INDEX_SQL => QuerySchemaEffect::CreateIndex {
                         index: "ScoreIndex".into(),
                         column: "CopiedScore".into(),
