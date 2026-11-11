@@ -115,3 +115,37 @@ pub fn native17_database_record(properties: &[u8]) -> Vec<u8> {
     row.extend([0xbf, 0x40, 0]);
     row
 }
+
+/// Replace only the MSysDb role's inline properties in a literal native17 catalog.
+/// Other catalog records retain their complete bytes; no production codec runs.
+pub fn with_native17_properties(before: &[u8], properties: &[u8]) -> Vec<u8> {
+    let page = &before[4 * PAGE_BYTES..5 * PAGE_BYTES];
+    let count = usize::from(u16::from_le_bytes(page[12..14].try_into().unwrap()));
+    let mut records = Vec::with_capacity(count);
+    let mut end = PAGE_BYTES;
+    let mut replaced = false;
+
+    for slot in 0..count {
+        let entry = 14 + 2 * slot;
+        let start = usize::from(u16::from_le_bytes(
+            page[entry..entry + 2].try_into().unwrap(),
+        ));
+        assert!(start < end, "unforwarded native17 catalog record");
+        let row = &page[start..end];
+        assert_eq!(&row[..2], &17_u16.to_le_bytes());
+        if row[2..6] == 0x0f00_0004_u32.to_le_bytes() {
+            assert!(!replaced, "unique MSysDb role");
+            records.push(native17_database_record(properties));
+            replaced = true;
+        } else {
+            records.push(row.to_vec());
+        }
+        end = start;
+    }
+    assert!(replaced, "existing MSysDb role");
+
+    let mut after = before.to_vec();
+    after[4 * PAGE_BYTES..5 * PAGE_BYTES]
+        .copy_from_slice(&super::canonical_native17_creation::packed(2, records));
+    after
+}

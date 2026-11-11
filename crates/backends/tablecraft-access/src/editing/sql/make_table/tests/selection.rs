@@ -5,7 +5,7 @@ use std::{cell::RefCell, io::Cursor};
 use tablecraft_ace::{TableSnapshotLimits, inspect_table_schema};
 use tablecraft_core::values::Value;
 use tablecraft_expressions::EvalError;
-use tablecraft_query::{MakeTableError, QueryError};
+use tablecraft_query::{ExecutionOptions, MakeTableError, QueryError};
 
 fn source() -> Vec<u8> {
     let seed = fields::source(fields::Case::FirstNumber).bytes;
@@ -69,7 +69,7 @@ fn filtered_text_uses_the_actual_field_comparer_and_keeps_its_physical_width() {
         &RefCell::new(budget()),
         &RefCell::new(budget()),
         &mut budget(),
-        &|| false,
+        ExecutionOptions::default(),
         TableSnapshotLimits::default(),
     )
     .unwrap();
@@ -137,5 +137,74 @@ fn omitted_rows_and_false_predicates_do_not_hide_eager_evaluation_errors() {
             ),
             "{sql}"
         );
+    }
+}
+
+#[test]
+fn native_like_mode_comes_from_the_captured_database_instead_of_caller_options() {
+    use tablecraft_expressions::predicates::LikeMode;
+    use tablecraft_testkit::fixtures::access::database_properties;
+
+    let (mut bytes, definition) = text_source();
+    for input in [rows::Input::Text("B"), rows::Input::Text("ab")] {
+        bytes = rows::append(&bytes, definition, rows::Profile::DesktopText, input);
+    }
+    for (stored, caller_mode, pattern, expected) in [
+        (
+            0_i32,
+            LikeMode::Ansi92,
+            "a*",
+            vec![vec![Value::Text("ab".into())]],
+        ),
+        (0, LikeMode::Ansi92, "a%", vec![]),
+        (
+            1,
+            LikeMode::Ansi89,
+            "a%",
+            vec![vec![Value::Text("ab".into())]],
+        ),
+        (1, LikeMode::Ansi89, "a*", vec![]),
+    ] {
+        let properties = database_properties::query_modes(&[(1, 4, &stored.to_le_bytes())]);
+        let before = database_properties::with_native17_properties(&bytes, &properties);
+        let prepared = prepare_native_make_table_with_native_comparison(
+            image(&before),
+            syntax(&format!(
+                "SELECT Name AS Label INTO Archive FROM Items WHERE Name LIKE '{pattern}'"
+            )),
+            &RefCell::new(budget()),
+            &RefCell::new(budget()),
+            &mut budget(),
+            ExecutionOptions {
+                like_mode: Some(caller_mode),
+                ..Default::default()
+            },
+            TableSnapshotLimits::default(),
+        )
+        .unwrap();
+        assert_eq!(prepared.rows(), expected, "stored mode {stored}, {pattern}");
+    }
+    for properties in [
+        database_properties::query_modes(&[]),
+        database_properties::query_modes(&[(1, 4, &2_i32.to_le_bytes())]),
+    ] {
+        let before = database_properties::with_native17_properties(&bytes, &properties);
+        assert!(matches!(
+            prepare_native_make_table_with_native_comparison(
+                image(&before),
+                syntax("SELECT Name AS Label INTO Archive FROM Items WHERE Name LIKE 'a*'"),
+                &RefCell::new(budget()),
+                &RefCell::new(budget()),
+                &mut budget(),
+                ExecutionOptions {
+                    like_mode: Some(LikeMode::Ansi89),
+                    ..Default::default()
+                },
+                TableSnapshotLimits::default(),
+            ),
+            Err(NativeMakeTableError::Query(MakeTableError::Query(
+                QueryError::Evaluation(EvalError::LikeModeRequired)
+            )))
+        ));
     }
 }

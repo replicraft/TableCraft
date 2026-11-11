@@ -4,12 +4,13 @@ mod shape;
 use crate::NativeSource;
 use std::cell::RefCell;
 use tablecraft_ace::{
-    CreateDatabaseError, FileFormat, FirstTableDefinition, InspectError, NativeImage,
-    TableSnapshotLimits, inspect_table_schema,
+    CreateDatabaseError, DatabaseQueryMode, FileFormat, FirstTableDefinition, InspectError,
+    NativeImage, TableSnapshotLimits, inspect_table_schema,
 };
 #[cfg(feature = "journal")]
 use tablecraft_ace::{PopulatedAddTableError, PopulatedAddTablePlan};
 use tablecraft_core::{limits::ResourceBudget, values::Value};
+use tablecraft_expressions::predicates::LikeMode;
 use tablecraft_model::ObjectKind;
 use tablecraft_query::{ExecutionOptions, MakeTableError, plan_make_table};
 use tablecraft_schema::NameComparison;
@@ -131,7 +132,7 @@ pub fn prepare_native_make_table_with_native_comparison(
     native: &RefCell<ResourceBudget>,
     comparison: &RefCell<ResourceBudget>,
     query_budget: &mut ResourceBudget,
-    cancelled: &dyn Fn() -> bool,
+    options: ExecutionOptions<'_>,
     snapshot_limits: TableSnapshotLimits,
 ) -> Result<PreparedNativeMakeTable, NativeMakeTableError> {
     prepare_with_policy(
@@ -141,10 +142,7 @@ pub fn prepare_native_make_table_with_native_comparison(
         query_budget,
         Preparation {
             parameters: &[],
-            options: ExecutionOptions {
-                cancelled: Some(cancelled),
-                ..Default::default()
-            },
+            options,
             snapshot_limits,
             native_comparison: Some(comparison),
         },
@@ -224,7 +222,7 @@ fn prepare_with_policy(
         )?
     };
     let staged = {
-        let source = NativeSource::new_with_shared_budget_and_snapshot_limits(
+        let mut source = NativeSource::new_with_shared_budget_and_snapshot_limits(
             image.reader(),
             scope,
             native,
@@ -233,6 +231,11 @@ fn prepare_with_policy(
         )?;
         match comparison {
             Some(comparison) => {
+                let like_mode = match source.database_query_mode()? {
+                    DatabaseQueryMode::Ansi89 => Some(LikeMode::Ansi89),
+                    DatabaseQueryMode::Ansi92 => Some(LikeMode::Ansi92),
+                    DatabaseQueryMode::Absent | DatabaseQueryMode::Unknown => None,
+                };
                 let (source, resolver) =
                     source.with_deferred_database_collation_resolver(comparison)?;
                 plan_make_table(
@@ -241,6 +244,7 @@ fn prepare_with_policy(
                     query_budget,
                     parameters,
                     ExecutionOptions {
+                        like_mode,
                         collation: Some(resolver.default_collation()),
                         collation_resolver: Some(&resolver),
                         ..options

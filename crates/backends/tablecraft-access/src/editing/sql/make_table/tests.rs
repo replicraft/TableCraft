@@ -425,7 +425,7 @@ fn native_comparison_preparation_uses_actual_field_order_and_never_binary_fallba
         &RefCell::new(budget()),
         &RefCell::new(budget()),
         &mut budget(),
-        &|| false,
+        ExecutionOptions::default(),
         TableSnapshotLimits::default(),
     )
     .unwrap();
@@ -440,7 +440,7 @@ fn native_comparison_preparation_uses_actual_field_order_and_never_binary_fallba
             &RefCell::new(budget()),
             &RefCell::new(ResourceBudget::new(0, 0, 0)),
             &mut budget(),
-            &|| false,
+            ExecutionOptions::default(),
             TableSnapshotLimits::default(),
         ),
         Err(NativeMakeTableError::Inspect(InspectError::Limit(_)))
@@ -453,7 +453,7 @@ fn native_comparison_preparation_uses_actual_field_order_and_never_binary_fallba
             &RefCell::new(budget()),
             &RefCell::new(budget()),
             &mut budget(),
-            &|| false,
+            ExecutionOptions::default(),
             TableSnapshotLimits::default(),
         ),
         Err(NativeMakeTableError::Query(MakeTableError::Query(
