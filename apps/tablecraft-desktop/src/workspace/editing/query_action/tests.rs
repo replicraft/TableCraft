@@ -52,8 +52,11 @@ fn run(harness: &mut Harness<'_, Desktop>, sql: &str) {
 }
 
 fn finish_refused_action(harness: &mut Harness<'_, Desktop>) {
+    let diagnostic = harness.state().state.localizer.text("diagnostics-copy");
     let deadline = Instant::now() + Duration::from_secs(10);
-    while harness.state().state.error.is_none()
+    while harness
+        .query_by_role_and_label(Role::Button, &diagnostic)
+        .is_none()
         && harness.state().editing.query_action_review.is_none()
         && !harness.state().editing.has_save()
     {
@@ -65,9 +68,12 @@ fn finish_refused_action(harness: &mut Harness<'_, Desktop>) {
         std::thread::yield_now();
     }
     assert!(
-        harness.state().state.error.is_some(),
-        "action unexpectedly produced a review or save"
+        harness
+            .query_by_role_and_label(Role::Button, &diagnostic)
+            .is_some(),
+        "action unexpectedly produced a review or save instead of its diagnostic"
     );
+    assert!(harness.state().editing.query_action_pending.is_none());
     assert!(harness.state().editing.query_action_review.is_none());
     assert!(!harness.state().editing.has_save());
 }
