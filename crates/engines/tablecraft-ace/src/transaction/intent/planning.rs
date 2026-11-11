@@ -23,6 +23,7 @@ mod retained_fixed_scalar_rows;
 mod retained_opaque_rows;
 #[cfg(feature = "ace16-create")]
 mod retained_rows;
+mod retained_wide_value_rows;
 
 use super::{
     NativeFittedEditIntent, NativeFittedIntentGroup, NativeFixedEditIntent, NativeFixedIntentGroup,
@@ -320,6 +321,7 @@ impl RecoverableNativeEditPlan {
                 | NativeUpdateProfile::Ace16RetainedCurrencyRows
                 | NativeUpdateProfile::Ace16RetainedBooleanRows
                 | NativeUpdateProfile::Ace16RetainedFixedScalarRows
+                | NativeUpdateProfile::Ace16RetainedWideValueRows
         ) {
             return Err(JournalError::ImageSize);
         }
@@ -341,6 +343,7 @@ impl RecoverableNativeEditPlan {
                 | NativeUpdateProfile::Ace16RetainedCurrencyRows
                 | NativeUpdateProfile::Ace16RetainedBooleanRows
                 | NativeUpdateProfile::Ace16RetainedFixedScalarRows
+                | NativeUpdateProfile::Ace16RetainedWideValueRows
         ) {
             return Err(JournalError::ImageSize);
         }
@@ -366,6 +369,7 @@ impl RecoverableNativeEditPlan {
                 | NativeUpdateProfile::Ace16RetainedCurrencyRows
                 | NativeUpdateProfile::Ace16RetainedBooleanRows
                 | NativeUpdateProfile::Ace16RetainedFixedScalarRows
+                | NativeUpdateProfile::Ace16RetainedWideValueRows
         ) {
             return Err(JournalError::ImageSize);
         }

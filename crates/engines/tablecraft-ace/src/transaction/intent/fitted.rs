@@ -6,13 +6,14 @@ mod grammar;
 mod model;
 mod profile;
 mod read;
+mod wide_value_carrier;
 
 pub(super) use codec::MAGIC;
 pub use model::{NativeFittedEditIntent, NativeFittedIntentGroup, NativeFittedUpdates};
 pub(super) use profile::{
     CURRENT_ROWS_MAGIC, EOF_ALLOCATION_MAGIC, HISTORICAL_TEXT_MAGIC, OWNED_GROWTH_MAGIC,
     RETAINED_BOOLEAN_ROWS_MAGIC, RETAINED_CURRENCY_ROWS_MAGIC, RETAINED_FIXED_SCALAR_ROWS_MAGIC,
-    RETAINED_OPAQUE_ROWS_MAGIC, RETAINED_ROWS_MAGIC, WireProfile,
+    RETAINED_OPAQUE_ROWS_MAGIC, RETAINED_ROWS_MAGIC, RETAINED_WIDE_VALUE_ROWS_MAGIC, WireProfile,
 };
 
 #[cfg(test)]

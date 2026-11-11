@@ -302,6 +302,24 @@ impl NativeFittedEditIntent {
         read::decode(bytes, WireProfile::RetainedCurrencyRows, budget, cancelled)
     }
 
+    /// Encode closed TCNI22 GUID and Decimal originals without native authority.
+    pub fn encode_retained_wide_values(
+        &self,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Vec<u8>, NativeIntentError> {
+        self.encode_profile(WireProfile::RetainedWideValueRows, budget, cancelled)
+    }
+
+    /// Decode exactly TCNI0022/profile22; older fitted grammars remain closed.
+    pub fn decode_retained_wide_values(
+        bytes: &[u8],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, NativeIntentError> {
+        read::decode(bytes, WireProfile::RetainedWideValueRows, budget, cancelled)
+    }
+
     /// Encode only TCNI21 exact fixed-scalar data, without native authority.
     pub fn encode_retained_fixed_scalars(
         &self,

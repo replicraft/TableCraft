@@ -21,6 +21,7 @@ const BINARY: u8 = 7;
 
 pub(in crate::transaction::intent) enum Payload<'a> {
     Fixed { bytes: [u8; 8], length: usize },
+    Wide { bytes: [u8; 17], length: usize },
     Borrowed(&'a [u8]),
 }
 
@@ -33,6 +34,7 @@ impl Encoded<'_> {
     pub fn bytes(&self) -> &[u8] {
         match &self.payload {
             Payload::Fixed { bytes, length } => &bytes[..*length],
+            Payload::Wide { bytes, length } => &bytes[..*length],
             Payload::Borrowed(bytes) => bytes,
         }
     }

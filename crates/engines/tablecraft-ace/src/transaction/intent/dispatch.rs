@@ -13,6 +13,8 @@ const ACE_PROFILE: u16 = 2;
 /// A versioned validation route, never a serialized native permission.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum NativeUpdateProfile {
+    /// Exact canonical GUID and Decimal originals in complete retained records.
+    Ace16RetainedWideValueRows,
     /// Exact nullable Byte/Int16/Int64/Single/Double/legacy DateTime retained cells.
     Ace16RetainedFixedScalarRows,
     /// Present complete retained Boolean cells with exact original bit values.
@@ -71,7 +73,7 @@ pub enum NativeUpdateBody {
     Int32(NativeInt32EditIntent),
     /// Original ordered fixed groups for closed TCNI0003/4/8/9/10/11/12/13/14 records.
     Fixed(NativeFixedEditIntent),
-    /// Ordered original variable/fixed requests for TCNI0005/15/16/17/18/19/20/21.
+    /// Ordered original variable/fixed requests for TCNI0005/15/16/17/18/19/20/21/22.
     Fitted(NativeFittedEditIntent),
     /// Original fixed/variable groups for explicit TCNI0006 owned-page growth.
     OwnedGrowth(NativeFittedEditIntent),
@@ -80,6 +82,13 @@ pub enum NativeUpdateBody {
 }
 
 impl NativeUpdateIntent {
+    pub(super) fn from_retained_wide_value_rows(original: NativeFittedEditIntent) -> Self {
+        Self {
+            profile: NativeUpdateProfile::Ace16RetainedWideValueRows,
+            body: NativeUpdateBody::Fitted(original),
+        }
+    }
+
     pub(super) fn from_retained_fixed_scalar_rows(original: NativeFittedEditIntent) -> Self {
         Self {
             profile: NativeUpdateProfile::Ace16RetainedFixedScalarRows,
@@ -359,6 +368,10 @@ impl NativeUpdateIntent {
         match (&self.body, self.profile) {
             (
                 NativeUpdateBody::Fitted(original),
+                NativeUpdateProfile::Ace16RetainedWideValueRows,
+            ) => original.encode_retained_wide_values(budget, cancelled),
+            (
+                NativeUpdateBody::Fitted(original),
                 NativeUpdateProfile::Ace16RetainedFixedScalarRows,
             ) => original.encode_retained_fixed_scalars(budget, cancelled),
             (NativeUpdateBody::Fitted(original), NativeUpdateProfile::Ace16RetainedBooleanRows) => {
@@ -445,6 +458,12 @@ impl NativeUpdateIntent {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, NativeIntentError> {
+        if bytes.get(..super::fitted::RETAINED_WIDE_VALUE_ROWS_MAGIC.len())
+            == Some(super::fitted::RETAINED_WIDE_VALUE_ROWS_MAGIC.as_slice())
+        {
+            return NativeFittedEditIntent::decode_retained_wide_values(bytes, budget, cancelled)
+                .map(Self::from_retained_wide_value_rows);
+        }
         if bytes.get(..super::fitted::RETAINED_FIXED_SCALAR_ROWS_MAGIC.len())
             == Some(super::fitted::RETAINED_FIXED_SCALAR_ROWS_MAGIC.as_slice())
         {

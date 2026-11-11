@@ -24,6 +24,9 @@ const RETAINED_BOOLEAN_ROWS_PROFILE: u16 = 20;
 pub(in crate::transaction::intent) const RETAINED_FIXED_SCALAR_ROWS_MAGIC: &[u8; 8] = b"TCNI0021";
 const RETAINED_FIXED_SCALAR_ROWS_PROFILE: u16 = 21;
 
+pub(in crate::transaction::intent) const RETAINED_WIDE_VALUE_ROWS_MAGIC: &[u8; 8] = b"TCNI0022";
+const RETAINED_WIDE_VALUE_ROWS_PROFILE: u16 = 22;
+
 #[derive(Clone, Copy)]
 pub(in crate::transaction::intent) enum WireProfile {
     Fitted,
@@ -36,12 +39,14 @@ pub(in crate::transaction::intent) enum WireProfile {
     RetainedCurrencyRows,
     RetainedBooleanRows,
     RetainedFixedScalarRows,
+    RetainedWideValueRows,
 }
 
 impl WireProfile {
     pub(super) const fn grammar(self) -> Grammar {
         match self {
             Self::RetainedFixedScalarRows => Grammar::RetainedFixedScalars,
+            Self::RetainedWideValueRows => Grammar::RetainedWideValues,
             Self::RetainedRows
             | Self::RetainedOpaqueRows
             | Self::RetainedCurrencyRows
@@ -62,6 +67,7 @@ impl WireProfile {
             Self::RetainedCurrencyRows => RETAINED_CURRENCY_ROWS_MAGIC,
             Self::RetainedBooleanRows => RETAINED_BOOLEAN_ROWS_MAGIC,
             Self::RetainedFixedScalarRows => RETAINED_FIXED_SCALAR_ROWS_MAGIC,
+            Self::RetainedWideValueRows => RETAINED_WIDE_VALUE_ROWS_MAGIC,
         }
     }
 
@@ -77,6 +83,7 @@ impl WireProfile {
             Self::RetainedCurrencyRows => RETAINED_CURRENCY_ROWS_PROFILE,
             Self::RetainedBooleanRows => RETAINED_BOOLEAN_ROWS_PROFILE,
             Self::RetainedFixedScalarRows => RETAINED_FIXED_SCALAR_ROWS_PROFILE,
+            Self::RetainedWideValueRows => RETAINED_WIDE_VALUE_ROWS_PROFILE,
         }
     }
 }

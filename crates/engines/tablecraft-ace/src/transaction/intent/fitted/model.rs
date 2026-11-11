@@ -89,6 +89,22 @@ impl NativeFittedIntentGroup {
         )
     }
 
+    /// Retain TCNI22 GUID fixed groups or exact Decimal variable groups.
+    pub fn new_retained_wide_values(
+        column: &str,
+        updates: NativeFittedUpdates,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, NativeIntentError> {
+        Self::new_with_grammar(
+            column,
+            updates,
+            Grammar::RetainedWideValues,
+            budget,
+            cancelled,
+        )
+    }
+
     pub(super) fn new_with_grammar(
         column: &str,
         updates: NativeFittedUpdates,
@@ -217,6 +233,24 @@ impl NativeFittedEditIntent {
             groups,
             before,
             Grammar::RetainedFixedScalars,
+            budget,
+            cancelled,
+        )
+    }
+
+    /// Bind TCNI22 originals to a complete native-sized BEFORE image.
+    pub fn new_retained_wide_values(
+        table: &str,
+        groups: Vec<NativeFittedIntentGroup>,
+        before: &[u8],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, NativeIntentError> {
+        Self::new_with_grammar(
+            table,
+            groups,
+            before,
+            Grammar::RetainedWideValues,
             budget,
             cancelled,
         )
