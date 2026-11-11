@@ -1,0 +1,115 @@
+{
+  "date": "2026-11-11",
+  "status": "Locally verified candidate construction and independent source qualification; no persistence or host activation.",
+  "scope": "ACE16 retained ordinary nullable nonunique LONG secondary INDEX non-journalable candidate; independent whole-image source and candidate qualification.",
+  "source_commits": [
+    "d6d9a745d",
+    "c131b3d11",
+    "4b52fa53b",
+    "2c5e19ac9",
+    "95e9e5408"
+  ],
+  "profiles": {
+    "populations": [
+      0,
+      6,
+      3000,
+      200000
+    ],
+    "directions": [
+      "ASC",
+      "DESC"
+    ],
+    "multilevel": "200000 rows; actual at least three tree levels",
+    "companion": "Generated primary ID, selected LONG Score, Currency Amount, Unicode/NULL/empty Text Label; old catalog/DATA/primary INDEX/LVAL bytes protected"
+  },
+  "source_result": "All three independent source tests PASS, including200000-row multilevel ASC/DESC complete selected reads and represented ownership.",
+  "failed_evidence": [
+    {
+      "log": ".cache/ace-sql-normal-index-source-first-20261111.log",
+      "sha256": "1b479287c6ec4fe74a2c8796a693270ae56933c46d544c8e51ccc2523148a198",
+      "passed": 1,
+      "failed": 2
+    },
+    {
+      "log": ".cache/ace-sql-make-table-workflows-index-source-20261111.log",
+      "sha256": "3dc7dab36c451d095dc33984fb69714a2b117c766d8a883846b613a23b567f76",
+      "passed": 1,
+      "failed": 2
+    },
+    {
+      "log": ".cache/ace-sql-index-and-defaults-repaired-native-20261111.log",
+      "sha256": "200e5d58e9f9ce668e31486b3ce49d2ad8bc441059d90c81322d58f3ea68374a",
+      "passed": 243,
+      "failed": 1
+    }
+  ],
+  "causes_preserved": [
+    "Initial independent ROW references used ordinal/256 while raw populated DATA packing uses255 records; first bad ordinal255. Corrected to255 without native reader changes, explicit boundary assertions254/255/256/510/2040.",
+    "Independent raw tree height initially encoded boolean internal-node flag; corrected actual subtree height before multilevel qualification.",
+    "The candidate matrix first exhausted its explicit Steps allowance at200000 rows ASC. Preserved index certification repeatedly linearly searched ordered ROW witnesses. Paid upfront order classification and first-equal lower-bound lookup removed quadratic work; the same unchanged candidate budget then passed both directions. Unordered input retains the old linear path; no failed-read fallback."
+  ],
+  "boundaries": [
+    "No durable save/journal/intent or GUI CREATE INDEX route is qualified by this candidate.",
+    "ACE16 evidence does not qualify Jet3/4 or other ACE write profiles.",
+    "Existing preview output and admission remain separate.",
+    "Explicit budgets are test consumer allowances; default snapshot quotas are not expanded.",
+    "No Windows/Access native save comparison performed in this lane."
+  ],
+  "verified_tree_commit": "84e47a3ee",
+  "checks": [
+    {
+      "name": "native",
+      "log": ".cache/ace-sql-index-membership-native-20261111.log",
+      "sha256": "4a3c7159024c4078355dd67ffdedb1a2da50f33d36321f0fbc840137f803b0f9",
+      "returncode": 0,
+      "passed": 384,
+      "failed": 0,
+      "ignored": 5
+    },
+    {
+      "name": "runtime",
+      "log": ".cache/ace-sql-index-membership-runtime-20261111.log",
+      "sha256": "e8073c33de5249792c5aaf6246c7a038b7186d2c4e1c45095b25e618fc5e5a7b",
+      "returncode": 0,
+      "passed": 391,
+      "failed": 0,
+      "ignored": 1
+    },
+    {
+      "name": "strict",
+      "log": ".cache/ace-sql-index-membership-strict-20261111.log",
+      "sha256": "99851b05de52d32f60a23de6a41fe94b0d7f85a424f6d5a28d4f247d799ec354",
+      "returncode": 0
+    }
+  ],
+  "explicit_test_allowances": {
+    "source": {
+      "bytes": 536870912,
+      "rows": "16*max(N,1)+100000",
+      "steps": "20000*max(N,1)+4000000"
+    },
+    "candidate": {
+      "bytes": 2147483648,
+      "rows": "100*max(N,1)+100000",
+      "steps": "40000*max(N,1)+16000000"
+    },
+    "note": "These consumer allowances were explicit; no default snapshot quotas or native geometry bounds were changed."
+  },
+  "coverage": [
+    "Independent raw complete BEFORE/AFTER images for0/6/3000/200000 rows inASC/DESC.",
+    "At least three levels and more than two leaves for200000-row fixture; full maximum KEY+ROW fences, leaf-first/root-last physical order, siblings and actual height checked.",
+    "Generated primary ID plus untouched Currency/Unicode/NULL/empty Text and siblings protected.",
+    "Owned-map omission, INDEX owner corruption and parent ROW-only fence corruption refuse.",
+    "Already-indexed target, wrong native kind, name conflict and cancellation refuse.",
+    "Independent proof rejects wrong original request and protected old-byte forgery.",
+    "Ordered/reversed ROW witnesses, first duplicate/missing-reference semantics, zero-byte lookup allocation, late cancellation and low Steps budgets covered."
+  ],
+  "receipt_notes": [
+    "Root ran Cargo; this lane authored fixtures/tests and reviewed actual source/proof owners without running Cargo.",
+    "Early compile/typing repairs are not native behavior failures; detailed logs retained under.cache.",
+    "Final384-function native gate is selected regression coverage, not the entire ACE suite.",
+    "Runtime391-function suite is accompanying regression evidence; it does not activate CREATE INDEX."
+  ],
+  "lookup_performance_commit": "3ab7e53da"
+}

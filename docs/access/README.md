@@ -39,6 +39,7 @@ Jet/ACE reading, native queries, storage, indexes, preservation and bounded writ
 - [Calendar-safe native DATE candidates](indexes/DATE_INDEX_CANDIDATES.md)
 - [Exact Byte and Int16 index ranges](indexes/NARROW_RANGES.md)
 - [Native index inspection](indexes/NATIVE_INDEXES.md)
+- [Retained LONG secondary-index candidates](indexes/NORMAL_INDEX_CANDIDATES.md)
 - [Native text ordering](indexes/NATIVE_TEXT.md)
 - [Comparer-qualified Short Text equality seeks](indexes/TEXT_EQUALITY_SEEKS.md)
 

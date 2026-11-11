@@ -59,6 +59,10 @@ required key and ignore-NULL); unknown profiles remain explicit. Qualified
 [Exact numeric constraint validation](../NATIVE_CHECKS.md#qualified-index-constraints) belongs
 to check_table, not metadata inspection or normal indexed retrieval.
 
+A separate [retained LONG secondary-index candidate](NORMAL_INDEX_CANDIDATES.md)
+constructs and independently checks new ordinary indexes without granting durable
+save or SQL CREATE INDEX authority.
+
 ## Explicit historical counter inspection
 
 `inspect_table_index_counter(source, scope, table, index, budget, cancelled)` now
