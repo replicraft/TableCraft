@@ -107,7 +107,7 @@ fn reveal(harness: &mut Harness<'_, Desktop>, field: &str, right: bool) {
     // the same name on a child Label of the ColumnHeader container.
     let target = harness.get_all_by_role(Role::ColumnHeader).find(|header| {
         header.accesskit_node().label().as_deref() == Some(field)
-            || header.get_all_by_role(Role::Label).any(|label| {
+            || header.query_all_by_role(Role::Label).any(|label| {
                 label.value().as_deref() == Some(field)
                     || label.accesskit_node().label().as_deref() == Some(field)
             })
@@ -117,7 +117,7 @@ fn reveal(harness: &mut Harness<'_, Desktop>, field: &str, right: bool) {
             .get_all_by_role(Role::ColumnHeader)
             .flat_map(|header| {
                 header
-                    .get_all_by_role(Role::Label)
+                    .query_all_by_role(Role::Label)
                     .filter_map(|label| label.value())
                     .collect::<Vec<_>>()
             })
