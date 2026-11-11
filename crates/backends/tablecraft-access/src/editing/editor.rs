@@ -449,6 +449,41 @@ impl NativeEditor {
     }
 
     #[cfg(feature = "ace16-create")]
+    pub(super) fn select_retained_boolean_materialization(
+        &self,
+        column: &str,
+        row: usize,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<bool, RecoverableEditError> {
+        self.image
+            .select_native_retained_boolean_materialization(
+                self.snapshot.name(),
+                column,
+                row,
+                budget,
+                cancelled,
+            )
+            .map_err(RecoverableEditError::from)
+    }
+
+    #[cfg(feature = "ace16-create")]
+    pub(super) fn plan_recoverable_retained_boolean_materialization(
+        self,
+        groups: Vec<NativeFittedIntentGroup>,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<RecoverableNativeEditPlan, RecoverableEditError> {
+        self.image
+            .plan_recoverable_retained_boolean_materialization(
+                self.snapshot.name(),
+                groups,
+                budget,
+                cancelled,
+            )
+    }
+
+    #[cfg(feature = "ace16-create")]
     pub(super) fn plan_recoverable_retained_boolean_rows(
         self,
         groups: Vec<NativeFittedIntentGroup>,

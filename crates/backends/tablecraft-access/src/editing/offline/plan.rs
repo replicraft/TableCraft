@@ -191,6 +191,7 @@ impl MutationPlan {
                         | NativeUpdateProfile::Ace16RetainedBooleanRows
                         | NativeUpdateProfile::Ace16RetainedFixedScalarRows
                         | NativeUpdateProfile::Ace16RetainedWideValueRows
+                        | NativeUpdateProfile::Ace16RetainedBooleanMaterialization
                 ) {
                     plan.prepare_retained(target, journal, budget, cancelled)
                         .map(PreparedNativeUpdate::Resizable)

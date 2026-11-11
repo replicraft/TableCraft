@@ -175,6 +175,25 @@ impl NativeJournalEditor {
             }
             positions.push(position);
         }
+        #[cfg(feature = "ace16-create")]
+        let boolean_materialization = if self.route == JournalRoute::RetainedRows
+            && columns.len() == 1
+            && self.snapshot().columns()[positions[0]].data_type() == ScalarType::Boolean
+            && columns[0].updates.len() == 1
+        {
+            let row = self
+                .snapshot()
+                .ordinal(columns[0].updates[0].row())
+                .map_err(NativeEditError::from)?;
+            self.editor.select_retained_boolean_materialization(
+                self.snapshot().columns()[positions[0]].name(),
+                row,
+                budget,
+                cancelled,
+            )?
+        } else {
+            false
+        };
         let maximum_variable_bytes = if self.route.retained_rows() {
             NativeFittedEditIntent::MAX_RETAINED_VARIABLE_BYTES
         } else {
@@ -322,8 +341,15 @@ impl NativeJournalEditor {
                 } else if positions.first().is_some_and(|&position| {
                     self.snapshot().columns()[position].data_type() == ScalarType::Boolean
                 }) {
-                    self.editor
-                        .plan_recoverable_retained_boolean_rows(groups, budget, cancelled)?
+                    if boolean_materialization {
+                        self.editor
+                            .plan_recoverable_retained_boolean_materialization(
+                                groups, budget, cancelled,
+                            )?
+                    } else {
+                        self.editor
+                            .plan_recoverable_retained_boolean_rows(groups, budget, cancelled)?
+                    }
                 } else if positions.first().is_some_and(|&position| {
                     self.snapshot().columns()[position].data_type() == ScalarType::Currency
                 }) {
