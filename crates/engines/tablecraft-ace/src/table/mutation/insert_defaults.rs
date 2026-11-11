@@ -12,3 +12,6 @@ pub(in crate::table::mutation) mod declaration;
 
 #[cfg(feature = "journal")]
 pub(in crate::table::mutation) use resolve::{derive, prepare};
+
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub(in crate::table::mutation) use resolve::{derive_retained, prepare_retained};

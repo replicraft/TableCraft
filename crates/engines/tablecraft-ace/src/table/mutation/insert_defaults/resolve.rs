@@ -27,6 +27,7 @@ pub(in crate::table::mutation) fn prepare(
         schema,
         requests,
         Projection::Preparation,
+        Bounds::Original,
         budget,
         cancelled,
     )
@@ -44,6 +45,52 @@ pub(in crate::table::mutation) fn derive(
         schema,
         requests,
         Projection::IndependentProof,
+        Bounds::Original,
+        budget,
+        cancelled,
+    )
+}
+
+#[derive(Clone, Copy)]
+enum Bounds {
+    Original,
+    #[cfg(feature = "ace16-create")]
+    Retained,
+}
+
+#[cfg(feature = "ace16-create")]
+pub(in crate::table::mutation) fn prepare_retained(
+    image: &NativeImage,
+    schema: &TableSchema,
+    requests: &[OmittedRowInsert],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Vec<RowInsert>, EditError> {
+    resolve(
+        image,
+        schema,
+        requests,
+        Projection::Preparation,
+        Bounds::Retained,
+        budget,
+        cancelled,
+    )
+}
+
+#[cfg(feature = "ace16-create")]
+pub(in crate::table::mutation) fn derive_retained(
+    image: &NativeImage,
+    schema: &TableSchema,
+    requests: &[OmittedRowInsert],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Vec<RowInsert>, EditError> {
+    resolve(
+        image,
+        schema,
+        requests,
+        Projection::IndependentProof,
+        Bounds::Retained,
         budget,
         cancelled,
     )
@@ -54,11 +101,19 @@ fn resolve(
     schema: &TableSchema,
     requests: &[OmittedRowInsert],
     projection: Projection,
+    bounds: Bounds,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Vec<RowInsert>, EditError> {
     check(budget, cancelled)?;
-    if requests.len() > MAX_LIVE_ROWS || !(1..=MAX_COLUMNS).contains(&schema.columns().len()) {
+    let valid = match bounds {
+        Bounds::Original => {
+            requests.len() <= MAX_LIVE_ROWS && (1..=MAX_COLUMNS).contains(&schema.columns().len())
+        }
+        #[cfg(feature = "ace16-create")]
+        Bounds::Retained => u32::try_from(requests.len()).is_ok() && !schema.columns().is_empty(),
+    };
+    if !valid {
         return Err(InspectError::StructureLimit.into());
     }
     let mut needed = false;

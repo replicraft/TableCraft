@@ -22,6 +22,8 @@ const RETAINED_MAGIC: &[u8; 8] = b"TCNA0008";
 const RETAINED_PROFILE: u16 = 8;
 const RETAINED_OPAQUE_MAGIC: &[u8; 8] = b"TCNA0009";
 const RETAINED_OPAQUE_PROFILE: u16 = 9;
+const RETAINED_KEYLESS_MAGIC: &[u8; 8] = b"TCNA0010";
+const RETAINED_KEYLESS_PROFILE: u16 = 10;
 
 impl Profile {
     const fn omitted_tag(self) -> u8 {
@@ -49,7 +51,7 @@ impl SourceFamily {
     fn view(self, value: &Value, profile: Profile) -> Result<Encoded<'_>, NativeIntentError> {
         match self {
             Self::Ordinary => carrier::row_view(value, profile),
-            Self::Current | Self::Retained | Self::RetainedOpaque => {
+            Self::Current | Self::Retained | Self::RetainedOpaque | Self::RetainedKeyless => {
                 carrier::length_prefixed_row_view(value, profile)
             }
         }
@@ -65,7 +67,7 @@ impl SourceFamily {
     ) -> Result<Borrowed<'a>, NativeIntentError> {
         match self {
             Self::Ordinary => carrier::row_parse(tag, bytes, profile, budget, cancelled),
-            Self::Current | Self::Retained | Self::RetainedOpaque => {
+            Self::Current | Self::Retained | Self::RetainedOpaque | Self::RetainedKeyless => {
                 carrier::length_prefixed_row_parse(tag, bytes, profile, budget, cancelled)
             }
         }
@@ -75,7 +77,7 @@ impl SourceFamily {
         match self {
             Self::Ordinary => MAX_RECORD_BYTES,
             Self::Current => NativeOmittedInsertIntent::MAX_CURRENT_ENCODED_BYTES,
-            Self::Retained | Self::RetainedOpaque => {
+            Self::Retained | Self::RetainedOpaque | Self::RetainedKeyless => {
                 NativeOmittedInsertIntent::MAX_RETAINED_ENCODED_BYTES
             }
         }
@@ -84,14 +86,18 @@ impl SourceFamily {
     const fn maximum_rows(self) -> usize {
         match self {
             Self::Ordinary => MAX_LIVE_ROWS,
-            Self::Current | Self::Retained | Self::RetainedOpaque => u32::MAX as usize,
+            Self::Current | Self::Retained | Self::RetainedOpaque | Self::RetainedKeyless => {
+                u32::MAX as usize
+            }
         }
     }
 
     const fn maximum_columns(self) -> usize {
         match self {
             Self::Ordinary => MAX_COLUMNS,
-            Self::Current | Self::Retained | Self::RetainedOpaque => u32::MAX as usize,
+            Self::Current | Self::Retained | Self::RetainedOpaque | Self::RetainedKeyless => {
+                u32::MAX as usize
+            }
         }
     }
 }
@@ -261,6 +267,9 @@ fn preflight<'a>(
         version if family == SourceFamily::RetainedOpaque && version == RETAINED_OPAQUE_MAGIC => {
             (Profile::Wider, RETAINED_OPAQUE_PROFILE)
         }
+        version if family == SourceFamily::RetainedKeyless && version == RETAINED_KEYLESS_MAGIC => {
+            (Profile::Wider, RETAINED_KEYLESS_PROFILE)
+        }
         _ => {
             return Err(if raw.starts_with(PREFIX) {
                 NativeIntentError::UnsupportedVersion
@@ -284,7 +293,7 @@ fn preflight<'a>(
     }
     let before_length = u64::from_le_bytes(raw[BEFORE_LENGTH_AT..BINDING_AT].try_into().unwrap());
     match family {
-        SourceFamily::Retained | SourceFamily::RetainedOpaque => {
+        SourceFamily::Retained | SourceFamily::RetainedOpaque | SourceFamily::RetainedKeyless => {
             binding::retained_length(before_length)?
         }
         _ => binding::length(before_length)?,
@@ -377,7 +386,9 @@ impl NativeOmittedInsertIntent {
         output
             .try_reserve_exact(length)
             .map_err(|_| InspectError::Allocation)?;
-        let (magic, number) = if self.family == SourceFamily::RetainedOpaque {
+        let (magic, number) = if self.family == SourceFamily::RetainedKeyless {
+            (RETAINED_KEYLESS_MAGIC, RETAINED_KEYLESS_PROFILE)
+        } else if self.family == SourceFamily::RetainedOpaque {
             (RETAINED_OPAQUE_MAGIC, RETAINED_OPAQUE_PROFILE)
         } else if self.family == SourceFamily::Retained {
             (RETAINED_MAGIC, RETAINED_PROFILE)
@@ -463,6 +474,20 @@ impl NativeOmittedInsertIntent {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, NativeIntentError> {
         Self::decode_family(raw, SourceFamily::RetainedOpaque, budget, cancelled)
+    }
+
+    /// Decode only TCNA0010/profile10 original presence. Older generated and
+    /// ordinary request languages are rejected without retry.
+    ///
+    /// # Errors
+    /// Refuses malformed framing, unsupported carriers or source lengths,
+    /// cancellation, allocation failure and explicit resource exhaustion.
+    pub fn decode_retained_keyless(
+        raw: &[u8],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, NativeIntentError> {
+        Self::decode_family(raw, SourceFamily::RetainedKeyless, budget, cancelled)
     }
 
     fn decode_family(

@@ -25,15 +25,36 @@ pub(in crate::table::mutation) fn variables(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Vec<Option<usize>>, EditError> {
+    variables_for(schema, Some(generated), budget, cancelled)
+}
+
+/// Fresh ordinary retained records have no generated position. All live fields
+/// keep their actual native slots; retired fixed storage is initialized, not reused.
+pub(in crate::table::mutation) fn ordinary_variables(
+    schema: &TableSchema,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Vec<Option<usize>>, EditError> {
+    variables_for(schema, None, budget, cancelled)
+}
+
+fn variables_for(
+    schema: &TableSchema,
+    generated: Option<usize>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Vec<Option<usize>>, EditError> {
     check(budget, cancelled)?;
     let layout = schema.physical_layout();
     if schema.columns().is_empty()
         || schema.columns().len() > layout.max_columns
         || layout.variable_slots > layout.max_columns
-        || schema
-            .columns()
-            .get(generated)
-            .is_none_or(|field| !field.fixed())
+        || generated.is_some_and(|position| {
+            schema
+                .columns()
+                .get(position)
+                .is_none_or(|field| !field.fixed())
+        })
     {
         return Err(EditError::Unsupported(WriteBlocker::RowLayout));
     }
@@ -59,7 +80,7 @@ pub(in crate::table::mutation) fn variables(
             return Err(EditError::Unsupported(WriteBlocker::RowLayout));
         }
         if field.fixed() {
-            let width = if position == generated {
+            let width = if Some(position) == generated {
                 fixed::incrementing_width(field)?
             } else {
                 fixed::width(field)?
@@ -103,7 +124,7 @@ pub(in crate::table::mutation) fn variables(
         }
     }
 
-    if fixed_end != layout.fixed_end {
+    if generated.is_some() && fixed_end != layout.fixed_end {
         return Err(EditError::Unsupported(WriteBlocker::RowLayout));
     }
 

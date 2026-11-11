@@ -25,6 +25,7 @@ enum SourceFamily {
     Current,
     Retained,
     RetainedOpaque,
+    RetainedKeyless,
 }
 
 /// Original ordered supplied/omitted rows and an exact complete BEFORE binding.
@@ -124,6 +125,34 @@ impl NativeOmittedInsertIntent {
         )
     }
 
+    /// Bind original ordinary presence to TCNA0010. This grants no source,
+    /// literal-default, generated-value or insertion authority.
+    ///
+    /// # Errors
+    /// Refuses invalid names, carriers or native image lengths, cancellation,
+    /// allocation failure and explicit resource exhaustion.
+    pub fn new_retained_keyless(
+        table: &str,
+        rows: Vec<OmittedRowInsert>,
+        before: &[u8],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, NativeIntentError> {
+        Self::capture(
+            table,
+            rows,
+            before,
+            SourceFamily::RetainedKeyless,
+            budget,
+            cancelled,
+        )
+    }
+
+    /// Exact TCNA0010 protocol identity, never a source certificate.
+    pub fn is_retained_keyless(&self) -> bool {
+        self.family == SourceFamily::RetainedKeyless
+    }
+
     /// Exact opaque-retained protocol identity, separate from TCNA0008.
     pub fn is_retained_opaque(&self) -> bool {
         self.family == SourceFamily::RetainedOpaque
@@ -162,9 +191,9 @@ impl NativeOmittedInsertIntent {
         }
         codec::validate_requests(table.len(), &rows, profile, family, budget, cancelled)?;
         let before_binding = match family {
-            SourceFamily::Retained | SourceFamily::RetainedOpaque => {
-                binding::digest_retained(before, budget, cancelled)?
-            }
+            SourceFamily::Retained
+            | SourceFamily::RetainedOpaque
+            | SourceFamily::RetainedKeyless => binding::digest_retained(before, budget, cancelled)?,
             _ => binding::digest(before, budget, cancelled)?,
         };
         let table = names::copy_name(table, budget)?;
@@ -231,8 +260,18 @@ impl NativeOmittedInsertIntent {
                 budget,
                 cancelled,
             ),
+            #[cfg(feature = "ace16-create")]
+            SourceFamily::RetainedKeyless => image.plan_retained_keyless_omitted_row_inserts(
+                self.table(),
+                self.rows(),
+                budget,
+                cancelled,
+            ),
             #[cfg(not(feature = "ace16-create"))]
-            SourceFamily::Current | SourceFamily::Retained | SourceFamily::RetainedOpaque => {
+            SourceFamily::Current
+            | SourceFamily::Retained
+            | SourceFamily::RetainedOpaque
+            | SourceFamily::RetainedKeyless => {
                 Err(EditError::Unsupported(crate::WriteBlocker::RowLayout))
             }
         }
@@ -260,9 +299,9 @@ impl NativeOmittedInsertIntent {
             return Err(NativeIntentError::BeforeMismatch);
         }
         let actual = match self.family {
-            SourceFamily::Retained | SourceFamily::RetainedOpaque => {
-                binding::digest_retained(before, budget, cancelled)?
-            }
+            SourceFamily::Retained
+            | SourceFamily::RetainedOpaque
+            | SourceFamily::RetainedKeyless => binding::digest_retained(before, budget, cancelled)?,
             _ => binding::digest(before, budget, cancelled)?,
         };
         budget

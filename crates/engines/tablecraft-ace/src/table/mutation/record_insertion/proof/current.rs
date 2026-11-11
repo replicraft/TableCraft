@@ -30,11 +30,29 @@ pub(in crate::table::mutation) fn capture(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Shape, EditError> {
+    capture_for(schema, Some(generated), budget, cancelled)
+}
+
+/// Independently bind ordinary native positions without a generation exception.
+pub(in crate::table::mutation) fn capture_ordinary(
+    schema: &TableSchema,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Shape, EditError> {
+    capture_for(schema, None, budget, cancelled)
+}
+
+fn capture_for(
+    schema: &TableSchema,
+    generated: Option<usize>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Shape, EditError> {
     let declaration = schema.physical_layout();
     if schema.columns().is_empty()
         || schema.columns().len() > declaration.max_columns
         || declaration.variable_slots > declaration.max_columns
-        || generated >= schema.columns().len()
+        || generated.is_some_and(|position| position >= schema.columns().len())
     {
         return Err(EditError::Unsupported(WriteBlocker::RowLayout));
     }
@@ -62,7 +80,7 @@ pub(in crate::table::mutation) fn capture(
         }
         if field.fixed() {
             let width = fixed::width(field).ok_or(EditError::Unsupported(WriteBlocker::Column))?;
-            let expected_flags = if position == generated {
+            let expected_flags = if Some(position) == generated {
                 if field.native_type() != INT32 {
                     return Err(EditError::Unsupported(WriteBlocker::Column));
                 }
@@ -111,9 +129,19 @@ pub(in crate::table::mutation) fn capture(
             }
         }
     }
-    if !schema.columns()[generated].fixed() || fixed_end != declaration.fixed_end {
+    if generated.is_some_and(|position| {
+        !schema.columns()[position].fixed() || fixed_end != declaration.fixed_end
+    }) || fixed_end > declaration.fixed_end
+    {
         return Err(EditError::Unsupported(WriteBlocker::RowLayout));
     }
+    // Ordinary sources may retain fixed bytes beyond all live fields. Fresh
+    // records retain that exact physical prefix, initialized independently.
+    let fixed_end = if generated.is_none() {
+        declaration.fixed_end
+    } else {
+        fixed_end
+    };
 
     Ok(Shape {
         fixed_end,
