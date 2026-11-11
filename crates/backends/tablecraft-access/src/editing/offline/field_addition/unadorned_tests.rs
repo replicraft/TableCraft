@@ -165,3 +165,37 @@ fn unadorned_stage_allocation_and_cancellation_refusals_keep_exclusive_owner_bef
         failure.into_session().release().unwrap();
     }
 }
+
+#[test]
+fn unadorned_stage_rejects_a_valid_changed_schema_and_retains_the_same_target_owner() {
+    let source = fields::source(fields::Case::FirstNumber);
+    let reviewed = plan(&source.bytes, false);
+    // Independently author another valid declaration before opening the target.
+    // It is not the original image the review authorized.
+    let changed = raw::after(
+        &source.bytes,
+        source.definition,
+        "OtherValue",
+        Kind::Currency,
+        [9, 4, 0, 1],
+    );
+    let directory = tempfile::tempdir().unwrap();
+    let path = directory.path().join("changed.accdb");
+    fs::write(&path, &changed).unwrap();
+    let failure = open(&path)
+        .stage_reviewed_retained_unadorned_field_addition_with_budgets(
+            reviewed,
+            &mut budget(),
+            &mut budget(),
+            &|| false,
+        )
+        .err()
+        .expect("a valid replacement schema cannot replace the reviewed original");
+    assert_eq!(failure.phase(), Phase::Planning);
+    assert!(matches!(failure.cause(), Cause::SourceChanged));
+    assert!(failure.pair_state().is_none());
+    assert!(failure.current_outcome().is_none());
+    assert_eq!(fs::read_dir(directory.path()).unwrap().count(), 1);
+    same(&fs::read(&path).unwrap(), &changed);
+    failure.into_session().release().unwrap();
+}
