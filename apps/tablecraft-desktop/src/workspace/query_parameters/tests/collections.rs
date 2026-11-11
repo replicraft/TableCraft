@@ -1,5 +1,7 @@
 //! Normal SQL Run must expose already-qualified attachment metadata members.
 use super::{opened_with_source, run};
+use egui::{Key, accesskit::Role};
+use egui_kittest::kittest::{NodeT, Queryable};
 use std::path::Path;
 use tablecraft_runtime::journal_path;
 use tablecraft_testkit::fixtures::access::attachment_modern;
@@ -80,6 +82,101 @@ fn sql_view_attachment_metadata_members_preserve_null_empty_and_child_alignment(
         result.rows[2][1].kind,
         CellKind::Scalar { is_null: false, .. }
     ));
+    assert_source(&path, &before);
+
+    let revision = harness
+        .state()
+        .state
+        .database
+        .as_ref()
+        .unwrap()
+        .document_revision;
+    assert!(
+        !harness
+            .state()
+            .state
+            .can_edit_cell_at(revision, "Items", "Score", 0)
+    );
+    assert!(
+        !harness
+            .state()
+            .state
+            .can_view_contents(&tablecraft_ui::ContentsTarget {
+                document_revision: revision,
+                table: "Query results".into(),
+                column: "FileName".into(),
+                parent_ordinal: 0,
+            })
+    );
+    let cell = harness
+        .query_all_by_role(Role::Label)
+        .find(|node| {
+            let node = node.accesskit_node();
+            node.label()
+                .is_some_and(|text| text.contains("synthetic.bin"))
+                || node
+                    .value()
+                    .is_some_and(|text| text.contains("synthetic.bin"))
+        })
+        .expect("actual published query result cell");
+    cell.click_secondary();
+    harness.run_steps(2);
+    let edit_label = harness.state().state.localizer.text("datasheet-edit-cell");
+    let contents_label = harness
+        .state()
+        .state
+        .localizer
+        .text("datasheet-view-contents");
+    assert!(
+        harness
+            .query_by_role_and_label(Role::Button, &edit_label)
+            .is_none()
+    );
+    assert!(
+        harness
+            .query_by_role_and_label(Role::Button, &contents_label)
+            .is_none()
+    );
+    harness.key_press(Key::Escape);
+    harness.run_steps(2);
+    assert!(!harness.state().state.edit_dialog_open());
+    assert!(harness.state().state.contents_request_id().is_none());
+    assert_source(&path, &before);
+
+    // A bare attachment is a child recordset, not a scalar metadata member.
+    // Refusal must retain the last fully published result, never publish a
+    // partial scalar-only projection or fabricate query-row source identity.
+    run(&mut harness, "SELECT Id, Score FROM Items ORDER BY Id");
+    assert!(harness.state().state.error.is_some());
+    let retained = harness.state().state.query_data.as_ref().unwrap();
+    assert_eq!(retained.source_revision, None);
+    assert_eq!(
+        retained
+            .columns
+            .iter()
+            .map(|column| column.name.as_str())
+            .collect::<Vec<_>>(),
+        ["Id", "FileName", "Flags"]
+    );
+    assert_eq!(
+        retained
+            .rows
+            .iter()
+            .map(|row| row
+                .iter()
+                .map(|cell| cell.text.as_str())
+                .collect::<Vec<_>>())
+            .collect::<Vec<_>>(),
+        [
+            vec!["1", "synthetic.bin", "-2147483648"],
+            vec!["1", "NULL", "NULL"],
+            vec!["2", "", "-2147483648"],
+            vec!["3", "NULL", "NULL"],
+        ]
+    );
+    assert!(!harness.state().state.busy);
+    assert!(!harness.state().state.edit_dialog_open());
+    assert!(harness.state().state.contents_request_id().is_none());
     assert_source(&path, &before);
 }
 
