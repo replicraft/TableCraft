@@ -1,5 +1,8 @@
 //! Literal typed saved-field ADD; no engine declaration or serialization imports.
-use crate::fixtures::access::{put16, put32, raw_catalog_properties, raw_forwarding_chain};
+use crate::fixtures::access::{
+    generated_record_insert::placement::{self, Pages},
+    put16, put32, raw_catalog_properties, raw_forwarding_chain,
+};
 
 const PAGE: usize = 4096;
 const FIELD_BYTES: usize = 25;
@@ -274,6 +277,46 @@ pub fn boolean_materialized_true(before: &[u8], definition: u32, root: usize) ->
     assert_eq!(range.len(), 11);
     let mut result = before.to_vec();
     put16(&mut result, range.start, 3);
-    result[range.end - 1] = (before[range.end - 1] & 3) | 4;
+    result[range.end - 1] = before[range.end - 1] | 4;
     result
+}
+
+/// Literal fresh three-field row under the newly saved gallery declaration.
+/// Old rows and their ignored payloads remain untouched; only new rows use defaults.
+pub fn append_omitted(before: &[u8], definition: u32, kind: Kind) -> Vec<u8> {
+    let base = definition as usize * PAGE;
+    assert_eq!(word(before, base + 41), 3);
+    assert_eq!(word(before, base + 45), 3);
+    let field = base + 75 + 50;
+    let (native, width) = kind.storage();
+    assert_eq!(before[field], native);
+    assert_eq!(word(before, field + 5), 2);
+    let pages = Pages {
+        definition: definition as usize,
+        data: definition as usize + 1,
+        index: definition as usize + 2,
+    };
+    let id = placement::next_id(before, pages);
+    let mut row = vec![3, 0];
+    row.extend(id.to_le_bytes());
+    row.extend(0_i32.to_le_bytes());
+    let mut mask = 3_u8;
+    if let Some(width) = width {
+        row.resize(10 + width, 0);
+        if kind.default_expression().is_some() && !matches!(kind, Kind::Boolean) {
+            mask |= 4;
+        }
+    } else {
+        assert_eq!(word(before, base + 43), 1);
+        if matches!(kind, Kind::Decimal { .. }) {
+            row.extend([0; 17]);
+            mask |= 4;
+        }
+        let end = row.len();
+        row.extend((end as u16).to_le_bytes());
+        row.extend(10_u16.to_le_bytes());
+        row.extend(1_u16.to_le_bytes());
+    }
+    row.push(mask);
+    placement::append(before, pages, id, &row)
 }
