@@ -57,7 +57,9 @@ fn assert_accepts(output: OutputType, value: &Value) {
         }
         OutputType::Null => assert_eq!(*value, Value::Null),
         OutputType::Dynamic => {}
-        OutputType::Multivalue { .. } => panic!("logical operators cannot produce a collection"),
+        OutputType::Multivalue { .. } | OutputType::Recordset { .. } => {
+            panic!("logical operators cannot produce a collection")
+        }
     }
 }
 

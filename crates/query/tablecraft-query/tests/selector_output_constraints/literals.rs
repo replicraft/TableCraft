@@ -96,7 +96,7 @@ fn literal_controls_keep_exact_selected_constraints_and_nullable_outcomes() {
                     assert!(data_type.validate_value(&row[0]).is_ok(), "{expression}");
                 }
                 OutputType::Dynamic => {}
-                OutputType::Multivalue { .. } => {
+                OutputType::Multivalue { .. } | OutputType::Recordset { .. } => {
                     panic!("scalar selector unexpectedly has collection metadata")
                 }
             }

@@ -13,7 +13,7 @@ fn scalar_type(output: OutputType) -> Option<ScalarType> {
     match output {
         OutputType::Scalar { data_type, .. } => Some(data_type.scalar_type()),
         OutputType::Null | OutputType::Dynamic => None,
-        OutputType::Multivalue { .. } => {
+        OutputType::Multivalue { .. } | OutputType::Recordset { .. } => {
             panic!("scalar result unexpectedly has collection metadata")
         }
     }
