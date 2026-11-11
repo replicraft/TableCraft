@@ -123,9 +123,11 @@ pub fn prepare_native_make_table(
 
 /// Prepare using the captured image's actual database default and per-field
 /// native comparison descriptors, with a separate cumulative comparison pool.
-/// This entry point selects native policies; caller-supplied comparers are not
-/// accepted or silently replaced. All other shape and source checks are shared
-/// with the explicit-policy preparation entry point.
+/// The native collation, resolver and LIKE mode override the corresponding
+/// `options` fields. Unknown or absent database policies remain unavailable;
+/// caller options cannot provide a fallback. Other host expression providers,
+/// including the clock and random state, are retained. All shape and source
+/// checks are shared with the explicit-policy preparation entry point.
 pub fn prepare_native_make_table_with_native_comparison(
     image: NativeImage,
     query: Query,
