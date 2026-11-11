@@ -109,7 +109,6 @@ fn unsupported_schema_contexts_and_parameters_never_issue_a_save_capability() {
         "ALTER TABLE Items ADD CONSTRAINT Rule CHECK (Id > 0)",
         "CREATE INDEX OtherIndex ON Items (Id)",
         "DROP VIEW Items",
-        "PARAMETERS p LONG; DROP TABLE Items",
         "SELECT 1",
     ] {
         let target = inspect(&worker, revision, sql);
@@ -120,16 +119,23 @@ fn unsupported_schema_contexts_and_parameters_never_issue_a_save_capability() {
         assert_eq!(fs::read(&path).unwrap(), pair.before);
         assert!(!crate::journal_path(&path).exists());
     }
-    assert!(matches!(
-        request(
-            &worker,
-            Command::InspectQuery {
-                document_revision: revision,
-                sql: "DROP TABLE Items; DELETE FROM Items".into(),
-            }
-        ),
-        Err(Error::Parse(_))
-    ));
+    for sql in [
+        "DROP TABLE Items; DELETE FROM Items",
+        "PARAMETERS p LONG; DROP TABLE Items",
+    ] {
+        assert!(matches!(
+            request(
+                &worker,
+                Command::InspectQuery {
+                    document_revision: revision,
+                    sql: sql.into(),
+                }
+            ),
+            Err(Error::Parse(_))
+        ));
+        assert_eq!(fs::read(&path).unwrap(), pair.before);
+        assert!(!crate::journal_path(&path).exists());
+    }
     assert_eq!(fs::read(path).unwrap(), pair.before);
 }
 

@@ -130,7 +130,7 @@ fn sql_fixed_and_variable_aliases_preserve_exact_widths_and_absent_property_defa
     save(
         &blank,
         &fixed,
-        "CREATE TABLE Items (Flag LOGICAL1, ByteValue INTEGER1, Int16Value INTEGER2, Int32Value INTEGER4, Int64Value BIGINT, Money MONEY, SingleValue FLOAT4, DoubleValue FLOAT8, DateValue DATE, GuidValue UNIQUEIDENTIFIER)",
+        "CREATE TABLE Items (Flag LOGICAL1, ByteValue INTEGER1, Int16Value INTEGER2, Int32Value INTEGER4, Int64Value BIGINT, [Money] MONEY, SingleValue FLOAT4, DoubleValue FLOAT8, DateValue DATE, GuidValue UNIQUEIDENTIFIER)",
         "Items",
         10,
     );
