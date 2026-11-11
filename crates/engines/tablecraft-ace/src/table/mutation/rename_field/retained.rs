@@ -7,12 +7,16 @@ mod verify;
 mod schema_tests;
 #[cfg(test)]
 mod tests;
+#[cfg(test)]
+mod typed_tests;
 
 use super::{FieldRenameError as Error, FittedFieldRenameSource, NativeFieldRenameIdentity};
 use crate::{
     NativeImage,
     header::check,
-    table::mutation::{catalog_property, current_schema::Family, normal_fitted::binding},
+    table::mutation::{
+        catalog_property, current_schema::Family, normal_fitted::binding, saved_field,
+    },
 };
 use source::Language;
 use tablecraft_core::limits::ResourceBudget;
@@ -177,11 +181,9 @@ impl NativeImage {
         if !self.has_retained_table_source(table, budget, cancelled)? {
             return Ok(false);
         }
-        Ok(
-            crate::table::mutation::saved_field::retained_rename_uses_typed(
-                self, table, column, budget, cancelled,
-            )?,
-        )
+        Ok(saved_field::retained_rename_uses_typed(
+            self, table, column, budget, cancelled,
+        )?)
     }
 
     /// Inspect the complete retained schema and actual typed target/group binding.

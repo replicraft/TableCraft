@@ -573,7 +573,7 @@ fn original_declaration_matches(
 fn qualify_typed_declaration(schema: &TableSchema, position: usize) -> Result<(), Error> {
     let column = schema.columns().get(position).ok_or(Error::Source)?;
     let (kind, width) = match column.scalar_type() {
-        Some(ScalarType::Boolean) => (ScalarType::Boolean, 0),
+        Some(ScalarType::Boolean) => (ScalarType::Boolean, data_type::BOOLEAN_BYTES),
         Some(ScalarType::Byte) => (ScalarType::Byte, size_of::<u8>()),
         Some(ScalarType::Int16) => (ScalarType::Int16, size_of::<i16>()),
         Some(ScalarType::Int32) => (ScalarType::Int32, size_of::<i32>()),
@@ -582,7 +582,7 @@ fn qualify_typed_declaration(schema: &TableSchema, position: usize) -> Result<()
         Some(ScalarType::Double) => (ScalarType::Double, size_of::<f64>()),
         Some(ScalarType::Currency) => (ScalarType::Currency, size_of::<i64>()),
         Some(ScalarType::DateTime) => (ScalarType::DateTime, size_of::<f64>()),
-        Some(ScalarType::Guid) => (ScalarType::Guid, size_of::<u128>()),
+        Some(ScalarType::Guid) => (ScalarType::Guid, data_type::GUID_BYTES),
         Some(ScalarType::Decimal) => return insertion_payload::qualify(column).map_err(edit_error),
         Some(ScalarType::Text) => return storage::qualify(column).map_err(edit_error),
         _ => return Err(Error::Source),
