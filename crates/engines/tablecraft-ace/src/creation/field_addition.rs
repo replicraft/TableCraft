@@ -121,8 +121,12 @@ impl RetainedFieldAdditionDefinition {
         {
             return Err(CreateDatabaseError::InvalidName);
         }
-        budget.charge_allocation(column.name().len() as u64, 1)?;
-        budget.charge(Resource::Steps, column.name().len() as u64)?;
+        budget
+            .charge_allocation(column.name().len() as u64, 1)
+            .map_err(InspectError::from)?;
+        budget
+            .charge(Resource::Steps, column.name().len() as u64)
+            .map_err(InspectError::from)?;
         let mut name = String::new();
         name.try_reserve_exact(column.name().len())
             .map_err(|_| InspectError::Allocation)?;
