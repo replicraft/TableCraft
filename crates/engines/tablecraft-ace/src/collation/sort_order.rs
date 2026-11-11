@@ -38,6 +38,7 @@ impl NativeSortOrder {
         })
     }
     /// Exact descriptor encoding for qualified native metadata writers.
+    #[cfg(feature = "ace16-create")]
     pub(crate) const fn native_bytes(self) -> [u8; ORDER_BYTES] {
         self.bytes
     }
