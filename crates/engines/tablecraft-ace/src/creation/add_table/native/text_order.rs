@@ -22,7 +22,7 @@ pub(super) fn capture(
     }
     let order = inspect_database_sort_order(&mut image.reader(), budget, cancelled)?;
     // This construction profile qualifies the exact two General variants.
-    // Other stored defaults remain observable metadata, never2010 fallback.
+    // Other stored defaults remain observable metadata, never a 2010 fallback.
     if order.general_family().is_none() {
         return Err(AddTableError::Source);
     }
