@@ -112,7 +112,7 @@ fn query_child_dialog_preserves_uninspected_members_and_rejects_late_result_call
     let mut harness = harness(state);
     crate::configure(&harness.ctx);
     harness.run_steps(2);
-    harness.get_by_label("Attachments");
+    harness.get_by_role_and_label(Role::Label, "Attachments");
     assert!(!harness.state().0.edit_dialog_open());
     assert_eq!(
         harness

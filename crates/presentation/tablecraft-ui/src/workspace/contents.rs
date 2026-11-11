@@ -251,6 +251,27 @@ impl State {
         Some(self.localizer.format(key, &args))
     }
 
+    fn contents_width_scope(&self, owner: &ContentsOwner) -> Option<egui::Id> {
+        match owner {
+            ContentsOwner::Native(target) => Some(egui::Id::new((
+                target.document_revision,
+                &target.table,
+                &target.column,
+            ))),
+            ContentsOwner::Query(target) => {
+                let data = self.query_contents_data()?;
+                let entry = data.query_contents.as_ref()?.entry(target)?;
+                // All parents of one projected field share widths; another field
+                // or successful result has an independent presentation scope.
+                Some(egui::Id::new((
+                    "query_contents",
+                    target.result_id,
+                    entry.column,
+                )))
+            }
+        }
+    }
+
     /// Bind only the actual current query result's inert token after host lookup.
     pub fn begin_query_contents(&mut self, target: QueryContentsTarget, request_id: u64) {
         if self.can_view_query_contents(&target) {
@@ -365,6 +386,9 @@ impl State {
         let Some(target_label) = self.contents_owner_label(&dialog.owner) else {
             return;
         };
+        let Some(width_scope) = self.contents_width_scope(&dialog.owner) else {
+            return;
+        };
         let dialog = self.contents.as_mut().expect("validated open dialog");
         let mut close = false;
         let response = egui::Modal::new(egui::Id::new("collection_contents")).show(ctx, |ui| {
@@ -450,7 +474,7 @@ impl State {
                                 egui::Layout::top_down(egui::Align::LEFT),
                                 |ui| {
                                     ui.set_clip_rect(ui.clip_rect().intersect(ui.max_rect()));
-                                    ui.push_id(("contents_result", request_id), |ui| {
+                                    ui.push_id(width_scope, |ui| {
                                         datasheet::show_collection(ui, data, &mut dialog.selection);
                                     });
                                 },
