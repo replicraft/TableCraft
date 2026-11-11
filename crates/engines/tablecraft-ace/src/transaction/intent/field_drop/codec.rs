@@ -35,6 +35,13 @@ const HEADER_BYTES: usize = RESERVED_AT + size_of::<u32>();
 pub(super) const MAX_RECORD_BYTES: usize = HEADER_BYTES + 2 * MAX_NAME_BYTES;
 pub(super) const MAX_NON_TAIL_RECORD_BYTES: usize = HEADER_BYTES + 2 * MAX_NON_TAIL_NAME_BYTES;
 
+#[cfg_attr(
+    not(feature = "ace16-create"),
+    expect(
+        clippy::enum_variant_names,
+        reason = "Journal-only decoding retains only the three retained-source wire families; the prefix identifies their source cohort."
+    )
+)]
 #[derive(Clone, Copy)]
 pub(super) enum Profile {
     #[cfg(feature = "ace16-create")]
