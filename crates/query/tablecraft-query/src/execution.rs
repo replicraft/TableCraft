@@ -26,7 +26,10 @@ pub use inserting::{
 };
 pub use mutation::MutationOptions;
 mod execute;
-pub use editing::{JoinedMutationOptions, plan_joined_batch_update_with_options};
+pub use editing::{
+    JoinedMutationOptions, PreparedJoinedUpdate, plan_joined_batch_update_with_options,
+    prepare_joined_batch_update_with_options,
+};
 pub use editing::{
     UpdateError, UpdatePlan, plan_batch_update, plan_batch_update_with_budgets,
     plan_batch_update_with_options, plan_update,
