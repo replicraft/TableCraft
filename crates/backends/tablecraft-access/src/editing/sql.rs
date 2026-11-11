@@ -241,3 +241,10 @@ pub fn plan_recoverable_batch_update_with_options(
 
 #[cfg(all(test, feature = "journal"))]
 mod budgets;
+
+#[cfg(feature = "journal")]
+mod predicate_reads;
+#[cfg(feature = "journal")]
+mod read_source_update;
+#[cfg(feature = "journal")]
+pub use read_source_update::{prepare_native_read_source_update, update_uses_read_source};

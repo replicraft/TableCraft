@@ -1,16 +1,13 @@
 //! Explicit predicate-read mode never retries a failed legacy DELETE planner.
 use super::{NativeMutationOptions, RecoverableDeleteError, local_delete_table};
 use crate::editing::journal::NativeJournalEditor;
-use tablecraft_core::limits::{Resource, ResourceBudget};
+use tablecraft_core::limits::ResourceBudget;
 use tablecraft_db::DeletableTable;
 use tablecraft_query::{
     MutationOptions, PreparedReadSourceDelete, QueryError, ReadSourceDeleteOptions, Source,
     prepare_read_source_delete_with_options,
 };
-use tablecraft_sql::{
-    query::{Query, Statement},
-    select::{Expression, FunctionArgument},
-};
+use tablecraft_sql::query::{Query, Statement};
 
 /// Identify written subquery predicates before acquiring native snapshot resources.
 /// This is mode selection only: unsupported subquery forms still enter explicit
@@ -25,71 +22,12 @@ pub fn delete_uses_read_source(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<bool, QueryError> {
-    check(budget, cancelled)?;
+    super::super::predicate_reads::check(budget, cancelled)?;
     local_delete_table(query, true)?;
     let Statement::Delete(delete) = &query.statement else {
         return Err(QueryError::Unsupported);
     };
-    let mut pending = Vec::new();
-    if let Some(value) = &delete.selection {
-        push(&mut pending, value, budget, cancelled)?;
-    }
-    let mut selected = false;
-    while let Some(value) = pending.pop() {
-        check(budget, cancelled)?;
-        match value {
-            Expression::Exists(_) | Expression::Subquery(_) => selected = true,
-            Expression::InQuery { expression, .. } | Expression::Quantified { expression, .. } => {
-                selected = true;
-                push(&mut pending, expression, budget, cancelled)?;
-            }
-            Expression::Unary { expression, .. }
-            | Expression::IsNull { expression, .. }
-            | Expression::Member { expression, .. } => {
-                push(&mut pending, expression, budget, cancelled)?
-            }
-            Expression::Binary { left, right, .. } => {
-                push(&mut pending, right, budget, cancelled)?;
-                push(&mut pending, left, budget, cancelled)?;
-            }
-            Expression::Like {
-                expression,
-                pattern,
-                ..
-            } => {
-                push(&mut pending, pattern, budget, cancelled)?;
-                push(&mut pending, expression, budget, cancelled)?;
-            }
-            Expression::Between {
-                expression,
-                first_bound,
-                second_bound,
-                ..
-            } => {
-                push(&mut pending, second_bound, budget, cancelled)?;
-                push(&mut pending, first_bound, budget, cancelled)?;
-                push(&mut pending, expression, budget, cancelled)?;
-            }
-            Expression::InList {
-                expression, values, ..
-            } => {
-                for value in values.iter().rev() {
-                    push(&mut pending, value, budget, cancelled)?;
-                }
-                push(&mut pending, expression, budget, cancelled)?;
-            }
-            Expression::Call { arguments, .. } => {
-                for argument in arguments.iter().rev() {
-                    check(budget, cancelled)?;
-                    if let FunctionArgument::Expression(value) = argument {
-                        push(&mut pending, value, budget, cancelled)?;
-                    }
-                }
-            }
-            _ => {}
-        }
-    }
-    Ok(selected)
+    super::super::predicate_reads::uses_reads(delete.selection.iter(), budget, cancelled)
 }
 
 /// Stage predicates against explicit read sources after native snapshot capture
@@ -130,33 +68,6 @@ pub fn prepare_native_read_source_delete(
         },
         cancelled,
     )?)
-}
-
-fn check(budget: &mut ResourceBudget, cancelled: &dyn Fn() -> bool) -> Result<(), QueryError> {
-    if cancelled() {
-        return Err(QueryError::Cancelled);
-    }
-    budget.charge(Resource::Steps, 1)?;
-    Ok(())
-}
-
-fn push<'a>(
-    pending: &mut Vec<&'a Expression>,
-    value: &'a Expression,
-    budget: &mut ResourceBudget,
-    cancelled: &dyn Fn() -> bool,
-) -> Result<(), QueryError> {
-    check(budget, cancelled)?;
-    if pending.len() == pending.capacity() {
-        let added = pending.capacity().max(1);
-        budget.charge(Resource::Steps, pending.len() as u64)?;
-        budget.charge_allocation(added as u64, size_of::<&Expression>() as u64)?;
-        pending
-            .try_reserve_exact(added)
-            .map_err(|_| QueryError::Allocation)?;
-    }
-    pending.push(value);
-    Ok(())
 }
 
 #[cfg(test)]
