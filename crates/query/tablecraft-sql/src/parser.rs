@@ -17,7 +17,6 @@ mod integer_projection;
 mod lex;
 mod limits;
 mod parameters;
-mod precedence;
 mod queries;
 mod reference_names;
 mod relations;

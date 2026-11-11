@@ -3,6 +3,7 @@
 mod expression;
 pub(crate) mod format;
 mod name;
+pub(crate) mod precedence;
 mod source;
 
 pub use expression::{BinaryOperator, Expression, FunctionArgument, Quantifier, UnaryOperator};

@@ -2,7 +2,7 @@
 use crate::{
     ParseError, ParseLimits,
     parser::parse_default_word,
-    select::{Expression, Name},
+    select::{Expression, Name, format::ExpressionStyle},
 };
 use std::fmt::{self, Display, Formatter};
 
@@ -21,7 +21,9 @@ impl Display for ColumnDefault {
     fn fmt(&self, formatter: &mut Formatter<'_>) -> fmt::Result {
         match self {
             Self::BareWord(word) => formatter.write_str(word.as_str()),
-            Self::Expression(expression) => expression.fmt(formatter),
+            Self::Expression(expression) => {
+                ExpressionStyle::Annotation.root(expression).fmt(formatter)
+            }
         }
     }
 }

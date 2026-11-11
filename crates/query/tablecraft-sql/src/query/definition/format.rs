@@ -1,4 +1,5 @@
 use super::*;
+use crate::select::format::ExpressionStyle;
 use std::fmt::{self, Display, Formatter};
 pub(crate) fn names(f: &mut Formatter<'_>, fields: &[Name]) -> fmt::Result {
     f.write_str("(")?;
@@ -136,7 +137,13 @@ impl Display for Constraint {
                 f.write_str("NOT NULL")?;
                 fields
             }
-            ConstraintKind::Check(expression) => return write!(f, "CHECK ({expression})"),
+            ConstraintKind::Check(expression) => {
+                return write!(
+                    f,
+                    "CHECK ({})",
+                    ExpressionStyle::Annotation.root(expression)
+                );
+            }
             ConstraintKind::ForeignKey(reference) => {
                 if !reference.fields.is_empty() {
                     f.write_str("FOREIGN KEY ")?;

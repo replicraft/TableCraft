@@ -1,8 +1,9 @@
 //! Access precedence on sqlparser's bounded token stream; no generic dialect fallback.
 
-use super::{ParseError, ParseErrorKind as K, access, precedence as power, reference_names};
+use super::{ParseError, ParseErrorKind as K, access, reference_names};
 use crate::select::{
-    BinaryOperator as B, Expression as E, FieldReference, FunctionArgument as A, UnaryOperator as U,
+    BinaryOperator as B, Expression as E, FieldReference, FunctionArgument as A,
+    UnaryOperator as U, precedence as power,
 };
 use sqlparser::{keywords::Keyword, parser::Parser, tokenizer::Token};
 

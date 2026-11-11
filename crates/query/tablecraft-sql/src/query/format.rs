@@ -1,5 +1,5 @@
 use super::*;
-use crate::select::format::sort;
+use crate::select::format::{ExpressionStyle, sort, sort_with_style};
 use std::fmt::{self, Display, Formatter};
 impl Display for Query {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
@@ -135,16 +135,16 @@ fn sources(f: &mut Formatter<'_>, sources: &[crate::select::TableSource]) -> fmt
     Ok(())
 }
 impl ReadBody {
-    pub(crate) fn fmt_sql(&self, f: &mut Formatter<'_>) -> fmt::Result {
+    fn fmt_with_style(&self, f: &mut Formatter<'_>, style: ExpressionStyle) -> fmt::Result {
         match self {
-            Self::Select(select) => select.fmt_body(f),
+            Self::Select(select) => select.fmt_body_with_style(f, style),
             Self::Reference(name) => name.fmt(f),
             Self::Table(name) => write!(f, "TABLE {name}"),
             Self::Union { first, rest } => {
-                first.fmt_sql(f)?;
+                first.fmt_with_style(f, style)?;
                 for arm in rest {
                     f.write_str(if arm.all { " UNION ALL " } else { " UNION " })?;
-                    arm.body.fmt_sql(f)?;
+                    arm.body.fmt_with_style(f, style)?;
                 }
                 Ok(())
             }
@@ -153,8 +153,16 @@ impl ReadBody {
 }
 impl ReadQuery {
     pub(crate) fn fmt_sql(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        self.body.fmt_sql(f)?;
-        sort(f, &self.order_by)?;
+        self.fmt_with_style(f, ExpressionStyle::Canonical)
+    }
+
+    pub(crate) fn fmt_with_style(
+        &self,
+        f: &mut Formatter<'_>,
+        style: ExpressionStyle,
+    ) -> fmt::Result {
+        self.body.fmt_with_style(f, style)?;
+        sort_with_style(f, &self.order_by, style)?;
         if self.owner_access {
             f.write_str(" WITH OWNERACCESS OPTION")?;
         }
