@@ -175,7 +175,7 @@ pub fn row(id: i32) -> Vec<Value> {
     ]
 }
 
-fn payload(column: Column, value: Option<Scalar>) -> Vec<u8> {
+pub(super) fn payload(column: Column, value: Option<Scalar>) -> Vec<u8> {
     let mut payload = Vec::new();
     match (column, value) {
         (_, None) => {}

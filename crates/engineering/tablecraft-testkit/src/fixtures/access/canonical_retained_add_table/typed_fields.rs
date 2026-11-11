@@ -46,7 +46,7 @@ pub const KINDS: [Kind; 12] = [
 ];
 
 impl Kind {
-    fn storage(self) -> (u8, Option<usize>) {
+    pub(super) fn storage(self) -> (u8, Option<usize>) {
         match self {
             Self::Boolean => (1, Some(0)),
             Self::Byte => (2, Some(1)),

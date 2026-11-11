@@ -1,4 +1,5 @@
 //! Independent descriptor-only scalar ADD without gallery property snapshots.
+pub mod rows;
 use super::typed_fields::{self, Kind};
 use crate::fixtures::access::generated_record_insert::placement::{self, Pages};
 

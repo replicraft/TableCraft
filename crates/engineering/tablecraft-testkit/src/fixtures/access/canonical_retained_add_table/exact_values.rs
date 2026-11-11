@@ -137,14 +137,14 @@ fn declaration(before: &[u8], definition: u32) {
 
 // Canonical text groups reverse their first 4/2/2 bytes in native field storage.
 // Repeating this transformation restores the canonical sequence.
-fn guid_bytes(mut bytes: [u8; 16]) -> [u8; 16] {
+pub(super) fn guid_bytes(mut bytes: [u8; 16]) -> [u8; 16] {
     bytes[..4].reverse();
     bytes[4..6].reverse();
     bytes[6..8].reverse();
     bytes
 }
 
-fn decimal_bytes(coefficient: i128) -> [u8; 17] {
+pub(super) fn decimal_bytes(coefficient: i128) -> [u8; 17] {
     let magnitude = coefficient.unsigned_abs();
     assert!(magnitude < PRECISION_BOUND);
     let mut bytes = [0; 17];
