@@ -41,16 +41,19 @@ fn changing_file_limits_revalidates_decoded_cache_without_rereading_stored_rows(
         .unwrap()
         .with_decoded_attachments();
         let sql = "SELECT Count(Score.FileData) FROM Items";
+        assert_eq!(execute(&source, sql).unwrap(), [vec![Value::Int64(2)]]);
+
+        forbid_children.set(true);
+        let smaller = AttachmentDecodeLimits::new(1_000_000).unwrap();
+        let source = source.with_decoded_attachment_limits(smaller);
         assert_eq!(
             execute(&source, sql),
             Err(QueryError::SourceFailure(SourceFailure::StructureLimit))
         );
-
-        forbid_children.set(true);
         let larger = AttachmentDecodeLimits::new(1_100_000).unwrap();
         let source = source.with_decoded_attachment_limits(larger);
         assert_eq!(execute(&source, sql).unwrap(), [vec![Value::Int64(2)]]);
-        let source = source.with_decoded_attachment_limits(AttachmentDecodeLimits::default());
+        let source = source.with_decoded_attachment_limits(smaller);
         assert_eq!(
             execute(&source, sql),
             Err(QueryError::SourceFailure(SourceFailure::StructureLimit))
@@ -103,7 +106,8 @@ fn file_policy_changes_do_not_refund_the_original_native_budget() {
     .with_decoded_attachment_limits(AttachmentDecodeLimits::new(1_100_000).unwrap());
     let sql = "SELECT Count(Score.FileData) FROM Items";
     assert_eq!(execute(&source, sql).unwrap(), [vec![Value::Int64(2)]]);
-    let source = source.with_decoded_attachment_limits(AttachmentDecodeLimits::default());
+    let smaller = AttachmentDecodeLimits::new(1_000_000).unwrap();
+    let source = source.with_decoded_attachment_limits(smaller);
     assert_eq!(
         execute(&source, sql),
         Err(QueryError::SourceFailure(SourceFailure::StructureLimit))
