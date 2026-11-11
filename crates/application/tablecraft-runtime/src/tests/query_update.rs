@@ -569,3 +569,14 @@ fn invalid_action_inputs_refuse_before_unreadable_native_data() {
 }
 
 mod joined;
+
+fn assert_image(actual: &[u8], expected: &[u8]) {
+    assert_eq!(actual.len(), expected.len(), "complete image length");
+    assert_eq!(
+        actual.iter().zip(expected).position(|(a, b)| a != b),
+        None,
+        "first differing image byte"
+    );
+}
+
+mod read_source;

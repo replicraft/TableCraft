@@ -1,20 +1,11 @@
 //! Real joined review stages source values before the existing native writer/save.
-use super::{inspect, open, opened, request, save_and_acknowledge};
+use super::{assert_image, inspect, open, opened, request, save_and_acknowledge};
 use crate::{Command, Error, Response};
 use tablecraft_access::editing::sql::RecoverableError;
 use tablecraft_query::{QueryError, UpdateError};
 use tablecraft_testkit::fixtures::access::canonical_retained_add_table::{
     field_changes, joined_update,
 };
-
-fn assert_image(actual: &[u8], expected: &[u8]) {
-    assert_eq!(actual.len(), expected.len(), "complete image length");
-    assert_eq!(
-        actual.iter().zip(expected).position(|(a, b)| a != b),
-        None,
-        "first differing image byte"
-    );
-}
 
 #[test]
 fn joined_update_review_save_ack_and_reopen_preserve_the_independent_native_image() {

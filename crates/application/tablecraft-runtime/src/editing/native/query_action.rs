@@ -79,6 +79,10 @@ pub(in crate::editing) fn review(
     } else {
         None
     };
+    let read_source_update = matches!(kind, Kind::Update)
+        && joined_update.is_none()
+        && sql::update_uses_read_source(parsed.query(), &mut query_work, cancelled)
+            .map_err(sql::RecoverableError::Shape)?;
     let read_source_delete = matches!(kind, Kind::Delete)
         && sql::delete_uses_read_source(parsed.query(), &mut query_work, cancelled)
             .map_err(sql::RecoverableDeleteError::Shape)?;
@@ -145,6 +149,36 @@ pub(in crate::editing) fn review(
         // Read-source callbacks borrow this same native pool. Finish only after
         // complete joined staging has returned and released those borrows.
         let staged = sql::prepare_native_joined_update(
+            editor,
+            parsed.query(),
+            &source,
+            &mut query_work,
+            sql::NativeMutationOptions {
+                parameters: &bindings,
+                collation: resolver.default_collation(),
+                resolver: &resolver,
+            },
+            cancelled,
+        )?;
+        let mut native = native_pool
+            .try_borrow_mut()
+            .map_err(|_| Error::Native(InspectError::Unsupported))?;
+        Plan::Update(
+            staged
+                .finish(&mut native, cancelled)
+                .map_err(sql::RecoverableError::Plan)?,
+        )
+    } else if read_source_update {
+        let editor = {
+            let mut native = native_pool
+                .try_borrow_mut()
+                .map_err(|_| Error::Native(InspectError::Unsupported))?;
+            NativeJournalEditor::new(image, table, &mut native, cancelled)
+                .map_err(sql::RecoverableError::Editor)?
+        };
+        // Correlated predicates borrow this same native pool through Source.
+        // Keep the consuming writer finish outside every read callback borrow.
+        let staged = sql::prepare_native_read_source_update(
             editor,
             parsed.query(),
             &source,
