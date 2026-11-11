@@ -206,7 +206,10 @@ fn execute(sql: &str, source: &Data) -> Result<CollectionQueryResult, QueryError
 fn list(value: &QueryValue) -> &[Value] {
     match value {
         QueryValue::Multivalue(value) => value.values(),
-        QueryValue::Scalar(_) | QueryValue::AbsentMultivalue => {
+        QueryValue::Scalar(_)
+        | QueryValue::AbsentMultivalue
+        | QueryValue::Recordset(_)
+        | QueryValue::AbsentRecordset => {
             panic!("expected a complete present list")
         }
     }
