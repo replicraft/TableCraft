@@ -3,17 +3,24 @@ use super::{CollectionFrame, JoinedFrame, Requests, Runtime};
 use crate::{
     MultivalueValue, QueryError,
     execution::cell::CellValue,
-    plan::{Relation, RelationNode},
+    plan::{CollectionOrigin, Relation, RelationNode},
     profile::SOURCE_SCHEMA_POLICY,
 };
+use std::sync::Arc;
 use tablecraft_core::{limits::Resource, values::Value};
-use tablecraft_db::{MultivalueList, ProjectedRow};
+use tablecraft_db::{MultivalueList, OwnedRecordset, ProjectedRow, RecordsetSchema};
 use tablecraft_schema::{CollectionMember, Column, validate_row};
 
 struct Request {
     native: usize,
     output: Option<usize>,
     criterion: Option<usize>,
+}
+
+struct RecordsetRequest<'a> {
+    native: usize,
+    origin: CollectionOrigin,
+    schema: &'a RecordsetSchema,
 }
 
 impl Runtime<'_, '_> {
@@ -33,6 +40,8 @@ impl Runtime<'_, '_> {
             multivalues,
             members,
             expansion,
+            recordsets,
+            recordset_projection,
             ..
         } = &relation.node
         else {
@@ -97,13 +106,48 @@ impl Runtime<'_, '_> {
                 });
             }
         }
-        if needed.is_empty() {
+        let mut requested_recordsets = Vec::new();
+        for native in recordset_projection {
+            self.tick()?;
+            let descriptor = recordsets.get(*native).ok_or(QueryError::Source)?;
+            let mut origin = None;
+            for slot in &relation.slots {
+                self.tick()?;
+                let Some(recordset) = &slot.recordset else {
+                    continue;
+                };
+                if recordset.index != *native {
+                    continue;
+                }
+                for selected in requests.recordsets {
+                    self.tick()?;
+                    if *selected == recordset.origin {
+                        if origin.is_some_and(|previous| previous != recordset.origin) {
+                            return Err(QueryError::Source);
+                        }
+                        origin = Some(recordset.origin);
+                    }
+                }
+            }
+            if let Some(origin) = origin {
+                self.push(
+                    &mut requested_recordsets,
+                    RecordsetRequest {
+                        native: *native,
+                        origin,
+                        schema: descriptor.schema(),
+                    },
+                )?;
+            }
+        }
+        if needed.is_empty() && requested_recordsets.is_empty() {
             let mut result = Vec::new();
             for scalars in self.relation(relation, &[])? {
                 self.push(
                     &mut result,
                     JoinedFrame {
                         frame: CollectionFrame {
+                            recordsets: Vec::new(),
                             scalars,
                             lists: Vec::new(),
                             keys: Vec::new(),
@@ -121,6 +165,11 @@ impl Runtime<'_, '_> {
             .try_reserve_exact(needed.len())
             .map_err(|_| QueryError::Allocation)?;
         indices.extend(needed.iter().map(|request| request.native));
+        let mut recordset_indices = Vec::new();
+        for request in &requested_recordsets {
+            self.tick()?;
+            self.push(&mut recordset_indices, request.native)?;
+        }
         let (values, named) = self.collection_requests(&indices, multivalues.len())?;
         let layout = if expansion.is_empty() {
             None
@@ -130,28 +179,32 @@ impl Runtime<'_, '_> {
         let source = self.namespace_source(*namespace)?;
         let mut rows = Vec::new();
         let mut failure: Option<QueryError> = None;
-        let mut visitor = |scalars: ProjectedRow<'_>, lists: &[&dyn MultivalueList]| {
+        let mut visitor = |scalars: ProjectedRow<'_>,
+                           lists: &[&dyn MultivalueList],
+                           records: &[Arc<OwnedRecordset>]| {
             if let Some(error) = &failure {
                 return Err(*error);
             }
             let result = (|| {
                 self.tick()?;
-                if lists.len() != needed.len() {
+                if lists.len() != needed.len() || records.len() != requested_recordsets.len() {
                     return Err(QueryError::Source);
                 }
                 self.check_joined_list_views(&needed, multivalues, members, lists)?;
+                let retained = self.retain_joined_recordsets(&requested_recordsets, records)?;
                 let scalars = self.copy_projected_row(columns, projection, scalars)?;
                 if let Some(layout) = &layout {
                     let views = self.displayed_collection_views(&needed, expansion, lists)?;
                     let mut expanded = Vec::new();
                     self.expand_collection_row(&scalars, layout, &views, &mut expanded)?;
                     for scalars in expanded {
-                        let row = self.copy_joined_parent_frame(&needed, lists, scalars)?;
+                        let row =
+                            self.copy_joined_parent_frame(&needed, lists, &retained, scalars)?;
                         self.push(&mut rows, row)?;
                     }
                     Ok(())
                 } else {
-                    let row = self.copy_joined_parent_frame(&needed, lists, scalars)?;
+                    let row = self.copy_joined_parent_frame(&needed, lists, &retained, scalars)?;
                     self.push(&mut rows, row)
                 }
             })();
@@ -160,7 +213,14 @@ impl Runtime<'_, '_> {
             }
             result
         };
-        let scan = source.scan_collection_members(name, projection, values, &named, &mut visitor);
+        let scan = source.scan_structured(
+            name,
+            projection,
+            values,
+            &named,
+            &recordset_indices,
+            &mut visitor,
+        );
         failure.map_or(scan.map(|()| rows), Err)
     }
 
@@ -196,6 +256,7 @@ impl Runtime<'_, '_> {
         &mut self,
         requested: &[Request],
         lists: &[&dyn MultivalueList],
+        recordsets: &[(CollectionOrigin, Option<Arc<OwnedRecordset>>)],
         scalars: Vec<CellValue>,
     ) -> Result<JoinedFrame, QueryError> {
         let mut owned = Vec::new();
@@ -211,14 +272,30 @@ impl Runtime<'_, '_> {
                 self.push(&mut owned, (index, Some(copied)))?;
             }
         }
+        let retained_recordsets = self.share_recordsets(recordsets)?;
         Ok(JoinedFrame {
             frame: CollectionFrame {
+                recordsets: retained_recordsets,
                 scalars,
                 lists: owned,
                 keys: Vec::new(),
             },
             criteria,
         })
+    }
+
+    fn retain_joined_recordsets(
+        &mut self,
+        requested: &[RecordsetRequest<'_>],
+        records: &[Arc<OwnedRecordset>],
+    ) -> Result<Vec<(CollectionOrigin, Option<Arc<OwnedRecordset>>)>, QueryError> {
+        let mut retained = Vec::new();
+        for (request, record) in requested.iter().zip(records) {
+            self.tick()?;
+            let value = self.retain_recordset(record, request.schema)?;
+            self.push(&mut retained, (request.origin, Some(value)))?;
+        }
+        Ok(retained)
     }
 
     fn check_joined_list_views(

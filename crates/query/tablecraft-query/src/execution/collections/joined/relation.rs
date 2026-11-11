@@ -89,6 +89,7 @@ impl Runtime<'_, '_> {
                             &mut result,
                             JoinedFrame {
                                 frame: CollectionFrame {
+                                    recordsets: Vec::new(),
                                     scalars,
                                     lists: Vec::new(),
                                     keys: Vec::new(),
@@ -227,8 +228,14 @@ impl Runtime<'_, '_> {
             let copied = self.copy_collection_presence(value.as_ref())?;
             self.push(&mut criteria, (*index, copied))?;
         }
+        let mut recordsets = self.share_recordsets(&left.frame.recordsets)?;
+        let right_recordsets = self.share_recordsets(&right.frame.recordsets)?;
+        for recordset in right_recordsets {
+            self.push(&mut recordsets, recordset)?;
+        }
         Ok(JoinedFrame {
             frame: CollectionFrame {
+                recordsets,
                 scalars,
                 lists,
                 keys: Vec::new(),

@@ -25,6 +25,29 @@ impl Runtime<'_, '_> {
                 }
             }
         }
+        let mut recordsets = Vec::new();
+        for slot in &relation.slots {
+            self.tick()?;
+            let Some(recordset) = &slot.recordset else {
+                continue;
+            };
+            let mut requested = false;
+            for origin in requests.recordsets {
+                self.tick()?;
+                requested |= *origin == recordset.origin;
+            }
+            if !requested {
+                continue;
+            }
+            let mut present = false;
+            for (origin, _) in &recordsets {
+                self.tick()?;
+                present |= *origin == recordset.origin;
+            }
+            if !present {
+                self.push(&mut recordsets, (recordset.origin, None))?;
+            }
+        }
         let mut criteria = Vec::new();
         if let Some(parent) = requests.parent {
             for (position, location) in parent
@@ -42,6 +65,7 @@ impl Runtime<'_, '_> {
         }
         Ok(JoinedFrame {
             frame: CollectionFrame {
+                recordsets,
                 // join_missing supplies exactly the missing scalar width. This
                 // frame carries only collection presence for the missing side.
                 scalars: Vec::new(),

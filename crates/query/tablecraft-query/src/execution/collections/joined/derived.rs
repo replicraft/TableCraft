@@ -36,7 +36,7 @@ impl Runtime<'_, '_> {
                 self.tick()?;
                 if kind.is_multivalue() {
                     list_width += 1;
-                } else {
+                } else if !kind.is_recordset() {
                     scalar_width += 1;
                 }
             }
@@ -218,8 +218,10 @@ impl Runtime<'_, '_> {
                 self.push(&mut criteria, (position, value))?;
             }
         }
+        let recordsets = self.share_recordsets(&frame.recordsets)?;
         Ok(JoinedFrame {
             frame: CollectionFrame {
+                recordsets,
                 scalars,
                 lists,
                 keys: Vec::new(),

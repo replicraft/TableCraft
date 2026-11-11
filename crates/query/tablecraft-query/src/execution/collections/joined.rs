@@ -8,7 +8,7 @@ use super::{CollectionFrame, Runtime};
 use crate::{
     MultivalueValue, QueryError,
     execution::multivalue::ParentCollections,
-    plan::{Expr, ParentFilter, Relation, SelectPlan},
+    plan::{CollectionOrigin, Expr, ParentFilter, Relation, SelectPlan},
 };
 use tablecraft_core::values::Value;
 use tablecraft_db::MultivalueList;
@@ -37,6 +37,7 @@ const MISSING_LIST: MissingList = MissingList;
 
 struct Requests<'a> {
     selected: &'a [usize],
+    recordsets: &'a [CollectionOrigin],
     parent: Option<&'a ParentFilter>,
 }
 
@@ -46,14 +47,18 @@ impl Runtime<'_, '_> {
         select: &SelectPlan,
     ) -> Result<Vec<CollectionFrame>, QueryError> {
         let mut selected = Vec::new();
+        let mut recordsets = Vec::new();
         for expression in &select.projection {
             self.tick()?;
             if let Expr::Multivalue { index, .. } = expression {
                 self.push(&mut selected, *index)?;
+            } else if let Expr::Recordset { origin, .. } = expression {
+                self.push(&mut recordsets, *origin)?;
             }
         }
         let requests = Requests {
             selected: &selected,
+            recordsets: &recordsets,
             parent: select.parent.as_ref(),
         };
         let input = self.joined_collection_relation(&select.source, &requests, 0, &mut 0)?;
