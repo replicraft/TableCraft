@@ -26,7 +26,7 @@ pub enum OutputType {
         /// not alter whether children in a present list may be NULL.
         parent_nullable: bool,
     },
-    /// One complete stored attachment recordset. Child schema is retained in
+    /// One complete source-declared stored child recordset. Kind and schema are retained in
     /// sparse output metadata; it is never inferred from the first result row.
     Recordset {
         /// The associated parent may be absent after an outer join. Unassigned

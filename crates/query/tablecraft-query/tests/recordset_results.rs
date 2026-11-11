@@ -3,11 +3,16 @@ mod source;
 
 use source::Data;
 use std::{cell::Cell, sync::Arc};
-use tablecraft_core::values::{ExpressionValue, Value};
-use tablecraft_db::{MemberAvailability, OwnedRecordset, RecordsetPresence, StoredCell};
+use tablecraft_core::{
+    limits::ResourceBudget,
+    values::{ExpressionValue, Value},
+};
+use tablecraft_db::{
+    MemberAvailability, OwnedRecordset, RecordsetKind, RecordsetPresence, StoredCell,
+};
 use tablecraft_query::{
     CollectionQueryResult, ExecutionOptions, OutputType, QueryError, QueryLimits, QueryValue,
-    prepare,
+    Source, prepare,
 };
 use tablecraft_sql::parse_query;
 
@@ -189,7 +194,7 @@ fn derived_recordsets_keep_schema_and_written_inner_projections_remain_eager() {
 
 #[test]
 fn structural_child_metadata_changes_refuse_before_any_row_scan() {
-    for change in 1..=4 {
+    for change in [1, 2, 3, 4, 6] {
         let data = Data::new();
         let parsed = parse_query("SELECT Files FROM T", Default::default()).unwrap();
         let prepared = prepare(parsed.query(), &data).unwrap();
@@ -319,4 +324,39 @@ fn byte_row_work_and_cancellation_limits_fail_without_partial_results() {
             .len(),
         4
     );
+}
+
+#[test]
+fn representational_recordset_equality_includes_kind_without_requiring_arc_identity() {
+    let data = Data::new();
+    let rows = || {
+        vec![
+            vec![
+                StoredCell::Value(Value::Text("named.txt".into())),
+                StoredCell::Uninspected,
+            ],
+            vec![StoredCell::Value(Value::Null), StoredCell::Uninspected],
+        ]
+    };
+    let same = OwnedRecordset::new(
+        Arc::clone(data.recordset_columns("T").unwrap()[0].schema()),
+        rows(),
+        RecordsetPresence::Assigned,
+        &mut ResourceBudget::new(0, 0, 1000),
+        &|| false,
+    )
+    .unwrap();
+    let original = QueryValue::Recordset(Arc::clone(&data.records[0]));
+    assert_eq!(original, QueryValue::Recordset(Arc::new(same)));
+    data.changed.set(6);
+    let changed = OwnedRecordset::new(
+        Arc::clone(data.recordset_columns("T").unwrap()[0].schema()),
+        rows(),
+        RecordsetPresence::Assigned,
+        &mut ResourceBudget::new(0, 0, 1000),
+        &|| false,
+    )
+    .unwrap();
+    assert_eq!(changed.schema().kind(), RecordsetKind::VersionHistory);
+    assert_ne!(original, QueryValue::Recordset(Arc::new(changed)));
 }

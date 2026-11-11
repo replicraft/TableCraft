@@ -4,8 +4,8 @@ use std::{
 };
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_db::{
-    MemberAvailability, OwnedRecordset, ProjectedRow, RecordsetPresence, RecordsetSchema,
-    StoredCell,
+    MemberAvailability, OwnedRecordset, ProjectedRow, RecordsetKind, RecordsetPresence,
+    RecordsetSchema, StoredCell,
 };
 use tablecraft_query::{
     QueryError, Source,
@@ -37,7 +37,7 @@ pub struct Data {
 
 fn schema(change: usize) -> Arc<RecordsetSchema> {
     Arc::new(
-        RecordsetSchema::new(
+        RecordsetSchema::with_kind(
             vec![
                 Column::new(
                     if change == 1 { "Changed" } else { "FileName" }.into(),
@@ -63,6 +63,11 @@ fn schema(change: usize) -> Arc<RecordsetSchema> {
                 NameComparison::Exact
             } else {
                 NameComparison::AsciiInsensitive
+            },
+            if change == 6 {
+                RecordsetKind::VersionHistory
+            } else {
+                RecordsetKind::Rows
             },
             &mut ResourceBudget::new(0, 0, 1000),
             &|| false,
@@ -113,7 +118,7 @@ impl Data {
         Self {
             columns: vec![Column::new("Id".into(), ScalarType::Int32, false).unwrap()],
             unavailable: vec![SchemaName::new("Files".into()).unwrap()],
-            declarations: (0..6)
+            declarations: (0..7)
                 .map(|change| {
                     vec![
                         RecordsetColumn::new(

@@ -1,10 +1,10 @@
-//! Structured stored-attachment metadata is separate from scalar/list values.
+//! Structured child metadata is separate from scalar/list values.
 use crate::QueryError;
 use std::sync::Arc;
 use tablecraft_db::{MultivalueList, OwnedRecordset, ProjectedRow, RecordsetSchema};
 use tablecraft_schema::{SchemaError, SchemaName};
 
-/// One source-owned stored attachment recordset declaration. It supplies no
+/// One source-owned structured child recordset declaration. It supplies no
 /// mutable identity, filesystem action, FileData value or implicit decoder.
 pub struct RecordsetColumn {
     name: SchemaName,
@@ -105,7 +105,10 @@ pub(crate) fn schemas_match(
     mut work: impl FnMut(usize) -> Result<(), QueryError>,
 ) -> Result<bool, QueryError> {
     work(1)?;
-    if expected.names() != actual.names() || expected.columns().len() != actual.columns().len() {
+    if expected.kind() != actual.kind()
+        || expected.names() != actual.names()
+        || expected.columns().len() != actual.columns().len()
+    {
         return Ok(false);
     }
     for ((expected, actual), (left, right)) in expected

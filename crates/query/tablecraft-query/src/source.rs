@@ -118,7 +118,7 @@ pub trait Source {
     ) -> Result<&[Option<TextCollationId>], QueryError> {
         Ok(&[])
     }
-    /// Stable stored-attachment child schemas, without reading parent/child rows.
+    /// Stable structured child schemas and kinds, without reading parent/child rows.
     /// Each name also occurs in unavailable_columns(), is disjoint from scalar
     /// and multivalue columns, and may share the named-member namespace. Child
     /// availability never substitutes an uninspected value with SQL NULL.

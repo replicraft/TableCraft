@@ -49,7 +49,8 @@ impl PartialEq for QueryValue {
             (Self::AbsentMultivalue, Self::AbsentMultivalue)
             | (Self::AbsentRecordset, Self::AbsentRecordset) => true,
             (Self::Recordset(left), Self::Recordset(right)) => {
-                left.schema().columns() == right.schema().columns()
+                left.schema().kind() == right.schema().kind()
+                    && left.schema().columns() == right.schema().columns()
                     && left.schema().availability() == right.schema().availability()
                     && left.schema().names() == right.schema().names()
                     && left.presence() == right.presence()

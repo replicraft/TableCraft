@@ -386,7 +386,7 @@ impl PreparedQuery {
         }
     }
 
-    /// Captured child schema for a structured stored attachment output. Scalar,
+    /// Captured child schema and kind for a structured stored output. Scalar,
     /// list and dynamic crosstab outputs return None without scanning rows.
     pub fn recordset_schema(&self, index: usize) -> Option<&RecordsetSchema> {
         match &self.body {
