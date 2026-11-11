@@ -567,3 +567,20 @@ The images remain in ignored `.cache/update-ui-20261109/`, with SHA-256 values
 `f6021f87840b951bb9c935cb276b9b0f02879d95b17c9dc436c630d33d2a942c`,
 respectively. These source-free observations qualify layout only, not network,
 installation, recovery or Microsoft Access behavior.
+
+## Typed saved-field properties — 10 November 2026
+
+The retained Windows/VirtualBox Table Design capture was reopened at
+1920 × 1165 pixels; its display scale is unknown. It establishes the upper
+Name / Data Type / Description grid and separate lower Field Properties pane.
+There is no matching expanded typed-ADD, Decimal-property or dark-mode capture.
+
+Twelve [offscreen frames](../../tests/results/schema/typed-field-addition-presentation-2026-11-10.json)
+were rendered and directly inspected on macOS 14.7.2 ARM64 at 1280 × 820, scale 1,
+using the normal shared host with Windows-style input. English/light and dark
+frames cover Currency, Decimal, the complete gallery and Text properties; German
+frames cover Decimal and Text in both themes. Visual review corrected a misleading
+stored-field selection marker while a pending proposal owned the lower properties.
+The pending row now carries that marker without changing stored field selection
+for the return path. These source-free frames establish layout/readability only;
+no native windows were opened and no Access save or pixel parity is inferred.

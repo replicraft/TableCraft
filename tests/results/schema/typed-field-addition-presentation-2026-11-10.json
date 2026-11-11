@@ -1,0 +1,143 @@
+{
+  "date": "2026-11-10",
+  "source_commit": "0ee20f3d69074cb82ebff0609bd5087a26651c1e",
+  "platform": "macOS 14.7.2 ARM64",
+  "host": "normal, offscreen WGPU with Windows-style input",
+  "native_windows_opened": false,
+  "renderer_sha256": "233bf7016e68931066001d4e36c81af6706be5f4f0c36f49cc87a05d404866c1",
+  "reference": {
+    "surface": "Retained Windows Access Table Design capture",
+    "pixels": [
+      1920,
+      1165
+    ],
+    "scale": "unknown",
+    "matching_expanded_typed_add_capture": false,
+    "matching_dark_capture": false
+  },
+  "qualification": "Source-free presentation and headless interaction; not native Access pixel, interaction or save parity",
+  "observations": [
+    "All normal Ribbon controls remain visible; unavailable actions disabled.",
+    "Existing fields remain separate from the pending proposal. Its selector marker and editor own the lower property pane.",
+    "Decimal precision/scale and Short Text UTF-16 width/compression remain visible; unsupported Required/default/AZL editing stays disabled.",
+    "English and German, light and dark labels remain legible at the captured size."
+  ],
+  "initial_observation": {
+    "artifact": ".cache/ui-previews/typed-field-addition-initial/en-US-light-design-field-addition-design-decimal.png",
+    "sha256": "d23e1c25f891b0d2faf18491907c7ad83d7e1e36ac6d18bc1c4327553420cc7f",
+    "finding": "Stored-field selection styling misleadingly remained active while a pending proposal owned lower properties.",
+    "repair_commit": "836b2748f"
+  },
+  "headless_tests": [
+    {
+      "log": ".cache/retained-typed-add-ui.log",
+      "sha256": "e3ad75a178bd680acf9fe04e5e817c34e43fc06fe0ea8367be404f1a44b9afe9",
+      "passed": 729,
+      "scope": "Complete UI library before selection-style repair"
+    },
+    {
+      "log": ".cache/retained-typed-add-host-ui.log",
+      "sha256": "44cbb541f3a166b69f2b8309b9993e36f6824e1f4c804c9af6f4812392068dcf",
+      "passed": 3,
+      "scope": "Focused Design ADD tests after repair"
+    }
+  ],
+  "frames": [
+    {
+      "path": ".cache/ui-previews/typed-field-addition/de-dark-design-field-addition-design-decimal.png",
+      "sha256": "de6f2b64e6249c9cf8c45f32d6815ab33beb0082e12753541395c6e2759ef10e",
+      "directly_inspected": true,
+      "width": 1280,
+      "height": 820,
+      "scale": 1
+    },
+    {
+      "path": ".cache/ui-previews/typed-field-addition/de-dark-design-field-addition-design-name.png",
+      "sha256": "e57a33a52d3428204b694ce803f9770bb97bce487674a5a4c743a976a24e3f11",
+      "directly_inspected": true,
+      "width": 1280,
+      "height": 820,
+      "scale": 1
+    },
+    {
+      "path": ".cache/ui-previews/typed-field-addition/de-light-design-field-addition-design-decimal.png",
+      "sha256": "a08e78686ca4149dfe8e06781fbf825f5949a286fabff00e24461f77a77a126e",
+      "directly_inspected": true,
+      "width": 1280,
+      "height": 820,
+      "scale": 1
+    },
+    {
+      "path": ".cache/ui-previews/typed-field-addition/de-light-design-field-addition-design-name.png",
+      "sha256": "c17309f3e9772499adf6cb14210ebb4d419d726ddb914bbc48531552d0d83882",
+      "directly_inspected": true,
+      "width": 1280,
+      "height": 820,
+      "scale": 1
+    },
+    {
+      "path": ".cache/ui-previews/typed-field-addition/en-US-dark-design-field-addition-design-currency.png",
+      "sha256": "8e5aa10e0fa7066c0bc8c96250a336cde5777c267f0c1f5e293c895707cc46f0",
+      "directly_inspected": true,
+      "width": 1280,
+      "height": 820,
+      "scale": 1
+    },
+    {
+      "path": ".cache/ui-previews/typed-field-addition/en-US-dark-design-field-addition-design-decimal.png",
+      "sha256": "9313361660949069da4c3ce577beded299327c1fa26aa96b0180279bad987113",
+      "directly_inspected": true,
+      "width": 1280,
+      "height": 820,
+      "scale": 1
+    },
+    {
+      "path": ".cache/ui-previews/typed-field-addition/en-US-dark-design-field-addition-design-name.png",
+      "sha256": "eb93519afef40ebaf3951f73446dae35ddfd3efdcd1e8c646c1d89f5633d6179",
+      "directly_inspected": true,
+      "width": 1280,
+      "height": 820,
+      "scale": 1
+    },
+    {
+      "path": ".cache/ui-previews/typed-field-addition/en-US-dark-design-field-addition-design-typed-menu.png",
+      "sha256": "e51c7b7fdcbc71c80de5ce048e30fbb41cc7d4927dfb76139bf55fece3c5f328",
+      "directly_inspected": true,
+      "width": 1280,
+      "height": 820,
+      "scale": 1
+    },
+    {
+      "path": ".cache/ui-previews/typed-field-addition/en-US-light-design-field-addition-design-currency.png",
+      "sha256": "c4de6bd1bb4c9b36d2d665052849e0a3d8afcd10a21e32eb0d69e8d921d7a36f",
+      "directly_inspected": true,
+      "width": 1280,
+      "height": 820,
+      "scale": 1
+    },
+    {
+      "path": ".cache/ui-previews/typed-field-addition/en-US-light-design-field-addition-design-decimal.png",
+      "sha256": "7f574cf3ec4c9eef74e40a48daa3947a1fe62420bbbf6446d3de54739e70e4a8",
+      "directly_inspected": true,
+      "width": 1280,
+      "height": 820,
+      "scale": 1
+    },
+    {
+      "path": ".cache/ui-previews/typed-field-addition/en-US-light-design-field-addition-design-name.png",
+      "sha256": "338547df963df52c27e638e197abdcf3db3b202adee1d2dde0ade54194ce7afb",
+      "directly_inspected": true,
+      "width": 1280,
+      "height": 820,
+      "scale": 1
+    },
+    {
+      "path": ".cache/ui-previews/typed-field-addition/en-US-light-design-field-addition-design-typed-menu.png",
+      "sha256": "4d0a1d70794f654bfe1c8f336101e0bf4a43d5d14f569a482ba08b0b7674b1c3",
+      "directly_inspected": true,
+      "width": 1280,
+      "height": 820,
+      "scale": 1
+    }
+  ]
+}
