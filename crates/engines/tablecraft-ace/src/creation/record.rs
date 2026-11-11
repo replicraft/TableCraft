@@ -1,8 +1,10 @@
 //! Direct DATA/record/map framing; NULL catalog carriers are never fake values.
+mod user;
+pub(super) use user::{UserRow, write as user_row};
+
 use super::{
     CreateDatabaseError,
     definition::{put16, put32},
-    input::Cell,
     profile,
     request::Request,
     stored_text,
@@ -128,100 +130,24 @@ pub(super) fn user(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), CreateDatabaseError> {
-    if record.len() != request.row_length(row) {
-        return Err(CreateDatabaseError::Layout);
-    }
-    let fields = request.fields();
-    let mask_start = record.len() - fields.count().div_ceil(u8::BITS as usize);
-    put16(record, 0, fields.count())?;
-    for column in 0..fields.count() {
-        let field = fields.get(column);
-        let Some(offset) = field.offset else {
-            continue;
-        };
-        let start = FIXED_COLUMN_COUNT_BYTES + offset;
-        let destination = record
-            .get_mut(start..start + field.width)
-            .ok_or(CreateDatabaseError::Layout)?;
-        let scalar = request.columns.scalar(column);
-        let present = match request.rows.cell(row, column) {
-            Cell::Int32(value) => {
-                if scalar != ScalarType::Int32 || destination.len() != size_of::<i32>() {
-                    return Err(CreateDatabaseError::Carrier);
-                }
-                destination.copy_from_slice(&value.to_le_bytes());
-                true
-            }
-            Cell::Value(Value::Null) if scalar != ScalarType::Boolean => false,
-            Cell::Value(Value::Boolean(value)) if scalar == ScalarType::Boolean => {
-                if !destination.is_empty() {
-                    return Err(CreateDatabaseError::Layout);
-                }
-                *value
-            }
-            Cell::Value(value) => {
-                write_fixed(scalar, value, destination)?;
-                true
-            }
-        };
-        if present {
-            record[mask_start + column / u8::BITS as usize] |= 1 << (column % u8::BITS as usize);
-        }
-    }
-    if let Some(prepared) = &request.variable {
-        let variables = fields.variable_count();
-        budget
-            .charge_allocation(variables as u64, size_of::<usize>() as u64)
-            .map_err(InspectError::from)?;
-        let mut starts = Vec::new();
-        starts
-            .try_reserve_exact(variables)
-            .map_err(|_| InspectError::Allocation)?;
-        let mut position = fields.fixed_end();
-        let mut slot = 0;
-        for column in 0..fields.count() {
-            if fields.get(column).offset.is_some() {
-                continue;
-            }
-            check(budget, cancelled)?;
-            starts.push(position);
-            let payload = prepared.payload(row, slot)?;
-            let end = position
-                .checked_add(payload.byte_len())
-                .ok_or(CreateDatabaseError::Layout)?;
-            payload.write(
-                record
-                    .get_mut(position..end)
-                    .ok_or(CreateDatabaseError::Layout)?,
-                budget,
-                cancelled,
-            )?;
-            if payload.present() {
-                record[mask_start + column / u8::BITS as usize] |=
-                    1 << (column % u8::BITS as usize);
-            }
-            position = end;
-            slot += 1;
-        }
-
-        // All user variable declarations are ordinary (no LVAL), hence slots
-        // retain declaration order. Present empty and NULL share offsets but
-        // remain distinct in the independently accumulated presence mask.
-        let eod = position;
-        put16(record, position, eod)?;
-        position += size_of::<u16>();
-        for start in starts.iter().rev() {
-            check(budget, cancelled)?;
-            put16(record, position, *start)?;
-            position += size_of::<u16>();
-        }
-        put16(record, position, slot)?;
-        position += size_of::<u16>();
-        if position != mask_start {
-            return Err(CreateDatabaseError::Layout);
-        }
-    }
-    Ok(())
+    let payloads = request
+        .variable
+        .as_ref()
+        .map(|prepared| prepared.row_payloads(row))
+        .transpose()?;
+    user_row(
+        record,
+        UserRow {
+            fields: request.fields(),
+            columns: request.columns,
+            cells: request.rows,
+            index: row,
+            payloads,
+            length: request.row_length(row),
+        },
+        budget,
+        cancelled,
+    )
 }
 
 fn write_fixed(

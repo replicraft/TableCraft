@@ -85,10 +85,15 @@ impl<'a> Prepared<'a> {
         self.row_lengths[row]
     }
 
-    pub fn payload(&self, row: usize, slot: usize) -> Result<Payload<'a>, CreateDatabaseError> {
+    pub fn row_payloads(&self, row: usize) -> Result<&[Payload<'a>], CreateDatabaseError> {
+        let start = row
+            .checked_mul(self.variables)
+            .ok_or(CreateDatabaseError::Layout)?;
+        let end = start
+            .checked_add(self.variables)
+            .ok_or(CreateDatabaseError::Layout)?;
         self.payloads
-            .get(row * self.variables + slot)
-            .copied()
+            .get(start..end)
             .ok_or(CreateDatabaseError::Layout)
     }
 }
@@ -168,7 +173,7 @@ pub(super) fn prepare<'a>(
     })
 }
 
-fn capture<'a>(
+pub(in crate::creation) fn capture<'a>(
     columns: Columns<'a>,
     rows: Rows<'a>,
     row: usize,
