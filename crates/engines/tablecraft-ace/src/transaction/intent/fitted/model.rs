@@ -70,6 +70,25 @@ impl NativeFittedIntentGroup {
         Self::new_with_grammar(column, updates, Grammar::Retained, budget, cancelled)
     }
 
+    /// Retain only TCNI21 original exact fixed-scalar carriers.
+    pub fn new_retained_fixed_scalars(
+        column: &str,
+        updates: NativeFittedUpdates,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, NativeIntentError> {
+        if !matches!(updates, NativeFittedUpdates::Fixed(_)) {
+            return Err(NativeIntentError::InvalidRecord);
+        }
+        Self::new_with_grammar(
+            column,
+            updates,
+            Grammar::RetainedFixedScalars,
+            budget,
+            cancelled,
+        )
+    }
+
     pub(super) fn new_with_grammar(
         column: &str,
         updates: NativeFittedUpdates,
@@ -78,6 +97,11 @@ impl NativeFittedIntentGroup {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, NativeIntentError> {
         check(budget, cancelled)?;
+        if grammar == Grammar::RetainedFixedScalars
+            && !matches!(updates, NativeFittedUpdates::Fixed(_))
+        {
+            return Err(NativeIntentError::InvalidRecord);
+        }
         grammar.name(column, budget, cancelled)?;
         if updates.len() > grammar.assignments() {
             return Err(InspectError::StructureLimit.into());
@@ -178,6 +202,24 @@ impl NativeFittedEditIntent {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, NativeIntentError> {
         Self::new_with_grammar(table, groups, before, Grammar::Retained, budget, cancelled)
+    }
+
+    /// Bind the closed TCNI21 scalar language to a complete native-sized image.
+    pub fn new_retained_fixed_scalars(
+        table: &str,
+        groups: Vec<NativeFittedIntentGroup>,
+        before: &[u8],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, NativeIntentError> {
+        Self::new_with_grammar(
+            table,
+            groups,
+            before,
+            Grammar::RetainedFixedScalars,
+            budget,
+            cancelled,
+        )
     }
 
     fn new_with_grammar(
@@ -312,7 +354,7 @@ pub(super) fn validate_groups(
     let mut count = 0_usize;
     for (position, group) in groups.iter().enumerate() {
         check(budget, cancelled)?;
-        if grammar == Grammar::Retained {
+        if grammar != Grammar::Legacy {
             grammar.name(group.column(), budget, cancelled)?;
         } else if group.column().len() > names::MAX_NAME_BYTES {
             // A group constructed for TCNI17 cannot bypass a legacy name bound.

@@ -302,6 +302,29 @@ impl NativeFittedEditIntent {
         read::decode(bytes, WireProfile::RetainedCurrencyRows, budget, cancelled)
     }
 
+    /// Encode only TCNI21 exact fixed-scalar data, without native authority.
+    pub fn encode_retained_fixed_scalars(
+        &self,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Vec<u8>, NativeIntentError> {
+        self.encode_profile(WireProfile::RetainedFixedScalarRows, budget, cancelled)
+    }
+
+    /// Decode only TCNI0021/profile21; other fitted carrier languages stay closed.
+    pub fn decode_retained_fixed_scalars(
+        bytes: &[u8],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, NativeIntentError> {
+        read::decode(
+            bytes,
+            WireProfile::RetainedFixedScalarRows,
+            budget,
+            cancelled,
+        )
+    }
+
     /// Encode exact TCNI20 Boolean requests; this grants no source authority.
     pub fn encode_retained_boolean(
         &self,

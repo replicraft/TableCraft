@@ -13,6 +13,8 @@ const ACE_PROFILE: u16 = 2;
 /// A versioned validation route, never a serialized native permission.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum NativeUpdateProfile {
+    /// Exact nullable Byte/Int16/Int64/Single/Double/legacy DateTime retained cells.
+    Ace16RetainedFixedScalarRows,
     /// Present complete retained Boolean cells with exact original bit values.
     Ace16RetainedBooleanRows,
     /// Complete retained Currency cells with exact scaled original witnesses.
@@ -69,7 +71,7 @@ pub enum NativeUpdateBody {
     Int32(NativeInt32EditIntent),
     /// Original ordered fixed groups for closed TCNI0003/4/8/9/10/11/12/13/14 records.
     Fixed(NativeFixedEditIntent),
-    /// Ordered original variable/fixed requests for TCNI0005/15/16/17/18/19/20.
+    /// Ordered original variable/fixed requests for TCNI0005/15/16/17/18/19/20/21.
     Fitted(NativeFittedEditIntent),
     /// Original fixed/variable groups for explicit TCNI0006 owned-page growth.
     OwnedGrowth(NativeFittedEditIntent),
@@ -78,6 +80,13 @@ pub enum NativeUpdateBody {
 }
 
 impl NativeUpdateIntent {
+    pub(super) fn from_retained_fixed_scalar_rows(original: NativeFittedEditIntent) -> Self {
+        Self {
+            profile: NativeUpdateProfile::Ace16RetainedFixedScalarRows,
+            body: NativeUpdateBody::Fitted(original),
+        }
+    }
+
     pub(super) fn from_retained_boolean_rows(original: NativeFittedEditIntent) -> Self {
         Self {
             profile: NativeUpdateProfile::Ace16RetainedBooleanRows,
@@ -106,7 +115,7 @@ impl NativeUpdateIntent {
         }
     }
 
-    /// Actual retained TCNI17/18/19/20 u32 complete-record length representation.
+    /// Actual retained TCNI17–21 u32 complete-record length representation.
     pub const MAX_RETAINED_ENCODED_BYTES: usize =
         NativeFittedEditIntent::MAX_RETAINED_ENCODED_BYTES;
 
@@ -348,6 +357,10 @@ impl NativeUpdateIntent {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Vec<u8>, NativeIntentError> {
         match (&self.body, self.profile) {
+            (
+                NativeUpdateBody::Fitted(original),
+                NativeUpdateProfile::Ace16RetainedFixedScalarRows,
+            ) => original.encode_retained_fixed_scalars(budget, cancelled),
             (NativeUpdateBody::Fitted(original), NativeUpdateProfile::Ace16RetainedBooleanRows) => {
                 original.encode_retained_boolean(budget, cancelled)
             }
@@ -432,6 +445,12 @@ impl NativeUpdateIntent {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, NativeIntentError> {
+        if bytes.get(..super::fitted::RETAINED_FIXED_SCALAR_ROWS_MAGIC.len())
+            == Some(super::fitted::RETAINED_FIXED_SCALAR_ROWS_MAGIC.as_slice())
+        {
+            return NativeFittedEditIntent::decode_retained_fixed_scalars(bytes, budget, cancelled)
+                .map(Self::from_retained_fixed_scalar_rows);
+        }
         if bytes.get(..super::fitted::RETAINED_BOOLEAN_ROWS_MAGIC.len())
             == Some(super::fitted::RETAINED_BOOLEAN_ROWS_MAGIC.as_slice())
         {
