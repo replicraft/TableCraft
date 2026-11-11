@@ -583,6 +583,9 @@ impl Desktop {
                 Ok(Response::TableDropSourceInspected { inspection }) => {
                     self.publish_table_drop_inspection(generation, inspection);
                 }
+                Ok(Response::IndexCreationReviewed { capability }) => {
+                    self.publish_query_schema_index_creation(generation, capability);
+                }
                 Ok(Response::TableDropReviewed { review, capability }) => {
                     if matches!(self.pending, PendingOperation::QueryActionReview { .. }) {
                         self.publish_query_schema_table_drop(generation, review, capability);

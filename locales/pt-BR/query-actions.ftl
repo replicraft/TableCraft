@@ -35,3 +35,10 @@ query-action-schema-retained-results = Os resultados anteriores são mantidos. R
 
 query-action-schema-make-table-confirmation = Criar esta tabela e inserir todos os registros selecionados em uma única operação?
 query-action-schema-make-table-records = Registros selecionados para inserir: { $count }
+
+query-action-schema-index-name = Índice: { $name }
+query-action-schema-index-field = Campo: { $name }
+query-action-schema-index-ascending = Ordem: Crescente
+query-action-schema-index-descending = Ordem: Decrescente
+query-action-schema-index-source-rows = Registros existentes a indexar: { $count }
+query-action-schema-index-confirmation = Criar este índice não exclusivo no banco de dados original?

@@ -35,3 +35,10 @@ query-action-schema-retained-results = 이전 결과가 유지됩니다. 저장�
 
 query-action-schema-make-table-confirmation = 이 테이블을 만들고 선택한 모든 레코드를 하나의 작업으로 삽입하시겠습니까?
 query-action-schema-make-table-records = 삽입할 선택된 레코드: { $count }
+
+query-action-schema-index-name = 인덱스: { $name }
+query-action-schema-index-field = 필드: { $name }
+query-action-schema-index-ascending = 순서: 오름차순
+query-action-schema-index-descending = 순서: 내림차순
+query-action-schema-index-source-rows = 인덱싱할 기존 레코드: { $count }
+query-action-schema-index-confirmation = 원본 데이터베이스에 이 중복 허용 인덱스를 만드시겠습니까?

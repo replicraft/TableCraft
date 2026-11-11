@@ -35,3 +35,10 @@ query-action-schema-retained-results = Vorherige Ergebnisse bleiben erhalten. Ö
 
 query-action-schema-make-table-confirmation = Diese Tabelle erstellen und alle ausgewählten Datensätze in einem Vorgang einfügen?
 query-action-schema-make-table-records = Ausgewählte Datensätze zum Einfügen: { $count }
+
+query-action-schema-index-name = Index: { $name }
+query-action-schema-index-field = Feld: { $name }
+query-action-schema-index-ascending = Reihenfolge: Aufsteigend
+query-action-schema-index-descending = Reihenfolge: Absteigend
+query-action-schema-index-source-rows = Zu indizierende vorhandene Datensätze: { $count }
+query-action-schema-index-confirmation = Diesen nicht eindeutigen Index in der ursprünglichen Datenbank erstellen?

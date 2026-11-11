@@ -100,6 +100,9 @@ impl State {
                             QueryActionEffect::Schema(effect) => schema_summary(ui, effect),
                         }
                         let confirmation = match &review.effect {
+                            QueryActionEffect::Schema(QuerySchemaEffect::CreateIndex {
+                                ..
+                            }) => "query-action-schema-index-confirmation",
                             QueryActionEffect::Schema(QuerySchemaEffect::CreateTable {
                                 ..
                             }) => "query-action-schema-create-confirmation",
@@ -280,6 +283,37 @@ impl QueryActionKind {
 
 fn schema_summary(ui: &mut Ui, effect: &QuerySchemaEffect) {
     match effect {
+        QuerySchemaEffect::CreateIndex {
+            index,
+            column,
+            descending,
+            indexed_rows,
+            ..
+        } => {
+            ui.label(message(
+                ui,
+                "query-action-schema-index-name",
+                &[("name", index.as_str())],
+            ));
+            ui.label(message(
+                ui,
+                "query-action-schema-index-field",
+                &[("name", column.as_str())],
+            ));
+            ui.label(tr(
+                ui,
+                if *descending {
+                    "query-action-schema-index-descending"
+                } else {
+                    "query-action-schema-index-ascending"
+                },
+            ));
+            ui.label(message(
+                ui,
+                "query-action-schema-index-source-rows",
+                &[("count", indexed_rows.to_string())],
+            ));
+        }
         QuerySchemaEffect::CreateTable { column_count } => {
             ui.label(message(
                 ui,

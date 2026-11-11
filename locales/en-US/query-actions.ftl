@@ -35,3 +35,10 @@ query-action-schema-retained-results = Previous results are retained. Reopen the
 
 query-action-schema-make-table-confirmation = Create this table and insert all selected records as one operation?
 query-action-schema-make-table-records = Selected records to insert: { $count }
+
+query-action-schema-index-name = Index: { $name }
+query-action-schema-index-field = Field: { $name }
+query-action-schema-index-ascending = Order: Ascending
+query-action-schema-index-descending = Order: Descending
+query-action-schema-index-source-rows = Existing records to index: { $count }
+query-action-schema-index-confirmation = Create this nonunique index in the original database?

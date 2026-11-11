@@ -10,9 +10,9 @@ use std::{
     sync::Arc,
 };
 use tablecraft_runtime::{
-    Command, CreatedTableReopen, FieldDropReview, FieldDroppedReopen, ReviewedFieldDrop,
-    ReviewedTableCreation, ReviewedTableDrop, SaveOutcome, SaveWorker, TableDropReview,
-    TableDroppedReopen,
+    Command, CreatedTableReopen, FieldDropReview, FieldDroppedReopen, IndexCreatedReopen,
+    ReviewedFieldDrop, ReviewedIndexCreation, ReviewedTableCreation, ReviewedTableDrop,
+    SaveOutcome, SaveWorker, TableDropReview, TableDroppedReopen,
 };
 use tablecraft_ui::{
     Database, QueryActionEffect, QueryActionReview, QuerySchemaEffect, QuerySchemaPublication,
@@ -20,6 +20,10 @@ use tablecraft_ui::{
 };
 
 pub(in crate::workspace::editing) enum ReviewedSchema {
+    CreateIndex {
+        capability: ReviewedIndexCreation,
+        witness: Arc<IndexCreatedReopen>,
+    },
     Create {
         capability: ReviewedTableCreation,
         witness: Arc<CreatedTableReopen>,
@@ -35,6 +39,7 @@ pub(in crate::workspace::editing) enum ReviewedSchema {
 }
 
 pub(super) enum Reopen {
+    IndexCreated(Arc<IndexCreatedReopen>),
     Created(Arc<CreatedTableReopen>),
     FieldDropped(Arc<FieldDroppedReopen>),
     TableDropped(Arc<TableDroppedReopen>),
@@ -71,6 +76,7 @@ impl ReviewedSchema {
 
     pub(super) fn document_revision(&self) -> u64 {
         match self {
+            Self::CreateIndex { witness, .. } => witness.document_revision(),
             Self::Create { witness, .. } => witness.document_revision(),
             Self::DropField { witness, .. } => witness.document_revision(),
             Self::DropTable { witness, .. } => witness.document_revision(),
@@ -79,6 +85,7 @@ impl ReviewedSchema {
 
     pub(super) fn source_path(&self) -> &Path {
         match self {
+            Self::CreateIndex { witness, .. } => witness.source_path(),
             Self::Create { witness, .. } => witness.source_path(),
             Self::DropField { witness, .. } => witness.source_path(),
             Self::DropTable { witness, .. } => witness.source_path(),
@@ -87,6 +94,7 @@ impl ReviewedSchema {
 
     pub(super) fn table(&self) -> &str {
         match self {
+            Self::CreateIndex { witness, .. } => witness.table_name(),
             Self::Create { witness, .. } => witness.table_name(),
             Self::DropField { witness, .. } => witness.table_name(),
             Self::DropTable { witness, .. } => witness.table_name(),
@@ -99,6 +107,20 @@ impl ReviewedSchema {
         bundle: PathBuf,
     ) -> Result<(u64, Reopen), (String, Option<Self>)> {
         match self {
+            Self::CreateIndex {
+                capability,
+                witness,
+            } => match worker.start_index_creation(capability, bundle) {
+                Ok(id) => Ok((id, Reopen::IndexCreated(witness))),
+                Err(error) => {
+                    let message = error.to_string();
+                    let original = error.into_reviewed().map(|capability| Self::CreateIndex {
+                        capability,
+                        witness,
+                    });
+                    Err((message, original))
+                }
+            },
             Self::Create {
                 capability,
                 witness,
@@ -148,6 +170,9 @@ impl ReviewedSchema {
 impl Reopen {
     pub(super) fn replacement_known(&self, outcome: SaveOutcome) -> bool {
         match self {
+            Self::IndexCreated(_) => outcome
+                .index_creation_reopen_facts()
+                .is_ok_and(|facts| facts.replacement),
             Self::Created(witness) => outcome
                 .table_creation_reopen_facts(witness.as_ref())
                 .is_ok_and(|facts| facts.replacement),
@@ -164,6 +189,9 @@ impl Reopen {
         // NO_CLONE: The retained read-only witness survives a failed guarded open;
         // the independent worker command shares its exact immutable native proof.
         match self {
+            Self::IndexCreated(witness) => Command::OpenIndexCreated {
+                witness: Arc::clone(witness),
+            },
             Self::Created(witness) => Command::OpenTableCreated {
                 witness: Arc::clone(witness),
             },
@@ -397,6 +425,22 @@ impl ReviewedSchema {
     pub(super) fn matches_effect(&self, effect: &QueryActionEffect) -> bool {
         match (self, effect) {
             (
+                Self::CreateIndex { witness, .. },
+                QueryActionEffect::Schema(QuerySchemaEffect::CreateIndex {
+                    index,
+                    column,
+                    native_number,
+                    descending,
+                    indexed_rows,
+                }),
+            ) => {
+                witness.index_name() == index
+                    && witness.column_name() == column
+                    && usize::from(witness.native_number()) == *native_number
+                    && witness.descending() == *descending
+                    && witness.indexed_rows() == *indexed_rows
+            }
+            (
                 Self::Create { witness, .. },
                 QueryActionEffect::Schema(QuerySchemaEffect::CreateTable { column_count }),
             ) => witness.column_count() == *column_count && witness.inserted_rows().is_none(),
@@ -430,6 +474,54 @@ impl ReviewedSchema {
 }
 
 impl Desktop {
+    pub(in crate::workspace) fn publish_query_schema_index_creation(
+        &mut self,
+        request_id: u64,
+        capability: ReviewedIndexCreation,
+    ) {
+        let witness = capability.reopen_witness();
+        let mut table = String::new();
+        let mut index = String::new();
+        let mut column = String::new();
+        if table.try_reserve_exact(witness.table_name().len()).is_err()
+            || index.try_reserve_exact(witness.index_name().len()).is_err()
+            || column
+                .try_reserve_exact(witness.column_name().len())
+                .is_err()
+        {
+            self.fail_query_action_review(
+                request_id,
+                self.state.localizer.text("objects-memory-limit"),
+            );
+            return;
+        }
+        // UI display owns small metadata independently of the runtime witness;
+        // database bytes and mutation authority remain with their original owners.
+        table.push_str(witness.table_name());
+        index.push_str(witness.index_name());
+        column.push_str(witness.column_name());
+        let review = QueryActionReview {
+            id: capability.id(),
+            document_revision: witness.document_revision(),
+            table,
+            effect: QueryActionEffect::Schema(QuerySchemaEffect::CreateIndex {
+                index,
+                column,
+                native_number: usize::from(witness.native_number()),
+                descending: witness.descending(),
+                indexed_rows: witness.indexed_rows(),
+            }),
+        };
+        self.publish_query_action_review(
+            request_id,
+            review,
+            ReviewedAction::Schema(ReviewedSchema::CreateIndex {
+                capability,
+                witness,
+            }),
+        );
+    }
+
     pub(in crate::workspace) fn publish_query_schema_creation(
         &mut self,
         request_id: u64,

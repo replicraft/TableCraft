@@ -35,3 +35,10 @@ query-action-schema-retained-results = Предыдущие результаты
 
 query-action-schema-make-table-confirmation = Создать эту таблицу и вставить все выбранные записи одной операцией?
 query-action-schema-make-table-records = Выбранные записи для вставки: { $count }
+
+query-action-schema-index-name = Индекс: { $name }
+query-action-schema-index-field = Поле: { $name }
+query-action-schema-index-ascending = Порядок: По возрастанию
+query-action-schema-index-descending = Порядок: По убыванию
+query-action-schema-index-source-rows = Существующие записи для индексации: { $count }
+query-action-schema-index-confirmation = Создать этот неуникальный индекс в исходной базе данных?

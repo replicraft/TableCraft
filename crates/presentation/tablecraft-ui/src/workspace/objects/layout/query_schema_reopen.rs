@@ -32,7 +32,9 @@ impl State {
             QuerySchemaEffect::DropTable { .. } => {
                 catalog::Change::TableDropped(&witness.review().table)
             }
-            QuerySchemaEffect::DropColumn { .. } => catalog::Change::Unchanged,
+            QuerySchemaEffect::DropColumn { .. } | QuerySchemaEffect::CreateIndex { .. } => {
+                catalog::Change::Unchanged
+            }
         };
         if self
             .database

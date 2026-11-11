@@ -166,7 +166,7 @@ impl Session {
             Phase::Review { review, error, .. } => {
                 count.string(&review.table);
                 if let QueryActionEffect::Schema(effect) = &review.effect {
-                    count.add(effect.retained_bytes());
+                    count.add(effect.retained_bytes()?);
                 }
                 if let Some(error) = error {
                     count.add(error.retained_bytes());
@@ -175,7 +175,7 @@ impl Session {
             Phase::Saving { review, .. } => {
                 count.string(&review.table);
                 if let QueryActionEffect::Schema(effect) = &review.effect {
-                    count.add(effect.retained_bytes());
+                    count.add(effect.retained_bytes()?);
                 }
             }
             Phase::Finished {
@@ -183,7 +183,7 @@ impl Session {
             } => {
                 count.string(&review.table);
                 if let QueryActionEffect::Schema(effect) = &review.effect {
-                    count.add(effect.retained_bytes());
+                    count.add(effect.retained_bytes()?);
                 }
                 count.string(outcome_message(outcome));
             }
@@ -259,10 +259,12 @@ impl State {
             );
             return false;
         }
-        let review_bytes = review.table.capacity().checked_add(match &review.effect {
+        let effect_bytes = match &review.effect {
             QueryActionEffect::Schema(effect) => effect.retained_bytes(),
-            _ => 0,
-        });
+            _ => Some(0),
+        };
+        let review_bytes =
+            effect_bytes.and_then(|bytes| review.table.capacity().checked_add(bytes));
         if !self.admit_object_bytes(review_bytes) {
             self.fail_query_action_review(request_id, self.localizer.text("objects-memory-limit"));
             return false;

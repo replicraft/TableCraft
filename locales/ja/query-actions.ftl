@@ -35,3 +35,10 @@ query-action-schema-retained-results = 前の結果を保持しています。�
 
 query-action-schema-make-table-confirmation = このテーブルを作成し、選択したすべてのレコードを1回の操作で挿入しますか？
 query-action-schema-make-table-records = 挿入する選択済みレコード数: { $count }
+
+query-action-schema-index-name = インデックス: { $name }
+query-action-schema-index-field = フィールド: { $name }
+query-action-schema-index-ascending = 順序: 昇順
+query-action-schema-index-descending = 順序: 降順
+query-action-schema-index-source-rows = インデックスを作成する既存レコード数: { $count }
+query-action-schema-index-confirmation = 元のデータベースにこの重複を許可するインデックスを作成しますか？

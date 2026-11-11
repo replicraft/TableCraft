@@ -35,3 +35,10 @@ query-action-schema-retained-results = 保留先前的结果。请重新打开�
 
 query-action-schema-make-table-confirmation = 是否创建此表并在一次操作中插入所有选定记录？
 query-action-schema-make-table-records = 要插入的选定记录数：{ $count }
+
+query-action-schema-index-name = 索引：{ $name }
+query-action-schema-index-field = 字段：{ $name }
+query-action-schema-index-ascending = 顺序：升序
+query-action-schema-index-descending = 顺序：降序
+query-action-schema-index-source-rows = 要编入索引的现有记录数：{ $count }
+query-action-schema-index-confirmation = 是否在原始数据库中创建此非唯一索引？

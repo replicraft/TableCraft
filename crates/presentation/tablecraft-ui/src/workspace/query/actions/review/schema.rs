@@ -13,6 +13,14 @@ pub(in crate::workspace) struct QuerySchemaRead {
 /// Exact reviewed schema effect, separate from matched or changed record counts.
 #[derive(Debug, PartialEq, Eq)]
 pub enum QuerySchemaEffect {
+    /// Create an ordinary nonunique index; source population is not a data delta.
+    CreateIndex {
+        index: String,
+        column: String,
+        native_number: usize,
+        descending: bool,
+        indexed_rows: usize,
+    },
     /// Create the named table with its exact declared number of fields.
     CreateTable { column_count: usize },
     /// Create one table and its complete selected scalar rows atomically.
@@ -32,6 +40,7 @@ pub enum QuerySchemaEffect {
 impl QuerySchemaEffect {
     pub(super) fn valid(&self) -> bool {
         match self {
+            Self::CreateIndex { index, column, .. } => !index.is_empty() && !column.is_empty(),
             Self::CreateTable { column_count } | Self::MakeTable { column_count, .. } => {
                 *column_count > 0
             }
@@ -40,10 +49,13 @@ impl QuerySchemaEffect {
         }
     }
 
-    pub(super) fn retained_bytes(&self) -> usize {
+    pub(super) fn retained_bytes(&self) -> Option<usize> {
         match self {
-            Self::DropColumn { column, .. } => column.capacity(),
-            Self::CreateTable { .. } | Self::MakeTable { .. } | Self::DropTable { .. } => 0,
+            Self::CreateIndex { index, column, .. } => {
+                index.capacity().checked_add(column.capacity())
+            }
+            Self::DropColumn { column, .. } => Some(column.capacity()),
+            Self::CreateTable { .. } | Self::MakeTable { .. } | Self::DropTable { .. } => Some(0),
         }
     }
 }
