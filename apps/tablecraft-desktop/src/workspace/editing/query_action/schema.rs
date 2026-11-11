@@ -19,7 +19,7 @@ use tablecraft_ui::{
     SaveCleanupNotice,
 };
 
-pub(super) enum ReviewedSchema {
+pub(in crate::workspace::editing) enum ReviewedSchema {
     Create {
         capability: ReviewedTableCreation,
         witness: Arc<CreatedTableReopen>,
