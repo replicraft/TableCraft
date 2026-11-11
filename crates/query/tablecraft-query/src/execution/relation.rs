@@ -133,10 +133,14 @@ impl Runtime<'_, '_> {
             return Err(QueryError::SchemaChanged);
         }
 
-        if !crate::source::recordsets_match(recordsets, source.recordset_columns(name)?, |work| {
-            self.budget.charge(Resource::Steps, work as u64)?;
-            self.tick()
-        })? {
+        if !crate::source::recordsets_match(
+            recordsets.iter().map(|entry| &entry.column),
+            source.recordset_columns(name)?,
+            |work| {
+                self.budget.charge(Resource::Steps, work as u64)?;
+                self.tick()
+            },
+        )? {
             return Err(QueryError::SchemaChanged);
         }
 

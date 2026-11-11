@@ -99,14 +99,12 @@ fn captured_recordset_schemas_are_sparse_and_do_not_scan_or_infer_child_rows() {
     let ReadNode::Select(select) = &read.node else {
         panic!("SELECT")
     };
-    let RelationNode::Table {
-        recordset_projection,
-        ..
-    } = &select.source.node
-    else {
+    let RelationNode::Table { recordsets, .. } = &select.source.node else {
         panic!("table")
     };
-    assert_eq!(recordset_projection, &[1]);
+    assert_eq!(recordsets.len(), 2);
+    assert!(!recordsets[0].projected);
+    assert!(recordsets[1].projected);
     assert_eq!(source.scans.get(), 0);
 
     let scalar = bind("SELECT Id FROM T", &source).unwrap();
@@ -117,14 +115,11 @@ fn captured_recordset_schemas_are_sparse_and_do_not_scan_or_infer_child_rows() {
     let ReadNode::Select(select) = &read.node else {
         panic!("SELECT")
     };
-    let RelationNode::Table {
-        recordset_projection,
-        ..
-    } = &select.source.node
-    else {
+    let RelationNode::Table { recordsets, .. } = &select.source.node else {
         panic!("table")
     };
-    assert!(recordset_projection.is_empty());
+    assert_eq!(recordsets.len(), 2);
+    assert!(recordsets.iter().all(|entry| !entry.projected));
 }
 
 #[test]

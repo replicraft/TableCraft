@@ -72,15 +72,15 @@ impl Binder<'_> {
                 if let Some(recordset) = &slot.recordset
                     && recordset.origin == *origin
                 {
-                    if let Some(previous) = selected {
-                        if !source::schemas_match(&previous.schema, &recordset.schema, |amount| {
+                    if let Some(previous) = selected
+                        && !source::schemas_match(&previous.schema, &recordset.schema, |amount| {
                             for _ in 0..amount {
                                 self.work()?;
                             }
                             Ok(())
-                        })? {
-                            return Err(QueryError::Source);
-                        }
+                        })?
+                    {
+                        return Err(QueryError::Source);
                     }
                     selected = Some(recordset);
                 }

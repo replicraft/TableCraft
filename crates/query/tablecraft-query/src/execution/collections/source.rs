@@ -50,12 +50,18 @@ impl Runtime<'_, '_> {
             multivalues,
             members,
             recordsets,
-            recordset_projection,
             ..
         } = &select.source.node
         else {
             return Err(QueryError::Unsupported);
         };
+        let mut recordset_projection = Vec::new();
+        for (index, recordset) in recordsets.iter().enumerate() {
+            self.tick()?;
+            if recordset.projected {
+                self.push(&mut recordset_projection, index)?;
+            }
+        }
         let total = multivalues.len() + members.len();
         self.budget
             .charge_allocation(total as u64, size_of::<bool>() as u64)?;
@@ -121,7 +127,7 @@ impl Runtime<'_, '_> {
                             break;
                         }
                     }
-                    let owned = self.retain_recordset(value, expected.schema())?;
+                    let owned = self.retain_recordset(value, expected.column.schema())?;
                     self.push(
                         &mut owned_recordsets,
                         (origin.ok_or(QueryError::Source)?, Some(owned)),
@@ -202,7 +208,7 @@ impl Runtime<'_, '_> {
             projection,
             values,
             &named,
-            recordset_projection,
+            &recordset_projection,
             &mut visitor,
         );
         failure.map_or(result.map(|()| rows), Err)

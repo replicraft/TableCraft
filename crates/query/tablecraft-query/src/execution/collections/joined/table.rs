@@ -1,4 +1,5 @@
 //! Leaf requests distinguish combined output slots from parent predicate requests.
+use super::super::RecordsetEntry;
 use super::{CollectionFrame, JoinedFrame, Requests, Runtime};
 use crate::{
     MultivalueValue, QueryError,
@@ -41,7 +42,6 @@ impl Runtime<'_, '_> {
             members,
             expansion,
             recordsets,
-            recordset_projection,
             ..
         } = &relation.node
         else {
@@ -107,16 +107,18 @@ impl Runtime<'_, '_> {
             }
         }
         let mut requested_recordsets = Vec::new();
-        for native in recordset_projection {
+        for (native, descriptor) in recordsets.iter().enumerate() {
             self.tick()?;
-            let descriptor = recordsets.get(*native).ok_or(QueryError::Source)?;
+            if !descriptor.projected {
+                continue;
+            }
             let mut origin = None;
             for slot in &relation.slots {
                 self.tick()?;
                 let Some(recordset) = &slot.recordset else {
                     continue;
                 };
-                if recordset.index != *native {
+                if recordset.index != native {
                     continue;
                 }
                 for selected in requests.recordsets {
@@ -133,9 +135,9 @@ impl Runtime<'_, '_> {
                 self.push(
                     &mut requested_recordsets,
                     RecordsetRequest {
-                        native: *native,
+                        native,
                         origin,
-                        schema: descriptor.schema(),
+                        schema: descriptor.column.schema(),
                     },
                 )?;
             }
@@ -256,7 +258,7 @@ impl Runtime<'_, '_> {
         &mut self,
         requested: &[Request],
         lists: &[&dyn MultivalueList],
-        recordsets: &[(CollectionOrigin, Option<Arc<OwnedRecordset>>)],
+        recordsets: &[RecordsetEntry],
         scalars: Vec<CellValue>,
     ) -> Result<JoinedFrame, QueryError> {
         let mut owned = Vec::new();
@@ -288,7 +290,7 @@ impl Runtime<'_, '_> {
         &mut self,
         requested: &[RecordsetRequest<'_>],
         records: &[Arc<OwnedRecordset>],
-    ) -> Result<Vec<(CollectionOrigin, Option<Arc<OwnedRecordset>>)>, QueryError> {
+    ) -> Result<Vec<RecordsetEntry>, QueryError> {
         let mut retained = Vec::new();
         for (request, record) in requested.iter().zip(records) {
             self.tick()?;

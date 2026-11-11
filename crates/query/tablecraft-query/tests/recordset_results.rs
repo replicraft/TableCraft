@@ -196,16 +196,21 @@ fn derived_recordsets_keep_schema_and_written_inner_projections_remain_eager() {
 
 #[test]
 fn structural_child_metadata_changes_refuse_before_any_row_scan() {
-    for change in [1, 2, 3, 4, 6] {
-        let data = Data::new();
-        let parsed = parse_query("SELECT Files FROM T", Default::default()).unwrap();
-        let prepared = prepare(parsed.query(), &data).unwrap();
-        data.changed.set(change);
-        assert!(matches!(
-            prepared.execute_collections(&data, &[], ExecutionOptions::default()),
-            Err(QueryError::SchemaChanged)
-        ));
-        assert_eq!(data.scans.get(), 0);
+    for sql in ["SELECT Files FROM T", "SELECT Id FROM T"] {
+        for change in [1, 2, 3, 4, 6] {
+            let data = Data::new();
+            let parsed = parse_query(sql, Default::default()).unwrap();
+            let prepared = prepare(parsed.query(), &data).unwrap();
+            data.changed.set(change);
+            assert!(
+                matches!(
+                    prepared.execute_collections(&data, &[], ExecutionOptions::default()),
+                    Err(QueryError::SchemaChanged)
+                ),
+                "{sql}, metadata change {change}"
+            );
+            assert_eq!(data.scans.get(), 0);
+        }
     }
     let data = Data::new();
     let parsed = parse_query("SELECT Files FROM T", Default::default()).unwrap();

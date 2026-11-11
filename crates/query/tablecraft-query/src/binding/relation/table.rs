@@ -6,6 +6,7 @@ use crate::{
     external_sources::SourceNamespace,
     plan::{
         CollectionOrigin, MemberSlot, ProfiledType, RecordsetSlot, Relation, RelationNode, Slot,
+        SourceRecordset,
     },
     profile::SOURCE_SCHEMA_POLICY,
     source::TextPolicy,
@@ -142,11 +143,7 @@ impl Binder<'_> {
         self.charge(
             recordsets
                 .iter()
-                .map(|column| {
-                    size_of::<crate::source::RecordsetColumn>()
-                        + size_of::<usize>()
-                        + column.name().len()
-                })
+                .map(|column| size_of::<SourceRecordset>() + column.name().len())
                 .sum(),
         )?;
         let mut retained_recordsets = Vec::new();
@@ -159,7 +156,10 @@ impl Binder<'_> {
             // NO_CLONE: The owned plan retains source metadata independently of
             // the borrowed provider. Arc shares the immutable schema, not rows.
             let schema = Arc::clone(column.schema());
-            retained_recordsets.push(crate::source::RecordsetColumn::new(name, schema)?);
+            retained_recordsets.push(SourceRecordset {
+                column: crate::source::RecordsetColumn::new(name, schema)?,
+                projected: true,
+            });
         }
         let occurrence = if multivalues.is_empty() {
             None
@@ -307,7 +307,6 @@ impl Binder<'_> {
                 unavailable: unavailable.to_vec(),
                 text_collations,
                 projection: (0..columns.len()).collect(),
-                recordset_projection: (0..retained_recordsets.len()).collect(),
                 recordsets: retained_recordsets,
                 multivalues: multivalues.to_vec(),
                 multivalue_text_collations,

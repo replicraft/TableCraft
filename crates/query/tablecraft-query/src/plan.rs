@@ -51,6 +51,11 @@ pub(crate) struct CrosstabPlan {
     pub headings: Option<Vec<Expr>>,
     pub text_policies: Option<Vec<TextPolicy>>,
 }
+pub(crate) struct SourceRecordset {
+    pub column: RecordsetColumn,
+    pub projected: bool,
+}
+
 pub(crate) struct RecordsetSlot {
     pub index: usize,
     pub origin: CollectionOrigin,
@@ -111,8 +116,7 @@ pub(crate) enum RelationNode {
         unavailable: Vec<tablecraft_schema::SchemaName>,
         text_collations: Vec<Option<crate::source::TextCollationId>>,
         projection: Vec<usize>,
-        recordsets: Vec<RecordsetColumn>,
-        recordset_projection: Vec<usize>,
+        recordsets: Vec<SourceRecordset>,
         multivalues: Vec<Column>,
         multivalue_text_collations: Vec<Option<crate::source::TextCollationId>>,
         member_text_collations: Vec<Option<crate::source::TextCollationId>>,

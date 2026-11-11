@@ -13,41 +13,23 @@ impl Pruner<'_, '_> {
     ) -> Result<(), QueryError> {
         self.tick()?;
         match &mut relation.node {
-            RelationNode::Table {
-                recordset_projection,
-                ..
-            } => {
-                let mut error = None;
-                recordset_projection.retain(|index| {
-                    if error.is_some() {
-                        return false;
-                    }
-                    let selected = (|| {
-                        for slot in &relation.slots {
+            RelationNode::Table { recordsets, .. } => {
+                for (index, entry) in recordsets.iter_mut().enumerate() {
+                    let mut selected = false;
+                    for slot in &relation.slots {
+                        self.binder.work()?;
+                        let Some(recordset) = &slot.recordset else {
+                            continue;
+                        };
+                        if recordset.index != index {
+                            continue;
+                        }
+                        for expression in projection {
                             self.binder.work()?;
-                            let Some(recordset) = &slot.recordset else { continue };
-                            if recordset.index != *index {
-                                continue;
-                            }
-                            for expression in projection {
-                                self.binder.work()?;
-                                if matches!(expression, Expr::Recordset { origin, .. } if *origin == recordset.origin) {
-                                    return Ok(true);
-                                }
-                            }
-                        }
-                        Ok(false)
-                    })();
-                    match selected {
-                        Ok(keep) => keep,
-                        Err(failure) => {
-                            error = Some(failure);
-                            false
+                            selected |= matches!(expression, Expr::Recordset { origin, .. } if *origin == recordset.origin);
                         }
                     }
-                });
-                if let Some(error) = error {
-                    return Err(error);
+                    entry.projected = selected;
                 }
             }
             RelationNode::Cross(left, right) | RelationNode::Join { left, right, .. } => {

@@ -71,8 +71,8 @@ impl RecordsetOutput {
 
 /// Compare captured metadata structurally under the execution owner's paid,
 /// cancellable work callback; sharing the same Arc is not source revalidation.
-pub(crate) fn recordsets_match(
-    expected: &[RecordsetColumn],
+pub(crate) fn recordsets_match<'a>(
+    expected: impl ExactSizeIterator<Item = &'a RecordsetColumn>,
     actual: &[RecordsetColumn],
     mut work: impl FnMut(usize) -> Result<(), QueryError>,
 ) -> Result<bool, QueryError> {
@@ -80,7 +80,7 @@ pub(crate) fn recordsets_match(
     if expected.len() != actual.len() {
         return Ok(false);
     }
-    for (expected, actual) in expected.iter().zip(actual) {
+    for (expected, actual) in expected.zip(actual) {
         work(
             expected
                 .name()
