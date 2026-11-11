@@ -1731,10 +1731,12 @@ headings do not acquire one from their displayed position or caption.
 
 `ReviewFieldRename` issues exact presentation facts and a separate consuming
 `ReviewedFieldRename` from the sealed native plan. The normal runtime now selects
-current-metadata profile4 or retained-storage profile5 from original native
-metadata before inspection and consuming review, independently of row count.
-The retained route handles deleted native ordinals and appended live-property
-snapshots without moving prior OFF/history rows. The original empty
+the current or retained source language from original native metadata before
+inspection and consuming review, independently of row count. Typed retained
+profile7 admits qualified ordinary scalar declarations and property shapes;
+canonical LONG/Short Text sources retain profile6. There is no retry from a failed
+source proof. The retained routes handle deleted native ordinals and appended
+live-property snapshots without moving prior OFF/history rows. The original empty
 same-width profile1, empty fitted profile2 and dense populated Number replay
 profile3 remain unchanged for explicit native callers and old intent recovery;
 they are not fallback paths from a refused current source. See
@@ -1750,6 +1752,15 @@ require a creator-history replay or disqualify the source. Actual parser-bound
 definition/property capacity still limits each proposal, and every byte outside
 the proved metadata scope remains protected. This is not general imported-file,
 arbitrary field-type, allocation-growth or native-program support.
+
+For typed retained renames, exact native declaration/storage, complete original
+constraints and literal properties, dependency/program absence and the fitted
+one-page TDEF name frame must also qualify. Required/default values and all data
+bytes remain protected. An ordinary nongenerated, unindexed field at ordinal
+zero can qualify under profile7; joined definitions, indexed targets, unsupported
+properties and non-ASCII namespace comparison remain outside that action. The
+runtime uses the existing consuming review, V3 save/recovery and guarded reopen
+services; it adds no separate UI mutation path.
 
 Inspection returns the explicit shared fitted-ASCII policy only after this source
 proof; equal-width, case-only, unchanged and differently sized proposals share

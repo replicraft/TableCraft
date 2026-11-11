@@ -10,6 +10,45 @@ flow](../../ui/FIELD_RENAME.md) passes its normal-host headless functional gate.
 with direct review of all 22 images complete. General persisted field CRUD,
 other native versions and native Access save comparison remain unfinished.
 
+## Retained typed declarations
+
+`TCFR0007`/profile 7 adds saved-field rename for qualified Boolean, Byte, Integer,
+LONG, Large Number, Single, Double, Currency, legacy DateTime, GUID, Decimal and
+Short Text declarations. The selected field must be ordinary, nongenerated,
+noncalculated and unindexed, with its exact native kind, flags and storage shape.
+An ordinary unindexed field at native ordinal zero is eligible in this family;
+ordinal zero alone is neither primary-key nor generated-field evidence. The
+older families keep their own original field-identity restrictions.
+
+The consuming retained-schema proof checks all original declarations, records,
+constraints, literal defaults, property keys, programs and dependencies. Required
+and default metadata are preserved, not replaced with type-specific guesses or
+reevaluated. Unsupported lookup/unknown properties, active required programs and
+unqualified dependencies remain refusal conditions. Name mutation does not
+supply a general field-property editor or change any stored value.
+
+Source metadata selects profile 7 when a supported declaration/property shape is
+outside the exact LONG/Short Text language of profile 6. Canonical profile-6
+sources keep that family; a failed proof is never retried as another profile.
+The complete ASCII namespace is checked for collisions, and the actual native
+number and stored ID remain bound throughout review, save and fresh reopen.
+
+The current name editor requires a single physical TDEF page with a terminated
+continuation link and a fitting checked name frame. Joined multi-page definitions
+remain unqualified for this operation. Original Inline/Single property storage
+and actual fitting owned/hinted snapshot capacity are checked independently.
+A real rename changes only the selected TDEF name and MR2 group name in the
+new snapshot, protecting all values, defaults, old property/history bodies,
+DATA/INDEX pages, maps, counters, siblings and inactive TDEF slack. Growth, shrink,
+case-only and repeated names use that same proof. An exact no-op still qualifies
+the entire source and preserves the complete image without appending a snapshot.
+
+The original request has an explicit `TCFR0007` discriminator and
+`decode_retained_typed` decoder. Consuming preparation and fresh recovery use
+checked V3 storage; profiles 1–6 and older preparation/recovery APIs retain their
+closed languages. No identifier collation beyond the qualified ASCII policy or
+Windows/Access save equivalence follows from this implementation.
+
 ## Retained tables and schema histories
 
 The retained-schema route renames qualified unindexed nullable LONG and Short

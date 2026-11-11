@@ -174,3 +174,23 @@ The [retained-tail row proof](../access/writes/RETAINED_DEFINITION_TAILS.md) now
 supports the demonstrated insertion/update/deletion journey while preserving
 newly free historical TDEF bytes. Every later rename must freshly qualify its
 current source; ADD retains its separate admission and cannot inherit authority.
+
+
+## Typed retained fields
+
+The same Rename Field command, source inspection, name input, review and save
+workflow now consumes the [typed retained source](../access/writes/FIELD_RENAME.md#retained-typed-declarations).
+Qualified existing scalar types use their actual native identity; a display
+caption or visual column position is not a rename target. The metadata-selected
+profile does not turn the other saved Design properties into editable controls.
+
+The `Measurements` and `ExactValues` acceptance journeys specify an established
+LONG rename/edit control before typed-field growth, shrink, case-only and exact
+no-op proposals. They preserve exact row bytes, native field-number mapping and
+scratch SQL, then edit by a newly published field name and reopen. A separate
+case-fold collision scenario retains the rejected name and original file, starts
+no native save actor and requires a corrected proposal to pass a new review.
+Existing shared checks cover invalid name shapes, stale callbacks, cancellation,
+Design selection and retained failed sort preferences. These are headless
+acceptance boundaries; no new layout, native-window or Access parity evidence is
+claimed here.
