@@ -81,6 +81,14 @@ pub fn drop_tail(before: &[u8], definition: u32, catalog_root: usize, name: &str
         .flat_map(u16::to_le_bytes)
         .collect::<Vec<_>>();
     assert_eq!(&before[last + 2..last + 2 + word(before, last)], expected);
+    drop_field(before, definition, catalog_root, name)
+}
+
+/// Remove one named ordinary declaration and its live property group. Native
+/// field/variable high water and every original DATA/INDEX byte remain intact.
+/// The independent raw definition owner rejects removal of generated field zero.
+pub fn drop_field(before: &[u8], definition: u32, catalog_root: usize, name: &str) -> Vec<u8> {
+    let page = definition as usize * PAGE;
     let declaration = raw_schema_drop::definition(
         &before[page..page + PAGE],
         name,
