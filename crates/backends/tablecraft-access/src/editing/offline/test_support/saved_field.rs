@@ -91,9 +91,14 @@ pub(in crate::editing::offline) fn retain_retained_pair(
 ) -> OfflineWriteSession {
     let intent = match &plan {
         FieldPlan::Rename(plan) => {
-            assert!(plan.intent().is_retained_schema());
+            assert!(plan.intent().is_retained_schema() || plan.intent().is_retained_typed());
             let encoded = plan.intent().encode(budget, &|| false).unwrap();
-            assert!(encoded.starts_with(b"TCFR0006"));
+            let marker = if plan.intent().is_retained_typed() {
+                b"TCFR0007"
+            } else {
+                b"TCFR0006"
+            };
+            assert!(encoded.starts_with(marker));
             encoded
         }
         FieldPlan::Drop(plan) => {

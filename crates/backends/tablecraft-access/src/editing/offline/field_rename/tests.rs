@@ -183,3 +183,5 @@ fn closed_field_family_never_retries_another_intent_decoder() {
 mod fitting;
 
 mod retained;
+
+mod typed_retained;
