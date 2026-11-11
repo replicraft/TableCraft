@@ -12,6 +12,17 @@ capability. Destructive targets require closed tabs; saved results publish only
 through the corresponding guarded AFTER reopen. Provider-only DEFAULT is not
 enabled in SQL View.
 
+Qualified SQL `ALTER TABLE ... ADD COLUMN ... CURRENCY` now uses an original
+TCAC0013 request and the same consuming review, V3 save/recovery and guarded
+AFTER reopen. Existing rows retain NULL, declarations retain absent properties,
+and connected tests perform a later Currency UPDATE and omitted-field INSERT.
+Current native admission covers retained keyless ordinary sources with qualified
+ASCII field namespaces; Unicode table names remain supported. Broader field types,
+indexed/generated sources and native Access comparison remain unfinished. The
+[Currency ADD checkpoint](../tests/results/queries/declared-currency-add-column-2026-11-11.json)
+records independent native proofs, repaired integration failures, the complete
+Runtime library batch and four inspected headless confirmation frames.
+
 The query layer now stages complete typed SELECT INTO results and prepares joined
 UPDATE with exact original target identities, original-value assignments and a
 separate consuming backend finish. Native/GUI joined UPDATE and local DELETE
