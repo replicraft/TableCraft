@@ -8,9 +8,9 @@ use tablecraft_runtime::{QueryPoolLimits, QueryRunOptions, QueryRunOptionsError}
 #[derive(Default, Deserialize, JsonSchema)]
 #[serde(deny_unknown_fields)]
 pub(super) struct ReadQueryOptions {
-    /// Positive complete-table ceiling, at most 1,000,000 rows.
+    /// Positive complete-table row allowance within the u32 request representation.
     snapshot_rows: Option<u32>,
-    /// Positive bounded native fetch size; independent of the snapshot ceiling.
+    /// Positive native fetch size within the u32 request representation; independent of snapshot rows.
     batch_rows: Option<u32>,
     native: Option<PoolOverride>,
     execution: Option<PoolOverride>,
@@ -21,15 +21,12 @@ pub(super) struct ReadQueryOptions {
 #[derive(Deserialize, JsonSchema)]
 #[serde(deny_unknown_fields)]
 struct PoolOverride {
-    /// Positive cumulative allocation allowance: execution at most 256 MiB,
-    /// other pools at most 4 GiB.
+    /// Positive cumulative allocation allowance within the u64 counter representation.
     bytes: Option<u64>,
-    /// Execution admits at most 1,000,000 rows, other pools at most 10,000,000.
-    /// Native/execution require positive values,
-    /// while comparison/presentation require zero.
+    /// Cumulative row allowance within the u64 counter representation.
+    /// Native/execution require positive values; comparison/presentation require zero.
     rows: Option<u64>,
-    /// Positive cumulative work: execution at most 100,000,000 steps,
-    /// other pools at most 1,000,000,000.
+    /// Positive cumulative work allowance within the u64 counter representation.
     steps: Option<u64>,
 }
 

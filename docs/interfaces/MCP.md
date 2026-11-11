@@ -95,17 +95,18 @@ before database dispatch; invalid limits are refused rather than clamped.
 
 | Pool | Default bytes | Default rows | Default steps |
 | --- | ---: | ---: | ---: |
-| Native | 512 MiB | 100,000 | 5,000,000 |
-| Execution | 16 MiB | 10,000 | 1,000,000 |
-| Comparison | 16 MiB | 0 | 1,000,000 |
-| Presentation | 8 MiB | 0 | 100,000 |
+| Native | `u64::MAX` | `u64::MAX` | `u64::MAX` |
+| Execution | `u64::MAX` | `u64::MAX` | `u64::MAX` |
+| Comparison | `u64::MAX` | 0 | `u64::MAX` |
+| Presentation | `u64::MAX` | 0 | `u64::MAX` |
 
-The complete-table snapshot defaults to 16,384 rows with 256-row fetches. Its
-ceiling is 1,000,000 rows; fetch batches must be 1–16,384. Execution admits at
-most 256 MiB, 1,000,000 rows and 100,000,000 steps. Other pools admit at most
-4 GiB, 10,000,000 rows and 1,000,000,000 steps, with positive bytes/steps.
-Native/execution rows must be positive; comparison/presentation rows must stay
-zero. Increasing one allowance does not increase another or qualify unsupported
+The complete-table snapshot defaults to `u32::MAX` rows with 256-row fetches.
+Explicit snapshot and batch row allowances accept positive `u32` values. Pool
+bytes and steps accept positive `u64` values; native/execution rows must be
+positive and comparison/presentation rows must remain zero. These are request
+and accounting representations. Actual validated rows grow under the selected
+cumulative allowances; a large requested row count does not preallocate that
+many rows. Increasing one allowance does not increase another or qualify unsupported
 SQL, native types, indexes or file formats. The MCP's separate 4 MiB logical
 result cap still applies.
 
