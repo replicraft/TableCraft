@@ -95,6 +95,29 @@ English/German light/dark offscreen frames. It retains initial failures and
 repairs separately. The final preview depicts an ordinary LONG field; no matching
 native Access SQL warning capture exists.
 
+## Preserved logical identities after deletion
+
+`prepare_retained_fresh_long_index_creation` has a separate construction policy
+for retained definitions whose surviving logical IDs can differ from their
+positions. It uses the current count when that identity is free; otherwise it
+uses checked maximum logical ID plus one. Surviving logical IDs are never
+renumbered. Physical descriptor numbering remains dense and independent.
+This is an explicit construction policy, not an observed Access allocation rule.
+The fresh route currently requires an ASCII index-name namespace; the original
+count-based producer retains its existing name profile.
+
+`NativeFreshIndexCreateIntent` records both allocated identities in the distinct
+TCIC0002/profile2 request. Complete source binding, fresh source qualification,
+identity checks and complete AFTER comparison precede the checked V3 protocol.
+The original TCIC0001 producer and reconstruction language remain separate;
+a fresh candidate cannot be captured as an original request merely because its
+result bytes coincide.
+
+The [fresh-identity checkpoint](../../../tests/results/indexes/fresh-index-identities-2026-11-11.json)
+records raw post-deletion histories, native identity/recovery checks, journal-only
+refusal and minimal-feature builds. It does not qualify application selection
+of that new route or native Access allocation and timestamp behavior.
+
 ## Design-timestamp parity gap
 
 Current index construction preserves the original `MSysObjects.DateUpdate` and

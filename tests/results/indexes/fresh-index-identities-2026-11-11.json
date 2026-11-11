@@ -1,0 +1,132 @@
+{
+  "date": "2026-11-11",
+  "platform": "macOS 14.7.2 ARM64",
+  "source_commits": [
+    "28c20ec65",
+    "728c9433e"
+  ],
+  "scope": "Native fresh logical-index identity construction and TCIC0002 original recovery, separate from the existing TCIC0001 request.",
+  "qualification": "Independent raw image histories and local native/journal checks; no Microsoft Access execution or application workflow qualification.",
+  "observations": [
+    "Surviving logical identities are preserved after deletion. Fresh construction uses the logical count when free; a collision selects checked maximum existing logical identity plus one. Physical descriptors keep their separate dense numbering.",
+    "This is an explicit valid construction policy, not a claim about Microsoft Access identity allocation. Qualified fresh names and the existing index-name namespace are ASCII; the original count-based producer retains its existing language.",
+    "TCIC0002/profile2 retains allocated logical and physical identities and binds the complete original image. Source and full AFTER reconstruction recheck both identities before checked V3 save or recovery.",
+    "Original TCIC0001 cannot capture a fresh candidate, even when the resulting bytes match. Neither decoder retries another family after failure.",
+    "Journal-only builds can validate request data and refuse native construction explicitly. Creation-only and minimal library profiles remain buildable."
+  ],
+  "checks": [
+    {
+      "job": "native",
+      "command": "cargo test -p tablecraft-ace --lib --all-features --offline --locked -- normal_index_drop normal_index_creation transaction::intent::index_create transaction::intent::fresh_index_create",
+      "returncode": 0,
+      "seconds": 122.84,
+      "log": {
+        "path": ".cache/ace-sql-index-history-native-20261111.log",
+        "sha256": "e7cfd4484e1db9efb43aeaa2a0ed43680946d1923b7d2ee375220e5b2aa5457b"
+      },
+      "test_summaries": [
+        {
+          "passed": 29,
+          "failed": 0,
+          "ignored": 0
+        }
+      ]
+    },
+    {
+      "job": "raw",
+      "command": "cargo test -p tablecraft-testkit --lib --all-features --offline --locked -- secondary_index::normal",
+      "returncode": 0,
+      "seconds": 24.32,
+      "log": {
+        "path": ".cache/ace-sql-index-history-raw-20261111.log",
+        "sha256": "7cae3e2f458340ca37edcd2ce9494d5d5ba37bb45b34864d421ef95297eaeb79"
+      },
+      "test_summaries": [
+        {
+          "passed": 4,
+          "failed": 0,
+          "ignored": 0
+        }
+      ]
+    },
+    {
+      "job": "journal-data",
+      "command": "cargo test -p tablecraft-ace --lib --no-default-features --features journal --offline --locked -- fresh_index_create",
+      "returncode": 0,
+      "seconds": 39.73,
+      "log": {
+        "path": ".cache/ace-sql-index-history-journal-data-20261111.log",
+        "sha256": "5f227ce4346d0903b5393b8c487a392ffc643756f7fbbffccc1d229b3f710e2e"
+      },
+      "test_summaries": [
+        {
+          "passed": 3,
+          "failed": 0,
+          "ignored": 0
+        }
+      ]
+    },
+    {
+      "job": "strict",
+      "command": "cargo clippy -p tablecraft-ace -p tablecraft-testkit --all-targets --all-features --offline --locked -- -D warnings",
+      "returncode": 0,
+      "seconds": 66.15,
+      "log": {
+        "path": ".cache/ace-sql-index-history-strict-20261111.log",
+        "sha256": "e904d9fe9a6c302199cefec1b8e044044a7236f052f631e9a4045cf6822ce191"
+      },
+      "test_summaries": []
+    },
+    {
+      "job": "journal-only",
+      "command": "cargo clippy -p tablecraft-ace --lib --no-default-features --features journal --offline --locked -- -D warnings",
+      "returncode": 0,
+      "seconds": 8.11,
+      "log": {
+        "path": ".cache/ace-sql-index-history-journal-only-20261111.log",
+        "sha256": "809481a29b5f4911b24a048ac067e8180b2a32b70010855bd333f64fec63b782"
+      },
+      "test_summaries": []
+    },
+    {
+      "job": "creation-only",
+      "command": "cargo check -p tablecraft-ace --lib --no-default-features --features ace16-create --offline --locked",
+      "returncode": 0,
+      "seconds": 1.14,
+      "log": {
+        "path": ".cache/ace-sql-index-history-creation-only-20261111.log",
+        "sha256": "fe954f471ed9a47d1cacfbca6e1b0d7e5c52e6f98e961c1618b9bf3db0f6665c"
+      },
+      "test_summaries": []
+    },
+    {
+      "job": "minimal",
+      "command": "cargo check -p tablecraft-ace --lib --no-default-features --offline --locked",
+      "returncode": 0,
+      "seconds": 1.29,
+      "log": {
+        "path": ".cache/ace-sql-index-history-minimal-20261111.log",
+        "sha256": "45cb0541cff6291882bb7e24ace987c0d226f0bead3f74325956cb0b34c9b8ec"
+      },
+      "test_summaries": []
+    },
+    {
+      "job": "rustdoc",
+      "command": "cargo doc -p tablecraft-ace --no-deps --all-features --offline --locked",
+      "returncode": 0,
+      "seconds": 8.54,
+      "log": {
+        "path": ".cache/ace-sql-index-history-rustdoc-20261111.log",
+        "sha256": "b25d471942426b7f225ae8b7ef4bdac7e23c7dbb2340fad0d687a2af0e31015c"
+      },
+      "test_summaries": []
+    }
+  ],
+  "counting": "The 29 native cases overlap previous CREATE and DROP regression scopes; four raw controls and three journal-only checks are separate boundaries, not additional native compatibility claims.",
+  "limitations": [
+    "This checkpoint uses independently synthesized post-deletion histories. The subsequent actual DROP to ADD to CREATE lifecycle test is a separate later check.",
+    "No adapter or Runtime selection of the new producer is qualified by this checkpoint.",
+    "No UNIQUE, compound, other key family, older-profile write, native Windows/Access or design timestamp parity claim."
+  ],
+  "presentation": "No changed UI surface or native application window."
+}
