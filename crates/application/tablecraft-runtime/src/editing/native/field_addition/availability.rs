@@ -37,12 +37,12 @@ pub(in crate::editing) fn inspect(
             &mut work,
             cancelled,
         )?;
+        let typed = typed_sources(&image, table, &mut work, cancelled)?;
         let available = source_result(
             image
                 .inspect_field_addition_source(table, &mut work, cancelled)
                 .map_err(Error::from),
         )?;
-        let typed = typed_sources(&image, table, &mut work, cancelled)?;
         (available, typed)
     } else {
         (None, Arc::from([]))
