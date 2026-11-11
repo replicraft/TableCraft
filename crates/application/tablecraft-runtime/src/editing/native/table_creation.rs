@@ -1,7 +1,7 @@
 mod declaration;
 
 use crate::editing::SaveSchemaChange;
-use crate::editing::{CreatedTableReopen, ReviewedTableCreation};
+use crate::editing::{CreatedTableReopen, ReviewedTableCreation, table_creation::CreationOrigin};
 use crate::{
     Error, Response,
     controls::{SCOPE, budget, check},
@@ -60,40 +60,69 @@ impl Document {
         let mut work = budget();
         check(cancelled)?;
         let definition = declaration::capture(snapshot, profile, &mut work, cancelled)?;
+        self.review_native_definition(
+            document_revision,
+            definition,
+            CreationOrigin::Design {
+                draft_revision: snapshot.revision(),
+            },
+            &mut work,
+            cancelled,
+        )
+    }
+
+    /// Lowered declarations share the native planner, save capability and budget
+    /// with actual table-design reviews; no synthetic design snapshot is needed.
+    pub(in crate::editing) fn review_native_definition(
+        &mut self,
+        document_revision: u64,
+        definition: FirstTableDefinition,
+        origin: CreationOrigin,
+        work: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Response, Error> {
+        if document_revision != self.revision {
+            return Err(Error::StaleDocument);
+        }
+        if !self.source.editable_native() {
+            return Err(EditError::ReadOnlySource.into());
+        }
+        let profile = self.table_creation.ok_or(EditError::Unavailable)?;
+        check(cancelled)?;
         // NO_CLONE: NativeImage owns the checked source while Document keeps using it; this
         // shares immutable bytes instead of copying the database image.
         let source = self.edits.image_source.clone();
         let image = match (profile, definition.is_native()) {
             (TableCreationProfile::First, false) => {
-                NativeImage::capture_shared(source, SCOPE, &mut work, cancelled)
+                NativeImage::capture_shared(source, SCOPE, work, cancelled)
             }
-            _ => NativeImage::capture_shared_retained(source, SCOPE, &mut work, cancelled),
+            _ => NativeImage::capture_shared_retained(source, SCOPE, work, cancelled),
         }?;
         let (expected, columns, definition) = match profile {
             TableCreationProfile::First => {
                 let plan = if definition.is_native() {
-                    image.plan_first_table_native(definition, &mut work, cancelled)?
+                    image.plan_first_table_native(definition, work, cancelled)?
                 } else {
-                    image.plan_first_table(definition, &mut work, cancelled)?
+                    image.plan_first_table(definition, work, cancelled)?
                 };
-                let expected = copy_expected(plan.after_bytes(), &mut work, cancelled)?;
+                let expected = copy_expected(plan.after_bytes(), work, cancelled)?;
                 (expected, plan.column_count(), plan.into_definition())
             }
             TableCreationProfile::Added | TableCreationProfile::AddedNative => {
-                let plan = image.plan_authored_add_table(definition, &mut work, cancelled)?;
-                let expected = copy_expected(plan.after_bytes(), &mut work, cancelled)?;
+                let plan = image.plan_authored_add_table(definition, work, cancelled)?;
+                let expected = copy_expected(plan.after_bytes(), work, cancelled)?;
                 (expected, plan.column_count(), plan.into_definition())
             }
         };
         work.charge_allocation(self.edits.path.as_os_str().len() as u64, 1)?;
-        work.charge_allocation(snapshot.table_name().len() as u64, 1)?;
+        work.charge_allocation(definition.table().len() as u64, 1)?;
         let mut table = String::new();
-        table.try_reserve_exact(snapshot.table_name().len())?;
-        table.push_str(snapshot.table_name());
+        table.try_reserve_exact(definition.table().len())?;
+        table.push_str(definition.table());
         work.charge_allocation(1, size_of::<CreatedTableReopen>() as u64)?;
         work.charge_allocation(1, size_of::<State>() as u64)?;
         check(cancelled)?;
-        let expected = NativeImageSource::from_vec(expected, &mut work, cancelled)?.shared_bytes();
+        let expected = NativeImageSource::from_vec(expected, work, cancelled)?.shared_bytes();
         let reopen = Arc::new(CreatedTableReopen {
             // NO_CLONE: The capability or reopen witness outlives this borrowed Document call
             // and owns its source path; the live Document keeps its own path.
@@ -102,7 +131,7 @@ impl Document {
             table,
             columns,
             document_revision,
-            draft_revision: snapshot.revision(),
+            origin,
             schema_change: profile.schema_change(columns),
         });
         let capability = ReviewedTableCreation {

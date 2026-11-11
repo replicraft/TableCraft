@@ -6,7 +6,13 @@ use crate::{
     document::Document,
 };
 use tablecraft_core::limits::Resource;
-use tablecraft_sql::{ParseLimits, parse_query, query::Statement};
+use tablecraft_sql::{
+    ParseLimits, parse_query,
+    query::{
+        Statement,
+        definition::{Definition, TableElement},
+    },
+};
 
 impl Document {
     pub(crate) fn review_schema_sql(
@@ -31,6 +37,15 @@ impl Document {
         let Statement::Definition(definition) = &parsed.query().statement else {
             return Err(Error::SchemaSqlUnsupported);
         };
+        if let Definition::CreateTable(table) = definition.as_ref()
+            && (table.temporary || table.elements.iter().any(|element| {
+                matches!(element, TableElement::Column(column) if column.default_value.is_some())
+            }))
+        {
+            // Temporary-session storage is not this durable service. DEFAULT
+            // is OLE DB/ADO syntax and remains unavailable in SQL View.
+            return Err(Error::SchemaSqlUnsupported);
+        }
         check(cancelled)?;
         platform::schema_sql::review(self, definition, cancelled)
     }

@@ -8,6 +8,13 @@ use std::{
     sync::Arc,
 };
 
+/// Provenance of the reviewed declaration; SQL has no table-design draft.
+#[derive(Clone, Copy)]
+pub(in crate::editing) enum CreationOrigin {
+    Design { draft_revision: u64 },
+    Sql,
+}
+
 /// Complete expected content for a fresh snapshot after an acknowledged save.
 /// This grants no mutation, retry, file cleanup or physical identity authority.
 pub struct CreatedTableReopen {
@@ -16,7 +23,7 @@ pub struct CreatedTableReopen {
     pub(super) table: String,
     pub(super) columns: usize,
     pub(super) document_revision: u64,
-    pub(super) draft_revision: u64,
+    pub(super) origin: CreationOrigin,
     pub(super) schema_change: SaveSchemaChange,
 }
 
@@ -37,8 +44,12 @@ impl CreatedTableReopen {
         self.document_revision
     }
 
-    pub fn draft_revision(&self) -> u64 {
-        self.draft_revision
+    /// Actual design-draft revision, absent for a reviewed SQL declaration.
+    pub fn draft_revision(&self) -> Option<u64> {
+        match self.origin {
+            CreationOrigin::Design { draft_revision } => Some(draft_revision),
+            CreationOrigin::Sql => None,
+        }
     }
 
     pub fn expected_schema_change(&self) -> SaveSchemaChange {

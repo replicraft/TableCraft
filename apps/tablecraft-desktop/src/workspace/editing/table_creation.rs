@@ -101,7 +101,7 @@ impl Desktop {
         let request = host.request;
         let witness = capability.reopen_witness();
         if witness.document_revision() != host.tab.target.document_revision
-            || witness.draft_revision() != host.revision
+            || witness.draft_revision() != Some(host.revision)
             || witness.table_name() != host.table
             || witness.column_count() != host.columns
         {

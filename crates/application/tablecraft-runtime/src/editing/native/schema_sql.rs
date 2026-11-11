@@ -1,4 +1,9 @@
 //! Metadata resolves original identities before the existing schema proof runs.
+#[cfg(feature = "ace16-create")]
+mod create;
+
+#[cfg(feature = "ace16-create")]
+use crate::editing::{EditError, table_creation::CreationOrigin};
 use crate::{
     Error, Response,
     controls::{SCOPE, budget, check},
@@ -20,6 +25,18 @@ pub(in crate::editing) fn review(
     let mut work = budget();
     check(cancelled)?;
     match definition {
+        #[cfg(feature = "ace16-create")]
+        Definition::CreateTable(table) => {
+            let profile = document.table_creation.ok_or(EditError::Unavailable)?;
+            let definition = create::capture(table, profile, &mut work, cancelled)?;
+            document.review_native_definition(
+                document.revision,
+                definition,
+                CreationOrigin::Sql,
+                &mut work,
+                cancelled,
+            )
+        }
         Definition::DropTable(table) => {
             let schema = inspect_table_schema(
                 &mut document.source,
