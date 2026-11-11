@@ -335,8 +335,10 @@ mod currency;
 #[cfg(feature = "ace16-create")]
 mod boolean;
 
+#[cfg(feature = "ace16-create")]
 mod fixed_scalars;
 
+#[cfg(feature = "ace16-create")]
 mod wide_values;
 
 #[cfg(feature = "ace16-create")]
