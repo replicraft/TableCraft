@@ -1,4 +1,6 @@
 //! Existing retained Yes/No fields change only their native value mask bit.
+mod materialization;
+
 use super::{
     current_row_updates::{self, Family},
     retained_cell_updates::{self, Capability},

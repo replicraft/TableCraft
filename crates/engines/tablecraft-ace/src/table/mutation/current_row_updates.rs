@@ -14,7 +14,7 @@ use crate::{
     EditError, FittedColumnUpdates, FixedColumnUpdates, InspectError, NativeEditPlan, NativeImage,
     WriteBlocker,
     format::{
-        data_type::{BOOLEAN, CURRENCY, GUID, INT32, NUMERIC, SHORT_TEXT},
+        data_type::{BOOLEAN, BOOLEAN_BYTES, CURRENCY, GUID, INT32, NUMERIC, SHORT_TEXT},
         layout::{FIXED_FLAG, UPDATABLE_FLAG},
         page::PAGE_BYTES,
         row::{OFFSET_MASK, RELOCATED_MASK},
@@ -37,6 +37,7 @@ pub(super) enum Family {
     RetainedOpaque,
     RetainedCurrency,
     RetainedBoolean,
+    RetainedBooleanMaterialization,
     RetainedFixedScalars,
     RetainedWideValues,
 }
@@ -66,6 +67,7 @@ impl Family {
             Self::Retained
             | Self::RetainedCurrency
             | Self::RetainedBoolean
+            | Self::RetainedBooleanMaterialization
             | Self::RetainedFixedScalars
             | Self::RetainedWideValues => {
                 if !image.has_retained_table_source(table, budget, cancelled)? {
@@ -88,6 +90,7 @@ impl Family {
             | Self::RetainedOpaque
             | Self::RetainedCurrency
             | Self::RetainedBoolean
+            | Self::RetainedBooleanMaterialization
             | Self::RetainedFixedScalars
             | Self::RetainedWideValues => fixed_records::copy(image.as_bytes(), budget, cancelled),
         }
@@ -107,6 +110,7 @@ impl Family {
             | Self::RetainedOpaque
             | Self::RetainedCurrency
             | Self::RetainedBoolean
+            | Self::RetainedBooleanMaterialization
             | Self::RetainedFixedScalars
             | Self::RetainedWideValues => {
                 record_roots::capture_retained(image, schema, requests, budget, cancelled)
@@ -128,6 +132,7 @@ impl Family {
             | Self::RetainedOpaque
             | Self::RetainedCurrency
             | Self::RetainedBoolean
+            | Self::RetainedBooleanMaterialization
             | Self::RetainedFixedScalars
             | Self::RetainedWideValues => {
                 Space::capture_retained(image, schema, owned, budget, cancelled)
@@ -146,6 +151,9 @@ impl Family {
             }
             Self::Current | Self::Retained | Self::RetainedOpaque => {
                 Ok(record_serialization::current_rows::Language::LongText)
+            }
+            Self::RetainedBooleanMaterialization => {
+                Ok(record_serialization::current_rows::Language::BooleanMaterialization)
             }
             Self::RetainedBoolean => Err(EditError::Preservation),
         }
@@ -285,6 +293,7 @@ pub(super) fn bind_for(
             | Family::RetainedOpaque
             | Family::RetainedCurrency
             | Family::RetainedBoolean
+            | Family::RetainedBooleanMaterialization
             | Family::RetainedFixedScalars
             | Family::RetainedWideValues
     ) {
@@ -322,8 +331,10 @@ pub(super) fn bind_for(
         (SHORT_TEXT, Value::Text(_) | Value::Null)
             if matches!(groups[0], FittedColumnUpdates::Variable { .. }) => {}
         (BOOLEAN, Value::Boolean(_))
-            if matches!(family, Family::RetainedBoolean)
-                && matches!(groups[0], FittedColumnUpdates::Fixed { .. }) => {}
+            if matches!(
+                family,
+                Family::RetainedBoolean | Family::RetainedBooleanMaterialization
+            ) && matches!(groups[0], FittedColumnUpdates::Fixed { .. }) => {}
         (CURRENCY, Value::Currency(_) | Value::Null)
             if matches!(family, Family::RetainedCurrency)
                 && matches!(groups[0], FittedColumnUpdates::Fixed { .. }) => {}
@@ -581,7 +592,9 @@ fn retained_column(
         FittedColumnUpdates::Fixed { updates, .. } => {
             let (kind, width) = match family {
                 Family::RetainedCurrency => (ScalarType::Currency, size_of::<i64>()),
-                Family::RetainedBoolean => (ScalarType::Boolean, 0),
+                Family::RetainedBoolean | Family::RetainedBooleanMaterialization => {
+                    (ScalarType::Boolean, BOOLEAN_BYTES)
+                }
                 Family::RetainedWideValues => (ScalarType::Guid, size_of::<u128>()),
                 Family::RetainedFixedScalars => {
                     record_serialization::current_rows::fixed_scalar_kind(field.native_type())
@@ -595,7 +608,10 @@ fn retained_column(
         FittedColumnUpdates::Variable { updates, .. } => {
             if matches!(
                 family,
-                Family::RetainedCurrency | Family::RetainedBoolean | Family::RetainedFixedScalars
+                Family::RetainedCurrency
+                    | Family::RetainedBoolean
+                    | Family::RetainedBooleanMaterialization
+                    | Family::RetainedFixedScalars
             ) {
                 return Err(EditError::Unsupported(WriteBlocker::Column));
             }
@@ -619,7 +635,12 @@ fn retained_column(
             matches!(cell.expected, Value::Int32(_) | Value::Null)
                 && matches!(cell.value, Value::Int32(_) | Value::Null)
         }
-        BOOLEAN if matches!(family, Family::RetainedBoolean) => {
+        BOOLEAN
+            if matches!(
+                family,
+                Family::RetainedBoolean | Family::RetainedBooleanMaterialization
+            ) =>
+        {
             matches!(cell.expected, Value::Boolean(_)) && matches!(cell.value, Value::Boolean(_))
         }
         CURRENCY if matches!(family, Family::RetainedCurrency) => {

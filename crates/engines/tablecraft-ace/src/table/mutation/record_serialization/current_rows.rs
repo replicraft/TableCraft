@@ -4,8 +4,8 @@ use crate::{
     EditError, InspectError, NativeColumn, TableSchema, WriteBlocker,
     format::{
         data_type::{
-            BYTE, CURRENCY, DATE_TIME, DOUBLE, GUID, INT16, INT32, INT64, NUMERIC, SHORT_TEXT,
-            SINGLE,
+            BOOLEAN, BOOLEAN_BYTES, BYTE, CURRENCY, DATE_TIME, DOUBLE, GUID, INT16, INT32, INT64,
+            NUMERIC, SHORT_TEXT, SINGLE,
         },
         layout::{FIXED_FLAG, UPDATABLE_FLAG},
         row::{COLUMN_COUNT_BYTES, MASK_BITS, VARIABLE_COUNT_BYTES, VARIABLE_OFFSET_BYTES},
@@ -29,6 +29,7 @@ pub(in crate::table::mutation) enum Language {
     Currency,
     FixedScalars,
     WideValues,
+    BooleanMaterialization,
 }
 
 /// Exact fixed payload types admitted only by the retained scalar action.
@@ -92,6 +93,11 @@ pub(in crate::table::mutation) fn qualify(
     check(budget, cancelled)?;
     let field = schema.columns().get(column).ok_or(EditError::Conflict)?;
     match (language, field.native_type(), field.fixed()) {
+        (Language::BooleanMaterialization, BOOLEAN, true)
+            if field.scalar_type() == Some(ScalarType::Boolean)
+                && field.storage_length() == BOOLEAN_BYTES
+                && field.flags() == (FIXED_FLAG | UPDATABLE_FLAG)
+                && field.extended_flags() == 0 => {}
         (Language::Currency, CURRENCY, true)
             if field.flags() == (FIXED_FLAG | UPDATABLE_FLAG)
                 && field.extended_flags() == 0
@@ -119,6 +125,12 @@ pub(in crate::table::mutation) fn qualify(
         _ => return Err(EditError::Unsupported(WriteBlocker::Column)),
     }
     let original = record_layout::parse(before, schema, budget)?;
+    if matches!(language, Language::BooleanMaterialization)
+        && (field.number() < original.count
+            || field.number() >= schema.physical_layout().max_columns)
+    {
+        return Err(EditError::Unsupported(WriteBlocker::RowLayout));
+    }
     let variables = schema.physical_layout().variable_slots;
     let old_variables = original.offsets.len().saturating_sub(1);
     if old_variables > variables || original.count > schema.physical_layout().max_columns {
@@ -160,6 +172,7 @@ pub(in crate::table::mutation) fn build(
     let field = &schema.columns()[column];
     let variable = (!field.fixed()).then_some(field.physical_field().variable);
     let payload = match (language, field.native_type(), value) {
+        (Language::BooleanMaterialization, BOOLEAN, Value::Boolean(_)) => Vec::new(),
         (Language::LongText, INT32, Value::Int32(_) | Value::Null)
         | (Language::Currency, CURRENCY, Value::Currency(_) | Value::Null) => Vec::new(),
         (Language::FixedScalars, native, value) if fixed_scalar_value(native, value) => Vec::new(),
@@ -324,7 +337,12 @@ pub(in crate::table::mutation) fn build(
     let byte = after
         .get_mut(mask + number / MASK_BITS)
         .ok_or(EditError::Preservation)?;
-    *byte = (*byte & !bit) | if matches!(value, Value::Null) { 0 } else { bit };
+    let set = match (language, value) {
+        (Language::BooleanMaterialization, Value::Boolean(value)) => *value,
+        (_, Value::Null) => false,
+        _ => true,
+    };
+    *byte = (*byte & !bit) | if set { bit } else { 0 };
     record_layout::parse(&after, schema, budget)?;
     Ok(after)
 }

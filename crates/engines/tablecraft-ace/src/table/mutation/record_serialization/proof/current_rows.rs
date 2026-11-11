@@ -2,7 +2,8 @@
 use crate::{
     EditError, InspectError, TableSchema,
     format::{
-        data_type::{CURRENCY, GUID, INT32, NUMERIC, SHORT_TEXT},
+        data_type::{BOOLEAN, BOOLEAN_BYTES, CURRENCY, GUID, INT32, NUMERIC, SHORT_TEXT},
+        layout::{FIXED_FLAG, UPDATABLE_FLAG},
         row::{COLUMN_COUNT_BYTES, MASK_BITS},
     },
     header::check,
@@ -18,6 +19,7 @@ use tablecraft_core::{
     limits::{Resource, ResourceBudget},
     values::Value,
 };
+use tablecraft_schema::ScalarType;
 
 pub(in crate::table::mutation) fn reconstruct(
     schema: &TableSchema,
@@ -34,7 +36,22 @@ pub(in crate::table::mutation) fn reconstruct(
         .columns()
         .get(column)
         .ok_or(EditError::Preservation)?;
+    if matches!(language, Language::BooleanMaterialization)
+        && (field.number() < original.count
+            || field.number() >= schema.physical_layout().max_columns)
+    {
+        return Err(EditError::Preservation);
+    }
     let payload = match (language, field.native_type(), value) {
+        (Language::BooleanMaterialization, BOOLEAN, Value::Boolean(_))
+            if field.scalar_type() == Some(ScalarType::Boolean)
+                && field.fixed()
+                && field.storage_length() == BOOLEAN_BYTES
+                && field.flags() == (FIXED_FLAG | UPDATABLE_FLAG)
+                && field.extended_flags() == 0 =>
+        {
+            Vec::new()
+        }
         (Language::LongText, INT32, Value::Int32(_) | Value::Null) if field.fixed() => Vec::new(),
         (Language::Currency, CURRENCY, Value::Currency(_) | Value::Null)
             if field.fixed() && field.storage_length() == size_of::<i64>() =>
@@ -228,7 +245,16 @@ pub(in crate::table::mutation) fn reconstruct(
     let byte = expected
         .get_mut(mask + number / MASK_BITS)
         .ok_or(EditError::Preservation)?;
-    *byte = (*byte & !bit) | if matches!(value, Value::Null) { 0 } else { bit };
+    let selected = match (language, value) {
+        (Language::BooleanMaterialization, Value::Boolean(value)) => *value,
+        (_, Value::Null) => false,
+        _ => true,
+    };
+    if selected {
+        *byte |= bit;
+    } else {
+        *byte &= !bit;
+    }
     if expected.len() != length {
         return Err(EditError::Preservation);
     }
