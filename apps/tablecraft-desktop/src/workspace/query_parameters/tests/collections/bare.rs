@@ -24,15 +24,19 @@ fn sql_view_stored_history_uses_history_contents_without_attachment_labels() {
                 }
         );
     }
+    let mut arguments = tablecraft_ui::FluentArgs::new();
+    arguments.set("count", 2);
+    let summary = harness
+        .state()
+        .state
+        .localizer
+        .format("collections-history-summary", &arguments);
     let cell = harness
         .query_all_by_role(Role::Label)
         .find(|node| {
             let node = node.accesskit_node();
-            node.label()
-                .is_some_and(|value| value.contains("2 stored versions"))
-                || node
-                    .value()
-                    .is_some_and(|value| value.contains("2 stored versions"))
+            node.label().is_some_and(|text| text.contains(&summary))
+                || node.value().is_some_and(|text| text.contains(&summary))
         })
         .expect("actual history summary");
     cell.click_secondary();
@@ -146,15 +150,19 @@ fn sql_view_attachment_wildcard_keeps_parent_rows_and_readonly_collection_summar
     assert!(harness.state().state.contents_request_id().is_none());
     assert_source(&path, &before);
 
+    let mut arguments = tablecraft_ui::FluentArgs::new();
+    arguments.set("count", 2);
+    let summary = harness
+        .state()
+        .state
+        .localizer
+        .format("collections-attachment-summary", &arguments);
     let cell = harness
         .query_all_by_role(Role::Label)
         .find(|node| {
             let node = node.accesskit_node();
-            node.label()
-                .is_some_and(|text| text.contains("2 attachments"))
-                || node
-                    .value()
-                    .is_some_and(|text| text.contains("2 attachments"))
+            node.label().is_some_and(|text| text.contains(&summary))
+                || node.value().is_some_and(|text| text.contains(&summary))
         })
         .expect("actual parent-associated attachment summary");
     cell.click_secondary();

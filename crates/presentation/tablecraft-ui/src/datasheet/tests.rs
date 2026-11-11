@@ -96,6 +96,40 @@ fn typed_cell_badges_do_not_change_copy_text_or_hide_accessible_provenance() {
 }
 
 #[test]
+fn german_typed_summary_paints_localized_text_but_copies_the_original_host_value() {
+    let context = Context::default();
+    let localizer = crate::Localizer::new(crate::Locale::De).unwrap();
+    crate::localization::install(&context, &localizer);
+    let value = Cell {
+        presentation: None,
+        alignment: crate::HorizontalAlignment::Left,
+        text: "2 attachments".into(),
+        kind: CellKind::Attachments {
+            assigned: true,
+            members: 2,
+        },
+    };
+    let label = value.state_label(&localizer).unwrap();
+    let _ = context.run_ui(input(vec![]), |ui| {
+        cell(ui, &value, "Files", 1, true).request_focus();
+    });
+    let output = context.run_ui(input(vec![Event::Copy]), |ui| {
+        cell(ui, &value, "Files", 1, true);
+    });
+    assert!(output.shapes.iter().any(|shape| {
+        matches!(&shape.shape, egui::Shape::Text(text)
+            if text.galley.job.text.contains(&label))
+    }));
+    assert!(
+        output
+            .platform_output
+            .commands
+            .contains(&OutputCommand::CopyText("2 attachments".into()))
+    );
+    assert_eq!(value.text, "2 attachments");
+}
+
+#[test]
 fn large_cell_preview_bounds_paint_and_accessibility_while_copy_preserves_complete_text() {
     for (text, prefix) in [
         ("a".repeat(100_000) + "tail", "a".repeat(512) + "…"),

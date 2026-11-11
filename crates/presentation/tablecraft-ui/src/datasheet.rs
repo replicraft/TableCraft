@@ -1098,7 +1098,15 @@ fn cell_with_occurrence(
             copy
         });
         if copy {
-            copy_text(ui.ctx(), original_text);
+            let copied = if matches!(
+                value.kind,
+                crate::CellKind::Uninspected | crate::CellKind::AbsentCollection
+            ) {
+                original_text
+            } else {
+                &value.text
+            };
+            copy_text(ui.ctx(), copied);
         }
     }
     response.on_hover_ui(|ui| {
