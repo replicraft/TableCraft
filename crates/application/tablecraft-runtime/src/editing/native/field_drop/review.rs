@@ -40,7 +40,13 @@ pub(in crate::editing) fn review(
         &mut work,
         cancelled,
     )?;
-    let plan = image.plan_recoverable_field_drop(table, column, &mut work, cancelled)?;
+    let plan = if image
+        .select_native_retained_non_tail_field_drop_source(table, column, &mut work, cancelled)?
+    {
+        image.plan_recoverable_retained_non_tail_field_drop(table, column, &mut work, cancelled)?
+    } else {
+        image.plan_recoverable_field_drop(table, column, &mut work, cancelled)?
+    };
     if plan.table() != table
         || plan.column() != column
         || plan.identity().column_number() != native_number

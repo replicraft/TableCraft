@@ -30,8 +30,14 @@ pub(in crate::editing) fn source_eligible(
         budget,
         cancelled,
     )?;
-    let identity =
-        source_result(image.inspect_field_drop_source(table, column, budget, cancelled))?;
+    let inspected = if image
+        .select_native_retained_non_tail_field_drop_source(table, column, budget, cancelled)?
+    {
+        image.inspect_retained_non_tail_field_drop_source(table, column, budget, cancelled)
+    } else {
+        image.inspect_field_drop_source(table, column, budget, cancelled)
+    };
+    let identity = source_result(inspected)?;
     let Some(identity) = identity else {
         return Ok(false);
     };
