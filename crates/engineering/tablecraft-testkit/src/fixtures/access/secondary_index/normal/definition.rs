@@ -36,6 +36,8 @@ pub(super) fn append(original: &[u8], request: NewIndex<'_>) -> Vec<u8> {
     }
     assert_eq!(names_end, tail);
     assert_eq!(&original[tail..length], &[255, 255]);
+    // NO_CLONE: The new active frame owns its reordered bytes while the
+    // immutable original page remains available for every retained span and tail.
     let mut frame = original[..columns].to_vec();
     let mut count = [0; 12];
     put32(&mut count, 4, request.distinct);
