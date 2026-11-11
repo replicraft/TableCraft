@@ -2,8 +2,9 @@
 use std::io::Cursor;
 use tablecraft_access::NativeSource;
 use tablecraft_ace::{
-    FileFormat, InspectError, inspect_attachment_declarations, inspect_header,
-    read_multivalue_column,
+    FileFormat, InspectError, inspect_attachment_declarations, inspect_complex_schema,
+    inspect_header, inspect_multivalue_declarations, inspect_version_history_declarations,
+    read_attachment_column, read_multivalue_column,
 };
 use tablecraft_core::{limits::ResourceBudget, values::Value};
 use tablecraft_model::CatalogScope;
@@ -123,6 +124,51 @@ fn ace2010_unqualified_attachments_remain_unavailable_without_losing_scalar_read
         ),
         Err(InspectError::Unsupported)
     ));
+    // Metadata-only discovery does not grant the public complete resolver or
+    // attachment payload reader a new ACE2010 value-layout permission.
+    assert!(matches!(
+        inspect_complex_schema(
+            &mut Cursor::new(&bytes),
+            CatalogScope::new(5),
+            "Items",
+            &mut budget(),
+            &|| false
+        ),
+        Err(InspectError::Unsupported)
+    ));
+    assert!(matches!(
+        read_attachment_column(
+            &mut Cursor::new(&bytes),
+            CatalogScope::new(5),
+            "Items",
+            "Score",
+            &mut budget(),
+            &|| false
+        ),
+        Err(InspectError::Unsupported)
+    ));
+    assert!(
+        inspect_multivalue_declarations(
+            &mut Cursor::new(&bytes),
+            CatalogScope::new(5),
+            "Items",
+            &mut budget(),
+            &|| false
+        )
+        .unwrap()
+        .is_empty()
+    );
+    assert!(
+        inspect_version_history_declarations(
+            &mut Cursor::new(&bytes),
+            CatalogScope::new(5),
+            "Items",
+            &mut budget(),
+            &|| false
+        )
+        .unwrap()
+        .is_empty()
+    );
     let scalar = NativeSource::new(Cursor::new(&bytes), CatalogScope::new(6), budget(), &|| {
         false
     })
