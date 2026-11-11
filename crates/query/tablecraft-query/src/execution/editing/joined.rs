@@ -234,13 +234,12 @@ pub fn prepare_joined_batch_update_with_options<E: EditableBatch>(
             group: None,
             group_keys: None,
         };
-        if let Some(filter) = &bound.filter {
-            if !Truth::from_value(&runtime.eval(filter, env)?)
+        if let Some(filter) = &bound.filter
+            && !Truth::from_value(&runtime.eval(filter, env)?)
                 .map_err(QueryError::from)?
                 .is_true()
-            {
-                continue;
-            }
+        {
+            continue;
         }
         let Some(handle) = frame.target else {
             continue;
