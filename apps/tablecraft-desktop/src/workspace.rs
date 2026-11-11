@@ -124,6 +124,11 @@ enum PendingOperation {
     Query {
         request_id: u64,
     },
+    QueryDiscovery {
+        request_id: u64,
+        inspection_id: u64,
+        options: QueryRunOptions,
+    },
     QueryInspection {
         request_id: u64,
         options: QueryRunOptions,
@@ -638,6 +643,9 @@ impl Desktop {
                 }
                 Ok(Response::SavedQuery { target, parameters }) => {
                     self.publish_saved_query(generation, target, parameters);
+                }
+                Ok(Response::QueryParametersDiscovered { target, parameters }) => {
+                    self.publish_discovered_query_parameters(generation, target, parameters);
                 }
                 Ok(Response::QueryParameters { target, parameters }) => {
                     self.publish_query_parameters(generation, target, parameters);

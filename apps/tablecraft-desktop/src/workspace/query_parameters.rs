@@ -3,8 +3,8 @@ use super::{Desktop, PendingOperation};
 use crate::workspace::request_read;
 use std::sync::Arc;
 use tablecraft_runtime::{
-    Command, InspectedQuery, ParameterInput as RuntimeInput, ParameterSpec as RuntimeSpec,
-    QueryOperation, QueryRunOptions,
+    Command, DiscoveredQuery, InspectedQuery, ParameterInput as RuntimeInput,
+    ParameterSpec as RuntimeSpec, QueryOperation, QueryRunOptions,
 };
 use tablecraft_ui::{Action, ParameterInput, ParameterSpec};
 
@@ -12,6 +12,7 @@ pub(super) struct Inspected {
     inspection_id: u64,
     target: Arc<InspectedQuery>,
     options: QueryRunOptions,
+    discovered: Option<Arc<DiscoveredQuery>>,
 }
 
 impl Desktop {
@@ -28,6 +29,24 @@ impl Desktop {
                 .query_parameter_inspection_current(inspected.inspection_id, inspected.target.sql())
         }) {
             self.query_parameters = None;
+        }
+
+        if let PendingOperation::QueryDiscovery {
+            request_id,
+            inspection_id,
+            ..
+        } = self.pending
+            && request_id == self.generation
+            && self.query_parameters.as_ref().is_none_or(|inspected| {
+                !self
+                    .state
+                    .query_parameter_inspection_current(inspection_id, inspected.target.sql())
+            })
+        {
+            self.worker.cancel();
+            self.state.busy = false;
+            self.clear_query_parameters();
+            self.pending = PendingOperation::Read;
         }
 
         if let PendingOperation::QueryInspection { request_id, .. } = self.pending
@@ -139,6 +158,88 @@ impl Desktop {
             | QueryOperation::Schema => {}
         }
 
+        if target.operation() == QueryOperation::Read {
+            // NO_CLONE: Discovery and the pending UI witness share the original
+            // issued SQL owner across the next metadata-only worker request.
+            let original = Arc::clone(&target);
+            let Some(next) = request_read(
+                Command::DiscoverQueryParameters {
+                    options,
+                    target: original,
+                },
+                &self.worker,
+                &mut self.state,
+            ) else {
+                self.state.fail_query_parameter_inspection(request_id);
+                self.read_request_rejected();
+                return;
+            };
+            self.query_parameters = Some(Inspected {
+                inspection_id: request_id,
+                target,
+                options,
+                discovered: None,
+            });
+            self.generation = next;
+            self.pending = PendingOperation::QueryDiscovery {
+                request_id: next,
+                inspection_id: request_id,
+                options,
+            };
+            self.state.busy = true;
+            return;
+        }
+        self.publish_query_parameter_prompt(request_id, target, parameters, options, None);
+    }
+
+    pub(super) fn publish_discovered_query_parameters(
+        &mut self,
+        request_id: u64,
+        discovered: Arc<DiscoveredQuery>,
+        parameters: Vec<RuntimeSpec>,
+    ) {
+        let (inspection_id, options) = match self.pending {
+            PendingOperation::QueryDiscovery {
+                request_id: actual,
+                inspection_id,
+                options,
+            } if actual == request_id => (inspection_id, options),
+            _ => return,
+        };
+        let original = discovered.original();
+        if !self
+            .state
+            .query_parameter_inspection_current(inspection_id, original.sql())
+            || self
+                .state
+                .database
+                .as_ref()
+                .is_none_or(|database| database.document_revision != original.document_revision())
+        {
+            self.clear_query_parameters();
+            self.pending = PendingOperation::Read;
+            return;
+        }
+        // NO_CLONE: The UI keeps the original issued syntax witness while the
+        // discovery owner retains the same witness beside its immutable plan.
+        let target = Arc::clone(original);
+        self.publish_query_parameter_prompt(
+            inspection_id,
+            target,
+            parameters,
+            options,
+            Some(discovered),
+        );
+    }
+
+    fn publish_query_parameter_prompt(
+        &mut self,
+        request_id: u64,
+        target: Arc<InspectedQuery>,
+        parameters: Vec<RuntimeSpec>,
+        options: QueryRunOptions,
+        discovered: Option<Arc<DiscoveredQuery>>,
+    ) {
         let specs = parameters
             .into_iter()
             .map(|parameter| ParameterSpec {
@@ -153,6 +254,7 @@ impl Desktop {
             inspection_id: request_id,
             target,
             options,
+            discovered,
         });
         let inspected = self
             .query_parameters
@@ -224,15 +326,22 @@ impl Desktop {
 
         let inputs = runtime_inputs(&parameters);
 
-        let Some(request_id) = request_read(
+        let command = if let Some(discovered) = &inspected.discovered {
+            // NO_CLONE: Runtime execution and UI pending provenance share the
+            // issued immutable prepared owner; its plan/payload is not copied.
+            Command::RunDiscoveredQuery {
+                options,
+                target: Arc::clone(discovered),
+                parameters: inputs,
+            }
+        } else {
             Command::RunQuery {
                 options,
                 target,
                 parameters: inputs,
-            },
-            &self.worker,
-            &mut self.state,
-        ) else {
+            }
+        };
+        let Some(request_id) = request_read(command, &self.worker, &mut self.state) else {
             self.read_request_rejected();
             return;
         };
