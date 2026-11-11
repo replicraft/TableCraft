@@ -379,6 +379,17 @@ impl Worker {
                 .ok_or(Error::NoDatabase)?
                 .review_table_creation(*document_revision, snapshot, cancelled),
             #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+            Command::OpenIndexCreated { witness } => {
+                document = None;
+                document_revision = document_revision
+                    .checked_add(1)
+                    .ok_or(Error::RevisionExhausted)?;
+                let (opened, response) =
+                    Document::open_index_created(witness, document_revision, cancelled)?;
+                document = Some(opened);
+                Ok(response)
+            }
+            #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
             Command::OpenTableCreated { witness } => {
                 document = None;
                 document_revision = document_revision
@@ -615,7 +626,7 @@ impl Worker {
             Command::ReviewSchemaSql { target } => document
                 .as_mut()
                 .ok_or(Error::NoDatabase)?
-                .review_schema_sql(target, cancelled),
+                .review_schema_sql(target, clock.as_ref(), cancelled),
             #[cfg(feature = "offline-edit")]
             Command::ReviewQueryInsert { target, parameters } => document
                 .as_mut()
@@ -762,6 +773,8 @@ impl Worker {
                         Command::ReviewAddInt32Column { .. } => "review_add_column",
                         #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
                         Command::OpenColumnAdded { .. } => "open_column_added",
+                        #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
+                        Command::OpenIndexCreated { .. } => "open_index_created",
                         #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
                         Command::OpenTableCreated { .. } => "open_table_created",
                         Command::Open { .. } => "open",
