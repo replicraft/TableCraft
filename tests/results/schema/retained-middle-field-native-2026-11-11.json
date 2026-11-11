@@ -1,0 +1,30 @@
+{
+  "date": "2026-11-11",
+  "source_commit": "5557434d466865193eecce0f321d4119e2c3e951",
+  "platform": "macOS 14.7.2 ARM64",
+  "scope": "Explicit native retained non-tail candidate; no host save or journal authority",
+  "native_windows_opened": false,
+  "baseline": {
+    "log": ".cache/query-recordsets-qualification-middle-baseline.log",
+    "sha256": "def897476cadcdadc4e35517429e89f0c52301a74988546b309b520c1879615f",
+    "outcome": "Expected Source refusal after independent source and AFTER controls succeeded"
+  },
+  "verification": {
+    "log": ".cache/retained-middle-native-final.log",
+    "sha256": "fffff24befa50c79f137465cf1a335543a5cad9310b2e555ec22aea54fdc0e1b",
+    "passed": 42,
+    "failed": 0,
+    "scope": "All selected native drop-field and persisted field-drop intent tests, including three explicit non-tail candidate tests"
+  },
+  "observations": [
+    "The consuming native candidate matches the independently authored complete replacement, preserving both records and Currency survivor storage.",
+    "Tail/generated targets and unknown live property declarations remain refused; cancellation and separate budget failures propagate.",
+    "The generic host eligibility inspector remains closed for this candidate. Existing tail candidate and persisted request languages remain distinct."
+  ],
+  "remaining": [
+    "Distinct journal intent and cold/settled recovery qualification",
+    "Access adapter and consuming runtime review/save wiring",
+    "Additional middle variable, Boolean and retired-slot histories",
+    "Native Windows Access comparison"
+  ]
+}

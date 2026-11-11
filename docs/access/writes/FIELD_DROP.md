@@ -7,6 +7,23 @@ family. The shared model has source-free ownership checks; it does not turn an
 eligibility fact or a Yes confirmation into write authority. General ALTER TABLE
 and Access 97–2019 write completion remain unfinished.
 
+## Explicit native non-tail candidate
+
+`NativeImage::prepare_retained_non_tail_field_drop` supplies a separate sealed
+candidate after complete retained-source qualification. It removes an ordinary,
+unindexed, nongenerated field while retaining survivor native numbers and physical
+storage. The normal host inspector and existing persisted tail languages do not
+admit this operation. Its journal intent, recovery dispatch and reviewed runtime
+save route are not implemented.
+
+The [native checkpoint](../../../tests/results/schema/retained-middle-field-native-2026-11-11.json)
+compares a populated middle LONG removal against an independent complete image,
+including its Currency survivor, both records, property groups, native high-water
+metadata and protected pages. Refusal controls cover tail/generated targets,
+unknown properties, cancellation and separate caller budgets. The combined native
+deletion/recovery batch passes 42 tests. Additional non-tail carrier histories and
+native Access comparisons remain unqualified; this is not general UI deletion.
+
 ## Typed retained tail fields
 
 `TCFD0004`/profile 4 removes a qualified last-active Boolean, Byte, Integer, LONG,
