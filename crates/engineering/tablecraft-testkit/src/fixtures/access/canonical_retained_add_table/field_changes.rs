@@ -1,7 +1,9 @@
 //! Independent retained field RENAME/DROP images preserve row and property history.
 use crate::fixtures::access::{
-    packed_record::append_record, put16, put32, raw_catalog_properties as properties,
-    raw_forwarding_chain, raw_property_groups, raw_schema_drop,
+    generated_record_insert::placement::{self, Pages},
+    packed_record::append_record,
+    put16, put32, raw_catalog_properties as properties, raw_forwarding_chain, raw_property_groups,
+    raw_schema_drop,
 };
 
 const PAGE: usize = 4096;
@@ -237,4 +239,46 @@ pub fn update_score(before: &[u8], definition: u32, root: usize, value: Option<i
         row[mask] &= !2;
     }
     raw_forwarding_chain::replace_terminal(before, definition + 1, root, &row)
+}
+
+/// Append to the final generated ID/Score declaration after typed tails retire.
+/// The caller supplies the resolved Score (Some0 for its literal omitted default,
+/// None for explicit NULL); no deleted declaration or default is inferred.
+pub fn append_score(before: &[u8], definition: u32, score: Option<i32>) -> Vec<u8> {
+    let base = definition as usize * PAGE;
+    assert_eq!(word(before, base + 45), 2);
+    assert_eq!(&before[base + 47..base + 55], &[1, 0, 0, 0, 1, 0, 0, 0]);
+    for (number, flags) in [(0, 7), (1, 3)] {
+        let field = base + 75 + 25 * number;
+        assert_eq!(before[field], 4);
+        assert_eq!(word(before, field + 5), number);
+        assert_eq!(before[field + 15], flags);
+        assert_eq!(before[field + 16], 0);
+        assert_eq!(word(before, field + 21), 4 * number);
+        assert_eq!(word(before, field + 23), 4);
+    }
+    let pages = Pages {
+        definition: definition as usize,
+        data: definition as usize + 1,
+        index: definition as usize + 2,
+    };
+    let id = placement::next_id(before, pages);
+    let fields = word(before, base + 41);
+    let variables = word(before, base + 43);
+    assert!(fields >= 2);
+    let mut row = (fields as u16).to_le_bytes().to_vec();
+    row.extend(id.to_le_bytes());
+    row.extend(score.unwrap_or(0).to_le_bytes());
+    if variables != 0 {
+        // Fresh records have no retired variable payload; every retained slot
+        // still has its native trailer entry at the current fixed endpoint.
+        for _ in 0..=variables {
+            row.extend(10_u16.to_le_bytes());
+        }
+        row.extend((variables as u16).to_le_bytes());
+    }
+    let mut mask = vec![0; fields.div_ceil(8)];
+    mask[0] = if score.is_some() { 3 } else { 1 };
+    row.extend(mask);
+    placement::append(before, pages, id, &row)
 }
