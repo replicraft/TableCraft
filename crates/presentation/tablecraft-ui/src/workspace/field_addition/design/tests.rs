@@ -90,6 +90,11 @@ fn blank_design_widgets_stage_one_local_proposal_without_inventing_a_stored_fiel
         "Pending Name"
     );
     assert_eq!(harness.state().0.schema.as_ref().unwrap().fields.len(), 1);
+    assert_eq!(harness.state().0.selected_field, 0);
+    assert_eq!(
+        harness.get_by_label("ID").accesskit_node().is_selected(),
+        Some(false)
+    );
     assert!(harness.state().1.is_empty());
     harness
         .get_by_role_and_label(Role::ComboBox, "Data Type")
@@ -122,6 +127,11 @@ fn blank_design_widgets_stage_one_local_proposal_without_inventing_a_stored_fiel
     harness.run_steps(2);
     assert!(!harness.state().0.field_addition_open());
     assert_eq!(harness.state().0.schema.as_ref().unwrap().fields.len(), 1);
+    assert_eq!(harness.state().0.selected_field, 0);
+    assert_eq!(
+        harness.get_by_label("ID").accesskit_node().is_selected(),
+        Some(true)
+    );
     assert!(harness.state().1.is_empty());
 }
 

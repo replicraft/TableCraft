@@ -167,6 +167,12 @@ pub(super) fn prepare(harness: &mut Harness<'_, Preview>, mode: &str) {
         .get_by_role_and_label(Role::TextInput, &name_label)
         .type_text(&name);
     super::settle(harness);
+    // Capture the pending declaration's editor, not the retained native field's
+    // earlier keyboard focus. No source metadata or selection is rewritten.
+    harness
+        .get_by_role_and_label(Role::TextInput, &name_label)
+        .focus();
+    super::settle(harness);
     let state = harness.state().state();
     assert_eq!(state.schema.as_ref().unwrap().fields.len(), 1);
     assert_eq!(state.field_addition_name().unwrap().1, name);

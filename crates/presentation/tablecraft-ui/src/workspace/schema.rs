@@ -139,6 +139,11 @@ impl State {
         let addition_kind = self
             .field_addition_declaration()
             .map(|declaration| declaration.kind());
+        // The pending declaration owns the property pane without becoming a
+        // stored field. Keep the prior native selection for its eventual return.
+        let addition_pending = addition
+            .as_ref()
+            .is_some_and(|(_, presentation)| presentation.name.is_some());
         let addition_caption = addition.as_ref().is_some_and(|(_, presentation)| {
             presentation.name.is_some() || (presentation.enabled && presentation.choices.any())
         });
@@ -226,7 +231,12 @@ impl State {
                         body.rows(FIELD_ROW_HEIGHT, row_count, |mut row| {
                             let position = row.index();
                             let Some(field) = schema.fields.get(position) else {
-                                row.col(|ui| grid::selector(ui, false));
+                                row.col(|ui| {
+                                    grid::selector(
+                                        ui,
+                                        addition_pending && position == schema.fields.len(),
+                                    )
+                                });
                                 if position == schema.fields.len()
                                     && let Some((_, presentation)) = &addition
                                 {
@@ -257,7 +267,12 @@ impl State {
                                 }
                                 return;
                             };
-                            row.col(|ui| grid::selector(ui, position == self.selected_field));
+                            row.col(|ui| {
+                                grid::selector(
+                                    ui,
+                                    !addition_pending && position == self.selected_field,
+                                )
+                            });
                             row.col(|ui| {
                                 let response = if let Some(editor) = &rename_editor
                                     && editor.target.column == field.name
@@ -285,7 +300,8 @@ impl State {
                                         ui,
                                         pending_label.as_deref().unwrap_or(&field.name),
                                         grid::CellStyle::FieldName {
-                                            selected: position == self.selected_field,
+                                            selected: !addition_pending
+                                                && position == self.selected_field,
                                             id: field_focus_id(
                                                 focus_scope,
                                                 document_revision,
