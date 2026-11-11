@@ -94,7 +94,11 @@ impl<'a> Cursor<'a> {
             1 => Family::Variable,
             _ => return Err(NativeIntentError::InvalidRecord),
         };
-        if self.grammar == Grammar::RetainedFixedScalars && family != Family::Fixed {
+        if matches!(
+            self.grammar,
+            Grammar::RetainedFixedScalars | Grammar::RetainedEmpty
+        ) && family != Family::Fixed
+        {
             return Err(NativeIntentError::InvalidRecord);
         }
         if count > self.grammar.assignments() {

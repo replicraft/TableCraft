@@ -113,8 +113,10 @@ impl NativeFittedIntentGroup {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, NativeIntentError> {
         check(budget, cancelled)?;
-        if grammar == Grammar::RetainedFixedScalars
-            && !matches!(updates, NativeFittedUpdates::Fixed(_))
+        if matches!(
+            grammar,
+            Grammar::RetainedFixedScalars | Grammar::RetainedEmpty
+        ) && !matches!(updates, NativeFittedUpdates::Fixed(_))
         {
             return Err(NativeIntentError::InvalidRecord);
         }
@@ -218,6 +220,29 @@ impl NativeFittedEditIntent {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, NativeIntentError> {
         Self::new_with_grammar(table, groups, before, Grammar::Retained, budget, cancelled)
+    }
+
+    /// Bind only named fixed groups with no row assignments to the complete image.
+    /// This inert request does not qualify target columns or native source authority.
+    ///
+    /// # Errors
+    /// Refuses empty/duplicate target lists, variable or nonempty groups, invalid
+    /// names/image geometry, allocation failure, cancellation and exhausted work.
+    pub fn new_retained_empty(
+        table: &str,
+        groups: Vec<NativeFittedIntentGroup>,
+        before: &[u8],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, NativeIntentError> {
+        Self::new_with_grammar(
+            table,
+            groups,
+            before,
+            Grammar::RetainedEmpty,
+            budget,
+            cancelled,
+        )
     }
 
     /// Bind the closed TCNI21 scalar language to a complete native-sized image.
@@ -388,8 +413,10 @@ pub(super) fn validate_groups(
     let mut count = 0_usize;
     for (position, group) in groups.iter().enumerate() {
         check(budget, cancelled)?;
-        if grammar == Grammar::RetainedFixedScalars
-            && !matches!(group.updates(), NativeFittedUpdates::Fixed(_))
+        if matches!(
+            grammar,
+            Grammar::RetainedFixedScalars | Grammar::RetainedEmpty
+        ) && !matches!(group.updates(), NativeFittedUpdates::Fixed(_))
         {
             return Err(NativeIntentError::InvalidRecord);
         }

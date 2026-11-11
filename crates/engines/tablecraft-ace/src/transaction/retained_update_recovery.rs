@@ -43,6 +43,7 @@ impl NativeUpdateIntent {
                 | NativeUpdateProfile::Ace16RetainedFixedScalarRows
                 | NativeUpdateProfile::Ace16RetainedWideValueRows
                 | NativeUpdateProfile::Ace16RetainedBooleanMaterialization
+                | NativeUpdateProfile::Ace16RetainedEmptyRows
         ) {
             return Err(NativeIntentError::UnsupportedProfile.into());
         }

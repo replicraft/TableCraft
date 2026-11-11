@@ -30,6 +30,9 @@ pub(in crate::transaction::intent) const RETAINED_BOOLEAN_MATERIALIZATION_MAGIC:
     b"TCNI0023";
 const RETAINED_BOOLEAN_MATERIALIZATION_PROFILE: u16 = 23;
 
+pub(in crate::transaction::intent) const RETAINED_EMPTY_ROWS_MAGIC: &[u8; 8] = b"TCNI0024";
+const RETAINED_EMPTY_ROWS_PROFILE: u16 = 24;
+
 #[derive(Clone, Copy)]
 pub(in crate::transaction::intent) enum WireProfile {
     Fitted,
@@ -44,11 +47,13 @@ pub(in crate::transaction::intent) enum WireProfile {
     RetainedFixedScalarRows,
     RetainedWideValueRows,
     RetainedBooleanMaterialization,
+    RetainedEmptyRows,
 }
 
 impl WireProfile {
     pub(super) const fn grammar(self) -> Grammar {
         match self {
+            Self::RetainedEmptyRows => Grammar::RetainedEmpty,
             Self::RetainedFixedScalarRows => Grammar::RetainedFixedScalars,
             Self::RetainedWideValueRows => Grammar::RetainedWideValues,
             Self::RetainedRows
@@ -62,6 +67,7 @@ impl WireProfile {
 
     pub(super) const fn magic(self) -> &'static [u8; 8] {
         match self {
+            Self::RetainedEmptyRows => RETAINED_EMPTY_ROWS_MAGIC,
             Self::Fitted => MAGIC,
             Self::OwnedOnly => OWNED_GROWTH_MAGIC,
             Self::AllocateEof => EOF_ALLOCATION_MAGIC,
@@ -79,6 +85,7 @@ impl WireProfile {
 
     pub(super) const fn number(self) -> u16 {
         match self {
+            Self::RetainedEmptyRows => RETAINED_EMPTY_ROWS_PROFILE,
             Self::Fitted => PROFILE,
             Self::OwnedOnly => OWNED_GROWTH_PROFILE,
             Self::AllocateEof => EOF_ALLOCATION_PROFILE,

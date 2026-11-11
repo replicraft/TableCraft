@@ -20,6 +20,8 @@ mod retained_boolean_rows;
 #[cfg(feature = "ace16-create")]
 mod retained_currency_rows;
 #[cfg(feature = "ace16-create")]
+mod retained_empty_rows;
+#[cfg(feature = "ace16-create")]
 mod retained_fixed_scalar_rows;
 #[cfg(feature = "ace16-create")]
 mod retained_opaque_rows;
@@ -326,6 +328,7 @@ impl RecoverableNativeEditPlan {
                 | NativeUpdateProfile::Ace16RetainedFixedScalarRows
                 | NativeUpdateProfile::Ace16RetainedWideValueRows
                 | NativeUpdateProfile::Ace16RetainedBooleanMaterialization
+                | NativeUpdateProfile::Ace16RetainedEmptyRows
         ) {
             return Err(JournalError::ImageSize);
         }
@@ -349,6 +352,7 @@ impl RecoverableNativeEditPlan {
                 | NativeUpdateProfile::Ace16RetainedFixedScalarRows
                 | NativeUpdateProfile::Ace16RetainedWideValueRows
                 | NativeUpdateProfile::Ace16RetainedBooleanMaterialization
+                | NativeUpdateProfile::Ace16RetainedEmptyRows
         ) {
             return Err(JournalError::ImageSize);
         }
@@ -376,6 +380,7 @@ impl RecoverableNativeEditPlan {
                 | NativeUpdateProfile::Ace16RetainedFixedScalarRows
                 | NativeUpdateProfile::Ace16RetainedWideValueRows
                 | NativeUpdateProfile::Ace16RetainedBooleanMaterialization
+                | NativeUpdateProfile::Ace16RetainedEmptyRows
         ) {
             return Err(JournalError::ImageSize);
         }

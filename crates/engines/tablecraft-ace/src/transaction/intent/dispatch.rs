@@ -13,6 +13,8 @@ const ACE_PROFILE: u16 = 2;
 /// A versioned validation route, never a serialized native permission.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum NativeUpdateProfile {
+    /// Source-qualified named ordinary LONG targets with no selected rows.
+    Ace16RetainedEmptyRows,
     /// A Boolean absent from the complete original record, requalified before materialization.
     Ace16RetainedBooleanMaterialization,
     /// Exact canonical GUID and Decimal originals in complete retained records.
@@ -84,6 +86,13 @@ pub enum NativeUpdateBody {
 }
 
 impl NativeUpdateIntent {
+    pub(super) fn from_retained_empty_rows(original: NativeFittedEditIntent) -> Self {
+        Self {
+            profile: NativeUpdateProfile::Ace16RetainedEmptyRows,
+            body: NativeUpdateBody::Fitted(original),
+        }
+    }
+
     pub(super) fn from_retained_boolean_materialization(original: NativeFittedEditIntent) -> Self {
         Self {
             profile: NativeUpdateProfile::Ace16RetainedBooleanMaterialization,
@@ -375,6 +384,9 @@ impl NativeUpdateIntent {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Vec<u8>, NativeIntentError> {
         match (&self.body, self.profile) {
+            (NativeUpdateBody::Fitted(original), NativeUpdateProfile::Ace16RetainedEmptyRows) => {
+                original.encode_retained_empty(budget, cancelled)
+            }
             (
                 NativeUpdateBody::Fitted(original),
                 NativeUpdateProfile::Ace16RetainedBooleanMaterialization,
@@ -471,6 +483,12 @@ impl NativeUpdateIntent {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, NativeIntentError> {
+        if bytes.get(..super::fitted::RETAINED_EMPTY_ROWS_MAGIC.len())
+            == Some(super::fitted::RETAINED_EMPTY_ROWS_MAGIC.as_slice())
+        {
+            return NativeFittedEditIntent::decode_retained_empty(bytes, budget, cancelled)
+                .map(Self::from_retained_empty_rows);
+        }
         if bytes.get(..super::fitted::RETAINED_BOOLEAN_MATERIALIZATION_MAGIC.len())
             == Some(super::fitted::RETAINED_BOOLEAN_MATERIALIZATION_MAGIC.as_slice())
         {

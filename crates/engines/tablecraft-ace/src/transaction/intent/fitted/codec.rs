@@ -302,6 +302,33 @@ impl NativeFittedEditIntent {
         read::decode(bytes, WireProfile::RetainedCurrencyRows, budget, cancelled)
     }
 
+    /// Encode only TCNI24 named fixed groups with zero row assignments.
+    /// Native source and target qualification remain consuming checks.
+    ///
+    /// # Errors
+    /// Refuses a different original grammar or invalid groups and retains typed
+    /// allocation, cancellation and cumulative-work failures.
+    pub fn encode_retained_empty(
+        &self,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Vec<u8>, NativeIntentError> {
+        self.encode_profile(WireProfile::RetainedEmptyRows, budget, cancelled)
+    }
+
+    /// Decode exactly TCNI0024/profile24 without selecting a native mutation route.
+    ///
+    /// # Errors
+    /// Refuses another family, malformed framing or nonempty/variable groups,
+    /// invalid names/image geometry, allocation failure, budgets and cancellation.
+    pub fn decode_retained_empty(
+        bytes: &[u8],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, NativeIntentError> {
+        read::decode(bytes, WireProfile::RetainedEmptyRows, budget, cancelled)
+    }
+
     /// Encode the separate TCNI23 missing-Boolean original request language.
     pub fn encode_retained_boolean_materialization(
         &self,
