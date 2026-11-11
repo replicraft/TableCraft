@@ -7,7 +7,10 @@
 mod field_addition;
 pub mod field_rename;
 mod model;
-pub use field_addition::{FieldAdditionDeclaration, FieldAdditionKind};
+pub use field_addition::{
+    FieldAdditionDeclaration, FieldAdditionDeclarationError, FieldAdditionKind,
+    TypedFieldAdditionDeclaration,
+};
 mod names;
 pub use names::next_field_name;
 mod snapshot;

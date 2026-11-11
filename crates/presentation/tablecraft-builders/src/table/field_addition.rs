@@ -1,5 +1,9 @@
 //! Explicit source-free declarations for the saved-field gallery's working choices.
+mod typed;
+pub use typed::{FieldAdditionDeclarationError, TypedFieldAdditionDeclaration};
+
 use std::num::NonZeroU8;
+use tablecraft_schema::ScalarType;
 
 /// Gallery choice, not a native source capability or arbitrary field declaration.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -8,6 +12,10 @@ pub enum FieldAdditionKind {
     Number,
     /// The current saved-field Short Text gallery policy.
     ShortText,
+    Currency,
+    YesNo,
+    LargeInteger,
+    DateTime,
 }
 
 /// Complete request semantics retained through inspection, review and save.
@@ -16,6 +24,8 @@ pub enum FieldAdditionKind {
 /// together with the exact width/compression below. Native proof stays separate.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum FieldAdditionDeclaration {
+    /// Validated twelve-kind single-field declaration under type-default policy.
+    Typed(TypedFieldAdditionDeclaration),
     /// Nullable LONG, stored Required(false), typed default zero.
     NumberLongZero,
     /// Nullable Text, stored Required(false)/AllowZeroLength(true), no default.
@@ -28,6 +38,7 @@ pub enum FieldAdditionDeclaration {
 impl FieldAdditionDeclaration {
     pub const fn kind(self) -> FieldAdditionKind {
         match self {
+            Self::Typed(declaration) => declaration.kind(),
             Self::NumberLongZero => FieldAdditionKind::Number,
             Self::ShortText { .. } => FieldAdditionKind::ShortText,
         }
@@ -37,6 +48,28 @@ impl FieldAdditionDeclaration {
     pub const fn ui_default(kind: FieldAdditionKind) -> Self {
         match kind {
             FieldAdditionKind::Number => Self::NumberLongZero,
+            FieldAdditionKind::Currency => {
+                Self::Typed(TypedFieldAdditionDeclaration::gallery_fixed(
+                    FieldAdditionKind::Currency,
+                    ScalarType::Currency,
+                ))
+            }
+            FieldAdditionKind::YesNo => Self::Typed(TypedFieldAdditionDeclaration::gallery_fixed(
+                FieldAdditionKind::YesNo,
+                ScalarType::Boolean,
+            )),
+            FieldAdditionKind::LargeInteger => {
+                Self::Typed(TypedFieldAdditionDeclaration::gallery_fixed(
+                    FieldAdditionKind::LargeInteger,
+                    ScalarType::Int64,
+                ))
+            }
+            FieldAdditionKind::DateTime => {
+                Self::Typed(TypedFieldAdditionDeclaration::gallery_fixed(
+                    FieldAdditionKind::DateTime,
+                    ScalarType::DateTime,
+                ))
+            }
             FieldAdditionKind::ShortText => Self::ShortText {
                 max_utf16_units: NonZeroU8::MAX,
                 unicode_compression: true,

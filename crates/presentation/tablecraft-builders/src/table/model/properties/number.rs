@@ -1,6 +1,6 @@
 //! Number declarations retain their selected storage size independently of raw input.
 use super::{DraftField, DraftFieldId, DraftFieldType, TableDraft, TableDraftError};
-use tablecraft_schema::DecimalConstraints;
+use tablecraft_schema::{DecimalConstraints, ScalarType};
 
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub enum DraftNumberSize {
@@ -12,6 +12,21 @@ pub enum DraftNumberSize {
     Double,
     Decimal,
     ReplicationId,
+}
+
+impl DraftNumberSize {
+    /// Exact scalar selected by the Number field-size control.
+    pub const fn scalar_type(self) -> ScalarType {
+        match self {
+            Self::Byte => ScalarType::Byte,
+            Self::Integer => ScalarType::Int16,
+            Self::LongInteger => ScalarType::Int32,
+            Self::Single => ScalarType::Single,
+            Self::Double => ScalarType::Double,
+            Self::Decimal => ScalarType::Decimal,
+            Self::ReplicationId => ScalarType::Guid,
+        }
+    }
 }
 
 impl DraftField {
