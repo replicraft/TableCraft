@@ -416,8 +416,16 @@ fn collections_flag_exposes_aligned_attachment_metadata_and_preserves_value_quer
                 database.path(),
                 "--collections",
             ]);
-            assert!(!result.status.success());
-            assert!(result.stdout.is_empty());
+            assert!(
+                result.status.success(),
+                "{}",
+                String::from_utf8_lossy(&result.stderr)
+            );
+            assert_eq!(
+                result.stdout,
+                b"Id\tScore\n1\trecordset: 2 rows\n2\trecordset: 1 rows\n3\trecordset: 0 rows\n"
+            );
+            assert!(result.stderr.is_empty());
         }
     }
     let database = Database::new(links_fixture::populated());
@@ -459,6 +467,41 @@ fn collections_flag_exposes_aligned_attachment_metadata_and_preserves_value_quer
         assert!(!result.status.success());
         assert!(result.stdout.is_empty());
     }
+}
+
+#[test]
+fn bare_attachment_summaries_distinguish_outer_absence_and_buffer_output_failure() {
+    let database = Database::new(attachment_fixture::database());
+    let sql = "SELECT l.Id,l.Score AS L,r.Score AS R FROM Items AS l LEFT JOIN Items AS r ON l.Id=r.Id AND r.Id=2 ORDER BY l.Id";
+    let result = CLI.run(&[
+        "query",
+        "run",
+        sql,
+        "--database",
+        database.path(),
+        "--collections",
+    ]);
+    assert!(
+        result.status.success(),
+        "{}",
+        String::from_utf8_lossy(&result.stderr)
+    );
+    assert_eq!(result.stdout, b"Id\tL\tR\n1\trecordset: 2 rows\trecordset: absent parent\n2\trecordset: 1 rows\trecordset: 1 rows\n3\trecordset: 0 rows\trecordset: absent parent\n");
+    assert!(result.stderr.is_empty());
+
+    let limited = CLI.run(&[
+        "query",
+        "run",
+        "SELECT Id,Score FROM Items ORDER BY Id",
+        "--database",
+        database.path(),
+        "--collections",
+        "--output-bytes",
+        "20",
+    ]);
+    assert!(!limited.status.success());
+    assert!(limited.stdout.is_empty());
+    assert!(String::from_utf8_lossy(&limited.stderr).contains("output limit"));
 }
 
 #[test]
