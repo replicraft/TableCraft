@@ -361,28 +361,6 @@ impl Model {
         true
     }
 
-    pub(super) fn replace_declaration(
-        &mut self,
-        tab: &ObjectTab,
-        declaration: FieldAdditionDeclaration,
-    ) -> bool {
-        let Some(draft) = &mut self.draft else {
-            return false;
-        };
-        if draft.tab != *tab || draft.phase != Phase::Naming {
-            return false;
-        }
-        if draft.declaration != declaration {
-            let Some(revision) = draft.revision.checked_add(1) else {
-                return false;
-            };
-            draft.declaration = declaration;
-            draft.properties = properties::Properties::new(declaration);
-            draft.revision = revision;
-        }
-        true
-    }
-
     pub(super) fn request(&self, tab: &ObjectTab) -> Option<FieldAdditionRequest> {
         let draft = self.draft.as_ref()?;
         if draft.tab != *tab
