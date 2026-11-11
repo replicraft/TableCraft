@@ -241,3 +241,6 @@ fn journal_only_runtime_does_not_gain_native_column_schema_authority() {
     assert_eq!(fs::read(&path).unwrap(), pair.before);
     assert!(!crate::journal_path(&path).exists());
 }
+
+#[cfg(feature = "ace16-create")]
+mod add_column;

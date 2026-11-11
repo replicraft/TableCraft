@@ -1,5 +1,6 @@
 //! Existing normal field actor/witness with explicit chronological source purpose.
 use super::*;
+use crate::FieldAdditionOrigin;
 use tablecraft_testkit::fixtures::access::canonical_created_number::mixed::after_off::{
     self as raw, history,
 };
@@ -133,8 +134,8 @@ fn history_review_refuses_unobserved_declarations_and_stale_capabilities() {
         .unwrap_err();
     assert_eq!(failure.kind, SaveStartFailure::StaleDocument);
     assert_eq!(
-        failure.into_reviewed().unwrap().captured_declaration(),
-        Declaration::NumberLongZero
+        failure.into_reviewed().unwrap().captured_origin(),
+        FieldAdditionOrigin::Gallery(Declaration::NumberLongZero)
     );
     assert!(!bundle.exists());
     assert_eq!(std::fs::read(path).unwrap(), before);

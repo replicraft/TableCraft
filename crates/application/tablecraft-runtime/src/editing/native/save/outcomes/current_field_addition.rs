@@ -1,7 +1,10 @@
 //! Current source and original request retain typed cancellation/resource facts.
 use super::{inspection_failure, intent_failure, qualification_failure};
 use crate::editing::SaveFailureKind;
-use tablecraft_ace::{CurrentFieldAdditionError, CurrentFieldAdditionIntentError, EditError};
+use tablecraft_ace::{
+    CurrentFieldAdditionError, CurrentFieldAdditionIntentError,
+    DeclaredFieldAdditionIntentError as DeclaredError, EditError,
+};
 
 pub(super) fn intent(error: &CurrentFieldAdditionIntentError) -> Option<SaveFailureKind> {
     match error {
@@ -38,3 +41,21 @@ pub(super) fn candidate(error: &CurrentFieldAdditionError) -> Option<SaveFailure
         _ => None,
     }
 }
+
+pub(super) fn declared(error: &DeclaredError) -> Option<SaveFailureKind> {
+    match error {
+        DeclaredError::Inspect(error) => inspection_failure(error),
+        #[cfg(feature = "ace16-create")]
+        DeclaredError::Binding(error) => intent_failure(error),
+        DeclaredError::Field(error) => candidate(error),
+        DeclaredError::Proof(error) => qualification_failure(error),
+        #[cfg(feature = "ace16-create")]
+        DeclaredError::Declaration(tablecraft_ace::CreateDatabaseError::Inspect(error)) => {
+            inspection_failure(error)
+        }
+        _ => None,
+    }
+}
+
+#[cfg(all(test, feature = "ace16-create"))]
+mod declared_tests;

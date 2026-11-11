@@ -3,14 +3,15 @@ pub(in crate::editing) mod availability;
 use crate::{
     Error, Response,
     document::Document,
-    editing::{AddedColumnReopen, EditError},
+    editing::{AddedColumnReopen, EditError, FieldAdditionOrigin},
 };
 use std::sync::Arc;
 use tablecraft_builders::table::FieldAdditionDeclaration;
 
 pub(in crate::editing) struct State {
     pub(in crate::editing) reopen: Arc<AddedColumnReopen>,
-    pub(in crate::editing) declaration: FieldAdditionDeclaration,
+    pub(in crate::editing) id: u64,
+    pub(in crate::editing) origin: FieldAdditionOrigin,
 }
 
 pub(in crate::editing) fn review(

@@ -1,5 +1,8 @@
 //! One validated saved-field declaration lowers without a synthetic table snapshot.
-use crate::{Error, editing::EditError};
+use crate::{
+    Error,
+    editing::{EditError, FieldAdditionOrigin},
+};
 use std::num::NonZeroU8;
 use tablecraft_ace::{CreateColumn, RetainedFieldAdditionDefinition, RetainedFieldAdditionType};
 use tablecraft_builders::table::TypedFieldAdditionDeclaration;
@@ -95,3 +98,23 @@ pub(super) fn captured(
     };
     Ok(declaration)
 }
+
+pub(super) fn captured_declared(column: CreateColumn<'_>) -> Result<FieldAdditionOrigin, Error> {
+    if column.scalar_type() != ScalarType::Currency
+        || column.required().is_some()
+        || column.allow_zero_length().is_some()
+        || column.default_literal().is_some()
+        || column.description().is_some()
+        || column.primary_key_name().is_some()
+        || column.incrementing_autonumber()
+        || column.unicode_compression()
+    {
+        return Err(Error::SchemaSqlUnsupported);
+    }
+    Ok(FieldAdditionOrigin::SqlDeclared {
+        scalar_type: column.scalar_type(),
+    })
+}
+
+#[cfg(test)]
+mod declared_tests;

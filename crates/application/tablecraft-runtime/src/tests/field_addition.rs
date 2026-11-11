@@ -1,5 +1,6 @@
 //! Public generic field review/save preserves exact declarations and older Number sources.
 use super::{open, request, stored::opened, terminal};
+use crate::FieldAdditionOrigin;
 use crate::{
     Command, Error, FieldAdditionAvailability, FieldAdditionReview, Response,
     ReviewedFieldAddition, SaveOutcome, SaveSchemaChange, SaveStartFailure, SaveWorker,
@@ -52,8 +53,11 @@ fn review(
     assert_eq!(review.document_revision, revision);
     assert_eq!(review.table, "Table1");
     assert_eq!(review.column, column);
-    assert_eq!(review.declaration, declaration);
-    assert_eq!(capability.captured_declaration(), declaration);
+    assert_eq!(review.origin, FieldAdditionOrigin::Gallery(declaration));
+    assert_eq!(
+        capability.captured_origin(),
+        FieldAdditionOrigin::Gallery(declaration)
+    );
     (review, capability)
 }
 
@@ -170,8 +174,8 @@ fn generic_review_revision_and_consuming_owner_staleness_never_creates_a_journal
         .unwrap_err();
     assert_eq!(error.kind, SaveStartFailure::StaleDocument);
     assert_eq!(
-        error.into_reviewed().unwrap().captured_declaration(),
-        text(255, true)
+        error.into_reviewed().unwrap().captured_origin(),
+        FieldAdditionOrigin::Gallery(text(255, true))
     );
     assert!(!bundle.exists());
     assert!(matches!(
@@ -237,8 +241,8 @@ fn broader_prefix_policies_select_typed_number_before_qualification() {
     assert!(facts.number_available && facts.short_text_available);
     let (_, capability) = review(&worker, revision, "Score", Declaration::NumberLongZero);
     assert_eq!(
-        capability.captured_declaration(),
-        Declaration::NumberLongZero
+        capability.captured_origin(),
+        FieldAdditionOrigin::Gallery(Declaration::NumberLongZero)
     );
     assert_eq!(std::fs::read(path).unwrap(), before.as_bytes());
 }

@@ -1,9 +1,11 @@
 //! Closed field declarations reviewed through one revision-bound native owner.
 mod availability;
+mod origin;
 mod outcome;
 use super::{AddedColumnReopen, platform};
 use crate::{Error, Response, document::Document};
 pub use availability::FieldAdditionAvailability;
+pub use origin::FieldAdditionOrigin;
 pub use outcome::{FieldAdditionOutcomeError, FieldAdditionReopenFacts};
 use std::{path::Path, sync::Arc};
 use tablecraft_builders::table::FieldAdditionDeclaration;
@@ -15,7 +17,7 @@ pub struct FieldAdditionReview {
     pub document_revision: u64,
     pub table: String,
     pub column: String,
-    pub declaration: FieldAdditionDeclaration,
+    pub origin: FieldAdditionOrigin,
 }
 
 /// Consuming field-addition authority; presentation facts cannot construct it.
@@ -33,8 +35,13 @@ impl ReviewedFieldAddition {
     }
 
     /// Derived from the private checked native plan when this owner was issued.
-    pub fn captured_declaration(&self) -> FieldAdditionDeclaration {
-        self.state.declaration
+    pub fn captured_origin(&self) -> FieldAdditionOrigin {
+        self.state.origin
+    }
+
+    /// Private native review identity, distinct from host request sequencing.
+    pub fn id(&self) -> u64 {
+        self.state.id
     }
 }
 

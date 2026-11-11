@@ -1,6 +1,7 @@
 //! Exact field declaration review; select source purpose before any qualification.
 pub(in crate::editing) mod availability;
 mod declaration;
+pub(in crate::editing) mod declared;
 pub(in crate::editing) mod plan;
 use crate::{
     Error, Response,
@@ -8,10 +9,11 @@ use crate::{
     display::Presentation,
     document::Document,
     editing::{
-        AddedColumnReopen, EditError, FieldAdditionReview, ReviewedFieldAddition,
-        platform::ids::issue_id,
+        AddedColumnReopen, EditError, FieldAdditionOrigin, FieldAdditionReview,
+        ReviewedFieldAddition, platform::ids::issue_id,
     },
 };
+use bytes::Bytes;
 use plan::Plan;
 use std::sync::{Arc, atomic::AtomicBool};
 use tablecraft_access::editing::journal::NativeJournalEditor;
@@ -20,11 +22,13 @@ use tablecraft_ace::{
     FieldAdditionSourcePurpose, FieldAdditionTarget,
 };
 use tablecraft_builders::table::FieldAdditionDeclaration;
+use tablecraft_core::limits::ResourceBudget;
 
 pub(in crate::editing) struct State {
     pub(in crate::editing) reopen: Arc<AddedColumnReopen>,
     pub(in crate::editing) plan: Plan,
-    pub(in crate::editing) declaration: FieldAdditionDeclaration,
+    pub(in crate::editing) id: u64,
+    pub(in crate::editing) origin: FieldAdditionOrigin,
     pub(in crate::editing) valid: Arc<AtomicBool>,
 }
 
@@ -156,18 +160,36 @@ pub(in crate::editing) fn review(
             ),
         }
     };
-    let captured = plan.captured_declaration()?;
-    if captured != declaration {
+    let expected = super::reopen_image::capture(plan.after_bytes(), &mut work, cancelled)?;
+    issue_review(
+        document,
+        plan,
+        expected,
+        FieldAdditionOrigin::Gallery(declaration),
+        &mut work,
+        cancelled,
+    )
+}
+
+fn issue_review(
+    document: &Document,
+    plan: Plan,
+    expected: Bytes,
+    requested_origin: FieldAdditionOrigin,
+    work: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Response, Error> {
+    let captured = plan.captured_origin()?;
+    if captured != requested_origin {
         return Err(EditError::InvalidInput.into());
     }
-    let expected = super::reopen_image::capture(plan.after_bytes(), &mut work, cancelled)?;
     let mut output = Presentation::new(cancelled);
     let review = FieldAdditionReview {
         id: issue_id()?,
         document_revision: document.revision,
         table: output.text(plan.table())?,
         column: output.text(plan.column())?,
-        declaration: captured,
+        origin: captured,
     };
     work.charge_allocation(document.edits.path.as_os_str().len() as u64, 1)?;
     work.charge_allocation(1, size_of::<AddedColumnReopen>() as u64)?;
@@ -184,7 +206,8 @@ pub(in crate::editing) fn review(
     let capability = ReviewedFieldAddition {
         state: Box::new(State {
             reopen,
-            declaration: captured,
+            id: review.id,
+            origin: captured,
             plan,
             valid: Arc::clone(&document.edits.valid),
         }),

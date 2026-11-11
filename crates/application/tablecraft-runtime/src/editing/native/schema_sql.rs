@@ -1,6 +1,10 @@
 //! Metadata resolves original identities before the existing schema proof runs.
 #[cfg(feature = "ace16-create")]
+mod add_column;
+#[cfg(feature = "ace16-create")]
 mod create;
+#[cfg(feature = "ace16-create")]
+mod declaration;
 #[cfg(feature = "ace16-create")]
 mod index_creation;
 #[cfg(feature = "ace16-create")]
@@ -57,6 +61,15 @@ pub(in crate::editing) fn review(
         }
         #[cfg(feature = "ace16-create")]
         Definition::AlterTable(table) => {
+            if let AlterOperation::AddColumn(column) = &table.operation {
+                return add_column::review(
+                    document,
+                    table.name.as_str(),
+                    column,
+                    &mut work,
+                    cancelled,
+                );
+            }
             let AlterOperation::DropColumn(column) = &table.operation else {
                 return Err(Error::SchemaSqlUnsupported);
             };

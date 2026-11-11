@@ -32,11 +32,11 @@ use tablecraft_ace::{
     RepeatedDefaultZeroAddColumnIntentError,
 };
 use tablecraft_ace::{
-    CurrentFieldAdditionError, CurrentFieldAdditionIntentError, EditError, InspectError,
-    NativeIntentError, NativeRecoveryQualificationError, QueryExpressionEditsError,
-    QueryExpressionEditsIntentError, QueryExpressionError, QueryExpressionIntentError,
-    QueryExpressionRecoveryError, RecoverableQueryExpressionError, TableRenameError,
-    TableRenameIntentError,
+    CurrentFieldAdditionError, CurrentFieldAdditionIntentError, DeclaredFieldAdditionIntentError,
+    EditError, InspectError, NativeIntentError, NativeRecoveryQualificationError,
+    QueryExpressionEditsError, QueryExpressionEditsIntentError, QueryExpressionError,
+    QueryExpressionIntentError, QueryExpressionRecoveryError, RecoverableQueryExpressionError,
+    TableRenameError, TableRenameIntentError,
 };
 use tablecraft_core::limits::LimitError;
 use tablecraft_io::{
@@ -271,6 +271,7 @@ fn typed_resource_failure(error: &(dyn StdError + 'static)) -> Option<SaveFailur
             #[cfg(feature = "ace16-create")]
             Cause::FieldAdditionIntent(error) => field_addition::intent(error),
             Cause::CurrentFieldAdditionIntent(error) => current_field_addition::intent(error),
+            Cause::DeclaredFieldAdditionIntent(error) => current_field_addition::declared(error),
             Cause::RetainedTypedFieldAdditionIntent(error) => {
                 current_field_addition::retained_typed(error)
             }
@@ -379,6 +380,9 @@ fn typed_resource_failure(error: &(dyn StdError + 'static)) -> Option<SaveFailur
         error.downcast_ref::<tablecraft_ace::RetainedTypedFieldAdditionIntentError>()
     {
         return current_field_addition::retained_typed(error);
+    }
+    if let Some(error) = error.downcast_ref::<DeclaredFieldAdditionIntentError>() {
+        return current_field_addition::declared(error);
     }
     if let Some(error) = error.downcast_ref::<CurrentFieldAdditionIntentError>() {
         return current_field_addition::intent(error);

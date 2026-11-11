@@ -1,5 +1,6 @@
 //! Normal field Save consumes TCAC6 only after actual OFF source selection.
 use super::*;
+use crate::FieldAdditionOrigin;
 use tablecraft_testkit::fixtures::access::{
     canonical_created_number::{Source as NumberSource, mixed::after_off as raw, repeated},
     canonical_database_options,
@@ -137,8 +138,8 @@ fn after_off_capability_obeys_existing_revision_and_consumer_staleness() {
         .unwrap_err();
     assert_eq!(error.kind, SaveStartFailure::StaleDocument);
     assert_eq!(
-        error.into_reviewed().unwrap().captured_declaration(),
-        Declaration::NumberLongZero
+        error.into_reviewed().unwrap().captured_origin(),
+        FieldAdditionOrigin::Gallery(Declaration::NumberLongZero)
     );
     assert!(!bundle.exists());
     assert_eq!(std::fs::read(path).unwrap(), before);

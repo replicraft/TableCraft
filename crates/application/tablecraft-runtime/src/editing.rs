@@ -50,8 +50,8 @@ pub use database_options::{
 pub use deleting::{DeleteReview, DeleteTarget, ReviewedDelete};
 #[cfg(feature = "ace16-create")]
 pub use field_addition::{
-    FieldAdditionAvailability, FieldAdditionOutcomeError, FieldAdditionReopenFacts,
-    FieldAdditionReview, ReviewedFieldAddition,
+    FieldAdditionAvailability, FieldAdditionOrigin, FieldAdditionOutcomeError,
+    FieldAdditionReopenFacts, FieldAdditionReview, ReviewedFieldAddition,
 };
 #[cfg(feature = "ace16-create")]
 pub use field_drop::{
