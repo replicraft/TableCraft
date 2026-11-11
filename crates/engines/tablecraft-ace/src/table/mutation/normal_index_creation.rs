@@ -2,6 +2,8 @@
 mod audit;
 mod maps;
 mod source;
+#[cfg(test)]
+mod tests;
 
 use super::index_creation::{
     SecondaryIndexCreate, buffer,
