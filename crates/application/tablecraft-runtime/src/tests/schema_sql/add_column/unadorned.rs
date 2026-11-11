@@ -144,7 +144,7 @@ fn cases() -> [ScalarCase; 12] {
         ScalarCase {
             ddl: "BIT",
             token: "boolean",
-            text: "True",
+            text: "true",
             kind: Kind::Boolean,
             value: Value::Boolean(true),
         },
@@ -308,7 +308,7 @@ fn every_unadorned_scalar_add_connects_historical_values_exact_update_and_fresh_
             case.ddl,
             case.token,
             if matches!(case.kind, Kind::Boolean) {
-                "False"
+                "false"
             } else {
                 ""
             },
@@ -374,7 +374,7 @@ fn every_unadorned_scalar_add_connects_historical_values_exact_update_and_fresh_
             rows::append_resolved(&run.expected, source.definition, case.kind, None, &fresh);
         let input = if matches!(case.kind, Kind::Boolean) {
             InsertInput::Value(EditInput {
-                text: "False".into(),
+                text: "false".into(),
                 is_null: false,
             })
         } else {
