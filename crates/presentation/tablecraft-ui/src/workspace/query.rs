@@ -18,13 +18,8 @@ const MIN_RESULTS_HEIGHT: f32 = 60.0;
 impl State {
     fn query_result_status(&self, ui: &mut Ui) {
         if self.query_data.is_some() {
-            let known_schema_after = self.schema_reopen.as_ref().is_some_and(|read| {
-                self.database
-                    .as_ref()
-                    .is_some_and(|database| database.document_revision == read.revision)
-            });
             let key = match &self.query_result {
-                _ if known_schema_after => "query-action-schema-retained-results",
+                _ if self.schema_after_awaits_reopen() => "query-action-schema-retained-results",
                 ResultOrigin::Unknown => "query-results-unknown",
                 _ if self.query_results_previous() => "query-results-previous",
                 _ => "query-results-current",

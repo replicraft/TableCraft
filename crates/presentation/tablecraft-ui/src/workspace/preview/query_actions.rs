@@ -301,6 +301,7 @@ mod tests {
         let mut failed = Preview::new(Scene::QuerySchemaReopenFailed);
         assert!(!failed.state.query_action_dialog_open());
         assert!(failed.state.native_source_stale());
+        assert!(!failed.state.can_inspect_query_parameters());
         assert_eq!(failed.state.sql, DROP_COLUMN_SQL);
         assert_eq!(
             failed.state.query_schema_reopen_retry_revision(),

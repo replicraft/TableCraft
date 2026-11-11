@@ -277,7 +277,8 @@ impl State {
         let Phase::Ready(body) = &session.phase else {
             return false;
         };
-        !self.busy
+        !self.schema_after_awaits_reopen()
+            && !self.busy
             && session.inspection_id == inspection_id
             && session.sql == sql
             && session.current(self)

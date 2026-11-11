@@ -107,7 +107,8 @@ impl State {
     }
 
     fn query_design_ready(&self) -> bool {
-        self.query_design_request().is_some()
+        !self.schema_after_awaits_reopen()
+            && self.query_design_request().is_some()
             && !self.busy
             && !self.backstage_visible()
             && self.edit.is_none()

@@ -303,7 +303,8 @@ impl State {
         target: &SavedQueryTarget,
         parameters: &[ParameterInput],
     ) -> bool {
-        self.saved_parameter_copy_fits(parameters)
+        !self.schema_after_awaits_reopen()
+            && self.saved_parameter_copy_fits(parameters)
             && !self.saved_query.sql.as_ref().is_some_and(sql::Draft::dirty)
             && !self.busy
             && self.saved_query_visible()

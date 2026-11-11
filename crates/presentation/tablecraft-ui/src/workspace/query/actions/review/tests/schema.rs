@@ -71,6 +71,8 @@ fn guarded_schema_catalog_publication_preserves_sql_tab_and_refuses_wrong_delta_
     assert!(state.set_query_action_save_outcome(71, EditSaveOutcome::Saved("known AFTER".into())));
     let publication = state.take_query_schema_publication(71).unwrap();
     assert!(state.native_source_stale());
+    assert!(!state.can_inspect_query_parameters());
+    assert!(!state.begin_query_parameter_inspection(81, state.sql.clone()));
     let mut wrong = fresh();
     wrong.tables.push(Table {
         name: "Unexpected".into(),
@@ -87,6 +89,7 @@ fn guarded_schema_catalog_publication_preserves_sql_tab_and_refuses_wrong_delta_
     assert_eq!(state.sql, sql);
     assert!(state.query_data.is_none());
     assert!(!state.native_source_stale());
+    assert!(state.can_inspect_query_parameters());
     assert!(!state.resolve_query_schema_after_reopen(&publication, fresh()));
 }
 

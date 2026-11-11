@@ -244,6 +244,20 @@ fn guarded_reopen_failure_retains_known_after_and_original_sql_without_row_fallb
     assert!(matches!(harness.state().pending, PendingOperation::Read));
     assert_eq!(harness.state().state.sql, sql);
     assert_image(&std::fs::read(&path).unwrap(), &foreign);
+    assert!(
+        harness
+            .get_by_role_and_label(Role::Button, "Run query")
+            .accesskit_node()
+            .is_disabled()
+    );
+    assert!(!harness.state().state.can_inspect_query_parameters());
+    let generation = harness.state().generation;
+    harness.state_mut().inspect_query_parameters();
+    harness.run_steps(2);
+    assert_eq!(harness.state().generation, generation);
+    assert!(matches!(harness.state().pending, PendingOperation::Read));
+    assert_eq!(harness.state().state.sql, sql);
+    assert_image(&std::fs::read(&path).unwrap(), &foreign);
     let revision = harness
         .state()
         .state

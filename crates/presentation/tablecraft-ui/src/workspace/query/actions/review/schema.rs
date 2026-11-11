@@ -128,6 +128,16 @@ impl State {
 }
 
 impl State {
+    /// The current reader still describes the original image after a known save.
+    /// Retained result viewing is safe; new queries require the guarded AFTER read.
+    pub(in crate::workspace) fn schema_after_awaits_reopen(&self) -> bool {
+        self.schema_reopen.as_ref().is_some_and(|read| {
+            self.database
+                .as_ref()
+                .is_some_and(|database| database.document_revision == read.revision)
+        })
+    }
+
     /// Mark a guarded read running only for this known-AFTER source revision.
     pub fn begin_query_schema_reopen(&mut self, revision: u64) -> bool {
         if self.query_schema_reopen_retry_revision() != Some(revision) {

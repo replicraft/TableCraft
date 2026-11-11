@@ -902,7 +902,8 @@ impl State {
     }
 
     fn query_ready(&self) -> bool {
-        self.view == DocumentView::Query
+        !self.schema_after_awaits_reopen()
+            && self.view == DocumentView::Query
             && !self.saved_query.active
             && !self.query_design_visible()
             && !self.query_design_results_visible()
