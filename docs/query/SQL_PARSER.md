@@ -171,6 +171,12 @@ parsing does not open their paths or activate providers. See Microsoft's
 Display prints normalized SQL with bracketed names, explicit aliases/directions,
 escaped single-quoted text, parentheses around expressions/joins and a final
 semicolon. Original quoting, comments and whitespace remain in `source()`.
+DEFAULT and CHECK expressions use the parser's shared operator binding powers
+to omit redundant grouping, including within their nested calls and read queries.
+Required grouping preserves the owned operator tree and left associativity;
+unary signs remain separated so consecutive minus signs cannot become a comment.
+Ordinary query formatting retains its fully parenthesized spelling. This
+annotation formatting does not change parsing depth limits or execute DDL.
 Function names/qualifiers, numeric/date/GUID spelling, UNION ALL flags, parameter type arguments,
 fixed pivot headings, omitted argument positions and source/destination metadata
 survive normalization. Public model Debug can contain SQL payloads; errors use
