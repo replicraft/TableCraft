@@ -1,5 +1,5 @@
 //! Independent original-byte envelope and decoded appended native role checks.
-use crate::creation::catalog_page::Page;
+use crate::creation::{catalog_page::Page, profile};
 pub(in crate::creation::add_table) mod catalog;
 pub(in crate::creation::add_table) mod columns;
 pub(in crate::creation::add_table) mod definition;
@@ -115,7 +115,14 @@ pub(super) fn verify(
     }
     let columns = definition.borrowed_columns(budget, cancelled)?;
     definition::verify(after, role, definition, &columns, budget, cancelled)?;
-    columns::verify(schema, &columns, role.primary.is_some(), budget, cancelled)?;
+    columns::verify(
+        schema,
+        &columns,
+        role.primary.is_some(),
+        Some(profile::GENERAL_SORT),
+        budget,
+        cancelled,
+    )?;
     let properties = properties::verify(&image, schema, &columns, budget, cancelled)?;
     // NO_CLONE: Index a borrowed catalog/map record range without removing it from the
     // captured page inventory used by preservation audit. Only range bounds are

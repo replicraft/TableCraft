@@ -87,6 +87,7 @@ pub(super) fn build(
         request.fields(),
         0,
         definition::Role {
+            text_sort_order: Some(profile::GENERAL_SORT),
             user: true,
             catalog: false,
             owned: reference(source.map_page, role.owned as u8),

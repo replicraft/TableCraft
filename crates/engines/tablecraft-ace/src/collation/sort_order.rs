@@ -37,6 +37,11 @@ impl NativeSortOrder {
                 .unwrap(),
         })
     }
+    /// Exact descriptor encoding for qualified native metadata writers.
+    pub(crate) const fn native_bytes(self) -> [u8; ORDER_BYTES] {
+        self.bytes
+    }
+
     /// Stored locale/collating-order identifier, including zero and unknown IDs.
     pub fn lcid(self) -> u16 {
         u16::from_le_bytes(self.bytes[..LCID_BYTES].try_into().unwrap())

@@ -9,7 +9,7 @@ use crate::format::{
     page::{PAGE_BYTES, TABLE_DEFINITION_SIGNATURE},
     row,
 };
-use crate::{InspectError, header::check};
+use crate::{InspectError, NativeSortOrder, header::check};
 use tablecraft_core::limits::{Resource, ResourceBudget};
 
 const HEADER_BYTES: usize = layout::COLUMN_BLOCK_OFFSET;
@@ -89,6 +89,7 @@ pub(super) fn write(
         fields,
         rows,
         Role {
+            text_sort_order: Some(profile::GENERAL_SORT),
             user: map_slot == profile::USER_MAP_SLOT,
             catalog: map_slot == profile::CATALOG_MAP_SLOT,
             owned: row::reference(profile::MAP_PAGE as u32, map_slot as u8),
@@ -107,6 +108,7 @@ pub(super) struct Role {
     pub catalog: bool,
     pub owned: u32,
     pub candidate: u32,
+    pub text_sort_order: Option<NativeSortOrder>,
 }
 
 pub(super) fn write_role(
@@ -215,8 +217,11 @@ pub(super) fn write_logical_role(
             field.native_variable.unwrap_or(variable),
         )?;
         if field.kind == SHORT_TEXT {
-            page[start + COLUMN_SORT..start + COLUMN_SORT + profile::GENERAL_SORT.len()]
-                .copy_from_slice(&profile::GENERAL_SORT);
+            let order = role
+                .text_sort_order
+                .ok_or(CreateDatabaseError::Declaration)?
+                .native_bytes();
+            page[start + COLUMN_SORT..start + COLUMN_SORT + order.len()].copy_from_slice(&order);
         } else if let Some(constraints) = field.decimal {
             page[start + COLUMN_PRECISION] = constraints.precision();
             page[start + COLUMN_SCALE] = constraints.scale();

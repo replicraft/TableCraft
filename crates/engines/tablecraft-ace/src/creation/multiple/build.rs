@@ -60,6 +60,7 @@ pub(in crate::creation) fn build(
             fields,
             rows,
             definition::Role {
+                text_sort_order: Some(profile::GENERAL_SORT),
                 user: false,
                 catalog,
                 owned: row::reference(profile::MAP_PAGE as u32, owned),
@@ -87,6 +88,7 @@ pub(in crate::creation) fn build(
             request.fields(),
             request.rows.count(),
             definition::Role {
+                text_sort_order: Some(profile::GENERAL_SORT),
                 user: true,
                 catalog: false,
                 owned: role.owned_reference()?,

@@ -95,6 +95,7 @@ pub(super) fn build(
                 fields,
                 rows,
                 definition::Role {
+                    text_sort_order: Some(profile::GENERAL_SORT),
                     user: true,
                     catalog: false,
                     owned: row::reference(profile::MAP_PAGE as u32, profile::USER_MAP_SLOT as u8),

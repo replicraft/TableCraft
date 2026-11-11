@@ -1,5 +1,6 @@
 //! Native-count append reuses actual packed or retained physical ownership.
 mod maps;
+mod text_order;
 
 use super::populated::rows::Membership;
 use super::{
@@ -29,6 +30,7 @@ use crate::{
 use maps::{FreshMap, Map};
 use std::{cmp::Ordering, ops::Range};
 use tablecraft_core::limits::{Resource, ResourceBudget};
+use tablecraft_schema::ScalarType;
 
 const EXTERNAL_DESCRIPTOR_BYTES: usize = 3 * size_of::<u32>();
 const MAP_BYTES: usize = 13;
@@ -277,6 +279,7 @@ pub(super) fn build(
         }
     }
     let columns = declaration.borrowed_columns(budget, cancelled)?;
+    let text_sort_order = text_order::capture(image, &columns, budget, cancelled)?;
     let request = request::validate_native(
         declaration.table(),
         Columns::Values(&columns),
@@ -471,6 +474,7 @@ pub(super) fn build(
                 .index
                 .map(|_| reference(map_host, (map_count + 2) as u8)),
         },
+        text_sort_order,
         budget,
         cancelled,
     )?;
@@ -654,10 +658,25 @@ pub(super) fn build(
     {
         return Err(AddTableError::Preservation);
     }
+    // The audit rereads the immutable BEFORE root rather than trusting the
+    // writer's selected descriptor or the source projection's custom policy.
+    let expected_text_sort_order = if columns
+        .iter()
+        .any(|column| column.scalar_type() == ScalarType::Text)
+    {
+        let order = crate::inspect_database_sort_order(&mut image.reader(), budget, cancelled)?;
+        if order.general_family().is_none() {
+            return Err(AddTableError::Preservation);
+        }
+        Some(order)
+    } else {
+        None
+    };
     super::audit::columns::verify(
         schema,
         &columns,
         topology.index.is_some(),
+        expected_text_sort_order,
         budget,
         cancelled,
     )?;

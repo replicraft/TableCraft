@@ -1,5 +1,6 @@
 //! Explicit bounded roles and native system declarations; no imported template.
 use super::{CreateDatabaseError, column::Declaration};
+use crate::NativeSortOrder;
 use crate::format::data_type::{
     BOOLEAN, BOOLEAN_BYTES, BYTE, BYTE_BYTES, CURRENCY, CURRENCY_BYTES, DATE_TIME, DATE_TIME_BYTES,
     DOUBLE, DOUBLE_BYTES, GUID, GUID_BYTES, INT16, INT16_BYTES, INT32, INT32_BYTES, INT64,
@@ -47,7 +48,7 @@ pub(super) const CATALOG_CREATED: usize = 4;
 pub(super) const CATALOG_UPDATED: usize = 5;
 pub(super) const MAP_BITMAP_BYTES: usize = 8;
 pub(super) const MAP_RECORD_BYTES: usize = INLINE_BITMAP_OFFSET + MAP_BITMAP_BYTES;
-pub(super) const GENERAL_SORT: [u8; 4] = [9, 4, 0, 1];
+pub(super) const GENERAL_SORT: NativeSortOrder = NativeSortOrder::from_native_bytes([9, 4, 0, 1]);
 pub(super) const SYSTEM_NAMES: [&str; 3] = ["MSysObjects", "MSysRelationships", "MSysACEs"];
 
 #[derive(Clone, Copy)]

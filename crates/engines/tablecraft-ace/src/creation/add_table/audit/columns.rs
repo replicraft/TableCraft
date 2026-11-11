@@ -8,6 +8,7 @@ pub(in crate::creation::add_table) fn verify(
     schema: &TableSchema,
     columns: &[CreateColumn<'_>],
     keyed: bool,
+    text_sort_order: Option<NativeSortOrder>,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), AddTableError> {
@@ -29,7 +30,7 @@ pub(in crate::creation::add_table) fn verify(
             fixed_offset
         };
         let sort = if declared.scalar_type() == ScalarType::Text {
-            Some(NativeSortOrder::from_native_bytes([9, 4, 0, 1]))
+            text_sort_order
         } else {
             None
         };

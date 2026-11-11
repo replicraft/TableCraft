@@ -4,6 +4,7 @@ mod authored;
 mod legacy_source_targets;
 mod mixed;
 mod repeated;
+mod text_default;
 use super::{AddTableError, AddTablePlan, audit, source};
 use crate::{CreateColumn, FirstTableDefinition, NativeImage, read_table};
 use std::{cell::Cell, io::Cursor};

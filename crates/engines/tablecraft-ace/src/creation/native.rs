@@ -14,7 +14,7 @@ use super::{
     request::Request,
 };
 use crate::{
-    InspectError,
+    InspectError, NativeSortOrder,
     format::{
         page::{PAGE_BYTES, TABLE_DEFINITION_SIGNATURE, USAGE_SIGNATURE},
         row::reference,
@@ -113,6 +113,7 @@ pub(super) fn first(
                 .index
                 .map(|_| reference(profile::MAP_PAGE as u32, profile::MAP_ROWS as u8)),
         },
+        Some(profile::GENERAL_SORT),
         budget,
         cancelled,
     )?;
@@ -189,6 +190,7 @@ pub(in crate::creation) fn write_table(
     request: &Request<'_>,
     topology: &Topology,
     maps: MapReferences,
+    text_sort_order: Option<NativeSortOrder>,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), CreateDatabaseError> {
@@ -209,6 +211,7 @@ pub(in crate::creation) fn write_table(
         request.fields(),
         0,
         definition::Role {
+            text_sort_order,
             user: true,
             catalog: false,
             owned: maps.owned,
