@@ -1,4 +1,4 @@
-//! Original TCNI17–21 replay over the same immutable checked V3 session.
+//! Original TCNI17–24 replay over the same immutable checked V3 session.
 use super::{
     NativeIntentError, NativeRecoveryQualificationError, NativeUpdateIntent, NativeUpdateProfile,
 };
@@ -23,7 +23,7 @@ pub struct QualifiedRetainedNativeUpdateRecovery<'a, J: DurableStorage> {
 }
 
 impl NativeUpdateIntent {
-    /// Qualify only TCNI17–21 without replacing its checked journal owner.
+    /// Qualify only TCNI17–24 without replacing its checked journal owner.
     pub fn qualify_retained_recovery<'a, J: DurableStorage>(
         self,
         checked: CheckedV3<'a, J>,
