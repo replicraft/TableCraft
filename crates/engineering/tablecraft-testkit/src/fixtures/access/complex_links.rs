@@ -26,23 +26,7 @@ pub fn populated() -> Vec<u8> {
 pub fn presence_cases() -> Vec<u8> {
     const PAGE: usize = 4096;
     let mut bytes = populated();
-    support::put32(&mut bytes, 10 * PAGE + 16, 4);
-    let parents = [
-        (1_i32, Some(10_i32)),
-        (2, Some(20)),
-        (3, Some(30)),
-        (4, None),
-    ]
-    .into_iter()
-    .map(|(id, key)| {
-        let mut row = 2_u16.to_le_bytes().to_vec();
-        row.extend(id.to_le_bytes());
-        row.extend(key.unwrap_or(30).to_le_bytes());
-        row.push(if key.is_some() { 3 } else { 1 });
-        (0, row)
-    })
-    .collect::<Vec<_>>();
-    bytes[12 * PAGE..13 * PAGE].copy_from_slice(&support::data_page(10, &parents));
+    install_presence_parents(&mut bytes);
     support::put32(&mut bytes, 20 * PAGE + 16, 4);
     let children = [
         (10_i32, Some(100_i32), 1_i32),
@@ -62,4 +46,27 @@ pub fn presence_cases() -> Vec<u8> {
     .collect::<Vec<_>>();
     bytes[22 * PAGE..23 * PAGE].copy_from_slice(&support::data_page(20, &children));
     bytes
+}
+
+/// The actual common parent declaration and four stored key states. Child
+/// schemas and records remain exclusively owned by each collection fixture.
+pub(in crate::fixtures::access) fn install_presence_parents(bytes: &mut [u8]) {
+    const PAGE: usize = 4096;
+    support::put32(bytes, 10 * PAGE + 16, 4);
+    let parents = [
+        (1_i32, Some(10_i32)),
+        (2, Some(20)),
+        (3, Some(30)),
+        (4, None),
+    ]
+    .into_iter()
+    .map(|(id, key)| {
+        let mut row = 2_u16.to_le_bytes().to_vec();
+        row.extend(id.to_le_bytes());
+        row.extend(key.unwrap_or(30).to_le_bytes());
+        row.push(if key.is_some() { 3 } else { 1 });
+        (0, row)
+    })
+    .collect::<Vec<_>>();
+    bytes[12 * PAGE..13 * PAGE].copy_from_slice(&support::data_page(10, &parents));
 }

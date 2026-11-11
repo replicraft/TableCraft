@@ -70,6 +70,15 @@ pub fn database(code: u8) -> Vec<u8> {
     with_first_data(code, &inline(old_attachment::PAYLOAD))
 }
 
+/// Four actual parent key states with the original modern attachment children.
+/// Named/NULL metadata, present-empty Text, assigned-empty and unassigned-empty
+/// remain separate; the existing three-parent factory is unchanged.
+pub fn presence_cases(code: u8) -> Vec<u8> {
+    let mut bytes = database(code);
+    super::complex_links::install_presence_parents(&mut bytes);
+    bytes
+}
+
 pub fn with_first_data(code: u8, file_data: &[u8]) -> Vec<u8> {
     let mut bytes = old_attachment::database();
     bytes[20] = code;
