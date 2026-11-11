@@ -1,20 +1,19 @@
 //! Editable draft declarations remain separate from stored metadata and literal parsing.
 pub(in crate::workspace::table_draft) mod editor;
 mod number;
-mod sheet;
 #[cfg(test)]
 mod tests;
 
 use super::Editor;
+use crate::workspace::field_properties::sheet::Sheet;
+use crate::workspace::field_properties::{PROPERTY_INPUT_MARGIN, boolean_property, unsigned_input};
 use crate::{localization::tr, theme::palette};
-use editor::{DefaultChoice, MAX_SIZE_INPUT_BYTES};
+use editor::DefaultChoice;
 use egui::{Ui, WidgetInfo, WidgetType};
-use sheet::Sheet;
 use tablecraft_builders::table::{DraftFieldType, DraftNumberSize, MAX_DRAFT_DEFAULT_BYTES};
 
 const HELP_WIDTH_FRACTION: f32 = 0.28;
 const HELP_DIVIDER_WIDTH: f32 = 1.0;
-const PROPERTY_INPUT_MARGIN: egui::Margin = egui::Margin::symmetric(4, 2);
 
 /// Keep the active working controls visible when locale font metrics or the
 /// Decimal declaration adds rows. The caller still reserves the upper grid.
@@ -187,24 +186,13 @@ fn show_general(ui: &mut Ui, editor: &mut Editor, position: usize) {
                 if kind == DraftFieldType::ShortText {
                     sheet.label(ui, "design-field-size", true);
                     let mut size = editor.properties.size(position).to_owned();
-                    let id = ui.make_persistent_id("text_units");
-                    let rejected = crate::text_input::reject_events_with_limits(
+                    let (input, rejected) = unsigned_input(
                         ui,
-                        id,
-                        &size,
-                        MAX_SIZE_INPUT_BYTES,
-                        MAX_SIZE_INPUT_BYTES,
+                        "text_units",
+                        "design-field-size",
+                        &mut size,
+                        value_width,
                     );
-                    let input = ui.add(
-                        egui::TextEdit::singleline(&mut size)
-                            .id(id)
-                            .margin(PROPERTY_INPUT_MARGIN)
-                            .desired_width(value_width),
-                    );
-                    let label = tr(ui, "design-field-size");
-                    input.widget_info(|| {
-                        WidgetInfo::labeled(WidgetType::TextEdit, ui.is_enabled(), &label)
-                    });
                     if input.changed() || rejected {
                         editor
                             .properties
@@ -381,46 +369,5 @@ fn show_general(ui: &mut Ui, editor: &mut Editor, position: usize) {
             ui.visuals().error_fg_color,
             tr(ui, "table-draft-property-input-limit"),
         );
-    }
-}
-
-fn boolean_property(
-    ui: &mut Ui,
-    id: &str,
-    label: &str,
-    current: Option<bool>,
-    enabled: bool,
-    value_width: f32,
-) -> Option<bool> {
-    let mut selected = None;
-    ui.add_enabled_ui(enabled, |ui| {
-        let response = egui::ComboBox::from_id_salt(id)
-            .width(value_width)
-            .selected_text(tr(ui, flag_key(current)))
-            .show_ui(ui, |ui| {
-                for value in [false, true] {
-                    if ui
-                        .selectable_label(current == Some(value), tr(ui, flag_key(Some(value))))
-                        .clicked()
-                    {
-                        selected = Some(value);
-                        ui.close();
-                    }
-                }
-            })
-            .response;
-        let accessible_label = tr(ui, label);
-        response.widget_info(|| {
-            WidgetInfo::labeled(WidgetType::ComboBox, response.enabled(), &accessible_label)
-        });
-    });
-    selected
-}
-
-fn flag_key(value: Option<bool>) -> &'static str {
-    match value {
-        None => "table-draft-property-unset",
-        Some(false) => "table-draft-property-no",
-        Some(true) => "table-draft-property-yes",
     }
 }

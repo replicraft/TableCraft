@@ -1,5 +1,6 @@
 //! Joint validation retains incomplete precision/scale text without changing the declaration.
-use super::{Editors, MAX_SIZE_INPUT_BYTES};
+use super::Editors;
+use crate::workspace::field_properties::MAX_SIZE_INPUT_BYTES;
 use tablecraft_builders::table::{DraftDefaultMode, DraftNumberSize, TableDraft};
 use tablecraft_schema::DecimalConstraints;
 

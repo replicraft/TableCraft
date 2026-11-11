@@ -12,6 +12,7 @@ mod editing;
 pub(crate) mod field_addition;
 pub(crate) mod field_drop;
 mod field_name;
+mod field_properties;
 pub(crate) mod field_rename;
 mod filtering;
 mod find;

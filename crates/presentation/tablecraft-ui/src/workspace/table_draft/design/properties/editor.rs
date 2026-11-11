@@ -7,7 +7,7 @@ use tablecraft_builders::table::{
     MIN_SHORT_TEXT_UNITS, SHORT_TEXT_UNITS, TableDraft,
 };
 
-pub(super) const MAX_SIZE_INPUT_BYTES: usize = 64;
+use crate::workspace::field_properties::MAX_SIZE_INPUT_BYTES;
 
 #[derive(Default)]
 pub(in crate::workspace::table_draft) struct Editors {

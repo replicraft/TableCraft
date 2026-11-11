@@ -20,7 +20,7 @@ const LABELS: [&str; 10] = [
     "design-validation-text",
 ];
 
-pub(super) struct Sheet {
+pub(in crate::workspace) struct Sheet {
     left: f32,
     width: f32,
     label_width: f32,
@@ -31,7 +31,7 @@ pub(super) struct Sheet {
 }
 
 impl Sheet {
-    pub(super) fn new(ui: &Ui) -> Self {
+    pub(in crate::workspace) fn new(ui: &Ui) -> Self {
         let font = egui::TextStyle::Body.resolve(ui.style());
         let width = ui.available_width();
         let label_width = LABELS
@@ -66,20 +66,20 @@ impl Sheet {
         }
     }
 
-    pub(super) fn value_width(&self) -> f32 {
+    pub(in crate::workspace) fn value_width(&self) -> f32 {
         (self.width - self.label_width).max(1.0)
     }
 
-    pub(super) fn row_height(&self) -> f32 {
+    pub(in crate::workspace) fn row_height(&self) -> f32 {
         self.row_height
     }
 
-    pub(super) fn label(&mut self, ui: &mut Ui, key: &str, enabled: bool) {
+    pub(in crate::workspace) fn label(&mut self, ui: &mut Ui, key: &str, enabled: bool) {
         let text = tr(ui, key);
         self.label_text(ui, text, enabled);
     }
 
-    pub(super) fn empty_label(&mut self, ui: &mut Ui) {
+    pub(in crate::workspace) fn empty_label(&mut self, ui: &mut Ui) {
         self.label_text(ui, String::new(), true);
     }
 
@@ -101,7 +101,7 @@ impl Sheet {
         self.top.get_or_insert(self.row_top);
     }
 
-    pub(super) fn end_row(&mut self, ui: &mut Ui) {
+    pub(in crate::workspace) fn end_row(&mut self, ui: &mut Ui) {
         let bounds = ui.min_rect();
         // Input frames snap to device pixels independently of the label UI.
         // Include the actual values before fixing the sheet's top boundary.
@@ -110,7 +110,7 @@ impl Sheet {
         ui.end_row();
     }
 
-    pub(super) fn paint(&self, ui: &Ui) {
+    pub(in crate::workspace) fn paint(&self, ui: &Ui) {
         let Some(top) = self.top else {
             return;
         };
