@@ -336,3 +336,5 @@ mod currency;
 mod boolean;
 
 mod fixed_scalars;
+
+mod wide_values;
