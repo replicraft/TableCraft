@@ -42,11 +42,14 @@ fn retained_middle_field_drop_admits_populated_score_without_moving_surviving_am
         )
         .unwrap()
         .rows(),
-        [vec![
-            Value::Int32(1),
-            Value::Int32(17),
-            Value::Currency(Currency::from_scaled(12345))
-        ]]
+        [
+            vec![
+                Value::Int32(1),
+                Value::Int32(17),
+                Value::Currency(Currency::from_scaled(12345))
+            ],
+            vec![Value::Int32(2), Value::Null, Value::Null],
+        ]
     );
 
     // The current tail action qualifies the same source, proving the intended
@@ -84,10 +87,13 @@ fn retained_middle_field_drop_admits_populated_score_without_moving_surviving_am
         )
         .unwrap()
         .rows(),
-        [vec![
-            Value::Int32(1),
-            Value::Currency(Currency::from_scaled(12345))
-        ]]
+        [
+            vec![
+                Value::Int32(1),
+                Value::Currency(Currency::from_scaled(12345))
+            ],
+            vec![Value::Int32(2), Value::Null],
+        ]
     );
     let definition = source.definition as usize;
     assert_eq!(
