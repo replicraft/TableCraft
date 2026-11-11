@@ -5189,6 +5189,7 @@ dependencies = [
  "tablecraft-core",
  "tablecraft-display",
  "tablecraft-runtime",
+ "tablecraft-schema",
  "tablecraft-testkit",
  "tablecraft-ui",
  "tablecraft-update",

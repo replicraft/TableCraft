@@ -12,7 +12,7 @@ use tablecraft_core::values::{Currency, Value};
 use tablecraft_model::CatalogScope;
 use tablecraft_schema::ScalarType;
 use tablecraft_testkit::fixtures::access::canonical_retained_add_table::{
-    declared_fields as raw, field_changes,
+    declared_fields as raw, field_changes::inserting,
 };
 
 const SQL: &str = "ALTER TABLE Items ADD COLUMN Amount MONEY";
@@ -25,7 +25,7 @@ fn same(actual: &[u8], expected: &[u8]) {
 #[test]
 fn sql_declared_currency_add_saves_without_gallery_policies_and_reopens_historical_null() {
     let mut source = raw::source();
-    source.bytes = field_changes::keyless_score(&source.bytes, source.definition, None);
+    source.bytes = inserting::keyless_score(&source.bytes, source.definition, None);
     let expected = raw::after(&source.bytes, source.definition, "Amount");
     let (_directory, path, worker, revision) = opened(&source.bytes);
     let target = inspect(&worker, revision, SQL);

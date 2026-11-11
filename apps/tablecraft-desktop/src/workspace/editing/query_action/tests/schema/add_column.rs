@@ -4,7 +4,7 @@ use egui::accesskit::Role;
 use egui_kittest::kittest::Queryable;
 use tablecraft_runtime::{SaveKnownOutcome, SaveOutcome, SaveSchemaChange, journal_path};
 use tablecraft_testkit::fixtures::access::canonical_retained_add_table::{
-    declared_fields as raw, field_changes,
+    declared_fields as raw, field_changes::inserting,
 };
 use tablecraft_ui::ObjectKind;
 
@@ -13,7 +13,7 @@ const SQL: &str = "ALTER TABLE Items ADD COLUMN Amount CURRENCY";
 #[test]
 fn sql_add_column_no_then_yes_preserves_absence_and_publishes_only_exact_native_after() {
     let mut source = raw::source();
-    source.bytes = field_changes::keyless_score(&source.bytes, source.definition, None);
+    source.bytes = inserting::keyless_score(&source.bytes, source.definition, None);
     let expected = raw::after(&source.bytes, source.definition, "Amount");
     let (_directory, path, before, mut harness) = opened(source.bytes);
     let original = harness.state().state.active_object().unwrap();

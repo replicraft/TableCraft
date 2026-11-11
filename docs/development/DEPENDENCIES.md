@@ -1,5 +1,12 @@
 # Adopted dependency and licensing baseline
 
+## SQL declared-field review facts — 11 November 2026
+
+The desktop host directly consumes the existing workspace `tablecraft-schema`
+owner for scalar type facts in issued SQL schema reviews. This introduces no new
+registry package or version and adds no schema validation or native admission
+logic to the host. The runtime and native review remain authoritative.
+
 ## Portable power kernel — 9 November 2026
 
 The scalar `^` operator directly consumes already locked `libm` 0.2.16 (MIT,
