@@ -69,13 +69,23 @@ and Decimal precision/scale from the actual source fields, then runs the moved
 retrieval against a reader constructed over that same image. It retains the
 complete typed rows and an explicit unadorned manual declaration; no Required,
 default, primary/index or generated property is inherited. Current preparation
-admits explicit field projections and aliases from one local table, with direct
-source-field ordering. It refuses filters, groups, computed/wildcard projections,
+admits explicit field projections and aliases from one local table, with WHERE,
+DISTINCT, single-table DISTINCTROW and TOP/PERCENT, including ordered boundary
+ties and percentage rounding, plus direct source-field ordering. The original
+retrieval is evaluated completely before native construction; TOP or an eager
+false predicate cannot hide an expression error. It refuses groups, computed/wildcard projections,
 parameters, named/joined/external sources, Binary, Long Text and extended date/time
 declarations rather than guessing their physical shape. The native-comparison
 entry point constructs the database-default and exact field-policy resolver from
 that same captured image, using a separate cumulative comparison budget. Unknown
 policies never silently become binary comparison.
+
+The same captured source supplies the stored ANSI query mode for LIKE. ANSI-89
+and ANSI-92 remain distinct; an absent or unknown setting does not inherit a
+caller fallback. Runtime supplies the same statement clock, random state, error
+catalog and Access expression-session context used by retrieval. Inspection and
+stale-review checks do not evaluate them. Review materializes their results once;
+save and cold recovery reconstruct original cells without consulting providers.
 
 Publication requires the positively qualified retained ACE 16 source with actual
 MSysDb metadata, unencoded pages, complete catalog/page ownership and the existing

@@ -971,8 +971,13 @@ With creation and offline editing, the same issued `ReviewSchemaSql` service
 accepts the qualified direct-local SELECT INTO profile. Source/revision checks
 precede parsing; preparation derives physical fields and complete scalar rows
 from one immutable native image. Its native comparison resolver uses that image's
-actual default and field policies under a separate cumulative pool. Filters,
-computed/wildcard outputs, parameters and broader source/declaration contexts
+actual default and field policies under a separate cumulative pool. WHERE,
+DISTINCT, single-table DISTINCTROW and TOP/PERCENT retain the original query
+evaluator's NULL, eager-error, rounding and ordered boundary-tie semantics. The
+captured source supplies its stored LIKE mode; unknown/absent mode stays unset.
+The worker supplies the existing statement expression context, including its
+clock. Inspection and stale requests do not read it; save/recovery do not rerun
+provider expressions. Computed/wildcard outputs, parameters and broader source/declaration contexts
 remain refused by this native preparation slice; the query-only planner has its
 own wider contract.
 

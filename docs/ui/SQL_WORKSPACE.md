@@ -120,7 +120,10 @@ matched count or issue an empty CREATE followed by INSERT. No keeps the source a
 previous results; Yes saves the complete reviewed relation once. A zero-row result
 still creates the declared table. Fresh catalog publication preserves the SQL tab
 and draft without rerunning the statement. The supported native shape is direct
-field projections/aliases and field ordering from one local table; see the
+field projections/aliases, WHERE, DISTINCT/DISTINCTROW, TOP/PERCENT and field
+ordering from one local table. Boundary ties use the existing evaluator; the
+reviewed selected count can exceed a TOP count. LIKE uses the captured database
+mode and supported clock expressions run only during review. See the
 [make-table contract](../query/MAKE_TABLE_QUERIES.md) for refused contexts and native
 source/default qualifications. The separate Read query command remains read-only.
 
