@@ -21,6 +21,12 @@ use crate::{
 use source::Language;
 use tablecraft_core::limits::ResourceBudget;
 
+enum SourceSelection {
+    Current,
+    Retained,
+    RetainedTyped,
+}
+
 /// Sealed fitting rename over checked current storage and retained snapshots.
 /// This candidate cannot be constructed from a decoded request or a raw image.
 pub struct NativeRetainedFieldRenameCandidate {
@@ -118,8 +124,7 @@ impl NativeImage {
             table,
             column,
             new_name,
-            Family::Current,
-            Language::LongText,
+            SourceSelection::Current,
             budget,
             cancelled,
         )
@@ -162,8 +167,7 @@ impl NativeImage {
             table,
             column,
             new_name,
-            Family::Retained,
-            Language::LongText,
+            SourceSelection::Retained,
             budget,
             cancelled,
         )
@@ -223,8 +227,7 @@ impl NativeImage {
             table,
             column,
             new_name,
-            Family::Retained,
-            Language::Typed,
+            SourceSelection::RetainedTyped,
             budget,
             cancelled,
         )
@@ -236,8 +239,7 @@ fn prepare(
     table: &str,
     column: &str,
     new_name: &str,
-    family: Family,
-    language: Language,
+    selection: SourceSelection,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<NativeRetainedFieldRenameCandidate, Error> {
@@ -248,14 +250,30 @@ fn prepare(
     if !new_name.is_ascii() {
         return Err(Error::CurrentNameShape);
     }
-    let (source, retained) = match family {
-        Family::Current => (
+    let (source, retained) = match selection {
+        SourceSelection::Current => (
             source::Source::capture(image, table, column, budget, cancelled)?,
             None,
         ),
-        Family::Retained => {
+        SourceSelection::Retained => {
             let (source, table) = source::Source::capture_retained_schema(
-                image, table, column, language, budget, cancelled,
+                image,
+                table,
+                column,
+                Language::LongText,
+                budget,
+                cancelled,
+            )?;
+            (source, Some(table))
+        }
+        SourceSelection::RetainedTyped => {
+            let (source, table) = source::Source::capture_retained_schema(
+                image,
+                table,
+                column,
+                Language::Typed,
+                budget,
+                cancelled,
             )?;
             (source, Some(table))
         }
