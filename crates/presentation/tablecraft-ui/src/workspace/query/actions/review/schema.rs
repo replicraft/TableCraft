@@ -1,7 +1,7 @@
 //! Sealed SQL-origin publication facts; these grant no native write authority.
 use super::{Origin, Phase, QueryActionEffect, QueryActionKind, QueryActionReview};
 use crate::localization::tr;
-use crate::workspace::{Action, EditSaveOutcome, ObjectKind, State};
+use crate::workspace::{Action, EditSaveOutcome, State};
 use egui::{Frame, Ui};
 
 /// Read publication state only; this supplies no native reopen authority.
@@ -75,9 +75,7 @@ impl State {
         ) {
             return true;
         }
-        !self.objects.entries.iter().any(|entry| {
-            matches!(&entry.tab.target.kind, ObjectKind::Table { name } if name == &review.table)
-        })
+        !self.table_object_is_open(&review.table)
     }
 
     /// Source-neutral preflight before the host acknowledges its actual native actor.

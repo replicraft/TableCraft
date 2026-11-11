@@ -56,6 +56,13 @@ pub(super) struct Objects {
 }
 
 impl State {
+    /// Borrow the actual open object registry without copying tab identities.
+    pub(in crate::workspace) fn table_object_is_open(&self, table: &str) -> bool {
+        self.objects.entries.iter().any(|entry| {
+            matches!(&entry.tab.target.kind, ObjectKind::Table { name } if name.as_str() == table)
+        })
+    }
+
     pub fn object_tabs(&self) -> Vec<ObjectTab> {
         // NO_CLONE: Return or dispatch an owned identity snapshot from retained shared State;
         // the caller may queue work or mutate State while the source owner must
