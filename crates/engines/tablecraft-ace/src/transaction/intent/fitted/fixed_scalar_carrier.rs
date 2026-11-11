@@ -66,17 +66,33 @@ pub(super) fn parse<'a>(
     let value = match tag {
         NULL => Value::Null,
         BYTE => Value::Byte(bytes[0]),
-        INT16 => Value::Int16(i16::from_le_bytes(bytes.try_into().unwrap())),
-        INT64 => Value::Int64(i64::from_le_bytes(bytes.try_into().unwrap())),
+        INT16 => Value::Int16(i16::from_le_bytes(
+            bytes
+                .try_into()
+                .map_err(|_| NativeIntentError::InvalidRecord)?,
+        )),
+        INT64 => Value::Int64(i64::from_le_bytes(
+            bytes
+                .try_into()
+                .map_err(|_| NativeIntentError::InvalidRecord)?,
+        )),
         SINGLE => Value::Single(Single::from_bits(u32::from_le_bytes(
-            bytes.try_into().unwrap(),
+            bytes
+                .try_into()
+                .map_err(|_| NativeIntentError::InvalidRecord)?,
         ))),
         DOUBLE => Value::Double(Double::from_bits(u64::from_le_bytes(
-            bytes.try_into().unwrap(),
+            bytes
+                .try_into()
+                .map_err(|_| NativeIntentError::InvalidRecord)?,
         ))),
         DATE => Value::DateTime(
-            LegacyDateTime::from_bits(u64::from_le_bytes(bytes.try_into().unwrap()))
-                .map_err(|_| NativeIntentError::InvalidRecord)?,
+            LegacyDateTime::from_bits(u64::from_le_bytes(
+                bytes
+                    .try_into()
+                    .map_err(|_| NativeIntentError::InvalidRecord)?,
+            ))
+            .map_err(|_| NativeIntentError::InvalidRecord)?,
         ),
         _ => return Err(NativeIntentError::InvalidRecord),
     };
