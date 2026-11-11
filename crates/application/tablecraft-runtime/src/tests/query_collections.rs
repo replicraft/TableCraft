@@ -97,17 +97,72 @@ fn inspected_attachment_member_query_preserves_scalar_results_and_source_bytes()
 }
 
 #[test]
-fn bare_collections_refuse_scalar_publication_without_poisoning_explicit_members() {
+fn bare_attachment_is_structured_while_multivalue_scalar_publication_stays_refused() {
     use tablecraft_query::QueryError;
     use tablecraft_testkit::fixtures::access::complex_links;
 
     let before = attachment_modern::database(6);
     let (_directory, path, worker, _revision) = opened(&before);
-    let failure = request(&worker, query("SELECT Score FROM Items")).err();
+    let Response::Data {
+        source_revision,
+        query_contents,
+        rows,
+        has_more,
+        ..
+    } = request(&worker, query("SELECT Score FROM Items")).unwrap()
+    else {
+        panic!("expected structured attachment result");
+    };
+    assert_eq!(source_revision, None);
+    assert!(!has_more);
+    assert_eq!(rows.len(), 3);
+    for (row, members) in rows.iter().zip([2, 1, 0]) {
+        assert_eq!(row.len(), 1);
+        assert_eq!(
+            row[0].kind,
+            CellKind::Attachments {
+                assigned: true,
+                members
+            }
+        );
+    }
+    assert_eq!(rows[0][0].text, "2 attachments");
+    assert_eq!(rows[1][0].text, "1 attachment");
+    assert_eq!(rows[2][0].text, "0 attachments");
+    let result = query_contents.expect("actual query-issued read-only child owner");
+    let bindings: Vec<_> = result.bindings().collect();
+    assert_eq!(bindings.len(), 3);
+    assert_eq!((bindings[0].row, bindings[0].column), (0, 0));
+    let Response::QueryContents { columns, rows, .. } = request(
+        &worker,
+        Command::InspectQueryCollection {
+            result,
+            binding: bindings[0].slot,
+        },
+    )
+    .unwrap() else {
+        panic!("expected issued child metadata");
+    };
+    assert_eq!(columns.len(), 6);
+    assert!(columns.iter().all(|column| column.native_number.is_none()));
+    assert_eq!(rows.len(), 2);
+    let data = columns
+        .iter()
+        .position(|column| column.name == "FileData")
+        .unwrap();
+    let name = columns
+        .iter()
+        .position(|column| column.name == "FileName")
+        .unwrap();
     assert!(
-        matches!(failure, Some(crate::Error::Query(QueryError::Unsupported))),
-        "bare attachment cannot be published as a fabricated scalar: {failure:?}"
+        rows.iter()
+            .all(|row| row[data].kind == CellKind::Uninspected)
     );
+    assert_eq!(rows[0][name].text, "synthetic.bin");
+    assert!(matches!(
+        rows[1][name].kind,
+        CellKind::Scalar { is_null: true, .. }
+    ));
     assert_members(request(&worker, query(MEMBERS)).unwrap());
     assert_source(&path, &before);
 
