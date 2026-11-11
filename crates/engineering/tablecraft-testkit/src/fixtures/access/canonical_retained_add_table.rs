@@ -176,3 +176,5 @@ pub(in crate::fixtures::access) fn extend_global_map(bytes: &mut [u8], old_pages
     put16(page, 14, start as u16);
     put16(page, 2, (start - 16) as u16);
 }
+
+pub mod unadorned_fields;

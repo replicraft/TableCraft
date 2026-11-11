@@ -167,6 +167,25 @@ pub fn after(
     name: &str,
     kind: Kind,
 ) -> Vec<u8> {
+    let result = descriptor_after(before, definition, name, kind, [9, 4, 0, 1]);
+    let body = properties(
+        &raw_catalog_properties::body(before, catalog_root),
+        name,
+        kind,
+    );
+    let candidate = raw_catalog_properties::candidate(before, body.len());
+    raw_catalog_properties::append(before, result, catalog_root, &body, candidate)
+}
+
+// The gallery and explicit declaration fixtures share only literal physical
+// framing. Property snapshots remain solely in the gallery operation above.
+pub(super) fn descriptor_after(
+    before: &[u8],
+    definition: u32,
+    name: &str,
+    kind: Kind,
+    text_order: [u8; 4],
+) -> Vec<u8> {
     assert!(name.is_ascii() && !name.is_empty() && name.len() <= 64);
     let base = definition as usize * PAGE;
     let original = &before[base..base + PAGE];
@@ -210,7 +229,7 @@ pub fn after(
         }
         Kind::ShortText { units, compression } => {
             assert!((1..=255).contains(&units));
-            descriptor[11..15].copy_from_slice(&[9, 4, 0, 1]);
+            descriptor[11..15].copy_from_slice(&text_order);
             descriptor[16] = u8::from(compression);
             put16(&mut descriptor, 23, units * 2);
         }
@@ -243,13 +262,7 @@ pub fn after(
     page.extend_from_slice(&original[new_length..]);
     let mut result = before.to_vec();
     result[base..base + PAGE].copy_from_slice(&page);
-    let body = properties(
-        &raw_catalog_properties::body(before, catalog_root),
-        name,
-        kind,
-    );
-    let candidate = raw_catalog_properties::candidate(before, body.len());
-    raw_catalog_properties::append(before, result, catalog_root, &body, candidate)
+    result
 }
 
 /// Preserve a short two-field row while setting the previously unrepresented Boolean bit.
