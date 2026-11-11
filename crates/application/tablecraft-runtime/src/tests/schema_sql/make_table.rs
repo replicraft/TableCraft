@@ -1,4 +1,5 @@
 //! Issued SQL creates its complete materialized relation through one native save.
+mod context;
 use super::{inspect, review};
 use crate::tests::{request, stored::opened, terminal};
 use crate::{Command, Error, QueryOperation, Response, SaveOutcome, SaveSchemaChange, SaveWorker};
