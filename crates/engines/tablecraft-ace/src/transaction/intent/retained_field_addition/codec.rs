@@ -4,7 +4,13 @@ use super::{
     RetainedTypedFieldAdditionIntentError as Error,
 };
 use crate::{
-    CreateColumn, InspectError, RetainedFieldAdditionDefinition, header::check,
+    CreateColumn, InspectError, RetainedFieldAdditionDefinition,
+    format::data_type::{
+        BOOLEAN, BYTE, CURRENCY, DATE_TIME, DOUBLE, GUID, INT16, INT32, INT64, NUMERIC, SHORT_TEXT,
+        SINGLE,
+    },
+    header::check,
+    identifier::{self, MAX_NAME_UNITS},
     transaction::intent::binding,
 };
 use tablecraft_core::{
@@ -14,10 +20,27 @@ use tablecraft_core::{
 use tablecraft_schema::{DecimalConstraints, ScalarType};
 
 const MAGIC: &[u8; 8] = b"TCAC0012";
-const HEADER: usize = 72;
-const NAME_BYTES: usize = 64 * char::MAX.len_utf8();
-const DEFAULT_BYTES: usize = size_of::<i128>() + size_of::<u8>();
-pub(super) const MAX_BYTES: usize = HEADER + 2 * NAME_BYTES + DEFAULT_BYTES;
+const PROFILE: u32 = 12;
+const TOTAL_OFFSET: usize = MAGIC.len();
+const PROFILE_OFFSET: usize = TOTAL_OFFSET + size_of::<u32>();
+const BEFORE_LENGTH_OFFSET: usize = PROFILE_OFFSET + size_of::<u32>();
+const BINDING_OFFSET: usize = BEFORE_LENGTH_OFFSET + size_of::<u64>();
+const TABLE_LENGTH_OFFSET: usize = BINDING_OFFSET + binding::DIGEST_BYTES;
+const COLUMN_LENGTH_OFFSET: usize = TABLE_LENGTH_OFFSET + size_of::<u16>();
+const KIND_OFFSET: usize = COLUMN_LENGTH_OFFSET + size_of::<u16>();
+const KIND_RESERVED_OFFSET: usize = KIND_OFFSET + size_of::<u8>();
+const TEXT_UNITS_OFFSET: usize = KIND_RESERVED_OFFSET + size_of::<u8>();
+const PRECISION_OFFSET: usize = TEXT_UNITS_OFFSET + size_of::<u16>();
+const SCALE_OFFSET: usize = PRECISION_OFFSET + size_of::<u8>();
+const COMPRESSION_OFFSET: usize = SCALE_OFFSET + size_of::<u8>();
+const COMPRESSION_RESERVED_OFFSET: usize = COMPRESSION_OFFSET + size_of::<u8>();
+const DEFAULT_LENGTH_OFFSET: usize = COMPRESSION_RESERVED_OFFSET + size_of::<u8>();
+const TRAILING_RESERVED_OFFSET: usize = DEFAULT_LENGTH_OFFSET + size_of::<u16>();
+const HEADER_BYTES: usize = TRAILING_RESERVED_OFFSET + size_of::<u16>();
+const NAME_BYTES: usize = MAX_NAME_UNITS * char::MAX.len_utf8();
+const DECIMAL_COEFFICIENT_BYTES: usize = size_of::<i128>();
+const DEFAULT_BYTES: usize = DECIMAL_COEFFICIENT_BYTES + size_of::<u8>();
+pub(super) const MAX_BYTES: usize = HEADER_BYTES + 2 * NAME_BYTES + DEFAULT_BYTES;
 
 fn array<const N: usize>(bytes: &[u8], at: usize) -> Result<[u8; N], Error> {
     bytes
@@ -31,7 +54,7 @@ pub(super) fn validate_name(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(), Error> {
-    if name.len() > NAME_BYTES || !crate::identifier::valid_name(name, budget, cancelled)? {
+    if name.len() > NAME_BYTES || !identifier::valid_name(name, budget, cancelled)? {
         return Err(Error::InvalidRecord);
     }
     Ok(())
@@ -51,18 +74,18 @@ pub(super) fn copy_name(name: &str, budget: &mut ResourceBudget) -> Result<Strin
 
 fn kind(scalar: ScalarType) -> Result<u8, Error> {
     Ok(match scalar {
-        ScalarType::Boolean => 1,
-        ScalarType::Byte => 2,
-        ScalarType::Int16 => 3,
-        ScalarType::Int32 => 4,
-        ScalarType::Currency => 5,
-        ScalarType::Single => 6,
-        ScalarType::Double => 7,
-        ScalarType::DateTime => 8,
-        ScalarType::Text => 10,
-        ScalarType::Guid => 15,
-        ScalarType::Decimal => 16,
-        ScalarType::Int64 => 19,
+        ScalarType::Boolean => BOOLEAN,
+        ScalarType::Byte => BYTE,
+        ScalarType::Int16 => INT16,
+        ScalarType::Int32 => INT32,
+        ScalarType::Currency => CURRENCY,
+        ScalarType::Single => SINGLE,
+        ScalarType::Double => DOUBLE,
+        ScalarType::DateTime => DATE_TIME,
+        ScalarType::Text => SHORT_TEXT,
+        ScalarType::Guid => GUID,
+        ScalarType::Decimal => NUMERIC,
+        ScalarType::Int64 => INT64,
         _ => return Err(Error::InvalidRecord),
     })
 }
@@ -73,40 +96,40 @@ fn default_bytes(value: Option<&Value>) -> Result<([u8; DEFAULT_BYTES], usize), 
         None => 0,
         Some(Value::Boolean(value)) => {
             bytes[0] = u8::from(*value);
-            1
+            size_of::<u8>()
         }
         Some(Value::Byte(value)) => {
             bytes[0] = *value;
-            1
+            size_of::<u8>()
         }
         Some(Value::Int16(value)) => {
-            bytes[..2].copy_from_slice(&value.to_le_bytes());
-            2
+            bytes[..size_of::<i16>()].copy_from_slice(&value.to_le_bytes());
+            size_of::<i16>()
         }
         Some(Value::Int32(value)) => {
-            bytes[..4].copy_from_slice(&value.to_le_bytes());
-            4
+            bytes[..size_of::<i32>()].copy_from_slice(&value.to_le_bytes());
+            size_of::<i32>()
         }
         Some(Value::Int64(value)) => {
-            bytes[..8].copy_from_slice(&value.to_le_bytes());
-            8
+            bytes[..size_of::<i64>()].copy_from_slice(&value.to_le_bytes());
+            size_of::<i64>()
         }
         Some(Value::Currency(value)) => {
-            bytes[..8].copy_from_slice(&value.scaled().to_le_bytes());
-            8
+            bytes[..size_of::<i64>()].copy_from_slice(&value.scaled().to_le_bytes());
+            size_of::<i64>()
         }
         Some(Value::Single(value)) => {
-            bytes[..4].copy_from_slice(&value.to_bits().to_le_bytes());
-            4
+            bytes[..size_of::<u32>()].copy_from_slice(&value.to_bits().to_le_bytes());
+            size_of::<u32>()
         }
         Some(Value::Double(value)) => {
-            bytes[..8].copy_from_slice(&value.to_bits().to_le_bytes());
-            8
+            bytes[..size_of::<u64>()].copy_from_slice(&value.to_bits().to_le_bytes());
+            size_of::<u64>()
         }
         Some(Value::Decimal(value)) => {
-            bytes[..16].copy_from_slice(&value.coefficient().to_le_bytes());
-            bytes[16] = value.scale();
-            17
+            bytes[..DECIMAL_COEFFICIENT_BYTES].copy_from_slice(&value.coefficient().to_le_bytes());
+            bytes[DECIMAL_COEFFICIENT_BYTES] = value.scale();
+            DEFAULT_BYTES
         }
         _ => return Err(Error::InvalidRecord),
     };
@@ -123,7 +146,7 @@ pub(super) fn encode(
     validate_name(intent.column(), budget, cancelled)?;
     let column = intent.definition.column();
     let (default, default_length) = default_bytes(column.default_literal())?;
-    let total = HEADER + intent.table.len() + intent.column().len() + default_length;
+    let total = HEADER_BYTES + intent.table.len() + intent.column().len() + default_length;
     budget
         .charge_allocation(total as u64, 1)
         .map_err(InspectError::from)?;
@@ -134,30 +157,29 @@ pub(super) fn encode(
     bytes
         .try_reserve_exact(total)
         .map_err(|_| InspectError::Allocation)?;
-    bytes.extend(MAGIC);
-    bytes.extend((total as u32).to_le_bytes());
-    bytes.extend([12, 0, 0, 0]);
-    bytes.extend(intent.before_length.to_le_bytes());
-    bytes.extend(intent.before_binding);
-    bytes.extend((intent.table.len() as u16).to_le_bytes());
-    bytes.extend((intent.column().len() as u16).to_le_bytes());
-    bytes.push(kind(column.scalar_type())?);
-    bytes.push(0);
-    bytes.extend((column.max_text_utf16_units().unwrap_or(0) as u16).to_le_bytes());
-    bytes.push(
-        column
-            .decimal_constraints()
-            .map_or(0, DecimalConstraints::precision),
-    );
-    bytes.push(
-        column
-            .decimal_constraints()
-            .map_or(0, DecimalConstraints::scale),
-    );
-    bytes.push(u8::from(column.unicode_compression()));
-    bytes.push(0);
-    bytes.extend((default_length as u16).to_le_bytes());
-    bytes.extend([0; 2]);
+    bytes.resize(HEADER_BYTES, 0);
+    bytes[..MAGIC.len()].copy_from_slice(MAGIC);
+    bytes[TOTAL_OFFSET..PROFILE_OFFSET].copy_from_slice(&(total as u32).to_le_bytes());
+    bytes[PROFILE_OFFSET..BEFORE_LENGTH_OFFSET].copy_from_slice(&PROFILE.to_le_bytes());
+    bytes[BEFORE_LENGTH_OFFSET..BINDING_OFFSET]
+        .copy_from_slice(&intent.before_length.to_le_bytes());
+    bytes[BINDING_OFFSET..TABLE_LENGTH_OFFSET].copy_from_slice(&intent.before_binding);
+    bytes[TABLE_LENGTH_OFFSET..COLUMN_LENGTH_OFFSET]
+        .copy_from_slice(&(intent.table.len() as u16).to_le_bytes());
+    bytes[COLUMN_LENGTH_OFFSET..KIND_OFFSET]
+        .copy_from_slice(&(intent.column().len() as u16).to_le_bytes());
+    bytes[KIND_OFFSET] = kind(column.scalar_type())?;
+    bytes[TEXT_UNITS_OFFSET..PRECISION_OFFSET]
+        .copy_from_slice(&(column.max_text_utf16_units().unwrap_or(0) as u16).to_le_bytes());
+    bytes[PRECISION_OFFSET] = column
+        .decimal_constraints()
+        .map_or(0, DecimalConstraints::precision);
+    bytes[SCALE_OFFSET] = column
+        .decimal_constraints()
+        .map_or(0, DecimalConstraints::scale);
+    bytes[COMPRESSION_OFFSET] = u8::from(column.unicode_compression());
+    bytes[DEFAULT_LENGTH_OFFSET..TRAILING_RESERVED_OFFSET]
+        .copy_from_slice(&(default_length as u16).to_le_bytes());
     bytes.extend(intent.table.as_bytes());
     bytes.extend(intent.column().as_bytes());
     bytes.extend(&default[..default_length]);
@@ -170,23 +192,32 @@ fn default_value(kind: u8, bytes: &[u8]) -> Result<Option<Value>, Error> {
         return Ok(None);
     }
     Ok(Some(match kind {
-        1 if bytes.len() == 1 && bytes[0] <= 1 => Value::Boolean(bytes[0] != 0),
-        2 if bytes.len() == 1 => Value::Byte(bytes[0]),
-        3 if bytes.len() == 2 => Value::Int16(i16::from_le_bytes(array(bytes, 0)?)),
-        4 if bytes.len() == 4 => Value::Int32(i32::from_le_bytes(array(bytes, 0)?)),
-        5 if bytes.len() == 8 => {
+        BOOLEAN if bytes.len() == size_of::<u8>() && bytes[0] <= 1 => Value::Boolean(bytes[0] != 0),
+        BYTE if bytes.len() == size_of::<u8>() => Value::Byte(bytes[0]),
+        INT16 if bytes.len() == size_of::<i16>() => {
+            Value::Int16(i16::from_le_bytes(array(bytes, 0)?))
+        }
+        INT32 if bytes.len() == size_of::<i32>() => {
+            Value::Int32(i32::from_le_bytes(array(bytes, 0)?))
+        }
+        CURRENCY if bytes.len() == size_of::<i64>() => {
             Value::Currency(Currency::from_scaled(i64::from_le_bytes(array(bytes, 0)?)))
         }
-        6 if bytes.len() == 4 => {
+        SINGLE if bytes.len() == size_of::<u32>() => {
             Value::Single(Single::from_bits(u32::from_le_bytes(array(bytes, 0)?)))
         }
-        7 if bytes.len() == 8 => {
+        DOUBLE if bytes.len() == size_of::<u64>() => {
             Value::Double(Double::from_bits(u64::from_le_bytes(array(bytes, 0)?)))
         }
-        19 if bytes.len() == 8 => Value::Int64(i64::from_le_bytes(array(bytes, 0)?)),
-        16 if bytes.len() == 17 => Value::Decimal(
-            Decimal::new(i128::from_le_bytes(array(bytes, 0)?), bytes[16])
-                .map_err(|_| Error::InvalidRecord)?,
+        INT64 if bytes.len() == size_of::<i64>() => {
+            Value::Int64(i64::from_le_bytes(array(bytes, 0)?))
+        }
+        NUMERIC if bytes.len() == DEFAULT_BYTES => Value::Decimal(
+            Decimal::new(
+                i128::from_le_bytes(array(bytes, 0)?),
+                bytes[DECIMAL_COEFFICIENT_BYTES],
+            )
+            .map_err(|_| Error::InvalidRecord)?,
         ),
         _ => return Err(Error::InvalidRecord),
     }))
@@ -198,67 +229,70 @@ pub(super) fn decode(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Intent, Error> {
     check(budget, cancelled)?;
-    if !(HEADER..=MAX_BYTES).contains(&bytes.len())
-        || bytes.get(..8) != Some(MAGIC.as_slice())
-        || u32::from_le_bytes(array(bytes, 8)?) as usize != bytes.len()
-        || bytes[12..16] != [12, 0, 0, 0]
-        || bytes[61] != 0
-        || bytes[67] != 0
-        || bytes[70..72] != [0, 0]
-        || bytes[66] > 1
+    if !(HEADER_BYTES..=MAX_BYTES).contains(&bytes.len())
+        || bytes.get(..MAGIC.len()) != Some(MAGIC.as_slice())
+        || u32::from_le_bytes(array(bytes, TOTAL_OFFSET)?) as usize != bytes.len()
+        || bytes[PROFILE_OFFSET..BEFORE_LENGTH_OFFSET] != PROFILE.to_le_bytes()
+        || bytes[KIND_RESERVED_OFFSET] != 0
+        || bytes[COMPRESSION_RESERVED_OFFSET] != 0
+        || bytes[TRAILING_RESERVED_OFFSET..HEADER_BYTES] != [0; size_of::<u16>()]
+        || bytes[COMPRESSION_OFFSET] > 1
     {
         return Err(Error::InvalidRecord);
     }
-    let before_length = u64::from_le_bytes(array(bytes, 16)?);
+    let before_length = u64::from_le_bytes(array(bytes, BEFORE_LENGTH_OFFSET)?);
     binding::retained_length(before_length)?;
-    let table_length = usize::from(u16::from_le_bytes(array(bytes, 56)?));
-    let name_length = usize::from(u16::from_le_bytes(array(bytes, 58)?));
-    let default_length = usize::from(u16::from_le_bytes(array(bytes, 68)?));
+    let table_length = usize::from(u16::from_le_bytes(array(bytes, TABLE_LENGTH_OFFSET)?));
+    let name_length = usize::from(u16::from_le_bytes(array(bytes, COLUMN_LENGTH_OFFSET)?));
+    let default_length = usize::from(u16::from_le_bytes(array(bytes, DEFAULT_LENGTH_OFFSET)?));
     if table_length > NAME_BYTES
         || name_length > NAME_BYTES
         || default_length > DEFAULT_BYTES
-        || HEADER + table_length + name_length + default_length != bytes.len()
+        || HEADER_BYTES + table_length + name_length + default_length != bytes.len()
     {
         return Err(Error::InvalidRecord);
     }
     budget
         .charge(Resource::Steps, bytes.len() as u64)
         .map_err(InspectError::from)?;
-    let name_at = HEADER + table_length;
+    let name_at = HEADER_BYTES + table_length;
     let value_at = name_at + name_length;
-    let table = std::str::from_utf8(&bytes[HEADER..name_at]).map_err(|_| Error::InvalidRecord)?;
+    let table =
+        std::str::from_utf8(&bytes[HEADER_BYTES..name_at]).map_err(|_| Error::InvalidRecord)?;
     let name = std::str::from_utf8(&bytes[name_at..value_at]).map_err(|_| Error::InvalidRecord)?;
     validate_name(table, budget, cancelled)?;
     validate_name(name, budget, cancelled)?;
-    let scalar = match bytes[60] {
-        1 => ScalarType::Boolean,
-        2 => ScalarType::Byte,
-        3 => ScalarType::Int16,
-        4 => ScalarType::Int32,
-        5 => ScalarType::Currency,
-        6 => ScalarType::Single,
-        7 => ScalarType::Double,
-        8 => ScalarType::DateTime,
-        10 => ScalarType::Text,
-        15 => ScalarType::Guid,
-        16 => ScalarType::Decimal,
-        19 => ScalarType::Int64,
+    let scalar = match bytes[KIND_OFFSET] {
+        BOOLEAN => ScalarType::Boolean,
+        BYTE => ScalarType::Byte,
+        INT16 => ScalarType::Int16,
+        INT32 => ScalarType::Int32,
+        CURRENCY => ScalarType::Currency,
+        SINGLE => ScalarType::Single,
+        DOUBLE => ScalarType::Double,
+        DATE_TIME => ScalarType::DateTime,
+        SHORT_TEXT => ScalarType::Text,
+        GUID => ScalarType::Guid,
+        NUMERIC => ScalarType::Decimal,
+        INT64 => ScalarType::Int64,
         _ => return Err(Error::InvalidRecord),
     };
-    let width = usize::from(u16::from_le_bytes(array(bytes, 62)?));
-    if scalar != ScalarType::Text && (width != 0 || bytes[66] != 0)
-        || scalar != ScalarType::Decimal && (bytes[64] != 0 || bytes[65] != 0)
+    let width = usize::from(u16::from_le_bytes(array(bytes, TEXT_UNITS_OFFSET)?));
+    if scalar != ScalarType::Text && (width != 0 || bytes[COMPRESSION_OFFSET] != 0)
+        || scalar != ScalarType::Decimal
+            && (bytes[PRECISION_OFFSET] != 0 || bytes[SCALE_OFFSET] != 0)
     {
         return Err(Error::InvalidRecord);
     }
-    let default = default_value(bytes[60], &bytes[value_at..])?;
+    let default = default_value(bytes[KIND_OFFSET], &bytes[value_at..])?;
     let mut column = match scalar {
         ScalarType::Text => CreateColumn::short_text(name, width)?
             .with_allow_zero_length(true)?
-            .with_unicode_compression(bytes[66] != 0)?,
+            .with_unicode_compression(bytes[COMPRESSION_OFFSET] != 0)?,
         ScalarType::Decimal => CreateColumn::decimal(
             name,
-            DecimalConstraints::new(bytes[64], bytes[65]).map_err(|_| Error::InvalidRecord)?,
+            DecimalConstraints::new(bytes[PRECISION_OFFSET], bytes[SCALE_OFFSET])
+                .map_err(|_| Error::InvalidRecord)?,
         ),
         _ => CreateColumn::new(name, scalar),
     }
@@ -273,6 +307,6 @@ pub(super) fn decode(
         table,
         definition,
         before_length,
-        before_binding: array(bytes, 24)?,
+        before_binding: array(bytes, BINDING_OFFSET)?,
     })
 }
