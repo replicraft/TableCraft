@@ -43,6 +43,18 @@ Retained keyless VALUES/SELECT
 appends now use their checked original-presence intent after field deletion, including full
 supplied rows; no deleted field default or generator is invented.
 
+Single-local UPDATE now accepts qualified correlated EXISTS/IN predicates through
+same-image read sources and original snapshot row handles. Complete staging
+precedes native finish; assignments retain original values. A distinct TCNI0024
+route qualifies ordinary unindexed LONG zero-action updates, including NULL
+NOT IN, without widening native17's one-cell language. Its source checks and
+whole-image identity proof remain mandatory; V3 recovery distinguishes journal
+outcomes even when images match. The
+[checkpoint](../tests/results/queries/correlated-update-native-empty-2026-11-11.json)
+retains the query1904 run, native62/journal4, adapter52, Runtime397 and desktop33
+checks, repaired failures and actual feature boundaries. These overlapping scopes
+are not additive conformance totals. Native Windows/Access parity is unverified.
+
 The [conformance matrix](query/ACE_SQL_CONFORMANCE.md) distinguishes syntax,
 query planning, reviewed persistence and GUI availability. The
 [verification record](../tests/results/queries/ace-sql-conformance-services-2026-11-11.json)

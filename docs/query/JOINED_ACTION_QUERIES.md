@@ -113,3 +113,8 @@ with one ignored, and 33 Desktop action/parameter tests. Strict lint checks for
 eight packages and no-create/minimal feature checks passed. These are local and
 headless results with independent raw images, not Microsoft Access or Windows
 execution/save parity evidence.
+
+The [correlated/zero-action checkpoint](../../tests/results/queries/correlated-update-native-empty-2026-11-11.json)
+retains the complete query-package gate, connected native/Runtime/desktop checks,
+initial failures and repairs. It distinguishes current constructive features from
+journal-only data decoding and native comparison evidence.

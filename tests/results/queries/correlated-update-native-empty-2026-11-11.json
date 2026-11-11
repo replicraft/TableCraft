@@ -1,0 +1,166 @@
+{
+  "date": "2026-11-11",
+  "platform": "macOS 14.7.2 ARM64",
+  "qualification": "Independent raw/native and connected local implementation tests. No native Windows/Access comparison or native application window.",
+  "scope": "Single-local UPDATE with qualified correlated EXISTS/IN predicates and source-qualified zero-action ordinary LONG updates.",
+  "source": {
+    "query": "f112a6b0dbec8a240c64c382eb602eb8abca79dd",
+    "access": "8deba3080e15e1a335fb0e1e8a326d8dc2c575a2",
+    "runtime": "3140b3ebcfc494aaca73709ff41362304bce20c0",
+    "desktop_predicates": "a97591edf9f27c7b7b1ebb18d171fcf8d42479f9",
+    "native_empty": "b014504e7ad0c82e6117f060e7f2d43864ef8030",
+    "original_empty_wire_and_recovery": "d253f683bd0351a84353839969dc1a5e06a02bb1",
+    "access_empty": "a6639d85de4b68da85abaadafd58b52a1743658b",
+    "desktop_empty": "af1adc59bd07a30c09af5a85389db145f3e3ba8f",
+    "query_test_typed_division": "9ab8bd969d097e0986e64728846e2a6b7bd146d7",
+    "actual_cancel_journey": "b47d9fddfa86f655ae27bd54427cf36995106d60"
+  },
+  "behavior": [
+    "Read-source mode is chosen from paid syntax before binding; failed bind/admission is not retried as another mode.",
+    "The original editor snapshot supplies target rows, old values and row handles. Read sources cannot replace target identity or drift its column/policy witness.",
+    "All predicates/assignments stage completely before the consuming native finish. EXISTS duplicates update an outer row once; NULL NOT IN produces a checked empty selection.",
+    "SET expressions retain original values and their existing closed deterministic scalar grammar. External/named/callable activation and unsupported subquery forms refuse before source callbacks.",
+    "TCNI0024 is a distinct original language retaining nonempty named Fixed LONG groups and exactly zero cells. TCNI17\u201323 remain unchanged.",
+    "Native zero planning requalifies original source/ownership/program/schema/field/index/record facts and proves the complete AFTER equals BEFORE. Unsupported fields still refuse with no fabricated matched assignment.",
+    "V3-only recovery reconstructs the same zero action. Pending, committed and settled outcomes come from journal state/verification facts rather than equal image bytes.",
+    "Actual SQL Run uses review No/Yes, retained save/ACK and fresh reopen with matched0/changed0/schemaNone. Negative workflows display the actual action diagnostic and use the actual localized Cancel button before another SQL run."
+  ],
+  "feature_boundary": {
+    "constructive_native": [
+      "journal",
+      "ace16-create"
+    ],
+    "reason": "Matches the actual existing complete retained source qualification closure used by native17; this record does not claim journal-only construction.",
+    "journal_only": "Inert original decode succeeds; native recovery refuses with the existing typed Edit Unsupported RowLayout before target effects."
+  },
+  "prior_unchanged_query_graph": {
+    "passed": 1904,
+    "failed": 0,
+    "ignored": 0,
+    "result_summaries": 272,
+    "log": {
+      "path": ".cache/ace-sql-correlated-update-predicates-query-20261111.log",
+      "sha256": "7c28d041b91db40293ebfb1765a063a95c41fab0c92f5b69c2e0bb9330aa006e"
+    }
+  },
+  "query_counting": "1904 checks are167 unit,1736 integration and1 doc check across272 result summaries. This run precedes native24; Query production code did not change with24. Do not add repeated/overlapping scopes as unique conformance cases.",
+  "current_checks": {
+    "native": {
+      "passed": 62,
+      "failed": 0,
+      "ignored": 0,
+      "result_summaries": 1,
+      "log": {
+        "path": ".cache/ace-sql-empty-update-native-20261111.log",
+        "sha256": "76b22fbf676b7258f9de4bc5947842124a2e755442d482b43d75a67cac0e0c26"
+      }
+    },
+    "journal-only": {
+      "passed": 4,
+      "failed": 0,
+      "ignored": 0,
+      "result_summaries": 1,
+      "log": {
+        "path": ".cache/ace-sql-empty-update-journal-only-20261111.log",
+        "sha256": "3a641a25642a5d62d686af26c869ad842be7717ce4f65d00f5713fe588666c4d"
+      }
+    },
+    "access": {
+      "passed": 52,
+      "failed": 0,
+      "ignored": 0,
+      "result_summaries": 1,
+      "log": {
+        "path": ".cache/ace-sql-empty-update-access-20261111.log",
+        "sha256": "23221faf9839fea13eb057a619e43d35986b64904f5deb304d6d3dc7cd6edf40"
+      }
+    },
+    "runtime": {
+      "passed": 397,
+      "failed": 0,
+      "ignored": 1,
+      "result_summaries": 1,
+      "log": {
+        "path": ".cache/ace-sql-empty-update-runtime-20261111.log",
+        "sha256": "63ecc7c93b05062fa4d71728b9479c197758cde717357d12dbb96ab9edba8f2f"
+      }
+    },
+    "desktop": {
+      "passed": 33,
+      "failed": 0,
+      "ignored": 0,
+      "result_summaries": 1,
+      "log": {
+        "path": ".cache/ace-sql-empty-update-desktop-20261111.log",
+        "sha256": "73bf7f1e7c0c05cd11c26ddad6f1bf6c2b821ca7330f73591ec3ed14aaec11f6"
+      }
+    }
+  },
+  "current_build_checks": {
+    "strict": {
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace-sql-empty-update-strict-20261111.log",
+        "sha256": "70c77274c583319344ff21405d39d356cd4d27744b5a828d05dfbe9e7e66cc28"
+      }
+    },
+    "no-creation": {
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace-sql-empty-update-no-creation-20261111.log",
+        "sha256": "33a774d64dcca5f5f371a2f503a2bc036d51ef10148aadff3d19bf356ff60f36"
+      }
+    },
+    "minimal": {
+      "exit_code": 0,
+      "log": {
+        "path": ".cache/ace-sql-empty-update-minimal-20261111.log",
+        "sha256": "8061eacca03d366ff39e9644ddddb4be5b73b35358bed0a8887d66bea9521eda"
+      }
+    }
+  },
+  "batch": {
+    "path": ".cache/ace-sql-empty-update-results-20261111.json",
+    "sha256": "cac7387e49781b7303cad6e22354139a9e623062b7cf28437dac4bd98d49c76a"
+  },
+  "preserved_failures": [
+    {
+      "cause": "Independent query test imported source contracts from the wrong module owner.",
+      "repair": "1d7e5f747b7f2215601c27da578859ca58c88e2e",
+      "log": {
+        "path": ".cache/ace-sql-correlated-update-query-20261111.log",
+        "sha256": "42360813627228194dce6aa14fe869ba90a68e040f842cb2ac68af8aa7b52343"
+      }
+    },
+    {
+      "cause": "The late-error test used fractional division assigning Double to stored Int32, so carrier refusal preceded the intended divide-by-zero. Integer division retains actual matched rows and reaches the intended late error.",
+      "repair": "9ab8bd969d097e0986e64728846e2a6b7bd146d7",
+      "log": {
+        "path": ".cache/ace-sql-correlated-update-repair-query-20261111.log",
+        "sha256": "8029c9d8a1e7368c1bad2794b652b9ec89c2849677dd9b88963b419b15e33a81"
+      }
+    },
+    {
+      "cause": "Native17 intentionally requires one cell and refused the zero-match NOT IN case. A distinct native24 original/proof/recovery route supplies actual zero-action authority.",
+      "repair": "d253f683bd0351a84353839969dc1a5e06a02bb1",
+      "log": {
+        "path": ".cache/ace-sql-correlated-update-repair-runtime-20261111.log",
+        "sha256": "33c833fff5086ba4996ee0174396ffed42537fb53b7b0d86067469d30b4c9a14"
+      }
+    },
+    {
+      "cause": "Desktop refusal wait incorrectly watched the global error instead of the action-session diagnostic. Programmatic SQL replacement also implicitly closed that modal; actual diagnostic and Cancel interactions now prove the user workflow.",
+      "repair": "b47d9fddfa86f655ae27bd54427cf36995106d60",
+      "log": {
+        "path": ".cache/ace-sql-correlated-update-repair-desktop-20261111.log",
+        "sha256": "2c8282157ecafa2075161ca558c6c4119777c84cdc7e419249f71b4aab7439ec"
+      }
+    }
+  ],
+  "additional_test_not_in_current_counts": {
+    "commit": "31f1e81d8aed3d24d67f603f700ddb6acd98b025",
+    "scope": "Multiple distinct ordinary LONG empty targets and missing-member refusal.",
+    "status": "Committed after this62-native-check gate; not yet executed and not counted here."
+  },
+  "remaining": "Native zero authority remains ordinary unindexed LONG under the admitted retained ACE16 source/build profile. Other field/source/key families, scalar or quantified SET subqueries, broader action/source semantics, unadorned SQL ADD COLUMN, ALTER COLUMN and DROP INDEX and native Microsoft execution/save parity remain separate conformance work."
+}
