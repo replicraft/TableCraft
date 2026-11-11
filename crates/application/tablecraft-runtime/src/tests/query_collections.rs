@@ -105,8 +105,8 @@ fn bare_collections_refuse_scalar_publication_without_poisoning_explicit_members
     let (_directory, path, worker, _revision) = opened(&before);
     let failure = request(&worker, query("SELECT Score FROM Items")).err();
     assert!(
-        matches!(failure, Some(crate::Error::Query(QueryError::UnknownName))),
-        "bare attachment has no fabricated scalar binding: {failure:?}"
+        matches!(failure, Some(crate::Error::Query(QueryError::Unsupported))),
+        "bare attachment cannot be published as a fabricated scalar: {failure:?}"
     );
     assert_members(request(&worker, query(MEMBERS)).unwrap());
     assert_source(&path, &before);
