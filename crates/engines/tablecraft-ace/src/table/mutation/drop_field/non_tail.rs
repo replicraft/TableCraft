@@ -3,11 +3,12 @@ use super::{
     FieldDropError as Error, NativeFieldDropIdentity, schema_candidate,
     schema_source::{self, Selection, Source},
 };
-use crate::{NativeImage, inspect_table_schema};
-use tablecraft_core::limits::ResourceBudget;
+use crate::{NativeImage, header::check, inspect_table_schema};
+use tablecraft_core::limits::{Resource, ResourceBudget};
 
 /// Sealed non-tail DROP over a completely qualified retained schema. This does
 /// not grant row serialization authority or belong to an older tail language.
+/// It is not a journal request, target lease or host save capability.
 pub struct NativeRetainedNonTailFieldDropCandidate {
     source: Source,
     after: Vec<u8>,
@@ -48,6 +49,10 @@ impl NativeRetainedNonTailFieldDropCandidate {
 impl NativeImage {
     /// Select the non-tail request language from an actual retained source and
     /// active native descriptor position. No source or mutation proof is granted.
+    ///
+    /// # Errors
+    /// Refuses missing/ambiguous targets and invalid native metadata. Cancellation,
+    /// explicit resource exhaustion and allocation failures retain their causes.
     pub fn select_native_retained_non_tail_field_drop_source(
         &self,
         table: &str,
@@ -65,16 +70,24 @@ impl NativeImage {
             budget,
             cancelled,
         )?;
-        let selected = schema
-            .columns()
-            .iter()
-            .position(|field| field.name().eq_ignore_ascii_case(column))
-            .ok_or(Error::Source)?;
+        let mut selected = None;
+        for (index, field) in schema.columns().iter().enumerate() {
+            check(budget, cancelled)?;
+            budget.charge(Resource::Steps, field.name().len().max(column.len()) as u64)?;
+            if field.name().eq_ignore_ascii_case(column) && selected.replace(index).is_some() {
+                return Err(Error::Source);
+            }
+        }
+        let selected = selected.ok_or(Error::Source)?;
         Ok(selected + 1 < schema.columns().len())
     }
 
     /// Inspect a selected ordinary non-tail declaration with complete source,
     /// properties, dependencies, programs and ownership checks; allocate no AFTER.
+    ///
+    /// # Errors
+    /// Refuses unqualified source evidence, unsupported or indexed/generated
+    /// targets, native corruption, cancellation, resource exhaustion or allocation failure.
     pub fn inspect_retained_non_tail_field_drop_source(
         &self,
         table: &str,
@@ -95,6 +108,12 @@ impl NativeImage {
 
     /// Remove one qualified ordinary unindexed non-tail field and its property
     /// group, preserving all physical records and survivor native identities.
+    /// The unpublished candidate supplies no journal or host save authority.
+    ///
+    /// # Errors
+    /// Refuses unsupported source/target evidence or insufficient fitting snapshot
+    /// capacity. Native corruption, failed preservation checks, cancellation,
+    /// resource exhaustion and allocation failures retain typed errors.
     pub fn prepare_retained_non_tail_field_drop(
         self,
         table: &str,
