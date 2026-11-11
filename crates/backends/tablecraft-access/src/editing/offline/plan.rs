@@ -7,8 +7,6 @@ use super::database_options::{
 use super::field_addition::plan::Plan as FieldAdditionPlan;
 use super::{Cause, QueryChange, SchemaChange, query_expression::QueryExpressionPlan};
 use crate::editing::journal::NativeJournalInsertPlan;
-#[cfg(not(feature = "ace16-create"))]
-use tablecraft_ace::DeclaredFieldAdditionIntentError;
 #[cfg(feature = "ace16-create")]
 use tablecraft_ace::{
     AddTablePlan, FirstTablePlan, NativeAddColumnIntent, NativeAddTableIntent,
@@ -20,6 +18,8 @@ use tablecraft_ace::{
     PopulatedAddTablePlan, RecoverableAddColumnPlan, RecoverableFieldDropPlan,
     RecoverableFieldRenamePlan, RecoverableNativeIndexCreatePlan,
 };
+#[cfg(not(feature = "ace16-create"))]
+use tablecraft_ace::{DeclaredFieldAdditionIntentError, UnadornedFieldAdditionIntentError};
 use tablecraft_ace::{
     NativeClockInsertIntent, NativeCompleteInsertIntent, NativeCurrentFieldAdditionIntent,
     NativeDeleteIntent, NativeEofInsertIntent, NativeFieldDropIntent, NativeFieldRenameIntent,
