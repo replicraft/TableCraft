@@ -54,6 +54,41 @@ fn qualify(case: &raw::Source, bytes: &[u8], after: bool, population: &str) {
     let mut work = allowance(case.rows.len());
     let image = NativeImage::capture_retained(&mut Cursor::new(bytes), SCOPE, &mut work, &|| false)
         .unwrap();
+    // TEMPORARY DIAGNOSTIC: retain the mandatory ownership assertion below,
+    // but identify whether independently selected reads already reject the frame.
+    if after && case.leaf_pages > 2 {
+        let mut diagnostic = allowance(case.rows.len());
+        inspect_table_indexes(
+            &mut image.reader(),
+            SCOPE,
+            case.table,
+            &mut diagnostic,
+            &|| false,
+        )
+        .unwrap_or_else(|error| panic!("{context}: diagnostic index metadata: {error:?}"));
+        check_table(
+            &mut image.reader(),
+            SCOPE,
+            case.table,
+            &mut diagnostic,
+            &|| false,
+        )
+        .unwrap_or_else(|error| panic!("{context}: diagnostic table/index check: {error:?}"));
+        read_table_index_with_request(
+            &mut image.reader(),
+            SCOPE,
+            case.table,
+            case.index_name,
+            IndexReadRequest {
+                columns: None,
+                selection: IndexProjectionSelection::All,
+                maximum_rows: case.rows.len().max(1) as u32,
+            },
+            &mut diagnostic,
+            &|| false,
+        )
+        .unwrap_or_else(|error| panic!("{context}: diagnostic selected index read: {error:?}"));
+    }
     // This is complete represented ownership/global allocation observation;
     // it does not mint index mutation or journal permission.
     #[cfg(feature = "ace16-create")]
