@@ -1,5 +1,7 @@
 //! Read-only single Int32-shaped membership for preserved ordinary/complex keys.
 //! The caller separately certifies native field/complex-reference declarations.
+mod lookup;
+
 use super::{
     Int64IndexSelection, NativeIndex, key::SingleKey, page::MAX_ENTRY_BYTES, profile::KeyType,
     walk::Walker,
@@ -9,6 +11,7 @@ use crate::{
     format::{allocation, reader::Reader},
     header::check,
 };
+use lookup::Lookup;
 use tablecraft_core::limits::ResourceBudget;
 
 pub(in crate::table) fn certify(
@@ -42,6 +45,7 @@ pub(in crate::table) fn certify(
     } else {
         expected.len()
     };
+    let lookup = Lookup::capture(expected, budget, cancelled)?;
     let profile = SingleKey {
         column: column.number(),
         key_type: KeyType::Int32,
@@ -104,10 +108,8 @@ pub(in crate::table) fn certify(
     let mut previous = None;
     for entry in entries {
         reader.tick()?;
-        reader.work(expected.len())?;
-        let position = expected
-            .iter()
-            .position(|(reference, _)| *reference == entry.row)
+        let position = lookup
+            .position(entry.row, reader.budget, reader.cancelled)?
             .ok_or(InspectError::Malformed)?;
         if seen[position]
             || entry.key != expected[position].1.map(i64::from)
@@ -123,3 +125,6 @@ pub(in crate::table) fn certify(
     reader.tick()?;
     Ok(owned)
 }
+
+#[cfg(all(test, feature = "journal", feature = "ace16-create"))]
+mod tests;
