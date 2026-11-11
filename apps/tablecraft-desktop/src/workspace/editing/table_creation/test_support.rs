@@ -2,7 +2,10 @@
 use super::Desktop;
 use crate::workspace::test_support::{finish_reads, finish_save, opened};
 use egui::accesskit::Role;
-use egui_kittest::{Harness, kittest::Queryable};
+use egui_kittest::{
+    Harness,
+    kittest::{NodeT, Queryable},
+};
 use std::{
     path::PathBuf,
     time::{Duration, Instant},
@@ -157,4 +160,54 @@ pub(super) fn apply_and_acknowledge(harness: &mut Harness<'_, Desktop>) {
         .click_accesskit();
     harness.run_steps(1);
     finish_reads(harness);
+}
+
+pub(super) fn reveal_field(harness: &mut Harness<'_, Desktop>, field: &str, right: bool) {
+    harness.get_by_role_and_label(Role::Tab, "Home").focus();
+    harness.run_steps(2);
+    let viewport = harness.ctx.content_rect();
+    let header = harness
+        .get_all_by_role(Role::ColumnHeader)
+        .map(|node| node.rect().intersect(viewport))
+        // Offscreen table headers can extend behind the navigation pane. A
+        // header in the right half of the host is inside the actual document.
+        .filter(|rect| {
+            rect.width() > 40.0 && rect.height() > 5.0 && rect.center().x > viewport.center().x
+        })
+        .max_by(|left, right| left.center().x.total_cmp(&right.center().x))
+        .expect("a real visible field header owns horizontal scrolling");
+    harness.event(egui::Event::PointerMoved(header.center()));
+    harness.event(egui::Event::MouseWheel {
+        unit: egui::MouseWheelUnit::Point,
+        delta: egui::vec2(if right { -10_000.0 } else { 10_000.0 }, 0.0),
+        phase: egui::TouchPhase::Move,
+        modifiers: egui::Modifiers::NONE,
+    });
+    harness.run_steps(10);
+    // Draft headers carry their label directly. Persisted datasheets expose
+    // the same name on a child Label of the ColumnHeader container.
+    let target = harness.get_all_by_role(Role::ColumnHeader).find(|header| {
+        header.accesskit_node().label().as_deref() == Some(field)
+            || header.query_all_by_role(Role::Label).any(|label| {
+                label.value().as_deref() == Some(field)
+                    || label.accesskit_node().label().as_deref() == Some(field)
+            })
+    });
+    let Some(target) = target else {
+        let names = harness
+            .get_all_by_role(Role::ColumnHeader)
+            .flat_map(|header| {
+                header
+                    .query_all_by_role(Role::Label)
+                    .filter_map(|label| label.value())
+                    .collect::<Vec<_>>()
+            })
+            .take(8)
+            .collect::<Vec<_>>();
+        panic!("requested field header {field} missing; current names: {names:?}");
+    };
+    assert!(
+        target.rect().intersects(viewport),
+        "field header {field} is still outside the viewport"
+    );
 }

@@ -4,7 +4,8 @@ use super::{
     design_tests::view,
     properties_tests::{choose, replace},
     test_support::{
-        add_named_field, apply_and_acknowledge, field_label, review, save_schema_and_bind_record,
+        add_named_field, apply_and_acknowledge, field_label, reveal_field, review,
+        save_schema_and_bind_record,
     },
 };
 use crate::workspace::{
@@ -18,10 +19,7 @@ use crate::workspace::{
     },
 };
 use egui::accesskit::Role;
-use egui_kittest::{
-    Harness,
-    kittest::{NodeT, Queryable},
-};
+use egui_kittest::kittest::Queryable;
 use std::path::Path;
 use tablecraft_runtime::journal_path;
 use tablecraft_testkit::fixtures::access::canonical_retained_add_table::{
@@ -81,56 +79,6 @@ fn assert_image(path: &Path, expected: &[u8]) {
     );
 }
 
-fn reveal(harness: &mut Harness<'_, Desktop>, field: &str, right: bool) {
-    harness.get_by_role_and_label(Role::Tab, "Home").focus();
-    harness.run_steps(2);
-    let viewport = harness.ctx.content_rect();
-    let header = harness
-        .get_all_by_role(Role::ColumnHeader)
-        .map(|node| node.rect().intersect(viewport))
-        // Offscreen table headers can extend behind the navigation pane. A
-        // header in the right half of the host is inside the actual document.
-        .filter(|rect| {
-            rect.width() > 40.0 && rect.height() > 5.0 && rect.center().x > viewport.center().x
-        })
-        .max_by(|left, right| left.center().x.total_cmp(&right.center().x))
-        .expect("a real visible field header owns horizontal scrolling");
-    harness.event(egui::Event::PointerMoved(header.center()));
-    harness.event(egui::Event::MouseWheel {
-        unit: egui::MouseWheelUnit::Point,
-        delta: egui::vec2(if right { -10_000.0 } else { 10_000.0 }, 0.0),
-        phase: egui::TouchPhase::Move,
-        modifiers: egui::Modifiers::NONE,
-    });
-    harness.run_steps(10);
-    // Draft headers carry their label directly. Persisted datasheets expose
-    // the same name on a child Label of the ColumnHeader container.
-    let target = harness.get_all_by_role(Role::ColumnHeader).find(|header| {
-        header.accesskit_node().label().as_deref() == Some(field)
-            || header.query_all_by_role(Role::Label).any(|label| {
-                label.value().as_deref() == Some(field)
-                    || label.accesskit_node().label().as_deref() == Some(field)
-            })
-    });
-    let Some(target) = target else {
-        let names = harness
-            .get_all_by_role(Role::ColumnHeader)
-            .flat_map(|header| {
-                header
-                    .query_all_by_role(Role::Label)
-                    .filter_map(|label| label.value())
-                    .collect::<Vec<_>>()
-            })
-            .take(8)
-            .collect::<Vec<_>>();
-        panic!("requested field header {field} missing; current names: {names:?}");
-    };
-    assert!(
-        target.rect().intersects(viewport),
-        "field header {field} is still outside the viewport"
-    );
-}
-
 #[test]
 fn retained_fixed_scalar_cells_keep_typed_precision_nulls_and_refills_after_actual_creation() {
     let before = fields::source(fields::Case::FirstNumber).bytes;
@@ -170,7 +118,7 @@ fn retained_fixed_scalar_cells_keep_typed_precision_nulls_and_refills_after_actu
     }
     view(&mut harness, "ribbon-datasheet");
     for (index, (column, text)) in raw::COLUMNS_TO_EDIT.into_iter().zip(INPUT).enumerate() {
-        reveal(&mut harness, column.name(), index >= 3);
+        reveal_field(&mut harness, column.name(), index >= 3);
         let label = field_label(&harness, "table-draft-record-field", column.name());
         assert!(
             harness
@@ -191,7 +139,7 @@ fn retained_fixed_scalar_cells_keep_typed_precision_nulls_and_refills_after_actu
     let mut expected = raw::append_values(&schema, definition, &INITIAL);
     assert_image(&path, &expected);
     // This ordinary LONG control must remain usable on the same typed table.
-    reveal(&mut harness, "Score", false);
+    reveal_field(&mut harness, "Score", false);
     begin_replacement(&mut harness, 0, "Score", false, Some("124"));
     let after = raw::update_score(&expected, definition, 0, Some(124));
     review_and_save(&mut harness, &path, &expected, &after);
@@ -202,7 +150,7 @@ fn retained_fixed_scalar_cells_keep_typed_precision_nulls_and_refills_after_actu
             (false, None, None),
             (true, Some(value), Some(text)),
         ] {
-            reveal(&mut harness, column.name(), column.number() >= 5);
+            reveal_field(&mut harness, column.name(), column.number() >= 5);
             begin_replacement(&mut harness, 0, column.name(), was_null, input);
             let after = raw::update(&expected, definition, 0, column, supplied);
             review_and_save(&mut harness, &path, &expected, &after);
