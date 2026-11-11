@@ -283,6 +283,14 @@ pub use intent::{
 };
 
 #[cfg(feature = "journal")]
+pub use intent::DeclaredFieldAdditionIntentError;
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub use intent::{
+    NativeDeclaredFieldAdditionIntent, QualifiedDeclaredFieldAdditionRecovery,
+    RecoverableDeclaredFieldAdditionPlan,
+};
+
+#[cfg(feature = "journal")]
 pub use intent::RetainedTypedFieldAdditionIntentError;
 #[cfg(all(feature = "journal", feature = "ace16-create"))]
 pub use intent::{

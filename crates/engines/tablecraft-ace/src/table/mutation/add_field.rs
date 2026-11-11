@@ -16,6 +16,7 @@ use crate::{
         current_schema::{self, Family},
     },
 };
+pub(crate) use declared::DeclaredFieldAdditionEffect;
 pub use declared::NativeDeclaredFieldAdditionCandidate;
 use definition::Plan;
 use tablecraft_core::{

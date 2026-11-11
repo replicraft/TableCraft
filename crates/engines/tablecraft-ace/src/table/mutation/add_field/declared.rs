@@ -5,7 +5,8 @@ mod tests;
 
 use super::{CurrentFieldAdditionError as Error, creation_error, definition::Plan};
 use crate::{
-    DeclaredFieldAdditionDefinition, InspectError, NativeImage, PropertyGroupKind,
+    DeclaredFieldAdditionDefinition, InspectError, NativeImage, NativeImageSource,
+    PropertyGroupKind,
     format::layout::{FIXED_FLAG, UPDATABLE_FLAG},
     header::check,
     table::mutation::current_schema::{self, Family},
@@ -22,7 +23,78 @@ pub struct NativeDeclaredFieldAdditionCandidate {
     column_id: u16,
 }
 
+/// Consuming original/effect split used only by the checked intent owner.
+pub(crate) struct DeclaredFieldAdditionParts {
+    pub(crate) effect: DeclaredFieldAdditionEffect,
+    pub(crate) definition: DeclaredFieldAdditionDefinition,
+}
+
+/// A sealed independently proved effect; no raw-byte constructor is exposed.
+pub(crate) struct DeclaredFieldAdditionEffect {
+    source: current_schema::Source,
+    after: NativeImageSource,
+    native_table: i32,
+    native_number: usize,
+    column_id: u16,
+}
+
+impl DeclaredFieldAdditionEffect {
+    pub(crate) fn before_bytes(&self) -> &[u8] {
+        self.source.image().as_bytes()
+    }
+    pub(crate) fn after_bytes(&self) -> &[u8] {
+        self.after.as_bytes()
+    }
+    pub(crate) fn after_shared_bytes(&self) -> bytes::Bytes {
+        self.after.shared_bytes()
+    }
+    pub(crate) fn table(&self) -> &str {
+        self.source.table().schema.name()
+    }
+    pub(crate) const fn native_table_id(&self) -> i32 {
+        self.native_table
+    }
+    pub(crate) fn definition_page(&self) -> u32 {
+        self.source.table().schema.definition_page()
+    }
+    pub(crate) const fn native_number(&self) -> usize {
+        self.native_number
+    }
+    pub(crate) const fn column_id(&self) -> u16 {
+        self.column_id
+    }
+    pub(crate) fn column_count(&self) -> usize {
+        self.source.table().schema.columns().len() + 1
+    }
+}
+
 impl NativeDeclaredFieldAdditionCandidate {
+    pub(crate) fn into_parts(
+        self,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<DeclaredFieldAdditionParts, InspectError> {
+        let Self {
+            source,
+            after,
+            definition,
+            native_table,
+            native_number,
+            column_id,
+        } = self;
+        let after = NativeImageSource::from_vec(after, budget, cancelled)?;
+        Ok(DeclaredFieldAdditionParts {
+            effect: DeclaredFieldAdditionEffect {
+                source,
+                after,
+                native_table,
+                native_number,
+                column_id,
+            },
+            definition,
+        })
+    }
+
     /// Complete immutable original; no physical scope is inferred from this slice.
     pub fn before_bytes(&self) -> &[u8] {
         self.source.image().as_bytes()

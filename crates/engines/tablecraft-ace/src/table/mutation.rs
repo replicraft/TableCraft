@@ -256,6 +256,8 @@ pub(crate) mod query_expression_edit;
 #[cfg(feature = "journal")]
 mod query_expression_source;
 
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub(crate) use add_field::DeclaredFieldAdditionEffect;
 #[cfg(all(feature = "ace16-create", feature = "journal"))]
 pub use add_field::{
     CurrentFieldAdditionSource, NativeCurrentFieldAdditionCandidate,

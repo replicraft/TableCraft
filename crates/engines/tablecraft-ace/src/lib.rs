@@ -439,6 +439,14 @@ pub use creation::{
 };
 
 #[cfg(feature = "journal")]
+pub use transaction::DeclaredFieldAdditionIntentError;
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub use transaction::{
+    NativeDeclaredFieldAdditionIntent, QualifiedDeclaredFieldAdditionRecovery,
+    RecoverableDeclaredFieldAdditionPlan,
+};
+
+#[cfg(feature = "journal")]
 pub use transaction::RetainedTypedFieldAdditionIntentError;
 #[cfg(all(feature = "journal", feature = "ace16-create"))]
 pub use transaction::{

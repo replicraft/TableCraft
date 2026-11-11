@@ -57,6 +57,8 @@ pub use mutation::Ace16IndexCreatePreview;
 #[cfg(feature = "journal")]
 pub use mutation::CurrentFieldAdditionError;
 #[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub(crate) use mutation::DeclaredFieldAdditionEffect;
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
 pub use mutation::NativeLongIndexCandidate;
 #[cfg(any(
     feature = "ace16-write-preview",

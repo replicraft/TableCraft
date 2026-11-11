@@ -209,6 +209,14 @@ pub use field_drop::{
 #[cfg(test)]
 mod schema_field_test_wire;
 
+mod declared_field_addition;
+pub use declared_field_addition::DeclaredFieldAdditionIntentError;
+#[cfg(feature = "ace16-create")]
+pub use declared_field_addition::{
+    NativeDeclaredFieldAdditionIntent, QualifiedDeclaredFieldAdditionRecovery,
+    RecoverableDeclaredFieldAdditionPlan,
+};
+
 mod retained_field_addition;
 pub use retained_field_addition::RetainedTypedFieldAdditionIntentError;
 #[cfg(feature = "ace16-create")]
