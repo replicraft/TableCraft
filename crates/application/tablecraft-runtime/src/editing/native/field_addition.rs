@@ -1,8 +1,8 @@
 //! Exact field declaration review; select source purpose before any qualification.
 pub(in crate::editing) mod availability;
 mod declaration;
-pub(in crate::editing) mod declared;
 pub(in crate::editing) mod plan;
+pub(in crate::editing) mod unadorned;
 use crate::{
     Error, Response,
     controls::{SCOPE, budget, check},

@@ -45,9 +45,8 @@ fn annotation_and_other_type_refusals_do_not_substitute_gallery_defaults() {
         "CURRENCY DEFAULT 0",
         "CURRENCY CONSTRAINT AmountKey PRIMARY KEY",
         "COUNTER",
-        "LONG",
-        "VARCHAR(80)",
-        "DECIMAL(28,4)",
+        "BINARY(16)",
+        "TEXT",
     ] {
         let syntax = column(&format!("ALTER TABLE Table1 ADD COLUMN Amount {suffix}"));
         assert!(matches!(capture(&syntax), Err(Error::SchemaSqlUnsupported)));

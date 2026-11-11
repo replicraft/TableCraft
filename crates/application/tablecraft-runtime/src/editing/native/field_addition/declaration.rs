@@ -74,7 +74,10 @@ pub(super) fn target(
 pub(super) fn captured(
     definition: &RetainedFieldAdditionDefinition,
 ) -> Result<TypedFieldAdditionDeclaration, Error> {
-    let column = definition.column();
+    captured_shape(definition.column())
+}
+
+fn captured_shape(column: CreateColumn<'_>) -> Result<TypedFieldAdditionDeclaration, Error> {
     let declaration = match column.scalar_type() {
         ScalarType::Text => TypedFieldAdditionDeclaration::short_text(
             u8::try_from(
@@ -99,9 +102,8 @@ pub(super) fn captured(
     Ok(declaration)
 }
 
-pub(super) fn captured_declared(column: CreateColumn<'_>) -> Result<FieldAdditionOrigin, Error> {
-    if column.scalar_type() != ScalarType::Currency
-        || column.required().is_some()
+pub(super) fn captured_unadorned(column: CreateColumn<'_>) -> Result<FieldAdditionOrigin, Error> {
+    if column.required().is_some()
         || column.allow_zero_length().is_some()
         || column.default_literal().is_some()
         || column.description().is_some()
@@ -111,9 +113,7 @@ pub(super) fn captured_declared(column: CreateColumn<'_>) -> Result<FieldAdditio
     {
         return Err(Error::SchemaSqlUnsupported);
     }
-    Ok(FieldAdditionOrigin::SqlDeclared {
-        scalar_type: column.scalar_type(),
-    })
+    Ok(FieldAdditionOrigin::SqlUnadorned(captured_shape(column)?))
 }
 
 #[cfg(test)]

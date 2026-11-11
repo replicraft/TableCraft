@@ -1,4 +1,4 @@
-//! First unadorned Currency ADD lowering; no native mutation or save authority.
+//! Unadorned scalar ADD lowering; no native mutation or save authority.
 use crate::Error;
 use tablecraft_ace::CreateColumn;
 use tablecraft_schema::ScalarType;
@@ -14,7 +14,23 @@ pub(super) fn capture(column: &Column) -> Result<CreateColumn<'_>, Error> {
     }
     let (declaration, generated) =
         super::super::declaration::capture(column.name.as_str(), &column.data_type)?;
-    if generated || declaration.scalar_type() != ScalarType::Currency {
+    if generated
+        || !matches!(
+            declaration.scalar_type(),
+            ScalarType::Boolean
+                | ScalarType::Byte
+                | ScalarType::Int16
+                | ScalarType::Int32
+                | ScalarType::Int64
+                | ScalarType::Single
+                | ScalarType::Double
+                | ScalarType::Currency
+                | ScalarType::DateTime
+                | ScalarType::Guid
+                | ScalarType::Text
+                | ScalarType::Decimal
+        )
+    {
         return Err(Error::SchemaSqlUnsupported);
     }
     Ok(declaration)

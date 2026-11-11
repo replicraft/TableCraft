@@ -36,7 +36,7 @@ use tablecraft_ace::{
     EditError, InspectError, NativeIntentError, NativeRecoveryQualificationError,
     QueryExpressionEditsError, QueryExpressionEditsIntentError, QueryExpressionError,
     QueryExpressionIntentError, QueryExpressionRecoveryError, RecoverableQueryExpressionError,
-    TableRenameError, TableRenameIntentError,
+    TableRenameError, TableRenameIntentError, UnadornedFieldAdditionIntentError,
 };
 use tablecraft_core::limits::LimitError;
 use tablecraft_io::{
@@ -272,6 +272,7 @@ fn typed_resource_failure(error: &(dyn StdError + 'static)) -> Option<SaveFailur
             Cause::FieldAdditionIntent(error) => field_addition::intent(error),
             Cause::CurrentFieldAdditionIntent(error) => current_field_addition::intent(error),
             Cause::DeclaredFieldAdditionIntent(error) => current_field_addition::declared(error),
+            Cause::UnadornedFieldAdditionIntent(error) => current_field_addition::unadorned(error),
             Cause::RetainedTypedFieldAdditionIntent(error) => {
                 current_field_addition::retained_typed(error)
             }
@@ -383,6 +384,9 @@ fn typed_resource_failure(error: &(dyn StdError + 'static)) -> Option<SaveFailur
     }
     if let Some(error) = error.downcast_ref::<DeclaredFieldAdditionIntentError>() {
         return current_field_addition::declared(error);
+    }
+    if let Some(error) = error.downcast_ref::<UnadornedFieldAdditionIntentError>() {
+        return current_field_addition::unadorned(error);
     }
     if let Some(error) = error.downcast_ref::<CurrentFieldAdditionIntentError>() {
         return current_field_addition::intent(error);

@@ -81,8 +81,8 @@ fn apply_plan(
         Err(error) => return failed_open(&error),
     };
     let staged = match plan {
-        Plan::Declared(plan) => session
-            .stage_reviewed_retained_declared_field_addition_with_budgets(
+        Plan::Unadorned(plan) => session
+            .stage_reviewed_retained_unadorned_field_addition_with_budgets(
                 *plan,
                 &mut native,
                 &mut proof,

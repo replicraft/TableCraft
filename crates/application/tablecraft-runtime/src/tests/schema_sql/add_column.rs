@@ -38,9 +38,10 @@ fn sql_declared_currency_add_saves_without_gallery_policies_and_reopens_historic
     };
     assert_eq!(
         facts.origin,
-        FieldAdditionOrigin::SqlDeclared {
-            scalar_type: ScalarType::Currency
-        }
+        FieldAdditionOrigin::SqlUnadorned(
+            tablecraft_builders::table::TypedFieldAdditionDeclaration::fixed(ScalarType::Currency)
+                .unwrap()
+        )
     );
     assert_eq!(capability.captured_origin(), facts.origin);
     assert_eq!(capability.id(), facts.id);
@@ -253,9 +254,9 @@ fn sql_add_refuses_annotations_and_other_kinds_without_using_gallery_defaults() 
     for suffix in [
         "CURRENCY NOT NULL",
         "CURRENCY DEFAULT 0",
-        "GUID",
-        "LONG",
-        "VARCHAR(80)",
+        "COUNTER",
+        "BINARY(16)",
+        "TEXT",
     ] {
         let target = inspect(
             &worker,

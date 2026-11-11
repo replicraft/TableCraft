@@ -4,6 +4,7 @@ use crate::editing::SaveFailureKind;
 use tablecraft_ace::{
     CurrentFieldAdditionError, CurrentFieldAdditionIntentError,
     DeclaredFieldAdditionIntentError as DeclaredError, EditError,
+    UnadornedFieldAdditionIntentError as UnadornedError,
 };
 
 pub(super) fn intent(error: &CurrentFieldAdditionIntentError) -> Option<SaveFailureKind> {
@@ -57,5 +58,22 @@ pub(super) fn declared(error: &DeclaredError) -> Option<SaveFailureKind> {
     }
 }
 
+pub(super) fn unadorned(error: &UnadornedError) -> Option<SaveFailureKind> {
+    match error {
+        UnadornedError::Inspect(error) => inspection_failure(error),
+        #[cfg(feature = "ace16-create")]
+        UnadornedError::Binding(error) => intent_failure(error),
+        UnadornedError::Field(error) => candidate(error),
+        UnadornedError::Proof(error) => qualification_failure(error),
+        #[cfg(feature = "ace16-create")]
+        UnadornedError::Declaration(tablecraft_ace::CreateDatabaseError::Inspect(error)) => {
+            inspection_failure(error)
+        }
+        _ => None,
+    }
+}
+
 #[cfg(all(test, feature = "ace16-create"))]
 mod declared_tests;
+#[cfg(all(test, feature = "ace16-create"))]
+mod unadorned_tests;

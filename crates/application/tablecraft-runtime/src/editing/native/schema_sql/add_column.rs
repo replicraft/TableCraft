@@ -1,7 +1,7 @@
 //! One actual SQL field declaration enters the shared consuming addition owner.
 mod lowering;
-use crate::{Error, Response, document::Document, editing::platform::field_addition::declared};
-use tablecraft_ace::DeclaredFieldAdditionDefinition;
+use crate::{Error, Response, document::Document, editing::platform::field_addition::unadorned};
+use tablecraft_ace::UnadornedFieldAdditionDefinition;
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_sql::query::definition::Column;
 
@@ -13,6 +13,6 @@ pub(super) fn review(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Response, Error> {
     let definition =
-        DeclaredFieldAdditionDefinition::capture(lowering::capture(column)?, work, cancelled)?;
-    declared::review(document, table, definition, work, cancelled)
+        UnadornedFieldAdditionDefinition::capture(lowering::capture(column)?, work, cancelled)?;
+    unadorned::review(document, table, definition, work, cancelled)
 }

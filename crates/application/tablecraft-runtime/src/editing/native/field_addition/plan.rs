@@ -2,16 +2,16 @@
 use crate::editing::FieldAdditionOrigin;
 use std::num::NonZeroU8;
 use tablecraft_ace::{
-    FieldAdditionTarget, RecoverableCurrentFieldAdditionPlan, RecoverableDeclaredFieldAdditionPlan,
-    RecoverableDefaultZeroAddColumnPlan, RecoverableFieldAdditionAfterOffHistoryPlan,
-    RecoverableFieldAdditionAfterOffPlan, RecoverableFieldAdditionPlan,
-    RecoverableRepeatedDefaultZeroAddColumnPlan, RecoverableRetainedTypedFieldAdditionPlan,
+    FieldAdditionTarget, RecoverableCurrentFieldAdditionPlan, RecoverableDefaultZeroAddColumnPlan,
+    RecoverableFieldAdditionAfterOffHistoryPlan, RecoverableFieldAdditionAfterOffPlan,
+    RecoverableFieldAdditionPlan, RecoverableRepeatedDefaultZeroAddColumnPlan,
+    RecoverableRetainedTypedFieldAdditionPlan, RecoverableUnadornedFieldAdditionPlan,
 };
 use tablecraft_builders::table::FieldAdditionDeclaration;
 
 pub(in crate::editing) enum Plan {
     RetainedTyped(Box<RecoverableRetainedTypedFieldAdditionPlan>),
-    Declared(Box<RecoverableDeclaredFieldAdditionPlan>),
+    Unadorned(Box<RecoverableUnadornedFieldAdditionPlan>),
     First(RecoverableDefaultZeroAddColumnPlan),
     Repeated(RecoverableRepeatedDefaultZeroAddColumnPlan),
     Typed(RecoverableFieldAdditionPlan),
@@ -23,8 +23,8 @@ pub(in crate::editing) enum Plan {
 impl Plan {
     pub(in crate::editing) fn captured_origin(&self) -> Result<FieldAdditionOrigin, crate::Error> {
         Ok(FieldAdditionOrigin::Gallery(match self {
-            Self::Declared(plan) => {
-                return super::declaration::captured_declared(plan.definition().column());
+            Self::Unadorned(plan) => {
+                return super::declaration::captured_unadorned(plan.definition().column());
             }
             Self::RetainedTyped(plan) => {
                 FieldAdditionDeclaration::Typed(super::declaration::captured(plan.definition())?)
@@ -48,7 +48,7 @@ impl Plan {
     pub(in crate::editing) fn table(&self) -> &str {
         match self {
             Self::RetainedTyped(plan) => plan.table(),
-            Self::Declared(plan) => plan.table(),
+            Self::Unadorned(plan) => plan.table(),
             Self::First(plan) => plan.table(),
             Self::Repeated(plan) => plan.table(),
             Self::Typed(plan) => plan.table(),
@@ -61,7 +61,7 @@ impl Plan {
     pub(in crate::editing) fn column(&self) -> &str {
         match self {
             Self::RetainedTyped(plan) => plan.column(),
-            Self::Declared(plan) => plan.column(),
+            Self::Unadorned(plan) => plan.column(),
             Self::First(plan) => plan.column(),
             Self::Repeated(plan) => plan.column(),
             Self::Typed(plan) => plan.column(),
@@ -74,7 +74,7 @@ impl Plan {
     pub(in crate::editing) fn before_bytes(&self) -> &[u8] {
         match self {
             Self::RetainedTyped(plan) => plan.before_bytes(),
-            Self::Declared(plan) => plan.before_bytes(),
+            Self::Unadorned(plan) => plan.before_bytes(),
             Self::First(plan) => plan.before_bytes(),
             Self::Repeated(plan) => plan.before_bytes(),
             Self::Typed(plan) => plan.before_bytes(),
@@ -87,7 +87,7 @@ impl Plan {
     pub(in crate::editing) fn after_bytes(&self) -> &[u8] {
         match self {
             Self::RetainedTyped(plan) => plan.after_bytes(),
-            Self::Declared(plan) => plan.after_bytes(),
+            Self::Unadorned(plan) => plan.after_bytes(),
             Self::First(plan) => plan.after_bytes(),
             Self::Repeated(plan) => plan.after_bytes(),
             Self::Typed(plan) => plan.after_bytes(),

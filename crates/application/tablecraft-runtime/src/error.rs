@@ -2,10 +2,9 @@
 #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
 use tablecraft_ace::{
     AddColumnIntentError, AddTableError, CurrentFieldAdditionIntentError,
-    DeclaredFieldAdditionIntentError, DefaultZeroAddColumnIntentError,
-    FieldAdditionAfterOffHistoryIntentError, FieldAdditionAfterOffIntentError,
-    FieldAdditionIntentError, FieldAdditionSourceError, FirstTableError,
-    RepeatedDefaultZeroAddColumnIntentError,
+    DefaultZeroAddColumnIntentError, FieldAdditionAfterOffHistoryIntentError,
+    FieldAdditionAfterOffIntentError, FieldAdditionIntentError, FieldAdditionSourceError,
+    FirstTableError, RepeatedDefaultZeroAddColumnIntentError, UnadornedFieldAdditionIntentError,
 };
 
 #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
@@ -102,10 +101,10 @@ pub enum Error {
     #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
     #[error(transparent)]
     RetainedTypedFieldAddition(#[from] tablecraft_ace::RetainedTypedFieldAdditionIntentError),
-    /// Original unadorned field request or complete native replay refused.
+    /// Native unadorned scalar ADD request, source or original proof refused.
     #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
     #[error(transparent)]
-    DeclaredFieldAddition(#[from] DeclaredFieldAdditionIntentError),
+    UnadornedFieldAddition(#[from] UnadornedFieldAdditionIntentError),
     /// Selected native field source or readonly capacity qualification failed.
     #[cfg(all(feature = "offline-edit", feature = "ace16-create"))]
     #[error(transparent)]

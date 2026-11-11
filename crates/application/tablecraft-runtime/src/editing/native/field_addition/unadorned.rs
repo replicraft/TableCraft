@@ -7,13 +7,13 @@ use crate::{
     editing::EditError,
 };
 use tablecraft_access::editing::journal::NativeJournalEditor;
-use tablecraft_ace::{DeclaredFieldAdditionDefinition, RecoverableDeclaredFieldAdditionPlan};
+use tablecraft_ace::{RecoverableUnadornedFieldAdditionPlan, UnadornedFieldAdditionDefinition};
 use tablecraft_core::limits::ResourceBudget;
 
 pub(in crate::editing) fn review(
     document: &mut Document,
     table: &str,
-    definition: DeclaredFieldAdditionDefinition,
+    definition: UnadornedFieldAdditionDefinition,
     work: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Response, Error> {
@@ -31,14 +31,14 @@ pub(in crate::editing) fn review(
         cancelled,
     )?;
     let plan = image
-        .plan_recoverable_retained_declared_field_addition(table, definition, work, cancelled)?;
-    let origin = super::declaration::captured_declared(plan.definition().column())?;
+        .plan_recoverable_retained_unadorned_field_addition(table, definition, work, cancelled)?;
+    let origin = super::declaration::captured_unadorned(plan.definition().column())?;
     let expected = plan.after_shared_bytes();
     check(cancelled)?;
-    work.charge_allocation(1, size_of::<RecoverableDeclaredFieldAdditionPlan>() as u64)?;
+    work.charge_allocation(1, size_of::<RecoverableUnadornedFieldAdditionPlan>() as u64)?;
     issue_review(
         document,
-        Plan::Declared(Box::new(plan)),
+        Plan::Unadorned(Box::new(plan)),
         expected,
         origin,
         work,
