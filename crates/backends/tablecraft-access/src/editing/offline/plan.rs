@@ -12,9 +12,10 @@ use tablecraft_ace::{
     AddTablePlan, FirstTablePlan, NativeAddColumnIntent, NativeAddTableIntent,
     NativeDefaultZeroAddColumnIntent, NativeFieldAdditionAfterOffHistoryIntent,
     NativeFieldAdditionAfterOffIntent, NativeFieldAdditionIntent, NativeFirstTableIntent,
-    NativePopulatedAddTableIntent, NativeRepeatedDefaultZeroAddColumnIntent,
-    NativeRetainedTypedFieldAdditionIntent, PopulatedAddTablePlan, RecoverableAddColumnPlan,
-    RecoverableFieldDropPlan, RecoverableFieldRenamePlan,
+    NativeIndexCreateIntent, NativePopulatedAddTableIntent,
+    NativeRepeatedDefaultZeroAddColumnIntent, NativeRetainedTypedFieldAdditionIntent,
+    PopulatedAddTablePlan, RecoverableAddColumnPlan, RecoverableFieldDropPlan,
+    RecoverableFieldRenamePlan, RecoverableNativeIndexCreatePlan,
 };
 use tablecraft_ace::{
     NativeClockInsertIntent, NativeCompleteInsertIntent, NativeCurrentFieldAdditionIntent,
@@ -48,6 +49,8 @@ mod keyless_tests;
 mod populated_tests;
 
 pub(super) enum MutationPlan {
+    #[cfg(feature = "ace16-create")]
+    IndexCreation(RecoverableNativeIndexCreatePlan),
     #[cfg(feature = "ace16-create")]
     DatabaseOptions(DatabaseOptionsPlan),
     QueryExpression(QueryExpressionPlan),
@@ -89,6 +92,11 @@ impl MutationPlan {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Vec<u8>, Cause> {
         match self {
+            #[cfg(feature = "ace16-create")]
+            Self::IndexCreation(plan) => plan
+                .intent()
+                .encode(budget, cancelled)
+                .map_err(Cause::IndexCreationIntent),
             #[cfg(feature = "ace16-create")]
             Self::PopulatedTable(plan) => plan
                 .encode_intent(budget, cancelled)
@@ -149,6 +157,14 @@ impl MutationPlan {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<(), Cause> {
         let prepared = match self {
+            #[cfg(feature = "ace16-create")]
+            Self::IndexCreation(plan) => {
+                return plan
+                    .prepare_retained(target, journal, budget, cancelled)
+                    .map_err(Cause::Prepare)?
+                    .commit(budget, cancelled)
+                    .map_err(Cause::Commit);
+            }
             #[cfg(feature = "ace16-create")]
             Self::PopulatedTable(plan) => {
                 return plan
@@ -283,6 +299,8 @@ impl MutationPlan {
 
 pub(super) enum MutationIntent {
     #[cfg(feature = "ace16-create")]
+    IndexCreation(NativeIndexCreateIntent),
+    #[cfg(feature = "ace16-create")]
     DatabaseOptions(DatabaseOptionsIntent),
     QueryExpression(NativeQueryExpressionIntent),
     QueryExpressionEdits(NativeQueryExpressionEditsIntent),
@@ -341,6 +359,8 @@ impl MutationIntent {
 
     pub(super) fn schema_change(&self) -> Option<SchemaChange> {
         match self {
+            #[cfg(feature = "ace16-create")]
+            Self::IndexCreation(_) => Some(SchemaChange::IndexCreated),
             #[cfg(feature = "ace16-create")]
             Self::AddColumn(_)
             | Self::DefaultZeroAddColumn(_)

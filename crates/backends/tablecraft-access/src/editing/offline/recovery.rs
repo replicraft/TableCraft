@@ -338,6 +338,19 @@ impl OfflineWriteSession {
                         .map_err(Cause::Recovery)
                 }
                 #[cfg(feature = "ace16-create")]
+                MutationIntent::IndexCreation(intent) => {
+                    let (mut target, mut journal) =
+                        pair.resizable_storage().map_err(Cause::Pair)?;
+                    let checked =
+                        inspect_v3(&mut journal, budget, cancelled).map_err(Cause::Recovery)?;
+                    let qualified = intent
+                        .qualify_retained_recovery(checked, slot.scope, budget, cancelled)
+                        .map_err(Cause::IndexCreationIntent)?;
+                    qualified
+                        .recover_retained(&mut target, budget, cancelled)
+                        .map_err(Cause::Recovery)
+                }
+                #[cfg(feature = "ace16-create")]
                 MutationIntent::PopulatedTable(intent) => {
                     let (mut target, mut journal) =
                         pair.resizable_storage().map_err(Cause::Pair)?;
@@ -796,6 +809,17 @@ impl OfflineWriteSession {
                         )
                     }
                     .map_err(Cause::Qualification)?;
+                    qualified
+                        .confirm_completed(&mut target, budget, cancelled)
+                        .map_err(Cause::Recovery)
+                }
+                #[cfg(feature = "ace16-create")]
+                MutationIntent::IndexCreation(intent) => {
+                    let checked =
+                        inspect_v3(&mut journal, budget, cancelled).map_err(Cause::Recovery)?;
+                    let qualified = intent
+                        .qualify_retained_recovery(checked, slot.scope, budget, cancelled)
+                        .map_err(Cause::IndexCreationIntent)?;
                     qualified
                         .confirm_completed(&mut target, budget, cancelled)
                         .map_err(Cause::Recovery)

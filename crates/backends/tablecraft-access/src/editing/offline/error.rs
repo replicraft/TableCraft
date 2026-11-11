@@ -6,7 +6,8 @@ use tablecraft_ace::{
     AddColumnIntentError, AddTableError, AddTableIntentError, DatabaseOptionsIntentError,
     DefaultZeroAddColumnIntentError, FieldAdditionAfterOffHistoryIntentError,
     FieldAdditionAfterOffIntentError, FieldAdditionIntentError, FieldHistoryOptionsIntentError,
-    FirstTableError, FirstTableIntentError, RepeatedDefaultZeroAddColumnIntentError,
+    FirstTableError, FirstTableIntentError, IndexCreateIntentError,
+    RepeatedDefaultZeroAddColumnIntentError,
 };
 use tablecraft_ace::{
     CurrentFieldAdditionIntentError, FieldDropIntentError, FieldRenameIntentError, InspectError,
@@ -62,6 +63,10 @@ pub enum Phase {
 /// Sanitized typed cause. Resources remain in Failure rather than being discarded.
 #[derive(Debug, Error)]
 pub enum Cause {
+    /// Original secondary-index request, source or full-image proof refused.
+    #[cfg(feature = "ace16-create")]
+    #[error(transparent)]
+    IndexCreationIntent(IndexCreateIntentError),
     /// This build cannot acquire the source authority required by the action.
     #[error("native action source is unsupported by this build")]
     UnsupportedSource,

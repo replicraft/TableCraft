@@ -18,6 +18,8 @@ mod field_drop;
 mod field_rename;
 #[cfg(feature = "ace16-create")]
 mod first_table;
+#[cfg(feature = "ace16-create")]
+mod index_creation;
 mod insert;
 mod plan;
 #[cfg(feature = "ace16-create")]
@@ -51,6 +53,8 @@ pub use field_drop::StagedFieldDrop;
 pub use field_rename::StagedFieldRename;
 #[cfg(feature = "ace16-create")]
 pub use first_table::StagedFirstTable;
+#[cfg(feature = "ace16-create")]
+pub use index_creation::StagedIndexCreation;
 pub use insert::{OfflineTableInserter, StagedInsert};
 #[cfg(feature = "ace16-create")]
 pub use populated_table::StagedPopulatedAddTable;
@@ -102,6 +106,8 @@ pub enum KnownOutcome {
 /// Acknowledged schema change, separate from affected-record counts.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum SchemaChange {
+    /// One ordinary secondary index was added without changing table rows.
+    IndexCreated,
     /// One ordinary field was appended to a qualified existing empty table.
     ColumnAdded,
     /// One existing field changed its true name without changing native identity.
