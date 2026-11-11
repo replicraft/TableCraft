@@ -108,9 +108,8 @@ fn file_policy_changes_do_not_refund_the_original_native_budget() {
     assert_eq!(execute(&source, sql).unwrap(), [vec![Value::Int64(2)]]);
     let smaller = AttachmentDecodeLimits::new(1_000_000).unwrap();
     let source = source.with_decoded_attachment_limits(smaller);
-    assert_eq!(
-        execute(&source, sql),
-        Err(QueryError::SourceFailure(SourceFailure::StructureLimit))
+    assert!(
+        matches!(execute(&source, sql), Err(QueryError::SourceFailure(SourceFailure::Limit(error))) if error.resource == Resource::Bytes)
     );
     let source =
         source.with_decoded_attachment_limits(AttachmentDecodeLimits::new(1_100_000).unwrap());
