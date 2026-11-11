@@ -18,8 +18,8 @@ fn index_review_scene_shows_exact_metadata_and_schema_only_counts() {
             crate::configure(&harness.ctx);
             harness.run_steps(3);
             for (key, value) in [
-                ("query-action-schema-index-name", "BalanceIndex"),
-                ("query-action-schema-index-field", "Balance"),
+                ("query-action-schema-index-name", "ScoreIndex"),
+                ("query-action-schema-index-field", "CopiedScore"),
             ] {
                 let mut arguments = FluentArgs::new();
                 arguments.set("name", value);

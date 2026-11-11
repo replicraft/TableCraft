@@ -11,7 +11,7 @@ const UPDATE_SQL: &str =
 
 const MAKE_TABLE_SQL: &str = "SELECT [CustomerName],[City],[Balance] INTO [CustomerArchive] FROM [Customers] ORDER BY [CustomerName]";
 
-const INDEX_SQL: &str = "CREATE INDEX [BalanceIndex] ON [Customers] ([Balance] DESC)";
+const INDEX_SQL: &str = "CREATE INDEX [ScoreIndex] ON [Archive] ([CopiedScore] DESC)";
 
 const CREATE_SQL: &str = "CREATE TABLE [Contacts] ([Id] LONG, [Name] VARCHAR(80))";
 const DROP_TABLE_SQL: &str = "DROP TABLE [Customers]";
@@ -142,7 +142,9 @@ impl Preview {
         let review = QueryActionReview {
             id: request,
             document_revision: fixtures::REVISION,
-            table: if sql == MAKE_TABLE_SQL {
+            table: if sql == INDEX_SQL {
+                "Archive"
+            } else if sql == MAKE_TABLE_SQL {
                 "CustomerArchive"
             } else if sql == CREATE_SQL {
                 "Contacts"
@@ -162,9 +164,9 @@ impl Preview {
                 QueryActionKind::Insert => QueryActionEffect::Insert { inserted_rows: 2 },
                 QueryActionKind::Schema => QueryActionEffect::Schema(match sql.as_str() {
                     INDEX_SQL => QuerySchemaEffect::CreateIndex {
-                        index: "BalanceIndex".into(),
-                        column: "Balance".into(),
-                        native_number: 3,
+                        index: "ScoreIndex".into(),
+                        column: "CopiedScore".into(),
+                        native_number: 0,
                         descending: true,
                         indexed_rows: fixtures::TOTAL_ROWS as usize,
                     },
@@ -177,8 +179,8 @@ impl Preview {
                         declared_rows: fixtures::TOTAL_ROWS,
                     },
                     DROP_COLUMN_SQL => QuerySchemaEffect::DropColumn {
-                        column: "Balance".into(),
-                        native_number: 3,
+                        column: "CopiedScore".into(),
+                        native_number: 0,
                     },
                     _ => return None,
                 }),
