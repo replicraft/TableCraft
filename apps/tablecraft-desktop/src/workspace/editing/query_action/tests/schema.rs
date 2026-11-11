@@ -311,3 +311,24 @@ fn select_into_run_reviews_all_selected_rows_and_creates_one_atomic_populated_ta
         Some(900),
     );
 }
+
+#[test]
+fn filtered_top_run_reviews_and_saves_every_boundary_tie_once() {
+    use tablecraft_testkit::fixtures::access::canonical_retained_add_table::populated;
+
+    let seed = fields::source(fields::Case::FirstNumber).bytes;
+    let before = populated::numbers(
+        &seed,
+        "Items",
+        &[None, Some(2), Some(5), Some(5), Some(9), Some(10)],
+    );
+    let expected = populated::numbers(&before, "Archive", &[Some(5), Some(5)]);
+    creation_journey(
+        before,
+        expected,
+        "SELECT TOP 1 CopiedScore INTO Archive FROM Items WHERE CopiedScore >= 5 ORDER BY CopiedScore",
+        "Archive",
+        SaveSchemaChange::TableAdded { column_count: 1 },
+        Some(2),
+    );
+}

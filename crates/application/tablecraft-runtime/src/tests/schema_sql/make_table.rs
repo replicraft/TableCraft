@@ -16,19 +16,33 @@ fn assert_image(actual: &[u8], expected: &[u8]) {
 
 #[test]
 fn make_table_reviews_materialized_rows_and_saves_schema_plus_rows_without_sql_reexecution() {
-    for literals in [
-        vec![],
-        std::iter::once(None).chain((1..900).map(Some)).collect(),
+    for (literals, sql, selected) in [
+        (
+            vec![],
+            "SELECT CopiedScore INTO Archive FROM Items ORDER BY CopiedScore",
+            vec![],
+        ),
+        (
+            std::iter::once(None).chain((1..900).map(Some)).collect(),
+            "SELECT CopiedScore INTO Archive FROM Items ORDER BY CopiedScore",
+            std::iter::once(None).chain((1..900).map(Some)).collect(),
+        ),
+        (
+            vec![None, Some(2), Some(5), Some(5), Some(9), Some(10)],
+            "SELECT TOP 1 CopiedScore INTO Archive FROM Items WHERE CopiedScore >= 5 ORDER BY CopiedScore",
+            vec![Some(5), Some(5)],
+        ),
+        (
+            vec![Some(5)],
+            "SELECT CopiedScore INTO Archive FROM Items WHERE CopiedScore > 100",
+            vec![],
+        ),
     ] {
         let seed = fields::source(fields::Case::FirstNumber).bytes;
         let before = populated::numbers(&seed, "Items", &literals);
-        let expected = populated::numbers(&before, "Archive", &literals);
+        let expected = populated::numbers(&before, "Archive", &selected);
         let (_directory, path, worker, revision) = opened(&before);
-        let target = inspect(
-            &worker,
-            revision,
-            "SELECT CopiedScore INTO Archive FROM Items ORDER BY CopiedScore",
-        );
+        let target = inspect(&worker, revision, sql);
         assert_eq!(target.operation(), QueryOperation::Schema);
         let Response::TableCreationReviewed { capability } = review(&worker, &target).unwrap()
         else {
@@ -36,7 +50,7 @@ fn make_table_reviews_materialized_rows_and_saves_schema_plus_rows_without_sql_r
         };
         let witness = capability.reopen_witness();
         assert_eq!(witness.draft_revision(), None);
-        assert_eq!(witness.inserted_rows(), Some(literals.len()));
+        assert_eq!(witness.inserted_rows(), Some(selected.len()));
         assert_eq!(witness.column_count(), 1);
         assert_image(witness.expected_bytes(), &expected);
         assert_image(&fs::read(&path).unwrap(), &before);
@@ -49,7 +63,7 @@ fn make_table_reviews_materialized_rows_and_saves_schema_plus_rows_without_sql_r
         let report = terminal(&saves);
         assert_eq!(report.id, id);
         assert!(matches!(report.outcome, SaveOutcome::Saved { receipt }
-            if receipt.matched_rows.is_none() && receipt.changed_rows == Some(literals.len())
+            if receipt.matched_rows.is_none() && receipt.changed_rows == Some(selected.len())
             && receipt.schema_change == Some(SaveSchemaChange::TableAdded { column_count: 1 })));
         assert!(saves.acknowledge(id));
         assert_image(&fs::read(&path).unwrap(), &expected);
@@ -77,7 +91,7 @@ fn make_table_rejects_existing_destinations_closed_shapes_and_stale_inspections_
     for sql in [
         "SELECT CopiedScore INTO Items FROM Items",
         "SELECT CopiedScore+1 AS Computed INTO Archive FROM Items",
-        "SELECT CopiedScore INTO Archive FROM Items WHERE CopiedScore > 0",
+        "SELECT CopiedScore INTO Archive FROM Items GROUP BY CopiedScore",
     ] {
         let target = inspect(&worker, revision, sql);
         assert!(review(&worker, &target).is_err());
