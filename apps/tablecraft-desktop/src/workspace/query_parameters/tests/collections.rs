@@ -147,7 +147,20 @@ fn sql_view_attachment_metadata_members_preserve_null_empty_and_child_alignment(
     // Refusal must retain the last fully published result, never publish a
     // partial scalar-only projection or fabricate query-row source identity.
     run(&mut harness, "SELECT Id, Score FROM Items ORDER BY Id");
-    assert!(harness.state().state.error.is_some());
+    let report = harness
+        .state()
+        .state
+        .error
+        .as_deref()
+        .expect("bare attachment refusal");
+    assert!(
+        harness.query_all_by_role(Role::Label).any(|node| {
+            let node = node.accesskit_node();
+            node.label().is_some_and(|text| text == report)
+                || node.value().is_some_and(|text| text == report)
+        }),
+        "the actual refusal must be visible while the previous result stays published"
+    );
     let retained = harness.state().state.query_data.as_ref().unwrap();
     assert_eq!(retained.source_revision, None);
     assert_eq!(
