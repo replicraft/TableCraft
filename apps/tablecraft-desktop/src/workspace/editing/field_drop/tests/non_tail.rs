@@ -62,13 +62,13 @@ fn assert_survivors(
         assert_eq!(actual.len(), expected.len());
         for (cell, (text, kind)) in actual.iter().zip(expected) {
             assert_eq!(&cell.text, text);
-            assert_eq!(cell.kind, *kind);
+            assert!(cell.kind == *kind, "surviving native field kind changed");
         }
     }
 }
 
-fn journey(case: fields::Case, column: &str) {
-    let source = fields::source(case);
+fn source(case: fields::Case) -> fields::Source {
+    let mut source = fields::source(case);
     let before = typed_fields::after(
         &source.bytes,
         source.definition,
@@ -81,22 +81,32 @@ fn journey(case: fields::Case, column: &str) {
     } else {
         before
     };
+    source.bytes = before;
+    source
+}
+
+fn journey(source: fields::Source, table: &str, column: &str) {
+    let before = source.bytes;
     let after = field_changes::drop_field(&before, source.definition, source.catalog_root, column);
     let (_directory, path, _, mut harness) = opened(before.clone());
     open_table(&mut harness, "Other");
     let sibling = harness.state().state.active_object().unwrap();
-    open_table(&mut harness, "Table1");
+    open_table(&mut harness, table);
     let original = harness.state().state.active_object().unwrap();
     scratch(&mut harness, &original);
     let tabs = harness.state().state.object_tabs();
     let data = harness.state().state.data.as_ref().unwrap();
-    assert_eq!(data.rows.len(), 2);
-    assert_eq!(data.columns[1].name, column);
+    assert_eq!(data.rows.len(), source.roots.len());
+    let selected = data
+        .columns
+        .iter()
+        .position(|field| field.name == column)
+        .unwrap();
     let columns = data
         .columns
         .iter()
         .enumerate()
-        .filter(|(index, _)| *index != 1)
+        .filter(|(index, _)| *index != selected)
         .map(|(_, field)| (field.name.clone(), field.native_number))
         .collect::<Vec<_>>();
     let rows = data
@@ -105,7 +115,7 @@ fn journey(case: fields::Case, column: &str) {
         .map(|row| {
             row.iter()
                 .enumerate()
-                .filter(|(index, _)| *index != 1)
+                .filter(|(index, _)| *index != selected)
                 .map(|(_, cell)| (cell.text.clone(), cell.kind))
                 .collect::<Vec<_>>()
         })
@@ -151,17 +161,37 @@ fn journey(case: fields::Case, column: &str) {
     drop(harness);
     let mut reopened = app_harness(Desktop::new(egui::Context::default(), Some(path.clone())));
     finish_reads(&mut reopened);
-    open_table(&mut reopened, "Table1");
+    open_table(&mut reopened, table);
     assert_survivors(&reopened, &columns, &rows);
     assert_image(&std::fs::read(&path).unwrap(), &after);
 }
 
 #[test]
 fn populated_middle_number_context_drop_keeps_currency_and_sibling_tabs() {
-    journey(fields::Case::FirstNumber, "Score");
+    journey(source(fields::Case::FirstNumber), "Table1", "Score");
 }
 
 #[test]
 fn populated_middle_text_context_drop_preserves_forwarded_rows_and_native_numbers() {
-    journey(fields::Case::SecondText, "Name");
+    journey(source(fields::Case::SecondText), "Table1", "Name");
+}
+
+#[test]
+fn keyless_ordinary_native_zero_context_drop_keeps_score_native_one() {
+    let seed = fields::source(fields::Case::FirstNumber).bytes;
+    let definition = (seed.len() / 4096) as u32;
+    let catalog_root = usize::from(u16::from_le_bytes(
+        seed[4 * 4096 + 12..4 * 4096 + 14].try_into().unwrap(),
+    ));
+    let bytes = field_changes::keyless_first_field(&seed, "Keyless");
+    journey(
+        fields::Source {
+            bytes,
+            definition,
+            catalog_root,
+            roots: vec![0],
+        },
+        "Keyless",
+        "Id",
+    );
 }

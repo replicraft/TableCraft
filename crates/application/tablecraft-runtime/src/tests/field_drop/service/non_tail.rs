@@ -1,6 +1,5 @@
 //! Real middle-field DROP binds inspection, consuming save and survivor publication.
-use super::super::inspect;
-use super::{opened, request, review, terminal};
+use super::{opened, request, terminal};
 use crate::{
     Command, Error, Response, SaveOutcome, SaveSchemaChange, SaveStartFailure, SaveWorker,
 };
@@ -17,8 +16,8 @@ fn assert_image(actual: &[u8], expected: &[u8]) {
     );
 }
 
-fn journey(case: fields::Case, column: &str) {
-    let source = fields::source(case);
+fn source(case: fields::Case) -> fields::Source {
+    let mut source = fields::source(case);
     let before = typed_fields::after(
         &source.bytes,
         source.definition,
@@ -31,6 +30,12 @@ fn journey(case: fields::Case, column: &str) {
     } else {
         before
     };
+    source.bytes = before;
+    source
+}
+
+fn journey(source: fields::Source, table: &str, column: &str) {
+    let before = source.bytes;
     let after = field_changes::drop_field(&before, source.definition, source.catalog_root, column);
     let (_directory, path, worker, revision) = opened(&before);
     let page = |table: &str| {
@@ -67,19 +72,56 @@ fn journey(case: fields::Case, column: &str) {
                 .collect::<Vec<_>>(),
         )
     };
-    let (_, original_columns, original_rows) = page("Table1");
-    assert_eq!(original_rows.len(), 2);
-    assert_eq!(original_columns[1].0, column);
-    assert_eq!(original_columns[1].1, Some(1));
+    let (_, original_columns, original_rows) = page(table);
+    assert_eq!(original_rows.len(), source.roots.len());
+    let selected = original_columns
+        .iter()
+        .position(|field| field.0 == column)
+        .unwrap();
+    let number = original_columns[selected].1.unwrap();
+    let inspect = |revision| {
+        request(
+            &worker,
+            Command::InspectFieldDropSource {
+                document_revision: revision,
+                table: table.into(),
+                column: column.into(),
+                native_number: number,
+            },
+        )
+        .map(|response| {
+            let Response::FieldDropSourceInspected { inspection } = response else {
+                panic!("expected checked source facts for the actual native field");
+            };
+            inspection
+        })
+    };
+    let review = || {
+        let Response::FieldDropReviewed { review, capability } = request(
+            &worker,
+            Command::ReviewFieldDrop {
+                document_revision: revision,
+                table: table.into(),
+                column: column.into(),
+                native_number: number,
+            },
+        )
+        .unwrap() else {
+            panic!("expected consuming non-tail DROP review");
+        };
+        assert_eq!(review.native_number, number);
+        assert_eq!(capability.captured_native_number(), number);
+        capability
+    };
     let (_, sibling_columns, sibling_rows) = page("Other");
-    let facts = inspect(&worker, revision, column, 1).unwrap();
+    let facts = inspect(revision).unwrap();
     assert!(
         facts.source_eligible,
         "actual middle target must have an eligible checked source"
     );
     assert_image(&std::fs::read(&path).unwrap(), &before);
-    let (_, capability) = review(&worker, revision, column, 1).unwrap();
-    let (_, stale) = review(&worker, revision, column, 1).unwrap();
+    let capability = review();
+    let stale = review();
     let witness = capability.reopen_witness();
     assert_image(witness.expected_bytes(), &after);
     assert_image(&std::fs::read(&path).unwrap(), &before);
@@ -93,7 +135,7 @@ fn journey(case: fields::Case, column: &str) {
         "{report:?}"
     );
     assert_eq!(
-        page("Table1").0,
+        page(table).0,
         revision,
         "terminal save does not publish a read session"
     );
@@ -108,23 +150,20 @@ fn journey(case: fields::Case, column: &str) {
         panic!("expected complete non-tail DROP witness reopening");
     };
     assert!(fresh > revision);
-    assert!(matches!(
-        inspect(&worker, revision, column, 1),
-        Err(Error::StaleDocument)
-    ));
+    assert!(matches!(inspect(revision), Err(Error::StaleDocument)));
     let failure = saves
         .start_field_drop(stale, crate::journal_path(&path))
         .unwrap_err();
     assert_eq!(failure.kind, SaveStartFailure::StaleDocument);
     assert!(!bundle.exists());
-    let (current, columns, rows) = page("Table1");
+    let (current, columns, rows) = page(table);
     assert_eq!(current, fresh);
     assert_eq!(
         columns,
         original_columns
             .into_iter()
             .enumerate()
-            .filter(|(index, _)| *index != 1)
+            .filter(|(index, _)| *index != selected)
             .map(|(_, column)| column)
             .collect::<Vec<_>>()
     );
@@ -135,7 +174,7 @@ fn journey(case: fields::Case, column: &str) {
             .map(|row| row
                 .into_iter()
                 .enumerate()
-                .filter(|(index, _)| *index != 1)
+                .filter(|(index, _)| *index != selected)
                 .map(|(_, cell)| cell)
                 .collect::<Vec<_>>())
             .collect::<Vec<_>>()
@@ -148,10 +187,30 @@ fn journey(case: fields::Case, column: &str) {
 
 #[test]
 fn populated_middle_number_drop_saves_acknowledges_and_reopens_exact_survivors() {
-    journey(fields::Case::FirstNumber, "Score");
+    journey(source(fields::Case::FirstNumber), "Table1", "Score");
 }
 
 #[test]
 fn populated_middle_text_drop_preserves_forwarded_rows_and_native_number_hole() {
-    journey(fields::Case::SecondText, "Name");
+    journey(source(fields::Case::SecondText), "Table1", "Name");
+}
+
+#[test]
+fn keyless_ordinary_native_zero_drop_preserves_score_one_without_primary_assumptions() {
+    let seed = fields::source(fields::Case::FirstNumber).bytes;
+    let definition = (seed.len() / 4096) as u32;
+    let catalog_root = usize::from(u16::from_le_bytes(
+        seed[4 * 4096 + 12..4 * 4096 + 14].try_into().unwrap(),
+    ));
+    let bytes = field_changes::keyless_first_field(&seed, "Keyless");
+    journey(
+        fields::Source {
+            bytes,
+            definition,
+            catalog_root,
+            roots: vec![0],
+        },
+        "Keyless",
+        "Id",
+    );
 }
