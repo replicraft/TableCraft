@@ -6,6 +6,7 @@ use crate::workspace::{
         app_harness,
         cell_edit::{begin_replacement, review_and_save},
         finish_reads, finish_schema_save,
+        inserting::{begin_generated_insert, choose_field_mode, review_and_save_insert},
         objects::{EXACT_SCRATCH, scratch},
         opened,
     },
@@ -242,6 +243,13 @@ fn decimal_then_guid_tail_drop_preserves_raw_history_and_live_number_identity() 
     begin_replacement(&mut harness, 0, "Score", false, Some("124"));
     let after = field_changes::update_score(&guid, definition, 0, Some(124));
     review_and_save(&mut harness, &path, &guid, &after);
+    let inserted = field_changes::append_score(&after, definition, Some(0));
+    begin_generated_insert(&mut harness);
+    choose_field_mode(&mut harness, "Score", "Omitted");
+    review_and_save_insert(&mut harness, &path, &after);
+    assert_image(&path, &inserted);
+    assert_eq!(harness.state().state.sql, EXACT_SCRATCH);
+    assert!(!journal_path(&path).exists());
     drop(harness);
     let mut fresh = app_harness(Desktop::new(egui::Context::default(), Some(path.clone())));
     finish_reads(&mut fresh);
@@ -250,8 +258,11 @@ fn decimal_then_guid_tail_drop_preserves_raw_history_and_live_number_identity() 
     assert_eq!(data.columns.len(), 2);
     assert_eq!(data.columns[0].native_number, Some(0));
     assert_eq!(data.columns[1].native_number, Some(1));
+    assert_eq!(data.rows.len(), 2);
     assert_eq!(data.rows[0][0].text, "1");
     assert_eq!(data.rows[0][1].text, "124");
-    assert_image(&path, &after);
+    assert_eq!(data.rows[1][0].text, "2");
+    assert_eq!(data.rows[1][1].text, "0");
+    assert_image(&path, &inserted);
     assert!(!journal_path(&path).exists());
 }
