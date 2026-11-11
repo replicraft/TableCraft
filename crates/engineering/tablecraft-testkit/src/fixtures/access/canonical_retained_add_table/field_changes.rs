@@ -1,4 +1,7 @@
 //! Independent retained field RENAME/DROP images preserve row and property history.
+/// Independent row appends over explicit post-retirement survivor declarations.
+pub mod inserting;
+
 use crate::fixtures::access::{
     generated_record_insert::placement::{self, Pages},
     packed_record::append_record,
