@@ -32,6 +32,13 @@ const FIELD_RENAME_FAMILY: &[u8; 4] = b"TCFR";
 const FIELD_DROP_FAMILY: &[u8; 4] = b"TCFD";
 const TABLE_DROP_FAMILY: &[u8; 4] = b"TCTD";
 
+#[cfg(all(
+    test,
+    not(feature = "ace16-create"),
+    any(target_os = "macos", target_os = "linux", windows)
+))]
+mod non_tail_tests;
+
 pub(super) enum MutationPlan {
     #[cfg(feature = "ace16-create")]
     DatabaseOptions(DatabaseOptionsPlan),
@@ -138,7 +145,10 @@ impl MutationPlan {
             }
             #[cfg(feature = "ace16-create")]
             Self::FieldDrop(plan) => {
-                if plan.intent().is_retained() || plan.intent().is_retained_typed() {
+                if plan.intent().is_retained()
+                    || plan.intent().is_retained_typed()
+                    || plan.intent().is_retained_non_tail()
+                {
                     return plan
                         .prepare_retained(target, journal, budget, cancelled)
                         .map_err(Cause::Prepare)?
@@ -397,6 +407,11 @@ impl MutationIntent {
                     tablecraft_ace::RetainedTypedFieldAdditionIntentError::UnsupportedSource,
                 ));
             }
+        }
+        if raw.starts_with(b"TCFD0005") {
+            return NativeFieldDropIntent::decode_retained_non_tail(raw, budget, cancelled)
+                .map(Self::RetainedFieldDrop)
+                .map_err(Cause::FieldDropIntent);
         }
         if raw.starts_with(b"TCFD0004") {
             return NativeFieldDropIntent::decode_retained_typed(raw, budget, cancelled)

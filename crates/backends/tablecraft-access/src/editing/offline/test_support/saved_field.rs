@@ -106,9 +106,15 @@ pub(in crate::editing::offline) fn retain_retained_pair(
             encoded
         }
         FieldPlan::Drop(plan) => {
-            assert!(plan.intent().is_retained() || plan.intent().is_retained_typed());
+            assert!(
+                plan.intent().is_retained()
+                    || plan.intent().is_retained_typed()
+                    || plan.intent().is_retained_non_tail()
+            );
             let encoded = plan.intent().encode(budget, &|| false).unwrap();
-            let marker = if plan.intent().is_retained_typed() {
+            let marker = if plan.intent().is_retained_non_tail() {
+                b"TCFD0005"
+            } else if plan.intent().is_retained_typed() {
                 b"TCFD0004"
             } else {
                 b"TCFD0003"
