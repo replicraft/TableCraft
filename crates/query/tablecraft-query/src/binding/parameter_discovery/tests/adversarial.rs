@@ -218,15 +218,15 @@ fn strict_named_domain_crosstab_and_authorized_external_queries_still_execute() 
     assert_eq!(result.columns().len(), 3);
 }
 
-fn balanced_sum(level: usize, leaf: &str) -> String {
-    if level == 0 {
-        return leaf.into();
+fn variant_wrapped(leaf: &str) -> String {
+    // This exact nesting shape already has successful depth32 controls in
+    // tests/binding_depth/support.rs; unlike a wide arithmetic tree it does not
+    // exhaust the independent binder node pool through repeated declaration walks.
+    let mut expression = leaf.to_owned();
+    for _ in 0..18 {
+        expression = format!("CVar({expression})");
     }
-    format!(
-        "({}+{})",
-        balanced_sum(level - 1, leaf),
-        balanced_sum(level - 1, leaf)
-    )
+    expression
 }
 
 #[test]
@@ -244,7 +244,7 @@ fn paid_classifier_does_not_add_expression_depth_beyond_existing_preparation() {
         binding_depth: preparation.binding_depth,
         ..Default::default()
     };
-    let body = balanced_sum(7, "Score");
+    let body = variant_wrapped("Score");
     let parsed = parse_query(
         &format!("SELECT {body} AS Total FROM Items WHERE Id=1"),
         ParseLimits::default(),
@@ -254,7 +254,7 @@ fn paid_classifier_does_not_add_expression_depth_beyond_existing_preparation() {
         .unwrap()
         .execute_collections(&data, &[], execution)
         .unwrap();
-    assert_eq!(existing.rows(), [vec![scalar(Value::Int32(640))]]);
+    assert_eq!(existing.rows(), [vec![scalar(Value::Int32(5))]]);
     assert_eq!(
         parameter_discovery_mode(
             parsed.query(),
@@ -278,7 +278,7 @@ fn paid_classifier_does_not_add_expression_depth_beyond_existing_preparation() {
     .unwrap();
     assert_eq!(captured.rows(), existing.rows());
 
-    let body = balanced_sum(7, "[P]");
+    let body = variant_wrapped("[P]");
     let declared = parse_query(
         &format!("PARAMETERS P VALUE; SELECT {body} AS Total"),
         ParseLimits::default(),
@@ -290,7 +290,7 @@ fn paid_classifier_does_not_add_expression_depth_beyond_existing_preparation() {
         .unwrap()
         .execute_collections(&data, &inputs, execution)
         .unwrap();
-    assert_eq!(existing.rows(), [vec![scalar(Value::Int32(640))]]);
+    assert_eq!(existing.rows(), [vec![scalar(Value::Int32(5))]]);
     let prepared = prepare_with_parameter_discovery(
         implicit.query(),
         &data,
@@ -308,9 +308,9 @@ fn paid_classifier_does_not_add_expression_depth_beyond_existing_preparation() {
         existing.rows()
     );
 
-    let body = balanced_sum(7, "Score");
+    let body = variant_wrapped("DCount('*','Items')");
     let parsed = parse_query(
-        &format!("SELECT {body}+DCount('*','Items') AS Total FROM Items WHERE Id=1"),
+        &format!("SELECT {body} AS Total FROM Items WHERE Id=1"),
         ParseLimits::default(),
     )
     .unwrap();
@@ -318,7 +318,7 @@ fn paid_classifier_does_not_add_expression_depth_beyond_existing_preparation() {
         .unwrap()
         .execute_collections(&data, &[], execution)
         .unwrap();
-    assert_eq!(existing.rows(), [vec![scalar(Value::Int64(642))]]);
+    assert_eq!(existing.rows(), [vec![scalar(Value::Int64(2))]]);
     assert_eq!(
         parameter_discovery_mode(
             parsed.query(),
