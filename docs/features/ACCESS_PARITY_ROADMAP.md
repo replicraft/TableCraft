@@ -154,8 +154,16 @@ consuming runtime review, original-intent recovery and complete-image checked
 reopening. Target identity, sources, aliases, fragment membership/order and other
 native fields remain protected. This does not create, Save As, rename or delete
 QueryDefs, admit broader query shapes/compiled payloads, or qualify older native
-write profiles. Query results currently buffer under 16 MiB/10,000-row limits;
-table-browser paging does not provide paged query results.
+write profiles. Query results buffer under the caller-selected work, row and byte
+allowances; table-browser paging does not provide paged query results.
+
+Qualified bare attachment/history projections now retain one typed child-recordset
+cell per parent, including matching wildcards. Query-owned read-only contents bind
+the issued result and actual published tab; output ordinals do not grant native
+parent or edit authority. Stored history stays separate from current Memo and
+attachment FileData remains uninspected in the metadata view. Generic row-recordset
+GUI contents and broader whole-recordset operators remain unfinished. See the
+[runtime contract](../application/RUNTIME.md#query-owned-collection-contents).
 
 The parser already models much more syntax than hosts can execute. Separate
 neutral mutation planners and qualified native/CLI actions exist, but their

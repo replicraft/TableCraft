@@ -27,6 +27,16 @@ and bounded feature evidence below retain their original scope.
 
 ## Existing implementation evidence
 
+Qualified attachment/history projections now retain structured child recordsets in
+normal SQL Run rather than flattening parent rows or omitting selected columns.
+Read-only query-owned contents use typed schema kinds and issued result ownership;
+attachment payloads stay uninspected and current Memo remains separate from stored
+history. See the [current implementation](IMPLEMENTATION.md#structured-attachment-and-history-query-results--11-november-2026)
+and [query workspace contract](ui/SQL_WORKSPACE.md#attachment-and-stored-history-query-results).
+Functional host/query checks and offscreen presentation are recorded; final native
+guard and strict qualification are still pending. Generic row-recordset GUI views,
+query result paging and broader native query/application parity remain active work.
+
 The [current column lifecycle matrix](features/ACCESS_PARITY_ROADMAP.md#current-native-crud-matrix)
 now includes qualified retained scalar edits and saved-field renames across all
 twelve supported scalar kinds, plus typed last-active field deletion through

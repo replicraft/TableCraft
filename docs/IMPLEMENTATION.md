@@ -1,5 +1,37 @@
 # Implementation status
 
+## Structured attachment and history query results — 11 November 2026
+
+Normal SQL Run now preserves qualified bare attachment and stored-history fields
+as one child-recordset cell per parent, including matching wildcard projections.
+Explicit named members retain their existing scalar expansion. Typed schema kinds
+select attachment/history summaries and read-only contents; history never replaces
+the visible current Memo. NULL, assigned empty collections, missing outer parents
+and uninspected attachment FileData remain distinct. Query-owned issued handles
+bind the actual result, document and published object tab without granting native
+parent identity or edit authority. Failed runs retain the last complete results.
+
+The [runtime contract](application/RUNTIME.md#query-owned-collection-contents) and
+[SQL workspace](ui/SQL_WORKSPACE.md#attachment-and-stored-history-query-results)
+describe the implemented ownership boundary. Generic row recordsets remain
+unavailable in GUI contents. Whole-recordset scalar conversion, ordering and
+aggregation do not gain implicit semantics. No payload is decoded or opened.
+
+Functional qualification currently records 1,867 passing query executions across
+271 targets, 24 focused adapter checks including four qualified history profiles,
+364 full runtime checks with one ignored, 33 focused UI checks and 22 desktop query
+workflows. CLI collection integration passes 13 checks; MCP passes 73 unit and two
+stdio checks. These runs are separate evidence, not one deduplicated total.
+Native guard repairs and final strict verification remain pending; this is not a
+final all-gates-passing receipt.
+
+The [localized presentation record](../tests/results/queries/query-history-localized-presentation-2026-11-11.json)
+retains 24 offscreen frames with 12 directly inspected across English/German,
+light/dark and parent/contents/empty states. It records the source-free adaptation
+and reference gaps separately from actual desktop execution. No native window or
+Windows/Access parity is claimed. Query result paging and a dedicated saved-query
+attachment integration regression remain unfinished.
+
 ## Stored collection member queries in SQL View — 11 November 2026
 
 Normal SQL Run now exposes explicitly named attachment metadata and existing
@@ -25,9 +57,9 @@ checks, six focused runtime collection tests, 20 desktop query workflows and
 distinct functions pass and one remains ignored. Strict affected-package lint,
 minimal runtime, rustdoc and repository guards pass. No native windows were opened.
 
-The four bare-attachment wildcard gaps remain open. Structured child-recordset
-results and query-owned read-only contents handles are separate work; current
-scalar member projections do not establish native Access recordset parity.
+At this member-query checkpoint, structured child-recordset publication and
+query-owned contents were separate work. The current section above records their
+implementation; neither checkpoint establishes native Access recordset parity.
 
 ## Retained typed saved-field addition — 10 November 2026
 
