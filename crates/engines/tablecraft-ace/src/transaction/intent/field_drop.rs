@@ -366,3 +366,6 @@ mod retained_tests;
 
 #[cfg(test)]
 mod typed_tests;
+
+#[cfg(test)]
+mod non_tail_tests;
