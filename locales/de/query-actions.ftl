@@ -31,3 +31,4 @@ query-action-schema-drop-column-confirmation = Dieses geprüfte Feld und seine W
 query-action-schema-close-target = Schließen Sie die Zieltabelle, bevor Sie diese Schemaabfrage ausführen.
 query-action-schema-reopen-failed = Die Schemaänderung wurde gespeichert, aber die Datenbank konnte nicht erneut geöffnet werden. Wiederholen Sie die Abfrage nicht.
 query-action-schema-retry-reopen = Erneut öffnen
+query-action-schema-retained-results = Vorherige Ergebnisse bleiben erhalten. Öffnen Sie die gespeicherte Datenbank erneut, um ihre Struktur zu aktualisieren; wiederholen Sie die Abfrage nicht.

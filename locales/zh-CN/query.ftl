@@ -1,7 +1,7 @@
 # TableCraft UI: query.
 
 query-title = SQL 查询
-query-help = 运行支持的读取查询，或审核支持的 UPDATE、DELETE 或 INSERT（VALUES/SELECT）。
+query-help = 运行支持的读取查询；审阅支持的 UPDATE、DELETE、INSERT (VALUES/SELECT) 和数据定义查询。
 query-placeholder = SELECT TOP 100 * FROM [Customers]
 query-run = 运行查询
 query-empty = 运行查询以查看结果。

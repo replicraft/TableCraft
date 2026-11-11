@@ -1,7 +1,7 @@
 # TableCraft UI: query.
 
 query-title = Consulta SQL
-query-help = Ejecuta lecturas compatibles; revisa UPDATE, DELETE o INSERT (VALUES/SELECT) compatibles.
+query-help = Ejecute consultas de lectura compatibles; revise UPDATE, DELETE, INSERT (VALUES/SELECT) y consultas de definición de datos compatibles.
 query-placeholder = SELECT TOP 100 * FROM [Customers]
 query-run = Ejecutar consulta
 query-empty = Ejecuta una consulta para ver sus resultados.

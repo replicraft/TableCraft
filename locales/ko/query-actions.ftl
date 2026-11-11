@@ -31,3 +31,4 @@ query-action-schema-drop-column-confirmation = 검토한 필드와 해당 값을
 query-action-schema-close-target = 이 스키마 쿼리를 실행하기 전에 대상 테이블을 닫으세요.
 query-action-schema-reopen-failed = 스키마 변경은 저장되었지만 데이터베이스를 다시 열 수 없습니다. 쿼리를 반복하지 마세요.
 query-action-schema-retry-reopen = 다시 열기
+query-action-schema-retained-results = 이전 결과가 유지됩니다. 저장된 데이터베이스를 다시 열어 구조를 새로 고치세요. 쿼리를 다시 실행하지 마세요.

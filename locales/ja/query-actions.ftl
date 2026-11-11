@@ -31,3 +31,4 @@ query-action-schema-drop-column-confirmation = 確認済みのフィールドと
 query-action-schema-close-target = このスキーマクエリを実行する前に、対象のテーブルを閉じてください。
 query-action-schema-reopen-failed = スキーマの変更は保存されましたが、データベースを再度開けませんでした。クエリを繰り返さないでください。
 query-action-schema-retry-reopen = 再度開く
+query-action-schema-retained-results = 前の結果を保持しています。保存済みデータベースを開き直して構造を更新してください。クエリを再実行しないでください。

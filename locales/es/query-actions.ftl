@@ -31,3 +31,4 @@ query-action-schema-drop-column-confirmation = ¿Eliminar permanentemente este c
 query-action-schema-close-target = Cierre la tabla de destino antes de ejecutar esta consulta de esquema.
 query-action-schema-reopen-failed = El cambio de esquema se guardó, pero no se pudo volver a abrir la base de datos. No repita la consulta.
 query-action-schema-retry-reopen = Volver a abrir
+query-action-schema-retained-results = Se conservan los resultados anteriores. Vuelva a abrir la base de datos guardada para actualizar su estructura; no repita la consulta.

@@ -31,3 +31,4 @@ query-action-schema-drop-column-confirmation = Безвозвратно удал
 query-action-schema-close-target = Закройте целевую таблицу перед выполнением этого запроса изменения структуры.
 query-action-schema-reopen-failed = Изменение структуры сохранено, но базу данных не удалось открыть заново. Не повторяйте запрос.
 query-action-schema-retry-reopen = Повторить открытие
+query-action-schema-retained-results = Предыдущие результаты сохранены. Повторно откройте сохранённую базу данных, чтобы обновить её структуру; не повторяйте запрос.

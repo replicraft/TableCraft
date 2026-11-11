@@ -31,3 +31,4 @@ query-action-schema-drop-column-confirmation = Permanently delete this reviewed 
 query-action-schema-close-target = Close the target table before running this schema query.
 query-action-schema-reopen-failed = The schema change was saved, but the database could not be reopened. Do not repeat the query.
 query-action-schema-retry-reopen = Retry reopening
+query-action-schema-retained-results = Previous results are retained. Reopen the saved database to refresh its structure; do not repeat the query.
