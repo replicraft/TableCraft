@@ -5,10 +5,44 @@ use tablecraft_ace::{
     RecoverableEditError, WriteBlocker,
 };
 use tablecraft_core::limits::ResourceBudget;
+#[cfg(feature = "ace16-create")]
+use tablecraft_core::values::Value;
 use tablecraft_db::InsertValue;
 use tablecraft_expressions::functions::dates::clock::Clock;
 
 impl NativeJournalInserter {
+    #[cfg(feature = "ace16-create")]
+    pub(super) fn plan_supplied_presence(
+        self,
+        values: Vec<Value>,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<NativeJournalInsertPlan, Error> {
+        let values = supplied_fields(values, budget, cancelled)?;
+        self.plan_presence(values, None, budget, cancelled)
+    }
+
+    #[cfg(feature = "ace16-create")]
+    pub(super) fn plan_supplied_presence_rows(
+        self,
+        rows: Vec<Vec<Value>>,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<NativeJournalInsertPlan, Error> {
+        budget
+            .charge_allocation(rows.len() as u64, size_of::<Vec<InsertValue>>() as u64)
+            .map_err(InspectError::from)
+            .map_err(NativeEditError::from)?;
+        let mut supplied = Vec::new();
+        supplied
+            .try_reserve_exact(rows.len())
+            .map_err(|_| NativeEditError::from(InspectError::Allocation))?;
+        for row in rows {
+            supplied.push(supplied_fields(row, budget, cancelled)?);
+        }
+        self.plan_presence_rows(supplied, None, budget, cancelled)
+    }
+
     pub(super) fn plan_presence(
         self,
         values: Vec<InsertValue>,
@@ -161,6 +195,28 @@ impl NativeJournalInserter {
             .map(NativeJournalInsertPlan::Omitted)
             .map_err(Error::from)
     }
+}
+
+#[cfg(feature = "ace16-create")]
+fn supplied_fields(
+    values: Vec<Value>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Vec<InsertValue>, Error> {
+    check(budget, cancelled)?;
+    budget
+        .charge_allocation(values.len() as u64, size_of::<InsertValue>() as u64)
+        .map_err(InspectError::from)
+        .map_err(NativeEditError::from)?;
+    let mut supplied = Vec::new();
+    supplied
+        .try_reserve_exact(values.len())
+        .map_err(|_| NativeEditError::from(InspectError::Allocation))?;
+    for value in values {
+        check(budget, cancelled)?;
+        supplied.push(InsertValue::Supplied(value));
+    }
+    Ok(supplied)
 }
 
 fn convert_fields(

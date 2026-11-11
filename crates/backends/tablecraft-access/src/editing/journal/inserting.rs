@@ -9,6 +9,8 @@ mod presence;
 use super::Error;
 use crate::editing::NativeEditError;
 pub use plan::NativeJournalInsertPlan;
+#[cfg(feature = "ace16-create")]
+use tablecraft_ace::RecoverableEditError;
 use tablecraft_ace::{InspectError, NativeImage, RowInsert, inspect_table_schema};
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
@@ -108,6 +110,14 @@ impl InsertableTable for NativeJournalInserter {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self::Plan, Self::Error> {
         check(budget, cancelled)?;
+        #[cfg(feature = "ace16-create")]
+        if self
+            .image
+            .select_native_retained_keyless_insert_table(&self.name, budget, cancelled)
+            .map_err(RecoverableEditError::from)?
+        {
+            return self.plan_supplied_presence(values, budget, cancelled);
+        }
         budget
             .charge_allocation(std::mem::size_of::<RowInsert>() as u64, 1)
             .map_err(InspectError::from)
