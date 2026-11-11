@@ -105,6 +105,7 @@ fn shared_prefix(wires: &[Wire]) -> usize {
 
 struct Frame {
     owner: u32,
+    height: u8,
     previous: u32,
     next: u32,
     tail: Option<u32>,
@@ -119,7 +120,8 @@ fn page(wires: &[Wire], frame: Frame) -> Vec<u8> {
     put32(&mut page, 20, frame.tail.unwrap_or(0));
     let prefix = shared_prefix(wires);
     put16(&mut page, 24, prefix as u16);
-    page[26] = u8::from(frame.tail.is_some());
+    assert_eq!(frame.tail.is_some(), frame.height != 0);
+    page[26] = frame.height;
     let mut used = 0;
     for (position, wire) in wires.iter().enumerate() {
         let skip = if position == 0 { 0 } else { prefix };
@@ -174,6 +176,7 @@ pub(super) fn build(rows: &[Row], first: u32, owner: u32, descending: bool) -> T
             &wires[range.start..range.end],
             Frame {
                 owner,
+                height: 0,
                 previous,
                 next,
                 tail: None,
@@ -225,6 +228,7 @@ pub(super) fn build(rows: &[Row], first: u32, owner: u32, descending: bool) -> T
                 &fences[range.start..range.end - 1],
                 Frame {
                     owner,
+                    height: levels as u8,
                     previous,
                     next,
                     tail: Some(tail.number),
@@ -239,6 +243,7 @@ pub(super) fn build(rows: &[Row], first: u32, owner: u32, descending: bool) -> T
         levels += 1;
     }
     assert_eq!(level[0].number, first + pages.len() as u32 - 1);
+    assert_eq!(pages.last().unwrap()[26] as usize, levels - 1);
     Tree {
         pages,
         root: level[0].number,
