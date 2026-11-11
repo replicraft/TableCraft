@@ -1,5 +1,30 @@
 # Implementation status
 
+## Retained fixed-scalar cell workflows — 10 November 2026
+
+Retained Byte, Integer/Int16, Large Integer/Int64, Single, Double and legacy
+Date/Time cells now use one exact TCNI21/V3 action through the existing shared
+runtime and Access services. Actual metadata selects this route before carrier
+lowering; LONG/Text, Currency and Boolean keep their own action families.
+Eligible targets have checked native widths/flags, are unindexed and
+nongenerated, and retain source, expected-value, constraint and required-program
+checks. Decimal, GUID and DateTimeExtended need their own qualified edit paths.
+
+The real desktop creates and fills an eight-field retained table, proves the
+LONG control, then edits all six types through values, NULL and refill. Runtime
+and native checks compare complete independent images, including Int64 beyond
+2^53, finite IEEE subnormals/negative zero and exact OLE date bits. Complete older
+rows missing later columns can materialize the selected field without assigning
+defaults to other absent fields; a NULL no-op preserves the shorter image.
+Fresh-scope V3 recovery also reconstructs that materialization.
+
+The [workflow receipt](../tests/results/schema/retained-fixed-scalar-workflows-2026-11-10.json)
+records 348 runtime tests, 50 combined selected desktop workflows, 135 native
+checks, 18 adapter checks, three journal-only cases and six focused
+materialization/recovery checks passing. Strict Clippy across seven consumers,
+feature checks, rustdoc and repository guards pass. Ignored tests and native
+Access/Windows qualification remain explicit in the receipt.
+
 ## Current fixed-preview and request bounds — 10 November 2026
 
 Fixed-purpose image capture accepts caller-selected ceilings up to the native

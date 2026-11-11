@@ -695,6 +695,19 @@ including edits after table replacement and insertion. Native operation limits
 remain explicit. SQL is never generated from the input. The shared UI's review
 is a display DTO; only the runtime can issue its opaque consuming `ReviewedEdit`.
 
+Retained Byte, Int16, Int64, Single, Double and legacy DateTime targets now use
+TCNI21 through those same commands and consuming reviews. The typed input parser
+and desktop adapters need no alternate editing logic. Exact native kind/width,
+finite floating values, expected state, NULL rules, unindexed/nongenerated flags,
+source programs and full-image binding remain enforced. Existing action families
+keep their own target restrictions. A completely framed shorter stored row can
+materialize a later fixed field while other absent fields stay NULL; a NULL
+no-op preserves its complete original frame. Decimal, Guid and DateTimeExtended
+remain separate edit-qualification work. The
+[workflow receipt](../../tests/results/schema/retained-fixed-scalar-workflows-2026-11-10.json)
+records actual creation, insertion, LONG control, six-type value/NULL/refill and
+independent recovery checks.
+
 Literal clipboard text can seed the same replacement input with `is_null=false`;
 review still uses the target field's invariant/ISO syntax and normal native
 admission. It does not infer typed NULL from `NULL` or an empty string, recover

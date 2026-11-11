@@ -970,3 +970,23 @@ authority. Existing action-specific editing restrictions still apply.
 
 The [workflow receipt](../../tests/results/schema/native-field-creation-row-crud-2026-11-10.json)
 records the passing local checks and their native Access qualification boundary.
+
+
+## Retained Number and Date/Time editing — 10 November 2026
+
+An actual retained/MSysDb workflow now creates `Measurements` with a LONG control,
+Byte, Integer, Large Integer, Single, Double and legacy Date/Time fields. It
+supplies exact initial values, including an integer beyond 2^53, through the
+existing initial-record widgets and separately reviewed first-row save. Existing
+cell edits then replace, set NULL and refill each of those six kinds through the
+same review/apply/reopen workflow. Complete independent byte images check every
+save; this does not infer precision from regional display text.
+
+[TCNI21 eligibility](../access/writes/RETAINED_CELL_UPDATES.md) remains distinct
+from creation and insertion support. Indexed, generated, calculated and otherwise
+unqualified targets remain unavailable. Decimal and Replication ID/GUID can be
+authored and inserted through their current profiles but still need retained-cell
+edit qualification. Date/Time Extended has a separate native representation and
+is outside this legacy Date/Time action. The
+[workflow receipt](../../tests/results/schema/retained-fixed-scalar-workflows-2026-11-10.json)
+records the local headless checks and qualification limits.

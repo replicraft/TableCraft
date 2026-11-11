@@ -1,0 +1,159 @@
+{
+  "date": "2026-11-10",
+  "source_commit": "a02d0842e4ddbecb09470319cd4901a1612841ba",
+  "source_tree": "7af610e89ac76ed2d748b7bc7feeb55d97e4d16d",
+  "platform": "macOS ARM64",
+  "verification": "headless actual application workflows and independent native/wire byte oracles",
+  "batches": [
+    {
+      "receipt": ".cache/retained-fixed-scalar-results.json",
+      "results": [
+        {
+          "job": "api",
+          "returncode": 0,
+          "seconds": 9.4,
+          "log": ".cache/retained-fixed-scalar-api.log",
+          "log_sha256": "469005f5c9519a20f0e47ef25c6c343e10ca73335d2b1183bd0bfa39b64bc385"
+        },
+        {
+          "job": "runtime",
+          "returncode": 0,
+          "seconds": 19.06,
+          "log": ".cache/retained-fixed-scalar-runtime.log",
+          "log_sha256": "cb63f93e086ead0af33d7b7a0326782d65fa6cb99232a90fc5816133c77bcccb"
+        },
+        {
+          "job": "desktop",
+          "returncode": 101,
+          "seconds": 11.72,
+          "log": ".cache/retained-fixed-scalar-desktop.log",
+          "log_sha256": "828e90f462185502041876df8090c0f2ce1a67d0d8907ba7225350609d028516"
+        },
+        {
+          "job": "access",
+          "returncode": 0,
+          "seconds": 20.87,
+          "log": ".cache/retained-fixed-scalar-access.log",
+          "log_sha256": "9362d478a3d498e1de51aba536f02302a0dbb452bbff87efd28a301b9dfa3539"
+        },
+        {
+          "job": "native",
+          "returncode": 0,
+          "seconds": 62.8,
+          "log": ".cache/retained-fixed-scalar-native.log",
+          "log_sha256": "49979be2988a874ba0144671ce888a7667dae96339b2a671c09b82a439c4b311"
+        },
+        {
+          "job": "lint",
+          "returncode": 101,
+          "seconds": 45.51,
+          "log": ".cache/retained-fixed-scalar-lint.log",
+          "log_sha256": "95186527b80c1c43f82dcc9ee93dea1c9a953399c050dac89038aeeb85181be8"
+        },
+        {
+          "job": "minimal",
+          "returncode": 0,
+          "seconds": 3.65,
+          "log": ".cache/retained-fixed-scalar-minimal.log",
+          "log_sha256": "16e771c114b40c9a70757d6a83a0043796fabbb5a3d7afd287dd9ccae71e6a24"
+        },
+        {
+          "job": "creation",
+          "returncode": 0,
+          "seconds": 0.96,
+          "log": ".cache/retained-fixed-scalar-creation.log",
+          "log_sha256": "cd3f9bc4141b4d3dabae7ddd262b169692ef4f12cf3d97a231f8ec0de7d578e6"
+        },
+        {
+          "job": "journal",
+          "returncode": 0,
+          "seconds": 2.06,
+          "log": ".cache/retained-fixed-scalar-journal.log",
+          "log_sha256": "2a75ceb07557c2baf4dc93f7ae5c3dfb3eb4f89bb6be2c72cee68dc1b291348a"
+        },
+        {
+          "job": "docs",
+          "returncode": 0,
+          "seconds": 12.44,
+          "log": ".cache/retained-fixed-scalar-docs.log",
+          "log_sha256": "98a51248e279ca20575c19fda58112159ddc5cc9de6396bac693ad9753e40678"
+        }
+      ]
+    },
+    {
+      "receipt": ".cache/retained-fixed-scalar-repair-results.json",
+      "results": [
+        {
+          "job": "desktop",
+          "returncode": 101,
+          "seconds": 20.97,
+          "log": ".cache/retained-fixed-scalar-repair-desktop.log",
+          "log_sha256": "17d4918bae4a838510531a198f4c96619dfeb7c4b071ddbde4baa15db1e40608"
+        },
+        {
+          "job": "journal-wire",
+          "returncode": 0,
+          "seconds": 34.01,
+          "log": ".cache/retained-fixed-scalar-repair-journal-wire.log",
+          "log_sha256": "9a9643ecf9711d17e1e5af24be356ac8f55957861caf864d55758cda70ff8c36"
+        },
+        {
+          "job": "lint",
+          "returncode": 0,
+          "seconds": 9.87,
+          "log": ".cache/retained-fixed-scalar-repair-lint.log",
+          "log_sha256": "2639e7b58e88acc34fab9902fc5fb1e667b9816fac92fc64da3e1bb55f19b95b"
+        }
+      ]
+    },
+    {
+      "receipt": ".cache/retained-fixed-scalar-materialization-results.json",
+      "results": [
+        {
+          "job": "native",
+          "returncode": 0,
+          "seconds": 32.37,
+          "log": ".cache/retained-fixed-scalar-materialization-native.log",
+          "log_sha256": "38c97a9f6b73592247be66b178fda8939ae7e14bfa1a51668f7b3612dbb6c23a"
+        },
+        {
+          "job": "lint",
+          "returncode": 0,
+          "seconds": 43.2,
+          "log": ".cache/retained-fixed-scalar-materialization-lint.log",
+          "log_sha256": "14a694d0d28419c6bc213820813b71b40ee9068d16eae17fa1e2886538a845cf"
+        }
+      ]
+    }
+  ],
+  "final_desktop": {
+    "log": ".cache/retained-fixed-scalar-desktop-verified-header.log",
+    "sha256": "42c0bbbac25e41acdf3eed9fa69b3e381d32108e3ece5b26cd8b5853f4a9c809",
+    "passed": 1,
+    "scope": "Repaired scalar journey; the other 49 selected desktop workflows passed in the repair batch."
+  },
+  "counts": {
+    "runtime_passed": 348,
+    "runtime_ignored": 1,
+    "native_batch_passed": 135,
+    "native_batch_ignored": 11,
+    "adapter_passed": 18,
+    "desktop_combined_passed": 50,
+    "journal_only_passed": 3,
+    "materialization_and_recovery_passed": 6
+  },
+  "observations": [
+    "Actual retained/MSysDb creation and first insertion preserve all six typed values and a working LONG control.",
+    "Byte, Int16, Int64, Single, Double and legacy DateTime replace, NULL and refill through the real desktop reviewed save workflow.",
+    "Whole-image oracles preserve Int64 above 2^53, finite IEEE bits, legacy OLE date bits and all nonselected bytes.",
+    "Six-kind historical rows retain exact short source bytes for NULL no-op; non-NULL materialization expands the complete frame and leaves other absent fields NULL.",
+    "Fresh-scope V3 pending, committed and settled recovery includes historical NULL-to-Byte materialization.",
+    "TCNI17\u201320 target grammars, indexed/generated/extended-column restrictions, required-program and source checks remain explicit."
+  ],
+  "limitations": [
+    "No native application window was opened.",
+    "Local checks do not establish Windows execution or Microsoft Access differential parity.",
+    "Decimal, GUID and DateTimeExtended are outside TCNI21; their creation, insertion and edit capabilities remain distinct.",
+    "The failed setup and missing test-import runs are retained separately; their failures are not represented as passing checks."
+  ]
+}
