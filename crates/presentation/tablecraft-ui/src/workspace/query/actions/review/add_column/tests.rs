@@ -26,8 +26,15 @@ fn unadorned_summary_keeps_native_text_units_and_decimal_parameters_in_both_loca
             harness.get_by_role_and_label(Role::Label, "ExactValue");
             if declaration.short_text_units().is_some() {
                 harness.get_by_role_and_label(Role::Label, "80");
-                let label = harness.state().0.text("table-draft-short-text");
+                let label = harness.state().0.text("design-type-short-text");
                 harness.get_by_role_and_label(Role::Label, &label);
+                let gallery_default = harness.state().0.text("table-draft-short-text");
+                assert!(
+                    harness
+                        .query_by_role_and_label(Role::Label, &gallery_default)
+                        .is_none(),
+                    "SQL TEXT(80) must not display the gallery's default size of 255"
+                );
             } else {
                 let label = harness.state().0.text("table-draft-number-decimal");
                 harness.get_by_role_and_label(Role::Label, &label);

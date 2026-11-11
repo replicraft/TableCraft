@@ -6,7 +6,12 @@ use tablecraft_builders::table::TypedFieldAdditionDeclaration;
 
 pub(super) fn show(ui: &mut Ui, column: &str, declaration: TypedFieldAdditionDeclaration) {
     pair(ui, "design-field-name", column);
-    let kind = tr(ui, field_label_key(declaration.kind()));
+    let kind_key = if declaration.short_text_units().is_some() {
+        "design-type-short-text"
+    } else {
+        field_label_key(declaration.kind())
+    };
+    let kind = tr(ui, kind_key);
     pair(ui, "design-data-type", &kind);
     let descriptor = declaration.descriptor();
     if let Some(units) = declaration.short_text_units() {
