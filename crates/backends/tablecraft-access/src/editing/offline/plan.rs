@@ -386,6 +386,11 @@ impl MutationIntent {
                 .map(Self::RetainedUpdate)
                 .map_err(Cause::Intent);
         }
+        if raw.starts_with(b"TCNA0010") {
+            return NativeOmittedInsertIntent::decode_retained_keyless(raw, budget, cancelled)
+                .map(Self::RetainedInsert)
+                .map_err(Cause::Intent);
+        }
         if raw.starts_with(b"TCNA0009") {
             return NativeOmittedInsertIntent::decode_retained_opaque(raw, budget, cancelled)
                 .map(Self::RetainedInsert)

@@ -102,6 +102,17 @@ impl NativeJournalInserter {
         {
             if self
                 .image
+                .select_native_retained_keyless_insert_table(&self.name, budget, cancelled)
+                .map_err(RecoverableEditError::from)?
+            {
+                return self
+                    .image
+                    .plan_recoverable_retained_keyless_insert(&self.name, rows, budget, cancelled)
+                    .map(NativeJournalInsertPlan::Retained)
+                    .map_err(Error::from);
+            }
+            if self
+                .image
                 .select_native_retained_opaque_insert_table(&self.name, budget, cancelled)
                 .map_err(RecoverableEditError::from)?
             {
