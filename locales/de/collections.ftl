@@ -20,3 +20,13 @@ collections-mock-error = Simulierter Lesefehler der Sammlung. Es wurden keine Nu
 collections-stale-view = Die Sammlung gehört nicht mehr zu dieser Ansicht.
 collections-absent-parent = Kein übergeordneter Datensatz
 collections-query-target = Abfrageergebnis · { $column } · Zeile { $row }
+
+collections-attachment-summary = { $count } { $count ->
+    [one] Anlage
+   *[other] Anlagen
+    }
+
+collections-history-summary = { $count } { $count ->
+    [one] gespeicherte Version
+   *[other] gespeicherte Versionen
+    }

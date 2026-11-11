@@ -20,3 +20,6 @@ collections-mock-error = Смоделированная ошибка чтени�
 collections-stale-view = Коллекция больше не относится к этому представлению.
 collections-absent-parent = Нет родительской записи
 collections-query-target = Результат запроса · { $column } · строка { $row }
+
+collections-attachment-summary = Вложений: { $count }
+collections-history-summary = Сохранённых версий: { $count }

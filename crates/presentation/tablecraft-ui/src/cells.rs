@@ -121,6 +121,26 @@ impl Cell {
         }
     }
 
+    pub(crate) fn state_label(&self, localizer: &Localizer) -> Option<String> {
+        let (key, assigned, members) = match self.kind {
+            CellKind::Uninspected => return Some(localizer.text("design-not-inspected")),
+            CellKind::AbsentCollection => return Some(localizer.text("collections-absent-parent")),
+            CellKind::Attachments { assigned, members } => {
+                ("collections-attachment-summary", assigned, members)
+            }
+            CellKind::VersionHistory { assigned, members } => {
+                ("collections-history-summary", assigned, members)
+            }
+            _ => return None,
+        };
+        if !assigned {
+            return None;
+        }
+        let mut arguments = FluentArgs::new();
+        arguments.set("count", members);
+        Some(localizer.format(key, &arguments))
+    }
+
     pub(crate) fn context(&self, localizer: &Localizer) -> Option<String> {
         let base = match self.kind {
             CellKind::Uninspected => Some(localizer.text("design-not-inspected")),
@@ -231,6 +251,28 @@ pub(crate) fn membership(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn typed_summary_localization_preserves_host_and_scalar_text() {
+        let localizer = Localizer::new(crate::Locale::De).unwrap();
+        let cell = Cell {
+            presentation: None,
+            alignment: HorizontalAlignment::Left,
+            text: "host summary".into(),
+            kind: CellKind::Attachments {
+                assigned: true,
+                members: 2,
+            },
+        };
+        let label = cell.state_label(&localizer).unwrap();
+        assert!(label.contains("2") && label.contains("Anlagen"));
+        assert_eq!(cell.text, "host summary");
+        assert!(
+            Cell::scalar("2 attachments")
+                .state_label(&localizer)
+                .is_none()
+        );
+    }
 
     #[test]
     fn stored_null_and_literal_null_text_have_distinct_provenance() {

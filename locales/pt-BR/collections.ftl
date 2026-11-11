@@ -20,3 +20,13 @@ collections-mock-error = Erro simulado na leitura da coleção. Nenhum conteúdo
 collections-stale-view = A coleção não pertence mais a esta exibição.
 collections-absent-parent = Sem registro pai
 collections-query-target = Resultado da consulta · { $column } · linha { $row }
+
+collections-attachment-summary = { $count } { $count ->
+    [one] anexo
+   *[other] anexos
+    }
+
+collections-history-summary = { $count } { $count ->
+    [one] versão armazenada
+   *[other] versões armazenadas
+    }

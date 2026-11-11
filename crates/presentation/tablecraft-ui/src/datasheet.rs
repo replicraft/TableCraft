@@ -961,13 +961,9 @@ fn cell_with_occurrence(
     occurrence: Option<&occurrence::Occurrence>,
 ) -> Response {
     let localizer = for_context(ui.ctx());
-    // These are explicit non-value states, so their visible/copy label belongs
-    // to UI localization rather than to stored Text or Binary interpretation.
-    let state_label = match value.kind {
-        crate::CellKind::Uninspected => Some(localizer.text("design-not-inspected")),
-        crate::CellKind::AbsentCollection => Some(localizer.text("collections-absent-parent")),
-        _ => None,
-    };
+    // Typed summaries and explicit non-value states are presentation labels;
+    // localization never changes the host text or stored scalar input.
+    let state_label = value.state_label(&localizer);
     let original_text = state_label.as_deref().unwrap_or(value.text.as_str());
     let preview = preview::text(original_text);
     let text = preview.text.as_ref();

@@ -20,3 +20,6 @@ collections-mock-error = コレクション読み取りエラーのシミュレ�
 collections-stale-view = このコレクションは現在のビューに属していません。
 collections-absent-parent = 親レコードなし
 collections-query-target = クエリ結果 · { $column } · 行 { $row }
+
+collections-attachment-summary = 添付ファイル: { $count } 件
+collections-history-summary = 保存されたバージョン: { $count } 件

@@ -20,3 +20,6 @@ collections-mock-error = 模拟集合读取错误。未打开或导出任何载�
 collections-stale-view = 此集合已不再属于当前视图。
 collections-absent-parent = 无父记录
 collections-query-target = 查询结果 · { $column } · 第 { $row } 行
+
+collections-attachment-summary = { $count } 个附件
+collections-history-summary = { $count } 个已存储版本

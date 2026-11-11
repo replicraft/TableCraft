@@ -16,17 +16,19 @@ pub(super) fn prepare(harness: &mut Harness<'_, Preview>, mode: &str) {
     if mode == "parent" {
         return;
     }
-    let needle = if mode == "empty" {
-        "0 attachments"
-    } else {
-        "2 attachments"
-    };
+    let mut arguments = tablecraft_ui::FluentArgs::new();
+    arguments.set("count", if mode == "empty" { 0 } else { 2 });
+    let needle = harness
+        .state()
+        .state()
+        .localizer
+        .format("collections-attachment-summary", &arguments);
     let cell = harness
         .query_all_by_role(Role::Label)
         .find(|node| {
             let node = node.accesskit_node();
-            node.label().is_some_and(|text| text.contains(needle))
-                || node.value().is_some_and(|text| text.contains(needle))
+            node.label().is_some_and(|text| text.contains(&needle))
+                || node.value().is_some_and(|text| text.contains(&needle))
         })
         .expect("actual synthetic query collection summary");
     cell.click_secondary();

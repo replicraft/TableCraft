@@ -23,3 +23,13 @@ collections-mock-error = Synthetic collection read error. No payload was opened 
 collections-stale-view = The collection no longer belongs to this view.
 collections-absent-parent = No parent record
 collections-query-target = Query result · { $column } · row { $row }
+
+collections-attachment-summary = { $count } { $count ->
+    [one] attachment
+   *[other] attachments
+    }
+
+collections-history-summary = { $count } { $count ->
+    [one] stored version
+   *[other] stored versions
+    }
