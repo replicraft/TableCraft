@@ -1,9 +1,9 @@
-//! Member origin is retained from actual attachment discovery, never guessed from names.
+//! Child semantics retain actual attachment/history discovery, never name heuristics.
 use super::{Group, NativeSource, Recordsets, allocate, check, copy, recordset_error};
 use crate::source::collections::payload;
 use std::{cell::OnceCell, sync::Arc};
 use tablecraft_ace::NativeReadSource;
-use tablecraft_db::{MemberAvailability, RecordsetSchema};
+use tablecraft_db::{MemberAvailability, RecordsetKind, RecordsetSchema};
 use tablecraft_query::{QueryError, source::RecordsetColumn};
 use tablecraft_schema::NameComparison;
 
@@ -28,11 +28,18 @@ impl<R: NativeReadSource> NativeSource<'_, R> {
                 .budget
                 .try_borrow_mut()
                 .map_err(|_| QueryError::SourceFailure(tablecraft_query::SourceFailure::Busy))?;
-            let mut columns = allocate(cache.attachment_member_count, &mut budget)?;
-            let mut groups: Vec<Group> = allocate(cache.attachment_member_count, &mut budget)?;
-            for owner in 0..cache.attachment_member_count {
+            let mut columns = allocate(cache.members.len(), &mut budget)?;
+            let mut groups: Vec<Group> = allocate(cache.members.len(), &mut budget)?;
+            for owner in 0..cache.members.len() {
                 check(&mut budget, self.cancelled)?;
                 let member = &cache.members[owner];
+                let kind = if owner < cache.attachment_member_count {
+                    RecordsetKind::Attachments
+                } else if cache.history_memos[owner].is_some() {
+                    RecordsetKind::VersionHistory
+                } else {
+                    return Err(QueryError::SchemaChanged);
+                };
                 let mut seen = false;
                 for group in &groups {
                     check(&mut budget, self.cancelled)?;
@@ -42,7 +49,7 @@ impl<R: NativeReadSource> NativeSource<'_, R> {
                     continue;
                 }
                 let mut count = 0;
-                for other in &cache.members[..cache.attachment_member_count] {
+                for other in &cache.members {
                     check(&mut budget, self.cancelled)?;
                     if other.collection() == member.collection() {
                         count += 1;
@@ -51,21 +58,27 @@ impl<R: NativeReadSource> NativeSource<'_, R> {
                 let mut indices = allocate(count, &mut budget)?;
                 let mut child_columns = allocate(count, &mut budget)?;
                 let mut availability = allocate(count, &mut budget)?;
-                for (index, other) in cache.members[..cache.attachment_member_count]
-                    .iter()
-                    .enumerate()
-                {
+                for (index, other) in cache.members.iter().enumerate() {
                     check(&mut budget, self.cancelled)?;
                     if other.collection() != member.collection() {
                         continue;
                     }
+                    let same_kind = match kind {
+                        RecordsetKind::Attachments => index < cache.attachment_member_count,
+                        RecordsetKind::VersionHistory => cache.history_memos[index].is_some(),
+                        RecordsetKind::Rows => false,
+                    };
+                    if !same_kind {
+                        return Err(QueryError::SchemaChanged);
+                    }
                     indices.push(index);
                     child_columns.push(copy::column(other.column(), &mut budget, self.cancelled)?);
                     availability.push(
-                        if other
-                            .column()
-                            .name()
-                            .eq_ignore_ascii_case(payload::FILE_DATA)
+                        if kind == RecordsetKind::Attachments
+                            && other
+                                .column()
+                                .name()
+                                .eq_ignore_ascii_case(payload::FILE_DATA)
                         {
                             MemberAvailability::Uninspected
                         } else {
@@ -73,10 +86,11 @@ impl<R: NativeReadSource> NativeSource<'_, R> {
                         },
                     );
                 }
-                let schema = RecordsetSchema::new(
+                let schema = RecordsetSchema::with_kind(
                     child_columns,
                     availability,
                     NameComparison::AsciiInsensitive,
+                    kind,
                     &mut budget,
                     self.cancelled,
                 )

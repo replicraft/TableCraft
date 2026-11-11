@@ -1,4 +1,4 @@
-//! Positively declared attachments expose owned metadata records without FileData reads.
+//! Qualified stored collections expose owned metadata and history without FileData reads.
 mod copy;
 mod metadata;
 mod scan;

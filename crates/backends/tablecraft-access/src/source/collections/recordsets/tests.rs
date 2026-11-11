@@ -60,6 +60,7 @@ fn declared_recordsets_are_metadata_only_and_preserve_four_parent_states_with_sh
     assert_eq!(columns.len(), 1);
     assert_eq!(columns[0].name(), "Score");
     let schema = columns[0].schema();
+    assert_eq!(schema.kind(), tablecraft_db::RecordsetKind::Attachments);
     assert_eq!(schema.columns().len(), 6);
     let data = schema
         .columns()
@@ -411,4 +412,124 @@ fn structured_source_budget_and_cancellation_fail_without_cached_partial_rows() 
         )
         .unwrap();
     assert_eq!(callbacks, 4);
+}
+
+#[test]
+fn bare_history_keeps_parent_rows_actual_member_order_and_separate_current_memo() {
+    use tablecraft_core::values::{ExpressionValue, LegacyDateTime};
+    use tablecraft_db::RecordsetKind;
+    use tablecraft_query::{ExecutionOptions, QueryValue, prepare};
+    use tablecraft_sql::{ParseLimits, parse_query};
+    use tablecraft_testkit::fixtures::access::version_history;
+
+    let text = "current"
+        .encode_utf16()
+        .flat_map(u16::to_le_bytes)
+        .collect::<Vec<_>>();
+    let mut descriptor = (0x8000_0000_u32 | text.len() as u32).to_le_bytes().to_vec();
+    descriptor.extend([0; 8]);
+    descriptor.extend(text);
+    for code in [2, 3, 5, 6] {
+        let mut bytes = version_history::with_current_memo_descriptor(&descriptor);
+        bytes[20] = code;
+        let children = Rc::new(Cell::new(0));
+        let payload = Rc::new(Cell::new(0));
+        let source = NativeSource::new(
+            Watched {
+                bytes: Cursor::new(bytes),
+                children: Rc::clone(&children),
+                payload: Rc::clone(&payload),
+            },
+            CatalogScope::new(4407),
+            budget(),
+            &|| false,
+        )
+        .unwrap()
+        .with_collections();
+        let sql = parse_query("SELECT * FROM Items ORDER BY Id", ParseLimits::default()).unwrap();
+        let plan = prepare(sql.query(), &source).unwrap();
+        assert_eq!(
+            children.get(),
+            0,
+            "history schema preparation cannot scan records"
+        );
+        let result = plan
+            .execute_collections(&source, &[], ExecutionOptions::default())
+            .unwrap();
+        assert_eq!(result.columns(), ["Id", "Notes", "Score"]);
+        assert_eq!(
+            result.rows().len(),
+            3,
+            "history children do not expand bare parent rows"
+        );
+        assert_eq!(
+            result.rows()[0][1],
+            QueryValue::Scalar(ExpressionValue::Value(Value::Text("current".into())))
+        );
+        assert_eq!(
+            result.rows()[1][1],
+            QueryValue::Scalar(ExpressionValue::Value(Value::Null))
+        );
+        for (row, count) in result.rows().iter().zip([2, 2, 0]) {
+            let QueryValue::Recordset(history) = &row[2] else {
+                panic!("expected parent-associated history");
+            };
+            assert_eq!(history.schema().kind(), RecordsetKind::VersionHistory);
+            assert_eq!(
+                history
+                    .schema()
+                    .columns()
+                    .iter()
+                    .map(|column| column.name())
+                    .collect::<Vec<_>>(),
+                ["Notes", "Modified"]
+            );
+            assert_eq!(
+                history.schema().availability(),
+                [MemberAvailability::Available; 2]
+            );
+            assert_eq!(history.presence(), RecordsetPresence::Assigned);
+            assert_eq!(history.len(), count);
+        }
+        let QueryValue::Recordset(first) = &result.rows()[0][2] else {
+            unreachable!()
+        };
+        assert_eq!(
+            first.rows()[0],
+            [
+                StoredCell::Value(Value::Text("é🦀\0older".into())),
+                StoredCell::Value(Value::DateTime(
+                    LegacyDateTime::from_bits((-0.25_f64).to_bits()).unwrap()
+                )),
+            ]
+        );
+        assert_eq!(
+            first.rows()[1],
+            [
+                StoredCell::Value(Value::Text("newer".into())),
+                StoredCell::Value(Value::DateTime(
+                    LegacyDateTime::from_bits(0.25_f64.to_bits()).unwrap()
+                )),
+            ]
+        );
+        let QueryValue::Recordset(second) = &result.rows()[1][2] else {
+            unreachable!()
+        };
+        assert_eq!(
+            second.rows()[0],
+            [
+                StoredCell::Value(Value::Text(String::new())),
+                StoredCell::Value(Value::DateTime(LegacyDateTime::from_bits(1).unwrap())),
+            ]
+        );
+        assert_eq!(
+            second.rows()[1],
+            [
+                StoredCell::Value(Value::Null),
+                StoredCell::Value(Value::Null)
+            ]
+        );
+        assert!(children.get() > 0);
+        assert_eq!(payload.get(), 0);
+    }
 }
