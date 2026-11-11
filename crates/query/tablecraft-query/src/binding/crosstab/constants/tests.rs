@@ -51,12 +51,18 @@ fn text_reservations_and_nodes_consume_the_parent_binding_budget() {
 }
 
 #[test]
-fn structural_allocation_depth_and_nonconstant_nodes_fail_without_source_access() {
+fn explicit_allocation_budget_depth_and_nonconstant_nodes_fail_without_source_access() {
     let large = Expr::Literal(Expression::Text("a".repeat(1_048_577)));
-    assert_eq!(
-        binder(None, None).constant_heading(&large, 1),
-        Err(QueryError::StructureLimit)
-    );
+    let mut limited = ResourceBudget::new(1_048_576, 0, 1000);
+    assert!(matches!(
+        binder(Some(&mut limited), None).constant_heading(&large, 1),
+        Err(QueryError::Limit(error)) if error.resource == Resource::Bytes
+    ));
+    let Value::Text(unlimited) = binder(None, None).constant_heading(&large, 1).unwrap() else {
+        panic!("expected the complete Text heading");
+    };
+    assert_eq!(unlimited.len(), 1_048_577);
+    assert!(unlimited.bytes().all(|byte| byte == b'a'));
     let mut deep = Expr::Literal(Expression::Integer(1));
     for _ in 0..20 {
         deep = Expr::Unary(UnaryOperator::Plus, Box::new(deep));
