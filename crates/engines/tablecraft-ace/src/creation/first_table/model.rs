@@ -431,6 +431,7 @@ impl FirstTableDefinition {
         self.manual
     }
 
+    #[cfg(feature = "journal")]
     pub(in crate::creation) fn select_native_construction(&mut self) {
         self.construction = Construction::Native;
     }
