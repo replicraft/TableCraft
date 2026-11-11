@@ -113,22 +113,23 @@ pub fn resolve_parameter_type(data_type: &DataType) -> Result<ParameterType, Que
     }
 
     let kind = match data_type.name.as_str() {
-        "BIT" | "YESNO" | "BOOLEAN" | "LOGICAL" => ScalarType::Boolean,
-        "BYTE" | "TINYINT" => ScalarType::Byte,
-        "SHORT" | "SMALLINT" => ScalarType::Int16,
-        "LONG" | "LONGINTEGER" | "INTEGER" | "INT" => ScalarType::Int32,
+        "BIT" | "YESNO" | "BOOLEAN" | "LOGICAL" | "LOGICAL1" => ScalarType::Boolean,
+        "BYTE" | "TINYINT" | "INTEGER1" => ScalarType::Byte,
+        "SHORT" | "SMALLINT" | "INTEGER2" => ScalarType::Int16,
+        "LONG" | "LONGINTEGER" | "INTEGER" | "INT" | "INTEGER4" => ScalarType::Int32,
         "BIGINT" | "LONGLONG" | "LARGE NUMBER" => ScalarType::Int64,
-        "SINGLE" | "REAL" | "IEEESINGLE" => ScalarType::Single,
-        "DOUBLE" | "FLOAT" | "IEEEDOUBLE" => ScalarType::Double,
+        "SINGLE" | "REAL" | "IEEESINGLE" | "FLOAT4" => ScalarType::Single,
+        "DOUBLE" | "FLOAT" | "IEEEDOUBLE" | "FLOAT8" | "NUMBER" => ScalarType::Double,
         "CURRENCY" | "MONEY" => ScalarType::Currency,
-        "DECIMAL" | "NUMERIC" => ScalarType::Decimal,
-        "TEXT" | "CHAR" | "CHARACTER" | "VARCHAR" | "LONGTEXT" | "MEMO" | "LONGCHAR" => {
-            ScalarType::Text
-        }
+        "DECIMAL" | "NUMERIC" | "DEC" => ScalarType::Decimal,
+        "TEXT" | "CHAR" | "CHARACTER" | "VARCHAR" | "LONGTEXT" | "MEMO" | "LONGCHAR"
+        | "ALPHANUMERIC" | "STRING" | "NCHAR" | "NOTE" | "NTEXT" => ScalarType::Text,
         "GUID" | "UNIQUEIDENTIFIER" => ScalarType::Guid,
         "DATETIME" | "DATE" | "TIME" | "TIMESTAMP" => ScalarType::DateTime,
         "DATETIMEEXTENDED" => ScalarType::DateTimeExtended,
-        "BINARY" | "IMAGE" | "LONGBINARY" => ScalarType::Binary,
+        "BINARY" | "IMAGE" | "LONGBINARY" | "VARBINARY" | "GENERAL" | "OLEOBJECT" => {
+            ScalarType::Binary
+        }
         _ => return Err(QueryError::Unsupported),
     };
     let data_type = match data_type.arguments.as_slice() {
