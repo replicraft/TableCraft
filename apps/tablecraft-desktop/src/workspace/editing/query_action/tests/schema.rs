@@ -2,7 +2,10 @@
 use super::{finish_reads, finish_save, opened, reviewed, run};
 use crate::workspace::{Desktop, PendingOperation};
 use egui::{Key, accesskit::Role};
-use egui_kittest::{Harness, kittest::Queryable};
+use egui_kittest::{
+    Harness,
+    kittest::{NodeT, Queryable},
+};
 #[cfg(unix)]
 use std::time::{Duration, Instant};
 use tablecraft_runtime::{SaveOutcome, SaveSchemaChange, journal_path};
