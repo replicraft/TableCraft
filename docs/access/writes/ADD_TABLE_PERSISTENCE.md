@@ -94,8 +94,7 @@ can grow into proven adjacent free record capacity. Indirect-map promotion and
 adding catalog/map container pages are not implemented; exhausted actual carrier
 capacity refuses before saving. These are implementation gaps, not Access
 page-count or table-count limits. Retained capture accepts the native database
-size bound with fallible allocation, cancellation and cumulative caller budgets;
-it does not inherit the older 64 MiB capture ceiling.
+size bound with fallible allocation, cancellation and cumulative caller budgets.
 
 `TCAT0006` carries this exact source family and a closed TCNT1–6 declaration.
 `NativeAddTableIntent::new_retained` binds request data only. Preparation uses the

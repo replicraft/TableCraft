@@ -147,8 +147,8 @@ The [ordinary-content fixed route](access/writes/NORMAL_ACE_ORDINARY_FIXED.md)
 now supports the initial closed data-only family through shared sessions and
 the CLI, including equal/empty requests and TCNI0004 recovery. Full content proof
 replaces neither native mutation proof nor qualification of arbitrary imported
-files. Variable inline-map windows now remove the initial 64-page ceiling, with
-qualified 96-page source/save/recovery/readback checks. Retained Int32 counters
+files. Allocation uses variable inline-map windows, with qualified 96-page
+source/save/recovery/readback checks. Retained Int32 counters
 and local single-Int32 indexes now have ordinary content and fixed-write checks.
 Manual Int32 indexed updates now include fitting NULL transitions, atomic UNIQUE
 swaps and independent TCNI0004 reconstruction. Two genuine ACE 16 originals now
@@ -1220,8 +1220,9 @@ frontend, not features supplied by the preview.
 Native [larger payload reads](access/storage/LARGE_PAYLOADS.md) now have separate encoded,
 decoded Memo, attachment-file, query and output policies. Independent inputs
 include 20 MiB OLE, 3 MiB Memo and 3 MiB incompressible attachments.
-[Explicit decoded Memo/query Text ceilings](access/storage/LARGER_MEMOS.md) reach 16 MiB without
-raising defaults or cumulative limits; rendered output retains its own ceiling.
+[Decoded Memo UTF-8](access/storage/LARGER_MEMOS.md) defaults to twice the
+native 30-bit encoded-value bound. Query Text and CLI output have no implicit
+size quota; explicit caller budgets and cumulative work/allocation checks apply.
 
 ## Retained Binary-index UPDATE continuation
 

@@ -24,8 +24,7 @@ retain their own target and carrier checks even for named-empty requests.
 
 The initial family is unencoded ACE header 5/6, with the known clear header
 fields, code page 1252 and General sort declaration. The standard 64 MiB captured
-image envelope and existing read/work limits remain. The earlier 64-page map
-ceiling is removed. Definitions fit one page; allocation uses qualified variable
+image envelope and existing read/work limits apply. Definitions fit one page; allocation uses qualified variable
 inline-map windows and the sole GLOBAL record. Indirect maps still refuse.
 Direct live DATA slots, free-space
 counts, catalog layouts and map ownership must be complete. Unknown fields,

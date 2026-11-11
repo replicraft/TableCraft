@@ -232,9 +232,8 @@ path and use File → Open. Password input is masked and is consumed/erased
 when opening. Original database files are opened for bounded snapshot reads;
 close other writers before opening. The preview does not provide a live shared
 file editing session. Native snapshot capture follows the engine's actual
-header/page/2-GiB envelope, with fallible allocation and cancellation; the former
-64 MiB host ceiling is removed. Datasheet pagination controls work granularity,
-not total table cardinality. Native/query/display resource policies are separate
+header/page/2-GiB envelope, with fallible allocation and cancellation. Datasheet
+pagination controls work granularity, not total table cardinality. Native/query/display resource policies are separate
 from Access compatibility limits and do not promise an exact process memory cap. Unsupported tables/queries show
 errors rather than omitting fields or running providers.
 

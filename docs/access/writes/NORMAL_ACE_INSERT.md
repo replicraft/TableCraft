@@ -137,8 +137,7 @@ that geometry will require revisiting those older proof dependencies.
 
 TCNA7 uses the wider scalar carrier grammar and tag14 for omission, preserving
 tag0 for supplied NULL. The complete record, row/column counts and variable
-payloads use their actual u32 wire bounds plus caller-selected budgets; the new
-codec does not inherit the older 16,384-row, 64 MiB or 8 KiB carrier quotas.
+payloads use their actual u32 wire bounds plus caller-selected budgets.
 Native field constraints and physical source capacity remain independent of
 inert request encoding. Existing TCNA2/6 decoders stay closed; `decode_current`
 accepts only TCNA7. Clock envelopes retain their original TCNA2 nesting and are

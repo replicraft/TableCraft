@@ -571,7 +571,7 @@ there without losing field or generation history. Desktop production code remain
 unchanged: the work lives in the native engine, adapter and runtime. TCAT6 and
 TCNA8 retain distinct original requests and V3 recovery; old source/decoder/journal
 families remain closed. Retained capture follows actual native format bounds and
-explicit caller budgets, without the old 64 MiB image ceiling.
+explicit caller budgets.
 
 Independent native checks cover 224 complete INSERT outcomes. Six native/selector,
 three source-authority and nineteen omitted-intent/recovery tests pass, alongside

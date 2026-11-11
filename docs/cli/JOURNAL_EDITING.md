@@ -117,7 +117,8 @@ complete content validation must pass before capability is advertised and
 again for every native plan/recovery. There is no caller absence flag. Ordinary
 equal assignments and genuine empty selections retain bytes and complete the
 normal journal lifecycle. This is not admission for arbitrary imported databases.
-The earlier 64-page ceiling is removed; indirect maps remain outside this route.
+Allocation uses qualified variable inline-map windows; indirect maps remain
+outside this route.
 
 A distinct [native target-table profile](../access/writes/NATIVE_TARGET_PROGRAM_ABSENCE.md)
 also supports the exact seventeen-field catalog when the selected local table

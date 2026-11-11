@@ -1,6 +1,5 @@
 # Native decoded Memo reads
 
-Decoded Memo UTF-8 no longer has a 1 MiB default or a 16 MiB product ceiling.
 `LongTextReadLimits` defaults to the maximum UTF-8 expansion implied by the
 native encoded-value bound: twice `0x3fffffff` bytes. This is a representation
 bound for supported compressed/UTF-16 forms, not an extra Access text quota.
@@ -25,7 +24,7 @@ query or mutation compatibility.
 ## Historical verification
 
 The following evidence describes captured builds and deliberately selected
-budgets. Their old product ceilings are superseded by the policy above.
+budgets. Current limits are specified above.
 
 ### Recorded independent evidence
 
