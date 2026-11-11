@@ -203,6 +203,18 @@ fn prepare<E: EditableTable>(
     comparison: MutationOptions<'_>,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<PreparedUpdate, QueryError> {
+    prepare_with_source(editor, query, multiple, budget, comparison, None, cancelled)
+}
+
+pub(super) fn prepare_with_source<E: EditableTable>(
+    editor: &E,
+    query: &Query,
+    multiple: bool,
+    budget: &mut ResourceBudget,
+    comparison: MutationOptions<'_>,
+    reads: Option<&dyn crate::Source>,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<PreparedUpdate, QueryError> {
     check(budget, cancelled)?;
 
     let profile = editor.update_profile();
@@ -221,22 +233,46 @@ fn prepare<E: EditableTable>(
     }
     let source = MutationSource {
         snapshot,
-        text_collations: comparison.text_collations,
+        text_collations: match reads {
+            Some(reads) => reads.text_collations(snapshot.name())?,
+            None => comparison.text_collations,
+        },
     };
+    validate_text_collations(snapshot.columns(), source.text_collations)?;
+    if reads.is_some()
+        && !comparison.text_collations.is_empty()
+        && source.text_collations != comparison.text_collations
+    {
+        return Err(QueryError::SchemaChanged);
+    }
+    let selected_source = reads.unwrap_or(&source);
     let BoundUpdate {
         parameters,
         assignments,
         filter,
-    } = if multiple {
+    } = if reads.is_some() {
+        crate::binding::bind_read_source_update(
+            query,
+            selected_source,
+            crate::binding::ReadSourceUpdateTarget {
+                table: snapshot.name(),
+                columns: snapshot.columns(),
+                text_collations: source.text_collations,
+            },
+            comparison.parameters.is_some(),
+            budget,
+            cancelled,
+        )?
+    } else if multiple {
         bind_batch_update(
             query,
-            &source,
+            selected_source,
             budget,
             comparison.parameters.is_some(),
             cancelled,
         )?
     } else {
-        bind_update(query, &source, budget, cancelled)?
+        bind_update(query, selected_source, budget, cancelled)?
     };
 
     snapshot
@@ -276,7 +312,7 @@ fn prepare<E: EditableTable>(
         owner: crate::external_sources::SourceNamespace::Root,
         numeric_scratch: Vec::new(),
         repeatable_dynamic: false,
-        source: &source,
+        source: selected_source,
         external_sources: Vec::new(),
         discovery: &discovery,
         parameters: Vec::new(),

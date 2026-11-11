@@ -1,4 +1,5 @@
 pub(super) mod joined;
+pub(super) mod read_source;
 
 use super::{Binder, Parameter, resolve};
 use crate::{QueryError, Source, plan::Expr};
@@ -25,7 +26,7 @@ pub(crate) fn bind_update(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<BoundUpdate, QueryError> {
-    bind_assignments(query, source, false, false, budget, cancelled)
+    bind_assignments(query, source, false, false, budget, cancelled, None)
 }
 
 pub(crate) fn bind_batch_update(
@@ -35,7 +36,15 @@ pub(crate) fn bind_batch_update(
     allow_parameters: bool,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<BoundUpdate, QueryError> {
-    bind_assignments(query, source, true, allow_parameters, budget, cancelled)
+    bind_assignments(
+        query,
+        source,
+        true,
+        allow_parameters,
+        budget,
+        cancelled,
+        None,
+    )
 }
 
 fn bind_assignments(
@@ -45,6 +54,7 @@ fn bind_assignments(
     allow_parameters: bool,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
+    target_columns: Option<read_source::ReadSourceUpdateTarget<'_>>,
 ) -> Result<BoundUpdate, QueryError> {
     if !allow_parameters && !query.parameters.is_empty() {
         return Err(QueryError::Unsupported);
@@ -53,9 +63,17 @@ fn bind_assignments(
     let Statement::Update(update) = &query.statement else {
         return Err(QueryError::Unsupported);
     };
-    let [table @ TableSource::Table(_)] = update.sources.as_slice() else {
+    let [table @ TableSource::Table(selected)] = update.sources.as_slice() else {
         return Err(QueryError::Unsupported);
     };
+    if let Some(target) = &target_columns {
+        if selected.database.is_some() {
+            return Err(QueryError::Unsupported);
+        }
+        if !selected.name.as_str().eq_ignore_ascii_case(target.table) {
+            return Err(QueryError::Source);
+        }
+    }
     if update.assignments.is_empty() || (!multiple && update.assignments.len() != 1) {
         return Err(QueryError::Unsupported);
     }
@@ -75,6 +93,36 @@ fn bind_assignments(
         1,
         crate::external_sources::SourceNamespace::Root,
     )?;
+
+    if let Some(target) = &target_columns {
+        let crate::plan::RelationNode::Table {
+            columns,
+            multivalues,
+            members,
+            recordsets,
+            text_collations,
+            ..
+        } = &relation.node
+        else {
+            return Err(QueryError::Unsupported);
+        };
+        if !multivalues.is_empty() || !members.is_empty() || !recordsets.is_empty() {
+            return Err(QueryError::Unsupported);
+        }
+        binder.work()?;
+        if let Some(budget) = &mut binder.budget {
+            budget.charge(
+                Resource::Steps,
+                columns
+                    .len()
+                    .checked_add(text_collations.len())
+                    .ok_or(QueryError::StructureLimit)? as u64,
+            )?;
+        }
+        if columns != target.columns || text_collations != target.text_collations {
+            return Err(QueryError::SchemaChanged);
+        }
+    }
 
     let count = update.assignments.len();
     let bytes = count
@@ -118,11 +166,12 @@ fn bind_assignments(
         .as_ref()
         .map(|filter| binder.expression(filter, &scopes, false, 1))
         .transpose()?;
-    if filter
-        .as_ref()
-        .is_some_and(|filter| !super::mutation_scalar::admitted(filter))
-    {
-        return Err(QueryError::Unsupported);
+    if let Some(filter) = &filter {
+        if target_columns.is_some() {
+            super::mutation_reads::admit(filter, &mut binder)?;
+        } else if !super::mutation_scalar::admitted(filter) {
+            return Err(QueryError::Unsupported);
+        }
     }
 
     Ok(BoundUpdate {

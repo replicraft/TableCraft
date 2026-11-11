@@ -66,3 +66,8 @@ pub(crate) use result::publish_cells;
 pub use result::{ExpressionQueryResult, QueryResult};
 
 mod variants;
+
+pub use editing::{
+    PreparedReadSourceUpdate, ReadSourceUpdateOptions,
+    prepare_read_source_batch_update_with_options,
+};

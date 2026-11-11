@@ -62,3 +62,8 @@ pub use execution::{
     PreparedReadSourceDelete, ReadSourceDeleteOptions, prepare_read_source_delete_with_options,
 };
 pub use source::{RecordsetOutput, Source};
+
+pub use execution::{
+    PreparedReadSourceUpdate, ReadSourceUpdateOptions,
+    prepare_read_source_batch_update_with_options,
+};
