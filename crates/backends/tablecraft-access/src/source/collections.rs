@@ -6,8 +6,9 @@ use super::{NativeSource, query_error};
 use payload::DecodedFiles;
 use std::cell::OnceCell;
 use tablecraft_ace::{
-    AttachmentColumn, AttachmentMetadataColumn, ComplexParentLink, MultivalueColumn,
-    VersionHistoryColumn, inspect_attachment_declarations, inspect_version_history_declarations,
+    AttachmentColumn, AttachmentMetadataColumn, ComplexParentLink, MultivalueColumn, ReadProfile,
+    VersionHistoryColumn, inspect_attachment_declarations, inspect_header,
+    inspect_version_history_declarations,
 };
 use tablecraft_core::{limits::Resource, values::Value};
 use tablecraft_db::{MultivalueList, validate_projection};
@@ -109,9 +110,28 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
                 .try_borrow_mut()
                 .map_err(|_| QueryError::SourceFailure(SourceFailure::Busy))?;
             let unavailable = &entry.columns.get().ok_or(QueryError::Source)?.unavailable;
-            let declarations = if unavailable.is_empty() {
-                Vec::new()
+            let profile = if unavailable.is_empty() {
+                None
             } else {
+                let mut source = self
+                    .source
+                    .try_borrow_mut()
+                    .map_err(|_| QueryError::SourceFailure(SourceFailure::Busy))?;
+                Some(
+                    inspect_header(&mut *source, &mut budget, self.cancelled)
+                        .map_err(query_error)?
+                        .read_profile()
+                        .map_err(query_error)?,
+                )
+            };
+            // Attachment and history inspectors have distinct qualified native
+            // profiles. Selecting an unavailable metadata capability is not a
+            // source error and must not disable unrelated scalar or Value reads.
+            // Every error from an inspector that actually runs still propagates.
+            let declarations = if matches!(
+                profile,
+                Some(ReadProfile::Ace2007 | ReadProfile::Ace2016 | ReadProfile::Ace2019)
+            ) {
                 let mut source = self
                     .source
                     .try_borrow_mut()
@@ -124,6 +144,8 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
                     self.cancelled,
                 )
                 .map_err(query_error)?
+            } else {
+                Vec::new()
             };
             budget
                 .charge_allocation(
@@ -163,7 +185,15 @@ impl<R: tablecraft_ace::NativeReadSource> NativeSource<'_, R> {
                 .try_reserve_exact(members.len())
                 .map_err(|_| QueryError::SourceFailure(SourceFailure::Allocation))?;
             history_memos.resize(members.len(), None);
-            if !unavailable.is_empty() {
+            if matches!(
+                profile,
+                Some(
+                    ReadProfile::Ace2007
+                        | ReadProfile::Ace2010
+                        | ReadProfile::Ace2016
+                        | ReadProfile::Ace2019
+                )
+            ) {
                 let mut source = self
                     .source
                     .try_borrow_mut()
