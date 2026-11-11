@@ -1,0 +1,215 @@
+{
+  "date": "2026-11-10",
+  "source_commit": "753f7e766408d559996d8639fc514dcc44f0d637",
+  "source_tree": "0a919dffdce4ac4f85ea92aed6eb9f45207862d5",
+  "platform": "macOS ARM64",
+  "verification": "Headless actual application workflows, independent native images and filesystem recovery",
+  "baselines": [
+    {
+      "host": "desktop",
+      "log": ".cache/retained-typed-rename-desktop-baseline.log",
+      "log_sha256": "7a54a7c22c46645e74919a4c9c636d84cd30eef3265559a09e469bc56696ad2b",
+      "outcome": "failed_as_expected",
+      "failure": "Typed source inspection refuses Byte/GUID targets",
+      "long_rename_and_value_edit_control_passed": true
+    },
+    {
+      "host": "runtime",
+      "log": ".cache/retained-typed-rename-runtime-baseline.log",
+      "log_sha256": "5352dd7441a260114c279b494911b62681ffc0f2a9627ebc66f09465b0d62afa",
+      "outcome": "failed_as_expected",
+      "failure": "Typed Byte rename returns FieldRenameIntent(Rename(Source))",
+      "long_rename_and_value_edit_control_passed": true
+    }
+  ],
+  "batches": [
+    {
+      "receipt": ".cache/retained-typed-rename-early-results.json",
+      "results": [
+        {
+          "job": "api",
+          "returncode": 0,
+          "seconds": 21.03,
+          "log": ".cache/retained-typed-rename-early-api.log",
+          "log_sha256": "284e5d22d82ba73fe9389769c1785b609a4ac78f2b033c64907135dc858de53f"
+        },
+        {
+          "job": "runtime",
+          "returncode": 0,
+          "seconds": 41.97,
+          "log": ".cache/retained-typed-rename-early-runtime.log",
+          "log_sha256": "7dce6b20bf85774716bd6635759f5addf12093df61125a6bf5e54a2c2245071c"
+        },
+        {
+          "job": "desktop",
+          "returncode": 101,
+          "seconds": 150.55,
+          "log": ".cache/retained-typed-rename-early-desktop.log",
+          "log_sha256": "9e942e30c5d9ffa172df89a612731406c3af81a365b82a5ebe7be482ee58b095"
+        },
+        {
+          "job": "access",
+          "returncode": 0,
+          "seconds": 46.41,
+          "log": ".cache/retained-typed-rename-early-access.log",
+          "log_sha256": "c6247680a585f33f484e20527dc9ee8836578fcce6b1439fe2249ea8b6403ba2"
+        }
+      ]
+    },
+    {
+      "receipt": ".cache/retained-typed-rename-late-results.json",
+      "results": [
+        {
+          "job": "desktop-keyless",
+          "returncode": 0,
+          "seconds": 9.69,
+          "log": ".cache/retained-typed-rename-late-desktop-keyless.log",
+          "log_sha256": "0c86dbe5d3c54495dc62a8c9ece6bd5a3b3317f7ba336c3e06b6fddb7635997f"
+        },
+        {
+          "job": "native",
+          "returncode": 0,
+          "seconds": 83.01,
+          "log": ".cache/retained-typed-rename-late-native.log",
+          "log_sha256": "b1f15b2b7fa89369be4cddc4bd41ed67eb4da346a96059dc6d6e6970253b9064"
+        },
+        {
+          "job": "lint",
+          "returncode": 101,
+          "seconds": 14.4,
+          "log": ".cache/retained-typed-rename-late-lint.log",
+          "log_sha256": "65987931529c5f2d967b0264222a20e2c47d726a5f35b619aac8cda45a515962"
+        },
+        {
+          "job": "minimal",
+          "returncode": 0,
+          "seconds": 6.96,
+          "log": ".cache/retained-typed-rename-late-minimal.log",
+          "log_sha256": "159175e7dfd8d8bfe5600751918996f591f93d57ecd5e434141732a3f9f9fe8c"
+        },
+        {
+          "job": "creation",
+          "returncode": 0,
+          "seconds": 0.46,
+          "log": ".cache/retained-typed-rename-late-creation.log",
+          "log_sha256": "931c56a2b21e2c034bf8f3c0c65f60b36acb2179aadbcaa2c7bddec750fc8a6a"
+        },
+        {
+          "job": "journal",
+          "returncode": 0,
+          "seconds": 5.08,
+          "log": ".cache/retained-typed-rename-late-journal.log",
+          "log_sha256": "7fdafa0d29a0fc99d2b2a1386b610d132f000486237f81947e6b2527db0deda9"
+        },
+        {
+          "job": "journal-tests",
+          "returncode": 0,
+          "seconds": 25.86,
+          "log": ".cache/retained-typed-rename-late-journal-tests.log",
+          "log_sha256": "8087b991776b1e09721426c20a3421c017b1c40b75addff8736cca8b811dc954"
+        },
+        {
+          "job": "docs",
+          "returncode": 0,
+          "seconds": 16.63,
+          "log": ".cache/retained-typed-rename-late-docs.log",
+          "log_sha256": "bf60a7bd95a48e0b6a3448573d99aff503c9467574fa078818456a8ab3e64406"
+        }
+      ]
+    },
+    {
+      "receipt": ".cache/retained-typed-rename-repair-results.json",
+      "results": [
+        {
+          "job": "native",
+          "returncode": 0,
+          "seconds": 38.79,
+          "log": ".cache/retained-typed-rename-repair-native.log",
+          "log_sha256": "5977bd92b239ea9d2e48e4d949cc6dc65396f568e37faa498fff54a5983ff582"
+        },
+        {
+          "job": "lint",
+          "returncode": 0,
+          "seconds": 64.02,
+          "log": ".cache/retained-typed-rename-repair-lint.log",
+          "log_sha256": "702a44b631c7bb97c800f39d43f2cf863fe18e5a1f9ae5cedd6dea45b69298bc"
+        }
+      ]
+    }
+  ],
+  "counts": {
+    "runtime": {
+      "passed": 350,
+      "ignored": 1
+    },
+    "desktop_original_batch_passed": 87,
+    "desktop_repaired_keyless": {
+      "passed": 1,
+      "ignored": 0
+    },
+    "desktop_combined_passed": 88,
+    "adapter": {
+      "passed": 30,
+      "ignored": 0
+    },
+    "native": {
+      "passed": 202,
+      "ignored": 11
+    },
+    "journal_only": {
+      "passed": 9,
+      "ignored": 0
+    },
+    "source_selection_repair_native": {
+      "passed": 9,
+      "ignored": 0
+    }
+  },
+  "observations": [
+    "The native typed rename matrix covers twelve scalar kinds and thirteen targets, including an ordinary field at native ordinal zero.",
+    "Independent complete images cover growth, shrink, case-only and no-op names while preserving defaults, DATA/INDEX pages, row values and stored field identities.",
+    "Actual runtime and desktop workflows retain a working LONG rename/edit control, then rename Byte, GUID and Decimal fields and edit by the new names through existing cell services.",
+    "The first ordinary column of a keyless table remains separate from its record selector through real header rename, save and fresh reopen.",
+    "Rejected case-fold collisions retain the proposal and unchanged source; corrected names require a fresh successful review.",
+    "TCFR7 originals retain exact identity, names and complete BEFORE binding. Checked V3 native reconstruction and actual offline filesystem recovery verify pending, committed and settled outcomes.",
+    "Canonical LONG/Text metadata continues to select TCFR6; other eligible typed metadata selects TCFR7 before planning. No failed proof is retried under another family.",
+    "Journal-only decoding provides no native reconstruction or write authority."
+  ],
+  "intermediate_failures": [
+    "The keyless desktop case exposed an indexed-only name offset in the independent raw rename oracle. The oracle now derives the offset from the actual physical index count; indexed outputs remain unchanged.",
+    "Strict Clippy rejected an eight-argument preparation helper. A private three-case source-selection enum now prevents invalid current/typed combinations; all nine affected native tests and strict checks pass."
+  ],
+  "limitations": [
+    "No native application window was opened. These checks do not establish Windows execution or Microsoft Access save/reopen parity.",
+    "This action retains the qualified ASCII collision policy, single-page TDEF, Inline/Single property storage, actual fitted snapshot capacity and complete source/program/dependency proofs.",
+    "Indexed/generated/calculated targets, unsupported properties/programs/dependencies and joined multi-page TDEF renames remain unqualified.",
+    "General typed saved-field ADD/DROP and non-tail DROP remain separate CRUD work; rename does not supply those actions.",
+    "Eleven native and one runtime ignored cases are not passing evidence."
+  ],
+  "guards": [
+    {
+      "check": "check_rust_format.py",
+      "returncode": 0,
+      "log": ".cache/typed-rename-final-check_rust_format.py.log",
+      "log_sha256": "81ef6bec6015e66a3290fad77133f1b3ca005d22054e9b29174246fe42e97a27"
+    },
+    {
+      "check": "check_rust_layout.py",
+      "returncode": 0,
+      "log": ".cache/typed-rename-final-check_rust_layout.py.log",
+      "log_sha256": "e4495a784bb5b2430d358e84c0b08910bbade659dc50ff7df49d8a3236451954"
+    },
+    {
+      "check": "check_dependency_boundaries.py",
+      "returncode": 0,
+      "log": ".cache/typed-rename-final-check_dependency_boundaries.py.log",
+      "log_sha256": "0550e0f35860c6b24c4aa1e52b57bcd7b8a01555414ce715a2168995381230b0"
+    },
+    {
+      "check": "check_documentation_links.py",
+      "returncode": 0,
+      "log": ".cache/typed-rename-final-check_documentation_links.py.log",
+      "log_sha256": "fa606c034bb42d1be80d04f9b501ef5247e168b461104cc1201bc0e56c443884"
+    }
+  ]
+}

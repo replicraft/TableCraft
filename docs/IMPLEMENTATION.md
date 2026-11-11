@@ -1,5 +1,41 @@
 # Implementation status
 
+## Retained typed saved-field renaming — 10 November 2026
+
+Qualified existing Boolean, Byte, Integer, LONG, Large Number, Single, Double,
+Currency, legacy DateTime, GUID, Decimal and Short Text fields now support saved
+renames through the shared runtime and Access services. Actual metadata selects
+TCFR6 for its canonical LONG/Text language or TCFR7 for other eligible typed
+declarations and properties. Complete source, dependency, program, constraint,
+index and generated-field checks remain mandatory. An ordinary keyless field
+at native ordinal zero is eligible; its actual metadata determines permission.
+
+The real headless desktop and runtime rename Byte, GUID and Decimal fields
+through growth, shrink, case-only and no-op names, then edit values by their new
+names. Exact values, native field identities and view state survive save/reopen.
+The keyless first-column workflow retains its data and record selector separately.
+Rejected case-fold collisions preserve the proposal and original source until a
+corrected review. Native checks cover all twelve scalar kinds and thirteen
+targets against independent complete images, including forwarding histories,
+literal defaults and unchanged DATA/INDEX bytes.
+
+TCFR7 has a closed original-request grammar and checked V3 reconstruction.
+Actual filesystem tests verify cold and settled recovery without inventing row
+effects for schema changes. Existing serialized families remain closed; a failed
+proof is never retried through another family. Desktop adds no native DDL logic.
+
+The [workflow receipt](../tests/results/schema/retained-typed-field-rename-workflows-2026-11-10.json)
+records 350 runtime tests, 88 combined desktop workflows, 202 selected native
+checks, 30 adapter checks and nine journal-only cases passing. The nine affected
+native tests and strict Clippy across seven consumers pass after the private
+source-selection repair. Feature checks, rustdoc and repository guards pass;
+intermediate failures and ignored cases remain explicit. These local checks do
+not establish Windows or Microsoft Access save/reopen parity.
+
+Rename retains its qualified ASCII collision policy, single-page TDEF and
+checked fitting property-storage boundaries. Joined definitions, broader native
+profiles, typed saved-field ADD/DROP and general non-tail DROP remain CRUD work.
+
 ## Retained GUID and Decimal cell workflows — 10 November 2026
 
 Qualified GUID and Decimal cells now use TCNI22 through the shared runtime and
@@ -25,8 +61,8 @@ Clippy across seven consumers, feature checks, rustdoc and repository guards
 pass. Intermediate failures and ignored cases remain recorded. These local
 checks do not establish Windows or Microsoft Access save/reopen parity.
 Indexed/generated targets, unknown required programs, ambiguous source layouts,
-GUID generation and DateTimeExtended remain outside this action. Broader saved-field
-rename/add/drop support remains a separate CRUD gap.
+GUID generation and DateTimeExtended remain outside this action. Additional
+rename profiles and typed saved-field ADD/DROP remain separate CRUD work.
 
 ## Retained fixed-scalar cell workflows — 10 November 2026
 

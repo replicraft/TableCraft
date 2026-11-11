@@ -194,3 +194,8 @@ Existing shared checks cover invalid name shapes, stale callbacks, cancellation,
 Design selection and retained failed sort preferences. These are headless
 acceptance boundaries; no new layout, native-window or Access parity evidence is
 claimed here.
+
+The [verified workflow receipt](../../tests/results/schema/retained-typed-field-rename-workflows-2026-11-10.json)
+records the passing runtime, actual desktop, native and filesystem recovery
+checks. It includes a real keyless first-column rename that preserves native
+field zero, both row values and the separate record selector through fresh reopen.

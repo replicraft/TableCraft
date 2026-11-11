@@ -49,6 +49,13 @@ checked V3 storage; profiles 1–6 and older preparation/recovery APIs retain th
 closed languages. No identifier collation beyond the qualified ASCII policy or
 Windows/Access save equivalence follows from this implementation.
 
+The [typed workflow receipt](../../../tests/results/schema/retained-typed-field-rename-workflows-2026-11-10.json)
+records independent all-type image checks, actual application workflows and
+filesystem recovery verification. The keyless oracle derives name placement
+from the actual physical index count; existing indexed outputs remain unchanged.
+Its intermediate fixture and strict-check failures are retained separately from
+the final passing checks.
+
 ## Retained tables and schema histories
 
 The retained-schema route renames qualified unindexed nullable LONG and Short
