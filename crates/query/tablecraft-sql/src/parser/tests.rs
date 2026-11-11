@@ -13,6 +13,7 @@ mod queries;
 mod saved;
 mod terminators;
 mod text;
+mod type_aliases;
 
 use super::*;
 use crate::select::{BinaryOperator, Expression, Projection, SelectPredicate};
