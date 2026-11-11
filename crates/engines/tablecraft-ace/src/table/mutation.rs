@@ -51,6 +51,8 @@ mod retained_fixed_scalar_row_updates;
 mod retained_opaque_row_updates;
 #[cfg(all(feature = "journal", feature = "ace16-create"))]
 mod retained_row_updates;
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+mod retained_wide_value_row_updates;
 #[cfg(feature = "ace16-write-preview")]
 pub use index_create::{Ace16IndexCreatePreview, SecondaryIndexCreate};
 #[cfg(all(feature = "ace16-create", feature = "journal"))]

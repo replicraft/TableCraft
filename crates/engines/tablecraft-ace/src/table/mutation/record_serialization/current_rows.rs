@@ -1,9 +1,12 @@
 //! Current logical identities retain opaque retired fixed and variable payloads.
 use super::storage;
 use crate::{
-    EditError, InspectError, TableSchema, WriteBlocker,
+    EditError, InspectError, NativeColumn, TableSchema, WriteBlocker,
     format::{
-        data_type::{BYTE, CURRENCY, DATE_TIME, DOUBLE, INT16, INT32, INT64, SHORT_TEXT, SINGLE},
+        data_type::{
+            BYTE, CURRENCY, DATE_TIME, DOUBLE, GUID, INT16, INT32, INT64, NUMERIC, SHORT_TEXT,
+            SINGLE,
+        },
         layout::{FIXED_FLAG, UPDATABLE_FLAG},
         row::{COLUMN_COUNT_BYTES, MASK_BITS, VARIABLE_COUNT_BYTES, VARIABLE_OFFSET_BYTES},
     },
@@ -22,6 +25,7 @@ pub(in crate::table::mutation) enum Language {
     LongText,
     Currency,
     FixedScalars,
+    WideValues,
 }
 
 /// Exact fixed payload types admitted only by the retained scalar action.
@@ -46,6 +50,23 @@ pub(in crate::table::mutation) fn fixed_scalar_value(native: u8, value: &Value) 
         | (DATE_TIME, Value::DateTime(_)) => true,
         (SINGLE, Value::Single(value)) => f32::from_bits(value.to_bits()).is_finite(),
         (DOUBLE, Value::Double(value)) => f64::from_bits(value.to_bits()).is_finite(),
+        _ => false,
+    }
+}
+
+/// Field constraints remain native facts, separate from the request carrier.
+pub(in crate::table::mutation) fn wide_value(field: &NativeColumn, value: &Value) -> bool {
+    match (field.native_type(), value) {
+        (GUID | NUMERIC, Value::Null) | (GUID, Value::Guid(_)) => true,
+        (NUMERIC, Value::Decimal(value)) => {
+            field
+                .decimal_parameters()
+                .is_some_and(|(precision, scale)| {
+                    field.scalar_type() == Some(ScalarType::Decimal)
+                        && value.scale() == scale
+                        && value.coefficient().unsigned_abs() < 10_u128.pow(u32::from(precision))
+                })
+        }
         _ => false,
     }
 }
@@ -83,6 +104,14 @@ pub(in crate::table::mutation) fn qualify(
                     && field.flags() == (FIXED_FLAG | UPDATABLE_FLAG)
                     && field.extended_flags() == 0
             }) => {}
+        (Language::WideValues, GUID, true)
+            if field.scalar_type() == Some(ScalarType::Guid)
+                && field.storage_length() == size_of::<u128>()
+                && field.flags() == (FIXED_FLAG | UPDATABLE_FLAG)
+                && field.extended_flags() == 0 => {}
+        (Language::WideValues, NUMERIC, false) => {
+            super::super::record_insertion::payload::qualify(field)?;
+        }
         (Language::LongText, SHORT_TEXT, false) => storage::qualify(field)?,
         _ => return Err(EditError::Unsupported(WriteBlocker::Column)),
     }
@@ -131,6 +160,10 @@ pub(in crate::table::mutation) fn build(
         (Language::LongText, INT32, Value::Int32(_) | Value::Null)
         | (Language::Currency, CURRENCY, Value::Currency(_) | Value::Null) => Vec::new(),
         (Language::FixedScalars, native, value) if fixed_scalar_value(native, value) => Vec::new(),
+        (Language::WideValues, GUID, Value::Guid(_) | Value::Null) => Vec::new(),
+        (Language::WideValues, NUMERIC, value) if wide_value(field, value) => {
+            super::super::record_insertion::payload::encode(field, value, budget, cancelled)?
+        }
         (Language::LongText, SHORT_TEXT, Value::Text(_) | Value::Null) => {
             storage::encode_preferred(field, value, budget, cancelled)?
         }
@@ -203,6 +236,12 @@ pub(in crate::table::mutation) fn build(
             8 => write_fixed::<8>(kind, value, target)?,
             _ => return Err(EditError::Preservation),
         }
+    }
+    if matches!((language, value), (Language::WideValues, Value::Guid(_))) {
+        let target = after
+            .get_mut(start..start + size_of::<u128>())
+            .ok_or(EditError::Preservation)?;
+        write_fixed::<{ size_of::<u128>() }>(ScalarType::Guid, value, target)?;
     }
     match value {
         Value::Int32(value) => after

@@ -6,7 +6,9 @@ use crate::{
     EditError, InspectError, NativeImage, WriteBlocker,
     format::{
         bytes::u16_at,
-        data_type::{BOOLEAN, CURRENCY, INT32, SHORT_TEXT},
+        data_type::{
+            BOOLEAN, CURRENCY, GUID, GUID_BYTES, INT32, NUMERIC, NUMERIC_BYTES, SHORT_TEXT,
+        },
         layout::{FIXED_FLAG, UPDATABLE_FLAG},
     },
     header::check,
@@ -19,6 +21,7 @@ pub(super) enum Capability {
     Currency,
     Boolean,
     FixedScalars,
+    WideValues,
     CellUpdates,
 }
 
@@ -61,6 +64,26 @@ pub(super) fn qualify(
             }
             SHORT_TEXT if matches!(capability, Capability::CellUpdates) && !column.fixed() => {
                 Family::Retained
+            }
+            GUID if matches!(capability, Capability::WideValues | Capability::CellUpdates)
+                && column.scalar_type() == Some(ScalarType::Guid)
+                && column.fixed()
+                && column.storage_length() == GUID_BYTES
+                && column.flags() == (FIXED_FLAG | UPDATABLE_FLAG)
+                && column.extended_flags() == 0 =>
+            {
+                Family::RetainedWideValues
+            }
+            NUMERIC
+                if matches!(capability, Capability::WideValues | Capability::CellUpdates)
+                    && column.scalar_type() == Some(ScalarType::Decimal)
+                    && !column.fixed()
+                    && column.storage_length() == NUMERIC_BYTES
+                    && column.flags() == UPDATABLE_FLAG
+                    && column.extended_flags() == 0
+                    && column.complex_type_id().is_none() =>
+            {
+                Family::RetainedWideValues
             }
             native
                 if matches!(
@@ -112,6 +135,10 @@ pub(super) fn qualify(
             INT32 => {
                 field::fixed_column_at(schema, position, ScalarType::Int32, size_of::<i32>())?;
             }
+            GUID => {
+                field::fixed_column_at(schema, position, ScalarType::Guid, GUID_BYTES)?;
+            }
+            NUMERIC => super::record_insertion::payload::qualify(column)?,
             SHORT_TEXT => record_serialization::storage::qualify(column)?,
             native => {
                 let (kind, width) = record_serialization::current_rows::fixed_scalar_kind(native)

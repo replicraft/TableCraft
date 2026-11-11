@@ -2,7 +2,7 @@
 use crate::{
     EditError, InspectError, TableSchema,
     format::{
-        data_type::{CURRENCY, INT32, SHORT_TEXT},
+        data_type::{CURRENCY, GUID, INT32, NUMERIC, SHORT_TEXT},
         row::{COLUMN_COUNT_BYTES, MASK_BITS},
     },
     header::check,
@@ -45,6 +45,18 @@ pub(in crate::table::mutation) fn reconstruct(
                 && current_rows::fixed_scalar_value(native, value) =>
         {
             Vec::new()
+        }
+        (Language::WideValues, GUID, Value::Guid(_) | Value::Null)
+            if field.fixed() && field.storage_length() == size_of::<u128>() =>
+        {
+            Vec::new()
+        }
+        (Language::WideValues, NUMERIC, value)
+            if !field.fixed() && current_rows::wide_value(field, value) =>
+        {
+            crate::table::mutation::record_insertion::proof::payload::encode(
+                field, value, budget, cancelled,
+            )?
         }
         (Language::LongText, SHORT_TEXT, Value::Text(_) | Value::Null) if !field.fixed() => {
             super::payload::encode(field, value, budget, cancelled)?
@@ -161,6 +173,17 @@ pub(in crate::table::mutation) fn reconstruct(
             Value::Null => {}
             _ => return Err(EditError::Preservation),
         }
+    }
+    if let (Language::WideValues, Value::Guid(value)) = (language, value) {
+        let mut native = value.to_bytes();
+        native[..4].reverse();
+        native[4..6].reverse();
+        native[6..8].reverse();
+        let start = COLUMN_COUNT_BYTES + field.physical_field().offset;
+        expected
+            .get_mut(start..start + native.len())
+            .ok_or(EditError::Preservation)?
+            .copy_from_slice(&native);
     }
     for segment in &segments {
         check(budget, cancelled)?;
