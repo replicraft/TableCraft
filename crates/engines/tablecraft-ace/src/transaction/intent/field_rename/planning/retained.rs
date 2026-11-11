@@ -29,10 +29,32 @@ impl NativeImage {
         check(budget, cancelled)?;
         RecoverableFieldRenamePlan::new(candidate, intent, budget, cancelled)
     }
+    /// Bind the new typed target language to its complete original source.
+    pub fn plan_recoverable_retained_typed_field_rename(
+        self,
+        table: &str,
+        column: &str,
+        new_name: &str,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<RecoverableFieldRenamePlan, Error> {
+        let _span = tracing::debug_span!("native.retained_typed_field_rename.plan").entered();
+        let candidate = Candidate::RetainedAscii(
+            self.prepare_retained_typed_field_rename(table, column, new_name, budget, cancelled)?,
+        );
+        let intent = Intent::capture(
+            super::super::Profile::RetainedTypedAscii,
+            &candidate,
+            budget,
+            cancelled,
+        )?;
+        check(budget, cancelled)?;
+        RecoverableFieldRenamePlan::new(candidate, intent, budget, cancelled)
+    }
 }
 
 impl RecoverableFieldRenamePlan {
-    /// Prepare only retained TCFR6 with the same checked V3 journal owner.
+    /// Prepare only retained TCFR6/7 with the same checked V3 journal owner.
     pub fn prepare_retained<'a, D: ResizableDurableStorage, J: DurableStorage>(
         self,
         target: &'a mut D,
@@ -41,7 +63,7 @@ impl RecoverableFieldRenamePlan {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<PreparedResizableImage<'a, D, J>, JournalError> {
         let _span = tracing::debug_span!("native.retained_schema_field_rename.prepare").entered();
-        if !self.intent.is_retained_schema() {
+        if !self.intent.is_retained_schema() && !self.intent.is_retained_typed() {
             return Err(JournalError::ImageSize);
         }
         journal::prepare_resizable_v3_expected(

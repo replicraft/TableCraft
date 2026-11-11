@@ -94,7 +94,7 @@ impl Identity {
 
 /// Persisted profiles select their own validation and native reconstruction.
 /// A malformed older request is never retried through the fitted profile.
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, PartialEq, Eq)]
 enum Profile {
     #[cfg(feature = "ace16-create")]
     SameWidth,
@@ -107,6 +107,7 @@ enum Profile {
     #[cfg(feature = "ace16-create")]
     RetainedAscii,
     RetainedSchemaAscii,
+    RetainedTypedAscii,
 }
 
 impl Profile {
@@ -123,6 +124,7 @@ impl Profile {
             #[cfg(feature = "ace16-create")]
             Self::RetainedAscii => 5,
             Self::RetainedSchemaAscii => 6,
+            Self::RetainedTypedAscii => 7,
         }
     }
 
@@ -162,8 +164,20 @@ impl NativeFieldRenameIntent {
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, FieldRenameIntentError> {
-        let retained = matches!(candidate, Candidate::RetainedAscii(candidate) if candidate.is_retained_schema());
-        if retained != matches!(profile, Profile::RetainedSchemaAscii) {
+        let actual = match candidate {
+            Candidate::SameWidth(_) => Profile::SameWidth,
+            Candidate::FittedAscii(_) => Profile::FittedAscii,
+            Candidate::PopulatedAscii(_) => Profile::PopulatedAscii,
+            Candidate::CurrentAscii(_) => Profile::CurrentAscii,
+            Candidate::RetainedAscii(candidate) if candidate.is_retained_typed() => {
+                Profile::RetainedTypedAscii
+            }
+            Candidate::RetainedAscii(candidate) if candidate.is_retained_schema() => {
+                Profile::RetainedSchemaAscii
+            }
+            Candidate::RetainedAscii(_) => Profile::RetainedAscii,
+        };
+        if profile != actual {
             return Err(FieldRenameIntentError::InvalidRecord);
         }
         validate_request(
@@ -177,7 +191,10 @@ impl NativeFieldRenameIntent {
         let identity = Identity::from_native(candidate.identity())?;
         let before_length = candidate.before_bytes().len() as u64;
         codec::validate_identity(identity, before_length, candidate.column().len(), profile)?;
-        let before_binding = if matches!(profile, Profile::RetainedSchemaAscii) {
+        let before_binding = if matches!(
+            profile,
+            Profile::RetainedSchemaAscii | Profile::RetainedTypedAscii
+        ) {
             binding::digest_retained(candidate.before_bytes(), budget, cancelled)?
         } else {
             binding::digest(candidate.before_bytes(), budget, cancelled)?
@@ -196,6 +213,20 @@ impl NativeFieldRenameIntent {
     /// Whether the original request belongs exclusively to retained schema6.
     pub const fn is_retained_schema(&self) -> bool {
         matches!(self.profile, Profile::RetainedSchemaAscii)
+    }
+
+    /// Whether this original belongs exclusively to typed retained TCFR7.
+    pub const fn is_retained_typed(&self) -> bool {
+        matches!(self.profile, Profile::RetainedTypedAscii)
+    }
+
+    /// Decode only TCFR0007/profile7; never retry an older field-rename record.
+    pub fn decode_retained_typed(
+        bytes: &[u8],
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, FieldRenameIntentError> {
+        codec::decode_retained_typed(bytes, budget, cancelled)
     }
 
     /// Decode only TCFR0006/profile6, without trying the original request decoder.
@@ -262,7 +293,7 @@ impl NativeFieldRenameIntent {
         if before.len() as u64 != self.before_length {
             return Err(FieldRenameIntentError::BeforeMismatch);
         }
-        let actual = if self.is_retained_schema() {
+        let actual = if self.is_retained_schema() || self.is_retained_typed() {
             binding::digest_retained(before, budget, cancelled)?
         } else {
             binding::digest(before, budget, cancelled)?
@@ -312,6 +343,15 @@ impl NativeFieldRenameIntent {
                 budget,
                 cancelled,
             )?),
+            Profile::RetainedTypedAscii => {
+                Candidate::RetainedAscii(image.prepare_retained_typed_field_rename(
+                    self.table(),
+                    self.column(),
+                    self.new_name(),
+                    budget,
+                    cancelled,
+                )?)
+            }
             Profile::RetainedSchemaAscii => {
                 Candidate::RetainedAscii(image.prepare_retained_schema_field_rename(
                     self.table(),

@@ -8,6 +8,7 @@ use tablecraft_core::limits::{Resource, ResourceBudget};
 
 const MAGIC: &[u8; 8] = b"TCFR0001";
 const RETAINED_SCHEMA_MAGIC: &[u8; 8] = b"TCFR0006";
+const RETAINED_TYPED_MAGIC: &[u8; 8] = b"TCFR0007";
 const TOTAL_AT: usize = MAGIC.len();
 const PROFILE_AT: usize = TOTAL_AT + size_of::<u32>();
 const FLAGS_AT: usize = PROFILE_AT + size_of::<u16>();
@@ -38,7 +39,10 @@ pub(super) fn validate_identity(
     original_length: usize,
     profile: Profile,
 ) -> Result<(), Error> {
-    if matches!(profile, Profile::RetainedSchemaAscii) {
+    if matches!(
+        profile,
+        Profile::RetainedSchemaAscii | Profile::RetainedTypedAscii
+    ) {
         binding::retained_length(before_length)?;
     } else {
         binding::length(before_length)?;
@@ -83,7 +87,9 @@ pub(super) fn encode(
     output
         .try_reserve_exact(length)
         .map_err(|_| crate::InspectError::Allocation)?;
-    output.extend_from_slice(if intent.is_retained_schema() {
+    output.extend_from_slice(if intent.is_retained_typed() {
+        RETAINED_TYPED_MAGIC
+    } else if intent.is_retained_schema() {
         RETAINED_SCHEMA_MAGIC
     } else {
         MAGIC
@@ -111,17 +117,17 @@ pub(super) fn encode(
 
 fn decode_selected(
     input: &[u8],
-    retained: bool,
+    selected: Option<Profile>,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Intent, Error> {
     check(budget, cancelled)?;
     if !(HEADER_BYTES..=MAX_RECORD_BYTES).contains(&input.len())
         || input.get(..MAGIC.len())
-            != Some(if retained {
-                RETAINED_SCHEMA_MAGIC
-            } else {
-                MAGIC
+            != Some(match selected {
+                Some(Profile::RetainedSchemaAscii) => RETAINED_SCHEMA_MAGIC,
+                Some(Profile::RetainedTypedAscii) => RETAINED_TYPED_MAGIC,
+                _ => MAGIC,
             })
     {
         return Err(Error::InvalidRecord);
@@ -134,11 +140,11 @@ fn decode_selected(
         return Err(Error::InvalidRecord);
     }
     let tag = u16::from_le_bytes(bytes(input, PROFILE_AT)?);
-    let profile = if retained {
-        if tag != 6 {
+    let profile = if let Some(profile) = selected {
+        if tag != profile.tag() {
             return Err(Error::InvalidRecord);
         }
-        Profile::RetainedSchemaAscii
+        profile
     } else {
         #[cfg(feature = "ace16-create")]
         {
@@ -196,7 +202,7 @@ pub(super) fn decode(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Intent, Error> {
-    decode_selected(input, false, budget, cancelled)
+    decode_selected(input, None, budget, cancelled)
 }
 
 pub(super) fn decode_retained_schema(
@@ -204,5 +210,13 @@ pub(super) fn decode_retained_schema(
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Intent, Error> {
-    decode_selected(input, true, budget, cancelled)
+    decode_selected(input, Some(Profile::RetainedSchemaAscii), budget, cancelled)
+}
+
+pub(super) fn decode_retained_typed(
+    input: &[u8],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<Intent, Error> {
+    decode_selected(input, Some(Profile::RetainedTypedAscii), budget, cancelled)
 }

@@ -1,4 +1,4 @@
-//! TCFR0006 replays only after requalifying the same checked V3 journal.
+//! TCFR0006/7 replays only after requalifying the same checked V3 journal.
 use super::super::{FieldRenameIntentError, NativeFieldRenameIntent};
 use crate::header::check;
 #[cfg(feature = "ace16-create")]
@@ -12,14 +12,14 @@ use tablecraft_io::journal::{
 };
 use tablecraft_model::CatalogScope;
 
-/// The same immutable V3 session, qualified by the original TCFR0006 source proof.
+/// The same immutable V3 session, qualified by the original TCFR0006/7 source proof.
 #[must_use = "recover explicitly or retain the qualified V3 journal"]
 pub struct QualifiedRetainedFieldRenameRecovery<'a, J: DurableStorage> {
     checked: CheckedV3<'a, J>,
 }
 
 impl NativeFieldRenameIntent {
-    /// Qualify only retained TCFR0006 against original BEFORE and complete AFTER.
+    /// Qualify only retained TCFR0006/7 against original BEFORE and complete AFTER.
     pub fn qualify_retained_recovery<'a, J: DurableStorage>(
         self,
         checked: CheckedV3<'a, J>,
@@ -29,7 +29,7 @@ impl NativeFieldRenameIntent {
     ) -> Result<QualifiedRetainedFieldRenameRecovery<'a, J>, FieldRenameIntentError> {
         let _span = tracing::debug_span!("native.retained_field_rename_recovery.qualify").entered();
         check(budget, cancelled)?;
-        if !self.is_retained_schema() {
+        if !self.is_retained_schema() && !self.is_retained_typed() {
             return Err(FieldRenameIntentError::InvalidRecord);
         }
         #[cfg(feature = "ace16-create")]

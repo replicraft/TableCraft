@@ -24,7 +24,7 @@ pub fn qualify_native_field_rename_recovery<'a, J: DurableStorage>(
 ) -> Result<QualifiedFieldRenameRecovery<'a, J>, Error> {
     let _span = tracing::debug_span!("native.field_rename_recovery.qualify").entered();
     check(budget, cancelled)?;
-    if intent.is_retained_schema() {
+    if intent.is_retained_schema() || intent.is_retained_typed() {
         return Err(Error::InvalidRecord);
     }
     intent.verify_before(checked.before_bytes(), budget, cancelled)?;

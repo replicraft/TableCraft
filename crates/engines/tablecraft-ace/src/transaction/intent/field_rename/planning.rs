@@ -294,7 +294,7 @@ impl RecoverableFieldRenamePlan {
         cancelled: &dyn Fn() -> bool,
     ) -> Result<PreparedImage<'a, D, J>, JournalError> {
         let _span = tracing::debug_span!("native.field_rename.prepare_v1").entered();
-        if self.intent.is_retained_schema() {
+        if self.intent.is_retained_schema() || self.intent.is_retained_typed() {
             return Err(JournalError::ImageSize);
         }
         journal::prepare_expected(
