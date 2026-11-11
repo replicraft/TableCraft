@@ -583,6 +583,23 @@ impl Worker {
                 sql,
                 cancelled,
             ),
+            Command::DiscoverQueryParameters { target, options } => {
+                // NO_CLONE: Command and issued discovery independently retain the
+                // immutable syntax witness; share its Arc without copying SQL.
+                let target = Arc::clone(target);
+                document
+                    .as_mut()
+                    .ok_or(Error::NoDatabase)?
+                    .discover_query_parameters(target, *options, cancelled)
+            }
+            Command::RunDiscoveredQuery {
+                target,
+                parameters,
+                options,
+            } => document
+                .as_mut()
+                .ok_or(Error::NoDatabase)?
+                .run_discovered_query(target, parameters, *options, clock.as_ref(), cancelled),
             Command::RunQuery {
                 target,
                 parameters,
@@ -790,6 +807,8 @@ impl Worker {
                         Command::ReviewSchemaSql { .. } => "review_schema_sql",
                         #[cfg(feature = "offline-edit")]
                         Command::ReviewQueryInsert { .. } => "review_query_insert",
+                        Command::DiscoverQueryParameters { .. } => "discover_query_parameters",
+                        Command::RunDiscoveredQuery { .. } => "run_discovered_query",
                         Command::RunQuery { .. } => "run_query",
                         Command::InspectSavedQuery { .. } => "inspect_saved_query",
                         Command::RunSavedQuery { .. } => "run_saved_query",

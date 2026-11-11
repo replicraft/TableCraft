@@ -66,29 +66,109 @@ pub(crate) fn bindings<'a>(
     result.try_reserve_exact(inputs.len())?;
     for declaration in &query.parameters {
         let name = declaration.name.as_str();
-        let mut selected = None;
-        for input in inputs {
-            output.work(1 + name.len() as u64 + input.name.len() as u64)?;
-            if input.name == name {
-                if selected.is_some() {
-                    return Err(Error::ParameterInput);
-                }
-                selected = Some(input);
-            }
-        }
-        let input = selected.ok_or(Error::ParameterInput)?;
+        let input = selected_input(name, inputs, output)?;
         output.work(1 + input.kind.len() as u64 + declaration.data_type.arguments.len() as u64)?;
         let declared = resolve_parameter_type(&declaration.data_type)?;
-        let kind = selected_kind(&input.kind).ok_or(Error::ParameterInput)?;
-        if matches!(declared, ParameterType::Scalar(descriptor) if descriptor.scalar_type() != kind)
-        {
-            return Err(Error::ParameterInput);
-        }
-        let value = scalar_input::parse(kind, &input.text, input.is_null, output)?;
-        if !declared.accepts(&value) {
-            return Err(Error::ParameterInput);
-        }
+        let value = parse_parameter_input(declared, input, output)?;
         result.push((name, value));
+    }
+    Ok(result)
+}
+
+fn selected_input<'a>(
+    name: &str,
+    inputs: &'a [ParameterInput],
+    output: &mut Presentation<'_>,
+) -> Result<&'a ParameterInput, Error> {
+    let mut selected = None;
+    for input in inputs {
+        output.work(1 + name.len() as u64 + input.name.len() as u64)?;
+        if input.name == name {
+            if selected.is_some() {
+                return Err(Error::ParameterInput);
+            }
+            selected = Some(input);
+        }
+    }
+    selected.ok_or(Error::ParameterInput)
+}
+
+fn parse_parameter_input(
+    declared: ParameterType,
+    input: &ParameterInput,
+    output: &mut Presentation<'_>,
+) -> Result<Value, Error> {
+    let kind = selected_kind(&input.kind).ok_or(Error::ParameterInput)?;
+    if matches!(declared, ParameterType::Scalar(descriptor) if descriptor.scalar_type() != kind) {
+        return Err(Error::ParameterInput);
+    }
+    let value = scalar_input::parse(kind, &input.text, input.is_null, output)?;
+    if !declared.accepts(&value) {
+        return Err(Error::ParameterInput);
+    }
+    Ok(value)
+}
+
+pub(crate) fn discovered_specs(
+    prepared: &tablecraft_query::PreparedParameterQuery,
+    original: &Query,
+    output: &mut Presentation<'_>,
+) -> Result<Vec<ParameterSpec>, Error> {
+    let count = prepared.parameters().len();
+    if count > MAX_QUERY_PARAMETERS {
+        return Err(Error::ParameterInput);
+    }
+    output.allocation(count, size_of::<ParameterSpec>())?;
+    let mut result = Vec::new();
+    result.try_reserve_exact(count)?;
+    for (index, parameter) in prepared.parameters().enumerate() {
+        output.work(1)?;
+        let kind = match parameter.data_type {
+            ParameterType::Scalar(descriptor) => token(descriptor.scalar_type()),
+            ParameterType::Value => "value",
+        };
+        let label = match parameter.origin {
+            tablecraft_query::ParameterOrigin::Declared => {
+                let declared = original
+                    .parameters
+                    .get(index)
+                    .ok_or(Error::ParameterInput)?;
+                if declared.name.as_str() != parameter.name
+                    || resolve_parameter_type(&declared.data_type)? != parameter.data_type
+                {
+                    return Err(Error::ParameterInput);
+                }
+                output.text(&declared.data_type.to_string())?
+            }
+            tablecraft_query::ParameterOrigin::Implicit => output.text("VALUE")?,
+        };
+        result.push(ParameterSpec {
+            name: output.text(parameter.name)?,
+            kind: output.text(kind)?,
+            label,
+            nullable: true,
+        });
+    }
+    Ok(result)
+}
+
+pub(crate) fn discovered_bindings<'a>(
+    prepared: &'a tablecraft_query::PreparedParameterQuery,
+    inputs: &[ParameterInput],
+    output: &mut Presentation<'_>,
+) -> Result<Vec<(&'a str, Value)>, Error> {
+    let count = prepared.parameters().len();
+    if inputs.len() > MAX_QUERY_PARAMETERS || inputs.len() != count {
+        return Err(Error::ParameterInput);
+    }
+    output.allocation(count, size_of::<(&str, Value)>())?;
+    let mut result = Vec::new();
+    result.try_reserve_exact(count)?;
+    for parameter in prepared.parameters() {
+        let input = selected_input(parameter.name, inputs, output)?;
+        output.work(1 + input.kind.len() as u64)?;
+        let value = parse_parameter_input(parameter.data_type, input, output)?;
+        result.push((parameter.name, value));
     }
     Ok(result)
 }

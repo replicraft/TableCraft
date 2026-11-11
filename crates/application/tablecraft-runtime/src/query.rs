@@ -3,6 +3,7 @@ pub(crate) mod contents;
 pub(crate) mod context;
 pub(crate) mod inspection;
 pub(crate) mod options;
+pub(crate) mod parameter_discovery;
 pub(crate) mod parameters;
 
 use super::{

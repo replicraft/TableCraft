@@ -1,4 +1,5 @@
 //! Scratch parameter prompts bind immutable SQL to the actual open document.
+mod discovery;
 use super::{open, request};
 use crate::{
     Cell, CellKind, Command, Error, InspectedQuery, ParameterInput, ParameterSpec, QueryOperation,

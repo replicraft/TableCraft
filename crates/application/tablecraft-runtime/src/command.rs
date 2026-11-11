@@ -7,10 +7,10 @@ use crate::{
     FieldRenamedReopen,
 };
 use crate::{
-    ContentsTarget, FieldFilterOperator, FieldFilterTarget, FilterComparison, FilterDefinition,
-    FilterHandle, FilterSelectionTarget, FindRequest, InspectedQuery, ParameterInput,
-    QueryDesignTarget, QueryRunOptions, SavedQueryTarget, SortSpec, SortTarget, TotalSpec,
-    TotalsTarget,
+    ContentsTarget, DiscoveredQuery, FieldFilterOperator, FieldFilterTarget, FilterComparison,
+    FilterDefinition, FilterHandle, FilterSelectionTarget, FindRequest, InspectedQuery,
+    ParameterInput, QueryDesignTarget, QueryRunOptions, SavedQueryTarget, SortSpec, SortTarget,
+    TotalSpec, TotalsTarget,
 };
 #[cfg(feature = "offline-edit")]
 use crate::{
@@ -290,6 +290,17 @@ pub enum Command {
     InspectQuery {
         document_revision: u64,
         sql: String,
+    },
+    /// Explicit metadata-only discovery; old InspectQuery stays syntax-only.
+    DiscoverQueryParameters {
+        options: QueryRunOptions,
+        target: Arc<InspectedQuery>,
+    },
+    /// Execute a runtime-issued prepared/strict route without changing its identity.
+    RunDiscoveredQuery {
+        options: QueryRunOptions,
+        target: Arc<DiscoveredQuery>,
+        parameters: Vec<ParameterInput>,
     },
     RunQuery {
         options: QueryRunOptions,

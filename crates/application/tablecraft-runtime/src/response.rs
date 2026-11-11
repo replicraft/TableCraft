@@ -8,9 +8,9 @@ use crate::{
     ReviewedNumberColumn, ReviewedTableCreation,
 };
 use crate::{
-    Cell, CollectionKind, Column, ContentsTarget, Field, FieldFilterDescription, FilteredData,
-    FindPosition, FindRequest, InspectedQuery, ParameterSpec, QueryDesignTarget, SavedQuery,
-    SavedQueryTarget, Table, TotalsData, TotalsDescription,
+    Cell, CollectionKind, Column, ContentsTarget, DiscoveredQuery, Field, FieldFilterDescription,
+    FilteredData, FindPosition, FindRequest, InspectedQuery, ParameterSpec, QueryDesignTarget,
+    SavedQuery, SavedQueryTarget, Table, TotalsData, TotalsDescription,
 };
 #[cfg(feature = "offline-edit")]
 use crate::{
@@ -118,6 +118,10 @@ pub enum Response {
     TotalsDescription(TotalsDescription),
     Totals(TotalsData),
     FieldFilterDescription(FieldFilterDescription),
+    QueryParametersDiscovered {
+        target: Arc<DiscoveredQuery>,
+        parameters: Vec<ParameterSpec>,
+    },
     QueryParameters {
         target: Arc<InspectedQuery>,
         parameters: Vec<ParameterSpec>,
