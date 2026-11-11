@@ -17,9 +17,8 @@ use egui_kittest::{
 };
 use std::path::Path;
 use tablecraft_runtime::journal_path;
-use tablecraft_testkit::fixtures::access::{
-    canonical_retained_add_table::{exact_values, field_changes, fields, fixed_scalars},
-    raw_record_update,
+use tablecraft_testkit::fixtures::access::canonical_retained_add_table::{
+    exact_values, field_changes, fields, fixed_scalars,
 };
 use tablecraft_ui::CellKind;
 
@@ -186,14 +185,7 @@ fn populated_fixed_tail_design_drop_cancels_then_preserves_editable_survivors() 
         Entry::Design,
     );
     begin_replacement(&mut harness, 0, "Score", false, Some("124"));
-    let after = raw_record_update::number(
-        &dropped,
-        definition + 1,
-        0,
-        definition as usize * 4096 + 100,
-        1,
-        Some(124),
-    );
+    let after = field_changes::update_score(&dropped, definition, 0, Some(124));
     review_and_save(&mut harness, &path, &dropped, &after);
     drop(harness);
     let mut fresh = app_harness(Desktop::new(egui::Context::default(), Some(path.clone())));
@@ -248,14 +240,7 @@ fn decimal_then_guid_tail_drop_preserves_raw_history_and_live_number_identity() 
         Entry::Datasheet,
     );
     begin_replacement(&mut harness, 0, "Score", false, Some("124"));
-    let after = raw_record_update::number(
-        &guid,
-        definition + 1,
-        0,
-        definition as usize * 4096 + 100,
-        1,
-        Some(124),
-    );
+    let after = field_changes::update_score(&guid, definition, 0, Some(124));
     review_and_save(&mut harness, &path, &guid, &after);
     drop(harness);
     let mut fresh = app_harness(Desktop::new(egui::Context::default(), Some(path.clone())));
