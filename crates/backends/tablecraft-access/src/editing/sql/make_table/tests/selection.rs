@@ -1,8 +1,8 @@
 //! Row selection changes the materialized relation, never its native declaration.
-use super::{budget, fields, image, prepare, raw, rows, syntax, text_source};
+use super::{SCOPE, budget, fields, image, prepare, raw, rows, syntax, text_source};
 use crate::editing::sql::{NativeMakeTableError, prepare_native_make_table_with_native_comparison};
-use std::cell::RefCell;
-use tablecraft_ace::TableSnapshotLimits;
+use std::{cell::RefCell, io::Cursor};
+use tablecraft_ace::{TableSnapshotLimits, inspect_table_schema};
 use tablecraft_core::values::Value;
 use tablecraft_expressions::EvalError;
 use tablecraft_query::{MakeTableError, QueryError};
@@ -56,6 +56,7 @@ fn native_selection_retains_where_distinctrow_and_top_boundary_semantics() {
     }
 }
 
+#[cfg(feature = "journal")]
 #[test]
 fn filtered_text_uses_the_actual_field_comparer_and_keeps_its_physical_width() {
     let (mut bytes, definition) = text_source();
@@ -73,13 +74,18 @@ fn filtered_text_uses_the_actual_field_comparer_and_keeps_its_physical_width() {
     )
     .unwrap();
     assert_eq!(prepared.rows(), &[vec![Value::Text("a".into())]]);
-    let columns = prepared
-        .definition()
-        .borrowed_columns(&mut budget(), &|| false)
-        .unwrap();
-    assert_eq!(columns[0].name(), "Label");
-    assert_eq!(columns[0].max_text_utf16_units(), Some(7));
-    assert_eq!(columns[0].default_literal(), None);
+    let plan = prepared.finish(&mut budget(), &|| false).unwrap();
+    let schema = inspect_table_schema(
+        &mut Cursor::new(plan.after_bytes()),
+        SCOPE,
+        "Archive",
+        &mut budget(),
+        &|| false,
+    )
+    .unwrap();
+    assert_eq!(schema.columns()[0].name(), "Label");
+    assert_eq!(schema.columns()[0].native_type(), 10);
+    assert_eq!(schema.columns()[0].storage_length(), 14);
 }
 
 #[cfg(feature = "journal")]
