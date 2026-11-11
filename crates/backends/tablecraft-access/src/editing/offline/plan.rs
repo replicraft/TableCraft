@@ -388,7 +388,9 @@ impl MutationIntent {
             #[cfg(feature = "ace16-create")]
             Self::RetainedTypedFieldAddition(_) => Some(SchemaChange::ColumnAdded),
             #[cfg(feature = "ace16-create")]
-            Self::DeclaredFieldAddition(_) => Some(SchemaChange::ColumnAdded),
+            Self::DeclaredFieldAddition(_) | Self::UnadornedFieldAddition(_) => {
+                Some(SchemaChange::ColumnAdded)
+            }
             #[cfg(feature = "ace16-create")]
             Self::FieldDrop(_) => Some(SchemaChange::ColumnDropped),
             Self::RetainedFieldDrop(_) => Some(SchemaChange::ColumnDropped),
