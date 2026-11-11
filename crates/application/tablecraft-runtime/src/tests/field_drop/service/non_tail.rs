@@ -1,4 +1,6 @@
 //! Real middle-field DROP binds inspection, consuming save and survivor publication.
+mod survivors;
+
 use super::{opened, request, terminal};
 use crate::{
     Command, Error, Response, SaveOutcome, SaveSchemaChange, SaveStartFailure, SaveWorker,
@@ -34,7 +36,16 @@ fn source(case: fields::Case) -> fields::Source {
     source
 }
 
-fn journey(source: fields::Source, table: &str, column: &str) {
+struct Reopened {
+    _directory: tempfile::TempDir,
+    path: std::path::PathBuf,
+    worker: crate::Worker,
+    revision: u64,
+    bytes: Vec<u8>,
+    definition: u32,
+}
+
+fn journey(source: fields::Source, table: &str, column: &str) -> Reopened {
     let before = source.bytes;
     let after = field_changes::drop_field(&before, source.definition, source.catalog_root, column);
     let (_directory, path, worker, revision) = opened(&before);
@@ -183,11 +194,19 @@ fn journey(source: fields::Source, table: &str, column: &str) {
     assert_eq!(columns, sibling_columns);
     assert_eq!(rows, sibling_rows);
     assert_image(&std::fs::read(&path).unwrap(), &after);
+    Reopened {
+        _directory,
+        path,
+        worker,
+        revision: fresh,
+        bytes: after,
+        definition: source.definition,
+    }
 }
 
 #[test]
 fn populated_middle_number_drop_saves_acknowledges_and_reopens_exact_survivors() {
-    journey(source(fields::Case::FirstNumber), "Table1", "Score");
+    survivors::currency(source(fields::Case::FirstNumber));
 }
 
 #[test]
@@ -203,14 +222,10 @@ fn keyless_ordinary_native_zero_drop_preserves_score_one_without_primary_assumpt
         seed[4 * 4096 + 12..4 * 4096 + 14].try_into().unwrap(),
     ));
     let bytes = field_changes::keyless_first_field(&seed, "Keyless");
-    journey(
-        fields::Source {
-            bytes,
-            definition,
-            catalog_root,
-            roots: vec![0],
-        },
-        "Keyless",
-        "Id",
-    );
+    survivors::keyless(fields::Source {
+        bytes,
+        definition,
+        catalog_root,
+        roots: vec![0],
+    });
 }
