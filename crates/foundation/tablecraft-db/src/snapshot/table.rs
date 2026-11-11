@@ -1,4 +1,4 @@
-use super::{RowHandle, identity};
+use super::{RowHandle, SnapshotId, identity};
 use crate::SnapshotError;
 use tablecraft_core::{
     limits::{Resource, ResourceBudget},
@@ -50,6 +50,11 @@ impl Snapshot {
             policy,
         })
     }
+    /// Process-local identity of this exact snapshot, independent of its rows.
+    pub const fn id(&self) -> SnapshotId {
+        SnapshotId(self.identity)
+    }
+
     /// Original validated table name.
     pub fn name(&self) -> &str {
         self.name.as_str()

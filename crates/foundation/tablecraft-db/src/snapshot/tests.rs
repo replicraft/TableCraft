@@ -78,3 +78,24 @@ fn exact_carriers_schema_policy_cancellation_and_work_are_checked() {
         Err(SnapshotError::Limit(_))
     ));
 }
+
+#[test]
+fn empty_snapshots_have_distinct_identity_without_fabricating_row_handles() {
+    let make = || {
+        Snapshot::new(
+            "Empty".into(),
+            vec![Column::new("Score".into(), ScalarType::Int32, true).unwrap()],
+            Vec::new(),
+            policy(),
+            &mut budget(),
+            &|| false,
+        )
+        .unwrap()
+    };
+    let first = make();
+    let second = make();
+    assert_eq!(first.id(), first.id());
+    assert_ne!(first.id(), second.id());
+    assert!(first.row_handle(0).is_none());
+    assert!(second.row_handle(0).is_none());
+}

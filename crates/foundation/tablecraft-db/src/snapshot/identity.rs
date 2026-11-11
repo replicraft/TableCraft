@@ -11,6 +11,11 @@ pub(super) fn issue() -> Result<u64, SnapshotError> {
         .map_err(|_| SnapshotError::IdentityExhausted)
 }
 
+/// Opaque identity of one validated complete snapshot, including an empty one.
+/// Reconstructing identical metadata and rows issues a different identity.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct SnapshotId(pub(super) u64);
+
 /// Opaque process-local snapshot position, not a persistent backend RecordId.
 /// Only its issuing snapshot can resolve it. Reopening/rebuilding invalidates it.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]

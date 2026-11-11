@@ -13,7 +13,7 @@ pub use editing::{
     UpdateProfile,
 };
 pub use error::SnapshotError;
-pub use snapshot::{RowHandle, Snapshot};
+pub use snapshot::{RowHandle, Snapshot, SnapshotId};
 pub use views::{
     MemberAvailability, MultivalueList, OwnedRecordset, ProjectedRow, ProjectionError,
     RecordsetError, RecordsetKind, RecordsetPresence, RecordsetSchema, StoredCell,
