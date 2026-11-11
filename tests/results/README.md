@@ -11,7 +11,7 @@ Captured evidence retains its original bytes, paths and execution identities. Hi
 - [reading](reading/): 30 files
 - [recovery](recovery/): 8 files
 - [rows](rows/): 178 files
-- [schema](schema/): 52 files
+- [schema](schema/): 59 files
 - [storage](storage/): 46 files
 
 See the [engineering guide](../README.md).

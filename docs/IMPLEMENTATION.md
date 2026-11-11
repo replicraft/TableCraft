@@ -1,5 +1,33 @@
 # Implementation status
 
+## Retained GUID and Decimal cell workflows — 10 November 2026
+
+Qualified GUID and Decimal cells now use TCNI22 through the shared runtime and
+Access services. Actual field metadata selects the action before request
+construction. GUID retains its canonical original value and native mixed-endian
+payload; Decimal retains an exact coefficient and declared scale, with native
+precision checks and variable-record reconstruction. Creation, insertion and
+existing-cell replacement, NULL and refill work through the actual headless
+desktop controls. Rejected GUID, scale and precision inputs preserve the source
+and require a corrected review before saving. Desktop adds no native codec.
+
+SQL GUID literals and typed Decimal parameters use the same checked action.
+Regional string-to-number conversion still requires an explicit number-format
+policy; this workflow does not invent one. LONG control edits retain TCNI17.
+Fresh-scope V3 recovery rechecks complete source bindings and independent native
+AFTER reconstruction. Journal-only builds decode request data without granting
+native write authority.
+
+The [workflow receipt](../tests/results/schema/retained-wide-value-workflows-2026-11-10.json)
+records 349 runtime tests, 52 selected desktop workflows, 143 selected native
+checks, 19 combined adapter checks and three journal-only cases passing. Strict
+Clippy across seven consumers, feature checks, rustdoc and repository guards
+pass. Intermediate failures and ignored cases remain recorded. These local
+checks do not establish Windows or Microsoft Access save/reopen parity.
+Indexed/generated targets, unknown required programs, ambiguous source layouts,
+GUID generation and DateTimeExtended remain outside this action. Broader saved-field
+rename/add/drop support remains a separate CRUD gap.
+
 ## Retained fixed-scalar cell workflows — 10 November 2026
 
 Retained Byte, Integer/Int16, Large Integer/Int64, Single, Double and legacy
@@ -8,7 +36,8 @@ runtime and Access services. Actual metadata selects this route before carrier
 lowering; LONG/Text, Currency and Boolean keep their own action families.
 Eligible targets have checked native widths/flags, are unindexed and
 nongenerated, and retain source, expected-value, constraint and required-program
-checks. Decimal, GUID and DateTimeExtended need their own qualified edit paths.
+checks. GUID and Decimal use the separate TCNI22 path above; DateTimeExtended
+still needs its own qualified edit path.
 
 The real desktop creates and fills an eight-field retained table, proves the
 LONG control, then edits all six types through values, NULL and refill. Runtime

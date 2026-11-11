@@ -1,0 +1,212 @@
+{
+  "date": "2026-11-10",
+  "source_commit": "95a940f7f94fd23555b0808b8dde493e8beeccf5",
+  "source_tree": "a829adb1fca61cac096f5e2278ba1ad6ac2459f3",
+  "platform": "macOS ARM64",
+  "verification": "Headless actual application workflows and independent native/wire byte oracles",
+  "baselines": [
+    {
+      "host": "runtime",
+      "log": ".cache/exact-values-runtime-baseline.log",
+      "sha256": "ebce89161398c43db87175e2207ffeb6010211232c99d43ce27ed99d070db2db",
+      "outcome": "failed_as_expected",
+      "failure": "Token review: Native Unsupported",
+      "creation_insert_long_control_passed": true,
+      "native_windows_opened": false
+    },
+    {
+      "host": "desktop",
+      "log": ".cache/exact-values-desktop-baseline.log",
+      "sha256": "89893b65db8bdb142f0acb719a6923722bda25f5b4218c572770f9a18e598d49",
+      "outcome": "failed_as_expected",
+      "failure": "Token review refused: native assignment carrier is unsupported; helper expected Apply",
+      "creation_insert_long_control_passed": true,
+      "native_windows_opened": false
+    }
+  ],
+  "batches": [
+    {
+      "receipt": ".cache/retained-wide-value-results.json",
+      "results": [
+        {
+          "job": "api",
+          "returncode": 0,
+          "seconds": 11.1,
+          "log": ".cache/retained-wide-value-api.log",
+          "log_sha256": "3334546321d09e305aa098152a4bc3d568253a1911dc190999e929e9300b307d"
+        },
+        {
+          "job": "runtime",
+          "returncode": 0,
+          "seconds": 22.08,
+          "log": ".cache/retained-wide-value-runtime.log",
+          "log_sha256": "f0ea4b27b436e343a7a3128efaab90e06e3022b6e41239464e8590b180aff2d9"
+        },
+        {
+          "job": "desktop",
+          "returncode": 0,
+          "seconds": 35.54,
+          "log": ".cache/retained-wide-value-desktop.log",
+          "log_sha256": "23d5ac3f2ac5e15b9657c45baf5ee132d54d7cc22e73494333e4d84bf29997c0"
+        },
+        {
+          "job": "access",
+          "returncode": 101,
+          "seconds": 18.42,
+          "log": ".cache/retained-wide-value-access.log",
+          "log_sha256": "9f2455fe3da58ee272812b461bbc0817719aaad679bf4b9f3055b5768821b382"
+        },
+        {
+          "job": "native",
+          "returncode": 0,
+          "seconds": 44.06,
+          "log": ".cache/retained-wide-value-native.log",
+          "log_sha256": "f6464875782f18d35fa061fecfd8837cf1a40c36a9f9bb65b5a39594131ca7fd"
+        },
+        {
+          "job": "lint",
+          "returncode": 101,
+          "seconds": 10.51,
+          "log": ".cache/retained-wide-value-lint.log",
+          "log_sha256": "37ad7e9644658677f4df1cd3a99f454e05bbe971ac3a713aa1ec805ec1ea0705"
+        },
+        {
+          "job": "minimal",
+          "returncode": 101,
+          "seconds": 3.13,
+          "log": ".cache/retained-wide-value-minimal.log",
+          "log_sha256": "b3dfc00e368f71b31d310139bf441e516a899f323c48d0e8e3750a6d85ef8bd8"
+        },
+        {
+          "job": "creation",
+          "returncode": 0,
+          "seconds": 0.94,
+          "log": ".cache/retained-wide-value-creation.log",
+          "log_sha256": "c0e765cca2087c3cf5d1018f6a941709c75263914a41b2846d2a048a37043896"
+        },
+        {
+          "job": "journal",
+          "returncode": 101,
+          "seconds": 2.44,
+          "log": ".cache/retained-wide-value-journal.log",
+          "log_sha256": "b3dfc00e368f71b31d310139bf441e516a899f323c48d0e8e3750a6d85ef8bd8"
+        },
+        {
+          "job": "journal-tests",
+          "returncode": 101,
+          "seconds": 3.02,
+          "log": ".cache/retained-wide-value-journal-tests.log",
+          "log_sha256": "d3831d0cb2207b47f792704cbbbbf9d8798a00ef0fe28f0e4a5df77b47705b37"
+        },
+        {
+          "job": "docs",
+          "returncode": 0,
+          "seconds": 10.3,
+          "log": ".cache/retained-wide-value-docs.log",
+          "log_sha256": "28d7f2d2030de6d84334f9fed59f82e200b14280ffa95bc464314c8d87ec1643"
+        }
+      ]
+    },
+    {
+      "receipt": ".cache/retained-wide-value-repair-results.json",
+      "results": [
+        {
+          "job": "access",
+          "returncode": 0,
+          "seconds": 13.98,
+          "log": ".cache/retained-wide-value-repair-access.log",
+          "log_sha256": "8d6e31ad6e8f1b80ea7a70e40e4d7ddb7fe3bcfc5ee7101d7ea7df61acb40f1c"
+        },
+        {
+          "job": "lint",
+          "returncode": 0,
+          "seconds": 43.9,
+          "log": ".cache/retained-wide-value-repair-lint.log",
+          "log_sha256": "191cf9e191e51e65dfaec5065570b3b73a222ab430ea5e2579ae3dd8a4250f86"
+        },
+        {
+          "job": "minimal",
+          "returncode": 0,
+          "seconds": 3.57,
+          "log": ".cache/retained-wide-value-repair-minimal.log",
+          "log_sha256": "cd07a96c5cfce74daad1ac1c248414bc41e4eda2bfb048799543f4d1a8965526"
+        },
+        {
+          "job": "journal-tests",
+          "returncode": 0,
+          "seconds": 17.67,
+          "log": ".cache/retained-wide-value-repair-journal-tests.log",
+          "log_sha256": "e85ca1cca11bbf00cafdf39db3c1b40854971458f5bd6c6efa5a5dc53b9863a5"
+        }
+      ]
+    }
+  ],
+  "counts": {
+    "runtime": {
+      "passed": 349,
+      "ignored": 1
+    },
+    "desktop": {
+      "passed": 52,
+      "ignored": 0
+    },
+    "native": {
+      "passed": 143,
+      "ignored": 11
+    },
+    "adapter_original_batch_passed": 18,
+    "adapter_repaired_exact_value_workflow": {
+      "passed": 1,
+      "ignored": 0
+    },
+    "journal_only": {
+      "passed": 3,
+      "ignored": 0
+    }
+  },
+  "observations": [
+    "Actual desktop and runtime author GUID and Decimal fields, insert supplied exact values and save existing cells through replacement, NULL and refill.",
+    "Decimal values beyond 2^53 retain exact coefficients at declared scale; invalid GUID, scale and precision input leaves source bytes unchanged until corrected review.",
+    "Complete independent AFTER images and fresh opens check GUID native byte order, Decimal variable payloads, retained padding and unchanged siblings.",
+    "SQL GUID literals and typed Decimal parameters save through the same metadata-selected action; LONG control assignments retain their original family.",
+    "TCNI22 original request grammar remains separate from native GUID/NUMERIC storage; checked V3 recovery reconstructs independently in a fresh native scope.",
+    "Journal-only builds can decode the closed request data but have no native creation or mutation authority."
+  ],
+  "intermediate_failures": [
+    "The original SQL test used CDec on a string without a host number-format policy. It correctly refused NumberFormatRequired; the repaired test supplies exact typed Decimal parameters without inventing a locale.",
+    "The initial journal-only build exposed a missing creation-feature gate on the new planning module; the gate now matches the native planner capability.",
+    "Strict Clippy requested typed array chunks in the independent Decimal fixture decoder; the byte oracle is unchanged."
+  ],
+  "limitations": [
+    "No native application window was opened; these checks do not establish Windows execution or Microsoft Access save/reopen parity.",
+    "This action admits qualified unindexed nongenerated GUID and Decimal cells in complete retained-row sources; unsupported required programs, constraints and ambiguous source layouts remain refused.",
+    "GUID generation, non-NULL GUID constant defaults, DateTimeExtended authoring/editing and general saved-field DDL are not supplied by this action.",
+    "The original batch retained 11 ignored native cases and one ignored runtime case; they are not passing evidence."
+  ],
+  "guards": [
+    {
+      "check": "check_rust_format.py",
+      "returncode": 0,
+      "log": ".cache/wide-values-final-check_rust_format.py.log",
+      "log_sha256": "81ef6bec6015e66a3290fad77133f1b3ca005d22054e9b29174246fe42e97a27"
+    },
+    {
+      "check": "check_rust_layout.py",
+      "returncode": 0,
+      "log": ".cache/wide-values-final-check_rust_layout.py.log",
+      "log_sha256": "e4495a784bb5b2430d358e84c0b08910bbade659dc50ff7df49d8a3236451954"
+    },
+    {
+      "check": "check_dependency_boundaries.py",
+      "returncode": 0,
+      "log": ".cache/wide-values-final-check_dependency_boundaries.py.log",
+      "log_sha256": "0550e0f35860c6b24c4aa1e52b57bcd7b8a01555414ce715a2168995381230b0"
+    },
+    {
+      "check": "check_documentation_links.py",
+      "returncode": 0,
+      "log": ".cache/wide-values-final-check_documentation_links.py.log",
+      "log_sha256": "6a6e674b486682547b2d0af318e27cc8a159b847215f0b268e3b23b4bc3372b6"
+    }
+  ]
+}

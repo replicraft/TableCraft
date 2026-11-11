@@ -1010,3 +1010,7 @@ not expose Apply; corrected input requires a new successful review. These are
 acceptance scenarios for the implemented route, not a claim of Windows/Access
 save/reopen equivalence. Saved-field ADD of these kinds, indexed targets, GUID
 generation and Date/Time Extended remain separate work.
+
+The [verified workflow receipt](../../tests/results/schema/retained-wide-value-workflows-2026-11-10.json)
+records the passing headless desktop, runtime, SQL and native recovery checks,
+including intermediate failures and the native Access qualification boundary.
