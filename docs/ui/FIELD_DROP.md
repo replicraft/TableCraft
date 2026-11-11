@@ -27,8 +27,11 @@ Current support uses the [native DROP profiles](../access/writes/FIELD_DROP.md):
 the original empty canonical ACE16 field-history source, a separate populated
 current-metadata source and the retained-schema source for appended/sibling
 histories. Each requires explicit stored Name AutoCorrect OFF and
-qualified nonprimary, unindexed nullable Number Long or Short Text declarations.
-The populated route removes only the native tail field while retaining old
+qualified nonprimary, unindexed targets. The original and profile-3 retained
+routes keep their nullable Number Long/Short Text declaration policies; the
+[typed retained route](../access/writes/FIELD_DROP.md#typed-retained-tail-fields)
+also admits the other supported ordinary scalar declarations through its own
+complete proof. The populated route removes only the native tail field while retaining old
 record bytes, IDs and counts. Missing, absent or unknown settings refuse; this
 command never disables settings automatically. Dependencies, required programs,
 unknown metadata, indexed/middle populated targets and older formats remain
@@ -42,6 +45,16 @@ preexisting inactive TDEF slack, row/index bytes, counters, old property snapsho
 and siblings. The connected pending-Save/confirmation flow uses shared services;
 desktop implements no native deletion logic. Broader targets and dependencies
 remain engine admission boundaries.
+
+Typed retained DROP uses the same Datasheet Delete Field or Design Delete Rows
+command, source-bound Yes/No confirmation, pending Save, consuming review and
+ACK/reopen workflow. At least one active native field must remain, and only the
+last active descriptor qualifies. The selected scalar type does not introduce a new
+confirmation gesture, an automatic save or a field-property editor. Cancellation
+leaves native bytes unchanged; cancellation of a pending close retains its exact
+proposal under the existing shared owner checks. A post-DROP cell edit or new row
+has its own reviewed native qualification and cannot inherit authority from the
+schema receipt. No native-window or new Access visual-parity evidence is implied.
 
 The confirmation and pending state own the exact target and local draft
 revision. Confirmation supplies no native authority. Other dirty stored-object

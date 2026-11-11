@@ -2068,6 +2068,18 @@ unchanged/no-op branch. Populated deletion retains all DATA bytes and row counts
 removes only the qualified native tail field and its live property group, and
 uses a distinct TCFD0002 original request. Older TCFD0001 remains empty-source-only.
 No write lease is held during confirmation.
+
+The retained source also has separate TCFD3 and typed TCFD4 languages. The actual
+original metadata selects canonical Number/Short Text or the supported typed
+last-active declaration before qualification. TCFD4 retains complete original
+constraint/property/program checks, exact native identity, at least one surviving
+field, one-page definition capacity and the checked V3 save/recovery boundary.
+Older languages remain closed; no source failure is retried as another family.
+All DATA/INDEX bytes, retained counters and field/variable high water stay intact.
+Successful schema publication does not authorize a subsequent row write: fresh
+UPDATE and INSERT commands independently qualify the resulting source and bind
+their own consuming reviews, including defaults and retired-record framing.
+
 `SaveWorker::start_field_drop` consumes the capability through the real adapter
 and the existing nonreplaceable retained worker, with separate native/proof/
 persistence allowances. Failures retain actual resources and typed causes.

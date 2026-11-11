@@ -7,7 +7,51 @@ family. The shared model has source-free ownership checks; it does not turn an
 eligibility fact or a Yes confirmation into write authority. General ALTER TABLE
 and Access 97–2019 write completion remain unfinished.
 
-## Retained tables and last-active fields
+## Typed retained tail fields
+
+`TCFD0004`/profile 4 removes a qualified last-active Boolean, Byte, Integer, LONG,
+Large Number, Single, Double, Currency, legacy DateTime, GUID, Decimal or Short
+Text declaration. The target must be ordinary, nongenerated, noncalculated and
+unindexed, with its exact native storage shape. At least one active field must
+survive. The selected descriptor must be last in the actual native declaration,
+not merely the rightmost displayed column; non-tail deletion remains unsupported.
+
+The complete retained-schema proof qualifies original rows, constraints, literal
+defaults, known properties, dependencies, programs and owned storage. This action
+does not impose the older profile's exact Required(false)/default-zero property
+tuple on every type. It preserves the actual qualified declarations rather than
+inventing defaults or skipping required programs. Metadata selects profile 4 for
+eligible typed/property shapes outside profile 3; the canonical LONG/Short Text
+language remains profile 3, without error-driven retry.
+
+The current operation still requires a checked, fitting one-page TDEF frame and
+actual Inline/Single property storage with fitting owned/hinted snapshot capacity.
+Joined definitions remain unqualified. Packing removes the selected declaration
+and name, clears only the newly vacated active frame and preserves prior inactive
+slack. A new MR2 snapshot removes exactly its selected live property group while
+retaining dictionary entries and all other groups. Native-number/variable-slot
+high water, surviving stored IDs, every DATA/INDEX byte, masks, offsets, retired
+payloads, generated counters, maps, old property history and siblings remain
+unchanged. No row migration or storage reclamation is supplied.
+
+The original `TCFD0004` request binds the actual target identity and complete
+BEFORE image. Its explicit typed decoder and checked V3 preparation/recovery
+freshly reconstruct both images. Older profiles 1–3 keep their original source
+languages, decoders and preparation contracts. UI confirmation grants no native
+authority; the shared runtime must still issue a consuming review before Save.
+
+A successful metadata DROP does not qualify an unrelated row operation. A fresh
+survivor UPDATE or INSERT must requalify its own source, framing, defaults,
+constraints and indexes. In particular, preserved retired-variable bytes must not
+be reinterpreted or erased merely to make a post-DROP row editable. The actual
+GUI acceptance scenarios cover a populated fixed tail and successive Decimal/GUID
+tails, cancellation, preserved survivor identities and separately reviewed
+survivor edits. The Decimal/GUID scenario also specifies a separately reviewed
+omitted-default INSERT after both drops: it retains the old edited value and
+generates the next ID without resurrecting retired payloads. These scenarios and independent byte oracles are not a claim of
+Windows/Access execution equivalence or general imported-schema editing.
+
+## Retained Number/Short Text and last-active fields
 
 The retained-schema route removes a qualified nullable, nonprimary, unindexed
 LONG or Short Text field after table creation, insertion, cell editing and field
