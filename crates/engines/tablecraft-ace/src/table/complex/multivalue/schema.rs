@@ -1,5 +1,5 @@
 //! Qualified scalar collection metadata without reading parent or child records.
-use super::super::{ComplexColumnSchema, inspect_complex_schema, supported_key};
+use super::super::{ComplexColumnSchema, resolve::inspect_complex_declarations, supported_key};
 use crate::{
     InspectError, NativeColumn,
     format::{
@@ -50,7 +50,7 @@ fn inspect_declarations<R: crate::NativeReadSource, T>(
     mut declaration: impl FnMut(Column, Option<crate::NativeSortOrder>) -> T,
 ) -> Result<Vec<T>, InspectError> {
     let _span = tracing::debug_span!("native.complex.multivalue.schema").entered();
-    let schema = inspect_complex_schema(source, scope, table, budget, cancelled)?;
+    let schema = inspect_complex_declarations(source, scope, table, budget, cancelled)?;
     budget.charge_allocation(schema.columns().len() as u64, size_of::<T>() as u64)?;
     let mut columns = Vec::new();
     columns

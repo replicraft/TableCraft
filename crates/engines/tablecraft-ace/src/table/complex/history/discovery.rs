@@ -3,8 +3,9 @@ use super::{VersionHistoryMemberDeclaration, schema};
 use crate::{
     InspectError,
     header::check,
-    inspect_complex_schema,
-    table::complex::{encoding::OBSERVED_HISTORY_EXT_FLAG, supported_key},
+    table::complex::{
+        encoding::OBSERVED_HISTORY_EXT_FLAG, resolve::inspect_complex_declarations, supported_key,
+    },
 };
 use tablecraft_core::limits::{Resource, ResourceBudget};
 use tablecraft_model::CatalogScope;
@@ -22,7 +23,7 @@ pub fn inspect_version_history_declarations<R: crate::NativeReadSource>(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<Vec<VersionHistoryMemberDeclaration>, InspectError> {
     let _span = tracing::debug_span!("native.complex.history.schema").entered();
-    let complex = inspect_complex_schema(source, scope, table, budget, cancelled)?;
+    let complex = inspect_complex_declarations(source, scope, table, budget, cancelled)?;
     if !matches!(
         complex.owner().header.read_profile()?,
         crate::ReadProfile::Ace2007

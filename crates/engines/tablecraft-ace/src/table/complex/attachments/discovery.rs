@@ -1,6 +1,6 @@
 //! Metadata-only attachment member declarations. FileData stays opaque.
-use super::schema;
-use crate::{InspectError, header::check, inspect_complex_schema};
+use super::{super::resolve::inspect_complex_declarations, schema};
+use crate::{InspectError, header::check};
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_model::CatalogScope;
 use tablecraft_schema::{CollectionMember, Column};
@@ -43,7 +43,7 @@ fn inspect_declarations<R: crate::NativeReadSource, T>(
     mut declaration: impl FnMut(CollectionMember, Option<crate::NativeSortOrder>) -> T,
 ) -> Result<Vec<T>, InspectError> {
     let _span = tracing::debug_span!("native.complex.attachments.schema").entered();
-    let complex = inspect_complex_schema(source, scope, table, budget, cancelled)?;
+    let complex = inspect_complex_declarations(source, scope, table, budget, cancelled)?;
     if !matches!(
         complex.owner().header.read_profile()?,
         crate::ReadProfile::Ace2007 | crate::ReadProfile::Ace2016 | crate::ReadProfile::Ace2019

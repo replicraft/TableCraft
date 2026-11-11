@@ -28,6 +28,12 @@ const CHILD_SYSTEM_COLUMNS: usize = 2;
 const MODERN_IDENTITY_EXT_FLAG: u8 = 0x04;
 const CATALOG_LOOKUPS_PER_COLUMN: u64 = 2;
 
+#[derive(Clone, Copy)]
+enum Inspection {
+    Read,
+    Declarations,
+}
+
 /// Resolve bounded complex-field metadata on a stable/offline source.
 /// Rejects missing/duplicate/foreign-owner mappings and inconsistent child shapes.
 /// No complex values, calculations, scripts or attachment content are executed.
@@ -35,6 +41,38 @@ pub fn inspect_complex_schema<R: crate::NativeReadSource>(
     source: &mut R,
     scope: CatalogScope,
     name: &str,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<ComplexTableSchema, InspectError> {
+    inspect(source, scope, name, Inspection::Read, budget, cancelled)
+}
+
+/// Resolve actual declaration identities and reference carriers without granting
+/// a member-family value layout. Each declaration inspector must positively
+/// qualify its selected family before publishing any members. Normal complex
+/// reads retain the complete member-family checks of the public entry point.
+pub(in crate::table::complex) fn inspect_complex_declarations<R: crate::NativeReadSource>(
+    source: &mut R,
+    scope: CatalogScope,
+    name: &str,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<ComplexTableSchema, InspectError> {
+    inspect(
+        source,
+        scope,
+        name,
+        Inspection::Declarations,
+        budget,
+        cancelled,
+    )
+}
+
+fn inspect<R: crate::NativeReadSource>(
+    source: &mut R,
+    scope: CatalogScope,
+    name: &str,
+    inspection: Inspection,
     budget: &mut ResourceBudget,
     cancelled: &dyn Fn() -> bool,
 ) -> Result<ComplexTableSchema, InspectError> {
@@ -163,29 +201,31 @@ pub fn inspect_complex_schema<R: crate::NativeReadSource>(
                 budget,
                 cancelled,
             )?;
-            // Field count selects a strict existing member-family qualifier;
-            // it never qualifies an unknown template by itself.
-            match resolved.type_table.columns().len() {
-                1 if resolved.type_table.declared_rows() == 0 => {
-                    super::multivalue::schema::qualified(&resolved, &resolved.flat_table)?;
+            if matches!(inspection, Inspection::Read) {
+                // Field count selects a strict existing member-family qualifier;
+                // it never qualifies an unknown template by itself.
+                match resolved.type_table.columns().len() {
+                    1 if resolved.type_table.declared_rows() == 0 => {
+                        super::multivalue::schema::qualified(&resolved, &resolved.flat_table)?;
+                    }
+                    2 => {
+                        super::history::schema::qualify(
+                            &resolved,
+                            &resolved.flat_table,
+                            budget,
+                            cancelled,
+                        )?;
+                    }
+                    6 => {
+                        super::attachments::schema::qualify(
+                            &resolved,
+                            &resolved.flat_table,
+                            budget,
+                            cancelled,
+                        )?;
+                    }
+                    _ => return Err(InspectError::Unsupported),
                 }
-                2 => {
-                    super::history::schema::qualify(
-                        &resolved,
-                        &resolved.flat_table,
-                        budget,
-                        cancelled,
-                    )?;
-                }
-                6 => {
-                    super::attachments::schema::qualify(
-                        &resolved,
-                        &resolved.flat_table,
-                        budget,
-                        cancelled,
-                    )?;
-                }
-                _ => return Err(InspectError::Unsupported),
             }
         }
         columns.push(resolved);
