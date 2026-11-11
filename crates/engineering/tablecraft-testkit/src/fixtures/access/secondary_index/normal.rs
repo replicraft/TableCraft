@@ -1,5 +1,6 @@
 //! Normal secondary-index images over genuine retained sources; no engine codecs.
 mod definition;
+pub mod dropping;
 mod tree;
 
 use crate::fixtures::access::{
