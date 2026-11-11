@@ -6,6 +6,7 @@ use crate::{
     document::Document,
 };
 use tablecraft_core::limits::Resource;
+use tablecraft_expressions::functions::dates::clock::Clock;
 use tablecraft_sql::{
     ParseLimits, parse_query,
     query::{
@@ -18,6 +19,7 @@ impl Document {
     pub(crate) fn review_schema_sql(
         &mut self,
         target: &InspectedQuery,
+        _clock: &dyn Clock,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Response, Error> {
         self.require_query_inspection(target, cancelled)?;
@@ -36,7 +38,12 @@ impl Document {
         }
         if matches!(&parsed.query().statement, Statement::MakeTable(_)) {
             #[cfg(feature = "ace16-create")]
-            return platform::schema_sql::review_make_table(self, parsed.into_query(), cancelled);
+            return platform::schema_sql::review_make_table(
+                self,
+                parsed.into_query(),
+                _clock,
+                cancelled,
+            );
             #[cfg(not(feature = "ace16-create"))]
             return Err(Error::SchemaSqlUnsupported);
         }
