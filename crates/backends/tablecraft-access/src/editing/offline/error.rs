@@ -10,10 +10,10 @@ use tablecraft_ace::{
     RepeatedDefaultZeroAddColumnIntentError,
 };
 use tablecraft_ace::{
-    CurrentFieldAdditionIntentError, FieldDropIntentError, FieldRenameIntentError, InspectError,
-    NativeIntentError, NativeRecoveryQualificationError, QueryExpressionEditsIntentError,
-    QueryExpressionIntentError, QueryExpressionRecoveryError, TableDropIntentError,
-    TableRenameIntentError,
+    CurrentFieldAdditionIntentError, DeclaredFieldAdditionIntentError, FieldDropIntentError,
+    FieldRenameIntentError, InspectError, NativeIntentError, NativeRecoveryQualificationError,
+    QueryExpressionEditsIntentError, QueryExpressionIntentError, QueryExpressionRecoveryError,
+    TableDropIntentError, TableRenameIntentError,
 };
 use tablecraft_io::{
     IoError,
@@ -112,6 +112,9 @@ pub enum Cause {
     /// Current metadata ADD request or fresh native reconstruction refused.
     #[error(transparent)]
     CurrentFieldAdditionIntent(CurrentFieldAdditionIntentError),
+    /// Unadorned declared ADD request or complete native reconstruction refused.
+    #[error(transparent)]
+    DeclaredFieldAdditionIntent(DeclaredFieldAdditionIntentError),
     /// Typed retained-field ADD request or complete native reconstruction refused.
     #[error(transparent)]
     RetainedTypedFieldAdditionIntent(tablecraft_ace::RetainedTypedFieldAdditionIntentError),

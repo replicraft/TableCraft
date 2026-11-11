@@ -4,7 +4,8 @@ use super::{Cause, Failure, OfflineWriteSession, Phase, Receipt, SchemaChange, S
 use plan::Plan;
 use std::path::Path;
 use tablecraft_ace::{
-    NativeImage, RecoverableDefaultZeroAddColumnPlan, RecoverableFieldAdditionPlan,
+    InspectError, NativeImage, RecoverableDeclaredFieldAdditionPlan,
+    RecoverableDefaultZeroAddColumnPlan, RecoverableFieldAdditionPlan,
     RecoverableRepeatedDefaultZeroAddColumnPlan,
 };
 use tablecraft_core::limits::ResourceBudget;
@@ -56,6 +57,29 @@ impl OfflineWriteSession {
     ) -> Result<StagedFieldAddition, Failure> {
         let _span = tracing::debug_span!("access.offline.stage_reviewed_field_addition").entered();
         self.stage_field_addition(Plan::Typed(reviewed), native, proof, cancelled)
+    }
+
+    /// Requalify the unadorned TCAC13 request under this exact retained original.
+    /// This method creates no journal and does not add gallery field policies.
+    pub fn stage_reviewed_retained_declared_field_addition_with_budgets(
+        self,
+        reviewed: RecoverableDeclaredFieldAdditionPlan,
+        native: &mut ResourceBudget,
+        proof: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<StagedFieldAddition, Failure> {
+        if let Err(cause) = self.require_ready() {
+            return Err(self.fail(Phase::Planning, cause));
+        }
+        if cancelled() {
+            return Err(self.fail(Phase::Planning, Cause::Native(InspectError::Cancelled)));
+        }
+        if let Err(error) =
+            native.charge_allocation(1, size_of::<RecoverableDeclaredFieldAdditionPlan>() as u64)
+        {
+            return Err(self.fail(Phase::Planning, Cause::Native(InspectError::from(error))));
+        }
+        self.stage_field_addition(Plan::Declared(Box::new(reviewed)), native, proof, cancelled)
     }
 
     /// Requalify the TCAC12 single-column original under this retained session.
@@ -161,3 +185,6 @@ mod current;
 
 #[cfg(test)]
 mod tests;
+
+#[cfg(test)]
+mod declared_tests;

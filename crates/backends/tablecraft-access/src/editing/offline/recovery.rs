@@ -205,6 +205,19 @@ impl OfflineWriteSession {
                         .recover_retained(&mut target, budget, cancelled)
                         .map_err(Cause::Recovery)
                 }
+                #[cfg(feature = "ace16-create")]
+                MutationIntent::DeclaredFieldAddition(intent) => {
+                    let (mut target, mut journal) =
+                        pair.resizable_storage().map_err(Cause::Pair)?;
+                    let checked =
+                        inspect_v3(&mut journal, budget, cancelled).map_err(Cause::Recovery)?;
+                    let qualified = intent
+                        .qualify_retained_recovery(checked, slot.scope, budget, cancelled)
+                        .map_err(Cause::DeclaredFieldAdditionIntent)?;
+                    qualified
+                        .recover_retained(&mut target, budget, cancelled)
+                        .map_err(Cause::Recovery)
+                }
                 MutationIntent::RetainedFieldAddition(intent) => {
                     let (mut target, mut journal) =
                         pair.resizable_storage().map_err(Cause::Pair)?;
@@ -697,6 +710,17 @@ impl OfflineWriteSession {
                         .confirm_completed(&mut target, budget, cancelled)
                         .map_err(Cause::Recovery)
                 }
+                #[cfg(feature = "ace16-create")]
+                MutationIntent::DeclaredFieldAddition(intent) => {
+                    let checked =
+                        inspect_v3(&mut journal, budget, cancelled).map_err(Cause::Recovery)?;
+                    let qualified = intent
+                        .qualify_retained_recovery(checked, slot.scope, budget, cancelled)
+                        .map_err(Cause::DeclaredFieldAdditionIntent)?;
+                    qualified
+                        .confirm_completed(&mut target, budget, cancelled)
+                        .map_err(Cause::Recovery)
+                }
                 MutationIntent::RetainedFieldAddition(intent) => {
                     let checked =
                         inspect_v3(&mut journal, budget, cancelled).map_err(Cause::Recovery)?;
@@ -1046,6 +1070,7 @@ impl OfflineWriteSession {
         #[cfg(feature = "ace16-create")]
         let limit = limit
             .max(tablecraft_ace::NativeRetainedTypedFieldAdditionIntent::MAX_ENCODED_BYTES as u64)
+            .max(tablecraft_ace::NativeDeclaredFieldAdditionIntent::MAX_ENCODED_BYTES as u64)
             .max(NativeOmittedInsertIntent::MAX_RETAINED_ENCODED_BYTES as u64)
             .max(NativeFirstTableIntent::MAX_ENCODED_BYTES as u64)
             .max(NativeFirstTableIntent::MAX_NATIVE_ENCODED_BYTES as u64)

@@ -10,20 +10,21 @@ use crate::editing::journal::NativeJournalInsertPlan;
 #[cfg(feature = "ace16-create")]
 use tablecraft_ace::{
     AddTablePlan, FirstTablePlan, NativeAddColumnIntent, NativeAddTableIntent,
-    NativeDefaultZeroAddColumnIntent, NativeFieldAdditionAfterOffHistoryIntent,
-    NativeFieldAdditionAfterOffIntent, NativeFieldAdditionIntent, NativeFirstTableIntent,
-    NativeIndexCreateIntent, NativePopulatedAddTableIntent,
-    NativeRepeatedDefaultZeroAddColumnIntent, NativeRetainedTypedFieldAdditionIntent,
-    PopulatedAddTablePlan, RecoverableAddColumnPlan, RecoverableFieldDropPlan,
-    RecoverableFieldRenamePlan, RecoverableNativeIndexCreatePlan,
+    NativeDeclaredFieldAdditionIntent, NativeDefaultZeroAddColumnIntent,
+    NativeFieldAdditionAfterOffHistoryIntent, NativeFieldAdditionAfterOffIntent,
+    NativeFieldAdditionIntent, NativeFirstTableIntent, NativeIndexCreateIntent,
+    NativePopulatedAddTableIntent, NativeRepeatedDefaultZeroAddColumnIntent,
+    NativeRetainedTypedFieldAdditionIntent, PopulatedAddTablePlan, RecoverableAddColumnPlan,
+    RecoverableFieldDropPlan, RecoverableFieldRenamePlan, RecoverableNativeIndexCreatePlan,
 };
 use tablecraft_ace::{
-    NativeClockInsertIntent, NativeCompleteInsertIntent, NativeCurrentFieldAdditionIntent,
-    NativeDeleteIntent, NativeEofInsertIntent, NativeFieldDropIntent, NativeFieldRenameIntent,
-    NativeInsertIntent, NativeOmittedInsertIntent, NativeQueryExpressionEditsIntent,
-    NativeQueryExpressionIntent, NativeTableDropIntent, NativeTableRenameIntent,
-    NativeUpdateIntent, NativeUpdateProfile, PreparedNativeUpdate, RecoverableNativeDeletePlan,
-    RecoverableNativeEditPlan, RecoverableNativeTableRenamePlan, RecoverableTableDropPlan,
+    DeclaredFieldAdditionIntentError, NativeClockInsertIntent, NativeCompleteInsertIntent,
+    NativeCurrentFieldAdditionIntent, NativeDeleteIntent, NativeEofInsertIntent,
+    NativeFieldDropIntent, NativeFieldRenameIntent, NativeInsertIntent, NativeOmittedInsertIntent,
+    NativeQueryExpressionEditsIntent, NativeQueryExpressionIntent, NativeTableDropIntent,
+    NativeTableRenameIntent, NativeUpdateIntent, NativeUpdateProfile, PreparedNativeUpdate,
+    RecoverableNativeDeletePlan, RecoverableNativeEditPlan, RecoverableNativeTableRenamePlan,
+    RecoverableTableDropPlan,
 };
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_io::journal::{DurableStorage, ResizableDurableStorage};
@@ -48,6 +49,9 @@ mod keyless_tests;
 
 #[cfg(all(test, not(feature = "ace16-create")))]
 mod index_creation_tests;
+
+#[cfg(all(test, not(feature = "ace16-create")))]
+mod declared_addition_tests;
 
 #[cfg(all(test, not(feature = "ace16-create")))]
 mod populated_tests;
@@ -327,6 +331,8 @@ pub(super) enum MutationIntent {
     #[cfg(feature = "ace16-create")]
     RetainedTypedFieldAddition(NativeRetainedTypedFieldAdditionIntent),
     #[cfg(feature = "ace16-create")]
+    DeclaredFieldAddition(NativeDeclaredFieldAdditionIntent),
+    #[cfg(feature = "ace16-create")]
     FieldRename(NativeFieldRenameIntent),
     RetainedFieldRename(NativeFieldRenameIntent),
     #[cfg(feature = "ace16-create")]
@@ -377,6 +383,8 @@ impl MutationIntent {
             Self::RetainedFieldAddition(_) => Some(SchemaChange::ColumnAdded),
             #[cfg(feature = "ace16-create")]
             Self::RetainedTypedFieldAddition(_) => Some(SchemaChange::ColumnAdded),
+            #[cfg(feature = "ace16-create")]
+            Self::DeclaredFieldAddition(_) => Some(SchemaChange::ColumnAdded),
             #[cfg(feature = "ace16-create")]
             Self::FieldDrop(_) => Some(SchemaChange::ColumnDropped),
             Self::RetainedFieldDrop(_) => Some(SchemaChange::ColumnDropped),
@@ -478,6 +486,16 @@ impl MutationIntent {
             return NativeOmittedInsertIntent::decode_retained(raw, budget, cancelled)
                 .map(Self::RetainedInsert)
                 .map_err(Cause::Intent);
+        }
+        if raw.starts_with(b"TCAC0013") {
+            #[cfg(feature = "ace16-create")]
+            return NativeDeclaredFieldAdditionIntent::decode(raw, budget, cancelled)
+                .map(Self::DeclaredFieldAddition)
+                .map_err(Cause::DeclaredFieldAdditionIntent);
+            #[cfg(not(feature = "ace16-create"))]
+            return Err(Cause::DeclaredFieldAdditionIntent(
+                DeclaredFieldAdditionIntentError::UnsupportedSource,
+            ));
         }
         if raw.starts_with(b"TCAC0012") {
             #[cfg(feature = "ace16-create")]
