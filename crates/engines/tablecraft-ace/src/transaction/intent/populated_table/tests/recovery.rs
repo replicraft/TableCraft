@@ -259,3 +259,37 @@ fn wrong_before_after_values_and_split_pool_failures_never_gain_recovery_authori
     assert_eq!(foreign_target.writes, 0);
     assert_image(foreign_target.bytes.get_ref(), &before);
 }
+
+#[test]
+fn shared_recovery_pool_accumulates_proof_and_native_work_without_refill() {
+    let before = fields::source(fields::Case::FirstNumber).bytes;
+    let after = raw::numbers(&before, "Archive", &[Some(123), None]);
+    let encoded = intent(&before, &[Some(123), None]);
+    let (target, mut journal_file) = pending(&before, &after);
+    let checked = journal::inspect_v3(&mut journal_file, &mut budget(), &|| false).unwrap();
+    let mut measured = budget();
+    drop(
+        NativePopulatedAddTableIntent::decode(&encoded, &mut budget(), &|| false)
+            .unwrap()
+            .qualify_recovery_shared(checked, SCOPE, &mut measured, &|| false)
+            .unwrap(),
+    );
+    let used = u64::MAX - measured.remaining(Resource::Steps);
+    assert!(used > 1);
+    let checked = journal::inspect_v3(&mut journal_file, &mut budget(), &|| false).unwrap();
+    let mut short = ResourceBudget::new(u64::MAX, u64::MAX, used - 1);
+    assert!(matches!(
+        NativePopulatedAddTableIntent::decode(&encoded, &mut budget(), &|| false)
+            .unwrap().qualify_recovery_shared(checked, SCOPE, &mut short, &|| false),
+        Err(NativeRecoveryQualificationError::Inspect(InspectError::Limit(limit)))
+            if limit.resource == Resource::Steps
+    ));
+    let checked = journal::inspect_v3(&mut journal_file, &mut budget(), &|| false).unwrap();
+    assert!(
+        NativePopulatedAddTableIntent::decode(&encoded, &mut budget(), &|| false)
+            .unwrap()
+            .qualify_recovery_shared(checked, SCOPE, &mut budget(), &|| true)
+            .is_err()
+    );
+    assert_eq!(target.writes, 0);
+}
