@@ -58,6 +58,7 @@ impl Document {
         let mut output = Presentation::with_budget(options.presentation().budget(), cancelled);
         parameters::validate_input_limits(inputs, &mut output)
             .map_err(crate::query::options::presentation_error)?;
+        let issuer = self.query_result_issuer();
         let source = NativeSource::new_with_snapshot_limits(
             &mut self.source,
             SCOPE,
@@ -65,7 +66,8 @@ impl Document {
             cancelled,
             options.snapshot(),
         )
-        .map_err(crate::query::options::native_error)?;
+        .map_err(crate::query::options::native_error)?
+        .with_collections();
         let comparison_pool = RefCell::new(options.comparison().budget());
         let (mut source, resolver) =
             source.with_deferred_database_collation_resolver(&comparison_pool)?;
@@ -84,6 +86,7 @@ impl Document {
                 title: &target.name,
                 clock,
                 cancelled,
+                issuer,
             },
             output,
         )

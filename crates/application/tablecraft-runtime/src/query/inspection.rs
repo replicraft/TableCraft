@@ -132,6 +132,7 @@ impl Document {
         let bindings = parameters::bindings(parsed.query(), inputs, &mut output)
             .map_err(super::options::presentation_error)?;
         check(cancelled)?;
+        let issuer = self.query_result_issuer();
         let source = NativeSource::new_with_snapshot_limits(
             &mut self.source,
             SCOPE,
@@ -154,6 +155,7 @@ impl Document {
                 title: "Query results",
                 clock,
                 cancelled,
+                issuer,
             },
             output,
         )
