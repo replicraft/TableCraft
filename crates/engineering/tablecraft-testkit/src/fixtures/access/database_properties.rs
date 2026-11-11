@@ -122,18 +122,19 @@ pub fn with_native17_properties(before: &[u8], properties: &[u8]) -> Vec<u8> {
     let page = &before[4 * PAGE_BYTES..5 * PAGE_BYTES];
     let count = usize::from(u16::from_le_bytes(page[12..14].try_into().unwrap()));
     let mut records = Vec::with_capacity(count);
+    let mut flags = Vec::with_capacity(count);
     let mut end = PAGE_BYTES;
     let mut replaced = false;
 
     for slot in 0..count {
         let entry = 14 + 2 * slot;
-        let start = usize::from(u16::from_le_bytes(
-            page[entry..entry + 2].try_into().unwrap(),
-        ));
-        assert!(start < end, "unforwarded native17 catalog record");
+        let stored = u16::from_le_bytes(page[entry..entry + 2].try_into().unwrap());
+        let start = usize::from(stored & 0x1fff);
+        assert!(start <= end, "native17 catalog record boundaries");
         let row = &page[start..end];
-        assert_eq!(&row[..2], &17_u16.to_le_bytes());
-        if row[2..6] == 0x0f00_0004_u32.to_le_bytes() {
+        flags.push(stored & 0xe000);
+        if stored & 0xe000 == 0 && row.get(2..6) == Some(&0x0f00_0004_u32.to_le_bytes()) {
+            assert_eq!(&row[..2], &17_u16.to_le_bytes());
             assert!(!replaced, "unique MSysDb role");
             records.push(native17_database_record(properties));
             replaced = true;
@@ -145,7 +146,12 @@ pub fn with_native17_properties(before: &[u8], properties: &[u8]) -> Vec<u8> {
     assert!(replaced, "existing MSysDb role");
 
     let mut after = before.to_vec();
-    after[4 * PAGE_BYTES..5 * PAGE_BYTES]
-        .copy_from_slice(&super::canonical_native17_creation::packed(2, records));
+    let mut packed = super::canonical_native17_creation::packed(2, records);
+    for (slot, flags) in flags.into_iter().enumerate() {
+        let entry = 14 + 2 * slot;
+        let start = u16::from_le_bytes(packed[entry..entry + 2].try_into().unwrap());
+        packed[entry..entry + 2].copy_from_slice(&(start | flags).to_le_bytes());
+    }
+    after[4 * PAGE_BYTES..5 * PAGE_BYTES].copy_from_slice(&packed);
     after
 }
