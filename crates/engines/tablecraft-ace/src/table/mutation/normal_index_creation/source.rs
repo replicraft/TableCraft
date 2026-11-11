@@ -75,10 +75,9 @@ pub(super) fn capture(
                 column.name().len().max(request.column.len()) as u64,
             )
             .map_err(crate::InspectError::from)?;
-        if column.name().eq_ignore_ascii_case(request.column) {
-            if selected.replace(column).is_some() {
-                return Err(crate::InspectError::Malformed.into());
-            }
+        if column.name().eq_ignore_ascii_case(request.column) && selected.replace(column).is_some()
+        {
+            return Err(crate::InspectError::Malformed.into());
         }
     }
     let selected = selected.ok_or(crate::InspectError::UnknownColumn)?;

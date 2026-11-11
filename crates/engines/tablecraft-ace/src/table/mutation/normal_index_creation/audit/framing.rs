@@ -40,7 +40,7 @@ pub(super) fn appended(
         owner,
         descending,
     } = layout;
-    if root.checked_add(1) != Some(host) || host <= first || bytes.len() % PAGE != 0 {
+    if root.checked_add(1) != Some(host) || host <= first || !bytes.len().is_multiple_of(PAGE) {
         return Err(EditError::Preservation);
     }
     let mut level_start = first;

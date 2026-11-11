@@ -15,7 +15,6 @@ const WINDOW: u32 = ((PAGE_BYTES - USAGE_HEADER) * u8::BITS as usize) as u32;
 
 pub(super) struct Maps {
     pub pages: Vec<CreatedPage>,
-    pub host: u32,
     pub usage: u32,
     pub after_pages: u32,
 }
@@ -63,7 +62,6 @@ pub(super) fn build(
         });
         return Ok(Maps {
             pages,
-            host,
             usage,
             after_pages: host.checked_add(1).ok_or(InspectError::StructureLimit)?,
         });
@@ -129,7 +127,6 @@ pub(super) fn build(
     }
     Ok(Maps {
         pages,
-        host,
         usage,
         after_pages,
     })
