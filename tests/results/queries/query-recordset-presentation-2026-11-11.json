@@ -1,0 +1,134 @@
+{
+  "date": "2026-11-11",
+  "source_commit": "2af2e67431b0a3f04649ca6151a1e30fef4f32c0",
+  "platform": "macOS 14.7.2 ARM64",
+  "host": "normal source-free preview, offscreen WGPU",
+  "native_windows_opened": false,
+  "renderer": {
+    "path": ".cache/cargo-backend-20261102/debug/examples/render_preview",
+    "sha256": "7e6867176e03b91d7005a474eb368f0b233a6b2971bf25da895a5fe342860555"
+  },
+  "reference": {
+    "surface": "Retained Windows Access Home/datasheet capture",
+    "pixels": [
+      1920,
+      1141
+    ],
+    "scale": "unknown",
+    "matching_query_recordset_capture": false,
+    "matching_dark_capture": false
+  },
+  "qualification": "Headless synthetic interaction and presentation only; query-owned contents is an adaptation, not native Access pixel or database parity",
+  "observations": [
+    "Parent results retain three rows with 2/1/0 child summaries rather than flattening children.",
+    "Contents has a visible Close action, ordinary empty Text, explicit NULL and distinct Not inspected FileData cells. No open/export/decode action is offered.",
+    "English 1280x820 and German 1000x680 light/dark frames remain readable. The compact German Ribbon scrolls horizontally and retains its commands.",
+    "German parent collection summary text remains English; context, badges, child inspection states and dismissal are localized. This is a known presentation gap in these captured frames."
+  ],
+  "render_log": {
+    "path": ".cache/ui-previews/query-recordsets-current/render-results.json",
+    "sha256": "6b049f6a850337a7d343899ad9aff324cb8ac3523c446a893e22bfc22fba68d6"
+  },
+  "sandbox_adapter_failure": {
+    "path": ".cache/ui-previews/query-recordsets-current/en-US-light-parent.log",
+    "sha256": "1d84e571dff43265eb5250bb117f37f9ba6fd6c700bfc48f059a544e51e077e8"
+  },
+  "frames": [
+    {
+      "path": ".cache/ui-previews/query-recordsets-current/de-dark-query-query-collections-contents.png",
+      "sha256": "5c9b400e0b8ad38adfa8c81273a436ae6bf6385df0ead572ad143d7256d94664",
+      "width": 1000,
+      "height": 680,
+      "scale": 1,
+      "directly_inspected": true
+    },
+    {
+      "path": ".cache/ui-previews/query-recordsets-current/de-dark-query-query-collections-empty.png",
+      "sha256": "6fcbfa7a767b039d119dd7ebfcfbe5fed61c30e394fae7e452adbd348e64d9a3",
+      "width": 1000,
+      "height": 680,
+      "scale": 1,
+      "directly_inspected": true
+    },
+    {
+      "path": ".cache/ui-previews/query-recordsets-current/de-dark-query-query-collections-parent.png",
+      "sha256": "71fcb7e180b4ca6a70a1258a7058970a404105fd3af0dae52fa01929554daabc",
+      "width": 1000,
+      "height": 680,
+      "scale": 1,
+      "directly_inspected": true
+    },
+    {
+      "path": ".cache/ui-previews/query-recordsets-current/de-light-query-query-collections-contents.png",
+      "sha256": "bc8f9644324ec5fa628735f2b3c47d1c84515d196532e73bcf06eb65e2237ebe",
+      "width": 1000,
+      "height": 680,
+      "scale": 1,
+      "directly_inspected": true
+    },
+    {
+      "path": ".cache/ui-previews/query-recordsets-current/de-light-query-query-collections-empty.png",
+      "sha256": "e06ded2496c469deecaf1527d42709b77b90cc14ade4e670e94173cdf72a4bb0",
+      "width": 1000,
+      "height": 680,
+      "scale": 1,
+      "directly_inspected": true
+    },
+    {
+      "path": ".cache/ui-previews/query-recordsets-current/de-light-query-query-collections-parent.png",
+      "sha256": "45f1c16dc5dc91b8f5cd80e134799d66233171573d396ed7dbc482fd707d31ba",
+      "width": 1000,
+      "height": 680,
+      "scale": 1,
+      "directly_inspected": true
+    },
+    {
+      "path": ".cache/ui-previews/query-recordsets-current/en-US-dark-query-query-collections-contents.png",
+      "sha256": "2a93c94bd24404d787e675d1326b55f07fc3151e659656b3988cc348e43044aa",
+      "width": 1280,
+      "height": 820,
+      "scale": 1,
+      "directly_inspected": true
+    },
+    {
+      "path": ".cache/ui-previews/query-recordsets-current/en-US-dark-query-query-collections-empty.png",
+      "sha256": "abdf77f7fa317d069ce6a6c7d8658eecba9da01394646c551d4d91782df44c72",
+      "width": 1280,
+      "height": 820,
+      "scale": 1,
+      "directly_inspected": true
+    },
+    {
+      "path": ".cache/ui-previews/query-recordsets-current/en-US-dark-query-query-collections-parent.png",
+      "sha256": "ffaf45e1d2346be3eb515c4ecabf1138139c5ab2bebce3bdc475ec4af0143952",
+      "width": 1280,
+      "height": 820,
+      "scale": 1,
+      "directly_inspected": true
+    },
+    {
+      "path": ".cache/ui-previews/query-recordsets-current/en-US-light-query-query-collections-contents.png",
+      "sha256": "6f90612a82aa65e527c45bd3ff0aeded8fad9623fad6aca6de24ef082ca5f33c",
+      "width": 1280,
+      "height": 820,
+      "scale": 1,
+      "directly_inspected": true
+    },
+    {
+      "path": ".cache/ui-previews/query-recordsets-current/en-US-light-query-query-collections-empty.png",
+      "sha256": "2543c0d6fd93e8ee27afc9d9f1970b01d3ce7d612e0f06265da140af2bcd2f96",
+      "width": 1280,
+      "height": 820,
+      "scale": 1,
+      "directly_inspected": true
+    },
+    {
+      "path": ".cache/ui-previews/query-recordsets-current/en-US-light-query-query-collections-parent.png",
+      "sha256": "e2e8cc8b06596357d31435275dc1a11a93b9ec748af75a660f34b461c3850cb6",
+      "width": 1280,
+      "height": 820,
+      "scale": 1,
+      "directly_inspected": true
+    }
+  ]
+}
