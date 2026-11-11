@@ -50,15 +50,6 @@ fn keyless_presence_requalifies_empty_and_real_pending_committed_settled_journal
     let (before, definition) = source();
     for value in [None, Some(77)] {
         for empty in [false, true] {
-            let original = if empty {
-                Vec::new()
-            } else {
-                vec![OmittedRowInsert::new(vec![
-                    value.map_or(InsertFieldValue::Omitted, |value| {
-                        InsertFieldValue::Supplied(Value::Int32(value))
-                    }),
-                ])]
-            };
             let rows = if empty {
                 Vec::new()
             } else {
@@ -71,10 +62,15 @@ fn keyless_presence_requalifies_empty_and_real_pending_committed_settled_journal
                 field_changes::inserting::keyless_score(&before, definition, value)
             };
             for committed in [false, true] {
-                let requests = original
-                    .iter()
-                    .map(|row| OmittedRowInsert::new(row.values().to_vec()))
-                    .collect();
+                let requests = if empty {
+                    Vec::new()
+                } else {
+                    vec![OmittedRowInsert::new(vec![
+                        value.map_or(InsertFieldValue::Omitted, |value| {
+                            InsertFieldValue::Supplied(Value::Int32(value))
+                        }),
+                    ])]
+                };
                 let plan = image(&before, 4621)
                     .plan_recoverable_retained_keyless_insert(
                         "Keyless",
