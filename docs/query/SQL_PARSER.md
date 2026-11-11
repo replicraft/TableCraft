@@ -76,9 +76,9 @@ is the first working consumer.
 | Crosstabs | TRANSFORM expression with optional AS alias, SELECT/grouping, PIVOT expression and optional ordered fixed headings, trailing owner-access option; headings are distinct from membership IN; subqueries allowed in predicates, rejected in output expressions |
 | Append/update/delete | INSERT VALUES (one record) or retrieval source, ordered target fields; UPDATE relations and SET assignments; DELETE target wildcards, relations and filters |
 | Make-table | SELECT INTO is a separate root statement kind; destination IN is distinct from source IN; make-table statements are rejected inside retrieval operands |
-| Schema queries | CREATE [TEMPORARY] TABLE with ordered fields/constraints; ALTER TABLE one operation; CREATE [UNIQUE] INDEX with ordered directions and WITH policy; DROP TABLE/INDEX |
+| Schema queries | CREATE [TEMPORARY] TABLE with ordered fields/constraints and provider DEFAULT annotations; ALTER TABLE one operation, including ALTER COLUMN type/nullability/default/inline constraint annotations; CREATE [UNIQUE] INDEX with ordered directions and WITH policy; DROP TABLE/INDEX |
 | Saved queries | CREATE VIEW with optional output names and retrieval body; CREATE PROCEDURE / PROCEDURE headers with parameters and one parsed body; DROP VIEW/PROCEDURE |
-| Constraints | Inline/named primary, unique and NOT NULL constraints; foreign keys with NO INDEX, optional referenced fields and ON UPDATE/DELETE CASCADE or SET NULL |
+| Constraints | Inline/named primary, unique, NOT NULL and parenthesized CHECK constraints; foreign keys with NO INDEX, optional referenced fields and ON UPDATE/DELETE CASCADE or SET NULL |
 | External databases | Quoted paths or simple bare database filenames, optional quoted type strings or bracketed DATABASE connection specifications; stored as text and never opened |
 
 TOP accepts unsigned u32 syntax (including zero); PERCENT is restricted to
@@ -97,6 +97,50 @@ statements; `query/definition/` owns table, constraint and index syntax. The pri
 `parser/` contains lexical, expression, relation, parameter and statement adapters.
 Upstream token/parser types do not appear in public APIs. Query types are not a
 validated public builder, serialization protocol or execution IR.
+
+## Declaration defaults, checks and ALTER COLUMN
+
+Column declarations retain an optional `ColumnDefault` independently of type,
+NOT NULL and their inline constraint. ADD and ALTER COLUMN use the same owned
+`Column` representation. A named table constraint or an inline column constraint
+can carry `ConstraintKind::Check(Expression)`. CHECK requires its surrounding
+parentheses and reuses the existing Access expression grammar, including nested
+read-only subqueries, arithmetic and predicates. Its nested syntax shares the
+same input/token, expression-depth and parser-recursion guards as the enclosing
+statement. Binding, field-reference scope, result type, native constraint limits
+and enforcement remain consumer responsibilities.
+
+Microsoft documents DEFAULT for the Access OLE DB provider/ADO and explicitly
+states that it returns an error in Access SQL View. The syntax-only parser can
+retain this engine/provider annotation without selecting a provider or making it
+available to the GUI. Current runtime DDL/make-table refusal is unchanged. See
+Microsoft's [table-design SQL contract](https://learn.microsoft.com/en-us/office/vba/access/concepts/structured-query-language/modify-a-table-s-design-using-access-sql)
+for DEFAULT, CHECK and ALTER COLUMN constraint examples; syntax admission is not
+an Access execution or database-write qualification.
+
+`DEFAULT Unknown` retains the unquoted word as `ColumnDefault::BareWord` and prints
+it without inventing quotes or brackets. `DEFAULT [Unknown]` retains a field
+expression, while `DEFAULT 'Unknown'` retains quoted Text expression syntax.
+NULL/TRUE/FALSE, numeric/date/GUID literals, calls and other expressions keep their
+normal expression nodes. No annotation is evaluated, resolved as a reference or
+converted to a stored default by parsing. The original source preserves exact
+quoting/comments; normalized expression output retains its existing canonical
+quoting rules. Provider-specific interpretation of those spellings is separate.
+
+`BareDefaultWord::new` validates an actual single unquoted word through the strict
+expression parser under caller limits. It rejects delimiters, comments,
+qualifiers, operators, additional SQL, whitespace surrounding the token and
+literal/function expressions. Its field is private: a general `Name`, which can
+contain quoted-identifier punctuation, cannot be supplied to raw default output.
+The declaration parser moves its already-checked unquoted token into that owner
+without copying or parsing its payload a second time.
+
+Repeated DEFAULT or direct NOT NULL annotations, and multiple inline constraints,
+are refused. A named NOT NULL constraint remains distinct from the direct flag.
+A following NOT NULL annotation terminates only the outer column-default
+expression; it is not admitted as a postfix predicate in ordinary SELECTs,
+parenthesized values or function arguments. Trailing SQL is still rejected rather
+than consumed as part of a default or check expression.
 
 ## Access grammar and formatting
 
@@ -150,8 +194,8 @@ tests run with SQLParser's std feature alone. See DEPENDENCIES.md.
 Pass-through/vendor SQL, SQL Server TOP parentheses/WITH TIES, LIMIT,
 EXCEPT/INTERSECT, FULL/CROSS/APPLY/USING/NATURAL joins, window functions, CAST/CASE,
 DISTINCT aggregate arguments, named function arguments, multi-row VALUES and
-positional `?` placeholders are rejected. Schema DEFAULT/CHECK clauses,
-IF EXISTS/IF NOT EXISTS and multi-operation ALTER TABLE are also rejected. Multi-word type spellings
+positional `?` placeholders are rejected. IF EXISTS/IF NOT EXISTS and
+multi-operation ALTER TABLE are also rejected. Multi-word type spellings
 (such as NCHAR VARYING), signed type arguments and provider-specific schema
 extensions are outside this bounded grammar. Transaction, privilege and
 pass-through command languages are not query-model features. Parameter references use Access names.
