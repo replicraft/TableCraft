@@ -5,7 +5,7 @@ mod budget_tests;
 use crate::{
     ExecutionOptions, ExpressionQueryResult, PreparedQuery, QueryError, QueryLimits, Source,
     binding::{PreparationOptions, StageOptions, prepare_insert_stage, prepare_stage},
-    execution::{CellQueryResult, ExecutionContext, publish_cells, validate_insert_parameters},
+    execution::{CellQueryResult, ExecutionContext, publish_cells, validate_staged_parameters},
     plan::PreparedBody,
     profile::MAX_NAMED_DEPTH,
     source::TextPolicy,
@@ -70,17 +70,17 @@ pub fn execute_with_schema_discovery<'a>(
     publish_cells(result, operation.budget, options)
 }
 
-/// Internal append source execution retains cells until destination assignment.
+/// Internal complete retrieval retains cells until explicit stored assignment.
 /// Both staged binding and every discovered dependency use the caller's pool.
-pub(crate) fn execute_insert_source<'a>(
+pub(crate) fn execute_staged_source<'a>(
     query: &Query,
     source: &'a dyn Source,
     parameters: &'a [(&str, Value)],
     options: ExecutionOptions<'a>,
     budget: &mut ResourceBudget,
-    expected_width: usize,
+    expected_width: Option<usize>,
 ) -> Result<CellQueryResult, QueryError> {
-    validate_insert_parameters(query, parameters, options, budget)?;
+    validate_staged_parameters(query, parameters, options, budget)?;
     let discovery = DiscoveryState::new(true);
     let mut operation = Operation {
         source,
@@ -91,10 +91,15 @@ pub(crate) fn execute_insert_source<'a>(
         parameterless: false,
         repeatable_dynamic: false,
     };
-    let plan = operation.prepare_input(query, SourceNamespace::Root, true)?;
-    if plan
-        .output_types()
-        .is_none_or(|columns| columns.len() != expected_width)
+    let plan = operation.prepare_input(
+        query,
+        SourceNamespace::Root,
+        matches!(&query.statement, Statement::Insert(_)),
+    )?;
+    if let Some(expected_width) = expected_width
+        && plan
+            .output_types()
+            .is_none_or(|columns| columns.len() != expected_width)
     {
         return Err(QueryError::Width);
     }

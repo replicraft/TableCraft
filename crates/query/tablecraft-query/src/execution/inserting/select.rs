@@ -2,7 +2,7 @@
 use super::{InsertError, stored_value, target, values};
 use crate::{
     ExecutionOptions, QueryError, Source,
-    discovery::execute_insert_source,
+    discovery::execute_staged_source,
     execution::cell::{CellValue, into_scalar},
     profile::SOURCE_SCHEMA_POLICY,
 };
@@ -186,7 +186,14 @@ fn prepare<'a, E: InsertableTable>(
         budget,
         cancelled,
     )?;
-    let result = execute_insert_source(query, source, parameters, options, budget, mapping.len())?;
+    let result = execute_staged_source(
+        query,
+        source,
+        parameters,
+        options,
+        budget,
+        Some(mapping.len()),
+    )?;
 
     budget.charge_allocation(
         result.rows.len() as u64,

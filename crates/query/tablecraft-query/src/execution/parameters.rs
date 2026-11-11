@@ -73,9 +73,9 @@ impl<'a> Runtime<'a, '_> {
     }
 }
 
-/// Root input errors precede any append schema-discovery row reads. The source
+/// Root input errors precede staged schema-discovery row reads. The source
 /// here cannot service relation metadata or scans; only declarations are bound.
-pub(crate) fn validate_insert_parameters<'a>(
+pub(crate) fn validate_staged_parameters<'a>(
     query: &Query,
     supplied: &'a [(&str, Value)],
     options: ExecutionOptions<'a>,
