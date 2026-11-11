@@ -48,6 +48,15 @@ fn assert_image(actual: &[u8], expected: &[u8]) {
 fn keyless_original_presence_appends_literal_nulls_and_value_without_resurrecting_id() {
     let (before, definition) = source();
     let native = image(&before);
+    assert!(matches!(
+        crate::table::mutation::fixed_records::indexed::CheckedIndexes::capture_actions(
+            &native,
+            "Keyless",
+            &mut budget(),
+            &|| false,
+        ),
+        Err(EditError::Unsupported(WriteBlocker::IndexedColumn))
+    ));
     assert!(
         native
             .select_native_retained_keyless_insert_table("Keyless", &mut budget(), &|| false)
@@ -120,6 +129,16 @@ fn keyless_empty_requests_still_reject_generated_and_indexed_sources() {
         Err(EditError::Unsupported(WriteBlocker::Column))
     ));
     let manual = raw::append(&source, "Manual", raw::Target::ManualNumber);
+    let indexed = image(&manual);
+    assert!(matches!(
+        crate::table::mutation::fixed_records::indexed::CheckedIndexes::capture_keyless_actions(
+            &indexed,
+            "Manual",
+            &mut budget(),
+            &|| false,
+        ),
+        Err(EditError::Unsupported(WriteBlocker::IndexedColumn))
+    ));
     assert!(
         !image(&manual)
             .select_native_retained_keyless_insert_table("Manual", &mut budget(), &|| false)

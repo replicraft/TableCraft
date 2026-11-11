@@ -240,6 +240,41 @@ pub(super) fn qualify<'image>(
     cancelled: &dyn Fn() -> bool,
 ) -> Result<(CheckedIndexes<'image>, bool), EditError> {
     let facts = CheckedIndexes::capture_actions(image, table, budget, cancelled)?;
+    qualify_facts(image, source, requests, scope, facts, budget, cancelled)
+}
+
+/// The keyless source must positively own zero indexes; all common source,
+/// catalog/tree ownership and retained LVAL exclusions are still checked.
+#[cfg(feature = "ace16-create")]
+pub(super) fn qualify_keyless<'image>(
+    image: &'image NativeImage,
+    source: &Source,
+    table: &str,
+    requests: &[RowInsert],
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(CheckedIndexes<'image>, bool), EditError> {
+    let facts = CheckedIndexes::capture_keyless_actions(image, table, budget, cancelled)?;
+    qualify_facts(
+        image,
+        source,
+        requests,
+        LvalScope::Retained,
+        facts,
+        budget,
+        cancelled,
+    )
+}
+
+fn qualify_facts<'image>(
+    image: &'image NativeImage,
+    source: &Source,
+    requests: &[RowInsert],
+    scope: LvalScope,
+    facts: CheckedIndexes<'image>,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(CheckedIndexes<'image>, bool), EditError> {
     let schema = source.table.schema();
     facts.require_source(image, schema, budget, cancelled)?;
     if facts.checked().schema().declared_rows() != schema.declared_rows()

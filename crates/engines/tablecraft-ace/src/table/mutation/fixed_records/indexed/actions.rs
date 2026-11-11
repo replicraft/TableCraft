@@ -17,6 +17,13 @@ use tablecraft_schema::ScalarType;
 #[cfg(test)]
 mod tests;
 
+#[derive(Clone, Copy)]
+enum IndexSet {
+    Required,
+    #[cfg(feature = "ace16-create")]
+    Absent,
+}
+
 impl<'image> CheckedIndexes<'image> {
     /// Complete scalar/key read coverage bound to the original image. This
     /// method neither qualifies a writable field nor grants durable authority.
@@ -25,6 +32,28 @@ impl<'image> CheckedIndexes<'image> {
     pub(in crate::table::mutation) fn capture_actions(
         image: &'image NativeImage,
         table: &str,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, EditError> {
+        Self::capture_action_indexes(image, table, IndexSet::Required, budget, cancelled)
+    }
+
+    /// Bind an exactly index-free table for the separate retained keyless action.
+    /// This is not the indexed-action factory and grants no key mutation policy.
+    #[cfg(feature = "ace16-create")]
+    pub(in crate::table::mutation) fn capture_keyless_actions(
+        image: &'image NativeImage,
+        table: &str,
+        budget: &mut ResourceBudget,
+        cancelled: &dyn Fn() -> bool,
+    ) -> Result<Self, EditError> {
+        Self::capture_action_indexes(image, table, IndexSet::Absent, budget, cancelled)
+    }
+
+    fn capture_action_indexes(
+        image: &'image NativeImage,
+        table: &str,
+        indexes: IndexSet,
         budget: &mut ResourceBudget,
         cancelled: &dyn Fn() -> bool,
     ) -> Result<Self, EditError> {
@@ -42,7 +71,16 @@ impl<'image> CheckedIndexes<'image> {
                 return Err(EditError::Unsupported(WriteBlocker::Column));
             }
         }
-        if checked.indexes().is_empty() {
+        let allowed = match indexes {
+            IndexSet::Required => !checked.indexes().is_empty(),
+            #[cfg(feature = "ace16-create")]
+            IndexSet::Absent => {
+                checked.indexes().is_empty()
+                    && schema.physical_layout().physical_indexes == 0
+                    && schema.physical_layout().logical_indexes == 0
+            }
+        };
+        if !allowed {
             return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
         }
         for index in checked.indexes() {

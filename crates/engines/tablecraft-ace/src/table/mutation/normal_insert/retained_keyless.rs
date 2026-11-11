@@ -34,15 +34,7 @@ fn qualify(
         return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));
     }
     let variables = record_insertion::current::ordinary_variables(schema, budget, cancelled)?;
-    indexed::qualify(
-        image,
-        source,
-        table,
-        &[],
-        indexed::LvalScope::Retained,
-        budget,
-        cancelled,
-    )?;
+    indexed::qualify_keyless(image, source, table, &[], budget, cancelled)?;
     Ok(variables)
 }
 
@@ -116,15 +108,8 @@ impl NativeImage {
             budget,
             cancelled,
         )?;
-        let (facts, optional) = indexed::qualify(
-            &self,
-            &source,
-            table,
-            &rows,
-            indexed::LvalScope::Retained,
-            budget,
-            cancelled,
-        )?;
+        let (facts, optional) =
+            indexed::qualify_keyless(&self, &source, table, &rows, budget, cancelled)?;
         if optional {
             return Err(EditError::Preservation);
         }
