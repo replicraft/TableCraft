@@ -455,7 +455,9 @@ fn bare_history_keeps_parent_rows_actual_member_order_and_separate_current_memo(
         );
         let result = plan
             .execute_collections(&source, &[], ExecutionOptions::default())
-            .unwrap();
+            .unwrap_or_else(|error| {
+                panic!("profile {code}: structured query execution: {error:?}")
+            });
         assert_eq!(result.columns(), ["Id", "Notes", "Score"]);
         assert_eq!(
             result.rows().len(),

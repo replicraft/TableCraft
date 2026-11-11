@@ -3,7 +3,7 @@ use crate::{
     ComplexColumnSchema, InspectError, ReadProfile, TableSchema,
     format::{
         data_type,
-        layout::{AUTO_NUMBER_FLAG, COMPLEX_FK_EXT_FLAG, UPDATABLE_FLAG},
+        layout::{AUTO_NUMBER_FLAG, COMPLEX_FK_EXT_FLAG, FIXED_FLAG, UPDATABLE_FLAG},
     },
     header::check,
     table::snapshot,
@@ -56,6 +56,55 @@ pub(super) fn qualify_variable(
     Ok(())
 }
 
+fn qualify_fixed_ace2010(
+    column: &ComplexColumnSchema,
+    flat: &TableSchema,
+    budget: &mut ResourceBudget,
+    cancelled: &dyn Fn() -> bool,
+) -> Result<(), InspectError> {
+    check(budget, cancelled)?;
+    budget.charge(Resource::Steps, (flat.columns().len() * 2) as u64)?;
+    let reference = |number| {
+        flat.columns()
+            .iter()
+            .find(|field| field.number() == number)
+            .ok_or(InspectError::Malformed)
+    };
+    let foreign = reference(column.foreign_key_number())?;
+    let identity = reference(column.identity_number())?;
+    let fixed = FIXED_FLAG | UPDATABLE_FLAG;
+    if column.foreign_key_number() == column.identity_number()
+        || foreign.read_profile() != ReadProfile::Ace2010
+        || identity.read_profile() != ReadProfile::Ace2010
+        || !foreign.fixed()
+        || !identity.fixed()
+        || foreign.native_type() != data_type::INT32
+        || identity.native_type() != data_type::INT32
+        || foreign.storage_length() != data_type::INT32_BYTES
+        || identity.storage_length() != data_type::INT32_BYTES
+        || foreign.flags() != fixed
+        || identity.flags() != fixed | AUTO_NUMBER_FLAG
+        || foreign.extended_flags() != COMPLEX_FK_EXT_FLAG
+        || identity.extended_flags() != 0
+    {
+        return Err(InspectError::Unsupported);
+    }
+    let foreign_end = foreign
+        .field
+        .offset
+        .checked_add(data_type::INT32_BYTES)
+        .ok_or(InspectError::Malformed)?;
+    let identity_end = identity
+        .field
+        .offset
+        .checked_add(data_type::INT32_BYTES)
+        .ok_or(InspectError::Malformed)?;
+    if foreign.field.offset < identity_end && identity.field.offset < foreign_end {
+        return Err(InspectError::Unsupported);
+    }
+    Ok(())
+}
+
 /// Preserve all original field metadata; override only the two proven reference
 /// carriers. Every member payload still needs its ordinary scalar declaration.
 pub(super) fn columns(
@@ -72,8 +121,11 @@ pub(super) fn columns(
             || field.number() == column.identity_number())
             && !field.fixed()
     });
+    let fixed_ace2010 = !variable && flat.header.read_profile()? == ReadProfile::Ace2010;
     if variable {
         qualify_variable(column, flat, budget, cancelled)?;
+    } else if fixed_ace2010 {
+        qualify_fixed_ace2010(column, flat, budget, cancelled)?;
     }
     budget.charge_allocation(flat.columns().len() as u64, size_of::<Column>() as u64)?;
     let mut columns = Vec::new();
@@ -84,7 +136,7 @@ pub(super) fn columns(
         check(budget, cancelled)?;
         let reference = field.number() == column.foreign_key_number()
             || field.number() == column.identity_number();
-        let kind = if variable && reference {
+        let kind = if (variable || fixed_ace2010) && reference {
             ScalarType::Int32
         } else {
             field.scalar_type().ok_or(InspectError::Unsupported)?
