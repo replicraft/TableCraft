@@ -7,5 +7,6 @@ mod other_services;
 mod populated_row_composition;
 mod recovery;
 mod schema;
+mod typed_field_drop;
 
 mod unchanged_field_rename;
