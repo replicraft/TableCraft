@@ -13,6 +13,7 @@ fn filler_rules_follow_scaled_rows_without_creating_selectable_records() {
         crate::configure(&context);
         crate::theme::set_datasheet_zoom(&context, 150);
         let data = Data {
+            query_contents: None,
             row_ordinals: None,
             source_revision: Some(7),
             table: "Items".into(),

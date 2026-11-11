@@ -18,3 +18,5 @@ collections-stored-version = 저장된 버전
 collections-mock-error = 컬렉션 읽기 오류 시뮬레이션입니다. 페이로드를 열거나 내보내지 않았습니다.
 
 collections-stale-view = 이 컬렉션은 더 이상 이 보기에 속하지 않습니다.
+collections-absent-parent = 상위 레코드 없음
+collections-query-target = 쿼리 결과 · { $column } · 행 { $row }

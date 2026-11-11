@@ -63,6 +63,9 @@ pub(in crate::workspace) fn data(data: &Data) -> Option<usize> {
             count.string(&cell.text);
         }
     }
+    if let Some(bindings) = &data.query_contents {
+        count.add(bindings.retained_bytes()?);
+    }
     if let Some(ordinals) = &data.row_ordinals {
         count.add(ordinals.retained_bytes()?);
     }
@@ -170,6 +173,7 @@ impl super::Objects {
 impl State {
     pub(in crate::workspace) fn object_bytes(&self) -> Option<usize> {
         let mut count = Counter::new(self.objects.retained_bytes()?);
+        count.add(self.contents_retained_bytes()?);
         if let Some(page) = &self.data {
             count.add(data(page)?);
         }

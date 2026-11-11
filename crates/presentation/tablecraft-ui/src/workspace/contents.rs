@@ -1,7 +1,7 @@
 //! Revision-bound read-only collection dialogs; no database or payload decoding.
 use super::ribbon::Icon;
-use super::{Action, Data, DocumentView, State};
-use crate::localization::{for_context, message, tr};
+use super::{Action, Data, DocumentView, QueryContentsTarget, State};
+use crate::localization::{for_context, tr};
 use crate::{CellKind, datasheet};
 
 const EMPTY_CONTENTS_HEIGHT: f32 = 48.0;
@@ -25,8 +25,14 @@ pub enum CollectionKind {
     VersionHistory,
 }
 
+#[derive(PartialEq, Eq)]
+enum ContentsOwner {
+    Native(ContentsTarget),
+    Query(QueryContentsTarget),
+}
+
 pub(super) struct ContentsDialog {
-    target: ContentsTarget,
+    owner: ContentsOwner,
     request_id: u64,
     result: ContentsResult,
     selection: datasheet::Selection,
@@ -45,7 +51,12 @@ enum ContentsResult {
 impl Data {
     pub(crate) fn contents_target(&self, row: usize, column: usize) -> Option<ContentsTarget> {
         let cell = self.rows.get(row)?.get(column)?;
-        if matches!(cell.kind, CellKind::Scalar { .. }) {
+        if !matches!(
+            cell.kind,
+            CellKind::Multivalue { .. }
+                | CellKind::Attachments { .. }
+                | CellKind::VersionHistory { .. }
+        ) {
             return None;
         }
         Some(ContentsTarget {
@@ -99,7 +110,14 @@ impl State {
         data.rows
             .get(row)
             .and_then(|row| row.get(column))
-            .is_some_and(|cell| !matches!(cell.kind, CellKind::Scalar { .. }))
+            .is_some_and(|cell| {
+                matches!(
+                    cell.kind,
+                    CellKind::Multivalue { .. }
+                        | CellKind::Attachments { .. }
+                        | CellKind::VersionHistory { .. }
+                )
+            })
     }
 
     /// Bind the dialog to the actual host request, after target admission.
@@ -107,7 +125,7 @@ impl State {
         if self.can_view_contents(&target) {
             self.reset_record_navigation();
             self.contents = Some(ContentsDialog {
-                target,
+                owner: ContentsOwner::Native(target),
                 request_id,
                 result: ContentsResult::Loading,
                 selection: datasheet::Selection::default(),
@@ -163,15 +181,15 @@ impl State {
 
     fn accepts_contents(&self, request_id: u64, target: &ContentsTarget) -> bool {
         self.can_view_contents(target)
-            && self
-                .contents
-                .as_ref()
-                .is_some_and(|dialog| dialog.request_id == request_id && &dialog.target == target)
+            && self.contents.as_ref().is_some_and(|dialog| {
+                dialog.request_id == request_id
+                    && matches!(&dialog.owner, ContentsOwner::Native(current) if current == target)
+            })
     }
 
     pub(super) fn selected_contents_text(&self) -> Option<&str> {
         let dialog = self.contents.as_ref()?;
-        if !self.can_view_contents(&dialog.target) {
+        if !self.can_view_contents_owner(&dialog.owner) {
             return None;
         }
         let ContentsResult::Ready { data, .. } = &dialog.result else {
@@ -184,7 +202,7 @@ impl State {
         let Some(dialog) = &self.contents else {
             return false;
         };
-        if !self.can_view_contents(&dialog.target) {
+        if !self.can_view_contents_owner(&dialog.owner) {
             return false;
         }
         match &dialog.result {
@@ -206,6 +224,130 @@ impl State {
         }
     }
 
+    fn can_view_contents_owner(&self, owner: &ContentsOwner) -> bool {
+        match owner {
+            ContentsOwner::Native(target) => self.can_view_contents(target),
+            ContentsOwner::Query(target) => self.can_view_query_contents(target),
+        }
+    }
+
+    fn contents_owner_label(&self, owner: &ContentsOwner) -> Option<String> {
+        let mut args = crate::FluentArgs::new();
+        let key = match owner {
+            ContentsOwner::Native(target) => {
+                args.set("table", target.table.as_str());
+                args.set("column", target.column.as_str());
+                args.set("parent", (u64::from(target.parent_ordinal) + 1).to_string());
+                "collections-target"
+            }
+            ContentsOwner::Query(target) => {
+                let data = self.query_contents_data()?;
+                let entry = data.query_contents.as_ref()?.entry(target)?;
+                args.set("column", data.columns.get(entry.column)?.name.as_str());
+                args.set("row", (entry.row as u128 + 1).to_string());
+                "collections-query-target"
+            }
+        };
+        Some(self.localizer.format(key, &args))
+    }
+
+    /// Bind only the actual current query result's inert token after host lookup.
+    pub fn begin_query_contents(&mut self, target: QueryContentsTarget, request_id: u64) {
+        if self.can_view_query_contents(&target) {
+            self.reset_record_navigation();
+            self.contents = Some(ContentsDialog {
+                owner: ContentsOwner::Query(target),
+                request_id,
+                result: ContentsResult::Loading,
+                selection: datasheet::Selection::default(),
+            });
+        }
+    }
+
+    /// Publish metadata-only child rows without native source or edit identity.
+    pub fn set_query_contents(
+        &mut self,
+        request_id: u64,
+        target: &QueryContentsTarget,
+        mut data: Data,
+    ) {
+        if !self.accepts_query_contents(request_id, target) {
+            return;
+        }
+        if data.source_revision.is_some()
+            || data.row_ordinals.is_some()
+            || data.query_contents.is_some()
+        {
+            self.fail_query_contents(
+                request_id,
+                target,
+                self.localizer.text("datasheet-row-identity-invalid"),
+            );
+            return;
+        }
+        self.prepare_display(&mut data);
+        if !self.admit_object_data(&data) {
+            return;
+        }
+        let assigned = self.query_contents_data().and_then(|parent| {
+            let entry = parent.query_contents.as_ref()?.entry(target)?;
+            match parent.rows.get(entry.row)?.get(entry.column)?.kind {
+                CellKind::Attachments { assigned, .. } => Some(assigned),
+                _ => None,
+            }
+        });
+        if let Some(assigned) = assigned
+            && let Some(dialog) = &mut self.contents
+        {
+            dialog.selection.reset(&data);
+            dialog.result = ContentsResult::Ready {
+                kind: CollectionKind::Attachments,
+                assigned,
+                data,
+            };
+        }
+    }
+
+    pub fn fail_query_contents(
+        &mut self,
+        request_id: u64,
+        target: &QueryContentsTarget,
+        message: String,
+    ) {
+        if self.accepts_query_contents(request_id, target)
+            && let Some(dialog) = &mut self.contents
+        {
+            dialog.result = ContentsResult::Failed(message);
+        }
+    }
+
+    fn accepts_query_contents(&self, request_id: u64, target: &QueryContentsTarget) -> bool {
+        self.can_view_query_contents(target)
+            && self.contents.as_ref().is_some_and(|dialog| {
+                dialog.request_id == request_id
+                    && matches!(&dialog.owner, ContentsOwner::Query(current) if current == target)
+            })
+    }
+
+    pub(in crate::workspace) fn contents_retained_bytes(&self) -> Option<usize> {
+        let Some(dialog) = &self.contents else {
+            return Some(0);
+        };
+        let mut bytes = size_of::<ContentsDialog>();
+        if let ContentsOwner::Native(target) = &dialog.owner {
+            bytes = bytes
+                .checked_add(target.table.capacity())?
+                .checked_add(target.column.capacity())?;
+        }
+        match &dialog.result {
+            ContentsResult::Loading => Some(bytes),
+            ContentsResult::Failed(message) => bytes.checked_add(message.capacity()),
+            ContentsResult::Ready { data, .. } => {
+                bytes.checked_add(super::objects::memory::data(data)?)
+            }
+        }
+    }
+
     pub fn close_contents(&mut self) {
         self.contents = None;
     }
@@ -215,11 +357,14 @@ impl State {
             return;
         };
         let request_id = dialog.request_id;
-        if !self.can_view_contents(&dialog.target) {
+        if !self.can_view_contents_owner(&dialog.owner) {
             self.close_contents();
             actions.push(Action::CloseContents { request_id });
             return;
         }
+        let Some(target_label) = self.contents_owner_label(&dialog.owner) else {
+            return;
+        };
         let dialog = self.contents.as_mut().expect("validated open dialog");
         let mut close = false;
         let response = egui::Modal::new(egui::Id::new("collection_contents")).show(ctx, |ui| {
@@ -260,16 +405,7 @@ impl State {
                 .max_height(body_height)
                 .show(ui, |ui| {
                     let body_top = ui.cursor().top();
-                    let parent = (u64::from(dialog.target.parent_ordinal) + 1).to_string();
-                    ui.label(message(
-                        ui,
-                        "collections-target",
-                        &[
-                            ("table", dialog.target.table.as_str()),
-                            ("column", dialog.target.column.as_str()),
-                            ("parent", parent.as_str()),
-                        ],
-                    ));
+                    ui.label(&target_label);
                     ui.separator();
 
                     match &dialog.result {
@@ -314,20 +450,9 @@ impl State {
                                 egui::Layout::top_down(egui::Align::LEFT),
                                 |ui| {
                                     ui.set_clip_rect(ui.clip_rect().intersect(ui.max_rect()));
-                                    ui.push_id(
-                                        (
-                                            dialog.target.document_revision,
-                                            &dialog.target.table,
-                                            &dialog.target.column,
-                                        ),
-                                        |ui| {
-                                            datasheet::show_collection(
-                                                ui,
-                                                data,
-                                                &mut dialog.selection,
-                                            );
-                                        },
-                                    );
+                                    ui.push_id(("contents_result", request_id), |ui| {
+                                        datasheet::show_collection(ui, data, &mut dialog.selection);
+                                    });
                                 },
                             );
                         }

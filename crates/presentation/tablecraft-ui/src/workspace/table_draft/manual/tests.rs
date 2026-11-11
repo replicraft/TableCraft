@@ -465,6 +465,7 @@ fn manual_primary_save_completion_preserves_first_supplied_record_into_native_dr
     assert!(state.insert_continuation_pending());
     assert!(state.prepare_object_open(completion.target).is_some());
     assert!(state.set_table_data(crate::Data {
+        query_contents: None,
         source_revision: Some(72),
         row_ordinals: None,
         table: table.clone(),

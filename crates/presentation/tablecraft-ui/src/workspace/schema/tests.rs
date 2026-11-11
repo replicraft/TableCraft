@@ -414,6 +414,7 @@ fn design_publication_and_source_reset_preserve_independent_result_slots() {
         .unwrap()
         .tab;
     assert!(state.set_table_data(Data {
+        query_contents: None,
         row_ordinals: None,
         source_revision: Some(7),
         table: "Mixed".into(),
@@ -445,6 +446,7 @@ fn design_publication_and_source_reset_preserve_independent_result_slots() {
     state.set_query_data(
         None,
         Data {
+            query_contents: None,
             row_ordinals: None,
             source_revision: None,
             table: "Query result".into(),

@@ -65,6 +65,7 @@ pub(super) fn prepare(harness: &mut Harness<'_, Preview>, mode: &str) {
         // NO_CLONE: The synthetic Data table name must be owned while the independent
         // active-tab identity remains available for field-addition preparation.
         assert!(state.set_table_data(Data {
+            query_contents: None,
             source_revision: Some(tab.target.document_revision),
             row_ordinals: None,
             table: name.clone(),

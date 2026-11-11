@@ -18,3 +18,5 @@ collections-stored-version = gespeicherte Version
 collections-mock-error = Simulierter Lesefehler der Sammlung. Es wurden keine Nutzdaten geöffnet oder exportiert.
 
 collections-stale-view = Die Sammlung gehört nicht mehr zu dieser Ansicht.
+collections-absent-parent = Kein übergeordneter Datensatz
+collections-query-target = Abfrageergebnis · { $column } · Zeile { $row }

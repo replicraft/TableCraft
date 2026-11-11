@@ -288,6 +288,7 @@ fn deferred_command_entry_cannot_cross_a_new_publication_tab_or_document() {
                     .unwrap()
                     .document_revision;
                 harness.state_mut().0.set_table_data(Data {
+                    query_contents: None,
                     table: "Customers".into(),
                     source_revision: Some(revision),
                     row_ordinals: None,

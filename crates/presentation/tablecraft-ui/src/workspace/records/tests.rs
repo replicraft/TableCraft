@@ -8,6 +8,7 @@ use egui_kittest::{
 
 fn page(offset: u32, count: usize, has_more: bool) -> Data {
     Data {
+        query_contents: None,
         row_ordinals: None,
         source_revision: Some(7),
         table: "Items".into(),

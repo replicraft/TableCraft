@@ -814,6 +814,7 @@ fn collect_contents_action(
     }
     let (row, column) = position;
     let contents = data.contents_target(row, column);
+    let query_contents = data.query_contents_target(row, column);
     let edit = data.edit_target(row, column);
     let value = data.rows.get(row).and_then(|values| values.get(column));
     let zoom = allow_zoom && value.is_some_and(crate::workspace::zoom::can_view);
@@ -848,7 +849,7 @@ fn collect_contents_action(
         }
     }
 
-    if contents.is_none() && edit.is_none() && !zoom {
+    if contents.is_none() && query_contents.is_none() && edit.is_none() && !zoom {
         return;
     }
     let mut view_contents = false;
@@ -860,7 +861,9 @@ fn collect_contents_action(
             }
             ui.close();
         }
-        if contents.is_some() && ui.button(tr(ui, "datasheet-view-contents")).clicked() {
+        if (contents.is_some() || query_contents.is_some())
+            && ui.button(tr(ui, "datasheet-view-contents")).clicked()
+        {
             view_contents = true;
             ui.close();
         }
@@ -901,7 +904,7 @@ fn collect_contents_action(
             });
         }
     }
-    if contents.is_some() && response.has_focus() {
+    if (contents.is_some() || query_contents.is_some()) && response.has_focus() {
         view_contents |= ui.input_mut(|input| {
             let mut enter = false;
             input.events.retain(|event| {
@@ -914,8 +917,12 @@ fn collect_contents_action(
             enter
         });
     }
-    if view_contents && let Some(target) = contents {
-        actions.push(Action::ViewContents { target });
+    if view_contents {
+        if let Some(target) = contents {
+            actions.push(Action::ViewContents { target });
+        } else if let Some(target) = query_contents {
+            actions.push(Action::ViewQueryContents { target });
+        }
     }
     if edit_cell && let Some(target) = edit {
         actions.push(Action::BeginEdit { target });
@@ -953,10 +960,17 @@ fn cell_with_occurrence(
     allow_copy: bool,
     occurrence: Option<&occurrence::Occurrence>,
 ) -> Response {
-    let original_text = value.text.as_str();
+    let localizer = for_context(ui.ctx());
+    // These are explicit non-value states, so their visible/copy label belongs
+    // to UI localization rather than to stored Text or Binary interpretation.
+    let state_label = match value.kind {
+        crate::CellKind::Uninspected => Some(localizer.text("design-not-inspected")),
+        crate::CellKind::AbsentCollection => Some(localizer.text("collections-absent-parent")),
+        _ => None,
+    };
+    let original_text = state_label.as_deref().unwrap_or(value.text.as_str());
     let preview = preview::text(original_text);
     let text = preview.text.as_ref();
-    let localizer = for_context(ui.ctx());
     let mut context = value.context(&localizer);
     if preview.shortened {
         let shortening = localizer.text("datasheet-value-preview-truncated");

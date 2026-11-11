@@ -83,6 +83,7 @@ fn pointer_column_resize_and_horizontal_viewport_follow_pages_but_not_other_sour
     context.enable_accesskit();
     crate::configure(&context);
     let mut data = Data {
+        query_contents: None,
         source_revision: Some(7),
         row_ordinals: None,
         table: "Items".into(),

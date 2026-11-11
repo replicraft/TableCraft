@@ -21,6 +21,7 @@ fn state(value: String, native: bool) -> State {
         queries: Vec::new(),
     });
     let data = Data {
+        query_contents: None,
         row_ordinals: None,
         source_revision: native.then_some(1),
         table: "Items".into(),
@@ -201,6 +202,7 @@ fn publication_and_format_changes_close_zoom_while_theme_and_language_keep_its_b
     state.validate_zoom();
     assert!(state.zoom_dialog_open());
     assert!(!state.set_table_data(Data {
+        query_contents: None,
         row_ordinals: None,
         source_revision: Some(2),
         table: "Items".into(),
@@ -216,6 +218,7 @@ fn publication_and_format_changes_close_zoom_while_theme_and_language_keep_its_b
     );
     assert_eq!(state.data.as_ref().unwrap().rows[0][0].text, "full value");
     let replacement = Data {
+        query_contents: None,
         row_ordinals: None,
         source_revision: Some(1),
         table: "Items".into(),
@@ -291,6 +294,7 @@ fn closing_or_replacing_a_large_source_discards_incomplete_clipboard_work() {
         if replace {
             assert!(
                 harness.state_mut().0.set_table_data(Data {
+                    query_contents: None,
                     row_ordinals: None,
                     source_revision: Some(1),
                     table: "Items".into(),

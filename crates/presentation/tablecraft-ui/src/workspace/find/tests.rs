@@ -34,6 +34,7 @@ pub(super) fn state() -> State {
 
 pub(super) fn page(offset: u32) -> Data {
     Data {
+        query_contents: None,
         row_ordinals: None,
         source_revision: Some(7),
         table: "People".into(),

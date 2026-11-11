@@ -378,6 +378,7 @@ mod tests {
     #[test]
     fn incomplete_record_copy_publishes_no_clipboard_prefix() {
         let data = Data {
+            query_contents: None,
             row_ordinals: None,
             source_revision: None,
             table: "Result".into(),

@@ -34,6 +34,7 @@ fn state() -> (State, FieldFilterTarget) {
         })
         .unwrap();
     assert!(state.set_table_data(Data {
+        query_contents: None,
         row_ordinals: None,
         source_revision: Some(7),
         table: "Items".into(),
@@ -96,6 +97,7 @@ fn metadata_and_apply_bind_exact_draft_and_failure_preserves_inputs_and_previous
             matched_rows: 0,
             source_rows: 1,
             data: Data {
+                query_contents: None,
                 row_ordinals: Some(RowOrdinals::new(Vec::new()).unwrap()),
                 source_revision: Some(7),
                 table: "Wrong table".into(),

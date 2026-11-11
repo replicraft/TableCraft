@@ -22,6 +22,7 @@ fn shared_workspace_renders_empty_and_populated_states_without_host_resources() 
             });
             state.dismiss_backstage();
             state.data = Some(Data {
+                query_contents: None,
                 row_ordinals: None,
                 source_revision: None,
                 table: "Customers".into(),

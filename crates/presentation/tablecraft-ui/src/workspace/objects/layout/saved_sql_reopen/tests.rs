@@ -89,6 +89,7 @@ fn fresh(state: &State) -> Database {
 
 fn table_data() -> Data {
     Data {
+        query_contents: None,
         source_revision: Some(7),
         row_ordinals: None,
         table: "A".into(),

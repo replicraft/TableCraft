@@ -132,6 +132,7 @@ fn missing_publications_show_loading_then_retry_without_confusing_loaded_empty_o
             });
         } else {
             assert!(harness.state_mut().0.set_table_data(Data {
+                query_contents: None,
                 row_ordinals: None,
                 source_revision: Some(7),
                 table: "Items".into(),

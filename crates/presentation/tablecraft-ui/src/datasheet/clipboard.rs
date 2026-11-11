@@ -94,6 +94,7 @@ mod tests {
         assert_eq!(
             row_text(
                 &Data {
+                    query_contents: None,
                     row_ordinals: None,
                     source_revision: None,
                     table: "Result".into(),

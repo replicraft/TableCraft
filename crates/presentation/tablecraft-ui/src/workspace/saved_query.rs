@@ -359,6 +359,10 @@ impl State {
             return false;
         }
         if data.source_revision.is_some()
+            || data
+                .query_contents
+                .as_ref()
+                .is_some_and(|bindings| !bindings.valid_for(&data))
             || data.row_ordinals.is_some()
             || data.offset != 0
             || data.has_more

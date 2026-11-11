@@ -31,6 +31,7 @@ fn reviewed() -> (State, FieldAdditionRequest) {
         .unwrap()
         .tab;
     assert!(state.set_table_data(Data {
+        query_contents: None,
         source_revision: Some(7),
         row_ordinals: None,
         table: "Table1".into(),

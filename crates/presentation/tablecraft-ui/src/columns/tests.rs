@@ -3,6 +3,7 @@ use crate::{Cell, CellKind, Database, RecordTarget, State, datasheet};
 
 fn data() -> Data {
     Data {
+        query_contents: None,
         row_ordinals: None,
         source_revision: Some(7),
         table: "Items".into(),

@@ -331,6 +331,7 @@ pub(super) fn filtered_publication(
     .map_err(|_| InvalidFilterPublication)?;
     let target = ui_target(result.target);
     let data = Data {
+        query_contents: None,
         source_revision: Some(target.document_revision),
         // NO_CLONE: Published filter target and Data.table both retain the table name in separate
         // owned publication fields for downstream source validation.

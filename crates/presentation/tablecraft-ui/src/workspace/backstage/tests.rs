@@ -159,6 +159,7 @@ fn file_back_and_escape_preserve_document_inputs_and_running_work() {
         tables: vec![],
     });
     state.set_table_data(Data {
+        query_contents: None,
         row_ordinals: None,
         source_revision: Some(4),
         table: "Table".into(),
@@ -299,6 +300,7 @@ fn options_round_trip_preserves_typed_saved_inputs_results_and_sql_draft() {
     state.set_query_data(
         None,
         Data {
+            query_contents: None,
             row_ordinals: None,
             source_revision: None,
             table: "Independent SQL result".into(),

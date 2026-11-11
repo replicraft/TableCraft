@@ -3,6 +3,7 @@ use crate::{Cell, CellKind, State};
 
 fn page() -> Data {
     Data {
+        query_contents: None,
         source_revision: Some(7),
         row_ordinals: Some(RowOrdinals::new(vec![7, 100]).unwrap()),
         table: "Items".into(),

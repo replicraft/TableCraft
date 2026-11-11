@@ -89,6 +89,7 @@ pub use insertion::{
 pub use navigation::rename::TableRenameRequest;
 pub use objects::{ObjectKind, ObjectOpen, ObjectTab, ObjectTarget, WorkspaceLayout};
 pub use query::actions::review::{QueryActionEffect, QueryActionKind, QueryActionReview};
+pub use query::contents::{QueryCollectionBinding, QueryContentsBindings, QueryContentsTarget};
 pub use query::options::{QueryPoolLimits, QueryRunLimits};
 pub use query::parameters::{ParameterInput, ParameterSpec};
 pub use query_design::{QueryDesignCompletion, QueryDesignRequest, QueryDesignTarget};
@@ -140,6 +141,7 @@ pub struct Database {
 
 /// One bounded buffered page or query result supplied by the host.
 pub struct Data {
+    pub query_contents: Option<QueryContentsBindings>,
     pub source_revision: Option<u64>,
     /// Physical native membership for a sparse display page; offset stays visible.
     pub row_ordinals: Option<RowOrdinals>,
@@ -327,6 +329,9 @@ pub enum Action {
     },
     ViewSchema {
         table: String,
+    },
+    ViewQueryContents {
+        target: QueryContentsTarget,
     },
     ViewContents {
         target: ContentsTarget,
@@ -626,7 +631,7 @@ impl State {
 
     /// Publish a checked table page into its admitted object session.
     pub fn set_table_data(&mut self, mut data: Data) -> bool {
-        if data.validate_row_ordinals().is_err() {
+        if data.query_contents.is_some() || data.validate_row_ordinals().is_err() {
             self.error = Some(self.localizer.text("datasheet-row-identity-invalid"));
             return false;
         }
@@ -653,7 +658,13 @@ impl State {
     /// Publish a result and its captured submitted SQL into the scratch object.
     /// `None` retains unknown-origin data without claiming draft equivalence.
     pub fn set_query_data(&mut self, submitted_sql: Option<String>, mut data: Data) -> bool {
-        if data.source_revision.is_some() || data.row_ordinals.is_some() {
+        if data.source_revision.is_some()
+            || data.row_ordinals.is_some()
+            || data
+                .query_contents
+                .as_ref()
+                .is_some_and(|bindings| !bindings.valid_for(&data))
+        {
             self.error = Some(self.localizer.text("datasheet-row-identity-invalid"));
             return false;
         }
@@ -1094,6 +1105,7 @@ mod tests {
 
     fn data(table: &str, offset: u32) -> Data {
         Data {
+            query_contents: None,
             row_ordinals: None,
             source_revision: None,
             table: table.into(),
@@ -1220,6 +1232,7 @@ mod selection_tests {
 
     fn data(text: &str) -> Data {
         Data {
+            query_contents: None,
             row_ordinals: None,
             source_revision: None,
             table: "Same result name".into(),

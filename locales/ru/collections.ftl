@@ -18,3 +18,5 @@ collections-stored-version = сохранённая версия
 collections-mock-error = Смоделированная ошибка чтения коллекции. Содержимое не открывалось и не экспортировалось.
 
 collections-stale-view = Коллекция больше не относится к этому представлению.
+collections-absent-parent = Нет родительской записи
+collections-query-target = Результат запроса · { $column } · строка { $row }

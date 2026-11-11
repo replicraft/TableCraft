@@ -9,6 +9,7 @@ fn virtualized_grid_exposes_real_rows_fields_and_existing_value_widgets() {
         let context = Context::default();
         context.enable_accesskit();
         let data = Data {
+            query_contents: None,
             source_revision: Some(1),
             row_ordinals: Some(
                 RowOrdinals::from_display_order((0..10_000).rev().map(|index| index * 2).collect())
@@ -117,6 +118,7 @@ fn empty_nonzero_page_does_not_invent_a_relation_length() {
         let context = Context::default();
         context.enable_accesskit();
         let data = Data {
+            query_contents: None,
             source_revision: None,
             row_ordinals: None,
             table: "Empty page".into(),

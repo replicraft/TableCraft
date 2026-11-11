@@ -43,6 +43,7 @@ pub(in crate::workspace::query) fn harness(state: State) -> Harness<'static, (St
 
 pub(in crate::workspace::query) fn result(text: &str) -> crate::Data {
     crate::Data {
+        query_contents: None,
         source_revision: None,
         row_ordinals: None,
         table: "Query results".into(),

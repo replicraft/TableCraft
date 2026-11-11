@@ -89,6 +89,8 @@ pub(super) fn collection_kind(kind: RuntimeCollectionKind) -> CollectionKind {
 
 pub(super) fn cell(cell: RuntimeCell) -> Cell {
     let kind = match cell.kind {
+        RuntimeKind::Uninspected => CellKind::Uninspected,
+        RuntimeKind::AbsentCollection => CellKind::AbsentCollection,
         RuntimeKind::Scalar {
             is_null,
             stored_calculation,

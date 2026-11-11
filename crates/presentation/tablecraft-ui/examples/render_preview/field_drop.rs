@@ -39,6 +39,7 @@ pub(super) fn prepare(harness: &mut Harness<'_, Preview>, mode: &str) {
     // NO_CLONE: The table Data and the pending field-operation tab retain independent owned
     // table names; both identities must survive the state transition.
     assert!(state.set_table_data(Data {
+        query_contents: None,
         source_revision: Some(revision),
         row_ordinals: None,
         table: name.clone(),

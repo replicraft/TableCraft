@@ -14,6 +14,7 @@ fn desktop() -> Desktop {
         tables: Vec::new(),
     });
     assert!(desktop.state.set_table_data(Data {
+        query_contents: None,
         row_ordinals: None,
         source_revision: Some(7),
         table: "Items".into(),

@@ -18,3 +18,5 @@ collections-stored-version = 保存済みバージョン
 collections-mock-error = コレクション読み取りエラーのシミュレーションです。ペイロードの読み込みやエクスポートは行っていません。
 
 collections-stale-view = このコレクションは現在のビューに属していません。
+collections-absent-parent = 親レコードなし
+collections-query-target = クエリ結果 · { $column } · 行 { $row }

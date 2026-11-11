@@ -10,6 +10,8 @@ pub(super) fn columns(values: &[Column]) -> Value {
 
 pub(super) fn cell(value: &Cell) -> Value {
     let semantics = match value.kind {
+        CellKind::Uninspected => json!({"kind":"uninspected"}),
+        CellKind::AbsentCollection => json!({"kind":"absent_parent"}),
         CellKind::Scalar {
             is_null,
             stored_calculation,
@@ -67,7 +69,7 @@ impl Session {
                 });
                 return Ok(json!({"catalog": &self.catalog}));
             }
-            Response::Data { source_revision, table, offset, columns: fields, rows: values, has_more } => json!({"document_revision": source_revision, "table": table, "offset": offset, "columns": columns(&fields), "rows": rows(&values), "has_more": has_more}),
+            Response::Data { query_contents: _, source_revision, table, offset, columns: fields, rows: values, has_more } => json!({"document_revision": source_revision, "table": table, "offset": offset, "columns": columns(&fields), "rows": rows(&values), "has_more": has_more}),
             Response::Details { table, declared_rows, fields } => json!({"table": table, "declared_rows": declared_rows, "fields": fields.into_iter().map(|field| {
                 json!({"name": field.name, "native_number": field.number, "native_type": field.native_type, "storage_bytes": field.storage_bytes, "fixed": field.fixed, "flags": field.flags, "extended_flags": field.extended_flags, "scalar_type": field.scalar_type, "reader_nullable": field.reader_nullable, "decimal_parameters": field.decimal_parameters, "complex_type_id": field.complex_type_id,
                     "properties": field.properties.into_iter().map(|property| {
@@ -79,6 +81,7 @@ impl Session {
                         json!({"name": property.name, "observation": value})
                     }).collect::<Vec<_>>()})
             }).collect::<Vec<_>>()}),
+            Response::QueryContents { binding, columns: fields, rows: values } => json!({"query_binding": binding, "columns": columns(&fields), "rows": rows(&values)}),
             Response::Contents { target, kind, assigned, columns: fields, rows: values } => json!({"document_revision": target.document_revision, "table": target.table, "column": target.column, "parent_ordinal": target.parent_ordinal, "kind": format!("{kind:?}"), "assigned": assigned, "columns": columns(&fields), "rows": rows(&values)}),
             Response::QueryParameters { target, parameters: values } => {
                 let id = self.next_handle()?;

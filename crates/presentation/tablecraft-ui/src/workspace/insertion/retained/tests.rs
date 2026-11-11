@@ -163,6 +163,7 @@ fn original_image_permission_keeps_even_saved_presentation_and_requires_fresh_gu
     assert_eq!(target.document_revision, 8);
     assert_continuation(&state);
     state.set_table_data(Data {
+        query_contents: None,
         source_revision: Some(8),
         row_ordinals: None,
         table: "Empty table".into(),

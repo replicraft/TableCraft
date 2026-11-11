@@ -1,6 +1,9 @@
 //! A bare attachment stays one structured cell on each parent result row.
 use super::super::{opened_with_source, run, run_until_terminal};
 use super::assert_source;
+use crate::workspace::test_support::finish_reads;
+use egui::accesskit::Role;
+use egui_kittest::kittest::{NodeT, Queryable};
 use tablecraft_testkit::fixtures::access::attachment_modern;
 use tablecraft_ui::CellKind;
 
@@ -86,5 +89,66 @@ fn sql_view_attachment_wildcard_keeps_parent_rows_and_readonly_collection_summar
     );
     assert!(!harness.state().state.edit_dialog_open());
     assert!(harness.state().state.contents_request_id().is_none());
+    assert_source(&path, &before);
+
+    let cell = harness
+        .query_all_by_role(Role::Label)
+        .find(|node| {
+            let node = node.accesskit_node();
+            node.label()
+                .is_some_and(|text| text.contains("2 attachments"))
+                || node
+                    .value()
+                    .is_some_and(|text| text.contains("2 attachments"))
+        })
+        .expect("actual parent-associated attachment summary");
+    cell.click_secondary();
+    harness.run_steps(2);
+    let edit = harness.state().state.localizer.text("datasheet-edit-cell");
+    assert!(
+        harness
+            .query_by_role_and_label(Role::Button, &edit)
+            .is_none()
+    );
+    let contents = harness
+        .state()
+        .state
+        .localizer
+        .text("datasheet-view-contents");
+    harness
+        .get_by_role_and_label(Role::Button, &contents)
+        .click_accesskit();
+    harness.run_steps(1);
+    finish_reads(&mut harness);
+    assert!(harness.state().state.contents_request_id().is_some());
+    assert!(!harness.state().state.edit_dialog_open());
+    assert!(
+        harness.query_all_by_role(Role::Label).any(|node| {
+            let node = node.accesskit_node();
+            node.label()
+                .is_some_and(|text| text.contains("FileData") && text.contains("Not inspected"))
+                || node
+                    .value()
+                    .is_some_and(|text| text.contains("FileData") && text.contains("Not inspected"))
+        }),
+        "FileData must remain visibly uninspected, not NULL or decoded payload"
+    );
+    assert_source(&path, &before);
+    harness
+        .get_by_role_and_label(Role::Button, "Close")
+        .click_accesskit();
+    harness.run_steps(2);
+    assert!(harness.state().state.contents_request_id().is_none());
+    assert_eq!(
+        harness
+            .state()
+            .state
+            .query_data
+            .as_ref()
+            .unwrap()
+            .rows
+            .len(),
+        3
+    );
     assert_source(&path, &before);
 }

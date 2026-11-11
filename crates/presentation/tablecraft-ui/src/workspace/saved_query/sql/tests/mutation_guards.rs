@@ -18,6 +18,7 @@ fn parked_dirty_sql_blocks_cell_edits_until_the_exact_draft_is_discarded() {
         },
     };
     let data = || Data {
+        query_contents: None,
         source_revision: Some(7),
         row_ordinals: None,
         table: "Items".into(),

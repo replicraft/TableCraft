@@ -5,6 +5,11 @@ use tablecraft_runtime::Error;
 impl Desktop {
     pub(super) fn fail_read(&mut self, generation: u64, error: &Error) {
         match &self.pending {
+            PendingOperation::QueryContents { target, request_id } => {
+                self.state
+                    .fail_query_contents(*request_id, target, error.to_string());
+            }
+
             PendingOperation::DatabaseOptionsInspection {
                 revision,
                 request_id,

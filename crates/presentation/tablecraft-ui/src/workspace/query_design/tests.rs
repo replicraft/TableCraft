@@ -35,6 +35,7 @@ fn built(state: &State) -> BuiltQueryDesign {
 
 fn result() -> Data {
     Data {
+        query_contents: None,
         source_revision: None,
         row_ordinals: None,
         table: "Query".into(),

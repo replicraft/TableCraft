@@ -7,6 +7,7 @@ mod find;
 mod navigation;
 mod objects;
 mod opening;
+mod query_contents;
 mod query_design;
 mod query_limits;
 mod query_parameters;
@@ -202,6 +203,10 @@ enum PendingOperation {
         target: RecordTarget,
         request_id: u64,
     },
+    QueryContents {
+        request_id: u64,
+        target: tablecraft_ui::QueryContentsTarget,
+    },
     Contents {
         target: ContentsTarget,
         request_id: u64,
@@ -243,6 +248,7 @@ pub(super) struct Desktop {
     filter: Option<FilterHandle>,
     objects: objects::Sessions,
     query_parameters: Option<query_parameters::Inspected>,
+    query_contents: query_contents::Publications,
     query_run_options: QueryRunOptions,
     startup_visibility_pending: bool,
     font_inventory: FontInventory,
@@ -296,6 +302,7 @@ impl Desktop {
             filter: None,
             objects: objects::Sessions::default(),
             query_parameters: None,
+            query_contents: query_contents::Publications::default(),
             query_run_options: QueryRunOptions::default(),
             startup_visibility_pending: true,
             font_inventory: FontInventory::default(),
@@ -345,6 +352,16 @@ impl Desktop {
         {
             return false;
         }
+        self.query_contents.prune(&self.state);
+        let query_contents = match &command {
+            Command::InspectQueryCollection { result, binding } => {
+                let Some(target) = self.query_contents_target(result, *binding) else {
+                    return false;
+                };
+                Some(target)
+            }
+            _ => None,
+        };
         let contents = match &command {
             Command::InspectCollection { target } => {
                 Some(crate::view_models::contents_target(target))
@@ -356,7 +373,7 @@ impl Desktop {
                 self.state.error = Some(self.state.localizer.text("collections-stale-view"));
                 return false;
             }
-        } else {
+        } else if query_contents.is_none() {
             self.state.close_contents();
         }
         if matches!(&command, Command::Describe { .. }) {
@@ -384,7 +401,13 @@ impl Desktop {
         };
         self.generation = generation;
         self.state.clear_query_run();
-        self.pending = if let Some(target) = contents {
+        self.pending = if let Some(target) = query_contents {
+            self.state.begin_query_contents(target, self.generation);
+            PendingOperation::QueryContents {
+                target,
+                request_id: self.generation,
+            }
+        } else if let Some(target) = contents {
             // NO_CLONE: The collection dialog and host pending record each retain exact request
             // target identity for late-response and close/cancellation checks.
             self.state.begin_contents(target.clone(), self.generation);
@@ -787,6 +810,7 @@ impl Desktop {
                     }
                 }
                 Ok(Response::Data {
+                    query_contents,
                     source_revision,
                     table,
                     offset,
@@ -794,7 +818,27 @@ impl Desktop {
                     rows,
                     has_more,
                 }) => {
+                    let query_owner = if matches!(
+                        self.pending,
+                        PendingOperation::Query { .. }
+                            | PendingOperation::SavedRun { .. }
+                            | PendingOperation::QueryDesignRun { .. }
+                    ) {
+                        self.state.active_object()
+                    } else {
+                        None
+                    };
+                    let bindings =
+                        match self.query_contents_bindings(generation, query_contents.as_ref()) {
+                            Ok(bindings) => bindings,
+                            Err(()) => {
+                                self.state.error =
+                                    Some(self.state.localizer.text("objects-memory-limit"));
+                                continue;
+                            }
+                        };
                     let data = Data {
+                        query_contents: bindings,
                         row_ordinals: None,
                         source_revision,
                         table,
@@ -855,6 +899,16 @@ impl Desktop {
                             }
                         }
                     }
+                    if let Some(tab) = query_owner {
+                        self.retain_query_contents(tab, generation, query_contents);
+                    }
+                }
+                Ok(Response::QueryContents {
+                    binding,
+                    columns,
+                    rows,
+                }) => {
+                    self.publish_query_contents(generation, binding, columns, rows);
                 }
                 Ok(Response::Contents {
                     target,
@@ -875,6 +929,7 @@ impl Desktop {
                             parent_ordinal: target.parent_ordinal,
                         };
                         let data = Data {
+                            query_contents: None,
                             row_ordinals: None,
                             // NO_CLONE: Collection Data.table display label and the ContentsTarget
                             // field identity are distinct owned DTO members; target must
@@ -901,7 +956,7 @@ impl Desktop {
     }
 
     fn close_contents(&mut self, request_id: u64) {
-        if matches!(&self.pending, PendingOperation::Contents { request_id: current, .. } if *current == request_id)
+        if matches!(&self.pending, PendingOperation::Contents { request_id: current, .. } | PendingOperation::QueryContents { request_id: current, .. } if *current == request_id)
             && self.generation == request_id
         {
             self.state.close_contents();
@@ -916,6 +971,7 @@ impl Desktop {
 
 impl eframe::App for Desktop {
     fn logic(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
+        self.query_contents.prune(&self.state);
         if let Some(families) = self.font_inventory.poll(ctx) {
             self.state.font_families = families;
         }
@@ -1106,6 +1162,7 @@ impl eframe::App for Desktop {
                 Action::ReplaceFindMatch { request } => self.replace_find_match(request),
                 Action::CancelFind { request_id } => self.cancel_find(request_id),
                 Action::ViewSchema { table } => self.view_object_schema(table),
+                Action::ViewQueryContents { target } => self.view_query_contents(target),
                 Action::ViewContents { target } => {
                     self.submit(Command::InspectCollection {
                         target: RuntimeContentsTarget {
@@ -1239,7 +1296,9 @@ impl eframe::App for Desktop {
                         self.cancel_current_save();
                         continue;
                     }
-                    if let PendingOperation::Contents { request_id, .. } = &self.pending {
+                    if let PendingOperation::Contents { request_id, .. }
+                    | PendingOperation::QueryContents { request_id, .. } = &self.pending
+                    {
                         self.close_contents(*request_id);
                     } else {
                         self.worker.cancel();

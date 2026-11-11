@@ -20,6 +20,7 @@ fn state() -> State {
         queries: Vec::new(),
     });
     state.set_table_data(Data {
+        query_contents: None,
         source_revision: Some(7),
         row_ordinals: None,
         table: "People".into(),
@@ -50,6 +51,7 @@ fn publication(id: u64, enabled: bool, offset: u32, ordinals: Vec<u32>) -> Filte
         matched_rows: 3,
         source_rows: 10,
         data: Data {
+            query_contents: None,
             source_revision: Some(7),
             row_ordinals: Some(RowOrdinals::new(ordinals).unwrap()),
             table: "People".into(),

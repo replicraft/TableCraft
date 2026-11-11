@@ -13,6 +13,7 @@ fn state() -> (State, EditTarget) {
         tables: vec![],
     });
     state.set_table_data(Data {
+        query_contents: None,
         row_ordinals: None,
         source_revision: Some(7),
         table: "Items".into(),
@@ -481,6 +482,7 @@ fn home_clipboard_witness_rejects_late_source_focus_and_dialog_changes() {
         match change {
             "source" => {
                 state.set_table_data(Data {
+                    query_contents: None,
                     source_revision: Some(7),
                     row_ordinals: None,
                     table: "Replacement".into(),
@@ -592,6 +594,7 @@ fn borrowed_cell_admission_keeps_exact_source_coordinates_and_modal_guards() {
 fn reopened_edit_selection_uses_native_identity_in_mapped_rows_and_rejects_stale_targets() {
     let (mut state, mut target) = state();
     assert!(state.set_table_data(Data {
+        query_contents: None,
         row_ordinals: Some(crate::RowOrdinals::from_display_order(vec![104, 100]).unwrap()),
         source_revision: Some(7),
         table: "Items".into(),

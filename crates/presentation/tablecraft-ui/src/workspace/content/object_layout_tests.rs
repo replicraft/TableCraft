@@ -32,6 +32,7 @@ fn saved_result(state: &mut State, object_id: u128, request: u64) -> ObjectTab {
         request + 1,
         &target,
         Data {
+            query_contents: None,
             row_ordinals: None,
             source_revision: None,
             table: "Query".into(),

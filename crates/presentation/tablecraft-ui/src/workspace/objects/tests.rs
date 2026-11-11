@@ -38,6 +38,7 @@ pub(super) fn state() -> State {
 
 fn data(name: &str, value: &str) -> Data {
     Data {
+        query_contents: None,
         source_revision: Some(7),
         row_ordinals: None,
         table: name.into(),

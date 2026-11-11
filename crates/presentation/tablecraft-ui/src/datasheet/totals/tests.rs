@@ -17,6 +17,7 @@ fn derived_row_is_reachable_and_column_aligned_without_becoming_a_record() {
         (2, true, false),
     ] {
         let data = Data {
+            query_contents: None,
             row_ordinals: None,
             source_revision: Some(7),
             table: "Items".into(),

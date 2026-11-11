@@ -32,6 +32,7 @@ pub(in crate::workspace) fn state_with_fields(fields: Vec<InsertField>) -> (Stat
         queries: Vec::new(),
     });
     state.set_table_data(Data {
+        query_contents: None,
         row_ordinals: None,
         source_revision: Some(7),
         table: "Empty table".into(),

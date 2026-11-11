@@ -66,6 +66,7 @@ impl Preview {
             matched_rows,
             source_rows: fixtures::TOTAL_ROWS,
             data: Data {
+                query_contents: None,
                 source_revision: Some(fixtures::REVISION),
                 row_ordinals: Some(RowOrdinals::new(ordinals).unwrap()),
                 table: "Customers".into(),
@@ -128,6 +129,7 @@ impl Preview {
             matched_rows: fixtures::TOTAL_ROWS,
             source_rows: fixtures::TOTAL_ROWS,
             data: Data {
+                query_contents: None,
                 source_revision: Some(fixtures::REVISION),
                 row_ordinals: Some(RowOrdinals::from_display_order(ordinals).unwrap()),
                 table: "Customers".into(),

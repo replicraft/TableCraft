@@ -34,6 +34,7 @@ fn harness(width: f32) -> Harness<'static, (State, bool, Vec<Action>)> {
         })
         .unwrap();
     state.set_table_data(Data {
+        query_contents: None,
         row_ordinals: None,
         source_revision: Some(7),
         table: name.into(),
@@ -264,6 +265,7 @@ fn close_dispatches_exact_tab_instance_and_retains_independent_sql_object() {
     harness.state_mut().0.set_query_data(
         None,
         Data {
+            query_contents: None,
             row_ordinals: None,
             source_revision: None,
             table: "Independent query".into(),

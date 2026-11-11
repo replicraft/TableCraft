@@ -89,6 +89,7 @@ pub(super) fn page(table: &str, offset: u32) -> Data {
     let columns = columns(table);
     let rows = (offset..end).map(|index| row(table, index)).collect();
     Data {
+        query_contents: None,
         row_ordinals: None,
         source_revision: Some(REVISION),
         table: table.into(),
@@ -297,6 +298,7 @@ pub(super) fn contents(kind: CollectionKind) -> Data {
         ),
     };
     Data {
+        query_contents: None,
         row_ordinals: None,
         source_revision: None,
         table: "Collection contents".into(),

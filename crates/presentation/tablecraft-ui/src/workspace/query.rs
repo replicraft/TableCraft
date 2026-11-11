@@ -1,5 +1,6 @@
 //! Query editor admission is shared with keyboard command handling.
 pub(super) mod actions;
+pub(in crate::workspace) mod contents;
 pub(super) mod options;
 pub(super) mod parameters;
 pub(super) mod provenance;

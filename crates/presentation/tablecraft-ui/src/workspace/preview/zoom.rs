@@ -25,6 +25,7 @@ impl Preview {
         self.state.set_query_data(
             Some(sql.into()),
             Data {
+                query_contents: None,
                 row_ordinals: None,
                 source_revision: None,
                 table: "Query results".into(),

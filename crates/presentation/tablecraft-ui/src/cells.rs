@@ -32,6 +32,10 @@ const CHECKBOX_DISPLAY_CONTROL: i16 = 106;
 
 #[derive(Clone, Copy, PartialEq, Eq)]
 pub enum CellKind {
+    /// No value was read for this child member.
+    Uninspected,
+    /// The outer-joined side has no parent.
+    AbsentCollection,
     Scalar {
         is_null: bool,
         stored_calculation: bool,
@@ -80,6 +84,7 @@ impl Cell {
             CellKind::Multivalue { .. } => "datasheet-badge-list",
             CellKind::Attachments { .. } => "datasheet-badge-encoded",
             CellKind::VersionHistory { .. } => "datasheet-badge-history",
+            CellKind::Uninspected | CellKind::AbsentCollection => return None,
         };
         Some(localizer.text(key))
     }
@@ -118,6 +123,8 @@ impl Cell {
 
     pub(crate) fn context(&self, localizer: &Localizer) -> Option<String> {
         let base = match self.kind {
+            CellKind::Uninspected => Some(localizer.text("design-not-inspected")),
+            CellKind::AbsentCollection => Some(localizer.text("collections-absent-parent")),
             CellKind::Scalar {
                 is_null,
                 stored_calculation,

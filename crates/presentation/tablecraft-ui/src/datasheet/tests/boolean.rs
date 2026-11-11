@@ -21,6 +21,7 @@ fn pointer_space_and_assistive_click_emit_the_same_source_bound_boolean_proposal
                 display_control: control,
             };
             let data = Data {
+                query_contents: None,
                 row_ordinals: Some(RowOrdinals::new(vec![42]).unwrap()),
                 source_revision: Some(7),
                 table: "Flags".into(),
@@ -100,6 +101,7 @@ fn pointer_space_and_assistive_click_emit_the_same_source_bound_boolean_proposal
 fn query_and_calculated_checkboxes_remain_readonly_without_toggle_actions() {
     for calculated in [false, true] {
         let data = Data {
+            query_contents: None,
             row_ordinals: None,
             source_revision: Some(7),
             table: "Flags".into(),

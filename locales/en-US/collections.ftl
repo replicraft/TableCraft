@@ -21,3 +21,5 @@ collections-stored-version = stored version
 collections-mock-error = Synthetic collection read error. No payload was opened or exported.
 
 collections-stale-view = The collection no longer belongs to this view.
+collections-absent-parent = No parent record
+collections-query-target = Query result · { $column } · row { $row }
