@@ -1,5 +1,8 @@
 //! Actual fixed-image retained pair setup shared by rename and DROP acceptance.
-use super::super::{OfflineWriteSession, SessionState};
+use super::super::{
+    CompletionKind, OfflineWriteSession, SchemaChange, SessionState, VerifiedImage,
+};
+use super::assert_completion;
 use std::{
     fs,
     path::{Path, PathBuf},
@@ -7,6 +10,7 @@ use std::{
 use tablecraft_ace::{RecoverableFieldDropPlan, RecoverableFieldRenamePlan};
 use tablecraft_core::limits::ResourceBudget;
 use tablecraft_io::journal::{RecoveryOutcome, filesystem::OfflineJournalPair};
+use tablecraft_model::CatalogScope;
 
 pub(in crate::editing::offline) enum FieldPlan {
     Rename(RecoverableFieldRenamePlan),
@@ -102,9 +106,14 @@ pub(in crate::editing::offline) fn retain_retained_pair(
             encoded
         }
         FieldPlan::Drop(plan) => {
-            assert!(plan.intent().is_retained());
+            assert!(plan.intent().is_retained() || plan.intent().is_retained_typed());
             let encoded = plan.intent().encode(budget, &|| false).unwrap();
-            assert!(encoded.starts_with(b"TCFD0003"));
+            let marker = if plan.intent().is_retained_typed() {
+                b"TCFD0004"
+            } else {
+                b"TCFD0003"
+            };
+            assert!(encoded.starts_with(marker));
             encoded
         }
     };
@@ -145,4 +154,78 @@ pub(in crate::editing::offline) fn retain_retained_pair(
     slot.pair = Some(pair);
     slot.state = SessionState::RetainedJournal;
     owner
+}
+
+/// Check one real pending/committed or retired schema journal. Private session
+/// ownership glue stays here; independent expected images come from the caller.
+pub(in crate::editing::offline) fn assert_retained_schema_recovery(
+    scope: CatalogScope,
+    before: &[u8],
+    after: &[u8],
+    plan: FieldPlan,
+    committed: bool,
+    retired: bool,
+    budget: &mut ResourceBudget,
+) {
+    let change = match &plan {
+        FieldPlan::Rename(_) => SchemaChange::ColumnRenamed,
+        FieldPlan::Drop(_) => SchemaChange::ColumnDropped,
+    };
+    let directory = tempfile::tempdir().unwrap();
+    let path = directory.path().join("schema-recovery.accdb");
+    let bundle = directory.path().join("journal");
+    fs::write(&path, before).unwrap();
+    let owner = OfflineWriteSession::open(&path, scope, budget, &|| false).unwrap();
+    let owner = retain_retained_pair(owner, &bundle, plan, committed, retired, budget);
+    owner.release().unwrap();
+
+    let owner = OfflineWriteSession::open(&path, scope, budget, &|| false).unwrap();
+    let (owner, receipt) = if retired {
+        owner
+            .confirm_retired(&retired_namespace(directory.path()), budget, &|| false)
+            .unwrap()
+    } else {
+        owner.recover_update(&bundle, budget, &|| false).unwrap()
+    };
+    assert_eq!(
+        (receipt.matched_rows(), receipt.changed_rows()),
+        (None, None)
+    );
+    assert_eq!(receipt.schema_change(), committed.then_some(change));
+    assert_eq!(receipt.query_change(), None);
+    assert_eq!(receipt.database_options_change(), None);
+    assert_completion(&receipt);
+    if retired {
+        assert_eq!(receipt.kind(), CompletionKind::Confirmed);
+        assert_eq!(
+            receipt.verified_image(),
+            Some(if committed {
+                VerifiedImage::Replacement
+            } else {
+                VerifiedImage::Original
+            }),
+        );
+    } else {
+        assert_eq!(receipt.kind(), CompletionKind::Recovered);
+        assert_eq!(
+            receipt.outcome(),
+            Some(if committed {
+                RecoveryOutcome::Committed
+            } else {
+                RecoveryOutcome::RolledBack
+            }),
+        );
+    }
+    owner.release().unwrap();
+    let actual = fs::read(&path).unwrap();
+    let expected = if committed { after } else { before };
+    assert_eq!(actual.len(), expected.len(), "complete image length");
+    assert_eq!(
+        actual
+            .iter()
+            .zip(expected)
+            .position(|(left, right)| left != right),
+        None,
+        "first differing image byte",
+    );
 }

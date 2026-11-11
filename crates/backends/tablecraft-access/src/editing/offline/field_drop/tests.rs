@@ -187,3 +187,5 @@ fn closed_drop_family_never_retries_another_action_decoder() {
 }
 
 mod retained;
+
+mod typed_retained;
