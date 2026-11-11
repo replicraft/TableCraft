@@ -1,11 +1,13 @@
 //! Data-definition syntax, without database or schema mutation.
 mod constraint;
+mod default;
 mod format;
 mod index;
 mod saved;
 mod table;
 use crate::select::Name;
 pub use constraint::{Constraint, ConstraintKind, Reference, ReferentialAction};
+pub use default::{BareDefaultWord, ColumnDefault};
 pub use index::{CreateIndex, IndexField, IndexPolicy};
 pub use saved::{CreateView, Procedure};
 pub use table::{AlterOperation, AlterTable, Column, CreateTable, TableElement};

@@ -1,4 +1,4 @@
-use crate::select::Name;
+use crate::select::{Expression, Name};
 /// Inline or table-level constraint syntax.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Constraint {
@@ -16,6 +16,9 @@ pub enum ConstraintKind {
     Unique(Vec<Name>),
     /// Named NOT NULL.
     NotNull(Vec<Name>),
+    /// Parenthesized CHECK expression. Reference scope, validity and enforcement
+    /// belong to the consuming provider, not the syntax-only model.
+    Check(Expression),
     /// REFERENCES / FOREIGN KEY relationship.
     ForeignKey(Reference),
 }

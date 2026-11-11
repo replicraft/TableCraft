@@ -1,4 +1,5 @@
 mod constraint;
+mod default;
 mod index;
 mod saved;
 mod table;
@@ -19,7 +20,7 @@ pub(super) fn parse(p: &mut Parser<'_>, context: &ParseContext) -> Result<Defini
     if p.parse_keyword(W::CREATE) {
         let temporary = word(p, "TEMPORARY");
         if p.parse_keyword(W::TABLE) {
-            return table::create(p, temporary).map(Definition::CreateTable);
+            return table::create(p, temporary, context).map(Definition::CreateTable);
         }
         if temporary {
             return Err(ParseError::at(p, K::Syntax, "TEMPORARY requires TABLE"));
@@ -32,7 +33,7 @@ pub(super) fn parse(p: &mut Parser<'_>, context: &ParseContext) -> Result<Defini
         }
         index::create(p).map(Definition::CreateIndex)
     } else if p.parse_keyword(W::ALTER) {
-        table::alter(p).map(Definition::AlterTable)
+        table::alter(p, context).map(Definition::AlterTable)
     } else {
         expect(p, W::DROP)?;
         if p.parse_keyword(W::TABLE) {

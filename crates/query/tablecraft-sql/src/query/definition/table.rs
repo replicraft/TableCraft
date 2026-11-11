@@ -1,4 +1,4 @@
-use super::Constraint;
+use super::{ColumnDefault, Constraint};
 use crate::{query::DataType, select::Name};
 /// CREATE TABLE with field and constraint order retained.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -29,6 +29,8 @@ pub struct Column {
     pub not_null: bool,
     /// WITH COMPRESSION (including its COMP spelling).
     pub compression: bool,
+    /// Optional provider-specific DEFAULT syntax, never evaluated by this model.
+    pub default_value: Option<ColumnDefault>,
     /// Inline constraint on this field.
     pub constraint: Option<Constraint>,
 }
@@ -45,13 +47,8 @@ pub struct AlterTable {
 pub enum AlterOperation {
     /// ADD COLUMN.
     AddColumn(Column),
-    /// ALTER COLUMN, changing the type annotation.
-    AlterColumn {
-        /// Field name.
-        name: Name,
-        /// New syntactic type annotation.
-        data_type: DataType,
-    },
+    /// ALTER COLUMN with its type, nullability, default and inline constraint syntax.
+    AlterColumn(Column),
     /// ADD CONSTRAINT.
     AddConstraint(Constraint),
     /// DROP COLUMN.

@@ -1,5 +1,9 @@
 use super::*;
-pub(super) fn parse(p: &mut Parser<'_>, inline: bool) -> Result<Constraint, ParseError> {
+pub(super) fn parse(
+    p: &mut Parser<'_>,
+    inline: bool,
+    context: &ParseContext,
+) -> Result<Constraint, ParseError> {
     let constraint_name = if p.parse_keyword(W::CONSTRAINT) {
         Some(identifier(p)?)
     } else if inline {
@@ -19,6 +23,11 @@ pub(super) fn parse(p: &mut Parser<'_>, inline: bool) -> Result<Constraint, Pars
     } else if p.parse_keyword(W::NOT) {
         expect(p, W::NULL)?;
         ConstraintKind::NotNull(if inline { Vec::new() } else { names(p)? })
+    } else if p.parse_keyword(W::CHECK) {
+        expect_token(p, Token::LParen)?;
+        let expression = super::super::expression::parse(p, context)?;
+        expect_token(p, Token::RParen)?;
+        ConstraintKind::Check(expression)
     } else {
         let (fields, no_index) = if inline {
             (Vec::new(), false)

@@ -60,9 +60,7 @@ impl Display for Definition {
                 write!(f, "ALTER TABLE {} ", table.name)?;
                 match &table.operation {
                     AlterOperation::AddColumn(column) => write!(f, "ADD COLUMN {column}"),
-                    AlterOperation::AlterColumn { name, data_type } => {
-                        write!(f, "ALTER COLUMN {name} {data_type}")
-                    }
+                    AlterOperation::AlterColumn(column) => write!(f, "ALTER COLUMN {column}"),
                     AlterOperation::AddConstraint(constraint) => write!(f, "ADD {constraint}"),
                     AlterOperation::DropColumn(name) => write!(f, "DROP COLUMN {name}"),
                     AlterOperation::DropConstraint(name) => write!(f, "DROP CONSTRAINT {name}"),
@@ -111,6 +109,9 @@ impl Display for Column {
         if self.compression {
             f.write_str(" WITH COMPRESSION")?;
         }
+        if let Some(default) = &self.default_value {
+            write!(f, " DEFAULT {default}")?;
+        }
         if let Some(constraint) = &self.constraint {
             write!(f, " {constraint}")?;
         }
@@ -135,6 +136,7 @@ impl Display for Constraint {
                 f.write_str("NOT NULL")?;
                 fields
             }
+            ConstraintKind::Check(expression) => return write!(f, "CHECK ({expression})"),
             ConstraintKind::ForeignKey(reference) => {
                 if !reference.fields.is_empty() {
                     f.write_str("FOREIGN KEY ")?;

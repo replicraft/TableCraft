@@ -26,8 +26,31 @@ pub(super) fn parse(
     parser: &mut Parser<'_>,
     limits: &super::limits::ParseContext,
 ) -> Result<E, ParseError> {
+    parse_until(parser, limits, Boundary::Expression)
+}
+
+/// Only a column DEFAULT may end before a following NOT NULL field annotation.
+/// Nested parenthesized values, calls and subqueries retain ordinary boundaries.
+pub(super) fn parse_column_default(
+    parser: &mut Parser<'_>,
+    limits: &super::limits::ParseContext,
+) -> Result<E, ParseError> {
+    parse_until(parser, limits, Boundary::ColumnAnnotation)
+}
+
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum Boundary {
+    Expression,
+    ColumnAnnotation,
+}
+
+fn parse_until(
+    parser: &mut Parser<'_>,
+    limits: &super::limits::ParseContext,
+    boundary: Boundary,
+) -> Result<E, ParseError> {
     let start = parser.peek_token().span.start;
-    let expr = pratt(parser, limits, 0, 0)?;
+    let expr = pratt(parser, limits, 0, 0, boundary)?;
     check_depth(&expr, limits.depth(), 1)
         .map_err(|()| ParseError::new(K::Limit, "SQL expression depth limit exceeded", start))?;
     Ok(expr)
@@ -115,6 +138,7 @@ fn pratt(
     limits: &super::limits::ParseContext,
     min: u8,
     recursion: usize,
+    boundary: Boundary,
 ) -> Result<E, ParseError> {
     if recursion > super::limits::MAX_RECURSION {
         return Err(ParseError::at(
@@ -124,7 +148,7 @@ fn pratt(
         ));
     }
     let _guard = limits.enter(parser)?;
-    let mut left = prefix(parser, limits, recursion + 1)?;
+    let mut left = prefix(parser, limits, recursion + 1, boundary)?;
     loop {
         if let Some((precedence, op)) = binary(&parser.peek_token().token) {
             if precedence < min {
@@ -157,7 +181,7 @@ fn pratt(
                     continue;
                 }
             }
-            let right = pratt(parser, limits, precedence + 1, recursion + 1)?;
+            let right = pratt(parser, limits, precedence + 1, recursion + 1, boundary)?;
             left = E::Binary {
                 left: Box::new(left),
                 operator: op,
@@ -168,13 +192,31 @@ fn pratt(
         if min > power::COMPARISON {
             break;
         }
+        if boundary == Boundary::ColumnAnnotation
+            && matches!(parser.peek_token().token, Token::Word(ref word) if word.quote_style.is_none() && word.keyword == Keyword::NOT)
+            && matches!(parser.peek_nth_token(1).token, Token::Word(ref word) if word.quote_style.is_none() && word.keyword == Keyword::NULL)
+        {
+            break;
+        }
         let negated = parser.parse_keyword(Keyword::NOT);
         if parser.parse_keyword(Keyword::BETWEEN) {
-            let first = pratt(parser, limits, power::COMPARISON + 1, recursion + 1)?;
+            let first = pratt(
+                parser,
+                limits,
+                power::COMPARISON + 1,
+                recursion + 1,
+                boundary,
+            )?;
             if !parser.parse_keyword(Keyword::AND) {
                 return Err(ParseError::at(parser, K::Syntax, "BETWEEN requires AND"));
             }
-            let second = pratt(parser, limits, power::COMPARISON + 1, recursion + 1)?;
+            let second = pratt(
+                parser,
+                limits,
+                power::COMPARISON + 1,
+                recursion + 1,
+                boundary,
+            )?;
             left = E::Between {
                 expression: Box::new(left),
                 first_bound: Box::new(first),
@@ -198,9 +240,21 @@ fn pratt(
                 };
                 continue;
             }
-            let mut values = vec![pratt(parser, limits, 0, recursion + 1)?];
+            let mut values = vec![pratt(
+                parser,
+                limits,
+                0,
+                recursion + 1,
+                Boundary::Expression,
+            )?];
             while parser.consume_token(&Token::Comma) {
-                values.push(pratt(parser, limits, 0, recursion + 1)?);
+                values.push(pratt(
+                    parser,
+                    limits,
+                    0,
+                    recursion + 1,
+                    Boundary::Expression,
+                )?);
             }
             expect_token(parser, Token::RParen)?;
             left = E::InList {
@@ -209,7 +263,13 @@ fn pratt(
                 negated,
             };
         } else if parser.parse_keyword(Keyword::LIKE) {
-            let pattern = pratt(parser, limits, power::COMPARISON + 1, recursion + 1)?;
+            let pattern = pratt(
+                parser,
+                limits,
+                power::COMPARISON + 1,
+                recursion + 1,
+                boundary,
+            )?;
             left = E::Like {
                 expression: Box::new(left),
                 pattern: Box::new(pattern),
@@ -244,11 +304,12 @@ fn prefix(
     parser: &mut Parser<'_>,
     limits: &super::limits::ParseContext,
     recursion: usize,
+    boundary: Boundary,
 ) -> Result<E, ParseError> {
     let token = parser.peek_token();
     if parser.consume_token(&Token::Plus) || parser.consume_token(&Token::Minus) {
         let minus = token.token == Token::Minus;
-        let value = pratt(parser, limits, power::UNARY_SIGN, recursion)?;
+        let value = pratt(parser, limits, power::UNARY_SIGN, recursion, boundary)?;
         if let E::Integer(n) = value {
             if !minus {
                 return Ok(E::Integer(n));
@@ -320,7 +381,7 @@ fn prefix(
     if parser.parse_keyword(Keyword::NOT) {
         return Ok(E::Unary {
             operator: U::Not,
-            expression: Box::new(pratt(parser, limits, power::NOT, recursion)?),
+            expression: Box::new(pratt(parser, limits, power::NOT, recursion, boundary)?),
         });
     }
     if parser.parse_keyword(Keyword::EXISTS) {
@@ -348,7 +409,7 @@ fn prefix(
                 expect_token(parser, Token::RParen)?;
                 return Ok(E::Subquery(Box::new(query)));
             }
-            let value = pratt(parser, limits, 0, recursion)?;
+            let value = pratt(parser, limits, 0, recursion, Boundary::Expression)?;
             expect_token(parser, Token::RParen)?;
             value
         }
@@ -486,5 +547,5 @@ pub(super) fn argument(
     limits: &super::limits::ParseContext,
     recursion: usize,
 ) -> Result<E, ParseError> {
-    pratt(parser, limits, 0, recursion)
+    pratt(parser, limits, 0, recursion, Boundary::Expression)
 }
