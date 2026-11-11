@@ -307,6 +307,11 @@ pub use intent::{
 };
 
 #[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub use intent::RecoverableNativeIndexDropPlan;
+#[cfg(feature = "journal")]
+pub use intent::{IndexDropIntentError, NativeIndexDropIntent, QualifiedNativeIndexDropRecovery};
+
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
 pub use intent::RecoverableNativeIndexCreatePlan;
 #[cfg(feature = "journal")]
 pub use intent::{

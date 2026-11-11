@@ -47,6 +47,9 @@ pub(super) fn capture(
     if !crate::identifier::valid_name(requested, budget, cancelled)? {
         return Err(EditError::Unsupported(WriteBlocker::Column));
     }
+    if !requested.is_ascii() {
+        return Err(EditError::Unsupported(WriteBlocker::ConstraintCoverage));
+    }
     let content = normal_ordinary::capture_retained_schema(image, table, budget, cancelled)?;
     if !content.dependencies.is_empty() {
         return Err(EditError::Unsupported(WriteBlocker::ConstraintCoverage));
@@ -69,7 +72,7 @@ pub(super) fn capture(
             return Err(InspectError::Malformed.into());
         }
     }
-    let position = position.ok_or(EditError::Unsupported(WriteBlocker::Column))?;
+    let position = position.ok_or(InspectError::UnknownIndex)?;
     let selected = &content.indexes.indexes()[position];
     let [key] = selected.columns() else {
         return Err(EditError::Unsupported(WriteBlocker::IndexedColumn));

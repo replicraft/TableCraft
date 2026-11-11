@@ -72,6 +72,8 @@ mod normal_index_drop;
 #[cfg(all(feature = "journal", feature = "ace16-create"))]
 pub use normal_index_drop::NativeIndexDropCandidate;
 #[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub(crate) use normal_index_drop::{NativeIndexDropEffect, NativeIndexDropParts};
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
 mod normal_index_creation;
 #[cfg(all(feature = "journal", feature = "ace16-create"))]
 pub use normal_index_creation::NativeLongIndexCandidate;

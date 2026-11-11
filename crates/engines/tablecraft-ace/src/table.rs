@@ -104,6 +104,8 @@ pub use mutation::{FittedColumnUpdates, FixedColumnUpdates, SlotScalarUpdate};
 pub(crate) use mutation::{NativeIndexCreateEffect, NativeIndexCreateParts};
 #[cfg(all(feature = "journal", feature = "ace16-create"))]
 pub use mutation::{NativeIndexDropCandidate, NativeLongIndexCandidate};
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub(crate) use mutation::{NativeIndexDropEffect, NativeIndexDropParts};
 #[cfg(feature = "journal")]
 pub use mutation::{
     NativeTableDropIdentity, NativeTableDropInspection, NativeTableDropPlan, TableDropError,

@@ -107,11 +107,24 @@ fn primary_missing_corrupt_owner_cancellation_and_exhausted_work_do_not_return_c
         ),
         Err(EditError::Unsupported(WriteBlocker::IndexedColumn))
     ));
-    assert!(
-        image(&case.expected, &mut budget)
-            .prepare_retained_index_drop(case.table, "Missing", &mut budget, &|| false)
-            .is_err()
-    );
+    assert!(matches!(
+        image(&case.expected, &mut budget).prepare_retained_index_drop(
+            case.table,
+            "Missing",
+            &mut budget,
+            &|| false
+        ),
+        Err(EditError::Inspect(crate::InspectError::UnknownIndex))
+    ));
+    assert!(matches!(
+        image(&case.expected, &mut budget).prepare_retained_index_drop(
+            case.table,
+            "ſcoreLookup",
+            &mut budget,
+            &|| false
+        ),
+        Err(EditError::Unsupported(WriteBlocker::ConstraintCoverage))
+    ));
     assert!(
         image(&case.expected, &mut budget)
             .prepare_retained_index_drop(case.table, case.index_name, &mut budget, &|| true)

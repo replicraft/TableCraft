@@ -1,5 +1,7 @@
 //! Complete normal index removal, separate from row-update retirement.
 mod definition;
+mod effect;
+pub(crate) use effect::{NativeIndexDropEffect, NativeIndexDropParts};
 mod proof;
 mod retirement;
 mod source;

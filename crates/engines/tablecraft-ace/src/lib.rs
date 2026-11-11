@@ -464,6 +464,13 @@ pub use transaction::{
 };
 
 #[cfg(all(feature = "journal", feature = "ace16-create"))]
+pub use transaction::RecoverableNativeIndexDropPlan;
+#[cfg(feature = "journal")]
+pub use transaction::{
+    IndexDropIntentError, NativeIndexDropIntent, QualifiedNativeIndexDropRecovery,
+};
+
+#[cfg(all(feature = "journal", feature = "ace16-create"))]
 pub use transaction::RecoverableNativeIndexCreatePlan;
 #[cfg(feature = "journal")]
 pub use transaction::{

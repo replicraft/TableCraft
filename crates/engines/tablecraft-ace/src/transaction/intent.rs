@@ -233,6 +233,13 @@ pub use fresh_index_create::{
     QualifiedNativeFreshIndexCreateRecovery,
 };
 
+mod index_drop;
+#[cfg(feature = "ace16-create")]
+pub use index_drop::RecoverableNativeIndexDropPlan;
+pub use index_drop::{
+    IndexDropIntentError, NativeIndexDropIntent, QualifiedNativeIndexDropRecovery,
+};
+
 mod index_create;
 #[cfg(feature = "ace16-create")]
 pub use index_create::RecoverableNativeIndexCreatePlan;
