@@ -293,3 +293,6 @@ fn word_append(bytes: &mut Vec<u8>, value: usize) -> Result<(), Error> {
     );
     Ok(())
 }
+
+#[cfg(test)]
+mod tests;
